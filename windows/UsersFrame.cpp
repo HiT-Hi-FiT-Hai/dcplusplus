@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	WinUtil::splitTokens(columnSizes, SETTING(USERSFRAME_WIDTHS), COLUMN_LAST);
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
-		ctrlUsers.InsertColumn(j, CSTRING_I(columnNames[j]), LVCFMT_LEFT, columnSizes[j], j);
+		ctrlUsers.InsertColumn(j, CTSTRING_I(columnNames[j]), LVCFMT_LEFT, columnSizes[j], j);
 	}
 	
 	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
@@ -54,8 +54,8 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.CreatePopupMenu();
 	appendUserItems(usersMenu);
 	usersMenu.AppendMenu(MF_SEPARATOR);
-	usersMenu.AppendMenu(MF_STRING, IDC_EDIT, CSTRING(PROPERTIES));
-	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	usersMenu.AppendMenu(MF_STRING, IDC_EDIT, CTSTRING(PROPERTIES));
+	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
 	HubManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
@@ -85,11 +85,11 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		UserInfo* ui = ctrlUsers.getItemData(i);
 		dcassert(i != -1);
 		LineDlg dlg;
-		dlg.description = STRING(DESCRIPTION);
-		dlg.title = ui->user->getNick();
-		dlg.line = ui->user->getUserDescription();
+		dlg.description = TSTRING(DESCRIPTION);
+		dlg.title = WinUtil::toT(ui->user->getNick());
+		dlg.line = WinUtil::toT(ui->user->getUserDescription());
 		if(dlg.DoModal(m_hWnd)) {
-			ui->user->setUserDescription(dlg.line);
+			ui->user->setUserDescription(WinUtil::fromT(dlg.line));
 			ui->update();
 			ctrlUsers.updateItem(i);
 			HubManager::getInstance()->save();
@@ -115,7 +115,7 @@ void UsersFrame::addUser(const User::Ptr& aUser) {
 
 void UsersFrame::updateUser(const User::Ptr& aUser) {
 	int i = -1;
-	while((i = ctrlUsers.findItem(aUser->getNick(), i)) != -1) {
+	while((i = ctrlUsers.findItem(WinUtil::toT(aUser->getNick()), i)) != -1) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
 			ui->update();
@@ -126,7 +126,7 @@ void UsersFrame::updateUser(const User::Ptr& aUser) {
 
 void UsersFrame::removeUser(const User::Ptr& aUser) {
 	int i = -1;
-	while((i = ctrlUsers.findItem(aUser->getNick(), i)) != -1) {
+	while((i = ctrlUsers.findItem(WinUtil::toT(aUser->getNick()), i)) != -1) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
 			ctrlUsers.DeleteItem(i);
@@ -159,6 +159,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.24 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.25 2004/09/06 12:32:45 arnetheduck Exp $
  */
 

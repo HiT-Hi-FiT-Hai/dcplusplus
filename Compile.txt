@@ -6,7 +6,7 @@ How to compile in 3 easy steps:
    one from the source extras).
    
    * Note; This step may not be required, i e it might work without STLPort,
-     but I don't recommend this as it's completely untested, and the original distribution uses it.
+     but I don't recommend this as it's completely untested, and is not being actively maintained.
      See client\config.h for further details.
 
 2) Make sure you've downloaded the WTL 7.1 Package and have all the files in it in your include path.

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,19 +26,19 @@
 #include "../client/HttpConnection.h"
 #include "../client/SimpleXML.h"
 
-static const char thanks[] = "Big thanks to all donators and people who have contributed with ideas "
-"and code! Thanks go out to sourceforge for hosting the project. This application uses libzip2, "
-"thanks to Julian R Seward and team for providing it. This application uses STLPort "
-"(www.stlport.org), a most excellent STL package. zlib is also used in this application. "
-"The following people have contributed code to "
-"DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n"
-"geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, "
-"patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, "
-"sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, "
-"distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, "
-"theparanoidone, gadget, torgny nyblom, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, "
-"defr, ullner, fleetcommand, liny, xan, olle svensson. "
-"Keep it coming!";
+static const TCHAR thanks[] = _T("Big thanks to all donators and people who have contributed with ideas ")
+_T("and code! Thanks go out to sourceforge for hosting the project. This application uses libzip2, ")
+_T("thanks to Julian R Steward and team for providing it. This application uses STLPort ")
+_T("(www.stlport.org), a most excellent STL package. zlib is also used in this application. ")
+_T("The following people have contributed code to ")
+_T("DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n")
+_T("geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, ")
+_T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, ")
+_T("sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
+_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
+_T("theparanoidone, gadget, torgny nyblom, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
+_T("defr, ullner, fleetcommand, liny, xan, olle svensson. ")
+_T("Keep it coming!");
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
 {
@@ -57,20 +57,20 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2004 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/");
+		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2004 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 		CEdit ctrl(GetDlgItem(IDC_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);
 		ctrl.Detach();
 		SetDlgItemText(IDC_TTH, WinUtil::tth.c_str());
-		SetDlgItemText(IDC_LATEST, CSTRING(DOWNLOADING));
-		SetDlgItemText(IDC_TOTALS, ("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
+		SetDlgItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
+		SetDlgItemText(IDC_TOTALS, WinUtil::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
 			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
 
 		if(SETTING(TOTAL_DOWNLOAD) > 0) {
 			char buf[64];
 			sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
-			SetDlgItemText(IDC_RATIO, buf);
+			SetDlgItemText(IDC_RATIO, WinUtil::toT(buf).c_str());
 		}
 		CenterWindow(GetParent());
 		c.addListener(this);
@@ -79,7 +79,7 @@ public:
 	}
 
 	LRESULT onVersionData(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		string* x = (string*) wParam;
+		tstring* x = (tstring*) wParam;
 		SetDlgItemText(IDC_LATEST, x->c_str());
 		delete x;
 		return 0;
@@ -106,7 +106,7 @@ private:
 			if(xml.findChild("DCUpdate")) {
 				xml.stepIn();
 				if(xml.findChild("Version")) {
-					string* x = new string(xml.getChildData());
+					tstring* x = new tstring(WinUtil::toT(xml.getChildData()));
 					PostMessage(WM_VERSIONDATA, (WPARAM) x);
 				}
 			}
@@ -115,7 +115,7 @@ private:
 	}
 
 	virtual void on(HttpConnectionListener::Failed, HttpConnection* conn, const string& aLine) throw() {
-		string* x = new string(aLine);
+		tstring* x = new tstring(WinUtil::toT(aLine));
 		PostMessage(WM_VERSIONDATA, (WPARAM) x);
 		conn->removeListener(this);
 	}
@@ -127,6 +127,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.34 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.35 2004/09/06 12:32:43 arnetheduck Exp $
  */
 

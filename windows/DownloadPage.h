@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ class DownloadPage : public CPropertyPage<IDD_DOWNLOADPAGE>, public PropPage
 public:
 	DownloadPage(SettingsManager *s) : PropPage(s) { 
 		m_psp.dwFlags |= PSP_USETITLE;
-		m_psp.pszTitle = CSTRING(SETTINGS_DOWNLOADS);
+		m_psp.pszTitle = CTSTRING(SETTINGS_DOWNLOADS);
 	};
 	virtual ~DownloadPage() { };
 
@@ -57,5 +57,5 @@ protected:
 
 /**
  * @file
- * $Id: DownloadPage.h,v 1.9 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.10 2004/09/06 12:32:43 arnetheduck Exp $
  */

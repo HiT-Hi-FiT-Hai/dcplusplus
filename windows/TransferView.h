@@ -158,11 +158,11 @@ private:
 		int64_t actual;
 		int64_t speed;
 		int64_t timeLeft;
-		string statusString;
-		string file;
-		string path;
-		string IP;
-		string country;
+		tstring statusString;
+		tstring file;
+		tstring path;
+		tstring IP;
+		tstring country;
 
 		enum {
 			MASK_USER = 1 << COLUMN_USER,
@@ -176,7 +176,7 @@ private:
 			MASK_IP = 1 << COLUMN_IP,
 			MASK_RATIO = 1 << COLUMN_RATIO,
 		};
-		string columns[COLUMN_LAST];
+		tstring columns[COLUMN_LAST];
 		u_int32_t updateMask;
 		void update();
 
@@ -186,7 +186,7 @@ private:
 
 		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
 
-		const string& getText(int col) const {
+		const tstring& getText(int col) const {
 			return columns[col];
 		}
 
@@ -246,5 +246,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.15 2004/05/03 12:38:05 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.16 2004/09/06 12:32:45 arnetheduck Exp $
  */

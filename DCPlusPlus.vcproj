@@ -17,7 +17,7 @@
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="0">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -31,6 +31,7 @@
 				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="FALSE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
@@ -43,10 +44,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib"
+				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib comctl32.lib Ws2_32.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				IgnoreAllDefaultLibraries="FALSE"
+				IgnoreDefaultLibraryNames="kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
 				SubSystem="2"
@@ -114,12 +117,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib"
+				AdditionalDependencies="unicows.lib comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib"
 				OutputFile="./App/DCPlusPlus.exe"
 				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				IgnoreDefaultLibraryNames=""
+				IgnoreAllDefaultLibraries="FALSE"
+				IgnoreDefaultLibraryNames="kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib"
 				DelayLoadDLLs="comdlg32.dll;dbghelp.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="./App/DCPlusPlus.pdb"
@@ -410,6 +414,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\GeneralPage.h">
+			</File>
+			<File
+				RelativePath=".\windows\HashProgressDlg.h">
 			</File>
 			<File
 				RelativePath=".\windows\HubFrame.h">

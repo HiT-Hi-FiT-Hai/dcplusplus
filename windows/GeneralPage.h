@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
 {
 public:
 	GeneralPage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CSTRING(SETTINGS_GENERAL));
+		SetTitle(CTSTRING(SETTINGS_GENERAL));
 	};
 	virtual ~GeneralPage() { };
 
@@ -65,6 +65,6 @@ private:
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.9 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.10 2004/09/06 12:32:44 arnetheduck Exp $
  */
 

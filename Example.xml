@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="windows-1252" standalone="yes"?>
-<Language Name="Example Language">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Language Name="Example Language" Author="arnetheduck" Version="0.40325" Revision="1">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -104,6 +104,8 @@
 		<String Name="FileWithDifferentSize">A file with a different size already exists in the queue</String>
 		<String Name="FileWithDifferentTth">A file with diffent tth root already exists in the queue</String>
 		<String Name="Filename">Filename</String>
+		<String Name="FilesPerHour">files/h</String>
+		<String Name="FilesLeft">files left</String>
 		<String Name="Filter">F&amp;ilter</String>
 		<String Name="Find">Find</String>
 		<String Name="FinishedDownloads">Finished Downloads</String>
@@ -147,6 +149,7 @@
 		<String Name="LastChange">Last change: </String>
 		<String Name="LastHub">Hub (last seen on if offline)</String>
 		<String Name="LastSeen">Time last seen</String>
+		<String Name="Left">left</String>
 		<String Name="Loading">Loading DC++, please wait...</String>
 		<String Name="LookupAtBitzi">Lookup TTH at Bitzi.com</String>
 		<String Name="Low">Low</String>
@@ -175,6 +178,7 @@
 		<String Name="MenuFavoriteHubs">&amp;Favorite Hubs	Ctrl+F</String>
 		<String Name="MenuFavoriteUsers">Favorite &amp;Users	Ctrl+U</String>
 		<String Name="MenuFollowRedirect">Follow last redirec&amp;t	Ctrl+T</String>
+		<String Name="MenuHashProgress">Indexing progress</String>
 		<String Name="MenuNetworkStatistics">Network Statistics</String>
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
 		<String Name="MenuOpenFileList">Open file list...</String>
@@ -190,7 +194,7 @@
 		<String Name="MenuAbout">About DC++...</String>
 		<String Name="MenuChangelog">Change Log</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
-		<String Name="MenuDonate">Donate €€€/$$$ (paypal)</String>
+		<String Name="MenuDonate">Donate â‚¬â‚¬â‚¬/$$$ (paypal)</String>
 		<String Name="MenuHelpDownloads">Downloads</String>
 		<String Name="MenuHelpTranslations">Translations</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
@@ -283,7 +287,6 @@
 		<String Name="SearchSpamFrom">Search spam detected from </String>
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search String</String>
-		<String Name="SearchStringInefficient">Specifying the same search string for more than 5 files for a passive connection or 10 files for an active connection is inefficient. Would you like to continue with the operation?</String>
 		<String Name="SearchingFor">Searching for </String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Separator">Separator</String>
@@ -317,7 +320,7 @@
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
-		<String Name="SettingsExampleText">Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
+		<String Name="SettingsExampleText">Donate â‚¬â‚¬â‚¬:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
@@ -450,6 +453,7 @@
 		<String Name="Users">Users</String>
 		<String Name="Video">Video</String>
 		<String Name="ViewAsText">View as text</String>
+		<String Name="VirtualNameExists">Virtual directory name already exists</String>
 		<String Name="Waiting">Waiting...</String>
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>

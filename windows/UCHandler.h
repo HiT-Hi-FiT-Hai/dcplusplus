@@ -49,8 +49,8 @@ public:
 		return 0;
 	}
 
-	void prepareMenu(CMenu& menu, int ctx, const string& server, bool op) {
-		userCommands = HubManager::getInstance()->getUserCommands(ctx, server, op);
+	void prepareMenu(CMenu& menu, int ctx, const tstring& server, bool op) {
+		userCommands = HubManager::getInstance()->getUserCommands(ctx, WinUtil::fromT(server), op);
 		int n = 0;
 
 		menuPos = menu.GetMenuItemCount();
@@ -68,13 +68,13 @@ public:
 					}
 				} else if(uc.getType() == UserCommand::TYPE_RAW || uc.getType() == UserCommand::TYPE_RAW_ONCE) {
 					cur = menu.m_hMenu;
-					StringTokenizer t(uc.getName(), '\\');
-					for(StringIter i = t.getTokens().begin(); i != t.getTokens().end(); ++i) {
+					StringTokenizer<tstring> t(WinUtil::toT(uc.getName()), _T('\\'));
+					for(TStringIter i = t.getTokens().begin(); i != t.getTokens().end(); ++i) {
 						if(i+1 == t.getTokens().end()) {
 							cur.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, i->c_str());
 						} else {
 							bool found = false;
-							char buf[1024];
+							TCHAR buf[1024];
 							// Let's see if we find an existing item...
 							for(int k = 0; k < cur.GetMenuItemCount(); k++) {
 								if(cur.GetMenuState(k, MF_BYPOSITION) & MF_POPUP) {
@@ -115,5 +115,5 @@ private:
 
 /**
 * @file
-* $Id: UCHandler.h,v 1.5 2004/01/24 20:44:37 arnetheduck Exp $
+* $Id: UCHandler.h,v 1.6 2004/09/06 12:32:45 arnetheduck Exp $
 */

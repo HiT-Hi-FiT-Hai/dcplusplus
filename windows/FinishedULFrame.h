@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ public:
 	FinishedULFrame() : totalBytes(0), totalTime(0), closed(false) { };
 	virtual ~FinishedULFrame() { };
 
-	DECLARE_FRAME_WND_CLASS_EX("FinishedULFrame", IDR_FINISHED_UL, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
@@ -192,8 +192,8 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	
 	void updateStatus() {
-		ctrlStatus.SetText(1, Util::formatBytes(totalBytes).c_str());
-		ctrlStatus.SetText(2, (Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
+		ctrlStatus.SetText(1, WinUtil::toT(Util::formatBytes(totalBytes)).c_str());
+		ctrlStatus.SetText(2, WinUtil::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
 	}
 
 	void updateList(const FinishedItem::List& fl) {
@@ -228,5 +228,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.13 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.14 2004/09/06 12:32:44 arnetheduck Exp $
  */

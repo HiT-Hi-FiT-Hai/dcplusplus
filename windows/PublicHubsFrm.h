@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,14 +38,14 @@ class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public St
 {
 public:
 	PublicHubsFrame() : users(0), hubs(0), closed(false), filter(""),
-		ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP), 
-		filterContainer("edit", this, FILTER_MESSAGE_MAP) {
+		ctrlHubContainer(WC_EDIT, this, SERVER_MESSAGE_MAP), 
+		filterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP) {
 	};
 
 	virtual ~PublicHubsFrame() {
 	};
 
-	DECLARE_FRAME_WND_CLASS_EX("PublicHubsFrame", IDR_PUBLICHUBS, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("PublicHubsFrame"), IDR_PUBLICHUBS, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
@@ -170,7 +170,7 @@ private:
 	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
 
 	void speak(int x, const string& l) {
-		PostMessage(WM_SPEAKER, x, (LPARAM)new string(l));
+		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(WinUtil::toT(l)));
 	}
 	
 	void updateStatus();
@@ -181,5 +181,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.22 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.23 2004/09/06 12:32:44 arnetheduck Exp $
  */

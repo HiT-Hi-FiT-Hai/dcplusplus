@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ void HubManager::onHttpFinished() throw() {
 		i = 0;
 		
 		while( (i < x->size()) && ((j=x->find("\r\n", i)) != string::npos)) {
-			StringTokenizer tok(x->substr(i, j-i), '|');
+			StringTokenizer<string> tok(x->substr(i, j-i), '|');
 			i = j + 2;
 			if(tok.getTokens().size() < 4)
 				continue;
@@ -301,7 +301,7 @@ void HubManager::load(SimpleXML* aXml) {
 }
 
 void HubManager::refresh() {
-	StringList sl = StringTokenizer(SETTING(HUBLIST_SERVERS), ';').getTokens();
+	StringList sl = StringTokenizer<string>(SETTING(HUBLIST_SERVERS), ';').getTokens();
 	if(sl.empty())
 		return;
 	const string& server = sl[(lastServer) % sl.size()];
@@ -370,5 +370,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.51 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.52 2004/09/06 12:32:42 arnetheduck Exp $
  */

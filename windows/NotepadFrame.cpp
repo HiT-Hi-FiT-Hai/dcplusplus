@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		}
 	}
 
-	ctrlPad.SetWindowText(tmp.c_str());
+	ctrlPad.SetWindowText(WinUtil::toT(tmp).c_str());
 	ctrlPad.EmptyUndoBuffer();
 	
 	bHandled = FALSE;
@@ -56,10 +56,11 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	
 	if(dirty || ctrlPad.GetModify()) {
-		AutoArray<char> buf(ctrlPad.GetWindowTextLength() + 1);
+		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {
-			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(buf, ctrlPad.GetWindowTextLength());
+			string tmp(WinUtil::fromT(tstring(buf, ctrlPad.GetWindowTextLength())));
+			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
 		} catch(const FileException&) {
 			// Oops...
 		}
@@ -86,7 +87,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.15 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.16 2004/09/06 12:32:44 arnetheduck Exp $
  */
 
 

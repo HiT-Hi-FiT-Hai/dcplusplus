@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,6 +166,6 @@ struct DeleteFunction {
 
 /**
  * @file
- * $Id: Pointer.h,v 1.14 2003/11/28 13:08:06 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.15 2004/09/06 12:32:42 arnetheduck Exp $
  */
 

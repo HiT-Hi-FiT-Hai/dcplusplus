@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,11 +49,11 @@ public:
 	typedef MDITabChildWindowImpl<ADLSearchFrame> baseClass;
 
 	// Constructor/destructor
-	ADLSearchFrame() : listContainer("list", this, ADLLIST_MESSAGE_MAP) {}
+	ADLSearchFrame() : listContainer(WC_LISTBOX, this, ADLLIST_MESSAGE_MAP) {}
 	virtual ~ADLSearchFrame() { }
 
 	// Frame window declaration
-	DECLARE_FRAME_WND_CLASS_EX("ADLSearchFrame", IDR_ADLSEARCH, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("ADLSearchFrame"), IDR_ADLSEARCH, 0, COLOR_3DFACE);
 
 	// Inline message map
 	BEGIN_MSG_MAP(ADLSearchFrame)
@@ -152,5 +152,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.8 2004/09/06 12:32:43 arnetheduck Exp $
  */

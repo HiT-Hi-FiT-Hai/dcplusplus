@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,15 +137,15 @@ public:
 
 	void download(const string& aDir, const string& aTarget);
 	void download(Directory* aDir, const string& aTarget);
+	void download(File* aFile, const string& aTarget, bool view = false);
 	
 	string getPath(Directory* d);
-	
 	string getPath(File* f) { return getPath(f->getParent()); };
+
 	int64_t getTotalSize(bool adls = false) { return root->getTotalSize(adls); };
 	int getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
+
 	Directory* getRoot() { return root; };
-	
-	void download(File* aFile, const string& aTarget, bool view = false);
 
 	GETSET(User::Ptr, user, User);
 	GETSET(bool, utf8, Utf8);
@@ -169,5 +169,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.27 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.28 2004/09/06 12:32:42 arnetheduck Exp $
  */

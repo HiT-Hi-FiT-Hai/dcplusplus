@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,9 +71,9 @@ public:
 	int getSortColumn() { return sortColumn; };
 	int getSortType() { return sortType; };
 
-	int insert(int nItem, StringList& aList, int iImage = 0, LPARAM lParam = NULL);
-	int insert(StringList& aList, int iImage = 0, LPARAM lParam = NULL);
-	int insert(int nItem, const string& aString, int iImage = 0, LPARAM lParam = NULL) {
+	int insert(int nItem, TStringList& aList, int iImage = 0, LPARAM lParam = NULL);
+	int insert(TStringList& aList, int iImage = 0, LPARAM lParam = NULL);
+	int insert(int nItem, const tstring& aString, int iImage = 0, LPARAM lParam = NULL) {
 		return InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, nItem, aString.c_str(), 0, 0, iImage, lParam);
 	}
 
@@ -93,15 +93,15 @@ public:
 		return FindItem(&fi, aStart);
 	}
 
-	int find(const string& aText, int aStart = -1, bool aPartial = false) {
+	int find(const tstring& aText, int aStart = -1, bool aPartial = false) {
 		LV_FINDINFO fi;
 		fi.flags = aPartial ? LVFI_PARTIAL : LVFI_STRING;
 		fi.psz = aText.c_str();
 		return FindItem(&fi, aStart);
 	}
-	void deleteItem(const string& aItem, int col = 0) {
+	void deleteItem(const tstring& aItem, int col = 0) {
 		for(int i = 0; i < GetItemCount(); i++) {
-			char buf[256];
+			TCHAR buf[256];
 			GetItemText(i, col, buf, 256);
 			if(aItem == buf) {
 				DeleteItem(i);
@@ -114,8 +114,8 @@ public:
 
 	static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
-		char buf[128];
-		char buf2[128];
+		TCHAR buf[128];
+		TCHAR buf2[128];
 		// This is a trick, so that if fun() returns something bigger than one, use the
 		// internal default sort functions
 		int result = p->sortType;
@@ -126,7 +126,7 @@ public:
 		if(result == SORT_STRING) {
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
 			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			result = strcmp(buf, buf2);			
+			result = _tcscmp(buf, buf2);			
 		} else if(result == SORT_STRING_NOCASE) {
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
 			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
@@ -134,11 +134,11 @@ public:
 		} else if(result == SORT_INT) {
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
 			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			result = compare(atoi(buf), atoi(buf2));
+			result = compare(_tstoi(buf), _tstoi(buf2));
 		} else if(result == SORT_FLOAT) {
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
 			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			result = compare(atof(buf), atof(buf2));
+			result = compare(_tstof(buf), _tstof(buf2));
 		}
 		if(!p->ascending)
 			result = -result;
@@ -158,6 +158,6 @@ public:
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.11 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.12 2004/09/06 12:32:43 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ public:
 			}
 		}
 
-		h = ::CreateFile(aFileName.c_str(), access, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		h = ::CreateFile(Util::utf8ToWide(aFileName).c_str(), access, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		
 		if(h == INVALID_HANDLE_VALUE) {
 			throw FileException(Util::translateError(GetLastError()));
@@ -218,22 +218,27 @@ public:
 		return 0;
 	}
 
-	static void deleteFile(const string& aFileName) throw() { ::DeleteFile(aFileName.c_str()); };
+	static void deleteFile(const string& aFileName) throw() { ::DeleteFile(Util::utf8ToWide(aFileName).c_str()); }
 	static void renameFile(const string& source, const string& target) throw(FileException) { 
-		if(!::MoveFile(source.c_str(), target.c_str())) {
+		if(!::MoveFile(Util::utf8ToWide(source).c_str(), Util::utf8ToWide(target).c_str())) {
 			// Can't move, try copy/delete...
-			if(!CopyFile(source.c_str(), target.c_str(), FALSE)) {
+			if(!CopyFile(Util::utf8ToWide(source).c_str(), Util::utf8ToWide(target).c_str(), FALSE)) {
 				throw FileException(Util::translateError(GetLastError()));
 			}
 			deleteFile(source);
 		}
-	};
+	}
+	static void copyFile(const string& src, const string& target) throw(FileException) {
+		if(!::CopyFile(Util::utf8ToWide(src).c_str(), Util::utf8ToWide(target).c_str(), FALSE)) {
+			throw FileException(Util::translateError(GetLastError()));
+		}
+	}
 
 	static int64_t getSize(const string& aFileName) throw() {
 		WIN32_FIND_DATA fd;
 		HANDLE hFind;
 		
-		hFind = FindFirstFile(aFileName.c_str(), &fd);
+		hFind = FindFirstFile(Util::utf8ToWide(aFileName).c_str(), &fd);
 		
 		if (hFind == INVALID_HANDLE_VALUE) {
 			return -1;
@@ -472,6 +477,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.38 2004/06/26 13:11:50 arnetheduck Exp $
+ * $Id: File.h,v 1.39 2004/09/06 12:32:42 arnetheduck Exp $
  */
 

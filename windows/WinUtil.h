@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,12 +94,12 @@ public:
 	}
 
 	void appendUserItems(CMenu& menu) {
-		menu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-		menu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
-		menu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
-		menu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
-		menu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
-		menu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
+		menu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
+		menu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
+		menu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE));
+		menu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
+		menu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
+		menu.AppendMenu(MF_STRING, IDC_REMOVEALL, CTSTRING(REMOVE_FROM_ALL));
 	}
 };
 
@@ -115,7 +115,7 @@ public:
 	static void openWindow() {
 		if(frame == NULL) {
 			frame = new T();
-			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, ResourceManager::getInstance()->getString(ResourceManager::Strings(title)).c_str());
+			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, CTSTRING_I(ResourceManager::Strings(title)));
 		} else {
 			frame->MDIActivate(frame->m_hWnd);
 		}
@@ -144,18 +144,18 @@ public:
 	static HFONT monoFont;
 	static CMenu mainMenu;
 	static int dirIconIndex;
-	static StringList lastDirs;
+	static TStringList lastDirs;
 	static HWND mainWnd;
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
-	static string commands;
+	static tstring commands;
 	static HHOOK hook;
-	static string tth;
+	static tstring tth;
 
 	static void init(HWND hWnd);
 	static void uninit();
 
-	static void decodeFont(const string& setting, LOGFONT &dest);
+	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 
@@ -167,15 +167,15 @@ public:
 	 * @param status Message that should be shown in the status line.
 	 * @return True if the command was processed, false otherwise.
 	 */
-	static bool checkCommand(string& cmd, string& param, string& message, string& status);
+	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
 
-	static int getTextWidth(const string& str, HWND hWnd) {
+	static int getTextWidth(const tstring& str, HWND hWnd) {
 		HDC dc = ::GetDC(hWnd);
 		int sz = getTextWidth(str, dc);
 		::ReleaseDC(mainWnd, dc);
 		return sz;
 	}
-	static int getTextWidth(const string& str, HDC dc) {
+	static int getTextWidth(const tstring& str, HDC dc) {
 		SIZE sz = { 0, 0 };
 		::GetTextExtentPoint32(dc, str.c_str(), str.length(), &sz);
 		return sz.cx;		
@@ -201,9 +201,9 @@ public:
 		return tm.tmHeight;
 	}
 
-	static void setClipboard(const string& str);
+	static void setClipboard(const tstring& str);
 
-	static void addLastDir(const string& dir) {
+	static void addLastDir(const tstring& dir) {
 		if(find(lastDirs.begin(), lastDirs.end(), dir) != lastDirs.end()) {
 			return;
 		}
@@ -213,38 +213,56 @@ public:
 		lastDirs.push_back(dir);
 	}
 	
-	static string encodeFont(LOGFONT const& font)
+#ifdef UNICODE
+	static wstring toT(const string& str) {
+		return Util::utf8ToWide(str);
+	}
+	static string fromT(const wstring& str) {
+		return Util::wideToUtf8(str);
+	}
+#else
+	static string toT(const string& str) {
+		string tmp;
+		return Util::toAcp(str, tmp);
+	}
+	static string fromT(const string& str) {
+		string tmp;
+		return Util::toUtf8(str, tmp);
+	}
+#endif
+
+	static tstring encodeFont(LOGFONT const& font)
 	{
-		string res(font.lfFaceName);
-		res += ',';
-		res += Util::toString(font.lfHeight);
-		res += ',';
-		res += Util::toString(font.lfWeight);
-		res += ',';
-		res += Util::toString(font.lfItalic);
+		tstring res(font.lfFaceName);
+		res += L',';
+		res += Util::utf8ToWide(Util::toString(font.lfHeight));
+		res += L',';
+		res += Util::utf8ToWide(Util::toString(font.lfWeight));
+		res += L',';
+		res += Util::utf8ToWide(Util::toString(font.lfItalic));
 		return res;
 	}
 	
-	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL, const char* defExt = NULL);
-	static bool browseDirectory(string& target, HWND owner = NULL);
+	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
+	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
 	// Hash related
 	static void bitziLink(TTHValue* /*aHash*/);
-	static void copyMagnet(TTHValue* /*aHash*/, const string& /*aFile*/);
+	static void copyMagnet(TTHValue* /*aHash*/, const tstring& /*aFile*/);
 	static void searchHash(TTHValue* /*aHash*/);
 
 	// URL related
 	static void registerDchubHandler();
 	static void registerMagnetHandler();
-	static void parseDchubUrl(const string& /*aUrl*/);
-	static void parseMagnetUri(const string& /*aUrl*/, bool aOverride = false);
+	static void parseDchubUrl(const tstring& /*aUrl*/);
+	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
 
-	static void openLink(const string& url);
-	static void openFile(const string& file) {
+	static void openLink(const tstring& url);
+	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 
-	static int getIconIndex(const string& aFileName);
+	static int getIconIndex(const tstring& aFileName);
 
 	static int getDirIconIndex() {
 		return dirIconIndex;
@@ -278,5 +296,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.30 2004/08/02 14:20:17 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.31 2004/09/06 12:32:45 arnetheduck Exp $
  */

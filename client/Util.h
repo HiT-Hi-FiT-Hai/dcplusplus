@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,47 +110,36 @@ private:
 class Util  
 {
 public:
+	static tstring emptyStringT;
 	static string emptyString;
+	static wstring emptyStringW;
 
 	static void initialize();
 
-	static void ensureDirectory(const string& aFile)
+	static void ensureDirectory(const string& aFile) { ensureDirectory(Util::utf8ToWide(aFile)); }
+	static void ensureDirectory(const wstring& aFile)
 	{
 		string::size_type start = 0;
 
 #ifdef _WIN32
-		while( (start = aFile.find_first_of("\\/", start)) != string::npos) {
+		while( (start = aFile.find_first_of(L"\\/", start)) != string::npos) {
 			CreateDirectory(aFile.substr(0, start+1).c_str(), NULL);
 			start++;
 		}
 #else
-		while( (start = aFile.find_first_of("/", start)) != string::npos) {
+		while( (start = aFile.find_first_of(L'/', start)) != string::npos) {
 			mkdir(aFile.substr(0, start+1).c_str(), 0755);
 			start++;
 		}
 #endif
 	}
 	
-	static string getAppPath() {
-#ifdef _WIN32
-		TCHAR buf[MAX_PATH+1];
-		GetModuleFileName(NULL, buf, MAX_PATH);
-		int i = (strrchr(buf, '\\') - buf);
-		return string(buf, i + 1);
-#else // _WIN32
-		char* home = getenv("HOME");
-		if (home) {
-			return string(home) + "/.dc++/";
-		}
-		return emptyString;
-#endif // _WIN32
-	}	
-
+	static string getAppPath() { return appPath; }
 	static string getAppName() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH+1];
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
-		return string(buf, x);
+		return Util::wideToUtf8(wstring(buf, x));
 #else // _WIN32
 		char buf[PATH_MAX + 1];
 		char* path = getenv("_");
@@ -168,7 +157,7 @@ public:
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
 		DWORD x = GetTempPath(MAX_PATH, buf);
-		return string(buf, x);
+		return Util::wideToUtf8(wstring(buf, x));
 #else
 		return "/tmp/";
 #endif
@@ -200,7 +189,7 @@ public:
 			0,
 			NULL 
 			);
-		string tmp = (LPCTSTR)lpMsgBuf;
+		string tmp = Util::wideToUtf8((LPCTSTR)lpMsgBuf);
 		// Free the buffer.
 		LocalFree( lpMsgBuf );
 		string::size_type i;
@@ -233,7 +222,27 @@ public:
 		string::size_type j = path.rfind(PATH_SEPARATOR, i-1);
 		return (j != string::npos) ? path.substr(j+1, j-i-1) : path;
 	}
-	
+
+	static wstring getFilePath(const wstring& path) {
+		wstring::size_type i = path.rfind(PATH_SEPARATOR);
+		return (i != wstring::npos) ? path.substr(0, i + 1) : path;
+	}
+	static wstring getFileName(const wstring& path) {
+		wstring::size_type i = path.rfind(PATH_SEPARATOR);
+		return (i != wstring::npos) ? path.substr(i + 1) : path;
+	}
+	static wstring getFileExt(const wstring& path) {
+		wstring::size_type i = path.rfind('.');
+		return (i != wstring::npos) ? path.substr(i) : Util::emptyStringW;
+	}
+	static wstring getLastDir(const wstring& path) {
+		wstring::size_type i = path.rfind(PATH_SEPARATOR);
+		if(i == wstring::npos)
+			return Util::emptyStringW;
+		wstring::size_type j = path.rfind(PATH_SEPARATOR, i-1);
+		return (j != wstring::npos) ? path.substr(j+1, j-i-1) : path;
+	}
+
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
 	static string validateFileName(string aFile);
 	
@@ -309,8 +318,10 @@ public:
 		}
 		return tmp;
 	}
-	static char toLower(char c) { return lower[(u_int8_t)c]; };
-	static u_int8_t toLower(u_int8_t c) { return lower[c]; };
+	static char toLower(char c) { return (char)lower[(u_int8_t)c]; };
+	static u_int8_t toLower(u_int8_t c) { return (u_int8_t)lower[c]; };
+	static wchar_t toLower(wchar_t c) { return (wchar_t)lower[(u_int16_t)c]; };
+	static u_int16_t toLower(u_int16_t c) { return lower[c]; };
 	static void toLower2(string& aString) {
 		for(string::size_type i = 0; i < aString.length(); ++i) {
 			aString[i] = toLower(aString[i]);
@@ -360,16 +371,31 @@ public:
 	}
 	static const string& toUtf8(const string& str, string& tmp) {
 		if(needsUtf8(str)) {
-			tmp = str;
+			tmp.clear();
+			tmp.append(str);
 			return toUtf8(tmp);
 		}
 		return str;
 	}
 	static string& toUtf8(string& str);
 
+	static wstring utf8ToWide(const string& str) {
+		wstring tmp;
+		utf8ToWide(str, tmp);
+		return tmp;
+	}
+	static void utf8ToWide(const string& str, wstring& tgt);
+
+	static string wideToUtf8(const wstring& str) {
+		string tmp;
+		wideToUtf8(str, tmp);
+		return tmp;
+	}
+	static void wideToUtf8(const wstring& str, string& tgt);
 	static const string& toAcp(const string& str, string& tmp) {
 		if(needsAcp(str)) {
-			tmp = str;
+			tmp.clear();
+			tmp.append(str);
 			return toAcp(tmp);
 		}
 		return str;
@@ -406,6 +432,10 @@ public:
 		sscanf(aString.c_str(), "%X", &res);
 		return static_cast<char>(res);
 	}
+	static bool isAscii(u_int8_t c) {
+		return !(c & 80);
+	}
+
 	static string encodeURI(const string& /*aString*/, bool reverse = false);
 	static string getLocalIp();
 	static bool isPrivateIp(string const& ip);
@@ -413,85 +443,48 @@ public:
 	 * Case insensitive substring search.
 	 * @return First position found or string::npos
 	 */
-	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) {
-		if(aString.length() < start)
-			return (string::size_type)string::npos;
+	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) throw();
 
-		if(aString.length() < aSubString.length())
-			return (string::size_type)string::npos;
-
-		if(aSubString.empty())
-			return 0;
-
-		u_int8_t* tx = (u_int8_t*)aString.c_str();
-		u_int8_t* px = (u_int8_t*)aSubString.c_str();
-
-		u_int8_t p = Util::toLower(px[0]);
-
-		u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
-
-		for (tx += start; tx < end; ++tx) {
-			if(p == Util::toLower(tx[0])) {
-				int i = 1;
-
-				for(; px[i] && Util::toLower(px[i]) == Util::toLower(tx[i]); ++i)
-					;	// Empty
-
-				if(px[i] == 0)
-					return tx - (u_int8_t*)aString.c_str();
-			}
-		}
-		return (string::size_type)string::npos;
-	}
-
-	static string::size_type findSubStringCaseSensitive(const string& aString, const string& aSubString, string::size_type start = 0) {
-		if(aString.length() < start)
-			return (string::size_type)string::npos;
-
-		if(aString.length() < aSubString.length())
-			return (string::size_type)string::npos;
-
-		if(aSubString.empty())
-			return 0;
-
-		u_int8_t* tx = (u_int8_t*)aString.c_str();
-		u_int8_t* px = (u_int8_t*)aSubString.c_str();
-
-		u_int8_t p = px[0];
-
-		u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
-
-		for (tx += start; tx < end; ++tx) {
-			if(p == tx[0]) {
-				int i = 1;
-
-				for(; px[i] && px[i] == tx[i]; ++i)
-					;	// Empty
-
-				if(px[i] == 0)
-					return tx - (u_int8_t*)aString.c_str();
-			}
-		}
-		return (string::size_type)string::npos;
-	}
-
-	/* Table-driven versions of strnicmp and stricmp */
+	/* Utf-8 versions of strnicmp and stricmp, not very fast at the moment */
 	static int stricmp(const char* a, const char* b) {
 		// return ::stricmp(a, b);
-		while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
+		return stricmp(utf8ToWide(a), utf8ToWide(b));
+/*		while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			a++; b++;
 		}
-		return cmpi[(u_int8_t)*a][(u_int8_t)*b];
+		return cmpi[(u_int8_t)*a][(u_int8_t)*b];*/
+	}
+	static int stricmp(const wchar_t* a, const wchar_t* b) {
+#ifdef _WIN32
+		return ::_wcsicmp(a, b);
+#else
+#warning FIXME
+		return 0;
+#endif
+		// return ::stricmp(a, b);
+		
 	}
 	static int strnicmp(const char* a, const char* b, int n) {
+		return stricmp(utf8ToWide(string(a, n)), utf8ToWide(string(b, n)));
 		// return ::strnicmp(a, b, n);
-		while(n && *a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
+/*		while(n && *a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			n--; a++; b++;
 		}
-		return (n == 0) ? 0 : cmpi[(u_int8_t)*a][(u_int8_t)*b];
+		return (n == 0) ? 0 : cmpi[(u_int8_t)*a][(u_int8_t)*b];*/
 	}
+	static int strnicmp(const wchar_t* a, const wchar_t* b, int n) {
+#ifdef _WIN32
+		return ::_wcsnicmp(a, b, n);
+#else
+#warning FIXME
+		return 0;
+#endif
+	}
+
 	static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
 	static int strnicmp(const string& a, const string& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
+	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); };
+	static int strnicmp(const wstring& a, const wstring& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
 	
 	static string validateNick(string tmp) {	
 		string::size_type i;
@@ -523,13 +516,14 @@ public:
 	static double randd() { return ((double)rand()) / ((double)0xffffffff); };
 
 private:
+	static string appPath;
+	static string dataPath;
 	static bool away;
 	static string awayMsg;
 	static time_t awayTime;
-	static char upper[];
-	static char lower[];
-	static int8_t cmp[256][256];
-	static int8_t cmpi[256][256];
+	static wchar_t lower[];
+	static int8_t cmp[128][128];
+	static int8_t cmpi[128][128];
 
 	typedef map<u_int32_t, u_int16_t> CountryList;
 	typedef CountryList::iterator CountryIter;
@@ -557,7 +551,16 @@ struct noCaseStringHash {
 		}
 		return x;
 	}
-	bool operator()(const string& a, const string& b) const {
+	size_t operator()(const wstring& s) const {
+		size_t x = 0;
+		const wchar_t* y = s.data();
+		wstring::size_type j = s.size();
+		for(wstring::size_type i = 0; i < j; ++i) {
+			x = x*31 + (size_t)Util::toLower(y[i]);
+		}
+		return x;
+	}
+	bool operator()(const wstring& a, const wstring& b) const {
 		return Util::stricmp(a, b) == -1;
 	}
 };
@@ -567,11 +570,17 @@ struct noCaseStringEq {
 	bool operator()(const string& a, const string& b) const {
 		return Util::stricmp(a.c_str(), b.c_str()) == 0;
 	}
+	bool operator()(const wstring& a, const wstring& b) const {
+		return Util::stricmp(a.c_str(), b.c_str()) == 0;
+	}
 };
 
 /** Case insensitive string ordering */
 struct noCaseStringLess {
 	bool operator()(const string& a, const string& b) const {
+		return Util::stricmp(a.c_str(), b.c_str()) == -1;
+	}
+	bool operator()(const wstring& a, const wstring& b) const {
 		return Util::stricmp(a.c_str(), b.c_str()) == -1;
 	}
 };
@@ -581,5 +590,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.93 2004/08/11 22:18:16 arnetheduck Exp $
+ * $Id: Util.h,v 1.94 2004/09/06 12:32:43 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "ADLSProperties.h"
 #include "../client/ADLSearch.h"
 #include "../client/HubManager.h"
+#include "WinUtil.h"
 
 // Initialize dialog
 LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
@@ -45,11 +46,10 @@ LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 		(LPARAM)search->SizeTypeToStringInternational(ADLSearch::SizeGigaBytes).c_str());
 
 	// Load search data
-	char buf[32];
-	SetDlgItemText(IDC_SEARCH_STRING, search->searchString.c_str());
-	SetDlgItemText(IDC_DEST_DIR,      search->destDir.c_str());
-	SetDlgItemText(IDC_MIN_FILE_SIZE, search->minFileSize > 0 ? _i64toa(search->minFileSize, buf, 10) : "");
-	SetDlgItemText(IDC_MAX_FILE_SIZE, search->maxFileSize > 0 ? _i64toa(search->maxFileSize, buf, 10) : "");
+	SetDlgItemText(IDC_SEARCH_STRING, WinUtil::toT(search->searchString).c_str());
+	SetDlgItemText(IDC_DEST_DIR,      WinUtil::toT(search->destDir).c_str());
+	SetDlgItemText(IDC_MIN_FILE_SIZE, WinUtil::toT(search->minFileSize > 0 ? Util::toString(search->minFileSize) : "").c_str());
+	SetDlgItemText(IDC_MAX_FILE_SIZE, WinUtil::toT(search->maxFileSize > 0 ? Util::toString(search->maxFileSize) : "").c_str());
 	::SendMessage(GetDlgItem(IDC_IS_ACTIVE), BM_SETCHECK, search->isActive ? 1 : 0, 0L);
 	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_SETCURSEL, search->sourceType, 0L);
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_SETCURSEL, search->typeFileSize, 0L);
@@ -67,17 +67,17 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 	if(wID == IDOK)
 	{
 		// Update search
-		char buf[256];
+		TCHAR buf[256];
 
 		GetDlgItemText(IDC_SEARCH_STRING, buf, 256);
-		search->searchString = buf;		
+		search->searchString = WinUtil::fromT(buf);
 		GetDlgItemText(IDC_DEST_DIR, buf, 256);
-		search->destDir = buf;		
+		search->destDir = WinUtil::fromT(buf);
 
 		GetDlgItemText(IDC_MIN_FILE_SIZE, buf, 256);
-		search->minFileSize = (strlen(buf) == 0 ? -1 : Util::toInt64((string)buf));
+		search->minFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(WinUtil::fromT(buf)));
 		GetDlgItemText(IDC_MAX_FILE_SIZE, buf, 256);
-		search->maxFileSize = (strlen(buf) == 0 ? -1 : Util::toInt64((string)buf));
+		search->maxFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(WinUtil::fromT(buf)));
 
 		search->sourceType = (ADLSearch::SourceType)::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_GETCURSEL, 0, 0L);
 		search->typeFileSize = (ADLSearch::SizeType)::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_GETCURSEL, 0, 0L);
@@ -91,5 +91,5 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 
 /**
  * @file
- * $Id: ADLSProperties.cpp,v 1.2 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: ADLSProperties.cpp,v 1.3 2004/09/06 12:32:43 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,5 +66,5 @@ private:
 
 /**
 * @file
-* $Id: CID.h,v 1.3 2004/06/13 11:27:32 arnetheduck Exp $
+* $Id: CID.h,v 1.4 2004/09/06 12:32:41 arnetheduck Exp $
 */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include "LineDlg.h"
 #include "../client/MerkleTree.h"
 
-void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser, const string& start) {
+void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser, const tstring& start) {
 	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser, start);
 	if(BOOLSETTING(POPUNDER_FILELIST))
 		WinUtil::hiddenCreateEx(frame);
@@ -39,21 +39,21 @@ void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUs
 		
 }
 
-DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser, const string& s) :
+DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser, const tstring& s) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
 	treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(s)
 {
-	string tmp;
+	tstring tmp;
 	if(aFile.size() < 4) {
-		error = aUser->getFullNick() + ": " + STRING(UNSUPPORTED_FILELIST_FORMAT);
+		error = WinUtil::toT(aUser->getFullNick() + ": " + STRING(UNSUPPORTED_FILELIST_FORMAT));
 		return;
 	}
 
 	dl = new DirectoryListing(aUser);
 	try {
-		dl->loadFile(aFile, true);
+		dl->loadFile(WinUtil::fromT(aFile), true);
 	} catch(const Exception& e) {
-		error = aUser->getFullNick() + ": " + e.getError();
+		error = WinUtil::toT(aUser->getFullNick() + ": " + e.getError());
 	}
 }
 
@@ -74,10 +74,10 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlTree.SetBkColor(WinUtil::bgColor);
 	ctrlTree.SetTextColor(WinUtil::textColor);
 	
-	ctrlList.InsertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
-	ctrlList.InsertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
-	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
-	ctrlList.InsertColumn(COLUMN_TTH, CSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
+	ctrlList.InsertColumn(COLUMN_FILENAME, CTSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
+	ctrlList.InsertColumn(COLUMN_TYPE, CTSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
+	ctrlList.InsertColumn(COLUMN_SIZE, CTSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
+	ctrlList.InsertColumn(COLUMN_TTH, CTSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
 
 	ctrlList.setSortColumn(COLUMN_FILENAME);
 	
@@ -86,17 +86,17 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	ctrlFind.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON, 0, IDC_FIND);
-	ctrlFind.SetWindowText(CSTRING(FIND));
+	ctrlFind.SetWindowText(CTSTRING(FIND));
 	ctrlFind.SetFont(WinUtil::systemFont);
 
 	ctrlFindNext.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON, 0, IDC_NEXT);
-	ctrlFindNext.SetWindowText(CSTRING(NEXT));
+	ctrlFindNext.SetWindowText(CTSTRING(NEXT));
 	ctrlFindNext.SetFont(WinUtil::systemFont);
 
 	ctrlMatchQueue.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON, 0, IDC_MATCH_QUEUE);
-	ctrlMatchQueue.SetWindowText(CSTRING(MATCH_QUEUE));
+	ctrlMatchQueue.SetWindowText(CTSTRING(MATCH_QUEUE));
 	ctrlMatchQueue.SetFont(WinUtil::systemFont);
 
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -104,28 +104,28 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_nProportionalPos = 2500;
 	
 	if(dl != NULL)
-		treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, dl->getUser()->getNick().c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
+		treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, WinUtil::toT(dl->getUser()->getNick()).c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
 
 	updateTree(dl->getRoot(), treeRoot);
 	files = dl->getTotalFileCount();
 	size = Util::formatBytes(dl->getTotalSize());
 
 	memset(statusSizes, 0, sizeof(statusSizes));
-	string tmp1 = STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true));
-	string tmp2 = STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true));
+	tstring tmp1 = WinUtil::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true)));
+	tstring tmp2 = WinUtil::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true)));
 	statusSizes[2] = WinUtil::getTextWidth(tmp1, m_hWnd);
 	statusSizes[3] = WinUtil::getTextWidth(tmp2, m_hWnd);
-	statusSizes[4] = WinUtil::getTextWidth(STRING(MATCH_QUEUE), m_hWnd) + 8;
-	statusSizes[5] = WinUtil::getTextWidth(STRING(FIND), m_hWnd) + 8;
-	statusSizes[6] = WinUtil::getTextWidth(STRING(NEXT), m_hWnd) + 8;
+	statusSizes[4] = WinUtil::getTextWidth(TSTRING(MATCH_QUEUE), m_hWnd) + 8;
+	statusSizes[5] = WinUtil::getTextWidth(TSTRING(FIND), m_hWnd) + 8;
+	statusSizes[6] = WinUtil::getTextWidth(TSTRING(NEXT), m_hWnd) + 8;
 
 	ctrlStatus.SetParts(8, statusSizes);
 	ctrlStatus.SetText(3, tmp1.c_str());
 	ctrlStatus.SetText(4, tmp2.c_str());
 
 	if(!start.empty()) {
-		StringTokenizer tok(start, '\\');
-		StringIter i = tok.getTokens().begin();
+		StringTokenizer<tstring> tok(start, _T('\\'));
+		TStringIter i = tok.getTokens().begin();
 		GoToDirectory(treeRoot, i, tok.getTokens().end());
 	} else {
 		ctrlTree.SelectItem(treeRoot);
@@ -136,17 +136,17 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	directoryMenu.CreatePopupMenu();
 	targetDirMenu.CreatePopupMenu();
 	
-	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
-	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
-	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
-	fileMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CSTRING(SEARCH_BY_TTH));
-	fileMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CSTRING(LOOKUP_AT_BITZI));
-	fileMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CSTRING(COPY_MAGNET));
+	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CTSTRING(DOWNLOAD));
+	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
+	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
+	fileMenu.AppendMenu(MF_SEPARATOR);
+	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
+	fileMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CTSTRING(LOOKUP_AT_BITZI));
+	fileMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CTSTRING(COPY_MAGNET));
 	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 
-	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
-	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
+	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CTSTRING(DOWNLOAD));
+	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CTSTRING(DOWNLOAD_TO));
 	
 	setWindowTitle();
 
@@ -155,9 +155,15 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 }
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
-	string tmp;
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
-		const string& name = dl->getUtf8() ? Util::toAcp((*i)->getName(), tmp) : (*i)->getName();
+		tstring name;
+		if(dl->getUtf8()) {
+			name = WinUtil::toT((*i)->getName());
+		} else {
+			string tmp = (*i)->getName();
+			Util::toUtf8(tmp);
+			name = WinUtil::toT(tmp);
+		}
 		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
 		if((*i)->getAdls())
 			ctrlTree.SetItemState(ht, TVIS_BOLD, TVIS_BOLD);
@@ -176,8 +182,8 @@ void DirectoryListingFrame::updateStatus() {
 			total = ctrlList.forEachSelectedT(ItemInfo::TotalSize()).total;
 		}
 
-		string tmp1 = STRING(ITEMS) + ": " + Util::toString(cnt);
-		string tmp2 = STRING(SIZE) + ": " + Util::formatBytes(total);
+		tstring tmp1 = WinUtil::toT(STRING(ITEMS) + ": " + Util::toString(cnt));
+		tstring tmp2 = WinUtil::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
 		bool u = false;
 
 		int w = WinUtil::getTextWidth(tmp1, ctrlStatus.m_hWnd);
@@ -237,9 +243,9 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 
 		if(ii->type == ItemInfo::FILE) {
 			try {
-				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + ii->getText(COLUMN_FILENAME));
+				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + WinUtil::fromT(ii->getText(COLUMN_FILENAME)));
 			} catch(const Exception& e) {
-				ctrlStatus.SetText(0, e.getError().c_str());
+				ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
 			}
 		} else {
 			HTREEITEM ht = ctrlTree.GetChildItem(t);
@@ -262,7 +268,7 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 		try {
 			dl->download(dir, SETTING(DOWNLOAD_DIRECTORY));
 		} catch(const Exception& e) {
-			ctrlStatus.SetText(0, e.getError().c_str());
+			ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
 		}
 	}
 	return 0;
@@ -272,44 +278,44 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
-		string target = SETTING(DOWNLOAD_DIRECTORY);
+		tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY));
 		if(WinUtil::browseDirectory(target, m_hWnd)) {
 			WinUtil::addLastDir(target);
 			
 			try {
-				dl->download(dir, target);
+				dl->download(dir, WinUtil::fromT(target));
 			} catch(const Exception& e) {
-				ctrlStatus.SetText(0, e.getError().c_str());
+				ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
 			}
 		}
 	}
 	return 0;
 }
 
-void DirectoryListingFrame::downloadList(const string& aTarget, bool view /* = false */) {
+void DirectoryListingFrame::downloadList(const tstring& aTarget, bool view /* = false */) {
 	int i=-1;
 	while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
 
-		string target = aTarget.empty() ? SETTING(DOWNLOAD_DIRECTORY) : aTarget;
+		tstring target = aTarget.empty() ? WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)) : aTarget;
 
 		try {
 			if(ii->type == ItemInfo::FILE) {
 				if(view) {
-					File::deleteFile(target + Util::validateFileName(ii->file->getName()));
+					File::deleteFile(WinUtil::fromT(target) + Util::validateFileName(ii->file->getName()));
 				}
-				dl->download(ii->file, target + ii->getText(COLUMN_FILENAME), view);
+				dl->download(ii->file, WinUtil::fromT(target + ii->getText(COLUMN_FILENAME)), view);
 			} else if(!view) {
-				dl->download(ii->dir, target);
+				dl->download(ii->dir, WinUtil::fromT(target));
 			} 
 		} catch(const Exception& e) {
-			ctrlStatus.SetText(0, e.getError().c_str());
+			ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
 		}
 	}
 }
 
 LRESULT DirectoryListingFrame::onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	downloadList(SETTING(DOWNLOAD_DIRECTORY));
+	downloadList(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)));
 	return 0;
 }
 
@@ -319,23 +325,23 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 		try {
 			if(ii->type == ItemInfo::FILE) {
-				string target = SETTING(DOWNLOAD_DIRECTORY) + ii->getText(COLUMN_FILENAME);
+				tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)) + ii->getText(COLUMN_FILENAME);
 				if(WinUtil::browseFile(target, m_hWnd)) {
 					WinUtil::addLastDir(Util::getFilePath(target));
-					dl->download(ii->file, target);
+					dl->download(ii->file, WinUtil::fromT(target));
 				}
 			} else {
-				string target = SETTING(DOWNLOAD_DIRECTORY);
+				tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY));
 				if(WinUtil::browseDirectory(target, m_hWnd)) {
 					WinUtil::addLastDir(target);
-					dl->download(ii->dir, target);
+					dl->download(ii->dir, WinUtil::fromT(target));
 				}
 			} 
 		} catch(const Exception& e) {
-			ctrlStatus.SetText(0, e.getError().c_str());
+			ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
 		}
 	} else {
-		string target = SETTING(DOWNLOAD_DIRECTORY);
+		tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY));
 		if(WinUtil::browseDirectory(target, m_hWnd)) {
 			WinUtil::addLastDir(target);			
 			downloadList(target);
@@ -345,14 +351,14 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 }
 
 LRESULT DirectoryListingFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	downloadList(Util::getTempPath(), true);
+	downloadList(WinUtil::toT(Util::getTempPath()), true);
 	return 0;
 }
 
 LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
 	if(ii != NULL) {
-		TTHValue tmp(ii->getText(COLUMN_TTH));
+		TTHValue tmp(WinUtil::fromT(ii->getText(COLUMN_TTH)));
 		WinUtil::searchHash(&tmp);
 	}
 	return 0;
@@ -361,7 +367,7 @@ LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/,
 LRESULT DirectoryListingFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
 	if(ii != NULL) {
-		TTHValue tmp(ii->getText(COLUMN_TTH));
+		TTHValue tmp(WinUtil::fromT(ii->getText(COLUMN_TTH)));
 		WinUtil::bitziLink(&tmp);
 	}
 	return 0;
@@ -370,7 +376,7 @@ LRESULT DirectoryListingFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/,
 LRESULT DirectoryListingFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
 	if(ii != NULL) {
-		TTHValue tmp(ii->getText(COLUMN_TTH));
+		TTHValue tmp(WinUtil::fromT(ii->getText(COLUMN_TTH)));
 		WinUtil::copyMagnet(&tmp, ii->getText(COLUMN_FILENAME));
 	}
 	return 0;
@@ -378,8 +384,8 @@ LRESULT DirectoryListingFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 LRESULT DirectoryListingFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int x = QueueManager::getInstance()->matchListing(dl);
-	char* buf = new char[STRING(MATCHED_FILES).length() + 32];
-	sprintf(buf, CSTRING(MATCHED_FILES), x);
+	TCHAR* buf = new TCHAR[STRING(MATCHED_FILES).length() + 32];
+	_stprintf(buf, CTSTRING(MATCHED_FILES), x);
 	ctrlStatus.SetText(0, buf);
 	delete[] buf;
 	return 0;
@@ -389,35 +395,35 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 	if(ctrlList.GetSelectedCount() != 1) 
 		return 0;
 
-	string fullPath;
+	tstring fullPath;
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 	if(ii->type == ItemInfo::FILE) {
 		if(!ii->file->getAdls())
 			return 0;
 		DirectoryListing::Directory* pd = ii->file->getParent();
 		while(pd != NULL && pd != dl->getRoot()) {
-			fullPath = (string)"\\" + pd->getName() + fullPath;
+			fullPath = _T("\\") + WinUtil::toT(pd->getName()) + fullPath;
 			pd = pd->getParent();
 		}
 	} else if(ii->type == ItemInfo::DIRECTORY) {
 		if(!(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()))
 			return 0;
-		fullPath = ((DirectoryListing::AdlDirectory*)ii->dir)->getFullPath();
+		fullPath = WinUtil::toT(((DirectoryListing::AdlDirectory*)ii->dir)->getFullPath());
 	}
 
 	// Break full path
-	StringList brokenPath;
+	TStringList brokenPath;
 	while(1) {
 		if(fullPath.size() == 0 || fullPath[0] != '\\') 
 			break;
 		fullPath.erase(0, 1);
-		string subPath = fullPath.substr(0, fullPath.find_first_of('\\'));
+		tstring subPath = fullPath.substr(0, fullPath.find_first_of('\\'));
 		fullPath.erase(0, subPath.size());
 		brokenPath.push_back(subPath);
 	}
 	
 	// Go to directory (recursive)
-	StringList::iterator iPath = brokenPath.begin();
+	TStringList::iterator iPath = brokenPath.begin();
 	GoToDirectory(ctrlTree.GetRootItem(), iPath, brokenPath.end());
 	
 	return 0;
@@ -426,8 +432,8 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 
 void DirectoryListingFrame::GoToDirectory(
 	HTREEITEM hItem, 
-	StringList::iterator& iPath, 
-	const StringList::iterator& iPathEnd)
+	TStringList::iterator& iPath, 
+	const TStringList::iterator& iPathEnd)
 {
 	if(iPath == iPathEnd)
 		return;	// unexpected
@@ -436,11 +442,11 @@ void DirectoryListingFrame::GoToDirectory(
 
 	// Check on tree children
 	HTREEITEM hChild = ctrlTree.GetChildItem(hItem);
-	char itemText[256];
+	TCHAR itemText[256];
 	while(hChild != NULL) {
 		if(!ctrlTree.GetItemText(hChild, itemText, 255))
 			return; // unexpected
-		if(Util::stricmp(*iPath, (string)itemText) == 0) {
+		if(Util::stricmp(*iPath, itemText) == 0) {
 			++iPath;
 			if(iPath == iPathEnd) {
 				ctrlTree.SelectItem(hChild);
@@ -474,7 +480,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
 
-		string hash = ii->getText(COLUMN_TTH);
+		tstring hash = ii->getText(COLUMN_TTH);
 		if (ctrlList.GetSelectedCount() == 1 && hash.length() == 39) {
 			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
 			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
@@ -486,36 +492,40 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		}
 
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
-			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
+			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CTSTRING(BROWSE));
 			targets.clear();
-			QueueManager::getInstance()->getTargetsBySize(targets, ii->file->getSize(), Util::getFileExt(ii->file->getName()));
+			if(ii->file->getTTH() != NULL) {
+				QueueManager::getInstance()->getTargetsByRoot(targets, *ii->file->getTTH());
+			} else {
+				QueueManager::getInstance()->getTargetsBySize(targets, ii->file->getSize(), Util::getFileExt(ii->file->getName()));
+			}
 			if(targets.size() > 0) {
-				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+				targetMenu.AppendMenu(MF_SEPARATOR);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
-					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
+					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), WinUtil::toT(*i).c_str());
 				}
 			}
 			if(WinUtil::lastDirs.size() > 0) {
-				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
+				targetMenu.AppendMenu(MF_SEPARATOR);
+				for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
 				}
 			}
 
 			if(ii->file->getAdls())	{
-				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CSTRING(GO_TO_DIRECTORY));
+				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		} else {
-			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
+			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CTSTRING(BROWSE));
 			if(WinUtil::lastDirs.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
+				for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
 				}
 			}
 			if(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
-				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CSTRING(GO_TO_DIRECTORY));
+				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		}
@@ -539,12 +549,12 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 				targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
 			}
 
-			targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CSTRING(BROWSE));
+			targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
 
 			if(WinUtil::lastDirs.size() > 0) {
 				targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				int n = 0;
-				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
+				for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (++n), i->c_str());
 				}
 			}
@@ -571,7 +581,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 				try {
 					dl->download(ii->file, targets[newId]);
 				} catch(const Exception& e) {
-					ctrlStatus.SetText(0, e.getError().c_str());
+					ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
 				}
 			} else {
 				newId -= (int)targets.size();
@@ -599,9 +609,9 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
 			dcassert(newId < (int)WinUtil::lastDirs.size());
-			dl->download(dir, WinUtil::lastDirs[newId]);
+			dl->download(dir, WinUtil::fromT(WinUtil::lastDirs[newId]));
 		} catch(const Exception& e) {
-			ctrlStatus.SetText(0, e.getError().c_str());
+			ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
 		}
 	}
 	return 0;
@@ -632,10 +642,10 @@ LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 					ht = ctrlTree.GetNextSiblingItem(ht);
 				}
 			} else {
-				downloadList(SETTING(DOWNLOAD_DIRECTORY));
+				downloadList(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)));
 			}
 		} else {
-			downloadList(SETTING(DOWNLOAD_DIRECTORY));
+			downloadList(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)));
 		}
 	}
 	return 0;
@@ -733,16 +743,16 @@ void DirectoryListingFrame::findFile(bool findNext)
 	if(!findNext) {
 		// Prompt for substring to find
 		LineDlg dlg;
-		dlg.title = STRING(SEARCH_FOR_FILE);
-		dlg.description = STRING(ENTER_SEARCH_STRING);
-		dlg.line = Util::emptyString;
+		dlg.title = TSTRING(SEARCH_FOR_FILE);
+		dlg.description = TSTRING(ENTER_SEARCH_STRING);
+		dlg.line = Util::emptyStringT;
 
 		if(dlg.DoModal() != IDOK)
 			return;
 
-		findStr = dlg.line;
-		if(dl->getUtf8())
-			findStr = Util::toUtf8(findStr);
+		findStr = WinUtil::fromT(dlg.line);
+		if(!dl->getUtf8())
+			findStr = Util::toAcp(findStr);
 		skipHits = 0;
 	} else {
 		skipHits++;
@@ -776,7 +786,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 				// Locate the dir in the file list
 				DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(foundDir);
 				
-				foundFile = ctrlList.findItem(dir->getName(), -1, false);
+				foundFile = ctrlList.findItem(WinUtil::toT(dir->getName()), -1, false);
 			} else {
 				// If no parent exists, just the dir tree item and skip the list highlighting
 				ctrlTree.SelectItem(foundDir);
@@ -799,11 +809,11 @@ void DirectoryListingFrame::findFile(bool findNext)
 		}
 	} else {
 		ctrlTree.SelectItem(oldDir);
-		MessageBox(CSTRING(NO_MATCHES), CSTRING(SEARCH_FOR_FILE));
+		MessageBox(CTSTRING(NO_MATCHES), CTSTRING(SEARCH_FOR_FILE));
 	}
 }
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.37 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.38 2004/09/06 12:32:43 arnetheduck Exp $
  */

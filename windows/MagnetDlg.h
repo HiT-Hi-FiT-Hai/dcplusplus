@@ -33,7 +33,7 @@ class CMagnetDlg : public CDialogImpl<CMagnetDlg > {
 public:
 	enum { IDD = IDD_MAGNET };
 
-	CMagnetDlg(const string& aHash, const string& aFileName) : mHash(aHash), mFileName(aFileName) { };
+	CMagnetDlg(const tstring& aHash, const tstring& aFileName) : mHash(aHash), mFileName(aFileName) { };
 	virtual ~CMagnetDlg() { };
 
 	BEGIN_MSG_MAP(CMagnetDlg)
@@ -47,19 +47,19 @@ public:
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		// zombies.
-		SetWindowText(CSTRING(MAGNET_DLG_TITLE));
+		SetWindowText(CTSTRING(MAGNET_DLG_TITLE));
 		CenterWindow(GetParent());
 
 		// fill in dialog bits
-		SetDlgItemText(IDC_MAGNET_HASH, CSTRING(MAGNET_DLG_HASH));
-		SetDlgItemText(IDC_MAGNET_NAME, CSTRING(MAGNET_DLG_FILE));
-		SetDlgItemText(IDC_MAGNET_QUEUE, CSTRING(MAGNET_DLG_QUEUE));
+		SetDlgItemText(IDC_MAGNET_HASH, CTSTRING(MAGNET_DLG_HASH));
+		SetDlgItemText(IDC_MAGNET_NAME, CTSTRING(MAGNET_DLG_FILE));
+		SetDlgItemText(IDC_MAGNET_QUEUE, CTSTRING(MAGNET_DLG_QUEUE));
 		::ShowWindow(GetDlgItem(IDC_MAGNET_QUEUE), false);
-		SetDlgItemText(IDC_MAGNET_SEARCH, CSTRING(MAGNET_DLG_SEARCH));
-		SetDlgItemText(IDC_MAGNET_NOTHING, CSTRING(MAGNET_DLG_NOTHING));
-		SetDlgItemText(IDC_MAGNET_REMEMBER, CSTRING(MAGNET_DLG_REMEMBER));
+		SetDlgItemText(IDC_MAGNET_SEARCH, CTSTRING(MAGNET_DLG_SEARCH));
+		SetDlgItemText(IDC_MAGNET_NOTHING, CTSTRING(MAGNET_DLG_NOTHING));
+		SetDlgItemText(IDC_MAGNET_REMEMBER, CTSTRING(MAGNET_DLG_REMEMBER));
 		::ShowWindow(GetDlgItem(IDC_MAGNET_REMEMBER), false);
-		SetDlgItemText(IDC_MAGNET_TEXT, CSTRING(MAGNET_DLG_TEXT_GOOD));
+		SetDlgItemText(IDC_MAGNET_TEXT, CTSTRING(MAGNET_DLG_TEXT_GOOD));
 
 		// file details
 		SetDlgItemText(IDC_MAGNET_DISP_HASH, mHash.c_str());
@@ -87,7 +87,7 @@ public:
 			//}
 
 			if(IsDlgButtonChecked(IDC_MAGNET_SEARCH)) {
-				TTHValue tmphash(mHash);
+				TTHValue tmphash(WinUtil::fromT(mHash));
 				WinUtil::searchHash(&tmphash);
 			} //else if(IsDlgButtonChecked(IDC_MAGNET_QUEUE)) {
 				// FIXME: Write this code when the queue is more tth-centric
@@ -114,13 +114,13 @@ public:
 	}
 
 private:
-	string mHash, mFileName;
+	tstring mHash, mFileName;
 };
 
 #endif // MAGNETDLG_H
 
 /**
 * @file
-* $Id: MagnetDlg.h,v 1.1 2004/08/02 15:42:06 arnetheduck Exp $
+* $Id: MagnetDlg.h,v 1.2 2004/09/06 12:32:44 arnetheduck Exp $
 */
 

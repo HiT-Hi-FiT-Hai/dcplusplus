@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,6 @@ void Thread::start() throw(ThreadException) {
 #endif
 /**
  * @file
- * $Id: Thread.cpp,v 1.6 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: Thread.cpp,v 1.7 2004/09/06 12:32:42 arnetheduck Exp $
  */
 

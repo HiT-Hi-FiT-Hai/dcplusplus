@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,36 +43,38 @@
 FastCriticalSection FastAllocBase::cs;
 
 string Util::emptyString;
+wstring Util::emptyStringW;
+tstring Util::emptyStringT;
 
 bool Util::away = false;
 string Util::awayMsg;
 time_t Util::awayTime;
-char Util::upper[256];
-char Util::lower[256];
-int8_t Util::cmp[256][256];
-int8_t Util::cmpi[256][256];
+
+wchar_t Util::lower[65536];
+int8_t Util::cmp[128][128];
+int8_t Util::cmpi[128][128];
 Util::CountryList Util::countries;
+string Util::appPath;
 
 static void sgenrand(unsigned long seed);
 
 void Util::initialize() {
+	setlocale(LC_ALL, "");
+
 	int i;
-	for(i = 0; i < 256; ++i) {
+	for(i = 0; i < 65536; ++i) {
 #ifdef _WIN32
-		upper[i] = (char)CharUpper((LPSTR)i);
-		lower[i] = (char)CharLower((LPSTR)i);
+		lower[i] = (wchar_t)CharLowerW((LPWSTR)i);
 #else
-		upper[i] = (char)toupper(i);
+#warning FIXME for non-ascii char codes
 		lower[i] = (char)tolower(i);
 #endif
 	}
 
-	setlocale(LC_ALL, "");
 
-	// Now initialize the compare table to the current locale (hm...hopefully we
-	// won't have strange problems because of this (users from different locales for instance)
-	for(i = 0; i < 256; ++i) {
-		for(int j = 0; j < 256; ++j) {
+	// Now initialize the ASCII compare table
+	for(i = 0; i < 128; ++i) {
+		for(int j = 0; j < 128; ++j) {
 			cmp[i][j] = (int8_t)::strncmp((char*)&i, (char*)&j, 1);
 			cmpi[i][j] = (int8_t)::strncmp((char*)&lower[i], (char*)&lower[j], 1);
 		}
@@ -83,7 +85,7 @@ void Util::initialize() {
 	try {
 		string file = Util::getAppPath() + "GeoIpCountryWhois.csv";
 
-		StringTokenizer st(File(file , File::READ, File::OPEN).read());
+		StringTokenizer<string> st(File(file, File::READ, File::OPEN).read(), '\n');
 		CountryIter last = countries.end();
 		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
 			string::size_type j = i->find(',');
@@ -94,6 +96,20 @@ void Util::initialize() {
 		}
 	} catch(const FileException&) {
 	}
+
+#ifdef _WIN32
+	wchar_t buf[MAX_PATH+1];
+	GetModuleFileNameW(NULL, buf, MAX_PATH);
+	appPath = Util::wideToUtf8(buf);
+	appPath.erase(appPath.rfind('\\') + 1);
+#else // _WIN32
+	char* home = getenv("HOME");
+	if (home) {
+		Util::toUtf8(home, appPath);
+		appPath += "/.dc++/";
+	}
+#endif // _WIN32
+
 }
 
 string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
@@ -293,7 +309,7 @@ string Util::formatExactSize(int64_t aBytes) {
 	char buf[64];
 #ifdef _WIN32
 		char number[64];
-		NUMBERFMT nf;
+		NUMBERFMTA nf;
 		sprintf(number, "%I64d", aBytes);
 		char Dummy[16];
     
@@ -304,9 +320,9 @@ string Util::formatExactSize(int64_t aBytes) {
 		nf.NegativeOrder = 0;
 		nf.lpDecimalSep = ",";
 
-		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, Dummy, 16 );
+		GetLocaleInfoA( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, Dummy, 16 );
 		nf.Grouping = atoi(Dummy);
-		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Dummy, 16 );
+		GetLocaleInfoA( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Dummy, 16 );
 		nf.lpThousandSep = Dummy;
 
 		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, &nf, buf, sizeof(buf)/sizeof(buf[0]));
@@ -408,6 +424,108 @@ static int utf8ToC(const char* str, wchar_t& c) {
 	return l;
 }
 
+typedef const u_int8_t* ccp;
+static wchar_t utf8ToC(ccp& str) {
+	wchar_t c = 0;
+	if(str[0] & 0x80) {
+		if(str[0] & 0x40) {
+			if(str[0] & 0x20) {
+				if(str[1] == 0 || str[2] == 0 ||
+					!((((unsigned char)str[1]) & ~0x3f) == 0x80) ||
+					!((((unsigned char)str[2]) & ~0x3f) == 0x80))
+				{
+					str++;
+				}
+				c = ((wchar_t)(unsigned char)str[0] & 0xf) << 12 |
+					((wchar_t)(unsigned char)str[1] & 0x3f) << 6 |
+					((wchar_t)(unsigned char)str[2] & 0x3f);
+				str += 3;
+			} else {
+				if(str[1] == 0 ||
+					!((((unsigned char)str[1]) & ~0x3f) == 0x80)) 
+				{
+					str++;
+				}
+				c = ((wchar_t)(unsigned char)str[0] & 0x1f) << 6 |
+					((wchar_t)(unsigned char)str[1] & 0x3f);
+				str += 2;
+			}
+		} else {
+			str++;
+		}
+	} else {
+		c = (unsigned char)str[0];
+		str++;
+	}
+
+	return c;
+}
+
+string::size_type Util::findSubString(const string& aString, const string& aSubString, string::size_type start) throw() {
+	if(aString.length() < start)
+		return (string::size_type)string::npos;
+
+	if(aString.length() - start < aSubString.length())
+		return (string::size_type)string::npos;
+
+	if(aSubString.empty())
+		return 0;
+
+	u_int8_t* tx = (u_int8_t*)aString.c_str();
+	u_int8_t* px = (u_int8_t*)aSubString.c_str();
+
+	u_int8_t p = Util::toLower(px[0]);
+
+	u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
+	if(isAscii(p)) {
+		for (tx += start; tx < end; ++tx) {
+			if(isAscii(tx[0]) && p == Util::toLower(tx[0])) {
+				u_int8_t* px2 = px;
+				u_int8_t* tx2 = tx;
+
+				for(;;) {
+					if(*px2 == 0)
+						return tx - (u_int8_t*)aString.c_str();
+
+					if(Util::toLower(utf8ToC(px2)) != Util::toLower(utf8ToC(tx2)))
+						break;
+				}
+				tx++;
+			}
+		}
+	} else {
+		wchar_t wp = Util::toLower(utf8ToC(px));
+		for(string::size_type i = 0; i < start; ++i) {
+			utf8ToC(tx);
+		}
+
+		while(tx < end) {
+			u_int8_t* otx = tx;
+			if(wp == Util::toLower(utf8ToC(tx))) {
+				u_int8_t* px2 = px;
+				u_int8_t* tx2 = tx;
+
+				for(;;) {
+					if(*px2 == 0)
+						return otx - (u_int8_t*)aString.c_str();
+
+					if(Util::toLower(utf8ToC(px2)) != Util::toLower(utf8ToC(tx2)))
+						break;
+				}
+			}
+		}
+	}
+	return (string::size_type)string::npos;
+}
+
+
+void Util::wideToUtf8(const wstring& str, string& tgt) {
+	string::size_type n = str.length();
+	for(string::size_type i = 0; i < n; ++i) {
+		cToUtf8(str[i], tgt);
+	}
+}
+
 /**
  * Convert a string in the current locale (whatever that happens to be) to UTF-8.
  */
@@ -434,18 +552,12 @@ string& Util::toUtf8(string& str) {
 
 	wtmp.resize(sz);
 	str.clear();
-    for(string::size_type i = 0; i < wtmp.length(); ++i) {
-		cToUtf8(wtmp[i], str);
-	}
+    wideToUtf8(wtmp, str);
 	return str;
 }
 
-string& Util::toAcp(string& str) {
-	if(str.empty())
-		return str;
-
-	wstring wtmp;
-	wtmp.reserve(str.length());
+void Util::utf8ToWide(const string& str, wstring& tgt) {
+	tgt.reserve(str.length());
 	for(string::size_type i = 0; i < str.length(); ) {
 		wchar_t c = 0;
 		int x = utf8ToC(str.c_str() + i, c);
@@ -453,9 +565,19 @@ string& Util::toAcp(string& str) {
 			i++;
 		} else {
 			i+=x;
-			wtmp += c;
+			tgt += c;
 		}
 	}
+
+}
+
+string& Util::toAcp(string& str) {
+	if(str.empty())
+		return str;
+
+	wstring wtmp;
+	utf8ToWide(str, wtmp);
+
 #ifdef _WIN32
 	int x = WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), wtmp.length(), NULL, 0, NULL, NULL);
 	if(x == 0) {
@@ -760,6 +882,6 @@ string Util::toDOS(const string& tmp) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.60 2004/08/11 22:18:16 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.61 2004/09/06 12:32:43 arnetheduck Exp $
  */
 

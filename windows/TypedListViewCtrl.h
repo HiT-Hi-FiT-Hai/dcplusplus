@@ -90,7 +90,7 @@ public:
 		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
 		if(di->item.mask & LVIF_TEXT) {
 			di->item.mask |= LVIF_DI_SETITEM;
-			di->item.pszText = const_cast<char*>(((T*)di->item.lParam)->getText(di->item.iSubItem).c_str());
+			di->item.pszText = const_cast<TCHAR*>(((T*)di->item.lParam)->getText(di->item.iSubItem).c_str());
 		}
 		return 0;
 	}
@@ -132,11 +132,11 @@ public:
 	}
 	struct CompFirst {
 		CompFirst() { } 
-		bool operator()(T& a, const string& b) {
+		bool operator()(T& a, const tstring& b) {
 			return Util::stricmp(a.getText(0), b) == -1;
 		}
 	};
-	int findItem(const string& b, int start = -1, bool aPartial = false) {
+	int findItem(const tstring& b, int start = -1, bool aPartial = false) {
 		LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
 		return FindItem(&fi, start);
 	}
@@ -237,5 +237,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.11 2004/03/26 19:23:29 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.12 2004/09/06 12:32:45 arnetheduck Exp $
 */

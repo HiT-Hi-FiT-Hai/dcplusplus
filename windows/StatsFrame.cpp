@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 					ypos = 0;
 				if(height == 0)
 					height = 1;
-				string txt = Util::formatBytes(max * (height-ypos) / height) + "/s";
+				tstring txt = WinUtil::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
 				int tw = WinUtil::getTextWidth(txt, dc);
 				if(tw + 2 > twidth)
 					twidth = tw + 2;
@@ -111,7 +111,7 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		}
 
 		if(rc.left < twidth) {
-			string txt = Util::formatBytes(max) + "/s";
+			tstring txt = WinUtil::toT(Util::formatBytes(max) + "/s");
 			int tw = WinUtil::getTextWidth(txt, dc);
 			if(tw + 2 > twidth)
 				twidth = tw + 2;
@@ -212,5 +212,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.9 2004/08/02 15:29:19 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.10 2004/09/06 12:32:45 arnetheduck Exp $
  */

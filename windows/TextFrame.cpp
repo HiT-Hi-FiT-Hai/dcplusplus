@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 
 #define MAX_TEXT_LEN 32768
 
-void TextFrame::openWindow(const string& aFileName) {
+void TextFrame::openWindow(const tstring& aFileName) {
 	TextFrame* frame = new TextFrame(aFileName);
 	frame->CreateEx(WinUtil::mdiClient);
 }
@@ -40,7 +40,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlPad.SetFont(WinUtil::monoFont);
 	string tmp;
 	try {
-		tmp = Util::toDOS(File(file, File::READ, File::OPEN).read(MAX_TEXT_LEN));
+		tmp = Util::toDOS(File(WinUtil::fromT(file), File::READ, File::OPEN).read(MAX_TEXT_LEN));
 		string::size_type i = 0;
 		while((i = tmp.find('\n', i)) != string::npos) {
 			if(i == 0 || tmp[i-1] != '\r') {
@@ -49,11 +49,11 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			}
 			i++;
 		}
-		ctrlPad.SetWindowText(tmp.c_str());
+		ctrlPad.SetWindowText(WinUtil::toT(tmp).c_str());
 		ctrlPad.EmptyUndoBuffer();
-		SetWindowText(Util::getFileName(file).c_str());
+		SetWindowText(WinUtil::toT(Util::getFileName(WinUtil::fromT(file))).c_str());
 	} catch(const FileException& e) {
-		SetWindowText((Util::getFileName(file) + ": " + e.getError()).c_str());
+		SetWindowText(WinUtil::toT(Util::getFileName(WinUtil::fromT(file)) + ": " + e.getError()).c_str());
 	}
 	
 	bHandled = FALSE;
@@ -81,7 +81,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: TextFrame.cpp,v 1.8 2004/08/11 22:18:16 arnetheduck Exp $
+ * $Id: TextFrame.cpp,v 1.9 2004/09/06 12:32:45 arnetheduck Exp $
  */
 
 

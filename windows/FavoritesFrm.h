@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ public:
 	FavoriteHubsFrame() : nosave(true) { };
 	~FavoriteHubsFrame() { };
 
-	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("FavoriteHubsFrame"), IDR_FAVORITES, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
@@ -165,18 +165,7 @@ private:
 		ctrlHubs.Invalidate();
 	}
 
-	void addEntry(const FavoriteHubEntry* entry, int pos) {
-		StringList l;
-		l.push_back(entry->getName());
-		l.push_back(entry->getDescription());
-		l.push_back(entry->getNick(false));
-		l.push_back(string(entry->getPassword().size(), '*'));
-		l.push_back(entry->getServer());
-		l.push_back(entry->getUserDescription());
-		bool b = entry->getConnect();
-		int i = ctrlHubs.insert(pos, l, 0, (LPARAM)entry);
-		ctrlHubs.SetCheckState(i, b);
-	}
+	void addEntry(const FavoriteHubEntry* entry, int pos);
 	virtual void on(FavoriteAdded, const FavoriteHubEntry* e)  throw() { addEntry(e, ctrlHubs.GetItemCount()); }
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry* e) throw() { ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)e)); }
 };
@@ -185,6 +174,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.17 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.18 2004/09/06 12:32:43 arnetheduck Exp $
  */
 

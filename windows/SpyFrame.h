@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public:
 		COLUMN_LAST
 	};
 
-	DECLARE_FRAME_WND_CLASS_EX("SpyFrame", IDR_SPY, 0, COLOR_3DFACE)
+	DECLARE_FRAME_WND_CLASS_EX(_T("SpyFrame"), IDR_SPY, 0, COLOR_3DFACE)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
@@ -68,38 +68,8 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		if(!closed){
-			ClientManager::getInstance()->removeListener(this);
-			TimerManager::getInstance()->removeListener(this);
-
-			bHandled = TRUE;
-			closed = true;
-			PostMessage(WM_CLOSE);
-			return 0;
-		} else {
-			bHandled = FALSE;
-			return 0;
-		}
-	}
-
-	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlSearches.getSortColumn()) {
-			if (!ctrlSearches.isAscending())
-				ctrlSearches.setSort(-1, ctrlSearches.getSortType());
-			else
-				ctrlSearches.setSortDirection(false);
-		} else {
-			if(l->iSubItem == COLUMN_COUNT) {
-				ctrlSearches.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
-			} else {
-				ctrlSearches.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-			}
-		}
-		return 0;
-	}
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
@@ -116,7 +86,7 @@ private:
 	int total;
 	int perSecond[AVG_TIME];
 	int cur;
-	string searchString;
+	tstring searchString;
 
 	bool closed;
 	
@@ -131,6 +101,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.17 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.18 2004/09/06 12:32:45 arnetheduck Exp $
  */
 

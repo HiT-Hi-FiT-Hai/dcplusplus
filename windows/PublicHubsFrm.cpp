@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_USERS) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlHubs.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		ctrlHubs.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
 	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
@@ -72,17 +72,17 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_CONNECT);
-	ctrlConnect.SetWindowText(CSTRING(CONNECT));
+	ctrlConnect.SetWindowText(CTSTRING(CONNECT));
 	ctrlConnect.SetFont(WinUtil::systemFont);
 
 	ctrlRefresh.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_REFRESH);
-	ctrlRefresh.SetWindowText(CSTRING(REFRESH));
+	ctrlRefresh.SetWindowText(CTSTRING(REFRESH));
 	ctrlRefresh.SetFont(WinUtil::systemFont);
 
 	ctrlAddress.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_GROUPBOX, WS_EX_TRANSPARENT);
-	ctrlAddress.SetWindowText(CSTRING(MANUAL_ADDRESS));
+	ctrlAddress.SetWindowText(CTSTRING(MANUAL_ADDRESS));
 	ctrlAddress.SetFont(WinUtil::systemFont);
 	
 	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -92,13 +92,13 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	
 	ctrlFilterDesc.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_GROUPBOX, WS_EX_TRANSPARENT);
-	ctrlFilterDesc.SetWindowText(CSTRING(FILTER));
+	ctrlFilterDesc.SetWindowText(CTSTRING(FILTER));
 	ctrlFilterDesc.SetFont(WinUtil::systemFont);
 
 	HubManager::getInstance()->addListener(this);
 
 	if(HubManager::getInstance()->isDownloading()) 
-		ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
+		ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
 
 	hubs = HubManager::getInstance()->getPublicHubs();
 	if(hubs.empty())
@@ -107,9 +107,9 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	updateList();
 	
 	hubsMenu.CreatePopupMenu();
-	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
-	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CSTRING(ADD_TO_FAVORITES));
-	hubsMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CSTRING(COPY_HUB));
+	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));
+	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CTSTRING(ADD_TO_FAVORITES));
+	hubsMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
 	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 	
 	bHandled = FALSE;
@@ -123,7 +123,7 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 
 	if(item->iItem != -1) {
-		char buf[256];
+		TCHAR buf[256];
 		
 		ctrlHubs.GetItemText(item->iItem, COLUMN_SERVER, buf, 256);
 		HubFrame::openWindow(buf);
@@ -138,7 +138,7 @@ LRESULT PublicHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHa
 
 	int item = ctrlHubs.GetNextItem(-1, LVNI_FOCUSED);
 	if(item != -1) {
-		char buf[256];
+		TCHAR buf[256];
 
 		ctrlHubs.GetItemText(item, COLUMN_SERVER, buf, 256);
 		HubFrame::openWindow(buf);
@@ -151,7 +151,7 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	ctrlHubs.DeleteAllItems();
 	users = 0;
 	visibleHubs = 0;
-	ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
+	ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
 	HubManager::getInstance()->refresh();
 
 	return 0;
@@ -162,11 +162,11 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		return 0;
 
 	if(ctrlHub.GetWindowTextLength() > 0) {
-		char* hub = new char[ctrlHub.GetWindowTextLength()+1];
+		TCHAR* hub = new TCHAR[ctrlHub.GetWindowTextLength()+1];
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
-		ctrlHub.SetWindowText("");
-		string tmp = hub;
-		delete hub;
+		ctrlHub.SetWindowText(_T(""));
+		tstring tmp = hub;
+		delete[] hub;
 		string::size_type i;
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
@@ -175,7 +175,7 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 			
 	} else {
 		if(ctrlHubs.GetSelectedCount() == 1) {
-			char buf[256];
+			TCHAR buf[256];
 			int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 			ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
 			HubFrame::openWindow(buf);
@@ -195,17 +195,17 @@ LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	if(!checkNick())
 		return 0;
 	
-	char buf[256];
+	TCHAR buf[256];
 	
 	if(ctrlHubs.GetSelectedCount() == 1) {
 		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 		FavoriteHubEntry e;
 		ctrlHubs.GetItemText(i, COLUMN_NAME, buf, 256);
-		e.setName(buf);
+		e.setName(WinUtil::fromT(buf));
 		ctrlHubs.GetItemText(i, COLUMN_DESCRIPTION, buf, 256);
-		e.setDescription(buf);
+		e.setDescription(WinUtil::fromT(buf));
 		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
-		e.setServer(buf);
+		e.setServer(WinUtil::fromT(buf));
 		HubManager::getInstance()->addFavorite(e);
 	}
 	return 0;
@@ -217,10 +217,10 @@ LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 			return 0;
 		}
 		
-		char *hub = new char[ctrlHub.GetWindowTextLength()+1];
+		TCHAR *hub = new TCHAR[ctrlHub.GetWindowTextLength()+1];
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
-		ctrlHub.SetWindowText("");
-		string tmp = hub;
+		ctrlHub.SetWindowText(_T(""));
+		tstring tmp = hub;
 		delete hub;
 		string::size_type i;
 		while((i = tmp.find(' ')) != string::npos)
@@ -311,7 +311,7 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 bool PublicHubsFrame::checkNick() {
 	if(SETTING(NICK).empty()) {
-		MessageBox(CSTRING(ENTER_NICK), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
+		MessageBox(CTSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 		return false;
 	}
 	return true;
@@ -330,11 +330,11 @@ void PublicHubsFrame::updateList() {
 			filter.match(i->getDescription()) ||
 			filter.match(i->getServer()) ) {
 
-			StringList l;
-			l.push_back(i->getName());
-			l.push_back(i->getDescription());
-			l.push_back(i->getUsers());
-			l.push_back(i->getServer());
+			TStringList l;
+			l.push_back(WinUtil::toT(i->getName()));
+			l.push_back(WinUtil::toT(i->getDescription()));
+			l.push_back(WinUtil::toT(i->getUsers()));
+			l.push_back(WinUtil::toT(i->getServer()));
 			ctrlHubs.insert(ctrlHubs.GetItemCount(), l);
 			visibleHubs++;
 			users += Util::toInt(i->getUsers());
@@ -348,36 +348,36 @@ void PublicHubsFrame::updateList() {
 }
 
 void PublicHubsFrame::updateStatus() {
-	ctrlStatus.SetText(1, (STRING(HUBS) + ": " + Util::toString(visibleHubs)).c_str());
-	ctrlStatus.SetText(2, (STRING(USERS) + ": " + Util::toString(users)).c_str());
+	ctrlStatus.SetText(1, WinUtil::toT(STRING(HUBS) + ": " + Util::toString(visibleHubs)).c_str());
+	ctrlStatus.SetText(2, WinUtil::toT(STRING(USERS) + ": " + Util::toString(users)).c_str());
 }
 
 LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == FINISHED) {
 		hubs = HubManager::getInstance()->getPublicHubs();
 		updateList();
-		string* x = (string*)lParam;
-		ctrlStatus.SetText(0, (STRING(HUB_LIST_DOWNLOADED) + " (" + (*x) + ")").c_str());
+		tstring* x = (tstring*)lParam;
+		ctrlStatus.SetText(0, (TSTRING(HUB_LIST_DOWNLOADED) + _T(" (") + (*x) + _T(")")).c_str());
 		delete x;
 	} else if(wParam == STARTING) {
-		string* x = (string*)lParam;
-		ctrlStatus.SetText(0, (STRING(DOWNLOADING_HUB_LIST) + " (" + (*x) + ")").c_str());
+		tstring* x = (tstring*)lParam;
+		ctrlStatus.SetText(0, (TSTRING(DOWNLOADING_HUB_LIST) + _T(" (") + (*x) + _T(")")).c_str());
 		delete x;
 	} else if(wParam == FAILED) {
-		string* x = (string*)lParam;
-		ctrlStatus.SetText(0, (STRING(DOWNLOAD_FAILED) + (*x) ).c_str());
+		tstring* x = (tstring*)lParam;
+		ctrlStatus.SetText(0, (TSTRING(DOWNLOAD_FAILED) + (*x) ).c_str());
 		delete x;
 	}
 	return 0;
 }
 
 LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	char* str;
+	TCHAR* str;
 	
 	if(wParam == VK_RETURN) {
-		str = new char[ctrlFilter.GetWindowTextLength()+1];
+		str = new TCHAR[ctrlFilter.GetWindowTextLength()+1];
 		ctrlFilter.GetWindowText(str, ctrlFilter.GetWindowTextLength()+1);
-		filter = string(str, ctrlFilter.GetWindowTextLength());
+		filter = WinUtil::fromT(tstring(str, ctrlFilter.GetWindowTextLength()));
 		delete[] str;
 		updateList();
 	} else {
@@ -409,7 +409,7 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlHubs.GetSelectedCount() == 1) {
-		char buf[256];
+		TCHAR buf[256];
 		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
 		WinUtil::setClipboard(buf);
@@ -419,6 +419,6 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.24 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.25 2004/09/06 12:32:44 arnetheduck Exp $
  */
 

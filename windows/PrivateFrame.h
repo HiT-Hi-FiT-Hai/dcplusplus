@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,15 +38,15 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
-	static void gotMessage(const User::Ptr& aUser, const string& aMessage);
-	static void openWindow(const User::Ptr& aUser, const string& aMessage = Util::emptyString);
+	static void gotMessage(const User::Ptr& aUser, const tstring& aMessage);
+	static void openWindow(const User::Ptr& aUser, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 
 	enum {
 		USER_UPDATED
 	};
 
-	DECLARE_FRAME_WND_CLASS_EX("PrivateFrame", IDR_PRIVATE, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("PrivateFrame"), IDR_PRIVATE, 0, COLOR_3DFACE);
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
@@ -85,7 +85,7 @@ public:
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
-	void addLine(const string& aLine);
+	void addLine(const tstring& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
@@ -124,22 +124,22 @@ public:
 		return 0;
 	}
 	
-	void addClientLine(const string& aLine) {
+	void addClientLine(const tstring& aLine) {
 		if(!created) {
 			CreateEx(WinUtil::mdiClient);
 		}
-		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
+		ctrlStatus.SetText(0, (_T("[") + WinUtil::toT(Util::getShortTimeString()) + _T("] ") + aLine).c_str());
 		if (BOOLSETTING(TAB_DIRTY)) {
 			setDirty();
 		}
 	}
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
-	void sendMessage(const string& msg) {
+	void sendMessage(const tstring& msg) {
 		if(user && user->isOnline()) {
-			string s = "<" + user->getClientNick() + "> " + msg;
+			string s = "<" + user->getClientNick() + "> " + WinUtil::fromT(msg);
 			user->privateMessage(s);
-			addLine(s);
+			addLine(WinUtil::toT(s));
 		}
 	}
 	
@@ -147,7 +147,7 @@ public:
 private:
 	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
 		created(false), closed(false), 
-		ctrlMessageContainer("edit", this, PM_MESSAGE_MAP) {
+		ctrlMessageContainer(_T("edit"), this, PM_MESSAGE_MAP) {
 	}
 	
 	~PrivateFrame() {
@@ -173,13 +173,13 @@ private:
 
 	void updateTitle() {
 		if(user->isOnline()) {
-			SetWindowText(user->getFullNick().c_str());
+			SetWindowText(WinUtil::toT(user->getFullNick()).c_str());
 			setTabColor(RGB(0, 255, 255));
 		} else {
 			if(user->getClientName() == STRING(OFFLINE)) {
-				SetWindowText(user->getFullNick().c_str());
+				SetWindowText(WinUtil::toT(user->getFullNick()).c_str());
 			} else {
-				SetWindowText((user->getFullNick() + " [" + STRING(OFFLINE) + "]").c_str());
+				SetWindowText((WinUtil::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
 			}
 			setTabColor(RGB(255, 0, 0));
 		}
@@ -196,6 +196,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.19 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.20 2004/09/06 12:32:44 arnetheduck Exp $
  */
 

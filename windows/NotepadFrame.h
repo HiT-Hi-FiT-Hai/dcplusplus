@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, public StaticFrame<NotepadFrame, ResourceManager::NOTEPAD>
 {
 public:
-	DECLARE_FRAME_WND_CLASS_EX("NotepadFrame", IDR_NOTEPAD, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("NotepadFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
 	NotepadFrame() : dirty(false) { }
 	~NotepadFrame() { }
@@ -80,6 +80,6 @@ private:
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.10 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.11 2004/09/06 12:32:44 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ void QueueManager::FileQueue::find(QueueItem::List& sl, int64_t aSize, const str
 	}
 }
 
-void QueueManager::FileQueue::find(QueueItem::List& ql, TTHValue* tth) {
+void QueueManager::FileQueue::find(QueueItem::List& ql, const TTHValue* tth) {
 	for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
 		QueueItem* qi = i->second;
 		if(qi->getTTH() != NULL && *qi->getTTH() == *tth) {
@@ -293,19 +293,19 @@ QueueManager::~QueueManager() {
 		WIN32_FIND_DATA data;
 		HANDLE hFind;
 	
-		hFind = FindFirstFile((path + "\\*.bz2").c_str(), &data);
+		hFind = FindFirstFile(Util::utf8ToWide(path + "\\*.bz2").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
-				File::deleteFile(path + data.cFileName);			
+				File::deleteFile(path + Util::wideToUtf8(data.cFileName));			
 			} while(FindNextFile(hFind, &data));
 			
 			FindClose(hFind);
 		}
 		
-		hFind = FindFirstFile((path + "\\*.DcLst").c_str(), &data);
+		hFind = FindFirstFile(Util::utf8ToWide(path + "\\*.DcLst").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
-				File::deleteFile(path + data.cFileName);			
+				File::deleteFile(path + Util::wideToUtf8(data.cFileName));			
 			} while(FindNextFile(hFind, &data));
 			
 			FindClose(hFind);
@@ -994,8 +994,8 @@ void QueueManager::saveQueue() throw() {
 		File ff(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		BufferedOutputStream<false> f(&ff);
 
-		f.write(SimpleXML::w1252Header);
-		f.write(STRINGLEN("<Downloads>\r\n"));
+		f.write(SimpleXML::utf8Header);
+		f.write(STRINGLEN("<Downloads Version=\"" VERSIONSTRING "\">\r\n"));
 		string tmp;
 		string b32tmp;
 		for(QueueItem::StringIter i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
@@ -1070,7 +1070,7 @@ void QueueManager::saveQueue() throw() {
 
 class QueueLoader : public SimpleXMLReader::CallBack {
 public:
-	QueueLoader() : cur(NULL), inDownloads(false) { };
+	QueueLoader() : cur(NULL), queueVersion(0), inDownloads(false) { };
 	virtual ~QueueLoader() { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
@@ -1078,7 +1078,10 @@ private:
 	string target;
 
 	QueueItem* cur;
+	float queueVersion;
 	bool inDownloads;
+	
+
 };
 
 void QueueManager::loadQueue() throw() {
@@ -1110,6 +1113,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 	QueueManager* qm = QueueManager::getInstance();
 	if(!inDownloads && name == "Downloads") {
 		inDownloads = true;
+		queueVersion = Util::toFloat(getAttrib(attribs, "Version", 0));
 	} else if(inDownloads) {
 		if(cur == NULL && name == sDownload) {
 			int flags = QueueItem::FLAG_RESUME;
@@ -1117,17 +1121,26 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			if(size == 0)
 				return;
 			try {
-				target = QueueManager::checkTarget(getAttrib(attribs, sTarget, 0), size, flags);
+				const string& tgt = getAttrib(attribs, sTarget, 0);
+				// Old queues saved in ACP...
+				if(queueVersion <= 0.4032) {
+					target = tgt;
+					target = QueueManager::checkTarget(Util::toUtf8(target), size, flags);
+				} else {
+					target = QueueManager::checkTarget(tgt, size, flags);
+				}
 				if(target.empty())
 					return;
 			} catch(const Exception&) {
 				return;
 			}
 			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority, 3));
-			const string& tempTarget = getAttrib(attribs, sTempTarget, 4);
+			string tempTarget = getAttrib(attribs, sTempTarget, 4);
+			if(queueVersion <= 0.4032) {
+				Util::toUtf8(tempTarget);				
+			}
 			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded, 5));
 			const string& tthRoot = getAttrib(attribs, sTTH, 6);
-			const string& searchString = getAttrib(attribs, sSearchString, 6);
 			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded, 6));
 			if (downloaded > size || downloaded < 0)
 				downloaded = 0;
@@ -1138,11 +1151,11 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			QueueItem* qi = qm->fileQueue.find(target);
 
 			if(qi == NULL) {
-				if(tthRoot.empty())
-					qi = qm->fileQueue.add(target, size, searchString, flags, p, tempTarget, downloaded, added, NULL);
-				else {
+				if(tthRoot.empty()) {
+					qi = qm->fileQueue.add(target, size, Util::emptyString, flags, p, tempTarget, downloaded, added, NULL);
+				} else {
 					TTHValue root(tthRoot);
-					qi = qm->fileQueue.add(target, size, searchString, flags, p, tempTarget, downloaded, added, &root);
+					qi = qm->fileQueue.add(target, size, Util::emptyString, flags, p, tempTarget, downloaded, added, &root);
 				}
 				qm->fire(QueueManagerListener::Added(), qi);
 			}
@@ -1261,5 +1274,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.95 2004/08/08 18:37:22 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.96 2004/09/06 12:32:42 arnetheduck Exp $
  */

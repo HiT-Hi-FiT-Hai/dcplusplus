@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ class UploadPage : public CPropertyPage<IDD_UPLOADPAGE>, public PropPage
 {
 public:
 	UploadPage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CSTRING(SETTINGS_UPLOADS));
+		SetTitle(CTSTRING(SETTINGS_UPLOADS));
 	};
 	~UploadPage() {
 		ctrlDirectories.Detach();
@@ -56,7 +56,7 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
+	virtual void setTitle(const tstring& t) { SetTitle(t.c_str()); };
 	
 protected:
 	static Item items[];
@@ -64,13 +64,13 @@ protected:
 	ExListViewCtrl ctrlDirectories;
 	CStatic ctrlTotal;
 
-	void addDirectory(string path);
+	void addDirectory(tstring path);
 };
 
 #endif //UPLOADPAGE_H
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.9 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.10 2004/09/06 12:32:45 arnetheduck Exp $
  */
 

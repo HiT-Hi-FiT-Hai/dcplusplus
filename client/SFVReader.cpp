@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,14 +50,14 @@ void SFVReader::load(const string& fileName) throw() {
 	string fname = Util::getFileName(fileName);
 
 	WIN32_FIND_DATA fd;
-	HANDLE hf = FindFirstFile((path + "*.sfv").c_str(), &fd);
+	HANDLE hf = FindFirstFile(Util::utf8ToWide(path + "*.sfv").c_str(), &fd);
 	if(hf == INVALID_HANDLE_VALUE) {
 		return;
 	}
 
 	do {
 		try {
-			if(tryFile(path + fd.cFileName, fname)) {
+			if(tryFile(path + Util::wideToUtf8(fd.cFileName), fname)) {
 				FindClose(hf);
 				return;
 			}
@@ -73,5 +73,5 @@ void SFVReader::load(const string& fileName) throw() {
 
 /**
  * @file
- * $Id: SFVReader.cpp,v 1.4 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: SFVReader.cpp,v 1.5 2004/09/06 12:32:42 arnetheduck Exp $
  */

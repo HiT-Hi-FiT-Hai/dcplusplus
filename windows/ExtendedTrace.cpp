@@ -21,6 +21,7 @@
 
 #include "../client/DCPlusPlus.h"
 #include "../client/File.h"
+#include "WinUtil.h"
 
 #include <tchar.h>
 #include <DbgHelp.h>
@@ -290,14 +291,14 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		callStack.AddrStack.Mode   = AddrModeFlat;
 		callStack.AddrFrame.Mode   = AddrModeFlat;
 
-		f.write(lpszMessage, strlen(lpszMessage));
+		f.write(WinUtil::fromT(lpszMessage));
 
 		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-		f.write(srcInfo, strlen(srcInfo));
+		f.write(WinUtil::fromT(srcInfo));
 		f.write(LIT(": "));
-		f.write(symInfo, strlen(symInfo));
+		f.write(WinUtil::fromT(symInfo));
 		f.write(LIT("\r\n"));
 
 		// Max 100 stack lines...
@@ -323,9 +324,9 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 			GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 			GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-			f.write(srcInfo, strlen(srcInfo));
+			f.write(WinUtil::fromT(srcInfo));
 			f.write(LIT(": "));
-			f.write(symInfo, strlen(symInfo));
+			f.write(WinUtil::fromT(symInfo));
 			f.write(LIT("\r\n"));
 
 		}

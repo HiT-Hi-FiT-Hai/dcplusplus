@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -303,6 +303,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.55 2004/07/27 22:21:14 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.56 2004/09/06 12:32:42 arnetheduck Exp $
  */
 

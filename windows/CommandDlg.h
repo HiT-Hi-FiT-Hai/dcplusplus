@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "../client/Util.h"
+#include "WinUtil.h"
 
 class CommandDlg : public CDialogImpl<CommandDlg>
 {
@@ -44,9 +45,9 @@ class CommandDlg : public CDialogImpl<CommandDlg>
 public:
 	int type;
 	int ctx;
-	string name;
-	string command;
-	string hub;
+	tstring name;
+	tstring command;
+	tstring hub;
 
 	enum { IDD = IDD_USER_COMMAND };
 
@@ -74,33 +75,7 @@ public:
 	LRESULT onType(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		updateContext();
-		if(wID == IDOK) {
-			char buf[256];
-
-			if((type != 0) && 
-				((ctrlName.GetWindowTextLength() == 0) || (ctrlCommand.GetWindowTextLength()== 0)))
-			{
-				MessageBox("Name and command must not be empty");
-				return 0;
-			}
-
-#define GET_TEXT(id, var) \
-			GetDlgItemText(id, buf, 256); \
-			var = buf;
-
-			GET_TEXT(IDC_NAME, name);
-			GET_TEXT(IDC_HUB, hub);
-
-			if(type != 0) {
-				type = (ctrlOnce.GetCheck() == BST_CHECKED) ? 2 : 1;
-			}
-		}
-		EndDialog(wID);
-		return 0;
-	}
+	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 private:
 	void updateType() {
 		if(ctrlSeparator.GetCheck() == BST_CHECKED) {
@@ -115,7 +90,7 @@ private:
 	}
 	enum { BUF_LEN = 1024 };
 	void updateCommand() {
-		char buf[BUF_LEN];
+		TCHAR buf[BUF_LEN];
 		if(type == 0) {
 			command.clear();
 		} else if(type == 1) {
@@ -123,12 +98,12 @@ private:
 			command = buf;
 		} else if(type == 2) {
 			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-			command = "<%[mynick]> " + Util::validateMessage(buf, false) + "|";
+			command = WinUtil::toT("<%[mynick]> " + Util::validateMessage(WinUtil::fromT(buf), false) + "|");
 		} else if(type == 3) {
 			ctrlNick.GetWindowText(buf, BUF_LEN - 1);
-			string to(buf);
+			tstring to(buf);
 			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-			command = "$To: " + to + " From: %[mynick] $<%[mynick]> " + Util::validateMessage(buf, false) + "|";
+			command = _T("$To: ") + to + _T(" From: %[mynick] $<%[mynick]> ") + WinUtil::toT(Util::validateMessage(WinUtil::fromT(buf), false)) + _T("|");
 		}
 	}
 	void updateControls() {
@@ -158,5 +133,5 @@ private:
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.6 2003/11/13 15:32:16 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.7 2004/09/06 12:32:43 arnetheduck Exp $
  */

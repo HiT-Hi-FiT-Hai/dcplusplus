@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,5 +96,5 @@ template<class T> void* FastAlloc<T>::freeList = NULL;
 #endif // _FAST_ALLOC
 /**
  * @file
- * $Id: FastAlloc.h,v 1.5 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: FastAlloc.h,v 1.6 2004/09/06 12:32:42 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,5 +61,5 @@ private:
 
 /**
  * @file
- * $Id: TigerHash.h,v 1.4 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: TigerHash.h,v 1.5 2004/09/06 12:32:43 arnetheduck Exp $
  */

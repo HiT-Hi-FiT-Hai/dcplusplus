@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ class LineDlg : public CDialogImpl<LineDlg>
 	CEdit ctrlLine;
 	CStatic ctrlDescription;
 public:
-	string line;
-	string description;
-	string title;
+	tstring line;
+	tstring description;
+	tstring title;
 	bool password;
 
 	enum { IDD = IDD_LINE };
@@ -73,7 +73,7 @@ public:
 	{
 		if(wID == IDOK) {
 			int len = ctrlLine.GetWindowTextLength() + 1;
-			char* buf = new char[len];
+			TCHAR* buf = new TCHAR[len];
 			GetDlgItemText(IDC_LINE, buf, len);
 			line = buf;
 			delete[] buf;
@@ -88,5 +88,5 @@ public:
 
 /**
  * @file
- * $Id: LineDlg.h,v 1.6 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: LineDlg.h,v 1.7 2004/09/06 12:32:44 arnetheduck Exp $
  */

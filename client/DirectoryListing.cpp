@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ void DirectoryListing::loadFile(const string& name, bool doAdl) {
 }
 
 void DirectoryListing::load(const string& in, bool doAdl) {
-	StringTokenizer t(in);
+	StringTokenizer<string> t(in, '\n');
 
 	StringList& tokens = t.getTokens();
 	string::size_type indent = 0;
@@ -247,7 +247,7 @@ string DirectoryListing::getPath(Directory* d) {
 }
 
 static inline const string& escaper(const string& n, string& tmp, bool utf8) {
-	return utf8 ? Util::toAcp(n, tmp) : n;
+	return utf8 ? n : Util::toUtf8(n, tmp);
 }
 
 void DirectoryListing::download(Directory* aDir, const string& aTarget) {
@@ -280,6 +280,20 @@ void DirectoryListing::download(const string& aDir, const string& aTarget) {
 	Directory* d = find(aDir, getRoot());
 	if(d != NULL)
 		download(d, aTarget);
+}
+
+void DirectoryListing::download(File* aFile, const string& aTarget, bool view /* = false */) {
+	int flags = (getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0) |
+		(view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
+
+	if(getUtf8()) {
+		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
+			aFile->getTTH(), Util::emptyString, flags);
+	} else {
+		string tmp;
+		QueueManager::getInstance()->add(Util::toUtf8(getPath(aFile) + aFile->getName(), tmp), aFile->getSize(), user, aTarget, 
+			aFile->getTTH(), Util::emptyString, flags);
+	}
 }
 
 DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directory* current) {
@@ -315,14 +329,7 @@ int DirectoryListing::Directory::getTotalFileCount(bool adl) {
 	return x;
 }
 
-void DirectoryListing::download(File* aFile, const string& aTarget, bool view /* = false */) {
-	int flags = (getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0) |
-		(view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
-	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
-		aFile->getTTH(), Util::emptyString, flags);
-}
-
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.31 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.32 2004/09/06 12:32:42 arnetheduck Exp $
  */

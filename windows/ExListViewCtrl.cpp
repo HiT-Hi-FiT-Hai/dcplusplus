@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,13 @@
 #include "ExListViewCtrl.h"
 
 int ExListViewCtrl::moveItem(int oldPos, int newPos) {
-
-	char buf[512];
+	TCHAR buf[512];
 	LVITEM lvi;
 	lvi.iItem = oldPos;
 	lvi.iSubItem = 0;
 	lvi.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
 	GetItem(&lvi);
-	StringList l;
+	TStringList l;
 
 	for(int j = 0; j < GetHeader().GetItemCount(); j++) {
 		GetItemText(oldPos, j, buf, 512);
@@ -42,7 +41,7 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 	lvi.iItem = newPos;
 	int i = InsertItem(&lvi);
 	j = 0;
-	for(StringIter k = l.begin(); k != l.end(); ++k, j++) {
+	for(TStringIter k = l.begin(); k != l.end(); ++k, j++) {
 		SetItemText(i, j, k->c_str());
 	}
 	
@@ -60,9 +59,9 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 	return i;
 }
 
-int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
+int ExListViewCtrl::insert(TStringList& aList, int iImage, LPARAM lParam) {
 
-	char buf[128];
+	TCHAR buf[128];
 	int loc = 0;
 	int count = GetItemCount();
 
@@ -75,7 +74,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 	a.stateMask = 0;
 	a.lParam = lParam;
 	a.iIndent = 0;
-	a.pszText = const_cast<char*>(sortColumn == -1 ? aList[0].c_str() : aList[sortColumn].c_str());
+	a.pszText = const_cast<TCHAR*>(sortColumn == -1 ? aList[0].c_str() : aList[sortColumn].c_str());
 	a.cchTextMax = sortColumn == -1 ? aList[0].size() : aList[sortColumn].size();
 	
 	if(sortColumn == -1) {
@@ -84,9 +83,9 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 		loc = 0;
 	} else {
 
-		string& b = aList[sortColumn];
-		int c = atoi(b.c_str());
-		double f = atof(b.c_str());
+		tstring& b = aList[sortColumn];
+		int c = _tstoi(b.c_str());
+		double f = _tstof(b.c_str());
 		LPARAM data = NULL;			
 		int low = 0;
 		int high = count-1;
@@ -105,16 +104,16 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 			
 			if(comp == SORT_STRING) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp = compare(b, string(buf));
+				comp = compare(b, tstring(buf));
 			} else if(comp == SORT_STRING_NOCASE) {
 				GetItemText(loc, sortColumn, buf, 128);
 				comp =  Util::stricmp(b.c_str(), buf);
 			} else if(comp == SORT_INT) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp = compare(c, atoi(buf)); 
+				comp = compare(c, _tstoi(buf)); 
 			} else if(comp == SORT_FLOAT) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp = compare(f, atof(buf));
+				comp = compare(f, _tstof(buf));
 			}
 			
 			if(!ascending)
@@ -134,13 +133,13 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 			comp = fun(lParam, data);
 		} 
 		if(comp == SORT_STRING) {
-			comp = compare(b, string(buf));
+			comp = compare(b, tstring(buf));
 		} else if(comp == SORT_STRING_NOCASE) {
 			comp =  Util::stricmp(b.c_str(), buf);
 		} else if(comp == SORT_INT) {
-			comp = compare(c, atoi(buf)); 
+			comp = compare(c, _tstoi(buf)); 
 		} else if(comp == SORT_FLOAT) {
-			comp = compare(f, atof(buf));
+			comp = compare(f, _tstof(buf));
 		}
 
 		if(!ascending)
@@ -154,20 +153,20 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 	a.iSubItem = 0;
 	int i = InsertItem(&a);
 	int k = 0;
-	for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
+	for(TStringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 		SetItemText(i, k, j->c_str());
 	}
 	return loc;
 }
 
-int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lParam) {
+int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lParam) {
 
 	dcassert(aList.size() > 0);
 
 	int i = insert(nItem, aList[0], iImage, lParam);
 
 	int k = 0;
-	for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
+	for(TStringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 		SetItemText(i, k, j->c_str());
 	}
 	return i;
@@ -176,6 +175,6 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file
- * $Id: ExListViewCtrl.cpp,v 1.10 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.11 2004/09/06 12:32:43 arnetheduck Exp $
  */
 

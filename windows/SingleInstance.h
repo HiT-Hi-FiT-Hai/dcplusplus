@@ -32,7 +32,7 @@ class SingleInstance
 	HANDLE hMutex;
 
 public:
-	SingleInstance(char* strMutexName)
+	SingleInstance(const TCHAR* strMutexName)
 	{
 		// strMutexName must be unique
 		hMutex = CreateMutex(NULL, FALSE, strMutexName);
@@ -54,5 +54,5 @@ public:
 
 /**
  * @file
- * $Id: SingleInstance.h,v 1.3 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: SingleInstance.h,v 1.4 2004/09/06 12:32:45 arnetheduck Exp $
  */

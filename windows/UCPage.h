@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ class UCPage : public CPropertyPage<IDD_UCPAGE>, public PropPage
 {
 public:
 	UCPage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CSTRING(SETTINGS_USER_COMMANDS));
+		SetTitle(CTSTRING(SETTINGS_USER_COMMANDS));
 	};
 
 	virtual ~UCPage() { 
@@ -78,6 +78,6 @@ protected:
 
 /**
  * @file
- * $Id: UCPage.h,v 1.4 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: UCPage.h,v 1.5 2004/09/06 12:32:45 arnetheduck Exp $
  */
 

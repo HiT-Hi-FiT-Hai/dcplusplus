@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 
 #include <windows.h>
 #include <crtdbg.h>
-
+#include <tchar.h>
 #else
 #include <unistd.h>
 #endif
@@ -94,5 +94,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.8 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.9 2004/09/06 12:32:43 arnetheduck Exp $
  */

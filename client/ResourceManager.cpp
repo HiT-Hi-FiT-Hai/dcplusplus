@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "SimpleXML.h"
 #include "File.h"
 
+wstring ResourceManager::wstrings[ResourceManager::LAST];
+
 void ResourceManager::loadLanguage(const string& aFile) {
 	try {
 		File f(aFile, File::READ, File::OPEN);
@@ -47,6 +49,7 @@ void ResourceManager::loadLanguage(const string& aFile) {
 					if(j != h.end()) {
 						strings[j->second] = xml.getChildData();
 					}
+					createWide();
 				}
 			}
 		}
@@ -54,8 +57,15 @@ void ResourceManager::loadLanguage(const string& aFile) {
 		// ...
 	}
 }
+
+void ResourceManager::createWide() {
+	for(int i = 0; i < LAST; ++i) {
+		Util::utf8ToWide(strings[i], wstrings[i]);
+	}
+}
+
 /**
  * @file
- * $Id: ResourceManager.cpp,v 1.8 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.9 2004/09/06 12:32:42 arnetheduck Exp $
  */
 

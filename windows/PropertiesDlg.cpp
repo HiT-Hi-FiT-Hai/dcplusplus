@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include "Advanced2Page.h"
 #include "UCPage.h"
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CSTRING(SETTINGS))
+PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
 	pages[0] = new GeneralPage(s);
 	pages[1] = new DownloadPage(s);
@@ -77,6 +77,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.8 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.9 2004/09/06 12:32:44 arnetheduck Exp $
  */
 

@@ -34,18 +34,19 @@ int __cdecl main(int argc, char* argv[])
 	}
 	
 	try {
+		string tmp;
 		File src(argv[1], File::READ, File::OPEN);
 		File tgt(argv[2], File::WRITE, File::CREATE | File::TRUNCATE);
 		File example(argv[3], File::WRITE, File::CREATE | File::TRUNCATE);
 		string x = src.read();
-
+		Util::toUtf8(x);
 		string::size_type k;
 		
 		while((k = x.find('\r')) != string::npos) {
 			x.erase(k, 1);
 		}
 
-		StringList l = StringTokenizer(x).getTokens();
+		StringList l = StringTokenizer<string>(x, '\n').getTokens();
 
 		StringIter i;
 		string varStr;
@@ -83,6 +84,9 @@ int __cdecl main(int argc, char* argv[])
 		
 		ex.addTag("Language");
 		ex.addChildAttrib("Name", string("Example Language"));
+		ex.addChildAttrib("Author", string("arnetheduck"));
+		ex.addChildAttrib("Version", string(VERSIONSTRING));
+		ex.addChildAttrib("Revision", string("1"));
 		ex.stepIn();
 		ex.addTag("Strings");
 		ex.stepIn();
@@ -139,7 +143,7 @@ int __cdecl main(int argc, char* argv[])
 		tgt.write(varStr);
 		tgt.write(varName);
 
-		example.write("<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n");
+		example.write(SimpleXML::utf8Header);
 		example.write(ex.toXML());
 	} catch(Exception e) {
 		printf("%s\n", e.getError().c_str());

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,52 +47,52 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = LVCFMT_LEFT;
-		ctrlHubs.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		ctrlHubs.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
 	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_CONNECT);
-	ctrlConnect.SetWindowText(CSTRING(CONNECT));
+	ctrlConnect.SetWindowText(CTSTRING(CONNECT));
 	ctrlConnect.SetFont(WinUtil::font);
 
 	ctrlNew.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_NEWFAV);
-	ctrlNew.SetWindowText(CSTRING(NEW));
+	ctrlNew.SetWindowText(CTSTRING(NEW));
 	ctrlNew.SetFont(WinUtil::font);
 
 	ctrlProps.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_EDIT);
-	ctrlProps.SetWindowText(CSTRING(PROPERTIES));
+	ctrlProps.SetWindowText(CTSTRING(PROPERTIES));
 	ctrlProps.SetFont(WinUtil::font);
 
 	ctrlRemove.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_REMOVE);
-	ctrlRemove.SetWindowText(CSTRING(REMOVE));
+	ctrlRemove.SetWindowText(CTSTRING(REMOVE));
 	ctrlRemove.SetFont(WinUtil::font);
 
 	ctrlUp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_MOVE_UP);
-	ctrlUp.SetWindowText(CSTRING(MOVE_UP));
+	ctrlUp.SetWindowText(CTSTRING(MOVE_UP));
 	ctrlUp.SetFont(WinUtil::font);
 
 	ctrlDown.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_MOVE_DOWN);
-	ctrlDown.SetWindowText(CSTRING(MOVE_DOWN));
+	ctrlDown.SetWindowText(CTSTRING(MOVE_DOWN));
 	ctrlDown.SetFont(WinUtil::font);
 
 	HubManager::getInstance()->addListener(this);
 	updateList(HubManager::getInstance()->getFavoriteHubs());
 	
 	hubsMenu.CreatePopupMenu();
-	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
-	hubsMenu.AppendMenu(MF_STRING, IDC_NEWFAV, CSTRING(NEW));
-	hubsMenu.AppendMenu(MF_STRING, IDC_EDIT, CSTRING(PROPERTIES));
-	hubsMenu.AppendMenu(MF_STRING, IDC_MOVE_UP, CSTRING(MOVE_UP));
-	hubsMenu.AppendMenu(MF_STRING, IDC_MOVE_DOWN, CSTRING(MOVE_DOWN));
-	hubsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	hubsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));
+	hubsMenu.AppendMenu(MF_STRING, IDC_NEWFAV, CTSTRING(NEW));
+	hubsMenu.AppendMenu(MF_STRING, IDC_EDIT, CTSTRING(PROPERTIES));
+	hubsMenu.AppendMenu(MF_STRING, IDC_MOVE_UP, CTSTRING(MOVE_UP));
+	hubsMenu.AppendMenu(MF_STRING, IDC_MOVE_DOWN, CTSTRING(MOVE_DOWN));
+	hubsMenu.AppendMenu(MF_SEPARATOR);
+	hubsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 
 	nosave = false;
@@ -108,9 +108,22 @@ void FavoriteHubsFrame::openSelected() {
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+		HubFrame::openWindow(WinUtil::toT(entry->getServer()), WinUtil::toT(entry->getNick()), WinUtil::toT(entry->getPassword()), WinUtil::toT(entry->getUserDescription()));
 	}
 	return;
+}
+
+void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
+	TStringList l;
+	l.push_back(WinUtil::toT(entry->getName()));
+	l.push_back(WinUtil::toT(entry->getDescription()));
+	l.push_back(WinUtil::toT(entry->getNick(false)));
+	l.push_back(tstring(entry->getPassword().size(), '*'));
+	l.push_back(WinUtil::toT(entry->getServer()));
+	l.push_back(WinUtil::toT(entry->getUserDescription()));
+	bool b = entry->getConnect();
+	int i = ctrlHubs.insert(pos, l, 0, (LPARAM)entry);
+	ctrlHubs.SetCheckState(i, b);
 }
 
 LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -121,7 +134,7 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 
 	if(item->iItem != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
-		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+		HubFrame::openWindow(WinUtil::toT(entry->getServer()), WinUtil::toT(entry->getNick()), WinUtil::toT(entry->getPassword()), WinUtil::toT(entry->getUserDescription()));
 	}
 
 	return 0;
@@ -144,12 +157,12 @@ LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		FavHubProperties dlg(e);
 		if(dlg.DoModal(m_hWnd) == IDOK)
 		{
-			ctrlHubs.SetItemText(i, COLUMN_NAME, e->getName().c_str());
-			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, e->getDescription().c_str());
-			ctrlHubs.SetItemText(i, COLUMN_SERVER, e->getServer().c_str());
-			ctrlHubs.SetItemText(i, COLUMN_NICK, e->getNick(false).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, string(e->getPassword().size(), '*').c_str());
-			ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, e->getUserDescription().c_str());
+			ctrlHubs.SetItemText(i, COLUMN_NAME, WinUtil::toT(e->getName()).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, WinUtil::toT(e->getDescription()).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_SERVER, WinUtil::toT(e->getServer()).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_NICK, WinUtil::toT(e->getNick(false)).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*').c_str());
+			ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, WinUtil::toT(e->getUserDescription()).c_str());
 		}
 	}
 	return 0;
@@ -167,7 +180,7 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 bool FavoriteHubsFrame::checkNick() {
 	if(SETTING(NICK).empty()) {
-		MessageBox(CSTRING(ENTER_NICK), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
+		MessageBox(CTSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 		return false;
 	}
 	return true;
@@ -277,6 +290,6 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.24 2004/07/16 09:53:46 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.25 2004/09/06 12:32:43 arnetheduck Exp $
  */
 

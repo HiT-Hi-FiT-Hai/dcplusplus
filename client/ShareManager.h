@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,40 +48,23 @@ class ShareManager : public Singleton<ShareManager>, private SettingsManagerList
 	private HashManagerListener, private DownloadManagerListener
 {
 public:
-	StringList getDirectories();
-	void addDirectory(const string& aDirectory) throw(ShareException);
-	void removeDirectory(const string& aDirectory);	
+	/**
+	 * @param aDirectory Physical directory localtion
+	 * @param aName Virtual name
+	 */
+	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
+	void removeDirectory(const string& aName);	
 	string translateFileName(const string& aFile, bool adc, bool utf8) throw(ShareException);
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
-	void setDirty() { dirty = true; };
+	void setDirty() { xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);
 
-	int64_t getShareSize() {
-		RLock l(cs);
-		int64_t tmp = 0;
-		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			tmp += i->second->getSize();
-		}
-		return tmp;
-	}
+	StringPairList getDirectories() const { RLock l(cs); return virtualMap; }
 
-	int64_t getShareSize(const string& aDir) {
-		RLock l(cs);
-		dcassert(aDir.size()>0);
-		Directory::MapIter i;
-		if(aDir[aDir.size()-1] =='\\')
-			i = directories.find(aDir.substr(0, aDir.size()-1));
-		else
-			i = directories.find(aDir);
-
-		if(i != directories.end()) {
-			return i->second->getSize();
-		}
-		
-		return -1;
-	}
+	int64_t getShareSize() throw();
+	int64_t getShareSize(const string& aDir) throw();
 
 	string getShareSizeString() { return Util::toString(getShareSize()); };
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
@@ -123,9 +106,8 @@ private:
 			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
 			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
 
-			string getADCPath() const {
-				return parent->getADCPath() + name;
-			}
+			string getADCPath() const { return parent->getADCPath() + name; }
+			string getFullName() const { return parent->getFullName() + getName(); }
 
 			GETSET(string, name, Name);
 			GETSET(int64_t, size, Size);
@@ -145,56 +127,22 @@ private:
 			size(0), name(aName), parent(aParent), fileTypes(0), searchTypes(0) { 
 		};
 
-		~Directory() {
-			for(MapIter i = directories.begin(); i != directories.end(); ++i)
-				delete i->second;
-			for(File::Iter i = files.begin(); i != files.end(); ++i) {
-				if(i->getTTH() != NULL) {
-					ShareManager::getInstance()->tthIndex.erase(i->getTTH());
-				}
-			}
-		}
+		~Directory();
 
-		string getADCPath() const {
-			if(parent == NULL)
-				return '/' + name + '/';
-			return parent->getADCPath() + name + '/';
-		}
-
-		bool hasType(u_int32_t type) throw() {
+		bool hasType(u_int32_t type) const throw() {
 			return ( (type == SearchManager::TYPE_ANY) || (fileTypes & (1 << type)) );
 		}
-		void addType(u_int32_t type) throw() {
-			Directory* cur = this;
-			while(cur && !cur->hasType(type)) {
-				cur->fileTypes |= (1 << type);
-				cur = cur->getParent();
-			}
-		}
-
-		bool hasSearchType(u_int32_t mask) throw() {
+		void addType(u_int32_t type) throw();
+		bool hasSearchType(u_int32_t mask) const throw() {
 			return (searchTypes & mask) == mask;
 		}
-		void addSearchType(u_int32_t mask) throw() {
-			Directory* cur = this;
-			if(cur && !cur->hasSearchType(mask)) {
-				searchTypes |= mask;
-				cur = cur->getParent();
-			}
-		}
+		void addSearchType(u_int32_t mask) throw();
 		u_int32_t getSearchTypes() throw() {
 			return searchTypes;
 		}
 
-		string getFullName() throw() {
-			Directory* x = this;
-			string str;
-			while(x) {
-				str = x->getName() + '\\' + str;
-				x = x->getParent();
-			}
-			return str;
-		}
+		string getADCPath() const throw();
+		string getFullName() const throw(); 
 
 		int64_t getSize() {
 			int64_t tmp = size;
@@ -207,8 +155,9 @@ private:
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw();
 		void search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw();
 
-		void toString(string& tmp, OutputStream* xmlFile, string& indent);
-		
+		void toNmdc(string& nmdc, string& indent, string& tmp2);
+		void toXml(OutputStream& xmlFile, string& indent, string& tmp2);
+
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
 	private:
@@ -224,7 +173,7 @@ private:
 	
 	virtual ~ShareManager();
 	
-	StringList loadDirs;
+	StringPairList loadDirs;
 
 	struct AdcSearch {
 		AdcSearch(const StringList& params);
@@ -259,21 +208,15 @@ private:
 		bool isDirectory;
 	};
 
-	struct TTHHash {
-		size_t operator()(const TTHValue* tth) const { return *(size_t*)tth; };
-		bool operator()(const TTHValue* a, const TTHValue* b) const { return (*a) == (*b); };
-	};
-	struct TTHLess {
-		int operator()(const TTHValue* a, const TTHValue* b) { return (*a) < (*b); };
-	};
-	typedef HASH_MAP_X(TTHValue*, Directory::File::Iter, TTHHash, TTHHash, TTHLess) HashFileMap;
+	typedef HASH_MULTIMAP_X(TTHValue::Ptr, Directory::File::Iter, TTHValue::PtrHash, TTHValue::PtrHash, TTHValue::PtrLess) HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;
 
 	int64_t listLen;
 	int64_t bzXmlListLen;
-	bool dirty;
+	bool xmlDirty;
+	bool nmdcDirty;
 	bool refreshDirs;
 	bool update;
 	
@@ -282,21 +225,32 @@ private:
 	File* lFile;
 	File* xFile;
 
-	u_int32_t lastUpdate;
+	u_int32_t lastXmlUpdate;
+	u_int32_t lastNmdcUpdate;
+	u_int32_t lastFullUpdate;
 
 	/** Words that are commonly searched for. */	 
 	StringList words;
 
-	RWLock cs;
+	mutable RWLock cs;
 
+	// Map real name to directory structure
 	Directory::Map directories;
-	StringMap dirs;
+
+	// Map virtual to real dir name
+	StringPairList virtualMap;
+
 	BloomFilter<5> bloom;
 	
+	StringPairIter findVirtual(const string& name);
+
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
+	void addTree(const string& aName, Directory* aDirectory);
+	void generateNmdcList();
+	void generateXmlList();
 
-	void addFinishedFile(Directory* aParent, const string& aName, int64_t aSize);
+	void removeTTH(TTHValue* tth, const Directory::File::Iter&);
 
 	Directory* getDirectory(const string& fname);
 
@@ -327,6 +281,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.52 2004/08/02 15:29:19 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.53 2004/09/06 12:32:42 arnetheduck Exp $
  */
 

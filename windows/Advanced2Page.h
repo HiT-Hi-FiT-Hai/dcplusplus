@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class Advanced2Page : public CPropertyPage<IDD_ADVANCED2PAGE>, public PropPage
 {
 public:
 	Advanced2Page(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CSTRING(SETTINGS_LOGS));
+		SetTitle(CTSTRING(SETTINGS_LOGS));
 	};
 
 	virtual ~Advanced2Page() { };
@@ -64,6 +64,6 @@ protected:
 
 /**
  * @file
- * $Id: Advanced2Page.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: Advanced2Page.h,v 1.9 2004/09/06 12:32:43 arnetheduck Exp $
  */
 

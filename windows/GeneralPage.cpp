@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "GeneralPage.h"
 #include "../client/SettingsManager.h"
 #include "../client/Socket.h"
+#include "WinUtil.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -67,10 +68,10 @@ PropPage::Item GeneralPage::items[] = {
 
 void GeneralPage::write()
 {
-	char tmp[1024];
+	TCHAR tmp[1024];
 	GetDlgItemText(IDC_SOCKS_SERVER, tmp, 1024);
-	string x = tmp;
-	string::size_type i;
+	tstring x = tmp;
+	tstring::size_type i;
 
 	while((i = x.find(' ')) != string::npos)
 		x.erase(i, 1);
@@ -107,7 +108,7 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
 	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
-		ctrlConnection.AddString(SettingsManager::connectionSpeeds[i].c_str());
+		ctrlConnection.AddString(WinUtil::toT(SettingsManager::connectionSpeeds[i]).c_str());
 
 	int const connType = settings->get(SettingsManager::CONNECTION_TYPE);
 	if(connType == SettingsManager::CONNECTION_ACTIVE)
@@ -121,7 +122,7 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	fixControls();
 
-	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, SETTING(CONNECTION).c_str()));
+	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, WinUtil::toT(SETTING(CONNECTION)).c_str()));
 
 	nick.Attach(GetDlgItem(IDC_NICK));
 	nick.LimitText(35);
@@ -165,13 +166,13 @@ LRESULT GeneralPage::onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	char buf[SETTINGS_BUF_LEN];
+	TCHAR buf[SETTINGS_BUF_LEN];
 
 	GetDlgItemText(wID, buf, SETTINGS_BUF_LEN);
-	string old = buf;
+	tstring old = buf;
 
 	// Strip '$', '|', '<', '>' and ' ' from text
-	char *b = buf, *f = buf, c;
+	TCHAR *b = buf, *f = buf, c;
 	while( (c = *b++) != 0 )
 	{
 		if(c != '$' && c != '|' && (wID == IDC_DESCRIPTION || c != ' ') && ( (wID != IDC_NICK) || (c != '<' && c != '>')) )
@@ -199,6 +200,6 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file
- * $Id: GeneralPage.cpp,v 1.8 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.9 2004/09/06 12:32:44 arnetheduck Exp $
  */
 

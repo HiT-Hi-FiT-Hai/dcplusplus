@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlSearches.SetTextBkColor(WinUtil::bgColor);
 	ctrlSearches.SetTextColor(WinUtil::textColor);
 
-	ctrlSearches.AddColumn(CSTRING(SEARCH_STRING), COLUMN_STRING, COLUMN_STRING);
-	ctrlSearches.AddColumn(CSTRING(COUNT), COLUMN_COUNT, COLUMN_COUNT);
+	ctrlSearches.AddColumn(CTSTRING(SEARCH_STRING), COLUMN_STRING, COLUMN_STRING);
+	ctrlSearches.AddColumn(CTSTRING(COUNT), COLUMN_COUNT, COLUMN_COUNT);
 
 	ctrlSearches.setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
 
@@ -48,6 +48,38 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	bHandled = FALSE;
 	return 1;
+}
+
+LRESULT SpyFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(!closed){
+		ClientManager::getInstance()->removeListener(this);
+		TimerManager::getInstance()->removeListener(this);
+
+		bHandled = TRUE;
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		bHandled = FALSE;
+		return 0;
+	}
+}
+
+LRESULT SpyFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+	if(l->iSubItem == ctrlSearches.getSortColumn()) {
+		if (!ctrlSearches.isAscending())
+			ctrlSearches.setSort(-1, ctrlSearches.getSortType());
+		else
+			ctrlSearches.setSortDirection(false);
+	} else {
+		if(l->iSubItem == COLUMN_COUNT) {
+			ctrlSearches.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+		} else {
+			ctrlSearches.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+		}
+	}
+	return 0;
 }
 
 void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
@@ -77,7 +109,7 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == SEARCH) {
-		string* x = (string*)lParam;
+		tstring* x = (tstring*)lParam;
 
 		total++;
 
@@ -86,29 +118,29 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 		int j = ctrlSearches.find(*x);
 		if(j == -1) {
-			StringList a;
+			TStringList a;
 			a.push_back(*x);
-			a.push_back(Util::toString(1));
+			a.push_back(WinUtil::toT(Util::toString(1)));
 			ctrlSearches.insert(a);
 			if(ctrlSearches.GetItemCount() > 500) {
 				ctrlSearches.DeleteItem(ctrlSearches.GetItemCount() - 1);
 			}
 		} else {
-			char tmp[32];
+			TCHAR tmp[32];
 			ctrlSearches.GetItemText(j, COLUMN_COUNT, tmp, 32);
-			ctrlSearches.SetItemText(j, COLUMN_COUNT, Util::toString(Util::toInt(tmp)+1).c_str());
+			ctrlSearches.SetItemText(j, COLUMN_COUNT, WinUtil::toT(Util::toString(Util::toInt(WinUtil::fromT(tmp))+1)).c_str());
 			if(ctrlSearches.getSortColumn() == COLUMN_COUNT )
 				ctrlSearches.resort();
 		}
 		delete x;
 
-		ctrlStatus.SetText(1, (STRING(TOTAL) + Util::toString(total)).c_str());
-		ctrlStatus.SetText(3, (STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())).c_str());
+		ctrlStatus.SetText(1, WinUtil::toT(STRING(TOTAL) + Util::toString(total)).c_str());
+		ctrlStatus.SetText(3, WinUtil::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())).c_str());
 		double ratio = total > 0 ? ((double)ShareManager::getInstance()->getHits()) / (double)total : 0.0;
-		ctrlStatus.SetText(4, (STRING(HIT_RATIO) + Util::toString(ratio)).c_str());
+		ctrlStatus.SetText(4, WinUtil::toT(STRING(HIT_RATIO) + Util::toString(ratio)).c_str());
 	} else if(wParam == TICK_AVG) {
 		float* x = (float*)lParam;
-		ctrlStatus.SetText(2, (STRING(AVERAGE) + Util::toString(*x)).c_str());
+		ctrlStatus.SetText(2, WinUtil::toT(STRING(AVERAGE) + Util::toString(*x)).c_str());
 		delete x;
 	}
 
@@ -128,11 +160,11 @@ LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 		CMenu mnu;
 		mnu.CreatePopupMenu();
-		mnu.AppendMenu(MF_STRING, IDC_SEARCH, CSTRING(SEARCH));
-		char* buf = new char[256];
+		mnu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
+		TCHAR* buf = new TCHAR[256];
 		ctrlSearches.GetItemText(i, COLUMN_STRING, buf, 256);
 		searchString = buf;
-		delete buf;
+		delete[] buf;
 
 		ctrlSearches.ClientToScreen(&pt);
 		mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -149,10 +181,10 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 };
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
-	string* x = new string(s);
-	string::size_type i = 0;
-	while( (i=x->find('$')) != string::npos) {
-		(*x)[i] = ' ';
+	tstring* x = new tstring(WinUtil::toT(s));
+	tstring::size_type i = 0;
+	while( (i=x->find(_T('$'))) != string::npos) {
+		(*x)[i] = _T(' ');
 	}
 	PostMessage(WM_SPEAKER, SEARCH, (LPARAM)x);
 }
@@ -170,5 +202,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.21 2004/07/27 22:21:14 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.22 2004/09/06 12:32:45 arnetheduck Exp $
  */

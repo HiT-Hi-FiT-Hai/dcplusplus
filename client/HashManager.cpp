@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,13 +28,16 @@
 #define HASH_FILE_VERSION_STRING "1"
 static const u_int32_t HASH_FILE_VERSION=1;
 
-TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
+void HashManager::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 	Lock l(cs);
-	TTHValue* root = store.getTTH(aFileName, aSize, aTimeStamp);
-	if(root == NULL) {
-		hasher.hashFile(aFileName);
+	if(!store.checkTTH(aFileName, aSize, aTimeStamp)) {
+		hasher.hashFile(aFileName, aSize);
 	}
-	return root;
+}
+
+TTHValue* HashManager::getTTH(const string& aFileName) {
+	Lock l(cs);
+	return store.getTTH(aFileName);
 }
 
 bool HashManager::getTree(const string& aFileName, TigerTree& tt) {
@@ -47,7 +50,7 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 	{
 		Lock l(cs);
 		store.addFile(aFileName, tth, true);
-		root = store.getTTH(aFileName, tth.getFileSize(), tth.getTimeStamp());
+		root = store.getTTH(aFileName);
 	}
 
 	if(root != NULL) {
@@ -317,16 +320,16 @@ void HashManager::HashStore::createDataFile(const string& name) {
 #define BUF_SIZE (256*1024)
 
 #ifdef _WIN32
-static bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth) {
+bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size) {
 	HANDLE h = INVALID_HANDLE_VALUE;
 	DWORD x, y;
-	if(!GetDiskFreeSpace(Util::getFilePath(fname).c_str(), &y, &x, &y, &y)) {
+	if(!GetDiskFreeSpace(Util::utf8ToWide(Util::getFilePath(fname)).c_str(), &y, &x, &y, &y)) {
 		return false;
 	} else {
 		if((BUF_SIZE % x) != 0) {
 			return false;
 		} else {
-			h = ::CreateFile(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED, NULL);
+			h = ::CreateFile(Util::utf8ToWide(fname).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED, NULL);
 			if(h == INVALID_HANDLE_VALUE)
 				return false;
 		}
@@ -359,10 +362,10 @@ static bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth) {
 	}
 
 	over.Offset = hn;
-
+	size -= hn;
 	BOOL res = TRUE;
 	for(;;) {
-		if(hn != 0) {
+		if(size > 0) {
 			// Start a new overlapped read
 			ResetEvent(over.hEvent);
 			if(SETTING(MAX_HASH_SPEED) > 0) {
@@ -377,36 +380,35 @@ static bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth) {
 				lastRead = GET_TICK();
 			}
 			res = ReadFile(h, rbuf, BUF_SIZE, &rn, &over);
+		} else {
+			rn = 0;
 		}
 
 		tth.update(hbuf, hn);
+		total -= hn;
 
-		if(hn == 0)
+		if(size == 0) {
+			ok = true;
 			break;
+		}
 
 		if (!res) { 
 			// deal with the error code 
 			switch (GetLastError()) { 
-			case ERROR_HANDLE_EOF: 
-				ok = true;
-				goto cleanup;
 			case ERROR_IO_PENDING: 
 				if(!GetOverlappedResult(h, &over, &rn, TRUE)) {
-					if(GetLastError() == ERROR_HANDLE_EOF) {
-						ok = true;
-						rn = 0;
-						goto cleanup;
-					} else {
-						goto cleanup;
-					}
+					dcdebug("Error 0x%x: %s\n", GetLastError(), Util::translateError(GetLastError()).c_str());
+					goto cleanup;
 				}
 				break;
 			default:
+				dcdebug("Error 0x%x: %s\n", GetLastError(), Util::translateError(GetLastError()).c_str());
 				goto cleanup;
 			}
 		}
 
 		*((u_int64_t*)&over.Offset) += rn;
+		size -= rn;
 
 		swap(rbuf, hbuf);
 		swap(rn, hn);
@@ -427,7 +429,6 @@ int HashManager::Hasher::run() {
 
 	string fname;
 	bool last = false;
-
 	for(;;) {
 		s.wait();
 		if(stop)
@@ -435,7 +436,7 @@ int HashManager::Hasher::run() {
 		{
 			Lock l(cs);
 			if(!w.empty()) {
-				fname = *w.begin();
+				file = fname = *w.begin();
 				w.erase(w.begin());
 				last = w.empty();
 			} else {
@@ -443,8 +444,11 @@ int HashManager::Hasher::run() {
 				fname.clear();
 			}
 		}
+		running = true;
 
 		if(!fname.empty()) {
+			int64_t size = File::getSize(fname);
+			int64_t sizeLeft = size;
 #ifdef _WIN32
 			if(buf == NULL) {
 				virtualBuf = true;
@@ -459,7 +463,6 @@ int HashManager::Hasher::run() {
 				File f(fname, File::READ, File::OPEN);
 				size_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)MIN_BLOCK_SIZE);
 #ifdef _WIN32
-				int64_t size = f.getSize();
 				u_int32_t start = GET_TICK();
 #endif
 
@@ -469,7 +472,7 @@ int HashManager::Hasher::run() {
 #ifdef _WIN32
 				TigerTree fastTTH(bs, f.getLastModified());
 				tth = &fastTTH;
-				if(!virtualBuf || !fastHash(fname, buf, fastTTH)) {
+				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size)) {
 					tth = &slowTTH;
 					u_int32_t lastRead = GET_TICK();
 #endif
@@ -488,8 +491,13 @@ int HashManager::Hasher::run() {
 #endif
 						n = f.read(buf, bufSize);
 						tth->update(buf, n);
+
+						total -= n;
+						sizeLeft -= n;
 					} while (n > 0 && !stop);
 #ifdef _WIN32
+				} else {
+					sizeLeft = 0;
 				}
 #endif
 				f.close();
@@ -507,7 +515,10 @@ int HashManager::Hasher::run() {
 			} catch(const FileException&) {
 				// Ignore, it'll be readded on the next share refresh...
 			}
+
+			total -= sizeLeft;
 		}
+		running = false;
 		if(buf != NULL && (last || stop)) {
 			if(virtualBuf) {
 #ifdef _WIN32
@@ -517,6 +528,7 @@ int HashManager::Hasher::run() {
 				delete buf;
 			}
 			buf = NULL;
+			total = 0;
 		}
 	}
 	return 0;
@@ -524,5 +536,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.20 2004/06/26 13:11:50 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.21 2004/09/06 12:32:42 arnetheduck Exp $
  */

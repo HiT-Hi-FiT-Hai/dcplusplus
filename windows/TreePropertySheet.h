@@ -72,8 +72,8 @@ private:
 	void addTree();
 	void fillTree();
 
-	HTREEITEM createTree(const string& str, HTREEITEM parent, int page);
-	HTREEITEM findItem(const string& str, HTREEITEM start);
+	HTREEITEM createTree(const tstring& str, HTREEITEM parent, int page);
+	HTREEITEM findItem(const tstring& str, HTREEITEM start);
 	HTREEITEM findItem(int page, HTREEITEM start);
 
 	CTreeViewCtrl ctrlTree;
@@ -85,5 +85,5 @@ private:
 
 /**
 * @file
-* $Id: TreePropertySheet.h,v 1.3 2004/03/19 08:48:58 arnetheduck Exp $
+* $Id: TreePropertySheet.h,v 1.4 2004/09/06 12:32:45 arnetheduck Exp $
 */

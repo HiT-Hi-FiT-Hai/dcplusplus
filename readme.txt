@@ -2,9 +2,14 @@ DC++ Readme
 
 --------------------------------------------------
 DC++
-Copyright (C) 2001-2003 Jacek Sieka, jacek@creatio.se
+Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
 
 License
+
+This program is licensed under GPL-2 with the notable exception
+that you may compile it with WTL when redistributing binaries. 
+You can find the full text of the license in license.txt that
+should have been distributed with the rest of the application.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,5 +188,5 @@ public:
 #endif // _COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.7 2004/06/27 17:59:20 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.8 2004/09/06 12:32:41 arnetheduck Exp $
 */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,46 +76,46 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	for(int j = 0; j < COLUMN_LAST; j++) 
 	{
 		int fmt = LVCFMT_LEFT;
-		ctrlList.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 
 	// Create buttons
 	ctrlAdd.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_ADD);
-	ctrlAdd.SetWindowText(CSTRING(NEW));
+	ctrlAdd.SetWindowText(CTSTRING(NEW));
 	ctrlAdd.SetFont(WinUtil::font);
 
 	ctrlEdit.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_EDIT);
-	ctrlEdit.SetWindowText(CSTRING(PROPERTIES));
+	ctrlEdit.SetWindowText(CTSTRING(PROPERTIES));
 	ctrlEdit.SetFont(WinUtil::font);
 
 	ctrlRemove.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_REMOVE);
-	ctrlRemove.SetWindowText(CSTRING(REMOVE));
+	ctrlRemove.SetWindowText(CTSTRING(REMOVE));
 	ctrlRemove.SetFont(WinUtil::font);
 
 	ctrlMoveUp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_MOVE_UP);
-	ctrlMoveUp.SetWindowText(CSTRING(MOVE_UP));
+	ctrlMoveUp.SetWindowText(CTSTRING(MOVE_UP));
 	ctrlMoveUp.SetFont(WinUtil::font);
 
 	ctrlMoveDown.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_MOVE_DOWN);
-	ctrlMoveDown.SetWindowText(CSTRING(MOVE_DOWN));
+	ctrlMoveDown.SetWindowText(CTSTRING(MOVE_DOWN));
 	ctrlMoveDown.SetFont(WinUtil::font);
 
 	ctrlHelp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_HELP_FAQ);
-	ctrlHelp.SetWindowText(CSTRING(WHATS_THIS));
+	ctrlHelp.SetWindowText(CTSTRING(WHATS_THIS));
 	ctrlHelp.SetFont(WinUtil::font);
 
 	// Create context menu
 	contextMenu.CreatePopupMenu();
-	contextMenu.AppendMenu(MF_STRING, IDC_ADD,    CSTRING(NEW));
-	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
-	contextMenu.AppendMenu(MF_STRING, IDC_EDIT,   CSTRING(PROPERTIES));
+	contextMenu.AppendMenu(MF_STRING, IDC_ADD,    CTSTRING(NEW));
+	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
+	contextMenu.AppendMenu(MF_STRING, IDC_EDIT,   CTSTRING(PROPERTIES));
 
 	// Load all searches
 	LoadAll();
@@ -319,43 +319,43 @@ LRESULT ADLSearchFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 // Help
 LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
-	char title[] =
-		"ADLSearch brief description";
+	TCHAR title[] =
+		_T("ADLSearch brief description");
 
-	char message[] = 
-		"ADLSearch is a tool for fast searching of directory listings downloaded from users. \n"
-		"Create a new ADLSearch entering 'avi' as search string for example. When you \n"
-		"download a directory listing from a user, all avi-files will be placed in a special folder \n"
-		"called <<<ADLSearch>>> for easy finding. It is almost the same as using the standard \n"
-		"'Find' multiple times in a directory listing. \n"
-		"\n"
-		"Special options: \n"
-		"- 'Active' check box selects if the search is used or not. \n"
-		"- 'Source Type' can be the following options; 'Filename' matches search against filename, \n"
-		"   'Directory' matches against current subdirectory and places the whole structure in the \n"
-		"   special folder, 'Full Path' matches against whole directory + filename. \n"
-		"- 'Destination Directory' selects the special output folder for a search. Multiple folders \n"
-		"   with different names can exist simultaneously. \n"
-		"- 'Min/Max Size' sets file size limits. This is not used for 'Directory' type searches. \n"
-		"- 'Move Up'/'Move Down' can be used to organize the list of searches. \n"
-		"\n"
-		"There is a new option in the context menu (right-click) for directory listings. It is called \n"
-		"'Go to directory' and can be used to jump to the original location of the file or directory. \n"
-		"\n"
-		"Extra features:\n"
-		"\n"
-		"1) If you use %y.%m.%d in a search string it will be replaced by todays date. Switch \n"
-		"place on y/m/d, or leave any of them out to alter the substitution. If you use %[nick] \n"
-		"it will be replaced by the nick of the user you download the directory listing from. \n"
-		"\n"
-		"2) If you name a destination directory 'discard', it will not be shown in the total result. \n"
-		"Useful with the extra feature 3) below to remove uninteresting results. \n"
-		" \n"
-		"3) There is a switch called 'Break on first ADLSearch match' in Settings->Advanced'.  \n"
-		"If enabled, ADLSearch will stop after the first match for a specific file/directory. \n"
-		"The order in the ADLSearch windows is therefore important. Example: Add a search \n"
-		"item at the top of the list with string='xxx' and destination='discard'. It will catch \n"
-		"many pornographic files and they will not be included in any following search results. \n"
+	TCHAR message[] = 
+		_T("ADLSearch is a tool for fast searching of directory listings downloaded from users. \n")
+		_T("Create a new ADLSearch entering 'avi' as search string for example. When you \n")
+		_T("download a directory listing from a user, all avi-files will be placed in a special folder \n")
+		_T("called <<<ADLSearch>>> for easy finding. It is almost the same as using the standard \n")
+		_T("'Find' multiple times in a directory listing. \n")
+		_T("\n")
+		_T("Special options: \n")
+		_T("- 'Active' check box selects if the search is used or not. \n")
+		_T("- 'Source Type' can be the following options; 'Filename' matches search against filename, \n")
+		_T("   'Directory' matches against current subdirectory and places the whole structure in the \n")
+		_T("   special folder, 'Full Path' matches against whole directory + filename. \n")
+		_T("- 'Destination Directory' selects the special output folder for a search. Multiple folders \n")
+		_T("   with different names can exist simultaneously. \n")
+		_T("- 'Min/Max Size' sets file size limits. This is not used for 'Directory' type searches. \n")
+		_T("- 'Move Up'/'Move Down' can be used to organize the list of searches. \n")
+		_T("\n")
+		_T("There is a new option in the context menu (right-click) for directory listings. It is called \n")
+		_T("'Go to directory' and can be used to jump to the original location of the file or directory. \n")
+		_T("\n")
+		_T("Extra features:\n")
+		_T("\n")
+		_T("1) If you use %y.%m.%d in a search string it will be replaced by todays date. Switch \n")
+		_T("place on y/m/d, or leave any of them out to alter the substitution. If you use %[nick] \n")
+		_T("it will be replaced by the nick of the user you download the directory listing from. \n")
+		_T("\n")
+		_T("2) If you name a destination directory 'discard', it will not be shown in the total result. \n")
+		_T("Useful with the extra feature 3) below to remove uninteresting results. \n")
+		_T(" \n")
+		_T("3) There is a switch called 'Break on first ADLSearch match' in Settings->Advanced'.  \n")
+		_T("If enabled, ADLSearch will stop after the first match for a specific file/directory. \n")
+		_T("The order in the ADLSearch windows is therefore important. Example: Add a search \n")
+		_T("item at the top of the list with string='xxx' and destination='discard'. It will catch \n")
+		_T("many pornographic files and they will not be included in any following search results. \n")
 		;
 
 	MessageBox(message, title, MB_OK);
@@ -550,28 +550,27 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	}
 
 	// Generate values
-	StringList line;
-	char buf[32];
-	string fs;
-	line.push_back(search.searchString);
-	line.push_back(search.SourceTypeToString(search.sourceType));
-	line.push_back(search.destDir);
+	TStringList line;
+	tstring fs;
+	line.push_back(WinUtil::toT(search.searchString));
+	line.push_back(WinUtil::toT(search.SourceTypeToString(search.sourceType)));
+	line.push_back(WinUtil::toT(search.destDir));
 
-	fs = "";
+	fs = _T("");
 	if(search.minFileSize >= 0)
 	{
-		fs = _i64toa(search.minFileSize, buf, 10);
-		fs += " ";
-		fs += search.SizeTypeToStringInternational(search.typeFileSize);
+		fs = WinUtil::toT(Util::toString(search.minFileSize));
+		fs += _T(" ");
+		fs += WinUtil::toT(search.SizeTypeToStringInternational(search.typeFileSize));
 	}
 	line.push_back(fs);
 
-	fs = "";
+	fs = _T("");
 	if(search.maxFileSize >= 0)
 	{
-		fs = _i64toa(search.maxFileSize, buf, 10);
-		fs += " ";
-		fs += search.SizeTypeToStringInternational(search.typeFileSize);
+		fs = WinUtil::toT(Util::toString(search.maxFileSize));
+		fs += _T(" ");
+		fs += WinUtil::toT(search.SizeTypeToStringInternational(search.typeFileSize));
 	}
 	line.push_back(fs);
 
@@ -584,5 +583,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.14 2004/07/16 09:53:46 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.15 2004/09/06 12:32:43 arnetheduck Exp $
  */

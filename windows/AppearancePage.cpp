@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
-	WinUtil::decodeFont(SETTING(TEXT_FONT), font);
+	WinUtil::decodeFont(WinUtil::toT(SETTING(TEXT_FONT)), font);
 
 	// Do specialized reading here
 	fg = SETTING(TEXT_COLOR);
@@ -106,8 +106,8 @@ void AppearancePage::write()
 	settings->set(SettingsManager::UPLOAD_BAR_COLOR, (int)upBar);
 	settings->set(SettingsManager::DOWNLOAD_BAR_COLOR, (int)downBar);
 
-	string f = WinUtil::encodeFont(font);
-	settings->set(SettingsManager::TEXT_FONT, f);
+	tstring f = WinUtil::encodeFont(font);
+	settings->set(SettingsManager::TEXT_FONT, WinUtil::fromT(f));
 }
 
 LRESULT AppearancePage::onClickedBackground(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -157,13 +157,13 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 }
 
 LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	char buf[MAX_PATH];
-	static const char types[] = "Language Files\0*.xml\0All Files\0*.*\0";
+	TCHAR buf[MAX_PATH];
+	static const TCHAR types[] = _T("Language Files\0*.xml\0All Files\0*.*\0");
 
 	GetDlgItemText(IDC_LANGUAGE, buf, MAX_PATH);
-	string x = buf;
+	tstring x = buf;
 
-	if(WinUtil::browseFile(x, m_hWnd, false, Util::getAppPath(), types) == IDOK) {
+	if(WinUtil::browseFile(x, m_hWnd, false, WinUtil::toT(Util::getAppPath()), types) == IDOK) {
 		SetDlgItemText(IDC_LANGUAGE, x.c_str());
 	}
 	return 0;
@@ -197,5 +197,5 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.18 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.19 2004/09/06 12:32:43 arnetheduck Exp $
  */

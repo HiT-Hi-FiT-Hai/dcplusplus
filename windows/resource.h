@@ -44,6 +44,7 @@
 #define IDD_UCPAGE                      236
 #define IDR_NET_STATS                   237
 #define IDD_MAGNET                      238
+#define IDD_HASH_PROGRESS               239
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -270,6 +271,15 @@
 #define IDC_SETTINGS_TIME_STAMPS_FORMAT 1241
 #define IDC_TIME_STAMPS_FORMAT          1242
 #define IDC_SETTINGS_ONLY_HASHED        1243
+#define IDC_HASH_PROGRESS               1246
+#define IDC_HASH_INDEXING               1247
+#define IDC_FILES_PER_HOUR              1248
+#define IDC_HASH_SPEED                  1249
+#define IDC_FILES_LEFT                  1250
+#define IDC_TIME_LEFT                   1251
+#define IDC_BYTES_LEFT                  1252
+#define IDC_STATISTICS                  1253
+#define IDC_CURRENT_FILE                1255
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -304,9 +314,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        239
+#define _APS_NEXT_RESOURCE_VALUE        240
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1244
+#define _APS_NEXT_CONTROL_VALUE         1256
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

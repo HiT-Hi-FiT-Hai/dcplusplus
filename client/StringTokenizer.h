@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,37 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+template<class T>
 class StringTokenizer  
 {
 private:
-	StringList tokens;
+	vector<T> tokens;
 public:
-	StringTokenizer(const string& aString, char aToken = '\n');
-	StringTokenizer(const string& aString, const char* aToken);
-	StringList& getTokens() { return tokens; };
+	StringTokenizer(const T& aString, typename T::value_type aToken) {
+		string::size_type i = 0;
+		string::size_type j = 0;
+		while( (i=aString.find(aToken, j)) != string::npos ) {
+			tokens.push_back(aString.substr(j, i-j));
+			j = i + 1;
+		}
+		if(j < aString.size())
+			tokens.push_back(aString.substr(j, aString.size()-j));
+	}
+
+	StringTokenizer(const T& aString, typename T::value_type* aToken) {
+		string::size_type i = 0;
+		string::size_type j = 0;
+		size_t l = strlen(aToken);
+		while( (i=aString.find(aToken, j)) != string::npos ) {
+			tokens.push_back(aString.substr(j, i-j));
+			j = i + l;
+		}
+		if(j < aString.size())
+			tokens.push_back(aString.substr(j, aString.size()-j));
+	}
+
+	vector<T>& getTokens() { return tokens; };
+
 	~StringTokenizer() { };
 
 };
@@ -39,5 +62,5 @@ public:
 
 /**
  * @file
- * $Id: StringTokenizer.h,v 1.6 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: StringTokenizer.h,v 1.7 2004/09/06 12:32:42 arnetheduck Exp $
  */

@@ -469,6 +469,24 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,184,112,50,14
 END
 
+IDD_HASH_PROGRESS DIALOGEX 0, 0, 430, 113
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Creating file index..."
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Run in background",IDOK,147,92,109,14
+    CONTROL         "",IDC_HASH_PROGRESS,"msctls_progress32",WS_BORDER | 0x1,
+                    7,74,416,14
+    GROUPBOX        "Statistics",IDC_STATISTICS,7,30,416,40
+    LTEXT           "Please wait while DC++ indexes your files (they won't be shared until they've been indexed)...",
+                    IDC_HASH_INDEXING,7,7,416,8
+    LTEXT           "0.0 files/hour",IDC_FILES_PER_HOUR,14,39,376,8
+    LTEXT           "0.0 MiB/s",IDC_HASH_SPEED,14,48,376,8
+    LTEXT           "0:00:00 left",IDC_TIME_LEFT,14,57,376,8
+    LTEXT           "Current file...",IDC_CURRENT_FILE,7,19,416,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -626,6 +644,16 @@ BEGIN
         VERTGUIDE, 234
         TOPMARGIN, 7
         BOTTOMMARGIN, 136
+    END
+
+    IDD_HASH_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 423
+        VERTGUIDE, 14
+        VERTGUIDE, 390
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 106
     END
 END
 #endif    // APSTUDIO_INVOKED

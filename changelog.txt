@@ -1,12 +1,22 @@
- -- 0.4033 --
- * Fixed a rare download crash (thanks farcry)
- * Fixed tab dropping in the last position (thanks trem)
- * Fixed directory sorting in the file listings (thanks trem)
- * Files that can't be moved to the target drive from the temp folder
-   are now renamed to their real name
- * Text with unix and mac line end encodings should now be correctly displayed
- 
- 
+-- 0.4033 --
+* Fixed a rare download crash (thanks farcry)
+* Fixed tab dropping in the last position (thanks trem)
+* Fixed directory sorting in the file listings (thanks trem)
+* Files that can't be moved to the target drive from the temp folder
+  are now renamed to their real name
+* Text with unix and mac line end encodings should now be correctly displayed
+* TTH Values are used for right click download menus when available
+* Upgraded to WTL 7.5.4196
+* Updated license to allow others to release legal binaries compiled against WTL
+* Moved the core structures to UTF-8 to allow correct internationalisation
+* Moving towards full unicodization of the user interface, MS layer for unicode
+  now needed for old crappy windows versions
+* Rewrote the share manager to accomodate for future features, it can now read
+  unicode names and translate them correctly into utf-8 regardless of codepage
+* Removed autosearch string, it's not used any more
+* Fixed a tth hash speed bug (hashing should be much faster now)
+
+
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists
 * Fixed an issue with autosearch by tth not being done

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,5 +102,5 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 /**
  * @file
- * $Id: ZUtils.cpp,v 1.2 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: ZUtils.cpp,v 1.3 2004/09/06 12:32:43 arnetheduck Exp $
  */
