@@ -86,6 +86,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 			norm = Util::toInt(i->substr(2));
 		} else if(i->compare(0, 2, "SL") == 0) {
 			sl = Util::toInt(i->substr(2));
+			u->setSlots(sl);
 		} else if(i->compare(0, 2, "BO") == 0) {
 			if(i->length() == 2) {
 				u->unsetFlag(User::BOT);
@@ -104,7 +105,9 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 			} else {
 				u->setFlag(User::HUB);
 			}
-		}
+		} else if(i->compare(0, 2, "U4") == 0) {
+			u->setUDPPort((short)Util::toInt(i->substr(2)));
+		} 
 	}
 
 	if(!ve.empty()) {
@@ -207,11 +210,35 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
     connect(&*p, token);
 }
 
+void AdcHub::sendUDP(const AdcCommand& cmd) {
+	try {
+		Socket s;
+		s.create(Socket::TYPE_UDP);
+
+		string tmp = cmd.toString();
+		for(User::NickIter i = nickMap.begin(); i != nickMap.end(); ++i) {
+			if(i->second->getUDPPort() != 0 && !i->second->getIp().empty()) {
+				try {
+					s.writeTo(i->second->getIp(), i->second->getUDPPort(), tmp);
+				} catch(const SocketException& e) {
+					dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
+				}
+			}
+		}
+	} catch(SocketException&) {
+		dcdebug("Can't create udp socket\n");
+	}
+}
+
 void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	if(c.getParameters().size() < 2)
 		return;
 
 	fire(ClientListener::Message(), this, c.getParam(1));
+}
+
+void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {	
+	fire(ClientListener::AdcSearch(), this, c);
 }
 
 void AdcHub::connect(const User* user) {
@@ -253,11 +280,12 @@ void AdcHub::privateMessage(const User* user, const string& aMessage) {
 	send(AdcCommand(AdcCommand::CMD_MSG, user->getCID()).addParam(aMessage).addParam("PM", SETTING(CLIENT_ID))); 
 }
 
-void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
+void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) { 
 	if(state != STATE_NORMAL)
 		return;
 
-	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_BROADCAST);
+
+	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_UDP);
 
 	if(aFileType == SearchManager::TYPE_TTH) {
 		c.addParam("TR", aString);
@@ -272,7 +300,16 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 			c.addParam("++", *i);
 		}
 	}
-	send(c);
+
+	if(!aToken.empty())
+		c.addParam("TO", aToken);
+
+	sendUDP(c);
+
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+		c.setType(AdcCommand::TYPE_PASSIVE);
+		send(c);
+	}
 }
 
 void AdcHub::password(const string& pwd) { 
@@ -384,5 +421,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.40 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.41 2005/03/12 16:45:35 arnetheduck Exp $
  */

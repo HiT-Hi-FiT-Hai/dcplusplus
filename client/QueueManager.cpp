@@ -403,7 +403,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	}
 
 	if(!searchString.empty()) {
-		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
+		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE, "auto");
 	}
 }
 
@@ -1359,5 +1359,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.123 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.124 2005/03/12 16:45:35 arnetheduck Exp $
  */

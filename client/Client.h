@@ -28,6 +28,7 @@
 #include "SettingsManager.h"
 
 class Client;
+class AdcCommand;
 
 class ClientListener  
 {
@@ -51,6 +52,7 @@ public:
 	typedef X<15> NickTaken;
 	typedef X<16> SearchFlood;
 	typedef X<17> NmdcSearch;
+	typedef X<18> AdcSearch;
 
 	virtual void on(Connecting, Client*) throw() { }
 	virtual void on(Connected, Client*) throw() { }
@@ -69,6 +71,7 @@ public:
 	virtual void on(NickTaken, Client*) throw() { }
 	virtual void on(SearchFlood, Client*, const string&) throw() { }
 	virtual void on(NmdcSearch, Client*, const string&, int, int64_t, int, const string&) throw() { }
+	virtual void on(AdcSearch, Client*, const AdcCommand&) throw() { }
 };
 
 /** Yes, this should probably be called a Hub */
@@ -86,7 +89,7 @@ public:
 	virtual void privateMessage(const User* user, const string& aMessage) = 0;
 	virtual void send(const string& aMessage) = 0;
 	virtual void sendUserCmd(const string& aUserCmd) = 0;
-	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) = 0;
+	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) = 0;
 	virtual void password(const string& pwd) = 0;
 	virtual void info(bool alwaysSend) = 0;
     
@@ -195,5 +198,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.98 2005/02/19 21:58:30 arnetheduck Exp $
+ * $Id: Client.h,v 1.99 2005/03/12 16:45:36 arnetheduck Exp $
  */

@@ -27,14 +27,14 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 	if(nmdc) {
 		// "$ADCxxx ..."
 		if(aLine.length() < 7)
-			return;
+			throw ParseException("Too short");
 		type = TYPE_CLIENT;
 		memcpy(cmd, &aLine[4], 3);
 		i += 3;
 	} else {
 		// "yxxx ..."
 		if(aLine.length() < 4)
-			return;
+			throw ParseException("Too short");
 		type = aLine[0];
 		memcpy(cmd, &aLine[1], 3);
 	}
@@ -153,5 +153,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.10 2005/02/19 21:58:30 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.11 2005/03/12 16:45:35 arnetheduck Exp $
  */

@@ -32,7 +32,7 @@ public:
 	virtual void privateMessage(const User* user, const string& aMessage);
 	virtual void send(const string& aMessage) { socket->write(aMessage); };
 	virtual void sendUserCmd(const string& aUserCmd) { send(aUserCmd); }
-	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
+	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	virtual void password(const string& pwd);
 	virtual void info(bool alwaysSend);
 
@@ -49,6 +49,7 @@ public:
 	}
 
 	void send(const AdcCommand& cmd) { socket->write(cmd.toString(false)); };
+	void sendUDP(const AdcCommand& cmd);
 
 	void handle(AdcCommand::SUP, AdcCommand& c) throw();
 	void handle(AdcCommand::MSG, AdcCommand& c) throw();
@@ -58,6 +59,7 @@ public:
 	void handle(AdcCommand::CTM, AdcCommand& c) throw();
 	void handle(AdcCommand::RCM, AdcCommand& c) throw();
 	void handle(AdcCommand::STA, AdcCommand& c) throw();
+	void handle(AdcCommand::SCH, AdcCommand& c) throw();
 
 	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
 
@@ -98,5 +100,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.25 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.26 2005/03/12 16:45:35 arnetheduck Exp $
  */

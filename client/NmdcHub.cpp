@@ -651,7 +651,7 @@ void NmdcHub::disconnect() throw() {
 	}
 }
 
-void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString){
+void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {
 	checkstate(); 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
@@ -714,6 +714,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.29 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.30 2005/03/12 16:45:36 arnetheduck Exp $
  */
 

@@ -131,6 +131,10 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	}
 }
 
+void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc) throw() {
+	SearchManager::getInstance()->respond(adc);
+}
+
 User::Ptr ClientManager::getUser(const string& aNick, const string& aHint /* = Util::emptyString */) {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
@@ -230,17 +234,17 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 	return i->second;
 }
 
-void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
+void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 		if((*i)->isConnected()) {
-			(*i)->search(aSizeMode, aSize, aFileType, aString);
+			(*i)->search(aSizeMode, aSize, aFileType, aString, aToken);
 		}
 	}
 }
 
-void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
+void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 
 	for(StringIter it = who.begin(); it != who.end(); ++it) {
@@ -248,7 +252,7 @@ void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aF
 		for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
 			Client* c = *j;
 			if(c->isConnected() && c->getIpPort() == client) {
-				c->search(aSizeMode, aSize, aFileType, aString);
+				c->search(aSizeMode, aSize, aFileType, aString, aToken);
 			}
 		}
 	}
@@ -352,5 +356,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.66 2005/01/05 19:30:23 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.67 2005/03/12 16:45:35 arnetheduck Exp $
  */

@@ -308,7 +308,7 @@ void SearchFrame::onEnter() {
 
 	if(SearchManager::getInstance()->okToSearch()) {
 		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
-			(SearchManager::TypeModes)ftype, mode);
+			(SearchManager::TypeModes)ftype, mode, "manual");
 		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
 			ctrlSearch.SetWindowText(_T(""));
 	} else {
@@ -1103,5 +1103,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.85 2005/02/19 12:44:29 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.86 2005/03/12 16:45:37 arnetheduck Exp $
  */
