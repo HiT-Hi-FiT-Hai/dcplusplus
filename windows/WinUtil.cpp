@@ -691,7 +691,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	if(Util::stricmp(app.c_str(), Buf) != 0) {
 		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub"), &hk);
 		TCHAR* tmp = _T("URL:Direct Connect Protocol");
-		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, _tcslen(tmp) + 1);
+		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		::RegCloseKey(hk);
 
@@ -726,7 +726,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	 if(Util::stricmp(app.c_str(), Buf) != 0) {
 		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc"), &hk);
 		 TCHAR* tmp = _T("URL:Direct Connect Protocol");
-		 ::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, _tcslen(tmp) + 1);
+		 ::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		 ::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		 ::RegCloseKey(hk);
 
@@ -1140,5 +1140,5 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.80 2005/04/03 14:48:31 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.81 2005/04/07 23:04:33 arnetheduck Exp $
  */

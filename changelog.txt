@@ -1,6 +1,9 @@
 ﻿-- 0.674 --
 * Added stats window to autoopen (thanks paka)
 * Fixed context menu open for multi-screen setups (thanks trem)
+* Changed country database to the original format so that users can update by themselves (thanks paka)
+* Fixed some registry issues (thanks trem)
+* Fixed localised number encodings (thanks trem)
 
 
 -- 0.673 2005-03-22 --

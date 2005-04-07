@@ -139,8 +139,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
 	m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-	m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+	m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
@@ -1212,5 +1212,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.88 2005/04/03 14:48:32 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.89 2005/04/07 23:04:35 arnetheduck Exp $
  */
