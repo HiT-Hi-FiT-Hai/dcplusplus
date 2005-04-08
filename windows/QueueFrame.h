@@ -248,7 +248,7 @@ private:
 				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
 				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
 				case COLUMN_ADDED: return compare(a->getAdded(), b->getAdded());
-				default: return Util::stricmp(a->getDisplay()->columns[col], b->getDisplay()->columns[col]);
+				default: return lstrcmpi(a->getDisplay()->columns[col].c_str(), b->getDisplay()->columns[col].c_str());
 			}
 		}
 
@@ -430,5 +430,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.52 2005/02/07 18:24:04 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.53 2005/04/08 23:01:50 arnetheduck Exp $
  */

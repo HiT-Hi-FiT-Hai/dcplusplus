@@ -209,16 +209,12 @@ private:
 			}
 
 			switch(col) {
-			case COLUMN_USER: return Util::stricmp(a->user->getNick(), b->user->getNick());
-			case COLUMN_HUB: return Util::stricmp(a->user->getClientName(), b->user->getClientName());
-			case COLUMN_STATUS: return 0;
-			case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
-			case COLUMN_SPEED: return compare(a->speed, b->speed);
-			case COLUMN_FILE: return Util::stricmp(a->columns[COLUMN_FILE], b->columns[COLUMN_FILE]);
-			case COLUMN_SIZE: return compare(a->size, b->size);
-			case COLUMN_PATH: return Util::stricmp(a->columns[COLUMN_PATH], b->columns[COLUMN_PATH]);
-			case COLUMN_IP: return Util::stricmp(a->columns[COLUMN_IP], b->columns[COLUMN_IP]);
-			case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
+				case COLUMN_STATUS: return 0;
+				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
+				case COLUMN_SPEED: return compare(a->speed, b->speed);
+				case COLUMN_SIZE: return compare(a->size, b->size);
+				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
+				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 			}
 			return 0;
 		}
@@ -255,5 +251,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.19 2005/01/05 19:30:20 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.20 2005/04/08 23:01:49 arnetheduck Exp $
  */

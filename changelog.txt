@@ -4,7 +4,7 @@
 * Changed country database to the original format so that users can update by themselves (thanks paka)
 * Fixed some registry issues (thanks trem)
 * Fixed localised number encodings (thanks trem)
-
+* Updated sorting to use a more windows-like order (thanks trem)
 
 -- 0.673 2005-03-22 --
 * Added auto-prio by file size settings (thanks paka)

@@ -129,11 +129,11 @@ public:
 		if(result == SORT_STRING) {
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
-			result = _tcscmp(buf, buf2);			
+			result = lstrcmp(buf, buf2);			
 		} else if(result == SORT_STRING_NOCASE) {
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
-			result = Util::stricmp(buf, buf2);			
+			result = lstrcmpi(buf, buf2);			
 		} else if(result == SORT_INT) {
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
@@ -161,6 +161,6 @@ public:
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.14 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.15 2005/04/08 23:01:50 arnetheduck Exp $
  */
 

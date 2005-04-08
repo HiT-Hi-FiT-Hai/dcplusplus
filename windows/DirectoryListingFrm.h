@@ -268,7 +268,7 @@ private:
 					switch(col) {
 					case COLUMN_EXACTSIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
 					case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
-					default: return Util::stricmp(a->columns[col], b->columns[col]);
+					default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 					}
 				} else {
 					return -1;
@@ -279,7 +279,7 @@ private:
 				switch(col) {
 				case COLUMN_EXACTSIZE: return compare(a->file->getSize(), b->file->getSize());
 				case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
-				default: return Util::stricmp(a->columns[col], b->columns[col]);
+				default: return lstrcmp(a->columns[col].c_str(), b->columns[col].c_str());
 				}
 			}
 		}
@@ -335,5 +335,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.51 2005/03/22 18:54:36 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.52 2005/04/08 23:01:50 arnetheduck Exp $
  */

@@ -209,7 +209,7 @@ private:
 			if(col == COLUMN_SHARED) {
 				return compare(a->user->getBytesShared(), b->user->getBytesShared());
 			}
-			return Util::stricmp(a->columns[col], b->columns[col]);	
+			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
 		}
 
 		void update() { 
@@ -387,6 +387,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.59 2005/04/03 14:48:31 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.60 2005/04/08 23:01:50 arnetheduck Exp $
  */
 

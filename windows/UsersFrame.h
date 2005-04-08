@@ -115,7 +115,7 @@ private:
 		}
 
 		static int compareItems(UserInfo* a, UserInfo* b, int col) {
-			return Util::stricmp(a->columns[col], b->columns[col]);
+			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 		}
 
 		void remove() { HubManager::getInstance()->removeFavoriteUser(user); }
@@ -164,6 +164,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.19 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.20 2005/04/08 23:01:50 arnetheduck Exp $
  */
 
