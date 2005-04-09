@@ -58,7 +58,7 @@ int Text::utf8ToWc(const char* str, wchar_t& c) {
 						}
 					}
 					int i = -1;
-					while(i > n && (str[abs(i)] & 0x80) > 0)
+					while(i > n && (str[abs(i)] & 0x80) == 0x80)
 						--i;
 					return i;
 				} else {		// 1110xxxx
@@ -256,5 +256,5 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 
 /**
  * @file
- * $Id: Text.cpp,v 1.8 2005/04/09 15:31:02 arnetheduck Exp $
+ * $Id: Text.cpp,v 1.9 2005/04/09 15:41:49 arnetheduck Exp $
  */

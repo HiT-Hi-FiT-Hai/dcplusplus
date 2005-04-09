@@ -221,6 +221,7 @@
 		<String Name="MenuHashProgress">Indexing progress</String>
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuHelpDownloads">Downloads</String>
+		<String Name="MenuHelpGeoipfile">GeoIP database update</String>
 		<String Name="MenuHelpForum">Help forum</String>
 		<String Name="MenuHelpTranslations">Translations</String>
 		<String Name="MenuHomepage">DC++ Homepage</String>
@@ -350,7 +351,7 @@
 		<String Name="SettingsAppearance2">Colors and sounds</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
-		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>
+		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
@@ -390,7 +391,7 @@
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
-		<String Name="SettingsListDupes">Keep duplicate files in your file list (duplicates never count towards your share size)</String>
+		<String Name="SettingsListDupes">Keep duplicate files in your file list</String>
 		<String Name="SettingsLogDownloads">Log downloads</String>
 		<String Name="SettingsLogFilelistTransfers">Log filelist transfers</String>
 		<String Name="SettingsLogMainChat">Log main chat</String>

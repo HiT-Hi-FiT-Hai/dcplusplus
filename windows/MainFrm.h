@@ -287,7 +287,7 @@ public:
 	}	
 	 LRESULT onWindowRestoreAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		HWND tmpWnd = GetWindow(GW_CHILD); //getting client window
-		HWND ClientWnd = tmpWnd //saving client window handle
+		HWND ClientWnd = tmpWnd; //saving client window handle
 		tmpWnd = ::GetWindow(tmpWnd, GW_CHILD); //getting first child window
 		BOOL bmax;
 		while (tmpWnd!=NULL) {
@@ -396,7 +396,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.56 2005/04/09 15:31:07 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.57 2005/04/09 15:41:49 arnetheduck Exp $
  */
 
  
