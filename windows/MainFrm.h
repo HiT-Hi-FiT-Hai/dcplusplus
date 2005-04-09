@@ -118,6 +118,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_GEOIPFILE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_TRANSLATIONS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_HELP_FORUM, onLink)
@@ -284,15 +285,20 @@ public:
 		}
 		return 0;
 	}	
-	LRESULT onWindowRestoreAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	 LRESULT onWindowRestoreAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		HWND tmpWnd = GetWindow(GW_CHILD); //getting client window
+		HWND ClientWnd = tmpWnd //saving client window handle
 		tmpWnd = ::GetWindow(tmpWnd, GW_CHILD); //getting first child window
+		BOOL bmax;
 		while (tmpWnd!=NULL) {
 			::ShowWindow(tmpWnd, SW_RESTORE);
+			::SendMessage(ClientWnd,WM_MDIGETACTIVE,NULL,(LPARAM)&bmax);
+			if(bmax)break; //bmax will be true if active child 
+					//window is maximized, so if bmax then break
 			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
 		}
 		return 0;
-	}	
+	}
 
 private:
 
@@ -349,6 +355,7 @@ private:
 	struct {
 		tstring homepage;
 		tstring downloads;
+		tstring geoipfile;
 		tstring translations;
 		tstring faq;
 		tstring help;
@@ -389,7 +396,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.55 2005/03/12 13:36:50 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.56 2005/04/09 15:31:07 arnetheduck Exp $
  */
 
  

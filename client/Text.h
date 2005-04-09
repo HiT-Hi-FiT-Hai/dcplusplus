@@ -98,6 +98,8 @@ public:
 		return true;
 	}
 
+	static bool validateUtf8(const string& str) throw();
+
 	static char asciiToLower(char c) { dcassert((((u_int8_t)c) & 0x80) == 0); return asciiLower[(u_int8_t)c]; }
 
 	static wchar_t toLower(wchar_t c) { return lower[(u_int16_t)c]; }
@@ -121,5 +123,5 @@ private:
 
 /**
  * @file
- * $Id: Text.h,v 1.7 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: Text.h,v 1.8 2005/04/09 15:31:02 arnetheduck Exp $
  */

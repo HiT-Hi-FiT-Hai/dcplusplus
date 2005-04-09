@@ -39,7 +39,6 @@ NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),
 	reconnect(true), lastUpdate(0)
 {
 	TimerManager::getInstance()->addListener(this);
-
 }
 
 NmdcHub::~NmdcHub() throw() {
@@ -718,6 +717,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.32 2005/03/22 21:51:31 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.33 2005/04/09 15:31:02 arnetheduck Exp $
  */
 

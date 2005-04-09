@@ -343,6 +343,7 @@
 #define IDC_WINDOW_OPTIONS              1290
 #define IDC_WINDOWS_OPTIONS             1290
 #define IDC_SETTINGS_WINDOWS_OPTIONS    1291
+#define IDC_HELP_GEOIPFILE              1292
 #define IDC_PRIO_HIGHEST_SIZE           1300
 #define IDC_PRIO_HIGH_SIZE              1301
 #define IDC_PRIO_NORMAL_SIZE            1302

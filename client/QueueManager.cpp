@@ -73,9 +73,6 @@ string QueueItem::getSearchString() const {
 	return SearchManager::clean(getTargetFileName());
 }
 
-namespace {
-}
-
 const string& QueueItem::getTempTarget() {
 	if(!isSet(QueueItem::FLAG_USER_LIST) && tempTarget.empty()) {
 		if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(getTarget()) == -1)) {
@@ -1372,5 +1369,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.128 2005/03/22 18:53:52 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.129 2005/04/09 15:31:02 arnetheduck Exp $
  */

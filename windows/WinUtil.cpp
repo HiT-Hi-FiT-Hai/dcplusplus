@@ -275,6 +275,7 @@ void WinUtil::init(HWND hWnd) {
 	help.AppendMenu(MF_SEPARATOR);
 	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CTSTRING(MENU_HOMEPAGE));
 	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CTSTRING(MENU_HELP_DOWNLOADS));
+	help.AppendMenu(MF_STRING, IDC_HELP_GEOIPFILE, CTSTRING(MENU_HELP_GEOIPFILE));
 	help.AppendMenu(MF_STRING, IDC_HELP_TRANSLATIONS, CTSTRING(MENU_HELP_TRANSLATIONS));
 	help.AppendMenu(MF_STRING, IDC_HELP_FAQ, CTSTRING(MENU_FAQ));
 	help.AppendMenu(MF_STRING, IDC_HELP_HELP_FORUM, CTSTRING(MENU_HELP_FORUM));
@@ -1140,5 +1141,5 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.81 2005/04/07 23:04:33 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.82 2005/04/09 15:31:07 arnetheduck Exp $
  */

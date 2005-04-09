@@ -1,10 +1,15 @@
 ﻿-- 0.674 --
+*** WARNING ***
+  This version fixes a security bug, upgrade unless you want to risk losing data
+  anywhere on your drive, this error affects all clients from 0.307 to date (thanks cologic for finding it)
+*** WARNING ***
 * Added stats window to autoopen (thanks paka)
 * Fixed context menu open for multi-screen setups (thanks trem)
 * Changed country database to the original format so that users can update by themselves (thanks paka)
 * Fixed some registry issues (thanks trem)
 * Fixed localised number encodings (thanks trem)
 * Updated sorting to use a more windows-like order (thanks trem)
+* Fixed an issue with restore all (thanks krzysztof tyszecki)
 
 -- 0.673 2005-03-22 --
 * Added auto-prio by file size settings (thanks paka)
@@ -216,11 +221,11 @@
 
 -- 0.4033 2004-09-27 --
 *** WARNING *** 
-This update will change all your config files and queues, and it is 
-very probable that you won't be able to revert back to an older version
-once the update has been done!!!
-Also, finish your queue file before upgrading if you care for your
-international filenames in it - they will not be correctly converted.
+ This update will change all your config files and queues, and it is 
+ very probable that you won't be able to revert back to an older version
+ once the update has been done!!!
+ Also, finish your queue file before upgrading if you care for your
+ international filenames in it - they will not be correctly converted.
 *** WARNING ***
 
 * Fixed a rare download crash (thanks farcry)
@@ -393,7 +398,6 @@ international filenames in it - they will not be correctly converted.
 * Added default menu items to finished frames (thanks slowmo)
 * TTH leaves (TTHL) exchanged between capable clients to verify data integrity
 
-
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue
 * Hopefully fixed the dupe op issue
@@ -454,7 +458,6 @@ international filenames in it - they will not be correctly converted.
 * Ip column in transfer list (thanks cologic)
 * Scrollbar for multiline messages (thanks garg)
 * Fixed an issue with icon transparencies (thanks garg)
-
 
  -- 0.306 2004-01-09 --
 * Fixed an issue with UNC paths (those starting with "\\")
@@ -597,11 +600,12 @@ international filenames in it - they will not be correctly converted.
 * Added NoGetINFO extension support
 
  -- 0.300 2003-10-27 --
-* ---- IMPORTANT ----
+*** WARNING ***
   Security update, upgrade unless you want to risk losing files anywhere
   on your hd (this is for all versions prior to this one) (thanks fusbar for bringing 
   it to my attention) 
-  ---- IMPORTANT ----
+*** WARNING ***
+
 * Some code cleanup
 * Added vertical tiling of windows
 * Nick and password are now taken from favorite hubs on redirect (thanks saurod)
@@ -679,7 +683,6 @@ international filenames in it - they will not be correctly converted.
 * Upgraded to STLPort 4.5.0725 (should be compatible with msvc 7.1)
 * Fixed right-click menu in hub frame when the username comes last on a line (thanks sed)
 * Added stored password sent notification when connecting to favorite hubs
-
 
  -- 0.261 2003-07-15 --
 * Fixed user list problems
@@ -952,10 +955,14 @@ Minor:
 * Fixed a bug with files being added to the queue without target directory. This caused quite a lot of strange
   behaviour ranging from hang at startup to empty queues and crashing deletes. Hopefully, I fixed it proper,
   but rereport the bugs if you still have problems... 
-  *WARNING - WARNING - WARNING* if you upgrade to 0.22, all old queue items that are missing a directory in the
+
+*** WARNING ***
+  If you upgrade to 0.22, all old queue items that are missing a directory in the
   target file-name will be removed. Don't upgrade if your queue is precious to you, and you didn't have anything
   in the default download directory box in the settings (finish it with version 0.181
   or edit your queue.xml file and add a directory to all targets without...). (thanks fusbar for finding it)
+*** WARNING ***
+
 * Added so that only files with the same extension are visible in the download to menus (this was actually done in 0.21
   but I forgot to write it down...=)
 * Fixed a bug where dc++ would stop listening to incoming connections, causing connection timeouts in active mode

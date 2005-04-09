@@ -225,6 +225,7 @@ enum Strings { // @DontAdd
 	MENU_HASH_PROGRESS, // "Indexing progress"
 	MENU_HELP, // "&Help"
 	MENU_HELP_DOWNLOADS, // "Downloads"
+	MENU_HELP_GEOIPFILE, // "GeoIP database update"
 	MENU_HELP_FORUM, // "Help forum"
 	MENU_HELP_TRANSLATIONS, // "Translations"
 	MENU_HOMEPAGE, // "DC++ Homepage"

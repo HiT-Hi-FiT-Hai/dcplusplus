@@ -12,7 +12,7 @@
 <body>
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
-<h2>0.673 <span style="color: gray;">(2005-03-21)</span></h2>
+<h2>0.673 <span style="color: gray;">(2005-03-22)</span></h2>
 <ul>
   <li>Added auto-prio by file size settings (thanks paka)</li>
   <li>Fixed yet another context menu fix (in case anyone wondered, it should now be possible to use the context menu key for all context menus)</li>
@@ -590,7 +590,11 @@ See the version history of DC++ below.
 
 <h2>0.300 <span style="color: gray;">(2003-10-27)</span></h2>
 <ul>
-  <li>---- IMPORTANT ---- Security update, upgrade unless you want to risk losing files anywhere on your hd (this is for all versions prior to this one) (thanks fusbar for bringing it to my attention) ---- IMPORTANT ----</li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
+  <li><span style="color: red;">Security update, upgrade unless you want to risk losing files anywhere</span></li>
+  <li><span style="color: red;">on your hd (this is for all versions prior to this one) (thanks fusbar for bringing</span></li>
+  <li><span style="color: red;">it to my attention)</span></li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
   <li>Some code cleanup</li>
   <li>Added vertical tiling of windows</li>
   <li>Nick and password are now taken from favorite hubs on redirect (thanks saurod)</li>
@@ -894,7 +898,13 @@ See the version history of DC++ below.
 <ul>
   <li>The forums are up again! On a new address though, http://dcplusplus.sf.net/forum...</li>
   <li>Added nice installer. It's big because it comes with the debug info, if you just want a zip as in the old versions, you can find it on http://sf.net/projects/dcplusplus.</li>
-  <li>Fixed a bug with files being added to the queue without target directory. This caused quite a lot of strange behaviour ranging from hang at startup to empty queues and crashing deletes. Hopefully, I fixed it proper, but rereport the bugs if you still have problems... *WARNING - WARNING - WARNING* if you upgrade to 0.22, all old queue items that are missing a directory in the target file-name will be removed. Don't upgrade if your queue is precious to you, and you didn't have anything in the default download directory box in the settings (finish it with version 0.181 or edit your queue.xml file and add a directory to all targets without...). (thanks fusbar for finding it)</li>
+  <li>Fixed a bug with files being added to the queue without target directory. This caused quite a lot of strange behaviour ranging from hang at startup to empty queues and crashing deletes. Hopefully, I fixed it proper, but rereport the bugs if you still have problems...</li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
+  <li><span style="color: red;">If you upgrade to 0.22, all old queue items that are missing a directory in the</span></li>
+  <li><span style="color: red;">target file-name will be removed. Don't upgrade if your queue is precious to you, and you didn't have anything</span></li>
+  <li><span style="color: red;">in the default download directory box in the settings (finish it with version 0.181</span></li>
+  <li><span style="color: red;">or edit your queue.xml file and add a directory to all targets without...). (thanks fusbar for finding it)</span></li>
+  <li><span style="color: red;">*** WARNING ***</span></li>
   <li>Added so that only files with the same extension are visible in the download to menus (this was actually done in 0.21 but I forgot to write it down...=)</li>
   <li>Fixed a bug where dc++ would stop listening to incoming connections, causing connection timeouts in active mode</li>
   <li>Right-click menu now works for all nicks (even outside &lt; and &gt;)</li>

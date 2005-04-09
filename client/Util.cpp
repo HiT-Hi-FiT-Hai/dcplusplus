@@ -518,8 +518,8 @@ int Util::stricmp(const char* a, const char* b) {
 		if(ca != cb) {
 			return (int)ca - (int)cb;
 		}
-		a+= na < 0 ? 1 : na;
-		b+= nb < 0 ? 1 : nb;
+		a += abs(na);
+		b += abs(nb);
 	}
 	wchar_t ca = 0, cb = 0;
 	Text::utf8ToWc(a, ca);
@@ -539,8 +539,8 @@ int Util::strnicmp(const char* a, const char* b, size_t n) {
 		if(ca != cb) {
 			return (int)ca - (int)cb;
 		}
-		a+= na < 0 ? 1 : na;
-		b+= nb < 0 ? 1 : nb;
+		a += abs(na);
+		b += abs(nb);
 	}
 	wchar_t ca = 0, cb = 0;
 	Text::utf8ToWc(a, ca);
@@ -877,6 +877,6 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.84 2005/04/07 23:04:45 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.85 2005/04/09 15:31:02 arnetheduck Exp $
  */
 
