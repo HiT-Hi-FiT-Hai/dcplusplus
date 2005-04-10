@@ -37,7 +37,9 @@ class TransferView : public CWindowImpl<TransferView>, private DownloadManagerLi
 	public UserInfoBaseHandler<TransferView>, public UCHandler<TransferView>
 {
 public:
-	TransferView() { };
+	DECLARE_WND_CLASS(_T("TransferView"))
+
+	TransferView() { }
 	~TransferView(void);
 
 	typedef UserInfoBaseHandler<TransferView> uibBase;
@@ -216,7 +218,6 @@ private:
 				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
 				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 			}
-			return 0;
 		}
 	};
 
@@ -251,5 +252,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.20 2005/04/08 23:01:49 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.21 2005/04/10 21:23:27 arnetheduck Exp $
  */

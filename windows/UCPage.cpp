@@ -53,7 +53,7 @@ LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlCommands.InsertColumn(0, CTSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width()/4, 0);
 	ctrlCommands.InsertColumn(1, CTSTRING(SETTINGS_COMMAND), LVCFMT_LEFT, rc.Width()*2 / 4, 1);
 	ctrlCommands.InsertColumn(2, CTSTRING(HUB), LVCFMT_LEFT, rc.Width() / 4, 2);
-	ctrlCommands.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	ctrlCommands.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	// Do specialized reading here
 	UserCommand::List lst = HubManager::getInstance()->getUserCommands();
@@ -178,6 +178,6 @@ LRESULT UCPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.12 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.13 2005/04/10 21:23:27 arnetheduck Exp $
  */
 

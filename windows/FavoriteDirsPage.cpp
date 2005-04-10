@@ -40,7 +40,7 @@ LRESULT FavoriteDirsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 {
 	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_FAVORITE_DIRECTORIES));
-	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 		
 	// Prepare shared dir list
 	ctrlDirectories.InsertColumn(0, CTSTRING(FAVORITE_DIR_NAME), LVCFMT_LEFT, 80, 0);
@@ -180,5 +180,5 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: FavoriteDirsPage.cpp,v 1.5 2005/01/18 11:17:51 arnetheduck Exp $
+ * $Id: FavoriteDirsPage.cpp,v 1.6 2005/04/10 21:23:27 arnetheduck Exp $
  */

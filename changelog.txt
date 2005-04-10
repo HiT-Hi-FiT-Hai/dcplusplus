@@ -1,4 +1,4 @@
-﻿-- 0.674 --
+﻿-- 0.674 2005-04-10 --
 *** WARNING ***
   This version fixes a security bug, upgrade unless you want to risk losing data
   anywhere on your drive, this error affects all clients from 0.307 to date (thanks cologic for finding it)
@@ -10,6 +10,7 @@
 * Fixed localised number encodings (thanks trem)
 * Updated sorting to use a more windows-like order (thanks trem)
 * Fixed an issue with restore all (thanks krzysztof tyszecki)
+* Added list view tooltips
 
 -- 0.673 2005-03-22 --
 * Added auto-prio by file size settings (thanks paka)

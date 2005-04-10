@@ -55,7 +55,7 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 {
 	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
-	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 		
 	ctrlTotal.Attach(GetDlgItem(IDC_TOTAL));
 
@@ -263,6 +263,6 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.34 2005/02/01 16:41:44 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.35 2005/04/10 21:23:27 arnetheduck Exp $
  */
 

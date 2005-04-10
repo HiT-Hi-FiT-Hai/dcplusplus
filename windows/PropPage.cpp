@@ -62,7 +62,7 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 		ctrl.Attach(list);
 		CRect rc;
 		ctrl.GetClientRect(rc);
-		ctrl.SetExtendedListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+		ctrl.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 		ctrl.InsertColumn(0, _T("Dummy"), LVCFMT_LEFT, rc.Width(), 0);
 
 		LVITEM lvi;
@@ -137,6 +137,6 @@ void PropPage::translate(HWND page, TextItem* textItems)
 
 /**
  * @file
- * $Id: PropPage.cpp,v 1.12 2005/01/05 19:30:22 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.13 2005/04/10 21:23:28 arnetheduck Exp $
  */
 

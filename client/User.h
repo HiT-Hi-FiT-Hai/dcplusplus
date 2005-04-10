@@ -31,9 +31,7 @@
 class Client;
 class FavoriteUser;
 
-/**
- * A user connected to a hubs.
- */
+/** A user connected to one or more hubs. */
 class User : public PointerBase, public Flags
 {
 public:
@@ -58,7 +56,6 @@ public:
 		HUB = 1<<HUB_BIT,
 		BOT = 1<<BOT_BIT
 	};
-
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
@@ -142,9 +139,33 @@ private:
 	FavoriteUser* favoriteUser;
 };
 
+/** One of possibly many identities of a user, mainly for UI purposes */
+class Identity : public Flags {
+public:
+	Identity(const User::Ptr& ptr) : user(ptr) { }
+	Identity(const Identity& rhs) : user(rhs.user), hubURL(rhs.hubURL), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; hubURL = rhs.hubURL; info = rhs.info; }
+
+	const string& getNick() { return get("NI"); }
+	const string& getDescription() { return get("DE"); }
+
+	const string& get(const char* name) {
+		InfIter i = info.find(*(short*)name);
+		return i == info.end() ? Util::emptyString : i->second;
+	}
+
+	GETSET(User::Ptr, user, User);
+	GETSET(string, hubURL, HubURL);
+private:
+	typedef map<short, string> InfMap;
+	typedef InfMap::iterator InfIter;
+
+	InfMap info;
+};
+
 #endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
 
 /**
  * @file
- * $Id: User.h,v 1.52 2005/03/14 10:37:23 arnetheduck Exp $
+ * $Id: User.h,v 1.53 2005/04/10 21:23:30 arnetheduck Exp $
  */

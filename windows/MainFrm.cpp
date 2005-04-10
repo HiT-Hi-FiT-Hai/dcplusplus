@@ -166,6 +166,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
+	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
 
 	CreateMDIClient();
@@ -1020,7 +1021,6 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 		ctrlStatus.SetParts(8, w);
 		ctrlLastLines.SetMaxTipWidth(w[0]);
-		ctrlLastLines.SetWindowPos(HWND_TOPMOST, sr.left, sr.top, sr.Width(), sr.Height(), SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
 	CRect rc = rect;
 	rc.top = rc.bottom - ctrlTab.getHeight();
@@ -1218,5 +1218,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.90 2005/04/09 15:31:08 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.91 2005/04/10 21:23:27 arnetheduck Exp $
  */

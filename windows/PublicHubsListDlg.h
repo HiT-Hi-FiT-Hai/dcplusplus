@@ -65,7 +65,7 @@ public:
 		// set up the list of lists
 		CRect rc;
 		ctrlList.Attach(GetDlgItem(IDC_LIST_LIST));
-		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+		ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 		ctrlList.GetClientRect(rc);
 		ctrlList.InsertColumn(0, CTSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width() - 4, 0);
 		StringList lists(HubManager::getInstance()->getHubLists());
@@ -164,6 +164,6 @@ private:
 
 /**
 * @file
-* $Id: PublicHubsListDlg.h,v 1.4 2005/01/05 19:30:21 arnetheduck Exp $
+* $Id: PublicHubsListDlg.h,v 1.5 2005/04/10 21:23:27 arnetheduck Exp $
 */
 

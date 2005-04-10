@@ -56,7 +56,6 @@
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
 namespace {
-	const char* badChars = "$|.[]()-_+";
 	const string TEMP_EXTENSION = ".dctmp";
 
 	string getTempName(const string& aFileName, const TTHValue* aRoot) {
@@ -1369,5 +1368,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.129 2005/04/09 15:31:02 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.130 2005/04/10 21:23:30 arnetheduck Exp $
  */
