@@ -1,4 +1,13 @@
-﻿-- 0.674 2005-04-10 --
+﻿-- 0.69 --
+* Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of
+  which users are actually the same for NMDC (essentially, NMDC users are now identified by nick+hub always, not only nick)
+* Removed saving of directories scheduled for download, since the individual files should appear in the queue fast enough that
+  this will rarely be used (since file lists are free and downloaded almost instantly)
+* Fixed international timestamps (thanks ullner)
+* Fixed targetdrive docs (thanks ullner)
+* Fixed transfer list view flicker on WinXP
+
+-- 0.674 2005-04-10 --
 *** WARNING ***
   This version fixes a security bug, upgrade unless you want to risk losing data
   anywhere on your drive, this error affects all clients from 0.307 to date (thanks cologic for finding it)

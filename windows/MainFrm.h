@@ -25,7 +25,7 @@
 
 #include "../client/TimerManager.h"
 #include "../client/HttpConnection.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
 #include "../client/LogManager.h"
@@ -396,7 +396,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.57 2005/04/09 15:41:49 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.58 2005/04/12 23:24:03 arnetheduck Exp $
  */
 
  

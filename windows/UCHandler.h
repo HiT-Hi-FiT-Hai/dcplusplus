@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/StringTokenizer.h"
 
 template<class T>
@@ -50,7 +50,7 @@ public:
 	}
 
 	void prepareMenu(CMenu& menu, int ctx, const tstring& server, bool op) {
-		userCommands = HubManager::getInstance()->getUserCommands(ctx, Text::fromT(server), op);
+		userCommands = FavoriteManager::getInstance()->getUserCommands(ctx, Text::fromT(server), op);
 		int n = 0;
 
 		menuPos = menu.GetMenuItemCount();
@@ -115,5 +115,5 @@ private:
 
 /**
 * @file
-* $Id: UCHandler.h,v 1.9 2005/01/05 19:30:19 arnetheduck Exp $
+* $Id: UCHandler.h,v 1.10 2005/04/12 23:24:02 arnetheduck Exp $
 */

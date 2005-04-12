@@ -24,7 +24,7 @@
 #include "CommandDlg.h"
 
 #include "../client/SettingsManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "WinUtil.h"
 
 PropPage::TextItem UCPage::texts[] = {
@@ -56,7 +56,7 @@ LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlCommands.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	// Do specialized reading here
-	UserCommand::List lst = HubManager::getInstance()->getUserCommands();
+	UserCommand::List lst = FavoriteManager::getInstance()->getUserCommands();
 	for(UserCommand::Iter i = lst.begin(); i != lst.end(); ++i) {
 		UserCommand& uc = *i;	
 		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) {
@@ -71,7 +71,7 @@ LRESULT UCPage::onAddMenu(WORD , WORD , HWND , BOOL& ) {
 	CommandDlg dlg;
 
 	if(dlg.DoModal() == IDOK) {
-		addEntry(HubManager::getInstance()->addUserCommand(dlg.type, dlg.ctx,
+		addEntry(FavoriteManager::getInstance()->addUserCommand(dlg.type, dlg.ctx,
 			0, Text::fromT(dlg.name), Text::fromT(dlg.command), Text::fromT(dlg.hub)), ctrlCommands.GetItemCount());
 	}
 	return 0;
@@ -81,7 +81,7 @@ LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 	if(ctrlCommands.GetSelectedCount() == 1) {
 		int sel = ctrlCommands.GetSelectedIndex();
 		UserCommand uc;
-		HubManager::getInstance()->getUserCommand(ctrlCommands.GetItemData(sel), uc);
+		FavoriteManager::getInstance()->getUserCommand(ctrlCommands.GetItemData(sel), uc);
 		
 		CommandDlg dlg;
 		dlg.type = uc.getType();
@@ -102,7 +102,7 @@ LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 			uc.setHub(Text::fromT(dlg.hub));
 			uc.setType(dlg.type);
 			uc.setCtx(dlg.ctx);
-			HubManager::getInstance()->updateUserCommand(uc);
+			FavoriteManager::getInstance()->updateUserCommand(uc);
 		}
 	}
 	return 0;
@@ -111,7 +111,7 @@ LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 LRESULT UCPage::onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlCommands.GetSelectedCount() == 1) {
 		int i = ctrlCommands.GetNextItem(-1, LVNI_SELECTED);
-		HubManager::getInstance()->removeUserCommand(ctrlCommands.GetItemData(i));
+		FavoriteManager::getInstance()->removeUserCommand(ctrlCommands.GetItemData(i));
 		ctrlCommands.DeleteItem(i);
 	}
 	return 0;
@@ -121,11 +121,11 @@ LRESULT UCPage::onMoveUp(WORD , WORD , HWND , BOOL& ) {
 	int i = ctrlCommands.GetSelectedIndex();
 	if(i != -1 && i != 0) {
 		int n = ctrlCommands.GetItemData(i);
-		HubManager::getInstance()->moveUserCommand(n, -1);
+		FavoriteManager::getInstance()->moveUserCommand(n, -1);
 		ctrlCommands.SetRedraw(FALSE);
 		ctrlCommands.DeleteItem(i);
 		UserCommand uc;
-		HubManager::getInstance()->getUserCommand(n, uc);
+		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, i-1);
 		ctrlCommands.SelectItem(i-1);
 		ctrlCommands.EnsureVisible(i-1, FALSE);
@@ -138,11 +138,11 @@ LRESULT UCPage::onMoveDown(WORD , WORD , HWND , BOOL& ) {
 	int i = ctrlCommands.GetSelectedIndex();
 	if(i != -1 && i != (ctrlCommands.GetItemCount()-1) ) {
 		int n = ctrlCommands.GetItemData(i);
-		HubManager::getInstance()->moveUserCommand(n, 1);
+		FavoriteManager::getInstance()->moveUserCommand(n, 1);
 		ctrlCommands.SetRedraw(FALSE);
 		ctrlCommands.DeleteItem(i);
 		UserCommand uc;
-		HubManager::getInstance()->getUserCommand(n, uc);
+		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, i+1);
 		ctrlCommands.SelectItem(i+1);
 		ctrlCommands.EnsureVisible(i+1, FALSE);
@@ -178,6 +178,6 @@ LRESULT UCPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.13 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.14 2005/04/12 23:24:04 arnetheduck Exp $
  */
 

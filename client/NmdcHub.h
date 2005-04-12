@@ -71,16 +71,16 @@ public:
 	virtual void on(Connecting, NmdcHub*) throw() { }
 	virtual void on(Connected, NmdcHub*) throw() { }
 	virtual void on(BadPassword, NmdcHub*) throw() { }
-	virtual void on(MyInfo, NmdcHub*, const User::Ptr&) throw() { }
-	virtual void on(NickList, NmdcHub*, const User::List&) throw() { }
-	virtual void on(OpList, NmdcHub*, const User::List&) throw() { }
-	virtual void on(Quit, NmdcHub*, const User::Ptr&) throw() { }
+	virtual void on(MyInfo, NmdcHub*, const OnlineUser&) throw() { }
+	virtual void on(NickList, NmdcHub*, const OnlineUser::List&) throw() { }
+	virtual void on(OpList, NmdcHub*, const OnlineUser::List&) throw() { }
+	virtual void on(Quit, NmdcHub*, const OnlineUser&) throw() { }
 	virtual void on(Redirect, NmdcHub*, const string&) throw() { }
 	virtual void on(Failed, NmdcHub*, const string&) throw() { }
 	virtual void on(GetPassword, NmdcHub*) throw() { }
 	virtual void on(HubName, NmdcHub*) throw() { }
 	virtual void on(Message, NmdcHub*, const string&) throw() { }
-	virtual void on(PrivateMessage, NmdcHub*, const User::Ptr&, const string&) throw() { }
+	virtual void on(PrivateMessage, NmdcHub*, const OnlineUser&, const string&) throw() { }
 	virtual void on(UserCommand, NmdcHub*, int, int, const string&, const string&) throw() { }
 	virtual void on(HubFull, NmdcHub*) throw() { }
 	virtual void on(NickTaken, NmdcHub*) throw() { }
@@ -88,12 +88,12 @@ public:
 	virtual void on(ValidateDenied, NmdcHub*) throw() { }
 	virtual void on(Search, NmdcHub*, const string&, int, int64_t, int, const string&) throw() { }
 	virtual void on(ConnectToMe, NmdcHub*, const string&, short) throw() { }
-	virtual void on(RevConnectToMe, NmdcHub*, const User::Ptr&) throw() { }
+	virtual void on(RevConnectToMe, NmdcHub*, const OnlineUser&) throw() { }
 	virtual void on(Supports, NmdcHub*, const StringList&) throw() { }
 	virtual void on(CLock, NmdcHub*, const string&, const string&) throw() { }
-	virtual void on(UserIp, NmdcHub*, const User::List&) throw() { }
+	virtual void on(UserIp, NmdcHub*, const OnlineUser::List&) throw() { }
 	virtual void on(LoggedIn, NmdcHub*) throw() { }
-	virtual void on(Hello, NmdcHub*, const User::Ptr&) throw() { }
+	virtual void on(Hello, NmdcHub*, const OnlineUser&) throw() { }
 };
 
 class NmdcHub : public Client, public Speaker<NmdcHubListener>, private TimerManagerListener, private Flags
@@ -112,9 +112,9 @@ public:
 
 #define checkstate() if(state != STATE_CONNECTED) return
 
-	virtual void connect(const User* aUser);
+	virtual void connect(const OnlineUser& aUser);
 	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
-	virtual void privateMessage(const User* aUser, const string& aMessage) { privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage); }
+	virtual void privateMessage(const OnlineUser& aUser, const string& aMessage) { privateMessage(aUser.getIdentity().getNick(), string("<") + getNick() + "> " + aMessage); }
 	virtual void send(const string& a) throw() {
 		lastActivity = GET_TICK();
 		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
@@ -132,9 +132,6 @@ public:
 	virtual const string& getName() const { return name; };
 	virtual bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
 
-	virtual User::NickMap& lockUserList() { cs.enter(); return users; };
-	virtual void unlockUserList() { cs.leave(); };
-
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
 	void disconnect() throw();
@@ -146,18 +143,14 @@ public:
 	void key(const string& aKey) { send("$Key " + aKey + "|"); };	
 	void version() { send("$Version 1,0091|"); };
 	void getNickList() { checkstate(); send("$GetNickList|"); };
-	void getInfo(User::Ptr aUser) { checkstate(); send("$GetINFO " + toNmdc(aUser->getNick()) + " " + toNmdc(getNick()) + "|"); };
-	void getInfo(User* aUser) {  checkstate(); send("$GetINFO " + toNmdc(aUser->getNick()) + " " + toNmdc(getNick()) + "|"); };
+	void getInfo(const OnlineUser& aUser) { checkstate(); send("$GetINFO " + toNmdc(aUser.getIdentity().getNick()) + " " + toNmdc(getNick()) + "|"); };
 
-	void connectToMe(const User::Ptr& aUser) {
+	void connectToMe(const OnlineUser& aUser) {
 		checkstate(); 
-		dcdebug("NmdcHub::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + toNmdc(aUser->getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)) + "|");
+		dcdebug("NmdcHub::connectToMe %s\n", aUser.getIdentity().getNick().c_str());
+		send("$ConnectToMe " + toNmdc(aUser.getIdentity().getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)) + "|");
 	}
 
-	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
-		privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage);
-	}
 	void privateMessage(const string& aNick, const string& aMessage) {
 		checkstate(); 
 		send("$To: " + toNmdc(aNick) + " From: " + toNmdc(getNick()) + " $" + toNmdc(Util::validateMessage(aMessage, false)) + "|");
@@ -169,10 +162,10 @@ public:
 		}
 		send("$Supports " + x + '|');
 	}
-	void revConnectToMe(const User::Ptr& aUser) {
+	void revConnectToMe(const OnlineUser& aUser) {
 		checkstate(); 
-		dcdebug("NmdcHub::revConnectToMe %s\n", aUser->getNick().c_str());
-		send("$RevConnectToMe " + toNmdc(getNick()) + " " + toNmdc(aUser->getNick()) + "|");
+		dcdebug("NmdcHub::revConnectToMe %s\n", aUser.getIdentity().getNick().c_str());
+		send("$RevConnectToMe " + toNmdc(getNick()) + " " + toNmdc(aUser.getIdentity().getNick()) + "|");
 	}
 
 	void send(const char* aBuf, int aLen) throw() {
@@ -189,22 +182,22 @@ private:
 		virtual void on(Connecting, NmdcHub*) throw() { c->fire(ClientListener::Connecting(), c); }
 		virtual void on(Connected, NmdcHub*) throw() { c->fire(ClientListener::Connected(), c); }
 		virtual void on(BadPassword, NmdcHub*) throw() { c->fire(ClientListener::BadPassword(), c); }
-		virtual void on(MyInfo, NmdcHub*, const User::Ptr& u) throw() { c->fire(ClientListener::UserUpdated(), c, u); }
-		virtual void on(NickList, NmdcHub*, const User::List& l) throw() { c->fire(ClientListener::UsersUpdated(), c, l); }
-		virtual void on(OpList, NmdcHub*, const User::List& l) throw() { c->fire(ClientListener::UsersUpdated(), c, l); }
-		virtual void on(Quit, NmdcHub*, const User::Ptr& u) throw() { c->fire(ClientListener::UserRemoved(), c, u); }
+		virtual void on(MyInfo, NmdcHub*, const OnlineUser& u) throw() { c->fire(ClientListener::UserUpdated(), c, u); }
+		virtual void on(NickList, NmdcHub*, const OnlineUser::List& l) throw() { c->fire(ClientListener::UsersUpdated(), c, l); }
+		virtual void on(OpList, NmdcHub*, const OnlineUser::List& l) throw() { c->fire(ClientListener::UsersUpdated(), c, l); }
+		virtual void on(Quit, NmdcHub*, const OnlineUser& u) throw() { c->fire(ClientListener::UserRemoved(), c, u); }
 		virtual void on(Redirect, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::Redirect(), c, aLine); }
 		virtual void on(Failed, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::Failed(), c, aLine); }
 		virtual void on(GetPassword, NmdcHub*) throw() { c->fire(ClientListener::GetPassword(), c); }
 		virtual void on(HubName, NmdcHub*) throw() { c->fire(ClientListener::HubUpdated(), c); }
 		virtual void on(Message, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::Message(), c, aLine); }
-		virtual void on(PrivateMessage, NmdcHub*, const User::Ptr& u, const string& aLine) throw() { c->fire(ClientListener::PrivateMessage(), c, u, aLine); }
+		virtual void on(PrivateMessage, NmdcHub*, const OnlineUser& u, const string& aLine) throw() { c->fire(ClientListener::PrivateMessage(), c, u, aLine); }
 		virtual void on(UserCommand, NmdcHub*, int a, int b, const string& l1, const string& l2) throw() { c->fire(ClientListener::UserCommand(), c, a, b, l1, l2); }
 		virtual void on(HubFull, NmdcHub*) throw() { c->fire(ClientListener::HubFull(), c); }
 		virtual void on(NickTaken, NmdcHub*) throw() { c->fire(ClientListener::NickTaken(), c); }
 		virtual void on(SearchFlood, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::SearchFlood(), c, aLine); }
 		virtual void on(ValidateDenied, NmdcHub*) throw() { c->fire(ClientListener::NickTaken(), c); }
-		virtual void on(Hello, NmdcHub*, const User::Ptr& u) throw() { c->fire(ClientListener::UserUpdated(), c, u); }
+		virtual void on(Hello, NmdcHub*, const OnlineUser& u) throw() { c->fire(ClientListener::UserUpdated(), c, u); }
 		virtual void on(Search, NmdcHub*, const string& a, int b, int64_t d, int e, const string& f) throw() { c->fire(ClientListener::NmdcSearch(), c, a, b, d, e, f); }
 	} adapter;
 
@@ -221,7 +214,10 @@ private:
 
 	mutable CriticalSection cs;
 
-	User::NickMap users;
+	typedef HASH_MAP_X(string, OnlineUser*, noCaseStringHash, noCaseStringEq, noCaseStringLess) NickMap;
+	typedef NickMap::iterator NickIter;
+
+	NickMap users;
 
 	bool reconnect;
 	u_int32_t lastUpdate;
@@ -244,6 +240,10 @@ private:
 	void clearUsers();
 	void onLine(const string& aLine) throw();
 
+	OnlineUser& getUser(const string& aNick);
+	OnlineUser* findUser(const string& aNick);
+	void putUser(const string& aNick);
+
 	string fromNmdc(const string& str) const { return Text::acpToUtf8(str); }
 	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
 
@@ -264,6 +264,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.22 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.23 2005/04/12 23:24:13 arnetheduck Exp $
  */
 

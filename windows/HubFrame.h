@@ -187,11 +187,21 @@ private:
 		COLUMN_EMAIL, 
 		COLUMN_LAST
 	};
+
+	struct UpdateInfo {
+		UpdateInfo() { }
+		UpdateInfo(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) {	}
+
+		User::Ptr user;
+		Identity identity;
+	};
+
+
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const User::Ptr& u) : UserInfoBase(u), op(false) { 
-			update(); 
+		UserInfo(const UpdateInfo& u) : UserInfoBase(u.user), op(false) { 
+			update(u.identity); 
 		};
 
 		const tstring& getText(int col) const {
@@ -207,20 +217,19 @@ private:
 				}
 			}
 			if(col == COLUMN_SHARED) {
-				return compare(a->user->getBytesShared(), b->user->getBytesShared());
+				/// @todo return compare(a->user->getBytesShared(), b->user->getBytesShared());
 			}
 			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
 		}
 
-		void update() { 
-			columns[COLUMN_NICK] = Text::toT(user->getNick());
-			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(user->getBytesShared()));
-			columns[COLUMN_DESCRIPTION] = Text::toT(user->getDescription());
-			columns[COLUMN_TAG] = Text::toT(user->getTag());
-			columns[COLUMN_CONNECTION] = Text::toT(user->getConnection());
-			columns[COLUMN_EMAIL] = Text::toT(user->getEmail());
+		void update(const Identity& identity) { 
+			columns[COLUMN_NICK] = Text::toT(identity.getNick());
+			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
+			columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
+			columns[COLUMN_TAG] = Text::toT(identity.getTag());
+			/// @todo columns[COLUMN_CONNECTION] = Text::toT(i->getConnection());
+			columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
 			op = user->isSet(User::OP); 
-		
 		}
 
 		tstring columns[COLUMN_LAST];
@@ -294,7 +303,7 @@ private:
 	TStringMap tabParams;
 	bool tabMenuShown;
 
-	typedef vector<pair<User::Ptr, Speakers> > UpdateList;
+	typedef vector<pair<UpdateInfo, Speakers> > UpdateList;
 	typedef UpdateList::iterator UpdateIter;
 	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
 	typedef UserMap::iterator UserMapIter;
@@ -314,7 +323,7 @@ private:
 	
 	int findUser(const User::Ptr& aUser);
 
-	bool updateUser(const User::Ptr& u);
+	bool updateUser(const UpdateInfo& u);
 	void addAsFavorite();
 
 	bool getUserInfo() { return showUsers; }
@@ -356,26 +365,26 @@ private:
 	virtual void on(Connecting, Client*) throw();
 	virtual void on(Connected, Client*) throw();
 	virtual void on(BadPassword, Client*) throw();
-	virtual void on(UserUpdated, Client*, const User::Ptr&) throw();
-	virtual void on(UsersUpdated, Client*, const User::List&) throw();
-	virtual void on(UserRemoved, Client*, const User::Ptr&) throw();
+	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
+	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
+	virtual void on(UserRemoved, Client*, const OnlineUser&) throw();
 	virtual void on(Redirect, Client*, const string&) throw();
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(GetPassword, Client*) throw();
 	virtual void on(HubUpdated, Client*) throw();
 	virtual void on(Message, Client*, const string&) throw();
-	virtual void on(PrivateMessage, Client*, const User::Ptr&, const string&) throw();
+	virtual void on(PrivateMessage, Client*, const OnlineUser&, const string&) throw();
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); };
-	void speak(Speakers s, const User::Ptr& u) { 
+	void speak(Speakers s, const OnlineUser& u) { 
 		Lock l(updateCS);
-		updateList.push_back(make_pair(u, s));
+		updateList.push_back(make_pair(UpdateInfo(u), s));
 		updateUsers = true;
 	};
-	void speak(Speakers s, const User::Ptr& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u, line)); };
+	void speak(Speakers s, const OnlineUser& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u.getUser(), line)); };
 
 };
 /////////////////////////////////////////////////////////////////////////////
@@ -387,6 +396,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.60 2005/04/08 23:01:50 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.61 2005/04/12 23:24:03 arnetheduck Exp $
  */
 

@@ -74,42 +74,26 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 	private SearchManagerListener, private ClientManagerListener
 {
 public:
-	
 	/** Add a file to the queue. */
-	void add(const string& aFile, int64_t aSize, User::Ptr aUser, 
-		const string& aTarget, const TTHValue* root, 
-		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
-		bool addBad = true) throw(QueueException, FileException);
-	
+	void add(const string& aTarget, int64_t aSize, const TTHValue* root, User::Ptr aUser, const string& aSourceFile, 
+		bool utf8 = true, int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
-		string x = aUser->getNick();
-		string::size_type i = 0;
-		while((i = x.find('\\'), i) != string::npos)
-			x[i] = '_';
-		string file = Util::getAppPath() + "FileLists\\" + x;
-		// We use the searchString to store the start viewing directory for file lists
-		add(USER_LIST_NAME, -1, aUser, file, NULL, 
-			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
-			true);
-	}
-
+	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
+	/** Queue a partial file list download */
 	void addPfs(const User::Ptr& aUser, const string& aDir) throw();
-
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
-
 	/** Add a directory to the queue (downloads filelist and matches the directory). */
 	void addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
 	
-	int matchListing(DirectoryListing* dl) throw();
+	int matchListing(const DirectoryListing& dl) throw();
 
 	/** Move the target location of a queued item. Running items are silently ignored */
 	void move(const string& aSource, const string& aTarget) throw();
 
 	void remove(const string& aTarget) throw();
 	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true) throw();
-	void removeSources(User::Ptr& aUser, int reason) throw();
+	void removeSource(User::Ptr& aUser, int reason) throw();
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
@@ -224,10 +208,10 @@ private:
 	/** Add a source to an existing queue item */
 	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, Flags::MaskType addBad, bool utf8) throw(QueueException, FileException);
 
-	int matchFiles(DirectoryListing::Directory* dir) throw();
+	int matchFiles(const DirectoryListing::Directory* dir) throw();
 	void processList(const string& name, User::Ptr& user, int flags);
 
-	void load(SimpleXML* aXml);
+	void load(const SimpleXML& aXml);
 
 	void setDirty() {
 		if(!dirty) {
@@ -251,6 +235,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.70 2005/03/14 10:37:21 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.71 2005/04/12 23:24:14 arnetheduck Exp $
  */
 

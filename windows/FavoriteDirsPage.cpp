@@ -26,7 +26,7 @@
 
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 
 PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, ResourceManager::SETTINGS_FAVORITE_DIRS },
@@ -45,7 +45,7 @@ LRESULT FavoriteDirsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	// Prepare shared dir list
 	ctrlDirectories.InsertColumn(0, CTSTRING(FAVORITE_DIR_NAME), LVCFMT_LEFT, 80, 0);
 	ctrlDirectories.InsertColumn(1, CTSTRING(DIRECTORY), LVCFMT_LEFT, 197, 1);
-	StringPairList directories = HubManager::getInstance()->getFavoriteDirs();
+	StringPairList directories = FavoriteManager::getInstance()->getFavoriteDirs();
 	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
 		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->second));
@@ -112,7 +112,7 @@ LRESULT FavoriteDirsPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		item.iItem = i;
 		item.iSubItem = 1;
 		ctrlDirectories.GetItem(&item);
-		if(HubManager::getInstance()->removeFavoriteDir(Text::fromT(buf)))
+		if(FavoriteManager::getInstance()->removeFavoriteDir(Text::fromT(buf)))
 			ctrlDirectories.DeleteItem(i);
 	}
 
@@ -139,7 +139,7 @@ LRESULT FavoriteDirsPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		virt.description = TSTRING(FAVORITE_DIR_NAME_LONG);
 		virt.line = tstring(buf);
 		if(virt.DoModal(m_hWnd) == IDOK) {
-			if (HubManager::getInstance()->renameFavoriteDir(Text::fromT(buf), Text::fromT(virt.line))) {
+			if (FavoriteManager::getInstance()->renameFavoriteDir(Text::fromT(buf), Text::fromT(virt.line))) {
 				ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
 			} else {
 				MessageBox(CTSTRING(DIRECTORY_ADD_ERROR));
@@ -169,7 +169,7 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 	virt.description = TSTRING(FAVORITE_DIR_NAME_LONG);
 	virt.line = Util::getLastDir(path);
 	if(virt.DoModal(m_hWnd) == IDOK) {
-		if (HubManager::getInstance()->addFavoriteDir(Text::fromT(path), Text::fromT(virt.line))) {
+		if (FavoriteManager::getInstance()->addFavoriteDir(Text::fromT(path), Text::fromT(virt.line))) {
 			int j = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), virt.line );
 			ctrlDirectories.SetItemText(j, 1, path.c_str());
 		} else {
@@ -180,5 +180,5 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: FavoriteDirsPage.cpp,v 1.6 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: FavoriteDirsPage.cpp,v 1.7 2005/04/12 23:24:04 arnetheduck Exp $
  */

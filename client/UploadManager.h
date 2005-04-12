@@ -121,23 +121,7 @@ public:
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
 	
 	/** @param aUser Reserve an upload slot for this user and connect. */
-	void reserveSlot(User::Ptr& aUser) {
-		{
-			Lock l(cs);
-			reservedSlots[aUser] = GET_TICK();
-		}
-		if(aUser->isOnline())
-			aUser->connect();
-	}
-
-	/** @param aUser Reserve an upload slot for this user. */
-	void reserveSlot(const User::Ptr& aUser) {
-		{
-			Lock l(cs);
-			reservedSlots[aUser] = GET_TICK();
-		}
-	}
-
+	void reserveSlot(const User::Ptr& aUser);
 
 	/** @internal */
 	void addConnection(UserConnection::Ptr conn) {
@@ -170,7 +154,7 @@ private:
 	}
 
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
 	
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
@@ -198,5 +182,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.78 2005/01/12 01:16:55 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.79 2005/04/12 23:24:13 arnetheduck Exp $
  */

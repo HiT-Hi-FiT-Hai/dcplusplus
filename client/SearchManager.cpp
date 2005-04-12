@@ -34,13 +34,13 @@ SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, cons
 	file(aFile), size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
 	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(true), ref(1) { }
 
-string SearchResult::toSR() const {
+string SearchResult::toSR(const Client& c) const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
 	// Directory:	"$SR %s %s %d/%d%c%s (%s)|"
 	string tmp;
 	tmp.reserve(128);
 	tmp.append("$SR ", 4);
-	tmp.append(Text::utf8ToAcp(user->getNick()));
+	/// @todo tmp.append(Text::utf8ToAcp(user->getNick()));
 	tmp.append(1, ' ');
 	string acpFile = utf8 ? Text::utf8ToAcp(file) : file;
 	if(type == TYPE_FILE) {
@@ -243,7 +243,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		if(c.getParameters().empty())
 			return;
 
-		User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
+		User::Ptr p = ClientManager::getInstance()->findUser(c.getFrom());
 		if(!p)
 			return;
 
@@ -264,9 +264,9 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 
 		if(!name.empty() && freeSlots != -1 && size != -1) {
 			SearchResult::Types type = (name[name.length() - 1] == '\\' ? SearchResult::TYPE_DIRECTORY : SearchResult::TYPE_FILE);
-			SearchResult* sr = new SearchResult(p, type, p->getSlots(), freeSlots, size, name, p->getClientName(), "0.0.0.0", NULL, true);
-			fire(SearchManagerListener::SR(), sr);
-			sr->decRef();
+			/// @todo SearchResult* sr = new SearchResult(p, type, p->getSlots(), freeSlots, size, name, p->getClientName(), "0.0.0.0", NULL, true);
+			/// @todo fire(SearchManagerListener::SR(), sr);
+			/// @todo sr->decRef();
 		}
 	} else if(x.compare(1, 4, "SCH ") == 0 && x[x.length() - 1] == 0x0a) {
 		try {
@@ -281,7 +281,7 @@ void SearchManager::respond(const AdcCommand& adc) {
 	if(adc.getFrom().toBase32() == SETTING(CLIENT_ID))
 		return;
 
-	User::Ptr p = ClientManager::getInstance()->getUser(adc.getFrom(), false);
+	User::Ptr p = ClientManager::getInstance()->findUser(adc.getFrom());
 	if(!p)
 		return;
 
@@ -295,29 +295,13 @@ void SearchManager::respond(const AdcCommand& adc) {
 	if(results.empty())
 		return;
 
-	if(!p->getIp().empty() && p->getUDPPort() != 0) {
-		Socket s;
-		try {
-			s.create(Socket::TYPE_UDP);
-			for(SearchResult::Iter i = results.begin(); i != results.end(); ++i) {
-				if(token.empty())
-					s.writeTo(p->getIp(), p->getUDPPort(), (*i)->toRES(AdcCommand::TYPE_UDP).toString());
-				else
-					s.writeTo(p->getIp(), p->getUDPPort(), (*i)->toRES(AdcCommand::TYPE_UDP).addParam("TO", token).toString());
-				(*i)->decRef();
-			}
-		} catch(const SocketException&) {
-			dcdebug("Search caught error\n");
-		}
-	} else {
-		for(SearchResult::Iter i = results.begin(); i != results.end(); ++i) {
-			AdcCommand cmd = (*i)->toRES(AdcCommand::TYPE_DIRECT);
-			cmd.setTo(adc.getFrom());
-			if(!token.empty())
-				cmd.addParam("TO", token);
-			p->send(cmd.toString());
-			(*i)->decRef();
-		}
+	for(SearchResult::Iter i = results.begin(); i != results.end(); ++i) {
+		AdcCommand cmd = (*i)->toRES(AdcCommand::TYPE_UDP);
+		cmd.setTo(adc.getFrom());
+		if(!token.empty())
+			cmd.addParam("TO", token);
+		ClientManager::getInstance()->send(cmd);
+		(*i)->decRef();
 	}
 }
 
@@ -339,6 +323,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.53 2005/03/19 09:02:45 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.54 2005/04/12 23:24:13 arnetheduck Exp $
  */
 

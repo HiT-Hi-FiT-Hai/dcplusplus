@@ -24,7 +24,7 @@
 #include "CommandDlg.h"
 
 #include "../client/SettingsManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "WinUtil.h"
 
 PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };
@@ -88,6 +88,6 @@ LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.49 2005/03/19 13:38:12 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.50 2005/04/12 23:24:02 arnetheduck Exp $
  */
 

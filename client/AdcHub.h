@@ -25,12 +25,12 @@ class ClientManager;
 class AdcHub : public Client, public CommandHandler<AdcHub> {
 public:
 
-	virtual void connect(const User* user);
-	virtual void connect(const User* user, string const& token);
+	virtual void connect(const OnlineUser& user);
+	virtual void connect(const OnlineUser& user, string const& token);
 	virtual void disconnect();
 	
 	virtual void hubMessage(const string& aMessage);
-	virtual void privateMessage(const User* user, const string& aMessage);
+	virtual void privateMessage(const OnlineUser& user, const string& aMessage);
 	virtual void send(const string& aMessage) { socket->write(aMessage); };
 	virtual void sendUserCmd(const string& aUserCmd) { send(aUserCmd); }
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
@@ -39,11 +39,8 @@ public:
 
 	virtual size_t getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };
-	virtual const string& getName() const { return (hub ? hub->getNick() : getAddressPort()); };
+	virtual const string& getName() const { return (!hub.getNick().empty() ? hub.getNick() : getAddressPort()); };
 	virtual bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
-
-	virtual User::NickMap& lockUserList() { return nickMap; };
-	virtual void unlockUserList() { };
 
 	template<typename T> void handle(T, AdcCommand&) { 
 		//Speaker<AdcHubListener>::fire(t, this, c);
@@ -79,9 +76,12 @@ private:
 	AdcHub(const AdcHub&);
 	AdcHub& operator=(const AdcHub&);
 	virtual ~AdcHub() throw();
-	User::NickMap nickMap;
-	User::CIDMap cidMap;
-	User::Ptr hub;
+
+	typedef HASH_MAP_X(CID, OnlineUser*, CID::Hash, equal_to<CID>, less<CID>) CIDMap;
+	typedef CIDMap::iterator CIDIter;
+
+	CIDMap users;
+	Identity hub;
 	StringMap lastInfoMap;
 	CriticalSection cs;
 
@@ -92,6 +92,10 @@ private:
 	virtual string checkNick(const string& nick);
 	virtual string getHubURL();
 	
+	OnlineUser& getUser(const CID& cid);
+	OnlineUser* findUser(const CID& cid);
+	void putUser(const CID& cid);
+
 	void clearUsers();
 
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
@@ -102,5 +106,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.28 2005/03/14 10:37:21 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.29 2005/04/12 23:24:11 arnetheduck Exp $
  */

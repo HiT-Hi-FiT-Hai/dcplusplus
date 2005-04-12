@@ -83,8 +83,8 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlDown.SetWindowText(CTSTRING(MOVE_DOWN));
 	ctrlDown.SetFont(WinUtil::font);
 
-	HubManager::getInstance()->addListener(this);
-	updateList(HubManager::getInstance()->getFavoriteHubs());
+	FavoriteManager::getInstance()->addListener(this);
+	updateList(FavoriteManager::getInstance()->getFavoriteHubs());
 	
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));
@@ -169,7 +169,7 @@ LRESULT FavoriteHubsFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i = -1;
 	if(!BOOLSETTING(CONFIRM_HUB_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) {
 		while( (i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			HubManager::getInstance()->removeFavorite((FavoriteHubEntry*)ctrlHubs.GetItemData(i));
+			FavoriteManager::getInstance()->removeFavorite((FavoriteHubEntry*)ctrlHubs.GetItemData(i));
 		}
 	}
 	return 0;
@@ -201,7 +201,7 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	FavHubProperties dlg(&e);
 
 	if(dlg.DoModal((HWND)*this) == IDOK)
-		HubManager::getInstance()->addFavorite(e);
+		FavoriteManager::getInstance()->addFavorite(e);
 	return 0;
 }
 
@@ -216,7 +216,7 @@ bool FavoriteHubsFrame::checkNick() {
 LRESULT FavoriteHubsFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	nosave = true;
 	int j = ctrlHubs.GetItemCount();
-	FavoriteHubEntry::List& fh = HubManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	ctrlHubs.SetRedraw(FALSE);
 	for(int i = 1; i < j; ++i) {
 		if(ctrlHubs.GetItemState(i, LVIS_SELECTED)) {
@@ -230,13 +230,13 @@ LRESULT FavoriteHubsFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	}
 	ctrlHubs.SetRedraw(TRUE);
 	nosave = false;
-	HubManager::getInstance()->save();
+	FavoriteManager::getInstance()->save();
 	return 0;
 }
 
 LRESULT FavoriteHubsFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int j = ctrlHubs.GetItemCount() - 2;
-	FavoriteHubEntry::List& fh = HubManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 
 	nosave = true;
 	ctrlHubs.SetRedraw(FALSE);
@@ -252,7 +252,7 @@ LRESULT FavoriteHubsFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	}
 	ctrlHubs.SetRedraw(TRUE);
 	nosave = false;
-	HubManager::getInstance()->save();
+	FavoriteManager::getInstance()->save();
 	return 0;
 }
 
@@ -261,13 +261,13 @@ LRESULT FavoriteHubsFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	if(!nosave && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
 		FavoriteHubEntry* f = (FavoriteHubEntry*)ctrlHubs.GetItemData(l->iItem);
 		f->setConnect(ctrlHubs.GetCheckState(l->iItem) != FALSE);
-		HubManager::getInstance()->save();
+		FavoriteManager::getInstance()->save();
 	}
 	return 0;
 }
 
 LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	HubManager::getInstance()->removeListener(this);
+	FavoriteManager::getInstance()->removeListener(this);
 	
 	WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::FAVORITESFRAME_ORDER, 
 		SettingsManager::FAVORITESFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
@@ -317,6 +317,6 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.35 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.36 2005/04/12 23:24:03 arnetheduck Exp $
  */
 

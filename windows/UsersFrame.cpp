@@ -57,13 +57,13 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.AppendMenu(MF_STRING, IDC_EDIT, CTSTRING(PROPERTIES));
 	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
-	HubManager::getInstance()->addListener(this);
+	FavoriteManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
 
-	User::List ul = HubManager::getInstance()->getFavoriteUsers();
+	FavoriteUser::List ul = FavoriteManager::getInstance()->getFavoriteUsers();
 	ctrlUsers.SetRedraw(FALSE);
-	for(User::Iter i = ul.begin(); i != ul.end(); ++i) {
-		addUser(*i);
+	for(FavoriteUser::Iter i = ul.begin(); i != ul.end(); ++i) {
+		/// @todo addUser(*i);
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
@@ -126,13 +126,13 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		dcassert(i != -1);
 		LineDlg dlg;
 		dlg.description = TSTRING(DESCRIPTION);
-		dlg.title = Text::toT(ui->user->getNick());
-		dlg.line = Text::toT(ui->user->getUserDescription());
+		/// @todo dlg.title = Text::toT(ui->user->getNick());
+		/// @todo dlg.line = Text::toT(ui->user->getUserDescription());
 		if(dlg.DoModal(m_hWnd)) {
-			ui->user->setUserDescription(Text::fromT(dlg.line));
-			ui->update();
+			/// @todo ui->user->setUserDescription(Text::fromT(dlg.line));
+			/// @todo ui->update();
 			ctrlUsers.updateItem(i);
-			HubManager::getInstance()->save();
+			FavoriteManager::getInstance()->save();
 		}
 	}
 	return 0;
@@ -141,31 +141,31 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
-		ctrlUsers.getItemData(l->iItem)->user->setFavoriteGrantSlot(ctrlUsers.GetCheckState(l->iItem) != FALSE);
-		HubManager::getInstance()->save();
+		/// @todo ctrlUsers.getItemData(l->iItem)->user->setFavoriteGrantSlot(ctrlUsers.GetCheckState(l->iItem) != FALSE);
+		FavoriteManager::getInstance()->save();
 	}
 	return 0;
 } 
 
 void UsersFrame::addUser(const User::Ptr& aUser) {
 	int i = ctrlUsers.insertItem(new UserInfo(aUser), 0);
-	bool b = aUser->getFavoriteGrantSlot();
-	ctrlUsers.SetCheckState(i, b);
+	/// @todo bool b = aUser->getFavoriteGrantSlot();
+	//ctrlUsers.SetCheckState(i, b);
 }
 
 void UsersFrame::updateUser(const User::Ptr& aUser) {
-	int i = -1;
+/** @todo	int i = -1;
 	while((i = ctrlUsers.findItem(Text::toT(aUser->getNick()), i)) != -1) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
 			ui->update();
 			ctrlUsers.updateItem(i);
 		}
-	}
+	} */
 }
 
 void UsersFrame::removeUser(const User::Ptr& aUser) {
-	int i = -1;
+/**	@todo int i = -1;
 	while((i = ctrlUsers.findItem(Text::toT(aUser->getNick()), i)) != -1) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
@@ -173,12 +173,12 @@ void UsersFrame::removeUser(const User::Ptr& aUser) {
 			delete ui;
 			return;
 		}
-	}
+	} */
 }
 
 LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
-		HubManager::getInstance()->removeListener(this);
+		FavoriteManager::getInstance()->removeListener(this);
 		ClientManager::getInstance()->removeListener(this);
 
 		closed = true;
@@ -199,6 +199,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.33 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.34 2005/04/12 23:24:03 arnetheduck Exp $
  */
 

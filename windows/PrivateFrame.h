@@ -140,9 +140,9 @@ public:
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const tstring& msg) {
 		if(user && user->isOnline()) {
-			user->privateMessage(Text::fromT(msg));
-			string s = "<" + user->getClientNick() + "> " + Text::fromT(msg);
-			addLine(Text::toT(s));
+			/// @todo user->privateMessage(Text::fromT(msg));
+			/// @todo string s = "<" + user->getClientNick() + "> " + Text::fromT(msg);
+			/// @todo addLine(Text::toT(s));
 		}
 	}
 	
@@ -178,14 +178,14 @@ private:
 
 	void updateTitle() {
 		if(user->isOnline()) {
-			SetWindowText(Text::toT(user->getFullNick()).c_str());
+			/// @todo SetWindowText(Text::toT(user->getFullNick()).c_str());
 			setTabColor(RGB(0, 255, 255));
 		} else {
-			if(user->getClientName() == STRING(OFFLINE)) {
+			/**if(user->getClientName() == STRING(OFFLINE)) {
 				SetWindowText(Text::toT(user->getFullNick()).c_str());
 			} else {
 				SetWindowText((Text::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
-			}
+			}*/
 			setTabColor(RGB(255, 0, 0));
 		}
 	}
@@ -201,6 +201,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.26 2005/01/05 19:30:22 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.27 2005/04/12 23:24:04 arnetheduck Exp $
  */
 

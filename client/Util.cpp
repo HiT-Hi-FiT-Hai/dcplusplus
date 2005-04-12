@@ -285,7 +285,7 @@ string Util::getShortTimeString() {
 	} else {
 		strftime(buf, 254, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm);
 	}
-	return buf;
+	return Text::acpToUtf8(buf);
 }
 
 /**
@@ -877,6 +877,6 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.85 2005/04/09 15:31:02 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.86 2005/04/12 23:24:14 arnetheduck Exp $
  */
 

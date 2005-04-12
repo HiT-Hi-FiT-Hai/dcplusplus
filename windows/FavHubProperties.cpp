@@ -23,7 +23,7 @@
 
 #include "FavHubProperties.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/ResourceManager.h"
 
 LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
@@ -82,7 +82,7 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		entry->setPassword(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBUSERDESCR, buf, 256);
 		entry->setUserDescription(Text::fromT(buf));
-		HubManager::getInstance()->save();
+		FavoriteManager::getInstance()->save();
 	}
 	EndDialog(wID);
 	return 0;
@@ -124,5 +124,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file
- * $Id: FavHubProperties.cpp,v 1.11 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.12 2005/04/12 23:24:03 arnetheduck Exp $
  */

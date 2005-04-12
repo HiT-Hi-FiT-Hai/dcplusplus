@@ -30,7 +30,7 @@
 #include "../client/LogManager.h"
 #include "../client/UploadManager.h"
 #include "../client/ShareManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
 
 CriticalSection PrivateFrame::cs;
@@ -78,8 +78,8 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 		bool found = false;
 		for(i = frames.begin(); i != frames.end(); ++i) {
 			if( (!i->first->isOnline()) && 
-				(i->first->getNick() == aUser->getNick()) &&
-				(i->first->getLastHubAddress() == aUser->getLastHubAddress()) ) {
+				(i->first->getFirstNick() == aUser->getFirstNick()) /*&&
+				(i->first->getLastHubAddress() == aUser->getLastHubAddress())*/ ) {
 				
 				found = true;
 				p = i->second;
@@ -100,7 +100,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 			p->addLine(aMessage);
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
-				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->getConnection().empty()))
+				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->isSet(User::BOT)))
 					p->sendMessage(Text::toT(Util::getAwayMessage()));
 			}
 
@@ -182,19 +182,19 @@ void PrivateFrame::onEnter()
 			} else if(Util::stricmp(s.c_str(), _T("close")) == 0) {
 				PostMessage(WM_CLOSE);
 			} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
-				HubManager::getInstance()->addFavoriteUser(getUser());
+				FavoriteManager::getInstance()->addFavoriteUser(getUser());
 				addLine(TSTRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
 				StringMap params;
-				params["user"] = user->getNick();
-				params["hub"] = user->getClientName();
+				params["user"] = user->getFirstNick();
+				/** @todo params["hub"] = user->getClientName();
 				params["mynick"] = user->getClientNick(); 
 				params["mycid"] = user->getClientCID().toBase32(); 
 				params["cid"] = user->getCID().toBase32(); 
-				params["hubaddr"] = user->getClientAddressPort();
+				params["hubaddr"] = user->getClientAddressPort();*/
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
@@ -246,11 +246,12 @@ void PrivateFrame::addLine(const tstring& aLine) {
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
+		/** @todo 
 		params["user"] = user->getNick();
 		params["hub"] = user->getClientName();
 		params["hubaddr"] = user->getClientAddressPort();
 		params["mynick"] = user->getClientNick(); 
-		params["mycid"] = user->getClientCID().toBase32(); 
+		params["mycid"] = user->getClientCID().toBase32(); */
 		params["cid"] = user->getCID().toBase32(); 
 		LOG(LogManager::PM, params);
 	}
@@ -270,7 +271,7 @@ void PrivateFrame::addLine(const tstring& aLine) {
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
+	/// @todo prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -283,14 +284,14 @@ LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 void PrivateFrame::runUserCommand(UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
-
+/** @todo
 	ucParams["mynick"] = user->getClientNick();
 	ucParams["mycid"] = user->getClientCID().toBase32();
-
 	user->getParams(ucParams);
 	user->clientEscapeParams(ucParams);
 
 	user->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
+	*/
 	return;
 };
 
@@ -320,7 +321,7 @@ LRESULT PrivateFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 }
 
 LRESULT PrivateFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	HubManager::getInstance()->addFavoriteUser(user);
+	FavoriteManager::getInstance()->addFavoriteUser(user);
 	return 0;
 }
 
@@ -374,8 +375,8 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 void PrivateFrame::readLog() {
 	StringMap params;	
-	params["user"] = user->getNick();	
-	params["hub"] = user->getClientName();
+	params["user"] = user->getFirstNick();	
+	/** @todo params["hub"] = user->getClientName();
 	params["mynick"] = user->getClientNick();	
 	params["mycid"] = user->getClientCID().toBase32();	
 	params["cid"] = user->getCID().toBase32();	
@@ -404,13 +405,13 @@ void PrivateFrame::readLog() {
 
 			f.close();
 		}
-	} catch(FileException & /*e*/){
-	}
+	} catch(const FileException& ){
+	}*/
 }
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.45 2005/01/12 01:16:48 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.46 2005/04/12 23:24:02 arnetheduck Exp $
  */
 
 

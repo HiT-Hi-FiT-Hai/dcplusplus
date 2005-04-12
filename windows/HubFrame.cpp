@@ -29,7 +29,7 @@
 #include "../client/ShareManager.h"
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/LogManager.h"
 #include "../client/AdcCommand.h"
 
@@ -113,7 +113,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	bHandled = FALSE;
 	client->connect();
 	
-	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 	if(fhe != NULL){
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
@@ -294,7 +294,7 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 		dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
 		return ctrlUsers.getSortPos(ui);
 	}
-	return ctrlUsers.findItem(Text::toT(aUser->getNick()));
+	return ctrlUsers.findItem(Text::toT(aUser->getFirstNick()));
 }
 
 void HubFrame::addAsFavorite() {
@@ -306,7 +306,7 @@ void HubFrame::addAsFavorite() {
 	aEntry.setDescription(Text::fromT(buf));
 	aEntry.setConnect(false);
 	aEntry.setNick(client->getNick());
-	HubManager::getInstance()->addFavorite(aEntry);
+	FavoriteManager::getInstance()->addFavorite(aEntry);
 	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
 }
 
@@ -316,7 +316,7 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		string nicks;
 
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			nicks += (ctrlUsers.getItemData(i))->user->getNick();
+			nicks += (ctrlUsers.getItemData(i))->user->getFirstNick();
 			nicks += ' ';
 		}
 		if(!nicks.empty()) {
@@ -337,19 +337,19 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 }
 
 
-bool HubFrame::updateUser(const User::Ptr& u) {
-	int i = findUser(u);
+bool HubFrame::updateUser(const UpdateInfo& u) {
+	int i = findUser(u.user);
 	if(i == -1) {
 		UserInfo* ui = new UserInfo(u);
-		userMap.insert(make_pair(u, ui));
-		ctrlUsers.insertItem(ui, getImage(u));
+		userMap.insert(make_pair(u.user, ui));
+		ctrlUsers.insertItem(ui, getImage(u.user));
 		return true;
 	} else {
 		UserInfo* ui = ctrlUsers.getItemData(i);
-		bool resort = (ui->getOp() != u->isSet(User::OP));
-		ctrlUsers.getItemData(i)->update();
+		bool resort = (ui->getOp() != u.user->isSet(User::OP));
+		ctrlUsers.getItemData(i)->update(u.identity);
 		ctrlUsers.updateItem(i);
-		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
+		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
 		if(resort)
 			ctrlUsers.resort();
 		return false;
@@ -363,13 +363,13 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		{
 			Lock l(updateCS);
 			for(UpdateIter i = updateList.begin(); i != updateList.end(); ++i) {
-				User::Ptr& u = i->first;
+				UpdateInfo& u = i->first;
 				switch(i->second) {
 				case UPDATE_USER:
 					if(updateUser(u)) {
-						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
+/** @todo						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
 							addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u->getNick()));
-						}
+						} */
 					} else {
 						resort = true;
 					}
@@ -380,15 +380,15 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 					
 					break;
 				case REMOVE_USER:
-					int j = findUser(u);
+					int j = findUser(u.user);
 					if( j != -1 ) {
 						UserInfo* ui = ctrlUsers.getItemData(j);
 						ctrlUsers.DeleteItem(j);
-						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
+/** @todo						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
 							addLine(Text::toT("*** " + STRING(PARTS) + u->getNick()));
-						}
-						dcassert(userMap[u] == ui);
-						userMap.erase(u);
+						}*/
+						dcassert(userMap[u.user] == ui);
+						userMap.erase(u.user);
 						delete ui;
 					}
 					break;
@@ -440,7 +440,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->user)) {
 				PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
@@ -448,7 +448,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
 				PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
 		}
 		delete i;
@@ -517,7 +517,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	} else {
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
-		HubManager::getInstance()->removeUserCommand(Text::fromT(server));
+		FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
 		userMap.clear();
 
@@ -531,7 +531,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER, 
 			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 		if(fhe != NULL && !IsIconic()){
 			CRect rc;
 			
@@ -548,7 +548,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			fhe->setLeft((u_int16_t)(rc.left > 0 ? rc.left : 0));
 			fhe->setRight((u_int16_t)(rc.right > 0 ? rc.right : 0));
 
-			HubManager::getInstance()->save();
+			FavoriteManager::getInstance()->save();
 		}
 
 		bHandled = FALSE;
@@ -726,9 +726,9 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
 			StringMap tmp = ucParams;
-			u->user->getParams(tmp);
+			/**@todo u->user->getParams(tmp);
 			client->escapeParams(tmp);
-			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
 		}
 	}
 	return;
@@ -940,12 +940,12 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	bHandled = FALSE;
 	if((wParam == BST_CHECKED)) {
 		showUsers = true;
-		User::NickMap& lst = client->lockUserList();
+/** @todo		User::NickMap& lst = client->lockUserList();
 		ctrlUsers.SetRedraw(FALSE);
 		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
 			updateUser(i->second);
 		}
-		client->unlockUserList();
+		client->unlockUserList();*/
 		ctrlUsers.SetRedraw(TRUE);
 		ctrlUsers.resort();
 	} else {
@@ -1063,23 +1063,23 @@ void HubFrame::on(Connected, Client*) throw() {
 void HubFrame::on(BadPassword, Client*) throw() { 
 	client->setPassword(Util::emptyString);
 }
-void HubFrame::on(UserUpdated, Client*, const User::Ptr& user) throw() { 
-	if(getUserInfo() && !user->isSet(User::HIDDEN)) 
+void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() { 
+	///@todo if(getUserInfo() && !user->isSet(User::HIDDEN)) 
 		speak(UPDATE_USER, user);
 }
-void HubFrame::on(UsersUpdated, Client*, const User::List& aList) throw() {
+void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
 	Lock l(updateCS);
 	updateList.reserve(aList.size());
-	for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-		if(!(*i)->isSet(User::HIDDEN))
-			updateList.push_back(make_pair(*i, UPDATE_USERS));
+	for(OnlineUser::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+		if(!(*i)->getIdentity().isHidden())
+			updateList.push_back(make_pair(UpdateInfo(*(*i)), UPDATE_USERS));
 	}
 	if(!updateList.empty()) {
 		PostMessage(WM_SPEAKER, UPDATE_USERS);
 	}
 }
 
-void HubFrame::on(UserRemoved, Client*, const User::Ptr& user) throw() {
+void HubFrame::on(UserRemoved, Client*, const OnlineUser& user) throw() {
 	if(getUserInfo()) 
 		speak(REMOVE_USER, user);
 }
@@ -1123,7 +1123,7 @@ void HubFrame::on(Message, Client*, const string& line) throw() {
 		speak(ADD_CHAT_LINE, Util::toDOS(line));
 	}
 }
-void HubFrame::on(PrivateMessage, Client*, const User::Ptr& user, const string& line) throw() { 
+void HubFrame::on(PrivateMessage, Client*, const OnlineUser& user, const string& line) throw() { 
 	speak(PRIVATE_MESSAGE, user, Util::toDOS(line));
 }
 void HubFrame::on(NickTaken, Client*) throw() { 
@@ -1136,5 +1136,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.104 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.105 2005/04/12 23:24:04 arnetheduck Exp $
  */

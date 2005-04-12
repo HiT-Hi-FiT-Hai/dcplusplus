@@ -23,7 +23,7 @@
 
 #include "BufferedSocket.h"
 
-#include "HubManager.h"
+#include "FavoriteManager.h"
 
 Client::Counts Client::counts;
 
@@ -43,7 +43,7 @@ Client::~Client() throw() {
 }
 
 void Client::reloadSettings() {
-	FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(getHubURL());
+	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubURL());
 	if(hub) {
 		setNick(checkNick(hub->getNick(true)));
 		setDescription(hub->getUserDescription());
@@ -87,8 +87,8 @@ string Client::getLocalIp() const {
 	if(!SETTING(SERVER).empty()) {
 		return Socket::resolve(SETTING(SERVER));
 	}
-	if(getMe() && !getMe()->getIp().empty())
-		return getMe()->getIp();
+	/// @todo if(getMe() && !getMe()->getIp().empty())
+		//return getMe()->getIp();
 
 	if(socket == NULL)
 		return Util::getLocalIp();
@@ -100,5 +100,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.82 2005/02/19 21:58:30 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.83 2005/04/12 23:24:12 arnetheduck Exp $
  */

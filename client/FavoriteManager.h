@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
-#define AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_
+#ifndef FAVORITE_MANAGER_H
+#define FAVORITE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -106,7 +106,7 @@ private:
 	string nick;
 };
 
-class HubManagerListener {
+class FavoriteManagerListener {
 public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
@@ -132,7 +132,7 @@ class SimpleXML;
 /**
  * Public hub list, favorites (hub&user). Assumed to be called only by UI thread.
  */
-class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>,
+class FavoriteManager : public Speaker<FavoriteManagerListener>, private HttpConnectionListener, public Singleton<FavoriteManager>,
 	private SettingsManagerListener
 {
 public:
@@ -153,10 +153,13 @@ public:
 	bool isDownloading() { return running; };
 
 // Favorite Users
-	User::List& getFavoriteUsers() { return users; };
+	FavoriteUser::List& getFavoriteUsers() { return users; };
 	
 	void addFavoriteUser(User::Ptr& aUser);
 	void removeFavoriteUser(User::Ptr& aUser);
+
+	/// @todo
+	bool hasSlot(User::Ptr& ptr) { return false; }
 
 // Favorite Hubs
 	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
@@ -201,7 +204,7 @@ private:
 	UserCommand::List userCommands;
 	int lastId;
 
-	User::List users;
+	FavoriteUser::List users;
 
 	CriticalSection cs;
 
@@ -218,13 +221,13 @@ private:
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
-	friend class Singleton<HubManager>;
+	friend class Singleton<FavoriteManager>;
 	
-	HubManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
+	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
 	}
 
-	virtual ~HubManager() throw() {
+	virtual ~FavoriteManager() throw() {
 		SettingsManager::getInstance()->removeListener(this);
 		if(c) {
 			c->removeListener(this);
@@ -265,10 +268,10 @@ private:
 	
 };
 
-#endif // !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
+#endif // FAVORITE_MANAGER_H
 
 /**
  * @file
- * $Id: HubManager.h,v 1.65 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.1 2005/04/12 23:24:12 arnetheduck Exp $
  */
 

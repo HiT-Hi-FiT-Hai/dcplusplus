@@ -33,7 +33,7 @@
 
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 
 #define STATUS_MESSAGE_MAP 9
 
@@ -95,8 +95,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET_DIR, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
@@ -155,10 +155,10 @@ public:
 	}
 	
 	void setWindowTitle() {
-		if(error.empty())
+/**@todo		if(error.empty())
 			SetWindowText(Text::toT(dl->getUser()->getFullNick()).c_str());
 		else
-			SetWindowText(error.c_str());		
+			SetWindowText(error.c_str());		*/
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -335,5 +335,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.52 2005/04/08 23:01:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.53 2005/04/12 23:24:02 arnetheduck Exp $
  */

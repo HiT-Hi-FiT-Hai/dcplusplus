@@ -29,7 +29,7 @@
 #include "ClientManager.h"
 #include "HashManager.h"
 #include "LogManager.h"
-#include "HubManager.h"
+#include "FavoriteManager.h"
 #include "SettingsManager.h"
 #include "FinishedManager.h"
 #include "ADLSearch.h"
@@ -56,7 +56,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
 	ShareManager::newInstance();
-	HubManager::newInstance();
+	FavoriteManager::newInstance();
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
@@ -67,7 +67,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
 	}
 
-	HubManager::getInstance()->load();
+	FavoriteManager::getInstance()->load();
 	int i;
 	for(i = 0; i < SettingsManager::SPEED_LAST; i++) {
 		if(SETTING(CONNECTION) == SettingsManager::connectionSpeeds[i])
@@ -106,7 +106,7 @@ void shutdown() {
 	ConnectionManager::deleteInstance();
 	SearchManager::deleteInstance();
 	ClientManager::deleteInstance();
-	HubManager::deleteInstance();
+	FavoriteManager::deleteInstance();
 	HashManager::deleteInstance();
 	LogManager::deleteInstance();
 	SettingsManager::deleteInstance();
@@ -116,6 +116,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.35 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.36 2005/04/12 23:24:13 arnetheduck Exp $
  */
 

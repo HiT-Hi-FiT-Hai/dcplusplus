@@ -236,7 +236,7 @@ void ListLoader::endTag(const string& name, const string&) {
 	}
 }
 
-string DirectoryListing::getPath(Directory* d) {
+string DirectoryListing::getPath(const Directory* d) const {
 	if(d == root)
 		return "";
 
@@ -290,11 +290,13 @@ void DirectoryListing::download(const string& aDir, const string& aTarget, bool 
 }
 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view, bool highPrio) {
-	int flags = (getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0) |
-		(view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
+	int flags = (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
-	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
-		aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), 
+		getPath(aFile) + aFile->getName(), getUtf8(), flags);
+
+	if(highPrio)
+		QueueManager::getInstance()->setPriority(aTarget, QueueItem::HIGHEST);
 }
 
 DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directory* current) {
@@ -332,5 +334,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.50 2005/03/20 15:35:30 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.51 2005/04/12 23:24:12 arnetheduck Exp $
  */

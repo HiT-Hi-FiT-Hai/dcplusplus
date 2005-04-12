@@ -26,14 +26,14 @@
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/StringSearch.h"
 
 #include "WinUtil.h"
 
 #define FILTER_MESSAGE_MAP 8
 class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS>, 
-	private HubManagerListener
+	private FavoriteManagerListener
 {
 public:
 	PublicHubsFrame() : users(0), hubs(0), closed(false), filter(""),
@@ -172,5 +172,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.29 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.30 2005/04/12 23:24:02 arnetheduck Exp $
  */

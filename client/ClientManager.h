@@ -27,12 +27,13 @@
 
 #include "Client.h"
 #include "Singleton.h"
+#include "SettingsManager.h"
 
 #include "ClientManagerListener.h"
 
 class ClientManager : public Speaker<ClientManagerListener>, 
 	private ClientListener, public Singleton<ClientManager>, 
-	private TimerManagerListener
+	private TimerManagerListener, private SettingsManagerListener
 {
 public:
 	Client* getClient(const string& aHubURL);
@@ -73,27 +74,22 @@ public:
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void infoUpdated();
 
-	User::Ptr getUser(const CID& cid, bool createUser);
-	User::Ptr getUser(const CID& cid, Client* aClient, bool putOnline = true);
-	User::Ptr getUser(const string& aNick, const string& aHint = Util::emptyString);
-	User::Ptr getUser(const string& aNick, Client* aClient, bool putOnline = true);
-	
-	bool isOnline(const string& aNick) {
-		Lock l(cs);
-		UserPair i = users.equal_range(aNick);
-		for(UserIter j = i.first; j != i.second; ++j) {
-			if(j->second->isOnline())
-				return true;
-		}
-		return false;
-	}
+	/** Construct a synthetic CID and return the user */
+	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
+	User::Ptr getLegacyUser(const string& aNick) throw();
+	User::Ptr getUser(const CID& cid) throw();
 
-	/**
-	 * A user went offline. Must be called whenever a user quits a hub.
-	 * @param quitHub The user went offline because (s)he disconnected from the hub.
-	 */
-	void putUserOffline(User::Ptr& aUser, bool quitHub = false);
+	User::Ptr findUser(const CID& cid) throw();
+	User::Ptr findUser(const string& aNick) throw();
+
+	void putOnline(OnlineUser& ou) throw();
+	void putOffline(OnlineUser& ou) throw();
+
+	User::Ptr& getMe() { return me; }
 	
+	void connect(const User::Ptr& p);
+	void send(AdcCommand& c);
+
 	void lock() throw() { cs.enter(); }
 	void unlock() throw() { cs.leave(); }
 
@@ -109,28 +105,43 @@ public:
  	}
 
 private:
-	typedef HASH_MULTIMAP_X(string, User::Ptr, noCaseStringHash, noCaseStringEq, noCaseStringLess) UserMap;
-	typedef UserMap::iterator UserIter;
-	typedef pair<UserIter, UserIter> UserPair;
+	typedef HASH_MAP<string, User::Ptr> LegacyMap;
+	typedef LegacyMap::iterator LegacyIter;
 
-	typedef HASH_MULTIMAP_X(CID, User::Ptr, CID::Hash, equal_to<CID>, less<CID>) AdcMap;
-	typedef AdcMap::iterator AdcIter;
-	typedef pair<AdcIter, AdcIter> AdcPair;
+	typedef HASH_MAP_X(CID, User::Ptr, CID::Hash, equal_to<CID>, less<CID>) UserMap;
+	typedef UserMap::iterator UserIter;
+
+	typedef HASH_MULTIMAP_X(CID, OnlineUser*, CID::Hash, equal_to<CID>, less<CID>) OnlineMap;
+	typedef OnlineMap::iterator OnlineIter;
+	typedef pair<OnlineIter, OnlineIter> OnlinePair;
 
 	Client::List clients;
 	CriticalSection cs;
 	
 	UserMap users;
-	AdcMap adcUsers;
+	LegacyMap legacyUsers;
+	OnlineMap onlineUsers;
 
+	User::Ptr me;
+	
 	Socket s;
 
 	friend class Singleton<ClientManager>;
+
 	ClientManager() { 
 		TimerManager::getInstance()->addListener(this); 
-	};
+		SettingsManager::getInstance()->addListener(this);
+	}
 
-	virtual ~ClientManager() throw() { TimerManager::getInstance()->removeListener(this); };
+	virtual ~ClientManager() throw() { 
+		SettingsManager::getInstance()->removeListener(this);
+		TimerManager::getInstance()->removeListener(this); 
+	}
+
+	// SettingsManagerListener
+	virtual void on(Load, SimpleXML*) throw() {
+		me = new User(SETTING(CLIENT_ID));
+	}
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
@@ -149,6 +160,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.56 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.57 2005/04/12 23:24:12 arnetheduck Exp $
  */
 

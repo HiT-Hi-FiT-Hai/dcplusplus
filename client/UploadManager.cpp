@@ -30,6 +30,7 @@
 #include "ResourceManager.h"
 #include "HashManager.h"
 #include "AdcCommand.h"
+#include "FavoriteManager.h"
 
 static const string UPLOAD_AREA = "Uploads";
 
@@ -147,7 +148,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 
 	if(!aSource->isSet(UserConnection::FLAG_HASSLOT)) {
 		bool hasReserved = (reservedSlots.find(aSource->getUser()) != reservedSlots.end());
-		bool isFavorite = aSource->getUser()->getFavoriteGrantSlot();
+		bool isFavorite = FavoriteManager::getInstance()->hasSlot(aSource->getUser());
 
 		if(!(hasReserved || isFavorite || getFreeSlots() > 0 || getAutoSlot())) {
 			bool supportsFree = aSource->getUser()->isSet(User::DCPLUSPLUS) || aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS) || !aSource->isSet(UserConnection::FLAG_NMDC);
@@ -205,6 +206,15 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	}
 
 	return true;
+}
+
+void UploadManager::reserveSlot(const User::Ptr& aUser) {
+	{
+		Lock l(cs);
+		reservedSlots[aUser] = GET_TICK();
+	}
+	if(aUser->isOnline())
+		ClientManager::getInstance()->connect(aUser);
 }
 
 void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, const string& aFile, int64_t aResume) throw() {
@@ -286,10 +296,10 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 	if(BOOLSETTING(LOG_UPLOADS) && !u->isSet(Upload::FLAG_TTH_LEAVES) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
 		StringMap params;
 		params["source"] = u->getFileName();
-		params["user"] = aSource->getUser()->getNick();
+		/// @todo params["user"] = aSource->getUser()->getNick();
 		params["userip"] = aSource->getRemoteIp();
-		params["hub"] = aSource->getUser()->getLastHubName();
-		params["hubip"] = aSource->getUser()->getLastHubAddress();
+		/// @todo params["hub"] = aSource->getUser()->getLastHubName();
+		/// @todo params["hubip"] = aSource->getUser()->getLastHubAddress();
 		params["size"] = Util::toString(u->getSize());
 		params["sizeshort"] = Util::formatBytes(u->getSize());
 		params["chunksize"] = Util::toString(u->getTotal());
@@ -421,10 +431,10 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 }
 
-void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-	if( (!aUser->isOnline()) && 
-		(aUser->isSet(User::QUIT_HUB)) && 
-		(BOOLSETTING(AUTO_KICK)) ){
+void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+
+	/// @todo Don't kick when /me disconnects
+	if( BOOLSETTING(AUTO_KICK) ) {
 
 		Lock l(cs);
 		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
@@ -435,7 +445,7 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
-				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFullNick());
+				/// @todo LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFullNick());
 			}
 		}
 	}
@@ -443,5 +453,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.92 2005/03/14 14:04:30 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.93 2005/04/12 23:24:12 arnetheduck Exp $
  */

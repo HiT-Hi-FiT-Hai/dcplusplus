@@ -26,12 +26,12 @@
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 
 #define SERVER_MESSAGE_MAP 7
 
 class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, public StaticFrame<FavoriteHubsFrame, ResourceManager::FAVORITE_HUBS>,
-	private HubManagerListener
+	private FavoriteManagerListener
 {
 public:
 	FavoriteHubsFrame() : nosave(true) { };
@@ -139,6 +139,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.20 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.21 2005/04/12 23:24:03 arnetheduck Exp $
  */
 

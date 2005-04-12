@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
-#define AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_
+#ifndef USER_H
+#define USER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,135 +25,105 @@
 
 #include "Util.h"
 #include "Pointer.h"
-#include "CriticalSection.h"
 #include "CID.h"
-
-class Client;
-class FavoriteUser;
+#include "FastAlloc.h"
 
 /** A user connected to one or more hubs. */
-class User : public PointerBase, public Flags
+class User : public FastAlloc<User>, public PointerBase, public Flags
 {
 public:
-	enum {
+	enum Bits {
 		OP_BIT,
 		ONLINE_BIT,
 		DCPLUSPLUS_BIT,
 		PASSIVE_BIT,
-		QUIT_HUB_BIT,
-		HIDDEN_BIT,
-		HUB_BIT,
+		NMDC_BIT,
 		BOT_BIT
 	};
 
-	enum {
+	/** Each flag is set if it's true in at least one hub */
+	enum UserFlags {
 		OP = 1<<OP_BIT,
 		ONLINE = 1<<ONLINE_BIT,
 		DCPLUSPLUS = 1<<DCPLUSPLUS_BIT,
 		PASSIVE = 1<<PASSIVE_BIT,
-		QUIT_HUB = 1<<QUIT_HUB_BIT,
-		HIDDEN = 1<<HIDDEN_BIT,
-		HUB = 1<<HUB_BIT,
+		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT
+
 	};
+
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	typedef HASH_MAP_X(string,Ptr,noCaseStringHash,noCaseStringEq,noCaseStringLess) NickMap;
-	typedef NickMap::iterator NickIter;
-	typedef HASH_MAP_X(CID, Ptr, CID::Hash, equal_to<CID>, less<CID>) CIDMap;
-	typedef CIDMap::iterator CIDIter;
 
 	struct HashFunction {
 		static const size_t bucket_size = 4;
 		static const size_t min_buckets = 8;
-		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))/sizeof(User); };
-		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); };
+		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))/sizeof(User); }
+		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); }
 	};
 
-	User(const CID& aCID) : cid(aCID), bytesShared(0), slots(0), udpPort(0), client(NULL), favoriteUser(NULL) { }
-	User(const string& aNick) throw() : nick(aNick), bytesShared(0), slots(0), udpPort(0), client(NULL), favoriteUser(NULL) { }
+	User(const string& nick) : firstNick(nick), Flags(NMDC) { }
+	User(const CID& aCID) : cid(aCID) { }
 
-	virtual ~User() throw();
+	virtual ~User() throw() { };
 
-	void setClient(Client* aClient);
-	void connect();
-	const string& getClientNick() const;
-	CID getClientCID() const;
-	const string& getClientName() const;
-	string getClientAddressPort() const;
-	void privateMessage(const string& aMsg);
-	void clientMessage(const string& aMsg);
-	bool isClientOp() const;
-	void send(const string& msg);
-	void sendUserCmd(const string& aUserCmd);
-	
-	string getFullNick() const { 
-		string tmp(getNick());
-		tmp += " (";
-		tmp += getClientName();
-		tmp += ")";
-		return tmp;
-	}
-	
-	void setBytesShared(const string& aSharing) { setBytesShared(Util::toInt64(aSharing)); };
+	operator CID() { return cid; }
 
-	bool isOnline() const { return isSet(ONLINE); };
-	bool isClient(Client* aClient) const { return client == aClient; };
-	
-	void getParams(StringMap& ucParams);
+	bool isOnline() const { return isSet(ONLINE); }
+	bool isNMDC() const { return isSet(NMDC); }
 
-	// favorite user stuff
-	void setFavoriteUser(FavoriteUser* aUser);
-	bool isFavoriteUser() const;
-	bool getFavoriteGrantSlot() const;
-	void setFavoriteGrantSlot(bool grant);
-	void setFavoriteLastSeen(u_int32_t anOfflineTime = 0);
-	u_int32_t getFavoriteLastSeen() const;
-	const string& getUserDescription() const;
-	void setUserDescription(const string& aDescription);
-
-	static void updated(User::Ptr& aUser);
-
-	StringMap& clientEscapeParams(StringMap& sm) const;
-	
-	GETSET(string, connection, Connection);
-	GETSET(string, nick, Nick);
-	GETSET(string, email, Email);
-	GETSET(string, description, Description);
-	GETSET(string, tag, Tag);
-	GETSET(string, lastHubAddress, LastHubAddress);
-	GETSET(string, lastHubName, LastHubName);
-	GETSET(string, ip, Ip);
 	GETSET(CID, cid, CID);
-	GETSET(int64_t, bytesShared, BytesShared);
-	GETSET(int, slots, Slots);
-	GETSET(short, udpPort, UDPPort);
+	GETSET(string, firstNick, FirstNick);
 private:
-	mutable RWLock<> cs;
-
 	User(const User&);
 	User& operator=(const User&);
-
-	Client* client;
-	FavoriteUser* favoriteUser;
 };
 
 /** One of possibly many identities of a user, mainly for UI purposes */
 class Identity : public Flags {
 public:
+	enum {
+		GOT_INF_BIT
+	};
+	enum Flags {
+		GOT_INF
+	};
+
+	Identity() { }
 	Identity(const User::Ptr& ptr) : user(ptr) { }
 	Identity(const Identity& rhs) : user(rhs.user), hubURL(rhs.hubURL), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubURL = rhs.hubURL; info = rhs.info; }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; hubURL = rhs.hubURL; info = rhs.info; return *this; }
 
-	const string& getNick() { return get("NI"); }
-	const string& getDescription() { return get("DE"); }
+#define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
+	GS(Nick, "NI")
+	GS(Description, "DE")
+	GS(Ip, "I4")
+	GS(UdpPort, "U4")
+	GS(Email, "EM")
 
-	const string& get(const char* name) {
-		InfIter i = info.find(*(short*)name);
+	void setBytesShared(const string& bs) { set("BS", bs); }
+	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
+
+	/// @todo
+	string getTag() const { return Util::emptyString; }
+	const bool isOp() const { return !get("OP").empty(); }
+	const bool isHidden() const { return !get("HI").empty(); }
+	const bool isTcpActive() const { return !getIp().empty(); }
+	const bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
+
+	const string& get(const char* name) const {
+		InfMap::const_iterator i = info.find(*(short*)name);
 		return i == info.end() ? Util::emptyString : i->second;
 	}
 
+	void set(const char* name, const string& val) {
+		if(val.empty())
+			info.erase(*(short*)name);
+		else
+			info[*(short*)name] = val;
+	}
+	
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubURL, HubURL);
 private:
@@ -163,9 +133,40 @@ private:
 	InfMap info;
 };
 
-#endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
+class Client;
+class NmdcHub;
+
+class OnlineUser : public FastAlloc<OnlineUser> {
+public:
+	typedef vector<OnlineUser*> List;
+	typedef List::iterator Iter;
+
+	OnlineUser() : client(NULL) { }
+	OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), identity(ptr), client(&client_) { }
+
+	operator User::Ptr&() { return user; }
+	operator const User::Ptr&() const { return user; }
+
+	User::Ptr& getUser() { return user; }
+	Identity& getIdentity() { return identity; }
+	Client& getClient() { return *client; }
+	const Client& getClient() const { return *client; }
+
+	GETSET(User::Ptr, user, User);
+	GETSET(Identity, identity, Identity);
+
+private:
+	friend class NmdcHub;
+
+	OnlineUser(const OnlineUser&);
+	OnlineUser& operator=(const OnlineUser&);
+
+	Client* client;
+};
+
+#endif // USER_H
 
 /**
  * @file
- * $Id: User.h,v 1.53 2005/04/10 21:23:30 arnetheduck Exp $
+ * $Id: User.h,v 1.54 2005/04/12 23:24:13 arnetheduck Exp $
  */

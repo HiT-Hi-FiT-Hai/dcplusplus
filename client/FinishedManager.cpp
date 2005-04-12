@@ -64,8 +64,8 @@ void FinishedManager::removeAll(bool upload /* = false */) {
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
 	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
-		FinishedItem *item = new FinishedItem(
-			d->getTarget(), d->getUserConnection()->getUser()->getNick(),
+/** @todo		FinishedItem *item = new FinishedItem(
+			d->getTarget(), d->getUserConnection()->getUser()->getFirstNick(),
 			d->getUserConnection()->getUser()->getLastHubName(),
 			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
 		{
@@ -73,14 +73,14 @@ void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 			downloads.push_back(item);
 		}
 
-		fire(FinishedManagerListener::AddedDl(), item);
+		fire(FinishedManagerListener::AddedDl(), item); */
 	}
 }
 
 void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
 	if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
-		FinishedItem *item = new FinishedItem(
+/** @todo		FinishedItem *item = new FinishedItem(
 			u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
 			u->getUserConnection()->getUser()->getLastHubName(),
 			u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
@@ -89,11 +89,11 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 			uploads.push_back(item);
 		}
 		
-		fire(FinishedManagerListener::AddedUl(), item);
+		fire(FinishedManagerListener::AddedUl(), item); */
 	}
 }
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.23 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.24 2005/04/12 23:24:11 arnetheduck Exp $
  */

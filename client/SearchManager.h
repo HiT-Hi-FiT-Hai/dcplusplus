@@ -69,7 +69,7 @@ public:
 		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), utf8(aUtf8), ref(1) { }
 
 	string getFileName() const;
-	string toSR() const;
+	string toSR(const Client& client) const;
 	AdcCommand toRES(char type) const;
 
 	User::Ptr& getUser() { return user; }
@@ -77,7 +77,8 @@ public:
 
 	const string& getFile() const { return file; }
 	const string& getHubIpPort() const { return hubIpPort; }
-	const string& getHubName() const { return hubName.empty() ? user->getClientName() : hubName; }
+	/** @todo Return a hub where the user is online? */
+	const string& getHubName() const { return hubName; }
 	int64_t getSize() const { return size; }
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }
@@ -202,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.53 2005/03/14 10:37:21 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.54 2005/04/12 23:24:13 arnetheduck Exp $
  */

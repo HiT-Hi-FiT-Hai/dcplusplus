@@ -22,7 +22,7 @@
 
 #include "ADLSProperties.h"
 #include "../client/ADLSearch.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "WinUtil.h"
 
 // Initialize dialog
@@ -102,5 +102,5 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 
 /**
  * @file
- * $Id: ADLSProperties.cpp,v 1.8 2005/02/01 16:41:45 arnetheduck Exp $
+ * $Id: ADLSProperties.cpp,v 1.9 2005/04/12 23:24:03 arnetheduck Exp $
  */

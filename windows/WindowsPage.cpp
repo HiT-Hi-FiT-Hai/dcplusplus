@@ -23,7 +23,7 @@
 #include "WindowsPage.h"
 
 #include "../client/SettingsManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "WinUtil.h"
 
 PropPage::Item WindowsPage::items[] = { { 0, 0, PropPage::T_END } };
@@ -76,6 +76,6 @@ LRESULT WindowsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: WindowsPage.cpp,v 1.3 2005/04/03 14:48:15 arnetheduck Exp $
+ * $Id: WindowsPage.cpp,v 1.4 2005/04/12 23:24:03 arnetheduck Exp $
  */
 

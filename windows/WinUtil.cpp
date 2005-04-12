@@ -33,7 +33,7 @@
 #include "../client/ShareManager.h"
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 #include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
@@ -166,7 +166,7 @@ void UserInfoBase::browseList() {
 	}
 }
 void UserInfoBase::addFav() {
-	HubManager::getInstance()->addFavoriteUser(user);
+	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 void UserInfoBase::pm() {
 	PrivateFrame::openWindow(user);
@@ -175,7 +175,7 @@ void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
 }
 void UserInfoBase::removeAll() {
-	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
@@ -908,7 +908,8 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 		if(file[0] == '/') // Remove any '/' in from of the file
 			file = file.substr(1);
 		try {
-			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(file), QueueItem::FLAG_CLIENT_VIEW);
+			/// @todo check this...
+			QueueManager::getInstance()->addList(ClientManager::getInstance()->getLegacyUser(file), QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception&) {
 			// ...
 		}
@@ -1141,5 +1142,5 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.82 2005/04/09 15:31:07 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.83 2005/04/12 23:24:03 arnetheduck Exp $
  */

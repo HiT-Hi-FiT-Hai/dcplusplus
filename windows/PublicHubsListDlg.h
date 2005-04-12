@@ -25,7 +25,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/Text.h"
-#include "../Client/HubManager.h"
+#include "../Client/FavoriteManager.h"
 #include "ExListViewCtrl.h"
 #include "LineDlg.h"
 
@@ -68,7 +68,7 @@ public:
 		ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 		ctrlList.GetClientRect(rc);
 		ctrlList.InsertColumn(0, CTSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width() - 4, 0);
-		StringList lists(HubManager::getInstance()->getHubLists());
+		StringList lists(FavoriteManager::getInstance()->getHubLists());
 		for(StringList::iterator idx = lists.begin(); idx != lists.end(); ++idx) {
 			ctrlList.insert(ctrlList.GetItemCount(), Text::toT(*idx));
 		}
@@ -164,6 +164,6 @@ private:
 
 /**
 * @file
-* $Id: PublicHubsListDlg.h,v 1.5 2005/04/10 21:23:27 arnetheduck Exp $
+* $Id: PublicHubsListDlg.h,v 1.6 2005/04/12 23:24:04 arnetheduck Exp $
 */
 

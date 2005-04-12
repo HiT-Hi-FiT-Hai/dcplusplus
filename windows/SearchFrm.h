@@ -31,7 +31,7 @@
 #include "../client/SearchManager.h"
 #include "../client/CriticalSection.h"
 #include "../client/ClientManagerListener.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 
 #include "UCHandler.h"
 
@@ -82,8 +82,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_BITZI_LOOKUP, onBitziLookup)
 		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
 		COMMAND_ID_HANDLER(IDC_PURGE, onPurge)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_COMMANDS(ucBase)
@@ -334,8 +334,8 @@ private:
 				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 				type = TSTRING(DIRECTORY);
 			}
-			nick = Text::toT(sr->getUser()->getNick());
-			connection = Text::toT(sr->getUser()->getConnection());
+			/// @todo nick = Text::toT(sr->getUser()->getNick());
+			/// @todo connection = Text::toT(sr->getUser()->getConnection());
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
 			ip = Text::toT(sr->getIP());
@@ -480,6 +480,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.55 2005/04/08 23:01:50 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.56 2005/04/12 23:24:02 arnetheduck Exp $
  */
 

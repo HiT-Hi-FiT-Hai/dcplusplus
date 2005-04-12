@@ -28,10 +28,10 @@
 #include "WinUtil.h"
 
 #include "../client/ClientManager.h"
-#include "../client/HubManager.h"
+#include "../client/FavoriteManager.h"
 
 class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS>,
-	private HubManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
+	private FavoriteManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
 	UsersFrame() : closed(false), startup(true) { };
@@ -106,7 +106,7 @@ private:
 	class UserInfo : public UserInfoBase {
 	public:
 		UserInfo(const User::Ptr& u) : UserInfoBase(u) { 
-			columns[COLUMN_NICK] = Text::toT(u->getNick());
+			/// @todo columns[COLUMN_NICK] = Text::toT(u->getNick());
 			update();
 		};
 
@@ -118,16 +118,16 @@ private:
 			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 		}
 
-		void remove() { HubManager::getInstance()->removeFavoriteUser(user); }
+		void remove() { FavoriteManager::getInstance()->removeFavoriteUser(user); }
 
 		void update() {
 			columns[COLUMN_STATUS] = user->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
-			columns[COLUMN_HUB] = Text::toT(user->getClientName());
+			/** @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
 			if(!user->getLastHubAddress().empty()) {
 				columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
 			}
 			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));
-			columns[COLUMN_DESCRIPTION] = Text::toT(user->getUserDescription());
+			columns[COLUMN_DESCRIPTION] = Text::toT(user->getUserDescription()); */
 		}
 
 		tstring columns[COLUMN_LAST];
@@ -144,15 +144,15 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	// HubManagerListener
+	// FavoriteManagerListener
 	virtual void on(UserAdded, const User::Ptr& aUser) throw() { addUser(aUser); }
 	virtual void on(UserRemoved, const User::Ptr& aUser) throw() { removeUser(aUser); }
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-		if(aUser->isFavoriteUser()) {
-			PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
-		}
+		/// @todo if(aUser->isFavoriteUser()) {
+			// PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
+		// }
 	}
 
 	void addUser(const User::Ptr& aUser);
@@ -164,6 +164,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.20 2005/04/08 23:01:50 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.21 2005/04/12 23:24:03 arnetheduck Exp $
  */
 

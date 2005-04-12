@@ -57,15 +57,15 @@ public:
 	virtual void on(Connecting, Client*) throw() { }
 	virtual void on(Connected, Client*) throw() { }
 	virtual void on(BadPassword, Client*) throw() { }
-	virtual void on(UserUpdated, Client*, const User::Ptr&) throw() { }
-	virtual void on(UsersUpdated, Client*, const User::List&) throw() { }
-	virtual void on(UserRemoved, Client*, const User::Ptr&) throw() { }
+	virtual void on(UserUpdated, Client*, const OnlineUser&) throw() { }
+	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw() { }
+	virtual void on(UserRemoved, Client*, const OnlineUser&) throw() { }
 	virtual void on(Redirect, Client*, const string&) throw() { }
 	virtual void on(Failed, Client*, const string&) throw() { }
 	virtual void on(GetPassword, Client*) throw() { }
 	virtual void on(HubUpdated, Client*) throw() { }
 	virtual void on(Message, Client*, const string&) throw() { }
-	virtual void on(PrivateMessage, Client*, const User::Ptr&, const string&) throw() { }
+	virtual void on(PrivateMessage, Client*, const OnlineUser&, const string&) throw() { }
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw() { }
 	virtual void on(HubFull, Client*) throw() { }
 	virtual void on(NickTaken, Client*) throw() { }
@@ -84,9 +84,9 @@ public:
 	Client(const string& hubURL, char separator);
 	virtual ~Client() throw();
 
-	virtual void connect(const User* user) = 0;
+	virtual void connect(const OnlineUser& user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
-	virtual void privateMessage(const User* user, const string& aMessage) = 0;
+	virtual void privateMessage(const OnlineUser& user, const string& aMessage) = 0;
 	virtual void send(const string& aMessage) = 0;
 	virtual void sendUserCmd(const string& aUserCmd) = 0;
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) = 0;
@@ -98,14 +98,11 @@ public:
 	virtual const string& getName() const = 0;
 	virtual bool getOp() const = 0;
 
-	virtual User::NickMap& lockUserList() = 0;
-	virtual void unlockUserList() = 0;
-
 	const string& getAddress() const { return address; }
 	const string& getAddressPort() const { return addressPort; }
 	short getPort() const { return port; }
 
-	const string& getIp() const {	return socket->getIp().empty() ? getAddress() : socket->getIp(); };
+	const string& getIp() const { return socket->getIp().empty() ? getAddress() : socket->getIp(); };
 	string getIpPort() const { return port == 411 ? getIp() : getIp() + ':' + Util::toString(port); };
 	string getLocalIp() const;
 
@@ -113,7 +110,7 @@ public:
 	bool isConnected() const { return socket->isConnected(); }
 	void disconnect() { socket->disconnect(); }
 
-	void updated(User::Ptr& aUser) { 
+	void updated(const OnlineUser& aUser) { 
 		fire(ClientListener::UserUpdated(), this, aUser);
 	}
 
@@ -198,5 +195,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.99 2005/03/12 16:45:36 arnetheduck Exp $
+ * $Id: Client.h,v 1.100 2005/04/12 23:24:14 arnetheduck Exp $
  */

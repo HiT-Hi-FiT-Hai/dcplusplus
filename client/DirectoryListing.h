@@ -122,17 +122,17 @@ public:
 
 	class AdlDirectory : public Directory {
 	public:
-		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true, true), fullPath(aFullPath) { };
+		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true, true), fullPath(aFullPath) { }
 
 		GETSET(string, fullPath, FullPath);
 	};
 
 	DirectoryListing(const User::Ptr& aUser) : user(aUser), utf8(false), root(new Directory(NULL, Util::emptyString, false, false)) {
-	};
+	}
 	
 	~DirectoryListing() {
 		delete root;
-	};
+	}
 
 	void loadFile(const string& name);
 
@@ -143,13 +143,14 @@ public:
 	void download(Directory* aDir, const string& aTarget, bool highPrio);
 	void download(File* aFile, const string& aTarget, bool view, bool highPrio);
 	
-	string getPath(Directory* d);
-	string getPath(File* f) { return getPath(f->getParent()); };
+	string getPath(const Directory* d) const;
+	string getPath(const File* f) const { return getPath(f->getParent()); }
 
-	int64_t getTotalSize(bool adls = false) { return root->getTotalSize(adls); };
-	size_t getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
+	int64_t getTotalSize(bool adls = false) { return root->getTotalSize(adls); }
+	size_t getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); }
 
-	Directory* getRoot() { return root; };
+	const Directory* getRoot() const { return root; }
+	Directory* getRoot() { return root; }
 
 	GETSET(User::Ptr, user, User);
 	GETSET(bool, utf8, Utf8);
@@ -173,5 +174,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.41 2005/03/14 14:04:31 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.42 2005/04/12 23:24:11 arnetheduck Exp $
  */
