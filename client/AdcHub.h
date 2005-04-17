@@ -37,10 +37,8 @@ public:
 	virtual void password(const string& pwd);
 	virtual void info(bool alwaysSend);
 
-	virtual size_t getUserCount() const { return 0;};
-	virtual int64_t getAvailable() const { return 0; };
-	virtual const string& getName() const { return (!hub.getNick().empty() ? hub.getNick() : getAddressPort()); };
-	virtual bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
+	virtual size_t getUserCount() const { Lock l(cs); return users.size(); }
+	virtual int64_t getAvailable() const;
 
 	template<typename T> void handle(T, AdcCommand&) { 
 		//Speaker<AdcHubListener>::fire(t, this, c);
@@ -81,16 +79,14 @@ private:
 	typedef CIDMap::iterator CIDIter;
 
 	CIDMap users;
-	Identity hub;
 	StringMap lastInfoMap;
-	CriticalSection cs;
+	mutable CriticalSection cs;
 
 	string salt;
 
 	static const string CLIENT_PROTOCOL;
 	 
 	virtual string checkNick(const string& nick);
-	virtual string getHubURL();
 	
 	OnlineUser& getUser(const CID& cid);
 	OnlineUser* findUser(const CID& cid);
@@ -106,5 +102,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.29 2005/04/12 23:24:11 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.30 2005/04/17 09:41:05 arnetheduck Exp $
  */

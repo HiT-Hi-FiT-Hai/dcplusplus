@@ -24,15 +24,17 @@
 #include "BufferedSocket.h"
 
 #include "FavoriteManager.h"
+#include "TimerManager.h"
 
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator) : 
-	socket(BufferedSocket::getSocket(separator)), reconnDelay(120), registered(false), port(0), countType(COUNT_UNCOUNTED)
+	socket(BufferedSocket::getSocket(separator)), reconnDelay(120), 
+	lastActivity(0), registered(false), hubUrl(hubURL), port(0), 
+	countType(COUNT_UNCOUNTED)
 {
 	string file;
 	Util::decodeUrl(hubURL, address, port, file);
-	addressPort = hubURL;
 	socket->addListener(this);
 }
 
@@ -43,19 +45,30 @@ Client::~Client() throw() {
 }
 
 void Client::reloadSettings() {
-	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubURL());
+	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubUrl());
 	if(hub) {
-		setNick(checkNick(hub->getNick(true)));
-		setDescription(hub->getUserDescription());
+		getMyIdentity().setNick(checkNick(hub->getNick(true)));
+		getMyIdentity().setDescription(hub->getUserDescription());
 		setPassword(hub->getPassword());
 	} else {
-		setNick(checkNick(SETTING(NICK)));
+		getMyIdentity().setNick(checkNick(SETTING(NICK)));
 	}
 }
 
 void Client::connect() {
+	socket->disconnect();
+
+	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings();
+	setRegistered(false);
+
 	socket->connect(address, port);
+
+	updateActivity();
+}
+
+void Client::updateActivity() {
+	lastActivity = GET_TICK();
 }
 
 void Client::updateCounts(bool aRemove) {
@@ -67,10 +80,11 @@ void Client::updateCounts(bool aRemove) {
 	} else if(countType == COUNT_OP) {
 		Thread::safeDec(counts.op);
 	}
+
 	countType = COUNT_UNCOUNTED;
 
 	if(!aRemove) {
-		if(getOp()) {
+		if(getMyIdentity().isOp()) {
 			Thread::safeInc(counts.op);
 			countType = COUNT_OP;
 		} else if(registered) {
@@ -83,16 +97,18 @@ void Client::updateCounts(bool aRemove) {
 	}
 }
 
-string Client::getLocalIp() const { 
-	if(!SETTING(SERVER).empty()) {
-		return Socket::resolve(SETTING(SERVER));
+string Client::getLocalIp() const {
+	// Best case - the server detected it
+	if((!BOOLSETTING(NO_IP_OVERRIDE) || SETTING(EXTERNAL_IP).empty()) && !getMyIdentity().getIp().empty()) {
+		return getMyIdentity().getIp();
 	}
-	/// @todo if(getMe() && !getMe()->getIp().empty())
-		//return getMe()->getIp();
 
-	if(socket == NULL)
-		return Util::getLocalIp();
+	if(!SETTING(EXTERNAL_IP).empty()) {
+		return Socket::resolve(SETTING(EXTERNAL_IP));
+	}
+
 	string lip = socket->getLocalIp();
+
 	if(lip.empty())
 		return Util::getLocalIp();
 	return lip;
@@ -100,5 +116,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.83 2005/04/12 23:24:12 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.84 2005/04/17 09:41:05 arnetheduck Exp $
  */

@@ -26,8 +26,9 @@
 #include "ShareManager.h"
 
 SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH, bool aUtf8) :
-	file(aFile), hubName(aClient->getName()), hubIpPort(aClient->getIpPort()), user(aClient->getMe()), 
-	size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
+	file(aFile), hubName(aClient->getHubName()), hubIpPort(aClient->getIpPort()), 
+	user(ClientManager::getInstance()->getMe()), size(aSize), type(aType), slots(SETTING(SLOTS)), 
+	freeSlots(UploadManager::getInstance()->getFreeSlots()),  
 	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(aUtf8), ref(1) { }
 
 SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH) :
@@ -40,7 +41,7 @@ string SearchResult::toSR(const Client& c) const {
 	string tmp;
 	tmp.reserve(128);
 	tmp.append("$SR ", 4);
-	/// @todo tmp.append(Text::utf8ToAcp(user->getNick()));
+	tmp.append(Text::utf8ToAcp(c.getMyNick()));
 	tmp.append(1, ' ');
 	string acpFile = utf8 ? Text::utf8ToAcp(file) : file;
 	if(type == TYPE_FILE) {
@@ -61,7 +62,7 @@ string SearchResult::toSR(const Client& c) const {
 		tmp.append("TTH:" + getTTH()->toBase32());
 	}
 	tmp.append(" (", 2);
-	tmp.append(hubIpPort);
+	tmp.append(c.getIpPort());
 	tmp.append(")|", 2);
 	return tmp;
 }
@@ -264,9 +265,10 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 
 		if(!name.empty() && freeSlots != -1 && size != -1) {
 			SearchResult::Types type = (name[name.length() - 1] == '\\' ? SearchResult::TYPE_DIRECTORY : SearchResult::TYPE_FILE);
-			/// @todo SearchResult* sr = new SearchResult(p, type, p->getSlots(), freeSlots, size, name, p->getClientName(), "0.0.0.0", NULL, true);
-			/// @todo fire(SearchManagerListener::SR(), sr);
-			/// @todo sr->decRef();
+			/// @todo Something about the slots
+			SearchResult* sr = new SearchResult(p, type, 0, freeSlots, size, name, Util::emptyString, "0.0.0.0", NULL, true);
+			fire(SearchManagerListener::SR(), sr);
+			sr->decRef();
 		}
 	} else if(x.compare(1, 4, "SCH ") == 0 && x[x.length() - 1] == 0x0a) {
 		try {
@@ -323,6 +325,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.54 2005/04/12 23:24:13 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.55 2005/04/17 09:41:05 arnetheduck Exp $
  */
 

@@ -219,6 +219,15 @@ void PrivateFrame::onEnter()
 	} 
 }
 
+void PrivateFrame::sendMessage(const tstring& msg) {
+	if(user && user->isOnline()) {
+		ClientManager::getInstance()->privateMessage(user, Text::fromT(msg));
+		/// @todo potentially wrong nick used
+		string s = "<" + SETTING(NICK) + "> " + Text::fromT(msg);
+		addLine(Text::toT(s));
+	}
+}
+
 LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		ClientManager::getInstance()->removeListener(this);
@@ -411,7 +420,7 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.46 2005/04/12 23:24:02 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.47 2005/04/17 09:41:08 arnetheduck Exp $
  */
 
 

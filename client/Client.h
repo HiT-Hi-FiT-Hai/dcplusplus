@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
+#ifndef CLIENT_H
+#define CLIENT_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -84,31 +84,29 @@ public:
 	Client(const string& hubURL, char separator);
 	virtual ~Client() throw();
 
-	virtual void connect(const OnlineUser& user) = 0;
-	virtual void hubMessage(const string& aMessage) = 0;
-	virtual void privateMessage(const OnlineUser& user, const string& aMessage) = 0;
-	virtual void send(const string& aMessage) = 0;
-	virtual void sendUserCmd(const string& aUserCmd) = 0;
-	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) = 0;
-	virtual void password(const string& pwd) = 0;
-	virtual void info(bool alwaysSend) = 0;
-    
-	virtual size_t getUserCount() const = 0;
-	virtual int64_t getAvailable() const = 0;
-	virtual const string& getName() const = 0;
-	virtual bool getOp() const = 0;
-
-	const string& getAddress() const { return address; }
-	const string& getAddressPort() const { return addressPort; }
-	short getPort() const { return port; }
-
-	const string& getIp() const { return socket->getIp().empty() ? getAddress() : socket->getIp(); };
-	string getIpPort() const { return port == 411 ? getIp() : getIp() + ':' + Util::toString(port); };
-	string getLocalIp() const;
-
 	virtual void connect();
 	bool isConnected() const { return socket->isConnected(); }
 	void disconnect() { socket->disconnect(); }
+
+	virtual void connect(const OnlineUser& user) = 0;
+	virtual void hubMessage(const string& aMessage) = 0;
+	virtual void privateMessage(const OnlineUser& user, const string& aMessage) = 0;
+	virtual void sendUserCmd(const string& aUserCmd) = 0;
+	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) = 0;
+	virtual void password(const string& pwd) = 0;
+	virtual void info(bool force) = 0;
+    
+	virtual size_t getUserCount() const = 0;
+	virtual int64_t getAvailable() const = 0;
+	
+	bool isOp() const { return getMyIdentity().isOp(); }
+
+	short getPort() const { return port; }
+	const string& getAddress() const { return address; }
+
+	const string& getIp() const { return socket->getIp().empty() ? getAddress() : socket->getIp(); };
+	string getIpPort() const { return getIp() + ':' + Util::toString(port); };
+	string getLocalIp() const;
 
 	void updated(const OnlineUser& aUser) { 
 		fire(ClientListener::UserUpdated(), this, aUser);
@@ -119,13 +117,6 @@ public:
 		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
-	const User::Ptr& getMe() const { return me; };
-	User::Ptr& getMe() { return me; }
-	void setMe(const User::Ptr& aMe) { me = aMe; }
-
-	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
-	void setDescription(const string& aDesc) { description = aDesc; };
-
 	void scheduleDestruction() const { socket->shutdown(); }
 
 	virtual string escape(string const& str) const { return str; };
@@ -135,6 +126,28 @@ public:
 		}
 		return sm;
 	}
+
+	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
+	void send(const char* aMessage, size_t aLen) {
+		updateActivity();
+		socket->write(aMessage, aLen);
+	}
+	const string& getMyNick() const { return getMyIdentity().getNick(); }
+	const string& getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
+	const string& getHubDescription() const { return getHubIdentity().getDescription(); }
+
+	Identity& getMyIdentity() { return myIdentity; }
+	Identity& getHubIdentity() { return hubIdentity; }
+
+	const string& getHubUrl() const { return hubUrl; }
+
+	GETSET(Identity, myIdentity, MyIdentity);
+	GETSET(Identity, hubIdentity, HubIdentity);
+
+	GETSET(string, defpassword, Password);
+	GETSET(u_int32_t, reconnDelay, ReconnDelay);
+	GETSET(u_int32_t, lastActivity, LastActivity);
+	GETSET(bool, registered, Registered);
 
 protected:
 	struct Counts {
@@ -147,24 +160,17 @@ protected:
 
 	BufferedSocket* socket;
 
-	User::Ptr me;
 	static Counts counts;
 	Counts lastCounts;
 
 	void updateCounts(bool aRemove);
+	void updateActivity();
 
-	void setPort(short aPort) { port = aPort; }
-
-	// reload nick from settings, other details from hubmanager
+	// reload nick from settings, other details from favmanager
 	void reloadSettings();
 
 	virtual string checkNick(const string& nick) = 0;
-	virtual string getHubURL() = 0;
 
-	GETSET(string, nick, Nick);
-	GETSET(string, defpassword, Password);
-	GETSET(u_int32_t, reconnDelay, ReconnDelay);
-	GETSET(bool, registered, Registered);
 private:
 
 	enum CountType {
@@ -177,16 +183,16 @@ private:
 	Client(const Client&);
 	Client& operator=(const Client&);
 
-	string description;
-
+	string hubUrl;
 	string address;
-	string addressPort;
 	u_int16_t port;
 
 	CountType countType;
 
 	// BufferedSocketListener
-	virtual void on(BufferedSocketListener::Shutdown) throw() {
+	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
+	virtual void on(Connected) throw() { updateActivity(); fire(ClientListener::Connected(), this); }
+	virtual void on(Shutdown) throw() {
 		removeListeners();
 		delete this;
 	}
@@ -195,5 +201,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.100 2005/04/12 23:24:14 arnetheduck Exp $
+ * $Id: Client.h,v 1.101 2005/04/17 09:41:05 arnetheduck Exp $
  */

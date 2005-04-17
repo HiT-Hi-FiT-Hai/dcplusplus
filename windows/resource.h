@@ -13,6 +13,7 @@
 #define IDR_HUB                         129
 #define IDC_HUBLIST                     131
 #define IDC_SERVER                      133
+#define IDC_EXTERNAL_IP                 133
 #define IDC_FILES                       135
 #define IDB_FOLDERS                     206
 #define IDB_ARROWS                      207
@@ -61,7 +62,9 @@
 #define IDC_USERS                       1006
 #define IDC_ACTIVE                      1007
 #define IDC_PASSIVE                     1008
+#define IDC_FIREWALL_PASSIVE            1008
 #define IDC_PORT                        1009
+#define IDC_PORT_TCP                    1009
 #define IDC_DIRECTORIES                 1010
 #define IDC_ADD                         1011
 #define IDC_REMOVE                      1012
@@ -197,9 +200,12 @@
 #define IDC_SETTINGS_EMAIL              1141
 #define IDC_SETTINGS_DESCRIPTION        1142
 #define IDC_SETTINGS_CONNECTION_TYPE    1143
+#define IDC_SETTINGS_UPLOAD_SPEED       1143
 #define IDC_SETTINGS_CONNECTION_SETTINGS 1144
+#define IDC_SETTINGS_INCOMING           1144
 #define IDC_SETTINGS_IP                 1145
 #define IDC_SETTINGS_PORT               1146
+#define IDC_SETTINGS_PORT_TCP           1146
 #define IDC_SETTINGS_SOCKS5_IP          1147
 #define IDC_SETTINGS_SOCKS5_PORT        1148
 #define IDC_SETTINGS_SOCKS5_USERNAME    1149
@@ -317,7 +323,9 @@
 #define IDC_LIST_EDIT                   1264
 #define IDC_OPEN_OWN_LIST               1265
 #define IDC_UDP_PORT                    1266
+#define IDC_PORT_UDP                    1266
 #define IDC_SETTINGS_UDP_PORT           1267
+#define IDC_SETTINGS_PORT_UDP           1267
 #define IDC_DOWNLOAD_FILE               1268
 #define IDC_UPLOAD_FILE                 1269
 #define IDC_PRIVATE_CHAT_FILE           1270
@@ -344,6 +352,13 @@
 #define IDC_WINDOWS_OPTIONS             1290
 #define IDC_SETTINGS_WINDOWS_OPTIONS    1291
 #define IDC_HELP_GEOIPFILE              1292
+#define IDC_FIREWALL_UPNP               1292
+#define IDC_DIRECT                      1293
+#define IDC_FIREWALL_NAT                1294
+#define IDC_SETTINGS_OUTGOING           1295
+#define IDC_DIRECT_OUT                  1296
+#define IDC_OVERRIDE                    1297
+#define IDC_SETTINGS_PORTS              1298
 #define IDC_PRIO_HIGHEST_SIZE           1300
 #define IDC_PRIO_HIGH_SIZE              1301
 #define IDC_PRIO_NORMAL_SIZE            1302
@@ -398,7 +413,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        245
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1292
+#define _APS_NEXT_CONTROL_VALUE         1299
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

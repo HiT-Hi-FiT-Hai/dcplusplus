@@ -138,13 +138,7 @@ public:
 	}
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
-	void sendMessage(const tstring& msg) {
-		if(user && user->isOnline()) {
-			/// @todo user->privateMessage(Text::fromT(msg));
-			/// @todo string s = "<" + user->getClientNick() + "> " + Text::fromT(msg);
-			/// @todo addLine(Text::toT(s));
-		}
-	}
+	void sendMessage(const tstring& msg);
 	
 	User::Ptr& getUser() { return user; };
 private:
@@ -201,6 +195,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.27 2005/04/12 23:24:04 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.28 2005/04/17 09:41:08 arnetheduck Exp $
  */
 

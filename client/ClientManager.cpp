@@ -168,6 +168,15 @@ void ClientManager::connect(const User::Ptr& p) {
 	}
 }
 
+void ClientManager::privateMessage(const User::Ptr& p, const string& msg) {
+	Lock l(cs);
+	OnlineIter i = onlineUsers.find(p->getCID());
+	if(i != onlineUsers.end()) {
+		OnlineUser* u = i->second;
+		u->getClient().privateMessage(*u, msg);
+	}
+}
+
 void ClientManager::send(AdcCommand& cmd) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(cmd.getTo());
@@ -204,7 +213,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	bool isPassive = (aSeeker.compare(0, 4, "Hub:") == 0);
 
 	// We don't wan't to answer passive searches if we're in passive mode...
-	if(isPassive && SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) {
+	if(isPassive && !ClientManager::getInstance()->isActive()) {
 		return;
 	}
 	
@@ -312,21 +321,21 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 }
 
 void ClientManager::on(Failed, Client* client, const string&) throw() { 
-	FavoriteManager::getInstance()->removeUserCommand(client->getAddressPort());
+	FavoriteManager::getInstance()->removeUserCommand(client->getHubUrl());
 	fire(ClientManagerListener::ClientDisconnected(), client);
 }
 
 void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() { 
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
  		if(aType == ::UserCommand::TYPE_CLEAR) {
- 			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getAddressPort());
+ 			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getHubUrl());
  		} else {
- 			FavoriteManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
+ 			FavoriteManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getHubUrl());
  		}
 	}
 }
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.68 2005/04/12 23:24:11 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.69 2005/04/17 09:41:05 arnetheduck Exp $
  */

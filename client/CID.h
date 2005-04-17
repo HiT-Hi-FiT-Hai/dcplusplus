@@ -43,7 +43,7 @@ public:
 	string toBase32() const { return Encoder::toBase32((u_int8_t*)&cid, sizeof(cid)); }
 	string& toBase32(string& tmp) const { return Encoder::toBase32((u_int8_t*)&cid, sizeof(cid), tmp); }
 	
-	size_t toHash() const { size_t* p = (size_t*)&cid; return *p ^ *(p+1); }
+	size_t toHash() const { return (size_t)cid; }
 	const u_int8_t* getData() const { return (u_int8_t*)&cid; }
 
 	bool isZero() const { return cid == 0; }
@@ -66,5 +66,5 @@ private:
 
 /**
 * @file
-* $Id: CID.h,v 1.5 2005/01/05 19:30:25 arnetheduck Exp $
+* $Id: CID.h,v 1.6 2005/04/17 09:41:05 arnetheduck Exp $
 */

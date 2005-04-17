@@ -332,7 +332,7 @@ void Socket::writeTo(const string& aIp, short aPort, const char* aBuffer, size_t
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5 && !noproxy) {
+	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5 && !noproxy) {
 
 		if(udpServer.empty() || udpPort == 0) {
 			throw SocketException(STRING(SOCKS_SETUP_ERROR));
@@ -482,7 +482,7 @@ void Socket::socksUpdated() {
 	udpServer.clear();
 	udpPort = 0;
 	
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
+	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5) {
 		try {
 			Socket s(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
 			
@@ -584,5 +584,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.64 2005/03/19 09:02:45 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.65 2005/04/17 09:41:05 arnetheduck Exp $
  */

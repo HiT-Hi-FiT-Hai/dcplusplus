@@ -30,7 +30,7 @@ PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_NICK, ResourceManager::NICK },
 	{ IDC_SETTINGS_EMAIL, ResourceManager::EMAIL },
 	{ IDC_SETTINGS_DESCRIPTION, ResourceManager::DESCRIPTION },
-	{ IDC_SETTINGS_CONNECTION_TYPE, ResourceManager::SETTINGS_CONNECTION_TYPE },
+	{ IDC_SETTINGS_UPLOAD_SPEED, ResourceManager::SETTINGS_UPLOAD_SPEED },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -38,7 +38,7 @@ PropPage::Item GeneralPage::items[] = {
 	{ IDC_NICK,			SettingsManager::NICK,			PropPage::T_STR }, 
 	{ IDC_EMAIL,		SettingsManager::EMAIL,			PropPage::T_STR }, 
 	{ IDC_DESCRIPTION,	SettingsManager::DESCRIPTION,	PropPage::T_STR }, 
-	{ IDC_CONNECTION,	SettingsManager::CONNECTION,	PropPage::T_STR }, 
+	{ IDC_CONNECTION,	SettingsManager::UPLOAD_SPEED,	PropPage::T_STR }, 
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -52,12 +52,12 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	PropPage::translate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
-	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
-		ctrlConnection.AddString(Text::toT(SettingsManager::connectionSpeeds[i]).c_str());
+	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i)
+		ctrlConnection.AddString(Text::toT(*i).c_str());
 
 	PropPage::read((HWND)(*this), items);
 
-	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, Text::toT(SETTING(CONNECTION)).c_str()));
+	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, Text::toT(SETTING(UPLOAD_SPEED)).c_str()));
 
 	nick.Attach(GetDlgItem(IDC_NICK));
 	nick.LimitText(35);
@@ -113,6 +113,6 @@ LRESULT GeneralPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 
 /**
  * @file
- * $Id: GeneralPage.cpp,v 1.14 2005/01/05 19:30:20 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.15 2005/04/17 09:41:08 arnetheduck Exp $
  */
 

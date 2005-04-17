@@ -28,10 +28,12 @@
 #include "version.h"
 #include "CID.h"
 
+StringList SettingsManager::connectionSpeeds;
+
 const string SettingsManager::settingTags[] =
 {
 	// Strings
-	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
+	"Nick", "UploadSpeed", "Description", "DownloadDirectory", "EMail", "ExternalIp",
 	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
@@ -44,7 +46,7 @@ const string SettingsManager::settingTags[] =
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
 	"SENTRY", 
 	// Ints
-	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
+	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
@@ -59,23 +61,35 @@ const string SettingsManager::settingTags[] =
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
-	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
+	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize",
 	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
-	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad",
+	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
 	"SENTRY"
 };
 
-const string SettingsManager::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", 
-"Satellite", "Cable", "DSL", "LAN(T1)", "LAN(T3)" };
-
 SettingsManager::SettingsManager()
 {
+	connectionSpeeds.push_back("0.05");
+	connectionSpeeds.push_back("0.01");
+	connectionSpeeds.push_back("0.02");
+	connectionSpeeds.push_back("0.05");
+	connectionSpeeds.push_back("0.1");
+	connectionSpeeds.push_back("0.2");
+	connectionSpeeds.push_back("0.5");
+	connectionSpeeds.push_back("1");
+	connectionSpeeds.push_back("2");
+	connectionSpeeds.push_back("5");
+	connectionSpeeds.push_back("10");
+	connectionSpeeds.push_back("20");
+	connectionSpeeds.push_back("50");
+	connectionSpeeds.push_back("100");
+
 	for(int i=0; i<SETTINGS_LAST; i++)
 		isSet[i] = false;
 
@@ -91,9 +105,10 @@ SettingsManager::SettingsManager()
 	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads" PATH_SEPARATOR_STR);
 	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getAppPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
-	//setDefault(SERVER, Util::getLocalIp());
-	setDefault(IN_PORT, Util::rand(1025, 32000));
+	setDefault(TCP_PORT, Util::rand(1025, 32000));
 	setDefault(UDP_PORT, Util::rand(1025, 32000));
+	setDefault(INCOMING_CONNECTIONS, INCOMING_DIRECT);
+	setDefault(OUTGOING_CONNECTIONS, OUTGOING_DIRECT);
 	setDefault(ROLLBACK, 4096);
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
@@ -117,7 +132,7 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_MAIN_CHAT, false);
 	setDefault(STATUS_IN_CHAT, true);
 	setDefault(SHOW_JOINS, false);
-	setDefault(CONNECTION, connectionSpeeds[0]);
+	setDefault(UPLOAD_SPEED, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
 	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
 	setDefault(USE_SYSTEM_ICONS, true);
@@ -182,7 +197,6 @@ SettingsManager::SettingsManager()
 	setDefault(MAGNET_ASK, true);
 	setDefault(MAGNET_ACTION, MAGNET_AUTO_SEARCH);
 	setDefault(ADD_FINISHED_INSTANTLY, false);
-	setDefault(SETTINGS_USE_UPNP, false);
 	setDefault(DONT_DL_ALREADY_SHARED, false);
 	setDefault(CONFIRM_HUB_REMOVAL, false);
 	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
@@ -209,7 +223,8 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_SEARCH_SPY, false);
 	setDefault(OPEN_NETWORK_STATISTICS, false);
 	setDefault(OPEN_NOTEPAD, false);
-	
+	setDefault(NO_IP_OVERRIDE, false);
+
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
@@ -273,11 +288,8 @@ void SettingsManager::load(string const& aFileName)
 
 		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
-		if(v < 0.668 && isSet[IN_PORT]) {
-			set(UDP_PORT, SETTING(IN_PORT));
-		}
 
-		if(CID(SETTING(CLIENT_ID)).isZero())
+		if(v <= 0.674 || CID(SETTING(CLIENT_ID)).isZero())
 			set(CLIENT_ID, CID::generate().toBase32());
 
 		if(SETTING(SET_MINISLOT_SIZE) < 64)
@@ -298,7 +310,7 @@ void SettingsManager::load(string const& aFileName)
 #ifdef _DEBUG
 		set(CLIENT_ID, CID::generate().toBase32());
 #endif
-		setDefault(UDP_PORT, SETTING(IN_PORT));
+		setDefault(UDP_PORT, SETTING(TCP_PORT));
 		
 		fire(SettingsManagerListener::Load(), &xml);
 
@@ -369,6 +381,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.120 2005/04/03 14:48:37 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.121 2005/04/17 09:41:05 arnetheduck Exp $
  */
 

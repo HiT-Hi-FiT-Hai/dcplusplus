@@ -145,7 +145,7 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		if(!pm)
 			return;
 
-		if(pm->getUser() == getMe()) {
+		if(pm->getUser() == ClientManager::getInstance()->getMe()) {
 			return;
 		}
 		string msg = '<' + u->getIdentity().getNick() + "> " + c.getParam(0);
@@ -171,7 +171,7 @@ void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 
 void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 	OnlineUser* u = findUser(c.getFrom());
-	if(!u || u->getUser() == getMe())
+	if(!u || u->getUser() == ClientManager::getInstance()->getMe())
 		return;
 	if(c.getParameters().size() < 3)
 		return;
@@ -192,10 +192,10 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
-	if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
+	if(!ClientManager::getInstance()->isActive())
 		return;
 	OnlineUser* u = findUser(c.getFrom());
-	if(!u || u->getUser() == getMe())
+	if(!u || u->getUser() == ClientManager::getInstance()->getMe())
 		return;
 	if(c.getParameters().empty() || c.getParameters()[0] != CLIENT_PROTOCOL)
 		return;
@@ -246,8 +246,8 @@ void AdcHub::connect(const OnlineUser& user, string const& token) {
 	if(state != STATE_NORMAL)
 		return;
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		send(AdcCommand(AdcCommand::CMD_CTM, user.getUser()->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))).addParam(token));
+	if(ClientManager::getInstance()->isActive()) {
+		send(AdcCommand(AdcCommand::CMD_CTM, user.getUser()->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(TCP_PORT))).addParam(token));
 	} else {
 		send(AdcCommand(AdcCommand::CMD_RCM, user.getUser()->getCID()).addParam(CLIENT_PROTOCOL));
 	}
@@ -300,7 +300,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 
 	sendUDP(c);
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+	if(ClientManager::getInstance()->isActive()) {
 		c.setType(AdcCommand::TYPE_PASSIVE);
 		send(c);
 	}
@@ -325,8 +325,6 @@ void AdcHub::password(const string& pwd) {
 void AdcHub::info(bool /*alwaysSend*/) {
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 		return;
-	if(!getMe())
-		return;
 
 	AdcCommand c(AdcCommand::CMD_INF, AdcCommand::TYPE_BROADCAST);
 	string tmp;
@@ -347,8 +345,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 		lastInfoMap[var] = tmp; \
 	}
 
-	ADDPARAM("NI", getNick());
-	ADDPARAM("DE", getDescription());
+	ADDPARAM("NI", getMyIdentity().getNick());
+	ADDPARAM("DE", getMyIdentity().getDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
 	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
 	ADDPARAM("SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
@@ -357,10 +355,15 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		ADDPARAM("I4", "0.0.0.0");
+	if(ClientManager::getInstance()->isActive()) {
+		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
+			ADDPARAM("I4", Socket::resolve(SETTING(EXTERNAL_IP)));
+		} else {
+			ADDPARAM("I4", "0.0.0.0");
+		}
 		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
 	} else {
+		ADDPARAM("I4", "");
 		ADDPARAM("U4", "");
 	}
 
@@ -371,6 +374,15 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	}
 }
 
+int64_t AdcHub::getAvailable() const {
+	Lock l(cs);
+	int64_t x = 0;
+	for(CIDMap::const_iterator i = users.begin(); i != users.end(); ++i) {
+		x+=i->second->getIdentity().getBytesShared();
+	}
+	return x;
+}
+
 string AdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
 	string::size_type i = 0;
@@ -378,10 +390,6 @@ string AdcHub::checkNick(const string& aNick) {
 		tmp[i++]='_';
 	}
 	return tmp;
-}
-
-string AdcHub::getHubURL() {
-	return getAddressPort();
 }
 
 void AdcHub::on(Connected) throw() { 
@@ -406,5 +414,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.46 2005/04/12 23:24:11 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.47 2005/04/17 09:41:05 arnetheduck Exp $
  */

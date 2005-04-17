@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.674" Revision="1">
+<Language Name="Example Language" Author="arnetheduck" Version="0.6745" Revision="1">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -366,9 +366,9 @@
 		<String Name="SettingsConfirmExit">Confirm application exit</String>
 		<String Name="SettingsConfirmHubRemoval">Confirm favorite hub removal</String>
 		<String Name="SettingsConfirmItemRemoval">Confirm item removal in download queue</String>
-		<String Name="SettingsConnectionSettings">Connection Settings (see the help file if unsure)</String>
 		<String Name="SettingsConnectionType">Connection Type</String>
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>
+		<String Name="SettingsDirect">Direct connection</String>
 		<String Name="SettingsDirectories">Directories</String>
 		<String Name="SettingsDontDlAlreadyShared">Don't download files already in share</String>
 		<String Name="SettingsDownloadDirectory">Default download directory</String>
@@ -377,18 +377,21 @@
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
 		<String Name="SettingsExampleText">Donate â‚¬â‚¬â‚¬:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
+		<String Name="SettingsExternalIp">External / WAN IP</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFavoriteDirsPage">Downloads\\Favorites</String>
 		<String Name="SettingsFavoriteDirs">Favorite download directories</String>
 		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
+		<String Name="SettingsFirewallNat">Firewall with manual port forwarding</String>
+		<String Name="SettingsFirewallPassive">Firewall (passive, last resort)</String>
+		<String Name="SettingsFirewallUpnp">Firewall with UPnP</String>
 		<String Name="SettingsFormat">Format</String>
 		<String Name="SettingsGeneral">Personal information </String>
 		<String Name="SettingsGetUserCountry">Get User Country</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
-		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
 		<String Name="SettingsListDupes">Keep duplicate files in your file list</String>
@@ -413,7 +416,8 @@
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
 		<String Name="SettingsOpenUserCmdHelp">Always open help file with this dialog</String>
 		<String Name="SettingsOptions">Options</String>
-		<String Name="SettingsPassive">Passive</String>
+		<String Name="SettingsOutgoing">Outgoing connection settings</String>
+		<String Name="SettingsOverride">Don't allow hub/UPnP to override</String>
 		<String Name="SettingsPersonalInformation">Personal Information</String>
 		<String Name="SettingsPmBeep">Make an annoying sound every time a private message is received</String>
 		<String Name="SettingsPmBeepOpen">Make an annoying sound when a private message window is opened</String>
@@ -422,6 +426,7 @@
 		<String Name="SettingsPopunderPm">Open new private message windows in the background</String>
 		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
 		<String Name="SettingsPopupPms">Open private messages in their own window</String>
+		<String Name="SettingsPorts">Ports</String>
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
@@ -464,6 +469,7 @@
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
 		<String Name="SettingsUdpPort">UDP Port</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
+		<String Name="SettingsUploadSpeed">Max upload speed</String>
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
@@ -472,7 +478,6 @@
 		<String Name="SettingsUseCtrlForLineHistory">Use CTRL for line history</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
-		<String Name="SettingsUseUpnp">Use UPnP Control</String>
 		<String Name="SettingsUserCommands">Advanced\\User Commands</String>
 		<String Name="SettingsWindows">Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>

@@ -102,8 +102,10 @@ public:
 	GS(UdpPort, "U4")
 	GS(Email, "EM")
 
-	void setBytesShared(const string& bs) { set("BS", bs); }
+	void setBytesShared(const string& bs) { set("SS", bs); }
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
+	
+	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 
 	/// @todo
 	string getTag() const { return Util::emptyString; }
@@ -168,5 +170,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.54 2005/04/12 23:24:13 arnetheduck Exp $
+ * $Id: User.h,v 1.55 2005/04/17 09:41:05 arnetheduck Exp $
  */

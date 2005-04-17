@@ -26,25 +26,32 @@
 #include "WinUtil.h"
 
 PropPage::TextItem NetworkPage::texts[] = {
-	{ IDC_ACTIVE, ResourceManager::ACTIVE },
-	{ IDC_PASSIVE, ResourceManager::SETTINGS_PASSIVE },
+	{ IDC_DIRECT, ResourceManager::SETTINGS_DIRECT },
+	{ IDC_DIRECT_OUT, ResourceManager::SETTINGS_DIRECT },
+	{ IDC_FIREWALL_UPNP, ResourceManager::SETTINGS_FIREWALL_UPNP },
+	{ IDC_FIREWALL_NAT, ResourceManager::SETTINGS_FIREWALL_NAT },
+	{ IDC_FIREWALL_PASSIVE, ResourceManager::SETTINGS_FIREWALL_PASSIVE },
+	{ IDC_OVERRIDE, ResourceManager::SETTINGS_OVERRIDE },
 	{ IDC_SOCKS5, ResourceManager::SETTINGS_SOCKS5 }, 
-	{ IDC_SETTINGS_IP, ResourceManager::SETTINGS_IP },
-	{ IDC_SETTINGS_PORT, ResourceManager::SETTINGS_TCP_PORT },
-	{ IDC_SETTINGS_UDP_PORT, ResourceManager::SETTINGS_UDP_PORT },
+	{ IDC_SETTINGS_PORTS, ResourceManager::SETTINGS_PORTS },
+	{ IDC_SETTINGS_IP, ResourceManager::SETTINGS_EXTERNAL_IP },
+	{ IDC_SETTINGS_PORT_TCP, ResourceManager::SETTINGS_TCP_PORT },
+	{ IDC_SETTINGS_PORT_UDP, ResourceManager::SETTINGS_UDP_PORT },
 	{ IDC_SETTINGS_SOCKS5_IP, ResourceManager::SETTINGS_SOCKS5_IP },
 	{ IDC_SETTINGS_SOCKS5_PORT, ResourceManager::SETTINGS_SOCKS5_PORT },
 	{ IDC_SETTINGS_SOCKS5_USERNAME, ResourceManager::SETTINGS_SOCKS5_USERNAME },
 	{ IDC_SETTINGS_SOCKS5_PASSWORD, ResourceManager::PASSWORD },
 	{ IDC_SOCKS_RESOLVE, ResourceManager::SETTINGS_SOCKS5_RESOLVE },
-	{ IDC_SETTINGS_CONNECTION_SETTINGS, ResourceManager::SETTINGS_CONNECTION_SETTINGS },
+	{ IDC_SETTINGS_INCOMING, ResourceManager::SETTINGS_INCOMING },
+	{ IDC_SETTINGS_OUTGOING, ResourceManager::SETTINGS_OUTGOING },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 PropPage::Item NetworkPage::items[] = {
-	{ IDC_SERVER,		SettingsManager::SERVER,		PropPage::T_STR }, 
-	{ IDC_PORT,			SettingsManager::IN_PORT,		PropPage::T_INT }, 
-	{ IDC_UDP_PORT,		SettingsManager::UDP_PORT,		PropPage::T_INT }, 
+	{ IDC_EXTERNAL_IP,	SettingsManager::EXTERNAL_IP,	PropPage::T_STR }, 
+	{ IDC_PORT_TCP,		SettingsManager::TCP_PORT,		PropPage::T_INT }, 
+	{ IDC_PORT_UDP,		SettingsManager::UDP_PORT,		PropPage::T_INT }, 
+	{ IDC_OVERRIDE,		SettingsManager::NO_IP_OVERRIDE, PropPage::T_BOOL },
 	{ IDC_SOCKS_SERVER, SettingsManager::SOCKS_SERVER,	PropPage::T_STR },
 	{ IDC_SOCKS_PORT,	SettingsManager::SOCKS_PORT,	PropPage::T_INT },
 	{ IDC_SOCKS_USER,	SettingsManager::SOCKS_USER,	PropPage::T_STR },
@@ -75,16 +82,26 @@ void NetworkPage::write()
 	PropPage::write((HWND)(*this), items);
 
 	// Set connection active/passive
-	int ct = -1;
-	if(IsDlgButtonChecked(IDC_ACTIVE))
-		ct = SettingsManager::CONNECTION_ACTIVE;
-	else if(IsDlgButtonChecked(IDC_PASSIVE))
-		ct = SettingsManager::CONNECTION_PASSIVE;
-	else if(IsDlgButtonChecked(IDC_SOCKS5))
-		ct = SettingsManager::CONNECTION_SOCKS5;
+	int ct = SettingsManager::INCOMING_DIRECT;
 
-	if(SETTING(CONNECTION_TYPE) != ct) {
-		settings->set(SettingsManager::CONNECTION_TYPE, ct);
+	if(IsDlgButtonChecked(IDC_FIREWALL_UPNP))
+		ct = SettingsManager::INCOMING_FIREWALL_UPNP;
+	else if(IsDlgButtonChecked(IDC_FIREWALL_NAT))
+		ct = SettingsManager::INCOMING_FIREWALL_NAT;
+	else if(IsDlgButtonChecked(IDC_FIREWALL_PASSIVE))
+		ct = SettingsManager::INCOMING_FIREWALL_PASSIVE;
+
+	if(SETTING(INCOMING_CONNECTIONS) != ct) {
+		settings->set(SettingsManager::INCOMING_CONNECTIONS, ct);
+	}
+
+	ct = SettingsManager::OUTGOING_DIRECT;
+	
+	if(IsDlgButtonChecked(IDC_SOCKS5))
+		ct = SettingsManager::OUTGOING_SOCKS5;
+
+	if(SETTING(OUTGOING_CONNECTIONS) != ct) {
+		settings->set(SettingsManager::OUTGOING_CONNECTIONS, ct);
 		Socket::socksUpdated();
 	}
 
@@ -93,14 +110,20 @@ void NetworkPage::write()
 LRESULT NetworkPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::translate((HWND)(*this), texts);
-		
-	int const connType = settings->get(SettingsManager::CONNECTION_TYPE);
-	if(connType == SettingsManager::CONNECTION_ACTIVE)
-		CheckRadioButton(IDC_ACTIVE, IDC_SOCKS5, IDC_ACTIVE);
-	else if(connType == SettingsManager::CONNECTION_PASSIVE)
-		CheckRadioButton(IDC_ACTIVE, IDC_SOCKS5, IDC_PASSIVE);
-	else if(connType == SettingsManager::CONNECTION_SOCKS5)
-		CheckRadioButton(IDC_ACTIVE, IDC_SOCKS5, IDC_SOCKS5);
+	
+	switch(SETTING(INCOMING_CONNECTIONS)) {
+		case SettingsManager::INCOMING_DIRECT: CheckRadioButton(IDC_DIRECT, IDC_FIREWALL_PASSIVE, IDC_DIRECT); break;
+		case SettingsManager::INCOMING_FIREWALL_UPNP: CheckRadioButton(IDC_DIRECT, IDC_FIREWALL_PASSIVE, IDC_FIREWALL_UPNP); break;
+		case SettingsManager::INCOMING_FIREWALL_NAT: CheckRadioButton(IDC_DIRECT, IDC_FIREWALL_PASSIVE, IDC_FIREWALL_NAT); break;
+		case SettingsManager::INCOMING_FIREWALL_PASSIVE: CheckRadioButton(IDC_DIRECT, IDC_FIREWALL_PASSIVE, IDC_FIREWALL_PASSIVE); break;
+		default: CheckRadioButton(IDC_DIRECT, IDC_FIREWALL_PASSIVE, IDC_DIRECT); break;
+	}
+
+	switch(SETTING(OUTGOING_CONNECTIONS)) {
+		case SettingsManager::OUTGOING_DIRECT: CheckRadioButton(IDC_DIRECT_OUT, IDC_SOCKS5, IDC_SOCKS5); break;
+		case SettingsManager::OUTGOING_SOCKS5: CheckRadioButton(IDC_DIRECT_OUT, IDC_SOCKS5, IDC_SOCKS5); break;
+		default: CheckRadioButton(IDC_DIRECT_OUT, IDC_SOCKS5, IDC_SOCKS5); break;
+	}
 
 	PropPage::read((HWND)(*this), items);
 

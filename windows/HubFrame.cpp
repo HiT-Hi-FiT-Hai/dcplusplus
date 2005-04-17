@@ -212,7 +212,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)) + "/" + Util::toString(SETTING(UDP_PORT)))));
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(TCP_PORT)) + "/" + Util::toString(SETTING(UDP_PORT)))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
@@ -224,9 +224,9 @@ void HubFrame::onEnter() {
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
 				StringMap params;
-				params["hub"] = client->getName();
-				params["hubaddr"] = client->getAddressPort();
-				params["mynick"] = client->getNick(); 
+				params["hub"] = client->getHubName();
+				params["hubaddr"] = client->getHubUrl();
+				params["mynick"] = client->getMyNick(); 
 				if(param.empty()) {
 					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params))));
 				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
@@ -305,7 +305,7 @@ void HubFrame::addAsFavorite() {
 	aEntry.setName(Text::fromT(buf));
 	aEntry.setDescription(Text::fromT(buf));
 	aEntry.setConnect(false);
-	aEntry.setNick(client->getNick());
+	aEntry.setNick(client->getMyNick());
 	FavoriteManager::getInstance()->addFavorite(aEntry);
 	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
 }
@@ -625,9 +625,9 @@ void HubFrame::addLine(const tstring& aLine) {
 	if(BOOLSETTING(LOG_MAIN_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		params["hub"] = client->getName();
-		params["hubaddr"] = client->getAddressPort();
-		params["mynick"] = client->getNick(); 
+		params["hub"] = client->getHubName();
+		params["hubaddr"] = client->getHubUrl();
+		params["mynick"] = client->getMyNick(); 
 		LOG(LogManager::CHAT, params);
 	}
 	if(timeStamps) {
@@ -646,7 +646,7 @@ void HubFrame::addLine(const tstring& aLine) {
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	tabMenuShown = true;
-	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, Text::toT(client->getAddressPort()), client->getOp());
+	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, Text::toT(client->getHubUrl()), client->getMyIdentity().isOp());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -700,7 +700,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		}
 
 		tabMenuShown = false;
-		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getAddressPort()), client->getOp());
+		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getHubUrl()), client->getMyIdentity().isOp());
 		checkAdcItems(userMenu);
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(userMenu);
@@ -715,8 +715,8 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
-	ucParams["mynick"] = client->getNick();
-	ucParams["mycid"] = client->getMe()->getCID().toBase32();
+	ucParams["mynick"] = client->getMyNick();
+	ucParams["mycid"] = SETTING(CLIENT_ID);
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
@@ -1030,8 +1030,8 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		StringMap params;
-		params["hub"] = client->getName();
-		params["hubaddr"] = client->getAddressPort();
+		params["hub"] = client->getHubName();
+		params["hubaddr"] = client->getHubUrl();
 		params["message"] = Text::fromT(aLine);
 		LOG(LogManager::STATUS, params);
 	}
@@ -1054,8 +1054,8 @@ void HubFrame::on(TimerManagerListener::Second, DWORD /*aTick*/) throw() {
 }
 
 void HubFrame::on(Connecting, Client*) throw() { 
-	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getAddressPort() + "...");
-	speak(SET_WINDOW_TITLE, client->getAddressPort());
+	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getHubUrl() + "...");
+	speak(SET_WINDOW_TITLE, client->getHubUrl());
 }
 void HubFrame::on(Connected, Client*) throw() { 
 	speak(CONNECTED);
@@ -1108,7 +1108,7 @@ void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
 void HubFrame::on(HubUpdated, Client*) throw() { 
-	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getName(), true, false) + " (" + client->getAddressPort() + ")");
+	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName(), true, false) + " (" + client->getHubUrl() + ")");
 }
 void HubFrame::on(Message, Client*, const string& line) throw() { 
 	if(SETTING(FILTER_MESSAGES)) {
@@ -1136,5 +1136,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.105 2005/04/12 23:24:04 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.106 2005/04/17 09:41:08 arnetheduck Exp $
  */

@@ -6,6 +6,9 @@
 * Fixed international timestamps (thanks ullner)
 * Fixed targetdrive docs (thanks ullner)
 * Fixed transfer list view flicker on WinXP
+* New connection settings, please check settings page
+* Connection type freely settable, and default connection strings changed
+* No longer fallbacks to passive mode on failed UPnP
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

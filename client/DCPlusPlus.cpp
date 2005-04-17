@@ -68,14 +68,6 @@ void startup(void (*f)(void*, const string&), void* p) {
 	}
 
 	FavoriteManager::getInstance()->load();
-	int i;
-	for(i = 0; i < SettingsManager::SPEED_LAST; i++) {
-		if(SETTING(CONNECTION) == SettingsManager::connectionSpeeds[i])
-			break;
-	}
-	if(i == SettingsManager::SPEED_LAST) {
-		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, SettingsManager::connectionSpeeds[0]);
-	}
 
 	if(f != NULL)
 		(*f)(p, STRING(HASH_DATABASE));
@@ -116,6 +108,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.36 2005/04/12 23:24:13 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.37 2005/04/17 09:41:05 arnetheduck Exp $
  */
 

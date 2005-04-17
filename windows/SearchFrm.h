@@ -466,7 +466,7 @@ private:
 	LRESULT onItemChangedHub(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
 	void speak(Speakers s, Client* aClient) {
-		HubInfo* hubInfo = new HubInfo(Text::toT(aClient->getIpPort()), Text::toT(aClient->getName()), aClient->getOp());
+		HubInfo* hubInfo = new HubInfo(Text::toT(aClient->getIpPort()), Text::toT(aClient->getHubName()), aClient->getMyIdentity().isOp());
 		PostMessage(WM_SPEAKER, WPARAM(s), LPARAM(hubInfo)); 
 	};
 };
@@ -480,6 +480,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.56 2005/04/12 23:24:02 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.57 2005/04/17 09:41:08 arnetheduck Exp $
  */
 
