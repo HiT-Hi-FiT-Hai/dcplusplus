@@ -388,10 +388,11 @@
 		<String Name="SettingsFirewallPassive">Firewall (passive, last resort)</String>
 		<String Name="SettingsFirewallUpnp">Firewall with UPnP</String>
 		<String Name="SettingsFormat">Format</String>
-		<String Name="SettingsGeneral">Personal information </String>
+		<String Name="SettingsGeneral">Personal information</String>
 		<String Name="SettingsGetUserCountry">Get User Country</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
+		<String Name="SettingsIncoming">Incoming connection settings (see Help/FAQ if unsure)</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
 		<String Name="SettingsListDupes">Keep duplicate files in your file list</String>

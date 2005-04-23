@@ -338,28 +338,68 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 
 bool HubFrame::updateUser(const UpdateInfo& u) {
-	int i = findUser(u.user);
-	if(i == -1) {
+	UserMapIter i = userMap.find(u.user);
+	if(i == userMap.end()) {
 		UserInfo* ui = new UserInfo(u);
 		userMap.insert(make_pair(u.user, ui));
-		ctrlUsers.insertItem(ui, getImage(u.user));
+		if(!ui->getHidden() && showUsers)
+			ctrlUsers.insertItem(ui, getImage(u.user));
 		return true;
 	} else {
-		UserInfo* ui = ctrlUsers.getItemData(i);
-		bool resort = (ui->getOp() != u.user->isSet(User::OP));
-		ctrlUsers.getItemData(i)->update(u.identity);
-		ctrlUsers.updateItem(i);
-		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
-		if(resort)
-			ctrlUsers.resort();
+		UserInfo* ui = i->second;
+		if(!ui->getHidden() && u.identity.isHidden() && showUsers) {
+			ctrlUsers.deleteItem(ui);
+		}
+		
+		resort = ui->update(u.identity, ctrlUsers.getSortColumn()) || resort;
+		if(showUsers) {
+			int pos = ctrlUsers.findItem(ui);
+			dcassert(pos != -1);
+			ctrlUsers.updateItem(pos);
+			ctrlUsers.SetItem(pos, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
+		}
+
 		return false;
 	}
+}
+
+void HubFrame::removeUser(const User::Ptr& aUser) {
+	UserMapIter i = userMap.find(aUser);
+	dcassert(i != userMap.end());
+
+	UserInfo* ui = i->second;
+	if(!ui->getHidden() && showUsers)
+		ctrlUsers.deleteItem(ui);
+
+	userMap.erase(i);
+	delete ui;
+}
+
+bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
+	bool needsSort = (op != identity.isOp());
+	tstring old;
+	if(sortCol != -1)
+		old = columns[sortCol];
+
+	columns[COLUMN_NICK] = Text::toT(identity.getNick());
+	columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
+	columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
+	columns[COLUMN_TAG] = Text::toT(identity.getTag());
+	/// @todo columns[COLUMN_CONNECTION] = Text::toT(i->getConnection());
+	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
+
+	op = identity.isOp();
+	hidden = identity.isHidden();
+
+	if(sortCol != -1) {
+		needsSort = needsSort || (old != columns[sortCol]);
+	}
+	return needsSort;
 }
 
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPDATE_USERS) {
 		ctrlUsers.SetRedraw(FALSE);
-		bool resort = false;
 		{
 			Lock l(updateCS);
 			for(UpdateIter i = updateList.begin(); i != updateList.end(); ++i) {
@@ -367,37 +407,31 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				switch(i->second) {
 				case UPDATE_USER:
 					if(updateUser(u)) {
-/** @todo						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
-							addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u->getNick()));
-						} */
-					} else {
-						resort = true;
+						if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
+							addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
+						} 
 					}
 					break;
 				case UPDATE_USERS:
-					if(!updateUser(u))
-						resort = true;
-					
+					updateUser(u);
 					break;
 				case REMOVE_USER:
-					int j = findUser(u.user);
-					if( j != -1 ) {
-						UserInfo* ui = ctrlUsers.getItemData(j);
-						ctrlUsers.DeleteItem(j);
-/** @todo						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
-							addLine(Text::toT("*** " + STRING(PARTS) + u->getNick()));
-						}*/
-						dcassert(userMap[u.user] == ui);
-						userMap.erase(u.user);
-						delete ui;
+					removeUser(u.user);
+					if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
+						addLine(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
 					}
+
 					break;
 				}
 			}
 			updateList.clear();
 		}
-		if(ctrlUsers.getSortColumn() != COLUMN_NICK)
+
+		if(resort && showUsers) {
 			ctrlUsers.resort();
+			resort = false;
+		}
+
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
 		clearUserList();
@@ -494,7 +528,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 			SetSinglePaneMode(SPLIT_PANE_LEFT);
 	} else {
 		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-		SetSinglePaneMode(SPLIT_PANE_NONE);
+			SetSinglePaneMode(SPLIT_PANE_NONE);
 	}
 	SetSplitterRect(rc);
 	
@@ -519,15 +553,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
 		FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
-		userMap.clear();
-
-		int i = 0;
-		int j = ctrlUsers.GetItemCount();
-		while(i < j) {
-			delete ctrlUsers.getItemData(i);
-			i++;
-		}
-
+		clearUserList();
 		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER, 
 			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
@@ -555,6 +581,20 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	}
 }
+
+void HubFrame::clearUserList() {
+	{
+		Lock l(updateCS);
+		updateList.clear();
+	}
+
+	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+		delete i->second;
+	}
+	ctrlUsers.DeleteAllItems();
+	userMap.clear();
+}
+
 
 LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
@@ -940,17 +980,19 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	bHandled = FALSE;
 	if((wParam == BST_CHECKED)) {
 		showUsers = true;
-/** @todo		User::NickMap& lst = client->lockUserList();
 		ctrlUsers.SetRedraw(FALSE);
-		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
-			updateUser(i->second);
+		ctrlUsers.DeleteAllItems();
+		
+		for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+			UserInfo* ui = i->second;
+			if(!ui->getHidden())
+				ctrlUsers.insertItem(ui, getImage(ui->getUser()));
 		}
-		client->unlockUserList();*/
+
 		ctrlUsers.SetRedraw(TRUE);
 		ctrlUsers.resort();
 	} else {
 		showUsers = false;
-		clearUserList();
 	}
 
 	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
@@ -1064,8 +1106,7 @@ void HubFrame::on(BadPassword, Client*) throw() {
 	client->setPassword(Util::emptyString);
 }
 void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() { 
-	///@todo if(getUserInfo() && !user->isSet(User::HIDDEN)) 
-		speak(UPDATE_USER, user);
+	speak(UPDATE_USER, user);
 }
 void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
 	Lock l(updateCS);
@@ -1080,8 +1121,7 @@ void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() 
 }
 
 void HubFrame::on(UserRemoved, Client*, const OnlineUser& user) throw() {
-	if(getUserInfo()) 
-		speak(REMOVE_USER, user);
+	speak(REMOVE_USER, user);
 }
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() { 
@@ -1136,5 +1176,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.106 2005/04/17 09:41:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.107 2005/04/23 15:45:28 arnetheduck Exp $
  */

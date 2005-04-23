@@ -33,7 +33,7 @@ public:
     
 	FavoriteUser(const User::Ptr& ptr) : user(ptr), lastIdentity(ptr), lastSeen(0) { }
 
-	bool operator==(const User::Ptr& rhs) { return user == rhs; }
+	bool operator==(const User::Ptr& rhs) const { return user == rhs; }
 	operator User::Ptr() { return user; }
 
 	enum Flags {
@@ -50,5 +50,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.9 2005/04/12 23:24:13 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.10 2005/04/23 15:45:32 arnetheduck Exp $
  */

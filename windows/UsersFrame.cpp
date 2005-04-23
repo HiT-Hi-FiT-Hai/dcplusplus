@@ -63,7 +63,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	FavoriteUser::List ul = FavoriteManager::getInstance()->getFavoriteUsers();
 	ctrlUsers.SetRedraw(FALSE);
 	for(FavoriteUser::Iter i = ul.begin(); i != ul.end(); ++i) {
-		/// @todo addUser(*i);
+		addUser(*i);
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
@@ -126,8 +126,8 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		dcassert(i != -1);
 		LineDlg dlg;
 		dlg.description = TSTRING(DESCRIPTION);
-		/// @todo dlg.title = Text::toT(ui->user->getNick());
-		/// @todo dlg.line = Text::toT(ui->user->getUserDescription());
+		dlg.title = ui->columns[COLUMN_NICK];
+		dlg.line = ui->columns[COLUMN_DESCRIPTION];
 		if(dlg.DoModal(m_hWnd)) {
 			/// @todo ui->user->setUserDescription(Text::fromT(dlg.line));
 			/// @todo ui->update();
@@ -147,33 +147,31 @@ LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 	return 0;
 } 
 
-void UsersFrame::addUser(const User::Ptr& aUser) {
+void UsersFrame::addUser(const FavoriteUser& aUser) {
 	int i = ctrlUsers.insertItem(new UserInfo(aUser), 0);
-	/// @todo bool b = aUser->getFavoriteGrantSlot();
-	//ctrlUsers.SetCheckState(i, b);
+	bool b = aUser.isSet(FavoriteUser::FLAG_GRANTSLOT);
+	ctrlUsers.SetCheckState(i, b);
 }
 
-void UsersFrame::updateUser(const User::Ptr& aUser) {
-/** @todo	int i = -1;
-	while((i = ctrlUsers.findItem(Text::toT(aUser->getNick()), i)) != -1) {
+void UsersFrame::updateUser(const FavoriteUser& aUser) {
+	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
-		if(ui->user == aUser) {
-			ui->update();
+		if(ui->user == aUser.getUser()) {
+			ui->update(aUser);
 			ctrlUsers.updateItem(i);
 		}
-	} */
+	}
 }
 
-void UsersFrame::removeUser(const User::Ptr& aUser) {
-/**	@todo int i = -1;
-	while((i = ctrlUsers.findItem(Text::toT(aUser->getNick()), i)) != -1) {
+void UsersFrame::removeUser(const FavoriteUser& aUser) {
+	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
-		if(ui->user == aUser) {
+		if(ui->user == aUser.getUser()) {
 			ctrlUsers.DeleteItem(i);
 			delete ui;
 			return;
 		}
-	} */
+	}
 }
 
 LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -199,6 +197,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.34 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.35 2005/04/23 15:45:28 arnetheduck Exp $
  */
 

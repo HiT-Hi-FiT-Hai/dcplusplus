@@ -200,8 +200,8 @@ private:
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const UpdateInfo& u) : UserInfoBase(u.user), op(false) { 
-			update(u.identity); 
+		UserInfo(const UpdateInfo& u) : UserInfoBase(u.user), op(false), hidden(false) { 
+			update(u.identity, -1); 
 		};
 
 		const tstring& getText(int col) const {
@@ -217,23 +217,17 @@ private:
 				}
 			}
 			if(col == COLUMN_SHARED) {
-				/// @todo return compare(a->user->getBytesShared(), b->user->getBytesShared());
+				return compare(a->getBytes(), b->getBytes());
 			}
 			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
 		}
 
-		void update(const Identity& identity) { 
-			columns[COLUMN_NICK] = Text::toT(identity.getNick());
-			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
-			columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
-			columns[COLUMN_TAG] = Text::toT(identity.getTag());
-			/// @todo columns[COLUMN_CONNECTION] = Text::toT(i->getConnection());
-			columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
-			op = user->isSet(User::OP); 
-		}
+		bool update(const Identity& identity, int sortCol);
 
 		tstring columns[COLUMN_LAST];
+		GETSET(int64_t, bytes, Bytes);
 		GETSET(bool, op, Op);
+		GETSET(bool, hidden, Hidden);
 	};
 
 	class PMInfo {
@@ -245,7 +239,7 @@ private:
 
 	HubFrame(const tstring& aServer) : 
 	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
-		showUsers(BOOLSETTING(GET_USER_INFO)), updateUsers(false), 
+		showUsers(BOOLSETTING(GET_USER_INFO)), updateUsers(false), resort(false),
 		curCommandPosition(0), timeStamps(BOOLSETTING(TIME_STAMPS)),
 		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP), 
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
@@ -312,6 +306,7 @@ private:
 	UpdateList updateList;
 	CriticalSection updateCS;
 	bool updateUsers;
+	bool resort;
 
 	enum { MAX_CLIENT_LINES = 5 };
 	TStringList lastLinesList;
@@ -324,23 +319,11 @@ private:
 	int findUser(const User::Ptr& aUser);
 
 	bool updateUser(const UpdateInfo& u);
+	void removeUser(const User::Ptr& aUser);
+
 	void addAsFavorite();
 
-	bool getUserInfo() { return showUsers; }
-
-	void clearUserList() {
-		{
-			Lock l(updateCS);
-			updateList.clear();
-		}
-
-		userMap.clear();
-		int j = ctrlUsers.GetItemCount();
-		for(int i = 0; i < j; i++) {
-			delete (UserInfo*) ctrlUsers.GetItemData(i);
-		}
-		ctrlUsers.DeleteAllItems();
-	}
+	void clearUserList();
 
 	int getImage(const User::Ptr& u) {
 		int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
@@ -396,6 +379,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.61 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.62 2005/04/23 15:45:28 arnetheduck Exp $
  */
 

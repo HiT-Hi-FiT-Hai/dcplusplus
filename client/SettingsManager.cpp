@@ -67,6 +67,7 @@ const string SettingsManager::settingTags[] =
 	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
+	"NoIpOverride",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -381,6 +382,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.121 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.122 2005/04/23 15:45:32 arnetheduck Exp $
  */
 

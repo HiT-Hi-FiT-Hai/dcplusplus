@@ -334,7 +334,7 @@ private:
 				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 				type = TSTRING(DIRECTORY);
 			}
-			/// @todo nick = Text::toT(sr->getUser()->getNick());
+			nick = Text::toT(sr->getUser()->getFirstNick());
 			/// @todo connection = Text::toT(sr->getUser()->getConnection());
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
@@ -480,6 +480,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.57 2005/04/17 09:41:08 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.58 2005/04/23 15:45:28 arnetheduck Exp $
  */
 

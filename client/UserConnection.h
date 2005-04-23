@@ -329,7 +329,7 @@ public:
 	void handle(T , const AdcCommand& ) {
 	}
 
-	GETSET(string, nick, Nick);
+	GETSET(string, hubUrl, HubUrl);
 	GETSET(string, token, Token);
 	GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
@@ -400,6 +400,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.92 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.93 2005/04/23 15:45:32 arnetheduck Exp $
  */
 

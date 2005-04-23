@@ -85,38 +85,17 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		return;
 
 	
-	/// @todo fix	
 	OnlineUser& u = getUser(c.getFrom());
-
-	int op = 0;
-	int reg = 0;
-	int norm = 0;
-	string ve;
-	int sl = 0;
 
 	for(StringIterC i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
 		if(i->length() < 2)
 			continue;
 			
 		u.getIdentity().set(i->c_str(), i->substr(2));
-
-		if(i->compare(0, 2, "HU") == 0) {
-			/// @todo hub = u;
-		}
 	}
 
-#if 0
-	if(!ve.empty()) {
-		if(ve.find(' ') != string::npos) {
-			ve.insert(ve.find(' ') + 1, "V:");
-		}
-		u->setTag("<" + ve + ",M:" + string(u->getIp().empty() ? "P" : "A") + ",H:" + Util::toString(norm) + "/" + 
-			Util::toString(reg) + "/" + Util::toString(op) + ",S:" + 
-			Util::toString(sl) + ">" );
-	}
-	if(u == getMe())
-		state = STATE_NORMAL;
-#endif
+	if(u.getIdentity().isHub())
+		setHubIdentity(u.getIdentity());
 
 	fire(ClientListener::UserUpdated(), this, u);
 }
@@ -177,18 +156,18 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 		return;
 
 	if(c.getParam(0) != CLIENT_PROTOCOL) {
-		// Protocol unhandled...
-		AdcCommand cc(AdcCommand::CMD_STA, u->getUser()->getCID());
-		cc.addParam(Util::toString(AdcCommand::ERROR_PROTOCOL_UNSUPPORTED));
-		cc.addParam(c.getParam(0));
-		cc.addParam(c.getParam(1));
-		cc.addParam("Protocol unsupported");
-		send(cc);
+		send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown", AdcCommand::TYPE_DIRECT).setTo(c.getFrom()));
 		return;
 	}
+
+	if(!u->getIdentity().isTcpActive()) {
+		send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Not active", AdcCommand::TYPE_DIRECT).setTo(c.getFrom()));
+		return;
+	}
+
 	string token;
 	c.getParam("TO", 2, token);
-	/// @todo ConnectionManager::getInstance()->adcConnect(p->getIp(), (short)Util::toInt(c.getParameters()[1]), token);
+	ConnectionManager::getInstance()->adcConnect(u->getIdentity().getIp(), (short)Util::toInt(c.getParameters()[1]), token);
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
@@ -414,5 +393,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.47 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.48 2005/04/23 15:45:32 arnetheduck Exp $
  */

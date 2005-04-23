@@ -392,11 +392,11 @@ enum Strings { // @DontAdd
 	SETTINGS_FIREWALL_PASSIVE, // "Firewall (passive, last resort)"
 	SETTINGS_FIREWALL_UPNP, // "Firewall with UPnP"
 	SETTINGS_FORMAT, // "Format"
-	SETTINGS_GENERAL, // "Personal information "
+	SETTINGS_GENERAL, // "Personal information"
 	SETTINGS_GET_USER_COUNTRY, // "Get User Country"
 	SETTINGS_HUB_USER_COMMANDS, // "Accept custom user commands from hub"
 	SETTINGS_IGNORE_OFFLINE, // "Ignore private messages from offline users"
-	SETTINGS_INCOMING, // "Incoming connection settings (see Help/FAQ if unsure)
+	SETTINGS_INCOMING, // "Incoming connection settings (see Help/FAQ if unsure)"
 	SETTINGS_KEEP_LISTS, // "Don't delete file lists when exiting"
 	SETTINGS_LANGUAGE_FILE, // "Language file"
 	SETTINGS_LIST_DUPES, // "Keep duplicate files in your file list"

@@ -70,7 +70,11 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 	public Singleton<ConnectionManager>
 {
 public:
-	void nmdcConnect(const string& aServer, short aPort, const string& aNick);
+	void nmdcExpect(const string& aNick, const string& aMyNick, const string& aHubUrl) {
+		expectedConnections.insert(make_pair(aNick, make_pair(aMyNick, aHubUrl)));
+	}
+
+	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
 	void adcConnect(const string& aServer, short aPort, const string& aToken);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
@@ -113,6 +117,9 @@ private:
 	ServerSocket socket;
 	StringList features;
 	StringList adcFeatures;
+
+	/** Nick -> myNick, hubUrl for expected NMDC incoming connections */
+	map<string, pair<string, string> > expectedConnections;
 
 	u_int32_t floodCounter;
 
@@ -159,5 +166,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.67 2005/03/14 10:37:21 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.68 2005/04/23 15:45:32 arnetheduck Exp $
  */

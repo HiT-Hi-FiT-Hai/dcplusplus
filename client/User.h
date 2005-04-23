@@ -38,7 +38,8 @@ public:
 		DCPLUSPLUS_BIT,
 		PASSIVE_BIT,
 		NMDC_BIT,
-		BOT_BIT
+		BOT_BIT,
+		HUB_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -48,7 +49,8 @@ public:
 		DCPLUSPLUS = 1<<DCPLUSPLUS_BIT,
 		PASSIVE = 1<<PASSIVE_BIT,
 		NMDC = 1<<NMDC_BIT,
-		BOT = 1<<BOT_BIT
+		BOT = 1<<BOT_BIT,
+		HUB = 1<<HUB_BIT,
 
 	};
 
@@ -107,8 +109,14 @@ public:
 	
 	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 
-	/// @todo
-	string getTag() const { return Util::emptyString; }
+	string getTag() const { 
+		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
+			return Util::emptyString;
+		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" + 
+			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
+	}
+
+	const bool isHub() const { return !get("HU").empty(); }
 	const bool isOp() const { return !get("OP").empty(); }
 	const bool isHidden() const { return !get("HI").empty(); }
 	const bool isTcpActive() const { return !getIp().empty(); }
@@ -170,5 +178,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.55 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: User.h,v 1.56 2005/04/23 15:45:32 arnetheduck Exp $
  */

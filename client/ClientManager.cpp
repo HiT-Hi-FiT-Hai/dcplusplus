@@ -71,14 +71,7 @@ void ClientManager::putClient(Client* aClient) {
 }
 
 User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
-	string n = Text::toLower(aNick);
-	TigerHash th;
-	th.update(n.c_str(), n.length());
-	th.update(Text::toLower(aHubUrl).c_str(), aHubUrl.length());
-	// Construct hybrid CID from the first 64 bits of the tiger hash - should be
-	// fairly random, and hopefully low-collision
-	CID cid(*(u_int64_t*)th.finalize());
-
+	CID cid = makeCid(aNick, aHubUrl);
 	Lock l(cs);
 
 	UserIter ui = users.find(cid);
@@ -86,7 +79,7 @@ User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) thr
 		return ui->second;
 	}
 
-	LegacyIter li = legacyUsers.find(n);
+	LegacyIter li = legacyUsers.find(Text::toLower(aNick));
 	if(li != legacyUsers.end()) {
 		User::Ptr p = li->second;
 		p->setCID(cid);
@@ -124,6 +117,16 @@ User::Ptr ClientManager::findUser(const CID& cid) throw() {
 	return NULL;
 }
 
+CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {
+	string n = Text::toLower(aNick);
+	TigerHash th;
+	th.update(n.c_str(), n.length());
+	th.update(Text::toLower(aHubUrl).c_str(), aHubUrl.length());
+	// Construct hybrid CID from the first 64 bits of the tiger hash - should be
+	// fairly random, and hopefully low-collision
+	return CID(*(u_int64_t*)th.finalize());
+}
+
 void ClientManager::putOnline(OnlineUser& ou) throw() {
 	{
 		Lock l(cs);
@@ -147,8 +150,9 @@ void ClientManager::putOffline(OnlineUser& ou) throw() {
 			OnlineUser* ou2 = i->second;
 			/// @todo something nicer to compare with...
 			if(&ou.getClient() == &ou2->getClient()) {
-				onlineUsers.erase(i);
 				lastUser = (distance(op.first, op.second) == 1);
+				onlineUsers.erase(i);
+				break;
 			}
 		}
 	}
@@ -337,5 +341,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.69 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.70 2005/04/23 15:45:32 arnetheduck Exp $
  */

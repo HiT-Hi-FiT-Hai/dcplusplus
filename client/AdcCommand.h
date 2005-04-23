@@ -93,7 +93,10 @@ public:
 
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), type(aType) { }
 	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
-
+	explicit AdcCommand(Severity sev, Error err, const string& desc, char aType = TYPE_CLIENT) : cmdInt(CMD_STA), from(SETTING(CLIENT_ID)), type(aType) {
+		addParam(Util::toString(sev) + Util::toString(err));
+		addParam(desc);
+	}
 	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
 		parse(aLine, nmdc);
 	}
@@ -146,7 +149,7 @@ public:
 		return tmp;
 	}
 	const CID& getTo() const { return to; }
-	void setTo(const CID& cid) { to = cid; }
+	AdcCommand& setTo(const CID& cid) { to = cid; return *this; }
 	const CID& getFrom() const { return from; }
 
 private:
@@ -203,5 +206,5 @@ public:
 #endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.20 2005/03/14 10:37:22 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.21 2005/04/23 15:45:32 arnetheduck Exp $
 */

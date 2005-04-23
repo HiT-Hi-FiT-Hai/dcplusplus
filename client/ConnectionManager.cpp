@@ -329,14 +329,17 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	}
 }
 
-void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick) {
+
+
+void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick, const string& hubUrl) {
 	if(shuttingDown)
 		return;
 
 	UserConnection* uc = NULL;
 	try {
 		uc = getConnection(true);
-		uc->setNick(aNick);
+		uc->setToken(aNick);
+		uc->setHubUrl(hubUrl);
 		uc->setState(UserConnection::STATE_CONNECT);
 		uc->setFlag(UserConnection::FLAG_NMDC);
 		uc->connect(aServer, aPort);
@@ -389,7 +392,7 @@ void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) 
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
-		aSource->myNick(aSource->getNick());
+		aSource->myNick(aSource->getToken());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} else {
 		aSource->sup(adcFeatures);
@@ -401,7 +404,6 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
 void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSource, const string& aNick) throw() {
-
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
@@ -412,14 +414,14 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
 	dcassert(!aSource->getUser());
 
+	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
+
 	// First, we try looking in the pending downloads...hopefully it's one of them...
-/// @todo onMyNick
-#if 0
 	{
 		Lock l(cs);
 		for(ConnectionQueueItem::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 			ConnectionQueueItem* cqi = *i;
-			if((cqi->getState() == ConnectionQueueItem::CONNECTING || cqi->getState() == ConnectionQueueItem::WAITING) && cqi->getUser()->getNick() == aNick) {
+			if((cqi->getState() == ConnectionQueueItem::CONNECTING || cqi->getState() == ConnectionQueueItem::WAITING) && cqi->getUser()->getCID() == cid) {
 				aSource->setUser(cqi->getUser());
 				// Indicate that we're interested in this file...
 				aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
@@ -430,24 +432,23 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 	if(!aSource->getUser()) {
 		// Make sure we know who it is, i e that he/she is connected...
-		if(!ClientManager::getInstance()->isOnline(aNick)) {
+
+		aSource->setUser(ClientManager::getInstance()->getUser(cid));
+		if(!aSource->getUser()) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
 			putConnection(aSource);
 			return;
 		}
-
-		aSource->setUser(ClientManager::getInstance()->getUser(aNick));
 		// We don't need this connection for downloading...make it an upload connection instead...
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 	}
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
-		aSource->myNick(aSource->getUser()->getClientNick()); 
+		aSource->myNick(aSource->getToken()); 
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	}
 
 	aSource->setState(UserConnection::STATE_LOCK);
-#endif
 }
 
 void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSource, const string& aLock, const string& aPk) throw() {
@@ -694,5 +695,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.98 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.99 2005/04/23 15:45:32 arnetheduck Exp $
  */

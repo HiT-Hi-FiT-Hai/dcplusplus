@@ -105,9 +105,8 @@ private:
 
 	class UserInfo : public UserInfoBase {
 	public:
-		UserInfo(const User::Ptr& u) : UserInfoBase(u) { 
-			/// @todo columns[COLUMN_NICK] = Text::toT(u->getNick());
-			update();
+		UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) { 
+			update(u);
 		};
 
 		const tstring& getText(int col) const {
@@ -120,14 +119,15 @@ private:
 
 		void remove() { FavoriteManager::getInstance()->removeFavoriteUser(user); }
 
-		void update() {
-			columns[COLUMN_STATUS] = user->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
+		void update(const FavoriteUser& u) {
+			columns[COLUMN_NICK] = Text::toT(u.getLastIdentity().getNick());
+			columns[COLUMN_STATUS] = u.getUser()->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
 			/** @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
 			if(!user->getLastHubAddress().empty()) {
 				columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
 			}
-			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));
-			columns[COLUMN_DESCRIPTION] = Text::toT(user->getUserDescription()); */
+			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));*/
+			columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
 		}
 
 		tstring columns[COLUMN_LAST];
@@ -145,8 +145,8 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 
 	// FavoriteManagerListener
-	virtual void on(UserAdded, const User::Ptr& aUser) throw() { addUser(aUser); }
-	virtual void on(UserRemoved, const User::Ptr& aUser) throw() { removeUser(aUser); }
+	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
+	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
@@ -155,15 +155,15 @@ private:
 		// }
 	}
 
-	void addUser(const User::Ptr& aUser);
-	void updateUser(const User::Ptr& aUser);
-	void removeUser(const User::Ptr& aUser);
+	void addUser(const FavoriteUser& aUser);
+	void updateUser(const FavoriteUser& aUser);
+	void removeUser(const FavoriteUser& aUser);
 };
 
 #endif // !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.21 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.22 2005/04/23 15:45:28 arnetheduck Exp $
  */
 

@@ -142,6 +142,29 @@ void NmdcHub::clearUsers() {
 	}
 }
 
+void NmdcHub::updateFromTag(Identity& id, const string& tag) {
+	StringTokenizer<string> tok(tag, ',');
+	for(StringIter i = tok.getTokens().begin(); i != tok.getTokens().end(); ++i) {
+		if(i->length() < 2)
+			continue;
+
+		if(i->compare(0, 2, "H:") == 0) {
+			StringTokenizer<string> t(i->substr(2), '/');
+			if(t.getTokens().size() != 3)
+				continue;
+			id.set("HN", t.getTokens()[0]);
+			id.set("HR", t.getTokens()[1]);
+			id.set("HO", t.getTokens()[2]);
+		} else if(i->compare(0, 2, "S:") == 0) {
+			id.set("SL", i->substr(2));
+		} else if(i->find("V:") != string::npos) {
+			string::size_type j = i->find("V:");
+			i->erase(i->begin() + j, i->begin() + j + 2);
+			id.set("VE", *i);
+		}
+	}
+}
+
 void NmdcHub::onLine(const string& aLine) throw() {
 	updateActivity();
 
@@ -288,13 +311,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			x = tmpDesc.rfind('<');
 			if(x != string::npos) {
 				// Hm, we have something...disassemble it...
-				/// @todo u->setTag(tmpDesc.substr(x));
+				updateFromTag(u.getIdentity(), tmpDesc.substr(x + 1, tmpDesc.length() - x - 2));
 				tmpDesc.erase(x);
-			} else {
-				/// @todo u->setTag(Util::emptyString);
 			}
-		} else {
-			/// @todo u->setTag(Util::emptyString);
 		}
 		u.getIdentity().setDescription(tmpDesc);
 
@@ -349,7 +368,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getMyNick()); 
+		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getMyNick(), getHubUrl()); 
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_CONNECTED) {
 			return;
@@ -424,6 +443,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		state = STATE_HELLO;
+
+		// Param must not be fromNmdc'd...
+		param = aLine.substr(6);
 
 		if(!param.empty()) {
 			string::size_type j = param.find(" Pk=");
@@ -714,6 +736,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.35 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.36 2005/04/23 15:45:32 arnetheduck Exp $
  */
 

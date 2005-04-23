@@ -133,6 +133,8 @@ private:
 	string fromNmdc(const string& str) const { return Text::acpToUtf8(str); }
 	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
 
+	void updateFromTag(Identity& id, const string& tag);
+
 	virtual string checkNick(const string& aNick);
 
 	// TimerManagerListener
@@ -147,6 +149,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.24 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.25 2005/04/23 15:45:32 arnetheduck Exp $
  */
 

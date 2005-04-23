@@ -1047,7 +1047,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT MainFrame::onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!ShareManager::getInstance()->getOwnListFile().empty()){
-		/// @todo DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getUser(SETTING(NICK)));
+		DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getMe());
 	}
 	return 0;
 }
@@ -1212,5 +1212,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.93 2005/04/17 09:41:08 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.94 2005/04/23 15:45:28 arnetheduck Exp $
  */

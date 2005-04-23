@@ -123,8 +123,8 @@ public:
 	virtual void on(DownloadFinished, const string&) throw() { }
 	virtual void on(FavoriteAdded, const FavoriteHubEntry*) throw() { }
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry*) throw() { }
-	virtual void on(UserAdded, const User::Ptr&) throw() { }
-	virtual void on(UserRemoved, const User::Ptr&) throw() { }
+	virtual void on(UserAdded, const FavoriteUser&) throw() { }
+	virtual void on(UserRemoved, const FavoriteUser&) throw() { }
 };
 
 class SimpleXML;
@@ -156,10 +156,17 @@ public:
 	FavoriteUser::List& getFavoriteUsers() { return users; };
 	
 	void addFavoriteUser(User::Ptr& aUser);
+	bool isFavoriteUser(const User::Ptr& aUser) const {
+		return find(users.begin(), users.end(), aUser) != users.end();
+	}
 	void removeFavoriteUser(User::Ptr& aUser);
 
-	/// @todo
-	bool hasSlot(User::Ptr& ptr) { return false; }
+	bool hasSlot(const User::Ptr& aUser) const { 
+		FavoriteUser::List::const_iterator i = find(users.begin(), users.end(), aUser);
+		if(i == users.end())
+			return false;
+		return i->isSet(FavoriteUser::FLAG_GRANTSLOT);
+	}
 
 // Favorite Hubs
 	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
@@ -272,6 +279,6 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.1 2005/04/12 23:24:12 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.2 2005/04/23 15:45:32 arnetheduck Exp $
  */
 

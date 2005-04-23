@@ -74,13 +74,15 @@ public:
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void infoUpdated();
 
-	/** Construct a synthetic CID and return the user */
 	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
 	User::Ptr getLegacyUser(const string& aNick) throw();
 	User::Ptr getUser(const CID& cid) throw();
 
+	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
-	User::Ptr findUser(const string& aNick) throw();
+
+	/** Constructs a synthetic, hopefully unique CID */
+	CID makeCid(const string& nick, const string& hubUrl) throw();
 
 	void putOnline(OnlineUser& ou) throw();
 	void putOffline(OnlineUser& ou) throw();
@@ -163,6 +165,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.58 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.59 2005/04/23 15:45:32 arnetheduck Exp $
  */
 
