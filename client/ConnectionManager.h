@@ -119,7 +119,8 @@ private:
 	StringList adcFeatures;
 
 	/** Nick -> myNick, hubUrl for expected NMDC incoming connections */
-	map<string, pair<string, string> > expectedConnections;
+	typedef map<string, pair<string, string> > ExpectMap;
+	ExpectMap expectedConnections;
 
 	u_int32_t floodCounter;
 
@@ -166,5 +167,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.68 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.69 2005/04/23 15:56:57 arnetheduck Exp $
  */

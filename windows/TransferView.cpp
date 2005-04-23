@@ -329,7 +329,7 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		/// @todo columns[COLUMN_USER] = Text::toT(user->getNick());
+		columns[COLUMN_USER] = Text::toT(user->getFirstNick());
 	}
 	if(colMask & MASK_HUB) {
 		/// @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
@@ -600,5 +600,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.49 2005/04/12 23:24:02 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.50 2005/04/23 15:56:59 arnetheduck Exp $
  */

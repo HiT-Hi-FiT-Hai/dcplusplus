@@ -414,6 +414,18 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
 	dcassert(!aSource->getUser());
 
+	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
+		// Try to guess where this came from...
+		ExpectMap::iterator i = expectedConnections.find(aNick);
+		if(i == expectedConnections.end()) {
+			dcdebug("Unkown incoming connection from %s\n", aNick.c_str());
+			putConnection(aSource);
+			return;
+		}
+        aSource->setToken(i->second.first);	
+		aSource->setHubUrl(i->second.second);	
+		expectedConnections.erase(i);
+	}
 	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
 
 	// First, we try looking in the pending downloads...hopefully it's one of them...
@@ -433,7 +445,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	if(!aSource->getUser()) {
 		// Make sure we know who it is, i e that he/she is connected...
 
-		aSource->setUser(ClientManager::getInstance()->getUser(cid));
+		aSource->setUser(ClientManager::getInstance()->findUser(cid));
 		if(!aSource->getUser()) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
 			putConnection(aSource);
@@ -695,5 +707,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.99 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.100 2005/04/23 15:56:58 arnetheduck Exp $
  */

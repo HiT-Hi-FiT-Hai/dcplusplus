@@ -618,6 +618,7 @@ string NmdcHub::checkNick(const string& aNick) {
 void NmdcHub::connectToMe(const OnlineUser& aUser) {
 	checkstate(); 
 	dcdebug("NmdcHub::connectToMe %s\n", aUser.getIdentity().getNick().c_str());
+	ConnectionManager::getInstance()->nmdcExpect(aUser.getIdentity().getNick(), getMyNick(), getHubUrl());
 	send("$ConnectToMe " + toNmdc(aUser.getIdentity().getNick()) + " " + getLocalIp() + ":" + Util::toString(SETTING(TCP_PORT)) + "|");
 }
 
@@ -736,6 +737,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.36 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.37 2005/04/23 15:56:58 arnetheduck Exp $
  */
 
