@@ -114,11 +114,10 @@ void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 	}
 }
 
-
 void FavoriteManager::addFavoriteUser(User::Ptr& aUser) { 
 	if(find(users.begin(), users.end(), aUser) == users.end()) {
-		users.push_back(aUser);
-		fire(FavoriteManagerListener::UserAdded(), aUser);
+		users.push_back(FavoriteUser(aUser, Util::emptyString));
+		fire(FavoriteManagerListener::UserAdded(), users.back());
 		save();
 	}
 }
@@ -126,7 +125,7 @@ void FavoriteManager::addFavoriteUser(User::Ptr& aUser) {
 void FavoriteManager::removeFavoriteUser(User::Ptr& aUser) {
 	FavoriteUser::Iter i = find(users.begin(), users.end(), aUser);
 	if(i != users.end()) {
-		fire(FavoriteManagerListener::UserRemoved(), aUser);
+		fire(FavoriteManagerListener::UserRemoved(), *i);
 		users.erase(i);
 		save();
 	}
@@ -320,7 +319,7 @@ void FavoriteManager::save() {
 		for(FavoriteUser::Iter j = users.begin(); j != users.end(); ++j) {
 			xml.addTag("User");
 			xml.addChildAttrib("Nick", j->getLastIdentity().getNick());
-			xml.addChildAttrib("LastHubAddress", j->getLastIdentity().getHubURL());
+			xml.addChildAttrib("LastHubAddress", j->getLastIdentity().getHubUrl());
 			xml.addChildAttrib("LastSeen", j->getLastSeen());
 			xml.addChildAttrib("GrantSlot", j->isSet(FavoriteUser::FLAG_GRANTSLOT));
 			xml.addChildAttrib("UserDescription", j->getDescription());
@@ -597,5 +596,5 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.1 2005/04/12 23:24:12 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.2 2005/04/23 22:24:38 arnetheduck Exp $
  */

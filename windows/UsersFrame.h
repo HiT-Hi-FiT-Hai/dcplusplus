@@ -27,11 +27,10 @@
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
-#include "../client/ClientManager.h"
 #include "../client/FavoriteManager.h"
 
 class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS>,
-	private FavoriteManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
+	private FavoriteManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
 	UsersFrame() : closed(false), startup(true) { };
@@ -73,7 +72,7 @@ public:
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		if(wParam == USER_UPDATED) {
-			updateUser(((UserInfoBase*)lParam)->user);
+			///updateUser(((UserInfoBase*)lParam)->user);
 			delete (UserInfoBase*)lParam;
 		}
 		return 0;
@@ -148,13 +147,6 @@ private:
 	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
 	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
 
-	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-		/// @todo if(aUser->isFavoriteUser()) {
-			// PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
-		// }
-	}
-
 	void addUser(const FavoriteUser& aUser);
 	void updateUser(const FavoriteUser& aUser);
 	void removeUser(const FavoriteUser& aUser);
@@ -164,6 +156,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.22 2005/04/23 15:45:28 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.23 2005/04/23 22:24:33 arnetheduck Exp $
  */
 

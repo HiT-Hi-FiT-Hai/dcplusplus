@@ -39,7 +39,9 @@ public:
 		PASSIVE_BIT,
 		NMDC_BIT,
 		BOT_BIT,
-		HUB_BIT
+		HUB_BIT,
+		TTH_GET_BIT,
+		SAVE_NICK_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -51,7 +53,8 @@ public:
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
 		HUB = 1<<HUB_BIT,
-
+		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
+		SAVE_NICK = 1<<SAVE_NICK_BIT	//< Save cid->nick association
 	};
 
 	typedef Pointer<User> Ptr;
@@ -93,9 +96,9 @@ public:
 	};
 
 	Identity() { }
-	Identity(const User::Ptr& ptr) : user(ptr) { }
-	Identity(const Identity& rhs) : user(rhs.user), hubURL(rhs.hubURL), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubURL = rhs.hubURL; info = rhs.info; return *this; }
+	Identity(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), hubUrl(aHubUrl) { }
+	Identity(const Identity& rhs) : user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
@@ -135,7 +138,7 @@ public:
 	}
 	
 	GETSET(User::Ptr, user, User);
-	GETSET(string, hubURL, HubURL);
+	GETSET(string, hubUrl, HubUrl);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
@@ -152,7 +155,7 @@ public:
 	typedef List::iterator Iter;
 
 	OnlineUser() : client(NULL) { }
-	OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), identity(ptr), client(&client_) { }
+	OnlineUser(const User::Ptr& ptr, Client& client_);
 
 	operator User::Ptr&() { return user; }
 	operator const User::Ptr&() const { return user; }
@@ -178,5 +181,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.56 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: User.h,v 1.57 2005/04/23 22:24:37 arnetheduck Exp $
  */

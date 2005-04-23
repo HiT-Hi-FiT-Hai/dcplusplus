@@ -688,24 +688,26 @@ void ConnectionManager::shutdown() {
 // UserConnectionListener
 void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
 	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-		if(*i == UserConnection::FEATURE_GET_ZBLOCK)
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
-		else if(*i == UserConnection::FEATURE_MINISLOTS)
+		if(*i == UserConnection::FEATURE_GET_ZBLOCK) {
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK); 
+		} else if(*i == UserConnection::FEATURE_MINISLOTS) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
-		else if(*i == UserConnection::FEATURE_XML_BZLIST)
+		} else if(*i == UserConnection::FEATURE_XML_BZLIST) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
-		else if(*i == UserConnection::FEATURE_ADCGET)
+		} else if(*i == UserConnection::FEATURE_ADCGET) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_ADCGET);
-		else if(*i == UserConnection::FEATURE_ZLIB_GET)
+		} else if(*i == UserConnection::FEATURE_ZLIB_GET) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
-		else if(*i == UserConnection::FEATURE_TTHL)
+		} else if(*i == UserConnection::FEATURE_TTHL) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHL);
-		else if(*i == UserConnection::FEATURE_TTHF)
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF);
+		} else if(*i == UserConnection::FEATURE_TTHF) {
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHF); 
+			conn->getUser()->setFlag(User::TTH_GET);
+		}
 	}
 }
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.100 2005/04/23 15:56:58 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.101 2005/04/23 22:24:38 arnetheduck Exp $
  */

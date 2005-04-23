@@ -20,10 +20,15 @@
 #include "DCPlusPlus.h"
 
 #include "User.h"
+#include "Client.h"
+
+OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), identity(ptr, client_.getHubUrl()), client(&client_) { 
+
+}
 
 
 /**
  * @file
- * $Id: User.cpp,v 1.42 2005/04/12 23:24:14 arnetheduck Exp $
+ * $Id: User.cpp,v 1.43 2005/04/23 22:24:38 arnetheduck Exp $
  */
 

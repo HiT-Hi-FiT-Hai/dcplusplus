@@ -1133,13 +1133,15 @@ void QueueManager::saveQueue() throw() {
 
 				for(QueueItem::Source::List::const_iterator j = qi->sources.begin(); j != qi->sources.end(); ++j) {
 					QueueItem::Source* s = *j;
-					f.write(STRINGLEN("\t\t<Source Nick=\""));
-					f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
 					if(!s->getUser()->getCID().isZero()) {
-						f.write(STRINGLEN("\" CID=\""));
+						s->getUser()->setFlag(User::SAVE_NICK);
+						f.write(STRINGLEN("\t\t<Source CID=\""));
 						f.write(s->getUser()->getCID().toBase32());
+					} else {
+						f.write(STRINGLEN("\t\t<Source Nick=\""));
+						f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
 					}
-					if(!s->getPath().empty()) {
+					if(!s->getPath().empty() || (!s->getUser()->isSet(User::TTH_GET) && qi->getTTH())) {
 						f.write(STRINGLEN("\" Path=\""));
 						f.write(CHECKESCAPE(s->getPath()));
 						f.write(STRINGLEN("\" Utf8=\""));
@@ -1351,5 +1353,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.132 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.133 2005/04/23 22:24:37 arnetheduck Exp $
  */

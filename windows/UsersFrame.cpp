@@ -58,7 +58,6 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
 	FavoriteManager::getInstance()->addListener(this);
-	ClientManager::getInstance()->addListener(this);
 
 	FavoriteUser::List ul = FavoriteManager::getInstance()->getFavoriteUsers();
 	ctrlUsers.SetRedraw(FALSE);
@@ -177,7 +176,6 @@ void UsersFrame::removeUser(const FavoriteUser& aUser) {
 LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		FavoriteManager::getInstance()->removeListener(this);
-		ClientManager::getInstance()->removeListener(this);
 
 		closed = true;
 		PostMessage(WM_CLOSE);
@@ -197,6 +195,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.35 2005/04/23 15:45:28 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.36 2005/04/23 22:24:28 arnetheduck Exp $
  */
 

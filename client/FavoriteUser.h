@@ -31,7 +31,7 @@ public:
 	typedef vector<FavoriteUser> List;
 	typedef List::iterator Iter;
     
-	FavoriteUser(const User::Ptr& ptr) : user(ptr), lastIdentity(ptr), lastSeen(0) { }
+	FavoriteUser(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), lastIdentity(ptr, aHubUrl), lastSeen(0) { }
 
 	bool operator==(const User::Ptr& rhs) const { return user == rhs; }
 	operator User::Ptr() { return user; }
@@ -50,5 +50,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.10 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.11 2005/04/23 22:24:37 arnetheduck Exp $
  */

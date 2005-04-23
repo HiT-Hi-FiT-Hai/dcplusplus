@@ -26,6 +26,7 @@
 #include "CryptoManager.h"
 #include "ConnectionManager.h"
 #include "FavoriteManager.h"
+#include "SimpleXML.h"
 
 #include "AdcHub.h"
 #include "NmdcHub.h"
@@ -70,12 +71,30 @@ void ClientManager::putClient(Client* aClient) {
 	aClient->scheduleDestruction();
 }
 
+User::Ptr ClientManager::getLegacyUser(const string& aNick) {
+	Lock l(cs);
+	dcassert(aNick.size() > 0);
+
+	LegacyIter i = legacyUsers.find(aNick);
+	if(i != legacyUsers.end())
+		return i->second;
+
+	for(UserIter i = users.begin(); i != users.end(); ++i) {
+		User::Ptr& p = i->second;
+		if(p->isSet(User::NMDC) && p->getFirstNick() == aNick)
+			return p;
+	}
+
+	return users.insert(make_pair(aNick, new User(aNick))).first->second;
+}
+
 User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
 	CID cid = makeCid(aNick, aHubUrl);
 	Lock l(cs);
 
 	UserIter ui = users.find(cid);
 	if(ui != users.end()) {
+		ui->second->setFlag(User::NMDC);
 		return ui->second;
 	}
 
@@ -265,23 +284,6 @@ void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc) throw() {
 	SearchManager::getInstance()->respond(adc);
 }
 
-User::Ptr ClientManager::getLegacyUser(const string& aNick) {
-	Lock l(cs);
-	dcassert(aNick.size() > 0);
-
-	LegacyIter i = legacyUsers.find(aNick);
-	if(i != legacyUsers.end())
-		return i->second;
-
-	for(UserIter i = users.begin(); i != users.end(); ++i) {
-		User::Ptr& p = i->second;
-		if(p->isSet(User::NMDC) && p->getFirstNick() == aNick)
-			return p;
-	}
-
-	return users.insert(make_pair(aNick, new User(aNick))).first->second;
-}
-
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 
@@ -324,6 +326,66 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 }
 
+void ClientManager::on(Save, SimpleXML*) {
+	Lock l(cs);
+
+	try {
+
+#define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
+
+		File ff(getUsersFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedOutputStream<false> f(&ff);
+
+		f.write(SimpleXML::utf8Header);
+		f.write(LIT("<Users Version=\"1\">\r\n"));
+		for(UserIter i = users.begin(); i != users.end(); ++i) {
+			User::Ptr& p = i->second;
+			if(p->isSet(User::SAVE_NICK) && !p->getCID().isZero() && !p->getFirstNick().empty()) {
+				f.write(LIT("\t<User CID=\""));
+				f.write(p->getCID().toBase32());
+				f.write(LIT("\">\r\n\t\t<Nick>"));
+				f.write(p->getFirstNick());
+				f.write(LIT("</Nick>\r\n\t</User>\r\n"));
+			}
+		}
+
+		f.write("</Users>\r\n");
+		f.flush();
+		ff.close();
+		File::deleteFile(getUsersFile());
+		File::renameFile(getUsersFile() + ".tmp", getUsersFile());
+
+	} catch(const FileException&) {
+		// ...
+	}
+}
+/// @todo save more often perhaps?
+void ClientManager::on(Load, SimpleXML*) {
+	me = new User(SETTING(CLIENT_ID));
+
+	try {
+		SimpleXML xml;
+		xml.fromXML(File(getUsersFile(), File::READ, File::OPEN).read());
+		if(xml.findChild("Users") && xml.getChildAttrib("Version") == "1") {
+			xml.stepIn();
+			while(xml.findChild("User")) {
+				string c = xml.getChildAttrib("CID");
+				if(c.empty())
+					continue;
+
+				xml.stepIn();
+				if(xml.findChild("Nick")) {
+					User::Ptr p(new User(CID(c)));
+					p->setFirstNick(xml.getChildData());
+					users.insert(make_pair(p->getCID(), p));
+				}
+			}
+		}
+	} catch(const Exception& e) {
+		dcdebug("Error loading Users.xml: %s\n", e.getError().c_str());
+	}
+}
+
 void ClientManager::on(Failed, Client* client, const string&) throw() { 
 	FavoriteManager::getInstance()->removeUserCommand(client->getHubUrl());
 	fire(ClientManagerListener::ClientDisconnected(), client);
@@ -341,5 +403,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.70 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.71 2005/04/23 22:24:38 arnetheduck Exp $
  */
