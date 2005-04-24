@@ -88,7 +88,7 @@ void DirectoryListingFrame::loadFile(const tstring& name) {
 		ADLSearchManager::getInstance()->matchListing(dl);
 		refreshTree(Text::toT(WinUtil::getInitialDir(dl->getUser())));
 	} catch(const Exception& e) {
-		/// @todo error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
+		error = Text::toT(dl->getUser()->getFirstNick() + ": " + e.getError());
 	}
 
 	initStatus();
@@ -98,7 +98,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 	try {
 		refreshTree(Text::toT(Util::toNmdcFile(dl->loadXML(txt, true))));
 	} catch(const Exception& e) {
-		/// @todo error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
+		error = Text::toT(dl->getUser()->getFirstNick() + ": " + e.getError());
 	}
 
 	initStatus();
@@ -1004,5 +1004,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.64 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.65 2005/04/24 09:45:36 arnetheduck Exp $
  */

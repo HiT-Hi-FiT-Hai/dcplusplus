@@ -591,7 +591,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			if(j != string::npos) {
 				string from = param.substr(i, j - 1 - i);
 				if(from.size() > 0 && param.size() > (j + 1)) {
-					/// @todo Speaker<NmdcHubListener>::fire(NmdcHubListener::PrivateMessage(), this, ClientManager::getInstance()->getUser(from, this, false), Util::validateMessage(param.substr(j + 1), true));
+					OnlineUser* ou = findUser(from);
+					if(ou == NULL) {
+						// @todo Route anonymous message to the ui
+					} else {
+						fire(ClientListener::PrivateMessage(), this, *ou, Util::validateMessage(param.substr(j + 1), true));
+					}
 				}
 			}
 		}
@@ -737,6 +742,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.38 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.39 2005/04/24 09:45:39 arnetheduck Exp $
  */
 

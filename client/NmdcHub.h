@@ -32,6 +32,7 @@
 #include "User.h"
 #include "CriticalSection.h"
 #include "Text.h"
+#include "Client.h"
 
 class NmdcHub : public Client, private TimerManagerListener, private Flags
 {
@@ -149,5 +150,5 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.26 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.27 2005/04/24 09:45:39 arnetheduck Exp $
  */

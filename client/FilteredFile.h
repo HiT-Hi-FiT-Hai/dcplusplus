@@ -42,8 +42,8 @@ public:
 		return s->write(buf, len);
 	}
 
-
 	const Filter& getFilter() const { return filter; }
+	Filter& getFilter() { return filter; }
 private:
 	OutputStream* s;
 	Filter filter;
@@ -187,5 +187,5 @@ private:
 
 /**
  * @file
- * $Id: FilteredFile.h,v 1.13 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: FilteredFile.h,v 1.14 2005/04/24 09:45:39 arnetheduck Exp $
  */

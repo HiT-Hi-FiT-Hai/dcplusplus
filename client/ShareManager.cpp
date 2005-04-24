@@ -120,7 +120,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	if(aFile == "MyList.DcLst") {
 		generateNmdcList();
 		return getListFile();
-	} else if(aFile == "files.xml.bz2") {
+	} else if(aFile == "files.xml.bz2" || "files.xml") {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {
@@ -170,8 +170,24 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	}
 }
 
-/** @todo Fix for file list */
 AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) {
+	if(aFile == "files.xml") {
+		generateXmlList();
+		/** todo fix size... */
+		AdcCommand cmd(AdcCommand::CMD_RES);
+		cmd.addParam("FN", "files.xml");
+		cmd.addParam("TR", xmlRoot.toBase32());
+		return cmd;
+	} else if(aFile == "files.xml.bz2") {
+		generateXmlList();
+
+		AdcCommand cmd(AdcCommand::CMD_RES);
+		cmd.addParam("FN", "files.xml.bz2");
+		cmd.addParam("SI", Util::toString(File::getSize(getBZXmlFile())));
+		cmd.addParam("TR", xmlbzRoot.toBase32());
+		return cmd;
+	}
+
 	if(aFile.compare(0, 4, "TTH/") != 0)
 		throw ShareException("File Not Available");
 
@@ -809,7 +825,12 @@ void ShareManager::generateXmlList() {
 
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
-				FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
+				File f(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE);
+				// We don't care about the leaves...
+				CalcOutputStream<TTFilter<1024*1024*1024>, false> bzTree(&f);
+				FilteredOutputStream<BZFilter, false> bzipper(&bzTree);
+				CalcOutputStream<TTFilter<1024*1024*1024>, false> newXmlFile(&bzipper);
+
 				newXmlFile.write(SimpleXML::utf8Header);
 				newXmlFile.write("<FileListing Version=\"1\" CID=\"" + SETTING(CLIENT_ID) + "\" Base=\"/\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
 				for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
@@ -817,6 +838,12 @@ void ShareManager::generateXmlList() {
 				}
 				newXmlFile.write("</FileListing>");
 				newXmlFile.flush();
+
+				newXmlFile.getFilter().getTree().finalize();
+				bzTree.getFilter().getTree().finalize();
+
+				xmlRoot = newXmlFile.getFilter().getTree().getRoot();
+				xmlbzRoot = bzTree.getFilter().getTree().getRoot();
 			}
 
 			if(xFile != NULL) {
@@ -1479,5 +1506,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.132 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.133 2005/04/24 09:45:39 arnetheduck Exp $
  */

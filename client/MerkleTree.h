@@ -217,10 +217,11 @@ private:
 typedef MerkleTree<TigerHash> TigerTree;
 typedef TigerTree::MerkleValue TTHValue;
 
+template<int64_t aBlockSize>
 struct TTFilter {
-	TTFilter(int64_t aBlockSize) : tt(aBlockSize) { };
+	TTFilter() : tt(aBlockSize) { };
 	void operator()(const void* data, size_t len) { tt.update(data, len); }
-	TigerTree& getTree() { tt.finalize(); return tt; }
+	TigerTree& getTree() { return tt; }
 private:
 	TigerTree tt;
 };
@@ -229,5 +230,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.25 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.26 2005/04/24 09:45:39 arnetheduck Exp $
  */

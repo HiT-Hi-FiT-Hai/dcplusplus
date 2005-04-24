@@ -474,7 +474,19 @@ void FavoriteManager::load(SimpleXML* aXml) {
 	if(aXml->findChild("Users")) {
 		aXml->stepIn();
 		while(aXml->findChild("User")) {
-			User::Ptr u = ClientManager::getInstance()->getUser(aXml->getChildAttrib("Nick"), aXml->getChildAttrib("LastHubAddress"));
+			User::Ptr u;
+			const string& cid = aXml->getChildAttrib("CID");
+			const string& nick = aXml->getChildAttrib("Nick");
+			const string& hubUrl = aXml->getChildAttrib("LastHubAddress");
+
+			if(cid.empty()) {
+				if(nick.empty() || hubUrl.empty())
+					continue;
+				u = ClientManager::getInstance()->getUser(nick, hubUrl);
+			} else {
+				u = ClientManager::getInstance()->getUser(CID(cid));
+				u->setFirstNick(nick);
+			}
 			if(!u->isOnline()) {
 				/// @todo u->setLastHubAddress(aXml->getChildAttrib("LastHubAddress"));
 				/// @todo u->setLastHubName(aXml->getChildAttrib("LastHubName"));
@@ -596,5 +608,5 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.3 2005/04/24 08:13:10 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.4 2005/04/24 09:45:39 arnetheduck Exp $
  */

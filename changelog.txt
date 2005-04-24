@@ -9,6 +9,7 @@
 * New connection settings, please check settings page
 * Connection type freely settable, and default connection strings changed
 * No longer fallbacks to passive mode on failed UPnP
+* Janitorial cleanups (thanks garg)
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

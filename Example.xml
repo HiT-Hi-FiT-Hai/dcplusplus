@@ -451,8 +451,8 @@
 		<String Name="SettingsSocks5">SOCKS5</String>
 		<String Name="SettingsSocks5Ip">Socks IP</String>
 		<String Name="SettingsSocks5Port">Port</String>
-		<String Name="SettingsSocks5Resolve">Use SOCKS5 server to resolve hostnames</String>
-		<String Name="SettingsSocks5Username">Username</String>
+		<String Name="SettingsSocks5Resolve">Use SOCKS5 server to resolve host names</String>
+		<String Name="SettingsSocks5Username">Login</String>
 		<String Name="SettingsSounds">Sounds</String>
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
@@ -494,8 +494,8 @@
 		<String Name="Slots">Slots</String>
 		<String Name="SlotsSet">Slots set</String>
 		<String Name="SocketShutDown">Socket has been shut down</String>
-		<String Name="SocksAuthFailed">Socks server authentication failed (bad username / password?)</String>
-		<String Name="SocksAuthUnsupported">The socks server doesn't support user / password authentication</String>
+		<String Name="SocksAuthFailed">Socks server authentication failed (bad login / password?)</String>
+		<String Name="SocksAuthUnsupported">The socks server doesn't support login / password authentication</String>
 		<String Name="SocksFailed">The socks server failed establish a connection</String>
 		<String Name="SocksNeedsAuth">The socks server requires authentication</String>
 		<String Name="SocksSetupError">Failed to set up the socks server for UDP relay (check socks address and port)</String>

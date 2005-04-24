@@ -251,6 +251,9 @@ private:
 
 	int64_t listLen;
 	int64_t bzXmlListLen;
+	TTHValue xmlbzRoot;
+	TTHValue xmlRoot;
+
 	bool xmlDirty;
 	bool nmdcDirty;
 	bool refreshDirs;
@@ -322,5 +325,5 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.78 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.79 2005/04/24 09:45:39 arnetheduck Exp $
  */

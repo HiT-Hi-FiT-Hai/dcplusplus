@@ -271,23 +271,19 @@ void CryptoManager::walkTree(list<Node*>& aTree) {
 	}
 }
 
-/**
- * @todo Make more effective in terms of memory allocations and copies...
- */
 void CryptoManager::recurseLookup(vector<u_int8_t>* table, Node* node, vector<u_int8_t>& u_int8_ts) {
 	if(node->chr != -1) {
 		table[node->chr] = u_int8_ts;
 		return;
 	}
 
-	vector<u_int8_t> left = u_int8_ts;
-	vector<u_int8_t> right = u_int8_ts;
-	
-	left.push_back(0);
-	right.push_back(1);
+	u_int8_ts.push_back(0);
+	recurseLookup(table, node->left, u_int8_ts);
+	u_int8_ts.pop_back();
 
-	recurseLookup(table, node->left, left);
-	recurseLookup(table, node->right, right);
+	u_int8_ts.push_back(1);
+	recurseLookup(table, node->right, u_int8_ts);
+	u_int8_ts.pop_back();
 }
 
 /**
@@ -401,5 +397,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.54 2005/04/24 08:13:10 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.55 2005/04/24 09:45:39 arnetheduck Exp $
  */

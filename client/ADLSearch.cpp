@@ -296,7 +296,7 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 void ADLSearchManager::matchListing(DirectoryListing* aDirList) throw() {
 	StringMap params;
-	/// @todo params["nick"] = aDirList->getUser()->getNick();
+	params["nick"] = aDirList->getUser()->getFirstNick();
 	setUser(aDirList->getUser());
 
 	DestDirList destDirs;
@@ -323,5 +323,5 @@ void ADLSearchManager::matchRecurse(DestDirList &aDestList, DirectoryListing::Di
 
 /**
  * @file
- * $Id: ADLSearch.cpp,v 1.26 2005/04/24 08:13:10 arnetheduck Exp $
+ * $Id: ADLSearch.cpp,v 1.27 2005/04/24 09:45:39 arnetheduck Exp $
  */

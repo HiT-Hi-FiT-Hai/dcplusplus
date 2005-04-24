@@ -164,7 +164,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(j->getUser()->isOnline())
 					online++;
 
-				/// @todo tmp += Text::toT(j->getUser()->getFullNick());
+				tmp += Text::toT(j->getUser()->getFirstNick());
 			}
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
@@ -232,7 +232,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");
-					/// @todo tmp += Text::toT(j->getUser()->getNick());
+						tmp += Text::toT(j->getUser()->getFirstNick());
 					tmp += _T(" (");
 					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
 						tmp += TSTRING(FILE_NOT_AVAILABLE);
@@ -1262,5 +1262,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.78 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.79 2005/04/24 09:45:35 arnetheduck Exp $
  */

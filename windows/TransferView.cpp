@@ -171,7 +171,7 @@ void TransferView::ItemInfo::removeAll() {
 LRESULT TransferView::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		/// @todo WinUtil::setClipboard(Text::toT(ctrlTransfers.getItemData(i)->user->getNick()));
+		WinUtil::setClipboard(Text::toT(ctrlTransfers.getItemData(i)->user->getFirstNick()));
 	}
 	return 0;
 }
@@ -600,5 +600,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.51 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.52 2005/04/24 09:45:36 arnetheduck Exp $
  */
