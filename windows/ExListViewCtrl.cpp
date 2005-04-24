@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -181,6 +181,5 @@ int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lPa
 
 /**
  * @file
- * $Id: ExListViewCtrl.cpp,v 1.14 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.15 2005/04/24 08:13:04 arnetheduck Exp $
  */
-

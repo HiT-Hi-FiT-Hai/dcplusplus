@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -709,5 +709,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.101 2005/04/23 22:24:38 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.102 2005/04/24 08:13:10 arnetheduck Exp $
  */

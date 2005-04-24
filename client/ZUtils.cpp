@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -73,13 +73,13 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 UnZFilter::UnZFilter() {
 	memset(&zs, 0, sizeof(zs));
 
-	if(inflateInit(&zs) != Z_OK) 
+	if(inflateInit(&zs) != Z_OK)
 		throw Exception(STRING(DECOMPRESSION_ERROR));
 
 }
 
 UnZFilter::~UnZFilter() {
-	dcdebug("UnZFilter end, %ld/%ld = %.04f\n", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
+	dcdebug("UnZFilter end, %ld/%ld = %.04f\n", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1));
 	inflateEnd(&zs);
 }
 
@@ -107,5 +107,5 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 /**
  * @file
- * $Id: ZUtils.cpp,v 1.7 2005/02/01 16:41:35 arnetheduck Exp $
+ * $Id: ZUtils.cpp,v 1.8 2005/04/24 08:13:37 arnetheduck Exp $
  */

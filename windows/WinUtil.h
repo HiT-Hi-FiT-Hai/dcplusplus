@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __WINUTIL_H
-#define __WINUTIL_H
+#if !defined(WIN_UTIL_H)
+#define WIN_UTIL_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -344,9 +344,9 @@ private:
 	
 };
 
-#endif // __WINUTIL_H
+#endif // !defined(WIN_UTIL_H)
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.47 2005/04/12 23:24:04 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.48 2005/04/24 08:13:04 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -90,6 +90,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.17 2005/03/22 18:54:36 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.18 2005/04/24 08:13:04 arnetheduck Exp $
  */
 

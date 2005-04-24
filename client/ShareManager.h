@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
-#define AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_
+#if !defined(SHARE_MANAGER_H)
+#define SHARE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -318,10 +318,9 @@ private:
 	
 };
 
-#endif // !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
+#endif // !defined(SHARE_MANAGER_H)
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.77 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.78 2005/04/24 08:13:36 arnetheduck Exp $
  */
-

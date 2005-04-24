@@ -1,4 +1,4 @@
-	/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
-#define AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_
+#if !defined(SEARCH_MANAGER_H)
+#define SEARCH_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -199,9 +199,9 @@ private:
 	void onData(const u_int8_t* buf, size_t aLen, const string& address);
 };
 
-#endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
+#endif // !defined(SEARCH_MANAGER_H)
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.54 2005/04/12 23:24:13 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.55 2005/04/24 08:13:37 arnetheduck Exp $
  */

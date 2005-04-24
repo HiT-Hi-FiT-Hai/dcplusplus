@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -391,7 +391,8 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
 }
+
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.48 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.49 2005/04/24 08:13:36 arnetheduck Exp $
  */

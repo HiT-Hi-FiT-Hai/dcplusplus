@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,7 @@ LRESULT FavoriteDirsPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh,
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
-	return 0;		
+	return 0;
 }
 
 LRESULT FavoriteDirsPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -180,5 +180,5 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: FavoriteDirsPage.cpp,v 1.7 2005/04/12 23:24:04 arnetheduck Exp $
+ * $Id: FavoriteDirsPage.cpp,v 1.8 2005/04/24 08:13:03 arnetheduck Exp $
  */

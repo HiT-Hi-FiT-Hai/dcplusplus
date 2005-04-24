@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_FLATTABCTRL_H__FFFCBD5C_891D_44FB_B9F3_1DF83DA3EA83__INCLUDED_)
-#define AFX_FLATTABCTRL_H__FFFCBD5C_891D_44FB_B9F3_1DF83DA3EA83__INCLUDED_
+#if !defined(FLAT_TAB_CTRL_H)
+#define FLAT_TAB_CTRL_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -820,9 +820,9 @@ private:
 	bool created;
 };
 
-#endif // !defined(AFX_FLATTABCTRL_H__FFFCBD5C_891D_44FB_B9F3_1DF83DA3EA83__INCLUDED_)
+#endif // !defined(FLAT_TAB_CTRL_H)
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.37 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.38 2005/04/24 08:13:04 arnetheduck Exp $
  */

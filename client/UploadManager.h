@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
-#define AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_
+#if !defined(UPLOAD_MANAGER_H)
+#define UPLOAD_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -178,9 +178,9 @@ private:
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
 };
 
-#endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
+#endif // !defined(UPLOAD_MANAGER_H)
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.79 2005/04/12 23:24:13 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.80 2005/04/24 08:13:36 arnetheduck Exp $
  */

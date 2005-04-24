@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1262,7 +1262,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.77 2005/04/12 23:24:02 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.78 2005/04/24 08:13:05 arnetheduck Exp $
  */
-
-

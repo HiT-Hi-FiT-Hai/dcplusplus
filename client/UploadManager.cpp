@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -453,5 +453,5 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.93 2005/04/12 23:24:12 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.94 2005/04/24 08:13:36 arnetheduck Exp $
  */

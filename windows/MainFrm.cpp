@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1212,5 +1212,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.94 2005/04/23 15:45:28 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.95 2005/04/24 08:13:03 arnetheduck Exp $
  */

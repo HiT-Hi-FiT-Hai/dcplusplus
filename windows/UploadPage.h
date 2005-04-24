@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef UPLOADPAGE_H
-#define UPLOADPAGE_H
+#if !defined(UPLOAD_PAGE_H)
+#define UPLOAD_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,7 +31,7 @@
 class UploadPage : public CPropertyPage<IDD_UPLOADPAGE>, public PropPage
 {
 public:
-	UploadPage(SettingsManager *s) : PropPage(s) { 
+	UploadPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_UPLOADS));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -75,10 +75,9 @@ protected:
 	void addDirectory(const tstring& aPath);
 };
 
-#endif //UPLOADPAGE_H
+#endif // !defined(UPLOAD_PAGE_H)
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.15 2005/01/05 19:30:20 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
  */
-

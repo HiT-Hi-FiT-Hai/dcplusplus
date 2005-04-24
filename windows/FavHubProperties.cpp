@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -124,5 +124,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file
- * $Id: FavHubProperties.cpp,v 1.12 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.13 2005/04/24 08:13:05 arnetheduck Exp $
  */

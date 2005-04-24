@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
-#define AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_
+#if !defined(SERVER_SOCKET_H)
+#define SERVER_SOCKET_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -63,11 +63,10 @@ private:
 
 	socket_t sock;
 };
- 
-#endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
+
+#endif // !defined(SERVER_SOCKET_H)
 
 /**
  * @file
- * $Id: ServerSocket.h,v 1.24 2005/01/05 19:30:23 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.25 2005/04/24 08:13:12 arnetheduck Exp $
  */
-

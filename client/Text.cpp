@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 char Text::asciiLower[128];
 wchar_t Text::lower[65536];
 
-// When using GNU C library; setlocale should be called before Text::initialize 
+// When using GNU C library; setlocale should be called before Text::initialize
 
 void Text::initialize() {
 	for(size_t i = 0; i < 65536; ++i) {
@@ -151,7 +151,7 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	if (n < 1) {
 		tmp.clear();
 		return tmp;
-	} 
+	}
 	return tmp;
 #endif
 }
@@ -256,5 +256,5 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 
 /**
  * @file
- * $Id: Text.cpp,v 1.9 2005/04/09 15:41:49 arnetheduck Exp $
+ * $Id: Text.cpp,v 1.10 2005/04/24 08:13:11 arnetheduck Exp $
  */

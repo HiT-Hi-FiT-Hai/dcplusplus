@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef QUEUEPAGE_H
-#define QUEUEPAGE_H
+#if !defined(QUEUE_PAGE_H)
+#define QUEUE_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -30,7 +30,7 @@
 class QueuePage : public CPropertyPage<IDD_QUEUEPAGE>, public PropPage
 {
 public:
-	QueuePage(SettingsManager *s) : PropPage(s) { 
+	QueuePage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_QUEUE));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -58,4 +58,9 @@ protected:
 	static TextItem texts[];
 };
 
-#endif //QUEUEPAGE_H
+#endif // !defined(QUEUE_PAGE_H)
+
+/**
+ * @file
+ * $Id: QueuePage.h,v 1.2 2005/04/24 08:13:05 arnetheduck Exp $
+ */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,11 +18,11 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom at home se
+ * Henrik Engström, henrikengstrom on home point se
  */
 
-#if !defined(__ADL_SEARCH_FRAME_H__)
-#define __ADL_SEARCH_FRAME_H__
+#if !defined(ADL_SEARCH_FRAME_H)
+#define ADL_SEARCH_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -150,9 +150,9 @@ private:
 	static int columnSizes[];
 };
 
-#endif
+#endif // !defined(ADL_SEARCH_FRAME_H)
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.10 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.11 2005/04/24 08:13:03 arnetheduck Exp $
  */

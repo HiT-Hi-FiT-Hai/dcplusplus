@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
-#define AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_
+#if !defined(QUEUE_MANAGER_H)
+#define QUEUE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -231,10 +231,9 @@ private:
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
 };
 
-#endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
+#endif // !defined(QUEUE_MANAGER_H)
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.71 2005/04/12 23:24:14 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.72 2005/04/24 08:13:36 arnetheduck Exp $
  */
-

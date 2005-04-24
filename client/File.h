@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FILE_H
+#if !defined(FILE_H)
 #define FILE_H
 
 #if _MSC_VER > 1000
@@ -417,10 +417,9 @@ private:
 	File& operator=(const File&);
 };
 
-#endif // FILE_H
+#endif // !defined(FILE_H)
 
 /**
  * @file
- * $Id: File.h,v 1.51 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: File.h,v 1.52 2005/04/24 08:13:11 arnetheduck Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_HASH_PROGRESSDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
-#define AFX_HASH_PROGESSDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_
+#if !defined(HASH_PROGRESS_DLG_H)
+#define HASH_PROGESS_DLG_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,8 +31,8 @@ public:
 	enum { IDD = IDD_HASH_PROGRESS };
 	enum { WM_VERSIONDATA = WM_APP + 53 };
 
-	HashProgressDlg(bool aAutoClose) : autoClose(aAutoClose), startTime(GET_TICK()), startBytes(0), startFiles(0) { 
-		
+	HashProgressDlg(bool aAutoClose) : autoClose(aAutoClose), startTime(GET_TICK()), startBytes(0), startFiles(0) {
+
 	};
 	virtual ~HashProgressDlg() { };
 
@@ -145,10 +145,9 @@ private:
 	
 };
 
-#endif // !defined(AFX_HASH_PROGRESSDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
+#endif // !defined(HASH_PROGRESS_DLG_H)
 
 /**
  * @file
- * $Id: HashProgressDlg.h,v 1.7 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: HashProgressDlg.h,v 1.8 2005/04/24 08:13:03 arnetheduck Exp $
  */
-

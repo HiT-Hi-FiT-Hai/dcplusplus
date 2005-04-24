@@ -1,20 +1,20 @@
-/* 
-* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
@@ -87,7 +87,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 			ctrlNick.SetWindowText(to.c_str());
 			ctrlCommand.SetWindowText(cmd.c_str());
 		} else if((_tcsncmp(command.c_str(), _T("<%[mynick]> "), 12) == 0) &&
-			command[command.length()-1] == '|') 
+			command[command.length()-1] == '|')
 		{
 			// Looks like a chat thing...
 			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(12, command.length()-13)), true, false));
@@ -132,7 +132,7 @@ LRESULT CommandDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 	if(wID == IDOK) {
 		TCHAR buf[256];
 
-		if((type != 0) && 
+		if((type != 0) &&
 			((ctrlName.GetWindowTextLength() == 0) || (ctrlCommand.GetWindowTextLength()== 0)))
 		{
 			MessageBox(_T("Name and command must not be empty"));
@@ -192,6 +192,6 @@ LRESULT CommandDlg::onHelpCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 }
 
 /**
-* @file
-* $Id: CommandDlg.cpp,v 1.16 2005/01/05 19:30:19 arnetheduck Exp $
-*/
+ * @file
+ * $Id: CommandDlg.cpp,v 1.17 2005/04/24 08:13:03 arnetheduck Exp $
+ */

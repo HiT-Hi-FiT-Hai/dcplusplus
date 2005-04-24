@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef STDINC_H
+#if !defined(STDINC_H)
 #define STDINC_H
 
 #include "config.h"
@@ -94,10 +94,10 @@ using namespace _STL;
 
 #elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #include <ext/hash_map>
-                                                                                
+
 using namespace std;
 using namespace __gnu_cxx;
-                                                                                
+
 // GNU C++ library doesn't have hash(std::string) or hash(long long int)
 namespace __gnu_cxx {
 	template<> struct hash<std::string> {
@@ -116,9 +116,9 @@ using namespace stdext;
 
 #endif // __GLIBCPP__
 
-#endif // STDINC_H
+#endif // !defined(STDINC_H)
 
 /**
  * @file
- * $Id: stdinc.h,v 1.14 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.15 2005/04/24 08:13:11 arnetheduck Exp $
  */

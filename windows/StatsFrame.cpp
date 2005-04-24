@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -212,5 +212,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.13 2005/02/07 18:24:04 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.14 2005/04/24 08:13:05 arnetheduck Exp $
  */

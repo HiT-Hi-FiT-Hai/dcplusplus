@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONFIG_H
+#if !defined(CONFIG_H)
 #define CONFIG_H
 
 #if _MSC_VER > 1000
@@ -119,9 +119,9 @@ typedef unsigned __int64 u_int64_t;
 # define _WIN32_IE	0x0500
 #endif
 
-#endif // CONFIG_H
+#endif // !defined(CONFIG_H)
 
 /**
  * @file
- * $Id: config.h,v 1.32 2005/01/18 15:53:34 arnetheduck Exp $
+ * $Id: config.h,v 1.33 2005/04/24 08:13:37 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -673,5 +673,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.46 2005/03/14 10:37:23 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.47 2005/04/24 08:13:11 arnetheduck Exp $
  */

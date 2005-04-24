@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -95,5 +95,5 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.24 2005/04/12 23:24:11 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.25 2005/04/24 08:13:37 arnetheduck Exp $
  */

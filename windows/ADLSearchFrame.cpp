@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -549,5 +549,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.24 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.25 2005/04/24 08:13:05 arnetheduck Exp $
  */

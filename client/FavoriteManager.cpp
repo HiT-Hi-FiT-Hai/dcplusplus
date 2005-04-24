@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -596,5 +596,5 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.2 2005/04/23 22:24:38 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.3 2005/04/24 08:13:10 arnetheduck Exp $
  */

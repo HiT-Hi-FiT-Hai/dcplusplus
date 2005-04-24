@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ADVANCED3PAGE_H
-#define ADVANCED3PAGE_H
+#if !defined(ADVANCED3_PAGE_H)
+#define ADVANCED3_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -30,12 +30,12 @@
 class Advanced3Page : public CPropertyPage<IDD_ADVANCED3PAGE>, public PropPage
 {
 public:
-	Advanced3Page(SettingsManager *s) : PropPage(s) { 
+	Advanced3Page(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_ADVANCED3));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
 
-	virtual ~Advanced3Page() { 
+	virtual ~Advanced3Page() {
 	};
 
 	BEGIN_MSG_MAP(Advanced3Page)
@@ -58,4 +58,9 @@ protected:
 	static TextItem texts[];
 };
 
-#endif //ADVANCED3PAGE_H
+#endif // !defined(ADVANCED3_PAGE_H)
+
+/**
+ * @file
+ * $Id: Advanced3Page.h,v 1.3 2005/04/24 08:13:05 arnetheduck Exp $
+ */

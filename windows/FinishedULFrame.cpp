@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -250,8 +250,7 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 	ctrlList.EnsureVisible(loc, FALSE);
 }
 
-
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.28 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.29 2005/04/24 08:13:05 arnetheduck Exp $
  */

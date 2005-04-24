@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1353,5 +1353,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.133 2005/04/23 22:24:37 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.134 2005/04/24 08:13:11 arnetheduck Exp $
  */

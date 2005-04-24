@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -105,5 +105,5 @@ void Encoder::fromBase32(const char* src, u_int8_t* dst, size_t len) {
 
 /**
  * @file
- * $Id: Encoder.cpp,v 1.6 2005/01/18 11:17:41 arnetheduck Exp $
+ * $Id: Encoder.cpp,v 1.7 2005/04/24 08:13:10 arnetheduck Exp $
  */

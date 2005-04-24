@@ -61,9 +61,7 @@
 #define IDC_CONNECTION                  1005
 #define IDC_USERS                       1006
 #define IDC_ACTIVE                      1007
-#define IDC_PASSIVE                     1008
 #define IDC_FIREWALL_PASSIVE            1008
-#define IDC_PORT                        1009
 #define IDC_PORT_TCP                    1009
 #define IDC_DIRECTORIES                 1010
 #define IDC_ADD                         1011
@@ -174,7 +172,6 @@
 #define IDC_DEFAULT_AWAY_MESSAGE        1116
 #define IDC_MAX_TAB_ROWS                1117
 #define IDC_CLOSE_DISCONNECTED          1118
-#define IDC_SEARCH_HISTORY              1118
 #define IDC_OPEN_FOLDER                 1119
 #define IDC_OPEN_FILE                   1120
 #define IDC_FILE_ADL_SEARCH             1121
@@ -199,12 +196,9 @@
 #define IDC_SETTINGS_NICK               1140
 #define IDC_SETTINGS_EMAIL              1141
 #define IDC_SETTINGS_DESCRIPTION        1142
-#define IDC_SETTINGS_CONNECTION_TYPE    1143
 #define IDC_SETTINGS_UPLOAD_SPEED       1143
-#define IDC_SETTINGS_CONNECTION_SETTINGS 1144
 #define IDC_SETTINGS_INCOMING           1144
 #define IDC_SETTINGS_IP                 1145
-#define IDC_SETTINGS_PORT               1146
 #define IDC_SETTINGS_PORT_TCP           1146
 #define IDC_SETTINGS_SOCKS5_IP          1147
 #define IDC_SETTINGS_SOCKS5_PORT        1148
@@ -234,11 +228,9 @@
 #define IDC_SETTINGS_SOUNDS             1172
 #define IDC_SETTINGS_ADVANCED           1173
 #define IDC_SETTINGS_ROLLBACK           1174
-#define IDC_SETTINGS_CLIENT_VER         1175
 #define IDC_SETTINGS_WRITE_BUFFER       1176
 #define IDC_SETTINGS_MAX_TAB_ROWS       1177
 #define IDC_SETTINGS_USER_MENU          1178
-#define IDC_SETTINGS_SEARCH_HISTORY     1178
 #define IDC_SETTINGS_KB                 1179
 #define IDC_SETTINGS_B                  1180
 #define IDC_SETTINGS_KBPS               1181
@@ -268,6 +260,8 @@
 #define IDC_SETTINGS_UPLOAD_BAR_COLOR   1205
 #define IDC_SETTINGS_DOWNLOAD_BAR_COLOR 1206
 #define IDC_SETTINGS_FORMAT             1207
+#define IDC_SEARCH_HISTORY              1208
+#define IDC_SETTINGS_SEARCH_HISTORY     1209
 #define IDC_LOG_SYSTEM                  1211
 #define IDC_SETTINGS_HASH_SPEED         1213
 #define IDC_MAX_HASH_SPEED              1214
@@ -322,9 +316,7 @@
 #define IDC_RENAME                      1263
 #define IDC_LIST_EDIT                   1264
 #define IDC_OPEN_OWN_LIST               1265
-#define IDC_UDP_PORT                    1266
 #define IDC_PORT_UDP                    1266
-#define IDC_SETTINGS_UDP_PORT           1267
 #define IDC_SETTINGS_PORT_UDP           1267
 #define IDC_DOWNLOAD_FILE               1268
 #define IDC_UPLOAD_FILE                 1269
@@ -352,13 +344,13 @@
 #define IDC_WINDOWS_OPTIONS             1290
 #define IDC_SETTINGS_WINDOWS_OPTIONS    1291
 #define IDC_HELP_GEOIPFILE              1292
-#define IDC_FIREWALL_UPNP               1292
-#define IDC_DIRECT                      1293
-#define IDC_FIREWALL_NAT                1294
-#define IDC_SETTINGS_OUTGOING           1295
-#define IDC_DIRECT_OUT                  1296
-#define IDC_OVERRIDE                    1297
-#define IDC_SETTINGS_PORTS              1298
+#define IDC_FIREWALL_UPNP               1293
+#define IDC_DIRECT                      1294
+#define IDC_FIREWALL_NAT                1295
+#define IDC_SETTINGS_OUTGOING           1296
+#define IDC_DIRECT_OUT                  1297
+#define IDC_OVERRIDE                    1298
+#define IDC_SETTINGS_PORTS              1299
 #define IDC_PRIO_HIGHEST_SIZE           1300
 #define IDC_PRIO_HIGH_SIZE              1301
 #define IDC_PRIO_NORMAL_SIZE            1302
@@ -374,6 +366,7 @@
 #define IDC_SETTINGS_KB5                1312
 #define IDC_SETTINGS_KB6                1313
 #define IDC_SETTINGS_BOOL               1314
+#define IDC_SETTINGS_MEBIBYES           1315
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -411,9 +404,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        245
+#define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1299
+#define _APS_NEXT_CONTROL_VALUE         1316
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

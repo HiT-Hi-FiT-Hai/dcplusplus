@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
-#define AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_
+#if !defined(FAVORITE_HUBS_FRM_H)
+#define FAVORITE_HUBS_FRM_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -135,10 +135,9 @@ private:
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry* e) throw() { ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)e)); }
 };
 
-#endif // !defined(AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
+#endif // !defined(FAVORITE_HUBS_FRM_H)
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.21 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.22 2005/04/24 08:13:05 arnetheduck Exp $
  */
-

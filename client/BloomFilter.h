@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _BLOOM_FILTER
-#define _BLOOM_FILTER
+#if !defined(BLOOM_FILTER_H)
+#define BLOOM_FILTER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -90,9 +90,9 @@ private:
 	vector<bool> table;
 };
 
-#endif // _BLOOM_FILTER
+#endif // !defined(BLOOM_FILTER_H)
 
 /**
  * @file
- * $Id: BloomFilter.h,v 1.9 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: BloomFilter.h,v 1.10 2005/04/24 08:13:10 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -209,5 +209,5 @@ UPnP::~UPnP()
 
 /**
  * @file
- * $Id: UPnP.cpp,v 1.7 2005/02/01 16:41:45 arnetheduck Exp $
+ * $Id: UPnP.cpp,v 1.8 2005/04/24 08:13:04 arnetheduck Exp $
  */

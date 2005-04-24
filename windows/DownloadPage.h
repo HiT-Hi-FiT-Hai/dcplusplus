@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DOWNLOADPAGE_H
-#define DOWNLOADPAGE_H
+#if !defined(DOWNLOAD_PAGE_H)
+#define DOWNLOAD_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -29,7 +29,7 @@
 class DownloadPage : public CPropertyPage<IDD_DOWNLOADPAGE>, public PropPage
 {
 public:
-	DownloadPage(SettingsManager *s) : PropPage(s) { 
+	DownloadPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_DOWNLOADS));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -60,9 +60,9 @@ protected:
 	static TextItem texts[];
 };
 
-#endif //DOWNLOADPAGE_H
+#endif //  !defined(DOWNLOAD_PAGE_H)
 
 /**
  * @file
- * $Id: DownloadPage.h,v 1.13 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.14 2005/04/24 08:13:05 arnetheduck Exp $
  */

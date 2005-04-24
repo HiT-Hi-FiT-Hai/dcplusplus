@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef SINGLEINSTANCE_H
-#define SINGLEINSTANCE_H
+#if !defined(SINGLE_INSTANCE_H)
+#define SINGLE_INSTANCE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -50,9 +50,9 @@ public:
 	BOOL IsAnotherInstanceRunning() { return (ERROR_ALREADY_EXISTS == LastError); }
 };
 
-#endif // SINGLEINSTANCE_H
+#endif // !defined(SINGLE_INSTANCE_H)
 
 /**
  * @file
- * $Id: SingleInstance.h,v 1.5 2005/01/18 11:17:51 arnetheduck Exp $
+ * $Id: SingleInstance.h,v 1.6 2005/04/24 08:13:05 arnetheduck Exp $
  */

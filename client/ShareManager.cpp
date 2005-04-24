@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1479,6 +1479,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.131 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.132 2005/04/24 08:13:36 arnetheduck Exp $
  */
-

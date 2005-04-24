@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1176,5 +1176,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.107 2005/04/23 15:45:28 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.108 2005/04/24 08:13:05 arnetheduck Exp $
  */

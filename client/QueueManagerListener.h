@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_QUEUEMANAGERLISTENER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
-#define AFX_QUEUEMANAGERLISTENER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_
+#if !defined(QUEUE_MANAGER_LISTENER_H)
+#define QUEUE_MANAGER_LISTENER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -48,9 +48,9 @@ public:
 	virtual void on(PartialList, const User::Ptr&, const string&) throw() { }
 };
 
-#endif
+#endif // !defined(QUEUE_MANAGER_LISTENER_H)
 
 /**
  * @file
- * $Id: QueueManagerListener.h,v 1.9 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: QueueManagerListener.h,v 1.10 2005/04/24 08:13:36 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -181,5 +181,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.49 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.50 2005/04/24 08:13:10 arnetheduck Exp $
  */

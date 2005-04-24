@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -101,5 +101,5 @@ void SFVReader::load(const string& fileName) throw() {
 
 /**
  * @file
- * $Id: SFVReader.cpp,v 1.10 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: SFVReader.cpp,v 1.11 2005/04/24 08:13:37 arnetheduck Exp $
  */

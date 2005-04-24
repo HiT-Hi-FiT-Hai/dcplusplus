@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,6 @@ OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), ident
 
 /**
  * @file
- * $Id: User.cpp,v 1.43 2005/04/23 22:24:38 arnetheduck Exp $
+ * $Id: User.cpp,v 1.44 2005/04/24 08:13:36 arnetheduck Exp $
  */
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
-#define AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_
+#if !defined(CONNECTION_MANAGER_H)
+#define CONNECTION_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -163,9 +163,9 @@ private:
 
 };
 
-#endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
+#endif // !defined(CONNECTION_MANAGER_H)
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.69 2005/04/23 15:56:57 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.70 2005/04/24 08:13:10 arnetheduck Exp $
  */

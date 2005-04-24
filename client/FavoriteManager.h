@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FAVORITE_MANAGER_H
+#if !defined(FAVORITE_MANAGER_H)
 #define FAVORITE_MANAGER_H
 
 #if _MSC_VER > 1000
@@ -275,10 +275,9 @@ private:
 	
 };
 
-#endif // FAVORITE_MANAGER_H
+#endif // !defined(FAVORITE_MANAGER_H)
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.2 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.3 2005/04/24 08:13:11 arnetheduck Exp $
  */
-

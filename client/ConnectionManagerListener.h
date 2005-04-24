@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CONNECTIONMANAGERLISTENER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
-#define AFX_CONNECTIONMANAGERLISTENER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_
+#if !defined(CONNECTION_MANAGER_LISTENER_H)
+#define CONNECTION_MANAGER_LISTENER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -42,9 +42,9 @@ public:
 	virtual void on(StatusChanged, ConnectionQueueItem*) throw() { };
 };
 
-#endif
+#endif // !defined(CONNECTION_MANAGER_LISTENER_H)
 
 /**
-* @file
-* $Id: ConnectionManagerListener.h,v 1.5 2005/01/05 19:30:25 arnetheduck Exp $
-*/
+ * @file
+ * $Id: ConnectionManagerListener.h,v 1.6 2005/04/24 08:13:11 arnetheduck Exp $
+ */

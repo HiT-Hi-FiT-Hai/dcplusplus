@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -737,6 +737,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.37 2005/04/23 15:56:58 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.38 2005/04/24 08:13:36 arnetheduck Exp $
  */
 

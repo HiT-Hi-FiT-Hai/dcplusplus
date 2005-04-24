@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -465,6 +465,5 @@ void PublicHubsFrame::updateDropDown() {
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.39 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.40 2005/04/24 08:13:05 arnetheduck Exp $
  */
-

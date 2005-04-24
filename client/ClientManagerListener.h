@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CLIENT_MANAGER_LISTENER_H
+#if !defined(CLIENT_MANAGER_LISTENER_H)
 #define CLIENT_MANAGER_LISTENER_H
 
 #if _MSC_VER > 1000
@@ -46,9 +46,9 @@ public:
 	virtual void on(ClientDisconnected, Client*) throw() { }
 };
 
-#endif
+#endif // !defined(CLIENT_MANAGER_LISTENER_H)
 
 /**
  * @file
- * $Id: ClientManagerListener.h,v 1.10 2005/04/12 23:24:11 arnetheduck Exp $
+ * $Id: ClientManagerListener.h,v 1.11 2005/04/24 08:13:37 arnetheduck Exp $
  */

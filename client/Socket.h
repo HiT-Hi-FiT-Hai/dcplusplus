@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef SOCKET_H
+#if !defined(SOCKET_H)
 #define SOCKET_H
 
 #if _MSC_VER > 1000
@@ -176,9 +176,9 @@ public:
 	}
 #else
 	void setBlocking(bool block) throw() {
-		int flags = fcntl(sock, F_GETFL, 0); 
+		int flags = fcntl(sock, F_GETFL, 0);
 		if(block) {
-			fcntl(sock, F_SETFL, flags | O_NONBLOCK); 
+			fcntl(sock, F_SETFL, flags | O_NONBLOCK);
 		} else {
 			fcntl(sock, F_SETFL, flags & (~O_NONBLOCK));
 		}
@@ -222,9 +222,9 @@ private:
 	static Stats stats;
 };
 
-#endif // _SOCKET_H
+#endif // !defined(SOCKET_H)
 
 /**
  * @file
- * $Id: Socket.h,v 1.60 2005/03/19 09:02:45 arnetheduck Exp $
+ * $Id: Socket.h,v 1.61 2005/04/24 08:13:11 arnetheduck Exp $
  */

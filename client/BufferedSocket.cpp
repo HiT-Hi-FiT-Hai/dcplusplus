@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -437,5 +437,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.82 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.83 2005/04/24 08:13:12 arnetheduck Exp $
  */

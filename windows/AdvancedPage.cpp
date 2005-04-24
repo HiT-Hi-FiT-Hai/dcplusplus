@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -87,6 +87,5 @@ LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.51 2005/04/17 09:41:08 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.52 2005/04/24 08:13:03 arnetheduck Exp $
  */
-

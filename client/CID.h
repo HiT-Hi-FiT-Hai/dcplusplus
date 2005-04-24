@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CID_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
-#define AFX_CID_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_
+#if !defined(CID_H)
+#define CID_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "Encoder.h"
 #include "Util.h"
@@ -62,9 +66,9 @@ private:
 
 };
 
-#endif
+#endif // !defined(CID_H)
 
 /**
-* @file
-* $Id: CID.h,v 1.6 2005/04/17 09:41:05 arnetheduck Exp $
-*/
+ * @file
+ * $Id: CID.h,v 1.7 2005/04/24 08:13:11 arnetheduck Exp $
+ */

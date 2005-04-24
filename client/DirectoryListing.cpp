@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -334,5 +334,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.51 2005/04/12 23:24:12 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.52 2005/04/24 08:13:36 arnetheduck Exp $
  */

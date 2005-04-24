@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,5 @@ int TimerManager::run() {
 
 /**
  * @file
- * $Id: TimerManager.cpp,v 1.18 2005/01/05 19:30:25 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.19 2005/04/24 08:13:11 arnetheduck Exp $
  */
-

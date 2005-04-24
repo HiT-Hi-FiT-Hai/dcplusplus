@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -682,5 +682,5 @@ u_int64_t TigerHash::table[4*256] = {
 
 /**
  * @file
- * $Id: TigerHash.cpp,v 1.6 2005/01/05 19:30:28 arnetheduck Exp $
+ * $Id: TigerHash.cpp,v 1.7 2005/04/24 08:13:11 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_RESOURCEMANAGER_H__AA978E1D_82F9_434B_8C3C_1D58B93F7582__INCLUDED_)
-#define AFX_RESOURCEMANAGER_H__AA978E1D_82F9_434B_8C3C_1D58B93F7582__INCLUDED_
+#if !defined(RESOURCE_MANAGER_H)
+#define RESOURCE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -40,7 +40,7 @@ private:
 	typedef HASH_MAP<string, Strings> NameMap;
 	typedef NameMap::iterator NameIter;
 
-	ResourceManager() { 
+	ResourceManager() {
 		createWide();
 	};
 
@@ -74,9 +74,9 @@ private:
 #endif
 
 
-#endif // !defined(AFX_RESOURCEMANAGER_H__AA978E1D_82F9_434B_8C3C_1D58B93F7582__INCLUDED_)
+#endif // !defined(RESOURCE_MANAGER_H)
 
 /**
  * @file
- * $Id: ResourceManager.h,v 1.14 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.15 2005/04/24 08:13:11 arnetheduck Exp $
  */

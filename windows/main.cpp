@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -346,5 +346,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.36 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: main.cpp,v 1.37 2005/04/24 08:13:05 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ADC_COMMAND_H
+#if !defined(ADC_COMMAND_H)
 #define ADC_COMMAND_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "CID.h"
 #include "SettingsManager.h"
@@ -203,8 +207,9 @@ public:
 	}
 };
 
-#endif // ADC_COMMAND_H
+#endif // !defined(ADC_COMMAND_H)
+
 /**
-* @file
-* $Id: AdcCommand.h,v 1.21 2005/04/23 15:45:32 arnetheduck Exp $
-*/
+ * @file
+ * $Id: AdcCommand.h,v 1.22 2005/04/24 08:13:11 arnetheduck Exp $
+ */

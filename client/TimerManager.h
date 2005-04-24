@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_TIMERMANAGER_H__2172C2AD_D4FD_4B46_A1B2_7959D7359CCD__INCLUDED_)
-#define AFX_TIMERMANAGER_H__2172C2AD_D4FD_4B46_A1B2_7959D7359CCD__INCLUDED_
+#if !defined(TIMER_MANAGER_H)
+#define TIMER_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -86,10 +86,9 @@ private:
 #define GET_TICK() TimerManager::getTick()
 #define GET_TIME() TimerManager::getTime()
 
-#endif // !defined(AFX_TIMERMANAGER_H__2172C2AD_D4FD_4B46_A1B2_7959D7359CCD__INCLUDED_)
+#endif // !defined(TIMER_MANAGER_H)
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.26 2005/01/06 18:19:48 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.27 2005/04/24 08:13:36 arnetheduck Exp $
  */
-

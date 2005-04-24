@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_POINTER_H__FCC38D23_858F_43AC_BF23_73FD708FDC82__INCLUDED_)
-#define AFX_POINTER_H__FCC38D23_858F_43AC_BF23_73FD708FDC82__INCLUDED_
+#if !defined(POINTER_H)
+#define POINTER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -162,10 +162,9 @@ struct DeleteFunction {
 	void operator()(const T& p) const { delete p; };
 };
 
-#endif // !defined(AFX_POINTER_H__FCC38D23_858F_43AC_BF23_73FD708FDC82__INCLUDED_)
+#endif // !defined(POINTER_H)
 
 /**
  * @file
- * $Id: Pointer.h,v 1.18 2005/03/14 10:37:21 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.19 2005/04/24 08:13:36 arnetheduck Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -401,5 +401,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.53 2005/02/04 17:17:11 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.54 2005/04/24 08:13:10 arnetheduck Exp $
  */

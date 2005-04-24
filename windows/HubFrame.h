@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
-#define AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_
+#if !defined(HUB_FRAME_H)
+#define HUB_FRAME_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -370,15 +370,10 @@ private:
 	void speak(Speakers s, const OnlineUser& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u.getUser(), line)); };
 
 };
-/////////////////////////////////////////////////////////////////////////////
 
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
+#endif // !defined(HUB_FRAME_H)
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.62 2005/04/23 15:45:28 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.63 2005/04/24 08:13:05 arnetheduck Exp $
  */
-

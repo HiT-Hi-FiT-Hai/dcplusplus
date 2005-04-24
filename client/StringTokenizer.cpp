@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,5 @@
 
 /**
  * @file
- * $Id: StringTokenizer.cpp,v 1.11 2005/01/05 19:30:25 arnetheduck Exp $
+ * $Id: StringTokenizer.cpp,v 1.12 2005/04/24 08:13:36 arnetheduck Exp $
  */
-

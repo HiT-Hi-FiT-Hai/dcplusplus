@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef EXCEPTION_H
+#if !defined(EXCEPTION_H)
 #define EXCEPTION_H
 
 #if _MSC_VER > 1000
@@ -53,9 +53,9 @@ public:\
 }
 #endif
 
-#endif // EXCEPTION_H
+#endif // !defined(EXCEPTION_H)
 
 /**
  * @file
- * $Id: Exception.h,v 1.17 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: Exception.h,v 1.18 2005/04/24 08:13:36 arnetheduck Exp $
  */

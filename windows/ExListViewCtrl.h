@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_)
-#define AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_
+#if !defined(EX_LIST_VIEW_CTRL_H)
+#define EX_LIST_VIEW_CTRL_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -157,10 +157,9 @@ public:
 	virtual ~ExListViewCtrl() { };
 };
 
-#endif // !defined(AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_)
+#endif // !defined(EX_LIST_VIEW_CTRL_H)
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.15 2005/04/08 23:01:50 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
  */
-

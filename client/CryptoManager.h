@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CRYPTO_H__28F66860_0AD5_44AD_989C_BA4326C42F46__INCLUDED_)
-#define AFX_CRYPTO_H__28F66860_0AD5_44AD_989C_BA4326C42F46__INCLUDED_
+#if !defined(CRYPTO_MANAGER_H)
+#define CRYPTO_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -123,9 +123,9 @@ private:
 	}
 };
 
-#endif // !defined(AFX_CRYPTO_H__28F66860_0AD5_44AD_989C_BA4326C42F46__INCLUDED_)
+#endif // !defined(CRYPTO_MANAGER_H)
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.42 2005/02/04 17:17:10 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.43 2005/04/24 08:13:11 arnetheduck Exp $
  */

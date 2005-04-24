@@ -1,23 +1,23 @@
-/* 
-* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
-#if !defined(MAGNETDLG_H)
-#define MAGNETDLG_H
+#if !defined(MAGNET_DLG_H)
+#define MAGNET_DLG_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -91,7 +91,7 @@ public:
 				WinUtil::searchHash(&tmphash);
 			} //else if(IsDlgButtonChecked(IDC_MAGNET_QUEUE)) {
 				// FIXME: Write this code when the queue is more tth-centric
-			//} 
+			//}
 		}
 		EndDialog(wID);
 		return 0;
@@ -100,7 +100,7 @@ public:
 	LRESULT onRadioButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		switch(wID){
 			case IDC_MAGNET_QUEUE:
-            case IDC_MAGNET_SEARCH:
+			case IDC_MAGNET_SEARCH:
 				//::EnableWindow(GetDlgItem(IDC_MAGNET_REMEMBER), true);
 				break;
 			case IDC_MAGNET_NOTHING:
@@ -117,10 +117,9 @@ private:
 	tstring mHash, mFileName;
 };
 
-#endif // MAGNETDLG_H
+#endif // !defined(MAGNET_DLG_H)
 
 /**
-* @file
-* $Id: MagnetDlg.h,v 1.6 2005/01/05 19:30:21 arnetheduck Exp $
-*/
-
+ * @file
+ * $Id: MagnetDlg.h,v 1.7 2005/04/24 08:13:03 arnetheduck Exp $
+ */

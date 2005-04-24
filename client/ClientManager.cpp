@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -403,5 +403,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.71 2005/04/23 22:24:38 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.72 2005/04/24 08:13:10 arnetheduck Exp $
  */

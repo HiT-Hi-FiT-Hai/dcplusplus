@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_H
-#define DCPLUSPLUS_H
+#if !defined(DC_PLUS_PLUS_H)
+#define DC_PLUS_PLUS_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -62,7 +62,7 @@ _CrtDbgBreak(); } } while(false)
 #define dcasserta(exp)
 #endif // _WIN32
 #define dcdebug if (false) printf
-#define dcassert(exp) 
+#define dcassert(exp)
 #define dcdrun(exp)
 #endif //_DEBUG
 
@@ -124,9 +124,9 @@ typedef StringMapIter TStringMapIter;
 extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
 
-#endif // DCPLUSPLUS_H
+#endif // !defined(DC_PLUS_PLUS_H)
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.47 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.48 2005/04/24 08:13:36 arnetheduck Exp $
  */

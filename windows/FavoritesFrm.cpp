@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -317,6 +317,5 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.36 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.37 2005/04/24 08:13:04 arnetheduck Exp $
  */
-

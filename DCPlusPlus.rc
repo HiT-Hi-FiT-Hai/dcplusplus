@@ -140,6 +140,8 @@ BEGIN
     RTEXT           "Max upload speed",IDC_SETTINGS_UPLOAD_SPEED,14,70,74,8
     COMBOBOX        IDC_CONNECTION,94,68,58,95,CBS_DROPDOWNLIST | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "idc_settings_mebibyes",IDC_SETTINGS_MEBIBYES,156,71,102,
+                    8
 END
 
 IDD_ADVANCEDPAGE DIALOGEX 0, 0, 275, 225

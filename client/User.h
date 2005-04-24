@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef USER_H
+#if !defined(USER_H)
 #define USER_H
 
 #if _MSC_VER > 1000
@@ -177,9 +177,9 @@ private:
 	Client* client;
 };
 
-#endif // USER_H
+#endif // !defined(USER_H)
 
 /**
  * @file
- * $Id: User.h,v 1.57 2005/04/23 22:24:37 arnetheduck Exp $
+ * $Id: User.h,v 1.58 2005/04/24 08:13:11 arnetheduck Exp $
  */

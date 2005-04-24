@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
-#define AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_
+#if !defined(USERS_FRAME_H)
+#define USERS_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -156,6 +156,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.23 2005/04/23 22:24:33 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.24 2005/04/24 08:13:03 arnetheduck Exp $
  */
 

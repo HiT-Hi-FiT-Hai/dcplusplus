@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _MERKLE_TREE
-#define _MERKLE_TREE
+#if !defined(MERKLE_TREE_H)
+#define MERKLE_TREE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -225,9 +225,9 @@ private:
 	TigerTree tt;
 };
 
-#endif // _MERKLE_TREE
+#endif // !defined(MERKLE_TREE_H)
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.24 2005/01/18 15:53:34 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.25 2005/04/24 08:13:36 arnetheduck Exp $
  */

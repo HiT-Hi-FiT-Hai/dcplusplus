@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
-#define AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_
+#if !defined(NOTEPAD_FRAME_H)
+#define NOTEPAD_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -83,10 +83,9 @@ private:
 	CContainedWindow ctrlClientContainer;
 };
 
-#endif // !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
+#endif // !defined(NOTEPAD_FRAME_H)
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.13 2005/01/05 19:30:20 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.14 2005/04/24 08:13:05 arnetheduck Exp $
  */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// Do specialized reading here
 	UserCommand::List lst = FavoriteManager::getInstance()->getUserCommands();
 	for(UserCommand::Iter i = lst.begin(); i != lst.end(); ++i) {
-		UserCommand& uc = *i;	
+		UserCommand& uc = *i;
 		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) {
 			addEntry(uc, ctrlCommands.GetItemCount());
 		}
@@ -178,6 +178,5 @@ LRESULT UCPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.14 2005/04/12 23:24:04 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.15 2005/04/24 08:13:03 arnetheduck Exp $
  */
-

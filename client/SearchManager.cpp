@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -322,9 +322,7 @@ string SearchManager::clean(const string& aSearchString) {
 	return tmp;
 }
 
-
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.55 2005/04/17 09:41:05 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.56 2005/04/24 08:13:37 arnetheduck Exp $
  */
-

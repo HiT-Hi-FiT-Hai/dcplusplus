@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_DIRECTORYFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
-#define AFX_DIRECTORYFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_
+#if !defined(DIRECTORY_LISTING_FRM_H)
+#define DIRECTORY_LISTING_FRM_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -331,9 +331,9 @@ private:
 	static int columnSizes[COLUMN_LAST];
 };
 
-#endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
+#endif // !defined(DIRECTORY_LISTING_FRM_H)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.53 2005/04/12 23:24:02 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.54 2005/04/24 08:13:05 arnetheduck Exp $
  */

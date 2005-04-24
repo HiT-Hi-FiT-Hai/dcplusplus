@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef THREAD_H
+#if !defined(THREAD_H)
 #define THREAD_H
 
 #if _MSC_VER > 1000
@@ -144,10 +144,9 @@ private:
 #endif
 };
 
-#endif // !defined(AFX_THREAD_H__3006956B_7C69_4DAD_9596_A49E1BD007D5__INCLUDED_)
+#endif // !defined(THREAD_H)
 
 /**
  * @file
- * $Id: Thread.h,v 1.21 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: Thread.h,v 1.22 2005/04/24 08:13:37 arnetheduck Exp $
  */
-

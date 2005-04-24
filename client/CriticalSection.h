@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CRITICALSECTION_H
-#define CRITICALSECTION_H
+#if !defined(CRITICAL_SECTION_H)
+#define CRITICAL_SECTION_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -172,9 +172,9 @@ private:
 	RWLock<T>& rwl;
 };
 
-#endif // CRITICALSECTION_H
+#endif // !defined(CRITICAL_SECTION_H)
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.27 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.28 2005/04/24 08:13:36 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -153,5 +153,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.12 2005/03/12 17:42:53 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.13 2005/04/24 08:13:11 arnetheduck Exp $
  */

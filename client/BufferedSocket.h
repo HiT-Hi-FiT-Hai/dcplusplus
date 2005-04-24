@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_BUFFEREDSOCKET_H__0760BAF6_91F5_481F_BFF7_7CA192EE44CC__INCLUDED_)
-#define AFX_BUFFEREDSOCKET_H__0760BAF6_91F5_481F_BFF7_7CA192EE44CC__INCLUDED_
+#if !defined(BUFFERED_SOCKET_H)
+#define BUFFERED_SOCKET_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -210,9 +210,9 @@ private:
 	}
 };
 
-#endif // !defined(AFX_BUFFEREDSOCKET_H__0760BAF6_91F5_481F_BFF7_7CA192EE44CC__INCLUDED_)
+#endif // !defined(BUFFERED_SOCKET_H)
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.67 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.68 2005/04/24 08:13:11 arnetheduck Exp $
  */

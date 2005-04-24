@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef SINGLETON_H
+#if !defined(SINGLETON_H)
 #define SINGLETON_H
 
 #if _MSC_VER > 1000
@@ -56,9 +56,9 @@ private:
 
 template<class T> T* Singleton<T>::instance = NULL;
 
-#endif // SINGLETON_H
+#endif // !defined(SINGLETON_H)
 
 /**
  * @file
- * $Id: Singleton.h,v 1.9 2005/01/05 19:30:25 arnetheduck Exp $
+ * $Id: Singleton.h,v 1.10 2005/04/24 08:13:11 arnetheduck Exp $
  */

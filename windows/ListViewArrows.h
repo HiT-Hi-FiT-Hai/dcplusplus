@@ -1,23 +1,23 @@
-/* 
-* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+/*
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
-#if !defined(AFX_LISTVIEW_ARROWS_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
-#define AFX_LISTVIEW_ARROWS_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_
+#if !defined(LIST_VIEW_ARROWS_H)
+#define LIST_VIEW_ARROWS_H
 
 template<class T>
 class ListViewArrows {
@@ -137,7 +137,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) { 
+	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		rebuildArrows();
 		bHandled = FALSE;
 		return 1;
@@ -147,10 +147,9 @@ private:
 	CBitmap downArrow;
 };
 
-#endif
+#endif // !defined(LIST_VIEW_ARROWS_H)
 
 /**
-* @file
-* $Id: ListViewArrows.h,v 1.4 2005/01/05 19:30:21 arnetheduck Exp $
-*/
-
+ * @file
+ * $Id: ListViewArrows.h,v 1.5 2005/04/24 08:13:03 arnetheduck Exp $
+ */

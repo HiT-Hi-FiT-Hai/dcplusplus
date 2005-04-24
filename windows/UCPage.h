@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef UCPAGE_H
-#define UCPAGE_H
+#if !defined(UC_PAGE_H)
+#define UC_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -32,12 +32,12 @@ class UserCommand;
 class UCPage : public CPropertyPage<IDD_UCPAGE>, public PropPage
 {
 public:
-	UCPage(SettingsManager *s) : PropPage(s) { 
+	UCPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_USER_COMMANDS));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
 
-	virtual ~UCPage() { 
+	virtual ~UCPage() {
 		ctrlCommands.Detach();
 	};
 
@@ -79,10 +79,9 @@ protected:
 	void addEntry(const UserCommand& uc, int pos);
 };
 
-#endif //ADVANCEDPAGE_H
+#endif // !defined(UC_PAGE_H)
 
 /**
  * @file
- * $Id: UCPage.h,v 1.7 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: UCPage.h,v 1.8 2005/04/24 08:13:03 arnetheduck Exp $
  */
-

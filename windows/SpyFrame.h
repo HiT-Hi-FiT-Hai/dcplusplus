@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
-#define AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_
+#if !defined(SPY_FRAME_H)
+#define SPY_FRAME_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -114,10 +114,9 @@ private:
 	virtual void on(TimerManagerListener::Second, u_int32_t) throw();
 };
 
-#endif // !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
+#endif // !defined(SPY_FRAME_H)
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.23 2005/02/04 14:40:51 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.24 2005/04/24 08:13:05 arnetheduck Exp $
  */
-

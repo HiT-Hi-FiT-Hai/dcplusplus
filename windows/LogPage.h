@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef LOGPAGE_H
-#define LOGPAGE_H
+#if !defined(LOG_PAGE_H)
+#define LOG_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -30,7 +30,7 @@
 class LogPage : public CPropertyPage<IDD_LOGPAGE>, public PropPage
 {
 public:
-	LogPage(SettingsManager *s) : PropPage(s) { 
+	LogPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_LOGS));
 		 m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -72,10 +72,9 @@ protected:
 	void getValues();
 };
 
-#endif //LOGPAGE_H
+#endif // !defined(LOG_PAGE_H)
 
 /**
  * @file
- * $Id: LogPage.h,v 1.3 2005/01/06 20:21:08 arnetheduck Exp $
+ * $Id: LogPage.h,v 1.4 2005/04/24 08:13:04 arnetheduck Exp $
  */
-

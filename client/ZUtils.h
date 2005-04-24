@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _Z_UTILS
-#define _Z_UTILS
+#if !defined(Z_UTILS_H)
+#define Z_UTILS_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -79,9 +79,9 @@ private:
 	u_int32_t crc;
 };
 
-#endif // _Z_UTILS
+#endif // !defined(_Z_UTILS_H)
 
 /**
  * @file
- * $Id: ZUtils.h,v 1.7 2005/01/13 15:08:00 arnetheduck Exp $
+ * $Id: ZUtils.h,v 1.8 2005/04/24 08:13:11 arnetheduck Exp $
  */

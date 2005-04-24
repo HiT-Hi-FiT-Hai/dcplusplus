@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#if !defined(SFV_READER_H)
+#define SFV_READER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -50,7 +53,9 @@ private:
 	
 };
 
+#endif // !defined(SFV_READER_H)
+
 /**
  * @file
- * $Id: SFVReader.h,v 1.5 2005/01/13 15:07:59 arnetheduck Exp $
+ * $Id: SFVReader.h,v 1.6 2005/04/24 08:13:11 arnetheduck Exp $
  */

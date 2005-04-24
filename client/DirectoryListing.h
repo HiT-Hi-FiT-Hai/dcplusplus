@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_)
-#define AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_
+#if !defined(DIRECTORY_LISTING_H)
+#define DIRECTORY_LISTING_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -170,9 +170,9 @@ private:
 inline bool operator==(DirectoryListing::Directory::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
 inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
 
-#endif // !defined(AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_)
+#endif // !defined(DIRECTORY_LISTING_H)
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.42 2005/04/12 23:24:11 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.43 2005/04/24 08:13:11 arnetheduck Exp $
  */

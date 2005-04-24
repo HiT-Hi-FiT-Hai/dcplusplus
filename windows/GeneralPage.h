@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef GENERALPAGE_H
-#define GENERALPAGE_H
+#if !defined(GENERAL_PAGE_H)
+#define GENERAL_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -29,7 +29,7 @@
 class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
 {
 public:
-	GeneralPage(SettingsManager *s) : PropPage(s) { 
+	GeneralPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_GENERAL));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
@@ -62,10 +62,9 @@ private:
 
 };
 
-#endif // GENERALPAGE_H
+#endif // !defined(GENERAL_PAGE_H)
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.13 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.14 2005/04/24 08:13:03 arnetheduck Exp $
  */
-

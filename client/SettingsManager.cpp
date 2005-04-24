@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -382,6 +382,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.122 2005/04/23 15:45:32 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.123 2005/04/24 08:13:37 arnetheduck Exp $
  */
-

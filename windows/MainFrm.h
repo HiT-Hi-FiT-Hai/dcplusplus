@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
-#define AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_
+#if !defined(MAIN_FRM_H)
+#define MAIN_FRM_H
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -392,11 +392,9 @@ private:
 	UPnP* UPnP_UDPConnection;
 };
 
-#endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
+#endif // !defined(MAIN_FRM_H)
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.58 2005/04/12 23:24:03 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.59 2005/04/24 08:13:05 arnetheduck Exp $
  */
-
- 

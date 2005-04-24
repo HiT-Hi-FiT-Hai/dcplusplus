@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -249,8 +249,7 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 	ctrlList.EnsureVisible(loc, FALSE);
 }
 
-
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.35 2005/04/10 21:23:27 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.36 2005/04/24 08:13:05 arnetheduck Exp $
  */
