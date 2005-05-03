@@ -421,12 +421,11 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	OPENFILENAME ofn;       // common dialog box structure
+	OPENFILENAME ofn = { 0 };       // common dialog box structure
 	target = Text::toT(Util::validateFileName(Text::fromT(target)));
 	_tcscpy(buf, target.c_str());
 	// Initialize OPENFILENAME
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400;
 	ofn.hwndOwner = owner;
 	ofn.lpstrFile = buf;
 	ofn.lpstrFilter = types;
@@ -458,7 +457,6 @@ tstring WinUtil::encodeFont(LOGFONT const& font)
 	res += Text::toT(Util::toString(font.lfItalic));
 	return res;
 }
-
 
 void WinUtil::setClipboard(const tstring& str) {
 	if(!::OpenClipboard(mainWnd)) {
@@ -1142,5 +1140,5 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.84 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.85 2005/05/03 15:37:40 arnetheduck Exp $
  */

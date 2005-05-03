@@ -29,6 +29,5 @@ OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), ident
 
 /**
  * @file
- * $Id: User.cpp,v 1.44 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: User.cpp,v 1.45 2005/05/03 15:37:53 arnetheduck Exp $
  */
-

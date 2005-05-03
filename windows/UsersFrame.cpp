@@ -195,6 +195,5 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.37 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.38 2005/05/03 15:37:39 arnetheduck Exp $
  */
-

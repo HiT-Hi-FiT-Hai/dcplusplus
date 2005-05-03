@@ -81,6 +81,8 @@ public:
 	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
 
+	string getHubUrl(const User::Ptr& user);
+
 	/** Constructs a synthetic, hopefully unique CID */
 	CID makeCid(const string& nick, const string& hubUrl) throw();
 
@@ -162,10 +164,9 @@ private:
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 };
 
-#endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
+#endif // !defined(CLIENT_MANAGER_H)
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.61 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.62 2005/05/03 15:37:53 arnetheduck Exp $
  */
-

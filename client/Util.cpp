@@ -330,9 +330,10 @@ void Util::decodeUrl(const string& url, string& aServer, u_int16_t& aPort, strin
 		k = j;
 	}
 
-	if(k == string::npos)
-		aServer = url;
-	else
+	if(k == string::npos) {
+		aServer = url.substr(i);
+		if(i==0) aPort = 411;
+	} else
 		aServer = url.substr(i, k-i);
 }
 
@@ -878,5 +879,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.87 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.88 2005/05/03 15:37:53 arnetheduck Exp $
  */

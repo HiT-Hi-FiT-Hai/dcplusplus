@@ -136,6 +136,14 @@ User::Ptr ClientManager::findUser(const CID& cid) throw() {
 	return NULL;
 }
 
+string ClientManager::getHubUrl(const User::Ptr& user) {
+	Lock l(cs);
+	OnlineIter i = onlineUsers.find(user->getCID());
+	if(i != onlineUsers.end())
+		return i->second->getHubUrl();
+	return Util::emptyString;
+}
+
 CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {
 	string n = Text::toLower(aNick);
 	TigerHash th;
@@ -403,5 +411,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.72 2005/04/24 08:13:10 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.73 2005/05/03 15:37:53 arnetheduck Exp $
  */
