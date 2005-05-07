@@ -51,7 +51,7 @@ class ShareManager : public Singleton<ShareManager>, private SettingsManagerList
 {
 public:
 	/**
-	 * @param aDirectory Physical directory localtion
+	 * @param aDirectory Physical directory location
 	 * @param aName Virtual name
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
@@ -325,5 +325,5 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.79 2005/04/24 09:45:39 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.80 2005/05/07 22:43:23 arnetheduck Exp $
  */

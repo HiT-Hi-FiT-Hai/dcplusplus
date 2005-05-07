@@ -638,7 +638,7 @@ string fixedftime(const string& format, struct tm* t) {
 
 	StringMap sm;
 	AutoArray<char> buf(1024);
-	for(size_t i = 0; i < sizeof(codes); ++i) {
+	for(size_t i = 0; i < strlen(codes); ++i) {
 		tmp[1] = codes[i];
 		tmp[2] = 0;
 		strftime(buf, 1024-1, tmp, t);
@@ -879,5 +879,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.88 2005/05/03 15:37:53 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.89 2005/05/07 22:43:23 arnetheduck Exp $
  */

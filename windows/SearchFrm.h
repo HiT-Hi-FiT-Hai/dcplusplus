@@ -339,6 +339,9 @@ private:
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
 			ip = Text::toT(sr->getIP());
+			tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+			if(!tmpCountry.empty())
+				ip = tmpCountry + _T(" (") + ip + _T(")");
 			if(sr->getTTH() != NULL)
 				setTTH(Text::toT(sr->getTTH()->toBase32()));
 		}
@@ -475,5 +478,5 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.59 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.60 2005/05/07 22:43:26 arnetheduck Exp $
  */

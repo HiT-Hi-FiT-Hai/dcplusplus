@@ -361,10 +361,10 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_PATH] = path;
 	}
 	if(colMask & MASK_IP) {
-		if (country == _T("")) 
-			columns[COLUMN_IP] = IP;
-		else 
+		if(!country.empty())
 			columns[COLUMN_IP] = country + _T(" (") + IP + _T(")");
+		else
+			columns[COLUMN_IP] = IP;
 	}
 	if(colMask & MASK_RATIO) {
 		columns[COLUMN_RATIO] = Text::toT(Util::toString(getRatio()));
@@ -600,5 +600,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.52 2005/04/24 09:45:36 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.53 2005/05/07 22:43:26 arnetheduck Exp $
  */

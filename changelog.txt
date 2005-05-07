@@ -11,6 +11,9 @@
 * No longer fallbacks to passive mode on failed UPnP
 * Janitorial cleanups (thanks garg)
 * Removed some old favorite file format compatibility code
+* Added country to search frame (thanks paka)
+* Strftime fix (thanks garg)
+* Directory listing type sort fix (thanks ullner)
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

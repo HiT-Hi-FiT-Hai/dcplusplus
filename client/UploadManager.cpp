@@ -72,7 +72,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	try {
 		if(aType == "file") {
 			file = ShareManager::getInstance()->translateFileName(aFile);
-			userlist = (Util::stricmp(aFile.c_str(), "files.xml.bz2") == 0);
+			userlist = (aFile == "files.xml.bz2");
 
 			try {
 				File* f = new File(file, File::READ, File::OPEN);
@@ -452,5 +452,5 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.95 2005/04/24 09:45:39 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.96 2005/05/07 22:43:23 arnetheduck Exp $
  */
