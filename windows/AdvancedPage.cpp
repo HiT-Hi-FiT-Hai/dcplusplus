@@ -36,7 +36,6 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::AUTO_SEARCH, ResourceManager::SETTINGS_AUTO_SEARCH },
 	{ SettingsManager::LIST_DUPES, ResourceManager::SETTINGS_LIST_DUPES },
 	{ SettingsManager::URL_HANDLER, ResourceManager::SETTINGS_URL_HANDLER },
-	{ SettingsManager::IGNORE_OFFLINE, ResourceManager::SETTINGS_IGNORE_OFFLINE },
 	{ SettingsManager::MAGNET_REGISTER, ResourceManager::SETTINGS_URL_MAGNET },
 	{ SettingsManager::SMALL_SEND_BUFFER, ResourceManager::SETTINGS_SMALL_SEND_BUFFER },
 	{ SettingsManager::KEEP_LISTS, ResourceManager::SETTINGS_KEEP_LISTS },
@@ -87,5 +86,5 @@ LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.52 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.53 2005/05/14 07:11:00 arnetheduck Exp $
  */

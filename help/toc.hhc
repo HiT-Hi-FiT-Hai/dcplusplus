@@ -109,6 +109,10 @@
 			<param name="Local" value="settings_colors_and_sounds.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Windows">
+			<param name="Local" value="settings_windows.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Logs">
 			<param name="Local" value="settings_logs.html">
 			</OBJECT>

@@ -266,7 +266,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 
 	if(SETTING(NICK).empty()) {
-		PostMessage(WM_COMMAND, IDC_HELP_README);
+		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
 	}
 
@@ -1212,5 +1212,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.95 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.96 2005/05/14 07:11:00 arnetheduck Exp $
  */

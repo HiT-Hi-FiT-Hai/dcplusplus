@@ -13,7 +13,8 @@
 * Removed some old favorite file format compatibility code
 * Added country to search frame (thanks paka)
 * Strftime fix (thanks garg)
-* Directory listing type sort fix (thanks ullner)
+* Help instead of readme shown on first startup (thanks paka)
+
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

@@ -153,12 +153,12 @@ public:
 		bHandled = FALSE;
 		return 0;
 	}
-	
+
 	void setWindowTitle() {
-/**@todo		if(error.empty())
-			SetWindowText(Text::toT(dl->getUser()->getFullNick()).c_str());
+		if(error.empty())
+			SetWindowText(Text::toT(dl->getUser()->getFirstNick()).c_str());
 		else
-			SetWindowText(error.c_str());		*/
+			SetWindowText(error.c_str());
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -335,5 +335,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.54 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.55 2005/05/14 07:11:00 arnetheduck Exp $
  */

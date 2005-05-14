@@ -26,6 +26,7 @@ settings_usercommands.html
 settings_colors_and_sounds.html
 settings_expert.html
 settings_connection.html
+settings_windows.html
 chat_commands.html
 non-routable.html
 plusplus_tag.html
@@ -65,6 +66,7 @@ IDD_STARTPAGE=index.html
 IDD_UCPAGE=settings_usercommands.html
 IDD_UPLOADPAGE=settings_sharing.html
 IDR_ADLSEARCH=adlsearch.html
+IDD_WINDOWSPAGE=settings_windows.html
 
 [MAP]
 #include ..\windows\resource.h
