@@ -1123,10 +1123,13 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	while(ctrlSearchBox.GetCount() > 0){
 			ctrlSearchBox.DeleteString(0);
 	}
+	while(lastSearches.size() > 0) {
+		lastSearches.erase(lastSearches.end());
+	}
 	return 0;
 }
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.95 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.96 2005/06/12 22:12:42 arnetheduck Exp $
  */

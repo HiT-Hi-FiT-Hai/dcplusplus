@@ -125,7 +125,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	WinUtil::splitTokens(columnSizes, SETTING(DIRECTORLISTINGFRAME_WIDTHS), COLUMN_LAST);
 	for(int j = 0; j < COLUMN_LAST; j++) 
 	{
-		int fmt = (j == COLUMN_SIZE) || (j == COLUMN_EXACTSIZE) || (j == COLUMN_TYPE)) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		int fmt = ((j == COLUMN_SIZE) || (j == COLUMN_EXACTSIZE)) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 		ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
@@ -1004,5 +1004,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.66 2005/05/07 22:43:26 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.67 2005/06/12 22:12:42 arnetheduck Exp $
  */

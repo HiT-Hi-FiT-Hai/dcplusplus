@@ -192,11 +192,6 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		return;
 	}
 
-	{
-		Lock l(cs);
-		downloads.push_back(d);
-	}
-
 	d->setUserConnection(aConn);
 	aConn->setDownload(d);
 
@@ -242,6 +237,11 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
 				d->setFlag(Download::FLAG_UTF8);
 		}
+	}
+
+	{
+		Lock l(cs);
+		downloads.push_back(d);
 	}
 
 	// File ok for adcget in nmdc-conns
@@ -886,5 +886,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.152 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.153 2005/06/12 22:12:48 arnetheduck Exp $
  */

@@ -140,7 +140,7 @@ string ClientManager::getHubUrl(const User::Ptr& user) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(user->getCID());
 	if(i != onlineUsers.end())
-		return i->second->getHubUrl();
+		return i->second->getClient().getHubUrl();
 	return Util::emptyString;
 }
 
@@ -411,5 +411,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.73 2005/05/03 15:37:53 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.74 2005/06/12 22:12:48 arnetheduck Exp $
  */

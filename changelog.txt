@@ -14,7 +14,9 @@
 * Added country to search frame (thanks paka)
 * Strftime fix (thanks garg)
 * Help instead of readme shown on first startup (thanks paka)
-
+* [bug 553] Minimize to tray and confirm appexit default to true (thanks paka)
+* [bug 452] Fixed example.xml language file generation (thanks tpo)
+* [bug 556] Fixed last searches purge (thanks sulan)
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

@@ -343,7 +343,7 @@
 		<String Name="SettingsAddFolder">&amp;Add folder</String>
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAdvanced">Advanced</String>
-		<String Name="SettingsAdvanced3">Advanced\\Experts only</String>
+		<String Name="SettingsAdvanced3">Advanced\Experts only</String>
 		<String Name="SettingsAdvancedResume">Advanced resume using TTH</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
@@ -379,7 +379,7 @@
 		<String Name="SettingsExampleText">Donate â‚¬â‚¬â‚¬:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsExternalIp">External / WAN IP</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
-		<String Name="SettingsFavoriteDirsPage">Downloads\\Favorites</String>
+		<String Name="SettingsFavoriteDirsPage">Downloads\Favorites</String>
 		<String Name="SettingsFavoriteDirs">Favorite download directories</String>
 		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
@@ -432,7 +432,7 @@
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
 		<String Name="SettingsQueueDirty">Set Download Queue tab bold when contents change</String>
-		<String Name="SettingsQueue">Downloads\\Queue</String>
+		<String Name="SettingsQueue">Downloads\Queue</String>
 		<String Name="SettingsRenameFolder">Rename</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>
@@ -479,7 +479,7 @@
 		<String Name="SettingsUseCtrlForLineHistory">Use CTRL for line history</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
-		<String Name="SettingsUserCommands">Advanced\\User Commands</String>
+		<String Name="SettingsUserCommands">Advanced\User Commands</String>
 		<String Name="SettingsWindows">Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
