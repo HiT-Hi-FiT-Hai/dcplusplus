@@ -324,6 +324,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 		lastInfoMap[var] = tmp; \
 	}
 
+	updateCounts(false); \
+
 	ADDPARAM("NI", getMyIdentity().getNick());
 	ADDPARAM("DE", getMyIdentity().getDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
@@ -394,5 +396,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.49 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.50 2005/07/21 00:01:53 arnetheduck Exp $
  */

@@ -110,6 +110,8 @@ public:
 		return (pfsQueue.find(aUser->getCID()) != pfsQueue.end()) || (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
+	int countOnlineSources(const string& aTarget);
+	
 	void loadQueue() throw();
 	void saveQueue() throw();
 	
@@ -235,5 +237,5 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.72 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.73 2005/07/21 00:01:54 arnetheduck Exp $
  */

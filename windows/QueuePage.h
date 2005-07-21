@@ -56,11 +56,12 @@ protected:
 
 	static Item items[];
 	static TextItem texts[];
+	static ListItem optionItems[];
 };
 
 #endif // !defined(QUEUE_PAGE_H)
 
 /**
  * @file
- * $Id: QueuePage.h,v 1.2 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: QueuePage.h,v 1.3 2005/07/21 00:02:04 arnetheduck Exp $
  */

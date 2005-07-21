@@ -1191,6 +1191,18 @@ void QueueManager::loadQueue() throw() {
 	}
 }
 
+int QueueManager::countOnlineSources(const string& aTarget) {
+	Lock l(cs);
+
+	QueueItem* qi = fileQueue.find(aTarget);
+	int onlineSources = 0;
+	for(QueueItem::Source::Iter i = qi->getSources().begin(); i != qi->getSources().end(); ++i) {
+		if((*i)->getUser()->isOnline())
+			onlineSources++;
+	}
+	return onlineSources;
+}
+
 static const string sDownload = "Download";
 static const string sTempTarget = "TempTarget";
 static const string sTarget = "Target";
@@ -1353,5 +1365,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.134 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.135 2005/07/21 00:01:53 arnetheduck Exp $
  */

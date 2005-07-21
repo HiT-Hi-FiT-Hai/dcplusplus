@@ -974,9 +974,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 
 	tstring site;
-	bool isFile = false;
 	switch(wID) {
-	case IDC_HELP_README: site = Text::toT(Util::getAppPath() + "README.txt"); isFile = true; break;
 	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
 	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
 	case IDC_HELP_GEOIPFILE: site = links.geoipfile; break;
@@ -990,10 +988,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	default: dcassert(0);
 	}
 
-	if(isFile)
-		WinUtil::openFile(site);
-	else
-		WinUtil::openLink(site);
+	WinUtil::openLink(site);
 
 	return 0;
 }
@@ -1212,5 +1207,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.96 2005/05/14 07:11:00 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.97 2005/07/21 00:02:20 arnetheduck Exp $
  */

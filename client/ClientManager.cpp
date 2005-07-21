@@ -71,7 +71,7 @@ void ClientManager::putClient(Client* aClient) {
 	aClient->scheduleDestruction();
 }
 
-User::Ptr ClientManager::getLegacyUser(const string& aNick) {
+User::Ptr ClientManager::getLegacyUser(const string& aNick) throw() {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
 
@@ -334,7 +334,7 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 }
 
-void ClientManager::on(Save, SimpleXML*) {
+void ClientManager::on(Save, SimpleXML*) throw() {
 	Lock l(cs);
 
 	try {
@@ -368,7 +368,7 @@ void ClientManager::on(Save, SimpleXML*) {
 	}
 }
 /// @todo save more often perhaps?
-void ClientManager::on(Load, SimpleXML*) {
+void ClientManager::on(Load, SimpleXML*) throw() {
 	me = new User(SETTING(CLIENT_ID));
 
 	try {
@@ -411,5 +411,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.74 2005/06/12 22:12:48 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.75 2005/07/21 00:01:52 arnetheduck Exp $
  */

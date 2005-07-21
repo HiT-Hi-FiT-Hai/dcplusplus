@@ -17,6 +17,11 @@
 * [bug 553] Minimize to tray and confirm appexit default to true (thanks paka)
 * [bug 452] Fixed example.xml language file generation (thanks tpo)
 * [bug 556] Fixed last searches purge (thanks sulan)
+* [bug 73] Added option to disconnect slow sources (thanks paka)
+* ADC hub counts updated correctly (thanks ullner)
+* Added error message when adding dupe fav hub (thanks ullner)
+* Updated bzip2 to 1.0.3 (thanks garg)
+* Some small *nix fixes (thanks poison)
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

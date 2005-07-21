@@ -41,8 +41,8 @@ enum Strings { // @DontAdd
 	AWAY_MODE_ON, // "Away mode on: "
 	B, // "B"
 	BAN_USER, // "Ban user(s)"
-	BOOL, // "0/1"
 	BOTH_USERS_OFFLINE, // "Both users offline"
+	BPS, // "B/s"
 	BROWSE, // "Browse..."
 	BROWSE_ACCEL, // "&Browse..."
 	BROWSE_FILE_LIST, // "Browse file list"
@@ -119,6 +119,7 @@ enum Strings { // @DontAdd
 	FAVORITE_DIR_NAME, // "Favorite name"
 	FAVORITE_DIR_NAME_LONG, // "Under what name you see the directory"
 	FAVORITE_HUB_ADDED, // "Favorite hub added"
+	FAVORITE_HUB_ALREADY_EXISTS, // "Hub already exists as a favorite"
 	FAVORITE_HUB_IDENTITY, // "Identification (leave blank for defaults)"
 	FAVORITE_HUB_PROPERTIES, // "Favorite Hub Properties"
 	FAVORITE_HUBS, // "Favorite Hubs"
@@ -239,7 +240,6 @@ enum Strings { // @DontAdd
 	MENU_OPEN_OWN_LIST, // "Open own list"
 	MENU_PUBLIC_HUBS, // "&Public Hubs\tCtrl+P"
 	MENU_QUICK_CONNECT, // "&Quick Connect ...\tCtrl+Q"
-	MENU_README, // "Readme / Newbie help"
 	MENU_RECONNECT, // "&Reconnect\tCtrl+R"
 	MENU_REFRESH_FILE_LIST, // "Refresh file list\tCtrl+E"
 	MENU_REPORT_BUG, // "Report a bug"
@@ -326,6 +326,7 @@ enum Strings { // @DontAdd
 	REMOVE_SOURCE, // "Remove source"
 	ROLLBACK_INCONSISTENCY, // "Rollback inconsistency, existing file does not match the one being downloaded"
 	RUNNING, // "Running..."
+	S, // "s"
 	SEARCH, // "Search"
 	SEARCH_FOR, // "Search for"
 	SEARCH_FOR_ALTERNATES, // "Search for alternates"
@@ -353,6 +354,12 @@ enum Strings { // @DontAdd
 	SETTINGS_ANTI_FRAG, // "Use antifragmentation method for downloads"
 	SETTINGS_APPEARANCE, // "Appearance"
 	SETTINGS_APPEARANCE2, // "Colors and sounds"
+	SETTINGS_AUTODROP_SPEED, // "Drop sources below"
+	SETTINGS_AUTODROP_INTERVAL, // "Check every"
+	SETTINGS_AUTODROP_ELAPSED, // "Min elapsed"
+	SETTINGS_AUTODROP_INACTIVITY, // "Max inactivity"
+	SETTINGS_AUTODROP_ALL, // "Autodrop slow sources for all queue items"
+	SETTINGS_AUTODROP_DISCONNECT, // "Don't remove the source when autodropping, only disconnect"
 	SETTINGS_AUTO_AWAY, // "Auto-away on minimize (and back on restore)"
 	SETTINGS_AUTO_FOLLOW, // "Automatically follow redirects"
 	SETTINGS_AUTO_KICK, // "Automatically disconnect users who leave the hub"
@@ -464,11 +471,11 @@ enum Strings { // @DontAdd
 	SETTINGS_TAB_DIRTY, // "Set hub/PM/Search tab bold when contents change"
 	SETTINGS_TCP_PORT, // "TCP Port"
 	SETTINGS_TEXT_MINISLOT, // "Mini slot size"
-	SETTINGS_PRIO_HIGHEST, // "Highest prio size", 
-	SETTINGS_PRIO_HIGH, // "High prio size", 
-	SETTINGS_PRIO_NORMAL, // "Normal prio size", 
-	SETTINGS_PRIO_LOW, // "Low prio size", 
-	SETTINGS_PRIO_LOWEST, // "Lowest prio enabled", 
+	SETTINGS_PRIO_HIGHEST, // "Highest prio max size", 
+	SETTINGS_PRIO_HIGH, // "High prio max size", 
+	SETTINGS_PRIO_NORMAL, // "Normal prio max size", 
+	SETTINGS_PRIO_LOW, // "Low prio max size", 
+	SETTINGS_PRIO_LOWEST, // "Set lowest prio for newly added files larger than Low prio size", 
 	SETTINGS_TIME_STAMPS, // "Show timestamps in chat by default"
 	SETTINGS_TIME_STAMPS_FORMAT, // "Set timestamps"
 	SETTINGS_TOGGLE_ACTIVE_WINDOW, // "Toggle window when selecting an active tab"
@@ -503,6 +510,7 @@ enum Strings { // @DontAdd
 	SOCKS_FAILED, // "The socks server failed establish a connection"
 	SOCKS_NEEDS_AUTH, // "The socks server requires authentication"
 	SOCKS_SETUP_ERROR, // "Failed to set up the socks server for UDP relay (check socks address and port)"
+	SOURCE_TOO_SLOW, // "Source too slow"
 	SOURCE_TYPE, // "Source Type"
 	SPECIFY_SEARCH_STRING, // "Specify a search string"
 	SPECIFY_SERVER, // "Specify a server to connect to"

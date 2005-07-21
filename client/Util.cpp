@@ -59,6 +59,10 @@ string Util::appPath;
 
 static void sgenrand(unsigned long seed);
 
+extern "C" void bz_internal_error(int errcode) { 
+	dcdebug("bzip2 internal error: %d\n", errcode); 
+}
+
 void Util::initialize() {
 	setlocale(LC_ALL, "");
 
@@ -879,5 +883,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.89 2005/05/07 22:43:23 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.90 2005/07/21 00:01:54 arnetheduck Exp $
  */

@@ -65,6 +65,7 @@ const string SettingsManager::settingTags[] =
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize",
 	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
+	"AutoDropSpeed", "AutoDropInterval", "AutoDropElapsed", "AutoDropInactivity", "AutoDropAll", "AutoDropDisconnect", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride",
@@ -214,7 +215,13 @@ SettingsManager::SettingsManager()
 	setDefault(PRIO_HIGH_SIZE, 0);
 	setDefault(PRIO_NORMAL_SIZE, 0);
 	setDefault(PRIO_LOW_SIZE, 0);
-	setDefault(PRIO_LOWEST, 0);
+	setDefault(PRIO_LOWEST, false);
+	setDefault(AUTODROP_SPEED, 1024);
+	setDefault(AUTODROP_INTERVAL, 10);
+	setDefault(AUTODROP_ELAPSED, 15);
+	setDefault(AUTODROP_INACTIVITY, 10);
+	setDefault(AUTODROP_ALL, false);
+	setDefault(AUTODROP_DISCONNECT, false);
 	setDefault(OPEN_PUBLIC, false);
 	setDefault(OPEN_FAVORITE_HUBS, false);
 	setDefault(OPEN_FAVORITE_USERS, false);
@@ -297,16 +304,10 @@ void SettingsManager::load(string const& aFileName)
 			set(SET_MINISLOT_SIZE, 64);
 		if(SETTING(PRIO_HIGHEST_SIZE) < 16)
 			set(PRIO_HIGHEST_SIZE, 16);
-		if(SETTING(PRIO_HIGH_SIZE) < 0)
-			set(PRIO_HIGH_SIZE, 0);
-		if(SETTING(PRIO_NORMAL_SIZE) < 0)
-			set(PRIO_NORMAL_SIZE, 0);
-		if(SETTING(PRIO_LOW_SIZE) < 0)
-			set(PRIO_LOW_SIZE, 0);
-		if(SETTING(PRIO_LOWEST) < 0)
-			set(PRIO_LOWEST, 0);
-		if(SETTING(PRIO_LOWEST) > 1)
-			set(PRIO_LOWEST, 1);
+		if(SETTING(AUTODROP_INTERVAL) < 1)
+			set(AUTODROP_INTERVAL, 1);
+		if(SETTING(AUTODROP_ELAPSED) < 1)
+			set(AUTODROP_ELAPSED, 1);
 
 #ifdef _DEBUG
 		set(CLIENT_ID, CID::generate().toBase32());
@@ -382,5 +383,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.124 2005/06/12 22:12:47 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.125 2005/07/21 00:01:53 arnetheduck Exp $
  */

@@ -103,6 +103,12 @@
 				RelativePath=".\faq_upnp.html">
 			</File>
 			<File
+				RelativePath=".\faq_install.html">
+			</File>
+			<File
+				RelativePath=".\faq_secret.html">
+			</File>
+			<File
 				RelativePath=".\favorite_hubs.html">
 			</File>
 			<File

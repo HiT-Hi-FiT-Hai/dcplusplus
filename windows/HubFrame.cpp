@@ -298,16 +298,21 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 }
 
 void HubFrame::addAsFavorite() {
-	FavoriteHubEntry aEntry;
-	TCHAR buf[256];
-	this->GetWindowText(buf, 255);
-	aEntry.setServer(Text::fromT(server));
-	aEntry.setName(Text::fromT(buf));
-	aEntry.setDescription(Text::fromT(buf));
-	aEntry.setConnect(false);
-	aEntry.setNick(client->getMyNick());
-	FavoriteManager::getInstance()->addFavorite(aEntry);
-	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
+	FavoriteHubEntry* existingHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
+	if(!existingHub) {
+		FavoriteHubEntry aEntry;
+		TCHAR buf[256];
+		this->GetWindowText(buf, 255);
+		aEntry.setServer(Text::fromT(server));
+		aEntry.setName(Text::fromT(buf));
+		aEntry.setDescription(Text::fromT(buf));
+		aEntry.setConnect(false);
+		aEntry.setNick(client->getMyNick());
+		FavoriteManager::getInstance()->addFavorite(aEntry);
+		addClientLine(TSTRING(FAVORITE_HUB_ADDED));
+	} else {
+		addClientLine(TSTRING(FAVORITE_HUB_ALREADY_EXISTS));
+	}
 }
 
 LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -1176,5 +1181,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.108 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.109 2005/07/21 00:02:20 arnetheduck Exp $
  */

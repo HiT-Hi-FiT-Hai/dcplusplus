@@ -9,6 +9,8 @@ libdcppclient_la_LDFLAGS = -export-dynamic -version-info $(LIBDCPP_CURRENT):$(LI
 libdcppclient_la_CXXFLAGS = -Wall -pedantic -ansi -Wno-long-long
 
 libdcppclient_la_SOURCES= \
+FavoriteManager.cpp \
+FavoriteManager.h \
 AdcCommand.h \
 AdcCommand.cpp \
 AdcHub.cpp \
@@ -56,8 +58,6 @@ HashManager.h \
 HashValue.h \
 HttpConnection.cpp \
 HttpConnection.h \
-HubManager.cpp \
-HubManager.h \
 LogManager.cpp \
 LogManager.h \
 MerkleTree.h \

@@ -37,8 +37,8 @@
 		<String Name="AwayModeOn">Away mode on: </String>
 		<String Name="B">B</String>
 		<String Name="BanUser">Ban user(s)</String>
-		<String Name="Bool">0/1</String>
 		<String Name="BothUsersOffline">Both users offline</String>
+		<String Name="Bps">B/s</String>
 		<String Name="Browse">Browse...</String>
 		<String Name="BrowseAccel">&amp;Browse...</String>
 		<String Name="BrowseFileList">Browse file list</String>
@@ -115,6 +115,7 @@
 		<String Name="FavoriteDirName">Favorite name</String>
 		<String Name="FavoriteDirNameLong">Under what name you see the directory</String>
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
+		<String Name="FavoriteHubAlreadyExists">Hub already exists as a favorite</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
 		<String Name="FavoriteHubs">Favorite Hubs</String>
@@ -235,7 +236,6 @@
 		<String Name="MenuOpenOwnList">Open own list</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
-		<String Name="MenuReadme">Readme / Newbie help</String>
 		<String Name="MenuReconnect">&amp;Reconnect	Ctrl+R</String>
 		<String Name="MenuRefreshFileList">Refresh file list	Ctrl+E</String>
 		<String Name="MenuReportBug">Report a bug</String>
@@ -322,6 +322,7 @@
 		<String Name="RemoveSource">Remove source</String>
 		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
 		<String Name="Running">Running...</String>
+		<String Name="S">s</String>
 		<String Name="Search">Search</String>
 		<String Name="SearchFor">Search for</String>
 		<String Name="SearchForAlternates">Search for alternates</String>
@@ -349,6 +350,12 @@
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>
 		<String Name="SettingsAppearance2">Colors and sounds</String>
+		<String Name="SettingsAutodropSpeed">Drop sources below</String>
+		<String Name="SettingsAutodropInterval">Check every</String>
+		<String Name="SettingsAutodropElapsed">Min elapsed</String>
+		<String Name="SettingsAutodropInactivity">Max inactivity</String>
+		<String Name="SettingsAutodropAll">Autodrop slow sources for all queue items</String>
+		<String Name="SettingsAutodropDisconnect">Don't remove the source when autodropping, only disconnect</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub</String>
@@ -460,11 +467,11 @@
 		<String Name="SettingsTabDirty">Set hub/PM/Search tab bold when contents change</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
-		<String Name="SettingsPrioHighest">Highest prio size</String>
-		<String Name="SettingsPrioHigh">High prio size</String>
-		<String Name="SettingsPrioNormal">Normal prio size</String>
-		<String Name="SettingsPrioLow">Low prio size</String>
-		<String Name="SettingsPrioLowest">Lowest prio enabled</String>
+		<String Name="SettingsPrioHighest">Highest prio max size</String>
+		<String Name="SettingsPrioHigh">High prio max size</String>
+		<String Name="SettingsPrioNormal">Normal prio max size</String>
+		<String Name="SettingsPrioLow">Low prio max size</String>
+		<String Name="SettingsPrioLowest">Set lowest prio for newly added files larger than Low prio size</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
@@ -499,6 +506,7 @@
 		<String Name="SocksFailed">The socks server failed establish a connection</String>
 		<String Name="SocksNeedsAuth">The socks server requires authentication</String>
 		<String Name="SocksSetupError">Failed to set up the socks server for UDP relay (check socks address and port)</String>
+		<String Name="SourceTooSlow">Source too slow</String>
 		<String Name="SourceType">Source Type</String>
 		<String Name="SpecifySearchString">Specify a search string</String>
 		<String Name="SpecifyServer">Specify a server to connect to</String>

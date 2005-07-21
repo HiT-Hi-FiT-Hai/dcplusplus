@@ -244,6 +244,8 @@ void QueueFrame::QueueItemInfo::update() {
 						tmp += TSTRING(SFV_INCONSISTENCY);
 					} else if(j->isSet(QueueItem::Source::FLAG_BAD_TREE)) {
 						tmp += TSTRING(INVALID_TREE);
+					} else if(j->isSet(QueueItem::Source::FLAG_SLOW_SOURCE)) {
+						tmp += TSTRING(SOURCE_TOO_SLOW);
 					}
 					tmp += ')';
 				}
@@ -1262,5 +1264,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.79 2005/04/24 09:45:35 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.80 2005/07/21 00:02:04 arnetheduck Exp $
  */

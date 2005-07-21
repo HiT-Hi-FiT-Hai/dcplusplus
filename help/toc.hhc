@@ -73,6 +73,14 @@
 			<param name="Name" value="What do the units mean?">
 			<param name="Local" value="faq_units.html">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How do I install/uninstall/upgrade DC++?">
+			<param name="Local" value="faq_install.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="What secret stuff are there?">
+			<param name="Local" value="faq_secret.html">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Settings">

@@ -269,7 +269,6 @@ void WinUtil::init(HWND hWnd) {
 
 	help.AppendMenu(MF_STRING, IDC_HELP_CONTENTS, CTSTRING(MENU_CONTENTS));
 	help.AppendMenu(MF_SEPARATOR);
-	help.AppendMenu(MF_STRING, IDC_HELP_README, CTSTRING(MENU_README));
 	help.AppendMenu(MF_STRING, IDC_HELP_CHANGELOG, CTSTRING(MENU_CHANGELOG));
 	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CTSTRING(MENU_ABOUT));
 	help.AppendMenu(MF_SEPARATOR);
@@ -1140,5 +1139,5 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.85 2005/05/03 15:37:40 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.86 2005/07/21 00:02:20 arnetheduck Exp $
  */
