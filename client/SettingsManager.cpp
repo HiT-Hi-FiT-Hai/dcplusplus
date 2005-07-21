@@ -65,7 +65,8 @@ const string SettingsManager::settingTags[] =
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize",
 	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
-	"AutoDropSpeed", "AutoDropInterval", "AutoDropElapsed", "AutoDropInactivity", "AutoDropAll", "AutoDropDisconnect", 
+	"AutoDropSpeed", "AutoDropInterval", "AutoDropElapsed", "AutoDropInactivity", "AutoDropMinSources", "AutoDropFilesize", 
+	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride",
@@ -220,7 +221,10 @@ SettingsManager::SettingsManager()
 	setDefault(AUTODROP_INTERVAL, 10);
 	setDefault(AUTODROP_ELAPSED, 15);
 	setDefault(AUTODROP_INACTIVITY, 10);
+	setDefault(AUTODROP_MINSOURCES, 1);
+	setDefault(AUTODROP_FILESIZE, 0);
 	setDefault(AUTODROP_ALL, false);
+	setDefault(AUTODROP_FILELISTS, false);
 	setDefault(AUTODROP_DISCONNECT, false);
 	setDefault(OPEN_PUBLIC, false);
 	setDefault(OPEN_FAVORITE_HUBS, false);
@@ -383,5 +387,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.125 2005/07/21 00:01:53 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.126 2005/07/21 21:52:49 arnetheduck Exp $
  */

@@ -43,6 +43,9 @@ PropPage::TextItem QueuePage::texts[] = {
 	{ IDC_SETTINGS_S2, ResourceManager::S },
 	{ IDC_SETTINGS_AUTODROP_INACTIVITY, ResourceManager::SETTINGS_AUTODROP_INACTIVITY },
 	{ IDC_SETTINGS_S3, ResourceManager::S },
+	{ IDC_SETTINGS_AUTODROP_MINSOURCES, ResourceManager::SETTINGS_AUTODROP_MINSOURCES },
+	{ IDC_SETTINGS_AUTODROP_FILESIZE, ResourceManager::SETTINGS_AUTODROP_FILESIZE },
+	{ IDC_SETTINGS_KB7, ResourceManager::KiB },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -55,12 +58,15 @@ PropPage::Item QueuePage::items[] = {
 	{ IDC_AUTODROP_INTERVAL, SettingsManager::AUTODROP_INTERVAL, PropPage::T_INT },
 	{ IDC_AUTODROP_ELAPSED, SettingsManager::AUTODROP_ELAPSED, PropPage::T_INT },
 	{ IDC_AUTODROP_INACTIVITY, SettingsManager::AUTODROP_INACTIVITY, PropPage::T_INT },
+	{ IDC_AUTODROP_MINSOURCES, SettingsManager::AUTODROP_MINSOURCES, PropPage::T_INT },
+	{ IDC_AUTODROP_FILESIZE, SettingsManager::AUTODROP_FILESIZE, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
 PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::PRIO_LOWEST, ResourceManager::SETTINGS_PRIO_LOWEST },
 	{ SettingsManager::AUTODROP_ALL, ResourceManager::SETTINGS_AUTODROP_ALL },
+	{ SettingsManager::AUTODROP_FILELISTS, ResourceManager::SETTINGS_AUTODROP_FILELISTS },
 	{ SettingsManager::AUTODROP_DISCONNECT, ResourceManager::SETTINGS_AUTODROP_DISCONNECT },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
@@ -99,5 +105,5 @@ LRESULT QueuePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 /**
  * @file
- * $Id: QueuePage.cpp,v 1.3 2005/07/21 00:02:20 arnetheduck Exp $
+ * $Id: QueuePage.cpp,v 1.4 2005/07/21 21:52:52 arnetheduck Exp $
  */

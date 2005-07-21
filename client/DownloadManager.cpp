@@ -102,24 +102,26 @@ void DownloadManager::on(TimerManagerListener::Second, u_int32_t /*aTick*/) thro
 	// Automatically remove or disconnect slow sources
 	if((u_int32_t)(GET_TICK() / 1000) % SETTING(AUTODROP_INTERVAL) == 0) {
 		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
-			if(!((*i)->isSet(Download::FLAG_USER_LIST))) {
-				u_int32_t timeElapsed = GET_TICK() - (*i)->getStart();
-				u_int32_t timeInactive = GET_TICK() - (*i)->getUserConnection()->getLastActivity();
-				u_int64_t bytesDownloaded = (*i)->getTotal();
-				bool timeElapsedOk = timeElapsed > (u_int32_t)SETTING(AUTODROP_ELAPSED) * 1000;
-				bool timeInactiveOk = timeInactive < (u_int32_t)SETTING(AUTODROP_INACTIVITY) * 1000;
-				bool speedTooLow = timeElapsedOk && timeInactiveOk && bytesDownloaded > 0 ?
-				bytesDownloaded / timeElapsed * 1000 < (u_int32_t)SETTING(AUTODROP_SPEED) : false;
-				int onlineSources = speedTooLow ? QueueManager::getInstance()->countOnlineSources((*i)->getTarget()) : 0;
-				if(BOOLSETTING(AUTODROP_ALL) && speedTooLow && (onlineSources > 1)) {
-					if(BOOLSETTING(AUTODROP_DISCONNECT)) {
-						(*i)->getUserConnection()->disconnect();
-					} else {
-						QueueManager::getInstance()->removeSource((*i)->getTarget(),
-						(*i)->getUserConnection()->getUser(), QueueItem::Source::FLAG_SLOW_SOURCE);
-					}
-					continue;
+			u_int32_t timeElapsed = GET_TICK() - (*i)->getStart();
+			u_int32_t timeInactive = GET_TICK() - (*i)->getUserConnection()->getLastActivity();
+			u_int64_t bytesDownloaded = (*i)->getTotal();
+			bool timeElapsedOk = timeElapsed >= (u_int32_t)SETTING(AUTODROP_ELAPSED) * 1000;
+			bool timeInactiveOk = timeInactive <= (u_int32_t)SETTING(AUTODROP_INACTIVITY) * 1000;
+			bool speedTooLow = timeElapsedOk && timeInactiveOk && bytesDownloaded > 0 ?
+			bytesDownloaded / timeElapsed * 1000 < (u_int32_t)SETTING(AUTODROP_SPEED) : false;
+			bool onlineSourcesOk = (*i)->isSet(Download::FLAG_USER_LIST) ?
+			true : QueueManager::getInstance()->countOnlineSources((*i)->getTarget()) >= SETTING(AUTODROP_MINSOURCES);
+			bool filesizeOk = !((*i)->isSet(Download::FLAG_USER_LIST)) && (*i)->getSize() >= ((size_t)SETTING(AUTODROP_FILESIZE)) * 1024;
+			bool dropIt = ((*i)->isSet(Download::FLAG_USER_LIST) && BOOLSETTING(AUTODROP_FILELISTS)) ||
+			(filesizeOk && BOOLSETTING(AUTODROP_ALL));
+			if(speedTooLow && onlineSourcesOk && dropIt) {
+				if(BOOLSETTING(AUTODROP_DISCONNECT) && !((*i)->isSet(Download::FLAG_USER_LIST))) {
+					(*i)->getUserConnection()->disconnect();
+				} else {
+					QueueManager::getInstance()->removeSource((*i)->getTarget(),
+					(*i)->getUserConnection()->getUser(), QueueItem::Source::FLAG_SLOW_SOURCE);
 				}
+				continue;
 			}
 		}
 	}
@@ -911,5 +913,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.154 2005/07/21 00:01:53 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.155 2005/07/21 21:52:49 arnetheduck Exp $
  */
