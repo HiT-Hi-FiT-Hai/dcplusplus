@@ -108,8 +108,8 @@ SettingsManager::SettingsManager()
 	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads" PATH_SEPARATOR_STR);
 	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getAppPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
-	setDefault(TCP_PORT, Util::rand(1025, 32000));
-	setDefault(UDP_PORT, Util::rand(1025, 32000));
+	setDefault(TCP_PORT, 0);
+	setDefault(UDP_PORT, 0);
 	setDefault(INCOMING_CONNECTIONS, INCOMING_DIRECT);
 	setDefault(OUTGOING_CONNECTIONS, OUTGOING_DIRECT);
 	setDefault(ROLLBACK, 4096);
@@ -387,5 +387,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.126 2005/07/21 21:52:49 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.127 2005/07/23 17:52:18 arnetheduck Exp $
  */

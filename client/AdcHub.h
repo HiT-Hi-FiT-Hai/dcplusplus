@@ -63,6 +63,7 @@ public:
 	void handle(AdcCommand::RCM, AdcCommand& c) throw();
 	void handle(AdcCommand::STA, AdcCommand& c) throw();
 	void handle(AdcCommand::SCH, AdcCommand& c) throw();
+	void handle(AdcCommand::CMD, AdcCommand& c) throw();
 
 	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
 
@@ -111,5 +112,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.31 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.32 2005/07/23 17:52:01 arnetheduck Exp $
  */

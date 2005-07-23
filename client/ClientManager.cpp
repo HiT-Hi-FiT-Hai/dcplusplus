@@ -75,17 +75,17 @@ User::Ptr ClientManager::getLegacyUser(const string& aNick) throw() {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
 
-	LegacyIter i = legacyUsers.find(aNick);
-	if(i != legacyUsers.end())
-		return i->second;
-
 	for(UserIter i = users.begin(); i != users.end(); ++i) {
 		User::Ptr& p = i->second;
-		if(p->isSet(User::NMDC) && p->getFirstNick() == aNick)
+		if(p->isSet(User::NMDC) && Text::toLower(p->getFirstNick()) == Text::toLower(aNick))
 			return p;
 	}
 
-	return users.insert(make_pair(aNick, new User(aNick))).first->second;
+	LegacyIter li = legacyUsers.find(Text::toLower(aNick));
+	if(li != legacyUsers.end())
+		return li->second;
+
+	return legacyUsers.insert(make_pair(Text::toLower(aNick), new User(aNick))).first->second;
 }
 
 User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
@@ -94,6 +94,8 @@ User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) thr
 
 	UserIter ui = users.find(cid);
 	if(ui != users.end()) {
+		if(ui->second->getFirstNick().empty())		// Could happen on bad queue loads etc...
+			ui->second->setFirstNick(aNick);	
 		ui->second->setFlag(User::NMDC);
 		return ui->second;
 	}
@@ -102,6 +104,8 @@ User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) thr
 	if(li != legacyUsers.end()) {
 		User::Ptr p = li->second;
 		p->setCID(cid);
+		if(p->getFirstNick().empty())
+			p->setFirstNick(aNick);
 		dcassert(users.find(cid) == users.end());
 		users.insert(make_pair(cid, p));
 		return p;
@@ -142,6 +146,16 @@ string ClientManager::getHubUrl(const User::Ptr& user) {
 	if(i != onlineUsers.end())
 		return i->second->getClient().getHubUrl();
 	return Util::emptyString;
+}
+
+bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
+	Lock l(cs);
+	pair<OnlineIter, OnlineIter> p = onlineUsers.equal_range(user->getCID());
+	for(OnlineIter i = p.first; i != p.second; ++i) {
+		if(i->second->getClient().getHubUrl() == aHubUrl)
+			return true;
+	}
+	return false;
 }
 
 CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {
@@ -367,7 +381,6 @@ void ClientManager::on(Save, SimpleXML*) throw() {
 		// ...
 	}
 }
-/// @todo save more often perhaps?
 void ClientManager::on(Load, SimpleXML*) throw() {
 	me = new User(SETTING(CLIENT_ID));
 
@@ -411,5 +424,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.75 2005/07/21 00:01:52 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.76 2005/07/23 17:52:01 arnetheduck Exp $
  */

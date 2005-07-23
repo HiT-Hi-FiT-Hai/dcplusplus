@@ -230,12 +230,12 @@ private:
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw();
 };
 
 #endif // !defined(QUEUE_MANAGER_H)
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.73 2005/07/21 00:01:54 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.74 2005/07/23 17:52:18 arnetheduck Exp $
  */

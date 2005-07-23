@@ -81,6 +81,13 @@ public:
 	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
 
+	bool isOnline(const User::Ptr& aUser) {
+		Lock l(cs);
+		return onlineUsers.find(aUser->getCID()) != onlineUsers.end();
+	}
+
+	bool isOp(const User::Ptr& aUser, const string& aHubUrl);
+
 	string getHubUrl(const User::Ptr& user);
 
 	/** Constructs a synthetic, hopefully unique CID */
@@ -168,5 +175,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.62 2005/05/03 15:37:53 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.63 2005/07/23 17:52:01 arnetheduck Exp $
  */

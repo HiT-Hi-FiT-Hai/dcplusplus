@@ -172,14 +172,12 @@ private:
 
 	void updateTitle() {
 		if(user->isOnline()) {
-			/// @todo SetWindowText(Text::toT(user->getFullNick()).c_str());
+			/** @todo Find something better here perhaps? */
+			SetWindowText(Text::toT(user->getFirstNick()).c_str());
 			setTabColor(RGB(0, 255, 255));
 		} else {
-			/**if(user->getClientName() == STRING(OFFLINE)) {
-				SetWindowText(Text::toT(user->getFullNick()).c_str());
-			} else {
-				SetWindowText((Text::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
-			}*/
+			/** @todo Find something better here perhaps? */
+			SetWindowText(Text::toT(user->getFirstNick() + " [" + STRING(OFFLINE) + "]").c_str());
 			setTabColor(RGB(255, 0, 0));
 		}
 	}
@@ -189,11 +187,19 @@ private:
 		if(aUser == user)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
+	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
+		if(aUser == user)
+			PostMessage(WM_SPEAKER, USER_UPDATED);
+	}
+	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+		if(aUser == user)
+			PostMessage(WM_SPEAKER, USER_UPDATED);
+	}
 };
 
 #endif // !defined(PRIVATE_FRAME_H)
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.29 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.30 2005/07/23 17:52:24 arnetheduck Exp $
  */

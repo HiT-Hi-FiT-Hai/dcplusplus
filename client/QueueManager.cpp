@@ -556,7 +556,11 @@ bool QueueManager::addSource(QueueItem* qi, const string& aFile, User::Ptr aUser
 		throw QueueException(STRING(DUPLICATE_SOURCE));
 	}
 
-	s = qi->addSource(aUser, aFile);
+	if(qi->getTTH() && aUser->isSet(User::TTH_GET))
+		s = qi->addSource(aUser, Util::emptyString);
+	else
+		s = qi->addSource(aUser, aFile);
+
 	if(utf8)
 		s->setFlag(QueueItem::Source::FLAG_UTF8);
 
@@ -1334,7 +1338,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 }
 
 // ClientManagerListener
-void QueueManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
+void QueueManager::on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
 	bool hasDown = false;
 	{
 		Lock l(cs);
@@ -1353,7 +1357,7 @@ void QueueManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser
 		}
 	}
 
-	if(aUser->isOnline() && hasDown)	
+	if(hasDown)	
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
@@ -1365,5 +1369,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.135 2005/07/21 00:01:53 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.136 2005/07/23 17:52:01 arnetheduck Exp $
  */

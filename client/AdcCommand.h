@@ -76,24 +76,27 @@ public:
 	static const char TYPE_PASSIVE = 'P';
 	static const char TYPE_UDP = 'U';
 
-#define CMD(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
-	CMD(SUP, 'S','U','P');
-	CMD(STA, 'S','T','A');
-	CMD(INF, 'I','N','F');
-	CMD(MSG, 'M','S','G');
-	CMD(SCH, 'S','C','H');
-	CMD(RES, 'R','E','S');
-	CMD(CTM, 'C','T','M');
-	CMD(RCM, 'R','C','M');
-	CMD(GPA, 'G','P','A');
-	CMD(PAS, 'P','A','S');
-	CMD(QUI, 'Q','U','I');
-	CMD(DSC, 'D','S','C');
-	CMD(GET, 'G','E','T');
-	CMD(GFI, 'G','F','I');
-	CMD(SND, 'S','N','D');
-	CMD(NTD, 'N','T','D');
-#undef CMD
+#define C(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
+	// Base commands
+	C(SUP, 'S','U','P');
+	C(STA, 'S','T','A');
+	C(INF, 'I','N','F');
+	C(MSG, 'M','S','G');
+	C(SCH, 'S','C','H');
+	C(RES, 'R','E','S');
+	C(CTM, 'C','T','M');
+	C(RCM, 'R','C','M');
+	C(GPA, 'G','P','A');
+	C(PAS, 'P','A','S');
+	C(QUI, 'Q','U','I');
+	C(DSC, 'D','S','C');
+	C(GET, 'G','E','T');
+	C(GFI, 'G','F','I');
+	C(SND, 'S','N','D');
+	C(NTD, 'N','T','D');
+	// Extensions
+	C(CMD, 'C','M','D');
+#undef C
 
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), type(aType) { }
 	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
@@ -176,24 +179,25 @@ public:
 		try {
 			AdcCommand c(aLine, nmdc);
 
-#define CMD(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
+#define C(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
 			switch(c.getCommand()) {
-				CMD(SUP);
-				CMD(STA);
-				CMD(INF);
-				CMD(MSG);
-				CMD(SCH);
-				CMD(RES);
-				CMD(CTM);
-				CMD(RCM);
-				CMD(GPA);
-				CMD(PAS);
-				CMD(QUI);
-				CMD(DSC);
-				CMD(GET);
-				CMD(GFI);
-				CMD(SND);
-				CMD(NTD);
+				C(SUP);
+				C(STA);
+				C(INF);
+				C(MSG);
+				C(SCH);
+				C(RES);
+				C(CTM);
+				C(RCM);
+				C(GPA);
+				C(PAS);
+				C(QUI);
+				C(DSC);
+				C(GET);
+				C(GFI);
+				C(SND);
+				C(NTD);
+				C(CMD);
 			default: 
 				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
 				break;
@@ -211,5 +215,5 @@ public:
 
 /**
  * @file
- * $Id: AdcCommand.h,v 1.22 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: AdcCommand.h,v 1.23 2005/07/23 17:52:18 arnetheduck Exp $
  */

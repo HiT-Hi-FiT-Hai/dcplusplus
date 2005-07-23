@@ -225,6 +225,7 @@ private:
 		bool update(const Identity& identity, int sortCol);
 
 		tstring columns[COLUMN_LAST];
+		GETSET(Identity, identity, Identity);
 		GETSET(int64_t, bytes, Bytes);
 		GETSET(bool, op, Op);
 		GETSET(bool, hidden, Hidden);
@@ -325,12 +326,12 @@ private:
 
 	void clearUserList();
 
-	int getImage(const User::Ptr& u) {
-		int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
+	int getImage(const Identity& u) {
+		int image = u.isOp() ? IMAGE_OP : IMAGE_USER;
 		
-		if(u->isSet(User::DCPLUSPLUS))
-			image+=2;
-		if(u->isSet(User::PASSIVE)) {
+		/** @todo if(u->isSet(User::DCPLUSPLUS))
+			image+=2; */
+		if(u.isTcpActive()) {
 			image+=4;
 		}
 		return image;	
@@ -375,5 +376,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.63 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.64 2005/07/23 17:52:22 arnetheduck Exp $
  */

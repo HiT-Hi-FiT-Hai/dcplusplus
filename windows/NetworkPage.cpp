@@ -111,6 +111,11 @@ LRESULT NetworkPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 {
 	PropPage::translate((HWND)(*this), texts);
 	
+	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 ) //WinXP & WinSvr2003
+		|| WinUtil::getOsMajor() >= 6 ) //Longhorn
+	{
+		::EnableWindow(GetDlgItem(IDC_FIREWALL_UPNP), FALSE);
+	}
 	switch(SETTING(INCOMING_CONNECTIONS)) {
 		case SettingsManager::INCOMING_DIRECT: CheckDlgButton(IDC_DIRECT, BST_CHECKED); break;
 		case SettingsManager::INCOMING_FIREWALL_UPNP: CheckDlgButton(IDC_FIREWALL_UPNP, BST_CHECKED); break;
@@ -181,5 +186,5 @@ LRESULT NetworkPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 
 /**
  * @file
- * $Id: NetworkPage.cpp,v 1.7 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: NetworkPage.cpp,v 1.8 2005/07/23 17:52:23 arnetheduck Exp $
  */

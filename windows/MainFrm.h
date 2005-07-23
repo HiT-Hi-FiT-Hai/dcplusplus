@@ -192,6 +192,9 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const tstring& cmdLine);
 
+	void startUPnP();
+	void stopUPnP();
+
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return WMU_WHERE_ARE_YOU;
 	}
@@ -395,5 +398,5 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.60 2005/07/21 00:02:04 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.61 2005/07/23 17:52:22 arnetheduck Exp $
  */

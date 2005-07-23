@@ -167,7 +167,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 
 	string token;
 	c.getParam("TO", 2, token);
-	ConnectionManager::getInstance()->adcConnect(u->getIdentity().getIp(), (short)Util::toInt(c.getParameters()[1]), token);
+	ConnectionManager::getInstance()->adcConnect(*u, (short)Util::toInt(c.getParameters()[1]), token);
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
@@ -181,6 +181,10 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 	string token;
 	c.getParam("TO", 1, token);
     connect(*u, token);
+}
+
+void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
+	// @todo Add the user command
 }
 
 void AdcHub::sendUDP(const AdcCommand& cmd) {
@@ -342,7 +346,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 		} else {
 			ADDPARAM("I4", "0.0.0.0");
 		}
-		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
+		ADDPARAM("U4", Util::toString(SearchManager::getInstance()->getPort()));
 	} else {
 		ADDPARAM("I4", "");
 		ADDPARAM("U4", "");
@@ -396,5 +400,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.50 2005/07/21 00:01:53 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.51 2005/07/23 17:52:01 arnetheduck Exp $
  */

@@ -526,7 +526,7 @@ void FavoriteManager::refresh() {
 UserCommand::List FavoriteManager::getUserCommands(int ctx, const string& hub, bool op) {
 	Lock l(cs);
 	UserCommand::List lst;
-	bool adc = hub.size() >= 6 && hub.substr(0, 6) == "adc://";
+	bool adc = (hub.compare(0, 6, "adc://") == 0);
 	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
 		if(uc.getCtx() & ctx) {
@@ -570,5 +570,5 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.5 2005/05/03 15:37:53 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.6 2005/07/23 17:52:18 arnetheduck Exp $
  */

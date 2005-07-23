@@ -106,16 +106,37 @@ string SearchResult::getFileName() const {
 	return getFile().substr(i + 1);
 }
 
-void SearchManager::setPort(short aPort) throw(SocketException) {
-	port = aPort;
-	if(socket != NULL) {
-		disconnect();
-	} else {
-		socket = new Socket();
+void SearchManager::listen() throw(SocketException) {
+	short lastPort = (short)SETTING(UDP_PORT);
+
+	if(lastPort == 0)
+		lastPort = (short)Util::rand(1025, 32000);
+
+	short firstPort = lastPort;
+
+	disconnect();
+
+	while(true) {
+		try {
+			if(socket != NULL) {
+				disconnect();
+			} else {
+				socket = new Socket();
+			}
+
+			socket->create(Socket::TYPE_UDP, true);
+			socket->bind(lastPort);
+			port = lastPort;
+			break;
+		} catch(const Exception&) {
+			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+			if(!SettingsManager::getInstance()->isDefault(SettingsManager::UDP_PORT) || (firstPort == newPort)) {
+				throw Exception("Could not find a suitable free port");
+			}
+			lastPort = newPort;
+		}
 	}
 
-	socket->create(Socket::TYPE_UDP, true);
-	socket->bind(aPort);
 	start();
 }
 
@@ -123,6 +144,7 @@ void SearchManager::disconnect() throw() {
 	if(socket != NULL) {
 		stop = true;
 		socket->disconnect();
+		port = 0;
 #ifdef _WIN32
 		join();
 #endif
@@ -233,7 +255,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 			return;
 		}
 		string hubIpPort = x.substr(i, j-i);
-		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
+		User::Ptr user = ClientManager::getInstance()->getLegacyUser(nick);
 
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
 			file, hubName, hubIpPort, address, false);
@@ -324,5 +346,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.56 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.57 2005/07/23 17:52:01 arnetheduck Exp $
  */

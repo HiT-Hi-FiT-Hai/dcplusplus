@@ -43,6 +43,31 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 	adcFeatures.push_back("+BASE");
 }
 
+void ConnectionManager::listen() throw(Exception){
+	short lastPort = (short)SETTING(TCP_PORT);
+	
+	if(lastPort == 0)
+		lastPort = (short)Util::rand(1025, 32000);
+
+	short firstPort = lastPort;
+
+	disconnect();
+
+	while(true) {
+		try {
+			socket.waitForConnections(lastPort);
+			port = lastPort;
+			break;
+		} catch(const Exception&) {
+			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
+				throw Exception("Could not find a suitable free port");
+			}
+			lastPort = newPort;
+		}
+	}
+}
+
 /**
  * Request a connection for downloading.
  * DownloadManager::addConnection will be called as soon as the connection is ready
@@ -337,8 +362,6 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	}
 }
 
-
-
 void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick, const string& hubUrl) {
 	if(shuttingDown)
 		return;
@@ -357,7 +380,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 	}
 }
 
-void ConnectionManager::adcConnect(const string& aServer, short aPort, const string& aToken) {
+void ConnectionManager::adcConnect(const OnlineUser& aUser, short aPort, const string& aToken) {
 	if(shuttingDown)
 		return;
 
@@ -366,7 +389,10 @@ void ConnectionManager::adcConnect(const string& aServer, short aPort, const str
 		uc = getConnection(false);
 		uc->setToken(aToken);
 		uc->setState(UserConnection::STATE_CONNECT);
-		uc->connect(aServer, aPort);
+		if(aUser.getIdentity().isOp()) {
+			uc->setFlag(UserConnection::FLAG_OP);
+		}
+		uc->connect(aUser.getIdentity().getIp(), aPort);
 	} catch(const SocketException&) {
 		if(uc)
 			putConnection(uc);
@@ -408,9 +434,6 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
 	aSource->setState(UserConnection::STATE_SUPNICK);
 }
 
-/**
- * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
- */
 void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSource, const string& aNick) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
@@ -426,7 +449,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		// Try to guess where this came from...
 		ExpectMap::iterator i = expectedConnections.find(aNick);
 		if(i == expectedConnections.end()) {
-			dcdebug("Unkown incoming connection from %s\n", aNick.c_str());
+			dcdebug("Unknown incoming connection from %s\n", aNick.c_str());
 			putConnection(aSource);
 			return;
 		}
@@ -454,7 +477,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		// Make sure we know who it is, i e that he/she is connected...
 
 		aSource->setUser(ClientManager::getInstance()->findUser(cid));
-		if(!aSource->getUser()) {
+		if(!aSource->getUser() || !ClientManager::getInstance()->isOnline(aSource->getUser())) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
 			putConnection(aSource);
 			return;
@@ -462,6 +485,9 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		// We don't need this connection for downloading...make it an upload connection instead...
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 	}
+
+	if(ClientManager::getInstance()->isOp(aSource->getUser(), aSource->getHubUrl()))
+		aSource->setFlag(UserConnection::FLAG_OP);
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
 		aSource->myNick(aSource->getToken()); 
@@ -717,5 +743,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.103 2005/05/03 15:37:53 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.104 2005/07/23 17:52:18 arnetheduck Exp $
  */

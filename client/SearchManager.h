@@ -159,7 +159,7 @@ public:
 		return port;
 	}
 
-	void setPort(short aPort) throw(SocketException);
+	void listen() throw(Exception);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
@@ -203,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.55 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.56 2005/07/23 17:52:02 arnetheduck Exp $
  */

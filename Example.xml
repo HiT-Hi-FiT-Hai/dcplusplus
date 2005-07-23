@@ -295,7 +295,6 @@
 		<String Name="Pib">PiB</String>
 		<String Name="Picture">Picture</String>
 		<String Name="Port">Port: </String>
-		<String Name="PortIsBusy">Port %d is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++</String>
 		<String Name="PreparingFileList">Preparing file list...</String>
 		<String Name="PressFollow">Press the follow redirect button to connect to </String>
 		<String Name="Priority">Priority</String>
@@ -354,7 +353,10 @@
 		<String Name="SettingsAutodropInterval">Check every</String>
 		<String Name="SettingsAutodropElapsed">Min elapsed</String>
 		<String Name="SettingsAutodropInactivity">Max inactivity</String>
-		<String Name="SettingsAutodropAll">Autodrop slow sources for all queue items</String>
+		<String Name="SettingsAutodropMinsources">Min sources online</String>
+		<String Name="SettingsAutodropFilesize">Min filesize</String>
+		<String Name="SettingsAutodropAll">Autodrop slow sources for all queue items (except filelists)</String>
+		<String Name="SettingsAutodropFilelists">Remove slow filelists</String>
 		<String Name="SettingsAutodropDisconnect">Don't remove the source when autodropping, only disconnect</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
@@ -515,6 +517,7 @@
 		<String Name="StoredPasswordSent">Stored password sent...</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
+		<String Name="TcpPortBusy">Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port</String>
 		<String Name="Tib">TiB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimeLeft">Time left</String>
@@ -526,6 +529,7 @@
 		<String Name="TthInconsistency">TTH inconsistency</String>
 		<String Name="TthRoot">TTH Root</String>
 		<String Name="Type">Type</String>
+		<String Name="UdpPortBusy">Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port</String>
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="Unknown">Unknown</String>
 		<String Name="UnknownAddress">Unknown address</String>

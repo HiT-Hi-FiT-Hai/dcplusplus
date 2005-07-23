@@ -32,6 +32,8 @@
 #include "../client/FavoriteManager.h"
 #include "../client/LogManager.h"
 #include "../client/AdcCommand.h"
+#include "../client/ConnectionManager.h"
+#include "../client/SearchManager.h"
 
 HubFrame::FrameMap HubFrame::frames;
 
@@ -212,7 +214,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(TCP_PORT)) + "/" + Util::toString(SETTING(UDP_PORT)))));
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + Util::toString(SearchManager::getInstance()->getPort()))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
@@ -348,7 +350,7 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 		UserInfo* ui = new UserInfo(u);
 		userMap.insert(make_pair(u.user, ui));
 		if(!ui->getHidden() && showUsers)
-			ctrlUsers.insertItem(ui, getImage(u.user));
+			ctrlUsers.insertItem(ui, getImage(u.identity));
 		return true;
 	} else {
 		UserInfo* ui = i->second;
@@ -361,7 +363,7 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 			int pos = ctrlUsers.findItem(ui);
 			dcassert(pos != -1);
 			ctrlUsers.updateItem(pos);
-			ctrlUsers.SetItem(pos, 0, LVIF_IMAGE, NULL, getImage(u.user), 0, 0, NULL);
+			ctrlUsers.SetItem(pos, 0, LVIF_IMAGE, NULL, getImage(u.identity), 0, 0, NULL);
 		}
 
 		return false;
@@ -399,6 +401,8 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	if(sortCol != -1) {
 		needsSort = needsSort || (old != columns[sortCol]);
 	}
+
+	setIdentity(identity);
 	return needsSort;
 }
 
@@ -991,7 +995,7 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 			UserInfo* ui = i->second;
 			if(!ui->getHidden())
-				ctrlUsers.insertItem(ui, getImage(ui->getUser()));
+				ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
 		}
 
 		ctrlUsers.SetRedraw(TRUE);
@@ -1181,5 +1185,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.109 2005/07/21 00:02:20 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.110 2005/07/23 17:52:22 arnetheduck Exp $
  */

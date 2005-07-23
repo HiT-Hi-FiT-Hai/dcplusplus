@@ -152,7 +152,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 
 		if(!(hasReserved || isFavorite || getFreeSlots() > 0 || getAutoSlot())) {
 			bool supportsFree = aSource->getUser()->isSet(User::DCPLUSPLUS) || aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS) || !aSource->isSet(UserConnection::FLAG_NMDC);
-			bool allowedFree = aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || aSource->getUser()->isSet(User::OP) || getFreeExtraSlots() > 0;
+			bool allowedFree = aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || aSource->isSet(UserConnection::FLAG_OP) || getFreeExtraSlots() > 0;
 			if(free && supportsFree && allowedFree) {
 				extraSlot = true;
 			} else {
@@ -452,5 +452,5 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.96 2005/05/07 22:43:23 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.97 2005/07/23 17:52:02 arnetheduck Exp $
  */
