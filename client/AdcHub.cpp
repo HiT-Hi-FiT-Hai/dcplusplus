@@ -27,6 +27,8 @@
 #include "ConnectionManager.h"
 #include "version.h"
 #include "Util.h"
+#include "UserCommand.h"
+#include "FavoriteManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 
@@ -184,7 +186,31 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
-	// @todo Add the user command
+	if(c.getParameters().size() < 1)
+		return;
+	const string& name = c.getParam(0);
+	bool rem = c.hasFlag("RM", 1);
+	if(rem) {
+		int cmd = FavoriteManager::getInstance()->findUserCommand(name);
+		if(cmd != -1)
+			FavoriteManager::getInstance()->removeUserCommand(cmd);
+	}
+	bool sep = c.hasFlag("SP", 1);
+	string sctx;
+	if(!c.getParam("CT", 1, sctx))
+		return;
+	int ctx = Util::toInt(sctx);
+	if(ctx <= 0)
+		return;
+	if(sep) {
+		FavoriteManager::getInstance()->addUserCommand(UserCommand::TYPE_SEPARATOR, ctx, UserCommand::FLAG_NOSAVE, name, "", getHubUrl());
+		return;
+	}
+	bool once = c.hasFlag("CO", 1);
+	string txt;
+	if(!c.getParam("TT", 1, txt))
+		return;
+	FavoriteManager::getInstance()->addUserCommand(once ? UserCommand::TYPE_RAW_ONCE : UserCommand::TYPE_RAW, ctx, UserCommand::FLAG_NOSAVE, name, txt, getHubUrl());
 }
 
 void AdcHub::sendUDP(const AdcCommand& cmd) {
@@ -400,5 +426,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.51 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.52 2005/07/24 19:29:42 arnetheduck Exp $
  */

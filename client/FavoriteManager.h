@@ -193,6 +193,7 @@ public:
 // User Commands
 	UserCommand addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub);
 	bool getUserCommand(int cid, UserCommand& uc);
+	int findUserCommand(const string& aName);
 	bool moveUserCommand(int cid, int pos);
 	void updateUserCommand(const UserCommand& uc);
 	void removeUserCommand(int cid);
@@ -279,5 +280,5 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.3 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.4 2005/07/24 19:29:42 arnetheduck Exp $
  */

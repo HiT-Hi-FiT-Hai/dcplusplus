@@ -161,7 +161,7 @@ string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 			i++;
 		}
 		if(checkNewLines) {
-			// Check all '<' and '|' after newlines...
+			// Check all '<' and '[' after newlines...
 			i = 0;
 			while( (i = tmp.find('\n', i)) != string::npos) {
 				if(i + 1 < tmp.length()) {
@@ -883,5 +883,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.90 2005/07/21 00:01:54 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.91 2005/07/24 19:29:42 arnetheduck Exp $
  */

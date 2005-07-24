@@ -40,6 +40,8 @@ public:
 		FLAG_GRANTSLOT = 1 << 0
 	};
 
+	User::Ptr& getUser() { return user; }
+
 	GETSET(User::Ptr, user, User);
 	GETSET(Identity, lastIdentity, LastIdentity);
 	GETSET(u_int32_t, lastSeen, LastSeen);
@@ -50,5 +52,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.12 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.13 2005/07/24 19:29:42 arnetheduck Exp $
  */

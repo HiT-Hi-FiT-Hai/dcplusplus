@@ -79,6 +79,16 @@ void FavoriteManager::updateUserCommand(const UserCommand& uc) {
 		save();
 }
 
+int FavoriteManager::findUserCommand(const string& aName) {
+	Lock l(cs);
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+		if(i->getName() == aName) {
+			return i->getId();
+		}
+	}
+	return -1;
+}
+
 void FavoriteManager::removeUserCommand(int cid) {
 	bool nosave = true;
 	Lock l(cs);
@@ -116,6 +126,7 @@ void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 
 void FavoriteManager::addFavoriteUser(User::Ptr& aUser) { 
 	if(find(users.begin(), users.end(), aUser) == users.end()) {
+		aUser->setFlag(User::SAVE_NICK);
 		users.push_back(FavoriteUser(aUser, Util::emptyString));
 		fire(FavoriteManagerListener::UserAdded(), users.back());
 		save();
@@ -317,6 +328,7 @@ void FavoriteManager::save() {
 		xml.addTag("Users");
 		xml.stepIn();
 		for(FavoriteUser::Iter j = users.begin(); j != users.end(); ++j) {
+			j->getUser()->setFlag(User::SAVE_NICK);
 			xml.addTag("User");
 			xml.addChildAttrib("Nick", j->getLastIdentity().getNick());
 			xml.addChildAttrib("LastHubAddress", j->getLastIdentity().getHubUrl());
@@ -570,5 +582,5 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.6 2005/07/23 17:52:18 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.7 2005/07/24 19:29:42 arnetheduck Exp $
  */

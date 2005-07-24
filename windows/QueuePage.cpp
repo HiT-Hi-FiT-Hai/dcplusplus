@@ -68,6 +68,12 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::AUTODROP_ALL, ResourceManager::SETTINGS_AUTODROP_ALL },
 	{ SettingsManager::AUTODROP_FILELISTS, ResourceManager::SETTINGS_AUTODROP_FILELISTS },
 	{ SettingsManager::AUTODROP_DISCONNECT, ResourceManager::SETTINGS_AUTODROP_DISCONNECT },
+	{ SettingsManager::AUTO_SEARCH, ResourceManager::SETTINGS_AUTO_SEARCH },
+	{ SettingsManager::AUTO_SEARCH_AUTO_MATCH, ResourceManager::SETTINGS_AUTO_SEARCH_AUTO_MATCH },
+	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_SKIP_ZERO_BYTE },
+	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::SETTINGS_DONT_DL_ALREADY_SHARED },
+	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ANTI_FRAG },
+	{ SettingsManager::ADVANCED_RESUME, ResourceManager::SETTINGS_ADVANCED_RESUME },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -105,5 +111,5 @@ LRESULT QueuePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 /**
  * @file
- * $Id: QueuePage.cpp,v 1.4 2005/07/21 21:52:52 arnetheduck Exp $
+ * $Id: QueuePage.cpp,v 1.5 2005/07/24 19:29:44 arnetheduck Exp $
  */

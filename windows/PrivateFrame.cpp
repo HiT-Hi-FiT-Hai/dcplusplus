@@ -224,6 +224,9 @@ void PrivateFrame::sendMessage(const tstring& msg) {
 		ClientManager::getInstance()->privateMessage(user, Text::fromT(msg));
 		/// @todo potentially wrong nick used
 		string s = "<" + SETTING(NICK) + "> " + Text::fromT(msg);
+		// local echo formatting
+		s = Util::validateMessage(s, false);
+		s = Util::validateMessage(s, true, true);
 		addLine(Text::toT(s));
 	}
 }
@@ -420,5 +423,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.48 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.49 2005/07/24 19:29:44 arnetheduck Exp $
  */

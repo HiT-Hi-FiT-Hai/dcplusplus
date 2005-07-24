@@ -23,6 +23,9 @@
 * Updated bzip2 to 1.0.3 (thanks garg)
 * Some small *nix fixes (thanks poison)
 * Source path no longer saved for TTH enabled clients (saves memory and queue file space)
+* Search window settings saved automatically (thanks michael jones)
+* Open folder selects file in explorer (thanks michael jones)
+* Local echo in pm window formatted as the other side should see it (thanks paka)
 
 
 -- 0.674 2005-04-10 --

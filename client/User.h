@@ -135,6 +135,7 @@ public:
 			info[*(short*)name] = val;
 	}
 	
+	void getParams(StringMap& map, const string& prefix) const;
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubUrl, HubUrl);
 private:
@@ -179,5 +180,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.59 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: User.h,v 1.60 2005/07/24 19:29:42 arnetheduck Exp $
  */

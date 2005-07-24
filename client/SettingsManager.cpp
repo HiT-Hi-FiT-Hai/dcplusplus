@@ -69,7 +69,7 @@ const string SettingsManager::settingTags[] =
 	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
-	"NoIpOverride",
+	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -236,6 +236,8 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_NETWORK_STATISTICS, false);
 	setDefault(OPEN_NOTEPAD, false);
 	setDefault(NO_IP_OVERRIDE, false);
+	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
+	setDefault(LAST_SEARCH_TYPE, 0);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -387,5 +389,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.127 2005/07/23 17:52:18 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.128 2005/07/24 19:29:42 arnetheduck Exp $
  */

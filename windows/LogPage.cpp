@@ -28,12 +28,12 @@
 
 
 PropPage::TextItem LogPage::texts[] = {
-	{ IDC_SETTINGS_LOGGING,		ResourceManager::SETTINGS_LOGGING },
-	{ IDC_SETTINGS_LOG_DIR,		ResourceManager::DIRECTORY},
-	{ IDC_BROWSE_LOG,			ResourceManager::BROWSE_ACCEL },
-	{ IDC_SETTINGS_FORMAT,		ResourceManager::SETTINGS_FORMAT },
-	{ IDC_SETTINGS_FILE_NAME,	ResourceManager::SETTINGS_FILE_NAME },
-	{ 0,						ResourceManager::SETTINGS_AUTO_AWAY }
+	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
+	{ IDC_SETTINGS_LOG_DIR, ResourceManager::DIRECTORY },
+	{ IDC_BROWSE_LOG, ResourceManager::BROWSE_ACCEL },
+	{ IDC_SETTINGS_FORMAT, ResourceManager::SETTINGS_FORMAT },
+	{ IDC_SETTINGS_FILE_NAME, ResourceManager::SETTINGS_FILE_NAME },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 PropPage::Item LogPage::items[] = {
@@ -42,13 +42,14 @@ PropPage::Item LogPage::items[] = {
 };
 
 PropPage::ListItem LogPage::listItems[] = {
-	{ SettingsManager::LOG_MAIN_CHAT,			ResourceManager::SETTINGS_LOG_MAIN_CHAT },
-	{ SettingsManager::LOG_PRIVATE_CHAT,		ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
-	{ SettingsManager::LOG_DOWNLOADS,			ResourceManager::SETTINGS_LOG_DOWNLOADS },
-	{ SettingsManager::LOG_UPLOADS,				ResourceManager::SETTINGS_LOG_UPLOADS },
-	{ SettingsManager::LOG_SYSTEM,				ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
-	{ SettingsManager::LOG_STATUS_MESSAGES,		ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
-	{ 0,										ResourceManager::SETTINGS_AUTO_AWAY }
+	{ SettingsManager::LOG_MAIN_CHAT, ResourceManager::SETTINGS_LOG_MAIN_CHAT },
+	{ SettingsManager::LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
+	{ SettingsManager::LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS },
+	{ SettingsManager::LOG_UPLOADS, ResourceManager::SETTINGS_LOG_UPLOADS },
+	{ SettingsManager::LOG_FILELIST_TRANSFERS, ResourceManager::SETTINGS_LOG_FILELIST_TRANSFERS },
+	{ SettingsManager::LOG_SYSTEM, ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
+	{ SettingsManager::LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 
@@ -155,5 +156,5 @@ LRESULT LogPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 
 /**
  * @file
- * $Id: LogPage.cpp,v 1.4 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: LogPage.cpp,v 1.5 2005/07/24 19:29:44 arnetheduck Exp $
  */
