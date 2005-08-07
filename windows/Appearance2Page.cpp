@@ -26,6 +26,7 @@
 #include "WinUtil.h"
 
 PropPage::TextItem Appearance2Page::texts[] = {
+	{ IDC_SETTINGS_BOLD_CONTENTS, ResourceManager::SETTINGS_BOLD_OPTIONS },
 	{ IDC_SETTINGS_COLORS, ResourceManager::SETTINGS_COLORS },
 	{ IDC_SELWINCOLOR, ResourceManager::SETTINGS_SELECT_WINDOW_COLOR },
 	{ IDC_SELTEXT, ResourceManager::SETTINGS_SELECT_TEXT_FACE },
@@ -45,6 +46,16 @@ PropPage::Item Appearance2Page::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
+PropPage::ListItem Appearance2Page::listItems[] = {
+	{ SettingsManager::FINISHED_DOWNLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_DOWNLOAD_DIRTY },
+	{ SettingsManager::FINISHED_UPLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_UPLOAD_DIRTY },
+	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
+	{ SettingsManager::TAB_HUB_DIRTY, ResourceManager::SETTINGS_TAB_HUB_DIRTY },
+	{ SettingsManager::TAB_SEARCH_DIRTY, ResourceManager::SETTINGS_TAB_SEARCH_DIRTY },
+	{ SettingsManager::TAB_PM_DIRTY, ResourceManager::SETTINGS_TAB_PM_DIRTY },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 Appearance2Page::~Appearance2Page()
 {
 	::DeleteObject(bgbrush);
@@ -56,7 +67,7 @@ LRESULT Appearance2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	PropPage::translate((HWND)(*this), texts);
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
-	PropPage::read((HWND)*this, items, 0,GetDlgItem(IDC_APPEARANCE_BOOLEANS));
+	PropPage::read((HWND)*this, items, listItems,GetDlgItem(IDC_BOLD_BOOLEANS));
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
 
 	// Do specialized reading here
@@ -71,7 +82,7 @@ LRESULT Appearance2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 void Appearance2Page::write()
 {
-	PropPage::write((HWND)*this, items, 0,GetDlgItem(IDC_APPEARANCE_BOOLEANS));
+	PropPage::write((HWND)*this, items, listItems,GetDlgItem(IDC_BOLD_BOOLEANS));
 
 	settings->set(SettingsManager::TEXT_COLOR, (int)fg);
 	settings->set(SettingsManager::BACKGROUND_COLOR, (int)bg);
@@ -166,5 +177,5 @@ LRESULT Appearance2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 /**
  * @file
- * $Id: Appearance2Page.cpp,v 1.3 2005/04/24 08:13:07 arnetheduck Exp $
+ * $Id: Appearance2Page.cpp,v 1.4 2005/08/07 13:05:47 arnetheduck Exp $
  */

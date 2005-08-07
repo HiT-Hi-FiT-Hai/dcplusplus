@@ -1,9 +1,9 @@
 /* compress.c -- compress a memory buffer
- * Copyright (C) 1995-2002 Jean-loup Gailly.
+ * Copyright (C) 1995-2003 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* @(#) $Id: compress.c,v 1.2 2004/02/23 17:42:17 arnetheduck Exp $ */
+/* @(#) $Id: compress.c,v 1.3 2005/08/07 13:05:47 arnetheduck Exp $ */
 
 #define ZLIB_INTERNAL
 #include "zlib.h"

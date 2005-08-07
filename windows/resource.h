@@ -363,6 +363,8 @@
 #define IDC_SETTINGS_KB5                1310
 #define IDC_SETTINGS_KB6                1311
 #define IDC_SETTINGS_AUTOPRIO           1312
+#define IDC_BOLD_BOOLEANS               1313
+#define IDC_SETTINGS_BOLD_CONTENTS      1314
 #define IDC_AUTODROP_SPEED              1350
 #define IDC_AUTODROP_INTERVAL           1351
 #define IDC_AUTODROP_ELAPSED            1352

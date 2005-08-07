@@ -916,7 +916,7 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(Text::toT(sr->getFile())) : WinUtil::getDirIconIndex();
 			ctrlResults.insertItem(si, image);
 			ctrlStatus.SetText(2, Text::toT(Util::toString(ctrlResults.GetItemCount()) + ' ' + STRING(ITEMS)).c_str());
-			if (BOOLSETTING(TAB_DIRTY)) {
+			if (BOOLSETTING(TAB_SEARCH_DIRTY)) {
 				setDirty();
 			}
 		}
@@ -1140,5 +1140,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.97 2005/07/24 19:29:44 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.98 2005/08/07 13:05:47 arnetheduck Exp $
  */

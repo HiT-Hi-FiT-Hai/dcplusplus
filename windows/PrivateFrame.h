@@ -132,7 +132,7 @@ public:
 			CreateEx(WinUtil::mdiClient);
 		}
 		ctrlStatus.SetText(0, (_T("[") + Text::toT(Util::getShortTimeString()) + _T("] ") + aLine).c_str());
-		if (BOOLSETTING(TAB_DIRTY)) {
+		if (BOOLSETTING(TAB_PM_DIRTY)) {
 			setDirty();
 		}
 	}
@@ -201,5 +201,5 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.30 2005/07/23 17:52:24 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.31 2005/08/07 13:05:47 arnetheduck Exp $
  */

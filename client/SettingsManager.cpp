@@ -55,7 +55,7 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression", "FinishedDirty", "QueueDirty", "TabDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
+	"MaxCompression", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", 
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
@@ -69,7 +69,8 @@ const string SettingsManager::settingTags[] =
 	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
-	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType",
+	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
+	"TabHubDirty", "TabPmDirty", "TabSearchDirty", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -173,9 +174,6 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
-	setDefault(FINISHED_DIRTY, true);
-	setDefault(QUEUE_DIRTY, true);
-	setDefault(TAB_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
@@ -238,6 +236,12 @@ SettingsManager::SettingsManager()
 	setDefault(NO_IP_OVERRIDE, false);
 	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
 	setDefault(LAST_SEARCH_TYPE, 0);
+	setDefault(FINISHED_DOWNLOAD_DIRTY, true);
+	setDefault(FINISHED_UPLOAD_DIRTY, true);
+	setDefault(QUEUE_DIRTY, true);
+	setDefault(TAB_HUB_DIRTY, true);
+	setDefault(TAB_SEARCH_DIRTY, true);
+	setDefault(TAB_PM_DIRTY, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -389,5 +393,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.128 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.129 2005/08/07 13:05:44 arnetheduck Exp $
  */

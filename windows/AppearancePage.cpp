@@ -54,9 +54,6 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::FAV_SHOW_JOINS, ResourceManager::SETTINGS_FAV_SHOW_JOINS },
 	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
 	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
-	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
-	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
-	{ SettingsManager::TAB_DIRTY, ResourceManager::SETTINGS_TAB_DIRTY },
 	{ SettingsManager::GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
 	{ SettingsManager::CONFIRM_HUB_REMOVAL, ResourceManager::SETTINGS_CONFIRM_HUB_REMOVAL },
 	{ SettingsManager::CONFIRM_ITEM_REMOVAL, ResourceManager::SETTINGS_CONFIRM_ITEM_REMOVAL },
@@ -105,5 +102,5 @@ LRESULT AppearancePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.26 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.27 2005/08/07 13:05:47 arnetheduck Exp $
  */

@@ -66,6 +66,7 @@ protected:
 
 	static Item items[];
 	static TextItem texts[];
+	static ListItem listItems[];
 
 	CStatic ctrlExample;
 	COLORREF fg, bg, upBar, downBar;
@@ -78,5 +79,5 @@ protected:
 
 /**
  * @file
- * $Id: Appearance2Page.h,v 1.3 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: Appearance2Page.h,v 1.4 2005/08/07 13:05:47 arnetheduck Exp $
  */

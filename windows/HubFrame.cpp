@@ -687,7 +687,7 @@ void HubFrame::addLine(const tstring& aLine) {
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
 	}
-	if (BOOLSETTING(TAB_DIRTY)) {
+	if (BOOLSETTING(TAB_HUB_DIRTY)) {
 		setDirty();
 	}
 }
@@ -1072,7 +1072,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 		lastLinesList.erase(lastLinesList.begin());
 	lastLinesList.push_back(line);
 
-	if (BOOLSETTING(TAB_DIRTY)) {
+	if (BOOLSETTING(TAB_HUB_DIRTY)) {
 		setDirty();
 	}
 	
@@ -1185,5 +1185,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.111 2005/07/24 19:29:44 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.112 2005/08/07 13:05:47 arnetheduck Exp $
  */

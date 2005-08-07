@@ -339,9 +339,12 @@ private:
 			hubName = Text::toT(sr->getHubName());
 			slots = Text::toT(sr->getSlotString());
 			ip = Text::toT(sr->getIP());
-			tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
-			if(!tmpCountry.empty())
-				ip = tmpCountry + _T(" (") + ip + _T(")");
+			if (!ip.empty()) {
+				// Only attempt to grab a country mapping if we actually have an IP address
+				tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+				if(!tmpCountry.empty())
+					ip = tmpCountry + _T(" (") + ip + _T(")");
+			}
 			if(sr->getTTH() != NULL)
 				setTTH(Text::toT(sr->getTTH()->toBase32()));
 		}
@@ -478,5 +481,5 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.61 2005/07/24 19:29:44 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.62 2005/08/07 13:05:47 arnetheduck Exp $
  */
