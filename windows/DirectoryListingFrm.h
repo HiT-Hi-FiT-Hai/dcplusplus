@@ -104,6 +104,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FIND, onFind)
 		COMMAND_ID_HANDLER(IDC_NEXT, onNext)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
+		COMMAND_ID_HANDLER(IDC_FILELIST_DIFF, onListDiff)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -189,6 +190,7 @@ public:
 	}
 
 	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onListDiff(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
@@ -302,6 +304,7 @@ private:
 	HTREEITEM treeRoot;
 	
 	CButton ctrlFind, ctrlFindNext;
+	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
 
 	/** Parameter map for user commands */
@@ -318,7 +321,7 @@ private:
 	bool updating;
 	bool searching;
 
-	int statusSizes[8];
+	int statusSizes[9];
 	
 	DirectoryListing* dl;
 
@@ -335,5 +338,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.55 2005/05/14 07:11:00 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.56 2005/08/10 17:30:55 arnetheduck Exp $
  */

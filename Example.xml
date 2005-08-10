@@ -123,6 +123,7 @@
 		<String Name="FavoriteUsers">Favorite Users</String>
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
+		<String Name="FileListDiff">Subtract list</String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
 		<String Name="FileListRefreshInitiated">File list refresh initiated</String>
 		<String Name="FileNotAvailable">File not available</String>
@@ -164,6 +165,7 @@
 		<String Name="HubUsers">Users</String>
 		<String Name="IgnoreTthSearches">Ignore TTH searches</String>
 		<String Name="IgnoredMessage">Ignored message: </String>
+		<String Name="InvalidListname">Invalid file list name</String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>
 		<String Name="InvalidTree">Downloaded tree does not match TTH root</String>
