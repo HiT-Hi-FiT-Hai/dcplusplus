@@ -115,6 +115,8 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 		if(!aTempTarget.empty()) {
 			qi->setTempTarget(aTempTarget);
 		}
+	} else {
+		qi->setPriority(QueueItem::HIGHEST);
 	}
 
 	if((qi->getDownloadedBytes() > 0))
@@ -1145,7 +1147,7 @@ void QueueManager::saveQueue() throw() {
 						f.write(STRINGLEN("\t\t<Source Nick=\""));
 						f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
 					}
-					if(!s->getPath().empty() || (!s->getUser()->isSet(User::TTH_GET) && qi->getTTH())) {
+					if(!s->getPath().empty() && (!s->getUser()->isSet(User::TTH_GET) || !qi->getTTH()) ) {
 						f.write(STRINGLEN("\" Path=\""));
 						f.write(CHECKESCAPE(s->getPath()));
 						f.write(STRINGLEN("\" Utf8=\""));
@@ -1369,5 +1371,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.136 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.137 2005/08/10 15:55:17 arnetheduck Exp $
  */

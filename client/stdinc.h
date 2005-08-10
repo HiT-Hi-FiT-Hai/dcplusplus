@@ -91,10 +91,11 @@
 #ifdef HAVE_STLPORT
 using namespace _STL;
 #include <hash_map>
+#include <hash_set>
 
 #elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #include <ext/hash_map>
-
+#include <ext/hash_set>
 using namespace std;
 using namespace __gnu_cxx;
 
@@ -111,6 +112,8 @@ namespace __gnu_cxx {
 #else // __GLIBCPP__
 
 #include <hash_map>
+#include <hash_set>
+
 using namespace std;
 using namespace stdext;
 
@@ -120,5 +123,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.15 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.16 2005/08/10 15:55:17 arnetheduck Exp $
  */

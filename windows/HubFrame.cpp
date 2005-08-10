@@ -465,8 +465,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		SetWindowText(x->c_str());
 		delete x;
 	} else if(wParam == STATS) {
-		ctrlStatus.SetText(1, Text::toT(Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
-		ctrlStatus.SetText(2, Text::toT(Util::formatBytes(client->getAvailable())).c_str());
+		ctrlStatus.SetText(1, Text::toT(Util::toString(getUserCount()) + " " + STRING(HUB_USERS)).c_str());
+		ctrlStatus.SetText(2, Text::toT(Util::formatBytes(getAvailable())).c_str());
 	} else if(wParam == GET_PASSWORD) {
 		if(client->getPassword().size() > 0) {
 			client->password(client->getPassword());
@@ -1157,7 +1157,7 @@ void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
 void HubFrame::on(HubUpdated, Client*) throw() { 
-	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName(), true, false) + " (" + client->getHubUrl() + ")");
+	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName() + " " + client->getHubDescription(), true, false) + " (" + client->getHubUrl() + ")");
 }
 void HubFrame::on(Message, Client*, const string& line) throw() { 
 	if(SETTING(FILTER_MESSAGES)) {
@@ -1185,5 +1185,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.112 2005/08/07 13:05:47 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.113 2005/08/10 15:55:18 arnetheduck Exp $
  */

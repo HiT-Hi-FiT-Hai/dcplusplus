@@ -573,7 +573,7 @@ _T("\r\n-- My client supports XML file lists, does yours?\r\n") LINE2
 
 #define MSGS 16
 
-tstring WinUtil::commands = _T("/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /rebuild");
+tstring WinUtil::commands = _T("/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /u <url>, /rebuild");
 
 bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status) {
 	string::size_type i = cmd.find(' ');
@@ -641,6 +641,12 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		} else {
 			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("u")) == 0) {
+		if (param.empty()) {
+			status = TSTRING(SPECIFY_URL);
+		} else {
+			WinUtil::openLink(Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
 		HashManager::getInstance()->rebuild();
@@ -1139,5 +1145,5 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.86 2005/07/21 00:02:20 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.87 2005/08/10 15:55:18 arnetheduck Exp $
  */

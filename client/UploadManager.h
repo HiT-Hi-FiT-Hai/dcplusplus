@@ -136,9 +136,9 @@ private:
 	Upload::List uploads;
 	CriticalSection cs;
 
-	typedef HASH_MAP<User::Ptr, u_int32_t, User::HashFunction> SlotMap;
-	typedef SlotMap::iterator SlotIter;
-	SlotMap reservedSlots;
+	typedef HASH_SET<User::Ptr, User::HashFunction> SlotSet;
+	typedef SlotSet::iterator SlotIter;
+	SlotSet reservedSlots;
 
 	friend class Singleton<UploadManager>;
 	UploadManager() throw();
@@ -157,7 +157,6 @@ private:
 	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
 	
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 
 	// UserConnectionListener
@@ -182,5 +181,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.80 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.81 2005/08/10 15:55:17 arnetheduck Exp $
  */

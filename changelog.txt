@@ -29,6 +29,10 @@
 * Fixed debug assertion (thanks tpo)
 * Dirty tabs settings improved (thanks ullner)
 * ZLib upgraded to 1.2.3, possibly fixing security issues (thanks garg)
+* Slot grants now last one connection instead of 10 minutes
+* [bug 632] Subtotals shown when selecting users in hub frame (thanks cologic)
+* [bug 625] /u chat command opens url (thanks pur)
+* The first word of hub name is taken as short name for displaying purposes when space is limited
 
 
 -- 0.674 2005-04-10 --

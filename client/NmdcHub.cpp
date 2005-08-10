@@ -398,8 +398,15 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
-		getHubIdentity().setNick(param);
-		getHubIdentity().setDescription(param);
+		// Hack - first word goes to hub name, rest to description
+		string::size_type i = param.find(' ');
+		if(i == string::npos) {
+			getHubIdentity().setNick(param);
+			getHubIdentity().setDescription(Util::emptyString);			
+		} else {
+			getHubIdentity().setNick(param.substr(0, i));
+			getHubIdentity().setDescription(param.substr(i+1));
+		}
 		fire(ClientListener::HubUpdated(), this);
 	} else if(cmd == "$Supports") {
 		StringTokenizer<string> st(param, ' ');
@@ -741,6 +748,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.40 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.41 2005/08/10 15:55:17 arnetheduck Exp $
  */
 

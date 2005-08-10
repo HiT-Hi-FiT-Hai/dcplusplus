@@ -326,6 +326,8 @@ public:
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 
+	static bool isShift() { return (GetKeyState(VK_SHIFT) & 0x8000) > 0; }
+
 	template<class T> static HWND hiddenCreateEx(T& p) throw() {
 		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);
 		::LockWindowUpdate(mdiClient);
@@ -348,5 +350,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.48 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.49 2005/08/10 15:55:18 arnetheduck Exp $
  */

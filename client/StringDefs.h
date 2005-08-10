@@ -520,6 +520,7 @@ enum Strings { // @DontAdd
 	SOURCE_TYPE, // "Source Type"
 	SPECIFY_SEARCH_STRING, // "Specify a search string"
 	SPECIFY_SERVER, // "Specify a server to connect to"
+	SPECIFY_URL, // "Specify a URL"
 	SPEED, // "Speed"
 	STATUS, // "Status"
 	STORED_PASSWORD_SENT, // "Stored password sent..."

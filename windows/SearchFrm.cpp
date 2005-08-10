@@ -425,11 +425,11 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile(), 
 				si->sr->getUtf8());
 
-			if((GetKeyState(VK_SHIFT) & 0x8000) > 0)
+			if(WinUtil::isShift())
 				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		}
 	} catch(const Exception&) {
 	}
@@ -439,10 +439,10 @@ void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->addDirectory(Text::fromT(si->path), si->sr->getUser(), Text::fromT(tgt),
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		}
 	} catch(const Exception&) {
 	}
@@ -456,11 +456,11 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile(), 
 				si->sr->getUtf8());
 
-			if((GetKeyState(VK_SHIFT) & 0x8000) > 0)
+			if(WinUtil::isShift())
 				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
-				(GetKeyState(VK_SHIFT) & 0x8000) > 0 ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		}
 	} catch(const Exception&) {
 	}
@@ -824,7 +824,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 	switch(wParam) {
 	case VK_TAB:
 		if(uMsg == WM_KEYDOWN) {
-			onTab((GetKeyState(VK_SHIFT) & 0x8000) > 0);
+			onTab(WinUtil::isShift());
 		}
 		break;
 	case VK_RETURN:
@@ -1140,5 +1140,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.98 2005/08/07 13:05:47 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.99 2005/08/10 15:55:18 arnetheduck Exp $
  */

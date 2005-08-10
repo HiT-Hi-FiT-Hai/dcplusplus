@@ -366,6 +366,7 @@
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
 		<String Name="SettingsAutoOpen">Auto-open at startup</String>
 		<String Name="SettingsBindAddress">Bind address</String>
+		<String Name="SettingsBoldOptions">Bold options</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
 		<String Name="SettingsColors">Colors</String>
@@ -392,7 +393,8 @@
 		<String Name="SettingsFavoriteDirs">Favorite download directories</String>
 		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
-		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
+		<String Name="SettingsFinishedDownloadDirty">Set Finished Download tab bold when an entry is added</String>
+		<String Name="SettingsFinishedUploadDirty">Set Finished Upload tab bold when an entry is added</String>
 		<String Name="SettingsFirewallNat">Firewall with manual port forwarding</String>
 		<String Name="SettingsFirewallPassive">Firewall (passive, last resort)</String>
 		<String Name="SettingsFirewallUpnp">Firewall with UPnP</String>
@@ -466,7 +468,9 @@
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
 		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
-		<String Name="SettingsTabDirty">Set hub/PM/Search tab bold when contents change</String>
+		<String Name="SettingsTabHubDirty">Set hub tab bold when contents change</String>
+		<String Name="SettingsTabPmDirty">Set PM tab bold when contents change</String>
+		<String Name="SettingsTabSearchDirty">Set search tab bold when contents change</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
 		<String Name="SettingsPrioHighest">Highest prio max size</String>
@@ -512,6 +516,7 @@
 		<String Name="SourceType">Source Type</String>
 		<String Name="SpecifySearchString">Specify a search string</String>
 		<String Name="SpecifyServer">Specify a server to connect to</String>
+		<String Name="SpecifyUrl">Specify a URL</String>
 		<String Name="Speed">Speed</String>
 		<String Name="Status">Status</String>
 		<String Name="StoredPasswordSent">Stored password sent...</String>
