@@ -115,6 +115,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onSearchSpy)
 		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onFileADLSearch)
 		COMMAND_ID_HANDLER(IDC_NET_STATS, onNetStats)
+		COMMAND_ID_HANDLER(IDC_VIEW_WAITING_USERS, onViewWaitingUsers)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
@@ -167,6 +168,7 @@ public:
 	LRESULT onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onNetStats(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onViewWaitingUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -398,5 +400,5 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.61 2005/07/23 17:52:22 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.62 2005/08/12 21:30:05 arnetheduck Exp $
  */

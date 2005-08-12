@@ -32,6 +32,8 @@
 #include "AdcCommand.h"
 #include "FavoriteManager.h"
 
+#include <functional>
+
 static const string UPLOAD_AREA = "Uploads";
 
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) { 
@@ -158,9 +160,19 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			} else {
 				delete is;
 				aSource->maxedOut();
+
+				// Check for tth root identifier
+				string tFile = aFile;
+				if (tFile.compare(0, 4, "TTH/") == 0)
+					tFile = ShareManager::getInstance()->translateTTH(aFile.substr(4));
+
+				addFailedUpload(aSource, tFile +
+					" (" + Util::toString((aStartPos*1000/(File::getSize(file)+10))/10.0)+"% of " + Util::formatBytes(File::getSize(file)) + " done)");
 				aSource->disconnect();
 				return false;
 			}
+		} else {
+			clearUserFiles(aSource->getUser());	// this user is using a full slot, nix them.
 		}
 
 		setLastGrant(GET_TICK());
@@ -321,6 +333,42 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 	removeUpload(u);
 }
 
+void UploadManager::addFailedUpload(UserConnection::Ptr source, string filename) {
+	{
+		Lock l(cs);
+		if (!count_if(waitingUsers.begin(), waitingUsers.end(), UserMatch(source->getUser())))
+			waitingUsers.push_back(WaitingUser(source->getUser(), GET_TICK()));
+		waitingFiles[source->getUser()].insert(filename);		//files for which user's asked
+	}
+
+	fire(UploadManagerListener::WaitingAddFile(), source->getUser(), filename);
+}
+
+void UploadManager::clearUserFiles(const User::Ptr& source) {
+	Lock l(cs);
+	//run this when a user's got a slot or goes offline.
+	UserDeque::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), UserMatch(source));
+	if (sit == waitingUsers.end()) return;
+
+	FilesMap::iterator fit = waitingFiles.find(sit->first);
+	if (fit != waitingFiles.end()) waitingFiles.erase(fit);
+	fire(UploadManagerListener::WaitingRemoveUser(), sit->first);
+
+	waitingUsers.erase(sit);
+}
+
+vector<User::Ptr> UploadManager::getWaitingUsers() {
+	Lock l(cs);
+	vector<User::Ptr> u;
+	transform(waitingUsers.begin(), waitingUsers.end(), back_inserter(u), select1st<WaitingUser>());
+	return u;
+}
+
+const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const User::Ptr &u) {
+	Lock l(cs);
+	return waitingFiles.find(u)->second;
+}
+
 void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
 	dcassert(aConn->getUpload() == NULL);
 	aConn->removeListener(this);
@@ -333,6 +381,19 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
 		aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 	}
 	ConnectionManager::getInstance()->putUploadConnection(aConn, ntd);
+}
+
+void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
+	Lock l(cs);
+
+	UserDeque::iterator i = stable_partition(waitingUsers.begin(), waitingUsers.end(), WaitingUserFresh());
+	for (UserDeque::iterator j = i; j != waitingUsers.end(); ++j) {
+		FilesMap::iterator fit = waitingFiles.find(j->first);
+		if (fit != waitingFiles.end()) waitingFiles.erase(fit);
+		fire(UploadManagerListener::WaitingRemoveUser(), j->first);
+	}
+
+	waitingUsers.erase(i, waitingUsers.end());
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() { 
@@ -439,9 +500,14 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 			}
 		}
 	}
+
+	//Remove references to them.
+	if(!aUser->isOnline()) {
+		clearUserFiles(aUser);
+	}
 }
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.98 2005/08/10 15:55:17 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.99 2005/08/12 21:30:11 arnetheduck Exp $
  */

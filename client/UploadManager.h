@@ -27,6 +27,7 @@
 #include "Singleton.h"
 
 #include "ClientManagerListener.h"
+#include <deque>
 #include "File.h"
 #include "MerkleTree.h"
 
@@ -65,11 +66,15 @@ public:
 	typedef X<1> Failed;
 	typedef X<2> Starting;
 	typedef X<3> Tick;
+	typedef X<4> WaitingAddFile;
+	typedef X<5> WaitingRemoveUser;
 
 	virtual void on(Starting, Upload*) throw() { };
 	virtual void on(Tick, const Upload::List&) throw() { };
 	virtual void on(Complete, Upload*) throw() { };
 	virtual void on(Failed, Upload*, const string&) throw() { };
+	virtual void on(WaitingAddFile, const User::Ptr, const string&) throw() { };
+	virtual void on(WaitingRemoveUser, const User::Ptr) throw() { };
 
 };
 
@@ -123,6 +128,12 @@ public:
 	/** @param aUser Reserve an upload slot for this user and connect. */
 	void reserveSlot(const User::Ptr& aUser);
 
+	typedef set<string> FileSet;
+	typedef hash_map<User::Ptr, FileSet, User::HashFunction> FilesMap;
+	void clearUserFiles(const User::Ptr&);
+	vector<User::Ptr> getWaitingUsers();
+	const FileSet& getWaitingUserFiles(const User::Ptr &);
+
 	/** @internal */
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
@@ -139,6 +150,24 @@ private:
 	typedef HASH_SET<User::Ptr, User::HashFunction> SlotSet;
 	typedef SlotSet::iterator SlotIter;
 	SlotSet reservedSlots;
+
+	typedef pair<User::Ptr, u_int32_t> WaitingUser;
+	typedef deque<WaitingUser> UserDeque;
+
+	struct UserMatch {
+		UserMatch(const User::Ptr& u) : u(u) { }
+		User::Ptr u;
+		bool operator()(const WaitingUser& wu) { return wu.first == u; }
+	};
+
+	struct WaitingUserFresh {
+		bool operator()(const WaitingUser& wu) { return wu.second > GET_TICK() - 5*60*1000; }
+	};
+
+	//functions for manipulating waitingFiles and waitingUsers
+	UserDeque waitingUsers;		//this one merely lists the users waiting for slots
+	FilesMap waitingFiles;		//set of files which this user has asked for
+	void addFailedUpload(UserConnection::Ptr source, string filename);
 
 	friend class Singleton<UploadManager>;
 	UploadManager() throw();
@@ -158,6 +187,7 @@ private:
 	
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 
 	// UserConnectionListener
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();
@@ -181,5 +211,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.81 2005/08/10 15:55:17 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.82 2005/08/12 21:30:11 arnetheduck Exp $
  */

@@ -391,6 +391,7 @@
 #define IDC_SETTINGS_AUTODROP_FILELISTS 1405
 #define IDC_FILELIST_DIFF               1406
 #define IDC_SETTINGS_MEBIBYES           1500
+#define IDC_COPY_FILENAME               1600
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -398,6 +399,8 @@
 #define IDC_DOWNLOAD_TARGET             5000
 #define IDC_DOWNLOAD_TARGET_DIR         5500
 #define IDC_SELECT_WINDOW               6000
+#define IDC_VIEW_WAITING_USERS          6628
+#define IDR_WAITING_USERS               6629
 #define IDC_USER_COMMAND                6500
 #define IDC_PRIORITY_PAUSED             7000
 #define IDC_PRIORITY_LOWEST             7001

@@ -60,6 +60,7 @@
 		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
 		<String Name="ConfiguredHubLists">Configured Public Hub Lists</String>
+		<String Name="CopyFilename">Copy Filename</String>
 		<String Name="CopyHub">Copy address to clipboard</String>
 		<String Name="CopyMagnet">Copy magnet link to clipboard</String>
 		<String Name="CopyNick">Copy nick to clipboard</String>
@@ -579,6 +580,7 @@
 		<String Name="VirtualNameLong">Name under which the others see the directory</String>
 		<String Name="Waiting">Waiting...</String>
 		<String Name="WaitingToRetry">Waiting to retry...</String>
+		<String Name="WaitingUsers">Waiting Users</String>
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>
 		<String Name="YesStr">Yes</String>

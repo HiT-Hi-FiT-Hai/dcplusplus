@@ -81,6 +81,7 @@ IDR_FINISHED_UL         ICON                    "res\\FinishedUL.ico"
 IDR_USERS               ICON                    "res\\FavoriteUser.ico"
 IDR_SPY                 ICON                    "res\\searchspy.ico"
 IDR_NET_STATS           ICON                    "res\\netstats.ico"
+IDR_WAITING_USERS       ICON                    "res\\wuicon.ico"
 IDI_MAGNET              ICON                    "res\\magnet.ico"
 
 /////////////////////////////////////////////////////////////////////////////

@@ -37,6 +37,7 @@
 #include "FinishedULFrame.h"
 #include "TextFrame.h"
 #include "StatsFrame.h"
+#include "WaitingUsersFrame.h"
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 #include "UPnP.h"
@@ -124,7 +125,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(IDB_TOOLBAR, 16, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	images.CreateFromImage(IDB_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	m_CmdBar.m_hImageList = images;
 
 	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
@@ -134,6 +135,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
 	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
 	m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+	m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
 	m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 	m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
@@ -318,7 +320,7 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.SetImageList(largeImages);
 	ctrlToolbar.SetHotImageList(largeImagesHot);
 
-	const int numButtons = 21;
+	const int numButtons = 22;
 
 
 	TBBUTTON tb[numButtons];
@@ -372,6 +374,12 @@ HWND MainFrame::createToolbar() {
 	n++;
 	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FINISHED;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_VIEW_WAITING_USERS;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
@@ -574,6 +582,12 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
+LRESULT MainFrame::onViewWaitingUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+{
+	WaitingUsersFrame::openWindow();
+	return 0;
+}
+
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	PropertiesDlg dlg(SettingsManager::getInstance());
@@ -755,6 +769,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
 			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
+			case IDC_VIEW_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
 			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
 			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
@@ -1158,5 +1173,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.99 2005/08/10 17:30:55 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.100 2005/08/12 21:30:05 arnetheduck Exp $
  */

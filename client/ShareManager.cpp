@@ -115,6 +115,16 @@ ShareManager::Directory::~Directory() {
 	}
 }
 
+string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
+	TTHValue v(TTH);
+	HashFileIter i = tthIndex.find(&v);
+	if(i != tthIndex.end()) {
+		return i->second->getADCPath();
+	} else {
+		throw ShareException("File Not Available");
+	}
+}
+
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	RLock<> l(cs);
 	if(aFile == "MyList.DcLst") {
@@ -131,13 +141,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 
 		// Check for tth root identifier
 		if(aFile.compare(0, 4, "TTH/") == 0) {
-			TTHValue v(aFile.substr(4));
-			HashFileIter i = tthIndex.find(&v);
-			if(i != tthIndex.end()) {
-				file = i->second->getADCPath();
-			} else {
-				throw ShareException("File Not Available");
-			}
+			file = translateTTH(aFile.substr(4));
 		} else if(aFile[0] != '/') {
 			throw ShareException("File Not Available");
 		}  else {
@@ -1506,5 +1510,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.134 2005/05/14 07:11:03 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.135 2005/08/12 21:30:11 arnetheduck Exp $
  */

@@ -386,6 +386,9 @@
 				RelativePath=".\windows\UsersFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\WaitingUsersFrame.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\WindowsPage.cpp">
 			</File>
 			<File
@@ -544,6 +547,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\UsersFrame.h">
+			</File>
+			<File
+				RelativePath=".\windows\WaitingUsersFrame.h">
 			</File>
 			<File
 				RelativePath=".\windows\WindowsPage.h">
