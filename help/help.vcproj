@@ -85,10 +85,16 @@
 				RelativePath=".\faq_different_icons.html">
 			</File>
 			<File
+				RelativePath=".\faq_install.html">
+			</File>
+			<File
 				RelativePath=".\faq_keyboard_commands.html">
 			</File>
 			<File
 				RelativePath=".\faq_nosearch.html">
+			</File>
+			<File
+				RelativePath=".\faq_secret.html">
 			</File>
 			<File
 				RelativePath=".\faq_slowdownload.html">
@@ -101,12 +107,6 @@
 			</File>
 			<File
 				RelativePath=".\faq_upnp.html">
-			</File>
-			<File
-				RelativePath=".\faq_install.html">
-			</File>
-			<File
-				RelativePath=".\faq_secret.html">
 			</File>
 			<File
 				RelativePath=".\favorite_hubs.html">
@@ -122,6 +122,9 @@
 			</File>
 			<File
 				RelativePath=".\keyboard_commands.html">
+			</File>
+			<File
+				RelativePath=".\Links.html">
 			</File>
 			<File
 				RelativePath=".\menu_help.html">
@@ -163,6 +166,9 @@
 				RelativePath=".\settings_logs.html">
 			</File>
 			<File
+				RelativePath=".\settings_queue.html">
+			</File>
+			<File
 				RelativePath=".\settings_sharing.html">
 			</File>
 			<File
@@ -170,6 +176,9 @@
 			</File>
 			<File
 				RelativePath=".\settings_windows.html">
+			</File>
+			<File
+				RelativePath=".\template.html">
 			</File>
 		</Filter>
 	</Files>

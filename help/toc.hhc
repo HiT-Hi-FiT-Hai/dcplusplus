@@ -100,8 +100,12 @@
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Download to">
+				<param name="Name" value="Favorites">
 				<param name="Local" value="settings_favoritedirs.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Queue">
+				<param name="Local" value="settings_queue.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">

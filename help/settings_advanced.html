@@ -23,22 +23,6 @@ redirect.</dd>
   <dt>Clear Search Box After Each Search</dt>
   <dd>After each search, your search terms will be cleared. The last
 terms will be accessible through the drop-down. You can set how many terms that you want to save by using <a href="settings_expert.html#searchhistory">Search history</a>.</dd>
-  <dt>Automatically Search for Alternative Download Locations</dt>
-  <dd>Every few minutes, the client will search for files in your
-Download Queue to find more download locations (more users/sources). If
-the download was started with a TTH root hash available, the autosearch
-will find exact matches by searching via hash. Otherwise, the
-autosearch will try to find matches by searching with a slightly
-modified version of the filename.</dd>
-  <dt>Automatically Match Queue for Auto Search Hits</dt>
-  <dd>Enable to automatically download a user's list and match them as
-sources for files in your Download Queue when they've been discovered
-as a source for one of the files you're downloading. If you download
-files in sets, that user is probably a source for many more files
-you're downloading. <span style="font-style: italic;">Enable if unsure.
-The drawbacks are that it might add slower sources, possibly increasing
-the time needed to complete a download, and that you'll download a lot
-of file lists.</span></dd>
   <dt>Keep Duplicate Files in Your File List</dt>
   <dd>Decides whether to remove duplicate files from your share or to
 list them but subtract their size from your total reported share size.
@@ -112,18 +96,6 @@ with your current share. <span style="font-style: italic;">Disabling
 this option is really only needed for really large shares where
 refreshing takes so much time that the client is unusable in the mean
 time.</span></dd>
-  <dt><a name="antifrag"></a>Use AntiFragmentation Method for
-Downloads</dt>
-  <dd>This option will try to reserve the full space needed for a file
-when starting the download. This should reduce the fragmentation of
-files on your hard drive. (Fragmentation is bad because reading files
-from your drive will take longer because the drive head has to hop from
-place to place instead of reading in a continuous fashion.) <span
- style="font-style: italic;">Enable if unsure. The drawbacks are a
-short pause at the start of every download during which the drive space
-is reserved, less drive space being available while you are
-downloading, and possibly losing progress on your download if Windows
-crashes and DC++ cannot exit cleanly.</span></dd>
   <dt>Don't Send the Away Message to Bots</dt>
   <dd>When in away mode, don't send the away message to users that
 appear to be bots. Having this option disabled is very annoying if you
@@ -131,11 +103,6 @@ get messages from bots that link chat from multiple users (the most
 well known example is the Operator Chat facility found in many hubs).
 Users are judged to be bots if they have an empty Connection type. <span
  style="font-style: italic;">Enable if unsure.</span></dd>
-  <dt>Skip Zero-Byte Files</dt>
-  <dd>When this option is enabled, any zero byte files you try to
-download will be silently skipped. Sometimes empty files contain
-information through their naming. However every file, even an empty
-one, will consume some drive space.</dd>
   <dt><a name="break"></a>Break on First ADLSearch Match</dt>
   <dd>If you're using the <a href="adlsearch.html">ADLSearch</a>
 features, keeping this option enabled will make a file show up in only
@@ -160,10 +127,6 @@ custom commands from a remote&nbsp;hub. Custom User Commands may show
 when you click on the hub's tab, or on a user in the Transfer View,
 Search Window, or User List, and can enable you to read the rules,
 perform operator functions, interact with hub bots, etcetera.</dd>
-  <dt><a name="filelist"></a>Log Filelist transfers</dt>
-  <dd>Add successful file lists transfers&nbsp;to your upload and
-download logs. Otherwise only transferred files are logged. <em>Enabled
-by default.</em></dd>
   <dt>Send Unknown /commands to the Hub</dt>
   <dd>Enable this to send <a href="chat_commands.html">/commands</a>
 that DC++ does not recognize to the hub as normal chat.</dd>
@@ -172,10 +135,6 @@ that DC++ does not recognize to the hub as normal chat.</dd>
 this option will add the files to your share as soon as they're
 finished. Searches will return the file, and users can download it. It
 will not appear in your file list until the next refresh.</dd>
-  <dt>Don't download files already in share</dt>
-  <dd>This option will stop you from downloading files which already
-exist in one of your shared directories. Note that this only works with
-those files which have a TTH.</dd>
   <dt>Use CTRL for line history</dt>
   <dd>Press up arrow while holding down CTRL to scroll through line
 history. If not enabled, up arrow will be enough.</dd>
@@ -183,14 +142,6 @@ history. If not enabled, up arrow will be enough.</dd>
   <dd>Enables "Only results with TTH root" in the search window as
 standard. This option will cause search results that don't have a TTH
 to not be displayed.</dd>
-  <dt><a name="advanced_resume"></a>Advanced resume using TTH</dt>
-  <dd>Enables a more advanced form of transfer resuming than the <a
- href="settings_expert.html#rollback">rollback</a> method.&nbsp; The
-last block of the incomplete file will be checked for validity using
-the leaves, retrieved from the remote client, of the TTH.&nbsp; If the
-block fails verification, the previous block in the file will be tried,
-and so on, until a good block is found, or there is no more data in the
-file.</dd>
   <dt>Toggle window when selecting an active tab</dt>
   <dd>With this option enabled, clicking on an active tab will mimic
 the behavior of Windows 98+ and send the currently active window to the
