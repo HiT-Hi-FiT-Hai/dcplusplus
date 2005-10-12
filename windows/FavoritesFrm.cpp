@@ -200,8 +200,19 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	FavoriteHubEntry e;
 	FavHubProperties dlg(&e);
 
-	if(dlg.DoModal((HWND)*this) == IDOK)
-		FavoriteManager::getInstance()->addFavorite(e);
+	while (true) {
+		if(dlg.DoModal((HWND)*this) == IDOK) {
+			if (FavoriteManager::getInstance()->checkFavHubExists(e)){
+				MessageBox(
+					CTSTRING(FAVORITE_HUB_ALREADY_EXISTS), _T(" "), MB_ICONWARNING | MB_OK);
+			} else {
+				FavoriteManager::getInstance()->addFavorite(e);
+				break;
+			}
+		} else {
+			break;
+		}
+	}
 	return 0;
 }
 
@@ -317,5 +328,5 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.37 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.38 2005/10/12 14:02:53 arnetheduck Exp $
  */

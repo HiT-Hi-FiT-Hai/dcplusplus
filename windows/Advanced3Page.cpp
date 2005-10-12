@@ -41,6 +41,8 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_TEXT_MINISLOT, ResourceManager::SETTINGS_TEXT_MINISLOT }, 
 	{ IDC_SETTINGS_KB2, ResourceManager::KiB },
 	{ IDC_SETTINGS_BIND_ADDRESS, ResourceManager::SETTINGS_BIND_ADDRESS },
+	{ IDC_SETTINGS_MAX_FILELIST_SIZE, ResourceManager::SETTINGS_MAX_FILELIST_SIZE },
+	{ IDC_SETTINGS_MB, ResourceManager::MiB },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -53,6 +55,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_SEARCH_HISTORY, SettingsManager::SEARCH_HISTORY, PropPage::T_INT },
 	{ IDC_SET_MINISLOT_SIZE, SettingsManager::SET_MINISLOT_SIZE, PropPage::T_INT },
 	{ IDC_BIND_ADDRESS, SettingsManager::BIND_ADDRESS, PropPage::T_STR },
+	{ IDC_MAX_FILELIST_SIZE, SettingsManager::MAX_FILELIST_SIZE, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -89,5 +92,5 @@ LRESULT Advanced3Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file
- * $Id: Advanced3Page.cpp,v 1.9 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: Advanced3Page.cpp,v 1.10 2005/10/12 14:02:53 arnetheduck Exp $
  */

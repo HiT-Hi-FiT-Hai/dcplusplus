@@ -63,7 +63,7 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize",
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize", "MaxFilelistSize", 
 	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
 	"AutoDropSpeed", "AutoDropInterval", "AutoDropElapsed", "AutoDropInactivity", "AutoDropMinSources", "AutoDropFilesize", 
 	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect", 
@@ -181,7 +181,7 @@ SettingsManager::SettingsManager()
 	setDefault(TAB_COMPLETION, true);
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
-	setDefault(LOG_FILELIST_TRANSFERS, true);
+	setDefault(LOG_FILELIST_TRANSFERS, false);
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
 	setDefault(MAX_HASH_SPEED, 0);
@@ -210,6 +210,7 @@ SettingsManager::SettingsManager()
 	setDefault(TOGGLE_ACTIVE_WINDOW, true);
 	setDefault(SEARCH_HISTORY, 10);
 	setDefault(SET_MINISLOT_SIZE, 64);
+	setDefault(MAX_FILELIST_SIZE, 512);
 	setDefault(PRIO_HIGHEST_SIZE, 64);
 	setDefault(PRIO_HIGH_SIZE, 0);
 	setDefault(PRIO_NORMAL_SIZE, 0);
@@ -312,8 +313,6 @@ void SettingsManager::load(string const& aFileName)
 
 		if(SETTING(SET_MINISLOT_SIZE) < 64)
 			set(SET_MINISLOT_SIZE, 64);
-		if(SETTING(PRIO_HIGHEST_SIZE) < 16)
-			set(PRIO_HIGHEST_SIZE, 16);
 		if(SETTING(AUTODROP_INTERVAL) < 1)
 			set(AUTODROP_INTERVAL, 1);
 		if(SETTING(AUTODROP_ELAPSED) < 1)
@@ -393,5 +392,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.129 2005/08/07 13:05:44 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.130 2005/10/12 14:02:53 arnetheduck Exp $
  */

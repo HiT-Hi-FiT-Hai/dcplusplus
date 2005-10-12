@@ -167,6 +167,14 @@ void FavoriteManager::removeFavorite(FavoriteHubEntry* entry) {
 	save();
 }
 
+bool FavoriteManager::checkFavHubExists(const FavoriteHubEntry& aEntry){
+	FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
+	if(i != favoriteHubs.end()) {
+		return true;
+	}
+	return false;
+}
+
 bool FavoriteManager::addFavoriteDir(const string& aDirectory, const string & aName){
 	string path = aDirectory;
 
@@ -582,5 +590,5 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.7 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.8 2005/10/12 14:02:53 arnetheduck Exp $
  */

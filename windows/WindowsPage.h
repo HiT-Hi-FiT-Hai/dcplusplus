@@ -56,11 +56,12 @@ protected:
 	static Item items[];
 	static ListItem listItems[];
 	static ListItem optionItems[];
+	static ListItem confirmItems[];
 };
 
 #endif // !defined(WINDOWS_PAGE_H)
 
 /**
  * @file
- * $Id: WindowsPage.h,v 1.3 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: WindowsPage.h,v 1.4 2005/10/12 14:02:53 arnetheduck Exp $
  */

@@ -97,10 +97,14 @@ void DirectoryListing::loadFile(const string& name) {
 		const size_t BUF_SIZE = 64*1024;
 		char buf[BUF_SIZE];
 		size_t len;
+		size_t bytesRead = 0;
 		for(;;) {
 			size_t n = BUF_SIZE;
 			len = f.read(buf, n);
 			txt.append(buf, len);
+			bytesRead += len;
+			if(SETTING(MAX_FILELIST_SIZE) && bytesRead > (size_t)SETTING(MAX_FILELIST_SIZE)*1024*1024)
+				break;
 			if(len < BUF_SIZE)
 				break;
 		}
@@ -424,5 +428,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.53 2005/08/10 17:30:55 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.54 2005/10/12 14:02:53 arnetheduck Exp $
  */

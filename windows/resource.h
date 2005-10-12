@@ -365,6 +365,8 @@
 #define IDC_SETTINGS_AUTOPRIO           1312
 #define IDC_BOLD_BOOLEANS               1313
 #define IDC_SETTINGS_BOLD_CONTENTS      1314
+#define IDC_SETTINGS_CONFIRM_OPTIONS    1315
+#define IDC_CONFIRM_OPTIONS             1316
 #define IDC_AUTODROP_SPEED              1350
 #define IDC_AUTODROP_INTERVAL           1351
 #define IDC_AUTODROP_ELAPSED            1352
@@ -389,9 +391,12 @@
 #define IDC_SETTINGS_AUTODROP_ALL       1403
 #define IDC_SETTINGS_AUTODROP_DISCONNECT 1404
 #define IDC_SETTINGS_AUTODROP_FILELISTS 1405
-#define IDC_FILELIST_DIFF               1406
-#define IDC_SETTINGS_MEBIBYES           1500
-#define IDC_COPY_FILENAME               1600
+#define IDC_SETTINGS_MEBIBYES           1406
+#define IDC_FILELIST_DIFF               1407
+#define IDC_COPY_FILENAME               1408
+#define IDC_MAX_FILELIST_SIZE           1409
+#define IDC_SETTINGS_MAX_FILELIST_SIZE  1410
+#define IDC_SETTINGS_MB                 1411
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -433,7 +438,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1316
+#define _APS_NEXT_CONTROL_VALUE         1317
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

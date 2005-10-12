@@ -91,8 +91,6 @@ void QueuePage::write() {
 	PropPage::write((HWND)*this, items, 0, 0);
 	PropPage::write((HWND)*this, items, optionItems, GetDlgItem(IDC_OTHER_QUEUE_OPTIONS));
 
-	if(SETTING(PRIO_HIGHEST_SIZE) < 16)
-		settings->set(SettingsManager::PRIO_HIGHEST_SIZE, 16);
 	if(SETTING(AUTODROP_INTERVAL) < 1)
 		settings->set(SettingsManager::AUTODROP_INTERVAL, 1);
 	if(SETTING(AUTODROP_ELAPSED) < 1)
@@ -111,5 +109,5 @@ LRESULT QueuePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 /**
  * @file
- * $Id: QueuePage.cpp,v 1.5 2005/07/24 19:29:44 arnetheduck Exp $
+ * $Id: QueuePage.cpp,v 1.6 2005/10/12 14:02:53 arnetheduck Exp $
  */

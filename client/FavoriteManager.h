@@ -173,6 +173,7 @@ public:
 
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
+	bool checkFavHubExists(const FavoriteHubEntry& aEntry);
 
 // Favorite Directories
 	bool addFavoriteDir(const string& aDirectory, const string& aName);
@@ -280,5 +281,5 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.4 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.5 2005/10/12 14:02:53 arnetheduck Exp $
  */

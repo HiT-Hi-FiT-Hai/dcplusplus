@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import re
 import codecs
-import xml.sax.saxutils
+from xml.sax.saxutils import quoteattr, escape
 
 def makename(oldname):
 	name = "";
@@ -36,8 +36,8 @@ lre = re.compile('\s*(\w+),\s*//\s*\"(.+)\"\s*')
 
 decoder = codecs.getdecoder('cp1252')
 encoder = codecs.getencoder('utf8')
-recodeattr = lambda s: encoder(decoder(xml.sax.saxutils.quoteattr(s))[0])[0]
-recodeval = lambda s: encoder(decoder(xml.sax.saxutils.escape(s.replace("\\\\","\\").replace("\\t","\t")))[0])[0]
+recodeattr = lambda s: encoder(decoder(quoteattr(s))[0])[0]
+recodeval = lambda s: encoder(decoder(escape(s, {"\\\\":"\\","\\t":"\t"}))[0])[0]
 
 for x in file("client/StringDefs.h", "r"):
     if x.startswith("// @Strings: "):

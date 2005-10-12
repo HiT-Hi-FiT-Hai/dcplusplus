@@ -166,6 +166,7 @@
 		<String Name="HubUsers">Users</String>
 		<String Name="IgnoreTthSearches">Ignore TTH searches</String>
 		<String Name="IgnoredMessage">Ignored message: </String>
+		<String Name="IncompleteFavHub">Hub address cannot be empty.</String>
 		<String Name="InvalidListname">Invalid file list name</String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>

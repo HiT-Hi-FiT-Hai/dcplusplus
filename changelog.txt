@@ -34,6 +34,13 @@
 * [bug 625] /u chat command opens url (thanks pur)
 * The first word of hub name is taken as short name for displaying purposes when space is limited
 * [bug 629] Waiting users frame added (thanks cologic)
+* Removed old versions check (thanks cologic)
+* Added option to limit maximum file list size to open (thanks paka)
+* Filelist transfer logging default to off (thanks paka)
+* Added some checks when creating fav hubs (thanks tpo)
+* More settings screen updates (thanks ullner)
+* Fixed linux file moving (thanks naga)
+* Added option to only download files with TTH (thanks ullner)
 
 
 -- 0.674 2005-04-10 --
