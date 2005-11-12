@@ -175,7 +175,7 @@ LRESULT FinishedFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		::ShellExecute(NULL, NULL, Text::toT(Util::getFilePath(entry->getTarget())).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		WinUtil::openFolder(Text::toT(entry->getTarget()));
 	}
 	return 0;
 }
@@ -251,5 +251,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.37 2005/08/07 13:05:47 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.38 2005/11/12 10:23:02 arnetheduck Exp $
  */

@@ -35,7 +35,7 @@ public:
 		SetTitle(CTSTRING(SETTINGS_UPLOADS));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
-	~UploadPage() {
+	virtual ~UploadPage() {
 		ctrlDirectories.Detach();
 		ctrlTotal.Detach();
 	};
@@ -79,5 +79,5 @@ protected:
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.17 2005/11/12 10:23:02 arnetheduck Exp $
  */

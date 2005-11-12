@@ -929,7 +929,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_DISCUSS: site = links.discuss; break;
 	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
 	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
-	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/xclick/business=arnetheduck%40gmail.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
+	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8"); break;
 	default: dcassert(0);
 	}
 
@@ -1148,5 +1148,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.101 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.102 2005/11/12 10:23:02 arnetheduck Exp $
  */

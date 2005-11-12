@@ -106,12 +106,6 @@ public:
 		return FALSE;
 	};
 
-	// Final message
-	virtual void OnFinalMessage(HWND /*hWnd*/) 
-	{
-		delete this;
-	}
-
 	// Update control layouts
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
@@ -154,5 +148,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.11 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.12 2005/11/12 10:23:02 arnetheduck Exp $
  */

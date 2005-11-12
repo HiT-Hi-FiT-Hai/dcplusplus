@@ -117,23 +117,22 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 	if(c.getParameters().empty())
 		return;
 
-	OnlineUser* u = findUser(c.getFrom());
-	if(!u)
+	OnlineUser* from = findUser(c.getFrom());
+	if(!from)
 		return;
+	OnlineUser* to = findUser(c.getTo());
+	if(!to)
+		return;
+
 	string pmFrom;
 	if(c.getParam("PM", 1, pmFrom)) { // add PM<group-cid> as well
-		OnlineUser* pm = findUser(CID(pmFrom));
-		if(!pm)
+		OnlineUser* replyTo = findUser(CID(pmFrom));
+		if(!replyTo)
 			return;
 
-		if(pm->getUser() == ClientManager::getInstance()->getMe()) {
-			return;
-		}
-		string msg = '<' + u->getIdentity().getNick() + "> " + c.getParam(0);
-		fire(ClientListener::PrivateMessage(), this, *pm, msg);
+		fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, c.getParam(0));
 	} else {
-		string msg = '<' + u->getIdentity().getNick() + "> " + c.getParam(0);
-		fire(ClientListener::Message(), this, msg);
+		fire(ClientListener::Message(), this, *from, c.getParam(0));
 	}		
 }
 
@@ -239,7 +238,11 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	if(c.getParameters().size() < 2)
 		return;
 
-	fire(ClientListener::Message(), this, c.getParam(1));
+	OnlineUser* u = findUser(c.getFrom());
+	if(!u)
+		return;
+
+	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
 
 void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {	
@@ -413,7 +416,7 @@ void AdcHub::on(Connected) throw() {
 
 void AdcHub::on(Line, const string& aLine) throw() { 
 	if(BOOLSETTING(ADC_DEBUG)) {
-		fire(ClientListener::Message(), this, "<ADC>" + aLine + "</ADC>");
+		fire(ClientListener::StatusMessage(), this, "<ADC>" + aLine + "</ADC>");
 	}
 	dispatch(aLine); 
 }
@@ -426,5 +429,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.52 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.53 2005/11/12 10:23:02 arnetheduck Exp $
  */

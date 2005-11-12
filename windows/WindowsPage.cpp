@@ -28,6 +28,13 @@
 
 PropPage::Item WindowsPage::items[] = { { 0, 0, PropPage::T_END } };
 
+PropPage::TextItem WindowsPage::textItem[] = {
+	{ IDC_SETTINGS_AUTO_OPEN, ResourceManager::SETTINGS_AUTO_OPEN },
+	{ IDC_SETTINGS_WINDOWS_OPTIONS, ResourceManager::SETTINGS_WINDOWS_OPTIONS },
+	{ IDC_SETTINGS_CONFIRM_OPTIONS, ResourceManager::SETTINGS_CONFIRM_DIALOG_OPTIONS },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 WindowsPage::ListItem WindowsPage::listItems[] = {
 	{ SettingsManager::OPEN_PUBLIC, ResourceManager::PUBLIC_HUBS },
 	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::FAVORITE_HUBS },
@@ -87,5 +94,5 @@ LRESULT WindowsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: WindowsPage.cpp,v 1.7 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: WindowsPage.cpp,v 1.8 2005/11/12 10:23:02 arnetheduck Exp $
  */

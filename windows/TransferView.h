@@ -40,7 +40,7 @@ public:
 	DECLARE_WND_CLASS(_T("TransferView"))
 
 	TransferView() { }
-	~TransferView(void);
+	virtual ~TransferView(void);
 
 	typedef UserInfoBaseHandler<TransferView> uibBase;
 	typedef UCHandler<TransferView> ucBase;
@@ -252,5 +252,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.22 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.23 2005/11/12 10:23:02 arnetheduck Exp $
  */

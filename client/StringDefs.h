@@ -381,6 +381,7 @@ enum Strings { // @DontAdd
 	SETTINGS_COMMAND, // "Command"
 	SETTINGS_COMPRESS_TRANSFERS, // "Enable safe and compressed transfers"
 	SETTINGS_CONFIGURE_HUB_LISTS, // "Configure Public Hub Lists"
+	SETTINGS_CONFIRM_DIALOG_OPTIONS, // "Confirm dialog options"
 	SETTINGS_CONFIRM_EXIT, // "Confirm application exit"
 	SETTINGS_CONFIRM_HUB_REMOVAL, // "Confirm favorite hub removal"
 	SETTINGS_CONFIRM_ITEM_REMOVAL, // "Confirm item removal in download queue"

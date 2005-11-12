@@ -33,7 +33,6 @@
 #include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
 
-CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
 
 LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -70,59 +69,36 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
+void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
-	Lock l(cs);
-	FrameIter i = frames.find(aUser);
-	if(i == frames.end()) {
-		bool found = false;
-		for(i = frames.begin(); i != frames.end(); ++i) {
-			if( (!i->first->isOnline()) && 
-				(i->first->getFirstNick() == aUser->getFirstNick()) /*&&
-				(i->first->getLastHubAddress() == aUser->getLastHubAddress())*/ ) {
-				
-				found = true;
-				p = i->second;
-				frames.erase(i);
-				frames[aUser] = p;
-				p->setUser(aUser);
-				p->addLine(aMessage);
-				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
-					MessageBeep(MB_OK);
-				}
-				break;
-			}
+	FrameIter i = frames.find(replyTo);
+	if(i != frames.end()) {
+		p = new PrivateFrame(replyTo);
+		frames[replyTo] = p;
+		p->readLog();
+		p->addLine(from, aMessage);
+		if(Util::getAway()) {
+			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && from->isSet(User::BOT)))
+				p->sendMessage(Text::toT(Util::getAwayMessage()));
 		}
-		if(!found) {
-			p = new PrivateFrame(aUser);
-			frames[aUser] = p;
-			p->readLog();
-			p->addLine(aMessage);
-			if(Util::getAway()) {
-				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
-				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->isSet(User::BOT)))
-					p->sendMessage(Text::toT(Util::getAwayMessage()));
-			}
 
-			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-				MessageBeep(MB_OK);
-			}
+		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
+			MessageBeep(MB_OK);
 		}
 	} else {
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
 			MessageBeep(MB_OK);
 		}
-		i->second->addLine(aMessage);
+		i->second->addLine(from, aMessage);
 	}
 }
 
-void PrivateFrame::openWindow(const User::Ptr& aUser, const tstring& msg) {
+void PrivateFrame::openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& msg) {
 	PrivateFrame* p = NULL;
-	Lock l(cs);
-	FrameIter i = frames.find(aUser);
+	FrameIter i = frames.find(to);
 	if(i == frames.end()) {
-		p = new PrivateFrame(aUser);
-		frames[aUser] = p;
+		p = new PrivateFrame(to);
+		frames[to] = p;
 		p->CreateEx(WinUtil::mdiClient);
 	} else {
 		p = i->second;
@@ -130,8 +106,8 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, const tstring& msg) {
 			::ShowWindow(p->m_hWnd, SW_RESTORE);
 		p->MDIActivate(p->m_hWnd);
 	}
-	if(!msg.empty())
-		p->sendMessage(msg);
+	// @todo if(!msg.empty())
+		// p->sendMessage(from, msg);
 }
 
 LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -183,7 +159,7 @@ void PrivateFrame::onEnter()
 				PostMessage(WM_CLOSE);
 			} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
 				FavoriteManager::getInstance()->addFavoriteUser(getUser());
-				addLine(TSTRING(FAVORITE_USER_ADDED));
+				// @todo addLine(TSTRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
@@ -197,7 +173,7 @@ void PrivateFrame::onEnter()
 				params["hubaddr"] = user->getClientAddressPort();*/
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
-				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
+				// @todo addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
 			} else {
 				if(user->isOnline()) {
 					sendMessage(tstring(msg));
@@ -227,7 +203,7 @@ void PrivateFrame::sendMessage(const tstring& msg) {
 		// local echo formatting
 		s = Util::validateMessage(s, false);
 		s = Util::validateMessage(s, true, true);
-		addLine(Text::toT(s));
+		// @todo addLine(Text::toT(s));
 	}
 }
 
@@ -239,7 +215,6 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		Lock l(cs);
 		frames.erase(user);
 
 		bHandled = FALSE;
@@ -247,7 +222,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 }
 
-void PrivateFrame::addLine(const tstring& aLine) {
+void PrivateFrame::addLine(const User::Ptr&, const tstring& aLine) {
 	if(!created) {
 		if(BOOLSETTING(POPUNDER_PM))
 			WinUtil::hiddenCreateEx(this);
@@ -423,5 +398,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.50 2005/08/07 13:05:47 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.51 2005/11/12 10:23:02 arnetheduck Exp $
  */

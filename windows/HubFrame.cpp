@@ -243,16 +243,18 @@ void HubFrame::onEnter() {
 					int k = ctrlUsers.findItem(nick);
 					if(k != -1) {
 						UserInfo* ui = ctrlUsers.getItemData(k);
+						/* @todo
 						if(param.size() > j + 1)
 							PrivateFrame::openWindow(ui->user, param.substr(j+1));
 						else
 							PrivateFrame::openWindow(ui->user);
+						*/
 					}
 				} else if(!param.empty()) {
 					int k = ctrlUsers.findItem(param);
 					if(k != -1) {
 						UserInfo* ui = ctrlUsers.getItemData(k);
-						PrivateFrame::openWindow(ui->user);
+						// @todo PrivateFrame::openWindow(ui->user);
 					}
 				}
 			} else {
@@ -481,7 +483,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		PMInfo* i = (PMInfo*)lParam;
 		if(i->user->isOnline()) {
 			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->user)) {
-				PrivateFrame::gotMessage(i->user, i->msg);
+				// @todo PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
 				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
@@ -489,7 +491,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
 				addClientLine(TSTRING(IGNORED_MESSAGE) + i->msg, false);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
-				PrivateFrame::gotMessage(i->user, i->msg);
+				// @todo PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
 				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->user->getFirstNick()) + _T(": ") + i->msg);
 			}
@@ -631,7 +633,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			if(pos != -1) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					PrivateFrame::openWindow((ctrlUsers.getItemData(pos))->user);
+					// @todo PrivateFrame::openWindow((ctrlUsers.getItemData(pos))->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
 						QueueManager::getInstance()->addList((ctrlUsers.getItemData(pos))->user, QueueItem::FLAG_CLIENT_VIEW);
@@ -1185,5 +1187,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.113 2005/08/10 15:55:18 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.114 2005/11/12 10:23:02 arnetheduck Exp $
  */

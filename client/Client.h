@@ -46,13 +46,14 @@ public:
 	typedef X<8> GetPassword;
 	typedef X<9> HubUpdated;
 	typedef X<11> Message;
-	typedef X<12> PrivateMessage;
-	typedef X<13> UserCommand;
-	typedef X<14> HubFull;
-	typedef X<15> NickTaken;
-	typedef X<16> SearchFlood;
-	typedef X<17> NmdcSearch;
-	typedef X<18> AdcSearch;
+	typedef X<12> StatusMessage;
+	typedef X<13> PrivateMessage;
+	typedef X<14> UserCommand;
+	typedef X<15> HubFull;
+	typedef X<16> NickTaken;
+	typedef X<17> SearchFlood;
+	typedef X<18> NmdcSearch;
+	typedef X<19> AdcSearch;
 
 	virtual void on(Connecting, Client*) throw() { }
 	virtual void on(Connected, Client*) throw() { }
@@ -64,8 +65,9 @@ public:
 	virtual void on(Failed, Client*, const string&) throw() { }
 	virtual void on(GetPassword, Client*) throw() { }
 	virtual void on(HubUpdated, Client*) throw() { }
-	virtual void on(Message, Client*, const string&) throw() { }
-	virtual void on(PrivateMessage, Client*, const OnlineUser&, const string&) throw() { }
+	virtual void on(Message, Client*, const OnlineUser&, const string&) throw() { }
+	virtual void on(StatusMessage, Client*, const string&) throw() { }
+	virtual void on(PrivateMessage, Client*, const OnlineUser&, const OnlineUser&, const OnlineUser&, const string&) throw() { }
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw() { }
 	virtual void on(HubFull, Client*) throw() { }
 	virtual void on(NickTaken, Client*) throw() { }
@@ -202,5 +204,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.102 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: Client.h,v 1.103 2005/11/12 10:23:02 arnetheduck Exp $
  */

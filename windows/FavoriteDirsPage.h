@@ -35,7 +35,7 @@ public:
 		SetTitle(CTSTRING(SETTINGS_FAVORITE_DIRS_PAGE));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
-	~FavoriteDirsPage() {
+	virtual ~FavoriteDirsPage() {
 		ctrlDirectories.Detach();
 	};
 
@@ -74,5 +74,5 @@ protected:
 
 /**
  * @file
- * $Id: FavoriteDirsPage.h,v 1.5 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: FavoriteDirsPage.h,v 1.6 2005/11/12 10:23:02 arnetheduck Exp $
  */

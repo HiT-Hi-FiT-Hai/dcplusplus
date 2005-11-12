@@ -45,10 +45,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("PublicHubsFrame"), IDR_PUBLICHUBS, 0, COLOR_3DFACE);
 		
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-	
 	typedef MDITabChildWindowImpl<PublicHubsFrame> baseClass;
 	BEGIN_MSG_MAP(PublicHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -172,5 +168,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.31 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.32 2005/11/12 10:23:02 arnetheduck Exp $
  */

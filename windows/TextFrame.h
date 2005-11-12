@@ -34,12 +34,8 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("TextFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
 	TextFrame(const tstring& fileName) : file(fileName) { }
-	~TextFrame() { }
+	virtual ~TextFrame() { }
 	
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
 	typedef MDITabChildWindowImpl<TextFrame> baseClass;
 	BEGIN_MSG_MAP(TextFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
@@ -81,5 +77,5 @@ private:
 
 /**
  * @file
- * $Id: TextFrame.h,v 1.5 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: TextFrame.h,v 1.6 2005/11/12 10:23:02 arnetheduck Exp $
  */

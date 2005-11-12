@@ -17,7 +17,7 @@
  */
 
 #if !defined(WINDOWS_PAGE_H)
-#define WINDOW_SPAGE_H
+#define WINDOWS_PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -53,6 +53,7 @@ public:
 	
 protected:
 
+	static TextItem textItem[];
 	static Item items[];
 	static ListItem listItems[];
 	static ListItem optionItems[];
@@ -63,5 +64,5 @@ protected:
 
 /**
  * @file
- * $Id: WindowsPage.h,v 1.4 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: WindowsPage.h,v 1.5 2005/11/12 10:23:02 arnetheduck Exp $
  */

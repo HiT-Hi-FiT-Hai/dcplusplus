@@ -352,7 +352,7 @@
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>
-		<String Name="SettingsAppearance2">Colors and sounds</String>
+		<String Name="SettingsAppearance2">Appearance\Colors and sounds</String>
 		<String Name="SettingsAutodropSpeed">Drop sources below</String>
 		<String Name="SettingsAutodropInterval">Check every</String>
 		<String Name="SettingsAutodropElapsed">Min elapsed</String>
@@ -377,6 +377,7 @@
 		<String Name="SettingsCommand">Command</String>
 		<String Name="SettingsCompressTransfers">Enable safe and compressed transfers</String>
 		<String Name="SettingsConfigureHubLists">Configure Public Hub Lists</String>
+		<String Name="SettingsConfirmDialogOptions">Confirm dialog options</String>
 		<String Name="SettingsConfirmExit">Confirm application exit</String>
 		<String Name="SettingsConfirmHubRemoval">Confirm favorite hub removal</String>
 		<String Name="SettingsConfirmItemRemoval">Confirm item removal in download queue</String>
@@ -419,8 +420,9 @@
 		<String Name="SettingsLogSystemMessages">Log system messages</String>
 		<String Name="SettingsLogUploads">Log uploads</String>
 		<String Name="SettingsLogging">Logging</String>
-		<String Name="SettingsLogs">Logs</String>
+		<String Name="SettingsLogs">Advanced\Logs</String>
 		<String Name="SettingsMagnetAsk">Ask what to do when a magnet link is detected.</String>
+		<String Name="SettingsMaxFilelistSize">Max filelist size</String>
 		<String Name="SettingsMaxHashSpeed">Max hash speed</String>
 		<String Name="SettingsMaxTabRows">Max tab rows</String>
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
@@ -497,7 +499,7 @@
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>
-		<String Name="SettingsWindows">Windows</String>
+		<String Name="SettingsWindows">Appearance\Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>

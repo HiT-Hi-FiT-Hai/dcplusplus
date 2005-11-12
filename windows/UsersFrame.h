@@ -38,11 +38,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("UsersFrame"), IDR_USERS, 0, COLOR_3DFACE);
 		
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		frame = NULL;
-		delete this;
-	}
-
 	typedef MDITabChildWindowImpl<UsersFrame> baseClass;
 	typedef UserInfoBaseHandler<UsersFrame> uibBase;
 
@@ -156,5 +151,5 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.25 2005/05/03 15:37:41 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.26 2005/11/12 10:23:02 arnetheduck Exp $
  */

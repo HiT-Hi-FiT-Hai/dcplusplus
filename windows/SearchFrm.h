@@ -119,7 +119,6 @@ public:
 
 	virtual ~SearchFrame() {
 	}
-	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -481,5 +480,5 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.62 2005/08/07 13:05:47 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.63 2005/11/12 10:23:02 arnetheduck Exp $
  */

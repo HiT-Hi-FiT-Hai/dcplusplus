@@ -35,14 +35,10 @@ class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, publi
 {
 public:
 	FavoriteHubsFrame() : nosave(true) { };
-	~FavoriteHubsFrame() { };
+	virtual ~FavoriteHubsFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FavoriteHubsFrame"), IDR_FAVORITES, 0, COLOR_3DFACE);
 		
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
 	BEGIN_MSG_MAP(FavoriteHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -139,5 +135,5 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.22 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.23 2005/11/12 10:23:02 arnetheduck Exp $
  */

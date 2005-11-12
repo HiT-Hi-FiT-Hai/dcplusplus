@@ -687,7 +687,7 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 		// "Size"
 		int w2 = width - rMargin - lMargin;
 		rc.top += spacing;
-		rc.bottom += spacing;
+		rc.bottom = rc.top + comboH;
 		rc.right = w2/3;
 		ctrlMode.MoveWindow(rc);
 
@@ -695,10 +695,12 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		rc.left = rc.right + lMargin;
 		rc.right += w2/3;
+		rc.bottom = rc.top + 21;
 		ctrlSize.MoveWindow(rc);
 
 		rc.left = rc.right + lMargin;
 		rc.right = width - rMargin;
+		rc.bottom = rc.top + comboH;
 		ctrlSizeMode.MoveWindow(rc);
 
 		// "File type"
@@ -1140,5 +1142,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.99 2005/08/10 15:55:18 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.100 2005/11/12 10:23:02 arnetheduck Exp $
  */

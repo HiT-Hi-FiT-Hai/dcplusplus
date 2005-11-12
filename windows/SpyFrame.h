@@ -57,8 +57,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("SpyFrame"), IDR_SPY, 0, COLOR_3DFACE)
 
-	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
-
 	typedef MDITabChildWindowImpl<SpyFrame> baseClass;
 	BEGIN_MSG_MAP(SpyFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -118,5 +116,5 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.24 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.25 2005/11/12 10:23:02 arnetheduck Exp $
  */

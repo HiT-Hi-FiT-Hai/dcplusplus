@@ -58,7 +58,7 @@ public:
 	};
 	
 	DirectoryListingFrame(const User::Ptr& aUser);
-	~DirectoryListingFrame() { 
+	virtual ~DirectoryListingFrame() { 
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
 		delete dl; 
@@ -66,10 +66,6 @@ public:
 
 
 	DECLARE_FRAME_WND_CLASS(_T("DirectoryListingFrame"), IDR_DIRECTORY)
-
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
 
 	BEGIN_MSG_MAP(DirectoryListingFrame)
 		NOTIFY_HANDLER(IDC_FILES, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
@@ -338,5 +334,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.56 2005/08/10 17:30:55 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.57 2005/11/12 10:23:02 arnetheduck Exp $
  */

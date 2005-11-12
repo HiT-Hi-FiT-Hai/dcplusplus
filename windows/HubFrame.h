@@ -84,13 +84,6 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 	END_MSG_MAP()
 
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		dcassert(frames.find(server) != frames.end());
-		dcassert(frames[server] == this);
-		frames.erase(server);
-		delete this;
-	}
-
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -217,7 +210,7 @@ private:
 				}
 			}
 			if(col == COLUMN_SHARED) {
-				return compare(a->getBytes(), b->getBytes());
+				return compare(a->identity.getBytesShared(), b->identity.getBytesShared());;
 			}
 			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());	
 		}
@@ -226,7 +219,6 @@ private:
 
 		tstring columns[COLUMN_LAST];
 		GETSET(Identity, identity, Identity);
-		GETSET(int64_t, bytes, Bytes);
 		GETSET(bool, op, Op);
 		GETSET(bool, hidden, Hidden);
 	};
@@ -250,7 +242,11 @@ private:
 		client->addListener(this);
 	}
 
-	~HubFrame() {
+	virtual ~HubFrame() {
+		dcassert(frames.find(server) != frames.end());
+		dcassert(frames[server] == this);
+		frames.erase(server);
+
 		ClientManager::getInstance()->putClient(client);
 	}
 
@@ -397,5 +393,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.65 2005/08/10 15:55:18 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.66 2005/11/12 10:23:02 arnetheduck Exp $
  */

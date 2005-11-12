@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "../client/User.h"
-#include "../client/CriticalSection.h"
 #include "../client/ClientManagerListener.h"
 #include "../client/ResourceManager.h"
 
@@ -38,8 +37,8 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
-	static void gotMessage(const User::Ptr& aUser, const tstring& aMessage);
-	static void openWindow(const User::Ptr& aUser, const tstring& aMessage = Util::emptyStringT);
+	static void gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
+	static void openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 
 	enum {
@@ -47,10 +46,6 @@ public:
 	};
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("PrivateFrame"), IDR_PRIVATE, 0, COLOR_3DFACE);
-
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
 
 	typedef MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)> baseClass;
 	typedef UCHandler<PrivateFrame> ucBase;
@@ -87,7 +82,7 @@ public:
 	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
-	void addLine(const tstring& aLine);
+	void addLine(const User::Ptr&, const tstring& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
@@ -137,7 +132,6 @@ public:
 		}
 	}
 	
-	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const tstring& msg);
 	
 	User::Ptr& getUser() { return user; };
@@ -148,8 +142,7 @@ private:
 		ctrlClientContainer(_T("edit"), this, PM_MESSAGE_MAP) {
 	}
 	
-	~PrivateFrame() {
-	}
+	virtual ~PrivateFrame() { }
 	
 	bool created;
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
@@ -158,7 +151,6 @@ private:
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
-	static CriticalSection cs;
 
 	CMenu tabMenu;
 
@@ -201,5 +193,5 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.31 2005/08/07 13:05:47 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.32 2005/11/12 10:23:02 arnetheduck Exp $
  */

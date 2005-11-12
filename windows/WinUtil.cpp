@@ -169,7 +169,7 @@ void UserInfoBase::addFav() {
 	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 void UserInfoBase::pm() {
-	PrivateFrame::openWindow(user);
+	// @todo PrivateFrame::openWindow(user);
 }
 void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
@@ -694,17 +694,17 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	}
 
 	if(Util::stricmp(app.c_str(), Buf) != 0) {
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		TCHAR* tmp = _T("URL:Direct Connect Protocol");
 		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		::RegCloseKey(hk);
 
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
 
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		app = Text::toT(Util::getAppName());
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
@@ -729,17 +729,17 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	 }
 
 	 if(Util::stricmp(app.c_str(), Buf) != 0) {
-		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc"), &hk);
+		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		 TCHAR* tmp = _T("URL:Direct Connect Protocol");
 		 ::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		 ::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		 ::RegCloseKey(hk);
 
-		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), &hk);
+		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		 ::RegCloseKey(hk);
 
-		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc\\DefaultIcon"), &hk);
+		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		 app = Text::toT(Util::getAppName());
 		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		 ::RegCloseKey(hk);
@@ -785,7 +785,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 			haveMagnet = false;
 		} else {
 			// set Magnet\Location
-			::RegCreateKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet"), &hk);
+			::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 			::RegSetValueEx(hk, _T("Location"), NULL, REG_SZ, (LPBYTE)magnetExe.c_str(), sizeof(TCHAR) * (magnetExe.length()+1));
 			::RegCloseKey(hk);
 		}
@@ -794,15 +794,15 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	// (re)register the handler if magnet.exe isn't the default, or if DC++ is handling it
 	if(BOOLSETTING(MAGNET_REGISTER) && (Util::strnicmp(openCmd, magnetLoc, magnetLoc.size()) != 0 || !haveMagnet)) {
 		SHDeleteKey(HKEY_CLASSES_ROOT, _T("magnet"));
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("magnet"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_SHELL_DESC), sizeof(TCHAR)*(TSTRING(MAGNET_SHELL_DESC).length()+1));
 		::RegSetValueEx(hk, _T("URL Protocol"), NULL, REG_SZ, NULL, NULL);
 		::RegCloseKey(hk);
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("magnet\\DefaultIcon"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)magnetLoc.c_str(), sizeof(TCHAR)*(magnetLoc.length()+1));
 		::RegCloseKey(hk);
 		magnetLoc += _T(" %1");
-		::RegCreateKey(HKEY_CLASSES_ROOT, _T("magnet\\shell\\open\\command"), &hk);
+		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet\\shell\\open\\command"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)magnetLoc.c_str(), sizeof(TCHAR)*(magnetLoc.length()+1));
 		::RegCloseKey(hk);
 	}
@@ -810,7 +810,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	// clean out the DC++ tree first
 	SHDeleteKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"));
 	// add DC++ to magnet-handler's list of applications
-	::RegCreateKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"), &hk);
+	::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (TSTRING(MAGNET_HANDLER_ROOT).size()+1));
 	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_DESC), sizeof(TCHAR) * (STRING(MAGNET_HANDLER_DESC).size()+1));
 	// set ShellExecute
@@ -826,7 +826,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	// Reference: http://forums.shareaza.com/showthread.php?threadid=23731
 	// Note: the three part hash types require magnethandler >= 1.0.0.3
 	DWORD nothing = 0;
-	::RegCreateKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++\\Type"), &hk);
+	::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++\\Type"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
 	::RegSetValueEx(hk, _T("urn:bitprint"), NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
 	::RegSetValueEx(hk, _T("urn:tree:tiger"), NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
 	::RegSetValueEx(hk, _T("urn:tree:tiger/"), NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
@@ -1144,7 +1144,13 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 	aEdit.ClientToScreen(&aPt);
 }
 
+void WinUtil::openFolder(const tstring& file) {
+	if (File::getSize(Text::fromT(file)) != -1)
+		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, /select, \"" + (Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
+	else
+		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, \"" + Util::getFilePath(Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
+}
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.88 2005/08/12 21:30:05 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.89 2005/11/12 10:23:02 arnetheduck Exp $
  */

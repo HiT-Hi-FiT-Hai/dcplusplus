@@ -40,8 +40,7 @@ public:
 		foregr.CreatePen(PS_SOLID, 0, WinUtil::textColor);
 	}
 
-	~StatsFrame() { 
-	}
+	virtual ~StatsFrame() { }
 
 	static CFrameWndClassInfo& GetWndClassInfo() { 
 		static CFrameWndClassInfo wc = { 
@@ -53,10 +52,6 @@ public:
 		};
 		
 		return wc; 
-	}
-
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
 	}
 
 	typedef MDITabChildWindowImpl<StatsFrame> baseClass;
@@ -124,5 +119,5 @@ private:
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.10 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.11 2005/11/12 10:23:02 arnetheduck Exp $
  */

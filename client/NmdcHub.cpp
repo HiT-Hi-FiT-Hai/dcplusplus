@@ -178,7 +178,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				reconnect = false;
 			}
 		}
-		fire(ClientListener::Message(), this, Util::validateMessage(fromNmdc(aLine), true));
+		string line = fromNmdc(aLine);
+		// @todo Decrypt who the message is from...
+		fire(ClientListener::StatusMessage(), this, Util::validateMessage(fromNmdc(aLine), true));
 		return;
 	}
 
@@ -591,20 +593,39 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		}
 	} else if(cmd == "$To:") {
 		string::size_type i = param.find("From:");
-		if(i != string::npos) {
-			i+=6;
-			string::size_type j = param.find("$");
-			if(j != string::npos) {
-				string from = param.substr(i, j - 1 - i);
-				if(from.size() > 0 && param.size() > (j + 1)) {
-					OnlineUser* ou = findUser(from);
-					if(ou == NULL) {
-						// @todo Route anonymous message to the ui
-					} else {
-						fire(ClientListener::PrivateMessage(), this, *ou, Util::validateMessage(param.substr(j + 1), true));
-					}
-				}
-			}
+		if(i == string::npos)
+			return;
+
+		i+=6;
+		string::size_type j = param.find('$', i);
+		if(j == string::npos)
+			return;
+
+		string rtNick = param.substr(i, j - 1 - i);
+		if(rtNick.empty())
+			return;
+		i = j + 1;
+
+		if(param.size() < i + 3 || param[i] != '<')
+			return;
+
+		j = param.find('>', i);
+		if(j == string::npos)
+			return;
+
+		string fromNick = param.substr(i+1, j-i-1);
+		if(fromNick.empty())
+			return;
+
+        OnlineUser* replyTo = findUser(rtNick);
+		OnlineUser* from = findUser(fromNick);
+		OnlineUser* to = findUser(getMyNick());
+
+		if(replyTo == NULL || from == NULL || to == NULL) {
+			// @todo Route anonymous message to the ui
+		} else {
+			string msg = param.substr(j + 2);
+			fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, Util::validateMessage(param.substr(j + 2), true));
 		}
 	} else if(cmd == "$GetPass") {
 		setRegistered(true);
@@ -748,6 +769,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.41 2005/08/10 15:55:17 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.42 2005/11/12 10:23:02 arnetheduck Exp $
  */
 

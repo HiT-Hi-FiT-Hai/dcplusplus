@@ -134,7 +134,7 @@ class UserCommand;
 template<class T, int title>
 class StaticFrame {
 public:
-	~StaticFrame() { frame = NULL; };
+	virtual ~StaticFrame() { frame = NULL; };
 
 	static T* frame;
 	static void openWindow() {
@@ -304,6 +304,7 @@ public:
 	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
+	static void openFolder(const tstring& file);
 
 	static int getIconIndex(const tstring& aFileName);
 
@@ -350,5 +351,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.49 2005/08/10 15:55:18 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.50 2005/11/12 10:23:02 arnetheduck Exp $
  */

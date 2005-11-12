@@ -39,10 +39,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
 		
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
 	BEGIN_MSG_MAP(FinishedFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -170,5 +166,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedFrame.h,v 1.22 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.23 2005/11/12 10:23:02 arnetheduck Exp $
  */

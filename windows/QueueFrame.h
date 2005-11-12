@@ -47,10 +47,6 @@ public:
 
 	virtual ~QueueFrame() { }
 	
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
 	typedef MDITabChildWindowImpl<QueueFrame> baseClass;
 	typedef CSplitterImpl<QueueFrame> splitBase;
 
@@ -430,5 +426,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.54 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.55 2005/11/12 10:23:02 arnetheduck Exp $
  */

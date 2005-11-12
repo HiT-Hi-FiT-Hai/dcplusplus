@@ -41,6 +41,7 @@
 * More settings screen updates (thanks ullner)
 * Fixed linux file moving (thanks naga)
 * Added option to only download files with TTH (thanks ullner)
+* Fixed registry creation functions used (thanks ullner)
 
 
 -- 0.674 2005-04-10 --

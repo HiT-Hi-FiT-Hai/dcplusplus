@@ -35,12 +35,8 @@ public:
 
 	NotepadFrame() : dirty(false),
 		ctrlClientContainer(_T("edit"), this, NOTEPAD_MESSAGE_MAP) { }
-	~NotepadFrame() { }
+	virtual ~NotepadFrame() { }
 	
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		delete this;
-	}
-
 	typedef MDITabChildWindowImpl<NotepadFrame> baseClass;
 	BEGIN_MSG_MAP(NotepadFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
@@ -87,5 +83,5 @@ private:
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.14 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.15 2005/11/12 10:23:02 arnetheduck Exp $
  */
