@@ -62,7 +62,7 @@ void Client::connect() {
 	reloadSettings();
 	setRegistered(false);
 
-	socket->connect(address, port);
+	socket->connect(address, port, false, true);
 
 	updateActivity();
 }
@@ -116,5 +116,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.85 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.86 2005/11/27 19:19:20 arnetheduck Exp $
  */

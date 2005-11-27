@@ -26,39 +26,53 @@
 #include "SettingsManager.h"
 
 #include "Streams.h"
-
-#define SMALL_BUFFER_SIZE 1024
+#include "SSLSocket.h"
 
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw(SocketException) : 
-separator(aSeparator), port(0), mode(MODE_LINE), 
-dataBytes(0), escaped(false), inbufSize(64*1024), curBuf(0), file(NULL) {
+BufferedSocket::BufferedSocket(char aSeparator) throw() : 
+separator(aSeparator), mode(MODE_LINE), 
+dataBytes(0), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0)
+{
+}
 
-	inbuf = new u_int8_t[inbufSize];
+BufferedSocket::~BufferedSocket() throw() {
+	delete sock;
+}
 
-	for(int i = 0; i < BUFFERS; i++) {
-		outbuf[i] = new u_int8_t[inbufSize];
-		outbufPos[i] = 0;
-		outbufSize[i] = inbufSize;
+void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException) {
+	dcassert(!sock);
+	if(secure) {
+		sock = SSLSocketFactory::getInstance()->getServerSocket();
+	} else {
+		sock = new Socket;
 	}
+	sock->accept(srv);
+	addTask(ACCEPTED, 0);
 
 	try {
 		start();
 	} catch(const ThreadException& e) {
-		delete[] inbuf;
-		for(int i = 0; i < BUFFERS; i++) {
-			delete[] outbuf[i];
-		}
 		throw SocketException(e.getError());
 	}
 }
 
-BufferedSocket::~BufferedSocket() throw() {
-	delete[] inbuf;
-	for(int i = 0; i < BUFFERS; i++) {
-		delete[] outbuf[i];
+void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException) {
+	dcassert(!sock);
+
+	if(secure) {
+		sock = SSLSocketFactory::getInstance()->getClientSocket();
+	} else {
+		sock = new Socket;
+	}
+
+	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy));
+
+	try {
+		start();
+	} catch(const ThreadException& e) {
+		throw SocketException(e.getError());
 	}
 }
 
@@ -66,23 +80,37 @@ BufferedSocket::~BufferedSocket() throw() {
  * Send a chunk of a file
  * @return True if file is finished, false if there's more data to send
  */
-bool BufferedSocket::threadSendFile() {
+bool BufferedSocket::threadSendFile(InputStream* file) {
 	dcassert(file != NULL);
 	try {
+		vector<u_int8_t> buf;
+
 		for(;;) {
-			{
-				Lock l(cs);
-				if(!tasks.empty())
-					return false;
+			size_t bytesRead = 0;
+
+			if(buf.empty()) {
+				buf.resize(SETTING(SOCKET_OUT_BUFFER));
+				bytesRead = buf.size();
+				size_t actual = file->read(&buf[0], bytesRead);
+				if(actual == 0) {
+					fire(BufferedSocketListener::TransmitDone());
+					return true;
+				}
+				buf.resize(actual);
 			}
-			size_t s = (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize);
-			size_t actual = file->read(inbuf, s);
-			if(actual > 0) {
-				Socket::write((char*)inbuf, actual);
-				fire(BufferedSocketListener::BytesSent(), s, actual);
-			} else {
-				fire(BufferedSocketListener::TransmitDone());
-				return true;
+
+			while(!buf.empty()) {
+				int written = sock->write(&buf[0], buf.size());
+				if(written == -1) {
+					if(sock->wait(1000, Socket::WAIT_WRITE | Socket::WAIT_READ) == Socket::WAIT_READ) {
+						// This could be a socket close notification...or strange data coming in while sending file...better check.
+						threadRead();
+					}
+				} else {
+					fire(BufferedSocketListener::BytesSent(), bytesRead, written);
+					buf.erase(buf.begin(), buf.begin()+written);
+				}
+				bytesRead = 0;
 			}
 		}
 	} catch(const Exception& e) {
@@ -91,74 +119,29 @@ bool BufferedSocket::threadSendFile() {
 	}
 }
 
-bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 */) throw(SocketException) {
-	dcassert(buf != NULL);
-	dcassert(bufLen > 0);
-	
-	int bytesIn = 0;
-	u_int32_t startTime = GET_TICK();
-
-	while(bytesIn < bufLen) {
-		while(!wait(POLL_TIMEOUT, WAIT_READ)) {
-			{
-				Lock l(cs);
-				if(!tasks.empty()) {
-					// We don't want to handle tasks here...
-					Socket::disconnect();
-					return false;
-				}
-			}
-			if((timeout != 0) && ((startTime + timeout) < GET_TICK())) {
-				// Connection timeout
-				throw SocketException(STRING(CONNECTION_TIMEOUT));
-			}
-		}
-		dcassert(bufLen > bytesIn);
-		int x = Socket::read(buf + bytesIn, bufLen - bytesIn);
-		if(x <= 0) {
-			// ???
-			throw SocketException(STRING(CONNECTION_CLOSED));
-		}
-		bytesIn += x;
-	}
-	
-	return true;
-}
-
-void BufferedSocket::threadConnect() {
+void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy) {
 	dcdebug("threadConnect()\n");
 
 	fire(BufferedSocketListener::Connecting());
 
-	u_int32_t startTime = GET_TICK();
-	string s;
-	short p;
-	{
-		Lock l(cs);
-
-		s=address;
-		p=port;
-	}
-
 	try {
-		setBlocking(false);
-		Socket::create();
+		sock->create();
+		sock->setBlocking(false);
 
-		if( !getNoproxy() && SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5) {
-			if(!BOOLSETTING(SOCKS_RESOLVE)) {
-				s = resolve(s);
-			}
-			Socket::connect(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
+		u_int32_t startTime = GET_TICK();
+		if(proxy) {
+			sock->socksConnect(aAddr, aPort);
 		} else {
-			Socket::connect(s, p);
+			sock->connect(aAddr, aPort);
 		}
+
 		
-		while(!wait(POLL_TIMEOUT, WAIT_CONNECT)) {
+		while(!sock->wait(POLL_TIMEOUT, Socket::WAIT_CONNECT)) {
 			{
 				Lock l(cs);
 				if(!tasks.empty()) {
 					// We don't want to handle tasks here...
-					Socket::disconnect();
+					sock->disconnect();
 					return;
 				}
 			}
@@ -169,120 +152,19 @@ void BufferedSocket::threadConnect() {
 			}
 		}
 
-		// Hm, let's see if we're socksified...
-		if( !getNoproxy() && SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5) {
-			if(SETTING(SOCKS_USER).empty() && SETTING(SOCKS_PASSWORD).empty()) {
-				// No username and pw, easier...=)
-				char connStr[3];
-				connStr[0] = 5;			// SOCKSv5
-				connStr[1] = 1;			// 1 method
-				connStr[2] = 0;			// Method 0: No auth...
-
-				Socket::write(connStr, 3);
-				
-				if(!fillBuffer(connStr, 2, 30000))
-					return;
-				
-				if(connStr[1] != 0) {
-					fail(STRING(SOCKS_NEEDS_AUTH));
-					return;
-				}				
-			} else {
-				// We try the username and password auth type (no, we don't support gssapi)
-				u_int8_t ulen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
-				u_int8_t plen = (u_int8_t)(SETTING(SOCKS_PASSWORD).length() & 0xff);
-				AutoArray<u_int8_t> connStr(3 + ulen + plen);
-
-				connStr[0] = 5;			// SOCKSv5
-				connStr[1] = 1;			// 1 method
-				connStr[2] = 2;			// Method 2: Name/Password...
-				Socket::write((char*)(u_int8_t*)connStr, 3);
-				if(!fillBuffer((char*)(u_int8_t*)connStr, 2, 30000))
-					return;
-				if(connStr[1] != 2) {
-					fail(STRING(SOCKS_AUTH_UNSUPPORTED));
-					return;
-				}
-				// Now we send the username / pw...
-				connStr[0] = 1;
-				connStr[1] = ulen;
-				strncpy((char*)(u_int8_t*)connStr + 2, SETTING(SOCKS_USER).c_str(), ulen);
-				connStr[2 + ulen] = plen;
-				strncpy((char*)(u_int8_t*)connStr + 3 + ulen, SETTING(SOCKS_PASSWORD).c_str(), plen);
-				Socket::write((char*)(u_int8_t*)connStr, 3 + plen + ulen);
-
-				if(!fillBuffer((char*)(u_int8_t*)connStr, 2, 30000)) {
-					return;
-				}
-
-				if(connStr[1] != 0) {
-					fail(STRING(SOCKS_AUTH_FAILED));
-					return;
-				}
-				
-			}
-
-			// Alrite, let's get on with it...
-			AutoArray<u_int8_t> connStr(10 + s.length());
-			int connLen;
-			connStr[0] = 5;			// SOCKSv5
-			connStr[1] = 1;			// Connect
-			connStr[2] = 0;			// Reserved
-			
-			if(BOOLSETTING(SOCKS_RESOLVE)) {
-				u_int8_t slen =(u_int8_t)(s.length() & 0xff);
-				connStr[3] = 3;		// Address type: domain name
-				connStr[4] = slen;
-				strncpy((char*)(u_int8_t*)connStr + 5, s.c_str(), slen);
-				*((u_int16_t*)(&connStr[5 + slen])) = htons(p);
-				connLen = 7 + slen;
-			} else {
-				connStr[3] = 1;		// Address type: IPv4;
-				*((long*)(&connStr[4])) = inet_addr(s.c_str());
-				*((u_int16_t*)(&connStr[8])) = htons(p);	
-				connLen = 10;
-			}
-			
-			Socket::write((char*)(u_int8_t*)connStr, connLen);
-			// We assume we'll get a ipv4 address back...therefore, 10 bytes...if not, things
-			// will break, but hey...noone's perfect (and I'm tired...)...
-			if(!fillBuffer((char*)(u_int8_t*)connStr, 10, 30000)) {
-				return;
-			}
-
-			if(connStr[0] != 5 || connStr[1] != 0) {
-				fail(STRING(SOCKS_FAILED));
-				return;
-			}
-
-			// Yihaa!
-		}
-
-		// We're connected! Clear the buffers...
-		for(int k = 0; k < BUFFERS; k++) {
-			outbufPos[k] = 0;
-		}
-		line.clear();
-		setBlocking(true);
-
 		fire(BufferedSocketListener::Connected());
 	} catch(const SocketException& e) {
-		if(!getNoproxy() && SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5) {
-			fail("Socks5: " + e.getError());
-		} else {
-			fail(e.getError());
-		}
-		return;
+		fail(e.getError());
 	}
 }	
 
 void BufferedSocket::threadRead() {
 	try {
-		int i = read(inbuf, inbufSize);
-		if(i == -1) {
+		int left = sock->read(&inbuf[0], (int)inbuf.size());
+		if(left == -1) {
 			// EWOULDBLOCK, no data recived...
 			return;
-		} else if(i == 0) {
+		} else if(left == 0) {
 			// This socket has been closed...
 			disconnect();
 			return;
@@ -290,19 +172,19 @@ void BufferedSocket::threadRead() {
 
 		int bufpos = 0;
 		string l;
-		while(i > 0) {
-			// Special to autodetect nmdc connections...
-			if(separator == 0) {
-				if(inbuf[0] == '$') {
-					separator = '|';
-				} else {
-					separator = '\n';
-				}
-			}
+		while(left > 0) {
 			if(mode == MODE_LINE) {
+				// Special to autodetect nmdc connections...
+				if(separator == 0) {
+					if(inbuf[0] == '$') {
+						separator = '|';
+					} else {
+						separator = '\n';
+					}
+				}
 				string::size_type pos = 0;
 
-				l = string((char*)inbuf + bufpos, i);
+				l = string((char*)&inbuf[0] + bufpos, left);
 
 				if((pos = l.find(separator)) != string::npos) {
 					if(!line.empty()) {
@@ -311,22 +193,22 @@ void BufferedSocket::threadRead() {
 					} else {
 						fire(BufferedSocketListener::Line(), l.substr(0, pos));
 					}
-					i -= (pos + sizeof(separator));
+					left -= (pos + sizeof(separator));
 					bufpos += (pos + sizeof(separator));
 				} else {
 					line += l;
-					i = 0;
+					left = 0;
 				}
 			} else if(mode == MODE_DATA) {
 				if(dataBytes == -1) {
-					fire(BufferedSocketListener::Data(), inbuf+bufpos, i);
-					bufpos+=i;
-					i = 0;
+					fire(BufferedSocketListener::Data(), &inbuf[bufpos], left);
+					bufpos += left;
+					left = 0;
 				} else {
-					int high = (int)min(dataBytes, (int64_t)i);
-					fire(BufferedSocketListener::Data(), inbuf+bufpos, high);
+					int high = (int)min(dataBytes, (int64_t)left);
+					fire(BufferedSocketListener::Data(), &inbuf[bufpos], high);
 					bufpos += high;
-					i-=high;
+					left -= high;
 
 					dataBytes -= high;
 					if(dataBytes == 0) {
@@ -347,42 +229,25 @@ void BufferedSocket::threadRead() {
 void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
 	{
 		Lock l(cs);
-		size_t newSize = outbufSize[curBuf];
-		
-		while(newSize < (aLen + outbufPos[curBuf])) {
-			newSize *= 2;
-		}
-
-		if(newSize > outbufSize[curBuf]) {
-			// Need to grow...
-			dcdebug("Growing outbuf[%d] to %lu bytes\n", curBuf, newSize);
-			u_int8_t* newbuf = new u_int8_t[newSize];
-			memcpy(newbuf, outbuf[curBuf], outbufPos[curBuf]);
-			delete[] outbuf[curBuf];
-			outbuf[curBuf] = newbuf;
-			outbufSize[curBuf] = newSize;
-		}
-
-		memcpy(outbuf[curBuf] + outbufPos[curBuf], aBuf, aLen);
-		outbufPos[curBuf] += aLen;
-		addTask(SEND_DATA);
+		writeBuf.insert(writeBuf.end(), aBuf, aBuf+aLen);
+		addTask(SEND_DATA, 0);
 	}
 }
 
 void BufferedSocket::threadSendData() {
-	int myBuf;
-
-	{
+	if(sendBuf.empty()) {
 		Lock l(cs);
-		myBuf = curBuf;
-		curBuf = (curBuf + 1) % BUFFERS;
+		if(writeBuf.empty())
+			return;
 	}
 
-	if(outbufPos[myBuf] == 0)
+	if(sendBuf.empty())
 		return;
 
-	Socket::write((char*)outbuf[myBuf], outbufPos[myBuf]);
-	outbufPos[myBuf] = 0;
+	int n = sock->write(&sendBuf[0], sendBuf.size());
+	if(n == -1)
+		return;
+	sendBuf.erase(sendBuf.begin(), sendBuf.begin() + n);
 }
 
 /**
@@ -390,41 +255,57 @@ void BufferedSocket::threadSendData() {
  * @todo Fix the polling...
  */
 int BufferedSocket::run() {
-	bool sendingFile = false;
-
 	while(true) {
 		try {
-
 			while(isConnected() ? taskSem.wait(0) : taskSem.wait()) {
-				Tasks t;
+				pair<Tasks, TaskData*> p;
 				{
 					Lock l(cs);
 					dcassert(tasks.size() > 0);
-					t = tasks.front();
+					p = tasks.front();
 					tasks.erase(tasks.begin());
 				}
 
-				switch(t) {
-				case SHUTDOWN: threadShutDown(); return 0;
-				case DISCONNECT: if(isConnected()) fail(STRING(DISCONNECTED)); break;
-				case SEND_FILE: if(isConnected()) sendingFile = true; break;
-				case SEND_DATA: dcassert(!sendingFile); if(isConnected()) threadSendData(); break;
-				case CONNECT: sendingFile = false; threadConnect(); break;
-				case ACCEPTED: break;
+				switch(p.first) {
+				case SHUTDOWN: 
+					threadShutDown(); 
+					return 0;
+				case DISCONNECT: 
+					if(isConnected()) 
+						fail(STRING(DISCONNECTED)); 
+					break;
+				case SEND_FILE: 
+					threadSendFile(((SendFileInfo*)p.second)->stream); break;
+				case CONNECT: 
+					{
+						ConnectInfo* ci = (ConnectInfo*)p.second;
+						threadConnect(ci->addr, ci->port, ci->proxy); 
+						break;
+					}
+				case ACCEPTED: 
+					break;
 
 				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
+				
+				delete p.second;
 			}
 
 			// Now check if there's any activity on the socket
 			if(isConnected()) {
-				int waitFor = wait(POLL_TIMEOUT, sendingFile ? WAIT_READ | WAIT_WRITE : WAIT_READ);
-				if(waitFor & WAIT_WRITE) {
-					dcassert(sendingFile);
-					if(threadSendFile())
-						sendingFile = false;
+				bool hasData = !sendBuf.empty();
+				if(!hasData) {
+					Lock l(cs);
+					hasData = !writeBuf.empty();
 				}
-				if(waitFor & WAIT_READ) {
+
+				int waitFor = sock->wait(POLL_TIMEOUT, hasData ? Socket::WAIT_READ | Socket::WAIT_WRITE : Socket::WAIT_READ);
+				
+				if(waitFor & Socket::WAIT_WRITE) {
+					threadSendData();
+				}
+
+				if(waitFor & Socket::WAIT_READ) {
 					threadRead();
 				}
 			}
@@ -437,5 +318,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.83 2005/04/24 08:13:12 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.84 2005/11/27 19:19:20 arnetheduck Exp $
  */

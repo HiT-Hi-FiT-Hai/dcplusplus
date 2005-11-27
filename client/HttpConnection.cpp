@@ -66,9 +66,8 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	if(!socket) {
 		socket = BufferedSocket::getSocket(0x0a);
 	}
-	socket->setNoproxy(true);
 	socket->addListener(this);
-	socket->connect(server, port);
+	socket->connect(server, port, false, false);
 }
 
 void HttpConnection::on(BufferedSocketListener::Connected) throw() { 
@@ -158,5 +157,5 @@ void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLe
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.30 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.31 2005/11/27 19:19:20 arnetheduck Exp $
  */

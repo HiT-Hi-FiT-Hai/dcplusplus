@@ -28,65 +28,13 @@
 
 #ifdef _WIN32
 // Berkely constants converted to the windows equivs...
-#	define EWOULDBLOCK             WSAEWOULDBLOCK
-#	define EINPROGRESS             WSAEINPROGRESS
-#	define EALREADY                WSAEALREADY
-#	define ENOTSOCK                WSAENOTSOCK
-#	define EDESTADDRREQ            WSAEDESTADDRREQ
-#	define EMSGSIZE                WSAEMSGSIZE
-#	define EPROTOTYPE              WSAEPROTOTYPE
-#	define ENOPROTOOPT             WSAENOPROTOOPT
-#	define EPROTONOSUPPORT         WSAEPROTONOSUPPORT
-#	define ESOCKTNOSUPPORT         WSAESOCKTNOSUPPORT
-#	define EOPNOTSUPP              WSAEOPNOTSUPP
-#	define EPFNOSUPPORT            WSAEPFNOSUPPORT
-#	define EAFNOSUPPORT            WSAEAFNOSUPPORT
-#	define EADDRINUSE              WSAEADDRINUSE
 #	define EADDRNOTAVAIL           WSAEADDRNOTAVAIL
-#	define ENETDOWN                WSAENETDOWN
-#	define ENETUNREACH             WSAENETUNREACH
-#	define ENETRESET               WSAENETRESET
-#	define ECONNABORTED            WSAECONNABORTED
-#	define ECONNRESET              WSAECONNRESET
-#	define ENOBUFS                 WSAENOBUFS
-#	define EISCONN                 WSAEISCONN
-#	define ENOTCONN                WSAENOTCONN
-#	define ESHUTDOWN               WSAESHUTDOWN
-#	define ETOOMANYREFS            WSAETOOMANYREFS
-#	define ETIMEDOUT               WSAETIMEDOUT
-#	define ECONNREFUSED            WSAECONNREFUSED
-#	define ELOOP                   WSAELOOP
-#	ifdef ENAMETOOLONG
-#		undef ENAMETOOLONG
-#	endif
-#	define ENAMETOOLONG            WSAENAMETOOLONG
-#	define EHOSTDOWN               WSAEHOSTDOWN
-#	define EHOSTUNREACH            WSAEHOSTUNREACH
-#	ifdef ENOTEMPTY
-#		undef ENOTEMPTY
-#	endif
-#	define ENOTEMPTY               WSAENOTEMPTY
-#	define EPROCLIM                WSAEPROCLIM
-#	define EUSERS                  WSAEUSERS
-#	define EDQUOT                  WSAEDQUOT
-#	define ESTALE                  WSAESTALE
-#	define EREMOTE                 WSAEREMOTE
-#	ifdef EACCES
-#		undef EACCES
-#	endif
-#	define EACCES					WSAEACCES
-#	ifdef errno
-#		undef errno
-#	endif
-#	define errno ::WSAGetLastError()
-#	define checksocket(x) if((x) == INVALID_SOCKET) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
-#	define checkrecv(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); if(a == EWOULDBLOCK) return -1; else { Socket::disconnect(); throw SocketException(a); } }
-#	define checksockerr(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
 
 typedef int socklen_t;
 typedef SOCKET socket_t;
 
 #else
+
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -96,13 +44,8 @@ typedef SOCKET socket_t;
 #include <fcntl.h>
 
 typedef int socket_t;
-#define SOCKET_ERROR -1
-#define INVALID_SOCKET -1
-#	define closesocket(x) close(x)
-#	define ioctlsocket(a, b, c) ioctl(a, b, c)
-#	define checksocket(x) if((x) < 0) { Socket::disconnect(); throw SocketException(errno); }
-#	define checkrecv(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
-#	define checksockerr(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
+const int INVALID_SOCKET = -1;
+
 #endif
 
 class SocketException : public Exception {
@@ -136,25 +79,63 @@ public:
 		TYPE_UDP
 	};
 
-	Socket() throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { }
-	Socket(const string& aIp, const string& aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); }
-	Socket(const string& aIp, short aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); }
+	Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false), blocking(true) { }
+	Socket(const string& aIp, short aPort) throw(SocketException) : sock(INVALID_SOCKET), connected(false), blocking(true) { connect(aIp, aPort); }
 	virtual ~Socket() throw() { Socket::disconnect(); };
 
-	virtual void create(int aType = TYPE_TCP, bool server = false) throw(SocketException);
-	virtual void bind(short aPort) throw(SocketException);
+	/**
+	 * Connects a socket to an address/ip, closing any other connections made with
+	 * this instance.
+	 * @param aAddr Server address, in dns or xxx.xxx.xxx.xxx format.
+	 * @param aPort Server port.
+	 * @throw SocketException If any connection error occurs.
+	 */
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);
 	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); };
-	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
-	virtual void write(const char* aBuffer, size_t aLen) throw(SocketException);
-	void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
-	virtual void writeTo(const string& aIp, short aPort, const char* aBuffer, size_t aLen) throw(SocketException);
-	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), aData.length()); };
-	virtual void disconnect() throw();
+	/**
+	 * Same as connect(), but through the SOCKS5 server
+	 */
+	void socksConnect(const string& aIp, short aPort, u_int32_t timeout = 0) throw(SocketException);
 
+	/**
+	 * Sends data, will block until all data has been sent or an exception occurs
+	 * @param aBuffer Buffer with data
+	 * @param aLen Data length
+	 * @throw SocketExcpetion Send failed.
+	 */
+	void writeAll(const void* aBuffer, int aLen, u_int32_t timeout = 0) throw(SocketException);
+	virtual int write(const void* aBuffer, int aLen) throw(SocketException);
+	int write(const string& aData) throw(SocketException) { return write(aData.data(), (int)aData.length()); };
+	virtual void writeTo(const string& aIp, short aPort, const void* aBuffer, int aLen, bool proxy = true) throw(SocketException);
+	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), (int)aData.length()); };
+	virtual void shutdown() throw();
+	virtual void close() throw();
+	void disconnect() throw();
+
+	/**
+	 * Reads zero to aBufLen characters from this socket, 
+	 * @param aBuffer A buffer to store the data in.
+	 * @param aBufLen Size of the buffer.
+	 * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
+	 * @throw SocketException On any failure.
+	 */
 	int read(void* aBuffer, int aBufLen) throw(SocketException);
+	/**
+	 * Reads zero to aBufLen characters from this socket, 
+	 * @param aBuffer A buffer to store the data in.
+	 * @param aBufLen Size of the buffer.
+	 * @param aIP Remote IP address
+	 * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
+	 * @throw SocketException On any failure.
+	 */	
 	int read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException);
-	int readFull(void* aBuffer, int aBufLen) throw(SocketException);
+	/**
+	 * Reads data until aBufLen bytes have been read or an error occurs.
+	 * If the socket is closed, or the timeout is reached, the number of bytes read 
+	 * actually read is returned.
+	 * On exception, an unspecified amount of bytes might have already been read.
+	 */
+	int readAll(void* aBuffer, int aBufLen, u_int32_t timeout = 0) throw(SocketException);
 	
 	int wait(u_int32_t millis, int waitFor) throw(SocketException);
 	bool isConnected() { return connected; };
@@ -163,16 +144,11 @@ public:
 	static int64_t getTotalDown() { return stats.totalDown; };
 	static int64_t getTotalUp() { return stats.totalUp; };
 	
-	int getAvailable() {
-		u_int32_t i = 0;
-		ioctlsocket(sock, FIONREAD, &i);
-		return i;
-	}
-
 #ifdef _WIN32
 	void setBlocking(bool block) throw() {
 		u_long b = block ? 0 : 1;
 		ioctlsocket(sock, FIONBIO, &b);
+		blocking = block;
 	}
 #else
 	void setBlocking(bool block) throw() {
@@ -182,30 +158,33 @@ public:
 		} else {
 			fcntl(sock, F_SETFL, flags & (~O_NONBLOCK));
 		}
+		blocking = block;
 	}
 #endif
-	
-	string getLocalIp() throw() {
-		if(sock == INVALID_SOCKET)
-			return Util::emptyString;
+	bool getBlocking() throw() { return blocking; }
 
-		sockaddr_in sock_addr;
-		socklen_t len = sizeof(sock_addr);
-		if(getsockname(sock, (sockaddr*)&sock_addr, &len) == 0) {
-			return inet_ntoa(sock_addr.sin_addr);
-		}
-		return Util::emptyString;
-	}
+	string getLocalIp() throw();
+
+	// Low level interface
+	virtual void create(int aType = TYPE_TCP) throw(SocketException);
+
+	/** Binds a socket to a certain local port and possibly IP. */
+	virtual void bind(short aPort = 0, const string& aIp = "0.0.0.0") throw(SocketException);
+	virtual void listen() throw(SocketException);
+	virtual void accept(const Socket& listeningSocket) throw(SocketException);
+
+	int getSocketOptInt(int option) throw(SocketException);
+	void setSocketOpt(int option, int value) throw(SocketException);
 
 	/** When socks settings are updated, this has to be called... */
 	static void socksUpdated();
 
 	GETSET(string, ip, Ip);
-	GETSET(bool, noproxy, Noproxy);
 protected:
 	socket_t sock;
 	int type;
 	bool connected;
+	bool blocking;
 
 	static string udpServer;
 	static short udpPort;
@@ -220,11 +199,54 @@ private:
 		int64_t totalUp;
 	};
 	static Stats stats;
+
+	void socksAuth(u_int32_t timeout) throw(SocketException);
+
+#ifdef _WIN32
+	static int getLastError() {  return ::WSAGetLastError(); }
+	static int checksocket(socket_t ret) { 
+		if(ret == (socket_t) SOCKET_ERROR) { 
+			throw SocketException(getLastError()); 
+		} 
+		return ret;
+	}
+	static int check(int ret, bool blockOk = false) { 
+		if(ret == SOCKET_ERROR) {
+			int error = getLastError();
+			if(blockOk && error == WSAEWOULDBLOCK) {
+				return -1;
+			} else {
+				throw SocketException(error); 
+			}
+		} 
+		return ret;
+	}
+#else
+	static int getLastError() { return errno; }
+	static int checksocket(int ret) { 
+		if(ret < 0) { 
+			throw SocketException(getLastError()); 
+		} 
+		return ret;
+	}
+	static int check(int ret, bool blockOk = false) { 
+		if(ret == -1) {
+			int error = getLastError();
+			if(blockOk && error == EWOULDBLOCK) {
+				return -1;
+			} else {
+				throw SocketException(error); 
+			}
+		} 
+		return ret;
+	}
+#endif
+	
 };
 
 #endif // !defined(SOCKET_H)
 
 /**
  * @file
- * $Id: Socket.h,v 1.61 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: Socket.h,v 1.62 2005/11/27 19:19:20 arnetheduck Exp $
  */

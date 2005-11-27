@@ -275,11 +275,17 @@ public:
 	void setLineMode() { dcassert(socket); socket->setLineMode(); };
 
 	void connect(const string& aServer, short aPort) throw(SocketException) { 
-		socket->connect(aServer, aPort);
+		if(socket)
+			BufferedSocket::putSocket(socket);
+		socket = BufferedSocket::getSocket(0);
+		socket->connect(aServer, aPort, false, true);
 	}
 	
-	void accept(const ServerSocket& aServer) throw(SocketException) {
-		socket->accept(aServer);
+	void accept(const Socket& aServer) throw(SocketException) {
+		if(socket)
+			BufferedSocket::putSocket(socket);
+		socket = BufferedSocket::getSocket(0);
+		socket->accept(aServer, false);
 	}
 	
 	void disconnect() { if(socket) socket->disconnect(); };
@@ -350,7 +356,7 @@ private:
 
 	// We only want ConnectionManager to create this...
 	UserConnection() throw(SocketException) : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), 
-		socket(BufferedSocket::getSocket(0)), download(NULL) { 
+		socket(0), download(NULL) { 
 		
 		socket->addListener(this);
 	};
@@ -401,5 +407,5 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.95 2005/07/23 17:52:02 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.96 2005/11/27 19:19:20 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-/*
+(/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,12 @@
 
 #include "SettingsManager.h"
 #include "ResourceManager.h"
-
-#include "ServerSocket.h"
+#include "TimerManager.h"
 
 string Socket::udpServer;
 short Socket::udpPort;
 
-#define checkconnected() if(!isConnected()) throw SocketException(STRING(NOT_CONNECTED))
+#define checkconnected() if(!isConnected()) throw SocketException(ENOTCONN))
 
 #ifdef _DEBUG
 
@@ -40,271 +39,315 @@ SocketException::SocketException(int aError) throw() {
 
 #else // _DEBUG
 
-SocketException::SocketException(int aError) throw() {
-	error = errorToString(aError);
-}
+SocketException::SocketException(int aError) throw() : Exception(errorToString(aError)) { }
 
 #endif
 
 Socket::Stats Socket::stats = { 0, 0 };
 
+static const u_int32_t SOCKS_TIMEOUT = 30000;
+
 string SocketException::errorToString(int aError) throw() {
-	switch(aError) {
-	case EWOULDBLOCK:
-		return STRING(OPERATION_WOULD_BLOCK_EXECUTION);
-	case EACCES:
-		return STRING(PERMISSION_DENIED);
-	case EADDRINUSE:
-		return STRING(ADDRESS_ALREADY_IN_USE);
-	case EADDRNOTAVAIL:
-		return STRING(ADDRESS_NOT_AVAILABLE);
-	case EALREADY:
-		return STRING(NON_BLOCKING_OPERATION);
-	case ECONNREFUSED:
-		return STRING(CONNECTION_REFUSED);
-	case ETIMEDOUT:
-		return STRING(CONNECTION_TIMEOUT);
-	case EHOSTUNREACH:
-		return STRING(HOST_UNREACHABLE);
-	case ESHUTDOWN:
-		return STRING(SOCKET_SHUT_DOWN);
-	case ECONNABORTED:
-		return STRING(CONNECTION_CLOSED);
-	case ECONNRESET:
-		return STRING(CONNECTION_RESET);
-	case ENOTSOCK:
-		return STRING(NOT_SOCKET);
-	case ENOTCONN:
-		return STRING(NOT_CONNECTED);
-	case ENETUNREACH:
-		return STRING(NETWORK_UNREACHABLE);
-	default:
-		{
-			char tmp[64];
-			sprintf(tmp, CSTRING(UNKNOWN_ERROR), aError);
-			return tmp;
-		}
+	string msg = Util::translateError(aError);
+	if(msg.empty())
+	{
+		char tmp[64];
+		sprintf(tmp, CSTRING(UNKNOWN_ERROR), aError);
+		msg = tmp;
 	}
+	return msg;
 }
 
-void Socket::create(int aType /* = TYPE_TCP */, bool server /* = false */) throw(SocketException) {
+void Socket::create(int aType /* = TYPE_TCP */) throw(SocketException) {
 	if(sock != INVALID_SOCKET)
-		Socket::disconnect();
+		disconnect();
 
 	switch(aType) {
 	case TYPE_TCP:
-		checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+		sock = checksocket(socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 		break;
 	case TYPE_UDP:
-		checksocket(sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP));
+		sock = checksocket(socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP));
 		break;
 	default:
 		dcasserta(0);
 	}
-	// Multiple interface fix
-	if(!server && SETTING(BIND_ADDRESS) != "0.0.0.0") {
-		sockaddr_in sock_addr;
-		sock_addr.sin_family = AF_INET;
-		sock_addr.sin_port = htons(0); // Let stack choose our port
-		sock_addr.sin_addr.s_addr = inet_addr(SETTING(BIND_ADDRESS).c_str());
-		::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr));
-		// If it fails, we'll get normal INADDR binding instead...
-	}	
 	type = aType;
+	setBlocking(true);
+	setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+	setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 }
 
-/**
- * Binds an UDP socket to a certain local port.
- */
-void Socket::bind(short aPort) throw (SocketException){
-	dcassert(type == TYPE_UDP);
-
-	sockaddr_in sock_addr;
-		
-	sock_addr.sin_family = AF_INET;
-	sock_addr.sin_port = htons(aPort);
-	// Multiple interface fix
-	sock_addr.sin_addr.s_addr = inet_addr(SETTING(BIND_ADDRESS).c_str());
-	if(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
-	sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    checksockerr(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
-	}
-	connected = true;
-}
-
-void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
+void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
 	if(sock != INVALID_SOCKET) {
-		Socket::disconnect();
+		disconnect();
 	}
-	type = TYPE_TCP;
-	dcassert(!isConnected());
-
 	sockaddr_in sock_addr;
 	socklen_t sz = sizeof(sock_addr);
 
-	checksockerr(sock=::accept(aSocket.getSocket(), (sockaddr*)&sock_addr, &sz));
+	sock = check(::accept(listeningSocket.sock, (sockaddr*)&sock_addr, &sz));
 #ifdef _WIN32
 	// Make sure we disable any inherited windows message things for this socket.
 	::WSAAsyncSelect(sock, NULL, 0, 0);
 #endif
-	setBlocking(true);
-	connected = true;
-	
+
+	type = TYPE_TCP;
+
 	setIp(inet_ntoa(sock_addr.sin_addr));
+	connected = true;
+	setBlocking(true);
 }
 
-/**
- * Connects a socket to an address/ip, closing any other connections made with
- * this instance.
- * @param aAddr Server address, in dns or xxx.xxx.xxx.xxx format.
- * @param aPort Server port.
- * @throw SocketException If any connection error occurs.
- */
+
+void Socket::bind(short aPort, const string& aIp /* = 0.0.0.0 */) throw (SocketException){
+	sockaddr_in sock_addr;
+		
+	sock_addr.sin_family = AF_INET;
+	sock_addr.sin_port = htons(aPort);
+	sock_addr.sin_addr.s_addr = inet_addr(aIp.c_str());
+	if(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
+		dcdebug("Bind failed, retrying with INADDR_ANY: %s\n", SocketException(getLastError()).getError().c_str());
+		sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	    check(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
+	}
+}
+
+void Socket::listen() throw(SocketException) {
+	check(::listen(sock, 20));
+	connected = true;
+}
+
 void Socket::connect(const string& aAddr, short aPort) throw(SocketException) {
 	sockaddr_in  serv_addr;
-	hostent* host;
 
 	if(sock == INVALID_SOCKET) {
-		create();
+		create(TYPE_TCP);
 	}
+
+	string addr = resolve(aAddr);
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_port = htons(aPort);
 	serv_addr.sin_family = AF_INET;
-	
-	serv_addr.sin_addr.s_addr = inet_addr(aAddr.c_str());
+	serv_addr.sin_addr.s_addr = inet_addr(addr.c_str());
 
-    if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
-        host = gethostbyname(aAddr.c_str());
-        if (host == NULL) {
-            throw SocketException(STRING(UNKNOWN_ADDRESS));
-        }
-        serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
-    }
-
-	setIp(inet_ntoa(serv_addr.sin_addr));
-
-    if(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)) == SOCKET_ERROR) {
-		// EWOULDBLOCK is ok, the attempt is still being made, and FD_CONNECT will be signaled...
-		if(errno != EWOULDBLOCK) {
-			checksockerr(SOCKET_ERROR);
-		}
-	}
+	check(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)), true);
 	connected = true;
+	setIp(addr);
 }
 
-/**
- * Reads zero to aBufLen characters from this socket, 
- * @param aBuffer A buffer to store the data in.
- * @param aBufLen Size of the buffer.
- * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
- * @throw SocketException On any failure.
- */
+namespace {
+	inline u_int32_t timeLeft(u_int32_t start, u_int32_t timeout) {
+		if(timeout == 0) {
+			return 0;
+		}			
+		u_int32_t now = GET_TICK();
+		if(start + timeout < now)
+			throw SocketException(STRING(CONNECTION_TIMEOUT));
+		return start + timeout - now;
+	}
+}
+
+void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) throw(SocketException) {
+
+	if(SETTING(SOCKS_SERVER).empty() || SETTING(SOCKS_PORT) == 0) {
+		throw SocketException(STRING(SOCKS_FAILED));
+	}
+
+	bool oldblock = getBlocking();
+	setBlocking(false);
+
+	u_int32_t start = GET_TICK();
+
+	connect(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
+
+	if(wait(timeLeft(start, timeout), WAIT_CONNECT) != WAIT_CONNECT) {
+		throw SocketException(STRING(SOCKS_FAILED));
+	}
+
+	socksAuth(timeLeft(start, timeout));
+
+	vector<u_int8_t> connStr;
+
+	// Authenticated, let's get on with it...
+	connStr.push_back(5);			// SOCKSv5
+	connStr.push_back(1);			// Connect
+	connStr.push_back(0);			// Reserved
+
+	if(BOOLSETTING(SOCKS_RESOLVE)) {
+		connStr.push_back(3);		// Address type: domain name
+		connStr.push_back((u_int8_t)aAddr.size());
+		connStr.insert(connStr.end(), aAddr.begin(), aAddr.end());
+	} else {
+		connStr.push_back(1);		// Address type: IPv4;
+		unsigned long addr = inet_addr(resolve(aAddr).c_str());
+		u_int8_t* paddr = (u_int8_t*)&addr;
+		connStr.insert(connStr.end(), paddr, paddr+4);
+	}
+
+	u_int16_t port = htons(aPort);
+	u_int8_t* pport = (u_int8_t*)&port;
+	connStr.push_back(pport[0]);
+	connStr.push_back(pport[1]);
+
+	writeAll(&connStr[0], connStr.size(), timeLeft(start, timeout));
+	// We assume we'll get a ipv4 address back...therefore, 10 bytes...if not, things
+	// will break, but hey...noone's perfect (and I'm tired...)...
+	if(readAll(&connStr[0], 10, timeLeft(start, timeout)) != 10) {
+		throw SocketException(STRING(SOCKS_FAILED));
+	}
+
+	if(connStr[0] != 5 || connStr[1] != 0) {
+		throw SocketException(STRING(SOCKS_FAILED));
+	}
+
+	in_addr sock_addr;
+
+	memset(&sock_addr, 0, sizeof(sock_addr));
+	sock_addr.s_addr = *((unsigned long*)&connStr[4]);
+	setIp(inet_ntoa(sock_addr));
+
+	setBlocking(oldblock);
+}
+
+void Socket::socksAuth(u_int32_t timeout) {
+	vector<u_int8_t> connStr;
+
+	u_int32_t start = GET_TICK();
+
+	if(SETTING(SOCKS_USER).empty() && SETTING(SOCKS_PASSWORD).empty()) {
+		// No username and pw, easier...=)
+		connStr.push_back(5);			// SOCKSv5
+		connStr.push_back(1);			// 1 method
+		connStr.push_back(0);			// Method 0: No auth...
+
+		writeAll(&connStr[0], 3, timeLeft(start, timeout));
+
+		if(readAll(&connStr[0], 2, timeLeft(start, timeout)) != 2) {
+			throw SocketException(STRING(SOCKS_FAILED));
+		}
+
+		if(connStr[1] != 0) {
+			throw SocketException(STRING(SOCKS_NEEDS_AUTH));
+		}				
+	} else {
+		// We try the username and password auth type (no, we don't support gssapi)
+
+		connStr.push_back(5);			// SOCKSv5
+		connStr.push_back(1);			// 1 method
+		connStr.push_back(2);			// Method 2: Name/Password...
+		writeAll(&connStr[0], 3, timeLeft(start, timeout));
+
+		if(readAll(&connStr[0], 2, timeLeft(start, timeout)) != 2) {
+			throw SocketException(STRING(SOCKS_FAILED));
+		}
+		if(connStr[1] != 2) {
+			throw SocketException(STRING(SOCKS_AUTH_UNSUPPORTED));
+		}
+
+		connStr.clear();
+		// Now we send the username / pw...
+		connStr.push_back(1);
+		connStr.push_back((u_int8_t)SETTING(SOCKS_USER).length());
+		connStr.insert(connStr.end(), SETTING(SOCKS_USER).begin(), SETTING(SOCKS_USER).end());
+		connStr.push_back((u_int8_t)SETTING(SOCKS_PASSWORD).length());
+		connStr.insert(connStr.end(), SETTING(SOCKS_PASSWORD).begin(), SETTING(SOCKS_PASSWORD).end());
+
+		writeAll(&connStr[0], connStr.size(), timeLeft(start, timeout));
+
+		if(readAll(&connStr[0], 2, timeLeft(start, timeout)) != 2) {
+			throw SocketException(STRING(SOCKS_AUTH_FAILED));
+		}
+
+		if(connStr[1] != 0) {
+			throw SocketException(STRING(SOCKS_AUTH_FAILED));
+		}
+	}
+}
+
+int Socket::getSocketOptInt(int option) throw(SocketException) {
+	int val;
+	int len = sizeof(val);
+	check(::getsockopt(sock, SOL_SOCKET, option, (char*)&val, &len));
+	return val;
+}
+
+void Socket::setSocketOpt(int option, int val) throw(SocketException) {
+	int len = sizeof(val);
+	check(::setsockopt(sock, SOL_SOCKET, option, (char*)&val, len));
+}
+
 int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
-	checkconnected();
 	int len = 0;
 	if(type == TYPE_TCP) {
-		checkrecv(len=::recv(sock, (char*)aBuffer, aBufLen, 0));
-	} else if(type == TYPE_UDP) {
-		checkrecv(len=::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL));
+		len = check(::recv(sock, (char*)aBuffer, aBufLen, 0), true);
+	} else {
+		dcassert(type == TYPE_UDP);
+		len = check(::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL), true);
 	}
-	stats.totalDown += len;
+	if(len > 0)
+		stats.totalDown += len;
 	return len;
 }
 
-/**
- * Reads zero to aBufLen characters from this socket, 
- * @param aBuffer A buffer to store the data in.
- * @param aBufLen Size of the buffer.
- * @param aIP Remote IP address
- * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
- * @throw SocketException On any failure.
- */
 int Socket::read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException) {
-	checkconnected();
-	int len = 0;
+	dcassert(type == TYPE_UDP);
 
 	sockaddr_in remote_addr = { 0 };
 	socklen_t addr_length = sizeof(remote_addr);
 
-	checkrecv(len=::recvfrom(sock, (char*)aBuffer, aBufLen, 0, (sockaddr*)&remote_addr, &addr_length)); //
-	aIP = string(inet_ntoa(remote_addr.sin_addr));
+	int len = check(::recvfrom(sock, (char*)aBuffer, aBufLen, 0, (sockaddr*)&remote_addr, &addr_length), true);
 
-	stats.totalDown += len;
+	if(len > 0) {
+		aIP = inet_ntoa(remote_addr.sin_addr);
+		stats.totalDown += len;
+	} else {
+		aIP.clear();
+	}
 	return len;
 }
 
-/**
- * Reads data until aBufLen bytes have been read or an error occurs.
- * On error, an unspecified amount of bytes might have already been read...
- */
-int Socket::readFull(void* aBuffer, int aBufLen) throw(SocketException) {
+int Socket::readAll(void* aBuffer, int aBufLen, u_int32_t timeout) throw(SocketException) {
+	u_int8_t* buf = (u_int8_t*)aBuffer;
 	int i = 0;
-	int j;
 	while(i < aBufLen) {
-		if((j = read(((char*)aBuffer) + i, aBufLen - i)) <= 0) {
-			return j;
+		int j = read(buf + i, aBufLen - i);
+		if(j == 0) {
+			return i;
+		} else if(j == -1) {
+			if(wait(timeout, WAIT_READ) != WAIT_READ) {
+				return i;
+			}
+			continue;
 		}
+
 		i += j;
 	}
 	return i;
 }
 
-/**
- * Sends data, will block until all data has been sent or an exception occurs
- * @param aBuffer Buffer with data
- * @param aLen Data length
- * @throw SocketExcpetion Send failed.
- */
-void Socket::write(const char* aBuffer, size_t aLen) throw(SocketException) {
-	checkconnected();
-//	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
-        
-        if(aLen == 0){
-                return;
-        }
-
-	size_t pos = 0;
-	size_t sendSize = min(aLen, (size_t)64 * 1024);
-
-	bool blockAgain = false;
+void Socket::writeAll(const void* aBuffer, int aLen, u_int32_t timeout) throw(SocketException) {
+	const u_int8_t* buf = (const u_int8_t*)aBuffer;
+	int pos = 0;
+	// No use sending more than this at a time...
+	int sendSize = getSocketOptInt(SO_SNDBUF);
 
 	while(pos < aLen) {
-		int i = ::send(sock, aBuffer+pos, (int)min(aLen-pos, sendSize), 0);
-		if(i == SOCKET_ERROR) {
-			if(errno == EWOULDBLOCK) {
-				if(blockAgain) {
-					// Uhm, two blocks in a row...try making the send window smaller...
-					if(sendSize >= 256) {
-						sendSize /= 2;
-						dcdebug("Reducing send window size to %lu\n", sendSize);
-					} else {
-						Thread::sleep(10);
-					}
-					blockAgain = false;
-				} else {
-					blockAgain = true;
-				}
-				wait(2000, WAIT_WRITE);
-
-			} else if(errno == ENOBUFS) {
-				if(sendSize > 32) {
-					sendSize /= 2;
-					dcdebug("Reducing send window size to %lu\n", sendSize);
-				} else {
-					throw SocketException(STRING(OUT_OF_BUFFER_SPACE));
-				}
-			} else {
-				checksockerr(SOCKET_ERROR);
-			}
+		int i = write(buf+pos, (int)min(aLen-pos, sendSize));
+		if(i == -1) {
+			wait(timeout, WAIT_WRITE);
 		} else {
-			dcassert(i != 0);
 			pos+=i;
-
 			stats.totalUp += i;
-			blockAgain = false;
 		}
 	}
+}
+
+int Socket::write(const void* aBuffer, int aLen) throw(SocketException) {
+	int i = check(::send(sock, (const char*)aBuffer, aLen, 0), true);
+	if(i > 0)
+		stats.totalUp += i;
+	return i;
 }
 
 /**
@@ -313,84 +356,62 @@ void Socket::write(const char* aBuffer, size_t aLen) throw(SocketException) {
 * @param aLen Data length
 * @throw SocketExcpetion Send failed.
 */
-void Socket::writeTo(const string& aIp, short aPort, const char* aBuffer, size_t aLen) throw(SocketException) {
+void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int aLen, bool proxy) throw(SocketException) {
+	if(aLen <= 0) 
+		return;
+
+	u_int8_t* buf = (u_int8_t*)aBuffer;
 	if(sock == INVALID_SOCKET) {
 		create(TYPE_UDP);
 	}
+
 	dcassert(type == TYPE_UDP);
-	//	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
-	dcassert(aLen > 0);
-	dcassert(aLen < 1450);
-	dcassert(sock != INVALID_SOCKET);
 
-	sockaddr_in  serv_addr;
-	hostent* host;
+	sockaddr_in serv_addr;
 
-	if(aIp.empty() || aPort == 0) {
-		throw SocketException(STRING(ADDRESS_NOT_AVAILABLE));
+	if(aAddr.empty() || aPort == 0) {
+		throw SocketException(EADDRNOTAVAIL);
 	}
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
 
-	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5 && !noproxy) {
-
+	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5 && proxy) {
 		if(udpServer.empty() || udpPort == 0) {
 			throw SocketException(STRING(SOCKS_SETUP_ERROR));
 		}
 
 		serv_addr.sin_port = htons(udpPort);
 		serv_addr.sin_family = AF_INET;
-		
 		serv_addr.sin_addr.s_addr = inet_addr(udpServer.c_str());
 		
 		string s = BOOLSETTING(SOCKS_RESOLVE) ? resolve(ip) : ip;
 
-		// Alrite, let's get on with it...
-		AutoArray<u_int8_t> connStr(10 + s.length() + aLen);
-		connStr[0] = 0;		// Reserved
-		connStr[1] = 0;		// Reserved
-		connStr[2] = 0;		// Fragment number, 0 always in our case...
+		vector<u_int8_t> connStr;
+
+		connStr.push_back(0);		// Reserved
+		connStr.push_back(0);		// Reserved
+		connStr.push_back(0);		// Fragment number, always 0 in our case...
 		
-		int connLen;
 		if(BOOLSETTING(SOCKS_RESOLVE)) {
-			
-			u_int8_t slen =(u_int8_t)(s.length() & 0xff);
-			connStr[3] = 3;		// Address type: domain name
-			connStr[4] = slen;
-			strncpy((char*)(u_int8_t*)connStr + 5, s.c_str(), slen);
-			*((u_int16_t*)(&connStr[5 + slen])) = htons(aPort);
-			connLen = 7 + slen;
+			connStr.push_back(3);
+			connStr.push_back((u_int8_t)s.size());
+			connStr.insert(connStr.end(), aAddr.begin(), aAddr.end());
 		} else {
-			connStr[3] = 1;		// Address type: IPv4;
-			*((long*)(&connStr[4])) = inet_addr(s.c_str());
-			*((u_int16_t*)(&connStr[8])) = htons(aPort);	
-			connLen = 10;
+			connStr.push_back(1);		// Address type: IPv4;
+			unsigned long addr = inet_addr(resolve(aAddr).c_str());
+			u_int8_t* paddr = (u_int8_t*)&addr;
+			connStr.insert(connStr.end(), paddr, paddr+4);
 		}
 
-		memcpy(((u_int8_t*)connStr) + connLen, aBuffer, aLen);
+		connStr.insert(connStr.end(), buf, buf + aLen);
 
-		int i = ::sendto(sock, (char*)(u_int8_t*)connStr, connLen + (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-		checksockerr(i);
-		
-		stats.totalUp += i;
+		stats.totalUp += check(::sendto(sock, (const char*)&connStr[0], connStr.size(), 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr)));
 	} else {
 		serv_addr.sin_port = htons(aPort);
 		serv_addr.sin_family = AF_INET;
+		serv_addr.sin_addr.s_addr = inet_addr(resolve(aAddr).c_str());
 		
-		serv_addr.sin_addr.s_addr = inet_addr(aIp.c_str());
-		
-		if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
-			host = gethostbyname(aIp.c_str());
-			if (host == NULL) {
-				throw SocketException(STRING(UNKNOWN_ADDRESS));
-			}
-			serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
-		}
-		
-		int i = ::sendto(sock, aBuffer, (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-		checksockerr(i);
-		
-		stats.totalUp += i;
+		stats.totalUp += check(::sendto(sock, (const char*)aBuffer, (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr)));
 	}
 }
 
@@ -417,12 +438,12 @@ int Socket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 
 		FD_SET(sock, &wfd);
 		FD_SET(sock, &efd);
-		checksockerr(select((int)(sock+1), NULL, &wfd, &efd, &tv));
+		check(select((int)(sock+1), NULL, &wfd, &efd, &tv));
 
 		if(FD_ISSET(sock, &wfd) || FD_ISSET(sock, &efd)) {
 			int y = 0;
 			socklen_t z = sizeof(y);
-			checksockerr(getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&y, &z));
+			check(getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&y, &z));
 
 			if(y != 0)
 				throw SocketException(y);
@@ -445,7 +466,7 @@ int Socket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 		FD_SET(sock, wfdp);
 	}
 	waitFor = WAIT_NONE;
-	checksockerr(select((int)(sock+1), rfdp, wfdp, NULL, &tv));
+	check(select((int)(sock+1), rfdp, wfdp, NULL, &tv));
 
 	if(rfdp && FD_ISSET(sock, rfdp)) {
 		waitFor |= WAIT_READ;
@@ -478,63 +499,29 @@ string Socket::resolve(const string& aDns) {
 	}
 }
 
+string Socket::getLocalIp() throw() {
+	if(sock == INVALID_SOCKET)
+		return Util::emptyString;
+
+	sockaddr_in sock_addr;
+	socklen_t len = sizeof(sock_addr);
+	if(getsockname(sock, (sockaddr*)&sock_addr, &len) == 0) {
+		return inet_ntoa(sock_addr.sin_addr);
+	}
+	return Util::emptyString;
+}
+
 void Socket::socksUpdated() {
 	udpServer.clear();
 	udpPort = 0;
 	
 	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5) {
 		try {
-			Socket s(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
-			
-			if(SETTING(SOCKS_USER).empty() && SETTING(SOCKS_PASSWORD).empty()) {
-				// No username and pw, easier...=)
-				char connStr[3];
-				connStr[0] = 5;			// SOCKSv5
-				connStr[1] = 1;			// 1 method
-				connStr[2] = 0;			// Method 0: No auth...
-				
-				s.write(connStr, 3);
-				
-				if(s.readFull(connStr, 2) <= 0)
-					return;
-				
-				if(connStr[1] != 0) {
-					return;
-				}				
-			} else {
-				// We try the username and password auth type (no, we don't support gssapi)
-				u_int8_t ulen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
-				u_int8_t plen = (u_int8_t)(SETTING(SOCKS_PASSWORD).length() & 0xff);
-				AutoArray<u_int8_t> connStr(3 + ulen + plen);
-				
-				connStr[0] = 5;			// SOCKSv5
-				connStr[1] = 1;			// 1 method
-				connStr[2] = 2;			// Method 2: Name/Password...
-				s.write((char*)(u_int8_t*)connStr, 3);
-				if(s.readFull((char*)(u_int8_t*)connStr, 2) <= 0)
-					return;
+			Socket s;
+			s.setBlocking(false);
+			s.connect(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
+			s.socksAuth(SOCKS_TIMEOUT);
 
-				if(connStr[1] != 2) {
-					return;
-				}				
-				// Now we send the username / pw...
-				connStr[0] = 1;
-				connStr[1] = ulen;
-				strncpy((char*)(u_int8_t*)connStr + 2, SETTING(SOCKS_USER).c_str(), ulen);
-				connStr[2 + ulen] = plen;
-				strncpy((char*)(u_int8_t*)connStr + 3 + ulen, SETTING(SOCKS_PASSWORD).c_str(), plen);
-				s.write((char*)(u_int8_t*)connStr, 3 + plen + ulen);
-				
-				if(s.readFull((char*)(u_int8_t*)connStr, 2) <= 0) {
-					return;
-				}
-				
-				if(connStr[1] != 0) {
-					return;
-				}
-				
-			}
-			// Alrite, let's get on with it...
 			char connStr[10];
 			connStr[0] = 5;			// SOCKSv5
 			connStr[1] = 3;			// UDP Associate
@@ -543,11 +530,11 @@ void Socket::socksUpdated() {
 			*((long*)(&connStr[4])) = 0;		// No specific outgoing UDP address
 			*((u_int16_t*)(&connStr[8])) = 0;	// No specific port...
 			
-			s.write(connStr, 10);
+			s.writeAll(connStr, 10, SOCKS_TIMEOUT);
 			
 			// We assume we'll get a ipv4 address back...therefore, 10 bytes...if not, things
 			// will break, but hey...noone's perfect (and I'm tired...)...
-			if(s.readFull(connStr, 10) <= 0) {
+			if(s.readAll(connStr, 10, SOCKS_TIMEOUT) != 10) {
 				return;
 			}
 
@@ -557,32 +544,37 @@ void Socket::socksUpdated() {
 
 			udpPort = (short)ntohs(*((u_int16_t*)(&connStr[8])));
 
-			sockaddr_in  serv_addr;
+			in_addr serv_addr;
 			
 			memset(&serv_addr, 0, sizeof(serv_addr));
-			serv_addr.sin_port = htons(udpPort);
-			serv_addr.sin_family = AF_INET;
-			
-			serv_addr.sin_addr.s_addr = *((long*)(&connStr[4]));
-			udpServer = inet_ntoa(serv_addr.sin_addr);
+			serv_addr.s_addr = *((long*)(&connStr[4]));
+			udpServer = inet_ntoa(serv_addr);
 		} catch(const SocketException&) {
 			dcdebug("Socket: Failed to register with socks server\n");
-			// ...
 		}
 	}
 }
 
-void Socket::disconnect() throw() {
-	if(sock != INVALID_SOCKET) {
-		::shutdown(sock, 1); // Make sure we send FIN (SD_SEND shutdown type...)
-		closesocket(sock);
-	}
-	connected = false;
+void Socket::shutdown() {
+	::shutdown(sock, 1);
+}
 
+void Socket::close() {
+#ifdef _WIN32
+	closesocket(sock);
+#else
+	close(sock);
+#endif
+	connected = false;
 	sock = INVALID_SOCKET;
+}
+
+void Socket::disconnect() throw() {
+	shutdown();
+	close();
 }
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.66 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.67 2005/11/27 19:19:20 arnetheduck Exp $
  */

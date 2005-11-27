@@ -40,7 +40,7 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
 
-	adcFeatures.push_back("+BASE");
+	adcFeatures.push_back("+BAS0");
 }
 
 void ConnectionManager::listen() throw(Exception){
@@ -55,7 +55,7 @@ void ConnectionManager::listen() throw(Exception){
 
 	while(true) {
 		try {
-			socket.waitForConnections(lastPort);
+			socket.listen(lastPort);
 			port = lastPort;
 			break;
 		} catch(const Exception&) {
@@ -743,5 +743,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.104 2005/07/23 17:52:18 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.105 2005/11/27 19:19:20 arnetheduck Exp $
  */

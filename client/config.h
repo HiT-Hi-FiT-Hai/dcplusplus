@@ -44,8 +44,13 @@
 #endif
 
 #ifdef HAVE_STLPORT
+# define _STLP_USE_PTR_SPECIALIZATIONS 1
+# define _STLP_USE_TEMPLATE_EXPRESSION 1
+# define _STLP_NO_ANACHRONISMS 1
+# define _STLP_NO_CUSTOM_IO 1
+# define _STLP_NO_IOSTREAMS 1
 # ifndef _DEBUG
-#  define _STLP_NO_EXCEPTIONS 1
+#  define _STLP_DONT_USE_EXCEPTIONS 1
 # endif
 #endif
 
@@ -55,7 +60,7 @@
 # pragma warning(disable: 4290) // C++ Exception Specification ignored
 # pragma warning(disable: 4127) // constant expression
 # pragma warning(disable: 4710) // function not inlined
-
+# pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
 # if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310
 
 typedef signed char int8_t;
@@ -123,5 +128,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.33 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: config.h,v 1.34 2005/11/27 19:19:20 arnetheduck Exp $
  */

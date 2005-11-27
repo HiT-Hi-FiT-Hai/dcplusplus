@@ -24,7 +24,7 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;;&quot;$(SolutionDir)\yassl\include&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -90,7 +90,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;;&quot;$(SolutionDir)\yassl\include&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -224,6 +224,9 @@
 			</File>
 			<File
 				RelativePath=".\client\Socket.cpp">
+			</File>
+			<File
+				RelativePath=".\client\SSLSocket.cpp">
 			</File>
 			<File
 				RelativePath=".\client\stdinc.cpp">
@@ -429,6 +432,9 @@
 			</File>
 			<File
 				RelativePath="client\Speaker.h">
+			</File>
+			<File
+				RelativePath=".\client\SSLSocket.h">
 			</File>
 			<File
 				RelativePath=".\client\stdinc.h">

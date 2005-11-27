@@ -367,6 +367,11 @@
 #define IDC_SETTINGS_BOLD_CONTENTS      1314
 #define IDC_SETTINGS_CONFIRM_OPTIONS    1315
 #define IDC_CONFIRM_OPTIONS             1316
+#define IDC_SOCKET_IN_BUFFER            1317
+#define IDC_EDIT2                       1318
+#define IDC_SOCKET_OUT_BUFFER           1318
+#define IDC_SETTINGS_SOCKET_OUT_BUFFER  1319
+#define IDC_SETTINGS_SOCKET_IN_BUFFER   1320
 #define IDC_AUTODROP_SPEED              1350
 #define IDC_AUTODROP_INTERVAL           1351
 #define IDC_AUTODROP_ELAPSED            1352
@@ -404,9 +409,9 @@
 #define IDC_DOWNLOAD_TARGET             5000
 #define IDC_DOWNLOAD_TARGET_DIR         5500
 #define IDC_SELECT_WINDOW               6000
+#define IDC_USER_COMMAND                6500
 #define IDC_VIEW_WAITING_USERS          6628
 #define IDR_WAITING_USERS               6629
-#define IDC_USER_COMMAND                6500
 #define IDC_PRIORITY_PAUSED             7000
 #define IDC_PRIORITY_LOWEST             7001
 #define IDC_PRIORITY_LOW                7002
@@ -438,7 +443,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1317
+#define _APS_NEXT_CONTROL_VALUE         1321
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

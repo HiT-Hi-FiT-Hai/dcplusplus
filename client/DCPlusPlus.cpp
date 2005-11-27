@@ -33,6 +33,7 @@
 #include "SettingsManager.h"
 #include "FinishedManager.h"
 #include "ADLSearch.h"
+#include "SSLSocket.h"
 
 #include "StringTokenizer.h"
 
@@ -60,6 +61,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
+	SSLSocketFactory::newInstance();
 
 	SettingsManager::getInstance()->load();
 
@@ -88,6 +90,7 @@ void shutdown() {
 	TimerManager::getInstance()->removeListeners();
 	SettingsManager::getInstance()->save();
 	
+	SSLSocketFactory::deleteInstance();
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
 	ShareManager::deleteInstance();
@@ -108,5 +111,5 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.38 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.39 2005/11/27 19:19:20 arnetheduck Exp $
  */

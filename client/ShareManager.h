@@ -119,7 +119,7 @@ private:
 				StringComp& operator=(const StringComp&);
 			};
 			struct FileLess {
-				int operator()(const File& a, const File& b) const { return Util::stricmp(a.getName(), b.getName()); }
+				bool operator()(const File& a, const File& b) const { return (Util::stricmp(a.getName(), b.getName()) == -1); }
 			};
 			typedef set<File, FileLess> Set;
 			typedef Set::iterator Iter;
@@ -326,5 +326,5 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.81 2005/08/12 21:30:11 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.82 2005/11/27 19:19:20 arnetheduck Exp $
  */

@@ -12,6 +12,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client.vcproj", "
 	ProjectSection(ProjectDependencies) = postProject
 		{8B162F1B-5D6C-41C1-8A80-858B379DE07D} = {8B162F1B-5D6C-41C1-8A80-858B379DE07D}
 		{DFBBE42A-45F4-4188-89C2-17F5DFE50673} = {DFBBE42A-45F4-4188-89C2-17F5DFE50673}
+		{BC917BB3-5772-43A6-A88C-72310AAD5B23} = {BC917BB3-5772-43A6-A88C-72310AAD5B23}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib.vcproj", "{DFBBE42A-45F4-4188-89C2-17F5DFE50673}"
@@ -19,6 +20,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib.vcproj", "{DFB
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "help", "help\help.vcproj", "{9011F311-1280-4C2D-888C-B3202DC2A6ED}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yassl", "yassl\yassl.vcproj", "{BC917BB3-5772-43A6-A88C-72310AAD5B23}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0668B8BD-4431-46E6-B7DA-5BE8E8192FE5} = {0668B8BD-4431-46E6-B7DA-5BE8E8192FE5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "taocrypt", "yassl\taocrypt\taocrypt.vcproj", "{0668B8BD-4431-46E6-B7DA-5BE8E8192FE5}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -48,6 +58,14 @@ Global
 		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Debug.Build.0 = Release|Win32
 		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Release.ActiveCfg = Release|Win32
 		{9011F311-1280-4C2D-888C-B3202DC2A6ED}.Release.Build.0 = Release|Win32
+		{BC917BB3-5772-43A6-A88C-72310AAD5B23}.Debug.ActiveCfg = Debug|Win32
+		{BC917BB3-5772-43A6-A88C-72310AAD5B23}.Debug.Build.0 = Debug|Win32
+		{BC917BB3-5772-43A6-A88C-72310AAD5B23}.Release.ActiveCfg = Release|Win32
+		{BC917BB3-5772-43A6-A88C-72310AAD5B23}.Release.Build.0 = Release|Win32
+		{0668B8BD-4431-46E6-B7DA-5BE8E8192FE5}.Debug.ActiveCfg = Debug|Win32
+		{0668B8BD-4431-46E6-B7DA-5BE8E8192FE5}.Debug.Build.0 = Debug|Win32
+		{0668B8BD-4431-46E6-B7DA-5BE8E8192FE5}.Release.ActiveCfg = Release|Win32
+		{0668B8BD-4431-46E6-B7DA-5BE8E8192FE5}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

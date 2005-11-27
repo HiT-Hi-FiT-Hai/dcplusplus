@@ -106,8 +106,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::init(m_hWnd);
 
 	// Register server socket message
-	WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(),
-		m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
+	// @todo WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(),
+		//m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
 
 	trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
 
@@ -238,7 +238,7 @@ void MainFrame::startSocket() {
 	if(ClientManager::getInstance()->isActive()) {
 		try {
 			ConnectionManager::getInstance()->listen();
-			WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(), m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
+			// @todo WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(), m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
 		} catch(const Exception&) {
 			MessageBox(CTSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 		}
@@ -1148,5 +1148,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.102 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.103 2005/11/27 19:19:18 arnetheduck Exp $
  */

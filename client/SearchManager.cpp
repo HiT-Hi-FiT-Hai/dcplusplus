@@ -124,7 +124,7 @@ void SearchManager::listen() throw(SocketException) {
 				socket = new Socket();
 			}
 
-			socket->create(Socket::TYPE_UDP, true);
+			socket->create(Socket::TYPE_UDP);
 			socket->bind(lastPort);
 			port = lastPort;
 			break;
@@ -174,7 +174,7 @@ int SearchManager::run() {
 
 		try {
 			socket->disconnect();
-			socket->create(Socket::TYPE_UDP, true);
+			socket->create(Socket::TYPE_UDP);
 			socket->bind(port);
 		} catch(const SocketException& e) {
 			// Oops, fatal this time...
@@ -346,5 +346,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.57 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.58 2005/11/27 19:19:20 arnetheduck Exp $
  */

@@ -66,7 +66,7 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); }
 	};
 
-	User(const string& nick) : firstNick(nick), Flags(NMDC) { }
+	User(const string& nick) : Flags(NMDC), firstNick(nick) { }
 	User(const CID& aCID) : cid(aCID) { }
 
 	virtual ~User() throw() { };
@@ -182,5 +182,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.61 2005/08/10 15:55:17 arnetheduck Exp $
+ * $Id: User.h,v 1.62 2005/11/27 19:19:20 arnetheduck Exp $
  */

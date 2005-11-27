@@ -78,7 +78,7 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 		p->readLog();
 		p->addLine(from, aMessage);
 		if(Util::getAway()) {
-			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && from->isSet(User::BOT)))
+			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && replyTo->isSet(User::BOT)))
 				p->sendMessage(Text::toT(Util::getAwayMessage()));
 		}
 
@@ -106,8 +106,8 @@ void PrivateFrame::openWindow(const User::Ptr& from, const User::Ptr& to, const 
 			::ShowWindow(p->m_hWnd, SW_RESTORE);
 		p->MDIActivate(p->m_hWnd);
 	}
-	// @todo if(!msg.empty())
-		// p->sendMessage(from, msg);
+	if(!msg.empty())
+		p->sendMessage(msg);
 }
 
 LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -159,13 +159,13 @@ void PrivateFrame::onEnter()
 				PostMessage(WM_CLOSE);
 			} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
 				FavoriteManager::getInstance()->addFavoriteUser(getUser());
-				// @todo addLine(TSTRING(FAVORITE_USER_ADDED));
+				addStatus(TSTRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
 				StringMap params;
-				params["user"] = user->getFirstNick();
+				params["user"] = replyTo->getFirstNick();
 				/** @todo params["hub"] = user->getClientName();
 				params["mynick"] = user->getClientNick(); 
 				params["mycid"] = user->getClientCID().toBase32(); 
@@ -173,9 +173,9 @@ void PrivateFrame::onEnter()
 				params["hubaddr"] = user->getClientAddressPort();*/
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
-				// @todo addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
+				addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
 			} else {
-				if(user->isOnline()) {
+				if(replyTo->isOnline()) {
 					sendMessage(tstring(msg));
 				} else {
 					ctrlStatus.SetText(0, CTSTRING(USER_WENT_OFFLINE));
@@ -183,7 +183,7 @@ void PrivateFrame::onEnter()
 				}
 			}
 		} else {
-			if(user->isOnline()) {
+			if(replyTo->isOnline()) {
 				sendMessage(s);
 			} else {
 				ctrlStatus.SetText(0, CTSTRING(USER_WENT_OFFLINE));
@@ -196,15 +196,7 @@ void PrivateFrame::onEnter()
 }
 
 void PrivateFrame::sendMessage(const tstring& msg) {
-	if(user && user->isOnline()) {
-		ClientManager::getInstance()->privateMessage(user, Text::fromT(msg));
-		/// @todo potentially wrong nick used
-		string s = "<" + SETTING(NICK) + "> " + Text::fromT(msg);
-		// local echo formatting
-		s = Util::validateMessage(s, false);
-		s = Util::validateMessage(s, true, true);
-		// @todo addLine(Text::toT(s));
-	}
+	ClientManager::getInstance()->privateMessage(replyTo, Text::fromT(msg));
 }
 
 LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -215,14 +207,14 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		frames.erase(user);
+		frames.erase(replyTo);
 
 		bHandled = FALSE;
 		return 0;
 	}
 }
 
-void PrivateFrame::addLine(const User::Ptr&, const tstring& aLine) {
+void PrivateFrame::addLine(const User::Ptr& from, const tstring& aLine) {
 	if(!created) {
 		if(BOOLSETTING(POPUNDER_PM))
 			WinUtil::hiddenCreateEx(this);
@@ -239,21 +231,44 @@ void PrivateFrame::addLine(const User::Ptr&, const tstring& aLine) {
 		params["hubaddr"] = user->getClientAddressPort();
 		params["mynick"] = user->getClientNick(); 
 		params["mycid"] = user->getClientCID().toBase32(); */
-		params["cid"] = user->getCID().toBase32(); 
+		params["cid"] = replyTo->getCID().toBase32(); 
 		LOG(LogManager::PM, params);
 	}
 
+	tstring line;
 	if(BOOLSETTING(TIME_STAMPS)) {
-		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
-		
+		line = Text::toT("\r\n[" + Util::getShortTimeString() + "] ");
 	} else {
-		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
+		line = _T("\r\n");
 	}
+	line += Text::toT('<' + from->getFirstNick() + "> ") + aLine;
+
+	ctrlClient.AppendText(line.c_str());
+
 	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
 
 	if (BOOLSETTING(TAB_PM_DIRTY)) {
 		setDirty();
 	}
+}
+
+void PrivateFrame::addStatus(const tstring& aLine) {
+	if(!created) {
+		if(BOOLSETTING(POPUNDER_PM))
+			WinUtil::hiddenCreateEx(this);
+		else
+			CreateEx(WinUtil::mdiClient);
+	}
+
+	tstring line;
+	if(BOOLSETTING(TIME_STAMPS)) {
+		line = Text::toT("\r\n[" + Util::getShortTimeString() + "] ");
+	} else {
+		line = _T("\r\n");
+	}
+	line += aLine;
+
+	ctrlClient.AppendText(line.c_str());
 }
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -286,7 +301,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 
 LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	try {
-		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
+		QueueManager::getInstance()->addList(replyTo, QueueItem::FLAG_CLIENT_VIEW);
 	} catch(const Exception& e) {
 		addClientLine(Text::toT(e.getError()));
 	}
@@ -295,7 +310,7 @@ LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 LRESULT PrivateFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	try {
-		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
+		QueueManager::getInstance()->addList(replyTo, QueueItem::FLAG_MATCH_QUEUE);
 	} catch(const Exception& e) {
 		addClientLine(Text::toT(e.getError()));
 	}
@@ -303,12 +318,12 @@ LRESULT PrivateFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 LRESULT PrivateFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	UploadManager::getInstance()->reserveSlot(user);
+	UploadManager::getInstance()->reserveSlot(replyTo);
 	return 0;
 }
 
 LRESULT PrivateFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	FavoriteManager::getInstance()->addFavoriteUser(user);
+	FavoriteManager::getInstance()->addFavoriteUser(replyTo);
 	return 0;
 }
 
@@ -360,9 +375,22 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
+void PrivateFrame::updateTitle() {
+	if(replyTo->isOnline()) {
+		/** @todo Find something better here perhaps? */
+		SetWindowText(Text::toT(replyTo->getFirstNick()).c_str());
+		setTabColor(RGB(0, 255, 255));
+	} else {
+		/** @todo Find something better here perhaps? */
+		SetWindowText(Text::toT(replyTo->getFirstNick() + " [" + STRING(OFFLINE) + "]").c_str());
+		setTabColor(RGB(255, 0, 0));
+	}
+}
+
+
 void PrivateFrame::readLog() {
 	StringMap params;	
-	params["user"] = user->getFirstNick();	
+	params["user"] = replyTo->getFirstNick();	
 	/** @todo params["hub"] = user->getClientName();
 	params["mynick"] = user->getClientNick();	
 	params["mycid"] = user->getClientCID().toBase32();	
@@ -398,5 +426,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.51 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.52 2005/11/27 19:19:18 arnetheduck Exp $
  */

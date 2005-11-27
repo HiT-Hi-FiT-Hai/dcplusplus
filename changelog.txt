@@ -42,6 +42,11 @@
 * Fixed linux file moving (thanks naga)
 * Added option to only download files with TTH (thanks ullner)
 * Fixed registry creation functions used (thanks ullner)
+* Updated WTL
+* Changed the socket code to accomodate for SSL (this might break things badly)
+* Now using standard windows error messages for socket errors
+* Fixed a bug with file list loading
+* Updated STLport
 
 
 -- 0.674 2005-04-10 --

@@ -6,8 +6,6 @@
 		<String Name="Add">&amp;Add</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="Added">Added</String>
-		<String Name="AddressAlreadyInUse">Address already in use</String>
-		<String Name="AddressNotAvailable">Address not available</String>
 		<String Name="AdlSearch">Automatic Directory Listing Search</String>
 		<String Name="AdlsDestination">Destination Directory</String>
 		<String Name="AdlsDiscard">Discard</String>
@@ -55,9 +53,6 @@
 		<String Name="ConnectingForced">Connecting (forced)...</String>
 		<String Name="ConnectingTo">Connecting to </String>
 		<String Name="Connection">Connection</String>
-		<String Name="ConnectionClosed">Connection closed</String>
-		<String Name="ConnectionRefused">Connection refused by target machine</String>
-		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
 		<String Name="ConfiguredHubLists">Configured Public Hub Lists</String>
 		<String Name="CopyFilename">Copy Filename</String>
@@ -156,7 +151,6 @@
 		<String Name="Highest">Highest</String>
 		<String Name="HitRatio">Hit Ratio: </String>
 		<String Name="Hits">Hits: </String>
-		<String Name="HostUnreachable">Host unreachable</String>
 		<String Name="Hub">Hub</String>
 		<String Name="Hubs">Hubs</String>
 		<String Name="HubAddress">Address</String>
@@ -260,7 +254,6 @@
 		<String Name="MoveDown">Move &amp;Down</String>
 		<String Name="MoveUp">Move &amp;Up</String>
 		<String Name="NetworkStatistics">Network Statistics</String>
-		<String Name="NetworkUnreachable">Network unreachable (are you connected to the internet?)</String>
 		<String Name="New">&amp;New...</String>
 		<String Name="Next">Next</String>
 		<String Name="Nick">Nick</String>
@@ -274,10 +267,7 @@
 		<String Name="NoSlotsAvailable">No slots available</String>
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
-		<String Name="NonBlockingOperation">Non-blocking operation still in progress</String>
 		<String Name="Normal">Normal</String>
-		<String Name="NotConnected">Not connected</String>
-		<String Name="NotSocket">Not a socket</String>
 		<String Name="Notepad">Notepad</String>
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
@@ -288,14 +278,12 @@
 		<String Name="OpenDownloadPage">Open download page?</String>
 		<String Name="OpenFolder">Open folder</String>
 		<String Name="OperatingSystemNotCompatible">Operating system does not match minimum requirements for feature</String>
-		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
 		<String Name="OutOfBufferSpace">Out of buffer space</String>
 		<String Name="Parts">Parts: </String>
 		<String Name="PassiveUser">Passive user</String>
 		<String Name="Password">Password</String>
 		<String Name="Path">Path</String>
 		<String Name="Paused">Paused</String>
-		<String Name="PermissionDenied">Permission denied</String>
 		<String Name="Pib">PiB</String>
 		<String Name="Picture">Picture</String>
 		<String Name="Port">Port: </String>
@@ -512,7 +500,6 @@
 		<String Name="SlotGranted">Slot granted</String>
 		<String Name="Slots">Slots</String>
 		<String Name="SlotsSet">Slots set</String>
-		<String Name="SocketShutDown">Socket has been shut down</String>
 		<String Name="SocksAuthFailed">Socks server authentication failed (bad login / password?)</String>
 		<String Name="SocksAuthUnsupported">The socks server doesn't support login / password authentication</String>
 		<String Name="SocksFailed">The socks server failed establish a connection</String>

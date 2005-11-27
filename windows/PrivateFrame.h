@@ -83,6 +83,7 @@ public:
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	void addLine(const User::Ptr&, const tstring& aLine);
+	void addStatus(const tstring& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
@@ -134,9 +135,9 @@ public:
 	
 	void sendMessage(const tstring& msg);
 	
-	User::Ptr& getUser() { return user; };
+	User::Ptr& getUser() { return replyTo; };
 private:
-	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
+	PrivateFrame(const User::Ptr& replyTo_) : replyTo(replyTo_), 
 		created(false), closed(false), 
 		ctrlMessageContainer(_T("edit"), this, PM_MESSAGE_MAP),
 		ctrlClientContainer(_T("edit"), this, PM_MESSAGE_MAP) {
@@ -156,35 +157,25 @@ private:
 
 	StringMap ucParams;
 
-	User::Ptr user;
+	User::Ptr replyTo;
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow ctrlClientContainer;
 
 	bool closed;
 
-	void updateTitle() {
-		if(user->isOnline()) {
-			/** @todo Find something better here perhaps? */
-			SetWindowText(Text::toT(user->getFirstNick()).c_str());
-			setTabColor(RGB(0, 255, 255));
-		} else {
-			/** @todo Find something better here perhaps? */
-			SetWindowText(Text::toT(user->getFirstNick() + " [" + STRING(OFFLINE) + "]").c_str());
-			setTabColor(RGB(255, 0, 0));
-		}
-	}
+	void updateTitle();
 	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-		if(aUser == user)
+		if(aUser == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
-		if(aUser == user)
+		if(aUser == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
-		if(aUser == user)
+		if(aUser == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 };
@@ -193,5 +184,5 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.32 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.33 2005/11/27 19:19:19 arnetheduck Exp $
  */
