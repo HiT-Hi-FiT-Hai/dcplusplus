@@ -466,6 +466,12 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 		return;
 	}
 
+	// Check if we're trying to download a non-TTH file
+	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
+		if(BOOLSETTING(ONLY_DL_TTH_FILES))
+			throw QueueException(STRING(FILE_HAVE_NO_TTH));
+	} 
+
 	{
 		Lock l(cs);
 
@@ -1371,5 +1377,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.137 2005/08/10 15:55:17 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.138 2005/11/28 01:21:05 arnetheduck Exp $
  */

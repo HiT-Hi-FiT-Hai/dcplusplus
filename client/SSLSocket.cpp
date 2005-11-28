@@ -24,6 +24,8 @@
 
 SSLSocketFactory::SSLSocketFactory() : clientContext(SSL_CTX_new(TLSv1_client_method())), serverContext(SSL_CTX_new(TLSv1_server_method())) {
 	SSL_CTX_set_verify(serverContext, SSL_VERIFY_NONE, 0);
+	SSL_CTX_use_certificate_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\server-cert.pem").c_str(), SSL_FILETYPE_PEM);
+	SSL_CTX_use_PrivateKey_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\server-key.pem").c_str(), SSL_FILETYPE_PEM);
 	SSL_CTX_set_verify(clientContext, SSL_VERIFY_NONE, 0);
 }
 
@@ -53,14 +55,26 @@ void SSLSocket::connect(const string& aIp, short aPort) throw(SocketException) {
 
 void SSLSocket::accept(const Socket& listeningSocket) throw(SocketException) {
 	Socket::accept(listeningSocket);
+	SSL_set_fd(ssl, sock);
 	checkSSL(SSL_accept(ssl));
 }
 int SSLSocket::read(void* aBuffer, int aBufLen) throw(SocketException) {
-	return checkSSL(SSL_read(ssl, aBuffer, aBufLen));
+	int len = checkSSL(SSL_read(ssl, aBuffer, aBufLen));
+
+	if(len > 0) {
+		stats.totalDown += len;
+		dcdebug("In(s): %.*s\n", len, (char*)aBuffer);
+	}
+	return len;
+
 }
 
 int SSLSocket::write(const void* aBuffer, int aLen) throw(SocketException) {
 	int ret = SSL_write(ssl, aBuffer, aLen);
+	if(ret > 0) {
+		stats.totalUp += ret;
+		dcdebug("Out(s): %.*s\n", ret, (char*)aBuffer);
+	}
 	return ret;
 }
 
@@ -72,7 +86,11 @@ int SSLSocket::checkSSL(int ret) {
 			case SSL_ERROR_WANT_WRITE:
 				return -1;
 			default:
-				throw SocketException("SSL Error: " + Util::toString(ret) + ", " + Util::toString(err)); // @todo Translate
+				{
+					// @todo replace 80 with MAX_ERROR_SZ in some nice way...
+					char errbuf[80];
+					throw SocketException(string("SSL Error: ") + ERR_error_string(err, errbuf) + " (" + Util::toString(ret) + ", " + Util::toString(err) + ")"); // @todo Translate
+				}
 		}
 	}
 	return ret;

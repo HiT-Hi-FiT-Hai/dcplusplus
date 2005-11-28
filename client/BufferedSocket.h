@@ -94,8 +94,8 @@ public:
 		addTask(SHUTDOWN, 0);
 	}
 
-	void accept(const Socket& srv, bool secure) throw(SocketException);
-	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException);
+	void accept(const Socket& srv, bool secure) throw(SocketException, ThreadException);
+	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(ThreadException);
 
 	void disconnect() throw() {
 		Lock l(cs);
@@ -205,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.69 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.70 2005/11/28 01:21:05 arnetheduck Exp $
  */

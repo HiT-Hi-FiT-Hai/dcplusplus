@@ -93,6 +93,7 @@ private:
 	string salt;
 
 	static const string CLIENT_PROTOCOL;
+	static const string SECURE_CLIENT_PROTOCOL;
 	 
 	virtual string checkNick(const string& nick);
 	
@@ -112,5 +113,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.32 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.33 2005/11/28 01:21:05 arnetheduck Exp $
  */

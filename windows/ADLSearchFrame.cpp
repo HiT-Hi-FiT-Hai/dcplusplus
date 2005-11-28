@@ -46,8 +46,8 @@ static ResourceManager::Strings columnNames[] = {
 	ResourceManager::ACTIVE_SEARCH_STRING, 
 	ResourceManager::SOURCE_TYPE, 
 	ResourceManager::DESTINATION, 
-	ResourceManager::SIZE_MIN, 
-	ResourceManager::SIZE_MAX, 
+	ResourceManager::MIN_SIZE, 
+	ResourceManager::MAX_SIZE, 
 };
 
 // Frame creation
@@ -549,5 +549,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.25 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.26 2005/11/28 01:21:06 arnetheduck Exp $
  */

@@ -26,7 +26,7 @@
 #include "ListViewArrows.h"
 
 template<class T, int ctrlId>
-class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, CControlWinTraits>,
+class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl<T, ctrlId>, CListViewCtrl, CControlWinTraits>,
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:
@@ -237,5 +237,5 @@ private:
 
 /**
  * @file
- * $Id: TypedListViewCtrl.h,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: TypedListViewCtrl.h,v 1.17 2005/11/28 01:21:06 arnetheduck Exp $
  */

@@ -36,8 +36,6 @@
 #include "TransferView.h"
 #include "UPnP.h"
 
-#define SERVER_SOCKET_MESSAGE (WM_APP + 1235)
-
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
@@ -93,7 +91,6 @@ public:
 		MESSAGE_HANDLER(trayMessage, onTray)
 		MESSAGE_HANDLER(WM_COPYDATA, onCopyData)
 		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
-		MESSAGE_HANDLER(SERVER_SOCKET_MESSAGE, onServerSocket)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_HELP_CONTENTS, onMenuHelp)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -400,5 +397,5 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.62 2005/08/12 21:30:05 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.63 2005/11/28 01:21:06 arnetheduck Exp $
  */

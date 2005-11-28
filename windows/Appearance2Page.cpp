@@ -48,6 +48,7 @@ PropPage::Item Appearance2Page::items[] = {
 
 PropPage::ListItem Appearance2Page::listItems[] = {
 	{ SettingsManager::FINISHED_DOWNLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_DOWNLOAD_DIRTY },
+	{ SettingsManager::WAITING_USERS_DIRTY, ResourceManager::SETTINGS_WAITING_USERS_DIRTY },
 	{ SettingsManager::FINISHED_UPLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_UPLOAD_DIRTY },
 	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
 	{ SettingsManager::TAB_HUB_DIRTY, ResourceManager::SETTINGS_TAB_HUB_DIRTY },
@@ -177,5 +178,5 @@ LRESULT Appearance2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 /**
  * @file
- * $Id: Appearance2Page.cpp,v 1.4 2005/08/07 13:05:47 arnetheduck Exp $
+ * $Id: Appearance2Page.cpp,v 1.5 2005/11/28 01:21:07 arnetheduck Exp $
  */

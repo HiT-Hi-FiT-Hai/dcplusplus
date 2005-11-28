@@ -1161,7 +1161,11 @@ void HubFrame::on(GetPassword, Client*) throw() {
 void HubFrame::on(HubUpdated, Client*) throw() { 
 	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName() + " " + client->getHubDescription(), true, false) + " (" + client->getHubUrl() + ")");
 }
-void HubFrame::on(Message, Client*, const string& line) throw() { 
+void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() { 
+	speak(ADD_CHAT_LINE, Util::toDOS("<" + from.getIdentity().getNick() + "> " + msg));
+}
+
+void HubFrame::on(StatusMessage, Client*, const string& line) {
 	if(SETTING(FILTER_MESSAGES)) {
 		if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
 			// Do nothing...
@@ -1174,6 +1178,7 @@ void HubFrame::on(Message, Client*, const string& line) throw() {
 		speak(ADD_CHAT_LINE, Util::toDOS(line));
 	}
 }
+
 void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() { 
 	speak(PRIVATE_MESSAGE, from, to, replyTo, Util::toDOS(line));
 }
@@ -1187,5 +1192,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.115 2005/11/27 19:19:19 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.116 2005/11/28 01:21:07 arnetheduck Exp $
  */

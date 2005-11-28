@@ -550,7 +550,7 @@ private:
 
 	TabInfo* active;
 	TabInfo* moving;
-	TabInfo::List tabs;
+	typename TabInfo::List tabs;
 	CPen black;
 
 	typedef list<HWND> WindowList;
@@ -826,5 +826,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.39 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.40 2005/11/28 01:21:06 arnetheduck Exp $
  */

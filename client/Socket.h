@@ -186,6 +186,13 @@ protected:
 	bool connected;
 	bool blocking;
 
+	class Stats {
+	public:
+		int64_t totalDown;
+		int64_t totalUp;
+	};
+	static Stats stats;
+
 	static string udpServer;
 	static short udpPort;
 
@@ -193,12 +200,6 @@ private:
 	Socket(const Socket&);
 	Socket& operator=(const Socket&);
 
-	class Stats {
-	public:
-		int64_t totalDown;
-		int64_t totalUp;
-	};
-	static Stats stats;
 
 	void socksAuth(u_int32_t timeout) throw(SocketException);
 
@@ -248,5 +249,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.62 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: Socket.h,v 1.63 2005/11/28 01:21:05 arnetheduck Exp $
  */

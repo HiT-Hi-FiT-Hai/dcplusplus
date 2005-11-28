@@ -275,9 +275,13 @@ LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		const pair<User::Ptr, string> *p = (pair<User::Ptr, string> *)lParam;
 		onAddFile(p->first, p->second);
 		delete p;
+		if(BOOLSETTING(WAITING_USERS_DIRTY))
+			setDirty();
 	} else if(wParam == SPEAK_REMOVE_USER) {
 		onRemoveUser(reinterpret_cast<UserPtr *>(lParam)->u);
 		delete reinterpret_cast<UserPtr *>(lParam);
+		if(BOOLSETTING(WAITING_USERS_DIRTY))
+			setDirty();
 	}
 	return 0;
 }

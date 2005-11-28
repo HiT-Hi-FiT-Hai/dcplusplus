@@ -74,8 +74,6 @@ void Socket::create(int aType /* = TYPE_TCP */) throw(SocketException) {
 	}
 	type = aType;
 	setBlocking(true);
-	setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 }
 
 void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
@@ -285,8 +283,10 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 		dcassert(type == TYPE_UDP);
 		len = check(::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL), true);
 	}
-	if(len > 0)
+	if(len > 0) {
 		stats.totalDown += len;
+		dcdebug("In: %.*s\n", len, (char*)aBuffer);
+	}
 	return len;
 }
 
@@ -345,8 +345,10 @@ void Socket::writeAll(const void* aBuffer, int aLen, u_int32_t timeout) throw(So
 
 int Socket::write(const void* aBuffer, int aLen) throw(SocketException) {
 	int i = check(::send(sock, (const char*)aBuffer, aLen, 0), true);
-	if(i > 0)
+	if(i > 0) {
 		stats.totalUp += i;
+		dcdebug("Out: %.*s\n", i, (char*)aBuffer);
+	}
 	return i;
 }
 
@@ -576,5 +578,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.67 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.68 2005/11/28 01:21:05 arnetheduck Exp $
  */

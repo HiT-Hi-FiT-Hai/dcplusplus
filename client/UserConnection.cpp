@@ -174,6 +174,23 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	}
 }
 
+void UserConnection::connect(const string& aServer, short aPort) throw(SocketException) { 
+	if(socket)
+		BufferedSocket::putSocket(socket);
+	socket = BufferedSocket::getSocket(0);
+	socket->addListener(this);
+	socket->connect(aServer, aPort, secure, true);
+}
+
+void UserConnection::accept(const Socket& aServer) throw(SocketException) {
+	if(socket)
+		BufferedSocket::putSocket(socket);
+	socket = BufferedSocket::getSocket(0);
+	socket->addListener(this);
+	socket->accept(aServer, secure);
+}
+
+
 void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	setState(STATE_UNCONNECTED);
 	fire(UserConnectionListener::Failed(), this, aLine);
@@ -181,5 +198,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.50 2005/04/24 08:13:10 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.51 2005/11/28 01:21:06 arnetheduck Exp $
  */

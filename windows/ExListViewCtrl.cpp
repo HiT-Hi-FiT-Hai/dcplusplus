@@ -45,7 +45,7 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 		lvi.iItem = newPos;
 	}
 	int i = InsertItem(&lvi);
-	j = 0;
+	int j = 0;
 	for(TStringIter k = l.begin(); k != l.end(); ++k, j++) {
 		SetItemText(i, j, k->c_str());
 	}
@@ -181,5 +181,5 @@ int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lPa
 
 /**
  * @file
- * $Id: ExListViewCtrl.cpp,v 1.15 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.16 2005/11/28 01:21:06 arnetheduck Exp $
  */

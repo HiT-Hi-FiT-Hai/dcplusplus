@@ -86,7 +86,7 @@ public:
 		}
 		dc.SelectPen(penLight);
 		dc.Polyline(pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
-		for (i=0; i < sizeof(pathArrowLong)/sizeof(pathArrowLong[0]); ++i)
+		for (int i=0; i < sizeof(pathArrowLong)/sizeof(pathArrowLong[0]); ++i)
 		{
 			POINT& pt = pathArrowLong[i];
 			pt.x = bitmapWidth - pt.x;
@@ -151,5 +151,5 @@ private:
 
 /**
  * @file
- * $Id: ListViewArrows.h,v 1.5 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: ListViewArrows.h,v 1.6 2005/11/28 01:21:07 arnetheduck Exp $
  */

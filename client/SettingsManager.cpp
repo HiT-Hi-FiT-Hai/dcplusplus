@@ -70,7 +70,8 @@ const string SettingsManager::settingTags[] =
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
-	"TabHubDirty", "TabPmDirty", "TabSearchDirty", "SocketInBuffer", "SocketOutBuffer",
+	"TabHubDirty", "TabPmDirty", "TabSearchDirty", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
+	"OpenWaitingUsers", "WaitingUsersDirty", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -244,6 +245,9 @@ SettingsManager::SettingsManager()
 	setDefault(TAB_PM_DIRTY, true);
 	setDefault(SOCKET_IN_BUFFER, 8192);
 	setDefault(SOCKET_OUT_BUFFER, 8192);
+	setDefault(ONLY_DL_TTH_FILES, false);
+	setDefault(OPEN_WAITING_USERS, false);
+	setDefault(WAITING_USERS_DIRTY, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -393,5 +397,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.131 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.132 2005/11/28 01:21:06 arnetheduck Exp $
  */

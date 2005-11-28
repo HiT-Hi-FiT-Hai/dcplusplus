@@ -48,17 +48,17 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	} else {
 		sock = new Socket;
 	}
-	sock->accept(srv);
-	addTask(ACCEPTED, 0);
 
-	try {
-		start();
-	} catch(const ThreadException& e) {
-		throw SocketException(e.getError());
-	}
+	sock->accept(srv);
+
+	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+
+	addTask(ACCEPTED, 0);
+	start();
 }
 
-void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException) {
+void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(ThreadException) {
 	dcassert(!sock);
 
 	if(secure) {
@@ -67,13 +67,8 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 		sock = new Socket;
 	}
 
-	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy));
-
-	try {
-		start();
-	} catch(const ThreadException& e) {
-		throw SocketException(e.getError());
-	}
+	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
+	start();
 }
 
 /**
@@ -126,6 +121,10 @@ void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy)
 
 	try {
 		sock->create();
+
+		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+
 		sock->setBlocking(false);
 
 		u_int32_t startTime = GET_TICK();
@@ -239,6 +238,8 @@ void BufferedSocket::threadSendData() {
 		Lock l(cs);
 		if(writeBuf.empty())
 			return;
+
+		swap(writeBuf, sendBuf);
 	}
 
 	if(sendBuf.empty())
@@ -285,6 +286,9 @@ int BufferedSocket::run() {
 				case ACCEPTED: 
 					break;
 
+				case SEND_DATA:
+					break;
+
 				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
 				
@@ -318,5 +322,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.84 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.85 2005/11/28 01:21:05 arnetheduck Exp $
  */

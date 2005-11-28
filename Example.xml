@@ -119,6 +119,7 @@
 		<String Name="FavoriteUsers">Favorite Users</String>
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
+		<String Name="FileHaveNoTth">This file have no TTH</String>
 		<String Name="FileListDiff">Subtract list</String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
 		<String Name="FileListRefreshInitiated">File list refresh initiated</String>
@@ -198,7 +199,9 @@
 		<String Name="MatchQueue">Match queue</String>
 		<String Name="MatchedFiles">Matched %d file(s)</String>
 		<String Name="MaxHubs">Max Hubs</String>
+		<String Name="MaxSize">Max Size</String>
 		<String Name="MaxUsers">Max Users</String>
+		<String Name="MinSize">Min Size</String>
 		<String Name="Mib">MiB</String>
 		<String Name="Mibps">MiB/s</String>
 		<String Name="MenuAbout">About DC++...</String>
@@ -209,7 +212,7 @@
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
-		<String Name="MenuDonate">Donate ï¿½ï¿½ï¿½/$$$ (paypal)</String>
+		<String Name="MenuDonate">Donate \0xe2\0x82\0xac\0xe2\0x82\0xac\0xe2\0x82\0xac/$$$ (paypal)</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>
 		<String Name="MenuExit">&amp;Exit</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
@@ -417,6 +420,7 @@
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNetwork">Connection settings</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
+		<String Name="SettingsOnlyDlTthFiles">Only download files that have a TTH</String>
 		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
@@ -487,6 +491,7 @@
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>
+		<String Name="SettingsWaitingUsersDirty">Set Waiting Users tab bold when contents change</String>
 		<String Name="SettingsWindows">Appearance\Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
@@ -494,8 +499,6 @@
 		<String Name="Shared">Shared</String>
 		<String Name="SharedFiles">Shared Files</String>
 		<String Name="Size">Size</String>
-		<String Name="SizeMax">Max Size</String>
-		<String Name="SizeMin">Min Size</String>
 		<String Name="SkipRename">New virtual name matches old name, skipping...</String>
 		<String Name="SlotGranted">Slot granted</String>
 		<String Name="Slots">Slots</String>

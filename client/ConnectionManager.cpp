@@ -30,9 +30,8 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : port(0), securePort(0), server(0), secureServer(0), floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
-	socket.addListener(this);
 
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
 	features.push_back(UserConnection::FEATURE_XML_BZLIST);
@@ -42,7 +41,7 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 
 	adcFeatures.push_back("+BAS0");
 }
-
+// @todo clean this up
 void ConnectionManager::listen() throw(Exception){
 	short lastPort = (short)SETTING(TCP_PORT);
 	
@@ -55,8 +54,25 @@ void ConnectionManager::listen() throw(Exception){
 
 	while(true) {
 		try {
-			socket.listen(lastPort);
+			server = new Server(false, lastPort, SETTING(BIND_ADDRESS));
 			port = lastPort;
+			break;
+		} catch(const Exception&) {
+			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
+				throw Exception("Could not find a suitable free port");
+			}
+			lastPort = newPort;
+		}
+	}
+
+	lastPort++;
+	firstPort = lastPort;
+
+	while(true) {
+		try {
+			secureServer = new Server(true, lastPort, SETTING(BIND_ADDRESS));
+			securePort = lastPort;
 			break;
 		} catch(const Exception&) {
 			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
@@ -177,8 +193,8 @@ void ConnectionManager::putUploadConnection(UserConnection* aSource, bool ntd) {
 	}
 }
 
-UserConnection* ConnectionManager::getConnection(bool aNmdc) throw(SocketException) {
-	UserConnection* uc = new UserConnection();
+UserConnection* ConnectionManager::getConnection(bool aNmdc, bool secure) throw(SocketException) {
+	UserConnection* uc = new UserConnection(true);
 	uc->addListener(this);
 	{
 		Lock l(cs);
@@ -324,11 +340,32 @@ void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw(
 static const u_int32_t FLOOD_TRIGGER = 20000;
 static const u_int32_t FLOOD_ADD = 2000;
 
+ConnectionManager::Server::Server(bool secure_, short port, const string& ip /* = "0.0.0.0" */) : secure(secure_), die(false) {
+	sock.create();
+	sock.bind(port, ip);
+	sock.listen();
+
+	start();
+}
+
+
+static const u_int32_t POLL_TIMEOUT = 250;
+
+int ConnectionManager::Server::run() throw() {
+	while(!die) {
+		if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
+			ConnectionManager::getInstance()->accept(sock, secure);
+		}
+	}
+	delete this;
+	return 0;
+}
+
 /**
  * Someone's connecting, accept the connection and wait for identification...
  * It's always the other fellow that starts sending if he made the connection.
  */
-void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
+void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	UserConnection* uc = NULL;
 	u_int32_t now = GET_TICK();
 
@@ -338,7 +375,7 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 		if(now + FLOOD_TRIGGER < floodCounter) {
 			Socket s;
 			try {
-				s.accept(socket);
+				s.accept(sock);
 			} catch(const SocketException&) {
 				// ...
 			}
@@ -350,11 +387,11 @@ void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	}
 
 	try { 
-		uc = getConnection(false);
+		uc = getConnection(false, secure);
 		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->setState(UserConnection::STATE_SUPNICK);
 		uc->setLastActivity(GET_TICK());
-		uc->accept(socket);
+		uc->accept(sock);
 	} catch(const SocketException& e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		if(uc)
@@ -368,7 +405,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 
 	UserConnection* uc = NULL;
 	try {
-		uc = getConnection(true);
+		uc = getConnection(true, false);
 		uc->setToken(aNick);
 		uc->setHubUrl(hubUrl);
 		uc->setState(UserConnection::STATE_CONNECT);
@@ -380,13 +417,13 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 	}
 }
 
-void ConnectionManager::adcConnect(const OnlineUser& aUser, short aPort, const string& aToken) {
+void ConnectionManager::adcConnect(const OnlineUser& aUser, short aPort, const string& aToken, bool secure) {
 	if(shuttingDown)
 		return;
 
 	UserConnection* uc = NULL;
 	try {
-		uc = getConnection(false);
+		uc = getConnection(false, secure);
 		uc->setToken(aToken);
 		uc->setState(UserConnection::STATE_CONNECT);
 		if(aUser.getIdentity().isOp()) {
@@ -699,8 +736,7 @@ void ConnectionManager::removeConnection(const User::Ptr& aUser, int isDownload)
 
 void ConnectionManager::shutdown() {
 	shuttingDown = true;
-	socket.removeListener(this);
-	socket.disconnect();
+	disconnect();
 	{
 		Lock l(cs);
 		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
@@ -743,5 +779,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.105 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.106 2005/11/28 01:21:06 arnetheduck Exp $
  */

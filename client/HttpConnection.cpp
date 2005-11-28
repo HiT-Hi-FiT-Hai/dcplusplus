@@ -67,7 +67,11 @@ void HttpConnection::downloadFile(const string& aUrl) {
 		socket = BufferedSocket::getSocket(0x0a);
 	}
 	socket->addListener(this);
-	socket->connect(server, port, false, false);
+	try {
+		socket->connect(server, port, false, false);
+	} catch(const ThreadException& e) {
+		dcdebug("Thread exception: %s\n", e.getError().c_str());
+	}
 }
 
 void HttpConnection::on(BufferedSocketListener::Connected) throw() { 
@@ -157,5 +161,5 @@ void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLe
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.31 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.32 2005/11/28 01:21:06 arnetheduck Exp $
  */

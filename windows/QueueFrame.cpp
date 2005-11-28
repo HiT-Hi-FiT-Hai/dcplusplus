@@ -489,7 +489,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	
 	if(isFileList) {
 		dcassert(fileLists != NULL);
-		delete (string*)ctrlDirs.GetItemData(fileLists);
+		delete (tstring*)ctrlDirs.GetItemData(fileLists);
 		ctrlDirs.DeleteItem(fileLists);
 		fileLists = NULL;
 		return;
@@ -516,7 +516,7 @@ void QueueFrame::removeDirectory(const tstring& dir, bool isFileList /* = false 
 	next = parent;
 
 	while((ctrlDirs.GetChildItem(next) == NULL) && (directories.find(getDir(next)) == directories.end())) {
-		delete (string*)ctrlDirs.GetItemData(next);
+		delete (tstring*)ctrlDirs.GetItemData(next);
 		parent = ctrlDirs.GetParentItem(next);
 		
 		ctrlDirs.DeleteItem(next);
@@ -532,7 +532,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 		removeDirectories(next);
 		next = ctrlDirs.GetNextSiblingItem(ht);
 	}
-	delete (string*)ctrlDirs.GetItemData(ht);
+	delete (tstring*)ctrlDirs.GetItemData(ht);
 	ctrlDirs.DeleteItem(ht);
 }
 
@@ -1264,5 +1264,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.81 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.82 2005/11/28 01:21:06 arnetheduck Exp $
  */

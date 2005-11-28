@@ -74,6 +74,7 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::SETTINGS_DONT_DL_ALREADY_SHARED },
 	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ANTI_FRAG },
 	{ SettingsManager::ADVANCED_RESUME, ResourceManager::SETTINGS_ADVANCED_RESUME },
+	{ SettingsManager::ONLY_DL_TTH_FILES, ResourceManager::SETTINGS_ONLY_DL_TTH_FILES },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -109,5 +110,5 @@ LRESULT QueuePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 /**
  * @file
- * $Id: QueuePage.cpp,v 1.6 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: QueuePage.cpp,v 1.7 2005/11/28 01:21:07 arnetheduck Exp $
  */
