@@ -226,7 +226,7 @@ void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
 }
 
 void BufferedSocket::threadSendData() {
-	if(sendBuf.empty()) {
+	{
 		Lock l(cs);
 		if(writeBuf.empty())
 			return;
@@ -255,10 +255,8 @@ bool BufferedSocket::checkEvents() {
 		}
 
 		switch(p.first) {
-			case DISCONNECT: 
-				if(isConnected()) 
-					fail(STRING(DISCONNECTED)); 
-				break;
+			case SEND_DATA:
+				threadSendData(); break;
 			case SEND_FILE: 
 				threadSendFile(((SendFileInfo*)p.second)->stream); break;
 			case CONNECT: 
@@ -267,6 +265,10 @@ bool BufferedSocket::checkEvents() {
 					threadConnect(ci->addr, ci->port, ci->proxy); 
 					break;
 				}
+			case DISCONNECT: 
+				if(isConnected()) 
+					fail(STRING(DISCONNECTED)); 
+				break;
 			case SHUTDOWN: 
 				threadShutDown(); 
 				return false;
@@ -278,17 +280,7 @@ bool BufferedSocket::checkEvents() {
 }
 
 void BufferedSocket::checkSocket() {
-	bool hasData = !sendBuf.empty();
-	if(!hasData) {
-		Lock l(cs);
-		hasData = !writeBuf.empty();
-	}
-
-	int waitFor = sock->wait(POLL_TIMEOUT, hasData ? Socket::WAIT_READ | Socket::WAIT_WRITE : Socket::WAIT_READ);
-
-	if(waitFor & Socket::WAIT_WRITE) {
-		threadSendData();
-	}
+	int waitFor = sock->wait(POLL_TIMEOUT, Socket::WAIT_READ);
 
 	if(waitFor & Socket::WAIT_READ) {
 		threadRead();
@@ -314,5 +306,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.86 2005/12/01 00:01:14 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.87 2005/12/01 13:38:45 arnetheduck Exp $
  */
