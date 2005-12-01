@@ -57,6 +57,7 @@ enum Strings { // @DontAdd
 	CONNECTING_FORCED, // "Connecting (forced)..."
 	CONNECTING_TO, // "Connecting to "
 	CONNECTION, // "Connection"
+	CONNECTION_CLOSED, // "Connection closed"
 	CONNECTION_TIMEOUT, // "Connection timeout"
 	CONFIGURED_HUB_LISTS, // "Configured Public Hub Lists"
 	COPY_FILENAME, // "Copy Filename"

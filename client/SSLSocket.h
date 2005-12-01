@@ -27,6 +27,7 @@ class SSLSocket;
 namespace yaSSL {
 	class SSL;
 	class SSL_CTX;
+	struct DH;
 };
 
 using namespace yaSSL;
@@ -36,11 +37,12 @@ public:
 	SSLSocketFactory();
 	virtual ~SSLSocketFactory();
 
-	SSLSocket* getClientSocket();
-	SSLSocket* getServerSocket();
+	SSLSocket* getClientSocket() throw(SocketException);
+	SSLSocket* getServerSocket() throw(SocketException);
 private:
 	SSL_CTX* clientContext;
 	SSL_CTX* serverContext;
+	DH* dh;
 };
 
 class SSLSocket : public Socket {
@@ -56,8 +58,11 @@ public:
 private:
 	friend class SSLSocketFactory;
 
-	SSLSocket(SSL_CTX* context);
+	SSLSocket(SSL_CTX* context) throw(SocketException);
+	SSLSocket(const SSLSocket&);
+	SSLSocket& operator=(const SSLSocket&);
 
+	SSL_CTX* ctx;
 	SSL* ssl;
 
 	int checkSSL(int ret) throw(SocketException);

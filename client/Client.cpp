@@ -28,19 +28,18 @@
 
 Client::Counts Client::counts;
 
-Client::Client(const string& hubURL, char separator) : 
-	socket(BufferedSocket::getSocket(separator)), reconnDelay(120), 
-	lastActivity(0), registered(false), hubUrl(hubURL), port(0), 
+Client::Client(const string& hubURL, char separator_) : 
+	socket(NULL), reconnDelay(120), 
+	lastActivity(0), registered(false), hubUrl(hubURL), port(0), separator(separator_),
 	countType(COUNT_UNCOUNTED)
 {
 	string file;
 	Util::decodeUrl(hubURL, address, port, file);
-	socket->addListener(this);
 }
 
 Client::~Client() throw() {
-	socket->removeListener(this);
-
+	if(socket)
+		BufferedSocket::putSocket(socket);
 	updateCounts(true);
 }
 
@@ -56,14 +55,16 @@ void Client::reloadSettings() {
 }
 
 void Client::connect() {
-	socket->disconnect();
+	if(socket)
+		BufferedSocket::putSocket(socket);
 
 	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings();
 	setRegistered(false);
 
+	socket = BufferedSocket::getSocket(separator);
+	socket->addListener(this);
 	socket->connect(address, port, false, true);
-
 	updateActivity();
 }
 
@@ -107,7 +108,9 @@ string Client::getLocalIp() const {
 		return Socket::resolve(SETTING(EXTERNAL_IP));
 	}
 
-	string lip = socket->getLocalIp();
+	string lip;
+	if(socket)
+		lip = socket->getLocalIp();
 
 	if(lip.empty())
 		return Util::getLocalIp();
@@ -116,5 +119,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.86 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.87 2005/12/01 00:01:14 arnetheduck Exp $
  */

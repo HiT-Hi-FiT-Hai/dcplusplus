@@ -53,6 +53,7 @@
 		<String Name="ConnectingForced">Connecting (forced)...</String>
 		<String Name="ConnectingTo">Connecting to </String>
 		<String Name="Connection">Connection</String>
+		<String Name="ConnectionClosed">Connection closed</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
 		<String Name="ConfiguredHubLists">Configured Public Hub Lists</String>
 		<String Name="CopyFilename">Copy Filename</String>

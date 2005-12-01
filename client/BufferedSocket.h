@@ -45,7 +45,6 @@ public:
 	typedef X<5> ModeChange;
 	typedef X<6> TransmitDone;
 	typedef X<7> Failed;
-	typedef X<8> Shutdown;
 
 	virtual void on(Connecting) throw() { }
 	virtual void on(Connected) throw() { }
@@ -55,7 +54,6 @@ public:
 	virtual void on(ModeChange) throw() { }
 	virtual void on(TransmitDone) throw() { }
 	virtual void on(Failed, const string&) throw() { }
-	virtual void on(Shutdown) throw() { }
 };
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Thread
@@ -102,16 +100,12 @@ public:
 		addTask(DISCONNECT, 0);
 	}
 	
-	/**
-	 * Sets data mode for aBytes bytes long. Must be called within an action method...
-	 */
+	/** Sets data mode for aBytes bytes long. Must be called within an action method... */
 	void setDataMode(int64_t aBytes = -1) {
 		mode = MODE_DATA;
 		dataBytes = aBytes;
 	}
-	/**
-	 * Should be called when data mode.
-	 */
+	/** Should be called when data mode. */
 	void setLineMode() {
 		dcassert(mode == MODE_DATA);
 		dcassert(dataBytes == -1);
@@ -174,9 +168,9 @@ private:
 
 	virtual int run();
 
-	void threadConnect(const string& aAddr, short aPort, bool proxy);
-	void threadRead();
-	bool threadSendFile(InputStream* is);
+	void threadConnect(const string& aAddr, short aPort, bool proxy) throw(SocketException);
+	void threadRead() throw(SocketException);
+	void threadSendFile(InputStream* is) throw(Exception);
 	void threadSendData();
 	void threadDisconnect();
 	
@@ -185,13 +179,14 @@ private:
 		fire(BufferedSocketListener::Failed(), aError);
 	}
 
+	bool checkEvents();
+	void checkSocket();
+
 	/**
 	 * Shut down the socket and delete itself...no variables must be referenced after
 	 * calling threadShutDown, the thread function should exit as soon as possible
 	 */
 	void threadShutDown() {
-		fire(BufferedSocketListener::Shutdown());
-		removeListeners();
 		delete this;
 	}
 	
@@ -205,5 +200,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.70 2005/11/28 01:21:05 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.71 2005/12/01 00:01:14 arnetheduck Exp $
  */

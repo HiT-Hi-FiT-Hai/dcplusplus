@@ -32,13 +32,14 @@ class ClientManager;
 class AdcHub : public Client, public CommandHandler<AdcHub> {
 public:
 
+	using Client::send;
+
 	virtual void connect(const OnlineUser& user);
 	virtual void connect(const OnlineUser& user, string const& token);
 	virtual void disconnect();
 	
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& user, const string& aMessage);
-	virtual void send(const string& aMessage) { socket->write(aMessage); };
 	virtual void sendUserCmd(const string& aUserCmd) { send(aUserCmd); }
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	virtual void password(const string& pwd);
@@ -51,7 +52,7 @@ public:
 		//Speaker<AdcHubListener>::fire(t, this, c);
 	}
 
-	void send(const AdcCommand& cmd) { socket->write(cmd.toString(false)); };
+	void send(const AdcCommand& cmd) { dcassert(socket); socket->write(cmd.toString(false)); };
 	void sendUDP(const AdcCommand& cmd);
 
 	void handle(AdcCommand::SUP, AdcCommand& c) throw();
@@ -113,5 +114,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.33 2005/11/28 01:21:05 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.34 2005/12/01 00:01:14 arnetheduck Exp $
  */

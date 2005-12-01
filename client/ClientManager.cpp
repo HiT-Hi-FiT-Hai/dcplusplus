@@ -68,7 +68,7 @@ void ClientManager::putClient(Client* aClient) {
 			}
 		}
 	}
-	aClient->scheduleDestruction();
+	delete aClient;
 }
 
 User::Ptr ClientManager::getLegacyUser(const string& aNick) throw() {
@@ -424,5 +424,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.76 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.77 2005/12/01 00:01:15 arnetheduck Exp $
  */

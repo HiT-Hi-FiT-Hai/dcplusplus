@@ -558,17 +558,20 @@ void Socket::socksUpdated() {
 }
 
 void Socket::shutdown() {
-	::shutdown(sock, 1);
+	if(sock != INVALID_SOCKET)
+		::shutdown(sock, 1);
 }
 
 void Socket::close() {
+	if(sock != INVALID_SOCKET) {
 #ifdef _WIN32
-	closesocket(sock);
+		closesocket(sock);
 #else
-	close(sock);
+		close(sock);
 #endif
-	connected = false;
-	sock = INVALID_SOCKET;
+		connected = false;
+		sock = INVALID_SOCKET;
+	}
 }
 
 void Socket::disconnect() throw() {
@@ -578,5 +581,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.68 2005/11/28 01:21:05 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.69 2005/12/01 00:01:15 arnetheduck Exp $
  */

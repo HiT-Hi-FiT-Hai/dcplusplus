@@ -87,8 +87,8 @@ public:
 	virtual ~Client() throw();
 
 	virtual void connect();
-	bool isConnected() const { return socket->isConnected(); }
-	void disconnect() { socket->disconnect(); }
+	bool isConnected() const { return socket && socket->isConnected(); }
+	void disconnect() { if(socket) socket->disconnect(); }
 
 	virtual void connect(const OnlineUser& user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
@@ -119,8 +119,6 @@ public:
 		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
-	void scheduleDestruction() const { socket->shutdown(); }
-
 	virtual string escape(string const& str) const { return str; };
 	StringMap& escapeParams(StringMap& sm) {
 		for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
@@ -131,6 +129,7 @@ public:
 
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
 	void send(const char* aMessage, size_t aLen) {
+		dcassert(socket);
 		updateActivity();
 		socket->write(aMessage, aLen);
 	}
@@ -188,21 +187,18 @@ private:
 	string hubUrl;
 	string address;
 	u_int16_t port;
+	char separator;
 
 	CountType countType;
 
 	// BufferedSocketListener
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw() { updateActivity(); fire(ClientListener::Connected(), this); }
-	virtual void on(Shutdown) throw() {
-		removeListeners();
-		delete this;
-	}
 };
 
 #endif // !defined(CLIENT_H)
 
 /**
  * @file
- * $Id: Client.h,v 1.103 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: Client.h,v 1.104 2005/12/01 00:01:15 arnetheduck Exp $
  */
