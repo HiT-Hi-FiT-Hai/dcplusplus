@@ -71,6 +71,54 @@ void ClientManager::putClient(Client* aClient) {
 	delete aClient;
 }
 
+size_t ClientManager::getUserCount() {
+	Lock l(cs);
+	return onlineUsers.size();
+}
+
+StringList ClientManager::getHubs(const CID& cid) {
+	Lock l(cs);
+	StringList lst;
+	OnlinePair op = onlineUsers.equal_range(cid);
+	for(OnlineIter i = op.first; i != op.second; ++i) {
+		lst.push_back(i->second->getClient().getHubUrl());
+	}
+	return lst;
+}
+
+StringList ClientManager::getHubNames(const CID& cid) {
+	Lock l(cs);
+	StringList lst;
+	OnlinePair op = onlineUsers.equal_range(cid);
+	for(OnlineIter i = op.first; i != op.second; ++i) {
+		lst.push_back(i->second->getClient().getHubName());
+	}
+	return lst;
+}
+
+
+int64_t ClientManager::getAvailable() {
+	Lock l(cs);
+	int64_t bytes = 0;
+	for(OnlineIter i = onlineUsers.begin(); i != onlineUsers.end(); ++i) {
+		bytes += i->second->getIdentity().getBytesShared();
+	}
+
+	return bytes;
+}
+
+bool ClientManager::isConnected(const string& aUrl) {
+	Lock l(cs);
+
+	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
+		if((*i)->getHubUrl() == aUrl) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 User::Ptr ClientManager::getLegacyUser(const string& aNick) throw() {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
@@ -424,5 +472,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.77 2005/12/01 00:01:15 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.78 2005/12/03 00:18:08 arnetheduck Exp $
  */

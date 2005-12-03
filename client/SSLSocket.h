@@ -53,6 +53,7 @@ public:
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);
 	virtual int read(void* aBuffer, int aBufLen) throw(SocketException);
 	virtual int write(const void* aBuffer, int aLen) throw(SocketException);
+	virtual int wait(u_int32_t millis, int waitFor) throw(SocketException);
 	virtual void shutdown() throw();
 	virtual void close() throw();
 private:

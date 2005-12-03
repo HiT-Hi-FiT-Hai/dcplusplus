@@ -266,12 +266,12 @@ private:
 			const tstring& tgt;
 		};
 		struct CheckSize {
-			CheckSize() : size(-1), op(true), oneHub(true), hasTTH(false), firstTTH(true) { };
+			CheckSize() : size(-1), op(true), firstHubs(true), hasTTH(false), firstTTH(true) { };
 			void operator()(SearchInfo* si);
 			tstring ext;
 			int64_t size;
-			bool oneHub;
-			tstring hub;
+			bool firstHubs;
+			StringList hubs;
 			bool op;
 			bool hasTTH;
 			bool firstTTH;
@@ -314,39 +314,7 @@ private:
 			}
 		}
 
-		void update() { 
-			if(sr->getType() == SearchResult::TYPE_FILE) {
-				if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-					fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
-				} else {
-					fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
-					path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
-				}
-
-				type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
-				if(!type.empty() && type[0] == _T('.'))
-					type.erase(0, 1);
-				size = Text::toT(Util::formatBytes(sr->getSize()));
-				exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
-			} else {
-				fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
-				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
-				type = TSTRING(DIRECTORY);
-			}
-			nick = Text::toT(sr->getUser()->getFirstNick());
-			/// @todo connection = Text::toT(sr->getUser()->getConnection());
-			hubName = Text::toT(sr->getHubName());
-			slots = Text::toT(sr->getSlotString());
-			ip = Text::toT(sr->getIP());
-			if (!ip.empty()) {
-				// Only attempt to grab a country mapping if we actually have an IP address
-				tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
-				if(!tmpCountry.empty())
-					ip = tmpCountry + _T(" (") + ip + _T(")");
-			}
-			if(sr->getTTH() != NULL)
-				setTTH(Text::toT(sr->getTTH()->toBase32()));
-		}
+		void update();
 
 		GETSET(tstring, nick, Nick);
 		GETSET(tstring, connection, Connection)
@@ -480,5 +448,5 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.63 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.64 2005/12/03 00:18:08 arnetheduck Exp $
  */

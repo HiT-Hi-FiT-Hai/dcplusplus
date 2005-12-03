@@ -24,9 +24,23 @@
 
 SSLSocketFactory::SSLSocketFactory() : clientContext(SSL_CTX_new(TLSv1_client_method())), serverContext(SSL_CTX_new(TLSv1_server_method())), dh(0) {
 	SSL_CTX_set_verify(serverContext, SSL_VERIFY_NONE, 0);
-	SSL_CTX_use_certificate_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\server-cert.pem").c_str(), SSL_FILETYPE_PEM);
-	SSL_CTX_use_PrivateKey_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\server-key.pem").c_str(), SSL_FILETYPE_PEM);
+	if(SSL_CTX_use_certificate_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testcert.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		dcdebug("Failed to set server cert\n");
+	}
+	if(SSL_CTX_use_PrivateKey_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testkey.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		dcdebug("Failed to set server key\n");
+	}
 	SSL_CTX_set_verify(clientContext, SSL_VERIFY_NONE, 0);
+	if(SSL_CTX_use_certificate_file(clientContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testcert.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		dcdebug("Failed to set client cert\n");
+	}
+	if(SSL_CTX_use_PrivateKey_file(clientContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testkey.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		dcdebug("Failed to set client key\n");
+	}
+
+	if(SSL_CTX_load_verify_locations(clientContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testcert.pem").c_str(), NULL) != SSL_SUCCESS) {
+		dcdebug("Failed to set client verification location");
+	}
 
 	static unsigned char dh512_p[] =
 	{
@@ -78,7 +92,8 @@ SSLSocket::SSLSocket(SSL_CTX* context) throw(SocketException) : ctx(context), ss
 
 void SSLSocket::connect(const string& aIp, short aPort) throw(SocketException) {
 	Socket::connect(aIp, aPort);
-	
+
+	setBlocking(true);
 	if(ssl)
 		SSL_free(ssl);
 
@@ -88,13 +103,23 @@ void SSLSocket::connect(const string& aIp, short aPort) throw(SocketException) {
 
 	checkSSL(SSL_set_fd(ssl, sock));
 	checkSSL(SSL_connect(ssl));
+	dcdebug("Connected to SSL server using %s\n", SSL_get_cipher(ssl));
 }
 
 void SSLSocket::accept(const Socket& listeningSocket) throw(SocketException) {
 	Socket::accept(listeningSocket);
 
+	setBlocking(true);
+	if(ssl)
+		SSL_free(ssl);
+
+	ssl = SSL_new(ctx);
+	if(!ssl)
+		checkSSL(-1);
+
 	checkSSL(SSL_set_fd(ssl, sock));
 	checkSSL(SSL_accept(ssl));
+	dcdebug("Connected to SSL client using %s\n", SSL_get_cipher(ssl));
 }
 
 int SSLSocket::read(void* aBuffer, int aBufLen) throw(SocketException) {
@@ -139,11 +164,18 @@ int SSLSocket::checkSSL(int ret) throw(SocketException) {
 	return ret;
 }
 
+int SSLSocket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
+	if(ssl && (waitFor & Socket::WAIT_READ)) {
+		/** @todo Take writing into account as well if reading is possible? */
+		if(SSL_pending(ssl) > 0)
+			return WAIT_READ;
+	}
+	return Socket::wait(millis, waitFor);
+}
+
 void SSLSocket::shutdown() throw() {
 	if(ssl)
 		SSL_shutdown(ssl);
-
-	Socket::shutdown();
 }
 
 void SSLSocket::close() throw() {
@@ -151,5 +183,6 @@ void SSLSocket::close() throw() {
 		SSL_free(ssl);
 		ssl = 0;
 	}
+	Socket::shutdown();
 	Socket::close();
 }

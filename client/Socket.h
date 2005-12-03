@@ -119,7 +119,7 @@ public:
 	 * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
 	 * @throw SocketException On any failure.
 	 */
-	int read(void* aBuffer, int aBufLen) throw(SocketException);
+	virtual int read(void* aBuffer, int aBufLen) throw(SocketException);
 	/**
 	 * Reads zero to aBufLen characters from this socket, 
 	 * @param aBuffer A buffer to store the data in.
@@ -128,7 +128,7 @@ public:
 	 * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
 	 * @throw SocketException On any failure.
 	 */	
-	int read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException);
+	virtual int read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException);
 	/**
 	 * Reads data until aBufLen bytes have been read or an error occurs.
 	 * If the socket is closed, or the timeout is reached, the number of bytes read 
@@ -137,7 +137,7 @@ public:
 	 */
 	int readAll(void* aBuffer, int aBufLen, u_int32_t timeout = 0) throw(SocketException);
 	
-	int wait(u_int32_t millis, int waitFor) throw(SocketException);
+	virtual int wait(u_int32_t millis, int waitFor) throw(SocketException);
 	bool isConnected() { return connected; };
 	
 	static string resolve(const string& aDns);
@@ -249,5 +249,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.63 2005/11/28 01:21:05 arnetheduck Exp $
+ * $Id: Socket.h,v 1.64 2005/12/03 00:18:08 arnetheduck Exp $
  */

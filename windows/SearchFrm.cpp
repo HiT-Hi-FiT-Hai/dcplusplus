@@ -511,16 +511,13 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	} else {
 		size = -1;
 	}
-	/** @todo 
-	if(oneHub && hub.empty()) {
-		hub = Text::toT(si->sr->getUser()->getClientAddressPort());
-	} else if(hub != Text::toT(si->sr->getUser()->getClientAddressPort())) {
-		oneHub = false;
-		hub.clear();
+ 
+	if(firstHubs && hubs.empty()) {
+		hubs = ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID());
+		firstHubs = false;
+	} else if(!hubs.empty()) {
+		Util::intersect(hubs, ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID()));
 	}
-	if(op)
-		op = si->sr->getUser()->isClientOp();
-		*/
 }
 
 LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -909,10 +906,10 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			for(int i = 0, j = ctrlResults.GetItemCount(); i < j; ++i) {
 				SearchInfo* si2 = ctrlResults.getItemData(i);
 				SearchResult* sr2 = si2->sr;
-/**@todo				if((sr->getUser()->getNick() == sr2->getUser()->getNick()) && (sr->getFile() == sr2->getFile())) {
+				if((sr->getUser()->getCID() == sr2->getUser()->getCID()) && (sr->getFile() == sr2->getFile())) {
 					delete si;
 					return 0;
-				} */
+				} 
 			}
 
 			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(Text::toT(sr->getFile())) : WinUtil::getDirIconIndex();
@@ -1028,7 +1025,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MFS_GRAYED);
 		}
 		
-		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);
+		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hubs);
 		checkAdcItems(resultsMenu);
 		resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(resultsMenu);
@@ -1140,7 +1137,42 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
+
+void SearchFrame::SearchInfo::update() { 
+	if(sr->getType() == SearchResult::TYPE_FILE) {
+		if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
+			fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+		} else {
+			fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+			path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+		}
+
+		type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
+		if(!type.empty() && type[0] == _T('.'))
+			type.erase(0, 1);
+		size = Text::toT(Util::formatBytes(sr->getSize()));
+		exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
+	} else {
+		fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
+		path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+		type = TSTRING(DIRECTORY);
+	}
+	nick = Text::toT(sr->getUser()->getFirstNick());
+	/// @todo connection = Text::toT(sr->getUser()->getConnection());
+	hubName = Text::toT(sr->getHubName());
+	slots = Text::toT(sr->getSlotString());
+	ip = Text::toT(sr->getIP());
+	if (!ip.empty()) {
+		// Only attempt to grab a country mapping if we actually have an IP address
+		tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+		if(!tmpCountry.empty())
+			ip = tmpCountry + _T(" (") + ip + _T(")");
+	}
+	if(sr->getTTH() != NULL)
+		setTTH(Text::toT(sr->getTTH()->toBase32()));
+}
+
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.100 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.101 2005/12/03 00:18:08 arnetheduck Exp $
  */

@@ -113,16 +113,7 @@ private:
 
 		void remove() { FavoriteManager::getInstance()->removeFavoriteUser(user); }
 
-		void update(const FavoriteUser& u) {
-			columns[COLUMN_NICK] = Text::toT(u.getLastIdentity().getNick());
-			columns[COLUMN_STATUS] = u.getUser()->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
-			/** @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
-			if(!user->getLastHubAddress().empty()) {
-				columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
-			}
-			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));*/
-			columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
-		}
+		void update(const FavoriteUser& u);
 
 		tstring columns[COLUMN_LAST];
 	};
@@ -151,5 +142,5 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.26 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.27 2005/12/03 00:18:08 arnetheduck Exp $
  */

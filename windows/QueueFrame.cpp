@@ -27,6 +27,7 @@
 
 #include "../client/StringTokenizer.h"
 #include "../client/ShareManager.h"
+#include "../client/ClientManager.h"
 
 #define FILE_LIST_NAME _T("File Lists")
 
@@ -989,7 +990,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		
 		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		// @todo PrivateFrame::openWindow(s->getUser());
+		PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), s->getUser());
 	}
 	return 0;
 }
@@ -1264,5 +1265,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.82 2005/11/28 01:21:06 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.83 2005/12/03 00:18:08 arnetheduck Exp $
  */

@@ -202,7 +202,7 @@ public:
 	void removeHubUserCommands(int ctx, const string& hub);
 
 	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; };
-	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
+	UserCommand::List getUserCommands(int ctx, const StringList& hub);
 
 	void load();
 	void save();
@@ -281,5 +281,5 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.5 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.6 2005/12/03 00:18:08 arnetheduck Exp $
  */

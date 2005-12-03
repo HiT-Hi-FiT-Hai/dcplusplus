@@ -19,18 +19,19 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 
-#include "../client/File.h"
-#include "../client/QueueManager.h"
-#include "../client/StringTokenizer.h"
-#include "../client/ADLSearch.h"
-
 #include "Resource.h"
 
 #include "DirectoryListingFrm.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
+
+#include "../client/File.h"
+#include "../client/QueueManager.h"
+#include "../client/StringTokenizer.h"
+#include "../client/ADLSearch.h"
 #include "../client/MerkleTree.h"
 #include "../client/User.h"
+#include "../client/ClientManager.h"
 
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
 int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
@@ -601,7 +602,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 			if(ii->file->getAdls())	{
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
-///@todo			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientAddressPort()), dl->getUser()->isClientOp());
+			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, ClientManager::getInstance()->getHubs(dl->getUser()->getCID()));
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			cleanMenu(fileMenu);
 		} else {
@@ -627,7 +628,8 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 			   ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
-///@todo			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientAddressPort()), dl->getUser()->isClientOp());
+
+			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, ClientManager::getInstance()->getHubs(dl->getUser()->getCID()));
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			cleanMenu(fileMenu);
 		}
@@ -995,9 +997,8 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		}
 		if(!dl->getUser()->isOnline())
 			return;
-		/** @todo
-		ucParams["mynick"] = dl->getUser()->getClientNick();
-		ucParams["mycid"] = dl->getUser()->getClientCID().toBase32();
+		/// @todo More info about me?
+		ucParams["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 		ucParams["tth"] = "NONE";
 		if(ii->type == ItemInfo::FILE) {
 			ucParams["type"] = "File";
@@ -1019,14 +1020,13 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 		StringMap tmp = ucParams;
 		User::Ptr tmpPtr = dl->getUser();
-		tmpPtr->getParams(tmp);
-		tmpPtr->clientEscapeParams(tmp);
-		tmpPtr->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
-		*/
+		///@todo tmpPtr->getParams(tmp);
+		///@todo tmpPtr->clientEscapeParams(tmp);
+		///@todo tmpPtr->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
 	}
 }
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.69 2005/08/10 17:30:55 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.70 2005/12/03 00:18:08 arnetheduck Exp $
  */

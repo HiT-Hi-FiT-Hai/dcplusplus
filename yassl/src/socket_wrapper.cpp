@@ -122,18 +122,27 @@ uint Socket::receive(byte* buf, unsigned int sz, int flags) const
     assert(socket_ != INVALID_SOCKET);
     int recvd = ::recv(socket_, reinterpret_cast<char *>(buf), sz, flags);
 
-    if (recvd == -1) 
-        return 0;
-
+	if (recvd == -1) {
+#ifdef _WIN32
+		if(WSAGetLastError() == WSAEWOULDBLOCK)
+#else
+		if(errno == EAGAIN)
+#endif
+			return 0;
+		else
+			return (uint)-1;
+	} else if(recvd == 0) {
+		return (uint)-1;
+	}
     return recvd;
 }
 
 
 // wait if blocking for input, or error
-void Socket::wait() const
+bool Socket::wait() const
 {
     byte b;
-    receive(&b, 1, MSG_PEEK);
+    return receive(&b, 1, MSG_PEEK) != (uint)-1;
 }
 
 

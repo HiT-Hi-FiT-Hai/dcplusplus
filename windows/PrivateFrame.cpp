@@ -273,7 +273,7 @@ void PrivateFrame::addStatus(const tstring& aLine) {
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	/// @todo prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -376,15 +376,14 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 }
 
 void PrivateFrame::updateTitle() {
-	if(replyTo->isOnline()) {
-		/** @todo Find something better here perhaps? */
-		SetWindowText(Text::toT(replyTo->getFirstNick()).c_str());
+	StringList hubs = ClientManager::getInstance()->getHubNames(replyTo->getCID());
+	if(hubs.empty()) {
+		hubs.push_back(STRING(OFFLINE));
 		setTabColor(RGB(0, 255, 255));
 	} else {
-		/** @todo Find something better here perhaps? */
-		SetWindowText(Text::toT(replyTo->getFirstNick() + " [" + STRING(OFFLINE) + "]").c_str());
 		setTabColor(RGB(255, 0, 0));
 	}
+	SetWindowText(Text::toT(replyTo->getFirstNick() + " " + Util::toString(hubs)).c_str());
 }
 
 
@@ -426,5 +425,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.52 2005/11/27 19:19:18 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.53 2005/12/03 00:18:08 arnetheduck Exp $
  */

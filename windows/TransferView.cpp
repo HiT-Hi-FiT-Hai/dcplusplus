@@ -115,7 +115,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			itemI = ctrlTransfers.getItemData(i);
 			bCustomMenu = true;
 
-///@todo			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, Text::toT(itemI->user->getClientAddressPort()), itemI->user->isClientOp());
+			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(itemI->user->getCID()));
 			transferMenu.AppendMenu(MF_SEPARATOR);
 		}
 
@@ -332,7 +332,10 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_USER] = Text::toT(user->getFirstNick());
 	}
 	if(colMask & MASK_HUB) {
-		/// @todo columns[COLUMN_HUB] = Text::toT(user->getClientName());
+		StringList hubs = ClientManager::getInstance()->getHubNames(user->getCID());
+		if(hubs.empty())
+			hubs.push_back(STRING(OFFLINE));
+		columns[COLUMN_HUB] = Text::toT(Util::toString(hubs));
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;
@@ -600,5 +603,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.53 2005/05/07 22:43:26 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.54 2005/12/03 00:18:08 arnetheduck Exp $
  */

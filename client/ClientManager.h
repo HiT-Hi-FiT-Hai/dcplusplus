@@ -39,36 +39,12 @@ public:
 	Client* getClient(const string& aHubURL);
 	void putClient(Client* aClient);
 
-	size_t getUserCount() {
-		Lock l(cs);
+	size_t getUserCount();
+	int64_t getAvailable();
+	StringList getHubs(const CID& cid);
+	StringList getHubNames(const CID& cid);
 
-		size_t c = 0;
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			c+=(*i)->getUserCount();
-		}
-		return c;
-	}
-
-	int64_t getAvailable() {
-		Lock l(cs);
-		
-		int64_t c = 0;
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			c+=(*i)->getAvailable();
-		}
-		return c;
-	}
-
-	bool isConnected(const string& aAddress, short port) {
-		Lock l(cs);
-
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if(((*i)->getAddress() == aAddress || (*i)->getIp() == aAddress) && (*i)->getPort() == port) {
-				return true;
-			}
-		}
-		return false;
-	}
+	bool isConnected(const string& aUrl);
 	
 	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
@@ -175,5 +151,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.63 2005/07/23 17:52:01 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.64 2005/12/03 00:18:08 arnetheduck Exp $
  */

@@ -57,6 +57,7 @@
 #include <deque>
 #include <list>
 #include <utility>
+#include <functional>
 
 // Use maps if hash_maps aren't available
 #ifdef HAVE_HASH
@@ -123,5 +124,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.17 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.18 2005/12/03 00:18:08 arnetheduck Exp $
  */

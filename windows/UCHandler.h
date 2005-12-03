@@ -49,8 +49,12 @@ public:
 		return 0;
 	}
 
-	void prepareMenu(CMenu& menu, int ctx, const tstring& server, bool op) {
-		userCommands = FavoriteManager::getInstance()->getUserCommands(ctx, Text::fromT(server), op);
+	void prepareMenu(CMenu& menu, int ctx, const string& hubUrl) {
+		prepareMenu(menu, ctx, StringList(1, hubUrl));
+	}
+
+	void prepareMenu(CMenu& menu, int ctx, const StringList& hubs) {
+		userCommands = FavoriteManager::getInstance()->getUserCommands(ctx, hubs);
 		int n = 0;
 
 		menuPos = menu.GetMenuItemCount();
@@ -115,5 +119,5 @@ private:
 
 /**
  * @file
- * $Id: UCHandler.h,v 1.11 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: UCHandler.h,v 1.12 2005/12/03 00:18:08 arnetheduck Exp $
  */

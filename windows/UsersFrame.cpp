@@ -23,6 +23,8 @@
 #include "UsersFrame.h"
 
 #include "../client/StringTokenizer.h"
+#include "../client/ClientManager.h"
+
 #include "LineDlg.h"
 
 int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION };
@@ -193,7 +195,19 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 }
 
+void UsersFrame::UserInfo::update(const FavoriteUser& u) {
+	columns[COLUMN_NICK] = Text::toT(u.getLastIdentity().getNick());
+	columns[COLUMN_STATUS] = u.getUser()->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
+	columns[COLUMN_HUB] = Text::toT(Util::toString(ClientManager::getInstance()->getHubNames(u.getUser()->getCID())));
+/**@todo	if(!user->getLastHubAddress().empty()) {
+		columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
+	}*/
+	columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
+	columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
+}
+
+
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.38 2005/05/03 15:37:39 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.39 2005/12/03 00:18:08 arnetheduck Exp $
  */

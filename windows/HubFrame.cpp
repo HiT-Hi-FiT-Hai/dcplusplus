@@ -243,18 +243,16 @@ void HubFrame::onEnter() {
 					int k = ctrlUsers.findItem(nick);
 					if(k != -1) {
 						UserInfo* ui = ctrlUsers.getItemData(k);
-						/* @todo
 						if(param.size() > j + 1)
-							PrivateFrame::openWindow(ui->user, param.substr(j+1));
+							PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ui->user, param.substr(j+1));
 						else
-							PrivateFrame::openWindow(ui->user);
-						*/
+							PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ui->user);
 					}
 				} else if(!param.empty()) {
 					int k = ctrlUsers.findItem(param);
 					if(k != -1) {
 						UserInfo* ui = ctrlUsers.getItemData(k);
-						// @todo PrivateFrame::openWindow(ui->user);
+						PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ui->user);
 					}
 				}
 			} else {
@@ -491,7 +489,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
 				addClientLine(TSTRING(IGNORED_MESSAGE) + i->msg, false);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
-				// @todo PrivateFrame::gotMessage(i->user, i->msg);
+				PrivateFrame::gotMessage(i->from, i->to, i->replyTo, i->msg);
 			} else {
 				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->from->getFirstNick()) + _T(": ") + i->msg);
 			}
@@ -633,10 +631,10 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			if(pos != -1) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					// @todo PrivateFrame::openWindow((ctrlUsers.getItemData(pos))->user);
+					PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ctrlUsers.getItemData(pos)->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
-						QueueManager::getInstance()->addList((ctrlUsers.getItemData(pos))->user, QueueItem::FLAG_CLIENT_VIEW);
+						QueueManager::getInstance()->addList(ctrlUsers.getItemData(pos)->user, QueueItem::FLAG_CLIENT_VIEW);
 					} catch(const Exception& e) {
 						addClientLine(Text::toT(e.getError()));
 					}
@@ -697,7 +695,7 @@ void HubFrame::addLine(const tstring& aLine) {
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	tabMenuShown = true;
-	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, Text::toT(client->getHubUrl()), client->getMyIdentity().isOp());
+	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, client->getHubUrl());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -751,7 +749,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		}
 
 		tabMenuShown = false;
-		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getHubUrl()), client->getMyIdentity().isOp());
+		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
 		checkAdcItems(userMenu);
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(userMenu);
@@ -1013,12 +1011,8 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 }
 
 LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
 	if(!redirect.empty()) {
-		string s, f;
-		u_int16_t p = 411;
-		Util::decodeUrl(Text::fromT(redirect), s, p, f);
-		if(ClientManager::getInstance()->isConnected(s, p)) {
+		if(ClientManager::getInstance()->isConnected(Text::fromT(redirect))) {
 			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
 			return 0;
 		}
@@ -1136,10 +1130,7 @@ void HubFrame::on(UserRemoved, Client*, const OnlineUser& user) throw() {
 }
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() { 
-	string s, f;
-	u_int16_t p = 411;
-	Util::decodeUrl(line, s, p, f);
-	if(ClientManager::getInstance()->isConnected(s, p)) {
+	if(ClientManager::getInstance()->isConnected(line)) {
 		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
 		return;
 	}
@@ -1192,5 +1183,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.116 2005/11/28 01:21:07 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.117 2005/12/03 00:18:08 arnetheduck Exp $
  */

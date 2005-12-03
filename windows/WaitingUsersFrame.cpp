@@ -165,7 +165,7 @@ LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 LRESULT WaitingUsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();
 	if (user) {
-		// @todo PrivateFrame::openWindow(user);
+		PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), user);
 	}
 	return 0;
 }

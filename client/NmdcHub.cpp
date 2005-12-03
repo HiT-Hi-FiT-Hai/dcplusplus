@@ -622,7 +622,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		OnlineUser* to = findUser(getMyNick());
 
 		if(replyTo == NULL || from == NULL || to == NULL) {
-			// @todo Route anonymous message to the ui
+			fire(ClientListener::StatusMessage(), this, Util::validateMessage(param.substr(i), true));
 		} else {
 			string msg = param.substr(j + 2);
 			fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, Util::validateMessage(param.substr(j + 2), true));
@@ -769,6 +769,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.42 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.43 2005/12/03 00:18:08 arnetheduck Exp $
  */
 
