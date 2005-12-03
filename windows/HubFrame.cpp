@@ -226,9 +226,9 @@ void HubFrame::onEnter() {
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
 				StringMap params;
-				params["hub"] = client->getHubName();
-				params["hubaddr"] = client->getHubUrl();
-				params["mynick"] = client->getMyNick(); 
+				params["hubNI"] = client->getHubName();
+				params["hubURL"] = client->getHubUrl();
+				params["myNI"] = client->getMyNick(); 
 				if(param.empty()) {
 					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params))));
 				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
@@ -244,15 +244,15 @@ void HubFrame::onEnter() {
 					if(k != -1) {
 						UserInfo* ui = ctrlUsers.getItemData(k);
 						if(param.size() > j + 1)
-							PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ui->user, param.substr(j+1));
+							PrivateFrame::openWindow(ui->user, param.substr(j+1));
 						else
-							PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ui->user);
+							PrivateFrame::openWindow(ui->user);
 					}
 				} else if(!param.empty()) {
 					int k = ctrlUsers.findItem(param);
 					if(k != -1) {
 						UserInfo* ui = ctrlUsers.getItemData(k);
-						PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ui->user);
+						PrivateFrame::openWindow(ui->user);
 					}
 				}
 			} else {
@@ -631,7 +631,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			if(pos != -1) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), ctrlUsers.getItemData(pos)->user);
+					PrivateFrame::openWindow(ctrlUsers.getItemData(pos)->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
 						QueueManager::getInstance()->addList(ctrlUsers.getItemData(pos)->user, QueueItem::FLAG_CLIENT_VIEW);
@@ -674,9 +674,9 @@ void HubFrame::addLine(const tstring& aLine) {
 	if(BOOLSETTING(LOG_MAIN_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		params["hub"] = client->getHubName();
-		params["hubaddr"] = client->getHubUrl();
-		params["mynick"] = client->getMyNick(); 
+		client->getHubIdentity().getParams(params, "hub");
+		params["hubURL"] = client->getHubUrl();
+		client->getMyIdentity().getParams(params, "my");
 		LOG(LogManager::CHAT, params);
 	}
 	if(timeStamps) {
@@ -1077,8 +1077,9 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		StringMap params;
-		params["hub"] = client->getHubName();
-		params["hubaddr"] = client->getHubUrl();
+		client->getHubIdentity().getParams(params, "hub");
+		params["hubURL"] = client->getHubUrl();
+		client->getMyIdentity().getParams(params, "my");
 		params["message"] = Text::fromT(aLine);
 		LOG(LogManager::STATUS, params);
 	}
@@ -1183,5 +1184,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.117 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.118 2005/12/03 12:32:36 arnetheduck Exp $
  */

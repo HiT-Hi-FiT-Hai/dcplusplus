@@ -169,7 +169,7 @@ void UserInfoBase::addFav() {
 	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 void UserInfoBase::pm() {
-	PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), user);
+	PrivateFrame::openWindow(user);
 }
 void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
@@ -1152,5 +1152,5 @@ void WinUtil::openFolder(const tstring& file) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.90 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.91 2005/12/03 12:32:36 arnetheduck Exp $
  */

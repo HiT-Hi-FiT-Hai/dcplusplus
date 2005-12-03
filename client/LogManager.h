@@ -91,8 +91,8 @@ private:
 	LogManager() {
 		logOptions[UPLOAD][FILE]		= SettingsManager::LOG_FILE_UPLOAD;
 		logOptions[UPLOAD][FORMAT]		= SettingsManager::LOG_FORMAT_POST_UPLOAD;
-        	logOptions[DOWNLOAD][FILE]		= SettingsManager::LOG_FILE_DOWNLOAD;
-		logOptions[DOWNLOAD][FORMAT]		= SettingsManager::LOG_FORMAT_POST_DOWNLOAD;
+        logOptions[DOWNLOAD][FILE]		= SettingsManager::LOG_FILE_DOWNLOAD;
+		logOptions[DOWNLOAD][FORMAT]	= SettingsManager::LOG_FORMAT_POST_DOWNLOAD;
 		logOptions[CHAT][FILE]			= SettingsManager::LOG_FILE_MAIN_CHAT;
 		logOptions[CHAT][FORMAT]		= SettingsManager::LOG_FORMAT_MAIN_CHAT;
 		logOptions[PM][FILE]			= SettingsManager::LOG_FILE_PRIVATE_CHAT;
@@ -112,5 +112,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.17 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.18 2005/12/03 12:32:36 arnetheduck Exp $
  */

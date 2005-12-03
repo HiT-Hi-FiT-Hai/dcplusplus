@@ -30,10 +30,11 @@ void Identity::getParams(StringMap& map, const string& prefix) const {
 	for(InfMap::const_iterator i = info.begin(); i != info.end(); ++i) {
 		map[prefix + string((char*)(&i->first), 2)] = i->second;
 	}
-	map[prefix + "CID"] = user->getCID().toBase32();
+	if(user)
+		map[prefix + "CID"] = user->getCID().toBase32();
 }
 
 /**
  * @file
- * $Id: User.cpp,v 1.46 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: User.cpp,v 1.47 2005/12/03 12:32:36 arnetheduck Exp $
  */

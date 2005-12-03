@@ -142,10 +142,10 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		if(!itemI->user->isOnline())
 			return;
 
-		/** @todo ucParams["mynick"] = itemI->user->getClientNick();
-		ucParams["mycid"] = itemI->user->getClientCID().toBase32(); 
-		ucParams["file"] = Text::fromT(itemI->path) + Text::fromT(itemI->file);
-
+		ucParams["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
+		ucParams["userCID"] = itemI->user->getCID().toBase32();
+		ucParams["fileFN"] = Text::fromT(itemI->path + itemI->file);
+		/** @todo 
 		StringMap tmp = ucParams;
 		itemI->user->getParams(tmp);
 		itemI->user->clientEscapeParams(tmp);
@@ -474,11 +474,23 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 			i->timeLeft = d->getSecondsLeft();
 			i->speed = d->getRunningAverage();
 
-			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-				i->statusString = _T("* ") + tstring(buf);
-			} else {
-				i->statusString = buf;
+			i->statusString.clear();
+			if(d->getUserConnection()->isSecure()) {
+				i->statusString += _T("[S]");
 			}
+			if(d->isSet(Download::FLAG_TTH_CHECK)) {
+				i->statusString += _T("[T]");
+			}
+			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+				i->statusString += _T("[Z]");
+			} 
+			if(d->isSet(Download::FLAG_ROLLBACK)) {
+				i->statusString += _T("[R]");
+			}
+			if(!i->statusString.empty()) {
+				i->statusString += _T(" ");
+			}
+			i->statusString += buf;
 			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 
 			v->push_back(i);
@@ -566,11 +578,19 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 			_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
 				(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
 
-			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
-				i->statusString = _T("* ") + tstring(buf);
-			} else {
-				i->statusString = buf;
+			i->statusString.clear();
+
+			if(u->getUserConnection()->isSecure()) {
+				i->statusString += _T("[S]");
 			}
+			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
+				i->statusString += _T("[Z]");
+			}
+			if(!i->statusString.empty()) {
+				i->statusString += _T(" ");
+			}
+			i->statusString += buf;
+			
 
 			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 			v->push_back(i);
@@ -603,5 +623,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.54 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.55 2005/12/03 12:32:36 arnetheduck Exp $
  */

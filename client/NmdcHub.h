@@ -52,7 +52,7 @@ public:
 
 	virtual void connect(const OnlineUser& aUser);
 	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getMyNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
-	virtual void privateMessage(const OnlineUser& aUser, const string& aMessage) { privateMessage(aUser.getIdentity().getNick(), string("<") + getMyNick() + "> " + aMessage); }
+	virtual void privateMessage(const OnlineUser& aUser, const string& aMessage);
 	virtual void sendUserCmd(const string& aUserCmd) throw() { send(toNmdc(aUserCmd)); }
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	virtual void password(const string& aPass) { send("$MyPass " + toNmdc(aPass) + "|"); }
@@ -77,11 +77,9 @@ public:
 	void connectToMe(const OnlineUser& aUser);
 	void revConnectToMe(const OnlineUser& aUser);
 
-	void privateMessage(const string& aNick, const string& aMessage) {
-		checkstate(); 
-		send("$To: " + toNmdc(aNick) + " From: " + toNmdc(getMyNick()) + " $" + toNmdc(Util::validateMessage(aMessage, false)) + "|");
+/*	void privateMessage(const string& aNick, const string& aMessage) {
 	}
-
+*/
 	void supports(const StringList& feat) { 
 		string x;
 		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
@@ -150,5 +148,5 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.27 2005/04/24 09:45:39 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.28 2005/12/03 12:32:36 arnetheduck Exp $
  */

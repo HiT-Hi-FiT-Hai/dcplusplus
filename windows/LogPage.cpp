@@ -46,9 +46,9 @@ PropPage::ListItem LogPage::listItems[] = {
 	{ SettingsManager::LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
 	{ SettingsManager::LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS },
 	{ SettingsManager::LOG_UPLOADS, ResourceManager::SETTINGS_LOG_UPLOADS },
-	{ SettingsManager::LOG_FILELIST_TRANSFERS, ResourceManager::SETTINGS_LOG_FILELIST_TRANSFERS },
 	{ SettingsManager::LOG_SYSTEM, ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
 	{ SettingsManager::LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
+	{ SettingsManager::LOG_FILELIST_TRANSFERS, ResourceManager::SETTINGS_LOG_FILELIST_TRANSFERS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -78,7 +78,7 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 	
 	int sel = logOptions.GetSelectedIndex();
 		
-	if(sel >= 0) {
+	if(sel >= 0 && sel < LogManager::LAST) {
 		BOOL checkState = logOptions.GetCheckState(sel) == BST_CHECKED ? TRUE : FALSE;
 				
 		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), checkState);
@@ -89,6 +89,12 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 	
 		//save the old selection so we know where to save the values
 		oldSelection = sel;
+	} else {
+		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), FALSE);
+		::EnableWindow(GetDlgItem(IDC_LOG_FILE), FALSE);
+
+		SetDlgItemText(IDC_LOG_FILE, _T(""));
+		SetDlgItemText(IDC_LOG_FORMAT, _T(""));
 	}
 		
 	logOptions.Detach();
@@ -156,5 +162,5 @@ LRESULT LogPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 
 /**
  * @file
- * $Id: LogPage.cpp,v 1.5 2005/07/24 19:29:44 arnetheduck Exp $
+ * $Id: LogPage.cpp,v 1.6 2005/12/03 12:32:36 arnetheduck Exp $
  */

@@ -502,10 +502,11 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			d->setFile(crc);
 		}
 
-		/** @todo something when resuming... */
+		/** @todo check the rest of the file when resuming? */
 		if(d->getTreeValid()) {
 			if((d->getPos() % d->getTigerTree().getBlockSize()) == 0) {
 				d->setFile(new MerkleCheckOutputStream<TigerTree, true>(d->getTigerTree(), d->getFile(), d->getPos()));
+				d->setFlag(Download::FLAG_TTH_CHECK);
 			}
 		}
 		if(d->isSet(Download::FLAG_ROLLBACK)) {
@@ -723,22 +724,22 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t c
 void DownloadManager::logDownload(UserConnection* aSource, Download* d) {
 	StringMap params;
 	params["target"] = d->getTarget();
-	params["user"] = aSource->getUser()->getFirstNick();
-	params["userip"] = aSource->getRemoteIp();
+	params["userNI"] = aSource->getUser()->getFirstNick();
+	params["userI4"] = aSource->getRemoteIp();
 	/// @todo params["hub"] = aSource->getUser()->getLastHubName();
 	/// @todo params["hubip"] = aSource->getUser()->getLastHubAddress();
-	params["size"] = Util::toString(d->getSize());
-	params["sizeshort"] = Util::formatBytes(d->getSize());
-	params["chunksize"] = Util::toString(d->getTotal());
-	params["chunksizeshort"] = Util::formatBytes(d->getTotal());
-	params["actualsize"] = Util::toString(d->getActual());
-	params["actualsizeshort"] = Util::formatBytes(d->getActual());
+	params["fileSI"] = Util::toString(d->getSize());
+	params["fileSIshort"] = Util::formatBytes(d->getSize());
+	params["fileSIchunk"] = Util::toString(d->getTotal());
+	params["fileSIchunkshort"] = Util::formatBytes(d->getTotal());
+	params["fileSIactual"] = Util::toString(d->getActual());
+	params["fileSIactualshort"] = Util::formatBytes(d->getActual());
 	params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
 	params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
 	params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
 	TTHValue *hash = d->getTTH();
 	if(hash != NULL) {
-		params["tth"] = d->getTTH()->toBase32();
+		params["fileTR"] = d->getTTH()->toBase32();
 	}
 	LOG(LogManager::DOWNLOAD, params);
 }
@@ -913,5 +914,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.155 2005/07/21 21:52:49 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.156 2005/12/03 12:32:36 arnetheduck Exp $
  */

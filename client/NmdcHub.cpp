@@ -730,6 +730,16 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	send(buf, chars);
 }
 
+void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) { 
+	checkstate();
+
+	send("$To: " + toNmdc(aUser.getIdentity().getNick()) + " From: " + toNmdc(getMyNick()) + " $" + toNmdc(Util::validateMessage("<" + getMyNick() + "> " + aMessage, false)) + "|");
+	// Emulate a returning message...
+	NickIter i = users.find(getMyNick());
+	if(i != users.end())
+		fire(ClientListener::PrivateMessage(), this, *i->second, aUser, *i->second, aMessage);
+}
+
 // TimerManagerListener
 void NmdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	if(socket && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
@@ -769,6 +779,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.43 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.44 2005/12/03 12:32:36 arnetheduck Exp $
  */
 

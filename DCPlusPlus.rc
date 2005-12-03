@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include <atlres.h>
+#include "wtl\\atlres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -34,7 +34,7 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include <atlres.h>\r\n"
+    "#include ""wtl\\\\atlres.h""\r\n"
     "\0"
 END
 
@@ -287,7 +287,7 @@ BEGIN
 END
 
 IDD_LOGPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Logs"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0

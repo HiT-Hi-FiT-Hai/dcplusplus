@@ -784,15 +784,13 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		}
 		if(!sr->getUser()->isOnline())
 			return;
-		/** @todo
-		ucParams["mynick"] = sr->getUser()->getClientNick();
-		ucParams["mycid"] = sr->getUser()->getClientCID().toBase32();
-		*/
-		ucParams["file"] = sr->getFile();
-		ucParams["filesize"] = Util::toString(sr->getSize());
-		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());
+
+		ucParams["userCID"] = sr->getUser()->getCID().toBase32();
+		ucParams["fileFN"] = sr->getFile();
+		ucParams["fileSI"] = Util::toString(sr->getSize());
+		ucParams["fileSIshort"] = Util::formatBytes(sr->getSize());
 		if(sr->getTTH() != NULL) {
-			ucParams["tth"] = sr->getTTH()->toBase32();
+			ucParams["fileTR"] = sr->getTTH()->toBase32();
 		}
 
 /**		StringMap tmp = ucParams;
@@ -1174,5 +1172,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.101 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.102 2005/12/03 12:32:36 arnetheduck Exp $
  */

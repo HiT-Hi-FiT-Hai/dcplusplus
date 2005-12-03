@@ -213,7 +213,7 @@
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
-		<String Name="MenuDonate">Donate \0xe2\0x82\0xac\0xe2\0x82\0xac\0xe2\0x82\0xac/$$$ (paypal)</String>
+		<String Name="MenuDonate">Donate (paypal)</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>
 		<String Name="MenuExit">&amp;Exit</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
@@ -397,7 +397,7 @@
 		<String Name="SettingsFirewallUpnp">Firewall with UPnP</String>
 		<String Name="SettingsFormat">Format</String>
 		<String Name="SettingsGeneral">Personal information</String>
-		<String Name="SettingsGetUserCountry">Get User Country</String>
+		<String Name="SettingsGetUserCountry">Guess user country from IP</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
 		<String Name="SettingsIncoming">Incoming connection settings (see Help/FAQ if unsure)</String>

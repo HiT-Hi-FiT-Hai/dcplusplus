@@ -146,6 +146,7 @@ int SSLSocket::checkSSL(int ret) throw(SocketException) {
 	if(ret <= 0) {
 		int err = SSL_get_error(ssl, ret);
 		switch(SSL_get_error(ssl, ret)) {
+			case SSL_ERROR_NONE:		// Fallthrough - YaSSL doesn't for example return an openssl compatible error on recv fail
 			case SSL_ERROR_WANT_READ:	// Fallthrough
 			case SSL_ERROR_WANT_WRITE:
 				return -1;
@@ -157,6 +158,7 @@ int SSLSocket::checkSSL(int ret) throw(SocketException) {
 					}
 					// @todo replace 80 with MAX_ERROR_SZ or whatever's appropriate for yaSSL in some nice way...
 					char errbuf[80];
+					dcdebug("%s\n", Util::translateError(::WSAGetLastError()).c_str());
 					throw SocketException(string("SSL Error: ") + ERR_error_string(err, errbuf) + " (" + Util::toString(ret) + ", " + Util::toString(err) + ")"); // @todo Translate
 				}
 		}

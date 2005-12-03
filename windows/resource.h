@@ -372,6 +372,7 @@
 #define IDC_SOCKET_OUT_BUFFER           1318
 #define IDC_SETTINGS_SOCKET_OUT_BUFFER  1319
 #define IDC_SETTINGS_SOCKET_IN_BUFFER   1320
+#define IDC_CHECK1                      1321
 #define IDC_AUTODROP_SPEED              1350
 #define IDC_AUTODROP_INTERVAL           1351
 #define IDC_AUTODROP_ELAPSED            1352
@@ -443,7 +444,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1321
+#define _APS_NEXT_CONTROL_VALUE         1323
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

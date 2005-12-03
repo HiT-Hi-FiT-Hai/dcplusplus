@@ -71,14 +71,16 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
-	FrameIter i = frames.find(replyTo);
-	if(i != frames.end()) {
-		p = new PrivateFrame(replyTo);
-		frames[replyTo] = p;
+	const User::Ptr& user = (from == ClientManager::getInstance()->getMe()) ? to : replyTo;
+	
+	FrameIter i = frames.find(user);
+	if(i == frames.end()) {
+		p = new PrivateFrame(user);
+		frames[user] = p;
 		p->readLog();
-		p->addLine(from, aMessage);
+		p->addLine(user, aMessage);
 		if(Util::getAway()) {
-			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && replyTo->isSet(User::BOT)))
+			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
 				p->sendMessage(Text::toT(Util::getAwayMessage()));
 		}
 
@@ -93,12 +95,12 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 	}
 }
 
-void PrivateFrame::openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& msg) {
+void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
 	PrivateFrame* p = NULL;
-	FrameIter i = frames.find(to);
+	FrameIter i = frames.find(replyTo);
 	if(i == frames.end()) {
-		p = new PrivateFrame(to);
-		frames[to] = p;
+		p = new PrivateFrame(replyTo);
+		frames[replyTo] = p;
 		p->CreateEx(WinUtil::mdiClient);
 	} else {
 		p = i->second;
@@ -165,11 +167,15 @@ void PrivateFrame::onEnter()
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
 				StringMap params;
-				params["user"] = replyTo->getFirstNick();
+
+				params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+				params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+				params["userCID"] = replyTo->getCID().toBase32(); 
+				params["userNI"] = replyTo->getFirstNick();
+				params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
+
 				/** @todo params["hub"] = user->getClientName();
 				params["mynick"] = user->getClientNick(); 
-				params["mycid"] = user->getClientCID().toBase32(); 
-				params["cid"] = user->getCID().toBase32(); 
 				params["hubaddr"] = user->getClientAddressPort();*/
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
@@ -225,13 +231,11 @@ void PrivateFrame::addLine(const User::Ptr& from, const tstring& aLine) {
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		/** @todo 
-		params["user"] = user->getNick();
-		params["hub"] = user->getClientName();
-		params["hubaddr"] = user->getClientAddressPort();
-		params["mynick"] = user->getClientNick(); 
-		params["mycid"] = user->getClientCID().toBase32(); */
-		params["cid"] = replyTo->getCID().toBase32(); 
+		params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+		params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+		params["userCID"] = replyTo->getCID().toBase32(); 
+		params["userNI"] = replyTo->getFirstNick();
+		params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 		LOG(LogManager::PM, params);
 	}
 
@@ -286,9 +290,13 @@ LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 void PrivateFrame::runUserCommand(UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
+
+	ucParams["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+	ucParams["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+	ucParams["userCID"] = replyTo->getCID().toBase32(); 
+	ucParams["userNI"] = replyTo->getFirstNick();
+	ucParams["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 /** @todo
-	ucParams["mynick"] = user->getClientNick();
-	ucParams["mycid"] = user->getClientCID().toBase32();
 	user->getParams(ucParams);
 	user->clientEscapeParams(ucParams);
 
@@ -379,9 +387,9 @@ void PrivateFrame::updateTitle() {
 	StringList hubs = ClientManager::getInstance()->getHubNames(replyTo->getCID());
 	if(hubs.empty()) {
 		hubs.push_back(STRING(OFFLINE));
-		setTabColor(RGB(0, 255, 255));
-	} else {
 		setTabColor(RGB(255, 0, 0));
+	} else {
+		setTabColor(RGB(0, 255, 255));
 	}
 	SetWindowText(Text::toT(replyTo->getFirstNick() + " " + Util::toString(hubs)).c_str());
 }
@@ -389,12 +397,13 @@ void PrivateFrame::updateTitle() {
 
 void PrivateFrame::readLog() {
 	StringMap params;	
-	params["user"] = replyTo->getFirstNick();	
-	/** @todo params["hub"] = user->getClientName();
-	params["mynick"] = user->getClientNick();	
-	params["mycid"] = user->getClientCID().toBase32();	
-	params["cid"] = user->getCID().toBase32();	
-	params["hubaddr"] = user->getClientAddressPort();	
+
+	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+	params["userCID"] = replyTo->getCID().toBase32(); 
+	params["userNI"] = replyTo->getFirstNick();
+	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
+
 	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params));
 
 	try {
@@ -414,16 +423,16 @@ void PrivateFrame::readLog() {
 			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG) + 1) : 0;
 
 			for(; i < (linesCount - 1); ++i){
-				addLine(_T("- ") + Text::toT(lines[i]));
+				addStatus(_T("- ") + Text::toT(lines[i]));
 			}
 
 			f.close();
 		}
-	} catch(const FileException& ){
-	}*/
+	} catch(const FileException&){
+	}
 }
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.53 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.54 2005/12/03 12:32:36 arnetheduck Exp $
  */

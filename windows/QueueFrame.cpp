@@ -990,7 +990,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		
 		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		PrivateFrame::openWindow(ClientManager::getInstance()->getMe(), s->getUser());
+		PrivateFrame::openWindow(s->getUser());
 	}
 	return 0;
 }
@@ -1265,5 +1265,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.83 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.84 2005/12/03 12:32:36 arnetheduck Exp $
  */

@@ -144,15 +144,15 @@ SettingsManager::SettingsManager()
 	setDefault(USE_OEM_MONOFONT, false);
 	setDefault(POPUP_PMS, true);
 	setDefault(MIN_UPLOAD_SPEED, 0);
-	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
-	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
+	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time]");
+	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time]");
 	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_STATUS, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_SYSTEM, "[%Y-%m-%d %H:%M] %[message]");
-	setDefault(LOG_FILE_MAIN_CHAT, "%[hubaddr].log");
-	setDefault(LOG_FILE_STATUS, "%[hubaddr]_status.log");
-	setDefault(LOG_FILE_PRIVATE_CHAT, "%[user].log");
+	setDefault(LOG_FILE_MAIN_CHAT, "%[hubURL].log");
+	setDefault(LOG_FILE_STATUS, "%[hubURL]_status.log");
+	setDefault(LOG_FILE_PRIVATE_CHAT, "%[userNI].%[userCID].log");
 	setDefault(LOG_FILE_UPLOAD, "Uploads.log");
 	setDefault(LOG_FILE_DOWNLOAD, "Downloads.log");
 	setDefault(LOG_FILE_SYSTEM, "system.log");
@@ -313,8 +313,23 @@ void SettingsManager::load(string const& aFileName)
 		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
 
-		if(v <= 0.674 || CID(SETTING(CLIENT_ID)).isZero())
+		if(v <= 0.674 || CID(SETTING(CLIENT_ID)).isZero()) {
 			set(CLIENT_ID, CID::generate().toBase32());
+
+			// Formats changed, might as well remove these...
+			set(LOG_FORMAT_POST_DOWNLOAD, Util::emptyString);
+			set(LOG_FORMAT_POST_UPLOAD, Util::emptyString);
+			set(LOG_FORMAT_MAIN_CHAT, Util::emptyString);
+			set(LOG_FORMAT_PRIVATE_CHAT, Util::emptyString);
+			set(LOG_FORMAT_STATUS, Util::emptyString);
+			set(LOG_FORMAT_SYSTEM, Util::emptyString);
+			set(LOG_FILE_MAIN_CHAT, Util::emptyString);
+			set(LOG_FILE_STATUS, Util::emptyString);
+			set(LOG_FILE_PRIVATE_CHAT, Util::emptyString);
+			set(LOG_FILE_UPLOAD, Util::emptyString);
+			set(LOG_FILE_DOWNLOAD, Util::emptyString);
+			set(LOG_FILE_SYSTEM, Util::emptyString);
+		}
 
 		if(SETTING(SET_MINISLOT_SIZE) < 64)
 			set(SET_MINISLOT_SIZE, 64);
@@ -397,5 +412,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.132 2005/11/28 01:21:06 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.133 2005/12/03 12:32:36 arnetheduck Exp $
  */

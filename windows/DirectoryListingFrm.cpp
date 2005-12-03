@@ -999,23 +999,23 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 			return;
 		/// @todo More info about me?
 		ucParams["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-		ucParams["tth"] = "NONE";
+		ucParams["fileTR"] = "NONE";
 		if(ii->type == ItemInfo::FILE) {
 			ucParams["type"] = "File";
-			ucParams["file"] = dl->getPath(ii->file) + ii->file->getName();
-			ucParams["filesize"] = Util::toString(ii->file->getSize());
-			ucParams["filesizeshort"] = Util::formatBytes(ii->file->getSize());
+			ucParams["fileFN"] = dl->getPath(ii->file) + ii->file->getName();
+			ucParams["fileSI"] = Util::toString(ii->file->getSize());
+			ucParams["fileSIshort"] = Util::formatBytes(ii->file->getSize());
 			TTHValue *hash = ii->file->getTTH();
 			if(hash != NULL) {
-				ucParams["tth"] = hash->toBase32();
+				ucParams["fileTR"] = hash->toBase32();
 			}
 		}
 		else
 		{
 			ucParams["type"] = "Directory";
-			ucParams["file"] = dl->getPath(ii->dir) + ii->dir->getName();
-			ucParams["filesize"] = Util::toString(ii->dir->getTotalSize());
-			ucParams["filesizeshort"] = Util::formatBytes(ii->dir->getTotalSize());
+			ucParams["fileFN"] = dl->getPath(ii->dir) + ii->dir->getName();
+			ucParams["fileSI"] = Util::toString(ii->dir->getTotalSize());
+			ucParams["fileSIshort"] = Util::formatBytes(ii->dir->getTotalSize());
 		}
 
 		StringMap tmp = ucParams;
@@ -1028,5 +1028,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.70 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.71 2005/12/03 12:32:36 arnetheduck Exp $
  */

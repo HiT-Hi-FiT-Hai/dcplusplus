@@ -38,7 +38,7 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)
 {
 public:
 	static void gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
-	static void openWindow(const User::Ptr& from, const User::Ptr& to, const tstring& aMessage = Util::emptyStringT);
+	static void openWindow(const User::Ptr& replyTo, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 
 	enum {
@@ -184,5 +184,5 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.33 2005/11/27 19:19:19 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.34 2005/12/03 12:32:36 arnetheduck Exp $
  */

@@ -194,7 +194,7 @@ void ConnectionManager::putUploadConnection(UserConnection* aSource, bool ntd) {
 }
 
 UserConnection* ConnectionManager::getConnection(bool aNmdc, bool secure) throw(SocketException) {
-	UserConnection* uc = new UserConnection(true);
+	UserConnection* uc = new UserConnection(secure);
 	uc->addListener(this);
 	{
 		Lock l(cs);
@@ -357,7 +357,6 @@ int ConnectionManager::Server::run() throw() {
 			ConnectionManager::getInstance()->accept(sock, secure);
 		}
 	}
-	delete this;
 	return 0;
 }
 
@@ -779,5 +778,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.108 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.109 2005/12/03 12:32:36 arnetheduck Exp $
  */

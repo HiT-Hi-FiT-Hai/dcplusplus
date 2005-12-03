@@ -24,7 +24,7 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;;&quot;$(SolutionDir)\yassl\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -73,7 +73,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				Culture="1033"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\wtl&quot;"/>
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -105,7 +105,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;;&quot;$(SolutionDir)\yassl\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"
 				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -159,7 +159,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				Culture="1033"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\wtl&quot;"/>
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -573,9 +573,6 @@
 			</File>
 			<File
 				RelativePath=".\Extensions.txt">
-			</File>
-			<File
-				RelativePath=".\readme.txt">
 			</File>
 		</Filter>
 	</Files>

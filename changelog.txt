@@ -45,12 +45,15 @@
 * Updated WTL
 * Rewrote socket code to remove some old hacks and add some new (major change)
 * Now using standard windows error messages for socket errors
-* Added basic SSL support
+* Added basic SSL encryption support (ADC only)
 * Fixed a bug with file list loading and filenames differing in case only
 * Updated STLport
 * Fixed a few standard compliance issues
 * Added dirtying to waiting users frame (thanks ullner)
-
+* Changed so that a few flags are shown in transfer status, [T] = TTH check on, [Z] = zlib on, [R] = rollback performed
+* Parameter names all updated, your current %[xxx] macros will break all over, on the upside they're now more or less unified
+* All hubs a user is online on are shown where only one was before (ADC only)
+* Fixed some log page issues
 
 -- 0.674 2005-04-10 --
 *** WARNING ***
