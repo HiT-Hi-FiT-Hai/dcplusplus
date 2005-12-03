@@ -152,7 +152,7 @@ void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy)
 		}
 	}
 
-	sock->setBlocking(true);
+	sock->setBlocking(false);
 
 	fire(BufferedSocketListener::Connected());
 }	
@@ -306,5 +306,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.87 2005/12/01 13:38:45 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.88 2005/12/03 20:36:49 arnetheduck Exp $
  */

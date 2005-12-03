@@ -20,28 +20,17 @@
 #include "DCPlusPlus.h"
 
 #include "SSLSocket.h"
+#include "LogManager.h"
+#include "SettingsManager.h"
+
 #include <openssl/ssl.h>
 
-SSLSocketFactory::SSLSocketFactory() : clientContext(SSL_CTX_new(TLSv1_client_method())), serverContext(SSL_CTX_new(TLSv1_server_method())), dh(0) {
-	SSL_CTX_set_verify(serverContext, SSL_VERIFY_NONE, 0);
-	if(SSL_CTX_use_certificate_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testcert.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		dcdebug("Failed to set server cert\n");
-	}
-	if(SSL_CTX_use_PrivateKey_file(serverContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testkey.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		dcdebug("Failed to set server key\n");
-	}
-	SSL_CTX_set_verify(clientContext, SSL_VERIFY_NONE, 0);
-	if(SSL_CTX_use_certificate_file(clientContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testcert.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		dcdebug("Failed to set client cert\n");
-	}
-	if(SSL_CTX_use_PrivateKey_file(clientContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testkey.pem").c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		dcdebug("Failed to set client key\n");
-	}
-
-	if(SSL_CTX_load_verify_locations(clientContext, (Util::getAppPath() + "\\..\\yassl\\certs\\testcert.pem").c_str(), NULL) != SSL_SUCCESS) {
-		dcdebug("Failed to set client verification location");
-	}
-
+SSLSocketFactory::SSLSocketFactory() 
+:	clientContext(SSL_CTX_new(TLSv1_client_method())), 
+	serverContext(SSL_CTX_new(TLSv1_server_method())), 
+	dh(DH_new()), 
+	certsLoaded(false) 
+{
 	static unsigned char dh512_p[] =
 	{
 		0xDA,0x58,0x3C,0x16,0xD9,0x85,0x22,0x89,0xD0,0xE4,0xAF,0x75,
@@ -57,7 +46,6 @@ SSLSocketFactory::SSLSocketFactory() : clientContext(SSL_CTX_new(TLSv1_client_me
 		0x02,
 	};
 
-	dh = DH_new();
 	if(dh) {
 		dh->p = BN_bin2bn(dh512_p, sizeof(dh512_p), 0);
 		dh->g = BN_bin2bn(dh512_g, sizeof(dh512_g), 0);
@@ -69,6 +57,52 @@ SSLSocketFactory::SSLSocketFactory() : clientContext(SSL_CTX_new(TLSv1_client_me
 			SSL_CTX_set_tmp_dh(serverContext, dh);
 		}
 	}
+}
+
+void SSLSocketFactory::loadCertificates() throw() {
+	SSL_CTX_set_verify(serverContext, SSL_VERIFY_NONE, 0);
+	SSL_CTX_set_verify(clientContext, SSL_VERIFY_NONE, 0);
+
+	if(!SETTING(SSL_CERTIFICATE_FILE).empty()) {
+		if(SSL_CTX_use_certificate_file(serverContext, SETTING(SSL_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load certificate file");
+			return;
+		}
+		if(SSL_CTX_use_certificate_file(clientContext, SETTING(SSL_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load certificate file");
+			return;
+		}
+	}
+
+	if(!SETTING(SSL_PRIVATE_KEY_FILE).empty()) {
+		if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load certificate file");
+			return;
+		}
+		if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load certificate file");
+			return;
+		}
+	}
+
+#ifdef _WIN32
+	WIN32_FIND_DATA data;
+	HANDLE hFind;
+
+	hFind = FindFirstFile(Text::toT(SETTING(SSL_TRUSTED_CERTIFICATES_PATH) + "*.pem").c_str(), &data);
+	if(hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if(SSL_CTX_load_verify_locations(clientContext, (SETTING(SSL_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
+				LogManager::getInstance()->message("Failed to load trusted certificates");
+			}
+		} while(FindNextFile(hFind, &data));
+
+		FindClose(hFind);
+	}
+#else
+#error todo
+#endif
+	certsLoaded = true;
 }
 
 SSLSocketFactory::~SSLSocketFactory() {
@@ -169,8 +203,9 @@ int SSLSocket::checkSSL(int ret) throw(SocketException) {
 int SSLSocket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 	if(ssl && (waitFor & Socket::WAIT_READ)) {
 		/** @todo Take writing into account as well if reading is possible? */
-		if(SSL_pending(ssl) > 0)
-			return WAIT_READ;
+//		if(SSL_pending(ssl) > 0)
+//			return WAIT_READ;
+		// doesn't work in yassl...sigh...
 	}
 	return Socket::wait(millis, waitFor);
 }

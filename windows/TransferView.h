@@ -110,7 +110,6 @@ public:
 
 private:
 	/** Parameter map for user commands */
-	StringMap ucParams;
 	class ItemInfo;
 public:
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };
@@ -252,5 +251,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.23 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.24 2005/12/03 20:36:50 arnetheduck Exp $
  */

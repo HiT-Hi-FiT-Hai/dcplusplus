@@ -303,9 +303,6 @@ private:
 	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
 
-	/** Parameter map for user commands */
-	StringMap ucParams;
-
 	string findStr;
 	tstring error;
 	string size;
@@ -334,5 +331,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.57 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.58 2005/12/03 20:36:50 arnetheduck Exp $
  */

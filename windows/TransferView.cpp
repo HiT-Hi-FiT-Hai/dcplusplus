@@ -133,6 +133,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 void TransferView::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
@@ -142,14 +143,9 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		if(!itemI->user->isOnline())
 			return;
 
-		ucParams["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-		ucParams["userCID"] = itemI->user->getCID().toBase32();
-		ucParams["fileFN"] = Text::fromT(itemI->path + itemI->file);
-		/** @todo 
 		StringMap tmp = ucParams;
-		itemI->user->getParams(tmp);
-		itemI->user->clientEscapeParams(tmp);
-		itemI->user->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
+		tmp["fileFN"] = Text::fromT(itemI->path + itemI->file);
+		ClientManager::getInstance()->userCommand(itemI->user, uc, tmp);
 	}
 	return;
 };
@@ -623,5 +619,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.55 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.56 2005/12/03 20:36:50 arnetheduck Exp $
  */

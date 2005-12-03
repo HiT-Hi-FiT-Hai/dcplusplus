@@ -44,6 +44,7 @@ const string SettingsManager::settingTags[] =
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
+	"SslPrivateKeyFile", "SslCertificateFile", "SslTrustedCertificatesPath",
 	"SENTRY", 
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -71,7 +72,7 @@ const string SettingsManager::settingTags[] =
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
 	"TabHubDirty", "TabPmDirty", "TabSearchDirty", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
-	"OpenWaitingUsers", "WaitingUsersDirty", 
+	"OpenWaitingUsers", "WaitingUsersDirty", "OpenSystemLog", "SystemLogDirty",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -248,6 +249,9 @@ SettingsManager::SettingsManager()
 	setDefault(ONLY_DL_TTH_FILES, false);
 	setDefault(OPEN_WAITING_USERS, false);
 	setDefault(WAITING_USERS_DIRTY, true);
+	setDefault(OPEN_SYSTEM_LOG, true);
+	setDefault(SYSTEM_LOG_DIRTY, true);
+	setDefault(SSL_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "certs\\");
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -412,5 +416,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.133 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.134 2005/12/03 20:36:50 arnetheduck Exp $
  */

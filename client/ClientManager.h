@@ -31,6 +31,8 @@
 
 #include "ClientManagerListener.h"
 
+class UserCommand;
+
 class ClientManager : public Speaker<ClientManagerListener>, 
 	private ClientListener, public Singleton<ClientManager>, 
 	private TimerManagerListener, private SettingsManagerListener
@@ -77,6 +79,8 @@ public:
 	void connect(const User::Ptr& p);
 	void send(AdcCommand& c);
 	void privateMessage(const User::Ptr& p, const string& msg);
+
+	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params);
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 	
@@ -151,5 +155,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.64 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.65 2005/12/03 20:36:50 arnetheduck Exp $
  */

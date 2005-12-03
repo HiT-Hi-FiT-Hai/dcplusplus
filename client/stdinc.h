@@ -90,7 +90,7 @@
 
 
 #ifdef HAVE_STLPORT
-using namespace stlport;
+using namespace _STL;
 #include <hash_map>
 #include <hash_set>
 
@@ -124,5 +124,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.18 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.19 2005/12/03 20:36:49 arnetheduck Exp $
  */

@@ -35,7 +35,7 @@ public:
 	using Client::send;
 
 	virtual void connect(const OnlineUser& user);
-	virtual void connect(const OnlineUser& user, string const& token);
+	virtual void connect(const OnlineUser& user, string const& token, bool secure);
 	virtual void disconnect();
 	
 	virtual void hubMessage(const string& aMessage);
@@ -78,7 +78,7 @@ private:
 		STATE_NORMAL
 	} state;
 
-	AdcHub(const string& aHubURL);
+	AdcHub(const string& aHubURL, bool secure);
 
 	AdcHub(const AdcHub&);
 	AdcHub& operator=(const AdcHub&);
@@ -114,5 +114,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.34 2005/12/01 00:01:14 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.35 2005/12/03 20:36:50 arnetheduck Exp $
  */

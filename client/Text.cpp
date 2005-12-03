@@ -126,6 +126,8 @@ string& Text::acpToUtf8(const string& str, string& tmp) throw() {
 }
 
 wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
+	if(str.empty())
+		return tmp;
 #ifdef _WIN32
 	int n = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), (int)str.length(), NULL, 0);
 	if(n == 0) {
@@ -165,6 +167,8 @@ string& Text::wideToUtf8(const wstring& str, string& tgt) throw() {
 }
 
 string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
+	if(str.empty())
+		return tmp;
 #ifdef _WIN32
 	int n = WideCharToMultiByte(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0, NULL, NULL);
 	if(n == 0) {
@@ -256,5 +260,5 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 
 /**
  * @file
- * $Id: Text.cpp,v 1.10 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: Text.cpp,v 1.11 2005/12/03 20:36:49 arnetheduck Exp $
  */

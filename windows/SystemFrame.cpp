@@ -20,59 +20,35 @@
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
-#include "NotepadFrame.h"
+#include "SystemFrame.h"
 #include "WinUtil.h"
 #include "../client/File.h"
 
-LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
 	
-	ctrlPad.LimitText(0);
+	ctrlPad.SetReadOnly(TRUE);
 	ctrlPad.SetFont(WinUtil::font);
-	string tmp;
-	try {
-		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ, File::OPEN).read();
-	} catch(const FileException&) {
-		// ...
-	}
-	
-	if(tmp.empty()) {
-		tmp = SETTING(NOTEPAD_TEXT);
-		if(!tmp.empty()) {
-			dirty = true;
-			SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, Util::emptyString);
-		}
-	}
 
-	ctrlPad.SetWindowText(Text::toT(tmp).c_str());
-	ctrlPad.EmptyUndoBuffer();
 	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
+
+	LogManager::getInstance()->addListener(this);
 
 	bHandled = FALSE;
 	return 1;
 }
 
-LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	
-	if(dirty || ctrlPad.GetModify()) {
-		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
-		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
-		try {
-			string tmp(Text::fromT(tstring(buf, ctrlPad.GetWindowTextLength())));
-			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
-		} catch(const FileException&) {
-			// Oops...
-		}
-	}
+LRESULT SystemFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 
+	LogManager::getInstance()->removeListener(this);
 	bHandled = FALSE;
 	return 0;
 	
 }
 
-void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
+void SystemFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 {
 	CRect rc;
 
@@ -86,7 +62,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	
 }
 
-LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;
 	if(focus == ctrlPad.m_hWnd) {
@@ -95,7 +71,7 @@ LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlPad, x);
 		tstring::size_type end = x.find(_T(" "), start);
 
-		if(end == string::npos)
+		if(end == tstring::npos)
 			end = x.length();
 		
 		bHandled = WinUtil::parseDBLClick(x, start, end);
@@ -103,7 +79,17 @@ LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
+LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	auto_ptr<tstring> msg((tstring*)wParam);
+	
+	ctrlPad.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + *msg).c_str());
+
+	if(BOOLSETTING(SYSTEM_LOG_DIRTY))
+		setDirty();
+	return 0;
+}
+
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.22 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: SystemFrame.cpp,v 1.1 2005/12/03 20:36:50 arnetheduck Exp $
  */

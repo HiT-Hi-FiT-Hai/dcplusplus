@@ -39,10 +39,14 @@ public:
 
 	SSLSocket* getClientSocket() throw(SocketException);
 	SSLSocket* getServerSocket() throw(SocketException);
+
+	void loadCertificates() throw();
+	bool hasCerts() const { return certsLoaded; }
 private:
 	SSL_CTX* clientContext;
 	SSL_CTX* serverContext;
 	DH* dh;
+	bool certsLoaded;
 };
 
 class SSLSocket : public Socket {

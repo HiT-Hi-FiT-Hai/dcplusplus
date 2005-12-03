@@ -32,7 +32,7 @@
 #include "UserCommand.h"
 #include "StringTokenizer.h"
 
-NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0), state(STATE_CONNECT),
+NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|', false), supportFlags(0), state(STATE_CONNECT),
 	reconnect(true), lastUpdate(0)
 {
 	TimerManager::getInstance()->addListener(this);
@@ -227,15 +227,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			seekers.push_back(make_pair(seeker, tick));
 
 			// First, check if it's a flooder
-			FloodIter fi;
-			for(fi = flooders.begin(); fi != flooders.end(); ++fi) {
+			for(FloodIter fi = flooders.begin(); fi != flooders.end(); ++fi) {
 				if(fi->first == seeker) {
 					return;
 				}
 			}
 
 			int count = 0;
-			for(fi = seekers.begin(); fi != seekers.end(); ++fi) {
+			for(FloodIter fi = seekers.begin(); fi != seekers.end(); ++fi) {
 				if(fi->first == seeker)
 					count++;
 
@@ -779,6 +778,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.44 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.45 2005/12/03 20:36:50 arnetheduck Exp $
  */
 

@@ -155,8 +155,6 @@ private:
 
 	CMenu tabMenu;
 
-	StringMap ucParams;
-
 	User::Ptr replyTo;
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow ctrlClientContainer;
@@ -184,5 +182,5 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.34 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.35 2005/12/03 20:36:50 arnetheduck Exp $
  */

@@ -46,6 +46,7 @@ WindowsPage::ListItem WindowsPage::listItems[] = {
 	{ SettingsManager::OPEN_SEARCH_SPY, ResourceManager::SEARCH_SPY },
 	{ SettingsManager::OPEN_NETWORK_STATISTICS, ResourceManager::NETWORK_STATISTICS },
 	{ SettingsManager::OPEN_NOTEPAD, ResourceManager::NOTEPAD },
+	{ SettingsManager::OPEN_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -95,5 +96,5 @@ LRESULT WindowsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: WindowsPage.cpp,v 1.9 2005/11/28 01:21:07 arnetheduck Exp $
+ * $Id: WindowsPage.cpp,v 1.10 2005/12/03 20:36:50 arnetheduck Exp $
  */

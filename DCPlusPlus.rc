@@ -666,6 +666,23 @@ BEGIN
                     WS_TABSTOP,9,126,255,86
 END
 
+IDD_CERTIFICATESPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+EXSTYLE WS_EX_STATICEDGE
+CAPTION "Security Certificates"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_SSL_PRIVATE_KEY_FILE,102,7,166,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SSL_CERTIFICATE_FILE,102,24,166,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SSL_TRUSTED_CERTIFICATES_PATH,102,42,166,14,
+                    ES_AUTOHSCROLL
+    LTEXT           "Private key file",IDC_STATIC,50,10,48,8
+    LTEXT           "Own certificate file",IDC_STATIC,37,27,61,8
+    LTEXT           "Trusted certificates path",IDC_STATIC,18,45,80,8
+    LTEXT           "Under construction, restart dc++ to see effects...",
+                    IDC_STATIC,7,90,163,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -882,6 +899,16 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+    END
+
+    IDD_CERTIFICATESPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        VERTGUIDE, 98
+        VERTGUIDE, 102
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END

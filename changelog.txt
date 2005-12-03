@@ -54,6 +54,7 @@
 * Parameter names all updated, your current %[xxx] macros will break all over, on the upside they're now more or less unified
 * All hubs a user is online on are shown where only one was before (ADC only)
 * Fixed some log page issues
+* Replaced small buffer size option with the possibility to set recv/send buffer sizes manually
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

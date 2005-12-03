@@ -611,17 +611,17 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 	if(focus == ctrlClient.m_hWnd) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		tstring x;
-		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
-		string::size_type end = x.find(_T(" "), start);
+		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
+		tstring::size_type end = x.find(_T(" "), start);
 
-		if(end == string::npos)
+		if(end == tstring::npos)
 			end = x.length();
 		
 		bHandled = WinUtil::parseDBLClick(x, start, end);
 		if (!bHandled) {
 			string::size_type end = x.find_first_of(_T(" >\t"), start+1);
 
-			if(end == string::npos) // get EOL as well
+			if(end == tstring::npos) // get EOL as well
 				end = x.length();
 			else if(end == start + 1)
 				return 0;
@@ -717,10 +717,10 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
 		tstring x;
 		ctrlClient.ScreenToClient(&pt);
-		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
+		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
 		ctrlClient.ClientToScreen(&pt);
 
-		string::size_type end = x.find_first_of(_T(" >\t"), start+1);
+		tstring::size_type end = x.find_first_of(_T(" >\t"), start+1);
 		if(end == string::npos) // get EOL as well
 			end = x.length();
 		else if(end == start + 1) {
@@ -761,10 +761,12 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 }
 
 void HubFrame::runUserCommand(::UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
 	client->getMyIdentity().getParams(ucParams, "my");
+	client->getHubIdentity().getParams(ucParams, "hub");
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
@@ -1184,5 +1186,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.118 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.119 2005/12/03 20:36:50 arnetheduck Exp $
  */

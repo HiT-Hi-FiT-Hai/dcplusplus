@@ -35,6 +35,7 @@
 #include "NetworkPage.h"
 #include "WindowsPage.h"
 #include "QueuePage.h"
+#include "CertificatesPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
@@ -52,6 +53,7 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[n++] = new UCPage(s);
 	pages[n++] = new FavoriteDirsPage(s);
 	pages[n++] = new QueuePage(s);
+	pages[n++] = new CertificatesPage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());
@@ -90,6 +92,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.18 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.19 2005/12/03 20:36:50 arnetheduck Exp $
  */
 

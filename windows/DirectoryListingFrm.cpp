@@ -983,6 +983,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 }
 
 void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 	set<User::Ptr> nicks;
@@ -997,8 +998,6 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		}
 		if(!dl->getUser()->isOnline())
 			return;
-		/// @todo More info about me?
-		ucParams["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 		ucParams["fileTR"] = "NONE";
 		if(ii->type == ItemInfo::FILE) {
 			ucParams["type"] = "File";
@@ -1020,13 +1019,11 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 		StringMap tmp = ucParams;
 		User::Ptr tmpPtr = dl->getUser();
-		///@todo tmpPtr->getParams(tmp);
-		///@todo tmpPtr->clientEscapeParams(tmp);
-		///@todo tmpPtr->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp);
 	}
 }
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.71 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.72 2005/12/03 20:36:50 arnetheduck Exp $
  */

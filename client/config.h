@@ -44,6 +44,7 @@
 #endif
 
 #ifdef HAVE_STLPORT
+# define _STLP_DONT_USE_SHORT_STRING_OPTIM 1	// Lots of memory issues with this undefined...wonder what's up with that..
 # define _STLP_USE_PTR_SPECIALIZATIONS 1
 # define _STLP_USE_TEMPLATE_EXPRESSION 1
 # define _STLP_NO_ANACHRONISMS 1
@@ -128,5 +129,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.34 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: config.h,v 1.35 2005/12/03 20:36:50 arnetheduck Exp $
  */

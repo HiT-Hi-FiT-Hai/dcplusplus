@@ -285,7 +285,7 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 	}
 	if(len > 0) {
 		stats.totalDown += len;
-		dcdebug("In: %.*s\n", len, (char*)aBuffer);
+		//dcdebug("In: %.*s\n", len, (char*)aBuffer);
 	}
 	return len;
 }
@@ -347,7 +347,7 @@ int Socket::write(const void* aBuffer, int aLen) throw(SocketException) {
 	int i = check(::send(sock, (const char*)aBuffer, aLen, 0), true);
 	if(i > 0) {
 		stats.totalUp += i;
-		dcdebug("Out: %.*s\n", i, (char*)aBuffer);
+//		dcdebug("Out: %.*s\n", i, (char*)aBuffer);
 	}
 	return i;
 }
@@ -581,5 +581,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.69 2005/12/01 00:01:15 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.70 2005/12/03 20:36:50 arnetheduck Exp $
  */

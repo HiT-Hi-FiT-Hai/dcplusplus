@@ -288,24 +288,12 @@ LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 void PrivateFrame::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
-	ucParams["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
-	ucParams["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-	ucParams["userCID"] = replyTo->getCID().toBase32(); 
-	ucParams["userNI"] = replyTo->getFirstNick();
-	ucParams["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-/** @todo
-	user->getParams(ucParams);
-	user->clientEscapeParams(ucParams);
-
-	user->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
-	*/
-	return;
+	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams);
 };
-
-
 
 LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	try {
@@ -372,8 +360,8 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	if(focus == ctrlClient.m_hWnd) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		tstring x;
-		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
-		string::size_type end = x.find(_T(" "), start);
+		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
+		tstring::size_type end = x.find(_T(" "), start);
 
 		if(end == string::npos)
 			end = x.length();
@@ -434,5 +422,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.54 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.55 2005/12/03 20:36:50 arnetheduck Exp $
  */

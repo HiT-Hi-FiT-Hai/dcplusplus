@@ -312,7 +312,6 @@ private:
 	bool closed;
 	bool showUsers;
 
-	StringMap ucParams;
 	TStringMap tabParams;
 	bool tabMenuShown;
 
@@ -396,5 +395,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.68 2005/11/28 01:21:07 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.69 2005/12/03 20:36:50 arnetheduck Exp $
  */

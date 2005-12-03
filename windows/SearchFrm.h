@@ -397,9 +397,6 @@ private:
 	StringList targets;
 	StringList wholeTargets;
 
-	/** Parameter map for user commands */
-	StringMap ucParams;
-
 	bool onlyFree;
 	bool isHash;
 	bool onlyTTH;
@@ -448,5 +445,5 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.64 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.65 2005/12/03 20:36:50 arnetheduck Exp $
  */

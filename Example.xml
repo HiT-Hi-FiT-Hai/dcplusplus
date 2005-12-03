@@ -247,6 +247,7 @@
 		<String Name="MenuSettings">Settings...</String>
 		<String Name="MenuShow">Show</String>
 		<String Name="MenuStatusBar">&amp;Status bar	Ctrl+2</String>
+		<String Name="MenuSystemLog">System Log</String>
 		<String Name="MenuToolbar">&amp;Toolbar	Ctrl+1</String>
 		<String Name="MenuTransferView">T&amp;ransfers	Ctrl+3</String>
 		<String Name="MenuVerticalTile">Vertical Tile</String>
@@ -363,6 +364,7 @@
 		<String Name="SettingsAutoOpen">Auto-open at startup</String>
 		<String Name="SettingsBindAddress">Bind address</String>
 		<String Name="SettingsBoldOptions">Bold options</String>
+		<String Name="SettingsCertificates">Advanced\Security Certificates</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
 		<String Name="SettingsColors">Colors</String>
@@ -517,6 +519,7 @@
 		<String Name="Speed">Speed</String>
 		<String Name="Status">Status</String>
 		<String Name="StoredPasswordSent">Stored password sent...</String>
+		<String Name="SystemLog">System Log</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
 		<String Name="TcpPortBusy">Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port</String>

@@ -244,6 +244,7 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
 	view.AppendMenu(MF_STRING, IDC_NOTEPAD, CTSTRING(MENU_NOTEPAD));
 	view.AppendMenu(MF_STRING, IDC_HASH_PROGRESS, CTSTRING(MENU_HASH_PROGRESS));
+	view.AppendMenu(MF_STRING, IDC_SYSTEM_LOG, CTSTRING(MENU_SYSTEM_LOG));
 	view.AppendMenu(MF_SEPARATOR);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
@@ -1152,5 +1153,5 @@ void WinUtil::openFolder(const tstring& file) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.91 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.92 2005/12/03 20:36:50 arnetheduck Exp $
  */

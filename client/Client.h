@@ -83,7 +83,7 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client(const string& hubURL, char separator);
+	Client(const string& hubURL, char separator, bool secure_);
 	virtual ~Client() throw();
 
 	virtual void connect();
@@ -188,6 +188,7 @@ private:
 	string address;
 	u_int16_t port;
 	char separator;
+	bool secure;
 
 	CountType countType;
 
@@ -200,5 +201,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.104 2005/12/01 00:01:15 arnetheduck Exp $
+ * $Id: Client.h,v 1.105 2005/12/03 20:36:50 arnetheduck Exp $
  */

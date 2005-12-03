@@ -770,22 +770,24 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 }
 
 void SearchFrame::runUserCommand(UserCommand& uc) {
+	StringMap ucParams;
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
-	set<User::Ptr> nicks;
+	set<CID> users;
 
 	int sel = -1;
 	while((sel = ctrlResults.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = ctrlResults.getItemData(sel)->sr;
-		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
-			if(nicks.find(sr->getUser()) != nicks.end())
-				continue;
-			nicks.insert(sr->getUser());
-		}
-		if(!sr->getUser()->isOnline())
-			return;
 
-		ucParams["userCID"] = sr->getUser()->getCID().toBase32();
+		if(!sr->getUser()->isOnline())
+			continue;
+
+		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
+			if(users.find(sr->getUser()->getCID()) != users.end())
+				continue;
+			users.insert(sr->getUser()->getCID());
+		}
+
 		ucParams["fileFN"] = sr->getFile();
 		ucParams["fileSI"] = Util::toString(sr->getSize());
 		ucParams["fileSIshort"] = Util::formatBytes(sr->getSize());
@@ -793,10 +795,8 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 			ucParams["fileTR"] = sr->getTTH()->toBase32();
 		}
 
-/**		StringMap tmp = ucParams;
-		sr->getUser()->getParams(tmp);
-		sr->getUser()->clientEscapeParams(tmp);
-		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); */
+		StringMap tmp = ucParams;
+		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp);
 	}
 	return;
 };
@@ -1172,5 +1172,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.102 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.103 2005/12/03 20:36:50 arnetheduck Exp $
  */

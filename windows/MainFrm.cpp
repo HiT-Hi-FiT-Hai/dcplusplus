@@ -41,6 +41,7 @@
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 #include "UPnP.h"
+#include "SystemFrame.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -194,6 +195,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	c->addListener(this);
 	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
+	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
 	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_FILE_CONNECT);
 	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
@@ -558,6 +560,11 @@ LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 LRESULT MainFrame::onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	SpyFrame::openWindow();
+	return 0;
+}
+
+LRESULT MainFrame::onSystemLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	SystemFrame::openWindow();
 	return 0;
 }
 
@@ -1139,5 +1146,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.104 2005/11/28 01:21:07 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.105 2005/12/03 20:36:50 arnetheduck Exp $
  */
