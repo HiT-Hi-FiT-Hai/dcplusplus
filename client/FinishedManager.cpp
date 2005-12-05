@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "FinishedManager.h"
+#include "ClientManager.h"
 
 FinishedManager::~FinishedManager() throw() {
 	Lock l(cs);
@@ -65,8 +66,8 @@ void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
 	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItem *item = new FinishedItem(
-			d->getTarget(), d->getUserConnection()->getUser()->getFirstNick(),
-			"" /*d->getUserConnection()->getUser()->getLastHubName()*/, /** @todo add hubname */
+			d->getTarget(), Util::toString(ClientManager::getInstance()->getNicks(d->getUserConnection()->getUser()->getCID())),
+			Util::toString(ClientManager::getInstance()->getHubNames(d->getUserConnection()->getUser()->getCID())),
 			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
 		{
 			Lock l(cs);
@@ -81,8 +82,8 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
 	if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItem *item = new FinishedItem(
-			u->getLocalFileName(), u->getUserConnection()->getUser()->getFirstNick(),
-			"" /*d->getUserConnection()->getUser()->getLastHubName()*/, /** @todo add hubname */
+			u->getLocalFileName(), Util::toString(ClientManager::getInstance()->getNicks(u->getUserConnection()->getUser()->getCID())),
+			Util::toString(ClientManager::getInstance()->getHubNames(u->getUserConnection()->getUser()->getCID())),
 			u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
 		{
 			Lock l(cs);
@@ -95,5 +96,5 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.26 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.27 2005/12/05 12:28:23 arnetheduck Exp $
  */

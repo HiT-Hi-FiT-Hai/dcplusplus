@@ -372,14 +372,13 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 }
 
 void PrivateFrame::updateTitle() {
-	StringList hubs = ClientManager::getInstance()->getHubNames(replyTo->getCID());
-	if(hubs.empty()) {
-		hubs.push_back(STRING(OFFLINE));
-		setTabColor(RGB(255, 0, 0));
-	} else {
+	pair<tstring, bool> hubs = WinUtil::getHubNames(replyTo);
+	if(hubs.second) {
 		setTabColor(RGB(0, 255, 255));
+	} else {
+		setTabColor(RGB(255, 0, 0));
 	}
-	SetWindowText(Text::toT(replyTo->getFirstNick() + " " + Util::toString(hubs)).c_str());
+	SetWindowText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first).c_str());
 }
 
 
@@ -422,5 +421,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.55 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.56 2005/12/05 12:28:22 arnetheduck Exp $
  */

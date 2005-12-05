@@ -45,6 +45,7 @@ public:
 	int64_t getAvailable();
 	StringList getHubs(const CID& cid);
 	StringList getHubNames(const CID& cid);
+	StringList getNicks(const CID& cid);
 
 	bool isConnected(const string& aUrl);
 	
@@ -155,5 +156,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.65 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.66 2005/12/05 12:28:23 arnetheduck Exp $
  */

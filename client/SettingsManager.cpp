@@ -251,7 +251,7 @@ SettingsManager::SettingsManager()
 	setDefault(WAITING_USERS_DIRTY, true);
 	setDefault(OPEN_SYSTEM_LOG, true);
 	setDefault(SYSTEM_LOG_DIRTY, true);
-	setDefault(SSL_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "certs\\");
+	setDefault(SSL_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "certs" PATH_SEPARATOR_STR);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -416,5 +416,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.134 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.135 2005/12/05 12:28:23 arnetheduck Exp $
  */

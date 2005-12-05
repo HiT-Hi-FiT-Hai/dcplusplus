@@ -436,6 +436,8 @@ public:
 	}
 
 	static string toString(const StringList& lst) {
+		if(lst.size() == 1)
+			return lst[0];
 		string tmp("[");
 		for(StringList::const_iterator i = lst.begin(); i != lst.end(); ++i) {
 			tmp += *i + ',';
@@ -615,5 +617,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.123 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: Util.h,v 1.124 2005/12/05 12:28:23 arnetheduck Exp $
  */

@@ -1112,6 +1112,19 @@ int WinUtil::getOsMinor()
 	return ver.dwMinorVersion;
 }
 
+tstring WinUtil::getNicks(const CID& cid) throw() {
+	return Text::toT(Util::toString(ClientManager::getInstance()->getNicks(cid)));
+}
+
+pair<tstring, bool> WinUtil::getHubNames(const CID& cid) throw() {
+	StringList hubs = ClientManager::getInstance()->getHubNames(cid);
+	if(hubs.empty()) {
+		return make_pair(TSTRING(OFFLINE), false);
+	} else {
+		return make_pair(Text::toT(Util::toString(hubs)), true);
+	}
+}
+
 void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {
 	int pos = aList.GetNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
 	if(pos >= 0) {
@@ -1153,5 +1166,5 @@ void WinUtil::openFolder(const tstring& file) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.92 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.93 2005/12/05 12:28:22 arnetheduck Exp $
  */

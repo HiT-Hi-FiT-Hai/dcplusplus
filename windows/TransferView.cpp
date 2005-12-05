@@ -325,13 +325,10 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		columns[COLUMN_USER] = Text::toT(user->getFirstNick());
+		columns[COLUMN_USER] = WinUtil::getNicks(user);
 	}
 	if(colMask & MASK_HUB) {
-		StringList hubs = ClientManager::getInstance()->getHubNames(user->getCID());
-		if(hubs.empty())
-			hubs.push_back(STRING(OFFLINE));
-		columns[COLUMN_HUB] = Text::toT(Util::toString(hubs));
+		columns[COLUMN_HUB] = WinUtil::getHubNames(user).first;
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;
@@ -619,5 +616,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.56 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.57 2005/12/05 12:28:22 arnetheduck Exp $
  */

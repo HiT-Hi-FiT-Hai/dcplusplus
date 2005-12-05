@@ -100,6 +100,22 @@ StringList ClientManager::getHubNames(const CID& cid) {
 	return lst;
 }
 
+StringList ClientManager::getNicks(const CID& cid) {
+	Lock l(cs);
+	StringList lst;
+	OnlinePair op = onlineUsers.equal_range(cid);
+	for(OnlineIter i = op.first; i != op.second; ++i) {
+		lst.push_back(i->second->getIdentity().getNick());
+	}
+	if(lst.empty()) {
+		// Offline perhaps?
+		UserIter i = users.find(cid);
+		if(i != users.end())
+			lst.push_back(i->second->getFirstNick());
+	}
+	return lst;
+}
+
 
 int64_t ClientManager::getAvailable() {
 	Lock l(cs);
@@ -491,5 +507,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.79 2005/12/03 20:36:49 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.80 2005/12/05 12:28:23 arnetheduck Exp $
  */

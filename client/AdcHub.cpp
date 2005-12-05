@@ -269,10 +269,13 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	if(state != STATE_NORMAL)
 		return;
 
+	const string& proto = secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL;
+	short port = secure ? ConnectionManager::getInstance()->getPort() : ConnectionManager::getInstance()->getSecurePort();
+
 	if(ClientManager::getInstance()->isActive()) {
-		send(AdcCommand(AdcCommand::CMD_CTM, user.getUser()->getCID()).addParam(secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL).addParam(Util::toString(SETTING(TCP_PORT))).addParam(token));
+		send(AdcCommand(AdcCommand::CMD_CTM, user.getUser()->getCID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
 	} else {
-		send(AdcCommand(AdcCommand::CMD_RCM, user.getUser()->getCID()).addParam(secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL));
+		send(AdcCommand(AdcCommand::CMD_RCM, user.getUser()->getCID()).addParam(proto));
 	}
 }
 
@@ -445,5 +448,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.55 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.56 2005/12/05 12:28:23 arnetheduck Exp $
  */

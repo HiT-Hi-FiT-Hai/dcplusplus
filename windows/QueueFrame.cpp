@@ -165,7 +165,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(j->getUser()->isOnline())
 					online++;
 
-				tmp += Text::toT(j->getUser()->getFirstNick());
+				tmp += WinUtil::getNicks(j->getUser());
 			}
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
@@ -233,7 +233,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");
-						tmp += Text::toT(j->getUser()->getFirstNick());
+					tmp += WinUtil::getNicks(j->getUser());
 					tmp += _T(" (");
 					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
 						tmp += TSTRING(FILE_NOT_AVAILABLE);
@@ -775,7 +775,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			int pmItems = 0;
 			QueueItemInfo::SourceIter i;
 			for(i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
-				tstring nick = Text::toT(i->getUser()->getFirstNick());
+				tstring nick = WinUtil::getNicks(i->getUser());
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -795,7 +795,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			}
 			readdItems = 0;
 			for(i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
-				tstring nick = Text::toT(i->getUser()->getFirstNick());
+				tstring nick = WinUtil::getNicks(i->getUser());
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -1265,5 +1265,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.84 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.85 2005/12/05 12:28:22 arnetheduck Exp $
  */

@@ -198,7 +198,7 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 void UsersFrame::UserInfo::update(const FavoriteUser& u) {
 	columns[COLUMN_NICK] = Text::toT(u.getLastIdentity().getNick());
 	columns[COLUMN_STATUS] = u.getUser()->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
-	columns[COLUMN_HUB] = Text::toT(Util::toString(ClientManager::getInstance()->getHubNames(u.getUser()->getCID())));
+	columns[COLUMN_HUB] = WinUtil::getHubNames(u.getUser()).first;
 /**@todo	if(!user->getLastHubAddress().empty()) {
 		columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
 	}*/
@@ -209,5 +209,5 @@ void UsersFrame::UserInfo::update(const FavoriteUser& u) {
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.39 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.40 2005/12/05 12:28:22 arnetheduck Exp $
  */

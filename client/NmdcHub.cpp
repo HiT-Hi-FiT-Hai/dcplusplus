@@ -97,7 +97,11 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 		if(i != users.end())
 			return *i->second;
 
-		User::Ptr p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
+		User::Ptr p;
+		if(aNick == getMyNick())
+			p = ClientManager::getInstance()->getMe();
+		else
+			p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
 
 		u = users.insert(make_pair(aNick, new OnlineUser(p, *this))).first->second;
 		u->getIdentity().setNick(aNick);
@@ -734,6 +738,7 @@ void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) {
 
 	send("$To: " + toNmdc(aUser.getIdentity().getNick()) + " From: " + toNmdc(getMyNick()) + " $" + toNmdc(Util::validateMessage("<" + getMyNick() + "> " + aMessage, false)) + "|");
 	// Emulate a returning message...
+	Lock l(cs);
 	NickIter i = users.find(getMyNick());
 	if(i != users.end())
 		fire(ClientListener::PrivateMessage(), this, *i->second, aUser, *i->second, aMessage);
@@ -778,6 +783,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.45 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.46 2005/12/05 12:28:23 arnetheduck Exp $
  */
 

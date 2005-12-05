@@ -153,7 +153,7 @@ public:
 
 	void setWindowTitle() {
 		if(error.empty())
-			SetWindowText(Text::toT(dl->getUser()->getFirstNick()).c_str());
+			SetWindowText((WinUtil::getNicks(dl->getUser()) + _T(" - ") + WinUtil::getHubNames(dl->getUser()).first).c_str());
 		else
 			SetWindowText(error.c_str());
 	}
@@ -331,5 +331,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.58 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.59 2005/12/05 12:28:22 arnetheduck Exp $
  */

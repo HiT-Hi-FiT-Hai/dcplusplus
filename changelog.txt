@@ -47,7 +47,6 @@
 * Now using standard windows error messages for socket errors
 * Added basic SSL encryption support (ADC only)
 * Fixed a bug with file list loading and filenames differing in case only
-* Updated STLport
 * Fixed a few standard compliance issues
 * Added dirtying to waiting users frame (thanks ullner)
 * Changed so that a few flags are shown in transfer status, [T] = TTH check on, [Z] = zlib on, [R] = rollback performed

@@ -293,6 +293,8 @@ private:
 			return client->getAvailable();
 	}
 
+	const tstring& getNick(const User::Ptr& u);
+
 	Client* client;
 	tstring server;
 	CContainedWindow ctrlMessageContainer;
@@ -395,5 +397,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.69 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.70 2005/12/05 12:28:22 arnetheduck Exp $
  */

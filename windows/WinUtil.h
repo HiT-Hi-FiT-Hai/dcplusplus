@@ -323,6 +323,12 @@ public:
 	
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 
+	static tstring getNicks(const CID& cid) throw();
+	static tstring getNicks(const User::Ptr& u) { return getNicks(u->getCID()); }
+	/** @return Pair of hubnames as a string and a bool representing the user's online status */
+	static pair<tstring, bool> getHubNames(const CID& cid) throw();
+	static pair<tstring, bool> getHubNames(const User::Ptr& u) { return getHubNames(u->getCID()); }
+
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
@@ -351,5 +357,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.50 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.51 2005/12/05 12:28:22 arnetheduck Exp $
  */

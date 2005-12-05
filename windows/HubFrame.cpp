@@ -290,13 +290,23 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 	if(i == userMap.end())
 		return -1;
 
+	UserInfo* ui = i->second;
+
 	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
 		// Sort order of the other columns changes too late when the user's updated
-		UserInfo* ui = i->second;
 		dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
 		return ctrlUsers.getSortPos(ui);
 	}
-	return ctrlUsers.findItem(Text::toT(aUser->getFirstNick()));
+	return ctrlUsers.findItem(Text::toT(ui->getIdentity().getNick()));
+}
+
+const tstring& HubFrame::getNick(const User::Ptr& aUser) {
+	UserMapIter i = userMap.find(aUser);
+	if(i == userMap.end())
+		return Util::emptyStringT;
+
+	UserInfo* ui = i->second;
+	return ui->columns[COLUMN_NICK];
 }
 
 void HubFrame::addAsFavorite() {
@@ -483,7 +493,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->replyTo)) {
 				PrivateFrame::gotMessage(i->from, i->to, i->replyTo, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->from->getFirstNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(i->from) + _T(": ") + i->msg);
 			}
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
@@ -491,7 +501,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
 				PrivateFrame::gotMessage(i->from, i->to, i->replyTo, i->msg);
 			} else {
-				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + Text::toT(i->from->getFirstNick()) + _T(": ") + i->msg);
+				addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(i->from) + _T(": ") + i->msg);
 			}
 		}
 		delete i;
@@ -1186,5 +1196,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.119 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.120 2005/12/05 12:28:22 arnetheduck Exp $
  */
