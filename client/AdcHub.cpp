@@ -97,6 +97,14 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u.getIdentity().set(i->c_str(), i->substr(2));
 	}
 
+	if(u.getUser()->getFirstNick().empty()) {
+		u.getUser()->setFirstNick(u.getIdentity().getNick());
+	}
+
+	if(u.getIdentity().get("AS") == "0.9") {
+		u.getUser()->setFlag(User::SSL);
+	}
+
 	if(u.getIdentity().isHub())
 		setHubIdentity(u.getIdentity());
 
@@ -253,6 +261,7 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	if(!u)
 		return;
 
+	// @todo Check for invalid protocol and unset SSL if necessary
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
 
@@ -262,7 +271,7 @@ void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
 
 void AdcHub::connect(const OnlineUser& user) {
 	u_int32_t r = Util::rand();
-	connect(user, Util::toString(r), user.getIdentity().get("AS") == "0.9");
+	connect(user, Util::toString(r), user.getUser()->isSet(User::SSL));
 }
 
 void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
@@ -270,7 +279,7 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 		return;
 
 	const string& proto = secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL;
-	short port = secure ? ConnectionManager::getInstance()->getPort() : ConnectionManager::getInstance()->getSecurePort();
+	short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
 
 	if(ClientManager::getInstance()->isActive()) {
 		send(AdcCommand(AdcCommand::CMD_CTM, user.getUser()->getCID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
@@ -448,5 +457,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.56 2005/12/05 12:28:23 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.57 2005/12/09 22:50:07 arnetheduck Exp $
  */

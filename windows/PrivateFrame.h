@@ -164,8 +164,8 @@ private:
 	void updateTitle();
 	
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
-		if(aUser == replyTo)
+	virtual void on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw() {
+		if(aUser.getUser() == replyTo)
 			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
@@ -182,5 +182,5 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.35 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.36 2005/12/09 22:50:39 arnetheduck Exp $
  */

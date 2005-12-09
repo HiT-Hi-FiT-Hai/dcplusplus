@@ -25,12 +25,10 @@
 
 #include "FastAlloc.h"
 #include "User.h"
+#include "CID.h"
 
 class FavoriteUser : public Flags {
 public:
-	typedef vector<FavoriteUser> List;
-	typedef List::iterator Iter;
-    
 	FavoriteUser(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), lastIdentity(ptr, aHubUrl), lastSeen(0) { }
 
 	bool operator==(const User::Ptr& rhs) const { return user == rhs; }
@@ -52,5 +50,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.13 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.14 2005/12/09 22:50:07 arnetheduck Exp $
  */

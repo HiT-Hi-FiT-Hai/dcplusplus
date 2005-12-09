@@ -173,10 +173,6 @@ void PrivateFrame::onEnter()
 				params["userCID"] = replyTo->getCID().toBase32(); 
 				params["userNI"] = replyTo->getFirstNick();
 				params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-
-				/** @todo params["hub"] = user->getClientName();
-				params["mynick"] = user->getClientNick(); 
-				params["hubaddr"] = user->getClientAddressPort();*/
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 				addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
@@ -421,5 +417,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.56 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.57 2005/12/09 22:50:39 arnetheduck Exp $
  */

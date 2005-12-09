@@ -213,16 +213,10 @@ private:
 		/** File -> root mapping info */
 		struct FileInfo {
 		public:
-			struct StringComp {
-				const string& str;
-				StringComp(const string& aStr) : str(aStr) { }
-				bool operator()(const FileInfo& a) { return a.getFileName() == str; }	
-			private:
-				StringComp& operator=(const StringComp&);
-			};
-
 			FileInfo(const string& aFileName, const TTHValue& aRoot, u_int32_t aTimeStamp, bool aUsed) :
-			  fileName(aFileName), root(aRoot), timeStamp(aTimeStamp), used(aUsed) { }
+				fileName(aFileName), root(aRoot), timeStamp(aTimeStamp), used(aUsed) { }
+
+			bool operator==(const string& name) { return name == fileName; }
 
 			GETSET(string, fileName, FileName);
 			GETSET(TTHValue, root, Root);
@@ -279,5 +273,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.30 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.31 2005/12/09 22:50:07 arnetheduck Exp $
  */

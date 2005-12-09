@@ -297,7 +297,7 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 		dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
 		return ctrlUsers.getSortPos(ui);
 	}
-	return ctrlUsers.findItem(Text::toT(ui->getIdentity().getNick()));
+	return ctrlUsers.findItem(ui);
 }
 
 const tstring& HubFrame::getNick(const User::Ptr& aUser) {
@@ -1196,5 +1196,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.120 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.121 2005/12/09 22:50:39 arnetheduck Exp $
  */

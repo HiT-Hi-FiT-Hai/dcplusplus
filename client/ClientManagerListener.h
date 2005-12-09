@@ -37,7 +37,7 @@ public:
 
 	/** User online in at least one hub */
 	virtual void on(UserConnected, const User::Ptr&) throw() { }
-	virtual void on(UserUpdated, const User::Ptr&) throw() { }
+	virtual void on(UserUpdated, const OnlineUser&) throw() { }
 	/** User offline in all hubs */
 	virtual void on(UserDisconnected, const User::Ptr&) throw() { }
 	virtual void on(IncomingSearch, const string&) throw() { }
@@ -50,5 +50,5 @@ public:
 
 /**
  * @file
- * $Id: ClientManagerListener.h,v 1.11 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: ClientManagerListener.h,v 1.12 2005/12/09 22:50:07 arnetheduck Exp $
  */

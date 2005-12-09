@@ -88,6 +88,8 @@ public:
 	void lock() throw() { cs.enter(); }
 	void unlock() throw() { cs.leave(); }
 
+	Identity getIdentity(const User::Ptr& aUser);
+
 	Client::List& getClients() { return clients; }
 
  	void removeClientListener(ClientListener* listener) {
@@ -141,6 +143,7 @@ private:
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
+	virtual void on(UserUpdated, Client*, const OnlineUser& user) { fire(ClientManagerListener::UserUpdated(), user); }
 	virtual void on(UsersUpdated, Client* c, const User::List&) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
@@ -156,5 +159,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.66 2005/12/05 12:28:23 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.67 2005/12/09 22:50:07 arnetheduck Exp $
  */

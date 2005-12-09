@@ -387,6 +387,14 @@ void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc) throw() {
 	SearchManager::getInstance()->respond(adc);
 }
 
+Identity ClientManager::getIdentity(const User::Ptr& aUser) {
+	OnlineIter i = onlineUsers.find(aUser->getCID());
+	if(i != onlineUsers.end()) {
+		return i->second->getIdentity();
+	}
+	return Identity(aUser, Util::emptyString);
+}
+
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 
@@ -507,5 +515,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.80 2005/12/05 12:28:23 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.81 2005/12/09 22:50:07 arnetheduck Exp $
  */

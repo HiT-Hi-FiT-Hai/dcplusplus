@@ -61,10 +61,10 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	FavoriteManager::getInstance()->addListener(this);
 
-	FavoriteUser::List ul = FavoriteManager::getInstance()->getFavoriteUsers();
+	FavoriteManager::FavoriteMap ul = FavoriteManager::getInstance()->getFavoriteUsers();
 	ctrlUsers.SetRedraw(FALSE);
-	for(FavoriteUser::Iter i = ul.begin(); i != ul.end(); ++i) {
-		addUser(*i);
+	for(FavoriteManager::FavoriteMap::iterator i = ul.begin(); i != ul.end(); ++i) {
+		addUser(i->second);
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
@@ -209,5 +209,5 @@ void UsersFrame::UserInfo::update(const FavoriteUser& u) {
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.40 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.41 2005/12/09 22:50:39 arnetheduck Exp $
  */

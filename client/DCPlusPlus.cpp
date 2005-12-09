@@ -101,8 +101,8 @@ void shutdown() {
 	QueueManager::deleteInstance();
 	ConnectionManager::deleteInstance();
 	SearchManager::deleteInstance();
-	ClientManager::deleteInstance();
 	FavoriteManager::deleteInstance();
+	ClientManager::deleteInstance();
 	HashManager::deleteInstance();
 	LogManager::deleteInstance();
 	SettingsManager::deleteInstance();
@@ -112,5 +112,5 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.40 2005/12/03 20:36:49 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.41 2005/12/09 22:50:07 arnetheduck Exp $
  */

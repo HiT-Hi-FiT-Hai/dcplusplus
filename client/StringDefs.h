@@ -109,6 +109,7 @@ enum Strings { // @DontAdd
 	ENTER_SEARCH_STRING, // "Enter search string"
 	ENTER_SERVER, // "Please enter a destination server"
 	ERRORS, // "Errors"
+	ERROR_CREATING_HASH_DATA_FILE, // "Error creating hash data file: "
 	EXACT_SIZE, // "Exact size"
 	EXECUTABLE, // "Executable"
 	FAV_JOIN_SHOWING_OFF, // "Join/part of favorite users showing off"

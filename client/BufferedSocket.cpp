@@ -75,7 +75,6 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(file != NULL);
 	vector<u_int8_t> buf;
 
-	sock->setBlocking(false);
 	while(true) {
 		size_t bytesRead = 0;
 
@@ -85,7 +84,6 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 			size_t actual = file->read(&buf[0], bytesRead);
 			if(actual == 0) {
 				fire(BufferedSocketListener::TransmitDone());
-				sock->setBlocking(false);
 				return;
 			}
 			buf.resize(actual);
@@ -306,5 +304,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.88 2005/12/03 20:36:49 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.89 2005/12/09 22:50:07 arnetheduck Exp $
  */

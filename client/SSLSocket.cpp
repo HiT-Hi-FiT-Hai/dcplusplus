@@ -93,7 +93,7 @@ void SSLSocketFactory::loadCertificates() throw() {
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if(SSL_CTX_load_verify_locations(clientContext, (SETTING(SSL_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
-				LogManager::getInstance()->message("Failed to load trusted certificates");
+				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
 			}
 		} while(FindNextFile(hFind, &data));
 

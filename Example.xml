@@ -105,6 +105,7 @@
 		<String Name="EnterSearchString">Enter search string</String>
 		<String Name="EnterServer">Please enter a destination server</String>
 		<String Name="Errors">Errors</String>
+		<String Name="ErrorCreatingHashDataFile">Error creating hash data file: </String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>

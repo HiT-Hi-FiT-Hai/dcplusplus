@@ -34,7 +34,13 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
 
+	deque<string> oldMessages = LogManager::getInstance()->getLastLogs();
+	// Technically, we might miss a message or two here, but who cares...
 	LogManager::getInstance()->addListener(this);
+
+	for(deque<string>::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
+		addLine(Text::toT(*i));
+	}
 
 	bHandled = FALSE;
 	return 1;
@@ -82,14 +88,17 @@ LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	auto_ptr<tstring> msg((tstring*)wParam);
 	
-	ctrlPad.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + *msg).c_str());
-
+	addLine(*msg);
 	if(BOOLSETTING(SYSTEM_LOG_DIRTY))
 		setDirty();
 	return 0;
 }
 
+void SystemFrame::addLine(const tstring& msg) {
+	ctrlPad.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + msg).c_str());
+
+}
 /**
  * @file
- * $Id: SystemFrame.cpp,v 1.1 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: SystemFrame.cpp,v 1.2 2005/12/09 22:50:39 arnetheduck Exp $
  */
