@@ -35,6 +35,7 @@ BufferedSocket::BufferedSocket(char aSeparator) throw() :
 separator(aSeparator), mode(MODE_LINE), 
 dataBytes(0), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0)
 {
+	start();
 }
 
 BufferedSocket::~BufferedSocket() throw() {
@@ -43,6 +44,7 @@ BufferedSocket::~BufferedSocket() throw() {
 
 void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException) {
 	dcassert(!sock);
+
 	if(secure) {
 		sock = SSLSocketFactory::getInstance()->getServerSocket();
 	} else {
@@ -55,7 +57,6 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 
 	addTask(ACCEPTED, 0);
-	start();
 }
 
 void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(ThreadException) {
@@ -68,53 +69,9 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	}
 
 	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
-	start();
 }
 
-void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
-	dcassert(file != NULL);
-	vector<u_int8_t> buf;
-
-	while(true) {
-		size_t bytesRead = 0;
-
-		if(buf.empty()) {
-			buf.resize(SETTING(SOCKET_OUT_BUFFER));
-			bytesRead = buf.size();
-			size_t actual = file->read(&buf[0], bytesRead);
-			if(actual == 0) {
-				fire(BufferedSocketListener::TransmitDone());
-				return;
-			}
-			buf.resize(actual);
-		}
-
-		while(!buf.empty()) {
-			int written = sock->write(&buf[0], buf.size());
-			if(written == -1) {
-				if(sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ) == Socket::WAIT_READ) {
-					// This could be a socket close notification...or strange data coming in while sending file...better check.
-					threadRead();
-				}
-
-				{
-					Lock l(cs);
-					if(!tasks.empty()) {
-						// We don't want to handle tasks here
-						dcassert(tasks.front().first == Tasks::DISCONNECT || tasks.front().first == Tasks::SHUTDOWN);
-						sock->disconnect();
-						return;
-					}
-				}
-			} else {
-				fire(BufferedSocketListener::BytesSent(), bytesRead, written);
-				buf.erase(buf.begin(), buf.begin()+written);
-			}
-			bytesRead = 0;
-		}
-	}
-}
-
+#define CONNECT_TIMEOUT 30000
 void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy) throw(SocketException) {
 	dcdebug("threadConnect()\n");
 
@@ -129,31 +86,30 @@ void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy)
 
 	u_int32_t startTime = GET_TICK();
 	if(proxy) {
-		sock->socksConnect(aAddr, aPort);
+		sock->socksConnect(aAddr, aPort, CONNECT_TIMEOUT);
 	} else {
 		sock->connect(aAddr, aPort);
 	}
 
 	while(sock->wait(POLL_TIMEOUT, Socket::WAIT_CONNECT) != Socket::WAIT_CONNECT) {
-		{
-			Lock l(cs);
-			if(!tasks.empty()) {
-				// We don't want to handle tasks here
-				dcassert(tasks.front().first == Tasks::DISCONNECT || tasks.front().first == Tasks::SHUTDOWN);
-				sock->disconnect();
-				return;
-			}
-		}
+		if(checkDisconnect())
+			return;
 
 		if((startTime + 30000) < GET_TICK()) {
 			throw SocketException(STRING(CONNECTION_TIMEOUT));
 		}
 	}
 
-	sock->setBlocking(false);
-
 	fire(BufferedSocketListener::Connected());
-}	
+}
+
+void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
+	{
+		Lock l(cs);
+		writeBuf.insert(writeBuf.end(), aBuf, aBuf+aLen);
+		addTask(SEND_DATA, 0);
+	}
+}
 
 void BufferedSocket::threadRead() {
 	int left = sock->read(&inbuf[0], (int)inbuf.size());
@@ -215,11 +171,40 @@ void BufferedSocket::threadRead() {
 	}
 }
 
-void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
-	{
-		Lock l(cs);
-		writeBuf.insert(writeBuf.end(), aBuf, aBuf+aLen);
-		addTask(SEND_DATA, 0);
+void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
+	dcassert(file != NULL);
+	vector<u_int8_t> buf;
+
+	while(true) {
+		size_t bytesRead = 0;
+
+		buf.resize(SETTING(SOCKET_OUT_BUFFER));
+		bytesRead = buf.size();
+		size_t actual = file->read(&buf[0], bytesRead);
+		if(actual == 0) {
+			fire(BufferedSocketListener::TransmitDone());
+			return;
+		}
+		buf.resize(actual);
+
+		while(!buf.empty()) {
+			if(checkDisconnect())
+				return;
+
+			int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
+			if(w & Socket::WAIT_READ) {
+				threadRead();
+			}
+			if(w & Socket::WAIT_WRITE) {
+				int written = sock->write(&buf[0], buf.size());
+				if(written > 0) {
+					buf.erase(buf.begin(), buf.begin()+written);
+
+					fire(BufferedSocketListener::BytesSent(), bytesRead, written);
+					bytesRead = 0;		// Make sure we only report the bytes we actually read just once...
+				}
+			}
+		}
 	}
 }
 
@@ -235,11 +220,35 @@ void BufferedSocket::threadSendData() {
 	size_t left = sendBuf.size();
 	size_t done = 0;
 	while(left > 0) {
-		int n = sock->write(&sendBuf[done], left);
-		left -= n;
-		done += n;
+		if(checkDisconnect()) {
+			return;
+		}
+
+		int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_READ | Socket::WAIT_WRITE);
+
+		if(w & Socket::WAIT_READ) {
+			threadRead();
+		}
+
+		if(w & Socket::WAIT_WRITE) {
+			int n = sock->write(&sendBuf[done], left);
+			if(n > 0) {
+				left -= n;
+				done += n;
+			}
+		}
 	}
 	sendBuf.clear();
+}
+
+bool BufferedSocket::checkDisconnect() {
+	Lock l(cs);
+	for(vector<pair<Tasks, TaskData*> >::iterator i = tasks.begin(); i != tasks.end(); ++i) {
+		if(i->first == Tasks::DISCONNECT || i->first == Tasks::SHUTDOWN) {
+			return true;
+		}
+	}
+	return false;
 }
 
 bool BufferedSocket::checkEvents() {
@@ -304,5 +313,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.89 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.90 2005/12/12 08:43:00 arnetheduck Exp $
  */

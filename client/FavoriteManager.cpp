@@ -128,14 +128,23 @@ void FavoriteManager::addFavoriteUser(User::Ptr& aUser) {
 	Lock l(cs);
 	if(users.find(aUser->getCID()) == users.end()) {
 		aUser->setFlag(User::SAVE_NICK);
-		FavoriteMap::iterator i = users.insert(make_pair(aUser->getCID(), FavoriteUser(aUser, Util::emptyString))).first;
-		i->second.setLastIdentity(ClientManager::getInstance()->getIdentity(aUser));
+		StringList urls = ClientManager::getInstance()->getHubs(aUser->getCID());
+		StringList nicks = ClientManager::getInstance()->getNicks(aUser->getCID());
+        
+		/// @todo make this an error probably...
+		if(urls.empty())
+			urls.push_back(Util::emptyString);
+		if(nicks.empty())
+			nicks.push_back(Util::emptyString);
+
+		FavoriteMap::iterator i = users.insert(make_pair(aUser->getCID(), FavoriteUser(aUser, nicks[0], urls[0]))).first;
 		fire(FavoriteManagerListener::UserAdded(), i->second);
 		save();
 	}
 }
 
 void FavoriteManager::removeFavoriteUser(User::Ptr& aUser) {
+	Lock l(cs);
 	FavoriteMap::iterator i = users.find(aUser->getCID());
 	if(i != users.end()) {
 		fire(FavoriteManagerListener::UserRemoved(), i->second);
@@ -343,8 +352,8 @@ void FavoriteManager::save() {
 			xml.addChildAttrib("LastSeen", j->second.getLastSeen());
 			xml.addChildAttrib("GrantSlot", j->second.isSet(FavoriteUser::FLAG_GRANTSLOT));
 			xml.addChildAttrib("UserDescription", j->second.getDescription());
-			xml.addChildAttrib("NI", j->second.getLastIdentity().getNick());
-			xml.addChildAttrib("URL", j->second.getLastIdentity().getHubUrl());
+			xml.addChildAttrib("Nick", j->second.getNick());
+			xml.addChildAttrib("URL", j->second.getUrl());
 			xml.addChildAttrib("CID", j->first.toBase32());
 		}
 		xml.stepOut();
@@ -461,7 +470,7 @@ void FavoriteManager::load(SimpleXML* aXml) {
 		while(aXml->findChild("User")) {
 			User::Ptr u;
 			const string& cid = aXml->getChildAttrib("CID");
-			const string& nick = aXml->getChildAttrib("NI");
+			const string& nick = aXml->getChildAttrib("Nick");
 			const string& hubUrl = aXml->getChildAttrib("URL");
 
 			if(cid.empty()) {
@@ -473,7 +482,7 @@ void FavoriteManager::load(SimpleXML* aXml) {
 				if(u->getFirstNick().empty())
 					u->setFirstNick(nick);
 			}
-			FavoriteMap::iterator i = users.insert(make_pair(u->getCID(), FavoriteUser(u, hubUrl))).first;
+			FavoriteMap::iterator i = users.insert(make_pair(u->getCID(), FavoriteUser(u, nick, hubUrl))).first;
 
 			if(aXml->getBoolChildAttrib("GrantSlot"))
 				i->second.setFlag(FavoriteUser::FLAG_GRANTSLOT);
@@ -512,8 +521,45 @@ void FavoriteManager::userUpdated(const OnlineUser& info) {
 	FavoriteMap::iterator i = users.find(info.getUser()->getCID());
 	if(i != users.end()) {
 		FavoriteUser& fu = i->second;
-		fu.setLastIdentity(info.getIdentity());
+		fu.update(info);
+		save();
 	}
+}
+
+bool FavoriteManager::hasSlot(const User::Ptr& aUser) const { 
+	Lock l(cs);
+	FavoriteMap::const_iterator i = users.find(aUser->getCID());
+	if(i == users.end())
+		return false;
+	return i->second.isSet(FavoriteUser::FLAG_GRANTSLOT);
+}
+
+time_t FavoriteManager::getLastSeen(const User::Ptr& aUser) const { 
+	Lock l(cs);
+	FavoriteMap::const_iterator i = users.find(aUser->getCID());
+	if(i == users.end())
+		return 0;
+	return i->second.getLastSeen();
+}
+
+void FavoriteManager::setAutoGrant(const User::Ptr& aUser, bool grant) {
+	Lock l(cs);
+	FavoriteMap::iterator i = users.find(aUser->getCID());
+	if(i == users.end())
+		return;
+	if(grant)
+		i->second.setFlag(FavoriteUser::FLAG_GRANTSLOT);
+	else
+		i->second.unsetFlag(FavoriteUser::FLAG_GRANTSLOT);
+	save();
+}
+void FavoriteManager::setUserDescription(const User::Ptr& aUser, const string& description) {
+	Lock l(cs);
+	FavoriteMap::iterator i = users.find(aUser->getCID());
+	if(i == users.end())
+		return;
+	i->second.setDescription(description);
+	save();
 }
 
 StringList FavoriteManager::getHubLists() {
@@ -599,7 +645,35 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 void FavoriteManager::on(UserUpdated, const OnlineUser& user) {
 	userUpdated(user);
 }
+void FavoriteManager::on(UserDisconnected, const User::Ptr& user) {
+	bool isFav = false;
+	{
+		Lock l(cs);
+		FavoriteMap::iterator i = users.find(user->getCID());
+		if(i != users.end()) {
+			isFav = true;
+			i->second.setLastSeen(GET_TIME());
+			save();
+		}
+	}
+	if(isFav)
+		fire(FavoriteManagerListener::StatusChanged(), user);
+}
+
+void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
+	bool isFav = false;
+	{
+		Lock l(cs);
+		FavoriteMap::iterator i = users.find(user->getCID());
+		if(i != users.end()) {
+			isFav = true;
+		}
+	}
+	if(isFav)
+		fire(FavoriteManagerListener::StatusChanged(), user);
+}
+
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.10 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.11 2005/12/12 08:43:00 arnetheduck Exp $
  */

@@ -208,14 +208,6 @@ User::Ptr ClientManager::findUser(const CID& cid) throw() {
 	return NULL;
 }
 
-string ClientManager::getHubUrl(const User::Ptr& user) {
-	Lock l(cs);
-	OnlineIter i = onlineUsers.find(user->getCID());
-	if(i != onlineUsers.end())
-		return i->second->getClient().getHubUrl();
-	return Util::emptyString;
-}
-
 bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
 	Lock l(cs);
 	pair<OnlineIter, OnlineIter> p = onlineUsers.equal_range(user->getCID());
@@ -515,5 +507,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.81 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.82 2005/12/12 08:43:00 arnetheduck Exp $
  */

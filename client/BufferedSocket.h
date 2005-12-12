@@ -181,6 +181,7 @@ private:
 
 	bool checkEvents();
 	void checkSocket();
+	bool checkDisconnect();
 
 	/**
 	 * Shut down the socket and delete itself...no variables must be referenced after
@@ -200,5 +201,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.71 2005/12/01 00:01:14 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.72 2005/12/12 08:43:00 arnetheduck Exp $
  */

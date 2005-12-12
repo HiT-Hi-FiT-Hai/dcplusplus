@@ -67,8 +67,6 @@ public:
 
 	bool isOp(const User::Ptr& aUser, const string& aHubUrl);
 
-	string getHubUrl(const User::Ptr& user);
-
 	/** Constructs a synthetic, hopefully unique CID */
 	CID makeCid(const string& nick, const string& hubUrl) throw();
 
@@ -159,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.67 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.68 2005/12/12 08:43:00 arnetheduck Exp $
  */

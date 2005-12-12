@@ -190,7 +190,6 @@ void UserConnection::accept(const Socket& aServer) throw(SocketException) {
 	socket->accept(aServer, secure);
 }
 
-
 void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	setState(STATE_UNCONNECTED);
 	fire(UserConnectionListener::Failed(), this, aLine);
@@ -198,5 +197,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.51 2005/11/28 01:21:06 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.52 2005/12/12 08:43:00 arnetheduck Exp $
  */

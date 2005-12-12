@@ -119,6 +119,7 @@ public:
 	typedef X<4> FavoriteRemoved;
 	typedef X<5> UserAdded;
 	typedef X<6> UserRemoved;
+	typedef X<7> StatusChanged;
 
 	virtual void on(DownloadStarting, const string&) throw() { }
 	virtual void on(DownloadFailed, const string&) throw() { }
@@ -127,6 +128,7 @@ public:
 	virtual void on(FavoriteRemoved, const FavoriteHubEntry*) throw() { }
 	virtual void on(UserAdded, const FavoriteUser&) throw() { }
 	virtual void on(UserRemoved, const FavoriteUser&) throw() { }
+	virtual void on(StatusChanged, const User::Ptr&) throw() { }
 };
 
 class SimpleXML;
@@ -159,21 +161,14 @@ public:
 	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; };
 	
 	void addFavoriteUser(User::Ptr& aUser);
-	bool isFavoriteUser(const User::Ptr& aUser) const {
-		Lock l(cs);
-		return users.find(aUser->getCID()) != users.end();
-	}
+	bool isFavoriteUser(const User::Ptr& aUser) const { Lock l(cs); return users.find(aUser->getCID()) != users.end(); }
 	void removeFavoriteUser(User::Ptr& aUser);
 
-	bool hasSlot(const User::Ptr& aUser) const { 
-		FavoriteMap::const_iterator i = users.find(aUser->getCID());
-		if(i == users.end())
-			return false;
-		return i->second.isSet(FavoriteUser::FLAG_GRANTSLOT);
-	}
-
+	bool hasSlot(const User::Ptr& aUser) const;
+	void setUserDescription(const User::Ptr& aUser, const string& description);
+	void setAutoGrant(const User::Ptr& aUser, bool grant);
 	void userUpdated(const OnlineUser& info);
-
+	time_t getLastSeen(const User::Ptr& aUser) const;
 // Favorite Hubs
 	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
 
@@ -268,6 +263,9 @@ private:
 
 	// ClientManagerListener
 	virtual void on(UserUpdated, const OnlineUser& user) throw();
+	virtual void on(UserConnected, const User::Ptr& user) throw();
+	virtual void on(UserDisconnected, const User::Ptr& user) throw();
+
 	// HttpConnectionListener
 	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw();
 	virtual void on(Failed, HttpConnection*, const string&) throw();
@@ -291,5 +289,5 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.7 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.8 2005/12/12 08:43:00 arnetheduck Exp $
  */

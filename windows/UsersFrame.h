@@ -65,13 +65,7 @@ public:
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		if(wParam == USER_UPDATED) {
-			///updateUser(((UserInfoBase*)lParam)->user);
-			delete (UserInfoBase*)lParam;
-		}
-		return 0;
-	}
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlUsers.SetFocus();
@@ -86,7 +80,6 @@ private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_NICK = COLUMN_FIRST,
-		COLUMN_STATUS,
 		COLUMN_HUB,
 		COLUMN_SEEN,
 		COLUMN_DESCRIPTION,
@@ -132,9 +125,10 @@ private:
 	// FavoriteManagerListener
 	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
 	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
+	virtual void on(StatusChanged, const User::Ptr& aUser) throw() { PostMessage(WM_SPEAKER, (WPARAM)USER_UPDATED, (LPARAM)new UserInfoBase(aUser)); }
 
 	void addUser(const FavoriteUser& aUser);
-	void updateUser(const FavoriteUser& aUser);
+	void updateUser(const User::Ptr& aUser);
 	void removeUser(const FavoriteUser& aUser);
 };
 
@@ -142,5 +136,5 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.27 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.28 2005/12/12 08:43:01 arnetheduck Exp $
  */

@@ -189,8 +189,9 @@ void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) t
 	connStr.push_back(pport[1]);
 
 	writeAll(&connStr[0], connStr.size(), timeLeft(start, timeout));
-	// We assume we'll get a ipv4 address back...therefore, 10 bytes...if not, things
-	// will break, but hey...noone's perfect (and I'm tired...)...
+
+	// We assume we'll get a ipv4 address back...therefore, 10 bytes...
+	/// @todo add support for ipv6
 	if(readAll(&connStr[0], 10, timeLeft(start, timeout)) != 10) {
 		throw SocketException(STRING(SOCKS_FAILED));
 	}
@@ -205,7 +206,8 @@ void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) t
 	sock_addr.s_addr = *((unsigned long*)&connStr[4]);
 	setIp(inet_ntoa(sock_addr));
 
-	setBlocking(oldblock);
+	if(oldblock)
+		setBlocking(oldblock);
 }
 
 void Socket::socksAuth(u_int32_t timeout) {
@@ -581,5 +583,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.70 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.71 2005/12/12 08:43:00 arnetheduck Exp $
  */

@@ -29,10 +29,7 @@
 
 class FavoriteUser : public Flags {
 public:
-	FavoriteUser(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), lastIdentity(ptr, aHubUrl), lastSeen(0) { }
-
-	bool operator==(const User::Ptr& rhs) const { return user == rhs; }
-	operator User::Ptr() { return user; }
+	FavoriteUser(const User::Ptr& user_, const string& nick_, const string& hubUrl_) : user(user_), nick(nick_), url(hubUrl_), lastSeen(0) { }
 
 	enum Flags {
 		FLAG_GRANTSLOT = 1 << 0
@@ -40,8 +37,11 @@ public:
 
 	User::Ptr& getUser() { return user; }
 
+	void update(const OnlineUser& info) { setNick(info.getIdentity().getNick()); setUrl(info.getIdentity().getHubUrl()); }
+
 	GETSET(User::Ptr, user, User);
-	GETSET(Identity, lastIdentity, LastIdentity);
+	GETSET(string, nick, Nick);
+	GETSET(string, url, Url);
 	GETSET(u_int32_t, lastSeen, LastSeen);
 	GETSET(string, description, Description);
 };
@@ -50,5 +50,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.14 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.15 2005/12/12 08:43:00 arnetheduck Exp $
  */

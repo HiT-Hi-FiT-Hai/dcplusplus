@@ -85,10 +85,11 @@ void startup(void (*f)(void*, const string&), void* p) {
 }
 
 void shutdown() {
-	ConnectionManager::getInstance()->shutdown();
-	HashManager::getInstance()->shutdown();
-
 	TimerManager::getInstance()->removeListeners();
+
+	HashManager::getInstance()->shutdown();
+	ConnectionManager::getInstance()->shutdown();
+
 	SettingsManager::getInstance()->save();
 	
 	SSLSocketFactory::deleteInstance();
@@ -112,5 +113,5 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.41 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.42 2005/12/12 08:43:00 arnetheduck Exp $
  */
