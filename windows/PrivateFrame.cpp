@@ -241,7 +241,7 @@ void PrivateFrame::addLine(const User::Ptr& from, const tstring& aLine) {
 	} else {
 		line = _T("\r\n");
 	}
-	line += Text::toT('<' + from->getFirstNick() + "> ") + aLine;
+	line += aLine;
 
 	ctrlClient.AppendText(line.c_str());
 
@@ -417,5 +417,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.57 2005/12/09 22:50:39 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.58 2005/12/14 22:52:56 arnetheduck Exp $
  */

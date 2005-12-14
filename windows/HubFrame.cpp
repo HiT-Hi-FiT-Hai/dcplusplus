@@ -1184,7 +1184,7 @@ void HubFrame::on(StatusMessage, Client*, const string& line) {
 }
 
 void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() { 
-	speak(PRIVATE_MESSAGE, from, to, replyTo, Util::toDOS(line));
+	speak(PRIVATE_MESSAGE, from, to, replyTo, Util::toDOS("<" + from.getIdentity().getNick() + "> " + line));
 }
 void HubFrame::on(NickTaken, Client*) throw() { 
 	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
@@ -1196,5 +1196,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.121 2005/12/09 22:50:39 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.122 2005/12/14 22:52:55 arnetheduck Exp $
  */
