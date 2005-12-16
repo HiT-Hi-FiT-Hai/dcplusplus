@@ -642,10 +642,10 @@ void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
 	listType = TYPE_BZIP2; 
 }
 
-void FavoriteManager::on(UserUpdated, const OnlineUser& user) {
+void FavoriteManager::on(UserUpdated, const OnlineUser& user) throw() {
 	userUpdated(user);
 }
-void FavoriteManager::on(UserDisconnected, const User::Ptr& user) {
+void FavoriteManager::on(UserDisconnected, const User::Ptr& user) throw() {
 	bool isFav = false;
 	{
 		Lock l(cs);
@@ -675,5 +675,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.11 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.12 2005/12/16 01:00:46 arnetheduck Exp $
  */

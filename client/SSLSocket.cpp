@@ -100,7 +100,7 @@ void SSLSocketFactory::loadCertificates() throw() {
 		FindClose(hFind);
 	}
 #else
-#error todo
+//§#error todo
 #endif
 	certsLoaded = true;
 }
@@ -192,7 +192,6 @@ int SSLSocket::checkSSL(int ret) throw(SocketException) {
 					}
 					// @todo replace 80 with MAX_ERROR_SZ or whatever's appropriate for yaSSL in some nice way...
 					char errbuf[80];
-					dcdebug("%s\n", Util::translateError(::WSAGetLastError()).c_str());
 					throw SocketException(string("SSL Error: ") + ERR_error_string(err, errbuf) + " (" + Util::toString(ret) + ", " + Util::toString(err) + ")"); // @todo Translate
 				}
 		}

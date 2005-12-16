@@ -1,4 +1,4 @@
-(/*
+/*
  * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
@@ -210,7 +210,7 @@ void Socket::socksConnect(const string& aAddr, short aPort, u_int32_t timeout) t
 		setBlocking(oldblock);
 }
 
-void Socket::socksAuth(u_int32_t timeout) {
+void Socket::socksAuth(u_int32_t timeout) throw(SocketException) {
 	vector<u_int8_t> connStr;
 
 	u_int32_t start = GET_TICK();
@@ -267,7 +267,7 @@ void Socket::socksAuth(u_int32_t timeout) {
 
 int Socket::getSocketOptInt(int option) throw(SocketException) {
 	int val;
-	int len = sizeof(val);
+	socklen_t len = sizeof(val);
 	check(::getsockopt(sock, SOL_SOCKET, option, (char*)&val, &len));
 	return val;
 }
@@ -559,17 +559,17 @@ void Socket::socksUpdated() {
 	}
 }
 
-void Socket::shutdown() {
+void Socket::shutdown() throw() {
 	if(sock != INVALID_SOCKET)
 		::shutdown(sock, 1);
 }
 
-void Socket::close() {
+void Socket::close() throw() {
 	if(sock != INVALID_SOCKET) {
 #ifdef _WIN32
-		closesocket(sock);
+		::closesocket(sock);
 #else
-		close(sock);
+		::close(sock);
 #endif
 		connected = false;
 		sock = INVALID_SOCKET;
@@ -583,5 +583,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.71 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.72 2005/12/16 01:00:46 arnetheduck Exp $
  */

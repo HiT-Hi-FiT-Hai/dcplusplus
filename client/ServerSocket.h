@@ -38,7 +38,7 @@ class ServerSocket : public Speaker<ServerSocketListener> {
 public:
 	ServerSocket() throw() { };
 
-	void listen(short port);
+	void listen(short port) throw(SocketException);
 	void disconnect() throw() { socket.disconnect(); }
 
 	/** This is called by windows whenever an "FD_ACCEPT" is sent...doesn't work with unix... */
@@ -60,5 +60,5 @@ private:
 
 /**
  * @file
- * $Id: ServerSocket.h,v 1.26 2005/11/27 19:19:19 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.27 2005/12/16 01:00:46 arnetheduck Exp $
  */

@@ -28,7 +28,7 @@ namespace yaSSL {
 	class SSL;
 	class SSL_CTX;
 	struct DH;
-};
+}
 
 using namespace yaSSL;
 
@@ -51,7 +51,7 @@ private:
 
 class SSLSocket : public Socket {
 public:
-	virtual ~SSLSocket() {}
+	virtual ~SSLSocket() throw() {}
 
 	virtual void accept(const Socket& listeningSocket) throw(SocketException);
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);

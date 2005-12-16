@@ -141,7 +141,7 @@ private:
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
-	virtual void on(UserUpdated, Client*, const OnlineUser& user) { fire(ClientManagerListener::UserUpdated(), user); }
+	virtual void on(UserUpdated, Client*, const OnlineUser& user) throw() { fire(ClientManagerListener::UserUpdated(), user); }
 	virtual void on(UsersUpdated, Client* c, const User::List&) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
@@ -157,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.68 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.69 2005/12/16 01:00:46 arnetheduck Exp $
  */

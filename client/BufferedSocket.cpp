@@ -42,7 +42,7 @@ BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
 }
 
-void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException) {
+void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
 	if(secure) {
@@ -111,7 +111,7 @@ void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
 	}
 }
 
-void BufferedSocket::threadRead() {
+void BufferedSocket::threadRead() throw(SocketException) {
 	int left = sock->read(&inbuf[0], (int)inbuf.size());
 	if(left == -1) {
 		// EWOULDBLOCK, no data received...
@@ -244,7 +244,7 @@ void BufferedSocket::threadSendData() {
 bool BufferedSocket::checkDisconnect() {
 	Lock l(cs);
 	for(vector<pair<Tasks, TaskData*> >::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-		if(i->first == Tasks::DISCONNECT || i->first == Tasks::SHUTDOWN) {
+		if(i->first == DISCONNECT || i->first == SHUTDOWN) {
 			return true;
 		}
 	}
@@ -313,5 +313,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.90 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.91 2005/12/16 01:00:46 arnetheduck Exp $
  */

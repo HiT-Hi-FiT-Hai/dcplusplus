@@ -97,6 +97,7 @@ using namespace _STL;
 #elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #include <ext/hash_map>
 #include <ext/hash_set>
+#include <ext/functional>
 using namespace std;
 using namespace __gnu_cxx;
 
@@ -124,5 +125,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.19 2005/12/03 20:36:49 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.20 2005/12/16 01:00:46 arnetheduck Exp $
  */

@@ -106,7 +106,7 @@ string SearchResult::getFileName() const {
 	return getFile().substr(i + 1);
 }
 
-void SearchManager::listen() throw(SocketException) {
+void SearchManager::listen() throw(Exception) {
 	short lastPort = (short)SETTING(UDP_PORT);
 
 	if(lastPort == 0)
@@ -346,5 +346,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.58 2005/11/27 19:19:20 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.59 2005/12/16 01:00:46 arnetheduck Exp $
  */

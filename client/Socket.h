@@ -45,7 +45,7 @@ typedef SOCKET socket_t;
 
 typedef int socket_t;
 const int INVALID_SOCKET = -1;
-
+#define SOCKET_ERROR -1
 #endif
 
 class SocketException : public Exception {
@@ -249,5 +249,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.64 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: Socket.h,v 1.65 2005/12/16 01:00:46 arnetheduck Exp $
  */
