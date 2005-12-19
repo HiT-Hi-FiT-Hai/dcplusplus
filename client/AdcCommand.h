@@ -67,13 +67,14 @@ public:
 		SEV_FATAL = 2
 	};
 
-	static const char TYPE_ACTIVE = 'A';
+	static const char TYPE_UDP_ACTIVE = 'A';
 	static const char TYPE_BROADCAST = 'B';
 	static const char TYPE_CLIENT = 'C';
 	static const char TYPE_DIRECT = 'D';
+	static const char TYPE_FEATURE = 'F';
 	static const char TYPE_INFO = 'I';
 	static const char TYPE_HUB = 'H';
-	static const char TYPE_PASSIVE = 'P';
+	static const char TYPE_TCP_ACTIVE = 'T';
 	static const char TYPE_UDP = 'U';
 
 #define C(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
@@ -98,16 +99,10 @@ public:
 	C(CMD, 'C','M','D');
 #undef C
 
-	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), type(aType) { }
-	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
-	explicit AdcCommand(Severity sev, Error err, const string& desc, char aType = TYPE_CLIENT) : cmdInt(CMD_STA), from(SETTING(CLIENT_ID)), type(aType) {
-		addParam(Util::toString(sev) + Util::toString(err));
-		addParam(desc);
-	}
-	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
-		parse(aLine, nmdc);
-	}
-
+	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT);
+	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget);
+	explicit AdcCommand(Severity sev, Error err, const string& desc, char aType = TYPE_CLIENT);
+	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException);
 	void parse(const string& aLine, bool nmdc = false) throw(ParseException);
 
 	u_int32_t getCommand() const { return cmdInt; }
@@ -215,5 +210,5 @@ public:
 
 /**
  * @file
- * $Id: AdcCommand.h,v 1.23 2005/07/23 17:52:18 arnetheduck Exp $
+ * $Id: AdcCommand.h,v 1.24 2005/12/19 00:15:50 arnetheduck Exp $
  */

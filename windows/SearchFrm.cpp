@@ -913,7 +913,7 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(Text::toT(sr->getFile())) : WinUtil::getDirIconIndex();
 			ctrlResults.insertItem(si, image);
 			ctrlStatus.SetText(2, Text::toT(Util::toString(ctrlResults.GetItemCount()) + ' ' + STRING(ITEMS)).c_str());
-			if (BOOLSETTING(TAB_SEARCH_DIRTY)) {
+			if (BOOLSETTING(BOLD_SEARCH)) {
 				setDirty();
 			}
 		}
@@ -1172,5 +1172,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.103 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.104 2005/12/19 00:15:52 arnetheduck Exp $
  */

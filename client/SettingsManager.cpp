@@ -70,9 +70,9 @@ const string SettingsManager::settingTags[] =
 	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
-	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "FinishedDownloadDirty", "FinishedUploadDirty", "QueueDirty", 
-	"TabHubDirty", "TabPmDirty", "TabSearchDirty", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
-	"OpenWaitingUsers", "WaitingUsersDirty", "OpenSystemLog", "SystemLogDirty",
+	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
+	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
+	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -238,20 +238,20 @@ SettingsManager::SettingsManager()
 	setDefault(NO_IP_OVERRIDE, false);
 	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
 	setDefault(LAST_SEARCH_TYPE, 0);
-	setDefault(FINISHED_DOWNLOAD_DIRTY, true);
-	setDefault(FINISHED_UPLOAD_DIRTY, true);
-	setDefault(QUEUE_DIRTY, true);
-	setDefault(TAB_HUB_DIRTY, true);
-	setDefault(TAB_SEARCH_DIRTY, true);
-	setDefault(TAB_PM_DIRTY, true);
 	setDefault(SOCKET_IN_BUFFER, 8192);
 	setDefault(SOCKET_OUT_BUFFER, 8192);
 	setDefault(ONLY_DL_TTH_FILES, false);
 	setDefault(OPEN_WAITING_USERS, false);
-	setDefault(WAITING_USERS_DIRTY, true);
 	setDefault(OPEN_SYSTEM_LOG, true);
-	setDefault(SYSTEM_LOG_DIRTY, true);
 	setDefault(SSL_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "certs" PATH_SEPARATOR_STR);
+	setDefault(BOLD_FINISHED_DOWNLOADS, true);
+	setDefault(BOLD_FINISHED_UPLOADS, true);
+	setDefault(BOLD_QUEUE, true);
+	setDefault(BOLD_HUB, true);
+	setDefault(BOLD_PM, true);
+	setDefault(BOLD_SEARCH, true);
+	setDefault(BOLD_WAITING_USERS, true);
+	setDefault(BOLD_SYSTEM_LOG, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -416,5 +416,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.135 2005/12/05 12:28:23 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.136 2005/12/19 00:15:50 arnetheduck Exp $
  */

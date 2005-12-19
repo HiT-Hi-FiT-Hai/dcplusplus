@@ -654,7 +654,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			
 			delete ii;
 			updateStatus();
-			if (BOOLSETTING(QUEUE_DIRTY)) {
+			if (BOOLSETTING(BOLD_QUEUE)) {
 				setDirty();
 			}
 			dirty = true;
@@ -1265,5 +1265,5 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.85 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.86 2005/12/19 00:15:52 arnetheduck Exp $
  */

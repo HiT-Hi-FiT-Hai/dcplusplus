@@ -219,7 +219,7 @@ LRESULT FinishedFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	if(wParam == SPEAK_ADD_LINE) {
 		FinishedItem* entry = (FinishedItem*)lParam;
 		addEntry(entry);
-		if(BOOLSETTING(FINISHED_DOWNLOAD_DIRTY))
+		if(BOOLSETTING(BOLD_FINISHED_DOWNLOADS))
 			setDirty();
 		updateStatus();
 	} else if(wParam == SPEAK_REMOVE) {
@@ -251,5 +251,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.38 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.39 2005/12/19 00:15:52 arnetheduck Exp $
  */

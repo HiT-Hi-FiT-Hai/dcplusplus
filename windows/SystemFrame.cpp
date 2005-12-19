@@ -89,7 +89,7 @@ LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	auto_ptr<tstring> msg((tstring*)wParam);
 	
 	addLine(*msg);
-	if(BOOLSETTING(SYSTEM_LOG_DIRTY))
+	if(BOOLSETTING(BOLD_SYSTEM_LOG))
 		setDirty();
 	return 0;
 }
@@ -100,5 +100,5 @@ void SystemFrame::addLine(const tstring& msg) {
 }
 /**
  * @file
- * $Id: SystemFrame.cpp,v 1.2 2005/12/09 22:50:39 arnetheduck Exp $
+ * $Id: SystemFrame.cpp,v 1.3 2005/12/19 00:15:52 arnetheduck Exp $
  */

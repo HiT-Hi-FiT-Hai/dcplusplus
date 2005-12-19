@@ -247,7 +247,7 @@ void PrivateFrame::addLine(const User::Ptr& from, const tstring& aLine) {
 
 	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
 
-	if (BOOLSETTING(TAB_PM_DIRTY)) {
+	if (BOOLSETTING(BOLD_PM)) {
 		setDirty();
 	}
 }
@@ -417,5 +417,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.58 2005/12/14 22:52:56 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.59 2005/12/19 00:15:52 arnetheduck Exp $
  */

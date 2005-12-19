@@ -403,6 +403,9 @@
 				RelativePath="include\socket_wrapper.hpp">
 			</File>
 			<File
+				RelativePath=".\include\openssl\ssl.h">
+			</File>
+			<File
 				RelativePath="include\timer.hpp">
 			</File>
 			<File

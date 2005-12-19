@@ -58,6 +58,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_MAX_FILELIST_SIZE, SettingsManager::MAX_FILELIST_SIZE, PropPage::T_INT },
 	{ IDC_SOCKET_IN_BUFFER, SettingsManager::SOCKET_IN_BUFFER, PropPage::T_INT },
 	{ IDC_SOCKET_OUT_BUFFER, SettingsManager::SOCKET_OUT_BUFFER, PropPage::T_INT },
+	{ IDC_CLIENT_ID, SettingsManager::CLIENT_ID, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -94,5 +95,5 @@ LRESULT Advanced3Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file
- * $Id: Advanced3Page.cpp,v 1.11 2005/11/27 19:19:18 arnetheduck Exp $
+ * $Id: Advanced3Page.cpp,v 1.12 2005/12/19 00:15:51 arnetheduck Exp $
  */

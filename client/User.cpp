@@ -21,6 +21,7 @@
 
 #include "User.h"
 #include "Client.h"
+#include "StringTokenizer.h"
 
 OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), identity(ptr, client_.getHubUrl()), client(&client_) { 
 
@@ -34,7 +35,17 @@ void Identity::getParams(StringMap& map, const string& prefix) const {
 		map[prefix + "CID"] = user->getCID().toBase32();
 }
 
+const bool Identity::supports(const string& name) const {
+	string su = get("SU");
+	StringTokenizer<string> st(su, ',');
+	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+		if(*i == name)
+			return true;
+	}
+	return false;
+}
+
 /**
  * @file
- * $Id: User.cpp,v 1.47 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: User.cpp,v 1.48 2005/12/19 00:15:51 arnetheduck Exp $
  */

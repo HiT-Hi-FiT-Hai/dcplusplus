@@ -47,13 +47,14 @@ PropPage::Item Appearance2Page::items[] = {
 };
 
 PropPage::ListItem Appearance2Page::listItems[] = {
-	{ SettingsManager::FINISHED_DOWNLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_DOWNLOAD_DIRTY },
-	{ SettingsManager::WAITING_USERS_DIRTY, ResourceManager::SETTINGS_WAITING_USERS_DIRTY },
-	{ SettingsManager::FINISHED_UPLOAD_DIRTY, ResourceManager::SETTINGS_FINISHED_UPLOAD_DIRTY },
-	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
-	{ SettingsManager::TAB_HUB_DIRTY, ResourceManager::SETTINGS_TAB_HUB_DIRTY },
-	{ SettingsManager::TAB_SEARCH_DIRTY, ResourceManager::SETTINGS_TAB_SEARCH_DIRTY },
-	{ SettingsManager::TAB_PM_DIRTY, ResourceManager::SETTINGS_TAB_PM_DIRTY },
+	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
+	{ SettingsManager::BOLD_FINISHED_UPLOADS, ResourceManager::FINISHED_UPLOADS },
+	{ SettingsManager::BOLD_QUEUE, ResourceManager::DOWNLOAD_QUEUE },
+	{ SettingsManager::BOLD_HUB, ResourceManager::HUB },
+	{ SettingsManager::BOLD_PM, ResourceManager::PRIVATE_MESSAGE },
+	{ SettingsManager::BOLD_SEARCH, ResourceManager::SEARCH },
+	{ SettingsManager::BOLD_WAITING_USERS, ResourceManager::WAITING_USERS },
+	{ SettingsManager::BOLD_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -178,5 +179,5 @@ LRESULT Appearance2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 /**
  * @file
- * $Id: Appearance2Page.cpp,v 1.5 2005/11/28 01:21:07 arnetheduck Exp $
+ * $Id: Appearance2Page.cpp,v 1.6 2005/12/19 00:15:51 arnetheduck Exp $
  */

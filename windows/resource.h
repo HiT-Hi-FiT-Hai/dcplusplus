@@ -53,7 +53,6 @@
 #define IDD_ADVANCED3PAGE               243
 #define IDD_WINDOWSPAGE                 244
 #define IDD_QUEUEPAGE                   245
-#define IDD_CERTIFICATEPAGE             246
 #define IDD_CERTIFICATESPAGE            246
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
@@ -409,6 +408,8 @@
 #define IDC_SYSTEM_LOG                  1412
 #define IDC_SSL_PRIVATE_KEY_FILE        1414
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1415
+#define IDC_EDIT1                       1416
+#define IDC_CLIENT_ID                   1416
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -450,7 +451,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1416
+#define _APS_NEXT_CONTROL_VALUE         1417
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

@@ -20,6 +20,17 @@
 #include "DCPlusPlus.h"
 
 #include "AdcCommand.h"
+#include "ClientManager.h"
+
+AdcCommand::AdcCommand(u_int32_t aCmd, char aType /* = TYPE_CLIENT */) : cmdInt(aCmd), from(ClientManager::getInstance()->getMe()->getCID().toBase32()), type(aType) { }
+AdcCommand::AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(ClientManager::getInstance()->getMe()->getCID().toBase32()), to(aTarget), type(TYPE_DIRECT) { }
+AdcCommand::AdcCommand(Severity sev, Error err, const string& desc, char aType /* = TYPE_CLIENT */) : cmdInt(CMD_STA), from(ClientManager::getInstance()->getMe()->getCID().toBase32()), type(aType) {
+	addParam(Util::toString(sev) + Util::toString(err));
+	addParam(desc);
+}
+AdcCommand::AdcCommand(const string& aLine, bool nmdc /* = false */) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
+	parse(aLine, nmdc);
+}
 
 void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(ParseException) {
 	string::size_type i = 5;
@@ -45,6 +56,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 	cur.reserve(128);
 
 	bool toSet = false;
+	bool gotFeature = false;
 	bool fromSet = nmdc; // $ADCxxx never have a from CID...
 
 	while(i < len) {
@@ -73,6 +85,9 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 				} else if(type == TYPE_DIRECT && !toSet) {
 					to = CID(cur);
 					toSet = true;
+				} else if(type == TYPE_FEATURE && !gotFeature) {
+					// Skip...
+					gotFeature = true;
 				} else {
 					parameters.push_back(cur);
 				}
@@ -153,5 +168,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.13 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.14 2005/12/19 00:15:49 arnetheduck Exp $
  */

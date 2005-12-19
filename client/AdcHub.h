@@ -95,6 +95,7 @@ private:
 
 	static const string CLIENT_PROTOCOL;
 	static const string SECURE_CLIENT_PROTOCOL;
+	static const string ADCS_FEATURE;
 	 
 	virtual string checkNick(const string& nick);
 	
@@ -114,5 +115,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.35 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.36 2005/12/19 00:15:50 arnetheduck Exp $
  */

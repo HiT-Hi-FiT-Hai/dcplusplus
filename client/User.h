@@ -121,6 +121,7 @@ public:
 			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 	}
 
+	const bool supports(const string& name) const;
 	const bool isHub() const { return !get("HU").empty(); }
 	const bool isOp() const { return !get("OP").empty(); }
 	const bool isHidden() const { return !get("HI").empty(); }
@@ -184,5 +185,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.63 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: User.h,v 1.64 2005/12/19 00:15:51 arnetheduck Exp $
  */

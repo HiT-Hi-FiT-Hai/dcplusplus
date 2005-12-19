@@ -836,7 +836,7 @@ void ShareManager::generateXmlList() {
 				CalcOutputStream<TTFilter<1024*1024*1024>, false> newXmlFile(&bzipper);
 
 				newXmlFile.write(SimpleXML::utf8Header);
-				newXmlFile.write("<FileListing Version=\"1\" CID=\"" + SETTING(CLIENT_ID) + "\" Base=\"/\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
+				newXmlFile.write("<FileListing Version=\"1\" CID=\"" + ClientManager::getInstance()->getMe()->getCID().toBase32() + "\" Base=\"/\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
 				for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 					i->second->toXml(newXmlFile, indent, tmp2, true);
 				}
@@ -919,7 +919,7 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 
 	string xml = SimpleXML::utf8Header;
 	string tmp;
-	xml += "<FileListing Version=\"1\" CID=\"" + SETTING(CLIENT_ID) + "\" Base=\"" + SimpleXML::escape(dir, tmp, false) + "\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n";
+	xml += "<FileListing Version=\"1\" CID=\"" + ClientManager::getInstance()->getMe()->getCID().toBase32() + "\" Base=\"" + SimpleXML::escape(dir, tmp, false) + "\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n";
 	StringOutputStream sos(xml);
 	string indent = "\t";
 
@@ -1510,5 +1510,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.135 2005/08/12 21:30:11 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.136 2005/12/19 00:15:50 arnetheduck Exp $
  */

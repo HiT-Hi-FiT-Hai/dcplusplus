@@ -302,7 +302,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 
 void SearchManager::respond(const AdcCommand& adc) {
 	// Filter own searches
-	if(adc.getFrom().toBase32() == SETTING(CLIENT_ID))
+	if(adc.getFrom() == ClientManager::getInstance()->getMe()->getCID())
 		return;
 
 	User::Ptr p = ClientManager::getInstance()->findUser(adc.getFrom());
@@ -346,5 +346,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.59 2005/12/16 01:00:46 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.60 2005/12/19 00:15:50 arnetheduck Exp $
  */

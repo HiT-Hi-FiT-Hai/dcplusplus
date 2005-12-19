@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "UserConnection.h"
+#include "ClientManager.h"
 
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
@@ -190,6 +191,15 @@ void UserConnection::accept(const Socket& aServer) throw(SocketException) {
 	socket->accept(aServer, secure);
 }
 
+void UserConnection::inf(bool withToken) { 
+	AdcCommand c(AdcCommand::CMD_INF);
+	c.addParam("CI", ClientManager::getInstance()->getMe()->getCID().toBase32());
+	if(withToken) {
+		c.addParam("TO", getToken());
+	}
+	send(c);
+}
+
 void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	setState(STATE_UNCONNECTED);
 	fire(UserConnectionListener::Failed(), this, aLine);
@@ -197,5 +207,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.52 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.53 2005/12/19 00:15:51 arnetheduck Exp $
  */

@@ -54,6 +54,7 @@
 * All hubs a user is online on are shown where only one was before (ADC only)
 * Fixed some log page issues
 * Replaced small buffer size option with the possibility to set recv/send buffer sizes manually
+* Consolidated bolding options, you'll have to reset them to your preference
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

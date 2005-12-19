@@ -33,6 +33,7 @@
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.9");
+const string AdcHub::ADCS_FEATURE("ADC0");
 
 AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), state(STATE_PROTOCOL) {
 }
@@ -101,7 +102,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u.getUser()->setFirstNick(u.getIdentity().getNick());
 	}
 
-	if(u.getIdentity().get("AS") == "0.9") {
+	if(u.getIdentity().supports(ADCS_FEATURE)) {
 		u.getUser()->setFlag(User::SSL);
 	}
 
@@ -306,15 +307,14 @@ void AdcHub::hubMessage(const string& aMessage) {
 void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) { 
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, user.getUser()->getCID()).addParam(aMessage).addParam("PM", SETTING(CLIENT_ID))); 
+	send(AdcCommand(AdcCommand::CMD_MSG, user.getUser()->getCID()).addParam(aMessage).addParam("PM", getMyIdentity().getUser()->getCID().toBase32())); 
 }
 
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) { 
 	if(state != STATE_NORMAL)
 		return;
 
-
-	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_UDP);
+	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_BROADCAST);
 
 	if(aFileType == SearchManager::TYPE_TTH) {
 		c.addParam("TR", aString);
@@ -333,10 +333,10 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	if(!aToken.empty())
 		c.addParam("TO", aToken);
 
-	sendUDP(c);
-
 	if(ClientManager::getInstance()->isActive()) {
-		c.setType(AdcCommand::TYPE_PASSIVE);
+		send(c);
+	} else {
+		c.setType(AdcCommand::TYPE_TCP_ACTIVE);
 		send(c);
 	}
 }
@@ -349,7 +349,8 @@ void AdcHub::password(const string& pwd) {
 		AutoArray<u_int8_t> buf(saltBytes);
 		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
-		th.update(SETTING(CLIENT_ID).c_str(), SETTING(CLIENT_ID).length());
+		string cid = getMyIdentity().getUser()->getCID().toBase32();
+		th.update(cid.c_str(), cid.length());
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
@@ -394,9 +395,11 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("VE", "++ " VERSIONSTRING);
 
 	if(SSLSocketFactory::getInstance()->hasCerts()) {
-		ADDPARAM("AS", "0.9");
+		ADDPARAM("SU", ADCS_FEATURE);
+	} else {
+		ADDPARAM("SU", Util::emptyString);
 	}
-
+	
 	if(ClientManager::getInstance()->isActive()) {
 		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
 			ADDPARAM("I4", Socket::resolve(SETTING(EXTERNAL_IP)));
@@ -457,5 +460,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.57 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.58 2005/12/19 00:15:50 arnetheduck Exp $
  */
