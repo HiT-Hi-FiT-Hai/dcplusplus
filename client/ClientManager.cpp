@@ -362,15 +362,15 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	}
 }
 
-void ClientManager::userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params) {
+void ClientManager::userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility) {
 	OnlineIter i = onlineUsers.find(p->getCID());
 	if(i == onlineUsers.end())
 		return;
 
 	OnlineUser& ou = *i->second;
-	ou.getIdentity().getParams(params, "user");
-	ou.getClient().getHubIdentity().getParams(params, "hub");
-	ou.getClient().getMyIdentity().getParams(params, "my");
+	ou.getIdentity().getParams(params, "user", compatibility);
+	ou.getClient().getHubIdentity().getParams(params, "hub", false);
+	ou.getClient().getMyIdentity().getParams(params, "my", compatibility);
 	ou.getClient().escapeParams(params);
 	ou.getClient().sendUserCmd(Util::formatParams(uc.getCommand(), params));
 }
@@ -507,5 +507,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.82 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.83 2005/12/22 19:47:33 arnetheduck Exp $
  */

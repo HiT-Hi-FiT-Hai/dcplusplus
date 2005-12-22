@@ -78,7 +78,7 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 		p = new PrivateFrame(user);
 		frames[user] = p;
 		p->readLog();
-		p->addLine(user, aMessage);
+		p->addLine(aMessage);
 		if(Util::getAway()) {
 			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
 				p->sendMessage(Text::toT(Util::getAwayMessage()));
@@ -91,7 +91,7 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
 			MessageBeep(MB_OK);
 		}
-		i->second->addLine(from, aMessage);
+		i->second->addLine(aMessage);
 	}
 }
 
@@ -216,7 +216,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 }
 
-void PrivateFrame::addLine(const User::Ptr& from, const tstring& aLine) {
+void PrivateFrame::addLine(const tstring& aLine) {
 	if(!created) {
 		if(BOOLSETTING(POPUNDER_PM))
 			WinUtil::hiddenCreateEx(this);
@@ -288,7 +288,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
-	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams);
+	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams, true);
 };
 
 LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -417,5 +417,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.59 2005/12/19 00:15:52 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.60 2005/12/22 19:47:33 arnetheduck Exp $
  */

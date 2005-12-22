@@ -27,12 +27,22 @@ OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_) : user(ptr), ident
 
 }
 
-void Identity::getParams(StringMap& map, const string& prefix) const {
+void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility) const {
 	for(InfMap::const_iterator i = info.begin(); i != info.end(); ++i) {
-		map[prefix + string((char*)(&i->first), 2)] = i->second;
+		sm[prefix + string((char*)(&i->first), 2)] = i->second;
 	}
 	if(user)
-		map[prefix + "CID"] = user->getCID().toBase32();
+		sm[prefix + "CID"] = user->getCID().toBase32();
+
+	if(compatibility) {
+		if(prefix == "my") {
+			sm["mynick"] = getNick();
+			sm["mycid"] = user->getCID().toBase32();
+		} else {
+			sm["nick"] = getNick();
+			sm["cid"] = user->getCID().toBase32();
+		}
+	}
 }
 
 const bool Identity::supports(const string& name) const {
@@ -47,5 +57,5 @@ const bool Identity::supports(const string& name) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.48 2005/12/19 00:15:51 arnetheduck Exp $
+ * $Id: User.cpp,v 1.49 2005/12/22 19:47:33 arnetheduck Exp $
  */

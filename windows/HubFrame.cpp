@@ -684,9 +684,9 @@ void HubFrame::addLine(const tstring& aLine) {
 	if(BOOLSETTING(LOG_MAIN_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		client->getHubIdentity().getParams(params, "hub");
+		client->getHubIdentity().getParams(params, "hub", false);
 		params["hubURL"] = client->getHubUrl();
-		client->getMyIdentity().getParams(params, "my");
+		client->getMyIdentity().getParams(params, "my", true);
 		LOG(LogManager::CHAT, params);
 	}
 	if(timeStamps) {
@@ -775,8 +775,8 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
 
-	client->getMyIdentity().getParams(ucParams, "my");
-	client->getHubIdentity().getParams(ucParams, "hub");
+	client->getMyIdentity().getParams(ucParams, "my", true);
+	client->getHubIdentity().getParams(ucParams, "hub", false);
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
@@ -787,7 +787,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
 			StringMap tmp = ucParams;
 
-			u->getIdentity().getParams(tmp, "user");
+			u->getIdentity().getParams(tmp, "user", true);
 			client->escapeParams(tmp);
 			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); 
 		}
@@ -1089,9 +1089,9 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		StringMap params;
-		client->getHubIdentity().getParams(params, "hub");
+		client->getHubIdentity().getParams(params, "hub", false);
 		params["hubURL"] = client->getHubUrl();
-		client->getMyIdentity().getParams(params, "my");
+		client->getMyIdentity().getParams(params, "my", true);
 		params["message"] = Text::fromT(aLine);
 		LOG(LogManager::STATUS, params);
 	}
@@ -1196,5 +1196,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.123 2005/12/19 00:15:52 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.124 2005/12/22 19:47:33 arnetheduck Exp $
  */

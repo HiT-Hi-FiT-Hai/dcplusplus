@@ -82,7 +82,7 @@ public:
 	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
-	void addLine(const User::Ptr&, const tstring& aLine);
+	void addLine(const tstring& aLine);
 	void addStatus(const tstring& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
@@ -182,5 +182,5 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.37 2005/12/19 00:15:52 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.38 2005/12/22 19:47:33 arnetheduck Exp $
  */

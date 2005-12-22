@@ -1008,9 +1008,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 			if(hash != NULL) {
 				ucParams["fileTR"] = hash->toBase32();
 			}
-		}
-		else
-		{
+		} else {
 			ucParams["type"] = "Directory";
 			ucParams["fileFN"] = dl->getPath(ii->dir) + ii->dir->getName();
 			ucParams["fileSI"] = Util::toString(ii->dir->getTotalSize());
@@ -1019,11 +1017,11 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 		StringMap tmp = ucParams;
 		User::Ptr tmpPtr = dl->getUser();
-		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp);
+		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
 	}
 }
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.73 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.74 2005/12/22 19:47:33 arnetheduck Exp $
  */

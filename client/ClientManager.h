@@ -79,7 +79,7 @@ public:
 	void send(AdcCommand& c);
 	void privateMessage(const User::Ptr& p, const string& msg);
 
-	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params);
+	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility);
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 	
@@ -157,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.69 2005/12/16 01:00:46 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.70 2005/12/22 19:47:33 arnetheduck Exp $
  */

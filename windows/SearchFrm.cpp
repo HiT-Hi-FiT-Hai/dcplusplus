@@ -796,7 +796,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		}
 
 		StringMap tmp = ucParams;
-		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp);
+		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp, true);
 	}
 	return;
 };
@@ -1172,5 +1172,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.104 2005/12/19 00:15:52 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.105 2005/12/22 19:47:33 arnetheduck Exp $
  */
