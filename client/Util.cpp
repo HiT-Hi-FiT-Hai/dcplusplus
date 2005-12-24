@@ -86,7 +86,7 @@ void Util::initialize() {
 	try {
 		// This product includes GeoIP data created by MaxMind, available from http://maxmind.com/
 		// Updates at http://www.maxmind.com/app/geoip_country
-		string file = Util::getAppPath() + "GeoIpCountryWhois.csv";
+		string file = Util::getDataPath() + "GeoIpCountryWhois.csv";
 		string data = File(file, File::READ, File::OPEN).read();
 
 		const char* start = data.c_str();
@@ -133,12 +133,31 @@ string Util::getConfigPath() {
 		char* home = getenv("HOME");
 		if (home) {
 #ifdef __APPLE__
+/// @todo Verify this for apple?
 			return string(home) + "/Library/Application Support/Mac DC++/";
 #else
 			return string(home) + "/.dc++/";
 #endif // __APPLE__
 		}
 		return emptyString;
+#endif // _WIN32
+}
+
+string Util::getDataPath() {
+#ifdef _WIN32
+	return getAppPath();
+#else
+	// This probably ought to be /usr/share/*...
+	char* home = getenv("HOME");
+	if (home) {
+#ifdef __APPLE__
+		/// @todo Verify this for apple?
+		return string(home) + "/Library/Application Support/Mac DC++/";
+#else
+		return string(home) + "/.dc++/";
+#endif // __APPLE__
+	}
+	return emptyString;
 #endif // _WIN32
 }
 
@@ -883,5 +902,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.91 2005/07/24 19:29:42 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.92 2005/12/24 23:13:25 arnetheduck Exp $
  */

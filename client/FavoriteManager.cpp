@@ -30,8 +30,6 @@
 #include "SimpleXML.h"
 #include "UserCommand.h"
 
-#define FAVORITES_FILE "Favorites.xml"
-
 UserCommand FavoriteManager::addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub) {
 	// No dupes, add it...
 	Lock l(cs);
@@ -382,7 +380,7 @@ void FavoriteManager::save() {
 
 		xml.stepOut();
 
-		string fname = Util::getAppPath() + FAVORITES_FILE;
+		string fname = getConfigFile();
 
 		File f(fname + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		f.write(SimpleXML::utf8Header);
@@ -429,7 +427,7 @@ void FavoriteManager::load() {
 
 	try {
 		SimpleXML xml;
-		xml.fromXML(File(Util::getAppPath() + FAVORITES_FILE, File::READ, File::OPEN).read());
+		xml.fromXML(File(getConfigFile(), File::READ, File::OPEN).read());
 		
 		if(xml.findChild("Favorites")) {
 			xml.stepIn();
@@ -675,5 +673,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.12 2005/12/16 01:00:46 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.13 2005/12/24 23:13:25 arnetheduck Exp $
  */

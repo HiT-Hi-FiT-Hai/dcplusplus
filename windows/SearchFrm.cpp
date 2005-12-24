@@ -302,7 +302,7 @@ void SearchFrame::onEnter() {
 			ctrlSearchBox.DeleteString(i);
 		ctrlSearchBox.InsertString(0, s.c_str());
 
-		while(lastSearches.size() > (int64_t)i) {
+		while(lastSearches.size() > (TStringList::size_type)i) {
 			lastSearches.erase(lastSearches.begin());
 		}
 		lastSearches.push_back(s);
@@ -389,21 +389,19 @@ LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
 
 		ctrlStatus.SetText(1, buf);
-		ctrlStatus.SetText(2, _T(""));
-		ctrlStatus.SetText(3, _T(""));
-
 		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
 	} else {
 		if(timerID != 0) {
 			KillTimer(timerID);
 			timerID = 0;
 		}
-		ctrlStatus.SetText(1, (TSTRING(SEARCHING_READY)).c_str());
-		ctrlStatus.SetText(2, _T(""));
-		ctrlStatus.SetText(3, _T(""));
 
+		ctrlStatus.SetText(1, (TSTRING(SEARCHING_READY)).c_str());
 		SetWindowText((TSTRING(SEARCH) + _T(" - ") + TSTRING(SEARCHING_READY)).c_str());
 	}
+
+	ctrlStatus.SetText(2, _T(""));
+	ctrlStatus.SetText(3, _T(""));
 	return 0;
 }
 void SearchFrame::SearchInfo::view() {
@@ -1126,12 +1124,8 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
-	while(ctrlSearchBox.GetCount() > 0){
-			ctrlSearchBox.DeleteString(0);
-	}
-	while(lastSearches.size() > 0) {
-		lastSearches.erase(lastSearches.end());
-	}
+	ctrlSearchBox.ResetContent();
+	lastSearches.clear();
 	return 0;
 }
 
@@ -1172,5 +1166,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.105 2005/12/22 19:47:33 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.106 2005/12/24 23:13:26 arnetheduck Exp $
  */

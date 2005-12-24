@@ -30,8 +30,6 @@
 #include "File.h"
 #include "SimpleXML.h"
 
-#define ADLS_STORE_FILENAME "ADLSearch.xml"
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //	Load old searches from disk
@@ -45,7 +43,7 @@ void ADLSearchManager::Load()
 	// Load file as a string
 	try {
 		SimpleXML xml;
-		xml.fromXML(File(Util::getAppPath() + ADLS_STORE_FILENAME, File::READ, File::OPEN).read());
+		xml.fromXML(File(getConfigFile(), File::READ, File::OPEN).read());
 
 		if(xml.findChild("ADLSearch")) {
 			xml.stepIn();
@@ -166,7 +164,7 @@ void ADLSearchManager::Save()
 
 		// Save string to file			
 		try {
-			File fout(Util::getAppPath() + ADLS_STORE_FILENAME, File::WRITE, File::CREATE | File::TRUNCATE);
+			File fout(getConfigFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			fout.write(SimpleXML::utf8Header);
 			fout.write(xml.toXML());
 			fout.close();
@@ -325,5 +323,5 @@ void ADLSearchManager::matchRecurse(DestDirList &aDestList, DirectoryListing::Di
 
 /**
  * @file
- * $Id: ADLSearch.cpp,v 1.28 2005/12/03 12:32:35 arnetheduck Exp $
+ * $Id: ADLSearch.cpp,v 1.29 2005/12/24 23:13:25 arnetheduck Exp $
  */

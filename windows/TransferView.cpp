@@ -74,11 +74,6 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
-#if 0
-	ItemInfo* ii = new ItemInfo(ClientManager::getInstance()->getUser("test"), 
-		ItemInfo::TYPE_DOWNLOAD, ItemInfo::STATUS_RUNNING, 75, 100, 25, 50);
-	ctrlTransfers.insert(0, tstring("Test"), 0, (LPARAM)ii);
-#endif
 	return 0;
 }
 
@@ -141,7 +136,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo* itemI = ctrlTransfers.getItemData(i);
 		if(!itemI->user->isOnline())
-			return;
+			continue;
 
 		StringMap tmp = ucParams;
 		tmp["fileFN"] = Text::fromT(itemI->path + itemI->file);
@@ -616,5 +611,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.58 2005/12/22 19:47:33 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.59 2005/12/24 23:13:26 arnetheduck Exp $
  */

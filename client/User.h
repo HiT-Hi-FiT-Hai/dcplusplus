@@ -141,6 +141,7 @@ public:
 	}
 	
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
+	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubUrl, HubUrl);
 private:
@@ -185,5 +186,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.65 2005/12/22 19:47:33 arnetheduck Exp $
+ * $Id: User.h,v 1.66 2005/12/24 23:13:25 arnetheduck Exp $
  */

@@ -133,7 +133,7 @@ private:
 		TimerManager::getInstance()->removeListener(this); 
 	}
 
-	string getUsersFile() { return Util::getAppPath() + "Users.xml"; }
+	string getUsersFile() { return Util::getConfigPath() + "Users.xml"; }
 
 	// SettingsManagerListener
 	virtual void on(Load, SimpleXML*) throw();
@@ -157,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.70 2005/12/22 19:47:33 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.71 2005/12/24 23:13:25 arnetheduck Exp $
  */

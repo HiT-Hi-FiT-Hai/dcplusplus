@@ -80,7 +80,7 @@ const string& QueueItem::getTempTarget() {
 			if(target.length() >= 3 && target[1] == ':' && target[2] == '\\')
 				sm["targetdrive"] = target.substr(0, 3);
 			else
-				sm["targetdrive"] = Util::getAppPath().substr(0, 3);
+				sm["targetdrive"] = Util::getConfigPath().substr(0, 3);
 			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
 #else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
@@ -323,12 +323,12 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queue.xml"), dirty(true), nextSearch(0) { 
+QueueManager::QueueManager() : lastSave(0), queueFile(Util::getConfigPath() + "Queue.xml"), dirty(true), nextSearch(0) { 
 	TimerManager::getInstance()->addListener(this); 
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
 
-	File::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
+	File::ensureDirectory(Util::getConfigPath() + FILELISTS_DIR);
 }
 
 QueueManager::~QueueManager() throw() { 
@@ -339,7 +339,7 @@ QueueManager::~QueueManager() throw() {
 	saveQueue();
 
 	if(!BOOLSETTING(KEEP_LISTS)) {
-		string path = Util::getAppPath() + FILELISTS_DIR;
+		string path = Util::getConfigPath() + FILELISTS_DIR;
 
 #ifdef _WIN32
 		WIN32_FIND_DATA data;
@@ -418,7 +418,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 }
 
 void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
-	string target = Util::getAppPath() + "FileLists\\" + Util::validateFileName(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
+	string target = Util::getConfigPath() + FILELISTS_DIR + Util::validateFileName(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
 
 	add(target, -1, NULL, aUser, USER_LIST_NAME, true, QueueItem::FLAG_USER_LIST | aFlags);
 }
@@ -1377,5 +1377,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.138 2005/11/28 01:21:05 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.139 2005/12/24 23:13:25 arnetheduck Exp $
  */

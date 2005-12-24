@@ -31,16 +31,17 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 	for(InfMap::const_iterator i = info.begin(); i != info.end(); ++i) {
 		sm[prefix + string((char*)(&i->first), 2)] = i->second;
 	}
-	if(user)
+	if(user) {
 		sm[prefix + "CID"] = user->getCID().toBase32();
 
-	if(compatibility) {
-		if(prefix == "my") {
-			sm["mynick"] = getNick();
-			sm["mycid"] = user->getCID().toBase32();
-		} else {
-			sm["nick"] = getNick();
-			sm["cid"] = user->getCID().toBase32();
+		if(compatibility) {
+			if(prefix == "my") {
+				sm["mynick"] = getNick();
+				sm["mycid"] = user->getCID().toBase32();
+			} else {
+				sm["nick"] = getNick();
+				sm["cid"] = user->getCID().toBase32();
+			}
 		}
 	}
 }
@@ -57,5 +58,5 @@ const bool Identity::supports(const string& name) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.49 2005/12/22 19:47:33 arnetheduck Exp $
+ * $Id: User.cpp,v 1.50 2005/12/24 23:13:25 arnetheduck Exp $
  */

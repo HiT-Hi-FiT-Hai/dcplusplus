@@ -408,7 +408,6 @@
 #define IDC_SYSTEM_LOG                  1412
 #define IDC_SSL_PRIVATE_KEY_FILE        1414
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1415
-#define IDC_EDIT1                       1416
 #define IDC_CLIENT_ID                   1416
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500

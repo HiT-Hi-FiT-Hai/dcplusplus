@@ -303,11 +303,13 @@ private:
 			}
 		}
 	}
+
+	string getConfigFile() { return Util::getConfigPath() + "ADLSearch.xml"; }
 };
 
 #endif // !defined(ADL_SEARCH_H)
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.23 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.24 2005/12/24 23:13:25 arnetheduck Exp $
  */

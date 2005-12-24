@@ -72,7 +72,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 
 	if(firstException) {
-		File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
+		File::deleteFile(Util::getConfigPath() + "exceptioninfo.txt");
 		firstException = false;
 	}
 
@@ -86,7 +86,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 	}
 
-	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
+	File f(Util::getConfigPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
 	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
@@ -117,7 +117,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
     f.write(LIT("\r\n"));
 
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
-	
+
+	f.write(LIT("\r\n"));
+
 	f.close();
 
 	if(MessageBox(WinUtil::mainWnd, _T("DC++ just encountered a fatal bug and should have written an exceptioninfo.txt the same directory as the executable. You can upload this file at http://dcplusplus.sf.net/crash/ to help us find out what happened (please do not report this bug in the bug tracker unless you know the exact steps to reproduce it...). Go there now?"), _T("DC++ Has Crashed"), MB_YESNO | MB_ICONERROR) == IDYES) {
@@ -348,5 +350,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.38 2005/11/27 19:19:18 arnetheduck Exp $
+ * $Id: main.cpp,v 1.39 2005/12/24 23:13:26 arnetheduck Exp $
  */

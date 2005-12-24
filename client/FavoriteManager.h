@@ -283,11 +283,12 @@ private:
 
 	void load(SimpleXML* aXml);
 	
+	string getConfigFile() { return Util::getConfigPath() + "Favorties.xml"; }
 };
 
 #endif // !defined(FAVORITE_MANAGER_H)
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.8 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.9 2005/12/24 23:13:25 arnetheduck Exp $
  */

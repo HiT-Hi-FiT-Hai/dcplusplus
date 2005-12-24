@@ -233,7 +233,7 @@ private:
 	static int check(int ret, bool blockOk = false) { 
 		if(ret == -1) {
 			int error = getLastError();
-			if(blockOk && error == EWOULDBLOCK) {
+			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS) ) {
 				return -1;
 			} else {
 				throw SocketException(error); 
@@ -249,5 +249,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.65 2005/12/16 01:00:46 arnetheduck Exp $
+ * $Id: Socket.h,v 1.66 2005/12/24 23:13:25 arnetheduck Exp $
  */

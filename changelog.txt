@@ -5,7 +5,7 @@
   this will rarely be used (since file lists are free and downloaded almost instantly)
 * Fixed international timestamps (thanks ullner)
 * Fixed targetdrive docs (thanks ullner)
-* Fixed transfer list view flicker on WinXP
+* [bug 485] Fixed transfer list view flicker on WinXP
 * New connection settings, please check settings page
 * Connection type freely settable, and default connection strings changed
 * No longer falls back to passive mode on failed UPnP
@@ -13,17 +13,17 @@
 * Removed some old favorite file format compatibility code
 * Added country to search frame (thanks paka)
 * Strftime fix (thanks garg)
-* Help instead of readme shown on first startup (thanks paka)
+* [bug 521] Help instead of readme shown on first startup (thanks paka)
 * [bug 553] Minimize to tray and confirm appexit default to true (thanks paka)
 * [bug 452] Fixed example.xml language file generation (thanks tpo)
 * [bug 556] Fixed last searches purge (thanks sulan)
 * [bug 73] Added option to disconnect slow sources (thanks paka)
 * ADC hub counts updated correctly (thanks ullner)
-* Added error message when adding dupe fav hub (thanks ullner)
+* [bug 325] Added error message when adding dupe fav hub (thanks ullner)
 * Updated bzip2 to 1.0.3 (thanks garg)
 * Some small *nix fixes (thanks poison)
 * Source path no longer saved for TTH enabled clients (saves memory and queue file space)
-* Search window settings saved automatically (thanks pothead)
+* [bug 335] Search window settings saved automatically (thanks pothead)
 * Open folder selects file in explorer (thanks pothead)
 * Local echo in pm window formatted as the other side should see it (thanks paka)
 * Fixed debug assertion (thanks tpo)
@@ -35,13 +35,13 @@
 * (NMDC) The first word of hub name is taken as short name for displaying purposes when space is limited
 * [bug 629] Waiting users frame added (thanks cologic)
 * Removed old versions check (thanks cologic)
-* Added option to limit maximum file list size to open (thanks paka)
+* [bug 635] Added option to limit maximum file list size to open (thanks paka)
 * Filelist transfer logging default to off (thanks paka)
 * Added some checks when creating fav hubs (thanks tpo)
 * More settings screen updates (thanks ullner)
 * Fixed linux file moving (thanks naga)
-* Added option to only download files with TTH (thanks ullner)
-* Fixed registry creation functions used (thanks ullner)
+* [bug 260] Added option to only download files with TTH (thanks ullner)
+* [bug 708] Fixed registry creation functions used (thanks ullner)
 * Updated WTL
 * Rewrote socket code to remove some old hacks and add some new (major change)
 * Now using standard windows error messages for socket errors
@@ -55,6 +55,9 @@
 * Fixed some log page issues
 * Replaced small buffer size option with the possibility to set recv/send buffer sizes manually
 * Consolidated bolding options, you'll have to reset them to your preference
+* Removed support for old hash index files (pre-0.670 I think)
+* Improved hashing error reporting
+* Fixed hash database rebuild
 
 -- 0.674 2005-04-10 --
 *** WARNING ***
@@ -65,7 +68,7 @@
 * Fixed context menu open for multi-screen setups (thanks trem)
 * Changed country database to the original format so that users can update by themselves (thanks paka)
 * Fixed some registry issues (thanks trem)
-* Fixed localised number encodings (thanks trem)
+* [bug 443] Fixed localised number encodings (thanks trem)
 * Updated sorting to use a more windows-like order (thanks trem)
 * Fixed an issue with restore all (thanks krzysztof tyszecki)
 * Added list view tooltips
@@ -124,7 +127,7 @@
 * Hopefully fixed an UPnP crash
 * [bug 302] User commands in file lists (thanks joakim tosteberg)
 * ADC url's clickable (thanks naga)
-* Improved search timer to avoid spamming hub (thanks naga)
+* [Bug 117] Improved search timer to avoid spamming hub (thanks naga)
 * Redid some of the hash storage code, should be slighly more efficient
 * [bug 94] Share is cached for faster startup
 * Temporary targetnames are now filled in when download starts, not when item is added to queue,
@@ -556,7 +559,7 @@
 * Shift-clicking tab will close window (thanks twink)
 * Added support for $UserIP, %[ip] as user command parameter and server side ip detection (automatically used
   if the ip field in settings is blank)
-* Transfer bar colors updated and user-configurable (thanks gargoyle)
+* Transfer bar colors updated and user-configurable (thanks garg)
 * Fixed possibility to share same folder twice (thanks theparaniodone)
 * Fixed translations of kick & redirect user
 * Fixed missing subdirs when moving directories in the queue
@@ -568,13 +571,13 @@
 * Max 3 slots more than max download slots are used for highest priority downloads
 * Added option to automatically download filelist and match it on autosearch match. This will dramatically speed up
   autosearching, lessening the strain on the hubs as less searches have to be done.
-* Added accelerator for filtering in public hubs (thanks gargoyle)
+* Added accelerator for filtering in public hubs (thanks garg)
 * Fixed some translations (thanks ciber)
 * Added "downloaded bytes" to queue (thanks ciber)
 * Fixed refresh file list from main menu
 * Switched user and filename column in search frame so that the image will be attached to the correct column (thanks
-  gargoyle)
-* A few message boxes updated (thanks gargoyle)
+  garg)
+* A few message boxes updated (thanks garg)
 * Added supports NoHello, a hub bandwidth easing feature for the hubs that support it
 * Fixed a problem with matched list downloads not starting
 
@@ -677,11 +680,11 @@
 * Reconnect time is randomized a little to reduce stress on hub when everyone reconnects
 * Small i18n fix in uploads settings (thanks atomicjo)
 * Numbers only on search size box (thanks atomicjo)
-* Delete multiple favorite users (thanks gargoyle)
+* Delete multiple favorite users (thanks garg)
 * Autocomplete turned off when using shift-tab (to tab between the windows instead) 
-  (thanks gargoyle)
-* Small fixes (thanks gargoyle)
-* Toolbar updates (thanks gargoyle)
+  (thanks garg)
+* Small fixes (thanks garg)
+* Toolbar updates (thanks garg)
 * Speeded up match queue a lot (I mean a _lot_)
 * Added a network statistics view
 * Added tab-specific context menus
@@ -692,7 +695,7 @@
 * &amp; is used to escape the & in chat (currently only escapes when really necessary, i e
   | or $ escape is used)
 * Added "Match Queue" to various right-click menus
-* Internationalised settings (thanks gargoyle)
+* Internationalised settings (thanks garg)
 * Fixed finished frame lockups
 * Moved to Visual Studio 7.1, 7.0 project files are available, but won't be maintained...
 * Own icon always set to blue (DC++) (thanks atomicjo)
@@ -791,7 +794,7 @@ Major:
   Boyer-Moore)
 * User commands now work from search as well
 * Fixed a major bug where queue items without sources were not loaded from disk on restart
-* Fixed slow favorites opening / excessive saving (thanks todd pederzani)
+* Fixed slow favorites opening / excessive saving (thanks garg)
 * Large speedup in file listing search (QuickSearch + unnecessary processing added earlier removed)
 * Added selection size info to queue frame (same as file listing)
 * Fixed some crashes when closing windows (and perhaps added some new ones...)
@@ -809,9 +812,9 @@ Minor:
 * Fixed %[hub] in upload log
 * Some code cleanup
 * Fix for buggy HTTP servers sending Content-Length with wrong case (thanks sandos)
-* Added link to change log in help menu (thanks todd)
-* Fixed link to faq (thanks todd)
-* Fixed public hub list mouse clicks and reopening (thanks todd)
+* Added link to change log in help menu (thanks garg)
+* Fixed link to faq (thanks garg)
+* Fixed public hub list mouse clicks and reopening (thanks garg)
 * Fixed so that "3/4 users offline" can be translated to polish
 * Fixed tabbing in search frame 
 * Added option for not downloading zero-byte files
@@ -819,11 +822,11 @@ Minor:
 * Fixed a bug with strange nicks causing problems with file list opening
 * Fixed a bug with orphaned file lists
 * Fixed a bug with socks5 password length (thanks dwomac) 
-* Double-clicking text selects the word (as in old versions, thanks todd pederzani)
+* Double-clicking text selects the word (as in old versions, thanks garg)
 * Directories are no longer returned for "at least" searches with bytes > 0 (i e directory size is assumed 0)
 * Fixed another issue with accesses to invalid drive letters (thanks sarf)
 * Holding shift during startup (when the main window shows) will disable autoconnecting to hubs
-* Fixed user description saving and updating (thanks todd)
+* Fixed user description saving and updating (thanks garg)
 * Large files are now moved in a separate thread to avoid losing connection while moving (if using temporary download dir)
 
  -- 0.242 2003-04-19 --
@@ -849,15 +852,15 @@ Minor:
 * Last entered parameter for user commands is now remembered (%[line:...])
 * VC6 projects files brought up-to-date
 * Added a DLL to the installation procedure to make sure we get good debug info under older windows versions (research 
-  by todd pederzani)
+  by garg)
 * Fixed attempt to access f: I think (it seems that the debug info generator tries to access f: when dc++ crashes, 
   because microsoft compiled their stuff from f:...untested, I don't have any f: =)
-* Update to some confirmation dialog (thanks todd pederzani)
+* Update to some confirmation dialog (thanks garg)
 * Partially changed back to the 0.233 code for uploads (since the new one seems to cause upload performance problems)
 * The queue is now only bolded when an file is finished.
-* Added away indicator in the main status bar (thanks todd pederzani)
-* Added finished uploads frame (thanks todd pederzani)
-* Added finished bold disable option (thanks todd pederzani)
+* Added away indicator in the main status bar (thanks garg)
+* Added finished uploads frame (thanks garg)
+* Added finished bold disable option (thanks garg)
 * Minor adjustments to the sort order
 * Added anti-fragmentation feature. When downloading, it creates a file of the expected target size with unspecified
   content. If the download fails, the file is truncated to the size DC++ thinks it has downloaded, and
@@ -882,7 +885,7 @@ Minor:
 * Fixed a crash-at-exit in the debug build
 * Fixed a bug causing missing search results (thanks opera)
 * Another go at the case insensitive string comp bug (tried with a queue file that was reported not to work so...)
-* Added custom per-hub user description to favorite hubs (thanks todd pederzani)
+* Added custom per-hub user description to favorite hubs (thanks garg)
 * Some code cleanup and minor fixes
 * Updated H: tag. It now looks like H:x/y/z where x, y, and z are normal, registered and op hubs respectively. It
   is updated roughly once a minute, but if you're disconnected, the count won't go down until the window is closed
@@ -909,8 +912,8 @@ Minor:
 * Fixed some problems with file lists not refreshing correctly when they were being downloaded at the same time.
 * Added option to disable the hourly automatic share refresher
 * Fixed another Finished Files crash -- now it *should* work, I actually tested it once this time...
-* Fixed a "dc++ would not shutdown" bug (thanks todd pederzani)
-* Fixed another thing with hub lists being unnecessarily downloaded (thanks todd pederzani)
+* Fixed a "dc++ would not shutdown" bug (thanks garg)
+* Fixed another thing with hub lists being unnecessarily downloaded (thanks garg)
 * Fixed a bug with opening faulty .bz2 file lists (thanks who)
 * Fixed a bug with whole descriptions not being visible in the settings
 
@@ -921,11 +924,11 @@ Minor:
 * Changed the "download whole directory" back to the old way of working (see 0.23 notes), it turned out that i didn't
   like it and neither did anyone at the forum seem to do...maybe I'll think of something better later on...
 * Fixed the move file thing (properly this time, I hope)
-* Fixed edit boxes being enabled when option was not in logs&sound settings (thanks todd pederzani)
-* Fixed "add shared directory" modality (thanks todd pederzani)
+* Fixed edit boxes being enabled when option was not in logs&sound settings (thanks garg)
+* Fixed "add shared directory" modality (thanks garg)
 * Fixed finished files crash
-* Added an icon for the finished downloads to the toolbar (thanks todd pederzani)
-* The main icon now contains a 48x48 icon as well (thanks todd pederzani)
+* Added an icon for the finished downloads to the toolbar (thanks garg)
+* The main icon now contains a 48x48 icon as well (thanks garg)
 * I hope the owner of the picture doesn't sue me / mind =)...
 
  -- 0.231 2003-02-04 --
@@ -934,7 +937,7 @@ Minor:
 * Fixed a silly assertion fault in the debug build
 * Fixed the single file move crash (together with "wrong file moved", same bug)
 * Fixed so that a user won't be granted a slot when using a "free" slot if disconnected because of the 
-  autodisconnect feature (thanks Todd Pederzani)
+  autodisconnect feature (thanks garg)
 * The tab control now supports more than one row
 * In the tab chevron menu, those windows that have updated (that would have been bold) now have a dot
 * The download queue tab now goes bold if something about the queue has updated (download finished/added/failed/etc)

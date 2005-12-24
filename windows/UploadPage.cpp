@@ -77,10 +77,10 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	CUpDownCtrl updown;
 	updown.Attach(GetDlgItem(IDC_SLOTSPIN));
-	updown.SetRange(1, 100);
+	updown.SetRange(1, UD_MAXVAL);
 	updown.Detach();
 	updown.Attach(GetDlgItem(IDC_MIN_UPLOAD_SPIN));
-	updown.SetRange32(0, 30000);
+	updown.SetRange32(0, UD_MAXVAL);
 	return TRUE;
 }
 
@@ -263,5 +263,5 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.36 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.37 2005/12/24 23:13:26 arnetheduck Exp $
  */

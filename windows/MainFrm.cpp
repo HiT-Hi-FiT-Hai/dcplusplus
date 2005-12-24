@@ -968,7 +968,7 @@ static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0
 
 LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring file;
-	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getAppPath() + "FileLists\\"), types)) {
+	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), types)) {
 		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if(u) {
 			DirectoryListingFrame::openWindow(file, u);
@@ -1146,5 +1146,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.105 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.106 2005/12/24 23:13:26 arnetheduck Exp $
  */

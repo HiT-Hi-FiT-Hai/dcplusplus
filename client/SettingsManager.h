@@ -172,10 +172,10 @@ public:
 	bool isDefault(int aSet) { return !isSet[aSet]; };
 
 	void load() {
-		load(Util::getAppPath() + "DCPlusPlus.xml");
+		load(Util::getConfigPath() + "DCPlusPlus.xml");
 	}
 	void save() {
-		save(Util::getAppPath() + "DCPlusPlus.xml");
+		save(Util::getConfigPath() + "DCPlusPlus.xml");
 	}
 
 	void load(const string& aFileName);
@@ -205,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: SettingsManager.h,v 1.106 2005/12/19 00:15:50 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.107 2005/12/24 23:13:25 arnetheduck Exp $
  */

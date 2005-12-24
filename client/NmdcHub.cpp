@@ -161,10 +161,17 @@ void NmdcHub::updateFromTag(Identity& id, const string& tag) {
 			id.set("HO", t.getTokens()[2]);
 		} else if(i->compare(0, 2, "S:") == 0) {
 			id.set("SL", i->substr(2));
-		} else if(i->find("V:") != string::npos) {
+		} else if(i->compare(0, 2, "V:") == 0) {
 			string::size_type j = i->find("V:");
 			i->erase(i->begin() + j, i->begin() + j + 2);
 			id.set("VE", *i);
+		} else if(i->compare(0, 2, "M:") == 0) {
+			if(i->size() == 3) {
+				if((*i)[2] == 'A')
+					id.getUser()->unsetFlag(User::PASSIVE);
+				else
+					id.getUser()->setFlag(User::PASSIVE);
+			}
 		}
 	}
 }
@@ -783,6 +790,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.46 2005/12/05 12:28:23 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.47 2005/12/24 23:13:25 arnetheduck Exp $
  */
 

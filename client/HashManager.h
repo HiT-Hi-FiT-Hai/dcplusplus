@@ -34,6 +34,7 @@
 #include "Text.h"
 
 STANDARD_EXCEPTION(HashException);
+class File;
 
 class HashManagerListener {
 public:
@@ -74,19 +75,18 @@ public:
 	void setPriority(Thread::Priority p) {
 		hasher.setThreadPriority(p);
 	}
-	/**
-	 * @return TTH root
-	 */
-	const TTHValue& getTTH(const string& aFileName, int64_t aSize) throw(HashException);
+
+	/** @return TTH root */
+	TTHValue getTTH(const string& aFileName, int64_t aSize) throw(HashException);
 
 	bool getTree(const TTHValue& root, TigerTree& tt);
 
 	void addTree(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tt) {
 		hashDone(aFileName, aTimeStamp, tt, -1);
 	}
-	void addTree(const TigerTree& tt) {
+	void addTree(const TigerTree& tree) {
 		Lock l(cs);
-		store.addTree(tt);
+		store.addTree(tree);
 	}
 
 	void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {
@@ -185,7 +185,6 @@ private:
 	public:
 		HashStore();
 		void addFile(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, bool aUsed);
-		bool addTree(const TigerTree& tt);
 
 		void load();
 		void save();
@@ -194,6 +193,7 @@ private:
 
 		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
+		void addTree(const TigerTree& tt);
 		const TTHValue* getTTH(const string& aFileName);
 		bool getTree(const TTHValue& root, TigerTree& tth);
 		bool isDirty() { return dirty; };
@@ -238,13 +238,15 @@ private:
 		DirMap fileIndex;
 		TreeMap treeIndex;
 
-		string indexFile;
-		string dataFile;
-
 		bool dirty;
 
 		void createDataFile(const string& name);
-		int64_t addLeaves(const TigerTree::MerkleList& leaves);
+
+		bool loadTree(File& dataFile, const TreeInfo& ti, const TTHValue& root, TigerTree& tt);
+		int64_t saveTree(File& dataFile, const TigerTree& tt);
+
+		string getIndexFile() { return Util::getConfigPath() + "HashIndex.xml"; }
+		string getDataFile() { return Util::getConfigPath() + "HashData.dat"; }
 	};
 
 	friend class HashLoader;
@@ -256,7 +258,6 @@ private:
 
 	/** Single node tree where node = root, no storage in HashData.dat */
 	static const int64_t SMALL_TREE = -1;
-	static const int64_t STORE_FAILED = 0;
 
 	void hashDone(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, int64_t speed);
 	void doRebuild() {
@@ -273,5 +274,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.31 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.32 2005/12/24 23:13:25 arnetheduck Exp $
  */
