@@ -33,7 +33,7 @@ public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Message;
-	virtual void on(Message, const string&) throw() { };
+	virtual void on(Message, time_t, const string&) throw() { };
 };
 
 class LogManager : public Singleton<LogManager>, public Speaker<LogManagerListener>
@@ -52,7 +52,7 @@ public:
 		log(path, msg);
 	}
 
-	deque<string> getLastLogs() { Lock l(cs); return lastLogs; }
+	deque<pair<time_t, string> > getLastLogs() { Lock l(cs); return lastLogs; }
 
 	void message(const string& msg) {
 		if(BOOLSETTING(LOG_SYSTEM)) {
@@ -60,14 +60,15 @@ public:
 			params["message"] = msg;
 			log(LogManager::SYSTEM, params);
 		}
+		time_t t = GET_TIME();
 		{
 			Lock l(cs);
 			// Keep the last 100 messages (completely arbitrary number...)
 			while(lastLogs.size() > 100)
 				lastLogs.pop_front();
-			lastLogs.push_back(msg);
+			lastLogs.push_back(make_pair(t, msg));
 		}
-		fire(LogManagerListener::Message(), msg);
+		fire(LogManagerListener::Message(), t, msg);
 	}
 
 	const string& getSetting(int area, int sel) {
@@ -94,7 +95,7 @@ private:
 
 	friend class Singleton<LogManager>;
 	CriticalSection cs;
-	deque<string> lastLogs;
+	deque<pair<time_t, string> > lastLogs;
 
 	int logOptions[LAST][2];
 
@@ -122,5 +123,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.19 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.20 2005/12/26 17:16:03 arnetheduck Exp $
  */

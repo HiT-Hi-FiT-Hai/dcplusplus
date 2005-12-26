@@ -139,7 +139,7 @@ public:
 		else
 			info[*(short*)name] = val;
 	}
-	
+
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
@@ -186,5 +186,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.66 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: User.h,v 1.67 2005/12/26 17:16:03 arnetheduck Exp $
  */

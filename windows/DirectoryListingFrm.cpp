@@ -396,7 +396,7 @@ void DirectoryListingFrame::downloadList(const tstring& aTarget, bool view /* = 
 				if(view) {
 					File::deleteFile(Text::fromT(target) + Util::validateFileName(ii->file->getName()));
 				}
-				dl->download(ii->file, Text::fromT(target + ii->getText(COLUMN_FILENAME)), view, WinUtil::isShift());
+				dl->download(ii->file, Text::fromT(target + ii->getText(COLUMN_FILENAME)), view, WinUtil::isShift() || view);
 			} else if(!view) {
 				dl->download(ii->dir, Text::fromT(target), WinUtil::isShift());
 			} 
@@ -503,7 +503,7 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 			return 0;
 		DirectoryListing::Directory* pd = ii->file->getParent();
 		while(pd != NULL && pd != dl->getRoot()) {
-			fullPath = _T("\\") + Text::toT(pd->getName()) + fullPath;
+			fullPath = Text::toT(pd->getName()) + _T("\\") + fullPath;
 			pd = pd->getParent();
 		}
 	} else if(ii->type == ItemInfo::DIRECTORY) {
@@ -1023,5 +1023,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.75 2005/12/24 23:13:26 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.76 2005/12/26 17:16:03 arnetheduck Exp $
  */

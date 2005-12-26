@@ -300,10 +300,9 @@ string Util::validateFileName(string tmp) {
 	return tmp;
 }
 
-string Util::getShortTimeString() {
+string Util::getShortTimeString(time_t t) {
 	char buf[255];
-	time_t _tt = time(NULL);
-	tm* _tm = localtime(&_tt);
+	tm* _tm = localtime(&t);
 	if(_tm == NULL) {
 		strcpy(buf, "xx:xx");
 	} else {
@@ -902,5 +901,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.92 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.93 2005/12/26 17:16:03 arnetheduck Exp $
  */

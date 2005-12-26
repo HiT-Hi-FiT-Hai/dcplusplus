@@ -377,7 +377,7 @@ private:
 	MainFrame(const MainFrame&) { dcassert(0); };
 
 	// LogManagerListener
-	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new tstring(Text::toT(m))); };
+	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); };
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second type, u_int32_t aTick) throw();
@@ -399,5 +399,5 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.64 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.65 2005/12/26 17:16:03 arnetheduck Exp $
  */

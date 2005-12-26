@@ -22,7 +22,7 @@ See the version history of DC++ below.
   <li>Fixed context menu open for multi-screen setups (thanks trem)</li>
   <li>Changed country database to the original format so that users can update by themselves (thanks paka)</li>
   <li>Fixed some registry issues (thanks trem)</li>
-  <li>Fixed localised number encodings (thanks trem)</li>
+  <li>[bug 443] Fixed localised number encodings (thanks trem)</li>
   <li>Updated sorting to use a more windows-like order (thanks trem)</li>
   <li>Fixed an issue with restore all (thanks krzysztof tyszecki)</li>
   <li>Added list view tooltips</li>
@@ -88,7 +88,7 @@ See the version history of DC++ below.
   <li>Hopefully fixed an UPnP crash</li>
   <li>[bug 302] User commands in file lists (thanks joakim tosteberg)</li>
   <li>ADC url's clickable (thanks naga)</li>
-  <li>Improved search timer to avoid spamming hub (thanks naga)</li>
+  <li>[Bug 117] Improved search timer to avoid spamming hub (thanks naga)</li>
   <li>Redid some of the hash storage code, should be slighly more efficient</li>
   <li>[bug 94] Share is cached for faster startup</li>
   <li>Temporary targetnames are now filled in when download starts, not when item is added to queue, which makes temp target dir changes happen for current queue items as well, plus we get a huge memory save on huge queues.</li>
@@ -512,7 +512,7 @@ See the version history of DC++ below.
   <li>Added "open download directory" to file and tray menu</li>
   <li>Shift-clicking tab will close window (thanks twink)</li>
   <li>Added support for $UserIP, %[ip] as user command parameter and server side ip detection (automatically used if the ip field in settings is blank)</li>
-  <li>Transfer bar colors updated and user-configurable (thanks gargoyle)</li>
+  <li>Transfer bar colors updated and user-configurable (thanks garg)</li>
   <li>Fixed possibility to share same folder twice (thanks theparaniodone)</li>
   <li>Fixed translations of kick &amp; redirect user</li>
   <li>Fixed missing subdirs when moving directories in the queue</li>
@@ -523,12 +523,12 @@ See the version history of DC++ below.
   <li>Max download slots default changed to 3</li>
   <li>Max 3 slots more than max download slots are used for highest priority downloads</li>
   <li>Added option to automatically download filelist and match it on autosearch match. This will dramatically speed up autosearching, lessening the strain on the hubs as less searches have to be done.</li>
-  <li>Added accelerator for filtering in public hubs (thanks gargoyle)</li>
+  <li>Added accelerator for filtering in public hubs (thanks garg)</li>
   <li>Fixed some translations (thanks ciber)</li>
   <li>Added "downloaded bytes" to queue (thanks ciber)</li>
   <li>Fixed refresh file list from main menu</li>
-  <li>Switched user and filename column in search frame so that the image will be attached to the correct column (thanks gargoyle)</li>
-  <li>A few message boxes updated (thanks gargoyle)</li>
+  <li>Switched user and filename column in search frame so that the image will be attached to the correct column (thanks garg)</li>
+  <li>A few message boxes updated (thanks garg)</li>
   <li>Added supports NoHello, a hub bandwidth easing feature for the hubs that support it</li>
   <li>Fixed a problem with matched list downloads not starting</li>
 </ul>
@@ -623,10 +623,10 @@ See the version history of DC++ below.
   <li>Reconnect time is randomized a little to reduce stress on hub when everyone reconnects</li>
   <li>Small i18n fix in uploads settings (thanks atomicjo)</li>
   <li>Numbers only on search size box (thanks atomicjo)</li>
-  <li>Delete multiple favorite users (thanks gargoyle)</li>
-  <li>Autocomplete turned off when using shift-tab (to tab between the windows instead) (thanks gargoyle)</li>
-  <li>Small fixes (thanks gargoyle)</li>
-  <li>Toolbar updates (thanks gargoyle)</li>
+  <li>Delete multiple favorite users (thanks garg)</li>
+  <li>Autocomplete turned off when using shift-tab (to tab between the windows instead) (thanks garg)</li>
+  <li>Small fixes (thanks garg)</li>
+  <li>Toolbar updates (thanks garg)</li>
   <li>Speeded up match queue a lot (I mean a _lot_)</li>
   <li>Added a network statistics view</li>
   <li>Added tab-specific context menus</li>
@@ -636,7 +636,7 @@ See the version history of DC++ below.
   <li>New %[ parameters in user commands</li>
   <li>&amp;amp; is used to escape the &amp; in chat (currently only escapes when really necessary, i e | or $ escape is used)</li>
   <li>Added "Match Queue" to various right-click menus</li>
-  <li>Internationalised settings (thanks gargoyle)</li>
+  <li>Internationalised settings (thanks garg)</li>
   <li>Fixed finished frame lockups</li>
   <li>Moved to Visual Studio 7.1, 7.0 project files are available, but won't be maintained...</li>
   <li>Own icon always set to blue (DC++) (thanks atomicjo)</li>
@@ -741,7 +741,7 @@ See the version history of DC++ below.
   <li>Implemented a faster substring search algorithm for share and file listing searches (the QuickSearch variant of Boyer-Moore)</li>
   <li>User commands now work from search as well</li>
   <li>Fixed a major bug where queue items without sources were not loaded from disk on restart</li>
-  <li>Fixed slow favorites opening / excessive saving (thanks todd pederzani)</li>
+  <li>Fixed slow favorites opening / excessive saving (thanks garg)</li>
   <li>Large speedup in file listing search (QuickSearch + unnecessary processing added earlier removed)</li>
   <li>Added selection size info to queue frame (same as file listing)</li>
   <li>Fixed some crashes when closing windows (and perhaps added some new ones...)</li>
@@ -757,9 +757,9 @@ See the version history of DC++ below.
   <li>Fixed %[hub] in upload log</li>
   <li>Some code cleanup</li>
   <li>Fix for buggy HTTP servers sending Content-Length with wrong case (thanks sandos)</li>
-  <li>Added link to change log in help menu (thanks todd)</li>
-  <li>Fixed link to faq (thanks todd)</li>
-  <li>Fixed public hub list mouse clicks and reopening (thanks todd)</li>
+  <li>Added link to change log in help menu (thanks garg)</li>
+  <li>Fixed link to faq (thanks garg)</li>
+  <li>Fixed public hub list mouse clicks and reopening (thanks garg)</li>
   <li>Fixed so that "3/4 users offline" can be translated to polish</li>
   <li>Fixed tabbing in search frame</li>
   <li>Added option for not downloading zero-byte files</li>
@@ -767,11 +767,11 @@ See the version history of DC++ below.
   <li>Fixed a bug with strange nicks causing problems with file list opening</li>
   <li>Fixed a bug with orphaned file lists</li>
   <li>Fixed a bug with socks5 password length (thanks dwomac)</li>
-  <li>Double-clicking text selects the word (as in old versions, thanks todd pederzani)</li>
+  <li>Double-clicking text selects the word (as in old versions, thanks garg)</li>
   <li>Directories are no longer returned for "at least" searches with bytes &gt; 0 (i e directory size is assumed 0)</li>
   <li>Fixed another issue with accesses to invalid drive letters (thanks sarf)</li>
   <li>Holding shift during startup (when the main window shows) will disable autoconnecting to hubs</li>
-  <li>Fixed user description saving and updating (thanks todd)</li>
+  <li>Fixed user description saving and updating (thanks garg)</li>
   <li>Large files are now moved in a separate thread to avoid losing connection while moving (if using temporary download dir)</li>
 </ul>
 
@@ -797,14 +797,14 @@ See the version history of DC++ below.
   <li>Same server but different port is now properly considered a different hub (thanks sedulus)</li>
   <li>Last entered parameter for user commands is now remembered (%[line:...])</li>
   <li>VC6 projects files brought up-to-date</li>
-  <li>Added a DLL to the installation procedure to make sure we get good debug info under older windows versions (research by todd pederzani)</li>
+  <li>Added a DLL to the installation procedure to make sure we get good debug info under older windows versions (research by garg)</li>
   <li>Fixed attempt to access f: I think (it seems that the debug info generator tries to access f: when dc++ crashes, because microsoft compiled their stuff from f:...untested, I don't have any f: =)</li>
-  <li>Update to some confirmation dialog (thanks todd pederzani)</li>
+  <li>Update to some confirmation dialog (thanks garg)</li>
   <li>Partially changed back to the 0.233 code for uploads (since the new one seems to cause upload performance problems)</li>
   <li>The queue is now only bolded when an file is finished.</li>
-  <li>Added away indicator in the main status bar (thanks todd pederzani)</li>
-  <li>Added finished uploads frame (thanks todd pederzani)</li>
-  <li>Added finished bold disable option (thanks todd pederzani)</li>
+  <li>Added away indicator in the main status bar (thanks garg)</li>
+  <li>Added finished uploads frame (thanks garg)</li>
+  <li>Added finished bold disable option (thanks garg)</li>
   <li>Minor adjustments to the sort order</li>
   <li>Added anti-fragmentation feature. When downloading, it creates a file of the expected target size with unspecified content. If the download fails, the file is truncated to the size DC++ thinks it has downloaded, and resume should work fine. If DC++ crashes, you'll lose the whole downloaded part + any resumed part as well, as there's no way to know how much valid data there is in the file. Disabled by default.</li>
   <li>Added a few keyboard shortcuts here and there</li>
@@ -822,7 +822,7 @@ See the version history of DC++ below.
   <li>Fixed a crash-at-exit in the debug build</li>
   <li>Fixed a bug causing missing search results (thanks opera)</li>
   <li>Another go at the case insensitive string comp bug (tried with a queue file that was reported not to work so...)</li>
-  <li>Added custom per-hub user description to favorite hubs (thanks todd pederzani)</li>
+  <li>Added custom per-hub user description to favorite hubs (thanks garg)</li>
   <li>Some code cleanup and minor fixes</li>
   <li>Updated H: tag. It now looks like H:x/y/z where x, y, and z are normal, registered and op hubs respectively. It is updated roughly once a minute, but if you're disconnected, the count won't go down until the window is closed (i e hubs you're trying to reconnect to count as well, to avoid too many updates being sent to the hub). Also, note that there's a problem with the op count. All op's will first be counted as registered users, and then, when they're fully logged in the count will be updated. This is a protocol limitation and there's not much to do about it (although, most of the time you shouldn't notice, if the hub sends the op list fast enough...). This release also fixes a bug where the count was not correctly updated across all hubs.</li>
   <li>To avoid confusion when receiving text pasted from the chat, "- " is inserted whenever a line starts with '&lt;' or '[' in the main and private chat (so that it won't look like somebody else is writing a message)</li>
@@ -840,8 +840,8 @@ See the version history of DC++ below.
   <li>Fixed some problems with file lists not refreshing correctly when they were being downloaded at the same time.</li>
   <li>Added option to disable the hourly automatic share refresher</li>
   <li>Fixed another Finished Files crash -- now it *should* work, I actually tested it once this time...</li>
-  <li>Fixed a "dc++ would not shutdown" bug (thanks todd pederzani)</li>
-  <li>Fixed another thing with hub lists being unnecessarily downloaded (thanks todd pederzani)</li>
+  <li>Fixed a "dc++ would not shutdown" bug (thanks garg)</li>
+  <li>Fixed another thing with hub lists being unnecessarily downloaded (thanks garg)</li>
   <li>Fixed a bug with opening faulty .bz2 file lists (thanks who)</li>
   <li>Fixed a bug with whole descriptions not being visible in the settings</li>
 </ul>
@@ -853,11 +853,11 @@ See the version history of DC++ below.
   <li>Files containing $'s are no longer added to share (can't be downloaded later on...) (this is a protocol limitation)</li>
   <li>Changed the "download whole directory" back to the old way of working (see 0.23 notes), it turned out that i didn't like it and neither did anyone at the forum seem to do...maybe I'll think of something better later on...</li>
   <li>Fixed the move file thing (properly this time, I hope)</li>
-  <li>Fixed edit boxes being enabled when option was not in logs&amp;sound settings (thanks todd pederzani)</li>
-  <li>Fixed "add shared directory" modality (thanks todd pederzani)</li>
+  <li>Fixed edit boxes being enabled when option was not in logs&amp;sound settings (thanks garg)</li>
+  <li>Fixed "add shared directory" modality (thanks garg)</li>
   <li>Fixed finished files crash</li>
-  <li>Added an icon for the finished downloads to the toolbar (thanks todd pederzani)</li>
-  <li>The main icon now contains a 48x48 icon as well (thanks todd pederzani)</li>
+  <li>Added an icon for the finished downloads to the toolbar (thanks garg)</li>
+  <li>The main icon now contains a 48x48 icon as well (thanks garg)</li>
   <li>I hope the owner of the picture doesn't sue me / mind =)...</li>
 </ul>
 
@@ -867,7 +867,7 @@ See the version history of DC++ below.
   <li>Fixed missing search results when searching without type (fix also provides a tiny speedup when being searched)</li>
   <li>Fixed a silly assertion fault in the debug build</li>
   <li>Fixed the single file move crash (together with "wrong file moved", same bug)</li>
-  <li>Fixed so that a user won't be granted a slot when using a "free" slot if disconnected because of the autodisconnect feature (thanks Todd Pederzani)</li>
+  <li>Fixed so that a user won't be granted a slot when using a "free" slot if disconnected because of the autodisconnect feature (thanks garg)</li>
   <li>The tab control now supports more than one row</li>
   <li>In the tab chevron menu, those windows that have updated (that would have been bold) now have a dot</li>
   <li>The download queue tab now goes bold if something about the queue has updated (download finished/added/failed/etc)</li>

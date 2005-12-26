@@ -524,6 +524,16 @@ void FavoriteManager::userUpdated(const OnlineUser& info) {
 	}
 }
 
+FavoriteHubEntry* FavoriteManager::getFavoriteHubEntry(const string& aServer) {
+	for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
+		FavoriteHubEntry* hub = *i;
+		if(Util::stricmp(hub->getServer(), aServer) == 0) {
+			return hub;
+		}
+	}
+	return NULL;
+}
+
 bool FavoriteManager::hasSlot(const User::Ptr& aUser) const { 
 	Lock l(cs);
 	FavoriteMap::const_iterator i = users.find(aUser->getCID());
@@ -673,5 +683,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.13 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.14 2005/12/26 17:16:03 arnetheduck Exp $
  */

@@ -482,9 +482,9 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
 	} else if(wParam == STATUS_MESSAGE) {
-		tstring* msg = (tstring*)lParam;
+		auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)lParam);
 		if(ctrlStatus.IsWindow()) {
-			tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + *msg;
+			tstring line = Text::toT("[" + Util::getShortTimeString(msg->first) + "] ") + msg->second;
 
 			ctrlStatus.SetText(0, line.c_str());
 			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
@@ -495,7 +495,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 				lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
 			}
 		}
-		delete msg;
 	}
 
 	return 0;
@@ -1146,5 +1145,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.106 2005/12/24 23:13:26 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.107 2005/12/26 17:16:03 arnetheduck Exp $
  */

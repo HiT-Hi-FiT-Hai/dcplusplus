@@ -112,6 +112,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	dcdebug("%s %s\n", u.getUser()->getCID().toBase32().c_str(), ClientManager::getInstance()->getMe()->getCID().toBase32().c_str());
 	if(u.getUser() == ClientManager::getInstance()->getMe()) {
 		state = STATE_NORMAL;
+		setMyIdentity(u.getIdentity());
 	}
 	fire(ClientListener::UserUpdated(), this, u);
 }
@@ -460,5 +461,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.58 2005/12/19 00:15:50 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.59 2005/12/26 17:16:02 arnetheduck Exp $
  */

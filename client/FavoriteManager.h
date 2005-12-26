@@ -175,22 +175,13 @@ public:
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
 	bool checkFavHubExists(const FavoriteHubEntry& aEntry);
+	FavoriteHubEntry* getFavoriteHubEntry(const string& aServer);
 
 // Favorite Directories
 	bool addFavoriteDir(const string& aDirectory, const string& aName);
 	bool removeFavoriteDir(const string& aName);
 	bool renameFavoriteDir(const string& aName, const string& anotherName);
 	StringPairList getFavoriteDirs() { return favoriteDirs; }
-
-	FavoriteHubEntry* getFavoriteHubEntry(const string& aServer) {
-		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
-			FavoriteHubEntry* hub = *i;
-			if(Util::stricmp(hub->getServer(), aServer) == 0) {
-				return hub;
-			}
-		}
-		return NULL;
-	}
 
 // User Commands
 	UserCommand addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub);
@@ -283,12 +274,12 @@ private:
 
 	void load(SimpleXML* aXml);
 	
-	string getConfigFile() { return Util::getConfigPath() + "Favorties.xml"; }
+	string getConfigFile() { return Util::getConfigPath() + "Favorites.xml"; }
 };
 
 #endif // !defined(FAVORITE_MANAGER_H)
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.9 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.10 2005/12/26 17:16:03 arnetheduck Exp $
  */

@@ -80,7 +80,7 @@ private:
 	CEdit ctrlPad;
 	CContainedWindow ctrlClientContainer;
 
-	void addLine(const tstring& msg);
+	void addLine(time_t t, const tstring& msg);
 
 	virtual void on(Message, const string& message) { PostMessage(WM_SPEAKER, (WPARAM)(new tstring(Text::toT(message)))); }
 };
@@ -89,5 +89,5 @@ private:
 
 /**
  * @file
- * $Id: SystemFrame.h,v 1.2 2005/12/09 22:50:39 arnetheduck Exp $
+ * $Id: SystemFrame.h,v 1.3 2005/12/26 17:16:03 arnetheduck Exp $
  */

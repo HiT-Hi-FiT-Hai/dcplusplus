@@ -275,7 +275,7 @@ public:
 
 	static string toDOS(const string& tmp);
 
-	static string getShortTimeString();
+	static string getShortTimeString(time_t t = time(NULL) );
 
 	static string getTimeString() {
 		char buf[64];
@@ -601,5 +601,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.125 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: Util.h,v 1.126 2005/12/26 17:16:03 arnetheduck Exp $
  */

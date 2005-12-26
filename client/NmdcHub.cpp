@@ -98,11 +98,13 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 			return *i->second;
 
 		User::Ptr p;
-		if(aNick == getMyNick())
+		if(aNick == getMyNick()) {
 			p = ClientManager::getInstance()->getMe();
-		else
+			getMyIdentity().setUser(p);
+			getMyIdentity().setHubUrl(getHubUrl());
+		} else {
 			p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
-
+		}
 		u = users.insert(make_pair(aNick, new OnlineUser(p, *this))).first->second;
 		u->getIdentity().setNick(aNick);
 	}
@@ -161,7 +163,7 @@ void NmdcHub::updateFromTag(Identity& id, const string& tag) {
 			id.set("HO", t.getTokens()[2]);
 		} else if(i->compare(0, 2, "S:") == 0) {
 			id.set("SL", i->substr(2));
-		} else if(i->compare(0, 2, "V:") == 0) {
+		} else if(i->find("V:") != string::npos) {
 			string::size_type j = i->find("V:");
 			i->erase(i->begin() + j, i->begin() + j + 2);
 			id.set("VE", *i);
@@ -349,6 +351,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		u.getIdentity().setBytesShared(param.substr(i, j-i));
 
+		if(u.getUser() == getMyIdentity().getUser())
+			setMyIdentity(u.getIdentity());
+		
 		fire(ClientListener::UserUpdated(), this, u);
 	} else if(cmd == "$Quit") {
 		if(!param.empty()) {
@@ -790,6 +795,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.47 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.48 2005/12/26 17:16:03 arnetheduck Exp $
  */
 
