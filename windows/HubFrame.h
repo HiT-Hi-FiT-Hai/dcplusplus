@@ -193,7 +193,7 @@ private:
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const UpdateInfo& u) : UserInfoBase(u.user), op(false), hidden(false) { 
+		UserInfo(const UpdateInfo& u) : UserInfoBase(u.user) { 
 			update(u.identity, -1); 
 		};
 
@@ -203,9 +203,9 @@ private:
 
 		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
 			if(col == COLUMN_NICK) {
-				if(a->getOp() && !b->getOp()) {
+				if(a->getIdentity().isOp() && !b->getIdentity().isOp()) {
 					return -1;
-				} else if(!a->getOp() && b->getOp()) {
+				} else if(!a->getIdentity().isOp() && b->getIdentity().isOp()) {
 					return 1;
 				}
 			}
@@ -219,8 +219,6 @@ private:
 
 		tstring columns[COLUMN_LAST];
 		GETSET(Identity, identity, Identity);
-		GETSET(bool, op, Op);
-		GETSET(bool, hidden, Hidden);
 	};
 
 	class PMInfo {
@@ -342,6 +340,7 @@ private:
 	void removeUser(const User::Ptr& aUser);
 
 	void addAsFavorite();
+	void removeFavoriteHub();
 
 	void clearUserList();
 
@@ -397,5 +396,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.70 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.71 2006/01/01 17:49:59 arnetheduck Exp $
  */

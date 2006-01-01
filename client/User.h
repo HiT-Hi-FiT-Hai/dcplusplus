@@ -108,6 +108,7 @@ public:
 	GS(Ip, "I4")
 	GS(UdpPort, "U4")
 	GS(Email, "EM")
+	GS(Connection, "CO")
 
 	void setBytesShared(const string& bs) { set("SS", bs); }
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
@@ -115,6 +116,8 @@ public:
 	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 
 	string getTag() const { 
+		if(!get("TA").empty())
+			return get("TA");
 		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
 			return Util::emptyString;
 		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" + 
@@ -186,5 +189,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.67 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: User.h,v 1.68 2006/01/01 17:49:56 arnetheduck Exp $
  */

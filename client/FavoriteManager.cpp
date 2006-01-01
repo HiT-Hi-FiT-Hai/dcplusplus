@@ -487,6 +487,8 @@ void FavoriteManager::load(SimpleXML* aXml) {
 
 			i->second.setLastSeen((u_int32_t)aXml->getIntChildAttrib("LastSeen"));
 			i->second.setDescription(aXml->getChildAttrib("UserDescription"));
+
+			i->second.getUser()->setFlag(User::SAVE_NICK);
 		}
 		aXml->stepOut();
 	}
@@ -683,5 +685,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.14 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.15 2006/01/01 17:49:56 arnetheduck Exp $
  */

@@ -145,7 +145,7 @@ User::Ptr ClientManager::getLegacyUser(const string& aNick) throw() {
 
 	for(UserIter i = users.begin(); i != users.end(); ++i) {
 		User::Ptr& p = i->second;
-		if(p->isSet(User::NMDC) && Text::toLower(p->getFirstNick()) == Text::toLower(aNick))
+		if(p->isSet(User::NMDC) && Util::stricmp(p->getFirstNick(), aNick) == 0)
 			return p;
 	}
 
@@ -507,5 +507,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.83 2005/12/22 19:47:33 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.84 2006/01/01 17:49:55 arnetheduck Exp $
  */

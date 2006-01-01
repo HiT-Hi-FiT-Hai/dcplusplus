@@ -56,6 +56,7 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
 	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 
+	Lock l(cs);
 	addTask(ACCEPTED, 0);
 }
 
@@ -68,6 +69,7 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 		sock = new Socket;
 	}
 
+	Lock l(cs);
 	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 }
 
@@ -313,5 +315,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.91 2005/12/16 01:00:46 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.92 2006/01/01 17:49:55 arnetheduck Exp $
  */

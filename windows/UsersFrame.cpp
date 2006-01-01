@@ -116,7 +116,10 @@ void UsersFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 }
 
 LRESULT UsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	ctrlUsers.forEachSelected(&UserInfo::remove);
+	int i = -1;
+	while( (i = ctrlUsers.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		ctrlUsers.getItemData(i)->remove();
+	}
 	return 0;
 }
 
@@ -211,5 +214,5 @@ LRESULT UsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.42 2005/12/12 08:43:01 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.43 2006/01/01 17:49:59 arnetheduck Exp $
  */

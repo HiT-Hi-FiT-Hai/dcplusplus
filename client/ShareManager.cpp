@@ -1498,8 +1498,8 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const T
 }
 
 void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
-	if(BOOLSETTING(AUTO_UPDATE_LIST)) {
-		if(lastFullUpdate + 60 * 60 * 1000 < tick) {
+	if(SETTING(AUTO_REFRESH_TIME) > 0) {
+		if(lastFullUpdate + SETTING(AUTO_REFRESH_TIME) * 60 * 1000 < tick) {
 			try {
 				refresh(true, true);
 			} catch(const ShareException&) {
@@ -1510,5 +1510,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.137 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.138 2006/01/01 17:49:56 arnetheduck Exp $
  */

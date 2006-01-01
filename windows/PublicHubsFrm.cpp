@@ -326,13 +326,14 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 	// lists dropdown
 	rc.top += 16;
-	rc.bottom -= 8;
+	rc.bottom -= 8 - 140;
 	rc.right -= 8 + 100;
 	rc.left += 8;
 	ctrlPubLists.MoveWindow(rc);
 
 	// configure button
 	rc.left = rc.right + 4;
+	rc.bottom -= 140;
 	rc.right += 100;
 	ctrlConfigure.MoveWindow(rc);
 
@@ -465,5 +466,5 @@ void PublicHubsFrame::updateDropDown() {
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.40 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.41 2006/01/01 17:49:59 arnetheduck Exp $
  */

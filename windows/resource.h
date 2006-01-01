@@ -409,6 +409,9 @@
 #define IDC_SSL_PRIVATE_KEY_FILE        1414
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1415
 #define IDC_CLIENT_ID                   1416
+#define IDC_EDIT1                       1419
+#define IDC_AUTO_REFRESH_TIME           1419
+#define IDC_SETTINGS_AUTO_REFRESH_TIME  1420
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -450,7 +453,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1417
+#define _APS_NEXT_CONTROL_VALUE         1421
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

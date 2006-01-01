@@ -55,9 +55,9 @@ const string SettingsManager::settingTags[] =
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
-	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
+	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows",
 	"MaxCompression", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
-	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", 
+	"SkipZeroByte", "AdlsBreakOnFirst", 
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
@@ -72,7 +72,7 @@ const string SettingsManager::settingTags[] =
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
-	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog",
+	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -173,13 +173,11 @@ SettingsManager::SettingsManager()
 	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. State your business and I might answer later if you're lucky.");
 	setDefault(TIME_STAMPS_FORMAT, "%H:%M");
 	setDefault(MAX_TAB_ROWS, 2);
-	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
 	setDefault(ADLS_BREAK_ON_FIRST, false);
-	setDefault(TAB_COMPLETION, true);
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
 	setDefault(LOG_FILELIST_TRANSFERS, false);
@@ -252,6 +250,7 @@ SettingsManager::SettingsManager()
 	setDefault(BOLD_SEARCH, true);
 	setDefault(BOLD_WAITING_USERS, true);
 	setDefault(BOLD_SYSTEM_LOG, true);
+	setDefault(AUTO_REFRESH_TIME, 60);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -416,5 +415,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.137 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.138 2006/01/01 17:49:56 arnetheduck Exp $
  */

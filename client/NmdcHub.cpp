@@ -176,6 +176,8 @@ void NmdcHub::updateFromTag(Identity& id, const string& tag) {
 			}
 		}
 	}
+	/// @todo Think about this
+	id.set("TA", tag);
 }
 
 void NmdcHub::onLine(const string& aLine) throw() {
@@ -336,7 +338,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(j == string::npos)
 			return;
 
-		/// @todo u->setConnection(param.substr(i, j-i-1));
+		u.getIdentity().setConnection(param.substr(i, j-i-1));
 		i = j + 1;
 		j = param.find('$', i);
 
@@ -795,6 +797,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.48 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.49 2006/01/01 17:49:56 arnetheduck Exp $
  */
 

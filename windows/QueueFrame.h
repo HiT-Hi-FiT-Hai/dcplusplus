@@ -395,7 +395,7 @@ private:
 			clearTree(next);
 			next = ctrlDirs.GetNextSiblingItem(next);
 		}
-		delete (string*)ctrlDirs.GetItemData(item);
+		delete (tstring*)ctrlDirs.GetItemData(item);
 	}
 
 	void removeSelected() {
@@ -426,5 +426,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.55 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.56 2006/01/01 17:49:59 arnetheduck Exp $
  */

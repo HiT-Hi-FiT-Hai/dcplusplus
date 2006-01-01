@@ -373,9 +373,7 @@ struct HashContained {
 	HashContained(const HASH_SET<TTHValue, TTHValue::Hash>& l) : tl(l) { }
 	const HASH_SET<TTHValue, TTHValue::Hash>& tl;
 	bool operator()(const DirectoryListing::File::Ptr i) const {
-		bool r = !tl.count(*(i->getTTH()));
-		if (r) DeleteFunction<const DirectoryListing::File*>()(i);
-		return r;
+		return tl.count(*(i->getTTH())) && (DeleteFunction<const DirectoryListing::File*>()(i), true);
 	}
 private:
 	HashContained& operator=(HashContained&);
@@ -428,5 +426,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.54 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.55 2006/01/01 17:49:56 arnetheduck Exp $
  */

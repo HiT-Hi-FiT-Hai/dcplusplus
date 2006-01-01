@@ -45,19 +45,26 @@
 * Updated WTL
 * Rewrote socket code to remove some old hacks and add some new (major change)
 * Now using standard windows error messages for socket errors
-* Added basic SSL encryption support (ADC only)
+* [ADC] Added basic SSL encryption support
 * Fixed a bug with file list loading and filenames differing in case only
 * Fixed a few standard compliance issues
 * Added dirtying to waiting users frame (thanks ullner)
 * Changed so that a few flags are shown in transfer status, [T] = TTH check on, [Z] = zlib on, [R] = rollback performed
 * Parameter names all updated, your current %[xxx] macros will break all over, on the upside they're now more or less unified
-* All hubs a user is online on are shown where only one was before (ADC only)
+* [ADC] All hubs a user is online on are shown where only one was shown before 
 * Fixed some log page issues
 * Replaced small buffer size option with the possibility to set recv/send buffer sizes manually
 * Consolidated bolding options, you'll have to reset them to your preference
 * Removed support for old hash index files (pre-0.670 I think)
 * Improved hashing error reporting
 * Fixed hash database rebuild
+* Added /removefav command to remove a favorite hub (thanks ullner)
+* [bug 717] Fixed search combo box (thanks pothead)
+* Added option to change auto-refresh interval (thanks ullner)
+* [bug 740] Removed tab completion option (thanks ullner)
+* [bug 743] Added registry key creation failure notification (thanks ullner)
+* [bug 717] Fixed dropdown sizes (thanks pothead)
+* [bug 760] Fixed list subtraction issue (thanks cologic)
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

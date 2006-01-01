@@ -217,6 +217,8 @@ void HubFrame::onEnter() {
 				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + Util::toString(SearchManager::getInstance()->getPort()))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
+			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
+				removeFavoriteHub();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
 				if( !param.empty() ){
 					int k = ctrlUsers.findItem(param);
@@ -235,7 +237,7 @@ void HubFrame::onEnter() {
 					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params))));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
-				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>"));
+				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
 			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 				string::size_type j = param.find(_T(' '));
 				if(j != string::npos) {
@@ -327,6 +329,16 @@ void HubFrame::addAsFavorite() {
 	}
 }
 
+void HubFrame::removeFavoriteHub() {
+	FavoriteHubEntry* removeHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
+	if(removeHub) {
+		FavoriteManager::getInstance()->removeFavorite(removeHub);
+		addClientLine(TSTRING(FAVORITE_HUB_REMOVED));
+	} else {
+		addClientLine(TSTRING(FAVORITE_HUB_DOES_NOT_EXIST));
+	}
+}
+
 LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	if(client->isConnected()) {
@@ -359,12 +371,12 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 	if(i == userMap.end()) {
 		UserInfo* ui = new UserInfo(u);
 		userMap.insert(make_pair(u.user, ui));
-		if(!ui->getHidden() && showUsers)
+		if(!ui->getIdentity().isHidden() && showUsers)
 			ctrlUsers.insertItem(ui, getImage(u.identity));
 		return true;
 	} else {
 		UserInfo* ui = i->second;
-		if(!ui->getHidden() && u.identity.isHidden() && showUsers) {
+		if(!ui->getIdentity().isHidden() && u.identity.isHidden() && showUsers) {
 			ctrlUsers.deleteItem(ui);
 		}
 		
@@ -385,7 +397,7 @@ void HubFrame::removeUser(const User::Ptr& aUser) {
 	dcassert(i != userMap.end());
 
 	UserInfo* ui = i->second;
-	if(!ui->getHidden() && showUsers)
+	if(!ui->getIdentity().isHidden() && showUsers)
 		ctrlUsers.deleteItem(ui);
 
 	userMap.erase(i);
@@ -393,7 +405,7 @@ void HubFrame::removeUser(const User::Ptr& aUser) {
 }
 
 bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
-	bool needsSort = (op != identity.isOp());
+	bool needsSort = (getIdentity().isOp() != identity.isOp());
 	tstring old;
 	if(sortCol != -1)
 		old = columns[sortCol];
@@ -402,11 +414,8 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
 	columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
 	columns[COLUMN_TAG] = Text::toT(identity.getTag());
-	/// @todo columns[COLUMN_CONNECTION] = Text::toT(i->getConnection());
+	columns[COLUMN_CONNECTION] = Text::toT(identity.getConnection());
 	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
-
-	op = identity.isOp();
-	hidden = identity.isHidden();
 
 	if(sortCol != -1) {
 		needsSort = needsSort || (old != columns[sortCol]);
@@ -796,8 +805,8 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 };
 
 void HubFrame::onTab() {
-	if(	BOOLSETTING(TAB_COMPLETION) && 
-		(GetFocus() == ctrlMessage.m_hWnd) && 
+	HWND focus = GetFocus();
+	if( (focus == ctrlMessage.m_hWnd) && 
 		!(GetAsyncKeyState(VK_SHIFT) & 0x8000) ) 
 	{
 		int n = ctrlMessage.GetWindowTextLength();
@@ -814,6 +823,7 @@ void HubFrame::onTab() {
 			}
 			if(complete.empty()) {
 				// Still empty, no text entered...
+				ctrlUsers.SetFocus();
 				return;
 			}
 			int y = ctrlUsers.GetItemCount();
@@ -871,17 +881,13 @@ void HubFrame::onTab() {
 				i = 0;
 			}
 		}
-	} else {
-		HWND focus = GetFocus();
-
-		if(focus == ctrlClient.m_hWnd) {
-			ctrlMessage.SetFocus();
-		} else if(focus == ctrlMessage.m_hWnd) {
-			ctrlUsers.SetFocus();
-		} else if(focus == ctrlUsers.m_hWnd) {
-			ctrlClient.SetFocus();
-		} 
 	}
+
+	if(focus == ctrlClient.m_hWnd) {
+		ctrlMessage.SetFocus();
+	} else if(focus == ctrlUsers.m_hWnd) {
+		ctrlClient.SetFocus();
+	} 
 }
 
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -1006,7 +1012,7 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		
 		for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 			UserInfo* ui = i->second;
-			if(!ui->getHidden())
+			if(!ui->getIdentity().isHidden())
 				ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
 		}
 
@@ -1196,5 +1202,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.124 2005/12/22 19:47:33 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.125 2006/01/01 17:49:59 arnetheduck Exp $
  */

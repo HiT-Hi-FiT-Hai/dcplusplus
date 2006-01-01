@@ -106,6 +106,9 @@
 		<String Name="EnterServer">Please enter a destination server</String>
 		<String Name="Errors">Errors</String>
 		<String Name="ErrorCreatingHashDataFile">Error creating hash data file: </String>
+		<String Name="ErrorCreatingRegistryKeyAdc">Error creating adc registry key</String>
+		<String Name="ErrorCreatingRegistryKeyDchub">Error creating dchub registry key</String>
+		<String Name="ErrorCreatingRegistryKeyMagnet">Error creating magnet registry key</String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
@@ -114,8 +117,10 @@
 		<String Name="FavoriteDirNameLong">Under what name you see the directory</String>
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
 		<String Name="FavoriteHubAlreadyExists">Hub already exists as a favorite</String>
+		<String Name="FavoriteHubDoesNotExist">This hub is not a favorite hub</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
+		<String Name="FavoriteHubRemoved">Favorite hub removed</String>
 		<String Name="FavoriteHubs">Favorite Hubs</String>
 		<String Name="FavoriteUserAdded">Favorite user added</String>
 		<String Name="FavoriteUsers">Favorite Users</String>
@@ -364,8 +369,8 @@
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
-		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
 		<String Name="SettingsAutoOpen">Auto-open at startup</String>
+		<String Name="SettingsAutoRefreshTime">Auto refresh time</String>
 		<String Name="SettingsBindAddress">Bind address</String>
 		<String Name="SettingsBoldOptions">Tab bolding on content change</String>
 		<String Name="SettingsCertificates">Advanced\Security Certificates</String>
@@ -469,7 +474,6 @@
 		<String Name="SettingsSounds">Sounds</String>
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
-		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
 		<String Name="SettingsPrioHighest">Highest prio max size</String>
