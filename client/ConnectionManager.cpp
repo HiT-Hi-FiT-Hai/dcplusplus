@@ -316,7 +316,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 
 	}
 
-	for_each(penDel.begin(), penDel.end(), DeleteFunction<UserConnection*>());
+	for_each(penDel.begin(), penDel.end(), DeleteFunction());
 
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSource(*ui, QueueItem::Source::FLAG_PASSIVE);
@@ -778,5 +778,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.109 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.110 2006/01/01 22:42:54 arnetheduck Exp $
  */

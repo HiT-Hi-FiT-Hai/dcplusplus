@@ -93,8 +93,8 @@ public:
 			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
 		
 		virtual ~Directory() {
-			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
-			for_each(files.begin(), files.end(), DeleteFunction<File*>());
+			for_each(directories.begin(), directories.end(), DeleteFunction());
+			for_each(files.begin(), files.end(), DeleteFunction());
 		}
 
 		size_t getTotalFileCount(bool adls = false);		
@@ -179,5 +179,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.44 2005/08/10 17:30:55 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.45 2006/01/01 22:42:54 arnetheduck Exp $
  */

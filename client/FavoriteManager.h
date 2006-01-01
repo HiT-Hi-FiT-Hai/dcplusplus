@@ -238,7 +238,7 @@ private:
 			c = NULL;
 		}
 		
-		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction<FavoriteHubEntry*>());
+		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction());
 	}
 	
 	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
@@ -281,5 +281,5 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.10 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.11 2006/01/01 22:42:54 arnetheduck Exp $
  */

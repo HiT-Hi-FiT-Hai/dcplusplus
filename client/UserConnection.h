@@ -346,7 +346,7 @@ private:
 		removeListeners();
 		BufferedSocket::putSocket(socket);
 	};
-	friend struct DeleteFunction<UserConnection*>;
+	friend struct DeleteFunction;
 
 	UserConnection(const UserConnection&);
 	UserConnection& operator=(const UserConnection&);
@@ -387,5 +387,5 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.99 2005/12/19 00:15:51 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.100 2006/01/01 22:42:54 arnetheduck Exp $
  */

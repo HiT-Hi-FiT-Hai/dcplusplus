@@ -73,7 +73,7 @@ public:
 	void putOnline(OnlineUser& ou) throw();
 	void putOffline(OnlineUser& ou) throw();
 
-	User::Ptr& getMe() { return me; }
+	User::Ptr& getMe();
 	
 	void connect(const User::Ptr& p);
 	void send(AdcCommand& c);
@@ -157,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.71 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.72 2006/01/01 22:42:54 arnetheduck Exp $
  */

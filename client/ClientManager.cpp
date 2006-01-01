@@ -462,9 +462,19 @@ void ClientManager::on(Save, SimpleXML*) throw() {
 		// ...
 	}
 }
+
+User::Ptr& ClientManager::getMe() {
+	if(!me) {
+		Lock l(cs);
+		if(!me) {
+			me = new User(CID(SETTING(CLIENT_ID)));
+			me->setFirstNick(SETTING(NICK));
+		}
+	}
+	return me;
+}
+
 void ClientManager::on(Load, SimpleXML*) throw() {
-	me = new User(CID(SETTING(CLIENT_ID)));
-	me->setFirstNick(SETTING(NICK));
 	users.insert(make_pair(me->getCID(), me));
 
 	try {
@@ -507,5 +517,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.84 2006/01/01 17:49:55 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.85 2006/01/01 22:42:54 arnetheduck Exp $
  */

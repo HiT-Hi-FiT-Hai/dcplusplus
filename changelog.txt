@@ -7,7 +7,7 @@
 * Fixed targetdrive docs (thanks ullner)
 * [bug 485] Fixed transfer list view flicker on WinXP
 * New connection settings, please check settings page
-* Connection type freely settable, and default connection strings changed
+* Connection type strings changed
 * No longer falls back to passive mode on failed UPnP
 * Janitorial cleanups (thanks garg)
 * Removed some old favorite file format compatibility code

@@ -143,8 +143,8 @@ public:
 	}
 
 	virtual ~QueueItem() { 
-		for_each(sources.begin(), sources.end(), DeleteFunction<Source*>());
-		for_each(badSources.begin(), badSources.end(), DeleteFunction<Source*>());
+		for_each(sources.begin(), sources.end(), DeleteFunction());
+		for_each(badSources.begin(), badSources.end(), DeleteFunction());
 		delete tthRoot;
 	};
 
@@ -282,5 +282,5 @@ private:
 
 /**
  * @file
- * $Id: QueueItem.h,v 1.23 2005/07/21 00:01:53 arnetheduck Exp $
+ * $Id: QueueItem.h,v 1.24 2006/01/01 22:42:54 arnetheduck Exp $
  */
