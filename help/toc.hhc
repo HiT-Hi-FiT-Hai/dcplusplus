@@ -116,23 +116,25 @@
 			<param name="Name" value="Appearance">
 			<param name="Local" value="settings_appearance.html">
 			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Colors and sounds">
-			<param name="Local" value="settings_colors_and_sounds.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Windows">
-			<param name="Local" value="settings_windows.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Logs">
-			<param name="Local" value="settings_logs.html">
-			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Colors and sounds">
+				<param name="Local" value="settings_colors_and_sounds.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Windows">
+				<param name="Local" value="settings_windows.html">
+				</OBJECT>
+		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Advanced">
 			<param name="Local" value="settings_advanced.html">
 			</OBJECT>
 		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Logs">
+				<param name="Local" value="settings_logs.html">
+				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Experts only">
 				<param name="Local" value="settings_expert.html">
@@ -140,6 +142,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="User Commands">
 				<param name="Local" value="settings_usercommands.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Security Certificates">
+				<param name="Local" value="settings_certs.html">
 				</OBJECT>
 		</UL>
 	</UL>

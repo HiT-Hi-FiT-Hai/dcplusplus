@@ -178,6 +178,9 @@
 				RelativePath=".\settings_windows.html">
 			</File>
 			<File
+				RelativePath=".\settings_certs.html">
+			</File>
+			<File
 				RelativePath=".\template.html">
 			</File>
 		</Filter>

@@ -64,18 +64,18 @@ All of the above autodrop options are necessary to estimate and
 disconnect/drop sources properly.
 <h2>Other queue options</h2>
 To enable autodrop, turn on either "Autodrop slow sources for all queue
-items" or "Remove slow filelists" (or both of them).
+items" or "Remove slow file lists" (or both of them).
 <div style="margin-left: 40px;">
 <dl>
   <dt>Set lowest prio for newly added files larger than Low prio size</dt>
   <dd>With this enabled, files that are larger than Low prio max size
 are set to Lowest as priority. If disabled, the files will be set to
 Normal as priority. </dd>
-  <dt>Autodrop slow sources for all queued items (except filelists)</dt>
+  <dt>Autodrop slow sources for all queued items (except file lists)</dt>
   <dd>This option removes the slow sources for all queue items (except
-filelists).</dd>
+file lists).</dd>
   <dt>Remove slow filelists</dt>
-  <dd>With this option enabled, DC++ will delete a filelist whose speed
+  <dd>With this option enabled, DC++ will delete a file list whose speed
 was recognized as too slow. </dd>
   <dt>Don't remove the source when autodropping, only disconnect</dt>
   <dd>With this option enabled, sources will only be disconnected but
@@ -112,19 +112,22 @@ when starting the download. This should reduce the fragmentation of
 files on your hard drive. (Fragmentation is bad because reading files
 from your drive will take longer because the drive head has to hop from
 place to place instead of reading in a continuous fashion.) <span
- style="font-style: italic;">Enable if unsure. The drawbacks are a
+ style="font-style: italic;">Disable if unsure. The drawbacks are a
 short pause at the start of every download during which the drive space
 is reserved, less drive space being available while you are
-downloading, and possibly losing progress on your download if Windows
-crashes and DC++ cannot exit cleanly.</span></dd>
+downloading, and possibly losing <span style="font-weight: bold;">all</span> 
+progress on your download if Windows crashes and DC++ cannot exit 
+cleanly.</span></dd>
   <dt><a name="advanced_resume"></a>Advanced resume using TTH</dt>
   <dd>Enables a more advanced form of transfer resuming than the <a
- href="settings_expert.html#rollback">rollback</a> method.&nbsp; The
+ href="settings_expert.html#rollback">rollback</a> method. The
 last block of the incomplete file will be checked for validity using
-the leaves, retrieved from the remote client, of the TTH.&nbsp; If the
+the leaves, retrieved from the remote client, of the TTH. If the
 block fails verification, the previous block in the file will be tried,
 and so on, until a good block is found, or there is no more data in the
 file.</dd>
+  <dt>Only download files that have a TTH</dt>
+  <dd>With this option enabled, DC++ will <span style="font-weight: bold;">only</span> download files that have a TTH.</dd>
 </dl>
 </div>
 </body>
