@@ -33,22 +33,24 @@ public:
 	void loadLanguage(const string& aFile);
 	const string& getString(Strings x) const { dcassert(x >= 0 && x < LAST); return strings[x]; };
 	const wstring& getStringW(Strings x) const { dcassert(x >= 0 && x < LAST); return wstrings[x]; };
-
+	bool isRTL() { return rtl; }
 private:
 	friend class Singleton<ResourceManager>;
 	
 	typedef HASH_MAP<string, Strings> NameMap;
 	typedef NameMap::iterator NameIter;
 
-	ResourceManager() {
+	ResourceManager() : rtl(false) {
 		createWide();
 	};
 
 	virtual ~ResourceManager() { };
-	
+
 	static string strings[LAST];
 	static wstring wstrings[LAST];
 	static string names[LAST];
+
+	bool rtl;
 
 	void createWide();
 };
@@ -78,5 +80,5 @@ private:
 
 /**
  * @file
- * $Id: ResourceManager.h,v 1.15 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.16 2006/01/05 00:11:31 arnetheduck Exp $
  */

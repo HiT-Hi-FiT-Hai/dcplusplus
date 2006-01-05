@@ -65,6 +65,7 @@
 * [bug 743] Added registry key creation failure notification (thanks ullner)
 * [bug 717] Fixed dropdown sizes (thanks pothead)
 * [bug 760] Fixed list subtraction issue (thanks cologic)
+* Added some right-to-left support, but it probably needs more work
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

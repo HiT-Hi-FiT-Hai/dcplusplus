@@ -33,7 +33,7 @@ public:
 		CPropertySheetImpl<TreePropertySheet>(title, uStartPage, hWndParent), tabContainer(WC_TABCONTROL, this, TAB_MESSAGE_MAP) {
 
 		m_psh.pfnCallback = &PropSheetProc;
-
+		m_psh.dwFlags |= PSH_RTLREADING;
 	}
 	
 	typedef CPropertySheetImpl<TreePropertySheet> baseClass;
@@ -93,5 +93,5 @@ private:
 
 /**
  * @file
- * $Id: TreePropertySheet.h,v 1.8 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: TreePropertySheet.h,v 1.9 2006/01/05 00:11:31 arnetheduck Exp $
  */

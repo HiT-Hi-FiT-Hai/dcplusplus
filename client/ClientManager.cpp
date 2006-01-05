@@ -475,7 +475,7 @@ User::Ptr& ClientManager::getMe() {
 }
 
 void ClientManager::on(Load, SimpleXML*) throw() {
-	users.insert(make_pair(me->getCID(), me));
+	users.insert(make_pair(getMe()->getCID(), getMe()));
 
 	try {
 		SimpleXML xml;
@@ -517,5 +517,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.85 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.86 2006/01/05 00:11:31 arnetheduck Exp $
  */

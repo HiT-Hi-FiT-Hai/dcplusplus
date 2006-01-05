@@ -31,7 +31,7 @@ class DownloadPage : public CPropertyPage<IDD_DOWNLOADPAGE>, public PropPage
 public:
 	DownloadPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_DOWNLOADS));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	virtual ~DownloadPage() { };
 
@@ -64,5 +64,5 @@ protected:
 
 /**
  * @file
- * $Id: DownloadPage.h,v 1.14 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.15 2006/01/05 00:11:31 arnetheduck Exp $
  */

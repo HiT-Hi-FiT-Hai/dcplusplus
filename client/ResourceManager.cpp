@@ -40,6 +40,8 @@ void ResourceManager::loadLanguage(const string& aFile) {
 		}
 
 		if(xml.findChild("Language")) {
+			rtl = xml.getBoolChildAttrib("RightToLeft");
+
 			xml.stepIn();
 			if(xml.findChild("Strings")) {
 				xml.stepIn();
@@ -68,5 +70,5 @@ void ResourceManager::createWide() {
 
 /**
  * @file
- * $Id: ResourceManager.cpp,v 1.14 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.15 2006/01/05 00:11:31 arnetheduck Exp $
  */

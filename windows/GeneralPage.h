@@ -31,7 +31,7 @@ class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
 public:
 	GeneralPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_GENERAL));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	virtual ~GeneralPage() { };
 
@@ -66,5 +66,5 @@ private:
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.14 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.15 2006/01/05 00:11:31 arnetheduck Exp $
  */

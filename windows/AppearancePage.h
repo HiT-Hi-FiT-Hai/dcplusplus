@@ -32,7 +32,7 @@ class AppearancePage : public CPropertyPage<IDD_APPEARANCEPAGE>, public PropPage
 public:
 	AppearancePage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_APPEARANCE));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~AppearancePage();
@@ -69,5 +69,5 @@ protected:
 
 /**
  * @file
- * $Id: AppearancePage.h,v 1.14 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.15 2006/01/05 00:11:31 arnetheduck Exp $
  */

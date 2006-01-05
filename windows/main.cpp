@@ -242,6 +242,10 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.DestroyWindow();
 	dummy.DestroyWindow();
 
+	if(ResourceManager::getInstance()->isRTL()) {
+		SetProcessDefaultLayout(LAYOUT_RTL);
+	}
+
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	
@@ -262,7 +266,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		}
 	}
 
-	if(wndMain.CreateEx(NULL, rc) == NULL) {
+	if(wndMain.CreateEx(NULL, rc, 0, WS_EX_RTLREADING | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) == NULL) {
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
@@ -350,5 +354,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.39 2005/12/24 23:13:26 arnetheduck Exp $
+ * $Id: main.cpp,v 1.40 2006/01/05 00:11:31 arnetheduck Exp $
  */

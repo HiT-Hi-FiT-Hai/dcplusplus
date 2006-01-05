@@ -20,7 +20,7 @@
 #include "../client/DCPlusPlus.h"
 
 #include "TreePropertySheet.h"
-
+#include "../client/ResourceManager.h"
 static const TCHAR SEPARATOR = _T('\\');
 
 int TreePropertySheet::PropSheetProc(HWND hwndDlg, UINT uMsg, LPARAM lParam) {
@@ -32,6 +32,8 @@ int TreePropertySheet::PropSheetProc(HWND hwndDlg, UINT uMsg, LPARAM lParam) {
 }
 
 LRESULT TreePropertySheet::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
+	if(ResourceManager::getInstance()->isRTL())
+		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL);
 	hideTab();
 	addTree();
 	fillTree();
@@ -48,8 +50,8 @@ void TreePropertySheet::hideTab() {
 	tab.GetWindowRect(&rcTab);
 	page.GetClientRect(&rcPage);
 	page.MapWindowPoints(m_hWnd,&rcPage);
-	GetWindowRect(&rcWindow);
-	ScreenToClient(&rcTab);
+	GetWindowRect(&rcWindow);	
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rcTab, 2);
 
 	ScrollWindow(SPACE_LEFT + TREE_WIDTH + SPACE_MID-rcPage.left, SPACE_TOP-rcPage.top);
 	rcWindow.right += SPACE_LEFT + TREE_WIDTH + SPACE_MID - rcPage.left - (rcClient.Width()-rcTab.right) + SPACE_RIGHT;
@@ -69,7 +71,7 @@ void TreePropertySheet::addTree()
 
 	HWND page = IndexToHwnd(0);
 	::GetWindowRect(page, &rcPage);
-	ScreenToClient(&rcPage);
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rcPage, 2);
 
 	CRect rc(SPACE_LEFT, rcPage.top, TREE_WIDTH, rcPage.bottom);
 	ctrlTree.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_PAGE);
@@ -193,5 +195,5 @@ LRESULT TreePropertySheet::onSetCurSel(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lP
 
 /**
  * @file
- * $Id: TreePropertySheet.cpp,v 1.10 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: TreePropertySheet.cpp,v 1.11 2006/01/05 00:11:31 arnetheduck Exp $
  */

@@ -592,7 +592,7 @@ LRESULT MainFrame::onViewWaitingUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	PropertiesDlg dlg(SettingsManager::getInstance());
+	PropertiesDlg dlg(m_hWnd, SettingsManager::getInstance());
 
 	short lastPort = (short)SETTING(TCP_PORT);
 	short lastUDP = (short)SETTING(UDP_PORT);
@@ -1145,5 +1145,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.107 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.108 2006/01/05 00:11:31 arnetheduck Exp $
  */

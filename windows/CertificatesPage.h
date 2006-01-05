@@ -32,7 +32,7 @@ class CertificatesPage : public CPropertyPage<IDD_CERTIFICATESPAGE>, public Prop
 public:
 	CertificatesPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_CERTIFICATES));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~CertificatesPage() { };
@@ -61,5 +61,5 @@ protected:
 
 /**
  * @file
- * $Id: CertificatesPage.h,v 1.1 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: CertificatesPage.h,v 1.2 2006/01/05 00:11:31 arnetheduck Exp $
  */

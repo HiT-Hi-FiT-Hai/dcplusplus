@@ -33,7 +33,7 @@ class FavoriteDirsPage : public CPropertyPage<IDD_FAVORITE_DIRSPAGE>, public Pro
 public:
 	FavoriteDirsPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_FAVORITE_DIRS_PAGE));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	virtual ~FavoriteDirsPage() {
 		ctrlDirectories.Detach();
@@ -74,5 +74,5 @@ protected:
 
 /**
  * @file
- * $Id: FavoriteDirsPage.h,v 1.6 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: FavoriteDirsPage.h,v 1.7 2006/01/05 00:11:31 arnetheduck Exp $
  */

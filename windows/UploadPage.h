@@ -33,7 +33,7 @@ class UploadPage : public CPropertyPage<IDD_UPLOADPAGE>, public PropPage
 public:
 	UploadPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_UPLOADS));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 	virtual ~UploadPage() {
 		ctrlDirectories.Detach();
@@ -79,5 +79,5 @@ protected:
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.17 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.18 2006/01/05 00:11:31 arnetheduck Exp $
  */

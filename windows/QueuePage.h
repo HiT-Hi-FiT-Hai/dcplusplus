@@ -32,7 +32,7 @@ class QueuePage : public CPropertyPage<IDD_QUEUEPAGE>, public PropPage
 public:
 	QueuePage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_QUEUE));
-		m_psp.dwFlags |= PSP_HASHELP;
+		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	};
 
 	virtual ~QueuePage() { 
@@ -63,5 +63,5 @@ protected:
 
 /**
  * @file
- * $Id: QueuePage.h,v 1.3 2005/07/21 00:02:04 arnetheduck Exp $
+ * $Id: QueuePage.h,v 1.4 2006/01/05 00:11:31 arnetheduck Exp $
  */

@@ -38,7 +38,7 @@ public:
 		MESSAGE_HANDLER(TCM_SETCURSEL, TreePropertySheet::onSetCurSel)
 	END_MSG_MAP()
 
-	PropertiesDlg(SettingsManager *s);
+	PropertiesDlg(HWND parent, SettingsManager *s);
 	virtual ~PropertiesDlg();
 
 	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -53,5 +53,5 @@ protected:
 
 /**
  * @file
- * $Id: PropertiesDlg.h,v 1.17 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: PropertiesDlg.h,v 1.18 2006/01/05 00:11:31 arnetheduck Exp $
  */

@@ -37,7 +37,7 @@
 #include "QueuePage.h"
 #include "CertificatesPage.h"
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
+PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS), 0, parent)
 {
 	int n = 0;
 	pages[n++] = new GeneralPage(s);
@@ -92,6 +92,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.19 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.20 2006/01/05 00:11:31 arnetheduck Exp $
  */
 
