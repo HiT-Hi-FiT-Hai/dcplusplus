@@ -73,6 +73,7 @@ const string SettingsManager::settingTags[] =
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
+	"UseSsl",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -199,8 +200,8 @@ SettingsManager::SettingsManager()
 	setDefault(ADD_FINISHED_INSTANTLY, false);
 	setDefault(DONT_DL_ALREADY_SHARED, false);
 	setDefault(CONFIRM_HUB_REMOVAL, false);
-	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
-	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
+	setDefault(USE_CTRL_FOR_LINE_HISTORY, true);
+	setDefault(JOIN_OPEN_NEW_WINDOW, false);
 	setDefault(SEARCH_ONLY_TTH, false);
 	setDefault(SHOW_LAST_LINES_LOG, 0);
 	setDefault(CONFIRM_ITEM_REMOVAL, true);
@@ -251,6 +252,7 @@ SettingsManager::SettingsManager()
 	setDefault(BOLD_WAITING_USERS, true);
 	setDefault(BOLD_SYSTEM_LOG, true);
 	setDefault(AUTO_REFRESH_TIME, 60);
+	setDefault(USE_SSL, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -415,5 +417,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.138 2006/01/01 17:49:56 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.139 2006/01/06 14:44:31 arnetheduck Exp $
  */

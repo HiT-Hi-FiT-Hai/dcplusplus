@@ -148,13 +148,15 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S) {
 void UserInfoBase::matchQueue() {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
 }
 void UserInfoBase::getList() {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
 }
 void UserInfoBase::browseList() {
@@ -162,7 +164,8 @@ void UserInfoBase::browseList() {
 		return;
 	try {
 		QueueManager::getInstance()->addPfs(user, "");
-	} catch(const Exception&) {
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(e.getError());
 	}
 }
 void UserInfoBase::addFav() {
@@ -1181,5 +1184,5 @@ void WinUtil::openFolder(const tstring& file) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.94 2006/01/01 17:49:59 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.95 2006/01/06 14:44:32 arnetheduck Exp $
  */

@@ -469,8 +469,12 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 	// Check if we're trying to download a non-TTH file
 	if(root == NULL && !(aFlags &QueueItem::FLAG_USER_LIST)) {
 		if(BOOLSETTING(ONLY_DL_TTH_FILES))
-			throw QueueException(STRING(FILE_HAVE_NO_TTH));
+			throw QueueException(STRING(FILE_HAS_NO_TTH));
 	} 
+
+	if(aUser->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
+		throw QueueException(STRING(NO_DOWNLOADS_FROM_PASSIVE));
+	}
 
 	{
 		Lock l(cs);
@@ -926,7 +930,7 @@ void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
 	try {
 		dirList.loadFile(name);
 	} catch(const Exception&) {
-		/** @todo Log this */
+		LogManager::getInstance()->message(STRING(UNABLE_TO_OPEN_FILELIST) + name);
 		return;
 	}
 
@@ -1377,5 +1381,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.139 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.140 2006/01/06 14:44:31 arnetheduck Exp $
  */

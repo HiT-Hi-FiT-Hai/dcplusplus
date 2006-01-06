@@ -686,6 +686,8 @@ BEGIN
     LTEXT           "Trusted certificates path",IDC_STATIC,18,45,80,8
     LTEXT           "Under construction, restart dc++ to see effects...",
                     IDC_STATIC,7,90,163,8
+    LTEXT           "Experimental feature, don't consider DC++ secure in any way",
+                    IDC_STATIC,7,106,200,8
 END
 
 

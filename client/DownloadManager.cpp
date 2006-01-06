@@ -33,6 +33,7 @@
 #include "File.h"
 #include "FilteredFile.h"
 #include "MerkleCheckOutputStream.h"
+#include "ClientManager.h"
 
 #include <limits>
 
@@ -724,10 +725,16 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t c
 void DownloadManager::logDownload(UserConnection* aSource, Download* d) {
 	StringMap params;
 	params["target"] = d->getTarget();
-	params["userNI"] = aSource->getUser()->getFirstNick();
+	params["userNI"] = Util::toString(ClientManager::getInstance()->getNicks(aSource->getUser()->getCID()));
 	params["userI4"] = aSource->getRemoteIp();
-	/// @todo params["hub"] = aSource->getUser()->getLastHubName();
-	/// @todo params["hubip"] = aSource->getUser()->getLastHubAddress();
+	StringList hubNames = ClientManager::getInstance()->getHubNames(aSource->getUser()->getCID());
+	if(hubNames.empty())
+		hubNames.push_back(STRING(OFFLINE));
+	params["hub"] = Util::toString(hubNames);
+	StringList hubs = ClientManager::getInstance()->getHubs(aSource->getUser()->getCID());
+	if(hubs.empty())
+		hubs.push_back(STRING(OFFLINE));
+	params["hubURL"] = Util::toString(hubs);
 	params["fileSI"] = Util::toString(d->getSize());
 	params["fileSIshort"] = Util::formatBytes(d->getSize());
 	params["fileSIchunk"] = Util::toString(d->getTotal());
@@ -914,5 +921,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.156 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.157 2006/01/06 14:44:31 arnetheduck Exp $
  */

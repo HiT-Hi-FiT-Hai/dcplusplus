@@ -543,7 +543,6 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser() && !aSource->getUser()->isSet(User::DCPLUSPLUS)) {
 			aSource->getUser()->setFlag(User::DCPLUSPLUS);
-			/// @todo User::updated(aSource->getUser());
 		}
 		StringList defFeatures = features;
 		if(BOOLSETTING(COMPRESS_TRANSFERS)) {
@@ -778,5 +777,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.110 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.111 2006/01/06 14:44:31 arnetheduck Exp $
  */

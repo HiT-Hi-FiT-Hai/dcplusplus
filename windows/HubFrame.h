@@ -344,17 +344,7 @@ private:
 
 	void clearUserList();
 
-	int getImage(const Identity& u) {
-		int image = u.isOp() ? IMAGE_OP : IMAGE_USER;
-		
-		/** @todo if(u->isSet(User::DCPLUSPLUS))
-			image+=2; */
-		if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !u.isTcpActive()) {
-			// Users we can't connect to...
-			image+=4;
-		}
-		return image;	
-	}
+	int getImage(const Identity& u);
 
 	void updateStatusBar() {
 		if(m_hWnd)
@@ -396,5 +386,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.71 2006/01/01 17:49:59 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.72 2006/01/06 14:44:32 arnetheduck Exp $
  */

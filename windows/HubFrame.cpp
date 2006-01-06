@@ -173,7 +173,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
 				if(!param.empty()) {
 					redirect = param;
-					if(BOOLSETTING(SETTINGS_OPEN_NEW_WINDOW)) {
+					if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
 						HubFrame::openWindow(param);
 					} else {
 						BOOL whatever = FALSE;
@@ -337,6 +337,18 @@ void HubFrame::removeFavoriteHub() {
 	} else {
 		addClientLine(TSTRING(FAVORITE_HUB_DOES_NOT_EXIST));
 	}
+}
+
+int HubFrame::getImage(const Identity& u) {
+	int image = u.isOp() ? IMAGE_OP : IMAGE_USER;
+
+	if(u.getUser()->isSet(User::DCPLUSPLUS))
+		image+=2;
+	if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !u.isTcpActive()) {
+		// Users we can't connect to...
+		image+=4;
+	}
+	return image;	
 }
 
 LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -924,7 +936,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				}
 				break;
 		case VK_UP:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING( SETTINGS_USE_CTRL_FOR_LINE_HISTORY ) == true) ) ) {
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
 				//scroll up in chat command history
 				//currently beyond the last command?
 				if (curCommandPosition > 0) {
@@ -946,7 +958,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 			break;
 		case VK_DOWN:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING( SETTINGS_USE_CTRL_FOR_LINE_HISTORY ) == true) ) ) {
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
 				//scroll down in chat command history
 
 				//currently beyond the last command?
@@ -1202,5 +1214,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.125 2006/01/01 17:49:59 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.126 2006/01/06 14:44:32 arnetheduck Exp $
  */

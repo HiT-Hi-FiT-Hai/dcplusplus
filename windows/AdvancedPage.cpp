@@ -46,7 +46,8 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::HUB_USER_COMMANDS, ResourceManager::SETTINGS_HUB_USER_COMMANDS },
 	{ SettingsManager::SEND_UNKNOWN_COMMANDS, ResourceManager::SETTINGS_SEND_UNKNOWN_COMMANDS },
 	{ SettingsManager::ADD_FINISHED_INSTANTLY, ResourceManager::SETTINGS_ADD_FINISHED_INSTANTLY },
-	{ SettingsManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY, ResourceManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY },
+	{ SettingsManager::USE_CTRL_FOR_LINE_HISTORY, ResourceManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY },
+	{ SettingsManager::USE_SSL, ResourceManager::SETTINGS_USE_SSL },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -74,5 +75,5 @@ LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.57 2006/01/01 17:49:59 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.58 2006/01/06 14:44:32 arnetheduck Exp $
  */

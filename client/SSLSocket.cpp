@@ -100,7 +100,7 @@ void SSLSocketFactory::loadCertificates() throw() {
 		FindClose(hFind);
 	}
 #else
-//§#error todo
+#error todo
 #endif
 	certsLoaded = true;
 }

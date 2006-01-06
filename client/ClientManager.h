@@ -46,6 +46,7 @@ public:
 	StringList getHubs(const CID& cid);
 	StringList getHubNames(const CID& cid);
 	StringList getNicks(const CID& cid);
+	string getConnection(const CID& cid);
 
 	bool isConnected(const string& aUrl);
 	
@@ -56,6 +57,8 @@ public:
 	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
 	User::Ptr getLegacyUser(const string& aNick) throw();
 	User::Ptr getUser(const CID& cid) throw();
+
+	string findHub(const string& ipPort);
 
 	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
@@ -157,5 +160,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.72 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.73 2006/01/06 14:44:31 arnetheduck Exp $
  */

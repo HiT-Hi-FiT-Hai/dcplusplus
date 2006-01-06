@@ -82,12 +82,12 @@ private:
 
 	void addLine(time_t t, const tstring& msg);
 
-	virtual void on(Message, const string& message) { PostMessage(WM_SPEAKER, (WPARAM)(new tstring(Text::toT(message)))); }
+	virtual void on(Message, time_t t, const string& message) { PostMessage(WM_SPEAKER, (WPARAM)(new pair<time_t, tstring>(t, Text::toT(message)))); }
 };
 
 #endif // !defined(SYSTEM_FRAME_H)
 
 /**
  * @file
- * $Id: SystemFrame.h,v 1.3 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: SystemFrame.h,v 1.4 2006/01/06 14:44:32 arnetheduck Exp $
  */

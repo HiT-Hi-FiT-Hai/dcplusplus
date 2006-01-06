@@ -177,7 +177,7 @@ void NmdcHub::updateFromTag(Identity& id, const string& tag) {
 		}
 	}
 	/// @todo Think about this
-	id.set("TA", tag);
+	id.set("TA", '<' + tag + '>');
 }
 
 void NmdcHub::onLine(const string& aLine) throw() {
@@ -797,6 +797,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.49 2006/01/01 17:49:56 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.50 2006/01/06 14:44:31 arnetheduck Exp $
  */
 

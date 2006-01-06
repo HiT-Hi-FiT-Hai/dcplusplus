@@ -1149,8 +1149,8 @@ void SearchFrame::SearchInfo::update() {
 		path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 		type = TSTRING(DIRECTORY);
 	}
-	nick = Text::toT(sr->getUser()->getFirstNick());
-	/// @todo connection = Text::toT(sr->getUser()->getConnection());
+	nick = WinUtil::getNicks(sr->getUser());
+	connection = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
 	hubName = Text::toT(sr->getHubName());
 	slots = Text::toT(sr->getSlotString());
 	ip = Text::toT(sr->getIP());
@@ -1166,5 +1166,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.106 2005/12/24 23:13:26 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.107 2006/01/06 14:44:32 arnetheduck Exp $
  */

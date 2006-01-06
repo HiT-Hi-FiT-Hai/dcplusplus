@@ -398,11 +398,11 @@ void FavoriteManager::load() {
 	
 	// Add NMDC standard op commands
 	static const char kickstr[] = 
-		"$To: %[nick] From: %[mynick] $<%[mynick]> You are being kicked because: %[line:Reason]|<%[mynick]> %[mynick] is kicking %[nick] because: %[line:Reason]|$Kick %[nick]|";
+		"$To: %[userNI] From: %[myNI] $<%[myNI]> You are being kicked because: %[line:Reason]|<%[myNI]> %[myNI] is kicking %[userNI] because: %[line:Reason]|$Kick %[userNI]|";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
 		STRING(KICK_USER), kickstr, "op");
 	static const char redirstr[] =
-		"$OpForceMove $Who:%[nick]$Where:%[line:Target Server]$Msg:%[line:Message]|";
+		"$OpForceMove $Who:%[userNI]$Where:%[line:Target Server]$Msg:%[line:Message]|";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
 		STRING(REDIRECT_USER), redirstr, "op");
 
@@ -411,18 +411,6 @@ void FavoriteManager::load() {
 		"HDSC %[mycid] %[cid] DI ND Friendly\\ disconnect\n";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
 		STRING(DISCONNECT_USER), adc_disconnectstr, "adc://op");
-	static const char adc_kickstr[] =
-		"HDSC %[mycid] %[cid] KK KK %[line:Reason]\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(KICK_USER), adc_kickstr, "adc://op");
-	static const char adc_banstr[] =
-		"HDSC %[mycid] %[cid] BN BN %[line:Seconds (-1 = forever)] %[line:Reason]\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(BAN_USER), adc_banstr, "adc://op");
-	static const char adc_redirstr[] =
-		"HDSC %[mycid] %[cid] RD RD %[line:Redirect address] %[line:Reason]\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(REDIRECT_USER), adc_redirstr, "adc://op");
 
 
 	try {
@@ -612,12 +600,23 @@ void FavoriteManager::refresh() {
 }
 
 UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hubs) {
+	bool isOp = false;
+	for(StringIterC i = hubs.begin(); i != hubs.end(); ++i) {
+		if(ClientManager::getInstance()->isOp(ClientManager::getInstance()->getMe(), *i)) {
+			isOp = true;
+			break;
+		}
+	}
+
 	Lock l(cs);
 	UserCommand::List lst;
 	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
         if( (uc.getCtx() & ctx) && 
-			(find_if(hubs.begin(), hubs.end(), bind1st(equal_to<string>(), uc.getHub())) != hubs.end()) ) 
+			(	uc.getHub().empty() || 
+				(uc.getHub() == "op" && isOp) ||
+				(find_if(hubs.begin(), hubs.end(), bind1st(equal_to<string>(), uc.getHub())) != hubs.end())
+			) ) 
 		{
 			lst.push_back(*i);
 		}
@@ -685,5 +684,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.15 2006/01/01 17:49:56 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.16 2006/01/06 14:44:31 arnetheduck Exp $
  */

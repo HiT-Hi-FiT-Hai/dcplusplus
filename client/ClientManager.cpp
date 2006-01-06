@@ -28,6 +28,7 @@
 #include "FavoriteManager.h"
 #include "SimpleXML.h"
 #include "UserCommand.h"
+#include "ResourceManager.h"
 
 #include "AdcHub.h"
 #include "NmdcHub.h"
@@ -116,6 +117,14 @@ StringList ClientManager::getNicks(const CID& cid) {
 	return lst;
 }
 
+string ClientManager::getConnection(const CID& cid) {
+	Lock l(cs);
+	OnlineIter i = onlineUsers.find(cid);
+	if(i != onlineUsers.end()) {
+		return i->second->getIdentity().getConnection();
+	}
+	return STRING(OFFLINE);
+}
 
 int64_t ClientManager::getAvailable() {
 	Lock l(cs);
@@ -138,6 +147,26 @@ bool ClientManager::isConnected(const string& aUrl) {
 	return false;
 }
 
+string ClientManager::findHub(const string& ipPort) {
+	Lock l(cs);
+
+	string ip;
+	short port = 411;
+	string::size_type i = ipPort.find(':');
+	if(i == string::npos) {
+		ip = ipPort;
+	} else {
+		ip = ip.substr(0, i);
+		port = (short)Util::toInt(ipPort.substr(i+1));
+	}
+
+	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
+		Client* c = *i;
+		if(c->getPort() == port && c->getIp() == ip)
+			return c->getHubUrl();
+	}
+	return Util::emptyString;
+}
 
 User::Ptr ClientManager::getLegacyUser(const string& aNick) throw() {
 	Lock l(cs);
@@ -212,8 +241,9 @@ bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
 	Lock l(cs);
 	pair<OnlineIter, OnlineIter> p = onlineUsers.equal_range(user->getCID());
 	for(OnlineIter i = p.first; i != p.second; ++i) {
-		if(i->second->getClient().getHubUrl() == aHubUrl)
-			return true;
+		if(i->second->getClient().getHubUrl() == aHubUrl) {
+			return i->second->getClient().getMyIdentity().isOp();
+		}
 	}
 	return false;
 }
@@ -517,5 +547,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.86 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.87 2006/01/06 14:44:31 arnetheduck Exp $
  */

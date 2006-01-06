@@ -51,21 +51,13 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, const TTHValue* aTTH, bool aUtf8);
 	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue* aTTH);
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubIpPort, const string& aIp, bool aUtf8) :
-	file(aFile), hubName(isTTH(aHubName) ? Util::emptyString : aHubName), hubIpPort(aHubIpPort), user(aUser), 
-		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 
-		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), utf8(aUtf8), ref(1) { }
-
-	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
-		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubIpPort, TTHValue* aTTH, bool aUtf8) :
-	file(aFile), hubName(aHubName), hubIpPort(aHubIpPort), user(aUser), 
-		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
+		const string& aHubURL, const string& ip, TTHValue* aTTH, bool aUtf8) :
+	file(aFile), hubName(aHubName), hubURL(aHubURL), user(aUser), 
+		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(ip),
 		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), utf8(aUtf8), ref(1) { }
 
 	string getFileName() const;
@@ -76,16 +68,15 @@ public:
 	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
 
 	const string& getFile() const { return file; }
-	const string& getHubIpPort() const { return hubIpPort; }
-	/** @todo Return a hub where the user is online? */
+	const string& getHubURL() const { return hubURL; }
 	const string& getHubName() const { return hubName; }
 	int64_t getSize() const { return size; }
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
-	const string& getIP() const { return IP; }
 	TTHValue* getTTH() const { return tth; }
 	bool getUtf8() const { return utf8; }
+	const string& getIP() const { return IP; }
 
 	void incRef() { Thread::safeInc(ref); }
 	void decRef() { 
@@ -103,7 +94,7 @@ private:
 
 	string file;
 	string hubName;
-	string hubIpPort;
+	string hubURL;
 	User::Ptr user;
 	int64_t size;
 	Types type;
@@ -114,10 +105,6 @@ private:
 	
 	bool utf8;
 	volatile long ref;
-
-	bool isTTH(const string& str) const {
-		return str.compare(0, 4, "TTH:") == 0;
-	}
 };
 
 class SearchManager : public Speaker<SearchManagerListener>, public Singleton<SearchManager>, public Thread
@@ -203,5 +190,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.56 2005/07/23 17:52:02 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.57 2006/01/06 14:44:31 arnetheduck Exp $
  */

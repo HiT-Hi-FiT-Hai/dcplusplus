@@ -183,7 +183,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 	}
 
 	if(!u->getIdentity().isTcpActive()) {
-		send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Not active", AdcCommand::TYPE_DIRECT).setTo(c.getFrom()));
+		send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "IP unknown", AdcCommand::TYPE_DIRECT).setTo(c.getFrom()));
 		return;
 	}
 
@@ -273,7 +273,7 @@ void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
 
 void AdcHub::connect(const OnlineUser& user) {
 	u_int32_t r = Util::rand();
-	connect(user, Util::toString(r), user.getUser()->isSet(User::SSL));
+	connect(user, Util::toString(r), BOOLSETTING(USE_SSL) && user.getUser()->isSet(User::SSL));
 }
 
 void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
@@ -461,5 +461,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.59 2005/12/26 17:16:02 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.60 2006/01/06 14:44:31 arnetheduck Exp $
  */
