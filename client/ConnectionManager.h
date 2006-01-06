@@ -61,6 +61,34 @@ private:
 	
 	User::Ptr user;
 };
+
+class ExpectedMap {
+public:
+	void add(const string& aNick, const string& aMyNick, const string& aHubUrl) {
+		Lock l(cs);
+		expectedConnections.insert(make_pair(aNick, make_pair(aMyNick, aHubUrl)));
+	}
+
+	pair<string, string> remove(const string& aNick) {
+		Lock l(cs);
+		ExpectMap::iterator i = expectedConnections.find(aNick);
+		
+		if(i == expectedConnections.end()) return make_pair(Util::emptyString, Util::emptyString);
+
+		pair<string, string> tmp = make_pair(i->second.first, i->second.second);
+		expectedConnections.erase(i);
+		
+		return tmp;
+	}
+
+private:
+	/** Nick -> myNick, hubUrl for expected NMDC incoming connections */
+	typedef map<string, pair<string, string> > ExpectMap;
+	ExpectMap expectedConnections;
+
+	CriticalSection cs;
+};
+
 // Comparing with a user...
 inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; }
 
@@ -70,7 +98,7 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 {
 public:
 	void nmdcExpect(const string& aNick, const string& aMyNick, const string& aHubUrl) {
-		expectedConnections.insert(make_pair(aNick, make_pair(aMyNick, aHubUrl)));
+		expectedConnections.add(aNick, aMyNick, aHubUrl);
 	}
 
 	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
@@ -130,9 +158,7 @@ private:
 	StringList features;
 	StringList adcFeatures;
 
-	/** Nick -> myNick, hubUrl for expected NMDC incoming connections */
-	typedef map<string, pair<string, string> > ExpectMap;
-	ExpectMap expectedConnections;
+	ExpectedMap expectedConnections;
 
 	u_int32_t floodCounter;
 
@@ -181,5 +207,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.73 2005/12/03 12:32:36 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.74 2006/01/06 21:00:29 arnetheduck Exp $
  */

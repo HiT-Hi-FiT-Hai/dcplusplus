@@ -284,7 +284,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 				freeSlots = Util::toInt(str.substr(2));
 			} else if(str.compare(0, 2, "SI") == 0) {
 				size = Util::toInt64(str.substr(2));
-			} else if(str.compare(0, 2, "TH") == 0) {
+			} else if(str.compare(0, 2, "TR") == 0) {
 				tth = str.substr(2);
 			}
 		}
@@ -357,5 +357,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.61 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.62 2006/01/06 21:00:29 arnetheduck Exp $
  */

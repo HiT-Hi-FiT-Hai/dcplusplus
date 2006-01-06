@@ -68,6 +68,7 @@
 * Added some right-to-left support, but it probably needs more work
 * [NMDC] Minislots are only given to clients supporting them (any dc++ >= 0.304 for example)
 * [ADC] Directory size returned with search results
+* Fixed a rare deadlock
 
 -- 0.674 2005-04-10 --
 *** WARNING ***

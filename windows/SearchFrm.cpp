@@ -1148,6 +1148,10 @@ void SearchFrame::SearchInfo::update() {
 		fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
 		path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 		type = TSTRING(DIRECTORY);
+		if(sr->getSize() > 0) {
+			size = Text::toT(Util::formatBytes(sr->getSize()));
+			exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
+		}
 	}
 	nick = WinUtil::getNicks(sr->getUser());
 	connection = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
@@ -1166,5 +1170,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.107 2006/01/06 14:44:32 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.108 2006/01/06 21:00:32 arnetheduck Exp $
  */
