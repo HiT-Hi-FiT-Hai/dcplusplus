@@ -1015,6 +1015,12 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 			ucParams["fileSIshort"] = Util::formatBytes(ii->dir->getTotalSize());
 		}
 
+		// compatibility with 0.674 and earlier
+		ucParams["file"] = ucParams["fileFN"];
+		ucParams["filesize"] = ucParams["fileSI"];
+		ucParams["filesizeshort"] = ucParams["fileSIshort"];
+		ucParams["tth"] = ucParams["fileTR"];
+
 		StringMap tmp = ucParams;
 		User::Ptr tmpPtr = dl->getUser();
 		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
@@ -1023,5 +1029,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.76 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.77 2006/01/09 22:44:49 arnetheduck Exp $
  */

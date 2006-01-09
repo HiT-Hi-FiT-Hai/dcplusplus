@@ -51,6 +51,7 @@ void Client::reloadSettings() {
 		setPassword(hub->getPassword());
 	} else {
 		getMyIdentity().setNick(checkNick(SETTING(NICK)));
+		getMyIdentity().setDescription(SETTING(DESCRIPTION));
 	}
 	getMyIdentity().setUser(ClientManager::getInstance()->getMe());
 	getMyIdentity().setHubUrl(getHubUrl());
@@ -121,5 +122,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.89 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.90 2006/01/09 22:44:49 arnetheduck Exp $
  */

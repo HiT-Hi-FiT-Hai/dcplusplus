@@ -76,11 +76,11 @@ void SSLSocketFactory::loadCertificates() throw() {
 
 	if(!SETTING(SSL_PRIVATE_KEY_FILE).empty()) {
 		if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-			LogManager::getInstance()->message("Failed to load certificate file");
+			LogManager::getInstance()->message("Failed to load private key");
 			return;
 		}
 		if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-			LogManager::getInstance()->message("Failed to load certificate file");
+			LogManager::getInstance()->message("Failed to load private key");
 			return;
 		}
 	}

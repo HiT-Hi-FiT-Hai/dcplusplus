@@ -140,6 +140,10 @@ void TransferView::runUserCommand(UserCommand& uc) {
 
 		StringMap tmp = ucParams;
 		tmp["fileFN"] = Text::fromT(itemI->path + itemI->file);
+
+		// compatibility with 0.674 and earlier
+		ucParams["file"] = ucParams["fileFN"];
+
 		ClientManager::getInstance()->userCommand(itemI->user, uc, tmp, true);
 	}
 	return;
@@ -611,5 +615,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.59 2005/12/24 23:13:26 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.60 2006/01/09 22:44:49 arnetheduck Exp $
  */

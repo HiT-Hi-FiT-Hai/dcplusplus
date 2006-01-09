@@ -169,7 +169,9 @@ enum Strings { // @DontAdd
 	HUBS, // "Hubs"
 	HUB_ADDRESS, // "Address"
 	HUB_LIST_DOWNLOADED, // "Hub list downloaded..."
+	HUB_LIST_EDIT, // "Edit the hublist"
 	HUB_NAME, // "Name"
+	HUB_LIST, // "Hublist"
 	HUB_PASSWORD, // "Hub password"
 	HUB_USERS, // "Users"
 	IGNORE_TTH_SEARCHES, // "Ignore TTH searches"
@@ -481,11 +483,11 @@ enum Strings { // @DontAdd
 	SETTINGS_STATUS_IN_CHAT, // "View status messages in main chat"
 	SETTINGS_TCP_PORT, // "TCP Port"
 	SETTINGS_TEXT_MINISLOT, // "Mini slot size"
-	SETTINGS_PRIO_HIGHEST, // "Highest prio max size", 
-	SETTINGS_PRIO_HIGH, // "High prio max size", 
-	SETTINGS_PRIO_NORMAL, // "Normal prio max size", 
-	SETTINGS_PRIO_LOW, // "Low prio max size", 
-	SETTINGS_PRIO_LOWEST, // "Set lowest prio for newly added files larger than Low prio size", 
+	SETTINGS_PRIO_HIGHEST, // "Highest prio max size"
+	SETTINGS_PRIO_HIGH, // "High prio max size"
+	SETTINGS_PRIO_NORMAL, // "Normal prio max size"
+	SETTINGS_PRIO_LOW, // "Low prio max size"
+	SETTINGS_PRIO_LOWEST, // "Set lowest prio for newly added files larger than Low prio size"
 	SETTINGS_TIME_STAMPS, // "Show timestamps in chat by default"
 	SETTINGS_TIME_STAMPS_FORMAT, // "Set timestamps"
 	SETTINGS_TOGGLE_ACTIVE_WINDOW, // "Toggle window when selecting an active tab"

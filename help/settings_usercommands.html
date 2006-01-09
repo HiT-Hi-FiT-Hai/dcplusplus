@@ -51,24 +51,47 @@ variables and <a href="settings_logs.html#timeformat">date/time
 specifiers</a> (%Y, %m, ...). The following variables are also
 available:<br>
 <ul style="margin-left: 40px;">
-  <li>%[mynick]: Your own nick</li>
-  <li>%[nick]: The user's nick (user &amp; search context only)</li>
-  <li>%[tag]: The user's tag (user &amp; search context only)</li>
-  <li>%[description]: The user's description (user &amp; search context only)</li>
-  <li>%[email]: The user's email (user &amp; search context only)</li>
-  <li>%[share]: The user's shared bytes (exact) (user &amp; search
-context only)</li>
-  <li>%[shareshort]: The user's shared bytes (formatted) (user &amp;
-search context only)</li>
-  <li>%[ip]: The user's ip (if supported by hub)</li>
-  <li>%[file]: Filename (search context and in transferview only)</li>
-  <li>%[filesize]: File size (search context only)</li>
-  <li>%[filesizeshort]: File size, short version including units
-(search context only)</li>
-  <li>%[tth]: TTH for the file (search context only)</li>
-  <li>%[line:reason]: Opens up a window asking for "reason"</li>
-  <li>%[mycid]: Your ADC CID </li>
-  <li>%[cid]: The user's ADC CID </li>
+  <li>%[fileFN]: Filename (search, file list, and&nbsp;transfer view contexts only)</li>
+  <li>%[fileSIsize]: File size (search, file list contexts only)</li>
+  <li>%[fileSIshort]: File size, short version including units
+(search, file list contexts only)</li>
+  <li>%[fileTR]: TTH for the file, or "NONE" (search, file list contexts only)</li>
+  <li>%[type]: "File" or "Directory" (directory context only)</li>
+  <li>%[line:<span style="font-style: italic;">reason</span>]: Opens up a window asking for "<span style="font-style: italic;">reason</span>"</li>
+</ul>
+In addition to these variables, all of the ADC INF flags are available, with the following prefixes: <span style="font-weight: bold;">my</span>, <span style="font-weight: bold;">user</span>, and <span style="font-weight: bold;">hub</span>. &nbsp;Some may <span style="text-decoration: underline;">not</span> be available on NMDC hubs. &nbsp;Many&nbsp; useful ones are enumerated below:<br>
+<div style="margin-left: 40px;">
+<ul>
+  <li>%[myNI]: Your&nbsp;nick</li>
+  <li>%[myCID]: Your ADC CID</li>
+  <li>%[userNI]: The user's nick</li>
+  <li>%[userCID]: The user's ADC CID</li>
+  <li>%[userI4]: The user's IP (if supported by hub)</li>
+  <li>%[userTAG]: The user's tag</li>
+  <li>%[userDE]: The user's description</li>
+  <li>%[userEM]: The user's email</li>
+  <li>%[userSS]: The user's shared bytes (exact)</li>
+  <li>%[userSSshort]: The user's shared bytes (formatted with units)</li>
+</ul>
+</div>
+<h2 style="margin-left: 40px;">Compatibilty Variables</h2>
+<ul style="margin-left: 40px;">
+  <ul>
+    <li>%[mynick] = %[myNI]</li>
+    <li>%[nick] = %[userNI]</li>
+    <li>%[file] = %[fileFN]</li>
+    <li>%[filesize] = %[fileSI]</li>
+    <li>%[filesizeshort] = %[fileSIshort]</li>
+    <li>%[tth] = %[fileTR]</li>
+    <li>%[mycid] = %[myCID] </li>
+    <li>%[cid] = %[userCID]</li>
+    <li>%[ip] = %[userI4]</li>
+    <li>%[tag] = %[userTAG]</li>
+    <li>%[description] = %[userDE]</li>
+    <li>%[email] &nbsp;= %[userEM]</li>
+    <li>%[share] = %[userSS]</li>
+    <li>%[shareshort] = %[userSSshort]</li>
+  </ul>
 </ul>
 </body>
 </html>

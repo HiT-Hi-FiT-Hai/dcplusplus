@@ -12,6 +12,78 @@
 <body>
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
+<h2>0.68 <span style="color: gray;">(2006-01-08)</span></h2>
+<ul>
+  <li>Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of which users are actually the same for NMDC (essentially, NMDC users are now identified by nick+hub always, not only nick)</li>
+  <li>Removed saving of directories scheduled for download, since the individual files should appear in the queue fast enough that this will rarely be used (since file lists are free and downloaded almost instantly)</li>
+  <li>Fixed international timestamps (thanks ullner)</li>
+  <li>Fixed targetdrive docs (thanks ullner)</li>
+  <li>[bug 485] Fixed transfer list view flicker on WinXP</li>
+  <li>New connection settings, please check settings page</li>
+  <li>Connection type strings changed</li>
+  <li>No longer falls back to passive mode on failed UPnP</li>
+  <li>Janitorial cleanups (thanks garg)</li>
+  <li>Removed some old favorite file format compatibility code</li>
+  <li>Added country to search frame (thanks paka)</li>
+  <li>Strftime fix (thanks garg)</li>
+  <li>[bug 521] Help instead of readme shown on first startup (thanks paka)</li>
+  <li>[bug 553] Minimize to tray and confirm appexit default to true (thanks paka)</li>
+  <li>[bug 452] Fixed example.xml language file generation (thanks tpo)</li>
+  <li>[bug 556] Fixed last searches purge (thanks sulan)</li>
+  <li>[bug 73] Added option to disconnect slow sources (thanks paka)</li>
+  <li>ADC hub counts updated correctly (thanks ullner)</li>
+  <li>[bug 325] Added error message when adding dupe fav hub (thanks ullner)</li>
+  <li>Updated bzip2 to 1.0.3 (thanks garg)</li>
+  <li>Some small *nix fixes (thanks poison)</li>
+  <li>Source path no longer saved for TTH enabled clients (saves memory and queue file space)</li>
+  <li>[bug 335] Search window settings saved automatically (thanks pothead)</li>
+  <li>Open folder selects file in explorer (thanks pothead)</li>
+  <li>Local echo in pm window formatted as the other side should see it (thanks paka)</li>
+  <li>Fixed debug assertion (thanks tpo)</li>
+  <li>Dirty tabs settings improved (thanks ullner)</li>
+  <li>ZLib upgraded to 1.2.3, possibly fixing security issues (thanks garg)</li>
+  <li>Slot grants now last one connection instead of 10 minutes</li>
+  <li>[bug 632] Subtotals shown when selecting users in hub frame (thanks cologic)</li>
+  <li>[bug 625] /u chat command opens url (thanks pur)</li>
+  <li>[NMDC] The first word of hub name is taken as short name for displaying purposes when space is limited</li>
+  <li>[bug 629] Waiting users frame added (thanks cologic)</li>
+  <li>Removed old versions check (thanks cologic)</li>
+  <li>[bug 635] Added option to limit maximum file list size to open (thanks paka)</li>
+  <li>Filelist transfer logging default to off (thanks paka)</li>
+  <li>Added some checks when creating fav hubs (thanks tpo)</li>
+  <li>More settings screen updates (thanks ullner)</li>
+  <li>Fixed linux file moving (thanks naga)</li>
+  <li>[bug 260] Added option to only download files with TTH (thanks ullner)</li>
+  <li>[bug 708] Fixed registry creation functions used (thanks ullner)</li>
+  <li>Updated WTL</li>
+  <li>Rewrote socket code to remove some old hacks and add some new (major change)</li>
+  <li>Now using standard windows error messages for socket errors</li>
+  <li>[ADC] Added basic SSL encryption support</li>
+  <li>Fixed a bug with file list loading and filenames differing in case only</li>
+  <li>Fixed a few standard compliance issues</li>
+  <li>Added dirtying to waiting users frame (thanks ullner)</li>
+  <li>Changed so that a few flags are shown in transfer status, [T] = TTH check on, [Z] = zlib on, [R] = rollback performed, [S] = secure</li>
+  <li>Parameter names all updated, your current %[xxx] macros will break all over, on the upside they're now more or less unified</li>
+  <li>[ADC] All hubs a user is online on are shown where only one was shown before</li>
+  <li>Fixed some log page issues</li>
+  <li>Replaced small buffer size option with the possibility to set recv/send buffer sizes manually</li>
+  <li>Consolidated bolding options, you'll have to reset them to your preference</li>
+  <li>Removed support for old hash index files (pre-0.670)</li>
+  <li>Improved hashing error reporting</li>
+  <li>Fixed hash database rebuild</li>
+  <li>Added /removefav command to remove a favorite hub (thanks ullner)</li>
+  <li>[bug 717] Fixed search combo box (thanks pothead)</li>
+  <li>Added option to change auto-refresh interval (thanks ullner)</li>
+  <li>[bug 740] Removed tab completion option (thanks ullner)</li>
+  <li>[bug 743] Added registry key creation failure notification (thanks ullner)</li>
+  <li>[bug 717] Fixed dropdown sizes (thanks pothead)</li>
+  <li>[bug 760] Fixed list subtraction issue (thanks cologic)</li>
+  <li>Added some right-to-left support, but it probably needs more work</li>
+  <li>[NMDC] Minislots are no longer given to old DC++ clients (&lt;0.304)</li>
+  <li>[ADC] Directory size returned with search results</li>
+  <li>Fixed a rare deadlock</li>
+</ul>
+
 <h2>0.674 <span style="color: gray;">(2005-04-10)</span></h2>
 <ul>
   <li><span style="color: red;">*** WARNING ***</span></li>
@@ -409,6 +481,7 @@ See the version history of DC++ below.
   <li>Search by TTH greyed out for items that don't have a TTH root (thanks slowmo)</li>
   <li>Added default menu items to finished frames (thanks slowmo)</li>
   <li>TTH leaves (TTHL) exchanged between capable clients to verify data integrity</li>
+  <li>Fixed a disconnecting bug caused when $UGetBlock and $GetZBlock are given an unknown number of bytes to send</li>
 </ul>
 
 <h2>0.401 <span style="color: gray;">(2004-03-28)</span></h2>
@@ -543,7 +616,7 @@ See the version history of DC++ below.
   <li>Added check so that temp directory cannot be added to share list</li>
   <li>Hopefully speeded up hub connect a little</li>
   <li>Fixed transfer view sorting I think, this is how it should be: running downloads, running uploads, waiting downloads, waiting uploads</li>
-  <li>Fixed missing string (thanks gargoyle)</li>
+  <li>Fixed missing string (thanks garg)</li>
   <li>Fixed invalid date added formatting</li>
   <li>Fixed trimming of spaces for http downloads (hub list...)</li>
   <li>Fixed a bug in autosearch when using auto search strings (thanks ilkka seppälä)</li>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.6745" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.68" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -165,7 +165,9 @@
 		<String Name="Hubs">Hubs</String>
 		<String Name="HubAddress">Address</String>
 		<String Name="HubListDownloaded">Hub list downloaded...</String>
+		<String Name="HubListEdit">Edit the hublist</String>
 		<String Name="HubName">Name</String>
+		<String Name="HubList">Hublist</String>
 		<String Name="HubPassword">Hub password</String>
 		<String Name="HubUsers">Users</String>
 		<String Name="IgnoreTthSearches">Ignore TTH searches</String>

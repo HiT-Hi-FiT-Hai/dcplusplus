@@ -237,8 +237,8 @@ SettingsManager::SettingsManager()
 	setDefault(NO_IP_OVERRIDE, false);
 	setDefault(SEARCH_ONLY_FREE_SLOTS, false);
 	setDefault(LAST_SEARCH_TYPE, 0);
-	setDefault(SOCKET_IN_BUFFER, 8192);
-	setDefault(SOCKET_OUT_BUFFER, 8192);
+	setDefault(SOCKET_IN_BUFFER, 64*1024);
+	setDefault(SOCKET_OUT_BUFFER, 64*1024);
 	setDefault(ONLY_DL_TTH_FILES, false);
 	setDefault(OPEN_WAITING_USERS, false);
 	setDefault(OPEN_SYSTEM_LOG, true);
@@ -417,5 +417,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.139 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.140 2006/01/09 22:44:49 arnetheduck Exp $
  */

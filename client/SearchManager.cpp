@@ -303,12 +303,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			fire(SearchManagerListener::SR(), sr);
 			sr->decRef();
 		}
-	} else if(x.compare(1, 4, "SCH ") == 0 && x[x.length() - 1] == 0x0a) {
+	} /*else if(x.compare(1, 4, "SCH ") == 0 && x[x.length() - 1] == 0x0a) {
 		try {
 			respond(AdcCommand(x.substr(0, x.length()-1)));
 		} catch(ParseException& ) {
 		}
-	}
+	}*/ // Needs further DoS investigation
 }
 
 void SearchManager::respond(const AdcCommand& adc) {
@@ -357,5 +357,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.62 2006/01/06 21:00:29 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.63 2006/01/09 22:44:49 arnetheduck Exp $
  */

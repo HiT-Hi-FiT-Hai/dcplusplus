@@ -33,6 +33,8 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 	}
 	if(user) {
 		sm[prefix + "CID"] = user->getCID().toBase32();
+		sm[prefix + "TAG"] = getTag();
+		sm[prefix + "SSshort"] = Util::formatBytes(get("SS"));
 
 		if(compatibility) {
 			if(prefix == "my") {
@@ -41,6 +43,12 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 			} else {
 				sm["nick"] = getNick();
 				sm["cid"] = user->getCID().toBase32();
+				sm["ip"] = get("I4");
+				sm["tag"] = getTag();
+				sm["description"] = get("DE");
+				sm["email"] = get("EM");
+				sm["share"] = get("SS");
+				sm["shareshort"] = Util::formatBytes(get("SS"));
 			}
 		}
 	}
@@ -58,5 +66,5 @@ const bool Identity::supports(const string& name) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.50 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: User.cpp,v 1.51 2006/01/09 22:44:49 arnetheduck Exp $
  */

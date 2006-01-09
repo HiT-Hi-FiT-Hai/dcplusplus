@@ -117,8 +117,8 @@ public:
 		TCHAR buf[256];
 		while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			LineDlg hublist;
-			hublist.title = _T("Hublist");
-			hublist.description = _T("Edit the hublist");
+			hublist.title = CTSTRING(HUB_LIST);
+			hublist.description = CTSTRING(HUB_LIST_EDIT);
 			ctrlList.GetItemText(i, 0, buf, 256);
 			hublist.line = tstring(buf);
 			if(hublist.DoModal(m_hWnd) == IDOK) {
@@ -164,5 +164,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsListDlg.h,v 1.7 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: PublicHubsListDlg.h,v 1.8 2006/01/09 22:44:49 arnetheduck Exp $
  */

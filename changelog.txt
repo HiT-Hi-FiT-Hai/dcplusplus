@@ -1,4 +1,4 @@
-﻿-- 0.69 --
+﻿-- 0.68 2006-01-08 --
 * Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of
   which users are actually the same for NMDC (essentially, NMDC users are now identified by nick+hub always, not only nick)
 * Removed saving of directories scheduled for download, since the individual files should appear in the queue fast enough that
@@ -32,7 +32,7 @@
 * Slot grants now last one connection instead of 10 minutes
 * [bug 632] Subtotals shown when selecting users in hub frame (thanks cologic)
 * [bug 625] /u chat command opens url (thanks pur)
-* (NMDC) The first word of hub name is taken as short name for displaying purposes when space is limited
+* [NMDC] The first word of hub name is taken as short name for displaying purposes when space is limited
 * [bug 629] Waiting users frame added (thanks cologic)
 * Removed old versions check (thanks cologic)
 * [bug 635] Added option to limit maximum file list size to open (thanks paka)
@@ -49,13 +49,13 @@
 * Fixed a bug with file list loading and filenames differing in case only
 * Fixed a few standard compliance issues
 * Added dirtying to waiting users frame (thanks ullner)
-* Changed so that a few flags are shown in transfer status, [T] = TTH check on, [Z] = zlib on, [R] = rollback performed
+* Changed so that a few flags are shown in transfer status, [T] = TTH check on, [Z] = zlib on, [R] = rollback performed, [S] = secure
 * Parameter names all updated, your current %[xxx] macros will break all over, on the upside they're now more or less unified
 * [ADC] All hubs a user is online on are shown where only one was shown before 
 * Fixed some log page issues
 * Replaced small buffer size option with the possibility to set recv/send buffer sizes manually
 * Consolidated bolding options, you'll have to reset them to your preference
-* Removed support for old hash index files (pre-0.670 I think)
+* Removed support for old hash index files (pre-0.670)
 * Improved hashing error reporting
 * Fixed hash database rebuild
 * Added /removefav command to remove a favorite hub (thanks ullner)
@@ -66,7 +66,7 @@
 * [bug 717] Fixed dropdown sizes (thanks pothead)
 * [bug 760] Fixed list subtraction issue (thanks cologic)
 * Added some right-to-left support, but it probably needs more work
-* [NMDC] Minislots are only given to clients supporting them (any dc++ >= 0.304 for example)
+* [NMDC] Minislots are no longer given to old DC++ clients (<0.304)
 * [ADC] Directory size returned with search results
 * Fixed a rare deadlock
 
@@ -470,6 +470,8 @@
 * Search by TTH greyed out for items that don't have a TTH root (thanks slowmo)
 * Added default menu items to finished frames (thanks slowmo)
 * TTH leaves (TTHL) exchanged between capable clients to verify data integrity
+* Fixed a disconnecting bug caused when $UGetBlock and $GetZBlock are given an 
+  unknown number of bytes to send
 
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue
@@ -604,7 +606,7 @@
 * Hopefully speeded up hub connect a little
 * Fixed transfer view sorting I think, this is how it should be: running downloads, running uploads, waiting 
   downloads, waiting uploads
-* Fixed missing string (thanks gargoyle)
+* Fixed missing string (thanks garg)
 * Fixed invalid date added formatting
 * Fixed trimming of spaces for http downloads (hub list...)
 * Fixed a bug in autosearch when using auto search strings (thanks ilkka seppälä)
