@@ -1211,6 +1211,8 @@ int QueueManager::countOnlineSources(const string& aTarget) {
 	Lock l(cs);
 
 	QueueItem* qi = fileQueue.find(aTarget);
+	if(qi == NULL)
+		return 0;
 	int onlineSources = 0;
 	for(QueueItem::Source::Iter i = qi->getSources().begin(); i != qi->getSources().end(); ++i) {
 		if((*i)->getUser()->isOnline())
@@ -1381,5 +1383,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.140 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.141 2006/01/09 23:29:40 arnetheduck Exp $
  */
