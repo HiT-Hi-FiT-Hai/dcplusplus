@@ -45,15 +45,6 @@ magnet.exe is installed on the system or is located in the
 application's directory. Disabling will make DC++ remove the key from
 the Windows registry.<br>
   </dd>
-  <dt><a name="smallbuffer"></a>Use Small Send Buffer</dt>
-  <dd>Enable this option if download speeds slow down when uploading
-files. Users on asynchronous lines with less upstream than downstream
-will often notice this. Acknowledgement packets for incoming data have
-to wait in line between the outgoing data. This results in slower
-sending of acknowledgements packets resulting in a slowdown in the
-incoming data transfer. Enabling this option will break the outgoing
-data up into smaller packets so acknowledgement packets can get through
-more quickly.</dd>
   <dt>Don't Delete File Lists When Exiting</dt>
   <dd>If this option is disabled, DC++ will delete the contents of the
 file list directory, where file lists are stored, when
@@ -86,21 +77,13 @@ files are accompanied by a so-called sfv-file which contains CRC32
 checksums of each file. If there is an sfv-file included, DC++ will
 check that your download is free of corruption and retry the download
 that wasn't the case.</dd>
-  <dt>Automatically Refresh Share List Every Hour</dt>
-  <dd>If you have a dynamic share (files getting added, moved or
-deleted all the time) enabling this option is a must. Your file list
-will be refreshed every hour, keeping the users on the hub up to date
-with your current share. <span style="font-style: italic;">Disabling
-this option is really only needed for really large shares where
-refreshing takes so much time that the client is unusable in the mean
-time.</span></dd>
   <dt>Don't Send the Away Message to Bots</dt>
   <dd>When in away mode, don't send the away message to users that
 appear to be bots. Having this option disabled is very annoying if you
 get messages from bots that link chat from multiple users (the most
 well known example is the Operator Chat facility found in many hubs).
-Users are judged to be bots if they have an empty Connection type. <span
- style="font-style: italic;">Enable if unsure.</span></dd>
+Users are judged to be bots if they have an empty Connection type. <span style="font-style: italic;">Enable if unsure.</span></dd>
+
   <dt><a name="break"></a>Break on First ADLSearch Match</dt>
   <dd>If you're using the <a href="adlsearch.html">ADLSearch</a>
 features, keeping this option enabled will make a file show up in only
@@ -117,8 +100,8 @@ match "[BBB]arnetheduck").</dd>
   <dd>When transfering data with a compatible client, DC++ will try to
 use ZLIB compression with integrity checks. This uses some CPU cycles,
 but can dramatically speed up transfers of uncompressed files as well
-as ensure file integrity (reduce the chance of corruption to near zero).<span
- style="font-style: italic;">Enable if unsure.</span></dd>
+as ensure file integrity (reduce the chance of corruption to near zero).<span style="font-style: italic;">Enable if unsure.</span></dd>
+
   <dt>Accept Custom User Command From Hub</dt>
   <dd>This option lets you enable or disable DC++'s ability to retrieve
 custom commands from a remote&nbsp;hub. Custom User Commands may show
@@ -136,12 +119,12 @@ will not appear in your file list until the next refresh.</dd>
   <dt>Use CTRL for line history</dt>
   <dd>Press up arrow while holding down CTRL to scroll through line
 history. If not enabled, up arrow will be enough.</dd>
-  <dt>Toggle window when selecting an active tab</dt>
-  <dd>With this option enabled, clicking on an active tab will mimic
-the behavior of Windows 98+ and send the currently active window to the
-background. The most recently accessed window will become the new
-active window.<br>
-  </dd>
+  <dt>Use SSL when remote client supports it</dt>
+  <dd>When this option is enabled, DC++ will connect to&nbsp;remote
+clients on an ADC hub that support SSL using SSL. &nbsp;This option is
+an experimental one, and shouldn't imply that DC++ is secure in any way.</dd>
+  <span style="font-weight: bold;">Use SSL when remote client supports it<br>
+  </span>
 </dl>
 </body>
 </html>

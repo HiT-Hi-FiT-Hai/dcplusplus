@@ -29,8 +29,7 @@ to configuring UPnP</a>.</dd>
   <dt>Firewall with manual port
 forwarding</dt>
   <dd>Select this mode if you are behind a firewall (router), and will
-set up the TCP and UDP port forwarding on your own. You <span
- style="text-decoration: underline;">will</span> need to specify the
+set up the TCP and UDP port forwarding on your own. You <span style="text-decoration: underline;">will</span> need to specify the
 external IP address of your router using the setting below if you want
 downloads to work properly. Use <a href="faq_activemode.html">this
 guide</a> to set up active mode.</dd>
@@ -54,10 +53,9 @@ between 1025 and 32000.</dd>
 results. If this setting is blank, DC++ will use a random port between
 1025 and 32000.</dd>
   <dt>External / WAN IP</dt>
-  <dd>Normally, DC++ will automatically detect and use your local IP.
-Fill in this box only if you need to override the auto-detection.
-Ordinarily, you will only need to fill in this box if you're behind a
-router and are using&nbsp;manual port forwarding. If you put a DNS name
+  <dd>If you're directly connected to the internet, DC++ will tell remote users to connect to your local IP.
+Fill in this box <span style="font-weight: bold;">only</span> if you need to override the auto-detection.
+Ordinarily, only users behind a home router (NAT device) will need to fill in this box. If you put a DNS name
 here, DC++ will try to resolve it into an IP address before use.</dd>
   <dt>Don't allow hub/UPnP to override</dt>
   <dd>Enable this to always use the IP address in "External / WAN IP,"
@@ -72,8 +70,7 @@ connections. This includes connecting to any IP address on any port.</dd>
   <dd>Select this mode if you want to make outbound connections through
 a SOCKS proxy. The caveats for Firewall (passive) mode also apply here.
 SOCKS5 proxies are <span style="text-decoration: underline;">not</span>
-the same as HTTP proxies. DC++'s SOCKS5 support does <span
- style="text-decoration: underline;">not</span> include GSSAPI.</dd>
+the same as HTTP proxies. DC++'s SOCKS5 support does <span style="text-decoration: underline;">not</span> include GSSAPI.</dd>
 </dl>
 <h3 style="margin-left: 40px;">Options</h3>
 <dl style="margin-left: 80px;">

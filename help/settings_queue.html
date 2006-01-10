@@ -21,13 +21,13 @@ priority is 16 KiB.
   <dt>Highest prio max size</dt>
   <dd>Files with the same or under the entered size will be set to
 Highest as priority. (default: 64 KiB) </dd>
-  <dt>High prio max size</dt>
-  <dd>Files with the same or under the entered size, but above Highest
-prio max size, will be set to High as priority. (default: 0 KiB)</dd>
   <dt>Normal prio max size</dt>
   <dd>Files with the same or under the entered size, but above Highest
 and High prio max size, will be set to Normal as priority. (default: 0
 KiB) </dd>
+  <dt>High prio max size</dt>
+  <dd>Files with the same or under the entered size, but above Highest
+prio max size, will be set to High as priority. (default: 0 KiB)</dd>
   <dt>Low prio max size</dt>
   <dd>Files with the same or under the entered size, but above Highest,
 High and Normal prio max size, will be set to Low as priority.
@@ -111,16 +111,14 @@ Downloads</dt>
 when starting the download. This should reduce the fragmentation of
 files on your hard drive. (Fragmentation is bad because reading files
 from your drive will take longer because the drive head has to hop from
-place to place instead of reading in a continuous fashion.) <span
- style="font-style: italic;">Disable if unsure. The drawbacks are a
+place to place instead of reading in a continuous fashion.) <span style="font-style: italic;">Disable if unsure. The drawbacks are a
 short pause at the start of every download during which the drive space
 is reserved, less drive space being available while you are
 downloading, and possibly losing <span style="font-weight: bold;">all</span> 
 progress on your download if Windows crashes and DC++ cannot exit 
 cleanly.</span></dd>
   <dt><a name="advanced_resume"></a>Advanced resume using TTH</dt>
-  <dd>Enables a more advanced form of transfer resuming than the <a
- href="settings_expert.html#rollback">rollback</a> method. The
+  <dd>Enables a more advanced form of transfer resuming than the <a href="settings_expert.html#rollback">rollback</a> method. The
 last block of the incomplete file will be checked for validity using
 the leaves, retrieved from the remote client, of the TTH. If the
 block fails verification, the previous block in the file will be tried,
