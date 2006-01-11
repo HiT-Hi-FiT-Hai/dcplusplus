@@ -1,4 +1,9 @@
-﻿-- 0.68 2006-01-08 --
+﻿-- 0.69 --
+* Fixed a crash when using slow sources disconnect
+* Fixed system log overflow
+* Minor user command fix (thanks garg)
+
+-- 0.68 2006-01-08 --
 * Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of
   which users are actually the same for NMDC (essentially, NMDC users are now identified by nick+hub always, not only nick)
 * Removed saving of directories scheduled for download, since the individual files should appear in the queue fast enough that

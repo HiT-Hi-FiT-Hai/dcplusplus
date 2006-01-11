@@ -95,10 +95,17 @@ LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 }
 
 void SystemFrame::addLine(time_t t, const tstring& msg) {
+	if(ctrlPad.GetWindowTextLength() > 25000) {
+		// We want to limit the buffer to 25000 characters...after that, w95 becomes sad...
+		ctrlPad.SetRedraw(FALSE);
+		ctrlPad.SetSel(0, ctrlPad.LineIndex(ctrlPad.LineFromChar(2000)), TRUE);
+		ctrlPad.ReplaceSel(_T(""));
+		ctrlPad.SetRedraw(TRUE);
+	}
 	ctrlPad.AppendText((Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg).c_str());
 
 }
 /**
  * @file
- * $Id: SystemFrame.cpp,v 1.4 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: SystemFrame.cpp,v 1.5 2006/01/11 21:31:01 arnetheduck Exp $
  */

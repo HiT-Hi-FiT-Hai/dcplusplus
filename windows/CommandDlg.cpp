@@ -76,21 +76,25 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	} else {
 		// More difficult, determine type by what it seems to be...
 		if((_tcsncmp(command.c_str(), _T("$To: "), 5) == 0) &&
-			command.find(_T(" From: %[mynick] $<%[mynick]> ")) != string::npos &&
+			(command.find(_T(" From: %[myNI] $<%[myNI]> ")) != string::npos ||
+			command.find(_T(" From: %[mynick] $<%[mynick]> ")) != string::npos) &&
 			command.find(_T('|')) == command.length() - 1) // if it has | anywhere but the end, it is raw
 		{
 			string::size_type i = command.find(_T(' '), 5);
 			dcassert(i != string::npos);
 			tstring to = command.substr(5, i-5);
-			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(i + 30, command.length()-i-31)), true, false));
+			string::size_type cmd_pos = command.find(_T('>'), 5) + 2;
+			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(cmd_pos, command.length()-cmd_pos-1)), true, false));
 			ctrlPM.SetCheck(BST_CHECKED);
 			ctrlNick.SetWindowText(to.c_str());
 			ctrlCommand.SetWindowText(cmd.c_str());
-		} else if((_tcsncmp(command.c_str(), _T("<%[mynick]> "), 12) == 0) &&
+		} else if(((_tcsncmp(command.c_str(), _T("<%[mynick]> "), 12) == 0) ||
+			(_tcsncmp(command.c_str(), _T("<%[myNI]> "), 10) == 0)) &&
 			command[command.length()-1] == '|')
 		{
 			// Looks like a chat thing...
-			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(12, command.length()-13)), true, false));
+			string::size_type cmd_pos = command.find(_T('>')) + 2;
+			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(cmd_pos, command.length()-cmd_pos-1)), true, false));
 			ctrlChat.SetCheck(BST_CHECKED);
 			ctrlCommand.SetWindowText(cmd.c_str());
 		} else {
@@ -193,5 +197,5 @@ LRESULT CommandDlg::onHelpCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 /**
  * @file
- * $Id: CommandDlg.cpp,v 1.17 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: CommandDlg.cpp,v 1.18 2006/01/11 21:31:01 arnetheduck Exp $
  */

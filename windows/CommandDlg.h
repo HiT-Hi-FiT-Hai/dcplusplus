@@ -103,12 +103,12 @@ private:
 			command = buf;
 		} else if(type == 2) {
 			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-			command = Text::toT("<%[mynick]> " + Util::validateMessage(Text::fromT(buf), false) + "|");
+			command = Text::toT("<%[myNI]> " + Util::validateMessage(Text::fromT(buf), false) + "|");
 		} else if(type == 3) {
 			ctrlNick.GetWindowText(buf, BUF_LEN - 1);
 			tstring to(buf);
 			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-			command = _T("$To: ") + to + _T(" From: %[mynick] $<%[mynick]> ") + Text::toT(Util::validateMessage(Text::fromT(buf), false)) + _T("|");
+			command = _T("$To: ") + to + _T(" From: %[myNI] $<%[myNI]> ") + Text::toT(Util::validateMessage(Text::fromT(buf), false)) + _T("|");
 		}
 	}
 	void updateControls() {
@@ -138,5 +138,5 @@ private:
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.13 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.14 2006/01/11 21:31:01 arnetheduck Exp $
  */
