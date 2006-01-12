@@ -45,7 +45,7 @@
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), initial(true), listN(0), lFile(NULL), 
-	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20) 
+	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), refreshing(0)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -758,6 +758,12 @@ void ShareManager::removeTTH(const TTHValue& tth, const Directory::File::Iter& i
 }
 
 void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */) throw(ShareException) {
+	if(Thread::safeInc(refreshing) > 1) {
+		Thread::safeDec(refreshing);
+		LogManager::getInstance()->message(STRING(FILE_LIST_REFRRESH_IN_PROGRESS));
+		return;
+	}
+	
 	update = aUpdate;
 	refreshDirs = dirs;
 	join();
@@ -810,6 +816,8 @@ int ShareManager::run() {
 			refreshDirs = false;
 		}
 	}
+
+	Thread::safeDec(refreshing);
 
 	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 	if(update) {
@@ -1505,5 +1513,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.139 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.140 2006/01/12 22:32:41 arnetheduck Exp $
  */

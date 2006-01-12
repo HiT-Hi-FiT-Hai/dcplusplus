@@ -46,6 +46,7 @@ public:
 	typedef ListViewArrows<ExListViewCtrl> arrowBase;
 
 	BEGIN_MSG_MAP(ExListViewCtrl)
+		MESSAGE_HANDLER(WM_CHAR, onChar)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP()
 
@@ -147,6 +148,19 @@ public:
 			result = -result;
 		return result;
 	}
+
+	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
+			int count = GetItemCount();
+			for(int i = 0; i < count; ++i)
+				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
+
+			return 0;
+		}
+
+		bHandled = FALSE;
+		return 1;
+	}
 	
 	template<class T> static int compare(const T& a, const T& b) {
 		return (a < b) ? -1 : ( (a == b) ? 0 : 1);
@@ -161,5 +175,5 @@ public:
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.17 2006/01/12 22:32:44 arnetheduck Exp $
  */

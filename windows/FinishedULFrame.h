@@ -23,129 +23,23 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include "FinishedFrameBase.h"
 
-#include "../client/FinishedManager.h"
-
-#define SERVER_MESSAGE_MAP 7
-
-class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, public StaticFrame<FinishedULFrame, ResourceManager::FINISHED_UPLOADS>,
-	private FinishedManagerListener
+class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, ResourceManager::FINISHED_UPLOADS, IDC_FINISHED_UL>
 {
 public:
-	FinishedULFrame() : totalBytes(0), totalTime(0), closed(false) { };
+	FinishedULFrame() {
+		upload = true;
+		boldFinished = SettingsManager::BOLD_FINISHED_UPLOADS;
+		columnOrder = SettingsManager::FINISHED_UL_ORDER;
+		columnWidth = SettingsManager::FINISHED_UL_WIDTHS;
+	};
+
 	virtual ~FinishedULFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
 		
-	BEGIN_MSG_MAP(FinishedULFrame)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_TOTAL, onRemove)
-		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
-		COMMAND_ID_HANDLER(IDC_OPEN_FILE, onOpenFile)
-		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpenFolder)
-		NOTIFY_HANDLER(IDC_FINISHED_UL, LVN_COLUMNCLICK, onColumnClickFinished)
-		NOTIFY_HANDLER(IDC_FINISHED_UL, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_FINISHED_UL, NM_DBLCLK, onDoubleClick)
-		CHAIN_MSG_MAP(MDITabChildWindowImpl<FinishedULFrame>)
-	END_MSG_MAP()
-		
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onOpenFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
-	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
-		ctrlList.SetFocus();
-		return 0;
-	}
-
-	static int sortSize(LPARAM a, LPARAM b) {
-		FinishedItem* c = (FinishedItem*)a;
-		FinishedItem* d = (FinishedItem*)b;
-		return compare(c->getSize(), d->getSize());
-	}
-
-	static int sortSpeed(LPARAM a, LPARAM b) {
-		FinishedItem* c = (FinishedItem*)a;
-		FinishedItem* d = (FinishedItem*)b;
-		return compare(c->getAvgSpeed(), d->getAvgSpeed());
-	}
-
-	
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		
-		if(kd->wVKey == VK_DELETE) {
-			BOOL dummy;
-			onRemove(0, IDC_REMOVE, 0, dummy);
-		} 
-		return 0;
-	}
-
 private:
-	enum {
-		SPEAK_ADD_LINE,
-		SPEAK_REMOVE,
-		SPEAK_REMOVE_ALL
-	};
-
-	enum {
-		COLUMN_FIRST,
-		COLUMN_FILE = COLUMN_FIRST,
-		COLUMN_DONE,
-		COLUMN_PATH,
-		COLUMN_NICK,
-		COLUMN_HUB,
-		COLUMN_SIZE,
-		COLUMN_SPEED,
-		COLUMN_LAST
-	};
-	
-	CStatusBarCtrl ctrlStatus;
-	CMenu ctxMenu;
-	
-	ExListViewCtrl ctrlList;
-	
-	int64_t totalBytes;
-	int64_t totalTime;
-
-	bool closed;
-
-	static int columnSizes[COLUMN_LAST];
-	static int columnIndexes[COLUMN_LAST];
-	
-	void updateStatus() {
-		ctrlStatus.SetText(1, Text::toT(Util::toString(ctrlList.GetItemCount()) + ' ' + STRING(ITEMS)).c_str());
-		ctrlStatus.SetText(2, Text::toT(Util::formatBytes(totalBytes)).c_str());
-		ctrlStatus.SetText(3, Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
-	}
-
-	void updateList(const FinishedItem::List& fl) {
-		ctrlList.SetRedraw(FALSE);
-		for(FinishedItem::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-			addEntry(*i);
-		}
-		ctrlList.SetRedraw(TRUE);
-		ctrlList.Invalidate();
-		updateStatus();
-	}
-
-	void addEntry(FinishedItem* entry);
 
 	virtual void on(AddedUl, FinishedItem* entry) throw() {
 		PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (WPARAM)entry);
@@ -166,5 +60,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.20 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.21 2006/01/12 22:32:44 arnetheduck Exp $
  */

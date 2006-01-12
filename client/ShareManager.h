@@ -263,6 +263,8 @@ private:
 	
 	int listN;
 
+	volatile long refreshing;
+
 	File* lFile;
 	File* xFile;
 
@@ -326,5 +328,5 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.83 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.84 2006/01/12 22:32:41 arnetheduck Exp $
  */

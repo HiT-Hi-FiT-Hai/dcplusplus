@@ -37,6 +37,7 @@ public:
 	typedef ListViewArrows<thisClass> arrowBase;
 
 	BEGIN_MSG_MAP(thisClass)
+		MESSAGE_HANDLER(WM_CHAR, onChar)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -85,6 +86,19 @@ public:
 		int cur;
 		int cnt;
 	};
+
+	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
+			int count = GetItemCount();
+			for(int i = 0; i < count; ++i)
+				ListView_SetItemState(m_hWnd, i, LVIS_SELECTED, LVIS_SELECTED);
+
+			return 0;
+		}
+
+		bHandled = FALSE;
+		return 1;
+	}
 
 	LRESULT onGetDispInfo(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
 		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
@@ -237,5 +251,5 @@ private:
 
 /**
  * @file
- * $Id: TypedListViewCtrl.h,v 1.17 2005/11/28 01:21:06 arnetheduck Exp $
+ * $Id: TypedListViewCtrl.h,v 1.18 2006/01/12 22:32:44 arnetheduck Exp $
  */

@@ -303,12 +303,6 @@
 				RelativePath=".\windows\FavoritesFrm.cpp">
 			</File>
 			<File
-				RelativePath="windows\FinishedFrame.cpp">
-			</File>
-			<File
-				RelativePath=".\windows\FinishedULFrame.cpp">
-			</File>
-			<File
 				RelativePath=".\windows\GeneralPage.cpp">
 			</File>
 			<File
@@ -458,6 +452,9 @@
 			</File>
 			<File
 				RelativePath="windows\FinishedFrame.h">
+			</File>
+			<File
+				RelativePath=".\windows\FinishedFrameBase.h">
 			</File>
 			<File
 				RelativePath=".\windows\FinishedULFrame.h">
