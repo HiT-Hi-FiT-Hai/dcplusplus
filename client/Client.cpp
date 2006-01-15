@@ -65,9 +65,17 @@ void Client::connect() {
 	reloadSettings();
 	setRegistered(false);
 
-	socket = BufferedSocket::getSocket(separator);
-	socket->addListener(this);
-	socket->connect(address, port, secure, true);
+	try {
+		socket = BufferedSocket::getSocket(separator);
+		socket->addListener(this);
+		socket->connect(address, port, secure, true);
+	} catch(const Exception& e) {
+		if(socket) {
+			BufferedSocket::putSocket(socket);
+			socket = NULL;
+		}
+		fire(ClientListener::Failed(), this, e.getError());
+	}
 	updateActivity();
 }
 
@@ -122,5 +130,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.90 2006/01/09 22:44:49 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.91 2006/01/15 18:40:39 arnetheduck Exp $
  */

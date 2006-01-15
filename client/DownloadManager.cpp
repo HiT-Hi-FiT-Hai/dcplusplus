@@ -157,10 +157,13 @@ int DownloadManager::FileMover::run() {
 	}
 }
 
-void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */, bool ntd /* = false */) {
+void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
 	dcassert(aConn->getDownload() == NULL);
 	aConn->removeListener(this);
-	ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse, ntd);
+	aConn->disconnect();
+
+	Lock l(cs);
+	idlers.erase(remove(idlers.begin(), idlers.end(), aConn), idlers.end());
 }
 
 class TreeOutputStream : public OutputStream {
@@ -199,6 +202,18 @@ private:
 	size_t bufPos;
 };
 
+void DownloadManager::checkIdle(const User::Ptr& user) {
+	Lock l(cs);
+	for(UserConnection::Iter i = idlers.begin(); i != idlers.end(); ++i) {
+		UserConnection* uc = *i;
+		if(uc->getUser() == user) {
+			idlers.erase(i);
+			checkDownloads(uc);
+			return;
+		}
+	}
+}
+
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 	dcassert(aConn->getDownload() == NULL);
 
@@ -216,7 +231,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	Download* d = QueueManager::getInstance()->getDownload(aConn->getUser(), aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL));
 
 	if(d == NULL) {
-		removeConnection(aConn, true);
+		Lock l(cs);
+		idlers.push_back(aConn);
 		return;
 	}
 
@@ -541,7 +557,7 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 			throw Exception(STRING(TOO_MUCH_DATA));
 		} else if(d->getPos() == d->getSize()) {
 			handleEndData(aSource);
-			aSource->setLineMode();
+			aSource->setLineMode(0);
 		}
 	} catch(const RollbackException& e) {
 		string target = d->getTarget();
@@ -794,7 +810,7 @@ void DownloadManager::noSlots(UserConnection* aSource) {
 
 	aSource->setDownload(NULL);
 	QueueManager::getInstance()->putDownload(d, false);
-	removeConnection(aSource, false, !aSource->isSet(UserConnection::FLAG_NMDC));
+	removeConnection(aSource);
 }
 
 void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
@@ -921,5 +937,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.157 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.158 2006/01/15 18:40:38 arnetheduck Exp $
  */

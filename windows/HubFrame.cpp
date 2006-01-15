@@ -584,7 +584,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	if(!closed) {
 		TimerManager::getInstance()->removeListener(this);
 		client->removeListener(this);
-		client->disconnect();
+		client->disconnect(true);
 
 		closed = true;
 		PostMessage(WM_CLOSE);
@@ -1214,5 +1214,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.126 2006/01/06 14:44:32 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.127 2006/01/15 18:40:43 arnetheduck Exp $
  */

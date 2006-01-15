@@ -42,17 +42,16 @@ public:
 	enum State {
 		CONNECTING,					// Recently sent request to connect
 		WAITING,					// Waiting to send request to connect
-		NO_DOWNLOAD_SLOTS,			// Bot needed right now
-		IDLE,						// In the download pool
+		NO_DOWNLOAD_SLOTS,			// Not needed right now
 		ACTIVE						// In one up/downmanager
 	};
 
-	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), connection(NULL), lastAttempt(0), download(aDownload), user(aUser) { };
+	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), user(aUser) { };
 	
-	User::Ptr& getUser() { return user; };
+	User::Ptr& getUser() { return user; }
+	const User::Ptr& getUser() const { return user; }
 	
 	GETSET(State, state, State);
-	GETSET(UserConnection*, connection, Connection);
 	GETSET(u_int32_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
@@ -103,12 +102,13 @@ public:
 
 	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
 	void adcConnect(const OnlineUser& aUser, short aPort, const string& aToken, bool secure);
-	void getDownloadConnection(const User::Ptr& aUser);
-	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
-	void putUploadConnection(UserConnection* aSource, bool ntd);
 	
-	void removeConnection(const User::Ptr& aUser, int isDownload);
-	void shutdown();	
+	void getDownloadConnection(const User::Ptr& aUser);
+
+	void disconnect(const User::Ptr& aUser, int isDownload);
+
+	void shutdown();
+
 	/** Find a suitable port to listen on, and start doing it */
 	void listen() throw(Exception);
 	void disconnect() throw() {
@@ -119,13 +119,8 @@ public:
 		port = securePort = 0;
 	}
 
-	unsigned short getPort() {
-		return port;
-	}
-	unsigned short getSecurePort() {
-		return securePort;
-	}
-
+	unsigned short getPort() { return port; }
+	unsigned short getSecurePort() { return securePort;	}
 private:
 
 	class Server : public Thread {
@@ -150,10 +145,10 @@ private:
 	ConnectionQueueItem::List downloads;
 	ConnectionQueueItem::List uploads;
 
-	User::List pendingAdd;
-	UserConnection::List pendingDelete;
 	/** All active connections */
 	UserConnection::List userConnections;
+
+	User::List checkIdle;
 
 	StringList features;
 	StringList adcFeatures;
@@ -172,7 +167,7 @@ private:
 
 	virtual ~ConnectionManager() throw() { shutdown(); };
 	
-	UserConnection* getConnection(bool aNmdc, bool secure) throw(SocketException);
+	UserConnection* getConnection(bool aNmdc, bool secure) throw();
 	void putConnection(UserConnection* aConn);
 
 	void addUploadConnection(UserConnection* uc);
@@ -207,5 +202,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.74 2006/01/06 21:00:29 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.75 2006/01/15 18:40:38 arnetheduck Exp $
  */

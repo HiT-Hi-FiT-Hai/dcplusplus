@@ -59,18 +59,9 @@ public:
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Thread
 {
 public:
-	enum {	
+	enum Modes {
 		MODE_LINE,
 		MODE_DATA
-	};
-
-	enum Tasks {
-		CONNECT,
-		DISCONNECT,
-		SEND_DATA,
-		SEND_FILE,
-		SHUTDOWN,
-		ACCEPTED
 	};
 
 	/**
@@ -78,7 +69,7 @@ public:
 	 * @param sep Line separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep) throw() { 
+	static BufferedSocket* getSocket(char sep) throw(ThreadException) { 
 		return new BufferedSocket(sep); 
 	};
 
@@ -87,47 +78,40 @@ public:
 		aSock->shutdown();
 	};
 
-	void shutdown() {
-		Lock l(cs);
-		addTask(SHUTDOWN, 0);
-	}
+	void accept(const Socket& srv, bool secure) throw(SocketException);
+	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException);
 
-	void accept(const Socket& srv, bool secure) throw(SocketException, ThreadException);
-	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(ThreadException);
-
-	void disconnect() throw() {
-		Lock l(cs);
-		addTask(DISCONNECT, 0);
-	}
-	
-	/** Sets data mode for aBytes bytes long. Must be called within an action method... */
-	void setDataMode(int64_t aBytes = -1) {
-		mode = MODE_DATA;
-		dataBytes = aBytes;
-	}
-	/** Should be called when data mode. */
-	void setLineMode() {
-		dcassert(mode == MODE_DATA);
-		dcassert(dataBytes == -1);
-		mode = MODE_LINE;
-	}
-	int getMode() { return mode; };
+	/** Sets data mode for aBytes bytes. Must be called within onLine. */
+	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }
+	/** 
+	 * Rollback is an ugly hack to solve problems with compressed transfers where not all data received
+	 * should be treated as data.
+	 * Must be called from within onData. 
+	 */
+	void setLineMode(size_t aRollback) { mode = MODE_LINE; rollback = aRollback; }
+	Modes getMode() const { return mode; };
 	const string& getIp() { return sock ? sock->getIp() : Util::emptyString; }
 	bool isConnected() { return sock && sock->isConnected(); }
 	
-	void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
-	virtual void write(const char* aBuf, size_t aLen) throw();
-
+	void write(const string& aData) throw() { write(aData.data(), aData.length()); }
+	void write(const char* aBuf, size_t aLen) throw();
 	/** Send the file f over this socket. */
-	void transmitFile(InputStream* f) throw() {
-		Lock l(cs);
-		addTask(SEND_FILE, new SendFileInfo(f));
-	}
+	void transmitFile(InputStream* f) throw() { Lock l(cs); addTask(SEND_FILE, new SendFileInfo(f)); }
 
-	string getLocalIp() { return sock->getLocalIp(); }
+	void disconnect(bool graceless = false) throw() { Lock l(cs); if(graceless) disconnecting = true; addTask(DISCONNECT, 0); }
+
+	string getLocalIp() const { return sock ? sock->getLocalIp() : Util::getLocalIp(); }
 
 	GETSET(char, separator, Separator)
 private:
+	enum Tasks {
+		CONNECT,
+		DISCONNECT,
+		SEND_DATA,
+		SEND_FILE,
+		SHUTDOWN,
+		ACCEPTED
+	};
 
 	struct TaskData { 
 		virtual ~TaskData() { };
@@ -143,7 +127,7 @@ private:
 		InputStream* stream;
 	};
 
-	BufferedSocket(char aSeparator) throw();
+	BufferedSocket(char aSeparator) throw(ThreadException);
 
 	// Dummy...
 	BufferedSocket(const BufferedSocket&);
@@ -156,8 +140,9 @@ private:
 	Semaphore taskSem;
 	vector<pair<Tasks, TaskData*> > tasks;
 
-	int mode;
+	Modes mode;
 	int64_t dataBytes;
+	size_t rollback;
 	
 	string line;
 	vector<u_int8_t> inbuf;
@@ -165,6 +150,7 @@ private:
 	vector<u_int8_t> sendBuf;
 
 	Socket* sock;
+	bool disconnecting;
 
 	virtual int run();
 
@@ -175,31 +161,21 @@ private:
 	void threadDisconnect();
 	
 	void fail(const string& aError) {
-		sock->disconnect();
+		if(sock)
+			sock->disconnect();
 		fire(BufferedSocketListener::Failed(), aError);
 	}
 
 	bool checkEvents();
 	void checkSocket();
-	bool checkDisconnect();
 
-	/**
-	 * Shut down the socket and delete itself...no variables must be referenced after
-	 * calling threadShutDown, the thread function should exit as soon as possible
-	 */
-	void threadShutDown() {
-		delete this;
-	}
-	
-	void addTask(Tasks task, TaskData* data) {
-		tasks.push_back(make_pair(task, data));
-		taskSem.signal();
-	}
+	void shutdown() { Lock l(cs); disconnecting = true; addTask(SHUTDOWN, 0); }
+	void addTask(Tasks task, TaskData* data) { tasks.push_back(make_pair(task, data)); taskSem.signal(); }
 };
 
 #endif // !defined(BUFFERED_SOCKET_H)
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.72 2005/12/12 08:43:00 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.73 2006/01/15 18:40:37 arnetheduck Exp $
  */

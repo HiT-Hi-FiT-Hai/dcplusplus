@@ -101,12 +101,6 @@ public:
 		return avg;
 	}
 	
-	/**
-	 * @remarks This is defined with GETSET below.
-	 * @return Number of running uploads.
-	 */
-//	int getRunning() { return running; };
-
 	/** @return Number of free slots. */
 	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
 	
@@ -118,8 +112,8 @@ public:
 		/** Only grant one slot per 30 sec */
 		if(GET_TICK() < getLastGrant() + 30*1000)
 			return false;
-		/** Grant if uploadspeed is less than the threshold speed */
-		return UploadManager::getInstance()->getAverageSpeed() < (SETTING(MIN_UPLOAD_SPEED)*1024);
+		/** Grant if upload speed is less than the threshold speed */
+		return getAverageSpeed() < (SETTING(MIN_UPLOAD_SPEED)*1024);
 	}
 
 	/** @internal */
@@ -174,13 +168,7 @@ private:
 	virtual ~UploadManager() throw();
 
 	void removeConnection(UserConnection::Ptr aConn, bool ntd);
-	void removeUpload(Upload* aUpload) {
-		Lock l(cs);
-		dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
-		uploads.erase(find(uploads.begin(), uploads.end(), aUpload));
-		aUpload->setUserConnection(NULL);
-		delete aUpload;
-	}
+	void removeUpload(Upload* aUpload);
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
@@ -211,5 +199,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.82 2005/08/12 21:30:11 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.83 2006/01/15 18:40:37 arnetheduck Exp $
  */

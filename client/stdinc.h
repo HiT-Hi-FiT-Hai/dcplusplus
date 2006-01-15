@@ -62,12 +62,15 @@
 // Use maps if hash_maps aren't available
 #ifdef HAVE_HASH
 # ifdef HAVE_STLPORT
+#  define HASH_SET_X(key, hfunc, eq, order) hash_set<key, hfunc, eq >
 #  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
 #  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
 # elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
+#  define HASH_SET_X(key, hfunc, eq, order) hash_set<key, hfunc, eq >
 #  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
 #  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
 # elif defined(_MSC_VER)  // Assume the msvc 7.x stl
+#  define HASH_SET_X(key, hfunc, eq, order) hash_set<key, hfunc >
 #  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc >
 #  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc >
 # else
@@ -80,6 +83,7 @@
 
 #else // HAVE_HASH
 
+#define HASH_SET_X(key, hfunc, eq, order) 
 # define HASH_SET set
 # define HASH_MAP map
 # define HASH_MAP_X(key, type, hfunc, eq, order) map<key, type, order >
@@ -125,5 +129,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.20 2005/12/16 01:00:46 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.21 2006/01/15 18:40:37 arnetheduck Exp $
  */

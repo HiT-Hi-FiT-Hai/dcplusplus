@@ -141,26 +141,18 @@ private:
 		IMAGE_UPLOAD
 	};
 
+	struct UpdateInfo;
 	class ItemInfo : public UserInfoBase {
 	public:
-		typedef HASH_MAP<ConnectionQueueItem*, ItemInfo*, PointerHash<ConnectionQueueItem> > Map;
-		typedef Map::iterator MapIter;
-
 		enum Status {
 			STATUS_RUNNING,
 			STATUS_WAITING
 		};
-		enum Types {
-			TYPE_DOWNLOAD,
-			TYPE_UPLOAD
-		};
 
-		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
-			int64_t p = 0, int64_t sz = 0, int st = 0, int a = 0) : UserInfoBase(u), type(t), 
-			status(s), pos(p), size(sz), start(st), actual(a), speed(0), timeLeft(0),
-			updateMask((u_int32_t)-1) { update(); };
+		ItemInfo(const User::Ptr& u, bool aDownload);
 
-		Types type;
+		bool download;
+		bool transferFailed;
 		Status status;
 		int64_t pos;
 		int64_t size;
@@ -168,27 +160,9 @@ private:
 		int64_t actual;
 		int64_t speed;
 		int64_t timeLeft;
-		tstring statusString;
-		tstring file;
-		tstring path;
-		tstring IP;
-		tstring country;
 
-		enum {
-			MASK_USER = 1 << COLUMN_USER,
-			MASK_HUB = 1 << COLUMN_HUB,
-			MASK_STATUS = 1 << COLUMN_STATUS,
-			MASK_TIMELEFT = 1 << COLUMN_TIMELEFT,
-			MASK_SPEED = 1 << COLUMN_SPEED,
-			MASK_FILE = 1 << COLUMN_FILE,
-			MASK_SIZE = 1 << COLUMN_SIZE,
-			MASK_PATH = 1 << COLUMN_PATH,
-			MASK_IP = 1 << COLUMN_IP,
-			MASK_RATIO = 1 << COLUMN_RATIO,
-		};
 		tstring columns[COLUMN_LAST];
-		u_int32_t updateMask;
-		void update();
+		void update(const UpdateInfo& ui);
 
 		void disconnect();
 		void removeAll();
@@ -202,8 +176,8 @@ private:
 
 		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
 			if(a->status == b->status) {
-				if(a->type != b->type) {
-					return (a->type == ItemInfo::TYPE_DOWNLOAD) ? -1 : 1;
+				if(a->download != b->download) {
+					return a->download ? -1 : 1;
 				}
 			} else {
 				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
@@ -220,8 +194,57 @@ private:
 		}
 	};
 
+	struct UpdateInfo {
+		enum {
+			MASK_POS = 1 << 0,
+			MASK_SIZE = 1 << 1,
+			MASK_START = 1 << 2,
+			MASK_ACTUAL = 1 << 3,
+			MASK_SPEED = 1 << 4,
+			MASK_FILE = 1 << 5,
+			MASK_STATUS = 1 << 6,
+			MASK_TIMELEFT = 1 << 7,
+			MASK_IP = 1 << 8,
+			MASK_STATUS_STRING = 1 << 9,
+			MASK_COUNTRY = 1 << 10
+		};
+
+		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
+
+		UpdateInfo(const User::Ptr& aUser, bool isDownload, bool isTransferFailed = false) : updateMask(0), user(aUser), download(isDownload), transferFailed(isTransferFailed) { }
+
+		u_int32_t updateMask;
+
+		User::Ptr user;
+		bool download;
+		bool transferFailed;
+		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
+		ItemInfo::Status status;
+		void setPos(int64_t aPos) { pos = aPos; updateMask |= MASK_POS; }
+		int64_t pos;
+		void setSize(int64_t aSize) { size = aSize; updateMask |= MASK_SIZE; }
+		int64_t size;
+		void setStart(int64_t aStart) { start = aStart; updateMask |= MASK_START; }
+		int64_t start;
+		void setActual(int64_t aActual) { actual = aActual; updateMask |= MASK_ACTUAL; }
+		int64_t actual;
+		void setSpeed(int64_t aSpeed) { speed = aSpeed; updateMask |= MASK_SPEED; }
+		int64_t speed;
+		void setTimeLeft(int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
+		int64_t timeLeft;
+		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
+		tstring statusString;
+		void setFile(const tstring& aFile) { file = Util::getFileName(aFile); path = Util::getFilePath(aFile); updateMask|= MASK_FILE; }
+		tstring file;
+		tstring path;
+		void setIP(const tstring& aIP) { IP = aIP; updateMask |= MASK_IP; }
+		tstring IP;
+	};
+
+	void speak(int type, UpdateInfo* ui) { PostMessage(WM_SPEAKER, type, reinterpret_cast<LPARAM>(ui)); }
+	void speak(int type, vector<UpdateInfo*>* ui) { PostMessage(WM_SPEAKER, type, reinterpret_cast<LPARAM>(ui)); }
+
 	CriticalSection cs;
-	ItemInfo::Map transferItems;
 
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS> ctrlTransfers;
 	static int columnIndexes[];
@@ -251,5 +274,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.24 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.25 2006/01/15 18:40:43 arnetheduck Exp $
  */

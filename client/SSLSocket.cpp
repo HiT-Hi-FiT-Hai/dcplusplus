@@ -164,7 +164,6 @@ int SSLSocket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 		dcdebug("In(s): %.*s\n", len, (char*)aBuffer);
 	}
 	return len;
-
 }
 
 int SSLSocket::write(const void* aBuffer, int aLen) throw(SocketException) {

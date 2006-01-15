@@ -88,7 +88,7 @@ public:
 
 	virtual void connect();
 	bool isConnected() const { return socket && socket->isConnected(); }
-	void disconnect() { if(socket) socket->disconnect(); }
+	void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
 
 	virtual void connect(const OnlineUser& user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
@@ -106,7 +106,7 @@ public:
 	short getPort() const { return port; }
 	const string& getAddress() const { return address; }
 
-	const string& getIp() const { return socket->getIp().empty() ? getAddress() : socket->getIp(); };
+	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); };
 	string getIpPort() const { return getIp() + ':' + Util::toString(port); };
 	string getLocalIp() const;
 
@@ -130,6 +130,8 @@ public:
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
 	void send(const char* aMessage, size_t aLen) {
 		dcassert(socket);
+		if(!socket)
+			return;
 		updateActivity();
 		socket->write(aMessage, aLen);
 	}
@@ -201,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.105 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: Client.h,v 1.106 2006/01/15 18:40:39 arnetheduck Exp $
  */

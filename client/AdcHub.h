@@ -36,7 +36,7 @@ public:
 
 	virtual void connect(const OnlineUser& user);
 	virtual void connect(const OnlineUser& user, string const& token, bool secure);
-	virtual void disconnect();
+	virtual void disconnect(bool graceless);
 	
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& user, const string& aMessage);
@@ -52,7 +52,7 @@ public:
 		//Speaker<AdcHubListener>::fire(t, this, c);
 	}
 
-	void send(const AdcCommand& cmd) { dcassert(socket); socket->write(cmd.toString(false)); };
+	void send(const AdcCommand& cmd) { dcassert(socket); if(socket) socket->write(cmd.toString(false)); };
 	void sendUDP(const AdcCommand& cmd);
 
 	void handle(AdcCommand::SUP, AdcCommand& c) throw();
@@ -115,5 +115,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.36 2005/12/19 00:15:50 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.37 2006/01/15 18:40:37 arnetheduck Exp $
  */

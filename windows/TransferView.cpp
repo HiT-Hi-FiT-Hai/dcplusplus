@@ -139,7 +139,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 			continue;
 
 		StringMap tmp = ucParams;
-		tmp["fileFN"] = Text::fromT(itemI->path + itemI->file);
+		/// @todo tmp["fileFN"] = Text::fromT(itemI->path + itemI->file);
 
 		// compatibility with 0.674 and earlier
 		ucParams["file"] = ucParams["fileFN"];
@@ -194,7 +194,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
 				TCHAR buf[256];
-				COLORREF barBase = ii->type == ItemInfo::TYPE_DOWNLOAD ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR);
+				COLORREF barBase = ii->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR);
 				COLORREF bgBase = WinUtil::bgColor;
 				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
 				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
@@ -287,333 +287,297 @@ LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 
 LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == ADD_ITEM) {
-		ItemInfo* i = (ItemInfo*)lParam;
-		ctrlTransfers.insertItem(i, (i->type == ItemInfo::TYPE_DOWNLOAD) ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
+		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
+		ItemInfo* ii = new ItemInfo(ui->user, ui->download);
+		ii->update(*ui);
+		ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
 	} else if(wParam == REMOVE_ITEM) {
-		ItemInfo* i = (ItemInfo*)lParam;
-		dcassert(ctrlTransfers.findItem(i) != -1);
-		ctrlTransfers.deleteItem(i);
-		delete i;
+		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
+		int ic = ctrlTransfers.GetItemCount(); 
+		for(int i = 0; i < ic; ++i) {
+			ItemInfo* ii = ctrlTransfers.getItemData(i);
+			if(*ui == *ii) {
+				ctrlTransfers.DeleteItem(i);
+				delete ii;
+				break;
+			}
+		}
 	} else if(wParam == UPDATE_ITEM) {
-		ItemInfo* i = (ItemInfo*)lParam;
-		i->update();
-		ctrlTransfers.updateItem(i);
-		if(ctrlTransfers.getSortColumn() != COLUMN_USER)
-			ctrlTransfers.resort();
+		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
+		int ic = ctrlTransfers.GetItemCount(); 
+		for(int i = 0; i < ic; ++i) {
+			ItemInfo* ii = ctrlTransfers.getItemData(i);
+			if(ii->download == ui->download && ii->user == ui->user) {
+				ii->update(*ui);
+				ctrlTransfers.updateItem(i);
+				break;
+			}
+		}
 	} else if(wParam == UPDATE_ITEMS) {
-		vector<ItemInfo*>* v = (vector<ItemInfo*>*)lParam;
+		auto_ptr<vector<UpdateInfo*> > v(reinterpret_cast<vector<UpdateInfo*>* >(lParam));
 		ctrlTransfers.SetRedraw(FALSE);
-		for(vector<ItemInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
-			ItemInfo* i = *j;
-			i->update();
-			ctrlTransfers.updateItem(i);
+		int ic = ctrlTransfers.GetItemCount(); 
+		for(int i = 0; i < ic; ++i) {
+			ItemInfo* ii = ctrlTransfers.getItemData(i);
+			for(vector<UpdateInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
+				UpdateInfo* ui = *j;
+				if(*ui == *ii) {
+					ii->update(*ui);
+					ctrlTransfers.updateItem(i);
+				}
+			}
 		}
 
 		if(ctrlTransfers.getSortColumn() != COLUMN_STATUS)
 			ctrlTransfers.resort();
 		ctrlTransfers.SetRedraw(TRUE);
 		
-		delete v;
+		for_each(v->begin(), v->end(), DeleteFunction());
 	}
 
 	return 0;
 }
 
-void TransferView::ItemInfo::update() {
-	u_int32_t colMask = updateMask;
-	updateMask = 0;
+TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
+	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0) 
+{ 
+	columns[COLUMN_USER] = WinUtil::getNicks(u);
+	columns[COLUMN_HUB] = WinUtil::getHubNames(u).first;
+};
 
-	if(colMask & MASK_USER) {
-		columns[COLUMN_USER] = WinUtil::getNicks(user);
+void TransferView::ItemInfo::update(const UpdateInfo& ui) {
+	if(ui.updateMask & UpdateInfo::MASK_STATUS) {
+		status = ui.status;
 	}
-	if(colMask & MASK_HUB) {
-		columns[COLUMN_HUB] = WinUtil::getHubNames(user).first;
+	if(ui.updateMask & UpdateInfo::MASK_STATUS_STRING) {
+		// No slots etc from transfermanager better than disconnected from connectionmanager
+		if(!transferFailed)
+			columns[COLUMN_STATUS] = ui.statusString;
+		transferFailed = ui.transferFailed;
 	}
-	if(colMask & MASK_STATUS) {
-		columns[COLUMN_STATUS] = statusString;
+	if(ui.updateMask & UpdateInfo::MASK_SIZE) {
+		size = ui.size;
+		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(size));
 	}
-	if(colMask & MASK_TIMELEFT) {
-		if (status == STATUS_RUNNING) {
-			columns[COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(timeLeft));
-		} else {
-			columns[COLUMN_TIMELEFT] = Util::emptyStringT;
-		}
+	if(ui.updateMask & UpdateInfo::MASK_START) {
+		start = ui.start;
 	}
-	if(colMask & MASK_SPEED) {
+	if(ui.updateMask & UpdateInfo::MASK_POS) {
+		pos = start + ui.pos;
+	}
+	if(ui.updateMask & UpdateInfo::MASK_ACTUAL) {
+		actual = start + ui.actual;
+		columns[COLUMN_RATIO] = Text::toT(Util::toString(getRatio()));
+	}
+	if(ui.updateMask & UpdateInfo::MASK_SPEED) {
+		speed = ui.speed;
 		if (status == STATUS_RUNNING) {
 			columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(speed) + "/s");
 		} else {
 			columns[COLUMN_SPEED] = Util::emptyStringT;
 		}
 	}
-	if(colMask & MASK_FILE) {
-		columns[COLUMN_FILE] = file;
+	if(ui.updateMask & UpdateInfo::MASK_FILE) {
+		columns[COLUMN_FILE] = ui.file;
+		columns[COLUMN_PATH] = ui.path;
 	}
-	if(colMask & MASK_SIZE) {
-		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(size));
+	if(ui.updateMask & UpdateInfo::MASK_TIMELEFT) {
+		timeLeft = ui.timeLeft;
+		if (status == STATUS_RUNNING) {
+			columns[COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(timeLeft));
+		} else {
+			columns[COLUMN_TIMELEFT] = Util::emptyStringT;
+		}
 	}
-	if(colMask & MASK_PATH) {
-		columns[COLUMN_PATH] = path;
-	}
-	if(colMask & MASK_IP) {
-		if(!country.empty())
-			columns[COLUMN_IP] = country + _T(" (") + IP + _T(")");
-		else
-			columns[COLUMN_IP] = IP;
-	}
-	if(colMask & MASK_RATIO) {
-		columns[COLUMN_RATIO] = Text::toT(Util::toString(getRatio()));
+	if(ui.updateMask & UpdateInfo::MASK_IP) {
+		columns[COLUMN_IP] = ui.IP;
 	}
 }
 
 void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) {
-	ItemInfo::Types t = aCqi->getDownload() ? ItemInfo::TYPE_DOWNLOAD : ItemInfo::TYPE_UPLOAD;
-	ItemInfo* i = new ItemInfo(aCqi->getUser(), t, ItemInfo::STATUS_WAITING);
+	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
-	{
-		Lock l(cs);
-		dcassert(transferItems.find(aCqi) == transferItems.end());
-		transferItems.insert(make_pair(aCqi, i));
-		i->columns[COLUMN_STATUS] = i->statusString = TSTRING(CONNECTING);
-	}
+	ui->setStatus(ItemInfo::STATUS_WAITING);
+	ui->setStatusString(TSTRING(CONNECTING));
 
-	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
+	speak(ADD_ITEM, ui);
 }
 
 void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) {
-	ItemInfo* i;
-	{
-		Lock l(cs);
-		dcassert(transferItems.find(aCqi) != transferItems.end());
-		i = transferItems[aCqi];		
-		i->statusString = aCqi->getState() == ConnectionQueueItem::CONNECTING ? TSTRING(CONNECTING) : TSTRING(WAITING_TO_RETRY);
-		i->updateMask |= ItemInfo::MASK_STATUS;
-	}
+	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
-	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
+	ui->setStatusString((aCqi->getState() == ConnectionQueueItem::CONNECTING) ? TSTRING(CONNECTING) : TSTRING(WAITING_TO_RETRY));
+
+	speak(UPDATE_ITEM, ui);
 }
 
 void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) {
-	ItemInfo* i;
-	{
-		Lock l(cs);
-		ItemInfo::MapIter ii = transferItems.find(aCqi);
-		dcassert(ii != transferItems.end());
-		i = ii->second;
-		transferItems.erase(ii);
-	}
-	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)i);
+	speak(REMOVE_ITEM, new UpdateInfo(aCqi->getUser(), aCqi->getDownload()));
 }
 
 void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) {
-	ItemInfo* i;
-	{
-		Lock l(cs);
-		dcassert(transferItems.find(aCqi) != transferItems.end());
-		i = transferItems[aCqi];		
-		i->statusString = Text::toT(aReason);
-		i->updateMask |= ItemInfo::MASK_STATUS;
-	}
-	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
+	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
+	ui->setStatusString(Text::toT(aReason));
+	speak(UPDATE_ITEM, ui);
 }
 
 void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
-	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
-	ItemInfo* i;
-	{
-		Lock l(cs);
-		dcassert(transferItems.find(aCqi) != transferItems.end());
-		i = transferItems[aCqi];		
-		i->status = ItemInfo::STATUS_RUNNING;
-		i->pos = 0;
-		i->start = aDownload->getPos();
-		i->actual = i->start;
-		i->size = aDownload->getSize();
-		i->file = Text::toT(Util::getFileName(aDownload->getTarget()));
-		i->path = Text::toT(Util::getFilePath(aDownload->getTarget()));
-		i->statusString = TSTRING(DOWNLOAD_STARTING);
-		i->IP = Text::toT(aDownload->getUserConnection()->getRemoteIp());
-		i->country = Text::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
-		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
-			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
-
-		if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-			i->file = _T("TTH: ") + i->file;
-		}
+	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true);
+	ui->setStatus(ItemInfo::STATUS_RUNNING);
+	ui->setPos(aDownload->getTotal());
+	ui->setActual(aDownload->getActual());
+	ui->setStart(aDownload->getPos());
+	ui->setSize(aDownload->getSize());
+	ui->setFile(Text::toT(aDownload->getTarget()));
+	ui->setStatusString(TSTRING(DOWNLOAD_STARTING));
+	tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
+	tstring ip = Text::toT(aDownload->getUserConnection()->getRemoteIp());
+	if(country.empty()) {
+		ui->setIP(ip);
+	} else {
+		ui->setIP(country + _T(" (") + ip + _T(")"));
+	}
+	if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+		ui->file = _T("TTH: ") + ui->file;
 	}
 
-	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
+	speak(UPDATE_ITEM, ui);
 }
 
 void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
-	vector<ItemInfo*>* v = new vector<ItemInfo*>();
+	vector<UpdateInfo*>* v = new vector<UpdateInfo*>();
 	v->reserve(dl.size());
 
 	AutoArray<TCHAR> buf(TSTRING(DOWNLOADED_BYTES).size() + 64);
 
-	{
-		Lock l(cs);
-		for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
-			Download* d = *j;
+	for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
+		Download* d = *j;
 
-			_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(d->getPos())).c_str(), 
-				(double)d->getPos()*100.0/(double)d->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - d->getStart())/1000)).c_str());
+		UpdateInfo* ui = new UpdateInfo(d->getUserConnection()->getUser(), true);
+		ui->setActual(d->getActual());
+		ui->setPos(d->getTotal());
+		ui->setTimeLeft(d->getSecondsLeft());
+		ui->setSpeed(d->getRunningAverage());
 
-			ConnectionQueueItem* aCqi = d->getUserConnection()->getCQI();
-			ItemInfo* i = transferItems[aCqi];
-			i->actual = i->start + d->getActual();
-			i->pos = i->start + d->getTotal();
-			i->timeLeft = d->getSecondsLeft();
-			i->speed = d->getRunningAverage();
+		_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(d->getPos())).c_str(), 
+			(double)d->getPos()*100.0/(double)d->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - d->getStart())/1000)).c_str());
 
-			i->statusString.clear();
-			if(d->getUserConnection()->isSecure()) {
-				i->statusString += _T("[S]");
-			}
-			if(d->isSet(Download::FLAG_TTH_CHECK)) {
-				i->statusString += _T("[T]");
-			}
-			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-				i->statusString += _T("[Z]");
-			} 
-			if(d->isSet(Download::FLAG_ROLLBACK)) {
-				i->statusString += _T("[R]");
-			}
-			if(!i->statusString.empty()) {
-				i->statusString += _T(" ");
-			}
-			i->statusString += buf;
-			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
+		tstring statusString;
 
-			v->push_back(i);
+		if(d->getUserConnection()->isSecure()) {
+			statusString += _T("[S]");
 		}
+		if(d->isSet(Download::FLAG_TTH_CHECK)) {
+			statusString += _T("[T]");
+		}
+		if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+			statusString += _T("[Z]");
+		} 
+		if(d->isSet(Download::FLAG_ROLLBACK)) {
+			statusString += _T("[R]");
+		}
+		if(!statusString.empty()) {
+			statusString += _T(" ");
+		}
+		statusString += buf;
+		ui->setStatusString(statusString);
+
+		v->push_back(ui);
 	}
 
-	PostMessage(WM_SPEAKER, UPDATE_ITEMS, (LPARAM)v);
+	speak(UPDATE_ITEMS, v);
 }
 
 void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) {
-	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
-	ItemInfo* i;
-	{
-		Lock l(cs);
-		dcassert(transferItems.find(aCqi) != transferItems.end());
-		i = transferItems[aCqi];		
-		i->status = ItemInfo::STATUS_WAITING;
-		i->pos = 0;
-
-		i->statusString = Text::toT(aReason);
-		i->size = aDownload->getSize();
-		i->file = Text::toT(Util::getFileName(aDownload->getTarget()));
-		i->path = Text::toT(Util::getFilePath(aDownload->getTarget()));
-		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_SIZE | ItemInfo::MASK_FILE |
-		ItemInfo::MASK_PATH;
-
-		if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-			i->file = _T("TTH: ") + i->file;
-		}
-
+	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true, true);
+	ui->setStatus(ItemInfo::STATUS_WAITING);
+	ui->setPos(0);
+	ui->setStatusString(Text::toT(aReason));
+	ui->setSize(aDownload->getSize());
+	ui->setFile(Text::toT(aDownload->getTarget()));
+	if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+		ui->file = _T("TTH: ") + ui->file;
 	}
-	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
+
+	speak(UPDATE_ITEM, ui);
 }
 
 void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
-	ConnectionQueueItem* aCqi = aUpload->getUserConnection()->getCQI();
-	ItemInfo* i;
-	{
-		Lock l(cs);
-		dcassert(transferItems.find(aCqi) != transferItems.end());
-		i = transferItems[aCqi];		
-		i->pos = 0;
-		i->start = aUpload->getPos();
-		i->actual = i->start;
-		i->size = aUpload->getSize();
-		i->status = ItemInfo::STATUS_RUNNING;
-		i->speed = 0;
-		i->timeLeft = 0;
+	UpdateInfo* ui = new UpdateInfo(aUpload->getUserConnection()->getUser(), false);
 
-		i->file = Text::toT(Util::getFileName(aUpload->getFileName()));
-		i->path = Text::toT(Util::getFilePath(aUpload->getFileName()));
-		i->statusString = TSTRING(UPLOAD_STARTING);
-		i->IP = Text::toT(aUpload->getUserConnection()->getRemoteIp());
-		i->country = Text::toT(Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp()));
-		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
-			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
-
-		if(aUpload->isSet(Upload::FLAG_TTH_LEAVES)) {
-			i->file = _T("TTH: ") + i->file;
-		}
-
+	ui->setStatus(ItemInfo::STATUS_RUNNING);
+	ui->setPos(aUpload->getTotal());
+	ui->setActual(aUpload->getActual());
+	ui->setStart(aUpload->getPos());
+	ui->setSize(aUpload->getSize());
+	ui->setFile(Text::toT(aUpload->getFileName()));
+	ui->setStatusString(TSTRING(UPLOAD_STARTING));
+	tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp()));
+	tstring ip = Text::toT(aUpload->getUserConnection()->getRemoteIp());
+	if(country.empty()) {
+		ui->setIP(ip);
+	} else {
+		ui->setIP(country + _T(" (") + ip + _T(")"));
+	}
+	if(aUpload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+		ui->file = _T("TTH: ") + ui->file;
 	}
 
-	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
+	speak(UPDATE_ITEM, ui);
 }
 
 void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
-	vector<ItemInfo*>* v = new vector<ItemInfo*>();
+	vector<UpdateInfo*>* v = new vector<UpdateInfo*>();
 	v->reserve(ul.size());
 
-	AutoArray<TCHAR> buf(STRING(UPLOADED_BYTES).size() + 64);
+	AutoArray<TCHAR> buf(TSTRING(UPLOADED_BYTES).size() + 64);
 
-	{
-		Lock l(cs);
-		for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
-			Upload* u = *j;
+	for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
+		Upload* u = *j;
 
-			ConnectionQueueItem* aCqi = u->getUserConnection()->getCQI();
-			ItemInfo* i = transferItems[aCqi];	
-			i->actual = i->start + u->getActual();
-			i->pos = i->start + u->getTotal();
-			i->timeLeft = u->getSecondsLeft();
-			i->speed = u->getRunningAverage();
+		UpdateInfo* ui = new UpdateInfo(u->getUserConnection()->getUser(), false);
+		ui->setActual(u->getActual());
+		ui->setPos(u->getTotal());
+		ui->setTimeLeft(u->getSecondsLeft());
+		ui->setSpeed(u->getRunningAverage());
 
-			_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
-				(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
+		_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(), 
+			(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
 
-			i->statusString.clear();
-
-			if(u->getUserConnection()->isSecure()) {
-				i->statusString += _T("[S]");
-			}
-			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
-				i->statusString += _T("[Z]");
-			}
-			if(!i->statusString.empty()) {
-				i->statusString += _T(" ");
-			}
-			i->statusString += buf;
-			
-
-			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
-			v->push_back(i);
+		tstring statusString;
+		
+		if(u->getUserConnection()->isSecure()) {
+			statusString += _T("[S]");
 		}
+		if(u->isSet(Upload::FLAG_ZUPLOAD)) {
+			statusString += _T("[Z]");
+		}
+		if(!statusString.empty()) {
+			statusString += _T(" ");
+		}
+		statusString += buf;
+
+		v->push_back(ui);
 	}
 
-	PostMessage(WM_SPEAKER, UPDATE_ITEMS, (LPARAM)v);
+	speak(UPDATE_ITEMS, v);
 }
 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
-	ConnectionQueueItem* aCqi = aTransfer->getUserConnection()->getCQI();
-	ItemInfo* i;
-	{
-		Lock l(cs);
-		dcassert(transferItems.find(aCqi) != transferItems.end());
-		i = transferItems[aCqi];		
+	UpdateInfo* ui = new UpdateInfo(aTransfer->getUserConnection()->getUser(), !isUpload);
 
-		i->status = ItemInfo::STATUS_WAITING;
-		i->pos = 0;
-
-		i->statusString = isUpload ? TSTRING(UPLOAD_FINISHED_IDLE) : TSTRING(DOWNLOAD_FINISHED_IDLE);
-		i->updateMask |= ItemInfo::MASK_STATUS;
-	}
-	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);	
+	ui->setStatus(ItemInfo::STATUS_WAITING);
+	ui->setPos(0);
+	ui->setStatusString(isUpload ? TSTRING(UPLOAD_FINISHED_IDLE) : TSTRING(DOWNLOAD_FINISHED_IDLE));
+	
+	speak(UPDATE_ITEM, ui);
 }
 
 void TransferView::ItemInfo::disconnect() {
-	ConnectionManager::getInstance()->removeConnection(user, (type == TYPE_DOWNLOAD));
+	ConnectionManager::getInstance()->disconnect(user, download);
 }
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.60 2006/01/09 22:44:49 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.61 2006/01/15 18:40:43 arnetheduck Exp $
  */

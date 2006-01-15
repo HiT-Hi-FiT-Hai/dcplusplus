@@ -143,7 +143,6 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 		return false;
 	}
 
-
 	Lock l(cs);
 
 	bool extraSlot = false;
@@ -220,6 +219,14 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	}
 
 	return true;
+}
+
+void UploadManager::removeUpload(Upload* aUpload) {
+	Lock l(cs);
+	dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
+	uploads.erase(find(uploads.begin(), uploads.end(), aUpload));
+	aUpload->setUserConnection(NULL);
+	delete aUpload;
 }
 
 void UploadManager::reserveSlot(const User::Ptr& aUser) {
@@ -386,7 +393,6 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
 		extra--;
 		aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 	}
-	ConnectionManager::getInstance()->putUploadConnection(aConn, ntd);
 }
 
 void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
@@ -485,7 +491,6 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 	
 	if(ticks.size() > 0)
 		fire(UploadManagerListener::Tick(), ticks);
-
 }
 
 void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
@@ -515,5 +520,5 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.101 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.102 2006/01/15 18:40:39 arnetheduck Exp $
  */

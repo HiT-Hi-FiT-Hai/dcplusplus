@@ -54,7 +54,7 @@ Client* ClientManager::getClient(const string& aHubURL) {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	aClient->disconnect();
+	aClient->disconnect(true);
 	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
 
@@ -547,5 +547,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.87 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.88 2006/01/15 18:40:37 arnetheduck Exp $
  */
