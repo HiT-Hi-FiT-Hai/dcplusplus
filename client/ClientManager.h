@@ -102,6 +102,8 @@ public:
  		}
  	}
 
+	string getCachedIp() const { Lock l(cs); return cachedIp; }
+
 private:
 	typedef HASH_MAP<string, User::Ptr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
@@ -114,7 +116,7 @@ private:
 	typedef pair<OnlineIter, OnlineIter> OnlinePair;
 
 	Client::List clients;
-	CriticalSection cs;
+	mutable CriticalSection cs;
 	
 	UserMap users;
 	LegacyMap legacyUsers;
@@ -123,6 +125,8 @@ private:
 	User::Ptr me;
 	
 	Socket s;
+
+	string cachedIp;
 
 	friend class Singleton<ClientManager>;
 
@@ -137,6 +141,8 @@ private:
 	}
 
 	string getUsersFile() { return Util::getConfigPath() + "Users.xml"; }
+
+	void updateCachedIp();
 
 	// SettingsManagerListener
 	virtual void on(Load, SimpleXML*) throw();
@@ -160,5 +166,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.73 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.74 2006/01/19 20:50:27 arnetheduck Exp $
  */

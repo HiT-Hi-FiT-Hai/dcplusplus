@@ -506,6 +506,7 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 			ConnectionQueueItem* cqi = *i;
 			if(cqi->getState() == ConnectionQueueItem::WAITING || cqi->getState() == ConnectionQueueItem::CONNECTING) {
 				cqi->setState(ConnectionQueueItem::ACTIVE);
+				uc->setFlag(UserConnection::FLAG_ASSOCIATED);
 
 				fire(ConnectionManagerListener::Connected(), cqi);
 				
@@ -539,6 +540,7 @@ void ConnectionManager::addUploadConnection(UserConnection* uc) {
 			ConnectionQueueItem* cqi = getCQI(uc->getUser(), false);
 
 			cqi->setState(ConnectionQueueItem::ACTIVE);
+			uc->setFlag(UserConnection::FLAG_ASSOCIATED);
 
 			fire(ConnectionManagerListener::Connected(), cqi);
 
@@ -598,22 +600,21 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
 	Lock l(cs);
 
-	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-		ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aSource->getUser());
-		dcassert(i != downloads.end());
-
-		ConnectionQueueItem* cqi = *i;
-		cqi->setState(ConnectionQueueItem::WAITING);
-		cqi->setLastAttempt(GET_TICK());
-		fire(ConnectionManagerListener::Failed(), cqi, aError);
-	} else if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
-		ConnectionQueueItem::Iter i = find(uploads.begin(), uploads.end(), aSource->getUser());
-		dcassert(i != uploads.end());
-
-		ConnectionQueueItem* cqi = *i;
-		putCQI(cqi);
+	if(aSource->isSet(UserConnection::FLAG_ASSOCIATED)) {
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aSource->getUser());
+			dcassert(i != downloads.end());
+			ConnectionQueueItem* cqi = *i;
+			cqi->setState(ConnectionQueueItem::WAITING);
+			cqi->setLastAttempt(GET_TICK());
+			fire(ConnectionManagerListener::Failed(), cqi, aError);
+		} else if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
+			ConnectionQueueItem::Iter i = find(uploads.begin(), uploads.end(), aSource->getUser());
+			dcassert(i != uploads.end());
+			ConnectionQueueItem* cqi = *i;
+			putCQI(cqi);
+		}
 	}
-
 	putConnection(aSource);
 }
 
@@ -673,5 +674,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.113 2006/01/15 18:40:39 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.114 2006/01/19 20:50:27 arnetheduck Exp $
  */

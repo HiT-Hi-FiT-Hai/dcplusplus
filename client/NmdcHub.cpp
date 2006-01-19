@@ -223,7 +223,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		// Filter own searches
 		if(ClientManager::getInstance()->isActive()) {
-			if(seeker == (getLocalIp() + ":" + Util::toString(SearchManager::getInstance()->getPort()))) {
+			if(seeker == (ClientManager::getInstance()->getCachedIp() + ":" + Util::toString(SearchManager::getInstance()->getPort()))) {
 				return;
 			}
 		} else {
@@ -737,7 +737,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	}
 	int chars = 0;
 	if(ClientManager::getInstance()->isActive()) {
-		string x = getLocalIp();
+		string x = ClientManager::getInstance()->getCachedIp();
 		buf = new char[x.length() + aString.length() + 64];
 		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
@@ -797,6 +797,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.51 2006/01/15 18:40:38 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.52 2006/01/19 20:50:27 arnetheduck Exp $
  */
 
