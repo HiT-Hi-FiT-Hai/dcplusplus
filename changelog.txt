@@ -1,4 +1,7 @@
-﻿-- 0.69 2006-01-21 --
+﻿-- 0.6811 2006-01-21 --
+* Fixed a socket race condition leading to failing connections and crashes
+
+-- 0.681 2006-01-21 --
 * Fixed a crash when using slow sources disconnect
 * Fixed system log overflow
 * Minor user command fix (thanks garg)

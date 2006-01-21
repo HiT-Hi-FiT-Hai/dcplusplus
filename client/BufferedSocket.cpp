@@ -31,18 +31,17 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw(ThreadException) : 
+BufferedSocket::BufferedSocket(char aSeparator) throw() : 
 separator(aSeparator), mode(MODE_LINE), 
 dataBytes(0), rollback(0), failed(false), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0), disconnecting(false)
 {
-	start();
 }
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
 }
 
-void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException) {
+void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
@@ -52,11 +51,19 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
 
+	try {
+		start();
+	} catch(...) {
+		delete sock;
+		sock = 0;
+		throw;
+	}
+
 	Lock l(cs);
 	addTask(ACCEPTED, 0);
 }
 
-void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException) {
+void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
@@ -65,6 +72,14 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
 	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
+
+	try {
+		start();
+	} catch(...) {
+		delete sock;
+		sock = 0;
+		throw;
+	}
 
 	Lock l(cs);
 	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
@@ -316,7 +331,19 @@ int BufferedSocket::run() {
 	return 0;
 }
 
+void BufferedSocket::shutdown() { 
+	if(sock) {
+		Lock l(cs); 
+		disconnecting = true; 
+		addTask(SHUTDOWN, 0); 
+	} else {
+		// Socket thread not running yet, disconnect...
+		delete this;
+	}
+
+}
+
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.95 2006/01/21 09:23:55 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.96 2006/01/21 10:38:01 arnetheduck Exp $
  */
