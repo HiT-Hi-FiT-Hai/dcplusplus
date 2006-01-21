@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.68" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.681" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -109,6 +109,7 @@
 		<String Name="ErrorCreatingRegistryKeyAdc">Error creating adc registry key</String>
 		<String Name="ErrorCreatingRegistryKeyDchub">Error creating dchub registry key</String>
 		<String Name="ErrorCreatingRegistryKeyMagnet">Error creating magnet registry key</String>
+		<String Name="ErrorHashing">Error hashing </String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
@@ -216,6 +217,7 @@
 		<String Name="MinSize">Min Size</String>
 		<String Name="Mib">MiB</String>
 		<String Name="Mibps">MiB/s</String>
+		<String Name="Mibitsps">MiBits/s</String>
 		<String Name="MenuAbout">About DC++...</String>
 		<String Name="MenuAdlSearch">ADL Search</String>
 		<String Name="MenuArrange">Arrange icons</String>
@@ -329,6 +331,7 @@
 		<String Name="RemoveAllSubdirectories">Remove all subdirectories before adding this one</String>
 		<String Name="RemoveFromAll">Remove user from queue</String>
 		<String Name="RemoveSource">Remove source</String>
+		<String Name="RenamedTo"> renamed to </String>
 		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
 		<String Name="Running">Running...</String>
 		<String Name="S">s</String>
@@ -543,6 +546,7 @@
 		<String Name="UdpPortBusy">Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port</String>
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="UnableToOpenFilelist">Unable to open filelist: </String>
+		<String Name="UnableToRename">Unable to rename </String>
 		<String Name="Unknown">Unknown</String>
 		<String Name="UnknownAddress">Unknown address</String>
 		<String Name="UnknownCommand">Unknown command: </String>

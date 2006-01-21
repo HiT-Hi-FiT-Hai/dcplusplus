@@ -42,7 +42,7 @@
 						Description="Compiling Help File"
 						CommandLine="compile.cmd
 "
-						AdditionalDependencies="*.html;index.hhk;toc.hhc;..\windows\resource.h"
+						AdditionalDependencies="$(ProjectDir)changelog.html;$(ProjectDir)index.hhk;$(ProjectDir)toc.hhc;..\windows\resource.h"
 						Outputs="$(SolutionDir)app\DCPlusPlus.chm"/>
 				</FileConfiguration>
 			</File>
@@ -62,6 +62,15 @@
 			</File>
 			<File
 				RelativePath=".\changelog.html">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Building changelog"
+						CommandLine="$(ProjectDir)gen_changelog.py"
+						AdditionalDependencies="$(SolutionDir)changelog.txt"
+						Outputs="changelog.html"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\chat_commands.html">
@@ -145,6 +154,9 @@
 				RelativePath=".\settings_appearance.html">
 			</File>
 			<File
+				RelativePath=".\settings_certs.html">
+			</File>
+			<File
 				RelativePath=".\settings_colors_and_sounds.html">
 			</File>
 			<File
@@ -176,9 +188,6 @@
 			</File>
 			<File
 				RelativePath=".\settings_windows.html">
-			</File>
-			<File
-				RelativePath=".\settings_certs.html">
 			</File>
 			<File
 				RelativePath=".\template.html">

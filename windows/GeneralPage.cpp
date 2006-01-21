@@ -31,7 +31,7 @@ PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_EMAIL, ResourceManager::EMAIL },
 	{ IDC_SETTINGS_DESCRIPTION, ResourceManager::DESCRIPTION },
 	{ IDC_SETTINGS_UPLOAD_SPEED, ResourceManager::SETTINGS_UPLOAD_SPEED },
-	{ IDC_SETTINGS_MEBIBYES, ResourceManager::MiBPS },
+	{ IDC_SETTINGS_MEBIBITS, ResourceManager::MiBITSPS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -114,5 +114,5 @@ LRESULT GeneralPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 
 /**
  * @file
- * $Id: GeneralPage.cpp,v 1.16 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.17 2006/01/21 09:23:55 arnetheduck Exp $
  */

@@ -400,6 +400,7 @@
 #define IDC_SETTINGS_AUTODROP_DISCONNECT 1404
 #define IDC_SETTINGS_AUTODROP_FILELISTS 1405
 #define IDC_SETTINGS_MEBIBYES           1406
+#define IDC_SETTINGS_MEBIBITS           1406
 #define IDC_FILELIST_DIFF               1407
 #define IDC_COPY_FILENAME               1408
 #define IDC_MAX_FILELIST_SIZE           1409
@@ -409,7 +410,6 @@
 #define IDC_SSL_PRIVATE_KEY_FILE        1414
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1415
 #define IDC_CLIENT_ID                   1416
-#define IDC_EDIT1                       1419
 #define IDC_AUTO_REFRESH_TIME           1419
 #define IDC_SETTINGS_AUTO_REFRESH_TIME  1420
 #define IDC_BROWSELIST                  3000

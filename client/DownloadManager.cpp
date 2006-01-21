@@ -152,7 +152,14 @@ int DownloadManager::FileMover::run() {
 		try {
 			File::renameFile(next.first, next.second);
 		} catch(const FileException&) {
-			// Too bad...
+			try {
+				// Try to just rename it to the correct name  at least
+				string newTarget = Util::getFilePath(next.first) + Util::getFileName(next.second);
+				File::renameFile(next.first, newTarget);
+				LogManager::getInstance()->message(next.first + STRING(RENAMED_TO) + newTarget);
+			} catch(const FileException& e) {
+				LogManager::getInstance()->message(STRING(UNABLE_TO_RENAME) + next.first + ": " + e.getError());
+			}
 		}
 	}
 }
@@ -937,5 +944,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.158 2006/01/15 18:40:38 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.159 2006/01/21 09:23:55 arnetheduck Exp $
  */

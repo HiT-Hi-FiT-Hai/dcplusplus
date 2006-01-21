@@ -143,7 +143,7 @@ private:
 	Modes mode;
 	int64_t dataBytes;
 	size_t rollback;
-	
+	bool failed;
 	string line;
 	vector<u_int8_t> inbuf;
 	vector<u_int8_t> writeBuf;
@@ -164,6 +164,7 @@ private:
 		if(sock)
 			sock->disconnect();
 		fire(BufferedSocketListener::Failed(), aError);
+		failed = true;
 	}
 
 	bool checkEvents();
@@ -177,5 +178,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.73 2006/01/15 18:40:37 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.74 2006/01/21 09:23:55 arnetheduck Exp $
  */

@@ -406,7 +406,11 @@ bool HubFrame::updateUser(const UpdateInfo& u) {
 
 void HubFrame::removeUser(const User::Ptr& aUser) {
 	UserMapIter i = userMap.find(aUser);
-	dcassert(i != userMap.end());
+	if(i == userMap.end()) {
+		// Should never happen?
+		dcassert(i != userMap.end());
+		return;
+	}
 
 	UserInfo* ui = i->second;
 	if(!ui->getIdentity().isHidden() && showUsers)
@@ -1214,5 +1218,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.127 2006/01/15 18:40:43 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.128 2006/01/21 09:23:55 arnetheduck Exp $
  */

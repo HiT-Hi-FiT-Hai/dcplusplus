@@ -141,7 +141,7 @@ BEGIN
     RTEXT           "Max upload speed",IDC_SETTINGS_UPLOAD_SPEED,14,70,74,8
     COMBOBOX        IDC_CONNECTION,94,68,58,95,CBS_DROPDOWNLIST | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "idc_settings_mebibyes",IDC_SETTINGS_MEBIBYES,156,71,102,
+    LTEXT           "idc_settings_mebibits",IDC_SETTINGS_MEBIBITS,156,71,102,
                     8
 END
 
@@ -929,8 +929,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,8,0
- PRODUCTVERSION 0,6,8,0
+ FILEVERSION 0,6,8,1
+ PRODUCTVERSION 0,6,8,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -947,12 +947,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 6, 8, 0"
+            VALUE "FileVersion", "0, 6, 8, 1"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2005 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 6, 8, 0"
+            VALUE "ProductVersion", "0, 6, 8, 1"
         END
     END
     BLOCK "VarFileInfo"

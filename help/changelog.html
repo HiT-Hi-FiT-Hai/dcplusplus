@@ -12,6 +12,21 @@
 <body>
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
+<h2>0.69 <span style="color: gray;">(2006-01-21)</span></h2>
+<ul>
+  <li>Fixed a crash when using slow sources disconnect</li>
+  <li>Fixed system log overflow</li>
+  <li>Minor user command fix (thanks garg)</li>
+  <li>Removed some duplicate code (thanks trem)</li>
+  <li>Ctrl-a to select all items in a list (thanks garg)</li>
+  <li>Added a check for multiple refreshes running at the same time (thanks trem)</li>
+  <li>Fixed a few crashes here and there</li>
+  <li>Fixed no-slots message not being sent out always</li>
+  <li>Fixed yassl build locations (thanks pothead)</li>
+  <li>Added ip resolve cache when searching (thanks trem)</li>
+  <li>Failed file moves are now reported to the system log</li>
+</ul>
+
 <h2>0.68 <span style="color: gray;">(2006-01-08)</span></h2>
 <ul>
   <li>Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of which users are actually the same for NMDC (essentially, NMDC users are now identified by nick+hub always, not only nick)</li>
@@ -622,8 +637,8 @@ See the version history of DC++ below.
   <li>Fixed a bug in autosearch when using auto search strings (thanks ilkka seppälä)</li>
   <li>Fixed typo in user commands help</li>
   <li>Fixed missing sort arrows</li>
-  <li>Added time last seen online to fav users (thanks garg)</li>
-  <li>Changed auto-grant slot ui (thanks garg)</li>
+  <li>Added time last seen online to fav users (thanks gargoyle)</li>
+  <li>Changed auto-grant slot ui (thanks gargoyle)</li>
   <li>Fixed error removing recently added share directory</li>
   <li>Fixed open folder in finished frames</li>
 </ul>
