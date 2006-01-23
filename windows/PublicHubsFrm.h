@@ -36,7 +36,7 @@ class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public St
 	private FavoriteManagerListener
 {
 public:
-	PublicHubsFrame() : users(0), hubs(0), closed(false), filter(""),
+	PublicHubsFrame() : users(0), hubs(0), closed(false), 
 		filterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP) {
 	};
 
@@ -91,7 +91,7 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlPubLists.m_hWnd || hWnd == ctrlFilter.m_hWnd) {
+		if(hWnd == ctrlPubLists.m_hWnd || hWnd == ctrlFilter.m_hWnd || hWnd == ctrlFilterSel.m_hWnd) {
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);
 			return (LRESULT)WinUtil::bgBrush;
@@ -141,10 +141,11 @@ private:
 
 	CContainedWindow filterContainer;
 	CComboBox ctrlPubLists;
+	CComboBox ctrlFilterSel;
 	ExListViewCtrl ctrlHubs;
 
 	HubEntry::List hubs;
-	StringSearch filter;
+	string filter;
 
 	bool closed;
 	
@@ -162,11 +163,14 @@ private:
 	void updateStatus();
 	void updateList();
 	void updateDropDown();
+
+	bool parseFilter(int& mode, double& size);
+	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const int& mode, const double& size);
 };
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.32 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.33 2006/01/23 08:00:50 arnetheduck Exp $
  */

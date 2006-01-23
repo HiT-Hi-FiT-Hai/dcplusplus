@@ -292,21 +292,21 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 	}
 }
 
-void ADLSearchManager::matchListing(DirectoryListing* aDirList) throw() {
+void ADLSearchManager::matchListing(DirectoryListing& aDirList) throw() {
 	StringMap params;
-	params["userNI"] = aDirList->getUser()->getFirstNick();
-	params["userCID"] = aDirList->getUser()->getCID().toBase32();
+	params["userNI"] = aDirList.getUser()->getFirstNick();
+	params["userCID"] = aDirList.getUser()->getCID().toBase32();
 
-	setUser(aDirList->getUser());
+	setUser(aDirList.getUser());
 
 	DestDirList destDirs;
-	PrepareDestinationDirectories(destDirs, aDirList->getRoot(), params);
+	PrepareDestinationDirectories(destDirs, aDirList.getRoot(), params);
 	setBreakOnFirst(BOOLSETTING(ADLS_BREAK_ON_FIRST));
 
-	string path(aDirList->getRoot()->getName());
-	matchRecurse(destDirs, aDirList->getRoot(), path);
+	string path(aDirList.getRoot()->getName());
+	matchRecurse(destDirs, aDirList.getRoot(), path);
 
-	FinalizeDestinationDirectories(destDirs, aDirList->getRoot());
+	FinalizeDestinationDirectories(destDirs, aDirList.getRoot());
 }
 
 void ADLSearchManager::matchRecurse(DestDirList &aDestList, DirectoryListing::Directory* aDir, string &aPath) {
@@ -323,5 +323,5 @@ void ADLSearchManager::matchRecurse(DestDirList &aDestList, DirectoryListing::Di
 
 /**
  * @file
- * $Id: ADLSearch.cpp,v 1.29 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: ADLSearch.cpp,v 1.30 2006/01/23 08:00:49 arnetheduck Exp $
  */

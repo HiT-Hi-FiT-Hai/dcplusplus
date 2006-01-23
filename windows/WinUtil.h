@@ -99,21 +99,21 @@ public:
 		return 0;
 	}
 
-	struct NmdcOnly {
-		NmdcOnly() : nmdcOnly(true) { }
-		void operator()(UserInfoBase* ui) { if(!ui->getUser()->getCID().isZero()) nmdcOnly = false; }
+	struct ADCOnly {
+		ADCOnly() : adcOnly(true) { }
+		void operator()(UserInfoBase* ui) { if(!ui->getUser()->isSet(User::NMDC)) adcOnly = false; }
 
-		bool nmdcOnly;
+		bool adcOnly;
 	};
 	void checkAdcItems(CMenu& menu) {
 
 		MENUITEMINFO mii = { 0 };
 		mii.cbSize = sizeof(mii);
 		mii.fMask = MIIM_STATE;
-		if(((T*)this)->getUserList().forEachSelectedT(NmdcOnly()).nmdcOnly) {
-			menu.EnableMenuItem(IDC_BROWSELIST, MFS_DISABLED);
-		} else {
+		if(((T*)this)->getUserList().forEachSelectedT(ADCOnly()).adcOnly) {
 			menu.EnableMenuItem(IDC_BROWSELIST, MFS_ENABLED);
+		} else {
+			menu.EnableMenuItem(IDC_BROWSELIST, MFS_DISABLED);
 		}
 	}
 
@@ -357,5 +357,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.51 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.52 2006/01/23 08:00:50 arnetheduck Exp $
  */

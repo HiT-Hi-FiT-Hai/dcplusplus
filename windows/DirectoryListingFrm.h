@@ -42,8 +42,8 @@ class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame
 
 {
 public:
-	static void openWindow(const tstring& aFile, const User::Ptr& aUser);
-	static void openWindow(const User::Ptr& aUser, const string& txt);
+	static void openWindow(const tstring& aFile, const User::Ptr& aUser, int64_t aSpeed);
+	static void openWindow(const User::Ptr& aUser, const string& txt, int64_t aSpeed);
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 	typedef UCHandler<DirectoryListingFrame> ucBase;
@@ -56,12 +56,26 @@ public:
 		COLUMN_TTH,
 		COLUMN_LAST
 	};
+
+	enum {
+		STATUS_TEXT,
+		STATUS_SPEED,
+		STATUS_TOTAL_FILES,
+		STATUS_TOTAL_SIZE,
+		STATUS_SELECTED_FILES,
+		STATUS_SELECTED_SIZE,
+		STATUS_FILE_LIST_DIFF,
+		STATUS_MATCH_QUEUE,
+		STATUS_FIND,
+		STATUS_NEXT,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
 	
-	DirectoryListingFrame(const User::Ptr& aUser);
+	DirectoryListingFrame(const User::Ptr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame() { 
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
-		delete dl; 
 	}
 
 
@@ -310,13 +324,14 @@ private:
 	int skipHits;
 
 	size_t files;
+	int64_t speed;		/**< Speed at which this file list was downloaded */
 
 	bool updating;
 	bool searching;
 
-	int statusSizes[9];
+	int statusSizes[10];
 	
-	DirectoryListing* dl;
+	auto_ptr<DirectoryListing> dl;
 
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
@@ -331,5 +346,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.59 2005/12/05 12:28:22 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.60 2006/01/23 08:00:50 arnetheduck Exp $
  */

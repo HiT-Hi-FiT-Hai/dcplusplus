@@ -307,10 +307,10 @@ private:
 
 	class DirectoryListInfo {
 	public:
-		DirectoryListInfo(LPARAM lp = NULL) : lParam(lp) { };
+		DirectoryListInfo(const User::Ptr& aUser, const tstring& aFile, int64_t aSpeed) : user(aUser), file(aFile), speed(aSpeed) { };
 		User::Ptr user;
 		tstring file;
-		LPARAM lParam;
+		int64_t speed;
 	};
 	class DirectoryBrowseInfo {
 	public:
@@ -387,7 +387,7 @@ private:
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw();	
 
 	// QueueManagerListener
-	virtual void on(QueueManagerListener::Finished, QueueItem* qi) throw();
+	virtual void on(QueueManagerListener::Finished, QueueItem* qi, int64_t speed) throw();
 	virtual void on(PartialList, const User::Ptr&, const string& text) throw();
 
 	// UPnP connectors
@@ -399,5 +399,5 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.65 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.66 2006/01/23 08:00:50 arnetheduck Exp $
  */

@@ -557,6 +557,8 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 		}
 		statusString += buf;
 
+		ui->setStatusString(statusString);
+
 		v->push_back(ui);
 	}
 
@@ -579,5 +581,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.61 2006/01/15 18:40:43 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.62 2006/01/23 08:00:50 arnetheduck Exp $
  */

@@ -1,4 +1,14 @@
-﻿-- 0.6811 2006-01-21 --
+﻿-- 0.69 --
+* Fixed "browse list" being available for NMDC users
+* [ADC] Fixed obsolete CI field
+* Fixed missing upload progress
+* [bug 89] Readded dynamic compression disabling
+* Added filelist download speed to filelist browser status bar
+* Added advanced hublist filter (thanks trem)
+* [bug 579] Fixed 0-byte files not being created if directory doesn't exist
+
+
+-- 0.6811 2006-01-21 --
 * Fixed a socket race condition leading to failing connections and crashes
 
 -- 0.681 2006-01-21 --
@@ -7,12 +17,12 @@
 * Minor user command fix (thanks garg)
 * Removed some duplicate code (thanks trem)
 * Ctrl-a to select all items in a list (thanks garg)
-* Added a check for multiple refreshes running at the same time (thanks trem)
+* [bug 484] Added a check for multiple refreshes running at the same time (thanks trem)
 * Fixed a few crashes here and there
 * Fixed no-slots message not being sent out always
 * Fixed yassl build locations (thanks pothead)
 * Added ip resolve cache when searching (thanks trem)
-* Failed file moves are now reported to the system log
+* [bug 413] Failed file moves are now reported to the system log
 
 -- 0.68 2006-01-08 --
 * Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of

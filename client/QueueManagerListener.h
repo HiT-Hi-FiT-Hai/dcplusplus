@@ -39,7 +39,7 @@ public:
 	typedef X<7> PartialList;
 
 	virtual void on(Added, QueueItem*) throw() { }
-	virtual void on(Finished, QueueItem*) throw() { }
+	virtual void on(Finished, QueueItem*, int64_t) throw() { }
 	virtual void on(Removed, QueueItem*) throw() { }
 	virtual void on(Moved, QueueItem*) throw() { }
 	virtual void on(SourcesUpdated, QueueItem*) throw() { }
@@ -52,5 +52,5 @@ public:
 
 /**
  * @file
- * $Id: QueueManagerListener.h,v 1.10 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: QueueManagerListener.h,v 1.11 2006/01/23 08:00:49 arnetheduck Exp $
  */

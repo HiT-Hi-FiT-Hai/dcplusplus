@@ -265,7 +265,7 @@ public:
 	GETSET(User::Ptr, user, User)
 
 	// @remarks Used to add ADLSearch directories to an existing DirectoryListing
-	void matchListing(DirectoryListing* /*aDirList*/) throw();
+	void matchListing(DirectoryListing& /*aDirList*/) throw();
 
 private:
 	// @internal
@@ -311,5 +311,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.24 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.25 2006/01/23 08:00:49 arnetheduck Exp $
  */

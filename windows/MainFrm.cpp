@@ -445,20 +445,18 @@ HWND MainFrame::createToolbar() {
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		
 	if(wParam == DOWNLOAD_LISTING) {
-		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
-		DirectoryListingFrame::openWindow(i->file, i->user);
-		delete i;
+		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
+		DirectoryListingFrame::openWindow(i->file, i->user, i->speed);
 	} else if(wParam == BROWSE_LISTING) {
-		DirectoryBrowseInfo* i = (DirectoryBrowseInfo*)lParam;
-		DirectoryListingFrame::openWindow(i->user, i->text);
-		delete i;
+		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
+		DirectoryListingFrame::openWindow(i->user, i->text, 0);
 	} else if(wParam == VIEW_FILE_AND_DELETE) {
-		tstring* file = (tstring*)lParam;
+		auto_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
 		TextFrame::openWindow(*file);
 		File::deleteFile(Text::fromT(*file));
-		delete file;
 	} else if(wParam == STATS) {
-		TStringList& str = *(TStringList*)lParam;
+		auto_ptr<TStringList> pstr(reinterpret_cast<TStringList*>(lParam));
+		const TStringList& str = *pstr;
 		if(ctrlStatus.IsWindow()) {
 			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
 			bool u = false;
@@ -476,7 +474,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			if(u)
 				UpdateLayout(TRUE);
 		}
-		delete &str;
 	} else if(wParam == AUTO_CONNECT) {
 		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
@@ -970,7 +967,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), types)) {
 		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if(u) {
-			DirectoryListingFrame::openWindow(file, u);
+			DirectoryListingFrame::openWindow(file, u, 0);
 		} else {
 			MessageBox(CTSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		}
@@ -980,7 +977,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT MainFrame::onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!ShareManager::getInstance()->getOwnListFile().empty()){
-		DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getMe());
+		DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getMe(), 0);
 	}
 	return 0;
 }
@@ -1127,14 +1124,12 @@ void MainFrame::on(PartialList, const User::Ptr& aUser, const string& text) thro
 	PostMessage(WM_SPEAKER, BROWSE_LISTING, (LPARAM)new DirectoryBrowseInfo(aUser, text));
 }
 
-void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
+void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t speed) throw() {
 	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 			// This is a file listing, show it...
 
-			DirectoryListInfo* i = new DirectoryListInfo();
-			i->file = Text::toT(qi->getListName());
-			i->user = qi->getCurrent()->getUser();
+			DirectoryListInfo* i = new DirectoryListInfo(qi->getCurrent()->getUser(), Text::toT(qi->getListName()), speed);
 
 			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 		} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
@@ -1145,5 +1140,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.108 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.109 2006/01/23 08:00:50 arnetheduck Exp $
  */

@@ -461,6 +461,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 	// Check if it's a zero-byte file, if so, create and return...
 	if(aSize == 0) {
 		if(!BOOLSETTING(SKIP_ZERO_BYTE)) {
+			File::ensureDirectory(target);
 			File f(target, File::WRITE, File::CREATE);
 		}
 		return;
@@ -860,7 +861,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 						fire(QueueManagerListener::StatusUpdated(), q);
 					} else {
 						userQueue.remove(q);
-						fire(QueueManagerListener::Finished(), q);
+						fire(QueueManagerListener::Finished(), q, aDownload->getAverageSpeed());
 						fire(QueueManagerListener::Removed(), q);
 						// Now, let's see if this was a directory download filelist...
 						if( (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) && directories.find(q->getCurrent()->getUser()) != directories.end()) ||
@@ -1383,5 +1384,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.141 2006/01/09 23:29:40 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.142 2006/01/23 08:00:49 arnetheduck Exp $
  */
