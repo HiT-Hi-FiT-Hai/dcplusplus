@@ -6,7 +6,12 @@
 * Added filelist download speed to filelist browser status bar
 * Added advanced hublist filter (thanks trem)
 * [bug 579] Fixed 0-byte files not being created if directory doesn't exist
-
+* [bug 804] Cleaned up project files (thanks pothead)
+* Socket buffer size = 0 now means use system default
+* [bug 789] Fixed wrong nick being copied (thanks ullner)
+* [bug 794] [ADC] Fixed automatic reconnect (thanks ullner)
+* [bug 806] Fixed description for favorite hubs (thanks ullner)
+* Updated to latest ADC specs, this will break 0.68/0.681/0.6811 queue sources and fav users (for NMDC as well)
 
 -- 0.6811 2006-01-21 --
 * Fixed a socket race condition leading to failing connections and crashes

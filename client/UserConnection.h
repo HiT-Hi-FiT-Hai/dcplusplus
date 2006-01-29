@@ -84,7 +84,6 @@ public:
 
 	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() { }
@@ -240,8 +239,8 @@ public:
 	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); };
 	void error(const string& aError) { send("$Error " + aError + '|'); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
-	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full"); };
-	void fileNotAvail() { isSet(FLAG_NMDC) ? send("$Error " + FILE_NOT_AVAILABLE + "|") : sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE); }
+	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full")); };
+	void fileNotAvail() { isSet(FLAG_NMDC) ? send("$Error " + FILE_NOT_AVAILABLE + "|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE)); }
 
 	// ADC Stuff
 	void sup(const StringList& features) { 
@@ -253,8 +252,6 @@ public:
 	void inf(bool withToken);
 	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_GET).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 	void snd(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_SND).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
-	void ntd() { send(AdcCommand(AdcCommand::CMD_NTD)); }
-	void sta(AdcCommand::Severity sev, AdcCommand::Error err, const string& desc) { send(AdcCommand(AdcCommand::CMD_STA).addParam(Util::toString(100 * sev + err)).addParam(desc)); }
 
 	void send(const AdcCommand& c) { send(c.toString(isSet(FLAG_NMDC), isSet(FLAG_SUPPORTS_ADCGET))); }
 
@@ -293,7 +290,6 @@ public:
 	void handle(AdcCommand::GET t, const AdcCommand& c) { fire(t, this, c); }
 	void handle(AdcCommand::SND t, const AdcCommand& c) { fire(t, this, c);	}
 	void handle(AdcCommand::STA t, const AdcCommand& c) { fire(t, this, c);	}
-	void handle(AdcCommand::NTD t, const AdcCommand& c) { fire(t, this, c);	}
 	void handle(AdcCommand::RES t, const AdcCommand& c) { fire(t, this, c); }
 	void handle(AdcCommand::GFI t, const AdcCommand& c) { fire(t, this, c);	}
 
@@ -366,5 +362,5 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.102 2006/01/19 20:50:27 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.103 2006/01/29 18:48:25 arnetheduck Exp $
  */

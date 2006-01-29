@@ -139,7 +139,7 @@ public:
 	}
 	static string clean(const string& aSearchString);
 	
-	void respond(const AdcCommand& cmd);
+	void respond(const AdcCommand& cmd, const CID& cid);
 
 	short getPort()
 	{
@@ -190,5 +190,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.57 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.58 2006/01/29 18:48:25 arnetheduck Exp $
  */

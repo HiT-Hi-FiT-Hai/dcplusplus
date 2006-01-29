@@ -47,7 +47,11 @@ void Client::reloadSettings() {
 	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubUrl());
 	if(hub) {
 		getMyIdentity().setNick(checkNick(hub->getNick(true)));
-		getMyIdentity().setDescription(hub->getUserDescription());
+		if(!hub->getUserDescription().empty()) {
+			getMyIdentity().setDescription(hub->getUserDescription());
+		} else {
+			getMyIdentity().setDescription(SETTING(DESCRIPTION));
+		}
 		setPassword(hub->getPassword());
 	} else {
 		getMyIdentity().setNick(checkNick(SETTING(NICK)));
@@ -130,5 +134,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.91 2006/01/15 18:40:39 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.92 2006/01/29 18:48:25 arnetheduck Exp $
  */

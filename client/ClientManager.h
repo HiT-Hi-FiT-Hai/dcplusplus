@@ -79,7 +79,7 @@ public:
 	User::Ptr& getMe();
 	
 	void connect(const User::Ptr& p);
-	void send(AdcCommand& c);
+	void send(AdcCommand& c, const CID& to);
 	void privateMessage(const User::Ptr& p, const string& msg);
 
 	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility);
@@ -157,7 +157,7 @@ private:
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
 	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
 		int aFileType, const string& aString) throw();
-	virtual void on(AdcSearch, Client* c, const AdcCommand& adc) throw();
+	virtual void on(AdcSearch, Client* c, const AdcCommand& adc, const CID& from) throw();
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 };
@@ -166,5 +166,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.74 2006/01/19 20:50:27 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.75 2006/01/29 18:48:25 arnetheduck Exp $
  */

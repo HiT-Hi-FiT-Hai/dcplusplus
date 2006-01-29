@@ -33,7 +33,7 @@
 
 BufferedSocket::BufferedSocket(char aSeparator) throw() : 
 separator(aSeparator), mode(MODE_LINE), 
-dataBytes(0), rollback(0), failed(false), inbuf(SETTING(SOCKET_IN_BUFFER)), sock(0), disconnecting(false)
+dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false)
 {
 }
 
@@ -47,10 +47,13 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->accept(srv);
-	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+	if(SETTING(SOCKET_IN_BUFFER) > 0)
+		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+    if(SETTING(SOCKET_OUT_BUFFER) > 0)
+		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
 
+	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
 	try {
 		start();
 	} catch(...) {
@@ -69,9 +72,13 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->create();
-	sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+	if(SETTING(SOCKET_IN_BUFFER) > 0)
+		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+	if(SETTING(SOCKET_OUT_BUFFER) > 0)
+		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
+
+	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
 
 	try {
 		start();
@@ -182,9 +189,10 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 		return;
 	dcassert(file != NULL);
 	vector<u_int8_t> buf;
+	size_t bufSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 
 	while(true) {
-		buf.resize(SETTING(SOCKET_OUT_BUFFER));
+		buf.resize(bufSize);
 		size_t bytesRead = buf.size();
 		size_t actual = file->read(&buf[0], bytesRead);
 		if(actual == 0) {
@@ -345,5 +353,5 @@ void BufferedSocket::shutdown() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.96 2006/01/21 10:38:01 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.97 2006/01/29 18:48:25 arnetheduck Exp $
  */

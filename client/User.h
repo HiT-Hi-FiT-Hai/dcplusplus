@@ -162,8 +162,8 @@ public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
 
-	OnlineUser() : client(NULL) { }
-	OnlineUser(const User::Ptr& ptr, Client& client_);
+	OnlineUser() : client(NULL), sid(0) { }
+	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
 
 	operator User::Ptr&() { return user; }
 	operator const User::Ptr&() const { return user; }
@@ -175,7 +175,7 @@ public:
 
 	GETSET(User::Ptr, user, User);
 	GETSET(Identity, identity, Identity);
-
+	GETSET(u_int32_t, sid, SID);
 private:
 	friend class NmdcHub;
 
@@ -189,5 +189,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.68 2006/01/01 17:49:56 arnetheduck Exp $
+ * $Id: User.h,v 1.69 2006/01/29 18:48:25 arnetheduck Exp $
  */

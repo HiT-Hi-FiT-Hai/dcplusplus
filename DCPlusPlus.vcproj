@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\vc7\Debug\windows\"
-			IntermediateDirectory=".\vc7\Debug\windows\"
+			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -49,13 +49,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
 				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib  ws2_32.lib"
-				OutputFile=".\App/DCPlusPlus.exe"
+				OutputFile="$(SolutionDir)App/$(ProjectName).exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreAllDefaultLibraries="FALSE"
 				IgnoreDefaultLibraryNames="kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
+				ProgramDatabaseFile="$(SolutionDir)App/$(ProjectName).pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -63,7 +63,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\App/DCPlusPlus.tlb"/>
+				TypeLibraryName="$(SolutionDir)App/$(ProjectName).tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
@@ -87,8 +87,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\vc7\Release\windows"
-			IntermediateDirectory=".\vc7\Release\windows"
+			OutputDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			UseOfATL="1"
@@ -128,7 +128,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
 				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib delayimp.lib htmlhelp.lib ws2_32.lib"
-				OutputFile="./App/DCPlusPlus.exe"
+				OutputFile="$(SolutionDir)App/$(ProjectName).exe"
 				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -136,7 +136,7 @@
 				IgnoreDefaultLibraryNames="kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib"
 				DelayLoadDLLs="dbghelp.dll;oleaut32.dll"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="./App/DCPlusPlus.pdb"
+				ProgramDatabaseFile="$(SolutionDir)App/$(ProjectName).pdb"
 				GenerateMapFile="TRUE"
 				MapFileName=""
 				SubSystem="2"
@@ -149,7 +149,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\App/DCPlusPlus.tlb"/>
+				TypeLibraryName="$(SolutionDir)App/$(ProjectName).tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool

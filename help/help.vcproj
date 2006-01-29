@@ -13,7 +13,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)app"
-			IntermediateDirectory="$(SolutionDir)vc7\Release\help"
+			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="10">
 			<Tool
 				Name="VCCustomBuildTool"/>

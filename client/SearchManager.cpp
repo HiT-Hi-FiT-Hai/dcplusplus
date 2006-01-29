@@ -266,8 +266,13 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		AdcCommand c(x.substr(0, x.length()-1));
 		if(c.getParameters().empty())
 			return;
+		string cid;
+		if(!c.getParam("ID", 0, cid))
+			return;
+		if(cid.size() != 39)
+			return;
 
-		User::Ptr user = ClientManager::getInstance()->findUser(c.getFrom());
+		User::Ptr user = ClientManager::getInstance()->findUser(CID(cid));
 		if(!user)
 			return;
 
@@ -311,12 +316,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 	}*/ // Needs further DoS investigation
 }
 
-void SearchManager::respond(const AdcCommand& adc) {
+void SearchManager::respond(const AdcCommand& adc, const CID& from) {
 	// Filter own searches
-	if(adc.getFrom() == ClientManager::getInstance()->getMe()->getCID())
+	if(from == ClientManager::getInstance()->getMe()->getCID())
 		return;
 
-	User::Ptr p = ClientManager::getInstance()->findUser(adc.getFrom());
+	User::Ptr p = ClientManager::getInstance()->findUser(from);
 	if(!p)
 		return;
 
@@ -335,7 +340,7 @@ void SearchManager::respond(const AdcCommand& adc) {
 		cmd.setTo(adc.getFrom());
 		if(!token.empty())
 			cmd.addParam("TO", token);
-		ClientManager::getInstance()->send(cmd);
+		ClientManager::getInstance()->send(cmd, from);
 		(*i)->decRef();
 	}
 }
@@ -357,5 +362,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.63 2006/01/09 22:44:49 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.64 2006/01/29 18:48:25 arnetheduck Exp $
  */

@@ -105,7 +105,7 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 		} else {
 			p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
 		}
-		u = users.insert(make_pair(aNick, new OnlineUser(p, *this))).first->second;
+		u = users.insert(make_pair(aNick, new OnlineUser(p, *this, 0))).first->second;
 		u->getIdentity().setNick(aNick);
 	}
 
@@ -797,6 +797,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.52 2006/01/19 20:50:27 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.53 2006/01/29 18:48:25 arnetheduck Exp $
  */
 

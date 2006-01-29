@@ -357,7 +357,7 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		string nicks;
 
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			nicks += (ctrlUsers.getItemData(i))->user->getFirstNick();
+			nicks += (ctrlUsers.getItemData(i))->getIdentity().getNick();
 			nicks += ' ';
 		}
 		if(!nicks.empty()) {
@@ -1218,5 +1218,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.128 2006/01/21 09:23:55 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.129 2006/01/29 18:48:26 arnetheduck Exp $
  */

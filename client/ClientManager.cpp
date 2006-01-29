@@ -255,7 +255,7 @@ CID ClientManager::makeCid(const string& aNick, const string& aHubUrl) throw() {
 	th.update(Text::toLower(aHubUrl).c_str(), aHubUrl.length());
 	// Construct hybrid CID from the first 64 bits of the tiger hash - should be
 	// fairly random, and hopefully low-collision
-	return CID(*(u_int64_t*)th.finalize());
+	return CID(th.finalize());
 }
 
 void ClientManager::putOnline(OnlineUser& ou) throw() {
@@ -312,22 +312,16 @@ void ClientManager::privateMessage(const User::Ptr& p, const string& msg) {
 	}
 }
 
-void ClientManager::send(AdcCommand& cmd) {
+void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 	Lock l(cs);
-	OnlineIter i = onlineUsers.find(cmd.getTo());
+	OnlineIter i = onlineUsers.find(cid);
 	if(i != onlineUsers.end()) {
 		OnlineUser* u = i->second;
 		if(cmd.getType() == AdcCommand::TYPE_UDP && !u->getIdentity().isUdpActive()) {
 			cmd.setType(AdcCommand::TYPE_DIRECT);
 		}
-
-		if(cmd.getType() == AdcCommand::TYPE_UDP) {
-			/// @todo ugly cast...
-			AdcHub* h = (AdcHub*)&u->getClient();
-			h->sendUDP(cmd);
-		} else {
-			u->getClient().send(cmd.toString());
-		}
+		cmd.setTo(u->getSID());
+		u->getClient().send(cmd);
 	}
 }
 
@@ -405,8 +399,8 @@ void ClientManager::userCommand(const User::Ptr& p, const ::UserCommand& uc, Str
 	ou.getClient().sendUserCmd(Util::formatParams(uc.getCommand(), params));
 }
 
-void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc) throw() {
-	SearchManager::getInstance()->respond(adc);
+void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc, const CID& from) throw() {
+	SearchManager::getInstance()->respond(adc, from);
 }
 
 Identity ClientManager::getIdentity(const User::Ptr& aUser) {
@@ -572,5 +566,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.89 2006/01/19 20:50:27 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.90 2006/01/29 18:48:25 arnetheduck Exp $
  */

@@ -171,7 +171,7 @@ private:
 	void putConnection(UserConnection* aConn);
 
 	void addUploadConnection(UserConnection* uc);
-	void addDownloadConnection(UserConnection* uc, bool sendNTD);
+	void addDownloadConnection(UserConnection* uc);
 
 	ConnectionQueueItem* getCQI(const User::Ptr& aUser, bool download);
 	void putCQI(ConnectionQueueItem* cqi);
@@ -189,7 +189,6 @@ private:
 
 	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener
@@ -202,5 +201,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.75 2006/01/15 18:40:38 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.76 2006/01/29 18:48:25 arnetheduck Exp $
  */

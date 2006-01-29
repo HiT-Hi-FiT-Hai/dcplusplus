@@ -167,7 +167,7 @@ private:
 	UploadManager() throw();
 	virtual ~UploadManager() throw();
 
-	void removeConnection(UserConnection::Ptr aConn, bool ntd);
+	void removeConnection(UserConnection::Ptr aConn);
 	void removeUpload(Upload* aUpload);
 
 	// ClientManagerListener
@@ -189,7 +189,6 @@ private:
 	
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw();
-	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
@@ -199,5 +198,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.83 2006/01/15 18:40:37 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.84 2006/01/29 18:48:25 arnetheduck Exp $
  */

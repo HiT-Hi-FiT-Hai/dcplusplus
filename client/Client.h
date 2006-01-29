@@ -135,6 +135,8 @@ public:
 		updateActivity();
 		socket->write(aMessage, aLen);
 	}
+	virtual void send(const AdcCommand& command) = 0;
+
 	const string& getMyNick() const { return getMyIdentity().getNick(); }
 	const string& getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
 	const string& getHubDescription() const { return getHubIdentity().getDescription(); }
@@ -203,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.106 2006/01/15 18:40:39 arnetheduck Exp $
+ * $Id: Client.h,v 1.107 2006/01/29 18:48:25 arnetheduck Exp $
  */

@@ -46,7 +46,7 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 	zs.next_out = (Bytef*)out;
 
 	// Check if there's any use compressing; if not, save some cpu...
-	if(compressing && insize > 0 && outsize > 5 && (totalIn > (64*1024)) && ((static_cast<double>(totalOut) / totalIn) > 0.95)) {
+	if(compressing && insize > 0 && outsize > 16 && (totalIn > (64*1024)) && ((static_cast<double>(totalOut) / totalIn) > 0.95)) {
 		zs.avail_in = 0;
 		zs.avail_out = outsize;
 		if(deflateParams(&zs, 0, Z_DEFAULT_STRATEGY) != Z_OK) {
@@ -55,6 +55,15 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 		zs.avail_in = insize;
 		compressing = false;
 		dcdebug("Dynamically disabled compression");
+
+		// Check if we ate all space already...
+		if(zs.avail_out == 0) {
+			outsize = outsize - zs.avail_out;
+			insize = insize - zs.avail_in;
+			totalOut += outsize;
+			totalIn += insize;
+			return true;
+		}
 	} else {
 		zs.avail_in = insize;
 		zs.avail_out = outsize;
@@ -119,5 +128,5 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 /**
  * @file
- * $Id: ZUtils.cpp,v 1.9 2006/01/23 08:00:49 arnetheduck Exp $
+ * $Id: ZUtils.cpp,v 1.10 2006/01/29 18:48:25 arnetheduck Exp $
  */

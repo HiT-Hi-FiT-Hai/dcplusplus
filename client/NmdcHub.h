@@ -64,6 +64,9 @@ public:
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
 	virtual void disconnect(bool graceless) throw();
+	using Client::send;
+	virtual void send(const AdcCommand&) { dcassert(0); }
+
 	void myInfo(bool alwaysSend);
 	
 	void refreshUserList(bool unknownOnly = false);
@@ -148,5 +151,5 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.29 2006/01/15 18:40:39 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.30 2006/01/29 18:48:25 arnetheduck Exp $
  */

@@ -28,29 +28,25 @@
 
 class CID {
 public:
-	enum { SIZE = sizeof(u_int64_t) };
+	enum { SIZE = 192 / 8 };
 
 	struct Hash {
 		size_t operator()(const CID& c) const { return c.toHash(); }
 	};
-	CID() : cid(0) { }
-	explicit CID(u_int64_t c) : cid(c) { }
-	explicit CID(const string& base32) { Encoder::fromBase32(base32.c_str(),(u_int8_t*)&cid, sizeof(cid)); }
-	CID(const CID& rhs) : cid(rhs.cid) { }
+	CID() { memset(cid, 0, sizeof(cid)); }
+	explicit CID(const u_int8_t* data) { memcpy(cid, data, sizeof(cid)); }
+	explicit CID(const string& base32) { Encoder::fromBase32(base32.c_str(), cid, sizeof(cid)); }
 
-	operator u_int64_t() { return cid; }
-
-	CID& operator=(const CID& rhs) { cid = rhs.cid; return *this; }		
 	bool operator==(const CID& rhs) const { return cid == rhs.cid; }
 	bool operator<(const CID& rhs) const { return cid < rhs.cid; }
 
-	string toBase32() const { return Encoder::toBase32((u_int8_t*)&cid, sizeof(cid)); }
-	string& toBase32(string& tmp) const { return Encoder::toBase32((u_int8_t*)&cid, sizeof(cid), tmp); }
+	string toBase32() const { return Encoder::toBase32(cid, sizeof(cid)); }
+	string& toBase32(string& tmp) const { return Encoder::toBase32(cid, sizeof(cid), tmp); }
 	
-	size_t toHash() const { return (size_t)cid; }
-	const u_int8_t* getData() const { return (u_int8_t*)&cid; }
+	size_t toHash() const { return *reinterpret_cast<const size_t*>(cid); }
+	const u_int8_t* getData() const { return cid; }
 
-	bool isZero() const { return cid == 0; }
+	bool isZero() const { return find_if(cid, cid+SIZE, bind2nd(not_equal_to<u_int8_t>(), 0)) == (cid+SIZE); }
 
 	static CID generate() { 
 		CID cid; 
@@ -60,15 +56,13 @@ public:
 		return cid;
 	}
 
-	static const u_int64_t zero = 0;
 private:
-	u_int64_t cid;
-
+	u_int8_t cid[SIZE];
 };
 
 #endif // !defined(CID_H)
 
 /**
  * @file
- * $Id: CID.h,v 1.7 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: CID.h,v 1.8 2006/01/29 18:48:25 arnetheduck Exp $
  */

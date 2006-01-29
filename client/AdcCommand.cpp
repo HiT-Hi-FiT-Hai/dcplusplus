@@ -22,9 +22,9 @@
 #include "AdcCommand.h"
 #include "ClientManager.h"
 
-AdcCommand::AdcCommand(u_int32_t aCmd, char aType /* = TYPE_CLIENT */) : cmdInt(aCmd), from(ClientManager::getInstance()->getMe()->getCID().toBase32()), type(aType) { }
-AdcCommand::AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(ClientManager::getInstance()->getMe()->getCID().toBase32()), to(aTarget), type(TYPE_DIRECT) { }
-AdcCommand::AdcCommand(Severity sev, Error err, const string& desc, char aType /* = TYPE_CLIENT */) : cmdInt(CMD_STA), from(ClientManager::getInstance()->getMe()->getCID().toBase32()), type(aType) {
+AdcCommand::AdcCommand(u_int32_t aCmd, char aType /* = TYPE_CLIENT */) : cmdInt(aCmd), from(0), type(aType) { }
+AdcCommand::AdcCommand(u_int32_t aCmd, const u_int32_t aTarget) : cmdInt(aCmd), from(0), to(aTarget), type(TYPE_DIRECT) { }
+AdcCommand::AdcCommand(Severity sev, Error err, const string& desc, char aType /* = TYPE_CLIENT */) : cmdInt(CMD_STA), from(0), type(aType) {
 	addParam(Util::toString(sev) + Util::toString(err));
 	addParam(desc);
 }
@@ -79,11 +79,11 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		case ' ': 
 			// New parameter...
 			{
-				if(!fromSet) {
-					from = CID(cur);
+				if(type != TYPE_CLIENT && type != TYPE_UDP && !fromSet) {
+					from = toSID(cur);
 					fromSet = true;
 				} else if(type == TYPE_DIRECT && !toSet) {
-					to = CID(cur);
+					to = toSID(cur);
 					toSet = true;
 				} else if(type == TYPE_FEATURE && !gotFeature) {
 					// Skip...
@@ -100,11 +100,11 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		++i;
 	}
 	if(!cur.empty()) {
-		if(!fromSet) {
-			to = CID(cur);
+		if(type != TYPE_CLIENT && type != TYPE_UDP && !fromSet) {
+			from = toSID(cur);
 			fromSet = true;
 		} else if(type == TYPE_DIRECT && !toSet) {
-			from = CID(cur);
+			to = toSID(cur);
 			toSet = true;
 		} else {
 			parameters.push_back(cur);
@@ -112,7 +112,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 	}
 }
 
-string AdcCommand::toString(bool nmdc /* = false */, bool old /* = false */) const {
+string AdcCommand::toString(u_int32_t sid /* = 0 */, bool nmdc /* = false */, bool old /* = false */) const {
 	string tmp;
 	if(nmdc) {
 		tmp += "$ADC";
@@ -122,14 +122,14 @@ string AdcCommand::toString(bool nmdc /* = false */, bool old /* = false */) con
 
 	tmp += cmdChar;
 
-	if(!nmdc) {
+	if(!nmdc && getType() != TYPE_CLIENT && getType() != TYPE_UDP) {
 		tmp += ' ';
-		tmp += from.toBase32();
+		tmp += fromSID(sid);
 	}
 
 	if(getType() == TYPE_DIRECT) {
 		tmp += ' ';
-		tmp += to.toBase32();
+		tmp += fromSID(to);
 	}
 
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
@@ -168,5 +168,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.14 2005/12/19 00:15:49 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.15 2006/01/29 18:48:25 arnetheduck Exp $
  */

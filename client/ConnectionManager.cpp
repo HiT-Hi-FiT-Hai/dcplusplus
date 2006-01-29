@@ -352,10 +352,6 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 	aSource->setState(UserConnection::STATE_INF);
 }
 
-void ConnectionManager::on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw() {
-
-}
-
 void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() {
 
 }
@@ -493,10 +489,8 @@ void ConnectionManager::on(UserConnectionListener::Direction, UserConnection* aS
 	aSource->setState(UserConnection::STATE_KEY);
 }
 
-void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) {
-
+void ConnectionManager::addDownloadConnection(UserConnection* uc) {
 	dcassert(uc->isSet(UserConnection::FLAG_DOWNLOAD));
-
 	bool addConn = false;
 	{
 		Lock l(cs);
@@ -518,11 +512,6 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 
 	if(addConn) {
 		DownloadManager::getInstance()->addConnection(uc);
-	} else if(sendNTD) {
-		uc->ntd();
-		uc->unsetFlag(UserConnection::FLAG_DOWNLOAD);
-		uc->setFlag(UserConnection::FLAG_UPLOAD);
-		addUploadConnection(uc);
 	} else {
 		putConnection(uc);
 	}
@@ -565,7 +554,7 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 	dcassert(aSource->getUser());
 
 	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-		addDownloadConnection(aSource, false);
+		addDownloadConnection(aSource);
 	} else {
 		addUploadConnection(aSource);
 	}
@@ -574,23 +563,32 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_INF) {
 		// Already got this once, ignore...
-		aSource->sta(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Expecting INF");
-		dcdebug("CM::onMyNick %p sent INF twice\n", aSource);
+		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Expecting INF"));
+		dcdebug("CM::onINF %p sent INF twice\n", aSource);
+		aSource->disconnect();
 		return;
 	}
 
-	aSource->setUser(ClientManager::getInstance()->findUser(cmd.getFrom()));
+	string cid;
+	if(!cmd.getParam("ID", 0, cid)) {
+		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_INF_MISSING, "ID missing").addParam("FL", "ID"));
+		dcdebug("CM::onINF missing ID");
+		aSource->disconnect();
+		return;
+	}
+
+	aSource->setUser(ClientManager::getInstance()->findUser(CID(cid)));
 
 	if(!aSource->getUser()) {
 		dcdebug("CM::onINF: User not found");
-		aSource->sta(AdcCommand::SEV_FATAL, AdcCommand::ERROR_GENERIC, "User not found");
+		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_GENERIC, "User not found"));
 		putConnection(aSource);
 		return;
 	}
 
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
 		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
-		addDownloadConnection(aSource, true);
+		addDownloadConnection(aSource);
 	} else {
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 		addUploadConnection(aSource);
@@ -674,5 +672,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.114 2006/01/19 20:50:27 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.115 2006/01/29 18:48:25 arnetheduck Exp $
  */
