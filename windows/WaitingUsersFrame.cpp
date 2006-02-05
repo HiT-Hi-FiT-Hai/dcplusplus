@@ -255,7 +255,6 @@ void WaitingUsersFrame::onAddFile(const User::Ptr aUser, const string& aFile) {
 		userNode = ctrlQueued.GetNextSiblingItem(userNode);
 	}
 
-	string aNick = aUser->getFirstNick();
 	userNode = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT, (WinUtil::getNicks(aUser) + _T(" - ") + WinUtil::getHubNames(aUser).first).c_str(), 
 		0, 0, 0, 0, (LPARAM)new UserPtr(aUser),	TVI_ROOT, TVI_LAST);
 	ctrlQueued.InsertItem(Text::toT(aFile).c_str(), userNode, TVI_LAST);

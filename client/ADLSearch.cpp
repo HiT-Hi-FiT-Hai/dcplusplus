@@ -18,7 +18,7 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engstr�m, henrikengstrom at home se
+ * Henrik Engström, henrikengstrom at home se
  */
 
 #include "stdinc.h"
@@ -26,6 +26,7 @@
 
 #include "ADLSearch.h"
 #include "QueueManager.h"
+#include "ClientManager.h"
 
 #include "File.h"
 #include "SimpleXML.h"
@@ -294,7 +295,7 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 void ADLSearchManager::matchListing(DirectoryListing& aDirList) throw() {
 	StringMap params;
-	params["userNI"] = aDirList.getUser()->getFirstNick();
+	params["userNI"] = ClientManager::getInstance()->getNicks(aDirList.getUser()->getCID())[0];
 	params["userCID"] = aDirList.getUser()->getCID().toBase32();
 
 	setUser(aDirList.getUser());
@@ -323,5 +324,5 @@ void ADLSearchManager::matchRecurse(DestDirList &aDestList, DirectoryListing::Di
 
 /**
  * @file
- * $Id: ADLSearch.cpp,v 1.30 2006/01/23 08:00:49 arnetheduck Exp $
+ * $Id: ADLSearch.cpp,v 1.31 2006/02/05 17:02:37 arnetheduck Exp $
  */

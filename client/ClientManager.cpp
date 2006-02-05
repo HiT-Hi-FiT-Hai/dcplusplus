@@ -496,7 +496,7 @@ void ClientManager::on(Load, SimpleXML*) throw() {
 			xml.stepIn();
 			while(xml.findChild("User")) {
 				string c = xml.getChildAttrib("CID");
-				if(c.empty())
+				if(c.length() != 39)
 					continue;
 
 				xml.stepIn();
@@ -550,5 +550,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.91 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.92 2006/02/05 17:02:38 arnetheduck Exp $
  */

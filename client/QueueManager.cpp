@@ -957,7 +957,7 @@ void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
 	if(flags & QueueItem::FLAG_MATCH_QUEUE) {
 		AutoArray<char> tmp(STRING(MATCHED_FILES).size() + 16);
 		sprintf(tmp, CSTRING(MATCHED_FILES), matchListing(dirList));
-		LogManager::getInstance()->message(user->getFirstNick() + ": " + string(tmp));			
+		LogManager::getInstance()->message(Util::toString(ClientManager::getInstance()->getNicks(user->getCID())) + ": " + string(tmp));			
 	}
 }
 
@@ -1152,13 +1152,9 @@ void QueueManager::saveQueue() throw() {
 
 				for(QueueItem::Source::List::const_iterator j = qi->sources.begin(); j != qi->sources.end(); ++j) {
 					QueueItem::Source* s = *j;
-					if(!s->getUser()->getCID().isZero()) {
-						f.write(STRINGLEN("\t\t<Source CID=\""));
-						f.write(s->getUser()->getCID().toBase32());
-					} else {
-						f.write(STRINGLEN("\t\t<Source Nick=\""));
-						f.write(CHECKESCAPE(s->getUser()->getFirstNick()));
-					}
+					f.write(STRINGLEN("\t\t<Source CID=\""));
+					f.write(s->getUser()->getCID().toBase32());
+
 					if(!s->getPath().empty() && (!s->getUser()->isSet(User::TTH_GET) || !qi->getTTH()) ) {
 						f.write(STRINGLEN("\" Path=\""));
 						f.write(CHECKESCAPE(s->getPath()));
@@ -1328,9 +1324,10 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			// Size compare to avoid popular spoof
 			bool found = (*qi->getTTH() == *sr->getTTH()) && (qi->getSize() == sr->getSize());
 
-			if(found) {
+			if(found && !qi->isSource(sr->getUser())) {
 				try {
-					wantConnection = addSource(qi, sr->getFile(), sr->getUser(), 0, false);
+					if(!BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
+						wantConnection = addSource(qi, sr->getFile(), sr->getUser(), 0, false);
 					added = true;
 				} catch(const Exception&) {
 					// ...
@@ -1384,5 +1381,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.143 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.144 2006/02/05 17:02:37 arnetheduck Exp $
  */

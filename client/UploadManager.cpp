@@ -503,7 +503,7 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
-				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFirstNick());
+				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + Util::toString(ClientManager::getInstance()->getNicks(aUser->getCID())));
 			}
 		}
 	}
@@ -516,5 +516,5 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.103 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.104 2006/02/05 17:02:38 arnetheduck Exp $
  */

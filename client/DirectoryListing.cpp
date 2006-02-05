@@ -61,8 +61,8 @@ User::Ptr DirectoryListing::getUserFromFilename(const string& fileName) {
 	}
 
 	size_t n = name.length() - (i + 1);
-	// CID's always 13 chars long...
-	if(n != 13)
+	// CID's always 39 chars long...
+	if(n != 39)
 		return NULL;
 
 	CID cid(name.substr(i + 1));
@@ -426,5 +426,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.56 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.57 2006/02/05 17:02:38 arnetheduck Exp $
  */

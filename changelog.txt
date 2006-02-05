@@ -16,6 +16,8 @@
 * [ADC] Fixed quitting user processing (thanks ullner)
 * Clarified upload speed setting (thanks pothead)
 * Manual away setting no longer cleared when un-minimizing (thanks pothead)
+* Search result automatching waits with match until file list is downloaded if auto-matching enabled
+* Slight performance improvement when sending files
 
 -- 0.6811 2006-01-21 --
 * Fixed a socket race condition leading to failing connections and crashes
