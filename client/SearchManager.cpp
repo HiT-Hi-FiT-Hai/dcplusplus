@@ -194,6 +194,10 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		}
 		string nick = Text::acpToUtf8(x.substr(i, j-i));
 		User::Ptr user = ClientManager::getInstance()->getLegacyUser(nick);
+		if(!user) {
+			dcdebug("Search result from unknown legacy user");
+			return;
+		}
 		i = j + 1;
 
 		// A file has 2 0x05, a directory only one
@@ -362,5 +366,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.64 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.65 2006/02/05 13:38:44 arnetheduck Exp $
  */

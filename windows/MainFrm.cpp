@@ -802,13 +802,10 @@ void MainFrame::updateTray(bool add /* = true */) {
 	}
 }
 
-/**
- * @todo Fix so that the away mode is not reset if it was set manually...
- */
 LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if(wParam == SIZE_MINIMIZED) {
-		if(BOOLSETTING(AUTO_AWAY)) {
+		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(true);
 		}
 		if(BOOLSETTING(MINIMIZE_TRAY)) {
@@ -818,7 +815,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		maximized = IsZoomed() > 0;
 
 	} else if( (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) ) {
-		if(BOOLSETTING(AUTO_AWAY)) {
+		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(false);
 		}
 		if(trayIcon) {
@@ -1140,5 +1137,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t speed)
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.109 2006/01/23 08:00:50 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.110 2006/02/05 13:38:44 arnetheduck Exp $
  */

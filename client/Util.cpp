@@ -51,6 +51,7 @@ wstring Util::emptyStringW;
 tstring Util::emptyStringT;
 
 bool Util::away = false;
+bool Util::manualAway = false;
 string Util::awayMsg;
 time_t Util::awayTime;
 
@@ -901,5 +902,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.93 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.94 2006/02/05 13:38:44 arnetheduck Exp $
  */

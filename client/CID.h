@@ -37,8 +37,8 @@ public:
 	explicit CID(const u_int8_t* data) { memcpy(cid, data, sizeof(cid)); }
 	explicit CID(const string& base32) { Encoder::fromBase32(base32.c_str(), cid, sizeof(cid)); }
 
-	bool operator==(const CID& rhs) const { return cid == rhs.cid; }
-	bool operator<(const CID& rhs) const { return cid < rhs.cid; }
+	bool operator==(const CID& rhs) const { return memcmp(cid, rhs.cid, sizeof(cid)) == 0; }
+	bool operator<(const CID& rhs) const { return memcmp(cid, rhs.cid, sizeof(cid)) < 0; }
 
 	string toBase32() const { return Encoder::toBase32(cid, sizeof(cid)); }
 	string& toBase32(string& tmp) const { return Encoder::toBase32(cid, sizeof(cid), tmp); }
@@ -64,5 +64,5 @@ private:
 
 /**
  * @file
- * $Id: CID.h,v 1.8 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: CID.h,v 1.9 2006/02/05 13:38:44 arnetheduck Exp $
  */

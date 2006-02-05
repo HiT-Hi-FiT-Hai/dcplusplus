@@ -586,6 +586,8 @@ bool QueueManager::addSource(QueueItem* qi, const string& aFile, User::Ptr aUser
 		wantConnection = false;
 	}
 
+	aUser->setFlag(User::SAVE_NICK);
+
 	fire(QueueManagerListener::SourcesUpdated(), qi);
 	setDirty();
 
@@ -1151,7 +1153,6 @@ void QueueManager::saveQueue() throw() {
 				for(QueueItem::Source::List::const_iterator j = qi->sources.begin(); j != qi->sources.end(); ++j) {
 					QueueItem::Source* s = *j;
 					if(!s->getUser()->getCID().isZero()) {
-						s->getUser()->setFlag(User::SAVE_NICK);
 						f.write(STRINGLEN("\t\t<Source CID=\""));
 						f.write(s->getUser()->getCID().toBase32());
 					} else {
@@ -1280,16 +1281,15 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			if(!simple)
 				cur = qi;
 		} else if(cur != NULL && name == sSource) {
-			const string& nick = getAttrib(attribs, sNick, 0);
-			const string& cid = getAttrib(attribs, sCID, 1);
+			const string& cid = getAttrib(attribs, sCID, 0);
+			if(cid.length() != 39) {
+				// Skip loading this source - sorry old users
+				return;
+			}
 			const string& path = getAttrib(attribs, sPath, 1);
 			const string& utf8 = getAttrib(attribs, sUtf8, 2);
 			bool isUtf8 = (utf8 == "1");
-			User::Ptr user;
-			if(!cid.empty())
-				user = ClientManager::getInstance()->getUser(CID(cid));
-			else
-				user = ClientManager::getInstance()->getLegacyUser(nick);
+			User::Ptr user = ClientManager::getInstance()->getUser(CID(cid));
 
 			try {
 				if(qm->addSource(cur, path, user, 0, isUtf8) && user->isOnline())
@@ -1384,5 +1384,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.142 2006/01/23 08:00:49 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.143 2006/02/05 13:38:44 arnetheduck Exp $
  */

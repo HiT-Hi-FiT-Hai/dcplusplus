@@ -137,6 +137,10 @@ private:
 				return *this;
 			}
 
+			bool operator==(const File& rhs) const {
+				return getParent() == rhs.getParent() && (Util::stricmp(getName(), rhs.getName()) == 0);
+			}
+
 			string getADCPath() const { return parent->getADCPath() + name; }
 			string getFullName() const { return parent->getFullName() + getName(); }
 
@@ -297,7 +301,7 @@ private:
 	void generateXmlList();
 	bool loadCache();
 
-	void removeTTH(const TTHValue& tth, const Directory::File::Iter&);
+	void removeTTH(const TTHValue& tth, const Directory::File& file);
 
 	Directory* getDirectory(const string& fname);
 
@@ -328,5 +332,5 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.84 2006/01/12 22:32:41 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.85 2006/02/05 13:38:44 arnetheduck Exp $
  */

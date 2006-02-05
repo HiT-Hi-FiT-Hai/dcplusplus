@@ -276,7 +276,7 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	if(now > floodCounter) {
 		floodCounter = now + FLOOD_ADD;
 	} else {
-		if(now + FLOOD_TRIGGER < floodCounter) {
+		if(false && now + FLOOD_TRIGGER < floodCounter) {
 			Socket s;
 			try {
 				s.accept(sock);
@@ -672,5 +672,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.115 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.116 2006/02/05 13:38:44 arnetheduck Exp $
  */

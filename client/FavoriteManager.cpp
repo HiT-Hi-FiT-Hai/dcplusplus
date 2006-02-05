@@ -459,7 +459,7 @@ void FavoriteManager::load(SimpleXML* aXml) {
 			const string& nick = aXml->getChildAttrib("Nick");
 			const string& hubUrl = aXml->getChildAttrib("URL");
 
-			if(cid.empty()) {
+			if(cid.length() != 39) {
 				if(nick.empty() || hubUrl.empty())
 					continue;
 				u = ClientManager::getInstance()->getUser(nick, hubUrl);
@@ -684,5 +684,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.16 2006/01/06 14:44:31 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.17 2006/02/05 13:38:44 arnetheduck Exp $
  */

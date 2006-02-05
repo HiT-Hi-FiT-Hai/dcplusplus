@@ -196,7 +196,7 @@
 #define IDC_SETTINGS_NICK               1140
 #define IDC_SETTINGS_EMAIL              1141
 #define IDC_SETTINGS_DESCRIPTION        1142
-#define IDC_SETTINGS_UPLOAD_SPEED       1143
+#define IDC_SETTINGS_UPLOAD_LINE_SPEED  1143
 #define IDC_SETTINGS_INCOMING           1144
 #define IDC_SETTINGS_IP                 1145
 #define IDC_SETTINGS_PORT_TCP           1146

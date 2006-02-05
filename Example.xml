@@ -493,7 +493,7 @@
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
 		<String Name="SettingsUdpPort">UDP Port</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
-		<String Name="SettingsUploadSpeed">Max upload speed</String>
+		<String Name="SettingsUploadLineSpeed">Line speed (upload)</String>
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>

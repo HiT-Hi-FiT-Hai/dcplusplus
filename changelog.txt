@@ -12,6 +12,10 @@
 * [bug 794] [ADC] Fixed automatic reconnect (thanks ullner)
 * [bug 806] Fixed description for favorite hubs (thanks ullner)
 * Updated to latest ADC specs, this will break 0.68/0.681/0.6811 queue sources and fav users (for NMDC as well)
+* Fixed a bufferedsocket crash
+* [ADC] Fixed quitting user processing (thanks ullner)
+* Clarified upload speed setting (thanks pothead)
+* Manual away setting no longer cleared when un-minimizing (thanks pothead)
 
 -- 0.6811 2006-01-21 --
 * Fixed a socket race condition leading to failing connections and crashes

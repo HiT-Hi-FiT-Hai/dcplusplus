@@ -497,8 +497,11 @@ public:
 		if (away)
 			awayTime = time(NULL);
 	};
-	static string getAwayMessage();
 
+	static bool getManualAway() { return manualAway; };
+	static void setManualAway(bool aManualAway) { manualAway = aManualAway;	};
+
+	static string getAwayMessage();
 	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
 
 	static u_int32_t rand();
@@ -510,6 +513,7 @@ private:
 	static string appPath;
 	static string dataPath;
 	static bool away;
+	static bool manualAway;
 	static string awayMsg;
 	static time_t awayTime;
 
@@ -601,5 +605,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.126 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: Util.h,v 1.127 2006/02/05 13:38:44 arnetheduck Exp $
  */

@@ -55,7 +55,7 @@ public:
 	void infoUpdated();
 
 	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
-	User::Ptr getLegacyUser(const string& aNick) throw();
+	User::Ptr getLegacyUser(const string& aNick) const throw();
 	User::Ptr getUser(const CID& cid) throw();
 
 	string findHub(const string& ipPort);
@@ -119,7 +119,6 @@ private:
 	mutable CriticalSection cs;
 	
 	UserMap users;
-	LegacyMap legacyUsers;
 	OnlineMap onlineUsers;
 
 	User::Ptr me;
@@ -166,5 +165,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.75 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.76 2006/02/05 13:38:44 arnetheduck Exp $
  */

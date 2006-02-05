@@ -497,7 +497,7 @@ enum Strings { // @DontAdd
 	SETTINGS_TOGGLE_ACTIVE_WINDOW, // "Toggle window when selecting an active tab"
 	SETTINGS_UDP_PORT, // "UDP Port"
 	SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY, // "Unfinished downloads directory"
-	SETTINGS_UPLOAD_SPEED, // "Max upload speed"
+	SETTINGS_UPLOAD_LINE_SPEED, // "Line speed (upload)"
 	SETTINGS_UPLOADS, // "Sharing"
 	SETTINGS_UPLOADS_MIN_SPEED, // "Automatically open an extra slot if speed is below (0 = disable)"
 	SETTINGS_UPLOADS_SLOTS, // "Upload slots"

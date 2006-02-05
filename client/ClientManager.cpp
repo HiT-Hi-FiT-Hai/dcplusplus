@@ -168,21 +168,16 @@ string ClientManager::findHub(const string& ipPort) {
 	return Util::emptyString;
 }
 
-User::Ptr ClientManager::getLegacyUser(const string& aNick) throw() {
+User::Ptr ClientManager::getLegacyUser(const string& aNick) const throw() {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
 
-	for(UserIter i = users.begin(); i != users.end(); ++i) {
-		User::Ptr& p = i->second;
-		if(p->isSet(User::NMDC) && Util::stricmp(p->getFirstNick(), aNick) == 0)
-			return p;
+	for(OnlineMap::const_iterator i = onlineUsers.begin(); i != onlineUsers.end(); ++i) {
+		const OnlineUser* ou = i->second;
+		if(ou->getUser()->isSet(User::NMDC) && Util::stricmp(ou->getIdentity().getNick(), aNick) == 0)
+			return ou->getUser();
 	}
-
-	LegacyIter li = legacyUsers.find(Text::toLower(aNick));
-	if(li != legacyUsers.end())
-		return li->second;
-
-	return legacyUsers.insert(make_pair(Text::toLower(aNick), new User(aNick))).first->second;
+	return User::Ptr();
 }
 
 User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
@@ -195,17 +190,6 @@ User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) thr
 			ui->second->setFirstNick(aNick);	
 		ui->second->setFlag(User::NMDC);
 		return ui->second;
-	}
-
-	LegacyIter li = legacyUsers.find(Text::toLower(aNick));
-	if(li != legacyUsers.end()) {
-		User::Ptr p = li->second;
-		p->setCID(cid);
-		if(p->getFirstNick().empty())
-			p->setFirstNick(aNick);
-		dcassert(users.find(cid) == users.end());
-		users.insert(make_pair(cid, p));
-		return p;
 	}
 
 	User::Ptr p(new User(aNick));
@@ -566,5 +550,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.90 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.91 2006/02/05 13:38:44 arnetheduck Exp $
  */

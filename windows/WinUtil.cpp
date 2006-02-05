@@ -626,9 +626,11 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	} else if(Util::stricmp(cmd.c_str(), _T("away")) == 0) {
 		if(Util::getAway() && param.empty()) {
 			Util::setAway(false);
+			Util::setManualAway(false);
 			status = TSTRING(AWAY_MODE_OFF);
 		} else {
 			Util::setAway(true);
+			Util::setManualAway(true);
 			Util::setAwayMessage(Text::fromT(param));
 			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
 		}
@@ -1184,5 +1186,5 @@ void WinUtil::openFolder(const tstring& file) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.95 2006/01/06 14:44:32 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.96 2006/02/05 13:38:44 arnetheduck Exp $
  */

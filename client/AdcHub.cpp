@@ -73,6 +73,7 @@ void AdcHub::putUser(const u_int32_t aSID) {
 	if(i == users.end())
 		return;
 	ClientManager::getInstance()->putOffline(*i->second);
+	fire(ClientListener::UserRemoved(), this, *i->second);
 	delete i->second;
 	users.erase(i);
 }
@@ -495,5 +496,5 @@ void AdcHub::send(const AdcCommand& cmd) {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.62 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.63 2006/02/05 13:38:44 arnetheduck Exp $
  */

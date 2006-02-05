@@ -43,7 +43,8 @@ BufferedSocket::~BufferedSocket() throw() {
 
 void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
 	dcassert(!sock);
-
+	
+	dcdebug("BufferedSocket::accept() %p\n", this);
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->accept(srv);
@@ -54,6 +55,9 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	sock->setBlocking(false);
 
 	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
+
+	// This lock prevents the shutdown task from being added and executed before we're done initializing the socket
+	Lock l(cs);
 	try {
 		start();
 	} catch(...) {
@@ -62,13 +66,13 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 		throw;
 	}
 
-	Lock l(cs);
 	addTask(ACCEPTED, 0);
 }
 
 void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
+	dcdebug("BufferedSocket::connect() %p\n", this);
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->create();
@@ -80,6 +84,7 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 
 	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
 
+	Lock l(cs);
 	try {
 		start();
 	} catch(...) {
@@ -88,7 +93,6 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 		throw;
 	}
 
-	Lock l(cs);
 	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 }
 
@@ -188,20 +192,20 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	if(!sock)
 		return;
 	dcassert(file != NULL);
-	vector<u_int8_t> buf;
-	size_t bufSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
+	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
+	size_t bufSize =  sockSize * 16;		// Perhaps make this a setting?
+	AutoArray<u_int8_t> buf(bufSize);
 
 	while(true) {
-		buf.resize(bufSize);
-		size_t bytesRead = buf.size();
+		size_t bytesRead = bufSize;
 		size_t actual = file->read(&buf[0], bytesRead);
 		if(actual == 0) {
 			fire(BufferedSocketListener::TransmitDone());
 			return;
 		}
-		buf.resize(actual);
 
-		while(!buf.empty()) {
+		size_t done = 0;
+		while(done < actual) {
 			if(disconnecting)
 				return;
 
@@ -210,9 +214,9 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 				threadRead();
 			}
 			if(w & Socket::WAIT_WRITE) {
-				int written = sock->write(&buf[0], buf.size());
+				int written = sock->write(buf + done, min(sockSize, actual - done));
 				if(written > 0) {
-					buf.erase(buf.begin(), buf.begin()+written);
+					done += written;
 
 					fire(BufferedSocketListener::BytesSent(), bytesRead, written);
 					bytesRead = 0;		// Make sure we only report the bytes we actually read just once...
@@ -279,7 +283,7 @@ bool BufferedSocket::checkEvents() {
 			tasks.erase(tasks.begin());
 		}
 		if(failed && p.first != SHUTDOWN) {
-			dcdebug("BufferedSocket: New commands when already failed\n");
+			dcdebug("BufferedSocket: New command when already failed: %d\n", p.first);
 			fail(STRING(DISCONNECTED));
 			delete p.second;
 			continue;
@@ -326,6 +330,7 @@ void BufferedSocket::checkSocket() {
  * @todo Fix the polling...
  */
 int BufferedSocket::run() {
+	dcdebug("BufferedSocket::run() start %p\n", this);
 	while(true) {
 		try {
 			if(!checkEvents())
@@ -335,6 +340,7 @@ int BufferedSocket::run() {
 			fail(e.getError());
 		}
 	}
+	dcdebug("BufferedSocket::run() end %p\n", this);
 	delete this;
 	return 0;
 }
@@ -353,5 +359,5 @@ void BufferedSocket::shutdown() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.97 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.98 2006/02/05 13:38:44 arnetheduck Exp $
  */
