@@ -34,6 +34,8 @@
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.9");
 const string AdcHub::ADCS_FEATURE("ADC0");
+const string AdcHub::TCP4_FEATURE("TCP4");
+const string AdcHub::UDP4_FEATURE("UDP4");
 
 AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), state(STATE_PROTOCOL), sid(0), reconnect(true) {
 	TimerManager::getInstance()->addListener(this);
@@ -377,6 +379,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 		return;
 
+	reloadSettings();
+
 	AdcCommand c(AdcCommand::CMD_INF, AdcCommand::TYPE_BROADCAST);
 	string tmp;
 
@@ -398,6 +402,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 
 	updateCounts(false); \
 
+	ADDPARAM("ID", ClientManager::getInstance()->getMyCID().toBase32());
+	ADDPARAM("PD", ClientManager::getInstance()->getMyPID().toBase32());
 	ADDPARAM("NI", getMyIdentity().getNick());
 	ADDPARAM("DE", getMyIdentity().getDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
@@ -409,11 +415,10 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
 
+	string su;
 	if(SSLSocketFactory::getInstance()->hasCerts()) {
-		ADDPARAM("SU", ADCS_FEATURE);
-	} else {
-		ADDPARAM("SU", Util::emptyString);
-	}
+		su += ADCS_FEATURE + ",";
+	} 
 	
 	if(ClientManager::getInstance()->isActive()) {
 		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
@@ -422,10 +427,17 @@ void AdcHub::info(bool /*alwaysSend*/) {
 			ADDPARAM("I4", "0.0.0.0");
 		}
 		ADDPARAM("U4", Util::toString(SearchManager::getInstance()->getPort()));
+		su += TCP4_FEATURE + ",";
+		su += UDP4_FEATURE + ",";
 	} else {
 		ADDPARAM("I4", "");
 		ADDPARAM("U4", "");
 	}
+
+	if(!su.empty()) {
+		su.erase(su.size() - 1);
+	}
+	ADDPARAM("SU", su);
 
 #undef ADDPARAM
 
@@ -496,5 +508,5 @@ void AdcHub::send(const AdcCommand& cmd) {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.63 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.64 2006/02/10 07:56:46 arnetheduck Exp $
  */

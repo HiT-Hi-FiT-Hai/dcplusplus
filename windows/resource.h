@@ -410,8 +410,11 @@
 #define IDC_SSL_PRIVATE_KEY_FILE        1414
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1415
 #define IDC_CLIENT_ID                   1416
+#define IDC_PRIVATE_ID                  1416
 #define IDC_AUTO_REFRESH_TIME           1419
 #define IDC_SETTINGS_AUTO_REFRESH_TIME  1420
+#define IDC_AUTO_SEARCH_LIMIT           1421
+#define IDC_SETTINGS_AUTO_SEARCH_LIMIT  1422
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

@@ -44,6 +44,7 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_MAX_FILELIST_SIZE, ResourceManager::SETTINGS_MAX_FILELIST_SIZE },
 	{ IDC_SETTINGS_MB, ResourceManager::MiB },
 	{ IDC_SETTINGS_AUTO_REFRESH_TIME, ResourceManager::SETTINGS_AUTO_REFRESH_TIME },
+	{ IDC_SETTINGS_AUTO_SEARCH_LIMIT, ResourceManager::SETTINGS_AUTO_SEARCH_LIMIT },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -59,8 +60,9 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_MAX_FILELIST_SIZE, SettingsManager::MAX_FILELIST_SIZE, PropPage::T_INT },
 	{ IDC_SOCKET_IN_BUFFER, SettingsManager::SOCKET_IN_BUFFER, PropPage::T_INT },
 	{ IDC_SOCKET_OUT_BUFFER, SettingsManager::SOCKET_OUT_BUFFER, PropPage::T_INT },
-	{ IDC_CLIENT_ID, SettingsManager::CLIENT_ID, PropPage::T_STR },
+	{ IDC_PRIVATE_ID, SettingsManager::PRIVATE_ID, PropPage::T_STR },
 	{ IDC_AUTO_REFRESH_TIME, SettingsManager::AUTO_REFRESH_TIME, PropPage::T_INT },
+	{ IDC_AUTO_SEARCH_LIMIT, SettingsManager::AUTO_SEARCH_LIMIT, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -83,6 +85,10 @@ void Advanced3Page::write() {
 
 	if(SETTING(SET_MINISLOT_SIZE) < 64)
 		settings->set(SettingsManager::SET_MINISLOT_SIZE, 64);
+	if(SETTING(AUTO_SEARCH_LIMIT) > 5)
+		settings->set(SettingsManager::AUTO_SEARCH_LIMIT, 5);
+	else if(SETTING(AUTO_SEARCH_LIMIT) < 1)
+		settings->set(SettingsManager::AUTO_SEARCH_LIMIT, 1);
 }
 
 LRESULT Advanced3Page::onHelpInfo(LPNMHDR /*pnmh*/) {
@@ -97,5 +103,5 @@ LRESULT Advanced3Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file
- * $Id: Advanced3Page.cpp,v 1.13 2006/01/01 17:49:59 arnetheduck Exp $
+ * $Id: Advanced3Page.cpp,v 1.14 2006/02/10 07:56:47 arnetheduck Exp $
  */

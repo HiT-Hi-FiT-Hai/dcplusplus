@@ -60,7 +60,7 @@ public:
 	string translateTTH(const string& TTH) throw(ShareException);
 	string translateFileName(const string& aFile) throw(ShareException);
 	bool getTTH(const string& aFile, TTHValue& tth) throw();
-	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
+	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ThreadException, ShareException);
 	void setDirty() { xmlDirty = nmdcDirty = true; };
 
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
@@ -332,5 +332,5 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.85 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.86 2006/02/10 07:56:46 arnetheduck Exp $
  */

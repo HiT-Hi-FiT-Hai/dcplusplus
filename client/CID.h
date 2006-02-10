@@ -48,12 +48,12 @@ public:
 
 	bool isZero() const { return find_if(cid, cid+SIZE, bind2nd(not_equal_to<u_int8_t>(), 0)) == (cid+SIZE); }
 
-	static CID generate() { 
-		CID cid; 
-		u_int32_t* c = (u_int32_t*)&cid.cid; 
-		*(c++) = Util::rand();
-		*(c++) = Util::rand();
-		return cid;
+	static CID generate() {
+		u_int8_t data[CID::SIZE];
+		for(size_t i = 0; i < sizeof(data); ++i) {
+			data[i] = (u_int8_t)Util::rand();
+		}
+		return CID(data);
 	}
 
 private:
@@ -64,5 +64,5 @@ private:
 
 /**
  * @file
- * $Id: CID.h,v 1.9 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: CID.h,v 1.10 2006/02/10 07:56:46 arnetheduck Exp $
  */

@@ -680,6 +680,8 @@ void NmdcHub::revConnectToMe(const OnlineUser& aUser) {
 void NmdcHub::myInfo(bool alwaysSend) {
 	checkstate();
 	
+	reloadSettings();
+
 	dcdebug("MyInfo %s...\n", getMyNick().c_str());
 	lastCounts = counts;
 	
@@ -797,6 +799,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.53 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.54 2006/02/10 07:56:46 arnetheduck Exp $
  */
 

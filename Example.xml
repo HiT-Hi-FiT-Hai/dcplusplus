@@ -228,7 +228,7 @@
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
 		<String Name="MenuDonate">Donate (paypal)</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>
-		<String Name="MenuExit">&amp;Exit</String>
+		<String Name="MenuExit">E&amp;xit</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
 		<String Name="MenuFavoriteHubs">&amp;Favorite Hubs	Ctrl+F</String>
 		<String Name="MenuFavoriteUsers">Favorite &amp;Users	Ctrl+U</String>
@@ -376,6 +376,7 @@
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
+		<String Name="SettingsAutoSearchLimit">Auto-search limit</String>
 		<String Name="SettingsAutoOpen">Auto-open at startup</String>
 		<String Name="SettingsAutoRefreshTime">Auto refresh time</String>
 		<String Name="SettingsBindAddress">Bind address</String>

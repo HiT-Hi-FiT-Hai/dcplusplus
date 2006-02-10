@@ -101,7 +101,7 @@ public:
 
 	struct ADCOnly {
 		ADCOnly() : adcOnly(true) { }
-		void operator()(UserInfoBase* ui) { if(!ui->getUser()->isSet(User::NMDC)) adcOnly = false; }
+		void operator()(UserInfoBase* ui) { if(ui->getUser()->isSet(User::NMDC)) adcOnly = false; }
 
 		bool adcOnly;
 	};
@@ -357,5 +357,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.52 2006/01/23 08:00:50 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.53 2006/02/10 07:56:47 arnetheduck Exp $
  */

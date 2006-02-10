@@ -445,8 +445,7 @@ void ClientManager::on(Save, SimpleXML*) throw() {
 	Lock l(cs);
 
 	try {
-
-#define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
+		string tmp;
 
 		File ff(getUsersFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		BufferedOutputStream<false> f(&ff);
@@ -458,9 +457,9 @@ void ClientManager::on(Save, SimpleXML*) throw() {
 			if(p->isSet(User::SAVE_NICK) && !p->getCID().isZero() && !p->getFirstNick().empty()) {
 				f.write(LIT("\t<User CID=\""));
 				f.write(p->getCID().toBase32());
-				f.write(LIT("\">\r\n\t\t<Nick>"));
-				f.write(p->getFirstNick());
-				f.write(LIT("</Nick>\r\n\t</User>\r\n"));
+				f.write(LIT("\" Nick=\""));
+				f.write(SimpleXML::escape(p->getFirstNick(), tmp, true));
+				f.write(LIT("\"/>\r\n"));
 			}
 		}
 
@@ -479,11 +478,23 @@ User::Ptr& ClientManager::getMe() {
 	if(!me) {
 		Lock l(cs);
 		if(!me) {
-			me = new User(CID(SETTING(CLIENT_ID)));
+			me = new User(getMyCID());
 			me->setFirstNick(SETTING(NICK));
 		}
 	}
 	return me;
+}
+
+const CID& ClientManager::getMyPID() {
+	if(pid.isZero())
+		pid = CID(SETTING(PRIVATE_ID));
+	return pid;
+}
+
+CID ClientManager::getMyCID() {
+	TigerHash tiger;
+	tiger.update(pid.getData(), CID::SIZE);
+	return CID(tiger.finalize());
 }
 
 void ClientManager::on(Load, SimpleXML*) throw() {
@@ -495,16 +506,13 @@ void ClientManager::on(Load, SimpleXML*) throw() {
 		if(xml.findChild("Users") && xml.getChildAttrib("Version") == "1") {
 			xml.stepIn();
 			while(xml.findChild("User")) {
-				string c = xml.getChildAttrib("CID");
-				if(c.length() != 39)
+				const string& cid = xml.getChildAttrib("CID");
+				const string& nick = xml.getChildAttrib("Nick");
+                if(cid.length() != 39 || nick.empty())
 					continue;
-
-				xml.stepIn();
-				if(xml.findChild("Nick")) {
-					User::Ptr p(new User(CID(c)));
-					p->setFirstNick(xml.getChildData());
-					users.insert(make_pair(p->getCID(), p));
-				}
+				User::Ptr p(new User(CID(cid)));
+				p->setFirstNick(xml.getChildData());
+				users.insert(make_pair(p->getCID(), p));
 			}
 		}
 	} catch(const Exception& e) {
@@ -550,5 +558,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.92 2006/02/05 17:02:38 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.93 2006/02/10 07:56:46 arnetheduck Exp $
  */

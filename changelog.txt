@@ -1,6 +1,6 @@
 ﻿-- 0.69 --
 * Fixed "browse list" being available for NMDC users
-* [ADC] Fixed obsolete CI field
+* [ADC] Removed obsolete CI field
 * Fixed missing upload progress
 * [bug 89] Readded dynamic compression disabling
 * Added filelist download speed to filelist browser status bar
@@ -18,6 +18,13 @@
 * Manual away setting no longer cleared when un-minimizing (thanks pothead)
 * Search result automatching waits with match until file list is downloaded if auto-matching enabled
 * Slight performance improvement when sending files
+* Fixed an issue with nick names disappearing from hub
+* Added customizable maximum user count when autosearching
+* Changed to open source version unicows for win9x users, perhaps this one will work better for you (see it as a
+  last attempt; if it doesn't work, w9x support will be phased out completely unless someone else solves the win9x
+  issues)
+* [bug 774] Fixed invalid description being sent if hub modifies it
+* [bug 818] Fixed default exit mnemonic
 
 -- 0.6811 2006-01-21 --
 * Fixed a socket race condition leading to failing connections and crashes
@@ -106,7 +113,7 @@
 * [NMDC] Minislots are no longer given to old DC++ clients (<0.304)
 * [ADC] Directory size returned with search results
 * Fixed a rare deadlock
-
+  
 -- 0.674 2005-04-10 --
 *** WARNING ***
   This version fixes a security bug, upgrade unless you want to risk losing data

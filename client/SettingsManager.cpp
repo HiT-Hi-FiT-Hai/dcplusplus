@@ -73,7 +73,7 @@ const string SettingsManager::settingTags[] =
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
-	"UseSsl",
+	"UseSsl", "AutoSearchLimit", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -253,6 +253,7 @@ SettingsManager::SettingsManager()
 	setDefault(BOLD_SYSTEM_LOG, true);
 	setDefault(AUTO_REFRESH_TIME, 60);
 	setDefault(USE_SSL, false);
+	setDefault(AUTO_SEARCH_LIMIT, 5);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -318,8 +319,8 @@ void SettingsManager::load(string const& aFileName)
 		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
 
-		if(v <= 0.674 || CID(SETTING(CLIENT_ID)).isZero()) {
-			set(CLIENT_ID, CID::generate().toBase32());
+		if(v <= 0.674 || SETTING(PRIVATE_ID).length() != 39 || CID(SETTING(PRIVATE_ID)).isZero()) {
+			set(PRIVATE_ID, CID::generate().toBase32());
 
 			// Formats changed, might as well remove these...
 			set(LOG_FORMAT_POST_DOWNLOAD, Util::emptyString);
@@ -342,9 +343,13 @@ void SettingsManager::load(string const& aFileName)
 			set(AUTODROP_INTERVAL, 1);
 		if(SETTING(AUTODROP_ELAPSED) < 1)
 			set(AUTODROP_ELAPSED, 1);
+		if(SETTING(AUTO_SEARCH_LIMIT) > 5)
+			set(AUTO_SEARCH_LIMIT, 5);
+		else if(SETTING(AUTO_SEARCH_LIMIT) < 1)
+			set(AUTO_SEARCH_LIMIT, 1);
 
 #ifdef _DEBUG
-		set(CLIENT_ID, CID::generate().toBase32());
+		set(PRIVATE_ID, CID::generate().toBase32());
 #endif
 		setDefault(UDP_PORT, SETTING(TCP_PORT));
 		
@@ -353,8 +358,8 @@ void SettingsManager::load(string const& aFileName)
 		xml.stepOut();
 
 	} catch(const Exception&) {
-		if(CID(SETTING(CLIENT_ID)).isZero())
-			set(CLIENT_ID, CID::generate().toBase32());
+		if(CID(SETTING(PRIVATE_ID)).isZero())
+			set(PRIVATE_ID, CID::generate().toBase32());
 	}
 }
 
@@ -417,5 +422,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.140 2006/01/09 22:44:49 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.141 2006/02/10 07:56:46 arnetheduck Exp $
  */

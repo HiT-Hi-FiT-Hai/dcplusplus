@@ -104,6 +104,8 @@ public:
 
 	string getCachedIp() const { Lock l(cs); return cachedIp; }
 
+	CID getMyCID();
+	const CID& getMyPID();
 private:
 	typedef HASH_MAP<string, User::Ptr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
@@ -126,6 +128,7 @@ private:
 	Socket s;
 
 	string cachedIp;
+	CID pid;
 
 	friend class Singleton<ClientManager>;
 
@@ -165,5 +168,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.76 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.77 2006/02/10 07:56:46 arnetheduck Exp $
  */

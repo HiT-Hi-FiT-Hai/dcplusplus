@@ -256,9 +256,6 @@ void HashManager::HashStore::rebuild() {
 	}
 }
 
-#define LITERAL(x) x, sizeof(x)-1
-#define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
-
 void HashManager::HashStore::save() {
 	if(dirty) {
 		try {
@@ -269,41 +266,41 @@ void HashManager::HashStore::save() {
 			string b32tmp;
 
 			f.write(SimpleXML::utf8Header);
-			f.write(LITERAL("<HashStore Version=\"" HASH_FILE_VERSION_STRING "\">\r\n"));
+			f.write(LIT("<HashStore Version=\"" HASH_FILE_VERSION_STRING "\">\r\n"));
 
-			f.write(LITERAL("\t<Trees>\r\n"));
+			f.write(LIT("\t<Trees>\r\n"));
 
 			for(TreeIter i = treeIndex.begin(); i != treeIndex.end(); ++i) {
 				const TreeInfo& ti = i->second;
-				f.write(LITERAL("\t\t<Hash Type=\"TTH\" Index=\""));
+				f.write(LIT("\t\t<Hash Type=\"TTH\" Index=\""));
 				f.write(Util::toString(ti.getIndex()));
-				f.write(LITERAL("\" BlockSize=\""));
+				f.write(LIT("\" BlockSize=\""));
 				f.write(Util::toString(ti.getBlockSize()));
-				f.write(LITERAL("\" Size=\""));
+				f.write(LIT("\" Size=\""));
 				f.write(Util::toString(ti.getSize()));
-				f.write(LITERAL("\" Root=\""));
+				f.write(LIT("\" Root=\""));
 				b32tmp.clear();
 				f.write(i->first.toBase32(b32tmp));
-				f.write(LITERAL("\"/>\r\n"));
+				f.write(LIT("\"/>\r\n"));
 			}
 
-			f.write(LITERAL("\t</Trees>\r\n\t<Files>\r\n"));
+			f.write(LIT("\t</Trees>\r\n\t<Files>\r\n"));
 
 			for(DirIter i = fileIndex.begin(); i != fileIndex.end(); ++i) {
 				const string& dir = i->first;
 				for(FileInfoIter j = i->second.begin(); j != i->second.end(); ++j) {
 					const FileInfo& fi = *j;
-					f.write(LITERAL("\t\t<File Name=\""));
-					f.write(CHECKESCAPE(dir + fi.getFileName()));
-					f.write(LITERAL("\" TimeStamp=\""));
+					f.write(LIT("\t\t<File Name=\""));
+					f.write(SimpleXML::escape(dir + fi.getFileName(), tmp, true));
+					f.write(LIT("\" TimeStamp=\""));
 					f.write(Util::toString(fi.getTimeStamp()));
-					f.write(LITERAL("\" Root=\""));
+					f.write(LIT("\" Root=\""));
 					b32tmp.clear();
 					f.write(fi.getRoot().toBase32(b32tmp));
-					f.write(LITERAL("\"/>\r\n"));
+					f.write(LIT("\"/>\r\n"));
 				}
 			}
-			f.write(LITERAL("\t</Files>\r\n</HashStore>"));
+			f.write(LIT("\t</Files>\r\n</HashStore>"));
 			f.flush();
 			ff.close();
 			File::deleteFile(getIndexFile());
@@ -659,5 +656,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.50 2006/01/21 09:23:55 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.51 2006/02/10 07:56:46 arnetheduck Exp $
  */

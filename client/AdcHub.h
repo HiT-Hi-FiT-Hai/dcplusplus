@@ -102,6 +102,8 @@ private:
 	static const string CLIENT_PROTOCOL;
 	static const string SECURE_CLIENT_PROTOCOL;
 	static const string ADCS_FEATURE;
+	static const string TCP4_FEATURE;
+	static const string UDP4_FEATURE;
 	 
 	virtual string checkNick(const string& nick);
 	
@@ -122,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.38 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.39 2006/02/10 07:56:46 arnetheduck Exp $
  */

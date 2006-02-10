@@ -48,7 +48,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib  ws2_32.lib"
+				AdditionalDependencies="libunicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib  ws2_32.lib"
 				OutputFile="$(SolutionDir)App/$(ProjectName).exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -127,7 +127,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib delayimp.lib htmlhelp.lib ws2_32.lib"
+				AdditionalDependencies="libunicows.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib  ws2_32.lib"
 				OutputFile="$(SolutionDir)App/$(ProjectName).exe"
 				Version=""
 				LinkIncremental="1"
