@@ -31,8 +31,8 @@
 #include "FavoriteManager.h"
 #include "SSLSocket.h"
 
-const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
-const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.9");
+const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
+const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
 const string AdcHub::ADCS_FEATURE("ADC0");
 const string AdcHub::TCP4_FEATURE("TCP4");
 const string AdcHub::UDP4_FEATURE("UDP4");
@@ -59,7 +59,8 @@ OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
 		u = users.insert(make_pair(aSID, new OnlineUser(p, *this, aSID))).first->second;
 	}
 
-	ClientManager::getInstance()->putOnline(*u);
+	if(!aCID.isZero())
+		ClientManager::getInstance()->putOnline(*u);
 	return *u;
 }
 
@@ -74,7 +75,8 @@ void AdcHub::putUser(const u_int32_t aSID) {
 	SIDIter i = users.find(aSID);
 	if(i == users.end())
 		return;
-	ClientManager::getInstance()->putOffline(*i->second);
+	if(aSID != AdcCommand::HUB_SID)
+		ClientManager::getInstance()->putOffline(*i->second);
 	fire(ClientListener::UserRemoved(), this, *i->second);
 	delete i->second;
 	users.erase(i);
@@ -83,7 +85,8 @@ void AdcHub::putUser(const u_int32_t aSID) {
 void AdcHub::clearUsers() {
 	Lock l(cs);
 	for(SIDIter i = users.begin(); i != users.end(); ++i) {
-		ClientManager::getInstance()->putOffline(*i->second);
+		if(i->first != AdcCommand::HUB_SID)
+			ClientManager::getInstance()->putOffline(*i->second);
 		delete i->second;
 	}
 	users.clear();
@@ -99,6 +102,8 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	OnlineUser* u = 0;
 	if(c.getParam("ID", 0, cid))
 		u = &getUser(c.getFrom(), CID(cid));
+	else if(c.getFrom() == AdcCommand::HUB_SID)
+		u = &getUser(c.getFrom(), CID());
 	else
 		u = findUser(c.getFrom());
 
@@ -139,6 +144,19 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 		disconnect(false);
 		return;
 	}
+}
+
+void AdcHub::handle(AdcCommand::SID, AdcCommand& c) throw() {
+	if(state != STATE_PROTOCOL) {
+		dcdebug("Invalid state for SID\n");
+		return;
+	}
+
+	if(c.getParameters().empty())
+		return;
+
+	sid = AdcCommand::toSID(c.getParam(0));
+
 	state = STATE_IDENTIFY;
 	info(true);
 }
@@ -353,7 +371,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 		send(c);
 	} else {
 		c.setType(AdcCommand::TYPE_FEATURE);
-		c.setFeature("+TCP4");
+		c.setFeatures("+TCP4");
 		send(c);
 	}
 }
@@ -508,5 +526,5 @@ void AdcHub::send(const AdcCommand& cmd) {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.64 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.65 2006/02/11 21:01:54 arnetheduck Exp $
  */

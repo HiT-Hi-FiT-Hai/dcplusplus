@@ -253,7 +253,7 @@ public:
 	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_GET).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 	void snd(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(AdcCommand(AdcCommand::CMD_SND).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
 
-	void send(const AdcCommand& c) { send(c.toString(isSet(FLAG_NMDC), isSet(FLAG_SUPPORTS_ADCGET))); }
+	void send(const AdcCommand& c) { send(c.toString(0, isSet(FLAG_NMDC))); }
 
 	void supports(const StringList& feat) { 
 		string x;
@@ -362,5 +362,5 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.103 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.104 2006/02/11 21:01:54 arnetheduck Exp $
  */

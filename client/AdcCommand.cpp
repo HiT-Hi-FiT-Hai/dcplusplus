@@ -40,14 +40,22 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		if(aLine.length() < 7)
 			throw ParseException("Too short");
 		type = TYPE_CLIENT;
-		memcpy(cmd, &aLine[4], 3);
+		cmd[0] = aLine[4];
+		cmd[1] = aLine[5];
+		cmd[2] = aLine[6];
 		i += 3;
 	} else {
-		// "yxxx cidcidcidcid..."
-		if(aLine.length() < 5 + (8 * 8 + 7) / 5)
+		// "yxxx ..."
+		if(aLine.length() < 4)
 			throw ParseException("Too short");
 		type = aLine[0];
-		memcpy(cmd, &aLine[1], 3);
+		cmd[0] = aLine[1];
+		cmd[1] = aLine[2];
+		cmd[2] = aLine[3];
+	}
+
+	if(type == TYPE_INFO) {
+		from = HUB_SID;
 	}
 
 	string::size_type len = aLine.length();
@@ -56,7 +64,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 	cur.reserve(128);
 
 	bool toSet = false;
-	bool gotFeature = false;
+	bool featureSet = false;
 	bool fromSet = nmdc; // $ADCxxx never have a from CID...
 
 	while(i < len) {
@@ -79,15 +87,15 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		case ' ': 
 			// New parameter...
 			{
-				if(type != TYPE_CLIENT && type != TYPE_UDP && !fromSet) {
+				if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) && !fromSet) {
 					from = toSID(cur);
 					fromSet = true;
 				} else if(type == TYPE_DIRECT && !toSet) {
 					to = toSID(cur);
 					toSet = true;
-				} else if(type == TYPE_FEATURE && !gotFeature) {
+				} else if(type == TYPE_FEATURE && !featureSet) {
 					// Skip...
-					gotFeature = true;
+					featureSet = true;
 				} else {
 					parameters.push_back(cur);
 				}
@@ -100,19 +108,22 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		++i;
 	}
 	if(!cur.empty()) {
-		if(type != TYPE_CLIENT && type != TYPE_UDP && !fromSet) {
+		if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) && !fromSet) {
 			from = toSID(cur);
 			fromSet = true;
 		} else if(type == TYPE_DIRECT && !toSet) {
 			to = toSID(cur);
 			toSet = true;
+		} else if(type == TYPE_FEATURE && !featureSet) {
+			// Skip...
+			featureSet = true;
 		} else {
 			parameters.push_back(cur);
 		}
 	}
 }
 
-string AdcCommand::toString(u_int32_t sid /* = 0 */, bool nmdc /* = false */, bool old /* = false */) const {
+string AdcCommand::toString(u_int32_t sid /* = 0 */, bool nmdc /* = false */) const {
 	string tmp;
 	if(nmdc) {
 		tmp += "$ADC";
@@ -122,19 +133,24 @@ string AdcCommand::toString(u_int32_t sid /* = 0 */, bool nmdc /* = false */, bo
 
 	tmp += cmdChar;
 
-	if(!nmdc && getType() != TYPE_CLIENT && getType() != TYPE_UDP) {
+	if(type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) {
 		tmp += ' ';
 		tmp += fromSID(sid);
 	}
 
-	if(getType() == TYPE_DIRECT) {
+	if(type == TYPE_DIRECT) {
 		tmp += ' ';
 		tmp += fromSID(to);
 	}
 
+	if(type == TYPE_FEATURE) {
+		tmp += ' ';
+		tmp += features;
+	}
+
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 		tmp += ' ';
-		tmp += escape(*i, old);
+		tmp += escape(*i, nmdc);
 	}
 	if(nmdc) {
 		tmp += '|';
@@ -168,5 +184,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.15 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.16 2006/02/11 21:01:54 arnetheduck Exp $
  */

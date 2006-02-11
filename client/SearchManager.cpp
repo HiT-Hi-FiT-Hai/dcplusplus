@@ -193,11 +193,6 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			return;
 		}
 		string nick = Text::acpToUtf8(x.substr(i, j-i));
-		User::Ptr user = ClientManager::getInstance()->getLegacyUser(nick);
-		if(!user) {
-			dcdebug("Search result from unknown legacy user");
-			return;
-		}
 		i = j + 1;
 
 		// A file has 2 0x05, a directory only one
@@ -250,18 +245,24 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			return;
 		}
 		string hubName = Text::acpToUtf8(x.substr(i, j-i));
-		string tth;
-		if(hubName.compare(0, 4, "TTH:") == 0) {
-			tth = hubName.substr(4);
-			StringList names = ClientManager::getInstance()->getHubNames(user->getCID());
-			hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
-		}
 		i = j + 2;
 		if( (j = x.rfind(')')) == string::npos) {
 			return;
 		}
 		string hubIpPort = x.substr(i, j-i);
 		string url = ClientManager::getInstance()->findHub(hubIpPort);
+		
+		User::Ptr user = ClientManager::getInstance()->findUser(nick, url);
+		if(!user)
+			return;
+
+		string tth;
+		if(hubName.compare(0, 4, "TTH:") == 0) {
+			tth = hubName.substr(4);
+			StringList names = ClientManager::getInstance()->getHubNames(user->getCID());
+			hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
+		}
+				
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
 			file, hubName, url, remoteIp, tth.empty() ? NULL : new TTHValue(tth), false);
 		fire(SearchManagerListener::SR(), sr);
@@ -270,9 +271,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		AdcCommand c(x.substr(0, x.length()-1));
 		if(c.getParameters().empty())
 			return;
-		string cid;
-		if(!c.getParam("ID", 0, cid))
-			return;
+		string cid = c.getParam(0);
 		if(cid.size() != 39)
 			return;
 
@@ -285,7 +284,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		string file;
 		string tth;
 
-		for(StringIter i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
+		for(StringIter i = c.getParameters().begin() + 1; i != c.getParameters().end(); ++i) {
 			string& str = *i;
 			if(str.compare(0, 2, "FN") == 0) {
 				file = Util::toNmdcFile(str.substr(2));
@@ -366,5 +365,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.65 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.66 2006/02/11 21:01:54 arnetheduck Exp $
  */

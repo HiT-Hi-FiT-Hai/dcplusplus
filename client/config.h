@@ -63,6 +63,7 @@
 # pragma warning(disable: 4127) // constant expression
 # pragma warning(disable: 4710) // function not inlined
 # pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
+
 # if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310
 
 typedef signed char int8_t;
@@ -130,5 +131,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.38 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: config.h,v 1.39 2006/02/11 21:01:54 arnetheduck Exp $
  */

@@ -493,7 +493,7 @@ const CID& ClientManager::getMyPID() {
 
 CID ClientManager::getMyCID() {
 	TigerHash tiger;
-	tiger.update(pid.getData(), CID::SIZE);
+	tiger.update(getMyPID().getData(), CID::SIZE);
 	return CID(tiger.finalize());
 }
 
@@ -558,5 +558,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.93 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.94 2006/02/11 21:01:54 arnetheduck Exp $
  */

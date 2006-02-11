@@ -57,6 +57,7 @@ public:
 	void sendUDP(const AdcCommand& cmd);
 
 	void handle(AdcCommand::SUP, AdcCommand& c) throw();
+	void handle(AdcCommand::SID, AdcCommand& c) throw();
 	void handle(AdcCommand::MSG, AdcCommand& c) throw();
 	void handle(AdcCommand::INF, AdcCommand& c) throw();
 	void handle(AdcCommand::GPA, AdcCommand& c) throw();
@@ -66,7 +67,6 @@ public:
 	void handle(AdcCommand::STA, AdcCommand& c) throw();
 	void handle(AdcCommand::SCH, AdcCommand& c) throw();
 	void handle(AdcCommand::CMD, AdcCommand& c) throw();
-
 	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
 
 	string getMySID() { return AdcCommand::fromSID(sid); }
@@ -124,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.39 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.40 2006/02/11 21:01:54 arnetheduck Exp $
  */

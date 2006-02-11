@@ -91,9 +91,12 @@ public:
 	C(GET, 'G','E','T');
 	C(GFI, 'G','F','I');
 	C(SND, 'S','N','D');
+	C(SID, 'S','I','D');
 	// Extensions
 	C(CMD, 'C','M','D');
 #undef C
+
+	static const HUB_SID = 0x41414141;		// AAAA in base32
 
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT);
 	explicit AdcCommand(u_int32_t aCmd, const u_int32_t aTarget);
@@ -105,12 +108,12 @@ public:
 	char getType() const { return type; }
 	void setType(char t) { type = t; }
 	
-	void setFeature(const string& feat) { feature = feat; }
+	AdcCommand& setFeatures(const string& feat) { features = feat; return *this; }
 
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
 
-	string toString(u_int32_t sid, bool nmdc = false, bool old = false) const;
+	string toString(u_int32_t sid, bool nmdc = false) const;
 
 	AdcCommand& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
@@ -156,7 +159,7 @@ public:
 	static string fromSID(const u_int32_t aSID) { return string(reinterpret_cast<const char*>(&aSID), sizeof(aSID)); }
 private:
 	StringList parameters;
-	string feature;
+	string features;
 	union {
 		char cmdChar[4];
 		u_int8_t cmd[4];
@@ -192,11 +195,12 @@ public:
 				C(GET);
 				C(GFI);
 				C(SND);
+				C(SID);
 				C(CMD);
 			default: 
 				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
 				break;
-#undef CMD
+#undef C
 
 			}
 		} catch(const ParseException&) {
@@ -210,5 +214,5 @@ public:
 
 /**
  * @file
- * $Id: AdcCommand.h,v 1.25 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: AdcCommand.h,v 1.26 2006/02/11 21:01:54 arnetheduck Exp $
  */

@@ -572,7 +572,7 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 	string cid;
 	if(!cmd.getParam("ID", 0, cid)) {
 		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_INF_MISSING, "ID missing").addParam("FL", "ID"));
-		dcdebug("CM::onINF missing ID");
+		dcdebug("CM::onINF missing ID\n");
 		aSource->disconnect();
 		return;
 	}
@@ -672,5 +672,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.116 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.117 2006/02/11 21:01:54 arnetheduck Exp $
  */

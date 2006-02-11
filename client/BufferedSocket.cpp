@@ -194,6 +194,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize =  sockSize * 16;		// Perhaps make this a setting?
+	dcdebug("threadSendFile buffer size: %lu\n", bufSize);
 	AutoArray<u_int8_t> buf(bufSize);
 
 	while(true) {
@@ -359,5 +360,5 @@ void BufferedSocket::shutdown() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.98 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.99 2006/02/11 21:01:54 arnetheduck Exp $
  */

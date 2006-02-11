@@ -192,6 +192,7 @@ void UserConnection::accept(const Socket& aServer) throw(SocketException, Thread
 
 void UserConnection::inf(bool withToken) { 
 	AdcCommand c(AdcCommand::CMD_INF);
+	c.addParam("ID", ClientManager::getInstance()->getMyCID().toBase32());
 	if(withToken) {
 		c.addParam("TO", getToken());
 	}
@@ -207,5 +208,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.56 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.57 2006/02/11 21:01:54 arnetheduck Exp $
  */
