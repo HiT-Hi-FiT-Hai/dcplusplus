@@ -47,6 +47,11 @@ public:
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
 {
 public:
+	void shutdown() {
+		s.signal();
+		join();
+	}
+
 	static time_t getTime() {
 		return (time_t)time(NULL);
 	}
@@ -69,13 +74,12 @@ private:
 		gettimeofday(&tv, NULL);
 #endif
 	};
-	
+
 	virtual ~TimerManager() throw() {
 		dcassert(listeners.empty());
-		s.signal();
-		join();
+		shutdown();
 	};
-	
+
 	virtual int run();
 	
 #ifndef _WIN32
@@ -90,5 +94,5 @@ private:
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.27 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.28 2006/02/12 18:16:12 arnetheduck Exp $
  */

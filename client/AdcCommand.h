@@ -28,6 +28,8 @@
 
 STANDARD_EXCEPTION(ParseException);
 
+class CID;
+
 class AdcCommand {
 public:
 	template<u_int32_t T>
@@ -113,6 +115,7 @@ public:
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
 
+	string toString(const CID& aCID) const;
 	string toString(u_int32_t sid, bool nmdc = false) const;
 
 	AdcCommand& addParam(const string& name, const string& value) {
@@ -158,6 +161,9 @@ public:
 	static u_int32_t toSID(const string& aSID) { return *reinterpret_cast<const u_int32_t*>(aSID.data()); }
 	static string fromSID(const u_int32_t aSID) { return string(reinterpret_cast<const char*>(&aSID), sizeof(aSID)); }
 private:
+	string getHeaderString(const CID& cid) const;
+	string getHeaderString(u_int32_t sid, bool nmdc) const;
+	string getParamString(bool nmdc) const;
 	StringList parameters;
 	string features;
 	union {
@@ -214,5 +220,5 @@ public:
 
 /**
  * @file
- * $Id: AdcCommand.h,v 1.26 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: AdcCommand.h,v 1.27 2006/02/12 18:16:12 arnetheduck Exp $
  */

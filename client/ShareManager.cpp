@@ -1329,20 +1329,20 @@ ShareManager::AdcSearch::AdcSearch(const StringList& params) : include(&includeX
 			hasRoot = true;
 			root = TTHValue(p.substr(2));
 			return;
-		} else if(toCode('+', '+') == cmd) {
+		} else if(toCode('A', 'N') == cmd) {
 			includeX.push_back(StringSearch(p.substr(2)));		
-		} else if(toCode('-', '-') == cmd) {
+		} else if(toCode('N', 'O') == cmd) {
 			exclude.push_back(StringSearch(p.substr(2)));
 		} else if(toCode('E', 'X') == cmd) {
 			ext.push_back(p.substr(2));
-		} else if(toCode('>', '=') == cmd) {
+		} else if(toCode('G', 'E') == cmd) {
 			gt = Util::toInt64(p.substr(2));
-		} else if(toCode('<', '=') == cmd) {
+		} else if(toCode('L', 'E') == cmd) {
 			lt = Util::toInt64(p.substr(2));
-		} else if(toCode('=', '=') == cmd) {
+		} else if(toCode('E', 'Q') == cmd) {
 			lt = gt = Util::toInt64(p.substr(2));
-		} else if(toCode('D', 'O') == cmd) {
-			isDirectory = (p[2] != '0');
+		} else if(toCode('T', 'Y') == cmd) {
+			isDirectory = (p[2] == '2');
 		}
 	}
 }
@@ -1517,5 +1517,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.142 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.143 2006/02/12 18:16:12 arnetheduck Exp $
  */

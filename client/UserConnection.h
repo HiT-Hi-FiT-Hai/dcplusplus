@@ -175,6 +175,7 @@ public:
 	static const string FEATURE_ZLIB_GET;
 	static const string FEATURE_TTHL;
 	static const string FEATURE_TTHF;
+	static const string FEATURE_ADC_BASE;
 
 	static const string FILE_NOT_AVAILABLE;
 	
@@ -362,5 +363,5 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.104 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.105 2006/02/12 18:16:12 arnetheduck Exp $
  */

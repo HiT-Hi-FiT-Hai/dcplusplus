@@ -78,6 +78,11 @@ public:
 		aSock->shutdown();
 	};
 
+	static void waitShutdown() {
+		while(sockets)
+			Thread::sleep(100);
+	}
+
 	void accept(const Socket& srv, bool secure) throw(SocketException, ThreadException);
 	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException);
 
@@ -166,6 +171,8 @@ private:
 		fire(BufferedSocketListener::Failed(), aError);
 		failed = true;
 	}
+	
+	static size_t sockets;
 
 	bool checkEvents();
 	void checkSocket();
@@ -178,5 +185,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.75 2006/01/21 10:38:01 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.76 2006/02/12 18:16:12 arnetheduck Exp $
  */

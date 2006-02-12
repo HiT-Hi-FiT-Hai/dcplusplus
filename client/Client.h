@@ -73,7 +73,7 @@ public:
 	virtual void on(NickTaken, Client*) throw() { }
 	virtual void on(SearchFlood, Client*, const string&) throw() { }
 	virtual void on(NmdcSearch, Client*, const string&, int, int64_t, int, const string&) throw() { }
-	virtual void on(AdcSearch, Client*, const AdcCommand&) throw() { }
+	virtual void on(AdcSearch, Client*, const AdcCommand&, const CID&) throw() { }
 };
 
 /** Yes, this should probably be called a Hub */
@@ -205,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.107 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: Client.h,v 1.108 2006/02/12 18:16:13 arnetheduck Exp $
  */

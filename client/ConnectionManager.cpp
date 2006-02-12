@@ -39,7 +39,7 @@ ConnectionManager::ConnectionManager() : port(0), securePort(0), server(0), secu
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
 
-	adcFeatures.push_back("+BAS0");
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BASE);
 }
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
@@ -336,15 +336,37 @@ void ConnectionManager::adcConnect(const OnlineUser& aUser, short aPort, const s
 	}
 }
 
-void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand&) throw() {
+void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
-		// Already got this once, ignore...
+		// Already got this once, ignore...@todo fix support updates
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
 		return;
 	}
 
+	bool baseOk = false;
+
+	for(StringIterC i = cmd.getParameters().begin(); i != cmd.getParameters().end(); ++i) {
+		if(i->compare(0, 2, "AD") == 0) {
+			string feat = i->substr(2);
+			if(feat == UserConnection::FEATURE_ADC_BASE)
+				baseOk = true;
+			else if(feat == UserConnection::FEATURE_ZLIB_GET)
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
+		}
+	}
+
+	if(!baseOk) {
+		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Invalid SUP"));
+		aSource->disconnect();
+		return;
+	}
+
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
-		aSource->sup(adcFeatures);
+		StringList defFeatures = adcFeatures;
+		if(BOOLSETTING(COMPRESS_TRANSFERS)) {
+			defFeatures.push_back("AD" + UserConnection::FEATURE_ZLIB_GET);
+		}
+		aSource->sup(defFeatures);
 		aSource->inf(false);
 	} else {
 		aSource->inf(true);
@@ -362,7 +384,11 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
 		aSource->myNick(aSource->getToken());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} else {
-		aSource->sup(adcFeatures);
+		StringList defFeatures = adcFeatures;
+		if(BOOLSETTING(COMPRESS_TRANSFERS)) {
+			defFeatures.push_back("AD" + UserConnection::FEATURE_ZLIB_GET);
+		}
+		aSource->sup(defFeatures);
 	}
 	aSource->setState(UserConnection::STATE_SUPNICK);
 }
@@ -628,6 +654,7 @@ void ConnectionManager::disconnect(const User::Ptr& aUser, int isDownload) {
 }
 
 void ConnectionManager::shutdown() {
+	TimerManager::getInstance()->removeListener(this);
 	shuttingDown = true;
 	disconnect();
 	{
@@ -672,5 +699,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.117 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.118 2006/02/12 18:16:13 arnetheduck Exp $
  */

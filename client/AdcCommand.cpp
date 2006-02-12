@@ -123,7 +123,15 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 	}
 }
 
+string AdcCommand::toString(const CID& aCID) const {
+	return getHeaderString(aCID) + getParamString(false);
+}
+
 string AdcCommand::toString(u_int32_t sid /* = 0 */, bool nmdc /* = false */) const {
+	return getHeaderString(sid, nmdc) + getParamString(nmdc);
+}
+
+string AdcCommand::getHeaderString(u_int32_t sid, bool nmdc) const {
 	string tmp;
 	if(nmdc) {
 		tmp += "$ADC";
@@ -147,7 +155,22 @@ string AdcCommand::toString(u_int32_t sid /* = 0 */, bool nmdc /* = false */) co
 		tmp += ' ';
 		tmp += features;
 	}
+	return tmp;
+}
 
+string AdcCommand::getHeaderString(const CID& cid) const {
+	dcassert(type == TYPE_UDP);
+	string tmp;
+	
+	tmp += getType();
+	tmp += cmdChar;
+	tmp += ' ';
+	tmp += cid.toBase32();
+	return tmp;
+}
+
+string AdcCommand::getParamString(bool nmdc) const {
+	string tmp;
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 		tmp += ' ';
 		tmp += escape(*i, nmdc);
@@ -184,5 +207,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.16 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.17 2006/02/12 18:16:12 arnetheduck Exp $
  */

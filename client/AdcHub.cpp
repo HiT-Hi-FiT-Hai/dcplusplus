@@ -42,6 +42,7 @@ AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secur
 }
 
 AdcHub::~AdcHub() throw() {
+	TimerManager::getInstance()->removeListener(this);
 	clearUsers();
 }
 
@@ -140,7 +141,10 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 	if(state != STATE_PROTOCOL) /** @todo SUP changes */
 		return;
-	if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
+	if(find(c.getParameters().begin(), c.getParameters().end(), "ADBASE") == c.getParameters().end()
+		&& find(c.getParameters().begin(), c.getParameters().end(), "ADBAS0") == c.getParameters().end())
+	{
+		fire(ClientListener::StatusMessage(), this, "Failed to negotiate base protocol"); // @todo internationalize
 		disconnect(false);
 		return;
 	}
@@ -272,19 +276,22 @@ void AdcHub::sendUDP(const AdcCommand& cmd) {
 		s.create(Socket::TYPE_UDP);
 
 		Lock l(cs);
-		string tmp = cmd.toString(sid);
-		for(SIDIter i = users.begin(); i != users.end(); ++i) {
-			OnlineUser* u = i->second;
-			if(u->getIdentity().isUdpActive()) {
-				try {
-					s.writeTo(u->getIdentity().getIp(), (short)Util::toInt(u->getIdentity().getUdpPort()), tmp);
-				} catch(const SocketException& e) {
-					dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
-				}
+		SIDMap::const_iterator i = users.find(cmd.getTo());
+		if(i == users.end()) {
+			dcdebug("AdcHub::sendUDP: invalid user\n");
+			return;
+		}
+		OnlineUser& u = *i->second;
+		string tmp = cmd.toString(u.getUser()->getCID());
+		if(u.getIdentity().isUdpActive()) {
+			try {
+				s.writeTo(u.getIdentity().getIp(), (short)Util::toInt(u.getIdentity().getUdpPort()), tmp);
+			} catch(const SocketException& e) {
+				dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
 			}
 		}
 	} catch(SocketException&) {
-		dcdebug("Can't create udp socket\n");
+		dcdebug("Can't create UDP socket\n");
 	}
 }
 
@@ -300,8 +307,14 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
 
-void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {	
-	fire(ClientListener::AdcSearch(), this, c);
+void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
+	SIDMap::const_iterator i = users.find(c.getFrom());
+	if(i == users.end()) {
+		dcdebug("Invalid user in AdcHub::onSCH\n");
+		return;
+	}
+
+	fire(ClientListener::AdcSearch(), this, c, i->second->getUser()->getCID());
 }
 
 void AdcHub::connect(const OnlineUser& user) {
@@ -354,13 +367,16 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 		c.addParam("TR", aString);
 	} else {
 		if(aSizeMode == SearchManager::SIZE_ATLEAST) {
-			c.addParam(">=", Util::toString(aSize));
+			c.addParam("GE", Util::toString(aSize));
 		} else if(aSizeMode == SearchManager::SIZE_ATMOST) {
-			c.addParam("<=", Util::toString(aSize));
+			c.addParam("LE", Util::toString(aSize));
 		}
 		StringTokenizer<string> st(aString, ' ');
 		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			c.addParam("++", *i);
+			c.addParam("AN", *i);
+		}
+		if(aFileType == SearchManager::TYPE_DIRECTORY) {
+			c.addParam("TY", "2");
 		}
 	}
 
@@ -486,7 +502,7 @@ void AdcHub::on(Connected) throw() {
 	dcassert(state == STATE_PROTOCOL);
 	lastInfoMap.clear();
 	reconnect = true;
-	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("+BAS0"));
+	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("ADBAS0"));
 	
 	fire(ClientListener::Connected(), this);
 }
@@ -526,5 +542,5 @@ void AdcHub::send(const AdcCommand& cmd) {
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.65 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.66 2006/02/12 18:16:12 arnetheduck Exp $
  */
