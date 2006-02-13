@@ -35,8 +35,8 @@
 #define HAVE_HASH 1
 
 // This enables stlport's debug mode (and slows it down to a crawl...)
-#define _STLP_DEBUG 1
-#define _STLP_USE_NEWALLOC 1
+//#define _STLP_DEBUG 1
+//#define _STLP_USE_NEWALLOC 1
 
 // --- Shouldn't have to change anything under here...
 
@@ -131,5 +131,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.39 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: config.h,v 1.40 2006/02/13 08:32:52 arnetheduck Exp $
  */

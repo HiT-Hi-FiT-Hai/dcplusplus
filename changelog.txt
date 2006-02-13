@@ -1,4 +1,4 @@
-﻿-- 0.69 --
+﻿-- 0.685 2006-02-12 --
 * Fixed "browse list" being available for NMDC users
 * [ADC] Removed obsolete CI field
 * Fixed missing upload progress
@@ -27,6 +27,7 @@
 * [bug 818] Fixed default exit mnemonic
 * Fixed some more crashes (thanks bigmuscle)
 * Fixed some shutdown issues
+* Updated country database
 
 -- 0.6811 2006-01-21 --
 * Fixed a socket race condition leading to failing connections and crashes
