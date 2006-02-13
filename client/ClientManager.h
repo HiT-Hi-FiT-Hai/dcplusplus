@@ -55,13 +55,13 @@ public:
 	void infoUpdated();
 
 	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
-	User::Ptr getLegacyUser(const string& aNick) const throw();
 	User::Ptr getUser(const CID& cid) throw();
 
 	string findHub(const string& ipPort);
 
 	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) throw();
+	User::Ptr findLegacyUser(const string& aNick) const throw();
 
 	bool isOnline(const User::Ptr& aUser) {
 		Lock l(cs);
@@ -168,5 +168,5 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.77 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.78 2006/02/13 21:13:27 arnetheduck Exp $
  */

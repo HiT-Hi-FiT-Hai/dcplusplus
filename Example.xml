@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.685" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.686" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -129,6 +129,7 @@
 		<String Name="Files">Files</String>
 		<String Name="FileHasNoTth">This file has no TTH</String>
 		<String Name="FileListDiff">Subtract list</String>
+		<String Name="FileListRefreshFailed">File list refresh failed: </String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
 		<String Name="FileListRefreshInitiated">File list refresh initiated</String>
 		<String Name="FileListRefrreshInProgress">File list refresh in progress, please wait for it to finish before trying to refresh again</String>

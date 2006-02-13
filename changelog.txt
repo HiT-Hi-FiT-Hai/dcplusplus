@@ -1,4 +1,13 @@
-﻿-- 0.685 2006-02-12 --
+﻿-- 0.guess.what --
+* Fixed XML file list generation for invalid filenames from other os's
+* Fixed a rare refresh crash
+
+
+-- 0.686 2006-02-13 --
+* Fixed active search (oops)
+* Fixed a crash when clicking on dchub links
+
+-- 0.685 2006-02-12 --
 * Fixed "browse list" being available for NMDC users
 * [ADC] Removed obsolete CI field
 * Fixed missing upload progress

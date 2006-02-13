@@ -253,8 +253,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		string url = ClientManager::getInstance()->findHub(hubIpPort);
 		
 		User::Ptr user = ClientManager::getInstance()->findUser(nick, url);
-		if(!user)
-			return;
+		if(!user) {
+			// Could happen if hub has multiple URLs / IPs
+			user = ClientManager::getInstance()->findLegacyUser(nick);
+			if(!user)
+				return;
+		}
 
 		string tth;
 		if(hubName.compare(0, 4, "TTH:") == 0) {
@@ -365,5 +369,5 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.66 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.67 2006/02/13 21:13:27 arnetheduck Exp $
  */

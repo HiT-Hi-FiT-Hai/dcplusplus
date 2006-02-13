@@ -236,14 +236,7 @@ public:
 		return 0;
 	}
 	
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		if(trayIcon) {
-			updateTray(false);
-		}
-		bHandled = FALSE;
-		return 0;
-	}
+	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
@@ -399,5 +392,5 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.66 2006/01/23 08:00:50 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.67 2006/02/13 21:13:28 arnetheduck Exp $
  */

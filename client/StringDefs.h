@@ -133,6 +133,7 @@ enum Strings { // @DontAdd
 	FILES, // "Files"
 	FILE_HAS_NO_TTH, // "This file has no TTH"
 	FILE_LIST_DIFF, // "Subtract list"
+	FILE_LIST_REFRESH_FAILED, // "File list refresh failed: "
 	FILE_LIST_REFRESH_FINISHED, // "File list refresh finished"
 	FILE_LIST_REFRESH_INITIATED, // "File list refresh initiated"
 	FILE_LIST_REFRRESH_IN_PROGRESS, // "File list refresh in progress, please wait for it to finish before trying to refresh again"

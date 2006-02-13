@@ -274,8 +274,11 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
 	
 	int nRet = theLoop.Run();
-	
+
 	_Module.RemoveMessageLoop();
+
+	shutdown();
+
 	return nRet;
 }
 
@@ -354,5 +357,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.40 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: main.cpp,v 1.41 2006/02/13 21:13:28 arnetheduck Exp $
  */

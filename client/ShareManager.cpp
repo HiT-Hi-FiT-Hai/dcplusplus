@@ -776,11 +776,15 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, b
 		cached = loadCache();
 		initial = false;
 	}
-	start();
-	if(block && !cached) {
-		join();
-	} else {
-		setThreadPriority(Thread::LOW);
+	try {
+		start();
+		if(block && !cached) {
+			join();
+		} else {
+			setThreadPriority(Thread::LOW);
+		}		
+	} catch(const ThreadException& e) {
+		LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FAILED) + e.getError());
 	}
 }
 
@@ -1020,10 +1024,10 @@ MemoryInputStream* ShareManager::getTree(const string& aFile) {
 }
 
 static const string& escaper(const string& n, string& tmp) {
-	if(SimpleXML::needsEscape(n, false, false)) {
+	if(SimpleXML::needsEscape(n, true, false)) {
 		tmp.clear();
 		tmp.append(n);
-		return SimpleXML::escape(tmp, false, false);
+		return SimpleXML::escape(tmp, true, false);
 	}
 	return n;
 }
@@ -1517,5 +1521,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.143 2006/02/12 18:16:12 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.144 2006/02/13 21:13:27 arnetheduck Exp $
  */

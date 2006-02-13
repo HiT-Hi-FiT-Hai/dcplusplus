@@ -12,6 +12,43 @@
 <body>
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
+<h2>0.686 <span style="color: gray;">(2006-02-13)</span></h2>
+<ul>
+  <li>Fixed active search (oops)</li>
+  <li>Fixed a crash when clicking on dchub links</li>
+</ul>
+
+<h2>0.685 <span style="color: gray;">(2006-02-12)</span></h2>
+<ul>
+  <li>Fixed "browse list" being available for NMDC users</li>
+  <li>[ADC] Removed obsolete CI field</li>
+  <li>Fixed missing upload progress</li>
+  <li>[bug 89] Readded dynamic compression disabling</li>
+  <li>Added filelist download speed to filelist browser status bar</li>
+  <li>Added advanced hublist filter (thanks trem)</li>
+  <li>[bug 579] Fixed 0-byte files not being created if directory doesn't exist</li>
+  <li>[bug 804] Cleaned up project files (thanks pothead)</li>
+  <li>Socket buffer size = 0 now means use system default</li>
+  <li>[bug 789] Fixed wrong nick being copied (thanks ullner)</li>
+  <li>[bug 794] [ADC] Fixed automatic reconnect (thanks ullner)</li>
+  <li>[bug 806] Fixed description for favorite hubs (thanks ullner)</li>
+  <li>Updated to latest ADC specs, this will break 0.68/0.681/0.6811 queue sources and fav users (for NMDC as well)</li>
+  <li>Fixed a bufferedsocket crash</li>
+  <li>[ADC] Fixed quitting user processing (thanks ullner)</li>
+  <li>Clarified upload speed setting (thanks pothead)</li>
+  <li>Manual away setting no longer cleared when un-minimizing (thanks pothead)</li>
+  <li>Search result automatching waits with match until file list is downloaded if auto-matching enabled</li>
+  <li>Slight performance improvement when sending files</li>
+  <li>Fixed an issue with nick names disappearing from hub</li>
+  <li>Added customizable maximum user count when autosearching</li>
+  <li>Changed to open source version unicows for win9x users, perhaps this one will work better for you (see it as a last attempt; if it doesn't work, w9x support will be phased out completely unless someone else solves the win9x issues)</li>
+  <li>[bug 774] Fixed invalid description being sent if hub modifies it</li>
+  <li>[bug 818] Fixed default exit mnemonic</li>
+  <li>Fixed some more crashes (thanks bigmuscle)</li>
+  <li>Fixed some shutdown issues</li>
+  <li>Updated country database</li>
+</ul>
+
 <h2>0.6811 <span style="color: gray;">(2006-01-21)</span></h2>
 <ul>
   <li>Fixed a socket race condition leading to failing connections and crashes</li>

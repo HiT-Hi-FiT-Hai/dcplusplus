@@ -933,8 +933,10 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 		if(file[0] == '/') // Remove any '/' in from of the file
 			file = file.substr(1);
 		try {
-			/// @todo check this...
-			QueueManager::getInstance()->addList(ClientManager::getInstance()->getLegacyUser(file), QueueItem::FLAG_CLIENT_VIEW);
+			User::Ptr user = ClientManager::getInstance()->findLegacyUser(file);
+			if(user)
+				QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
+			// @todo else report error
 		} catch(const Exception&) {
 			// ...
 		}
@@ -1186,5 +1188,5 @@ void WinUtil::openFolder(const tstring& file) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.96 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.97 2006/02/13 21:13:28 arnetheduck Exp $
  */
