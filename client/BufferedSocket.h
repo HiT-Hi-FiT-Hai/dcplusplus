@@ -132,7 +132,7 @@ private:
 		InputStream* stream;
 	};
 
-	BufferedSocket(char aSeparator) throw(ThreadException);
+	BufferedSocket(char aSeparator) throw();
 
 	// Dummy...
 	BufferedSocket(const BufferedSocket&);
@@ -185,5 +185,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.76 2006/02/12 18:16:12 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.77 2006/02/17 19:23:51 arnetheduck Exp $
  */

@@ -99,7 +99,7 @@ public:
 
 	Identity() { }
 	Identity(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), hubUrl(aHubUrl) { }
-	Identity(const Identity& rhs) : user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info) { }
+	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info) { }
 	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
@@ -162,7 +162,7 @@ public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
 
-	OnlineUser() : client(NULL), sid(0) { }
+	OnlineUser() : sid(0), client(NULL) { }
 	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
 
 	operator User::Ptr&() { return user; }
@@ -189,5 +189,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.69 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: User.h,v 1.70 2006/02/17 19:23:51 arnetheduck Exp $
  */

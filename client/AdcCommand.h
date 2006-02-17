@@ -98,7 +98,7 @@ public:
 	C(CMD, 'C','M','D');
 #undef C
 
-	static const HUB_SID = 0x41414141;		// AAAA in base32
+	static const u_int32_t HUB_SID = 0x41414141;		// AAAA in base32
 
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT);
 	explicit AdcCommand(u_int32_t aCmd, const u_int32_t aTarget);
@@ -220,5 +220,5 @@ public:
 
 /**
  * @file
- * $Id: AdcCommand.h,v 1.27 2006/02/12 18:16:12 arnetheduck Exp $
+ * $Id: AdcCommand.h,v 1.28 2006/02/17 19:23:51 arnetheduck Exp $
  */

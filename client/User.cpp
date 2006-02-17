@@ -23,7 +23,7 @@
 #include "Client.h"
 #include "StringTokenizer.h"
 
-OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : user(ptr), identity(ptr, client_.getHubUrl()), client(&client_), sid(sid_) { 
+OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : user(ptr), identity(ptr, client_.getHubUrl()), sid(sid_), client(&client_) { 
 
 }
 
@@ -66,5 +66,5 @@ const bool Identity::supports(const string& name) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.52 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: User.cpp,v 1.53 2006/02/17 19:23:51 arnetheduck Exp $
  */

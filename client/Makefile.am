@@ -122,8 +122,8 @@ ZUtils.h
 
 pch: stdinc.h.gch
 
-stdinc.h.gch: stdinc.h
-    $(CXX) $(venus_CXXFLAGS) $(CXXFLAGS) $?
+BUILT_SOURCES = stdinc.h.gch
 
-.PHONY: pch
-	
+stdinc.h.gch: stdinc.h
+	$(CXX) $(libdcppclient_la_CXXFLAGS) $(CXXFLAGS) $?
+
