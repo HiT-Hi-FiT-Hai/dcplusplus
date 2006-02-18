@@ -64,6 +64,12 @@ extern "C" void bz_internal_error(int errcode) {
 	dcdebug("bzip2 internal error: %d\n", errcode); 
 }
 
+#if defined(_WIN32) && _MSC_VER == 1400
+void WINAPI invalidParameterHandler(const wchar_t*, const wchar_t*, const wchar_t*, unsigned int, uintptr_t) {
+	//do nothing, this exist because vs2k5 crt needs it not to crash on errors.
+}
+#endif
+
 void Util::initialize() {
 	setlocale(LC_ALL, "");
 
@@ -76,6 +82,11 @@ void Util::initialize() {
 	GetModuleFileName(NULL, buf, MAX_PATH);
 	appPath = Text::fromT(buf);
 	appPath.erase(appPath.rfind('\\') + 1);
+
+#if _MSC_VER == 1400
+	_set_invalid_parameter_handler(reinterpret_cast<_invalid_parameter_handler>(invalidParameterHandler));
+#endif
+
 #else // _WIN32
 	char* home = getenv("HOME");
 	if (home) {
@@ -902,5 +913,5 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.94 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.95 2006/02/18 23:32:17 arnetheduck Exp $
  */

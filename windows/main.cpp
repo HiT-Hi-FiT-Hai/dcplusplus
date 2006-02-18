@@ -60,7 +60,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #ifndef _DEBUG
 #if _MSC_VER == 1200
 	__pfnDliFailureHook = FailHook;
-#elif _MSC_VER == 1300 || _MSC_VER == 1310
+#elif _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
 	__pfnDliFailureHook2 = FailHook;
 #else
 #error Unknown Compiler version
@@ -357,5 +357,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.41 2006/02/13 21:13:28 arnetheduck Exp $
+ * $Id: main.cpp,v 1.42 2006/02/18 23:32:17 arnetheduck Exp $
  */

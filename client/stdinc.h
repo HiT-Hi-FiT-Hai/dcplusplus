@@ -32,6 +32,13 @@
 #define _ATL_NO_HOSTING
 #define _ATL_NO_OLD_NAMES
 
+#if _MSC_VER == 1400
+//disable the deperecated warnings for the crt functions.
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _ATL_SECURE_NO_DEPRECATE 1
+#define _CRT_NON_CONFORMING_SWPRINTFS 1
+#endif
+
 #include <Winsock2.h>
 
 #include <windows.h>
@@ -129,5 +136,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.21 2006/01/15 18:40:37 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.22 2006/02/18 23:32:17 arnetheduck Exp $
  */

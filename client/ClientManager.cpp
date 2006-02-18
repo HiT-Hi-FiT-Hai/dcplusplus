@@ -113,6 +113,8 @@ StringList ClientManager::getNicks(const CID& cid) {
 		UserIter i = users.find(cid);
 		if(i != users.end())
 			lst.push_back(i->second->getFirstNick());
+		else
+			lst.push_back('{' + cid.toBase32() + '}');
 	}
 	return lst;
 }
@@ -566,5 +568,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.95 2006/02/13 21:13:27 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.96 2006/02/18 23:32:17 arnetheduck Exp $
  */

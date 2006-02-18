@@ -197,7 +197,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 		return;
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
-	size_t bufSize =  sockSize * 16;		// Perhaps make this a setting?
+	size_t bufSize = max(sockSize, (size_t)64*1024);
 	dcdebug("threadSendFile buffer size: %lu\n", bufSize);
 	AutoArray<u_int8_t> buf(bufSize);
 
@@ -215,19 +215,18 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 			if(disconnecting)
 				return;
 
-			int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
-			if(w & Socket::WAIT_READ) {
-				threadRead();
-			}
-			if(w & Socket::WAIT_WRITE) {
-				int written = sock->write(buf + done, min(sockSize, actual - done));
-				if(written > 0) {
-					done += written;
+			int written = sock->write(buf + done, min(sockSize, actual - done));
+			if(written > 0) {
+				done += written;
 
-					size_t doneReadNow = static_cast<size_t>((static_cast<double>(done)/actual) * bytesRead);
+				size_t doneReadNow = static_cast<size_t>((static_cast<double>(done)/actual) * bytesRead);
 
-					fire(BufferedSocketListener::BytesSent(), doneReadNow - doneRead, written);
-					doneRead = doneReadNow;
+				fire(BufferedSocketListener::BytesSent(), doneReadNow - doneRead, written);
+				doneRead = doneReadNow;
+			} else if(written == -1) {
+				int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
+				if(w & Socket::WAIT_READ) {
+					threadRead();
 				}
 			}
 		}
@@ -367,5 +366,5 @@ void BufferedSocket::shutdown() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.100 2006/02/12 18:16:12 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.101 2006/02/18 23:32:17 arnetheduck Exp $
  */

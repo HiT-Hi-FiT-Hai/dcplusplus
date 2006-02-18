@@ -190,7 +190,7 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 			ULONG index = 0;
 			for( ; ; index++ )
 			{
-				lpszParamSep = _tcschr( lpszParsed, _T(',') );
+				lpszParamSep = _tcschr( const_cast<wchar_t*>(lpszParsed), _T(',') );
 				if ( lpszParamSep == NULL )
 					break;
 
@@ -202,7 +202,7 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 				lpszParsed = lpszParamSep + 1;
 			}
 
-			lpszParamSep = _tcschr( lpszParsed, _T(')') );
+			lpszParamSep = _tcschr( const_cast<wchar_t*>(lpszParsed), _T(')') );
 			if ( lpszParamSep != NULL )
 			{
 				*lpszParamSep = _T('\0');
@@ -338,5 +338,5 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 
 /**
  * @file
- * $Id: ExtendedTrace.cpp,v 1.13 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: ExtendedTrace.cpp,v 1.14 2006/02/18 23:32:17 arnetheduck Exp $
  */
