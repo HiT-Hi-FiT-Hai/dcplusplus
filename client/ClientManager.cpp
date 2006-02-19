@@ -54,10 +54,11 @@ Client* ClientManager::getClient(const string& aHubURL) {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	aClient->disconnect(true);
+	aClient->shutdown();
+
 	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
-
+	
 	{
 		Lock l(cs);
 
@@ -568,5 +569,5 @@ void ClientManager::updateCachedIp() {
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.96 2006/02/18 23:32:17 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.97 2006/02/19 23:51:31 arnetheduck Exp $
  */

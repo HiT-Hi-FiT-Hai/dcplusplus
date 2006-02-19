@@ -639,7 +639,6 @@ void HubFrame::clearUserList() {
 	userMap.clear();
 }
 
-
 LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;
@@ -1217,5 +1216,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.130 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.131 2006/02/19 23:51:31 arnetheduck Exp $
  */

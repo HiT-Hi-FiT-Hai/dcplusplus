@@ -361,10 +361,9 @@ void BufferedSocket::shutdown() {
 		// Socket thread not running yet, disconnect...
 		delete this;
 	}
-
 }
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.102 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.103 2006/02/19 23:51:31 arnetheduck Exp $
  */

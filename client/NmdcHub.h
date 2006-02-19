@@ -26,19 +26,19 @@
 #include "TimerManager.h"
 #include "SettingsManager.h"
 
-#include "ClientManager.h"
-
-#include "BufferedSocket.h"
 #include "User.h"
 #include "CriticalSection.h"
 #include "Text.h"
 #include "Client.h"
+
+class ClientManager;
 
 class NmdcHub : public Client, private TimerManagerListener, private Flags
 {
 public:
 	using Client::send;
 
+	virtual void connect();
 	virtual void connect(const OnlineUser& aUser);
 	virtual void disconnect(bool graceless) throw();
 
@@ -95,8 +95,6 @@ private:
 	NmdcHub(const NmdcHub&);
 	NmdcHub& operator=(const NmdcHub&);
 
-	virtual void connect();
-
 	void clearUsers();
 	void onLine(const string& aLine) throw();
 
@@ -132,5 +130,5 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.32 2006/02/19 20:39:20 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.33 2006/02/19 23:51:31 arnetheduck Exp $
  */

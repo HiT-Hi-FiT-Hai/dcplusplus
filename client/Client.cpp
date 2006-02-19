@@ -38,9 +38,15 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 }
 
 Client::~Client() throw() {
-	if(socket)
-		BufferedSocket::putSocket(socket);
+	dcassert(!socket);
 	updateCounts(true);
+}
+
+void Client::shutdown() {
+	if(socket) {
+		BufferedSocket::putSocket(socket);
+		socket = 0;
+	}
 }
 
 void Client::reloadSettings() {
@@ -134,5 +140,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.93 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.94 2006/02/19 23:51:31 arnetheduck Exp $
  */

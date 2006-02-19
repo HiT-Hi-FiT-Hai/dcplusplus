@@ -29,7 +29,7 @@
 
 class Client;
 class AdcCommand;
-
+class ClientManager;
 class ClientListener  
 {
 public:
@@ -83,9 +83,6 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client(const string& hubURL, char separator, bool secure_);
-	virtual ~Client() throw();
-
 	virtual void connect();
 	virtual void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
 
@@ -128,6 +125,8 @@ public:
 		return sm;
 	}
 
+	void shutdown();
+
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
 	void send(const char* aMessage, size_t aLen) {
 		dcassert(socket);
@@ -155,6 +154,9 @@ public:
 	GETSET(bool, registered, Registered);
 
 protected:
+	friend class ClientManager;
+	Client(const string& hubURL, char separator, bool secure_);
+	virtual ~Client() throw();
 	struct Counts {
 		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { }
 		volatile long normal;
@@ -205,5 +207,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.110 2006/02/19 20:39:20 arnetheduck Exp $
+ * $Id: Client.h,v 1.111 2006/02/19 23:51:31 arnetheduck Exp $
  */
