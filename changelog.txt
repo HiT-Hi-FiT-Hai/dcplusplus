@@ -5,6 +5,8 @@
 * Fixed another crash when loading file lists
 * Played some more with bufferedsocket performance
 * Fixed some VS 2005 issues (thanks trem)
+* Installer now removes old unicows library
+* Updated to yaSSL 1.1.5
 
 
 -- 0.686 2006-02-13 --

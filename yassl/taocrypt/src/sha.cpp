@@ -26,8 +26,6 @@
 #include "algorithm.hpp"    // mySTL::swap
 #include "sha.hpp"
 
-    #include <stdio.h>  // for vc7 test
-
 
 #if defined(TAOCRYPT_X86ASM_AVAILABLE) && defined(TAO_ASM)
     #define DO_SHA_ASM
@@ -224,21 +222,21 @@ void SHA::Transform()
 //      w = rotlFixed(w,30);
 
 //      use esi for f
-//      use esp as tmp
+//      use edi as tmp
 
 
 #define ASMR0(v,w,x,y,z,i) \
     AS2(    mov   esi, x                        )   \
-    AS2(    mov   esp, [edi - i * 4]            )   \
+    AS2(    mov   edi, [esp + i * 4]            )   \
     AS2(    xor   esi, y                        )   \
     AS2(    and   esi, w                        )   \
-    AS2(    lea     z, [esp + z + 0x5A827999]   )   \
-    AS2(    mov   esp, v                        )   \
+    AS2(    lea     z, [edi + z + 0x5A827999]   )   \
+    AS2(    mov   edi, v                        )   \
     AS2(    xor   esi, y                        )   \
-    AS2(    rol   esp, 5                        )   \
+    AS2(    rol   edi, 5                        )   \
     AS2(    add     z, esi                      )   \
     AS2(    rol     w, 30                       )   \
-    AS2(    add     z, esp                      )
+    AS2(    add     z, edi                      )
 
 
 /*  Some macro stuff, but older gas ( < 2,16 ) can't process &, so do by hand
@@ -270,88 +268,88 @@ void SHA::Transform()
 // ASMR1 = ASMR0 but use esp for W calcs
 
 #define ASMR1(v,w,x,y,z,i,W1,W2,W3,W4) \
-    AS2(    mov   esp, [edi - W1 * 4]           )   \
+    AS2(    mov   edi, [esp + W1 * 4]           )   \
     AS2(    mov   esi, x                        )   \
-    AS2(    xor   esp, [edi - W2 * 4]           )   \
+    AS2(    xor   edi, [esp + W2 * 4]           )   \
     AS2(    xor   esi, y                        )   \
-    AS2(    xor   esp, [edi - W3 * 4]           )   \
+    AS2(    xor   edi, [esp + W3 * 4]           )   \
     AS2(    and   esi, w                        )   \
-    AS2(    xor   esp, [edi - W4 * 4]           )   \
-    AS2(    rol   esp, 1                        )   \
+    AS2(    xor   edi, [esp + W4 * 4]           )   \
+    AS2(    rol   edi, 1                        )   \
     AS2(    xor   esi, y                        )   \
-    AS2(    mov   [edi - W1 * 4], esp           )   \
-    AS2(    lea     z, [esp + z + 0x5A827999]   )   \
-    AS2(    mov   esp, v                        )   \
-    AS2(    rol   esp, 5                        )   \
+    AS2(    mov   [esp + W1 * 4], edi           )   \
+    AS2(    lea     z, [edi + z + 0x5A827999]   )   \
+    AS2(    mov   edi, v                        )   \
+    AS2(    rol   edi, 5                        )   \
     AS2(    add     z, esi                      )   \
     AS2(    rol     w, 30                       )   \
-    AS2(    add     z, esp                      )
+    AS2(    add     z, edi                      )
 
 
 // ASMR2 = ASMR1 but f is xor, xor instead
 
 #define ASMR2(v,w,x,y,z,i,W1,W2,W3,W4) \
-    AS2(    mov   esp, [edi - W1 * 4]           )   \
+    AS2(    mov   edi, [esp + W1 * 4]           )   \
     AS2(    mov   esi, x                        )   \
-    AS2(    xor   esp, [edi - W2 * 4]           )   \
+    AS2(    xor   edi, [esp + W2 * 4]           )   \
     AS2(    xor   esi, y                        )   \
-    AS2(    xor   esp, [edi - W3 * 4]           )   \
+    AS2(    xor   edi, [esp + W3 * 4]           )   \
     AS2(    xor   esi, w                        )   \
-    AS2(    xor   esp, [edi - W4 * 4]           )   \
-    AS2(    rol   esp, 1                        )   \
+    AS2(    xor   edi, [esp + W4 * 4]           )   \
+    AS2(    rol   edi, 1                        )   \
     AS2(    add     z, esi                      )   \
-    AS2(    mov   [edi - W1 * 4], esp           )   \
-    AS2(    lea     z, [esp + z + 0x6ED9EBA1]   )   \
-    AS2(    mov   esp, v                        )   \
-    AS2(    rol   esp, 5                        )   \
+    AS2(    mov   [esp + W1 * 4], edi           )   \
+    AS2(    lea     z, [edi + z + 0x6ED9EBA1]   )   \
+    AS2(    mov   edi, v                        )   \
+    AS2(    rol   edi, 5                        )   \
     AS2(    rol     w, 30                       )   \
-    AS2(    add     z, esp                      )
+    AS2(    add     z, edi                      )
 
 
 // ASMR3 = ASMR2 but f is (x&y)|(z&(x|y))
 //               which is (w&x)|(y&(w|x))
 
 #define ASMR3(v,w,x,y,z,i,W1,W2,W3,W4) \
-    AS2(    mov   esp, [edi - W1 * 4]           )   \
+    AS2(    mov   edi, [esp + W1 * 4]           )   \
     AS2(    mov   esi, x                        )   \
-    AS2(    xor   esp, [edi - W2 * 4]           )   \
+    AS2(    xor   edi, [esp + W2 * 4]           )   \
     AS2(     or   esi, w                        )   \
-    AS2(    xor   esp, [edi - W3 * 4]           )   \
+    AS2(    xor   edi, [esp + W3 * 4]           )   \
     AS2(    and   esi, y                        )   \
-    AS2(    xor   esp, [edi - W4 * 4]           )   \
+    AS2(    xor   edi, [esp + W4 * 4]           )   \
     AS2(    movd  mm0, esi                      )   \
-    AS2(    rol   esp, 1                        )   \
+    AS2(    rol   edi, 1                        )   \
     AS2(    mov   esi, x                        )   \
-    AS2(    mov   [edi - W1 * 4], esp           )   \
+    AS2(    mov   [esp + W1 * 4], edi           )   \
     AS2(    and   esi, w                        )   \
-    AS2(    lea     z, [esp + z + 0x8F1BBCDC]   )   \
-    AS2(    movd  esp, mm0                      )   \
-    AS2(     or   esi, esp                      )   \
-    AS2(    mov   esp, v                        )   \
-    AS2(    rol   esp, 5                        )   \
+    AS2(    lea     z, [edi + z + 0x8F1BBCDC]   )   \
+    AS2(    movd  edi, mm0                      )   \
+    AS2(     or   esi, edi                      )   \
+    AS2(    mov   edi, v                        )   \
+    AS2(    rol   edi, 5                        )   \
     AS2(    add     z, esi                      )   \
     AS2(    rol     w, 30                       )   \
-    AS2(    add     z, esp                      )
+    AS2(    add     z, edi                      )
 
 
 // ASMR4 = ASMR2 but different constant
 
 #define ASMR4(v,w,x,y,z,i,W1,W2,W3,W4) \
-    AS2(    mov   esp, [edi - W1 * 4]           )   \
+    AS2(    mov   edi, [esp + W1 * 4]           )   \
     AS2(    mov   esi, x                        )   \
-    AS2(    xor   esp, [edi - W2 * 4]           )   \
+    AS2(    xor   edi, [esp + W2 * 4]           )   \
     AS2(    xor   esi, y                        )   \
-    AS2(    xor   esp, [edi - W3 * 4]           )   \
+    AS2(    xor   edi, [esp + W3 * 4]           )   \
     AS2(    xor   esi, w                        )   \
-    AS2(    xor   esp, [edi - W4 * 4]           )   \
-    AS2(    rol   esp, 1                        )   \
+    AS2(    xor   edi, [esp + W4 * 4]           )   \
+    AS2(    rol   edi, 1                        )   \
     AS2(    add     z, esi                      )   \
-    AS2(    mov   [edi - W1 * 4], esp           )   \
-    AS2(    lea     z, [esp + z + 0xCA62C1D6]   )   \
-    AS2(    mov   esp, v                        )   \
-    AS2(    rol   esp, 5                        )   \
+    AS2(    mov   [esp + W1 * 4], edi           )   \
+    AS2(    lea     z, [edi + z + 0xCA62C1D6]   )   \
+    AS2(    mov   edi, v                        )   \
+    AS2(    rol   edi, 5                        )   \
     AS2(    rol     w, 30                       )   \
-    AS2(    add     z, esp                      )
+    AS2(    add     z, edi                      )
 
 
 #ifdef _MSC_VER
@@ -374,9 +372,10 @@ void SHA::AsmTransform(const byte* data, word32 times)
         AS2(    mov   eax, DWORD PTR [ebp + 16]     )
 
     #define EPILOG()  \
-        AS2(    movd  esp, mm6                  )   \
+        AS2(    movd  ebp, mm6                  )   \
         AS2(    movd  esi, mm5                  )   \
         AS2(    movd  ebx, mm4                  )   \
+        AS2(    mov   esp, ebp                  )   \
         AS2(    movd  edi, mm3                  )   \
         AS1(    emms                            )   \
         asm(".att_syntax");
@@ -408,9 +407,17 @@ void SHA::AsmTransform(const byte* data, word32 times)
     PROLOG()
 
     AS2(    mov   esi, ecx              )
-    AS2(    add   esi, 16               )   // digest_[0]
+
+    #ifdef OLD_GCC_OFFSET
+        AS2(    add   esi, 20               )   // digest_[0]
+    #else
+        AS2(    add   esi, 16               )   // digest_[0]
+    #endif
+
     AS2(    movd  mm2, eax              )   // store times_
     AS2(    movd  mm1, esi              )   // store digest_
+
+    AS2(    sub   esp, 68               )   // make room on stack
 
 AS1( loopStart: )
 
@@ -427,10 +434,10 @@ AS1( loopStart: )
     AS1(    bswap ecx   )
     AS1(    bswap edx   )
 
-    AS2(    mov   [ebp -  4], eax   )
-    AS2(    mov   [ebp -  8], ebx   )
-    AS2(    mov   [ebp - 12], ecx   )
-    AS2(    mov   [ebp - 16], edx   )
+    AS2(    mov   [esp],      eax   )
+    AS2(    mov   [esp +  4], ebx   )
+    AS2(    mov   [esp +  8], ecx   )
+    AS2(    mov   [esp + 12], edx   )
 
     // part 2
     AS2(    mov   eax, [edi + 16]   )
@@ -443,10 +450,10 @@ AS1( loopStart: )
     AS1(    bswap ecx   )
     AS1(    bswap edx   )
 
-    AS2(    mov   [ebp - 20], eax   )
-    AS2(    mov   [ebp - 24], ebx   )
-    AS2(    mov   [ebp - 28], ecx   )
-    AS2(    mov   [ebp - 32], edx   )
+    AS2(    mov   [esp + 16], eax   )
+    AS2(    mov   [esp + 20], ebx   )
+    AS2(    mov   [esp + 24], ecx   )
+    AS2(    mov   [esp + 28], edx   )
 
 
     // part 3
@@ -460,10 +467,10 @@ AS1( loopStart: )
     AS1(    bswap ecx   )
     AS1(    bswap edx   )
 
-    AS2(    mov   [ebp - 36], eax   )
-    AS2(    mov   [ebp - 40], ebx   )
-    AS2(    mov   [ebp - 44], ecx   )
-    AS2(    mov   [ebp - 48], edx   )
+    AS2(    mov   [esp + 32], eax   )
+    AS2(    mov   [esp + 36], ebx   )
+    AS2(    mov   [esp + 40], ecx   )
+    AS2(    mov   [esp + 44], edx   )
 
 
     // part 4
@@ -477,15 +484,12 @@ AS1( loopStart: )
     AS1(    bswap ecx   )
     AS1(    bswap edx   )
 
-    AS2(    mov   [ebp - 52], eax   )
-    AS2(    mov   [ebp - 56], ebx   )
-    AS2(    mov   [ebp - 60], ecx   )
-    AS2(    mov   [ebp - 64], edx   )
+    AS2(    mov   [esp + 48], eax   )
+    AS2(    mov   [esp + 52], ebx   )
+    AS2(    mov   [esp + 56], ecx   )
+    AS2(    mov   [esp + 60], edx   )
 
-    AS2(    mov   [ebp - 68], edi   )   // store edi for end
-
-    // set edi to beginning of byte reversed input
-    AS2(    lea   edi, [ebp - 4]        ) 
+    AS2(    mov   [esp + 64], edi   )   // store edi for end
 
     // read from digest_
     AS2(    mov   eax, [esi]            )   // a1
@@ -493,10 +497,6 @@ AS1( loopStart: )
     AS2(    mov   ecx, [esi +  8]       )   // c1
     AS2(    mov   edx, [esi + 12]       )   // d1
     AS2(    mov   ebp, [esi + 16]       )   // e1
-
-    // setup
-    AS2(    mov   esi, ecx              )
-    AS2(    mov   esp, [edi]            )
 
 
     ASMR0(eax, ebx, ecx, edx, ebp,  0)
@@ -595,16 +595,15 @@ AS1( loopStart: )
     AS2(    add   [esi + 16], ebp       )
 
     // setup next round
-    AS2(    movd  ebp, mm6              )   // original ebp
-    AS2(    movd  esp, mm2              )   // times
+    AS2(    movd  ebp, mm2              )   // times
  
-    AS2(    mov   edi, DWORD PTR [ebp - 68] )   // data
+    AS2(    mov   edi, DWORD PTR [esp + 64] )   // data
     
     AS2(    add   edi, 64               )   // next round of data
-    AS2(    mov   [ebp - 68], edi       )   // restore
+    AS2(    mov   [esp + 64], edi       )   // restore
     
-    AS1(    dec   esp                   )
-    AS2(    movd  mm2, esp              )
+    AS1(    dec   ebp                   )
+    AS2(    movd  mm2, ebp              )
     AS1(    jnz   loopStart             )
 
 

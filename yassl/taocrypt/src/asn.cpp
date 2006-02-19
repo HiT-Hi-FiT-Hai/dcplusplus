@@ -186,7 +186,7 @@ PublicKey::PublicKey(const byte* k, word32 s) : key_(0), sz_(0)
 void PublicKey::SetSize(word32 s)
 {
     sz_ = s;
-    key_ = new byte[sz_];
+    key_ = NEW_TC byte[sz_];
 }
 
 
@@ -198,7 +198,7 @@ void PublicKey::SetKey(const byte* k)
 
 void PublicKey::AddToEnd(const byte* data, word32 len)
 {
-    mySTL::auto_ptr<byte> tmp(new byte[sz_ + len], tcArrayDelete);
+    mySTL::auto_ptr<byte> tmp(NEW_TC byte[sz_ + len], tcArrayDelete);
 
     memcpy(tmp.get(), key_, sz_);
     memcpy(tmp.get() + sz_, data, len);
@@ -217,7 +217,7 @@ Signer::Signer(const byte* k, word32 kSz, const char* n, const byte* h)
 {
     if (n) {
         int sz = strlen(n);
-        name_ = new char[sz + 1];
+        name_ = NEW_TC char[sz + 1];
         memcpy(name_, n, sz);
         name_[sz] = 0;
     }
@@ -422,9 +422,9 @@ void DH_Decoder::Decode(DH& key)
 
 
 CertDecoder::CertDecoder(Source& s, bool decode, SignerList* signers,
-                         CertType ct)
+                         bool noVerify, CertType ct)
     : BER_Decoder(s), certBegin_(0), sigIndex_(0), sigLength_(0),
-      signature_(0), issuer_(0), subject_(0)
+      signature_(0), issuer_(0), subject_(0), verify_(!noVerify)
 { 
     if (decode)
         Decode(signers, ct); 
@@ -476,14 +476,14 @@ void CertDecoder::Decode(SignerList* signers, CertType ct)
 
     if (ct == CA) {
         if ( memcmp(issuerHash_, subjectHash_, SHA::DIGEST_SIZE) == 0 ) {
-            if (!ValidateSelfSignature())
+            if (!ValidateSelfSignature() && verify_)
                 source_.SetError(SIG_CONFIRM_E);
         }
         else
-            if (!ValidateSignature(signers))
+            if (!ValidateSignature(signers) && verify_)
                 source_.SetError(SIG_OTHER_E);
     }
-    else if (!ValidateSignature(signers))
+    else if (!ValidateSignature(signers) && verify_)
         source_.SetError(SIG_OTHER_E);
 }
 
@@ -636,7 +636,7 @@ word32 CertDecoder::GetSignature()
     }
     sigLength_--;
 
-    signature_ = new byte[sigLength_];
+    signature_ = NEW_TC byte[sigLength_];
     memcpy(signature_, source_.get_current(), sigLength_);
     source_.advance(sigLength_);
 
@@ -657,7 +657,7 @@ word32 CertDecoder::GetDigest()
 
     sigLength_ = GetLength(source_);
 
-    signature_ = new byte[sigLength_];
+    signature_ = NEW_TC byte[sigLength_];
     memcpy(signature_, source_.get_current(), sigLength_);
     source_.advance(sigLength_);
 
@@ -697,7 +697,7 @@ void CertDecoder::GetName(NameType nt)
 
             if (id == COMMON_NAME) {
                 char*& ptr = (nt == ISSUER) ? issuer_ : subject_;
-                ptr = new char[strLen + 1];
+                ptr = NEW_TC char[strLen + 1];
                 memcpy(ptr, source_.get_current(), strLen);
                 ptr[strLen] = 0;
             }
@@ -739,7 +739,7 @@ void CertDecoder::GetDate(DateType dt)
     memcpy(date, source_.get_current(), length);
     source_.advance(length);
 
-    if (!ValidateDate(date, b, dt))
+    if (!ValidateDate(date, b, dt) && verify_)
         if (dt == BEFORE)
             source_.SetError(BEFORE_DATE_E);
         else
@@ -814,15 +814,15 @@ bool CertDecoder::ConfirmSignature(Source& pub)
     mySTL::auto_ptr<HASH> hasher(tcDelete);
 
     if (signatureOID_ == MD5wRSA) {
-        hasher.reset(new MD5);
+        hasher.reset(NEW_TC MD5);
         ht = MD5h;
     }
     else if (signatureOID_ == MD2wRSA) {
-        hasher.reset(new MD2);
+        hasher.reset(NEW_TC MD2);
         ht = MD2h;
     }
     else if (signatureOID_ == SHAwRSA || signatureOID_ == SHAwDSA) {
-        hasher.reset(new SHA);
+        hasher.reset(NEW_TC SHA);
         ht = SHAh;
     }
     else {

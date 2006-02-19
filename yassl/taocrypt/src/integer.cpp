@@ -114,7 +114,7 @@ CPP_TYPENAME AllocatorBase<T>::pointer AlignedAllocator<T>::allocate(
         assert(IsAlignedOn(p, 16));
         return (T*)p;
     }
-    return new T[n];
+    return new (tc) T[n];
 }
 
 

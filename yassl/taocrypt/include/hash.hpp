@@ -76,6 +76,7 @@ protected:
 };
 
 
+
 } // namespace
 
 #endif // TAO_CRYPT_HASH_HPP

@@ -184,7 +184,7 @@ class PublicKey {
     word32 sz_;
 public:
     explicit PublicKey(const byte* k = 0, word32 s = 0);
-    ~PublicKey() { tcArrayDelete(key_); }
+    ~PublicKey() { tcDelete(key_); }
 
     const byte* GetKey() const { return key_; }
     word32      size()   const { return sz_; }
@@ -237,7 +237,7 @@ public:
     enum CertType { CA, USER };
 
     explicit CertDecoder(Source&, bool decode = true, SignerList* sl = 0,
-                         CertType ct = USER);
+                         bool noVerify = false, CertType ct = USER);
     ~CertDecoder();
 
     const PublicKey& GetPublicKey()  const { return key_; }
@@ -259,6 +259,7 @@ private:
     byte*     signature_;
     char*     issuer_;                  // CommonName
     char*     subject_;                 // CommonName
+    bool      verify_;                  // Default to yes, but could be off
 
     void   ReadHeader();
     void   Decode(SignerList*, CertType);

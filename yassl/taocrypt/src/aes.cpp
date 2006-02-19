@@ -470,6 +470,7 @@ void AES::decrypt(const byte* inBlock, const byte* xorBlock,
             asm(".intel_syntax noprefix"); \
             AS2(    movd  mm3, edi                      )   \
             AS2(    movd  mm4, ebx                      )   \
+            AS2(    sub   esp, 4                        )   \
             AS2(    movd  mm7, ebp                      )   \
             AS2(    mov   [ebp - 4], esi                )   \
             AS2(    mov   ecx, DWORD PTR [ebp +  8]     )   \
@@ -477,9 +478,9 @@ void AES::decrypt(const byte* inBlock, const byte* xorBlock,
             AS2(    mov   ebp, DWORD PTR [ebp + 20]     )
 
         #define EPILOG()  \
-            AS2(    movd esp, mm7                   )   \
-            AS2(    mov  esi, [ebp - 4]             )   \
+            AS2(    mov  esp, ebp                   )   \
             AS2(    movd ebx, mm4                   )   \
+            AS2(    mov  esi, [ebp - 4]             )   \
             AS2(    movd edi, mm3                   )   \
             AS1(    emms                            )   \
             asm(".att_syntax");
@@ -492,6 +493,7 @@ void AES::decrypt(const byte* inBlock, const byte* xorBlock,
             AS2(    mov   ebp, esp                      )   \
             AS2(    movd  mm3, edi                      )   \
             AS2(    movd  mm4, ebx                      )   \
+            AS2(    sub   esp, 4                        )   \
             AS2(    movd  mm7, ebp                      )   \
             AS2(    mov   [ebp - 4], esi                )   \
             AS2(    mov   esi, DWORD PTR [ebp +  8]     )   \
@@ -519,32 +521,32 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
 
     PROLOG()
 
-    AS2(    mov   edx, DWORD PTR [ecx + 56]     )   // rounds
-    AS2(    lea   edi, [ecx + 60]               )   // rk
+    #ifdef OLD_GCC_OFFSET
+        AS2(    mov   edx, DWORD PTR [ecx + 60]     )   // rounds
+        AS2(    lea   edi, [ecx + 64]               )   // rk
+    #else
+        AS2(    mov   edx, DWORD PTR [ecx + 56]     )   // rounds
+        AS2(    lea   edi, [ecx + 60]               )   // rk
+    #endif
 
     AS1(    dec   edx                           )
     AS2(    movd  mm6, edi                      )   // save rk
     AS2(    movd  mm5, edx                      )   // save rounds
   
     AS2(    mov   eax, DWORD PTR [esi]                                  )
-    AS1(    bswap eax                                                   )
-    AS2(    mov   edx, DWORD PTR [edi]                                  )
-    AS2(    xor   eax, edx                      )   // s0
-
     AS2(    mov   ebx, DWORD PTR [esi + 4]                              )
-    AS1(    bswap ebx                                                   )
-    AS2(    mov   edx, DWORD PTR [edi + 4]                              )
-    AS2(    xor   ebx, edx                      )   // s1
-
     AS2(    mov   ecx, DWORD PTR [esi + 8]                              )
-    AS1(    bswap ecx                                                   )
-    AS2(    mov   edx, DWORD PTR [edi + 8]                              )
-    AS2(    xor   ecx, edx                      )   //  s2
-
     AS2(    mov   edx, DWORD PTR [esi + 12]                             )
+
+    AS1(    bswap eax                                                   )
+    AS1(    bswap ebx                                                   )
+    AS1(    bswap ecx                                                   )
     AS1(    bswap edx                                                   )
-    AS2(    mov   esp, DWORD PTR [edi + 12]                             )
-    AS2(    xor   edx, esp                      )   //  s3
+
+    AS2(    xor   eax, DWORD PTR [edi]               )   // s0
+    AS2(    xor   ebx, DWORD PTR [edi +  4]          )   // s1
+    AS2(    xor   ecx, DWORD PTR [edi +  8]          )   // s2
+    AS2(    xor   edx, DWORD PTR [edi + 12]          )   // s3
 
     AS1(loop1:                                                          )
             /* Put0 (mm0) =  
@@ -556,20 +558,20 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
        
     AS2(    mov   esi, eax                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + esi*4]                          )
+    AS2(    mov   esi, DWORD PTR [ebp + esi*4]                          )
                                                     
     AS2(    mov   edi, ebx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    xor   esp, DWORD PTR [ebp + 1024 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 1024 + edi*4]                   )
 
-    AS2(    movzx esi, ch                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 2048 + esi*4]                   )
+    AS2(    movzx edi, ch                                               )
+    AS2(    xor   esi, DWORD PTR [ebp + 2048 + edi*4]                   )
 
     AS2(    movzx edi, dl                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 3072 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 3072 + edi*4]                   )
 
-    AS2(    movd  mm0, esp                                              )
+    AS2(    movd  mm0, esi                                              )
 
              /* Put1 (mm1) =  
                 Te0[get1,rs 24] ^
@@ -580,20 +582,20 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
 
     AS2(    mov   esi, ebx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + esi*4]                          )
+    AS2(    mov   esi, DWORD PTR [ebp + esi*4]                          )
 
     AS2(    mov   edi, ecx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    xor   esp, DWORD PTR [ebp + 1024 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 1024 + edi*4]                   )
 
-    AS2(    movzx esi, dh                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 2048 + esi*4]                   )
+    AS2(    movzx edi, dh                                               )
+    AS2(    xor   esi, DWORD PTR [ebp + 2048 + edi*4]                   )
 
     AS2(    movzx edi, al                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 3072 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 3072 + edi*4]                   )
 
-    AS2(    movd  mm1, esp                                              )
+    AS2(    movd  mm1, esi                                              )
 
 
              /* Put2 (mm2) =  
@@ -605,20 +607,20 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
 
     AS2(    mov   esi, ecx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + esi*4]                          )
+    AS2(    mov   esi, DWORD PTR [ebp + esi*4]                          )
 
     AS2(    mov   edi, edx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    xor   esp, DWORD PTR [ebp + 1024 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 1024 + edi*4]                   )
 
-    AS2(    movzx esi, ah                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 2048 + esi*4]                   )
+    AS2(    movzx edi, ah                                               )
+    AS2(    xor   esi, DWORD PTR [ebp + 2048 + edi*4]                   )
 
     AS2(    movzx edi, bl                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 3072 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 3072 + edi*4]                   )
 
-    AS2(    movd  mm2, esp                                              )
+    AS2(    movd  mm2, esi                                              )
 
              /* Put3 (edx) =  
                 Te0[get3,rs 24] ^
@@ -644,20 +646,20 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
 
             // xOr
 
-    AS2(    movd  esi, mm6                      )   //  rk
-    AS2(    add   esi, 16                                               )
-    AS2(    movd  mm6, esi                      )   //  save back
+    AS2(    movd   esi, mm6                      )   //  rk
 
     AS2(    movd   eax, mm0                                             )
+    AS2(    add    esi, 16                                              )
     AS2(    movd   ebx, mm1                                             )
+    AS2(    movd   mm6, esi                      )   //  save back
     AS2(    movd   ecx, mm2                                             )
 
     AS2(    xor   eax, DWORD PTR [esi]                                  )
     AS2(    xor   ebx, DWORD PTR [esi +  4]                             )
+    AS2(    movd  edi, mm5                                              )
     AS2(    xor   ecx, DWORD PTR [esi +  8]                             )
     AS2(    xor   edx, DWORD PTR [esi + 12]                             )
 
-    AS2(    movd  edi, mm5                                              )
     AS1(    dec   edi                                                   )
     AS2(    movd  mm5, edi                                              )
 
@@ -673,27 +675,27 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
             */
     AS2(    mov   esi, eax                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + 4096 + esi*4]                   )
-    AS2(    and   esp, 4278190080                                       )
+    AS2(    mov   esi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    and   esi, 4278190080                                       )
 
     AS2(    mov   edi, ebx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 16711680                                         )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 16711680                                         )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movzx esi, ch                                               )
-    AS2(    mov   edi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    movzx edi, ch                                               )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
     AS2(    and   edi, 65280                                            )
-    AS2(    xor   esp, edi                                              )
+    AS2(    xor   esi, edi                                              )
 
     AS2(    movzx edi, dl                                               )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 255                                              )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 255                                              )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movd  mm0, esp                                              )
+    AS2(    movd  mm0, esi                                              )
 
             /*
             Put1 (mm1) =
@@ -704,27 +706,27 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
             */
     AS2(    mov   esi, ebx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + 4096 + esi*4]                   )
-    AS2(    and   esp, 4278190080                                       )
+    AS2(    mov   esi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    and   esi, 4278190080                                       )
 
     AS2(    mov   edi, ecx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 16711680                                         )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 16711680                                         )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movzx esi, dh                                               )
-    AS2(    mov   edi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    movzx edi, dh                                               )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
     AS2(    and   edi, 65280                                            )
-    AS2(    xor   esp, edi                                              )
+    AS2(    xor   esi, edi                                              )
 
     AS2(    movzx edi, al                                               )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 255                                              )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 255                                              )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movd  mm1, esp                                              )
+    AS2(    movd  mm1, esi                                              )
 
             /*
             Put2 (mm2) =
@@ -735,27 +737,27 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
             */
     AS2(    mov   esi, ecx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + 4096 + esi*4]                   )
-    AS2(    and   esp, 4278190080                                       )
+    AS2(    mov   esi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    and   esi, 4278190080                                       )
 
     AS2(    mov   edi, edx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 16711680                                         )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 16711680                                         )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movzx esi, ah                                               )
-    AS2(    mov   edi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    movzx edi, ah                                               )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
     AS2(    and   edi, 65280                                            )
-    AS2(    xor   esp, edi                                              )
+    AS2(    xor   esi, edi                                              )
 
     AS2(    movzx edi, bl                                               )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 255                                              )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 255                                              )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movd  mm2, esp                                              )
+    AS2(    movd  mm2, esi                                              )
 
             /*
             Put3 (edx) =
@@ -788,11 +790,10 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
 
     
             // xOr
-    AS2(    movd  esi, mm6                      )   //  rk
-    AS2(    add   esi, 16                                               )
-
     AS2(    movd   eax, mm0                                             )
+    AS2(    movd   esi, mm6                      )   //  rk
     AS2(    movd   ebx, mm1                                             )
+    AS2(    add    esi, 16                                               )
     AS2(    movd   ecx, mm2                                             )
 
     AS2(    xor   eax, DWORD PTR [esi]                                  )
@@ -806,8 +807,6 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
             // swap
     AS1(    bswap eax                                                   )
     AS1(    bswap ebx                                                   )
-    AS1(    bswap ecx                                                   )
-    AS1(    bswap edx                                                   )
 
             // store
     #ifdef __GNUC__
@@ -815,6 +814,10 @@ void AES::AsmEncrypt(const byte* inBlock, byte* outBlock, void* boxes) const
     #else
         AS2(    mov esi, DWORD PTR [ebp + 12]       )   //  outBlock
     #endif
+
+    AS1(    bswap ecx                                                   )
+    AS1(    bswap edx                                                   )
+
     AS2(    mov DWORD PTR [esi],      eax                               )
     AS2(    mov DWORD PTR [esi +  4], ebx                               )
     AS2(    mov DWORD PTR [esi +  8], ecx                               )
@@ -833,32 +836,33 @@ void AES::AsmDecrypt(const byte* inBlock, byte* outBlock, void* boxes) const
 
     PROLOG()
 
-    AS2(    mov   edx, DWORD PTR [ecx + 56]     )   // rounds
-    AS2(    lea   edi, [ecx + 60]               )   // rk 
+    #ifdef OLD_GCC_OFFSET
+        AS2(    mov   edx, DWORD PTR [ecx + 60]     )   // rounds
+        AS2(    lea   edi, [ecx + 64]               )   // rk 
+    #else
+        AS2(    mov   edx, DWORD PTR [ecx + 56]     )   // rounds
+        AS2(    lea   edi, [ecx + 60]               )   // rk 
+    #endif
    
     AS1(    dec   edx                           )
     AS2(    movd  mm6, edi                      )   // save rk
     AS2(    movd  mm5, edx                      )   // save rounds
-  
+
     AS2(    mov   eax, DWORD PTR [esi]                                  )
-    AS1(    bswap eax                                                   )
-    AS2(    mov   edx, DWORD PTR [edi]                                  )
-    AS2(    xor   eax, edx                      )   // s0
-
     AS2(    mov   ebx, DWORD PTR [esi + 4]                              )
-    AS1(    bswap ebx                                                   )
-    AS2(    mov   edx, DWORD PTR [edi + 4]                              )
-    AS2(    xor   ebx, edx                      )   // s1
-
     AS2(    mov   ecx, DWORD PTR [esi + 8]                              )
-    AS1(    bswap ecx                                                   )
-    AS2(    mov   edx, DWORD PTR [edi + 8]                              )
-    AS2(    xor   ecx, edx                      )   //  s2
-
     AS2(    mov   edx, DWORD PTR [esi + 12]                             )
+
+    AS1(    bswap eax                                                   )
+    AS1(    bswap ebx                                                   )
+    AS1(    bswap ecx                                                   )
     AS1(    bswap edx                                                   )
-    AS2(    mov   esp, DWORD PTR [edi + 12]                             )
-    AS2(    xor   edx, esp                      )   //  s3
+
+    AS2(    xor   eax, DWORD PTR [edi]               )   // s0
+    AS2(    xor   ebx, DWORD PTR [edi +  4]          )   // s1
+    AS2(    xor   ecx, DWORD PTR [edi +  8]          )   // s2
+    AS2(    xor   edx, DWORD PTR [edi + 12]          )   // s3
+
 
     AS1(loop2:                                                          )
        /*   Put0 (mm0) =
@@ -869,20 +873,20 @@ void AES::AsmDecrypt(const byte* inBlock, byte* outBlock, void* boxes) const
         */
     AS2(    mov   esi, eax                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + esi*4]                          )
+    AS2(    mov   esi, DWORD PTR [ebp + esi*4]                          )
                                                     
     AS2(    mov   edi, edx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    xor   esp, DWORD PTR [ebp + 1024 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 1024 + edi*4]                   )
 
-    AS2(    movzx esi, ch                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 2048 + esi*4]                   )
+    AS2(    movzx edi, ch                                               )
+    AS2(    xor   esi, DWORD PTR [ebp + 2048 + edi*4]                   )
 
     AS2(    movzx edi, bl                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 3072 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 3072 + edi*4]                   )
 
-    AS2(    movd  mm0, esp                                              )
+    AS2(    movd  mm0, esi                                              )
 
       /*    Put1 (mm1) =
             Td0[GETBYTE(get1, rs24)] ^
@@ -892,20 +896,20 @@ void AES::AsmDecrypt(const byte* inBlock, byte* outBlock, void* boxes) const
         */
     AS2(    mov   esi, ebx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + esi*4]                          )
+    AS2(    mov   esi, DWORD PTR [ebp + esi*4]                          )
                                                     
     AS2(    mov   edi, eax                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    xor   esp, DWORD PTR [ebp + 1024 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 1024 + edi*4]                   )
 
-    AS2(    movzx esi, dh                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 2048 + esi*4]                   )
+    AS2(    movzx edi, dh                                               )
+    AS2(    xor   esi, DWORD PTR [ebp + 2048 + edi*4]                   )
 
     AS2(    movzx edi, cl                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 3072 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 3072 + edi*4]                   )
 
-    AS2(    movd  mm1, esp                                              )
+    AS2(    movd  mm1, esi                                              )
 
       /*    Put2 (mm2) =
             Td0[GETBYTE(get2, rs24)] ^
@@ -915,20 +919,20 @@ void AES::AsmDecrypt(const byte* inBlock, byte* outBlock, void* boxes) const
       */
     AS2(    mov   esi, ecx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + esi*4]                          )
+    AS2(    mov   esi, DWORD PTR [ebp + esi*4]                          )
                                                     
     AS2(    mov   edi, ebx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    xor   esp, DWORD PTR [ebp + 1024 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 1024 + edi*4]                   )
 
-    AS2(    movzx esi, ah                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 2048 + esi*4]                   )
+    AS2(    movzx edi, ah                                               )
+    AS2(    xor   esi, DWORD PTR [ebp + 2048 + edi*4]                   )
 
     AS2(    movzx edi, dl                                               )
-    AS2(    xor   esp, DWORD PTR [ebp + 3072 + edi*4]                   )
+    AS2(    xor   esi, DWORD PTR [ebp + 3072 + edi*4]                   )
 
-    AS2(    movd  mm2, esp                                              )
+    AS2(    movd  mm2, esi                                              )
 
       /*    Put3 (edx) =
             Td0[GETBYTE(get3, rs24)] ^
@@ -983,27 +987,27 @@ void AES::AsmDecrypt(const byte* inBlock, byte* outBlock, void* boxes) const
             */
     AS2(    mov   esi, eax                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + 4096 + esi*4]                   )
-    AS2(    and   esp, 4278190080                                       )
+    AS2(    mov   esi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    and   esi, 4278190080                                       )
 
     AS2(    mov   edi, edx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 16711680                                         )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 16711680                                         )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movzx esi, ch                                               )
-    AS2(    mov   edi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    movzx edi, ch                                               )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
     AS2(    and   edi, 65280                                            )
-    AS2(    xor   esp, edi                                              )
+    AS2(    xor   esi, edi                                              )
 
     AS2(    movzx edi, bl                                               )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 255                                              )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 255                                              )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movd  mm0, esp                                              )
+    AS2(    movd  mm0, esi                                              )
 
             /*
             Put1 (mm1) =
@@ -1014,27 +1018,27 @@ void AES::AsmDecrypt(const byte* inBlock, byte* outBlock, void* boxes) const
             */
     AS2(    mov   esi, ebx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + 4096 + esi*4]                   )
-    AS2(    and   esp, 4278190080                                       )
+    AS2(    mov   esi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    and   esi, 4278190080                                       )
 
     AS2(    mov   edi, eax                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 16711680                                         )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 16711680                                         )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movzx esi, dh                                               )
-    AS2(    mov   edi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    movzx edi, dh                                               )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
     AS2(    and   edi, 65280                                            )
-    AS2(    xor   esp, edi                                              )
+    AS2(    xor   esi, edi                                              )
 
     AS2(    movzx edi, cl                                               )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 255                                              )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 255                                              )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movd  mm1, esp                                              )
+    AS2(    movd  mm1, esi                                              )
 
             /*
             Put2 (mm2) =
@@ -1045,27 +1049,27 @@ void AES::AsmDecrypt(const byte* inBlock, byte* outBlock, void* boxes) const
             */
     AS2(    mov   esi, ecx                                              )
     AS2(    shr   esi, 24                                               )
-    AS2(    mov   esp, DWORD PTR [ebp + 4096 + esi*4]                   )
-    AS2(    and   esp, 4278190080                                       )
+    AS2(    mov   esi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    and   esi, 4278190080                                       )
 
     AS2(    mov   edi, ebx                                              )
     AS2(    shr   edi, 16                                               )
     AS2(    and   edi, 255                                              )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 16711680                                         )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 16711680                                         )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movzx esi, ah                                               )
-    AS2(    mov   edi, DWORD PTR [ebp + 4096 + esi*4]                   )
+    AS2(    movzx edi, ah                                               )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
     AS2(    and   edi, 65280                                            )
-    AS2(    xor   esp, edi                                              )
+    AS2(    xor   esi, edi                                              )
 
     AS2(    movzx edi, dl                                               )
-    AS2(    mov   esi, DWORD PTR [ebp + 4096 + edi*4]                   )
-    AS2(    and   esi, 255                                              )
-    AS2(    xor   esp, esi                                              )
+    AS2(    mov   edi, DWORD PTR [ebp + 4096 + edi*4]                   )
+    AS2(    and   edi, 255                                              )
+    AS2(    xor   esi, edi                                              )
 
-    AS2(    movd  mm2, esp                                              )
+    AS2(    movd  mm2, esi                                              )
 
             /*
             Put3 (edx) =

@@ -612,10 +612,11 @@ void DES_EDE3::ProcessAndXorBlock(const byte* in, const byte* xOr,
 
    uses ecx, esi, and edi
 */
-#define DesRound() {\
+#define DesRound() \
     AS2(    mov   ecx,  ebx                     )\
+    AS2(    mov   esi,  DWORD PTR [edx]         )\
     AS2(    ror   ecx,  4                       )\
-    AS2(    xor   ecx,  DWORD PTR [edx]         )\
+    AS2(    xor   ecx,  esi                     )\
     AS2(    and   ecx,  0x3f3f3f3f              )\
     AS2(    movzx esi,  cl                      )\
     AS2(    movzx edi,  ch                      )\
@@ -623,11 +624,12 @@ void DES_EDE3::ProcessAndXorBlock(const byte* in, const byte* xOr,
     AS2(    shr   ecx,  16                      )\
     AS2(    xor   eax,  [ebp + edi*4 + 4*256]   )\
     AS2(    movzx esi,  cl                      )\
-    AS2(    xor   eax,  [ebp + esi*4 + 2*256]   )\
     AS2(    movzx edi,  ch                      )\
+    AS2(    xor   eax,  [ebp + esi*4 + 2*256]   )\
+    AS2(    mov   esi,  DWORD PTR [edx + 4]     )\
     AS2(    xor   eax,  [ebp + edi*4]           )\
     AS2(    mov   ecx,  ebx                     )\
-    AS2(    xor   ecx,  DWORD PTR [edx + 4]     )\
+    AS2(    xor   ecx,  esi                     )\
     AS2(    and   ecx,  0x3f3f3f3f              )\
     AS2(    movzx esi,  cl                      )\
     AS2(    movzx edi,  ch                      )\
@@ -635,12 +637,13 @@ void DES_EDE3::ProcessAndXorBlock(const byte* in, const byte* xOr,
     AS2(    shr   ecx,  16                      )\
     AS2(    xor   eax,  [ebp + edi*4 + 5*256]   )\
     AS2(    movzx esi,  cl                      )\
-    AS2(    xor   eax,  [ebp + esi*4 + 3*256]   )\
     AS2(    movzx edi,  ch                      )\
+    AS2(    xor   eax,  [ebp + esi*4 + 3*256]   )\
+    AS2(    mov   esi,  DWORD PTR [edx + 8]     )\
     AS2(    xor   eax,  [ebp + edi*4 + 1*256]   )\
     AS2(    mov   ecx,  eax                     )\
     AS2(    ror   ecx,  4                       )\
-    AS2(    xor   ecx,  DWORD PTR [edx + 8]     )\
+    AS2(    xor   ecx,  esi                     )\
     AS2(    and   ecx,  0x3f3f3f3f              )\
     AS2(    movzx esi,  cl                      )\
     AS2(    movzx edi,  ch                      )\
@@ -648,11 +651,12 @@ void DES_EDE3::ProcessAndXorBlock(const byte* in, const byte* xOr,
     AS2(    shr   ecx,  16                      )\
     AS2(    xor   ebx,  [ebp + edi*4 + 4*256]   )\
     AS2(    movzx esi,  cl                      )\
-    AS2(    xor   ebx,  [ebp + esi*4 + 2*256]   )\
     AS2(    movzx edi,  ch                      )\
+    AS2(    xor   ebx,  [ebp + esi*4 + 2*256]   )\
+    AS2(    mov   esi,  DWORD PTR [edx + 12]    )\
     AS2(    xor   ebx,  [ebp + edi*4]           )\
     AS2(    mov   ecx,  eax                     )\
-    AS2(    xor   ecx,  DWORD PTR [edx + 12]    )\
+    AS2(    xor   ecx,  esi                     )\
     AS2(    and   ecx,  0x3f3f3f3f              )\
     AS2(    movzx esi,  cl                      )\
     AS2(    movzx edi,  ch                      )\
@@ -660,10 +664,10 @@ void DES_EDE3::ProcessAndXorBlock(const byte* in, const byte* xOr,
     AS2(    shr   ecx,  16                      )\
     AS2(    xor   ebx,  [ebp + edi*4 + 5*256]   )\
     AS2(    movzx esi,  cl                      )\
-    AS2(    xor   ebx,  [ebp + esi*4 + 3*256]   )\
     AS2(    movzx edi,  ch                      )\
-    AS2(    xor   ebx,  [ebp + edi*4 + 1*256]   )\
-    AS2(    add   edx,  16                      ) }
+    AS2(    xor   ebx,  [ebp + esi*4 + 3*256]   )\
+    AS2(    add   edx,  16                      )\
+    AS2(    xor   ebx,  [ebp + edi*4 + 1*256]   )
 
 
 #ifdef _MSC_VER
@@ -725,7 +729,12 @@ void DES_EDE3::AsmProcess(const byte* in, byte* out, void* box) const
     PROLOG()
 
     AS2(    movd  mm2, edx                      )
-    AS2(    add   edx, 56                       )   // des1 = des1 key
+
+    #ifdef OLD_GCC_OFFSET
+        AS2(    add   edx, 60                       )   // des1 = des1 key
+    #else
+        AS2(    add   edx, 56                       )   // des1 = des1 key
+    #endif
 
     AS2(    mov   eax, DWORD PTR [esi]          )
     AS2(    mov   ebx, DWORD PTR [esi + 4]      )

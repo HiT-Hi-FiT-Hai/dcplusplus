@@ -298,7 +298,7 @@ void Twofish::decrypt(const byte* inBlock, const byte* xorBlock,
             AS2(    movd  mm4, ebx                      )   \
             AS2(    movd  mm5, esi                      )   \
             AS2(    movd  mm6, ebp                      )   \
-            AS2(    mov   ecx, DWORD PTR [ebp +  8]     )   \
+            AS2(    mov   edi, DWORD PTR [ebp +  8]     )   \
             AS2(    mov   esi, DWORD PTR [ebp + 12]     )
 
         #define EPILOG()  \
@@ -319,6 +319,7 @@ void Twofish::decrypt(const byte* inBlock, const byte* xorBlock,
             AS2(    movd  mm4, ebx                      )   \
             AS2(    movd  mm5, esi                      )   \
             AS2(    movd  mm6, ebp                      )   \
+            AS2(    mov   edi, ecx                      )   \
             AS2(    mov   esi, DWORD PTR [ebp +  8]     )
 
         /* ebp already set */
@@ -336,89 +337,97 @@ void Twofish::decrypt(const byte* inBlock, const byte* xorBlock,
 
 
 
-    // x = esi, y = ebp, s_ = esp
+    // x = esi, y = [esp], s_ = ebp
     // edi always open for G1 and G2
     // G1 also uses edx after save and restore
     // G2 also uses eax after save and restore
+    //      and ecx for tmp [esp] which Rounds also use
+    //      and restore from mm7
 
     // x = G1(a)   bytes(0,1,2,3)
 #define ASMG1(z, zl, zh) \
     AS2(    movd  mm2, edx                          )   \
     AS2(    movzx edi, zl                           )   \
-    AS2(    mov   esi, DWORD PTR     [esp + edi*4]  )   \
+    AS2(    mov   esi, DWORD PTR     [ebp + edi*4]  )   \
     AS2(    movzx edx, zh                           )   \
-    AS2(    xor   esi, DWORD PTR 1024[esp + edx*4]  )   \
+    AS2(    xor   esi, DWORD PTR 1024[ebp + edx*4]  )   \
                                                         \
     AS2(    mov   edx, z                            )   \
     AS2(    shr   edx, 16                           )   \
     AS2(    movzx edi, dl                           )   \
-    AS2(    xor   esi, DWORD PTR 2048[esp + edi*4]  )   \
+    AS2(    xor   esi, DWORD PTR 2048[ebp + edi*4]  )   \
     AS2(    movzx edx, dh                           )   \
-    AS2(    xor   esi, DWORD PTR 3072[esp + edx*4]  )   \
+    AS2(    xor   esi, DWORD PTR 3072[ebp + edx*4]  )   \
     AS2(    movd  edx, mm2                          )
 
 
-    // y = G2(b)  bytes(3,0,1,2)
+    // y = G2(b)  bytes(3,0,1,2)  [ put y into ecx for Rounds ]
 #define ASMG2(z, zl, zh)    \
+    AS2(    movd  mm7, ecx                          )   \
     AS2(    movd  mm2, eax                          )   \
     AS2(    mov   edi, z                            )   \
     AS2(    shr   edi, 24                           )   \
-    AS2(    mov   ebp, DWORD PTR     [esp + edi*4]  )   \
+    AS2(    mov   ecx, DWORD PTR     [ebp + edi*4]  )   \
     AS2(    movzx eax, zl                           )   \
-    AS2(    xor   ebp, DWORD PTR 1024[esp + eax*4]  )   \
+    AS2(    xor   ecx, DWORD PTR 1024[ebp + eax*4]  )   \
                                                         \
     AS2(    mov   eax, z                            )   \
     AS2(    shr   eax, 16                           )   \
     AS2(    movzx edi, zh                           )   \
-    AS2(    xor   ebp, DWORD PTR 2048[esp + edi*4]  )   \
+    AS2(    xor   ecx, DWORD PTR 2048[ebp + edi*4]  )   \
     AS2(    movzx eax, al                           )   \
-    AS2(    xor   ebp, DWORD PTR 3072[esp + eax*4]  )   \
+    AS2(    xor   ecx, DWORD PTR 3072[ebp + eax*4]  )   \
     AS2(    movd  eax, mm2                          )
 
 
     // encrypt Round (n), 
-    // x = esi, y = ebp, k = esp, edi open
+    // x = esi, k = ebp, edi open
+    // y is in ecx from G2, restore when done from mm7
+    //      before C (which be same register!)
 #define ASMENCROUND(N, A, A2, A3, B, B2, B3, C, D)      \
     /* setup s_  */                                     \
-    AS2(    movd  esp, mm1                          )   \
+    AS2(    movd  ebp, mm1                          )   \
     ASMG1(A, A2, A3)                                    \
     ASMG2(B, B2, B3)                                    \
     /* setup k  */                                      \
-    AS2(    movd  esp, mm0                          )   \
-    AS2(    add   esp, 32                           )   \
+    AS2(    movd  ebp, mm0                          )   \
     /* x += y   */                                      \
-    AS2(    add   esi, ebp                          )   \
+    AS2(    add   esi, ecx                          )   \
+    AS2(    add   ebp, 32                           )   \
     /* y += x + k[2 * (n) + 1] */                       \
-    AS2(    add   ebp, esi                          )   \
-    AS2(    add   ebp, DWORD PTR [esp + 8 * N + 4]  )   \
+    AS2(    add   ecx, esi                          )   \
+    AS2(    rol   D,   1                            )   \
+    AS2(    add   ecx, DWORD PTR [ebp + 8 * N + 4]  )   \
+	/* (d) = rotlFixed(d, 1) ^ y  */                    \
+    AS2(    xor   D,   ecx                          )   \
+    AS2(    movd  ecx, mm7                          )   \
 	/* (c) ^= x + k[2 * (n)] */                         \
     AS2(    mov   edi, esi                          )   \
-    AS2(    add   edi, DWORD PTR [esp + 8 * N]      )   \
+    AS2(    add   edi, DWORD PTR [ebp + 8 * N]      )   \
     AS2(    xor   C,   edi                          )   \
 	/* (c) = rotrFixed(c, 1) */                         \
-    AS2(    ror   C,   1                            )   \
-	/* (d) = rotlFixed(d, 1) ^ y  */                    \
-    AS2(    rol   D,   1                            )   \
-    AS2(    xor   D,   ebp                          )
+    AS2(    ror   C,   1                            )
 
 
     // decrypt Round (n), 
-    // x = esi, y = ebp, k = esp, edi open
+    // x = esi, k = ebp, edi open
+    // y is in ecx from G2, restore ecx from mm7 when done
 #define ASMDECROUND(N, A, A2, A3, B, B2, B3, C, D)      \
     /* setup s_  */                                     \
-    AS2(    movd  esp, mm1                          )   \
+    AS2(    movd  ebp, mm1                          )   \
     ASMG1(A, A2, A3)                                    \
     ASMG2(B, B2, B3)                                    \
     /* setup k  */                                      \
-    AS2(    movd  esp, mm0                          )   \
-    AS2(    add   esp, 32                           )   \
+    AS2(    movd  ebp, mm0                          )   \
     /* x += y   */                                      \
-    AS2(    add   esi, ebp                          )   \
+    AS2(    add   esi, ecx                          )   \
+    AS2(    add   ebp, 32                           )   \
     /* y += x     */                                    \
-    AS2(    add   ebp, esi                          )   \
+    AS2(    add   ecx, esi                          )   \
 	/* (d) ^= y + k[2 * (n) + 1] */                     \
-    AS2(    mov   edi, ebp                          )   \
-    AS2(    add   edi, DWORD PTR [esp + 8 * N + 4]  )   \
+    AS2(    mov   edi, DWORD PTR [ebp + 8 * N + 4]  )   \
+    AS2(    add   edi, ecx                          )   \
+    AS2(    movd  ecx, mm7                          )   \
     AS2(    xor   D,   edi                          )   \
 	/* (d) = rotrFixed(d, 1)     */                     \
     AS2(    ror   D,   1                            )   \
@@ -426,7 +435,7 @@ void Twofish::decrypt(const byte* inBlock, const byte* xorBlock,
     AS2(    rol   C,   1                            )   \
 	/* (c) ^= (x + k[2 * (n)])   */                     \
     AS2(    mov   edi, esi                          )   \
-    AS2(    add   edi, DWORD PTR [esp + 8 * N]      )   \
+    AS2(    add   edi, DWORD PTR [ebp + 8 * N]      )   \
     AS2(    xor   C,   edi                          )
 
 
@@ -437,18 +446,22 @@ void Twofish::AsmEncrypt(const byte* inBlock, byte* outBlock) const
 {
     PROLOG()
 
-    AS2(    add   ecx, 56                       ) // k_
-    AS2(    mov   edi, ecx                      )
-    AS2(    movd  mm0, edi                      ) // store k_
-    AS2(    add   ecx, 160                      ) // s_[0]
-    AS2(    mov   esp, ecx                      )
-    AS2(    movd  mm1, ecx                      ) // store s_
+    #ifdef OLD_GCC_OFFSET
+        AS2(    add   edi, 60                       ) // k_
+    #else
+        AS2(    add   edi, 56                       ) // k_
+    #endif
+
+    AS2(    mov   ebp, edi                      )
 
     AS2(    mov   eax, DWORD PTR [esi]          ) // a
+    AS2(    movd  mm0, edi                      ) // store k_
     AS2(    mov   ebx, DWORD PTR [esi +  4]     ) // b
+    AS2(    add   ebp, 160                      ) // s_[0]
     AS2(    mov   ecx, DWORD PTR [esi +  8]     ) // c
+    AS2(    movd  mm1, ebp                      ) // store s_
     AS2(    mov   edx, DWORD PTR [esi + 12]     ) // d
-
+    
     AS2(    xor   eax, DWORD PTR [edi]          ) // k_[0]
     AS2(    xor   ebx, DWORD PTR [edi +  4]     ) //   [1]
     AS2(    xor   ecx, DWORD PTR [edi +  8]     ) //   [2]
@@ -473,8 +486,8 @@ void Twofish::AsmEncrypt(const byte* inBlock, byte* outBlock) const
     ASMENCROUND(15, ecx, cl, ch, edx, dl, dh, eax, ebx)
 
 
-    AS2(    movd  esi, mm0                      ) // k_
     AS2(    movd  ebp, mm6                      )
+    AS2(    movd  esi, mm0                      ) // k_
     #ifdef __GNUC__
         AS2(    mov   edi, [ebp + 16]           ) // outBlock
     #else
@@ -503,17 +516,21 @@ void Twofish::AsmDecrypt(const byte* inBlock, byte* outBlock) const
 {
     PROLOG()
 
-    AS2(    add   ecx, 56                       ) // k_
-    AS2(    mov   edi, ecx                      )
-    AS2(    movd  mm0, edi                      ) // store k_
-    AS2(    add   ecx, 160                      ) // s_[0]
-    AS2(    mov   esp, ecx                      )
-    AS2(    movd  mm1, ecx                      ) // store s_
+    #ifdef OLD_GCC_OFFSET
+        AS2(    add   edi, 60                       ) // k_
+    #else
+        AS2(    add   edi, 56                       ) // k_
+    #endif
 
-    AS2(    mov   ecx, DWORD PTR [esi]          ) // a
-    AS2(    mov   edx, DWORD PTR [esi +  4]     ) // b
-    AS2(    mov   eax, DWORD PTR [esi +  8]     ) // c
-    AS2(    mov   ebx, DWORD PTR [esi + 12]     ) // d
+    AS2(    mov   ebp, edi                      )
+
+    AS2(    mov   ecx, DWORD PTR [esi]          ) // c
+    AS2(    movd  mm0, edi                      ) // store k_
+    AS2(    mov   edx, DWORD PTR [esi +  4]     ) // d
+    AS2(    add   ebp, 160                      ) // s_[0]
+    AS2(    mov   eax, DWORD PTR [esi +  8]     ) // a
+    AS2(    movd  mm1, ebp                      ) // store s_
+    AS2(    mov   ebx, DWORD PTR [esi + 12]     ) // b
 
     AS2(    xor   ecx, DWORD PTR [edi + 16]     ) // k_[4]
     AS2(    xor   edx, DWORD PTR [edi + 20]     ) //   [5]
@@ -539,8 +556,8 @@ void Twofish::AsmDecrypt(const byte* inBlock, byte* outBlock) const
     ASMDECROUND( 0, eax, al, ah, ebx, bl, bh, ecx, edx)
 
 
-    AS2(    movd  esi, mm0                      ) // k_
     AS2(    movd  ebp, mm6                      )
+    AS2(    movd  esi, mm0                      ) // k_
     #ifdef __GNUC__
         AS2(    mov   edi, [ebp + 16]           ) // outBlock
     #else

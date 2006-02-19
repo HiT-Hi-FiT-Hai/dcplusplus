@@ -29,7 +29,6 @@
 
 
 
-
 /*  see man pages for function descriptions */
 
 #include "runtime.hpp"
@@ -37,6 +36,14 @@
 #include "handshake.hpp"
 #include "yassl_int.hpp"
 #include <stdio.h>
+
+#ifdef _WIN32
+    #include <windows.h>    // FindFirstFile etc..
+#else
+    #include <sys/types.h>  // file helper
+    #include <sys/stat.h>   // stat
+    #include <dirent.h>     // opendir
+#endif
 
 
 namespace yaSSL {
@@ -52,25 +59,25 @@ SSL_METHOD* SSLv3_method()
 
 SSL_METHOD* SSLv3_server_method()
 {
-    return new SSL_METHOD(server_end, ProtocolVersion(3,0));
+    return NEW_YS SSL_METHOD(server_end, ProtocolVersion(3,0));
 }
 
 
 SSL_METHOD* SSLv3_client_method()
 {
-    return new SSL_METHOD(client_end, ProtocolVersion(3,0));
+    return NEW_YS SSL_METHOD(client_end, ProtocolVersion(3,0));
 }
 
 
 SSL_METHOD* TLSv1_server_method()
 {
-    return new SSL_METHOD(server_end, ProtocolVersion(3,1));
+    return NEW_YS SSL_METHOD(server_end, ProtocolVersion(3,1));
 }
 
 
 SSL_METHOD* TLSv1_client_method()
 {
-    return new SSL_METHOD(client_end, ProtocolVersion(3,1));
+    return NEW_YS SSL_METHOD(client_end, ProtocolVersion(3,1));
 }
 
 
@@ -83,7 +90,7 @@ SSL_METHOD* SSLv23_server_method()
 
 SSL_CTX* SSL_CTX_new(SSL_METHOD* method)
 {
-    return new SSL_CTX(method);
+    return NEW_YS SSL_CTX(method);
 }
 
 
@@ -95,7 +102,7 @@ void SSL_CTX_free(SSL_CTX* ctx)
 
 SSL* SSL_new(SSL_CTX* ctx)
 {
-    return new SSL(ctx);
+    return NEW_YS SSL(ctx);
 }
 
 
@@ -458,7 +465,7 @@ int read_file(SSL_CTX* ctx, const char* file, int format, CertType type)
             fseek(input, 0, SEEK_END);
             long sz = ftell(input);
             rewind(input);
-            x = new x509(sz); // takes ownership
+            x = NEW_YS x509(sz); // takes ownership
             size_t bytes = fread(x->use_buffer(), sz, 1, input);
             if (bytes != 1) {
                 fclose(input);
@@ -495,16 +502,74 @@ void SSL_CTX_set_verify(SSL_CTX* ctx, int mode, VerifyCallback /*vc*/)
     if (mode & SSL_VERIFY_PEER)
         ctx->setVerifyPeer();
 
+    if (mode == SSL_VERIFY_NONE)
+        ctx->setVerifyNone();
+
     if (mode & SSL_VERIFY_FAIL_IF_NO_PEER_CERT)
         ctx->setFailNoCert();
 }
 
 
 int SSL_CTX_load_verify_locations(SSL_CTX* ctx, const char* file,
-                                  const char* /*path*/)
+                                  const char* path)
 {
-    // just files for now
-    return read_file(ctx, file, SSL_FILETYPE_PEM, CA);
+    int       ret = SSL_SUCCESS;
+    const int HALF_PATH = 128;
+
+    if (file) ret = read_file(ctx, file, SSL_FILETYPE_PEM, CA);
+
+    if (ret == SSL_SUCCESS && path) {
+        // call read_file for each reqular file in path
+#ifdef _WIN32
+
+        WIN32_FIND_DATA FindFileData;
+        HANDLE hFind;
+
+        char name[MAX_PATH + 1];  // directory specification
+        strncpy(name, path, MAX_PATH - 3);
+        strncat(name, "\\*", 3);
+
+        hFind = FindFirstFile(name, &FindFileData);
+        if (hFind == INVALID_HANDLE_VALUE) return SSL_BAD_PATH;
+
+        do {
+            if (FindFileData.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY) {
+                strncpy(name, path, MAX_PATH - 2 - HALF_PATH);
+                strncat(name, "\\", 2);
+                strncat(name, FindFileData.cFileName, HALF_PATH);
+                ret = read_file(ctx, name, SSL_FILETYPE_PEM, CA);
+            }
+        } while (ret == SSL_SUCCESS && FindNextFile(hFind, &FindFileData));
+
+        FindClose(hFind);
+
+#else   // _WIN32
+
+        const int MAX_PATH = 260;
+
+        DIR* dir = opendir(path);
+        if (!dir) return SSL_BAD_PATH;
+
+        struct dirent* entry;
+        struct stat    buf;
+        char           name[MAX_PATH + 1];
+
+        while (ret == SSL_SUCCESS && (entry = readdir(dir))) {
+            strncpy(name, path, MAX_PATH - 1 - HALF_PATH);
+            strncat(name, "/", 1);
+            strncat(name, entry->d_name, HALF_PATH);
+            if (stat(name, &buf) < 0) return SSL_BAD_STAT;
+     
+            if (S_ISREG(buf.st_mode))
+                ret = read_file(ctx, name, SSL_FILETYPE_PEM, CA);
+        }
+
+        closedir(dir);
+
+#endif
+    }
+
+    return ret;
 }
 
 
@@ -653,7 +718,7 @@ void OpenSSL_add_all_algorithms()  // compatibility only
 
 DH* DH_new(void)
 {
-    DH* dh = new DH;
+    DH* dh = NEW_YS DH;
     if (dh)
         dh->p = dh->g = 0;
     return dh;
@@ -678,7 +743,7 @@ BIGNUM* BN_bin2bn(const unsigned char* num, int sz, BIGNUM* retVal)
 
     if (!retVal) {
         created = true;
-        bn.reset(new BIGNUM);
+        bn.reset(NEW_YS BIGNUM);
         retVal = bn.get();
     }
 
@@ -729,14 +794,14 @@ const char* X509_verify_cert_error_string(long /* error */)
 const EVP_MD* EVP_md5(void)
 {
     // TODO: FIX add to some list for destruction
-    return new MD5;
+    return NEW_YS MD5;
 }
 
 
 const EVP_CIPHER* EVP_des_ede3_cbc(void)
 {
     // TODO: FIX add to some list for destruction
-    return new DES_EDE;
+    return NEW_YS DES_EDE;
 }
 
 

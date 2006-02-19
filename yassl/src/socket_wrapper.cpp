@@ -46,9 +46,11 @@
 #ifdef _WIN32
     const int SOCKET_EINVAL = WSAEINVAL;
     const int SOCKET_EWOULDBLOCK = WSAEWOULDBLOCK;
+    const int SOCKET_EAGAIN = WSAEWOULDBLOCK;
 #else
     const int SOCKET_EINVAL = EINVAL;
     const int SOCKET_EWOULDBLOCK = EWOULDBLOCK;
+    const int SOCKET_EAGAIN = EAGAIN;
 #endif // _WIN32
 
 
@@ -122,27 +124,24 @@ uint Socket::receive(byte* buf, unsigned int sz, int flags) const
     assert(socket_ != INVALID_SOCKET);
     int recvd = ::recv(socket_, reinterpret_cast<char *>(buf), sz, flags);
 
-	if (recvd == -1) {
-#ifdef _WIN32
-		if(WSAGetLastError() == WSAEWOULDBLOCK)
-#else
-		if(errno == EAGAIN)
-#endif
-			return 0;
-		else
-			return (uint)-1;
-	} else if(recvd == 0) {
-		return (uint)-1;
-	}
+    // idea to seperate error from would block by arnetheduck@gmail.com
+    if (recvd == -1) {
+        if (get_lastError() == SOCKET_EWOULDBLOCK || 
+            get_lastError() == SOCKET_EAGAIN)
+            return 0;
+    }
+    else if (recvd == 0)
+        return static_cast<uint>(-1);
+
     return recvd;
 }
 
 
-// wait if blocking for input, or error
+// wait if blocking for input, return false for error
 bool Socket::wait() const
 {
     byte b;
-    return receive(&b, 1, MSG_PEEK) != (uint)-1;
+    return receive(&b, 1, MSG_PEEK) != static_cast<uint>(-1);
 }
 
 

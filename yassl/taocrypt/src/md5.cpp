@@ -139,9 +139,9 @@ void MD5::Update(const byte* data, word32 len)
     // w = rotlFixed(w + f(x, y, z) + index[edi] + data, s) + x
 #define ASMMD5STEP(f, w, x, y, z, index, data, s)       \
     f(x, y, z)                                          \
-    AS2(    mov   esp, [edi + index * 4]            )   \
+    AS2(    mov   ebp, [edi + index * 4]            )   \
     AS2(    lea     w, [esi + w + data]             )   \
-    AS2(    add     w, esp                          )   \
+    AS2(    add     w, ebp                          )   \
     AS2(    rol     w, s                            )   \
     AS2(    add     w, x                            )
 
@@ -180,51 +180,51 @@ void MD5::Update(const byte* data, word32 len)
     // combine above ASMMD5STEP(f w/ each f ASMF1 - F4
 
     // esi already set up, after using set for next round
-    // esp already set up, set up using next round index
+    // ebp already set up, set up using next round index
     
 #define MD5STEP1(w, x, y, z, index, data, s)    \
     AS2(    xor   esi, z                    )   \
     AS2(    and   esi, x                    )   \
-    AS2(    lea     w, [esp + w + data]     )   \
+    AS2(    lea     w, [ebp + w + data]     )   \
     AS2(    xor   esi, z                    )   \
     AS2(    add     w, esi                  )   \
     AS2(    mov   esi, x                    )   \
     AS2(    rol     w, s                    )   \
-    AS2(    mov   esp, [edi + index * 4]    )   \
+    AS2(    mov   ebp, [edi + index * 4]    )   \
     AS2(    add     w, x                    )
 
 #define MD5STEP2(w, x, y, z, index, data, s)    \
     AS2(    xor   esi, x                    )   \
     AS2(    and   esi, z                    )   \
-    AS2(    lea     w, [esp + w + data]     )   \
+    AS2(    lea     w, [ebp + w + data]     )   \
     AS2(    xor   esi, y                    )   \
     AS2(    add     w, esi                  )   \
     AS2(    mov   esi, x                    )   \
     AS2(    rol     w, s                    )   \
-    AS2(    mov   esp, [edi + index * 4]    )   \
+    AS2(    mov   ebp, [edi + index * 4]    )   \
     AS2(    add     w, x                    )
 
 
 #define MD5STEP3(w, x, y, z, index, data, s)    \
     AS2(    xor   esi, z                    )   \
-    AS2(    lea     w, [esp + w + data]     )   \
+    AS2(    lea     w, [ebp + w + data]     )   \
     AS2(    xor   esi, x                    )   \
     AS2(    add     w, esi                  )   \
     AS2(    mov   esi, x                    )   \
     AS2(    rol     w, s                    )   \
-    AS2(    mov   esp, [edi + index * 4]    )   \
+    AS2(    mov   ebp, [edi + index * 4]    )   \
     AS2(    add     w, x                    )
 
 
 #define MD5STEP4(w, x, y, z, index, data, s)    \
     AS2(     or   esi, x                    )   \
-    AS2(    lea     w, [esp + w + data]     )   \
+    AS2(    lea     w, [ebp + w + data]     )   \
     AS2(    xor   esi, y                    )   \
     AS2(    add     w, esi                  )   \
     AS2(    mov   esi, y                    )   \
     AS2(    rol     w, s                    )   \
     AS1(    not   esi                       )   \
-    AS2(    mov   esp, [edi + index * 4]    )   \
+    AS2(    mov   ebp, [edi + index * 4]    )   \
     AS2(    add     w, x                    )
 
 
@@ -243,13 +243,16 @@ void MD5::AsmTransform(const byte* data, word32 times)
         AS2(    movd  mm3, edi                      )   \
         AS2(    movd  mm4, ebx                      )   \
         AS2(    movd  mm5, esi                      )   \
+        AS2(    movd  mm6, ebp                      )   \
         AS2(    mov   ecx, DWORD PTR [ebp +  8]     )   \
         AS2(    mov   edi, DWORD PTR [ebp + 12]     )   \
         AS2(    mov   eax, DWORD PTR [ebp + 16]     )
 
     #define EPILOG()  \
+        AS2(    movd  ebp, mm6                  )   \
         AS2(    movd  esi, mm5                  )   \
         AS2(    movd  ebx, mm4                  )   \
+        AS2(    mov   esp, ebp                  )   \
         AS2(    movd  edi, mm3                  )   \
         AS1(    emms                            )   \
         asm(".att_syntax");
@@ -263,10 +266,12 @@ void MD5::AsmTransform(const byte* data, word32 times)
         AS2(    movd  mm3, edi                  )   \
         AS2(    movd  mm4, ebx                  )   \
         AS2(    movd  mm5, esi                  )   \
+        AS2(    movd  mm6, ebp                  )   \
         AS2(    mov   edi, DWORD PTR [ebp +  8] )   \
         AS2(    mov   eax, DWORD PTR [ebp + 12] )
 
     #define EPILOG() \
+        AS2(    movd  ebp, mm6                  )   \
         AS2(    movd  esi, mm5                  )   \
         AS2(    movd  ebx, mm4                  )   \
         AS2(    movd  edi, mm3                  )   \
@@ -280,14 +285,17 @@ void MD5::AsmTransform(const byte* data, word32 times)
 
     PROLOG()
 
-    AS2(    movd  mm0, esp              )   // store stack P
-
     AS2(    mov   esi, ecx              )
-    AS2(    add   esi, 16               )   // digest_[0]
+
+    #ifdef OLD_GCC_OFFSET
+        AS2(    add   esi, 20               )   // digest_[0]
+    #else
+        AS2(    add   esi, 16               )   // digest_[0]
+    #endif
+
     AS2(    movd  mm2, eax              )   // store times_
     AS2(    movd  mm1, esi              )   // store digest_
     
-
     AS2(    mov   eax, [esi]            )   // a
     AS2(    mov   ebx, [esi +  4]       )   // b
     AS2(    mov   ecx, [esi +  8]       )   // c
@@ -297,7 +305,7 @@ AS1(loopStart:)
 
     // set up
     AS2(    mov   esi, ecx      )
-    AS2(    mov   esp, [edi]    )
+    AS2(    mov   ebp, [edi]    )
 
     MD5STEP1( eax, ebx, ecx, edx, 1,   0xd76aa478,  7)
     MD5STEP1( edx, eax, ebx, ecx, 2,   0xe8c7b756, 12)
@@ -385,12 +393,11 @@ AS1(loopStart:)
     AS2(    mov   ecx, [esi +  8]       )
     AS2(    mov   edx, [esi + 12]       )
 
-    AS2(    movd  esp, mm2              )   // times
-    AS1(    dec   esp                   )
-    AS2(    movd  mm2, esp              )
+    AS2(    movd  ebp, mm2              )   // times
+    AS1(    dec   ebp                   )
+    AS2(    movd  mm2, ebp              )
     AS1(    jnz   loopStart             )
 
-    AS2(    movd  esp, mm0              )   // restore
 
     EPILOG()
 }

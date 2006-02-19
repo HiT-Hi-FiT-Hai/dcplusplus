@@ -121,9 +121,10 @@ void ARC4::Process(byte* out, const byte* in, word32 length)
         AS2(    mov   ebp, DWORD PTR [ebp + 20]     )
 
     #define EPILOG()  \
-        AS2(    movd  esp, mm6                  )   \
+        AS2(    movd  ebp, mm6                  )   \
         AS2(    movd  esi, mm5                  )   \
         AS2(    movd  ebx, mm4                  )   \
+        AS2(    mov   esp, ebp                  )   \
         AS2(    movd  edi, mm3                  )   \
         AS1(    emms                            )   \
         asm(".att_syntax");
@@ -156,19 +157,20 @@ void ARC4::Process(byte* out, const byte* in, word32 length)
 
     PROLOG()
 
+    AS2(    sub    esp, 4                   )   // make room 
+
     AS2(    cmp    ebp, 0                   )
-    AS1(    jz     done                     )
+    AS1(    jz     nothing                  )
 
-
-    AS2(    mov    esp, ecx                 )
-    AS2(    add    esp, 2                   )   // state_
+    AS2(    mov    [esp], ebp               )   // length
 
     AS2(    movzx  edx, BYTE PTR [ecx + 1]  )   // y
+    AS2(    lea    ebp, [ecx + 2]           )   // state_
     AS2(    movzx  ecx, BYTE PTR [ecx]      )   // x
 
     // setup loop
     // a = s[x];
-    AS2(    movzx  eax, BYTE PTR [esp + ecx]    )
+    AS2(    movzx  eax, BYTE PTR [ebp + ecx]    )
 
 
 AS1( begin:                             )
@@ -178,13 +180,13 @@ AS1( begin:                             )
     AS2(    and    edx, 255                     )
 
     // b = s[y];
-    AS2(    movzx  ebx, BYTE PTR [esp + edx]    )
+    AS2(    movzx  ebx, BYTE PTR [ebp + edx]    )
 
     // s[x] = b;
-    AS2(    mov    [esp + ecx], bl              )
+    AS2(    mov    [ebp + ecx], bl              )
 
     // s[y] = a;
-    AS2(    mov    [esp + edx], al              )
+    AS2(    mov    [ebp + edx], al              )
 
     // x = (x+1) & 0xff;
     AS1(    inc    ecx                          )
@@ -194,10 +196,10 @@ AS1( begin:                             )
     AS2(    add    eax, ebx                     )
     AS2(    and    eax, 255                     )
     
-    AS2(    movzx  ebx, BYTE PTR [esp + eax]    )
+    AS2(    movzx  ebx, BYTE PTR [ebp + eax]    )
 
     // a = s[x];   for next round
-    AS2(    movzx  eax, BYTE PTR [esp + ecx]    )
+    AS2(    movzx  eax, BYTE PTR [ebp + ecx]    )
 
     // xOr w/ inByte
     AS2(    xor    ebx, [esi]                   )
@@ -207,15 +209,16 @@ AS1( begin:                             )
     AS2(    mov    [edi], bl                    )
     AS1(    inc    edi                          )
 
-    AS1(    dec    ebp                          )
+    AS1(    dec    DWORD PTR [esp]              )
     AS1(    jnz    begin                        )
 
 
-AS1( done:                              )
-
     // write back to x_ and y_
-    AS2(    mov    [esp - 2], cl            )
-    AS2(    mov    [esp - 1], dl            )
+    AS2(    mov    [ebp - 2], cl            )
+    AS2(    mov    [ebp - 1], dl            )
+
+
+AS1( nothing:                           )
 
 
     EPILOG()

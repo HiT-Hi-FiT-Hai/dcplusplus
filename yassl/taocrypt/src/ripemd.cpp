@@ -423,13 +423,12 @@ void RIPEMD160::Transform()
 #define ASMSubroundF(a, b, c, d, e, index, s) \
     /* a += (b ^ c ^ d) + data[i] + k  */               \
     AS2(    xor   esi, b                            )   \
-    AS2(    add     a, esp                          )   \
+    AS2(    add     a, [edi + index * 4]            )   \
     AS2(    xor   esi, d                            )   \
     AS2(    add     a, esi                          )   \
-    AS2(    mov   esp, [edi + index * 4]            )   \
     /* a = rotlFixed((word32)a, s) + e */               \
-    AS2(    rol     a, s                            )   \
     AS2(    mov   esi, b                            )   \
+    AS2(    rol     a, s                            )   \
     /* c = rotlFixed((word32)c, 10U) */                 \
     AS2(    rol     c, 10                           )   \
     AS2(    add     a, e                            )
@@ -443,13 +442,12 @@ void RIPEMD160::Transform()
     /* a += (d ^ (b & (c^d))) + data[i] + k  */         \
     AS2(    xor   esi, d                            )   \
     AS2(    and   esi, b                            )   \
-    AS2(    lea     a, [esp + a + k]                )   \
+    AS2(    add     a, [edi + index * 4]            )   \
     AS2(    xor   esi, d                            )   \
-    AS2(    add     a, esi                          )   \
-    AS2(    mov   esp, [edi + index * 4]            )   \
+    AS2(    lea     a, [esi + a + k]                )   \
     /* a = rotlFixed((word32)a, s) + e */               \
-    AS2(    rol     a, s                            )   \
     AS2(    mov   esi, b                            )   \
+    AS2(    rol     a, s                            )   \
     /* c = rotlFixed((word32)c, 10U) */                 \
     AS2(    rol     c, 10                           )   \
     AS2(    add     a, e                            )
@@ -463,13 +461,12 @@ void RIPEMD160::Transform()
     /* a += (d ^ (b | ~c)) + data[i] + k  */            \
     AS1(    not   esi                               )   \
     AS2(     or   esi, b                            )   \
-    AS2(    lea     a, [esp + a + k]                )   \
+    AS2(    add     a, [edi + index * 4]            )   \
     AS2(    xor   esi, d                            )   \
-    AS2(    add     a, esi                          )   \
-    AS2(    mov   esp, [edi + index * 4]            )   \
+    AS2(    lea     a, [esi + a + k]                )   \
     /* a = rotlFixed((word32)a, s) + e */               \
-    AS2(    rol     a, s                            )   \
     AS2(    mov   esi, b                            )   \
+    AS2(    rol     a, s                            )   \
     /* c = rotlFixed((word32)c, 10U) */                 \
     AS2(    rol     c, 10                           )   \
     AS2(    add     a, e                            )
@@ -483,13 +480,12 @@ void RIPEMD160::Transform()
     /* a += (c ^ (d & (b^c))) + data[i] + k  */         \
     AS2(    xor   esi, b                            )   \
     AS2(    and   esi, d                            )   \
-    AS2(    lea     a, [esp + a + k]                )   \
+    AS2(    add     a, [edi + index * 4]            )   \
     AS2(    xor   esi, c                            )   \
-    AS2(    add     a, esi                          )   \
-    AS2(    mov   esp, [edi + index * 4]            )   \
+    AS2(    lea     a, [esi + a + k]                )   \
     /* a = rotlFixed((word32)a, s) + e */               \
-    AS2(    rol     a, s                            )   \
     AS2(    mov   esi, b                            )   \
+    AS2(    rol     a, s                            )   \
     /* c = rotlFixed((word32)c, 10U) */                 \
     AS2(    rol     c, 10                           )   \
     AS2(    add     a, e                            )
@@ -504,11 +500,10 @@ void RIPEMD160::Transform()
     AS1(    not   esi                               )   \
     AS2(     or   esi, c                            )   \
     /* c = rotlFixed((word32)c, 10U) */                 \
-    AS2(    rol     c, 10                           )   \
-    AS2(    lea     a, [esp + a + k]                )   \
+    AS2(    add     a, [edi + index * 4]            )   \
     AS2(    xor   esi, b                            )   \
-    AS2(    add     a, esi                          )   \
-    AS2(    mov   esp, [edi + index * 4]            )   \
+    AS2(    rol     c, 10                           )   \
+    AS2(    lea     a, [esi + a + k]                )   \
     /* a = rotlFixed((word32)a, s) + e */               \
     AS2(    rol     a, s                            )   \
     AS2(    mov   esi, c                            )   \
@@ -532,12 +527,13 @@ void RIPEMD160::AsmTransform(const byte* data, word32 times)
         AS2(    movd  mm6, ebp                      )   \
         AS2(    mov   ecx, DWORD PTR [ebp +  8]     )   \
         AS2(    mov   edi, DWORD PTR [ebp + 12]     )   \
-        AS2(    mov   eax, DWORD PTR [ebp + 16]     )
+        AS2(    mov   edx, DWORD PTR [ebp + 16]     )
 
     #define EPILOG()  \
-        AS2(    movd  esp, mm6                  )   \
+        AS2(    movd  ebp, mm6                  )   \
         AS2(    movd  esi, mm5                  )   \
         AS2(    movd  ebx, mm4                  )   \
+        AS2(    mov   esp, ebp                  )   \
         AS2(    movd  edi, mm3                  )   \
         AS1(    emms                            )   \
         asm(".att_syntax");
@@ -553,7 +549,7 @@ void RIPEMD160::AsmTransform(const byte* data, word32 times)
         AS2(    movd  mm5, esi                  )   \
         AS2(    movd  mm6, ebp                  )   \
         AS2(    mov   edi, DWORD PTR [ebp +  8] )   \
-        AS2(    mov   eax, DWORD PTR [ebp + 12] )
+        AS2(    mov   edx, DWORD PTR [ebp + 12] )
 
     #define EPILOG() \
         AS2(    movd  ebp, mm6                  )   \
@@ -569,11 +565,18 @@ void RIPEMD160::AsmTransform(const byte* data, word32 times)
 
     PROLOG()
 
-    AS2(    mov   esi, ecx              )
-    AS2(    add   esi, 16               )   // digest_[0]
-    AS2(    movd  mm2, eax              )   // store times_
+    #ifdef OLD_GCC_OFFSET
+        AS2(    lea   esi, [ecx + 20]               )   // digest_[0]
+    #else
+        AS2(    lea   esi, [ecx + 16]               )   // digest_[0]
+    #endif
+
+    AS2(    sub   esp, 24               )   // make room for tmp a1 - e1
     AS2(    movd  mm1, esi              )   // store digest_
     
+AS1( loopStart: )
+
+    AS2(    movd  mm2, edx              )   // store times_
 
     AS2(    mov   eax, [esi]            )   // a1
     AS2(    mov   ebx, [esi +  4]       )   // b1
@@ -581,110 +584,106 @@ void RIPEMD160::AsmTransform(const byte* data, word32 times)
     AS2(    mov   edx, [esi + 12]       )   // d1
     AS2(    mov   ebp, [esi + 16]       )   // e1
 
-
-    // setup
-AS1( loopStart: )
+    // setup 
     AS2(    mov   esi, ecx      )
-    AS2(    mov   esp, [edi]    )
 
-    ASMSubroundF( eax, ebx, ecx, edx, ebp,  1, 11)
-    ASMSubroundF( ebp, eax, ebx, ecx, edx,  2, 14)
-    ASMSubroundF( edx, ebp, eax, ebx, ecx,  3, 15)
-    ASMSubroundF( ecx, edx, ebp, eax, ebx,  4, 12)
-    ASMSubroundF( ebx, ecx, edx, ebp, eax,  5,  5)
-    ASMSubroundF( eax, ebx, ecx, edx, ebp,  6,  8)
-    ASMSubroundF( ebp, eax, ebx, ecx, edx,  7,  7)
-    ASMSubroundF( edx, ebp, eax, ebx, ecx,  8,  9)
-    ASMSubroundF( ecx, edx, ebp, eax, ebx,  9, 11)
-    ASMSubroundF( ebx, ecx, edx, ebp, eax, 10, 13)
-    ASMSubroundF( eax, ebx, ecx, edx, ebp, 11, 14)
-    ASMSubroundF( ebp, eax, ebx, ecx, edx, 12, 15)
-    ASMSubroundF( edx, ebp, eax, ebx, ecx, 13,  6)
-    ASMSubroundF( ecx, edx, ebp, eax, ebx, 14,  7)
-    ASMSubroundF( ebx, ecx, edx, ebp, eax, 15,  9)
-    ASMSubroundF( eax, ebx, ecx, edx, ebp,  7,  8)
+    ASMSubroundF( eax, ebx, ecx, edx, ebp,  0, 11)
+    ASMSubroundF( ebp, eax, ebx, ecx, edx,  1, 14)
+    ASMSubroundF( edx, ebp, eax, ebx, ecx,  2, 15)
+    ASMSubroundF( ecx, edx, ebp, eax, ebx,  3, 12)
+    ASMSubroundF( ebx, ecx, edx, ebp, eax,  4,  5)
+    ASMSubroundF( eax, ebx, ecx, edx, ebp,  5,  8)
+    ASMSubroundF( ebp, eax, ebx, ecx, edx,  6,  7)
+    ASMSubroundF( edx, ebp, eax, ebx, ecx,  7,  9)
+    ASMSubroundF( ecx, edx, ebp, eax, ebx,  8, 11)
+    ASMSubroundF( ebx, ecx, edx, ebp, eax,  9, 13)
+    ASMSubroundF( eax, ebx, ecx, edx, ebp, 10, 14)
+    ASMSubroundF( ebp, eax, ebx, ecx, edx, 11, 15)
+    ASMSubroundF( edx, ebp, eax, ebx, ecx, 12,  6)
+    ASMSubroundF( ecx, edx, ebp, eax, ebx, 13,  7)
+    ASMSubroundF( ebx, ecx, edx, ebp, eax, 14,  9)
+    ASMSubroundF( eax, ebx, ecx, edx, ebp, 15,  8)
 
-    ASMSubroundG( ebp, eax, ebx, ecx, edx,  4,  7, k1)
-    ASMSubroundG( edx, ebp, eax, ebx, ecx, 13,  6, k1)
-    ASMSubroundG( ecx, edx, ebp, eax, ebx,  1,  8, k1)
-    ASMSubroundG( ebx, ecx, edx, ebp, eax, 10, 13, k1)
-    ASMSubroundG( eax, ebx, ecx, edx, ebp,  6, 11, k1)
-    ASMSubroundG( ebp, eax, ebx, ecx, edx, 15,  9, k1)
-    ASMSubroundG( edx, ebp, eax, ebx, ecx,  3,  7, k1)
-    ASMSubroundG( ecx, edx, ebp, eax, ebx, 12, 15, k1)
-    ASMSubroundG( ebx, ecx, edx, ebp, eax,  0,  7, k1)
-    ASMSubroundG( eax, ebx, ecx, edx, ebp,  9, 12, k1)
-    ASMSubroundG( ebp, eax, ebx, ecx, edx,  5, 15, k1)
-    ASMSubroundG( edx, ebp, eax, ebx, ecx,  2,  9, k1)
-    ASMSubroundG( ecx, edx, ebp, eax, ebx, 14, 11, k1)
-    ASMSubroundG( ebx, ecx, edx, ebp, eax, 11,  7, k1)
-    ASMSubroundG( eax, ebx, ecx, edx, ebp,  8, 13, k1)
-    ASMSubroundG( ebp, eax, ebx, ecx, edx,  3, 12, k1)
+    ASMSubroundG( ebp, eax, ebx, ecx, edx,  7,  7, k1)
+    ASMSubroundG( edx, ebp, eax, ebx, ecx,  4,  6, k1)
+    ASMSubroundG( ecx, edx, ebp, eax, ebx, 13,  8, k1)
+    ASMSubroundG( ebx, ecx, edx, ebp, eax,  1, 13, k1)
+    ASMSubroundG( eax, ebx, ecx, edx, ebp, 10, 11, k1)
+    ASMSubroundG( ebp, eax, ebx, ecx, edx,  6,  9, k1)
+    ASMSubroundG( edx, ebp, eax, ebx, ecx, 15,  7, k1)
+    ASMSubroundG( ecx, edx, ebp, eax, ebx,  3, 15, k1)
+    ASMSubroundG( ebx, ecx, edx, ebp, eax, 12,  7, k1)
+    ASMSubroundG( eax, ebx, ecx, edx, ebp,  0, 12, k1)
+    ASMSubroundG( ebp, eax, ebx, ecx, edx,  9, 15, k1)
+    ASMSubroundG( edx, ebp, eax, ebx, ecx,  5,  9, k1)
+    ASMSubroundG( ecx, edx, ebp, eax, ebx,  2, 11, k1)
+    ASMSubroundG( ebx, ecx, edx, ebp, eax, 14,  7, k1)
+    ASMSubroundG( eax, ebx, ecx, edx, ebp, 11, 13, k1)
+    ASMSubroundG( ebp, eax, ebx, ecx, edx,  8, 12, k1)
 
-    ASMSubroundH( edx, ebp, eax, ebx, ecx, 10, 11, k2)
-    ASMSubroundH( ecx, edx, ebp, eax, ebx, 14, 13, k2)
-    ASMSubroundH( ebx, ecx, edx, ebp, eax,  4,  6, k2)
-    ASMSubroundH( eax, ebx, ecx, edx, ebp,  9,  7, k2)
-    ASMSubroundH( ebp, eax, ebx, ecx, edx, 15, 14, k2)
-    ASMSubroundH( edx, ebp, eax, ebx, ecx,  8,  9, k2)
-    ASMSubroundH( ecx, edx, ebp, eax, ebx,  1, 13, k2)
-    ASMSubroundH( ebx, ecx, edx, ebp, eax,  2, 15, k2)
-    ASMSubroundH( eax, ebx, ecx, edx, ebp,  7, 14, k2)
-    ASMSubroundH( ebp, eax, ebx, ecx, edx,  0,  8, k2)
-    ASMSubroundH( edx, ebp, eax, ebx, ecx,  6, 13, k2)
-    ASMSubroundH( ecx, edx, ebp, eax, ebx, 13,  6, k2)
-    ASMSubroundH( ebx, ecx, edx, ebp, eax, 11,  5, k2)
-    ASMSubroundH( eax, ebx, ecx, edx, ebp,  5, 12, k2)
-    ASMSubroundH( ebp, eax, ebx, ecx, edx, 12,  7, k2)
-    ASMSubroundH( edx, ebp, eax, ebx, ecx,  1,  5, k2)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx,  3, 11, k2)
+    ASMSubroundH( ecx, edx, ebp, eax, ebx, 10, 13, k2)
+    ASMSubroundH( ebx, ecx, edx, ebp, eax, 14,  6, k2)
+    ASMSubroundH( eax, ebx, ecx, edx, ebp,  4,  7, k2)
+    ASMSubroundH( ebp, eax, ebx, ecx, edx,  9, 14, k2)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx, 15,  9, k2)
+    ASMSubroundH( ecx, edx, ebp, eax, ebx,  8, 13, k2)
+    ASMSubroundH( ebx, ecx, edx, ebp, eax,  1, 15, k2)
+    ASMSubroundH( eax, ebx, ecx, edx, ebp,  2, 14, k2)
+    ASMSubroundH( ebp, eax, ebx, ecx, edx,  7,  8, k2)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx,  0, 13, k2)
+    ASMSubroundH( ecx, edx, ebp, eax, ebx,  6,  6, k2)
+    ASMSubroundH( ebx, ecx, edx, ebp, eax, 13,  5, k2)
+    ASMSubroundH( eax, ebx, ecx, edx, ebp, 11, 12, k2)
+    ASMSubroundH( ebp, eax, ebx, ecx, edx,  5,  7, k2)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx, 12,  5, k2)
 
-    ASMSubroundI( ecx, edx, ebp, eax, ebx,  9, 11, k3)
-    ASMSubroundI( ebx, ecx, edx, ebp, eax, 11, 12, k3)
-    ASMSubroundI( eax, ebx, ecx, edx, ebp, 10, 14, k3)
-    ASMSubroundI( ebp, eax, ebx, ecx, edx,  0, 15, k3)
-    ASMSubroundI( edx, ebp, eax, ebx, ecx,  8, 14, k3)
-    ASMSubroundI( ecx, edx, ebp, eax, ebx, 12, 15, k3)
-    ASMSubroundI( ebx, ecx, edx, ebp, eax,  4,  9, k3)
-    ASMSubroundI( eax, ebx, ecx, edx, ebp, 13,  8, k3)
-    ASMSubroundI( ebp, eax, ebx, ecx, edx,  3,  9, k3)
-    ASMSubroundI( edx, ebp, eax, ebx, ecx,  7, 14, k3)
-    ASMSubroundI( ecx, edx, ebp, eax, ebx, 15,  5, k3)
-    ASMSubroundI( ebx, ecx, edx, ebp, eax, 14,  6, k3)
-    ASMSubroundI( eax, ebx, ecx, edx, ebp,  5,  8, k3)
-    ASMSubroundI( ebp, eax, ebx, ecx, edx,  6,  6, k3)
-    ASMSubroundI( edx, ebp, eax, ebx, ecx,  2,  5, k3)
-    ASMSubroundI( ecx, edx, ebp, eax, ebx,  4, 12, k3)
+    ASMSubroundI( ecx, edx, ebp, eax, ebx,  1, 11, k3)
+    ASMSubroundI( ebx, ecx, edx, ebp, eax,  9, 12, k3)
+    ASMSubroundI( eax, ebx, ecx, edx, ebp, 11, 14, k3)
+    ASMSubroundI( ebp, eax, ebx, ecx, edx, 10, 15, k3)
+    ASMSubroundI( edx, ebp, eax, ebx, ecx,  0, 14, k3)
+    ASMSubroundI( ecx, edx, ebp, eax, ebx,  8, 15, k3)
+    ASMSubroundI( ebx, ecx, edx, ebp, eax, 12,  9, k3)
+    ASMSubroundI( eax, ebx, ecx, edx, ebp,  4,  8, k3)
+    ASMSubroundI( ebp, eax, ebx, ecx, edx, 13,  9, k3)
+    ASMSubroundI( edx, ebp, eax, ebx, ecx,  3, 14, k3)
+    ASMSubroundI( ecx, edx, ebp, eax, ebx,  7,  5, k3)
+    ASMSubroundI( ebx, ecx, edx, ebp, eax, 15,  6, k3)
+    ASMSubroundI( eax, ebx, ecx, edx, ebp, 14,  8, k3)
+    ASMSubroundI( ebp, eax, ebx, ecx, edx,  5,  6, k3)
+    ASMSubroundI( edx, ebp, eax, ebx, ecx,  6,  5, k3)
+    ASMSubroundI( ecx, edx, ebp, eax, ebx,  2, 12, k3)
 
     // setup
     AS2(    mov   esi, ebp      )
 
-    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  0,  9, k4)
-    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  5, 15, k4)
-    ASMSubroundJ( ebp, eax, ebx, ecx, edx,  9,  5, k4)
-    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  7, 11, k4)
-    ASMSubroundJ( ecx, edx, ebp, eax, ebx, 12,  6, k4)
-    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  2,  8, k4)
-    ASMSubroundJ( eax, ebx, ecx, edx, ebp, 10, 13, k4)
-    ASMSubroundJ( ebp, eax, ebx, ecx, edx, 14, 12, k4)
-    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  1,  5, k4)
-    ASMSubroundJ( ecx, edx, ebp, eax, ebx,  3, 12, k4)
-    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  8, 13, k4)
-    ASMSubroundJ( eax, ebx, ecx, edx, ebp, 11, 14, k4)
-    ASMSubroundJ( ebp, eax, ebx, ecx, edx,  6, 11, k4)
-    ASMSubroundJ( edx, ebp, eax, ebx, ecx, 15,  8, k4)
-    ASMSubroundJ( ecx, edx, ebp, eax, ebx, 13,  5, k4)
-    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  5,  6, k4)
+    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  4,  9, k4)
+    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  0, 15, k4)
+    ASMSubroundJ( ebp, eax, ebx, ecx, edx,  5,  5, k4)
+    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  9, 11, k4)
+    ASMSubroundJ( ecx, edx, ebp, eax, ebx,  7,  6, k4)
+    ASMSubroundJ( ebx, ecx, edx, ebp, eax, 12,  8, k4)
+    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  2, 13, k4)
+    ASMSubroundJ( ebp, eax, ebx, ecx, edx, 10, 12, k4)
+    ASMSubroundJ( edx, ebp, eax, ebx, ecx, 14,  5, k4)
+    ASMSubroundJ( ecx, edx, ebp, eax, ebx,  1, 12, k4)
+    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  3, 13, k4)
+    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  8, 14, k4)
+    ASMSubroundJ( ebp, eax, ebx, ecx, edx, 11, 11, k4)
+    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  6,  8, k4)
+    ASMSubroundJ( ecx, edx, ebp, eax, ebx, 15,  5, k4)
+    ASMSubroundJ( ebx, ecx, edx, ebp, eax, 13,  6, k4)
 
     // store a1 - e1 on stack
-    AS2(    mov   esi, ebp              )  // e1 in esi
-    AS2(    movd  ebp, mm6              )  // restore ebp
-    AS2(    mov   [ebp -  4], eax       )
-    AS2(    mov   [ebp -  8], ebx       )
-    AS2(    mov   [ebp - 12], ecx       )
-    AS2(    mov   [ebp - 16], edx       )
-    AS2(    mov   [ebp - 20], esi       )
-
     AS2(    movd  esi, mm1              )   // digest_
+
+    AS2(    mov   [esp],      eax       )
+    AS2(    mov   [esp +  4], ebx       )
+    AS2(    mov   [esp +  8], ecx       )
+    AS2(    mov   [esp + 12], edx       )
+    AS2(    mov   [esp + 16], ebp       )
+
     AS2(    mov   eax, [esi]            )   // a2
     AS2(    mov   ebx, [esi +  4]       )   // b2
     AS2(    mov   ecx, [esi +  8]       )   // c2
@@ -695,148 +694,138 @@ AS1( loopStart: )
     // setup
     AS2(    mov   esi, edx      )
 
-    ASMSubroundJ( eax, ebx, ecx, edx, ebp, 14,  8, k5)
-    ASMSubroundJ( ebp, eax, ebx, ecx, edx,  7,  9, k5)
-    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  0,  9, k5)
-    ASMSubroundJ( ecx, edx, ebp, eax, ebx,  9, 11, k5)
-    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  2, 13, k5)
-    ASMSubroundJ( eax, ebx, ecx, edx, ebp, 11, 15, k5)
-    ASMSubroundJ( ebp, eax, ebx, ecx, edx,  4, 15, k5)
-    ASMSubroundJ( edx, ebp, eax, ebx, ecx, 13,  5, k5)
-    ASMSubroundJ( ecx, edx, ebp, eax, ebx,  6,  7, k5)
-    ASMSubroundJ( ebx, ecx, edx, ebp, eax, 15,  7, k5)
-    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  8,  8, k5)
-    ASMSubroundJ( ebp, eax, ebx, ecx, edx,  1, 11, k5)
-    ASMSubroundJ( edx, ebp, eax, ebx, ecx, 10, 14, k5)
-    ASMSubroundJ( ecx, edx, ebp, eax, ebx,  3, 14, k5)
-    ASMSubroundJ( ebx, ecx, edx, ebp, eax, 12, 12, k5)
-    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  6,  6, k5)
+    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  5,  8, k5)
+    ASMSubroundJ( ebp, eax, ebx, ecx, edx, 14,  9, k5)
+    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  7,  9, k5)
+    ASMSubroundJ( ecx, edx, ebp, eax, ebx,  0, 11, k5)
+    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  9, 13, k5)
+    ASMSubroundJ( eax, ebx, ecx, edx, ebp,  2, 15, k5)
+    ASMSubroundJ( ebp, eax, ebx, ecx, edx, 11, 15, k5)
+    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  4,  5, k5)
+    ASMSubroundJ( ecx, edx, ebp, eax, ebx, 13,  7, k5)
+    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  6,  7, k5)
+    ASMSubroundJ( eax, ebx, ecx, edx, ebp, 15,  8, k5)
+    ASMSubroundJ( ebp, eax, ebx, ecx, edx,  8, 11, k5)
+    ASMSubroundJ( edx, ebp, eax, ebx, ecx,  1, 14, k5)
+    ASMSubroundJ( ecx, edx, ebp, eax, ebx, 10, 14, k5)
+    ASMSubroundJ( ebx, ecx, edx, ebp, eax,  3, 12, k5)
+    ASMSubroundJ( eax, ebx, ecx, edx, ebp, 12,  6, k5)
 
     // setup
     AS2(    mov   esi, ebx      )
 
-    ASMSubroundI( ebp, eax, ebx, ecx, edx, 11,  9, k6) 
-    ASMSubroundI( edx, ebp, eax, ebx, ecx,  3, 13, k6)
-    ASMSubroundI( ecx, edx, ebp, eax, ebx,  7, 15, k6)
-    ASMSubroundI( ebx, ecx, edx, ebp, eax,  0,  7, k6)
-    ASMSubroundI( eax, ebx, ecx, edx, ebp, 13, 12, k6)
-    ASMSubroundI( ebp, eax, ebx, ecx, edx,  5,  8, k6)
-    ASMSubroundI( edx, ebp, eax, ebx, ecx, 10,  9, k6)
-    ASMSubroundI( ecx, edx, ebp, eax, ebx, 14, 11, k6)
-    ASMSubroundI( ebx, ecx, edx, ebp, eax, 15,  7, k6)
-    ASMSubroundI( eax, ebx, ecx, edx, ebp,  8,  7, k6)
-    ASMSubroundI( ebp, eax, ebx, ecx, edx, 12, 12, k6)
-    ASMSubroundI( edx, ebp, eax, ebx, ecx,  4,  7, k6)
-    ASMSubroundI( ecx, edx, ebp, eax, ebx,  9,  6, k6)
-    ASMSubroundI( ebx, ecx, edx, ebp, eax,  1, 15, k6)
-    ASMSubroundI( eax, ebx, ecx, edx, ebp,  2, 13, k6)
-    ASMSubroundI( ebp, eax, ebx, ecx, edx, 15, 11, k6)
+    ASMSubroundI( ebp, eax, ebx, ecx, edx,  6,  9, k6) 
+    ASMSubroundI( edx, ebp, eax, ebx, ecx, 11, 13, k6)
+    ASMSubroundI( ecx, edx, ebp, eax, ebx,  3, 15, k6)
+    ASMSubroundI( ebx, ecx, edx, ebp, eax,  7,  7, k6)
+    ASMSubroundI( eax, ebx, ecx, edx, ebp,  0, 12, k6)
+    ASMSubroundI( ebp, eax, ebx, ecx, edx, 13,  8, k6)
+    ASMSubroundI( edx, ebp, eax, ebx, ecx,  5,  9, k6)
+    ASMSubroundI( ecx, edx, ebp, eax, ebx, 10, 11, k6)
+    ASMSubroundI( ebx, ecx, edx, ebp, eax, 14,  7, k6)
+    ASMSubroundI( eax, ebx, ecx, edx, ebp, 15,  7, k6)
+    ASMSubroundI( ebp, eax, ebx, ecx, edx,  8, 12, k6)
+    ASMSubroundI( edx, ebp, eax, ebx, ecx, 12,  7, k6)
+    ASMSubroundI( ecx, edx, ebp, eax, ebx,  4,  6, k6)
+    ASMSubroundI( ebx, ecx, edx, ebp, eax,  9, 15, k6)
+    ASMSubroundI( eax, ebx, ecx, edx, ebp,  1, 13, k6)
+    ASMSubroundI( ebp, eax, ebx, ecx, edx,  2, 11, k6)
 
-    ASMSubroundH( edx, ebp, eax, ebx, ecx,  5,  9, k7)
-    ASMSubroundH( ecx, edx, ebp, eax, ebx,  1,  7, k7)
-    ASMSubroundH( ebx, ecx, edx, ebp, eax,  3, 15, k7)
-    ASMSubroundH( eax, ebx, ecx, edx, ebp,  7, 11, k7)
-    ASMSubroundH( ebp, eax, ebx, ecx, edx, 14,  8, k7)
-    ASMSubroundH( edx, ebp, eax, ebx, ecx,  6,  6, k7)
-    ASMSubroundH( ecx, edx, ebp, eax, ebx,  9,  6, k7)
-    ASMSubroundH( ebx, ecx, edx, ebp, eax, 11, 14, k7)
-    ASMSubroundH( eax, ebx, ecx, edx, ebp,  8, 12, k7)
-    ASMSubroundH( ebp, eax, ebx, ecx, edx, 12, 13, k7)
-    ASMSubroundH( edx, ebp, eax, ebx, ecx,  2,  5, k7)
-    ASMSubroundH( ecx, edx, ebp, eax, ebx, 10, 14, k7)
-    ASMSubroundH( ebx, ecx, edx, ebp, eax,  0, 13, k7)
-    ASMSubroundH( eax, ebx, ecx, edx, ebp,  4, 13, k7)
-    ASMSubroundH( ebp, eax, ebx, ecx, edx, 13,  7, k7)
-    ASMSubroundH( edx, ebp, eax, ebx, ecx,  8,  5, k7)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx, 15,  9, k7)
+    ASMSubroundH( ecx, edx, ebp, eax, ebx,  5,  7, k7)
+    ASMSubroundH( ebx, ecx, edx, ebp, eax,  1, 15, k7)
+    ASMSubroundH( eax, ebx, ecx, edx, ebp,  3, 11, k7)
+    ASMSubroundH( ebp, eax, ebx, ecx, edx,  7,  8, k7)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx, 14,  6, k7)
+    ASMSubroundH( ecx, edx, ebp, eax, ebx,  6,  6, k7)
+    ASMSubroundH( ebx, ecx, edx, ebp, eax,  9, 14, k7)
+    ASMSubroundH( eax, ebx, ecx, edx, ebp, 11, 12, k7)
+    ASMSubroundH( ebp, eax, ebx, ecx, edx,  8, 13, k7)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx, 12,  5, k7)
+    ASMSubroundH( ecx, edx, ebp, eax, ebx,  2, 14, k7)
+    ASMSubroundH( ebx, ecx, edx, ebp, eax, 10, 13, k7)
+    ASMSubroundH( eax, ebx, ecx, edx, ebp,  0, 13, k7)
+    ASMSubroundH( ebp, eax, ebx, ecx, edx,  4,  7, k7)
+    ASMSubroundH( edx, ebp, eax, ebx, ecx, 13,  5, k7)
 
+    ASMSubroundG( ecx, edx, ebp, eax, ebx,  8, 15, k8)
+    ASMSubroundG( ebx, ecx, edx, ebp, eax,  6,  5, k8)
+    ASMSubroundG( eax, ebx, ecx, edx, ebp,  4,  8, k8)
+    ASMSubroundG( ebp, eax, ebx, ecx, edx,  1, 11, k8)
+    ASMSubroundG( edx, ebp, eax, ebx, ecx,  3, 14, k8)
+    ASMSubroundG( ecx, edx, ebp, eax, ebx, 11, 14, k8)
+    ASMSubroundG( ebx, ecx, edx, ebp, eax, 15,  6, k8)
+    ASMSubroundG( eax, ebx, ecx, edx, ebp,  0, 14, k8)
+    ASMSubroundG( ebp, eax, ebx, ecx, edx,  5,  6, k8)
+    ASMSubroundG( edx, ebp, eax, ebx, ecx, 12,  9, k8)
+    ASMSubroundG( ecx, edx, ebp, eax, ebx,  2, 12, k8)
+    ASMSubroundG( ebx, ecx, edx, ebp, eax, 13,  9, k8)
+    ASMSubroundG( eax, ebx, ecx, edx, ebp,  9, 12, k8)
+    ASMSubroundG( ebp, eax, ebx, ecx, edx,  7,  5, k8)
+    ASMSubroundG( edx, ebp, eax, ebx, ecx, 10, 15, k8)
+    ASMSubroundG( ecx, edx, ebp, eax, ebx, 14,  8, k8)
 
-    ASMSubroundG( ecx, edx, ebp, eax, ebx,  6, 15, k8)
-    ASMSubroundG( ebx, ecx, edx, ebp, eax,  4,  5, k8)
-    ASMSubroundG( eax, ebx, ecx, edx, ebp,  1,  8, k8)
-    ASMSubroundG( ebp, eax, ebx, ecx, edx,  3, 11, k8)
-    ASMSubroundG( edx, ebp, eax, ebx, ecx, 11, 14, k8)
-    ASMSubroundG( ecx, edx, ebp, eax, ebx, 15, 14, k8)
-    ASMSubroundG( ebx, ecx, edx, ebp, eax,  0,  6, k8)
-    ASMSubroundG( eax, ebx, ecx, edx, ebp,  5, 14, k8)
-    ASMSubroundG( ebp, eax, ebx, ecx, edx, 12,  6, k8)
-    ASMSubroundG( edx, ebp, eax, ebx, ecx,  2,  9, k8)
-    ASMSubroundG( ecx, edx, ebp, eax, ebx, 13, 12, k8)
-    ASMSubroundG( ebx, ecx, edx, ebp, eax,  9,  9, k8)
-    ASMSubroundG( eax, ebx, ecx, edx, ebp,  7, 12, k8)
-    ASMSubroundG( ebp, eax, ebx, ecx, edx, 10,  5, k8)
-    ASMSubroundG( edx, ebp, eax, ebx, ecx, 14, 15, k8)
-    ASMSubroundG( ecx, edx, ebp, eax, ebx, 12,  8, k8)
-
-    ASMSubroundF( ebx, ecx, edx, ebp, eax, 15,  8)
-    ASMSubroundF( eax, ebx, ecx, edx, ebp, 10,  5)
-    ASMSubroundF( ebp, eax, ebx, ecx, edx,  4, 12)
-    ASMSubroundF( edx, ebp, eax, ebx, ecx,  1,  9)
-    ASMSubroundF( ecx, edx, ebp, eax, ebx,  5, 12)
-    ASMSubroundF( ebx, ecx, edx, ebp, eax,  8,  5)
-    ASMSubroundF( eax, ebx, ecx, edx, ebp,  7, 14)
-    ASMSubroundF( ebp, eax, ebx, ecx, edx,  6,  6)
-    ASMSubroundF( edx, ebp, eax, ebx, ecx,  2,  8)
-    ASMSubroundF( ecx, edx, ebp, eax, ebx, 13, 13)
-    ASMSubroundF( ebx, ecx, edx, ebp, eax, 14,  6)
-    ASMSubroundF( eax, ebx, ecx, edx, ebp,  0,  5)
-    ASMSubroundF( ebp, eax, ebx, ecx, edx,  3, 15)
-    ASMSubroundF( edx, ebp, eax, ebx, ecx,  9, 13)
-    ASMSubroundF( ecx, edx, ebp, eax, ebx, 11, 11)
+    ASMSubroundF( ebx, ecx, edx, ebp, eax, 12,  8)
+    ASMSubroundF( eax, ebx, ecx, edx, ebp, 15,  5)
+    ASMSubroundF( ebp, eax, ebx, ecx, edx, 10, 12)
+    ASMSubroundF( edx, ebp, eax, ebx, ecx,  4,  9)
+    ASMSubroundF( ecx, edx, ebp, eax, ebx,  1, 12)
+    ASMSubroundF( ebx, ecx, edx, ebp, eax,  5,  5)
+    ASMSubroundF( eax, ebx, ecx, edx, ebp,  8, 14)
+    ASMSubroundF( ebp, eax, ebx, ecx, edx,  7,  6)
+    ASMSubroundF( edx, ebp, eax, ebx, ecx,  6,  8)
+    ASMSubroundF( ecx, edx, ebp, eax, ebx,  2, 13)
+    ASMSubroundF( ebx, ecx, edx, ebp, eax, 13,  6)
+    ASMSubroundF( eax, ebx, ecx, edx, ebp, 14,  5)
+    ASMSubroundF( ebp, eax, ebx, ecx, edx,  0, 15)
+    ASMSubroundF( edx, ebp, eax, ebx, ecx,  3, 13)
+    ASMSubroundF( ecx, edx, ebp, eax, ebx,  9, 11)
     ASMSubroundF( ebx, ecx, edx, ebp, eax, 11, 11)
 
     // advance data and store for next round
     AS2(    add   edi, 64                       )
+    AS2(    movd  esi, mm1                      )   // digest_
     AS2(    movd  mm0, edi                      )   // store
 
-    // edi = digest_, esi = ebp for a1 - e1 [-4 - -20], esp = tmp
-    AS2(    movd  edi, mm1                      )   // digest_
-    AS2(    movd  esi, mm6                      )   // old ebp_
+    // now edi as tmp
 
     // c1         = digest_[1] + c1 + d2;
-    AS2(    add   [esi - 12], edx               )   // + d2
-    AS2(    mov   esp, [edi + 4]                )   // digest_[1]
-    AS2(    add   [esi - 12], esp               )
+    AS2(    add   [esp +  8], edx               )   // + d2
+    AS2(    mov   edi, [esi + 4]                )   // digest_[1]
+    AS2(    add   [esp +  8], edi               )
 
     // digest_[1] = digest_[2] + d1 + e2;
-    AS2(    mov   [edi + 4], ebp                )   // e2
-    AS2(    mov   esp, [esi - 16]               )   // d1
-    AS2(    add   esp, [edi + 8]                )   // digest_[2]
-    AS2(    add   [edi + 4], esp                )
+    AS2(    mov   [esi + 4], ebp                )   // e2
+    AS2(    mov   edi, [esp + 12]               )   // d1
+    AS2(    add   edi, [esi + 8]                )   // digest_[2]
+    AS2(    add   [esi + 4], edi                )
 
     // digest_[2] = digest_[3] + e1 + a2;
-    AS2(    mov   [edi + 8], eax                )   // a2
-    AS2(    mov   esp, [esi - 20]               )   // e1
-    AS2(    add   esp, [edi + 12]               )   // digest_[3]
-    AS2(    add   [edi + 8], esp                )
+    AS2(    mov   [esi + 8], eax                )   // a2
+    AS2(    mov   edi, [esp + 16]               )   // e1
+    AS2(    add   edi, [esi + 12]               )   // digest_[3]
+    AS2(    add   [esi + 8], edi                )
 
     // digest_[3] = digest_[4] + a1 + b2;
-    AS2(    mov   [edi + 12], ebx               )   // b2
-    AS2(    mov   esp, [esi -  4]               )   // a1
-    AS2(    add   esp, [edi + 16]               )   // digest_[4]
-    AS2(    add   [edi + 12], esp               )
+    AS2(    mov   [esi + 12], ebx               )   // b2
+    AS2(    mov   edi, [esp]                    )   // a1
+    AS2(    add   edi, [esi + 16]               )   // digest_[4]
+    AS2(    add   [esi + 12], edi               )
 
     // digest_[4] = digest_[0] + b1 + c2;
-    AS2(    mov   [edi + 16], ecx               )   // c2
-    AS2(    mov   esp, [esi -  8]               )   // b1
-    AS2(    add   esp, [edi]                    )   // digest_[0]
-    AS2(    add   [edi + 16], esp               )
+    AS2(    mov   [esi + 16], ecx               )   // c2
+    AS2(    mov   edi, [esp +  4]               )   // b1
+    AS2(    add   edi, [esi]                    )   // digest_[0]
+    AS2(    add   [esi + 16], edi               )
 
     // digest_[0] = c1;
-    AS2(    mov   esp, [esi - 12]               )   // c1
-    AS2(    mov   [edi], esp                    )
+    AS2(    mov   edi, [esp +  8]               )   // c1
+    AS2(    mov   [esi], edi                    )
 
     // setup for loop back
-    AS2(    mov   eax, [edi]            )   // a1
-    AS2(    mov   ebx, [edi +  4]       )   // b1
-    AS2(    mov   ecx, [edi +  8]       )   // c1
-    AS2(    mov   edx, [edi + 12]       )   // d1
-    AS2(    mov   ebp, [edi + 16]       )   // e1
-
+    AS2(    movd  edx, mm2              )   // times
     AS2(    movd  edi, mm0              )   // data, already advanced
-
-    AS2(    movd  esp, mm2              )   // times
-    AS1(    dec   esp                   )
-    AS2(    movd  mm2, esp              )
+    AS1(    dec   edx                   )
     AS1(    jnz   loopStart             )
 
 

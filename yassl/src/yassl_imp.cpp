@@ -134,10 +134,10 @@ void DH_Server::build(SSL& ssl)
     const CertManager& cert = ssl.getCrypto().get_certManager();
     
     if (ssl.getSecurity().get_parms().sig_algo_ == rsa_sa_algo)
-        auth.reset(new RSA(cert.get_privateKey(),
+        auth.reset(NEW_YS RSA(cert.get_privateKey(),
                    cert.get_privateKeyLength(), false));
     else {
-        auth.reset(new DSS(cert.get_privateKey(),
+        auth.reset(NEW_YS DSS(cert.get_privateKey(),
                    cert.get_privateKeyLength(), false));
         sigSz += DSS_ENCODED_EXTRA;
     }
@@ -168,7 +168,7 @@ void DH_Server::build(SSL& ssl)
     byte hash[FINISHED_SZ];
     MD5  md5;
     SHA  sha;
-    signature_ = new byte[sigSz];
+    signature_ = NEW_YS byte[sigSz];
 
     const Connection& conn = ssl.getSecurity().get_connection();
     // md5
@@ -199,7 +199,7 @@ void DH_Server::build(SSL& ssl)
     tmp.write(signature_, sigSz);
 
     // key message
-    keyMessage_ = new opaque[length_];
+    keyMessage_ = NEW_YS opaque[length_];
     memcpy(keyMessage_, tmp.get_buffer(), tmp.get_size());
 }
 
@@ -253,7 +253,7 @@ opaque* EncryptedPreMasterSecret::get_clientKey() const
 void EncryptedPreMasterSecret::alloc(int sz)
 {
     length_ = sz;
-    secret_ = new opaque[sz];
+    secret_ = NEW_YS opaque[sz];
 }
 
 
@@ -303,7 +303,7 @@ opaque* ClientDiffieHellmanPublic::get_clientKey() const
 void ClientDiffieHellmanPublic::alloc(int sz, bool offset) 
 {
     length_ = sz + (offset ? KEY_OFFSET : 0); 
-    Yc_ = new opaque[length_];
+    Yc_ = NEW_YS opaque[length_];
 }
 
 
@@ -348,7 +348,7 @@ void DH_Server::read(SSL& ssl, input_buffer& input)
     tmp[1] = input[AUTO];
     ato16(tmp, length);
 
-    signature_ = new byte[length];
+    signature_ = NEW_YS byte[length];
     input.read(signature_, length);
 
     // verify signature
@@ -386,7 +386,7 @@ void DH_Server::read(SSL& ssl, input_buffer& input)
     }
 
     // save input
-    ssl.useCrypto().SetDH(new DiffieHellman(parms_.get_p(),
+    ssl.useCrypto().SetDH(NEW_YS DiffieHellman(parms_.get_p(),
                parms_.get_pSize(), parms_.get_g(), parms_.get_gSize(),
                parms_.get_pub(), parms_.get_pubSize(),
                ssl.getCrypto().get_random()));
@@ -928,7 +928,7 @@ void Data::Process(input_buffer& input, SSL& ssl)
     // read data
     if (dataSz) {
         input_buffer* data;
-        ssl.addData(data = new input_buffer(dataSz));
+        ssl.addData(data = NEW_YS input_buffer(dataSz));
         input.read(data->get_buffer(), dataSz);
         data->add_size(dataSz);
 
@@ -1025,7 +1025,7 @@ void Certificate::Process(input_buffer& input, SSL& ssl)
         c24to32(tmp, cert_sz);
         
         x509* myCert;
-        cm.AddPeerCert(myCert = new x509(cert_sz));
+        cm.AddPeerCert(myCert = NEW_YS x509(cert_sz));
         input.read(myCert->use_buffer(), myCert->get_length());
 
         list_sz -= cert_sz + CERT_HEADER;
@@ -1111,21 +1111,21 @@ const opaque* ServerDHParams::get_pub() const
 
 opaque* ServerDHParams::alloc_p(int sz)
 {
-    p_ = new opaque[pSz_ = sz];
+    p_ = NEW_YS opaque[pSz_ = sz];
     return p_;
 }
 
 
 opaque* ServerDHParams::alloc_g(int sz)
 {
-    g_ = new opaque[gSz_ = sz];
+    g_ = NEW_YS opaque[gSz_ = sz];
     return g_;
 }
 
 
 opaque* ServerDHParams::alloc_pub(int sz)
 {
-    Ys_ = new opaque[pubSz_ = sz];
+    Ys_ = NEW_YS opaque[pubSz_ = sz];
     return Ys_;
 }
 
@@ -1537,7 +1537,7 @@ void CertificateRequest::Build()
     for (int j = 0; j < authCount; j++) {
         int sz = REQUEST_HEADER + MIN_DIS_SIZE;
         DistinguishedName dn;
-        certificate_authorities_.push_back(dn = new byte[sz]);
+        certificate_authorities_.push_back(dn = NEW_YS byte[sz]);
 
         opaque tmp[REQUEST_HEADER];
         c16toa(MIN_DIS_SIZE, tmp);
@@ -1584,7 +1584,7 @@ input_buffer& operator>>(input_buffer& input, CertificateRequest& request)
         ato16(tmp, dnSz);
         
         DistinguishedName dn;
-        request.certificate_authorities_.push_back(dn = new 
+        request.certificate_authorities_.push_back(dn = NEW_YS 
                                                   byte[REQUEST_HEADER + dnSz]);
         memcpy(dn, tmp, REQUEST_HEADER);
         input.read(&dn[REQUEST_HEADER], dnSz);
@@ -1630,7 +1630,8 @@ output_buffer& operator<<(output_buffer& output,
 // CertificateRequest processing handler
 void CertificateRequest::Process(input_buffer&, SSL& ssl)
 {
-    ssl.useCrypto().use_certManager().setSendVerify();
+    if (ssl.useCrypto().use_certManager().get_cert())
+        ssl.useCrypto().use_certManager().setSendVerify();
 }
 
 
@@ -1665,7 +1666,7 @@ void CertificateVerify::Build(SSL& ssl)
         RSA rsa(cert.get_privateKey(), cert.get_privateKeyLength(), false);
 
         sz = rsa.get_cipherLength() + VERIFY_HEADER;
-        sig.reset(new byte[sz]);
+        sig.reset(NEW_YS byte[sz]);
 
         c16toa(sz - VERIFY_HEADER, len);
         memcpy(sig.get(), len, VERIFY_HEADER);
@@ -1676,7 +1677,7 @@ void CertificateVerify::Build(SSL& ssl)
         DSS dss(cert.get_privateKey(), cert.get_privateKeyLength(), false);
 
         sz = DSS_SIG_SZ + DSS_ENCODED_EXTRA + VERIFY_HEADER;
-        sig.reset(new byte[sz]);
+        sig.reset(NEW_YS byte[sz]);
 
         c16toa(sz - VERIFY_HEADER, len);
         memcpy(sig.get(), len, VERIFY_HEADER);
@@ -1714,7 +1715,7 @@ input_buffer& operator>>(input_buffer& input, CertificateVerify& request)
     ato16(tmp, sz);
     request.set_length(sz);
 
-    request.signature_ = new byte[sz];
+    request.signature_ = NEW_YS byte[sz];
     input.read(request.signature_, sz);
 
     return input;
@@ -1975,7 +1976,7 @@ Connection::~Connection()
 
 void Connection::AllocPreSecret(uint sz) 
 { 
-    pre_master_secret_ = new opaque[pre_secret_len_ = sz];
+    pre_master_secret_ = NEW_YS opaque[pre_secret_len_ = sz];
 }
 
 
@@ -2011,35 +2012,35 @@ void Connection::CleanPreMaster()
 
 
 // Create functions for message factory
-Message* CreateCipherSpec() { return new ChangeCipherSpec; }
-Message* CreateAlert()      { return new Alert; }
-Message* CreateHandShake()  { return new HandShakeHeader; }
-Message* CreateData()       { return new Data; }
+Message* CreateCipherSpec() { return NEW_YS ChangeCipherSpec; }
+Message* CreateAlert()      { return NEW_YS Alert; }
+Message* CreateHandShake()  { return NEW_YS HandShakeHeader; }
+Message* CreateData()       { return NEW_YS Data; }
 
 // Create functions for handshake factory
-HandShakeBase* CreateHelloRequest()       { return new HelloRequest; }
-HandShakeBase* CreateClientHello()        { return new ClientHello; }
-HandShakeBase* CreateServerHello()        { return new ServerHello; }
-HandShakeBase* CreateCertificate()        { return new Certificate; }
-HandShakeBase* CreateServerKeyExchange()  { return new ServerKeyExchange;}
-HandShakeBase* CreateCertificateRequest() { return new 
+HandShakeBase* CreateHelloRequest()       { return NEW_YS HelloRequest; }
+HandShakeBase* CreateClientHello()        { return NEW_YS ClientHello; }
+HandShakeBase* CreateServerHello()        { return NEW_YS ServerHello; }
+HandShakeBase* CreateCertificate()        { return NEW_YS Certificate; }
+HandShakeBase* CreateServerKeyExchange()  { return NEW_YS ServerKeyExchange;}
+HandShakeBase* CreateCertificateRequest() { return NEW_YS 
                                                     CertificateRequest; }
-HandShakeBase* CreateServerHelloDone()    { return new ServerHelloDone; }
-HandShakeBase* CreateCertificateVerify()  { return new CertificateVerify;}
-HandShakeBase* CreateClientKeyExchange()  { return new ClientKeyExchange;}
-HandShakeBase* CreateFinished()           { return new Finished; }
+HandShakeBase* CreateServerHelloDone()    { return NEW_YS ServerHelloDone; }
+HandShakeBase* CreateCertificateVerify()  { return NEW_YS CertificateVerify;}
+HandShakeBase* CreateClientKeyExchange()  { return NEW_YS ClientKeyExchange;}
+HandShakeBase* CreateFinished()           { return NEW_YS Finished; }
 
 // Create functions for server key exchange factory
-ServerKeyBase* CreateRSAServerKEA()       { return new RSA_Server; }
-ServerKeyBase* CreateDHServerKEA()        { return new DH_Server; }
-ServerKeyBase* CreateFortezzaServerKEA()  { return new Fortezza_Server; }
+ServerKeyBase* CreateRSAServerKEA()       { return NEW_YS RSA_Server; }
+ServerKeyBase* CreateDHServerKEA()        { return NEW_YS DH_Server; }
+ServerKeyBase* CreateFortezzaServerKEA()  { return NEW_YS Fortezza_Server; }
 
 // Create functions for client key exchange factory
-ClientKeyBase* CreateRSAClient()      { return new 
+ClientKeyBase* CreateRSAClient()      { return NEW_YS 
                                                 EncryptedPreMasterSecret; }
-ClientKeyBase* CreateDHClient()       { return new 
+ClientKeyBase* CreateDHClient()       { return NEW_YS 
                                                 ClientDiffieHellmanPublic; }
-ClientKeyBase* CreateFortezzaClient() { return new FortezzaKeys; }
+ClientKeyBase* CreateFortezzaClient() { return NEW_YS FortezzaKeys; }
 
 
 // Constructor calls this to Register compile time callbacks

@@ -40,47 +40,73 @@
 
 namespace TaoCrypt {
 
-// library allocation
-struct new_t {};      // TaoCrypt New type
-extern new_t tc;      // pass in parameter
+#ifdef YASSL_PURE_C
 
-} // namespace TaoCrypt
+    // library allocation
+    struct new_t {};      // TaoCrypt New type
+    extern new_t tc;      // pass in parameter
 
-void* operator new  (size_t, TaoCrypt::new_t);
-void* operator new[](size_t, TaoCrypt::new_t);
+    } // namespace TaoCrypt
 
-void operator delete  (void*, TaoCrypt::new_t);
-void operator delete[](void*, TaoCrypt::new_t);
+    void* operator new  (size_t, TaoCrypt::new_t);
+    void* operator new[](size_t, TaoCrypt::new_t);
 
-
-namespace TaoCrypt {
-
-template<typename T>
-void tcDelete(T* ptr)
-{
-    if (ptr) ptr->~T();
-    ::operator delete(ptr, TaoCrypt::tc);
-}
-
-template<typename T>
-void tcArrayDelete(T* ptr)
-{
-    // can't do array placement destruction since not tracking size in
-    // allocation, only allow builtins to use array placement since they
-    // don't need destructors called
-    typedef char builtin[IsFundamentalType<T>::Yes ? 1 : -1];
-    (void)sizeof(builtin);
-
-    ::operator delete[](ptr, TaoCrypt::tc);
-}
+    void operator delete  (void*, TaoCrypt::new_t);
+    void operator delete[](void*, TaoCrypt::new_t);
 
 
-// to resolve compiler generated operator delete on base classes with
-// virtual destructors (when on stack), make sure doesn't get called
-class virtual_base {
-public:
-    static void operator delete(void*) { assert(0); }
-};
+    namespace TaoCrypt {
+
+    template<typename T>
+    void tcDelete(T* ptr)
+    {
+        if (ptr) ptr->~T();
+        ::operator delete(ptr, TaoCrypt::tc);
+    }
+
+    template<typename T>
+    void tcArrayDelete(T* ptr)
+    {
+        // can't do array placement destruction since not tracking size in
+        // allocation, only allow builtins to use array placement since they
+        // don't need destructors called
+        typedef char builtin[IsFundamentalType<T>::Yes ? 1 : -1];
+        (void)sizeof(builtin);
+
+        ::operator delete[](ptr, TaoCrypt::tc);
+    }
+
+    #define NEW_TC new (tc)
+
+
+    // to resolve compiler generated operator delete on base classes with
+    // virtual destructors (when on stack), make sure doesn't get called
+    class virtual_base {
+    public:
+        static void operator delete(void*) { assert(0); }
+    };
+
+#else // YASSL_PURE_C
+
+
+    template<typename T>
+    void tcDelete(T* ptr)
+    {
+        delete ptr;
+    }
+
+    template<typename T>
+    void tcArrayDelete(T* ptr)
+    {
+        delete[] ptr;
+    }
+
+    #define NEW_TC new
+
+    class virtual_base {};
+   
+ 
+#endif // YASSL_PURE_C
 
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
@@ -112,10 +138,16 @@ public:
 
 
 // Turn on ia32 ASM for Ciphers and Message Digests
-// For GCC user has to enable during ./configure because of problems with
-// intel syntax addressing on older gas versions
-#if defined(TAOCRYPT_X86ASM_AVAILABLE) && defined(_MSC_VER)
+// Seperate define since these are more complex, use member offsets
+// and user may want to turn off while leaving Big Integer optos on 
+#if defined(TAOCRYPT_X86ASM_AVAILABLE) && !defined(DISABLE_TAO_ASM)
     #define TAO_ASM
+#endif
+
+
+//  Extra word in older vtable implementations, for ASM member offset
+#if defined(__GNUC__) && __GNUC__ < 3
+    #define OLD_GCC_OFFSET
 #endif
 
 

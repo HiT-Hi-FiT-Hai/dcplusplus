@@ -62,6 +62,9 @@ no_backup:
   File "License.txt"
   File "License-GeoIP.txt"
   File "Magnet.exe"
+  ; Remove unicows so that opencow will be used instead
+  Delete "$INSTDIR\unicows.dll"
+  Delete "$INSTDIR\unicows.pdb"
   
   ; Get DCPlusplus version we just installed and store in $1
   Push "DCPlusPlus.exe"

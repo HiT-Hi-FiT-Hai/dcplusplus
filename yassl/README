@@ -1,4 +1,16 @@
-yaSSL Release notes, version 1.0.6
+yaSSL Release notes, version 1.1.5
+
+    This release of yaSSL contains minor bug fixes, portability enhancements,
+    and user requested changes including the ability to add all certificates in
+    a directory, more robust socket handling, no new overloading unless
+    requested, and an SSL_VERIFY_NONE option.
+
+
+See build instructions below under 1.0.6:
+
+
+
+******************yaSSL Release notes, version 1.0.6
 
 This release of yaSSL contains minor bug fixes, portability enhancements,
 x86 assembly for ARC4, SHA, MD5, and RIPEMD, --enable-ia32-asm configure

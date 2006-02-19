@@ -23,6 +23,8 @@
  *
  */
 
+
+
 #ifndef ysSSL_openssl_h__
 #define yaSSL_openssl_h__
 
@@ -258,6 +260,8 @@ int SSL_pending(SSL*);
 
 
 enum { /* ssl Constants */
+    SSL_BAD_STAT        = -7,
+    SSL_BAD_PATH        = -6,
     SSL_BAD_FILETYPE    = -5,
     SSL_BAD_FILE        = -4,
     SSL_NOT_IMPLEMENTED = -3,

@@ -293,8 +293,11 @@ void Blowfish::AsmProcess(const byte* inBlock, byte* outBlock) const
 {
     PROLOG()
 
-    AS2(    add   ecx, 56                       )   // pbox
-    AS2(    mov   edi, ecx                      )   // edi keeps
+    #ifdef OLD_GCC_OFFSET
+        AS2(    lea   edi, [ecx + 60]                       )   // pbox
+    #else
+        AS2(    lea   edi, [ecx + 56]                       )   // pbox
+    #endif
 
     AS2(    mov   eax, DWORD PTR [esi]                                  )
     AS2(    mov   edx, DWORD PTR [edi]                                  )

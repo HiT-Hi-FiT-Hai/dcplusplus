@@ -229,7 +229,8 @@ sslFactory& GetSSL_Factory();
 class SSL_METHOD {
     ProtocolVersion version_;
     ConnectionEnd   side_;
-    bool            verifyPeer_;
+    bool            verifyPeer_;    // request or send certificate
+    bool            verifyNone_;    // whether to verify certificate
     bool            failNoCert_;
 public:
     explicit SSL_METHOD(ConnectionEnd ce, ProtocolVersion pv);
@@ -238,9 +239,11 @@ public:
     ConnectionEnd   getSide()    const;
 
     void setVerifyPeer();
+    void setVerifyNone();
     void setFailNoCert();
 
     bool verifyPeer() const;
+    bool verifyNone() const;
     bool failNoCert() const;
 private:
     SSL_METHOD(const SSL_METHOD&);              // hide copy
@@ -333,6 +336,7 @@ public:
     const Stats&      GetStats()    const;
 
     void setVerifyPeer();
+    void setVerifyNone();
     void setFailNoCert();
     bool SetCipherList(const char*);
     bool SetDH(const DH&);
