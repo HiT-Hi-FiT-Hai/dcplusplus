@@ -29,6 +29,7 @@ class HttpConnection;
 
 class HttpConnectionListener {
 public:
+	virtual ~HttpConnectionListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Data;
@@ -89,5 +90,5 @@ private:
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.27 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.28 2006/02/19 17:19:04 arnetheduck Exp $
  */

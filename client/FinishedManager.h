@@ -61,6 +61,7 @@ private:
 
 class FinishedManagerListener {
 public:
+	virtual ~FinishedManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> AddedUl;
@@ -108,5 +109,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.18 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.19 2006/02/19 17:19:04 arnetheduck Exp $
  */

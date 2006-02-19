@@ -35,6 +35,7 @@ class UserConnection;
 
 class UserConnectionListener {
 public:
+	virtual ~UserConnectionListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> BytesSent;
@@ -363,5 +364,5 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.106 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.107 2006/02/19 17:19:04 arnetheduck Exp $
  */

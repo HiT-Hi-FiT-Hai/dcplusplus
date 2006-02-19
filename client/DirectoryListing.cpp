@@ -370,8 +370,8 @@ DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directo
 }
 
 struct HashContained {
-	HashContained(const HASH_SET<TTHValue, TTHValue::Hash>& l) : tl(l) { }
-	const HASH_SET<TTHValue, TTHValue::Hash>& tl;
+	HashContained(const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) : tl(l) { }
+	const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& tl;
 	bool operator()(const DirectoryListing::File::Ptr i) const {
 		return tl.count(*(i->getTTH())) && (DeleteFunction()(i), true);
 	}
@@ -390,18 +390,18 @@ struct DirectoryEmpty {
 void DirectoryListing::Directory::filterList(DirectoryListing& dirList) {
 		DirectoryListing::Directory* d = dirList.getRoot();
 
-		HASH_SET<TTHValue, TTHValue::Hash> l;
+		HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) l;
 		d->getHashList(l);
 		filterList(l);
 }
 
-void DirectoryListing::Directory::filterList(const HASH_SET<TTHValue, TTHValue::Hash>& l) {
+void DirectoryListing::Directory::filterList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->filterList(l);
 	directories.erase(std::remove_if(directories.begin(),directories.end(),DirectoryEmpty()),directories.end());
 	files.erase(std::remove_if(files.begin(),files.end(),HashContained(l)),files.end());
 }
 
-void DirectoryListing::Directory::getHashList(HASH_SET<TTHValue, TTHValue::Hash>& l) {
+void DirectoryListing::Directory::getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->getHashList(l);
 	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert(*(*i)->getTTH());
 }
@@ -426,5 +426,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.58 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.59 2006/02/19 17:19:04 arnetheduck Exp $
  */

@@ -38,6 +38,7 @@ class File;
 
 class HashManagerListener {
 public:
+	virtual ~HashManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> TTHDone;
@@ -230,7 +231,7 @@ private:
 		typedef HASH_MAP<string, FileInfoList> DirMap;
 		typedef DirMap::iterator DirIter;
 
-		typedef HASH_MAP_X(TTHValue, TreeInfo, TTHValue::Hash, TTHValue::Hash, TTHValue::Less) TreeMap;
+		typedef HASH_MAP_X(TTHValue, TreeInfo, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) TreeMap;
 		typedef TreeMap::iterator TreeIter;
 
 		friend class HashLoader;
@@ -274,5 +275,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.33 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.34 2006/02/19 17:19:04 arnetheduck Exp $
  */

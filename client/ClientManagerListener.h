@@ -25,6 +25,7 @@
 
 class ClientManagerListener {
 public:
+	virtual ~ClientManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> UserConnected;
@@ -50,5 +51,5 @@ public:
 
 /**
  * @file
- * $Id: ClientManagerListener.h,v 1.12 2005/12/09 22:50:07 arnetheduck Exp $
+ * $Id: ClientManagerListener.h,v 1.13 2006/02/19 17:19:04 arnetheduck Exp $
  */

@@ -512,6 +512,7 @@ enum Strings { // @DontAdd
 	SETTINGS_WINDOWS, // "Appearance\\Windows"
 	SETTINGS_WINDOWS_OPTIONS, // "Window options"
 	SETTINGS_WRITE_BUFFER, // "Write buffer size"
+	SETTINGS_ALT_SORT_ORDER, // "Sort all downloads first"
 	SETTINGS_USE_SSL, // "Use SSL when remote client supports it"
 	SFV_INCONSISTENCY, // "CRC32 inconsistency (SFV-Check)"
 	SHARED, // "Shared"

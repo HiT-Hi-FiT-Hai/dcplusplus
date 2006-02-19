@@ -40,10 +40,6 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 
 	struct Hash {
 		size_t operator()(const HashValue& rhs) const { return *(size_t*)&rhs; }
-		bool operator()(const HashValue& lhs, const HashValue& rhs) const { return lhs == rhs; }
-	};
-	struct Less {
-		bool operator()(const HashValue& lhs, const HashValue& rhs) const { return lhs < rhs; }
 	};
 
 	HashValue() { }
@@ -65,5 +61,5 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 
 /**
  * @file
- * $Id: HashValue.h,v 1.13 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: HashValue.h,v 1.14 2006/02/19 17:19:04 arnetheduck Exp $
  */

@@ -35,6 +35,7 @@ class SocketException;
 
 class BufferedSocketListener {
 public:
+	virtual ~BufferedSocketListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;
@@ -185,5 +186,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.78 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.79 2006/02/19 17:19:04 arnetheduck Exp $
  */

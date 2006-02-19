@@ -100,8 +100,8 @@ public:
 		size_t getTotalFileCount(bool adls = false);		
 		int64_t getTotalSize(bool adls = false);
 		void filterList(DirectoryListing& dirList);
-		void filterList(const HASH_SET<TTHValue, TTHValue::Hash>& l);
-		void getHashList(HASH_SET<TTHValue, TTHValue::Hash>& l);
+		void filterList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l);
+		void getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l);
 		
 		size_t getFileCount() { return files.size(); }
 		
@@ -179,5 +179,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.46 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.47 2006/02/19 17:19:04 arnetheduck Exp $
  */

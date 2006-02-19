@@ -60,6 +60,7 @@ public:
 
 class UploadManagerListener {
 public:
+	virtual ~UploadManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 	
 	typedef X<0> Complete;
@@ -198,5 +199,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.85 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.86 2006/02/19 17:19:04 arnetheduck Exp $
  */

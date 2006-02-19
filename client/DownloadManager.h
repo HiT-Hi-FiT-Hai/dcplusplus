@@ -127,6 +127,7 @@ private:
  */
 class DownloadManagerListener {
 public:
+	virtual ~DownloadManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Complete;
@@ -281,5 +282,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.85 2006/02/19 16:19:05 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.86 2006/02/19 17:19:04 arnetheduck Exp $
  */

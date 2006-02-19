@@ -187,8 +187,7 @@ private:
 
 		User::Ptr user;
 		Identity identity;
-	}
-
+	};
 
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
@@ -386,5 +385,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.74 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.75 2006/02/19 17:19:05 arnetheduck Exp $
  */

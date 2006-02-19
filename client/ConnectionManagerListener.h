@@ -27,6 +27,7 @@ class ConnectionQueueItem;
 
 class ConnectionManagerListener {
 public:
+	virtual ~ConnectionManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Added;
@@ -46,5 +47,5 @@ public:
 
 /**
  * @file
- * $Id: ConnectionManagerListener.h,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: ConnectionManagerListener.h,v 1.8 2006/02/19 17:19:04 arnetheduck Exp $
  */

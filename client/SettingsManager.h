@@ -31,6 +31,7 @@ class SimpleXML;
 
 class SettingsManagerListener {
 public:
+	virtual ~SettingsManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Load;
@@ -88,7 +89,7 @@ public:
 		NO_IP_OVERRIDE, SEARCH_ONLY_FREE_SLOTS, LAST_SEARCH_TYPE, BOLD_FINISHED_DOWNLOADS, BOLD_FINISHED_UPLOADS, BOLD_QUEUE, 
 		BOLD_HUB, BOLD_PM, BOLD_SEARCH, SOCKET_IN_BUFFER, SOCKET_OUT_BUFFER, ONLY_DL_TTH_FILES,
 		OPEN_WAITING_USERS, BOLD_WAITING_USERS, OPEN_SYSTEM_LOG, BOLD_SYSTEM_LOG, AUTO_REFRESH_TIME, 
-		USE_SSL, AUTO_SEARCH_LIMIT, 
+		USE_SSL, AUTO_SEARCH_LIMIT, ALT_SORT_ORDER,
 		INT_LAST };
 
 	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
@@ -206,5 +207,5 @@ private:
 
 /**
  * @file
- * $Id: SettingsManager.h,v 1.111 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.112 2006/02/19 17:19:04 arnetheduck Exp $
  */

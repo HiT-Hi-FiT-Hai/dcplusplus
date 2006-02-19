@@ -27,6 +27,7 @@ class QueueItem;
 
 class QueueManagerListener {
 public:
+	virtual ~QueueManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Added;
@@ -52,5 +53,5 @@ public:
 
 /**
  * @file
- * $Id: QueueManagerListener.h,v 1.11 2006/01/23 08:00:49 arnetheduck Exp $
+ * $Id: QueueManagerListener.h,v 1.12 2006/02/19 17:19:04 arnetheduck Exp $
  */

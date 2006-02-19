@@ -73,7 +73,7 @@ const string SettingsManager::settingTags[] =
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
-	"UseSsl", "AutoSearchLimit", 
+	"UseSsl", "AutoSearchLimit", "AltSortOrder",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -254,6 +254,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_REFRESH_TIME, 60);
 	setDefault(USE_SSL, false);
 	setDefault(AUTO_SEARCH_LIMIT, 5);
+	setDefault(ALT_SORT_ORDER, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -422,5 +423,5 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.141 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.142 2006/02/19 17:19:04 arnetheduck Exp $
  */

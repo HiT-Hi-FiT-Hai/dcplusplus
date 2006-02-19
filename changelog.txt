@@ -7,7 +7,7 @@
 * Fixed some VS 2005 issues (thanks trem)
 * Installer now removes old unicows library
 * Updated to yaSSL 1.1.5
-
+* Added possiblity to sort transfer view by all downloads first (thanks guitarm)
 
 -- 0.686 2006-02-13 --
 * Fixed active search (oops)

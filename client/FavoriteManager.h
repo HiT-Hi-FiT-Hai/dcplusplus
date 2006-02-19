@@ -110,6 +110,7 @@ private:
 
 class FavoriteManagerListener {
 public:
+	virtual ~FavoriteManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> DownloadStarting;
@@ -281,5 +282,5 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.12 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.13 2006/02/19 17:19:04 arnetheduck Exp $
  */

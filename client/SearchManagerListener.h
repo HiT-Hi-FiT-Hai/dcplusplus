@@ -27,6 +27,7 @@ class SearchResult;
 
 class SearchManagerListener {
 public:
+	virtual ~SearchManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> SR;
@@ -37,5 +38,5 @@ public:
 
 /**
  * @file
- * $Id: SearchManagerListener.h,v 1.8 2005/04/24 08:13:10 arnetheduck Exp $
+ * $Id: SearchManagerListener.h,v 1.9 2006/02/19 17:19:04 arnetheduck Exp $
  */

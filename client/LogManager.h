@@ -30,6 +30,7 @@
 
 class LogManagerListener {
 public:
+	virtual ~LogManagerListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Message;
@@ -123,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.21 2006/02/19 16:19:05 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.22 2006/02/19 17:19:04 arnetheduck Exp $
  */

@@ -45,6 +45,7 @@ PropPage::Item AppearancePage::items[] = {
 };
 
 PropPage::ListItem AppearancePage::listItems[] = {
+	{ SettingsManager::ALT_SORT_ORDER, ResourceManager::SETTINGS_ALT_SORT_ORDER },
 	{ SettingsManager::FILTER_MESSAGES, ResourceManager::SETTINGS_FILTER_MESSAGES },
 	{ SettingsManager::MINIMIZE_TRAY, ResourceManager::SETTINGS_MINIMIZE_TRAY },
 	{ SettingsManager::TIME_STAMPS, ResourceManager::SETTINGS_TIME_STAMPS },
@@ -99,5 +100,5 @@ LRESULT AppearancePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.28 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.29 2006/02/19 17:19:05 arnetheduck Exp $
  */
