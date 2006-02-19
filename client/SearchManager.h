@@ -82,13 +82,13 @@ public:
 	void decRef() { 
 		if(Thread::safeDec(ref) == 0) 
 			delete this; 
-	};
+	}
 
 private:
 	friend class SearchManager;
 
 	SearchResult();
-	~SearchResult() { delete tth; };
+	~SearchResult() { delete tth; }
 
 	SearchResult(const SearchResult& rhs);
 
@@ -168,7 +168,7 @@ private:
 	u_int32_t lastSearch;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  };
+	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  }
 
 	virtual int run();
 
@@ -181,7 +181,7 @@ private:
 #endif
 			delete socket;
 		}
-	};
+	}
 
 	void onData(const u_int8_t* buf, size_t aLen, const string& address);
 };
@@ -190,5 +190,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.58 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.59 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -31,8 +31,8 @@ class Speaker {
 	typedef typename ListenerList::iterator ListenerIter;
 
 public:
-	Speaker() throw() { };
-	virtual ~Speaker() throw() { };
+	Speaker() throw() { }
+	virtual ~Speaker() throw() { }
 
 	template<typename T0>
 	void fire(T0 type) throw() {
@@ -125,5 +125,5 @@ protected:
 
 /**
  * @file
- * $Id: Speaker.h,v 1.9 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: Speaker.h,v 1.10 2006/02/19 16:19:06 arnetheduck Exp $
  */

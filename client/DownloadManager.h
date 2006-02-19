@@ -138,18 +138,18 @@ public:
 	 * This is the first message sent before a download starts. 
 	 * No other messages will be sent before.
 	 */
-	virtual void on(Starting, Download*) throw() { };
+	virtual void on(Starting, Download*) throw() { }
 
 	/**
 	 * Sent once a second if something has actually been downloaded.
 	 */
-	virtual void on(Tick, const Download::List&) throw() { };
+	virtual void on(Tick, const Download::List&) throw() { }
 
 	/** 
 	 * This is the last message sent before a download is deleted. 
 	 * No more messages will be sent after it.
 	 */
-	virtual void on(Complete, Download*) throw() { };
+	virtual void on(Complete, Download*) throw() { }
 
 	/** 
 	 * This indicates some sort of failure with a particular download.
@@ -158,7 +158,7 @@ public:
 	 * @remarks Should send an error code instead of a string and let the GUI
 	 * display an error string.
 	 */
-	virtual void on(Failed, Download*, const string&) throw() { };
+	virtual void on(Failed, Download*, const string&) throw() { }
 };
 
 
@@ -209,8 +209,8 @@ private:
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {
 	public:
-		FileMover() : active(false) { };
-		virtual ~FileMover() { join(); };
+		FileMover() : active(false) { }
+		virtual ~FileMover() { join(); }
 
 		void moveFile(const string& source, const string& target);
 		virtual int run();
@@ -244,7 +244,7 @@ private:
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 
 		TimerManager::getInstance()->addListener(this);
-	};
+	}
 
 	virtual ~DownloadManager() throw() {
 		TimerManager::getInstance()->removeListener(this);
@@ -256,7 +256,7 @@ private:
 			}
 			Thread::sleep(100);
 		}
-	};
+	}
 	
 	void checkDownloads(UserConnection* aConn);
 	void handleEndData(UserConnection* aSource);
@@ -281,5 +281,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.84 2006/01/15 18:40:37 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.85 2006/02/19 16:19:05 arnetheduck Exp $
  */

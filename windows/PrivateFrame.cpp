@@ -289,7 +289,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 		return;
 
 	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams, true);
-};
+}
 
 LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	try {
@@ -417,5 +417,5 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.61 2006/02/05 17:02:38 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.62 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -81,7 +81,7 @@ class SimpleXML
 public:
 	SimpleXML() : root("BOGUSROOT", Util::emptyString, NULL), current(&root), found(false) { 
 		resetCurrentChild();
-	};
+	}
 	~SimpleXML() { }
 	
 	void addTag(const string& aName, const string& aData = Util::emptyString) throw(SimpleXMLException);
@@ -169,8 +169,8 @@ public:
 	}
 	
 	void fromXML(const string& aXML) throw(SimpleXMLException);
-	string toXML() { string tmp; StringOutputStream os(tmp); toXML(&os); return tmp; };
-	void toXML(OutputStream* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
+	string toXML() { string tmp; StringOutputStream os(tmp); toXML(&os); return tmp; }
+	void toXML(OutputStream* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); }
 	
 	static const string& escape(const string& str, string& tmp, bool aAttrib, bool aLoading = false, bool utf8 = true) {
 		if(needsEscape(str, aAttrib, aLoading, utf8)) {
@@ -218,10 +218,10 @@ private:
 		Ptr parent;
 
 		Tag(const string& aName, const StringPairList& a, Ptr aParent) : attribs(a), name(aName), data(), parent(aParent) { 
-		};
+		}
 
 		Tag(const string& aName, const string& d, Ptr aParent) : name(aName), data(d), parent(aParent) { 
-		};
+		}
 		
 		const string& getAttrib(const string& aName, const string& aDefault = Util::emptyString) {
 			StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string,string>(aName));
@@ -244,7 +244,7 @@ private:
 
 	class TagReader : public SimpleXMLReader::CallBack {
 	public:
-		TagReader(Tag* root) : cur(root) { };
+		TagReader(Tag* root) : cur(root) { }
 		virtual bool getData(string&) { return false; }
 		virtual void startTag(const string& name, StringPairList& attribs, bool simple) {
 			cur->children.push_back(new Tag(name, attribs, cur));
@@ -284,5 +284,5 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.45 2005/05/07 22:43:23 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.46 2006/02/19 16:19:06 arnetheduck Exp $
  */

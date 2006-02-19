@@ -170,7 +170,7 @@ public:
 		int64Defaults[key - INT64_FIRST] = value;
 	}
 
-	bool isDefault(int aSet) { return !isSet[aSet]; };
+	bool isDefault(int aSet) { return !isSet[aSet]; }
 
 	void load() {
 		load(Util::getConfigPath() + "DCPlusPlus.xml");
@@ -206,5 +206,5 @@ private:
 
 /**
  * @file
- * $Id: SettingsManager.h,v 1.110 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.111 2006/02/19 16:19:06 arnetheduck Exp $
  */

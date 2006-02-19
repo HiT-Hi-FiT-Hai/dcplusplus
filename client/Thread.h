@@ -47,11 +47,11 @@ public:
 		HIGH = THREAD_PRIORITY_ABOVE_NORMAL
 	};
 
-	Thread() throw() : threadHandle(NULL), threadId(0){ };
+	Thread() throw() : threadHandle(NULL), threadId(0){ }
 	virtual ~Thread() { 
 		if(threadHandle)
 			CloseHandle(threadHandle);
-	};
+	}
 	
 	void start() throw(ThreadException);
 	void join() throw(ThreadException) {
@@ -64,13 +64,13 @@ public:
 		threadHandle = NULL;
 	}
 
-	void setThreadPriority(Priority p) throw() { ::SetThreadPriority(threadHandle, p); };
+	void setThreadPriority(Priority p) throw() { ::SetThreadPriority(threadHandle, p); }
 	
-	static void sleep(u_int32_t millis) { ::Sleep(millis); };
-	static void yield() { ::Sleep(0); };
-	static long safeInc(volatile long& v) { return InterlockedIncrement(&v); };
-	static long safeDec(volatile long& v) { return InterlockedDecrement(&v); };
-	static long safeExchange(volatile long& target, long value) { return InterlockedExchange(&target, value); };
+	static void sleep(u_int32_t millis) { ::Sleep(millis); }
+	static void yield() { ::Sleep(0); }
+	static long safeInc(volatile long& v) { return InterlockedIncrement(&v); }
+	static long safeDec(volatile long& v) { return InterlockedDecrement(&v); }
+	static long safeExchange(volatile long& target, long value) { return InterlockedExchange(&target, value); }
 
 #else
 
@@ -80,23 +80,23 @@ public:
 		NORMAL = 0,
 		HIGH = -1
 	};
-	Thread() throw() : threadHandle(0) { };
+	Thread() throw() : threadHandle(0) { }
 	virtual ~Thread() { 
 		if(threadHandle != 0) {
 			pthread_detach(threadHandle);
 		}
-	};
+	}
 	void start() throw(ThreadException);
 	void join() throw() { 
 		if (threadHandle) {
 			pthread_join(threadHandle, 0);
 			threadHandle = 0;
 		}
-	};
+	}
 
-	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); };
-	static void sleep(u_int32_t millis) { ::usleep(millis*1000); };
-	static void yield() { ::sched_yield(); };
+	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); }
+	static void sleep(u_int32_t millis) { ::usleep(millis*1000); }
+	static void yield() { ::sched_yield(); }
 	static long safeInc(volatile long& v) { 
 #ifdef HAVE_ASM_ATOMIC_H
 		atomic_t t = ATOMIC_INIT(v);
@@ -106,7 +106,7 @@ public:
 #warning FIXME
 		return ++v;
 #endif
-	};
+	}
 	static long safeDec(volatile long& v) { 
 #ifdef HAVE_ASM_ATOMIC_H
 		atomic_t t = ATOMIC_INIT(v);
@@ -116,7 +116,7 @@ public:
 #warning FIXME
 		return --v;
 #endif
-	};
+	}
 #endif
 
 protected:
@@ -148,5 +148,5 @@ private:
 
 /**
  * @file
- * $Id: Thread.h,v 1.22 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: Thread.h,v 1.23 2006/02/19 16:19:06 arnetheduck Exp $
  */

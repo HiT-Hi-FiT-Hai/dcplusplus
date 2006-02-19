@@ -106,13 +106,13 @@ public:
 				| FLAG_BAD_TREE | FLAG_NO_TREE | FLAG_SLOW_SOURCE
 		};
 
-		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
+		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { }
 		Source(const Source& aSource) : Flags(aSource), path(aSource.path), user(aSource.user) { }
 
-		User::Ptr& getUser() { return user; };
-		const User::Ptr& getUser() const { return user; };
-		void setUser(const User::Ptr& aUser) { user = aUser; };
-		string getFileName() { return Util::getFileName(path); };
+		User::Ptr& getUser() { return user; }
+		const User::Ptr& getUser() const { return user; }
+		void setUser(const User::Ptr& aUser) { user = aUser; }
+		string getFileName() { return Util::getFileName(path); }
 
 		GETSET(string, path, Path);
 	private:
@@ -125,7 +125,7 @@ public:
 		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING), 
 		priority(aPriority), current(NULL), currentDownload(NULL), added(aAdded),
 		tthRoot(tth == NULL ? NULL : new TTHValue(*tth))
-	{ };
+	{ }
 
 	QueueItem(const QueueItem& rhs) : 
 	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget), 
@@ -146,7 +146,7 @@ public:
 		for_each(sources.begin(), sources.end(), DeleteFunction());
 		for_each(badSources.begin(), badSources.end(), DeleteFunction());
 		delete tthRoot;
-	};
+	}
 
 	int countOnlineUsers() const {
 		int n = 0;
@@ -157,15 +157,15 @@ public:
 		}
 		return n;
 	}
-	bool hasOnlineUsers() const { return countOnlineUsers() > 0; };
+	bool hasOnlineUsers() const { return countOnlineUsers() > 0; }
 
 	const string& getSourcePath(const User::Ptr& aUser) { 
 		dcassert(isSource(aUser)); 
 		return (*getSource(aUser, sources))->getPath();
 	}
 
-	Source::List& getSources() { return sources; };
-	Source::List& getBadSources() { return badSources; };
+	Source::List& getSources() { return sources; }
+	Source::List& getBadSources() { return badSources; }
 
 	void getOnlineUsers(User::List& l) const  {
 		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i)
@@ -173,22 +173,22 @@ public:
 				l.push_back((*i)->getUser());
 	}
 
-	string getTargetFileName() const { return Util::getFileName(getTarget()); };
+	string getTargetFileName() const { return Util::getFileName(getTarget()); }
 
-	Source::Iter getSource(const User::Ptr& aUser) { return getSource(aUser, sources); };
-	Source::Iter getBadSource(const User::Ptr& aUser) { return getSource(aUser, badSources); };
+	Source::Iter getSource(const User::Ptr& aUser) { return getSource(aUser, sources); }
+	Source::Iter getBadSource(const User::Ptr& aUser) { return getSource(aUser, badSources); }
 
-	bool isSource(const User::Ptr& aUser) { return (getSource(aUser, sources) != sources.end()); };
-	bool isBadSource(const User::Ptr& aUser) { return (getSource(aUser, badSources) != badSources.end()); };
+	bool isSource(const User::Ptr& aUser) { return (getSource(aUser, sources) != sources.end()); }
+	bool isBadSource(const User::Ptr& aUser) { return (getSource(aUser, badSources) != badSources.end()); }
 
-	bool isSource(const User::Ptr& aUser) const { return isSource(aUser, sources); };
-	bool isBadSource(const User::Ptr& aUser) const { return isSource(aUser, badSources); };
+	bool isSource(const User::Ptr& aUser) const { return isSource(aUser, sources); }
+	bool isBadSource(const User::Ptr& aUser) const { return isSource(aUser, badSources); }
 	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
 		Source::ConstIter i = getSource(aUser, badSources);
 		if(i != badSources.end())
 			return (*i)->isAnySet(exceptions^Source::FLAG_MASK); 
 		return false;
-	};
+	}
 
 	void setCurrent(const User::Ptr& aUser) {
 		dcassert(isSource(aUser));
@@ -282,5 +282,5 @@ private:
 
 /**
  * @file
- * $Id: QueueItem.h,v 1.24 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: QueueItem.h,v 1.25 2006/02/19 16:19:06 arnetheduck Exp $
  */

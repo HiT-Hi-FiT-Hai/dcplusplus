@@ -84,8 +84,8 @@ private:
 	CPen foregr;
 
 	struct Stat {
-		Stat() : scroll(0), speed(0) { };
-		Stat(u_int32_t aScroll, int64_t aSpeed) : scroll(aScroll), speed(aSpeed) { };
+		Stat() : scroll(0), speed(0) { }
+		Stat(u_int32_t aScroll, int64_t aSpeed) : scroll(aScroll), speed(aSpeed) { }
 		u_int32_t scroll;
 		int64_t speed;
 	};
@@ -119,5 +119,5 @@ private:
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.11 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.12 2006/02/19 16:19:06 arnetheduck Exp $
  */

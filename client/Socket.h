@@ -81,7 +81,7 @@ public:
 
 	Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false), blocking(true) { }
 	Socket(const string& aIp, short aPort) throw(SocketException) : sock(INVALID_SOCKET), connected(false), blocking(true) { connect(aIp, aPort); }
-	virtual ~Socket() throw() { Socket::disconnect(); };
+	virtual ~Socket() throw() { Socket::disconnect(); }
 
 	/**
 	 * Connects a socket to an address/ip, closing any other connections made with
@@ -91,7 +91,7 @@ public:
 	 * @throw SocketException If any connection error occurs.
 	 */
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);
-	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); };
+	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); }
 	/**
 	 * Same as connect(), but through the SOCKS5 server
 	 */
@@ -105,9 +105,9 @@ public:
 	 */
 	void writeAll(const void* aBuffer, int aLen, u_int32_t timeout = 0) throw(SocketException);
 	virtual int write(const void* aBuffer, int aLen) throw(SocketException);
-	int write(const string& aData) throw(SocketException) { return write(aData.data(), (int)aData.length()); };
+	int write(const string& aData) throw(SocketException) { return write(aData.data(), (int)aData.length()); }
 	virtual void writeTo(const string& aIp, short aPort, const void* aBuffer, int aLen, bool proxy = true) throw(SocketException);
-	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), (int)aData.length()); };
+	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), (int)aData.length()); }
 	virtual void shutdown() throw();
 	virtual void close() throw();
 	void disconnect() throw();
@@ -138,11 +138,11 @@ public:
 	int readAll(void* aBuffer, int aBufLen, u_int32_t timeout = 0) throw(SocketException);
 	
 	virtual int wait(u_int32_t millis, int waitFor) throw(SocketException);
-	bool isConnected() { return connected; };
+	bool isConnected() { return connected; }
 	
 	static string resolve(const string& aDns);
-	static int64_t getTotalDown() { return stats.totalDown; };
-	static int64_t getTotalUp() { return stats.totalUp; };
+	static int64_t getTotalDown() { return stats.totalDown; }
+	static int64_t getTotalUp() { return stats.totalUp; }
 	
 #ifdef _WIN32
 	void setBlocking(bool block) throw() {
@@ -249,5 +249,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.66 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: Socket.h,v 1.67 2006/02/19 16:19:06 arnetheduck Exp $
  */

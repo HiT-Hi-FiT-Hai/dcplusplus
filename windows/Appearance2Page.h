@@ -33,7 +33,7 @@ public:
 	Appearance2Page(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_APPEARANCE2));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 
 	virtual ~Appearance2Page();
 
@@ -79,5 +79,5 @@ protected:
 
 /**
  * @file
- * $Id: Appearance2Page.h,v 1.5 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: Appearance2Page.h,v 1.6 2006/02/19 16:19:06 arnetheduck Exp $
  */

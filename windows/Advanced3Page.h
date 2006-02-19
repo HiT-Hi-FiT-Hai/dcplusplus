@@ -33,10 +33,9 @@ public:
 	Advanced3Page(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_ADVANCED3));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 
-	virtual ~Advanced3Page() {
-	};
+	virtual ~Advanced3Page() { }
 
 	BEGIN_MSG_MAP(Advanced3Page)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -62,5 +61,5 @@ protected:
 
 /**
  * @file
- * $Id: Advanced3Page.h,v 1.4 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: Advanced3Page.h,v 1.5 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -196,7 +196,7 @@ private:
 		void addTree(const TigerTree& tt);
 		const TTHValue* getTTH(const string& aFileName);
 		bool getTree(const TTHValue& root, TigerTree& tth);
-		bool isDirty() { return dirty; };
+		bool isDirty() { return dirty; }
 	private:
 		/** Root -> tree mapping info, we assume there's only one tree for each root (a collision would mean we've broken tiger...) */
 		struct TreeInfo {
@@ -274,5 +274,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.32 2005/12/24 23:13:25 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.33 2006/02/19 16:19:06 arnetheduck Exp $
  */

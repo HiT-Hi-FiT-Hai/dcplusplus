@@ -50,7 +50,7 @@ public:
 
 	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), moving(NULL), inTab(false) { 
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-	};
+	}
 	virtual ~FlatTabCtrlImpl() { }
 
 	static LPCTSTR GetWndClassName()
@@ -276,11 +276,11 @@ public:
 		return 0;
 	}
 
-	int getTabHeight() { return height; };
-	int getHeight() { return (getRows() * getTabHeight())+1; };
-	int getFill() { return (getTabHeight() + 1) / 2; };
+	int getTabHeight() { return height; }
+	int getHeight() { return (getRows() * getTabHeight())+1; }
+	int getFill() { return (getTabHeight() + 1) / 2; }
 
-	int getRows() { return rows; };
+	int getRows() { return rows; }
 
 	void calcRows(bool inval = true) {
 		CRect rc;
@@ -325,7 +325,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
 		chevron.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 			BS_PUSHBUTTON , 0, IDC_CHEVRON);
-		chevron.SetWindowText(_T("»"));
+		chevron.SetWindowText(_T("ï¿½"));
 
 		mnu.CreatePopupMenu();
 
@@ -446,7 +446,7 @@ private:
 			memset(&boldSize, 0, sizeof(boldSize));
 			name[0] = 0;
 			update();
-		};
+		}
 
 		HWND hWnd;
 		CPen pen;
@@ -483,7 +483,7 @@ private:
 			dc.SelectFont(f);		
 			::ReleaseDC(hWnd, dc);
 			return true;
-		};
+		}
 
 		bool updateText(LPCTSTR text) {
 			len = _tcslen(text);
@@ -505,7 +505,7 @@ private:
 			dc.SelectFont(f);		
 			::ReleaseDC(hWnd, dc);
 			return true;
-		};
+		}
 
 		int getWidth() {
 			return (dirty ? boldSize.cx : size.cx) + FT_EXTRA_SPACE;
@@ -623,7 +623,7 @@ private:
 		} else {
 			dc.TextOut(pos + getFill() / 2 + FT_EXTRA_SPACE / 2, ypos + 1, tab->name, tab->len);
 		}
-	};
+	}
 };
 
 class FlatTabCtrl : public FlatTabCtrlImpl<FlatTabCtrl> {
@@ -635,8 +635,8 @@ template <class T, int C = RGB(128, 128, 128), class TBase = CMDIWindow, class T
 class ATL_NO_VTABLE MDITabChildWindowImpl : public CMDIChildWindowImpl<T, TBase, TWinTraits> {
 public:
 
-	MDITabChildWindowImpl() : created(false) { };
-	FlatTabCtrl* getTab() { return WinUtil::tabCtrl; };
+	MDITabChildWindowImpl() : created(false) { }
+	FlatTabCtrl* getTab() { return WinUtil::tabCtrl; }
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
@@ -826,5 +826,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.40 2005/11/28 01:21:06 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.41 2006/02/19 16:19:06 arnetheduck Exp $
  */

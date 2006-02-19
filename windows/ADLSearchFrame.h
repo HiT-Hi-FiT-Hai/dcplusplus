@@ -18,7 +18,7 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom on home point se
+ * Henrik Engstrï¿½m, henrikengstrom on home point se
  */
 
 #if !defined(ADL_SEARCH_FRAME_H)
@@ -104,7 +104,7 @@ public:
 		}
 		bHandled = FALSE;
 		return FALSE;
-	};
+	}
 
 	// Update control layouts
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -148,5 +148,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.12 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.13 2006/02/19 16:19:06 arnetheduck Exp $
  */

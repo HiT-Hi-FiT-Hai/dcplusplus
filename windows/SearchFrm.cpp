@@ -804,8 +804,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		ClientManager::getInstance()->userCommand(sr->getUser(), uc, tmp, true);
 	}
-	return;
-};
+}
 
 LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	HWND hWnd = (HWND)lParam;
@@ -821,7 +820,7 @@ LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		::SetTextColor(hDC, WinUtil::textColor);
 		return (LRESULT)WinUtil::bgBrush;
 	}
-};
+}
 
 LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	switch(wParam) {
@@ -1178,5 +1177,5 @@ void SearchFrame::SearchInfo::update() {
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.109 2006/01/09 22:44:49 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.110 2006/02/19 16:19:06 arnetheduck Exp $
  */

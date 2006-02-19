@@ -42,7 +42,7 @@ public:
 	/** Call once all data has been processed. */
 	u_int8_t* finalize();
 
-	u_int8_t* getResult() { return (u_int8_t*) res; };
+	u_int8_t* getResult() { return (u_int8_t*) res; }
 private:
 	enum { BLOCK_SIZE = 512/8 };
 	/** 512 bit blocks for the compress function */
@@ -61,5 +61,5 @@ private:
 
 /**
  * @file
- * $Id: TigerHash.h,v 1.8 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: TigerHash.h,v 1.9 2006/02/19 16:19:06 arnetheduck Exp $
  */

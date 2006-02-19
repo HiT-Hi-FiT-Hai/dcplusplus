@@ -176,7 +176,7 @@ LRESULT WaitingUsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		UploadManager::getInstance()->reserveSlot(user);
 	}
 	return 0; 
-};
+}
 
 LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();
@@ -185,7 +185,7 @@ LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		FavoriteManager::getInstance()->addFavoriteUser(user);
 	}
 	return 0;
-};
+}
 
 // Load all searches from manager
 void WaitingUsersFrame::LoadAll()

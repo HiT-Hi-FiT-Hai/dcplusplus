@@ -68,9 +68,8 @@ public:
 		}
 		bHandled = FALSE;
 		return FALSE;
-	};
-	
-	
+	}
+		
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
 		return 0;
@@ -89,5 +88,5 @@ private:
 
 /**
  * @file
- * $Id: SystemFrame.h,v 1.4 2006/01/06 14:44:32 arnetheduck Exp $
+ * $Id: SystemFrame.h,v 1.5 2006/02/19 16:19:06 arnetheduck Exp $
  */

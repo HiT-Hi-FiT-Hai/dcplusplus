@@ -176,7 +176,7 @@ void DirectoryListing::load(const string& in) {
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
 	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) { 
-	};
+	}
 
 	virtual ~ListLoader() { }
 
@@ -426,5 +426,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.57 2006/02/05 17:02:38 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.58 2006/02/19 16:19:06 arnetheduck Exp $
  */

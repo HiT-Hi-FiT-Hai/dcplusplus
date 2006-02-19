@@ -36,7 +36,7 @@ public:
 
 class ServerSocket : public Speaker<ServerSocketListener> {
 public:
-	ServerSocket() throw() { };
+	ServerSocket() throw() { }
 
 	void listen(short port) throw(SocketException);
 	void disconnect() throw() { socket.disconnect(); }
@@ -60,5 +60,5 @@ private:
 
 /**
  * @file
- * $Id: ServerSocket.h,v 1.27 2005/12/16 01:00:46 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.28 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -163,7 +163,7 @@ LRESULT Appearance2Page::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 			break;
 		default:
 			break;
-	};
+	}
 	return true;
 }
 
@@ -179,5 +179,5 @@ LRESULT Appearance2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 /**
  * @file
- * $Id: Appearance2Page.cpp,v 1.6 2005/12/19 00:15:51 arnetheduck Exp $
+ * $Id: Appearance2Page.cpp,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -57,11 +57,11 @@ public:
 #else
 #error Can not find mutex type attribute.
 #endif
-	};
-	~CriticalSection() throw() { pthread_mutex_destroy(&mtx); };
-	void enter() throw() { pthread_mutex_lock(&mtx); };
-	void leave() throw() { pthread_mutex_unlock(&mtx); };
-	pthread_mutex_t& getMutex() { return mtx; };
+	}
+	~CriticalSection() throw() { pthread_mutex_destroy(&mtx); }
+	void enter() throw() { pthread_mutex_lock(&mtx); }
+	void leave() throw() { pthread_mutex_unlock(&mtx); }
+	pthread_mutex_t& getMutex() { return mtx; }
 private:
 	pthread_mutex_t mtx;
 #endif
@@ -80,7 +80,7 @@ private:
 class FastCriticalSection {
 public:
 #ifdef _WIN32
-	FastCriticalSection() : state(0) { };
+	FastCriticalSection() : state(0) { }
 
 	void enter() {
 		while(Thread::safeExchange(state, 1) == 1) {
@@ -98,10 +98,10 @@ private:
 	FastCriticalSection() { 
 		static pthread_mutex_t fastmtx = PTHREAD_MUTEX_INITIALIZER;
 		mtx = fastmtx;
-	};
-	~FastCriticalSection() { pthread_mutex_destroy(&mtx); };
-	void enter() { pthread_mutex_lock(&mtx); };
-	void leave() { pthread_mutex_unlock(&mtx); };
+	}
+	~FastCriticalSection() { pthread_mutex_destroy(&mtx); }
+	void enter() { pthread_mutex_lock(&mtx); }
+	void leave() { pthread_mutex_unlock(&mtx); }
 private:
 	pthread_mutex_t mtx;	
 #endif
@@ -110,8 +110,8 @@ private:
 template<class T>
 class LockBase {
 public:
-	LockBase(T& aCs) throw() : cs(aCs)  { cs.enter(); };
-	~LockBase() throw() { cs.leave(); };
+	LockBase(T& aCs) throw() : cs(aCs)  { cs.enter(); }
+	~LockBase() throw() { cs.leave(); }
 private:
 	LockBase& operator=(const LockBase&);
 	T& cs;
@@ -155,8 +155,8 @@ private:
 template<class T = CriticalSection>
 class RLock {
 public:
-	RLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterRead(); };
-	~RLock() throw() { rwl.leaveRead(); };
+	RLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterRead(); }
+	~RLock() throw() { rwl.leaveRead(); }
 private:
 	RLock& operator=(const RLock&);
 	RWLock<T>& rwl;
@@ -165,8 +165,8 @@ private:
 template<class T = CriticalSection>
 class WLock {
 public:
-	WLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterWrite(); };
-	~WLock() throw() { rwl.leaveWrite(); };
+	WLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterWrite(); }
+	~WLock() throw() { rwl.leaveWrite(); }
 private:
 	WLock& operator=(const WLock&);
 	RWLock<T>& rwl;
@@ -176,5 +176,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.28 2005/04/24 08:13:36 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.29 2006/02/19 16:19:06 arnetheduck Exp $
  */

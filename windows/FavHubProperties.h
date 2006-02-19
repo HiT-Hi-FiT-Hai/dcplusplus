@@ -28,8 +28,8 @@ class FavoriteHubEntry;
 class FavHubProperties : public CDialogImpl<FavHubProperties>
 {
 public:
-	FavHubProperties::FavHubProperties(FavoriteHubEntry *_entry) : entry(_entry) { };
-	virtual ~FavHubProperties() { };
+	FavHubProperties::FavHubProperties(FavoriteHubEntry *_entry) : entry(_entry) { }
+	virtual ~FavHubProperties() { }
 
 	enum { IDD = IDD_FAVORITEHUB };
 	
@@ -54,5 +54,5 @@ protected:
 
 /**
  * @file
- * $Id: FavHubProperties.h,v 1.7 2005/04/24 08:13:05 arnetheduck Exp $
+ * $Id: FavHubProperties.h,v 1.8 2006/02/19 16:19:06 arnetheduck Exp $
  */

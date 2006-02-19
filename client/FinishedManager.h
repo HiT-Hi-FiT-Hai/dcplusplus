@@ -44,7 +44,7 @@ public:
 	{
 	}
 
-	int64_t getAvgSpeed() { return milliSeconds > 0 ? (chunkSize * ((int64_t)1000) / milliSeconds) : 0; };
+	int64_t getAvgSpeed() { return milliSeconds > 0 ? (chunkSize * ((int64_t)1000) / milliSeconds) : 0; }
 
 	GETSET(string, target, Target);
 	GETSET(string, user, User);
@@ -83,8 +83,8 @@ class FinishedManager : public Singleton<FinishedManager>,
 	public Speaker<FinishedManagerListener>, private DownloadManagerListener, private UploadManagerListener
 {
 public:
-	FinishedItem::List& lockList(bool upload = false) { cs.enter(); return upload ? uploads : downloads; };
-	void unlockList() { cs.leave(); };
+	FinishedItem::List& lockList(bool upload = false) { cs.enter(); return upload ? uploads : downloads; }
+	void unlockList() { cs.leave(); }
 
 	void remove(FinishedItem *item, bool upload = false);
 	void removeAll(bool upload = false);
@@ -108,5 +108,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.17 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.18 2006/02/19 16:19:06 arnetheduck Exp $
  */

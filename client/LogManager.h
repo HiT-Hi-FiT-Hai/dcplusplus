@@ -33,7 +33,7 @@ public:
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Message;
-	virtual void on(Message, time_t, const string&) throw() { };
+	virtual void on(Message, time_t, const string&) throw() { }
 };
 
 class LogManager : public Singleton<LogManager>, public Speaker<LogManagerListener>
@@ -112,8 +112,8 @@ private:
 		logOptions[SYSTEM][FORMAT]		= SettingsManager::LOG_FORMAT_SYSTEM;
 		logOptions[STATUS][FILE]		= SettingsManager::LOG_FILE_STATUS;
 		logOptions[STATUS][FORMAT]		= SettingsManager::LOG_FORMAT_STATUS;
-	};
-	virtual ~LogManager() throw() { };
+	}
+	virtual ~LogManager() throw() { }
 
 };
 
@@ -123,5 +123,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.20 2005/12/26 17:16:03 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.21 2006/02/19 16:19:05 arnetheduck Exp $
  */

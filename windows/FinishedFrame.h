@@ -33,8 +33,8 @@ public:
 		boldFinished = SettingsManager::BOLD_FINISHED_DOWNLOADS;
 		columnOrder = SettingsManager::FINISHED_ORDER;
 		columnWidth = SettingsManager::FINISHED_WIDTHS;
-	};
-	virtual ~FinishedFrame() { };
+	}
+	virtual ~FinishedFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
 
@@ -58,5 +58,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedFrame.h,v 1.24 2006/01/12 22:32:44 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.25 2006/02/19 16:19:06 arnetheduck Exp $
  */

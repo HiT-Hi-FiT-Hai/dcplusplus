@@ -33,9 +33,9 @@ public:
 	LogPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_LOGS));
 		 m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 
-	virtual ~LogPage() { };
+	virtual ~LogPage() { }
 
 	BEGIN_MSG_MAP(LogPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -76,5 +76,5 @@ protected:
 
 /**
  * @file
- * $Id: LogPage.h,v 1.5 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: LogPage.h,v 1.6 2006/02/19 16:19:06 arnetheduck Exp $
  */

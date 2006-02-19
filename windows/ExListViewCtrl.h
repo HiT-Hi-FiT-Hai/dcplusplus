@@ -68,9 +68,9 @@ public:
 		}
 	}
 
-	bool isAscending() { return ascending; };
-	int getSortColumn() { return sortColumn; };
-	int getSortType() { return sortType; };
+	bool isAscending() { return ascending; }
+	int getSortColumn() { return sortColumn; }
+	int getSortType() { return sortType; }
 
 	int insert(int nItem, TStringList& aList, int iImage = 0, LPARAM lParam = NULL);
 	int insert(TStringList& aList, int iImage = 0, LPARAM lParam = NULL);
@@ -111,7 +111,7 @@ public:
 		}
 	}
 	int moveItem(int oldPos, int newPos);
-	void setSortDirection(bool aAscending) { setSort(sortColumn, sortType, aAscending, fun); };
+	void setSortDirection(bool aAscending) { setSort(sortColumn, sortType, aAscending, fun); }
 
 	static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
@@ -166,14 +166,14 @@ public:
 		return (a < b) ? -1 : ( (a == b) ? 0 : 1);
 	}
 
-	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1) { };
+	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1) { }
 
-	virtual ~ExListViewCtrl() { };
+	virtual ~ExListViewCtrl() { }
 };
 
 #endif // !defined(EX_LIST_VIEW_CTRL_H)
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.17 2006/01/12 22:32:44 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.18 2006/02/19 16:19:06 arnetheduck Exp $
  */

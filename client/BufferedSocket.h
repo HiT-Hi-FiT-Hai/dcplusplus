@@ -71,12 +71,12 @@ public:
 	 */
 	static BufferedSocket* getSocket(char sep) throw() { 
 		return new BufferedSocket(sep); 
-	};
+	}
 
 	static void putSocket(BufferedSocket* aSock) { 
 		aSock->removeListeners(); 
 		aSock->shutdown();
-	};
+	}
 
 	static void waitShutdown() {
 		while(sockets)
@@ -94,7 +94,7 @@ public:
 	 * Must be called from within onData. 
 	 */
 	void setLineMode(size_t aRollback) { mode = MODE_LINE; rollback = aRollback; }
-	Modes getMode() const { return mode; };
+	Modes getMode() const { return mode; }
 	const string& getIp() { return sock ? sock->getIp() : Util::emptyString; }
 	bool isConnected() { return sock && sock->isConnected(); }
 	
@@ -119,7 +119,7 @@ private:
 	};
 
 	struct TaskData { 
-		virtual ~TaskData() { };
+		virtual ~TaskData() { }
 	};
 	struct ConnectInfo : public TaskData {
 		ConnectInfo(string addr_, short port_, bool proxy_) : addr(addr_), port(port_), proxy(proxy_) { }
@@ -185,5 +185,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.77 2006/02/17 19:23:51 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.78 2006/02/19 16:19:06 arnetheduck Exp $
  */

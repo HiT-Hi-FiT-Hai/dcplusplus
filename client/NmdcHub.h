@@ -61,7 +61,7 @@ public:
 	virtual size_t getUserCount() const {  Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
-	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
+	virtual string escape(string const& str) const { return Util::validateMessage(str, false); }
 
 	virtual void disconnect(bool graceless) throw();
 	using Client::send;
@@ -72,10 +72,10 @@ public:
 	void refreshUserList(bool unknownOnly = false);
 
 	void validateNick(const string& aNick) { send("$ValidateNick " + toNmdc(aNick) + "|"); }
-	void key(const string& aKey) { send("$Key " + aKey + "|"); };	
-	void version() { send("$Version 1,0091|"); };
-	void getNickList() { checkstate(); send("$GetNickList|"); };
-	void getInfo(const OnlineUser& aUser) { checkstate(); send("$GetINFO " + toNmdc(aUser.getIdentity().getNick()) + " " + toNmdc(getMyNick()) + "|"); };
+	void key(const string& aKey) { send("$Key " + aKey + "|"); }
+	void version() { send("$Version 1,0091|"); }
+	void getNickList() { checkstate(); send("$GetNickList|"); }
+	void getInfo(const OnlineUser& aUser) { checkstate(); send("$GetINFO " + toNmdc(aUser.getIdentity().getNick()) + " " + toNmdc(getMyNick()) + "|"); }
 
 	void connectToMe(const OnlineUser& aUser);
 	void revConnectToMe(const OnlineUser& aUser);
@@ -151,5 +151,5 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.30 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.31 2006/02/19 16:19:06 arnetheduck Exp $
  */

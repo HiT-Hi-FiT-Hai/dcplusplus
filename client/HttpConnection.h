@@ -50,7 +50,7 @@ class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionList
 {
 public:
 	void downloadFile(const string& aUrl);
-	HttpConnection() : ok(false), port(80), size(-1), moved302(false), socket(NULL) { };
+	HttpConnection() : ok(false), port(80), size(-1), moved302(false), socket(NULL) { }
 	virtual ~HttpConnection() throw() { 
 		if(socket) {
 			socket->removeListener(this); 
@@ -89,5 +89,5 @@ private:
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.26 2005/04/24 08:13:10 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.27 2006/02/19 16:19:06 arnetheduck Exp $
  */

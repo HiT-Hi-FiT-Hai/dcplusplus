@@ -112,7 +112,7 @@ private:
 	/** Parameter map for user commands */
 	class ItemInfo;
 public:
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };
+	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
 private:
 	enum {
 		ADD_ITEM,
@@ -274,5 +274,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.25 2006/01/15 18:40:43 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.26 2006/02/19 16:19:06 arnetheduck Exp $
  */

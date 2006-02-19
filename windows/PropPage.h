@@ -31,8 +31,8 @@ class SettingsManager;
 class PropPage
 {
 public:
-	PropPage(SettingsManager *src) : settings(src) { };
-	virtual ~PropPage() { };
+	PropPage(SettingsManager *src) : settings(src) { }
+	virtual ~PropPage() { }
 
 	virtual PROPSHEETPAGE *getPSP() = 0;
 	virtual void write() = 0;
@@ -66,5 +66,5 @@ protected:
 
 /**
  * @file
- * $Id: PropPage.h,v 1.11 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: PropPage.h,v 1.12 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -33,8 +33,8 @@ class MagnetDlg : public CDialogImpl<MagnetDlg > {
 public:
 	enum { IDD = IDD_MAGNET };
 
-	MagnetDlg(const tstring& aHash, const tstring& aFileName) : mHash(aHash), mFileName(aFileName) { };
-	virtual ~MagnetDlg() { };
+	MagnetDlg(const tstring& aHash, const tstring& aFileName) : mHash(aHash), mFileName(aFileName) { }
+	virtual ~MagnetDlg() { }
 
 	BEGIN_MSG_MAP(MagnetDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -109,7 +109,7 @@ public:
 				//}
 				//::EnableWindow(GetDlgItem(IDC_MAGNET_REMEMBER), false);
 				break;
-		};
+		}
 		return 0;
 	}
 
@@ -121,5 +121,5 @@ private:
 
 /**
  * @file
- * $Id: MagnetDlg.h,v 1.7 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: MagnetDlg.h,v 1.8 2006/02/19 16:19:06 arnetheduck Exp $
  */

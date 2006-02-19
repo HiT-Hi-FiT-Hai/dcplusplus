@@ -66,8 +66,7 @@ closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConn
 	links.discuss = links.homepage + _T("forum/");
 	links.features = links.homepage + _T("bugs/");
 	links.bugs = links.homepage + _T("bugs/");
-
-};
+}
 
 MainFrame::~MainFrame() {
 	m_CmdBar.m_hImageList = NULL;
@@ -1148,5 +1147,5 @@ LRESULT MainFrame::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.111 2006/02/13 21:13:28 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.112 2006/02/19 16:19:06 arnetheduck Exp $
  */

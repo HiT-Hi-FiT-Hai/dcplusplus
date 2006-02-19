@@ -52,15 +52,14 @@ public:
 			tokens.push_back(aString.substr(j, aString.size()-j));
 	}
 
-	vector<T>& getTokens() { return tokens; };
+	vector<T>& getTokens() { return tokens; }
 
-	~StringTokenizer() { };
-
+	~StringTokenizer() { }
 };
 
 #endif // !defined(STRING_TOKENIZER_H)
 
 /**
  * @file
- * $Id: StringTokenizer.h,v 1.9 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: StringTokenizer.h,v 1.10 2006/02/19 16:19:06 arnetheduck Exp $
  */

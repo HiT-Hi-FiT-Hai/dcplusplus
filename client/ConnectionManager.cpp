@@ -30,7 +30,7 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : port(0), securePort(0), server(0), secureServer(0), floodCounter(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0), server(0), secureServer(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
@@ -339,7 +339,7 @@ void ConnectionManager::adcConnect(const OnlineUser& aUser, short aPort, const s
 void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...@todo fix support updates
-		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
+		dcdebug("CM::onMyNick %p sent nick twice\n", (void*)aSource);
 		return;
 	}
 
@@ -396,12 +396,12 @@ void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aS
 void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSource, const string& aNick) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
-		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
+		dcdebug("CM::onMyNick %p sent nick twice\n", (void*)aSource);
 		return;
 	}
 
 	dcassert(aNick.size() > 0);
-	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
+	dcdebug("ConnectionManager::onMyNick %p, %s\n", (void*)aSource, aNick.c_str());
 	dcassert(!aSource->getUser());
 
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
@@ -458,7 +458,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSource, const string& aLock, const string& aPk) throw() {
 	if(aSource->getState() != UserConnection::STATE_LOCK) {
-		dcdebug("CM::onLock %p received lock twice, ignoring\n", aSource);
+		dcdebug("CM::onLock %p received lock twice, ignoring\n", (void*)aSource);
 		return;
 	}
 	
@@ -483,7 +483,7 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 
 void ConnectionManager::on(UserConnectionListener::Direction, UserConnection* aSource, const string& dir, const string& num) throw() {
 	if(aSource->getState() != UserConnection::STATE_DIRECTION) {
-		dcdebug("CM::onDirection %p received direction twice, ignoring\n", aSource);
+		dcdebug("CM::onDirection %p received direction twice, ignoring\n", (void*)aSource);
 		return;
 	}
 
@@ -590,7 +590,7 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 	if(aSource->getState() != UserConnection::STATE_INF) {
 		// Already got this once, ignore...
 		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Expecting INF"));
-		dcdebug("CM::onINF %p sent INF twice\n", aSource);
+		dcdebug("CM::onINF %p sent INF twice\n", (void*)aSource);
 		aSource->disconnect();
 		return;
 	}
@@ -699,5 +699,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.118 2006/02/12 18:16:13 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.119 2006/02/19 16:19:06 arnetheduck Exp $
  */

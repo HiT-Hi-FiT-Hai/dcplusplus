@@ -64,8 +64,8 @@ public: TypeTraits<type>::ParameterType get##name2() const { return name; } \
 template<class T1, class T2, class op = equal_to<T1> >
 class CompareFirst {
 public:
-	CompareFirst(const T1& compareTo) : a(compareTo) { };
-	bool operator()(const pair<T1, T2>& p) { return op()(p.first, a); };
+	CompareFirst(const T1& compareTo) : a(compareTo) { }
+	bool operator()(const pair<T1, T2>& p) { return op()(p.first, a); }
 private:
 	CompareFirst& operator=(const CompareFirst&);
 	const T1& a;
@@ -75,8 +75,8 @@ private:
 template<class T1, class T2, class op = equal_to<T2> >
 class CompareSecond {
 public:
-	CompareSecond(const T2& compareTo) : a(compareTo) { };
-	bool operator()(const pair<T1, T2>& p) { return op()(p.second, a); };
+	CompareSecond(const T2& compareTo) : a(compareTo) { }
+	bool operator()(const pair<T1, T2>& p) { return op()(p.second, a); }
 private:
 	CompareSecond& operator=(const CompareSecond&);
 	const T2& a;
@@ -88,12 +88,12 @@ struct PointerHash {
 	static const size_t bucket_size = 4; 
 	static const size_t min_buckets = 8; 
 #endif 
-	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); };
-	bool operator()(const T* a, const T* b) { return a < b; };
+	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); }
+	bool operator()(const T* a, const T* b) { return a < b; }
 };
 template<>
 struct PointerHash<void> {
-	size_t operator()(const void* a) const { return ((size_t)a)>>2; };
+	size_t operator()(const void* a) const { return ((size_t)a)>>2; }
 };
 
 /** 
@@ -107,14 +107,14 @@ class Flags {
 	public:
 		typedef int MaskType;
 
-		Flags() : flags(0) { };
-		Flags(const Flags& rhs) : flags(rhs.flags) { };
-		Flags(MaskType f) : flags(f) { };
-		bool isSet(MaskType aFlag) const { return (flags & aFlag) == aFlag; };
-		bool isAnySet(MaskType aFlag) const { return (flags & aFlag) != 0; };
-		void setFlag(MaskType aFlag) { flags |= aFlag; };
-		void unsetFlag(MaskType aFlag) { flags &= ~aFlag; };
-		Flags& operator=(const Flags& rhs) { flags = rhs.flags; return *this; };
+		Flags() : flags(0) { }
+		Flags(const Flags& rhs) : flags(rhs.flags) { }
+		Flags(MaskType f) : flags(f) { }
+		bool isSet(MaskType aFlag) const { return (flags & aFlag) == aFlag; }
+		bool isAnySet(MaskType aFlag) const { return (flags & aFlag) != 0; }
+		void setFlag(MaskType aFlag) { flags |= aFlag; }
+		void unsetFlag(MaskType aFlag) { flags &= ~aFlag; }
+		Flags& operator=(const Flags& rhs) { flags = rhs.flags; return *this; }
 	private:
 		MaskType flags;
 };
@@ -123,11 +123,11 @@ template<typename T>
 class AutoArray {
 	typedef T* TPtr;
 public:
-	explicit AutoArray(TPtr t) : p(t) { };
-	explicit AutoArray(size_t size) : p(new T[size]) { };
-	~AutoArray() { delete[] p; };
-	operator TPtr() { return p; };
-	AutoArray& operator=(TPtr t) { delete[] p; p = t; return *this; };
+	explicit AutoArray(TPtr t) : p(t) { }
+	explicit AutoArray(size_t size) : p(new T[size]) { }
+	~AutoArray() { delete[] p; }
+	operator TPtr() { return p; }
+	AutoArray& operator=(TPtr t) { delete[] p; p = t; return *this; }
 private:
 	AutoArray(const AutoArray&);
 	AutoArray& operator=(const AutoArray&);
@@ -480,10 +480,10 @@ public:
 		return n == 0 ? 0 : ((int)Text::toLower(*a)) - ((int)Text::toLower(*b));
 	}
 
-	static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
-	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); };
-	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); };
-	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); };
+	static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); }
+	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); }
+	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); }
+	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); }
 	
 	static string validateMessage(string tmp, bool reverse, bool checkNewLines = true);
 
@@ -491,23 +491,23 @@ public:
 
 	static string getIpCountry (string IP);
 
-	static bool getAway() { return away; };
+	static bool getAway() { return away; }
 	static void setAway(bool aAway) {
 		away = aAway;
 		if (away)
 			awayTime = time(NULL);
-	};
+	}
 
-	static bool getManualAway() { return manualAway; };
-	static void setManualAway(bool aManualAway) { manualAway = aManualAway;	};
+	static bool getManualAway() { return manualAway; }
+	static void setManualAway(bool aManualAway) { manualAway = aManualAway;	}
 
 	static string getAwayMessage();
-	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
+	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; }
 
 	static u_int32_t rand();
-	static u_int32_t rand(u_int32_t high) { return rand() % high; };
-	static u_int32_t rand(u_int32_t low, u_int32_t high) { return rand(high-low) + low; };
-	static double randd() { return ((double)rand()) / ((double)0xffffffff); };
+	static u_int32_t rand(u_int32_t high) { return rand() % high; }
+	static u_int32_t rand(u_int32_t low, u_int32_t high) { return rand(high-low) + low; }
+	static double randd() { return ((double)rand()) / ((double)0xffffffff); }
 
 private:
 	static string appPath;
@@ -605,5 +605,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.127 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: Util.h,v 1.128 2006/02/19 16:19:06 arnetheduck Exp $
  */

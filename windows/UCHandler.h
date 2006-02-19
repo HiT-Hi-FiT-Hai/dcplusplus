@@ -29,7 +29,7 @@
 template<class T>
 class UCHandler {
 public:
-	UCHandler() : menuPos(0) { };
+	UCHandler() : menuPos(0) { }
 
 	typedef UCHandler<T> thisClass;
 	BEGIN_MSG_MAP(thisClass)
@@ -119,5 +119,5 @@ private:
 
 /**
  * @file
- * $Id: UCHandler.h,v 1.12 2005/12/03 00:18:08 arnetheduck Exp $
+ * $Id: UCHandler.h,v 1.13 2006/02/19 16:19:06 arnetheduck Exp $
  */

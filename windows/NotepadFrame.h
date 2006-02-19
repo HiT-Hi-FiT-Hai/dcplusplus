@@ -64,7 +64,7 @@ public:
 		}
 		bHandled = FALSE;
 		return FALSE;
-	};
+	}
 	
 	
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -83,5 +83,5 @@ private:
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.15 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.16 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -59,8 +59,7 @@ public:
 		}
 		bHandled = FALSE;
 		return FALSE;
-	};
-	
+	}	
 	
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
@@ -77,5 +76,5 @@ private:
 
 /**
  * @file
- * $Id: TextFrame.h,v 1.6 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: TextFrame.h,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
  */

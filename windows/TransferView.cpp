@@ -146,8 +146,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 
 		ClientManager::getInstance()->userCommand(itemI->user, uc, tmp, true);
 	}
-	return;
-};
+}
 
 
 LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -250,7 +249,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 					rc.top += 2;
 					::MoveToEx(cd->nmcd.hdc,rc.left+1,rc.top,(LPPOINT)NULL);
 					::LineTo(cd->nmcd.hdc,rc.right-2,rc.top);
-				};
+				}
 				
 				// draw status text
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
@@ -345,7 +344,7 @@ TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoB
 { 
 	columns[COLUMN_USER] = WinUtil::getNicks(u);
 	columns[COLUMN_HUB] = WinUtil::getHubNames(u).first;
-};
+}
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 	if(ui.updateMask & UpdateInfo::MASK_STATUS) {
@@ -583,5 +582,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.63 2006/02/05 17:02:38 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.64 2006/02/19 16:19:06 arnetheduck Exp $
  */

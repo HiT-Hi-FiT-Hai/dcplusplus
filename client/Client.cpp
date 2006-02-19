@@ -29,8 +29,8 @@
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
-	socket(NULL), reconnDelay(120), 
-	lastActivity(0), registered(false), hubUrl(hubURL), port(0), separator(separator_),
+	reconnDelay(120), lastActivity(0), registered(false), socket(NULL), 
+	hubUrl(hubURL), 	port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
 	string file;
@@ -134,5 +134,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.92 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.93 2006/02/19 16:19:06 arnetheduck Exp $
  */

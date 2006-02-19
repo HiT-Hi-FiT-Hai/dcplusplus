@@ -31,8 +31,8 @@ public:
 #include "StringDefs.h"
 
 	void loadLanguage(const string& aFile);
-	const string& getString(Strings x) const { dcassert(x >= 0 && x < LAST); return strings[x]; };
-	const wstring& getStringW(Strings x) const { dcassert(x >= 0 && x < LAST); return wstrings[x]; };
+	const string& getString(Strings x) const { dcassert(x >= 0 && x < LAST); return strings[x]; }
+	const wstring& getStringW(Strings x) const { dcassert(x >= 0 && x < LAST); return wstrings[x]; }
 	bool isRTL() { return rtl; }
 private:
 	friend class Singleton<ResourceManager>;
@@ -42,9 +42,9 @@ private:
 
 	ResourceManager() : rtl(false) {
 		createWide();
-	};
+	}
 
-	virtual ~ResourceManager() { };
+	virtual ~ResourceManager() { }
 
 	static string strings[LAST];
 	static wstring wstrings[LAST];
@@ -80,5 +80,5 @@ private:
 
 /**
  * @file
- * $Id: ResourceManager.h,v 1.16 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.17 2006/02/19 16:19:06 arnetheduck Exp $
  */

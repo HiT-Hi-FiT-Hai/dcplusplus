@@ -305,7 +305,7 @@ void CryptoManager::buildLookup(vector<u_int8_t>* table, Node* aRoot) {
 struct greaterNode { 
 	bool operator() (const Node* a, const Node* b) const { 
 		return *a < *b; 
-	}; 
+	}
 };
 
 /**
@@ -397,5 +397,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.55 2005/04/24 09:45:39 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.56 2006/02/19 16:19:06 arnetheduck Exp $
  */

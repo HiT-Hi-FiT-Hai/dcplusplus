@@ -71,7 +71,7 @@ public:
 	User(const string& nick) : Flags(NMDC), firstNick(nick) { }
 	User(const CID& aCID) : cid(aCID) { }
 
-	virtual ~User() throw() { };
+	virtual ~User() throw() { }
 
 	operator CID() { return cid; }
 
@@ -189,5 +189,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.70 2006/02/17 19:23:51 arnetheduck Exp $
+ * $Id: User.h,v 1.71 2006/02/19 16:19:06 arnetheduck Exp $
  */

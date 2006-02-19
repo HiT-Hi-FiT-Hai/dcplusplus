@@ -278,7 +278,7 @@ void FavoriteManager::onHttpFinished() throw() {
 
 class XmlListLoader : public SimpleXMLReader::CallBack {
 public:
-	XmlListLoader(HubEntry::List& lst) : publicHubs(lst) { };
+	XmlListLoader(HubEntry::List& lst) : publicHubs(lst) { }
 	virtual ~XmlListLoader() { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool) {
 		if(name == "Hub") {
@@ -684,5 +684,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 
 /**
  * @file
- * $Id: FavoriteManager.cpp,v 1.17 2006/02/05 13:38:44 arnetheduck Exp $
+ * $Id: FavoriteManager.cpp,v 1.18 2006/02/19 16:19:05 arnetheduck Exp $
  */

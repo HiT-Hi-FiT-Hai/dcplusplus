@@ -101,7 +101,7 @@ public:
 		return 0;
 	}
 
-	bool isOpen() { return h != INVALID_HANDLE_VALUE; };
+	bool isOpen() { return h != INVALID_HANDLE_VALUE; }
 
 	virtual void close() throw() {
 		if(isOpen()) {
@@ -259,7 +259,7 @@ public:
 		return (u_int32_t)s.st_mtime;
 	}
 
-	bool isOpen() { return h != -1; };
+	bool isOpen() { return h != -1; }
 
 	virtual void close() throw() {
 		if(h != -1) {
@@ -280,9 +280,9 @@ public:
 		return (int64_t) lseek(h, 0, SEEK_CUR);
 	}
 
-	virtual void setPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_SET); };
-	virtual void setEndPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_END); };
-	virtual void movePos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_CUR); };
+	virtual void setPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_SET); }
+	virtual void setEndPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_END); }
+	virtual void movePos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_CUR); }
 
 	virtual size_t read(void* buf, size_t& len) throw(FileException) {
 		ssize_t x = ::read(h, buf, len);
@@ -342,7 +342,7 @@ public:
 		return 0;
 	}
 
-	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
+	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); }
 
 	/* ::rename seems to have problems when source and target is on different partitions
        from "man 2 rename"
@@ -418,7 +418,7 @@ public:
 		return read((u_int32_t)sz);
 	}
 
-	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
+	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); }
 
 protected:
 #ifdef _WIN32
@@ -435,5 +435,5 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.53 2005/10/12 14:02:53 arnetheduck Exp $
+ * $Id: File.h,v 1.54 2006/02/19 16:19:06 arnetheduck Exp $
  */

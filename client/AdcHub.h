@@ -67,7 +67,7 @@ public:
 	void handle(AdcCommand::STA, AdcCommand& c) throw();
 	void handle(AdcCommand::SCH, AdcCommand& c) throw();
 	void handle(AdcCommand::CMD, AdcCommand& c) throw();
-	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
+	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); }
 
 	string getMySID() { return AdcCommand::fromSID(sid); }
 private:
@@ -124,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.40 2006/02/11 21:01:54 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.41 2006/02/19 16:19:06 arnetheduck Exp $
  */

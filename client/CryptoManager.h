@@ -46,8 +46,8 @@ public:
 	Node* left;
 	Node* right;
 	
-	Node(int aChr, int aWeight) : chr(aChr), weight(aWeight), left(NULL), right(NULL) { };
-	Node(Node* aLeft, Node* aRight) :  chr(-1), weight(aLeft->weight + aRight->weight), left(aLeft), right(aRight) { };
+	Node(int aChr, int aWeight) : chr(aChr), weight(aWeight), left(NULL), right(NULL) { }
+	Node(Node* aLeft, Node* aRight) :  chr(-1), weight(aLeft->weight + aRight->weight), left(aLeft), right(aRight) { }
 	~Node() {
 		delete left;
 		delete right;
@@ -73,9 +73,9 @@ class CryptoManager : public Singleton<CryptoManager>
 {
 public:
 	string makeKey(const string& aLock);
-	const string& getLock() { return lock; };
-	const string& getPk() { return pk; };
-	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; };
+	const string& getLock() { return lock; }
+	const string& getPk() { return pk; }
+	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; }
 
 	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
 	void encodeHuffman(const string& is, string& os);
@@ -84,15 +84,15 @@ private:
 
 	friend class Singleton<CryptoManager>;
 	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { };
-	virtual ~CryptoManager() { };
+	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { }
+	virtual ~CryptoManager() { }
 
 	class Leaf : public FastAlloc<Leaf> {
 	public:
 		int chr;
 		int len;
-		Leaf(int aChr, int aLen) : chr(aChr), len(aLen) { };
-		Leaf() : chr(-1), len(-1) { };
+		Leaf(int aChr, int aLen) : chr(aChr), len(aLen) { }
+		Leaf() : chr(-1), len(-1) { }
 	};
 	
 	class DecNode : public FastAlloc<DecNode> {
@@ -100,9 +100,9 @@ private:
 		int chr;
 		DecNode* left;
 		DecNode* right;
-		DecNode(int aChr) : chr(aChr), left(NULL), right(NULL) { };
-		DecNode(DecNode* aLeft, DecNode* aRight) : chr(-1), left(aLeft), right(aRight) { };
-		DecNode() : chr(-1), left(NULL), right(NULL) { };
+		DecNode(int aChr) : chr(aChr), left(NULL), right(NULL) { }
+		DecNode(DecNode* aLeft, DecNode* aRight) : chr(-1), left(aLeft), right(aRight) { }
+		DecNode() : chr(-1), left(NULL), right(NULL) { }
 		~DecNode() {
 			delete left;
 			delete right;
@@ -127,5 +127,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.43 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.44 2006/02/19 16:19:06 arnetheduck Exp $
  */

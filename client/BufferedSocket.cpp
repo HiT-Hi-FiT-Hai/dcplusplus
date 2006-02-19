@@ -48,7 +48,7 @@ BufferedSocket::~BufferedSocket() throw() {
 void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 	
-	dcdebug("BufferedSocket::accept() %p\n", this);
+	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->accept(srv);
@@ -76,7 +76,7 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
-	dcdebug("BufferedSocket::connect() %p\n", this);
+	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->create();
@@ -337,7 +337,7 @@ void BufferedSocket::checkSocket() {
  * @todo Fix the polling...
  */
 int BufferedSocket::run() {
-	dcdebug("BufferedSocket::run() start %p\n", this);
+	dcdebug("BufferedSocket::run() start %p\n", (void*)this);
 	while(true) {
 		try {
 			if(!checkEvents())
@@ -347,7 +347,7 @@ int BufferedSocket::run() {
 			fail(e.getError());
 		}
 	}
-	dcdebug("BufferedSocket::run() end %p\n", this);
+	dcdebug("BufferedSocket::run() end %p\n", (void*)this);
 	delete this;
 	return 0;
 }
@@ -366,5 +366,5 @@ void BufferedSocket::shutdown() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.101 2006/02/18 23:32:17 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.102 2006/02/19 16:19:06 arnetheduck Exp $
  */

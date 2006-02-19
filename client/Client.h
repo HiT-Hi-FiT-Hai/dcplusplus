@@ -106,8 +106,8 @@ public:
 	short getPort() const { return port; }
 	const string& getAddress() const { return address; }
 
-	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); };
-	string getIpPort() const { return getIp() + ':' + Util::toString(port); };
+	const string& getIp() const { return (!socket || socket->getIp().empty()) ? getAddress() : socket->getIp(); }
+	string getIpPort() const { return getIp() + ':' + Util::toString(port); }
 	string getLocalIp() const;
 
 	void updated(const OnlineUser& aUser) { 
@@ -119,7 +119,7 @@ public:
 		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
-	virtual string escape(string const& str) const { return str; };
+	virtual string escape(string const& str) const { return str; }
 	StringMap& escapeParams(StringMap& sm) {
 		for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
 			i->second = escape(i->second);
@@ -156,11 +156,11 @@ public:
 
 protected:
 	struct Counts {
-		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { };
+		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { }
 		volatile long normal;
 		volatile long registered;
 		volatile long op;
-		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; };
+		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; }
 	};
 
 	BufferedSocket* socket;
@@ -205,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.108 2006/02/12 18:16:13 arnetheduck Exp $
+ * $Id: Client.h,v 1.109 2006/02/19 16:19:06 arnetheduck Exp $
  */

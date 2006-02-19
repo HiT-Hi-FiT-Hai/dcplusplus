@@ -41,7 +41,7 @@ public:
 	
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
 	name(aName), server(aServer), description(aDescription), country(Util::emptyString), 
-	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { };
+	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { }
 
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers, const string& aCountry,
 		const string& aShared, const string& aMinShare, const string& aMinSlots, const string& aMaxHubs, const string& aMaxUsers,
@@ -52,12 +52,12 @@ public:
 
 	}
 
-	HubEntry() throw() { };
+	HubEntry() throw() { }
 	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country), 
 		rating(rhs.rating), reliability(rhs.reliability), shared(rhs.shared), minShare(rhs.minShare), users(rhs.users), minSlots(rhs.minSlots),
 		maxHubs(rhs.maxHubs), maxUsers(rhs.maxUsers) { }
 
-	~HubEntry() throw() { };
+	~HubEntry() throw() { }
 
 	GETSET(string, name, Name);
 	GETSET(string, server, Server);
@@ -79,17 +79,17 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0){ };
-	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0){ };
+	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0){ }
+	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0){ }
 	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), 
-		password(rhs.getPassword()), connect(rhs.getConnect()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), nick(rhs.nick){ };
+		password(rhs.getPassword()), connect(rhs.getConnect()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), nick(rhs.nick){ }
 	~FavoriteHubEntry() throw() { }	
 	
 	const string& getNick(bool useDefault = true) const { 
 		return (!nick.empty() || !useDefault) ? nick : SETTING(NICK);
 	}
 
-	void setNick(const string& aNick) { nick = aNick; };
+	void setNick(const string& aNick) { nick = aNick; }
 
 	GETSET(string, userdescription, UserDescription);
 	GETSET(string, name, Name);
@@ -147,18 +147,18 @@ public:
 	};
 	StringList getHubLists();
 	bool setHubList(int /*aHubList*/);
-	int getSelectedHubList() { return lastServer; };
+	int getSelectedHubList() { return lastServer; }
 	void refresh();
-	HubTypes getHubListType() { return listType; };
+	HubTypes getHubListType() { return listType; }
 	HubEntry::List getPublicHubs() {
 		Lock l(cs);
 		return publicListMatrix[publicListServer];
 	}
-	bool isDownloading() { return running; };
+	bool isDownloading() { return running; }
 
 // Favorite Users
 	typedef HASH_MAP_X(CID, FavoriteUser, CID::Hash, equal_to<CID>, less<CID>) FavoriteMap;
-	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; };
+	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; }
 	
 	void addFavoriteUser(User::Ptr& aUser);
 	bool isFavoriteUser(const User::Ptr& aUser) const { Lock l(cs); return users.find(aUser->getCID()) != users.end(); }
@@ -170,7 +170,7 @@ public:
 	void userUpdated(const OnlineUser& info);
 	time_t getLastSeen(const User::Ptr& aUser) const;
 // Favorite Hubs
-	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
+	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; }
 
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
@@ -193,7 +193,7 @@ public:
 	void removeUserCommand(const string& srv);
 	void removeHubUserCommands(int ctx, const string& hub);
 
-	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; };
+	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; }
 	UserCommand::List getUserCommands(int ctx, const StringList& hub);
 
 	void load();
@@ -281,5 +281,5 @@ private:
 
 /**
  * @file
- * $Id: FavoriteManager.h,v 1.11 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: FavoriteManager.h,v 1.12 2006/02/19 16:19:06 arnetheduck Exp $
  */

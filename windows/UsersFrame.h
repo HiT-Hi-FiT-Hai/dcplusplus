@@ -33,8 +33,8 @@ class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<
 	private FavoriteManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
-	UsersFrame() : closed(false), startup(true) { };
-	virtual ~UsersFrame() { };
+	UsersFrame() : closed(false), startup(true) { }
+	virtual ~UsersFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("UsersFrame"), IDR_USERS, 0, COLOR_3DFACE);
 		
@@ -94,7 +94,7 @@ private:
 	public:
 		UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) { 
 			update(u);
-		};
+		}
 
 		const tstring& getText(int col) const {
 			return columns[col];
@@ -136,5 +136,5 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.28 2005/12/12 08:43:01 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.29 2006/02/19 16:19:06 arnetheduck Exp $
  */

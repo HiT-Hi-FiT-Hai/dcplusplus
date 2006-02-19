@@ -42,7 +42,7 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 	END_MSG_MAP()
 	
-	LineDlg() : password(false) { };
+	LineDlg() : password(false) { }
 	
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlLine.SetFocus();
@@ -87,5 +87,5 @@ public:
 
 /**
  * @file
- * $Id: LineDlg.h,v 1.10 2005/04/24 08:13:04 arnetheduck Exp $
+ * $Id: LineDlg.h,v 1.11 2006/02/19 16:19:06 arnetheduck Exp $
  */

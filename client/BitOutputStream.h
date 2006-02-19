@@ -26,8 +26,8 @@
 class BitOutputStream
 {
 public:
-	BitOutputStream(string& aStream) : is(aStream), bitPos(0), next(0) { };
-	~BitOutputStream() { };
+	BitOutputStream(string& aStream) : is(aStream), bitPos(0), next(0) { }
+	~BitOutputStream() { }
 	
 	void put(vector<u_int8_t>& b) {
 		for(vector<u_int8_t>::iterator i = b.begin(); i != b.end(); ++i) {
@@ -61,5 +61,5 @@ private:
 
 /**
  * @file
- * $Id: BitOutputStream.h,v 1.15 2005/04/24 08:13:37 arnetheduck Exp $
+ * $Id: BitOutputStream.h,v 1.16 2006/02/19 16:19:06 arnetheduck Exp $
  */

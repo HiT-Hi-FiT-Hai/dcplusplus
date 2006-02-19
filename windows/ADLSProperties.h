@@ -35,8 +35,8 @@ class ADLSProperties : public CDialogImpl<ADLSProperties>
 public:
 
 	// Constructor/destructor
-	ADLSProperties::ADLSProperties(ADLSearch *_search) : search(_search) { };
-	virtual ~ADLSProperties() { };
+	ADLSProperties::ADLSProperties(ADLSearch *_search) : search(_search) { }
+	virtual ~ADLSProperties() { }
 
 	// Dilaog unique id
 	enum { IDD = IDD_ADLS_PROPERTIES };
@@ -62,5 +62,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSProperties.h,v 1.4 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: ADLSProperties.h,v 1.5 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -34,8 +34,8 @@ class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, publi
 	private FavoriteManagerListener
 {
 public:
-	FavoriteHubsFrame() : nosave(true) { };
-	virtual ~FavoriteHubsFrame() { };
+	FavoriteHubsFrame() : nosave(true) { }
+	virtual ~FavoriteHubsFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FavoriteHubsFrame"), IDR_FAVORITES, 0, COLOR_3DFACE);
 		
@@ -135,5 +135,5 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.23 2005/11/12 10:23:02 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.24 2006/02/19 16:19:06 arnetheduck Exp $
  */

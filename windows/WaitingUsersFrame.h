@@ -94,7 +94,7 @@ public:
 		}
 		bHandled = FALSE;
 		return FALSE;
-	};
+	}
 
 	// Update control layouts
 	void UpdateLayout(BOOL bResizeBars = TRUE);

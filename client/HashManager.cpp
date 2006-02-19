@@ -315,7 +315,7 @@ void HashManager::HashStore::save() {
 
 class HashLoader : public SimpleXMLReader::CallBack {
 public:
-	HashLoader(HashManager::HashStore& s) : store(s), size(0), timeStamp(0), version(HASH_FILE_VERSION), inTrees(false), inFiles(false), inHashStore(false) { };
+	HashLoader(HashManager::HashStore& s) : store(s), size(0), timeStamp(0), version(HASH_FILE_VERSION), inTrees(false), inFiles(false), inHashStore(false) { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
 	
@@ -656,5 +656,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.51 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.52 2006/02/19 16:19:06 arnetheduck Exp $
  */

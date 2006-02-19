@@ -158,7 +158,7 @@ public:
 private:
 	class UserInfo;
 public:
-	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; };
+	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
 
 	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, ADD_CHAT_LINE,
@@ -187,7 +187,7 @@ private:
 
 		User::Ptr user;
 		Identity identity;
-	};
+	}
 
 
 	friend struct CompareItems;
@@ -195,7 +195,7 @@ private:
 	public:
 		UserInfo(const UpdateInfo& u) : UserInfoBase(u.user) { 
 			update(u.identity, -1); 
-		};
+		}
 
 		const tstring& getText(int col) const {
 			return columns[col];
@@ -223,7 +223,7 @@ private:
 
 	class PMInfo {
 	public:
-		PMInfo(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const string& m) : from(from_), to(to_), replyTo(replyTo_), msg(Text::toT(m)) { };
+		PMInfo(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const string& m) : from(from_), to(to_), replyTo(replyTo_), msg(Text::toT(m)) { }
 		User::Ptr from;
 		User::Ptr to;
 		User::Ptr replyTo;
@@ -371,14 +371,14 @@ private:
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
-	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
-	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); };
+	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); }
+	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); }
 	void speak(Speakers s, const OnlineUser& u) { 
 		Lock l(updateCS);
 		updateList.push_back(make_pair(UpdateInfo(u), s));
 		updateUsers = true;
-	};
-	void speak(Speakers s, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(from, to, replyTo, line)); };
+	}
+	void speak(Speakers s, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(from, to, replyTo, line)); }
 
 };
 
@@ -386,5 +386,5 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.73 2006/01/15 18:40:43 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.74 2006/02/19 16:19:06 arnetheduck Exp $
  */

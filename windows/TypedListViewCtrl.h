@@ -30,7 +30,7 @@ class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl<T, ctrlId>, CList
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
 public:
-	TypedListViewCtrl() : sortColumn(-1), sortAscending(true) { };
+	TypedListViewCtrl() : sortColumn(-1), sortAscending(true) { }
 
 	typedef TypedListViewCtrl<T, ctrlId> thisClass;
 	typedef CListViewCtrl baseClass;
@@ -55,8 +55,8 @@ public:
 			return cur - rhs.cur;
 		}
 
-		iterator& operator+=(int n) { cur += n; return *this; };
-		iterator& operator-=(int n) { return (cur += -n); };
+		iterator& operator+=(int n) { cur += n; return *this; }
+		iterator& operator-=(int n) { return (cur += -n); }
 		
 		T& operator*() { return *typedList->getItemData(cur); }
 		T* operator->() { return &(*(*this)); }
@@ -185,8 +185,8 @@ public:
 		for(int j = 0; j < k; ++j)
 			SetItemText(i, j, LPSTR_TEXTCALLBACK);
 	}
-	void updateItem(T* item) { int i = findItem(item); if(i != -1) updateItem(i); };
-	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); };
+	void updateItem(T* item) { int i = findItem(item); if(i != -1) updateItem(i); }
+	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); }
 
 	int getSortPos(T* a) {
 		int high = GetItemCount();
@@ -251,5 +251,5 @@ private:
 
 /**
  * @file
- * $Id: TypedListViewCtrl.h,v 1.18 2006/01/12 22:32:44 arnetheduck Exp $
+ * $Id: TypedListViewCtrl.h,v 1.19 2006/02/19 16:19:06 arnetheduck Exp $
  */

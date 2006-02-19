@@ -216,7 +216,7 @@ public:
 private:
 	class SearchInfo;
 public:
-	TypedListViewCtrl<SearchInfo, IDC_RESULTS>& getUserList() { return ctrlResults; };
+	TypedListViewCtrl<SearchInfo, IDC_RESULTS>& getUserList() { return ctrlResults; }
 
 private:
 	enum {
@@ -241,32 +241,32 @@ private:
 
 		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) { 
 			sr->incRef(); update();
-		};
+		}
 		~SearchInfo() { 
 			sr->decRef(); 
-		};
+		}
 
 		void getList();
 		void browseList();
 
 		void view();
 		struct Download {
-			Download(const tstring& aTarget) : tgt(aTarget) { };
+			Download(const tstring& aTarget) : tgt(aTarget) { }
 			void operator()(SearchInfo* si);
 			const tstring& tgt;
 		};
 		struct DownloadWhole {
-			DownloadWhole(const tstring& aTarget) : tgt(aTarget) { };
+			DownloadWhole(const tstring& aTarget) : tgt(aTarget) { }
 			void operator()(SearchInfo* si);
 			const tstring& tgt;
 		};
 		struct DownloadTarget {
-			DownloadTarget(const tstring& aTarget) : tgt(aTarget) { };
+			DownloadTarget(const tstring& aTarget) : tgt(aTarget) { }
 			void operator()(SearchInfo* si);
 			const tstring& tgt;
 		};
 		struct CheckSize {
-			CheckSize() : size(-1), op(true), firstHubs(true), hasTTH(false), firstTTH(true) { };
+			CheckSize() : size(-1), op(true), firstHubs(true), hasTTH(false), firstTTH(true) { }
 			void operator()(SearchInfo* si);
 			tstring ext;
 			int64_t size;
@@ -331,7 +331,7 @@ private:
 
 	struct HubInfo : public FastAlloc<HubInfo> {
 		HubInfo(const tstring& aIpPort, const tstring& aName, bool aOp) : ipPort(aIpPort),
-			name(aName), op(aOp) { };
+			name(aName), op(aOp) { }
 
 		const tstring& getText(int col) const {
 			return (col == 0) ? name : Util::emptyStringT;
@@ -438,12 +438,12 @@ private:
 	void speak(Speakers s, Client* aClient) {
 		HubInfo* hubInfo = new HubInfo(Text::toT(aClient->getIpPort()), Text::toT(aClient->getHubName()), aClient->getMyIdentity().isOp());
 		PostMessage(WM_SPEAKER, WPARAM(s), LPARAM(hubInfo)); 
-	};
+	}
 };
 
 #endif // !defined(SEARCH_FRM_H)
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.65 2005/12/03 20:36:50 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.66 2006/02/19 16:19:06 arnetheduck Exp $
  */

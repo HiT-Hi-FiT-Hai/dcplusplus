@@ -40,8 +40,8 @@ class FinishedFrameBase : public MDITabChildWindowImpl<T>, public StaticFrame<T,
 	protected FinishedManagerListener
 {
 public:
-	FinishedFrameBase() : totalBytes(0), totalTime(0), closed(false) { };
-	virtual ~FinishedFrameBase() { };
+	FinishedFrameBase() : totalBytes(0), totalTime(0), closed(false) { }
+	virtual ~FinishedFrameBase() { }
 
 	BEGIN_MSG_MAP(T)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -365,5 +365,5 @@ ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceMana
 
 /**
 * @file
-* $Id: FinishedFrameBase.h,v 1.1 2006/01/12 22:32:44 arnetheduck Exp $
+* $Id: FinishedFrameBase.h,v 1.2 2006/02/19 16:19:06 arnetheduck Exp $
 */

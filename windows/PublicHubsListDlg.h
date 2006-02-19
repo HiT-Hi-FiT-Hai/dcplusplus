@@ -33,10 +33,8 @@ class PublicHubListDlg : public CDialogImpl<PublicHubListDlg> {
 public:
 	enum { IDD = IDD_HUB_LIST };
 
-	PublicHubListDlg() { };
-	virtual ~PublicHubListDlg() {
-		ctrlList.Detach();
-	};
+	PublicHubListDlg() { }
+	virtual ~PublicHubListDlg() { ctrlList.Detach(); }
 
 	BEGIN_MSG_MAP(PublicHubListDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -164,5 +162,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsListDlg.h,v 1.8 2006/01/09 22:44:49 arnetheduck Exp $
+ * $Id: PublicHubsListDlg.h,v 1.9 2006/02/19 16:19:06 arnetheduck Exp $
  */

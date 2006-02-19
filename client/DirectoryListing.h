@@ -49,11 +49,11 @@ public:
 		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
 			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)), adls(false)
 		{ 
-		};
+		}
 		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
 			name(aName), size(aSize), parent(aDir), tthRoot(NULL), adls(false)
 		{ 
-		};
+		}
 			
 		File(const File& rhs, bool _adls = false) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot)), adls(_adls)
 		{
@@ -90,7 +90,7 @@ public:
 		File::List files;
 		
 		Directory(Directory* aParent, const string& aName, bool _adls, bool aComplete) 
-			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
+			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { }
 		
 		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction());
@@ -103,7 +103,7 @@ public:
 		void filterList(const HASH_SET<TTHValue, TTHValue::Hash>& l);
 		void getHashList(HASH_SET<TTHValue, TTHValue::Hash>& l);
 		
-		size_t getFileCount() { return files.size(); };
+		size_t getFileCount() { return files.size(); }
 		
 		int64_t getSize() {
 			int64_t x = 0;
@@ -179,5 +179,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.45 2006/01/01 22:42:54 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.46 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -44,13 +44,13 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	Upload() : tth(NULL), file(NULL) { };
+	Upload() : tth(NULL), file(NULL) { }
 	virtual ~Upload() { 
 		delete file;
 		delete tth;
-	};
+	}
 	
-	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
+	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); }
 	
 	GETSET(string, fileName, FileName);
 	GETSET(string, localFileName, LocalFileName);
@@ -69,12 +69,12 @@ public:
 	typedef X<4> WaitingAddFile;
 	typedef X<5> WaitingRemoveUser;
 
-	virtual void on(Starting, Upload*) throw() { };
-	virtual void on(Tick, const Upload::List&) throw() { };
-	virtual void on(Complete, Upload*) throw() { };
-	virtual void on(Failed, Upload*, const string&) throw() { };
-	virtual void on(WaitingAddFile, const User::Ptr, const string&) throw() { };
-	virtual void on(WaitingRemoveUser, const User::Ptr) throw() { };
+	virtual void on(Starting, Upload*) throw() { }
+	virtual void on(Tick, const Upload::List&) throw() { }
+	virtual void on(Complete, Upload*) throw() { }
+	virtual void on(Failed, Upload*, const string&) throw() { }
+	virtual void on(WaitingAddFile, const User::Ptr, const string&) throw() { }
+	virtual void on(WaitingRemoveUser, const User::Ptr) throw() { }
 
 };
 
@@ -83,7 +83,7 @@ class UploadManager : private ClientManagerListener, private UserConnectionListe
 public:
 	
 	/** @return Number of uploads. */ 
-	size_t getUploadCount() { Lock l(cs); return uploads.size(); };
+	size_t getUploadCount() { Lock l(cs); return uploads.size(); }
 
 	/**
 	 * @remarks This is only used in the tray icons. Could be used in
@@ -117,7 +117,7 @@ public:
 	}
 
 	/** @internal */
-	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
+	int getFreeExtraSlots() { return max(3 - getExtra(), 0); }
 	
 	/** @param aUser Reserve an upload slot for this user and connect. */
 	void reserveSlot(const User::Ptr& aUser);
@@ -198,5 +198,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.84 2006/01/29 18:48:25 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.85 2006/02/19 16:19:06 arnetheduck Exp $
  */

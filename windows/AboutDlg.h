@@ -31,12 +31,13 @@ _T("and code! Thanks go out to sourceforge for hosting the project. This applica
 _T("thanks to Julian R Steward and team for providing it. This application uses STLPort ")
 _T("(www.stlport.org), a most excellent STL package. zlib is also used in this application. ")
 _T("This product includes GeoIP data created by MaxMind, available from http://maxmind.com/. ")
+_T("This product uses yassl from www.yassl.com, thanks to Todd Ouska and Larry Stefonic.")
 _T("The following people have contributed code to ")
 _T("DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n")
 _T("geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, ")
 _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, ")
 _T("sedulus, sandos, henrik engstr?m, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
-_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
+_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppï¿½lï¿½, johnny, ciber, ")
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
@@ -49,8 +50,8 @@ public:
 	enum { IDD = IDD_ABOUTBOX };
 	enum { WM_VERSIONDATA = WM_APP + 53 };
 
-	AboutDlg() { };
-	virtual ~AboutDlg() { };
+	AboutDlg() { }
+	virtual ~AboutDlg() { }
 
 	BEGIN_MSG_MAP(AboutDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -60,7 +61,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2005 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2005 Jacek Sieka\nCodeveloper: Per Lindï¿½n\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 		CEdit ctrl(GetDlgItem(IDC_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);
@@ -96,7 +97,7 @@ public:
 private:
 	HttpConnection c;
 
-	AboutDlg(const AboutDlg&) { dcassert(0); };
+	AboutDlg(const AboutDlg&) { dcassert(0); }
 	
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 		downBuf.append((char*)buf, len);
@@ -130,5 +131,5 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.57 2006/02/11 21:01:55 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.58 2006/02/19 16:19:06 arnetheduck Exp $
  */

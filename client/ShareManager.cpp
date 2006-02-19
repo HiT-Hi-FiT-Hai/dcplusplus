@@ -44,8 +44,8 @@
 #include <limits>
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
-	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), initial(true), listN(0), lFile(NULL), 
-	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20), refreshing(0)
+	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), initial(true), listN(0), refreshing(0), lFile(NULL), 
+	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -1521,5 +1521,5 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.144 2006/02/13 21:13:27 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.145 2006/02/19 16:19:06 arnetheduck Exp $
  */

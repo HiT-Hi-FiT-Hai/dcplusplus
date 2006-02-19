@@ -34,30 +34,30 @@ class Semaphore
 public:
 	Semaphore() throw() {
 		h = CreateSemaphore(NULL, 0, MAXLONG, NULL);
-	};
+	}
 
 	void signal() throw() {
 		ReleaseSemaphore(h, 1, NULL);
 	}
 
-	bool wait() throw() { return WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0; };
-	bool wait(u_int32_t millis) throw() { return WaitForSingleObject(h, millis) == WAIT_OBJECT_0; };
+	bool wait() throw() { return WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0; }
+	bool wait(u_int32_t millis) throw() { return WaitForSingleObject(h, millis) == WAIT_OBJECT_0; }
 
 	~Semaphore() throw() {
 		CloseHandle(h);
-	};
+	}
 
 private:
 	HANDLE h;
 #else
 public:
-	Semaphore() throw() : count(0) { pthread_cond_init(&cond, NULL); };
-	~Semaphore() throw() { pthread_cond_destroy(&cond); };
+	Semaphore() throw() : count(0) { pthread_cond_init(&cond, NULL); }
+	~Semaphore() throw() { pthread_cond_destroy(&cond); }
 	void signal() throw() { 
 		Lock l(cs);
 		count++;
 		pthread_cond_signal(&cond);
-	};
+	}
 
 	bool wait() throw() { 
 		Lock l(cs);
@@ -66,7 +66,7 @@ public:
 		}
 		count--;
 		return true;
-	};
+	}
 	bool wait(u_int32_t millis) throw() { 
 		Lock l(cs);
 		if(count == 0) {
@@ -83,7 +83,7 @@ public:
 		}
 		count--;
 		return true;
-	};
+	}
 
 private:
 	pthread_cond_t cond;
@@ -99,5 +99,5 @@ private:
 
 /**
  * @file
- * $Id: Semaphore.h,v 1.14 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: Semaphore.h,v 1.15 2006/02/19 16:19:06 arnetheduck Exp $
  */

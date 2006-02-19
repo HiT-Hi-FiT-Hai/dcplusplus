@@ -33,8 +33,8 @@ public:
 
 	HashProgressDlg(bool aAutoClose) : autoClose(aAutoClose), startTime(GET_TICK()), startBytes(0), startFiles(0) {
 
-	};
-	virtual ~HashProgressDlg() { };
+	}
+	virtual ~HashProgressDlg() { }
 
 	BEGIN_MSG_MAP(HashProgressDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -149,5 +149,5 @@ private:
 
 /**
  * @file
- * $Id: HashProgressDlg.h,v 1.8 2005/04/24 08:13:03 arnetheduck Exp $
+ * $Id: HashProgressDlg.h,v 1.9 2006/02/19 16:19:06 arnetheduck Exp $
  */

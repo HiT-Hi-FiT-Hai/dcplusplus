@@ -67,7 +67,7 @@ public:
 		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onChange)
 	END_MSG_MAP()
 
-	CommandDlg() : type(0), ctx(0) { };
+	CommandDlg() : type(0), ctx(0) { }
 
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlName.SetFocus();
@@ -138,5 +138,5 @@ private:
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.14 2006/01/11 21:31:01 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.15 2006/02/19 16:19:06 arnetheduck Exp $
  */

@@ -28,7 +28,7 @@
 class SFVReader {
 public:
 	/** @see load */
-	SFVReader(const string& aFileName) : crc32(0), crcFound(false) { load(aFileName); }; 
+	SFVReader(const string& aFileName) : crc32(0), crcFound(false) { load(aFileName); } 
 
 	/**
 	 * Search for a CRC32 file in all .sfv files in the directory of fileName. 
@@ -41,8 +41,8 @@ public:
 	 */
 	void load(const string& fileName) throw();
 
-	bool hasCRC() const throw() { return crcFound; };
-	u_int32_t getCRC() const throw() { return crc32; };
+	bool hasCRC() const throw() { return crcFound; }
+	u_int32_t getCRC() const throw() { return crc32; }
 	
 private:
 
@@ -57,5 +57,5 @@ private:
 
 /**
  * @file
- * $Id: SFVReader.h,v 1.6 2005/04/24 08:13:11 arnetheduck Exp $
+ * $Id: SFVReader.h,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
  */

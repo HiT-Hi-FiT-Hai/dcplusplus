@@ -34,11 +34,11 @@ public:
 	UploadPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_UPLOADS));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	};
+	}
 	virtual ~UploadPage() {
 		ctrlDirectories.Detach();
 		ctrlTotal.Detach();
-	};
+	}
 
 	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -79,5 +79,5 @@ protected:
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.18 2006/01/05 00:11:31 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.19 2006/02/19 16:19:06 arnetheduck Exp $
  */
