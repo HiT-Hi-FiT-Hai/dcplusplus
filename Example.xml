@@ -508,6 +508,7 @@
 		<String Name="SettingsWindows">Appearance\Windows</String>
 		<String Name="SettingsWindowsOptions">Window options</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
+		<String Name="SettingsAltSortOrder">Sort all downloads first</String>
 		<String Name="SettingsUseSsl">Use SSL when remote client supports it</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>

@@ -137,23 +137,7 @@ public:
 
 	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
 
-	static string escape(const string& str, bool old) {
-		string tmp = str;
-		string::size_type i = 0;
-		while( (i = tmp.find_first_of(" \n\\", i)) != string::npos) {
-			if(old) {
-				tmp.insert(i, "\\");
-			} else {
-				switch(tmp[i]) {
-				case ' ': tmp.replace(i, 1, "\\s"); break;
-				case '\n': tmp.replace(i, 1, "\\n"); break;
-				case '\\': tmp.replace(i, 1, "\\\\"); break;
-				}
-			}
-			i+=2;
-		}
-		return tmp;
-	}
+	static string escape(const string& str, bool old);
 	u_int32_t getTo() const { return to; }
 	AdcCommand& setTo(const u_int32_t sid) { to = sid; return *this; }
 	u_int32_t getFrom() const { return from; }
@@ -220,5 +204,5 @@ public:
 
 /**
  * @file
- * $Id: AdcCommand.h,v 1.28 2006/02/17 19:23:51 arnetheduck Exp $
+ * $Id: AdcCommand.h,v 1.29 2006/02/19 20:39:20 arnetheduck Exp $
  */

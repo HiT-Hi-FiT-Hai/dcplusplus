@@ -87,8 +87,7 @@ public:
 	virtual ~Client() throw();
 
 	virtual void connect();
-	bool isConnected() const { return socket && socket->isConnected(); }
-	void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
+	virtual void disconnect(bool graceless) { if(socket) socket->disconnect(graceless); }
 
 	virtual void connect(const OnlineUser& user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
@@ -100,7 +99,12 @@ public:
     
 	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
-	
+
+	virtual void send(const AdcCommand& command) = 0;
+
+	virtual string escape(string const& str) const { return str; }
+
+	bool isConnected() const { return socket && socket->isConnected(); }
 	bool isOp() const { return getMyIdentity().isOp(); }
 
 	short getPort() const { return port; }
@@ -110,16 +114,13 @@ public:
 	string getIpPort() const { return getIp() + ':' + Util::toString(port); }
 	string getLocalIp() const;
 
-	void updated(const OnlineUser& aUser) { 
-		fire(ClientListener::UserUpdated(), this, aUser);
-	}
+	void updated(const OnlineUser& aUser) { fire(ClientListener::UserUpdated(), this, aUser); }
 
 	static string getCounts() {
 		char buf[128];
 		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
-	virtual string escape(string const& str) const { return str; }
 	StringMap& escapeParams(StringMap& sm) {
 		for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
 			i->second = escape(i->second);
@@ -135,7 +136,6 @@ public:
 		updateActivity();
 		socket->write(aMessage, aLen);
 	}
-	virtual void send(const AdcCommand& command) = 0;
 
 	const string& getMyNick() const { return getMyIdentity().getNick(); }
 	const string& getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
@@ -205,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.109 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: Client.h,v 1.110 2006/02/19 20:39:20 arnetheduck Exp $
  */

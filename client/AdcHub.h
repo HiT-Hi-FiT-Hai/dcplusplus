@@ -32,11 +32,10 @@ class ClientManager;
 
 class AdcHub : public Client, public CommandHandler<AdcHub>, private TimerManagerListener {
 public:
-
 	using Client::send;
 
 	virtual void connect(const OnlineUser& user);
-	virtual void connect(const OnlineUser& user, string const& token, bool secure);
+	void connect(const OnlineUser& user, string const& token, bool secure);
 	virtual void disconnect(bool graceless);
 	
 	virtual void hubMessage(const string& aMessage);
@@ -49,29 +48,13 @@ public:
 	virtual size_t getUserCount() const { Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
-	template<typename T> void handle(T, AdcCommand&) { 
-		//Speaker<AdcHubListener>::fire(t, this, c);
-	}
-
-	void send(const AdcCommand& cmd);
-	void sendUDP(const AdcCommand& cmd);
-
-	void handle(AdcCommand::SUP, AdcCommand& c) throw();
-	void handle(AdcCommand::SID, AdcCommand& c) throw();
-	void handle(AdcCommand::MSG, AdcCommand& c) throw();
-	void handle(AdcCommand::INF, AdcCommand& c) throw();
-	void handle(AdcCommand::GPA, AdcCommand& c) throw();
-	void handle(AdcCommand::QUI, AdcCommand& c) throw();
-	void handle(AdcCommand::CTM, AdcCommand& c) throw();
-	void handle(AdcCommand::RCM, AdcCommand& c) throw();
-	void handle(AdcCommand::STA, AdcCommand& c) throw();
-	void handle(AdcCommand::SCH, AdcCommand& c) throw();
-	void handle(AdcCommand::CMD, AdcCommand& c) throw();
 	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); }
+	virtual void send(const AdcCommand& cmd);
 
 	string getMySID() { return AdcCommand::fromSID(sid); }
 private:
 	friend class ClientManager;
+	friend class CommandHandler<AdcHub>;
 
 	enum States {
 		STATE_PROTOCOL,
@@ -113,6 +96,24 @@ private:
 
 	void clearUsers();
 
+	void handle(AdcCommand::SUP, AdcCommand& c) throw();
+	void handle(AdcCommand::SID, AdcCommand& c) throw();
+	void handle(AdcCommand::MSG, AdcCommand& c) throw();
+	void handle(AdcCommand::INF, AdcCommand& c) throw();
+	void handle(AdcCommand::GPA, AdcCommand& c) throw();
+	void handle(AdcCommand::QUI, AdcCommand& c) throw();
+	void handle(AdcCommand::CTM, AdcCommand& c) throw();
+	void handle(AdcCommand::RCM, AdcCommand& c) throw();
+	void handle(AdcCommand::STA, AdcCommand& c) throw();
+	void handle(AdcCommand::SCH, AdcCommand& c) throw();
+	void handle(AdcCommand::CMD, AdcCommand& c) throw();
+
+	template<typename T> void handle(T, AdcCommand&) { 
+		//Speaker<AdcHubListener>::fire(t, this, c);
+	}
+
+	void sendUDP(const AdcCommand& cmd);
+
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string& aLine) throw();
@@ -124,5 +125,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.41 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.42 2006/02/19 20:39:20 arnetheduck Exp $
  */

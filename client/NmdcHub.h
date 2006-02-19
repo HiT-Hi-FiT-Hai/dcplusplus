@@ -36,22 +36,13 @@
 
 class NmdcHub : public Client, private TimerManagerListener, private Flags
 {
-	friend class ClientManager;
 public:
-	typedef NmdcHub* Ptr;
-	typedef list<Ptr> List;
-	typedef List::iterator Iter;
-
-	enum SupportFlags {
-		SUPPORTS_USERCOMMAND = 0x01,
-		SUPPORTS_NOGETINFO = 0x02,
-		SUPPORTS_USERIP2 = 0x04
-	};
-
-#define checkstate() if(state != STATE_CONNECTED) return
+	using Client::send;
 
 	virtual void connect(const OnlineUser& aUser);
-	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getMyNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
+	virtual void disconnect(bool graceless) throw();
+
+	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& aUser, const string& aMessage);
 	virtual void sendUserCmd(const string& aUserCmd) throw() { send(toNmdc(aUserCmd)); }
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string& aToken);
@@ -63,36 +54,17 @@ public:
 
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); }
 
-	virtual void disconnect(bool graceless) throw();
-	using Client::send;
 	virtual void send(const AdcCommand&) { dcassert(0); }
-
-	void myInfo(bool alwaysSend);
-	
-	void refreshUserList(bool unknownOnly = false);
-
-	void validateNick(const string& aNick) { send("$ValidateNick " + toNmdc(aNick) + "|"); }
-	void key(const string& aKey) { send("$Key " + aKey + "|"); }
-	void version() { send("$Version 1,0091|"); }
-	void getNickList() { checkstate(); send("$GetNickList|"); }
-	void getInfo(const OnlineUser& aUser) { checkstate(); send("$GetINFO " + toNmdc(aUser.getIdentity().getNick()) + " " + toNmdc(getMyNick()) + "|"); }
-
-	void connectToMe(const OnlineUser& aUser);
-	void revConnectToMe(const OnlineUser& aUser);
-
-/*	void privateMessage(const string& aNick, const string& aMessage) {
-	}
-*/
-	void supports(const StringList& feat) { 
-		string x;
-		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-			x+= *i + ' ';
-		}
-		send("$Supports " + x + '|');
-	}
 
 	GETSET(int, supportFlags, SupportFlags);
 private:
+	friend class ClientManager;
+	enum SupportFlags {
+		SUPPORTS_USERCOMMAND = 0x01,
+		SUPPORTS_NOGETINFO = 0x02,
+		SUPPORTS_USERIP2 = 0x04
+	};
+
 	enum States {
 		STATE_CONNECT,
 		STATE_LOCK,
@@ -135,6 +107,15 @@ private:
 	string fromNmdc(const string& str) const { return Text::acpToUtf8(str); }
 	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
 
+	void validateNick(const string& aNick) { send("$ValidateNick " + toNmdc(aNick) + "|"); }
+	void key(const string& aKey) { send("$Key " + aKey + "|"); }
+	void version() { send("$Version 1,0091|"); }
+	void getNickList() { send("$GetNickList|"); }
+	void connectToMe(const OnlineUser& aUser);
+	void revConnectToMe(const OnlineUser& aUser);
+	void myInfo(bool alwaysSend);
+	void supports(const StringList& feat);
+
 	void updateFromTag(Identity& id, const string& tag);
 
 	virtual string checkNick(const string& aNick);
@@ -151,5 +132,5 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.31 2006/02/19 16:19:06 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.32 2006/02/19 20:39:20 arnetheduck Exp $
  */

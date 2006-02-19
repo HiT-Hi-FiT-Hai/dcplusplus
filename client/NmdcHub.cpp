@@ -55,6 +55,8 @@ void NmdcHub::connect() {
 	Client::connect();
 }
 
+#define checkstate() if(state != STATE_CONNECTED) return
+
 void NmdcHub::connect(const OnlineUser& aUser) {
 	checkstate(); 
 	dcdebug("NmdcHub::connectToMe %s\n", aUser.getIdentity().getNick().c_str());
@@ -72,20 +74,6 @@ int64_t NmdcHub::getAvailable() const {
 		x+=i->second->getIdentity().getBytesShared();
 	}
 	return x;
-}
-
-void NmdcHub::refreshUserList(bool unknownOnly /* = false */) {
-	if(unknownOnly) {
-		Lock l(cs);
-		for(NickIter i = users.begin(); i != users.end(); ++i) {
-			if(!i->second->getIdentity().isSet(Identity::GOT_INF)) {
-				getInfo(*i->second);
-			}
-		}
-	} else {
-		clearUsers();
-		getNickList();
-	}
 }
 
 OnlineUser& NmdcHub::getUser(const string& aNick) {
@@ -111,6 +99,14 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 
 	ClientManager::getInstance()->putOnline(*u);
 	return *u;
+}
+
+void NmdcHub::supports(const StringList& feat) { 
+	string x;
+	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+		x+= *i + ' ';
+	}
+	send("$Supports " + x + '|');
 }
 
 OnlineUser* NmdcHub::findUser(const string& aNick) {
@@ -677,6 +673,11 @@ void NmdcHub::revConnectToMe(const OnlineUser& aUser) {
 	send("$RevConnectToMe " + toNmdc(getMyNick()) + " " + toNmdc(aUser.getIdentity().getNick()) + "|");
 }
 
+void NmdcHub::hubMessage(const string& aMessage) { 
+	checkstate(); 
+	send(toNmdc( "<" + getMyNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); 
+}
+
 void NmdcHub::myInfo(bool alwaysSend) {
 	checkstate();
 	
@@ -799,6 +800,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.54 2006/02/10 07:56:46 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.55 2006/02/19 20:39:20 arnetheduck Exp $
  */
 
