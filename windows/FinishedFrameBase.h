@@ -54,9 +54,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE, onOpenFile)
 		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpenFolder)
-		NOTIFY_HANDLER(IDC_FINISHED, LVN_COLUMNCLICK, onColumnClickFinished)
-		NOTIFY_HANDLER(IDC_FINISHED, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_FINISHED, NM_DBLCLK, onDoubleClick)
+		NOTIFY_HANDLER(id, LVN_COLUMNCLICK, onColumnClickFinished)
+		NOTIFY_HANDLER(id, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(id, NM_DBLCLK, onDoubleClick)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<T>)
 	END_MSG_MAP()
 
@@ -353,12 +353,12 @@ protected:
 };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED };
+int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
 
 template <class T, int title, int id>
-int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80 };
+int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH, 
-ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED
+ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 
 #endif // !defined(FINISHED_FRAME_BASE_H)

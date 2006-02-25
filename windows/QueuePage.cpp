@@ -27,6 +27,7 @@
 #include "WinUtil.h"
 
 PropPage::TextItem QueuePage::texts[] = {
+	{ IDC_SETTINGS_AUTOPRIO, ResourceManager::SETTINGS_PRIO_AUTOPRIO },
 	{ IDC_SETTINGS_PRIO_HIGHEST, ResourceManager::SETTINGS_PRIO_HIGHEST },
 	{ IDC_SETTINGS_KB3, ResourceManager::KiB },
 	{ IDC_SETTINGS_PRIO_HIGH, ResourceManager::SETTINGS_PRIO_HIGH },
@@ -35,6 +36,7 @@ PropPage::TextItem QueuePage::texts[] = {
 	{ IDC_SETTINGS_KB5, ResourceManager::KiB },
 	{ IDC_SETTINGS_PRIO_LOW, ResourceManager::SETTINGS_PRIO_LOW },
 	{ IDC_SETTINGS_KB6, ResourceManager::KiB },
+	{ IDC_SETTINGS_AUTODROP, ResourceManager::SETTINGS_AUTODROP_AUTODROPSETTINGS },
 	{ IDC_SETTINGS_AUTODROP_SPEED, ResourceManager::SETTINGS_AUTODROP_SPEED },
 	{ IDC_SETTINGS_BPS, ResourceManager::BPS },
 	{ IDC_SETTINGS_AUTODROP_INTERVAL, ResourceManager::SETTINGS_AUTODROP_INTERVAL },
@@ -46,6 +48,7 @@ PropPage::TextItem QueuePage::texts[] = {
 	{ IDC_SETTINGS_AUTODROP_MINSOURCES, ResourceManager::SETTINGS_AUTODROP_MINSOURCES },
 	{ IDC_SETTINGS_AUTODROP_FILESIZE, ResourceManager::SETTINGS_AUTODROP_FILESIZE },
 	{ IDC_SETTINGS_KB7, ResourceManager::KiB },
+	{ IDC_SETTINGS_OTHER_QUEUE_OPTIONS, ResourceManager::SETTINGS_OTHER_QUEUE_OPTIONS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

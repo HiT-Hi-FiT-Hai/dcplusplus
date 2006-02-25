@@ -273,9 +273,6 @@
 			<File
 				RelativePath=".\client\Util.cpp">
 			</File>
-			<File
-				RelativePath=".\client\ZUtils.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -498,6 +495,9 @@
 			</File>
 			<File
 				RelativePath=".\client\version.h">
+			</File>
+			<File
+				RelativePath=".\client\ZUtils.cpp">
 			</File>
 			<File
 				RelativePath=".\client\ZUtils.h">

@@ -8,6 +8,9 @@
 * Installer now removes old unicows library
 * Updated to yaSSL 1.1.5
 * Added possiblity to sort transfer view by all downloads first (thanks guitarm)
+* Some cleanup for frame creation (thanks martin)
+* Fixed some translation strings (thanks fleetcommand)
+* Fixed some finished transfer frame issues (thanks trem)
 
 -- 0.686 2006-02-13 --
 * Fixed active search (oops)

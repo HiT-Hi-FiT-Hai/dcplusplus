@@ -162,7 +162,6 @@ public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
 
-	OnlineUser() : sid(0), client(NULL) { }
 	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
 
 	operator User::Ptr&() { return user; }

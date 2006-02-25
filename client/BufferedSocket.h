@@ -27,6 +27,7 @@
 #include "Thread.h"
 #include "Speaker.h"
 #include "Util.h"
+#include "ZUtils.h"
 #include "Socket.h"
 
 class InputStream;
@@ -62,6 +63,7 @@ class BufferedSocket : public Speaker<BufferedSocketListener>, public Thread
 public:
 	enum Modes {
 		MODE_LINE,
+		MODE_ZPIPE,
 		MODE_DATA
 	};
 
@@ -94,7 +96,8 @@ public:
 	 * should be treated as data.
 	 * Must be called from within onData. 
 	 */
-	void setLineMode(size_t aRollback) { mode = MODE_LINE; rollback = aRollback; }
+	void setLineMode(size_t aRollback) { setMode (MODE_LINE, aRollback);}
+	void setMode(Modes mode, size_t aRollback = 0);
 	Modes getMode() const { return mode; }
 	const string& getIp() { return sock ? sock->getIp() : Util::emptyString; }
 	bool isConnected() { return sock && sock->isConnected(); }
@@ -147,6 +150,7 @@ private:
 	vector<pair<Tasks, TaskData*> > tasks;
 
 	Modes mode;
+	UnZFilter *filterIn;
 	int64_t dataBytes;
 	size_t rollback;
 	bool failed;

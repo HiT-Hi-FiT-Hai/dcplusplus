@@ -330,6 +330,7 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	ctrlFilter.MoveWindow(rc);
 
 	//filter sel
+	rc.bottom += comboH;
 	rc.right += ((rc.right - rc.left - 12) / 2) ;
 	rc.left += ((rc.right - rc.left + 8) / 3) * 2;
 	ctrlFilterSel.MoveWindow(rc);
