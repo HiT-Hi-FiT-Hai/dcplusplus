@@ -67,7 +67,7 @@ public:
 	void setThreadPriority(Priority p) throw() { ::SetThreadPriority(threadHandle, p); }
 	
 	static void sleep(u_int32_t millis) { ::Sleep(millis); }
-	static void yield() { ::Sleep(0); }
+	static void yield() { ::Sleep(1); }
 	static long safeInc(volatile long& v) { return InterlockedIncrement(&v); }
 	static long safeDec(volatile long& v) { return InterlockedDecrement(&v); }
 	static long safeExchange(volatile long& target, long value) { return InterlockedExchange(&target, value); }

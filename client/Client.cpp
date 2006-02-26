@@ -30,7 +30,7 @@ Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
 	reconnDelay(120), lastActivity(0), registered(false), socket(NULL), 
-	hubUrl(hubURL), 	port(0), separator(separator_),
+	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
 	string file;
@@ -49,10 +49,11 @@ void Client::shutdown() {
 	}
 }
 
-void Client::reloadSettings() {
+void Client::reloadSettings(bool updateNick) {
 	FavoriteHubEntry* hub = FavoriteManager::getInstance()->getFavoriteHubEntry(getHubUrl());
 	if(hub) {
-		getMyIdentity().setNick(checkNick(hub->getNick(true)));
+		if(updateNick)
+			getMyIdentity().setNick(checkNick(hub->getNick(true)));
 		if(!hub->getUserDescription().empty()) {
 			getMyIdentity().setDescription(hub->getUserDescription());
 		} else {
@@ -72,7 +73,7 @@ void Client::connect() {
 		BufferedSocket::putSocket(socket);
 
 	setReconnDelay(120 + Util::rand(0, 60));
-	reloadSettings();
+	reloadSettings(true);
 	setRegistered(false);
 
 	try {
@@ -87,6 +88,13 @@ void Client::connect() {
 		fire(ClientListener::Failed(), this, e.getError());
 	}
 	updateActivity();
+}
+
+void Client::disconnect(bool graceLess) {
+	if(!socket)
+		return;
+	socket->removeListener(this);
+	socket->disconnect(graceLess);
 }
 
 void Client::updateActivity() {

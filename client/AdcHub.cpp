@@ -54,9 +54,13 @@ OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
 		SIDIter i = users.find(aSID);
 		if(i != users.end())
 			return *i->second;
+	}
 
-		User::Ptr p = ClientManager::getInstance()->getUser(aCID);
 
+	User::Ptr p = ClientManager::getInstance()->getUser(aCID);
+
+	{
+		Lock l(cs);
 		u = users.insert(make_pair(aSID, new OnlineUser(p, *this, aSID))).first->second;
 	}
 
@@ -145,7 +149,7 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 		&& find(c.getParameters().begin(), c.getParameters().end(), "ADBAS0") == c.getParameters().end())
 	{
 		fire(ClientListener::StatusMessage(), this, "Failed to negotiate base protocol"); // @todo internationalize
-		disconnect(false);
+		socket->disconnect(false);
 		return;
 	}
 }
@@ -337,12 +341,9 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 }
 
 void AdcHub::disconnect(bool graceless) {
-	state = STATE_PROTOCOL;
 	Client::disconnect(graceless);
-	{
-		Lock l(cs);
-		clearUsers();
-	}
+	state = STATE_PROTOCOL;
+	clearUsers();
 }
 
 void AdcHub::hubMessage(const string& aMessage) {
@@ -413,7 +414,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 		return;
 
-	reloadSettings();
+	reloadSettings(false);
 
 	AdcCommand c(AdcCommand::CMD_INF, AdcCommand::TYPE_BROADCAST);
 	string tmp;

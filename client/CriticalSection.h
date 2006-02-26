@@ -127,21 +127,19 @@ public:
 	~RWLock() throw() { dcassert(readers==0); }
 
 	void enterRead() throw() {
-		Lock l(cs);
+		cs.enter();
 		readers++;
 		dcassert(readers < 100);
+		cs.leave();
 	}
-
 	void leaveRead() throw() {
+		dcassert(readers > 0);
 		Thread::safeDec(readers);
-		dcassert(readers >= 0);
 	}
 	void enterWrite() throw() {
 		cs.enter();
 		while(readers > 0) {
-			cs.leave();
 			Thread::yield();
-			cs.enter();
 		}
 	}
 	void leaveWrite() {

@@ -221,9 +221,9 @@ void HubFrame::onEnter() {
 				removeFavoriteHub();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
 				if( !param.empty() ){
-					int k = ctrlUsers.findItem(param);
-					if(k != -1) {
-						ctrlUsers.getItemData(k)->getList();
+					UserInfo* ui = findUser(param);
+					if(ui) {
+						ui->getList();
 					}
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
@@ -242,18 +242,17 @@ void HubFrame::onEnter() {
 				string::size_type j = param.find(_T(' '));
 				if(j != string::npos) {
 					tstring nick = param.substr(0, j);
-					int k = ctrlUsers.findItem(nick);
-					if(k != -1) {
-						UserInfo* ui = ctrlUsers.getItemData(k);
-						if(param.size() > j + 1)
+					UserInfo* ui = findUser(nick);
+
+					if(ui) {
+						if(param.size() > j + 1) 
 							PrivateFrame::openWindow(ui->user, param.substr(j+1));
-						else
+						else 
 							PrivateFrame::openWindow(ui->user);
 					}
 				} else if(!param.empty()) {
-					int k = ctrlUsers.findItem(param);
-					if(k != -1) {
-						UserInfo* ui = ctrlUsers.getItemData(k);
+					UserInfo* ui = findUser(param);
+					if(ui) {
 						PrivateFrame::openWindow(ui->user);
 					}
 				}
@@ -286,21 +285,6 @@ struct CompareItems {
 	}
 	const int col;
 };
-
-int HubFrame::findUser(const User::Ptr& aUser) {
-	UserMapIter i = userMap.find(aUser);
-	if(i == userMap.end())
-		return -1;
-
-	UserInfo* ui = i->second;
-
-	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
-		// Sort order of the other columns changes too late when the user's updated
-		dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
-		return ctrlUsers.getSortPos(ui);
-	}
-	return ctrlUsers.findItem(ui);
-}
 
 const tstring& HubFrame::getNick(const User::Ptr& aUser) {
 	UserMapIter i = userMap.find(aUser);
@@ -418,6 +402,14 @@ void HubFrame::removeUser(const User::Ptr& aUser) {
 
 	userMap.erase(i);
 	delete ui;
+}
+
+HubFrame::UserInfo* HubFrame::findUser(const tstring& nick) {
+	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+		if(i->second->columns[COLUMN_NICK] == nick)
+			return i->second;
+	}
+	return 0;
 }
 
 bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
@@ -661,21 +653,25 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 				return 0;
 
 			// Nickname click, let's see if we can find one like it in the name list...
-			int pos = ctrlUsers.findItem(x.substr(start, end - start));
-			if(pos != -1) {
+			tstring nick = x.substr(start, end - start);
+			UserInfo* ui = findUser(nick);
+			if(ui) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					PrivateFrame::openWindow(ctrlUsers.getItemData(pos)->user);
+					PrivateFrame::openWindow(ui->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
-						QueueManager::getInstance()->addList(ctrlUsers.getItemData(pos)->user, QueueItem::FLAG_CLIENT_VIEW);
+						QueueManager::getInstance()->addList(ui->user, QueueItem::FLAG_CLIENT_VIEW);
 					} catch(const Exception& e) {
 						addClientLine(Text::toT(e.getError()));
 					}
-				} else {
+				} else if(showUsers) {
 					int items = ctrlUsers.GetItemCount();
+					int pos = -1;
 					ctrlUsers.SetRedraw(FALSE);
 					for(int i = 0; i < items; ++i) {
+						if(ctrlUsers.getItemData(i) == ui)
+							pos = i;
 						ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
 					}
 					ctrlUsers.SetRedraw(TRUE);
@@ -739,6 +735,18 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	return TRUE;
 }
 
+LRESULT HubFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	HWND hWnd = (HWND)lParam;
+	HDC hDC = (HDC)wParam;
+	if(hWnd == ctrlClient.m_hWnd || hWnd == ctrlMessage.m_hWnd) {
+		::SetBkColor(hDC, WinUtil::bgColor);
+		::SetTextColor(hDC, WinUtil::textColor);
+		return (LRESULT)WinUtil::bgBrush;
+	} else {
+		return 0;
+	}
+}
+
 LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) }; 
 	
@@ -763,6 +771,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		}
 
 		// Nickname click, let's see if we can find one like it in the name list...
+
 		int pos = ctrlUsers.findItem(x.substr(start, end - start));
 		if(pos != -1) {
 			int items = ctrlUsers.GetItemCount();

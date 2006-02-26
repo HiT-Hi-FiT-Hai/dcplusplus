@@ -97,6 +97,7 @@ public:
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEnterUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const tstring& aLine);
@@ -126,18 +127,6 @@ public:
 	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		PostMessage(WM_CLOSE);
 		return 0;
-	}
-
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		HWND hWnd = (HWND)lParam;
-		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlClient.m_hWnd || hWnd == ctrlMessage.m_hWnd) {
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
-		} else {
-			return 0;
-		}
 	}
 
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -259,10 +248,6 @@ private:
 	bool favShowJoins;
 	tstring complete;
 
-	tstring lastKick;
-	tstring lastRedir;
-	tstring lastServer;
-	
 	bool waitingForPW;
 	bool extraSort;
 
@@ -280,7 +265,7 @@ private:
 
 	size_t getUserCount() const {
 		size_t sel = ctrlUsers.GetSelectedCount();
-		return sel>1?sel:client->getUserCount();
+		return sel > 1 ? sel : client->getUserCount();
 	}
 
 	int64_t getAvailable() {
@@ -333,10 +318,10 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
-	int findUser(const User::Ptr& aUser);
-
 	bool updateUser(const UpdateInfo& u);
 	void removeUser(const User::Ptr& aUser);
+
+	UserInfo* findUser(const tstring& nick);
 
 	void addAsFavorite();
 	void removeFavoriteHub();

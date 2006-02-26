@@ -10,7 +10,8 @@
 * Added possiblity to sort transfer view by all downloads first (thanks guitarm)
 * Some cleanup for frame creation (thanks martin)
 * Fixed some translation strings (thanks fleetcommand)
-* Fixed some finished transfer frame issues (thanks trem)
+* Fixed some finished transfers frames issues (thanks trem)
+* /pm and and a few other things work without user list in hub frame
 
 -- 0.686 2006-02-13 --
 * Fixed active search (oops)

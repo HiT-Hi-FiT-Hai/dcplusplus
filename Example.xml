@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.686" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.687" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -363,6 +363,7 @@
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>
 		<String Name="SettingsAppearance2">Appearance\Colors and sounds</String>
+		<String Name="SettingsAutodropAutodropsettings">Autodrop settings</String>
 		<String Name="SettingsAutodropSpeed">Drop sources below</String>
 		<String Name="SettingsAutodropInterval">Check every</String>
 		<String Name="SettingsAutodropElapsed">Min elapsed</String>
@@ -445,6 +446,7 @@
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
 		<String Name="SettingsOpenUserCmdHelp">Always open help file with this dialog</String>
 		<String Name="SettingsOptions">Options</String>
+		<String Name="SettingsOtherQueueOptions">Other queue options</String>
 		<String Name="SettingsOutgoing">Outgoing connection settings</String>
 		<String Name="SettingsOverride">Don't allow hub/UPnP to override</String>
 		<String Name="SettingsPersonalInformation">Personal Information</String>
@@ -472,7 +474,7 @@
 		<String Name="SettingsShareSize">Total size:</String>
 		<String Name="SettingsSharedDirectories">Shared directories</String>
 		<String Name="SettingsShowJoins">Show joins / parts in chat by default</String>
-		<String Name="SettingsShowProgressBars">Show progress bars for transfers (uses some CPU)</String>
+		<String Name="SettingsShowProgressBars">Show progress bars for transfers</String>
 		<String Name="SettingsSkipZeroByte">Skip zero-byte files</String>
 		<String Name="SettingsSmallSendBuffer">Use small send buffer (enable if uploads slow downloads a lot)</String>
 		<String Name="SettingsSocks5">SOCKS5</String>
@@ -485,6 +487,7 @@
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
+		<String Name="SettingsPrioAutoprio">Autoprio settings</String>
 		<String Name="SettingsPrioHighest">Highest prio max size</String>
 		<String Name="SettingsPrioHigh">High prio max size</String>
 		<String Name="SettingsPrioNormal">Normal prio max size</String>

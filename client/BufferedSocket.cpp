@@ -106,9 +106,9 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
 
 	sock->create();
-	if(SETTING(SOCKET_IN_BUFFER) > 0)
+	if(SETTING(SOCKET_IN_BUFFER) >= 1024)
 		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	if(SETTING(SOCKET_OUT_BUFFER) > 0)
+	if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
 		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
 	sock->setBlocking(false);
 
@@ -261,35 +261,72 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize = max(sockSize, (size_t)64*1024);
-	dcdebug("threadSendFile buffer size: %lu\n", bufSize);
-	AutoArray<u_int8_t> buf(bufSize);
+	
+	vector<u_int8_t> readBuf(bufSize);
+	vector<u_int8_t> writeBuf(bufSize);
 
+	size_t readPos = 0;
+
+	bool readDone = false;
+	dcdebug("Starting threadSend");
 	while(true) {
-		size_t bytesRead = bufSize;
-		size_t actual = file->read(&buf[0], bytesRead);
-		if(actual == 0) {
+		if(!readDone && readBuf.size() > readPos) {
+			// Fill read buffer
+			size_t bytesRead = readBuf.size() - readPos;
+			size_t actual = file->read(&readBuf[readPos], bytesRead);
+
+			if(bytesRead > 0) {
+				fire(BufferedSocketListener::BytesSent(), bytesRead, 0);
+			}
+
+			if(actual == 0) {
+				readDone = true;
+			} else {
+				readPos += actual;
+			}
+		}
+
+		if(readDone && readPos == 0) {
 			fire(BufferedSocketListener::TransmitDone());
 			return;
 		}
 
-		size_t done = 0;
-		size_t doneRead = 0;
-		while(done < actual) {
+		readBuf.swap(writeBuf);
+		readBuf.resize(bufSize);
+		writeBuf.resize(readPos);
+		readPos = 0;
+
+		size_t writePos = 0;
+
+		while(writePos < writeBuf.size()) {
 			if(disconnecting)
 				return;
-
-			int written = sock->write(buf + done, min(sockSize, actual - done));
+			size_t writeSize = min(sockSize / 2, writeBuf.size() - writePos);
+			int written = sock->write(&writeBuf[writePos], writeSize);
 			if(written > 0) {
-				done += written;
+				writePos += written;
 
-				size_t doneReadNow = static_cast<size_t>((static_cast<double>(done)/actual) * bytesRead);
-
-				fire(BufferedSocketListener::BytesSent(), doneReadNow - doneRead, written);
-				doneRead = doneReadNow;
+				fire(BufferedSocketListener::BytesSent(), 0, written);
 			} else if(written == -1) {
-				int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
-				if(w & Socket::WAIT_READ) {
-					threadRead();
+				if(readPos < readBuf.size()) {
+					// Read a little since we're blocking anyway...
+					size_t bytesRead = min(readBuf.size() - readPos, readBuf.size() / 2);
+					size_t actual = file->read(&readBuf[readPos], bytesRead);
+
+					if(bytesRead > 0) {
+						fire(BufferedSocketListener::BytesSent(), bytesRead, 0);
+					}
+
+					if(actual == 0) {
+						readDone = true;
+					} else {
+						readPos += actual;
+					}
+				} else {
+					int w = sock->wait(POLL_TIMEOUT, Socket::WAIT_WRITE | Socket::WAIT_READ);
+					if(w & Socket::WAIT_READ) {
+						threadRead();
+					}
 				}
 			}
 		}

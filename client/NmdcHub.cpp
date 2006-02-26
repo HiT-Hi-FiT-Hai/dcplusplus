@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ void NmdcHub::connect() {
 
 void NmdcHub::connect(const OnlineUser& aUser) {
 	checkstate(); 
-	dcdebug("NmdcHub::connectToMe %s\n", aUser.getIdentity().getNick().c_str());
+	dcdebug("NmdcHub::connect %s\n", aUser.getIdentity().getNick().c_str());
 	if(ClientManager::getInstance()->isActive()) {
 		connectToMe(aUser);
 	} else {
@@ -84,15 +84,19 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 		NickIter i = users.find(aNick);
 		if(i != users.end())
 			return *i->second;
+	}
 
-		User::Ptr p;
-		if(aNick == getMyNick()) {
-			p = ClientManager::getInstance()->getMe();
-			getMyIdentity().setUser(p);
-			getMyIdentity().setHubUrl(getHubUrl());
-		} else {
-			p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
-		}
+	User::Ptr p;
+	if(aNick == getMyNick()) {
+		p = ClientManager::getInstance()->getMe();
+		getMyIdentity().setUser(p);
+		getMyIdentity().setHubUrl(getHubUrl());
+	} else {
+		p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
+	}
+
+	{
+		Lock l(cs);
 		u = users.insert(make_pair(aNick, new OnlineUser(p, *this, 0))).first->second;
 		u->getIdentity().setNick(aNick);
 	}
@@ -525,12 +529,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			fire(ClientListener::UserUpdated(), this, u);
 		}
 	} else if(cmd == "$ForceMove") {
-		disconnect(false);
+		socket->disconnect(false);
 		fire(ClientListener::Redirect(), this, param);
 	} else if(cmd == "$HubIsFull") {
 		fire(ClientListener::HubFull(), this);
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
-		disconnect(false);
+		socket->disconnect(false);
 		fire(ClientListener::NickTaken(), this);
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
@@ -684,7 +688,7 @@ void NmdcHub::hubMessage(const string& aMessage) {
 void NmdcHub::myInfo(bool alwaysSend) {
 	checkstate();
 	
-	reloadSettings();
+	reloadSettings(false);
 
 	dcdebug("MyInfo %s...\n", getMyNick().c_str());
 	lastCounts = counts;
@@ -726,8 +730,8 @@ void NmdcHub::myInfo(bool alwaysSend) {
 }
 
 void NmdcHub::disconnect(bool graceless) throw() {	
-	state = STATE_CONNECT;
 	Client::disconnect(graceless);
+	state = STATE_CONNECT;
 	clearUsers();
 }
 
