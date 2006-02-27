@@ -1,4 +1,4 @@
-﻿-- 0.guess.what --
+﻿-- 0.687 2006-02-26 --
 * Fixed XML file list generation for invalid filenames from other os's
 * Fixed a rare refresh crash
 * CID is now shown if no nick name is currently available for a user
@@ -12,6 +12,8 @@
 * Fixed some translation strings (thanks fleetcommand)
 * Fixed some finished transfers frames issues (thanks trem)
 * /pm and and a few other things work without user list in hub frame
+* Added support for the ZPipe extension (test version) (thanks jove)
+* Moved to subversion, CVS will no longer be maintained
 
 -- 0.686 2006-02-13 --
 * Fixed active search (oops)

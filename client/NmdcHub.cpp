@@ -495,7 +495,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				feat.push_back("NoHello");
 				feat.push_back("UserIP2");
 				feat.push_back("TTHSearch");
-				feat.push_back("ZPipe");
+				feat.push_back("ZPipe0");
 
 				if(BOOLSETTING(COMPRESS_TRANSFERS))
 					feat.push_back("GetZBlock");
