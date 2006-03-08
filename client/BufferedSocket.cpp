@@ -180,6 +180,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 					string::size_type pos = 0;
 					AutoArray<u_int8_t> buffer (BufSize);
 					size_t in;
+					l = line;
 					// decompress all input data and store in l.
 					while (left) {
 						in = BufSize;
@@ -200,7 +201,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 						l.erase (0, pos + 1 /* seperator char */);
 					}
 					// store remainder
-					line += l;
+					line = l;
 
 					break;
 				}

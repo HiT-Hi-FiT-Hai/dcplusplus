@@ -167,8 +167,10 @@ LRESULT PublicHubsFrame::onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 		// BAH, sorting on bytes will break of course...oh well...later...
 		if(l->iSubItem == COLUMN_USERS || l->iSubItem == COLUMN_MINSLOTS ||l->iSubItem == COLUMN_MAXHUBS || l->iSubItem == COLUMN_MAXUSERS) {
 			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
-		} else if(l->iSubItem == COLUMN_SHARED || l->iSubItem == COLUMN_MINSHARE || l->iSubItem == COLUMN_RELIABILITY) {
-			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
+		} else if(l->iSubItem == COLUMN_RELIABILITY) {
+ 			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
+		} else if (l->iSubItem == COLUMN_SHARED || l->iSubItem == COLUMN_MINSHARE){
+			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_BYTES);
 		} else {
 			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 		}

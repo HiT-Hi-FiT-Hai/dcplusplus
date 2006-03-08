@@ -40,7 +40,8 @@ public:
  		SORT_STRING,
 		SORT_STRING_NOCASE,
 		SORT_INT,
-		SORT_FLOAT
+		SORT_FLOAT,
+		SORT_BYTES
 	};
 
 	typedef ListViewArrows<ExListViewCtrl> arrowBase;
@@ -143,7 +144,11 @@ public:
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
 			result = compare(_tstof(buf), _tstof(buf2));
-		}
+		} else if(result == SORT_BYTES) {
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
+			result = compare(Util::toBytes(buf), Util::toBytes(buf2));
+ 		}
 		if(!p->ascending)
 			result = -result;
 		return result;
