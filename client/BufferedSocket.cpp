@@ -42,7 +42,7 @@ size_t BufferedSocket::sockets = 0;
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
-	if (filterIn) delete filterIn;
+	delete filterIn;
 	sockets--;
 }
 

@@ -181,7 +181,6 @@ LRESULT WaitingUsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	User::Ptr user = getSelectedUser();
 	if (user) {
-		User::Ptr user = user;
 		FavoriteManager::getInstance()->addFavoriteUser(user);
 	}
 	return 0;

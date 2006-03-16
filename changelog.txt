@@ -1,4 +1,11 @@
-﻿-- 0.687 2006-02-26 --
+﻿-- 0.688 --
+* Fixed public hubs sorting (thanks pothead)
+* Fixed a ZPipe issue (thanks jove)
+* Fixed a 100% cpu / crash bug
+* [bug 872] Fixed a pm issue hopefully
+* [bug 812] Fixed pm's being sent to bots
+
+-- 0.687 2006-02-26 --
 * Fixed XML file list generation for invalid filenames from other os's
 * Fixed a rare refresh crash
 * CID is now shown if no nick name is currently available for a user

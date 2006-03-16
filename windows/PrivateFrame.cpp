@@ -71,7 +71,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
-	const User::Ptr& user = (from == ClientManager::getInstance()->getMe()) ? to : replyTo;
+	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 	
 	FrameIter i = frames.find(user);
 	if(i == frames.end()) {

@@ -93,6 +93,8 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 		getMyIdentity().setHubUrl(getHubUrl());
 	} else {
 		p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
+		// In NMDC, everyone's a bot until they show a good myinfo
+		p->setFlag(User::BOT);
 	}
 
 	{
@@ -316,6 +318,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		i = j + 1;
 		
 		OnlineUser& u = getUser(nick);
+
+		u.getUser()->unsetFlag(User::BOT);
 
 		j = param.find('$', i);
 		if(j == string::npos)
