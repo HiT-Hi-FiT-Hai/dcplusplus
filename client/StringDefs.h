@@ -282,6 +282,7 @@ enum Strings { // @DontAdd
 	NICK, // "Nick"
 	NICK_TAKEN, // "Your nick was already taken, please change to something else!"
 	NICK_UNKNOWN, // " (Nick unknown)"
+	NO_CRC32_MATCH, // " not shared; calculated CRC32 does not match the one found in SFV file."
 	NO_STR, // "No"
 	NO_DIRECTORY_SPECIFIED, // "No directory specified"
 	NO_DOWNLOADS_FROM_SELF, // "You're trying to download from yourself!"

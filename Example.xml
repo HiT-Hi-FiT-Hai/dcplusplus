@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.687" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.6875" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -278,6 +278,7 @@
 		<String Name="Nick">Nick</String>
 		<String Name="NickTaken">Your nick was already taken, please change to something else!</String>
 		<String Name="NickUnknown"> (Nick unknown)</String>
+		<String Name="NoCrc32Match"> not shared; calculated CRC32 does not match the one found in SFV file.</String>
 		<String Name="NoStr">No</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
 		<String Name="NoDownloadsFromSelf">You're trying to download from yourself!</String>

@@ -4,6 +4,7 @@
 * Fixed a 100% cpu / crash bug
 * [bug 872] Fixed a pm issue hopefully
 * [bug 812] Fixed pm's being sent to bots
+* Files with invalid crc-32, as per their sfv file, are no longer shared
 
 -- 0.687 2006-02-26 --
 * Fixed XML file list generation for invalid filenames from other os's
