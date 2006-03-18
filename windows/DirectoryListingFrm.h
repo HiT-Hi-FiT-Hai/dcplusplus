@@ -36,7 +36,7 @@
 #include "../client/FavoriteManager.h"
 
 #define STATUS_MESSAGE_MAP 9
-
+#define CONTROL_MESSAGE_MAP 10
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>,
 	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
 
@@ -115,6 +115,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_NEXT, onNext)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_ID_HANDLER(IDC_FILELIST_DIFF, onListDiff)
+	ALT_MSG_MAP(CONTROL_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_XBUTTONUP, onXButtonUp)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -132,6 +134,7 @@ public:
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onXButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -226,6 +229,9 @@ private:
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
 	void initStatus();
+	void addHistory(const string& name);
+	void back();
+	void forward();
 
 	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
@@ -305,8 +311,13 @@ private:
 	CMenu fileMenu;
 	CMenu directoryMenu;
 	CContainedWindow statusContainer;
+	CContainedWindow treeContainer;
+	CContainedWindow listContainer;
 
 	StringList targets;
+	
+	deque<string> history;
+	size_t historyIndex;
 	
 	CTreeViewCtrl ctrlTree;
 	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;

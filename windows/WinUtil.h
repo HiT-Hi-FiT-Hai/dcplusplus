@@ -335,6 +335,8 @@ public:
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 
 	static bool isShift() { return (GetKeyState(VK_SHIFT) & 0x8000) > 0; }
+	static bool isAlt() { return (GetKeyState(VK_MENU) & 0x8000) > 0; }
+	static bool isCtrl() { return (GetKeyState(VK_CONTROL) & 0x8000) > 0; }
 
 	template<class T> static HWND hiddenCreateEx(T& p) throw() {
 		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);

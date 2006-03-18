@@ -243,7 +243,7 @@ void SearchFrame::onEnter() {
 	int n = ctrlHubs.GetItemCount();
 	for(int i = 0; i < n; i++) {
 		if(ctrlHubs.GetCheckState(i)) {
-			clients.push_back(Text::fromT(ctrlHubs.getItemData(i)->ipPort));
+			clients.push_back(Text::fromT(ctrlHubs.getItemData(i)->url));
 		}
 	}
 
@@ -1055,7 +1055,7 @@ void SearchFrame::initHubs() {
 		if (!client->isConnected())
 			continue;
 
-		onHubAdded(new HubInfo(Text::toT(client->getIpPort()), Text::toT(client->getHubName()), client->getMyIdentity().isOp()));
+		onHubAdded(new HubInfo(Text::toT(client->getHubUrl()), Text::toT(client->getHubName()), client->getMyIdentity().isOp()));
 	}
 
 	clientMgr->unlock();
@@ -1073,7 +1073,7 @@ void SearchFrame::onHubChanged(HubInfo* info) {
 	int nItem = 0;
 	int n = ctrlHubs.GetItemCount();
 	for(; nItem < n; nItem++) {
-		if(ctrlHubs.getItemData(nItem)->ipPort == info->ipPort)
+		if(ctrlHubs.getItemData(nItem)->url == info->url)
 			break;
 	}
 	if (nItem == n)
@@ -1093,7 +1093,7 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 	int nItem = 0;
 	int n = ctrlHubs.GetItemCount();
 	for(; nItem < n; nItem++) {
-		if(ctrlHubs.getItemData(nItem)->ipPort == info->ipPort)
+		if(ctrlHubs.getItemData(nItem)->url == info->url)
 			break;
 	}
 	if (nItem == n)

@@ -7,6 +7,7 @@
 * Files with invalid crc-32, as per their sfv file, are no longer shared
 * [bug 873] Added connect to hub option (thanks joakim tosteberg)
 * Fixed an issue with linux file reading (thanks bart vullings and steven)
+* Added back/forward mouse/keyboard navigation to directory listing frame
 
 -- 0.687 2006-02-26 --
 * Fixed XML file list generation for invalid filenames from other os's
