@@ -1,4 +1,4 @@
-﻿-- 0.688 --
+﻿-- 0.688 2006-02-26 --
 * Fixed public hubs sorting (thanks pothead)
 * Fixed a ZPipe issue (thanks jove)
 * [bug 858] Fixed a 100% cpu / crash bug
