@@ -27,6 +27,8 @@
 
 #include "LineDlg.h"
 
+#include "HubFrame.h"
+
 int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION };
 int UsersFrame::columnSizes[] = { 200, 300, 150, 200 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION };
@@ -147,7 +149,20 @@ LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 		FavoriteManager::getInstance()->setAutoGrant(ctrlUsers.getItemData(l->iItem)->user, ctrlUsers.GetCheckState(l->iItem) != FALSE);
 	}
 	return 0;
-} 
+}
+
+LRESULT UsersFrame::onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
+		UserInfo *ui = ctrlUsers.getItemData(i);
+		FavoriteManager::FavoriteMap favUsers = FavoriteManager::getInstance()->getFavoriteUsers();
+		const FavoriteUser u = favUsers.find(ui->user->getCID())->second;
+		if(u.getUrl().length() > 0)
+		{
+			HubFrame::openWindow(Text::toT(u.getUrl()));
+		}
+	}
+	return 0;
+}
 
 void UsersFrame::addUser(const FavoriteUser& aUser) {
 	int i = ctrlUsers.insertItem(new UserInfo(aUser), 0);

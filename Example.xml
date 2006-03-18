@@ -48,6 +48,7 @@
 		<String Name="CompressionError">Error during compression</String>
 		<String Name="Configure">&amp;Configure</String>
 		<String Name="Connect">&amp;Connect</String>
+		<String Name="ConnectFavuserHub">Connect to hub</String>
 		<String Name="Connected">Connected</String>
 		<String Name="Connecting">Connecting...</String>
 		<String Name="ConnectingForced">Connecting (forced)...</String>

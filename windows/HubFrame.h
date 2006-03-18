@@ -132,6 +132,7 @@ public:
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		client->disconnect(false);
 		clearUserList();
+		clearTaskList();
 		client->connect();
 		return 0;
 	}
@@ -150,7 +151,7 @@ public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
 
-	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, ADD_CHAT_LINE,
+	enum Speakers { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, 
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
 	};
@@ -170,18 +171,35 @@ private:
 		COLUMN_LAST
 	};
 
-	struct UpdateInfo {
-		UpdateInfo() { }
-		UpdateInfo(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) {	}
+	struct Task {
+		Task(Speakers speaker_) : speaker(speaker_) { }
+		virtual ~Task() { }
+		Speakers speaker;
+	};
+
+	struct UserTask : public Task {
+		UserTask(Speakers speaker_, const OnlineUser& ou) : Task(speaker_), user(ou.getUser()), identity(ou.getIdentity()) { }
 
 		User::Ptr user;
 		Identity identity;
 	};
 
+	struct StringTask : public Task {
+		StringTask(Speakers speaker_, const tstring& msg_) : Task(speaker_), msg(msg_) { }
+		tstring msg;
+	};
+
+	struct PMTask : public StringTask {
+		PMTask(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m), from(from_), to(to_), replyTo(replyTo_) { }
+		User::Ptr from;
+		User::Ptr to;
+		User::Ptr replyTo;
+	};
+
 	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const UpdateInfo& u) : UserInfoBase(u.user) { 
+		UserInfo(const UserTask& u) : UserInfoBase(u.user) { 
 			update(u.identity, -1); 
 		}
 
@@ -209,14 +227,6 @@ private:
 		GETSET(Identity, identity, Identity);
 	};
 
-	class PMInfo {
-	public:
-		PMInfo(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const string& m) : from(from_), to(to_), replyTo(replyTo_), msg(Text::toT(m)) { }
-		User::Ptr from;
-		User::Ptr to;
-		User::Ptr replyTo;
-		tstring msg;
-	};
 
 	HubFrame(const tstring& aServer) : 
 	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
@@ -231,11 +241,13 @@ private:
 	}
 
 	virtual ~HubFrame() {
+		ClientManager::getInstance()->putClient(client);
+
 		dcassert(frames.find(server) != frames.end());
 		dcassert(frames[server] == this);
 		frames.erase(server);
 
-		ClientManager::getInstance()->putClient(client);
+		clearTaskList();
 	}
 
 	typedef HASH_MAP<tstring, HubFrame*> FrameMap;
@@ -272,7 +284,7 @@ private:
 		if (ctrlUsers.GetSelectedCount() > 1) {
 			return ctrlUsers.forEachSelectedT(CountAvailable()).available;
 		} else
-			return client->getAvailable();
+			return ctrlUsers.forEachT(CountAvailable()).available;
 	}
 
 	const tstring& getNick(const User::Ptr& u);
@@ -299,14 +311,14 @@ private:
 	TStringMap tabParams;
 	bool tabMenuShown;
 
-	typedef vector<pair<UpdateInfo, Speakers> > UpdateList;
-	typedef UpdateList::iterator UpdateIter;
+	typedef vector<Task*> TaskList;
+	typedef TaskList::iterator TaskIter;
 	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
 	typedef UserMap::iterator UserMapIter;
 
 	UserMap userMap;
-	UpdateList updateList;
-	CriticalSection updateCS;
+	TaskList taskList;
+	CriticalSection taskCS;
 	bool updateUsers;
 	bool resort;
 
@@ -318,7 +330,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
-	bool updateUser(const UpdateInfo& u);
+	bool updateUser(const UserTask& u);
 	void removeUser(const User::Ptr& aUser);
 
 	UserInfo* findUser(const tstring& nick);
@@ -327,13 +339,11 @@ private:
 	void removeFavoriteHub();
 
 	void clearUserList();
+	void clearTaskList();
 
 	int getImage(const Identity& u);
 
-	void updateStatusBar() {
-		if(m_hWnd)
-			PostMessage(WM_SPEAKER, STATS);
-	}
+	void updateStatusBar() { if(m_hWnd) speak(STATS); }
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw();
@@ -355,15 +365,10 @@ private:
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
-	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); }
-	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); }
-	void speak(Speakers s, const OnlineUser& u) { 
-		Lock l(updateCS);
-		updateList.push_back(make_pair(UpdateInfo(u), s));
-		updateUsers = true;
-	}
-	void speak(Speakers s, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(from, to, replyTo, line)); }
-
+	void speak(Speakers s) { Lock l(taskCS); taskList.push_back(new Task(s)); PostMessage(WM_SPEAKER); }
+	void speak(Speakers s, const string& msg) { Lock l(taskCS); taskList.push_back(new StringTask(s, Text::toT(msg))); PostMessage(WM_SPEAKER); }
+	void speak(Speakers s, const OnlineUser& u) { Lock l(taskCS); taskList.push_back(new UserTask(s, u)); updateUsers = true; }
+	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { Lock l(taskCS); taskList.push_back(new PMTask(from, to, replyTo, Text::toT(line))); }
 };
 
 #endif // !defined(HUB_FRAME_H)

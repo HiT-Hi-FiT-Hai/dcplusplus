@@ -52,6 +52,7 @@ enum Strings { // @DontAdd
 	COMPRESSION_ERROR, // "Error during compression"
 	CONFIGURE, // "&Configure"
 	CONNECT, // "&Connect"
+	CONNECT_FAVUSER_HUB, // "Connect to hub"
 	CONNECTED, // "Connected"
 	CONNECTING, // "Connecting..."
 	CONNECTING_FORCED, // "Connecting (forced)..."

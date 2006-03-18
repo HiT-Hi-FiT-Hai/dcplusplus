@@ -41,7 +41,7 @@ _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka sepp�l
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
-_T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove. ")
+_T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, steven. ")
 _T("Keep it coming!");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
