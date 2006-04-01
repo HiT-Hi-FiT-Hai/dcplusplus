@@ -287,7 +287,7 @@ public:
 	virtual size_t read(void* buf, size_t& len) throw(FileException) {
 		ssize_t x = ::read(h, buf, len);
 		if(x == -1)
-			throw("Read error");
+			throw FileException("Read error");
 		len = x;
 		return (size_t)x;
 	}

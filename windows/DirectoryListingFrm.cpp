@@ -339,6 +339,16 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	}
 }
 
+void DirectoryListingFrame::up() {
+	HTREEITEM t = ctrlTree.GetSelectedItem();
+	if(t == NULL)
+		return;
+	t = ctrlTree.GetParentItem(t);
+	if(t == NULL)
+		return;
+	ctrlTree.SelectItem(t);
+}
+
 void DirectoryListingFrame::back() {
 	if(history.size() > 1 && historyIndex > 1) {
 		size_t n = min(historyIndex, history.size()) - 1;
@@ -829,15 +839,13 @@ LRESULT DirectoryListingFrame::onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/,
 LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 	if(kd->wVKey == VK_BACK) {
-		HTREEITEM cur = ctrlTree.GetSelectedItem();
-		if(cur != NULL)
-		{
-			HTREEITEM parent = ctrlTree.GetParentItem(cur);
-			if(parent != NULL)
-				ctrlTree.SelectItem(parent);
-		}
+		up();
 	} else if(kd->wVKey == VK_TAB) {
 		onTab();
+	} else if(kd->wVKey == VK_LEFT && WinUtil::isAlt()) {
+		back();
+	} else if(kd->wVKey == VK_RIGHT && WinUtil::isAlt()) {
+		forward();
 	} else if(kd->wVKey == VK_RETURN) {
 		if(ctrlList.GetSelectedCount() == 1) {
 			ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));

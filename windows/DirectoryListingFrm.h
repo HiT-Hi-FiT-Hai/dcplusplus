@@ -230,6 +230,7 @@ private:
 	void updateStatus();
 	void initStatus();
 	void addHistory(const string& name);
+	void up();
 	void back();
 	void forward();
 

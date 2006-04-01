@@ -427,7 +427,7 @@ void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aF
 		string& client = *it;
 		for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
 			Client* c = *j;
-			if(c->isConnected() && c->getIpPort() == client) {
+			if(c->isConnected() && c->getHubUrl() == client) {
 				c->search(aSizeMode, aSize, aFileType, aString, aToken);
 			}
 		}

@@ -103,7 +103,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	WinUtil::init(m_hWnd);
 
-	trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
+	//trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
+	// Use ASCII version as opencow doesn't support the wide one...
+	trayMessage = RegisterWindowMessageA("TaskbarCreated");
 
 	TimerManager::getInstance()->start();
 

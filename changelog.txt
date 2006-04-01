@@ -1,4 +1,10 @@
-﻿-- 0.688 2006-02-26 --
+﻿-- 0.689 2006-04-01 --
+* Fixed displaying of available bytes when user list is off
+* Fixed a potential crash when not showing user list
+* Fixed 100% CPU bug on upload
+* [bug 853] Fixed missing function in opencow
+
+-- 0.688 2006-03-18 --
 * Fixed public hubs sorting (thanks pothead)
 * Fixed a ZPipe issue (thanks jove)
 * [bug 858] Fixed a 100% cpu / crash bug
