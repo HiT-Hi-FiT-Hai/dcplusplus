@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public:
 		stringSearchList.clear();
 
 		// Replace parameters such as %[nick]
-		string stringParams = Util::formatParams(searchString, params);
+		string stringParams = Util::formatParams(searchString, params, false);
 
 		// Split into substrings
 		StringTokenizer<string> st(stringParams, ' ');

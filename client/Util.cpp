@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -310,6 +310,15 @@ string Util::validateFileName(string tmp) {
 	}
 
 	return tmp;
+}
+
+string Util::cleanPathChars(string aNick) {
+	string::size_type i = 0;
+
+	while( (i = aNick.find_first_of("/.\\", i)) != string::npos) {
+		aNick[i] = '_';
+	}
+	return aNick;
 }
 
 string Util::getShortTimeString(time_t t) {
@@ -643,7 +652,7 @@ string Util::encodeURI(const string& aString, bool reverse) {
  * date/time and then finally written to the log file. If the parameter is not present at all,
  * it is removed from the string completely...
  */
-string Util::formatParams(const string& msg, StringMap& params) {
+string Util::formatParams(const string& msg, StringMap& params, bool filter) {
 	string result = msg;
 
 	string::size_type i, j, k;
@@ -658,13 +667,21 @@ string Util::formatParams(const string& msg, StringMap& params) {
 			result.erase(j, k-j + 1);
 			i = j;
 		} else {
-			if(smi->second.find('%') != string::npos) {
+			if(smi->second.find_first_of("%\\./") != string::npos) {
 				string tmp = smi->second;	// replace all % in params with %% for strftime
 				string::size_type m = 0;
 				while(( m = tmp.find('%', m)) != string::npos) {
 					tmp.replace(m, 1, "%%");
 					m+=2;
 				}
+				if(filter) {
+					// Filter chars that produce bad effects on file systems
+					m = 0;
+					while(( m = tmp.find_first_of("\\./", m)) != string::npos) {
+						tmp[m] = '_';
+					}
+				}
+				
 				result.replace(j, k-j + 1, tmp);
 				i = j + tmp.size();
 			} else {

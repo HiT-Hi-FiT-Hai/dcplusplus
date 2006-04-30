@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -220,7 +220,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTODROP_INTERVAL, 10);
 	setDefault(AUTODROP_ELAPSED, 15);
 	setDefault(AUTODROP_INACTIVITY, 10);
-	setDefault(AUTODROP_MINSOURCES, 1);
+	setDefault(AUTODROP_MINSOURCES, 2);
 	setDefault(AUTODROP_FILESIZE, 0);
 	setDefault(AUTODROP_ALL, false);
 	setDefault(AUTODROP_FILELISTS, false);

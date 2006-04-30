@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,9 +154,9 @@ public:
 	void setBlocking(bool block) throw() {
 		int flags = fcntl(sock, F_GETFL, 0);
 		if(block) {
-			fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-		} else {
 			fcntl(sock, F_SETFL, flags & (~O_NONBLOCK));
+		} else {
+			fcntl(sock, F_SETFL, flags | O_NONBLOCK);
 		}
 		blocking = block;
 	}
@@ -233,7 +233,7 @@ private:
 	static int check(int ret, bool blockOk = false) { 
 		if(ret == -1) {
 			int error = getLastError();
-			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS) ) {
+			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS || error == EINPROGRESS) ) {
 				return -1;
 			} else {
 				throw SocketException(error); 
