@@ -37,10 +37,10 @@
 
 HubFrame::FrameMap HubFrame::frames;
 
-int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100 };
-int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL };
+int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 125 };
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL, COLUMN_CID };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::EMAIL };
+ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::EMAIL, ResourceManager::CID };
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -421,6 +421,7 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	columns[COLUMN_TAG] = Text::toT(identity.getTag());
 	columns[COLUMN_CONNECTION] = Text::toT(identity.getConnection());
 	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
+	columns[COLUMN_CID] = Text::toT(identity.getUser()->getCID().toBase32());
 
 	if(sortCol != -1) {
 		needsSort = needsSort || (old != columns[sortCol]);

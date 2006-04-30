@@ -112,10 +112,11 @@ StringList ClientManager::getNicks(const CID& cid) {
 	if(lst.empty()) {
 		// Offline perhaps?
 		UserIter i = users.find(cid);
-		if(i != users.end())
+		if(i != users.end() && !i->second->getFirstNick().empty()) {
 			lst.push_back(i->second->getFirstNick());
-		else
+		} else {
 			lst.push_back('{' + cid.toBase32() + '}');
+		}
 	}
 	return lst;
 }
@@ -452,7 +453,7 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 }
 
-void ClientManager::on(Save, SimpleXML*) throw() {
+void ClientManager::save() {
 	Lock l(cs);
 
 	try {
@@ -483,6 +484,10 @@ void ClientManager::on(Save, SimpleXML*) throw() {
 	} catch(const FileException&) {
 		// ...
 	}
+}
+
+void ClientManager::on(Save, SimpleXML*) throw() {
+	save();
 }
 
 User::Ptr& ClientManager::getMe() {

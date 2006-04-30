@@ -106,6 +106,8 @@ public:
 
 	CID getMyCID();
 	const CID& getMyPID();
+
+	void save();
 private:
 	typedef HASH_MAP<string, User::Ptr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;

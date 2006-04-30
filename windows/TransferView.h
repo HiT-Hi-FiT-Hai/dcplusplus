@@ -133,6 +133,7 @@ private:
 		COLUMN_PATH,
 		COLUMN_IP,
 		COLUMN_RATIO,
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 
@@ -215,7 +216,7 @@ private:
 			MASK_TIMELEFT = 1 << 7,
 			MASK_IP = 1 << 8,
 			MASK_STATUS_STRING = 1 << 9,
-			MASK_COUNTRY = 1 << 10
+			MASK_COUNTRY = 1 << 10,
 		};
 
 		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }

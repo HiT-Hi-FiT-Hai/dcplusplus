@@ -269,7 +269,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	size_t readPos = 0;
 
 	bool readDone = false;
-	dcdebug("Starting threadSend");
+	dcdebug("Starting threadSend\n");
 	while(true) {
 		if(!readDone && readBuf.size() > readPos) {
 			// Fill read buffer

@@ -45,6 +45,7 @@ enum Strings { // @DontAdd
 	BROWSE_ACCEL, // "&Browse..."
 	BROWSE_FILE_LIST, // "Browse file list"
 	CHOOSE_FOLDER, // "Choose folder"
+	CID, // "CID"
 	CLOSE, // "Close"
 	CLOSE_CONNECTION, // "Close connection"
 	CLOSING_CONNECTION, // "Closing connection..."

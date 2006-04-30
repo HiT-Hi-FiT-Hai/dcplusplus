@@ -3,7 +3,9 @@
 * Fixed an issue where client could be crashed from remote
 * Fixed an issue bad nicks could cause directories to be created in log / file list download folder
 * Changed autodrop default to 2 for fewer unexpected autodrops (thanks paka)
-
+* Saved users file more often to have fewer missing nicks around
+* CID of user shown if nick is missing (in queue for example)
+* Added display of CID in a few places
 
 -- 0.689 2006-04-01 --
 * Fixed displaying of available bytes when user list is off

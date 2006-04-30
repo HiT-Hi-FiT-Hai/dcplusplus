@@ -1179,6 +1179,8 @@ void QueueManager::saveQueue() throw() {
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
 
+		ClientManager::getInstance()->save();
+
 		dirty = false;
 	} catch(const FileException&) {
 		// ...

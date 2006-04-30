@@ -41,6 +41,7 @@
 		<String Name="BrowseAccel">&amp;Browse...</String>
 		<String Name="BrowseFileList">Browse file list</String>
 		<String Name="ChooseFolder">Choose folder</String>
+		<String Name="Cid">CID</String>
 		<String Name="Close">Close</String>
 		<String Name="CloseConnection">Close connection</String>
 		<String Name="ClosingConnection">Closing connection...</String>
