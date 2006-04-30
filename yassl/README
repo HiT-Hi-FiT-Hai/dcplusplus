@@ -1,4 +1,24 @@
-yaSSL Release notes, version 1.1.5
+yaSSL Release notes, version 1.2.2 (03/27/06)
+
+
+    This release of yaSSL contains minor bug fixes and portability enhancements.
+
+See build instructions below under 1.0.6:
+
+
+
+*****************yaSSL Release notes, version 1.2.0
+
+
+    This release of yaSSL contains minor bug fixes, portability enhancements,
+    Diffie-Hellman compatibility fixes for other servers and client,
+    optimization improvements, and x86 ASM changes.
+
+See build instructions below under 1.0.6:
+
+
+
+*****************yaSSL Release notes, version 1.1.5
 
     This release of yaSSL contains minor bug fixes, portability enhancements,
     and user requested changes including the ability to add all certificates in

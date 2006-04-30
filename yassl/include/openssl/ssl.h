@@ -50,11 +50,11 @@ extern "C" {
     class X509;
     class X509_NAME;
 #else
-    typedef struct SSL         SSL;          
-    typedef struct SSL_SESION  SSL_SESSION;
-    typedef struct SSL_METHOD  SSL_METHOD;
-    typedef struct SSL_CTX     SSL_CTX;
-    typedef struct SSL_CIPHER  SSL_CIPHER;
+    typedef struct SSL          SSL;          
+    typedef struct SSL_SESSION  SSL_SESSION;
+    typedef struct SSL_METHOD   SSL_METHOD;
+    typedef struct SSL_CTX      SSL_CTX;
+    typedef struct SSL_CIPHER   SSL_CIPHER;
 
     typedef struct RSA RSA;
 

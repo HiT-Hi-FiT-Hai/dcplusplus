@@ -855,9 +855,9 @@ DiffieHellman& DiffieHellman::operator=(const DiffieHellman& that)
 }
 
 
-void DiffieHellman::makeAgreement(const byte* other)
+void DiffieHellman::makeAgreement(const byte* other, unsigned int otherSz)
 {
-    pimpl_->dh_.Agree(pimpl_->agreedKey_, pimpl_->privateKey_, other); 
+    pimpl_->dh_.Agree(pimpl_->agreedKey_, pimpl_->privateKey_, other, otherSz); 
 }
 
 

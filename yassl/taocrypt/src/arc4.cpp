@@ -80,7 +80,6 @@ inline unsigned int MakeByte(word32& x, word32& y, byte* s)
 
 void ARC4::Process(byte* out, const byte* in, word32 length)
 {
-    //AsmProcess(out, in, length);
     if (length == 0) return;
 
     byte *const s = state_;
@@ -202,7 +201,7 @@ AS1( begin:                             )
     AS2(    movzx  eax, BYTE PTR [ebp + ecx]    )
 
     // xOr w/ inByte
-    AS2(    xor    ebx, [esi]                   )
+    AS2(    xor    bl,  BYTE PTR [esi]          )
     AS1(    inc    esi                          )
 
     // write to outByte
