@@ -128,8 +128,3 @@ private:
 };
 
 #endif // !defined(ABOUT_DLG_H)
-
-/**
- * @file
- * $Id: AboutDlg.h,v 1.58 2006/02/19 16:19:06 arnetheduck Exp $
- */

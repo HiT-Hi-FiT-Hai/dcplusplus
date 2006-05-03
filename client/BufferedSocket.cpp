@@ -468,8 +468,3 @@ void BufferedSocket::shutdown() {
 		delete this;
 	}
 }
-
-/**
- * @file
- * $Id: BufferedSocket.cpp,v 1.103 2006/02/19 23:51:31 arnetheduck Exp $
- */

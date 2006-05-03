@@ -96,8 +96,3 @@ private:
 };
 
 #endif // !defined(SEMAPHORE_H)
-
-/**
- * @file
- * $Id: Semaphore.h,v 1.15 2006/02/19 16:19:06 arnetheduck Exp $
- */

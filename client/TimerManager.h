@@ -92,8 +92,3 @@ private:
 #define GET_TIME() TimerManager::getTime()
 
 #endif // !defined(TIMER_MANAGER_H)
-
-/**
- * @file
- * $Id: TimerManager.h,v 1.30 2006/02/19 17:19:04 arnetheduck Exp $
- */

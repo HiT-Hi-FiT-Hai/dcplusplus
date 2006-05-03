@@ -176,8 +176,3 @@ inline bool operator==(DirectoryListing::Directory::Ptr a, const string& b) { re
 inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
 
 #endif // !defined(DIRECTORY_LISTING_H)
-
-/**
- * @file
- * $Id: DirectoryListing.h,v 1.47 2006/02/19 17:19:04 arnetheduck Exp $
- */

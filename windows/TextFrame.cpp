@@ -78,8 +78,3 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	rc.right -=1;
 	ctrlPad.MoveWindow(rc);
 }
-
-/**
- * @file
- * $Id: TextFrame.cpp,v 1.12 2005/04/24 08:13:03 arnetheduck Exp $
- */

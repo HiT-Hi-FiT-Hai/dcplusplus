@@ -61,8 +61,3 @@ LRESULT CertificatesPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_CERTIFICATESPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: CertificatesPage.cpp,v 1.1 2005/12/03 20:36:50 arnetheduck Exp $
- */

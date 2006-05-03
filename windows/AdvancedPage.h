@@ -57,8 +57,3 @@ protected:
 };
 
 #endif // !defined(ADVANCED_PAGE_H)
-
-/**
- * @file
- * $Id: AdvancedPage.h,v 1.16 2006/02/19 16:19:06 arnetheduck Exp $
- */

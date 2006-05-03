@@ -329,8 +329,3 @@ private:
 };
 
 #endif // !defined(SHARE_MANAGER_H)
-
-/**
- * @file
- * $Id: ShareManager.h,v 1.87 2006/02/19 16:19:06 arnetheduck Exp $
- */

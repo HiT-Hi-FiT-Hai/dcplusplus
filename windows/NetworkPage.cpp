@@ -183,8 +183,3 @@ LRESULT NetworkPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_NETWORKPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: NetworkPage.cpp,v 1.8 2005/07/23 17:52:23 arnetheduck Exp $
- */

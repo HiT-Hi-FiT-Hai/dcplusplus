@@ -361,8 +361,3 @@ private:
 };
 
 #endif // !defined(USER_CONNECTION_H)
-
-/**
- * @file
- * $Id: UserConnection.h,v 1.107 2006/02/19 17:19:04 arnetheduck Exp $
- */

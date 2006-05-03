@@ -679,8 +679,3 @@ u_int64_t TigerHash::table[4*256] = {
 		_ULL(0xCD56D9430EA8280E)   /* 1020 */,    _ULL(0xC12591D7535F5065)   /* 1021 */,
 		_ULL(0xC83223F1720AEF96)   /* 1022 */,    _ULL(0xC3A0396F7363A51F)   /* 1023 */
 };
-
-/**
- * @file
- * $Id: TigerHash.cpp,v 1.7 2005/04/24 08:13:11 arnetheduck Exp $
- */

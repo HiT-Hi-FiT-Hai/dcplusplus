@@ -7,6 +7,7 @@
 * CID of user shown if nick is missing (in queue for example)
 * Added display of CID in a few places
 * Updated yaSSL to 1.2.2
+* Fixed ADC hubname display (thanks ullner)
 
 -- 0.689 2006-04-01 --
 * Fixed displaying of available bytes when user list is off

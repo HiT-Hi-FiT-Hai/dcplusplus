@@ -57,8 +57,3 @@ private:
 };
 
 #endif // !defined(FINISHED_UL_FRAME_H)
-
-/**
- * @file
- * $Id: FinishedULFrame.h,v 1.22 2006/02/19 16:19:06 arnetheduck Exp $
- */

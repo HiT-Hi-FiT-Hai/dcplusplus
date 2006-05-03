@@ -48,8 +48,3 @@ public:
 };
 
 #endif // !defined(CLIENT_MANAGER_LISTENER_H)
-
-/**
- * @file
- * $Id: ClientManagerListener.h,v 1.13 2006/02/19 17:19:04 arnetheduck Exp $
- */

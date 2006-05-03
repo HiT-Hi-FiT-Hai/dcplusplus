@@ -80,8 +80,3 @@ private:
 };
 
 #endif // !defined(_Z_UTILS_H)
-
-/**
- * @file
- * $Id: ZUtils.h,v 1.8 2005/04/24 08:13:11 arnetheduck Exp $
- */

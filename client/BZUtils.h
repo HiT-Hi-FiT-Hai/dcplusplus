@@ -64,8 +64,3 @@ private:
 };
 
 #endif // !defined(BZ_UTILS_H)
-
-/**
- * @file
- * $Id: BZUtils.h,v 1.6 2005/04/24 08:13:11 arnetheduck Exp $
- */

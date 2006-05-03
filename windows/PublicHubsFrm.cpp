@@ -601,8 +601,3 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 
 	return insert;
 }
-
-/**
- * @file
- * $Id: PublicHubsFrm.cpp,v 1.43 2006/01/23 08:00:50 arnetheduck Exp $
- */

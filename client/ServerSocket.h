@@ -58,8 +58,3 @@ private:
 };
 
 #endif // !defined(SERVER_SOCKET_H)
-
-/**
- * @file
- * $Id: ServerSocket.h,v 1.29 2006/02/19 17:19:04 arnetheduck Exp $
- */

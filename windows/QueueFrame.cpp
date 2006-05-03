@@ -1262,8 +1262,3 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 	}
 	ctrlDirs.DeleteItem(item);
 }
-
-/**
- * @file
- * $Id: QueueFrame.cpp,v 1.86 2005/12/19 00:15:52 arnetheduck Exp $
- */

@@ -91,8 +91,3 @@ private:
 };
 
 #endif // !defined(BLOOM_FILTER_H)
-
-/**
- * @file
- * $Id: BloomFilter.h,v 1.11 2006/02/19 16:19:06 arnetheduck Exp $
- */

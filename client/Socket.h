@@ -246,8 +246,3 @@ private:
 };
 
 #endif // !defined(SOCKET_H)
-
-/**
- * @file
- * $Id: Socket.h,v 1.67 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -355,8 +355,3 @@ private:
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)
-
-/**
- * @file
- * $Id: DirectoryListingFrm.h,v 1.61 2006/02/19 16:19:06 arnetheduck Exp $
- */

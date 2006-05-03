@@ -124,8 +124,3 @@ private:
 };
 
 #endif // !defined(CRYPTO_MANAGER_H)
-
-/**
- * @file
- * $Id: CryptoManager.h,v 1.44 2006/02/19 16:19:06 arnetheduck Exp $
- */

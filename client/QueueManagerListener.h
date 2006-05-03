@@ -50,8 +50,3 @@ public:
 };
 
 #endif // !defined(QUEUE_MANAGER_LISTENER_H)
-
-/**
- * @file
- * $Id: QueueManagerListener.h,v 1.12 2006/02/19 17:19:04 arnetheduck Exp $
- */

@@ -163,8 +163,3 @@ struct DeleteFunction {
 };
 
 #endif // !defined(POINTER_H)
-
-/**
- * @file
- * $Id: Pointer.h,v 1.22 2006/02/19 16:19:06 arnetheduck Exp $
- */

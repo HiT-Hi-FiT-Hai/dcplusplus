@@ -580,8 +580,3 @@ void Socket::disconnect() throw() {
 	shutdown();
 	close();
 }
-
-/**
- * @file
- * $Id: Socket.cpp,v 1.72 2005/12/16 01:00:46 arnetheduck Exp $
- */

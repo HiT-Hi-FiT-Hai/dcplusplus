@@ -808,9 +808,3 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 	fire(ClientListener::Failed(), this, aLine); 
 }
-
-/**
- * @file
- * $Id: NmdcHub.cpp,v 1.55 2006/02/19 20:39:20 arnetheduck Exp $
- */
-

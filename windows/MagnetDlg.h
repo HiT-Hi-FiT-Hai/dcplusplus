@@ -118,8 +118,3 @@ private:
 };
 
 #endif // !defined(MAGNET_DLG_H)
-
-/**
- * @file
- * $Id: MagnetDlg.h,v 1.8 2006/02/19 16:19:06 arnetheduck Exp $
- */

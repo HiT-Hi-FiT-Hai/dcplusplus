@@ -145,8 +145,3 @@ private:
 };
 
 #endif // !defined(ADL_SEARCH_FRAME_H)
-
-/**
- * @file
- * $Id: ADLSearchFrame.h,v 1.13 2006/02/19 16:19:06 arnetheduck Exp $
- */

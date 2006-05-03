@@ -76,8 +76,3 @@ protected:
 };
 
 #endif // !defined(APPEARANCE2_PAGE_H)
-
-/**
- * @file
- * $Id: Appearance2Page.h,v 1.6 2006/02/19 16:19:06 arnetheduck Exp $
- */

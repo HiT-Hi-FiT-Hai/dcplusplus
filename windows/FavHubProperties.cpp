@@ -125,8 +125,3 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 	return TRUE;
 }
-
-/**
- * @file
- * $Id: FavHubProperties.cpp,v 1.14 2005/10/12 14:02:53 arnetheduck Exp $
- */

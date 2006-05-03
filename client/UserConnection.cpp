@@ -206,8 +206,3 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 	delete this;
 }
-
-/**
- * @file
- * $Id: UserConnection.cpp,v 1.58 2006/02/12 18:16:12 arnetheduck Exp $
- */

@@ -1223,8 +1223,3 @@ void HubFrame::on(NickTaken, Client*) throw() {
 void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
 }
-
-/**
- * @file
- * $Id: HubFrame.cpp,v 1.131 2006/02/19 23:51:31 arnetheduck Exp $
- */

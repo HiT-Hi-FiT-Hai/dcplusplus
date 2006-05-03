@@ -39,8 +39,3 @@ void Thread::start() throw(ThreadException) {
 	}
 }
 #endif
-
-/**
- * @file
- * $Id: Thread.cpp,v 1.10 2005/04/24 08:13:36 arnetheduck Exp $
- */

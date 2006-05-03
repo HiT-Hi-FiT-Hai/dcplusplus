@@ -113,8 +113,3 @@ private:
 };
 
 #endif // !defined(SPY_FRAME_H)
-
-/**
- * @file
- * $Id: SpyFrame.h,v 1.25 2005/11/12 10:23:02 arnetheduck Exp $
- */

@@ -44,8 +44,3 @@ int TimerManager::run() {
 
 	return 0;
 }
-
-/**
- * @file
- * $Id: TimerManager.cpp,v 1.19 2005/04/24 08:13:11 arnetheduck Exp $
- */

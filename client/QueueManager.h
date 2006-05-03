@@ -234,8 +234,3 @@ private:
 };
 
 #endif // !defined(QUEUE_MANAGER_H)
-
-/**
- * @file
- * $Id: QueueManager.h,v 1.75 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -205,8 +205,3 @@ private:
 };
 
 #endif // !defined(CLIENT_H)
-
-/**
- * @file
- * $Id: Client.h,v 1.111 2006/02/19 23:51:31 arnetheduck Exp $
- */

@@ -99,8 +99,3 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 	EndDialog(wID);
 	return 0;
 }
-
-/**
- * @file
- * $Id: ADLSProperties.cpp,v 1.10 2005/04/24 08:13:03 arnetheduck Exp $
- */

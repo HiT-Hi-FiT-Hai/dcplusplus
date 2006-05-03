@@ -159,8 +159,3 @@ private:
 };
 
 #endif // !defined(PUBLIC_HUBS_LIST_DLG_H)
-
-/**
- * @file
- * $Id: PublicHubsListDlg.h,v 1.9 2006/02/19 16:19:06 arnetheduck Exp $
- */

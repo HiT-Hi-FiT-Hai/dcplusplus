@@ -279,8 +279,3 @@ private:
 };
 
 #endif // !defined(DOWNLOAD_MANAGER_H)
-
-/**
- * @file
- * $Id: DownloadManager.h,v 1.86 2006/02/19 17:19:04 arnetheduck Exp $
- */

@@ -61,8 +61,3 @@ private:
 };
 
 #endif // !defined(CID_H)
-
-/**
- * @file
- * $Id: CID.h,v 1.10 2006/02/10 07:56:46 arnetheduck Exp $
- */

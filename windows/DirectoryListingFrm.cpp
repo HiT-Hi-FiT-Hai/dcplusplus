@@ -1078,8 +1078,3 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
 	}
 }
-
-/**
- * @file
- * $Id: DirectoryListingFrm.cpp,v 1.79 2006/02/05 17:02:38 arnetheduck Exp $
- */

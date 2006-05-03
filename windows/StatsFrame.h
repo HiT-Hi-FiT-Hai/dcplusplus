@@ -116,8 +116,3 @@ private:
 };
 
 #endif // !defined(STATS_FRAME_H)
-
-/**
- * @file
- * $Id: StatsFrame.h,v 1.12 2006/02/19 16:19:06 arnetheduck Exp $
- */

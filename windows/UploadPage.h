@@ -76,8 +76,3 @@ protected:
 };
 
 #endif // !defined(UPLOAD_PAGE_H)
-
-/**
- * @file
- * $Id: UploadPage.h,v 1.19 2006/02/19 16:19:06 arnetheduck Exp $
- */

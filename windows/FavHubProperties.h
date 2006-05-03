@@ -51,8 +51,3 @@ protected:
 };
 
 #endif // !defined(FAV_HUB_PROPERTIES_H)
-
-/**
- * @file
- * $Id: FavHubProperties.h,v 1.8 2006/02/19 16:19:06 arnetheduck Exp $
- */

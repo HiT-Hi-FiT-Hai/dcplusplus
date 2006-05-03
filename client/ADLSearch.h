@@ -308,8 +308,3 @@ private:
 };
 
 #endif // !defined(ADL_SEARCH_H)
-
-/**
- * @file
- * $Id: ADLSearch.h,v 1.25 2006/01/23 08:00:49 arnetheduck Exp $
- */

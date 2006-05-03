@@ -357,8 +357,3 @@ private:
 };
 
 #endif // !defined(WIN_UTIL_H)
-
-/**
- * @file
- * $Id: WinUtil.h,v 1.54 2006/02/19 16:19:06 arnetheduck Exp $
- */

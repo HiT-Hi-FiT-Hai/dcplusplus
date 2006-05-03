@@ -58,8 +58,3 @@ protected:
 };
 
 #endif // !defined(QUEUE_PAGE_H)
-
-/**
- * @file
- * $Id: QueuePage.h,v 1.5 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -66,8 +66,3 @@ private:
 };
 
 #endif // !defined(BIT_INPUT_STREAM_H)
-
-/**
- * @file
- * $Id: BitInputStream.h,v 1.18 2006/02/19 16:19:06 arnetheduck Exp $
- */

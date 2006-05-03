@@ -423,8 +423,3 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 	}
 	return x;
 }
-
-/**
- * @file
- * $Id: DirectoryListing.cpp,v 1.59 2006/02/19 17:19:04 arnetheduck Exp $
- */

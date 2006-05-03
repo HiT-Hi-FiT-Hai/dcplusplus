@@ -72,8 +72,3 @@ LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCEDPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: AdvancedPage.cpp,v 1.58 2006/01/06 14:44:32 arnetheduck Exp $
- */

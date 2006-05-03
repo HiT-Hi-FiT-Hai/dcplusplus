@@ -58,8 +58,3 @@ private:
 };
 
 #endif // !defined(BIT_OUTPUT_STREAM_H)
-
-/**
- * @file
- * $Id: BitOutputStream.h,v 1.16 2006/02/19 16:19:06 arnetheduck Exp $
- */

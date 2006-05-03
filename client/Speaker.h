@@ -122,8 +122,3 @@ protected:
 };
 
 #endif // !defined(SPEAKER_H)
-
-/**
- * @file
- * $Id: Speaker.h,v 1.10 2006/02/19 16:19:06 arnetheduck Exp $
- */

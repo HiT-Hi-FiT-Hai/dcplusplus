@@ -59,8 +59,3 @@ private:
 };
 
 #endif // !defined(ADLS_PROPERTIES_H)
-
-/**
- * @file
- * $Id: ADLSProperties.h,v 1.5 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -374,8 +374,3 @@ private:
 };
 
 #endif // !defined(HUB_FRAME_H)
-
-/**
- * @file
- * $Id: HubFrame.h,v 1.75 2006/02/19 17:19:05 arnetheduck Exp $
- */

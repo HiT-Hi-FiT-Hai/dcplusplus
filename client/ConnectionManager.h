@@ -198,8 +198,3 @@ private:
 };
 
 #endif // !defined(CONNECTION_MANAGER_H)
-
-/**
- * @file
- * $Id: ConnectionManager.h,v 1.77 2006/02/19 16:19:06 arnetheduck Exp $
- */

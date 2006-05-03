@@ -1099,8 +1099,3 @@ LRESULT MainFrame::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	bHandled = FALSE;
 	return 0;
 }
-
-/**
- * @file
- * $Id: MainFrm.cpp,v 1.112 2006/02/19 16:19:06 arnetheduck Exp $
- */

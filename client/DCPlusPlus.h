@@ -125,8 +125,3 @@ extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
 
 #endif // !defined(DC_PLUS_PLUS_H)
-
-/**
- * @file
- * $Id: DCPlusPlus.h,v 1.48 2005/04/24 08:13:36 arnetheduck Exp $
- */

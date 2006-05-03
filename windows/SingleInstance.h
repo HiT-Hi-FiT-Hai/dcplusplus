@@ -51,8 +51,3 @@ public:
 };
 
 #endif // !defined(SINGLE_INSTANCE_H)
-
-/**
- * @file
- * $Id: SingleInstance.h,v 1.6 2005/04/24 08:13:05 arnetheduck Exp $
- */

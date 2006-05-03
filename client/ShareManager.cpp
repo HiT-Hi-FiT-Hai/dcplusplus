@@ -1518,8 +1518,3 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 		}
 	}
 }
-
-/**
- * @file
- * $Id: ShareManager.cpp,v 1.145 2006/02/19 16:19:06 arnetheduck Exp $
- */

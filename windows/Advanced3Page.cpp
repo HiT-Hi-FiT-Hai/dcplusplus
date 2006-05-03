@@ -100,8 +100,3 @@ LRESULT Advanced3Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED3PAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: Advanced3Page.cpp,v 1.14 2006/02/10 07:56:47 arnetheduck Exp $
- */

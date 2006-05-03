@@ -47,8 +47,3 @@ public:
 };
 
 #endif // !defined(FAVORITE_USER_H)
-
-/**
- * @file
- * $Id: FavoriteUser.h,v 1.15 2005/12/12 08:43:00 arnetheduck Exp $
- */

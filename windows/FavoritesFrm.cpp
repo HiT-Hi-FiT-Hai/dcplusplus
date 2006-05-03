@@ -325,8 +325,3 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	ctrlConnect.MoveWindow(rc);
 
 }
-
-/**
- * @file
- * $Id: FavoritesFrm.cpp,v 1.38 2005/10/12 14:02:53 arnetheduck Exp $
- */

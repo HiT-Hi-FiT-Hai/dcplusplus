@@ -132,8 +132,3 @@ private:
 };
 
 #endif // !defined(FAVORITE_HUBS_FRM_H)
-
-/**
- * @file
- * $Id: FavoritesFrm.h,v 1.24 2006/02/19 16:19:06 arnetheduck Exp $
- */

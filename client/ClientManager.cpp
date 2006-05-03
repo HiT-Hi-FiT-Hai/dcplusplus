@@ -571,8 +571,3 @@ void ClientManager::updateCachedIp() {
 	if(clients.size() > 0)
 		cachedIp = (*clients.begin())->getLocalIp();
 }
-
-/**
- * @file
- * $Id: ClientManager.cpp,v 1.97 2006/02/19 23:51:31 arnetheduck Exp $
- */

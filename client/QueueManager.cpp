@@ -1385,8 +1385,3 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 		saveQueue();
 	}
 }
-
-/**
- * @file
- * $Id: QueueManager.cpp,v 1.146 2006/02/19 16:19:06 arnetheduck Exp $
- */

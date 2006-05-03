@@ -675,8 +675,3 @@ int HashManager::Hasher::run() {
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: HashManager.cpp,v 1.52 2006/02/19 16:19:06 arnetheduck Exp $
- */

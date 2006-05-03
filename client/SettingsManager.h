@@ -204,8 +204,3 @@ private:
 #define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
 
 #endif // !defined(SETTINGS_MANAGER_H)
-
-/**
- * @file
- * $Id: SettingsManager.h,v 1.112 2006/02/19 17:19:04 arnetheduck Exp $
- */

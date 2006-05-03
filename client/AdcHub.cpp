@@ -132,8 +132,10 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getUser()->setFlag(User::SSL);
 	}
 
-	if(u->getIdentity().isHub())
+	if(u->getIdentity().isHub()) {
 		setHubIdentity(u->getIdentity());
+		fire(ClientListener::HubUpdated(), this);
+	}
 
 	if(u->getUser() == ClientManager::getInstance()->getMe()) {
 		state = STATE_NORMAL;
@@ -540,8 +542,3 @@ void AdcHub::send(const AdcCommand& cmd) {
 		sendUDP(cmd);
 	send(cmd.toString(sid));
 }
-
-/**
- * @file
- * $Id: AdcHub.cpp,v 1.66 2006/02/12 18:16:12 arnetheduck Exp $
- */

@@ -63,8 +63,3 @@ protected:
 };
 
 #endif // !defined(PROP_PAGE_H)
-
-/**
- * @file
- * $Id: PropPage.h,v 1.12 2006/02/19 16:19:06 arnetheduck Exp $
- */

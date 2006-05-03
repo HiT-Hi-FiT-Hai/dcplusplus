@@ -128,8 +128,3 @@ typedef unsigned __int64 u_int64_t;
 #endif
 
 #endif // !defined(CONFIG_H)
-
-/**
- * @file
- * $Id: config.h,v 1.41 2006/02/13 21:13:27 arnetheduck Exp $
- */

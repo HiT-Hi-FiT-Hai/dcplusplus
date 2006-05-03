@@ -280,8 +280,3 @@ LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id$
- */

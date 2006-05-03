@@ -1186,7 +1186,3 @@ void WinUtil::openFolder(const tstring& file) {
 	else
 		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, \"" + Util::getFilePath(Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
 }
-/**
- * @file
- * $Id: WinUtil.cpp,v 1.97 2006/02/13 21:13:28 arnetheduck Exp $
- */

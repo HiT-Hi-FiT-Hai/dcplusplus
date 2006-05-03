@@ -580,8 +580,3 @@ void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 void TransferView::ItemInfo::disconnect() {
 	ConnectionManager::getInstance()->disconnect(user, download);
 }
-
-/**
- * @file
- * $Id: TransferView.cpp,v 1.64 2006/02/19 16:19:06 arnetheduck Exp $
- */

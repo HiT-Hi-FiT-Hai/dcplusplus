@@ -46,8 +46,3 @@ private:
 };
 
 #endif // UPNP_H
-
-/**
- * @file
- * $Id: UPnP.h,v 1.5 2005/04/24 08:13:05 arnetheduck Exp $
- */

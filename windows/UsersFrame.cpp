@@ -227,8 +227,3 @@ LRESULT UsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: UsersFrame.cpp,v 1.43 2006/01/01 17:49:59 arnetheduck Exp $
- */

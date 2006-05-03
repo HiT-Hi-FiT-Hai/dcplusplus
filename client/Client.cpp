@@ -145,8 +145,3 @@ string Client::getLocalIp() const {
 		return Util::getLocalIp();
 	return lip;
 }
-
-/**
- * @file
- * $Id: Client.cpp,v 1.94 2006/02/19 23:51:31 arnetheduck Exp $
- */

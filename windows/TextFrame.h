@@ -73,8 +73,3 @@ private:
 };
 
 #endif // !defined(TEXT_FRAME_H)
-
-/**
- * @file
- * $Id: TextFrame.h,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
- */

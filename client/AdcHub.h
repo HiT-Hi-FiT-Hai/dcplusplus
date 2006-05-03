@@ -122,8 +122,3 @@ private:
 };
 
 #endif // !defined(ADC_HUB_H)
-
-/**
- * @file
- * $Id: AdcHub.h,v 1.42 2006/02/19 20:39:20 arnetheduck Exp $
- */

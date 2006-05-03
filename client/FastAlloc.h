@@ -98,8 +98,3 @@ template<class T> struct FastAlloc { };
 #endif
 
 #endif // !defined(FAST_ALLOC_H)
-
-/**
- * @file
- * $Id: FastAlloc.h,v 1.11 2005/04/24 08:13:10 arnetheduck Exp $
- */

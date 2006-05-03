@@ -60,8 +60,3 @@ protected:
 };
 
 #endif // !defined(WINDOWS_PAGE_H)
-
-/**
- * @file
- * $Id: WindowsPage.h,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
- */

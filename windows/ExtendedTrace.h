@@ -42,8 +42,3 @@ void StackTrace( HANDLE, LPCTSTR, File& file, DWORD eip, DWORD esp, DWORD ebp);
 #endif
 
 #endif
-
-/**
- * @file
- * $Id: ExtendedTrace.h,v 1.8 2005/04/24 08:13:07 arnetheduck Exp $
- */

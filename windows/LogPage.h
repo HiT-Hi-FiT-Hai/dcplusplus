@@ -73,8 +73,3 @@ protected:
 };
 
 #endif // !defined(LOG_PAGE_H)
-
-/**
- * @file
- * $Id: LogPage.h,v 1.6 2006/02/19 16:19:06 arnetheduck Exp $
- */

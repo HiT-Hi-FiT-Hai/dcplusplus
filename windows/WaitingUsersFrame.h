@@ -133,8 +133,3 @@ private:
 };
 
 #endif	/* WAITING_QUEUE_FRAME_H */
-
-/**
- * @file
- * $Id$
- */

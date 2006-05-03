@@ -272,8 +272,3 @@ private:
 };
 
 #endif // !defined(HASH_MANAGER_H)
-
-/**
- * @file
- * $Id: HashManager.h,v 1.34 2006/02/19 17:19:04 arnetheduck Exp $
- */

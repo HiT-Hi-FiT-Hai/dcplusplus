@@ -54,8 +54,3 @@ private:
 };
 
 #endif // !defined(SFV_READER_H)
-
-/**
- * @file
- * $Id: SFVReader.h,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
- */

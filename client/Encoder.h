@@ -38,8 +38,3 @@ private:
 };
 
 #endif // !defined(ENCODER_H)
-
-/**
- * @file
- * $Id: Encoder.h,v 1.6 2005/04/24 08:13:10 arnetheduck Exp $
- */

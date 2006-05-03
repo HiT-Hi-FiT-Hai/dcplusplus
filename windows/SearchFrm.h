@@ -417,8 +417,3 @@ private:
 };
 
 #endif // !defined(SEARCH_FRM_H)
-
-/**
- * @file
- * $Id: SearchFrm.h,v 1.66 2006/02/19 16:19:06 arnetheduck Exp $
- */

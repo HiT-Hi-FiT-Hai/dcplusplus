@@ -84,8 +84,3 @@ public:
 };
 
 #endif // !defined(LINE_DLG_H)
-
-/**
- * @file
- * $Id: LineDlg.h,v 1.11 2006/02/19 16:19:06 arnetheduck Exp $
- */

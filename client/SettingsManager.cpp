@@ -420,8 +420,3 @@ void SettingsManager::save(string const& aFileName) {
 		// ...
 	}
 }
-
-/**
- * @file
- * $Id: SettingsManager.cpp,v 1.142 2006/02/19 17:19:04 arnetheduck Exp $
- */

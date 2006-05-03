@@ -681,8 +681,3 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 	if(isFav)
 		fire(FavoriteManagerListener::StatusChanged(), user);
 }
-
-/**
- * @file
- * $Id: FavoriteManager.cpp,v 1.18 2006/02/19 16:19:05 arnetheduck Exp $
- */

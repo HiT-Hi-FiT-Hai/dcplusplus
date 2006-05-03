@@ -102,8 +102,3 @@ LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: NotepadFrame.cpp,v 1.23 2005/12/24 23:13:26 arnetheduck Exp $
- */

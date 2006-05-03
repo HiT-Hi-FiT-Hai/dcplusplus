@@ -187,8 +187,3 @@ private:
 };
 
 #endif // !defined(BUFFERED_SOCKET_H)
-
-/**
- * @file
- * $Id: BufferedSocket.h,v 1.79 2006/02/19 17:19:04 arnetheduck Exp $
- */

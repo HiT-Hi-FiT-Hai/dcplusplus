@@ -105,7 +105,3 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 	ctrlPad.AppendText((Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg).c_str());
 
 }
-/**
- * @file
- * $Id: SystemFrame.cpp,v 1.5 2006/01/11 21:31:01 arnetheduck Exp $
- */

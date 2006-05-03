@@ -513,8 +513,3 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 		clearUserFiles(aUser);
 	}
 }
-
-/**
- * @file
- * $Id: UploadManager.cpp,v 1.104 2006/02/05 17:02:38 arnetheduck Exp $
- */

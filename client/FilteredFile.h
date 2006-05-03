@@ -184,8 +184,3 @@ private:
 };
 
 #endif // !defined(FILTERED_FILE_H)
-
-/**
- * @file
- * $Id: FilteredFile.h,v 1.14 2005/04/24 09:45:39 arnetheduck Exp $
- */

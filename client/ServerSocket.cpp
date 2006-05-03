@@ -30,8 +30,3 @@ void ServerSocket::listen(short aPort) throw(SocketException) {
 	socket.bind(aPort, SETTING(BIND_ADDRESS));
 	socket.listen();
 }
-
-/**
- * @file
- * $Id: ServerSocket.cpp,v 1.18 2005/11/27 19:19:20 arnetheduck Exp $
- */

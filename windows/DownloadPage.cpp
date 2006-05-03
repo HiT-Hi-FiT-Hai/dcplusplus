@@ -126,8 +126,3 @@ LRESULT DownloadPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_DOWNLOADPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: DownloadPage.cpp,v 1.18 2005/04/24 08:13:05 arnetheduck Exp $
- */

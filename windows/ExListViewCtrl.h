@@ -177,8 +177,3 @@ public:
 };
 
 #endif // !defined(EX_LIST_VIEW_CTRL_H)
-
-/**
- * @file
- * $Id: ExListViewCtrl.h,v 1.18 2006/02/19 16:19:06 arnetheduck Exp $
- */

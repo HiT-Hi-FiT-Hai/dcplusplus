@@ -121,8 +121,3 @@ private:
 #define LOG(area, msg) LogManager::getInstance()->log(area, msg)
 
 #endif // !defined(LOG_MANAGER_H)
-
-/**
- * @file
- * $Id: LogManager.h,v 1.22 2006/02/19 17:19:04 arnetheduck Exp $
- */

@@ -57,8 +57,3 @@ private:
 template<class T> T* Singleton<T>::instance = NULL;
 
 #endif // !defined(SINGLETON_H)
-
-/**
- * @file
- * $Id: Singleton.h,v 1.10 2005/04/24 08:13:11 arnetheduck Exp $
- */

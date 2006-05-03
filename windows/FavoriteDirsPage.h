@@ -71,8 +71,3 @@ protected:
 };
 
 #endif // !defined(FAVORITE_DIR_SPAGE_H)
-
-/**
- * @file
- * $Id: FavoriteDirsPage.h,v 1.8 2006/02/19 16:19:06 arnetheduck Exp $
- */

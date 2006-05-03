@@ -35,8 +35,3 @@ public:
 };
 
 #endif // !defined(SEARCH_MANAGER_LISTENER_H)
-
-/**
- * @file
- * $Id: SearchManagerListener.h,v 1.9 2006/02/19 17:19:04 arnetheduck Exp $
- */

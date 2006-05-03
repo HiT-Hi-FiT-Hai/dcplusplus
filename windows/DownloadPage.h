@@ -61,8 +61,3 @@ protected:
 };
 
 #endif //  !defined(DOWNLOAD_PAGE_H)
-
-/**
- * @file
- * $Id: DownloadPage.h,v 1.16 2006/02/19 16:19:06 arnetheduck Exp $
- */

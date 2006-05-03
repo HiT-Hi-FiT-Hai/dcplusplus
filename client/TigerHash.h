@@ -58,8 +58,3 @@ private:
 };
 
 #endif // !defined(TIGER_HASH_H)
-
-/**
- * @file
- * $Id: TigerHash.h,v 1.9 2006/02/19 16:19:06 arnetheduck Exp $
- */

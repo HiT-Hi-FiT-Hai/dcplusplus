@@ -697,8 +697,3 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 		}
 	}
 }
-
-/**
- * @file
- * $Id: ConnectionManager.cpp,v 1.119 2006/02/19 16:19:06 arnetheduck Exp $
- */

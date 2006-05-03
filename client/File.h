@@ -432,8 +432,3 @@ private:
 };
 
 #endif // !defined(FILE_H)
-
-/**
- * @file
- * $Id: File.h,v 1.54 2006/02/19 16:19:06 arnetheduck Exp $
- */

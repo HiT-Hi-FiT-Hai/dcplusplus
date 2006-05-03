@@ -20,8 +20,3 @@
 #include "DCPlusPlus.h"
 
 #include "StringTokenizer.h"
-
-/**
- * @file
- * $Id: StringTokenizer.cpp,v 1.12 2005/04/24 08:13:36 arnetheduck Exp $
- */

@@ -134,8 +134,3 @@ void PropPage::translate(HWND page, TextItem* textItems)
 		}
 	}
 }
-
-/**
- * @file
- * $Id: PropPage.cpp,v 1.14 2005/04/24 08:13:04 arnetheduck Exp $
- */

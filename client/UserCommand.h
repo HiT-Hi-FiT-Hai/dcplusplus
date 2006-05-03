@@ -75,8 +75,3 @@ public:
 };
 
 #endif // !defined(USER_COMMAND_H)
-
-/**
- * @file
- * $Id: UserCommand.h,v 1.14 2006/02/19 16:19:06 arnetheduck Exp $
- */

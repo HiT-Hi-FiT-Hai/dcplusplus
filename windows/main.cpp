@@ -354,8 +354,3 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
 	return nRet;
 }
-
-/**
- * @file
- * $Id: main.cpp,v 1.42 2006/02/18 23:32:17 arnetheduck Exp $
- */

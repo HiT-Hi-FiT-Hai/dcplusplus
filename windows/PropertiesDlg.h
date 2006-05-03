@@ -50,8 +50,3 @@ protected:
 };
 
 #endif // !defined(PROPERTIES_DLG_H)
-
-/**
- * @file
- * $Id: PropertiesDlg.h,v 1.18 2006/01/05 00:11:31 arnetheduck Exp $
- */

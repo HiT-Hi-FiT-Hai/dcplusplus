@@ -823,8 +823,3 @@ private:
 };
 
 #endif // !defined(FLAT_TAB_CTRL_H)
-
-/**
- * @file
- * $Id: FlatTabCtrl.h,v 1.41 2006/02/19 16:19:06 arnetheduck Exp $
- */

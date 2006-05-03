@@ -281,8 +281,3 @@ private:
 };
 
 #endif // !defined(TRANSFER_VIEW_H)
-
-/**
- * @file
- * $Id: TransferView.h,v 1.27 2006/02/19 17:19:05 arnetheduck Exp $
- */

@@ -106,8 +106,3 @@ private:
 };
 
 #endif // !defined(FINISHED_MANAGER_H)
-
-/**
- * @file
- * $Id: FinishedManager.h,v 1.19 2006/02/19 17:19:04 arnetheduck Exp $
- */

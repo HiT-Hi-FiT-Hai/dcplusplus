@@ -192,8 +192,3 @@ private:
 
 
 #endif // !defined(STREAMS_H)
-
-/**
- * @file
- * $Id: Streams.h,v 1.7 2006/02/19 16:19:06 arnetheduck Exp $
- */

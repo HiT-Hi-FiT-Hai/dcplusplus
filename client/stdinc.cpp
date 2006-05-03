@@ -29,8 +29,3 @@
 #endif
 
 #endif // HAS_STLPORT
-
-/**
- * @file
- * $Id: stdinc.cpp,v 1.8 2005/04/24 08:13:36 arnetheduck Exp $
- */

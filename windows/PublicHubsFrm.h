@@ -168,8 +168,3 @@ private:
 };
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)
-
-/**
- * @file
- * $Id: PublicHubsFrm.h,v 1.34 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -281,8 +281,3 @@ private:
 };
 
 #endif // !defined(SIMPLE_XML_H)
-
-/**
- * @file
- * $Id: SimpleXML.h,v 1.46 2006/02/19 16:19:06 arnetheduck Exp $
- */

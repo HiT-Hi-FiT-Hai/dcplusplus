@@ -179,8 +179,3 @@ private:
 };
 
 #endif // !defined(PRIVATE_FRAME_H)
-
-/**
- * @file
- * $Id: PrivateFrame.h,v 1.39 2006/02/19 16:19:06 arnetheduck Exp $
- */

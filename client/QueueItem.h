@@ -279,8 +279,3 @@ private:
 };
 
 #endif // !defined(QUEUE_ITEM_H)
-
-/**
- * @file
- * $Id: QueueItem.h,v 1.25 2006/02/19 16:19:06 arnetheduck Exp $
- */

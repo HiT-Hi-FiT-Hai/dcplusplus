@@ -77,8 +77,3 @@ private:
 
 
 #endif // !defined(RESOURCE_MANAGER_H)
-
-/**
- * @file
- * $Id: ResourceManager.h,v 1.17 2006/02/19 16:19:06 arnetheduck Exp $
- */

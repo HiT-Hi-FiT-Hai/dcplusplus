@@ -377,8 +377,3 @@ private:
 };
 
 #endif // !defined(MAIN_FRM_H)
-
-/**
- * @file
- * $Id: MainFrm.h,v 1.68 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -54,8 +54,3 @@ public:\
 #endif
 
 #endif // !defined(EXCEPTION_H)
-
-/**
- * @file
- * $Id: Exception.h,v 1.19 2006/02/19 16:19:06 arnetheduck Exp $
- */

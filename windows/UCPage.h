@@ -78,8 +78,3 @@ protected:
 };
 
 #endif // !defined(UC_PAGE_H)
-
-/**
- * @file
- * $Id: UCPage.h,v 1.10 2006/02/19 16:19:06 arnetheduck Exp $
- */

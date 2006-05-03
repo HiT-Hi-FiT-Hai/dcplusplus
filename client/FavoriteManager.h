@@ -279,8 +279,3 @@ private:
 };
 
 #endif // !defined(FAVORITE_MANAGER_H)
-
-/**
- * @file
- * $Id: FavoriteManager.h,v 1.13 2006/02/19 17:19:04 arnetheduck Exp $
- */

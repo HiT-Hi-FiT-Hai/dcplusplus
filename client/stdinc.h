@@ -133,8 +133,3 @@ using namespace stdext;
 #endif // __GLIBCPP__
 
 #endif // !defined(STDINC_H)
-
-/**
- * @file
- * $Id: stdinc.h,v 1.22 2006/02/18 23:32:17 arnetheduck Exp $
- */

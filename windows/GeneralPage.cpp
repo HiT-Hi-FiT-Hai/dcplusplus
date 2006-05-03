@@ -111,8 +111,3 @@ LRESULT GeneralPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: GeneralPage.cpp,v 1.18 2006/02/05 13:38:44 arnetheduck Exp $
- */

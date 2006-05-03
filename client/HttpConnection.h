@@ -87,8 +87,3 @@ private:
 };
 
 #endif // !defined(HTTP_CONNECTION_H)
-
-/**
- * @file
- * $Id: HttpConnection.h,v 1.28 2006/02/19 17:19:04 arnetheduck Exp $
- */

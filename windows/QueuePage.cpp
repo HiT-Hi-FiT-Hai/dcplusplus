@@ -110,8 +110,3 @@ LRESULT QueuePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_QUEUEPAGE);
 	return 0;
 }
-
-/**
- * @file
- * $Id: QueuePage.cpp,v 1.7 2005/11/28 01:21:07 arnetheduck Exp $
- */

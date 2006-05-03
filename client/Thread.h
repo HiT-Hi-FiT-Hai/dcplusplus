@@ -145,8 +145,3 @@ private:
 };
 
 #endif // !defined(THREAD_H)
-
-/**
- * @file
- * $Id: Thread.h,v 1.23 2006/02/19 16:19:06 arnetheduck Exp $
- */

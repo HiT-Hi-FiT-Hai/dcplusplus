@@ -201,8 +201,3 @@ public:
 };
 
 #endif // !defined(ADC_COMMAND_H)
-
-/**
- * @file
- * $Id: AdcCommand.h,v 1.29 2006/02/19 20:39:20 arnetheduck Exp $
- */

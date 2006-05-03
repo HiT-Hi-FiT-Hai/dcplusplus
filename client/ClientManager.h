@@ -167,8 +167,3 @@ private:
 };
 
 #endif // !defined(CLIENT_MANAGER_H)
-
-/**
- * @file
- * $Id: ClientManager.h,v 1.78 2006/02/13 21:13:27 arnetheduck Exp $
- */

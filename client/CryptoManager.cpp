@@ -394,8 +394,3 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	}
 	bos.skipToByte();
 }
-
-/**
- * @file
- * $Id: CryptoManager.cpp,v 1.56 2006/02/19 16:19:06 arnetheduck Exp $
- */

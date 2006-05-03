@@ -414,8 +414,3 @@ void PrivateFrame::readLog() {
 	} catch(const FileException&){
 	}
 }
-
-/**
- * @file
- * $Id: PrivateFrame.cpp,v 1.62 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -941,8 +941,3 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);
 }
-
-/**
- * @file
- * $Id: DownloadManager.cpp,v 1.160 2006/02/19 16:19:06 arnetheduck Exp $
- */

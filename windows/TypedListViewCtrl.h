@@ -248,8 +248,3 @@ private:
 };
 
 #endif // !defined(TYPED_LIST_VIEW_CTRL_H)
-
-/**
- * @file
- * $Id: TypedListViewCtrl.h,v 1.19 2006/02/19 16:19:06 arnetheduck Exp $
- */

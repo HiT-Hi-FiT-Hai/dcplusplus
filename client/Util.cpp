@@ -945,8 +945,3 @@ string Util::toDOS(const string& tmp) {
 	}
 	return tmp2;
 }
-
-/**
- * @file
- * $Id: Util.cpp,v 1.95 2006/02/18 23:32:17 arnetheduck Exp $
- */

@@ -63,8 +63,3 @@ const bool Identity::supports(const string& name) const {
 	}
 	return false;
 }
-
-/**
- * @file
- * $Id: User.cpp,v 1.53 2006/02/17 19:23:51 arnetheduck Exp $
- */

@@ -227,8 +227,3 @@ private:
 };
 
 #endif // !defined(MERKLE_TREE_H)
-
-/**
- * @file
- * $Id: MerkleTree.h,v 1.27 2006/02/19 16:19:06 arnetheduck Exp $
- */

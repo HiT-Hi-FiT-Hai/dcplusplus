@@ -171,8 +171,3 @@ private:
 };
 
 #endif // !defined(CRITICAL_SECTION_H)
-
-/**
- * @file
- * $Id: CriticalSection.h,v 1.29 2006/02/19 16:19:06 arnetheduck Exp $
- */

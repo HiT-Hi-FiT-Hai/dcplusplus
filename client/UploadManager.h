@@ -196,8 +196,3 @@ private:
 };
 
 #endif // !defined(UPLOAD_MANAGER_H)
-
-/**
- * @file
- * $Id: UploadManager.h,v 1.86 2006/02/19 17:19:04 arnetheduck Exp $
- */

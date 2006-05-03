@@ -227,8 +227,3 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 	perSecond[cur] = 0;
 	PostMessage(WM_SPEAKER, TICK_AVG, (LPARAM)f);
 }
-
-/**
- * @file
- * $Id: SpyFrame.cpp,v 1.38 2006/02/19 16:19:06 arnetheduck Exp $
- */

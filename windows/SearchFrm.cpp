@@ -1177,8 +1177,3 @@ void SearchFrame::SearchInfo::update() {
 	columns[COLUMN_CID] = Text::toT(sr->getUser()->getCID().toBase32());
 
 }
-
-/**
- * @file
- * $Id: SearchFrm.cpp,v 1.110 2006/02/19 16:19:06 arnetheduck Exp $
- */

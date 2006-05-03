@@ -423,8 +423,3 @@ private:
 };
 
 #endif // !defined(QUEUE_FRAME_H)
-
-/**
- * @file
- * $Id: QueueFrame.h,v 1.57 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -102,8 +102,3 @@ void Encoder::fromBase32(const char* src, u_int8_t* dst, size_t len) {
 		}
 	}
 }
-
-/**
- * @file
- * $Id: Encoder.cpp,v 1.7 2005/04/24 08:13:10 arnetheduck Exp $
- */

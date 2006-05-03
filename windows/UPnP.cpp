@@ -181,8 +181,3 @@ UPnP::~UPnP() {
 		pUN->Release();
 	}
 }
-
-/**
- * @file
- * $Id: UPnP.cpp,v 1.9 2005/12/24 23:13:26 arnetheduck Exp $
- */
