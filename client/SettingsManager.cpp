@@ -73,7 +73,7 @@ const string SettingsManager::settingTags[] =
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
-	"UseSsl", "AutoSearchLimit", "AltSortOrder",
+	"UseSsl", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -255,6 +255,7 @@ SettingsManager::SettingsManager()
 	setDefault(USE_SSL, false);
 	setDefault(AUTO_SEARCH_LIMIT, 5);
 	setDefault(ALT_SORT_ORDER, false);
+	setDefault(AUTO_KICK_NO_FAVS, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

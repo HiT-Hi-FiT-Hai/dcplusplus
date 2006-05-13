@@ -266,7 +266,9 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		}
 
-		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && start > 0) {
+		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && start > 0 &&
+		   (d->getTigerTree().getLeaves().size() > 32 || // 32 leaves is 5 levels
+		    d->getTigerTree().getBlockSize() * 10 < d->getSize())) {
 			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), start));
 		} else {
 			int rollback = SETTING(ROLLBACK);

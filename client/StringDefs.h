@@ -383,6 +383,7 @@ enum Strings { // @DontAdd
 	SETTINGS_AUTO_AWAY, // "Auto-away on minimize (and back on restore)"
 	SETTINGS_AUTO_FOLLOW, // "Automatically follow redirects"
 	SETTINGS_AUTO_KICK, // "Automatically disconnect users who leave the hub"
+	SETTINGS_AUTO_KICK_NO_FAVS, // "Don't automatically disconnect favorite users who leave the hub"
 	SETTINGS_AUTO_SEARCH, // "Automatically search for alternative download locations"
 	SETTINGS_AUTO_SEARCH_AUTO_MATCH, // "Automatically match queue for auto search hits"
 	SETTINGS_AUTO_SEARCH_LIMIT, // "Auto-search limit"

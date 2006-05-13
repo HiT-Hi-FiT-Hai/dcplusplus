@@ -492,14 +492,14 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
 
 	/// @todo Don't kick when /me disconnects
-	if( BOOLSETTING(AUTO_KICK) ) {
+	if( BOOLSETTING(AUTO_KICK) && !(BOOLSETTING(AUTO_KICK_NO_FAVS) && FavoriteManager::getInstance()->isFavoriteUser(aUser)) ) {
 
 		Lock l(cs);
 		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
 			Upload* u = *i;
 			if(u->getUser() == aUser) {
 				// Oops...adios...
-				u->getUserConnection()->disconnect();
+				u->getUserConnection()->disconnect(true);
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
