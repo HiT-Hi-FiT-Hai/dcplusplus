@@ -408,10 +408,9 @@ void FavoriteManager::load() {
 
 	// Add ADC standard op commands
 	static const char adc_disconnectstr[] =
-		"HDSC %[mycid] %[cid] DI ND Friendly\\ disconnect\n";
+		"HDSC %[userSID]\n";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
 		STRING(DISCONNECT_USER), adc_disconnectstr, "adc://op");
-
 
 	try {
 		SimpleXML xml;
@@ -600,11 +599,11 @@ void FavoriteManager::refresh() {
 }
 
 UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hubs) {
-	bool isOp = false;
-	for(StringIterC i = hubs.begin(); i != hubs.end(); ++i) {
-		if(ClientManager::getInstance()->isOp(ClientManager::getInstance()->getMe(), *i)) {
-			isOp = true;
-			break;
+	vector<bool> isOp(hubs.size());
+
+	for(size_t i = 0; i < hubs.size(); ++i) {
+		if(ClientManager::getInstance()->isOp(ClientManager::getInstance()->getMe(), hubs[i])) {
+			isOp[i] = true;
 		}
 	}
 
@@ -612,13 +611,31 @@ UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hu
 	UserCommand::List lst;
 	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
-        if( (uc.getCtx() & ctx) && 
-			(	uc.getHub().empty() || 
-				(uc.getHub() == "op" && isOp) ||
-				(find_if(hubs.begin(), hubs.end(), bind1st(equal_to<string>(), uc.getHub())) != hubs.end())
-			) ) 
-		{
-			lst.push_back(*i);
+		if(!(uc.getCtx() & ctx)) {
+			continue;
+		}
+
+		for(size_t j = 0; j < hubs.size(); ++j) {
+			const string& hub = hubs[j];
+			bool hubAdc = hub.compare(0, 6, "adc://") == 0;
+			bool commandAdc = uc.getHub().compare(0, 6, "adc://") == 0;
+			if(hubAdc && commandAdc) {
+				if((uc.getHub().length() == 6) || 
+					(uc.getHub() == "adc://op" && isOp[j]) ||
+					(uc.getHub() == hub) )
+				{
+					lst.push_back(*i);
+					break;
+				}
+			} else if(!hubAdc && !commandAdc) {
+				if((uc.getHub().length() == 0) || 
+					(uc.getHub() == "op" && isOp[j]) ||
+					(uc.getHub() == hub) )
+				{
+					lst.push_back(*i);
+					break;
+				}
+			}
 		}
 	}
 	return lst;

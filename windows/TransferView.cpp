@@ -128,9 +128,10 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 void TransferView::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
 
 	int i = -1;
 	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {

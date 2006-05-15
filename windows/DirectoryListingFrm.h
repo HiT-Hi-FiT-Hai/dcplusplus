@@ -345,6 +345,8 @@ private:
 	
 	auto_ptr<DirectoryListing> dl;
 
+	StringMap ucLineParams;
+
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
 	

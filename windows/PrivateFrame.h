@@ -161,6 +161,8 @@ private:
 
 	bool closed;
 
+	StringMap ucLineParams;
+
 	void updateTitle();
 	
 	// ClientManagerListener

@@ -768,9 +768,11 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 }
 
 void SearchFrame::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
+
 	set<CID> users;
 
 	int sel = -1;

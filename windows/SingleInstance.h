@@ -24,7 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #define WMU_WHERE_ARE_YOU_MSG _T("WMU_WHERE_ARE_YOU-{885D4B75-6606-4add-A8DE-EEEDC04181F1}")
-const UINT WMU_WHERE_ARE_YOU = ::RegisterWindowMessage(_T("WMU_WHERE_ARE_YOU_MSG"));
+const UINT WMU_WHERE_ARE_YOU = ::RegisterWindowMessageA("WMU_WHERE_ARE_YOU_MSG");
 
 class SingleInstance
 {

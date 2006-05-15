@@ -383,6 +383,8 @@ private:
 
 	bool closed;
 
+	StringMap ucLineParams;
+
 	static int columnIndexes[];
 	static int columnSizes[];
 

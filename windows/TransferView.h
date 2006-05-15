@@ -263,6 +263,8 @@ private:
 	CMenu transferMenu;
 	CImageList arrows;
 
+	StringMap ucLineParams;
+
 	virtual void on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw();
 	virtual void on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw();
 	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();

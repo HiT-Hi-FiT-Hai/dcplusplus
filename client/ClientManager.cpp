@@ -316,7 +316,7 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 		if(cmd.getType() == AdcCommand::TYPE_UDP && !u->getIdentity().isUdpActive()) {
 			cmd.setType(AdcCommand::TYPE_DIRECT);
 		}
-		cmd.setTo(u->getSID());
+		cmd.setTo(u->getIdentity().getSID());
 		u->getClient().send(cmd);
 	}
 }
@@ -404,7 +404,7 @@ Identity ClientManager::getIdentity(const User::Ptr& aUser) {
 	if(i != onlineUsers.end()) {
 		return i->second->getIdentity();
 	}
-	return Identity(aUser, Util::emptyString);
+	return Identity(aUser, Util::emptyString, 0);
 }
 
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {

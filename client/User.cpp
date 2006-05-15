@@ -23,7 +23,7 @@
 #include "Client.h"
 #include "StringTokenizer.h"
 
-OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : user(ptr), identity(ptr, client_.getHubUrl()), sid(sid_), client(&client_) { 
+OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : user(ptr), identity(ptr, client_.getHubUrl(), sid_), client(&client_) { 
 
 }
 
@@ -32,6 +32,7 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 		sm[prefix + string((char*)(&i->first), 2)] = i->second;
 	}
 	if(user) {
+		sm[prefix + "SID"] = getSIDString();
 		sm[prefix + "CID"] = user->getCID().toBase32();
 		sm[prefix + "TAG"] = getTag();
 		sm[prefix + "SSshort"] = Util::formatBytes(get("SS"));

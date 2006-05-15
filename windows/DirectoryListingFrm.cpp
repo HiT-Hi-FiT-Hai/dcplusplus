@@ -1035,9 +1035,11 @@ void DirectoryListingFrame::findFile(bool findNext)
 }
 
 void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
+
 	set<User::Ptr> nicks;
 
 	int sel = -1;

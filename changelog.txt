@@ -11,6 +11,9 @@
 * Advanced TTH rollback no longer performed if tree is invalid (thanks garg)
 * Option not to auto-disconnect favorite users (thanks ullner)
 * Fixed auto-disconnect delay (thanks uller)
+* Another fix for opencow
+* Fixed user command parameters not being remembered
+* Fixed ADC op commands
 
 -- 0.689 2006-04-01 --
 * Fixed displaying of available bytes when user list is off

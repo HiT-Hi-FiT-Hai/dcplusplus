@@ -324,6 +324,8 @@ private:
 	bool updateUsers;
 	bool resort;
 
+	StringMap ucLineParams;
+
 	enum { MAX_CLIENT_LINES = 5 };
 	TStringList lastLinesList;
 	tstring lastLines;

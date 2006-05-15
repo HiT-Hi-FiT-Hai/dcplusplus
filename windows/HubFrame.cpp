@@ -799,9 +799,10 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 }
 
 void HubFrame::runUserCommand(::UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
 
 	client->getMyIdentity().getParams(ucParams, "my", true);
 	client->getHubIdentity().getParams(ucParams, "hub", false);

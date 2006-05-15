@@ -32,6 +32,7 @@
 #include "../client/ShareManager.h"
 #include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
+#include "../client/StringTokenizer.h"
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
@@ -284,9 +285,11 @@ LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 void PrivateFrame::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
 
 	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams, true);
 }
