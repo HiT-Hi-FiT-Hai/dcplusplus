@@ -603,7 +603,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 					continue;
 				OnlineUser& ou = getUser(*it);
 				ou.getIdentity().setOp(true);
-				v.push_back(&getUser(*it));
+				if(*it == getMyNick())
+					getMyIdentity().setOp(true);
+				v.push_back(&ou);
 			}
 
 			fire(ClientListener::UsersUpdated(), this, v);

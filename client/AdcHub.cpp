@@ -140,6 +140,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	if(u->getUser() == ClientManager::getInstance()->getMe()) {
 		state = STATE_NORMAL;
 		setMyIdentity(u->getIdentity());
+		updateCounts(false);
 	}
 	fire(ClientListener::UserUpdated(), this, *u);
 }

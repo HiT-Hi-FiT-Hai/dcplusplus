@@ -1241,6 +1241,15 @@ void QueueFrame::updateQueue() {
 	updateStatus();
 }
 
+void QueueFrame::clearTree(HTREEITEM item) {
+	HTREEITEM next = ctrlDirs.GetChildItem(item);
+	while(next != NULL) {
+		clearTree(next);
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+	delete (tstring*)ctrlDirs.GetItemData(item);
+}
+
 // Put it here to avoid a copy for each recursion...
 static TCHAR tmpBuf[1024];
 void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {

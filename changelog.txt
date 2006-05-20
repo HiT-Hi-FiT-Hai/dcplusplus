@@ -14,6 +14,9 @@
 * Another fix for opencow
 * Fixed user command parameters not being remembered
 * Fixed ADC op commands
+* [bug 464] Added option for masked password prompt (thanks ullner)
+* [bug 922] Updated help links (thanks xan)
+* Fixed op count
 
 -- 0.689 2006-04-01 --
 * Fixed displaying of available bytes when user list is off

@@ -462,6 +462,7 @@
 		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
 		<String Name="SettingsPopupPms">Open private messages in their own window</String>
 		<String Name="SettingsPorts">Ports</String>
+		<String Name="SettingsPromptPassword">Popup box to input password for hubs</String>
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>

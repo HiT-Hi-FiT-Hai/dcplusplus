@@ -93,15 +93,6 @@ public:
 
 	Client::List& getClients() { return clients; }
 
- 	void removeClientListener(ClientListener* listener) {
- 		Lock l(cs);
- 		Client::Iter endIt = clients.end();
- 		for(Client::Iter it = clients.begin(); it != endIt; ++it) {
- 			Client* client = *it;
- 			client->removeListener(listener);
- 		}
- 	}
-
 	string getCachedIp() const { Lock l(cs); return cachedIp; }
 
 	CID getMyCID();

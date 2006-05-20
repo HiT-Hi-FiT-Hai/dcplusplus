@@ -389,14 +389,7 @@ private:
 
 	void moveNode(HTREEITEM item, HTREEITEM parent);
 
-	void clearTree(HTREEITEM item) {
-		HTREEITEM next = ctrlDirs.GetChildItem(item);
-		while(next != NULL) {
-			clearTree(next);
-			next = ctrlDirs.GetNextSiblingItem(next);
-		}
-		delete (tstring*)ctrlDirs.GetItemData(item);
-	}
+	void clearTree(HTREEITEM item);
 
 	void removeSelected() {
 		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)

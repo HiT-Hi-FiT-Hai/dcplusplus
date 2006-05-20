@@ -57,15 +57,15 @@ closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConn
 { 
 	memset(statusSizes, 0, sizeof(statusSizes));
 	
-	links.homepage = _T("http://dcplusplus.sourceforge.net/");
+	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
 	links.translations = _T("http://sourceforge.net/tracker/?atid=460289&group_id=40287");
-	links.faq = links.homepage + _T("faq/faq.php?list=all&prog=1&lang=en");
+	links.faq = links.homepage + _T("faq/");
 	links.help = links.homepage + _T("forum/");
 	links.discuss = links.homepage + _T("forum/");
-	links.features = links.homepage + _T("bugs/");
-	links.bugs = links.homepage + _T("bugs/");
+	links.features = links.homepage + _T("bugzilla/");
+	links.bugs = links.homepage + _T("bugzilla/");
 }
 
 MainFrame::~MainFrame() {

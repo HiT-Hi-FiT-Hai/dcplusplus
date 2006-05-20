@@ -482,10 +482,24 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 				client->password(client->getPassword());
 				addClientLine(TSTRING(STORED_PASSWORD_SENT));
 			} else {
-				ctrlMessage.SetWindowText(_T("/password "));
-				ctrlMessage.SetFocus();
-				ctrlMessage.SetSel(10, 10);
-				waitingForPW = true;
+				if(!BOOLSETTING(PROMPT_PASSWORD)) {
+					ctrlMessage.SetWindowText(_T("/password "));
+					ctrlMessage.SetFocus();
+					ctrlMessage.SetSel(10, 10);
+					waitingForPW = true;
+				} else {
+					LineDlg linePwd;
+					linePwd.title = CTSTRING(ENTER_PASSWORD);
+					linePwd.description = CTSTRING(ENTER_PASSWORD);
+					linePwd.password = true;
+					if(linePwd.DoModal(m_hWnd) == IDOK) {
+						client->setPassword(Text::fromT(linePwd.line));
+						client->password(Text::fromT(linePwd.line));
+						waitingForPW = false;
+					} else {
+						client->disconnect(true);
+					}
+				}
 			}
 		} else if(task->speaker == PRIVATE_MESSAGE) {
 			PMTask& pm = *static_cast<PMTask*>(task);

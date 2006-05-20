@@ -466,6 +466,7 @@ enum Strings { // @DontAdd
 	SETTINGS_POPUP_OFFLINE, // "Open private messages from offline users in their own window"
 	SETTINGS_POPUP_PMS, // "Open private messages in their own window"
 	SETTINGS_PORTS, // "Ports"
+	SETTINGS_PROMPT_PASSWORD, // "Popup box to input password for hubs"
 	SETTINGS_PUBLIC_HUB_LIST, // "Public Hubs list"
 	SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, // "HTTP Proxy (for hublist only)"
 	SETTINGS_PUBLIC_HUB_LIST_URL, // "Public Hubs list URL"
