@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,6 +161,8 @@ private:
 
 	bool closed;
 
+	StringMap ucLineParams;
+
 	void updateTitle();
 	
 	// ClientManagerListener
@@ -179,8 +181,3 @@ private:
 };
 
 #endif // !defined(PRIVATE_FRAME_H)
-
-/**
- * @file
- * $Id: PrivateFrame.h,v 1.39 2006/02/19 16:19:06 arnetheduck Exp $
- */

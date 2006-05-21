@@ -1,4 +1,29 @@
-﻿-- 0.689 2006-04-01 --
+﻿-- 0.69 2006-05-21 --
+* Small linux / old gcc fixes (thanks jens oknelid)
+* Fixed an issue where client could be crashed from remote
+* Fixed an issue bad nicks could cause directories to be created in log / file list download folder
+* Changed autodrop default to 2 for fewer unexpected autodrops (thanks paka)
+* Saved users file more often to have fewer missing nicks around
+* CID of user shown if nick is missing (in queue for example)
+* Added display of CID in a few places
+* Updated yaSSL to 1.2.2
+* Fixed ADC hubname display (thanks ullner)
+* Advanced TTH rollback no longer performed if tree is invalid (thanks garg)
+* Option not to auto-disconnect favorite users (thanks ullner)
+* Fixed auto-disconnect delay (thanks uller)
+* Another fix for opencow
+* Fixed user command parameters not being remembered
+* Fixed ADC op commands
+* [bug 464] Added option for masked password prompt (thanks ullner)
+* [bug 922] Updated help links (thanks xan)
+* Fixed op count
+* [bug 230] Added settings to tray menu 
+* [bug 403] Unfinished file lists deleted since they're never resumed anyway
+* [bug 639] Separated remove user from queue menu option
+* [bug 766] Fixed broken app titlebar
+* Removed support for generating NMDC-style file lists (old clients won't be able to download from you)
+
+-- 0.689 2006-04-01 --
 * Fixed displaying of available bytes when user list is off
 * Fixed a potential crash when not showing user list
 * Fixed 100% CPU bug on upload

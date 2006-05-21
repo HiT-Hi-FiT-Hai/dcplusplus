@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include "Client.h"
 #include "StringTokenizer.h"
 
-OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : user(ptr), identity(ptr, client_.getHubUrl()), sid(sid_), client(&client_) { 
+OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : user(ptr), identity(ptr, client_.getHubUrl(), sid_), client(&client_) { 
 
 }
 
@@ -32,6 +32,7 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 		sm[prefix + string((char*)(&i->first), 2)] = i->second;
 	}
 	if(user) {
+		sm[prefix + "SID"] = getSIDString();
 		sm[prefix + "CID"] = user->getCID().toBase32();
 		sm[prefix + "TAG"] = getTag();
 		sm[prefix + "SSshort"] = Util::formatBytes(get("SS"));
@@ -63,8 +64,3 @@ const bool Identity::supports(const string& name) const {
 	}
 	return false;
 }
-
-/**
- * @file
- * $Id: User.cpp,v 1.53 2006/02/17 19:23:51 arnetheduck Exp $
- */

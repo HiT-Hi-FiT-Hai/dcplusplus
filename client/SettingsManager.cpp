@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ const string SettingsManager::settingTags[] =
 	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
-	"UseSsl", "AutoSearchLimit", "AltSortOrder",
+	"UseSsl", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -220,7 +220,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTODROP_INTERVAL, 10);
 	setDefault(AUTODROP_ELAPSED, 15);
 	setDefault(AUTODROP_INACTIVITY, 10);
-	setDefault(AUTODROP_MINSOURCES, 1);
+	setDefault(AUTODROP_MINSOURCES, 2);
 	setDefault(AUTODROP_FILESIZE, 0);
 	setDefault(AUTODROP_ALL, false);
 	setDefault(AUTODROP_FILELISTS, false);
@@ -255,6 +255,8 @@ SettingsManager::SettingsManager()
 	setDefault(USE_SSL, false);
 	setDefault(AUTO_SEARCH_LIMIT, 5);
 	setDefault(ALT_SORT_ORDER, false);
+	setDefault(AUTO_KICK_NO_FAVS, false);
+	setDefault(PROMPT_PASSWORD, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -420,8 +422,3 @@ void SettingsManager::save(string const& aFileName) {
 		// ...
 	}
 }
-
-/**
- * @file
- * $Id: SettingsManager.cpp,v 1.142 2006/02/19 17:19:04 arnetheduck Exp $
- */

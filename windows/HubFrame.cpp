@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,10 +37,10 @@
 
 HubFrame::FrameMap HubFrame::frames;
 
-int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100 };
-int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL };
+int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 125 };
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL, COLUMN_CID };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::EMAIL };
+ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::EMAIL, ResourceManager::CID };
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -231,9 +231,9 @@ void HubFrame::onEnter() {
 				params["hubURL"] = client->getHubUrl();
 				params["myNI"] = client->getMyNick(); 
 				if(param.empty()) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params))));
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params, true))));
 				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params))));
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params, true))));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
@@ -421,6 +421,7 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	columns[COLUMN_TAG] = Text::toT(identity.getTag());
 	columns[COLUMN_CONNECTION] = Text::toT(identity.getConnection());
 	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
+	columns[COLUMN_CID] = Text::toT(identity.getUser()->getCID().toBase32());
 
 	if(sortCol != -1) {
 		needsSort = needsSort || (old != columns[sortCol]);
@@ -481,10 +482,24 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 				client->password(client->getPassword());
 				addClientLine(TSTRING(STORED_PASSWORD_SENT));
 			} else {
-				ctrlMessage.SetWindowText(_T("/password "));
-				ctrlMessage.SetFocus();
-				ctrlMessage.SetSel(10, 10);
-				waitingForPW = true;
+				if(!BOOLSETTING(PROMPT_PASSWORD)) {
+					ctrlMessage.SetWindowText(_T("/password "));
+					ctrlMessage.SetFocus();
+					ctrlMessage.SetSel(10, 10);
+					waitingForPW = true;
+				} else {
+					LineDlg linePwd;
+					linePwd.title = CTSTRING(ENTER_PASSWORD);
+					linePwd.description = CTSTRING(ENTER_PASSWORD);
+					linePwd.password = true;
+					if(linePwd.DoModal(m_hWnd) == IDOK) {
+						client->setPassword(Text::fromT(linePwd.line));
+						client->password(Text::fromT(linePwd.line));
+						waitingForPW = false;
+					} else {
+						client->disconnect(true);
+					}
+				}
 			}
 		} else if(task->speaker == PRIVATE_MESSAGE) {
 			PMTask& pm = *static_cast<PMTask*>(task);
@@ -798,16 +813,17 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 }
 
 void HubFrame::runUserCommand(::UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
 
 	client->getMyIdentity().getParams(ucParams, "my", true);
 	client->getHubIdentity().getParams(ucParams, "hub", false);
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
-		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
+		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams, false));
 	} else {
 		int sel = -1;
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
@@ -816,7 +832,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 
 			u->getIdentity().getParams(tmp, "user", true);
 			client->escapeParams(tmp);
-			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp)); 
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false)); 
 		}
 	}
 }
@@ -1222,8 +1238,3 @@ void HubFrame::on(NickTaken, Client*) throw() {
 void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
 }
-
-/**
- * @file
- * $Id: HubFrame.cpp,v 1.131 2006/02/19 23:51:31 arnetheduck Exp $
- */

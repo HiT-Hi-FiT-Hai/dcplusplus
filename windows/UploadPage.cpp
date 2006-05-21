@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -260,8 +260,3 @@ void UploadPage::addDirectory(const tstring& aPath){
 		MessageBox(Text::toT(e.getError()).c_str(), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 	}
 }
-
-/**
- * @file
- * $Id: UploadPage.cpp,v 1.37 2005/12/24 23:13:26 arnetheduck Exp $
- */

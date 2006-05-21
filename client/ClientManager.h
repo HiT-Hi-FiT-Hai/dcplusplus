@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,19 +93,12 @@ public:
 
 	Client::List& getClients() { return clients; }
 
- 	void removeClientListener(ClientListener* listener) {
- 		Lock l(cs);
- 		Client::Iter endIt = clients.end();
- 		for(Client::Iter it = clients.begin(); it != endIt; ++it) {
- 			Client* client = *it;
- 			client->removeListener(listener);
- 		}
- 	}
-
 	string getCachedIp() const { Lock l(cs); return cachedIp; }
 
 	CID getMyCID();
 	const CID& getMyPID();
+
+	void save();
 private:
 	typedef HASH_MAP<string, User::Ptr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
@@ -165,8 +158,3 @@ private:
 };
 
 #endif // !defined(CLIENT_MANAGER_H)
-
-/**
- * @file
- * $Id: ClientManager.h,v 1.78 2006/02/13 21:13:27 arnetheduck Exp $
- */

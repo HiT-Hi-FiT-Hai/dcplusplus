@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,6 @@ public:
 	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; }
 
 	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
-	void encodeHuffman(const string& is, string& os);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 private:
 
@@ -124,8 +123,3 @@ private:
 };
 
 #endif // !defined(CRYPTO_MANAGER_H)
-
-/**
- * @file
- * $Id: CryptoManager.h,v 1.44 2006/02/19 16:19:06 arnetheduck Exp $
- */

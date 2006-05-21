@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1035,9 +1035,11 @@ void DirectoryListingFrame::findFile(bool findNext)
 }
 
 void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
+
 	set<User::Ptr> nicks;
 
 	int sel = -1;
@@ -1078,8 +1080,3 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
 	}
 }
-
-/**
- * @file
- * $Id: DirectoryListingFrm.cpp,v 1.79 2006/02/05 17:02:38 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -601,8 +601,3 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 
 	return insert;
 }
-
-/**
- * @file
- * $Id: PublicHubsFrm.cpp,v 1.43 2006/01/23 08:00:50 arnetheduck Exp $
- */

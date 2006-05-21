@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -196,8 +196,3 @@ private:
 };
 
 #endif // !defined(UPLOAD_MANAGER_H)
-
-/**
- * @file
- * $Id: UploadManager.h,v 1.86 2006/02/19 17:19:04 arnetheduck Exp $
- */

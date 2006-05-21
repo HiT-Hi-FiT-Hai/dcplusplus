@@ -832,7 +832,7 @@ void SSL::deriveKeys()
     int length = 2 * secure_.get_parms().hash_size_ + 
                  2 * secure_.get_parms().key_size_  +
                  2 * secure_.get_parms().iv_size_;
-    int rounds = length / MD5_LEN + ((length % MD5_LEN) ? 1 : 0);
+    int rounds = (length + MD5_LEN - 1 ) / MD5_LEN;
     input_buffer key_data(rounds * MD5_LEN);
 
     opaque sha_output[SHA_LEN];

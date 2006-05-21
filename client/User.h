@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,10 +97,10 @@ public:
 		NMDC_PASSIVE = 1 << NMDC_PASSIVE_BIT
 	};
 
-	Identity() { }
-	Identity(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), hubUrl(aHubUrl) { }
-	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; info = rhs.info; return *this; }
+	Identity() : sid(0) { }
+	Identity(const User::Ptr& ptr, const string& aHubUrl, u_int32_t aSID) : user(ptr), hubUrl(aHubUrl), sid(aSID) { }
+	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), sid(rhs.sid), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; sid = rhs.sid; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
@@ -143,10 +143,15 @@ public:
 			info[*(short*)name] = val;
 	}
 
+	string getSIDString() const {
+		return string((const char*)&sid, 4);
+	}
+
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubUrl, HubUrl);
+	GETSET(u_int32_t, sid, SID);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
@@ -174,7 +179,6 @@ public:
 
 	GETSET(User::Ptr, user, User);
 	GETSET(Identity, identity, Identity);
-	GETSET(u_int32_t, sid, SID);
 private:
 	friend class NmdcHub;
 
@@ -185,8 +189,3 @@ private:
 };
 
 #endif // !defined(USER_H)
-
-/**
- * @file
- * $Id: User.h,v 1.71 2006/02/19 16:19:06 arnetheduck Exp $
- */

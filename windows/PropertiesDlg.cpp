@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,9 +89,3 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	bHandled = FALSE;
 	return TRUE;
 }
-
-/**
- * @file
- * $Id: PropertiesDlg.cpp,v 1.20 2006/01/05 00:11:31 arnetheduck Exp $
- */
-

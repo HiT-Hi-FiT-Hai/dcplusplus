@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #define WMU_WHERE_ARE_YOU_MSG _T("WMU_WHERE_ARE_YOU-{885D4B75-6606-4add-A8DE-EEEDC04181F1}")
-const UINT WMU_WHERE_ARE_YOU = ::RegisterWindowMessage(_T("WMU_WHERE_ARE_YOU_MSG"));
+const UINT WMU_WHERE_ARE_YOU = ::RegisterWindowMessageA("WMU_WHERE_ARE_YOU_MSG");
 
 class SingleInstance
 {
@@ -51,8 +51,3 @@ public:
 };
 
 #endif // !defined(SINGLE_INSTANCE_H)
-
-/**
- * @file
- * $Id: SingleInstance.h,v 1.6 2005/04/24 08:13:05 arnetheduck Exp $
- */

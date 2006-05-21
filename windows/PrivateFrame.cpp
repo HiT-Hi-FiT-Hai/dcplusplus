@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include "../client/ShareManager.h"
 #include "../client/FavoriteManager.h"
 #include "../client/QueueManager.h"
+#include "../client/StringTokenizer.h"
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
@@ -173,7 +174,7 @@ void PrivateFrame::onEnter()
 				params["userCID"] = replyTo->getCID().toBase32(); 
 				params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 				params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
+				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 				addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
 			} else {
@@ -284,9 +285,11 @@ LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 void PrivateFrame::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
 
 	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams, true);
 }
@@ -387,7 +390,7 @@ void PrivateFrame::readLog() {
 	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 
-	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params));
+	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true));
 
 	try {
 		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
@@ -414,8 +417,3 @@ void PrivateFrame::readLog() {
 	} catch(const FileException&){
 	}
 }
-
-/**
- * @file
- * $Id: PrivateFrame.cpp,v 1.62 2006/02/19 16:19:06 arnetheduck Exp $
- */

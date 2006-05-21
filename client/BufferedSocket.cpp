@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -269,7 +269,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	size_t readPos = 0;
 
 	bool readDone = false;
-	dcdebug("Starting threadSend");
+	dcdebug("Starting threadSend\n");
 	while(true) {
 		if(!readDone && readBuf.size() > readPos) {
 			// Fill read buffer
@@ -468,8 +468,3 @@ void BufferedSocket::shutdown() {
 		delete this;
 	}
 }
-
-/**
- * @file
- * $Id: BufferedSocket.cpp,v 1.103 2006/02/19 23:51:31 arnetheduck Exp $
- */

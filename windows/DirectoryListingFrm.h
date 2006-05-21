@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -345,6 +345,8 @@ private:
 	
 	auto_ptr<DirectoryListing> dl;
 
+	StringMap ucLineParams;
+
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
 	
@@ -355,8 +357,3 @@ private:
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)
-
-/**
- * @file
- * $Id: DirectoryListingFrm.h,v 1.61 2006/02/19 16:19:06 arnetheduck Exp $
- */

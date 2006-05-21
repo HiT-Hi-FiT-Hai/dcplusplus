@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1217,6 +1217,17 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bH
 	return 0;
 }
 
+void QueueFrame::onTab() {
+	if(showTree) {
+		HWND focus = ::GetFocus();
+		if(focus == ctrlDirs.m_hWnd) {
+			ctrlQueue.SetFocus();
+		} else if(focus == ctrlQueue.m_hWnd) {
+			ctrlDirs.SetFocus();
+		}
+	}
+}
+
 void QueueFrame::updateQueue() {
 	Lock l(cs);
 
@@ -1241,6 +1252,15 @@ void QueueFrame::updateQueue() {
 	updateStatus();
 }
 
+void QueueFrame::clearTree(HTREEITEM item) {
+	HTREEITEM next = ctrlDirs.GetChildItem(item);
+	while(next != NULL) {
+		clearTree(next);
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+	delete (tstring*)ctrlDirs.GetItemData(item);
+}
+
 // Put it here to avoid a copy for each recursion...
 static TCHAR tmpBuf[1024];
 void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
@@ -1262,8 +1282,3 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 	}
 	ctrlDirs.DeleteItem(item);
 }
-
-/**
- * @file
- * $Id: QueueFrame.cpp,v 1.86 2005/12/19 00:15:52 arnetheduck Exp $
- */

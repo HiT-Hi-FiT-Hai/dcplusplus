@@ -605,7 +605,7 @@ void TLS_hmac(SSL& ssl, byte* digest, const byte* buffer, uint sz,
 void PRF(byte* digest, uint digLen, const byte* secret, uint secLen,
          const byte* label, uint labLen, const byte* seed, uint seedLen)
 {
-    uint half = secLen / 2 + secLen % 2;
+    uint half = (secLen + 1) / 2;
 
     output_buffer md5_half(half);
     output_buffer sha_half(half);

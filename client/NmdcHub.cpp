@@ -603,7 +603,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 					continue;
 				OnlineUser& ou = getUser(*it);
 				ou.getIdentity().setOp(true);
-				v.push_back(&getUser(*it));
+				if(*it == getMyNick())
+					getMyIdentity().setOp(true);
+				v.push_back(&ou);
 			}
 
 			fire(ClientListener::UsersUpdated(), this, v);
@@ -808,9 +810,3 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 	fire(ClientListener::Failed(), this, aLine); 
 }
-
-/**
- * @file
- * $Id: NmdcHub.cpp,v 1.55 2006/02/19 20:39:20 arnetheduck Exp $
- */
-

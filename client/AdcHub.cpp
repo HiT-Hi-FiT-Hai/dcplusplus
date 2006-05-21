@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,12 +132,15 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getUser()->setFlag(User::SSL);
 	}
 
-	if(u->getIdentity().isHub())
+	if(u->getIdentity().isHub()) {
 		setHubIdentity(u->getIdentity());
+		fire(ClientListener::HubUpdated(), this);
+	}
 
 	if(u->getUser() == ClientManager::getInstance()->getMe()) {
 		state = STATE_NORMAL;
 		setMyIdentity(u->getIdentity());
+		updateCounts(false);
 	}
 	fire(ClientListener::UserUpdated(), this, *u);
 }
@@ -334,9 +337,9 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
 
 	if(ClientManager::getInstance()->isActive()) {
-		send(AdcCommand(AdcCommand::CMD_CTM, user.getSID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
+		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
 	} else {
-		send(AdcCommand(AdcCommand::CMD_RCM, user.getSID()).addParam(proto));
+		send(AdcCommand(AdcCommand::CMD_RCM, user.getIdentity().getSID()).addParam(proto));
 	}
 }
 
@@ -355,7 +358,7 @@ void AdcHub::hubMessage(const string& aMessage) {
 void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) { 
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, user.getSID()).addParam(aMessage).addParam("PM", getMySID())); 
+	send(AdcCommand(AdcCommand::CMD_MSG, user.getIdentity().getSID()).addParam(aMessage).addParam("PM", getMySID())); 
 }
 
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) { 
@@ -540,8 +543,3 @@ void AdcHub::send(const AdcCommand& cmd) {
 		sendUDP(cmd);
 	send(cmd.toString(sid));
 }
-
-/**
- * @file
- * $Id: AdcHub.cpp,v 1.66 2006/02/12 18:16:12 arnetheduck Exp $
- */

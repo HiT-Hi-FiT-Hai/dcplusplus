@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -366,8 +366,3 @@ string SearchManager::clean(const string& aSearchString) {
 
 	return tmp;
 }
-
-/**
- * @file
- * $Id: SearchManager.cpp,v 1.67 2006/02/13 21:13:27 arnetheduck Exp $
- */

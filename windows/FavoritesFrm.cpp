@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -325,8 +325,3 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	ctrlConnect.MoveWindow(rc);
 
 }
-
-/**
- * @file
- * $Id: FavoritesFrm.cpp,v 1.38 2005/10/12 14:02:53 arnetheduck Exp $
- */

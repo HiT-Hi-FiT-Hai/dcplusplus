@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,6 +166,7 @@ private:
 		COLUMN_TAG,
 		COLUMN_CONNECTION, 
 		COLUMN_EMAIL, 
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 
@@ -323,6 +324,8 @@ private:
 	bool updateUsers;
 	bool resort;
 
+	StringMap ucLineParams;
+
 	enum { MAX_CLIENT_LINES = 5 };
 	TStringList lastLinesList;
 	tstring lastLines;
@@ -373,8 +376,3 @@ private:
 };
 
 #endif // !defined(HUB_FRAME_H)
-
-/**
- * @file
- * $Id: HubFrame.h,v 1.75 2006/02/19 17:19:05 arnetheduck Exp $
- */

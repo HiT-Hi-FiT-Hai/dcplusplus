@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,8 +93,3 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 		fire(FinishedManagerListener::AddedUl(), item);
 	}
 }
-
-/**
- * @file
- * $Id: FinishedManager.cpp,v 1.28 2006/01/01 22:42:54 arnetheduck Exp $
- */

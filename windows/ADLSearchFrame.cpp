@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -546,8 +546,3 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	// Update 'Active' check box
 	ctrlList.SetCheckState(index, search.isActive);
 }
-
-/**
- * @file
- * $Id: ADLSearchFrame.cpp,v 1.26 2005/11/28 01:21:06 arnetheduck Exp $
- */

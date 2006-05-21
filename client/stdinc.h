@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,8 +133,3 @@ using namespace stdext;
 #endif // __GLIBCPP__
 
 #endif // !defined(STDINC_H)
-
-/**
- * @file
- * $Id: stdinc.h,v 1.22 2006/02/18 23:32:17 arnetheduck Exp $
- */

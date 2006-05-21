@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,8 +138,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			aSource->fileNotAvail();
 			return false;
 		}
-	} catch(const ShareException&) {
-		aSource->fileNotAvail();
+	} catch(const ShareException& e) {
+		aSource->fileNotAvail(e.getError());
 		return false;
 	}
 
@@ -409,7 +409,7 @@ void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() { 
-	conn->listLen(ShareManager::getInstance()->getListLenString()); 
+	conn->listLen("42"); 
 }
 
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
@@ -492,14 +492,14 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
 
 	/// @todo Don't kick when /me disconnects
-	if( BOOLSETTING(AUTO_KICK) ) {
+	if( BOOLSETTING(AUTO_KICK) && !(BOOLSETTING(AUTO_KICK_NO_FAVS) && FavoriteManager::getInstance()->isFavoriteUser(aUser)) ) {
 
 		Lock l(cs);
 		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
 			Upload* u = *i;
 			if(u->getUser() == aUser) {
 				// Oops...adios...
-				u->getUserConnection()->disconnect();
+				u->getUserConnection()->disconnect(true);
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
@@ -513,8 +513,3 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 		clearUserFiles(aUser);
 	}
 }
-
-/**
- * @file
- * $Id: UploadManager.cpp,v 1.104 2006/02/05 17:02:38 arnetheduck Exp $
- */

@@ -184,7 +184,7 @@ class PublicKey {
     word32 sz_;
 public:
     explicit PublicKey(const byte* k = 0, word32 s = 0);
-    ~PublicKey() { tcDelete(key_); }
+    ~PublicKey() { tcArrayDelete(key_); }
 
     const byte* GetKey() const { return key_; }
     word32      size()   const { return sz_; }

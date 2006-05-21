@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,8 +209,3 @@ LRESULT StatsFrame::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 	
 }
-
-/**
- * @file
- * $Id: StatsFrame.cpp,v 1.14 2005/04/24 08:13:05 arnetheduck Exp $
- */

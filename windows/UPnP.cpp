@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,8 +181,3 @@ UPnP::~UPnP() {
 		pUN->Release();
 	}
 }
-
-/**
- * @file
- * $Id: UPnP.cpp,v 1.9 2005/12/24 23:13:26 arnetheduck Exp $
- */
