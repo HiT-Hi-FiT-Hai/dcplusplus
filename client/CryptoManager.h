@@ -78,7 +78,6 @@ public:
 	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; }
 
 	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
-	void encodeHuffman(const string& is, string& os);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 private:
 

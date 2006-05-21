@@ -133,16 +133,7 @@ public:
 		return 0;
 	}
 
-	void onTab() {
-		if(showTree) {
-			HWND focus = ::GetFocus();
-			if(focus == ctrlDirs.m_hWnd) {
-				ctrlQueue.SetFocus();
-			} else if(focus == ctrlQueue.m_hWnd) {
-				ctrlDirs.SetFocus();
-			}
-		}
-	}
+	void onTab();
 
 	LRESULT onShowTree(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;

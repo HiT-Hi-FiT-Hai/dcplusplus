@@ -1217,6 +1217,17 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bH
 	return 0;
 }
 
+void QueueFrame::onTab() {
+	if(showTree) {
+		HWND focus = ::GetFocus();
+		if(focus == ctrlDirs.m_hWnd) {
+			ctrlQueue.SetFocus();
+		} else if(focus == ctrlQueue.m_hWnd) {
+			ctrlDirs.SetFocus();
+		}
+	}
+}
+
 void QueueFrame::updateQueue() {
 	Lock l(cs);
 

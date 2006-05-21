@@ -65,6 +65,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	transferMenu.CreatePopupMenu();
 	appendUserItems(transferMenu);
+	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
 	transferMenu.AppendMenu(MF_SEPARATOR);

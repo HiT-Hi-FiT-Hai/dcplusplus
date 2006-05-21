@@ -44,8 +44,8 @@
 #include <limits>
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
-	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), initial(true), listN(0), refreshing(0), lFile(NULL), 
-	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20)
+	xmlDirty(true), refreshDirs(false), update(false), initial(true), listN(0), refreshing(0), lFile(NULL), 
+	xFile(NULL), lastXmlUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20)
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -80,21 +80,11 @@ ShareManager::~ShareManager() {
 		FindClose(hFind);
 	}
 
-	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "MyList*.DcLst").c_str(), &data);
-	if(hFind != INVALID_HANDLE_VALUE) {
-		do {
-			File::deleteFile(Util::getAppPath() + Text::fromT(data.cFileName));			
-		} while(FindNextFile(hFind, &data));
-
-		FindClose(hFind);
-	}
-
 #else
 	DIR* dir = opendir(Util::getAppName().c_str());
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
-			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0 ||
-				fnmatch("MyList*.DcLst", ent->d_name, 0) == 0) {
+			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0) {
 					File::deleteFile(Util::getConfigPath() + ent->d_name);	
 				}
 		}
@@ -121,21 +111,20 @@ string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
 	if(i != tthIndex.end()) {
 		return i->second->getADCPath();
 	} else {
-		throw ShareException("File Not Available");
+		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 	}
 }
 
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	RLock<> l(cs);
 	if(aFile == "MyList.DcLst") {
-		generateNmdcList();
-		return getListFile();
+		throw ShareException("NMDC-style lists no longer supported, please upgrade your client");
 	} else if(aFile == "files.xml.bz2" || aFile == "files.xml") {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {
 		if(aFile.length() < 3)
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 
 		string file;
 
@@ -143,25 +132,25 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(aFile.compare(0, 4, "TTH/") == 0) {
 			file = translateTTH(aFile.substr(4));
 		} else if(aFile[0] != '/') {
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		}  else {
 			file = aFile;
 		}
 
 		string::size_type i = file.find('/', 1);
 		if(i == string::npos)
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		
 		RLock<> l(cs);
 		StringPairIter j = lookupVirtual(file.substr(1, i-1));
 		if(j == virtualMap.end()) {
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		}
 
 		file = file.substr(i + 1);
 		Directory::File::Iter it;
 		if(!checkFile(j->second, file, it)) {
-			throw ShareException("File Not Available");
+			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		}
 
 #ifdef _WIN32
@@ -193,13 +182,13 @@ AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) 
 	}
 
 	if(aFile.compare(0, 4, "TTH/") != 0)
-		throw ShareException("File Not Available");
+		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 
 	RLock<> l(cs);
 	TTHValue val(aFile.substr(4));
 	HashFileIter i = tthIndex.find(&val);
 	if(i == tthIndex.end()) {
-		throw ShareException("File Not Available");
+		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 	}
 
 	Directory::File::Iter f = i->second;
@@ -886,46 +875,6 @@ void ShareManager::generateXmlList() {
 
 		xmlDirty = false;
 		lastXmlUpdate = GET_TICK();
-	}
-}
-void ShareManager::generateNmdcList() {
-	Lock l(listGenLock);
-	if(nmdcDirty && (lastNmdcUpdate + 15 * 60 * 1000 < GET_TICK() || lastNmdcUpdate < lastFullUpdate)) {
-		listN++;
-
-		try {
-			string tmp;
-			string tmp2;
-			string indent;
-
-			for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-				i->second->toNmdc(tmp, indent, tmp2);
-			}
-
-			string newName = Util::getConfigPath() + "MyList" + Util::toString(listN) + ".DcLst";
-			tmp2.clear();
-			CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
-			File(newName, File::WRITE, File::CREATE | File::TRUNCATE).write(tmp2);
-
-			if(lFile != NULL) {
-				delete lFile;
-				lFile = NULL;
-				File::deleteFile(getListFile());
-			}
-			try {
-				File::renameFile(newName, Util::getConfigPath() + "MyList.DcLst");
-				newName = Util::getConfigPath() + "MyList.DcLst";
-			} catch(const FileException&) {
-			}
-			lFile = new File(newName, File::READ, File::OPEN);
-			setListFile(newName);
-			listLen = File::getSize(newName);
-		} catch(const Exception&) {
-			// No new file lists...
-		}
-
-		nmdcDirty = false;
-		lastNmdcUpdate = GET_TICK();
 	}
 }
 

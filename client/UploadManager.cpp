@@ -138,8 +138,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			aSource->fileNotAvail();
 			return false;
 		}
-	} catch(const ShareException&) {
-		aSource->fileNotAvail();
+	} catch(const ShareException& e) {
+		aSource->fileNotAvail(e.getError());
 		return false;
 	}
 
@@ -409,7 +409,7 @@ void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() { 
-	conn->listLen(ShareManager::getInstance()->getListLenString()); 
+	conn->listLen("42"); 
 }
 
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {

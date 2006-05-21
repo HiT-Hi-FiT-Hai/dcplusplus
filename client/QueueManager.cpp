@@ -53,7 +53,7 @@
 #include <fnmatch.h>
 #endif
 
-const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
+const string QueueManager::USER_LIST_NAME = "files.xml";
 
 namespace {
 	const string TEMP_EXTENSION = ".dctmp";
@@ -899,7 +899,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 					}
 				}
 			} else if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-				if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
+				if(!aDownload->getTempTarget().empty() && (aDownload->isSet(Download::FLAG_USER_LIST) || aDownload->getTempTarget() != aDownload->getTarget())) {
 					File::deleteFile(aDownload->getTempTarget() + Download::ANTI_FRAG_EXT);
 					File::deleteFile(aDownload->getTempTarget());
 				}

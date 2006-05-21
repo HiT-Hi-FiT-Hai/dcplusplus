@@ -349,7 +349,6 @@ private:
 	} links;
 
 	HWND createToolbar();
-	void buildMenu();
 	void updateTray(bool add = true);
 
 	void autoConnect(const FavoriteHubEntry::List& fl);
