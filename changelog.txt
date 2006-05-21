@@ -1,4 +1,4 @@
-﻿-- --
+﻿-- 0.69 2006-05-21 --
 * Small linux / old gcc fixes (thanks jens oknelid)
 * Fixed an issue where client could be crashed from remote
 * Fixed an issue bad nicks could cause directories to be created in log / file list download folder
