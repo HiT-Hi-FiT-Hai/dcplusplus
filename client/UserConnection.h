@@ -242,7 +242,7 @@ public:
 	void error(const string& aError) { send("$Error " + aError + '|'); }
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
 	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full")); }
-	void fileNotAvail(const std::string& msg = Util::emptyString) { isSet(FLAG_NMDC) ? send("$Error " + (msg.empty() ? FILE_NOT_AVAILABLE : msg) + "|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE)); }
+	void fileNotAvail(const std::string& msg = FILE_NOT_AVAILABLE) { isSet(FLAG_NMDC) ? send("$Error " + msg + "|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, msg)); }
 
 	// ADC Stuff
 	void sup(const StringList& features) { 
