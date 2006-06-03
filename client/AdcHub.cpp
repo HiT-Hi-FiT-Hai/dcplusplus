@@ -119,6 +119,12 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getIdentity().set(i->c_str(), i->substr(2));
 	}
 
+	if(u->getIdentity().isBot()) {
+		u->getUser()->setFlag(User::BOT);
+	} else {
+		u->getUser()->unsetFlag(User::BOT);
+	}
+
 	if(u->getUser()->getFirstNick().empty()) {
 		u->getUser()->setFirstNick(u->getIdentity().getNick());
 	}

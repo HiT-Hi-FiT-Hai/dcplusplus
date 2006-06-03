@@ -55,8 +55,8 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 	}
 }
 
-const bool Identity::supports(const string& name) const {
-	string su = get("SU");
+bool Identity::supports(const string& name) const {
+	const string& su = get("SU");
 	StringTokenizer<string> st(su, ',');
 	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
 		if(*i == name)

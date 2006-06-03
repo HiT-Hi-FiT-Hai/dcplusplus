@@ -124,12 +124,13 @@ public:
 			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 	}
 
-	const bool supports(const string& name) const;
-	const bool isHub() const { return !get("HU").empty(); }
-	const bool isOp() const { return !get("OP").empty(); }
-	const bool isHidden() const { return !get("HI").empty(); }
-	const bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
-	const bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
+	bool supports(const string& name) const;
+	bool isHub() const { return !get("HU").empty(); }
+	bool isOp() const { return !get("OP").empty(); }
+	bool isHidden() const { return !get("HI").empty(); }
+	bool isBot() const { return !get("BO").empty(); }
+	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
+	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 
 	const string& get(const char* name) const {
 		InfMap::const_iterator i = info.find(*(short*)name);

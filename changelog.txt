@@ -1,4 +1,4 @@
-﻿-- 0.691 -- 
+﻿-- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog
 * [bug 122] Added userlist filter (thanks trem)
 * [bug 578] Added search for alternates to transfers menu (thanks trem)
@@ -12,7 +12,8 @@
 * Added "all" to hub list field search (thanks trem)
 * Fixed bug when sending active ADC search results
 * Updated to ADC 0.11
-* Passive users now also get search results
+* Passive users now also get ADC search results
+* Changed nmdc bot-detection to what it was before, should fix pm-to-bot bug
 
 -- 0.69 2006-05-21 --
 * Small linux / old gcc fixes (thanks jens oknelid)
