@@ -55,10 +55,10 @@ public:
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubURL, const string& ip, TTHValue* aTTH, bool aUtf8) :
+		const string& aHubURL, const string& ip, TTHValue* aTTH, bool aUtf8, const string& aToken) :
 	file(aFile), hubName(aHubName), hubURL(aHubURL), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(ip),
-		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), utf8(aUtf8), ref(1) { }
+		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), token(aToken), utf8(aUtf8), ref(1) { }
 
 	string getFileName() const;
 	string toSR(const Client& client) const;
@@ -77,6 +77,7 @@ public:
 	TTHValue* getTTH() const { return tth; }
 	bool getUtf8() const { return utf8; }
 	const string& getIP() const { return IP; }
+	const string& getToken() const { return token; }
 
 	void incRef() { Thread::safeInc(ref); }
 	void decRef() { 
@@ -102,6 +103,7 @@ private:
 	int freeSlots;
 	string IP;
 	TTHValue* tth;
+	string token;
 	
 	bool utf8;
 	volatile long ref;
@@ -151,6 +153,8 @@ public:
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
+
+	void onRES(const AdcCommand& cmd, const User::Ptr& from, const string& removeIp = Util::emptyString);
 	
 	int32_t timeToSearch() {
 		return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);

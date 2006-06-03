@@ -47,15 +47,10 @@ AdcHub::~AdcHub() throw() {
 }
 
 OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
-	OnlineUser* u = NULL;
-	{
-		Lock l(cs);
-
-		SIDIter i = users.find(aSID);
-		if(i != users.end())
-			return *i->second;
+	OnlineUser* u = findUser(aSID);
+	if(u) {
+		return *u;
 	}
-
 
 	User::Ptr p = ClientManager::getInstance()->getUser(aCID);
 
@@ -69,9 +64,9 @@ OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
 	return *u;
 }
 
-OnlineUser* AdcHub::findUser(const u_int32_t aSID) {
+OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
 	Lock l(cs);
-	SIDIter i = users.find(aSID);
+	SIDMap::const_iterator i = users.find(aSID);
 	return i == users.end() ? NULL : i->second;
 }
 
@@ -315,13 +310,22 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
-	SIDMap::const_iterator i = users.find(c.getFrom());
-	if(i == users.end()) {
+	OnlineUser* ou = findUser(c.getFrom());
+	if(!ou) {
 		dcdebug("Invalid user in AdcHub::onSCH\n");
 		return;
 	}
 
-	fire(ClientListener::AdcSearch(), this, c, i->second->getUser()->getCID());
+	fire(ClientListener::AdcSearch(), this, c, ou->getUser()->getCID());
+}
+
+void AdcHub::handle(AdcCommand::RES, AdcCommand& c) throw() {
+	OnlineUser* ou = findUser(c.getFrom());
+	if(!ou) {
+		dcdebug("Invalid user in AdcHub::onRES\n");
+		return;
+	}
+	SearchManager::getInstance()->onRES(c, ou->getUser());
 }
 
 void AdcHub::connect(const OnlineUser& user) {
