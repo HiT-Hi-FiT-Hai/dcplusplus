@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -206,8 +206,3 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 	delete this;
 }
-
-/**
- * @file
- * $Id: UserConnection.cpp,v 1.58 2006/02/12 18:16:12 arnetheduck Exp $
- */

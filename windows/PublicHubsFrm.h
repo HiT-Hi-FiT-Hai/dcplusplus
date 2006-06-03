@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,6 +128,16 @@ private:
 		FAILED
 	};
 
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
+	};
+
 	int visibleHubs;
 	int users;
 	CStatusBarCtrl ctrlStatus;
@@ -163,13 +173,8 @@ private:
 	void updateList();
 	void updateDropDown();
 
-	bool parseFilter(int& mode, double& size);
-	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const int& mode, const double& size);
+	bool parseFilter(FilterModes& mode, double& size);
+	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const FilterModes& mode, const double& size);
 };
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)
-
-/**
- * @file
- * $Id: PublicHubsFrm.h,v 1.34 2006/02/19 16:19:06 arnetheduck Exp $
- */

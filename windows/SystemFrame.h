@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,8 +85,3 @@ private:
 };
 
 #endif // !defined(SYSTEM_FRAME_H)
-
-/**
- * @file
- * $Id: SystemFrame.h,v 1.5 2006/02/19 16:19:06 arnetheduck Exp $
- */

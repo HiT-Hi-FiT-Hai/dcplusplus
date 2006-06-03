@@ -335,8 +335,3 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 }
 
 #endif //_DEBUG && _WIN32
-
-/**
- * @file
- * $Id: ExtendedTrace.cpp,v 1.14 2006/02/18 23:32:17 arnetheduck Exp $
- */

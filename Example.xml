@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.689" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Author="arnetheduck" Version="0.691" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -41,6 +41,7 @@
 		<String Name="BrowseAccel">&amp;Browse...</String>
 		<String Name="BrowseFileList">Browse file list</String>
 		<String Name="ChooseFolder">Choose folder</String>
+		<String Name="Cid">CID</String>
 		<String Name="Close">Close</String>
 		<String Name="CloseConnection">Close connection</String>
 		<String Name="ClosingConnection">Closing connection...</String>
@@ -225,6 +226,10 @@
 		<String Name="MenuArrange">Arrange icons</String>
 		<String Name="MenuCascade">Cascade</String>
 		<String Name="MenuChangelog">Change Log</String>
+		<String Name="MenuCloseAllDirList">Close all file list windows</String>
+		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
+		<String Name="MenuCloseAllPm">Close all PM windows</String>
+		<String Name="MenuCloseAllSearchframe">Close all search windows</String>
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
@@ -378,6 +383,7 @@
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub</String>
+		<String Name="SettingsAutoKickNoFavs">Don't automatically disconnect favorite users who leave the hub</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
 		<String Name="SettingsAutoSearchLimit">Auto-search limit</String>
@@ -460,6 +466,7 @@
 		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
 		<String Name="SettingsPopupPms">Open private messages in their own window</String>
 		<String Name="SettingsPorts">Ports</String>
+		<String Name="SettingsPromptPassword">Popup box to input password for hubs</String>
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>

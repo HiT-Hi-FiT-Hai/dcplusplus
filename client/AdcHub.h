@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ private:
 	virtual string checkNick(const string& nick);
 	
 	OnlineUser& getUser(const u_int32_t aSID, const CID& aCID);
-	OnlineUser* findUser(const u_int32_t sid);
+	OnlineUser* findUser(const u_int32_t sid) const;
 	void putUser(const u_int32_t sid);
 
 	void clearUsers();
@@ -107,6 +107,7 @@ private:
 	void handle(AdcCommand::STA, AdcCommand& c) throw();
 	void handle(AdcCommand::SCH, AdcCommand& c) throw();
 	void handle(AdcCommand::CMD, AdcCommand& c) throw();
+	void handle(AdcCommand::RES, AdcCommand& c) throw();
 
 	template<typename T> void handle(T, AdcCommand&) { 
 		//Speaker<AdcHubListener>::fire(t, this, c);
@@ -122,8 +123,3 @@ private:
 };
 
 #endif // !defined(ADC_HUB_H)
-
-/**
- * @file
- * $Id: AdcHub.h,v 1.42 2006/02/19 20:39:20 arnetheduck Exp $
- */

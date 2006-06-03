@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -580,8 +580,3 @@ void Socket::disconnect() throw() {
 	shutdown();
 	close();
 }
-
-/**
- * @file
- * $Id: Socket.cpp,v 1.72 2005/12/16 01:00:46 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,10 +97,10 @@ public:
 		NMDC_PASSIVE = 1 << NMDC_PASSIVE_BIT
 	};
 
-	Identity() { }
-	Identity(const User::Ptr& ptr, const string& aHubUrl) : user(ptr), hubUrl(aHubUrl) { }
-	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; info = rhs.info; return *this; }
+	Identity() : sid(0) { }
+	Identity(const User::Ptr& ptr, const string& aHubUrl, u_int32_t aSID) : user(ptr), hubUrl(aHubUrl), sid(aSID) { }
+	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), sid(rhs.sid), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; sid = rhs.sid; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
@@ -124,12 +124,13 @@ public:
 			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 	}
 
-	const bool supports(const string& name) const;
-	const bool isHub() const { return !get("HU").empty(); }
-	const bool isOp() const { return !get("OP").empty(); }
-	const bool isHidden() const { return !get("HI").empty(); }
-	const bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
-	const bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
+	bool supports(const string& name) const;
+	bool isHub() const { return !get("HU").empty(); }
+	bool isOp() const { return !get("OP").empty(); }
+	bool isHidden() const { return !get("HI").empty(); }
+	bool isBot() const { return !get("BO").empty(); }
+	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
+	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 
 	const string& get(const char* name) const {
 		InfMap::const_iterator i = info.find(*(short*)name);
@@ -143,10 +144,15 @@ public:
 			info[*(short*)name] = val;
 	}
 
+	string getSIDString() const {
+		return string((const char*)&sid, 4);
+	}
+
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
 	GETSET(string, hubUrl, HubUrl);
+	GETSET(u_int32_t, sid, SID);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
@@ -174,7 +180,6 @@ public:
 
 	GETSET(User::Ptr, user, User);
 	GETSET(Identity, identity, Identity);
-	GETSET(u_int32_t, sid, SID);
 private:
 	friend class NmdcHub;
 
@@ -185,8 +190,3 @@ private:
 };
 
 #endif // !defined(USER_H)
-
-/**
- * @file
- * $Id: User.h,v 1.71 2006/02/19 16:19:06 arnetheduck Exp $
- */

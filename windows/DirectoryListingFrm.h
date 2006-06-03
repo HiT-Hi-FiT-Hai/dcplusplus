@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame
 public:
 	static void openWindow(const tstring& aFile, const User::Ptr& aUser, int64_t aSpeed);
 	static void openWindow(const User::Ptr& aUser, const string& txt, int64_t aSpeed);
+	static void closeAll();
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 	typedef UCHandler<DirectoryListingFrame> ucBase;
@@ -163,6 +164,7 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlList.SetRedraw(FALSE);
 		clearList();
+		frames.erase(m_hWnd);
 		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::DIRECTORLISTINGFRAME_ORDER, SettingsManager::DIRECTORLISTINGFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 		bHandled = FALSE;
 		return 0;
@@ -345,6 +347,8 @@ private:
 	
 	auto_ptr<DirectoryListing> dl;
 
+	StringMap ucLineParams;
+
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
 	
@@ -352,11 +356,12 @@ private:
 
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
+
+	typedef map< HWND , DirectoryListingFrame* > FrameMap;
+	typedef pair< HWND , DirectoryListingFrame* > FramePair;
+	typedef FrameMap::iterator FrameIter;
+
+	static FrameMap frames;
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)
-
-/**
- * @file
- * $Id: DirectoryListingFrm.h,v 1.61 2006/02/19 16:19:06 arnetheduck Exp $
- */

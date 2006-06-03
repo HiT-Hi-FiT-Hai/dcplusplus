@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,11 @@ public:
 		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		COMMAND_ID_HANDLER(ID_WINDOW_RESTORE_ALL, onWindowRestoreAll)
-		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseDisconnected)
+		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseWindows)
+		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_PM, onCloseWindows)
+		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_OFFLINE_PM, onCloseWindows)
+		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_DIR_LIST, onCloseWindows)
+		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_SEARCH_FRAME, onCloseWindows)
 		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onOpenDownloads)
 		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
 		COMMAND_ID_HANDLER(ID_FILE_QUICK_CONNECT, onQuickConnect)
@@ -169,7 +173,7 @@ public:
 	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onCloseDisconnected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onMenuHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -349,7 +353,6 @@ private:
 	} links;
 
 	HWND createToolbar();
-	void buildMenu();
 	void updateTray(bool add = true);
 
 	void autoConnect(const FavoriteHubEntry::List& fl);
@@ -377,8 +380,3 @@ private:
 };
 
 #endif // !defined(MAIN_FRM_H)
-
-/**
- * @file
- * $Id: MainFrm.h,v 1.68 2006/02/19 16:19:06 arnetheduck Exp $
- */

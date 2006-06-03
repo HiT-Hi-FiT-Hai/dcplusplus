@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ public:
 		NO_IP_OVERRIDE, SEARCH_ONLY_FREE_SLOTS, LAST_SEARCH_TYPE, BOLD_FINISHED_DOWNLOADS, BOLD_FINISHED_UPLOADS, BOLD_QUEUE, 
 		BOLD_HUB, BOLD_PM, BOLD_SEARCH, SOCKET_IN_BUFFER, SOCKET_OUT_BUFFER, ONLY_DL_TTH_FILES,
 		OPEN_WAITING_USERS, BOLD_WAITING_USERS, OPEN_SYSTEM_LOG, BOLD_SYSTEM_LOG, AUTO_REFRESH_TIME, 
-		USE_SSL, AUTO_SEARCH_LIMIT, ALT_SORT_ORDER,
+		USE_SSL, AUTO_SEARCH_LIMIT, ALT_SORT_ORDER, AUTO_KICK_NO_FAVS, PROMPT_PASSWORD,
 		INT_LAST };
 
 	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
@@ -204,8 +204,3 @@ private:
 #define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
 
 #endif // !defined(SETTINGS_MANAGER_H)
-
-/**
- * @file
- * $Id: SettingsManager.h,v 1.112 2006/02/19 17:19:04 arnetheduck Exp $
- */

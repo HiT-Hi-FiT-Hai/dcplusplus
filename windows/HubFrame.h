@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 #include "UCHandler.h"
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
+#define FILTER_MESSAGE_MAP 8
 struct CompareItems;
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
@@ -83,6 +84,10 @@ public:
 		MESSAGE_HANDLER(BM_SETCHECK, onShowUsers)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
+		MESSAGE_HANDLER(WM_KEYUP, onFilterChar)
+		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
 	END_MSG_MAP()
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
@@ -98,6 +103,8 @@ public:
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEnterUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onFilterChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
@@ -106,6 +113,7 @@ public:
 	void addClientLine(const tstring& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
+	void handleTab(bool reverse);
 	void runUserCommand(::UserCommand& uc);
 
 	static void openWindow(const tstring& server);
@@ -166,7 +174,18 @@ private:
 		COLUMN_TAG,
 		COLUMN_CONNECTION, 
 		COLUMN_EMAIL, 
+		COLUMN_CID,
 		COLUMN_LAST
+	};
+
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
 	};
 
 	struct Task {
@@ -232,7 +251,9 @@ private:
 		curCommandPosition(0), timeStamps(BOOLSETTING(TIME_STAMPS)),
 		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP), 
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
-		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP)
+		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
+		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
+		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
 	{
 		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
 		client->addListener(this);
@@ -300,16 +321,22 @@ private:
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow clientContainer;
 	CContainedWindow showUsersContainer;
-
+	CContainedWindow ctrlFilterContainer;
+	CContainedWindow ctrlFilterSelContainer;
+	
 	CMenu userMenu;
 	CMenu tabMenu;
 
 	CButton ctrlShowUsers;
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
+	CEdit ctrlFilter;
+	CComboBox ctrlFilterSel;
 	typedef TypedListViewCtrl<UserInfo, IDC_USERS> CtrlUsers;
 	CtrlUsers ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
+
+	tstring filter;
 
 	bool closed;
 	bool showUsers;
@@ -323,6 +350,8 @@ private:
 	bool updateUsers;
 	bool resort;
 
+	StringMap ucLineParams;
+
 	enum { MAX_CLIENT_LINES = 5 };
 	TStringList lastLinesList;
 	tstring lastLines;
@@ -334,6 +363,9 @@ private:
 	bool updateUser(const UserTask& u);
 	void removeUser(const User::Ptr& aUser);
 
+	void updateUserList(UserInfo* ui = NULL);
+	bool parseFilter(FilterModes& mode, int64_t& size);
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = FilterModes::NONE, int64_t size = 0);
 	UserInfo* findUser(const tstring& nick);
 
 	void addAsFavorite();
@@ -373,8 +405,3 @@ private:
 };
 
 #endif // !defined(HUB_FRAME_H)
-
-/**
- * @file
- * $Id: HubFrame.h,v 1.75 2006/02/19 17:19:05 arnetheduck Exp $
- */

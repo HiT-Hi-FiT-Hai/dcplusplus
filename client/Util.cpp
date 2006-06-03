@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -312,6 +312,15 @@ string Util::validateFileName(string tmp) {
 	return tmp;
 }
 
+string Util::cleanPathChars(string aNick) {
+	string::size_type i = 0;
+
+	while( (i = aNick.find_first_of("/.\\", i)) != string::npos) {
+		aNick[i] = '_';
+	}
+	return aNick;
+}
+
 string Util::getShortTimeString(time_t t) {
 	char buf[255];
 	tm* _tm = localtime(&t);
@@ -562,6 +571,38 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 	return (string::size_type)string::npos;
 }
 
+wstring::size_type Util::findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type pos) throw() {
+	if(aString.length() < pos)
+		return static_cast<wstring::size_type>(wstring::npos);
+
+	if(aString.length() - pos < aSubString.length())
+		return static_cast<wstring::size_type>(wstring::npos);
+
+	if(aSubString.empty())
+		return 0;
+
+	wstring::size_type j = 0;
+	wstring::size_type end = aString.length() - aSubString.length() + 1;
+
+	for(; pos < end; ++pos) {
+		if(Text::toLower(aString[pos]) == Text::toLower(aSubString[j])) {
+			wstring::size_type tmp = pos+1;
+			bool found = true;
+			for(++j; j < aSubString.length(); ++j, ++tmp) {
+				if(Text::toLower(aString[tmp]) != Text::toLower(aSubString[j])) {
+					j = 0;
+					found = false;
+					break;
+				}
+			}
+
+			if(found)
+				return pos;
+		}
+	}
+	return static_cast<wstring::size_type>(wstring::npos);
+}
+
 int Util::stricmp(const char* a, const char* b) {
 	while(*a) {
 		wchar_t ca = 0, cb = 0;
@@ -643,7 +684,7 @@ string Util::encodeURI(const string& aString, bool reverse) {
  * date/time and then finally written to the log file. If the parameter is not present at all,
  * it is removed from the string completely...
  */
-string Util::formatParams(const string& msg, StringMap& params) {
+string Util::formatParams(const string& msg, StringMap& params, bool filter) {
 	string result = msg;
 
 	string::size_type i, j, k;
@@ -658,13 +699,21 @@ string Util::formatParams(const string& msg, StringMap& params) {
 			result.erase(j, k-j + 1);
 			i = j;
 		} else {
-			if(smi->second.find('%') != string::npos) {
+			if(smi->second.find_first_of("%\\./") != string::npos) {
 				string tmp = smi->second;	// replace all % in params with %% for strftime
 				string::size_type m = 0;
 				while(( m = tmp.find('%', m)) != string::npos) {
 					tmp.replace(m, 1, "%%");
 					m+=2;
 				}
+				if(filter) {
+					// Filter chars that produce bad effects on file systems
+					m = 0;
+					while(( m = tmp.find_first_of("\\./", m)) != string::npos) {
+						tmp[m] = '_';
+					}
+				}
+				
 				result.replace(j, k-j + 1, tmp);
 				i = j + tmp.size();
 			} else {
@@ -928,8 +977,3 @@ string Util::toDOS(const string& tmp) {
 	}
 	return tmp2;
 }
-
-/**
- * @file
- * $Id: Util.cpp,v 1.95 2006/02/18 23:32:17 arnetheduck Exp $
- */

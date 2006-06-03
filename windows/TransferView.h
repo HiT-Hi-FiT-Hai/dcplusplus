@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
+		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
 	END_MSG_MAP()
@@ -73,6 +74,7 @@ public:
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	void runUserCommand(UserCommand& uc);
 
 	void prepareClose();
@@ -133,6 +135,7 @@ private:
 		COLUMN_PATH,
 		COLUMN_IP,
 		COLUMN_RATIO,
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 
@@ -215,7 +218,7 @@ private:
 			MASK_TIMELEFT = 1 << 7,
 			MASK_IP = 1 << 8,
 			MASK_STATUS_STRING = 1 << 9,
-			MASK_COUNTRY = 1 << 10
+			MASK_COUNTRY = 1 << 10,
 		};
 
 		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
@@ -262,6 +265,8 @@ private:
 	CMenu transferMenu;
 	CImageList arrows;
 
+	StringMap ucLineParams;
+
 	virtual void on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw();
 	virtual void on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw();
 	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();
@@ -280,8 +285,3 @@ private:
 };
 
 #endif // !defined(TRANSFER_VIEW_H)
-
-/**
- * @file
- * $Id: TransferView.h,v 1.27 2006/02/19 17:19:05 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,8 +158,3 @@ void HttpConnection::on(BufferedSocketListener::ModeChange) throw() {
 void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLen) throw() {
 	fire(HttpConnectionListener::Data(), this, aBuf, aLen);
 }
-
-/**
- * @file
- * $Id: HttpConnection.cpp,v 1.33 2006/01/21 10:38:01 arnetheduck Exp $
- */

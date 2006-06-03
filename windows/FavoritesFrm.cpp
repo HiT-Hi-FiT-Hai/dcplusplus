@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,16 +152,32 @@ LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 }
 
 LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	if(!checkNick())
-		return 0;
-	
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 
-	if(item->iItem != -1) {
-		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
-		HubFrame::openWindow(Text::toT(entry->getServer()));
+	if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_NEWFAV, 0);
+	} else {
+		PostMessage(WM_COMMAND, IDC_CONNECT, 0);
 	}
 
+	return 0;
+}
+
+LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_NEWFAV, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	case VK_RETURN:
+		PostMessage(WM_COMMAND, IDC_CONNECT, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
 	return 0;
 }
 
@@ -325,8 +341,3 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	ctrlConnect.MoveWindow(rc);
 
 }
-
-/**
- * @file
- * $Id: FavoritesFrm.cpp,v 1.38 2005/10/12 14:02:53 arnetheduck Exp $
- */

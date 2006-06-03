@@ -478,9 +478,9 @@ void AES::decrypt(const byte* inBlock, const byte* xorBlock,
             AS2(    mov   ebp, DWORD PTR [ebp + 20]     )
 
         #define EPILOG()  \
+            AS2(    mov  esi, [ebp - 4]             )   \
             AS2(    mov  esp, ebp                   )   \
             AS2(    movd ebx, mm4                   )   \
-            AS2(    mov  esi, [ebp - 4]             )   \
             AS2(    movd edi, mm3                   )   \
             AS1(    emms                            )   \
             asm(".att_syntax");

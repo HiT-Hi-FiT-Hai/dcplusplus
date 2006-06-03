@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +32,14 @@ public:
 	MerkleCheckOutputStream(const TreeType& aTree, OutputStream* aStream, int64_t start) : s(aStream), real(aTree), cur(aTree.getBlockSize()), verified(0), bufPos(0) {
 		// Only start at block boundaries
 		dcassert(start % aTree.getBlockSize() == 0);
-		// Sanity check
-		dcassert(aTree.getLeaves().size() > (size_t)(start / aTree.getBlockSize()));
 		cur.setFileSize(start);
-		cur.getLeaves().insert(cur.getLeaves().begin(), aTree.getLeaves().begin(), aTree.getLeaves().begin() + (size_t)(start / aTree.getBlockSize()));
+
+		size_t nBlocks = static_cast<size_t>(start / aTree.getBlockSize());
+		if(nBlocks > aTree.getLeaves().size()) {
+			dcdebug("Invalid tree / parameters");
+			return;
+		}
+		cur.getLeaves().insert(cur.getLeaves().begin(), aTree.getLeaves().begin(), aTree.getLeaves().begin() + nBlocks);
 	}
 
 	virtual ~MerkleCheckOutputStream() throw() { if(managed) delete s; }
@@ -113,8 +117,3 @@ private:
 };
 
 #endif // !defined(MERKLE_CHECK_OUTPUT_STREAM_H)
-
-/**
- * @file
- * $Id: MerkleCheckOutputStream.h,v 1.5 2006/02/19 16:19:06 arnetheduck Exp $
- */

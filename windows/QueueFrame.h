@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,16 +133,7 @@ public:
 		return 0;
 	}
 
-	void onTab() {
-		if(showTree) {
-			HWND focus = ::GetFocus();
-			if(focus == ctrlDirs.m_hWnd) {
-				ctrlQueue.SetFocus();
-			} else if(focus == ctrlQueue.m_hWnd) {
-				ctrlDirs.SetFocus();
-			}
-		}
-	}
+	void onTab();
 
 	LRESULT onShowTree(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
@@ -389,14 +380,7 @@ private:
 
 	void moveNode(HTREEITEM item, HTREEITEM parent);
 
-	void clearTree(HTREEITEM item) {
-		HTREEITEM next = ctrlDirs.GetChildItem(item);
-		while(next != NULL) {
-			clearTree(next);
-			next = ctrlDirs.GetNextSiblingItem(next);
-		}
-		delete (tstring*)ctrlDirs.GetItemData(item);
-	}
+	void clearTree(HTREEITEM item);
 
 	void removeSelected() {
 		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
@@ -423,8 +407,3 @@ private:
 };
 
 #endif // !defined(QUEUE_FRAME_H)
-
-/**
- * @file
- * $Id: QueueFrame.h,v 1.57 2006/02/19 16:19:06 arnetheduck Exp $
- */

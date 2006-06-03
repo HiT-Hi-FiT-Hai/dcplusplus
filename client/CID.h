@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ public:
 	string& toBase32(string& tmp) const { return Encoder::toBase32(cid, sizeof(cid), tmp); }
 	
 	size_t toHash() const { return *reinterpret_cast<const size_t*>(cid); }
-	const u_int8_t* getData() const { return cid; }
+	const u_int8_t* data() const { return cid; }
 
 	bool isZero() const { return find_if(cid, cid+SIZE, bind2nd(not_equal_to<u_int8_t>(), 0)) == (cid+SIZE); }
 
@@ -61,8 +61,3 @@ private:
 };
 
 #endif // !defined(CID_H)
-
-/**
- * @file
- * $Id: CID.h,v 1.10 2006/02/10 07:56:46 arnetheduck Exp $
- */

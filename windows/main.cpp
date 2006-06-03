@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,8 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		}
 	}
 
-	if(wndMain.CreateEx(NULL, rc, 0, WS_EX_RTLREADING | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) == NULL) {
+	int rtl = ResourceManager::getInstance()->isRTL() ? WS_EX_RTLREADING : 0;
+	if(wndMain.CreateEx(NULL, rc, 0, rtl | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) == NULL) {
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
@@ -354,8 +355,3 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
 	return nRet;
 }
-
-/**
- * @file
- * $Id: main.cpp,v 1.42 2006/02/18 23:32:17 arnetheduck Exp $
- */

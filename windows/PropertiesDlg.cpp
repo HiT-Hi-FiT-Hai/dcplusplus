@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,16 +43,16 @@ PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertyShee
 	pages[n++] = new GeneralPage(s);
 	pages[n++] = new NetworkPage(s);
 	pages[n++] = new DownloadPage(s);
+	pages[n++] = new FavoriteDirsPage(s);
+	pages[n++] = new QueuePage(s);
 	pages[n++] = new UploadPage(s);
 	pages[n++] = new AppearancePage(s);
 	pages[n++] = new Appearance2Page(s);
 	pages[n++] = new WindowsPage(s);
-	pages[n++] = new LogPage(s);
 	pages[n++] = new AdvancedPage(s);
+	pages[n++] = new LogPage(s);
 	pages[n++] = new Advanced3Page(s);
 	pages[n++] = new UCPage(s);
-	pages[n++] = new FavoriteDirsPage(s);
-	pages[n++] = new QueuePage(s);
 	pages[n++] = new CertificatesPage(s);
 
 	for(int i=0; i<numPages; i++) {
@@ -89,9 +89,3 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	bHandled = FALSE;
 	return TRUE;
 }
-
-/**
- * @file
- * $Id: PropertiesDlg.cpp,v 1.20 2006/01/05 00:11:31 arnetheduck Exp $
- */
-

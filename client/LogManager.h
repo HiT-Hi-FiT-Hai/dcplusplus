@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,8 @@ public:
 		string path = SETTING(LOG_DIRECTORY);
 		string msg;
 	
-		path += Util::formatParams(getSetting(area, FILE), params);
-		msg = Util::formatParams(getSetting(area, FORMAT), params);
+		path += Util::formatParams(getSetting(area, FILE), params, true);
+		msg = Util::formatParams(getSetting(area, FORMAT), params, false);
 
 		log(path, msg);
 	}
@@ -121,8 +121,3 @@ private:
 #define LOG(area, msg) LogManager::getInstance()->log(area, msg)
 
 #endif // !defined(LOG_MANAGER_H)
-
-/**
- * @file
- * $Id: LogManager.h,v 1.22 2006/02/19 17:19:04 arnetheduck Exp $
- */

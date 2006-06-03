@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@ public:
 		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
 		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
+		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClick)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
@@ -64,6 +66,8 @@ public:
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
@@ -85,6 +89,7 @@ private:
 		COLUMN_HUB,
 		COLUMN_SEEN,
 		COLUMN_DESCRIPTION,
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 
@@ -135,8 +140,3 @@ private:
 };
 
 #endif // !defined(USERS_FRAME_H)
-
-/**
- * @file
- * $Id: UsersFrame.h,v 1.29 2006/02/19 16:19:06 arnetheduck Exp $
- */

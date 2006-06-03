@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,6 @@
 
 #include "../client/ADLSearch.h"
 
-#define ADLLIST_MESSAGE_MAP 6
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //	Class that represent an ADL search manager interface
@@ -49,7 +47,7 @@ public:
 	typedef MDITabChildWindowImpl<ADLSearchFrame> baseClass;
 
 	// Constructor/destructor
-	ADLSearchFrame() : listContainer(WC_LISTBOX, this, ADLLIST_MESSAGE_MAP) {}
+	ADLSearchFrame() {}
 	virtual ~ADLSearchFrame() { }
 
 	// Frame window declaration
@@ -71,9 +69,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown)
 		NOTIFY_HANDLER(IDC_ADLLIST, NM_DBLCLK, onDoubleClickList)
 		NOTIFY_HANDLER(IDC_ADLLIST, LVN_ITEMCHANGED, onItemChanged)
+		NOTIFY_HANDLER(IDC_ADLLIST, LVN_KEYDOWN, onKeyDown)
 		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(ADLLIST_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
 	END_MSG_MAP()
 
 	// Message handlers
@@ -88,6 +85,7 @@ public:
 	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onDoubleClickList(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	
@@ -125,7 +123,6 @@ private:
 	CButton ctrlMoveDown;
 	CButton ctrlHelp;
 	CMenu contextMenu;
-	CContainedWindow listContainer;
 
 	// Column order
 	enum 
@@ -145,8 +142,3 @@ private:
 };
 
 #endif // !defined(ADL_SEARCH_FRAME_H)
-
-/**
- * @file
- * $Id: ADLSearchFrame.h,v 1.13 2006/02/19 16:19:06 arnetheduck Exp $
- */

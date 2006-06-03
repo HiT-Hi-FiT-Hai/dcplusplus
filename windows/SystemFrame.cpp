@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,3 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 	ctrlPad.AppendText((Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg).c_str());
 
 }
-/**
- * @file
- * $Id: SystemFrame.cpp,v 1.5 2006/01/11 21:31:01 arnetheduck Exp $
- */

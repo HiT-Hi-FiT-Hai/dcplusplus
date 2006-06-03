@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,10 +112,11 @@ StringList ClientManager::getNicks(const CID& cid) {
 	if(lst.empty()) {
 		// Offline perhaps?
 		UserIter i = users.find(cid);
-		if(i != users.end())
+		if(i != users.end() && !i->second->getFirstNick().empty()) {
 			lst.push_back(i->second->getFirstNick());
-		else
+		} else {
 			lst.push_back('{' + cid.toBase32() + '}');
+		}
 	}
 	return lst;
 }
@@ -311,12 +312,18 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(cid);
 	if(i != onlineUsers.end()) {
-		OnlineUser* u = i->second;
-		if(cmd.getType() == AdcCommand::TYPE_UDP && !u->getIdentity().isUdpActive()) {
+		OnlineUser& u = *i->second;
+		if(cmd.getType() == AdcCommand::TYPE_UDP && !u.getIdentity().isUdpActive()) {
 			cmd.setType(AdcCommand::TYPE_DIRECT);
+			cmd.setTo(u.getIdentity().getSID());
+			u.getClient().send(cmd);
+		} else {
+			try {
+				s.writeTo(u.getIdentity().getIp(), static_cast<short>(Util::toInt(u.getIdentity().getUdpPort())), cmd.toString(getMe()->getCID()));
+			} catch(const SocketException&) {
+				dcdebug("Socket exception sending ADC UDP command\n");
+			}
 		}
-		cmd.setTo(u->getSID());
-		u->getClient().send(cmd);
 	}
 }
 
@@ -391,7 +398,7 @@ void ClientManager::userCommand(const User::Ptr& p, const ::UserCommand& uc, Str
 	ou.getClient().getHubIdentity().getParams(params, "hub", false);
 	ou.getClient().getMyIdentity().getParams(params, "my", compatibility);
 	ou.getClient().escapeParams(params);
-	ou.getClient().sendUserCmd(Util::formatParams(uc.getCommand(), params));
+	ou.getClient().sendUserCmd(Util::formatParams(uc.getCommand(), params, false));
 }
 
 void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc, const CID& from) throw() {
@@ -403,7 +410,7 @@ Identity ClientManager::getIdentity(const User::Ptr& aUser) {
 	if(i != onlineUsers.end()) {
 		return i->second->getIdentity();
 	}
-	return Identity(aUser, Util::emptyString);
+	return Identity(aUser, Util::emptyString, 0);
 }
 
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
@@ -452,7 +459,7 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 }
 
-void ClientManager::on(Save, SimpleXML*) throw() {
+void ClientManager::save() {
 	Lock l(cs);
 
 	try {
@@ -485,6 +492,10 @@ void ClientManager::on(Save, SimpleXML*) throw() {
 	}
 }
 
+void ClientManager::on(Save, SimpleXML*) throw() {
+	save();
+}
+
 User::Ptr& ClientManager::getMe() {
 	if(!me) {
 		Lock l(cs);
@@ -504,7 +515,7 @@ const CID& ClientManager::getMyPID() {
 
 CID ClientManager::getMyCID() {
 	TigerHash tiger;
-	tiger.update(getMyPID().getData(), CID::SIZE);
+	tiger.update(getMyPID().data(), CID::SIZE);
 	return CID(tiger.finalize());
 }
 
@@ -566,8 +577,3 @@ void ClientManager::updateCachedIp() {
 	if(clients.size() > 0)
 		cachedIp = (*clients.begin())->getLocalIp();
 }
-
-/**
- * @file
- * $Id: ClientManager.cpp,v 1.97 2006/02/19 23:51:31 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,8 +80,3 @@ private:
 };
 
 #endif // !defined(_Z_UTILS_H)
-
-/**
- * @file
- * $Id: ZUtils.h,v 1.8 2005/04/24 08:13:11 arnetheduck Exp $
- */

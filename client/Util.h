@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,6 +268,7 @@ public:
 
 	static void decodeUrl(const string& aUrl, string& aServer, u_int16_t& aPort, string& aFile);
 	static string validateFileName(string aFile);
+	static string cleanPathChars(string aNick);
 	
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));
@@ -330,7 +331,7 @@ public:
 		return buf;
 	}
 
-	static string formatParams(const string& msg, StringMap& params);
+	static string formatParams(const string& msg, StringMap& params, bool filter);
 	static string formatTime(const string &msg, const time_t t);
 
 	static int64_t toInt64(const string& aString) {
@@ -465,6 +466,7 @@ public:
 	 * @return First position found or string::npos
 	 */
 	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) throw();
+	static wstring::size_type findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type start = 0) throw();
 
 	/* Utf-8 versions of strnicmp and stricmp, unicode char code order (!) */
 	static int stricmp(const char* a, const char* b);
@@ -604,8 +606,3 @@ struct noCaseStringLess {
 };
 
 #endif // !defined(UTIL_H)
-
-/**
- * @file
- * $Id: Util.h,v 1.128 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -29,6 +29,7 @@
 #include "asn.hpp"  // provide crypto wrapper??
 
 
+
 namespace yaSSL {
 
 
@@ -111,11 +112,15 @@ void ClientDiffieHellmanPublic::build(SSL& ssl)
     uint keyLength = dhClient.get_agreedKeyLength(); // pub and agree same
 
     alloc(keyLength, true);
-    dhClient.makeAgreement(dhServer.get_publicKey());
+    dhClient.makeAgreement(dhServer.get_publicKey(), keyLength);
     c16toa(keyLength, Yc_);
     memcpy(Yc_ + KEY_OFFSET, dhClient.get_publicKey(), keyLength);
 
-    ssl.set_preMaster(dhClient.get_agreedKey(), keyLength);
+    // because of encoding first byte might be zero, don't use it for preMaster
+    if (*dhClient.get_agreedKey() == 0) 
+        ssl.set_preMaster(dhClient.get_agreedKey() + 1, keyLength - 1);
+    else
+        ssl.set_preMaster(dhClient.get_agreedKey(), keyLength);
 }
 
 
@@ -269,10 +274,14 @@ void ClientDiffieHellmanPublic::read(SSL& ssl, input_buffer& input)
     ato16(tmp, keyLength);
 
     alloc(keyLength);
-    input.read(Yc_, length_);
-    dh.makeAgreement(Yc_);
+    input.read(Yc_, keyLength);
+    dh.makeAgreement(Yc_, keyLength); 
 
-    ssl.set_preMaster(dh.get_agreedKey(), keyLength);
+    // because of encoding, first byte might be 0, don't use for preMaster 
+    if (*dh.get_agreedKey() == 0) 
+        ssl.set_preMaster(dh.get_agreedKey() + 1, dh.get_agreedKeyLength() - 1);
+    else
+        ssl.set_preMaster(dh.get_agreedKey(), dh.get_agreedKeyLength());
     ssl.makeMasterSecret();
 }
 
@@ -438,7 +447,7 @@ void Parameters::SetSuites(ProtocolVersion pv)
     int i = 0;
     // available suites, best first
     // when adding more, make sure cipher_names is updated and
-    //      MAX_CIPHER_LIST is big enough
+    //      MAX_CIPHERS is big enough
 
     if (isTLS(pv)) {
         suites_[i++] = 0x00;
@@ -510,13 +519,10 @@ void Parameters::SetCipherNames()
 
     for (int j = 0; j < suites; j++) {
         int index = suites_[j*2 + 1];  // every other suite is suite id
-        int len = strlen(cipher_names[index]);
-        memcpy(&cipher_list_[pos], cipher_names[index], len);
-        pos += len;
-        cipher_list_[pos++] = ':';
+        int len = strlen(cipher_names[index]) + 1;
+        strncpy(cipher_list_[pos++], cipher_names[index], len);
     }
-    if (suites)
-        cipher_list_[--pos] = 0;
+    cipher_list_[pos][0] = 0;
 }
 
 
@@ -1630,8 +1636,11 @@ output_buffer& operator<<(output_buffer& output,
 // CertificateRequest processing handler
 void CertificateRequest::Process(input_buffer&, SSL& ssl)
 {
-    if (ssl.useCrypto().use_certManager().get_cert())
-        ssl.useCrypto().use_certManager().setSendVerify();
+    CertManager& cm = ssl.useCrypto().use_certManager();
+
+    // make sure user provided cert and key before sending and using
+    if (cm.get_cert() && cm.get_privateKey())
+        cm.setSendVerify();
 }
 
 

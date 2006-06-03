@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@
 #include "WinUtil.h"
 #include "TransferView.h"
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
-int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
-ResourceManager::IP_BARE, ResourceManager::RATIO};
+ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
 
 TransferView::~TransferView() {
 	arrows.Destroy();
@@ -65,7 +65,9 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	transferMenu.CreatePopupMenu();
 	appendUserItems(transferMenu);
+	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
+	transferMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	transferMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
 	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(CLOSE_CONNECTION));
@@ -128,9 +130,10 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 }
 
 void TransferView::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
 
 	int i = -1;
 	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
@@ -339,11 +342,41 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	return 0;
 }
 
+LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+
+	if(i != -1) {
+		ItemInfo *ii = ctrlTransfers.getItemData(i);
+
+		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
+
+		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
+		QueueItem::StringIter qi = queue.find(&tmp);
+
+		//create a copy of the tth to avoid holding the filequeue lock while calling
+		//into searchframe, searchmanager and all of that
+		TTHValue *val = NULL;
+		if(qi != queue.end() && qi->second->getTTH()) {
+			val = new TTHValue(*qi->second->getTTH());
+		}
+
+		QueueManager::getInstance()->unlockQueue();
+
+		if(val) {
+			WinUtil::searchHash(val);
+			delete val;
+		} 
+	}
+
+	return 0;
+}
+
 TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
 	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0) 
 { 
 	columns[COLUMN_USER] = WinUtil::getNicks(u);
 	columns[COLUMN_HUB] = WinUtil::getHubNames(u).first;
+	columns[COLUMN_CID] = Text::toT(u->getCID().toBase32());
 }
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
@@ -579,8 +612,3 @@ void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 void TransferView::ItemInfo::disconnect() {
 	ConnectionManager::getInstance()->disconnect(user, download);
 }
-
-/**
- * @file
- * $Id: TransferView.cpp,v 1.64 2006/02/19 16:19:06 arnetheduck Exp $
- */

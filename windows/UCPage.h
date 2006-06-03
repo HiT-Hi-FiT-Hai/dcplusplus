@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_CHANGE_MENU, onChangeMenu)
 		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp)
 		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown)
-		NOTIFY_HANDLER(IDC_MENU_ITEMS, BN_DOUBLECLICKED, onDblClick)
+		NOTIFY_HANDLER(IDC_MENU_ITEMS, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_MENU_ITEMS, NM_DBLCLK, onDoubleClick)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
@@ -59,10 +60,8 @@ public:
 	LRESULT onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-
-	LRESULT onDblClick(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& bHandled) {
-		return onChangeMenu(0, 0, 0, bHandled);
-	}
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -78,8 +77,3 @@ protected:
 };
 
 #endif // !defined(UC_PAGE_H)
-
-/**
- * @file
- * $Id: UCPage.h,v 1.10 2006/02/19 16:19:06 arnetheduck Exp $
- */

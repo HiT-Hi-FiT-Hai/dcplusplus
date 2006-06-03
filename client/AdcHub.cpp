@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,15 +47,10 @@ AdcHub::~AdcHub() throw() {
 }
 
 OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
-	OnlineUser* u = NULL;
-	{
-		Lock l(cs);
-
-		SIDIter i = users.find(aSID);
-		if(i != users.end())
-			return *i->second;
+	OnlineUser* u = findUser(aSID);
+	if(u) {
+		return *u;
 	}
-
 
 	User::Ptr p = ClientManager::getInstance()->getUser(aCID);
 
@@ -69,9 +64,9 @@ OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
 	return *u;
 }
 
-OnlineUser* AdcHub::findUser(const u_int32_t aSID) {
+OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
 	Lock l(cs);
-	SIDIter i = users.find(aSID);
+	SIDMap::const_iterator i = users.find(aSID);
 	return i == users.end() ? NULL : i->second;
 }
 
@@ -124,6 +119,12 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getIdentity().set(i->c_str(), i->substr(2));
 	}
 
+	if(u->getIdentity().isBot()) {
+		u->getUser()->setFlag(User::BOT);
+	} else {
+		u->getUser()->unsetFlag(User::BOT);
+	}
+
 	if(u->getUser()->getFirstNick().empty()) {
 		u->getUser()->setFirstNick(u->getIdentity().getNick());
 	}
@@ -132,12 +133,15 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getUser()->setFlag(User::SSL);
 	}
 
-	if(u->getIdentity().isHub())
+	if(u->getIdentity().isHub()) {
 		setHubIdentity(u->getIdentity());
+		fire(ClientListener::HubUpdated(), this);
+	}
 
 	if(u->getUser() == ClientManager::getInstance()->getMe()) {
 		state = STATE_NORMAL;
 		setMyIdentity(u->getIdentity());
+		updateCounts(false);
 	}
 	fire(ClientListener::UserUpdated(), this, *u);
 }
@@ -312,13 +316,22 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::SCH, AdcCommand& c) throw() {
-	SIDMap::const_iterator i = users.find(c.getFrom());
-	if(i == users.end()) {
+	OnlineUser* ou = findUser(c.getFrom());
+	if(!ou) {
 		dcdebug("Invalid user in AdcHub::onSCH\n");
 		return;
 	}
 
-	fire(ClientListener::AdcSearch(), this, c, i->second->getUser()->getCID());
+	fire(ClientListener::AdcSearch(), this, c, ou->getUser()->getCID());
+}
+
+void AdcHub::handle(AdcCommand::RES, AdcCommand& c) throw() {
+	OnlineUser* ou = findUser(c.getFrom());
+	if(!ou) {
+		dcdebug("Invalid user in AdcHub::onRES\n");
+		return;
+	}
+	SearchManager::getInstance()->onRES(c, ou->getUser());
 }
 
 void AdcHub::connect(const OnlineUser& user) {
@@ -334,9 +347,9 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
 
 	if(ClientManager::getInstance()->isActive()) {
-		send(AdcCommand(AdcCommand::CMD_CTM, user.getSID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
+		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
 	} else {
-		send(AdcCommand(AdcCommand::CMD_RCM, user.getSID()).addParam(proto));
+		send(AdcCommand(AdcCommand::CMD_RCM, user.getIdentity().getSID()).addParam(proto));
 	}
 }
 
@@ -355,7 +368,7 @@ void AdcHub::hubMessage(const string& aMessage) {
 void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) { 
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, user.getSID()).addParam(aMessage).addParam("PM", getMySID())); 
+	send(AdcCommand(AdcCommand::CMD_MSG, user.getIdentity().getSID()).addParam(aMessage).addParam("PM", getMySID())); 
 }
 
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) { 
@@ -401,8 +414,8 @@ void AdcHub::password(const string& pwd) {
 		AutoArray<u_int8_t> buf(saltBytes);
 		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
-		string cid = getMyIdentity().getUser()->getCID().toBase32();
-		th.update(cid.c_str(), cid.length());
+		CID cid = getMyIdentity().getUser()->getCID();
+		th.update(cid.data(), CID::SIZE);
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
@@ -540,8 +553,3 @@ void AdcHub::send(const AdcCommand& cmd) {
 		sendUDP(cmd);
 	send(cmd.toString(sid));
 }
-
-/**
- * @file
- * $Id: AdcHub.cpp,v 1.66 2006/02/12 18:16:12 arnetheduck Exp $
- */

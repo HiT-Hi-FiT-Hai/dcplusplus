@@ -291,9 +291,15 @@ char* SSL_get_shared_ciphers(SSL* /*ssl*/, char* buf, int len)
 }
 
 
-const char* SSL_get_cipher_list(SSL* ssl, int /*priority */)
+const char* SSL_get_cipher_list(SSL* ssl, int priority)
 {
-    return ssl->getSecurity().get_parms().cipher_list_;
+    if (priority < 0 || priority >= MAX_CIPHERS)
+        return 0;
+
+    if (ssl->getSecurity().get_parms().cipher_list_[priority][0])
+        return ssl->getSecurity().get_parms().cipher_list_[priority];
+
+    return 0;
 }
 
 

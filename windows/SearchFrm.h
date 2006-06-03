@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)
 {
 public:
 	static void openWindow(const tstring& str = Util::emptyStringW, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
+	static void closeAll();
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("SearchFrame"), IDR_SEARCH, 0, COLOR_3DFACE)
 
@@ -232,13 +233,12 @@ private:
 		COLUMN_EXACT_SIZE,
 		COLUMN_IP,
 		COLUMN_TTH,
+		COLUMN_CID,
 		COLUMN_LAST
 	};
 
 	class SearchInfo : public UserInfoBase {
 	public:
-		SearchResult* sr;
-
 		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) { 
 			sr->incRef(); update();
 		}
@@ -278,29 +278,14 @@ private:
 			tstring tth;
 		};
 
-		const tstring& getText(int col) const {
-			switch(col) {
-				case COLUMN_NICK: return nick;
-				case COLUMN_FILENAME: return fileName;
-				case COLUMN_TYPE: return type;
-				case COLUMN_SIZE: return size;
-				case COLUMN_PATH: return path;
-				case COLUMN_SLOTS: return slots;
-				case COLUMN_CONNECTION: return connection;
-				case COLUMN_HUB: return hubName;
-				case COLUMN_EXACT_SIZE: return exactSize;
-				case COLUMN_IP: return ip;
-				case COLUMN_TTH: return tth;
-				default: return Util::emptyStringT;
-			}
-		}
+		const tstring& getText(int col) const { return columns[col]; }
 
 		static int compareItems(SearchInfo* a, SearchInfo* b, int col) {
 
 			switch(col) {
 				case COLUMN_TYPE: 
 					if(a->sr->getType() == b->sr->getType())
-						return lstrcmpi(a->type.c_str(), b->type.c_str());
+						return lstrcmpi(a->columns[COLUMN_TYPE].c_str(), b->columns[COLUMN_TYPE].c_str());
 					else
 						return(a->sr->getType() == SearchResult::TYPE_DIRECTORY) ? -1 : 1;
 				case COLUMN_SLOTS: 
@@ -316,17 +301,8 @@ private:
 
 		void update();
 
-		GETSET(tstring, nick, Nick);
-		GETSET(tstring, connection, Connection)
-		GETSET(tstring, fileName, FileName);
-		GETSET(tstring, path, Path);
-		GETSET(tstring, type, Type);
-		GETSET(tstring, hubName, HubName);
-		GETSET(tstring, size, Size);
-		GETSET(tstring, slots, Slots);
-		GETSET(tstring, exactSize, ExactSize);
-		GETSET(tstring, ip, IP);
-		GETSET(tstring, tth, TTH);
+		SearchResult* sr;
+		tstring columns[COLUMN_LAST];
 	};
 
 	struct HubInfo : public FastAlloc<HubInfo> {
@@ -408,11 +384,19 @@ private:
 
 	bool closed;
 
+	StringMap ucLineParams;
+
 	static int columnIndexes[];
 	static int columnSizes[];
 
 	// Timer ID, needed to turn off timer
 	UINT timerID;
+
+	typedef map<HWND, SearchFrame*> FrameMap;
+	typedef FrameMap::iterator FrameIter;
+	typedef pair<HWND, SearchFrame*> FramePair;
+
+	static FrameMap frames;
 
 	void downloadSelected(const tstring& aDir, bool view = false); 
 	void downloadWholeSelected(const tstring& aDir);
@@ -442,8 +426,3 @@ private:
 };
 
 #endif // !defined(SEARCH_FRM_H)
-
-/**
- * @file
- * $Id: SearchFrm.h,v 1.66 2006/02/19 16:19:06 arnetheduck Exp $
- */

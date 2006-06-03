@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		}
 
-		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && start > 0) {
+		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && start > 0 &&
+		   (d->getTigerTree().getLeaves().size() > 32 || // 32 leaves is 5 levels
+		    d->getTigerTree().getBlockSize() * 10 < d->getSize())) 
+		{
 			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), start));
 		} else {
 			int rollback = SETTING(ROLLBACK);
@@ -324,9 +327,10 @@ public:
 
 int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, int64_t startPos) {
 	// Always discard data until the last block
-	startPos = startPos - (startPos % tt.getBlockSize());
 	if(startPos < tt.getBlockSize())
 		return 0;
+
+	startPos -= (startPos % tt.getBlockSize());
 
 	DummyOutputStream dummy;
 
@@ -334,9 +338,10 @@ int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, i
 
 	do {
 		int64_t blockPos = startPos - tt.getBlockSize();
-		MerkleCheckOutputStream<TigerTree, false> check(tt, &dummy, blockPos);
 
 		try {
+			MerkleCheckOutputStream<TigerTree, false> check(tt, &dummy, blockPos);
+
 			File inFile(file, File::READ, File::OPEN);
 			inFile.setPos(blockPos);
 			int64_t bytesLeft = tt.getBlockSize();
@@ -941,8 +946,3 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);
 }
-
-/**
- * @file
- * $Id: DownloadManager.cpp,v 1.160 2006/02/19 16:19:06 arnetheduck Exp $
- */

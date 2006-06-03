@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 AdcCommand::AdcCommand(u_int32_t aCmd, char aType /* = TYPE_CLIENT */) : cmdInt(aCmd), from(0), type(aType) { }
 AdcCommand::AdcCommand(u_int32_t aCmd, const u_int32_t aTarget) : cmdInt(aCmd), from(0), to(aTarget), type(TYPE_DIRECT) { }
 AdcCommand::AdcCommand(Severity sev, Error err, const string& desc, char aType /* = TYPE_CLIENT */) : cmdInt(CMD_STA), from(0), type(aType) {
-	addParam(Util::toString(sev) + Util::toString(err));
+	addParam(Util::toString(sev * 100 + err));
 	addParam(desc);
 }
 AdcCommand::AdcCommand(const string& aLine, bool nmdc /* = false */) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
@@ -222,8 +222,3 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 	}
 	return false;
 }
-
-/**
- * @file
- * $Id: AdcCommand.cpp,v 1.18 2006/02/19 20:39:20 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,6 +85,33 @@ LRESULT FavoriteDirsPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh,
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
+	return 0;
+}
+
+LRESULT FavoriteDirsPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
+LRESULT FavoriteDirsPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+
+	if(item->iItem >= 0) {
+		PostMessage(WM_COMMAND, IDC_RENAME, 0);
+	} else if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
+	}
+
 	return 0;
 }
 
@@ -177,8 +204,3 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 		}
 	}
 }
-
-/**
- * @file
- * $Id: FavoriteDirsPage.cpp,v 1.8 2005/04/24 08:13:03 arnetheduck Exp $
- */

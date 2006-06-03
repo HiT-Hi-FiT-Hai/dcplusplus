@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -242,7 +242,7 @@ public:
 	void error(const string& aError) { send("$Error " + aError + '|'); }
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
 	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full")); }
-	void fileNotAvail() { isSet(FLAG_NMDC) ? send("$Error " + FILE_NOT_AVAILABLE + "|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE)); }
+	void fileNotAvail(const std::string& msg = FILE_NOT_AVAILABLE) { isSet(FLAG_NMDC) ? send("$Error " + msg + "|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, msg)); }
 
 	// ADC Stuff
 	void sup(const StringList& features) { 
@@ -361,8 +361,3 @@ private:
 };
 
 #endif // !defined(USER_CONNECTION_H)
-
-/**
- * @file
- * $Id: UserConnection.h,v 1.107 2006/02/19 17:19:04 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@
 
 #include "HubFrame.h"
 
-int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION };
-int UsersFrame::columnSizes[] = { 200, 300, 150, 200 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION };
+int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION, COLUMN_CID };
+int UsersFrame::columnSizes[] = { 200, 300, 150, 200, 125 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION, ResourceManager::CID };
 
 LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -151,6 +151,33 @@ LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 	return 0;
 }
 
+LRESULT UsersFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+
+	if(item->iItem != -1) {
+		PostMessage(WM_COMMAND, IDC_GETLIST, 0);
+	} else {
+		bHandled = FALSE;
+	}
+
+	return 0;
+}
+
+LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	case VK_RETURN:
+		PostMessage(WM_COMMAND, IDC_EDIT, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
 LRESULT UsersFrame::onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
 	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
@@ -216,6 +243,7 @@ void UsersFrame::UserInfo::update(const FavoriteUser& u) {
 	columns[COLUMN_HUB] = user->isOnline() ? WinUtil::getHubNames(u.getUser()).first : Text::toT(u.getUrl());
 	columns[COLUMN_SEEN] = user->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
 	columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
+	columns[COLUMN_CID] = Text::toT(u.getUser()->getCID().toBase32());
 }
 
 LRESULT UsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -226,8 +254,3 @@ LRESULT UsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	}
 	return 0;
 }
-
-/**
- * @file
- * $Id: UsersFrame.cpp,v 1.43 2006/01/01 17:49:59 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ public:
 		ERROR_CID_TAKEN = 24,
 		ERROR_COMMAND_ACCESS = 25,
 		ERROR_REGGED_ONLY = 26,
+		ERROR_INVALID_PID = 27,
 		ERROR_BANNED_GENERIC = 30,
 		ERROR_PERM_BANNED = 31,
 		ERROR_TEMP_BANNED = 32,
@@ -56,6 +57,8 @@ public:
 		ERROR_PROTOCOL_UNSUPPORTED = 41,
 		ERROR_INF_MISSING = 42,
 		ERROR_BAD_STATE = 43,
+		ERROR_FEATURE_MISSING = 44,
+		ERROR_BAD_IP = 45,
 		ERROR_TRANSFER_GENERIC = 50,
 		ERROR_FILE_NOT_AVAILABLE = 51,
 		ERROR_FILE_PART_NOT_AVAILABLE = 52,
@@ -201,8 +204,3 @@ public:
 };
 
 #endif // !defined(ADC_COMMAND_H)
-
-/**
- * @file
- * $Id: AdcCommand.h,v 1.29 2006/02/19 20:39:20 arnetheduck Exp $
- */

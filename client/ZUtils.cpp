@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,8 +125,3 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 	insize = insize - zs.avail_in;
 	return err == Z_OK;
 }
-
-/**
- * @file
- * $Id: ZUtils.cpp,v 1.10 2006/01/29 18:48:25 arnetheduck Exp $
- */

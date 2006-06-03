@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@
 #include <fnmatch.h>
 #endif
 
-const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
+const string QueueManager::USER_LIST_NAME = "files.xml";
 
 namespace {
 	const string TEMP_EXTENSION = ".dctmp";
@@ -81,7 +81,7 @@ const string& QueueItem::getTempTarget() {
 				sm["targetdrive"] = target.substr(0, 3);
 			else
 				sm["targetdrive"] = Util::getConfigPath().substr(0, 3);
-			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
+			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm, true) + getTempName(getTargetFileName(), getTTH()));
 #else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
 #endif //_WIN32
@@ -484,7 +484,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
-			q = fileQueue.add(target, aSize, aFlags, QueueItem::NORMAL, Util::emptyString, 0, GET_TIME(), root);
+			q = fileQueue.add(target, aSize, aFlags, QueueItem::DEFAULT, Util::emptyString, 0, GET_TIME(), root);
 			fire(QueueManagerListener::Added(), q);
 		} else {
 			if(q->getSize() != aSize) {
@@ -899,7 +899,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 					}
 				}
 			} else if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-				if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
+				if(!aDownload->getTempTarget().empty() && (aDownload->isSet(Download::FLAG_USER_LIST) || aDownload->getTempTarget() != aDownload->getTarget())) {
 					File::deleteFile(aDownload->getTempTarget() + Download::ANTI_FRAG_EXT);
 					File::deleteFile(aDownload->getTempTarget());
 				}
@@ -1179,6 +1179,8 @@ void QueueManager::saveQueue() throw() {
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
 
+		ClientManager::getInstance()->save();
+
 		dirty = false;
 	} catch(const FileException&) {
 		// ...
@@ -1383,8 +1385,3 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 		saveQueue();
 	}
 }
-
-/**
- * @file
- * $Id: QueueManager.cpp,v 1.146 2006/02/19 16:19:06 arnetheduck Exp $
- */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,17 +30,26 @@
 TStringList SearchFrame::lastSearches;
 
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
-	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH };
-int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 100, 125 };
+	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH, COLUMN_CID };
+int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 100, 125, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::USER, ResourceManager::TYPE, ResourceManager::SIZE, 
 	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION, 
-	ResourceManager::HUB, ResourceManager::EXACT_SIZE, ResourceManager::IP_BARE, ResourceManager::TTH_ROOT };
+	ResourceManager::HUB, ResourceManager::EXACT_SIZE, ResourceManager::IP_BARE, ResourceManager::TTH_ROOT, ResourceManager::CID };
+
+SearchFrame::FrameMap SearchFrame::frames;
 
 void SearchFrame::openWindow(const tstring& str /* = Util::emptyString */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY ( 0 ) */) {
 	SearchFrame* pChild = new SearchFrame();
 	pChild->setInitial(str, size, mode, type);
 	pChild->CreateEx(WinUtil::mdiClient);
+
+	frames.insert( FramePair(pChild->m_hWnd, pChild) );
+}
+
+void SearchFrame::closeAll() {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		::PostMessage(i->first, WM_CLOSE, 0, 0);
 }
 
 LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -407,7 +416,7 @@ LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(Util::getTempPath() + Text::fromT(fileName), 
+			QueueManager::getInstance()->add(Util::getTempPath() + Text::fromT(columns[COLUMN_FILENAME]), 
 				sr->getSize(), sr->getTTH(), sr->getUser(), sr->getFile(), 
 				sr->getUtf8(), QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
 		}
@@ -418,7 +427,7 @@ void SearchFrame::SearchInfo::view() {
 void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			string target = Text::fromT(tgt + si->fileName);
+			string target = Text::fromT(tgt + si->columns[COLUMN_FILENAME]);
 			QueueManager::getInstance()->add(target, si->sr->getSize(), 
 				si->sr->getTTH(), si->sr->getUser(), si->sr->getFile(), 
 				si->sr->getUtf8());
@@ -436,7 +445,7 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->addDirectory(Text::fromT(si->path), si->sr->getUser(), Text::fromT(tgt),
+			QueueManager::getInstance()->addDirectory(Text::fromT(si->columns[COLUMN_PATH]), si->sr->getUser(), Text::fromT(tgt),
 				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
@@ -466,7 +475,7 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 
 void SearchFrame::SearchInfo::getList() {
 	try {
-		WinUtil::addInitalDir(sr->getUser(), Text::fromT(getPath()));
+		WinUtil::addInitalDir(sr->getUser(), Text::fromT(columns[COLUMN_PATH]));
 		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW);
 	} catch(const Exception&) {
 		// Ignore for now...
@@ -475,20 +484,20 @@ void SearchFrame::SearchInfo::getList() {
 
 void SearchFrame::SearchInfo::browseList() {
 	try {
-		QueueManager::getInstance()->addPfs(sr->getUser(), Text::fromT(getPath()));
+		QueueManager::getInstance()->addPfs(sr->getUser(), Text::fromT(columns[COLUMN_PATH]));
 	} catch(const Exception&) {
 		// Ignore for now...
 	}
 }
 
 void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
-	if(!si->getTTH().empty()) {
+	if(!si->columns[COLUMN_TTH].empty()) {
 		if(firstTTH) {
-			tth = si->getTTH();
+			tth = si->columns[COLUMN_TTH];
 			hasTTH = true;
 			firstTTH = false;
 		} else if(hasTTH) {
-			if(tth != si->getTTH()) {
+			if(tth != si->columns[COLUMN_TTH]) {
 				hasTTH = false;
 			}
 		} 
@@ -499,10 +508,10 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 
 	if(si->sr->getType() == SearchResult::TYPE_FILE) {
 		if(ext.empty()) {
-			ext = Util::getFileExt(si->fileName);
+			ext = Util::getFileExt(si->columns[COLUMN_FILENAME]);
 			size = si->sr->getSize();
 		} else if(size != -1) {
-			if((si->sr->getSize() != size) || (Util::stricmp(ext, Util::getFileExt(si->fileName)) != 0)) {
+			if((si->sr->getSize() != size) || (Util::stricmp(ext, Util::getFileExt(si->columns[COLUMN_FILENAME])) != 0)) {
 				size = -1;
 			}
 		}
@@ -526,7 +535,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		SearchResult* sr = si->sr;
 
 		if(sr->getType() == SearchResult::TYPE_FILE) {
-			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + si->getFileName();
+			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + si->columns[COLUMN_FILENAME];
 			if(WinUtil::browseFile(target, m_hWnd)) {
 				WinUtil::addLastDir(Util::getFilePath(target));
 				ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(target));
@@ -608,6 +617,8 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		SearchManager::getInstance()->removeListener(this);
  		ClientManager* clientMgr = ClientManager::getInstance();
  		clientMgr->removeListener(this);
+
+		frames.erase(m_hWnd);
 
 		closed = true;
 		PostMessage(WM_CLOSE);
@@ -768,9 +779,11 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 }
 
 void SearchFrame::runUserCommand(UserCommand& uc) {
-	StringMap ucParams;
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
+
+	StringMap ucParams = ucLineParams;
+
 	set<CID> users;
 
 	int sel = -1;
@@ -830,9 +843,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 		}
 		break;
 	case VK_RETURN:
-		if( (GetKeyState(VK_SHIFT) & 0x8000) || 
-			(GetKeyState(VK_CONTROL) & 0x8000) || 
-			(GetKeyState(VK_MENU) & 0x8000) ) {
+		if( WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt() ) {
 			bHandled = FALSE;
 		} else {
 			if(uMsg == WM_KEYDOWN) {
@@ -1140,42 +1151,40 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 void SearchFrame::SearchInfo::update() { 
 	if(sr->getType() == SearchResult::TYPE_FILE) {
 		if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-			fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+			columns[COLUMN_FILENAME] = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 		} else {
-			fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
-			path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+			columns[COLUMN_FILENAME] = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+			columns[COLUMN_PATH] = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
 		}
 
-		type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
-		if(!type.empty() && type[0] == _T('.'))
-			type.erase(0, 1);
-		size = Text::toT(Util::formatBytes(sr->getSize()));
-		exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
+		columns[COLUMN_TYPE] = Text::toT(Util::getFileExt(Text::fromT(columns[COLUMN_FILENAME])));
+		if(!columns[COLUMN_TYPE].empty() && columns[COLUMN_TYPE][0] == _T('.'))
+			columns[COLUMN_TYPE].erase(0, 1);
+		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
+		columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
 	} else {
-		fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
-		path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
-		type = TSTRING(DIRECTORY);
+		columns[COLUMN_FILENAME] = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
+		columns[COLUMN_PATH] = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+		columns[COLUMN_TYPE] = TSTRING(DIRECTORY);
 		if(sr->getSize() > 0) {
-			size = Text::toT(Util::formatBytes(sr->getSize()));
-			exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
+			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
+			columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
 		}
 	}
-	nick = WinUtil::getNicks(sr->getUser());
-	connection = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
-	hubName = Text::toT(sr->getHubName());
-	slots = Text::toT(sr->getSlotString());
-	ip = Text::toT(sr->getIP());
-	if (!ip.empty()) {
+	columns[COLUMN_NICK] = WinUtil::getNicks(sr->getUser());
+	columns[COLUMN_CONNECTION] = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
+	columns[COLUMN_HUB] = Text::toT(sr->getHubName());
+	columns[COLUMN_SLOTS] = Text::toT(sr->getSlotString());
+	columns[COLUMN_IP] = Text::toT(sr->getIP());
+	if (!columns[COLUMN_IP].empty()) {
 		// Only attempt to grab a country mapping if we actually have an IP address
 		tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
 		if(!tmpCountry.empty())
-			ip = tmpCountry + _T(" (") + ip + _T(")");
+			columns[COLUMN_IP] = tmpCountry + _T(" (") + columns[COLUMN_IP] + _T(")");
 	}
-	if(sr->getTTH() != NULL)
-		setTTH(Text::toT(sr->getTTH()->toBase32()));
-}
+	if(sr->getTTH() != NULL) {
+		columns[COLUMN_TTH] = Text::toT(sr->getTTH()->toBase32());
+	}
+	columns[COLUMN_CID] = Text::toT(sr->getUser()->getCID().toBase32());
 
-/**
- * @file
- * $Id: SearchFrm.cpp,v 1.110 2006/02/19 16:19:06 arnetheduck Exp $
- */
+}
