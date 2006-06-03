@@ -103,6 +103,7 @@ void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
 		p = new PrivateFrame(replyTo);
 		frames[replyTo] = p;
 		p->CreateEx(WinUtil::mdiClient);
+		p->readLog();
 	} else {
 		p = i->second;
 		if(::IsIconic(p->m_hWnd))
@@ -116,9 +117,7 @@ void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
 LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	switch(wParam) {
 	case VK_RETURN:
-		if( (GetKeyState(VK_SHIFT) & 0x8000) || 
-			(GetKeyState(VK_CONTROL) & 0x8000) || 
-			(GetKeyState(VK_MENU) & 0x8000) ) {
+		if( WinUtil::isShift() || WinUtil::isCtrl() ||  WinUtil::isAlt() ) {
 			bHandled = FALSE;
 		} else {
 			if(uMsg == WM_KEYDOWN) {
@@ -415,5 +414,17 @@ void PrivateFrame::readLog() {
 			f.close();
 		}
 	} catch(const FileException&){
+	}
+}
+
+void PrivateFrame::closeAll(){
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		i->second->PostMessage(WM_CLOSE, 0, 0);
+}
+
+void PrivateFrame::closeAllOffline() {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i) {
+		if(!i->first->isOnline())
+			i->second->PostMessage(WM_CLOSE, 0, 0);
 	}
 }

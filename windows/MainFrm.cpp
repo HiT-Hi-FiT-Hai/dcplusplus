@@ -42,6 +42,7 @@
 #include "HashProgressDlg.h"
 #include "UPnP.h"
 #include "SystemFrame.h"
+#include "PrivateFrame.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -210,7 +211,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
 	if(!BOOLSETTING(SHOW_TRANSFERVIEW)) PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
 
-	if(!(GetAsyncKeyState(VK_SHIFT) & 0x8000))
+	if(!WinUtil::isShift())
 		PostMessage(WM_SPEAKER, AUTO_CONNECT);
 
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
@@ -770,7 +771,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(true);
 		}
-		if(BOOLSETTING(MINIMIZE_TRAY)) {
+		if(BOOLSETTING(MINIMIZE_TRAY) != WinUtil::isShift()) {
 			updateTray(true);
 			ShowWindow(SW_HIDE);
 		}
@@ -1021,8 +1022,14 @@ LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
-LRESULT MainFrame::onCloseDisconnected(WORD , WORD , HWND , BOOL& ) {
-	HubFrame::closeDisconnected();
+LRESULT MainFrame::onCloseWindows(WORD , WORD wID, HWND , BOOL& ) {
+	switch(wID) {
+	case IDC_CLOSE_DISCONNECTED:		HubFrame::closeDisconnected();		break;
+	case IDC_CLOSE_ALL_PM:				PrivateFrame::closeAll();			break;
+	case IDC_CLOSE_ALL_OFFLINE_PM:		PrivateFrame::closeAllOffline();	break;
+	case IDC_CLOSE_ALL_DIR_LIST:		DirectoryListingFrame::closeAll();	break;
+	case IDC_CLOSE_ALL_SEARCH_FRAME:	SearchFrame::closeAll();			break;
+	}
 	return 0;
 }
 

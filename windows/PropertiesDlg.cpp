@@ -43,16 +43,16 @@ PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertyShee
 	pages[n++] = new GeneralPage(s);
 	pages[n++] = new NetworkPage(s);
 	pages[n++] = new DownloadPage(s);
+	pages[n++] = new FavoriteDirsPage(s);
+	pages[n++] = new QueuePage(s);
 	pages[n++] = new UploadPage(s);
 	pages[n++] = new AppearancePage(s);
 	pages[n++] = new Appearance2Page(s);
 	pages[n++] = new WindowsPage(s);
-	pages[n++] = new LogPage(s);
 	pages[n++] = new AdvancedPage(s);
+	pages[n++] = new LogPage(s);
 	pages[n++] = new Advanced3Page(s);
 	pages[n++] = new UCPage(s);
-	pages[n++] = new FavoriteDirsPage(s);
-	pages[n++] = new QueuePage(s);
 	pages[n++] = new CertificatesPage(s);
 
 	for(int i=0; i<numPages; i++) {

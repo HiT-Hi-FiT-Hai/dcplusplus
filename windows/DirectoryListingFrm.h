@@ -44,6 +44,7 @@ class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame
 public:
 	static void openWindow(const tstring& aFile, const User::Ptr& aUser, int64_t aSpeed);
 	static void openWindow(const User::Ptr& aUser, const string& txt, int64_t aSpeed);
+	static void closeAll();
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 	typedef UCHandler<DirectoryListingFrame> ucBase;
@@ -163,6 +164,7 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlList.SetRedraw(FALSE);
 		clearList();
+		frames.erase(m_hWnd);
 		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::DIRECTORLISTINGFRAME_ORDER, SettingsManager::DIRECTORLISTINGFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 		bHandled = FALSE;
 		return 0;
@@ -354,6 +356,12 @@ private:
 
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
+
+	typedef map< HWND , DirectoryListingFrame* > FrameMap;
+	typedef pair< HWND , DirectoryListingFrame* > FramePair;
+	typedef FrameMap::iterator FrameIter;
+
+	static FrameMap frames;
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)

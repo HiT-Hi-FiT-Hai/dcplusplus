@@ -151,6 +151,33 @@ LRESULT UCPage::onMoveDown(WORD , WORD , HWND , BOOL& ) {
 	return 0;
 }
 
+LRESULT UCPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_INSERT:
+		PostMessage(WM_COMMAND, IDC_ADD_MENU, 0);
+		break;
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE_MENU, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
+LRESULT UCPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+
+	if(item->iItem >= 0) {
+		PostMessage(WM_COMMAND, IDC_CHANGE_MENU, 0);
+	} else if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_ADD_MENU, 0);
+	}
+
+	return 0;
+}
+
 void UCPage::addEntry(const UserCommand& uc, int pos) {
 	TStringList lst;
 	if(uc.getType() == UserCommand::TYPE_SEPARATOR)

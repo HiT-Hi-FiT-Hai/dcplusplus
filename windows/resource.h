@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Used by f:\Programmering\C++\dcplusplus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -415,6 +415,10 @@
 #define IDC_SETTINGS_AUTO_REFRESH_TIME  1420
 #define IDC_AUTO_SEARCH_LIMIT           1421
 #define IDC_SETTINGS_AUTO_SEARCH_LIMIT  1422
+#define IDC_CLOSE_ALL_PM                1423
+#define IDC_CLOSE_ALL_OFFLINE_PM        1424
+#define IDC_CLOSE_ALL_DIR_LIST          1425
+#define IDC_CLOSE_ALL_SEARCH_FRAME      1426
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

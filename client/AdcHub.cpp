@@ -404,8 +404,8 @@ void AdcHub::password(const string& pwd) {
 		AutoArray<u_int8_t> buf(saltBytes);
 		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
-		string cid = getMyIdentity().getUser()->getCID().toBase32();
-		th.update(cid.c_str(), cid.length());
+		CID cid = getMyIdentity().getUser()->getCID();
+		th.update(cid.data(), CID::SIZE);
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));

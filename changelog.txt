@@ -1,4 +1,18 @@
-﻿-- 0.69 2006-05-21 --
+﻿-- 0.691 -- 
+* Links to bugzilla in html changelog
+* [bug 122] Added userlist filter (thanks trem)
+* [bug 578] Added search for alternates to transfers menu (thanks trem)
+* [bug 861] Fixed auto-prio not being set correctly (thanks trem)
+* [bug 878] Added close all ... to window menu (thanks trem)
+* [bug 903] Holding shift while minimizing will use opposite tray setting (thanks joakim tosteberg)
+* [bug 923] PM history always read (thanks trem)
+* [bug 927] Fixed OP detection bug (thanks pothead)
+* [bug 929] Fixed list view flicker issues (thanks trem)
+* [bug 931] Improved keyboard navigation (thanks trem)
+* Fixed bug when sending active ADC search results
+* Updated to ADC 0.11
+
+-- 0.69 2006-05-21 --
 * Small linux / old gcc fixes (thanks jens oknelid)
 * Fixed an issue where client could be crashed from remote
 * Fixed an issue bad nicks could cause directories to be created in log / file list download folder
@@ -10,7 +24,7 @@
 * Fixed ADC hubname display (thanks ullner)
 * Advanced TTH rollback no longer performed if tree is invalid (thanks garg)
 * Option not to auto-disconnect favorite users (thanks ullner)
-* Fixed auto-disconnect delay (thanks uller)
+* Fixed auto-disconnect delay (thanks ullner)
 * Another fix for opencow
 * Fixed user command parameters not being remembered
 * Fixed ADC op commands

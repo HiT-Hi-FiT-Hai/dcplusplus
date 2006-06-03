@@ -40,6 +40,8 @@ public:
 	static void gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
 	static void openWindow(const User::Ptr& replyTo, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); }
+	static void closeAll();
+	static void closeAllOffline();
 
 	enum {
 		USER_UPDATED

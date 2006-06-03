@@ -63,7 +63,6 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_ADLLIST);
 	ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-	listContainer.SubclassWindow(ctrlList.m_hWnd);
 
 	// Set background color
 	ctrlList.SetBkColor(WinUtil::bgColor);
@@ -197,18 +196,19 @@ void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 }
 
 // Keyboard shortcuts
-LRESULT ADLSearchFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
-	switch(wParam) 
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) 
 	{
 	case VK_INSERT:
-		onAdd(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
 		break;
 	case VK_DELETE:
-		onRemove(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
 		break;
 	case VK_RETURN:
-		onEdit(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_EDIT, 0);
 		break;
 	default:
 		bHandled = FALSE;
@@ -466,18 +466,15 @@ LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 }
 
 // Double-click on list control
-LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) 
+LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 
-	// Hit-test
-	LVHITTESTINFO info;
-	info.pt = item->ptAction;
-    int iItem = ctrlList.SubItemHitTest(&info);
-	if(iItem >= 0)
-	{
+	if(item->iItem >= 0) {
 		// Treat as onEdit command
-		onEdit(0, 0, 0, bHandled);
+		PostMessage(WM_COMMAND, IDC_EDIT, 0);
+	} else if(item->iItem == -1) {
+		PostMessage(WM_COMMAND, IDC_ADD, 0);
 	}
 
 	return 0;

@@ -312,12 +312,18 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(cid);
 	if(i != onlineUsers.end()) {
-		OnlineUser* u = i->second;
-		if(cmd.getType() == AdcCommand::TYPE_UDP && !u->getIdentity().isUdpActive()) {
+		OnlineUser& u = *i->second;
+		if(cmd.getType() == AdcCommand::TYPE_UDP && !u.getIdentity().isUdpActive()) {
 			cmd.setType(AdcCommand::TYPE_DIRECT);
+			cmd.setTo(u.getIdentity().getSID());
+			u.getClient().send(cmd);
+		} else {
+			try {
+				s.writeTo(u.getIdentity().getIp(), static_cast<short>(Util::toInt(u.getIdentity().getUdpPort())), cmd.toString(getMe()->getCID()));
+			} catch(const SocketException&) {
+				dcdebug("Socket exception sending ADC UDP command\n");
+			}
 		}
-		cmd.setTo(u->getIdentity().getSID());
-		u->getClient().send(cmd);
 	}
 }
 
@@ -509,7 +515,7 @@ const CID& ClientManager::getMyPID() {
 
 CID ClientManager::getMyCID() {
 	TigerHash tiger;
-	tiger.update(getMyPID().getData(), CID::SIZE);
+	tiger.update(getMyPID().data(), CID::SIZE);
 	return CID(tiger.finalize());
 }
 

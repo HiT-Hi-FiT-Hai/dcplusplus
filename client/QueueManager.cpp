@@ -484,7 +484,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
-			q = fileQueue.add(target, aSize, aFlags, QueueItem::NORMAL, Util::emptyString, 0, GET_TIME(), root);
+			q = fileQueue.add(target, aSize, aFlags, QueueItem::DEFAULT, Util::emptyString, 0, GET_TIME(), root);
 			fire(QueueManagerListener::Added(), q);
 		} else {
 			if(q->getSize() != aSize) {

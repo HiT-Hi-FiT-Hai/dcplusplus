@@ -226,6 +226,10 @@
 		<String Name="MenuArrange">Arrange icons</String>
 		<String Name="MenuCascade">Cascade</String>
 		<String Name="MenuChangelog">Change Log</String>
+		<String Name="MenuCloseAllDirList">Close all file list windows</String>
+		<String Name="MenuCloseAllOfflinePm">Close all offline PM windows</String>
+		<String Name="MenuCloseAllPm">Close all PM windows</String>
+		<String Name="MenuCloseAllSearchframe">Close all search windows</String>
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>

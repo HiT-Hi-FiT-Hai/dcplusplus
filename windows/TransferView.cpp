@@ -67,6 +67,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	appendUserItems(transferMenu);
 	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
+	transferMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	transferMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
 	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(CLOSE_CONNECTION));
@@ -336,6 +337,35 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		ctrlTransfers.SetRedraw(TRUE);
 		
 		for_each(v->begin(), v->end(), DeleteFunction());
+	}
+
+	return 0;
+}
+
+LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+
+	if(i != -1) {
+		ItemInfo *ii = ctrlTransfers.getItemData(i);
+
+		QueueItem::StringMap queue = QueueManager::getInstance()->lockQueue();
+
+		string tmp = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
+		QueueItem::StringIter qi = queue.find(&tmp);
+
+		//create a copy of the tth to avoid holding the filequeue lock while calling
+		//into searchframe, searchmanager and all of that
+		TTHValue *val = NULL;
+		if(qi != queue.end() && qi->second->getTTH()) {
+			val = new TTHValue(*qi->second->getTTH());
+		}
+
+		QueueManager::getInstance()->unlockQueue();
+
+		if(val) {
+			WinUtil::searchHash(val);
+			delete val;
+		} 
 	}
 
 	return 0;

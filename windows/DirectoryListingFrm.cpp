@@ -33,6 +33,7 @@
 #include "../client/User.h"
 #include "../client/ClientManager.h"
 
+DirectoryListingFrame::FrameMap DirectoryListingFrame::frames;
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
 int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
 
@@ -55,6 +56,7 @@ void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aU
 			frame->CreateEx(WinUtil::mdiClient);
 		}
 		frame->loadFile(aFile);
+		frames.insert( FramePair( frame->m_hWnd, frame ) );
 	}
 }
 
@@ -71,6 +73,7 @@ void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt
 			frame->CreateEx(WinUtil::mdiClient);
 		}
 		frame->loadXML(txt);
+		frames.insert( FramePair( frame->m_hWnd, frame ) );
 	}
 }
 
@@ -779,7 +782,7 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
 			dcassert(newId < (int)WinUtil::lastDirs.size());
-			dl->download(dir, Text::fromT(WinUtil::lastDirs[newId]), (GetKeyState(VK_SHIFT) & 0x8000) > 0);
+			dl->download(dir, Text::fromT(WinUtil::lastDirs[newId]), WinUtil::isShift());
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(STATUS_TEXT, Text::toT(e.getError()).c_str());
 		}
@@ -1079,4 +1082,9 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		User::Ptr tmpPtr = dl->getUser();
 		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
 	}
+}
+
+void DirectoryListingFrame::closeAll(){
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		i->second->PostMessage(WM_CLOSE, 0, 0);
 }

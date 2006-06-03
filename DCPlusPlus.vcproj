@@ -487,6 +487,9 @@
 				RelativePath=".\windows\MainFrm.h">
 			</File>
 			<File
+				RelativePath=".\windows\memdc.h">
+			</File>
+			<File
 				RelativePath=".\windows\NetworkPage.h">
 			</File>
 			<File

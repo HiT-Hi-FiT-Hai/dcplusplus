@@ -37,10 +37,19 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, Resourc
 	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION, 
 	ResourceManager::HUB, ResourceManager::EXACT_SIZE, ResourceManager::IP_BARE, ResourceManager::TTH_ROOT, ResourceManager::CID };
 
+SearchFrame::FrameMap SearchFrame::frames;
+
 void SearchFrame::openWindow(const tstring& str /* = Util::emptyString */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY ( 0 ) */) {
 	SearchFrame* pChild = new SearchFrame();
 	pChild->setInitial(str, size, mode, type);
 	pChild->CreateEx(WinUtil::mdiClient);
+
+	frames.insert( FramePair(pChild->m_hWnd, pChild) );
+}
+
+void SearchFrame::closeAll() {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		::PostMessage(i->first, WM_CLOSE, 0, 0);
 }
 
 LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -609,6 +618,8 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
  		ClientManager* clientMgr = ClientManager::getInstance();
  		clientMgr->removeListener(this);
 
+		frames.erase(m_hWnd);
+
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
@@ -832,9 +843,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 		}
 		break;
 	case VK_RETURN:
-		if( (GetKeyState(VK_SHIFT) & 0x8000) || 
-			(GetKeyState(VK_CONTROL) & 0x8000) || 
-			(GetKeyState(VK_MENU) & 0x8000) ) {
+		if( WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt() ) {
 			bHandled = FALSE;
 		} else {
 			if(uMsg == WM_KEYDOWN) {

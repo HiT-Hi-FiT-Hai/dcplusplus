@@ -151,6 +151,33 @@ LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 	return 0;
 }
 
+LRESULT UsersFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+
+	if(item->iItem != -1) {
+		PostMessage(WM_COMMAND, IDC_GETLIST, 0);
+	} else {
+		bHandled = FALSE;
+	}
+
+	return 0;
+}
+
+LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	switch(kd->wVKey) {
+	case VK_DELETE:
+		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
+		break;
+	case VK_RETURN:
+		PostMessage(WM_COMMAND, IDC_EDIT, 0);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
 LRESULT UsersFrame::onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
 	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
 		UserInfo *ui = ctrlUsers.getItemData(i);

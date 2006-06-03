@@ -44,6 +44,7 @@ class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)
 {
 public:
 	static void openWindow(const tstring& str = Util::emptyStringW, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
+	static void closeAll();
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("SearchFrame"), IDR_SEARCH, 0, COLOR_3DFACE)
 
@@ -390,6 +391,12 @@ private:
 
 	// Timer ID, needed to turn off timer
 	UINT timerID;
+
+	typedef map<HWND, SearchFrame*> FrameMap;
+	typedef FrameMap::iterator FrameIter;
+	typedef pair<HWND, SearchFrame*> FramePair;
+
+	static FrameMap frames;
 
 	void downloadSelected(const tstring& aDir, bool view = false); 
 	void downloadWholeSelected(const tstring& aDir);

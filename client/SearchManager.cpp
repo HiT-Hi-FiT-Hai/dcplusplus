@@ -344,7 +344,6 @@ void SearchManager::respond(const AdcCommand& adc, const CID& from) {
 
 	for(SearchResult::Iter i = results.begin(); i != results.end(); ++i) {
 		AdcCommand cmd = (*i)->toRES(AdcCommand::TYPE_UDP);
-		cmd.setTo(adc.getFrom());
 		if(!token.empty())
 			cmd.addParam("TO", token);
 		ClientManager::getInstance()->send(cmd, from);

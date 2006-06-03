@@ -571,6 +571,38 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 	return (string::size_type)string::npos;
 }
 
+wstring::size_type Util::findSubString(const wstring& aString, const wstring& aSubString, wstring::size_type pos) throw() {
+	if(aString.length() < pos)
+		return static_cast<wstring::size_type>(wstring::npos);
+
+	if(aString.length() - pos < aSubString.length())
+		return static_cast<wstring::size_type>(wstring::npos);
+
+	if(aSubString.empty())
+		return 0;
+
+	wstring::size_type j = 0;
+	wstring::size_type end = aString.length() - aSubString.length() + 1;
+
+	for(; pos < end; ++pos) {
+		if(Text::toLower(aString[pos]) == Text::toLower(aSubString[j])) {
+			wstring::size_type tmp = pos+1;
+			bool found = true;
+			for(++j; j < aSubString.length(); ++j, ++tmp) {
+				if(Text::toLower(aString[tmp]) != Text::toLower(aSubString[j])) {
+					j = 0;
+					found = false;
+					break;
+				}
+			}
+
+			if(found)
+				return pos;
+		}
+	}
+	return static_cast<wstring::size_type>(wstring::npos);
+}
+
 int Util::stricmp(const char* a, const char* b) {
 	while(*a) {
 		wchar_t ca = 0, cb = 0;

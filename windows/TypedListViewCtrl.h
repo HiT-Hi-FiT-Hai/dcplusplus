@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "ListViewArrows.h"
+#include "memdc.h"
 
 template<class T, int ctrlId>
 class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl<T, ctrlId>, CListViewCtrl, CControlWinTraits>,
@@ -38,6 +39,8 @@ public:
 
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
+		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
+		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -234,6 +237,35 @@ public:
 
 	iterator begin() { return iterator(this); }
 	iterator end() { return iterator(this, GetItemCount()); }
+
+	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return 0;
+	}
+
+	LRESULT onPaint(UINT msg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		CRect updateRect;
+		CRect crc;
+		GetClientRect(&crc);
+		if(GetUpdateRect(updateRect, FALSE)){
+			CPaintDC dc(m_hWnd);
+			int oldDCSettings = dc.SaveDC();
+			dc.SetBkColor(WinUtil::bgColor);
+			CMemDC memDC(&dc, &crc);
+
+			//it seems like the default paint method actually
+			//uses the HDC it's passed, saves a lot of work =)
+			LRESULT ret = DefWindowProc(msg, (WPARAM)memDC.m_hDC, NULL);
+			
+			//make sure to paint before CPaintDC goes out of scope and destroys our hdc
+			memDC.Paint();
+
+			dc.RestoreDC(oldDCSettings);
+
+			return ret;
+		}
+
+		return 0;
+	}
 
 private:
 
