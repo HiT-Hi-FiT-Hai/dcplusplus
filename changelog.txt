@@ -9,8 +9,10 @@
 * [bug 927] Fixed OP detection bug (thanks pothead)
 * [bug 929] Fixed list view flicker issues (thanks trem)
 * [bug 931] Improved keyboard navigation (thanks trem)
+* Added "all" to hub list field search (thanks trem)
 * Fixed bug when sending active ADC search results
 * Updated to ADC 0.11
+* Passive users now also get search results
 
 -- 0.69 2006-05-21 --
 * Small linux / old gcc fixes (thanks jens oknelid)

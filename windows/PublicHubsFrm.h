@@ -128,6 +128,16 @@ private:
 		FAILED
 	};
 
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
+	};
+
 	int visibleHubs;
 	int users;
 	CStatusBarCtrl ctrlStatus;
@@ -163,8 +173,8 @@ private:
 	void updateList();
 	void updateDropDown();
 
-	bool parseFilter(int& mode, double& size);
-	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const int& mode, const double& size);
+	bool parseFilter(FilterModes& mode, double& size);
+	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const FilterModes& mode, const double& size);
 };
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)

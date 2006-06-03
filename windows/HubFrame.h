@@ -178,6 +178,16 @@ private:
 		COLUMN_LAST
 	};
 
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
+	};
+
 	struct Task {
 		Task(Speakers speaker_) : speaker(speaker_) { }
 		virtual ~Task() { }
@@ -354,8 +364,8 @@ private:
 	void removeUser(const User::Ptr& aUser);
 
 	void updateUserList(UserInfo* ui = NULL);
-	bool parseFilter(int& mode, int64_t& size);
-	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, int mode = 0, int64_t size = 0);
+	bool parseFilter(FilterModes& mode, int64_t& size);
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = FilterModes::NONE, int64_t size = 0);
 	UserInfo* findUser(const tstring& nick);
 
 	void addAsFavorite();
