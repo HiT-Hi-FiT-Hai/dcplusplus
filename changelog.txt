@@ -1,4 +1,15 @@
-﻿-- 0.691 2006-06-03 -- 
+﻿-- 0.692 --
+* [bug 927] Fixed OP detection bug really (thanks pothead)
+* [bug 938] Added a few more ADC info fields (thanks ullner)
+* [bug 939] Fixed hub info update (thanks ullner)
+* [bug 940] Fixed a 64-bit compile error (thanks steven sheehy)
+* [bug 942] Fixed atomic operations on unices (thanks tobias nygren)
+* [bug 943] Fixed unix utsname compile issue (thanks tobias nygren)
+* [bug 944] Fixed unix string conversion bug (thanks tobias nygren)
+* [bug 945] Fixed unix mutex initialiser (thanks tobias nygren)
+
+
+-- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog
 * [bug 122] Added userlist filter (thanks trem)
 * [bug 578] Added search for alternates to transfers menu (thanks trem)

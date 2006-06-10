@@ -631,7 +631,7 @@ int HashManager::Hasher::run() {
 
 						{
 							Lock l(cs);
-							currentSize = max(currentSize - n, _LL(0));
+							currentSize = max(static_cast<u_int64_t>(currentSize - n), static_cast<u_int64_t>(0));
 						}
 						sizeLeft -= n;
 					} while (n > 0 && !stop);

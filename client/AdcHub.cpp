@@ -133,17 +133,18 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getUser()->setFlag(User::SSL);
 	}
 
-	if(u->getIdentity().isHub()) {
-		setHubIdentity(u->getIdentity());
-		fire(ClientListener::HubUpdated(), this);
-	}
-
 	if(u->getUser() == ClientManager::getInstance()->getMe()) {
 		state = STATE_NORMAL;
 		setMyIdentity(u->getIdentity());
 		updateCounts(false);
 	}
-	fire(ClientListener::UserUpdated(), this, *u);
+
+	if(u->getIdentity().isHub()) {
+		setHubIdentity(u->getIdentity());
+		fire(ClientListener::HubUpdated(), this);
+	} else {
+		fire(ClientListener::UserUpdated(), this, *u);
+	}
 }
 
 void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
@@ -462,6 +463,19 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
 	ADDPARAM("VE", "++ " VERSIONSTRING);
+	ADDPARAM("US", Util::toString((long)(Util::toDouble(SETTING(UPLOAD_SPEED))*1024*1024)));
+
+	if(SETTING(MAX_DOWNLOAD_SPEED) > 0) {
+		ADDPARAM("DS", Util::toString((SETTING(MAX_DOWNLOAD_SPEED)*1024*8)));
+	} else {
+		ADDPARAM("DS", Util::emptyString);
+	}
+
+	if(Util::getAway()){
+		ADDPARAM("AW", '1');
+	} else {
+		ADDPARAM("AW", Util::emptyString);
+	}
 
 	string su;
 	if(SSLSocketFactory::getInstance()->hasCerts()) {

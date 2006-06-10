@@ -915,7 +915,7 @@ string Util::getOsVersion() {
 	return os;
 
 #else // _WIN32
-	utsname n;
+	struct utsname n;
 
 	if(uname(&n) != 0) {
 		return "unix (unknown version)";

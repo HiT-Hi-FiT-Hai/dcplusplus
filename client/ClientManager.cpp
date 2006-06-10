@@ -238,7 +238,7 @@ bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) {
 	pair<OnlineIter, OnlineIter> p = onlineUsers.equal_range(user->getCID());
 	for(OnlineIter i = p.first; i != p.second; ++i) {
 		if(i->second->getClient().getHubUrl() == aHubUrl) {
-			return i->second->getClient().getMyIdentity().isOp();
+			return i->second->getIdentity().isOp();
 		}
 	}
 	return false;

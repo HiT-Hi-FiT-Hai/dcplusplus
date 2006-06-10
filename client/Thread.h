@@ -29,10 +29,6 @@
 #include <sys/resource.h>
 #endif
 
-#ifdef HAVE_ASM_ATOMIC_H
-#include <asm/atomic.h>
-#endif
-
 #include "Exception.h"
 STANDARD_EXCEPTION(ThreadException);
 
@@ -98,24 +94,16 @@ public:
 	static void sleep(u_int32_t millis) { ::usleep(millis*1000); }
 	static void yield() { ::sched_yield(); }
 	static long safeInc(volatile long& v) { 
-#ifdef HAVE_ASM_ATOMIC_H
-		atomic_t t = ATOMIC_INIT(v);
-		atomic_inc(&t);
-		return (v=t.counter);
-#else
-#warning FIXME
-		return ++v;
-#endif
+		pthread_mutex_lock(&mtx);
+		long ret = ++v;
+		pthread_mutex_unlock(&mtx);
+		return ret;
 	}
 	static long safeDec(volatile long& v) { 
-#ifdef HAVE_ASM_ATOMIC_H
-		atomic_t t = ATOMIC_INIT(v);
-		atomic_dec(&t);
-		return (v=t.counter);
-#else
-#warning FIXME
-		return --v;
-#endif
+		pthread_mutex_lock(&mtx);
+		long ret = --v;
+		pthread_mutex_unlock(&mtx);
+		return ret;
 	}
 #endif
 
@@ -135,6 +123,7 @@ private:
 		return 0;
 	}
 #else
+	static pthread_mutex_t mtx;
 	pthread_t threadHandle;
 	static void* starter(void* p) {
 		Thread* t = (Thread*)p;
