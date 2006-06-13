@@ -7,7 +7,7 @@
 * [bug 943] Fixed unix utsname compile issue (thanks tobias nygren)
 * [bug 944] Fixed unix string conversion bug (thanks tobias nygren)
 * [bug 945] Fixed unix mutex initialiser (thanks tobias nygren)
-
+* [bug 946] Tiger hash supports big endian and 64-bit architectures (thanks tobias nygren)
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog
