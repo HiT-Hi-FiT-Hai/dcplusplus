@@ -240,6 +240,9 @@ private:
 
 		bool update(const Identity& identity, int sortCol);
 
+		const string& getNick() const { return identity.getNick(); }
+		bool isHidden() const { return identity.isHidden(); }
+		
 		tstring columns[COLUMN_LAST];
 		GETSET(Identity, identity, Identity);
 	};
@@ -302,10 +305,7 @@ private:
 		}
 	};
 
-	size_t getUserCount() const {
-		size_t sel = ctrlUsers.GetSelectedCount();
-		return sel > 1 ? sel : userMap.size();
-	}
+	string getUsersTextForStatusBar() const;
 
 	int64_t getAvailable() {
 		if (ctrlUsers.GetSelectedCount() > 1) {

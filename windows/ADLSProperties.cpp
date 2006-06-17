@@ -26,8 +26,7 @@
 #include "WinUtil.h"
 
 // Initialize dialog
-LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
-{
+LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
 	// Translate the texts
 	SetWindowText(CTSTRING(ADLS_PROPERTIES));
 	SetDlgItemText(IDC_ADLSP_SEARCH, CTSTRING(ADLS_SEARCH_STRING));
@@ -39,32 +38,34 @@ LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	SetDlgItemText(IDC_IS_ACTIVE, CTSTRING(ADLS_ENABLED));
 	SetDlgItemText(IDC_AUTOQUEUE, CTSTRING(ADLS_DOWNLOAD));
 
-	// Initialize combo boxes
-	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SourceTypeToDisplayString(ADLSearch::OnlyFile).c_str());
-	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SourceTypeToDisplayString(ADLSearch::OnlyDirectory).c_str());
-	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SourceTypeToDisplayString(ADLSearch::FullPath).c_str());
+	// Initialize dialog items
+	ctrlSearch.Attach(GetDlgItem(IDC_SEARCH_STRING));
+	ctrlDestDir.Attach(GetDlgItem(IDC_DEST_DIR));
+	ctrlMinSize.Attach(GetDlgItem(IDC_MIN_FILE_SIZE));
+	ctrlMaxSize.Attach(GetDlgItem(IDC_MAX_FILE_SIZE));
+	ctrlActive.Attach(GetDlgItem(IDC_IS_ACTIVE));
+	ctrlAutoQueue.Attach(GetDlgItem(IDC_AUTOQUEUE));
 
-	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeBytes).c_str());
-	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeKibiBytes).c_str());
-	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeMebiBytes).c_str());
-	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeGibiBytes).c_str());
+	ctrlSearchType.Attach(GetDlgItem(IDC_SOURCE_TYPE));
+	ctrlSearchType.AddString(CTSTRING(FILENAME));
+	ctrlSearchType.AddString(CTSTRING(DIRECTORY));
+	ctrlSearchType.AddString(CTSTRING(ADLS_FULL_PATH));
+
+	ctrlSizeType.Attach(GetDlgItem(IDC_SIZE_TYPE));
+	ctrlSizeType.AddString(CTSTRING(B));
+	ctrlSizeType.AddString(CTSTRING(KiB));
+	ctrlSizeType.AddString(CTSTRING(MiB));
+	ctrlSizeType.AddString(CTSTRING(GiB));
 
 	// Load search data
-	SetDlgItemText(IDC_SEARCH_STRING, Text::toT(search->searchString).c_str());
-	SetDlgItemText(IDC_DEST_DIR,      Text::toT(search->destDir).c_str());
-	SetDlgItemText(IDC_MIN_FILE_SIZE, Text::toT(search->minFileSize > 0 ? Util::toString(search->minFileSize) : "").c_str());
-	SetDlgItemText(IDC_MAX_FILE_SIZE, Text::toT(search->maxFileSize > 0 ? Util::toString(search->maxFileSize) : "").c_str());
-	::SendMessage(GetDlgItem(IDC_IS_ACTIVE), BM_SETCHECK, search->isActive ? 1 : 0, 0L);
-	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_SETCURSEL, search->sourceType, 0L);
-	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_SETCURSEL, search->typeFileSize, 0L);
-	::SendMessage(GetDlgItem(IDC_AUTOQUEUE), BM_SETCHECK, search->isAutoQueue ? 1 : 0, 0L);
+	ctrlSearch.SetWindowText(Text::toT(search->searchString).c_str());
+	ctrlDestDir.SetWindowText(Text::toT(search->destDir).c_str());
+	ctrlMinSize.SetWindowText(Text::toT(search->minFileSize > 0 ? Util::toString(search->minFileSize) : "").c_str());
+	ctrlMaxSize.SetWindowText(Text::toT(search->maxFileSize > 0 ? Util::toString(search->maxFileSize) : "").c_str());
+	ctrlActive.SetCheck(search->isActive ? 1 : 0);
+	ctrlAutoQueue.SetCheck(search->isAutoQueue ? 1 : 0);
+	ctrlSearchType.SetCurSel(search->sourceType);
+	ctrlSizeType.SetCurSel(search->typeFileSize);
 
 	// Center dialog
 	CenterWindow(GetParent());
@@ -75,25 +76,25 @@ LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 // Exit dialog
 LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(wID == IDOK)
-	{
+	if(wID == IDOK) {
 		// Update search
 		TCHAR buf[256];
 
-		GetDlgItemText(IDC_SEARCH_STRING, buf, 256);
+		ctrlSearch.GetWindowText(buf, 256);
 		search->searchString = Text::fromT(buf);
-		GetDlgItemText(IDC_DEST_DIR, buf, 256);
+		ctrlDestDir.GetWindowText(buf, 256);
 		search->destDir = Text::fromT(buf);
 
-		GetDlgItemText(IDC_MIN_FILE_SIZE, buf, 256);
+		ctrlMinSize.GetWindowText(buf, 256);
 		search->minFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(Text::fromT(buf)));
-		GetDlgItemText(IDC_MAX_FILE_SIZE, buf, 256);
+		ctrlMaxSize.GetWindowText(buf, 256);
 		search->maxFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(Text::fromT(buf)));
 
-		search->sourceType = (ADLSearch::SourceType)::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_GETCURSEL, 0, 0L);
-		search->typeFileSize = (ADLSearch::SizeType)::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_GETCURSEL, 0, 0L);
-		search->isActive = (::SendMessage(GetDlgItem(IDC_IS_ACTIVE), BM_GETCHECK, 0, 0L) != 0);
-		search->isAutoQueue = (::SendMessage(GetDlgItem(IDC_AUTOQUEUE), BM_GETCHECK, 0, 0L) != 0);
+		search->isActive = (ctrlActive.GetCheck() == 1);
+		search->isAutoQueue = (ctrlAutoQueue.GetCheck() == 1);
+
+		search->sourceType = (ADLSearch::SourceType)ctrlSearchType.GetCurSel();
+		search->typeFileSize = (ADLSearch::SizeType)ctrlSizeType.GetCurSel();
 	}
 
 	EndDialog(wID);

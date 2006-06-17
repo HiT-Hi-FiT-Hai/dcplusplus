@@ -8,6 +8,13 @@
 * [bug 944] Fixed unix string conversion bug (thanks tobias nygren)
 * [bug 945] Fixed unix mutex initialiser (thanks tobias nygren)
 * [bug 946] Tiger hash supports big endian and 64-bit architectures (thanks tobias nygren)
+* [bug 941] Updated usercount display (thanks pothead)
+* [bug 951] Fixed issue with high port numbers (thanks tpo)
+* [bug 958] Search spy tth option automagically saved (thanks ullner)
+* [bug 959] Code cleanup (thanks pothead)
+* [bug 966] Max hash speed fixed when fast hashing method is not used (thanks steven sheehy)
+* [bug 967] Fixed path case-sensitivity issue (thanks steven sheehy)
+
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

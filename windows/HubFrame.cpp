@@ -357,7 +357,7 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	string nicks;
 
 	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		nicks += (ctrlUsers.getItemData(i))->getIdentity().getNick();
+		nicks += ctrlUsers.getItemData(i)->getNick();
 		nicks += ' ';
 	}
 	if(!nicks.empty()) {
@@ -382,7 +382,7 @@ bool HubFrame::updateUser(const UserTask& u) {
 	if(i == userMap.end()) {
 		UserInfo* ui = new UserInfo(u);
 		userMap.insert(make_pair(u.user, ui));
-		if(!ui->getIdentity().isHidden() && showUsers)
+		if(!ui->isHidden() && showUsers)
 			ctrlUsers.insertItem(ui, getImage(u.identity));
 
 		if(!filter.empty())
@@ -391,7 +391,7 @@ bool HubFrame::updateUser(const UserTask& u) {
 		return true;
 	} else {
 		UserInfo* ui = i->second;
-		if(!ui->getIdentity().isHidden() && u.identity.isHidden() && showUsers) {
+		if(!ui->isHidden() && u.identity.isHidden() && showUsers) {
 			ctrlUsers.deleteItem(ui);
 		}
 		
@@ -419,7 +419,7 @@ void HubFrame::removeUser(const User::Ptr& aUser) {
 	}
 
 	UserInfo* ui = i->second;
-	if(!ui->getIdentity().isHidden() && showUsers)
+	if(!ui->isHidden() && showUsers)
 		ctrlUsers.deleteItem(ui);
 
 	userMap.erase(i);
@@ -500,8 +500,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 		} else if(task->speaker == SET_WINDOW_TITLE) {
 			SetWindowText(static_cast<StringTask*>(task)->msg.c_str());
 		} else if(task->speaker == STATS) {
-			ctrlStatus.SetText(1, Text::toT(Util::toString(showUsers ? ctrlUsers.GetItemCount() : getUserCount()) +
-				"/" + Util::toString(getUserCount()) + " " + STRING(HUB_USERS)).c_str());
+			ctrlStatus.SetText(1, Text::toT(getUsersTextForStatusBar()).c_str());
 			ctrlStatus.SetText(2, Text::toT(Util::formatBytes(getAvailable())).c_str());
 		} else if(task->speaker == GET_PASSWORD) {
 			if(client->getPassword().size() > 0) {
@@ -1090,7 +1089,7 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		
 		for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 			UserInfo* ui = i->second;
-			if(!ui->getIdentity().isHidden())
+			if(!ui->isHidden())
 				ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
 		}
 
@@ -1308,8 +1307,8 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 }
 
 bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
-	tstring::size_type start = tstring::npos;
-	tstring::size_type end = tstring::npos;
+	tstring::size_type start = static_cast<tstring::size_type>(tstring::npos);
+	tstring::size_type end = static_cast<tstring::size_type>(tstring::npos);
 	int64_t multiplier = 1;
 	
 	if(filter.compare(0, 2, _T(">=")) == 0) {
@@ -1360,7 +1359,6 @@ bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 		multiplier = 1;
 	}
 
-
 	if(end == tstring::npos) {
 		end = filter.length();
 	}
@@ -1383,6 +1381,9 @@ void HubFrame::updateUserList(UserInfo* ui) {
 	//avoid refreshing the whole list and just update the current item
 	//instead
 	if(ui != NULL) {
+		if(ui->isHidden()) {
+			return;
+		}
 		if(filter.empty()) {
 			if(ctrlUsers.findItem(ui) == -1) {
 				ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
@@ -1404,15 +1405,14 @@ void HubFrame::updateUserList(UserInfo* ui) {
 		
 		if(filter.empty()) {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
-				if(i->second != NULL)
+				UserInfo* ui = i->second;
+				if(!ui->isHidden())
 					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
 			}
 		} else {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
-				if( i->second != NULL ) {
-					if(matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
-						ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
-					}
+				if(!ui->isHidden() && matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
+					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
 				}
 			}
 		}
@@ -1482,3 +1482,18 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	return insert;
 }
 
+string HubFrame::getUsersTextForStatusBar() const {
+	size_t userCount = 0;
+	for(UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i){
+		UserInfo* ui = i->second;
+		if(!ui->isHidden())
+			userCount++;
+	}
+
+	string textForUsers;
+	if (ctrlUsers.GetSelectedCount() > 1)
+		textForUsers += Util::toString(ctrlUsers.GetSelectedCount()) + "/";
+	if (showUsers && (size_t)ctrlUsers.GetItemCount() < userCount)
+		textForUsers += Util::toString(ctrlUsers.GetItemCount()) + "/";
+	return textForUsers + Util::toString(userCount) + " " + STRING(HUB_USERS);
+}

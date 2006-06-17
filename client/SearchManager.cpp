@@ -103,12 +103,12 @@ string SearchResult::getFileName() const {
 }
 
 void SearchManager::listen() throw(Exception) {
-	short lastPort = (short)SETTING(UDP_PORT);
+	unsigned short lastPort = (unsigned short)SETTING(UDP_PORT);
 
 	if(lastPort == 0)
-		lastPort = (short)Util::rand(1025, 32000);
+		lastPort = (unsigned short)Util::rand(1025, 32000);
 
-	short firstPort = lastPort;
+	unsigned short firstPort = lastPort;
 
 	disconnect();
 

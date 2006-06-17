@@ -43,12 +43,12 @@ ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0)
 }
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
-	short lastPort = (short)SETTING(TCP_PORT);
+	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
 	
 	if(lastPort == 0)
-		lastPort = (short)Util::rand(1025, 32000);
+		lastPort = (unsigned short)Util::rand(1025, 32000);
 
-	short firstPort = lastPort;
+	unsigned short firstPort = lastPort;
 
 	disconnect();
 

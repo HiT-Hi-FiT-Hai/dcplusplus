@@ -624,6 +624,9 @@ int HashManager::Hasher::run() {
 							if(lastRead + minTime > now) {
 								Thread::sleep(minTime - (now - lastRead));
 							}
+							lastRead = lastRead + minTime;
+						} else {
+							lastRead = GET_TICK();
 						}
 						n = f.read(buf, bufSize);
 						tth->update(buf, n);

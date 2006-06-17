@@ -37,12 +37,6 @@
 
 #include <limits>
 
-#ifdef _WIN32
-#define FILELISTS_DIR "FileLists\\"
-#else
-#define FILELISTS_DIR "filelists/"
-#endif
-
 #ifdef ff
 #undef ff
 #endif
@@ -330,7 +324,7 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getConfigPath() + "Q
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
 
-	File::ensureDirectory(Util::getConfigPath() + FILELISTS_DIR);
+	File::ensureDirectory(Util::getListPath());
 }
 
 QueueManager::~QueueManager() throw() { 
@@ -341,7 +335,7 @@ QueueManager::~QueueManager() throw() {
 	saveQueue();
 
 	if(!BOOLSETTING(KEEP_LISTS)) {
-		string path = Util::getConfigPath() + FILELISTS_DIR;
+		string path = Util::getListPath();
 
 #ifdef _WIN32
 		WIN32_FIND_DATA data;
@@ -420,7 +414,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 }
 
 void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
-	string target = Util::getConfigPath() + FILELISTS_DIR + Util::validateFileName(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
+	string target = Util::getListPath() + Util::validateFileName(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
 
 	add(target, -1, NULL, aUser, USER_LIST_NAME, true, QueueItem::FLAG_USER_LIST | aFlags);
 }

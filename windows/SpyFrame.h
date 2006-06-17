@@ -35,7 +35,7 @@ class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, public StaticFrame<SpyF
 	private ClientManagerListener, private TimerManagerListener
 {
 public:
-	SpyFrame() : total(0), cur(0), closed(false), ignoreTth(false), ignoreTthContainer(WC_BUTTON, this, IGNORETTH_MESSAGE_MAP) {
+	SpyFrame() : total(0), cur(0), closed(false), ignoreTth(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES)), ignoreTthContainer(WC_BUTTON, this, IGNORETTH_MESSAGE_MAP) {
 		ZeroMemory(perSecond, sizeof(perSecond));
 		ClientManager::getInstance()->addListener(this);
 		TimerManager::getInstance()->addListener(this);
