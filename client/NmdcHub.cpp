@@ -192,8 +192,22 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			}
 		}
 		string line = fromAcp(aLine);
-		// @todo Decrypt who the message is from...
-		fire(ClientListener::StatusMessage(), this, unescape(fromAcp(aLine)));
+		if(line[0] != '<') {
+			fire(ClientListener::StatusMessage(), this, unescape(line));
+			return;
+		}
+		string::size_type i = line.find('>', 2);
+		if(i == string::npos) {
+			fire(ClientListener::StatusMessage(), this, unescape(line));
+			return;
+		}
+		string nick = line.substr(1, i-1);
+		OnlineUser* ou = findUser(nick);
+		if(ou) {
+			fire(ClientListener::Message(), this, *ou, unescape(line.substr(i+1)));
+		} else {
+			fire(ClientListener::StatusMessage(), this, unescape(line));
+		}
 		return;
 	}
 
@@ -282,7 +296,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		int type = Util::toInt(param.substr(i, j-i)) - 1;
 		i = j + 1;
-		param = param.substr(i);
+		string terms = param.substr(i);
 
 		if(param.size() > 0) {
 			if(seeker.compare(0, 4, "Hub:") == 0) {
@@ -351,7 +365,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(j == string::npos)
 			return;
 
-		u.getIdentity().setEmail(unescape(param.substr(i, j-i));
+		u.getIdentity().setEmail(unescape(param.substr(i, j-i)));
 
 		i = j + 1;
 		j = param.find('$', i);
@@ -366,9 +380,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		fire(ClientListener::UserUpdated(), this, u);
 	} else if(cmd == "$Quit") {
 		if(!param.empty()) {
-			string nick = param;
+			const string& nick = param;
 			OnlineUser* u = findUser(nick);
-			if(u == NULL)
+			if(!u)
 				return;
 
 			fire(ClientListener::UserRemoved(), this, *u);
@@ -394,7 +408,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getMyNick(), getHubUrl()); 
+		ConnectionManager::getInstance()->nmdcConnect(server, (unsigned short)Util::toInt(port), getMyNick(), getHubUrl()); 
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_CONNECTED) {
 			return;
@@ -466,10 +480,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			j = param.find('$');
 			if(j == string::npos)
 				return;
-			string name = param.substr(i, j-i);
+			string name = unescape(param.substr(i, j-i));
 			i = j+1;
-			string command = param.substr(i, param.length() - i);
-			fire(ClientListener::UserCommand(), this, type, ctx, unescape(name), unescape(command));
+			string command = unescape(param.substr(i, param.length() - i));
+			fire(ClientListener::UserCommand(), this, type, ctx, name, command);
 		}
 	} else if(cmd == "$Lock") {
 		if(state != STATE_LOCK) {
@@ -557,7 +571,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 				OnlineUser* u = findUser(it->substr(0, j));
 				
-				if(u == NULL)
+				if(!u)
 					continue;
 
 				u->getIdentity().setIp(it->substr(j+1));
@@ -666,7 +680,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$BadPass") {
 		fire(ClientListener::BadPassword(), this);
 	} else if(cmd == "$ZOn") {
-		socket->setMode (BufferedSocket::MODE_ZPIPE);
+		socket->setMode(BufferedSocket::MODE_ZPIPE);
 	} else {
 		dcassert(cmd[0] == '$');
 		dcdebug("NmdcHub::onLine Unknown command %s\n", aLine.c_str());
@@ -731,9 +745,9 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	string myInfoA = 
-		"$MyINFO $ALL " + toAcp(getCurrentNick()) + " " + toAcp(NmdcHub::validateMessage(getCurrentDescription(), false)) + 
+		"$MyINFO $ALL " + toAcp(getCurrentNick()) + " " + toAcp(escape(getCurrentDescription())) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
-		">$ $" + SETTING(UPLOAD_SPEED) + "\x01$" + toAcp(NmdcHub::validateMessage(SETTING(EMAIL), false)) + '$'; 
+		">$ $" + SETTING(UPLOAD_SPEED) + "\x01$" + toAcp(escape(SETTING(EMAIL))) + '$'; 
 	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
  	
  	if(lastMyInfoA != myInfoA || alwaysSend || (lastMyInfoB != myInfoB && lastUpdate + 15*60*1000 < GET_TICK()) ){
@@ -755,7 +769,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-	string tmp = NmdcHub::validateMessage(toAcp((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : aString), false);
+	string tmp = toAcp(escape((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : aString));
 	string::size_type i;
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
@@ -772,7 +786,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	send(buf, chars);
 }
 
-string NmdcHub::validateMessage(string tmp, bool reverse, bool checkNewLines) {
+string NmdcHub::validateMessage(string tmp, bool reverse) {
 	string::size_type i = 0;
 
 	if(reverse) {
@@ -790,6 +804,8 @@ string NmdcHub::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 			tmp.replace(i, 5, "&");
 			i++;
 		}
+#if 0
+/// @todo move this to a better place
 		if(checkNewLines) {
 			// Check all '<' and '[' after newlines...
 			i = 0;
@@ -803,6 +819,7 @@ string NmdcHub::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 				i++;
 			}
 		}
+#endif
 	} else {
 		i = 0;
 		while( (i = tmp.find("&amp;", i)) != string::npos) {
@@ -836,12 +853,13 @@ string NmdcHub::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) { 
 	checkstate();
 
-	send("$To: " + toAcp(aUser.getIdentity().getNick()) + " From: " + toAcp(getMyNick()) + " $" + toAcp(NmdcHub::validateMessage("<" + getMyNick() + "> " + aMessage, false)) + "|");
+	send("$To: " + toAcp(aUser.getIdentity().getNick()) + " From: " + toAcp(getMyNick()) + " $" + toAcp(escape("<" + getMyNick() + "> " + aMessage)) + "|");
 	// Emulate a returning message...
 	Lock l(cs);
-	NickIter i = users.find(getMyNick());
-	if(i != users.end())
-		fire(ClientListener::PrivateMessage(), this, *i->second, aUser, *i->second, aMessage);
+	OnlineUser* ou = findUser(getMyNick());
+	if(ou) {
+		fire(ClientListener::PrivateMessage(), this, *ou, aUser, *ou, aMessage);
+	}
 }
 
 // TimerManagerListener

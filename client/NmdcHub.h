@@ -52,12 +52,12 @@ public:
 	virtual size_t getUserCount() const {  Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
-	virtual string escape(string const& str) const;
-	virtual string unescape(const string& str) const;
+	virtual string escape(string const& str) const { return validateMessage(str, false); }
+	static string unescape(const string& str) { return validateMessage(str, true); }
 
 	virtual void send(const AdcCommand&) { dcassert(0); }
 
-	static string validateMessage(string tmp, bool reverse, bool checkNewLines);
+	static string validateMessage(string tmp, bool reverse);
 
 	GETSET(int, supportFlags, SupportFlags);
 private:
