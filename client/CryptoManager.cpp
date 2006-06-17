@@ -24,12 +24,117 @@
 #include "BitInputStream.h"
 #include "BitOutputStream.h"
 #include "ResourceManager.h"
+#include "LogManager.h"
+
+#include <openssl/ssl.h>
 
 #ifdef _WIN32
 #include "../bzip2/bzlib.h"
 #else
 #include <bzlib.h>
 #endif
+
+CryptoManager::CryptoManager() 
+:	
+	clientContext(SSL_CTX_new(TLSv1_client_method())), 
+	serverContext(SSL_CTX_new(TLSv1_server_method())), 
+	dh(DH_new()), 
+	certsLoaded(false), 
+	lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), 
+	pk("DCPLUSPLUS" VERSIONSTRING "ABCABC")
+{
+	static unsigned char dh512_p[] =
+	{
+		0xDA,0x58,0x3C,0x16,0xD9,0x85,0x22,0x89,0xD0,0xE4,0xAF,0x75,
+			0x6F,0x4C,0xCA,0x92,0xDD,0x4B,0xE5,0x33,0xB8,0x04,0xFB,0x0F,
+			0xED,0x94,0xEF,0x9C,0x8A,0x44,0x03,0xED,0x57,0x46,0x50,0xD3,
+			0x69,0x99,0xDB,0x29,0xD7,0x76,0x27,0x6B,0xA2,0xD3,0xD4,0x12,
+			0xE2,0x18,0xF4,0xDD,0x1E,0x08,0x4C,0xF6,0xD8,0x00,0x3E,0x7C,
+			0x47,0x74,0xE8,0x33,
+	};
+
+	static unsigned char dh512_g[] =
+	{
+		0x02,
+	};
+
+	if(dh) {
+		dh->p = BN_bin2bn(dh512_p, sizeof(dh512_p), 0);
+		dh->g = BN_bin2bn(dh512_g, sizeof(dh512_g), 0);
+
+		if (!dh->p || !dh->g) {
+			DH_free(dh);
+			dh = 0;
+		} else {
+			SSL_CTX_set_tmp_dh(serverContext, dh);
+		}
+	}
+}
+
+CryptoManager::~CryptoManager() {
+	if(serverContext)
+		SSL_CTX_free(serverContext);
+	if(clientContext)
+		SSL_CTX_free(clientContext);
+	if(dh)
+		DH_free(dh);
+}
+
+
+void CryptoManager::loadCertificates() throw() {
+	SSL_CTX_set_verify(serverContext, SSL_VERIFY_NONE, 0);
+	SSL_CTX_set_verify(clientContext, SSL_VERIFY_NONE, 0);
+
+	if(!SETTING(SSL_CERTIFICATE_FILE).empty()) {
+		if(SSL_CTX_use_certificate_file(serverContext, SETTING(SSL_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load certificate file");
+			return;
+		}
+		if(SSL_CTX_use_certificate_file(clientContext, SETTING(SSL_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load certificate file");
+			return;
+		}
+	}
+
+	if(!SETTING(SSL_PRIVATE_KEY_FILE).empty()) {
+		if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load private key");
+			return;
+		}
+		if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+			LogManager::getInstance()->message("Failed to load private key");
+			return;
+		}
+	}
+
+#ifdef _WIN32
+	WIN32_FIND_DATA data;
+	HANDLE hFind;
+
+	hFind = FindFirstFile(Text::toT(SETTING(SSL_TRUSTED_CERTIFICATES_PATH) + "*.pem").c_str(), &data);
+	if(hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if(SSL_CTX_load_verify_locations(clientContext, (SETTING(SSL_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
+				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
+			}
+		} while(FindNextFile(hFind, &data));
+
+		FindClose(hFind);
+	}
+#else
+#error todo
+#endif
+	certsLoaded = true;
+}
+
+
+SSLSocket* CryptoManager::getClientSocket() throw(SocketException) {
+	return new SSLSocket(clientContext);
+}
+SSLSocket* CryptoManager::getServerSocket() throw(SocketException) {
+	return new SSLSocket(serverContext);
+}
+
 
 void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (CryptoException) {
 	bz_stream bs = { 0 };

@@ -89,8 +89,6 @@ public:
 	void lock() throw() { cs.enter(); }
 	void unlock() throw() { cs.leave(); }
 
-	Identity getIdentity(const User::Ptr& aUser);
-
 	Client::List& getClients() { return clients; }
 
 	string getCachedIp() const { Lock l(cs); return cachedIp; }

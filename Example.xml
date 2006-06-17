@@ -130,6 +130,7 @@
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
 		<String Name="FileHasNoTth">This file has no TTH</String>
+		<String Name="FileIsAlreadyQueued">This file is already queued</String>
 		<String Name="FileListDiff">Subtract list</String>
 		<String Name="FileListRefreshFailed">File list refresh failed: </String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
@@ -406,6 +407,7 @@
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>
 		<String Name="SettingsDirect">Direct connection</String>
 		<String Name="SettingsDirectories">Directories</String>
+		<String Name="SettingsDontDlAlreadyQueued">Don't download files already in the queue</String>
 		<String Name="SettingsDontDlAlreadyShared">Don't download files already in share</String>
 		<String Name="SettingsDownloadDirectory">Default download directory</String>
 		<String Name="SettingsDownloadLimits">Limits</String>

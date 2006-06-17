@@ -103,12 +103,12 @@ private:
 			command = buf;
 		} else if(type == 2) {
 			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-			command = Text::toT("<%[myNI]> " + Util::validateMessage(Text::fromT(buf), false) + "|");
+			command = Text::toT("<%[myNI]> " + NmdcHub::validateMessage(Text::fromT(buf), false) + "|");
 		} else if(type == 3) {
 			ctrlNick.GetWindowText(buf, BUF_LEN - 1);
 			tstring to(buf);
 			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
-			command = _T("$To: ") + to + _T(" From: %[myNI] $<%[myNI]> ") + Text::toT(Util::validateMessage(Text::fromT(buf), false)) + _T("|");
+			command = _T("$To: ") + to + _T(" From: %[myNI] $<%[myNI]> ") + Text::toT(NmdcHub::validateMessage(Text::fromT(buf), false)) + _T("|");
 		}
 	}
 	void updateControls() {

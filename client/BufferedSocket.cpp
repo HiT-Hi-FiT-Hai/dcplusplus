@@ -27,6 +27,7 @@
 
 #include "Streams.h"
 #include "SSLSocket.h"
+#include "CryptoManager.h"
 
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
@@ -75,7 +76,7 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	dcassert(!sock);
 	
 	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
-	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
+	sock = secure ? CryptoManager::getInstance()->getClientSocket() : new Socket;
 
 	sock->accept(srv);
 	if(SETTING(SOCKET_IN_BUFFER) > 0)
@@ -103,7 +104,7 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 	dcassert(!sock);
 
 	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
-	sock = secure ? SSLSocketFactory::getInstance()->getClientSocket() : new Socket;
+	sock = secure ? CryptoManager::getInstance()->getClientSocket() : new Socket;
 
 	sock->create();
 	if(SETTING(SOCKET_IN_BUFFER) >= 1024)

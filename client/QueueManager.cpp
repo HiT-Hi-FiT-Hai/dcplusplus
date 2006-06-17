@@ -489,7 +489,9 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue* roo
 					q->setTTH(new TTHValue(*root));
 				} else if(!(*root == *q->getTTH())) {
 					throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
-				}
+				} else if(BOOLSETTING(DONT_DL_ALREADY_QUEUED)) {
+					throw QueueException(STRING(FILE_IS_ALREADY_QUEUED));
+ 				}
 			}
 			q->setFlag(aFlags);
 			

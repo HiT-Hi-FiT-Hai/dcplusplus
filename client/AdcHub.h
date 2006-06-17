@@ -30,7 +30,7 @@
 
 class ClientManager;
 
-class AdcHub : public Client, public CommandHandler<AdcHub>, private TimerManagerListener {
+class AdcHub : public Client, public CommandHandler<AdcHub> {
 public:
 	using Client::send;
 
@@ -119,7 +119,6 @@ private:
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string& aLine) throw();
 	virtual void on(Failed, const string& aLine) throw();
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 };
 
 #endif // !defined(ADC_HUB_H)

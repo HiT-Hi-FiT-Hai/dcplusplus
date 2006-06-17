@@ -28,7 +28,7 @@
 class UPnP
 {
 public:
-	UPnP( const string, const string, const string, const short );
+	UPnP( const string, const string, const string, const unsigned short );
 	~UPnP();
 	HRESULT OpenPorts();
 	HRESULT ClosePorts();

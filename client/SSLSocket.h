@@ -32,22 +32,7 @@ namespace yaSSL {
 
 using namespace yaSSL;
 
-class SSLSocketFactory : public Singleton<SSLSocketFactory> {
-public:
-	SSLSocketFactory();
-	virtual ~SSLSocketFactory();
-
-	SSLSocket* getClientSocket() throw(SocketException);
-	SSLSocket* getServerSocket() throw(SocketException);
-
-	void loadCertificates() throw();
-	bool hasCerts() const { return certsLoaded; }
-private:
-	SSL_CTX* clientContext;
-	SSL_CTX* serverContext;
-	DH* dh;
-	bool certsLoaded;
-};
+class CryptoManager;
 
 class SSLSocket : public Socket {
 public:
@@ -61,7 +46,7 @@ public:
 	virtual void shutdown() throw();
 	virtual void close() throw();
 private:
-	friend class SSLSocketFactory;
+	friend class CryptoManager;
 
 	SSLSocket(SSL_CTX* context) throw(SocketException);
 	SSLSocket(const SSLSocket&);

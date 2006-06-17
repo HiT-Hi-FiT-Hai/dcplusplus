@@ -98,9 +98,9 @@ public:
 	};
 
 	Identity() : sid(0) { }
-	Identity(const User::Ptr& ptr, const string& aHubUrl, u_int32_t aSID) : user(ptr), hubUrl(aHubUrl), sid(aSID) { }
-	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), hubUrl(rhs.hubUrl), sid(rhs.sid), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; hubUrl = rhs.hubUrl; sid = rhs.sid; info = rhs.info; return *this; }
+	Identity(const User::Ptr& ptr, u_int32_t aSID) : user(ptr), sid(aSID) { }
+	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
 
 #define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
@@ -127,8 +127,10 @@ public:
 	bool supports(const string& name) const;
 	bool isHub() const { return !get("HU").empty(); }
 	bool isOp() const { return !get("OP").empty(); }
+	bool isRegistered() const { return !get("RG").empty(); }
 	bool isHidden() const { return !get("HI").empty(); }
 	bool isBot() const { return !get("BO").empty(); }
+	bool isAway() const { return !get("AW").empty(); }
 	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
 	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 
@@ -151,12 +153,10 @@ public:
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
-	GETSET(string, hubUrl, HubUrl);
 	GETSET(u_int32_t, sid, SID);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
-
 	InfMap info;
 };
 
@@ -170,15 +170,15 @@ public:
 
 	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
 
-	operator User::Ptr&() { return user; }
-	operator const User::Ptr&() const { return user; }
+	operator User::Ptr&() { return getUser(); }
+	operator const User::Ptr&() const { return getUser(); }
 
-	User::Ptr& getUser() { return user; }
+	User::Ptr& getUser() { return getIdentity().getUser(); }
+	const User::Ptr& getUser() const { return getIdentity().getUser(); }
 	Identity& getIdentity() { return identity; }
 	Client& getClient() { return *client; }
 	const Client& getClient() const { return *client; }
 
-	GETSET(User::Ptr, user, User);
 	GETSET(Identity, identity, Identity);
 private:
 	friend class NmdcHub;

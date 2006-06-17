@@ -960,10 +960,7 @@ void HubFrame::onTab() {
 }
 
 LRESULT HubFrame::onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	client->disconnect(false);
-	clearUserList();
-	clearTaskList();
-	client->connect();
+	client->reconnect();
 	return 0;
 }
 
@@ -1190,7 +1187,7 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::on(TimerManagerListener::Second, DWORD /*aTick*/) throw() {
+void HubFrame::on(Second, DWORD /*aTick*/) throw() {
 	updateStatusBar();
 	if(updateUsers) {
 		updateUsers = false;
@@ -1245,7 +1242,12 @@ void HubFrame::on(GetPassword, Client*) throw() {
 	speak(GET_PASSWORD);
 }
 void HubFrame::on(HubUpdated, Client*) throw() { 
-	speak(SET_WINDOW_TITLE, Util::validateMessage(client->getHubName() + " " + client->getHubDescription(), true, false) + " (" + client->getHubUrl() + ")");
+	string hubName = client->getHubName();
+	if(!client->getHubDescription().empty()) {
+		hubName += " - " + client->getHubDescription();
+	}
+	hubName += " (" + client->getHubUrl() + ")";
+	speak(SET_WINDOW_TITLE, hubName);
 }
 void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() { 
 	speak(ADD_CHAT_LINE, Util::toDOS("<" + from.getIdentity().getNick() + "> " + msg));

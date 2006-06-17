@@ -33,7 +33,6 @@
 #include "SettingsManager.h"
 #include "FinishedManager.h"
 #include "ADLSearch.h"
-#include "SSLSocket.h"
 
 #include "StringTokenizer.h"
 
@@ -61,7 +60,6 @@ void startup(void (*f)(void*, const string&), void* p) {
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
-	SSLSocketFactory::newInstance();
 
 	SettingsManager::getInstance()->load();
 
@@ -70,7 +68,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	}
 
 	FavoriteManager::getInstance()->load();
-	SSLSocketFactory::getInstance()->loadCertificates();
+	CryptoManager::getInstance()->loadCertificates();
 
 	if(f != NULL)
 		(*f)(p, STRING(HASH_DATABASE));
@@ -93,7 +91,6 @@ void shutdown() {
 
 	SettingsManager::getInstance()->save();
 	
-	SSLSocketFactory::deleteInstance();
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
 	ShareManager::deleteInstance();

@@ -14,7 +14,10 @@
 * [bug 959] Code cleanup (thanks pothead)
 * [bug 966] Max hash speed fixed when fast hashing method is not used (thanks steven sheehy)
 * [bug 967] Fixed path case-sensitivity issue (thanks steven sheehy)
-
+* Fixed auto-reconnect
+* [bug 936] Fixed duplicate entries in search hubs
+* Fixed some hub title display issues
+* Some code spring cleanup
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

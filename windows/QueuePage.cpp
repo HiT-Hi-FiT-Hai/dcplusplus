@@ -78,6 +78,7 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ANTI_FRAG },
 	{ SettingsManager::ADVANCED_RESUME, ResourceManager::SETTINGS_ADVANCED_RESUME },
 	{ SettingsManager::ONLY_DL_TTH_FILES, ResourceManager::SETTINGS_ONLY_DL_TTH_FILES },
+	{ SettingsManager::DONT_DL_ALREADY_QUEUED, ResourceManager::SETTINGS_DONT_DL_ALREADY_QUEUED },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

@@ -37,7 +37,7 @@ public:
 
 	User::Ptr& getUser() { return user; }
 
-	void update(const OnlineUser& info) { setNick(info.getIdentity().getNick()); setUrl(info.getIdentity().getHubUrl()); }
+	void update(const OnlineUser& info);
 
 	GETSET(User::Ptr, user, User);
 	GETSET(string, nick, Nick);

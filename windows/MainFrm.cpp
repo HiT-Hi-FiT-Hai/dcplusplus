@@ -554,8 +554,8 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	PropertiesDlg dlg(m_hWnd, SettingsManager::getInstance());
 
-	short lastPort = (short)SETTING(TCP_PORT);
-	short lastUDP = (short)SETTING(UDP_PORT);
+	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
+	unsigned short lastUDP = (unsigned short)SETTING(UDP_PORT);
 	int lastConn = SETTING(INCOMING_CONNECTIONS);
 
 	if(dlg.DoModal(m_hWnd) == IDOK)

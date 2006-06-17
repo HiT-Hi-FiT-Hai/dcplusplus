@@ -405,14 +405,6 @@ void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc, const CID& fro
 	SearchManager::getInstance()->respond(adc, from);
 }
 
-Identity ClientManager::getIdentity(const User::Ptr& aUser) {
-	OnlineIter i = onlineUsers.find(aUser->getCID());
-	if(i != onlineUsers.end()) {
-		return i->second->getIdentity();
-	}
-	return Identity(aUser, Util::emptyString, 0);
-}
-
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
 	

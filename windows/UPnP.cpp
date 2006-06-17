@@ -24,7 +24,7 @@
 #include <atlconv.h>
 #include "../client/Util.h"
 
-UPnP::UPnP(const string theIPAddress, const string theProtocol, const string theDescription, const short thePort) {
+UPnP::UPnP(const string theIPAddress, const string theProtocol, const string theDescription, const unsigned short thePort) {
 	// need some messy string conversions in here
 	// to convert STL::string to BSTR type strings
 	// required for the UPnP code.

@@ -29,7 +29,7 @@
 #include "Util.h"
 #include "UserCommand.h"
 #include "FavoriteManager.h"
-#include "SSLSocket.h"
+#include "CryptoManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
@@ -453,8 +453,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 
 	ADDPARAM("ID", ClientManager::getInstance()->getMyCID().toBase32());
 	ADDPARAM("PD", ClientManager::getInstance()->getMyPID().toBase32());
-	ADDPARAM("NI", getMyIdentity().getNick());
-	ADDPARAM("DE", getMyIdentity().getDescription());
+	ADDPARAM("NI", getCurrentNick());
+	ADDPARAM("DE", getCurrentDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
 	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
 	ADDPARAM("SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
@@ -478,7 +478,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	}
 
 	string su;
-	if(SSLSocketFactory::getInstance()->hasCerts()) {
+	if(CryptoManager::getInstance()->hasCerts()) {
 		su += ADCS_FEATURE + ",";
 	} 
 	
@@ -546,17 +546,6 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 	clearUsers();
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
-}
-
-void AdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
-	if(socket && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Nothing's happened for ~120 seconds, check if we're connected, if not, try to connect...
-		if(!isConnected()) {
-			// Try to reconnect...
-			if(reconnect && !getAddress().empty())
-				Client::connect();
-		}
-	}
 }
 
 void AdcHub::send(const AdcCommand& cmd) {
