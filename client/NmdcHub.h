@@ -40,7 +40,6 @@ public:
 
 	virtual void connect();
 	virtual void connect(const OnlineUser& aUser);
-	virtual void disconnect(bool graceless) throw();
 
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& aUser, const string& aMessage);

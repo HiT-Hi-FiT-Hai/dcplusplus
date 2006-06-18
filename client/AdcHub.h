@@ -33,10 +33,10 @@ class ClientManager;
 class AdcHub : public Client, public CommandHandler<AdcHub> {
 public:
 	using Client::send;
+	using Client::connect;
 
 	virtual void connect(const OnlineUser& user);
 	void connect(const OnlineUser& user, string const& token, bool secure);
-	virtual void disconnect(bool graceless);
 	
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& user, const string& aMessage);
@@ -119,6 +119,8 @@ private:
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string& aLine) throw();
 	virtual void on(Failed, const string& aLine) throw();
+
+	virtual void on(Second, u_int32_t aTick) throw();
 };
 
 #endif // !defined(ADC_HUB_H)

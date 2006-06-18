@@ -170,13 +170,7 @@ private:
 	void threadSendData();
 	void threadDisconnect();
 	
-	void fail(const string& aError) {
-		if(sock)
-			sock->disconnect();
-		fire(BufferedSocketListener::Failed(), aError);
-		failed = true;
-	}
-	
+	void fail(const string& aError);	
 	static size_t sockets;
 
 	bool checkEvents();

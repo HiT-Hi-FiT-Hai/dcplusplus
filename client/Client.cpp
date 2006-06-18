@@ -109,7 +109,6 @@ void Client::connect() {
 void Client::disconnect(bool graceLess) {
 	if(!socket)
 		return;
-	socket->removeListener(this);
 	socket->disconnect(graceLess);
 }
 
@@ -158,9 +157,5 @@ string Client::getLocalIp() const {
 	return lip;
 }
 
-void Client::on(Second, u_int32_t aTick) throw() {
-	if(getAutoReconnect() && !isConnected() && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Try to reconnect...
-		connect();
-	}
+void Client::on(Second, u_int32_t) throw() {
 }

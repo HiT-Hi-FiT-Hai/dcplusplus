@@ -354,12 +354,6 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	}
 }
 
-void AdcHub::disconnect(bool graceless) {
-	Client::disconnect(graceless);
-	state = STATE_PROTOCOL;
-	clearUsers();
-}
-
 void AdcHub::hubMessage(const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
@@ -545,6 +539,8 @@ void AdcHub::on(Line, const string& aLine) throw() {
 
 void AdcHub::on(Failed, const string& aLine) throw() { 
 	clearUsers();
+	socket->removeListener(this);
+
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
 }
@@ -556,4 +552,11 @@ void AdcHub::send(const AdcCommand& cmd) {
 	if(cmd.getType() == AdcCommand::TYPE_UDP)
 		sendUDP(cmd);
 	send(cmd.toString(sid));
+}
+
+void AdcHub::on(Second, u_int32_t aTick) throw() {
+	if(getAutoReconnect() && state == STATE_PROTOCOL && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+		// Try to reconnect...
+		connect();
+	}
 }

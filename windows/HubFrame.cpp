@@ -1415,9 +1415,10 @@ void HubFrame::updateUserList(UserInfo* ui) {
 					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
 			}
 		} else {
-			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
-				if(!ui->isHidden() && matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
-					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
+			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+				UserInfo* ui = i->second;
+				if(!ui->isHidden() && matchFilter(*ui, sel, doSizeCompare, mode, size)) {
+					ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));	
 				}
 			}
 		}

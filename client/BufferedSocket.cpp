@@ -459,6 +459,16 @@ int BufferedSocket::run() {
 	return 0;
 }
 
+void BufferedSocket::fail(const string& aError) {
+	if(sock) {
+		sock->disconnect();
+	}
+	if(!failed) {
+		failed = true;
+		fire(BufferedSocketListener::Failed(), aError);
+	}
+}
+
 void BufferedSocket::shutdown() { 
 	if(sock) {
 		Lock l(cs); 

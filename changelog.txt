@@ -22,6 +22,7 @@
 * [ADC] Allowed $ and | in nick/description
 * Fixed targetdrive bug for temp target location
 * Fixed a crash bug when hash data cannot be saved
+* Possibly fixed issues with queue items not being updated
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

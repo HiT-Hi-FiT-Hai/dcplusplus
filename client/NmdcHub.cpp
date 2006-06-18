@@ -296,9 +296,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		int type = Util::toInt(param.substr(i, j-i)) - 1;
 		i = j + 1;
-		string terms = param.substr(i);
+		string terms = unescape(param.substr(i));
 
-		if(param.size() > 0) {
+		if(terms.size() > 0) {
 			if(seeker.compare(0, 4, "Hub:") == 0) {
 				OnlineUser* u = findUser(seeker.substr(4));
 
@@ -312,7 +312,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				}
 			}
 
-			fire(ClientListener::NmdcSearch(), this, seeker, a, Util::toInt64(size), type, param);
+			fire(ClientListener::NmdcSearch(), this, seeker, a, Util::toInt64(size), type, terms);
 		}
 	} else if(cmd == "$MyINFO") {
 		string::size_type i, j;
@@ -760,18 +760,12 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	}
 }
 
-void NmdcHub::disconnect(bool graceless) throw() {	
-	Client::disconnect(graceless);
-	state = STATE_CONNECT;
-	clearUsers();
-}
-
 void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {
 	checkstate(); 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-	string tmp = toAcp(escape((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : aString));
+	string tmp = ((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : toAcp(escape(aString)));
 	string::size_type i;
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
@@ -866,12 +860,15 @@ void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) {
 
 // TimerManagerListener
 void NmdcHub::on(Second, u_int32_t aTick) throw() {
-
-	if(isConnected() && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+	if(state == STATE_CONNECTED && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
 		// Try to send something for the fun of it...
 		dcdebug("Testing writing...\n");
 		send("|", 1);
+	} else if(getAutoReconnect() && state == STATE_CONNECT && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+		// Try to reconnect...
+		connect();
 	}
+
 	{
 		Lock l(cs);
 		
@@ -890,6 +887,8 @@ void NmdcHub::on(Second, u_int32_t aTick) throw() {
 // BufferedSocketListener
 void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	clearUsers();
+
+	socket->removeListener(this);
 
 	if(state == STATE_CONNECTED)
 		state = STATE_CONNECT;
