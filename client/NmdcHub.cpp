@@ -84,7 +84,7 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 	}
 
 	User::Ptr p;
-	if(aNick == getMyNick()) {
+	if(aNick == getCurrentNick()) {
 		p = ClientManager::getInstance()->getMe();
 	} else {
 		p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
@@ -524,13 +524,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			}
 
 			key(CryptoManager::getInstance()->makeKey(lock));
-			validateNick(getMyNick());
+			OnlineUser& ou = getUser(getCurrentNick());
+			validateNick(ou.getIdentity().getNick());
 		}
 	} else if(cmd == "$Hello") {
 		if(!param.empty()) {
 			OnlineUser& u = getUser(param);
 
-			if(getMyNick() == param) {
+			if(u.getUser() == getMyIdentity().getUser()) {
 				u.getUser()->setFlag(User::DCPLUSPLUS);
 				if(ClientManager::getInstance()->isActive())
 					u.getUser()->unsetFlag(User::PASSIVE);
@@ -538,7 +539,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 					u.getUser()->setFlag(User::PASSIVE);
 			}
 
-			if(state == STATE_HELLO) {
+			if(state == STATE_HELLO && u.getUser() == getMyIdentity().getUser()) {
 				state = STATE_CONNECTED;
 				updateCounts(false);
 
@@ -689,9 +690,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 string NmdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
-	string::size_type i = 0;
-	while( (i = tmp.find_first_of("|$ ", i)) != string::npos) {
-		tmp[i++]='_';
+	for(size_t i = 0; i < aNick.size(); ++i) {
+		if(tmp[i] <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
+			tmp[i] = '_';
+		}
 	}
 	return tmp;
 }
@@ -745,7 +747,7 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	string myInfoA = 
-		"$MyINFO $ALL " + toAcp(getCurrentNick()) + " " + toAcp(escape(getCurrentDescription())) + 
+		"$MyINFO $ALL " + toAcp(getMyNick()) + " " + toAcp(escape(getCurrentDescription())) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
 		">$ $" + SETTING(UPLOAD_SPEED) + "\x01$" + toAcp(escape(SETTING(EMAIL))) + '$'; 
 	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";

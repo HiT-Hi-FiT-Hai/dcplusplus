@@ -75,11 +75,11 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 	GetDlgItemText(wID, buf, SETTINGS_BUF_LEN);
 	tstring old = buf;
 
-	// Strip '$', '|', '<', '>' and ' ' from text
+	// Strip ' ' from nick
 	TCHAR *b = buf, *f = buf, c;
 	while( (c = *b++) != 0 )
 	{
-		if(c != '$' && c != '|' && (wID == IDC_DESCRIPTION || c != ' ') && ( (wID != IDC_NICK) || (c != '<' && c != '>')) )
+		if(c != ' ')
 			*f++ = c;
 	}
 

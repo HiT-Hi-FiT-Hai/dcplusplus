@@ -17,7 +17,11 @@
 * Fixed auto-reconnect
 * [bug 936] Fixed duplicate entries in search hubs
 * Fixed some hub title display issues
-* Some code spring cleanup
+* Some spring cleanup
+* [bug 970] Unix file permissions correctly set (thanks steven sheehy)
+* [ADC] Allowed $ and | in nick/description
+* Fixed targetdrive bug for temp target location
+* Fixed a crash bug when hash data cannot be saved
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

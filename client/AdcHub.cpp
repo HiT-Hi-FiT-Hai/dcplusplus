@@ -133,7 +133,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getUser()->setFlag(User::SSL);
 	}
 
-	if(u->getUser() == ClientManager::getInstance()->getMe()) {
+	if(u->getUser() == getMyIdentity().getUser()) {
 		state = STATE_NORMAL;
 		setMyIdentity(u->getIdentity());
 		updateCounts(false);
@@ -519,9 +519,10 @@ int64_t AdcHub::getAvailable() const {
 
 string AdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
-	string::size_type i = 0;
-	while( (i = tmp.find_first_of(" ", i)) != string::npos) {
-		tmp[i++]='_';
+	for(size_t i = 0; i < aNick.size(); ++i) {
+		if(tmp[i] <= 32) {
+			tmp[i] = '_';
+		}
 	}
 	return tmp;
 }

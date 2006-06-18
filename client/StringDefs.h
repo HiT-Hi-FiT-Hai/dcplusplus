@@ -116,6 +116,7 @@ enum Strings { // @DontAdd
 	ERROR_CREATING_REGISTRY_KEY_DCHUB, // "Error creating dchub registry key"
 	ERROR_CREATING_REGISTRY_KEY_MAGNET, // "Error creating magnet registry key"
 	ERROR_HASHING, // "Error hashing "
+	ERROR_SAVING_HASH, // "Error saving hash data: "
 	EXACT_SIZE, // "Exact size"
 	EXECUTABLE, // "Executable"
 	FAV_JOIN_SHOWING_OFF, // "Join/part of favorite users showing off"

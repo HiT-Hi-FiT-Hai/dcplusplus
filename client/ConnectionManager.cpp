@@ -122,10 +122,10 @@ void ConnectionManager::putCQI(ConnectionQueueItem* cqi) {
 	fire(ConnectionManagerListener::Removed(), cqi);
 	if(cqi->getDownload()) {
 		dcassert(find(downloads.begin(), downloads.end(), cqi) != downloads.end());
-		downloads.erase(find(downloads.begin(), downloads.end(), cqi));
+		downloads.erase(remove(downloads.begin(), downloads.end(), cqi), downloads.end());
 	} else {
 		dcassert(find(uploads.begin(), uploads.end(), cqi) != uploads.end());
-		uploads.erase(find(uploads.begin(), uploads.end(), cqi));
+		uploads.erase(remove(uploads.begin(), uploads.end(), cqi), uploads.end());
 	}
 	delete cqi;
 }

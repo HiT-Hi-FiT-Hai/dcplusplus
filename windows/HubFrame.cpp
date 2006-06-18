@@ -1313,6 +1313,9 @@ bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 	tstring::size_type end = static_cast<tstring::size_type>(tstring::npos);
 	int64_t multiplier = 1;
 	
+	if(filter.empty()) {
+		return false;
+	}
 	if(filter.compare(0, 2, _T(">=")) == 0) {
 		mode = FilterModes::GREATER_EQUAL;
 		start = 2;

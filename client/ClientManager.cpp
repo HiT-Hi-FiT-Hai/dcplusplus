@@ -61,18 +61,7 @@ void ClientManager::putClient(Client* aClient) {
 	
 	{
 		Lock l(cs);
-
-		// Either I'm stupid or the msvc7 optimizer is doing something _very_ strange here...
-		// STL-port -D_STL_DEBUG complains that .begin() and .end() don't have the same owner (!)
-		//		dcassert(find(clients.begin(), clients.end(), aClient) != clients.end());
-		//		clients.erase(find(clients.begin(), clients.end(), aClient));
-		
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if(*i == aClient) {
-				clients.erase(i);
-				break;
-			}
-		}
+		clients.erase(remove(clients.begin(), clients.end(), aClient), clients.end());
 	}
 	delete aClient;
 }

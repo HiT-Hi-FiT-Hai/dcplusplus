@@ -74,7 +74,9 @@ void Client::reloadSettings(bool updateNick) {
 		}
 		setPassword(hub->getPassword());
 	} else {
-		setCurrentNick(checkNick(SETTING(NICK)));
+		if(updateNick) {
+			setCurrentNick(checkNick(SETTING(NICK)));
+		}
 		setCurrentDescription(SETTING(DESCRIPTION));
 	}
 }
@@ -87,7 +89,7 @@ void Client::connect() {
 	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings(true);
 	setRegistered(false);
-	setMyIdentity(Identity());
+	setMyIdentity(Identity(ClientManager::getInstance()->getMe(), 0));
 	setHubIdentity(Identity());
 
 	try {

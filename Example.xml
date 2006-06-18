@@ -112,6 +112,7 @@
 		<String Name="ErrorCreatingRegistryKeyDchub">Error creating dchub registry key</String>
 		<String Name="ErrorCreatingRegistryKeyMagnet">Error creating magnet registry key</String>
 		<String Name="ErrorHashing">Error hashing </String>
+		<String Name="ErrorSavingHash">Error saving hash data: </String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>

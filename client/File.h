@@ -246,7 +246,7 @@ public:
 		if(mode & TRUNCATE) {
 			m |= O_TRUNC;
 		}
-		h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR);
+		h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		if(h == -1)
 			throw FileException("Could not open file");
 	}	
@@ -390,7 +390,7 @@ public:
 		string acp = Text::utf8ToAcp(aFile);
 		string::size_type start = 0;
 		while( (start = aFile.find_first_of(L'/', start)) != string::npos) {
-			mkdir(aFile.substr(0, start+1).c_str(), 0755);
+			mkdir(aFile.substr(0, start+1).c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 			start++;
 		}
 	}
