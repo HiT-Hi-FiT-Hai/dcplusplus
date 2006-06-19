@@ -800,22 +800,6 @@ string NmdcHub::validateMessage(string tmp, bool reverse) {
 			tmp.replace(i, 5, "&");
 			i++;
 		}
-#if 0
-/// @todo move this to a better place
-		if(checkNewLines) {
-			// Check all '<' and '[' after newlines...
-			i = 0;
-			while( (i = tmp.find('\n', i)) != string::npos) {
-				if(i + 1 < tmp.length()) {
-					if(tmp[i+1] == '[' || tmp[i+1] == '<') {
-						tmp.insert(i+1, "- ");
-						i += 2;
-					}
-				}
-				i++;
-			}
-		}
-#endif
 	} else {
 		i = 0;
 		while( (i = tmp.find("&amp;", i)) != string::npos) {

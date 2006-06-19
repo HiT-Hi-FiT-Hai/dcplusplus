@@ -23,6 +23,10 @@
 * Fixed targetdrive bug for temp target location
 * Fixed a crash bug when hash data cannot be saved
 * Possibly fixed issues with queue items not being updated
+* Added warning when someone tries to spam hublist.org or dcpp.net with your client
+* [bug 968] Fixed unix compile issue (thanks pothead)
+* [bug 975] Fixed silly warning (thanks pothead)
+
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

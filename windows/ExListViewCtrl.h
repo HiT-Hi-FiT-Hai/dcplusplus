@@ -23,8 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../client/Util.h"
 #include "ListViewArrows.h"
+#include "WinUtil.h"
 
 class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CControlWinTraits>,
 	public ListViewArrows<ExListViewCtrl>
@@ -147,7 +147,7 @@ public:
 		} else if(result == SORT_BYTES) {
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
-			result = compare(Util::toBytes(buf), Util::toBytes(buf2));
+			result = compare(WinUtil::toBytes(buf), WinUtil::toBytes(buf2));
  		}
 		if(!p->ascending)
 			result = -result;

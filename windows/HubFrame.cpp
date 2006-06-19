@@ -1250,7 +1250,7 @@ void HubFrame::on(HubUpdated, Client*) throw() {
 	speak(SET_WINDOW_TITLE, hubName);
 }
 void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() { 
-	speak(ADD_CHAT_LINE, Util::toDOS("<" + from.getIdentity().getNick() + "> " + msg));
+	speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg));
 }
 
 void HubFrame::on(StatusMessage, Client*, const string& line) {
@@ -1268,7 +1268,7 @@ void HubFrame::on(StatusMessage, Client*, const string& line) {
 }
 
 void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() { 
-	speak(from, to, replyTo, Util::toDOS("<" + from.getIdentity().getNick() + "> " + line));
+	speak(from, to, replyTo, Util::formatMessage(from.getIdentity().getNick(), line));
 }
 void HubFrame::on(NickTaken, Client*) throw() { 
 	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
