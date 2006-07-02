@@ -55,7 +55,7 @@ void sendCertificateVerify(SSL&, BufferOutput = buffered);
 int  sendData(SSL&, const void*, int);
 int  sendAlert(SSL& ssl, const Alert& alert);
 
-int  receiveData(SSL&, Data&); 
+int  receiveData(SSL&, Data&, bool peek = false); 
 void processReply(SSL&);
 
 void buildFinished(SSL&, Finished&, const opaque*);

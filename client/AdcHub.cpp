@@ -540,7 +540,6 @@ void AdcHub::on(Line, const string& aLine) throw() {
 void AdcHub::on(Failed, const string& aLine) throw() { 
 	clearUsers();
 	socket->removeListener(this);
-
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
 }
@@ -555,7 +554,7 @@ void AdcHub::send(const AdcCommand& cmd) {
 }
 
 void AdcHub::on(Second, u_int32_t aTick) throw() {
-	if(getAutoReconnect() && state == STATE_PROTOCOL && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+	if(getAutoReconnect() && state == STATE_PROTOCOL && (getReconnecting() || ((getLastActivity() + getReconnDelay() * 1000) < aTick)) ) {
 		// Try to reconnect...
 		connect();
 	}

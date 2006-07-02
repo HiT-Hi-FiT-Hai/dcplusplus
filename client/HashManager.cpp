@@ -409,7 +409,7 @@ void HashLoader::endTag(const string& name, const string&) {
 
 HashManager::HashStore::HashStore() : dirty(false) 
 { 
-	if(File::getSize(getDataFile()) <= sizeof(int64_t)) {
+	if(File::getSize(getDataFile()) <= static_cast<int64_t>(sizeof(int64_t))) {
 		try {
 			createDataFile(getDataFile());
 		} catch(const FileException&) {

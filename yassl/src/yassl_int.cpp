@@ -28,7 +28,6 @@
 #include "yassl_int.hpp"
 #include "handshake.hpp"
 #include "timer.hpp"
-#include "openssl/ssl.h"  // for DH
 
 
 #ifdef YASSL_PURE_C
@@ -987,6 +986,36 @@ void SSL::fillData(Data& data)
 }
 
 
+// like Fill but keep data in buffer
+void SSL::PeekData(Data& data)
+{
+    if (GetError()) return;
+    uint dataSz   = data.get_length();        // input, data size to fill
+    uint elements = buffers_.getData().size();
+
+    data.set_length(0);                         // output, actual data filled
+    dataSz = min(dataSz, bufferedData());
+
+    Buffers::inputList::iterator front = buffers_.getData().begin();
+
+    while (elements) {
+        uint frontSz = (*front)->get_remaining();
+        uint readSz  = min(dataSz - data.get_length(), frontSz);
+        uint before  = (*front)->get_current();
+
+        (*front)->read(data.set_buffer() + data.get_length(), readSz);
+        data.set_length(data.get_length() + readSz);
+        (*front)->set_current(before);
+
+        if (data.get_length() == dataSz)
+            break;
+
+        elements--;
+        front++;
+    }
+}
+
+
 // flush output buffer
 void SSL::flushBuffer()
 {
@@ -1363,20 +1392,25 @@ SSL_SESSION::~SSL_SESSION()
 }
 
 
-Sessions Sessions::instance_; // simple singleton
+static Sessions* sessionsInstance = 0;
 
 Sessions& GetSessions()
 {
-    return Sessions::instance_;
+    if (!sessionsInstance)
+        sessionsInstance = NEW_YS Sessions;
+    return *sessionsInstance;
 }
 
 
-sslFactory sslFactory::instance_; // simple singleton
+static sslFactory* sslFactoryInstance = 0;
 
 sslFactory& GetSSL_Factory()
-{   
-    return sslFactory::instance_;
+{  
+    if (!sslFactoryInstance)
+        sslFactoryInstance = NEW_YS sslFactory;
+    return *sslFactoryInstance;
 }
+
 
 
 typedef Mutex::Lock Lock;
@@ -1967,18 +2001,20 @@ void Security::set_resuming(bool b)
 
 
 X509_NAME::X509_NAME(const char* n, size_t sz)
-    : name_(0)
+    : name_(0), sz_(sz)
 {
     if (sz) {
         name_ = NEW_YS char[sz];
         memcpy(name_, n, sz);
     }
+    entry_.data = 0;
 }
 
 
 X509_NAME::~X509_NAME()
 {
     ysArrayDelete(name_);
+    ysArrayDelete(entry_.data);
 }
 
 
@@ -1988,8 +2024,10 @@ char* X509_NAME::GetName()
 }
 
 
-X509::X509(const char* i, size_t iSz, const char* s, size_t sSz)
-    : issuer_(i, iSz), subject_(s, sSz)
+X509::X509(const char* i, size_t iSz, const char* s, size_t sSz,
+           const char* b, int bSz, const char* a, int aSz)
+    : issuer_(i, iSz), subject_(s, sSz),
+      beforeDate_(b, bSz), afterDate_(a, aSz)
 {}
    
 
@@ -2005,8 +2043,75 @@ X509_NAME* X509::GetSubject()
 }
 
 
+ASN1_STRING* X509::GetBefore()
+{
+    return beforeDate_.GetString();
+}
+
+
+ASN1_STRING* X509::GetAfter()
+{
+    return afterDate_.GetString();
+}
+
+
+ASN1_STRING* X509_NAME::GetEntry(int i)
+{
+    if (i < 0 || i >= int(sz_))
+        return 0;
+
+    if (entry_.data)
+        ysArrayDelete(entry_.data);
+    entry_.data = NEW_YS byte[sz_];       // max size;
+
+    memcpy(entry_.data, &name_[i], sz_ - i);
+    if (entry_.data[sz_ -i - 1]) {
+        entry_.data[sz_ - i] = 0;
+        entry_.length = sz_ - i;
+    }
+    else
+        entry_.length = sz_ - i - 1;
+    entry_.type = 0;
+
+    return &entry_;
+}
+
+
+StringHolder::StringHolder(const char* str, int sz)
+{
+    asnString_.length = sz;
+    asnString_.data = NEW_YS byte[sz + 1];
+    memcpy(asnString_.data, str, sz);
+    asnString_.type = 0;  // not used for now
+}
+
+
+StringHolder::~StringHolder()
+{
+    ysArrayDelete(asnString_.data);
+}
+
+
+ASN1_STRING* StringHolder::GetString()
+{
+    return &asnString_;
+}
+
 
 } // namespace
+
+
+extern "C" void yaSSL_CleanUp()
+{
+    TaoCrypt::CleanUp();
+    yaSSL::ysDelete(yaSSL::sslFactoryInstance);
+    yaSSL::ysDelete(yaSSL::sessionsInstance);
+
+    // In case user calls more than once, prevent seg fault
+    yaSSL::sslFactoryInstance = 0;
+    yaSSL::sessionsInstance = 0;
+}
+
 
 #ifdef HAVE_EXPLICIT_TEMPLATE_INSTANTIATION
 namespace mySTL {

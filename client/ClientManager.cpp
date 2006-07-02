@@ -94,21 +94,21 @@ StringList ClientManager::getHubNames(const CID& cid) {
 
 StringList ClientManager::getNicks(const CID& cid) {
 	Lock l(cs);
-	StringList lst;
+	StringSet nicks;
 	OnlinePair op = onlineUsers.equal_range(cid);
 	for(OnlineIter i = op.first; i != op.second; ++i) {
-		lst.push_back(i->second->getIdentity().getNick());
+		nicks.insert(i->second->getIdentity().getNick());
 	}
-	if(lst.empty()) {
+	if(nicks.empty()) {
 		// Offline perhaps?
 		UserIter i = users.find(cid);
 		if(i != users.end() && !i->second->getFirstNick().empty()) {
-			lst.push_back(i->second->getFirstNick());
+			nicks.insert(i->second->getFirstNick());
 		} else {
-			lst.push_back('{' + cid.toBase32() + '}');
+			nicks.insert('{' + cid.toBase32() + '}');
 		}
 	}
-	return lst;
+	return StringList(nicks.begin(), nicks.end());
 }
 
 string ClientManager::getConnection(const CID& cid) {

@@ -39,7 +39,7 @@
     #include <string.h>
 #endif // _WIN32
 
-#ifdef __sun
+#if defined(__sun) || defined(__SCO_VERSION__)
     #include <sys/filio.h>
 #endif
 
@@ -58,7 +58,7 @@ namespace yaSSL {
 
 
 Socket::Socket(socket_t s) 
-    : socket_(s) 
+    : socket_(s), wouldBlock_(false)
 {}
 
 
@@ -95,11 +95,15 @@ void Socket::closeSocket()
 
 uint Socket::get_ready() const
 {
-    unsigned long ready = 0;
-
 #ifdef _WIN32
+    unsigned long ready = 0;
     ioctlsocket(socket_, FIONREAD, &ready);
 #else
+    /*
+       64-bit Solaris requires the variable passed to
+       FIONREAD be a 32-bit value.
+    */
+    unsigned int ready = 0;
     ioctl(socket_, FIONREAD, &ready);
 #endif
 
@@ -109,26 +113,39 @@ uint Socket::get_ready() const
 
 uint Socket::send(const byte* buf, unsigned int sz, int flags) const
 {
+    const byte* pos = buf;
+    const byte* end = pos + sz;
+
     assert(socket_ != INVALID_SOCKET);
-    int sent = ::send(socket_, reinterpret_cast<const char *>(buf), sz, flags);
 
-    if (sent == -1)
-        return 0;
+    while (pos != end) {
+        int sent = ::send(socket_, reinterpret_cast<const char *>(pos),
+                          static_cast<int>(end - pos), flags);
 
-    return sent;
+        if (sent == -1)
+            return 0;
+
+        pos += sent;
+    }
+
+    return sz;
 }
 
 
-uint Socket::receive(byte* buf, unsigned int sz, int flags) const
+uint Socket::receive(byte* buf, unsigned int sz, int flags)
 {
     assert(socket_ != INVALID_SOCKET);
+    wouldBlock_ = false;
+
     int recvd = ::recv(socket_, reinterpret_cast<char *>(buf), sz, flags);
 
     // idea to seperate error from would block by arnetheduck@gmail.com
     if (recvd == -1) {
         if (get_lastError() == SOCKET_EWOULDBLOCK || 
-            get_lastError() == SOCKET_EAGAIN)
+            get_lastError() == SOCKET_EAGAIN) {
+            wouldBlock_ = true;
             return 0;
+        }
     }
     else if (recvd == 0)
         return static_cast<uint>(-1);
@@ -138,7 +155,7 @@ uint Socket::receive(byte* buf, unsigned int sz, int flags) const
 
 
 // wait if blocking for input, return false for error
-bool Socket::wait() const
+bool Socket::wait()
 {
     byte b;
     return receive(&b, 1, MSG_PEEK) != static_cast<uint>(-1);
@@ -159,6 +176,12 @@ int Socket::get_lastError()
 #else
     return errno;
 #endif
+}
+
+
+bool Socket::WouldBlock() const
+{
+    return wouldBlock_;
 }
 
 

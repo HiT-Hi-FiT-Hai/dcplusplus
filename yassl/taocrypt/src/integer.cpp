@@ -555,7 +555,7 @@ static word AtomicInverseModPower2(word A)
     for (unsigned i=3; i<WORD_BITS; i*=2)
         R = R*(2-R*A);
 
-    assert(R*A==1);
+    assert(word(R*A)==1);
     return R;
 }
 
@@ -2428,7 +2428,7 @@ void PositiveMultiply(Integer& product, const Integer& a, const Integer& b)
     product.reg_.CleanNew(RoundupSize(aSize + bSize));
     product.sign_ = Integer::POSITIVE;
 
-    WordBlock workspace(aSize + bSize);
+    AlignedWordBlock workspace(aSize + bSize);
     AsymmetricMultiply(product.reg_.get_buffer(), workspace.get_buffer(),
                        a.reg_.get_buffer(), aSize, b.reg_.get_buffer(), bSize);
 }
@@ -2709,21 +2709,37 @@ unsigned int Integer::Encode(byte* output, unsigned int outputLen,
 }
 
 
-const Integer Integer::zero_;
+static Integer* zero = 0;
 
 const Integer &Integer::Zero()
 {
-    return zero_;
+    if (!zero)
+        zero = NEW_TC Integer;
+    return *zero;
 }
 
 
-const Integer Integer::one_(1,2);
+static Integer* one = 0;
 
 const Integer &Integer::One()
 {
-    return one_;
+    if (!one)
+        one = NEW_TC Integer(1,2);
+    return *one;
 }
 
+
+// Clean up static singleton holders, not a leak, but helpful to have gone
+// when checking for leaks
+void CleanUp()
+{
+    tcDelete(one);
+    tcDelete(zero);
+
+    // In case user calls more than once, prevent seg fault
+    one  = 0;
+    zero = 0;
+}
 
 Integer::Integer(RandomNumberGenerator& rng, const Integer& min,
                  const Integer& max)
@@ -3362,7 +3378,7 @@ void PositiveDivide(Integer& remainder, Integer& quotient,
     quotient.reg_.CleanNew(RoundupSize(aSize-bSize+2));
     quotient.sign_ = Integer::POSITIVE;
 
-    WordBlock T(aSize+2*bSize+4);
+    AlignedWordBlock T(aSize+2*bSize+4);
     Divide(remainder.reg_.get_buffer(), quotient.reg_.get_buffer(),
            T.get_buffer(), a.reg_.get_buffer(), aSize, b.reg_.get_buffer(),
            bSize);
@@ -3582,7 +3598,7 @@ Integer Integer::InverseMod(const Integer &m) const
         return !u ? Zero() : (m*(*this-u)+1)/(*this);
     }
 
-    WordBlock T(m.reg_.size() * 4);
+    AlignedWordBlock T(m.reg_.size() * 4);
     Integer r((word)0, m.reg_.size());
     unsigned k = AlmostInverse(r.reg_.get_buffer(), T.get_buffer(),
                                reg_.get_buffer(), reg_.size(),

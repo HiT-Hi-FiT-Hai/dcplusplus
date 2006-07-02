@@ -254,6 +254,10 @@ void BufferedSocket::threadRead() throw(SocketException) {
 				break;
 		}
 	}
+
+	if(mode == MODE_LINE && line.size() > SETTING(MAX_COMMAND_LENGTH)) {
+		throw SocketException(STRING(COMMAND_TOO_LONG));
+	}
 }
 
 void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {

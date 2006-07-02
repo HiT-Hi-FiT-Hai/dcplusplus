@@ -34,6 +34,7 @@
 
 namespace yaSSL {
 
+
 #ifdef YASSL_PURE_C
 
     // library allocation

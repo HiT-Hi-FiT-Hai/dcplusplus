@@ -51,6 +51,7 @@ enum Strings { // @DontAdd
 	CLOSING_CONNECTION, // "Closing connection..."
 	COMPRESSED, // "Compressed"
 	COMPRESSION_ERROR, // "Error during compression"
+	COMMAND_TOO_LONG, // "Maximum command length exceeded"
 	CONFIGURE, // "&Configure"
 	CONNECT, // "&Connect"
 	CONNECT_FAVUSER_HUB, // "Connect to hub"

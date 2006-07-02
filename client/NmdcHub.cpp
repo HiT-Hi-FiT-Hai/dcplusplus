@@ -848,7 +848,7 @@ void NmdcHub::on(Second, u_int32_t aTick) throw() {
 		// Try to send something for the fun of it...
 		dcdebug("Testing writing...\n");
 		send("|", 1);
-	} else if(getAutoReconnect() && state == STATE_CONNECT && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+	} else if(getAutoReconnect() && state == STATE_CONNECT && (getReconnecting() || ((getLastActivity() + getReconnDelay() * 1000) < aTick))) {
 		// Try to reconnect...
 		connect();
 	}
@@ -871,11 +871,7 @@ void NmdcHub::on(Second, u_int32_t aTick) throw() {
 // BufferedSocketListener
 void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	clearUsers();
-
 	socket->removeListener(this);
-
-	if(state == STATE_CONNECTED)
-		state = STATE_CONNECT;
-
-	fire(ClientListener::Failed(), this, aLine); 
+	state = STATE_CONNECT;
+	fire(ClientListener::Failed(), this, aLine);
 }

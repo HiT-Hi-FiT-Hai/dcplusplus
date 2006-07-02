@@ -26,7 +26,10 @@
 * Added warning when someone tries to spam hublist.org or dcpp.net with your client
 * [bug 968] Fixed unix compile issue (thanks pothead)
 * [bug 975] Fixed silly warning (thanks pothead)
-
+* [bug 978] Fixed 64-bit compiler issue (thanks steven sheehy)
+* [bug 988] Only unique nicks diplayed in title bar 
+* Added protection from hubs/clients sending junk data resulting in high memory usage / crash
+* Updated to yaSSL 1.3.7
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

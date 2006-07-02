@@ -30,7 +30,7 @@ Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
 	myIdentity(ClientManager::getInstance()->getMe(), 0),
-	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), socket(0), 
+	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), reconnecting(false), socket(0), 
 	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
@@ -49,7 +49,7 @@ Client::~Client() throw() {
 void Client::reconnect() {
 	disconnect(true);
 	setAutoReconnect(true);
-	resetActivtiy();
+	setReconnecting(true);
 }
 
 void Client::shutdown() {
@@ -86,6 +86,7 @@ void Client::connect() {
 		BufferedSocket::putSocket(socket);
 
 	setAutoReconnect(true);
+	setReconnecting(false);
 	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings(true);
 	setRegistered(false);

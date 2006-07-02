@@ -74,7 +74,7 @@ const string SettingsManager::settingTags[] =
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
 	"UseSsl", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches", 
-	"DontDlAlreadyQueued", 
+	"DontDlAlreadyQueued", "MaxCommandLength",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -260,6 +260,7 @@ SettingsManager::SettingsManager()
 	setDefault(PROMPT_PASSWORD, false);
 	setDefault(SPY_FRAME_IGNORE_TTH_SEARCHES, false);
 	setDefault(DONT_DL_ALREADY_QUEUED, false);
+	setDefault(MAX_COMMAND_LENGTH, 16*1024*1024);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

@@ -458,6 +458,11 @@ void ProcessOldClientHello(input_buffer& input, SSL& ssl)
 
     uint16 sz = ((b0 & 0x7f) << 8) | b1;
 
+    if (sz > input.get_remaining()) {
+        ssl.SetError(bad_input);
+        return;
+    }
+
     // hashHandShake manually
     const opaque* buffer = input.get_buffer() + input.get_current();
     ssl.useHashes().use_MD5().update(buffer, sz);
@@ -650,16 +655,16 @@ void build_certHashes(SSL& ssl, Hashes& hashes)
 }
 
 
-mySTL::auto_ptr<input_buffer> null_buffer(ysDelete);
 
 // do process input requests
 mySTL::auto_ptr<input_buffer>
 DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
 {
     // wait for input if blocking
-    if (!ssl.getSocket().wait()) {
+    if (!ssl.useSocket().wait()) {
         ssl.SetError(receive_error);
-        return buffered = null_buffer;
+        buffered.reset(0);
+        return buffered;
     }
     uint ready = ssl.getSocket().get_ready();
     if (!ready) return buffered; 
@@ -669,11 +674,11 @@ DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
     input_buffer buffer(buffSz + ready);
     if (buffSz) {
         buffer.assign(buffered.get()->get_buffer(), buffSz);
-        buffered = null_buffer;
+        buffered.reset(0);
     }
 
-    // add NEW_YS data
-    uint read  = ssl.getSocket().receive(buffer.get_buffer() + buffSz, ready);
+    // add new data
+    uint read  = ssl.useSocket().receive(buffer.get_buffer() + buffSz, ready);
     buffer.add_size(read);
     uint offset = 0;
     const MessageFactory& mf = ssl.getFactory().getMessage();
@@ -681,39 +686,56 @@ DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
     // old style sslv2 client hello?
     if (ssl.getSecurity().get_parms().entity_ == server_end &&
                   ssl.getStates().getServer() == clientNull) 
-        if (buffer.peek() != handshake)
+        if (buffer.peek() != handshake) {
             ProcessOldClientHello(buffer, ssl);
+            if (ssl.GetError()) {
+                buffered.reset(0);
+                return buffered;
+            }
+        }
 
     while(!buffer.eof()) {
         // each record
         RecordLayerHeader hdr;
-        buffer >> hdr;
-        ssl.verifyState(hdr);
+        bool              needHdr = false;
+
+        if (static_cast<uint>(RECORD_HEADER) > buffer.get_remaining())
+            needHdr = true;
+        else {
+            buffer >> hdr;
+            ssl.verifyState(hdr);
+        }
 
         // make sure we have enough input in buffer to process this record
-        if (hdr.length_ > buffer.get_remaining()) { 
-            uint sz = buffer.get_remaining() + RECORD_HEADER;
+        if (needHdr || hdr.length_ > buffer.get_remaining()) {
+            // put header in front for next time processing
+            uint extra = needHdr ? 0 : RECORD_HEADER;
+            uint sz = buffer.get_remaining() + extra;
             buffered.reset(NEW_YS input_buffer(sz, buffer.get_buffer() +
-                           buffer.get_current() - RECORD_HEADER, sz));
+                           buffer.get_current() - extra, sz));
             break;
         }
 
         while (buffer.get_current() < hdr.length_ + RECORD_HEADER + offset) {
-            // each message in record
+            // each message in record, can be more than 1 if not encrypted
             if (ssl.getSecurity().get_parms().pending_ == false) // cipher on
                 decrypt_message(ssl, buffer, hdr.length_);
             mySTL::auto_ptr<Message> msg(mf.CreateObject(hdr.type_), ysDelete);
             if (!msg.get()) {
                 ssl.SetError(factory_error);
-                return buffered = null_buffer;
+                buffered.reset(0);
+                return buffered;
             }
             buffer >> *msg;
             msg->Process(buffer, ssl);
-            if (ssl.GetError()) return buffered = null_buffer;
+            if (ssl.GetError()) {
+                buffered.reset(0);
+                return buffered;
+            }
         }
         offset += hdr.length_ + RECORD_HEADER;
     }
-    return buffered;  // done, don't call again
+    return buffered;
 }
 
 
@@ -854,8 +876,11 @@ void sendFinished(SSL& ssl, ConnectionEnd side, BufferOutput buffer)
 // send data
 int sendData(SSL& ssl, const void* buffer, int sz)
 {
+    if (ssl.GetError() == YasslError(SSL_ERROR_WANT_READ))
+        ssl.SetError(no_error);
+
     ssl.verfiyHandShakeComplete();
-    if (ssl.GetError()) return 0;
+    if (ssl.GetError()) return -1;
     int sent = 0;
 
     for (;;) {
@@ -866,7 +891,7 @@ int sendData(SSL& ssl, const void* buffer, int sz)
         buildMessage(ssl, out, data);
         ssl.Send(out.get_buffer(), out.get_size());
 
-        if (ssl.GetError()) return 0;
+        if (ssl.GetError()) return -1;
         sent += len;
         if (sent == sz) break;
     }
@@ -887,17 +912,29 @@ int sendAlert(SSL& ssl, const Alert& alert)
 
 
 // process input data
-int receiveData(SSL& ssl, Data& data)
+int receiveData(SSL& ssl, Data& data, bool peek)
 {
+    if (ssl.GetError() == YasslError(SSL_ERROR_WANT_READ))
+        ssl.SetError(no_error);
+
     ssl.verfiyHandShakeComplete();
-    if (ssl.GetError()) return 0;
+    if (ssl.GetError()) return -1;
 
     if (!ssl.bufferedData())
         processReply(ssl);
-    ssl.fillData(data);
-    ssl.useLog().ShowData(data.get_length());
 
-    if (ssl.GetError()) return 0;
+    if (peek)
+        ssl.PeekData(data);
+    else
+        ssl.fillData(data);
+
+    ssl.useLog().ShowData(data.get_length());
+    if (ssl.GetError()) return -1;
+
+    if (data.get_length() == 0 && ssl.getSocket().WouldBlock()) {
+        ssl.SetError(YasslError(SSL_ERROR_WANT_READ));
+        return SSL_WOULD_BLOCK;
+    }
     return data.get_length(); 
 }
 
