@@ -85,7 +85,9 @@ public:
 	SSLSocket* getServerSocket() throw(SocketException);
 
 	void loadCertificates() throw();
-	bool hasCerts() const { return certsLoaded; }
+	bool generateCertificate() throw();
+
+	bool TLSOk() const throw();
 private:
 
 	friend class Singleton<CryptoManager>;

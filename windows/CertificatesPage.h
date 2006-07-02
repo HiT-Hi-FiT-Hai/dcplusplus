@@ -55,6 +55,7 @@ protected:
 
 	static Item items[];
 	static TextItem texts[];
+	static ListItem listItems[];
 };
 
 #endif // !defined(CERTIFICATES_PAGE_H)

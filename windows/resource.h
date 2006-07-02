@@ -372,6 +372,7 @@
 #define IDC_EDIT2                       1318
 #define IDC_SOCKET_OUT_BUFFER           1318
 #define IDC_SSL_CERTIFICATE_FILE        1318
+#define IDC_TLS_CERTIFICATE_FILE        1318
 #define IDC_SETTINGS_SOCKET_OUT_BUFFER  1319
 #define IDC_SETTINGS_SOCKET_IN_BUFFER   1320
 #define IDC_CHECK1                      1321
@@ -408,12 +409,16 @@
 #define IDC_SETTINGS_MB                 1411
 #define IDC_SYSTEM_LOG                  1412
 #define IDC_SSL_PRIVATE_KEY_FILE        1414
+#define IDC_TLS_PRIVATE_KEY_FILE        1414
 #define IDC_SSL_TRUSTED_CERTIFICATES_PATH 1415
+#define IDC_TLS_TRUSTED_CERTIFICATES_PATH 1415
 #define IDC_CLIENT_ID                   1416
 #define IDC_PRIVATE_ID                  1416
 #define IDC_AUTO_REFRESH_TIME           1419
 #define IDC_SETTINGS_AUTO_REFRESH_TIME  1420
 #define IDC_AUTO_SEARCH_LIMIT           1421
+#define IDC_SSL_OPTIONS                 1421
+#define IDC_TLS_OPTIONS                 1421
 #define IDC_SETTINGS_AUTO_SEARCH_LIMIT  1422
 #define IDC_CLOSE_ALL_PM                1423
 #define IDC_CLOSE_ALL_OFFLINE_PM        1424
@@ -460,7 +465,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1421
+#define _APS_NEXT_CONTROL_VALUE         1422
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

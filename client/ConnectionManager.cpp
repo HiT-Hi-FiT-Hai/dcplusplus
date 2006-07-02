@@ -27,6 +27,7 @@
 #include "CryptoManager.h"
 #include "ClientManager.h"
 #include "QueueManager.h"
+#include "LogManager.h"
 
 #include "UserConnection.h"
 
@@ -295,6 +296,10 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	uc->setLastActivity(GET_TICK());
 	try { 
 		uc->accept(sock);
+		if(uc->isSecure() && !uc->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
+			putConnection(uc);
+			LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
+		}
 	} catch(const Exception&) {
 		putConnection(uc);
 		delete uc;
@@ -379,6 +384,12 @@ void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) 
 }
 
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
+	if(aSource->isSecure() && !aSource->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
+		putConnection(aSource);
+		LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
+		return;
+	}
+
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
 		aSource->myNick(aSource->getToken());

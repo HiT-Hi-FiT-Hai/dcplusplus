@@ -429,16 +429,14 @@ private:
 
 // holds input and output buffers
 class Buffers {
-    typedef mySTL::list<input_buffer*>  inputList;
-    typedef mySTL::list<output_buffer*> outputList;
-
-    inputList  dataList_;                // list of users app data / handshake
-    outputList handShakeList_;           // buffered handshake msgs
 public:
     Buffers() {}
     ~Buffers();
 
-    const inputList&  getData()      const;
+	typedef mySTL::list<input_buffer*>  inputList;
+	typedef mySTL::list<output_buffer*> outputList;
+
+	const inputList&  getData()      const;
     const outputList& getHandShake() const;
 
     inputList&  useData();
@@ -446,6 +444,9 @@ public:
 private:
     Buffers(const Buffers&);             // hide copy
     Buffers& operator=(const Buffers&); // and assign   
+	
+	inputList  dataList_;                // list of users app data / handshake
+	outputList handShakeList_;           // buffered handshake msgs
 };
 
 

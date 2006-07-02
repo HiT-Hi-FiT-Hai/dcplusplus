@@ -255,7 +255,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		}
 	}
 
-	if(mode == MODE_LINE && line.size() > SETTING(MAX_COMMAND_LENGTH)) {
+	if(mode == MODE_LINE && line.size() > static_cast<size_t>(SETTING(MAX_COMMAND_LENGTH))) {
 		throw SocketException(STRING(COMMAND_TOO_LONG));
 	}
 }

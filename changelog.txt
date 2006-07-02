@@ -30,6 +30,7 @@
 * [bug 988] Only unique nicks diplayed in title bar 
 * Added protection from hubs/clients sending junk data resulting in high memory usage / crash
 * Updated to yaSSL 1.3.7
+* Added a few TLS options; [U] in transfer status means untrusted TLS (encrypted but certificate not validated)
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

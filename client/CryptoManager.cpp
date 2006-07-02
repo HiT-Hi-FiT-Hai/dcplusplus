@@ -80,28 +80,63 @@ CryptoManager::~CryptoManager() {
 		DH_free(dh);
 }
 
+bool CryptoManager::TLSOk() const throw() { 
+	return BOOLSETTING(USE_TLS) && certsLoaded; 
+}
+
+bool CryptoManager::generateCertificate() throw() {
+#ifdef _WIN32
+	// Generate certificate using OpenSSL
+	if(SETTING(TLS_PRIVATE_KEY_FILE).empty()) {
+		return false;
+	}
+	wstring cmd = L"openssl.exe -out \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + L"\" 2048";
+	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFO si = { 0 };
+	si.cb = sizeof(si);
+
+	if(!CreateProcess(L"openssl.exe", const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, 0, &pi)) {
+		return false;
+	}
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
+
+	cmd = L"openssl.exe x509 -x509 -new -batch -key \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + 
+		L"\" -out \"" + Text::utf8ToWide(SETTING(TLS_CERTIFICATE_FILE)) + L"\"";
+
+	if(!CreateProcess(L"openssl.exe", const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, 0, &pi)) {
+		return false;
+	}
+
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
+#endif
+	return true;
+}
 
 void CryptoManager::loadCertificates() throw() {
 	SSL_CTX_set_verify(serverContext, SSL_VERIFY_NONE, 0);
 	SSL_CTX_set_verify(clientContext, SSL_VERIFY_NONE, 0);
 
-	if(!SETTING(SSL_CERTIFICATE_FILE).empty()) {
-		if(SSL_CTX_use_certificate_file(serverContext, SETTING(SSL_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+	if(!SETTING(TLS_CERTIFICATE_FILE).empty()) {
+		if(SSL_CTX_use_certificate_file(serverContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
 			LogManager::getInstance()->message("Failed to load certificate file");
 			return;
 		}
-		if(SSL_CTX_use_certificate_file(clientContext, SETTING(SSL_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		if(SSL_CTX_use_certificate_file(clientContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
 			LogManager::getInstance()->message("Failed to load certificate file");
 			return;
 		}
 	}
 
-	if(!SETTING(SSL_PRIVATE_KEY_FILE).empty()) {
-		if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+	if(!SETTING(TLS_PRIVATE_KEY_FILE).empty()) {
+		if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
 			LogManager::getInstance()->message("Failed to load private key");
 			return;
 		}
-		if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(SSL_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
 			LogManager::getInstance()->message("Failed to load private key");
 			return;
 		}
@@ -111,10 +146,10 @@ void CryptoManager::loadCertificates() throw() {
 	WIN32_FIND_DATA data;
 	HANDLE hFind;
 
-	hFind = FindFirstFile(Text::toT(SETTING(SSL_TRUSTED_CERTIFICATES_PATH) + "*.pem").c_str(), &data);
+	hFind = FindFirstFile(Text::toT(SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + "*.pem").c_str(), &data);
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
-			if(SSL_CTX_load_verify_locations(clientContext, (SETTING(SSL_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
+			if(SSL_CTX_load_verify_locations(clientContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
 				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
 			}
 		} while(FindNextFile(hFind, &data));

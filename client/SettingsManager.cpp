@@ -74,7 +74,7 @@ const string SettingsManager::settingTags[] =
 	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
 	"UseSsl", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches", 
-	"DontDlAlreadyQueued", "MaxCommandLength",
+	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -243,7 +243,7 @@ SettingsManager::SettingsManager()
 	setDefault(ONLY_DL_TTH_FILES, false);
 	setDefault(OPEN_WAITING_USERS, false);
 	setDefault(OPEN_SYSTEM_LOG, true);
-	setDefault(SSL_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR);
+	setDefault(TLS_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR);
 	setDefault(BOLD_FINISHED_DOWNLOADS, true);
 	setDefault(BOLD_FINISHED_UPLOADS, true);
 	setDefault(BOLD_QUEUE, true);
@@ -253,7 +253,7 @@ SettingsManager::SettingsManager()
 	setDefault(BOLD_WAITING_USERS, true);
 	setDefault(BOLD_SYSTEM_LOG, true);
 	setDefault(AUTO_REFRESH_TIME, 60);
-	setDefault(USE_SSL, false);
+	setDefault(USE_TLS, true);
 	setDefault(AUTO_SEARCH_LIMIT, 5);
 	setDefault(ALT_SORT_ORDER, false);
 	setDefault(AUTO_KICK_NO_FAVS, false);
@@ -261,6 +261,8 @@ SettingsManager::SettingsManager()
 	setDefault(SPY_FRAME_IGNORE_TTH_SEARCHES, false);
 	setDefault(DONT_DL_ALREADY_QUEUED, false);
 	setDefault(MAX_COMMAND_LENGTH, 16*1024*1024);
+	setDefault(ALLOW_UNTRUSTED_HUBS, true);
+	setDefault(ALLOW_UNTRUSTED_CLIENTS, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

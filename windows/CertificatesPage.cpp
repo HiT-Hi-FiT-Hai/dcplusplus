@@ -33,23 +33,29 @@ PropPage::TextItem CertificatesPage::texts[] = {
 };
 
 PropPage::Item CertificatesPage::items[] = {
-	{ IDC_SSL_CERTIFICATE_FILE, SettingsManager::SSL_CERTIFICATE_FILE, PropPage::T_STR },
-	{ IDC_SSL_PRIVATE_KEY_FILE, SettingsManager::SSL_PRIVATE_KEY_FILE, PropPage::T_STR },
-	{ IDC_SSL_TRUSTED_CERTIFICATES_PATH, SettingsManager::SSL_TRUSTED_CERTIFICATES_PATH, PropPage::T_STR },
+	{ IDC_TLS_CERTIFICATE_FILE, SettingsManager::TLS_CERTIFICATE_FILE, PropPage::T_STR },
+	{ IDC_TLS_PRIVATE_KEY_FILE, SettingsManager::TLS_PRIVATE_KEY_FILE, PropPage::T_STR },
+	{ IDC_TLS_TRUSTED_CERTIFICATES_PATH, SettingsManager::TLS_TRUSTED_CERTIFICATES_PATH, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
+};
+
+PropPage::ListItem CertificatesPage::listItems[] = {
+	{ SettingsManager::USE_TLS, ResourceManager::SETTINGS_USE_TLS },
+	{ SettingsManager::ALLOW_UNTRUSTED_HUBS, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_HUBS	},
+	{ SettingsManager::ALLOW_UNTRUSTED_CLIENTS, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_CLIENTS, }
 };
 
 LRESULT CertificatesPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items, 0, 0);
+	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_TLS_OPTIONS));
 
 	// Do specialized reading here
 	return TRUE;
 }
 
 void CertificatesPage::write() {
-	PropPage::write((HWND)*this, items, 0, 0);
+	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_TLS_OPTIONS));
 }
 
 LRESULT CertificatesPage::onHelpInfo(LPNMHDR /*pnmh*/) {

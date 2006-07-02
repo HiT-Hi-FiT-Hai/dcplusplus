@@ -27,6 +27,7 @@
 
 
 SSLSocket::SSLSocket(SSL_CTX* context) throw(SocketException) : ctx(context), ssl(0) {
+
 }
 
 void SSLSocket::connect(const string& aIp, short aPort) throw(SocketException) {
@@ -118,6 +119,22 @@ int SSLSocket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 		// doesn't work in yassl...sigh...
 	}
 	return Socket::wait(millis, waitFor);
+}
+
+bool SSLSocket::isTrusted() const throw() {
+	if(!ssl) {
+		return false;
+	}
+
+	if(SSL_get_verify_result(ssl) != SSL_ERROR_NONE) {
+		return false;
+	}
+
+	if(!SSL_get_peer_certificate(ssl)) {
+		return false;
+	}
+
+	return true;
 }
 
 void SSLSocket::shutdown() throw() {

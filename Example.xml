@@ -40,6 +40,7 @@
 		<String Name="Browse">Browse...</String>
 		<String Name="BrowseAccel">&amp;Browse...</String>
 		<String Name="BrowseFileList">Browse file list</String>
+		<String Name="CertificateNotTrusted">Certificate not trusted, unable to connect</String>
 		<String Name="ChooseFolder">Choose folder</String>
 		<String Name="Cid">CID</String>
 		<String Name="Close">Close</String>
@@ -47,6 +48,7 @@
 		<String Name="ClosingConnection">Closing connection...</String>
 		<String Name="Compressed">Compressed</String>
 		<String Name="CompressionError">Error during compression</String>
+		<String Name="CommandTooLong">Maximum command length exceeded</String>
 		<String Name="Configure">&amp;Configure</String>
 		<String Name="Connect">&amp;Connect</String>
 		<String Name="ConnectFavuserHub">Connect to hub</String>
@@ -301,6 +303,7 @@
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
+		<String Name="OnlyTlsAllowed">Only TLS connections allowed</String>
 		<String Name="OnlyTth">Only results with TTH root</String>
 		<String Name="OnlyWhereOp">Only where I'm op</String>
 		<String Name="Open">Open</String>
@@ -369,6 +372,8 @@
 		<String Name="SettingsAdvanced3">Advanced\Experts only</String>
 		<String Name="SettingsAdvancedResume">Advanced resume using TTH</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
+		<String Name="SettingsAllowUntrustedClients">Allow TLS connections to hubs without trusted certificate</String>
+		<String Name="SettingsAllowUntrustedHubs">Allow TLS connections to hubs without trusted certificate</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>
 		<String Name="SettingsAppearance2">Appearance\Colors and sounds</String>
@@ -415,7 +420,7 @@
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
-		<String Name="SettingsExampleText">Donate â‚¬â‚¬â‚¬:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
+		<String Name="SettingsExampleText">Donate Â€Â€Â€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsExternalIp">External / WAN IP</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFavoriteDirsPage">Downloads\Favorites</String>
@@ -524,7 +529,7 @@
 		<String Name="SettingsWindowsOptions">Window options</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
 		<String Name="SettingsAltSortOrder">Sort all downloads first</String>
-		<String Name="SettingsUseSsl">Use SSL when remote client supports it</String>
+		<String Name="SettingsUseTls">Use TLS when remote client supports it</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>
 		<String Name="SharedFiles">Shared Files</String>

@@ -25,6 +25,7 @@
 
 #include "FavoriteManager.h"
 #include "TimerManager.h"
+#include "ResourceManager.h"
 
 Client::Counts Client::counts;
 
@@ -100,11 +101,23 @@ void Client::connect() {
 	} catch(const Exception& e) {
 		if(socket) {
 			BufferedSocket::putSocket(socket);
-			socket = NULL;
+			socket = 0;
 		}
 		fire(ClientListener::Failed(), this, e.getError());
 	}
 	updateActivity();
+}
+
+void Client::on(Connected) throw() {
+	if(socket->isSecure() && !socket->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_HUBS)) {
+		fire(ClientListener::StatusMessage(), this, STRING(CERTIFICATE_NOT_TRUSTED));
+		disconnect(true);
+		return;
+	}
+
+	updateActivity(); 
+	ip = socket->getIp(); 
+	fire(ClientListener::Connected(), this);
 }
 
 void Client::disconnect(bool graceLess) {

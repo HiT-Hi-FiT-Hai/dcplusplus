@@ -208,7 +208,7 @@ private:
 
 	// BufferedSocketListener
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
-	virtual void on(Connected) throw() { updateActivity(); ip = socket->getIp(); fire(ClientListener::Connected(), this); }
+	virtual void on(Connected) throw();
 
 
 };
