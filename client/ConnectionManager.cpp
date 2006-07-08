@@ -67,7 +67,10 @@ void ConnectionManager::listen() throw(Exception){
 		}
 	}
 
-	lastPort++;
+	if(!CryptoManager::getInstance()->TLSOk()) {
+		return;
+	}
+	lastPort = (unsigned short)SETTING(TLS_PORT);
 	firstPort = lastPort;
 
 	while(true) {

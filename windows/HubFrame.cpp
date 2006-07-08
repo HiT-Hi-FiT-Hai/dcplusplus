@@ -231,7 +231,12 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + Util::toString(SearchManager::getInstance()->getPort()))));
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + 
+					STRING(PORT) + 
+					Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + 
+					Util::toString(SearchManager::getInstance()->getPort()) + "/" +
+					Util::toString(ConnectionManager::getInstance()->getSecurePort())
+					)));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
 			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {

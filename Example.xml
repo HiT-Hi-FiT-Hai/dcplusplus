@@ -506,7 +506,8 @@
 		<String Name="SettingsSounds">Sounds</String>
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
-		<String Name="SettingsTcpPort">TCP Port</String>
+		<String Name="SettingsTcpPort">TCP</String>
+		<String Name="SettingsTlsPort">TLS</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
 		<String Name="SettingsPrioAutoprio">Autoprio settings</String>
 		<String Name="SettingsPrioHighest">Highest prio max size</String>
@@ -517,7 +518,7 @@
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
-		<String Name="SettingsUdpPort">UDP Port</String>
+		<String Name="SettingsUdpPort">UDP</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
 		<String Name="SettingsUploadLineSpeed">Line speed (upload)</String>
 		<String Name="SettingsUploads">Sharing</String>

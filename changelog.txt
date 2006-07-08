@@ -34,6 +34,9 @@
 * Added certificate generation, OpenSSL must be installed and in PATH for this to work
 * [bug 996] Fixed an issue where directories that are hard to delete were created
 * [bug 1000] Fixed linux compile issue (thanks steven sheehy)
+* [bug 949] Fixed a crash when reading invalid XML files
+* TLS port may now be specified in settings and is only opened if TLS is enabled
+* Added TLS port to /connection
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog
