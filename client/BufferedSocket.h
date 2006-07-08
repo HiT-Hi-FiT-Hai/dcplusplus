@@ -174,7 +174,7 @@ private:
 	void threadDisconnect();
 	
 	void fail(const string& aError);	
-	static size_t sockets;
+	static volatile long sockets;
 
 	bool checkEvents();
 	void checkSocket();

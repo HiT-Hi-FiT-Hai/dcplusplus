@@ -36,15 +36,15 @@ BufferedSocket::BufferedSocket(char aSeparator) throw() :
 separator(aSeparator), mode(MODE_LINE), 
 dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false), filterIn(NULL)
 {
-	sockets++;
+	Thread::safeInc(sockets);
 }
 
-size_t BufferedSocket::sockets = 0;
+volatile long BufferedSocket::sockets = 0;
 
 BufferedSocket::~BufferedSocket() throw() {
 	delete sock;
 	delete filterIn;
-	sockets--;
+	Thread::safeDec(sockets);
 }
 
 void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
@@ -74,22 +74,21 @@ void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
 
 void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException, ThreadException) {
 	dcassert(!sock);
-	
-	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
-	sock = secure ? CryptoManager::getInstance()->getServerSocket(allowUntrusted) : new Socket;
-
-	sock->accept(srv);
-	if(SETTING(SOCKET_IN_BUFFER) > 0)
-		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-    if(SETTING(SOCKET_OUT_BUFFER) > 0)
-		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
-	sock->setBlocking(false);
-
-	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
-
-	// This lock prevents the shutdown task from being added and executed before we're done initializing the socket
-	Lock l(cs);
 	try {
+		dcdebug("BufferedSocket::accept() %p\n", (void*)this);
+		sock = secure ? CryptoManager::getInstance()->getServerSocket(allowUntrusted) : new Socket;
+
+		sock->accept(srv);
+		if(SETTING(SOCKET_IN_BUFFER) > 0)
+			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+		if(SETTING(SOCKET_OUT_BUFFER) > 0)
+			sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+		sock->setBlocking(false);
+
+		inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
+
+		// This lock prevents the shutdown task from being added and executed before we're done initializing the socket
+		Lock l(cs);
 		start();
 	} catch(...) {
 		delete sock;
@@ -103,20 +102,20 @@ void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted)
 void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
-	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
-	sock = secure ? CryptoManager::getInstance()->getClientSocket(allowUntrusted) : new Socket;
-
-	sock->create();
-	if(SETTING(SOCKET_IN_BUFFER) >= 1024)
-		sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-	if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
-		sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
-	sock->setBlocking(false);
-
-	inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
-
-	Lock l(cs);
 	try {
+		dcdebug("BufferedSocket::connect() %p\n", (void*)this);
+		sock = secure ? CryptoManager::getInstance()->getClientSocket(allowUntrusted) : new Socket;
+
+		sock->create();
+		if(SETTING(SOCKET_IN_BUFFER) >= 1024)
+			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+		if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
+			sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+		sock->setBlocking(false);
+
+		inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
+
+		Lock l(cs);
 		start();
 	} catch(...) {
 		delete sock;

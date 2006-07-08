@@ -70,6 +70,7 @@ CryptoManager::CryptoManager()
 			dh = 0;
 		} else {
 			SSL_CTX_set_tmp_dh(serverContext, dh);
+			SSL_CTX_set_tmp_dh(serverVerContext, dh);
 		}
 	}
 }
@@ -79,6 +80,10 @@ CryptoManager::~CryptoManager() {
 		SSL_CTX_free(serverContext);
 	if(clientContext)
 		SSL_CTX_free(clientContext);
+	if(serverVerContext)
+		SSL_CTX_free(serverVerContext);
+	if(clientVerContext)
+		SSL_CTX_free(clientVerContext);
 	if(dh)
 		DH_free(dh);
 }
@@ -192,6 +197,15 @@ void CryptoManager::loadCertificates() throw() {
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if(SSL_CTX_load_verify_locations(clientContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
+				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
+			}
+			if(SSL_CTX_load_verify_locations(clientVerContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
+				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
+			}
+			if(SSL_CTX_load_verify_locations(serverContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
+				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
+			}
+			if(SSL_CTX_load_verify_locations(serverVerContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS) {
 				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
 			}
 		} while(FindNextFile(hFind, &data));

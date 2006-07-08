@@ -27,10 +27,6 @@
 #include "autoconf.h"
 #endif
 
-// Changing this number will change the maximum number of simultaneous users
-// we can handle (when using select)...
-#define FD_SETSIZE 4096
-
 // Remove this line if hashes are not available in your stl
 #define HAVE_HASH 1
 
