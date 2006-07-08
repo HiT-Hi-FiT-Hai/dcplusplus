@@ -97,7 +97,7 @@ void Client::connect() {
 	try {
 		socket = BufferedSocket::getSocket(separator);
 		socket->addListener(this);
-		socket->connect(address, port, secure, true);
+		socket->connect(address, port, secure, BOOLSETTING(ALLOW_UNTRUSTED_HUBS), true);
 	} catch(const Exception& e) {
 		if(socket) {
 			BufferedSocket::putSocket(socket);
@@ -109,12 +109,6 @@ void Client::connect() {
 }
 
 void Client::on(Connected) throw() {
-	if(socket->isSecure() && !socket->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_HUBS)) {
-		fire(ClientListener::StatusMessage(), this, STRING(CERTIFICATE_NOT_TRUSTED));
-		disconnect(true);
-		return;
-	}
-
 	updateActivity(); 
 	ip = socket->getIp(); 
 	fire(ClientListener::Connected(), this);

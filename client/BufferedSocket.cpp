@@ -72,11 +72,11 @@ void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
 	}
 }
 
-void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketException, ThreadException) {
+void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 	
 	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
-	sock = secure ? CryptoManager::getInstance()->getClientSocket() : new Socket;
+	sock = secure ? CryptoManager::getInstance()->getServerSocket(allowUntrusted) : new Socket;
 
 	sock->accept(srv);
 	if(SETTING(SOCKET_IN_BUFFER) > 0)
@@ -100,11 +100,11 @@ void BufferedSocket::accept(const Socket& srv, bool secure) throw(SocketExceptio
 	addTask(ACCEPTED, 0);
 }
 
-void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException) {
+void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
 	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
-	sock = secure ? CryptoManager::getInstance()->getClientSocket() : new Socket;
+	sock = secure ? CryptoManager::getInstance()->getClientSocket(allowUntrusted) : new Socket;
 
 	sock->create();
 	if(SETTING(SOCKET_IN_BUFFER) >= 1024)

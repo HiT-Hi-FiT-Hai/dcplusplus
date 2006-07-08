@@ -25,6 +25,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/FavoriteManager.h"
+#include "../client/CryptoManager.h"
 
 #include "WinUtil.h"
 
@@ -65,5 +66,44 @@ LRESULT CertificatesPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 
 LRESULT CertificatesPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_CERTIFICATESPAGE);
+	return 0;
+}
+
+LRESULT CertificatesPage::onBrowsePrivateKey(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	tstring target = Text::toT(SETTING(TLS_PRIVATE_KEY_FILE));
+	CEdit edt(GetDlgItem(IDC_TLS_PRIVATE_KEY_FILE));
+
+	if(WinUtil::browseFile(target, m_hWnd, false, target)) {
+		edt.SetWindowText(&target[0]);
+	}
+	return 0;
+}
+
+LRESULT CertificatesPage::onBrowseCertificate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	tstring target = Text::toT(SETTING(TLS_CERTIFICATE_FILE));
+	CEdit edt(GetDlgItem(IDC_TLS_CERTIFICATE_FILE));
+
+	if(WinUtil::browseFile(target, m_hWnd, false, target)) {
+		edt.SetWindowText(&target[0]);
+	}
+	return 0;
+}
+
+LRESULT CertificatesPage::onBrowseTrustedPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	tstring target = Text::toT(SETTING(TLS_TRUSTED_CERTIFICATES_PATH));
+	CEdit edt(GetDlgItem(IDC_TLS_TRUSTED_CERTIFICATES_PATH));
+
+	if(WinUtil::browseDirectory(target, m_hWnd)) {
+		edt.SetWindowText(&target[0]);
+	}
+	return 0;
+}
+
+LRESULT CertificatesPage::onGenerateCerts(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	try {
+		CryptoManager::getInstance()->generateCertificate();
+	} catch(const CryptoException& e) {
+		MessageBox(Text::toT(e.getError()).c_str(), L"Error generating certificate");
+	}
 	return 0;
 }

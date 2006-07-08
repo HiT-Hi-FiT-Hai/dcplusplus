@@ -25,6 +25,7 @@
 #include "BitOutputStream.h"
 #include "ResourceManager.h"
 #include "LogManager.h"
+#include "ClientManager.h"
 
 #include <openssl/ssl.h>
 
@@ -38,6 +39,8 @@ CryptoManager::CryptoManager()
 :	
 	clientContext(SSL_CTX_new(TLSv1_client_method())), 
 	serverContext(SSL_CTX_new(TLSv1_server_method())), 
+	clientVerContext(SSL_CTX_new(TLSv1_client_method())), 
+	serverVerContext(SSL_CTX_new(TLSv1_server_method())), 
 	dh(DH_new()), 
 	certsLoaded(false), 
 	lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), 
@@ -84,62 +87,101 @@ bool CryptoManager::TLSOk() const throw() {
 	return BOOLSETTING(USE_TLS) && certsLoaded; 
 }
 
-bool CryptoManager::generateCertificate() throw() {
+void CryptoManager::generateCertificate() throw(CryptoException) {
 #ifdef _WIN32
 	// Generate certificate using OpenSSL
 	if(SETTING(TLS_PRIVATE_KEY_FILE).empty()) {
-		return false;
+		throw CryptoException("No private key file chosen");
 	}
-	wstring cmd = L"openssl.exe -out \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + L"\" 2048";
+	if(SETTING(TLS_CERTIFICATE_FILE).empty()) {
+		throw CryptoException("No certificate file chosen");
+	}
+	wstring cmd = L"openssl.exe genrsa -out \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + L"\" 2048";
 	PROCESS_INFORMATION pi = { 0 };
 	STARTUPINFO si = { 0 };
 	si.cb = sizeof(si);
 
-	if(!CreateProcess(L"openssl.exe", const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, 0, &pi)) {
-		return false;
+	if(!CreateProcess(0, const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
+		throw CryptoException(Util::translateError(::GetLastError()));
 	}
 	WaitForSingleObject(pi.hProcess, INFINITE);
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
 
-	cmd = L"openssl.exe x509 -x509 -new -batch -key \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + 
-		L"\" -out \"" + Text::utf8ToWide(SETTING(TLS_CERTIFICATE_FILE)) + L"\"";
+	cmd = L"openssl.exe req -x509 -new -batch -days 3650 -key \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + 
+		L"\" -out \"" + Text::utf8ToWide(SETTING(TLS_CERTIFICATE_FILE)) + L"\" -subj \"/CN=" +
+		Text::utf8ToWide(ClientManager::getInstance()->getMyCID().toBase32()) + L"\"";
 
-	if(!CreateProcess(L"openssl.exe", const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, 0, &pi)) {
-		return false;
+	if(!CreateProcess(0, const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
+		throw CryptoException(Util::translateError(::GetLastError()));
 	}
 
 	WaitForSingleObject(pi.hProcess, INFINITE);
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
 #endif
-	return true;
 }
 
 void CryptoManager::loadCertificates() throw() {
+	if(!BOOLSETTING(USE_TLS))
+		return;
+
 	SSL_CTX_set_verify(serverContext, SSL_VERIFY_NONE, 0);
 	SSL_CTX_set_verify(clientContext, SSL_VERIFY_NONE, 0);
+	SSL_CTX_set_verify(clientVerContext, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, 0);
+	SSL_CTX_set_verify(serverVerContext, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, 0);
 
-	if(!SETTING(TLS_CERTIFICATE_FILE).empty()) {
-		if(SSL_CTX_use_certificate_file(serverContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-			LogManager::getInstance()->message("Failed to load certificate file");
-			return;
-		}
-		if(SSL_CTX_use_certificate_file(clientContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-			LogManager::getInstance()->message("Failed to load certificate file");
-			return;
+	const string& cert = SETTING(TLS_CERTIFICATE_FILE);
+	const string& key = SETTING(TLS_PRIVATE_KEY_FILE);
+
+	if(cert.empty() || key.empty()) {
+		LogManager::getInstance()->message(STRING(NO_CERTIFICATE_FILE_SET));
+		return;
+	}
+
+	if(File::getSize(cert) == -1 || File::getSize(key) == -1) {
+		// Try to generate them...
+		try {
+			generateCertificate();
+		} catch(const CryptoException& e) {
+			LogManager::getInstance()->message(STRING(CERTIFICATE_GENERATION_FAILED) + e.getError());
 		}
 	}
 
-	if(!SETTING(TLS_PRIVATE_KEY_FILE).empty()) {
-		if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-			LogManager::getInstance()->message("Failed to load private key");
-			return;
-		}
-		if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-			LogManager::getInstance()->message("Failed to load private key");
-			return;
-		}
+	if(SSL_CTX_use_certificate_file(serverContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		return;
+	}
+	if(SSL_CTX_use_certificate_file(clientContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		return;
+	}
+
+	if(SSL_CTX_use_certificate_file(serverVerContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		return;
+	}
+	if(SSL_CTX_use_certificate_file(clientVerContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		return;
+	}
+
+	if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		return;
+	}
+	if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		return;
+	}
+
+	if(SSL_CTX_use_PrivateKey_file(serverVerContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		return;
+	}
+	if(SSL_CTX_use_PrivateKey_file(clientVerContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
+		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		return;
 	}
 
 #ifdef _WIN32
@@ -163,11 +205,11 @@ void CryptoManager::loadCertificates() throw() {
 }
 
 
-SSLSocket* CryptoManager::getClientSocket() throw(SocketException) {
-	return new SSLSocket(clientContext);
+SSLSocket* CryptoManager::getClientSocket(bool allowUntrusted) throw(SocketException) {
+	return new SSLSocket(allowUntrusted ? clientContext : clientVerContext);
 }
-SSLSocket* CryptoManager::getServerSocket() throw(SocketException) {
-	return new SSLSocket(serverContext);
+SSLSocket* CryptoManager::getServerSocket(bool allowUntrusted) throw(SocketException) {
+	return new SSLSocket(allowUntrusted ? serverContext : serverVerContext);
 }
 
 

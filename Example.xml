@@ -41,6 +41,7 @@
 		<String Name="BrowseAccel">&amp;Browse...</String>
 		<String Name="BrowseFileList">Browse file list</String>
 		<String Name="CertificateNotTrusted">Certificate not trusted, unable to connect</String>
+		<String Name="CertificateGenerationFailed">TLS disabled, failed to generate certificate: </String>
 		<String Name="ChooseFolder">Choose folder</String>
 		<String Name="Cid">CID</String>
 		<String Name="Close">Close</String>
@@ -117,6 +118,8 @@
 		<String Name="ErrorSavingHash">Error saving hash data: </String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
+		<String Name="FailedToLoadCertificate">Failed to load certificate file</String>
+		<String Name="FailedToLoadPrivateKey">Failed to load private key</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
 		<String Name="FavJoinShowingOn">Join/part of favorite users showing on</String>
 		<String Name="FavoriteDirName">Favorite name</String>
@@ -288,14 +291,15 @@
 		<String Name="Nick">Nick</String>
 		<String Name="NickTaken">Your nick was already taken, please change to something else!</String>
 		<String Name="NickUnknown"> (Nick unknown)</String>
+		<String Name="NoCertificateFileSet">TLS disabled, no certificate file set</String>
 		<String Name="NoCrc32Match"> not shared; calculated CRC32 does not match the one found in SFV file.</String>
-		<String Name="NoStr">No</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
 		<String Name="NoDownloadsFromSelf">You're trying to download from yourself!</String>
 		<String Name="NoDownloadsFromPassive">Can't download from passive users when you're passive</String>
 		<String Name="NoErrors">No errors</String>
 		<String Name="NoMatches">No matches</String>
 		<String Name="NoSlotsAvailable">No slots available</String>
+		<String Name="NoStr">No</String>
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
 		<String Name="Normal">Normal</String>
@@ -372,7 +376,7 @@
 		<String Name="SettingsAdvanced3">Advanced\Experts only</String>
 		<String Name="SettingsAdvancedResume">Advanced resume using TTH</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
-		<String Name="SettingsAllowUntrustedClients">Allow TLS connections to hubs without trusted certificate</String>
+		<String Name="SettingsAllowUntrustedClients">Allow TLS connections to clients without trusted certificate</String>
 		<String Name="SettingsAllowUntrustedHubs">Allow TLS connections to hubs without trusted certificate</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>

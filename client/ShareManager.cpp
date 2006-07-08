@@ -695,6 +695,9 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 				int64_t size = i->getSize();
 				string fileName = aName + name;
+				if(Util::stricmp(fileName, SETTING(TLS_PRIVATE_KEY_FILE)) == 0) {
+					continue;
+				}
 				try {
 					if(HashManager::getInstance()->checkTTH(fileName, size, i->getLastWriteTime()))
 						lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, HashManager::getInstance()->getTTH(fileName, size)));

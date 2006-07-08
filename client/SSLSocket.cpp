@@ -114,9 +114,9 @@ int SSLSocket::checkSSL(int ret) throw(SocketException) {
 int SSLSocket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 	if(ssl && (waitFor & Socket::WAIT_READ)) {
 		/** @todo Take writing into account as well if reading is possible? */
-//		if(SSL_pending(ssl) > 0)
-//			return WAIT_READ;
-		// doesn't work in yassl...sigh...
+		char c;
+		if(SSL_peek(ssl, &c, 1) > 0)
+			return WAIT_READ;
 	}
 	return Socket::wait(millis, waitFor);
 }

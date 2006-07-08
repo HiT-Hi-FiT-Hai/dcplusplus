@@ -86,8 +86,8 @@ public:
 			Thread::sleep(100);
 	}
 
-	void accept(const Socket& srv, bool secure) throw(SocketException, ThreadException);
-	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException);
+	void accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException, ThreadException);
+	void connect(const string& aAddress, short aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException);
 
 	/** Sets data mode for aBytes bytes. Must be called within onLine. */
 	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }

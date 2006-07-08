@@ -248,6 +248,19 @@ string Util::validateFileName(string tmp) {
 		i += 2;
 	}
 
+	// Dots at the end of path names aren't popular
+	i = 0;
+	while( ((i = tmp.find(".\\", i)) != string::npos) ) {
+		tmp[i] = '_';
+		i += 1;
+	}
+	i = 0;
+	while( ((i = tmp.find("./", i)) != string::npos) ) {
+		tmp[i] = '_';
+		i += 1;
+	}
+
+
 	return tmp;
 }
 

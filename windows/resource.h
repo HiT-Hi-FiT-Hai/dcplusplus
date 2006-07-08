@@ -417,12 +417,16 @@
 #define IDC_AUTO_REFRESH_TIME           1419
 #define IDC_SETTINGS_AUTO_REFRESH_TIME  1420
 #define IDC_AUTO_SEARCH_LIMIT           1421
-#define IDC_SSL_OPTIONS                 1421
 #define IDC_TLS_OPTIONS                 1421
 #define IDC_SETTINGS_AUTO_SEARCH_LIMIT  1422
+#define IDC_GENERATE_CERTS              1422
 #define IDC_CLOSE_ALL_PM                1423
+#define IDC_BROWSE_PRIVATE_KEY          1423
 #define IDC_CLOSE_ALL_OFFLINE_PM        1424
+#define IDC_BROWSE_OWN_CERTIFICATE      1424
+#define IDC_BROWSE_CERTIFICATE          1424
 #define IDC_CLOSE_ALL_DIR_LIST          1425
+#define IDC_BROWSE_TRUSTED_PATH         1425
 #define IDC_CLOSE_ALL_SEARCH_FRAME      1426
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
@@ -465,7 +469,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1422
+#define _APS_NEXT_CONTROL_VALUE         1426
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

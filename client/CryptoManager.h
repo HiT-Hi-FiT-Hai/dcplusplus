@@ -81,11 +81,11 @@ public:
 	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 
-	SSLSocket* getClientSocket() throw(SocketException);
-	SSLSocket* getServerSocket() throw(SocketException);
+	SSLSocket* getClientSocket(bool allowUntrusted) throw(SocketException);
+	SSLSocket* getServerSocket(bool allowUntrusted) throw(SocketException);
 
 	void loadCertificates() throw();
-	bool generateCertificate() throw();
+	void generateCertificate() throw(CryptoException);
 
 	bool TLSOk() const throw();
 private:
@@ -118,7 +118,10 @@ private:
 	};
 	
 	SSL_CTX* clientContext;
+	SSL_CTX* clientVerContext;
 	SSL_CTX* serverContext;
+	SSL_CTX* serverVerContext;
+
 	DH* dh;
 	bool certsLoaded;
 
