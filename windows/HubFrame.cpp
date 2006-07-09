@@ -119,6 +119,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
+	tabMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
 
 	showJoins = BOOLSETTING(SHOW_JOINS);
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
@@ -370,6 +371,11 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		nicks.erase(nicks.length() - 1);
 		WinUtil::setClipboard(Text::toT(nicks));
 	}
+	return 0;
+}
+
+LRESULT HubFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	WinUtil::setClipboard(Text::toT(client->getHubUrl()));
 	return 0;
 }
 

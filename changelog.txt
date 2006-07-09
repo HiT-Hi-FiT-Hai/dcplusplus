@@ -1,4 +1,4 @@
-﻿-- 0.692 --
+﻿-- 0.692 2006-07-09 --
 * [bug 927] Fixed OP detection bug really (thanks pothead)
 * [bug 938] Added a few more ADC info fields (thanks ullner)
 * [bug 939] Fixed hub info update (thanks ullner)
@@ -37,6 +37,8 @@
 * [bug 949] Fixed a crash when reading invalid XML files
 * TLS port may now be specified in settings and is only opened if TLS is enabled
 * Added TLS port to /connection
+* [bug 977] Added copy hub address to hub right-click menu (thanks pothead)
+* [bug 1001] Fixed assertion on unix (thanks steven sheehy)
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog
