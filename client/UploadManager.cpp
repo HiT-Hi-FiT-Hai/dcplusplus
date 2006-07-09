@@ -224,7 +224,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 void UploadManager::removeUpload(Upload* aUpload) {
 	Lock l(cs);
 	dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
-	uploads.erase(find(uploads.begin(), uploads.end(), aUpload));
+	uploads.erase(remove(uploads.begin(), uploads.end(), aUpload), uploads.end());
 	aUpload->setUserConnection(NULL);
 	delete aUpload;
 }

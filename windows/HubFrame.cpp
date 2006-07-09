@@ -119,6 +119,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
+	tabMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
 
 	showJoins = BOOLSETTING(SHOW_JOINS);
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
@@ -231,7 +232,12 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + Util::toString(SearchManager::getInstance()->getPort()))));
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + 
+					STRING(PORT) + 
+					Util::toString(ConnectionManager::getInstance()->getPort()) + "/" + 
+					Util::toString(SearchManager::getInstance()->getPort()) + "/" +
+					Util::toString(ConnectionManager::getInstance()->getSecurePort())
+					)));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
 			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
@@ -365,6 +371,11 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		nicks.erase(nicks.length() - 1);
 		WinUtil::setClipboard(Text::toT(nicks));
 	}
+	return 0;
+}
+
+LRESULT HubFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	WinUtil::setClipboard(Text::toT(client->getHubUrl()));
 	return 0;
 }
 
@@ -1250,7 +1261,7 @@ void HubFrame::on(HubUpdated, Client*) throw() {
 	speak(SET_WINDOW_TITLE, hubName);
 }
 void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() { 
-	speak(ADD_CHAT_LINE, Util::toDOS("<" + from.getIdentity().getNick() + "> " + msg));
+	speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg));
 }
 
 void HubFrame::on(StatusMessage, Client*, const string& line) {
@@ -1268,7 +1279,7 @@ void HubFrame::on(StatusMessage, Client*, const string& line) {
 }
 
 void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() { 
-	speak(from, to, replyTo, Util::toDOS("<" + from.getIdentity().getNick() + "> " + line));
+	speak(from, to, replyTo, Util::formatMessage(from.getIdentity().getNick(), line));
 }
 void HubFrame::on(NickTaken, Client*) throw() { 
 	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
@@ -1313,6 +1324,9 @@ bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 	tstring::size_type end = static_cast<tstring::size_type>(tstring::npos);
 	int64_t multiplier = 1;
 	
+	if(filter.empty()) {
+		return false;
+	}
 	if(filter.compare(0, 2, _T(">=")) == 0) {
 		mode = FilterModes::GREATER_EQUAL;
 		start = 2;
@@ -1412,9 +1426,10 @@ void HubFrame::updateUserList(UserInfo* ui) {
 					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
 			}
 		} else {
-			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
-				if(!ui->isHidden() && matchFilter(*i->second, sel, doSizeCompare, mode, size)) {
-					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));	
+			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+				UserInfo* ui = i->second;
+				if(!ui->isHidden() && matchFilter(*ui, sel, doSizeCompare, mode, size)) {
+					ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));	
 				}
 			}
 		}

@@ -274,8 +274,7 @@ public:
 		return formatBytes(toInt64(aString));
 	}
 	
-	static double toBytes(TCHAR* aSize);
-
+	static string formatMessage(const string& nick, const string& message);
 	static string toDOS(const string& tmp);
 
 	static string getShortTimeString(time_t t = time(NULL) );

@@ -24,7 +24,15 @@
 
 #include "runtime.hpp"
 #include "misc.hpp"
-#include <new>        // for NewHandler
+
+
+extern "C" {
+
+    // for libcurl configure test, these are the signatures they use
+    // locking handled internally by library
+    char CRYPTO_lock() { return 0;}
+    char CRYPTO_add_lock() { return 0;}
+}  // extern "C"
 
 #ifdef YASSL_PURE_C
 
@@ -72,6 +80,19 @@
         new_t tc;   // for library new
 
     }
+
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+
+extern "C" {
+
+    int __cxa_pure_virtual() {
+      assert("Pure virtual method called." == "Aborted");
+      return 0;
+    }
+
+}  // extern "C"
+
+#endif
 
 #endif // YASSL_PURE_C
 

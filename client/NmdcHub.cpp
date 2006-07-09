@@ -84,7 +84,7 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 	}
 
 	User::Ptr p;
-	if(aNick == getMyNick()) {
+	if(aNick == getCurrentNick()) {
 		p = ClientManager::getInstance()->getMe();
 	} else {
 		p = ClientManager::getInstance()->getUser(aNick, getHubUrl());
@@ -296,9 +296,9 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		int type = Util::toInt(param.substr(i, j-i)) - 1;
 		i = j + 1;
-		string terms = param.substr(i);
+		string terms = unescape(param.substr(i));
 
-		if(param.size() > 0) {
+		if(terms.size() > 0) {
 			if(seeker.compare(0, 4, "Hub:") == 0) {
 				OnlineUser* u = findUser(seeker.substr(4));
 
@@ -312,7 +312,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				}
 			}
 
-			fire(ClientListener::NmdcSearch(), this, seeker, a, Util::toInt64(size), type, param);
+			fire(ClientListener::NmdcSearch(), this, seeker, a, Util::toInt64(size), type, terms);
 		}
 	} else if(cmd == "$MyINFO") {
 		string::size_type i, j;
@@ -524,13 +524,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			}
 
 			key(CryptoManager::getInstance()->makeKey(lock));
-			validateNick(getMyNick());
+			OnlineUser& ou = getUser(getCurrentNick());
+			validateNick(ou.getIdentity().getNick());
 		}
 	} else if(cmd == "$Hello") {
 		if(!param.empty()) {
 			OnlineUser& u = getUser(param);
 
-			if(getMyNick() == param) {
+			if(u.getUser() == getMyIdentity().getUser()) {
 				u.getUser()->setFlag(User::DCPLUSPLUS);
 				if(ClientManager::getInstance()->isActive())
 					u.getUser()->unsetFlag(User::PASSIVE);
@@ -538,7 +539,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 					u.getUser()->setFlag(User::PASSIVE);
 			}
 
-			if(state == STATE_HELLO) {
+			if(state == STATE_HELLO && u.getUser() == getMyIdentity().getUser()) {
 				state = STATE_CONNECTED;
 				updateCounts(false);
 
@@ -689,9 +690,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 string NmdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
-	string::size_type i = 0;
-	while( (i = tmp.find_first_of("|$ ", i)) != string::npos) {
-		tmp[i++]='_';
+	for(size_t i = 0; i < aNick.size(); ++i) {
+		if(tmp[i] <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
+			tmp[i] = '_';
+		}
 	}
 	return tmp;
 }
@@ -745,7 +747,7 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	string myInfoA = 
-		"$MyINFO $ALL " + toAcp(getCurrentNick()) + " " + toAcp(escape(getCurrentDescription())) + 
+		"$MyINFO $ALL " + toAcp(getMyNick()) + " " + toAcp(escape(getCurrentDescription())) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
 		">$ $" + SETTING(UPLOAD_SPEED) + "\x01$" + toAcp(escape(SETTING(EMAIL))) + '$'; 
 	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
@@ -758,18 +760,12 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	}
 }
 
-void NmdcHub::disconnect(bool graceless) throw() {	
-	Client::disconnect(graceless);
-	state = STATE_CONNECT;
-	clearUsers();
-}
-
 void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string&) {
 	checkstate(); 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-	string tmp = toAcp(escape((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : aString));
+	string tmp = ((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : toAcp(escape(aString)));
 	string::size_type i;
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
@@ -804,22 +800,6 @@ string NmdcHub::validateMessage(string tmp, bool reverse) {
 			tmp.replace(i, 5, "&");
 			i++;
 		}
-#if 0
-/// @todo move this to a better place
-		if(checkNewLines) {
-			// Check all '<' and '[' after newlines...
-			i = 0;
-			while( (i = tmp.find('\n', i)) != string::npos) {
-				if(i + 1 < tmp.length()) {
-					if(tmp[i+1] == '[' || tmp[i+1] == '<') {
-						tmp.insert(i+1, "- ");
-						i += 2;
-					}
-				}
-				i++;
-			}
-		}
-#endif
 	} else {
 		i = 0;
 		while( (i = tmp.find("&amp;", i)) != string::npos) {
@@ -864,12 +844,15 @@ void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) {
 
 // TimerManagerListener
 void NmdcHub::on(Second, u_int32_t aTick) throw() {
-
-	if(isConnected() && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
+	if(state == STATE_CONNECTED && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
 		// Try to send something for the fun of it...
 		dcdebug("Testing writing...\n");
 		send("|", 1);
+	} else if(getAutoReconnect() && state == STATE_CONNECT && (getReconnecting() || ((getLastActivity() + getReconnDelay() * 1000) < aTick))) {
+		// Try to reconnect...
+		connect();
 	}
+
 	{
 		Lock l(cs);
 		
@@ -888,9 +871,7 @@ void NmdcHub::on(Second, u_int32_t aTick) throw() {
 // BufferedSocketListener
 void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 	clearUsers();
-
-	if(state == STATE_CONNECTED)
-		state = STATE_CONNECT;
-
-	fire(ClientListener::Failed(), this, aLine); 
+	socket->removeListener(this);
+	state = STATE_CONNECT;
+	fire(ClientListener::Failed(), this, aLine);
 }

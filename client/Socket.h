@@ -176,6 +176,9 @@ public:
 	int getSocketOptInt(int option) throw(SocketException);
 	void setSocketOpt(int option, int value) throw(SocketException);
 
+	virtual bool isSecure() const throw() { return false; }
+	virtual bool isTrusted() const throw() { return false; }
+
 	/** When socks settings are updated, this has to be called... */
 	static void socksUpdated();
 

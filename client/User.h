@@ -41,7 +41,7 @@ public:
 		HUB_BIT,
 		TTH_GET_BIT,
 		SAVE_NICK_BIT,
-		SSL_BIT
+		TLS_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -54,7 +54,7 @@ public:
 		HUB = 1<<HUB_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
 		SAVE_NICK = 1<<SAVE_NICK_BIT,	//< Save cid->nick association
-		SSL = 1<<SSL_BIT				//< Client supports SSL
+		TLS = 1<<TLS_BIT				//< Client supports SSL
 	};
 
 	typedef Pointer<User> Ptr;

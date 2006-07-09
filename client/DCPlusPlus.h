@@ -85,6 +85,9 @@ typedef StringPairList::iterator StringPairIter;
 typedef HASH_MAP<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
 
+typedef HASH_SET<string> StringSet;
+typedef StringSet::iterator StringSetIter;
+
 typedef vector<wstring> WStringList;
 typedef WStringList::iterator WStringIter;
 typedef WStringList::const_iterator WStringIterC;

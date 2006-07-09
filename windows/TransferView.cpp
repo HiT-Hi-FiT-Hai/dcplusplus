@@ -499,7 +499,11 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		tstring statusString;
 
 		if(d->getUserConnection()->isSecure()) {
-			statusString += _T("[S]");
+			if(d->getUserConnection()->isTrusted()) {
+				statusString += _T("[S]");
+			} else {
+				statusString += _T("[U]");
+			}
 		}
 		if(d->isSet(Download::FLAG_TTH_CHECK)) {
 			statusString += _T("[T]");

@@ -181,9 +181,6 @@ public:
 
 	void checkIdle(const User::Ptr& user);
 
-	/** @internal */
-	void abortDownload(const string& aTarget);
-
 	/**
 	 * @remarks This is only used in the tray icons. In MainFrame this is
 	 * calculated instead so there seems to be a little duplication of code.
@@ -241,6 +238,8 @@ private:
 	u_int32_t calcCrc32(const string& file) throw(FileException);
 	bool checkSfv(UserConnection* aSource, Download* d, u_int32_t crc);
 	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
+
+	void failDownload(UserConnection* aSource, const string& reason);
 
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 

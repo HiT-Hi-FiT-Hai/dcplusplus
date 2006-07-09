@@ -127,7 +127,6 @@ public:
 	}
 
 	void reconnect();
-
 	void shutdown();
 
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
@@ -155,6 +154,7 @@ public:
 	GETSET(u_int32_t, lastActivity, LastActivity);
 	GETSET(bool, registered, Registered);
 	GETSET(bool, autoReconnect, AutoReconnect);
+	GETSET(bool, reconnecting, Reconnecting);
 
 	GETSET(string, currentNick, CurrentNick);
 	GETSET(string, currentDescription, CurrentDescription);
@@ -177,7 +177,6 @@ protected:
 
 	void updateCounts(bool aRemove);
 	void updateActivity() { lastActivity = GET_TICK(); }
-	void resetActivtiy() { lastActivity = 0; }
 
 	/** Reload details from favmanager or settings */
 	void reloadSettings(bool updateNick);
@@ -209,7 +208,7 @@ private:
 
 	// BufferedSocketListener
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
-	virtual void on(Connected) throw() { updateActivity(); ip = socket->getIp(); fire(ClientListener::Connected(), this); }
+	virtual void on(Connected) throw();
 
 
 };

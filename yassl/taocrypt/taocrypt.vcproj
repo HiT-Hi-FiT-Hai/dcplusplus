@@ -438,6 +438,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\md4.cpp">
+			</File>
+			<File
 				RelativePath="src\md5.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -564,6 +567,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\template_instnt.cpp">
+			</File>
+			<File
 				RelativePath="src\tftables.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -655,7 +661,13 @@
 				RelativePath="include\integer.hpp">
 			</File>
 			<File
+				RelativePath=".\include\kernelc.hpp">
+			</File>
+			<File
 				RelativePath="include\md2.hpp">
+			</File>
+			<File
+				RelativePath=".\include\md4.hpp">
 			</File>
 			<File
 				RelativePath="include\md5.hpp">
@@ -680,6 +692,9 @@
 			</File>
 			<File
 				RelativePath="include\rsa.hpp">
+			</File>
+			<File
+				RelativePath=".\include\runtime.hpp">
 			</File>
 			<File
 				RelativePath="include\sha.hpp">

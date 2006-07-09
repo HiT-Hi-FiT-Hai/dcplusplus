@@ -27,6 +27,7 @@
 #include "CryptoManager.h"
 #include "ClientManager.h"
 #include "QueueManager.h"
+#include "LogManager.h"
 
 #include "UserConnection.h"
 
@@ -66,7 +67,10 @@ void ConnectionManager::listen() throw(Exception){
 		}
 	}
 
-	lastPort++;
+	if(!CryptoManager::getInstance()->TLSOk()) {
+		return;
+	}
+	lastPort = (unsigned short)SETTING(TLS_PORT);
 	firstPort = lastPort;
 
 	while(true) {
@@ -122,10 +126,10 @@ void ConnectionManager::putCQI(ConnectionQueueItem* cqi) {
 	fire(ConnectionManagerListener::Removed(), cqi);
 	if(cqi->getDownload()) {
 		dcassert(find(downloads.begin(), downloads.end(), cqi) != downloads.end());
-		downloads.erase(find(downloads.begin(), downloads.end(), cqi));
+		downloads.erase(remove(downloads.begin(), downloads.end(), cqi), downloads.end());
 	} else {
 		dcassert(find(uploads.begin(), uploads.end(), cqi) != uploads.end());
-		uploads.erase(find(uploads.begin(), uploads.end(), cqi));
+		uploads.erase(remove(uploads.begin(), uploads.end(), cqi), uploads.end());
 	}
 	delete cqi;
 }
@@ -295,6 +299,10 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	uc->setLastActivity(GET_TICK());
 	try { 
 		uc->accept(sock);
+		if(uc->isSecure() && !uc->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
+			putConnection(uc);
+			LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
+		}
 	} catch(const Exception&) {
 		putConnection(uc);
 		delete uc;
@@ -379,6 +387,12 @@ void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) 
 }
 
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
+	if(aSource->isSecure() && !aSource->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
+		putConnection(aSource);
+		LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
+		return;
+	}
+
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	if(aSource->isSet(UserConnection::FLAG_NMDC)) {
 		aSource->myNick(aSource->getToken());

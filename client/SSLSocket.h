@@ -45,6 +45,10 @@ public:
 	virtual int wait(u_int32_t millis, int waitFor) throw(SocketException);
 	virtual void shutdown() throw();
 	virtual void close() throw();
+
+	virtual bool isSecure() const throw() { return true; }
+	virtual bool isTrusted() const throw();
+
 private:
 	friend class CryptoManager;
 

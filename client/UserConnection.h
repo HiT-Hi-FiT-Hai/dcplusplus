@@ -279,7 +279,8 @@ public:
 	}
 
 	User::Ptr& getUser() { return user; }
-	bool isSecure() const { return secure; }
+	bool isSecure() const { return socket && socket->isSecure(); }
+	bool isTrusted() const { return socket && socket->isTrusted(); }
 
 	string getRemoteIp() const { return socket->getIp(); }
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; }
@@ -305,8 +306,8 @@ public:
 	GETSET(u_int32_t, lastActivity, LastActivity);
 private:
 	BufferedSocket* socket;
-	User::Ptr user;
 	bool secure;
+	User::Ptr user;
 	
 	static const string UPLOAD, DOWNLOAD;
 	
@@ -316,7 +317,7 @@ private:
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection(bool secure_) throw() : /*cqi(NULL),*/ state(STATE_UNCONNECTED), lastActivity(0),
+	UserConnection(bool secure_) throw() : state(STATE_UNCONNECTED), lastActivity(0),
 		socket(0), secure(secure_), download(NULL) { 
 	}
 

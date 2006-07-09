@@ -204,8 +204,6 @@ public:
 		}
 	}
 
-	string getSearchString() const;
-
 	const string& getTempTarget();
 	void setTempTarget(const string& aTempTarget) {
 		tempTarget = aTempTarget;

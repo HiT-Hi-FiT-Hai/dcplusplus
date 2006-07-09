@@ -86,8 +86,8 @@ public:
 			Thread::sleep(100);
 	}
 
-	void accept(const Socket& srv, bool secure) throw(SocketException, ThreadException);
-	void connect(const string& aAddress, short aPort, bool secure, bool proxy) throw(SocketException, ThreadException);
+	void accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException, ThreadException);
+	void connect(const string& aAddress, short aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException);
 
 	/** Sets data mode for aBytes bytes. Must be called within onLine. */
 	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }
@@ -99,8 +99,11 @@ public:
 	void setLineMode(size_t aRollback) { setMode (MODE_LINE, aRollback);}
 	void setMode(Modes mode, size_t aRollback = 0);
 	Modes getMode() const { return mode; }
-	const string& getIp() { return sock ? sock->getIp() : Util::emptyString; }
-	bool isConnected() { return sock && sock->isConnected(); }
+	const string& getIp() const { return sock ? sock->getIp() : Util::emptyString; }
+	bool isConnected() const { return sock && sock->isConnected(); }
+
+	bool isSecure() const { return sock && sock->isSecure(); }
+	bool isTrusted() const { return sock && sock->isTrusted(); }
 	
 	void write(const string& aData) throw() { write(aData.data(), aData.length()); }
 	void write(const char* aBuf, size_t aLen) throw();
@@ -170,14 +173,8 @@ private:
 	void threadSendData();
 	void threadDisconnect();
 	
-	void fail(const string& aError) {
-		if(sock)
-			sock->disconnect();
-		fire(BufferedSocketListener::Failed(), aError);
-		failed = true;
-	}
-	
-	static size_t sockets;
+	void fail(const string& aError);	
+	static volatile long sockets;
 
 	bool checkEvents();
 	void checkSocket();

@@ -34,6 +34,7 @@
 #include "cert_wrapper.hpp"
 #include "log.hpp"
 #include "lock.hpp"
+#include "openssl/ssl.h"  // ASN1_STRING and DH
 
 
 namespace yaSSL {
@@ -121,8 +122,6 @@ public:
 
     friend sslFactory& GetSSL_Factory();        // singleton creator
 private:
-    static sslFactory instance_;
-
     sslFactory(const sslFactory&);              // hide copy
     sslFactory& operator=(const sslFactory&);   // and assign   
 };
@@ -132,15 +131,28 @@ private:
 
 // openSSL X509 names
 class X509_NAME {
-    char* name_;
+    char*       name_;
+    size_t      sz_;
+    ASN1_STRING entry_;
 public:
     X509_NAME(const char*, size_t sz);
     ~X509_NAME();
 
-    char* GetName();
+    char*        GetName();
+    ASN1_STRING* GetEntry(int i);
 private:
     X509_NAME(const X509_NAME&);                // hide copy
     X509_NAME& operator=(const X509_NAME&);     // and assign
+};
+
+
+class StringHolder {
+    ASN1_STRING  asnString_;
+public:
+    StringHolder(const char* str, int sz);
+    ~StringHolder();
+
+    ASN1_STRING* GetString();
 };
 
 
@@ -148,12 +160,18 @@ private:
 class X509 {
     X509_NAME issuer_;
     X509_NAME subject_;
+    StringHolder beforeDate_;   // not valid before
+    StringHolder afterDate_;    // not valid after
 public:
-    X509(const char* i, size_t, const char* s, size_t);
+    X509(const char* i, size_t, const char* s, size_t,
+         const char* b, int, const char* a, int);
     ~X509() {}
 
     X509_NAME* GetIssuer();
     X509_NAME* GetSubject();
+
+    ASN1_STRING* GetBefore();
+    ASN1_STRING* GetAfter();
 private:
     X509(const X509&);              // hide copy
     X509& operator=(const X509&);   // and assign
@@ -214,8 +232,6 @@ public:
 
     friend Sessions& GetSessions(); // singleton creator
 private:
-    static Sessions instance_;
-
     Sessions(const Sessions&);              // hide copy
     Sessions& operator=(const Sessions&);   // and assign
 };
@@ -413,16 +429,14 @@ private:
 
 // holds input and output buffers
 class Buffers {
-    typedef mySTL::list<input_buffer*>  inputList;
-    typedef mySTL::list<output_buffer*> outputList;
-
-    inputList  dataList_;                // list of users app data / handshake
-    outputList handShakeList_;           // buffered handshake msgs
 public:
     Buffers() {}
     ~Buffers();
 
-    const inputList&  getData()      const;
+	typedef mySTL::list<input_buffer*>  inputList;
+	typedef mySTL::list<output_buffer*> outputList;
+
+	const inputList&  getData()      const;
     const outputList& getHandShake() const;
 
     inputList&  useData();
@@ -430,6 +444,9 @@ public:
 private:
     Buffers(const Buffers&);             // hide copy
     Buffers& operator=(const Buffers&); // and assign   
+	
+	inputList  dataList_;                // list of users app data / handshake
+	outputList handShakeList_;           // buffered handshake msgs
 };
 
 
@@ -505,6 +522,7 @@ public:
     void makeTLSMasterSecret();
     void addData(input_buffer* data);
     void fillData(Data&);
+    void PeekData(Data&);
     void addBuffer(output_buffer* b);
     void flushBuffer();
     void verifyState(const RecordLayerHeader&);

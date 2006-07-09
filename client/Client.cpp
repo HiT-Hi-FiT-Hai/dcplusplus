@@ -25,12 +25,13 @@
 
 #include "FavoriteManager.h"
 #include "TimerManager.h"
+#include "ResourceManager.h"
 
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) : 
 	myIdentity(ClientManager::getInstance()->getMe(), 0),
-	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), socket(0), 
+	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), reconnecting(false), socket(0), 
 	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
@@ -49,7 +50,7 @@ Client::~Client() throw() {
 void Client::reconnect() {
 	disconnect(true);
 	setAutoReconnect(true);
-	resetActivtiy();
+	setReconnecting(true);
 }
 
 void Client::shutdown() {
@@ -74,7 +75,9 @@ void Client::reloadSettings(bool updateNick) {
 		}
 		setPassword(hub->getPassword());
 	} else {
-		setCurrentNick(checkNick(SETTING(NICK)));
+		if(updateNick) {
+			setCurrentNick(checkNick(SETTING(NICK)));
+		}
 		setCurrentDescription(SETTING(DESCRIPTION));
 	}
 }
@@ -84,30 +87,36 @@ void Client::connect() {
 		BufferedSocket::putSocket(socket);
 
 	setAutoReconnect(true);
+	setReconnecting(false);
 	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings(true);
 	setRegistered(false);
-	setMyIdentity(Identity());
+	setMyIdentity(Identity(ClientManager::getInstance()->getMe(), 0));
 	setHubIdentity(Identity());
 
 	try {
 		socket = BufferedSocket::getSocket(separator);
 		socket->addListener(this);
-		socket->connect(address, port, secure, true);
+		socket->connect(address, port, secure, BOOLSETTING(ALLOW_UNTRUSTED_HUBS), true);
 	} catch(const Exception& e) {
 		if(socket) {
 			BufferedSocket::putSocket(socket);
-			socket = NULL;
+			socket = 0;
 		}
 		fire(ClientListener::Failed(), this, e.getError());
 	}
 	updateActivity();
 }
 
+void Client::on(Connected) throw() {
+	updateActivity(); 
+	ip = socket->getIp(); 
+	fire(ClientListener::Connected(), this);
+}
+
 void Client::disconnect(bool graceLess) {
 	if(!socket)
 		return;
-	socket->removeListener(this);
 	socket->disconnect(graceLess);
 }
 
@@ -156,9 +165,5 @@ string Client::getLocalIp() const {
 	return lip;
 }
 
-void Client::on(Second, u_int32_t aTick) throw() {
-	if(getAutoReconnect() && !isConnected() && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
-		// Try to reconnect...
-		connect();
-	}
+void Client::on(Second, u_int32_t) throw() {
 }

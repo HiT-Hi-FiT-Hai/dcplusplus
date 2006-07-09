@@ -1,4 +1,4 @@
-﻿-- 0.692 --
+﻿-- 0.692 2006-07-09 --
 * [bug 927] Fixed OP detection bug really (thanks pothead)
 * [bug 938] Added a few more ADC info fields (thanks ullner)
 * [bug 939] Fixed hub info update (thanks ullner)
@@ -17,7 +17,28 @@
 * Fixed auto-reconnect
 * [bug 936] Fixed duplicate entries in search hubs
 * Fixed some hub title display issues
-* Some code spring cleanup
+* Some spring cleanup
+* [bug 970] Unix file permissions correctly set (thanks steven sheehy)
+* [ADC] Allowed $ and | in nick/description
+* Fixed targetdrive bug for temp target location
+* Fixed a crash bug when hash data cannot be saved
+* Possibly fixed issues with queue items not being updated
+* Added warning when someone tries to spam hublist.org or dcpp.net with your client
+* [bug 968] Fixed unix compile issue (thanks pothead)
+* [bug 975] Fixed silly warning (thanks pothead)
+* [bug 978] Fixed 64-bit compiler issue (thanks steven sheehy)
+* [bug 988] Only unique nicks diplayed in title bar 
+* Added protection from hubs/clients sending junk data resulting in high memory usage / crash
+* Updated to yaSSL 1.3.7
+* Added a few TLS options; [U] in transfer status means untrusted TLS (encrypted but certificate not validated)
+* Added certificate generation, OpenSSL must be installed and in PATH for this to work
+* [bug 996] Fixed an issue where directories that are hard to delete were created
+* [bug 1000] Fixed linux compile issue (thanks steven sheehy)
+* [bug 949] Fixed a crash when reading invalid XML files
+* TLS port may now be specified in settings and is only opened if TLS is enabled
+* Added TLS port to /connection
+* [bug 977] Added copy hub address to hub right-click menu (thanks pothead)
+* [bug 1001] Fixed assertion on unix (thanks steven sheehy)
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog

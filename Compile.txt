@@ -4,7 +4,6 @@ How to compile in 3 easy steps:
 
 1) Download the source and STLPort from the DC++ download site. Unpack the DC++ source. Unpack the STLport source into the stlport directory.
    Download WTL from http://sf.net/projects/wtl. Unpack it to the wtl folder.
-   Download YaSSL from http://yassl.com/. Unpack it to the yassl folder.
 
 2) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
    You have to do this if you get an error that "natupnp.h" is missing. Since all you need is this

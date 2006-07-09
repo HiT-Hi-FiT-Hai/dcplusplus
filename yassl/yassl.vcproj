@@ -291,6 +291,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\template_instnt.cpp">
+			</File>
+			<File
 				RelativePath="src\timer.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -388,7 +391,19 @@
 				RelativePath="include\cert_wrapper.hpp">
 			</File>
 			<File
+				RelativePath=".\include\openssl\crypto.h">
+			</File>
+			<File
 				RelativePath="include\crypto_wrapper.hpp">
+			</File>
+			<File
+				RelativePath=".\include\openssl\des.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\engine.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\err.h">
 			</File>
 			<File
 				RelativePath="include\factory.hpp">
@@ -397,10 +412,34 @@
 				RelativePath="include\handshake.hpp">
 			</File>
 			<File
+				RelativePath=".\include\openssl\lhash.h">
+			</File>
+			<File
 				RelativePath="include\lock.hpp">
 			</File>
 			<File
 				RelativePath="include\log.hpp">
+			</File>
+			<File
+				RelativePath=".\include\openssl\md4.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\md5.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\opensslv.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\pem.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\pkcs12.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\rand.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\rsa.h">
 			</File>
 			<File
 				RelativePath="include\socket_wrapper.hpp">
@@ -410,6 +449,12 @@
 			</File>
 			<File
 				RelativePath="include\timer.hpp">
+			</File>
+			<File
+				RelativePath=".\include\openssl\x509.h">
+			</File>
+			<File
+				RelativePath=".\include\openssl\x509v3.h">
 			</File>
 			<File
 				RelativePath=".\include\yassl.hpp">

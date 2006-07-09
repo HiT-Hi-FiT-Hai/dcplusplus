@@ -45,9 +45,9 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 		lvi.iItem = newPos;
 	}
 	int i = InsertItem(&lvi);
-	int j = 0;
-	for(TStringIter k = l.begin(); k != l.end(); ++k, j++) {
-		SetItemText(i, j, k->c_str());
+	int m = 0;
+	for(TStringIter k = l.begin(); k != l.end(); ++k, m++) {
+		SetItemText(i, m, k->c_str());
 	}
 	EnsureVisible(i, FALSE);
 

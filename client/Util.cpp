@@ -248,6 +248,19 @@ string Util::validateFileName(string tmp) {
 		i += 2;
 	}
 
+	// Dots at the end of path names aren't popular
+	i = 0;
+	while( ((i = tmp.find(".\\", i)) != string::npos) ) {
+		tmp[i] = '_';
+		i += 1;
+	}
+	i = 0;
+	while( ((i = tmp.find("./", i)) != string::npos) ) {
+		tmp[i] = '_';
+		i += 1;
+	}
+
+
 	return tmp;
 }
 
@@ -339,24 +352,6 @@ string Util::formatBytes(int64_t aBytes) {
 	}
 
 	return buf;
-}
-
-double Util::toBytes(TCHAR* aSize) {
-	double bytes = _tstof(aSize);
-
-	if (_tcsstr(aSize, CTSTRING(PIB))) {
-		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(TiB))) {
-		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(GiB))) {
-		return bytes * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(MiB))) {
-		return bytes * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(KiB))) {
-		return bytes * 1024.0;
-	} else {
-		return bytes;
-	}
 }
 
 string Util::formatExactSize(int64_t aBytes) {
@@ -915,4 +910,20 @@ string Util::toDOS(const string& tmp) {
 		}
 	}
 	return tmp2;
+}
+
+string Util::formatMessage(const string& nick, const string& message) {
+	string tmp = '<' + nick + "> " + message;
+	// Check all '<' and '[' after newlines as they're probably pasts...
+	size_t i = 0;
+	while( (i = tmp.find('\n', i)) != string::npos) {
+		if(i + 1 < tmp.length()) {
+			if(tmp[i+1] == '[' || tmp[i+1] == '<') {
+				tmp.insert(i+1, "- ");
+				i += 2;
+			}
+		}
+		i++;
+	}
+	return toDOS(tmp);
 }

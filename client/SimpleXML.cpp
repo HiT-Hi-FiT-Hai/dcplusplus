@@ -164,7 +164,10 @@ string::size_type SimpleXMLReader::loadAttribs(const string& name, const string&
 	string::size_type j;
 
 	for(;;) {
-		if((j = tmp.find('=', i)) == string::npos) {
+		if((j = tmp.find_first_of("= \"'/>", i)) == string::npos) {
+			throw SimpleXMLException("Missing '=' in " + name);
+		}
+		if(tmp[j] != '=') {
 			throw SimpleXMLException("Missing '=' in " + name);
 		}
 

@@ -40,6 +40,11 @@
 
 namespace TaoCrypt {
 
+
+// Delete static singleton holders
+void CleanUp();
+
+
 #ifdef YASSL_PURE_C
 
     // library allocation
@@ -76,7 +81,7 @@ namespace TaoCrypt {
         ::operator delete[](ptr, TaoCrypt::tc);
     }
 
-    #define NEW_TC new (tc)
+    #define NEW_TC new (TaoCrypt::tc)
 
 
     // to resolve compiler generated operator delete on base classes with
@@ -123,7 +128,12 @@ namespace TaoCrypt {
 
 
 // no gas on these systems ?, disable for now
-#if defined(__sun__) || defined (__QNX__)
+#if defined(__sun__) || defined (__QNX__) || defined (__APPLE__)
+    #define TAOCRYPT_DISABLE_X86ASM
+#endif
+
+// icc problem with -03 and integer, disable for now
+#if defined(__INTEL_COMPILER)
     #define TAOCRYPT_DISABLE_X86ASM
 #endif
 
