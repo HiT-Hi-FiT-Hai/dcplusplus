@@ -29,7 +29,7 @@ names = "";
 prolog = "";
 
 example = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n';
-example += '<Language Name="Example Language" Author="arnetheduck" Version=' + version + ' Revision="1" RightToLeft="0">\n'
+example += '<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version=' + version + ' Revision="1" RightToLeft="0">\n'
 example += '\t<Strings>\n';
 
 lre = re.compile('\s*(\w+),\s*//\s*\"(.+)\"\s*')

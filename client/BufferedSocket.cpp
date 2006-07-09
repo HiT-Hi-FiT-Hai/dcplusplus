@@ -90,13 +90,13 @@ void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted)
 		// This lock prevents the shutdown task from being added and executed before we're done initializing the socket
 		Lock l(cs);
 		start();
+		addTask(ACCEPTED, 0);
 	} catch(...) {
 		delete sock;
 		sock = 0;
 		throw;
 	}
 
-	addTask(ACCEPTED, 0);
 }
 
 void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException) {
@@ -117,13 +117,13 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 
 		Lock l(cs);
 		start();
+		addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 	} catch(...) {
 		delete sock;
 		sock = 0;
 		throw;
 	}
 
-	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 }
 
 #define CONNECT_TIMEOUT 30000
