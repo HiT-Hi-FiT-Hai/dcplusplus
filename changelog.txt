@@ -1,4 +1,10 @@
-﻿-- 0.693 2006-07-09 --
+﻿-- 0.694 2006-07-10 --
+* Fixed crash in certificates page
+* [bug 1005] Fixed linux compile issue (thanks tpo)
+* [bug 1004] Fixed browse file list on self
+* Both .crt and .pem files are read as trusted certificates
+
+-- 0.693 2006-07-09 --
 * Fixed crash bug
 * Added language code to example language xml
 
