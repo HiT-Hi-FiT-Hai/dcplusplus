@@ -32,6 +32,7 @@
 #include "Util.h"
 #include "FastAlloc.h"
 #include "Text.h"
+#include "Streams.h"
 
 STANDARD_EXCEPTION(HashException);
 class File;

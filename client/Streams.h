@@ -23,6 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "SettingsManager.h"
 #include "Exception.h"
 STANDARD_EXCEPTION(FileException);
 

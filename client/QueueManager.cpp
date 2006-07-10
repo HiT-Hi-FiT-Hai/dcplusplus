@@ -413,7 +413,11 @@ void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueExcept
 	add(target, -1, NULL, aUser, USER_LIST_NAME, true, QueueItem::FLAG_USER_LIST | aFlags);
 }
 
-void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw() {
+void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw(QueueException) {
+	if(aUser == ClientManager::getInstance()->getMe()) {
+		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
+	}
+
 	if(!aUser->isOnline() || aUser->getCID().isZero())
 		return;
 

@@ -334,8 +334,12 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 
 	if(!d->getComplete()) {
 		if(dl->getUser()->isOnline()) {
-			QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
-			ctrlStatus.SetText(STATUS_TEXT, CTSTRING(DOWNLOADING_LIST));
+			try {
+				QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
+				ctrlStatus.SetText(STATUS_TEXT, CTSTRING(DOWNLOADING_LIST));
+			} catch(const QueueException& e) {
+				ctrlStatus.SetText(STATUS_TEXT, Text::toT(e.getError()).c_str());
+			}
 		} else {
 			ctrlStatus.SetText(STATUS_TEXT, CTSTRING(USER_OFFLINE));
 		}
