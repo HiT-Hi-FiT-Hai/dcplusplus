@@ -44,6 +44,7 @@ PropPage::ListItem CertificatesPage::listItems[] = {
 	{ SettingsManager::USE_TLS, ResourceManager::SETTINGS_USE_TLS },
 	{ SettingsManager::ALLOW_UNTRUSTED_HUBS, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_HUBS	},
 	{ SettingsManager::ALLOW_UNTRUSTED_CLIENTS, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_CLIENTS, }
+	{ 0, 0, PropPage::T_END }
 };
 
 LRESULT CertificatesPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
