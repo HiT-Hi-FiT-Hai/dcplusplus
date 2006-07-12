@@ -438,7 +438,8 @@
 		<String Name="SettingsGeneral">Personal information</String>
 		<String Name="SettingsGetUserCountry">Guess user country from IP</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
-		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
+		<String Name="SettingsIgnoreHubPms">Ignore private messages from the hub</String>
+		<String Name="SettingsIgnoreBotPms">Ignore private messages from bots</String>
 		<String Name="SettingsIncoming">Incoming connection settings (see Help/FAQ if unsure)</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
@@ -475,7 +476,8 @@
 		<String Name="SettingsPmHistory">PM history</String>
 		<String Name="SettingsPopunderFilelist">Open new file list windows in the background</String>
 		<String Name="SettingsPopunderPm">Open new private message windows in the background</String>
-		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
+		<String Name="SettingsPopupBotPms">Open private messages from the hub in their own window</String>
+		<String Name="SettingsPopupHubPms">Open private messages from bots in their own window</String>
 		<String Name="SettingsPopupPms">Open private messages in their own window</String>
 		<String Name="SettingsPorts">Ports</String>
 		<String Name="SettingsPromptPassword">Popup box to input password for hubs</String>

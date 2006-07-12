@@ -539,16 +539,24 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 			}
 		} else if(task->speaker == PRIVATE_MESSAGE) {
 			PMTask& pm = *static_cast<PMTask*>(task);
-			if(pm.replyTo->isOnline()) {
-				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
+			if(pm.hub) {
+				if(BOOLSETTING(IGNORE_HUB_PMS)) {
+					addClientLine(TSTRING(IGNORED_MESSAGE) + pm.msg, false);
+				} else if(BOOLSETTING(POPUP_HUB_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
+					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, pm.msg);
+				} else {
+					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + pm.msg);
+				}
+			} else if(pm.bot) {
+				if(BOOLSETTING(IGNORE_BOT_PMS)) {
+					addClientLine(TSTRING(IGNORED_MESSAGE) + pm.msg, false);
+				} else if(BOOLSETTING(POPUP_BOT_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, pm.msg);
 				} else {
 					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + pm.msg);
 				}
 			} else {
-				if(BOOLSETTING(IGNORE_OFFLINE)) {
-					addClientLine(TSTRING(IGNORED_MESSAGE) + pm.msg, false);
-				} else if(BOOLSETTING(POPUP_OFFLINE)) {
+				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, pm.msg);
 				} else {
 					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + pm.msg);

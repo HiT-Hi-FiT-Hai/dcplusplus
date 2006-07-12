@@ -38,7 +38,6 @@ public:
 		PASSIVE_BIT,
 		NMDC_BIT,
 		BOT_BIT,
-		HUB_BIT,
 		TTH_GET_BIT,
 		SAVE_NICK_BIT,
 		TLS_BIT
@@ -51,7 +50,6 @@ public:
 		PASSIVE = 1<<PASSIVE_BIT,
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
-		HUB = 1<<HUB_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
 		SAVE_NICK = 1<<SAVE_NICK_BIT,	//< Save cid->nick association
 		TLS = 1<<TLS_BIT				//< Client supports SSL
@@ -114,6 +112,9 @@ public:
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
 	
 	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
+	void setHub(bool hub) { set("HU", hub ? "1" : Util::emptyString); }
+	void setBot(bool bot) { set("BO", bot ? "1" : Util::emptyString); }
+	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
 
 	string getTag() const { 
 		if(!get("TA").empty())

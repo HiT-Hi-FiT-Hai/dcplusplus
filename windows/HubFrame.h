@@ -209,10 +209,15 @@ private:
 	};
 
 	struct PMTask : public StringTask {
-		PMTask(const User::Ptr& from_, const User::Ptr& to_, const User::Ptr& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m), from(from_), to(to_), replyTo(replyTo_) { }
+		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const tstring& m) : StringTask(PRIVATE_MESSAGE, m), 
+			from(from_.getUser()), to(to_.getUser()), replyTo(replyTo_.getUser()), hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) { }
+
 		User::Ptr from;
 		User::Ptr to;
 		User::Ptr replyTo;
+
+		bool hub;
+		bool bot;
 	};
 
 	friend struct CompareItems;
