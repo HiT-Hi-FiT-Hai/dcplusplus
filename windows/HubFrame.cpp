@@ -1221,9 +1221,6 @@ void HubFrame::on(Connecting, Client*) throw() {
 void HubFrame::on(Connected, Client*) throw() { 
 	speak(CONNECTED);
 }
-void HubFrame::on(BadPassword, Client*) throw() { 
-	client->setPassword(Util::emptyString);
-}
 void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() { 
 	speak(UPDATE_USER_JOIN, user);
 }

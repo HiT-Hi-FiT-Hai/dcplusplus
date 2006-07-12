@@ -391,7 +391,6 @@ private:
 	// ClientListener
 	virtual void on(Connecting, Client*) throw();
 	virtual void on(Connected, Client*) throw();
-	virtual void on(BadPassword, Client*) throw();
 	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
 	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
 	virtual void on(UserRemoved, Client*, const OnlineUser&) throw();

@@ -699,7 +699,7 @@ int QueueManager::matchListing(const DirectoryListing& dl) throw() {
 
 void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 	string target = Util::validateFileName(aTarget);
-	if(Util::stricmp(aSource, target) == 0)
+	if(aSource == target)
 		return;
 
 	bool delSource = false;
@@ -717,7 +717,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 
 		// Let's see if the target exists...then things get complicated...
 		QueueItem* qt = fileQueue.find(target);
-		if(qt == NULL) {
+		if(qt == NULL || Util::stricmp(aSource, target) == 0) {
 			// Good, update the target and move in the queue...
 			fileQueue.move(qs, target);
 			fire(QueueManagerListener::Moved(), qs);

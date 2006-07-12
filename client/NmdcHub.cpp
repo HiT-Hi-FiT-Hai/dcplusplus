@@ -708,7 +708,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		setMyIdentity(ou.getIdentity());
 		fire(ClientListener::GetPassword(), this);
 	} else if(cmd == "$BadPass") {
-		fire(ClientListener::BadPassword(), this);
+		setPassword(Util::emptyString);
 	} else if(cmd == "$ZOn") {
 		socket->setMode(BufferedSocket::MODE_ZPIPE);
 	} else {
