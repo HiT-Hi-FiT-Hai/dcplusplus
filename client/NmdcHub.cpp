@@ -202,9 +202,11 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string nick = line.substr(1, i-1);
+		string message = line.substr(i+2);
+
 		OnlineUser* ou = findUser(nick);
 		if(ou) {
-			fire(ClientListener::Message(), this, *ou, unescape(line.substr(i+1)));
+			fire(ClientListener::Message(), this, *ou, unescape(message));
 		} else {
 			OnlineUser& o = getUser(nick);
 			// Assume that messages from unknown users come from the hub
@@ -212,7 +214,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			o.getIdentity().setHidden(true);
 			fire(ClientListener::UserUpdated(), this, o);
 
-			fire(ClientListener::Message(), this, o, unescape(line.substr(i+1)));
+			fire(ClientListener::Message(), this, o, unescape(message));
 		}
 		return;
 	}

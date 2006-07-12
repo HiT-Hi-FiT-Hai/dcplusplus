@@ -3,6 +3,7 @@
   without connection type
 * [bug 125] Fixed out-of-order PM/quit
 * [bug 224] Slots are no longer granted to disconnected users, instead disconnection is delayed a minute
+* [NMDC] Fixed extra space in chat
 
 -- 0.694 2006-07-10 --
 * Fixed crash in certificates page
