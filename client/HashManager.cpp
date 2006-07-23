@@ -614,7 +614,7 @@ int HashManager::Hasher::run() {
 #ifdef _WIN32
 				TigerTree fastTTH(bs);
 				tth = &fastTTH;
-				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size, xcrc32)) {
+				if(!virtualBuf || !BOOLSETTING(FAST_HASH) || !fastHash(fname, buf, fastTTH, size, xcrc32)) {
 					tth = &slowTTH;
 					crc32 = CRC32Filter();
 #endif

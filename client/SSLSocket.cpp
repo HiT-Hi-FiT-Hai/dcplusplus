@@ -25,7 +25,6 @@
 
 #include <openssl/ssl.h>
 
-
 SSLSocket::SSLSocket(SSL_CTX* context) throw(SocketException) : ctx(context), ssl(0) {
 
 }

@@ -6,6 +6,7 @@
 * [NMDC] Fixed extra space in chat
 * [bug 395] Fixed password being blanked
 * [bug 419] Allowed changing case only when moving file in queue
+* [bug 736] Fixed escaping of menu items
 
 -- 0.694 2006-07-10 --
 * Fixed crash in certificates page

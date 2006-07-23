@@ -207,6 +207,7 @@ enum Strings { // @DontAdd
 	LAST_HUB, // "Hub (last seen on if offline)"
 	LAST_SEEN, // "Time last seen"
 	LEFT, // "left"
+	LISTENER_FAILED, // "Listening socket failed (you need to restart DC++): "
 	LOADING, // "Loading DC++, please wait..."
 	LOOKUP_AT_BITZI, // "Lookup TTH at Bitzi.com"
 	LOW, // "Low"

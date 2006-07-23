@@ -341,6 +341,14 @@ public:
 	static bool isAlt() { return (GetKeyState(VK_MENU) & 0x8000) > 0; }
 	static bool isCtrl() { return (GetKeyState(VK_CONTROL) & 0x8000) > 0; }
 
+	static tstring escapeMenu(tstring str) { 
+		string::size_type i = 0;
+		while( (i = str.find(_T('&'), i)) != string::npos) {
+			str.insert(str.begin()+i, 1, _T('&'));
+			i += 2;
+		}
+		return str;
+	}
 	template<class T> static HWND hiddenCreateEx(T& p) throw() {
 		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);
 		::LockWindowUpdate(mdiClient);

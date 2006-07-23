@@ -677,7 +677,6 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		OnlineUser* replyTo = findUser(rtNick);
 		OnlineUser* from = findUser(fromNick);
-		OnlineUser& to = getUser(getMyNick());
 
 		string msg = param.substr(j + 2);
 		if(replyTo == NULL || from == NULL) {
@@ -701,6 +700,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			from = findUser(fromNick);
 
 		}	
+		OnlineUser& to = getUser(getMyNick());
 		fire(ClientListener::PrivateMessage(), this, *from, to, *replyTo, unescape(msg));
 	} else if(cmd == "$GetPass") {
 		OnlineUser& ou = getUser(getMyNick());

@@ -203,6 +203,7 @@
 		<String Name="LastHub">Hub (last seen on if offline)</String>
 		<String Name="LastSeen">Time last seen</String>
 		<String Name="Left">left</String>
+		<String Name="ListenerFailed">Listening socket failed (you need to restart DC++): </String>
 		<String Name="Loading">Loading DC++, please wait...</String>
 		<String Name="LookupAtBitzi">Lookup TTH at Bitzi.com</String>
 		<String Name="Low">Low</String>
