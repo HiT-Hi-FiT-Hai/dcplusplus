@@ -437,14 +437,14 @@ int Socket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 	if(waitFor & WAIT_CONNECT) {
 		dcassert(!(waitFor & WAIT_READ) && !(waitFor & WAIT_WRITE));
 
-		FD_ZERO(&rfd);
+		FD_ZERO(&wfd);
 		FD_ZERO(&efd);
 
-		FD_SET(sock, &rfd);
+		FD_SET(sock, &wfd);
 		FD_SET(sock, &efd);
-		check(select((int)(sock+1), &rfd, 0, &efd, &tv));
+		check(select((int)(sock+1), 0, &wfd, &efd, &tv));
 
-		if(FD_ISSET(sock, &rfd)) {
+		if(FD_ISSET(sock, &wfd)) {
 			return WAIT_CONNECT;
 		}
 

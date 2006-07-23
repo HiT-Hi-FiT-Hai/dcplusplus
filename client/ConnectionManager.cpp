@@ -264,7 +264,7 @@ static const u_int32_t POLL_TIMEOUT = 250;
 int ConnectionManager::Server::run() throw() {
 	try {
 		while(!die) {
-			if(sock.wait(POLL_TIMEOUT, Socket::WAIT_CONNECT) == Socket::WAIT_CONNECT) {
+			if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
 				ConnectionManager::getInstance()->accept(sock, secure);
 			}
 		}
