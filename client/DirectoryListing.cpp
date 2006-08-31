@@ -95,7 +95,7 @@ void DirectoryListing::loadFile(const string& name) {
 		::File ff(name, ::File::READ, ::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
-		char buf[BUF_SIZE];
+		AutoArray<char> buf(BUF_SIZE);
 		size_t len;
 		size_t bytesRead = 0;
 		for(;;) {
@@ -110,7 +110,7 @@ void DirectoryListing::loadFile(const string& name) {
 		}
 	} else if(Util::stricmp(ext, ".xml") == 0) {
 		int64_t sz = ::File::getSize(name);
-		if(sz == -1 || sz >= txt.max_size())
+		if(sz == -1 || sz >= static_cast<int64_t>(txt.max_size()))
 			throw(FileException(CSTRING(FILE_NOT_AVAILABLE)));
 		txt.resize((size_t) sz);
 		size_t n = txt.length();

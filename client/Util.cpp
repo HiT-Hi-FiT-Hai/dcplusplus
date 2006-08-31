@@ -338,17 +338,17 @@ string Util::getAwayMessage() {
 string Util::formatBytes(int64_t aBytes) {
 	char buf[64];
 	if(aBytes < 1024) {
-		sprintf(buf, "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
+		snprintf(buf, sizeof(buf), "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
 	} else if(aBytes < 1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0), CSTRING(KiB));
 	} else if(aBytes < 1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MiB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GiB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024*1024) {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TiB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TiB));
 	} else {
-		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
+		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
 	}
 
 	return buf;
@@ -380,9 +380,8 @@ string Util::formatExactSize(int64_t aBytes) {
 		return Text::fromT(buf);
 #else
 		char buf[64];
-		sprintf(buf, "%'lld", aBytes);
-		sprintf(buf, "%s %s", buf, CSTRING(B));
-		return buf;
+		snprintf(buf, sizeof(buf), "%'lld", aBytes);
+		return string(buf) + STRING(B);
 #endif
 }
 

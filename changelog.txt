@@ -7,6 +7,14 @@
 * [bug 395] Fixed password being blanked
 * [bug 419] Allowed changing case only when moving file in queue
 * [bug 736] Fixed escaping of menu items
+* [bug 1013] Fixed gcc warnings (thanks steven sheehy)
+* [bug 1023] Fixed some large stack allocations (thanks steven sheehy)
+* [bug 1026] Fixed some potential buffer overflows (thanks steven sheehy)
+* [bug 1027] Improved unix socket support (thanks steven sheehy)
+* [bug 1028] Improved big endian support (thanks steven sheehy)
+* [bug 1029] Fixed BSD compile issue (thanks steven sheehy)
+* [bug 1031] Fixed a crash after closing hub window (thanks bigmuscle/pothead)
+* [bug 1032] Fixed certificates help (thanks pothead)
 
 -- 0.694 2006-07-10 --
 * Fixed crash in certificates page

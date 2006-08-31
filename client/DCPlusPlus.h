@@ -41,6 +41,10 @@ inline void CDECL debugTrace(const char* format, ...)
 	va_end(args);
 }
 
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 #define dcdebug debugTrace
 #ifdef _WIN32
 #define dcassert(exp) \

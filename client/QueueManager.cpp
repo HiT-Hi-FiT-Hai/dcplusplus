@@ -939,8 +939,9 @@ void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
 		}
 	}
 	if(flags & QueueItem::FLAG_MATCH_QUEUE) {
-		AutoArray<char> tmp(STRING(MATCHED_FILES).size() + 16);
-		sprintf(tmp, CSTRING(MATCHED_FILES), matchListing(dirList));
+		const size_t BUF_SIZE = STRING(MATCHED_FILES).size() + 16;
+		AutoArray<char> tmp(BUF_SIZE);
+		snprintf(tmp, BUF_SIZE, CSTRING(MATCHED_FILES), matchListing(dirList));
 		LogManager::getInstance()->message(Util::toString(ClientManager::getInstance()->getNicks(user->getCID())) + ": " + string(tmp));			
 	}
 }

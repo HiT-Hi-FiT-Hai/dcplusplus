@@ -326,7 +326,7 @@ public:
 
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
-		sprintf(buf, "%01lu:%02d:%02d", (unsigned long)(aSec / (60*60)), (int)((aSec / 60) % 60), (int)(aSec % 60));
+		snprintf(buf, sizeof(buf), "%01lu:%02d:%02d", (unsigned long)(aSec / (60*60)), (int)((aSec / 60) % 60), (int)(aSec % 60));
 		return buf;
 	}
 
@@ -369,55 +369,55 @@ public:
 
 	static string toString(short val) {
 		char buf[8];
-		sprintf(buf, "%d", (int)val);
+		snprintf(buf, sizeof(buf), "%d", (int)val);
 		return buf;
 	}
 	static string toString(unsigned short val) {
 		char buf[8];
-		sprintf(buf, "%u", (unsigned int)val);
+		snprintf(buf, sizeof(buf), "%u", (unsigned int)val);
 		return buf;
 	}
 	static string toString(int val) {
 		char buf[16];
-		sprintf(buf, "%d", val);
+		snprintf(buf, sizeof(buf), "%d", val);
 		return buf;
 	}
 	static string toString(unsigned int val) {
 		char buf[16];
-		sprintf(buf, "%u", val);
+		snprintf(buf, sizeof(buf), "%u", val);
 		return buf;
 	}
 	static string toString(long val) {
 		char buf[32];
-		sprintf(buf, "%ld", val);
+		snprintf(buf, sizeof(buf), "%ld", val);
 		return buf;
 	}
 	static string toString(unsigned long val) {
 		char buf[32];
-		sprintf(buf, "%lu", val);
+		snprintf(buf, sizeof(buf), "%lu", val);
 		return buf;
 	}
 	static string toString(long long val) {
 		char buf[32];
 #ifdef _MSC_VER
-		sprintf(buf, "%I64d", val);
+		snprintf(buf, sizeof(buf), "%I64d", val);
 #else
-		sprintf(buf, "%lld", val);
+		snprintf(buf, sizeof(buf), "%lld", val);
 #endif
 		return buf;
 	}
 	static string toString(unsigned long long val) {
 		char buf[32];
 #ifdef _MSC_VER
-		sprintf(buf, "%I64u", val);
+		snprintf(buf, sizeof(buf), "%I64u", val);
 #else
-		sprintf(buf, "%llu", val);
+		snprintf(buf, sizeof(buf), "%llu", val);
 #endif
 		return buf;
 	}
 	static string toString(double val) {
 		char buf[16];
-		sprintf(buf, "%0.2f", val);
+		snprintf(buf, sizeof(buf), "%0.2f", val);
 		return buf;
 	}
 
@@ -437,7 +437,7 @@ public:
 
 	static string toHexEscape(char val) {
 		char buf[sizeof(int)*2+1+1];
-		sprintf(buf, "%%%X", val&0x0FF);
+		snprintf(buf, sizeof(buf), "%%%X", val&0x0FF);
 		return buf;
 	}
 	static char fromHexEscape(const string aString) {

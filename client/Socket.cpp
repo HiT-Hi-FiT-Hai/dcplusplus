@@ -52,7 +52,7 @@ string SocketException::errorToString(int aError) throw() {
 	if(msg.empty())
 	{
 		char tmp[64];
-		sprintf(tmp, CSTRING(UNKNOWN_ERROR), aError);
+		snprintf(tmp, sizeof(tmp), CSTRING(UNKNOWN_ERROR), aError);
 		msg = tmp;
 	}
 	return msg;

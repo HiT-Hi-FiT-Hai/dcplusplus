@@ -117,7 +117,7 @@ void DownloadManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() 
 					bytesDownloaded / timeElapsed * 1000 < (u_int32_t)SETTING(AUTODROP_SPEED) : false;
 				bool onlineSourcesOk = (*i)->isSet(Download::FLAG_USER_LIST) ?
 					true : QueueManager::getInstance()->countOnlineSources((*i)->getTarget()) >= SETTING(AUTODROP_MINSOURCES);
-				bool filesizeOk = !((*i)->isSet(Download::FLAG_USER_LIST)) && (*i)->getSize() >= ((size_t)SETTING(AUTODROP_FILESIZE)) * 1024;
+				bool filesizeOk = !((*i)->isSet(Download::FLAG_USER_LIST)) && (*i)->getSize() >= ((int64_t)SETTING(AUTODROP_FILESIZE)) * 1024;
 				bool dropIt = ((*i)->isSet(Download::FLAG_USER_LIST) && BOOLSETTING(AUTODROP_FILELISTS)) ||
 					(filesizeOk && BOOLSETTING(AUTODROP_ALL));
 				if(speedTooLow && onlineSourcesOk && dropIt) {

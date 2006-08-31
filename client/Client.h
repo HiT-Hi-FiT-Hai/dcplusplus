@@ -34,6 +34,7 @@ class ClientManager;
 class ClientListener  
 {
 public:
+	virtual ~ClientListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;
@@ -114,7 +115,7 @@ public:
 
 	static string getCounts() {
 		char buf[128];
-		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
+		return string(buf, snprintf(buf, sizeof(buf), "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
 	StringMap& escapeParams(StringMap& sm) {
