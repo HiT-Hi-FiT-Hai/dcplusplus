@@ -144,56 +144,26 @@ public:
 
 	static void initialize();
 
-	/**
-	 * Get the path to the application executable. 
-	 * This is mainly intended for use on Windows.
-	 *
-	 * @return Path to executable file.
-	 */
-	static string getAppPath() { return appPath; }
-
-	static string getAppName() {
-#ifdef _WIN32
-		TCHAR buf[MAX_PATH+1];
-		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
-		return Text::wideToUtf8(wstring(buf, x));
-#else // _WIN32
-		char buf[PATH_MAX + 1];
-		int n;
-		n = readlink("/proc/self/exe", buf, PATH_MAX);
-		if (n == -1) {
-				return emptyString;
-			}
-		buf[n] = '\0';
-		return string(buf);
-#endif // _WIN32
-	}	
-
 	/** Path of temporary storage */
 	static string getTempPath() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
 		DWORD x = GetTempPath(MAX_PATH, buf);
-		return Text::wideToUtf8(wstring(buf, x));
+		return Text::fromT(tstring(buf, x));
 #else
 		return "/tmp/";
 #endif
 	}
 
-	/** Path of resource directory */
-	static string getDataPath();
-
 	/** Path of configuration files */
-	static string getConfigPath();
+	static const string& getConfigPath() { return configPath; }
+	static const string& getDataPath() { return dataPath; }
+	static const string& getSystemPath() { return systemPath; }
 
 	/** Path of file lists */
-	static string getListPath() {
-		return getConfigPath() + "FileLists" PATH_SEPARATOR_STR;
-	}
+	static string getListPath() { return getConfigPath() + "FileLists" PATH_SEPARATOR_STR; }
 	/** Notepad filename */
-	static string getNotepadFile() {
-		return getConfigPath() + "Notepad.txt";
-	}
+	static string getNotepadFile() { return getConfigPath() + "Notepad.txt"; }
 
 	static string translateError(int aError) {
 #ifdef _WIN32
@@ -270,55 +240,15 @@ public:
 	static string validateFileName(string aFile);
 	static string cleanPathChars(string aNick);
 	
-	static string formatBytes(const string& aString) {
-		return formatBytes(toInt64(aString));
-	}
-	
+	static string formatBytes(const string& aString) { return formatBytes(toInt64(aString)); }
 	static string formatMessage(const string& nick, const string& message);
 	static string toDOS(const string& tmp);
 
 	static string getShortTimeString(time_t t = time(NULL) );
 
-	static string getTimeString() {
-		char buf[64];
-		time_t _tt;
-		time(&_tt);
-		tm* _tm = localtime(&_tt);
-		if(_tm == NULL) {
-			strcpy(buf, "xx:xx:xx");
-		} else {
-			strftime(buf, 64, "%X", _tm);
-		}
-		return buf;
-	}
-
-	static string toAdcFile(const string& file) {
-		if(file == "files.xml.bz2" || file == "MyList.DcLst")
-			return file;
-
-		string ret;
-		ret.reserve(file.length() + 1);
-		ret += '/';
-		ret += file;
-		for(string::size_type i = 0; i < ret.length(); ++i) {
-			if(ret[i] == '\\') {
-				ret[i] = '/';
-			}
-		}
-		return ret;
-	}
-	static string toNmdcFile(const string& file) {
-		if(file.empty())
-			return Util::emptyString;
-		
-		string ret(file.substr(1));
-		for(string::size_type i = 0; i < ret.length(); ++i) {
-			if(ret[i] == '/') {
-				ret[i] = '\\';
-			}
-		}
-		return ret;
-	}
+	static string getTimeString();
+	static string toAdcFile(const string& file);
+	static string toNmdcFile(const string& file);
 	
 	static string formatBytes(int64_t aBytes);
 
@@ -399,20 +329,12 @@ public:
 	}
 	static string toString(long long val) {
 		char buf[32];
-#ifdef _MSC_VER
-		snprintf(buf, sizeof(buf), "%I64d", val);
-#else
-		snprintf(buf, sizeof(buf), "%lld", val);
-#endif
+		snprintf(buf, sizeof(buf), I64_FMT, val);
 		return buf;
 	}
 	static string toString(unsigned long long val) {
 		char buf[32];
-#ifdef _MSC_VER
-		snprintf(buf, sizeof(buf), "%I64u", val);
-#else
-		snprintf(buf, sizeof(buf), "%llu", val);
-#endif
+		snprintf(buf, sizeof(buf), U64_FMT, val);
 		return buf;
 	}
 	static string toString(double val) {
@@ -511,8 +433,13 @@ public:
 	static double randd() { return ((double)rand()) / ((double)0xffffffff); }
 
 private:
-	static string appPath;
+	/** Per-user configuration */
+	static string configPath;
+	/** Global configuration */
+	static string systemPath;
+	/** Various resources (help files etc) */
 	static string dataPath;
+
 	static bool away;
 	static bool manualAway;
 	static string awayMsg;

@@ -693,7 +693,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
  void WinUtil::registerDchubHandler() {
 	HKEY hk;
 	TCHAR Buf[512];
-	tstring app = _T("\"") + Text::toT(Util::getAppName()) + _T("\" %1");
+	tstring app = _T("\"") + Text::toT(getAppName()) + _T("\" %1");
 	Buf[0] = 0;
 
 	if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
@@ -719,7 +719,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 		::RegCloseKey(hk);
 
 		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
-		app = Text::toT(Util::getAppName());
+		app = Text::toT(getAppName());
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
 	}
@@ -732,7 +732,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
  void WinUtil::registerADChubHandler() {
 	 HKEY hk;
 	 TCHAR Buf[512];
-	 tstring app = _T("\"") + Text::toT(Util::getAppName()) + _T("\" %1");
+	 tstring app = _T("\"") + Text::toT(getAppName()) + _T("\" %1");
 	 Buf[0] = 0;
 
 	 if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
@@ -758,7 +758,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 		 ::RegCloseKey(hk);
 
 		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
-		 app = Text::toT(Util::getAppName());
+		 app = Text::toT(getAppName());
 		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		 ::RegCloseKey(hk);
 	 }
@@ -796,10 +796,10 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	}
 	// check for the existence of magnet.exe
 	if(File::getSize(Text::fromT(magnetExe)) == -1) {
-		magnetExe = Text::toT(Util::getAppPath() + "magnet.exe");
+		magnetExe = Text::toT(Util::getDataPath() + "magnet.exe");
 		if(File::getSize(Text::fromT(magnetExe)) == -1) {
 			// gracefully fall back to registering DC++ to handle magnets
-			magnetExe = Text::toT(Util::getAppName());
+			magnetExe = Text::toT(getAppName());
 			haveMagnet = false;
 		} else {
 			// set Magnet\Location
@@ -839,10 +839,10 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (TSTRING(MAGNET_HANDLER_ROOT).size()+1));
 	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_DESC), sizeof(TCHAR) * (STRING(MAGNET_HANDLER_DESC).size()+1));
 	// set ShellExecute
-	tstring app = Text::toT("\"" + Util::getAppName() + "\" %URL");
+	tstring app = Text::toT("\"" + getAppName() + "\" %URL");
 	::RegSetValueEx(hk, _T("ShellExecute"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length()+1));
 	// set DefaultIcon
-	app = Text::toT('"' + Util::getAppName() + '"');
+	app = Text::toT('"' + getAppName() + '"');
 	::RegSetValueEx(hk, _T("DefaultIcon"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR)*(app.length()+1));
 	::RegCloseKey(hk);
 

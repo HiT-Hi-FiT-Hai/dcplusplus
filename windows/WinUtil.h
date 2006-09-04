@@ -195,6 +195,12 @@ public:
 	static void init(HWND hWnd);
 	static void uninit();
 
+	static string getAppName() {
+		TCHAR buf[MAX_PATH+1];
+		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
+		return Text::fromT(tstring(buf, x));
+	}	
+
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
 	static void addInitalDir(const User::Ptr& user, string dir) {
@@ -277,7 +283,7 @@ public:
 	static tstring encodeFont(LOGFONT const& font);
 	
 	static tstring getHelpFile() {
-		return Text::toT(Util::getAppPath() + "DCPlusPlus.chm");
+		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	}
 
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);

@@ -343,7 +343,7 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	if(!u)
 		return;
 
-	int severity = Util::toInt(c.getParam(0).substr(0, 1));
+	//int severity = Util::toInt(c.getParam(0).substr(0, 1));
 	int code = Util::toInt(c.getParam(0).substr(1));
 
 	if(code == AdcCommand::ERROR_BAD_PASSWORD) {

@@ -74,14 +74,14 @@ ShareManager::~ShareManager() {
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if(_tcslen(data.cFileName) > 13) // length of "files.xml.bz2"
-				File::deleteFile(Util::getAppPath() + Text::fromT(data.cFileName));			
+				File::deleteFile(Util::getConfigPath() + Text::fromT(data.cFileName));			
 		} while(FindNextFile(hFind, &data));
 
 		FindClose(hFind);
 	}
 
 #else
-	DIR* dir = opendir(Util::getAppName().c_str());
+	DIR* dir = opendir(Util::getConfigPath().c_str());
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
 			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0) {

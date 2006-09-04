@@ -15,6 +15,8 @@
 * [bug 1029] Fixed BSD compile issue (thanks steven sheehy)
 * [bug 1031] Fixed a crash after closing hub window (thanks bigmuscle/pothead)
 * [bug 1032] Fixed certificates help (thanks pothead)
+* Added possibility to store configuration files in separate directory
+* Switched back to unicows for w9x users, opencow was missing too many functions
 
 -- 0.694 2006-07-10 --
 * Fixed crash in certificates page
