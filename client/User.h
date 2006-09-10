@@ -27,6 +27,7 @@
 #include "Pointer.h"
 #include "CID.h"
 #include "FastAlloc.h"
+#include "CriticalSection.h"
 
 /** A user connected to one or more hubs. */
 class User : public FastAlloc<User>, public PointerBase, public Flags
@@ -136,11 +137,13 @@ public:
 	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 
 	const string& get(const char* name) const {
+		RLock<> l(rw);
 		InfMap::const_iterator i = info.find(*(short*)name);
 		return i == info.end() ? Util::emptyString : i->second;
 	}
 
 	void set(const char* name, const string& val) {
+		WLock<> l(rw);
 		if(val.empty())
 			info.erase(*(short*)name);
 		else
@@ -159,6 +162,8 @@ private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
 	InfMap info;
+	/** @todo there are probably more threading issues here ...*/
+	static RWLock<> rw;
 };
 
 class Client;

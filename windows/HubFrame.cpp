@@ -161,6 +161,13 @@ void HubFrame::openWindow(const tstring& aServer) {
 	}
 }
 
+LRESULT HubFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LPMSG pMsg = (LPMSG)lParam;
+	if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
+		ctrlLastLines.RelayEvent(pMsg);
+	return 0;
+}
+
 void HubFrame::onEnter() {
 	if(ctrlMessage.GetWindowTextLength() > 0) {
 		AutoArray<TCHAR> msg(ctrlMessage.GetWindowTextLength()+1);

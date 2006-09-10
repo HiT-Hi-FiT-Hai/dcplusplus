@@ -831,6 +831,8 @@ string Util::getOsVersion() {
 				os += " Server";
 			else if(ver.wProductType & VER_NT_DOMAIN_CONTROLLER)
 				os += " DC";
+		} else if(ver.dwMajorVersion == 6) {
+			os = "WinVista";
 		}
 
 		if(ver.wServicePackMajor != 0) {

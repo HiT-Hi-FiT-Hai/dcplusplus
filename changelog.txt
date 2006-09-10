@@ -1,4 +1,4 @@
-﻿-- --
+﻿-- 0.695 2006-09-10 --
 * PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo
   without connection type
 * [bug 125] Fixed out-of-order PM/quit
@@ -17,6 +17,15 @@
 * [bug 1032] Fixed certificates help (thanks pothead)
 * Added possibility to store configuration files in separate directory
 * Switched back to unicows for w9x users, opencow was missing too many functions
+* [bug 876] Fixed lost tooltips (thanks poy and bigmuscle)
+* [bug 1041] Fixed about tab order (thanks pothead)
+* [bug 1042] Fixed experts tab order (thanks pothead)
+* [bug 1047] Fixed possible nmdc crash (thanks guitarm)
+* [bug 1049] Added tooltip to tab bar (thanks poy)
+* [bug 1053] Fixed vista detection (thanks ullner)
+* [bug 988] Fixed duplicate nicks
+* [bug 1015] Fixed chevron text
+* Default hub lists updated
 
 -- 0.694 2006-07-10 --
 * Fixed crash in certificates page
