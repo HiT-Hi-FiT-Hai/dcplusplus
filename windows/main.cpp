@@ -67,7 +67,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 
 	// The release version loads the dll and pdb:s here...
-	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
+	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
 
 #endif
 
@@ -76,7 +76,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 		firstException = false;
 	}
 
-	if(File::getSize(Util::getAppPath() + "DCPlusPlus.pdb") == -1) {
+	if(File::getSize(Util::getDataPath() + "DCPlusPlus.pdb") == -1) {
 		// No debug symbols, we're not interested...
 		::MessageBox(WinUtil::mainWnd, _T("DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution..."), _T("DC++ has crashed"), MB_OK);
 #ifndef _DEBUG
@@ -315,8 +315,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	// For SHBrowseForFolder, UPnP
 	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
 #ifdef _DEBUG
-	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
-	//File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
+	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
+	//File::deleteFile(Util::getDataPath() + "exceptioninfo.txt");
 #endif
 	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
 	
@@ -330,7 +330,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 	try {
-		File f(Util::getAppName(), File::READ, File::OPEN);
+		File f(WinUtil::getAppName(), File::READ, File::OPEN);
 		TigerTree tth(TigerTree::calcBlockSize(f.getSize(), 1));
 		size_t n = 0;
 		size_t n2 = DEBUG_BUFSIZE;

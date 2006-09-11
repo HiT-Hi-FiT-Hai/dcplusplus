@@ -113,8 +113,8 @@ LRESULT NetworkPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 {
 	PropPage::translate((HWND)(*this), texts);
 	
-	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 ) //WinXP & WinSvr2003
-		|| WinUtil::getOsMajor() >= 6 ) //Longhorn
+	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1  //WinXP & WinSvr2003
+		|| WinUtil::getOsMajor() >= 6 )) //Vista
 	{
 		::EnableWindow(GetDlgItem(IDC_FIREWALL_UPNP), FALSE);
 	}

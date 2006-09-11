@@ -202,11 +202,25 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string nick = line.substr(1, i-1);
-		OnlineUser* ou = findUser(nick);
-		if(ou) {
-			fire(ClientListener::Message(), this, *ou, unescape(line.substr(i+1)));
+		string message;
+		if((line.length()-1) > i) {
+			message = line.substr(i+2);
 		} else {
 			fire(ClientListener::StatusMessage(), this, unescape(line));
+			return;
+		}
+
+		OnlineUser* ou = findUser(nick);
+		if(ou) {
+			fire(ClientListener::Message(), this, *ou, unescape(message));
+		} else {
+			OnlineUser& o = getUser(nick);
+			// Assume that messages from unknown users come from the hub
+			o.getIdentity().setHub(true);
+			o.getIdentity().setHidden(true);
+			fire(ClientListener::UserUpdated(), this, o);
+
+			fire(ClientListener::Message(), this, o, unescape(message));
 		}
 		return;
 	}
@@ -354,9 +368,13 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(connection.empty()) {
 			// No connection = bot...
 			u.getUser()->setFlag(User::BOT);
+			u.getIdentity().setHub(false);
 		} else {
 			u.getUser()->unsetFlag(User::BOT);
+			u.getIdentity().setBot(false);
 		}
+
+		u.getIdentity().setHub(false);
 
 		u.getIdentity().setConnection(connection);
 		i = j + 1;
@@ -663,23 +681,40 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(fromNick.empty())
 			return;
 
-        OnlineUser* replyTo = findUser(rtNick);
+		OnlineUser* replyTo = findUser(rtNick);
 		OnlineUser* from = findUser(fromNick);
-		OnlineUser* to = findUser(getMyNick());
 
-		if(replyTo == NULL || from == NULL || to == NULL) {
-			fire(ClientListener::StatusMessage(), this, unescape(param.substr(i)));
-		} else {
-			string msg = param.substr(j + 2);
-			fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, unescape(param.substr(j + 2)));
+		string msg = param.substr(j + 2);
+		if(replyTo == NULL || from == NULL) {
+			if(replyTo == 0) {
+				// Assume it's from the hub
+				replyTo = &getUser(rtNick);
+				replyTo->getIdentity().setHub(true);
+				replyTo->getIdentity().setHidden(true);
+				fire(ClientListener::UserUpdated(), this, *replyTo);
+			}
+			if(from == 0) {
+				// Assume it's from the hub
+				from = &getUser(fromNick);
+				from->getIdentity().setHub(true);
+				from->getIdentity().setHidden(true);
+				fire(ClientListener::UserUpdated(), this, *from);
+			}
+			
+			// Update pointers just in case they've been invalidated
+			replyTo = findUser(rtNick);
+			from = findUser(fromNick);
 		}
+		
+		OnlineUser& to = getUser(getMyNick());
+		fire(ClientListener::PrivateMessage(), this, *from, to, *replyTo, unescape(msg));
 	} else if(cmd == "$GetPass") {
 		OnlineUser& ou = getUser(getMyNick());
 		ou.getIdentity().set("RG", "1");
 		setMyIdentity(ou.getIdentity());
 		fire(ClientListener::GetPassword(), this);
 	} else if(cmd == "$BadPass") {
-		fire(ClientListener::BadPassword(), this);
+		setPassword(Util::emptyString);
 	} else if(cmd == "$ZOn") {
 		socket->setMode(BufferedSocket::MODE_ZPIPE);
 	} else {
@@ -771,13 +806,16 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 		tmp[i] = '$';
 	}
 	int chars = 0;
+	size_t BUF_SIZE;
 	if(ClientManager::getInstance()->isActive()) {
 		string x = ClientManager::getInstance()->getCachedIp();
-		buf = new char[x.length() + aString.length() + 64];
-		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		BUF_SIZE = x.length() + aString.length() + 64;
+		buf = new char[BUF_SIZE];
+		chars = snprintf(buf, BUF_SIZE, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), (int)SearchManager::getInstance()->getPort(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
-		buf = new char[getMyNick().length() + aString.length() + 64];
-		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", toAcp(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		BUF_SIZE = getMyNick().length() + aString.length() + 64;
+		buf = new char[BUF_SIZE];
+		chars = snprintf(buf, BUF_SIZE, "$Search Hub:%s %c?%c?%s?%d?%s|", toAcp(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	}
 	send(buf, chars);
 }

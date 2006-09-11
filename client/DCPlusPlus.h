@@ -23,6 +23,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 #ifdef _DEBUG
 
 inline void CDECL debugTrace(const char* format, ...)

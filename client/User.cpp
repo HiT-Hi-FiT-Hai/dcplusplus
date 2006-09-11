@@ -28,7 +28,10 @@ OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : 
 
 }
 
+RWLock<> Identity::rw;
+
 void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility) const {
+	RLock<> l(rw);
 	for(InfMap::const_iterator i = info.begin(); i != info.end(); ++i) {
 		sm[prefix + string((char*)(&i->first), 2)] = i->second;
 	}

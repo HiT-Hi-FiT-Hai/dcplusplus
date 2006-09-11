@@ -80,7 +80,7 @@ public:
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
 	/** Queue a partial file list download */
-	void addPfs(const User::Ptr& aUser, const string& aDir) throw();
+	void addPfs(const User::Ptr& aUser, const string& aDir) throw(QueueException);
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 	/** Add a directory to the queue (downloads filelist and matches the directory). */

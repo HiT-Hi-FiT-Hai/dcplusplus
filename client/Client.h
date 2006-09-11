@@ -34,11 +34,11 @@ class ClientManager;
 class ClientListener  
 {
 public:
+	virtual ~ClientListener() { }
 	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;
 	typedef X<1> Connected;
-	typedef X<2> BadPassword;
 	typedef X<3> UserUpdated;
 	typedef X<4> UsersUpdated;
 	typedef X<5> UserRemoved;
@@ -58,7 +58,6 @@ public:
 
 	virtual void on(Connecting, Client*) throw() { }
 	virtual void on(Connected, Client*) throw() { }
-	virtual void on(BadPassword, Client*) throw() { }
 	virtual void on(UserUpdated, Client*, const OnlineUser&) throw() { }
 	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw() { }
 	virtual void on(UserRemoved, Client*, const OnlineUser&) throw() { }
@@ -116,7 +115,7 @@ public:
 
 	static string getCounts() {
 		char buf[128];
-		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
+		return string(buf, snprintf(buf, sizeof(buf), "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
 	StringMap& escapeParams(StringMap& sm) {

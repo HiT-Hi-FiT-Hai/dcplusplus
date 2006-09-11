@@ -73,7 +73,8 @@ void Client::reloadSettings(bool updateNick) {
 		} else {
 			setCurrentDescription(SETTING(DESCRIPTION));
 		}
-		setPassword(hub->getPassword());
+		if(!hub->getPassword().empty())
+			setPassword(hub->getPassword());
 	} else {
 		if(updateNick) {
 			setCurrentNick(checkNick(SETTING(NICK)));

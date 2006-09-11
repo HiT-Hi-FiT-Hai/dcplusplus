@@ -262,10 +262,14 @@ ConnectionManager::Server::Server(bool secure_, short port, const string& ip /* 
 static const u_int32_t POLL_TIMEOUT = 250;
 
 int ConnectionManager::Server::run() throw() {
-	while(!die) {
-		if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
-			ConnectionManager::getInstance()->accept(sock, secure);
+	try {
+		while(!die) {
+			if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
+				ConnectionManager::getInstance()->accept(sock, secure);
+			}
 		}
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(STRING(LISTENER_FAILED) + e.getError());
 	}
 	return 0;
 }
@@ -299,10 +303,6 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	uc->setLastActivity(GET_TICK());
 	try { 
 		uc->accept(sock);
-		if(uc->isSecure() && !uc->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
-			putConnection(uc);
-			LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
-		}
 	} catch(const Exception&) {
 		putConnection(uc);
 		delete uc;

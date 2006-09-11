@@ -49,7 +49,7 @@ const string SettingsManager::settingTags[] =
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
-	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
+	"AutoSearch", "TimeStamps", "ConfirmExit", "PopupHubPms", "PopupBotPms", "IgnoreHubPms", "IgnoreBotPms",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
@@ -75,7 +75,7 @@ const string SettingsManager::settingTags[] =
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
 	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches", 
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
-	"TLSPort",
+	"TLSPort", "FastHash",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -84,6 +84,7 @@ const string SettingsManager::settingTags[] =
 
 SettingsManager::SettingsManager()
 {
+	
 	connectionSpeeds.push_back("0.005");
 	connectionSpeeds.push_back("0.01");
 	connectionSpeeds.push_back("0.02");
@@ -111,8 +112,8 @@ SettingsManager::SettingsManager()
 		int64Settings[k] = 0;
 	}
 	
-	setDefault(DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Downloads" PATH_SEPARATOR_STR);
-	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Incomplete" PATH_SEPARATOR_STR);
+	setDefault(DOWNLOAD_DIRECTORY,  Util::getConfigPath() + "Downloads" PATH_SEPARATOR_STR);
+	setDefault(TEMP_DOWNLOAD_DIRECTORY,  Util::getConfigPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
 	setDefault(TCP_PORT, 0);
 	setDefault(UDP_PORT, 0);
@@ -128,14 +129,16 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH, false);
 	setDefault(TIME_STAMPS, false);
 	setDefault(CONFIRM_EXIT, true);
-	setDefault(IGNORE_OFFLINE, false);
-	setDefault(POPUP_OFFLINE, false);
+	setDefault(POPUP_HUB_PMS, true);
+	setDefault(POPUP_BOT_PMS, true);
+	setDefault(IGNORE_HUB_PMS, false);
+	setDefault(IGNORE_BOT_PMS, false);
 	setDefault(LIST_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.xml.bz2;http://dc.selwerd.nl/hublist.xml.bz2");
+	setDefault(HUBLIST_SERVERS, "http://home.bandicoot.nl/adchublist.xml.bz2;http://www.hublist.org/PublicHubList.xml.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
-	setDefault(LOG_DIRECTORY, Util::getConfigPath() + "Logs" PATH_SEPARATOR_STR);
+	setDefault(LOG_DIRECTORY,  Util::getConfigPath() + "Logs" PATH_SEPARATOR_STR);
 	setDefault(LOG_UPLOADS, false);
 	setDefault(LOG_DOWNLOADS, false);
 	setDefault(LOG_PRIVATE_CHAT, false);
@@ -246,8 +249,8 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_WAITING_USERS, false);
 	setDefault(OPEN_SYSTEM_LOG, true);
 	setDefault(TLS_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR);
-	setDefault(TLS_PRIVATE_KEY_FILE, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.key");
-	setDefault(TLS_CERTIFICATE_FILE, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.crt");
+	setDefault(TLS_PRIVATE_KEY_FILE,  Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.key");
+	setDefault(TLS_CERTIFICATE_FILE,  Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.crt");
 	setDefault(BOLD_FINISHED_DOWNLOADS, true);
 	setDefault(BOLD_FINISHED_UPLOADS, true);
 	setDefault(BOLD_QUEUE, true);
@@ -267,6 +270,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_COMMAND_LENGTH, 16*1024*1024);
 	setDefault(ALLOW_UNTRUSTED_HUBS, true);
 	setDefault(ALLOW_UNTRUSTED_CLIENTS, true);
+	setDefault(FAST_HASH, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

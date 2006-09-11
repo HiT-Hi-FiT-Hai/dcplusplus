@@ -212,6 +212,7 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 		updateTree(*i, ht);
 	}
 }
+
 void DirectoryListingFrame::refreshTree(const tstring& root) {
 	
 	ctrlTree.SetRedraw(FALSE);
@@ -334,8 +335,12 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 
 	if(!d->getComplete()) {
 		if(dl->getUser()->isOnline()) {
-			QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
-			ctrlStatus.SetText(STATUS_TEXT, CTSTRING(DOWNLOADING_LIST));
+			try {
+				QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
+				ctrlStatus.SetText(STATUS_TEXT, CTSTRING(DOWNLOADING_LIST));
+			} catch(const QueueException& e) {
+				ctrlStatus.SetText(STATUS_TEXT, Text::toT(e.getError()).c_str());
+			}
 		} else {
 			ctrlStatus.SetText(STATUS_TEXT, CTSTRING(USER_OFFLINE));
 		}
@@ -361,6 +366,7 @@ void DirectoryListingFrame::back() {
 		history = tmp;
 	}
 }
+
 void DirectoryListingFrame::forward() {
 	if(history.size() > 1 && historyIndex < history.size()) {
 		size_t n = min(historyIndex, history.size() - 1);

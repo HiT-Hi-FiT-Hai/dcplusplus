@@ -144,56 +144,26 @@ public:
 
 	static void initialize();
 
-	/**
-	 * Get the path to the application executable. 
-	 * This is mainly intended for use on Windows.
-	 *
-	 * @return Path to executable file.
-	 */
-	static string getAppPath() { return appPath; }
-
-	static string getAppName() {
-#ifdef _WIN32
-		TCHAR buf[MAX_PATH+1];
-		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
-		return Text::wideToUtf8(wstring(buf, x));
-#else // _WIN32
-		char buf[PATH_MAX + 1];
-		int n;
-		n = readlink("/proc/self/exe", buf, PATH_MAX);
-		if (n == -1) {
-				return emptyString;
-			}
-		buf[n] = '\0';
-		return string(buf);
-#endif // _WIN32
-	}	
-
 	/** Path of temporary storage */
 	static string getTempPath() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
 		DWORD x = GetTempPath(MAX_PATH, buf);
-		return Text::wideToUtf8(wstring(buf, x));
+		return Text::fromT(tstring(buf, x));
 #else
 		return "/tmp/";
 #endif
 	}
 
-	/** Path of resource directory */
-	static string getDataPath();
-
 	/** Path of configuration files */
-	static string getConfigPath();
+	static const string& getConfigPath() { return configPath; }
+	static const string& getDataPath() { return dataPath; }
+	static const string& getSystemPath() { return systemPath; }
 
 	/** Path of file lists */
-	static string getListPath() {
-		return getConfigPath() + "FileLists" PATH_SEPARATOR_STR;
-	}
+	static string getListPath() { return getConfigPath() + "FileLists" PATH_SEPARATOR_STR; }
 	/** Notepad filename */
-	static string getNotepadFile() {
-		return getConfigPath() + "Notepad.txt";
-	}
+	static string getNotepadFile() { return getConfigPath() + "Notepad.txt"; }
 
 	static string translateError(int aError) {
 #ifdef _WIN32
@@ -270,55 +240,15 @@ public:
 	static string validateFileName(string aFile);
 	static string cleanPathChars(string aNick);
 	
-	static string formatBytes(const string& aString) {
-		return formatBytes(toInt64(aString));
-	}
-	
+	static string formatBytes(const string& aString) { return formatBytes(toInt64(aString)); }
 	static string formatMessage(const string& nick, const string& message);
 	static string toDOS(const string& tmp);
 
 	static string getShortTimeString(time_t t = time(NULL) );
 
-	static string getTimeString() {
-		char buf[64];
-		time_t _tt;
-		time(&_tt);
-		tm* _tm = localtime(&_tt);
-		if(_tm == NULL) {
-			strcpy(buf, "xx:xx:xx");
-		} else {
-			strftime(buf, 64, "%X", _tm);
-		}
-		return buf;
-	}
-
-	static string toAdcFile(const string& file) {
-		if(file == "files.xml.bz2" || file == "MyList.DcLst")
-			return file;
-
-		string ret;
-		ret.reserve(file.length() + 1);
-		ret += '/';
-		ret += file;
-		for(string::size_type i = 0; i < ret.length(); ++i) {
-			if(ret[i] == '\\') {
-				ret[i] = '/';
-			}
-		}
-		return ret;
-	}
-	static string toNmdcFile(const string& file) {
-		if(file.empty())
-			return Util::emptyString;
-		
-		string ret(file.substr(1));
-		for(string::size_type i = 0; i < ret.length(); ++i) {
-			if(ret[i] == '/') {
-				ret[i] = '\\';
-			}
-		}
-		return ret;
-	}
+	static string getTimeString();
+	static string toAdcFile(const string& file);
+	static string toNmdcFile(const string& file);
 	
 	static string formatBytes(int64_t aBytes);
 
@@ -326,7 +256,7 @@ public:
 
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
-		sprintf(buf, "%01lu:%02d:%02d", (unsigned long)(aSec / (60*60)), (int)((aSec / 60) % 60), (int)(aSec % 60));
+		snprintf(buf, sizeof(buf), "%01lu:%02d:%02d", (unsigned long)(aSec / (60*60)), (int)((aSec / 60) % 60), (int)(aSec % 60));
 		return buf;
 	}
 
@@ -369,55 +299,47 @@ public:
 
 	static string toString(short val) {
 		char buf[8];
-		sprintf(buf, "%d", (int)val);
+		snprintf(buf, sizeof(buf), "%d", (int)val);
 		return buf;
 	}
 	static string toString(unsigned short val) {
 		char buf[8];
-		sprintf(buf, "%u", (unsigned int)val);
+		snprintf(buf, sizeof(buf), "%u", (unsigned int)val);
 		return buf;
 	}
 	static string toString(int val) {
 		char buf[16];
-		sprintf(buf, "%d", val);
+		snprintf(buf, sizeof(buf), "%d", val);
 		return buf;
 	}
 	static string toString(unsigned int val) {
 		char buf[16];
-		sprintf(buf, "%u", val);
+		snprintf(buf, sizeof(buf), "%u", val);
 		return buf;
 	}
 	static string toString(long val) {
 		char buf[32];
-		sprintf(buf, "%ld", val);
+		snprintf(buf, sizeof(buf), "%ld", val);
 		return buf;
 	}
 	static string toString(unsigned long val) {
 		char buf[32];
-		sprintf(buf, "%lu", val);
+		snprintf(buf, sizeof(buf), "%lu", val);
 		return buf;
 	}
 	static string toString(long long val) {
 		char buf[32];
-#ifdef _MSC_VER
-		sprintf(buf, "%I64d", val);
-#else
-		sprintf(buf, "%lld", val);
-#endif
+		snprintf(buf, sizeof(buf), I64_FMT, val);
 		return buf;
 	}
 	static string toString(unsigned long long val) {
 		char buf[32];
-#ifdef _MSC_VER
-		sprintf(buf, "%I64u", val);
-#else
-		sprintf(buf, "%llu", val);
-#endif
+		snprintf(buf, sizeof(buf), U64_FMT, val);
 		return buf;
 	}
 	static string toString(double val) {
 		char buf[16];
-		sprintf(buf, "%0.2f", val);
+		snprintf(buf, sizeof(buf), "%0.2f", val);
 		return buf;
 	}
 
@@ -437,7 +359,7 @@ public:
 
 	static string toHexEscape(char val) {
 		char buf[sizeof(int)*2+1+1];
-		sprintf(buf, "%%%X", val&0x0FF);
+		snprintf(buf, sizeof(buf), "%%%X", val&0x0FF);
 		return buf;
 	}
 	static char fromHexEscape(const string aString) {
@@ -511,8 +433,13 @@ public:
 	static double randd() { return ((double)rand()) / ((double)0xffffffff); }
 
 private:
-	static string appPath;
+	/** Per-user configuration */
+	static string configPath;
+	/** Global configuration */
+	static string systemPath;
+	/** Various resources (help files etc) */
 	static string dataPath;
+
 	static bool away;
 	static bool manualAway;
 	static string awayMsg;

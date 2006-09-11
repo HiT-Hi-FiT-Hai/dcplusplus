@@ -74,14 +74,14 @@ ShareManager::~ShareManager() {
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if(_tcslen(data.cFileName) > 13) // length of "files.xml.bz2"
-				File::deleteFile(Util::getAppPath() + Text::fromT(data.cFileName));			
+				File::deleteFile(Util::getConfigPath() + Text::fromT(data.cFileName));			
 		} while(FindNextFile(hFind, &data));
 
 		FindClose(hFind);
 	}
 
 #else
-	DIR* dir = opendir(Util::getAppName().c_str());
+	DIR* dir = opendir(Util::getConfigPath().c_str());
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
 			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0) {
@@ -339,7 +339,7 @@ bool ShareManager::loadCache() {
 		::File ff(Util::getConfigPath() + "files.xml.bz2", ::File::READ, ::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
-		char buf[BUF_SIZE];
+		AutoArray<char> buf(BUF_SIZE);
 		size_t len;
 		for(;;) {
 			size_t n = BUF_SIZE;

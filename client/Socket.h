@@ -236,7 +236,7 @@ private:
 	static int check(int ret, bool blockOk = false) { 
 		if(ret == -1) {
 			int error = getLastError();
-			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS || error == EINPROGRESS) ) {
+			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS || error == EINPROGRESS || error == EAGAIN) ) {
 				return -1;
 			} else {
 				throw SocketException(error); 

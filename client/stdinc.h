@@ -47,6 +47,7 @@
 
 #else
 #include <unistd.h>
+#include <stdint.h>
 #endif
 
 #include <stdio.h>

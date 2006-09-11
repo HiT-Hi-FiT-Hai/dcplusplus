@@ -222,6 +222,10 @@ public:
 		}
 	}
 
+	static bool isAbsolute(const string& path) {
+		return path.size() > 2 && (path[1] == ':' || path[0] == '/' || path[0] == '\\');
+	}
+
 #else // _WIN32
 
 	enum {
@@ -395,6 +399,9 @@ public:
 		}
 	}
 
+	static bool isAbsolute(const string& path) {
+		return path.size() > 1 && path[0] = '/';
+	}
 
 #endif // _WIN32
 

@@ -104,9 +104,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	WinUtil::init(m_hWnd);
 
-	//trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
-	// Use ASCII version as opencow doesn't support the wide one...
-	trayMessage = RegisterWindowMessageA("TaskbarCreated");
+	trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
 
 	TimerManager::getInstance()->start();
 
@@ -515,7 +513,7 @@ void MainFrame::parseCommandLine(const tstring& cmdLine)
 
 LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	tstring cmdLine = (LPCTSTR) (((COPYDATASTRUCT *)lParam)->lpData);
-	parseCommandLine(Text::toT(Util::getAppName() + " ") + cmdLine);
+	parseCommandLine(Text::toT(WinUtil::getAppName() + " ") + cmdLine);
 	return true;
 }
 

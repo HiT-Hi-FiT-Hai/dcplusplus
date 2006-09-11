@@ -37,7 +37,8 @@ public:
 		FLAG_USER_LIST = 0x01,
 		FLAG_TTH_LEAVES = 0x02,
 		FLAG_ZUPLOAD = 0x04,
-		FLAG_PARTIAL_LIST = 0x08
+		FLAG_PARTIAL_LIST = 0x08,
+		FLAG_PENDING_KICK = 0x10
 	};
 
 	typedef Upload* Ptr;
@@ -175,8 +176,8 @@ private:
 	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
 	
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(Second, u_int32_t aTick) throw();
+	virtual void on(Minute, u_int32_t aTick) throw();
 
 	// UserConnectionListener
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();
