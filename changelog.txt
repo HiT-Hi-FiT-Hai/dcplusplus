@@ -4,7 +4,11 @@
 * Removed the possibility to download files without TTH
 * Removed the possibility to read *.DcLst files (no TTH, no i18n support)
 * Files with no TTH no longer show up in search and directory listings
-* Fixed support for uncompressed files.xml
+* Sources in the queue with no TTH support will no longer appear
+* Files without TTH in the queue will be removed (finish downloads with an older version)
+* [ADC] Fixed support for uncompressed files.xml as well as proper files.xml.bz2 support
+* Some socket code cleanup
+* Removed broken nick save code
 
 -- 0.695 2006-09-10 --
 * PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo

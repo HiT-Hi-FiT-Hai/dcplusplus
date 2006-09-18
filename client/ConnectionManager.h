@@ -33,6 +33,8 @@
 
 #include "ConnectionManagerListener.h"
 
+class SocketException;
+
 class ConnectionQueueItem {
 public:
 	typedef ConnectionQueueItem* Ptr;
@@ -110,27 +112,23 @@ public:
 	void shutdown();
 
 	/** Find a suitable port to listen on, and start doing it */
-	void listen() throw(Exception);
-	void disconnect() throw() {
-		delete server;
-		delete secureServer;
+	void listen() throw(SocketException);
+	void disconnect() throw();
 
-		server = secureServer = 0;
-		port = securePort = 0;
-	}
-
-	unsigned short getPort() { return port; }
-	unsigned short getSecurePort() { return securePort;	}
+	unsigned short getPort() { return static_cast<unsigned short>(server->getPort()); }
+	unsigned short getSecurePort() { return static_cast<unsigned short>(secureServer->getPort());	}
 private:
 
 	class Server : public Thread {
 	public:
 		Server(bool secure_, short port, const string& ip = "0.0.0.0");
+		short getPort() { return port; }
 		virtual ~Server() { die = true; join(); }
 	private:
 		virtual int run() throw();
 
 		Socket sock;
+		short port;
 		bool secure;
 		bool die;
 	};
@@ -138,8 +136,6 @@ private:
 	friend class Server;
 
 	CriticalSection cs;
-	unsigned short port;
-	unsigned short securePort;
 
 	/** All ConnectionQueueItems */
 	ConnectionQueueItem::List downloads;

@@ -90,7 +90,7 @@ public:
 	TigerTree& getTigerTree() { return tt; }
 	string& getPFS() { return pfs; }
 	/** @internal */
-	AdcCommand getCommand(bool zlib, bool tthf);
+	AdcCommand getCommand(bool zlib);
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSET(string, source, Source);

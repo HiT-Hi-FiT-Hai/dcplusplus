@@ -941,7 +941,7 @@ string Util::getTimeString() {
 }
 
 string Util::toAdcFile(const string& file) {
-	if(file == "files.xml.bz2" || file == "MyList.DcLst")
+	if(file == "files.xml.bz2" || file == "files.xml")
 		return file;
 
 	string ret;

@@ -431,6 +431,10 @@ void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aF
 	}
 }
 
+void ClientManager::on(Load, SimpleXML&) throw() {
+	users.insert(make_pair(getMe()->getCID(), getMe()));
+}
+
 void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
 	Lock l(cs);
 
@@ -447,43 +451,6 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
 		(*j)->info(false);
 	}
-}
-
-void ClientManager::save() {
-	Lock l(cs);
-
-	try {
-		string tmp;
-
-		File ff(getUsersFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		BufferedOutputStream<false> f(&ff);
-
-		f.write(SimpleXML::utf8Header);
-		f.write(LIT("<Users Version=\"1\">\r\n"));
-		for(UserIter i = users.begin(); i != users.end(); ++i) {
-			User::Ptr& p = i->second;
-			if(p->isSet(User::SAVE_NICK) && !p->getCID().isZero() && !p->getFirstNick().empty()) {
-				f.write(LIT("\t<User CID=\""));
-				f.write(p->getCID().toBase32());
-				f.write(LIT("\" Nick=\""));
-				f.write(SimpleXML::escape(p->getFirstNick(), tmp, true));
-				f.write(LIT("\"/>\r\n"));
-			}
-		}
-
-		f.write("</Users>\r\n");
-		f.flush();
-		ff.close();
-		File::deleteFile(getUsersFile());
-		File::renameFile(getUsersFile() + ".tmp", getUsersFile());
-
-	} catch(const FileException&) {
-		// ...
-	}
-}
-
-void ClientManager::on(Save, SimpleXML*) throw() {
-	save();
 }
 
 User::Ptr& ClientManager::getMe() {
@@ -507,29 +474,6 @@ CID ClientManager::getMyCID() {
 	TigerHash tiger;
 	tiger.update(getMyPID().data(), CID::SIZE);
 	return CID(tiger.finalize());
-}
-
-void ClientManager::on(Load, SimpleXML*) throw() {
-	users.insert(make_pair(getMe()->getCID(), getMe()));
-
-	try {
-		SimpleXML xml;
-		xml.fromXML(File(getUsersFile(), File::READ, File::OPEN).read());
-		if(xml.findChild("Users") && xml.getChildAttrib("Version") == "1") {
-			xml.stepIn();
-			while(xml.findChild("User")) {
-				const string& cid = xml.getChildAttrib("CID");
-				const string& nick = xml.getChildAttrib("Nick");
-				if(cid.length() != 39 || nick.empty())
-					continue;
-				User::Ptr p(new User(CID(cid)));
-				p->setFirstNick(xml.getChildData());
-				users.insert(make_pair(p->getCID(), p));
-			}
-		}
-	} catch(const Exception& e) {
-		dcdebug("Error loading Users.xml: %s\n", e.getError().c_str());
-	}
 }
 
 void ClientManager::on(Failed, Client* client, const string&) throw() {

@@ -371,7 +371,7 @@ void SettingsManager::load(string const& aFileName)
 
 		File::ensureDirectory(SETTING(TLS_TRUSTED_CERTIFICATES_PATH));
 
-		fire(SettingsManagerListener::Load(), &xml);
+		fire(SettingsManagerListener::Load(), xml);
 
 		xml.stepOut();
 
@@ -422,7 +422,7 @@ void SettingsManager::save(string const& aFileName) {
 	}
 	xml.stepOut();
 
-	fire(SettingsManagerListener::Save(), &xml);
+	fire(SettingsManagerListener::Save(), xml);
 
 	try {
 		File out(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);

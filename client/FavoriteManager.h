@@ -269,11 +269,11 @@ private:
 	void onHttpFinished() throw();
 
 	// SettingsManagerListener
-	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw() {
 		load(xml);
 	}
 
-	void load(SimpleXML* aXml);
+	void load(SimpleXML& aXml);
 
 	string getConfigFile() { return Util::getConfigPath() + "Favorites.xml"; }
 };

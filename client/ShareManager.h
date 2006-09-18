@@ -308,17 +308,17 @@ private:
 	virtual void on(HashManagerListener::TTHDone, const string& fname, const TTHValue& root) throw();
 
 	// SettingsManagerListener
-	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw() {
+	virtual void on(SettingsManagerListener::Save, SimpleXML& xml) throw() {
 		save(xml);
 	}
-	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw() {
 		load(xml);
 	}
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, u_int32_t tick) throw();
-	void load(SimpleXML* aXml);
-	void save(SimpleXML* aXml);
+	void load(SimpleXML& aXml);
+	void save(SimpleXML& aXml);
 
 };
 

@@ -97,7 +97,7 @@ void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
 }
 
 
-void Socket::bind(short aPort, const string& aIp /* = 0.0.0.0 */) throw (SocketException){
+short Socket::bind(short aPort, const string& aIp /* = 0.0.0.0 */) throw (SocketException){
 	sockaddr_in sock_addr;
 
 	sock_addr.sin_family = AF_INET;
@@ -108,6 +108,9 @@ void Socket::bind(short aPort, const string& aIp /* = 0.0.0.0 */) throw (SocketE
 		sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 		check(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
 	}
+	int size = sizeof(sock_addr);
+	getsockname(sock, (sockaddr*)&sock_addr, &size);
+	return ntohs(sock_addr.sin_port);
 }
 
 void Socket::listen() throw(SocketException) {

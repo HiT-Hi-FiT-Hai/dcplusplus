@@ -248,14 +248,14 @@ string ShareManager::validateVirtual(const string& aVirt) {
 	return tmp;
 }
 
-void ShareManager::load(SimpleXML* aXml) {
+void ShareManager::load(SimpleXML& aXml) {
 	WLock<> l(cs);
 
-	if(aXml->findChild("Share")) {
-		aXml->stepIn();
-		while(aXml->findChild("Directory")) {
-			const string& virt = aXml->getChildAttrib("Virtual");
-			string d(aXml->getChildData()), newVirt;
+	if(aXml.findChild("Share")) {
+		aXml.stepIn();
+		while(aXml.findChild("Directory")) {
+			const string& virt = aXml.getChildAttrib("Virtual");
+			string d(aXml.getChildData()), newVirt;
 
 			if(d[d.length() - 1] != PATH_SEPARATOR)
 				d += PATH_SEPARATOR;
@@ -278,7 +278,7 @@ void ShareManager::load(SimpleXML* aXml) {
 				virtualMap.push_back(make_pair(newVirt, d));
 			}
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
 }
 
@@ -362,16 +362,16 @@ bool ShareManager::loadCache() {
 	return false;
 }
 
-void ShareManager::save(SimpleXML* aXml) {
+void ShareManager::save(SimpleXML& aXml) {
 	RLock<> l(cs);
 
-	aXml->addTag("Share");
-	aXml->stepIn();
+	aXml.addTag("Share");
+	aXml.stepIn();
 	for(StringPairIter i = virtualMap.begin(); i != virtualMap.end(); ++i) {
-		aXml->addTag("Directory", i->second);
-		aXml->addChildAttrib("Virtual", i->first);
+		aXml.addTag("Directory", i->second);
+		aXml.addChildAttrib("Virtual", i->first);
 	}
-	aXml->stepOut();
+	aXml.stepOut();
 }
 
 void ShareManager::addDirectory(const string& aDirectory, const string& aName) throw(ShareException) {

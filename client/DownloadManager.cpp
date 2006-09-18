@@ -49,7 +49,7 @@ const string DownloadManager::USER_LIST_NAME = "files.xml";
 const string DownloadManager::USER_LIST_NAME_BZ = "files.xml.bz2";
 
 Download::Download() throw() : file(NULL),
-crcCalc(NULL), tth(NULL), treeValid(false) {
+crcCalc(NULL), treeValid(false) {
 }
 
 Download::Download(QueueItem* qi) throw() : 
@@ -63,7 +63,7 @@ Download::Download(QueueItem* qi) throw() :
 		setFlag(Download::FLAG_RESUME);
 }
 
-AdcCommand Download::getCommand(bool zlib, bool tthf) {
+AdcCommand Download::getCommand(bool zlib) {
 	AdcCommand cmd(AdcCommand::CMD_GET);
 	if(isSet(FLAG_TREE_DOWNLOAD)) {
 		cmd.addParam("tthl");
@@ -72,15 +72,15 @@ AdcCommand Download::getCommand(bool zlib, bool tthf) {
 	} else {
 		cmd.addParam("file");
 	}
-	if(tthf) {
-		cmd.addParam("TTH/" + getTTH().toBase32());
-	} else {
+	if(isSet(FLAG_PARTIAL_LIST) || isSet(FLAG_USER_LIST)) {
 		cmd.addParam(Util::toAdcFile(getSource()));
+	} else {
+		cmd.addParam("TTH/" + getTTH().toBase32());
 	}
 	cmd.addParam(Util::toString(getPos()));
 	cmd.addParam(Util::toString(getSize() - getPos()));
 
-	if(zlib && getSize() != -1 && BOOLSETTING(COMPRESS_TRANSFERS)) {
+	if(zlib && BOOLSETTING(COMPRESS_TRANSFERS)) {
 		cmd.addParam("ZL1");
 	}
 
@@ -91,7 +91,7 @@ DownloadManager::DownloadManager() {
 	TimerManager::getInstance()->addListener(this);
 }
 
-~DownloadManager::DownloadManager() throw() {
+DownloadManager::~DownloadManager() throw() {
 	TimerManager::getInstance()->removeListener(this);
 	while(true) {
 		{
@@ -246,7 +246,7 @@ void DownloadManager::checkIdle(const User::Ptr& user) {
 }
 
 void DownloadManager::addConnection(UserConnection::Ptr conn) {
-	if(!conn->isSet(UserConnection::FLAG_SUPPORTS_TTHF)) {
+	if(!conn->isSet(UserConnection::FLAG_SUPPORTS_TTHF) || !conn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET)) {
 		// Can't download from these...
 		QueueManager::getInstance()->removeSource(conn->getUser(), QueueItem::Source::FLAG_NO_TTHF);
 		removeConnection(conn);
@@ -333,7 +333,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		downloads.push_back(d);
 	}
 
-	aConn->send(d->getCommand(aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET), !d->isSet(Download::FLAG_USER_LIST)));
+	aConn->send(d->getCommand(aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET)));
 }
 
 class DummyOutputStream : public OutputStream {
@@ -498,10 +498,10 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 		string target = d->getDownloadTarget();
 		File::ensureDirectory(target);
 		if(d->isSet(Download::FLAG_USER_LIST)) {
-			if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+			if(aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 				target += ".xml.bz2";
 			} else {
-				target += ".DcLst";
+				target += ".xml";
 			}
 		}
 

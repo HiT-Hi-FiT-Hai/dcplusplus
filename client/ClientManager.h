@@ -96,7 +96,6 @@ public:
 	CID getMyCID();
 	const CID& getMyPID();
 
-	void save();
 private:
 	typedef HASH_MAP<string, User::Ptr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
@@ -133,13 +132,10 @@ private:
 		TimerManager::getInstance()->removeListener(this);
 	}
 
-	string getUsersFile() { return Util::getConfigPath() + "Users.xml"; }
-
 	void updateCachedIp();
 
 	// SettingsManagerListener
-	virtual void on(Load, SimpleXML*) throw();
-	virtual void on(Save, SimpleXML*) throw();
+	virtual void on(Load, SimpleXML&);
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }

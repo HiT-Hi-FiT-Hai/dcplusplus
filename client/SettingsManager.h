@@ -37,8 +37,8 @@ public:
 	typedef X<0> Load;
 	typedef X<1> Save;
 
-	virtual void on(Load, SimpleXML*) throw() { }
-	virtual void on(Save, SimpleXML*) throw() { }
+	virtual void on(Load, SimpleXML&) throw() { }
+	virtual void on(Save, SimpleXML&) throw() { }
 };
 
 class SettingsManager : public Singleton<SettingsManager>, public Speaker<SettingsManagerListener>

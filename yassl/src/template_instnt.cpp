@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -61,6 +65,11 @@ template yaSSL::del_ptr_zero for_each<mySTL::list<yaSSL::output_buffer*>::iterat
 template yaSSL::del_ptr_zero for_each<mySTL::list<yaSSL::x509*>::iterator, yaSSL::del_ptr_zero>(mySTL::list<yaSSL::x509*>::iterator, mySTL::list<yaSSL::x509*>::iterator, yaSSL::del_ptr_zero);
 template yaSSL::del_ptr_zero for_each<mySTL::list<yaSSL::Digest*>::iterator, yaSSL::del_ptr_zero>(mySTL::list<yaSSL::Digest*>::iterator, mySTL::list<yaSSL::Digest*>::iterator, yaSSL::del_ptr_zero);
 template yaSSL::del_ptr_zero for_each<mySTL::list<yaSSL::BulkCipher*>::iterator, yaSSL::del_ptr_zero>(mySTL::list<yaSSL::BulkCipher*>::iterator, mySTL::list<yaSSL::BulkCipher*>::iterator, yaSSL::del_ptr_zero);
+template bool list<yaSSL::ThreadError>::erase(list<yaSSL::ThreadError>::iterator);
+template void list<yaSSL::ThreadError>::push_back(yaSSL::ThreadError);
+template void list<yaSSL::ThreadError>::pop_front();
+template void list<yaSSL::ThreadError>::pop_back();
+template list<yaSSL::ThreadError>::~list();
 }
 
 namespace yaSSL {
@@ -86,6 +95,7 @@ template void ysDelete<X509>(X509*);
 template void ysDelete<Message>(Message*);
 template void ysDelete<sslFactory>(sslFactory*);
 template void ysDelete<Sessions>(Sessions*);
+template void ysDelete<Errors>(Errors*);
 template void ysArrayDelete<unsigned char>(unsigned char*);
 template void ysArrayDelete<char>(char*);
 }

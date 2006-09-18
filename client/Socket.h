@@ -169,7 +169,7 @@ public:
 	virtual void create(int aType = TYPE_TCP) throw(SocketException);
 
 	/** Binds a socket to a certain local port and possibly IP. */
-	virtual void bind(short aPort = 0, const string& aIp = "0.0.0.0") throw(SocketException);
+	virtual short bind(short aPort = 0, const string& aIp = "0.0.0.0") throw(SocketException);
 	virtual void listen() throw(SocketException);
 	virtual void accept(const Socket& listeningSocket) throw(SocketException);
 

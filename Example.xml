@@ -563,7 +563,7 @@
 		<String Name="SystemLog">System Log</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
-		<String Name="TcpPortBusy">Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port</String>
+		<String Name="TcpPortBusy">Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port</String>
 		<String Name="Tib">TiB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimeLeft">Time left</String>

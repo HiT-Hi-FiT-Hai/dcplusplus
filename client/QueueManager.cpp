@@ -561,7 +561,6 @@ bool QueueManager::addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType add
 		wantConnection = false;
 	} else {
 		userQueue.add(qi, aUser);
-		aUser->setFlag(User::SAVE_NICK);
 	}
 
 	fire(QueueManagerListener::SourcesUpdated(), qi);
@@ -1142,8 +1141,6 @@ void QueueManager::saveQueue() throw() {
 		ff.close();
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
-
-		ClientManager::getInstance()->save();
 
 		dirty = false;
 	} catch(const FileException&) {

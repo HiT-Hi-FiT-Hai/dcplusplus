@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,6 +39,10 @@
 #include <stdio.h>    /* ERR_print fp */
 #include "opensslv.h" /* for version number */
 #include "rsa.h"
+
+
+#define YASSL_VERSION "1.4.0"
+
 
 #if defined(__cplusplus)
 extern "C" {
@@ -496,6 +504,8 @@ ASN1_TIME* X509_get_notAfter(X509* x);
 #define NID_commonName    13
 #define V_ASN1_UTF8STRING 12
 #define GEN_DNS            2
+
+#define CERTFICATE_ERROR 0x14090086  /* SSLv3 error */
 
 
 typedef struct MD4_CTX {

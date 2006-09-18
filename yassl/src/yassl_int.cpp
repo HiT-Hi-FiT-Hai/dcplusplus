@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -28,6 +32,10 @@
 #include "yassl_int.hpp"
 #include "handshake.hpp"
 #include "timer.hpp"
+
+#ifdef _POSIX_THREADS
+    #include "pthread.h"
+#endif
 
 
 #ifdef YASSL_PURE_C
@@ -151,6 +159,7 @@ void c32toa(uint32 u32, opaque* c)
 
 States::States() : recordLayer_(recordReady), handshakeLayer_(preHandshake),
            clientState_(serverNull),  serverState_(clientNull),
+           connectState_(CONNECT_BEGIN), acceptState_(ACCEPT_BEGIN),
            what_(no_error) {}
 
 const RecordLayerState& States::getRecord() const 
@@ -174,6 +183,18 @@ const ClientState& States::getClient() const
 const ServerState& States::getServer() const
 {
     return serverState_;
+}
+
+
+const ConnectState& States::GetConnect() const
+{
+    return connectState_;
+}
+
+
+const AcceptState& States::GetAccept() const
+{
+    return acceptState_;
 }
 
 
@@ -210,6 +231,18 @@ ClientState& States::useClient()
 ServerState& States::useServer()
 {
     return serverState_;
+}
+
+
+ConnectState& States::UseConnect()
+{
+    return connectState_;
+}
+
+
+AcceptState& States::UseAccept()
+{
+    return acceptState_;
 }
 
 
@@ -260,7 +293,8 @@ const ClientKeyFactory& sslFactory::getClientKey() const
 // extract context parameters and store
 SSL::SSL(SSL_CTX* ctx) 
     : secure_(ctx->getMethod()->getVersion(), crypto_.use_random(),
-              ctx->getMethod()->getSide(), ctx->GetCiphers(), ctx)
+              ctx->getMethod()->getSide(), ctx->GetCiphers(), ctx,
+              ctx->GetDH_Parms().set_)
 {
     if (int err = crypto_.get_random().GetError()) {
         SetError(YasslError(err));
@@ -704,6 +738,7 @@ void SSL::set_masterSecret(const opaque* sec)
 void SSL::set_sessionID(const opaque* sessionID)
 {
     memcpy(secure_.use_connection().sessionID_, sessionID, ID_LEN);
+    secure_.use_connection().sessionID_Set_ = true;
 }
 
 
@@ -713,6 +748,12 @@ void SSL::SetError(YasslError ye)
     states_.SetError(ye);
     //strncpy(states_.useString(), e.what(), mySTL::named_exception::NAME_SIZE);
     // TODO: add string here
+}
+
+
+Buffers& SSL::useBuffers()
+{
+    return buffers_;
 }
 
 
@@ -1207,8 +1248,10 @@ void SSL::matchSuite(const opaque* peer, uint length)
 
 void SSL::set_session(SSL_SESSION* s) 
 { 
-    if (s && GetSessions().lookup(s->GetID(), &secure_.use_resume()))
+    if (s && GetSessions().lookup(s->GetID(), &secure_.use_resume())) {
         secure_.set_resuming(true);
+        crypto_.use_certManager().setPeerX509(s->GetPeerX509());
+    }
 }
 
 
@@ -1308,9 +1351,25 @@ void SSL::addBuffer(output_buffer* b)
 }
 
 
+void SSL_SESSION::CopyX509(X509* x)
+{
+    assert(peerX509_ == 0);
+    if (x == 0) return;
+
+    X509_NAME* issuer   = x->GetIssuer();
+    X509_NAME* subject  = x->GetSubject();
+    ASN1_STRING* before = x->GetBefore();
+    ASN1_STRING* after  = x->GetAfter();
+
+    peerX509_ = NEW_YS X509(issuer->GetName(), issuer->GetLength(),
+        subject->GetName(), subject->GetLength(), (const char*) before->data,
+        before->length, (const char*) after->data, after->length);
+}
+
+
 // store connection parameters
 SSL_SESSION::SSL_SESSION(const SSL& ssl, RandomPool& ran) 
-    : timeout_(DEFAULT_TIMEOUT), random_(ran)
+    : timeout_(DEFAULT_TIMEOUT), random_(ran), peerX509_(0)
 {
     const Connection& conn = ssl.getSecurity().get_connection();
 
@@ -1319,12 +1378,14 @@ SSL_SESSION::SSL_SESSION(const SSL& ssl, RandomPool& ran)
     memcpy(suite_, ssl.getSecurity().get_parms().suite_, SUITE_LEN);
 
     bornOn_ = lowResTimer();
+
+    CopyX509(ssl.getCrypto().get_certManager().get_peerX509());
 }
 
 
 // for resumption copy in ssl::parameters
 SSL_SESSION::SSL_SESSION(RandomPool& ran) 
-    : bornOn_(0), timeout_(0), random_(ran)
+    : bornOn_(0), timeout_(0), random_(ran), peerX509_(0)
 {
     memset(sessionID_, 0, ID_LEN);
     memset(master_secret_, 0, SECRET_LEN);
@@ -1340,6 +1401,12 @@ SSL_SESSION& SSL_SESSION::operator=(const SSL_SESSION& that)
     
     bornOn_  = that.bornOn_;
     timeout_ = that.timeout_;
+
+    if (peerX509_) {
+        ysDelete(peerX509_);
+        peerX509_ = 0;
+    }
+    CopyX509(that.peerX509_);
 
     return *this;
 }
@@ -1360,6 +1427,12 @@ const opaque* SSL_SESSION::GetSecret() const
 const Cipher* SSL_SESSION::GetSuite() const
 {
     return suite_;
+}
+
+
+X509* SSL_SESSION::GetPeerX509() const
+{
+    return peerX509_;
 }
 
 
@@ -1389,6 +1462,8 @@ SSL_SESSION::~SSL_SESSION()
 {
     volatile opaque* p = master_secret_;
     clean(p, SECRET_LEN, random_);
+
+    ysDelete(peerX509_);
 }
 
 
@@ -1412,14 +1487,25 @@ sslFactory& GetSSL_Factory()
 }
 
 
+static Errors* errorsInstance = 0;
+
+Errors& GetErrors()
+{
+    if (!errorsInstance)
+        errorsInstance = NEW_YS Errors;
+    return *errorsInstance;
+}
+
 
 typedef Mutex::Lock Lock;
 
  
 void Sessions::add(const SSL& ssl) 
 {
-    Lock guard(mutex_);
-    list_.push_back(NEW_YS SSL_SESSION(ssl, random_));
+    if (ssl.getSecurity().get_connection().sessionID_Set_) {
+        Lock guard(mutex_);
+        list_.push_back(NEW_YS SSL_SESSION(ssl, random_));
+    }
 }
 
 
@@ -1432,7 +1518,8 @@ Sessions::~Sessions()
 // locals
 namespace yassl_int_cpp_local2 { // for explicit templates
 
-typedef mySTL::list<SSL_SESSION*>::iterator iterator;
+typedef mySTL::list<SSL_SESSION*>::iterator sess_iterator;
+typedef mySTL::list<ThreadError>::iterator  thr_iterator;
 
 struct sess_match {
     const opaque* id_;
@@ -1447,6 +1534,28 @@ struct sess_match {
 };
 
 
+THREAD_ID_T GetSelf()
+{
+#ifndef _POSIX_THREADS
+    return GetCurrentThreadId();
+#else
+    return pthread_self();
+#endif
+}
+
+struct thr_match {
+    THREAD_ID_T id_;
+    explicit thr_match() : id_(GetSelf()) {}
+
+    bool operator()(ThreadError thr)
+    {
+        if (thr.threadID_ == id_)
+            return true;
+        return false;
+    }
+};
+
+
 } // local namespace
 using namespace yassl_int_cpp_local2;
 
@@ -1455,8 +1564,8 @@ using namespace yassl_int_cpp_local2;
 SSL_SESSION* Sessions::lookup(const opaque* id, SSL_SESSION* copy)
 {
     Lock guard(mutex_);
-    iterator find = mySTL::find_if(list_.begin(), list_.end(), sess_match(id));
-
+    sess_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+                                        sess_match(id));
     if (find != list_.end()) {
         uint current = lowResTimer();
         if ( ((*find)->GetBornOn() + (*find)->GetTimeOut()) < current) {
@@ -1476,12 +1585,54 @@ SSL_SESSION* Sessions::lookup(const opaque* id, SSL_SESSION* copy)
 void Sessions::remove(const opaque* id)
 {
     Lock guard(mutex_);
-    iterator find = mySTL::find_if(list_.begin(), list_.end(), sess_match(id));
-
+    sess_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+                                        sess_match(id));
     if (find != list_.end()) {
         del_ptr_zero()(*find);
         list_.erase(find);
     }
+}
+
+
+// remove a self thread error
+void Errors::Remove()
+{
+    Lock guard(mutex_);
+    thr_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+                                       thr_match());
+    if (find != list_.end())
+        list_.erase(find);
+}
+
+
+// lookup self error code
+int Errors::Lookup(bool peek)
+{
+    Lock guard(mutex_);
+    thr_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+                                       thr_match());
+    if (find != list_.end()) {
+        int ret = find->errorID_;
+        if (!peek)
+            list_.erase(find);
+        return ret;
+    }
+    else
+        return 0;
+}
+
+
+// add a new error code for self
+void Errors::Add(int error)
+{
+    ThreadError add;
+    add.errorID_  = error;
+    add.threadID_ = GetSelf();
+
+    Remove();   // may have old error
+
+    Lock guard(mutex_);
+    list_.push_back(add);
 }
 
 
@@ -1906,12 +2057,33 @@ Hashes& sslHashes::use_certVerify()
 }
 
 
+Buffers::Buffers() : rawInput_(0)
+{}
+
+
 Buffers::~Buffers()
 {
     mySTL::for_each(handShakeList_.begin(), handShakeList_.end(),
                   del_ptr_zero()) ;
     mySTL::for_each(dataList_.begin(), dataList_.end(),
                   del_ptr_zero()) ;
+    ysDelete(rawInput_);
+}
+
+
+void Buffers::SetRawInput(input_buffer* ib)
+{
+    assert(rawInput_ == 0);
+    rawInput_ = ib;
+}
+
+
+input_buffer* Buffers::TakeRawInput()
+{
+    input_buffer* ret = rawInput_;
+    rawInput_ = 0;
+
+    return ret;
 }
 
 
@@ -1940,9 +2112,9 @@ Buffers::outputList& Buffers::useHandShake()
 
 
 Security::Security(ProtocolVersion pv, RandomPool& ran, ConnectionEnd ce,
-                   const Ciphers& ciphers, SSL_CTX* ctx)
-   : conn_(pv, ran), parms_(ce, ciphers, pv), resumeSession_(ran), ctx_(ctx),
-     resuming_(false)
+                   const Ciphers& ciphers, SSL_CTX* ctx, bool haveDH)
+   : conn_(pv, ran), parms_(ce, ciphers, pv, haveDH), resumeSession_(ran),
+     ctx_(ctx), resuming_(false)
 {}
 
 
@@ -2018,9 +2190,15 @@ X509_NAME::~X509_NAME()
 }
 
 
-char* X509_NAME::GetName()
+const char* X509_NAME::GetName() const
 {
     return name_;
+}
+
+
+size_t X509_NAME::GetLength() const
+{
+    return sz_;
 }
 
 
@@ -2029,7 +2207,7 @@ X509::X509(const char* i, size_t iSz, const char* s, size_t sSz,
     : issuer_(i, iSz), subject_(s, sSz),
       beforeDate_(b, bSz), afterDate_(a, aSz)
 {}
-   
+
 
 X509_NAME* X509::GetIssuer()
 {
@@ -2106,10 +2284,12 @@ extern "C" void yaSSL_CleanUp()
     TaoCrypt::CleanUp();
     yaSSL::ysDelete(yaSSL::sslFactoryInstance);
     yaSSL::ysDelete(yaSSL::sessionsInstance);
+    yaSSL::ysDelete(yaSSL::errorsInstance);
 
     // In case user calls more than once, prevent seg fault
     yaSSL::sslFactoryInstance = 0;
     yaSSL::sessionsInstance = 0;
+    yaSSL::errorsInstance = 0;
 }
 
 
@@ -2118,6 +2298,7 @@ namespace mySTL {
 template yaSSL::yassl_int_cpp_local1::SumData for_each<mySTL::list<yaSSL::input_buffer*>::iterator, yaSSL::yassl_int_cpp_local1::SumData>(mySTL::list<yaSSL::input_buffer*>::iterator, mySTL::list<yaSSL::input_buffer*>::iterator, yaSSL::yassl_int_cpp_local1::SumData);
 template yaSSL::yassl_int_cpp_local1::SumBuffer for_each<mySTL::list<yaSSL::output_buffer*>::iterator, yaSSL::yassl_int_cpp_local1::SumBuffer>(mySTL::list<yaSSL::output_buffer*>::iterator, mySTL::list<yaSSL::output_buffer*>::iterator, yaSSL::yassl_int_cpp_local1::SumBuffer);
 template mySTL::list<yaSSL::SSL_SESSION*>::iterator find_if<mySTL::list<yaSSL::SSL_SESSION*>::iterator, yaSSL::yassl_int_cpp_local2::sess_match>(mySTL::list<yaSSL::SSL_SESSION*>::iterator, mySTL::list<yaSSL::SSL_SESSION*>::iterator, yaSSL::yassl_int_cpp_local2::sess_match);
+template mySTL::list<yaSSL::ThreadError>::iterator find_if<mySTL::list<yaSSL::ThreadError>::iterator, yaSSL::yassl_int_cpp_local2::thr_match>(mySTL::list<yaSSL::ThreadError>::iterator, mySTL::list<yaSSL::ThreadError>::iterator, yaSSL::yassl_int_cpp_local2::thr_match);
 }
 #endif
 

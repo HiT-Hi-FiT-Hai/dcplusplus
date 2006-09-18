@@ -564,7 +564,7 @@ string ResourceManager::strings[] = {
 "System Log", 
 "Tag", 
 "Target filename too long", 
-"Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port", 
+"Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port", 
 "TiB", 
 "Time", 
 "Time left", 

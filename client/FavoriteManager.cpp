@@ -125,7 +125,6 @@ void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 void FavoriteManager::addFavoriteUser(User::Ptr& aUser) {
 	Lock l(cs);
 	if(users.find(aUser->getCID()) == users.end()) {
-		aUser->setFlag(User::SAVE_NICK);
 		StringList urls = ClientManager::getInstance()->getHubs(aUser->getCID());
 		StringList nicks = ClientManager::getInstance()->getNicks(aUser->getCID());
 
@@ -345,7 +344,6 @@ void FavoriteManager::save() {
 		xml.addTag("Users");
 		xml.stepIn();
 		for(FavoriteMap::iterator j = users.begin(); j != users.end(); ++j) {
-			j->second.getUser()->setFlag(User::SAVE_NICK);
 			xml.addTag("User");
 			xml.addChildAttrib("LastSeen", j->second.getLastSeen());
 			xml.addChildAttrib("GrantSlot", j->second.isSet(FavoriteUser::FLAG_GRANTSLOT));
@@ -418,7 +416,7 @@ void FavoriteManager::load() {
 
 		if(xml.findChild("Favorites")) {
 			xml.stepIn();
-			load(&xml);
+			load(xml);
 			xml.stepOut();
 		}
 	} catch(const Exception& e) {
@@ -426,37 +424,37 @@ void FavoriteManager::load() {
 	}
 }
 
-void FavoriteManager::load(SimpleXML* aXml) {
+void FavoriteManager::load(SimpleXML& aXml) {
 	dontSave = true;
 
-	aXml->resetCurrentChild();
-	if(aXml->findChild("Hubs")) {
-		aXml->stepIn();
-		while(aXml->findChild("Hub")) {
+	aXml.resetCurrentChild();
+	if(aXml.findChild("Hubs")) {
+		aXml.stepIn();
+		while(aXml.findChild("Hub")) {
 			FavoriteHubEntry* e = new FavoriteHubEntry();
-			e->setName(aXml->getChildAttrib("Name"));
-			e->setConnect(aXml->getBoolChildAttrib("Connect"));
-			e->setDescription(aXml->getChildAttrib("Description"));
-			e->setNick(aXml->getChildAttrib("Nick"));
-			e->setPassword(aXml->getChildAttrib("Password"));
-			e->setServer(aXml->getChildAttrib("Server"));
-			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
-			e->setBottom((u_int16_t)aXml->getIntChildAttrib("Bottom") );
-			e->setTop((u_int16_t)aXml->getIntChildAttrib("Top"));
-			e->setRight((u_int16_t)aXml->getIntChildAttrib("Right"));
-			e->setLeft((u_int16_t)aXml->getIntChildAttrib("Left"));
+			e->setName(aXml.getChildAttrib("Name"));
+			e->setConnect(aXml.getBoolChildAttrib("Connect"));
+			e->setDescription(aXml.getChildAttrib("Description"));
+			e->setNick(aXml.getChildAttrib("Nick"));
+			e->setPassword(aXml.getChildAttrib("Password"));
+			e->setServer(aXml.getChildAttrib("Server"));
+			e->setUserDescription(aXml.getChildAttrib("UserDescription"));
+			e->setBottom((u_int16_t)aXml.getIntChildAttrib("Bottom") );
+			e->setTop((u_int16_t)aXml.getIntChildAttrib("Top"));
+			e->setRight((u_int16_t)aXml.getIntChildAttrib("Right"));
+			e->setLeft((u_int16_t)aXml.getIntChildAttrib("Left"));
 			favoriteHubs.push_back(e);
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
-	aXml->resetCurrentChild();
-	if(aXml->findChild("Users")) {
-		aXml->stepIn();
-		while(aXml->findChild("User")) {
+	aXml.resetCurrentChild();
+	if(aXml.findChild("Users")) {
+		aXml.stepIn();
+		while(aXml.findChild("User")) {
 			User::Ptr u;
-			const string& cid = aXml->getChildAttrib("CID");
-			const string& nick = aXml->getChildAttrib("Nick");
-			const string& hubUrl = aXml->getChildAttrib("URL");
+			const string& cid = aXml.getChildAttrib("CID");
+			const string& nick = aXml.getChildAttrib("Nick");
+			const string& hubUrl = aXml.getChildAttrib("URL");
 
 			if(cid.length() != 39) {
 				if(nick.empty() || hubUrl.empty())
@@ -469,35 +467,34 @@ void FavoriteManager::load(SimpleXML* aXml) {
 			}
 			FavoriteMap::iterator i = users.insert(make_pair(u->getCID(), FavoriteUser(u, nick, hubUrl))).first;
 
-			if(aXml->getBoolChildAttrib("GrantSlot"))
+			if(aXml.getBoolChildAttrib("GrantSlot"))
 				i->second.setFlag(FavoriteUser::FLAG_GRANTSLOT);
 
-			i->second.setLastSeen((u_int32_t)aXml->getIntChildAttrib("LastSeen"));
-			i->second.setDescription(aXml->getChildAttrib("UserDescription"));
+			i->second.setLastSeen((u_int32_t)aXml.getIntChildAttrib("LastSeen"));
+			i->second.setDescription(aXml.getChildAttrib("UserDescription"));
 
-			i->second.getUser()->setFlag(User::SAVE_NICK);
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
-	aXml->resetCurrentChild();
-	if(aXml->findChild("UserCommands")) {
-		aXml->stepIn();
-		while(aXml->findChild("UserCommand")) {
-			addUserCommand(aXml->getIntChildAttrib("Type"), aXml->getIntChildAttrib("Context"),
-				0, aXml->getChildAttrib("Name"), aXml->getChildAttrib("Command"), aXml->getChildAttrib("Hub"));
+	aXml.resetCurrentChild();
+	if(aXml.findChild("UserCommands")) {
+		aXml.stepIn();
+		while(aXml.findChild("UserCommand")) {
+			addUserCommand(aXml.getIntChildAttrib("Type"), aXml.getIntChildAttrib("Context"),
+				0, aXml.getChildAttrib("Name"), aXml.getChildAttrib("Command"), aXml.getChildAttrib("Hub"));
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
 	//Favorite download to dirs
-	aXml->resetCurrentChild();
-	if(aXml->findChild("FavoriteDirs")) {
-		aXml->stepIn();
-		while(aXml->findChild("Directory")) {
-			string virt = aXml->getChildAttrib("Name");
-			string d(aXml->getChildData());
+	aXml.resetCurrentChild();
+	if(aXml.findChild("FavoriteDirs")) {
+		aXml.stepIn();
+		while(aXml.findChild("Directory")) {
+			string virt = aXml.getChildAttrib("Name");
+			string d(aXml.getChildData());
 			FavoriteManager::getInstance()->addFavoriteDir(d, virt);
 		}
-		aXml->stepOut();
+		aXml.stepOut();
 	}
 
 	dontSave = false;

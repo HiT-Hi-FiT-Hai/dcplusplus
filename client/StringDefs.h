@@ -567,7 +567,7 @@ enum Strings { // @DontAdd
 	SYSTEM_LOG, // "System Log"
 	TAG, // "Tag"
 	TARGET_FILENAME_TOO_LONG, // "Target filename too long"
-	TCP_PORT_BUSY, // "Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port"
+	TCP_PORT_BUSY, // "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
 	TiB, // "TiB"
 	TIME, // "Time"
 	TIME_LEFT, // "Time left"

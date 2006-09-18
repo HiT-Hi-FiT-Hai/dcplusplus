@@ -1083,7 +1083,6 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t speed)
 	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 			// This is a file listing, show it...
-
 			DirectoryListInfo* i = new DirectoryListInfo(qi->getCurrent()->getUser(), Text::toT(qi->getListName()), speed);
 
 			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);

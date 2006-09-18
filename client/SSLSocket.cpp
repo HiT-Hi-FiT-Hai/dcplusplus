@@ -30,9 +30,9 @@ SSLSocket::SSLSocket(SSL_CTX* context) throw(SocketException) : ctx(context), ss
 }
 
 void SSLSocket::connect(const string& aIp, short aPort) throw(SocketException) {
+	Socket::setBlocking(true);
 	Socket::connect(aIp, aPort);
 
-	setBlocking(true);
 	if(ssl)
 		SSL_free(ssl);
 
@@ -43,12 +43,12 @@ void SSLSocket::connect(const string& aIp, short aPort) throw(SocketException) {
 	checkSSL(SSL_set_fd(ssl, sock));
 	checkSSL(SSL_connect(ssl));
 	dcdebug("Connected to SSL server using %s\n", SSL_get_cipher(ssl));
+	Socket::setBlocking(false);
 }
 
 void SSLSocket::accept(const Socket& listeningSocket) throw(SocketException) {
 	Socket::accept(listeningSocket);
 
-	setBlocking(true);
 	if(ssl)
 		SSL_free(ssl);
 
