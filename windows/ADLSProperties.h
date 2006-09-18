@@ -40,14 +40,14 @@ public:
 
 	// Dilaog unique id
 	enum { IDD = IDD_ADLS_PROPERTIES };
-	
+
 	// Inline message map
 	BEGIN_MSG_MAP(ADLSProperties)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 	END_MSG_MAP()
-	
+
 	// Message handlers
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

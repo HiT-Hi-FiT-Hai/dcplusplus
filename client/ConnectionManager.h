@@ -38,7 +38,7 @@ public:
 	typedef ConnectionQueueItem* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	
+
 	enum State {
 		CONNECTING,					// Recently sent request to connect
 		WAITING,					// Waiting to send request to connect
@@ -47,17 +47,17 @@ public:
 	};
 
 	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), user(aUser) { }
-	
+
 	User::Ptr& getUser() { return user; }
 	const User::Ptr& getUser() const { return user; }
-	
+
 	GETSET(State, state, State);
 	GETSET(u_int32_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
 	ConnectionQueueItem(const ConnectionQueueItem&);
 	ConnectionQueueItem& operator=(const ConnectionQueueItem&);
-	
+
 	User::Ptr user;
 };
 
@@ -71,12 +71,12 @@ public:
 	pair<string, string> remove(const string& aNick) {
 		Lock l(cs);
 		ExpectMap::iterator i = expectedConnections.find(aNick);
-		
+
 		if(i == expectedConnections.end()) return make_pair(Util::emptyString, Util::emptyString);
 
 		pair<string, string> tmp = make_pair(i->second.first, i->second.second);
 		expectedConnections.erase(i);
-		
+
 		return tmp;
 	}
 
@@ -91,8 +91,8 @@ private:
 // Comparing with a user...
 inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; }
 
-class ConnectionManager : public Speaker<ConnectionManagerListener>, 
-	public UserConnectionListener, TimerManagerListener, 
+class ConnectionManager : public Speaker<ConnectionManagerListener>,
+	public UserConnectionListener, TimerManagerListener,
 	public Singleton<ConnectionManager>
 {
 public:
@@ -102,7 +102,7 @@ public:
 
 	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
 	void adcConnect(const OnlineUser& aUser, short aPort, const string& aToken, bool secure);
-	
+
 	void getDownloadConnection(const User::Ptr& aUser);
 
 	void disconnect(const User::Ptr& aUser, int isDownload);
@@ -166,7 +166,7 @@ private:
 	ConnectionManager();
 
 	virtual ~ConnectionManager() throw() { shutdown(); }
-	
+
 	UserConnection* getConnection(bool aNmdc, bool secure) throw();
 	void putConnection(UserConnection* aConn);
 
@@ -192,8 +192,8 @@ private:
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();	
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();	
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 
 };
 

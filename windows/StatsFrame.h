@@ -32,8 +32,8 @@ class StatsFrame : public MDITabChildWindowImpl<StatsFrame>, public StaticFrame<
 {
 public:
 	StatsFrame() : width(0), height(0), timerId(0), twidth(0), lastTick(GET_TICK()), scrollTick(0),
-		lastUp(Socket::getTotalUp()), lastDown(Socket::getTotalDown()), max(0) 
-	{ 
+		lastUp(Socket::getTotalUp()), lastDown(Socket::getTotalDown()), max(0)
+	{
 		backgr.CreateSolidBrush(WinUtil::bgColor);
 		upload.CreatePen(PS_SOLID, 0, SETTING(UPLOAD_BAR_COLOR));
 		download.CreatePen(PS_SOLID, 0, SETTING(DOWNLOAD_BAR_COLOR));
@@ -42,16 +42,16 @@ public:
 
 	virtual ~StatsFrame() { }
 
-	static CFrameWndClassInfo& GetWndClassInfo() { 
-		static CFrameWndClassInfo wc = { 
-			{	
-				sizeof(WNDCLASSEX), 0, StartWindowProc, 
-				0, 0, NULL, NULL, NULL, NULL, NULL, _T("StatsFrame"), NULL 
+	static CFrameWndClassInfo& GetWndClassInfo() {
+		static CFrameWndClassInfo wc = {
+			{
+				sizeof(WNDCLASSEX), 0, StartWindowProc,
+				0, 0, NULL, NULL, NULL, NULL, NULL, _T("StatsFrame"), NULL
 			},
-			NULL, NULL, IDC_ARROW, TRUE, 0, _T(""), IDR_NET_STATS 
+			NULL, NULL, IDC_ARROW, TRUE, 0, _T(""), IDR_NET_STATS
 		};
-		
-		return wc; 
+
+		return wc;
 	}
 
 	typedef MDITabChildWindowImpl<StatsFrame> baseClass;
@@ -71,7 +71,7 @@ public:
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+
 private:
 	// Pixels per second
 	enum { PIX_PER_SEC = 2 };

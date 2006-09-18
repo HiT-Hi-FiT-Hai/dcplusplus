@@ -84,10 +84,10 @@ private:
 
 template<class T>
 struct PointerHash {
-#if _MSC_VER >= 1300 
-	static const size_t bucket_size = 4; 
-	static const size_t min_buckets = 8; 
-#endif 
+#if _MSC_VER >= 1300
+	static const size_t bucket_size = 4;
+	static const size_t min_buckets = 8;
+#endif
 	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); }
 	bool operator()(const T* a, const T* b) { return a < b; }
 };
@@ -96,7 +96,7 @@ struct PointerHash<void> {
 	size_t operator()(const void* a) const { return ((size_t)a)>>2; }
 };
 
-/** 
+/**
  * Compares two values
  * @return -1 if v1 < v2, 0 if v1 == v2 and 1 if v1 > v2
  */
@@ -135,7 +135,7 @@ private:
 	TPtr p;
 };
 
-class Util  
+class Util
 {
 public:
 	static tstring emptyStringT;
@@ -168,16 +168,16 @@ public:
 	static string translateError(int aError) {
 #ifdef _WIN32
 		LPVOID lpMsgBuf;
-		DWORD chars = FormatMessage( 
-			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-			FORMAT_MESSAGE_FROM_SYSTEM | 
+		DWORD chars = FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER |
+			FORMAT_MESSAGE_FROM_SYSTEM |
 			FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL,
 			aError,
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 			(LPTSTR) &lpMsgBuf,
 			0,
-			NULL 
+			NULL
 			);
 		if(chars == 0) {
 			return string();
@@ -239,7 +239,7 @@ public:
 	static void decodeUrl(const string& aUrl, string& aServer, u_int16_t& aPort, string& aFile);
 	static string validateFileName(string aFile);
 	static string cleanPathChars(string aNick);
-	
+
 	static string formatBytes(const string& aString) { return formatBytes(toInt64(aString)); }
 	static string formatMessage(const string& nick, const string& message);
 	static string toDOS(const string& tmp);
@@ -249,7 +249,7 @@ public:
 	static string getTimeString();
 	static string toAdcFile(const string& file);
 	static string toNmdcFile(const string& file);
-	
+
 	static string formatBytes(int64_t aBytes);
 
 	static string formatExactSize(int64_t aBytes);
@@ -409,7 +409,7 @@ public:
 	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); }
 	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); }
 	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); }
-	
+
 	static string getOsVersion();
 
 	static string getIpCountry (string IP);
@@ -454,12 +454,12 @@ private:
 
 /** Case insensitive hash function for strings */
 struct noCaseStringHash {
-#if _MSC_VER < 1300 
-	enum {bucket_size = 4}; 
-	enum {min_buckets = 8}; 
-#else 
-	static const size_t bucket_size = 4; 
-	static const size_t min_buckets = 8; 
+#if _MSC_VER < 1300
+	enum {bucket_size = 4};
+	enum {min_buckets = 8};
+#else
+	static const size_t bucket_size = 4;
+	static const size_t min_buckets = 8;
 #endif // _MSC_VER == 1200
 
 	size_t operator()(const string* s) const {

@@ -43,12 +43,12 @@ public:
 //	typedef List::iterator Iter;
 	int chr;
 	int weight;
-	
+
 	Node* left;
 	Node* right;
-	
+
 	Node(int aChr, int aWeight) : chr(aChr), weight(aWeight), left(NULL), right(NULL) { }
-	Node(Node* aLeft, Node* aRight) :  chr(-1), weight(aLeft->weight + aRight->weight), left(aLeft), right(aRight) { }
+	Node(Node* aLeft, Node* aRight) : chr(-1), weight(aLeft->weight + aRight->weight), left(aLeft), right(aRight) { }
 	~Node() {
 		delete left;
 		delete right;
@@ -78,7 +78,6 @@ public:
 	const string& getPk() { return pk; }
 	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; }
 
-	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 
 	SSLSocket* getClientSocket(bool allowUntrusted) throw(SocketException);
@@ -91,32 +90,10 @@ public:
 private:
 
 	friend class Singleton<CryptoManager>;
-	
+
 	CryptoManager();
 	virtual ~CryptoManager();
 
-	class Leaf : public FastAlloc<Leaf> {
-	public:
-		int chr;
-		int len;
-		Leaf(int aChr, int aLen) : chr(aChr), len(aLen) { }
-		Leaf() : chr(-1), len(-1) { }
-	};
-	
-	class DecNode : public FastAlloc<DecNode> {
-	public:
-		int chr;
-		DecNode* left;
-		DecNode* right;
-		DecNode(int aChr) : chr(aChr), left(NULL), right(NULL) { }
-		DecNode(DecNode* aLeft, DecNode* aRight) : chr(-1), left(aLeft), right(aRight) { }
-		DecNode() : chr(-1), left(NULL), right(NULL) { }
-		~DecNode() {
-			delete left;
-			delete right;
-		}
-	};
-	
 	SSL_CTX* clientContext;
 	SSL_CTX* clientVerContext;
 	SSL_CTX* serverContext;
@@ -132,7 +109,7 @@ private:
 	void walkTree(list<Node*>& aTree);
 	void recurseLookup(vector<u_int8_t>* b, Node* node, vector<u_int8_t>& bytes);
 	void buildLookup(vector<u_int8_t>* b, Node* root);
-	
+
 	string keySubst(const u_int8_t* aKey, size_t len, size_t n);
 	bool isExtra(u_int8_t b) {
 		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);

@@ -63,7 +63,7 @@ LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 			addEntry(uc, ctrlCommands.GetItemCount());
 		}
 	}
-	
+
 	return TRUE;
 }
 
@@ -82,7 +82,7 @@ LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 		int sel = ctrlCommands.GetSelectedIndex();
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(ctrlCommands.GetItemData(sel), uc);
-		
+
 		CommandDlg dlg;
 		dlg.type = uc.getType();
 		dlg.ctx = uc.getCtx();

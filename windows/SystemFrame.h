@@ -38,7 +38,7 @@ public:
 
 	SystemFrame() : ctrlClientContainer(_T("edit"), this, SYSTEM_LOG_MESSAGE_MAP) { }
 	virtual ~SystemFrame() { }
-	
+
 	typedef MDITabChildWindowImpl<SystemFrame> baseClass;
 	BEGIN_MSG_MAP(SystemFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
@@ -57,7 +57,7 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -69,12 +69,12 @@ public:
 		bHandled = FALSE;
 		return FALSE;
 	}
-		
+
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
 		return 0;
 	}
-	
+
 private:
 	CEdit ctrlPad;
 	CContainedWindow ctrlClientContainer;

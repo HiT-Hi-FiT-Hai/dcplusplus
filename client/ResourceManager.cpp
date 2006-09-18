@@ -34,7 +34,7 @@ void ResourceManager::loadLanguage(const string& aFile) {
 		xml.fromXML(f.read());
 
 		HASH_MAP<string, int> h;
-		
+
 		for(int i = 0; i < LAST; ++i) {
 			h[names[i]] = i;
 		}

@@ -35,7 +35,7 @@ class OutputStream {
 public:
 	OutputStream() { }
 	virtual ~OutputStream() throw() { }
-	
+
 	/**
 	 * @return The actual number of bytes written. len bytes will always be
 	 *         consumed, but fewer or more bytes may actually be written,

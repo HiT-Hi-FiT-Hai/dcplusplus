@@ -35,7 +35,7 @@ class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CContro
 	int (*fun)(LPARAM, LPARAM);
 
 public:
-	enum {	
+	enum {
 		SORT_FUNC = 2,
  		SORT_STRING,
 		SORT_STRING_NOCASE,
@@ -53,7 +53,7 @@ public:
 
 	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
 		bool doUpdateArrow = (aColumn != sortColumn || aAscending != ascending);
-		
+
 		sortColumn = aColumn;
 		sortType = aType;
 		ascending = aAscending;
@@ -87,7 +87,7 @@ public:
 		GetItem(&lvi);
 		return lvi.iImage;
 	}
-	
+
 	int find(LPARAM lParam, int aStart = -1) {
 		LV_FINDINFO fi;
 		fi.flags = LVFI_PARAM;
@@ -126,16 +126,16 @@ public:
 		int result = p->sortType;
 		if(result == SORT_FUNC) {
 			result = p->fun(p->GetItemData(na), p->GetItemData(nb));
-		} 
+		}
 
 		if(result == SORT_STRING) {
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
-			result = lstrcmp(buf, buf2);			
+			result = lstrcmp(buf, buf2);
 		} else if(result == SORT_STRING_NOCASE) {
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
-			result = lstrcmpi(buf, buf2);			
+			result = lstrcmpi(buf, buf2);
 		} else if(result == SORT_INT) {
 			p->GetItemText(na, p->sortColumn, buf, 128);
 			p->GetItemText(nb, p->sortColumn, buf2, 128);
@@ -166,7 +166,7 @@ public:
 		bHandled = FALSE;
 		return 1;
 	}
-	
+
 	template<class T> static int compare(const T& a, const T& b) {
 		return (a < b) ? -1 : ( (a == b) ? 0 : 1);
 	}

@@ -98,7 +98,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		return;
 
 	string cid;
-	
+
 	OnlineUser* u = 0;
 	if(c.getParam("ID", 0, cid))
 		u = &getUser(c.getFrom(), CID(cid));
@@ -115,7 +115,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	for(StringIterC i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
 		if(i->length() < 2)
 			continue;
-			
+
 		u->getIdentity().set(i->c_str(), i->substr(2));
 	}
 
@@ -195,7 +195,7 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, c.getParam(0));
 	} else {
 		fire(ClientListener::Message(), this, *from, c.getParam(0));
-	}		
+	}
 }
 
 void AdcHub::handle(AdcCommand::GPA, AdcCommand& c) throw() {
@@ -272,7 +272,7 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
 		cmd.setTo(c.getFrom());
 		cmd.addParam("PR", protocol);
-		
+
 		if(hasToken)
 			cmd.addParam("TO", token);
 
@@ -394,16 +394,16 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 void AdcHub::hubMessage(const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST).addParam(aMessage)); 
+	send(AdcCommand(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST).addParam(aMessage));
 }
 
-void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) { 
+void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, user.getIdentity().getSID()).addParam(aMessage).addParam("PM", getMySID())); 
+	send(AdcCommand(AdcCommand::CMD_MSG, user.getIdentity().getSID()).addParam(aMessage).addParam("PM", getMySID()));
 }
 
-void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) { 
+void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	if(state != STATE_NORMAL)
 		return;
 
@@ -438,7 +438,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	}
 }
 
-void AdcHub::password(const string& pwd) { 
+void AdcHub::password(const string& pwd) {
 	if(state != STATE_VERIFY)
 		return;
 	if(!salt.empty()) {
@@ -511,8 +511,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	string su;
 	if(CryptoManager::getInstance()->TLSOk()) {
 		su += ADCS_FEATURE + ",";
-	} 
-	
+	}
+
 	if(ClientManager::getInstance()->isActive()) {
 		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
 			ADDPARAM("I4", Socket::resolve(SETTING(EXTERNAL_IP)));
@@ -558,23 +558,23 @@ string AdcHub::checkNick(const string& aNick) {
 	return tmp;
 }
 
-void AdcHub::on(Connected) throw() { 
+void AdcHub::on(Connected) throw() {
 	dcassert(state == STATE_PROTOCOL);
 	lastInfoMap.clear();
 	reconnect = true;
 	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("ADBAS0"));
-	
+
 	fire(ClientListener::Connected(), this);
 }
 
-void AdcHub::on(Line, const string& aLine) throw() { 
+void AdcHub::on(Line, const string& aLine) throw() {
 	if(BOOLSETTING(ADC_DEBUG)) {
 		fire(ClientListener::StatusMessage(), this, "<ADC>" + aLine + "</ADC>");
 	}
-	dispatch(aLine); 
+	dispatch(aLine);
 }
 
-void AdcHub::on(Failed, const string& aLine) throw() { 
+void AdcHub::on(Failed, const string& aLine) throw() {
 	clearUsers();
 	socket->removeListener(this);
 	state = STATE_PROTOCOL;

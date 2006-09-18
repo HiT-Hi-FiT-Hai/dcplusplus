@@ -26,10 +26,10 @@
 #include "ShareManager.h"
 #include "ResourceManager.h"
 
-SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH) :
-	file(aFile), user(ClientManager::getInstance()->getMe()), size(aSize), type(aType), slots(SETTING(SLOTS)), 
-	freeSlots(UploadManager::getInstance()->getFreeSlots()),  
-	tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(true), ref(1) { }
+SearchResult::SearchResult(Types aType, int64_t aSize, const string& aFile, const TTHValue& aTTH) :
+	file(aFile), user(ClientManager::getInstance()->getMe()), size(aSize), type(aType), slots(SETTING(SLOTS)),
+	freeSlots(UploadManager::getInstance()->getFreeSlots()),
+	tth(aTTH), utf8(true), ref(1) { }
 
 string SearchResult::toSR(const Client& c) const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
@@ -52,11 +52,7 @@ string SearchResult::toSR(const Client& c) const {
 	tmp.append(1, '/');
 	tmp.append(Util::toString(slots));
 	tmp.append(1, '\x05');
-	if(getTTH() == NULL) {
-		tmp.append(Text::utf8ToAcp(c.getHubName()));
-	} else {
-		tmp.append("TTH:" + getTTH()->toBase32());
-	}
+	tmp.append("TTH:" + getTTH().toBase32());
 	tmp.append(" (", 2);
 	tmp.append(c.getIpPort());
 	tmp.append(")|", 2);
@@ -68,9 +64,7 @@ AdcCommand SearchResult::toRES(char type) const {
 	cmd.addParam("SI", Util::toString(size));
 	cmd.addParam("SL", Util::toString(freeSlots));
 	cmd.addParam("FN", Util::toAdcFile(utf8 ? file : Text::acpToUtf8(file)));
-	if(getTTH() != NULL) {
-		cmd.addParam("TR", getTTH()->toBase32());
-	}
+	cmd.addParam("TR", getTTH().toBase32());
 	return cmd;
 }
 
@@ -88,9 +82,9 @@ void SearchManager::search(StringList& who, const string& aName, int64_t aSize /
 	}
 }
 
-string SearchResult::getFileName() const { 
-	if(getType() == TYPE_FILE) 
-		return Util::getFileName(getFile()); 
+string SearchResult::getFileName() const {
+	if(getType() == TYPE_FILE)
+		return Util::getFileName(getFile());
 
 	if(getFile().size() < 2)
 		return getFile();
@@ -150,7 +144,7 @@ void SearchManager::disconnect() throw() {
 
 #define BUFSIZE 8192
 int SearchManager::run() {
-	
+
 	AutoArray<u_int8_t> buf(BUFSIZE);
 	int len;
 
@@ -178,7 +172,7 @@ int SearchManager::run() {
 			return 1;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -187,7 +181,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 	if(x.compare(0, 4, "$SR ") == 0) {
 		string::size_type i, j;
 		// Directories: $SR <nick><0x20><directory><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
-		// Files:       $SR <nick><0x20><filename><0x05><filesize><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
+		// Files:		$SR <nick><0x20><filename><0x05><filesize><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
 		i = 4;
 		if( (j = x.find(' ', i)) == string::npos) {
 			return;
@@ -197,13 +191,13 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 
 		// A file has 2 0x05, a directory only one
 		size_t cnt = count(x.begin() + j, x.end(), 0x05);
-		
+
 		SearchResult::Types type = SearchResult::TYPE_FILE;
 		string file;
 		int64_t size = 0;
 
 		if(cnt == 1) {
-			// We have a directory...find the first space beyond the first 0x05 from the back 
+			// We have a directory...find the first space beyond the first 0x05 from the back
 			// (dirs might contain spaces as well...clever protocol, eh?)
 			type = SearchResult::TYPE_DIRECTORY;
 			// Get past the hubname that might contain spaces
@@ -230,7 +224,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			size = Util::toInt64(x.substr(i, j-i));
 		}
 		i = j + 1;
-		
+
 		if( (j = x.find('/', i)) == string::npos) {
 			return;
 		}
@@ -251,7 +245,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		}
 		string hubIpPort = x.substr(i, j-i);
 		string url = ClientManager::getInstance()->findHub(hubIpPort);
-		
+
 		User::Ptr user = ClientManager::getInstance()->findUser(nick, url);
 		if(!user) {
 			// Could happen if hub has multiple URLs / IPs
@@ -266,9 +260,11 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			StringList names = ClientManager::getInstance()->getHubNames(user->getCID());
 			hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
 		}
-				
+		if(tth.empty())
+			return;
+
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, url, remoteIp, tth.empty() ? NULL : new TTHValue(tth), false, Util::emptyString);
+			file, hubName, url, remoteIp, TTHValue(tth), false, Util::emptyString);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	} else if(x.compare(1, 4, "RES ") == 0 && x[x.length() - 1] == 0x0a) {
@@ -326,9 +322,11 @@ void SearchManager::onRES(const AdcCommand& cmd, const User::Ptr& from, const st
 		string hub = hubs.empty() ? STRING(OFFLINE) : Util::toString(hubs);
 
 		SearchResult::Types type = (file[file.length() - 1] == '\\' ? SearchResult::TYPE_DIRECTORY : SearchResult::TYPE_FILE);
+		if(type == SearchResult::TYPE_FILE && tth.empty())
+			return;
 		/// @todo Something about the slots
-		SearchResult* sr = new SearchResult(from, type, 0, freeSlots, size, 
-			file, hubName, hub, remoteIp, tth.empty() ? NULL : new TTHValue(tth), true, token);
+		SearchResult* sr = new SearchResult(from, type, 0, freeSlots, size,
+			file, hubName, hub, remoteIp, TTHValue(tth), true, token);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	}

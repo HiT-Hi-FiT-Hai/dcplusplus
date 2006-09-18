@@ -33,10 +33,10 @@ inline void CDECL debugTrace(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	
+
 #ifdef _WIN32
 	char buf[512];
-	
+
 	_vsnprintf(buf, sizeof(buf), format, args);
 	OutputDebugStringA(buf);
 #else // _WIN32

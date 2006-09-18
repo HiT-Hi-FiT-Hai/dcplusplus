@@ -111,18 +111,18 @@ public:
 
 	void setBytesShared(const string& bs) { set("SS", bs); }
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
-	
+
 	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 	void setHub(bool hub) { set("HU", hub ? "1" : Util::emptyString); }
 	void setBot(bool bot) { set("BO", bot ? "1" : Util::emptyString); }
 	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
 
-	string getTag() const { 
+	string getTag() const {
 		if(!get("TA").empty())
 			return get("TA");
 		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
 			return Util::emptyString;
-		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" + 
+		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" +
 			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 	}
 

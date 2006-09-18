@@ -66,7 +66,7 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	
+
 protected:
 	ExListViewCtrl ctrlCommands;
 

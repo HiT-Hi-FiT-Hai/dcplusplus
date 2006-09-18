@@ -89,7 +89,7 @@ public:
 		delete x;
 		return 0;
 	}
-		
+
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		EndDialog(wID);
 		return 0;
@@ -99,7 +99,7 @@ private:
 	HttpConnection c;
 
 	AboutDlg(const AboutDlg&) { dcassert(0); }
-	
+
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 		downBuf.append((char*)buf, len);
 	}

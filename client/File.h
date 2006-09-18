@@ -132,16 +132,16 @@ public:
 		DWORD l = ::SetFilePointer(h, 0, &x, FILE_CURRENT);
 
 		return (int64_t)l | ((int64_t)x)<<32;
-	}		
+	}
 
 	virtual void setPos(int64_t pos) throw() {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_BEGIN);
-	}		
+	}
 	virtual void setEndPos(int64_t pos) throw() {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_END);
-	}		
+	}
 
 	virtual void movePos(int64_t pos) throw() {
 		LONG x = (LONG) (pos>>32);
@@ -179,7 +179,7 @@ public:
 	}
 
 	static void deleteFile(const string& aFileName) throw() { ::DeleteFile(Text::toT(aFileName).c_str()); }
-	static void renameFile(const string& source, const string& target) throw(FileException) { 
+	static void renameFile(const string& source, const string& target) throw(FileException) {
 		if(!::MoveFile(Text::toT(source).c_str(), Text::toT(target).c_str())) {
 			// Can't move, try copy/delete...
 			if(!CopyFile(Text::toT(source).c_str(), Text::toT(target).c_str(), FALSE)) {
@@ -253,7 +253,7 @@ public:
 		h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		if(h == -1)
 			throw FileException("Could not open file");
-	}	
+	}
 
 	u_int32_t getLastModified() {
 		struct stat s;
@@ -324,7 +324,7 @@ public:
 
 		pos = (int64_t) lseek(h,0,SEEK_CUR);
 		eof = (int64_t) lseek(h,0,SEEK_END);
-		if (eof < pos) 
+		if (eof < pos)
 			ret = extendFile(pos);
 		else
 			ret = ftruncate(h,(off_t)pos);
@@ -337,7 +337,7 @@ public:
 		int64_t pos = getPos();
 		setPos(newSize);
 		setEOF();
-		setPos(pos);		
+		setPos(pos);
 	}
 
 	virtual size_t flush() throw(Exception) {
@@ -357,14 +357,14 @@ public:
 	static void renameFile(const string& source, const string& target) throw() {
 		int ret = ::rename(source.c_str(), target.c_str());
 		if ( ( ret != 0 ) && ( errno == EXDEV ) ) {
-          copyFile(source.c_str(), target.c_str());
-          deleteFile(source.c_str());
-        } else if (ret != 0)
-             throw FileException(source.c_str() + Util::translateError(errno));
-    }
+			copyFile(source.c_str(), target.c_str());
+			deleteFile(source.c_str());
+		} else if (ret != 0)
+			throw FileException(source.c_str() + Util::translateError(errno));
+	}
 
 	// This doesn't assume all bytes are written in one write call, it is a bit safer
-	static void copyFile(const string& source, const string& target) throw(FileException) { 
+	static void copyFile(const string& source, const string& target) throw(FileException) {
 		const size_t BUF_SIZE = 64 * 1024;
 		AutoArray<char> buffer(BUF_SIZE);
 		size_t count = BUF_SIZE;
@@ -373,7 +373,7 @@ public:
 
 		while ( src.read((char*)buffer, count) > 0) {
 			char* p = (char*)buffer;
-			while (count  > 0) {
+			while (count > 0) {
 				size_t ret = dst.write(p, count);
 				p += ret;
 				count -= ret;

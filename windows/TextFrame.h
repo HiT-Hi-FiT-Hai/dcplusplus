@@ -35,7 +35,7 @@ public:
 
 	TextFrame(const tstring& fileName) : file(fileName) { }
 	virtual ~TextFrame() { }
-	
+
 	typedef MDITabChildWindowImpl<TextFrame> baseClass;
 	BEGIN_MSG_MAP(TextFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
@@ -48,7 +48,7 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -59,15 +59,15 @@ public:
 		}
 		bHandled = FALSE;
 		return FALSE;
-	}	
-	
+	}
+
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
 		return 0;
 	}
-	
+
 private:
-	
+
 	tstring file;
 	CEdit ctrlPad;
 };

@@ -35,7 +35,7 @@ UserCommand FavoriteManager::addUserCommand(int type, int ctx, int flags, const 
 	Lock l(cs);
 	userCommands.push_back(UserCommand(lastId++, type, ctx, flags, name, command, hub));
 	UserCommand& uc = userCommands.back();
-	if(!uc.isSet(UserCommand::FLAG_NOSAVE)) 
+	if(!uc.isSet(UserCommand::FLAG_NOSAVE))
 		save();
 	return userCommands.back();
 }
@@ -122,13 +122,13 @@ void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 	}
 }
 
-void FavoriteManager::addFavoriteUser(User::Ptr& aUser) { 
+void FavoriteManager::addFavoriteUser(User::Ptr& aUser) {
 	Lock l(cs);
 	if(users.find(aUser->getCID()) == users.end()) {
 		aUser->setFlag(User::SAVE_NICK);
 		StringList urls = ClientManager::getInstance()->getHubs(aUser->getCID());
 		StringList nicks = ClientManager::getInstance()->getNicks(aUser->getCID());
-        
+
 		/// @todo make this an error probably...
 		if(urls.empty())
 			urls.push_back(Util::emptyString);
@@ -395,15 +395,15 @@ void FavoriteManager::save() {
 }
 
 void FavoriteManager::load() {
-	
+
 	// Add NMDC standard op commands
-	static const char kickstr[] = 
+	static const char kickstr[] =
 		"$To: %[userNI] From: %[myNI] $<%[myNI]> You are being kicked because: %[line:Reason]|<%[myNI]> %[myNI] is kicking %[userNI] because: %[line:Reason]|$Kick %[userNI]|";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
 		STRING(KICK_USER), kickstr, "op");
 	static const char redirstr[] =
 		"$OpForceMove $Who:%[userNI]$Where:%[line:Target Server]$Msg:%[line:Message]|";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
 		STRING(REDIRECT_USER), redirstr, "op");
 
 	// Add ADC standard op commands
@@ -415,7 +415,7 @@ void FavoriteManager::load() {
 	try {
 		SimpleXML xml;
 		xml.fromXML(File(getConfigFile(), File::READ, File::OPEN).read());
-		
+
 		if(xml.findChild("Favorites")) {
 			xml.stepIn();
 			load(&xml);
@@ -523,7 +523,7 @@ FavoriteHubEntry* FavoriteManager::getFavoriteHubEntry(const string& aServer) {
 	return NULL;
 }
 
-bool FavoriteManager::hasSlot(const User::Ptr& aUser) const { 
+bool FavoriteManager::hasSlot(const User::Ptr& aUser) const {
 	Lock l(cs);
 	FavoriteMap::const_iterator i = users.find(aUser->getCID());
 	if(i == users.end())
@@ -531,7 +531,7 @@ bool FavoriteManager::hasSlot(const User::Ptr& aUser) const {
 	return i->second.isSet(FavoriteUser::FLAG_GRANTSLOT);
 }
 
-time_t FavoriteManager::getLastSeen(const User::Ptr& aUser) const { 
+time_t FavoriteManager::getLastSeen(const User::Ptr& aUser) const {
 	Lock l(cs);
 	FavoriteMap::const_iterator i = users.find(aUser->getCID());
 	if(i == users.end())
@@ -620,7 +620,7 @@ UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hu
 			bool hubAdc = hub.compare(0, 6, "adc://") == 0;
 			bool commandAdc = uc.getHub().compare(0, 6, "adc://") == 0;
 			if(hubAdc && commandAdc) {
-				if((uc.getHub().length() == 6) || 
+				if((uc.getHub().length() == 6) ||
 					(uc.getHub() == "adc://op" && isOp[j]) ||
 					(uc.getHub() == hub) )
 				{
@@ -628,7 +628,7 @@ UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hu
 					break;
 				}
 			} else if(!hubAdc && !commandAdc) {
-				if((uc.getHub().length() == 0) || 
+				if((uc.getHub().length() == 0) ||
 					(uc.getHub() == "op" && isOp[j]) ||
 					(uc.getHub() == hub) )
 				{
@@ -642,11 +642,11 @@ UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hu
 }
 
 // HttpConnectionListener
-void FavoriteManager::on(Data, HttpConnection*, const u_int8_t* buf, size_t len) throw() { 
+void FavoriteManager::on(Data, HttpConnection*, const u_int8_t* buf, size_t len) throw() {
 	downloadBuf.append((const char*)buf, len);
 }
 
-void FavoriteManager::on(Failed, HttpConnection*, const string& aLine) throw() { 
+void FavoriteManager::on(Failed, HttpConnection*, const string& aLine) throw() {
 	c->removeListener(this);
 	lastServer++;
 	running = false;
@@ -658,14 +658,14 @@ void FavoriteManager::on(Complete, HttpConnection*, const string& aLine) throw()
 	running = false;
 	fire(FavoriteManagerListener::DownloadFinished(), aLine);
 }
-void FavoriteManager::on(Redirected, HttpConnection*, const string& aLine) throw() { 
+void FavoriteManager::on(Redirected, HttpConnection*, const string& aLine) throw() {
 	fire(FavoriteManagerListener::DownloadStarting(), aLine);
 }
-void FavoriteManager::on(TypeNormal, HttpConnection*) throw() { 
-	listType = TYPE_NORMAL; 
+void FavoriteManager::on(TypeNormal, HttpConnection*) throw() {
+	listType = TYPE_NORMAL;
 }
-void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() { 
-	listType = TYPE_BZIP2; 
+void FavoriteManager::on(TypeBZ2, HttpConnection*) throw() {
+	listType = TYPE_BZIP2;
 }
 
 void FavoriteManager::on(UserUpdated, const OnlineUser& user) throw() {

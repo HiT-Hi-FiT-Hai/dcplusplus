@@ -68,7 +68,7 @@ void AppearancePage::write()
 LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::translate((HWND)(*this), texts);
-	
+
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
 

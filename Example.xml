@@ -551,6 +551,7 @@
 		<String Name="SocksFailed">The socks server failed establish a connection</String>
 		<String Name="SocksNeedsAuth">The socks server requires authentication</String>
 		<String Name="SocksSetupError">Failed to set up the socks server for UDP relay (check socks address and port)</String>
+		<String Name="SourceTooOld">Source client does not support TTH</String>
 		<String Name="SourceTooSlow">Source too slow</String>
 		<String Name="SourceType">Source Type</String>
 		<String Name="SpecifySearchString">Specify a search string</String>

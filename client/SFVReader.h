@@ -28,11 +28,11 @@
 class SFVReader {
 public:
 	/** @see load */
-	SFVReader(const string& aFileName) : crc32(0), crcFound(false) { load(aFileName); } 
+	SFVReader(const string& aFileName) : crc32(0), crcFound(false) { load(aFileName); }
 
 	/**
-	 * Search for a CRC32 file in all .sfv files in the directory of fileName. 
-	 * Each SFV file has a number of lines containing a filename and its CRC32 value 
+	 * Search for a CRC32 file in all .sfv files in the directory of fileName.
+	 * Each SFV file has a number of lines containing a filename and its CRC32 value
 	 * in the form:
 	 * filename.ext xxxxxxxx
 	 * where the x's represent the file's crc32 value. Lines starting with ';' are
@@ -43,14 +43,14 @@ public:
 
 	bool hasCRC() const throw() { return crcFound; }
 	u_int32_t getCRC() const throw() { return crc32; }
-	
+
 private:
 
 	u_int32_t crc32;
 	bool crcFound;
 
 	bool tryFile(const string& sfvFile, const string& fileName) throw(FileException);
-	
+
 };
 
 #endif // !defined(SFV_READER_H)

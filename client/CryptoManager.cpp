@@ -35,15 +35,15 @@
 #include <bzlib.h>
 #endif
 
-CryptoManager::CryptoManager() 
-:	
-	clientContext(SSL_CTX_new(TLSv1_client_method())), 
-	serverContext(SSL_CTX_new(TLSv1_server_method())), 
-	clientVerContext(SSL_CTX_new(TLSv1_client_method())), 
-	serverVerContext(SSL_CTX_new(TLSv1_server_method())), 
-	dh(DH_new()), 
-	certsLoaded(false), 
-	lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), 
+CryptoManager::CryptoManager()
+:
+	clientContext(SSL_CTX_new(TLSv1_client_method())),
+	serverContext(SSL_CTX_new(TLSv1_server_method())),
+	clientVerContext(SSL_CTX_new(TLSv1_client_method())),
+	serverVerContext(SSL_CTX_new(TLSv1_server_method())),
+	dh(DH_new()),
+	certsLoaded(false),
+	lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"),
 	pk("DCPLUSPLUS" VERSIONSTRING "ABCABC")
 {
 	static unsigned char dh512_p[] =
@@ -88,8 +88,8 @@ CryptoManager::~CryptoManager() {
 		DH_free(dh);
 }
 
-bool CryptoManager::TLSOk() const throw() { 
-	return BOOLSETTING(USE_TLS) && certsLoaded; 
+bool CryptoManager::TLSOk() const throw() {
+	return BOOLSETTING(USE_TLS) && certsLoaded;
 }
 
 void CryptoManager::generateCertificate() throw(CryptoException) {
@@ -113,7 +113,7 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
 
-	cmd = L"openssl.exe req -x509 -new -batch -days 3650 -key \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + 
+	cmd = L"openssl.exe req -x509 -new -batch -days 3650 -key \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) +
 		L"\" -out \"" + Text::utf8ToWide(SETTING(TLS_CERTIFICATE_FILE)) + L"\" -subj \"/CN=" +
 		Text::utf8ToWide(ClientManager::getInstance()->getMyCID().toBase32()) + L"\"";
 
@@ -248,7 +248,7 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 	// but we'll have to do multiple passes...
 	size_t bufsize = 2*sz;
 	AutoArray<char> buf(bufsize);
-	
+
 	bs.avail_in = sz;
 	bs.avail_out = bufsize;
 	bs.next_in = (char*)(const_cast<u_int8_t*>(is));
@@ -257,33 +257,33 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 	int err;
 
 	os.clear();
-	
-	while((err = BZ2_bzDecompress(&bs)) == BZ_OK) { 
-		if (bs.avail_in == 0 && bs.avail_out > 0) { // error: BZ_UNEXPECTED_EOF 
-			BZ2_bzDecompressEnd(&bs); 
-			throw CryptoException(STRING(DECOMPRESSION_ERROR)); 
-		} 
-		os.append(buf, bufsize-bs.avail_out); 
-		bs.avail_out = bufsize; 
-		bs.next_out = buf; 
-	} 
+
+	while((err = BZ2_bzDecompress(&bs)) == BZ_OK) {
+		if (bs.avail_in == 0 && bs.avail_out > 0) { // error: BZ_UNEXPECTED_EOF
+			BZ2_bzDecompressEnd(&bs);
+			throw CryptoException(STRING(DECOMPRESSION_ERROR));
+		}
+		os.append(buf, bufsize-bs.avail_out);
+		bs.avail_out = bufsize;
+		bs.next_out = buf;
+	}
 
 	if(err == BZ_STREAM_END)
 		os.append(buf, bufsize-bs.avail_out);
-	
+
 	BZ2_bzDecompressEnd(&bs);
 
 	if(err < 0) {
 		// This was a real error
-		throw CryptoException(STRING(DECOMPRESSION_ERROR));	
+		throw CryptoException(STRING(DECOMPRESSION_ERROR));
 	}
 }
 
 string CryptoManager::keySubst(const u_int8_t* aKey, size_t len, size_t n) {
 	AutoArray<u_int8_t> temp(len + n * 10);
-	
+
 	size_t j=0;
-	
+
 	for(size_t i = 0; i<len; i++) {
 		if(isExtra(aKey[i])) {
 			temp[j++] = '/'; temp[j++] = '%'; temp[j++] = 'D';
@@ -308,14 +308,14 @@ string CryptoManager::makeKey(const string& aLock) {
 	if(aLock.size() < 3)
 		return Util::emptyString;
 
-    AutoArray<u_int8_t> temp(aLock.length());
+	AutoArray<u_int8_t> temp(aLock.length());
 	u_int8_t v1;
 	size_t extra=0;
-	
+
 	v1 = (u_int8_t)(aLock[0]^5);
 	v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4)) & 0xff);
 	temp[0] = v1;
-	
+
 	string::size_type i;
 
 	for(i = 1; i<aLock.length(); i++) {
@@ -325,114 +325,13 @@ string CryptoManager::makeKey(const string& aLock) {
 		if(isExtra(temp[i]))
 			extra++;
 	}
-	
+
 	temp[0] = (u_int8_t)(temp[0] ^ temp[aLock.length()-1]);
-	
+
 	if(isExtra(temp[0])) {
 		extra++;
 	}
-	
+
 	return keySubst(temp, aLock.length(), extra);
 }
 
-void CryptoManager::decodeHuffman(const u_int8_t* is, string& os, const size_t len) throw(CryptoException) {
-//	BitInputStream bis;
-	int pos = 0;
-
-	if(len < 11 || is[pos] != 'H' || is[pos+1] != 'E' || !((is[pos+2] == '3') || (is[pos+2] == '0'))) {
-		throw CryptoException(STRING(DECOMPRESSION_ERROR));
-	}
-	pos+=5;
-
-	int size;
-	size = *(int*)&is[pos];
-
-	pos+=4;
-
-	dcdebug("Size: %d\n", size);
-	
-	unsigned short treeSize;
-	treeSize = *(unsigned short*)&is[pos];
-
-	pos+=2;
-
-	if(len < (size_t)(11 + treeSize * 2)) 
-		throw CryptoException(STRING(DECOMPRESSION_ERROR));
-	Leaf** leaves = new Leaf*[treeSize];
-
-	int i;
-	for(i=0; i<treeSize; i++) {
-		int chr =  is[pos++];
-		int bits = is[pos++];
-		leaves[i] = new Leaf(chr, bits);
-	}
-
-	BitInputStream bis(is, pos, len);
-
-	DecNode* root = new DecNode();
-
-	for(i=0; i<treeSize; i++) {
-		DecNode* node = root;
-		for(int j=0; j<leaves[i]->len; j++) {
-			try {
-				if(bis.get()) {
-					if(node->right == NULL)
-						node->right = new DecNode();
-
-					node = node->right;
-				} else {
-					if(node->left == NULL)
-						node->left = new DecNode();
-
-					node = node->left;
-				}
-			} catch(const BitStreamException&) {
-				throw CryptoException(STRING(DECOMPRESSION_ERROR));
-			}
-		}
-		node->chr = leaves[i]->chr;
-	}
-	
-	bis.skipToByte();
-	
-	// We know the size, so no need to use strange STL stuff...
-	AutoArray<char> buf(size+1);
-
-	pos = 0;
-	for(i=0; i<size; i++) {
-		DecNode* node = root;
-		while(node->chr == -1) {
-			try {
-				if(bis.get()) {
-					node = node->right;
-				} else {
-					node = node->left;
-				}
-			} catch(const BitStreamException&) {
-				throw CryptoException(STRING(DECOMPRESSION_ERROR));
-			}
-
-			if(node == NULL) {
-				for(i=0; i<treeSize; i++) {
-					delete leaves[i];
-				}
-				
-				delete[] leaves;
-				delete root;
-
-				dcdebug("Bad node found!!!\n");
-				throw CryptoException(STRING(DECOMPRESSION_ERROR));
-			}
-		}
-		buf[pos++] = (u_int8_t)node->chr;
-	}
-	buf[pos] = 0;
-	os.assign(buf, size);
-
-	for(i=0; i<treeSize; i++) {
-		delete leaves[i];
-	}
-	
-	delete[] leaves;
-	delete root;
-}

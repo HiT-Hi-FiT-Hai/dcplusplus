@@ -38,18 +38,18 @@ public:
 	virtual ~FinishedULFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
-		
+
 private:
 
 	virtual void on(AddedUl, FinishedItem* entry) throw() {
 		PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (WPARAM)entry);
 	}
-	virtual void on(RemovedUl, FinishedItem* entry) throw() { 
+	virtual void on(RemovedUl, FinishedItem* entry) throw() {
 		totalBytes -= entry->getChunkSize();
 		totalTime -= entry->getMilliSeconds();
 		PostMessage(WM_SPEAKER, SPEAK_REMOVE);
 	}
-	virtual void on(RemovedAllUl) throw() { 
+	virtual void on(RemovedAllUl) throw() {
 		PostMessage(WM_SPEAKER, SPEAK_REMOVE_ALL);
 		totalBytes = 0;
 		totalTime = 0;

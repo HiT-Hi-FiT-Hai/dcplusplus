@@ -28,7 +28,7 @@
 
 #ifdef _WIN32
 // Berkely constants converted to the windows equivs...
-#	define EADDRNOTAVAIL           WSAEADDRNOTAVAIL
+#	define EADDRNOTAVAIL			WSAEADDRNOTAVAIL
 
 typedef int socklen_t;
 typedef SOCKET socket_t;
@@ -55,7 +55,7 @@ public:
 #else //_DEBUG
 	SocketException(const string& aError) throw() : Exception(aError) { }
 #endif // _DEBUG
-	
+
 	SocketException(int aError) throw();
 	virtual ~SocketException() throw() { }
 private:
@@ -113,7 +113,7 @@ public:
 	void disconnect() throw();
 
 	/**
-	 * Reads zero to aBufLen characters from this socket, 
+	 * Reads zero to aBufLen characters from this socket,
 	 * @param aBuffer A buffer to store the data in.
 	 * @param aBufLen Size of the buffer.
 	 * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
@@ -121,29 +121,29 @@ public:
 	 */
 	virtual int read(void* aBuffer, int aBufLen) throw(SocketException);
 	/**
-	 * Reads zero to aBufLen characters from this socket, 
+	 * Reads zero to aBufLen characters from this socket,
 	 * @param aBuffer A buffer to store the data in.
 	 * @param aBufLen Size of the buffer.
 	 * @param aIP Remote IP address
 	 * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
 	 * @throw SocketException On any failure.
-	 */	
+	 */
 	virtual int read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException);
 	/**
 	 * Reads data until aBufLen bytes have been read or an error occurs.
-	 * If the socket is closed, or the timeout is reached, the number of bytes read 
+	 * If the socket is closed, or the timeout is reached, the number of bytes read
 	 * actually read is returned.
 	 * On exception, an unspecified amount of bytes might have already been read.
 	 */
 	int readAll(void* aBuffer, int aBufLen, u_int32_t timeout = 0) throw(SocketException);
-	
+
 	virtual int wait(u_int32_t millis, int waitFor) throw(SocketException);
 	bool isConnected() { return connected; }
-	
+
 	static string resolve(const string& aDns);
 	static int64_t getTotalDown() { return stats.totalDown; }
 	static int64_t getTotalUp() { return stats.totalUp; }
-	
+
 #ifdef _WIN32
 	void setBlocking(bool block) throw() {
 		u_long b = block ? 0 : 1;
@@ -207,45 +207,45 @@ private:
 	void socksAuth(u_int32_t timeout) throw(SocketException);
 
 #ifdef _WIN32
-	static int getLastError() {  return ::WSAGetLastError(); }
-	static int checksocket(socket_t ret) { 
-		if(ret == (socket_t) SOCKET_ERROR) { 
-			throw SocketException(getLastError()); 
-		} 
+	static int getLastError() { return ::WSAGetLastError(); }
+	static int checksocket(socket_t ret) {
+		if(ret == (socket_t) SOCKET_ERROR) {
+			throw SocketException(getLastError());
+		}
 		return ret;
 	}
-	static int check(int ret, bool blockOk = false) { 
+	static int check(int ret, bool blockOk = false) {
 		if(ret == SOCKET_ERROR) {
 			int error = getLastError();
 			if(blockOk && error == WSAEWOULDBLOCK) {
 				return -1;
 			} else {
-				throw SocketException(error); 
+				throw SocketException(error);
 			}
-		} 
+		}
 		return ret;
 	}
 #else
 	static int getLastError() { return errno; }
-	static int checksocket(int ret) { 
-		if(ret < 0) { 
-			throw SocketException(getLastError()); 
-		} 
+	static int checksocket(int ret) {
+		if(ret < 0) {
+			throw SocketException(getLastError());
+		}
 		return ret;
 	}
-	static int check(int ret, bool blockOk = false) { 
+	static int check(int ret, bool blockOk = false) {
 		if(ret == -1) {
 			int error = getLastError();
 			if(blockOk && (error == EWOULDBLOCK || error == ENOBUFS || error == EINPROGRESS || error == EAGAIN) ) {
 				return -1;
 			} else {
-				throw SocketException(error); 
+				throw SocketException(error);
 			}
-		} 
+		}
 		return ret;
 	}
 #endif
-	
+
 };
 
 #endif // !defined(SOCKET_H)

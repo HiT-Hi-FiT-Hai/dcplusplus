@@ -32,7 +32,7 @@ PropPage::TextItem NetworkPage::texts[] = {
 	{ IDC_FIREWALL_NAT, ResourceManager::SETTINGS_FIREWALL_NAT },
 	{ IDC_FIREWALL_PASSIVE, ResourceManager::SETTINGS_FIREWALL_PASSIVE },
 	{ IDC_OVERRIDE, ResourceManager::SETTINGS_OVERRIDE },
-	{ IDC_SOCKS5, ResourceManager::SETTINGS_SOCKS5 }, 
+	{ IDC_SOCKS5, ResourceManager::SETTINGS_SOCKS5 },
 	{ IDC_SETTINGS_PORTS, ResourceManager::SETTINGS_PORTS },
 	{ IDC_SETTINGS_IP, ResourceManager::SETTINGS_EXTERNAL_IP },
 	{ IDC_SETTINGS_PORT_TCP, ResourceManager::SETTINGS_TCP_PORT },
@@ -49,9 +49,9 @@ PropPage::TextItem NetworkPage::texts[] = {
 };
 
 PropPage::Item NetworkPage::items[] = {
-	{ IDC_EXTERNAL_IP,	SettingsManager::EXTERNAL_IP,	PropPage::T_STR }, 
-	{ IDC_PORT_TCP,		SettingsManager::TCP_PORT,		PropPage::T_INT }, 
-	{ IDC_PORT_UDP,		SettingsManager::UDP_PORT,		PropPage::T_INT }, 
+	{ IDC_EXTERNAL_IP,	SettingsManager::EXTERNAL_IP,	PropPage::T_STR },
+	{ IDC_PORT_TCP,		SettingsManager::TCP_PORT,		PropPage::T_INT },
+	{ IDC_PORT_UDP,		SettingsManager::UDP_PORT,		PropPage::T_INT },
 	{ IDC_PORT_TLS,		SettingsManager::TLS_PORT,		PropPage::T_INT },
 	{ IDC_OVERRIDE,		SettingsManager::NO_IP_OVERRIDE, PropPage::T_BOOL },
 	{ IDC_SOCKS_SERVER, SettingsManager::SOCKS_SERVER,	PropPage::T_STR },
@@ -80,7 +80,7 @@ void NetworkPage::write()
 		x.erase(i, 1);
 
 	SetDlgItemText(IDC_SERVER, x.c_str());
-	
+
 	PropPage::write((HWND)(*this), items);
 
 	// Set connection active/passive
@@ -98,7 +98,7 @@ void NetworkPage::write()
 	}
 
 	ct = SettingsManager::OUTGOING_DIRECT;
-	
+
 	if(IsDlgButtonChecked(IDC_SOCKS5))
 		ct = SettingsManager::OUTGOING_SOCKS5;
 
@@ -112,8 +112,8 @@ void NetworkPage::write()
 LRESULT NetworkPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::translate((HWND)(*this), texts);
-	
-	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1  //WinXP & WinSvr2003
+
+	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 //WinXP & WinSvr2003
 		|| WinUtil::getOsMajor() >= 6 )) //Vista
 	{
 		::EnableWindow(GetDlgItem(IDC_FIREWALL_UPNP), FALSE);

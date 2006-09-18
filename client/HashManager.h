@@ -41,7 +41,7 @@ class CRC32Filter;
 class HashManagerListener {
 public:
 	virtual ~HashManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> TTHDone;
 
@@ -52,7 +52,7 @@ class HashLoader;
 class FileException;
 
 class HashManager : public Singleton<HashManager>, public Speaker<HashManagerListener>,
-	private TimerManagerListener 
+	private TimerManagerListener
 {
 public:
 
@@ -168,7 +168,7 @@ private:
 	private:
 		// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless.
 		// map because it's sorted (to avoid random hash order that would create quite strange shares while hashing)
-		typedef map<string, int64_t> WorkMap;	
+		typedef map<string, int64_t> WorkMap;
 		typedef WorkMap::iterator WorkIter;
 
 		WorkMap w;

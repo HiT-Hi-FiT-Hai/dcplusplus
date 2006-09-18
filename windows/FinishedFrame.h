@@ -42,12 +42,12 @@ private:
 	virtual void on(AddedDl, FinishedItem* entry) throw() {
 		PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (WPARAM)entry);
 	}
-	virtual void on(RemovedDl, FinishedItem* entry) throw() { 
+	virtual void on(RemovedDl, FinishedItem* entry) throw() {
 		totalBytes -= entry->getChunkSize();
 		totalTime -= entry->getMilliSeconds();
 		PostMessage(WM_SPEAKER, SPEAK_REMOVE);
 	}
-	virtual void on(RemovedAllDl) throw() { 
+	virtual void on(RemovedAllDl) throw() {
 		PostMessage(WM_SPEAKER, SPEAK_REMOVE_ALL);
 		totalBytes = 0;
 		totalTime = 0;

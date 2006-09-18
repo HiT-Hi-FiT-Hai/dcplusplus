@@ -31,11 +31,11 @@
 class Client;
 class AdcCommand;
 class ClientManager;
-class ClientListener  
+class ClientListener
 {
 public:
 	virtual ~ClientListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Connecting;
 	typedef X<1> Connected;
@@ -93,7 +93,7 @@ public:
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) = 0;
 	virtual void password(const string& pwd) = 0;
 	virtual void info(bool force) = 0;
-    
+
 	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
 

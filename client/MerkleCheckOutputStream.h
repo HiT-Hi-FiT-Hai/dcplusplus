@@ -78,7 +78,7 @@ public:
 		if(pos < len) {
 			dcassert(bufPos == 0);
 			size_t left = len - pos;
-			size_t part = left - (left %  TreeType::BASE_BLOCK_SIZE);
+			size_t part = left - (left % TreeType::BASE_BLOCK_SIZE);
 			if(part > 0) {
 				cur.update(xb + pos, part);
 				pos += part;
@@ -107,7 +107,7 @@ private:
 	void checkTrees() throw(FileException) {
 		while(cur.getLeaves().size() > verified) {
 			if(cur.getLeaves().size() > real.getLeaves().size() ||
-				!(cur.getLeaves()[verified] == real.getLeaves()[verified])) 
+				!(cur.getLeaves()[verified] == real.getLeaves()[verified]))
 			{
 				throw FileException(STRING(TTH_INCONSISTENCY));
 			}

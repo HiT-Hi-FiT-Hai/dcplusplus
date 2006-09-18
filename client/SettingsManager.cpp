@@ -34,46 +34,46 @@ const string SettingsManager::settingTags[] =
 {
 	// Strings
 	"Nick", "UploadSpeed", "Description", "DownloadDirectory", "EMail", "ExternalIp",
-	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
-	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
-	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
+	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths",
+	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths",
+	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths",
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
-	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
+	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",
 	"TempDownloadDirectory", "BindAddress", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
-	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
-	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
-	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
+	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths",
+	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat",
+	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem",
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
 	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath",
-	"SENTRY", 
+	"SENTRY",
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"AutoSearch", "TimeStamps", "ConfirmExit", "PopupHubPms", "PopupBotPms", "IgnoreHubPms", "IgnoreBotPms",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
+	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState",
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows",
 	"MaxCompression", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
-	"SkipZeroByte", "AdlsBreakOnFirst", 
+	"SkipZeroByte", "AdlsBreakOnFirst",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
-	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
-	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize", "MaxFilelistSize", 
-	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
-	"AutoDropSpeed", "AutoDropInterval", "AutoDropElapsed", "AutoDropInactivity", "AutoDropMinSources", "AutoDropFilesize", 
-	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect", 
+	"AddFinishedInstantly", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval",
+	"OpenNewWindow", "UDPPort", "ShowLastLinesLog", "ConfirmItemRemoval",
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize", "MaxFilelistSize",
+	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio",
+	"AutoDropSpeed", "AutoDropInterval", "AutoDropElapsed", "AutoDropInactivity", "AutoDropMinSources", "AutoDropFilesize",
+	"AutoDropAll", "AutoDropFilelists", "AutoDropDisconnect",
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad", "OutgoingConnections",
-	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue", 
-	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles", 
+	"NoIpOverride", "SearchOnlyFreeSlots", "LastSearchType", "BoldFinishedDownloads", "BoldFinishedUploads", "BoldQueue",
+	"BoldHub", "BoldPm", "BoldSearch", "SocketInBuffer", "SocketOutBuffer", "OnlyDlTthFiles",
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
-	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches", 
+	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
 	"TLSPort", "FastHash",
 	"SENTRY",
@@ -84,7 +84,7 @@ const string SettingsManager::settingTags[] =
 
 SettingsManager::SettingsManager()
 {
-	
+
 	connectionSpeeds.push_back("0.005");
 	connectionSpeeds.push_back("0.01");
 	connectionSpeeds.push_back("0.02");
@@ -111,9 +111,9 @@ SettingsManager::SettingsManager()
 		int64Defaults[k] = 0;
 		int64Settings[k] = 0;
 	}
-	
-	setDefault(DOWNLOAD_DIRECTORY,  Util::getConfigPath() + "Downloads" PATH_SEPARATOR_STR);
-	setDefault(TEMP_DOWNLOAD_DIRECTORY,  Util::getConfigPath() + "Incomplete" PATH_SEPARATOR_STR);
+
+	setDefault(DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Downloads" PATH_SEPARATOR_STR);
+	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getConfigPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
 	setDefault(TCP_PORT, 0);
 	setDefault(UDP_PORT, 0);
@@ -138,7 +138,7 @@ SettingsManager::SettingsManager()
 	setDefault(HUBLIST_SERVERS, "http://home.bandicoot.nl/adchublist.xml.bz2;http://www.hublist.org/PublicHubList.xml.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
-	setDefault(LOG_DIRECTORY,  Util::getConfigPath() + "Logs" PATH_SEPARATOR_STR);
+	setDefault(LOG_DIRECTORY, Util::getConfigPath() + "Logs" PATH_SEPARATOR_STR);
 	setDefault(LOG_UPLOADS, false);
 	setDefault(LOG_DOWNLOADS, false);
 	setDefault(LOG_PRIVATE_CHAT, false);
@@ -208,7 +208,6 @@ SettingsManager::SettingsManager()
 	setDefault(CONFIRM_HUB_REMOVAL, false);
 	setDefault(USE_CTRL_FOR_LINE_HISTORY, true);
 	setDefault(JOIN_OPEN_NEW_WINDOW, false);
-	setDefault(SEARCH_ONLY_TTH, false);
 	setDefault(SHOW_LAST_LINES_LOG, 0);
 	setDefault(CONFIRM_ITEM_REMOVAL, true);
 	setDefault(ADVANCED_RESUME, true);
@@ -249,8 +248,8 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_WAITING_USERS, false);
 	setDefault(OPEN_SYSTEM_LOG, true);
 	setDefault(TLS_TRUSTED_CERTIFICATES_PATH, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR);
-	setDefault(TLS_PRIVATE_KEY_FILE,  Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.key");
-	setDefault(TLS_CERTIFICATE_FILE,  Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.crt");
+	setDefault(TLS_PRIVATE_KEY_FILE, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.key");
+	setDefault(TLS_CERTIFICATE_FILE, Util::getConfigPath() + "Certificates" PATH_SEPARATOR_STR "client.crt");
 	setDefault(BOLD_FINISHED_DOWNLOADS, true);
 	setDefault(BOLD_FINISHED_UPLOADS, true);
 	setDefault(BOLD_QUEUE, true);
@@ -289,24 +288,24 @@ void SettingsManager::load(string const& aFileName)
 {
 	try {
 		SimpleXML xml;
-		
+
 		xml.fromXML(File(aFileName, File::READ, File::OPEN).read());
-		
+
 		xml.resetCurrentChild();
-		
+
 		xml.stepIn();
-		
+
 		if(xml.findChild("Settings"))
 		{
 			xml.stepIn();
 
 			int i;
-			
+
 			for(i=STR_FIRST; i<STR_LAST; i++)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(StrSetting(i), xml.getChildData());
 				xml.resetCurrentChild();
@@ -315,7 +314,7 @@ void SettingsManager::load(string const& aFileName)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(IntSetting(i), Util::toInt(xml.getChildData()));
 				xml.resetCurrentChild();
@@ -324,12 +323,12 @@ void SettingsManager::load(string const& aFileName)
 			{
 				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
-				
+
 				if(xml.findChild(attr))
 					set(Int64Setting(i), Util::toInt64(xml.getChildData()));
 				xml.resetCurrentChild();
 			}
-			
+
 			xml.stepOut();
 		}
 
@@ -371,7 +370,7 @@ void SettingsManager::load(string const& aFileName)
 		setDefault(UDP_PORT, SETTING(TCP_PORT));
 
 		File::ensureDirectory(SETTING(TLS_TRUSTED_CERTIFICATES_PATH));
-		
+
 		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();
@@ -392,7 +391,7 @@ void SettingsManager::save(string const& aFileName) {
 
 	int i;
 	string type("type"), curType("string");
-	
+
 	for(i=STR_FIRST; i<STR_LAST; i++)
 	{
 		if(i == CONFIG_VERSION) {
@@ -422,7 +421,7 @@ void SettingsManager::save(string const& aFileName) {
 		}
 	}
 	xml.stepOut();
-	
+
 	fire(SettingsManagerListener::Save(), &xml);
 
 	try {

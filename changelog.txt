@@ -1,4 +1,12 @@
-﻿-- 0.695 2006-09-10 --
+﻿-- --
+* Fixed a possible deadlock
+* [bug 1058] Removed some whitespace (big thanks to pothead)
+* Removed the possibility to download files without TTH
+* Removed the possibility to read *.DcLst files (no TTH, no i18n support)
+* Files with no TTH no longer show up in search and directory listings
+* Fixed support for uncompressed files.xml
+
+-- 0.695 2006-09-10 --
 * PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo
   without connection type
 * [bug 125] Fixed out-of-order PM/quit

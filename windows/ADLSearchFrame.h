@@ -88,13 +88,13 @@ public:
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	
+
 	// Update colors
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		HWND hWnd = (HWND)lParam;
 		HDC hDC   = (HDC)wParam;
-		if(hWnd == ctrlList.m_hWnd) 
+		if(hWnd == ctrlList.m_hWnd)
 		{
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);
@@ -106,7 +106,7 @@ public:
 
 	// Update control layouts
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+
 private:
 
 	// Communication with manager
@@ -125,7 +125,7 @@ private:
 	CMenu contextMenu;
 
 	// Column order
-	enum 
+	enum
 	{
 		COLUMN_FIRST = 0,
 		COLUMN_ACTIVE_SEARCH_STRING = COLUMN_FIRST,

@@ -32,7 +32,7 @@ BZFilter::BZFilter() {
 }
 
 BZFilter::~BZFilter() {
-	dcdebug("BZFilter end, %u/%u = %.04f\n", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1)); 
+	dcdebug("BZFilter end, %u/%u = %.04f\n", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1));
 	BZ2_bzCompressEnd(&zs);
 }
 
@@ -67,13 +67,13 @@ bool BZFilter::operator()(const void* in, size_t& insize, void* out, size_t& out
 UnBZFilter::UnBZFilter() {
 	memset(&zs, 0, sizeof(zs));
 
-	if(BZ2_bzDecompressInit(&zs, 0, 0) != BZ_OK) 
+	if(BZ2_bzDecompressInit(&zs, 0, 0) != BZ_OK)
 		throw Exception(STRING(DECOMPRESSION_ERROR));
 
 }
 
 UnBZFilter::~UnBZFilter() {
-	dcdebug("UnBZFilter end, %u/%u = %.04f\n", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1)); 
+	dcdebug("UnBZFilter end, %u/%u = %.04f\n", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1));
 	BZ2_bzDecompressEnd(&zs);
 }
 

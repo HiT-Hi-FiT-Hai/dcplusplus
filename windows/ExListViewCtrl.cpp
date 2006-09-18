@@ -82,7 +82,7 @@ int ExListViewCtrl::insert(TStringList& aList, int iImage, LPARAM lParam) {
 	a.iIndent = 0;
 	a.pszText = const_cast<TCHAR*>(sortColumn == -1 ? aList[0].c_str() : aList[sortColumn].c_str());
 	a.cchTextMax = sortColumn == -1 ? aList[0].size() : aList[sortColumn].size();
-	
+
 	if(sortColumn == -1) {
 		loc = count;
 	} else if(count == 0) {
@@ -92,14 +92,14 @@ int ExListViewCtrl::insert(TStringList& aList, int iImage, LPARAM lParam) {
 		tstring& b = aList[sortColumn];
 		int c = _tstoi(b.c_str());
 		double f = _tstof(b.c_str());
-		LPARAM data = NULL;			
+		LPARAM data = NULL;
 		int low = 0;
 		int high = count-1;
 		int comp = 0;
 		while(low <= high)
 		{
 			loc = (low + high)/2;
-			
+
 			// This is a trick, so that if fun() returns something bigger than one, use the
 			// internal default sort functions
 			comp = sortType;
@@ -107,21 +107,21 @@ int ExListViewCtrl::insert(TStringList& aList, int iImage, LPARAM lParam) {
 				data = GetItemData(loc);
 				comp = fun(lParam, data);
 			}
-			
+
 			if(comp == SORT_STRING) {
 				GetItemText(loc, sortColumn, buf, 128);
 				comp = compare(b, tstring(buf));
 			} else if(comp == SORT_STRING_NOCASE) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp =  Util::stricmp(b.c_str(), buf);
+				comp = Util::stricmp(b.c_str(), buf);
 			} else if(comp == SORT_INT) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp = compare(c, _tstoi(buf)); 
+				comp = compare(c, _tstoi(buf));
 			} else if(comp == SORT_FLOAT) {
 				GetItemText(loc, sortColumn, buf, 128);
 				comp = compare(f, _tstof(buf));
 			}
-			
+
 			if(!ascending)
 				comp = -comp;
 
@@ -131,26 +131,26 @@ int ExListViewCtrl::insert(TStringList& aList, int iImage, LPARAM lParam) {
 				low = loc + 1;
 			} else {
 				break;
-			} 
+			}
 		}
 
 		comp = sortType;
 		if(comp == SORT_FUNC) {
 			comp = fun(lParam, data);
-		} 
+		}
 		if(comp == SORT_STRING) {
 			comp = compare(b, tstring(buf));
 		} else if(comp == SORT_STRING_NOCASE) {
-			comp =  Util::stricmp(b.c_str(), buf);
+			comp = Util::stricmp(b.c_str(), buf);
 		} else if(comp == SORT_INT) {
-			comp = compare(c, _tstoi(buf)); 
+			comp = compare(c, _tstoi(buf));
 		} else if(comp == SORT_FLOAT) {
 			comp = compare(f, _tstof(buf));
 		}
 
 		if(!ascending)
 			comp = -comp;
-		
+
 		if(comp > 0)
 			loc++;
 	}
@@ -176,5 +176,5 @@ int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lPa
 		SetItemText(i, k, j->c_str());
 	}
 	return i;
-	
+
 }

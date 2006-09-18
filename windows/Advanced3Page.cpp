@@ -36,9 +36,9 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, ResourceManager::SETTINGS_MAX_HASH_SPEED },
 	{ IDC_SETTINGS_MBS, ResourceManager::MiBPS },
-	{ IDC_SETTINGS_PM_HISTORY, ResourceManager::SETTINGS_PM_HISTORY }, 
+	{ IDC_SETTINGS_PM_HISTORY, ResourceManager::SETTINGS_PM_HISTORY },
 	{ IDC_SETTINGS_SEARCH_HISTORY, ResourceManager::SETTINGS_SEARCH_HISTORY },
-	{ IDC_SETTINGS_TEXT_MINISLOT, ResourceManager::SETTINGS_TEXT_MINISLOT }, 
+	{ IDC_SETTINGS_TEXT_MINISLOT, ResourceManager::SETTINGS_TEXT_MINISLOT },
 	{ IDC_SETTINGS_KB2, ResourceManager::KiB },
 	{ IDC_SETTINGS_BIND_ADDRESS, ResourceManager::SETTINGS_BIND_ADDRESS },
 	{ IDC_SETTINGS_MAX_FILELIST_SIZE, ResourceManager::SETTINGS_MAX_FILELIST_SIZE },
@@ -49,7 +49,7 @@ PropPage::TextItem Advanced3Page::texts[] = {
 };
 
 PropPage::Item Advanced3Page::items[] = {
-	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT }, 
+	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT },
 	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
 	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },
 	{ IDC_MAX_HASH_SPEED, SettingsManager::MAX_HASH_SPEED, PropPage::T_INT },

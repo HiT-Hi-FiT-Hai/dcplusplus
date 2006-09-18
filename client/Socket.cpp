@@ -99,14 +99,14 @@ void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
 
 void Socket::bind(short aPort, const string& aIp /* = 0.0.0.0 */) throw (SocketException){
 	sockaddr_in sock_addr;
-		
+
 	sock_addr.sin_family = AF_INET;
 	sock_addr.sin_port = htons(aPort);
 	sock_addr.sin_addr.s_addr = inet_addr(aIp.c_str());
 	if(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
 		dcdebug("Bind failed, retrying with INADDR_ANY: %s\n", SocketException(getLastError()).getError().c_str());
 		sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	    check(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
+		check(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
 	}
 }
 
@@ -116,7 +116,7 @@ void Socket::listen() throw(SocketException) {
 }
 
 void Socket::connect(const string& aAddr, short aPort) throw(SocketException) {
-	sockaddr_in  serv_addr;
+	sockaddr_in serv_addr;
 
 	if(sock == INVALID_SOCKET) {
 		create(TYPE_TCP);
@@ -125,7 +125,7 @@ void Socket::connect(const string& aAddr, short aPort) throw(SocketException) {
 	string addr = resolve(aAddr);
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_port = htons(aPort);
+	serv_addr.sin_port = htons(aPort);
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = inet_addr(addr.c_str());
 
@@ -138,7 +138,7 @@ namespace {
 	inline u_int32_t timeLeft(u_int32_t start, u_int32_t timeout) {
 		if(timeout == 0) {
 			return 0;
-		}			
+		}
 		u_int32_t now = GET_TICK();
 		if(start + timeout < now)
 			throw SocketException(STRING(CONNECTION_TIMEOUT));
@@ -229,7 +229,7 @@ void Socket::socksAuth(u_int32_t timeout) throw(SocketException) {
 
 		if(connStr[1] != 0) {
 			throw SocketException(STRING(SOCKS_NEEDS_AUTH));
-		}				
+		}
 	} else {
 		// We try the username and password auth type (no, we don't support gssapi)
 
@@ -361,7 +361,7 @@ int Socket::write(const void* aBuffer, int aLen) throw(SocketException) {
 * @throw SocketExcpetion Send failed.
 */
 void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int aLen, bool proxy) throw(SocketException) {
-	if(aLen <= 0) 
+	if(aLen <= 0)
 		return;
 
 	u_int8_t* buf = (u_int8_t*)aBuffer;
@@ -387,7 +387,7 @@ void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int 
 		serv_addr.sin_port = htons(udpPort);
 		serv_addr.sin_family = AF_INET;
 		serv_addr.sin_addr.s_addr = inet_addr(udpServer.c_str());
-		
+
 		string s = BOOLSETTING(SOCKS_RESOLVE) ? resolve(ip) : ip;
 
 		vector<u_int8_t> connStr;
@@ -395,7 +395,7 @@ void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int 
 		connStr.push_back(0);		// Reserved
 		connStr.push_back(0);		// Reserved
 		connStr.push_back(0);		// Fragment number, always 0 in our case...
-		
+
 		if(BOOLSETTING(SOCKS_RESOLVE)) {
 			connStr.push_back(3);
 			connStr.push_back((u_int8_t)s.size());
@@ -414,7 +414,7 @@ void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int 
 		serv_addr.sin_port = htons(aPort);
 		serv_addr.sin_family = AF_INET;
 		serv_addr.sin_addr.s_addr = inet_addr(resolve(aAddr).c_str());
-		
+
 		stats.totalUp += check(::sendto(sock, (const char*)aBuffer, (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr)));
 	}
 }
@@ -432,7 +432,7 @@ int Socket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 	fd_set rfd, wfd, efd;
 	fd_set *rfdp = NULL, *wfdp = NULL;
 	tv.tv_sec = millis/1000;
-	tv.tv_usec = (millis%1000)*1000; 
+	tv.tv_usec = (millis%1000)*1000;
 
 	if(waitFor & WAIT_CONNECT) {
 		dcassert(!(waitFor & WAIT_READ) && !(waitFor & WAIT_WRITE));
@@ -522,7 +522,7 @@ string Socket::getLocalIp() throw() {
 void Socket::socksUpdated() {
 	udpServer.clear();
 	udpPort = 0;
-	
+
 	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5) {
 		try {
 			Socket s;
@@ -537,9 +537,9 @@ void Socket::socksUpdated() {
 			connStr[3] = 1;			// Address type: IPv4;
 			*((long*)(&connStr[4])) = 0;		// No specific outgoing UDP address
 			*((u_int16_t*)(&connStr[8])) = 0;	// No specific port...
-			
+
 			s.writeAll(connStr, 10, SOCKS_TIMEOUT);
-			
+
 			// We assume we'll get a ipv4 address back...therefore, 10 bytes...if not, things
 			// will break, but hey...noone's perfect (and I'm tired...)...
 			if(s.readAll(connStr, 10, SOCKS_TIMEOUT) != 10) {
@@ -553,7 +553,7 @@ void Socket::socksUpdated() {
 			udpPort = (short)ntohs(*((u_int16_t*)(&connStr[8])));
 
 			in_addr serv_addr;
-			
+
 			memset(&serv_addr, 0, sizeof(serv_addr));
 			serv_addr.s_addr = *((long*)(&connStr[4]));
 			udpServer = inet_ntoa(serv_addr);

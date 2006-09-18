@@ -91,7 +91,7 @@
 
 #else // HAVE_HASH
 
-#define HASH_SET_X(key, hfunc, eq, order) 
+#define HASH_SET_X(key, hfunc, eq, order)
 # define HASH_SET set
 # define HASH_MAP map
 # define HASH_MAP_X(key, type, hfunc, eq, order) map<key, type, order >

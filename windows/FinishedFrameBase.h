@@ -64,7 +64,7 @@ public:
 		CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 		ctrlStatus.Attach(m_hWndStatusBar);
 
-		ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 			WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, id);
 		ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
@@ -193,18 +193,18 @@ public:
 	}
 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		if (reinterpret_cast<HWND>(wParam) == ctrlList && ctrlList.GetSelectedCount() > 0) { 
+		if (reinterpret_cast<HWND>(wParam) == ctrlList && ctrlList.GetSelectedCount() > 0) {
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 			if(pt.x == -1 && pt.y == -1) {
 				WinUtil::getContextMenuPos(ctrlList, pt);
 			}
 
-			ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);			
-			return TRUE; 
+			ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			return TRUE;
 		}
 		bHandled = FALSE;
-		return FALSE; 
+		return FALSE;
 	}
 
 	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -275,7 +275,7 @@ public:
 
 		if(kd->wVKey == VK_DELETE) {
 			PostMessage(WM_COMMAND, IDC_REMOVE, 0);
-		} 
+		}
 		return 0;
 	}
 
@@ -357,7 +357,7 @@ int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FIL
 
 template <class T, int title, int id>
 int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH, 
+static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH,
 ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 

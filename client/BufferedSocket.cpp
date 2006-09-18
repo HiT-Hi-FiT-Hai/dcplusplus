@@ -32,7 +32,7 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw() : 
+BufferedSocket::BufferedSocket(char aSeparator) throw() :
 separator(aSeparator), mode(MODE_LINE), filterIn(NULL),
 dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false)
 {
@@ -167,9 +167,9 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		// This socket has been closed...
 		throw SocketException(STRING(CONNECTION_CLOSED));
 	}
-    size_t used;
+	size_t used;
 	string::size_type pos = 0;
-    // always uncompressed data
+	// always uncompressed data
 	string l;
 	int bufpos = 0, total = left;
 
@@ -177,7 +177,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		switch (mode) {
 			case MODE_ZPIPE:
 				if (filterIn != NULL){
-				    const int BufSize = 1024;
+					const int BufSize = 1024;
 					// Special to autodetect nmdc connections...
 					string::size_type pos = 0;
 					AutoArray<u_int8_t> buffer (BufSize);
@@ -228,7 +228,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 						break;
 					}
 				}
-				if (pos == string::npos) 
+				if (pos == string::npos)
 					left = 0;
 				line = l;
 				break;
@@ -268,7 +268,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize = max(sockSize, (size_t)64*1024);
-	
+
 	vector<u_int8_t> readBuf(bufSize);
 	vector<u_int8_t> writeBuf(bufSize);
 
@@ -411,19 +411,19 @@ bool BufferedSocket::checkEvents() {
 		switch(p.first) {
 			case SEND_DATA:
 				threadSendData(); break;
-			case SEND_FILE: 
+			case SEND_FILE:
 				threadSendFile(((SendFileInfo*)p.second)->stream); break;
-			case CONNECT: 
+			case CONNECT:
 				{
 					ConnectInfo* ci = (ConnectInfo*)p.second;
-					threadConnect(ci->addr, ci->port, ci->proxy); 
+					threadConnect(ci->addr, ci->port, ci->proxy);
 					break;
 				}
-			case DISCONNECT: 
-				if(isConnected()) 
-					fail(STRING(DISCONNECTED)); 
+			case DISCONNECT:
+				if(isConnected())
+					fail(STRING(DISCONNECTED));
 				break;
-			case SHUTDOWN: 
+			case SHUTDOWN:
 				return false;
 			case ACCEPTED:
 				break;
@@ -476,11 +476,11 @@ void BufferedSocket::fail(const string& aError) {
 	}
 }
 
-void BufferedSocket::shutdown() { 
+void BufferedSocket::shutdown() {
 	if(sock) {
-		Lock l(cs); 
-		disconnecting = true; 
-		addTask(SHUTDOWN, 0); 
+		Lock l(cs);
+		disconnecting = true;
+		addTask(SHUTDOWN, 0);
 	} else {
 		// Socket thread not running yet, disconnect...
 		delete this;

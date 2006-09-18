@@ -116,7 +116,7 @@ public:
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
 	void setType(char t) { type = t; }
-	
+
 	AdcCommand& setFeatures(const string& feat) { features = feat; return *this; }
 
 	StringList& getParameters() { return parameters; }
@@ -194,7 +194,7 @@ public:
 				C(SND);
 				C(SID);
 				C(CMD);
-			default: 
+			default:
 				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
 				break;
 #undef C

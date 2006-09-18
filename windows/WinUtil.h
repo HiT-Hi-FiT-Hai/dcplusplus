@@ -44,7 +44,7 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
 class UserInfoBase {
 public:
 	UserInfoBase(const User::Ptr& u) : user(u) { }
-	
+
 	void getList();
 	void browseList();
 	void matchQueue();
@@ -90,11 +90,11 @@ public:
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::pm);
 		return 0;
 	}
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::grant);
 		return 0;
 	}
-	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::removeAll);
 		return 0;
 	}
@@ -199,7 +199,7 @@ public:
 		TCHAR buf[MAX_PATH+1];
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
 		return Text::fromT(tstring(buf, x));
-	}	
+	}
 
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
@@ -245,7 +245,7 @@ public:
 	static int getTextWidth(const tstring& str, HDC dc) {
 		SIZE sz = { 0, 0 };
 		::GetTextExtentPoint32(dc, str.c_str(), str.length(), &sz);
-		return sz.cx;		
+		return sz.cx;
 	}
 
 	static int getTextHeight(HWND wnd, HFONT fnt) {
@@ -279,9 +279,9 @@ public:
 		}
 		lastDirs.push_back(dir);
 	}
-	
+
 	static tstring encodeFont(LOGFONT const& font);
-	
+
 	static tstring getHelpFile() {
 		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	}
@@ -290,9 +290,9 @@ public:
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
 	// Hash related
-	static void bitziLink(const TTHValue* /*aHash*/);
-	static void copyMagnet(const TTHValue* /*aHash*/, const tstring& /*aFile*/);
-	static void searchHash(const TTHValue* /*aHash*/);
+	static void bitziLink(const TTHValue& /*aHash*/);
+	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
+	static void searchHash(const TTHValue& /*aHash*/);
 
 	// URL related
 	static void registerDchubHandler();
@@ -320,7 +320,7 @@ public:
 	static int getDirMaskedIndex() { return dirMaskedIndex; }
 
 	static double toBytes(TCHAR* aSize);
-	
+
 	static int getOsMajor();
 	static int getOsMinor();
 
@@ -330,7 +330,7 @@ public:
 	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
 	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
 	static void getContextMenuPos(CEdit& aEdit,			POINT& aPt);
-	
+
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 
 	static tstring getNicks(const CID& cid) throw();
@@ -340,14 +340,14 @@ public:
 	static pair<tstring, bool> getHubNames(const User::Ptr& u) { return getHubNames(u->getCID()); }
 
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
-	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
+	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 
 	static bool isShift() { return (GetKeyState(VK_SHIFT) & 0x8000) > 0; }
 	static bool isAlt() { return (GetKeyState(VK_MENU) & 0x8000) > 0; }
 	static bool isCtrl() { return (GetKeyState(VK_CONTROL) & 0x8000) > 0; }
 
-	static tstring escapeMenu(tstring str) { 
+	static tstring escapeMenu(tstring str) {
 		string::size_type i = 0;
 		while( (i = str.find(_T('&'), i)) != string::npos) {
 			str.insert(str.begin()+i, 1, _T('&'));
@@ -369,8 +369,8 @@ public:
 	}
 
 private:
-	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
-	
+	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);
+
 };
 
 #endif // !defined(WIN_UTIL_H)

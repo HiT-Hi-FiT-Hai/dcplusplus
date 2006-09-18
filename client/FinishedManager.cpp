@@ -46,7 +46,7 @@ void FinishedManager::remove(FinishedItem *item, bool upload /* = false */) {
 		fire(FinishedManagerListener::RemovedDl(), item);
 	else
 		fire(FinishedManagerListener::RemovedUl(), item);
-	delete item;		
+	delete item;
 }
 
 void FinishedManager::removeAll(bool upload /* = false */) {
@@ -89,7 +89,7 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 			Lock l(cs);
 			uploads.push_back(item);
 		}
-		
+
 		fire(FinishedManagerListener::AddedUl(), item);
 	}
 }

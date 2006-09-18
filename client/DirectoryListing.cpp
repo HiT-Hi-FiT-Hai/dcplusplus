@@ -80,17 +80,7 @@ void DirectoryListing::loadFile(const string& name) {
 
 	// For now, we detect type by ending...
 	string ext = Util::getFileExt(name);
-	if(Util::stricmp(ext, ".DcLst") == 0) {
-		size_t len = (size_t)::File::getSize(name);
-		if(len == (size_t)-1)
-			return;
-		AutoArray<u_int8_t> buf(len);
-		::File(name, ::File::READ, ::File::OPEN).read(buf, len);
-		CryptoManager::getInstance()->decodeHuffman(buf, txt, len);
-		load(txt);
-		return;
-	} 
-	
+
 	if(Util::stricmp(ext, ".bz2") == 0) {
 		::File ff(name, ::File::READ, ::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
@@ -120,62 +110,9 @@ void DirectoryListing::loadFile(const string& name) {
 	loadXML(txt, false);
 }
 
-void DirectoryListing::load(const string& in) {
-	StringTokenizer<string> t(in, '\n');
-
-	StringList& tokens = t.getTokens();
-	string::size_type indent = 0;
-
-	root->setComplete(true);
-
-	Directory* cur = root;
-	string fullPath;
-	
-	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) 
-	{
-		string& tok = *i;
-		string::size_type j = tok.find_first_not_of('\t');
-		if(j == string::npos) {
-			break;
-		}
-
-		while(j < indent) {
-			// Wind up directory structure
-			cur = cur->getParent();
-			dcassert(cur != NULL);
-			indent--;
-			string::size_type l = fullPath.find_last_of('\\');
-			if(l != string::npos) {
-				fullPath.erase(fullPath.begin() + l, fullPath.end());
-			}
-		}
-
-		string::size_type k = tok.find('|', j);
-		if(k != string::npos) {
-			// this must be a file...
-			cur->files.push_back(new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
-		} else {
-			// A directory
-			string name = tok.substr(j, tok.length()-j-1);
-			fullPath += '\\';
-			fullPath += name;
-
-			Directory::Iter di = ::find(cur->directories.begin(), cur->directories.end(), name);
-			if(di != cur->directories.end()) {
-				cur = *di;
-			} else {
-				Directory* d = new Directory(cur, name, false, true);
-				cur->directories.push_back(d);
-				cur = d;
-			}
-			indent++;
-		}
-	}
-}
-
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
-	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) { 
+	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), base("/"), inListing(false), updating(aUpdating) {
 	}
 
 	virtual ~ListLoader() { }
@@ -220,7 +157,10 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			if(s.empty())
 				return;
 			const string& h = getAttrib(attribs, sTTH, 2);
-			DirectoryListing::File* f = h.empty() ? new DirectoryListing::File(cur, n, Util::toInt64(s)) : new DirectoryListing::File(cur, n, Util::toInt64(s), h);
+			if(h.empty()) {
+				return;
+			}
+			DirectoryListing::File* f = new DirectoryListing::File(cur, n, Util::toInt64(s), h);
 			cur->files.push_back(f);
 		} else if(name == sDirectory) {
 			const string& n = getAttrib(attribs, sName, 0);
@@ -230,7 +170,7 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			bool incomp = getAttrib(attribs, sIncomplete, 1) == "1";
 			DirectoryListing::Directory* d = NULL;
 			if(updating) {
-				for(DirectoryListing::Directory::Iter i  = cur->directories.begin(); i != cur->directories.end(); ++i) {
+				for(DirectoryListing::Directory::Iter i = cur->directories.begin(); i != cur->directories.end(); ++i) {
 					if((*i)->getName() == n) {
 						d = *i;
 						if(!d->getComplete())
@@ -347,8 +287,7 @@ void DirectoryListing::download(const string& aDir, const string& aTarget, bool 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view, bool highPrio) {
 	int flags = (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
-	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), 
-		getPath(aFile) + aFile->getName(), getUtf8(), flags);
+	QueueManager::getInstance()->add(aTarget, aFile->getSize(), aFile->getTTH(), getUser(), flags);
 
 	if(highPrio)
 		QueueManager::getInstance()->setPriority(aTarget, QueueItem::HIGHEST);
@@ -373,7 +312,7 @@ struct HashContained {
 	HashContained(const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) : tl(l) { }
 	const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& tl;
 	bool operator()(const DirectoryListing::File::Ptr i) const {
-		return tl.count(*(i->getTTH())) && (DeleteFunction()(i), true);
+		return tl.count((i->getTTH())) && (DeleteFunction()(i), true);
 	}
 private:
 	HashContained& operator=(HashContained&);
@@ -403,7 +342,7 @@ void DirectoryListing::Directory::filterList(HASH_SET_X(TTHValue, TTHValue::Hash
 
 void DirectoryListing::Directory::getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->getHashList(l);
-	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert(*(*i)->getTTH());
+	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert((*i)->getTTH());
 }
 
 int64_t DirectoryListing::Directory::getTotalSize(bool adl) {

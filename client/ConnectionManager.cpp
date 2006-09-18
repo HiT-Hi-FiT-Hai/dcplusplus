@@ -41,11 +41,13 @@ ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0)
 	features.push_back(UserConnection::FEATURE_TTHF);
 
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BASE);
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BZIP);
 }
+
 // @todo clean this up
 void ConnectionManager::listen() throw(Exception){
 	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
-	
+
 	if(lastPort == 0)
 		lastPort = (unsigned short)Util::rand(1025, 32000);
 
@@ -178,8 +180,8 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					// Not online anymore...remove it from the pending...
 					removed.push_back(cqi);
 					continue;
-				} 
-				
+				}
+
 				if(cqi->getUser()->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
 					passiveUsers.push_back(cqi->getUser());
 					removed.push_back(cqi);
@@ -237,7 +239,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	}
 }
 
-void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {	
+void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	Lock l(cs);
 
 	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
@@ -257,7 +259,6 @@ ConnectionManager::Server::Server(bool secure_, short port, const string& ip /* 
 
 	start();
 }
-
 
 static const u_int32_t POLL_TIMEOUT = 250;
 
@@ -301,7 +302,7 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	uc->setFlag(UserConnection::FLAG_INCOMING);
 	uc->setState(UserConnection::STATE_SUPNICK);
 	uc->setLastActivity(GET_TICK());
-	try { 
+	try {
 		uc->accept(sock);
 	} catch(const Exception&) {
 		putConnection(uc);
@@ -356,10 +357,15 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 	for(StringIterC i = cmd.getParameters().begin(); i != cmd.getParameters().end(); ++i) {
 		if(i->compare(0, 2, "AD") == 0) {
 			string feat = i->substr(2);
-			if(feat == UserConnection::FEATURE_ADC_BASE)
+			if(feat == UserConnection::FEATURE_ADC_BASE) {
 				baseOk = true;
-			else if(feat == UserConnection::FEATURE_ZLIB_GET)
+				// For compatibility with older clients...
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
+			} else if(feat == UserConnection::FEATURE_ZLIB_GET) {
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
+			} else if(feat == UserConnection::FEATURE_ADC_BZIP) {
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
+			}
 		}
 	}
 
@@ -427,7 +433,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 			putConnection(aSource);
 			return;
 		}
-        aSource->setToken(i.first);	
+		aSource->setToken(i.first);
 		aSource->setHubUrl(i.second);
 	}
 	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
@@ -463,7 +469,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		aSource->setFlag(UserConnection::FLAG_OP);
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
-		aSource->myNick(aSource->getToken()); 
+		aSource->myNick(aSource->getToken());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	}
 
@@ -475,7 +481,7 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		dcdebug("CM::onLock %p received lock twice, ignoring\n", (void*)aSource);
 		return;
 	}
-	
+
 	if( CryptoManager::getInstance()->isExtended(aLock) ) {
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser() && !aSource->getUser()->isSet(User::DCPLUSPLUS)) {
@@ -543,7 +549,7 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc) {
 				uc->setFlag(UserConnection::FLAG_ASSOCIATED);
 
 				fire(ConnectionManagerListener::Connected(), cqi);
-				
+
 				dcdebug("ConnectionManager::addDownloadConnection, leaving to downloadmanager\n");
 				addConn = true;
 			}
@@ -693,7 +699,7 @@ void ConnectionManager::shutdown() {
 void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
 	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
 		if(*i == UserConnection::FEATURE_GET_ZBLOCK) {
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK); 
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
 		} else if(*i == UserConnection::FEATURE_MINISLOTS) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
 		} else if(*i == UserConnection::FEATURE_XML_BZLIST) {

@@ -183,7 +183,7 @@ bool HashManager::HashStore::checkTTH(const string& aFileName, int64_t aSize, u_
 			}
 			return true;
 		}
-	} 
+	}
 	return false;
 }
 
@@ -218,7 +218,7 @@ void HashManager::HashStore::rebuild() {
 				}
 			}
 		}
-		
+
 		string tmpName = getDataFile() + ".tmp";
 		string origName = getDataFile();
 
@@ -241,7 +241,7 @@ void HashManager::HashStore::rebuild() {
 
 		for(DirIter i = fileIndex.begin(); i != fileIndex.end(); ++i) {
 			DirIter fi = newFileIndex.insert(make_pair(i->first, FileInfoList())).first;
-			
+
 			for(FileInfoIter j = i->second.begin(); j != i->second.end(); ++j) {
 				if(newTreeIndex.find(j->getRoot()) != newTreeIndex.end()) {
 					fi->second.push_back(*j);
@@ -325,7 +325,7 @@ public:
 	HashLoader(HashManager::HashStore& s) : store(s), size(0), timeStamp(0), version(HASH_FILE_VERSION), inTrees(false), inFiles(false), inHashStore(false) { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
-	
+
 private:
 	HashManager::HashStore& store;
 
@@ -407,8 +407,8 @@ void HashLoader::endTag(const string& name, const string&) {
 	}
 }
 
-HashManager::HashStore::HashStore() : dirty(false) 
-{ 
+HashManager::HashStore::HashStore() : dirty(false)
+{
 	if(File::getSize(getDataFile()) <= static_cast<int64_t>(sizeof(int64_t))) {
 		try {
 			createDataFile(getDataFile());
@@ -466,7 +466,7 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 
 	OVERLAPPED over = { 0 };
 	over.hEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
-	
+
 	bool ok = false;
 
 	u_int32_t lastRead = GET_TICK();
@@ -499,7 +499,7 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 				if(lastRead + minTime > now) {
 					u_int32_t diff = now - lastRead;
 					Thread::sleep(minTime - diff);
-				} 
+				}
 				lastRead = lastRead + minTime;
 			} else {
 				lastRead = GET_TICK();
@@ -522,10 +522,10 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 			break;
 		}
 
-		if (!res) { 
-			// deal with the error code 
-			switch (GetLastError()) { 
-			case ERROR_IO_PENDING: 
+		if (!res) {
+			// deal with the error code
+			switch (GetLastError()) {
+			case ERROR_IO_PENDING:
 				if(!GetOverlappedResult(h, &over, &rn, TRUE)) {
 					dcdebug("Error 0x%x: %s\n", GetLastError(), Util::translateError(GetLastError()).c_str());
 					goto cleanup;

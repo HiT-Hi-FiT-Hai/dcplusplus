@@ -97,7 +97,7 @@ void shutdown() {
 	BufferedSocket::waitShutdown();
 
 	SettingsManager::getInstance()->save();
-	
+
 	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
 	ShareManager::deleteInstance();

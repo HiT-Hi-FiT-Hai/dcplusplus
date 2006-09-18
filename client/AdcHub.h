@@ -37,7 +37,7 @@ public:
 
 	virtual void connect(const OnlineUser& user);
 	void connect(const OnlineUser& user, string const& token, bool secure);
-	
+
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& user, const string& aMessage);
 	virtual void sendUserCmd(const string& aUserCmd) { send(aUserCmd); }
@@ -87,9 +87,9 @@ private:
 	static const string ADCS_FEATURE;
 	static const string TCP4_FEATURE;
 	static const string UDP4_FEATURE;
-	 
+
 	virtual string checkNick(const string& nick);
-	
+
 	OnlineUser& getUser(const u_int32_t aSID, const CID& aCID);
 	OnlineUser* findUser(const u_int32_t sid) const;
 	void putUser(const u_int32_t sid);
@@ -109,7 +109,7 @@ private:
 	void handle(AdcCommand::CMD, AdcCommand& c) throw();
 	void handle(AdcCommand::RES, AdcCommand& c) throw();
 
-	template<typename T> void handle(T, AdcCommand&) { 
+	template<typename T> void handle(T, AdcCommand&) {
 		//Speaker<AdcHubListener>::fire(t, this, c);
 	}
 
