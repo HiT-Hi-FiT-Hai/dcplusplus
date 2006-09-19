@@ -70,7 +70,7 @@ ShareManager::~ShareManager() {
 	WIN32_FIND_DATA data;
 	HANDLE hFind;
 
-	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "files*.xml.bz2").c_str(), &data);
+	hFind = FindFirstFile(Text::toT(Util::getConfigPath() + "files?*.xml.bz2").c_str(), &data);
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if(_tcslen(data.cFileName) > 13) // length of "files.xml.bz2"
@@ -84,7 +84,7 @@ ShareManager::~ShareManager() {
 	DIR* dir = opendir(Util::getConfigPath().c_str());
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
-			if (fnmatch("files*.xml.bz2", ent->d_name, 0) == 0) {
+			if (fnmatch("files?*.xml.bz2", ent->d_name, 0) == 0) {
 					File::deleteFile(Util::getConfigPath() + ent->d_name);
 				}
 		}

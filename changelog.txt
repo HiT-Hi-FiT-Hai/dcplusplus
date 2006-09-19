@@ -12,6 +12,7 @@
 * Upgraded yaSSL to 1.4.0
 * Fixed some SSL connection issues
 * Fixed on-the-fly compression of file lists
+* [bug 1055] Stopped files.xml.bz2 from being deleted on linux (thanks dorian)
 
 -- 0.695 2006-09-10 --
 * PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo
