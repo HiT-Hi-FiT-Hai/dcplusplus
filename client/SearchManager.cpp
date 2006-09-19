@@ -96,36 +96,13 @@ string SearchResult::getFileName() const {
 	return getFile().substr(i + 1);
 }
 
-void SearchManager::listen() throw(Exception) {
-	unsigned short lastPort = (unsigned short)SETTING(UDP_PORT);
-
-	if(lastPort == 0)
-		lastPort = (unsigned short)Util::rand(1025, 32000);
-
-	unsigned short firstPort = lastPort;
+void SearchManager::listen() throw(SocketException) {
 
 	disconnect();
 
-	while(true) {
-		try {
-			if(socket != NULL) {
-				disconnect();
-			} else {
-				socket = new Socket();
-			}
-
-			socket->create(Socket::TYPE_UDP);
-			socket->bind(lastPort);
-			port = lastPort;
-			break;
-		} catch(const Exception&) {
-			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-			if(!SettingsManager::getInstance()->isDefault(SettingsManager::UDP_PORT) || (firstPort == newPort)) {
-				throw Exception("Could not find a suitable free port");
-			}
-			lastPort = newPort;
-		}
-	}
+	socket = new Socket();
+	socket->create(Socket::TYPE_UDP);
+	port = socket->bind(static_cast<short>(SETTING(UDP_PORT)));
 
 	start();
 }

@@ -38,6 +38,7 @@
 #include "AdcCommand.h"
 
 class SearchManager;
+class SocketException;
 
 class SearchResult : public FastAlloc<SearchResult> {
 public:
@@ -146,7 +147,7 @@ public:
 		return port;
 	}
 
-	void listen() throw(Exception);
+	void listen() throw(SocketException);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);

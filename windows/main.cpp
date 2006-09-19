@@ -212,8 +212,6 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
-	MainFrame wndMain;
-
 	CEdit dummy;
 	CEdit splash;
 
@@ -248,6 +246,8 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
+
+	MainFrame wndMain;
 
 	rc = wndMain.rcDefault;
 

@@ -115,8 +115,8 @@ public:
 	void listen() throw(SocketException);
 	void disconnect() throw();
 
-	unsigned short getPort() { return static_cast<unsigned short>(server->getPort()); }
-	unsigned short getSecurePort() { return static_cast<unsigned short>(secureServer->getPort());	}
+	unsigned short getPort() { return server ? static_cast<unsigned short>(server->getPort()) : 0; }
+	unsigned short getSecurePort() { return secureServer ? static_cast<unsigned short>(secureServer->getPort()) : 0; }
 private:
 
 	class Server : public Thread {

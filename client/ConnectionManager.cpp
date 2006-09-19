@@ -51,6 +51,7 @@ void ConnectionManager::listen() throw(SocketException){
 	server = new Server(false, port, SETTING(BIND_ADDRESS));
 
 	if(!CryptoManager::getInstance()->TLSOk()) {
+		dcdebug("Skipping secure port: %d\n", SETTING(USE_TLS));
 		return;
 	}
 

@@ -30,6 +30,8 @@
 #include "UserCommand.h"
 #include "FavoriteManager.h"
 #include "CryptoManager.h"
+#include "ResourceManager.h"
+#include "LogManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
@@ -383,7 +385,11 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 
 	const string& proto = secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL;
 	short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
-
+	if(port == 0) {
+		// Oops?
+		LogManager::getInstance()->message(STRING(NOT_LISTENING));
+		return;
+	}
 	if(ClientManager::getInstance()->isActive()) {
 		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
 	} else {

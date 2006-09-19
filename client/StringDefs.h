@@ -308,6 +308,7 @@ enum Strings { // @DontAdd
 	NO_USERS, // "No users"
 	NO_USERS_TO_DOWNLOAD_FROM, // "No users to download from"
 	NORMAL, // "Normal"
+	NOT_LISTENING, // "Not listening for connections - please restart DC++"
 	NOTEPAD, // "Notepad"
 	OFFLINE, // "Offline"
 	ONLINE, // "Online"

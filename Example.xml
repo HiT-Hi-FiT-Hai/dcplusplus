@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.695" Revision="1" RightToLeft="0">
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.696" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -304,6 +304,7 @@
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
 		<String Name="Normal">Normal</String>
+		<String Name="NotListening">Not listening for connections - please restart DC++</String>
 		<String Name="Notepad">Notepad</String>
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>

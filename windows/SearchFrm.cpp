@@ -778,7 +778,9 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		ucParams["fileFN"] = sr->getFile();
 		ucParams["fileSI"] = Util::toString(sr->getSize());
 		ucParams["fileSIshort"] = Util::formatBytes(sr->getSize());
-		ucParams["fileTR"] = sr->getTTH().toBase32();
+		if(sr->getType() == SearchResult::TYPE_FILE) {
+			ucParams["fileTR"] = sr->getTTH().toBase32();
+		}
 
 		// compatibility with 0.674 and earlier
 		ucParams["file"] = ucParams["fileFN"];
@@ -854,8 +856,9 @@ LRESULT SearchFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(ctrlResults.GetSelectedCount() == 1) {
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
-
-		WinUtil::searchHash(sr->getTTH());
+		if(sr->getType() == SearchResult::TYPE_FILE) {
+			WinUtil::searchHash(sr->getTTH());
+		}
 	}
 
 	return 0;
@@ -865,7 +868,9 @@ LRESULT SearchFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(ctrlResults.GetSelectedCount() == 1) {
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
-		WinUtil::bitziLink(sr->getTTH());
+		if(sr->getType() == SearchResult::TYPE_FILE) {
+			WinUtil::bitziLink(sr->getTTH());
+		}
 	}
 	return 0;
 }
@@ -874,7 +879,9 @@ LRESULT SearchFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if(ctrlResults.GetSelectedCount() == 1) {
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
-		WinUtil::copyMagnet(sr->getTTH(), Text::toT(sr->getFileName()));
+		if(sr->getType() == SearchResult::TYPE_FILE) {
+			WinUtil::copyMagnet(sr->getTTH(), Text::toT(sr->getFileName()));
+		}
 	}
 	return 0;
 }
@@ -1140,7 +1147,9 @@ void SearchFrame::SearchInfo::update() {
 		if(!tmpCountry.empty())
 			columns[COLUMN_IP] = tmpCountry + _T(" (") + columns[COLUMN_IP] + _T(")");
 	}
-	columns[COLUMN_TTH] = Text::toT(sr->getTTH().toBase32());
+	if(sr->getType() == SearchResult::TYPE_FILE) {
+        columns[COLUMN_TTH] = Text::toT(sr->getTTH().toBase32());
+	}
 	columns[COLUMN_CID] = Text::toT(sr->getUser()->getCID().toBase32());
 
 }
