@@ -40,7 +40,8 @@ public:
 		NMDC_BIT,
 		BOT_BIT,
 		TTH_GET_BIT,
-		TLS_BIT
+		TLS_BIT,
+		OLD_CLIENT_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -51,7 +52,8 @@ public:
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
-		TLS = 1<<TLS_BIT				//< Client supports SSL
+		TLS = 1<<TLS_BIT,				//< Client supports SSL
+		OLD_CLIENT = 1<<OLD_CLIENT_BIT  //< Can't download - old client
 	};
 
 	typedef Pointer<User> Ptr;

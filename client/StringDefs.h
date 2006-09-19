@@ -555,7 +555,7 @@ enum Strings { // @DontAdd
 	SOCKS_FAILED, // "The socks server failed establish a connection"
 	SOCKS_NEEDS_AUTH, // "The socks server requires authentication"
 	SOCKS_SETUP_ERROR, // "Failed to set up the socks server for UDP relay (check socks address and port)"
-	SOURCE_TOO_OLD, // "Source client does not support TTH"
+	SOURCE_TOO_OLD, // "Remote client does not fully support TTH - cannot download"
 	SOURCE_TOO_SLOW, // "Source too slow"
 	SOURCE_TYPE, // "Source Type"
 	SPECIFY_SEARCH_STRING, // "Specify a search string"

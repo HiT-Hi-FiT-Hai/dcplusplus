@@ -9,6 +9,9 @@
 * [ADC] Fixed support for uncompressed files.xml as well as proper files.xml.bz2 support
 * Some socket code cleanup
 * Removed broken nick save code
+* Upgraded yaSSL to 1.4.0
+* Fixed some SSL connection issues
+* Fixed on-the-fly compression of file lists
 
 -- 0.695 2006-09-10 --
 * PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo

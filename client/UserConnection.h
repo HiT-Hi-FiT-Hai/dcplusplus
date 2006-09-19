@@ -46,8 +46,6 @@ public:
 	typedef X<5> Key;
 	typedef X<6> Direction;
 	typedef X<7> Get;
-	typedef X<8> GetBlock;
-	typedef X<9> GetZBlock;
 	typedef X<10> Sending;
 	typedef X<11> FileLength;
 	typedef X<12> Send;
@@ -70,8 +68,6 @@ public:
 	virtual void on(Key, UserConnection*, const string&) throw() { }
 	virtual void on(Direction, UserConnection*, const string&, const string&) throw() { }
 	virtual void on(Get, UserConnection*, const string&, int64_t) throw() { }
-	virtual void on(GetBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
-	virtual void on(GetZBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
 	virtual void on(Sending, UserConnection*, int64_t) throw() { }
 	virtual void on(FileLength, UserConnection*, int64_t) throw() { }
 	virtual void on(Send, UserConnection*) throw() { }
@@ -235,8 +231,6 @@ public:
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
 	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); } 	// No acp - utf conversion here...
-	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send((utf8 ? "$UGetZBlock " : "$GetZBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
-	void uGetBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$UGetBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
 	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); }

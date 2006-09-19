@@ -352,8 +352,8 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		} else {
 			// match all here
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
-				if((*j->begin() != _T('-') && Util::findSubString(aResult->getUtf8() ? aResult->getFile() : Text::acpToUtf8(aResult->getFile()), Text::fromT(*j)) == -1) ||
-					(*j->begin() == _T('-') && j->size() != 1 && Util::findSubString(aResult->getUtf8() ? aResult->getFile() : Text::acpToUtf8(aResult->getFile()), Text::fromT(j->substr(1))) != -1)
+				if((*j->begin() != _T('-') && Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1) ||
+					(*j->begin() == _T('-') && j->size() != 1 && Util::findSubString(aResult->getFile(), Text::fromT(j->substr(1))) != -1)
 					)
 				{
 					droppedResults++;
@@ -1109,10 +1109,10 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 void SearchFrame::SearchInfo::update() {
 	if(sr->getType() == SearchResult::TYPE_FILE) {
 		if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-			columns[COLUMN_FILENAME] = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+			columns[COLUMN_FILENAME] = Text::toT(sr->getFile());
 		} else {
-			columns[COLUMN_FILENAME] = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
-			columns[COLUMN_PATH] = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+			columns[COLUMN_FILENAME] = Text::toT(Util::getFileName(sr->getFile()));
+			columns[COLUMN_PATH] = Text::toT(Util::getFilePath(sr->getFile()));
 		}
 
 		columns[COLUMN_TYPE] = Text::toT(Util::getFileExt(Text::fromT(columns[COLUMN_FILENAME])));
@@ -1121,8 +1121,8 @@ void SearchFrame::SearchInfo::update() {
 		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
 		columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
 	} else {
-		columns[COLUMN_FILENAME] = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
-		columns[COLUMN_PATH] = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
+		columns[COLUMN_FILENAME] = Text::toT(sr->getFileName());
+		columns[COLUMN_PATH] = Text::toT(sr->getFile());
 		columns[COLUMN_TYPE] = TSTRING(DIRECTORY);
 		if(sr->getSize() > 0) {
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));

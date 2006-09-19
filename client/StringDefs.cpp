@@ -552,7 +552,7 @@ string ResourceManager::strings[] = {
 "The socks server failed establish a connection", 
 "The socks server requires authentication", 
 "Failed to set up the socks server for UDP relay (check socks address and port)", 
-"Source client does not support TTH", 
+"Remote client does not fully support TTH - cannot download", 
 "Source too slow", 
 "Source Type", 
 "Specify a search string", 

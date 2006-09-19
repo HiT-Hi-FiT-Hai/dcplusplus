@@ -259,31 +259,6 @@ void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, con
 	}
 }
 
-void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int64_t aStartPos, int64_t aBytes, bool z) {
-	if(!z || BOOLSETTING(COMPRESS_TRANSFERS)) {
-		if(prepareFile(aSource, "file", Util::toAdcFile(aFile), aStartPos, aBytes)) {
-			Upload* u = aSource->getUpload();
-			dcassert(u != NULL);
-			if(aBytes == -1)
-				aBytes = u->getSize() - aStartPos;
-
-			dcassert(aBytes >= 0);
-
-			u->setStart(GET_TICK());
-
-			if(z) {
-				u->setFile(new FilteredInputStream<ZFilter, true>(u->getFile()));
-				u->setFlag(Upload::FLAG_ZUPLOAD);
-			}
-
-			aSource->sending(aBytes);
-			aSource->setState(UserConnection::STATE_DONE);
-			aSource->transmitFile(u->getFile());
-			fire(UploadManagerListener::Starting(), u);
-		}
-	}
-}
-
 void UploadManager::on(UserConnectionListener::Send, UserConnection* aSource) throw() {
 	if(aSource->getState() != UserConnection::STATE_SEND) {
 		dcdebug("UM::onSend Bad state, ignoring\n");

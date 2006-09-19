@@ -439,7 +439,11 @@ void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* a
 
 void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
-	ui->setStatusString(Text::toT(aReason));
+	if(aCqi->getUser()->isSet(User::OLD_CLIENT)) {
+		ui->setStatusString(TSTRING(SOURCE_TOO_OLD));
+	} else {
+		ui->setStatusString(Text::toT(aReason));
+	}
 	speak(UPDATE_ITEM, ui);
 }
 

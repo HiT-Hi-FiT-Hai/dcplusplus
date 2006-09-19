@@ -116,28 +116,6 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		if(x != string::npos) {
 			fire(UserConnectionListener::Get(), this, Text::acpToUtf8(param.substr(0, x)), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
-	} else if(cmd == "$GetZBlock" || cmd == "$UGetZBlock" || cmd == "$UGetBlock") {
-		string::size_type i = param.find(' ');
-		if(i == string::npos)
-			return;
-		int64_t start = Util::toInt64(param.substr(0, i));
-		if(start < 0) {
-			disconnect();
-			return;
-		}
-		i++;
-		string::size_type j = param.find(' ', i);
-		if(j == string::npos)
-			return;
-		int64_t bytes = Util::toInt64(param.substr(i, j-i));
-		string name = param.substr(j+1);
-		if(cmd == "$GetZBlock")
-			name = Text::acpToUtf8(name);
-		if(cmd == "$UGetBlock") {
-			fire(UserConnectionListener::GetBlock(), this, name, start, bytes);
-		} else {
-			fire(UserConnectionListener::GetZBlock(), this, name, start, bytes);
-		}
 	} else if(cmd == "$Key") {
 		if(!param.empty())
 			fire(UserConnectionListener::Key(), this, param);

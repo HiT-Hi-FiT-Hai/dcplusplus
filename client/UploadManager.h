@@ -182,8 +182,6 @@ private:
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
 	virtual void on(Get, UserConnection*, const string&, int64_t) throw();
-	virtual void on(GetBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, false); }
-	virtual void on(GetZBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, true); }
 	virtual void on(Send, UserConnection*) throw();
 	virtual void on(GetListLength, UserConnection* conn) throw();
 	virtual void on(TransmitDone, UserConnection*) throw();
@@ -191,7 +189,6 @@ private:
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw();
 
-	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
 };
 

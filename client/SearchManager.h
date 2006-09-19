@@ -55,10 +55,10 @@ public:
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots,
 		int64_t aSize, const string& aFile, const string& aHubName,
-		const string& aHubURL, const string& ip, TTHValue aTTH, bool aUtf8, const string& aToken) :
+		const string& aHubURL, const string& ip, TTHValue aTTH, const string& aToken) :
 	file(aFile), hubName(aHubName), hubURL(aHubURL), user(aUser),
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(ip),
-		tth(aTTH), token(aToken), utf8(aUtf8), ref(1) { }
+		tth(aTTH), token(aToken), ref(1) { }
 
 	string getFileName() const;
 	string toSR(const Client& client) const;
@@ -75,7 +75,6 @@ public:
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
 	TTHValue getTTH() const { return tth; }
-	bool getUtf8() const { return utf8; }
 	const string& getIP() const { return IP; }
 	const string& getToken() const { return token; }
 
@@ -105,7 +104,6 @@ private:
 	TTHValue tth;
 	string token;
 
-	bool utf8;
 	volatile long ref;
 };
 
