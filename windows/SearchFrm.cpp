@@ -347,8 +347,11 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		}
 
 		if(isHash) {
-			if(Util::stricmp(Text::toT(aResult->getTTH().toBase32()), search[0]) != 0)
+			if(aResult->getType() != SearchResult::TYPE_FILE || TTHValue(Text::fromT(search[0])) != aResult->getTTH()) {
+				droppedResults++;
+				PostMessage(WM_SPEAKER, FILTER_RESULT);
 				return;
+			}
 		} else {
 			// match all here
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
@@ -357,22 +360,20 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 					)
 				{
 					droppedResults++;
-					PostMessage(WM_SPEAKER, FILTER_RESULT, NULL);
+					PostMessage(WM_SPEAKER, FILTER_RESULT);
 					return;
 				}
 			}
 		}
 	}
 
-	// Reject results without free slots or tth if selected
-	// but always show directories
+	// Reject results without free slots
 	if((onlyFree && aResult->getFreeSlots() < 1))
 	{
 		droppedResults++;
-		ctrlStatus.SetText(3, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)).c_str());
+		PostMessage(WM_SPEAKER, FILTER_RESULT);
 		return;
 	}
-
 
 	SearchInfo* i = new SearchInfo(aResult);
 	PostMessage(WM_SPEAKER, ADD_RESULT, (LPARAM)i);
@@ -400,10 +401,11 @@ LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlStatus.SetText(3, _T(""));
 	return 0;
 }
+
 void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(Util::getTempPath() + Text::fromT(columns[COLUMN_FILENAME]),
+			QueueManager::getInstance()->add(Util::getTempPath() + sr->getFileName(),
 				sr->getSize(), sr->getTTH(), sr->getUser(), 
 				QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
 		}
@@ -430,12 +432,13 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 
 void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 	try {
+		QueueItem::Priority prio = WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT;
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->addDirectory(Text::fromT(si->columns[COLUMN_PATH]), si->sr->getUser(), Text::fromT(tgt),
-				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+			QueueManager::getInstance()->addDirectory(Text::fromT(si->columns[COLUMN_PATH]), 
+				si->sr->getUser(), Text::fromT(tgt), prio);
 		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
-				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), 
+				Text::fromT(tgt), prio);
 		}
 	} catch(const Exception&) {
 	}
@@ -475,7 +478,7 @@ void SearchFrame::SearchInfo::browseList() {
 	}
 }
 
-void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
+void SearchFrame::SearchInfo::CheckTTH::operator()(SearchInfo* si) {
 	if(firstTTH) {
 		tth = si->columns[COLUMN_TTH];
 		hasTTH = true;
@@ -484,19 +487,6 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 		if(tth != si->columns[COLUMN_TTH]) {
 			hasTTH = false;
 		}
-	}
-
-	if(si->sr->getType() == SearchResult::TYPE_FILE) {
-		if(ext.empty()) {
-			ext = Util::getFileExt(si->columns[COLUMN_FILENAME]);
-			size = si->sr->getSize();
-		} else if(size != -1) {
-			if((si->sr->getSize() != size) || (Util::stricmp(ext, Util::getFileExt(si->columns[COLUMN_FILENAME])) != 0)) {
-				size = -1;
-			}
-		}
-	} else {
-		size = -1;
 	}
 
 	if(firstHubs && hubs.empty()) {
@@ -965,15 +955,11 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 			}
 		}
 
-		SearchInfo::CheckSize cs = ctrlResults.forEachSelectedT(SearchInfo::CheckSize());
+		SearchInfo::CheckTTH cs = ctrlResults.forEachSelectedT(SearchInfo::CheckTTH());
 
-		if(cs.size != -1 || cs.hasTTH) {
+		if(cs.hasTTH) {
 			targets.clear();
-			if(cs.hasTTH) {
-				QueueManager::getInstance()->getTargetsByRoot(targets, TTHValue(Text::fromT(cs.tth)));
-			} else {
-				QueueManager::getInstance()->getTargetsBySize(targets, cs.size, Text::fromT(cs.ext));
-			}
+			QueueManager::getInstance()->getTargets(TTHValue(Text::fromT(cs.tth)), targets);
 
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR);

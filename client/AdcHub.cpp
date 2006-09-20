@@ -49,21 +49,21 @@ AdcHub::~AdcHub() throw() {
 }
 
 OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
-	OnlineUser* u = findUser(aSID);
-	if(u) {
-		return *u;
+	OnlineUser* ou = findUser(aSID);
+	if(ou) {
+		return *ou;
 	}
 
 	User::Ptr p = ClientManager::getInstance()->getUser(aCID);
 
 	{
 		Lock l(cs);
-		u = users.insert(make_pair(aSID, new OnlineUser(p, *this, aSID))).first->second;
+		ou = users.insert(make_pair(aSID, new OnlineUser(p, *this, aSID))).first->second;
 	}
 
-	if(!aCID.isZero())
-		ClientManager::getInstance()->putOnline(*u);
-	return *u;
+	if(aSID != AdcCommand::HUB_SID)
+		ClientManager::getInstance()->putOnline(*ou);
+	return *ou;
 }
 
 OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
@@ -73,25 +73,35 @@ OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
 }
 
 void AdcHub::putUser(const u_int32_t aSID) {
-	Lock l(cs);
-	SIDIter i = users.find(aSID);
-	if(i == users.end())
-		return;
+	OnlineUser* ou = 0;
+	{
+		Lock l(cs);
+		SIDIter i = users.find(aSID);
+		if(i == users.end())
+			return;
+		ou = i->second;
+		users.erase(i);
+	}
+
 	if(aSID != AdcCommand::HUB_SID)
-		ClientManager::getInstance()->putOffline(*i->second);
-	fire(ClientListener::UserRemoved(), this, *i->second);
-	delete i->second;
-	users.erase(i);
+		ClientManager::getInstance()->putOffline(*ou);
+
+	fire(ClientListener::UserRemoved(), this, *ou);
+	delete ou;
 }
 
 void AdcHub::clearUsers() {
-	Lock l(cs);
-	for(SIDIter i = users.begin(); i != users.end(); ++i) {
+	SIDMap tmp;
+	{
+		Lock l(cs);
+		users.swap(tmp);
+	}
+
+	for(SIDIter i = tmp.begin(); i != tmp.end(); ++i) {
 		if(i->first != AdcCommand::HUB_SID)
 			ClientManager::getInstance()->putOffline(*i->second);
 		delete i->second;
 	}
-	users.clear();
 }
 
 
@@ -312,28 +322,29 @@ void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
 	FavoriteManager::getInstance()->addUserCommand(once ? UserCommand::TYPE_RAW_ONCE : UserCommand::TYPE_RAW, ctx, UserCommand::FLAG_NOSAVE, name, txt, getHubUrl());
 }
 
-void AdcHub::sendUDP(const AdcCommand& cmd) {
-	try {
-		Socket s;
-		s.create(Socket::TYPE_UDP);
-
+void AdcHub::sendUDP(const AdcCommand& cmd) throw() {
+	string command;
+	string ip;
+	short port;
+	{
 		Lock l(cs);
 		SIDMap::const_iterator i = users.find(cmd.getTo());
 		if(i == users.end()) {
 			dcdebug("AdcHub::sendUDP: invalid user\n");
 			return;
 		}
-		OnlineUser& u = *i->second;
-		string tmp = cmd.toString(u.getUser()->getCID());
-		if(u.getIdentity().isUdpActive()) {
-			try {
-				s.writeTo(u.getIdentity().getIp(), (short)Util::toInt(u.getIdentity().getUdpPort()), tmp);
-			} catch(const SocketException& e) {
-				dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
-			}
+		OnlineUser& ou = *i->second;
+		if(!ou.getIdentity().isUdpActive()) {
+			return;
 		}
-	} catch(SocketException&) {
-		dcdebug("Can't create UDP socket\n");
+		ip = ou.getIdentity().getIp();
+		port = static_cast<short>(Util::toInt(ou.getIdentity().getUdpPort()));
+		command = cmd.toString(ou.getUser()->getCID());
+	}
+	try {
+		udp.writeTo(ip, port, command);
+	} catch(const SocketException& e) {
+		dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
 	}
 }
 

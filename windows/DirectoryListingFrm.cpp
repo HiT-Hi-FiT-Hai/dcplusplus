@@ -632,7 +632,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 			n = 0;
 			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CTSTRING(BROWSE));
 			targets.clear();
-			QueueManager::getInstance()->getTargetsByRoot(targets, ii->file->getTTH());
+			QueueManager::getInstance()->getTargets(ii->file->getTTH(), targets);
 
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR);

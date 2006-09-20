@@ -115,7 +115,7 @@ private:
 
 	User::Ptr me;
 
-	Socket s;
+	Socket udp;
 
 	string cachedIp;
 	CID pid;

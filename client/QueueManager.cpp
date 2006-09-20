@@ -721,16 +721,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 	}
 }
 
-void QueueManager::getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw() {
-	Lock l(cs);
-	QueueItem::List ql;
-	fileQueue.find(ql, aSize, suffix);
-	for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
-		sl.push_back((*i)->getTarget());
-	}
-}
-
-void QueueManager::getTargetsByRoot(StringList& sl, const TTHValue& tth) {
+void QueueManager::getTargets(const TTHValue& tth, StringList& sl) {
 	Lock l(cs);
 	QueueItem::List ql;
 	fileQueue.find(ql, tth);
@@ -753,8 +744,8 @@ Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw(
 
 	QueueItem* q = userQueue.getNext(aUser);
 
-	if(q == NULL)
-		return NULL;
+	if(!q)
+		return 0;
 
 	userQueue.setRunning(q, aUser);
 

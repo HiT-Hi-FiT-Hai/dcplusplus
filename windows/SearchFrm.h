@@ -258,11 +258,9 @@ private:
 			void operator()(SearchInfo* si);
 			const tstring& tgt;
 		};
-		struct CheckSize {
-			CheckSize() : size(-1), op(true), firstHubs(true), hasTTH(false), firstTTH(true) { }
+		struct CheckTTH {
+			CheckTTH() : op(true), firstHubs(true), hasTTH(false), firstTTH(true) { }
 			void operator()(SearchInfo* si);
-			tstring ext;
-			int64_t size;
 			bool firstHubs;
 			StringList hubs;
 			bool op;

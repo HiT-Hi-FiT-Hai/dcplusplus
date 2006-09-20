@@ -116,7 +116,6 @@ string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
 }
 
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
-	RLock<> l(cs);
 	if(aFile == "MyList.DcLst") {
 		throw ShareException("NMDC-style lists no longer supported, please upgrade your client");
 	} else if(aFile == DownloadManager::USER_LIST_NAME || aFile == DownloadManager::USER_LIST_NAME_BZ) {
@@ -127,6 +126,8 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 
 		string file;
+
+		RLock<> l(cs);
 
 		// Check for tth root identifier
 		if(aFile.compare(0, 4, "TTH/") == 0) {
@@ -141,7 +142,6 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(i == string::npos)
 			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 
-		RLock<> l(cs);
 		StringPairIter j = lookupVirtual(file.substr(1, i-1));
 		if(j == virtualMap.end()) {
 			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
@@ -1243,7 +1243,7 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 					i->second->getParent()->getFullName() + i->second->getName(), i->second->getTTH());
 
 				results.push_back(sr);
-				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
+				ShareManager::getInstance()->addHits(1);
 			}
 		}
 		return;

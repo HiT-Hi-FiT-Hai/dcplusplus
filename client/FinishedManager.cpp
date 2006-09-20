@@ -23,12 +23,12 @@
 #include "ClientManager.h"
 
 FinishedManager::~FinishedManager() throw() {
-	Lock l(cs);
-	for_each(downloads.begin(), downloads.end(), DeleteFunction());
-	for_each(uploads.begin(), uploads.end(), DeleteFunction());
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
 
+	Lock l(cs);
+	for_each(downloads.begin(), downloads.end(), DeleteFunction());
+	for_each(uploads.begin(), uploads.end(), DeleteFunction());
 }
 
 void FinishedManager::remove(FinishedItem *item, bool upload /* = false */) {

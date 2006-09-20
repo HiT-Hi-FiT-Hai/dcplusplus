@@ -220,6 +220,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 		if( (j = x.rfind(')')) == string::npos) {
 			return;
 		}
+
 		string hubIpPort = x.substr(i, j-i);
 		string url = ClientManager::getInstance()->findHub(hubIpPort);
 
@@ -237,8 +238,11 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remot
 			StringList names = ClientManager::getInstance()->getHubNames(user->getCID());
 			hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
 		}
-		if(tth.empty())
+
+		if(tth.empty() && type == SearchResult::TYPE_FILE) {
 			return;
+		}
+
 
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
 			file, hubName, url, remoteIp, TTHValue(tth), Util::emptyString);
