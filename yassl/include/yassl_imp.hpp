@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -622,6 +626,7 @@ struct Connection {
     bool            send_server_key_;                  // server key exchange?
     bool            master_clean_;                     // master secret clean?
     bool            TLS_;                              // TLSv1 or greater
+    bool            sessionID_Set_;                    // do we have a session
     ProtocolVersion version_;
     RandomPool&     random_;
 
@@ -664,9 +669,9 @@ struct Parameters {
     char                 cipher_name_[MAX_SUITE_NAME];
     char                 cipher_list_[MAX_CIPHERS][MAX_SUITE_NAME];
 
-    Parameters(ConnectionEnd, const Ciphers&, ProtocolVersion);
+    Parameters(ConnectionEnd, const Ciphers&, ProtocolVersion, bool haveDH);
 
-    void SetSuites(ProtocolVersion pv);
+    void SetSuites(ProtocolVersion pv, bool removeDH = false);
     void SetCipherNames();
 private:
     Parameters(const Parameters&);              // hide copy

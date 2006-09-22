@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,6 +39,10 @@
 #include "log.hpp"
 #include "lock.hpp"
 #include "openssl/ssl.h"  // ASN1_STRING and DH
+
+#ifdef _POSIX_THREADS
+    #include <pthread.h>
+#endif
 
 
 namespace yaSSL {
@@ -76,12 +84,35 @@ enum ServerState {
 };
 
 
+// client connect state for nonblocking restart
+enum ConnectState {
+    CONNECT_BEGIN = 0,
+    CLIENT_HELLO_SENT,
+    FIRST_REPLY_DONE,
+    FINISHED_DONE,
+    SECOND_REPLY_DONE
+};
+
+
+// server accpet state for nonblocking restart
+enum AcceptState {
+    ACCEPT_BEGIN = 0,
+    ACCEPT_FIRST_REPLY_DONE,
+    SERVER_HELLO_DONE,
+    ACCEPT_SECOND_REPLY_DONE,
+    ACCEPT_FINISHED_DONE,
+    ACCEPT_THIRD_REPLY_DONE
+};
+
+
 // combines all states
 class States {
     RecordLayerState recordLayer_;
     HandShakeState   handshakeLayer_;
     ClientState      clientState_;
     ServerState      serverState_;
+    ConnectState     connectState_;
+    AcceptState      acceptState_;
     char             errorString_[MAX_ERROR_SZ];
     YasslError       what_;
 public:
@@ -91,6 +122,8 @@ public:
     const HandShakeState&   getHandShake() const;
     const ClientState&      getClient()    const;
     const ServerState&      getServer()    const;
+    const ConnectState&     GetConnect()   const;
+    const AcceptState&      GetAccept()    const;
     const char*             getString()    const;
           YasslError        What()         const;
 
@@ -98,6 +131,8 @@ public:
     HandShakeState&   useHandShake();
     ClientState&      useClient();
     ServerState&      useServer();
+    ConnectState&     UseConnect();
+    AcceptState&      UseAccept();
     char*             useString();
     void              SetError(YasslError);
 private:
@@ -138,8 +173,9 @@ public:
     X509_NAME(const char*, size_t sz);
     ~X509_NAME();
 
-    char*        GetName();
+    const char*  GetName() const;
     ASN1_STRING* GetEntry(int i);
+    size_t       GetLength() const;
 private:
     X509_NAME(const X509_NAME&);                // hide copy
     X509_NAME& operator=(const X509_NAME&);     // and assign
@@ -153,6 +189,9 @@ public:
     ~StringHolder();
 
     ASN1_STRING* GetString();
+private:
+    StringHolder(const StringHolder&);                // hide copy
+    StringHolder& operator=(const StringHolder&);     // and assign
 };
 
 
@@ -172,6 +211,7 @@ public:
 
     ASN1_STRING* GetBefore();
     ASN1_STRING* GetAfter();
+
 private:
     X509(const X509&);              // hide copy
     X509& operator=(const X509&);   // and assign
@@ -198,21 +238,25 @@ class SSL_SESSION {
     uint        bornOn_;                        // create time in seconds
     uint        timeout_;                       // timeout in seconds
     RandomPool& random_;                        // will clean master secret
+    X509*       peerX509_;
 public:
     explicit SSL_SESSION(RandomPool&);
     SSL_SESSION(const SSL&, RandomPool&);
     ~SSL_SESSION();
 
-    const opaque* GetID()      const;
-    const opaque* GetSecret()  const;
-    const Cipher* GetSuite()   const;
-          uint    GetBornOn()  const;
-          uint    GetTimeOut() const;
+    const opaque* GetID()       const;
+    const opaque* GetSecret()   const;
+    const Cipher* GetSuite()    const;
+          uint    GetBornOn()   const;
+          uint    GetTimeOut()  const;
+          X509*   GetPeerX509() const;
           void    SetTimeOut(uint);
 
     SSL_SESSION& operator=(const SSL_SESSION&); // allow assign for resumption
 private:
     SSL_SESSION(const SSL_SESSION&);            // hide copy
+
+    void CopyX509(X509*);
 };
 
 
@@ -237,8 +281,42 @@ private:
 };
 
 
+#ifdef _POSIX_THREADS
+    typedef pthread_t THREAD_ID_T;
+#else
+    typedef DWORD     THREAD_ID_T;
+#endif
+
+// thread error data
+struct ThreadError {
+    THREAD_ID_T threadID_;
+    int         errorID_;
+};
+
+
+// holds all errors
+class Errors {
+    mySTL::list<ThreadError> list_;
+    Mutex                    mutex_;
+
+    Errors() {}                         // only GetErrors can create
+public:
+    int  Lookup(bool peek);             // self lookup
+    void Add(int);              
+    void Remove();                      // remove self
+
+    ~Errors() {}
+
+    friend Errors& GetErrors(); // singleton creator
+private:
+    Errors(const Errors&);              // hide copy
+    Errors& operator=(const Errors);    // and assign
+};
+
+
 Sessions&   GetSessions();      // forward singletons
 sslFactory& GetSSL_Factory();
+Errors&     GetErrors();
 
 
 // openSSL method and context types
@@ -429,24 +507,28 @@ private:
 
 // holds input and output buffers
 class Buffers {
+public: 
+    typedef mySTL::list<input_buffer*>  inputList;
+    typedef mySTL::list<output_buffer*> outputList;
+private:
+    inputList     dataList_;             // list of users app data / handshake
+    outputList    handShakeList_;        // buffered handshake msgs
+    input_buffer* rawInput_;             // buffered raw input yet to process
 public:
-    Buffers() {}
+    Buffers();
     ~Buffers();
 
-	typedef mySTL::list<input_buffer*>  inputList;
-	typedef mySTL::list<output_buffer*> outputList;
-
-	const inputList&  getData()      const;
+    const inputList&  getData()      const;
     const outputList& getHandShake() const;
 
     inputList&  useData();
     outputList& useHandShake();
+
+    void          SetRawInput(input_buffer*);  // takes ownership
+    input_buffer* TakeRawInput();              // takes ownership 
 private:
     Buffers(const Buffers&);             // hide copy
-    Buffers& operator=(const Buffers&); // and assign   
-	
-	inputList  dataList_;                // list of users app data / handshake
-	outputList handShakeList_;           // buffered handshake msgs
+    Buffers& operator=(const Buffers&);  // and assign   
 };
 
 
@@ -459,7 +541,7 @@ class Security {
     bool          resuming_;                      // trying to resume
 public:
     Security(ProtocolVersion, RandomPool&, ConnectionEnd, const Ciphers&,
-             SSL_CTX*);
+             SSL_CTX*, bool);
 
     const SSL_CTX*     GetContext()     const;
     const Connection&  get_connection() const;
@@ -505,6 +587,7 @@ public:
     sslHashes& useHashes();
     Socket&    useSocket();
     Log&       useLog();
+    Buffers&   useBuffers();
 
     // sets
     void set_pending(Cipher suite);

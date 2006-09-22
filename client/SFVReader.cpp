@@ -79,7 +79,7 @@ void SFVReader::load(const string& fileName) throw() {
 	string fname = Util::getFileName(fileName);
 
 	DIR* dir = opendir(path.c_str());
-	if (!dir) 
+	if (!dir)
 		return;
 	while (struct dirent* ent = readdir(dir)) {
 		if (fnmatch("*.sfv", ent->d_name, 0) == 0) {
@@ -90,11 +90,11 @@ void SFVReader::load(const string& fileName) throw() {
 				}
 			} catch(const FileException&) {
 				// Ignore...
-			}					
+			}
 		}
 	}
 
-	closedir(dir);	
+	closedir(dir);
 
 #endif
 }

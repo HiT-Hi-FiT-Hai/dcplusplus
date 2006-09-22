@@ -32,8 +32,8 @@
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
-class TransferView : public CWindowImpl<TransferView>, private DownloadManagerListener, 
-	private UploadManagerListener, private ConnectionManagerListener, 
+class TransferView : public CWindowImpl<TransferView>, private DownloadManagerListener,
+	private UploadManagerListener, private ConnectionManagerListener,
 	public UserInfoBaseHandler<TransferView>, public UCHandler<TransferView>
 {
 public:
@@ -70,7 +70,7 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
+	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -107,7 +107,7 @@ public:
 		return NFR_UNICODE;
 #else
 		return NFR_ANSI;
-#endif		
+#endif
 	}
 
 private:

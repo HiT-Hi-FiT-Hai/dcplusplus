@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -182,7 +186,8 @@ int CertManager::CopyCaCert(const x509* x)
         signers_.push_back(NEW_YS TaoCrypt::Signer(key.GetKey(), key.size(),
                                         cert.GetCommonName(), cert.GetHash()));
     }
-    return cert.GetError().What();
+    // just don't add, not an error return cert.GetError().What();
+    return 0;
 }
 
 
@@ -302,6 +307,23 @@ int CertManager::SetPrivateKey(const x509& key)
             keyType_ = dsa_sa_algo;
     }
     return 0;
+}
+
+
+// Store OpenSSL type peer's cert
+void CertManager::setPeerX509(X509* x)
+{
+    assert(peerX509_ == 0);
+    if (x == 0) return;
+
+    X509_NAME* issuer   = x->GetIssuer();
+    X509_NAME* subject  = x->GetSubject();
+    ASN1_STRING* before = x->GetBefore();
+    ASN1_STRING* after  = x->GetAfter();
+
+    peerX509_ = NEW_YS X509(issuer->GetName(), issuer->GetLength(),
+        subject->GetName(), subject->GetLength(), (const char*) before->data,
+        before->length, (const char*) after->data, after->length);
 }
 
 

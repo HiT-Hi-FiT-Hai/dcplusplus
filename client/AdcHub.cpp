@@ -30,6 +30,8 @@
 #include "UserCommand.h"
 #include "FavoriteManager.h"
 #include "CryptoManager.h"
+#include "ResourceManager.h"
+#include "LogManager.h"
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
@@ -47,21 +49,21 @@ AdcHub::~AdcHub() throw() {
 }
 
 OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
-	OnlineUser* u = findUser(aSID);
-	if(u) {
-		return *u;
+	OnlineUser* ou = findUser(aSID);
+	if(ou) {
+		return *ou;
 	}
 
 	User::Ptr p = ClientManager::getInstance()->getUser(aCID);
 
 	{
 		Lock l(cs);
-		u = users.insert(make_pair(aSID, new OnlineUser(p, *this, aSID))).first->second;
+		ou = users.insert(make_pair(aSID, new OnlineUser(p, *this, aSID))).first->second;
 	}
 
-	if(!aCID.isZero())
-		ClientManager::getInstance()->putOnline(*u);
-	return *u;
+	if(aSID != AdcCommand::HUB_SID)
+		ClientManager::getInstance()->putOnline(*ou);
+	return *ou;
 }
 
 OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
@@ -71,25 +73,35 @@ OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
 }
 
 void AdcHub::putUser(const u_int32_t aSID) {
-	Lock l(cs);
-	SIDIter i = users.find(aSID);
-	if(i == users.end())
-		return;
+	OnlineUser* ou = 0;
+	{
+		Lock l(cs);
+		SIDIter i = users.find(aSID);
+		if(i == users.end())
+			return;
+		ou = i->second;
+		users.erase(i);
+	}
+
 	if(aSID != AdcCommand::HUB_SID)
-		ClientManager::getInstance()->putOffline(*i->second);
-	fire(ClientListener::UserRemoved(), this, *i->second);
-	delete i->second;
-	users.erase(i);
+		ClientManager::getInstance()->putOffline(*ou);
+
+	fire(ClientListener::UserRemoved(), this, *ou);
+	delete ou;
 }
 
 void AdcHub::clearUsers() {
-	Lock l(cs);
-	for(SIDIter i = users.begin(); i != users.end(); ++i) {
+	SIDMap tmp;
+	{
+		Lock l(cs);
+		users.swap(tmp);
+	}
+
+	for(SIDIter i = tmp.begin(); i != tmp.end(); ++i) {
 		if(i->first != AdcCommand::HUB_SID)
 			ClientManager::getInstance()->putOffline(*i->second);
 		delete i->second;
 	}
-	users.clear();
 }
 
 
@@ -98,7 +110,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		return;
 
 	string cid;
-	
+
 	OnlineUser* u = 0;
 	if(c.getParam("ID", 0, cid))
 		u = &getUser(c.getFrom(), CID(cid));
@@ -115,7 +127,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	for(StringIterC i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
 		if(i->length() < 2)
 			continue;
-			
+
 		u->getIdentity().set(i->c_str(), i->substr(2));
 	}
 
@@ -195,7 +207,7 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, c.getParam(0));
 	} else {
 		fire(ClientListener::Message(), this, *from, c.getParam(0));
-	}		
+	}
 }
 
 void AdcHub::handle(AdcCommand::GPA, AdcCommand& c) throw() {
@@ -272,7 +284,7 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
 		cmd.setTo(c.getFrom());
 		cmd.addParam("PR", protocol);
-		
+
 		if(hasToken)
 			cmd.addParam("TO", token);
 
@@ -310,28 +322,29 @@ void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
 	FavoriteManager::getInstance()->addUserCommand(once ? UserCommand::TYPE_RAW_ONCE : UserCommand::TYPE_RAW, ctx, UserCommand::FLAG_NOSAVE, name, txt, getHubUrl());
 }
 
-void AdcHub::sendUDP(const AdcCommand& cmd) {
-	try {
-		Socket s;
-		s.create(Socket::TYPE_UDP);
-
+void AdcHub::sendUDP(const AdcCommand& cmd) throw() {
+	string command;
+	string ip;
+	short port;
+	{
 		Lock l(cs);
 		SIDMap::const_iterator i = users.find(cmd.getTo());
 		if(i == users.end()) {
 			dcdebug("AdcHub::sendUDP: invalid user\n");
 			return;
 		}
-		OnlineUser& u = *i->second;
-		string tmp = cmd.toString(u.getUser()->getCID());
-		if(u.getIdentity().isUdpActive()) {
-			try {
-				s.writeTo(u.getIdentity().getIp(), (short)Util::toInt(u.getIdentity().getUdpPort()), tmp);
-			} catch(const SocketException& e) {
-				dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
-			}
+		OnlineUser& ou = *i->second;
+		if(!ou.getIdentity().isUdpActive()) {
+			return;
 		}
-	} catch(SocketException&) {
-		dcdebug("Can't create UDP socket\n");
+		ip = ou.getIdentity().getIp();
+		port = static_cast<short>(Util::toInt(ou.getIdentity().getUdpPort()));
+		command = cmd.toString(ou.getUser()->getCID());
+	}
+	try {
+		udp.writeTo(ip, port, command);
+	} catch(const SocketException& e) {
+		dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
 	}
 }
 
@@ -343,6 +356,12 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 	if(!u)
 		return;
 
+	//int severity = Util::toInt(c.getParam(0).substr(0, 1));
+	int code = Util::toInt(c.getParam(0).substr(1));
+
+	if(code == AdcCommand::ERROR_BAD_PASSWORD) {
+		setPassword(Util::emptyString);
+	}
 	// @todo Check for invalid protocol and unset TLS if necessary
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
@@ -376,9 +395,13 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 		return;
 
 	const string& proto = secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL;
-	short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
-
 	if(ClientManager::getInstance()->isActive()) {
+		short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
+		if(port == 0) {
+			// Oops?
+			LogManager::getInstance()->message(STRING(NOT_LISTENING));
+			return;
+		}
 		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
 	} else {
 		send(AdcCommand(AdcCommand::CMD_RCM, user.getIdentity().getSID()).addParam(proto));
@@ -388,16 +411,16 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 void AdcHub::hubMessage(const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST).addParam(aMessage)); 
+	send(AdcCommand(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST).addParam(aMessage));
 }
 
-void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) { 
+void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, user.getIdentity().getSID()).addParam(aMessage).addParam("PM", getMySID())); 
+	send(AdcCommand(AdcCommand::CMD_MSG, user.getIdentity().getSID()).addParam(aMessage).addParam("PM", getMySID()));
 }
 
-void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) { 
+void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	if(state != STATE_NORMAL)
 		return;
 
@@ -432,7 +455,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	}
 }
 
-void AdcHub::password(const string& pwd) { 
+void AdcHub::password(const string& pwd) {
 	if(state != STATE_VERIFY)
 		return;
 	if(!salt.empty()) {
@@ -505,8 +528,8 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	string su;
 	if(CryptoManager::getInstance()->TLSOk()) {
 		su += ADCS_FEATURE + ",";
-	} 
-	
+	}
+
 	if(ClientManager::getInstance()->isActive()) {
 		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
 			ADDPARAM("I4", Socket::resolve(SETTING(EXTERNAL_IP)));
@@ -552,23 +575,23 @@ string AdcHub::checkNick(const string& aNick) {
 	return tmp;
 }
 
-void AdcHub::on(Connected) throw() { 
+void AdcHub::on(Connected) throw() {
 	dcassert(state == STATE_PROTOCOL);
 	lastInfoMap.clear();
 	reconnect = true;
 	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("ADBAS0"));
-	
+
 	fire(ClientListener::Connected(), this);
 }
 
-void AdcHub::on(Line, const string& aLine) throw() { 
+void AdcHub::on(Line, const string& aLine) throw() {
 	if(BOOLSETTING(ADC_DEBUG)) {
 		fire(ClientListener::StatusMessage(), this, "<ADC>" + aLine + "</ADC>");
 	}
-	dispatch(aLine); 
+	dispatch(aLine);
 }
 
-void AdcHub::on(Failed, const string& aLine) throw() { 
+void AdcHub::on(Failed, const string& aLine) throw() {
 	clearUsers();
 	socket->removeListener(this);
 	state = STATE_PROTOCOL;

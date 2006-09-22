@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -37,6 +41,7 @@
     #include <netinet/in.h>
     #include <sys/ioctl.h>
     #include <string.h>
+    #include <fcntl.h>
 #endif // _WIN32
 
 #if defined(__sun) || defined(__SCO_VERSION__)
@@ -58,7 +63,7 @@ namespace yaSSL {
 
 
 Socket::Socket(socket_t s) 
-    : socket_(s), wouldBlock_(false)
+    : socket_(s), wouldBlock_(false), blocking_(false)
 {}
 
 
@@ -144,6 +149,7 @@ uint Socket::receive(byte* buf, unsigned int sz, int flags)
         if (get_lastError() == SOCKET_EWOULDBLOCK || 
             get_lastError() == SOCKET_EAGAIN) {
             wouldBlock_ = true;
+            blocking_   = true; // socket can block, only way to tell for win32
             return 0;
         }
     }
@@ -182,6 +188,12 @@ int Socket::get_lastError()
 bool Socket::WouldBlock() const
 {
     return wouldBlock_;
+}
+
+
+bool Socket::IsBlocking() const
+{
+    return blocking_;
 }
 
 

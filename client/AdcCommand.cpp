@@ -84,7 +84,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 			else
 				throw ParseException("Unknown escape");
 			break;
-		case ' ': 
+		case ' ':
 			// New parameter...
 			{
 				if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) && !fromSet) {
@@ -179,7 +179,7 @@ string AdcCommand::getHeaderString(u_int32_t sid, bool nmdc) const {
 string AdcCommand::getHeaderString(const CID& cid) const {
 	dcassert(type == TYPE_UDP);
 	string tmp;
-	
+
 	tmp += getType();
 	tmp += cmdChar;
 	tmp += ' ';
@@ -213,7 +213,7 @@ bool AdcCommand::getParam(const char* name, size_t start, string& ret) const {
 
 bool AdcCommand::hasFlag(const char* name, size_t start) const {
 	for(string::size_type i = start; i < getParameters().size(); ++i) {
-		if(toCode(name) == toCode(getParameters()[i].c_str()) && 
+		if(toCode(name) == toCode(getParameters()[i].c_str()) &&
 			getParameters()[i][2] == '1' &&
 			getParameters()[i].size() == 3)
 		{

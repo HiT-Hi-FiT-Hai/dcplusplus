@@ -68,7 +68,7 @@ void AppearancePage::write()
 LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::translate((HWND)(*this), texts);
-	
+
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
 
@@ -82,7 +82,7 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	GetDlgItemText(IDC_LANGUAGE, buf, MAX_PATH);
 	tstring x = buf;
 
-	if(WinUtil::browseFile(x, m_hWnd, false, Text::toT(Util::getAppPath()), types) == IDOK) {
+	if(WinUtil::browseFile(x, m_hWnd, false, Text::toT(Util::getDataPath()), types) == IDOK) {
 		SetDlgItemText(IDC_LANGUAGE, x.c_str());
 	}
 	return 0;

@@ -51,6 +51,14 @@ public:
 			(*i)->on(type, p1);
 		}
 	}
+	template<typename T0, class T1>
+	void fire(T0 type, T1& p1) throw() {
+		Lock l(listenerCS);
+		tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
+			(*i)->on(type, p1);
+		}
+	}
 
 	template<typename T0, class T1, class T2>
 	void fire(T0 type, const T1& p1, const T2& p2) throw() {
@@ -114,7 +122,7 @@ public:
 		Lock l(listenerCS);
 		listeners.clear();
 	}
-	
+
 protected:
 	ListenerList listeners;
 	ListenerList tmp;

@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -63,12 +67,15 @@ int read_file(SSL_CTX* ctx, const char* file, int format, CertType type)
         return SSL_BAD_FILE;
 
     if (type == CA) {
-        x509* ptr = PemToDer(file, Cert);
-        if (!ptr) {
+        // may have a bunch of CAs
+        x509* ptr;
+        while ( (ptr = PemToDer(input, Cert)) )
+            ctx->AddCA(ptr);
+
+        if (!feof(input)) {
             fclose(input);
             return SSL_BAD_FILE;
         }
-        ctx->AddCA(ptr);  // takes ownership
     }
     else {
         x509*& x = (type == Cert) ? ctx->certificate_ : ctx->privateKey_;
@@ -85,7 +92,7 @@ int read_file(SSL_CTX* ctx, const char* file, int format, CertType type)
             }
         }
         else {
-            x = PemToDer(file, type);
+            x = PemToDer(input, type);
             if (!x) {
                 fclose(input);
                 return SSL_BAD_FILE;
@@ -170,38 +177,67 @@ int SSL_set_fd(SSL* ssl, int fd)
 
 int SSL_connect(SSL* ssl)
 {
-    sendClientHello(*ssl);
-    ClientState neededState = ssl->getSecurity().get_resuming() ?
-        serverFinishedComplete : serverHelloDoneComplete;
-    while (ssl->getStates().getClient() < neededState) {
-        if (ssl->GetError()) break;
-        processReply(*ssl);
-    }
+    if (ssl->GetError() == YasslError(SSL_ERROR_WANT_READ))
+        ssl->SetError(no_error);
 
-    if(ssl->getCrypto().get_certManager().sendVerify())
-        sendCertificate(*ssl);
+    ClientState neededState;
 
-    if (!ssl->getSecurity().get_resuming())
-        sendClientKeyExchange(*ssl);
+    switch (ssl->getStates().GetConnect()) {
 
-    if(ssl->getCrypto().get_certManager().sendVerify())
-        sendCertificateVerify(*ssl);
+    case CONNECT_BEGIN :
+        sendClientHello(*ssl);
+        if (!ssl->GetError())
+            ssl->useStates().UseConnect() = CLIENT_HELLO_SENT;
 
-    sendChangeCipher(*ssl);
-    sendFinished(*ssl, client_end);
-    ssl->flushBuffer();
-    if (!ssl->getSecurity().get_resuming())
-        while (ssl->getStates().getClient() < serverFinishedComplete) {
+    case CLIENT_HELLO_SENT :
+        neededState = ssl->getSecurity().get_resuming() ?
+                      serverFinishedComplete : serverHelloDoneComplete;
+        while (ssl->getStates().getClient() < neededState) {
             if (ssl->GetError()) break;
             processReply(*ssl);
         }
+        if (!ssl->GetError())
+            ssl->useStates().UseConnect() = FIRST_REPLY_DONE;
 
-    ssl->verifyState(serverFinishedComplete);
-    ssl->useLog().ShowTCP(ssl->getSocket().get_fd());
+    case FIRST_REPLY_DONE :
+        if(ssl->getCrypto().get_certManager().sendVerify())
+            sendCertificate(*ssl);
 
-    if (ssl->GetError())
-        return SSL_FATAL_ERROR;
-    return SSL_SUCCESS;
+        if (!ssl->getSecurity().get_resuming())
+            sendClientKeyExchange(*ssl);
+
+        if(ssl->getCrypto().get_certManager().sendVerify())
+            sendCertificateVerify(*ssl);
+
+        sendChangeCipher(*ssl);
+        sendFinished(*ssl, client_end);
+        ssl->flushBuffer();
+
+        if (!ssl->GetError())
+            ssl->useStates().UseConnect() = FINISHED_DONE;
+
+    case FINISHED_DONE :
+        if (!ssl->getSecurity().get_resuming())
+            while (ssl->getStates().getClient() < serverFinishedComplete) {
+                if (ssl->GetError()) break;
+                processReply(*ssl);
+            }
+        if (!ssl->GetError())
+            ssl->useStates().UseConnect() = SECOND_REPLY_DONE;
+
+    case SECOND_REPLY_DONE :
+        ssl->verifyState(serverFinishedComplete);
+        ssl->useLog().ShowTCP(ssl->getSocket().get_fd());
+
+        if (ssl->GetError()) {
+            GetErrors().Add(ssl->GetError());
+            return SSL_FATAL_ERROR;
+        }   
+        return SSL_SUCCESS;
+
+    default :
+        return SSL_FATAL_ERROR; // unkown state
+    }
 }
 
 
@@ -220,41 +256,75 @@ int SSL_read(SSL* ssl, void* buffer, int sz)
 
 int SSL_accept(SSL* ssl)
 {
-    processReply(*ssl);
-    sendServerHello(*ssl);
+    if (ssl->GetError() == YasslError(SSL_ERROR_WANT_READ))
+        ssl->SetError(no_error);
 
-    if (!ssl->getSecurity().get_resuming()) {
-        sendCertificate(*ssl);
+    switch (ssl->getStates().GetAccept()) {
 
-        if (ssl->getSecurity().get_connection().send_server_key_)
-            sendServerKeyExchange(*ssl);
+    case ACCEPT_BEGIN :
+        processReply(*ssl);
+        if (!ssl->GetError())
+            ssl->useStates().UseAccept() = ACCEPT_FIRST_REPLY_DONE;
 
-        if(ssl->getCrypto().get_certManager().verifyPeer())
-            sendCertificateRequest(*ssl);
+    case ACCEPT_FIRST_REPLY_DONE :
+        sendServerHello(*ssl);
 
-        sendServerHelloDone(*ssl);
+        if (!ssl->getSecurity().get_resuming()) {
+            sendCertificate(*ssl);
+
+            if (ssl->getSecurity().get_connection().send_server_key_)
+                sendServerKeyExchange(*ssl);
+
+            if(ssl->getCrypto().get_certManager().verifyPeer())
+                sendCertificateRequest(*ssl);
+
+            sendServerHelloDone(*ssl);
+            ssl->flushBuffer();
+        }
+      
+        if (!ssl->GetError())
+            ssl->useStates().UseAccept() = SERVER_HELLO_DONE;
+
+    case SERVER_HELLO_DONE :
+        if (!ssl->getSecurity().get_resuming()) {
+            while (ssl->getStates().getServer() < clientFinishedComplete) {
+                if (ssl->GetError()) break;
+                processReply(*ssl);
+            }
+        }
+        if (!ssl->GetError())
+            ssl->useStates().UseAccept() = ACCEPT_SECOND_REPLY_DONE;
+
+    case ACCEPT_SECOND_REPLY_DONE :
+        sendChangeCipher(*ssl);
+        sendFinished(*ssl, server_end);
         ssl->flushBuffer();
 
-        while (ssl->getStates().getServer() < clientFinishedComplete) {
-            if (ssl->GetError()) break;
-            processReply(*ssl);
-        }
-    }
-    sendChangeCipher(*ssl);
-    sendFinished(*ssl, server_end);
-    ssl->flushBuffer();
-    if (ssl->getSecurity().get_resuming()) {
-        while (ssl->getStates().getServer() < clientFinishedComplete) {
-            if (ssl->GetError()) break;
-            processReply(*ssl);
-        }
-    }
+        if (!ssl->GetError())
+            ssl->useStates().UseAccept() = ACCEPT_FINISHED_DONE;
 
-    ssl->useLog().ShowTCP(ssl->getSocket().get_fd());
+    case ACCEPT_FINISHED_DONE :
+        if (ssl->getSecurity().get_resuming()) {
+            while (ssl->getStates().getServer() < clientFinishedComplete) {
+                if (ssl->GetError()) break;
+                processReply(*ssl);
+            }
+        }
+        if (!ssl->GetError())
+            ssl->useStates().UseAccept() = ACCEPT_THIRD_REPLY_DONE;
 
-    if (ssl->GetError())
-        return SSL_FATAL_ERROR;
-    return SSL_SUCCESS;
+    case ACCEPT_THIRD_REPLY_DONE :
+        ssl->useLog().ShowTCP(ssl->getSocket().get_fd());
+
+        if (ssl->GetError()) {
+            GetErrors().Add(ssl->GetError());
+            return SSL_FATAL_ERROR;
+        }
+        return SSL_SUCCESS;
+
+    default:
+        return SSL_FATAL_ERROR; // unknown state
+    }
 }
 
 
@@ -270,6 +340,8 @@ int SSL_do_handshake(SSL* ssl)
 int SSL_clear(SSL* ssl)
 {
     ssl->useSocket().closeSocket();
+    GetErrors().Remove();
+
     return SSL_SUCCESS;
 }
 
@@ -280,6 +352,8 @@ int SSL_shutdown(SSL* ssl)
     sendAlert(*ssl, alert);
     ssl->useLog().ShowTCP(ssl->getSocket().get_fd(), true);
     ssl->useSocket().closeSocket();
+
+    GetErrors().Remove();
 
     return SSL_SUCCESS;
 }
@@ -1206,6 +1280,16 @@ int SSL_peek(SSL* ssl, void* buffer, int sz)
 }
 
 
+int SSL_pending(SSL* ssl)
+{
+    // Just in case there's pending data that hasn't been processed yet...
+    char c;
+    SSL_peek(ssl, &c, 1);
+    
+    return ssl->bufferedData();
+}
+
+
 
     // functions for stunnel
 
@@ -1370,15 +1454,6 @@ int SSL_peek(SSL* ssl, void* buffer, int sz)
     }
 
 
-    int SSL_pending(SSL* ssl)
-    {
-		// Just in case there's pending data that hasn't been processed yet...
-		char c;
-		SSL_peek(ssl, &c, 1);
-		return ssl->bufferedData();
-    }
-
-
     int SSL_want_read(SSL*)
     {
         return 0; // TODO:
@@ -1419,7 +1494,7 @@ int SSL_peek(SSL* ssl, void* buffer, int sz)
 
     void ERR_remove_state(unsigned long)
     {
-        // TODO:
+        GetErrors().Remove();
     }
 
 
@@ -1428,16 +1503,30 @@ int SSL_peek(SSL* ssl, void* buffer, int sz)
         return l & 0xfff;
     }
 
+    unsigned long err_helper(bool peek = false)
+    {
+        int ysError = GetErrors().Lookup(peek);
+
+        // translate cert error for libcurl, it uses OpenSSL hex code
+        switch (ysError) {
+        case TaoCrypt::SIG_OTHER_E:
+            return CERTFICATE_ERROR;
+            break;
+        default :
+            return 0;
+        }
+    }
+
 
     unsigned long ERR_peek_error()
     {
-        return 0;  // TODO:
+        return err_helper(true);
     }
 
 
     unsigned long ERR_get_error()
     {
-        return ERR_peek_error();
+        return err_helper();
     }
 
 

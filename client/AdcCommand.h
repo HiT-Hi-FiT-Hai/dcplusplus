@@ -79,7 +79,11 @@ public:
 	static const char TYPE_HUB = 'H';
 	static const char TYPE_UDP = 'U';
 
+#if defined(_WIN32) || defined(__i386__) || defined(__x86_64__) || defined(__alpha)
 #define C(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
+#else
+#define C(n, a, b, c) static const u_int32_t CMD_##n = ((((u_int32_t)a)<<24) | (((u_int32_t)b)<<16) | (((u_int32_t)c)<<8)); typedef Type<CMD_##n> n
+#endif
 	// Base commands
 	C(SUP, 'S','U','P');
 	C(STA, 'S','T','A');
@@ -112,7 +116,7 @@ public:
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
 	void setType(char t) { type = t; }
-	
+
 	AdcCommand& setFeatures(const string& feat) { features = feat; return *this; }
 
 	StringList& getParameters() { return parameters; }
@@ -190,7 +194,7 @@ public:
 				C(SND);
 				C(SID);
 				C(CMD);
-			default: 
+			default:
 				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
 				break;
 #undef C

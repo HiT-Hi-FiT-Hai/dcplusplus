@@ -31,7 +31,7 @@ UPnP::UPnP(const string theIPAddress, const string theProtocol, const string the
 	// if anyone knows a better way, please tell....
 
 	PortsAreOpen		= false;
-	
+
 	PortNumber		    = thePort;
 	bstrProtocol        = A2BSTR(theProtocol.c_str());
 	bstrInternalClient  = A2BSTR(theIPAddress.c_str());
@@ -73,7 +73,7 @@ HRESULT UPnP::OpenPorts() {
 				hr = E_OUTOFMEMORY;
 			}
 		} else {
-			hr = E_FAIL;    // work around a known bug here:  in some error
+			hr = E_FAIL;	// work around a known bug here:  in some error
 			// conditions, get_SPMC NULLs out the pointer, but incorrectly returns a success code.
 		}
 	}
@@ -108,7 +108,7 @@ HRESULT UPnP::ClosePorts() {
 
 // Returns the current external IP address
 string UPnP::GetExternalIP() {
-  	USES_CONVERSION;
+	USES_CONVERSION;
 	HRESULT hr;
 
 	// Check if we opened the desired port, 'cause we use it for getting the IP
@@ -116,8 +116,8 @@ string UPnP::GetExternalIP() {
 	// we opened the mapping
 	// This function is not used somewhere else, hence it is "save" to do it like this
 	if(!PortsAreOpen) {
-  		return Util::emptyString;
-  	}
+		return Util::emptyString;
+	}
 
 	// Get the Collection
 	IStaticPortMappingCollection *pIMaps = NULL;
@@ -126,7 +126,7 @@ string UPnP::GetExternalIP() {
 	// Check it
 	// We also check against that bug mentioned in OpenPorts()
 	if(!SUCCEEDED(hr) || !pIMaps ) {
-         // Only release when OK
+		// Only release when OK
 		if(pIMaps != NULL) {
 			pIMaps->Release();
 		}
@@ -143,9 +143,9 @@ string UPnP::GetExternalIP() {
 
 	// Query failed!
 	if(!SUCCEEDED(hr)) {
-  		pIMaps->Release();
-  		return Util::emptyString;
-  	}
+		pIMaps->Release();
+		return Util::emptyString;
+	}
 
 	// Get the External IP from our mapping
 	BSTR bstrExternal = NULL;
@@ -153,27 +153,27 @@ string UPnP::GetExternalIP() {
 
 	// D'OH. Failed
 	if(!SUCCEEDED(hr)) {
-  		pIMaps->Release();
+		pIMaps->Release();
 		pISM->Release();
-  		return Util::emptyString;
-  	}
+		return Util::emptyString;
+	}
 
 	// Check and convert the result
 	string tmp;
 	if(bstrExternal != NULL) {
 		tmp = OLE2A(bstrExternal);
-  	} else {
+	} else {
 		tmp = Util::emptyString;
-  	}
+	}
 
 	// no longer needed
 	SysFreeString(bstrExternal);
 
 	// no longer needed
-  	pIMaps->Release();
+	pIMaps->Release();
 	pISM->Release();
 
-  	return tmp;
+	return tmp;
 }
 
 UPnP::~UPnP() {

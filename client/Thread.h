@@ -32,7 +32,7 @@
 #include "Exception.h"
 STANDARD_EXCEPTION(ThreadException);
 
-class Thread  
+class Thread
 {
 public:
 #ifdef _WIN32
@@ -44,11 +44,11 @@ public:
 	};
 
 	Thread() throw() : threadHandle(NULL), threadId(0){ }
-	virtual ~Thread() { 
+	virtual ~Thread() {
 		if(threadHandle)
 			CloseHandle(threadHandle);
 	}
-	
+
 	void start() throw(ThreadException);
 	void join() throw(ThreadException) {
 		if(threadHandle == NULL) {
@@ -61,7 +61,7 @@ public:
 	}
 
 	void setThreadPriority(Priority p) throw() { ::SetThreadPriority(threadHandle, p); }
-	
+
 	static void sleep(u_int32_t millis) { ::Sleep(millis); }
 	static void yield() { ::Sleep(1); }
 	static long safeInc(volatile long& v) { return InterlockedIncrement(&v); }
@@ -77,13 +77,13 @@ public:
 		HIGH = -1
 	};
 	Thread() throw() : threadHandle(0) { }
-	virtual ~Thread() { 
+	virtual ~Thread() {
 		if(threadHandle != 0) {
 			pthread_detach(threadHandle);
 		}
 	}
 	void start() throw(ThreadException);
-	void join() throw() { 
+	void join() throw() {
 		if (threadHandle) {
 			pthread_join(threadHandle, 0);
 			threadHandle = 0;
@@ -93,13 +93,13 @@ public:
 	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); }
 	static void sleep(u_int32_t millis) { ::usleep(millis*1000); }
 	static void yield() { ::sched_yield(); }
-	static long safeInc(volatile long& v) { 
+	static long safeInc(volatile long& v) {
 		pthread_mutex_lock(&mtx);
 		long ret = ++v;
 		pthread_mutex_unlock(&mtx);
 		return ret;
 	}
-	static long safeDec(volatile long& v) { 
+	static long safeDec(volatile long& v) {
 		pthread_mutex_lock(&mtx);
 		long ret = --v;
 		pthread_mutex_unlock(&mtx);
@@ -109,7 +109,7 @@ public:
 
 protected:
 	virtual int run() = 0;
-	
+
 private:
 	Thread(const Thread&);
 	Thread& operator=(const Thread&);

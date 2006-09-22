@@ -109,7 +109,7 @@ int Text::utf8ToWc(const char* str, wchar_t& c) {
 
 void Text::wcToUtf8(wchar_t c, string& str) {
 	if(c >= 0x0800) {
-		str += (char)(0x80 | 0x40 | 0x20  | (c >> 12));
+		str += (char)(0x80 | 0x40 | 0x20 | (c >> 12));
 		str += (char)(0x80 | ((c >> 6) & 0x3f));
 		str += (char)(0x80 | (c & 0x3f));
 	} else if(c >= 0x0080) {

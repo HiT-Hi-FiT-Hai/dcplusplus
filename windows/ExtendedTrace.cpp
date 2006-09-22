@@ -13,7 +13,7 @@
 // ExtendedTrace.cpp
 //
 
-// Include StdAfx.h, if you're using precompiled 
+// Include StdAfx.h, if you're using precompiled
 // header through StdAfx.h
 #include "stdafx.h"
 
@@ -33,15 +33,15 @@
 void PCSTR2LPTSTR( PCSTR lpszIn, LPTSTR lpszOut )
 {
 #if defined(UNICODE)||defined(_UNICODE)
-   ULONG index = 0; 
+   ULONG index = 0;
    PCSTR lpAct = lpszIn;
-   
+
 	for( ; ; lpAct++ )
 	{
 		lpszOut[index++] = (TCHAR)(*lpAct);
 		if ( *lpAct == 0 )
 			break;
-	} 
+	}
 #else
    // This is trivial :)
 	strcpy( lpszOut, lpszIn );
@@ -128,7 +128,7 @@ static BOOL GetModuleNameFromAddress( UINT address, LPTSTR lpszModule )
 	else
 	   // Not found :(
 		_tcscpy( lpszModule, _T("?") );
-	
+
 	return ret;
 }
 
@@ -155,8 +155,8 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 	if ( SymFromAddr( GetCurrentProcess(), (ULONG)fnAddress, &dwDisp, pSym ) )
 	{
 	   // Make the symbol readable for humans
-		UnDecorateSymbolName( pSym->Name, lpszNonUnicodeUnDSymbol, BUFFERSIZE, 
-			UNDNAME_COMPLETE | 
+		UnDecorateSymbolName( pSym->Name, lpszNonUnicodeUnDSymbol, BUFFERSIZE,
+			UNDNAME_COMPLETE |
 			UNDNAME_NO_THISTYPE |
 			UNDNAME_NO_SPECIAL_SYMS |
 			UNDNAME_NO_MEMBER_TYPE |
@@ -215,9 +215,9 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 		}
 
 		_tcscat( lpszSymbol, lpszParsed );
-   
+
 		ret = TRUE;
-	} 
+	}
 	GlobalFree( pSym );
 
 	return ret;
@@ -262,7 +262,7 @@ static BOOL GetSourceInfoFromAddress( UINT address, LPTSTR lpszSourceInfo )
 
 		ret = FALSE;
 	}
-	
+
 	return ret;
 }
 
@@ -302,14 +302,14 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		f.write(LIT("\r\n"));
 
 		// Max 100 stack lines...
-		for( ULONG index = 0; index < 100; index++ ) 
+		for( ULONG index = 0; index < 100; index++ )
 		{
 			bResult = StackWalk(
 				IMAGE_FILE_MACHINE_I386,
 				hProcess,
 				hThread,
 				&callStack,
-				NULL, 
+				NULL,
 				NULL,
 				SymFunctionTableAccess,
 				SymGetModuleBase,
@@ -318,7 +318,7 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 			if ( index == 0 )
 				continue;
 
-			if( !bResult || callStack.AddrFrame.Offset == 0 ) 
+			if( !bResult || callStack.AddrFrame.Offset == 0 )
 				break;
 
 			GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );

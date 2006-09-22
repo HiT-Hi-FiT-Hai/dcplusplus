@@ -64,7 +64,7 @@ public:
 
 	enum FileFlags {
 		/** Normal download, no flags set */
-		FLAG_NORMAL = 0x00, 
+		FLAG_NORMAL = 0x00,
 		/** This download should be resumed if possible */
 		FLAG_RESUME = 0x01,
 		/** This is a user file listing download */
@@ -97,40 +97,34 @@ public:
 			FLAG_REMOVED = 0x08,
 			FLAG_CRC_FAILED = 0x10,
 			FLAG_CRC_WARN = 0x20,
-			FLAG_UTF8 = 0x40,
+			FLAG_NO_TTHF = 0x40,
 			FLAG_BAD_TREE = 0x80,
 			FLAG_NO_TREE = 0x100,
 			FLAG_SLOW_SOURCE = 0x200,
-			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY 
-				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 
+			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY
+				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN 
 				| FLAG_BAD_TREE | FLAG_NO_TREE | FLAG_SLOW_SOURCE
 		};
 
-		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { }
-		Source(const Source& aSource) : Flags(aSource), path(aSource.path), user(aSource.user) { }
+		Source(const User::Ptr& aUser) : user(aUser) { }
+		Source(const Source& aSource) : Flags(aSource), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; }
-		const User::Ptr& getUser() const { return user; }
-		void setUser(const User::Ptr& aUser) { user = aUser; }
-		string getFileName() { return Util::getFileName(path); }
-
-		GETSET(string, path, Path);
-	private:
-		User::Ptr user;
+		GETSET(User::Ptr, user, User);
 	};
 
-	QueueItem(const string& aTarget, int64_t aSize, 
-		Priority aPriority, int aFlag, int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* tth) : 
-	Flags(aFlag), target(aTarget), 
-		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING), 
+	QueueItem(const string& aTarget, int64_t aSize,
+		Priority aPriority, int aFlag, int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue& tth) :
+	Flags(aFlag), target(aTarget),
+		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING),
 		priority(aPriority), current(NULL), currentDownload(NULL), added(aAdded),
-		tthRoot(tth == NULL ? NULL : new TTHValue(*tth))
+		tthRoot(tth)
 	{ }
 
-	QueueItem(const QueueItem& rhs) : 
-	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget), 
-		size(rhs.size), downloadedBytes(rhs.downloadedBytes), status(rhs.status), priority(rhs.priority), 
-		current(rhs.current), currentDownload(rhs.currentDownload), added(rhs.added), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot))
+	QueueItem(const QueueItem& rhs) :
+	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget),
+		size(rhs.size), downloadedBytes(rhs.downloadedBytes), status(rhs.status), priority(rhs.priority),
+		current(rhs.current), currentDownload(rhs.currentDownload), added(rhs.added), tthRoot(rhs.tthRoot)
 	{
 		// Deep copy the source lists
 		Source::List::const_iterator i;
@@ -142,10 +136,9 @@ public:
 		}
 	}
 
-	virtual ~QueueItem() { 
+	virtual ~QueueItem() {
 		for_each(sources.begin(), sources.end(), DeleteFunction());
 		for_each(badSources.begin(), badSources.end(), DeleteFunction());
-		delete tthRoot;
 	}
 
 	int countOnlineUsers() const {
@@ -159,15 +152,10 @@ public:
 	}
 	bool hasOnlineUsers() const { return countOnlineUsers() > 0; }
 
-	const string& getSourcePath(const User::Ptr& aUser) { 
-		dcassert(isSource(aUser)); 
-		return (*getSource(aUser, sources))->getPath();
-	}
-
 	Source::List& getSources() { return sources; }
 	Source::List& getBadSources() { return badSources; }
 
-	void getOnlineUsers(User::List& l) const  {
+	void getOnlineUsers(User::List& l) const {
 		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i)
 			if((*i)->getUser()->isOnline())
 				l.push_back((*i)->getUser());
@@ -186,7 +174,7 @@ public:
 	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
 		Source::ConstIter i = getSource(aUser, badSources);
 		if(i != badSources.end())
-			return (*i)->isAnySet(exceptions^Source::FLAG_MASK); 
+			return (*i)->isAnySet(exceptions^Source::FLAG_MASK);
 		return false;
 	}
 
@@ -200,7 +188,7 @@ public:
 		if(isSet(QueueItem::FLAG_XML_BZLIST)) {
 			return getTarget() + ".xml.bz2";
 		} else {
-			return getTarget() + ".DcLst";
+			return getTarget() + ".xml";
 		}
 	}
 
@@ -217,62 +205,21 @@ public:
 	GETSET(Source*, current, Current);
 	GETSET(Download*, currentDownload, CurrentDownload);
 	GETSET(u_int32_t, added, Added);
-	GETSET(TTHValue*, tthRoot, TTH);
+	GETSET(TTHValue, tthRoot, TTH);
 private:
 	QueueItem& operator=(const QueueItem&);
 
 	friend class QueueManager;
 	Source::List sources;
-	Source::List badSources;	
+	Source::List badSources;
 
-	Source* addSource(const User::Ptr& aUser, const string& aPath) {
-		dcassert(!isSource(aUser));
-		Source* s = NULL;
-		Source::Iter i = getSource(aUser, badSources);
-		if(i != badSources.end()) {
-			s = *i;
-			badSources.erase(i);
-			s->setPath(aPath);
-		} else {
-			s = new Source(aUser, aPath);
-		}
+	Source* addSource(const User::Ptr& aUser);
 
-		sources.push_back(s);
-		return s;
-	}
+	void removeSource(const User::Ptr& aUser, int reason);
 
-	void removeSource(const User::Ptr& aUser, int reason) {
-		Source::Iter i = getSource(aUser, sources);
-		dcassert(i != sources.end());
-		(*i)->setFlag(reason);
-		badSources.push_back(*i);
-		sources.erase(i);
-	}
-
-	static Source::Iter getSource(const User::Ptr& aUser, Source::List& lst) { 
-		for(Source::Iter i = lst.begin(); i != lst.end(); ++i) {
-			if((*i)->getUser() == aUser)
-				return i;
-		}
-		return lst.end();
-	}
-	static Source::ConstIter getSource(const User::Ptr& aUser, const Source::List& lst) { 
-		for(Source::ConstIter i = lst.begin(); i != lst.end(); ++i) {
-			const Source* s = *i;
-			if( (s->getUser() == aUser) )
-				return i;
-		}
-
-		return lst.end();
-	}
-	static bool isSource(const User::Ptr& aUser, const Source::List& lst) {
-		for(Source::List::const_iterator i = lst.begin(); i != lst.end(); ++i) {
-			const Source* s = *i;
-			if( (s->getUser() == aUser)  )
-				return true;
-		}
-		return false;
-	}
+	static Source::Iter getSource(const User::Ptr& aUser, Source::List& lst);
+	static Source::ConstIter getSource(const User::Ptr& aUser, const Source::List& lst) ;
+	static bool isSource(const User::Ptr& aUser, const Source::List& lst);
 
 };
 

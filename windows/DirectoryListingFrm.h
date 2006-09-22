@@ -72,9 +72,9 @@ public:
 		STATUS_DUMMY,
 		STATUS_LAST
 	};
-	
+
 	DirectoryListingFrame(const User::Ptr& aUser, int64_t aSpeed);
-	virtual ~DirectoryListingFrame() { 
+	virtual ~DirectoryListingFrame() {
 		dcassert(lists.find(dl->getUser()) != lists.end());
 		lists.erase(dl->getUser());
 	}
@@ -132,8 +132,8 @@ public:
 	LRESULT onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTargetDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
-	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
+	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onXButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -242,13 +242,13 @@ private:
 			FILE,
 			DIRECTORY
 		} type;
-		
+
 		union {
 			DirectoryListing::File* file;
 			DirectoryListing::Directory* dir;
 		};
 
-		ItemInfo(DirectoryListing::File* f, bool utf8) : type(FILE), file(f) { 
+		ItemInfo(DirectoryListing::File* f, bool utf8) : type(FILE), file(f) {
 			if(utf8) {
 				columns[COLUMN_FILENAME] = Text::toT(f->getName());
 			} else {
@@ -260,10 +260,9 @@ private:
 
 			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(f->getSize()));
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
-			if(f->getTTH() != NULL)
-				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
+			columns[COLUMN_TTH] = Text::toT(f->getTTH().toBase32());
 		}
-		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
+		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) {
 			if(utf8) {
 				columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			} else {
@@ -276,7 +275,7 @@ private:
 		const tstring& getText(int col) {
 			return columns[col];
 		}
-		
+
 		struct TotalSize {
 			TotalSize() : total(0) { }
 			void operator()(ItemInfo* a) { total += a->type == DIRECTORY ? a->dir->getTotalSize() : a->file->getSize(); }
@@ -308,7 +307,7 @@ private:
 	private:
 		tstring columns[COLUMN_LAST];
 	};
-	
+
 	CMenu targetMenu;
 	CMenu targetDirMenu;
 	CMenu fileMenu;
@@ -318,15 +317,15 @@ private:
 	CContainedWindow listContainer;
 
 	StringList targets;
-	
+
 	deque<string> history;
 	size_t historyIndex;
-	
+
 	CTreeViewCtrl ctrlTree;
 	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;
 	CStatusBarCtrl ctrlStatus;
 	HTREEITEM treeRoot;
-	
+
 	CButton ctrlFind, ctrlFindNext;
 	CButton ctrlListDiff;
 	CButton ctrlMatchQueue;
@@ -344,14 +343,14 @@ private:
 	bool searching;
 
 	int statusSizes[10];
-	
+
 	auto_ptr<DirectoryListing> dl;
 
 	StringMap ucLineParams;
 
 	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
-	
+
 	static UserMap lists;
 
 	static int columnIndexes[COLUMN_LAST];

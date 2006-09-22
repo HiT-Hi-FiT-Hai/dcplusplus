@@ -37,7 +37,7 @@ class BitInputStream
 public:
 	BitInputStream(const u_int8_t* aStream, size_t aStart, size_t aEnd) : bitPos(aStart*8), endPos(aEnd*8), is(aStream) { }
 	~BitInputStream() { }
-	
+
 	bool get() throw(BitStreamException) {
 		if(bitPos > endPos) {
 			throw BitStreamException(STRING(SEEK_BEYOND_END));
@@ -46,12 +46,12 @@ public:
 		bitPos++;
 		return ret;
 	}
-	
+
 	void skipToByte() {
 		if(bitPos%8 != 0)
 			bitPos = (bitPos & (~7)) + 8;
 	}
-	
+
 	void skip(int n) {
 		bitPos += n * 8;
 		return ;
@@ -59,7 +59,7 @@ public:
 private:
 	BitInputStream(const BitInputStream&);
 	BitInputStream& operator=(const BitInputStream&);
-	
+
 	size_t bitPos;
 	size_t endPos;
 	const u_int8_t* is;

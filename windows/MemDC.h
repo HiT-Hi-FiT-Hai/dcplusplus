@@ -37,7 +37,7 @@
 #include "../client/DCPlusPlus.h"
 
 class CMemDC : public CDC {
-private:	
+private:
 	CBitmap		m_bitmap;		// Offscreen bitmap
 	HBITMAP		m_oldBitmap;	// bitmap originally found in CMemDC
 	CDC*		m_pDC;			// Saves CDC passed in constructor
@@ -73,27 +73,27 @@ private:
 		m_pDC->DPtoLP(&m_rect);
 		SetWindowOrg(m_rect.left, m_rect.top);
 
-		// Fill background 
+		// Fill background
 		FillSolidRect(m_rect, m_pDC->GetBkColor());
 	}
 public:
-	
+
 	CMemDC(CDC* pDC, const CRect* pRect = NULL) : CDC()
 	{
-		dcassert(pDC != NULL); 
+		dcassert(pDC != NULL);
 
 		// Some initialization
 		m_pDC = pDC;
 		m_oldBitmap = NULL;
 
 		Init(pRect);
-		
+
 		managed = false;
 	}
 
 	CMemDC(HDC& dc, const CRect* pRect = NULL) : CDC()
 	{
-		dcassert(dc != NULL); 
+		dcassert(dc != NULL);
 
 		// Some initialization
 		m_pDC = new CDC(dc);
@@ -111,10 +111,10 @@ public:
 
 		// Copy the offscreen bitmap onto the screen.
 		m_pDC->BitBlt(m_rect.left, m_rect.top, m_rect.Width(), m_rect.Height(),
-			*this, m_rect.left, m_rect.top, SRCCOPY);			
+			*this, m_rect.left, m_rect.top, SRCCOPY);
 
 		//Swap back the original bitmap.
-		SelectBitmap(m_oldBitmap);	
+		SelectBitmap(m_oldBitmap);
 
 		if(managed){
 			m_pDC->Detach();
@@ -123,10 +123,10 @@ public:
 
 		m_pDC = NULL;
 	}
-	
-	~CMemDC()	
-	{		
-		Paint();	
+
+	~CMemDC()
+	{
+		Paint();
 	}
 };
 

@@ -36,7 +36,7 @@ public:
 	NotepadFrame() : dirty(false),
 		ctrlClientContainer(_T("edit"), this, NOTEPAD_MESSAGE_MAP) { }
 	virtual ~NotepadFrame() { }
-	
+
 	typedef MDITabChildWindowImpl<NotepadFrame> baseClass;
 	BEGIN_MSG_MAP(NotepadFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
@@ -53,7 +53,7 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -65,15 +65,15 @@ public:
 		bHandled = FALSE;
 		return FALSE;
 	}
-	
-	
+
+
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
 		return 0;
 	}
-	
+
 private:
-	
+
 	bool dirty;
 	CEdit ctrlPad;
 	CContainedWindow ctrlClientContainer;

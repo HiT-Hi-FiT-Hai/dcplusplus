@@ -65,28 +65,31 @@ LRESULT LogPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		options.push_back(pair);
 	}
 
+	::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), false);
+	::EnableWindow(GetDlgItem(IDC_LOG_FILE), false);
+
 	oldSelection = -1;
-	
+
 	// Do specialized reading here
 	return TRUE;
 }
 
 LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 	logOptions.Attach(GetDlgItem(IDC_LOG_OPTIONS));
-	
+
 	getValues();
-	
+
 	int sel = logOptions.GetSelectedIndex();
-		
+
 	if(sel >= 0 && sel < LogManager::LAST) {
 		BOOL checkState = logOptions.GetCheckState(sel) == BST_CHECKED ? TRUE : FALSE;
-				
+
 		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), checkState);
 		::EnableWindow(GetDlgItem(IDC_LOG_FILE), checkState);
-				
+
 		SetDlgItemText(IDC_LOG_FILE, options[sel].first.c_str());
 		SetDlgItemText(IDC_LOG_FORMAT, options[sel].second.c_str());
-	
+
 		//save the old selection so we know where to save the values
 		oldSelection = sel;
 	} else {
@@ -96,7 +99,7 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 		SetDlgItemText(IDC_LOG_FILE, _T(""));
 		SetDlgItemText(IDC_LOG_FORMAT, _T(""));
 	}
-		
+
 	logOptions.Detach();
 	return 0;
 }
@@ -144,7 +147,7 @@ LRESULT LogPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
-		
+
 		SetDlgItemText(IDC_LOG_DIRECTORY, dir.c_str());
 	}
 	return 0;

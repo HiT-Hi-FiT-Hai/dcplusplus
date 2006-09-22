@@ -84,7 +84,7 @@ public:
 		ignoreTth = (wParam == BST_CHECKED);
 		return 0;
 	}
-	
+
 private:
 
 	enum { AVG_TIME = 60 };
@@ -104,10 +104,10 @@ private:
 
 	bool closed;
 	bool ignoreTth;
-	
+
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::IncomingSearch, const string& s) throw();
-	
+
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t) throw();
 };

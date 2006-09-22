@@ -50,7 +50,7 @@ void TreePropertySheet::hideTab() {
 	tab.GetWindowRect(&rcTab);
 	page.GetClientRect(&rcPage);
 	page.MapWindowPoints(m_hWnd,&rcPage);
-	GetWindowRect(&rcWindow);	
+	GetWindowRect(&rcWindow);
 	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rcTab, 2);
 
 	ScrollWindow(SPACE_LEFT + TREE_WIDTH + SPACE_MID-rcPage.left, SPACE_TOP-rcPage.top);
@@ -132,11 +132,11 @@ HTREEITEM TreePropertySheet::createTree(const tstring& str, HTREEITEM parent, in
 			tvi.item.lParam = -1;
 			tvi.item.pszText = const_cast<LPTSTR>(name.c_str());
 			item = ctrlTree.InsertItem(&tvi);
-		} 
+		}
 		ctrlTree.Expand(parent);
 		// Recurse...
 		return createTree(str.substr(i+1), item, page);
-	}	
+	}
 }
 
 HTREEITEM TreePropertySheet::findItem(const tstring& str, HTREEITEM start) {
@@ -185,7 +185,7 @@ LRESULT TreePropertySheet::onSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /* b
 			SetActivePage(page);
 	}
 	return 0;
-}	
+}
 
 LRESULT TreePropertySheet::onSetCurSel(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	ctrlTree.SelectItem(findItem((int)wParam, ctrlTree.GetRootItem()));

@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.691" Revision="1" RightToLeft="0">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version="0.696" Revision="1" RightToLeft="0">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -203,6 +203,7 @@
 		<String Name="LastHub">Hub (last seen on if offline)</String>
 		<String Name="LastSeen">Time last seen</String>
 		<String Name="Left">left</String>
+		<String Name="ListenerFailed">Listening socket failed (you need to restart DC++): </String>
 		<String Name="Loading">Loading DC++, please wait...</String>
 		<String Name="LookupAtBitzi">Lookup TTH at Bitzi.com</String>
 		<String Name="Low">Low</String>
@@ -303,6 +304,7 @@
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
 		<String Name="Normal">Normal</String>
+		<String Name="NotListening">Not listening for connections - please restart DC++</String>
 		<String Name="Notepad">Notepad</String>
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
@@ -438,7 +440,8 @@
 		<String Name="SettingsGeneral">Personal information</String>
 		<String Name="SettingsGetUserCountry">Guess user country from IP</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
-		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
+		<String Name="SettingsIgnoreHubPms">Ignore private messages from the hub</String>
+		<String Name="SettingsIgnoreBotPms">Ignore private messages from bots</String>
 		<String Name="SettingsIncoming">Incoming connection settings (see Help/FAQ if unsure)</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
@@ -475,7 +478,8 @@
 		<String Name="SettingsPmHistory">PM history</String>
 		<String Name="SettingsPopunderFilelist">Open new file list windows in the background</String>
 		<String Name="SettingsPopunderPm">Open new private message windows in the background</String>
-		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
+		<String Name="SettingsPopupBotPms">Open private messages from the hub in their own window</String>
+		<String Name="SettingsPopupHubPms">Open private messages from bots in their own window</String>
 		<String Name="SettingsPopupPms">Open private messages in their own window</String>
 		<String Name="SettingsPorts">Ports</String>
 		<String Name="SettingsPromptPassword">Popup box to input password for hubs</String>
@@ -548,6 +552,7 @@
 		<String Name="SocksFailed">The socks server failed establish a connection</String>
 		<String Name="SocksNeedsAuth">The socks server requires authentication</String>
 		<String Name="SocksSetupError">Failed to set up the socks server for UDP relay (check socks address and port)</String>
+		<String Name="SourceTooOld">Remote client does not fully support TTH - cannot download</String>
 		<String Name="SourceTooSlow">Source too slow</String>
 		<String Name="SourceType">Source Type</String>
 		<String Name="SpecifySearchString">Specify a search string</String>
@@ -559,7 +564,7 @@
 		<String Name="SystemLog">System Log</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
-		<String Name="TcpPortBusy">Unable to open TCP port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP port</String>
+		<String Name="TcpPortBusy">Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port</String>
 		<String Name="Tib">TiB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimeLeft">Time left</String>

@@ -27,6 +27,7 @@
 #include "Pointer.h"
 #include "CID.h"
 #include "FastAlloc.h"
+#include "CriticalSection.h"
 
 /** A user connected to one or more hubs. */
 class User : public FastAlloc<User>, public PointerBase, public Flags
@@ -38,10 +39,9 @@ public:
 		PASSIVE_BIT,
 		NMDC_BIT,
 		BOT_BIT,
-		HUB_BIT,
 		TTH_GET_BIT,
-		SAVE_NICK_BIT,
-		TLS_BIT
+		TLS_BIT,
+		OLD_CLIENT_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -51,10 +51,9 @@ public:
 		PASSIVE = 1<<PASSIVE_BIT,
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
-		HUB = 1<<HUB_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
-		SAVE_NICK = 1<<SAVE_NICK_BIT,	//< Save cid->nick association
-		TLS = 1<<TLS_BIT				//< Client supports SSL
+		TLS = 1<<TLS_BIT,				//< Client supports SSL
+		OLD_CLIENT = 1<<OLD_CLIENT_BIT  //< Can't download - old client
 	};
 
 	typedef Pointer<User> Ptr;
@@ -112,15 +111,18 @@ public:
 
 	void setBytesShared(const string& bs) { set("SS", bs); }
 	int64_t getBytesShared() const { return Util::toInt64(get("SS")); }
-	
-	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
 
-	string getTag() const { 
+	void setOp(bool op) { set("OP", op ? "1" : Util::emptyString); }
+	void setHub(bool hub) { set("HU", hub ? "1" : Util::emptyString); }
+	void setBot(bool bot) { set("BO", bot ? "1" : Util::emptyString); }
+	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
+
+	string getTag() const {
 		if(!get("TA").empty())
 			return get("TA");
 		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
 			return Util::emptyString;
-		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" + 
+		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" +
 			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 	}
 
@@ -135,11 +137,13 @@ public:
 	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 
 	const string& get(const char* name) const {
+		RLock<> l(rw);
 		InfMap::const_iterator i = info.find(*(short*)name);
 		return i == info.end() ? Util::emptyString : i->second;
 	}
 
 	void set(const char* name, const string& val) {
+		WLock<> l(rw);
 		if(val.empty())
 			info.erase(*(short*)name);
 		else
@@ -158,6 +162,8 @@ private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
 	InfMap info;
+	/** @todo there are probably more threading issues here ...*/
+	static RWLock<> rw;
 };
 
 class Client;

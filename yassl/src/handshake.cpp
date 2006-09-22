@@ -9,6 +9,10 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * There are special exceptions to the terms and conditions of the GPL as it
+ * is applied to yaSSL. View the full text of the exception in the file
+ * FLOSS-EXCEPTIONS in the directory of this software distribution.
+ *
  * yaSSL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -656,25 +660,25 @@ void build_certHashes(SSL& ssl, Hashes& hashes)
 
 
 
-// do process input requests
-mySTL::auto_ptr<input_buffer>
-DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
+// do process input requests, return 0 is done, 1 is call again to complete
+int DoProcessReply(SSL& ssl)
 {
     // wait for input if blocking
     if (!ssl.useSocket().wait()) {
         ssl.SetError(receive_error);
-        buffered.reset(0);
-        return buffered;
+        return 0;
     }
     uint ready = ssl.getSocket().get_ready();
-    if (!ready) return buffered; 
+    if (!ready) return 1; 
 
     // add buffered data if its there
-    uint buffSz = buffered.get() ? buffered.get()->get_size() : 0;
+    input_buffer* buffered = ssl.useBuffers().TakeRawInput();
+    uint buffSz = buffered ? buffered->get_size() : 0;
     input_buffer buffer(buffSz + ready);
     if (buffSz) {
-        buffer.assign(buffered.get()->get_buffer(), buffSz);
-        buffered.reset(0);
+        buffer.assign(buffered->get_buffer(), buffSz);
+        ysDelete(buffered);
+        buffered = 0;
     }
 
     // add new data
@@ -688,10 +692,8 @@ DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
                   ssl.getStates().getServer() == clientNull) 
         if (buffer.peek() != handshake) {
             ProcessOldClientHello(buffer, ssl);
-            if (ssl.GetError()) {
-                buffered.reset(0);
-                return buffered;
-            }
+            if (ssl.GetError())
+                return 0;
         }
 
     while(!buffer.eof()) {
@@ -711,9 +713,9 @@ DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
             // put header in front for next time processing
             uint extra = needHdr ? 0 : RECORD_HEADER;
             uint sz = buffer.get_remaining() + extra;
-            buffered.reset(NEW_YS input_buffer(sz, buffer.get_buffer() +
-                           buffer.get_current() - extra, sz));
-            break;
+            ssl.useBuffers().SetRawInput(NEW_YS input_buffer(sz,
+                      buffer.get_buffer() + buffer.get_current() - extra, sz));
+            return 1;
         }
 
         while (buffer.get_current() < hdr.length_ + RECORD_HEADER + offset) {
@@ -723,19 +725,16 @@ DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
             mySTL::auto_ptr<Message> msg(mf.CreateObject(hdr.type_), ysDelete);
             if (!msg.get()) {
                 ssl.SetError(factory_error);
-                buffered.reset(0);
-                return buffered;
+                return 0;
             }
             buffer >> *msg;
             msg->Process(buffer, ssl);
-            if (ssl.GetError()) {
-                buffered.reset(0);
-                return buffered;
-            }
+            if (ssl.GetError())
+                return 0;
         }
         offset += hdr.length_ + RECORD_HEADER;
     }
-    return buffered;
+    return 0;
 }
 
 
@@ -743,16 +742,17 @@ DoProcessReply(SSL& ssl, mySTL::auto_ptr<input_buffer> buffered)
 void processReply(SSL& ssl)
 {
     if (ssl.GetError()) return;
-    mySTL::auto_ptr<input_buffer> buffered(ysDelete);
-
-    for (;;) {
-        mySTL::auto_ptr<input_buffer> tmp(DoProcessReply(ssl, buffered));
-        if (tmp.get())      // had only part of a record's data, call again
-            buffered = tmp;
+  
+    if (DoProcessReply(ssl))
+        // didn't complete process
+        if (!ssl.getSocket().IsBlocking()) {
+            // keep trying now
+            while (!ssl.GetError())
+                if (DoProcessReply(ssl) == 0) break;
+        }
         else
-            break;
-        if (ssl.GetError()) return;
-    }
+            // user will have try again later
+            ssl.SetError(YasslError(SSL_ERROR_WANT_READ));
 }
 
 

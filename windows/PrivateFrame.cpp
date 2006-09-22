@@ -40,16 +40,16 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
-	
-	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+
+	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
-	
+
 	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
 	ctrlClient.SetFont(WinUtil::font);
-	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, WS_EX_CLIENTEDGE);
-	
+
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	ctrlClientContainer.SubclassWindow(ctrlClient.m_hWnd);
 
@@ -73,7 +73,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = NULL;
 	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
-	
+
 	FrameIter i = frames.find(user);
 	if(i == frames.end()) {
 		p = new PrivateFrame(user);
@@ -117,7 +117,7 @@ void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
 LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	switch(wParam) {
 	case VK_RETURN:
-		if( WinUtil::isShift() || WinUtil::isCtrl() ||  WinUtil::isAlt() ) {
+		if( WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt() ) {
 			bHandled = FALSE;
 		} else {
 			if(uMsg == WM_KEYDOWN) {
@@ -170,12 +170,12 @@ void PrivateFrame::onEnter()
 
 				params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 				params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-				params["userCID"] = replyTo->getCID().toBase32(); 
+				params["userCID"] = replyTo->getCID().toBase32();
 				params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 				params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
-				addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
+				addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log <system, downloads, uploads>"));
 			} else {
 				if(replyTo->isOnline()) {
 					sendMessage(tstring(msg));
@@ -194,7 +194,7 @@ void PrivateFrame::onEnter()
 		}
 		if(resetText)
 			ctrlMessage.SetWindowText(_T(""));
-	} 
+	}
 }
 
 void PrivateFrame::sendMessage(const tstring& msg) {
@@ -229,7 +229,7 @@ void PrivateFrame::addLine(const tstring& aLine) {
 		params["message"] = Text::fromT(aLine);
 		params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 		params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-		params["userCID"] = replyTo->getCID().toBase32(); 
+		params["userCID"] = replyTo->getCID().toBase32();
 		params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 		params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 		LOG(LogManager::PM, params);
@@ -272,7 +272,7 @@ void PrivateFrame::addStatus(const tstring& aLine) {
 }
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };		// location of mouse click
 	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
@@ -326,30 +326,30 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
 		int w[1];
 		ctrlStatus.GetClientRect(sr);
-		
+
 		w[0] = sr.right - 16;
 
 		ctrlStatus.SetParts(1, w);
 	}
-	
+
 	int h = WinUtil::fontHeight + 4;
 
 	CRect rc = rect;
 	rc.bottom -= h + 10;
 	ctrlClient.MoveWindow(rc);
-	
+
 	rc = rect;
 	rc.bottom -= 2;
 	rc.top = rc.bottom - h - 5;
 	rc.left +=2;
 	rc.right -=2;
 	ctrlMessage.MoveWindow(rc);
-	
+
 }
 
 LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
@@ -363,7 +363,7 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 		if(end == string::npos)
 			end = x.length();
-		
+
 		bHandled = WinUtil::parseDBLClick(x, start, end);
 	}
 	return 0;
@@ -381,11 +381,11 @@ void PrivateFrame::updateTitle() {
 
 
 void PrivateFrame::readLog() {
-	StringMap params;	
+	StringMap params;
 
 	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
 	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-	params["userCID"] = replyTo->getCID().toBase32(); 
+	params["userCID"] = replyTo->getCID().toBase32();
 	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
 	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
 
@@ -394,7 +394,7 @@ void PrivateFrame::readLog() {
 	try {
 		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
 			File f(path, File::READ, File::OPEN);
-		
+
 			int64_t size = f.getSize();
 
 			if(size > 32*1024) {

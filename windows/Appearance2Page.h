@@ -59,7 +59,7 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	
+
 protected:
 	string EncodeFont(LOGFONT const& font);
 	void DecodeFont(string setting, LOGFONT &dest);

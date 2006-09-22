@@ -29,9 +29,9 @@
 
 /**
  * A class that represents a Merkle Tree hash. Storing
- * only the leaves of the tree, it is rather memory efficient, 
- * but can still take a significant amount of memory during / after 
- * hash generation. 
+ * only the leaves of the tree, it is rather memory efficient,
+ * but can still take a significant amount of memory during / after
+ * hash generation.
  * The root hash produced can be used like any
  * other hash to verify the integrity of a whole file, while
  * the leaves provide checking of smaller parts of the file.
@@ -54,8 +54,8 @@ public:
 	 * @param data Pointer to (aFileSize + aBlockSize - 1) / aBlockSize) hash values,
 	 *             stored consecutively left to right
 	 */
-	MerkleTree(int64_t aFileSize, int64_t aBlockSize, u_int8_t* aData) : 
-		fileSize(aFileSize), blockSize(aBlockSize) 
+	MerkleTree(int64_t aFileSize, int64_t aBlockSize, u_int8_t* aData) :
+		fileSize(aFileSize), blockSize(aBlockSize)
 	{
 		size_t n = calcBlocks(aFileSize, aBlockSize);
 		for(size_t i = 0; i < n; i++)
@@ -97,7 +97,7 @@ public:
 		// Skip empty data sets if we already added at least one of them...
 		if(len == 0 && !(leaves.empty() && blocks.empty()))
 			return;
-		
+
 		do {
 			size_t n = min(baseBlockSize, len-i);
 			Hasher h;
@@ -157,7 +157,7 @@ public:
 		return buf;
 	}
 
-private:	
+private:
 	typedef pair<MerkleValue, int64_t> MerkleBlock;
 	typedef vector<MerkleBlock> MBList;
 
@@ -170,7 +170,7 @@ private:
 	int64_t fileSize;
 	/** Final block size */
 	int64_t blockSize;
-	
+
 	MerkleValue getHash(int64_t start, int64_t length) {
 		dcassert((start % blockSize) == 0);
 		if(length <= blockSize) {

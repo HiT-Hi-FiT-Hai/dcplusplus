@@ -34,16 +34,16 @@ public:
 	bool password;
 
 	enum { IDD = IDD_LINE };
-	
+
 	BEGIN_MSG_MAP(LineDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 	END_MSG_MAP()
-	
+
 	LineDlg() : password(false) { }
-	
+
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlLine.SetFocus();
 		return FALSE;
@@ -62,13 +62,13 @@ public:
 
 		ctrlDescription.Attach(GetDlgItem(IDC_DESCRIPTION));
 		ctrlDescription.SetWindowText(description.c_str());
-		
+
 		SetWindowText(title.c_str());
-		
+
 		CenterWindow(GetParent());
 		return FALSE;
 	}
-	
+
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		if(wID == IDOK) {
@@ -80,7 +80,7 @@ public:
 		EndDialog(wID);
 		return 0;
 	}
-	
+
 };
 
 #endif // !defined(LINE_DLG_H)

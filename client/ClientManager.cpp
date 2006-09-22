@@ -51,6 +51,7 @@ Client* ClientManager::getClient(const string& aHubURL) {
 	}
 
 	c->addListener(this);
+
 	return c;
 }
 
@@ -59,10 +60,10 @@ void ClientManager::putClient(Client* aClient) {
 
 	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
-	
+
 	{
 		Lock l(cs);
-		clients.erase(remove(clients.begin(), clients.end(), aClient), clients.end());
+		clients.remove(aClient);
 	}
 	delete aClient;
 }
@@ -166,7 +167,7 @@ string ClientManager::findHub(const string& ipPort) {
 			url = c->getHubUrl();
 		}
 	}
-	
+
 	return url;
 }
 
@@ -189,7 +190,7 @@ User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) thr
 	UserIter ui = users.find(cid);
 	if(ui != users.end()) {
 		if(ui->second->getFirstNick().empty())		// Could happen on bad queue loads etc...
-			ui->second->setFirstNick(aNick);	
+			ui->second->setFirstNick(aNick);
 		ui->second->setFlag(User::NMDC);
 		return ui->second;
 	}
@@ -309,7 +310,7 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 			u.getClient().send(cmd);
 		} else {
 			try {
-				s.writeTo(u.getIdentity().getIp(), static_cast<short>(Util::toInt(u.getIdentity().getUdpPort())), cmd.toString(getMe()->getCID()));
+				udp.writeTo(u.getIdentity().getIp(), static_cast<short>(Util::toInt(u.getIdentity().getUdpPort())), cmd.toString(getMe()->getCID()));
 			} catch(const SocketException&) {
 				dcdebug("Socket exception sending ADC UDP command\n");
 			}
@@ -326,8 +327,8 @@ void ClientManager::infoUpdated() {
 	}
 }
 
-void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
-									int aFileType, const string& aString) throw() 
+void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize,
+									int aFileType, const string& aString) throw()
 {
 	Speaker<ClientManagerListener>::fire(ClientManagerListener::IncomingSearch(), aString);
 
@@ -337,7 +338,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	if(isPassive && !ClientManager::getInstance()->isActive()) {
 		return;
 	}
-	
+
 	SearchResult::List l;
 	ShareManager::getInstance()->search(l, aString, aSearchType, aSize, aFileType, aClient, isPassive ? 5 : 10);
 //		dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
@@ -355,28 +356,28 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 
 				sr->decRef();
 			}
-			
+
 			if(str.size() > 0)
 				aClient->send(str);
-			
+
 		} else {
 			try {
 				string ip, file;
 				u_int16_t port = 0;
 				Util::decodeUrl(aSeeker, ip, port, file);
 				ip = Socket::resolve(ip);
-				
+
 				// Temporary fix to avoid spamming hublist.org and dcpp.net
 				if(ip == "70.85.55.252" || ip == "207.44.220.108") {
 					LogManager::getInstance()->message("Someone is trying to use your client to spam " + ip + ", please urge hub owner to fix this");
 					return;
 				}
-				
-				if(port == 0) 
+
+				if(port == 0)
 					port = 412;
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					s.writeTo(ip, port, sr->toSR(*aClient));
+					udp.writeTo(ip, port, sr->toSR(*aClient));
 					sr->decRef();
 				}
 			} catch(const SocketException& /* e */) {
@@ -405,7 +406,7 @@ void ClientManager::on(AdcSearch, Client*, const AdcCommand& adc, const CID& fro
 
 void ClientManager::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {
 	Lock l(cs);
-	
+
 	updateCachedIp(); // no point in doing a resolve for every single hub we're searching on
 
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
@@ -431,6 +432,10 @@ void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aF
 	}
 }
 
+void ClientManager::on(Load, SimpleXML&) throw() {
+	users.insert(make_pair(getMe()->getCID(), getMe()));
+}
+
 void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
 	Lock l(cs);
 
@@ -447,43 +452,6 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
 		(*j)->info(false);
 	}
-}
-
-void ClientManager::save() {
-	Lock l(cs);
-
-	try {
-		string tmp;
-
-		File ff(getUsersFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		BufferedOutputStream<false> f(&ff);
-
-		f.write(SimpleXML::utf8Header);
-		f.write(LIT("<Users Version=\"1\">\r\n"));
-		for(UserIter i = users.begin(); i != users.end(); ++i) {
-			User::Ptr& p = i->second;
-			if(p->isSet(User::SAVE_NICK) && !p->getCID().isZero() && !p->getFirstNick().empty()) {
-				f.write(LIT("\t<User CID=\""));
-				f.write(p->getCID().toBase32());
-				f.write(LIT("\" Nick=\""));
-				f.write(SimpleXML::escape(p->getFirstNick(), tmp, true));
-				f.write(LIT("\"/>\r\n"));
-			}
-		}
-
-		f.write("</Users>\r\n");
-		f.flush();
-		ff.close();
-		File::deleteFile(getUsersFile());
-		File::renameFile(getUsersFile() + ".tmp", getUsersFile());
-
-	} catch(const FileException&) {
-		// ...
-	}
-}
-
-void ClientManager::on(Save, SimpleXML*) throw() {
-	save();
 }
 
 User::Ptr& ClientManager::getMe() {
@@ -509,35 +477,12 @@ CID ClientManager::getMyCID() {
 	return CID(tiger.finalize());
 }
 
-void ClientManager::on(Load, SimpleXML*) throw() {
-	users.insert(make_pair(getMe()->getCID(), getMe()));
-
-	try {
-		SimpleXML xml;
-		xml.fromXML(File(getUsersFile(), File::READ, File::OPEN).read());
-		if(xml.findChild("Users") && xml.getChildAttrib("Version") == "1") {
-			xml.stepIn();
-			while(xml.findChild("User")) {
-				const string& cid = xml.getChildAttrib("CID");
-				const string& nick = xml.getChildAttrib("Nick");
-                if(cid.length() != 39 || nick.empty())
-					continue;
-				User::Ptr p(new User(CID(cid)));
-				p->setFirstNick(xml.getChildData());
-				users.insert(make_pair(p->getCID(), p));
-			}
-		}
-	} catch(const Exception& e) {
-		dcdebug("Error loading Users.xml: %s\n", e.getError().c_str());
-	}
-}
-
-void ClientManager::on(Failed, Client* client, const string&) throw() { 
+void ClientManager::on(Failed, Client* client, const string&) throw() {
 	FavoriteManager::getInstance()->removeUserCommand(client->getHubUrl());
 	fire(ClientManagerListener::ClientDisconnected(), client);
 }
 
-void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() { 
+void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
  		if(aType == ::UserCommand::TYPE_CLEAR) {
  			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getHubUrl());

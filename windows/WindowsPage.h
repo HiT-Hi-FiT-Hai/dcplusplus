@@ -29,7 +29,7 @@
 class WindowsPage : public CPropertyPage<IDD_WINDOWSPAGE>, public PropPage
 {
 public:
-	WindowsPage(SettingsManager *s) : PropPage(s) { 
+	WindowsPage(SettingsManager *s) : PropPage(s) {
 		SetTitle(CTSTRING(SETTINGS_WINDOWS));
 		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
 	}
@@ -49,7 +49,7 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	
+
 protected:
 
 	static TextItem textItem[];

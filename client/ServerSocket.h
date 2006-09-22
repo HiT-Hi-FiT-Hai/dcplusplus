@@ -29,7 +29,7 @@
 class ServerSocketListener {
 public:
 	virtual ~ServerSocketListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> IncomingConnection;
 	virtual void on(IncomingConnection) throw() = 0;
@@ -46,14 +46,14 @@ public:
 	void incoming() {
 		fire(ServerSocketListener::IncomingConnection());
 	}
-	
+
 	operator const Socket&() const { return socket; }
 private:
 	ServerSocket(const ServerSocket&);
 	ServerSocket& operator=(const ServerSocket&);
 
 	friend class Socket;
-	
+
 	Socket socket;
 };
 

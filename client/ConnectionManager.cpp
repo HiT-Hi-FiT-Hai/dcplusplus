@@ -31,7 +31,7 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0), server(0), secureServer(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : floodCounter(0), server(0), secureServer(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
@@ -41,51 +41,23 @@ ConnectionManager::ConnectionManager() : port(0), securePort(0), floodCounter(0)
 	features.push_back(UserConnection::FEATURE_TTHF);
 
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BASE);
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BZIP);
 }
-// @todo clean this up
-void ConnectionManager::listen() throw(Exception){
-	unsigned short lastPort = (unsigned short)SETTING(TCP_PORT);
-	
-	if(lastPort == 0)
-		lastPort = (unsigned short)Util::rand(1025, 32000);
 
-	unsigned short firstPort = lastPort;
-
+void ConnectionManager::listen() throw(SocketException){
 	disconnect();
+	unsigned short port = static_cast<unsigned short>(SETTING(TCP_PORT));
 
-	while(true) {
-		try {
-			server = new Server(false, lastPort, SETTING(BIND_ADDRESS));
-			port = lastPort;
-			break;
-		} catch(const Exception&) {
-			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
-				throw Exception("Could not find a suitable free port");
-			}
-			lastPort = newPort;
-		}
-	}
+	server = new Server(false, port, SETTING(BIND_ADDRESS));
 
 	if(!CryptoManager::getInstance()->TLSOk()) {
+		dcdebug("Skipping secure port: %d\n", SETTING(USE_TLS));
 		return;
 	}
-	lastPort = (unsigned short)SETTING(TLS_PORT);
-	firstPort = lastPort;
 
-	while(true) {
-		try {
-			secureServer = new Server(true, lastPort, SETTING(BIND_ADDRESS));
-			securePort = lastPort;
-			break;
-		} catch(const Exception&) {
-			short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-			if(!SettingsManager::getInstance()->isDefault(SettingsManager::TCP_PORT) || (firstPort == newPort)) {
-				throw Exception("Could not find a suitable free port");
-			}
-			lastPort = newPort;
-		}
-	}
+	port = static_cast<unsigned short>(SETTING(TLS_PORT));
+
+	secureServer = new Server(true, port, SETTING(BIND_ADDRESS));
 }
 
 /**
@@ -178,8 +150,8 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					// Not online anymore...remove it from the pending...
 					removed.push_back(cqi);
 					continue;
-				} 
-				
+				}
+
 				if(cqi->getUser()->isSet(User::PASSIVE) && !ClientManager::getInstance()->isActive()) {
 					passiveUsers.push_back(cqi->getUser());
 					removed.push_back(cqi);
@@ -237,7 +209,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	}
 }
 
-void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {	
+void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	Lock l(cs);
 
 	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
@@ -250,22 +222,25 @@ void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw(
 static const u_int32_t FLOOD_TRIGGER = 20000;
 static const u_int32_t FLOOD_ADD = 2000;
 
-ConnectionManager::Server::Server(bool secure_, short port, const string& ip /* = "0.0.0.0" */) : secure(secure_), die(false) {
+ConnectionManager::Server::Server(bool secure_, short aPort, const string& ip /* = "0.0.0.0" */) : port(0), secure(secure_), die(false) {
 	sock.create();
-	sock.bind(port, ip);
+	port = sock.bind(aPort, ip);
 	sock.listen();
 
 	start();
 }
 
-
 static const u_int32_t POLL_TIMEOUT = 250;
 
 int ConnectionManager::Server::run() throw() {
-	while(!die) {
-		if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
-			ConnectionManager::getInstance()->accept(sock, secure);
+	try {
+		while(!die) {
+			if(sock.wait(POLL_TIMEOUT, Socket::WAIT_READ) == Socket::WAIT_READ) {
+				ConnectionManager::getInstance()->accept(sock, secure);
+			}
 		}
+	} catch(const Exception& e) {
+		LogManager::getInstance()->message(STRING(LISTENER_FAILED) + e.getError());
 	}
 	return 0;
 }
@@ -297,12 +272,8 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	uc->setFlag(UserConnection::FLAG_INCOMING);
 	uc->setState(UserConnection::STATE_SUPNICK);
 	uc->setLastActivity(GET_TICK());
-	try { 
+	try {
 		uc->accept(sock);
-		if(uc->isSecure() && !uc->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
-			putConnection(uc);
-			LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
-		}
 	} catch(const Exception&) {
 		putConnection(uc);
 		delete uc;
@@ -344,6 +315,14 @@ void ConnectionManager::adcConnect(const OnlineUser& aUser, short aPort, const s
 	}
 }
 
+void ConnectionManager::disconnect() throw() {
+	delete server;
+	delete secureServer;
+
+	server = secureServer = 0;
+}
+
+
 void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...@todo fix support updates
@@ -356,10 +335,20 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 	for(StringIterC i = cmd.getParameters().begin(); i != cmd.getParameters().end(); ++i) {
 		if(i->compare(0, 2, "AD") == 0) {
 			string feat = i->substr(2);
-			if(feat == UserConnection::FEATURE_ADC_BASE)
+			if(feat == UserConnection::FEATURE_ADC_BASE) {
 				baseOk = true;
-			else if(feat == UserConnection::FEATURE_ZLIB_GET)
+				// ADC clients must support all these...
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ADCGET);
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_TTHF);
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_TTHL);
+				// For compatibility with older clients...
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
+			} else if(feat == UserConnection::FEATURE_ZLIB_GET) {
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
+			} else if(feat == UserConnection::FEATURE_ADC_BZIP) {
+				aSource->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
+			}
 		}
 	}
 
@@ -427,7 +416,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 			putConnection(aSource);
 			return;
 		}
-        aSource->setToken(i.first);	
+		aSource->setToken(i.first);
 		aSource->setHubUrl(i.second);
 	}
 	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
@@ -463,7 +452,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		aSource->setFlag(UserConnection::FLAG_OP);
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
-		aSource->myNick(aSource->getToken()); 
+		aSource->myNick(aSource->getToken());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	}
 
@@ -475,7 +464,7 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		dcdebug("CM::onLock %p received lock twice, ignoring\n", (void*)aSource);
 		return;
 	}
-	
+
 	if( CryptoManager::getInstance()->isExtended(aLock) ) {
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser() && !aSource->getUser()->isSet(User::DCPLUSPLUS)) {
@@ -543,7 +532,7 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc) {
 				uc->setFlag(UserConnection::FLAG_ASSOCIATED);
 
 				fire(ConnectionManagerListener::Connected(), cqi);
-				
+
 				dcdebug("ConnectionManager::addDownloadConnection, leaving to downloadmanager\n");
 				addConn = true;
 			}
@@ -693,7 +682,7 @@ void ConnectionManager::shutdown() {
 void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
 	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
 		if(*i == UserConnection::FEATURE_GET_ZBLOCK) {
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK); 
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
 		} else if(*i == UserConnection::FEATURE_MINISLOTS) {
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
 		} else if(*i == UserConnection::FEATURE_XML_BZLIST) {

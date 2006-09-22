@@ -38,9 +38,10 @@
 #include "AdcCommand.h"
 
 class SearchManager;
+class SocketException;
 
 class SearchResult : public FastAlloc<SearchResult> {
-public:	
+public:
 
 	enum Types {
 		TYPE_FILE,
@@ -50,15 +51,15 @@ public:
 	typedef SearchResult* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	
-	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue* aTTH);
 
-	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
-		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubURL, const string& ip, TTHValue* aTTH, bool aUtf8, const string& aToken) :
-	file(aFile), hubName(aHubName), hubURL(aHubURL), user(aUser), 
+	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue& aTTH);
+
+	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots,
+		int64_t aSize, const string& aFile, const string& aHubName,
+		const string& aHubURL, const string& ip, TTHValue aTTH, const string& aToken) :
+	file(aFile), hubName(aHubName), hubURL(aHubURL), user(aUser),
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(ip),
-		tth((aTTH != NULL) ? new TTHValue(*aTTH) : NULL), token(aToken), utf8(aUtf8), ref(1) { }
+		tth(aTTH), token(aToken), ref(1) { }
 
 	string getFileName() const;
 	string toSR(const Client& client) const;
@@ -74,22 +75,21 @@ public:
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
-	TTHValue* getTTH() const { return tth; }
-	bool getUtf8() const { return utf8; }
+	TTHValue getTTH() const { return tth; }
 	const string& getIP() const { return IP; }
 	const string& getToken() const { return token; }
 
 	void incRef() { Thread::safeInc(ref); }
-	void decRef() { 
-		if(Thread::safeDec(ref) == 0) 
-			delete this; 
+	void decRef() {
+		if(Thread::safeDec(ref) == 0)
+			delete this;
 	}
 
 private:
 	friend class SearchManager;
 
 	SearchResult();
-	~SearchResult() { delete tth; }
+	~SearchResult() { }
 
 	SearchResult(const SearchResult& rhs);
 
@@ -102,10 +102,9 @@ private:
 	int slots;
 	int freeSlots;
 	string IP;
-	TTHValue* tth;
+	TTHValue tth;
 	string token;
-	
-	bool utf8;
+
 	volatile long ref;
 };
 
@@ -129,18 +128,18 @@ public:
 		TYPE_DIRECTORY,
 		TYPE_TTH
 	};
-	
+
 	void search(const string& aName, int64_t aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken);
 	void search(const string& aName, const string& aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken) {
 		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode, aToken);
 	}
-	
+
 	void search(StringList& who, const string& aName, int64_t aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken);
 	void search(StringList& who, const string& aName, const string& aSize, TypeModes aTypeMode, SizeModes aSizeMode, const string& aToken) {
 		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode, aToken);
 	}
 	static string clean(const string& aSearchString);
-	
+
 	void respond(const AdcCommand& cmd, const CID& cid);
 
 	unsigned short getPort()
@@ -148,14 +147,14 @@ public:
 		return port;
 	}
 
-	void listen() throw(Exception);
+	void listen() throw(SocketException);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
 
 	void onRES(const AdcCommand& cmd, const User::Ptr& from, const string& removeIp = Util::emptyString);
-	
+
 	int32_t timeToSearch() {
 		return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);
 	}
@@ -165,18 +164,18 @@ public:
 	}
 
 private:
-	
+
 	Socket* socket;
 	unsigned short port;
 	bool stop;
 	u_int32_t lastSearch;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  }
+	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) { }
 
 	virtual int run();
 
-	virtual ~SearchManager() throw() { 
+	virtual ~SearchManager() throw() {
 		if(socket) {
 			stop = true;
 			socket->disconnect();
