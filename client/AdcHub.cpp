@@ -395,13 +395,13 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 		return;
 
 	const string& proto = secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL;
-	short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
-	if(port == 0) {
-		// Oops?
-		LogManager::getInstance()->message(STRING(NOT_LISTENING));
-		return;
-	}
 	if(ClientManager::getInstance()->isActive()) {
+		short port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
+		if(port == 0) {
+			// Oops?
+			LogManager::getInstance()->message(STRING(NOT_LISTENING));
+			return;
+		}
 		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID()).addParam(proto).addParam(Util::toString(port)).addParam(token));
 	} else {
 		send(AdcCommand(AdcCommand::CMD_RCM, user.getIdentity().getSID()).addParam(proto));

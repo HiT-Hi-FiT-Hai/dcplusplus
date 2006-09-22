@@ -65,6 +65,9 @@ LRESULT LogPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		options.push_back(pair);
 	}
 
+	::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), false);
+	::EnableWindow(GetDlgItem(IDC_LOG_FILE), false);
+
 	oldSelection = -1;
 
 	// Do specialized reading here

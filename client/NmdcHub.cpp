@@ -340,6 +340,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		OnlineUser& u = getUser(nick);
 
+		// If he is already considered to be the hub (thus hidden), probably should appear in the UserList
+		if(u.getIdentity().isHidden()) {
+			u.getIdentity().setHidden(false);
+			u.getIdentity().setHub(false);
+		}
+
 		j = param.find('$', i);
 		if(j == string::npos)
 			return;
@@ -453,14 +459,22 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
-		// Hack - first word goes to hub name, rest to description
-		string::size_type i = param.find(' ');
+		// If " - " found, the first part goes to hub name, rest to description
+		// If no " - " found, first word goes to hub name, rest to description
+
+		string::size_type i = param.find(" - ");
 		if(i == string::npos) {
-			getHubIdentity().setNick(unescape(param));
-			getHubIdentity().setDescription(Util::emptyString);
+			i = param.find(' ');
+			if(i == string::npos) {
+				getHubIdentity().setNick(unescape(param));
+				getHubIdentity().setDescription(Util::emptyString);			
+			} else {
+				getHubIdentity().setNick(unescape(param.substr(0, i)));
+				getHubIdentity().setDescription(unescape(param.substr(i+1)));
+			}
 		} else {
 			getHubIdentity().setNick(unescape(param.substr(0, i)));
-			getHubIdentity().setDescription(unescape(param.substr(i+1)));
+			getHubIdentity().setDescription(unescape(param.substr(i+3)));
 		}
 		fire(ClientListener::HubUpdated(), this);
 	} else if(cmd == "$Supports") {
