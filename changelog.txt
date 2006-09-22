@@ -1,4 +1,4 @@
-﻿-- 0.696 --
+﻿-- 0.696 2006-09-22 --
 * Fixed a possible deadlock
 * [bug 1058] Removed some whitespace (big thanks to pothead)
 * Removed the possibility to download files without TTH
