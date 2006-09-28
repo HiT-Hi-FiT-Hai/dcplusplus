@@ -66,7 +66,7 @@ public:
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults);
 
-	StringPairList getDirectories() const { RLock<> l(cs); return virtualMap; }
+	StringPairList getDirectories() const { Lock l(cs); return virtualMap; }
 
 	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
 	MemoryInputStream* getTree(const string& aFile);
@@ -271,7 +271,7 @@ private:
 	u_int32_t lastXmlUpdate;
 	u_int32_t lastFullUpdate;
 
-	mutable RWLock<> cs;
+	mutable CriticalSection cs;
 	CriticalSection listGenLock;
 
 	// Map real name to directory structure

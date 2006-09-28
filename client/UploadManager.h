@@ -27,7 +27,6 @@
 #include "Singleton.h"
 
 #include "ClientManagerListener.h"
-#include <deque>
 #include "File.h"
 #include "MerkleTree.h"
 
@@ -126,7 +125,7 @@ public:
 	typedef set<string> FileSet;
 	typedef hash_map<User::Ptr, FileSet, User::HashFunction> FilesMap;
 	void clearUserFiles(const User::Ptr&);
-	vector<User::Ptr> getWaitingUsers();
+	User::List getWaitingUsers();
 	const FileSet& getWaitingUserFiles(const User::Ptr &);
 
 	/** @internal */
@@ -147,12 +146,14 @@ private:
 	SlotSet reservedSlots;
 
 	typedef pair<User::Ptr, u_int32_t> WaitingUser;
-	typedef deque<WaitingUser> UserDeque;
+	typedef list<WaitingUser> UserList;
 
 	struct UserMatch {
 		UserMatch(const User::Ptr& u) : u(u) { }
-		User::Ptr u;
+		const User::Ptr& u;
 		bool operator()(const WaitingUser& wu) { return wu.first == u; }
+	private:
+		UserMatch& operator=(const UserMatch&);
 	};
 
 	struct WaitingUserFresh {
@@ -160,7 +161,7 @@ private:
 	};
 
 	//functions for manipulating waitingFiles and waitingUsers
-	UserDeque waitingUsers;		//this one merely lists the users waiting for slots
+	UserList waitingUsers;		//this one merely lists the users waiting for slots
 	FilesMap waitingFiles;		//set of files which this user has asked for
 	void addFailedUpload(UserConnection::Ptr source, string filename);
 

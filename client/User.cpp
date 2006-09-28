@@ -28,11 +28,9 @@ OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_) : 
 
 }
 
-RWLock<> Identity::rw;
-
 void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility) const {
 	{
-		RLock<> l(rw);
+		Lock l(cs);
 		for(InfMap::const_iterator i = info.begin(); i != info.end(); ++i) {
 			sm[prefix + string((char*)(&i->first), 2)] = i->second;
 		}
@@ -59,6 +57,28 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 			}
 		}
 	}
+}
+
+string Identity::getTag() const {
+	if(!get("TA").empty())
+		return get("TA");
+	if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
+		return Util::emptyString;
+	return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" +
+		get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
+}
+string Identity::get(const char* name) const {
+	Lock l(cs);
+	InfMap::const_iterator i = info.find(*(short*)name);
+	return i == info.end() ? Util::emptyString : i->second;
+}
+
+void Identity::set(const char* name, const string& val) {
+	Lock l(cs);
+	if(val.empty())
+		info.erase(*(short*)name);
+	else
+		info[*(short*)name] = val;
 }
 
 bool Identity::supports(const string& name) const {

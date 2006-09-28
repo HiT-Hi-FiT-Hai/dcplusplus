@@ -1,4 +1,13 @@
-﻿-- 0.696 2006-09-22 --
+﻿-- --
+* [ADC] Fixed a few protocol issues
+* Some code cleanup
+* Queue frame fixes and memory saves
+* TLS port change without restart fixed
+* [bug 1007] Fixed nick character check
+* Fixed some transfer view sorting issues
+* [bug 59] Added option to match all local lists
+
+-- 0.696 2006-09-22 --
 * Fixed a possible deadlock
 * [bug 1058] Removed some whitespace (big thanks to pothead)
 * Removed the possibility to download files without TTH

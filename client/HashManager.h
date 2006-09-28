@@ -72,13 +72,8 @@ public:
 	 */
 	bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
-	void stopHashing(const string& baseDir) {
-		hasher.stopHashing(baseDir);
-	}
-
-	void setPriority(Thread::Priority p) {
-		hasher.setThreadPriority(p);
-	}
+	void stopHashing(const string& baseDir) { hasher.stopHashing(baseDir); }
+	void setPriority(Thread::Priority p) { hasher.setThreadPriority(p); }
 
 	/** @return TTH root */
 	TTHValue getTTH(const string& aFileName, int64_t aSize) throw(HashException);
@@ -88,10 +83,7 @@ public:
 	void addTree(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tt) {
 		hashDone(aFileName, aTimeStamp, tt, -1);
 	}
-	void addTree(const TigerTree& tree) {
-		Lock l(cs);
-		store.addTree(tree);
-	}
+	void addTree(const TigerTree& tree) { Lock l(cs); store.addTree(tree); }
 
 	void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {
 		hasher.getStats(curFile, bytesLeft, filesLeft);
@@ -100,16 +92,11 @@ public:
 	/**
 	 * Rebuild hash data file
 	 */
-	void rebuild() {
-		hasher.scheduleRebuild();
-	}
+	void rebuild() { hasher.scheduleRebuild(); }
 
-	void startup() {
-		hasher.start();
-		store.load();
-	}
+	void startup() { hasher.start(); store.load(); }
 
-	void shutdown() {
+	void shutdown() { 
 		hasher.shutdown();
 		hasher.join();
 		Lock l(cs);
@@ -122,48 +109,16 @@ private:
 	public:
 		Hasher() : stop(false), running(false), rebuild(false), currentSize(0) { }
 
-		void hashFile(const string& fileName, int64_t size) {
-			Lock l(cs);
-			if(w.insert(make_pair(fileName, size)).second) {
-				s.signal();
-			}
-		}
+		void hashFile(const string& fileName, int64_t size);
 
-		void stopHashing(const string& baseDir) {
-			Lock l(cs);
-			for(WorkIter i = w.begin(); i != w.end(); ) {
-				if(Util::strnicmp(baseDir, i->first, baseDir.length()) == 0) {
-					w.erase(i++);
-				} else {
-					++i;
-				}
-			}
-		}
-
+		void stopHashing(const string& baseDir);
 		virtual int run();
 #ifdef _WIN32
 		bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32);
 #endif
-		void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {
-			Lock l(cs);
-			curFile = currentFile;
-			filesLeft = w.size();
-			if(running)
-				filesLeft++;
-			bytesLeft = 0;
-			for(WorkMap::const_iterator i = w.begin(); i != w.end(); ++i) {
-				bytesLeft += i->second;
-			}
-			bytesLeft += currentSize;
-		}
-		void shutdown() {
-			stop = true;
-			s.signal();
-		}
-		void scheduleRebuild() {
-			rebuild = true;
-			s.signal();
-		}
+		void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft);
+		void shutdown() { stop = true; s.signal(); }
+		void scheduleRebuild() { rebuild = true; s.signal(); }
 
 	private:
 		// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless.

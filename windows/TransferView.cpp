@@ -289,54 +289,77 @@ LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 	return 0;
 }
 
-LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(wParam == ADD_ITEM) {
-		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
-		ItemInfo* ii = new ItemInfo(ui->user, ui->download);
-		ii->update(*ui);
-		ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
-	} else if(wParam == REMOVE_ITEM) {
-		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
-		int ic = ctrlTransfers.GetItemCount();
-		for(int i = 0; i < ic; ++i) {
-			ItemInfo* ii = ctrlTransfers.getItemData(i);
-			if(*ui == *ii) {
-				ctrlTransfers.DeleteItem(i);
-				delete ii;
-				break;
+int TransferView::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
+	if(BOOLSETTING(ALT_SORT_ORDER)) {
+		if(a->download == b->download) {
+			if(a->status != b->status) {
+				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
 			}
+		} else {
+			return a->download ? -1 : 1;
 		}
-	} else if(wParam == UPDATE_ITEM) {
-		auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(lParam));
-		int ic = ctrlTransfers.GetItemCount();
-		for(int i = 0; i < ic; ++i) {
-			ItemInfo* ii = ctrlTransfers.getItemData(i);
-			if(ii->download == ui->download && ii->user == ui->user) {
-				ii->update(*ui);
-				ctrlTransfers.updateItem(i);
-				break;
+	} else {
+		if(a->status == b->status) {
+			if(a->download != b->download) {
+				return a->download ? -1 : 1;
 			}
+		} else {
+			return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
 		}
-	} else if(wParam == UPDATE_ITEMS) {
-		auto_ptr<vector<UpdateInfo*> > v(reinterpret_cast<vector<UpdateInfo*>* >(lParam));
+	}
+	switch(col) {
+				case COLUMN_STATUS: return 0;
+				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
+				case COLUMN_SPEED: return compare(a->speed, b->speed);
+				case COLUMN_SIZE: return compare(a->size, b->size);
+				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
+				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+	}
+}
+
+LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	TaskQueue::List t;
+	tasks.get(t);
+	if(t.size() > 2) {
 		ctrlTransfers.SetRedraw(FALSE);
-		int ic = ctrlTransfers.GetItemCount();
-		for(int i = 0; i < ic; ++i) {
-			ItemInfo* ii = ctrlTransfers.getItemData(i);
-			for(vector<UpdateInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
-				UpdateInfo* ui = *j;
+	}
+
+	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
+		if(i->first == ADD_ITEM) {
+			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
+			ItemInfo* ii = new ItemInfo(ui->user, ui->download);
+			ii->update(*ui);
+			ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
+		} else if(i->first == REMOVE_ITEM) {
+			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
+			int ic = ctrlTransfers.GetItemCount();
+			for(int i = 0; i < ic; ++i) {
+				ItemInfo* ii = ctrlTransfers.getItemData(i);
 				if(*ui == *ii) {
+					ctrlTransfers.DeleteItem(i);
+					delete ii;
+					break;
+				}
+			}
+		} else if(i->first == UPDATE_ITEM) {
+			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
+			int ic = ctrlTransfers.GetItemCount();
+			for(int i = 0; i < ic; ++i) {
+				ItemInfo* ii = ctrlTransfers.getItemData(i);
+				if(ii->download == ui->download && ii->user == ui->user) {
 					ii->update(*ui);
 					ctrlTransfers.updateItem(i);
+					break;
 				}
 			}
 		}
+	}
 
-		if(ctrlTransfers.getSortColumn() != COLUMN_STATUS)
-			ctrlTransfers.resort();
-		ctrlTransfers.SetRedraw(TRUE);
-
-		for_each(v->begin(), v->end(), DeleteFunction());
+	if(!t.empty()) {
+		ctrlTransfers.resort();
+		if(t.size() > 2) {
+			ctrlTransfers.SetRedraw(TRUE);
+		}
 	}
 
 	return 0;
@@ -471,9 +494,6 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 }
 
 void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
-	vector<UpdateInfo*>* v = new vector<UpdateInfo*>();
-	v->reserve(dl.size());
-
 	AutoArray<TCHAR> buf(TSTRING(DOWNLOADED_BYTES).size() + 64);
 
 	for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
@@ -512,10 +532,10 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		statusString += buf;
 		ui->setStatusString(statusString);
 
-		v->push_back(ui);
+		tasks.add(UPDATE_ITEM, ui);
 	}
 
-	speak(UPDATE_ITEMS, v);
+	PostMessage(WM_SPEAKER);
 }
 
 void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) {
@@ -557,9 +577,6 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 }
 
 void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
-	vector<UpdateInfo*>* v = new vector<UpdateInfo*>();
-	v->reserve(ul.size());
-
 	AutoArray<TCHAR> buf(TSTRING(UPLOADED_BYTES).size() + 64);
 
 	for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
@@ -589,10 +606,10 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 
 		ui->setStatusString(statusString);
 
-		v->push_back(ui);
+		tasks.add(UPDATE_ITEM, ui);
 	}
 
-	speak(UPDATE_ITEMS, v);
+	PostMessage(WM_SPEAKER);
 }
 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {

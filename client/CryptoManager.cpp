@@ -189,43 +189,21 @@ void CryptoManager::loadCertificates() throw() {
 		return;
 	}
 
-#ifdef _WIN32
-	WIN32_FIND_DATA data;
-	HANDLE hFind;
+	StringList certs = File::findFiles(SETTING(TLS_TRUSTED_CERTIFICATES_PATH), "*.pem");
+	StringList certs2 = File::findFiles(SETTING(TLS_TRUSTED_CERTIFICATES_PATH), "*.crt");
+	certs.insert(certs.end(), certs2.begin(), certs2.end());
 
-	hFind = FindFirstFile(Text::toT(SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + "*.pem").c_str(), &data);
-	if(hFind != INVALID_HANDLE_VALUE) {
-		do {
-			if(
-				SSL_CTX_load_verify_locations(clientContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS ||
-				SSL_CTX_load_verify_locations(clientVerContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS ||
-				SSL_CTX_load_verify_locations(serverContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS ||
-				SSL_CTX_load_verify_locations(serverVerContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS
-			) {
-				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
-			}
-		} while(FindNextFile(hFind, &data));
-
-		FindClose(hFind);
+	for(StringIter i = certs.begin(); i != certs.end(); ++i) {
+		if(
+			SSL_CTX_load_verify_locations(clientContext, i->c_str(), NULL) != SSL_SUCCESS ||
+			SSL_CTX_load_verify_locations(clientVerContext, i->c_str(), NULL) != SSL_SUCCESS ||
+			SSL_CTX_load_verify_locations(serverContext, i->c_str(), NULL) != SSL_SUCCESS ||
+			SSL_CTX_load_verify_locations(serverVerContext, i->c_str(), NULL) != SSL_SUCCESS
+		) {
+			LogManager::getInstance()->message("Failed to load trusted certificate from " + *i);
+		}
 	}
-	hFind = FindFirstFile(Text::toT(SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + "*.crt").c_str(), &data);
-	if(hFind != INVALID_HANDLE_VALUE) {
-		do {
-			if(
-				SSL_CTX_load_verify_locations(clientContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS ||
-				SSL_CTX_load_verify_locations(clientVerContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS ||
-				SSL_CTX_load_verify_locations(serverContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS ||
-				SSL_CTX_load_verify_locations(serverVerContext, (SETTING(TLS_TRUSTED_CERTIFICATES_PATH) + Text::fromT(data.cFileName)).c_str(), NULL) != SSL_SUCCESS
-			) {
-				LogManager::getInstance()->message("Failed to load trusted certificate from " + Text::fromT(data.cFileName));
-			}
-		} while(FindNextFile(hFind, &data));
 
-		FindClose(hFind);
-	}
-#else
-#error todo
-#endif
 	certsLoaded = true;
 }
 

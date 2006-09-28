@@ -137,9 +137,9 @@ public:
 		socket->write(aMessage, aLen);
 	}
 
-	const string& getMyNick() const { return getMyIdentity().getNick(); }
-	const string& getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
-	const string& getHubDescription() const { return getHubIdentity().getDescription(); }
+	string getMyNick() const { return getMyIdentity().getNick(); }
+	string getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
+	string getHubDescription() const { return getHubIdentity().getDescription(); }
 
 	Identity& getHubIdentity() { return hubIdentity; }
 

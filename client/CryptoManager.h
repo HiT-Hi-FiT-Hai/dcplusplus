@@ -33,40 +33,6 @@
 
 STANDARD_EXCEPTION(CryptoException);
 
-class Node : public FastAlloc<Node> {
-public:
-	// What's this? The only way (I've found out) to avoid a Internal Compiler Error! If this class is moved into
-	// CryptoManager along with the greater specialization, it generates a ICE on the greater class. The typedefs
-	// had to be removed in order to avoid template instatiation.
-//	typedef Node* Ptr;
-//	typedef list<Ptr> List;
-//	typedef List::iterator Iter;
-	int chr;
-	int weight;
-
-	Node* left;
-	Node* right;
-
-	Node(int aChr, int aWeight) : chr(aChr), weight(aWeight), left(NULL), right(NULL) { }
-	Node(Node* aLeft, Node* aRight) : chr(-1), weight(aLeft->weight + aRight->weight), left(aLeft), right(aRight) { }
-	~Node() {
-		delete left;
-		delete right;
-	}
-	bool operator <(const Node& rhs) const {
-		return weight<rhs.weight;
-	}
-	bool operator >(const Node& rhs) const {
-		return weight>rhs.weight;
-	}
-	bool operator <=(const Node& rhs) const {
-		return weight<=rhs.weight;
-	}
-	bool operator >=(const Node& rhs) const {
-		return weight>rhs.weight;
-	}
-};
-
 class File;
 class FileException;
 
@@ -104,11 +70,6 @@ private:
 
 	const string lock;
 	const string pk;
-
-	int countChars(const string& aString, int* c, u_int8_t& csum);
-	void walkTree(list<Node*>& aTree);
-	void recurseLookup(vector<u_int8_t>* b, Node* node, vector<u_int8_t>& bytes);
-	void buildLookup(vector<u_int8_t>* b, Node* root);
 
 	string keySubst(const u_int8_t* aKey, size_t len, size_t n);
 	bool isExtra(u_int8_t b) {

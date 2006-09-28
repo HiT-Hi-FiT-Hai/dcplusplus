@@ -29,6 +29,9 @@
 #include "MerkleTree.h"
 
 class ListLoader;
+class SimpleXML;
+class SimpleXMLException;
+class FileException;
 
 class DirectoryListing
 {
@@ -131,9 +134,8 @@ public:
 		delete root;
 	}
 
-	void loadFile(const string& name);
+	void loadFile(const string& name) throw(FileException, SimpleXMLException);
 
-	void load(const string& i);
 	string loadXML(const string& xml, bool updating);
 
 	void download(const string& aDir, const string& aTarget, bool highPrio);

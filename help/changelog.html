@@ -13,6 +13,27 @@
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
 
+<h2>0.696 <span style="color: gray;">(2006-09-22)</span></h2>
+<ul>
+  <li>Fixed a possible deadlock</li>
+  <li><a href="http://dcpp.net/bugzilla/show_bug.cgi?id=1058">[bug 1058]</a> Removed some whitespace (big thanks to pothead)</li>
+  <li>Removed the possibility to download files without TTH</li>
+  <li>Removed the possibility to read *.DcLst files (no TTH, no i18n support)</li>
+  <li>Files with no TTH no longer show up in search and directory listings</li>
+  <li>Sources in the queue with no TTH support will no longer appear</li>
+  <li>Files without TTH in the queue will be removed (finish downloads with an older version)</li>
+  <li>[ADC] Fixed support for uncompressed files.xml as well as proper files.xml.bz2 support</li>
+  <li>Some socket code cleanup</li>
+  <li>Removed broken nick save code</li>
+  <li>Upgraded yaSSL to 1.4.0</li>
+  <li>Fixed some SSL connection issues</li>
+  <li>Fixed on-the-fly compression of file lists</li>
+  <li><a href="http://dcpp.net/bugzilla/show_bug.cgi?id=1055">[bug 1055]</a> Stopped files.xml.bz2 from being deleted on linux (thanks dorian)</li>
+  <li><a href="http://dcpp.net/bugzilla/show_bug.cgi?id=1061">[bug 1061]</a> Log page fix (thanks fleetcommand)</li>
+  <li><a href="http://dcpp.net/bugzilla/show_bug.cgi?id=1033">[bug 1033]</a> Altered NMDC hubname/description detection slightly (thanks fleetcommand)</li>
+  <li><a href="http://dcpp.net/bugzilla/show_bug.cgi?id=1059">[bug 1059]</a> Fixed the possibility for users to become hidden in some cases (thanks fleetcommand)</li>
+</ul>
+
 <h2>0.695 <span style="color: gray;">(2006-09-10)</span></h2>
 <ul>
   <li>PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo without connection type</li>

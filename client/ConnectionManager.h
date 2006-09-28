@@ -74,9 +74,10 @@ public:
 		Lock l(cs);
 		ExpectMap::iterator i = expectedConnections.find(aNick);
 
-		if(i == expectedConnections.end()) return make_pair(Util::emptyString, Util::emptyString);
+		if(i == expectedConnections.end()) 
+			return make_pair(Util::emptyString, Util::emptyString);
 
-		pair<string, string> tmp = make_pair(i->second.first, i->second.second);
+		StringPair tmp = i->second;
 		expectedConnections.erase(i);
 
 		return tmp;
@@ -84,7 +85,7 @@ public:
 
 private:
 	/** Nick -> myNick, hubUrl for expected NMDC incoming connections */
-	typedef map<string, pair<string, string> > ExpectMap;
+	typedef map<string, StringPair> ExpectMap;
 	ExpectMap expectedConnections;
 
 	CriticalSection cs;

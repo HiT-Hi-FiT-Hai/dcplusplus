@@ -23,7 +23,7 @@
 #include "ClientManager.h"
 
 AdcCommand::AdcCommand(u_int32_t aCmd, char aType /* = TYPE_CLIENT */) : cmdInt(aCmd), from(0), type(aType) { }
-AdcCommand::AdcCommand(u_int32_t aCmd, const u_int32_t aTarget) : cmdInt(aCmd), from(0), to(aTarget), type(TYPE_DIRECT) { }
+AdcCommand::AdcCommand(u_int32_t aCmd, const u_int32_t aTarget, char aType) : cmdInt(aCmd), from(0), to(aTarget), type(aType) { }
 AdcCommand::AdcCommand(Severity sev, Error err, const string& desc, char aType /* = TYPE_CLIENT */) : cmdInt(CMD_STA), from(0), type(aType) {
 	addParam(Util::toString(sev * 100 + err));
 	addParam(desc);
@@ -52,6 +52,10 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		cmd[0] = aLine[1];
 		cmd[1] = aLine[2];
 		cmd[2] = aLine[3];
+	}
+
+	if(type != TYPE_BROADCAST && type != TYPE_CLIENT && type != TYPE_DIRECT && type != TYPE_ECHO && type != TYPE_FEATURE && type != TYPE_INFO && type != TYPE_HUB && type != TYPE_UDP) {
+		throw ParseException("Invalid type");
 	}
 
 	if(type == TYPE_INFO) {
@@ -87,13 +91,22 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		case ' ':
 			// New parameter...
 			{
-				if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) && !fromSet) {
+				if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_ECHO || type == TYPE_FEATURE) && !fromSet) {
+					if(cur.length() != 4) {
+						throw ParseException("Invalid SID length");
+					}
 					from = toSID(cur);
 					fromSet = true;
-				} else if(type == TYPE_DIRECT && !toSet) {
+				} else if((type == TYPE_DIRECT || type == TYPE_ECHO) && !toSet) {
+					if(cur.length() != 4) {
+						throw ParseException("Invalid SID length");
+					}
 					to = toSID(cur);
 					toSet = true;
 				} else if(type == TYPE_FEATURE && !featureSet) {
+					if(cur.length() % 5 != 0) {
+						throw ParseException("Invalid feature length");
+					}
 					// Skip...
 					featureSet = true;
 				} else {
@@ -108,18 +121,39 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		++i;
 	}
 	if(!cur.empty()) {
-		if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) && !fromSet) {
+		if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_ECHO || type == TYPE_FEATURE) && !fromSet) {
+			if(cur.length() != 4) {
+				throw ParseException("Invalid SID length");
+			}
 			from = toSID(cur);
 			fromSet = true;
-		} else if(type == TYPE_DIRECT && !toSet) {
+		} else if((type == TYPE_DIRECT || type == TYPE_ECHO) && !toSet) {
+			if(cur.length() != 4) {
+				throw ParseException("Invalid SID length");
+			}
 			to = toSID(cur);
 			toSet = true;
 		} else if(type == TYPE_FEATURE && !featureSet) {
-			// Skip...
+			if(cur.length() % 5 != 0) {
+				throw ParseException("Invalid feature length");
+			}
+            // Skip...
 			featureSet = true;
 		} else {
 			parameters.push_back(cur);
 		}
+	}
+
+	if((type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_ECHO || type == TYPE_FEATURE) && !fromSet) {
+		throw ParseException("Missing from_sid");
+	}
+	
+	if(type == TYPE_FEATURE && !featureSet) {
+		throw ParseException("Missing feature");
+	}
+	
+	if((type == TYPE_DIRECT || type == TYPE_ECHO) && !toSet) {
+		throw ParseException("Missing to_sid");
 	}
 }
 
@@ -159,12 +193,12 @@ string AdcCommand::getHeaderString(u_int32_t sid, bool nmdc) const {
 
 	tmp += cmdChar;
 
-	if(type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_FEATURE) {
+	if(type == TYPE_BROADCAST || type == TYPE_DIRECT || type == TYPE_ECHO || type == TYPE_FEATURE) {
 		tmp += ' ';
 		tmp += fromSID(sid);
 	}
 
-	if(type == TYPE_DIRECT) {
+	if(type == TYPE_DIRECT || type == TYPE_ECHO) {
 		tmp += ' ';
 		tmp += fromSID(to);
 	}
@@ -214,8 +248,8 @@ bool AdcCommand::getParam(const char* name, size_t start, string& ret) const {
 bool AdcCommand::hasFlag(const char* name, size_t start) const {
 	for(string::size_type i = start; i < getParameters().size(); ++i) {
 		if(toCode(name) == toCode(getParameters()[i].c_str()) &&
-			getParameters()[i][2] == '1' &&
-			getParameters()[i].size() == 3)
+			getParameters()[i].size() == 3 &&
+			getParameters()[i][2] == '1')
 		{
 			return true;
 		}

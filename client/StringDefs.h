@@ -267,6 +267,7 @@ enum Strings { // @DontAdd
 	MENU_NOTEPAD, // "&Notepad\tCtrl+N"
 	MENU_OPEN_DOWNLOADS_DIR, // "Open downloads directory"
 	MENU_OPEN_FILE_LIST, // "Open file list...\tCtrl+L"
+	MENU_OPEN_MATCH_ALL, // "Match downloaded lists"
 	MENU_OPEN_OWN_LIST, // "Open own list"
 	MENU_PUBLIC_HUBS, // "&Public Hubs\tCtrl+P"
 	MENU_QUICK_CONNECT, // "&Quick Connect ...\tCtrl+Q"

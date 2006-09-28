@@ -43,21 +43,21 @@ public:
 		HIGH = THREAD_PRIORITY_ABOVE_NORMAL
 	};
 
-	Thread() throw() : threadHandle(NULL), threadId(0){ }
+	Thread() throw() : threadHandle(INVALID_HANDLE_VALUE), threadId(0){ }
 	virtual ~Thread() {
-		if(threadHandle)
+		if(threadHandle != INVALID_HANDLE_VALUE)
 			CloseHandle(threadHandle);
 	}
 
 	void start() throw(ThreadException);
 	void join() throw(ThreadException) {
-		if(threadHandle == NULL) {
+		if(threadHandle == INVALID_HANDLE_VALUE) {
 			return;
 		}
 
 		WaitForSingleObject(threadHandle, INFINITE);
 		CloseHandle(threadHandle);
-		threadHandle = NULL;
+		threadHandle = INVALID_HANDLE_VALUE;
 	}
 
 	void setThreadPriority(Priority p) throw() { ::SetThreadPriority(threadHandle, p); }

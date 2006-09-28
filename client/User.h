@@ -91,17 +91,17 @@ public:
 		GOT_INF_BIT,
 		NMDC_PASSIVE_BIT
 	};
-	enum Flags {
+	enum IdentityFlags {
 		GOT_INF = 1 << GOT_INF_BIT,
 		NMDC_PASSIVE = 1 << NMDC_PASSIVE_BIT
 	};
 
 	Identity() : sid(0) { }
 	Identity(const User::Ptr& ptr, u_int32_t aSID) : user(ptr), sid(aSID) { }
-	Identity(const Identity& rhs) : ::Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
+	Identity(const Identity& rhs) : Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
+	Identity& operator=(const Identity& rhs) { Lock l(cs); *static_cast<Flags*>(this) = rhs; user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
 
-#define GS(n, x) const string& get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
+#define GS(n, x) string get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
 	GS(Description, "DE")
 	GS(Ip, "I4")
@@ -116,16 +116,7 @@ public:
 	void setHub(bool hub) { set("HU", hub ? "1" : Util::emptyString); }
 	void setBot(bool bot) { set("BO", bot ? "1" : Util::emptyString); }
 	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
-
-	string getTag() const {
-		if(!get("TA").empty())
-			return get("TA");
-		if(get("VE").empty() || get("HN").empty() || get("HR").empty() ||get("HO").empty() || get("SL").empty())
-			return Util::emptyString;
-		return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" +
-			get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
-	}
-
+	string getTag() const;
 	bool supports(const string& name) const;
 	bool isHub() const { return !get("HU").empty(); }
 	bool isOp() const { return !get("OP").empty(); }
@@ -135,24 +126,9 @@ public:
 	bool isAway() const { return !get("AW").empty(); }
 	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
 	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
-
-	const string& get(const char* name) const {
-		RLock<> l(rw);
-		InfMap::const_iterator i = info.find(*(short*)name);
-		return i == info.end() ? Util::emptyString : i->second;
-	}
-
-	void set(const char* name, const string& val) {
-		WLock<> l(rw);
-		if(val.empty())
-			info.erase(*(short*)name);
-		else
-			info[*(short*)name] = val;
-	}
-
-	string getSIDString() const {
-		return string((const char*)&sid, 4);
-	}
+	string get(const char* name) const;
+	void set(const char* name, const string& val);
+	string getSIDString() const { return string((const char*)&sid, 4); }
 
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
@@ -163,7 +139,7 @@ private:
 	typedef InfMap::iterator InfIter;
 	InfMap info;
 	/** @todo there are probably more threading issues here ...*/
-	static RWLock<> rw;
+	mutable CriticalSection cs;
 };
 
 class Client;

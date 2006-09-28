@@ -184,6 +184,9 @@
 				RelativePath=".\client\FavoriteManager.cpp">
 			</File>
 			<File
+				RelativePath=".\client\File.cpp">
+			</File>
+			<File
 				RelativePath="client\FinishedManager.cpp">
 			</File>
 			<File
@@ -272,6 +275,9 @@
 			</File>
 			<File
 				RelativePath=".\client\Util.cpp">
+			</File>
+			<File
+				RelativePath=".\client\ZUtils.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -467,6 +473,9 @@
 				RelativePath=".\client\StringTokenizer.h">
 			</File>
 			<File
+				RelativePath=".\client\TaskQueue.h">
+			</File>
+			<File
 				RelativePath=".\client\Text.h">
 			</File>
 			<File
@@ -495,9 +504,6 @@
 			</File>
 			<File
 				RelativePath=".\client\version.h">
-			</File>
-			<File
-				RelativePath=".\client\ZUtils.cpp">
 			</File>
 			<File
 				RelativePath=".\client\ZUtils.h">

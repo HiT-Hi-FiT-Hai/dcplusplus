@@ -444,6 +444,37 @@ void HashManager::HashStore::createDataFile(const string& name) {
 
 #define BUF_SIZE (256*1024)
 
+void HashManager::Hasher::hashFile(const string& fileName, int64_t size) {
+	Lock l(cs);
+	if(w.insert(make_pair(fileName, size)).second) {
+		s.signal();
+	}
+}
+
+void HashManager::Hasher::stopHashing(const string& baseDir) {
+	Lock l(cs);
+	for(WorkIter i = w.begin(); i != w.end(); ) {
+		if(Util::strnicmp(baseDir, i->first, baseDir.length()) == 0) {
+			w.erase(i++);
+		} else {
+			++i;
+		}
+	}
+}
+
+void HashManager::Hasher::getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {
+	Lock l(cs);
+	curFile = currentFile;
+	filesLeft = w.size();
+	if(running)
+		filesLeft++;
+	bytesLeft = 0;
+	for(WorkMap::const_iterator i = w.begin(); i != w.end(); ++i) {
+		bytesLeft += i->second;
+	}
+	bytesLeft += currentSize;
+}
+
 #ifdef _WIN32
 bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
 	HANDLE h = INVALID_HANDLE_VALUE;

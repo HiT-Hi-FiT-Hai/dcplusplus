@@ -346,7 +346,7 @@ void UploadManager::addFailedUpload(UserConnection::Ptr source, string filename)
 void UploadManager::clearUserFiles(const User::Ptr& source) {
 	Lock l(cs);
 	//run this when a user's got a slot or goes offline.
-	UserDeque::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), UserMatch(source));
+	UserList::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), UserMatch(source));
 	if (sit == waitingUsers.end()) return;
 
 	FilesMap::iterator fit = waitingFiles.find(sit->first);
@@ -356,9 +356,9 @@ void UploadManager::clearUserFiles(const User::Ptr& source) {
 	waitingUsers.erase(sit);
 }
 
-vector<User::Ptr> UploadManager::getWaitingUsers() {
+User::List UploadManager::getWaitingUsers() {
 	Lock l(cs);
-	vector<User::Ptr> u;
+	User::List u;
 	transform(waitingUsers.begin(), waitingUsers.end(), back_inserter(u), select1st<WaitingUser>());
 	return u;
 }
@@ -384,8 +384,8 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn) {
 void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
 	Lock l(cs);
 
-	UserDeque::iterator i = stable_partition(waitingUsers.begin(), waitingUsers.end(), WaitingUserFresh());
-	for (UserDeque::iterator j = i; j != waitingUsers.end(); ++j) {
+	UserList::iterator i = stable_partition(waitingUsers.begin(), waitingUsers.end(), WaitingUserFresh());
+	for (UserList::iterator j = i; j != waitingUsers.end(); ++j) {
 		FilesMap::iterator fit = waitingFiles.find(j->first);
 		if (fit != waitingFiles.end()) waitingFiles.erase(fit);
 		fire(UploadManagerListener::WaitingRemoveUser(), j->first);

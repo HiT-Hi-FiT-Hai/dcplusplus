@@ -737,7 +737,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 string NmdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
 	for(size_t i = 0; i < aNick.size(); ++i) {
-		if(tmp[i] <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
+		if(static_cast<u_int8_t>(tmp[i]) <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
 			tmp[i] = '_';
 		}
 	}

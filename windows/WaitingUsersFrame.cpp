@@ -190,9 +190,8 @@ LRESULT WaitingUsersFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, 
 void WaitingUsersFrame::LoadAll()
 {
 	// Load queue
-	typedef vector<User::Ptr> UserVect;
-	UserVect users = UploadManager::getInstance()->getWaitingUsers();
-	for (UserVect::const_iterator uit = users.begin(); uit != users.end(); ++uit) {
+	User::List users = UploadManager::getInstance()->getWaitingUsers();
+	for (User::Iter uit = users.begin(); uit != users.end(); ++uit) {
 		HTREEITEM lastInserted = ctrlQueued.InsertItem(TVIF_PARAM | TVIF_TEXT,
 			(WinUtil::getNicks(*uit) + _T(" - ") + WinUtil::getHubNames(*uit).first).c_str(),
 			0, 0, 0, 0, (LPARAM)(new UserPtr(*uit)), TVI_ROOT, TVI_LAST);
