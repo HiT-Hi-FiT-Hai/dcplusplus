@@ -27,7 +27,7 @@
 
 class ResourceManager : public Singleton<ResourceManager> {
 public:
-	
+
 #include "StringDefs.h"
 
 	void loadLanguage(const string& aFile);
@@ -36,7 +36,7 @@ public:
 	bool isRTL() { return rtl; }
 private:
 	friend class Singleton<ResourceManager>;
-	
+
 	typedef HASH_MAP<string, Strings> NameMap;
 	typedef NameMap::iterator NameIter;
 

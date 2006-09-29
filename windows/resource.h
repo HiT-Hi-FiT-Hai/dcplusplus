@@ -430,6 +430,7 @@
 #define IDC_BROWSE_TRUSTED_PATH         1425
 #define IDC_CLOSE_ALL_SEARCH_FRAME      1426
 #define IDC_SETTINGS_PORT_TLS           1427
+#define IDC_MATCH_ALL					1428
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -471,7 +472,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1428
+#define _APS_NEXT_CONTROL_VALUE         1429
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

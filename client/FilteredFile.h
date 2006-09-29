@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Streams.h"
+#include "Util.h"
 
 template<class Filter, bool managed>
 class CalcOutputStream : public OutputStream {
@@ -72,7 +73,7 @@ class FilteredOutputStream : public OutputStream {
 public:
 	using OutputStream::write;
 
-	FilteredOutputStream(OutputStream* aFile) : f(aFile), flushed(false) { }
+	FilteredOutputStream(OutputStream* aFile) : f(aFile), buf(BUF_SIZE), flushed(false) { }
 	~FilteredOutputStream() throw() { if(manage) delete f; }
 
 	size_t flush() throw(Exception) {
@@ -123,19 +124,19 @@ public:
 	}
 
 private:
-	enum { BUF_SIZE = 64*1024 };
+	static const size_t BUF_SIZE = 64*1024;
 
 	OutputStream* f;
 	Filter filter;
 
-	u_int8_t buf[BUF_SIZE];
+	AutoArray<u_int8_t> buf;
 	bool flushed;
 };
 
 template<class Filter, bool managed>
 class FilteredInputStream : public InputStream {
 public:
-	FilteredInputStream(InputStream* aFile) : f(aFile), pos(0), valid(0), more(true) { }
+	FilteredInputStream(InputStream* aFile) : f(aFile), buf(BUF_SIZE), pos(0), valid(0), more(true) { }
 	virtual ~FilteredInputStream() throw() { if(managed) delete f; }
 
 	/**
@@ -173,11 +174,11 @@ public:
 	}
 
 private:
-	enum { BUF_SIZE = 64*1024 };
+	static const size_t BUF_SIZE = 64*1024;
 
 	InputStream* f;
 	Filter filter;
-	u_int8_t buf[BUF_SIZE];
+	AutoArray<u_int8_t> buf;
 	size_t pos;
 	size_t valid;
 	bool more;

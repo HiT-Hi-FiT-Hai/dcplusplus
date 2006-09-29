@@ -72,7 +72,7 @@ void ADLSearchManager::Load()
 					}
 					if(xml.findChild("IsActive")) {
 						search.isActive = (Util::toInt(xml.getChildData()) != 0);
-					} 
+					}
 					if(xml.findChild("MaxSize")) {
 						search.maxFileSize = Util::toInt64(xml.getChildData());
 					}
@@ -163,7 +163,7 @@ void ADLSearchManager::Save()
 
 		xml.stepOut();
 
-		// Save string to file			
+		// Save string to file
 		try {
 			File fout(getConfigFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			fout.write(SimpleXML::utf8Header);
@@ -183,7 +183,7 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 		if(id->subdir != NULL) {
 			DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile, true);
 			dcassert(id->subdir->getAdls());
-			
+
 			id->subdir->files.push_back(copyFile);
 		}
 		id->fileAdded = false;	// Prepare for next stage
@@ -207,7 +207,7 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 
 			if(is->isAutoQueue){
 				QueueManager::getInstance()->add(SETTING(DOWNLOAD_DIRECTORY) + currentFile->getName(),
-					currentFile->getSize(), currentFile->getTTH(), getUser(), currentFile->getName());
+					currentFile->getSize(), currentFile->getTTH(), getUser());
 			}
 
 			if(breakOnFirst) {
@@ -222,7 +222,7 @@ void ADLSearchManager::MatchesDirectory(DestDirList& destDirVector, DirectoryLis
 	// Add to any substructure being stored
 	for(DestDirList::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id) {
 		if(id->subdir != NULL) {
-			DirectoryListing::Directory* newDir = 
+			DirectoryListing::Directory* newDir =
 				new DirectoryListing::AdlDirectory(fullPath, id->subdir, currentDir->getName());
 			id->subdir->directories.push_back(newDir);
 			id->subdir = newDir;
@@ -240,7 +240,7 @@ void ADLSearchManager::MatchesDirectory(DestDirList& destDirVector, DirectoryLis
 			continue;
 		}
 		if(is->MatchesDirectory(currentDir->getName())) {
-			destDirVector[is->ddIndex].subdir = 
+			destDirVector[is->ddIndex].subdir =
 				new DirectoryListing::AdlDirectory(fullPath, destDirVector[is->ddIndex].dir, currentDir->getName());
 			destDirVector[is->ddIndex].dir->directories.push_back(destDirVector[is->ddIndex].subdir);
 			if(breakOnFirst) {

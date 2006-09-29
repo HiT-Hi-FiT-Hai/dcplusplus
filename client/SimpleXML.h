@@ -76,14 +76,14 @@ private:
  * A simple XML class that loads an XML-ish structure into an internal tree
  * and allows easy access to each element through a "current location".
  */
-class SimpleXML  
+class SimpleXML
 {
 public:
-	SimpleXML() : root("BOGUSROOT", Util::emptyString, NULL), current(&root), found(false) { 
+	SimpleXML() : root("BOGUSROOT", Util::emptyString, NULL), current(&root), found(false) {
 		resetCurrentChild();
 	}
 	~SimpleXML() { }
-	
+
 	void addTag(const string& aName, const string& aData = Util::emptyString) throw(SimpleXMLException);
 	void addTag(const string& aName, int aData) throw(SimpleXMLException) {
 		addTag(aName, Util::toString(aData));
@@ -98,24 +98,24 @@ public:
 	}
 
 	void addAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
-	void addAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
+	void addAttrib(const string& aName, bool aData) throw(SimpleXMLException) {
 		addAttrib(aName, string(aData ? "1" : "0"));
 	}
-	
+
 	template <typename T>
-    void addChildAttrib(const string& aName, const T& aData) throw(SimpleXMLException) {	
+	void addChildAttrib(const string& aName, const T& aData) throw(SimpleXMLException) {
 		addChildAttrib(aName, Util::toString(aData));
 	}
 	void addChildAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
-	void addChildAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
+	void addChildAttrib(const string& aName, bool aData) throw(SimpleXMLException) {
 		addChildAttrib(aName, string(aData ? "1" : "0"));
 	}
-	
+
 	const string& getData() const {
 		dcassert(current != NULL);
 		return current->data;
 	}
-	
+
 	void stepIn() throw(SimpleXMLException) {
 		checkChildSelected();
 		current = *currentChild;
@@ -130,7 +130,7 @@ public:
 		dcassert(current->parent != NULL);
 
 		currentChild = find(current->parent->children.begin(), current->parent->children.end(), current);
-		
+
 		current = current->parent;
 		found = true;
 	}
@@ -167,11 +167,11 @@ public:
 
 		return (tmp.size() > 0) && tmp[0] == '1';
 	}
-	
+
 	void fromXML(const string& aXML) throw(SimpleXMLException);
 	string toXML() { string tmp; StringOutputStream os(tmp); toXML(&os); return tmp; }
 	void toXML(OutputStream* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); }
-	
+
 	static const string& escape(const string& str, string& tmp, bool aAttrib, bool aLoading = false, bool utf8 = true) {
 		if(needsEscape(str, aAttrib, aLoading, utf8)) {
 			tmp = str;
@@ -180,7 +180,7 @@ public:
 		return str;
 	}
 	static string& escape(string& aString, bool aAttrib, bool aLoading = false, bool utf8 = true);
-	/** 
+	/**
 	 * This is a heuristic for whether escape needs to be called or not. The results are
  	 * only guaranteed for false, i e sometimes true might be returned even though escape
 	 * was not needed...
@@ -198,7 +198,7 @@ private:
 
 		/**
 		 * A simple list of children. To find a tag, one must search the entire list.
-		 */ 
+		 */
 		List children;
 		/**
 		 * Attributes of this tag. According to the XML standard the names
@@ -207,28 +207,28 @@ private:
 		 * calls to the memory allocator...)
 		 */
 		StringPairList attribs;
-		
+
 		/** Tag name */
 		string name;
 
 		/** Tag data, may be empty. */
 		string data;
-				
+
 		/** Parent tag, for easy traversal */
 		Ptr parent;
 
-		Tag(const string& aName, const StringPairList& a, Ptr aParent) : attribs(a), name(aName), data(), parent(aParent) { 
+		Tag(const string& aName, const StringPairList& a, Ptr aParent) : attribs(a), name(aName), data(), parent(aParent) {
 		}
 
-		Tag(const string& aName, const string& d, Ptr aParent) : name(aName), data(d), parent(aParent) { 
+		Tag(const string& aName, const string& d, Ptr aParent) : name(aName), data(d), parent(aParent) {
 		}
-		
+
 		const string& getAttrib(const string& aName, const string& aDefault = Util::emptyString) {
 			StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string,string>(aName));
-			return (i == attribs.end()) ? aDefault : i->second; 
+			return (i == attribs.end()) ? aDefault : i->second;
 		}
 		void toXML(int indent, OutputStream* f);
-		
+
 		void appendAttribString(string& tmp);
 		/** Delete all children! */
 		~Tag() {

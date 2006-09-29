@@ -74,6 +74,7 @@ real slot (there were lots of nmdc users bitching about this...).
 
 Feature: GetZBlock
 Since: 0.307
+Deprecated - replaced by ADCGet
 
 Usage: Instead of $Get and $Send, use 
 "$GetZBlock <start> <numbytes> <filename>|" where <start> is the 0-based

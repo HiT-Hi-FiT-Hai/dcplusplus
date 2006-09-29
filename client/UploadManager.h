@@ -27,7 +27,6 @@
 #include "Singleton.h"
 
 #include "ClientManagerListener.h"
-#include <deque>
 #include "File.h"
 #include "MerkleTree.h"
 
@@ -37,32 +36,32 @@ public:
 		FLAG_USER_LIST = 0x01,
 		FLAG_TTH_LEAVES = 0x02,
 		FLAG_ZUPLOAD = 0x04,
-		FLAG_PARTIAL_LIST = 0x08
+		FLAG_PARTIAL_LIST = 0x08,
+		FLAG_PENDING_KICK = 0x10
 	};
 
 	typedef Upload* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	
-	Upload() : tth(NULL), file(NULL) { }
-	virtual ~Upload() { 
+
+	Upload() : file(0) { }
+	virtual ~Upload() {
 		delete file;
-		delete tth;
 	}
-	
+
 	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); }
-	
+
 	GETSET(string, fileName, FileName);
 	GETSET(string, localFileName, LocalFileName);
-	GETSET(TTHValue*, tth, TTH);
+	GETSET(TTHValue, tth, TTH);
 	GETSET(InputStream*, file, File);
 };
 
 class UploadManagerListener {
 public:
 	virtual ~UploadManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
-	
+	template<int I>	struct X { enum { TYPE = I }; };
+
 	typedef X<0> Complete;
 	typedef X<1> Failed;
 	typedef X<2> Starting;
@@ -82,8 +81,8 @@ public:
 class UploadManager : private ClientManagerListener, private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
 public:
-	
-	/** @return Number of uploads. */ 
+
+	/** @return Number of uploads. */
 	size_t getUploadCount() { Lock l(cs); return uploads.size(); }
 
 	/**
@@ -101,10 +100,10 @@ public:
 		}
 		return avg;
 	}
-	
+
 	/** @return Number of free slots. */
 	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
-	
+
 	/** @internal */
 	bool getAutoSlot() {
 		/** A 0 in settings means disable */
@@ -119,14 +118,14 @@ public:
 
 	/** @internal */
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); }
-	
+
 	/** @param aUser Reserve an upload slot for this user and connect. */
 	void reserveSlot(const User::Ptr& aUser);
 
 	typedef set<string> FileSet;
 	typedef hash_map<User::Ptr, FileSet, User::HashFunction> FilesMap;
 	void clearUserFiles(const User::Ptr&);
-	vector<User::Ptr> getWaitingUsers();
+	User::List getWaitingUsers();
 	const FileSet& getWaitingUserFiles(const User::Ptr &);
 
 	/** @internal */
@@ -147,12 +146,14 @@ private:
 	SlotSet reservedSlots;
 
 	typedef pair<User::Ptr, u_int32_t> WaitingUser;
-	typedef deque<WaitingUser> UserDeque;
+	typedef list<WaitingUser> UserList;
 
 	struct UserMatch {
 		UserMatch(const User::Ptr& u) : u(u) { }
-		User::Ptr u;
+		const User::Ptr& u;
 		bool operator()(const WaitingUser& wu) { return wu.first == u; }
+	private:
+		UserMatch& operator=(const UserMatch&);
 	};
 
 	struct WaitingUserFresh {
@@ -160,7 +161,7 @@ private:
 	};
 
 	//functions for manipulating waitingFiles and waitingUsers
-	UserDeque waitingUsers;		//this one merely lists the users waiting for slots
+	UserList waitingUsers;		//this one merely lists the users waiting for slots
 	FilesMap waitingFiles;		//set of files which this user has asked for
 	void addFailedUpload(UserConnection::Ptr source, string filename);
 
@@ -173,25 +174,22 @@ private:
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
-	
+
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(Second, u_int32_t aTick) throw();
+	virtual void on(Minute, u_int32_t aTick) throw();
 
 	// UserConnectionListener
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
 	virtual void on(Get, UserConnection*, const string&, int64_t) throw();
-	virtual void on(GetBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, false); }
-	virtual void on(GetZBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, true); }
 	virtual void on(Send, UserConnection*) throw();
 	virtual void on(GetListLength, UserConnection* conn) throw();
 	virtual void on(TransmitDone, UserConnection*) throw();
-	
+
 	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw();
 
-	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
 };
 

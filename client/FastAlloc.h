@@ -30,7 +30,7 @@ struct FastAllocBase {
 	static FastCriticalSection cs;
 };
 
-/** 
+/**
  * Fast new/delete replacements for constant sized objects, that also give nice
  * reference locality...
  */

@@ -31,14 +31,14 @@
 class Client;
 class AdcCommand;
 class ClientManager;
-class ClientListener  
+class ClientListener
 {
 public:
-	template<int I>	struct X { enum { TYPE = I };  };
+	virtual ~ClientListener() { }
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Connecting;
 	typedef X<1> Connected;
-	typedef X<2> BadPassword;
 	typedef X<3> UserUpdated;
 	typedef X<4> UsersUpdated;
 	typedef X<5> UserRemoved;
@@ -58,7 +58,6 @@ public:
 
 	virtual void on(Connecting, Client*) throw() { }
 	virtual void on(Connected, Client*) throw() { }
-	virtual void on(BadPassword, Client*) throw() { }
 	virtual void on(UserUpdated, Client*, const OnlineUser&) throw() { }
 	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw() { }
 	virtual void on(UserRemoved, Client*, const OnlineUser&) throw() { }
@@ -94,7 +93,7 @@ public:
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) = 0;
 	virtual void password(const string& pwd) = 0;
 	virtual void info(bool force) = 0;
-    
+
 	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
 
@@ -116,7 +115,7 @@ public:
 
 	static string getCounts() {
 		char buf[128];
-		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
+		return string(buf, snprintf(buf, sizeof(buf), "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
 	StringMap& escapeParams(StringMap& sm) {
@@ -138,9 +137,9 @@ public:
 		socket->write(aMessage, aLen);
 	}
 
-	const string& getMyNick() const { return getMyIdentity().getNick(); }
-	const string& getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
-	const string& getHubDescription() const { return getHubIdentity().getDescription(); }
+	string getMyNick() const { return getMyIdentity().getNick(); }
+	string getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
+	string getHubDescription() const { return getHubIdentity().getDescription(); }
 
 	Identity& getHubIdentity() { return hubIdentity; }
 

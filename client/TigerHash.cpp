@@ -53,9 +53,9 @@
 #define round(a,b,c,x,mul) \
 	c ^= x; \
 	a -= t1[((c)>>(0*8))&0xFF] ^ t2[((c)>>(2*8))&0xFF] ^ \
-	     t3[((c)>>(4*8))&0xFF] ^ t4[((c)>>(6*8))&0xFF] ; \
+		 t3[((c)>>(4*8))&0xFF] ^ t4[((c)>>(6*8))&0xFF] ; \
 	b += t4[((c)>>(1*8))&0xFF] ^ t3[((c)>>(3*8))&0xFF] ^ \
-	     t2[((c)>>(5*8))&0xFF] ^ t1[((c)>>(7*8))&0xFF] ; \
+		 t2[((c)>>(5*8))&0xFF] ^ t1[((c)>>(7*8))&0xFF] ; \
 	b *= mul;
 #else
 #define round(a,b,c,x,mul) \
@@ -148,7 +148,7 @@
 	state[2] = c; \
 }
 
-/* The compress function is a function. Requires smaller cache?    */
+/* The compress function is a function. Requires smaller cache? */
 void TigerHash::tigerCompress(const u_int64_t *str, u_int64_t state[3]) {
 	tiger_compress_macro(((const u_int64_t*)str), ((u_int64_t*)state));
 }
@@ -171,7 +171,7 @@ void TigerHash::update(const void* data, size_t length) {
 		if((tmppos + n) == BLOCK_SIZE) {
 #ifdef TIGER_BIG_ENDIAN
 			for(j=0; j<BLOCK_SIZE; j++)
-			        buf[j^7]=((u_int8_t*)tmp)[j];
+				buf[j^7]=((u_int8_t*)tmp)[j];
 			tiger_compress_macro(((u_int64_t*)buf), res);
 #else
 			tiger_compress_macro(((u_int64_t*)tmp), res);
@@ -187,7 +187,7 @@ void TigerHash::update(const void* data, size_t length) {
 	while(length>=BLOCK_SIZE) {
 #ifdef TIGER_BIG_ENDIAN
 		for(j=0; j<BLOCK_SIZE; j++)
-		        buf[j^7]=((u_int8_t*)str)[j];
+			buf[j^7]=((u_int8_t*)str)[j];
 		tiger_compress_macro(((u_int64_t*)buf), res);
 #else
 		tiger_compress_macro(((u_int64_t*)str), res);
@@ -217,7 +217,7 @@ u_int8_t* TigerHash::finalize() {
 		memset(tmp + tmppos, 0, BLOCK_SIZE - tmppos);
 #ifdef TIGER_BIG_ENDIAN
 		for(j=0; j<BLOCK_SIZE; j++)
-		        buf[j^7]=((u_int8_t*)tmp)[j];
+			buf[j^7]=((u_int8_t*)tmp)[j];
 		tiger_compress_macro(((u_int64_t*)buf), res);
 #else
 		tiger_compress_macro(((u_int64_t*)tmp), res);
@@ -227,7 +227,7 @@ u_int8_t* TigerHash::finalize() {
 		memset(tmp + tmppos, 0, BLOCK_SIZE - tmppos - sizeof(u_int64_t));
 #ifdef TIGER_BIG_ENDIAN
 		for(j=0; j<BLOCK_SIZE; j++)
-		        buf[j^7]=((u_int8_t*)tmp)[j];
+			buf[j^7]=((u_int8_t*)tmp)[j];
 		memcpy(tmp, buf, BLOCK_SIZE);
 #endif
 	}
@@ -236,7 +236,7 @@ u_int8_t* TigerHash::finalize() {
 	tiger_compress_macro(((u_int64_t*)tmp), res);
 #ifdef TIGER_BIG_ENDIAN
 	for(j=0; j<HASH_SIZE; j++)
-	        buf[j^7]=((u_int8_t*)res)[j];
+		buf[j^7]=((u_int8_t*)res)[j];
 	memcpy(res, buf, HASH_SIZE);
 #endif
 	return getResult();

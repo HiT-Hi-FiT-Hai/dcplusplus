@@ -26,7 +26,7 @@ const string SimpleXML::utf8Header = "<?xml version=\"1.0\" encoding=\"utf-8\" s
 string& SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false */, bool utf8 /* = true */) {
 	string::size_type i = 0;
 	const char* chars = aAttrib ? "<&>'\"" : "<&>";
-	
+
 	if(aLoading) {
 		while((i = aString.find('&', i)) != string::npos) {
 			if(aString.compare(i+1, 3, "lt;") == 0) {
@@ -52,7 +52,7 @@ string& SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = fals
 				while( (i = aString.find('\n', i) ) != string::npos) {
 					if(aString[i-1] != '\r')
 						aString.insert(i, 1, '\r');
-					
+
 					i+=2;
 				}
 			}
@@ -145,10 +145,10 @@ void SimpleXML::Tag::toXML(int indent, OutputStream* f) {
 
 bool SimpleXML::findChild(const string& aName) throw() {
 	dcassert(current != NULL);
-	
+
 	if(found && currentChild != current->children.end())
 		currentChild++;
-	
+
 	while(currentChild!=current->children.end()) {
 		if((*currentChild)->name == aName) {
 			found = true;
@@ -242,8 +242,8 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 		// Check if we reached the end tag
 		if(tmp[i] == '/') {
 			i++;
-			
-			if( (tmp.compare(i, n.length(), n) == 0) && 
+
+			if( (tmp.compare(i, n.length(), n) == 0) &&
 				(tmp[i + n.length()] == '>') )
 			{
 				if(!hasChildren) {
@@ -269,7 +269,7 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 			if((j = tmp.find_first_not_of(' ', j+1)) == string::npos) {
 				throw SimpleXMLException("Missing '>' in " + name);
 			}
-		}		
+		}
 
 		attribs.clear();
 		if(tmp[j] != '/' && tmp[j] != '>') {
@@ -288,7 +288,7 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 			j++;
 		}
 		i = j;
-	}	
+	}
 }
 
 void SimpleXML::addTag(const string& aName, const string& aData /* = "" */) throw(SimpleXMLException) {
@@ -325,11 +325,11 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 	TagReader t(&root);
 	SimpleXMLReader(&t).fromXML(aXML);
-	
+
 	if(root.children.size() != 1) {
 		throw SimpleXMLException("Invalid XML file, missing or multiple root tags");
 	}
-	
+
 	current = &root;
 	resetCurrentChild();
 }

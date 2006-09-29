@@ -35,7 +35,7 @@ public:
 		m_psh.pfnCallback = &PropSheetProc;
 		m_psh.dwFlags |= PSH_RTLREADING;
 	}
-	
+
 	typedef CPropertySheetImpl<TreePropertySheet> baseClass;
 	BEGIN_MSG_MAP(TreePropertySheet)
 		MESSAGE_HANDLER(WM_COMMAND, baseClass::OnCommand)

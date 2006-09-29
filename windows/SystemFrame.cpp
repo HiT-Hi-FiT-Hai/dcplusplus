@@ -28,7 +28,7 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 {
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
-	
+
 	ctrlPad.SetReadOnly(TRUE);
 	ctrlPad.SetFont(WinUtil::font);
 
@@ -51,7 +51,7 @@ LRESULT SystemFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	LogManager::getInstance()->removeListener(this);
 	bHandled = FALSE;
 	return 0;
-	
+
 }
 
 void SystemFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
@@ -59,13 +59,13 @@ void SystemFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	CRect rc;
 
 	GetClientRect(rc);
-	
+
 	rc.bottom -= 1;
 	rc.top += 1;
 	rc.left +=1;
 	rc.right -=1;
 	ctrlPad.MoveWindow(rc);
-	
+
 }
 
 LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
@@ -79,7 +79,7 @@ LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 
 		if(end == tstring::npos)
 			end = x.length();
-		
+
 		bHandled = WinUtil::parseDBLClick(x, start, end);
 	}
 	return 0;
@@ -87,7 +87,7 @@ LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 
 LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)wParam);
-	
+
 	addLine(msg->first, msg->second);
 	if(BOOLSETTING(BOLD_SYSTEM_LOG))
 		setDirty();

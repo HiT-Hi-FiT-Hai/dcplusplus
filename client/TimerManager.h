@@ -35,7 +35,7 @@
 class TimerManagerListener {
 public:
 	virtual ~TimerManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Second;
 	typedef X<1> Minute;
@@ -56,9 +56,9 @@ public:
 	static time_t getTime() {
 		return (time_t)time(NULL);
 	}
-	static u_int32_t getTick() { 
+	static u_int32_t getTick() {
 #ifdef _WIN32
-		return GetTickCount(); 
+		return GetTickCount();
 #else
 		timeval tv2;
 		gettimeofday(&tv2, NULL);
@@ -70,7 +70,7 @@ private:
 	Semaphore s;
 
 	friend class Singleton<TimerManager>;
-	TimerManager() { 
+	TimerManager() {
 #ifndef _WIN32
 		gettimeofday(&tv, NULL);
 #endif
@@ -82,7 +82,7 @@ private:
 	}
 
 	virtual int run();
-	
+
 #ifndef _WIN32
 	static timeval tv;
 #endif

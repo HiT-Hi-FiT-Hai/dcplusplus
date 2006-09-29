@@ -121,13 +121,13 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		ctrlSearchMenu.SetCheck(BST_CHECKED);
 	if(ctx & UserCommand::CONTEXT_FILELIST)
 		ctrlFilelistMenu.SetCheck(BST_CHECKED);
-	
+
 	updateControls();
 	updateCommand();
 	ctrlResult.SetWindowText(command.c_str());
 
 	ctrlSeparator.SetFocus();
-	
+
 	CenterWindow(GetParent());
 	return FALSE;
 }

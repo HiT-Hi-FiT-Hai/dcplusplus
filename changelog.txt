@@ -1,4 +1,67 @@
-﻿-- 0.693 2006-07-09 --
+﻿-- --
+* [ADC] Fixed a few protocol issues
+* Some code cleanup
+* Queue frame fixes and memory saves
+* TLS port change without restart fixed
+* [bug 1007] Fixed nick character check
+* Fixed some transfer view sorting issues
+* [bug 59] Added option to match all local lists
+
+-- 0.696 2006-09-22 --
+* Fixed a possible deadlock
+* [bug 1058] Removed some whitespace (big thanks to pothead)
+* Removed the possibility to download files without TTH
+* Removed the possibility to read *.DcLst files (no TTH, no i18n support)
+* Files with no TTH no longer show up in search and directory listings
+* Sources in the queue with no TTH support will no longer appear
+* Files without TTH in the queue will be removed (finish downloads with an older version)
+* [ADC] Fixed support for uncompressed files.xml as well as proper files.xml.bz2 support
+* Some socket code cleanup
+* Removed broken nick save code
+* Upgraded yaSSL to 1.4.0
+* Fixed some SSL connection issues
+* Fixed on-the-fly compression of file lists
+* [bug 1055] Stopped files.xml.bz2 from being deleted on linux (thanks dorian)
+* [bug 1061] Log page fix (thanks fleetcommand)
+* [bug 1033] Altered NMDC hubname/description detection slightly (thanks fleetcommand)
+* [bug 1059] Fixed the possibility for users to become hidden in some cases (thanks fleetcommand)
+
+-- 0.695 2006-09-10 --
+* PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo
+  without connection type
+* [bug 125] Fixed out-of-order PM/quit
+* [bug 224] Slots are no longer granted to disconnected users, instead disconnection is delayed a minute
+* [NMDC] Fixed extra space in chat
+* [bug 395] Fixed password being blanked
+* [bug 419] Allowed changing case only when moving file in queue
+* [bug 736] Fixed escaping of menu items
+* [bug 1013] Fixed gcc warnings (thanks steven sheehy)
+* [bug 1023] Fixed some large stack allocations (thanks steven sheehy)
+* [bug 1026] Fixed some potential buffer overflows (thanks steven sheehy)
+* [bug 1027] Improved unix socket support (thanks steven sheehy)
+* [bug 1028] Improved big endian support (thanks steven sheehy)
+* [bug 1029] Fixed BSD compile issue (thanks steven sheehy)
+* [bug 1031] Fixed a crash after closing hub window (thanks bigmuscle/pothead)
+* [bug 1032] Fixed certificates help (thanks pothead)
+* Added possibility to store configuration files in separate directory
+* Switched back to unicows for w9x users, opencow was missing too many functions
+* [bug 876] Fixed lost tooltips (thanks poy and bigmuscle)
+* [bug 1041] Fixed about tab order (thanks pothead)
+* [bug 1042] Fixed experts tab order (thanks pothead)
+* [bug 1047] Fixed possible nmdc crash (thanks guitarm)
+* [bug 1049] Added tooltip to tab bar (thanks poy)
+* [bug 1053] Fixed vista detection (thanks ullner)
+* [bug 988] Fixed duplicate nicks
+* [bug 1015] Fixed chevron text
+* Default hub lists updated
+
+-- 0.694 2006-07-10 --
+* Fixed crash in certificates page
+* [bug 1005] Fixed linux compile issue (thanks tpo)
+* [bug 1004] Fixed browse file list on self
+* Both .crt and .pem files are read as trusted certificates
+
+-- 0.693 2006-07-09 --
 * Fixed crash bug
 * Added language code to example language xml
 

@@ -41,7 +41,7 @@ static char buf[DEBUG_BUFSIZE];
 
 #ifndef _DEBUG
 
-FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
+FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo /* pdli */) {
 	MessageBox(WinUtil::mainWnd, _T("DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("DC++ Has Crashed"), MB_OK | MB_ICONERROR);
 	exit(-1);
 }
@@ -67,7 +67,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 #endif
 
 	// The release version loads the dll and pdb:s here...
-	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
+	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
 
 #endif
 
@@ -76,7 +76,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 		firstException = false;
 	}
 
-	if(File::getSize(Util::getAppPath() + "DCPlusPlus.pdb") == -1) {
+	if(File::getSize(Util::getDataPath() + "DCPlusPlus.pdb") == -1) {
 		// No debug symbols, we're not interested...
 		::MessageBox(WinUtil::mainWnd, _T("DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution..."), _T("DC++ has crashed"), MB_OK);
 #ifndef _DEBUG
@@ -88,10 +88,10 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 	File f(Util::getConfigPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
 	f.setEndPos(0);
-	
+
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
 
-	sprintf(buf, "Code: %x\r\nVersion: %s\r\n", 
+	sprintf(buf, "Code: %x\r\nVersion: %s\r\n",
 		exceptionCode, VERSIONSTRING);
 
 	f.write(buf, strlen(buf));
@@ -114,7 +114,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	f.write(tth, strlen(tth));
 	f.write(LIT("\r\n"));
 
-    f.write(LIT("\r\n"));
+	f.write(LIT("\r\n"));
 
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
 
@@ -128,7 +128,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 #ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
-	
+
 	exit(-1);
 #else
 	return EXCEPTION_CONTINUE_SEARCH;
@@ -167,31 +167,31 @@ static void checkCommonControls() {
 
 	HINSTANCE hinstDll;
 	DWORD dwVersion = 0;
-	
+
 	hinstDll = LoadLibrary(_T("comctl32.dll"));
-	
+
 	if(hinstDll)
 	{
 		DLLGETVERSIONPROC pDllGetVersion;
-	
+
 		pDllGetVersion = (DLLGETVERSIONPROC) GetProcAddress(hinstDll, "DllGetVersion");
-		
+
 		if(pDllGetVersion)
 		{
 			DLLVERSIONINFO dvi;
 			HRESULT hr;
-			
+
 			ZeroMemory(&dvi, sizeof(dvi));
 			dvi.cbSize = sizeof(dvi);
-			
+
 			hr = (*pDllGetVersion)(&dvi);
-			
+
 			if(SUCCEEDED(hr))
 			{
 				dwVersion = PACKVERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
 			}
 		}
-		
+
 		FreeLibrary(hinstDll);
 	}
 
@@ -211,8 +211,6 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
-	
-	MainFrame wndMain;
 
 	CEdit dummy;
 	CEdit splash;
@@ -225,12 +223,12 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	rc.left = rc.right / 2 - 150;
 	rc.right = rc.left + 300;
 
-	dummy.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	dummy.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
-	splash.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	splash.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
-	
+
 	rc.bottom = rc.top + WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
 	splash.HideCaret();
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
@@ -248,7 +246,9 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
-	
+
+	MainFrame wndMain;
+
 	rc = wndMain.rcDefault;
 
 	if( (SETTING(MAIN_WINDOW_POS_X) != CW_USEDEFAULT) &&
@@ -271,9 +271,9 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
-	
+
 	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
-	
+
 	int nRet = theLoop.Run();
 
 	_Module.RemoveMessageLoop();
@@ -311,26 +311,26 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			return FALSE;
 		}
 	}
-	
+
 	// For SHBrowseForFolder, UPnP
-	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
+	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 #ifdef _DEBUG
-	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
-	//File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
+	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
+	//File::deleteFile(Util::getDataPath() + "exceptioninfo.txt");
 #endif
 	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
-	
+
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
-	
+
 	AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES | ICC_PROGRESS_CLASS | ICC_STANDARD_CLASSES |
 		ICC_TAB_CLASSES | ICC_UPDOWN_CLASS);	// add flags to support other controls
-	
+
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
 
 	try {
-		File f(Util::getAppName(), File::READ, File::OPEN);
+		File f(WinUtil::getAppName(), File::READ, File::OPEN);
 		TigerTree tth(TigerTree::calcBlockSize(f.getSize(), 1));
 		size_t n = 0;
 		size_t n2 = DEBUG_BUFSIZE;
@@ -344,9 +344,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
-	
+
 	int nRet = Run(lpstrCmdLine, nCmdShow);
-	
+
 	_Module.Term();
 	::CoUninitialize();
 	::WSACleanup();

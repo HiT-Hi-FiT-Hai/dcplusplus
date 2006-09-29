@@ -61,9 +61,9 @@ protected:
 	static ListItem listItems[];
 
 	ExListViewCtrl logOptions;
-	
+
 	int oldSelection;
-	
+
 	//store all log options here so we can discard them
 	//if the user cancels the dialog.
 	//.first is filename and .second is format

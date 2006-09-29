@@ -23,6 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "SettingsManager.h"
 #include "Exception.h"
 STANDARD_EXCEPTION(FileException);
 
@@ -34,7 +35,7 @@ class OutputStream {
 public:
 	OutputStream() { }
 	virtual ~OutputStream() throw() { }
-	
+
 	/**
 	 * @return The actual number of bytes written. len bytes will always be
 	 *         consumed, but fewer or more bytes may actually be written,

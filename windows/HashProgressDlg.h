@@ -60,7 +60,7 @@ public:
 		updateStats();
 
 		HashManager::getInstance()->setPriority(Thread::NORMAL);
-		
+
 		SetTimer(1, 1000);
 		return TRUE;
 	}
@@ -136,13 +136,13 @@ public:
 
 private:
 	HashProgressDlg(const HashProgressDlg&);
-	
+
 	bool autoClose;
 	int64_t startBytes;
 	size_t startFiles;
 	u_int32_t startTime;
 	CProgressBarCtrl progress;
-	
+
 };
 
 #endif // !defined(HASH_PROGRESS_DLG_H)

@@ -36,7 +36,7 @@ PropPage::TextItem Appearance2Page::texts[] = {
 	{ IDC_SETTINGS_SOUNDS, ResourceManager::SETTINGS_SOUNDS },
 	{ IDC_PRIVATE_MESSAGE_BEEP, ResourceManager::SETTINGS_PM_BEEP },
 	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, ResourceManager::SETTINGS_PM_BEEP_OPEN },
-	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, ResourceManager::DOWNLOADS }, 
+	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, ResourceManager::DOWNLOADS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -143,10 +143,10 @@ LRESULT Appearance2Page::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 LRESULT Appearance2Page::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	switch (wID) {
-		case IDC_SETTINGS_UPLOAD_BAR_COLOR: 
+		case IDC_SETTINGS_UPLOAD_BAR_COLOR:
 			{
 				CColorDialog colPicker(upBar, 0, *this);
-				if(colPicker.DoModal() == IDOK) 
+				if(colPicker.DoModal() == IDOK)
 				{
 					upBar = colPicker.GetColor();
 				}
@@ -155,7 +155,7 @@ LRESULT Appearance2Page::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		case IDC_SETTINGS_DOWNLOAD_BAR_COLOR:
 			{
 				CColorDialog colPicker(downBar, 0, *this);
-				if(colPicker.DoModal() == IDOK) 
+				if(colPicker.DoModal() == IDOK)
 				{
 					downBar = colPicker.GetColor();
 				}

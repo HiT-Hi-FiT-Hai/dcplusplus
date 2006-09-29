@@ -73,17 +73,17 @@ bool WinUtil::urlMagnetRegistered = false;
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
 	unsigned char maxval = max(GetRValue(rgb), max(GetGValue(rgb), GetBValue(rgb)));
-	float mdiff  = float(maxval) - float(minval);
-	float msum   = float(maxval) + float(minval);
+	float mdiff = float(maxval) - float(minval);
+	float msum  = float(maxval) + float(minval);
 
 	float luminance = msum / 510.0f;
 	float saturation = 0.0f;
-	float hue = 0.0f; 
+	float hue = 0.0f;
 
-	if ( maxval != minval ) { 
-		float rnorm = (maxval - GetRValue(rgb)  ) / mdiff;      
-		float gnorm = (maxval - GetGValue(rgb)) / mdiff;
-		float bnorm = (maxval - GetBValue(rgb) ) / mdiff;   
+	if ( maxval != minval ) {
+		float rnorm = (maxval - GetRValue(rgb) ) / mdiff;
+		float gnorm = (maxval - GetGValue(rgb) ) / mdiff;
+		float bnorm = (maxval - GetBValue(rgb) ) / mdiff;
 
 		saturation = (luminance <= 0.5f) ? (mdiff / msum) : (mdiff / (510.0f - msum));
 
@@ -96,12 +96,12 @@ HLSCOLOR RGB2HLS (COLORREF rgb) {
 }
 
 static BYTE _ToRGB (float rm1, float rm2, float rh) {
-	if      (rh > 360.0f) rh -= 360.0f;
+	if		(rh > 360.0f) rh -= 360.0f;
 	else if (rh <   0.0f) rh += 360.0f;
 
-	if      (rh <  60.0f) rm1 = rm1 + (rm2 - rm1) * rh / 60.0f;   
+	if		(rh <  60.0f) rm1 = rm1 + (rm2 - rm1) * rh / 60.0f;
 	else if (rh < 180.0f) rm1 = rm2;
-	else if (rh < 240.0f) rm1 = rm1 + (rm2 - rm1) * (240.0f - rh) / 60.0f;      
+	else if (rh < 240.0f) rm1 = rm1 + (rm2 - rm1) * (240.0f - rh) / 60.0f;
 
 	return (BYTE)(rm1 * 255);
 }
@@ -116,10 +116,10 @@ COLORREF HLS2RGB (HLSCOLOR hls) {
 	}
 	float rm1, rm2;
 
-	if ( luminance <= 0.5f ) rm2 = luminance + luminance * saturation;  
+	if ( luminance <= 0.5f ) rm2 = luminance + luminance * saturation;
 	else                     rm2 = luminance + saturation - luminance * saturation;
-	rm1 = 2.0f * luminance - rm2;   
-	BYTE red   = _ToRGB (rm1, rm2, hue + 120.0f);   
+	rm1 = 2.0f * luminance - rm2;
+	BYTE red   = _ToRGB (rm1, rm2, hue + 120.0f);
 	BYTE green = _ToRGB (rm1, rm2, hue);
 	BYTE blue  = _ToRGB (rm1, rm2, hue - 120.0f);
 
@@ -218,6 +218,7 @@ void WinUtil::init(HWND hWnd) {
 
 	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CTSTRING(MENU_OPEN_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_OWN_LIST, CTSTRING(MENU_OPEN_OWN_LIST));
+	file.AppendMenu(MF_STRING, IDC_MATCH_ALL, CTSTRING(MENU_OPEN_MATCH_ALL));
 	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CTSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
 	file.AppendMenu(MF_SEPARATOR);
@@ -296,7 +297,7 @@ void WinUtil::init(HWND hWnd) {
 
 /** @todo fix this so that the system icon is used for dirs as well (we need
 			  to mask it so that incomplete folders appear correct */
-#if 0	
+#if 0
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
 		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
@@ -322,7 +323,7 @@ void WinUtil::init(HWND hWnd) {
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
 	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
 	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
-	
+
 	lf2.lfHeight = lf.lfHeight;
 	lf2.lfWeight = lf.lfWeight;
 	lf2.lfItalic = lf.lfItalic;
@@ -341,10 +342,10 @@ void WinUtil::init(HWND hWnd) {
 		registerDchubHandler();
 		registerADChubHandler();
 		urlDcADCRegistered = true;
-	} 
+	}
 	if(BOOLSETTING(MAGNET_REGISTER)) {
 		registerMagnetHandler();
-		urlMagnetRegistered = true; 
+		urlMagnetRegistered = true;
 	}
 
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
@@ -371,7 +372,7 @@ void WinUtil::uninit() {
 void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	StringTokenizer<tstring> st(setting, _T(','));
 	TStringList &sl = st.getTokens();
-	
+
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(dest), &dest);
 	tstring face;
 	if(sl.size() == 4)
@@ -381,7 +382,7 @@ void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 		dest.lfWeight = Util::toInt(Text::fromT(sl[2]));
 		dest.lfItalic = (BYTE)Util::toInt(Text::fromT(sl[3]));
 	}
-	
+
 	if(!face.empty()) {
 		::ZeroMemory(dest.lfFaceName, LF_FACESIZE);
 		_tcscpy(dest.lfFaceName, face.c_str());
@@ -390,7 +391,7 @@ void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 
 int CALLBACK WinUtil::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
 	switch(uMsg) {
-	case BFFM_INITIALIZED: 
+	case BFFM_INITIALIZED:
 		SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
 		break;
 	}
@@ -401,9 +402,9 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 	TCHAR buf[MAX_PATH];
 	BROWSEINFO bi;
 	LPMALLOC ma;
-	
+
 	ZeroMemory(&bi, sizeof(bi));
-	
+
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
 	bi.lpszTitle = CTSTRING(CHOOSE_FOLDER);
@@ -414,10 +415,10 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 	if(pidl != NULL) {
 		SHGetPathFromIDList(pidl, buf);
 		target = buf;
-		
+
 		if(target.size() > 0 && target[target.size()-1] != L'\\')
 			target+=L'\\';
-		
+
 		if(SHGetMalloc(&ma) != E_FAIL) {
 			ma->Free(pidl);
 			ma->Release();
@@ -429,7 +430,7 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	OPENFILENAME ofn = { 0 };       // common dialog box structure
+	OPENFILENAME ofn = { 0 };		// common dialog box structure
 	target = Text::toT(Util::validateFileName(Text::fromT(target)));
 	_tcscpy(buf, target.c_str());
 	// Initialize OPENFILENAME
@@ -445,8 +446,8 @@ bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* 
 	}
 	ofn.nMaxFile = sizeof(buf);
 	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
-	
-	// Display the Open dialog box. 
+
+	// Display the Open dialog box.
 	if ( (save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn) ) ==TRUE) {
 		target = ofn.lpstrFile;
 		return true;
@@ -473,20 +474,20 @@ void WinUtil::setClipboard(const tstring& str) {
 
 	EmptyClipboard();
 
-#ifdef UNICODE	
+#ifdef UNICODE
 	OSVERSIONINFOEX ver;
 	if( WinUtil::getVersionInfo(ver) ) {
 		if( ver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS ) {
 			string tmp = Text::wideToAcp(str);
 
-			HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (tmp.size() + 1) * sizeof(char)); 
-			if (hglbCopy == NULL) { 
-				CloseClipboard(); 
-				return; 
-			} 
+			HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (tmp.size() + 1) * sizeof(char));
+			if (hglbCopy == NULL) {
+				CloseClipboard();
+				return;
+			}
 
-			// Lock the handle and copy the text to the buffer. 
-			char* lptstrCopy = (char*)GlobalLock(hglbCopy); 
+			// Lock the handle and copy the text to the buffer.
+			char* lptstrCopy = (char*)GlobalLock(hglbCopy);
 			strcpy(lptstrCopy, tmp.c_str());
 			GlobalUnlock(hglbCopy);
 
@@ -499,21 +500,21 @@ void WinUtil::setClipboard(const tstring& str) {
 	}
 #endif
 
-	// Allocate a global memory object for the text. 
-	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1) * sizeof(TCHAR)); 
-	if (hglbCopy == NULL) { 
-		CloseClipboard(); 
-		return; 
-	} 
+	// Allocate a global memory object for the text.
+	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1) * sizeof(TCHAR));
+	if (hglbCopy == NULL) {
+		CloseClipboard();
+		return;
+	}
 
-	// Lock the handle and copy the text to the buffer. 
-	TCHAR* lptstrCopy = (TCHAR*)GlobalLock(hglbCopy); 
+	// Lock the handle and copy the text to the buffer.
+	TCHAR* lptstrCopy = (TCHAR*)GlobalLock(hglbCopy);
 	_tcscpy(lptstrCopy, str.c_str());
-	GlobalUnlock(hglbCopy); 
+	GlobalUnlock(hglbCopy);
 
 	// Place the handle on the clipboard.
 #ifdef UNICODE
-    SetClipboardData(CF_UNICODETEXT, hglbCopy); 
+	SetClipboardData(CF_UNICODETEXT, hglbCopy);
 #else
 	SetClipboardData(CF_TEXT hglbCopy);
 #endif
@@ -526,7 +527,7 @@ void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1
 	StringList& l = t.getTokens();
 	if(maxItems == -1)
 		maxItems = l.size();
-	
+
 	int k = 0;
 	for(StringList::const_iterator i = l.begin(); i != l.end() && k < maxItems; ++i, ++k) {
 		array[k] = Util::toInt(*i);
@@ -561,7 +562,7 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 	return true;
 }
 
-#define LINE2 _T("-- http://dcplusplus.sourceforge.net  <DC++ ") _T(VERSIONSTRING) _T(">")
+#define LINE2 _T("-- http://dcplusplus.sourceforge.net <DC++ ") _T(VERSIONSTRING) _T(">")
 TCHAR *msgs[] = { _T("\r\n-- I'm a happy dc++ user. You could be happy too.\r\n") LINE2,
 _T("\r\n-- Neo-...what? Nope...never heard of it...\r\n") LINE2,
 _T("\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n") LINE2,
@@ -668,32 +669,28 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	return true;
 }
 
-void WinUtil::bitziLink(const TTHValue* aHash) {
+void WinUtil::bitziLink(const TTHValue& aHash) {
 	// to use this free service by bitzi, we must not hammer or request information from bitzi
 	// except when the user requests it (a mass lookup isn't acceptable), and (if we ever fetch
-	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be 
+	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be
 	// tracked down and the code can be fixed
-	if(aHash != NULL) {
-		openLink(_T("http://bitzi.com/lookup/tree:tiger:") + Text::toT(aHash->toBase32()));
+	openLink(_T("http://bitzi.com/lookup/tree:tiger:") + Text::toT(aHash.toBase32()));
+}
+
+ void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
+	if(!aFile.empty()) {
+		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash.toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
 	}
 }
 
- void WinUtil::copyMagnet(const TTHValue* aHash, const tstring& aFile) {
-	if(aHash != NULL && !aFile.empty()) {
-		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash->toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
-	}
-}
-
- void WinUtil::searchHash(const TTHValue* aHash) {
-	 if(aHash != NULL) {
-		 SearchFrame::openWindow(Text::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
-	 }
+ void WinUtil::searchHash(const TTHValue& aHash) {
+	 SearchFrame::openWindow(Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
  }
 
  void WinUtil::registerDchubHandler() {
 	HKEY hk;
 	TCHAR Buf[512];
-	tstring app = _T("\"") + Text::toT(Util::getAppName()) + _T("\" %1");
+	tstring app = _T("\"") + Text::toT(getAppName()) + _T("\" %1");
 	Buf[0] = 0;
 
 	if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
@@ -704,11 +701,11 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	}
 
 	if(Util::stricmp(app.c_str(), Buf) != 0) {
-		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL))  {
+		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
 			LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_DCHUB));
 			return;
 		}
-	
+
 		TCHAR* tmp = _T("URL:Direct Connect Protocol");
 		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
@@ -719,7 +716,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 		::RegCloseKey(hk);
 
 		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
-		app = Text::toT(Util::getAppName());
+		app = Text::toT(getAppName());
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
 	}
@@ -732,7 +729,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
  void WinUtil::registerADChubHandler() {
 	 HKEY hk;
 	 TCHAR Buf[512];
-	 tstring app = _T("\"") + Text::toT(Util::getAppName()) + _T("\" %1");
+	 tstring app = _T("\"") + Text::toT(getAppName()) + _T("\" %1");
 	 Buf[0] = 0;
 
 	 if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
@@ -743,7 +740,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	 }
 
 	 if(Util::stricmp(app.c_str(), Buf) != 0) {
-		 if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL))  {
+		 if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
 			 LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_ADC));
 			 return;
 		 }
@@ -758,7 +755,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 		 ::RegCloseKey(hk);
 
 		 ::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
-		 app = Text::toT(Util::getAppName());
+		 app = Text::toT(getAppName());
 		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		 ::RegCloseKey(hk);
 	 }
@@ -796,14 +793,14 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	}
 	// check for the existence of magnet.exe
 	if(File::getSize(Text::fromT(magnetExe)) == -1) {
-		magnetExe = Text::toT(Util::getAppPath() + "magnet.exe");
+		magnetExe = Text::toT(Util::getDataPath() + "magnet.exe");
 		if(File::getSize(Text::fromT(magnetExe)) == -1) {
 			// gracefully fall back to registering DC++ to handle magnets
-			magnetExe = Text::toT(Util::getAppName());
+			magnetExe = Text::toT(getAppName());
 			haveMagnet = false;
 		} else {
 			// set Magnet\Location
-			if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL))  {
+			if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
 				LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_MAGNET));
 				return;
 			}
@@ -816,7 +813,7 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	// (re)register the handler if magnet.exe isn't the default, or if DC++ is handling it
 	if(BOOLSETTING(MAGNET_REGISTER) && (Util::strnicmp(openCmd, magnetLoc, magnetLoc.size()) != 0 || !haveMagnet)) {
 		SHDeleteKey(HKEY_CLASSES_ROOT, _T("magnet"));
-		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL))  {
+		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
 			LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_MAGNET));
 			return;
 		}
@@ -839,10 +836,10 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (TSTRING(MAGNET_HANDLER_ROOT).size()+1));
 	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_DESC), sizeof(TCHAR) * (STRING(MAGNET_HANDLER_DESC).size()+1));
 	// set ShellExecute
-	tstring app = Text::toT("\"" + Util::getAppName() + "\" %URL");
+	tstring app = Text::toT("\"" + getAppName() + "\" %URL");
 	::RegSetValueEx(hk, _T("ShellExecute"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length()+1));
 	// set DefaultIcon
-	app = Text::toT('"' + Util::getAppName() + '"');
+	app = Text::toT('"' + getAppName() + '"');
 	::RegSetValueEx(hk, _T("DefaultIcon"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR)*(app.length()+1));
 	::RegCloseKey(hk);
 
@@ -888,7 +885,7 @@ void WinUtil::openLink(const tstring& url) {
 			 *  C:\PROGRA~1\NETSCAPE\NETSCAPE\NETSCP.EXE -url "%1"
 			 */
 			tstring cmd(regbuf); // otherwise you consistently get two trailing nulls
-			
+
 			if(cmd.length() > 1) {
 				string::size_type start,end;
 				if(cmd[0] == '"') {
@@ -1023,7 +1020,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 }
 
 int WinUtil::textUnderCursor(POINT p, CEdit& ctrl, tstring& x) {
-	
+
 	int i = ctrl.CharFromPos(p);
 	int line = ctrl.LineFromChar(i);
 	int c = LOWORD(i) - ctrl.LineIndex(line);
@@ -1046,11 +1043,11 @@ int WinUtil::textUnderCursor(POINT p, CEdit& ctrl, tstring& x) {
 }
 
 bool WinUtil::parseDBLClick(const tstring& aString, string::size_type start, string::size_type end) {
-	if( (Util::strnicmp(aString.c_str() + start, _T("http://"), 7) == 0) || 
+	if( (Util::strnicmp(aString.c_str() + start, _T("http://"), 7) == 0) ||
 		(Util::strnicmp(aString.c_str() + start, _T("www."), 4) == 0) ||
 		(Util::strnicmp(aString.c_str() + start, _T("ftp://"), 6) == 0) ||
 		(Util::strnicmp(aString.c_str() + start, _T("irc://"), 6) == 0) ||
-		(Util::strnicmp(aString.c_str() + start, _T("https://"), 8) == 0) ||	
+		(Util::strnicmp(aString.c_str() + start, _T("https://"), 8) == 0) ||
 		(Util::strnicmp(aString.c_str() + start, _T("mailto:"), 7) == 0) )
 	{
 
@@ -1069,8 +1066,8 @@ bool WinUtil::parseDBLClick(const tstring& aString, string::size_type start, str
 	return false;
 }
 
-void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
-							  SettingsManager::StrSetting widths, int n, 
+void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
+							  SettingsManager::StrSetting widths, int n,
 							  int* indexes, int* sizes) throw() {
 	string tmp;
 
@@ -1134,7 +1131,7 @@ double WinUtil::toBytes(TCHAR* aSize) {
 int WinUtil::getOsMajor() {
 	OSVERSIONINFOEX ver;
 	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
-	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	if(!GetVersionEx((OSVERSIONINFO*)&ver))
 	{
 		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	}
@@ -1143,11 +1140,11 @@ int WinUtil::getOsMajor() {
 	return ver.dwMajorVersion;
 }
 
-int WinUtil::getOsMinor() 
+int WinUtil::getOsMinor()
 {
 	OSVERSIONINFOEX ver;
 	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
-	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	if(!GetVersionEx((OSVERSIONINFO*)&ver))
 	{
 		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	}

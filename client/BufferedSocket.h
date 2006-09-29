@@ -37,7 +37,7 @@ class SocketException;
 class BufferedSocketListener {
 public:
 	virtual ~BufferedSocketListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> Connecting;
 	typedef X<1> Connected;
@@ -72,12 +72,12 @@ public:
 	 * @param sep Line separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep) throw() { 
-		return new BufferedSocket(sep); 
+	static BufferedSocket* getSocket(char sep) throw() {
+		return new BufferedSocket(sep);
 	}
 
-	static void putSocket(BufferedSocket* aSock) { 
-		aSock->removeListeners(); 
+	static void putSocket(BufferedSocket* aSock) {
+		aSock->removeListeners();
 		aSock->shutdown();
 	}
 
@@ -91,10 +91,10 @@ public:
 
 	/** Sets data mode for aBytes bytes. Must be called within onLine. */
 	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }
-	/** 
+	/**
 	 * Rollback is an ugly hack to solve problems with compressed transfers where not all data received
 	 * should be treated as data.
-	 * Must be called from within onData. 
+	 * Must be called from within onData.
 	 */
 	void setLineMode(size_t aRollback) { setMode (MODE_LINE, aRollback);}
 	void setMode(Modes mode, size_t aRollback = 0);
@@ -104,7 +104,7 @@ public:
 
 	bool isSecure() const { return sock && sock->isSecure(); }
 	bool isTrusted() const { return sock && sock->isTrusted(); }
-	
+
 	void write(const string& aData) throw() { write(aData.data(), aData.length()); }
 	void write(const char* aBuf, size_t aLen) throw();
 	/** Send the file f over this socket. */
@@ -125,7 +125,7 @@ private:
 		ACCEPTED
 	};
 
-	struct TaskData { 
+	struct TaskData {
 		virtual ~TaskData() { }
 	};
 	struct ConnectInfo : public TaskData {
@@ -172,8 +172,8 @@ private:
 	void threadSendFile(InputStream* is) throw(Exception);
 	void threadSendData();
 	void threadDisconnect();
-	
-	void fail(const string& aError);	
+
+	void fail(const string& aError);
 	static volatile long sockets;
 
 	bool checkEvents();

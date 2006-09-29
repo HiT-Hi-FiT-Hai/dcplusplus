@@ -27,9 +27,8 @@
 #include "TypedListViewCtrl.h"
 
 #include "../client/QueueManager.h"
-#include "../client/CriticalSection.h"
 #include "../client/FastAlloc.h"
-#include "../client/version.h"
+#include "../client/TaskQueue.h"
 
 #define SHOWTREE_MESSAGE_MAP 12
 
@@ -39,14 +38,14 @@ class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("QueueFrame"), IDR_QUEUE, 0, COLOR_3DFACE);
 
-	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false), 
-		usingDirMenu(false),  readdItems(0), fileLists(NULL), showTree(true), closed(false),
+	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false),
+		usingDirMenu(false), readdItems(0), fileLists(NULL), showTree(true), closed(false),
 		showTreeContainer(WC_BUTTON, this, SHOWTREE_MESSAGE_MAP)
-	{ 
+	{
 	}
 
 	virtual ~QueueFrame() { }
-	
+
 	typedef MDITabChildWindowImpl<QueueFrame> baseClass;
 	typedef CSplitterImpl<QueueFrame> splitBase;
 
@@ -95,7 +94,7 @@ public:
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-		
+
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void removeDir(HTREEITEM ht);
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
@@ -129,7 +128,7 @@ public:
 			removeSelectedDir();
 		} else if(kd->wVKey == VK_TAB) {
 			onTab();
-		} 
+		}
 		return 0;
 	}
 
@@ -141,7 +140,7 @@ public:
 		UpdateLayout(FALSE);
 		return 0;
 	}
-	
+
 private:
 
 	enum {
@@ -165,31 +164,16 @@ private:
 		REMOVE_ITEM,
 		UPDATE_ITEM
 	};
-	
+
 	class QueueItemInfo;
 	friend class QueueItemInfo;
-	
+
 	class QueueItemInfo : public Flags, public FastAlloc<QueueItemInfo> {
 	public:
 
-		struct SourceInfo : public Flags {
-			explicit SourceInfo(const QueueItem::Source& s) : Flags(s), user(s.getUser()) { }
-
-			SourceInfo& operator=(const QueueItem::Source& s) {
-				*((Flags*)this) = s;
-				user = s.getUser();
-				return *this;
-			}
-			User::Ptr& getUser() { return user; }
-
-			User::Ptr user;
-		};
 		struct Display : public FastAlloc<Display> {
 			tstring columns[COLUMN_LAST];
 		};
-
-		typedef vector<SourceInfo> SourceList;
-		typedef SourceList::iterator SourceIter;
 
 		enum {
 			MASK_TARGET = 1 << COLUMN_TARGET,
@@ -205,25 +189,19 @@ private:
 			MASK_TYPE = 1 << COLUMN_TYPE
 		};
 
-		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(Text::toT(aQI->getTarget())),
-			path(Text::toT(Util::getFilePath(aQI->getTarget()))),
-			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
-			added(aQI->getAdded()), tth(aQI->getTTH()), priority(aQI->getPriority()), status(aQI->getStatus()),
-			updateMask((u_int32_t)-1), display(NULL)
-		{ 
-			for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
-				sources.push_back(SourceInfo(*(*i)));
-			}
-			for(QueueItem::Source::Iter i = aQI->getBadSources().begin(); i != aQI->getBadSources().end(); ++i) {
-				badSources.push_back(SourceInfo(*(*i)));
-			}
+		QueueItemInfo(const QueueItem& aQI) : Flags(aQI), target(aQI.getTarget()),
+			path(Util::getFilePath(aQI.getTarget())),
+			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
+			added(aQI.getAdded()), tth(aQI.getTTH()), priority(aQI.getPriority()), status(aQI.getStatus()),
+			updateMask((u_int32_t)-1), display(0), sources(aQI.getSources()), badSources(aQI.getBadSources())
+		{
 		}
 
 		~QueueItemInfo() { delete display; }
 
 		void update();
 
-		void remove() { QueueManager::getInstance()->remove(Text::fromT(getTarget())); }
+		void remove() { QueueManager::getInstance()->remove(getTarget()); }
 
 		// TypedListViewCtrl functions
 		const tstring& getText(int col) {
@@ -239,13 +217,11 @@ private:
 			}
 		}
 
-		const tstring& getTargetFileName() { return getDisplay()->columns[COLUMN_TARGET]; }
-
-		SourceList& getSources() { return sources; }
-		SourceList& getBadSources() { return badSources; }
+		QueueItem::SourceList& getSources() { return sources; }
+		QueueItem::SourceList& getBadSources() { return badSources; }
 
 		Display* getDisplay() {
-			if(display == NULL) {
+			if(!display) {
 				display = new Display;
 				update();
 			}
@@ -253,48 +229,53 @@ private:
 		}
 
 		bool isSource(const User::Ptr& u) {
-			for(SourceIter i = sources.begin(); i != sources.end(); ++i) {
-				if(i->getUser() == u)
-					return true;
-			}
-			return false;
+			return find(sources.begin(), sources.end(), u) != sources.end();
 		}
 		bool isBadSource(const User::Ptr& u) {
-			for(SourceIter i = badSources.begin(); i != badSources.end(); ++i) {
-				if(i->getUser() == u)
-					return true;
-			}
-			return false;
+			return find(badSources.begin(), badSources.end(), u) != badSources.end();
 		}
-		
-		GETSET(tstring, target, Target);
-		GETSET(tstring, path, Path);
+
+		GETSET(string, target, Target);
+		GETSET(string, path, Path);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
 		GETSET(u_int32_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
 		GETSET(QueueItem::Status, status, Status);
-		GETSET(TTHValue*, tth, TTH);
-		GETSET(tstring, type, Type);
+		GETSET(TTHValue, tth, TTH);
+		GETSET(QueueItem::SourceList, sources, Sources);
+		GETSET(QueueItem::SourceList, badSources, BadSources);
 		u_int32_t updateMask;
-	
+
 	private:
 
 		Display* display;
 
 		QueueItemInfo(const QueueItemInfo&);
 		QueueItemInfo& operator=(const QueueItemInfo&);
-		
-		SourceList sources;
-		SourceList badSources;
-
 	};
 
-	typedef pair<Tasks, void*> Task;
-	typedef list<Task> TaskList;
-	typedef TaskList::iterator TaskIter;
-	
-	TaskList tasks;
+	struct QueueItemInfoTask : FastAlloc<QueueItemInfoTask>, public Task {
+		QueueItemInfoTask(QueueItemInfo* ii_) : ii(ii_) { }
+		QueueItemInfo* ii;
+	};
+
+	struct UpdateTask : FastAlloc<UpdateTask>, public Task {
+		UpdateTask(const QueueItem& source) : target(source.getTarget()), priority(source.getPriority()),
+			status(source.getStatus()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
+		{
+		}
+
+		string target;
+		QueueItem::Priority priority;
+		QueueItem::Status status;
+		int64_t downloadedBytes;
+
+		QueueItem::SourceList sources;
+		QueueItem::SourceList badSources;
+	};
+
+	TaskQueue tasks;
 	bool spoken;
 
 	/** Single selection in the queue part */
@@ -324,83 +305,72 @@ private:
 
 	HTREEITEM fileLists;
 
-	typedef hash_map<QueueItem*, QueueItemInfo*, PointerHash<QueueItem> > QueueMap;
-	typedef QueueMap::iterator QueueIter;
-	QueueMap queue;
-	
-	typedef HASH_MULTIMAP_X(tstring, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
+	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;
-	tstring curDir;
-	
-	CriticalSection cs;
+	string curDir;
+
 	TypedListViewCtrl<QueueItemInfo, IDC_QUEUE> ctrlQueue;
 	CTreeViewCtrl ctrlDirs;
-	
+
 	CStatusBarCtrl ctrlStatus;
 	int statusSizes[6];
-	
+
 	int64_t queueSize;
 	int queueItems;
 
 	bool closed;
-	
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
 	void addQueueList(const QueueItem::StringMap& l);
 	void addQueueItem(QueueItemInfo* qi, bool noSort);
-	HTREEITEM addDirectory(const tstring& dir, bool isFileList = false, HTREEITEM startAt = NULL);
-	void removeDirectory(const tstring& dir, bool isFileList = false);
+	HTREEITEM addDirectory(const string& dir, bool isFileList = false, HTREEITEM startAt = NULL);
+	void removeDirectory(const string& dir, bool isFileList = false);
 	void removeDirectories(HTREEITEM ht);
 
 	void updateQueue();
 	void updateStatus();
-	
+
 	/**
 	 * This one is different from the others because when a lot of files are removed
 	 * at the same time, the WM_SPEAKER messages seem to get lost in the handling or
 	 * something, they're not correctly processed anyway...thanks windows.
 	 */
-	void speak(Tasks t, void* p) {
-		Lock l(cs);
-		tasks.push_back(make_pair(t, p));
+	void speak(Tasks t, Task* p) {
+        tasks.add(t, p);
 		if(!spoken) {
-			PostMessage(WM_SPEAKER);
 			spoken = true;
+			PostMessage(WM_SPEAKER);
 		}
 	}
 
-	bool isCurDir(const tstring& aDir) const { return Util::stricmp(curDir, aDir) == 0; }
+	bool isCurDir(const string& aDir) const { return Util::stricmp(curDir, aDir) == 0; }
 
-	void moveSelected();	
+	void moveSelected();
 	void moveSelectedDir();
-	void moveDir(HTREEITEM ht, const tstring& target);
+	void moveDir(HTREEITEM ht, const string& target);
 
 	void moveNode(HTREEITEM item, HTREEITEM parent);
 
 	void clearTree(HTREEITEM item);
 
-	void removeSelected() {
-		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
-			ctrlQueue.forEachSelected(&QueueItemInfo::remove);
-	}
-	
-	void removeSelectedDir() { 
-		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)	
-			removeDir(ctrlDirs.GetSelectedItem()); 
-	}
-	
-	const tstring& getSelectedDir() { 
+	QueueItemInfo* getItemInfo(const string& target);
+
+	void removeSelected();
+	void removeSelectedDir();
+
+	const string& getSelectedDir() {
 		HTREEITEM ht = ctrlDirs.GetSelectedItem();
-		return ht == NULL ? Util::emptyStringT : getDir(ctrlDirs.GetSelectedItem());
+		return ht == NULL ? Util::emptyString : getDir(ctrlDirs.GetSelectedItem());
 	}
-	
-	const tstring& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((tstring*)ctrlDirs.GetItemData(ht)); }
+
+	const string& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *reinterpret_cast<string*>(ctrlDirs.GetItemData(ht)); }
 
 	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
-	virtual void on(QueueManagerListener::Moved, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Moved, QueueItem* aQI, const string& oldTarget) throw();
 	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }

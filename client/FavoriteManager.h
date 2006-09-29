@@ -38,22 +38,22 @@ class HubEntry {
 public:
 	typedef vector<HubEntry> List;
 	typedef List::iterator Iter;
-	
-	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
-	name(aName), server(aServer), description(aDescription), country(Util::emptyString), 
+
+	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() :
+	name(aName), server(aServer), description(aDescription), country(Util::emptyString),
 	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { }
 
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers, const string& aCountry,
 		const string& aShared, const string& aMinShare, const string& aMinSlots, const string& aMaxHubs, const string& aMaxUsers,
-		const string& aReliability, const string& aRating) : name(aName), server(aServer), description(aDescription), country(aCountry), 
+		const string& aReliability, const string& aRating) : name(aName), server(aServer), description(aDescription), country(aCountry),
 		rating(aRating), reliability((float)(Util::toFloat(aReliability) / 100.0)), shared(Util::toInt64(aShared)), minShare(Util::toInt64(aMinShare)),
-		users(Util::toInt(aUsers)), minSlots(Util::toInt(aMinSlots)), maxHubs(Util::toInt(aMaxHubs)), maxUsers(Util::toInt(aMaxUsers)) 
+		users(Util::toInt(aUsers)), minSlots(Util::toInt(aMinSlots)), maxHubs(Util::toInt(aMaxHubs)), maxUsers(Util::toInt(aMaxUsers))
 	{
 
 	}
 
 	HubEntry() throw() { }
-	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country), 
+	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country),
 		rating(rhs.rating), reliability(rhs.reliability), shared(rhs.shared), minShare(rhs.minShare), users(rhs.users), minSlots(rhs.minSlots),
 		maxHubs(rhs.maxHubs), maxUsers(rhs.maxUsers) { }
 
@@ -81,11 +81,11 @@ public:
 
 	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0){ }
 	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0){ }
-	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), 
+	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()),
 		password(rhs.getPassword()), connect(rhs.getConnect()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), nick(rhs.nick){ }
-	~FavoriteHubEntry() throw() { }	
-	
-	const string& getNick(bool useDefault = true) const { 
+	~FavoriteHubEntry() throw() { }
+
+	const string& getNick(bool useDefault = true) const {
 		return (!nick.empty() || !useDefault) ? nick : SETTING(NICK);
 	}
 
@@ -111,7 +111,7 @@ private:
 class FavoriteManagerListener {
 public:
 	virtual ~FavoriteManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> DownloadStarting;
 	typedef X<1> DownloadFailed;
@@ -160,7 +160,7 @@ public:
 // Favorite Users
 	typedef HASH_MAP_X(CID, FavoriteUser, CID::Hash, equal_to<CID>, less<CID>) FavoriteMap;
 	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; }
-	
+
 	void addFavoriteUser(User::Ptr& aUser);
 	bool isFavoriteUser(const User::Ptr& aUser) const { Lock l(cs); return users.find(aUser->getCID()) != users.end(); }
 	void removeFavoriteUser(User::Ptr& aUser);
@@ -199,7 +199,7 @@ public:
 
 	void load();
 	void save();
-	
+
 private:
 	FavoriteHubEntry::List favoriteHubs;
 	StringPairList favoriteDirs;
@@ -219,12 +219,12 @@ private:
 	int lastServer;
 	HubTypes listType;
 	string downloadBuf;
-	
+
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
 	friend class Singleton<FavoriteManager>;
-	
+
 	FavoriteManager() : lastId(0), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
 		ClientManager::getInstance()->addListener(this);
@@ -238,10 +238,10 @@ private:
 			delete c;
 			c = NULL;
 		}
-		
+
 		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction());
 	}
-	
+
 	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
 			if(Util::stricmp((*i)->getServer(), aServer) == 0) {
@@ -269,12 +269,12 @@ private:
 	void onHttpFinished() throw();
 
 	// SettingsManagerListener
-	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+	virtual void on(SettingsManagerListener::Load, SimpleXML& xml) throw() {
 		load(xml);
 	}
 
-	void load(SimpleXML* aXml);
-	
+	void load(SimpleXML& aXml);
+
 	string getConfigFile() { return Util::getConfigPath() + "Favorites.xml"; }
 };
 

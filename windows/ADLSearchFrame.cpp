@@ -28,26 +28,26 @@
 #include "ADLSearchFrame.h"
 #include "AdlsProperties.h"
 
-int ADLSearchFrame::columnIndexes[] = { 
+int ADLSearchFrame::columnIndexes[] = {
 	COLUMN_ACTIVE_SEARCH_STRING,
 	COLUMN_SOURCE_TYPE,
 	COLUMN_DEST_DIR,
 	COLUMN_MIN_FILE_SIZE,
 	COLUMN_MAX_FILE_SIZE
 };
-int ADLSearchFrame::columnSizes[] = { 
-	120, 
-	90, 
-	90, 
-	90, 
-	90 
+int ADLSearchFrame::columnSizes[] = {
+	120,
+	90,
+	90,
+	90,
+	90
 };
-static ResourceManager::Strings columnNames[] = { 
-	ResourceManager::ACTIVE_SEARCH_STRING, 
-	ResourceManager::SOURCE_TYPE, 
-	ResourceManager::DESTINATION, 
-	ResourceManager::MIN_SIZE, 
-	ResourceManager::MAX_SIZE, 
+static ResourceManager::Strings columnNames[] = {
+	ResourceManager::ACTIVE_SEARCH_STRING,
+	ResourceManager::SOURCE_TYPE,
+	ResourceManager::DESTINATION,
+	ResourceManager::MIN_SIZE,
+	ResourceManager::MAX_SIZE,
 };
 
 // Frame creation
@@ -60,7 +60,7 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ctrlStatus.SetParts(1, w);
 
 	// Create list control
-	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_ADLLIST);
 	ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 
@@ -72,7 +72,7 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	// Create listview columns
 	WinUtil::splitTokens(columnIndexes, SETTING(ADLSEARCHFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(ADLSEARCHFRAME_WIDTHS), COLUMN_LAST);
-	for(int j = 0; j < COLUMN_LAST; j++) 
+	for(int j = 0; j < COLUMN_LAST; j++)
 	{
 		int fmt = LVCFMT_LEFT;
 		ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
@@ -124,26 +124,26 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 }
 
 // Close window
-LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) 
+LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	ADLSearchManager::getInstance()->Save();
 
-	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER, 
+	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER,
 		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-	
+
 	bHandled = FALSE;
 	return 0;
 }
 
 // Recalculate frame control layout
-void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) 
+void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 {
 	RECT rect;
 	GetClientRect(&rect);
 
 	// Position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	if(ctrlStatus.IsWindow()) 
+	if(ctrlStatus.IsWindow())
 	{
 		CRect sr;
 		int w[1];
@@ -199,7 +199,7 @@ void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	switch(kd->wVKey) 
+	switch(kd->wVKey)
 	{
 	case VK_INSERT:
 		PostMessage(WM_COMMAND, IDC_ADD, 0);
@@ -215,11 +215,11 @@ LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 	}
 	return 0;
 }
-	
+
 LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if(reinterpret_cast<HWND>(wParam) == ctrlList) { 
+	if(reinterpret_cast<HWND>(wParam) == ctrlList) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		
+
 		if(pt.x == -1 && pt.y == -1) {
 			WinUtil::getContextMenuPos(ctrlList, pt);
 		}
@@ -228,14 +228,14 @@ LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 		contextMenu.EnableMenuItem(IDC_EDIT, status);
 		contextMenu.EnableMenuItem(IDC_REMOVE, status);
 		contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		return TRUE; 
+		return TRUE;
 	}
 	bHandled = FALSE;
-	return FALSE; 
+	return FALSE;
 }
 
 // Add new search
-LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	// Invoke edit dialog with fresh search
 	ADLSearch search;
@@ -244,7 +244,7 @@ LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	{
 		// Add new search to the end or if selected, just before
 		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-		
+
 
 		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 		if(i < 0)
@@ -272,7 +272,7 @@ LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 }
 
 // Edit existing search
-LRESULT ADLSearchFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	// Get selection info
 	int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
@@ -294,14 +294,14 @@ LRESULT ADLSearchFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		collection[i] = search;
 
 		// Update list control
-		UpdateSearch(i);	  
+		UpdateSearch(i);
 	}
 
 	return 0;
 }
 
 // Remove searches
-LRESULT ADLSearchFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
@@ -329,7 +329,7 @@ LRESULT ADLSearchFrame::onHelpKey(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 }
 
 // Move selected entries up one step
-LRESULT ADLSearchFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
@@ -384,7 +384,7 @@ LRESULT ADLSearchFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 // Move selected entries down one step
-LRESULT ADLSearchFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
@@ -444,7 +444,7 @@ LRESULT ADLSearchFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 // Clicked 'Active' check box
-LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 
@@ -466,7 +466,7 @@ LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 }
 
 // Double-click on list control
-LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 

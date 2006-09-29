@@ -82,11 +82,11 @@ public:
 	void onAddFile(const User::Ptr, const string&);
 
 	// Update colors
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		HWND hWnd = (HWND)lParam;
 		HDC hDC   = (HDC)wParam;
-		if(hWnd == ctrlQueued.m_hWnd) 
+		if(hWnd == ctrlQueued.m_hWnd)
 		{
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);

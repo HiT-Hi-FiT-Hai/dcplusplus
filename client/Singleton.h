@@ -33,14 +33,14 @@ public:
 		dcassert(instance);
 		return instance;
 	}
-	
+
 	static void newInstance() {
 		if(instance)
 			delete instance;
-		
+
 		instance = new T();
 	}
-	
+
 	static void deleteInstance() {
 		if(instance)
 			delete instance;

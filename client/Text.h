@@ -30,7 +30,7 @@
  * acp - ANSI code page used by the system
  * wide - wide unicode string
  * utf8 - UTF-8 representation of the string
- * t - current text GUI text format
+ * t - current GUI text format
  * string - UTF-8 string (most of the time)
  * wstring - Wide string
  * tstring - GUI type string (acp string or wide string depending on build type)

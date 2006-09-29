@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Exception  
+class Exception
 {
 public:
 	Exception() { }

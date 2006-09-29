@@ -41,7 +41,7 @@ LRESULT FavoriteDirsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_FAVORITE_DIRECTORIES));
 	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
-		
+
 	// Prepare shared dir list
 	ctrlDirectories.InsertColumn(0, CTSTRING(FAVORITE_DIR_NAME), LVCFMT_LEFT, 80, 0);
 	ctrlDirectories.InsertColumn(1, CTSTRING(DIRECTORY), LVCFMT_LEFT, 197, 1);
@@ -51,7 +51,7 @@ LRESULT FavoriteDirsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->second));
 		ctrlDirectories.SetItemText(i, 1, Text::toT(j->first).c_str());
 	}
-	
+
 	return TRUE;
 }
 
@@ -65,9 +65,9 @@ LRESULT FavoriteDirsPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 	HDROP drop = (HDROP)wParam;
 	AutoArray<TCHAR> buf(MAX_PATH);
 	UINT nrFiles;
-	
+
 	nrFiles = DragQueryFile(drop, (UINT)-1, NULL, 0);
-	
+
 	for(UINT i = 0; i < nrFiles; ++i){
 		if(DragQueryFile(drop, i, buf, MAX_PATH)){
 			if(PathIsDirectory(buf))
@@ -121,7 +121,7 @@ LRESULT FavoriteDirsPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	if(WinUtil::browseDirectory(target, m_hWnd)) {
 		addDirectory(target);
 	}
-	
+
 	return 0;
 }
 

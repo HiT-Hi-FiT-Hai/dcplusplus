@@ -42,7 +42,7 @@ public:
 
 	string toBase32() const { return Encoder::toBase32(cid, sizeof(cid)); }
 	string& toBase32(string& tmp) const { return Encoder::toBase32(cid, sizeof(cid), tmp); }
-	
+
 	size_t toHash() const { return *reinterpret_cast<const size_t*>(cid); }
 	const u_int8_t* data() const { return cid; }
 

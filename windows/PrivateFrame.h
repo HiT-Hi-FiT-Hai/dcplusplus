@@ -33,7 +33,7 @@
 
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
-class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>, 
+class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>,
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
@@ -87,12 +87,12 @@ public:
 	void addLine(const tstring& aLine);
 	void addStatus(const tstring& aLine);
 	void onEnter();
-	void UpdateLayout(BOOL bResizeBars = TRUE);	
+	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
 	void readLog();
-	
+
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	
+
 	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
 		return 0;
@@ -107,7 +107,7 @@ public:
 		updateTitle();
 		return 0;
 	}
-	
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -124,7 +124,7 @@ public:
 		ctrlMessage.SetFocus();
 		return 0;
 	}
-	
+
 	void addClientLine(const tstring& aLine) {
 		if(!created) {
 			CreateEx(WinUtil::mdiClient);
@@ -134,19 +134,19 @@ public:
 			setDirty();
 		}
 	}
-	
+
 	void sendMessage(const tstring& msg);
-	
+
 	User::Ptr& getUser() { return replyTo; }
 private:
-	PrivateFrame(const User::Ptr& replyTo_) : replyTo(replyTo_), 
-		created(false), closed(false), 
+	PrivateFrame(const User::Ptr& replyTo_) : replyTo(replyTo_),
+		created(false), closed(false),
 		ctrlMessageContainer(_T("edit"), this, PM_MESSAGE_MAP),
 		ctrlClientContainer(_T("edit"), this, PM_MESSAGE_MAP) {
 	}
-	
+
 	virtual ~PrivateFrame() { }
-	
+
 	bool created;
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;
@@ -166,7 +166,7 @@ private:
 	StringMap ucLineParams;
 
 	void updateTitle();
-	
+
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw() {
 		if(aUser.getUser() == replyTo)

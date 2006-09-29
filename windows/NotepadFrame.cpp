@@ -28,7 +28,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
-	
+
 	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
 	string tmp;
@@ -37,7 +37,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	} catch(const FileException&) {
 		// ...
 	}
-	
+
 	if(tmp.empty()) {
 		tmp = SETTING(NOTEPAD_TEXT);
 		if(!tmp.empty()) {
@@ -55,7 +55,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 }
 
 LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	
+
 	if(dirty || ctrlPad.GetModify()) {
 		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
@@ -69,7 +69,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	bHandled = FALSE;
 	return 0;
-	
+
 }
 
 void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
@@ -77,13 +77,13 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	CRect rc;
 
 	GetClientRect(rc);
-	
+
 	rc.bottom -= 1;
 	rc.top += 1;
 	rc.left +=1;
 	rc.right -=1;
 	ctrlPad.MoveWindow(rc);
-	
+
 }
 
 LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
@@ -97,7 +97,7 @@ LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 		if(end == string::npos)
 			end = x.length();
-		
+
 		bHandled = WinUtil::parseDBLClick(x, start, end);
 	}
 	return 0;

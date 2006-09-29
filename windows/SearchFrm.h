@@ -38,8 +38,8 @@
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 #define SHOWUI_MESSAGE_MAP 7
 
-class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, 
-	private SearchManagerListener, private ClientManagerListener, 
+class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>,
+	private SearchManagerListener, private ClientManagerListener,
 	public UCHandler<SearchFrame>, public UserInfoBaseHandler<SearchFrame>
 {
 public:
@@ -76,7 +76,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
-		COMMAND_ID_HANDLER(IDC_ONLYTTH, onTTH)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
@@ -98,11 +97,11 @@ public:
 		MESSAGE_HANDLER(BM_SETCHECK, onShowUI)
 	END_MSG_MAP()
 
-	SearchFrame() : 
+	SearchFrame() :
 	searchBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
-		searchContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
-		purgeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
-		sizeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
+		searchContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
+		purgeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
+		sizeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP),
 		modeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		sizeModeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		fileTypeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
@@ -111,10 +110,9 @@ public:
 		doSearchContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
-		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)), closed(false), isHash(false), droppedResults(0), onlyTTH(BOOLSETTING(SEARCH_ONLY_TTH)), timerID(0)
-	{	
+		showUI(true), onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)), closed(false), isHash(false), droppedResults(0), timerID(0)
+	{
 		SearchManager::getInstance()->addListener(this);
 	}
 
@@ -141,7 +139,7 @@ public:
 	LRESULT onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
+
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
 
@@ -152,7 +150,7 @@ public:
 			ctrlResults.DeleteItem(i);
 		}
 	}
-	
+
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		ctrlResults.forEachSelectedT(SearchInfo::Download(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
 		return 0;
@@ -167,7 +165,7 @@ public:
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
 		return 0;
 	}
-	
+
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
 		return 0;
@@ -178,11 +176,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		onlyTTH = (ctrlTTH.GetCheck() == 1);
-		return 0;
-	}
-
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
 		return 0;
@@ -190,10 +183,10 @@ public:
 
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		
+
 		if(kd->wVKey == VK_DELETE) {
 			removeSelected();
-		} 
+		}
 		return 0;
 	}
 
@@ -213,7 +206,7 @@ public:
 	void SearchFrame::setInitial(const tstring& str, LONGLONG size, SearchManager::SizeModes mode, SearchManager::TypeModes type) {
 		initialString = str; initialSize = size; initialMode = mode; initialType = type;
 	}
-	
+
 private:
 	class SearchInfo;
 public:
@@ -239,11 +232,11 @@ private:
 
 	class SearchInfo : public UserInfoBase {
 	public:
-		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) { 
+		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) {
 			sr->incRef(); update();
 		}
-		~SearchInfo() { 
-			sr->decRef(); 
+		~SearchInfo() {
+			sr->decRef();
 		}
 
 		void getList();
@@ -265,11 +258,9 @@ private:
 			void operator()(SearchInfo* si);
 			const tstring& tgt;
 		};
-		struct CheckSize {
-			CheckSize() : size(-1), op(true), firstHubs(true), hasTTH(false), firstTTH(true) { }
+		struct CheckTTH {
+			CheckTTH() : op(true), firstHubs(true), hasTTH(false), firstTTH(true) { }
 			void operator()(SearchInfo* si);
-			tstring ext;
-			int64_t size;
 			bool firstHubs;
 			StringList hubs;
 			bool op;
@@ -283,12 +274,12 @@ private:
 		static int compareItems(SearchInfo* a, SearchInfo* b, int col) {
 
 			switch(col) {
-				case COLUMN_TYPE: 
+				case COLUMN_TYPE:
 					if(a->sr->getType() == b->sr->getType())
 						return lstrcmpi(a->columns[COLUMN_TYPE].c_str(), b->columns[COLUMN_TYPE].c_str());
 					else
 						return(a->sr->getType() == SearchResult::TYPE_DIRECTORY) ? -1 : 1;
-				case COLUMN_SLOTS: 
+				case COLUMN_SLOTS:
 					if(a->sr->getFreeSlots() == b->sr->getFreeSlots())
 						return compare(a->sr->getSlots(), b->sr->getSlots());
 					else
@@ -343,7 +334,7 @@ private:
 	CComboBox ctrlFiletype;
 	CButton ctrlDoSearch;
 	CButton ctrlPurge;
-	
+
 	CContainedWindow searchContainer;
 	CContainedWindow searchBoxContainer;
 	CContainedWindow sizeContainer;
@@ -355,11 +346,10 @@ private:
 	CContainedWindow doSearchContainer;
 	CContainedWindow resultsContainer;
 	CContainedWindow hubsContainer;
-	CContainedWindow tthContainer;
 	CContainedWindow purgeContainer;
-	
+
 	CStatic searchLabel, sizeLabel, optionLabel, typeLabel, hubsLabel;
-	CButton ctrlSlots, ctrlShowUI, ctrlTTH;
+	CButton ctrlSlots, ctrlShowUI;
 	bool showUI;
 
 	TypedListViewCtrl<SearchInfo, IDC_RESULTS> ctrlResults;
@@ -368,14 +358,13 @@ private:
 	CMenu resultsMenu;
 	CMenu targetMenu;
 	CMenu targetDirMenu;
-	
+
 	TStringList search;
 	StringList targets;
 	StringList wholeTargets;
 
 	bool onlyFree;
 	bool isHash;
-	bool onlyTTH;
 
 	CriticalSection cs;
 
@@ -398,13 +387,13 @@ private:
 
 	static FrameMap frames;
 
-	void downloadSelected(const tstring& aDir, bool view = false); 
+	void downloadSelected(const tstring& aDir, bool view = false);
 	void downloadWholeSelected(const tstring& aDir);
 	void onEnter();
 	void onTab(bool shift);
 
 	void download(SearchResult* aSR, const tstring& aDir, bool view);
-	
+
 	virtual void on(SearchManagerListener::SR, SearchResult* aResult) throw();
 
 	// ClientManagerListener
@@ -421,7 +410,7 @@ private:
 
 	void speak(Speakers s, Client* aClient) {
 		HubInfo* hubInfo = new HubInfo(Text::toT(aClient->getHubUrl()), Text::toT(aClient->getHubName()), aClient->getMyIdentity().isOp());
-		PostMessage(WM_SPEAKER, WPARAM(s), LPARAM(hubInfo)); 
+		PostMessage(WM_SPEAKER, WPARAM(s), LPARAM(hubInfo));
 	}
 };
 

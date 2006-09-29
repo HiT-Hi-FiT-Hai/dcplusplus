@@ -36,10 +36,10 @@ PropPage::TextItem GeneralPage::texts[] = {
 };
 
 PropPage::Item GeneralPage::items[] = {
-	{ IDC_NICK,			SettingsManager::NICK,			PropPage::T_STR }, 
-	{ IDC_EMAIL,		SettingsManager::EMAIL,			PropPage::T_STR }, 
-	{ IDC_DESCRIPTION,	SettingsManager::DESCRIPTION,	PropPage::T_STR }, 
-	{ IDC_CONNECTION,	SettingsManager::UPLOAD_SPEED,	PropPage::T_STR }, 
+	{ IDC_NICK,			SettingsManager::NICK,			PropPage::T_STR },
+	{ IDC_EMAIL,		SettingsManager::EMAIL,			PropPage::T_STR },
+	{ IDC_DESCRIPTION,	SettingsManager::DESCRIPTION,	PropPage::T_STR },
+	{ IDC_CONNECTION,	SettingsManager::UPLOAD_SPEED,	PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -52,7 +52,7 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 {
 	PropPage::translate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
-	
+
 	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i)
 		ctrlConnection.AddString(Text::toT(*i).c_str());
 

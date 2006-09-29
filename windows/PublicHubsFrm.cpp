@@ -29,7 +29,7 @@
 #include "../client/StringTokenizer.h"
 #include "../client/version.h"
 
-int PublicHubsFrame::columnIndexes[] = { 
+int PublicHubsFrame::columnIndexes[] = {
 	COLUMN_NAME,
 	COLUMN_DESCRIPTION,
 	COLUMN_USERS,
@@ -46,10 +46,10 @@ int PublicHubsFrame::columnIndexes[] = {
 
 int PublicHubsFrame::columnSizes[] = { 200, 290, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 
-static ResourceManager::Strings columnNames[] = { 
-	ResourceManager::HUB_NAME, 
-	ResourceManager::DESCRIPTION, 
-	ResourceManager::USERS, 
+static ResourceManager::Strings columnNames[] = {
+	ResourceManager::HUB_NAME,
+	ResourceManager::DESCRIPTION,
+	ResourceManager::USERS,
 	ResourceManager::HUB_ADDRESS,
 	ResourceManager::COUNTRY,
 	ResourceManager::SHARED,
@@ -59,7 +59,7 @@ static ResourceManager::Strings columnNames[] = {
 	ResourceManager::MAX_USERS,
 	ResourceManager::RELIABILITY,
 	ResourceManager::RATING,
-	
+
 };
 
 LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -69,26 +69,26 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	int w[3] = { 0, 0, 0};
 	ctrlStatus.SetParts(3, w);
-	
-	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+
+	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, WS_EX_CLIENTEDGE, IDC_HUBLIST);
 	ctrlHubs.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-	
+
 	// Create listview columns
 	WinUtil::splitTokens(columnIndexes, SETTING(PUBLICHUBSFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(PUBLICHUBSFRAME_WIDTHS), COLUMN_LAST);
-	
+
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_USERS) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 		ctrlHubs.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
-	
+
 	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	
+
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
-	
+
 	ctrlHubs.setSort(COLUMN_USERS, ExListViewCtrl::SORT_INT, false);
 	ctrlHubs.SetFocus();
 
@@ -107,18 +107,18 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlLists.SetFont(WinUtil::systemFont);
 	ctrlLists.SetWindowText(CTSTRING(CONFIGURED_HUB_LISTS));
 
-	ctrlPubLists.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlPubLists.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE, IDC_PUB_LIST_DROPDOWN);
 	ctrlPubLists.SetFont(WinUtil::systemFont, FALSE);
 	// populate with values from the settings
 	updateDropDown();
 
-	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
 	filterContainer.SubclassWindow(ctrlFilter.m_hWnd);
 	ctrlFilter.SetFont(WinUtil::systemFont);
 
-	ctrlFilterSel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+	ctrlFilterSel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE);
 	ctrlFilterSel.SetFont(WinUtil::systemFont, FALSE);
 
@@ -128,7 +128,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	}
 	ctrlFilterSel.AddString(CTSTRING(ANY));
 	ctrlFilterSel.SetCurSel(COLUMN_LAST);
-	
+
 	ctrlFilterDesc.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_GROUPBOX, WS_EX_TRANSPARENT);
 	ctrlFilterDesc.SetWindowText(CTSTRING(FILTER));
@@ -137,7 +137,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	FavoriteManager::getInstance()->addListener(this);
 
 	hubs = FavoriteManager::getInstance()->getPublicHubs();
-	if(FavoriteManager::getInstance()->isDownloading()) 
+	if(FavoriteManager::getInstance()->isDownloading())
 		ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
 	else {
 		if(hubs.empty())
@@ -145,13 +145,13 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	}
 
 	updateList();
-	
+
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));
 	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CTSTRING(ADD_TO_FAVORITES));
 	hubsMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
 	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
-	
+
 	bHandled = FALSE;
 	return TRUE;
 }
@@ -181,12 +181,12 @@ LRESULT PublicHubsFrame::onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;
-	
+
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 
 	if(item->iItem != -1) {
 		TCHAR buf[256];
-		
+
 		ctrlHubs.GetItemText(item->iItem, COLUMN_SERVER, buf, 256);
 		HubFrame::openWindow(buf);
 	}
@@ -250,9 +250,9 @@ LRESULT PublicHubsFrame::onFilterFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;
-	
+
 	TCHAR buf[256];
-	
+
 	if(ctrlHubs.GetSelectedCount() == 1) {
 		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 		FavoriteHubEntry e;
@@ -294,20 +294,20 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
 		int w[3];
 		ctrlStatus.GetClientRect(sr);
 		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-		
+
 		w[0] = sr.right - tmp;
 		w[1] = w[0] + (tmp-16)/2;
 		w[2] = w[0] + (tmp-16);
-		
+
 		ctrlStatus.SetParts(3, w);
 	}
-	
+
 	int const comboH = 140;
 
 	// listview
@@ -379,7 +379,7 @@ void PublicHubsFrame::updateList() {
 	ctrlHubs.DeleteAllItems();
 	users = 0;
 	visibleHubs = 0;
-	
+
 	ctrlHubs.SetRedraw(FALSE);
 
 	double size = -1;
@@ -388,7 +388,7 @@ void PublicHubsFrame::updateList() {
 	int sel = ctrlFilterSel.GetCurSel();
 
 	bool doSizeCompare = parseFilter(mode, size);
-	
+
 	for(HubEntry::List::const_iterator i = hubs.begin(); i != hubs.end(); ++i) {
 		if(matchFilter(*i, sel, doSizeCompare, mode, size)) {
 
@@ -411,7 +411,7 @@ void PublicHubsFrame::updateList() {
 			users += i->getUsers();
 		}
 	}
-	
+
 	ctrlHubs.SetRedraw(TRUE);
 	ctrlHubs.resort();
 
@@ -457,17 +457,17 @@ LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	if(reinterpret_cast<HWND>(wParam) == ctrlHubs && ctrlHubs.GetSelectedCount() == 1) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		
+
 		if(pt.x == -1 && pt.y == -1) {
 			WinUtil::getContextMenuPos(ctrlHubs, pt);
 		}
 
 		hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		return TRUE; 
+		return TRUE;
 	}
-	
+
 	bHandled = FALSE;
-	return FALSE; 
+	return FALSE;
 }
 
 LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -580,8 +580,8 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 	if(doSizeCompare) {
 		switch(mode) {
 			case FilterModes::EQUAL: insert = (size == entrySize); break;
-			case FilterModes::GREATER_EQUAL: insert = (size <=  entrySize); break;
-			case FilterModes::LESS_EQUAL: insert = (size >=  entrySize); break;
+			case FilterModes::GREATER_EQUAL: insert = (size <= entrySize); break;
+			case FilterModes::LESS_EQUAL: insert = (size >= entrySize); break;
 			case FilterModes::GREATER: insert = (size < entrySize); break;
 			case FilterModes::LESS: insert = (size > entrySize); break;
 			case FilterModes::NOT_EQUAL: insert = (size != entrySize); break;

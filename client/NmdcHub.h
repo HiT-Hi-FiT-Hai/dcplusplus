@@ -47,8 +47,8 @@ public:
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	virtual void password(const string& aPass) { send("$MyPass " + toAcp(aPass) + "|"); }
 	virtual void info(bool force) { myInfo(force); }
-	
-	virtual size_t getUserCount() const {  Lock l(cs); return users.size(); }
+
+	virtual size_t getUserCount() const { Lock l(cs); return users.size(); }
 	virtual int64_t getAvailable() const;
 
 	virtual string escape(string const& str) const { return validateMessage(str, false); }
@@ -89,7 +89,7 @@ private:
 	FloodMap seekers;
 	FloodMap flooders;
 
-	NmdcHub(const string& aHubURL);	
+	NmdcHub(const string& aHubURL);
 	virtual ~NmdcHub() throw();
 
 	// Dummy
@@ -114,6 +114,7 @@ private:
 	void revConnectToMe(const OnlineUser& aUser);
 	void myInfo(bool alwaysSend);
 	void supports(const StringList& feat);
+	void clearFlooders(u_int32_t tick);
 
 	void updateFromTag(Identity& id, const string& tag);
 

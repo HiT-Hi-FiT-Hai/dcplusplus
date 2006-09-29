@@ -32,18 +32,18 @@
 #include "WinUtil.h"
 
 #define FILTER_MESSAGE_MAP 8
-class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS>, 
+class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS>,
 	private FavoriteManagerListener
 {
 public:
-	PublicHubsFrame() : users(0), hubs(0), closed(false), 
+	PublicHubsFrame() : users(0), hubs(0), closed(false),
 		filterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP) {
 	}
 
 	virtual ~PublicHubsFrame() { }
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("PublicHubsFrame"), IDR_PUBLICHUBS, 0, COLOR_3DFACE);
-		
+
 	typedef MDITabChildWindowImpl<PublicHubsFrame> baseClass;
 	BEGIN_MSG_MAP(PublicHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -67,7 +67,7 @@ public:
 	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
 	END_MSG_MAP()
-		
+
 	LRESULT onFilterChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -86,7 +86,7 @@ public:
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	bool checkNick();
-	
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -98,12 +98,12 @@ public:
 		bHandled = FALSE;
 		return FALSE;
 	}
-	
+
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlHubs.SetFocus();
 		return 0;
 	}
-	
+
 private:
 	enum {
 		COLUMN_FIRST,
@@ -157,10 +157,10 @@ private:
 	string filter;
 
 	bool closed;
-	
+
 	static int columnIndexes[];
 	static int columnSizes[];
-	
+
 	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
 	virtual void on(DownloadFailed, const string& l) throw() { speak(FAILED, l); }
 	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
@@ -168,7 +168,7 @@ private:
 	void speak(int x, const string& l) {
 		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(Text::toT(l)));
 	}
-	
+
 	void updateStatus();
 	void updateList();
 	void updateDropDown();

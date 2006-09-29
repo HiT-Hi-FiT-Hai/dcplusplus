@@ -25,13 +25,13 @@
 
 #include "Thread.h"
 
-class CriticalSection  
+class CriticalSection
 {
 #ifdef _WIN32
 public:
 	void enter() throw() {
 		EnterCriticalSection(&cs);
-		dcdrun(counter++);	
+		dcdrun(counter++);
 	}
 	void leave() throw() {
 		dcassert(--counter >= 0);
@@ -72,8 +72,8 @@ private:
 
 /**
  * A fast, non-recursive and unfair implementation of the Critical Section.
- * It is meant to be used in situations where the risk for lock conflict is very low, 
- * i e locks that are held for a very short time. The lock is _not_ recursive, i e if 
+ * It is meant to be used in situations where the risk for lock conflict is very low,
+ * i e locks that are held for a very short time. The lock is _not_ recursive, i e if
  * the same thread will try to grab the lock it'll hang in a never-ending loop. The lock
  * is not fair, i e the first to try to enter a locked lock is not guaranteed to be the
  * first to get it when it's freed...
@@ -96,7 +96,7 @@ private:
 
 #else
 	// We have to use a pthread (nonrecursive) mutex, didn't find any test_and_set on linux...
-	FastCriticalSection() { 
+	FastCriticalSection() {
 		static pthread_mutex_t fastmtx = PTHREAD_MUTEX_INITIALIZER;
 		mtx = fastmtx;
 	}
@@ -104,14 +104,14 @@ private:
 	void enter() { pthread_mutex_lock(&mtx); }
 	void leave() { pthread_mutex_unlock(&mtx); }
 private:
-	pthread_mutex_t mtx;	
+	pthread_mutex_t mtx;
 #endif
 };
 
 template<class T>
 class LockBase {
 public:
-	LockBase(T& aCs) throw() : cs(aCs)  { cs.enter(); }
+	LockBase(T& aCs) throw() : cs(aCs) { cs.enter(); }
 	~LockBase() throw() { cs.leave(); }
 private:
 	LockBase& operator=(const LockBase&);
@@ -119,56 +119,5 @@ private:
 };
 typedef LockBase<CriticalSection> Lock;
 typedef LockBase<FastCriticalSection> FastLock;
-
-template<class T = CriticalSection>
-class RWLock
-{
-public:
-	RWLock() throw() : cs(), readers(0) { }
-	~RWLock() throw() { dcassert(readers==0); }
-
-	void enterRead() throw() {
-		cs.enter();
-		readers++;
-		dcassert(readers < 100);
-		cs.leave();
-	}
-	void leaveRead() throw() {
-		dcassert(readers > 0);
-		Thread::safeDec(readers);
-	}
-	void enterWrite() throw() {
-		cs.enter();
-		while(readers > 0) {
-			Thread::yield();
-		}
-	}
-	void leaveWrite() {
-		cs.leave();
-	}
-private:
-	T cs;
-	volatile long readers;
-};
-
-template<class T = CriticalSection>
-class RLock {
-public:
-	RLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterRead(); }
-	~RLock() throw() { rwl.leaveRead(); }
-private:
-	RLock& operator=(const RLock&);
-	RWLock<T>& rwl;
-};
-
-template<class T = CriticalSection>
-class WLock {
-public:
-	WLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterWrite(); }
-	~WLock() throw() { rwl.leaveWrite(); }
-private:
-	WLock& operator=(const WLock&);
-	RWLock<T>& rwl;
-};
 
 #endif // !defined(CRITICAL_SECTION_H)

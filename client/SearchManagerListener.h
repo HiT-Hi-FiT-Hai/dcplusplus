@@ -28,7 +28,7 @@ class SearchResult;
 class SearchManagerListener {
 public:
 	virtual ~SearchManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I };  };
+	template<int I>	struct X { enum { TYPE = I }; };
 
 	typedef X<0> SR;
 	virtual void on(SR, SearchResult*) throw() = 0;
