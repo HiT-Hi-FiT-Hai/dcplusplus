@@ -47,6 +47,12 @@ File::File(const string& aFileName, int access, int mode) throw(FileException) {
 	}
 }
 
+u_int32_t File::getLastModified() throw() {
+	FILETIME f = {0};
+	::GetFileTime(h, NULL, NULL, &f);
+	return convertTime(&f);
+}
+
 u_int32_t File::convertTime(FILETIME* f) {
 	SYSTEMTIME s = { 1970, 1, 0, 1, 0, 0, 0, 0 };
 	FILETIME f2 = {0};
@@ -103,7 +109,7 @@ void File::movePos(int64_t pos) throw() {
 	::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_CURRENT);
 }
 
-size_t File::read(void* buf, size_t& len) throw(Exception) {
+size_t File::read(void* buf, size_t& len) throw(FileException) {
 	DWORD x;
 	if(!::ReadFile(h, buf, (DWORD)len, &x, NULL)) {
 		throw(FileException(Util::translateError(GetLastError())));
@@ -112,7 +118,7 @@ size_t File::read(void* buf, size_t& len) throw(Exception) {
 	return x;
 }
 
-size_t File::write(const void* buf, size_t len) throw(Exception) {
+size_t File::write(const void* buf, size_t len) throw(FileException) {
 	DWORD x;
 	if(!::WriteFile(h, buf, (DWORD)len, &x, NULL)) {
 		throw FileException(Util::translateError(GetLastError()));
@@ -198,12 +204,13 @@ File::File(const string& aFileName, int access, int mode) throw(FileException) {
 	if(mode & TRUNCATE) {
 		m |= O_TRUNC;
 	}
+
 	h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	if(h == -1)
 		throw FileException("Could not open file");
 }
 
-u_int32_t File::getLastModified() {
+u_int32_t File::getLastModified() throw() {
 	struct stat s;
 	if (::fstat(h, &s) == -1)
 		return 0;
@@ -218,7 +225,7 @@ void File::close() throw() {
 	}
 }
 
-int64_t File::getSize() throw(FileException) {
+int64_t File::getSize() throw() {
 	struct stat s;
 	if(::fstat(h, &s) == -1)
 		return -1;
@@ -226,13 +233,21 @@ int64_t File::getSize() throw(FileException) {
 	return (int64_t)s.st_size;
 }
 
-int64_t File::getPos() throw(FileException) {
-	return (int64_t) lseek(h, 0, SEEK_CUR);
+int64_t File::getPos() throw() {
+	return (int64_t)lseek(h, 0, SEEK_CUR);
 }
 
-void File::setPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_SET); }
-void File::setEndPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_END); }
-void File::movePos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_CUR); }
+void File::setPos(int64_t pos) throw() {
+	lseek(h, (off_t)pos, SEEK_SET);
+}
+
+void File::setEndPos(int64_t pos) throw() {
+	lseek(h, (off_t)pos, SEEK_END);
+}
+
+void File::movePos(int64_t pos) throw() {
+	lseek(h, (off_t)pos, SEEK_CUR);
+}
 
 size_t File::read(void* buf, size_t& len) throw(FileException) {
 	ssize_t x = ::read(h, buf, len);
@@ -253,10 +268,10 @@ size_t File::write(const void* buf, size_t len) throw(FileException) {
 
 // some ftruncate implementations can't extend files like SetEndOfFile,
 // not sure if the client code needs this...
-int File::extendFile(int64_t len) {
+int File::extendFile(int64_t len) throw() {
 	char zero;
 
-	if ( (lseek(h,(off_t) len,SEEK_SET) != -1) && (::write(h,&zero,1) != -1) ) {
+	if( (lseek(h, (off_t)len, SEEK_SET) != -1) && (::write(h, &zero,1) != -1) ) {
 		ftruncate(h,(off_t)len);
 		return 1;
 	}
@@ -268,13 +283,13 @@ void File::setEOF() throw(FileException) {
 	int64_t eof;
 	int ret;
 
-	pos = (int64_t) lseek(h,0,SEEK_CUR);
-	eof = (int64_t) lseek(h,0,SEEK_END);
+	pos = (int64_t)lseek(h, 0, SEEK_CUR);
+	eof = (int64_t)lseek(h, 0, SEEK_END);
 	if (eof < pos)
 		ret = extendFile(pos);
 	else
-		ret = ftruncate(h,(off_t)pos);
-	lseek(h,(off_t)pos,SEEK_SET);
+		ret = ftruncate(h, (off_t)pos);
+	lseek(h, (off_t)pos, SEEK_SET);
 	if (ret == -1)
 		throw FileException(Util::translateError(errno));
 }
@@ -286,24 +301,25 @@ void File::setSize(int64_t newSize) throw(FileException) {
 	setPos(pos);
 }
 
-size_t File::flush() throw(Exception) {
-	if(fsync(h) == -1)
+size_t File::flush() throw(FileException) {
+	if(h != -1 && fsync(h) == -1)
 		throw FileException(Util::translateError(errno));
 	return 0;
 }
 
-/* ::rename seems to have problems when source and target is on different partitions
-from "man 2 rename"
-EXDEV  oldpath  and  newpath are not on the same mounted filesystem.  (Linux permits a
-filesystem to be mounted at multiple points, but rename(2) does not
-work across different mount points, even if the same filesystem is mounted on both.)
+/**
+ * ::rename seems to have problems when source and target is on different partitions
+ * from "man 2 rename":
+ * EXDEV oldpath and newpath are not on the same mounted filesystem. (Linux permits a
+ * filesystem to be mounted at multiple points, but rename(2) does not
+ * work across different mount points, even if the same filesystem is mounted on both.)
 */
-void File::renameFile(const string& source, const string& target) throw() {
+void File::renameFile(const string& source, const string& target) throw(FileException) {
 	int ret = ::rename(source.c_str(), target.c_str());
-	if ( ( ret != 0 ) && ( errno == EXDEV ) ) {
+	if(ret != 0 && errno == EXDEV) {
 		copyFile(source.c_str(), target.c_str());
 		deleteFile(source.c_str());
-	} else if (ret != 0)
+	} else if(ret != 0)
 		throw FileException(source.c_str() + Util::translateError(errno));
 }
 
@@ -315,9 +331,9 @@ void File::copyFile(const string& source, const string& target) throw(FileExcept
 	File src(source, File::READ, 0);
 	File dst(target, File::WRITE, File::CREATE | File::TRUNCATE);
 
-	while ( src.read((char*)buffer, count) > 0) {
+	while(src.read((char*)buffer, count) > 0) {
 		char* p = (char*)buffer;
-		while (count > 0) {
+		while(count > 0) {
 			size_t ret = dst.write(p, count);
 			p += ret;
 			count -= ret;
@@ -326,7 +342,7 @@ void File::copyFile(const string& source, const string& target) throw(FileExcept
 	}
 }
 
-int64_t File::getSize(const string& aFileName) {
+int64_t File::getSize(const string& aFileName) throw() {
 	struct stat s;
 	if(stat(aFileName.c_str(), &s) == -1)
 		return -1;
@@ -334,16 +350,16 @@ int64_t File::getSize(const string& aFileName) {
 	return s.st_size;
 }
 
-void File::ensureDirectory(const string& aFile) {
+void File::ensureDirectory(const string& aFile) throw() {
 	string acp = Text::utf8ToAcp(aFile);
 	string::size_type start = 0;
-	while( (start = aFile.find_first_of(L'/', start)) != string::npos) {
+	while( (start = aFile.find_first_of('/', start)) != string::npos) {
 		mkdir(aFile.substr(0, start+1).c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 		start++;
 	}
 }
 
-bool File::isAbsolute(const string& path) {
+bool File::isAbsolute(const string& path) throw() {
 	return path.size() > 1 && path[0] = '/';
 }
 
