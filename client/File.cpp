@@ -66,6 +66,10 @@ u_int32_t File::convertTime(FILETIME* f) {
 	return 0;
 }
 
+bool File::isOpen() throw() {
+	return h != INVALID_HANDLE_VALUE;
+}
+
 void File::close() throw() {
 	if(isOpen()) {
 		CloseHandle(h);
@@ -133,7 +137,7 @@ void File::setEOF() throw(FileException) {
 	}
 }
 
-size_t File::flush() throw(Exception) {
+size_t File::flush() throw(FileException) {
 	if(isOpen() && !FlushFileBuffers(h))
 		throw FileException(Util::translateError(GetLastError()));
 	return 0;
@@ -151,6 +155,11 @@ void File::copyFile(const string& src, const string& target) throw(FileException
 	if(!::CopyFile(Text::toT(src).c_str(), Text::toT(target).c_str(), FALSE)) {
 		throw FileException(Util::translateError(GetLastError()));
 	}
+}
+
+void File::deleteFile(const string& aFileName) throw()
+{
+	::DeleteFile(Text::toT(aFileName).c_str());
 }
 
 int64_t File::getSize(const string& aFileName) throw() {
@@ -185,7 +194,7 @@ bool File::isAbsolute(const string& path) {
 	return path.size() > 2 && (path[1] == ':' || path[0] == '/' || path[0] == '\\');
 }
 
-#else // _WIN32
+#else // !_WIN32
 
 File::File(const string& aFileName, int access, int mode) throw(FileException) {
 	dcassert(access == WRITE || access == READ || access == (READ | WRITE));
@@ -216,6 +225,10 @@ u_int32_t File::getLastModified() throw() {
 		return 0;
 
 	return (u_int32_t)s.st_mtime;
+}
+
+bool File::isOpen() throw() {
+	return h != -1;
 }
 
 void File::close() throw() {
@@ -302,7 +315,7 @@ void File::setSize(int64_t newSize) throw(FileException) {
 }
 
 size_t File::flush() throw(FileException) {
-	if(h != -1 && fsync(h) == -1)
+	if(isOpen() && fsync(h) == -1)
 		throw FileException(Util::translateError(errno));
 	return 0;
 }
@@ -342,6 +355,10 @@ void File::copyFile(const string& source, const string& target) throw(FileExcept
 	}
 }
 
+void File::deleteFile(const string& aFileName) throw() {
+	::unlink(aFileName.c_str());
+}
+
 int64_t File::getSize(const string& aFileName) throw() {
 	struct stat s;
 	if(stat(aFileName.c_str(), &s) == -1)
@@ -363,7 +380,7 @@ bool File::isAbsolute(const string& path) throw() {
 	return path.size() > 1 && path[0] = '/';
 }
 
-#endif // _WIN32
+#endif // !_WIN32
 
 string File::read(size_t len) throw(FileException) {
 	string s(len, 0);

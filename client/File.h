@@ -48,8 +48,33 @@ public:
 		CREATE = 0x02,
 		TRUNCATE = 0x04
 	};
+
+#ifdef _WIN32
+	enum {
+		READ = GENERIC_READ,
+		WRITE = GENERIC_WRITE,
+		RW = READ | WRITE
+	};
+
+	static u_int32_t convertTime(FILETIME* f);
+
+#else // !_WIN32
+
+	enum {
+		READ = 0x01,
+		WRITE = 0x02,
+		RW = READ | WRITE
+	};
+
+	// some ftruncate implementations can't extend files like SetEndOfFile,
+	// not sure if the client code needs this...
+	int extendFile(int64_t len) throw();
+
+#endif // !_WIN32
+
 	File(const string& aFileName, int access, int mode) throw(FileException);
 
+	bool isOpen() throw();
 	virtual void close() throw();
 	virtual int64_t getSize() throw();
 	virtual void setSize(int64_t newSize) throw(FileException);
@@ -68,40 +93,12 @@ public:
 
 	static void copyFile(const string& src, const string& target) throw(FileException);
 	static void renameFile(const string& source, const string& target) throw(FileException);
+	static void deleteFile(const string& aFileName) throw();
 
 	static int64_t getSize(const string& aFileName) throw();
 
-	static void ensureDirectory(const string& aFile);
-	static bool isAbsolute(const string& path);
-
-#ifdef _WIN32
-	enum {
-		READ = GENERIC_READ,
-		WRITE = GENERIC_WRITE,
-		RW = READ | WRITE
-	};
-
-	static u_int32_t convertTime(FILETIME* f);
-	bool isOpen() { return h != INVALID_HANDLE_VALUE; }
-
-	static void deleteFile(const string& aFileName) throw() { ::DeleteFile(Text::toT(aFileName).c_str()); }
-
-#else // _WIN32
-
-	enum {
-		READ = 0x01,
-		WRITE = 0x02,
-		RW = READ | WRITE
-	};
-
-	bool isOpen() { return h != -1; }
-	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); }
-
-	// some ftruncate implementations can't extend files like SetEndOfFile,
-	// not sure if the client code needs this...
-	int extendFile(int64_t len);
-
-#endif // _WIN32
+	static void ensureDirectory(const string& aFile) throw();
+	static bool isAbsolute(const string& path) throw();
 
 	virtual ~File() throw() { File::close(); }
 
