@@ -45,22 +45,26 @@
 static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
-const string DownloadManager::USER_LIST_NAME = "files.xml";
-const string DownloadManager::USER_LIST_NAME_BZ = "files.xml.bz2";
-
-Download::Download() throw() : file(NULL),
+Download::Download(UserConnection& conn) throw() : Transfer(conn), file(0),
 crcCalc(NULL), treeValid(false) {
+	conn.setDownload(this);
 }
 
-Download::Download(QueueItem* qi) throw() : 
-	target(qi->getTarget()), tempTarget(qi->getTempTarget()), file(NULL),
-	crcCalc(NULL), tth(qi->getTTH()), treeValid(false) {
-
-	setSize(qi->getSize());
-	if(qi->isSet(QueueItem::FLAG_USER_LIST))
+Download::Download(UserConnection& conn, QueueItem& qi) throw() : Transfer(conn),
+	target(qi.getTarget()), tempTarget(qi.getTempTarget()), file(0),
+	crcCalc(NULL), treeValid(false) 
+{
+	conn.setDownload(this);
+	
+	setTTH(qi.getTTH());
+	setSize(qi.getSize());
+	if(qi.isSet(QueueItem::FLAG_USER_LIST))
 		setFlag(Download::FLAG_USER_LIST);
-	if(qi->isSet(QueueItem::FLAG_RESUME))
+	if(qi.isSet(QueueItem::FLAG_RESUME))
 		setFlag(Download::FLAG_RESUME);
+}
+Download::~Download() {
+	getUserConnection().setDownload(0);
 }
 
 AdcCommand Download::getCommand(bool zlib) {
@@ -126,7 +130,7 @@ void DownloadManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() 
 		if((u_int32_t)(aTick / 1000) % SETTING(AUTODROP_INTERVAL) == 0) {
 			for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 				u_int32_t timeElapsed = GET_TICK() - (*i)->getStart();
-				u_int32_t timeInactive = GET_TICK() - (*i)->getUserConnection()->getLastActivity();
+				u_int32_t timeInactive = GET_TICK() - (*i)->getUserConnection().getLastActivity();
 				u_int64_t bytesDownloaded = (*i)->getTotal();
 				bool timeElapsedOk = timeElapsed >= (u_int32_t)SETTING(AUTODROP_ELAPSED) * 1000;
 				bool timeInactiveOk = timeInactive <= (u_int32_t)SETTING(AUTODROP_INACTIVITY) * 1000;
@@ -139,9 +143,9 @@ void DownloadManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() 
 					(filesizeOk && BOOLSETTING(AUTODROP_ALL));
 				if(speedTooLow && onlineSourcesOk && dropIt) {
 					if(BOOLSETTING(AUTODROP_DISCONNECT) && !((*i)->isSet(Download::FLAG_USER_LIST))) {
-						(*i)->getUserConnection()->disconnect();
+						(*i)->getUserConnection().disconnect();
 					} else {
-						dropTargets.push_back(make_pair((*i)->getTarget(), (*i)->getUserConnection()->getUser()));
+						dropTargets.push_back(make_pair((*i)->getTarget(), (*i)->getUser()));
 					}
 				}
 			}
@@ -271,16 +275,13 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		}
 	}
 
-	Download* d = QueueManager::getInstance()->getDownload(aConn->getUser(), aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL));
+	Download* d = QueueManager::getInstance()->getDownload(*aConn, aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL));
 
 	if(!d) {
 		Lock l(cs);
 		idlers.push_back(aConn);
 		return;
 	}
-
-	d->setUserConnection(aConn);
-	aConn->setDownload(d);
 
 	aConn->setState(UserConnection::STATE_FILELENGTH);
 
@@ -323,9 +324,9 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
-			d->setSource(USER_LIST_NAME_BZ);
+			d->setSource(Transfer::USER_LIST_NAME_BZ);
 		} else {
-			d->setSource(USER_LIST_NAME);
+			d->setSource(Transfer::USER_LIST_NAME);
 		}
 	}
 
@@ -482,7 +483,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 	}
 	if(d->getPos() >= d->getSize()) {
 		// Already finished?
-		aSource->setDownload(NULL);
 		removeDownload(d);
 		QueueManager::getInstance()->putDownload(d, true);
 		removeConnection(aSource);
@@ -561,7 +561,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 
 	dcassert(d->getPos() != -1);
 	d->setStart(GET_TICK());
-	aSource->setState(UserConnection::STATE_DONE);
+	aSource->setState(UserConnection::STATE_RUNNING);
 
 	fire(DownloadManagerListener::Starting(), d);
 
@@ -598,7 +598,7 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 /** Download finished! */
 void DownloadManager::handleEndData(UserConnection* aSource) {
 
-	dcassert(aSource->getState() == UserConnection::STATE_DONE);
+	dcassert(aSource->getState() == UserConnection::STATE_RUNNING);
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
@@ -620,7 +620,6 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 			QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_BAD_TREE, false);
 
-			aSource->setDownload(NULL);
 			QueueManager::getInstance()->putDownload(d, false);
 
 			checkDownloads(aSource);
@@ -680,7 +679,6 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	removeDownload(d);
 	fire(DownloadManagerListener::Complete(), d);
 
-	aSource->setDownload(NULL);
 	QueueManager::getInstance()->putDownload(d, true);
 	checkDownloads(aSource);
 }
@@ -720,7 +718,6 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t c
 			fire(DownloadManagerListener::Failed(), d, STRING(SFV_INCONSISTENCY));
 
 			QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
-			aSource->setDownload(NULL);
 			QueueManager::getInstance()->putDownload(d, false);
 
 			checkDownloads(aSource);
@@ -734,29 +731,15 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t c
 	return true;
 }
 
+void Download::getParams(const UserConnection& aSource, StringMap& params) {
+	Transfer::getParams(aSource, params);
+	params["target"] = getTarget();
+	params["sfv"] = Util::toString(isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
+}
+
 void DownloadManager::logDownload(UserConnection* aSource, Download* d) {
 	StringMap params;
-	params["target"] = d->getTarget();
-	params["userNI"] = Util::toString(ClientManager::getInstance()->getNicks(aSource->getUser()->getCID()));
-	params["userI4"] = aSource->getRemoteIp();
-	StringList hubNames = ClientManager::getInstance()->getHubNames(aSource->getUser()->getCID());
-	if(hubNames.empty())
-		hubNames.push_back(STRING(OFFLINE));
-	params["hub"] = Util::toString(hubNames);
-	StringList hubs = ClientManager::getInstance()->getHubs(aSource->getUser()->getCID());
-	if(hubs.empty())
-		hubs.push_back(STRING(OFFLINE));
-	params["hubURL"] = Util::toString(hubs);
-	params["fileSI"] = Util::toString(d->getSize());
-	params["fileSIshort"] = Util::formatBytes(d->getSize());
-	params["fileSIchunk"] = Util::toString(d->getTotal());
-	params["fileSIchunkshort"] = Util::formatBytes(d->getTotal());
-	params["fileSIactual"] = Util::toString(d->getActual());
-	params["fileSIactualshort"] = Util::formatBytes(d->getActual());
-	params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
-	params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
-	params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
-	params["fileTR"] = d->getTTH().toBase32();
+	d->getParams(*aSource, params);
 	LOG(LogManager::DOWNLOAD, params);
 }
 
@@ -798,6 +781,10 @@ void DownloadManager::noSlots(UserConnection* aSource) {
 	failDownload(aSource, STRING(NO_SLOTS_AVAILABLE));
 }
 
+void DownloadManager::on(UserConnectionListener::Error, UserConnection* aSource, const string& aError) throw() {
+	failDownload(aSource, aError);
+}
+
 void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
 	failDownload(aSource, aError);
 }
@@ -809,7 +796,6 @@ void DownloadManager::failDownload(UserConnection* aSource, const string& reason
 		removeDownload(d);
 		fire(DownloadManagerListener::Failed(), d, reason);
 
-		aSource->setDownload(0);
 		QueueManager::getInstance()->putDownload(d, false);
 	}
 	removeConnection(aSource);
@@ -892,8 +878,6 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 	removeDownload(d);
 	fire(DownloadManagerListener::Failed(), d, d->getTargetFileName() + ": " + STRING(FILE_NOT_AVAILABLE));
-
-	aSource->setDownload(NULL);
 
 	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), d->isSet(Download::FLAG_TREE_DOWNLOAD) ? QueueItem::Source::FLAG_NO_TREE : QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 

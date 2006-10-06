@@ -724,13 +724,14 @@ void QueueManager::getTargets(const TTHValue& tth, StringList& sl) {
 	}
 }
 
-Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw() {
+Download* QueueManager::getDownload(UserConnection& aSource, bool supportsTrees) throw() {
 	Lock l(cs);
 
+	User::Ptr& aUser = aSource.getUser();
 	// First check PFS's...
 	PfsIter pi = pfsQueue.find(aUser->getCID());
 	if(pi != pfsQueue.end()) {
-		Download* d = new Download();
+		Download* d = new Download(aSource);
 		d->setFlag(Download::FLAG_PARTIAL_LIST);
 		d->setSource(pi->second);
 		return d;
@@ -743,7 +744,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw(
 
 	userQueue.setRunning(q, aUser);
 
-	Download* d = new Download(q);
+	Download* d = new Download(aSource, *q);
 
 	q->setCurrentDownload(d);
 
@@ -783,18 +784,18 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 		Lock l(cs);
 
 		if(aDownload->isSet(Download::FLAG_PARTIAL_LIST)) {
-			pair<PfsIter, PfsIter> range = pfsQueue.equal_range(aDownload->getUserConnection()->getUser()->getCID());
+			pair<PfsIter, PfsIter> range = pfsQueue.equal_range(aDownload->getUser()->getCID());
 			PfsIter i = find_if(range.first, range.second, CompareSecond<CID, string>(aDownload->getSource()));
 			if(i != range.second) {
 				pfsQueue.erase(i);
-				fire(QueueManagerListener::PartialList(), aDownload->getUserConnection()->getUser(), aDownload->getPFS());
+				fire(QueueManagerListener::PartialList(), aDownload->getUser(), aDownload->getPFS());
 			}
 		} else {
 			QueueItem* q = fileQueue.find(aDownload->getTarget());
 
 			if(q) {
 				if(aDownload->isSet(Download::FLAG_USER_LIST)) {
-					if(aDownload->getSource() == DownloadManager::USER_LIST_NAME_BZ) {
+					if(aDownload->getSource() == Transfer::USER_LIST_NAME_BZ) {
 						q->setFlag(QueueItem::FLAG_XML_BZLIST);
 					} else {
 						q->unsetFlag(QueueItem::FLAG_XML_BZLIST);
@@ -861,7 +862,6 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 				}
 			}
 		}
-		aDownload->setUserConnection(0);
 		delete aDownload;
 	}
 

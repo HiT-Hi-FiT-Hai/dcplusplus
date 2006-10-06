@@ -581,6 +581,7 @@
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="UnableToOpenFilelist">Unable to open filelist: </String>
 		<String Name="UnableToRename">Unable to rename </String>
+		<String Name="UnableToSendFile">Unable to send file </String>
 		<String Name="Unknown">Unknown</String>
 		<String Name="UnknownAddress">Unknown address</String>
 		<String Name="UnknownCommand">Unknown command: </String>

@@ -103,7 +103,7 @@ public:
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
 	void unlockQueue() throw() { cs.leave(); }
 
-	Download* getDownload(User::Ptr& aUser, bool supportsTrees) throw();
+	Download* getDownload(UserConnection& aSource, bool supportsTrees) throw();
 	void putDownload(Download* aDownload, bool finished) throw();
 
 	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {

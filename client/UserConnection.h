@@ -30,6 +30,7 @@
 #include "File.h"
 #include "User.h"
 #include "AdcCommand.h"
+#include "MerkleTree.h"
 
 class UserConnection;
 
@@ -46,6 +47,7 @@ public:
 	typedef X<5> Key;
 	typedef X<6> Direction;
 	typedef X<7> Get;
+	typedef X<8> Error;
 	typedef X<10> Sending;
 	typedef X<11> FileLength;
 	typedef X<12> Send;
@@ -63,6 +65,7 @@ public:
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw() { }
 	virtual void on(Connected, UserConnection*) throw() { }
 	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw() { }
+	virtual void on(Error, UserConnection*, const string&) throw() { }
 	virtual void on(Failed, UserConnection*, const string&) throw() { }
 	virtual void on(CLock, UserConnection*, const string&, const string&) throw() { }
 	virtual void on(Key, UserConnection*, const string&) throw() { }
@@ -92,9 +95,15 @@ class ConnectionQueueItem;
 
 class Transfer {
 public:
-	Transfer() : userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0),
-		last(0), actual(0), pos(0), startPos(0), size(-1) { }
-	virtual ~Transfer() { }
+	static const string TYPE_FILE;		///< File transfer
+	static const string TYPE_LIST;		///< Partial file list
+	static const string TYPE_TTHL;		///< TTH Leaves
+
+	static const string USER_LIST_NAME;
+	static const string USER_LIST_NAME_BZ;
+
+	Transfer(UserConnection& conn);
+	virtual ~Transfer() { };
 
 	int64_t getPos() const { return pos; }
 	void setPos(int64_t aPos) { pos = aPos; }
@@ -113,7 +122,6 @@ public:
 
 	int64_t getSize() const { return size; }
 	void setSize(int64_t aSize) { size = aSize; }
-	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); }
 
 	int64_t getAverageSpeed() const {
 		int64_t diff = (int64_t)(GET_TICK() - getStart());
@@ -130,10 +138,17 @@ public:
 		return getSize() - getPos();
 	}
 
-	GETSET(UserConnection*, userConnection, UserConnection);
+	virtual void getParams(const UserConnection& aSource, StringMap& params);
+
+	User::Ptr getUser();
+
+	UserConnection& getUserConnection() { return userConnection; }
+	const UserConnection& getUserConnection() const { return userConnection; }
+
 	GETSET(u_int32_t, start, Start);
 	GETSET(u_int32_t, lastTick, LastTick);
 	GETSET(int64_t, runningAverage, RunningAverage);
+	GETSET(TTHValue, tth, TTH);
 private:
 	Transfer(const Transfer&);
 	Transfer& operator=(const Transfer&);
@@ -149,6 +164,7 @@ private:
 	/** Target size of this transfer */
 	int64_t size;
 
+	UserConnection& userConnection;
 };
 
 class ServerSocket;
@@ -214,9 +230,10 @@ public:
 		STATE_KEY,
 
 		// UploadManager
-		STATE_GET,
-		STATE_SEND,
-		STATE_DONE,
+		STATE_GET,			// Waiting for GET
+		STATE_SEND,			// Waiting for $Send
+		STATE_RUNNING,		// Transmitting data
+
 		// DownloadManager
 		STATE_FILELENGTH,
 		STATE_TREE
@@ -273,6 +290,7 @@ public:
 		return isSet(FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
 	}
 
+	const User::Ptr& getUser() const { return user; }
 	User::Ptr& getUser() { return user; }
 	bool isSecure() const { return socket && socket->isSecure(); }
 	bool isTrusted() const { return socket && socket->isTrusted(); }
@@ -296,7 +314,6 @@ public:
 
 	GETSET(string, hubUrl, HubUrl);
 	GETSET(string, token, Token);
-	//GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
 	GETSET(u_int32_t, lastActivity, LastActivity);
 private:

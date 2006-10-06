@@ -21,6 +21,7 @@
 
 #include "UserConnection.h"
 #include "ClientManager.h"
+#include "ResourceManager.h"
 
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
@@ -37,8 +38,18 @@ const string UserConnection::FEATURE_ADC_BZIP = "BZIP";
 
 const string UserConnection::FILE_NOT_AVAILABLE = "File Not Available";
 
+const string Transfer::TYPE_FILE = "file";
+const string Transfer::TYPE_LIST = "list";
+const string Transfer::TYPE_TTHL = "tthl";
+
+const string Transfer::USER_LIST_NAME = "files.xml";
+const string Transfer::USER_LIST_NAME_BZ = "files.xml.bz2";
+
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
+
+Transfer::Transfer(UserConnection& conn) : start(0), lastTick(GET_TICK()), runningAverage(0),
+last(0), actual(0), pos(0), startPos(0), size(-1), userConnection(conn) { }
 
 void Transfer::updateRunningAverage() {
 	u_int32_t tick = GET_TICK();
@@ -62,6 +73,32 @@ void Transfer::updateRunningAverage() {
 		last = tot;
 	}
 	lastTick = tick;
+}
+
+void Transfer::getParams(const UserConnection& aSource, StringMap& params) {
+	params["userNI"] = Util::toString(ClientManager::getInstance()->getNicks(aSource.getUser()->getCID()));
+	params["userI4"] = aSource.getRemoteIp();
+	StringList hubNames = ClientManager::getInstance()->getHubNames(aSource.getUser()->getCID());
+	if(hubNames.empty())
+		hubNames.push_back(STRING(OFFLINE));
+	params["hub"] = Util::toString(hubNames);
+	StringList hubs = ClientManager::getInstance()->getHubs(aSource.getUser()->getCID());
+	if(hubs.empty())
+		hubs.push_back(STRING(OFFLINE));
+	params["hubURL"] = Util::toString(hubs);
+	params["fileSI"] = Util::toString(getSize());
+	params["fileSIshort"] = Util::formatBytes(getSize());
+	params["fileSIchunk"] = Util::toString(getTotal());
+	params["fileSIchunkshort"] = Util::formatBytes(getTotal());
+	params["fileSIactual"] = Util::toString(getActual());
+	params["fileSIactualshort"] = Util::formatBytes(getActual());
+	params["speed"] = Util::formatBytes(getAverageSpeed()) + "/s";
+	params["time"] = Util::formatSeconds((GET_TICK() - getStart()) / 1000);
+	params["fileTR"] = getTTH().toBase32();
+}
+
+User::Ptr Transfer::getUser() {
+	return getUserConnection().getUser();
 }
 
 void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw () {

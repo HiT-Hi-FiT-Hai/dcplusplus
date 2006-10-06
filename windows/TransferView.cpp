@@ -471,7 +471,7 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 }
 
 void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
-	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true);
+	UpdateInfo* ui = new UpdateInfo(aDownload->getUser(), true);
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
 	ui->setPos(aDownload->getTotal());
 	ui->setActual(aDownload->getActual());
@@ -479,8 +479,8 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 	ui->setSize(aDownload->getSize());
 	ui->setFile(Text::toT(aDownload->getTarget()));
 	ui->setStatusString(TSTRING(DOWNLOAD_STARTING));
-	tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection()->getRemoteIp()));
-	tstring ip = Text::toT(aDownload->getUserConnection()->getRemoteIp());
+	tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection().getRemoteIp()));
+	tstring ip = Text::toT(aDownload->getUserConnection().getRemoteIp());
 	if(country.empty()) {
 		ui->setIP(ip);
 	} else {
@@ -499,7 +499,7 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 	for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
 		Download* d = *j;
 
-		UpdateInfo* ui = new UpdateInfo(d->getUserConnection()->getUser(), true);
+		UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
 		ui->setActual(d->getActual());
 		ui->setPos(d->getTotal());
 		ui->setTimeLeft(d->getSecondsLeft());
@@ -510,8 +510,8 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 
 		tstring statusString;
 
-		if(d->getUserConnection()->isSecure()) {
-			if(d->getUserConnection()->isTrusted()) {
+		if(d->getUserConnection().isSecure()) {
+			if(d->getUserConnection().isTrusted()) {
 				statusString += _T("[S]");
 			} else {
 				statusString += _T("[U]");
@@ -539,7 +539,7 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 }
 
 void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) {
-	UpdateInfo* ui = new UpdateInfo(aDownload->getUserConnection()->getUser(), true, true);
+	UpdateInfo* ui = new UpdateInfo(aDownload->getUser(), true, true);
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setPos(0);
 	ui->setStatusString(Text::toT(aReason));
@@ -553,17 +553,17 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 }
 
 void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
-	UpdateInfo* ui = new UpdateInfo(aUpload->getUserConnection()->getUser(), false);
+	UpdateInfo* ui = new UpdateInfo(aUpload->getUser(), false);
 
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
 	ui->setPos(aUpload->getTotal());
 	ui->setActual(aUpload->getActual());
 	ui->setStart(aUpload->getPos());
 	ui->setSize(aUpload->getSize());
-	ui->setFile(Text::toT(aUpload->getFileName()));
+	ui->setFile(Text::toT(aUpload->getSourceFile()));
 	ui->setStatusString(TSTRING(UPLOAD_STARTING));
-	tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection()->getRemoteIp()));
-	tstring ip = Text::toT(aUpload->getUserConnection()->getRemoteIp());
+	tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection().getRemoteIp()));
+	tstring ip = Text::toT(aUpload->getUserConnection().getRemoteIp());
 	if(country.empty()) {
 		ui->setIP(ip);
 	} else {
@@ -582,7 +582,7 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 	for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
 		Upload* u = *j;
 
-		UpdateInfo* ui = new UpdateInfo(u->getUserConnection()->getUser(), false);
+		UpdateInfo* ui = new UpdateInfo(u->getUser(), false);
 		ui->setActual(u->getActual());
 		ui->setPos(u->getTotal());
 		ui->setTimeLeft(u->getSecondsLeft());
@@ -593,8 +593,12 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 
 		tstring statusString;
 
-		if(u->getUserConnection()->isSecure()) {
-			statusString += _T("[S]");
+		if(u->getUserConnection().isSecure()) {
+			if(u->getUserConnection().isTrusted()) {
+				statusString += _T("[S]");
+			} else {
+				statusString += _T("[U]");
+			}
 		}
 		if(u->isSet(Upload::FLAG_ZUPLOAD)) {
 			statusString += _T("[Z]");
@@ -613,7 +617,7 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 }
 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
-	UpdateInfo* ui = new UpdateInfo(aTransfer->getUserConnection()->getUser(), !isUpload);
+	UpdateInfo* ui = new UpdateInfo(aTransfer->getUser(), !isUpload);
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setPos(0);

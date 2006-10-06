@@ -1,6 +1,9 @@
 ﻿-- --
 * [bug 1065] Code cleanup (thanks steven sheehy)
-
+* Fixed readme.txt (thanks ullner)
+* More code cleanup
+* Fixed trusted/untrusted upload view
+* Fixed crash on invalid remote command during upload
 
 -- 0.697 2006-09-29 --
 * [ADC] Fixed a few protocol issues

@@ -60,10 +60,12 @@ public:
 		FLAG_TTH_CHECK = 0x800
 	};
 
-	Download() throw();
-	Download(QueueItem* qi) throw();
+	Download(UserConnection& conn) throw();
+	Download(UserConnection& conn, QueueItem& qi) throw();
 
-	virtual ~Download() { }
+	virtual void getParams(const UserConnection& aSource, StringMap& params);
+
+	virtual ~Download();
 
 	/**
 	 * @remarks This function is only used from DownloadManager but its
@@ -72,12 +74,7 @@ public:
 	 * @return Target filename without path.
 	 */
 	string getTargetFileName() {
-		string::size_type i = getTarget().rfind('\\');
-		if(i != string::npos) {
-			return getTarget().substr(i + 1);
-		} else {
-			return getTarget();
-		}
+		return Util::getFileName(getTarget());
 	}
 
 	/** @internal */
@@ -98,7 +95,6 @@ public:
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-	GETSET(TTHValue, tth, TTH);
 	GETSET(bool, treeValid, TreeValid);
 
 private:
@@ -198,8 +194,6 @@ public:
 		return downloads.size();
 	}
 
-	static const string USER_LIST_NAME;
-	static const string USER_LIST_NAME_BZ;
 private:
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {
@@ -248,6 +242,7 @@ private:
 
 	// UserConnectionListener
 	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
+	virtual void on(Error, UserConnection*, const string&) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
 	virtual void on(Sending, UserConnection*, int64_t) throw();
 	virtual void on(FileLength, UserConnection*, int64_t) throw();

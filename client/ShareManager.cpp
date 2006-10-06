@@ -82,9 +82,8 @@ ShareManager::Directory::~Directory() {
 	}
 }
 
-string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
-	TTHValue v(TTH);
-	HashFileIter i = tthIndex.find(v);
+string ShareManager::translateTTH(const TTHValue& tth) throw(ShareException) {
+	HashFileIter i = tthIndex.find(tth);
 	if(i != tthIndex.end()) {
 		return i->second->getADCPath();
 	} else {
@@ -92,67 +91,64 @@ string ShareManager::translateTTH(const string& TTH) throw(ShareException) {
 	}
 }
 
-string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
-	if(aFile == "MyList.DcLst") {
+string ShareManager::translateFileName(const string& virtualFile) throw(ShareException) {
+	if(virtualFile == "MyList.DcLst") {
 		throw ShareException("NMDC-style lists no longer supported, please upgrade your client");
-	} else if(aFile == DownloadManager::USER_LIST_NAME || aFile == DownloadManager::USER_LIST_NAME_BZ) {
+	} else if(virtualFile == Transfer::USER_LIST_NAME_BZ || virtualFile == Transfer::USER_LIST_NAME) {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {
-		if(aFile.length() < 3)
-			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
-
-		string file;
-
+		string realFile;
 		Lock l(cs);
 
-		// Check for tth root identifier
-		if(aFile.compare(0, 4, "TTH/") == 0) {
-			file = translateTTH(aFile.substr(4));
-		} else if(aFile[0] != '/') {
-			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
-		} else {
-			file = aFile;
-		}
-
-		string::size_type i = file.find('/', 1);
-		if(i == string::npos)
-			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
-
-		StringPairIter j = lookupVirtual(file.substr(1, i-1));
-		if(j == virtualMap.end()) {
-			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
-		}
-
-		file = file.substr(i + 1);
 		Directory::File::Iter it;
-		if(!checkFile(j->second, file, it)) {
+		if(!checkFile(virtualFile, realFile, it)) {
 			throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 		}
-
-#ifdef _WIN32
-		for(i = 0; i < file.length(); ++i) {
-			if(file[i] == '/')
-				file[i] = '\\';
-		}
-#endif
-		return j->second + file;
+		return realFile;
 	}
 }
 
+TTHValue ShareManager::getTTH(const string& virtualName) throw(ShareException) {
+	Lock l(cs);
+	string realName;
+	Directory::File::Iter it;
+	if(!checkFile(virtualName, realName, it))
+		throw ShareException();
+	return it->getTTH();
+}
+
+MemoryInputStream* ShareManager::getTree(const string& aFile) {
+	TigerTree tree;
+	if(aFile.compare(0, 4, "TTH/") == 0) {
+		if(!HashManager::getInstance()->getTree(TTHValue(aFile.substr(4)), tree))
+			return 0;
+	} else {
+		try {
+			TTHValue tth = getTTH(aFile);
+			HashManager::getInstance()->getTree(tth, tree);
+		} catch(const Exception&) {
+			return 0;
+		}
+	}
+
+	vector<u_int8_t> buf = tree.getLeafData();
+	return new MemoryInputStream(&buf[0], buf.size());
+}
+
 AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) {
-	if(aFile == DownloadManager::USER_LIST_NAME) {
+	if(aFile == Transfer::USER_LIST_NAME) {
 		generateXmlList();
 		/** todo fix size... */
 		AdcCommand cmd(AdcCommand::CMD_RES);
-		cmd.addParam("FN", DownloadManager::USER_LIST_NAME);
+		cmd.addParam("FN", aFile);
 		cmd.addParam("TR", xmlRoot.toBase32());
 		return cmd;
-	} else if(aFile == DownloadManager::USER_LIST_NAME_BZ) {
+	} else if(aFile == Transfer::USER_LIST_NAME_BZ) {
 		generateXmlList();
 
 		AdcCommand cmd(AdcCommand::CMD_RES);
-		cmd.addParam("FN", DownloadManager::USER_LIST_NAME_BZ);
+		cmd.addParam("FN", aFile);
 		cmd.addParam("SI", Util::toString(File::getSize(getBZXmlFile())));
 		cmd.addParam("TR", xmlbzRoot.toBase32());
 		return cmd;
@@ -176,42 +172,68 @@ AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) 
 	return cmd;
 }
 
-StringPairIter ShareManager::findVirtual(const string& name) {
+StringPairIter ShareManager::findVirtual(const string& realName) {
 	for(StringPairIter i = virtualMap.begin(); i != virtualMap.	end(); ++i) {
-		if(Util::stricmp(name, i->second) == 0)
+		if(Util::stricmp(realName, i->second) == 0)
 			return i;
 	}
 	return virtualMap.end();
 }
 
-StringPairIter ShareManager::lookupVirtual(const string& name) {
+StringPairIter ShareManager::findReal(const string& virtualName) {
 	for(StringPairIter i = virtualMap.begin(); i != virtualMap.	end(); ++i) {
-		if(Util::stricmp(name, i->first) == 0)
+		if(Util::stricmp(virtualName, i->first) == 0)
 			return i;
 	}
 	return virtualMap.end();
 }
 
-bool ShareManager::checkFile(const string& dir, const string& aFile, Directory::File::Iter& it) {
-	Directory::MapIter mi = directories.find(dir);
+bool ShareManager::checkFile(const string& virtualFile, string& realFile, Directory::File::Iter& it) {
+	string file;
+	if(virtualFile.compare(0, 4, "TTH/") == 0) {
+		file = translateTTH(TTHValue(virtualFile.substr(4)));
+	} else if(virtualFile.empty() || virtualFile[0] != '/') {
+		return false;
+	} else {
+		file = virtualFile;
+	}
+
+	string::size_type i = file.find('/', 1);
+	if(i == string::npos || i == 1) {
+		return false;
+	}
+
+	StringPairIter k = findReal(file.substr(1, i-1));
+	if(k == virtualMap.end()) {
+		return false;
+	}
+
+	file = file.substr(i + 1);
+	
+	Directory::MapIter mi = directories.find(k->second);
 	if(mi == directories.end())
 		return false;
 	Directory* d = mi->second;
 
-	string::size_type i;
 	string::size_type j = 0;
-	while( (i = aFile.find('/', j)) != string::npos) {
-		mi = d->directories.find(aFile.substr(j, i-j));
+	while( (i = file.find('/', j)) != string::npos) {
+		mi = d->directories.find(file.substr(j, i-j));
 		j = i + 1;
 		if(mi == d->directories.end())
 			return false;
 		d = mi->second;
 	}
 
-	it = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(aFile.substr(j)));
+	it = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(file.substr(j)));
 	if(it == d->files.end())
 		return false;
 
+	
+#ifdef _WIN32
+	replace_if(file.begin(), file.end(), bind2nd(equal_to<char>(), '/'), '\\');
+#endif
+
+	realFile = k->second + file;
 	return true;
 }
 
@@ -249,7 +271,7 @@ void ShareManager::load(SimpleXML& aXml) {
 			newVirt = validateVirtual(newVirt);
 
 			// add only unique directories
-			if(lookupVirtual(newVirt) == virtualMap.end()) {
+			if(findReal(newVirt) == virtualMap.end()) {
 				Directory* dp = new Directory(newVirt);
 				directories[d] = dp;
 				virtualMap.push_back(make_pair(newVirt, d));
@@ -381,7 +403,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 			}
 		}
 
-		if(lookupVirtual(vName) != virtualMap.end()) {
+		if(findReal(vName) != virtualMap.end()) {
 			throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
 		}
 	}
@@ -427,13 +449,12 @@ void ShareManager::removeDirectory(const string& aDirectory, bool duringRefresh)
 }
 
 void ShareManager::renameDirectory(const string& oName, const string& nName) throw(ShareException) {
-	StringPairIter i;
 	Lock l(cs);
 	//Find the virtual name
-	i = lookupVirtual(oName);
-	if (lookupVirtual(nName) != virtualMap.end()) {
+	if (findReal(nName) != virtualMap.end()) {
 		throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
 	} else {
+		StringPairIter i = findReal(oName);
 		// Valid newName, lets rename
 		i->first = nName;
 
@@ -886,7 +907,7 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 
 			if(first) {
 				first = false;
-				StringPairIter k = lookupVirtual(dir.substr(j, i-j));
+				StringPairIter k = findReal(dir.substr(j, i-j));
 				if(k == virtualMap.end())
 					return NULL;
 				it = directories.find(k->second);
@@ -909,47 +930,6 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool rec
 
 	xml += "</FileListing>";
 	return new MemoryInputStream(xml);
-}
-
-bool ShareManager::getTTH(const string& aFile, TTHValue& tth) throw() {
-	if(aFile.length() < 3 || aFile[0] != '/')
-		return false;
-
-	string::size_type i = aFile.find('/', 1);
-	if(i == string::npos)
-		return false;
-
-	Lock l(cs);
-	StringPairIter j = lookupVirtual(aFile.substr(1, i-1));
-	if(j == virtualMap.end()) {
-		return false;
-	}
-
-	Directory::File::Iter it;
-	if(!checkFile(j->second, aFile.substr(i + 1), it))
-		return false;
-
-	tth = it->getTTH();
-	return true;
-}
-
-MemoryInputStream* ShareManager::getTree(const string& aFile) {
-	TigerTree tree;
-	if(aFile.compare(0, 4, "TTH/") == 0) {
-		if(!HashManager::getInstance()->getTree(TTHValue(aFile.substr(4)), tree))
-			return NULL;
-	} else {
-		try {
-			TTHValue tth;
-			if(getTTH(aFile, tth))
-				HashManager::getInstance()->getTree(tth, tree);
-		} catch(const Exception&) {
-			return NULL;
-		}
-	}
-
-	vector<u_int8_t> buf = tree.getLeafData();
-	return new MemoryInputStream(&buf[0], buf.size());
 }
 
 static const string& escaper(const string& n, string& tmp) {

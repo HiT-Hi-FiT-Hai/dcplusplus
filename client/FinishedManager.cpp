@@ -66,8 +66,8 @@ void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
 	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItem *item = new FinishedItem(
-			d->getTarget(), Util::toString(ClientManager::getInstance()->getNicks(d->getUserConnection()->getUser()->getCID())),
-			Util::toString(ClientManager::getInstance()->getHubNames(d->getUserConnection()->getUser()->getCID())),
+			d->getTarget(), Util::toString(ClientManager::getInstance()->getNicks(d->getUser()->getCID())),
+			Util::toString(ClientManager::getInstance()->getHubNames(d->getUser()->getCID())),
 			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
 		{
 			Lock l(cs);
@@ -82,8 +82,8 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
 	if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItem *item = new FinishedItem(
-			u->getLocalFileName(), Util::toString(ClientManager::getInstance()->getNicks(u->getUserConnection()->getUser()->getCID())),
-			Util::toString(ClientManager::getInstance()->getHubNames(u->getUserConnection()->getUser()->getCID())),
+			u->getSourceFile(), Util::toString(ClientManager::getInstance()->getNicks(u->getUser()->getCID())),
+			Util::toString(ClientManager::getInstance()->getHubNames(u->getUser()->getCID())),
 			u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
 		{
 			Lock l(cs);

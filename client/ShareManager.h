@@ -57,9 +57,10 @@ public:
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
 	void removeDirectory(const string& aName, bool duringRefresh = false);
 	void renameDirectory(const string& oName, const string& nName) throw(ShareException);
-	string translateTTH(const string& TTH) throw(ShareException);
+	string translateTTH(const TTHValue& tth) throw(ShareException);
 	string translateFileName(const string& aFile) throw(ShareException);
-	bool getTTH(const string& aFile, TTHValue& tth) throw();
+	TTHValue getTTH(const string& aFile) throw(ShareException);
+
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ThreadException, ShareException);
 	void setDirty() { xmlDirty = true; }
 
@@ -283,11 +284,11 @@ private:
 	BloomFilter<5> bloom;
 
 	/** Find virtual name from real name */
-	StringPairIter findVirtual(const string& name);
+	StringPairIter findVirtual(const string& realName);
 	/** Find real name from virtual name */
-	StringPairIter lookupVirtual(const string& name);
+	StringPairIter findReal(const string& virtualName);
 
-	bool checkFile(const string& aDir, const string& aFile, Directory::File::Iter& it);
+	bool checkFile(const string& virtualFile, string& realFile, Directory::File::Iter& it);
 
 	Directory* buildTree(const string& aName, Directory* aParent);
 	void addTree(Directory* aDirectory);

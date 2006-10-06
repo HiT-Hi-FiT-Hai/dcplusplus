@@ -43,7 +43,7 @@ to generate some nice docs...just check that the paths in doxyfile are correct (
 Linux / Unix:
 I've made some rudimentary autoconf/automake scripts now, so you can compile the client part into a library
 without too much hassle (I don't check if it compiles very often though...). You'll need the latest versions
-of automake and autoconf, and after getting the source (from CVS is easiest), do 
+of automake and autoconf, and after getting the source (from SVN is easiest), do 
 "aclocal && automake && autoconf && configure && make" and you'll have the client part nicely compiled.
 When / if I test it I do it on a Gentoo AMD64 box with the latest gcc in 64-bit mode, so I don't have a clue
 if the 32-bit compile works...
@@ -56,7 +56,7 @@ completely random, which just might be the case. Popular reasons for rejecting a
 ugly code, abusable features, feature that I don't like that bloat the application and incompatibility with other 
 modifications I've already done. 
 To increase the chances of your patch being accepted, post them in the DC++ bugzilla as diffs against the latest 
-code you can find (in the cvs repository on sourceforge most probably). You can find a lot of 
+code you can find (in the SVN repository on sourceforge most probably). You can find a lot of 
 information about diff and patch by googling for it. I like unified format (diff -u). When diffing, apply diff to
 the folders of the two versions, so that the paths will be included in the diff.
 By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
