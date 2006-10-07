@@ -86,17 +86,9 @@ public:
 	 * @remarks This is only used in the tray icons. Could be used in
 	 * MainFrame too.
 	 *
-	 * @return Average download speed in Bytes/s
+	 * @return Running average download speed in Bytes/s
 	 */
-	int getAverageSpeed() {
-		Lock l(cs);
-		int avg = 0;
-		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
-			Upload* u = *i;
-			avg += (int)u->getRunningAverage();
-		}
-		return avg;
-	}
+	int64_t getRunningAverage();
 
 	/** @return Number of free slots. */
 	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
@@ -132,14 +124,6 @@ private:
 
 	typedef pair<User::Ptr, u_int32_t> WaitingUser;
 	typedef list<WaitingUser> UserList;
-
-	struct UserMatch {
-		UserMatch(const User::Ptr& u) : u(u) { }
-		const User::Ptr& u;
-		bool operator()(const WaitingUser& wu) { return wu.first == u; }
-	private:
-		UserMatch& operator=(const UserMatch&);
-	};
 
 	struct WaitingUserFresh {
 		bool operator()(const WaitingUser& wu) { return wu.second > GET_TICK() - 5*60*1000; }

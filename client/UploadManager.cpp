@@ -214,7 +214,6 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 	if(partList)
 		u->setFlag(Upload::FLAG_PARTIAL_LIST);
 
-	dcassert(aSource.getUpload() == NULL);
 	uploads.push_back(u);
 
 	if(!aSource.isSet(UserConnection::FLAG_HASSLOT)) {
@@ -238,6 +237,16 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 	return true;
 }
 
+int64_t UploadManager::getRunningAverage() {
+	Lock l(cs);
+	int64_t avg = 0;
+	for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+		Upload* u = *i;
+		avg += (int)u->getRunningAverage();
+	}
+	return avg;
+}
+
 bool UploadManager::getAutoSlot() {
 	/** A 0 in settings means disable */
 	if(SETTING(MIN_UPLOAD_SPEED) == 0)
@@ -246,7 +255,7 @@ bool UploadManager::getAutoSlot() {
 	if(GET_TICK() < getLastGrant() + 30*1000)
 		return false;
 	/** Grant if upload speed is less than the threshold speed */
-	return getAverageSpeed() < (SETTING(MIN_UPLOAD_SPEED)*1024);
+	return getRunningAverage() < (SETTING(MIN_UPLOAD_SPEED)*1024);
 }
 
 void UploadManager::removeUpload(Upload* aUpload) {
@@ -362,7 +371,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 void UploadManager::addFailedUpload(const UserConnection& source, string filename) {
 	{
 		Lock l(cs);
-		if (!count_if(waitingUsers.begin(), waitingUsers.end(), UserMatch(source.getUser())))
+		if (!count_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, u_int32_t>(source.getUser())))
 			waitingUsers.push_back(WaitingUser(source.getUser(), GET_TICK()));
 		waitingFiles[source.getUser()].insert(filename);		//files for which user's asked
 	}
@@ -373,7 +382,7 @@ void UploadManager::addFailedUpload(const UserConnection& source, string filenam
 void UploadManager::clearUserFiles(const User::Ptr& source) {
 	Lock l(cs);
 	//run this when a user's got a slot or goes offline.
-	UserList::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), UserMatch(source));
+	UserList::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, u_int32_t>(source));
 	if (sit == waitingUsers.end()) return;
 
 	FilesMap::iterator fit = waitingFiles.find(sit->first);

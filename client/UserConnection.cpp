@@ -53,12 +53,11 @@ last(0), actual(0), pos(0), startPos(0), size(-1), userConnection(conn) { }
 
 void Transfer::updateRunningAverage() {
 	u_int32_t tick = GET_TICK();
-	if(tick > lastTick) {
+	// Update 4 times/sec at most
+	if(tick > (lastTick + 250)) {
 		u_int32_t diff = tick - lastTick;
 		int64_t tot = getTotal();
-		if(diff == 0) {
-			// No time passed, don't update runningAverage;
-		} else if( ((tick - getStart()) < AVG_PERIOD) ) {
+		if( ((tick - getStart()) < AVG_PERIOD) ) {
 			runningAverage = getAverageSpeed();
 		} else {
 			int64_t bdiff = tot - last;

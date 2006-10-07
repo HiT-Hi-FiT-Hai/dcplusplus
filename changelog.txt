@@ -4,6 +4,8 @@
 * More code cleanup
 * Fixed trusted/untrusted upload view
 * Fixed crash on invalid remote command during upload
+* [ADC] Improved GFI command support
+* Lowest priority downloads are no longer started if there are other downloads running
 
 -- 0.697 2006-09-29 --
 * [ADC] Fixed a few protocol issues

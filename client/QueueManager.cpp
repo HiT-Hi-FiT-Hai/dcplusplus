@@ -613,6 +613,18 @@ static inline u_int32_t adjustSize(u_int32_t sz, const string& name) {
 	return sz;
 }
 
+QueueItem::Priority QueueManager::hasDownload(const User::Ptr& aUser) throw() {
+	Lock l(cs);
+	if(pfsQueue.find(aUser->getCID()) != pfsQueue.end()) {
+		return QueueItem::HIGHEST;
+	}
+	QueueItem* qi = userQueue.getNext(aUser, QueueItem::LOWEST);
+	if(!qi) {
+		return QueueItem::PAUSED;
+	}
+	return qi->getPriority();
+}
+
 typedef HASH_MULTIMAP<u_int32_t, QueueItem*> SizeMap;
 typedef SizeMap::iterator SizeIter;
 typedef pair<SizeIter, SizeIter> SizePair;

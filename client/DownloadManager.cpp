@@ -22,9 +22,7 @@
 #include "DownloadManager.h"
 
 #include "ResourceManager.h"
-#include "ConnectionManager.h"
 #include "QueueManager.h"
-#include "CryptoManager.h"
 #include "HashManager.h"
 
 #include "LogManager.h"
@@ -33,7 +31,6 @@
 #include "File.h"
 #include "FilteredFile.h"
 #include "MerkleCheckOutputStream.h"
-#include "ClientManager.h"
 
 #include <limits>
 
@@ -89,6 +86,12 @@ AdcCommand Download::getCommand(bool zlib) {
 	}
 
 	return cmd;
+}
+
+void Download::getParams(const UserConnection& aSource, StringMap& params) {
+	Transfer::getParams(aSource, params);
+	params["target"] = getTarget();
+	params["sfv"] = Util::toString(isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
 }
 
 DownloadManager::DownloadManager() {
@@ -261,18 +264,34 @@ void DownloadManager::addConnection(UserConnection::Ptr conn) {
 	checkDownloads(conn);
 }
 
+bool DownloadManager::startDownload(QueueItem::Priority prio) {
+	size_t downloadCount = getDownloadCount();
+
+	bool full = (SETTING(DOWNLOAD_SLOTS) != 0) && (downloadCount >= (size_t)SETTING(DOWNLOAD_SLOTS));
+	full = full || (SETTING(MAX_DOWNLOAD_SPEED) != 0) && (getRunningAverage() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024));
+
+	if(full) {
+		bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloadCount() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
+		if(extraFull) {
+			return false;
+		}
+		return prio == QueueItem::HIGHEST;
+	}
+
+	if(downloadCount > 0) {
+		return prio != QueueItem::LOWEST;
+	}
+
+	return true;
+}
+
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 	dcassert(aConn->getDownload() == NULL);
 
-	bool slotsFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
-	bool speedFull = (SETTING(MAX_DOWNLOAD_SPEED) != 0) && (getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024));
-
-	if( slotsFull || speedFull ) {
-		bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloadCount() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
-		if(extraFull || !QueueManager::getInstance()->hasDownload(aConn->getUser(), QueueItem::HIGHEST)) {
-			removeConnection(aConn);
-			return;
-		}
+	QueueItem::Priority prio = QueueManager::getInstance()->hasDownload(aConn->getUser());
+	if(!startDownload(prio)) {
+		removeConnection(aConn);
+		return;
 	}
 
 	Download* d = QueueManager::getInstance()->getDownload(*aConn, aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL));
@@ -731,10 +750,14 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t c
 	return true;
 }
 
-void Download::getParams(const UserConnection& aSource, StringMap& params) {
-	Transfer::getParams(aSource, params);
-	params["target"] = getTarget();
-	params["sfv"] = Util::toString(isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
+int64_t DownloadManager::getRunningAverage() {
+	Lock l(cs);
+	int64_t avg = 0;
+	for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
+		Download* d = *i;
+		avg += d->getRunningAverage();
+	}
+	return avg;
 }
 
 void DownloadManager::logDownload(UserConnection* aSource, Download* d) {

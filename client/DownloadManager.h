@@ -30,8 +30,8 @@
 #include "FilteredFile.h"
 #include "ZUtils.h"
 #include "MerkleTree.h"
+#include "QueueItem.h"
 
-class QueueItem;
 class ConnectionQueueItem;
 
 /**
@@ -67,12 +67,7 @@ public:
 
 	virtual ~Download();
 
-	/**
-	 * @remarks This function is only used from DownloadManager but its
-	 * functionality could be useful in TransferView.
-	 *
-	 * @return Target filename without path.
-	 */
+	/** @return Target filename without path. */
 	string getTargetFileName() {
 		return Util::getFileName(getTarget());
 	}
@@ -99,13 +94,11 @@ public:
 
 private:
 	Download(const Download&);
-
 	Download& operator=(const Download&);
 
 	TigerTree tt;
 	string pfs;
 };
-
 
 /**
  * Use this listener interface to get progress information for downloads.
@@ -172,21 +165,8 @@ public:
 	void addConnection(UserConnection::Ptr conn);
 	void checkIdle(const User::Ptr& user);
 
-	/**
-	 * @remarks This is only used in the tray icons. In MainFrame this is
-	 * calculated instead so there seems to be a little duplication of code.
-	 *
-	 * @return Average download speed in Bytes/s
-	 */
-	int getAverageSpeed() {
-		Lock l(cs);
-		int avg = 0;
-		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
-			Download* d = *i;
-			avg += (int)d->getRunningAverage();
-		}
-		return avg;
-	}
+	/** @return Running average download speed in Bytes/s */
+	int64_t getRunningAverage();
 
 	/** @return Number of downloads. */
 	size_t getDownloadCount() {
@@ -194,6 +174,7 @@ public:
 		return downloads.size();
 	}
 
+	bool startDownload(QueueItem::Priority prio);
 private:
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {

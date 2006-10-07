@@ -1011,9 +1011,9 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		nid.hWnd = m_hWnd;
 		nid.uID = 0;
 		nid.uFlags = NIF_TIP;
-		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" +
+		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getRunningAverage()) + "/s (" +
 			Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")\r\nU: " +
-			Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()) + "/s (" +
+			Util::formatBytes(UploadManager::getInstance()->getRunningAverage()) + "/s (" +
 			Util::toString(UploadManager::getInstance()->getUploadCount()) + ")").c_str(), 64);
 
 		::Shell_NotifyIcon(NIM_MODIFY, &nid);

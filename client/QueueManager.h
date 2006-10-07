@@ -106,10 +106,8 @@ public:
 	Download* getDownload(UserConnection& aSource, bool supportsTrees) throw();
 	void putDownload(Download* aDownload, bool finished) throw();
 
-	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {
-		Lock l(cs);
-		return (pfsQueue.find(aUser->getCID()) != pfsQueue.end()) || (userQueue.getNext(aUser, minPrio) != NULL);
-	}
+	/** @return The highest priority download the user has, PAUSED may also mean no downloads */
+	QueueItem::Priority hasDownload(const User::Ptr& aUser) throw();
 
 	int countOnlineSources(const string& aTarget);
 

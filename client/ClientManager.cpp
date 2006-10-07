@@ -24,7 +24,6 @@
 #include "ShareManager.h"
 #include "SearchManager.h"
 #include "CryptoManager.h"
-#include "ConnectionManager.h"
 #include "FavoriteManager.h"
 #include "SimpleXML.h"
 #include "UserCommand.h"
