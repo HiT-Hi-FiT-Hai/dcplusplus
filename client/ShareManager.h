@@ -57,9 +57,9 @@ public:
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
 	void removeDirectory(const string& aName, bool duringRefresh = false);
 	void renameDirectory(const string& oName, const string& nName) throw(ShareException);
-	string translateTTH(const TTHValue& tth) throw(ShareException);
-	string translateFileName(const string& aFile) throw(ShareException);
-	TTHValue getTTH(const string& aFile) throw(ShareException);
+	string toVirtual(const TTHValue& tth) throw(ShareException);
+	string toReal(const string& virtualFile) throw(ShareException);
+	TTHValue getTTH(const string& virtualFile) throw(ShareException);
 
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ThreadException, ShareException);
 	void setDirty() { xmlDirty = true; }
@@ -70,7 +70,7 @@ public:
 	StringPairList getDirectories() const { Lock l(cs); return virtualMap; }
 
 	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
-	MemoryInputStream* getTree(const string& aFile);
+	MemoryInputStream* getTree(const string& virtualFile);
 
 	AdcCommand getFileInfo(const string& aFile) throw(ShareException);
 

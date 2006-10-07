@@ -88,7 +88,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 	string sourceFile;
 	try {
 		if(aType == Transfer::TYPE_FILE) {
-			sourceFile = ShareManager::getInstance()->translateFileName(aFile);
+			sourceFile = ShareManager::getInstance()->toReal(aFile);
 
 			if(aFile == Transfer::USER_LIST_NAME) {
 				// Unpack before sending...
@@ -123,7 +123,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				}
 			}
 		} else if(aType == Transfer::TYPE_TTHL) {
-			sourceFile = ShareManager::getInstance()->translateFileName(aFile);
+			sourceFile = ShareManager::getInstance()->toReal(aFile);
 			MemoryInputStream* mis = ShareManager::getInstance()->getTree(aFile);
 			if(!mis) {
 				aSource.fileNotAvail();
@@ -183,7 +183,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				// Check for tth root identifier
 				string tFile = aFile;
 				if (tFile.compare(0, 4, "TTH/") == 0)
-					tFile = ShareManager::getInstance()->translateTTH(TTHValue(aFile.substr(4)));
+					tFile = ShareManager::getInstance()->toVirtual(TTHValue(aFile.substr(4)));
 
 				addFailedUpload(aSource, tFile +
 					" (" + Util::toString((aStartPos*1000/(size+10))/10.0)+"% of " + Util::formatBytes(size) + " done)");
@@ -474,9 +474,9 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 
 	if(type == Transfer::TYPE_FILE) {
 		try {
-			string realFile = ShareManager::getInstance()->translateFileName(ident);
+			string realFile = ShareManager::getInstance()->toReal(ident);
 			TTHValue tth = ShareManager::getInstance()->getTTH(ident);
-			string virtualFile = ShareManager::getInstance()->translateTTH(tth);
+			string virtualFile = ShareManager::getInstance()->toVirtual(tth);
 			int64_t size = File::getSize(realFile);
 			SearchResult* sr = new SearchResult(SearchResult::TYPE_FILE, size, virtualFile, tth);
 			aSource->send(sr->toRES(AdcCommand::TYPE_CLIENT));

@@ -82,7 +82,7 @@ ShareManager::Directory::~Directory() {
 	}
 }
 
-string ShareManager::translateTTH(const TTHValue& tth) throw(ShareException) {
+string ShareManager::toVirtual(const TTHValue& tth) throw(ShareException) {
 	HashFileIter i = tthIndex.find(tth);
 	if(i != tthIndex.end()) {
 		return i->second->getADCPath();
@@ -91,7 +91,7 @@ string ShareManager::translateTTH(const TTHValue& tth) throw(ShareException) {
 	}
 }
 
-string ShareManager::translateFileName(const string& virtualFile) throw(ShareException) {
+string ShareManager::toReal(const string& virtualFile) throw(ShareException) {
 	if(virtualFile == "MyList.DcLst") {
 		throw ShareException("NMDC-style lists no longer supported, please upgrade your client");
 	} else if(virtualFile == Transfer::USER_LIST_NAME_BZ || virtualFile == Transfer::USER_LIST_NAME) {
@@ -109,23 +109,23 @@ string ShareManager::translateFileName(const string& virtualFile) throw(ShareExc
 	}
 }
 
-TTHValue ShareManager::getTTH(const string& virtualName) throw(ShareException) {
+TTHValue ShareManager::getTTH(const string& virtualFile) throw(ShareException) {
 	Lock l(cs);
-	string realName;
+	string realFile;
 	Directory::File::Iter it;
-	if(!checkFile(virtualName, realName, it))
+	if(!checkFile(virtualFile, realFile, it))
 		throw ShareException();
 	return it->getTTH();
 }
 
-MemoryInputStream* ShareManager::getTree(const string& aFile) {
+MemoryInputStream* ShareManager::getTree(const string& virtualFile) {
 	TigerTree tree;
-	if(aFile.compare(0, 4, "TTH/") == 0) {
-		if(!HashManager::getInstance()->getTree(TTHValue(aFile.substr(4)), tree))
+	if(virtualFile.compare(0, 4, "TTH/") == 0) {
+		if(!HashManager::getInstance()->getTree(TTHValue(virtualFile.substr(4)), tree))
 			return 0;
 	} else {
 		try {
-			TTHValue tth = getTTH(aFile);
+			TTHValue tth = getTTH(virtualFile);
 			HashManager::getInstance()->getTree(tth, tree);
 		} catch(const Exception&) {
 			return 0;
@@ -191,7 +191,7 @@ StringPairIter ShareManager::findReal(const string& virtualName) {
 bool ShareManager::checkFile(const string& virtualFile, string& realFile, Directory::File::Iter& it) {
 	string file;
 	if(virtualFile.compare(0, 4, "TTH/") == 0) {
-		file = translateTTH(TTHValue(virtualFile.substr(4)));
+		file = toVirtual(TTHValue(virtualFile.substr(4)));
 	} else if(virtualFile.empty() || virtualFile[0] != '/') {
 		return false;
 	} else {
