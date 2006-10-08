@@ -72,7 +72,7 @@
 # ifdef _STLPORT_VERSION
 #  define HASH_SET_X(key, hfunc, eq, order) hash_set<key, hfunc, eq >
 #  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
-// STLPort 4.6.2 hash_multimap buggy
+// STLPort 5.0.2 hash_multimap buggy
 #  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) multimap<key, type, order > 
 # elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #  define HASH_SET_X(key, hfunc, eq, order) hash_set<key, hfunc, eq >
