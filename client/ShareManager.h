@@ -55,7 +55,7 @@ public:
 	 * @param aName Virtual name
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
-	void removeDirectory(const string& aName, bool duringRefresh = false);
+	void removeDirectory(const string& aName);
 	void renameDirectory(const string& oName, const string& nName) throw(ShareException);
 	string toVirtual(const TTHValue& tth) throw(ShareException);
 	string toReal(const string& virtualFile) throw(ShareException);
@@ -168,24 +168,12 @@ private:
 		string getADCPath() const throw();
 		string getFullName() const throw();
 
-		int64_t getSize() {
-			int64_t tmp = size;
-			for(MapIter i = directories.begin(); i != directories.end(); ++i)
-				tmp+=i->second->getSize();
-			return tmp;
-		}
-
-		size_t countFiles() {
-			size_t tmp = files.size();
-			for(MapIter i = directories.begin(); i != directories.end(); ++i)
-				tmp+=i->second->countFiles();
-			return tmp;
-		}
+		int64_t getSize();
+		size_t countFiles();
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
 		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw();
 
-		void toNmdc(string& nmdc, string& indent, string& tmp2);
 		void toXml(OutputStream& xmlFile, string& indent, string& tmp2, bool fullList);
 		void filesToXml(OutputStream& xmlFile, string& indent, string& tmp2);
 
@@ -286,12 +274,11 @@ private:
 	bool checkFile(const string& virtualFile, string& realFile, Directory::File::Iter& it);
 
 	Directory* buildTree(const string& aName, Directory* aParent);
-	
-	void buildIndex();
-	void buildIndex(const Directory& dir);
 
-	void addTree(Directory* aDirectory);
-	void addFile(Directory* dir, Directory::File::Iter i);
+	void rebuildIndices();
+
+	void addTree(Directory& aDirectory);
+	void addFile(Directory& dir, Directory::File::Iter i);
 	void generateXmlList();
 	bool loadCache();
 
