@@ -70,7 +70,7 @@ public:
 	/**
 	 * Check if the TTH tree associated with the filename is current.
 	 */
-	bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
+	bool checkTTH(const string& aFileName, int64_t aSize, uint32_t aTimeStamp);
 
 	void stopHashing(const string& baseDir) { hasher.stopHashing(baseDir); }
 	void setPriority(Thread::Priority p) { hasher.setThreadPriority(p); }
@@ -80,7 +80,7 @@ public:
 
 	bool getTree(const TTHValue& root, TigerTree& tt);
 
-	void addTree(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tt) {
+	void addTree(const string& aFileName, uint32_t aTimeStamp, const TigerTree& tt) {
 		hashDone(aFileName, aTimeStamp, tt, -1);
 	}
 	void addTree(const TigerTree& tree) { Lock l(cs); store.addTree(tree); }
@@ -114,7 +114,7 @@ private:
 		void stopHashing(const string& baseDir);
 		virtual int run();
 #ifdef _WIN32
-		bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32);
+		bool fastHash(const string& fname, uint8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32);
 #endif
 		void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft);
 		void shutdown() { stop = true; s.signal(); }
@@ -142,14 +142,14 @@ private:
 	class HashStore {
 	public:
 		HashStore();
-		void addFile(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, bool aUsed);
+		void addFile(const string& aFileName, uint32_t aTimeStamp, const TigerTree& tth, bool aUsed);
 
 		void load();
 		void save();
 
 		void rebuild();
 
-		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
+		bool checkTTH(const string& aFileName, int64_t aSize, uint32_t aTimeStamp);
 
 		void addTree(const TigerTree& tt) throw();
 		const TTHValue* getTTH(const string& aFileName);
@@ -171,14 +171,14 @@ private:
 		/** File -> root mapping info */
 		struct FileInfo {
 		public:
-			FileInfo(const string& aFileName, const TTHValue& aRoot, u_int32_t aTimeStamp, bool aUsed) :
+			FileInfo(const string& aFileName, const TTHValue& aRoot, uint32_t aTimeStamp, bool aUsed) :
 				fileName(aFileName), root(aRoot), timeStamp(aTimeStamp), used(aUsed) { }
 
 			bool operator==(const string& name) { return name == fileName; }
 
 			GETSET(string, fileName, FileName);
 			GETSET(TTHValue, root, Root);
-			GETSET(u_int32_t, timeStamp, TimeStamp);
+			GETSET(uint32_t, timeStamp, TimeStamp);
 			GETSET(bool, used, Used);
 		};
 
@@ -217,12 +217,12 @@ private:
 	/** Single node tree where node = root, no storage in HashData.dat */
 	static const int64_t SMALL_TREE = -1;
 
-	void hashDone(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, int64_t speed);
+	void hashDone(const string& aFileName, uint32_t aTimeStamp, const TigerTree& tth, int64_t speed);
 	void doRebuild() {
 		Lock l(cs);
 		store.rebuild();
 	}
-	virtual void on(TimerManagerListener::Minute, u_int32_t) throw() {
+	virtual void on(TimerManagerListener::Minute, uint32_t) throw() {
 		Lock l(cs);
 		store.save();
 	}

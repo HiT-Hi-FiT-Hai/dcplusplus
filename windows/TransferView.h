@@ -198,7 +198,7 @@ private:
 
 		UpdateInfo(const User::Ptr& aUser, bool isDownload, bool isTransferFailed = false) : updateMask(0), user(aUser), download(isDownload), transferFailed(isTransferFailed) { }
 
-		u_int32_t updateMask;
+		uint32_t updateMask;
 
 		User::Ptr user;
 		bool download;

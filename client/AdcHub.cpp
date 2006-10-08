@@ -48,7 +48,7 @@ AdcHub::~AdcHub() throw() {
 	clearUsers();
 }
 
-OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
+OnlineUser& AdcHub::getUser(const uint32_t aSID, const CID& aCID) {
 	OnlineUser* ou = findUser(aSID);
 	if(ou) {
 		return *ou;
@@ -62,17 +62,17 @@ OnlineUser& AdcHub::getUser(const u_int32_t aSID, const CID& aCID) {
 	}
 
 	if(aSID != AdcCommand::HUB_SID)
-		ClientManager::getInstance()->putOnline(*ou);
+		ClientManager::getInstance()->putOnline(ou);
 	return *ou;
 }
 
-OnlineUser* AdcHub::findUser(const u_int32_t aSID) const {
+OnlineUser* AdcHub::findUser(const uint32_t aSID) const {
 	Lock l(cs);
 	SIDMap::const_iterator i = users.find(aSID);
 	return i == users.end() ? NULL : i->second;
 }
 
-void AdcHub::putUser(const u_int32_t aSID) {
+void AdcHub::putUser(const uint32_t aSID) {
 	OnlineUser* ou = 0;
 	{
 		Lock l(cs);
@@ -84,7 +84,7 @@ void AdcHub::putUser(const u_int32_t aSID) {
 	}
 
 	if(aSID != AdcCommand::HUB_SID)
-		ClientManager::getInstance()->putOffline(*ou);
+		ClientManager::getInstance()->putOffline(ou);
 
 	fire(ClientListener::UserRemoved(), this, *ou);
 	delete ou;
@@ -99,11 +99,10 @@ void AdcHub::clearUsers() {
 
 	for(SIDIter i = tmp.begin(); i != tmp.end(); ++i) {
 		if(i->first != AdcCommand::HUB_SID)
-			ClientManager::getInstance()->putOffline(*i->second);
+			ClientManager::getInstance()->putOffline(i->second);
 		delete i->second;
 	}
 }
-
 
 void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	if(c.getParameters().empty())
@@ -386,7 +385,7 @@ void AdcHub::handle(AdcCommand::RES, AdcCommand& c) throw() {
 }
 
 void AdcHub::connect(const OnlineUser& user) {
-	u_int32_t r = Util::rand();
+	uint32_t r = Util::rand();
 	connect(user, Util::toString(r), CryptoManager::getInstance()->TLSOk() && user.getUser()->isSet(User::TLS));
 }
 
@@ -460,7 +459,7 @@ void AdcHub::password(const string& pwd) {
 		return;
 	if(!salt.empty()) {
 		size_t saltBytes = salt.size() * 5 / 8;
-		AutoArray<u_int8_t> buf(saltBytes);
+		AutoArray<uint8_t> buf(saltBytes);
 		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
 		CID cid = getMyIdentity().getUser()->getCID();
@@ -568,7 +567,7 @@ int64_t AdcHub::getAvailable() const {
 string AdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
 	for(size_t i = 0; i < aNick.size(); ++i) {
-		if(static_cast<u_int8_t>(tmp[i]) <= 32) {
+		if(static_cast<uint8_t>(tmp[i]) <= 32) {
 			tmp[i] = '_';
 		}
 	}
@@ -607,7 +606,7 @@ void AdcHub::send(const AdcCommand& cmd) {
 	send(cmd.toString(sid));
 }
 
-void AdcHub::on(Second, u_int32_t aTick) throw() {
+void AdcHub::on(Second, uint32_t aTick) throw() {
 	if(getAutoReconnect() && state == STATE_PROTOCOL && (getReconnecting() || ((getLastActivity() + getReconnDelay() * 1000) < aTick)) ) {
 		// Try to reconnect...
 		connect();

@@ -32,7 +32,7 @@ class CID;
 
 class AdcCommand {
 public:
-	template<u_int32_t T>
+	template<uint32_t T>
 	struct Type {
 		enum { CMD = T };
 	};
@@ -82,9 +82,9 @@ public:
 	static const char TYPE_UDP = 'U';
 
 #if defined(_WIN32) || defined(__i386__) || defined(__x86_64__) || defined(__alpha)
-#define C(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
+#define C(n, a, b, c) static const uint32_t CMD_##n = (((uint32_t)a) | (((uint32_t)b)<<8) | (((uint32_t)c)<<16)); typedef Type<CMD_##n> n
 #else
-#define C(n, a, b, c) static const u_int32_t CMD_##n = ((((u_int32_t)a)<<24) | (((u_int32_t)b)<<16) | (((u_int32_t)c)<<8)); typedef Type<CMD_##n> n
+#define C(n, a, b, c) static const uint32_t CMD_##n = ((((uint32_t)a)<<24) | (((uint32_t)b)<<16) | (((uint32_t)c)<<8)); typedef Type<CMD_##n> n
 #endif
 	// Base commands
 	C(SUP, 'S','U','P');
@@ -107,15 +107,15 @@ public:
 	C(CMD, 'C','M','D');
 #undef C
 
-	static const u_int32_t HUB_SID = 0x41414141;		// AAAA in base32
+	static const uint32_t HUB_SID = 0x41414141;		// AAAA in base32
 
-	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT);
-	explicit AdcCommand(u_int32_t aCmd, const u_int32_t aTarget, char aType);
+	explicit AdcCommand(uint32_t aCmd, char aType = TYPE_CLIENT);
+	explicit AdcCommand(uint32_t aCmd, const uint32_t aTarget, char aType);
 	explicit AdcCommand(Severity sev, Error err, const string& desc, char aType = TYPE_CLIENT);
 	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException);
 	void parse(const string& aLine, bool nmdc = false) throw(ParseException);
 
-	u_int32_t getCommand() const { return cmdInt; }
+	uint32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
 	void setType(char t) { type = t; }
 
@@ -125,7 +125,7 @@ public:
 	const StringList& getParameters() const { return parameters; }
 
 	string toString(const CID& aCID) const;
-	string toString(u_int32_t sid, bool nmdc = false) const;
+	string toString(uint32_t sid, bool nmdc = false) const;
 
 	AdcCommand& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
@@ -142,30 +142,30 @@ public:
 	/** Return a named parameter where the name is a two-letter code */
 	bool getParam(const char* name, size_t start, string& ret) const;
 	bool hasFlag(const char* name, size_t start) const;
-	static u_int16_t toCode(const char* x) { return *((u_int16_t*)x); }
+	static uint16_t toCode(const char* x) { return *((uint16_t*)x); }
 
-	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
+	bool operator==(uint32_t aCmd) { return cmdInt == aCmd; }
 
 	static string escape(const string& str, bool old);
-	u_int32_t getTo() const { return to; }
-	AdcCommand& setTo(const u_int32_t sid) { to = sid; return *this; }
-	u_int32_t getFrom() const { return from; }
+	uint32_t getTo() const { return to; }
+	AdcCommand& setTo(const uint32_t sid) { to = sid; return *this; }
+	uint32_t getFrom() const { return from; }
 
-	static u_int32_t toSID(const string& aSID) { return *reinterpret_cast<const u_int32_t*>(aSID.data()); }
-	static string fromSID(const u_int32_t aSID) { return string(reinterpret_cast<const char*>(&aSID), sizeof(aSID)); }
+	static uint32_t toSID(const string& aSID) { return *reinterpret_cast<const uint32_t*>(aSID.data()); }
+	static string fromSID(const uint32_t aSID) { return string(reinterpret_cast<const char*>(&aSID), sizeof(aSID)); }
 private:
 	string getHeaderString(const CID& cid) const;
-	string getHeaderString(u_int32_t sid, bool nmdc) const;
+	string getHeaderString(uint32_t sid, bool nmdc) const;
 	string getParamString(bool nmdc) const;
 	StringList parameters;
 	string features;
 	union {
 		char cmdChar[4];
-		u_int8_t cmd[4];
-		u_int32_t cmdInt;
+		uint8_t cmd[4];
+		uint32_t cmdInt;
 	};
-	u_int32_t from;
-	u_int32_t to;
+	uint32_t from;
+	uint32_t to;
 	char type;
 
 };

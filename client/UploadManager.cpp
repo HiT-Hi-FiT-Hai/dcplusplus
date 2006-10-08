@@ -94,7 +94,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				// Unpack before sending...
 				string bz2 = File(sourceFile, File::READ, File::OPEN).read();
 				string xml;
-				CryptoManager::getInstance()->decodeBZ2(reinterpret_cast<const u_int8_t*>(bz2.data()), bz2.size(), xml);
+				CryptoManager::getInstance()->decodeBZ2(reinterpret_cast<const uint8_t*>(bz2.data()), bz2.size(), xml);
 				// Clear to save some memory...
 				string().swap(bz2);
 				is = new MemoryInputStream(xml);
@@ -371,7 +371,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 void UploadManager::addFailedUpload(const UserConnection& source, string filename) {
 	{
 		Lock l(cs);
-		if (!count_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, u_int32_t>(source.getUser())))
+		if (!count_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, uint32_t>(source.getUser())))
 			waitingUsers.push_back(WaitingUser(source.getUser(), GET_TICK()));
 		waitingFiles[source.getUser()].insert(filename);		//files for which user's asked
 	}
@@ -382,7 +382,7 @@ void UploadManager::addFailedUpload(const UserConnection& source, string filenam
 void UploadManager::clearUserFiles(const User::Ptr& source) {
 	Lock l(cs);
 	//run this when a user's got a slot or goes offline.
-	UserList::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, u_int32_t>(source));
+	UserList::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, uint32_t>(source));
 	if (sit == waitingUsers.end()) return;
 
 	FilesMap::iterator fit = waitingFiles.find(sit->first);
@@ -417,7 +417,7 @@ void UploadManager::removeConnection(UserConnection* aSource) {
 	}
 }
 
-void UploadManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
+void UploadManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw() {
 	User::List disconnects;
 	{
 		Lock l(cs);
@@ -474,13 +474,7 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 
 	if(type == Transfer::TYPE_FILE) {
 		try {
-			string realFile = ShareManager::getInstance()->toReal(ident);
-			TTHValue tth = ShareManager::getInstance()->getTTH(ident);
-			string virtualFile = ShareManager::getInstance()->toVirtual(tth);
-			int64_t size = File::getSize(realFile);
-			SearchResult* sr = new SearchResult(SearchResult::TYPE_FILE, size, virtualFile, tth);
-			aSource->send(sr->toRES(AdcCommand::TYPE_CLIENT));
-			sr->decRef();
+			aSource->send(ShareManager::getInstance()->getFileInfo(ident));
 		} catch(const ShareException&) {
 			aSource->fileNotAvail();
 		}
@@ -490,7 +484,7 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 }
 
 // TimerManagerListener
-void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
+void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 	Lock l(cs);
 	Upload::List ticks;
 

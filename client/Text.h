@@ -95,7 +95,7 @@ public:
 		return isAscii(str.c_str());
 	}
 	static bool isAscii(const char* str) {
-		for(const u_int8_t* p = (const u_int8_t*)str; *p; ++p) {
+		for(const uint8_t* p = (const uint8_t*)str; *p; ++p) {
 			if(*p & 0x80)
 				return false;
 		}
@@ -104,9 +104,9 @@ public:
 
 	static bool validateUtf8(const string& str) throw();
 
-	static char asciiToLower(char c) { dcassert((((u_int8_t)c) & 0x80) == 0); return asciiLower[(u_int8_t)c]; }
+	static char asciiToLower(char c) { dcassert((((uint8_t)c) & 0x80) == 0); return asciiLower[(uint8_t)c]; }
 
-	static wchar_t toLower(wchar_t c) { return lower[(u_int16_t)c]; }
+	static wchar_t toLower(wchar_t c) { return lower[(uint16_t)c]; }
 	static wstring toLower(const wstring& str) throw() {
 		wstring tmp;
 		return toLower(str, tmp);

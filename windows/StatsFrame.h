@@ -85,8 +85,8 @@ private:
 
 	struct Stat {
 		Stat() : scroll(0), speed(0) { }
-		Stat(u_int32_t aScroll, int64_t aSpeed) : scroll(aScroll), speed(aSpeed) { }
-		u_int32_t scroll;
+		Stat(uint32_t aScroll, int64_t aSpeed) : scroll(aScroll), speed(aSpeed) { }
+		uint32_t scroll;
 		int64_t speed;
 	};
 	typedef deque<Stat> StatList;
@@ -104,8 +104,8 @@ private:
 	UINT_PTR timerId;
 	int twidth;
 
-	u_int32_t lastTick;
-	u_int32_t scrollTick;
+	uint32_t lastTick;
+	uint32_t scrollTick;
 	int64_t lastUp;
 	int64_t lastDown;
 

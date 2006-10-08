@@ -44,7 +44,7 @@ public:
 	const string& getPk() { return pk; }
 	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; }
 
-	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
+	void decodeBZ2(const uint8_t* is, size_t sz, string& os) throw(CryptoException);
 
 	SSLSocket* getClientSocket(bool allowUntrusted) throw(SocketException);
 	SSLSocket* getServerSocket(bool allowUntrusted) throw(SocketException);
@@ -71,8 +71,8 @@ private:
 	const string lock;
 	const string pk;
 
-	string keySubst(const u_int8_t* aKey, size_t len, size_t n);
-	bool isExtra(u_int8_t b) {
+	string keySubst(const uint8_t* aKey, size_t len, size_t n);
+	bool isExtra(uint8_t b) {
 		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);
 	}
 };

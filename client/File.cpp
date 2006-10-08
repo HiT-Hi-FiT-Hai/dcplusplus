@@ -47,21 +47,21 @@ File::File(const string& aFileName, int access, int mode) throw(FileException) {
 	}
 }
 
-u_int32_t File::getLastModified() throw() {
+uint32_t File::getLastModified() throw() {
 	FILETIME f = {0};
 	::GetFileTime(h, NULL, NULL, &f);
 	return convertTime(&f);
 }
 
-u_int32_t File::convertTime(FILETIME* f) {
+uint32_t File::convertTime(FILETIME* f) {
 	SYSTEMTIME s = { 1970, 1, 0, 1, 0, 0, 0, 0 };
 	FILETIME f2 = {0};
 	if(::SystemTimeToFileTime(&s, &f2)) {
-		u_int64_t* a = (u_int64_t*)f;
-		u_int64_t* b = (u_int64_t*)&f2;
+		uint64_t* a = (uint64_t*)f;
+		uint64_t* b = (uint64_t*)&f2;
 		*a -= *b;
 		*a /= (1000LL*1000LL*1000LL/100LL);		// 100ns > s
-		return (u_int32_t)*a;
+		return (uint32_t)*a;
 	}
 	return 0;
 }
@@ -219,12 +219,12 @@ File::File(const string& aFileName, int access, int mode) throw(FileException) {
 		throw FileException("Could not open file");
 }
 
-u_int32_t File::getLastModified() throw() {
+uint32_t File::getLastModified() throw() {
 	struct stat s;
 	if (::fstat(h, &s) == -1)
 		return 0;
 
-	return (u_int32_t)s.st_mtime;
+	return (uint32_t)s.st_mtime;
 }
 
 bool File::isOpen() throw() {
@@ -395,7 +395,7 @@ string File::read() throw(FileException) {
 	int64_t sz = getSize();
 	if(sz == -1)
 		return Util::emptyString;
-	return read((u_int32_t)sz);
+	return read((uint32_t)sz);
 }
 
 StringList File::findFiles(const string& path, const string& pattern) {

@@ -122,14 +122,14 @@ void SearchManager::disconnect() throw() {
 #define BUFSIZE 8192
 int SearchManager::run() {
 
-	AutoArray<u_int8_t> buf(BUFSIZE);
+	AutoArray<uint8_t> buf(BUFSIZE);
 	int len;
 
 	while(true) {
 
 		string remoteAddr;
 		try {
-			while( (len = socket->read((u_int8_t*)buf, BUFSIZE, remoteAddr)) != 0) {
+			while( (len = socket->read((uint8_t*)buf, BUFSIZE, remoteAddr)) != 0) {
 				onData(buf, len, remoteAddr);
 			}
 		} catch(const SocketException& e) {
@@ -153,7 +153,7 @@ int SearchManager::run() {
 	return 0;
 }
 
-void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& remoteIp) {
+void SearchManager::onData(const uint8_t* buf, size_t aLen, const string& remoteIp) {
 	string x((char*)buf, aLen);
 	if(x.compare(0, 4, "$SR ") == 0) {
 		string::size_type i, j;

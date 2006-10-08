@@ -70,7 +70,7 @@ private:
 	virtual ~AdcHub() throw();
 
 	/** Map session id to OnlineUser */
-	typedef HASH_MAP<u_int32_t, OnlineUser*> SIDMap;
+	typedef HASH_MAP<uint32_t, OnlineUser*> SIDMap;
 	typedef SIDMap::iterator SIDIter;
 
 	Socket udp;
@@ -80,7 +80,7 @@ private:
 
 	string salt;
 
-	u_int32_t sid;
+	uint32_t sid;
 	bool reconnect;
 
 	static const string CLIENT_PROTOCOL;
@@ -91,9 +91,9 @@ private:
 
 	virtual string checkNick(const string& nick);
 
-	OnlineUser& getUser(const u_int32_t aSID, const CID& aCID);
-	OnlineUser* findUser(const u_int32_t sid) const;
-	void putUser(const u_int32_t sid);
+	OnlineUser& getUser(const uint32_t aSID, const CID& aCID);
+	OnlineUser* findUser(const uint32_t sid) const;
+	void putUser(const uint32_t sid);
 
 	void clearUsers();
 
@@ -121,7 +121,7 @@ private:
 	virtual void on(Line, const string& aLine) throw();
 	virtual void on(Failed, const string& aLine) throw();
 
-	virtual void on(Second, u_int32_t aTick) throw();
+	virtual void on(Second, uint32_t aTick) throw();
 };
 
 #endif // !defined(ADC_HUB_H)

@@ -60,7 +60,7 @@ public:
 	}
 
 	virtual size_t write(const void* b, size_t len) throw(FileException) {
-		u_int8_t* xb = (u_int8_t*)b;
+		uint8_t* xb = (uint8_t*)b;
 		size_t pos = 0;
 
 		if(bufPos != 0) {
@@ -101,7 +101,7 @@ private:
 	TreeType cur;
 	size_t verified;
 
-	u_int8_t buf[TreeType::BASE_BLOCK_SIZE];
+	uint8_t buf[TreeType::BASE_BLOCK_SIZE];
 	size_t bufPos;
 
 	void checkTrees() throw(FileException) {

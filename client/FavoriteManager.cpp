@@ -237,7 +237,7 @@ void FavoriteManager::onHttpFinished() throw() {
 
 	if(listType == TYPE_BZIP2) {
 		try {
-			CryptoManager::getInstance()->decodeBZ2((u_int8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
+			CryptoManager::getInstance()->decodeBZ2((uint8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
 		} catch(const CryptoException&) {
 			bzlist.clear();
 		}
@@ -439,10 +439,10 @@ void FavoriteManager::load(SimpleXML& aXml) {
 			e->setPassword(aXml.getChildAttrib("Password"));
 			e->setServer(aXml.getChildAttrib("Server"));
 			e->setUserDescription(aXml.getChildAttrib("UserDescription"));
-			e->setBottom((u_int16_t)aXml.getIntChildAttrib("Bottom") );
-			e->setTop((u_int16_t)aXml.getIntChildAttrib("Top"));
-			e->setRight((u_int16_t)aXml.getIntChildAttrib("Right"));
-			e->setLeft((u_int16_t)aXml.getIntChildAttrib("Left"));
+			e->setBottom((uint16_t)aXml.getIntChildAttrib("Bottom") );
+			e->setTop((uint16_t)aXml.getIntChildAttrib("Top"));
+			e->setRight((uint16_t)aXml.getIntChildAttrib("Right"));
+			e->setLeft((uint16_t)aXml.getIntChildAttrib("Left"));
 			favoriteHubs.push_back(e);
 		}
 		aXml.stepOut();
@@ -470,7 +470,7 @@ void FavoriteManager::load(SimpleXML& aXml) {
 			if(aXml.getBoolChildAttrib("GrantSlot"))
 				i->second.setFlag(FavoriteUser::FLAG_GRANTSLOT);
 
-			i->second.setLastSeen((u_int32_t)aXml.getIntChildAttrib("LastSeen"));
+			i->second.setLastSeen((uint32_t)aXml.getIntChildAttrib("LastSeen"));
 			i->second.setDescription(aXml.getChildAttrib("UserDescription"));
 
 		}
@@ -639,7 +639,7 @@ UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hu
 }
 
 // HttpConnectionListener
-void FavoriteManager::on(Data, HttpConnection*, const u_int8_t* buf, size_t len) throw() {
+void FavoriteManager::on(Data, HttpConnection*, const uint8_t* buf, size_t len) throw() {
 	downloadBuf.append((const char*)buf, len);
 }
 

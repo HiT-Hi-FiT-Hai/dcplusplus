@@ -54,7 +54,7 @@ public:
 	 * @param data Pointer to (aFileSize + aBlockSize - 1) / aBlockSize) hash values,
 	 *             stored consecutively left to right
 	 */
-	MerkleTree(int64_t aFileSize, int64_t aBlockSize, u_int8_t* aData) :
+	MerkleTree(int64_t aFileSize, int64_t aBlockSize, uint8_t* aData) :
 		fileSize(aFileSize), blockSize(aBlockSize)
 	{
 		size_t n = calcBlocks(aFileSize, aBlockSize);
@@ -90,8 +90,8 @@ public:
 	 *            the last block.
 	 */
 	void update(const void* data, size_t len) {
-		u_int8_t* buf = (u_int8_t*)data;
-		u_int8_t zero = 0;
+		uint8_t* buf = (uint8_t*)data;
+		uint8_t zero = 0;
 		size_t i = 0;
 
 		// Skip empty data sets if we already added at least one of them...
@@ -114,7 +114,7 @@ public:
 		fileSize += len;
 	}
 
-	u_int8_t* finalize() {
+	uint8_t* finalize() {
 		while(blocks.size() > 1) {
 			MerkleBlock& a = blocks[blocks.size()-2];
 			MerkleBlock& b = blocks[blocks.size()-1];
@@ -140,7 +140,7 @@ public:
 	int64_t getFileSize() const { return fileSize; }
 	void setFileSize(int64_t aSize) { fileSize = aSize; }
 
-	bool verifyRoot(const u_int8_t* aRoot) {
+	bool verifyRoot(const uint8_t* aRoot) {
 		return memcmp(aRoot, getRoot().data(), HASH_SIZE) == 0;
 	}
 
@@ -148,9 +148,9 @@ public:
 		root = getHash(0, fileSize);
 	}
 
-	vector<u_int8_t> getLeafData() {
-		vector<u_int8_t> buf(getLeaves().size() * HASH_SIZE);
-		u_int8_t* p = &buf[0];
+	vector<uint8_t> getLeafData() {
+		vector<uint8_t> buf(getLeaves().size() * HASH_SIZE);
+		uint8_t* p = &buf[0];
 		for(size_t i = 0; i < getLeaves().size(); ++i) {
 			memcpy(p + i * HASH_SIZE, &getLeaves()[i], HASH_SIZE);
 		}
@@ -175,7 +175,7 @@ private:
 		dcassert((start % blockSize) == 0);
 		if(length <= blockSize) {
 			dcassert((start / blockSize) < (int64_t)leaves.size());
-			return leaves[(u_int32_t)(start / blockSize)];
+			return leaves[(uint32_t)(start / blockSize)];
 		} else {
 			int64_t l = blockSize;
 			while(l * 2 < length)
@@ -185,7 +185,7 @@ private:
 	}
 
 	MerkleValue combine(const MerkleValue& a, const MerkleValue& b) {
-		u_int8_t one = 1;
+		uint8_t one = 1;
 		Hasher h;
 		h.update(&one, 1);
 		h.update(a.data, MerkleValue::SIZE);

@@ -142,8 +142,8 @@ void Util::initialize() {
 		string::size_type comma4 = 0;
 		string::size_type lineend = 0;
 		CountryIter last = countries.end();
-		u_int32_t startIP = 0;
-		u_int32_t endIP = 0, endIPprev = 0;
+		uint32_t startIP = 0;
+		uint32_t endIP = 0, endIPprev = 0;
 
 		for(;;) {
 			comma1 = data.find(',', linestart);
@@ -159,9 +159,9 @@ void Util::initialize() {
 
 			startIP = Util::toUInt32(start + comma2 + 2);
 			endIP = Util::toUInt32(start + comma3 + 2);
-			u_int16_t* country = (u_int16_t*)(start + comma4 + 2);
+			uint16_t* country = (uint16_t*)(start + comma4 + 2);
 			if((startIP-1) != endIPprev)
-				last = countries.insert(last, make_pair((startIP-1), (u_int16_t)16191));
+				last = countries.insert(last, make_pair((startIP-1), (uint16_t)16191));
 			last = countries.insert(last, make_pair(endIP, *country));
 
 			endIPprev = endIP;
@@ -288,7 +288,7 @@ string Util::getShortTimeString(time_t t) {
  * http:// -> port 80
  * dchub:// -> port 411
  */
-void Util::decodeUrl(const string& url, string& aServer, u_int16_t& aPort, string& aFile) {
+void Util::decodeUrl(const string& url, string& aServer, uint16_t& aPort, string& aFile) {
 	// First, check for a protocol: xxxx://
 	string::size_type i = 0, j, k;
 
@@ -425,7 +425,7 @@ bool Util::isPrivateIp(string const& ip) {
 	return false;
 }
 
-typedef const u_int8_t* ccp;
+typedef const uint8_t* ccp;
 static wchar_t utf8ToLC(ccp& str) {
 	wchar_t c = 0;
 	if(str[0] & 0x80) {
@@ -477,22 +477,22 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 		return 0;
 
 	// Hm, should start measure in characters or in bytes? bytes for now...
-	const u_int8_t* tx = (const u_int8_t*)aString.c_str() + start;
-	const u_int8_t* px = (const u_int8_t*)aSubString.c_str();
+	const uint8_t* tx = (const uint8_t*)aString.c_str() + start;
+	const uint8_t* px = (const uint8_t*)aSubString.c_str();
 
-	const u_int8_t* end = tx + aString.length() - start - aSubString.length() + 1;
+	const uint8_t* end = tx + aString.length() - start - aSubString.length() + 1;
 
 	wchar_t wp = utf8ToLC(px);
 
 	while(tx < end) {
-		const u_int8_t* otx = tx;
+		const uint8_t* otx = tx;
 		if(wp == utf8ToLC(tx)) {
-			const u_int8_t* px2 = px;
-			const u_int8_t* tx2 = tx;
+			const uint8_t* px2 = px;
+			const uint8_t* tx2 = tx;
 
 			for(;;) {
 				if(*px2 == 0)
-					return otx - (u_int8_t*)aString.c_str();
+					return otx - (uint8_t*)aString.c_str();
 
 				if(utf8ToLC(px2) != utf8ToLC(tx2))
 					break;
@@ -760,7 +760,7 @@ static void sgenrand(unsigned long seed) {
 		mt[mti] = (69069 * mt[mti-1]) & 0xffffffff;
 }
 
-u_int32_t Util::rand() {
+uint32_t Util::rand() {
 	unsigned long y;
 	static unsigned long mag01[2]={0x0, MATRIX_A};
 	/* mag01[x] = x * MATRIX_A  for x=0,1 */
@@ -873,7 +873,7 @@ string Util::getIpCountry (string IP) {
 		string::size_type b = IP.find('.', a+1);
 		string::size_type c = IP.find('.', b+2);
 
-		u_int32_t ipnum = (Util::toUInt32(IP.c_str()) << 24) |
+		uint32_t ipnum = (Util::toUInt32(IP.c_str()) << 24) |
 			(Util::toUInt32(IP.c_str() + a + 1) << 16) |
 			(Util::toUInt32(IP.c_str() + b + 1) << 8) |
 			(Util::toUInt32(IP.c_str() + c + 1) );

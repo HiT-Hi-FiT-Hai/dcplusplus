@@ -1091,7 +1091,7 @@ LRESULT MainFrame::onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
+void MainFrame::on(TimerManagerListener::Second, uint32_t aTick) throw() {
 	int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 	int64_t updiff = Socket::getTotalUp() - lastUp;
 	int64_t downdiff = Socket::getTotalDown() - lastDown;
@@ -1112,7 +1112,7 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	lastDown = Socket::getTotalDown();
 }
 
-void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
+void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw() {
 	versionInfo += string((const char*)buf, len);
 }
 

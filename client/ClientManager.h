@@ -41,14 +41,14 @@ public:
 	Client* getClient(const string& aHubURL);
 	void putClient(Client* aClient);
 
-	size_t getUserCount();
-	int64_t getAvailable();
-	StringList getHubs(const CID& cid);
-	StringList getHubNames(const CID& cid);
-	StringList getNicks(const CID& cid);
-	string getConnection(const CID& cid);
+	size_t getUserCount() const;
+	int64_t getAvailable() const;
+	StringList getHubs(const CID& cid) const;
+	StringList getHubNames(const CID& cid) const;
+	StringList getNicks(const CID& cid) const;
+	string getConnection(const CID& cid) const;
 
-	bool isConnected(const string& aUrl);
+	bool isConnected(const string& aUrl) const;
 
 	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
@@ -57,24 +57,24 @@ public:
 	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
 	User::Ptr getUser(const CID& cid) throw();
 
-	string findHub(const string& ipPort);
+	string findHub(const string& ipPort) const;
 
-	User::Ptr findUser(const string& aNick, const string& aHubUrl) throw() { return findUser(makeCid(aNick, aHubUrl)); }
-	User::Ptr findUser(const CID& cid) throw();
+	User::Ptr findUser(const string& aNick, const string& aHubUrl) const throw() { return findUser(makeCid(aNick, aHubUrl)); }
+	User::Ptr findUser(const CID& cid) const throw();
 	User::Ptr findLegacyUser(const string& aNick) const throw();
 
-	bool isOnline(const User::Ptr& aUser) {
+	bool isOnline(const User::Ptr& aUser) const {
 		Lock l(cs);
 		return onlineUsers.find(aUser->getCID()) != onlineUsers.end();
 	}
 
-	bool isOp(const User::Ptr& aUser, const string& aHubUrl);
+	bool isOp(const User::Ptr& aUser, const string& aHubUrl) const;
 
 	/** Constructs a synthetic, hopefully unique CID */
-	CID makeCid(const string& nick, const string& hubUrl) throw();
+	CID makeCid(const string& nick, const string& hubUrl) const throw();
 
-	void putOnline(OnlineUser& ou) throw();
-	void putOffline(OnlineUser& ou) throw();
+	void putOnline(OnlineUser* ou) throw();
+	void putOffline(OnlineUser* ou) throw();
 
 	User::Ptr& getMe();
 
@@ -105,7 +105,9 @@ private:
 
 	typedef HASH_MULTIMAP_X(CID, OnlineUser*, CID::Hash, equal_to<CID>, less<CID>) OnlineMap;
 	typedef OnlineMap::iterator OnlineIter;
+	typedef OnlineMap::const_iterator OnlineIterC;
 	typedef pair<OnlineIter, OnlineIter> OnlinePair;
+	typedef pair<OnlineIterC, OnlineIterC> OnlinePairC;
 
 	Client::List clients;
 	mutable CriticalSection cs;
@@ -148,7 +150,7 @@ private:
 		int aFileType, const string& aString) throw();
 	virtual void on(AdcSearch, Client* c, const AdcCommand& adc, const CID& from) throw();
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, uint32_t aTick) throw();
 };
 
 #endif // !defined(CLIENT_MANAGER_H)

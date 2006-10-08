@@ -54,7 +54,7 @@ public:
 	const User::Ptr& getUser() const { return user; }
 
 	GETSET(State, state, State);
-	GETSET(u_int32_t, lastAttempt, LastAttempt);
+	GETSET(uint32_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
 	ConnectionQueueItem(const ConnectionQueueItem&);
@@ -152,7 +152,7 @@ private:
 
 	ExpectedMap expectedConnections;
 
-	u_int32_t floodCounter;
+	uint32_t floodCounter;
 
 	Server* server;
 	Server* secureServer;
@@ -189,8 +189,8 @@ private:
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, uint32_t aTick) throw();
 
 };
 

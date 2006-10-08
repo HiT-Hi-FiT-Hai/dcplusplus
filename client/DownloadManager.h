@@ -199,7 +199,7 @@ private:
 	Download::List downloads;
 	UserConnection::List idlers;
 
-	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
+	bool checkRollback(Download* aDownload, const uint8_t* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn);
 	void removeDownload(Download* aDown);
 	void fileNotAvailable(UserConnection* aSource);
@@ -207,8 +207,8 @@ private:
 
 	void moveFile(const string& source, const string&target);
 	void logDownload(UserConnection* aSource, Download* d);
-	u_int32_t calcCrc32(const string& file) throw(FileException);
-	bool checkSfv(UserConnection* aSource, Download* d, u_int32_t crc);
+	uint32_t calcCrc32(const string& file) throw(FileException);
+	bool checkSfv(UserConnection* aSource, Download* d, uint32_t crc);
 	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
 
 	void failDownload(UserConnection* aSource, const string& reason);
@@ -222,7 +222,7 @@ private:
 	void handleEndData(UserConnection* aSource);
 
 	// UserConnectionListener
-	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
+	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw();
 	virtual void on(Error, UserConnection*, const string&) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
 	virtual void on(Sending, UserConnection*, int64_t) throw();
@@ -235,7 +235,7 @@ private:
 
 	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
 };
 
 #endif // !defined(DOWNLOAD_MANAGER_H)

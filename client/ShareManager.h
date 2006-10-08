@@ -86,7 +86,7 @@ public:
 
 	string validateVirtual(const string& /*aVirt*/);
 
-	void addHits(u_int32_t aHits) {
+	void addHits(uint32_t aHits) {
 		hits += aHits;
 	}
 
@@ -96,14 +96,12 @@ public:
 	}
 
 	bool isTTHShared(const TTHValue& tth){
-		HashFileIter i = tthIndex.find(tth);
-		return (i != tthIndex.end());
+		Lock l(cs);
+		return tthIndex.find(tth) != tthIndex.end();
 	}
 
-	GETSET(u_int32_t, hits, Hits);
-	GETSET(string, listFile, ListFile);
+	GETSET(uint32_t, hits, Hits);
 	GETSET(string, bzXmlFile, BZXmlFile);
-
 private:
 	struct AdcSearch;
 	class Directory : public FastAlloc<Directory> {
@@ -162,10 +160,10 @@ private:
 
 		~Directory();
 
-		bool hasType(u_int32_t type) const throw() {
+		bool hasType(uint32_t type) const throw() {
 			return ( (type == SearchManager::TYPE_ANY) || (fileTypes & (1 << type)) );
 		}
-		void addType(u_int32_t type) throw();
+		void addType(uint32_t type) throw();
 
 		string getADCPath() const throw();
 		string getFullName() const throw();
@@ -200,7 +198,7 @@ private:
 		Directory& operator=(const Directory&);
 
 		/** Set of flags that say which SearchManager::TYPE_* a directory contains */
-		u_int32_t fileTypes;
+		uint32_t fileTypes;
 
 	};
 
@@ -247,15 +245,16 @@ private:
 		bool isDirectory;
 	};
 
-	typedef HASH_MULTIMAP_X(TTHValue, Directory::File::Iter, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) HashFileMap;
+	typedef HASH_MAP_X(TTHValue, Directory::File::Set::const_iterator, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;
 
-	int64_t listLen;
-	int64_t bzXmlListLen;
-	TTHValue xmlbzRoot;
+	int64_t xmlListLen;
 	TTHValue xmlRoot;
+	int64_t bzXmlListLen;
+	TTHValue bzXmlRoot;
+	auto_ptr<File> bzXmlRef;
 
 	bool xmlDirty;
 	bool refreshDirs;
@@ -266,14 +265,10 @@ private:
 
 	volatile long refreshing;
 
-	File* lFile;
-	File* xFile;
-
-	u_int32_t lastXmlUpdate;
-	u_int32_t lastFullUpdate;
+	uint32_t lastXmlUpdate;
+	uint32_t lastFullUpdate;
 
 	mutable CriticalSection cs;
-	CriticalSection listGenLock;
 
 	// Map real name to directory structure
 	Directory::Map directories;
@@ -291,12 +286,14 @@ private:
 	bool checkFile(const string& virtualFile, string& realFile, Directory::File::Iter& it);
 
 	Directory* buildTree(const string& aName, Directory* aParent);
+	
+	void buildIndex();
+	void buildIndex(const Directory& dir);
+
 	void addTree(Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
 	void generateXmlList();
 	bool loadCache();
-
-	void removeTTH(const TTHValue& tth, const Directory::File& file);
 
 	Directory* getDirectory(const string& fname);
 
@@ -317,7 +314,7 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Minute, u_int32_t tick) throw();
+	virtual void on(TimerManagerListener::Minute, uint32_t tick) throw();
 	void load(SimpleXML& aXml);
 	void save(SimpleXML& aXml);
 

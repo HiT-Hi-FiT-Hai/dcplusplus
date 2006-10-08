@@ -43,7 +43,6 @@
 #ifdef HAVE_STLPORT
 # define _STLP_DONT_USE_SHORT_STRING_OPTIM 1	// Lots of memory issues with this undefined...wonder what's up with that..
 # define _STLP_USE_PTR_SPECIALIZATIONS 1
-# define _STLP_USE_TEMPLATE_EXPRESSION 1
 # define _STLP_NO_ANACHRONISMS 1
 # define _STLP_NO_CUSTOM_IO 1
 # define _STLP_NO_IOSTREAMS 1
@@ -62,15 +61,15 @@
 
 # if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
 
-typedef signed char int8_t;
-typedef signed short int16_t;
-typedef signed long int32_t;
+typedef signed __int8 int8_t;
+typedef signed __int16 int16_t;
+typedef signed __int32 int32_t;
 typedef signed __int64 int64_t;
 
-typedef unsigned char u_int8_t;
-typedef unsigned short u_int16_t;
-typedef unsigned long u_int32_t;
-typedef unsigned __int64 u_int64_t;
+typedef unsigned __int8 uint8_t;
+typedef unsigned __int16 uint16_t;
+typedef unsigned __int32 uint32_t;
+typedef unsigned __int64 uint64_t;
 
 # endif
 

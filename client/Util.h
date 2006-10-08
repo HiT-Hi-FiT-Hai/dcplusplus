@@ -236,7 +236,7 @@ public:
 		return (j != wstring::npos) ? path.substr(j+1, i-j-1) : path;
 	}
 
-	static void decodeUrl(const string& aUrl, string& aServer, u_int16_t& aPort, string& aFile);
+	static void decodeUrl(const string& aUrl, string& aServer, uint16_t& aPort, string& aFile);
 	static string validateFileName(string aFile);
 	static string cleanPathChars(string aNick);
 
@@ -274,11 +274,11 @@ public:
 	static int toInt(const string& aString) {
 		return atoi(aString.c_str());
 	}
-	static u_int32_t toUInt32(const string& str) {
+	static uint32_t toUInt32(const string& str) {
 		return toUInt32(str.c_str());
 	}
-	static u_int32_t toUInt32(const char* c) {
-		return (u_int32_t)atoi(c);
+	static uint32_t toUInt32(const char* c) {
+		return (uint32_t)atoi(c);
 	}
 
 	static double toDouble(const string& aString) {
@@ -427,9 +427,9 @@ public:
 	static string getAwayMessage();
 	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; }
 
-	static u_int32_t rand();
-	static u_int32_t rand(u_int32_t high) { return rand() % high; }
-	static u_int32_t rand(u_int32_t low, u_int32_t high) { return rand(high-low) + low; }
+	static uint32_t rand();
+	static uint32_t rand(uint32_t high) { return rand() % high; }
+	static uint32_t rand(uint32_t low, uint32_t high) { return rand(high-low) + low; }
 	static double randd() { return ((double)rand()) / ((double)0xffffffff); }
 
 private:
@@ -445,7 +445,7 @@ private:
 	static string awayMsg;
 	static time_t awayTime;
 
-	typedef map<u_int32_t, u_int16_t> CountryList;
+	typedef map<uint32_t, uint16_t> CountryList;
 	typedef CountryList::iterator CountryIter;
 
 	static CountryList countries;

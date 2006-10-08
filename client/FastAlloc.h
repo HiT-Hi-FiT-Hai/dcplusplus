@@ -56,7 +56,7 @@ struct FastAlloc : public FastAllocBase {
 		if (s != sizeof(T)) {
 			::operator delete(m);
 		} else if(m != NULL) {
-			deallocate((u_int8_t*)m);
+			deallocate((uint8_t*)m);
 		}
 	}
 private:
@@ -83,8 +83,8 @@ private:
 		dcassert(sizeof(T) >= sizeof(void*));
 		// We want to grow by approximately 128kb at a time...
 		size_t items = ((128*1024 + sizeof(T) - 1)/sizeof(T));
-		freeList = new u_int8_t[sizeof(T)*items];
-		u_int8_t* tmp = (u_int8_t*)freeList;
+		freeList = new uint8_t[sizeof(T)*items];
+		uint8_t* tmp = (uint8_t*)freeList;
 		for(size_t i = 0; i < items - 1; i++) {
 			*(void**)tmp = tmp + sizeof(T);
 			tmp += sizeof(T);

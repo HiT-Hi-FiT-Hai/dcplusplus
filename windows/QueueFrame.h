@@ -193,7 +193,7 @@ private:
 			path(Util::getFilePath(aQI.getTarget())),
 			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
 			added(aQI.getAdded()), tth(aQI.getTTH()), priority(aQI.getPriority()), status(aQI.getStatus()),
-			updateMask((u_int32_t)-1), display(0), sources(aQI.getSources()), badSources(aQI.getBadSources())
+			updateMask((uint32_t)-1), display(0), sources(aQI.getSources()), badSources(aQI.getBadSources())
 		{
 		}
 
@@ -239,13 +239,13 @@ private:
 		GETSET(string, path, Path);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
-		GETSET(u_int32_t, added, Added);
+		GETSET(uint32_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
 		GETSET(QueueItem::Status, status, Status);
 		GETSET(TTHValue, tth, TTH);
 		GETSET(QueueItem::SourceList, sources, Sources);
 		GETSET(QueueItem::SourceList, badSources, BadSources);
-		u_int32_t updateMask;
+		uint32_t updateMask;
 
 	private:
 

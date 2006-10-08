@@ -95,7 +95,7 @@ public:
 	/**
 	 * Same as connect(), but through the SOCKS5 server
 	 */
-	void socksConnect(const string& aIp, short aPort, u_int32_t timeout = 0) throw(SocketException);
+	void socksConnect(const string& aIp, short aPort, uint32_t timeout = 0) throw(SocketException);
 
 	/**
 	 * Sends data, will block until all data has been sent or an exception occurs
@@ -103,7 +103,7 @@ public:
 	 * @param aLen Data length
 	 * @throw SocketExcpetion Send failed.
 	 */
-	void writeAll(const void* aBuffer, int aLen, u_int32_t timeout = 0) throw(SocketException);
+	void writeAll(const void* aBuffer, int aLen, uint32_t timeout = 0) throw(SocketException);
 	virtual int write(const void* aBuffer, int aLen) throw(SocketException);
 	int write(const string& aData) throw(SocketException) { return write(aData.data(), (int)aData.length()); }
 	virtual void writeTo(const string& aIp, short aPort, const void* aBuffer, int aLen, bool proxy = true) throw(SocketException);
@@ -135,9 +135,9 @@ public:
 	 * actually read is returned.
 	 * On exception, an unspecified amount of bytes might have already been read.
 	 */
-	int readAll(void* aBuffer, int aBufLen, u_int32_t timeout = 0) throw(SocketException);
+	int readAll(void* aBuffer, int aBufLen, uint32_t timeout = 0) throw(SocketException);
 
-	virtual int wait(u_int32_t millis, int waitFor) throw(SocketException);
+	virtual int wait(uint32_t millis, int waitFor) throw(SocketException);
 	bool isConnected() { return connected; }
 
 	static string resolve(const string& aDns);
@@ -204,7 +204,7 @@ private:
 	Socket& operator=(const Socket&);
 
 
-	void socksAuth(u_int32_t timeout) throw(SocketException);
+	void socksAuth(uint32_t timeout) throw(SocketException);
 
 #ifdef _WIN32
 	static int getLastError() { return ::WSAGetLastError(); }

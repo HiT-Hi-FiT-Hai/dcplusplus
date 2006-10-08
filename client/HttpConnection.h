@@ -39,7 +39,7 @@ public:
 	typedef X<4> TypeNormal;
 	typedef X<5> TypeBZ2;
 
-	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw() =0;
+	virtual void on(Data, HttpConnection*, const uint8_t*, size_t) throw() =0;
 	virtual void on(Failed, HttpConnection*, const string&) throw() { }
 	virtual void on(Complete, HttpConnection*, const string&) throw() { }
 	virtual void on(Redirected, HttpConnection*, const string&) throw() { }
@@ -68,7 +68,7 @@ private:
 	string file;
 	string server;
 	bool ok;
-	u_int16_t port;
+	uint16_t port;
 	int64_t size;
 	bool moved302;
 
@@ -77,7 +77,7 @@ private:
 	// BufferedSocketListener
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string&) throw();
-	virtual void on(Data, u_int8_t*, size_t) throw();
+	virtual void on(Data, uint8_t*, size_t) throw();
 	virtual void on(ModeChange) throw();
 	virtual void on(Failed, const string&) throw();
 

@@ -56,7 +56,7 @@ public:
 		RW = READ | WRITE
 	};
 
-	static u_int32_t convertTime(FILETIME* f);
+	static uint32_t convertTime(FILETIME* f);
 
 #else // !_WIN32
 
@@ -89,7 +89,7 @@ public:
 	virtual size_t write(const void* buf, size_t len) throw(FileException);
 	virtual size_t flush() throw(FileException);
 
-	u_int32_t getLastModified() throw();
+	uint32_t getLastModified() throw();
 
 	static void copyFile(const string& src, const string& target) throw(FileException);
 	static void renameFile(const string& source, const string& target) throw(FileException);

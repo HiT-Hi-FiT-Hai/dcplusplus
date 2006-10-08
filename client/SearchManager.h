@@ -150,7 +150,7 @@ public:
 	void listen() throw(SocketException);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
-		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
+		onData((const uint8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
 
 	void onRES(const AdcCommand& cmd, const User::Ptr& from, const string& removeIp = Util::emptyString);
@@ -168,7 +168,7 @@ private:
 	Socket* socket;
 	unsigned short port;
 	bool stop;
-	u_int32_t lastSearch;
+	uint32_t lastSearch;
 	friend class Singleton<SearchManager>;
 
 	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) { }
@@ -186,7 +186,7 @@ private:
 		}
 	}
 
-	void onData(const u_int8_t* buf, size_t aLen, const string& address);
+	void onData(const uint8_t* buf, size_t aLen, const string& address);
 };
 
 #endif // !defined(SEARCH_MANAGER_H)

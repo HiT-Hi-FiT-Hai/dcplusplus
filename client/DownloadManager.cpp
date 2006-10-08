@@ -110,7 +110,7 @@ DownloadManager::~DownloadManager() throw() {
 	}
 }
 
-void DownloadManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
+void DownloadManager::on(TimerManagerListener::Second, uint32_t aTick) throw() {
 	typedef vector<pair<string, User::Ptr> > TargetList;
 	TargetList dropTargets;
 
@@ -130,15 +130,15 @@ void DownloadManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() 
 
 
 		// Automatically remove or disconnect slow sources
-		if((u_int32_t)(aTick / 1000) % SETTING(AUTODROP_INTERVAL) == 0) {
+		if((uint32_t)(aTick / 1000) % SETTING(AUTODROP_INTERVAL) == 0) {
 			for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
-				u_int32_t timeElapsed = GET_TICK() - (*i)->getStart();
-				u_int32_t timeInactive = GET_TICK() - (*i)->getUserConnection().getLastActivity();
-				u_int64_t bytesDownloaded = (*i)->getTotal();
-				bool timeElapsedOk = timeElapsed >= (u_int32_t)SETTING(AUTODROP_ELAPSED) * 1000;
-				bool timeInactiveOk = timeInactive <= (u_int32_t)SETTING(AUTODROP_INACTIVITY) * 1000;
+				uint32_t timeElapsed = GET_TICK() - (*i)->getStart();
+				uint32_t timeInactive = GET_TICK() - (*i)->getUserConnection().getLastActivity();
+				uint64_t bytesDownloaded = (*i)->getTotal();
+				bool timeElapsedOk = timeElapsed >= (uint32_t)SETTING(AUTODROP_ELAPSED) * 1000;
+				bool timeInactiveOk = timeInactive <= (uint32_t)SETTING(AUTODROP_INACTIVITY) * 1000;
 				bool speedTooLow = timeElapsedOk && timeInactiveOk && bytesDownloaded > 0 ?
-					bytesDownloaded / timeElapsed * 1000 < (u_int32_t)SETTING(AUTODROP_SPEED) : false;
+					bytesDownloaded / timeElapsed * 1000 < (uint32_t)SETTING(AUTODROP_SPEED) : false;
 				bool onlineSourcesOk = (*i)->isSet(Download::FLAG_USER_LIST) ?
 					true : QueueManager::getInstance()->countOnlineSources((*i)->getTarget()) >= SETTING(AUTODROP_MINSOURCES);
 				bool filesizeOk = !((*i)->isSet(Download::FLAG_USER_LIST)) && (*i)->getSize() >= ((int64_t)SETTING(AUTODROP_FILESIZE)) * 1024;
@@ -211,7 +211,7 @@ public:
 
 	virtual size_t write(const void* xbuf, size_t len) throw(Exception) {
 		size_t pos = 0;
-		u_int8_t* b = (u_int8_t*)xbuf;
+		uint8_t* b = (uint8_t*)xbuf;
 		while(pos < len) {
 			size_t left = len - pos;
 			if(bufPos == 0 && left >= TigerTree::HASH_SIZE) {
@@ -236,7 +236,7 @@ public:
 	}
 private:
 	TigerTree& tree;
-	u_int8_t buf[TigerTree::HASH_SIZE];
+	uint8_t buf[TigerTree::HASH_SIZE];
 	size_t bufPos;
 };
 
@@ -372,7 +372,7 @@ int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, i
 
 	DummyOutputStream dummy;
 
-	vector<u_int8_t> buf((size_t)min((int64_t)1024*1024, tt.getBlockSize()));
+	vector<uint8_t> buf((size_t)min((int64_t)1024*1024, tt.getBlockSize()));
 
 	do {
 		int64_t blockPos = startPos - tt.getBlockSize();
@@ -457,7 +457,7 @@ public:
 template<bool managed>
 class RollbackOutputStream : public OutputStream {
 public:
-	RollbackOutputStream(File* f, OutputStream* aStream, size_t bytes) : s(aStream), pos(0), bufSize(bytes), buf(new u_int8_t[bytes]) {
+	RollbackOutputStream(File* f, OutputStream* aStream, size_t bytes) : s(aStream), pos(0), bufSize(bytes), buf(new uint8_t[bytes]) {
 		size_t n = bytes;
 		f->read(buf, n);
 		f->movePos(-((int64_t)bytes));
@@ -472,7 +472,7 @@ public:
 		if(buf != NULL) {
 			size_t n = min(len, bufSize - pos);
 
-			u_int8_t* wb = (u_int8_t*)b;
+			uint8_t* wb = (uint8_t*)b;
 			if(memcmp(buf + pos, wb, n) != 0) {
 				throw RollbackException(STRING(ROLLBACK_INCONSISTENCY));
 			}
@@ -489,7 +489,7 @@ private:
 	OutputStream* s;
 	size_t pos;
 	size_t bufSize;
-	u_int8_t* buf;
+	uint8_t* buf;
 };
 
 
@@ -587,7 +587,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 	return true;
 }
 
-void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, const u_int8_t* aData, size_t aLen) throw() {
+void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, const uint8_t* aData, size_t aLen) throw() {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
@@ -648,7 +648,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	} else {
 
 		// Hm, if the real crc == 0, we'll get a file reread extra, but what the heck...
-		u_int32_t crc = 0;
+		uint32_t crc = 0;
 
 		// First, finish writing the file (flushing the buffers and closing the file...)
 		try {
@@ -702,20 +702,20 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	checkDownloads(aSource);
 }
 
-u_int32_t DownloadManager::calcCrc32(const string& file) throw(FileException) {
+uint32_t DownloadManager::calcCrc32(const string& file) throw(FileException) {
 	File ff(file, File::READ, File::OPEN);
 	CalcInputStream<CRC32Filter, false> f(&ff);
 
 	const size_t BUF_SIZE = 1024*1024;
-	AutoArray<u_int8_t> b(BUF_SIZE);
+	AutoArray<uint8_t> b(BUF_SIZE);
 	size_t n = BUF_SIZE;
-	while(f.read((u_int8_t*)b, n) > 0)
+	while(f.read((uint8_t*)b, n) > 0)
 		;		// Keep on looping...
 
 	return f.getFilter().getValue();
 }
 
-bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t crc) {
+bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, uint32_t crc) {
 	SFVReader sfv(d->getTarget());
 	if(sfv.hasCRC()) {
 		bool crcMatch = (crc == sfv.getCRC());

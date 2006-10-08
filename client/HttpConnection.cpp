@@ -83,7 +83,7 @@ void HttpConnection::on(BufferedSocketListener::Connected) throw() {
 	if(!SETTING(HTTP_PROXY).empty())
 	{
 		string tfile;
-		u_int16_t tport;
+		uint16_t tport;
 		Util::decodeUrl(file, sRemoteServer, tport, tfile);
 	}
 	socket->write("Host: " + sRemoteServer + "\r\n");
@@ -155,6 +155,6 @@ void HttpConnection::on(BufferedSocketListener::ModeChange) throw() {
 	socket = NULL;
 	fire(HttpConnectionListener::Complete(), this, currentUrl);
 }
-void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLen) throw() {
+void HttpConnection::on(BufferedSocketListener::Data, uint8_t* aBuf, size_t aLen) throw() {
 	fire(HttpConnectionListener::Data(), this, aBuf, aLen);
 }

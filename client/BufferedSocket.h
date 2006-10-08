@@ -51,7 +51,7 @@ public:
 	virtual void on(Connecting) throw() { }
 	virtual void on(Connected) throw() { }
 	virtual void on(Line, const string&) throw() { }
-	virtual void on(Data, u_int8_t*, size_t) throw() { }
+	virtual void on(Data, uint8_t*, size_t) throw() { }
 	virtual void on(BytesSent, size_t, size_t) throw() { }
 	virtual void on(ModeChange) throw() { }
 	virtual void on(TransmitDone) throw() { }
@@ -158,9 +158,9 @@ private:
 	size_t rollback;
 	bool failed;
 	string line;
-	vector<u_int8_t> inbuf;
-	vector<u_int8_t> writeBuf;
-	vector<u_int8_t> sendBuf;
+	vector<uint8_t> inbuf;
+	vector<uint8_t> writeBuf;
+	vector<uint8_t> sendBuf;
 
 	Socket* sock;
 	bool disconnecting;

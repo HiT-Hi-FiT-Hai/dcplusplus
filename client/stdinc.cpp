@@ -18,14 +18,7 @@
 
 #include "stdinc.h"
 
-#ifdef HAS_STLPORT
-
-#if (_STLPORT_VERSION != 0x462)
-#error STLPort not correctly installed, read compile.txt
+// Hm...version not updated it seems
+#if defined(HAVE_STLPORT) && (_STLPORT_VERSION != 0x501)
+#error I use STLport 5.0.2. Remove this if you know what you're doing.
 #endif
-
-#ifndef _STLP_NO_IOSTREAMS
-#error You're not using the STLPort from the DC++ homepage, that uses a different configuration than the original one. Remove this line only if you know what you're doing.
-#endif
-
-#endif // HAS_STLPORT

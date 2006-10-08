@@ -6,6 +6,12 @@
 * Fixed crash on invalid remote command during upload
 * [ADC] Improved GFI command support
 * Lowest priority downloads are no longer started if there are other downloads running
+* Upgraded to STLport 5.0.2
+* Updated compile instructions
+* Updated unsigned types to C99
+* Removed unmaintained autoconf files
+* Reworked match listing to make it slightly faster
+* Fixed a few random crashes
 
 -- 0.697 2006-09-29 --
 * [ADC] Fixed a few protocol issues

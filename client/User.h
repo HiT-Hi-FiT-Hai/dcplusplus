@@ -52,7 +52,7 @@ public:
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
 		TTH_GET = 1<<TTH_GET_BIT,		//< User supports getting files by tth -> don't have path in queue...
-		TLS = 1<<TLS_BIT,				//< Client supports SSL
+		TLS = 1<<TLS_BIT,				//< Client supports TLS
 		OLD_CLIENT = 1<<OLD_CLIENT_BIT  //< Can't download - old client
 	};
 
@@ -67,21 +67,22 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); }
 	};
 
-	User(const string& nick) : Flags(NMDC), firstNick(nick) { }
 	User(const CID& aCID) : cid(aCID) { }
 
 	virtual ~User() throw() { }
 
-	operator CID() { return cid; }
+	const CID& getCID() const { return cid; }
+	operator const CID&() const { return cid; }
 
 	bool isOnline() const { return isSet(ONLINE); }
 	bool isNMDC() const { return isSet(NMDC); }
 
-	GETSET(CID, cid, CID);
 	GETSET(string, firstNick, FirstNick);
 private:
 	User(const User&);
 	User& operator=(const User&);
+
+	CID cid;
 };
 
 /** One of possibly many identities of a user, mainly for UI purposes */
@@ -97,7 +98,7 @@ public:
 	};
 
 	Identity() : sid(0) { }
-	Identity(const User::Ptr& ptr, u_int32_t aSID) : user(ptr), sid(aSID) { }
+	Identity(const User::Ptr& ptr, uint32_t aSID) : user(ptr), sid(aSID) { }
 	Identity(const Identity& rhs) : Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
 	Identity& operator=(const Identity& rhs) { Lock l(cs); *static_cast<Flags*>(this) = rhs; user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
 
@@ -133,7 +134,7 @@ public:
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
 	User::Ptr& getUser() { return user; }
 	GETSET(User::Ptr, user, User);
-	GETSET(u_int32_t, sid, SID);
+	GETSET(uint32_t, sid, SID);
 private:
 	typedef map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
@@ -150,7 +151,7 @@ public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
 
-	OnlineUser(const User::Ptr& ptr, Client& client_, u_int32_t sid_);
+	OnlineUser(const User::Ptr& ptr, Client& client_, uint32_t sid_);
 
 	operator User::Ptr&() { return getUser(); }
 	operator const User::Ptr&() const { return getUser(); }
@@ -158,8 +159,8 @@ public:
 	User::Ptr& getUser() { return getIdentity().getUser(); }
 	const User::Ptr& getUser() const { return getIdentity().getUser(); }
 	Identity& getIdentity() { return identity; }
-	Client& getClient() { return *client; }
-	const Client& getClient() const { return *client; }
+	Client& getClient() { return client; }
+	const Client& getClient() const { return client; }
 
 	GETSET(Identity, identity, Identity);
 private:
@@ -168,7 +169,7 @@ private:
 	OnlineUser(const OnlineUser&);
 	OnlineUser& operator=(const OnlineUser&);
 
-	Client* client;
+	Client& client;
 };
 
 #endif // !defined(USER_H)

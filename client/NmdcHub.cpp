@@ -99,7 +99,7 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 		}
 	}
 
-	ClientManager::getInstance()->putOnline(*u);
+	ClientManager::getInstance()->putOnline(u);
 	return *u;
 }
 
@@ -127,7 +127,7 @@ void NmdcHub::putUser(const string& aNick) {
 		ou = i->second;
 		users.erase(i);
 	}
-	ClientManager::getInstance()->putOffline(*ou);
+	ClientManager::getInstance()->putOffline(ou);
 	delete ou;
 }
 
@@ -140,7 +140,7 @@ void NmdcHub::clearUsers() {
 	}
 
 	for(NickIter i = u2.begin(); i != u2.end(); ++i) {
-		ClientManager::getInstance()->putOffline(*i->second);
+		ClientManager::getInstance()->putOffline(i->second);
 		delete i->second;
 	}
 }
@@ -260,7 +260,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		i = j + 1;
 
-		u_int32_t tick = GET_TICK();
+		uint32_t tick = GET_TICK();
 		clearFlooders(tick);
 
 		seekers.push_back(make_pair(seeker, tick));
@@ -737,7 +737,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 string NmdcHub::checkNick(const string& aNick) {
 	string tmp = aNick;
 	for(size_t i = 0; i < aNick.size(); ++i) {
-		if(static_cast<u_int8_t>(tmp[i]) <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
+		if(static_cast<uint8_t>(tmp[i]) <= 32 || tmp[i] == '|' || tmp[i] == '$' || tmp[i] == '<' || tmp[i] == '>') {
 			tmp[i] = '_';
 		}
 	}
@@ -891,7 +891,7 @@ void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) {
 	}
 }
 
-void NmdcHub::clearFlooders(u_int32_t aTick) {
+void NmdcHub::clearFlooders(uint32_t aTick) {
 	while(!seekers.empty() && seekers.front().second + (5 * 1000) < aTick) {
 		seekers.pop_front();
 	}
@@ -902,7 +902,7 @@ void NmdcHub::clearFlooders(u_int32_t aTick) {
 }
 
 // TimerManagerListener
-void NmdcHub::on(Second, u_int32_t aTick) throw() {
+void NmdcHub::on(Second, uint32_t aTick) throw() {
 	if(state == STATE_CONNECTED && (getLastActivity() + getReconnDelay() * 1000) < aTick) {
 		// Try to send something for the fun of it...
 		dcdebug("Testing writing...\n");

@@ -64,7 +64,7 @@ public:
 
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw() { }
 	virtual void on(Connected, UserConnection*) throw() { }
-	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw() { }
+	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw() { }
 	virtual void on(Error, UserConnection*, const string&) throw() { }
 	virtual void on(Failed, UserConnection*, const string&) throw() { }
 	virtual void on(CLock, UserConnection*, const string&, const string&) throw() { }
@@ -145,8 +145,8 @@ public:
 	UserConnection& getUserConnection() { return userConnection; }
 	const UserConnection& getUserConnection() const { return userConnection; }
 
-	GETSET(u_int32_t, start, Start);
-	GETSET(u_int32_t, lastTick, LastTick);
+	GETSET(uint32_t, start, Start);
+	GETSET(uint32_t, lastTick, LastTick);
 	GETSET(int64_t, runningAverage, RunningAverage);
 	GETSET(TTHValue, tth, TTH);
 private:
@@ -315,7 +315,7 @@ public:
 	GETSET(string, hubUrl, HubUrl);
 	GETSET(string, token, Token);
 	GETSET(States, state, State);
-	GETSET(u_int32_t, lastActivity, LastActivity);
+	GETSET(uint32_t, lastActivity, LastActivity);
 private:
 	BufferedSocket* socket;
 	bool secure;
@@ -357,7 +357,7 @@ private:
 		fire(UserConnectionListener::Connected(), this);
 	}
 	virtual void on(Line, const string&) throw();
-	virtual void on(Data, u_int8_t* data, size_t len) throw() {
+	virtual void on(Data, uint8_t* data, size_t len) throw() {
 		lastActivity = GET_TICK();
 		fire(UserConnectionListener::Data(), this, data, len);
 	}

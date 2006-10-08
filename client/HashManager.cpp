@@ -28,10 +28,10 @@
 #include "SFVReader.h"
 
 #define HASH_FILE_VERSION_STRING "2"
-static const u_int32_t HASH_FILE_VERSION=2;
+static const uint32_t HASH_FILE_VERSION=2;
 const int64_t HashManager::MIN_BLOCK_SIZE = 64*1024;
 
-bool HashManager::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
+bool HashManager::checkTTH(const string& aFileName, int64_t aSize, uint32_t aTimeStamp) {
 	Lock l(cs);
 	if(!store.checkTTH(aFileName, aSize, aTimeStamp)) {
 		hasher.hashFile(aFileName, aSize);
@@ -55,7 +55,7 @@ bool HashManager::getTree(const TTHValue& root, TigerTree& tt) {
 	return store.getTree(root, tt);
 }
 
-void HashManager::hashDone(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, int64_t speed) {
+void HashManager::hashDone(const string& aFileName, uint32_t aTimeStamp, const TigerTree& tth, int64_t speed) {
 	try {
 		Lock l(cs);
 		store.addFile(aFileName, aTimeStamp, tth, true);
@@ -80,7 +80,7 @@ void HashManager::hashDone(const string& aFileName, u_int32_t aTimeStamp, const 
 	}
 }
 
-void HashManager::HashStore::addFile(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, bool aUsed) {
+void HashManager::HashStore::addFile(const string& aFileName, uint32_t aTimeStamp, const TigerTree& tth, bool aUsed) {
 	addTree(tth);
 
 	string fname = Text::toLower(Util::getFileName(aFileName));
@@ -143,8 +143,8 @@ bool HashManager::HashStore::loadTree(File& f, const TreeInfo& ti, const TTHValu
 	try {
 		f.setPos(ti.getIndex());
 		size_t datalen = TigerTree::calcBlocks(ti.getSize(), ti.getBlockSize()) * TTHValue::SIZE;
-		AutoArray<u_int8_t> buf(datalen);
-		f.read((u_int8_t*)buf, datalen);
+		AutoArray<uint8_t> buf(datalen);
+		f.read((uint8_t*)buf, datalen);
 		tt = TigerTree(ti.getSize(), ti.getBlockSize(), buf);
 		if(!(tt.getRoot() == root))
 			return false;
@@ -167,7 +167,7 @@ bool HashManager::HashStore::getTree(const TTHValue& root, TigerTree& tt) {
 	}
 }
 
-bool HashManager::HashStore::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
+bool HashManager::HashStore::checkTTH(const string& aFileName, int64_t aSize, uint32_t aTimeStamp) {
 	string fname = Text::toLower(Util::getFileName(aFileName));
 	string fpath = Text::toLower(Util::getFilePath(aFileName));
 	DirIter i = fileIndex.find(fpath);
@@ -331,7 +331,7 @@ private:
 
 	string file;
 	int64_t size;
-	u_int32_t timeStamp;
+	uint32_t timeStamp;
 	int version;
 
 	bool inTrees;
@@ -476,7 +476,7 @@ void HashManager::Hasher::getStats(string& curFile, int64_t& bytesLeft, size_t& 
 }
 
 #ifdef _WIN32
-bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
+bool HashManager::Hasher::fastHash(const string& fname, uint8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
 	HANDLE h = INVALID_HANDLE_VALUE;
 	DWORD x, y;
 	if(!GetDiskFreeSpace(Text::toT(Util::getFilePath(fname)).c_str(), &y, &x, &y, &y)) {
@@ -492,15 +492,15 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 	}
 	DWORD hn = 0;
 	DWORD rn = 0;
-	u_int8_t* hbuf = buf + BUF_SIZE;
-	u_int8_t* rbuf = buf;
+	uint8_t* hbuf = buf + BUF_SIZE;
+	uint8_t* rbuf = buf;
 
 	OVERLAPPED over = { 0 };
 	over.hEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
 
 	bool ok = false;
 
-	u_int32_t lastRead = GET_TICK();
+	uint32_t lastRead = GET_TICK();
 	if(!::ReadFile(h, hbuf, BUF_SIZE, &hn, &over)) {
 		if(GetLastError() == ERROR_HANDLE_EOF) {
 			hn = 0;
@@ -525,10 +525,10 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 			// Start a new overlapped read
 			ResetEvent(over.hEvent);
 			if(SETTING(MAX_HASH_SPEED) > 0) {
-				u_int32_t now = GET_TICK();
-				u_int32_t minTime = hn * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
+				uint32_t now = GET_TICK();
+				uint32_t minTime = hn * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
 				if(lastRead + minTime > now) {
-					u_int32_t diff = now - lastRead;
+					uint32_t diff = now - lastRead;
 					Thread::sleep(minTime - diff);
 				}
 				lastRead = lastRead + minTime;
@@ -568,7 +568,7 @@ bool HashManager::Hasher::fastHash(const string& fname, u_int8_t* buf, TigerTree
 			}
 		}
 
-		*((u_int64_t*)&over.Offset) += rn;
+		*((uint64_t*)&over.Offset) += rn;
 		size -= rn;
 
 		swap(rbuf, hbuf);
@@ -585,7 +585,7 @@ cleanup:
 int HashManager::Hasher::run() {
 	setThreadPriority(Thread::IDLE);
 
-	u_int8_t* buf = NULL;
+	uint8_t* buf = NULL;
 	bool virtualBuf = true;
 
 	string fname;
@@ -620,18 +620,18 @@ int HashManager::Hasher::run() {
 #ifdef _WIN32
 			if(buf == NULL) {
 				virtualBuf = true;
-				buf = (u_int8_t*)VirtualAlloc(NULL, 2*BUF_SIZE, MEM_COMMIT, PAGE_READWRITE);
+				buf = (uint8_t*)VirtualAlloc(NULL, 2*BUF_SIZE, MEM_COMMIT, PAGE_READWRITE);
 			}
 #endif
 			if(buf == NULL) {
 				virtualBuf = false;
-				buf = new u_int8_t[BUF_SIZE];
+				buf = new uint8_t[BUF_SIZE];
 			}
 			try {
 				File f(fname, File::READ, File::OPEN);
 				int64_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), MIN_BLOCK_SIZE);
-				u_int32_t start = GET_TICK();
-				u_int32_t timestamp = f.getLastModified();
+				uint32_t start = GET_TICK();
+				uint32_t timestamp = f.getLastModified();
 				TigerTree slowTTH(bs);
 				TigerTree* tth = &slowTTH;
 
@@ -649,13 +649,13 @@ int HashManager::Hasher::run() {
 					tth = &slowTTH;
 					crc32 = CRC32Filter();
 #endif
-					u_int32_t lastRead = GET_TICK();
+					uint32_t lastRead = GET_TICK();
 
 					do {
 						size_t bufSize = BUF_SIZE;
 						if(SETTING(MAX_HASH_SPEED) > 0) {
-							u_int32_t now = GET_TICK();
-							u_int32_t minTime = n * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
+							uint32_t now = GET_TICK();
+							uint32_t minTime = n * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
 							if(lastRead + minTime > now) {
 								Thread::sleep(minTime - (now - lastRead));
 							}
@@ -669,7 +669,7 @@ int HashManager::Hasher::run() {
 
 						{
 							Lock l(cs);
-							currentSize = max(static_cast<u_int64_t>(currentSize - n), static_cast<u_int64_t>(0));
+							currentSize = max(static_cast<uint64_t>(currentSize - n), static_cast<uint64_t>(0));
 						}
 						sizeLeft -= n;
 					} while (n > 0 && !stop);
@@ -680,7 +680,7 @@ int HashManager::Hasher::run() {
 #endif
 				f.close();
 				tth->finalize();
-				u_int32_t end = GET_TICK();
+				uint32_t end = GET_TICK();
 				int64_t speed = 0;
 				if(end > start) {
 					speed = size * _LL(1000) / (end - start);

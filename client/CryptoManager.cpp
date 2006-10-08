@@ -216,7 +216,7 @@ SSLSocket* CryptoManager::getServerSocket(bool allowUntrusted) throw(SocketExcep
 }
 
 
-void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (CryptoException) {
+void CryptoManager::decodeBZ2(const uint8_t* is, size_t sz, string& os) throw (CryptoException) {
 	bz_stream bs = { 0 };
 
 	if(BZ2_bzDecompressInit(&bs, 0, 0) != BZ_OK)
@@ -229,7 +229,7 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 
 	bs.avail_in = sz;
 	bs.avail_out = bufsize;
-	bs.next_in = (char*)(const_cast<u_int8_t*>(is));
+	bs.next_in = (char*)(const_cast<uint8_t*>(is));
 	bs.next_out = buf;
 
 	int err;
@@ -257,8 +257,8 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 	}
 }
 
-string CryptoManager::keySubst(const u_int8_t* aKey, size_t len, size_t n) {
-	AutoArray<u_int8_t> temp(len + n * 10);
+string CryptoManager::keySubst(const uint8_t* aKey, size_t len, size_t n) {
+	AutoArray<uint8_t> temp(len + n * 10);
 
 	size_t j=0;
 
@@ -279,32 +279,32 @@ string CryptoManager::keySubst(const u_int8_t* aKey, size_t len, size_t n) {
 			temp[j++] = aKey[i];
 		}
 	}
-	return string((char*)(u_int8_t*)temp, j);
+	return string((char*)(uint8_t*)temp, j);
 }
 
 string CryptoManager::makeKey(const string& aLock) {
 	if(aLock.size() < 3)
 		return Util::emptyString;
 
-	AutoArray<u_int8_t> temp(aLock.length());
-	u_int8_t v1;
+	AutoArray<uint8_t> temp(aLock.length());
+	uint8_t v1;
 	size_t extra=0;
 
-	v1 = (u_int8_t)(aLock[0]^5);
-	v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4)) & 0xff);
+	v1 = (uint8_t)(aLock[0]^5);
+	v1 = (uint8_t)(((v1 >> 4) | (v1 << 4)) & 0xff);
 	temp[0] = v1;
 
 	string::size_type i;
 
 	for(i = 1; i<aLock.length(); i++) {
-		v1 = (u_int8_t)(aLock[i]^aLock[i-1]);
-		v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4))&0xff);
+		v1 = (uint8_t)(aLock[i]^aLock[i-1]);
+		v1 = (uint8_t)(((v1 >> 4) | (v1 << 4))&0xff);
 		temp[i] = v1;
 		if(isExtra(temp[i]))
 			extra++;
 	}
 
-	temp[0] = (u_int8_t)(temp[0] ^ temp[aLock.length()-1]);
+	temp[0] = (uint8_t)(temp[0] ^ temp[aLock.length()-1]);
 
 	if(isExtra(temp[0])) {
 		extra++;

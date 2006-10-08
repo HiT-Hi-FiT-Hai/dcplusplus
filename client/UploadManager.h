@@ -100,7 +100,7 @@ public:
 	void reserveSlot(const User::Ptr& aUser);
 
 	typedef set<string> FileSet;
-	typedef hash_map<User::Ptr, FileSet, User::HashFunction> FilesMap;
+	typedef HASH_MAP_X(User::Ptr, FileSet, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) FilesMap;
 	void clearUserFiles(const User::Ptr&);
 	User::List getWaitingUsers();
 	const FileSet& getWaitingUserFiles(const User::Ptr &);
@@ -113,7 +113,7 @@ public:
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
-	GETSET(u_int32_t, lastGrant, LastGrant);
+	GETSET(uint32_t, lastGrant, LastGrant);
 private:
 	Upload::List uploads;
 	CriticalSection cs;
@@ -122,7 +122,7 @@ private:
 	typedef SlotSet::iterator SlotIter;
 	SlotSet reservedSlots;
 
-	typedef pair<User::Ptr, u_int32_t> WaitingUser;
+	typedef pair<User::Ptr, uint32_t> WaitingUser;
 	typedef list<WaitingUser> UserList;
 
 	struct WaitingUserFresh {
@@ -146,8 +146,8 @@ private:
 	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
 
 	// TimerManagerListener
-	virtual void on(Second, u_int32_t aTick) throw();
-	virtual void on(Minute, u_int32_t aTick) throw();
+	virtual void on(Second, uint32_t aTick) throw();
+	virtual void on(Minute, uint32_t aTick) throw();
 
 	// UserConnectionListener
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();

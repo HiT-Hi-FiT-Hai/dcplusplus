@@ -42,7 +42,7 @@ void Text::initialize() {
 }
 
 int Text::utf8ToWc(const char* str, wchar_t& c) {
-	u_int8_t c0 = (u_int8_t)str[0];
+	uint8_t c0 = (uint8_t)str[0];
 	if(c0 & 0x80) {									// 1xxx xxxx
 		if(c0 & 0x40) {								// 11xx xxxx
 			if(c0 & 0x20) {							// 111x xxxx
@@ -62,11 +62,11 @@ int Text::utf8ToWc(const char* str, wchar_t& c) {
 						--i;
 					return i;
 				} else {		// 1110xxxx
-					u_int8_t c1 = (u_int8_t)str[1];
+					uint8_t c1 = (uint8_t)str[1];
 					if((c1 & (0x80 | 0x40)) != 0x80)
 						return -1;
 
-					u_int8_t c2 = (u_int8_t)str[2];
+					uint8_t c2 = (uint8_t)str[2];
 					if((c2 & (0x80 | 0x40)) != 0x80)
 						return -2;
 
@@ -85,7 +85,7 @@ int Text::utf8ToWc(const char* str, wchar_t& c) {
 					return 3;
 				}
 			} else {				// 110xxxxx
-				u_int8_t c1 = (u_int8_t)str[1];
+				uint8_t c1 = (uint8_t)str[1];
 				if((c1 & (0x80 | 0x40)) != 0x80)
 					return -1;
 

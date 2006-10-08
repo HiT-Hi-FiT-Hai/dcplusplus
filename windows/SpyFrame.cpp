@@ -218,7 +218,7 @@ void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw(
 	PostMessage(WM_SPEAKER, SEARCH, (LPARAM)x);
 }
 
-void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
+void SpyFrame::on(TimerManagerListener::Second, uint32_t) throw() {
 	float* f = new float(0.0);
 	for(int i = 0; i < AVG_TIME; ++i) {
 		(*f) += (float)perSecond[i];

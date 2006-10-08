@@ -26,6 +26,30 @@
 #include "Streams.h"
 #include "Util.h"
 
+template<bool managed>
+class CountOutputStream : public OutputStream {
+public:
+	using OutputStream::write;
+	CountOutputStream(OutputStream* aStream) : s(aStream), count(0) { }
+	virtual ~CountOutputStream() throw() { if(managed) delete s; }
+
+	size_t flush() throw(Exception) {
+		size_t n = s->flush();
+		count += n;
+		return n;
+	}
+	size_t write(const void* buf, size_t len) throw(Exception) {
+		size_t n = s->write(buf, len);
+		count += n;
+		return n;
+	}
+
+	int64_t getCount() const { return count; }
+private:
+	OutputStream* s;
+	int64_t count;
+};
+
 template<class Filter, bool managed>
 class CalcOutputStream : public OutputStream {
 public:
@@ -100,7 +124,7 @@ public:
 		if(flushed)
 			throw Exception("No filtered writes after flush");
 
-		u_int8_t* wb = (u_int8_t*)wbuf;
+		uint8_t* wb = (uint8_t*)wbuf;
 		size_t written = 0;
 		while(len > 0) {
 			size_t n = BUF_SIZE;
@@ -129,7 +153,7 @@ private:
 	OutputStream* f;
 	Filter filter;
 
-	AutoArray<u_int8_t> buf;
+	AutoArray<uint8_t> buf;
 	bool flushed;
 };
 
@@ -146,7 +170,7 @@ public:
 	* @return Length of data in buffer
 	*/
 	size_t read(void* rbuf, size_t& len) throw(Exception) {
-		u_int8_t* rb = (u_int8_t*)rbuf;
+		uint8_t* rb = (uint8_t*)rbuf;
 
 		size_t totalRead = 0;
 		size_t totalProduced = 0;
@@ -178,7 +202,7 @@ private:
 
 	InputStream* f;
 	Filter filter;
-	AutoArray<u_int8_t> buf;
+	AutoArray<uint8_t> buf;
 	size_t pos;
 	size_t valid;
 	bool more;

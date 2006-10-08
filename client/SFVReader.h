@@ -42,11 +42,11 @@ public:
 	void load(const string& fileName) throw();
 
 	bool hasCRC() const throw() { return crcFound; }
-	u_int32_t getCRC() const throw() { return crc32; }
+	uint32_t getCRC() const throw() { return crc32; }
 
 private:
 
-	u_int32_t crc32;
+	uint32_t crc32;
 	bool crcFound;
 
 	bool tryFile(const string& sfvFile, const string& fileName) throw(FileException);

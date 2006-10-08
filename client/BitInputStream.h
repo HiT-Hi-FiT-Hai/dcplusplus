@@ -35,14 +35,14 @@ STANDARD_EXCEPTION(BitStreamException);
 class BitInputStream
 {
 public:
-	BitInputStream(const u_int8_t* aStream, size_t aStart, size_t aEnd) : bitPos(aStart*8), endPos(aEnd*8), is(aStream) { }
+	BitInputStream(const uint8_t* aStream, size_t aStart, size_t aEnd) : bitPos(aStart*8), endPos(aEnd*8), is(aStream) { }
 	~BitInputStream() { }
 
 	bool get() throw(BitStreamException) {
 		if(bitPos > endPos) {
 			throw BitStreamException(STRING(SEEK_BEYOND_END));
 		}
-		bool ret = (((u_int8_t)is[bitPos>>3]) >> (bitPos&0x07)) & 0x01;
+		bool ret = (((uint8_t)is[bitPos>>3]) >> (bitPos&0x07)) & 0x01;
 		bitPos++;
 		return ret;
 	}
@@ -62,7 +62,7 @@ private:
 
 	size_t bitPos;
 	size_t endPos;
-	const u_int8_t* is;
+	const uint8_t* is;
 };
 
 #endif // !defined(BIT_INPUT_STREAM_H)

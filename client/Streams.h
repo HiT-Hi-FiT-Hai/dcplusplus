@@ -73,10 +73,10 @@ private:
 
 class MemoryInputStream : public InputStream {
 public:
-	MemoryInputStream(const u_int8_t* src, size_t len) : pos(0), size(len), buf(new u_int8_t[len]) {
+	MemoryInputStream(const uint8_t* src, size_t len) : pos(0), size(len), buf(new uint8_t[len]) {
 		memcpy(buf, src, len);
 	}
-	MemoryInputStream(const string& src) : pos(0), size(src.size()), buf(new u_int8_t[src.size()]) {
+	MemoryInputStream(const string& src) : pos(0), size(src.size()), buf(new uint8_t[src.size()]) {
 		memcpy(buf, src.data(), src.size());
 	}
 
@@ -96,7 +96,7 @@ public:
 private:
 	size_t pos;
 	size_t size;
-	u_int8_t* buf;
+	uint8_t* buf;
 };
 
 class IOStream : public InputStream, public OutputStream {
@@ -149,7 +149,7 @@ public:
 	}
 
 	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
-		u_int8_t* b = (u_int8_t*)wbuf;
+		uint8_t* b = (uint8_t*)wbuf;
 		size_t l2 = len;
 		while(len > 0) {
 			if(pos == 0 && len >= bufSize) {
@@ -173,7 +173,7 @@ private:
 	OutputStream* s;
 	size_t pos;
 	size_t bufSize;
-	AutoArray<u_int8_t> buf;
+	AutoArray<uint8_t> buf;
 };
 
 class StringOutputStream : public OutputStream {

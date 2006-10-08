@@ -109,7 +109,7 @@ private:
 	virtual void on(ClientManagerListener::IncomingSearch, const string& s) throw();
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t) throw();
 };
 
 #endif // !defined(SPY_FRAME_H)

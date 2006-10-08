@@ -62,7 +62,7 @@ public:
 
 	void setThreadPriority(Priority p) throw() { ::SetThreadPriority(threadHandle, p); }
 
-	static void sleep(u_int32_t millis) { ::Sleep(millis); }
+	static void sleep(uint32_t millis) { ::Sleep(millis); }
 	static void yield() { ::Sleep(1); }
 	static long safeInc(volatile long& v) { return InterlockedIncrement(&v); }
 	static long safeDec(volatile long& v) { return InterlockedDecrement(&v); }
@@ -91,7 +91,7 @@ public:
 	}
 
 	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); }
-	static void sleep(u_int32_t millis) { ::usleep(millis*1000); }
+	static void sleep(uint32_t millis) { ::usleep(millis*1000); }
 	static void yield() { ::sched_yield(); }
 	static long safeInc(volatile long& v) {
 		pthread_mutex_lock(&mtx);

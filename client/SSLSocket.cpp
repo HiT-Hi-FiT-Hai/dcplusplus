@@ -110,7 +110,7 @@ int SSLSocket::checkSSL(int ret) throw(SocketException) {
 	return ret;
 }
 
-int SSLSocket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
+int SSLSocket::wait(uint32_t millis, int waitFor) throw(SocketException) {
 	if(ssl && (waitFor & Socket::WAIT_READ)) {
 		/** @todo Take writing into account as well if reading is possible? */
 		char c;

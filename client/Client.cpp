@@ -166,5 +166,5 @@ string Client::getLocalIp() const {
 	return lip;
 }
 
-void Client::on(Second, u_int32_t) throw() {
+void Client::on(Second, uint32_t) throw() {
 }

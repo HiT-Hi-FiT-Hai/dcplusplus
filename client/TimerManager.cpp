@@ -28,11 +28,11 @@ timeval TimerManager::tv;
 int TimerManager::run() {
 	int nextMin = 0;
 
-	u_int32_t x = getTick();
-	u_int32_t nextTick = x + 1000;
+	uint32_t x = getTick();
+	uint32_t nextTick = x + 1000;
 
 	while(!s.wait(nextTick > x ? nextTick - x : 0)) {
-		u_int32_t z = getTick();
+		uint32_t z = getTick();
 		nextTick = z + 1000;
 		fire(TimerManagerListener::Second(), z);
 		if(nextMin++ >= 60) {

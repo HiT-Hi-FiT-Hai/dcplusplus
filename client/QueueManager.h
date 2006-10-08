@@ -114,7 +114,7 @@ public:
 	void loadQueue() throw();
 	void saveQueue() throw();
 
-	GETSET(u_int32_t, lastSave, LastSave);
+	GETSET(uint32_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
 private:
 
@@ -132,7 +132,7 @@ private:
 		void add(QueueItem* qi);
 		QueueItem* add(const string& aTarget, int64_t aSize,
 			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
-			u_int32_t aAdded, const TTHValue& root) throw(QueueException, FileException);
+			uint32_t aAdded, const TTHValue& root) throw(QueueException, FileException);
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
@@ -200,14 +200,13 @@ private:
 	/** The queue needs to be saved */
 	bool dirty;
 	/** Next search */
-	u_int32_t nextSearch;
+	uint32_t nextSearch;
 
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */
 	bool addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType addBad) throw(QueueException, FileException);
 
-	int matchFiles(const DirectoryListing::Directory* dir) throw();
 	void processList(const string& name, User::Ptr& user, int flags);
 
 	void load(const SimpleXML& aXml);
@@ -220,8 +219,8 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
-	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, uint32_t aTick) throw();
 
 	// SearchManagerListener
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
