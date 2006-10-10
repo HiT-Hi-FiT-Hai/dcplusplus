@@ -113,9 +113,7 @@ private:
 
 		void stopHashing(const string& baseDir);
 		virtual int run();
-#ifdef _WIN32
 		bool fastHash(const string& fname, uint8_t* buf, TigerTree& tth, int64_t size, CRC32Filter* xcrc32);
-#endif
 		void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft);
 		void shutdown() { stop = true; s.signal(); }
 		void scheduleRebuild() { rebuild = true; s.signal(); }

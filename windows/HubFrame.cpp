@@ -481,7 +481,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 	TaskQueue::List t;
 	tasks.get(t);
 
-	ctrlUsers.SetRedraw(FALSE);
+	if(t.size() > 2) {
+		ctrlUsers.SetRedraw(FALSE);
+	}
 
 	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
 		if(i->first == UPDATE_USER) {
@@ -575,7 +577,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam
 		resort = false;
 	}
 
-	ctrlUsers.SetRedraw(TRUE);
+	if(t.size() > 2) {
+		ctrlUsers.SetRedraw(TRUE);
+	}
 
 	return 0;
 }

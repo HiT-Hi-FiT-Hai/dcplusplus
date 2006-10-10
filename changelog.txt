@@ -14,6 +14,7 @@
 * Fixed a few random crashes
 * [ADC] Removed obsolete DSC command
 * Fixed user list not being updated in some cases
+* [bug 1071] Added fasthash for unix (thanks steven sheehy)
 
 -- 0.697 2006-09-29 --
 * [ADC] Fixed a few protocol issues

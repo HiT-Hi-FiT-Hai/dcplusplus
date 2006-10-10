@@ -67,11 +67,11 @@ Download::~Download() {
 AdcCommand Download::getCommand(bool zlib) {
 	AdcCommand cmd(AdcCommand::CMD_GET);
 	if(isSet(FLAG_TREE_DOWNLOAD)) {
-		cmd.addParam("tthl");
+		cmd.addParam(Transfer::TYPE_TTHL);
 	} else if(isSet(FLAG_PARTIAL_LIST)) {
-		cmd.addParam("list");
+		cmd.addParam(Transfer::TYPE_LIST);
 	} else {
-		cmd.addParam("file");
+		cmd.addParam(Transfer::TYPE_FILE);
 	}
 	if(isSet(FLAG_PARTIAL_LIST) || isSet(FLAG_USER_LIST)) {
 		cmd.addParam(Util::toAdcFile(getSource()));
@@ -436,8 +436,8 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 	const string& type = cmd.getParam(0);
 	int64_t bytes = Util::toInt64(cmd.getParam(3));
 
-	if(!(type == "file" || (type == "tthl" && aSource->getDownload()->isSet(Download::FLAG_TREE_DOWNLOAD)) ||
-		(type == "list" && aSource->getDownload()->isSet(Download::FLAG_PARTIAL_LIST))) )
+	if(!(type == Transfer::TYPE_FILE || (type == Transfer::TYPE_TTHL && aSource->getDownload()->isSet(Download::FLAG_TREE_DOWNLOAD)) ||
+		(type == Transfer::TYPE_LIST && aSource->getDownload()->isSet(Download::FLAG_PARTIAL_LIST))) )
 	{
 		// Uhh??? We didn't ask for this?
 		aSource->disconnect();
