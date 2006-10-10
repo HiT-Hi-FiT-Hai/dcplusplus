@@ -633,7 +633,11 @@ int QueueManager::matchListing(const DirectoryListing& dl) throw() {
 				continue;
 			TTHMap::iterator j = tthMap.find(qi->getTTH());
 			if(j != tthMap.end() && i->second->getSize() == qi->getSize()) {
-				addSource(qi, dl.getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE);
+				try {
+					addSource(qi, dl.getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE);
+				} catch(...) {
+					// Ignore...
+				}
 				matches++;
 			}
 		}

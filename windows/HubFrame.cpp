@@ -1207,7 +1207,7 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::on(Second, DWORD /*aTick*/) throw() {
+void HubFrame::on(Second, uint32_t /*aTick*/) throw() {
 	updateStatusBar();
 	if(updateUsers) {
 		updateUsers = false;

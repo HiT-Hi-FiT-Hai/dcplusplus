@@ -404,12 +404,6 @@ void FavoriteManager::load() {
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
 		STRING(REDIRECT_USER), redirstr, "op");
 
-	// Add ADC standard op commands
-	static const char adc_disconnectstr[] =
-		"HDSC %[userSID]\n";
-	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(DISCONNECT_USER), adc_disconnectstr, "adc://op");
-
 	try {
 		SimpleXML xml;
 		xml.fromXML(File(getConfigFile(), File::READ, File::OPEN).read());

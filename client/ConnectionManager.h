@@ -70,7 +70,7 @@ public:
 		expectedConnections.insert(make_pair(aNick, make_pair(aMyNick, aHubUrl)));
 	}
 
-	pair<string, string> remove(const string& aNick) {
+	StringPair remove(const string& aNick) {
 		Lock l(cs);
 		ExpectMap::iterator i = expectedConnections.find(aNick);
 
