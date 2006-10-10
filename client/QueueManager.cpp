@@ -625,6 +625,7 @@ int QueueManager::matchListing(const DirectoryListing& dl) throw() {
 	int matches = 0;
 	{
 		Lock l(cs);
+		tthMap.clear();
 		buildMap(dl.getRoot());
 
 		for(QueueItem::StringMap::const_iterator i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
@@ -633,7 +634,11 @@ int QueueManager::matchListing(const DirectoryListing& dl) throw() {
 				continue;
 			TTHMap::iterator j = tthMap.find(qi->getTTH());
 			if(j != tthMap.end() && i->second->getSize() == qi->getSize()) {
-				addSource(qi, dl.getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE);
+				try {
+					addSource(qi, dl.getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE);
+				} catch(...) {
+					// Ignore...
+				}
 				matches++;
 			}
 		}

@@ -375,7 +375,7 @@ private:
 	void updateStatusBar() { if(m_hWnd) speak(STATS); }
 
 	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw();
+	virtual void on(TimerManagerListener::Second, uint32_t /*aTick*/) throw();
 
 	// ClientListener
 	virtual void on(Connecting, Client*) throw();
