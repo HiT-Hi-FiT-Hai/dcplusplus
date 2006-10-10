@@ -1,4 +1,4 @@
-﻿-- --
+﻿-- 0.698 --
 * [bug 1065] Code cleanup (thanks steven sheehy)
 * Fixed readme.txt (thanks ullner)
 * More code cleanup
