@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link href="office11.css" rel="stylesheet" type="text/css">
+  <title>User Commands</title>
+</head>
+<body>
+<h1>User Commands</h1>
+<h2>Command Types:</h2>
+<dl style="margin-left: 40px;">
+  <dt>Separator</dt>
+  <dd>Adds a separator to the menu</dd>
+  <dt>Raw</dt>
+  <dd>Sends raw command to the hub (experts only, end it with '|'!)</dd>
+  <dt>Chat</dt>
+  <dd>Sends command as if you were typing it in the chat</dd>
+  <dt>PM</dt>
+  <dd>Sends command as if you sent it by pm</dd>
+</dl>
+<h2>Context</h2>
+Contexts determine where the command is shown.<br>
+<dl style="margin-left: 40px;">
+  <dt>Hub Menu</dt>
+  <dd>Hub tab (at the bottom of the screen) right-click menu</dd>
+  <dt>Chat Menu </dt>
+  <dd>User right-click menu in chat and PM tab menu</dd>
+  <dt>Search Menu</dt>
+  <dd>Search right-click menu </dd>
+  <dt>File list Menu</dt>
+  <dd>File list right-click menu</dd>
+</dl>
+<h2>Parameters</h2>
+<dl style="margin-left: 40px;">
+  <dt>Name</dt>
+  <dd>Name (use '\' to create submenus)</dd>
+  <dt>Command</dt>
+  <dd>Command text (may contain any of the variables listed below). Use Ctrl + Enter to create a new line.</dd>
+  <dt>Hub </dt>
+  <dd>Hub ip as typed when connecting (empty = all hubs, "op" = hubs
+where you're an operator)</dd>
+  <dt>To</dt>
+  <dd>Private Message recipient</dd>
+  <dt>Send Once Per Nick</dt>
+  <dd>Send only once per user from search frame, regardless of how many
+files you've selected from that user</dd>
+</dl>
+<h2>Variables</h2>
+In the parameters, you can use %[<span style="font-weight: bold;">xxx</span>]
+variables and <a href="settings_logs.html#timeformat">date/time
+specifiers</a> (%Y, %m, ...). The following variables are also
+available:<br>
+<ul style="margin-left: 40px;">
+  <li>%[fileFN]: Filename (search, file list, and&nbsp;transfer view contexts only)</li>
+  <li>%[fileSIsize]: File size (search, file list contexts only)</li>
+  <li>%[fileSIshort]: File size, short version including units
+(search, file list contexts only)</li>
+  <li>%[fileTR]: TTH for the file, or "NONE" (search, file list contexts only)</li>
+  <li>%[type]: "File" or "Directory" (directory context only)</li>
+  <li>%[line:<span style="font-style: italic;">reason</span>]: Opens up a window asking for "<span style="font-style: italic;">reason</span>"</li>
+</ul>
+In addition to these variables, all of the ADC INF flags are available, with the following prefixes: <span style="font-weight: bold;">my</span>, <span style="font-weight: bold;">user</span>, and <span style="font-weight: bold;">hub</span>. &nbsp;Some may <span style="text-decoration: underline;">not</span> be available on NMDC hubs. &nbsp;Many&nbsp; useful ones are enumerated below:<br>
+<div style="margin-left: 40px;">
+<ul>
+  <li>%[myNI]: Your&nbsp;nick</li>
+  <li>%[myCID]: Your ADC CID</li>
+  <li>%[userNI]: The user's nick</li>
+  <li>%[userCID]: The user's ADC CID</li>
+  <li>%[userI4]: The user's IP (if supported by hub)</li>
+  <li>%[userTAG]: The user's tag</li>
+  <li>%[userDE]: The user's description</li>
+  <li>%[userEM]: The user's email</li>
+  <li>%[userSS]: The user's shared bytes (exact)</li>
+  <li>%[userSSshort]: The user's shared bytes (formatted with units)</li>
+</ul>
+</div>
+<h2 style="margin-left: 40px;">Compatibilty Variables</h2>
+<ul style="margin-left: 40px;">
+  <ul>
+    <li>%[mynick] = %[myNI]</li>
+    <li>%[nick] = %[userNI]</li>
+    <li>%[file] = %[fileFN]</li>
+    <li>%[filesize] = %[fileSI]</li>
+    <li>%[filesizeshort] = %[fileSIshort]</li>
+    <li>%[tth] = %[fileTR]</li>
+    <li>%[mycid] = %[myCID] </li>
+    <li>%[cid] = %[userCID]</li>
+    <li>%[ip] = %[userI4]</li>
+    <li>%[tag] = %[userTAG]</li>
+    <li>%[description] = %[userDE]</li>
+    <li>%[email] &nbsp;= %[userEM]</li>
+    <li>%[share] = %[userSS]</li>
+    <li>%[shareshort] = %[userSSshort]</li>
+  </ul>
+</ul>
+</body>
+</html>

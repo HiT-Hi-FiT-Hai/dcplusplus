@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Advanced</title>
+  <meta http-equiv="content-type" content="text/html; charset=us-ascii">
+  <link href="office11.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h1>Advanced</h1>
+<dl style="margin-left: 40px;">
+  <dt><a name="autoaway"></a>Auto-away on Minimize</dt>
+  <dd>Switch to away mode whenever the client is minimized (and to back
+whenever restored).</dd>
+  <dt>Automatically Follow Redirects</dt>
+  <dd>A connected hub can send out a redirect request, asking your
+client to disconnect from the current hub and joining another one.
+Enable this to automatically join that other hub. (You will be
+disconnected from the current hub no matter what.) If you leave it
+disabled, you can use the Follow Redirect button to manually follow the
+redirect.</dd>
+  <dt>Clear Search Box After Each Search</dt>
+  <dd>After each search, your search terms will be cleared. The last
+terms will be accessible through the drop-down. You can set how many terms that you want to save by using <a href="settings_expert.html#searchhistory">Search history</a>.</dd>
+  <dt>Keep Duplicate Files in Your File List</dt>
+  <dd>Decides whether to remove duplicate files from your share or to
+list them but subtract their size from your total reported share size.
+Duplicate files never count towards your share size, no matter what
+this is set to.</dd>
+  <dt><a name="registrydchubadc"></a>Register with Windows to Handle dchub:// and adc:// URL Links</dt>
+  <dd>When set, DC++ will be the default handler for all dchub:// and
+adc://
+links. These links can appear on web pages, internet shortcuts on your
+computer, or be&nbsp;typed and run as a program from
+the&nbsp;Start&nbsp;Menu. Disable this if you prefer for a different
+application to handle Direct Connect hub links. Disabling will make
+DC++ remove the keys from the Windows registry.<br>
+  </dd>
+  <dt><a name="registrymagnet"></a>Register with Windows to Handle manget: URI Links</dt>
+  <dd>When set, DC++ will register itself to handle magnet: links.
+These links will let you search the Direct Connect network for a file
+matching a given file hash, given that the magnet link contains
+information appropriate for the Direct Connect network. DC++ uses
+Magnethandler to give a choice between supported P2P applications when
+magnet.exe is installed on the system or is located in the
+application's directory. Disabling will make DC++ remove the key from
+the Windows registry.<br>
+  </dd>
+  <dt>Don't Delete File Lists When Exiting</dt>
+  <dd>If this option is disabled, DC++ will delete the contents of the
+file list directory, where file lists are stored, when
+exiting.&nbsp;However, you can open already downloaded file lists
+instead of downloading them again. These file lists have a chance of
+being out of date, but for users on slow connections, keeping file
+lists can save time. <em>Since the file list isn't curent, don't be
+surprised if the files you enqueue to download have been removed by the
+user, or moved.</em></dd>
+  <dt><a name="disconnect"></a>Automatically Disconnect Users Who
+Leave the Hub</dt>
+  <dd>The Direct Connect spirit is all about sharing. You are only
+sharing when you are connected to one or more hubs. In the past, users
+of questionable integrity and spirit logged onto a hub, selected a
+download, and disconnected from the hub again. If everyone did that,
+there would be nothing to download. Enable this option to avert that
+kind of behaviour. <em>Note that you might need to disable this option
+if you're connected to a hub that has a bad connection. The user will
+regain his/her slot if he/she reconnects within 10 minutes, but you
+might have opened up another slot for another user in the mean time.
+This could cause a situation where you have way more upload slots in
+use than you selected in the settings. Also, if you quit the hub,
+people downloading from you will not be disconnected.</em></dd>
+  <dt><a name="progressbar"></a>Show Progress Bars for Transfers</dt>
+  <dd>Enable this if you have CPU cycles to spare, and you will get
+colored progress bars in the Transfer View.</dd>
+  <dt>Enable Automatic SFV Checking</dt>
+  <dd>Simple File Verification (SFV) is a scheme in which a set of
+files are accompanied by a so-called sfv-file which contains CRC32
+checksums of each file. If there is an sfv-file included, DC++ will
+check that your download is free of corruption and retry the download
+that wasn't the case.</dd>
+  <dt>Don't Send the Away Message to Bots</dt>
+  <dd>When in away mode, don't send the away message to users that
+appear to be bots. Having this option disabled is very annoying if you
+get messages from bots that link chat from multiple users (the most
+well known example is the Operator Chat facility found in many hubs).
+Users are judged to be bots if they have an empty Connection type. <span style="font-style: italic;">Enable if unsure.</span></dd>
+
+  <dt><a name="break"></a>Break on First ADLSearch Match</dt>
+  <dd>If you're using the <a href="adlsearch.html">ADLSearch</a>
+features, keeping this option enabled will make a file show up in only
+the first search it matches. If disabled, it may appear multiple times,
+if it matches more than one search. <span style="font-style: italic;">Disable
+if unsure.</span></dd>
+  <dt><a name="tab_completion"></a>Tab Completion of Nicks in Chat</dt>
+  <dd>You can use the tab key to complete partial (beginnings) of
+nicknames from the main chat text input field (press tab multiple times
+to switch between multiple nicks). A partial nick will also match if
+comes after something between brackets (e.g. "arne&lt;tab&gt;" would
+match "[BBB]arnetheduck").</dd>
+  <dt>Enable Safe and Compressed Transfers</dt>
+  <dd>When transfering data with a compatible client, DC++ will try to
+use ZLIB compression with integrity checks. This uses some CPU cycles,
+but can dramatically speed up transfers of uncompressed files as well
+as ensure file integrity (reduce the chance of corruption to near zero).<span style="font-style: italic;">Enable if unsure.</span></dd>
+
+  <dt>Accept Custom User Command From Hub</dt>
+  <dd>This option lets you enable or disable DC++'s ability to retrieve
+custom commands from a remote&nbsp;hub. Custom User Commands may show
+when you click on the hub's tab, or on a user in the Transfer View,
+Search Window, or User List, and can enable you to read the rules,
+perform operator functions, interact with hub bots, etcetera.</dd>
+  <dt>Send Unknown /commands to the Hub</dt>
+  <dd>Enable this to send <a href="chat_commands.html">/commands</a>
+that DC++ does not recognize to the hub as normal chat.</dd>
+  <dt>Add Finished Files to Share Instantly</dt>
+  <dd>If you download files directly to a shared directory, enabling
+this option will add the files to your share as soon as they're
+finished. Searches will return the file, and users can download it. It
+will not appear in your file list until the next refresh.</dd>
+  <dt>Use CTRL for line history</dt>
+  <dd>Press up arrow while holding down CTRL to scroll through line
+history. If not enabled, up arrow will be enough.</dd>
+  <dt>Use SSL when remote client supports it</dt>
+  <dd>When this option is enabled, DC++ will connect to&nbsp;remote
+clients on an ADC hub that support SSL using SSL. &nbsp;This option is
+an experimental one, and shouldn't imply that DC++ is secure in any way.</dd>
+  <span style="font-weight: bold;">Use SSL when remote client supports it<br>
+  </span>
+</dl>
+</body>
+</html>

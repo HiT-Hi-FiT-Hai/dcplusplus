@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Appearance</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link href="office11.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<h1>Appearance</h1>
+<h2>Options</h2>
+<dl style="margin-left: 40px;">
+  <dt>Filter kick and NMDC Debug Messages</dt>
+  <dd>When enabled, kick and debug chat messages (sent by other
+clients) are hidden from main chat. These messages are generally not
+useful and make reading the chat more troublesome.</dd>
+  <dt>Minimize to Tray</dt>
+  <dd>When enabled, minimizing DC++ will cause it to appear as an icon
+in the windows system tray. If you left click, it will be
+returned to its previous status. If you right click on the icon,
+it will give you a small menu.</dd>
+  <dt>Show Timestamps in Chat By Default</dt>
+  <dd>This option will show time stamps on chat lined in newly opened
+hubs. In order to show them in an already open hub, use the <a
+ href="chat_commands.html#ts">/ts chat command</a>. To customize the
+format of the time stamps, see the <a href="#set_timestamps">Set
+Timestamps</a> option below.</dd>
+  <dt>View Status Messages in Main Chat</dt>
+  <dd>Show some messages destined for the Status Bar in main chat as
+well. <span style="font-style: italic;">It's generally a good idea to
+leave this enabled.</span></dd>
+  <dt>Show Joins / Parts in Chat By Default</dt>
+  <dd>Show an entry in main chat whenever someone joins or leaves the
+hub. Use the <a href="chat_commands.html#showjoins">/showjoins chat
+command</a>
+to enable or disable it on already open hubs. <span
+ style="font-style: italic;">On large hubs, you don't want this enabled.</span></dd>
+  <dt>Only Show Joins / Parts for Favorite Users</dt>
+  <dd>With this option enabled, only the joining and parting of
+<a href="favorite_users.html">Favorite Users</a> are shown.</dd>
+  <dt>Use System Icons When Browsing Files</dt>
+  <dd>If you have this option on, DC++ will use the per-extension icons
+from Windows Explorer. <span style="font-style: italic;">Turning
+on this option slows browsing file lists a bit.</span></dd>
+  <dt>Use OEM Monospaced Font for Viewing Text Files</dt>
+  <dd>Enable this option to use a monospaced font more suitable for
+viewing NFO files in the built-in text viewer (the "View as Text"
+function).</dd>
+  <dt>Guess User Country</dt>
+  <dd>When selected, country codes for your uploaders and downloaders
+appear in the Transfer View. The <a href="http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip" target="_blank" class="external">GeoIPCountryWhois.csv</a> <img title="External Link" src="external.png" border="0" height="10" width="10"> database is the one provided by <a href="http://www.maxmind.com" target="_blank" class="external">MaxMind</a> <img title="External Link" src="external.png" border="0" height="10" width="10">.</dd>
+</dl>
+<h2>Miscellaneous</h2>
+<dl style="margin-left: 40px;">
+  <dt><a name="awaymsg"></a>Default Away Message</dt>
+  <dd>This is the default away message that will appear when someone
+PMs you for the first time while you are in the away mode. You
+can activate away mode by using the <a
+ href="chat_commands.html#awayback">/away
+&lt;message&gt; and /back chat commands</a> or <a
+ href="settings_advanced.html#autoaway">Auto-away on Minimize option</a>.
+All time formatting variables are available, see <a
+ href="settings_logs.html#timeformat">Logs</a>. Use Ctrl + Enter to create a new line. <br>(default: "I'm away. State your business and I might answer later if you're lucky.")</dd>
+  <dt><a name="set_timestamps"></a>Set Timestamps</dt>
+  <dd>This lets you select the format of the time stamps that can
+appear in the chat and private message windows. For the available
+formatting variables, please see <a
+ href="settings_logs.html#timeformat">Logs</a>. <br>(default: %H:%M)</dd>
+  <dt>Language File</dt>
+  <dd>DC++ will read this XML translation file and load the strings in
+it, allowing you to use DC++ in whatever language the translators have
+made available. Link to many translations can be found on the
+<a href="Links.html#languagefiles">Links page</a>.</dd>
+</dl>
+</body>
+</html>

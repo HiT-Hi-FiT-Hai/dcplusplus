@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Downloads</title>
+  <meta http-equiv="content-type" content="text/html; charset=us-ascii">
+  <link type="text/css" rel="stylesheet" href="office11.css">
+</head>
+<body>
+<h1>Downloads</h1>
+<p>This page contains the configuration options for where DC++ will
+place complete and incomplete downloads, options that control the
+maximum simultaneous downloads, and information on the public hub list
+that DC++ will use.</p>
+<h2>Directories</h2>
+<div style="margin-left: 40px;">
+<dl>
+  <dt>Default Download Directory</dt>
+  <dd>After a download is complete, DC++ tries to move your
+just&nbsp;finished file to this directory. It defaults to the
+"Downloads\" subdirectory under where the DC++ executable is located.</dd>
+  <dt>Unfinished Downloads Directory</dt>
+  <dd>All incomplete downloads will be stored in this directory.
+If empty, temporary downloads will be stored in the "Incomplete\"
+subdirectory under where the DC++ executable is located. You can
+use <span style="font-weight: bold;">%[targetdrive]</span> for optional unfinished directory for target
+drive. If the
+file has been downloaded with a TTH, the incomplete file will
+bear the name &lt;filename&gt;.&lt;ext&gt;.&lt;TTH&gt;.dctmp. If
+the file has no TTH, it will be
+named&lt;filename&gt;.&lt;ext&gt;.dctmp. If <a
+ href="settings_queue.html#antifrag">Use AntiFragmentation Method
+for Downloads</a> is enabled the files will have ".antifrag" added to
+the end of it's name. As in
+&lt;filename&gt;.&lt;ext&gt;.&lt;TTH&gt;.dctmp.antifrag. </dd>
+</dl>
+</div>
+<h2>Limits</h2>
+<p>For both values listed below, certain conditions can result in the
+limits not being obeyed.&nbsp;Specifically, up to 3 files that are set
+to the 'highest' priority can be transferred while other downloads are
+going.&nbsp;&nbsp;File lists and small files (64 kibibytes or
+smaller) are queued with 'highest' as their priority. When either
+of the limits are hit, DC++ shows "<em>All download slots taken"</em>
+next to each source in the Transfer View.</p>
+<div style="margin-left: 40px;">
+<dl>
+  <dt>Maximum Simultaneous Downloads</dt>
+  <dd>This limits the number of simultaneous downloads. The
+default value&nbsp;of this option is 3, and a value of 0 means no limit.</dd>
+  <dt>No New Downloads if Speed Exceeds</dt>
+  <dd>This is another method of limiting simultaneous downloads,
+designed to prevent new downloads if your existing downloads exceed a
+specific threshold.&nbsp;It's measured in kibibytes per second, and a
+value of zero will disable this limit. <span
+ style="font-style: italic;">Note: because of changing download speeds,
+this is not 100% accurate</span></dd>
+</dl>
+</div>
+<h2><a name="hublist"></a>Public Hub List</h2>
+<div style="margin-left: 40px;">
+<dl>
+  <dt>Public Hub List URL</dt>
+  <dd><a href="public_hubs.html">Public hubs window</a></dd>
+  <dt>HTTP Proxy</dt>
+  <dd>This HTTP proxy will <u>only</u> be used to request the Public
+Hub List specified above. It's <u>not</u> used for uploads,
+downloads, or connecting to a hub.</dd>
+</dl>
+</div>
+</body>
+</html>

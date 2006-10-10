@@ -1,0 +1,81 @@
+[OPTIONS]
+Auto Index=Yes
+Compatibility=1.1 or later
+Compiled file=..\app\DCPlusPlus.chm
+Contents file=toc.hhc
+Default topic=index.html
+Display compile progress=Yes
+Enhanced decompilation=Yes
+Full-text search=Yes
+Index file=index.hhk
+Language=0x409 English (United States)
+Title=Help for DC++
+
+
+[FILES]
+office11.css
+index.html
+changelog.html
+settings_advanced.html
+settings_appearance.html
+settings_downloads.html
+settings_general.html
+settings_logs.html
+settings_sharing.html
+settings_usercommands.html
+settings_colors_and_sounds.html
+settings_expert.html
+settings_connection.html
+settings_windows.html
+settings_queue.html
+settings_certs.html
+chat_commands.html
+non-routable.html
+plusplus_tag.html
+netiquette.html
+credits.html
+adlsearch.html
+favorite_hubs.html
+favorite_users.html
+fdl.html
+settings_favoritedirs.html
+faq_keyboard_commands.html
+faq_upnp.html
+faq_activemode.html
+faq_university.html
+faq_nosearch.html
+faq_slowdownload.html
+faq_different_icons.html
+faq_units.html
+faq_install.html
+faq_secret.html
+dev_createpatch.html
+dev_applypatch.html
+links.html
+
+[ALIAS]
+IDC_HELP_CHANGELOG=changelog.html
+IDD_ADVANCED3PAGE=settings_expert.html
+IDD_ADVANCEDPAGE=settings_advanced.html
+IDD_APPEARANCE2PAGE=settings_colors_and_sounds.html
+IDD_APPEARANCEPAGE=settings_appearance.html
+IDD_DOWNLOADPAGE=settings_downloads.html
+IDD_DOWNLOADPAGE=settings_sharing.html
+IDD_FAVORITE_DIRSPAGE=settings_favoritedirs.html
+IDD_GENERALPAGE=settings_general.html
+IDD_KEYBOARD=faq_keyboard_commands.html
+IDD_LOGPAGE=settings_logs.html
+IDD_NETWORKPAGE=settings_connection.html
+IDD_QUEUEPAGE=settings_queue.html
+IDD_STARTPAGE=index.html
+IDD_UCPAGE=settings_usercommands.html
+IDD_UPLOADPAGE=settings_sharing.html
+IDD_WINDOWSPAGE=settings_windows.html
+IDR_ADLSEARCH=adlsearch.html
+IDD_CERTSPAGE=settings_certs.html
+
+[MAP]
+#include ..\windows\resource.h
+
+[INFOTYPES]
+

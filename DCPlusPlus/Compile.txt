@@ -1,0 +1,64 @@
+The most important thing about compiling: If it didn't work, *you* screwed up.
+
+How to compile in 3 easy steps:
+
+1) Download the source DC++ download site. Unpack the DC++ source.
+   Download STLPort 5.0.2 from http://sf.net/stlport and unpack it to a temporary folder. Inside you'll
+   find a folder named stlport which contains files such as "algorithm". Copy the contents of this folder
+   to the stlport folder where you unpacked DC++.
+   Download WTL from http://sf.net/projects/wtl. Unpack it to the wtl folder.
+
+2) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
+   You have to do this if you get an error that "natupnp.h" is missing. Since all you need is this
+   one file, you can ask someone at the dev hub to supply it for you (or look for it in the DC++
+   bugzilla, it's attached to one of the bugs).
+
+3) Open the solution in vc7.1 (2004) and press your build button. If you find your executable unreasonably large, 
+   you probably compiled in debug mode - switch to release once you're done testing the code.
+
+
+Note;	You'll need DBGHELP.dll from the binary distribution unless you're using WinXP, otherwise 
+        you'll get errors saying symbols are missing when running your compiled executable. My copy 
+        says version 5.1.2600.1106 right now.
+
+Note;	If you have problems, read the forum posts before posting. Somebody else has probably made your 
+	mistake already. The word to note in the last sentence is 'your', so let me articulate a bit more,
+	it works on my computer, so it's yours that is not correctly set up.
+
+Note;	To build the HTML Help file, you will need to download and install the HTML Help Workshop 
+	application.  The custom build setup relies on it being installed to the default path, which 
+	is: "C:\Program Files\HTML Help Workshop\"
+	http://msdn.microsoft.com/library/default.asp?url=/library/en-us/htmlhelp/html/hwMicrosoftHTMLHelpDownloads.asp
+
+Note;	You need to have python installed if you change StringDefs.h, as a small python script is automatically
+	run to generate StringDefs.cpp and Example.xml. To turn it off or change python path, go to 
+	client->Header Files->StringDefs.h->Properties->Custom build step and change the appropriate values.
+	The help file's changelog.html is also updated via a python script (courtesy of fusbar).
+
+By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
+to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...
+
+Linux / Unix:
+Look at linuxdcpp.berlios.de for the *nix port of DC++ - they'll gladly accept any help. 
+
+Submitting patches
+
+If you think you've done something that more people could use, you can always submit a patch for inclusion in the
+original distribution. I will then consider whether I like the patch or not based on things that might seem to be 
+completely random, which just might be the case. Popular reasons for rejecting a patch include, but are not limited to,
+ugly code, abusable features, feature that I don't like that bloat the application and incompatibility with other 
+modifications I've already done. 
+
+To increase the chances of your patch being accepted, do like this:
+1) Check out the latest code from SVN (see http://sf.net/projects/dcplusplus for instructions)
+2) Make your modification. If you make other modifications apart from the one you want to submit, do them
+   on a separate copy of the DC++ source code and then copy them to this folder.
+3) In the source root folder (the one with this file in it) do "svn diff > my-patch.diff".
+4) Post the file in the DC++ bugzilla (don't forget to hand over copyright, see below).
+
+By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
+the copyright is split out over a million people, each of which could stop further distribution of DC++, and also
+to make it easier for us to defend the gpl against violators. If you don't like this policy, start your own 
+distribution, if you're lucky it might become more popular than the original =). Please
+state explicitly in the bugzilla that you give me copyright over the code if the submission is larger than trivial.
+

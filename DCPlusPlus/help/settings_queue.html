@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Queue settings</title>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link href="office11.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<h1>Queue settings</h1>
+<h2>Autoprio settings</h2>
+Autoprio allows setting the queue item priority automatically when
+adding it to the download queue. A user can then change the priority of
+a file manually.<br>
+Priority conditions are checked from the Highest to the Lowest
+priority, when assigning a priority to a new queue item. A zero means
+that the given priority level won't be used - except Normal priority,
+which is the default priority. Lowest possible value for the Highest
+priority is 16 KiB.
+<div style="margin-left: 40px;">
+<dl>
+  <dt>Highest prio max size</dt>
+  <dd>Files with the same or under the entered size will be set to
+Highest as priority. (default: 64 KiB) </dd>
+  <dt>Normal prio max size</dt>
+  <dd>Files with the same or under the entered size, but above Highest
+and High prio max size, will be set to Normal as priority. (default: 0
+KiB) </dd>
+  <dt>High prio max size</dt>
+  <dd>Files with the same or under the entered size, but above Highest
+prio max size, will be set to High as priority. (default: 0 KiB)</dd>
+  <dt>Low prio max size</dt>
+  <dd>Files with the same or under the entered size, but above Highest,
+High and Normal prio max size, will be set to Low as priority.
+(default: 0 KiB)</dd>
+</dl>
+</div>
+<h2>Autodrop settings</h2>
+Autodrop allows automatical removal (or disconnecting) of slow download
+sources. By default, slow sources are removed.
+<div style="margin-left: 40px;">
+<dl>
+  <dt>Drop sources below x B/s</dt>
+  <dd>If the download speed of a file is below the entered value, the
+source will be dropped. (default: 1024 B/s) </dd>
+  <dt>Min elapsed</dt>
+  <dd>Amount of time (in seconds) that has to pass since the download
+started before a source can be dropped. (default: 15 s) </dd>
+  <dt>Min sources online</dt>
+  <dd>Minimum amount of sources before any sources will be dropped.
+(default: 1) </dd>
+  <dt>Check every x s</dt>
+  <dd>Check every x second(s) if the source is slow. (default: 10 s) </dd>
+  <dt>Max inactivity</dt>
+  <dd>This is the maximal time since the last chunk of data for the
+file was recieved. It is meant to improve speed measurement accuracy
+and to prevent dropping sources that are going to be disconnected only
+because of their current inactivity. (default: 10 s) </dd>
+  <dt>Min filesize</dt>
+  <dd>Minimum filesize before sources will be dropped (in KiB).
+(default: 0 KiB)</dd>
+</dl>
+</div>
+All of the above autodrop options are necessary to estimate and
+disconnect/drop sources properly.
+<h2>Other queue options</h2>
+To enable autodrop, turn on either "Autodrop slow sources for all queue
+items" or "Remove slow file lists" (or both of them).
+<div style="margin-left: 40px;">
+<dl>
+  <dt>Set lowest prio for newly added files larger than Low prio size</dt>
+  <dd>With this enabled, files that are larger than Low prio max size
+are set to Lowest as priority. If disabled, the files will be set to
+Normal as priority. </dd>
+  <dt>Autodrop slow sources for all queued items (except file lists)</dt>
+  <dd>This option removes the slow sources for all queue items (except
+file lists).</dd>
+  <dt>Remove slow filelists</dt>
+  <dd>With this option enabled, DC++ will delete a file list whose speed
+was recognized as too slow. </dd>
+  <dt>Don't remove the source when autodropping, only disconnect</dt>
+  <dd>With this option enabled, sources will only be disconnected but
+not removed from the queue.</dd>
+  <dt>Automatically Search for Alternative Download Locations</dt>
+  <dd>Every few minutes, the client will search for files in your
+Download Queue to find more download locations (more users/sources). If
+the download was started with a TTH root hash available, the autosearch
+will find exact matches by searching via hash. Otherwise, the
+autosearch will try to find matches by searching with a slightly
+modified version of the filename.</dd>
+  <dt>Automatically Match Queue for Auto Search Hits</dt>
+  <dd>Enable to automatically download a user's list and match them as
+sources for files in your Download Queue when they've been discovered
+as a source for one of the files you're downloading. If you download
+files in sets, that user is probably a source for many more files
+you're downloading. <span style="font-style: italic;">Enable if unsure.
+The drawbacks are that it might add slower sources, possibly increasing
+the time needed to complete a download, and that you'll download a lot
+of file lists.</span></dd>
+  <dt>Skip Zero-Byte Files</dt>
+  <dd>When this option is enabled, any zero byte files you try to
+download will be silently skipped. Sometimes empty files contain
+information through their naming. However every file, even an empty
+one, will consume some drive space.</dd>
+  <dt>Don't download files already in share</dt>
+  <dd>This option will stop you from downloading files which already
+exist in one of your shared directories. Note that this only works with
+those files which have a TTH.</dd>
+  <dt><a name="antifrag"></a>Use AntiFragmentation Method for
+Downloads</dt>
+  <dd>This option will try to reserve the full space needed for a file
+when starting the download. This should reduce the fragmentation of
+files on your hard drive. (Fragmentation is bad because reading files
+from your drive will take longer because the drive head has to hop from
+place to place instead of reading in a continuous fashion.) <span style="font-style: italic;">Disable if unsure. The drawbacks are a
+short pause at the start of every download during which the drive space
+is reserved, less drive space being available while you are
+downloading, and possibly losing <span style="font-weight: bold;">all</span> 
+progress on your download if Windows crashes and DC++ cannot exit 
+cleanly.</span></dd>
+  <dt><a name="advanced_resume"></a>Advanced resume using TTH</dt>
+  <dd>Enables a more advanced form of transfer resuming than the <a href="settings_expert.html#rollback">rollback</a> method. The
+last block of the incomplete file will be checked for validity using
+the leaves, retrieved from the remote client, of the TTH. If the
+block fails verification, the previous block in the file will be tried,
+and so on, until a good block is found, or there is no more data in the
+file.</dd>
+  <dt>Only download files that have a TTH</dt>
+  <dd>With this option enabled, DC++ will <span style="font-weight: bold;">only</span> download files that have a TTH.</dd>
+</dl>
+</div>
+</body>
+</html>

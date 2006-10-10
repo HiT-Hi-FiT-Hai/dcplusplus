@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Connections settings</title>
+  <meta http-equiv="content-type" content="text/html; charset=us-ascii">
+  <link type="text/css" rel="stylesheet" href="office11.css">
+</head>
+<body>
+<h1><a name="connection"></a>Connection Settings</h1>
+This page has options on it that will let you properly configure DC++'s
+options for incoming and outgoing connections. Your incoming connection
+type must be properly chosen for downloading to work.<br>
+<h2>Incoming connection settings</h2>
+<dl style="margin-left: 40px;">
+  <dt>Direct Connection</dt>
+  <dd>Select this mode if your computer is hooked directly to the
+internet. Do <span style="text-decoration: underline;">not</span>
+select this mode if you have a router (firewall) or a software firewall.</dd>
+  <dt>Firewall with UPnP</dt>
+  <dd>Select this mode if you are
+behind a firewall that supports
+the UPnP standard for program auto-configuration. DC++ will
+automatically open the ports it needs and obtain your external IP
+address. This mode is not available on operating systems
+before
+Windows XP, as it was the first version to have UPnP
+support. There is a <a href="faq_upnp.html">guide
+to configuring UPnP</a>.</dd>
+  <dt>Firewall with manual port
+forwarding</dt>
+  <dd>Select this mode if you are behind a firewall (router), and will
+set up the TCP and UDP port forwarding on your own. You <span style="text-decoration: underline;">will</span> need to specify the
+external IP address of your router using the setting below if you want
+downloads to work properly. Use <a href="faq_activemode.html">this
+guide</a> to set up active mode.</dd>
+  <dt>Firewall (passive, last resort)</dt>
+  <dd>Select this mode if none of the previous options apply. In this
+mode, DC++ will not try to make inbound connections, only outbound
+ones. This mode carries some limitations:</dd>
+</dl>
+<ul style="margin-left: 120px;">
+  <li>only 5 results per user will be returned in response to searches</li>
+  <li>you will not be able to download from other passive users</li>
+</ul>
+<h3 style="margin-left: 40px;">Options</h3>
+<dl style="margin-left: 80px;">
+  <dt>TCP Port</dt>
+  <dd>This is the port that DC++ listens on for incoming client
+connections. If this setting is blank, DC++ will use a random port
+between 1025 and 32000.</dd>
+  <dt>UDP Port</dt>
+  <dd>This is the port that DC++ listens on for incoming search
+results. If this setting is blank, DC++ will use a random port between
+1025 and 32000.</dd>
+  <dt>External / WAN IP</dt>
+  <dd>If you're directly connected to the internet, DC++ will tell remote users to connect to your local IP.
+Fill in this box <span style="font-weight: bold;">only</span> if you need to override the auto-detection.
+Ordinarily, only users behind a home router (NAT device) will need to fill in this box. If you put a DNS name
+here, DC++ will try to resolve it into an IP address before use.</dd>
+  <dt>Don't allow hub/UPnP to override</dt>
+  <dd>Enable this to always use the IP address in "External / WAN IP,"
+and not let either UPnP or connected hubs change it.</dd>
+</dl>
+<h2>Outgoing connection settings</h2>
+<dl style="margin-left: 40px;">
+  <dt>Direct connection</dt>
+  <dd>Select this mode if you can make unrestricted outbound
+connections. This includes connecting to any IP address on any port.</dd>
+  <dt>SOCKS5</dt>
+  <dd>Select this mode if you want to make outbound connections through
+a SOCKS proxy. The caveats for Firewall (passive) mode also apply here.
+SOCKS5 proxies are <span style="text-decoration: underline;">not</span>
+the same as HTTP proxies. DC++'s SOCKS5 support does <span style="text-decoration: underline;">not</span> include GSSAPI.</dd>
+</dl>
+<h3 style="margin-left: 40px;">Options</h3>
+<dl style="margin-left: 80px;">
+  <dt>Socks IP</dt>
+  <dd>This is the IP, not host name, of your SOCKS5 server.</dd>
+  <dt>Port</dt>
+  <dd>The port that your SOCKS5 server runs on. The default is 1080.</dd>
+  <dt>Login</dt>
+  <dd>Login name for the SOCKS5 proxy; may be required. </dd>
+  <dt>Password</dt>
+  <dd>Password for the SOCKS5 proxy; may be required. </dd>
+  <dt>Use SOCKS5 server to resolve host names</dt>
+  <dd>Enable this to use the SOCKS5 proxy, instead of the local name
+server, to resolve host names into IP addresses. </dd>
+</dl>
+</body>
+</html>

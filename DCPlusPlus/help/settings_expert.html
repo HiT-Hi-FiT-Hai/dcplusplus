@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Experts only</title>
+  <meta http-equiv="content-type" content="text/html; charset=us-ascii">
+  <link href="office11.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h1>Experts only</h1>
+<dl style="margin-left: 40px;">
+  <dt><a name="rollback"></a>Rollback</dt>
+  <dd>The number of bytes that will be requested from the remote
+user
+that overlap the existing incomplete file on disk. The
+overlapping bytes are compared, and if they do not match, the source is
+judged to be incompatible, and is removed with a "Rollback
+inconsistency, existing file does not match the one being downloaded"
+error. This value normally has no effect when <a href="settings_queue.html#advanced_resume">Advanced Resume</a>
+is
+enabled. (default: 4096)</dd>
+  <dt>Max Hash Speed</dt>
+  <dd>This is the speed at which DC++ will hash your files, in
+MiB/s.
+It is limited by the speed of your disk subsystem, but it can be
+used to make hashing slower and less noticable. A "normal" hash
+speed may be anywhere from 20 to 30 MiB/s.  (no default)</dd>
+  <dt>PM history</dt>
+  <dd>The number of lines that will be read from the private
+message
+log and displayed when a new PM is received. (no default)</dd>
+  <dt><a name="minislotsize"></a>Mini slot size</dt>
+  <dd>This defines the size of the <a href="settings_sharing.html#slots">mini slot</a>. The
+minimum value for this setting is&nbsp;64 KiB. (default: 64 KiB)</dd>
+
+  <dt>Max filelist size</dt>
+  <dd>This setting controls the size of the maximum file list
+that DC++
+will open, in mebibytes. This setting helps protect against
+malformed file lists that require large amounts of memory to decode.
+&nbsp;You may need to reduce or increase the value of this setting
+based on personal experience. (default: 512 MiB)</dd>
+  <dt>CID</dt>
+  <dd>This is your unique client ID (CID) used to identify you on
+ADC hubs.</dd>
+  <dt>Auto refresh time</dt>
+  <dd>This controls the interval at which your shared directories
+are rescanned for new and changed content. &nbsp;This is measured
+in minutes (default: 60 minutes)</dd>
+
+  <dt>Write Buffer Size</dt>
+  <dd>This controls the size of the chunks that DC++ writes to
+disk for downloads. Measured in kibibytes. (default: 16 KiB)</dd>
+  <dt>Max Tab Rows</dt>
+  <dd>The maximum number of rows of tabs that DC++ will make. Any
+tabs that do not fit will be accessible through the chevron at the
+right of the tab control. (default: 2)</dd>
+  <dt><a name="searchhistory"></a>Search
+history</dt>
+  <dd>Number of old search lines that will be shown in the Search
+Window. (default: 10)</dd>
+  <dt>Bind address</dt>
+  <dd>This setting allows you to bind DC++ to a particular IP
+address
+on your machine. Most users do not need to change the default value,
+0.0.0.0. However, if you&nbsp;have more than one network interface
+connected to the internet, you can force DC++ to use a particular
+connection by entering its IP here. If binding fails, it will do
+so silently and INADDR_ANY will be used instead. If you experience
+connection problems make sure that this is set to default. (default:
+0.0.0.0)<br>
+    <span style="font-style: italic;"> This feature
+requires a restart to be fully effective.</span></dd>
+  <dt>Socket read buffer</dt>
+  <dd>The size of the buffer DC++ use to read sockets. Measured
+in bytes. (default: 8192 bytes)</dd>
+  <dt>Socket write buffer</dt>
+  <dd>The size of the buffer DC++ use to write to sockets.
+Measured in bytes. (default: 8192 bytes)</dd>
+</dl>
+</body>
+</html>

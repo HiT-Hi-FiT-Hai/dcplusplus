@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link type="text/css" rel="stylesheet" href="office11.css">
+  <title>How to set up active mode</title>
+</head>
+<body>
+<h1>Setting up active mode</h1>
+<p>For DC++ to work properly in active mode, it requires access on <acronym
+ title="Transmission Control Protocol">TCP</acronym> and <acronym
+ title="User Datagram Protocol">UDP</acronym> listening ports, as well
+as outgoing access on all ports for both TCP and UDP.</p>
+<p>You can simplify the process of setting up active mode if your
+router and operating system is <acronym title="Universal Plug and Play">UPnP
+</acronym> compatible. If so, please read the <a href="faq_upnp.html">How to set up UPnP FAQ</a> instead, for more information.</p>
+<ol>
+  <li>First you need to set up the router to forward the connections to
+the computer with DC++. This is could be called Port mapping, port
+redirecting, port forwarding or something like that. Find out how to do
+this with your router / <acronym title="Network Address Translation">NAT</acronym>
+in the user manual.</li>
+  <li>You need to forward two ports, with either the same port number
+or different ones. Select one or two numbers between 1024 -
+65535, they should mostly all be free. Make sure both UDP and TCP is
+being forwarded on the port(s) you chose. </li>
+  <li>The IP that you are forwarding to should be the <span
+ style="font-weight: bold;">internal</span> IP address of your DC++
+computer. It usually begins with <a href="non-routable.html">"192.168",
+"172.16." or "10.x."</a>. Go to the command prompt and type: <span
+ style="font-style: italic;">ipconfig</span> (Start Menu -&gt; Run
+-&gt; <span style="font-style: italic;">cmd /k ipconfig</span>)</li>
+  <li>When you have mapped the port(s) on the router, open up DC++ and
+go to Settings. Select active mode. In the port fields, enter the port
+number(s) that you forwarded on the router. </li>
+  <li>In the IP field, you need to enter the <span
+ style="font-weight: bold;">external</span> IP address of your router.
+Your external IP can be checked against <a
+ href="http://www.dslreports.com/ip" target="_blank" class="external">DSLReport's
+IP page</a> <img title="External Link" src="external.png" border="0"
+ height="10" width="10" alt="External Link">. </li>
+  <li>It should now be working. If it is working for a while, but the
+next time you use DC++, you only get "Connection Timeout&#8217;s or no
+results when searching, your IP (either <span
+ style="font-weight: bold;">external</span> or <span
+ style="font-weight: bold;">internal</span>) is likely to have changed.
+If you find the external IP is constantly changing, you can set
+yourself up with a dynamic name (i.e. <i>hub.example.com</i>).
+Such as <a href="http://www.dynip.com/" target="_blank"
+ class="external">Dynip</a> <img title="External Link"
+ src="external.png" border="0" height="10" width="10" alt="External Link"> or <a
+ href="http://www.dyndns.org/" target="_blank" class="external">DynDns</a>
+    <img title="External Link" src="external.png" border="0" height="10"
+ width="10" alt="External Link"> and put that name into the IP field. Make sure to use a
+program that updates the dynamic name service with your latest IP.</li>
+</ol>
+<h2>Windows XP?</h2>
+<ul>
+  <li><span style="text-decoration: underline;">Service Pack 1</span>:
+Its strongly recommended that you do not use the SP1 firewall and
+instead use a third party one.
+Make sure to disable the XP firewall if you do choose this option. If
+you really must use it, then checkout <a
+ href="http://www.microsoft.com/security/protect/ports.asp"
+ target="_blank" class="external"> this guide</a> <img
+ title="External Link" src="external.png" border="0" height="10"
+ width="10" alt="External Link"> on how to set it up.</li>
+  <li><span style="text-decoration: underline;">Service Pack 2</span>:
+The firewall in SP2 is a lot more robust than its original incarnation.
+While it does not offer a plethora of options, its suitable to use by
+itself for protection. Its wise to enable logging of packets that the
+firewall drops for troubleshooting applications. To do this, go to
+Control Panels -&gt; Windows Firewall -&gt; Advanced Tab -&gt; Security
+Logging -&gt; Settings. Enable <span style="font-style: italic;">Log
+Dropped Packets</span>. The log file is located at:
+C:\WINDOWS\pfirewall.log.</li>
+</ul>
+</body>
+</html>
