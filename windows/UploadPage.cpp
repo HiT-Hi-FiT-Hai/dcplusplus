@@ -206,7 +206,7 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 			LineDlg virt;
 			virt.title = TSTRING(VIRTUAL_NAME);
 			virt.description = TSTRING(VIRTUAL_NAME_LONG);
-			virt.line = tstring(buf);
+			virt.line = vName;
 			if(virt.DoModal(m_hWnd) == IDOK) {
 				if (Util::stricmp(buf, virt.line) != 0) {
 					ShareManager::getInstance()->renameDirectory(Text::fromT(rPath), Text::fromT(virt.line));
