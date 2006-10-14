@@ -29,17 +29,13 @@ template<class Hasher>
 struct HashValue : FastAlloc<HashValue<Hasher> >{
 	static const size_t SIZE = Hasher::HASH_SIZE;
 
-	typedef HashValue* Ptr;
-	struct PtrHash {
-		size_t operator()(const Ptr rhs) const { return *(size_t*)rhs; }
-		bool operator()(const Ptr lhs, const Ptr rhs) const { return (*lhs) == (*rhs); }
-	};
-	struct PtrLess {
-		bool operator()(const Ptr lhs, const Ptr rhs) const { return (*lhs) < (*rhs); }
-	};
-
 	struct Hash {
+#ifdef _MSC_VER
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+#endif
 		size_t operator()(const HashValue& rhs) const { return *(size_t*)&rhs; }
+		bool operator()(const HashValue& a, const HashValue& b) const { return a < b; }
 	};
 
 	HashValue() { }

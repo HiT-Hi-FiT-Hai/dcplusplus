@@ -416,8 +416,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 		SHGetPathFromIDList(pidl, buf);
 		target = buf;
 
-		if(target.size() > 0 && target[target.size()-1] != L'\\')
-			target+=L'\\';
+		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
+			target+=_T('\\');
 
 		if(SHGetMalloc(&ma) != E_FAIL) {
 			ma->Free(pidl);

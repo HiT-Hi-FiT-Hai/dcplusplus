@@ -395,7 +395,9 @@ void UploadManager::clearUserFiles(const User::Ptr& source) {
 User::List UploadManager::getWaitingUsers() {
 	Lock l(cs);
 	User::List u;
-	transform(waitingUsers.begin(), waitingUsers.end(), back_inserter(u), select1st<WaitingUser>());
+	for(UserList::const_iterator i = waitingUsers.begin(); i != waitingUsers.end(); ++i) {
+		u.push_back(i->first);
+	}
 	return u;
 }
 

@@ -383,7 +383,7 @@ void PublicHubsFrame::updateList() {
 	ctrlHubs.SetRedraw(FALSE);
 
 	double size = -1;
-	FilterModes mode = FilterModes::NONE;
+	FilterModes mode = NONE;
 
 	int sel = ctrlFilterSel.GetCurSel();
 
@@ -495,25 +495,25 @@ bool PublicHubsFrame::parseFilter(FilterModes& mode, double& size) {
 	int64_t multiplier = 1;
 
 	if(filter.compare(0, 2, ">=") == 0) {
-		mode = FilterModes::GREATER_EQUAL;
+		mode = GREATER_EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, "<=") == 0) {
-		mode = FilterModes::LESS_EQUAL;
+		mode = LESS_EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, "==") == 0) {
-		mode = FilterModes::EQUAL;
+		mode = EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, "!=") == 0) {
-		mode = FilterModes::NOT_EQUAL;
+		mode = NOT_EQUAL;
 		start = 2;
 	} else if(filter[0] == _T('<')) {
-		mode = FilterModes::LESS;
+		mode = LESS;
 		start = 1;
 	} else if(filter[0] == _T('>')) {
-		mode = FilterModes::GREATER;
+		mode = GREATER;
 		start = 1;
 	} else if(filter[0] == _T('=')) {
-		mode = FilterModes::EQUAL;
+		mode = EQUAL;
 		start = 1;
 	}
 
@@ -579,12 +579,12 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 	bool insert = false;
 	if(doSizeCompare) {
 		switch(mode) {
-			case FilterModes::EQUAL: insert = (size == entrySize); break;
-			case FilterModes::GREATER_EQUAL: insert = (size <= entrySize); break;
-			case FilterModes::LESS_EQUAL: insert = (size >= entrySize); break;
-			case FilterModes::GREATER: insert = (size < entrySize); break;
-			case FilterModes::LESS: insert = (size > entrySize); break;
-			case FilterModes::NOT_EQUAL: insert = (size != entrySize); break;
+			case EQUAL: insert = (size == entrySize); break;
+			case GREATER_EQUAL: insert = (size <= entrySize); break;
+			case LESS_EQUAL: insert = (size >= entrySize); break;
+			case GREATER: insert = (size < entrySize); break;
+			case LESS: insert = (size > entrySize); break;
+			case NOT_EQUAL: insert = (size != entrySize); break;
 		}
 	} else {
 		if(sel >= COLUMN_LAST) {

@@ -84,7 +84,7 @@ private:
 
 template<class T>
 struct PointerHash {
-#if _MSC_VER >= 1300
+#ifdef _MSC_VER
 	static const size_t bucket_size = 4;
 	static const size_t min_buckets = 8;
 #endif
@@ -454,13 +454,10 @@ private:
 
 /** Case insensitive hash function for strings */
 struct noCaseStringHash {
-#if _MSC_VER < 1300
-	enum {bucket_size = 4};
-	enum {min_buckets = 8};
-#else
+#ifdef _MSC_VER
 	static const size_t bucket_size = 4;
 	static const size_t min_buckets = 8;
-#endif // _MSC_VER == 1200
+#endif
 
 	size_t operator()(const string* s) const {
 		return operator()(*s);
@@ -494,6 +491,19 @@ struct noCaseStringHash {
 			x = x*31 + (size_t)Text::toLower(y[i]);
 		}
 		return x;
+	}
+
+	bool operator()(const string* a, const string* b) const {
+		return Util::stricmp(*a, *b) < 0;
+	}
+	bool operator()(const string& a, const string& b) const {
+		return Util::stricmp(a, b) < 0;
+	}
+	bool operator()(const wstring* a, const wstring* b) const {
+		return Util::stricmp(*a, *b) < 0;
+	}
+	bool operator()(const wstring& a, const wstring& b) const {
+		return Util::stricmp(a, b) < 0;
 	}
 };
 

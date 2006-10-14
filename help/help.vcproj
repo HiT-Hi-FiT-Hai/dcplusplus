@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8,00"
 	Name="help"
 	ProjectGUID="{9011F311-1280-4C2D-888C-B3202DC2A6ED}"
-	RootNamespace="help">
+	RootNamespace="help"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)app"
 			IntermediateDirectory="$(SolutionDir)vc7\$(ConfigurationName)\$(ProjectName)"
-			ConfigurationType="10">
+			ConfigurationType="10"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCMIDLTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -31,166 +41,216 @@
 		<Filter
 			Name="Project File"
 			Filter="hpp"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<File
 				RelativePath=".\DCPlusPlus.hhp"
-				DeploymentContent="TRUE">
+				DeploymentContent="true"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling Help File"
-						CommandLine="compile.cmd
-"
+						CommandLine="compile.cmd&#x0D;&#x0A;"
 						AdditionalDependencies="$(ProjectDir)changelog.html;$(ProjectDir)index.hhk;$(ProjectDir)toc.hhc;..\windows\resource.h"
-						Outputs="$(SolutionDir)app\DCPlusPlus.chm"/>
+						Outputs="$(SolutionDir)app\DCPlusPlus.chm"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\index.hhk">
+				RelativePath=".\index.hhk"
+				>
 			</File>
 			<File
-				RelativePath=".\toc.hhc">
+				RelativePath=".\toc.hhc"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="HTML Files"
 			Filter="cpp"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
 			<File
-				RelativePath=".\adlsearch.html">
+				RelativePath=".\adlsearch.html"
+				>
 			</File>
 			<File
-				RelativePath=".\changelog.html">
+				RelativePath=".\changelog.html"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building changelog"
-						CommandLine="$(ProjectDir)gen_changelog.py"
+						CommandLine="$(ProjectDir)gen_changelog.py&#x0D;&#x0A;"
 						AdditionalDependencies="$(SolutionDir)changelog.txt"
-						Outputs="changelog.html"/>
+						Outputs="changelog.html"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\chat_commands.html">
+				RelativePath=".\chat_commands.html"
+				>
 			</File>
 			<File
-				RelativePath=".\credits.html">
+				RelativePath=".\credits.html"
+				>
 			</File>
 			<File
-				RelativePath=".\dev_applypatch.html">
+				RelativePath=".\dev_applypatch.html"
+				>
 			</File>
 			<File
-				RelativePath=".\dev_createpatch.html">
+				RelativePath=".\dev_createpatch.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq.html">
+				RelativePath=".\faq.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_activemode.html">
+				RelativePath=".\faq_activemode.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_different_icons.html">
+				RelativePath=".\faq_different_icons.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_install.html">
+				RelativePath=".\faq_install.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_keyboard_commands.html">
+				RelativePath=".\faq_keyboard_commands.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_nosearch.html">
+				RelativePath=".\faq_nosearch.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_secret.html">
+				RelativePath=".\faq_secret.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_slowdownload.html">
+				RelativePath=".\faq_slowdownload.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_units.html">
+				RelativePath=".\faq_units.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_university.html">
+				RelativePath=".\faq_university.html"
+				>
 			</File>
 			<File
-				RelativePath=".\faq_upnp.html">
+				RelativePath=".\faq_upnp.html"
+				>
 			</File>
 			<File
-				RelativePath=".\favorite_hubs.html">
+				RelativePath=".\favorite_hubs.html"
+				>
 			</File>
 			<File
-				RelativePath=".\favorite_users.html">
+				RelativePath=".\favorite_users.html"
+				>
 			</File>
 			<File
-				RelativePath=".\fdl.html">
+				RelativePath=".\fdl.html"
+				>
 			</File>
 			<File
-				RelativePath=".\index.html">
+				RelativePath=".\index.html"
+				>
 			</File>
 			<File
-				RelativePath=".\keyboard_commands.html">
+				RelativePath=".\keyboard_commands.html"
+				>
 			</File>
 			<File
-				RelativePath=".\Links.html">
+				RelativePath=".\Links.html"
+				>
 			</File>
 			<File
-				RelativePath=".\menu_help.html">
+				RelativePath=".\menu_help.html"
+				>
 			</File>
 			<File
-				RelativePath=".\netiquette.html">
+				RelativePath=".\netiquette.html"
+				>
 			</File>
 			<File
-				RelativePath=".\non-routable.html">
+				RelativePath=".\non-routable.html"
+				>
 			</File>
 			<File
-				RelativePath=".\plusplus_tag.html">
+				RelativePath=".\plusplus_tag.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_advanced.html">
+				RelativePath=".\settings_advanced.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_appearance.html">
+				RelativePath=".\settings_appearance.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_certs.html">
+				RelativePath=".\settings_certs.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_colors_and_sounds.html">
+				RelativePath=".\settings_colors_and_sounds.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_connection.html">
+				RelativePath=".\settings_connection.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_downloads.html">
+				RelativePath=".\settings_downloads.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_expert.html">
+				RelativePath=".\settings_expert.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_favoritedirs.html">
+				RelativePath=".\settings_favoritedirs.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_general.html">
+				RelativePath=".\settings_general.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_logs.html">
+				RelativePath=".\settings_logs.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_queue.html">
+				RelativePath=".\settings_queue.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_sharing.html">
+				RelativePath=".\settings_sharing.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_usercommands.html">
+				RelativePath=".\settings_usercommands.html"
+				>
 			</File>
 			<File
-				RelativePath=".\settings_windows.html">
+				RelativePath=".\settings_windows.html"
+				>
 			</File>
 			<File
-				RelativePath=".\template.html">
+				RelativePath=".\template.html"
+				>
 			</File>
 		</Filter>
 	</Files>

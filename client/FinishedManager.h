@@ -37,7 +37,7 @@ public:
 	typedef List::iterator Iter;
 
 	FinishedItem(string const& aTarget, string const& aUser, string const& aHub,
-		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, uint32_t aTime,
+		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, time_t aTime,
 		bool aCrc32 = false) :
 		target(aTarget), user(aUser), hub(aHub), size(aSize), chunkSize(aChunkSize),
 		milliSeconds(aMSeconds), time(aTime), crc32Checked(aCrc32)
@@ -52,7 +52,7 @@ public:
 	GETSET(int64_t, size, Size);
 	GETSET(int64_t, chunkSize, ChunkSize);
 	GETSET(int64_t, milliSeconds, MilliSeconds);
-	GETSET(uint32_t, time, Time);
+	GETSET(time_t, time, Time);
 	GETSET(bool, crc32Checked, Crc32Checked)
 private:
 	friend class FinishedManager;

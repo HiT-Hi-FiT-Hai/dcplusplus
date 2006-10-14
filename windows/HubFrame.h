@@ -361,7 +361,7 @@ private:
 
 	void updateUserList(UserInfo* ui = NULL);
 	bool parseFilter(FilterModes& mode, int64_t& size);
-	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = FilterModes::NONE, int64_t size = 0);
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 	UserInfo* findUser(const tstring& nick);
 
 	void addAsFavorite();

@@ -239,7 +239,7 @@ private:
 		GETSET(string, path, Path);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
-		GETSET(uint32_t, added, Added);
+		GETSET(time_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
 		GETSET(QueueItem::Status, status, Status);
 		GETSET(TTHValue, tth, TTH);

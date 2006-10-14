@@ -198,7 +198,10 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		item.iItem = i;
 		item.iSubItem = 0;
 		ctrlDirectories.GetItem(&item);
-
+		tstring vName = buf;
+		item.iSubItem = 1;
+		ctrlDirectories.GetItem(&item);
+		tstring rPath = buf;
 		try {
 			LineDlg virt;
 			virt.title = TSTRING(VIRTUAL_NAME);
@@ -206,7 +209,7 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 			virt.line = tstring(buf);
 			if(virt.DoModal(m_hWnd) == IDOK) {
 				if (Util::stricmp(buf, virt.line) != 0) {
-					ShareManager::getInstance()->renameDirectory(Text::fromT(buf), Text::fromT(virt.line));
+					ShareManager::getInstance()->renameDirectory(Text::fromT(rPath), Text::fromT(virt.line));
 					ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
 
 					setDirty = true;

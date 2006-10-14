@@ -468,7 +468,6 @@ enum Strings { // @DontAdd
 	SETTINGS_NAME, // "Name"
 	SETTINGS_NETWORK, // "Connection settings"
 	SETTINGS_NO_AWAYMSG_TO_BOTS, // "Don't send the away message to bots"
-	SETTINGS_ONLY_DL_TTH_FILES, // "Only download files that have a TTH"
 	SETTINGS_ONLY_HASHED, // "Note; Files appear in the share only after they've been hashed!"
 	SETTINGS_ONLY_TTH, // "Search for files with TTH root only as standard"
 	SETTINGS_OPEN_NEW_WINDOW, // "Open new window when using /join"

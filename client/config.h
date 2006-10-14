@@ -58,6 +58,7 @@
 # pragma warning(disable: 4127) // constant expression
 # pragma warning(disable: 4710) // function not inlined
 # pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
+# pragma warning(disable: 4428) // universal-character-name encountered in source
 
 # if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
 

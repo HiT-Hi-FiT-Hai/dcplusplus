@@ -31,7 +31,12 @@ public:
 	enum { SIZE = 192 / 8 };
 
 	struct Hash {
+#ifdef _MSC_VER
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+#endif
 		size_t operator()(const CID& c) const { return c.toHash(); }
+		bool operator()(const CID& a, const CID& b) const { return a < b; }
 	};
 	CID() { memset(cid, 0, sizeof(cid)); }
 	explicit CID(const uint8_t* data) { memcpy(cid, data, sizeof(cid)); }

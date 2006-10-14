@@ -1336,25 +1336,25 @@ bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 		return false;
 	}
 	if(filter.compare(0, 2, _T(">=")) == 0) {
-		mode = FilterModes::GREATER_EQUAL;
+		mode = GREATER_EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, _T("<=")) == 0) {
-		mode = FilterModes::LESS_EQUAL;
+		mode = LESS_EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, _T("==")) == 0) {
-		mode = FilterModes::EQUAL;
+		mode = EQUAL;
 		start = 2;
 	} else if(filter.compare(0, 2, _T("!=")) == 0) {
-		mode = FilterModes::NOT_EQUAL;
+		mode = NOT_EQUAL;
 		start = 2;
 	} else if(filter[0] == _T('<')) {
-		mode = FilterModes::LESS;
+		mode = LESS;
 		start = 1;
 	} else if(filter[0] == _T('>')) {
-		mode = FilterModes::GREATER;
+		mode = GREATER;
 		start = 1;
 	} else if(filter[0] == _T('=')) {
-		mode = FilterModes::EQUAL;
+		mode = EQUAL;
 		start = 1;
 	}
 
@@ -1395,7 +1395,7 @@ bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
 
 void HubFrame::updateUserList(UserInfo* ui) {
 	int64_t size = -1;
-	FilterModes mode = FilterModes::NONE;
+	FilterModes mode = NONE;
 
 	int sel = ctrlFilterSel.GetCurSel();
 
@@ -1483,12 +1483,12 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	bool insert = false;
 	if(doSizeCompare) {
 		switch(mode) {
-			case FilterModes::EQUAL: insert = (size == ui.getIdentity().getBytesShared()); break;
-			case FilterModes::GREATER_EQUAL: insert = (size <= ui.getIdentity().getBytesShared()); break;
-			case FilterModes::LESS_EQUAL: insert = (size >= ui.getIdentity().getBytesShared()); break;
-			case FilterModes::GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
-			case FilterModes::LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
-			case FilterModes::NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;
+			case EQUAL: insert = (size == ui.getIdentity().getBytesShared()); break;
+			case GREATER_EQUAL: insert = (size <= ui.getIdentity().getBytesShared()); break;
+			case LESS_EQUAL: insert = (size >= ui.getIdentity().getBytesShared()); break;
+			case GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
+			case LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
+			case NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;
 		}
 	} else {
 		if(sel >= COLUMN_LAST) {
