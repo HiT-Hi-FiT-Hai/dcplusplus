@@ -38,14 +38,14 @@ public:
 	~BloomFilter() { }
 
 	void add(const string& s) { xadd(s, N); }
-	bool match(const StringList& s) {
+	bool match(const StringList& s) const {
 		for(StringList::const_iterator i = s.begin(); i != s.end(); ++i) {
 			if(!match(*i))
 				return false;
 		}
 		return true;
 	}
-	bool match(const string& s) {
+	bool match(const string& s) const {
 		if(s.length() >= N) {
 			string::size_type l = s.length() - N;
 			for(string::size_type i = 0; i <= l; ++i) {
@@ -82,7 +82,7 @@ private:
 	}
 
 	/* Same functionality, but the old one did not want to compile for some reason. */
-	size_t getPos(const string& s, size_t i, size_t l) {
+	size_t getPos(const string& s, size_t i, size_t l) const {
 		HashFunc hf;
 		return (hf(&s[i], l) % table.size());
 	}

@@ -58,33 +58,34 @@ public:
 	void removeDirectory(const string& realPath);
 	void renameDirectory(const string& realPath, const string& virtualName) throw(ShareException);
 
-	string toVirtual(const TTHValue& tth) throw(ShareException);
+	string toVirtual(const TTHValue& tth) const throw(ShareException);
 	string toReal(const string& virtualFile) throw(ShareException);
-	TTHValue getTTH(const string& virtualFile) throw(ShareException);
-	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ThreadException, ShareException);
+	TTHValue getTTH(const string& virtualFile) const throw(ShareException);
+
+	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw();
 	void setDirty() { xmlDirty = true; }
 
-	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
-	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults);
+	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
+	void search(SearchResult::List& l, const StringList& params, StringList::size_type maxResults) throw();
 
-	StringPairList getDirectories() const;
+	StringPairList getDirectories() const throw();
 
-	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
-	MemoryInputStream* getTree(const string& virtualFile);
+	MemoryInputStream* generatePartialList(const string& dir, bool recurse) const;
+	MemoryInputStream* getTree(const string& virtualFile) const;
 
 	AdcCommand getFileInfo(const string& aFile) throw(ShareException);
 
-	int64_t getShareSize() throw();
-	int64_t getShareSize(const string& aDir) throw();
+	int64_t getShareSize() const throw();
+	int64_t getShareSize(const string& realPath) const throw();
 
-	size_t getSharedFiles() throw();
+	size_t getSharedFiles() const throw();
 
-	string getShareSizeString() { return Util::toString(getShareSize()); }
-	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); }
+	string getShareSizeString() const { return Util::toString(getShareSize()); }
+	string getShareSizeString(const string& aDir) const { return Util::toString(getShareSize(aDir)); }
 
-	SearchManager::TypeModes getType(const string& fileName);
+	SearchManager::TypeModes getType(const string& fileName) const throw();
 
-	string validateVirtual(const string& /*aVirt*/);
+	string validateVirtual(const string& /*aVirt*/) const throw();
 
 	void addHits(uint32_t aHits) {
 		hits += aHits;
@@ -138,7 +139,8 @@ private:
 			}
 
 			string getADCPath() const { return parent->getADCPath() + name; }
-			string getFullName() const { return parent->getFullName() + getName(); }
+			string getFullName() const { return parent->getFullName() + name; }
+			string getRealPath() const { return parent->getRealPath() + name; }
 
 			GETSET(string, name, Name);
 			GETSET(TTHValue, tth, TTH);
@@ -167,17 +169,18 @@ private:
 
 		string getADCPath() const throw();
 		string getFullName() const throw();
+		string getRealPath() const throw();
 
-		int64_t getSize();
-		size_t countFiles();
+		int64_t getSize() const throw();
+		size_t countFiles() const throw();
 
-		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
-		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) throw();
+		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) const throw();
+		void search(SearchResult::List& aResults, AdcSearch& aStrings, StringList::size_type maxResults) const throw();
 
-		void toXml(OutputStream& xmlFile, string& indent, string& tmp2, bool fullList);
-		void filesToXml(OutputStream& xmlFile, string& indent, string& tmp2);
+		void toXml(OutputStream& xmlFile, string& indent, string& tmp2, bool fullList) const;
+		void filesToXml(OutputStream& xmlFile, string& indent, string& tmp2) const;
 
-		File::Iter findFile(const string& aFile) { return find_if(files.begin(), files.end(), Directory::File::StringComp(aFile)); }
+		File::Set::const_iterator findFile(const string& aFile) const { return find_if(files.begin(), files.end(), Directory::File::StringComp(aFile)); }
 
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
@@ -263,7 +266,7 @@ private:
 
 	BloomFilter<5> bloom;
 
-	bool checkFile(const string& virtualFile, string& realFile, Directory::File::Iter& it) throw(ShareException);
+	Directory::File::Set::const_iterator findFile(const string& virtualFile) const throw(ShareException);
 
 	Directory* buildTree(const string& aName, Directory* aParent);
 
@@ -272,9 +275,9 @@ private:
 	void addTree(Directory& aDirectory);
 	void addFile(Directory& dir, Directory::File::Iter i);
 	void generateXmlList();
-	bool loadCache();
-	bool hasVirtual(const string& name);
-	Directory::MapIter getByVirtual(const string& virtualName);
+	bool loadCache() throw();
+	bool hasVirtual(const string& name) const throw();
+	Directory::Map::const_iterator getByVirtual(const string& virtualName) const throw();
 
 	Directory* getDirectory(const string& fname);
 
