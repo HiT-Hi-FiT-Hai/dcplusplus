@@ -96,7 +96,7 @@ void ShareManager::Directory::addType(uint32_t type) throw() {
 
 string ShareManager::Directory::getRealPath() const throw() {
 	if(getParent()) {
-		return getParent()->getRealPath() + PATH_SEPARATOR_STR + getName();
+		return getParent()->getRealPath() + getName() + PATH_SEPARATOR_STR;
 	} else {
 		dcassert(ShareManager::getInstance()->getByVirtual(getName()) != ShareManager::getInstance()->directories.end());
 		return ShareManager::getInstance()->getByVirtual(getName())->first;
