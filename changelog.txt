@@ -5,6 +5,9 @@
 * Confirm hub removal is now default
 * SFV checking is now default
 * Fixed TLS port not being greyed out
+* Automatic hub reconnection is only done if at least one successful connection has been made
+* [bug 1080] Better nick tab completion (thanks cologic)
+* [bug 1081] Added user IP in hub frame (thanks cologic)
 
 -- 0.698 2006-10-10 --
 * [bug 1065] Code cleanup (thanks steven sheehy)

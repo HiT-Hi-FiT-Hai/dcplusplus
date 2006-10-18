@@ -31,7 +31,7 @@ Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator_, bool secure_) :
 	myIdentity(ClientManager::getInstance()->getMe(), 0),
-	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(true), reconnecting(false), socket(0),
+	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(false), state(STATE_DISCONNECTED), socket(0),
 	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
@@ -50,7 +50,7 @@ Client::~Client() throw() {
 void Client::reconnect() {
 	disconnect(true);
 	setAutoReconnect(true);
-	setReconnecting(true);
+	setReconnDelay(0);
 }
 
 void Client::shutdown() {
@@ -88,7 +88,6 @@ void Client::connect() {
 		BufferedSocket::putSocket(socket);
 
 	setAutoReconnect(true);
-	setReconnecting(false);
 	setReconnDelay(120 + Util::rand(0, 60));
 	reloadSettings(true);
 	setRegistered(false);
@@ -107,18 +106,25 @@ void Client::connect() {
 		fire(ClientListener::Failed(), this, e.getError());
 	}
 	updateActivity();
+	state = STATE_CONNECTING;
 }
 
 void Client::on(Connected) throw() {
 	updateActivity();
 	ip = socket->getIp();
 	fire(ClientListener::Connected(), this);
+	state = STATE_PROTOCOL;
+}
+
+void Client::on(Failed, const string& aLine) throw() {
+	state = STATE_DISCONNECTED;
+	socket->removeListener(this);
+	fire(ClientListener::Failed(), this, aLine);
 }
 
 void Client::disconnect(bool graceLess) {
-	if(!socket)
-		return;
-	socket->disconnect(graceLess);
+	if(socket) 
+		socket->disconnect(graceLess);
 }
 
 void Client::updateCounts(bool aRemove) {
@@ -166,5 +172,13 @@ string Client::getLocalIp() const {
 	return lip;
 }
 
-void Client::on(Second, uint32_t) throw() {
+void Client::on(Line, const string& /*aLine*/) throw() {
+	updateActivity();
+}
+
+void Client::on(Second, uint32_t aTick) throw() {
+	if(state == STATE_DISCONNECTED && getAutoReconnect() && (aTick > (getLastActivity() + getReconnDelay() * 1000)) ) {
+		// Try to reconnect...
+		connect();
+	}
 }

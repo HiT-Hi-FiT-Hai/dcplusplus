@@ -100,6 +100,37 @@ typedef pair<wstring, wstring> WStringPair;
 typedef vector<WStringPair> WStringPairList;
 typedef WStringPairList::iterator WStringPairIter;
 
+#if defined(_MSC_VER)
+#define _LL(x) x##ll
+#define _ULL(x) x##ull
+#define I64_FMT "%I64d"
+#define U64_FMT "%I64d"
+
+#elif defined(SIZEOF_LONG) && SIZEOF_LONG == 8
+#define _LL(x) x##l
+#define _ULL(x) x##ul
+#define I64_FMT "%ld"
+#define U64_FMT "%ld"
+#else
+#define _LL(x) x##ll
+#define _ULL(x) x##ull
+#define I64_FMT "%lld"
+#define U64_FMT "%lld"
+#endif
+
+#ifdef _WIN32
+
+# define PATH_SEPARATOR '\\'
+# define PATH_SEPARATOR_STR "\\"
+
+#else
+
+# define PATH_SEPARATOR '/'
+# define PATH_SEPARATOR_STR "/"
+
+#endif
+
+
 typedef HASH_MAP<wstring, wstring> WStringMap;
 typedef WStringMap::iterator WStringMapIter;
 

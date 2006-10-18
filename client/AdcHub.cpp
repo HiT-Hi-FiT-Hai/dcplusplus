@@ -39,7 +39,7 @@ const string AdcHub::ADCS_FEATURE("ADC0");
 const string AdcHub::TCP4_FEATURE("TCP4");
 const string AdcHub::UDP4_FEATURE("UDP4");
 
-AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), state(STATE_PROTOCOL), sid(0), reconnect(true) {
+AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), sid(0) {
 	TimerManager::getInstance()->addListener(this);
 }
 
@@ -47,6 +47,7 @@ AdcHub::~AdcHub() throw() {
 	TimerManager::getInstance()->removeListener(this);
 	clearUsers();
 }
+
 
 OnlineUser& AdcHub::getUser(const uint32_t aSID, const CID& aCID) {
 	OnlineUser* ou = findUser(aSID);
@@ -146,6 +147,7 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 
 	if(u->getUser() == getMyIdentity().getUser()) {
 		state = STATE_NORMAL;
+		setAutoReconnect(true);
 		setMyIdentity(u->getIdentity());
 		updateCounts(false);
 	}
@@ -219,7 +221,13 @@ void AdcHub::handle(AdcCommand::GPA, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
-	putUser(AdcCommand::toSID(c.getParam(0)));
+	uint32_t s = AdcCommand::toSID(c.getParam(0));
+	putUser(s);
+
+	// No use to hammer if we're banned
+	if(s == sid &&  c.hasFlag("TL", 1)) {
+		setAutoReconnect(false);
+	}
 }
 
 void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
@@ -574,16 +582,24 @@ string AdcHub::checkNick(const string& aNick) {
 	return tmp;
 }
 
-void AdcHub::on(Connected) throw() {
-	dcassert(state == STATE_PROTOCOL);
-	lastInfoMap.clear();
-	reconnect = true;
-	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("ADBAS0"));
+void AdcHub::send(const AdcCommand& cmd) {
+	if(cmd.getType() == AdcCommand::TYPE_UDP)
+		sendUDP(cmd);
+	send(cmd.toString(sid));
+}
 
-	fire(ClientListener::Connected(), this);
+void AdcHub::on(Connected) throw() {
+	Client::on(Connected());
+
+	lastInfoMap.clear();
+	sid = 0;
+
+	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("ADBAS0"));
 }
 
 void AdcHub::on(Line, const string& aLine) throw() {
+	Client::on(Line(), aLine);
+
 	if(BOOLSETTING(ADC_DEBUG)) {
 		fire(ClientListener::StatusMessage(), this, "<ADC>" + aLine + "</ADC>");
 	}
@@ -592,23 +608,12 @@ void AdcHub::on(Line, const string& aLine) throw() {
 
 void AdcHub::on(Failed, const string& aLine) throw() {
 	clearUsers();
-	socket->removeListener(this);
-	state = STATE_PROTOCOL;
-	fire(ClientListener::Failed(), this, aLine);
-}
-
-void AdcHub::send(const AdcCommand& cmd) {
-	dcassert(socket);
-	if(!socket)
-		return;
-	if(cmd.getType() == AdcCommand::TYPE_UDP)
-		sendUDP(cmd);
-	send(cmd.toString(sid));
+	Client::on(Failed(), aLine);
 }
 
 void AdcHub::on(Second, uint32_t aTick) throw() {
-	if(getAutoReconnect() && state == STATE_PROTOCOL && (getReconnecting() || ((getLastActivity() + getReconnDelay() * 1000) < aTick)) ) {
-		// Try to reconnect...
-		connect();
+	Client::on(Second(), aTick);
+	if(state == STATE_NORMAL && (aTick > (getLastActivity() + 120*1000)) ) {
+		send("\n", 1);
 	}
 }

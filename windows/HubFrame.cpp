@@ -37,10 +37,10 @@
 
 HubFrame::FrameMap HubFrame::frames;
 
-int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 125 };
-int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL, COLUMN_CID };
+int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_IP, COLUMN_EMAIL, COLUMN_CID };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::EMAIL, ResourceManager::CID };
+ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::IP_BARE, ResourceManager::EMAIL, ResourceManager::CID };
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -463,6 +463,11 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
 	columns[COLUMN_TAG] = Text::toT(identity.getTag());
 	columns[COLUMN_CONNECTION] = Text::toT(identity.getConnection());
+	string ip = identity.getIp();
+	string country = ip.empty()?Util::emptyString:Util::getIpCountry(ip);
+	if (!country.empty())
+		ip = country + " (" + ip + ")";
+	columns[COLUMN_IP] = Text::toT(ip);
 	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
 	columns[COLUMN_CID] = Text::toT(identity.getUser()->getCID().toBase32());
 
@@ -899,6 +904,45 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 	}
 }
 
+string HubFrame::stripNick(const string& nick) const {
+	if (nick.substr(0, 1) != "[") return nick;
+	string::size_type x = nick.find(']');
+	string ret;
+	// Avoid full deleting of [IMCOOL][CUSIHAVENOTHINGELSETHANBRACKETS]-type nicks
+	if ((x != string::npos) && (nick.substr(x+1).length() > 0)) {
+		ret = nick.substr(x+1);
+	} else {
+		ret = nick;
+	}
+	return ret;
+}
+
+//Has fun side-effects. Otherwise needs reference arguments or multiple-return-values.
+tstring HubFrame::scanNickPrefix(const tstring& prefixT) {
+	string prefix = Text::fromT(prefixT), maxPrefix;
+	tabCompleteNicks.clear();
+	for (UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i) {
+		string prevNick, nick = i->second->getIdentity().getNick(), wholeNick = nick;
+
+		do {
+			string::size_type lp = prefix.size(), ln = nick.size();
+			if ((ln >= lp) && (!Util::strnicmp(nick, prefix, lp))) {
+				if (maxPrefix == Util::emptyString) maxPrefix = nick;	//ugly hack
+				tabCompleteNicks.push_back(nick);
+				tabCompleteNicks.push_back(wholeNick);
+				maxPrefix = maxPrefix.substr(0, mismatch(maxPrefix.begin(),
+					maxPrefix.begin()+min(maxPrefix.size(), nick.size()),
+					nick.begin(), compareCharsNoCase).first - maxPrefix.begin());
+			}
+
+			prevNick = nick;
+			nick = stripNick(nick);
+		} while (prevNick != nick);
+	}
+
+	return Text::toT(maxPrefix);
+}
+
 void HubFrame::onTab() {
 	if(ctrlMessage.GetWindowTextLength() == 0) {
 		handleTab(WinUtil::isShift());
@@ -936,49 +980,34 @@ void HubFrame::onTab() {
 		else
 			textStart++;
 
-		int start = ctrlUsers.GetNextItem(-1, LVNI_FOCUSED) + 1;
-		int i = start;
-		int j = ctrlUsers.GetItemCount();
+		if (inTabComplete) {
+			// Already pressed tab once. Output nick candidate list.
+			tstring nicks;
+			for (StringList::const_iterator i = tabCompleteNicks.begin(); i < tabCompleteNicks.end(); i+=2)
+				nicks.append(Text::toT(*i + " "));
+			addClientLine(nicks);
+			inTabComplete = false;
+		} else {
+			// First tab. Maximally extend proposed nick.
+			tstring nick = scanNickPrefix(complete);
+			if (tabCompleteNicks.empty()) return;
 
-		bool firstPass = i < j;
-		if(!firstPass)
-			i = 0;
-		while(firstPass || (!firstPass && i < start)) {
-			UserInfo* ui = ctrlUsers.getItemData(i);
-			const tstring& nick = ui->columns[COLUMN_NICK];
-			bool found = (Util::strnicmp(nick, complete, complete.length()) == 0);
-			tstring::size_type x = 0;
-			if(!found) {
-				// Check if there's one or more [ISP] tags to ignore...
-				tstring::size_type y = 0;
-				while(nick[y] == _T('[')) {
-					x = nick.find(_T(']'), y);
-					if(x != string::npos) {
-						if(Util::strnicmp(nick.c_str() + x + 1, complete.c_str(), complete.length()) == 0) {
-							found = true;
-							break;
-						}
-					} else {
-						break;
-					}
-					y = x + 1; // assuming that nick[y] == '\0' is legal
-				}
-			}
-			if(found) {
-				if((start - 1) != -1) {
-					ctrlUsers.SetItemState(start - 1, 0, LVNI_SELECTED | LVNI_FOCUSED);
-				}
+			// Maybe it found a unique match. If userlist showing, highlight.
+			if (showUsers && tabCompleteNicks.size() == 2) {
+				int i = ctrlUsers.findItem(Text::toT(tabCompleteNicks[1]));
 				ctrlUsers.SetItemState(i, LVNI_FOCUSED | LVNI_SELECTED, LVNI_FOCUSED | LVNI_SELECTED);
 				ctrlUsers.EnsureVisible(i, FALSE);
-				ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
+			}
+
+			ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
+			// no shift, use partial nick when appropriate
+			if(GetAsyncKeyState(VK_SHIFT) & 0x8000) {
 				ctrlMessage.ReplaceSel(nick.c_str());
-				return;
+			} else {
+				ctrlMessage.ReplaceSel(Text::toT(stripNick(Text::fromT(nick))).c_str());
 			}
-			i++;
-			if(i == j) {
-				firstPass = false;
-				i = 0;
-			}
+
+			inTabComplete = true;
 		}
 	}
 }
@@ -990,7 +1019,7 @@ LRESULT HubFrame::onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN)
-		complete.clear();
+		complete.clear(), inTabComplete = false;
 
 	if (uMsg != WM_KEYDOWN) {
 		switch(wParam) {

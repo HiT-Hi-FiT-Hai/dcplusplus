@@ -37,8 +37,8 @@ class NmdcHub : public Client, private Flags
 {
 public:
 	using Client::send;
+	using Client::connect;
 
-	virtual void connect();
 	virtual void connect(const OnlineUser& aUser);
 
 	virtual void hubMessage(const string& aMessage);
@@ -57,8 +57,6 @@ public:
 	virtual void send(const AdcCommand&) { dcassert(0); }
 
 	static string validateMessage(string tmp, bool reverse);
-
-	GETSET(int, supportFlags, SupportFlags);
 private:
 	friend class ClientManager;
 	enum SupportFlags {
@@ -67,13 +65,6 @@ private:
 		SUPPORTS_USERIP2 = 0x04
 	};
 
-	enum States {
-		STATE_CONNECT,
-		STATE_LOCK,
-		STATE_HELLO,
-		STATE_CONNECTED
-	} state;
-
 	mutable CriticalSection cs;
 
 	typedef HASH_MAP_X(string, OnlineUser*, noCaseStringHash, noCaseStringEq, noCaseStringLess) NickMap;
@@ -81,6 +72,7 @@ private:
 
 	NickMap users;
 
+	int supportFlags;
 	uint32_t lastUpdate;
 	string lastMyInfoA, lastMyInfoB;
 
@@ -123,7 +115,8 @@ private:
 	// TimerManagerListener
 	virtual void on(Second, uint32_t aTick) throw();
 
-	virtual void on(Line, const string& l) throw() { onLine(l); }
+	virtual void on(Connected) throw();
+	virtual void on(Line, const string& l) throw();
 	virtual void on(Failed, const string&) throw();
 
 };

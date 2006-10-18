@@ -153,7 +153,6 @@ public:
 	GETSET(uint32_t, lastActivity, LastActivity);
 	GETSET(bool, registered, Registered);
 	GETSET(bool, autoReconnect, AutoReconnect);
-	GETSET(bool, reconnecting, Reconnecting);
 
 	GETSET(string, currentNick, CurrentNick);
 	GETSET(string, currentDescription, CurrentDescription);
@@ -168,6 +167,15 @@ protected:
 		volatile long op;
 		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; }
 	};
+
+	enum States {
+		STATE_CONNECTING,	///< Waiting for socket to connect
+		STATE_PROTOCOL,		///< Protocol setup
+		STATE_IDENTIFY,		///< Nick setup
+		STATE_VERIFY,		///< Checking password
+		STATE_NORMAL,		///< Running
+		STATE_DISCONNECTED,	///< Nothing in particular
+	} state;
 
 	BufferedSocket* socket;
 
@@ -184,6 +192,11 @@ protected:
 
 	// TimerManagerListener
 	virtual void on(Second, uint32_t aTick) throw();
+	// BufferedSocketListener
+	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
+	virtual void on(Connected) throw();
+	virtual void on(Line, const string& aLine) throw();
+	virtual void on(Failed, const string&) throw();
 
 private:
 
@@ -204,12 +217,6 @@ private:
 	char separator;
 	bool secure;
 	CountType countType;
-
-	// BufferedSocketListener
-	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
-	virtual void on(Connected) throw();
-
-
 };
 
 #endif // !defined(CLIENT_H)
