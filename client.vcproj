@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"
 				StringPooling="true"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
@@ -128,7 +128,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)stlport&quot;;&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)wtl&quot;;&quot;$(SolutionDir)yassl\include&quot;"
 				StringPooling="true"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
