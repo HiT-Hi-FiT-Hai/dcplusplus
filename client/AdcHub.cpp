@@ -73,6 +73,16 @@ OnlineUser* AdcHub::findUser(const uint32_t aSID) const {
 	return i == users.end() ? NULL : i->second;
 }
 
+OnlineUser* AdcHub::findUser(const CID& aCID) const {
+	Lock l(cs);
+	for(SIDMap::const_iterator i = users.begin(); i != users.end(); ++i) {
+		if(i->second->getUser()->getCID() == aCID) {
+			return i->second;
+		}
+	}
+	return 0;
+}
+
 void AdcHub::putUser(const uint32_t aSID) {
 	OnlineUser* ou = 0;
 	{
@@ -112,12 +122,27 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	string cid;
 
 	OnlineUser* u = 0;
-	if(c.getParam("ID", 0, cid))
-		u = &getUser(c.getFrom(), CID(cid));
-	else if(c.getFrom() == AdcCommand::HUB_SID)
+	if(c.getParam("ID", 0, cid)) {
+		u = findUser(CID(cid));
+		if(u) {
+			if(u->getIdentity().getSID() != c.getFrom()) {
+				// Same CID but different SID not allowed - buggy hub?
+				string nick;
+				if(!c.getParam("NI", 0, nick)) {
+					nick = "[nick unknown]";
+				}
+				fire(ClientListener::StatusMessage(), this, u->getIdentity().getNick() + " (" + u->getIdentity().getSIDString() + 
+					") has same CID {" + cid + "} as " + nick + " (" + AdcCommand::fromSID(c.getFrom()) + "), ignoring.");
+				return;
+			}
+		} else {
+			u = &getUser(c.getFrom(), CID(cid));
+		}
+	} else if(c.getFrom() == AdcCommand::HUB_SID) {
 		u = &getUser(c.getFrom(), CID());
-	else
+	} else {
 		u = findUser(c.getFrom());
+	}
 
 	if(!u) {
 		dcdebug("AdcHub::INF Unknown user / no ID\n");

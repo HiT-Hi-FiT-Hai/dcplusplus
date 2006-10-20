@@ -223,10 +223,9 @@ ShareManager::Directory::File::Set::const_iterator ShareManager::findFile(const 
 		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 	}
 
-
 	string::size_type i = virtualFile.find('/', 1);
 	if(i == string::npos || i == 1) {
-		return false;
+		throw ShareException(UserConnection::FILE_NOT_AVAILABLE);
 	}
 
 	string virtualName = virtualFile.substr(1, i-1);
