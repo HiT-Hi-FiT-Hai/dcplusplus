@@ -103,8 +103,10 @@ information through their naming. However every file, even an empty
 one, will consume some drive space.</dd>
   <dt>Don't download files already in share</dt>
   <dd>This option will stop you from downloading files which already
-exist in one of your shared directories. Note that this only works with
-those files which have a TTH.</dd>
+exist in one of your shared directories.</dd>
+  <dt>Don't download files already in queue</dt>
+  <dd>This option will stop you from downloading files which already
+exist in your queue.</dd>
   <dt><a name="antifrag"></a>Use AntiFragmentation Method for
 Downloads</dt>
   <dd>This option will try to reserve the full space needed for a file
@@ -124,8 +126,6 @@ the leaves, retrieved from the remote client, of the TTH. If the
 block fails verification, the previous block in the file will be tried,
 and so on, until a good block is found, or there is no more data in the
 file.</dd>
-  <dt>Only download files that have a TTH</dt>
-  <dd>With this option enabled, DC++ will <span style="font-weight: bold;">only</span> download files that have a TTH.</dd>
 </dl>
 </div>
 </body>

@@ -122,7 +122,6 @@ typedef unsigned __int64 uint64_t;
 #include <utility>
 #include <functional>
 
-// Use maps if hash_maps aren't available
 #ifdef _STLPORT_VERSION
 # define HASH_SET hash_set
 # define HASH_MAP hash_map

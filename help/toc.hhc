@@ -29,6 +29,10 @@
 			<param name="Local" value="adlsearch.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Public Hubs">
+			<param name="Local" value="public_hubs.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Favorite Hubs">
 			<param name="Local" value="favorite_hubs.html">
 			</OBJECT>
@@ -120,6 +124,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Colors and sounds">
 				<param name="Local" value="settings_colors_and_sounds.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Tabs">
+				<param name="Local" value="settings_tabs.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Windows">

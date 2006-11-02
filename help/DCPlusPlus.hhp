@@ -29,12 +29,14 @@ settings_connection.html
 settings_windows.html
 settings_queue.html
 settings_certs.html
+settings_tabs.html
 chat_commands.html
 non-routable.html
 plusplus_tag.html
 netiquette.html
 credits.html
 adlsearch.html
+public_hubs.html
 favorite_hubs.html
 favorite_users.html
 fdl.html
@@ -73,6 +75,7 @@ IDD_UPLOADPAGE=settings_sharing.html
 IDD_WINDOWSPAGE=settings_windows.html
 IDR_ADLSEARCH=adlsearch.html
 IDD_CERTSPAGE=settings_certs.html
+IDD_TABSPAGE=settings_tabs.html
 
 [MAP]
 #include ..\windows\resource.h

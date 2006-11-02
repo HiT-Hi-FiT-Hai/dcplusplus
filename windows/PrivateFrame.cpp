@@ -17,6 +17,7 @@
  */
 
 #include "stdafx.h"
+#include <mmsystem.h>
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
@@ -86,11 +87,17 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 		}
 
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-			MessageBeep(MB_OK);
+			if (SETTING(BEEPFILE).empty())
+				MessageBeep(MB_OK);
+			else
+				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
 		}
 	} else {
 		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
-			MessageBeep(MB_OK);
+			if (SETTING(BEEPFILE).empty())
+				MessageBeep(MB_OK);
+			else
+				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
 		}
 		i->second->addLine(aMessage);
 	}

@@ -3,9 +3,6 @@ The most important thing about compiling: If it didn't work, *you* screwed up.
 How to compile in 3 easy steps:
 
 1) Download the source DC++ download site. Unpack the DC++ source.
-   Download STLPort 5.0.2 from http://sf.net/stlport and unpack it to a temporary folder. Inside you'll
-   find a folder named stlport which contains files such as "algorithm". Copy the contents of this folder
-   to the stlport folder where you unpacked DC++.
    Download WTL from http://sf.net/projects/wtl. Unpack it to the wtl folder.
 
 2) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
@@ -13,9 +10,8 @@ How to compile in 3 easy steps:
    one file, you can ask someone at the dev hub to supply it for you (or look for it in the DC++
    bugzilla, it's attached to one of the bugs).
 
-3) Open the solution in vc7.1 (2004) and press your build button. If you find your executable unreasonably large, 
+3) Open the solution in vc8.0 (2005) and press your build button. If you find your executable unreasonably large, 
    you probably compiled in debug mode - switch to release once you're done testing the code.
-
 
 Note;	You'll need DBGHELP.dll from the binary distribution unless you're using WinXP, otherwise 
         you'll get errors saying symbols are missing when running your compiled executable. My copy 
@@ -61,4 +57,3 @@ the copyright is split out over a million people, each of which could stop furth
 to make it easier for us to defend the gpl against violators. If you don't like this policy, start your own 
 distribution, if you're lucky it might become more popular than the original =). Please
 state explicitly in the bugzilla that you give me copyright over the code if the submission is larger than trivial.
-

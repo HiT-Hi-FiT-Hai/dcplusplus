@@ -463,6 +463,7 @@
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNetwork">Connection settings</String>
+		<String Name="SettingsNotificationSound">Notification sound</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
 		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
@@ -519,6 +520,7 @@
 		<String Name="SettingsPrioNormal">Normal prio max size</String>
 		<String Name="SettingsPrioLow">Low prio max size</String>
 		<String Name="SettingsPrioLowest">Set lowest prio for newly added files larger than Low prio size</String>
+		<String Name="SettingsTabs">Appearance\Tabs</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>

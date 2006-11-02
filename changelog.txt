@@ -9,6 +9,9 @@
 * [bug 1080] Better nick tab completion (thanks cologic)
 * [bug 1081] Added user IP in hub frame (thanks cologic)
 * No more STLport for the time being
+* Linux checks for invalid file types (thanks steven sheehy)
+* Fixed potential crash when search began with space
+* [bug 1085] Better sound playing settings (thanks cologic / ullner)
 
 -- 0.698 2006-10-10 --
 * [bug 1065] Code cleanup (thanks steven sheehy)

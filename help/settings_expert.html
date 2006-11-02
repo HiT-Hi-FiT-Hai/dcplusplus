@@ -39,21 +39,15 @@ will open, in mebibytes. This setting helps protect against
 malformed file lists that require large amounts of memory to decode.
 &nbsp;You may need to reduce or increase the value of this setting
 based on personal experience. (default: 512 MiB)</dd>
-  <dt>CID</dt>
-  <dd>This is your unique client ID (CID) used to identify you on
-ADC hubs.</dd>
+  <dt>PID</dt>
+  <dd>This is your unique private ID (PID). This will later with an algorithm be used to identify you on ADC hubs. <span style="font-weight: bold;">Do not share this with other users.</span></dd>
   <dt>Auto refresh time</dt>
   <dd>This controls the interval at which your shared directories
 are rescanned for new and changed content. &nbsp;This is measured
 in minutes (default: 60 minutes)</dd>
-
   <dt>Write Buffer Size</dt>
   <dd>This controls the size of the chunks that DC++ writes to
 disk for downloads. Measured in kibibytes. (default: 16 KiB)</dd>
-  <dt>Max Tab Rows</dt>
-  <dd>The maximum number of rows of tabs that DC++ will make. Any
-tabs that do not fit will be accessible through the chevron at the
-right of the tab control. (default: 2)</dd>
   <dt><a name="searchhistory"></a>Search
 history</dt>
   <dd>Number of old search lines that will be shown in the Search
@@ -76,6 +70,8 @@ in bytes. (default: 8192 bytes)</dd>
   <dt>Socket write buffer</dt>
   <dd>The size of the buffer DC++ use to write to sockets.
 Measured in bytes. (default: 8192 bytes)</dd>
+  <dt>Auto-search limit</dt>
+  <dd>This will limit the amount of sources a file can have before it will no longer be auto searched for. For example, if this option is set to 2, if a file has more than or exactly 2 sources, the file will be excluded from the auto-search list.</dd>
 </dl>
 </body>
 </html>

@@ -214,6 +214,12 @@ File::File(const string& aFileName, int access, int mode) throw(FileException) {
 		m |= O_TRUNC;
 	}
 
+	struct stat s;
+	if(lstat(aFileName.c_str(), &s) != -1) {
+		if(!S_ISREG(s.st_mode) && !S_ISLNK(s.st_mode))
+			throw FileException("Invalid file type");
+	}
+
 	h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	if(h == -1)
 		throw FileException("Could not open file");
@@ -417,7 +423,7 @@ StringList File::findFiles(const string& path, const string& pattern) {
 	DIR* dir = opendir(Util::getConfigPath().c_str());
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
-			if (fnmatch("files?*.xml.bz2", ent->d_name, 0) == 0) {
+			if (fnmatch(pattern.c_str(), ent->d_name, 0) == 0) {
 				ret.push_back(path + ent->d_name);
 			}
 		}

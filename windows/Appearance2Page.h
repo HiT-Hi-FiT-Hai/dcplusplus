@@ -41,6 +41,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
+		COMMAND_HANDLER(IDC_BROWSE, BN_CLICKED, onBrowse)
 		COMMAND_ID_HANDLER(IDC_SELTEXT, onClickedText)
 		COMMAND_ID_HANDLER(IDC_SELWINCOLOR, onClickedBackground)
 		COMMAND_ID_HANDLER(IDC_SETTINGS_UPLOAD_BAR_COLOR, onPickColor)
@@ -49,6 +50,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClickedText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBackground(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -66,7 +68,6 @@ protected:
 
 	static Item items[];
 	static TextItem texts[];
-	static ListItem listItems[];
 
 	CStatic ctrlExample;
 	COLORREF fg, bg, upBar, downBar;

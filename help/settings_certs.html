@@ -10,13 +10,23 @@
 
 <dl style="margin-left: 40px;">
   <dt>Private key file</dt>
-  <dd></dd>
+  <dd>This file is your personal and private certificate file. <span style="font-weight: bold;">Do not share this with other users or hubs.</span> If you do, you risk allowing others to use your certificate and in essence pose as you.</dd>
   <dt>Own certificate file</dt>
-  <dd></dd>
+  <dd>This file is the certificate file you should give to other users and hubs that you want to consider "trusted". </dd>
   <dt>Trusted certificates path</dt>
-  <dd>Where trusted certificates will be stored. (default: the Certs\ subdirectory of where you've installed the application.) </dd>
+  <dd>Where trusted certificates from users or hubs will be stored. (default: the Certs\ subdirectory of where you've installed the application.) </dd>
 </dl>
-
+<h2>Options</h2>
+<dl style="margin-left: 40px;">
+  <dt>Use SSL when remote client supports it</dt>
+  <dd>When this option is enabled, DC++ will connect to&nbsp;remote
+clients on an ADC hub that support SSL using SSL. &nbsp;This option is
+an experimental one, and shouldn't imply that DC++ is secure in any way.</dd>
+  <dt>Allow TLS connections to hubs without trusted certificate</dt>
+  <dd>With this option disabled, all hubs you connect to must have a certificate in your Trusted certificate folder.</dd>
+  <dt>Allow TLS connections to clients without trusted certificate</dt>
+  <dd>With this option disabled, all client you connect to must have a certificate in your Trusted certificate folder.</dd>
+</dl>
 To see effects, please restart DC++.<br>
 <br>
 SSL support is an experimental feature and doesn't imply that DC++ is secure in any way.

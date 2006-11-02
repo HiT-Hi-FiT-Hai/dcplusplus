@@ -54,6 +54,7 @@
 #define IDD_WINDOWSPAGE                 244
 #define IDD_QUEUEPAGE                   245
 #define IDD_CERTIFICATESPAGE            246
+#define IDD_TABSPAGE                    247
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -431,6 +432,8 @@
 #define IDC_CLOSE_ALL_SEARCH_FRAME      1426
 #define IDC_SETTINGS_PORT_TLS           1427
 #define IDC_MATCH_ALL                   1428
+#define IDC_BEEPFILE                    1429
+#define IDC_BEEP_NOTIFICATION           1430
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -472,7 +475,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        247
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1429
+#define _APS_NEXT_CONTROL_VALUE         1431
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

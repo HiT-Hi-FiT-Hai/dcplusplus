@@ -36,6 +36,7 @@
 #include "WindowsPage.h"
 #include "QueuePage.h"
 #include "CertificatesPage.h"
+#include "TabsPage.h"
 
 PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS), 0, parent)
 {
@@ -48,6 +49,7 @@ PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertyShee
 	pages[n++] = new UploadPage(s);
 	pages[n++] = new AppearancePage(s);
 	pages[n++] = new Appearance2Page(s);
+	pages[n++] = new TabsPage(s);
 	pages[n++] = new WindowsPage(s);
 	pages[n++] = new AdvancedPage(s);
 	pages[n++] = new LogPage(s);

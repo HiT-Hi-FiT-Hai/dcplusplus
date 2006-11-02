@@ -44,7 +44,7 @@ const string SettingsManager::settingTags[] =
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat",
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem",
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
-	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath",
+	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath", "BeepFile",
 	"SENTRY",
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",

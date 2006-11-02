@@ -1295,6 +1295,12 @@ void HubFrame::on(HubUpdated, Client*) throw() {
 		hubName += " - " + client->getHubDescription();
 	}
 	hubName += " (" + client->getHubUrl() + ")";
+#ifdef _DEBUG
+	string version = client->getHubIdentity().get("VE");
+	if(!version.empty()) {
+		hubName += " - " + version;
+	}
+#endif
 	speak(SET_WINDOW_TITLE, hubName);
 }
 void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() {

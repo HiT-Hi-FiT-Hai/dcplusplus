@@ -29,7 +29,7 @@
 class PropertiesDlg : public TreePropertySheet
 {
 public:
-	enum { numPages = 14 };
+	enum { numPages = 15 };
 
 	BEGIN_MSG_MAP(PropertiesDlg)
 		COMMAND_ID_HANDLER(IDOK, onOK)

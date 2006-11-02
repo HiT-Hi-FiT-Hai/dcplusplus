@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="DCPlusPlus"
 	ProjectGUID="{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}"
 	RootNamespace="DCPlusPlus"
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="libunicows.lib SHFolder.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib ws2_32.lib"
+				AdditionalDependencies="libunicows.lib SHFolder.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib ws2_32.lib winmm.lib"
 				OutputFile="$(SolutionDir)App/$(ProjectName).exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -187,7 +187,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="libunicows.lib SHFolder.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib ws2_32.lib"
+				AdditionalDependencies="libunicows.lib SHFolder.lib kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib htmlhelp.lib ws2_32.lib winmm.lib"
 				OutputFile="$(SolutionDir)App/$(ProjectName).exe"
 				Version=""
 				LinkIncremental="1"
@@ -509,6 +509,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\TabsPage.cpp"
+				>
+			</File>
+			<File
 				RelativePath="windows\TextFrame.cpp"
 				>
 			</File>
@@ -731,6 +735,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\SystemFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\TabsPage.h"
 				>
 			</File>
 			<File
