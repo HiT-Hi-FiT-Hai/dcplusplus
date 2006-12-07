@@ -278,13 +278,20 @@ void SearchFrame::onEnter() {
 	{
 		Lock l(cs);
 		search = StringTokenizer<tstring>(s, ' ').getTokens();
+		s.clear();
+		//strip out terms beginning with -
+		for(TStringList::iterator si = search.begin(); si != search.end(); ) {
+			if(si->empty()) {
+				si = search.erase(si);
+				continue;
+			}
+			if ((*si)[0] != _T('-')) 
+				s += *si + _T(' ');	
+		}
+
+		s = s.substr(0, max(s.size(), static_cast<tstring::size_type>(1)) - 1);
 	}
 
-	//strip out terms beginning with -
-	s.clear();
-	for (TStringList::const_iterator si = search.begin(); si != search.end(); ++si)
-		if ((*si)[0] != _T('-')) s += *si + _T(' ');	//Shouldn't get 0-length tokens, so safely assume at least a first char.
-	s = s.substr(0, max(s.size(), static_cast<tstring::size_type>(1)) - 1);
 
 	SearchManager::SizeModes mode((SearchManager::SizeModes)ctrlMode.GetCurSel());
 	if(llsize == 0)

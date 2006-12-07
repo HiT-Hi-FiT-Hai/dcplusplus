@@ -729,7 +729,7 @@ Download* QueueManager::getDownload(UserConnection& aSource, bool supportsTrees)
 	if(d->getSize() != -1) {
 		if(HashManager::getInstance()->getTree(d->getTTH(), d->getTigerTree())) {
 			d->setTreeValid(true);
-		} else if(supportsTrees && !q->getCurrent()->isSet(QueueItem::Source::FLAG_NO_TREE) && d->getSize() > HashManager::MIN_BLOCK_SIZE) {
+		} else if(supportsTrees && !q->getSource(aUser)->isSet(QueueItem::Source::FLAG_NO_TREE) && d->getSize() > HashManager::MIN_BLOCK_SIZE) {
 			// Get the tree unless the file is small (for small files, we'd probably only get the root anyway)
 			d->setFlag(Download::FLAG_TREE_DOWNLOAD);
 			d->getTigerTree().setFileSize(d->getSize());

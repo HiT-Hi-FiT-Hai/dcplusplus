@@ -383,7 +383,7 @@ void File::ensureDirectory(const string& aFile) throw() {
 }
 
 bool File::isAbsolute(const string& path) throw() {
-	return path.size() > 1 && path[0] = '/';
+	return path.size() > 1 && path[0] == '/';
 }
 
 #endif // !_WIN32

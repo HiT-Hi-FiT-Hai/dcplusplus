@@ -41,8 +41,8 @@
 struct CompareItems;
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
-	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
-	public UserInfoBaseHandler<HubFrame>
+	public CSplitterImpl<HubFrame>, private FavoriteManagerListener, private TimerManagerListener,
+	public UCHandler<HubFrame>, public UserInfoBaseHandler<HubFrame>
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("HubFrame"), IDR_HUB, 0, COLOR_3DFACE);
@@ -122,6 +122,7 @@ public:
 	void runUserCommand(::UserCommand& uc);
 
 	static void openWindow(const tstring& server);
+	static void resortUsers();
 	static void closeDisconnected();
 
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -226,10 +227,19 @@ private:
 
 		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
 			if(col == COLUMN_NICK) {
-				if(a->getIdentity().isOp() && !b->getIdentity().isOp()) {
+				bool a_isOp = a->getIdentity().isOp(),
+					b_isOp = b->getIdentity().isOp();
+				if(a_isOp && !b_isOp)
 					return -1;
-				} else if(!a->getIdentity().isOp() && b->getIdentity().isOp()) {
+				if(!a_isOp && b_isOp)
 					return 1;
+				if(BOOLSETTING(SORT_FAVUSERS_FIRST)) {
+					bool a_isFav = FavoriteManager::getInstance()->isFavoriteUser(a->getIdentity().getUser()),
+						b_isFav = FavoriteManager::getInstance()->isFavoriteUser(b->getIdentity().getUser());
+					if(a_isFav && !b_isFav)
+						return -1;
+					if(!a_isFav && b_isFav)
+						return 1;
 				}
 			}
 			if(col == COLUMN_SHARED) {
@@ -384,6 +394,11 @@ private:
 
 	void updateStatusBar() { if(m_hWnd) speak(STATS); }
 
+	// FavoriteManagerListener
+	virtual void on(FavoriteManagerListener::UserAdded, const FavoriteUser& /*aUser*/) throw();
+	virtual void on(FavoriteManagerListener::UserRemoved, const FavoriteUser& /*aUser*/) throw();
+	void resortForFavsFirst(bool justDoIt = false);
+
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, uint32_t /*aTick*/) throw();
 
@@ -392,7 +407,7 @@ private:
 	virtual void on(Connected, Client*) throw();
 	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
 	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
-	virtual void on(UserRemoved, Client*, const OnlineUser&) throw();
+	virtual void on(ClientListener::UserRemoved, Client*, const OnlineUser&) throw();
 	virtual void on(Redirect, Client*, const string&) throw();
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(GetPassword, Client*) throw();

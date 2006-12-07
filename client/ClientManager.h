@@ -137,7 +137,7 @@ private:
 	void updateCachedIp();
 
 	// SettingsManagerListener
-	virtual void on(Load, SimpleXML&);
+	virtual void on(Load, SimpleXML&) throw();
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }

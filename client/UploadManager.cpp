@@ -371,8 +371,12 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 void UploadManager::addFailedUpload(const UserConnection& source, string filename) {
 	{
 		Lock l(cs);
-		if (!count_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, uint32_t>(source.getUser())))
+		UserList::iterator it = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, uint32_t>(source.getUser()));
+		if (it==waitingUsers.end()) {
 			waitingUsers.push_back(WaitingUser(source.getUser(), GET_TICK()));
+		} else {
+			it->second = GET_TICK();
+		}	
 		waitingFiles[source.getUser()].insert(filename);		//files for which user's asked
 	}
 

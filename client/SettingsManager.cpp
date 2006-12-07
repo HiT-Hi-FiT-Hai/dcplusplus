@@ -75,7 +75,7 @@ const string SettingsManager::settingTags[] =
 	"OpenWaitingUsers", "BoldWaitingUsers", "OpenSystemLog", "BoldSystemLog", "AutoRefreshTime",
 	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
-	"TLSPort", "FastHash",
+	"TLSPort", "FastHash", "SortFavUsersFirst", "ShowShellMenu",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -135,7 +135,7 @@ SettingsManager::SettingsManager()
 	setDefault(IGNORE_BOT_PMS, false);
 	setDefault(LIST_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://home.bandicoot.nl/adchublist.xml.bz2;http://www.hublist.org/PublicHubList.xml.bz2");
+	setDefault(HUBLIST_SERVERS, "http://home.bandicoot.nl/adchublist.xml.bz2;http://adchublist.com/hublist.xml.bz2;http://www.hublist.org/PublicHubList.xml.bz2;http://dchublist.com/hublist.xml.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
 	setDefault(LOG_DIRECTORY, Util::getConfigPath() + "Logs" PATH_SEPARATOR_STR);
@@ -269,6 +269,8 @@ SettingsManager::SettingsManager()
 	setDefault(ALLOW_UNTRUSTED_HUBS, true);
 	setDefault(ALLOW_UNTRUSTED_CLIENTS, true);
 	setDefault(FAST_HASH, true);
+	setDefault(SORT_FAVUSERS_FIRST, false);
+	setDefault(SHOW_SHELL_MENU, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

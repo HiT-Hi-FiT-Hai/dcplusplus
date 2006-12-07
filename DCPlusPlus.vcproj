@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="DCPlusPlus"
 	ProjectGUID="{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}"
 	RootNamespace="DCPlusPlus"
@@ -477,6 +477,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\ShellContextMenu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\SpyFrame.cpp"
 				>
 			</File>
@@ -715,6 +719,10 @@
 			</File>
 			<File
 				RelativePath=".\windows\SearchFrm.h"
+				>
+			</File>
+			<File
+				RelativePath=".\windows\ShellContextMenu.h"
 				>
 			</File>
 			<File

@@ -27,11 +27,10 @@
 #include "FastAlloc.h"
 
 #include "MerkleTree.h"
+#include "SimpleXML.h"
+#include "Streams.h"
 
 class ListLoader;
-class SimpleXML;
-class SimpleXMLException;
-class FileException;
 
 class DirectoryListing
 {

@@ -23,7 +23,7 @@
 #include "LogManager.h"
 #include "SettingsManager.h"
 
-#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 SSLSocket::SSLSocket(SSL_CTX* context) throw(SocketException) : ctx(context), ssl(0) {
 

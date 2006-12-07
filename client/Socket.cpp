@@ -109,7 +109,7 @@ short Socket::bind(short aPort, const string& aIp /* = 0.0.0.0 */) throw (Socket
 		check(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
 	}
 	int size = sizeof(sock_addr);
-	getsockname(sock, (sockaddr*)&sock_addr, &size);
+	getsockname(sock, (sockaddr*)&sock_addr, (socklen_t*)&size);
 	return ntohs(sock_addr.sin_port);
 }
 

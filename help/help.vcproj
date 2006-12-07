@@ -153,10 +153,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\public_hubs.html"
-				>
-			</File>
-			<File
 				RelativePath=".\favorite_hubs.html"
 				>
 			</File>
@@ -194,6 +190,10 @@
 			</File>
 			<File
 				RelativePath=".\plusplus_tag.html"
+				>
+			</File>
+			<File
+				RelativePath=".\public_hubs.html"
 				>
 			</File>
 			<File
@@ -250,9 +250,6 @@
 			</File>
 			<File
 				RelativePath=".\settings_windows.html"
-				>
-			<File
-				RelativePath=".\settings_tabs.html"
 				>
 			</File>
 			<File

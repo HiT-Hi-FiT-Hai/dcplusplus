@@ -22,15 +22,15 @@
 #include "Socket.h"
 #include "Singleton.h"
 
-class SSLSocket;
+#include <openssl/ssl.h>
 
-namespace yaSSL {
-	class SSL;
-	class SSL_CTX;
-	struct DH;
-}
+#ifndef SSL_SUCCESS
+#define SSL_SUCCESS 1
+#endif
 
+#ifdef YASSL_VERSION
 using namespace yaSSL;
+#endif
 
 class CryptoManager;
 

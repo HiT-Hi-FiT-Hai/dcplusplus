@@ -27,8 +27,6 @@
 #include "LogManager.h"
 #include "ClientManager.h"
 
-#include <openssl/ssl.h>
-
 #ifdef _WIN32
 #include "../bzip2/bzlib.h"
 #else
@@ -37,15 +35,19 @@
 
 CryptoManager::CryptoManager()
 :
-	clientContext(SSL_CTX_new(TLSv1_client_method())),
-	serverContext(SSL_CTX_new(TLSv1_server_method())),
-	clientVerContext(SSL_CTX_new(TLSv1_client_method())),
-	serverVerContext(SSL_CTX_new(TLSv1_server_method())),
 	dh(DH_new()),
 	certsLoaded(false),
 	lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"),
 	pk("DCPLUSPLUS" VERSIONSTRING "ABCABC")
 {
+	SSL_library_init();
+
+	// Probably should check the return value of these.
+	clientContext = SSL_CTX_new(TLSv1_client_method());
+	clientVerContext = SSL_CTX_new(TLSv1_client_method());
+	serverContext = SSL_CTX_new(TLSv1_server_method());
+	serverVerContext = SSL_CTX_new(TLSv1_server_method());
+
 	static unsigned char dh512_p[] =
 	{
 		0xDA,0x58,0x3C,0x16,0xD9,0x85,0x22,0x89,0xD0,0xE4,0xAF,0x75,
@@ -93,7 +95,6 @@ bool CryptoManager::TLSOk() const throw() {
 }
 
 void CryptoManager::generateCertificate() throw(CryptoException) {
-#ifdef _WIN32
 	// Generate certificate using OpenSSL
 	if(SETTING(TLS_PRIVATE_KEY_FILE).empty()) {
 		throw CryptoException("No private key file chosen");
@@ -101,6 +102,8 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 	if(SETTING(TLS_CERTIFICATE_FILE).empty()) {
 		throw CryptoException("No certificate file chosen");
 	}
+
+#ifdef _WIN32
 	wstring cmd = L"openssl.exe genrsa -out \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + L"\" 2048";
 	PROCESS_INFORMATION pi = { 0 };
 	STARTUPINFO si = { 0 };
@@ -124,6 +127,18 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 	WaitForSingleObject(pi.hProcess, INFINITE);
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
+#else
+	string cmd = "openssl genrsa -out \"" + Text::utf8ToAcp(SETTING(TLS_PRIVATE_KEY_FILE)) + "\" 2048";
+	if (system(cmd.c_str()) == -1) {
+		throw CryptoException("Failed to spawn process: openssl");
+	}
+
+	cmd = "openssl req -x509 -new -batch -days 3650 -key \"" + Text::utf8ToAcp(SETTING(TLS_PRIVATE_KEY_FILE)) +
+		"\" -out \"" + Text::utf8ToAcp(SETTING(TLS_CERTIFICATE_FILE)) + "\" -subj \"/CN=" +
+		Text::utf8ToAcp(ClientManager::getInstance()->getMyCID().toBase32()) + "\"";
+	if (system(cmd.c_str()) == -1) {
+		throw CryptoException("Failed to spawn process: openssl");
+	}
 #endif
 }
 

@@ -454,6 +454,8 @@
 #define IDC_REMOVE_SOURCES              8000
 #define IDC_DOWNLOAD_FAVORITE_DIRS      8500
 #define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 9000
+#define ID_SHELLCONTEXTMENU_MIN         10000
+#define ID_SHELLCONTEXTMENU_MAX         12000
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

@@ -143,6 +143,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			MoveWindow(rc, TRUE);
 	}
 
+	FavoriteManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 
 	return 1;
@@ -653,6 +654,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		TimerManager::getInstance()->removeListener(this);
+		FavoriteManager::getInstance()->removeListener(this);
 		client->removeListener(this);
 		client->disconnect(true);
 
@@ -1232,11 +1234,30 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 }
 
+void HubFrame::resortUsers() {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		i->second->resortForFavsFirst(true);
+}
+
 void HubFrame::closeDisconnected() {
 	for(FrameIter i=frames.begin(); i!= frames.end(); ++i) {
 		if (!(i->second->client->isConnected())) {
 			i->second->PostMessage(WM_CLOSE);
 		}
+	}
+}
+
+void HubFrame::on(FavoriteManagerListener::UserAdded, const FavoriteUser& /*aUser*/) throw() {
+	resortForFavsFirst();
+}
+void HubFrame::on(FavoriteManagerListener::UserRemoved, const FavoriteUser& /*aUser*/) throw() {
+	resortForFavsFirst();
+}
+
+void HubFrame::resortForFavsFirst(bool justDoIt /* = false */) {
+	if(justDoIt || BOOLSETTING(SORT_FAVUSERS_FIRST)) {
+		resort = true;
+		PostMessage(WM_SPEAKER);
 	}
 }
 
@@ -1265,7 +1286,7 @@ void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() 
 	updateUsers = true;
 }
 
-void HubFrame::on(UserRemoved, Client*, const OnlineUser& user) throw() {
+void HubFrame::on(ClientListener::UserRemoved, Client*, const OnlineUser& user) throw() {
 	speak(REMOVE_USER, user);
 }
 

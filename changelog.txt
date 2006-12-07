@@ -12,6 +12,13 @@
 * Linux checks for invalid file types (thanks steven sheehy)
 * Fixed potential crash when search began with space
 * [bug 1085] Better sound playing settings (thanks cologic / ullner)
+* [bug 1111] OpenSSL compatibility and some unix fixes (thanks steven sheehy)
+* [bug 1056] Added option to sort fav users above other users in hub frame (thanks poy)
+* [bug 1063] Added option to show shell context menu in finished frame (thanks poy)
+* [bug 1092] Fixed TTH tree being redownloaded (thanks stephan hohe)
+* [bug 1097] Fixed waiting users being removed (thanks stephan hohe)
+* [bug 1110] Added new adc hub list (thanks mafa_45)
+* [bug 1091] Added new nmdc hub lists (thanks poy)
 
 -- 0.698 2006-10-10 --
 * [bug 1065] Code cleanup (thanks steven sheehy)

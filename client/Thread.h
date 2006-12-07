@@ -105,6 +105,13 @@ public:
 		pthread_mutex_unlock(&mtx);
 		return ret;
 	}
+	static long safeExchange(volatile long& target, long value) {
+		pthread_mutex_lock(&mtx);
+		long ret = target;
+		target = value;
+		pthread_mutex_unlock(&mtx);
+		return ret;
+	}
 #endif
 
 protected:

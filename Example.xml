@@ -501,6 +501,7 @@
 		<String Name="SettingsSharedDirectories">Shared directories</String>
 		<String Name="SettingsShowJoins">Show joins / parts in chat by default</String>
 		<String Name="SettingsShowProgressBars">Show progress bars for transfers</String>
+		<String Name="SettingsShowShellMenu">Show shell menu in finished transfers</String>
 		<String Name="SettingsSkipZeroByte">Skip zero-byte files</String>
 		<String Name="SettingsSmallSendBuffer">Use small send buffer (enable if uploads slow downloads a lot)</String>
 		<String Name="SettingsSocks5">SOCKS5</String>
@@ -508,6 +509,7 @@
 		<String Name="SettingsSocks5Port">Port</String>
 		<String Name="SettingsSocks5Resolve">Use SOCKS5 server to resolve host names</String>
 		<String Name="SettingsSocks5Username">Login</String>
+		<String Name="SettingsSortFavusersFirst">Sort favorite users first</String>
 		<String Name="SettingsSounds">Sounds</String>
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
