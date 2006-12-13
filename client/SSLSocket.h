@@ -39,7 +39,7 @@ public:
 	virtual ~SSLSocket() throw() {}
 
 	virtual void accept(const Socket& listeningSocket) throw(SocketException);
-	virtual void connect(const string& aIp, short aPort) throw(SocketException);
+	virtual void connect(const string& aIp, uint16_t aPort) throw(SocketException);
 	virtual int read(void* aBuffer, int aBufLen) throw(SocketException);
 	virtual int write(const void* aBuffer, int aLen) throw(SocketException);
 	virtual int wait(uint32_t millis, int waitFor) throw(SocketException);

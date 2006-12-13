@@ -287,6 +287,7 @@ void SearchFrame::onEnter() {
 			}
 			if ((*si)[0] != _T('-')) 
 				s += *si + _T(' ');	
+			++si;
 		}
 
 		s = s.substr(0, max(s.size(), static_cast<tstring::size_type>(1)) - 1);

@@ -39,7 +39,7 @@ class ServerSocket : public Speaker<ServerSocketListener> {
 public:
 	ServerSocket() throw() { }
 
-	void listen(short port) throw(SocketException);
+	void listen(uint16_t port) throw(SocketException);
 	void disconnect() throw() { socket.disconnect(); }
 
 	/** This is called by windows whenever an "FD_ACCEPT" is sent...doesn't work with unix... */

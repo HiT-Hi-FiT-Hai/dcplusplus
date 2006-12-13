@@ -313,9 +313,9 @@ void Util::decodeUrl(const string& url, string& aServer, uint16_t& aPort, string
 	if( (k=url.find(':', i)) != string::npos) {
 		// Port
 		if(j == string::npos) {
-			aPort = (short)Util::toInt(url.substr(k+1));
+			aPort = static_cast<uint16_t>(Util::toInt(url.substr(k+1)));
 		} else if(k < j) {
-			aPort = (short)Util::toInt(url.substr(k+1, j-k-1));
+			aPort = static_cast<uint16_t>(Util::toInt(url.substr(k+1, j-k-1)));
 		}
 	} else {
 		k = j;

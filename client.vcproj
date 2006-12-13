@@ -143,6 +143,7 @@
 				AssemblerOutput="4"
 				WarningLevel="4"
 				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 				CallingConvention="1"
 				DisableSpecificWarnings="4996"

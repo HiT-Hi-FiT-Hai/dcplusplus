@@ -19,6 +19,8 @@
 * [bug 1097] Fixed waiting users being removed (thanks stephan hohe)
 * [bug 1110] Added new adc hub list (thanks mafa_45)
 * [bug 1091] Added new nmdc hub lists (thanks poy)
+* [bug 1112] Port sign cleanup (thanks steven sheehy)
+* Fixed ADC client-to-client connection sequence
 
 -- 0.698 2006-10-10 --
 * [bug 1065] Code cleanup (thanks steven sheehy)

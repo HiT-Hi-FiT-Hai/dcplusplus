@@ -191,7 +191,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	}
 }
 
-void UserConnection::connect(const string& aServer, short aPort) throw(SocketException, ThreadException) {
+void UserConnection::connect(const string& aServer, uint16_t aPort) throw(SocketException, ThreadException) {
 	dcassert(!socket);
 
 	socket = BufferedSocket::getSocket(0);

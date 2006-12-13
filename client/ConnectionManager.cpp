@@ -46,7 +46,7 @@ ConnectionManager::ConnectionManager() : floodCounter(0), server(0), secureServe
 
 void ConnectionManager::listen() throw(SocketException){
 	disconnect();
-	unsigned short port = static_cast<unsigned short>(SETTING(TCP_PORT));
+	uint16_t port = static_cast<uint16_t>(SETTING(TCP_PORT));
 
 	server = new Server(false, port, SETTING(BIND_ADDRESS));
 
@@ -55,7 +55,7 @@ void ConnectionManager::listen() throw(SocketException){
 		return;
 	}
 
-	port = static_cast<unsigned short>(SETTING(TLS_PORT));
+	port = static_cast<uint16_t>(SETTING(TLS_PORT));
 
 	secureServer = new Server(true, port, SETTING(BIND_ADDRESS));
 }
@@ -170,7 +170,7 @@ void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw()
 					if(cqi->getState() == ConnectionQueueItem::WAITING) {
 						if(startDown) {
 							cqi->setState(ConnectionQueueItem::CONNECTING);
-							ClientManager::getInstance()->connect(cqi->getUser());
+							ClientManager::getInstance()->connect(cqi->getUser(), cqi->getToken());
 							fire(ConnectionManagerListener::StatusChanged(), cqi);
 							attemptDone = true;
 						} else {
@@ -215,7 +215,7 @@ void ConnectionManager::on(TimerManagerListener::Minute, uint32_t aTick) throw()
 static const uint32_t FLOOD_TRIGGER = 20000;
 static const uint32_t FLOOD_ADD = 2000;
 
-ConnectionManager::Server::Server(bool secure_, short aPort, const string& ip /* = "0.0.0.0" */) : port(0), secure(secure_), die(false) {
+ConnectionManager::Server::Server(bool secure_, uint16_t aPort, const string& ip /* = "0.0.0.0" */) : port(0), secure(secure_), die(false) {
 	sock.create();
 	port = sock.bind(aPort, ip);
 	sock.listen();
@@ -273,7 +273,7 @@ void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
 	}
 }
 
-void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const string& aNick, const string& hubUrl) {
+void ConnectionManager::nmdcConnect(const string& aServer, uint16_t aPort, const string& aNick, const string& hubUrl) {
 	if(shuttingDown)
 		return;
 
@@ -290,7 +290,7 @@ void ConnectionManager::nmdcConnect(const string& aServer, short aPort, const st
 	}
 }
 
-void ConnectionManager::adcConnect(const OnlineUser& aUser, short aPort, const string& aToken, bool secure) {
+void ConnectionManager::adcConnect(const OnlineUser& aUser, uint16_t aPort, const string& aToken, bool secure) {
 	if(shuttingDown)
 		return;
 
@@ -314,7 +314,6 @@ void ConnectionManager::disconnect() throw() {
 
 	server = secureServer = 0;
 }
-
 
 void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
@@ -608,13 +607,45 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 		return;
 	}
 
+	string token;
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
+		if(!cmd.getParam("TO", 0, token)) {
+			aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_GENERIC, "TO missing"));
+			putConnection(aSource);
+			return;
+		}
+	} else {
+		token = aSource->getToken();
+	}
+
+	bool down = true;
+	{
+		Lock l(cs);
+		ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aSource->getUser());
+		if(i == downloads.end() || (*i)->getToken() != token) {
+			down = false;
+		}
+		/** @todo check tokens for upload connections */
+	}
+
+	if(down) {
 		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
 		addDownloadConnection(aSource);
 	} else {
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 		addUploadConnection(aSource);
 	}
+}
+
+void ConnectionManager::force(const User::Ptr& aUser) {
+	Lock l(cs);
+
+	ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aUser);
+	if(i == downloads.end()) {
+		return;
+	}
+
+	(*i)->setLastAttempt(0);
 }
 
 void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {

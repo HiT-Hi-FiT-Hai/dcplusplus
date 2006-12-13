@@ -101,7 +101,7 @@ void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted)
 
 }
 
-void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException) {
+void BufferedSocket::connect(const string& aAddress, uint16_t aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException) {
 	dcassert(!sock);
 
 	try {
@@ -129,7 +129,7 @@ void BufferedSocket::connect(const string& aAddress, short aPort, bool secure, b
 }
 
 #define CONNECT_TIMEOUT 30000
-void BufferedSocket::threadConnect(const string& aAddr, short aPort, bool proxy) throw(SocketException) {
+void BufferedSocket::threadConnect(const string& aAddr, uint16_t aPort, bool proxy) throw(SocketException) {
 	dcdebug("threadConnect %s:%d\n", aAddr.c_str(), (int)aPort);
 	dcassert(sock);
 	if(!sock)

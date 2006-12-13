@@ -22,7 +22,7 @@
 #include "ServerSocket.h"
 #include "SettingsManager.h"
 
-void ServerSocket::listen(short aPort) throw(SocketException) {
+void ServerSocket::listen(uint16_t aPort) throw(SocketException) {
 	socket.disconnect();
 	socket.create(Socket::TYPE_TCP);
 	// Set reuse address option...

@@ -235,8 +235,8 @@ BEGIN
     CONTROL         "Make an annoying sound when a private message window is opened",IDC_PRIVATE_MESSAGE_BEEP_OPEN,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,87,246,10
     LTEXT           "Note; most of these options require that you restart DC++",IDC_SETTINGS_REQUIRES_RESTART,7,209,253,8
-    LTEXT           "Notification sound",IDC_BEEP_NOTIFICATION,10,110,53,8
-    EDITTEXT        IDC_BEEPFILE,71,108,133,12,ES_AUTOHSCROLL
+    LTEXT           "Notification sound",IDC_BEEP_NOTIFICATION,10,110,66,8
+    EDITTEXT        IDC_BEEPFILE,85,108,119,12,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSE,210,109,50,12
 END
 

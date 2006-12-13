@@ -144,13 +144,13 @@ string ClientManager::findHub(const string& ipPort) const {
 	Lock l(cs);
 
 	string ip;
-	short port = 411;
+	uint16_t port = 411;
 	string::size_type i = ipPort.find(':');
 	if(i == string::npos) {
 		ip = ipPort;
 	} else {
 		ip = ipPort.substr(0, i);
-		port = (short)Util::toInt(ipPort.substr(i+1));
+		port = static_cast<uint16_t>(Util::toInt(ipPort.substr(i+1)));
 	}
 
 	string url;
@@ -277,12 +277,12 @@ void ClientManager::putOffline(OnlineUser* ou) throw() {
 	}
 }
 
-void ClientManager::connect(const User::Ptr& p) {
+void ClientManager::connect(const User::Ptr& p, const string& token) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(p->getCID());
 	if(i != onlineUsers.end()) {
 		OnlineUser* u = i->second;
-		u->getClient().connect(*u);
+		u->getClient().connect(*u, token);
 	}
 }
 
@@ -306,7 +306,7 @@ void ClientManager::send(AdcCommand& cmd, const CID& cid) {
 			u.getClient().send(cmd);
 		} else {
 			try {
-				udp.writeTo(u.getIdentity().getIp(), static_cast<short>(Util::toInt(u.getIdentity().getUdpPort())), cmd.toString(getMe()->getCID()));
+				udp.writeTo(u.getIdentity().getIp(), static_cast<uint16_t>(Util::toInt(u.getIdentity().getUdpPort())), cmd.toString(getMe()->getCID()));
 			} catch(const SocketException&) {
 				dcdebug("Socket exception sending ADC UDP command\n");
 			}

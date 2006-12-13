@@ -87,7 +87,7 @@ public:
 	}
 
 	void accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException, ThreadException);
-	void connect(const string& aAddress, short aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException);
+	void connect(const string& aAddress, uint16_t aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException);
 
 	/** Sets data mode for aBytes bytes. Must be called within onLine. */
 	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }
@@ -129,9 +129,9 @@ private:
 		virtual ~TaskData() { }
 	};
 	struct ConnectInfo : public TaskData {
-		ConnectInfo(string addr_, short port_, bool proxy_) : addr(addr_), port(port_), proxy(proxy_) { }
+		ConnectInfo(string addr_, uint16_t port_, bool proxy_) : addr(addr_), port(port_), proxy(proxy_) { }
 		string addr;
-		short port;
+		uint16_t port;
 		bool proxy;
 	};
 	struct SendFileInfo : public TaskData {
@@ -167,7 +167,7 @@ private:
 
 	virtual int run();
 
-	void threadConnect(const string& aAddr, short aPort, bool proxy) throw(SocketException);
+	void threadConnect(const string& aAddr, uint16_t aPort, bool proxy) throw(SocketException);
 	void threadRead() throw(SocketException);
 	void threadSendFile(InputStream* is) throw(Exception);
 	void threadSendData();

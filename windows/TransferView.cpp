@@ -156,7 +156,7 @@ LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CTSTRING(CONNECTING_FORCED));
-		ClientManager::getInstance()->connect(((ItemInfo*)ctrlTransfers.getItemData(i))->user);
+		ConnectionManager::getInstance()->force(ctrlTransfers.getItemData(i)->user);
 	}
 	return 0;
 }

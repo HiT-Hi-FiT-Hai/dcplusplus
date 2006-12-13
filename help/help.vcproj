@@ -253,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\settings_tabs.html"
+				>
+			</File>
+			<File
 				RelativePath=".\template.html"
 				>
 			</File>

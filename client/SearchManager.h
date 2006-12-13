@@ -142,7 +142,7 @@ public:
 
 	void respond(const AdcCommand& cmd, const CID& cid);
 
-	unsigned short getPort()
+	uint16_t getPort()
 	{
 		return port;
 	}
@@ -166,7 +166,7 @@ public:
 private:
 
 	Socket* socket;
-	unsigned short port;
+	uint16_t port;
 	bool stop;
 	uint32_t lastSearch;
 	friend class Singleton<SearchManager>;

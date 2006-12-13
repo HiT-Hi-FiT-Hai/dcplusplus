@@ -102,7 +102,7 @@ void SearchManager::listen() throw(SocketException) {
 
 	socket = new Socket();
 	socket->create(Socket::TYPE_UDP);
-	port = socket->bind(static_cast<short>(SETTING(UDP_PORT)));
+	port = socket->bind(static_cast<uint16_t>(SETTING(UDP_PORT)));
 
 	start();
 }

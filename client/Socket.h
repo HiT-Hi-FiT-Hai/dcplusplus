@@ -80,7 +80,7 @@ public:
 	};
 
 	Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false), blocking(true) { }
-	Socket(const string& aIp, short aPort) throw(SocketException) : sock(INVALID_SOCKET), connected(false), blocking(true) { connect(aIp, aPort); }
+	Socket(const string& aIp, uint16_t aPort) throw(SocketException) : sock(INVALID_SOCKET), connected(false), blocking(true) { connect(aIp, aPort); }
 	virtual ~Socket() throw() { Socket::disconnect(); }
 
 	/**
@@ -90,12 +90,12 @@ public:
 	 * @param aPort Server port.
 	 * @throw SocketException If any connection error occurs.
 	 */
-	virtual void connect(const string& aIp, short aPort) throw(SocketException);
-	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); }
+	virtual void connect(const string& aIp, uint16_t aPort) throw(SocketException);
+	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, static_cast<uint16_t>(Util::toInt(aPort))); }
 	/**
 	 * Same as connect(), but through the SOCKS5 server
 	 */
-	void socksConnect(const string& aIp, short aPort, uint32_t timeout = 0) throw(SocketException);
+	void socksConnect(const string& aIp, uint16_t aPort, uint32_t timeout = 0) throw(SocketException);
 
 	/**
 	 * Sends data, will block until all data has been sent or an exception occurs
@@ -106,8 +106,8 @@ public:
 	void writeAll(const void* aBuffer, int aLen, uint32_t timeout = 0) throw(SocketException);
 	virtual int write(const void* aBuffer, int aLen) throw(SocketException);
 	int write(const string& aData) throw(SocketException) { return write(aData.data(), (int)aData.length()); }
-	virtual void writeTo(const string& aIp, short aPort, const void* aBuffer, int aLen, bool proxy = true) throw(SocketException);
-	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), (int)aData.length()); }
+	virtual void writeTo(const string& aIp, uint16_t aPort, const void* aBuffer, int aLen, bool proxy = true) throw(SocketException);
+	void writeTo(const string& aIp, uint16_t aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), (int)aData.length()); }
 	virtual void shutdown() throw();
 	virtual void close() throw();
 	void disconnect() throw();
@@ -169,7 +169,7 @@ public:
 	virtual void create(int aType = TYPE_TCP) throw(SocketException);
 
 	/** Binds a socket to a certain local port and possibly IP. */
-	virtual short bind(short aPort = 0, const string& aIp = "0.0.0.0") throw(SocketException);
+	virtual uint16_t bind(uint16_t aPort = 0, const string& aIp = "0.0.0.0") throw(SocketException);
 	virtual void listen() throw(SocketException);
 	virtual void accept(const Socket& listeningSocket) throw(SocketException);
 
@@ -197,7 +197,7 @@ protected:
 	static Stats stats;
 
 	static string udpServer;
-	static short udpPort;
+	static uint16_t udpPort;
 
 private:
 	Socket(const Socket&);
@@ -208,8 +208,8 @@ private:
 
 #ifdef _WIN32
 	static int getLastError() { return ::WSAGetLastError(); }
-	static int checksocket(socket_t ret) {
-		if(ret == (socket_t) SOCKET_ERROR) {
+	static int checksocket(int ret) {
+		if(ret == SOCKET_ERROR) {
 			throw SocketException(getLastError());
 		}
 		return ret;

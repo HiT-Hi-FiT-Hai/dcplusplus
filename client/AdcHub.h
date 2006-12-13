@@ -35,7 +35,7 @@ public:
 	using Client::send;
 	using Client::connect;
 
-	virtual void connect(const OnlineUser& user);
+	virtual void connect(const OnlineUser& user, const string& token);
 	void connect(const OnlineUser& user, string const& token, bool secure);
 
 	virtual void hubMessage(const string& aMessage);

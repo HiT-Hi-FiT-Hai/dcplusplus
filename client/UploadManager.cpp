@@ -271,7 +271,7 @@ void UploadManager::reserveSlot(const User::Ptr& aUser) {
 		reservedSlots.insert(aUser);
 	}
 	if(aUser->isOnline())
-		ClientManager::getInstance()->connect(aUser);
+		ClientManager::getInstance()->connect(aUser, Util::toString(Util::rand()));
 }
 
 void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, const string& aFile, int64_t aResume) throw() {

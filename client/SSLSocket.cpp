@@ -29,7 +29,7 @@ SSLSocket::SSLSocket(SSL_CTX* context) throw(SocketException) : ctx(context), ss
 
 }
 
-void SSLSocket::connect(const string& aIp, short aPort) throw(SocketException) {
+void SSLSocket::connect(const string& aIp, uint16_t aPort) throw(SocketException) {
 	Socket::setBlocking(true);
 	Socket::connect(aIp, aPort);
 

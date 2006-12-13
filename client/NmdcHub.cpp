@@ -44,7 +44,7 @@ NmdcHub::~NmdcHub() throw() {
 
 #define checkstate() if(state != STATE_NORMAL) return
 
-void NmdcHub::connect(const OnlineUser& aUser) {
+void NmdcHub::connect(const OnlineUser& aUser, const string&) {
 	checkstate();
 	dcdebug("NmdcHub::connect %s\n", aUser.getIdentity().getNick().c_str());
 	if(ClientManager::getInstance()->isActive()) {
@@ -417,7 +417,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->nmdcConnect(server, (unsigned short)Util::toInt(port), getMyNick(), getHubUrl());
+		ConnectionManager::getInstance()->nmdcConnect(server, static_cast<uint16_t>(Util::toInt(port)), getMyNick(), getHubUrl());
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_NORMAL) {
 			return;

@@ -26,7 +26,7 @@
 #include "TimerManager.h"
 
 string Socket::udpServer;
-short Socket::udpPort;
+uint16_t Socket::udpPort;
 
 #define checkconnected() if(!isConnected()) throw SocketException(ENOTCONN))
 
@@ -97,7 +97,7 @@ void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
 }
 
 
-short Socket::bind(short aPort, const string& aIp /* = 0.0.0.0 */) throw (SocketException){
+uint16_t Socket::bind(uint16_t aPort, const string& aIp /* = 0.0.0.0 */) throw (SocketException){
 	sockaddr_in sock_addr;
 
 	sock_addr.sin_family = AF_INET;
@@ -118,7 +118,7 @@ void Socket::listen() throw(SocketException) {
 	connected = true;
 }
 
-void Socket::connect(const string& aAddr, short aPort) throw(SocketException) {
+void Socket::connect(const string& aAddr, uint16_t aPort) throw(SocketException) {
 	sockaddr_in serv_addr;
 
 	if(sock == INVALID_SOCKET) {
@@ -149,7 +149,7 @@ namespace {
 	}
 }
 
-void Socket::socksConnect(const string& aAddr, short aPort, uint32_t timeout) throw(SocketException) {
+void Socket::socksConnect(const string& aAddr, uint16_t aPort, uint32_t timeout) throw(SocketException) {
 
 	if(SETTING(SOCKS_SERVER).empty() || SETTING(SOCKS_PORT) == 0) {
 		throw SocketException(STRING(SOCKS_FAILED));
@@ -160,7 +160,7 @@ void Socket::socksConnect(const string& aAddr, short aPort, uint32_t timeout) th
 
 	uint32_t start = GET_TICK();
 
-	connect(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
+	connect(SETTING(SOCKS_SERVER), static_cast<uint16_t>(SETTING(SOCKS_PORT)));
 
 	if(wait(timeLeft(start, timeout), WAIT_CONNECT) != WAIT_CONNECT) {
 		throw SocketException(STRING(SOCKS_FAILED));
@@ -363,7 +363,7 @@ int Socket::write(const void* aBuffer, int aLen) throw(SocketException) {
 * @param aLen Data length
 * @throw SocketExcpetion Send failed.
 */
-void Socket::writeTo(const string& aAddr, short aPort, const void* aBuffer, int aLen, bool proxy) throw(SocketException) {
+void Socket::writeTo(const string& aAddr, uint16_t aPort, const void* aBuffer, int aLen, bool proxy) throw(SocketException) {
 	if(aLen <= 0)
 		return;
 
@@ -530,7 +530,7 @@ void Socket::socksUpdated() {
 		try {
 			Socket s;
 			s.setBlocking(false);
-			s.connect(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
+			s.connect(SETTING(SOCKS_SERVER), static_cast<uint16_t>(SETTING(SOCKS_PORT)));
 			s.socksAuth(SOCKS_TIMEOUT);
 
 			char connStr[10];
@@ -553,7 +553,7 @@ void Socket::socksUpdated() {
 				return;
 			}
 
-			udpPort = (short)ntohs(*((uint16_t*)(&connStr[8])));
+			udpPort = static_cast<uint16_t>(ntohs(*((uint16_t*)(&connStr[8]))));
 
 			in_addr serv_addr;
 

@@ -48,7 +48,7 @@ public:
 		ACTIVE						// In one up/downmanager
 	};
 
-	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), user(aUser) { }
+	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), lastAttempt(0), download(aDownload), token(Util::toString(Util::rand())), user(aUser) { }
 
 	User::Ptr& getUser() { return user; }
 	const User::Ptr& getUser() const { return user; }
@@ -56,6 +56,7 @@ public:
 	GETSET(State, state, State);
 	GETSET(uint32_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
+	GETSET(string, token, Token);
 private:
 	ConnectionQueueItem(const ConnectionQueueItem&);
 	ConnectionQueueItem& operator=(const ConnectionQueueItem&);
@@ -103,10 +104,11 @@ public:
 		expectedConnections.add(aNick, aMyNick, aHubUrl);
 	}
 
-	void nmdcConnect(const string& aServer, short aPort, const string& aMyNick, const string& hubUrl);
-	void adcConnect(const OnlineUser& aUser, short aPort, const string& aToken, bool secure);
+	void nmdcConnect(const string& aServer, uint16_t aPort, const string& aMyNick, const string& hubUrl);
+	void adcConnect(const OnlineUser& aUser, uint16_t aPort, const string& aToken, bool secure);
 
 	void getDownloadConnection(const User::Ptr& aUser);
+	void force(const User::Ptr& aUser);
 
 	void disconnect(const User::Ptr& aUser, int isDownload);
 
@@ -116,20 +118,20 @@ public:
 	void listen() throw(SocketException);
 	void disconnect() throw();
 
-	unsigned short getPort() { return server ? static_cast<unsigned short>(server->getPort()) : 0; }
-	unsigned short getSecurePort() { return secureServer ? static_cast<unsigned short>(secureServer->getPort()) : 0; }
+	uint16_t getPort() { return server ? static_cast<uint16_t>(server->getPort()) : 0; }
+	uint16_t getSecurePort() { return secureServer ? static_cast<uint16_t>(secureServer->getPort()) : 0; }
 private:
 
 	class Server : public Thread {
 	public:
-		Server(bool secure_, short port, const string& ip = "0.0.0.0");
-		short getPort() { return port; }
+		Server(bool secure_, uint16_t port, const string& ip = "0.0.0.0");
+		uint16_t getPort() { return port; }
 		virtual ~Server() { die = true; join(); }
 	private:
 		virtual int run() throw();
 
 		Socket sock;
-		short port;
+		uint16_t port;
 		bool secure;
 		bool die;
 	};
