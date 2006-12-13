@@ -28,13 +28,16 @@
 
 #include "runtime.hpp"
 #include "ripemd.hpp"
-#include "algorithm.hpp"    // mySTL::swap
-
-
-
-#if defined(TAOCRYPT_X86ASM_AVAILABLE) && defined(TAO_ASM)
-    #define DO_RIPEMD_ASM
+#ifdef USE_SYS_STL
+    #include <algorithm>
+#else
+    #include "algorithm.hpp"
 #endif
+
+
+namespace STL = STL_NAMESPACE;
+
+
 
 namespace TaoCrypt {
 
@@ -75,19 +78,26 @@ RIPEMD160& RIPEMD160::operator= (const RIPEMD160& that)
 
 void RIPEMD160::Swap(RIPEMD160& other)
 {
-    mySTL::swap(loLen_,   other.loLen_);
-    mySTL::swap(hiLen_,   other.hiLen_);
-    mySTL::swap(buffLen_, other.buffLen_);
+    STL::swap(loLen_,   other.loLen_);
+    STL::swap(hiLen_,   other.hiLen_);
+    STL::swap(buffLen_, other.buffLen_);
 
     memcpy(digest_, other.digest_, DIGEST_SIZE);
     memcpy(buffer_, other.buffer_, BLOCK_SIZE);
 }
 
 
-// Update digest with data of size len, do in blocks
+#ifdef DO_RIPEMD_ASM
+
+// Update digest with data of size len
 void RIPEMD160::Update(const byte* data, word32 len)
 {
-    byte* local = (byte*)buffer_;
+    if (!isMMX) {
+        HASHwithTransform::Update(data, len);
+        return;
+    }
+
+    byte* local = reinterpret_cast<byte*>(buffer_);
 
     // remove buffered data if possible
     if (buffLen_)  {   
@@ -99,36 +109,22 @@ void RIPEMD160::Update(const byte* data, word32 len)
         len      -= add;
 
         if (buffLen_ == BLOCK_SIZE) {
-            ByteReverseIf(local, local, BLOCK_SIZE, LittleEndianOrder);
             Transform();
             AddLength(BLOCK_SIZE);
             buffLen_ = 0;
         }
     }
 
-    // do block size transforms or all at once for asm
+    // all at once for asm
     if (buffLen_ == 0) {
-        #ifndef DO_RIPEMD_ASM
-            while (len >= BLOCK_SIZE) {
-                memcpy(&local[0], data, BLOCK_SIZE);
-
-                data     += BLOCK_SIZE;
-                len      -= BLOCK_SIZE;
-
-                ByteReverseIf(local, local, BLOCK_SIZE, LittleEndianOrder);
-                Transform();
-                AddLength(BLOCK_SIZE);
-            }
-        #else
-            word32 times = len / BLOCK_SIZE;
-            if (times) {
-                AsmTransform(data, times);
-                const word32 add = BLOCK_SIZE * times;
-                AddLength(add);
-                len  -= add;
-                data += add;
-            }
-        #endif
+        word32 times = len / BLOCK_SIZE;
+        if (times) {
+            AsmTransform(data, times);
+            const word32 add = BLOCK_SIZE * times;
+            AddLength(add);
+            len  -= add;
+            data += add;
+        }
     }
 
     // cache any data left
@@ -137,6 +133,8 @@ void RIPEMD160::Update(const byte* data, word32 len)
         buffLen_ += len;
     }
 }
+
+#endif // DO_RIPEMD_ASM
 
 
 // for all

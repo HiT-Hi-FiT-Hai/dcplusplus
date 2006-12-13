@@ -40,9 +40,19 @@
 #include "lock.hpp"
 #include "openssl/ssl.h"  // ASN1_STRING and DH
 
+// Check if _POSIX_THREADS should be forced
+#if !defined(_POSIX_THREADS) && (defined(__NETWARE__) || defined(__hpux))
+// HPUX does not define _POSIX_THREADS as it's not _fully_ implemented
+// Netware supports pthreads but does not announce it
+#define _POSIX_THREADS
+#endif
+
 #ifdef _POSIX_THREADS
     #include <pthread.h>
 #endif
+
+
+namespace STL = STL_NAMESPACE;
 
 
 namespace yaSSL {
@@ -262,7 +272,7 @@ private:
 
 // holds all sessions
 class Sessions {
-    mySTL::list<SSL_SESSION*> list_;
+    STL::list<SSL_SESSION*> list_;
     RandomPool random_;                 // for session cleaning
     Mutex      mutex_;                  // no-op for single threaded
 
@@ -296,8 +306,8 @@ struct ThreadError {
 
 // holds all errors
 class Errors {
-    mySTL::list<ThreadError> list_;
-    Mutex                    mutex_;
+    STL::list<ThreadError> list_;
+    Mutex                  mutex_;
 
     Errors() {}                         // only GetErrors can create
 public:
@@ -326,8 +336,10 @@ class SSL_METHOD {
     bool            verifyPeer_;    // request or send certificate
     bool            verifyNone_;    // whether to verify certificate
     bool            failNoCert_;
+    bool            multipleProtocol_;  // for SSLv23 compatibility
 public:
-    explicit SSL_METHOD(ConnectionEnd ce, ProtocolVersion pv);
+    SSL_METHOD(ConnectionEnd ce, ProtocolVersion pv,
+               bool multipleProtocol = false);
 
     ProtocolVersion getVersion() const;
     ConnectionEnd   getSide()    const;
@@ -339,6 +351,7 @@ public:
     bool verifyPeer() const;
     bool verifyNone() const;
     bool failNoCert() const;
+    bool multipleProtocol() const;
 private:
     SSL_METHOD(const SSL_METHOD&);              // hide copy
     SSL_METHOD& operator=(const SSL_METHOD&);   // and assign
@@ -408,32 +421,41 @@ private:
 // the SSL context
 class SSL_CTX {
 public:
-    typedef mySTL::list<x509*> CertList;
+    typedef STL::list<x509*> CertList;
 private:
-    SSL_METHOD* method_;
-    x509*       certificate_;
-    x509*       privateKey_;
-    CertList    caList_;
-    Ciphers     ciphers_;
-    DH_Parms    dhParms_;
-    Stats       stats_;
-    Mutex       mutex_;         // for Stats
+    SSL_METHOD*     method_;
+    x509*           certificate_;
+    x509*           privateKey_;
+    CertList        caList_;
+    Ciphers         ciphers_;
+    DH_Parms        dhParms_;
+    pem_password_cb passwordCb_;
+    void*           userData_;
+    bool            sessionCacheOff_;
+    Stats           stats_;
+    Mutex           mutex_;         // for Stats
 public:
     explicit SSL_CTX(SSL_METHOD* meth);
     ~SSL_CTX();
 
-    const x509*       getCert()     const;
-    const x509*       getKey()      const;
-    const SSL_METHOD* getMethod()   const;
-    const Ciphers&    GetCiphers()  const;
-    const DH_Parms&   GetDH_Parms() const;
-    const Stats&      GetStats()    const;
+    const x509*       getCert()       const;
+    const x509*       getKey()        const;
+    const SSL_METHOD* getMethod()     const;
+    const Ciphers&    GetCiphers()    const;
+    const DH_Parms&   GetDH_Parms()   const;
+    const Stats&      GetStats()      const;
+    pem_password_cb   GetPasswordCb() const;
+          void*       GetUserData()   const;
+          bool        GetSessionCacheOff() const;
 
     void setVerifyPeer();
     void setVerifyNone();
     void setFailNoCert();
     bool SetCipherList(const char*);
     bool SetDH(const DH&);
+    void SetPasswordCb(pem_password_cb cb);
+    void SetUserData(void*);
+    void SetSessionCacheOff();
    
     void            IncrementStats(StatsField);
     void            AddCA(x509* ca);
@@ -508,8 +530,8 @@ private:
 // holds input and output buffers
 class Buffers {
 public: 
-    typedef mySTL::list<input_buffer*>  inputList;
-    typedef mySTL::list<output_buffer*> outputList;
+    typedef STL::list<input_buffer*>  inputList;
+    typedef STL::list<output_buffer*> outputList;
 private:
     inputList     dataList_;             // list of users app data / handshake
     outputList    handShakeList_;        // buffered handshake msgs
@@ -580,6 +602,8 @@ public:
     const sslFactory& getFactory()  const;
     const Socket&     getSocket()   const;
           YasslError  GetError()    const;
+          bool        GetMultiProtocol() const;
+          bool        CompressionOn()    const;
 
     Crypto&    useCrypto();
     Security&  useSecurity();
@@ -597,9 +621,12 @@ public:
     void set_preMaster(const opaque*, uint);
     void set_masterSecret(const opaque*);
     void SetError(YasslError);
+    int  SetCompression();
+    void UnSetCompression();
 
     // helpers
     bool isTLS() const;
+    bool isTLSv1_1() const;
     void order_error();
     void makeMasterSecret();
     void makeTLSMasterSecret();
@@ -632,6 +659,10 @@ private:
     const SSL& operator=(const SSL&);   // and assign
 };
 
+
+// compression
+int Compress(const byte*, int, input_buffer&);
+int DeCompress(input_buffer&, int, input_buffer&);
 
 
 // conversion functions

@@ -151,6 +151,17 @@ void CleanUp();
 #endif
 
 
+#ifdef TAOCRYPT_X86ASM_AVAILABLE
+    bool HaveCpuId();
+    bool IsPentium();
+    void CpuId(word32 input, word32 *output);
+
+    extern bool isMMX;
+#endif
+
+
+
+
 // Turn on ia32 ASM for Ciphers and Message Digests
 // Seperate define since these are more complex, use member offsets
 // and user may want to turn off while leaving Big Integer optos on 
@@ -195,6 +206,15 @@ void CleanUp();
     #define TAOCRYPT_NO_VTABLE __declspec(novtable)
 #else
     #define TAOCRYPT_NO_VTABLE
+#endif
+
+
+#ifdef USE_SYS_STL
+    // use system STL
+    #define STL_NAMESPACE       std
+#else
+    // use mySTL
+    #define STL_NAMESPACE       mySTL
 #endif
 
 

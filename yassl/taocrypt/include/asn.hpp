@@ -33,9 +33,15 @@
 
 #include "misc.hpp"
 #include "block.hpp"
-#include "list.hpp"
 #include "error.hpp"
+#ifdef USE_SYS_STL
+    #include <list>
+#else
+    #include "list.hpp"
+#endif
 
+
+namespace STL = STL_NAMESPACE;
 
 
 namespace TaoCrypt {
@@ -232,7 +238,7 @@ private:
 };
 
 
-typedef mySTL::list<Signer*> SignerList;
+typedef STL::list<Signer*> SignerList;
 
 
 enum SigType  { SHAwDSA = 517, MD2wRSA = 646, MD5wRSA = 648, SHAwRSA =649};

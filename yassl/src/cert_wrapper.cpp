@@ -63,8 +63,8 @@ x509::x509(const x509& that) : length_(that.length_),
 
 void x509::Swap(x509& that)
 {
-    mySTL::swap(length_, that.length_);
-    mySTL::swap(buffer_, that.buffer_);
+    STL::swap(length_, that.length_);
+    STL::swap(buffer_, that.buffer_);
 }
 
 
@@ -105,11 +105,11 @@ CertManager::~CertManager()
 {
     ysDelete(peerX509_);
 
-    mySTL::for_each(signers_.begin(), signers_.end(), del_ptr_zero()) ;
+    STL::for_each(signers_.begin(), signers_.end(), del_ptr_zero()) ;
 
-    mySTL::for_each(peerList_.begin(), peerList_.end(), del_ptr_zero()) ;
+    STL::for_each(peerList_.begin(), peerList_.end(), del_ptr_zero()) ;
 
-    mySTL::for_each(list_.begin(), list_.end(), del_ptr_zero()) ;
+    STL::for_each(list_.begin(), list_.end(), del_ptr_zero()) ;
 }
 
 
@@ -242,7 +242,7 @@ uint CertManager::get_privateKeyLength() const
 // Validate the peer's certificate list, from root to peer (last to first)
 int CertManager::Validate()
 {
-    CertList::iterator last  = peerList_.rbegin();  // fix this
+    CertList::reverse_iterator last = peerList_.rbegin();
     int count = peerList_.size();
 
     while ( count > 1 ) {
@@ -255,7 +255,7 @@ int CertManager::Validate()
         const TaoCrypt::PublicKey& key = cert.GetPublicKey();
         signers_.push_back(NEW_YS TaoCrypt::Signer(key.GetKey(), key.size(),
                                         cert.GetCommonName(), cert.GetHash()));
-        --last;
+        ++last;
         --count;
     }
 

@@ -124,14 +124,34 @@ void SetErrorString(YasslError error, char* buffer)
     case certificate_error :
         strncpy(buffer, "unable to proccess cerificate", max);
         break;
-        
+
+    case privateKey_error :
+        strncpy(buffer, "unable to proccess private key, bad format", max);
+        break;
+
+    case badVersion_error :
+        strncpy(buffer, "protocl version mismatch", max);
+        break;
+
+    case compress_error :
+        strncpy(buffer, "compression error", max);
+        break;
+
+    case decompress_error :
+        strncpy(buffer, "decompression error", max);
+        break;
+
+    case pms_version_error :
+        strncpy(buffer, "bad PreMasterSecret version error", max);
+        break;
+
         // openssl errors
     case SSL_ERROR_WANT_READ :
         strncpy(buffer, "the read operation would block", max);
         break;
 
         // TaoCrypt errors
-    case NO_ERROR :
+    case NO_ERROR_E :
         strncpy(buffer, "not in error state", max);
         break;
 

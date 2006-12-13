@@ -38,6 +38,11 @@
 #endif
 
 
+#ifdef HAVE_LIBZ
+    #include "zlib.h"
+#endif
+
+
 #ifdef YASSL_PURE_C
 
     void* operator new(size_t sz, yaSSL::new_t)
@@ -78,7 +83,6 @@
 namespace yaSSL {
 
 
-using mySTL::min;
 
 
 
@@ -728,6 +732,32 @@ void SSL::set_preMaster(const opaque* pre, uint sz)
 }
 
 
+// set yaSSL zlib type compression
+int SSL::SetCompression()
+{
+#ifdef HAVE_LIBZ
+    secure_.use_connection().compression_ = true;
+    return 0;
+#else
+    return -1;  // not built in
+#endif
+}
+
+
+// unset yaSSL zlib type compression
+void SSL::UnSetCompression()
+{
+    secure_.use_connection().compression_ = false;
+}
+
+
+// is yaSSL zlib compression on
+bool SSL::CompressionOn() const
+{
+    return secure_.get_connection().compression_;
+}
+
+
 // store master secret
 void SSL::set_masterSecret(const opaque* sec)
 {
@@ -994,7 +1024,7 @@ using namespace yassl_int_cpp_local1;
 
 uint SSL::bufferedData()
 {
-    return mySTL::for_each(buffers_.getData().begin(),buffers_.getData().end(),
+    return STL::for_each(buffers_.getData().begin(),buffers_.getData().end(),
                            SumData()).total_;
 }
 
@@ -1037,7 +1067,7 @@ void SSL::PeekData(Data& data)
     data.set_length(0);                         // output, actual data filled
     dataSz = min(dataSz, bufferedData());
 
-    Buffers::inputList::iterator front = buffers_.getData().begin();
+    Buffers::inputList::iterator front = buffers_.useData().begin();
 
     while (elements) {
         uint frontSz = (*front)->get_remaining();
@@ -1062,7 +1092,7 @@ void SSL::flushBuffer()
 {
     if (GetError()) return;
 
-    uint sz = mySTL::for_each(buffers_.getHandShake().begin(),
+    uint sz = STL::for_each(buffers_.getHandShake().begin(),
                             buffers_.getHandShake().end(),
                             SumBuffer()).total_;
     output_buffer out(sz);
@@ -1109,6 +1139,11 @@ const byte* SSL::get_macSecret(bool verify)
 void SSL::verifyState(const RecordLayerHeader& rlHeader)
 {
     if (GetError()) return;
+
+    if (rlHeader.version_.major_ != 3 || rlHeader.version_.minor_ > 2) {
+        SetError(badVersion_error);
+        return;
+    }
 
     if (states_.getRecord() == recordNotReady || 
             (rlHeader.type_ == application_data &&        // data and handshake
@@ -1247,7 +1282,10 @@ void SSL::matchSuite(const opaque* peer, uint length)
 
 
 void SSL::set_session(SSL_SESSION* s) 
-{ 
+{
+    if (getSecurity().GetContext()->GetSessionCacheOff())
+        return;
+
     if (s && GetSessions().lookup(s->GetID(), &secure_.use_resume())) {
         secure_.set_resuming(true);
         crypto_.use_certManager().setPeerX509(s->GetPeerX509());
@@ -1297,6 +1335,12 @@ YasslError SSL::GetError() const
 }
 
 
+bool SSL::GetMultiProtocol() const
+{
+    return secure_.GetContext()->getMethod()->multipleProtocol();
+}
+
+
 Crypto& SSL::useCrypto()
 {
     return crypto_;
@@ -1336,6 +1380,12 @@ Log& SSL::useLog()
 bool SSL::isTLS() const
 {
     return secure_.get_connection().TLS_;
+}
+
+
+bool SSL::isTLSv1_1() const
+{
+    return secure_.get_connection().TLSv1_1_;
 }
 
 
@@ -1511,15 +1561,15 @@ void Sessions::add(const SSL& ssl)
 
 Sessions::~Sessions() 
 { 
-    mySTL::for_each(list_.begin(), list_.end(), del_ptr_zero()); 
+    STL::for_each(list_.begin(), list_.end(), del_ptr_zero()); 
 }
 
 
 // locals
 namespace yassl_int_cpp_local2 { // for explicit templates
 
-typedef mySTL::list<SSL_SESSION*>::iterator sess_iterator;
-typedef mySTL::list<ThreadError>::iterator  thr_iterator;
+typedef STL::list<SSL_SESSION*>::iterator sess_iterator;
+typedef STL::list<ThreadError>::iterator  thr_iterator;
 
 struct sess_match {
     const opaque* id_;
@@ -1564,7 +1614,7 @@ using namespace yassl_int_cpp_local2;
 SSL_SESSION* Sessions::lookup(const opaque* id, SSL_SESSION* copy)
 {
     Lock guard(mutex_);
-    sess_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+    sess_iterator find = STL::find_if(list_.begin(), list_.end(),
                                         sess_match(id));
     if (find != list_.end()) {
         uint current = lowResTimer();
@@ -1585,7 +1635,7 @@ SSL_SESSION* Sessions::lookup(const opaque* id, SSL_SESSION* copy)
 void Sessions::remove(const opaque* id)
 {
     Lock guard(mutex_);
-    sess_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+    sess_iterator find = STL::find_if(list_.begin(), list_.end(),
                                         sess_match(id));
     if (find != list_.end()) {
         del_ptr_zero()(*find);
@@ -1598,7 +1648,7 @@ void Sessions::remove(const opaque* id)
 void Errors::Remove()
 {
     Lock guard(mutex_);
-    thr_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+    thr_iterator find = STL::find_if(list_.begin(), list_.end(),
                                        thr_match());
     if (find != list_.end())
         list_.erase(find);
@@ -1609,7 +1659,7 @@ void Errors::Remove()
 int Errors::Lookup(bool peek)
 {
     Lock guard(mutex_);
-    thr_iterator find = mySTL::find_if(list_.begin(), list_.end(),
+    thr_iterator find = STL::find_if(list_.begin(), list_.end(),
                                        thr_match());
     if (find != list_.end()) {
         int ret = find->errorID_;
@@ -1636,9 +1686,9 @@ void Errors::Add(int error)
 }
 
 
-SSL_METHOD::SSL_METHOD(ConnectionEnd ce, ProtocolVersion pv) 
+SSL_METHOD::SSL_METHOD(ConnectionEnd ce, ProtocolVersion pv, bool multiProto) 
     : version_(pv), side_(ce), verifyPeer_(false), verifyNone_(false),
-      failNoCert_(false) 
+      failNoCert_(false), multipleProtocol_(multiProto)
 {}
 
 
@@ -1690,8 +1740,15 @@ bool SSL_METHOD::failNoCert() const
 }
 
 
+bool SSL_METHOD::multipleProtocol() const
+{
+    return multipleProtocol_;
+}
+
+
 SSL_CTX::SSL_CTX(SSL_METHOD* meth) 
-    : method_(meth), certificate_(0), privateKey_(0)
+    : method_(meth), certificate_(0), privateKey_(0), passwordCb_(0),
+      userData_(0), sessionCacheOff_(false)
 {}
 
 
@@ -1701,7 +1758,7 @@ SSL_CTX::~SSL_CTX()
     ysDelete(certificate_);
     ysDelete(privateKey_);
 
-    mySTL::for_each(caList_.begin(), caList_.end(), del_ptr_zero());
+    STL::for_each(caList_.begin(), caList_.end(), del_ptr_zero());
 }
 
 
@@ -1751,6 +1808,42 @@ const DH_Parms& SSL_CTX::GetDH_Parms() const
 const Stats& SSL_CTX::GetStats() const
 {
     return stats_;
+}
+
+
+pem_password_cb SSL_CTX::GetPasswordCb() const
+{
+    return passwordCb_;
+}
+
+
+void SSL_CTX::SetPasswordCb(pem_password_cb cb)
+{
+    passwordCb_ = cb;
+}
+
+
+void* SSL_CTX::GetUserData() const
+{
+    return userData_;
+}
+
+
+bool SSL_CTX::GetSessionCacheOff() const
+{
+    return sessionCacheOff_;
+}
+
+
+void SSL_CTX::SetUserData(void* data)
+{
+    userData_ = data;
+}
+
+
+void SSL_CTX::SetSessionCacheOff()
+{
+    sessionCacheOff_ = true;
 }
 
 
@@ -2063,9 +2156,9 @@ Buffers::Buffers() : rawInput_(0)
 
 Buffers::~Buffers()
 {
-    mySTL::for_each(handShakeList_.begin(), handShakeList_.end(),
+    STL::for_each(handShakeList_.begin(), handShakeList_.end(),
                   del_ptr_zero()) ;
-    mySTL::for_each(dataList_.begin(), dataList_.end(),
+    STL::for_each(dataList_.begin(), dataList_.end(),
                   del_ptr_zero()) ;
     ysDelete(rawInput_);
 }
@@ -2276,7 +2369,108 @@ ASN1_STRING* StringHolder::GetString()
 }
 
 
+#ifdef HAVE_LIBZ
+
+    void* myAlloc(void* /* opaque */, unsigned int item, unsigned int size)
+    {
+        return NEW_YS unsigned char[item * size];
+    }
+
+
+    void myFree(void* /* opaque */, void* memory)
+    {
+        unsigned char* ptr = static_cast<unsigned char*>(memory);
+        yaSSL::ysArrayDelete(ptr);
+    }
+
+
+    // put size in front of compressed data
+    int Compress(const byte* in, int sz, input_buffer& buffer)
+    {
+        byte     tmp[LENGTH_SZ];
+        z_stream c_stream; /* compression stream */
+
+        buffer.allocate(sz + sizeof(uint16) + COMPRESS_EXTRA);
+
+        c_stream.zalloc = myAlloc;
+        c_stream.zfree  = myFree;
+        c_stream.opaque = (voidpf)0;
+
+        c_stream.next_in   = const_cast<byte*>(in);
+        c_stream.avail_in  = sz;
+        c_stream.next_out  = buffer.get_buffer() + sizeof(tmp);
+        c_stream.avail_out = buffer.get_capacity() - sizeof(tmp);
+
+        if (deflateInit(&c_stream, 8) != Z_OK) return -1;
+        int err = deflate(&c_stream, Z_FINISH);
+        deflateEnd(&c_stream);
+        if (err != Z_OK && err != Z_STREAM_END) return -1;
+
+        c16toa(sz, tmp);
+        memcpy(buffer.get_buffer(), tmp, sizeof(tmp));
+        buffer.add_size(c_stream.total_out + sizeof(tmp));
+
+        return 0;
+    }
+
+
+    // get uncompressed size in front
+    int DeCompress(input_buffer& in, int sz, input_buffer& out)
+    {
+        byte tmp[LENGTH_SZ];
+    
+        in.read(tmp, sizeof(tmp));
+
+        uint16 len;
+        ato16(tmp, len);
+
+        out.allocate(len);
+
+        z_stream d_stream; /* decompression stream */
+
+        d_stream.zalloc = myAlloc;
+        d_stream.zfree  = myFree;
+        d_stream.opaque = (voidpf)0;
+
+        d_stream.next_in   = in.get_buffer() + in.get_current();
+        d_stream.avail_in  = sz - sizeof(tmp);
+        d_stream.next_out  = out.get_buffer();
+        d_stream.avail_out = out.get_capacity();
+
+        if (inflateInit(&d_stream) != Z_OK) return -1;
+        int err = inflate(&d_stream, Z_FINISH);
+        inflateEnd(&d_stream);
+        if (err != Z_OK && err != Z_STREAM_END) return -1;
+
+        out.add_size(d_stream.total_out);
+        in.set_current(in.get_current() + sz - sizeof(tmp));
+
+        return 0;
+    }
+
+
+#else  // LIBZ
+
+    // these versions should never get called
+    int Compress(const byte* in, int sz, input_buffer& buffer)
+    {
+        assert(0);  
+        return -1;
+    } 
+
+
+    int DeCompress(input_buffer& in, int sz, input_buffer& out)
+    {
+        assert(0);  
+        return -1;
+    } 
+
+
+#endif // LIBZ
+
+
 } // namespace
+
 
 
 extern "C" void yaSSL_CleanUp()

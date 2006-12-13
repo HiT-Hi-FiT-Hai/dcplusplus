@@ -29,7 +29,7 @@
 #include "runtime.hpp"
 #include "yassl_int.hpp"
 #include "handshake.hpp"
-
+#include "memory_array.hpp"
 #include "asn.hpp"  // provide crypto wrapper??
 
 
@@ -87,7 +87,7 @@ void EncryptedPreMasterSecret::build(SSL& ssl)
     opaque tmp[SECRET_LEN];
     memset(tmp, 0, sizeof(tmp));
     ssl.getCrypto().get_random().Fill(tmp, SECRET_LEN);
-    ProtocolVersion pv = ssl.getSecurity().get_connection().version_;
+    ProtocolVersion pv = ssl.getSecurity().get_connection().chVersion_;
     tmp[0] = pv.major_;
     tmp[1] = pv.minor_;
     ssl.set_preMaster(tmp, SECRET_LEN);
@@ -139,7 +139,7 @@ void DH_Server::build(SSL& ssl)
                        parms_.alloc_pub(pubSz));
 
     short sigSz = 0;
-    mySTL::auto_ptr<Auth> auth(ysDelete);
+    STL_NAMESPACE::auto_ptr<Auth> auth;
     const CertManager& cert = ssl.getCrypto().get_certManager();
     
     if (ssl.getSecurity().get_parms().sig_algo_ == rsa_sa_algo)
@@ -151,9 +151,11 @@ void DH_Server::build(SSL& ssl)
         sigSz += DSS_ENCODED_EXTRA;
     }
     
-
     sigSz += auth->get_signatureLength();
-
+    if (!sigSz) {
+        ssl.SetError(privateKey_error);
+        return;
+    }
 
     length_ = 8; // pLen + gLen + YsLen + SigLen
     length_ += pSz + gSz + pubSz + sigSz;
@@ -230,6 +232,10 @@ void EncryptedPreMasterSecret::read(SSL& ssl, input_buffer& input)
     opaque preMasterSecret[SECRET_LEN];
     rsa.decrypt(preMasterSecret, secret_, length_, 
                 ssl.getCrypto().get_random());
+
+    ProtocolVersion pv = ssl.getSecurity().get_connection().chVersion_;
+    if (pv.major_ != preMasterSecret[0] || pv.minor_ != preMasterSecret[1])
+        ssl.SetError(pms_version_error); // continue deriving for timing attack
 
     ssl.set_preMaster(preMasterSecret, SECRET_LEN);
     ssl.makeMasterSecret();
@@ -435,6 +441,7 @@ Parameters::Parameters(ConnectionEnd ce, const Ciphers& ciphers,
                        ProtocolVersion pv, bool haveDH) : entity_(ce)
 {
     pending_ = true;	// suite not set yet
+    strncpy(cipher_name_, "NONE", 5);
 
     if (ciphers.setSuites_) {   // use user set list
         suites_size_ = ciphers.suiteSz_;
@@ -443,6 +450,7 @@ Parameters::Parameters(ConnectionEnd ce, const Ciphers& ciphers,
     }
     else 
         SetSuites(pv, ce == server_end && !haveDH);  // defaults
+
 }
 
 
@@ -611,14 +619,18 @@ output_buffer& operator<<(output_buffer& output, const HandShakeHeader& hdr)
 void HandShakeHeader::Process(input_buffer& input, SSL& ssl)
 {
     ssl.verifyState(*this);
+    if (ssl.GetError()) return;
     const HandShakeFactory& hsf = ssl.getFactory().getHandShake();
-    mySTL::auto_ptr<HandShakeBase> hs(hsf.CreateObject(type_), ysDelete);
+    STL_NAMESPACE::auto_ptr<HandShakeBase> hs(hsf.CreateObject(type_));
     if (!hs.get()) {
         ssl.SetError(factory_error);
         return;
     }
-    hashHandShake(ssl, input, c24to32(length_));
 
+    uint len = c24to32(length_);
+    hashHandShake(ssl, input, len);
+
+    hs->set_length(len);
     input >> *hs;
     hs->Process(input, ssl);
 }
@@ -847,11 +859,17 @@ void Alert::Process(input_buffer& input, SSL& ssl)
         opaque mac[SHA_LEN];
         input.read(mac, digestSz);
 
-        opaque fill;
-        int    padSz = ssl.getSecurity().get_parms().encrypt_size_ - aSz -
-                       digestSz;
-        for (int i = 0; i < padSz; i++) 
-            fill = input[AUTO];
+        if (ssl.getSecurity().get_parms().cipher_type_ == block) {
+            int    ivExtra = 0;
+            opaque fill;
+
+            if (ssl.isTLSv1_1())
+                ivExtra = ssl.getCrypto().get_cipher().get_blockSize();
+            int padSz = ssl.getSecurity().get_parms().encrypt_size_ - ivExtra -
+                        aSz - digestSz;
+            for (int i = 0; i < padSz; i++) 
+                fill = input[AUTO];
+        }
 
         // verify
         if (memcmp(mac, verify, digestSz)) {
@@ -877,9 +895,13 @@ Data::Data(uint16 len, opaque* b)
 {}
 
 
-Data::Data(uint16 len, const opaque* w)
-    : length_(len), buffer_(0), write_buffer_(w)
-{}
+void Data::SetData(uint16 len, const opaque* buffer)
+{
+    assert(write_buffer_ == 0);
+
+    length_ = len;
+    write_buffer_ = buffer;
+}
 
 input_buffer& Data::set(input_buffer& in)
 {
@@ -905,16 +927,11 @@ uint16 Data::get_length() const
 }
 
 
-const opaque* Data::get_buffer() const
-{
-    return write_buffer_;
-}
-
-
 void Data::set_length(uint16 l)
 {
     length_ = l;
 }
+
 
 opaque* Data::set_buffer()
 {
@@ -935,27 +952,42 @@ void Data::Process(input_buffer& input, SSL& ssl)
 {
     int msgSz = ssl.getSecurity().get_parms().encrypt_size_;
     int pad   = 0, padByte = 0;
+    int ivExtra = 0;
+
     if (ssl.getSecurity().get_parms().cipher_type_ == block) {
-        pad = *(input.get_buffer() + input.get_current() + msgSz - 1);
+        if (ssl.isTLSv1_1())  // IV
+            ivExtra = ssl.getCrypto().get_cipher().get_blockSize();
+        pad = *(input.get_buffer() + input.get_current() + msgSz -ivExtra - 1);
         padByte = 1;
     }
     int digestSz = ssl.getCrypto().get_digest().get_digestSize();
-    int dataSz = msgSz - digestSz - pad - padByte;   
+    int dataSz = msgSz - ivExtra - digestSz - pad - padByte;   
     opaque verify[SHA_LEN];
 
+    const byte* rawData = input.get_buffer() + input.get_current();
+
     // read data
-    if (dataSz) {
-        input_buffer* data;
-        ssl.addData(data = NEW_YS input_buffer(dataSz));
-        input.read(data->get_buffer(), dataSz);
-        data->add_size(dataSz);
+    if (dataSz) {                               // could be compressed
+        if (ssl.CompressionOn()) {
+            input_buffer tmp;
+            if (DeCompress(input, dataSz, tmp) == -1) {
+                ssl.SetError(decompress_error);
+                return;
+            }
+            ssl.addData(NEW_YS input_buffer(tmp.get_size(),
+                                            tmp.get_buffer(), tmp.get_size()));
+        }
+        else {
+            input_buffer* data;
+            ssl.addData(data = NEW_YS input_buffer(dataSz));
+            input.read(data->get_buffer(), dataSz);
+            data->add_size(dataSz);
+        }
 
         if (ssl.isTLS())
-            TLS_hmac(ssl, verify, data->get_buffer(), dataSz, application_data,
-                     true);
+            TLS_hmac(ssl, verify, rawData, dataSz, application_data, true);
         else
-            hmac(ssl, verify, data->get_buffer(), dataSz, application_data,
-                 true);
+            hmac(ssl, verify, rawData, dataSz, application_data, true);
     }
 
     // read mac and fill
@@ -1214,6 +1246,27 @@ output_buffer& operator<<(output_buffer& output, const ServerHello& hello)
 // Server Hello processing handler
 void ServerHello::Process(input_buffer&, SSL& ssl)
 {
+    if (ssl.GetMultiProtocol()) {   // SSLv23 support
+        if (ssl.isTLS() && server_version_.minor_ < 1)
+            // downgrade to SSLv3
+            ssl.useSecurity().use_connection().TurnOffTLS();
+        else if (ssl.isTLSv1_1() && server_version_.minor_ == 1)
+            // downdrage to TLSv1
+            ssl.useSecurity().use_connection().TurnOffTLS1_1();
+    }
+    else if (ssl.isTLSv1_1() && server_version_.minor_ < 2) {
+        ssl.SetError(badVersion_error);
+        return;
+    }
+    else if (ssl.isTLS() && server_version_.minor_ < 1) {
+        ssl.SetError(badVersion_error);
+        return;
+    }
+    else if (!ssl.isTLS() && (server_version_.major_ == 3 &&
+                              server_version_.minor_ >= 1)) {
+        ssl.SetError(badVersion_error);
+        return;
+    }
     ssl.set_pending(cipher_suite_[1]);
     ssl.set_random(random_, server_end);
     if (id_len_)
@@ -1236,6 +1289,10 @@ void ServerHello::Process(input_buffer&, SSL& ssl)
             ssl.useSecurity().set_resuming(false);
             ssl.useLog().Trace("server denied resumption");
         }
+
+    if (ssl.CompressionOn() && !compression_method_)
+        ssl.UnSetCompression(); // server isn't supporting yaSSL zlib request
+
     ssl.useStates().useClient() = serverHelloComplete;
 }
 
@@ -1247,8 +1304,9 @@ ServerHello::ServerHello()
 }
 
 
-ServerHello::ServerHello(ProtocolVersion pv)
-    : server_version_(pv)
+ServerHello::ServerHello(ProtocolVersion pv, bool useCompression)
+    : server_version_(pv),
+      compression_method_(useCompression ? zlib : no_compression)
 {
     memset(random_, 0, RAN_LEN);
     memset(session_id_, 0, ID_LEN);
@@ -1325,6 +1383,8 @@ opaque* ClientKeyBase::get_clientKey() const
 // input operator for Client Hello
 input_buffer& operator>>(input_buffer& input, ClientHello& hello)
 {
+    uint begin = input.get_current();  // could have extensions at end
+
     // Protocol
     hello.client_version_.major_ = input[AUTO];
     hello.client_version_.minor_ = input[AUTO];
@@ -1345,8 +1405,19 @@ input_buffer& operator>>(input_buffer& input, ClientHello& hello)
 
     // Compression
     hello.comp_len_ = input[AUTO];
-    while (hello.comp_len_--)  // ignore for now
-        hello.compression_methods_ = CompressionMethod(input[AUTO]);
+    hello.compression_methods_ = no_compression;
+    while (hello.comp_len_--) {
+        CompressionMethod cm = CompressionMethod(input[AUTO]);
+        if (cm == zlib)
+            hello.compression_methods_ = zlib;
+    }
+
+    uint read = input.get_current() - begin;
+    uint expected = hello.get_length();
+
+    // ignore client hello extensions for now
+    if (read < expected)
+        input.set_current(input.get_current() + expected - read);
 
     return input;
 }
@@ -1384,15 +1455,43 @@ output_buffer& operator<<(output_buffer& output, const ClientHello& hello)
 // Client Hello processing handler
 void ClientHello::Process(input_buffer&, SSL& ssl)
 {
-    if (ssl.isTLS() && client_version_.minor_ == 0) {
-        ssl.useSecurity().use_connection().TurnOffTLS();
-        ProtocolVersion pv = ssl.getSecurity().get_connection().version_;
-        ssl.useSecurity().use_parms().SetSuites(pv);  // reset w/ SSL suites
+    // store version for pre master secret
+    ssl.useSecurity().use_connection().chVersion_ = client_version_;
+
+    if (client_version_.major_ != 3) {
+        ssl.SetError(badVersion_error);
+        return;
     }
+    if (ssl.GetMultiProtocol()) {   // SSLv23 support
+        if (ssl.isTLS() && client_version_.minor_ < 1) {
+            // downgrade to SSLv3
+            ssl.useSecurity().use_connection().TurnOffTLS();
+            ProtocolVersion pv = ssl.getSecurity().get_connection().version_;
+            ssl.useSecurity().use_parms().SetSuites(pv);  // reset w/ SSL suites
+        }
+        else if (ssl.isTLSv1_1() && client_version_.minor_ == 1)
+            // downgrade to TLSv1, but use same suites
+            ssl.useSecurity().use_connection().TurnOffTLS1_1();
+    }
+    else if (ssl.isTLSv1_1() && client_version_.minor_ < 2) {
+        ssl.SetError(badVersion_error);
+        return;
+    }
+    else if (ssl.isTLS() && client_version_.minor_ < 1) {
+        ssl.SetError(badVersion_error);
+        return;
+    }
+    else if (!ssl.isTLS() && client_version_.minor_ >= 1) {
+        ssl.SetError(badVersion_error);
+        return;
+    }
+
     ssl.set_random(random_, client_end);
 
     while (id_len_) {  // trying to resume
-        SSL_SESSION* session = GetSessions().lookup(session_id_);
+        SSL_SESSION* session = 0;
+        if (!ssl.getSecurity().GetContext()->GetSessionCacheOff())
+            session = GetSessions().lookup(session_id_);
         if (!session)  {
             ssl.useLog().Trace("session lookup failed");
             break;
@@ -1415,6 +1514,9 @@ void ClientHello::Process(input_buffer&, SSL& ssl)
     }
     ssl.matchSuite(cipher_suites_, suite_len_);
     ssl.set_pending(ssl.getSecurity().get_parms().suite_[1]);
+
+    if (compression_methods_ == zlib)
+        ssl.SetCompression();
 
     ssl.useStates().useServer() = clientHelloComplete;
 }
@@ -1450,8 +1552,9 @@ ClientHello::ClientHello()
 }
 
 
-ClientHello::ClientHello(ProtocolVersion pv)
-    : client_version_(pv)
+ClientHello::ClientHello(ProtocolVersion pv, bool useCompression)
+    : client_version_(pv),
+      compression_methods_(useCompression ? zlib : no_compression)
 {
     memset(random_, 0, RAN_LEN);
 }
@@ -1541,7 +1644,7 @@ CertificateRequest::CertificateRequest()
 CertificateRequest::~CertificateRequest()
 {
 
-    mySTL::for_each(certificate_authorities_.begin(),
+    STL::for_each(certificate_authorities_.begin(),
                   certificate_authorities_.end(),
                   del_ptr_zero()) ;
 }
@@ -1634,9 +1737,9 @@ output_buffer& operator<<(output_buffer& output,
            request.typeTotal_ - REQUEST_HEADER, tmp);
     output.write(tmp, sizeof(tmp));
 
-    mySTL::list<DistinguishedName>::const_iterator first =
+    STL::list<DistinguishedName>::const_iterator first =
                                     request.certificate_authorities_.begin();
-    mySTL::list<DistinguishedName>::const_iterator last =
+    STL::list<DistinguishedName>::const_iterator last =
                                     request.certificate_authorities_.end();
     while (first != last) {
         uint16 sz;
@@ -1684,7 +1787,7 @@ void CertificateVerify::Build(SSL& ssl)
 
     uint16 sz = 0;
     byte   len[VERIFY_HEADER];
-    mySTL::auto_ptr<byte> sig(ysArrayDelete);
+    mySTL::auto_array<byte> sig;
 
     // sign
     const CertManager& cert = ssl.getCrypto().get_certManager();
@@ -1891,7 +1994,7 @@ void Finished::Process(input_buffer& input, SSL& ssl)
     // verify hashes
     const  Finished& verify = ssl.getHashes().get_verify();
     uint finishedSz = ssl.isTLS() ? TLS_FINISHED_SZ : FINISHED_SZ;
-
+    
     input.read(hashes_.md5_, finishedSz);
 
     if (memcmp(&hashes_, &verify.hashes_, finishedSz)) {
@@ -1915,8 +2018,13 @@ void Finished::Process(input_buffer& input, SSL& ssl)
     int    digestSz = ssl.getCrypto().get_digest().get_digestSize();
     input.read(mac, digestSz);
 
+    uint ivExtra = 0;
+    if (ssl.getSecurity().get_parms().cipher_type_ == block)
+        if (ssl.isTLSv1_1())
+            ivExtra = ssl.getCrypto().get_cipher().get_blockSize();
+
     opaque fill;
-    int    padSz = ssl.getSecurity().get_parms().encrypt_size_ -
+    int    padSz = ssl.getSecurity().get_parms().encrypt_size_ - ivExtra -
                      HANDSHAKE_HEADER - finishedSz - digestSz;
     for (int i = 0; i < padSz; i++) 
         fill = input[AUTO];
@@ -1990,7 +2098,9 @@ void clean(volatile opaque* p, uint sz, RandomPool& ran)
 Connection::Connection(ProtocolVersion v, RandomPool& ran)
     : pre_master_secret_(0), sequence_number_(0), peer_sequence_number_(0),
       pre_secret_len_(0), send_server_key_(false), master_clean_(false),
-      TLS_(v.major_ >= 3 && v.minor_ >= 1), version_(v), random_(ran) 
+      TLS_(v.major_ >= 3 && v.minor_ >= 1),
+      TLSv1_1_(v.major_ >= 3 && v.minor_ >= 2), compression_(false),
+      version_(v), random_(ran)
 {
     memset(sessionID_, 0, sizeof(sessionID_));
 }
@@ -2012,6 +2122,13 @@ void Connection::TurnOffTLS()
 {
     TLS_ = false;
     version_.minor_ = 0;
+}
+
+
+void Connection::TurnOffTLS1_1()
+{
+    TLSv1_1_ = false;
+    version_.minor_ = 1;
 }
 
 

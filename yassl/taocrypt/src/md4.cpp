@@ -28,8 +28,14 @@
 
 #include "runtime.hpp"
 #include "md4.hpp"
-#include "algorithm.hpp"    // mySTL::swap
+#ifdef USE_SYS_STL
+    #include <algorithm>
+#else
+    #include "algorithm.hpp"
+#endif
 
+
+namespace STL = STL_NAMESPACE;
    
 
 namespace TaoCrypt {
@@ -69,9 +75,9 @@ MD4& MD4::operator= (const MD4& that)
 
 void MD4::Swap(MD4& other)
 {
-    mySTL::swap(loLen_,   other.loLen_);
-    mySTL::swap(hiLen_,   other.hiLen_);
-    mySTL::swap(buffLen_, other.buffLen_);
+    STL::swap(loLen_,   other.loLen_);
+    STL::swap(hiLen_,   other.hiLen_);
+    STL::swap(buffLen_, other.buffLen_);
 
     memcpy(digest_, other.digest_, DIGEST_SIZE);
     memcpy(buffer_, other.buffer_, BLOCK_SIZE);
