@@ -178,6 +178,7 @@
 		<String Name="HubAddress">Address</String>
 		<String Name="HubListDownloaded">Hub list downloaded...</String>
 		<String Name="HubListEdit">Edit the hublist</String>
+		<String Name="HubListLoadedFromCache">Hub list loaded from cache...</String>
 		<String Name="HubName">Name</String>
 		<String Name="HubList">Hublist</String>
 		<String Name="HubPassword">Hub password</String>

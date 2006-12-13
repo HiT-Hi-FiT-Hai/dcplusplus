@@ -124,6 +124,7 @@ private:
 
 	enum {
 		FINISHED,
+		LOADED_FROM_CACHE,
 		STARTING,
 		FAILED
 	};
@@ -164,6 +165,7 @@ private:
 	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
 	virtual void on(DownloadFailed, const string& l) throw() { speak(FAILED, l); }
 	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
+	virtual void on(LoadedFromCache, const string& l) throw() { speak(LOADED_FROM_CACHE, l); }
 
 	void speak(int x, const string& l) {
 		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(Text::toT(l)));

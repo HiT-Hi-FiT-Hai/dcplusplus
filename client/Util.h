@@ -162,6 +162,8 @@ public:
 
 	/** Path of file lists */
 	static string getListPath() { return getConfigPath() + "FileLists" PATH_SEPARATOR_STR; }
+	/** Path of hub lists */
+	static string getHubListsPath() { return getConfigPath() + "HubLists" PATH_SEPARATOR_STR; }
 	/** Notepad filename */
 	static string getNotepadFile() { return getConfigPath() + "Notepad.txt"; }
 

@@ -27,9 +27,9 @@
 #include "../client/SimpleXML.h"
 
 static const TCHAR thanks[] = _T("Big thanks to all donators and people who have contributed with ideas ")
-_T("and code! Thanks go out to sourceforge for hosting the project. This application uses libzip2, ")
-_T("thanks to Julian R Steward and team for providing it. This application uses STLPort ")
-_T("(www.stlport.org), a most excellent STL package. zlib is also used in this application. ")
+_T("and code! Thanks go out to sourceforge for hosting the project. This application uses bzip2 (www.bzip.org), ")
+_T("thanks to Julian Seward and team for providing it. Thiz application uses zlib (www.zlib.net), ")
+_T("thanks to Jean-loup Gailly and Mark Adler for providing it. ")
 _T("This product includes GeoIP data created by MaxMind, available from http://maxmind.com/. ")
 _T("This product uses yassl from www.yassl.com, thanks to Todd Ouska and Larry Stefonic.")
 _T("The following people have contributed code to ")
@@ -42,7 +42,7 @@ _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, laur
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, ")
 _T("krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, ")
-_T("steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45. ")
+_T("steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman. ")
 _T("Keep it coming!");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener

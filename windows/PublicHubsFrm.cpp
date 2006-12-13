@@ -139,10 +139,8 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	hubs = FavoriteManager::getInstance()->getPublicHubs();
 	if(FavoriteManager::getInstance()->isDownloading())
 		ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
-	else {
-		if(hubs.empty())
-			FavoriteManager::getInstance()->refresh();
-	}
+	else if(hubs.empty())
+		FavoriteManager::getInstance()->refresh();
 
 	updateList();
 
@@ -210,12 +208,9 @@ LRESULT PublicHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHa
 }
 
 LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	ctrlHubs.DeleteAllItems();
-	users = 0;
-	visibleHubs = 0;
 	ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
-	FavoriteManager::getInstance()->refresh();
-
+	FavoriteManager::getInstance()->refresh(true);
+	updateDropDown();
 	return 0;
 }
 
@@ -424,11 +419,11 @@ void PublicHubsFrame::updateStatus() {
 }
 
 LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(wParam == FINISHED) {
+	if((wParam == FINISHED) || (wParam == LOADED_FROM_CACHE)) {
 		hubs = FavoriteManager::getInstance()->getPublicHubs();
 		updateList();
 		tstring* x = (tstring*)lParam;
-		ctrlStatus.SetText(0, (TSTRING(HUB_LIST_DOWNLOADED) + _T(" (") + (*x) + _T(")")).c_str());
+		ctrlStatus.SetText(0, (((wParam == LOADED_FROM_CACHE) ? TSTRING(HUB_LIST_LOADED_FROM_CACHE) : TSTRING(HUB_LIST_DOWNLOADED)) + _T(" (") + (*x) + _T(")")).c_str());
 		delete x;
 	} else if(wParam == STARTING) {
 		tstring* x = (tstring*)lParam;
