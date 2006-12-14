@@ -37,7 +37,6 @@
 #include "ripemd.hpp"
 #include "pwdbased.hpp"
 #include "algebra.hpp"
-#include "vector.hpp"
 #include "hash.hpp"
 
 #ifdef HAVE_EXPLICIT_TEMPLATE_INSTANTIATION

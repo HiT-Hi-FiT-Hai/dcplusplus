@@ -857,7 +857,7 @@ bool CertDecoder::ValidateSignature(SignerList* signers)
 bool CertDecoder::ConfirmSignature(Source& pub)
 {
     HashType ht;
-    mySTL::auto_ptr<HASH> hasher;
+    STL_NAMESPACE::auto_ptr<HASH> hasher;
 
     if (signatureOID_ == MD5wRSA) {
         hasher.reset(NEW_TC MD5);

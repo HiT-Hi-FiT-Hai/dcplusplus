@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="include,taocrypt\include,mySTL"
+				AdditionalIncludeDirectories="include,taocrypt\include,taocrypt\mySTL"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_SYS_STL"
 				StringPooling="true"
 				MinimalRebuild="true"
@@ -119,7 +119,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="include,taocrypt\include,mySTL"
+				AdditionalIncludeDirectories="include,taocrypt\include,taocrypt\mySTL"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_SYS_STL"
 				StringPooling="true"
 				MinimalRebuild="true"

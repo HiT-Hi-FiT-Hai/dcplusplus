@@ -33,7 +33,7 @@
 
 #include <assert.h>             // assert
 #include "yassl_types.hpp"      // ysDelete
-#include "memory.hpp"           // mySTL::auto_ptr
+#include "memory_array.hpp"           // mySTL::auto_ptr
 #include STL_ALGORITHM_FILE
 
 

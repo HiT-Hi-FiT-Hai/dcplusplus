@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "atlres.h"
+#include "wtl\\atlres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -831,8 +831,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,9,8
- PRODUCTVERSION 0,6,9,8
+ FILEVERSION 0,6,9,9
+ PRODUCTVERSION 0,6,9,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -840,7 +840,7 @@ VS_VERSION_INFO VERSIONINFO
  FILEFLAGS 0x0L
 #endif
  FILEOS 0x4L
- FILETYPE 0x2L
+ FILETYPE 0x1L
  FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
@@ -849,12 +849,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 6, 9, 8"
+            VALUE "FileVersion", "0, 6, 9, 9"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2006 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 6, 9, 8"
+            VALUE "ProductVersion", "0, 6, 9, 9"
         END
     END
     BLOCK "VarFileInfo"
