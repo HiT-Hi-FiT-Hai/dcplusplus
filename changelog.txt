@@ -1,4 +1,4 @@
-﻿-- --
+﻿-- 0.699 2006-12-15 --
 * Switched to VC8/VS2005
 * Removed some unused options
 * Antifrag is now default
