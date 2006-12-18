@@ -25,6 +25,7 @@
 * [bug 446] Public hub lists are cached and downloaded only when user requests it (thanks poy)
 * [bug 1117] Fixed subfolders being created on filelist downloads (thanks mikael eman)
 * [bug 1096] Updated credits in about box
+* [bug 1123] Removed some typecasts (thanks stephan hohe)
 
 -- 0.698 2006-10-10 --
 * [bug 1065] Code cleanup (thanks steven sheehy)

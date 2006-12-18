@@ -86,6 +86,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	if(f != NULL)
 		(*f)(p, STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
+	::MessageBox(NULL, _T("1"), _T("1"), MB_OK);
 
 }
 

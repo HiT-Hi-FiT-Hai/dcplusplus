@@ -405,7 +405,8 @@ void QueueManager::on(TimerManagerListener::Minute, uint32_t aTick) throw() {
 }
 
 void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
-	string target = Util::getListPath() + Util::validateFileName(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
+	// complete target is checked later, just remove path separators from the nick here
+	string target = Util::getListPath() + Util::cleanPathChars(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
 
 	add(target, -1, TTHValue(), aUser, QueueItem::FLAG_USER_LIST | aFlags);
 }

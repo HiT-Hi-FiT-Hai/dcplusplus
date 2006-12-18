@@ -382,7 +382,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL && item->iItem != -1) {
-		ItemInfo* ii = (ItemInfo*) ctrlList.GetItemData(item->iItem);
+		ItemInfo* ii = ctrlList.getItemData(item->iItem);
 
 		if(ii->type == ItemInfo::FILE) {
 			try {
@@ -438,7 +438,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 void DirectoryListingFrame::downloadList(const tstring& aTarget, bool view /* = false */) {
 	int i=-1;
 	while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
+		ItemInfo* ii = ctrlList.getItemData(i);
 
 		tstring target = aTarget.empty() ? Text::toT(SETTING(DOWNLOAD_DIRECTORY)) : aTarget;
 
@@ -464,7 +464,7 @@ LRESULT DirectoryListingFrame::onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlList.GetSelectedCount() == 1) {
-		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+		ItemInfo* ii = ctrlList.getItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		try {
 			if(ii->type == ItemInfo::FILE) {
@@ -548,7 +548,7 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 		return 0;
 
 	tstring fullPath;
-	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+	ItemInfo* ii = ctrlList.getItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 	if(ii->type == ItemInfo::FILE) {
 		if(!ii->file->getAdls())
 			return 0;
@@ -602,7 +602,7 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 
 		int n = 0;
 
-		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+		ItemInfo* ii = ctrlList.getItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
@@ -750,7 +750,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 	dcassert(newId >= 0);
 
 	if(ctrlList.GetSelectedCount() == 1) {
-		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+		ItemInfo* ii = ctrlList.getItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		if(ii->type == ItemInfo::FILE) {
 			if(newId < (int)targets.size()) {
@@ -798,7 +798,7 @@ LRESULT DirectoryListingFrame::onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 
 	if(ctrlList.GetSelectedCount() == 1) {
-		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+		ItemInfo* ii = ctrlList.getItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		if(ii->type == ItemInfo::FILE) {
 			if(newId < (int)targets.size()) {
@@ -854,7 +854,7 @@ LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		forward();
 	} else if(kd->wVKey == VK_RETURN) {
 		if(ctrlList.GetSelectedCount() == 1) {
-			ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+			ItemInfo* ii = ctrlList.getItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 			if(ii->type == ItemInfo::DIRECTORY) {
 				HTREEITEM ht = ctrlTree.GetChildItem(ctrlTree.GetSelectedItem());
 				while(ht != NULL) {
@@ -934,7 +934,7 @@ HTREEITEM DirectoryListingFrame::findFile(const StringSearch& str, HTREEITEM roo
 	// Check file names in list pane
 	for(int i=0; i<ctrlList.GetItemCount(); i++)
 	{
-		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
+		ItemInfo* ii = ctrlList.getItemData(i);
 		if(ii->type == ItemInfo::FILE)
 		{
 			if(str.match(ii->file->getName()))
@@ -1050,7 +1050,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 	int sel = -1;
 	while((sel = ctrlList.GetNextItem(sel, LVNI_SELECTED)) != -1) {
-		ItemInfo* ii = (ItemInfo*)ctrlList.getItemData(sel);
+		ItemInfo* ii = ctrlList.getItemData(sel);
 		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
 			if(nicks.find(dl->getUser()) != nicks.end())
 				continue;

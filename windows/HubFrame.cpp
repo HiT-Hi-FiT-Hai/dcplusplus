@@ -896,7 +896,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 	} else {
 		int sel = -1;
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
-			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
+			UserInfo* u = ctrlUsers.getItemData(sel);
 			StringMap tmp = ucParams;
 
 			u->getIdentity().getParams(tmp, "user", true);

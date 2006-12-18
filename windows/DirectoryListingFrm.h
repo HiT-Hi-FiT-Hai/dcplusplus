@@ -184,7 +184,7 @@ public:
 	void clearList() {
 		int j = ctrlList.GetItemCount();
 		for(int i = 0; i < j; i++) {
-			delete (ItemInfo*)ctrlList.GetItemData(i);
+			delete ctrlList.getItemData(i);
 		}
 		ctrlList.DeleteAllItems();
 	}

@@ -234,7 +234,6 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
 	splash.SetFocus();
 	splash.RedrawWindow();
-
 	startup(callBack, (void*)splash.m_hWnd);
 
 	splash.DestroyWindow();

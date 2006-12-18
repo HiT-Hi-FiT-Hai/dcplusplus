@@ -205,6 +205,7 @@
 				EnableCOMDATFolding="2"
 				SetChecksum="true"
 				TargetMachine="1"
+				FixedBaseAddress="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
