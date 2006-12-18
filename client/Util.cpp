@@ -98,7 +98,7 @@ void Util::initialize() {
 	dataPath = configPath; // dataPath in linux is usually prefix + /share/app_name, so we can't represent it here
 #endif
 
-/*	// Load boot settings
+	// Load boot settings
 	try {
 		SimpleXML boot;
 		boot.fromXML(File(systemPath + "dcppboot.xml", File::READ, File::OPEN).read());
@@ -117,7 +117,7 @@ void Util::initialize() {
 	} catch(const Exception& ) {
 		// Unable to load boot settings...
 	}
-*/
+
 	if(!File::isAbsolute(configPath)) {
 		configPath = systemPath + configPath;
 	}

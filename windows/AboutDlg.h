@@ -62,7 +62,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2005 Jacek Sieka\nCodeveloper: Per Lind�n\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2006 Jacek Sieka\nEx-codeveloper: Per Lind\u00e9n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 		CEdit ctrl(GetDlgItem(IDC_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);

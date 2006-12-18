@@ -1,4 +1,4 @@
-﻿-- 0.699 2006-12-15 --
+﻿-- 0.699 2006-12-18 --
 * Switched to VC8/VS2005
 * Removed some unused options
 * Antifrag is now default
@@ -26,6 +26,8 @@
 * [bug 1117] Fixed subfolders being created on filelist downloads (thanks mikael eman)
 * [bug 1096] Updated credits in about box
 * [bug 1123] Removed some typecasts (thanks stephan hohe)
+* [bug 1099] Fixed "Readd all" spin
+* [bug 1095] Fixed about dialog
 
 -- 0.698 2006-10-10 --
 * [bug 1065] Code cleanup (thanks steven sheehy)

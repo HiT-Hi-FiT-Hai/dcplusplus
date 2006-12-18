@@ -88,7 +88,7 @@ namespace TaoCrypt {
 #ifdef SSE2_INTRINSICS_AVAILABLE
 
 template <class T>
-CPP_TYPENAME AllocatorBase<T>::pointer AlignedAllocator<T>::allocate(
+CPP_TYPENAME AlignedAllocator<T>::pointer AlignedAllocator<T>::allocate(
                                            size_type n, const void *)
 {
     CheckSize(n);

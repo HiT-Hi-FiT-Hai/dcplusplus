@@ -351,8 +351,6 @@ private:
 };
 
 bool ShareManager::loadCache() throw() {
-	if(1)
-		return false;
 	try {
 		ShareLoader loader(directories);
 		string txt;

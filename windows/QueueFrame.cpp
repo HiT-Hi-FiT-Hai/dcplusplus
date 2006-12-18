@@ -884,7 +884,7 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		if(wID == IDC_READD) {
 			// re-add all sources
-			for(QueueItem::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+			for(QueueItem::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ++s) {
 				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
 			}
 		} else {
