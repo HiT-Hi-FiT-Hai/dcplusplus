@@ -568,7 +568,7 @@ void Socket::socksUpdated() {
 
 void Socket::shutdown() throw() {
 	if(sock != INVALID_SOCKET)
-		::shutdown(sock, 1);
+		::shutdown(sock, 2);
 }
 
 void Socket::close() throw() {

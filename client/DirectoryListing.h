@@ -133,7 +133,7 @@ public:
 		delete root;
 	}
 
-	void loadFile(const string& name) throw(FileException, SimpleXMLException);
+	void loadFile(const string& name) throw(Exception);
 
 	string loadXML(const string& xml, bool updating);
 

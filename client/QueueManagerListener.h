@@ -40,7 +40,7 @@ public:
 	typedef X<7> PartialList;
 
 	virtual void on(Added, QueueItem*) throw() { }
-	virtual void on(Finished, QueueItem*, int64_t) throw() { }
+	virtual void on(Finished, QueueItem*, const string&, int64_t) throw() { }
 	virtual void on(Removed, QueueItem*) throw() { }
 	virtual void on(Moved, QueueItem*, const string&) throw() { }
 	virtual void on(SourcesUpdated, QueueItem*) throw() { }

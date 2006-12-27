@@ -42,7 +42,7 @@ class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame
 
 {
 public:
-	static void openWindow(const tstring& aFile, const User::Ptr& aUser, int64_t aSpeed);
+	static void openWindow(const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed);
 	static void openWindow(const User::Ptr& aUser, const string& txt, int64_t aSpeed);
 	static void closeAll();
 
@@ -144,7 +144,7 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void findFile(bool findNext);
 	void runUserCommand(UserCommand& uc);
-	void loadFile(const tstring& name);
+	void loadFile(const tstring& name, const tstring& dir);
 	void loadXML(const string& txt);
 	void refreshTree(const tstring& root);
 

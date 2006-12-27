@@ -41,7 +41,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, Resourc
 
 DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
 
-void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		if(!BOOLSETTING(POPUNDER_FILELIST)) {
@@ -55,7 +55,7 @@ void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aU
 		} else {
 			frame->CreateEx(WinUtil::mdiClient);
 		}
-		frame->loadFile(aFile);
+		frame->loadFile(aFile, aDir);
 		frames.insert( FramePair( frame->m_hWnd, frame ) );
 	}
 }
@@ -85,11 +85,11 @@ DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser, int64_t aSp
 	lists.insert(make_pair(aUser, this));
 }
 
-void DirectoryListingFrame::loadFile(const tstring& name) {
+void DirectoryListingFrame::loadFile(const tstring& name, const tstring& dir) {
 	try {
 		dl->loadFile(Text::fromT(name));
 		ADLSearchManager::getInstance()->matchListing(*dl);
-		refreshTree(Text::toT(WinUtil::getInitialDir(dl->getUser())));
+		refreshTree(dir);
 	} catch(const Exception& e) {
 		error = WinUtil::getNicks(dl->getUser()) + Text::toT(": " + e.getError());
 	}
@@ -534,11 +534,15 @@ LRESULT DirectoryListingFrame::onListDiff(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	tstring file;
 	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), _T("File Lists\0*.xml.bz2\0All Files\0*.*\0"))) {
 		DirectoryListing dirList(dl->getUser());
-		dirList.loadFile(Text::fromT(file));
-		dl->getRoot()->filterList(dirList);
-		refreshTree(Util::emptyStringT);
-		initStatus();
-		updateStatus();
+		try {
+			dirList.loadFile(Text::fromT(file));
+			dl->getRoot()->filterList(dirList);
+			refreshTree(Util::emptyStringT);
+			initStatus();
+			updateStatus();
+		} catch(const Exception&) {
+			/// @todo report to user?
+		}
 	}
 	return 0;
 }

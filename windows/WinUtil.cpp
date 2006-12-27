@@ -65,7 +65,6 @@ HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
 tstring WinUtil::tth;
-StringPairList WinUtil::initialDirs;
 DWORD WinUtil::helpCookie = 0;
 bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;

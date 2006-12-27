@@ -703,6 +703,8 @@ void ShareManager::addTree(Directory& dir) {
 		addTree(*i->second);
 	}
 
+	dir.size = 0;
+
 	for(Directory::File::Iter i = dir.files.begin(); i != dir.files.end(); ) {
 		addFile(dir, i++);
 	}

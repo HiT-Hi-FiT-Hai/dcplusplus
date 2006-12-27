@@ -404,9 +404,13 @@ void QueueManager::on(TimerManagerListener::Minute, uint32_t aTick) throw() {
 	}
 }
 
-void QueueManager::addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
+void QueueManager::addList(const User::Ptr& aUser, int aFlags, const string& aInitialDir /* = Util::emptyString */) throw(QueueException, FileException) {
 	// complete target is checked later, just remove path separators from the nick here
 	string target = Util::getListPath() + Util::cleanPathChars(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
+
+	if (!aInitialDir.empty()) {
+		dirMap[aUser->getCID().toBase32()] = aInitialDir;
+	}
 
 	add(target, -1, TTHValue(), aUser, QueueItem::FLAG_USER_LIST | aFlags);
 }
@@ -802,7 +806,14 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 								| (q->isSet(QueueItem::FLAG_MATCH_QUEUE) ? QueueItem::FLAG_MATCH_QUEUE : 0);
 						}
 
-						fire(QueueManagerListener::Finished(), q, aDownload->getAverageSpeed());
+						string dir;
+						StringMapIter i = dirMap.find(aDownload->getUser()->getCID().toBase32());
+						if (i != dirMap.end()) {
+							dir = i->second;
+							dirMap.erase(i);
+						}
+
+						fire(QueueManagerListener::Finished(), q, dir, aDownload->getAverageSpeed());
 						fire(QueueManagerListener::Removed(), q);
 
 						userQueue.remove(q);
@@ -911,6 +922,11 @@ void QueueManager::remove(const string& aTarget) throw() {
 		} else if(!q->getTempTarget().empty() && q->getTempTarget() != q->getTarget()) {
 			File::deleteFile(q->getTempTarget() + Download::ANTI_FRAG_EXT);
 			File::deleteFile(q->getTempTarget());
+		}
+
+		StringMapIter i = dirMap.find(q->getCurrent()->getCID().toBase32());
+		if (i != dirMap.end()) {
+			dirMap.erase(i);
 		}
 
 		fire(QueueManagerListener::Removed(), q);

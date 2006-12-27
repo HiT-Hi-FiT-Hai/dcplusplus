@@ -1,4 +1,11 @@
-﻿-- 0.699 2006-12-18 --
+﻿-- --
+* [bug 1102] Fixed move/rename queue folder (thanks mikael eman)
+* [bug 1124] Fixed thread shutdown on *nix (thanks mikael eman)
+* Fixed invalid share size
+* [bug 1127] Fixed crash on invalid file list (thanks steven sheehy)
+* [bug 1019] Reworked initial filelist dir (thanks mikael eman)
+
+-- 0.699 2006-12-18 --
 * Switched to VC8/VS2005
 * Removed some unused options
 * Antifrag is now default

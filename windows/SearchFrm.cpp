@@ -471,8 +471,7 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 
 void SearchFrame::SearchInfo::getList() {
 	try {
-		WinUtil::addInitalDir(sr->getUser(), Text::fromT(columns[COLUMN_PATH]));
-		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW);
+		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW, Text::fromT(columns[COLUMN_PATH]));
 	} catch(const Exception&) {
 		// Ignore for now...
 	}

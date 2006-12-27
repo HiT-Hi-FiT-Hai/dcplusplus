@@ -483,7 +483,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	if(wParam == DOWNLOAD_LISTING) {
 		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
-		DirectoryListingFrame::openWindow(i->file, i->user, i->speed);
+		DirectoryListingFrame::openWindow(i->file, i->dir, i->user, i->speed);
 	} else if(wParam == BROWSE_LISTING) {
 		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
 		DirectoryListingFrame::openWindow(i->user, i->text, 0);
@@ -971,7 +971,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), types)) {
 		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if(u) {
-			DirectoryListingFrame::openWindow(file, u, 0);
+			DirectoryListingFrame::openWindow(file, Text::toT(Util::emptyString), u, 0);
 		} else {
 			MessageBox(CTSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		}
@@ -981,7 +981,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT MainFrame::onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!ShareManager::getInstance()->getOwnListFile().empty()){
-		DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), ClientManager::getInstance()->getMe(), 0);
+		DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
 	}
 	return 0;
 }
@@ -1125,11 +1125,11 @@ void MainFrame::on(PartialList, const User::Ptr& aUser, const string& text) thro
 	PostMessage(WM_SPEAKER, BROWSE_LISTING, (LPARAM)new DirectoryBrowseInfo(aUser, text));
 }
 
-void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, int64_t speed) throw() {
+void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi, const string& dir, int64_t speed) throw() {
 	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
 			// This is a file listing, show it...
-			DirectoryListInfo* i = new DirectoryListInfo(qi->getCurrent(), Text::toT(qi->getListName()), speed);
+			DirectoryListInfo* i = new DirectoryListInfo(qi->getCurrent(), Text::toT(qi->getListName()), Text::toT(dir), speed);
 
 			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 		} else if(qi->isSet(QueueItem::FLAG_TEXT)) {

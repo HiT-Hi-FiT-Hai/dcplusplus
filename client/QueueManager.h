@@ -78,7 +78,7 @@ public:
 	void add(const string& aTarget, int64_t aSize, const TTHValue& root, User::Ptr aUser, 
 		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException);
+	void addList(const User::Ptr& aUser, int aFlags, const string& aInitialDir = Util::emptyString) throw(QueueException, FileException);
 	/** Queue a partial file list download */
 	void addPfs(const User::Ptr& aUser, const string& aDir) throw(QueueException);
 	/** Readd a source that was removed */
@@ -201,7 +201,8 @@ private:
 	bool dirty;
 	/** Next search */
 	uint32_t nextSearch;
-
+	/** map for storing initial dir for file lists */
+	StringMap dirMap;
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */

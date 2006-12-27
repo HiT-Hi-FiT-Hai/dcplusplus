@@ -112,9 +112,9 @@ void SearchManager::disconnect() throw() {
 		stop = true;
 		socket->disconnect();
 		port = 0;
-#ifdef _WIN32
+
 		join();
-#endif
+
 		stop = false;
 	}
 }
