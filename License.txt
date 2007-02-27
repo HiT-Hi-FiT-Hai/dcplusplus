@@ -1,5 +1,5 @@
 DC++
-Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+Copyright (C) 2001-2006 Jacek Sieka, arnetheduck at gmail dot com
 
 This program is licensed under GPL-2 with the notable exception
 that you may compile it with WTL (sf.net/projects/wtl). 

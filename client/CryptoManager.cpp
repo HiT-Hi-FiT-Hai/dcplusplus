@@ -104,23 +104,23 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 	}
 
 #ifdef _WIN32
-	wstring cmd = L"openssl.exe genrsa -out \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) + L"\" 2048";
+	tstring cmd = _T("openssl.exe genrsa -out \"") + Text::toT(SETTING(TLS_PRIVATE_KEY_FILE)) + _T("\" 2048");
 	PROCESS_INFORMATION pi = { 0 };
 	STARTUPINFO si = { 0 };
 	si.cb = sizeof(si);
 
-	if(!CreateProcess(0, const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
+	if(!CreateProcess(0, const_cast<TCHAR*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
 		throw CryptoException(Util::translateError(::GetLastError()));
 	}
 	WaitForSingleObject(pi.hProcess, INFINITE);
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
 
-	cmd = L"openssl.exe req -x509 -new -batch -days 3650 -key \"" + Text::utf8ToWide(SETTING(TLS_PRIVATE_KEY_FILE)) +
-		L"\" -out \"" + Text::utf8ToWide(SETTING(TLS_CERTIFICATE_FILE)) + L"\" -subj \"/CN=" +
-		Text::utf8ToWide(ClientManager::getInstance()->getMyCID().toBase32()) + L"\"";
+	cmd = _T("openssl.exe req -x509 -new -batch -days 3650 -key \"") + Text::toT(SETTING(TLS_PRIVATE_KEY_FILE)) +
+		_T("\" -out \"") + Text::toT(SETTING(TLS_CERTIFICATE_FILE)) + _T("\" -subj \"/CN=") +
+		Text::toT(ClientManager::getInstance()->getMyCID().toBase32()) + _T("\"");
 
-	if(!CreateProcess(0, const_cast<wchar_t*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
+	if(!CreateProcess(0, const_cast<TCHAR*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
 		throw CryptoException(Util::translateError(::GetLastError()));
 	}
 

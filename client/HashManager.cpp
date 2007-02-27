@@ -500,6 +500,7 @@ bool HashManager::Hasher::fastHash(const string& fname, uint8_t* buf, TigerTree&
 	uint8_t* rbuf = buf;
 
 	OVERLAPPED over = { 0 };
+	BOOL res = TRUE;
 	over.hEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
 
 	bool ok = false;
@@ -523,7 +524,6 @@ bool HashManager::Hasher::fastHash(const string& fname, uint8_t* buf, TigerTree&
 
 	over.Offset = hn;
 	size -= hn;
-	BOOL res = TRUE;
 	for(;;) {
 		if(size > 0) {
 			// Start a new overlapped read

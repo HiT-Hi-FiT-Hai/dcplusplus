@@ -1,0 +1,14 @@
+# vim: set filetype=py
+ 
+Import('dev source_path')
+
+env, target, sources = dev.prepare_build(source_path, 'DCPlusPlus')
+
+env.Append(LIBS=["dcpp-bzip", "dcpp-zlib", "dcpp-yassl"])
+env.Append(CPPPATH=["../smartwin/include"])
+env.Append(LIBPATH=["../smartwin/lib"])
+env.Append(LIBS=["smartwin"])
+
+ret = env.Program(target, sources)
+
+Return('ret')

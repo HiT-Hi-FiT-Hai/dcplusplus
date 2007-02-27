@@ -34,6 +34,7 @@
 #include "runtime.hpp"
 #include "crypto_wrapper.hpp"
 #include "cert_wrapper.hpp"
+#include <memory>
 
 #include "md5.hpp"
 #include "sha.hpp"

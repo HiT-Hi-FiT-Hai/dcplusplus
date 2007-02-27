@@ -64,9 +64,17 @@ public:
 
 	static void sleep(uint32_t millis) { ::Sleep(millis); }
 	static void yield() { ::Sleep(1); }
+	
+#ifdef __MINGW32__
+	static long safeInc(volatile long& v) { return InterlockedIncrement((long*)&v); }
+	static long safeDec(volatile long& v) { return InterlockedDecrement((long*)&v); }
+	static long safeExchange(volatile long& target, long value) { return InterlockedExchange((long*)&target, value); }
+
+#else
 	static long safeInc(volatile long& v) { return InterlockedIncrement(&v); }
 	static long safeDec(volatile long& v) { return InterlockedDecrement(&v); }
 	static long safeExchange(volatile long& target, long value) { return InterlockedExchange(&target, value); }
+#endif
 
 #else
 

@@ -30,9 +30,7 @@
 #include "File.h"
 #include "SimpleXML.h"
 
-#ifdef _WIN32
-#include <ShlObj.h>
-#else
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -366,7 +364,7 @@ string Util::formatExactSize(int64_t aBytes) {
 		nf.lpDecimalSep = _T(",");
 
 		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, Dummy, 16 );
-		nf.Grouping = _tstoi(Dummy);
+		nf.Grouping = Util::toInt(Dummy);
 		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Dummy, 16 );
 		nf.lpThousandSep = Dummy;
 

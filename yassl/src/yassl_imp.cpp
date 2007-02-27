@@ -31,7 +31,7 @@
 #include "handshake.hpp"
 #include "memory_array.hpp"
 #include "asn.hpp"  // provide crypto wrapper??
-
+#include <memory>
 
 
 namespace yaSSL {

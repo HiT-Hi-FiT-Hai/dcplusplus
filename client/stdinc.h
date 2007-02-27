@@ -37,15 +37,13 @@
 #define USE_SYS_STL 1
 #endif
 
-#ifdef HAVE_STLPORT
-# define _STLP_DONT_USE_SHORT_STRING_OPTIM 1	// Lots of memory issues with this undefined...wonder what's up with that..
-# define _STLP_USE_PTR_SPECIALIZATIONS 1
-# define _STLP_NO_ANACHRONISMS 1
-# define _STLP_NO_CUSTOM_IO 1
-# define _STLP_NO_IOSTREAMS 1
-# ifndef _DEBUG
-#  define _STLP_DONT_USE_EXCEPTIONS 1
-# endif
+#define _STLP_DONT_USE_SHORT_STRING_OPTIM 1	// Lots of memory issues with this undefined...wonder what's up with that..
+#define _STLP_USE_PTR_SPECIALIZATIONS 1
+#define _STLP_NO_ANACHRONISMS 1
+#define _STLP_NO_CUSTOM_IO 1
+#define _STLP_NO_IOSTREAMS 1
+#ifndef _DEBUG
+# define _STLP_DONT_USE_EXCEPTIONS 1
 #endif
 
 #ifdef _MSC_VER
@@ -98,17 +96,24 @@ typedef unsigned __int64 uint64_t;
 #define _ATL_NO_HOSTING
 #define _ATL_NO_OLD_NAMES
 
-#include <Winsock2.h>
+#include <winsock2.h>
 
 #include <windows.h>
-#include <crtdbg.h>
 #include <tchar.h>
+#include <shlobj.h>
 
 #else
 #include <unistd.h>
 #include <stdint.h>
 #endif
 
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#else
+#include <assert.h>
+#endif
+
+#include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <memory.h>

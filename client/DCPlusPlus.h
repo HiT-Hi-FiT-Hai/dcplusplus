@@ -46,7 +46,7 @@ inline void CDECL debugTrace(const char* format, ...)
 }
 
 #define dcdebug debugTrace
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define dcassert(exp) \
 do { if (!(exp)) { \
 	dcdebug("Assertion hit in %s(%d): " #exp "\n", __FILE__, __LINE__); \
@@ -54,7 +54,6 @@ do { if (!(exp)) { \
 _CrtDbgBreak(); } } while(false)
 #define dcasserta(exp) dcassert(0)
 #else
-#include <assert.h>
 #define dcasserta(exp) assert(exp)
 #define dcassert(exp) assert(exp)
 #endif

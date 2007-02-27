@@ -40,7 +40,7 @@ File::File(const string& aFileName, int access, int mode) throw(FileException) {
 		}
 	}
 
-	h = ::CreateFile(Text::utf8ToWide(aFileName).c_str(), access, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	h = ::CreateFile(Text::toT(aFileName).c_str(), access, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 
 	if(h == INVALID_HANDLE_VALUE) {
 		throw FileException(Util::translateError(GetLastError()));
@@ -176,21 +176,21 @@ int64_t File::getSize(const string& aFileName) throw() {
 	}
 }
 
-void File::ensureDirectory(const string& aFile) {
+void File::ensureDirectory(const string& aFile) throw() {
 	// Skip the first dir...
 	tstring file;
 	Text::toT(aFile, file);
-	wstring::size_type start = file.find_first_of(L"\\/");
+	tstring::size_type start = file.find_first_of(_T("\\/"));
 	if(start == string::npos)
 		return;
 	start++;
-	while( (start = file.find_first_of(L"\\/", start)) != string::npos) {
-		CreateDirectory(file.substr(0, start+1).c_str(), NULL);
+	while( (start = file.find_first_of(_T("\\/"), start)) != string::npos) {
+		::CreateDirectory(file.substr(0, start+1).c_str(), NULL);
 		start++;
 	}
 }
 
-bool File::isAbsolute(const string& path) {
+bool File::isAbsolute(const string& path) throw() {
 	return path.size() > 2 && (path[1] == ':' || path[0] == '/' || path[0] == '\\');
 }
 
