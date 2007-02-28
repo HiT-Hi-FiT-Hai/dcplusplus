@@ -33,7 +33,8 @@ for i, source in enumerate(sources):
 		rev = ['DCPP_REVISION=' + getRevision()]
 		sources[i] = env.StaticObject(source, CPPDEFINES=env['CPPDEFINES'] + rev)
 
-env['Gch'] = env.Gch('stdinc.h')[0]
+if 'gcc' in env['TOOLS']:
+	env['Gch'] = env.Gch('stdinc.h')[0]
 
 ret = env.StaticLibrary(target, [sources, dev.zlib, dev.bzip2, dev.yassl])
 
