@@ -18,7 +18,7 @@
 
 
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
+#include <client/DCPlusPlus.h>
 
 #include "MainWindow.h"
 

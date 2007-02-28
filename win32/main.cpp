@@ -17,17 +17,21 @@
  */
 
 #include "stdafx.h"
+#include <client/DCPlusPlus.h>
+
+#include "SingleInstance.h"
+#include "WinUtil.h"
+
+#include <client/MerkleTree.h>
+#include <client/File.h>
+#include <client/Text.h>
+
 #ifdef PORT_ME
 
-#include "../client/DCPlusPlus.h"
 #include "Resource.h"
+#include "ExtendedTrace.h"
 
 #include "MainFrm.h"
-#include "ExtendedTrace.h"
-#include "WinUtil.h"
-#include "SingleInstance.h"
-
-#include "../client/MerkleTree.h"
 
 #include <delayimp.h>
 CAppModule _Module;
@@ -36,7 +40,6 @@ CriticalSection cs;
 enum { DEBUG_BUFSIZE = 8192 };
 static char guard[DEBUG_BUFSIZE];
 static int recursion = 0;
-static char tth[192*8/(5*8)+2];
 static bool firstException = true;
 
 static char buf[DEBUG_BUFSIZE];
@@ -283,16 +286,18 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	return nRet;
 }
+#endif
 
-int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
-{
+int SmartWinMain(SmartWin::Application& app) {
+	
 #ifndef _DEBUG
 	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}"));
 #else
 	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48350}"));
 #endif
 
-	if(dcapp.IsAnotherInstanceRunning()) {
+#ifdef PORT_ME
+	if(dcapp.isRunning()) {
 		HWND hOther = NULL;
 		EnumWindows(searchOtherInstance, (LPARAM)&hOther);
 
@@ -312,53 +317,43 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			return FALSE;
 		}
 	}
+#endif
 
-	// For SHBrowseForFolder, UPnP
-	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+#ifdef PORT_ME
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
 	//File::deleteFile(Util::getDataPath() + "exceptioninfo.txt");
 #endif
 	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
+#endif
 
+	// For SHBrowseForFolder, UPnP
+	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TREEVIEW_CLASSES | ICC_PROGRESS_CLASS | ICC_STANDARD_CLASSES |
-		ICC_TAB_CLASSES | ICC_UPDOWN_CLASS);	// add flags to support other controls
-
-	hRes = _Module.Init(NULL, hInstance);
-	ATLASSERT(SUCCEEDED(hRes));
-
 	try {
-		File f(WinUtil::getAppName(), File::READ, File::OPEN);
-		TigerTree tth(TigerTree::calcBlockSize(f.getSize(), 1));
-		size_t n = 0;
-		size_t n2 = DEBUG_BUFSIZE;
-		while( (n = f.read(buf, n2)) > 0) {
-			tth.update(buf, n);
-			n2 = DEBUG_BUFSIZE;
-		}
+		std::string module = File(app.getModuleFileName(), File::READ, File::OPEN).read();
+		TigerTree tth(TigerTree::calcBlockSize(module.size(), 1));
+		tth.update(module.data(), module.size());
 		tth.finalize();
-		strcpy(::tth, tth.getRoot().toBase32().c_str());
-		WinUtil::tth = Text::toT(::tth);
+		WinUtil::tth = Text::toT(tth.getRoot().toBase32());
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
 
-	int nRet = Run(lpstrCmdLine, nCmdShow);
+	int ret = app.run();
 
-	_Module.Term();
 	::CoUninitialize();
 	::WSACleanup();
+	
+#ifdef PORT_ME
 #ifdef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
 #endif
-	return nRet;
-}
 #endif
 
-int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	return 0;	
+	return ret;
 }
 

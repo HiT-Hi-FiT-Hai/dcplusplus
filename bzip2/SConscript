@@ -6,6 +6,4 @@ env, target, sources = dev.prepare_build(source_path, 'dcpp-bzip', source_glob="
 
 ret = env.StaticLibrary(target, sources)
 
-dev.env.Append(LIBPATH = [dev.get_build_path(source_path)])
-
 Return('ret')

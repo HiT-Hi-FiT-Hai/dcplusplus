@@ -16,12 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SINGLE_INSTANCE_H)
-#define SINGLE_INSTANCE_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#if !defined(DCPLUSPLUS_WIN32_SINGLE_INSTANCE_H)
+#define DCPLUSPLUS_WIN32_SINGLE_INSTANCE_H
 
 #define WMU_WHERE_ARE_YOU_MSG _T("WMU_WHERE_ARE_YOU-{885D4B75-6606-4add-A8DE-EEEDC04181F1}")
 const UINT WMU_WHERE_ARE_YOU = ::RegisterWindowMessage(_T("WMU_WHERE_ARE_YOU_MSG"));
@@ -35,8 +31,8 @@ public:
 	SingleInstance(const TCHAR* strMutexName)
 	{
 		// strMutexName must be unique
-		hMutex = CreateMutex(NULL, FALSE, strMutexName);
-		LastError = GetLastError();
+		hMutex = ::CreateMutex(NULL, FALSE, strMutexName);
+		LastError = ::GetLastError();
 	}
 
 	~SingleInstance()
@@ -47,7 +43,7 @@ public:
 		}
 	}
 
-	BOOL IsAnotherInstanceRunning() { return (ERROR_ALREADY_EXISTS == LastError); }
+	bool isRunning() { return (ERROR_ALREADY_EXISTS == LastError); }
 };
 
 #endif // !defined(SINGLE_INSTANCE_H)

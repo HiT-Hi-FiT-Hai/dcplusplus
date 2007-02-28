@@ -16,16 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
 
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
+#include <client/DCPlusPlus.h>
+
+#include "WinUtil.h"
+
+tstring WinUtil::tth;
+
+#ifdef PORT_ME
 #include "Resource.h"
 
 #define COMPILE_MULTIMON_STUBS 1
 #include <MultiMon.h>
 
-#include "WinUtil.h"
 #include "PrivateFrame.h"
 #include "SearchFrm.h"
 #include "LineDlg.h"
@@ -66,7 +70,6 @@ HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
-tstring WinUtil::tth;
 DWORD WinUtil::helpCookie = 0;
 bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;

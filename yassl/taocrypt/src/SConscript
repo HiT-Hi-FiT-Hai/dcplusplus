@@ -7,6 +7,4 @@ env, target, sources = dev.prepare_build(source_path, 'dcpp-yassl-taocrypt', in_
 env.Append(CPPPATH=["../include", "../mySTL"])
 ret = env.StaticLibrary(target, sources)
 
-dev.env.Append(LIBPATH = [dev.get_build_path(source_path)])
-
 Return('ret')

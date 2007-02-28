@@ -20,21 +20,7 @@
 #if !defined(DCPLUSPLUS_WIN32_STDAFX_H)
 #define DCPLUSPLUS_WIN32_STDAFX_H
 
-#include "../client/stdinc.h"
-#ifdef _WIN32
-
-#define STRICT
-#define WIN32_LEAN_AND_MEAN
-#define _WTL_NO_CSTRING
-#define _ATL_NO_OPENGL
-#define _ATL_NO_MSIMG
-#define _ATL_NO_COM
-#define _ATL_NO_HOSTING
-#define _ATL_NO_OLD_NAMES
-#define _ATL_NO_COM_SUPPORT
-#define _ATL_NO_PERF_SUPPORT
-#define _ATL_NO_SERVICE
-#define _ATL_NO_DOCHOSTUIHANDLER
+#include <client/stdinc.h>
 
 #include <winsock2.h>
 #include <SmartWin.h>
@@ -58,8 +44,7 @@ extern CAppModule _Module;
 #include <atlsplit.h>
 #include <Shellapi.h>
 #include <HtmlHelp.h>
-#endif // _WIN32
-#endif
 #define WM_SPEAKER (WM_APP + 500)
 
 #endif 
+#endif

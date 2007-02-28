@@ -3,7 +3,7 @@
 from build_util import Dev
 
 gcc_flags = {
-	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe'],
+	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
 	'debug': [], 
 	'release' : ['-O3']
 }
@@ -66,17 +66,15 @@ env.Tool("gch", toolpath=".")
 
 if 'mingw' not in env['TOOLS']:
 	env.Append(CCFLAGS=['-fvisibility=hidden'])
-	
-if 'mingw' in env['TOOLS']:
+else:
 	env.Append(CPPPATH = ['#/stlport/stlport/'])
-	#env.Append(LIBPATH = ['#/stlport/lib/'])
-	env.Append(CPPDEFINES = ['HAVE_STLPORT'])
+	env.Append(LIBPATH = ['#/stlport/lib/'])
+	env.Append(CPPDEFINES = ['HAVE_STLPORT', '_STLP_USE_STATIC_LIB=1'])
 	
-	gcc_link_flags['common'].append("-Wl,--enable-runtime-pseudo-reloc")
-	#if mode == 'debug':
-	#	env.Append(LIBS = ['stlportg.5.0'])
-	#else:
-	#	env.Append(LIBS = ['stlport.5.0'])	
+	if mode == 'debug':
+		env.Append(LIBS = ['stlportg.5.1'])
+	else:
+		env.Append(LIBS = ['stlport.5.1'])	
 
 if env['CC'] == 'cl':
 	flags = msvc_flags

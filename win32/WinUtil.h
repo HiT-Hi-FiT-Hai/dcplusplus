@@ -16,13 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(WIN_UTIL_H)
-#define WIN_UTIL_H
+#if !defined(DCPLUSPLUS_WIN32_WIN_UTIL_H)
+#define DCPLUSPLUS_WIN32_WIN_UTIL_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
+#ifdef PORT_ME
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
 #include "../client/User.h"
@@ -162,8 +159,13 @@ public:
 template<class T, int title>
 T* StaticFrame<T, title>::frame = NULL;
 
+#endif
+
 class WinUtil {
 public:
+	static tstring tth;
+
+#ifdef PORT_ME
 	static CImageList fileImages;
 	static int fileImageCount;
 	static CImageList userImages;
@@ -188,7 +190,6 @@ public:
 	static FlatTabCtrl* tabCtrl;
 	static tstring commands;
 	static HHOOK hook;
-	static tstring tth;
 	static DWORD helpCookie;
 
 	static void init(HWND hWnd);
@@ -348,7 +349,7 @@ public:
 
 private:
 	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);
-
+#endif
 };
 
 #endif // !defined(WIN_UTIL_H)

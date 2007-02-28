@@ -2,14 +2,9 @@
  
 Import('dev source_path')
 
-dev.build('src/')
-dev.build('taocrypt/src/')
+ret = []
 
-env, target, sources = dev.prepare_build(source_path, 'dcpp-yassl', in_bin=False)
-
-env.Append(LIBS=['dcpp-yassl-src', 'dcpp-yassl-taocrypt'])
-ret = env.StaticLibrary(target, sources)
-
-dev.env.Append(LIBPATH = [dev.get_build_path(source_path)])
+ret += dev.build('src/')
+ret += dev.build('taocrypt/src/')
 
 Return('ret')
