@@ -5,11 +5,11 @@ from build_util import Dev
 gcc_flags = {
 	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
 	'debug': [], 
-	'release' : ['-O3']
+	'release' : ['-O2']
 }
 
 msvc_flags = {
-	'common' : ['/W4', '/EHsc', '/Zi', '/GR'],
+	'common' : ['/W4', '/EHsc', '/Zi', '/GR', '/wd4100'],
 	'debug' : ['/MD'],
 	'release' : ['/O2', '/MD']
 }
@@ -66,7 +66,8 @@ env.Tool("gch", toolpath=".")
 
 if 'mingw' not in env['TOOLS'] and 'gcc' in env['TOOLS']:
 	env.Append(CCFLAGS=['-fvisibility=hidden'])
-else:
+
+if 'mingw' in env['TOOLS']:
 	env.Append(CPPPATH = ['#/stlport/stlport/'])
 	env.Append(LIBPATH = ['#/stlport/lib/'])
 	env.Append(CPPDEFINES = ['HAVE_STLPORT', '_STLP_USE_STATIC_LIB=1'])

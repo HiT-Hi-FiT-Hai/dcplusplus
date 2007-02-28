@@ -19,6 +19,8 @@
 #if !defined(DCPLUSPLUS_WIN32_MAIN_WINDOW_H)
 #define DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 
+#ifdef PORT_ME
+
 #include "../client/TimerManager.h"
 #include "../client/HttpConnection.h"
 #include "../client/FavoriteManager.h"
@@ -27,7 +29,6 @@
 #include "../client/LogManager.h"
 #include "../client/version.h"
 
-#ifdef PORT_ME
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
 #include "TransferView.h"
