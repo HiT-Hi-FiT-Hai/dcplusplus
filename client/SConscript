@@ -35,6 +35,7 @@ for i, source in enumerate(sources):
 
 env['Gch'] = env.Gch('stdinc.h')[0]
 
+env.Depends(target, [dev.zlib, dev.bzip2, dev.yassl])
 ret = env.StaticLibrary(target, sources)
 
 dev.env.Append(LIBPATH = [dev.get_build_path(source_path)])

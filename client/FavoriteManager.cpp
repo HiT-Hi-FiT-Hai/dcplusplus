@@ -61,7 +61,7 @@ UserCommand FavoriteManager::addUserCommand(int type, int ctx, int flags, const 
 
 bool FavoriteManager::getUserCommand(int cid, UserCommand& uc) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == cid) {
 			uc = *i;
 			return true;
@@ -73,7 +73,7 @@ bool FavoriteManager::getUserCommand(int cid, UserCommand& uc) {
 bool FavoriteManager::moveUserCommand(int cid, int pos) {
 	dcassert(pos == -1 || pos == 1);
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == cid) {
 			swap(*i, *(i + pos));
 			return true;
@@ -85,7 +85,7 @@ bool FavoriteManager::moveUserCommand(int cid, int pos) {
 void FavoriteManager::updateUserCommand(const UserCommand& uc) {
 	bool nosave = true;
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == uc.getId()) {
 			*i = uc;
 			nosave = uc.isSet(UserCommand::FLAG_NOSAVE);
@@ -98,7 +98,7 @@ void FavoriteManager::updateUserCommand(const UserCommand& uc) {
 
 int FavoriteManager::findUserCommand(const string& aName) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getName() == aName) {
 			return i->getId();
 		}
@@ -109,7 +109,7 @@ int FavoriteManager::findUserCommand(const string& aName) {
 void FavoriteManager::removeUserCommand(int cid) {
 	bool nosave = true;
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ++i) {
 		if(i->getId() == cid) {
 			nosave = i->isSet(UserCommand::FLAG_NOSAVE);
 			userCommands.erase(i);
@@ -121,7 +121,7 @@ void FavoriteManager::removeUserCommand(int cid) {
 }
 void FavoriteManager::removeUserCommand(const string& srv) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ) {
 		if((i->getHub() == srv) && i->isSet(UserCommand::FLAG_NOSAVE)) {
 			i = userCommands.erase(i);
 		} else {
@@ -132,7 +132,7 @@ void FavoriteManager::removeUserCommand(const string& srv) {
 
 void FavoriteManager::removeHubUserCommands(int ctx, const string& hub) {
 	Lock l(cs);
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ) {
 		if(i->getHub() == hub && i->isSet(UserCommand::FLAG_NOSAVE) && i->getCtx() & ctx) {
 			i = userCommands.erase(i);
 		} else {
@@ -383,7 +383,7 @@ void FavoriteManager::save() {
 		xml.stepOut();
 		xml.addTag("UserCommands");
 		xml.stepIn();
-		for(UserCommand::Iter k = userCommands.begin(); k != userCommands.end(); ++k) {
+		for(UserCommand::List::iterator k = userCommands.begin(); k != userCommands.end(); ++k) {
 			if(!k->isSet(UserCommand::FLAG_NOSAVE)) {
 				xml.addTag("UserCommand");
 				xml.addChildAttrib("Type", k->getType());
@@ -646,7 +646,7 @@ UserCommand::List FavoriteManager::getUserCommands(int ctx, const StringList& hu
 
 	Lock l(cs);
 	UserCommand::List lst;
-	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
 		if(!(uc.getCtx() & ctx)) {
 			continue;

@@ -3,7 +3,7 @@
 from build_util import Dev
 
 gcc_flags = {
-	'common': ['-ggdb3', '-Wall', '-Wextra', '-pipe'],
+	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe'],
 	'debug': [], 
 	'release' : ['-O3']
 }
@@ -15,7 +15,7 @@ msvc_flags = {
 }
 
 gcc_link_flags = {
-	'common' : ['-ggdb3', '-Wl,--no-undefined'],
+	'common' : ['-ggdb', '-Wl,--no-undefined'],
 	'debug' : [],
 	'release' : []				
 }
@@ -114,8 +114,8 @@ SWIGScanner = SCons.Scanner.ClassicCPP(
 )
 env.Append(SCANNERS=[SWIGScanner])
 
-dev.build('zlib/')
-dev.build('bzip2/')
-dev.build('yassl/')
-dev.build('client/')
-dev.build('win32/')
+dev.zlib = dev.build('zlib/')
+dev.bzip2 = dev.build('bzip2/')
+dev.yassl = dev.build('yassl/')
+dev.client = dev.build('client/')
+dev.win32 = dev.build('win32/')

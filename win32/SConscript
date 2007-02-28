@@ -4,10 +4,12 @@ Import('dev source_path')
 
 env, target, sources = dev.prepare_build(source_path, 'DCPlusPlus')
 
-env.Append(LIBS=["dcpp-bzip", "dcpp-zlib", "dcpp-yassl"])
+env.Append(LIBS=["dcpp-bzip", "dcpp-zlib", "dcpp-yassl", "dcpp"])
 env.Append(CPPPATH=["../smartwin/include"])
 env.Append(LIBPATH=["../smartwin/lib"])
 env.Append(LIBS=["smartwin"])
+
+env.Depends(target, dev.client)
 
 ret = env.Program(target, sources)
 

@@ -37,7 +37,6 @@
 class HubEntry {
 public:
 	typedef vector<HubEntry> List;
-	typedef List::iterator Iter;
 
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() :
 	name(aName), server(aServer), description(aDescription), country(Util::emptyString),

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+
+#include "MainWindow.h"
+
+#ifdef PORT_ME
+
 #include "Resource.h"
 
 #include "MainFrm.h"

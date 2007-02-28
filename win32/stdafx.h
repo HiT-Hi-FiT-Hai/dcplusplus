@@ -21,7 +21,6 @@
 #define DCPLUSPLUS_WIN32_STDAFX_H
 
 #include "../client/stdinc.h"
-#ifdef PORT_ME
 #ifdef _WIN32
 
 #define STRICT
@@ -38,6 +37,9 @@
 #define _ATL_NO_DOCHOSTUIHANDLER
 
 #include <winsock2.h>
+#include <SmartWin.h>
+
+#ifdef PORT_ME
 
 // Fix nt4 startup
 #include <multimon.h>

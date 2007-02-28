@@ -220,7 +220,7 @@ private:
 	StringSearch::List stringSearchList;
 	bool SearchAll(const string& s) {
 		// Match all substrings
-		for(StringSearch::Iter i = stringSearchList.begin(); i != stringSearchList.end(); ++i) {
+		for(StringSearch::List::iterator i = stringSearchList.begin(); i != stringSearchList.end(); ++i) {
 			if(!i->match(s)) {
 				return false;
 			}

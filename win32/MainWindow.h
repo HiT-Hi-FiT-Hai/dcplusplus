@@ -16,12 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(MAIN_FRM_H)
-#define MAIN_FRM_H
-
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
+#if !defined(DCPLUSPLUS_WIN32_MAIN_WINDOW_H)
+#define DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 
 #include "../client/TimerManager.h"
 #include "../client/HttpConnection.h"
@@ -31,20 +27,29 @@
 #include "../client/LogManager.h"
 #include "../client/version.h"
 
+#ifdef PORT_ME
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
 #include "TransferView.h"
 #include "UPnP.h"
+#endif
 
+namespace dcpp {
+
+class MainWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, MainWindow>  
+
+#ifdef PORT_ME
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
 		private LogManagerListener
+#endif
+
 {
 public:
-	MainFrame();
-	virtual ~MainFrame();
-
+	MainWindow();
+	virtual ~MainWindow();
+#ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
 	CMDICommandBarCtrl m_CmdBar;
@@ -383,6 +388,9 @@ private:
 	// UPnP connectors
 	UPnP* UPnP_TCPConnection;
 	UPnP* UPnP_UDPConnection;
+#endif
+
 };
+}
 
 #endif // !defined(MAIN_FRM_H)

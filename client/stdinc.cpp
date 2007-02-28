@@ -19,6 +19,6 @@
 #include "stdinc.h"
 
 // Hm...version not updated it seems
-#if defined(HAVE_STLPORT) && (_STLPORT_VERSION != 0x501)
-#error I use STLport 5.0.3. Remove this if you know what you're doing.
+#if defined(HAVE_STLPORT) && (_STLPORT_VERSION != 0x512)
+#error I use STLport 5.1.2. Remove this if you know what you're doing.
 #endif

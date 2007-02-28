@@ -28,7 +28,6 @@
 class UserCommand : public Flags {
 public:
 	typedef vector<UserCommand> List;
-	typedef List::iterator Iter;
 
 	enum {
 		TYPE_SEPARATOR,

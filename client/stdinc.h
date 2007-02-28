@@ -41,7 +41,7 @@
 #define _STLP_USE_PTR_SPECIALIZATIONS 1
 #define _STLP_NO_ANACHRONISMS 1
 #define _STLP_NO_CUSTOM_IO 1
-#define _STLP_NO_IOSTREAMS 1
+//#define _STLP_NO_IOSTREAMS 1
 #ifndef _DEBUG
 # define _STLP_DONT_USE_EXCEPTIONS 1
 #endif
@@ -85,16 +85,11 @@ typedef unsigned __int64 uint64_t;
 
 #ifdef _WIN32
 # define _WIN32_WINNT 0x0501
-# define _WIN32_IE	0x0500
+# define _WIN32_IE	0x0501
+# define WINVER 0x501
 
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
-#define _WTL_NO_CSTRING
-#define _ATL_NO_OPENGL
-#define _ATL_NO_MSIMG
-#define _ATL_NO_COM
-#define _ATL_NO_HOSTING
-#define _ATL_NO_OLD_NAMES
 
 #include <winsock2.h>
 
@@ -130,6 +125,7 @@ typedef unsigned __int64 uint64_t;
 #include <list>
 #include <utility>
 #include <functional>
+#include <memory>
 
 #ifdef _STLPORT_VERSION
 # define HASH_SET hash_set

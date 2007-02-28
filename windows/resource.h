@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
+#define IDC_STATIC -1
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
 #define IDC_TRAY_SHOW                   103
