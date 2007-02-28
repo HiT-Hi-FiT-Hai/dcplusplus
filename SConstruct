@@ -64,7 +64,7 @@ dev.prepare()
 env.SConsignFile()
 env.Tool("gch", toolpath=".")
 
-if 'mingw' not in env['TOOLS']:
+if 'mingw' not in env['TOOLS'] and 'gcc' in env['TOOLS']:
 	env.Append(CCFLAGS=['-fvisibility=hidden'])
 else:
 	env.Append(CPPPATH = ['#/stlport/stlport/'])
