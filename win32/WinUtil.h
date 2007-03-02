@@ -165,6 +165,10 @@ class WinUtil {
 public:
 	static tstring tth;
 
+	static int getTextHeight(HWND wnd, HFONT fnt);
+	static int getTextHeight(HDC dc, HFONT fnt);
+	static int getTextHeight(HDC dc);
+
 #ifdef PORT_ME
 	static CImageList fileImages;
 	static int fileImageCount;
@@ -181,7 +185,6 @@ public:
 	static HFONT boldFont;
 	static HFONT systemFont;
 	static HFONT monoFont;
-	static CMenu mainMenu;
 	static int dirIconIndex;
 	static int dirMaskedIndex;
 	static TStringList lastDirs;
@@ -225,26 +228,6 @@ public:
 		SIZE sz = { 0, 0 };
 		::GetTextExtentPoint32(dc, str.c_str(), str.length(), &sz);
 		return sz.cx;
-	}
-
-	static int getTextHeight(HWND wnd, HFONT fnt) {
-		HDC dc = ::GetDC(wnd);
-		int h = getTextHeight(dc, fnt);
-		::ReleaseDC(wnd, dc);
-		return h;
-	}
-
-	static int getTextHeight(HDC dc, HFONT fnt) {
-		HGDIOBJ old = ::SelectObject(dc, fnt);
-		int h = getTextHeight(dc);
-		::SelectObject(dc, old);
-		return h;
-	}
-
-	static int getTextHeight(HDC dc) {
-		TEXTMETRIC tm;
-		::GetTextMetrics(dc, &tm);
-		return tm.tmHeight;
 	}
 
 	static void setClipboard(const tstring& str);

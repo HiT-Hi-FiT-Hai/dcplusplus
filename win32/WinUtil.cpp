@@ -24,6 +24,26 @@
 
 tstring WinUtil::tth;
 
+int WinUtil::getTextHeight(HWND wnd, HFONT fnt) {
+	HDC dc = ::GetDC(wnd);
+	int h = getTextHeight(dc, fnt);
+	::ReleaseDC(wnd, dc);
+	return h;
+}
+
+int WinUtil::getTextHeight(HDC dc, HFONT fnt) {
+	HGDIOBJ old = ::SelectObject(dc, fnt);
+	int h = getTextHeight(dc);
+	::SelectObject(dc, old);
+	return h;
+}
+
+int WinUtil::getTextHeight(HDC dc) {
+	TEXTMETRIC tm;
+	::GetTextMetrics(dc, &tm);
+	return tm.tmHeight;
+}
+
 #ifdef PORT_ME
 #include "Resource.h"
 

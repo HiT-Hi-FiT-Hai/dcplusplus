@@ -21,6 +21,8 @@
 
 #include "SingleInstance.h"
 #include "WinUtil.h"
+#include "MainWindow.h"
+#include "SplashWindow.h"
 
 #include <client/MerkleTree.h>
 #include <client/File.h>
@@ -167,6 +169,33 @@ BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	return TRUE;
 }
 
+static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
+{
+	CMessageLoop theLoop;
+	_Module.AddMessageLoop(&theLoop);
+
+	splash.DestroyWindow();
+	dummy.DestroyWindow();
+
+	if(ResourceManager::getInstance()->isRTL()) {
+		SetProcessDefaultLayout(LAYOUT_RTL);
+	}
+
+	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
+
+	MainFrame wndMain;
+
+	int nRet = theLoop.Run();
+
+	_Module.RemoveMessageLoop();
+
+	shutdown();
+
+	return nRet;
+}
+#endif
+
 static void checkCommonControls() {
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
 
@@ -205,91 +234,7 @@ static void checkCommonControls() {
 	}
 }
 
-void callBack(void* x, const string& a) {
-	::SetWindowText((HWND)x, Text::toT(STRING(LOADING) + "(" + a + ")").c_str());
-	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
-}
-
-static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
-{
-	checkCommonControls();
-
-	CMessageLoop theLoop;
-	_Module.AddMessageLoop(&theLoop);
-
-	CEdit dummy;
-	CEdit splash;
-
-	CRect rc;
-	rc.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
-	rc.top = (rc.bottom / 2) - 20;
-
-	rc.right = GetSystemMetrics(SM_CXFULLSCREEN);
-	rc.left = rc.right / 2 - 150;
-	rc.right = rc.left + 300;
-
-	dummy.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
-	splash.Create(NULL, rc, _T(APPNAME) _T(" ") _T(VERSIONSTRING), WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
-	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
-
-	rc.bottom = rc.top + WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
-	splash.HideCaret();
-	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
-	splash.SetFocus();
-	splash.RedrawWindow();
-	startup(callBack, (void*)splash.m_hWnd);
-
-	splash.DestroyWindow();
-	dummy.DestroyWindow();
-
-	if(ResourceManager::getInstance()->isRTL()) {
-		SetProcessDefaultLayout(LAYOUT_RTL);
-	}
-
-	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
-
-	MainFrame wndMain;
-
-	rc = wndMain.rcDefault;
-
-	if( (SETTING(MAIN_WINDOW_POS_X) != CW_USEDEFAULT) &&
-		(SETTING(MAIN_WINDOW_POS_Y) != CW_USEDEFAULT) &&
-		(SETTING(MAIN_WINDOW_SIZE_X) != CW_USEDEFAULT) &&
-		(SETTING(MAIN_WINDOW_SIZE_Y) != CW_USEDEFAULT) ) {
-
-		rc.left = SETTING(MAIN_WINDOW_POS_X);
-		rc.top = SETTING(MAIN_WINDOW_POS_Y);
-		rc.right = rc.left + SETTING(MAIN_WINDOW_SIZE_X);
-		rc.bottom = rc.top + SETTING(MAIN_WINDOW_SIZE_Y);
-		// Now, let's ensure we have sane values here...
-		if( (rc.left < 0 ) || (rc.top < 0) || (rc.right - rc.left < 10) || ((rc.bottom - rc.top) < 10) ) {
-			rc = wndMain.rcDefault;
-		}
-	}
-
-	int rtl = ResourceManager::getInstance()->isRTL() ? WS_EX_RTLREADING : 0;
-	if(wndMain.CreateEx(NULL, rc, 0, rtl | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) == NULL) {
-		ATLTRACE(_T("Main window creation failed!\n"));
-		return 0;
-	}
-
-	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
-
-	int nRet = theLoop.Run();
-
-	_Module.RemoveMessageLoop();
-
-	shutdown();
-
-	return nRet;
-}
-#endif
-
-int SmartWinMain(SmartWin::Application& app) {
-	
+bool checkOtherInstances() {
 #ifndef _DEBUG
 	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}"));
 #else
@@ -314,10 +259,19 @@ int SmartWinMain(SmartWin::Application& app) {
 				::ShowWindow(hOther, SW_RESTORE);
 			}
 			sendCmdLine(hOther, lpstrCmdLine);
-			return FALSE;
+			return false;
 		}
 	}
 #endif
+	return true;
+}
+
+void callBack(void* ptr, const string& a) {
+	SplashWindow& splash = *((SplashWindow*)ptr);
+	splash(a);
+}
+
+int SmartWinMain(SmartWin::Application& app) {
 
 #ifdef PORT_ME
 #ifdef _DEBUG
@@ -327,12 +281,15 @@ int SmartWinMain(SmartWin::Application& app) {
 	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
 #endif
 
-	// For SHBrowseForFolder, UPnP
-	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-	
-	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if(!checkOtherInstances()) {
+		return 1;
+	}
 
+	checkCommonControls();
+
+	// For SHBrowseForFolder, UPnP
+	/// @todo check return
+	::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 	try {
 		std::string module = File(app.getModuleFileName(), File::READ, File::OPEN).read();
 		TigerTree tth(TigerTree::calcBlockSize(module.size(), 1));
@@ -342,11 +299,18 @@ int SmartWinMain(SmartWin::Application& app) {
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
+	
+	{
+		SplashWindow splash;
+		startup(&callBack, &splash);
+	}
 
+	MainWindow wnd;
 	int ret = app.run();
 
+	shutdown();
+
 	::CoUninitialize();
-	::WSACleanup();
 	
 #ifdef PORT_ME
 #ifdef _DEBUG

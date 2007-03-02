@@ -48,6 +48,12 @@ void startup(void (*f)(void*, const string&), void* p) {
 	// Nev's great contribution to dc++
 	while(1) break;
 
+
+#ifdef _WIN32
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+
 	Util::initialize();
 
 	ResourceManager::newInstance();
@@ -113,4 +119,8 @@ void shutdown() {
 	SettingsManager::deleteInstance();
 	TimerManager::deleteInstance();
 	ResourceManager::deleteInstance();
+
+#ifdef _WIN32	
+	::WSACleanup();
+#endif
 }

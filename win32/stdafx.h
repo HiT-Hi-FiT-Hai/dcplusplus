@@ -24,6 +24,7 @@
 
 #include <winsock2.h>
 #include <SmartWin.h>
+#include <shlwapi.h>
 
 #ifdef PORT_ME
 
@@ -42,7 +43,6 @@ extern CAppModule _Module;
 #include <atlctrlw.h>
 #include <atlmisc.h>
 #include <atlsplit.h>
-#include <Shellapi.h>
 #include <HtmlHelp.h>
 #define WM_SPEAKER (WM_APP + 500)
 

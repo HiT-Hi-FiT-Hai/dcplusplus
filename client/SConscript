@@ -36,6 +36,6 @@ for i, source in enumerate(sources):
 if 'gcc' in env['TOOLS']:
 	env['Gch'] = env.Gch('stdinc.h')[0]
 
-ret = env.StaticLibrary(target, [sources, dev.zlib, dev.bzip2, dev.yassl])
+ret = env.StaticLibrary(target, sources)
 
 Return('ret')

@@ -13,8 +13,8 @@ class Dev:
 		self.env['SHCCCOMSTR'] = "Compiling $TARGET (shared)"
 		self.env['CXXCOMSTR'] = "Compiling $TARGET (static)"
 		self.env['SHCXXCOMSTR'] = "Compiling $TARGET (shared)"
-		#self.env['SHLINKCOMSTR'] = "Linking $TARGET (shared)"
-		#self.env['LINKCOMSTR'] = "Linking $TARGET (static)"
+		self.env['SHLINKCOMSTR'] = "Linking $TARGET (shared)"
+		self.env['LINKCOMSTR'] = "Linking $TARGET (static)"
 		self.env['ARCOMSTR'] = "Archiving $TARGET"
 		
 		self.env.SConsignFile()

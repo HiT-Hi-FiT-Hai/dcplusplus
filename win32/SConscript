@@ -7,10 +7,10 @@ env, target, sources = dev.prepare_build(source_path, 'DCPlusPlus')
 # Anonymous namespace issues
 #env['Gch'] = env.Gch('stdafx.h')[0]
 
-env.Prepend(LIBS=["smartwin", "comctl32", "ws2_32", "ole32"])
+env.Prepend(LIBS=["smartwin", "comctl32", "ws2_32", "ole32", "gdi32"])
 env.Append(CPPPATH=["#/smartwin/include", "#/"])
 env.Append(LIBPATH=["#/smartwin/lib"])
 
-ret = env.Program(target, [sources, dev.client])
+ret = env.Program(target, [sources, dev.client, dev.zlib, dev.bzip2, dev.yassl])
 
 Return('ret')

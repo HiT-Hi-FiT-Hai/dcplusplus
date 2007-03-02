@@ -37,12 +37,6 @@
 #define USE_SYS_STL 1
 #endif
 
-#define _STLP_DONT_USE_SHORT_STRING_OPTIM 1	// Lots of memory issues with this undefined...wonder what's up with that..
-#define _STLP_USE_PTR_SPECIALIZATIONS 1
-#define _STLP_NO_ANACHRONISMS 1
-#define _STLP_NO_CUSTOM_IO 1
-//#define _STLP_NO_IOSTREAMS 1
-
 #ifdef _MSC_VER
 
 //disable the deprecated warnings for the CRT functions.

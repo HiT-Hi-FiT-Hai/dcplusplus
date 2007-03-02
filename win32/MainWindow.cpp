@@ -22,46 +22,14 @@
 
 #include "MainWindow.h"
 
-#ifdef PORT_ME
+#include <client/SettingsManager.h>
+#include <client/ResourceManager.h>
+#include <client/version.h>
 
-#include "Resource.h"
+namespace dcpp {
 
-#include "MainFrm.h"
-#include "AboutDlg.h"
-#include "HubFrame.h"
-#include "SearchFrm.h"
-#include "PublicHubsFrm.h"
-#include "PropertiesDlg.h"
-#include "UsersFrame.h"
-#include "DirectoryListingFrm.h"
-#include "FavoritesFrm.h"
-#include "NotepadFrame.h"
-#include "QueueFrame.h"
-#include "SpyFrame.h"
-#include "FinishedFrame.h"
-#include "ADLSearchFrame.h"
-#include "FinishedULFrame.h"
-#include "TextFrame.h"
-#include "StatsFrame.h"
-#include "WaitingUsersFrame.h"
-#include "LineDlg.h"
-#include "HashProgressDlg.h"
-#include "UPnP.h"
-#include "SystemFrame.h"
-#include "PrivateFrame.h"
-
-#include "../client/ConnectionManager.h"
-#include "../client/DownloadManager.h"
-#include "../client/UploadManager.h"
-#include "../client/StringTokenizer.h"
-#include "../client/SimpleXML.h"
-#include "../client/ShareManager.h"
-#include "../client/version.h"
-
-MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0),
-lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()),
-closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL)
-{
+MainWindow::MainWindow() {
+	#ifdef PORT_ME
 	memset(statusSizes, 0, sizeof(statusSizes));
 
 	links.homepage = _T("http://dcpp.net/");
@@ -73,88 +41,49 @@ closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConn
 	links.discuss = links.homepage + _T("forum/");
 	links.features = links.homepage + _T("bugzilla/");
 	links.bugs = links.homepage + _T("bugzilla/");
-}
+#endif
 
-MainFrame::~MainFrame() {
-	m_CmdBar.m_hImageList = NULL;
 
-	images.Destroy();
-	largeImages.Destroy();
-	largeImagesHot.Destroy();
+	Seed cs;
 
-	WinUtil::uninit();
-}
-
-DWORD WINAPI MainFrame::stopper(void* p) {
-	MainFrame* mf = (MainFrame*)p;
-	HWND wnd, wnd2 = NULL;
-
-	while( (wnd=::GetWindow(mf->m_hWndMDIClient, GW_CHILD)) != NULL) {
-		if(wnd == wnd2)
-			Sleep(100);
-		else {
-			::PostMessage(wnd, WM_CLOSE, 0, 0);
-			wnd2 = wnd;
-		}
-	}
-
-	mf->PostMessage(WM_CLOSE);
-	return 0;
-}
-
-class ListMatcher : public Thread {
-public:
-	ListMatcher(StringList files_) : files(files_) {
-
-	}
-	virtual int run() {
-		for(StringIter i = files.begin(); i != files.end(); ++i) {
-			User::Ptr u = DirectoryListing::getUserFromFilename(*i);
-			if(!u)
-				continue;
-			DirectoryListing dl(u);
-			try {
-				dl.loadFile(*i);
-				const size_t BUF_SIZE = STRING(MATCHED_FILES).size() + 16;
-				AutoArray<char> tmp(BUF_SIZE);
-				snprintf(tmp, BUF_SIZE, CSTRING(MATCHED_FILES), QueueManager::getInstance()->matchListing(dl));
-				LogManager::getInstance()->message(Util::toString(ClientManager::getInstance()->getNicks(u->getCID())) + ": " + string(tmp));
-			} catch(const Exception&) {
-
-			}
-		}
-		delete this;
-		return 0;
-	}
-	StringList files;
-};
-
-LRESULT MainFrame::onMatchAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	ListMatcher* matcher = new ListMatcher(File::findFiles(Util::getListPath(), "*.xml*"));
-	try {
-		matcher->start();
-	} catch(const ThreadException&) {
-		///@todo add error message
-		delete matcher;
+	int pos_x = SETTING(MAIN_WINDOW_POS_X);
+	int pos_y = SETTING(MAIN_WINDOW_POS_Y);
+	int size_x = SETTING(MAIN_WINDOW_SIZE_X);
+	int size_y = SETTING(MAIN_WINDOW_SIZE_Y);
+	
+	if( (pos_x != static_cast<int>(CW_USEDEFAULT)) &&
+		(pos_y != static_cast<int>(CW_USEDEFAULT)) &&
+		(size_x != static_cast<int>(CW_USEDEFAULT)) &&
+		(size_y != static_cast<int>(CW_USEDEFAULT)) &&
+		(pos_x > 0 && pos_y > 0) &&
+		(size_x > 10 && size_y > 10)
+		)
+	{
+		cs.location = SmartWin::Rectangle(pos_x, pos_y, size_x, size_y);
 	}
 	
-	return 0;
-}
+	cs.exStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
+	if(ResourceManager::getInstance()->isRTL())
+		cs.exStyle |= WS_EX_RTLREADING; 
 
-LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+#ifdef PORT_ME
+	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
+#endif
+	// Set window name
+	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 
+	createWindow(cs);
+	
+
+#ifdef PORT_ME
 	TimerManager::getInstance()->addListener(this);
 	QueueManager::getInstance()->addListener(this);
 	LogManager::getInstance()->addListener(this);
 
-	WinUtil::init(m_hWnd);
 
 	trayMessage = RegisterWindowMessage(_T("TaskbarCreated"));
 
 	TimerManager::getInstance()->start();
-
-	// Set window name
-	SetWindowText(_T(APPNAME) _T(" ") _T(VERSIONSTRING));
 
 	// Load images
 	// create command bar window
@@ -270,6 +199,117 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
+	return 0;
+#endif
+}
+
+
+#ifdef PORT_ME
+
+#include "Resource.h"
+
+#include "MainFrm.h"
+#include "AboutDlg.h"
+#include "HubFrame.h"
+#include "SearchFrm.h"
+#include "PublicHubsFrm.h"
+#include "PropertiesDlg.h"
+#include "UsersFrame.h"
+#include "DirectoryListingFrm.h"
+#include "FavoritesFrm.h"
+#include "NotepadFrame.h"
+#include "QueueFrame.h"
+#include "SpyFrame.h"
+#include "FinishedFrame.h"
+#include "ADLSearchFrame.h"
+#include "FinishedULFrame.h"
+#include "TextFrame.h"
+#include "StatsFrame.h"
+#include "WaitingUsersFrame.h"
+#include "LineDlg.h"
+#include "HashProgressDlg.h"
+#include "UPnP.h"
+#include "SystemFrame.h"
+#include "PrivateFrame.h"
+
+#include "../client/ConnectionManager.h"
+#include "../client/DownloadManager.h"
+#include "../client/UploadManager.h"
+#include "../client/StringTokenizer.h"
+#include "../client/SimpleXML.h"
+#include "../client/ShareManager.h"
+#include "../client/version.h"
+
+MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0),
+lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()),
+closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL)
+#endif
+
+MainWindow::~MainWindow() {
+#ifdef PORT_ME
+	m_CmdBar.m_hImageList = NULL;
+
+	images.Destroy();
+	largeImages.Destroy();
+	largeImagesHot.Destroy();
+
+	WinUtil::uninit();
+#endif
+}
+#ifdef PORT_ME
+DWORD WINAPI MainFrame::stopper(void* p) {
+	MainFrame* mf = (MainFrame*)p;
+	HWND wnd, wnd2 = NULL;
+
+	while( (wnd=::GetWindow(mf->m_hWndMDIClient, GW_CHILD)) != NULL) {
+		if(wnd == wnd2)
+			Sleep(100);
+		else {
+			::PostMessage(wnd, WM_CLOSE, 0, 0);
+			wnd2 = wnd;
+		}
+	}
+
+	mf->PostMessage(WM_CLOSE);
+	return 0;
+}
+
+class ListMatcher : public Thread {
+public:
+	ListMatcher(StringList files_) : files(files_) {
+
+	}
+	virtual int run() {
+		for(StringIter i = files.begin(); i != files.end(); ++i) {
+			User::Ptr u = DirectoryListing::getUserFromFilename(*i);
+			if(!u)
+				continue;
+			DirectoryListing dl(u);
+			try {
+				dl.loadFile(*i);
+				const size_t BUF_SIZE = STRING(MATCHED_FILES).size() + 16;
+				AutoArray<char> tmp(BUF_SIZE);
+				snprintf(tmp, BUF_SIZE, CSTRING(MATCHED_FILES), QueueManager::getInstance()->matchListing(dl));
+				LogManager::getInstance()->message(Util::toString(ClientManager::getInstance()->getNicks(u->getCID())) + ": " + string(tmp));
+			} catch(const Exception&) {
+
+			}
+		}
+		delete this;
+		return 0;
+	}
+	StringList files;
+};
+
+LRESULT MainFrame::onMatchAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ListMatcher* matcher = new ListMatcher(File::findFiles(Util::getListPath(), "*.xml*"));
+	try {
+		matcher->start();
+	} catch(const ThreadException&) {
+		///@todo add error message
+		delete matcher;
+	}
+	
 	return 0;
 }
 
@@ -1157,3 +1197,5 @@ LRESULT MainFrame::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 0;
 }
 #endif
+
+}

@@ -35,8 +35,6 @@
 #include "UPnP.h"
 #endif
 
-namespace dcpp {
-
 class MainWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, MainWindow>  
 
 #ifdef PORT_ME
@@ -50,6 +48,10 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 public:
 	MainWindow();
 	virtual ~MainWindow();
+
+private:
+	
+
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
@@ -392,6 +394,5 @@ private:
 #endif
 
 };
-}
 
 #endif // !defined(MAIN_FRM_H)
