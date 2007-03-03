@@ -51,7 +51,20 @@ public:
 
 private:
 	
+	WidgetStatusBarSectionsPtr status;
+	WidgetMDIParentPtr mdi;
+	WidgetMenuPtr mainMenu;
 
+	void initWindow();
+	void initMenu();
+	void initStatusBar();
+	void initMDI();
+	
+	// User actions
+	void handleExit(WidgetMenuPtr menu, unsigned id);
+	// Events
+	void sized(const SmartWin::WidgetSizedEventResult& sz);
+	
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 

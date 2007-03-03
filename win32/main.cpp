@@ -301,11 +301,12 @@ int SmartWinMain(SmartWin::Application& app) {
 	}
 	
 	{
-		SplashWindow splash;
-		startup(&callBack, &splash);
+		SplashWindow* splash(new SplashWindow);
+		startup(&callBack, splash);
+		splash->close();
 	}
 
-	MainWindow wnd;
+	MainWindow* wnd(new MainWindow);
 	int ret = app.run();
 
 	shutdown();

@@ -21,6 +21,7 @@
 #include <client/DCPlusPlus.h>
 
 #include "MainWindow.h"
+#include "resource.h"
 
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
@@ -28,7 +29,10 @@
 
 namespace dcpp {
 
-MainWindow::MainWindow() {
+MainWindow::MainWindow() :
+	status(0),
+	mdi(0)
+{
 	#ifdef PORT_ME
 	memset(statusSizes, 0, sizeof(statusSizes));
 
@@ -43,38 +47,13 @@ MainWindow::MainWindow() {
 	links.bugs = links.homepage + _T("bugzilla/");
 #endif
 
+	initWindow();
+	initMenu();
+	initStatusBar();
+	initMDI();
 
-	Seed cs;
-
-	int pos_x = SETTING(MAIN_WINDOW_POS_X);
-	int pos_y = SETTING(MAIN_WINDOW_POS_Y);
-	int size_x = SETTING(MAIN_WINDOW_SIZE_X);
-	int size_y = SETTING(MAIN_WINDOW_SIZE_Y);
+	onSized(&MainWindow::sized);
 	
-	if( (pos_x != static_cast<int>(CW_USEDEFAULT)) &&
-		(pos_y != static_cast<int>(CW_USEDEFAULT)) &&
-		(size_x != static_cast<int>(CW_USEDEFAULT)) &&
-		(size_y != static_cast<int>(CW_USEDEFAULT)) &&
-		(pos_x > 0 && pos_y > 0) &&
-		(size_x > 10 && size_y > 10)
-		)
-	{
-		cs.location = SmartWin::Rectangle(pos_x, pos_y, size_x, size_y);
-	}
-	
-	cs.exStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-	if(ResourceManager::getInstance()->isRTL())
-		cs.exStyle |= WS_EX_RTLREADING; 
-
-#ifdef PORT_ME
-	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
-#endif
-	// Set window name
-	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
-
-	createWindow(cs);
-	
-
 #ifdef PORT_ME
 	TimerManager::getInstance()->addListener(this);
 	QueueManager::getInstance()->addListener(this);
@@ -129,10 +108,6 @@ MainWindow::MainWindow() {
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 	CreateSimpleStatusBar();
 
-	ctrlStatus.Attach(m_hWndStatusBar);
-	ctrlStatus.SetSimple(FALSE);
-	int w[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	ctrlStatus.SetParts(8, w);
 	statusSizes[0] = WinUtil::getTextWidth(TSTRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 
@@ -140,8 +115,6 @@ MainWindow::MainWindow() {
 	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
 
-	CreateMDIClient();
-	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	WinUtil::mdiClient = m_hWndMDIClient;
 
 	ctrlTab.Create(m_hWnd, rcDefault);
@@ -203,6 +176,148 @@ MainWindow::MainWindow() {
 #endif
 }
 
+void MainWindow::initWindow() {
+	// Create main window
+	dcdebug("initWindow\n");
+	Seed cs;
+
+	int pos_x = SETTING(MAIN_WINDOW_POS_X);
+	int pos_y = SETTING(MAIN_WINDOW_POS_Y);
+	int size_x = SETTING(MAIN_WINDOW_SIZE_X);
+	int size_y = SETTING(MAIN_WINDOW_SIZE_Y);
+	
+	if( (pos_x != static_cast<int>(CW_USEDEFAULT)) &&
+		(pos_y != static_cast<int>(CW_USEDEFAULT)) &&
+		(size_x != static_cast<int>(CW_USEDEFAULT)) &&
+		(size_y != static_cast<int>(CW_USEDEFAULT)) &&
+		(pos_x > 0 && pos_y > 0) &&
+		(size_x > 10 && size_y > 10)
+		)
+	{
+		cs.location = SmartWin::Rectangle(pos_x, pos_y, size_x, size_y);
+	}
+	
+	cs.exStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
+	if(ResourceManager::getInstance()->isRTL())
+		cs.exStyle |= WS_EX_RTLREADING; 
+
+#ifdef PORT_ME
+	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
+#endif
+	// Set window name
+	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
+
+	createWindow(cs);
+}
+
+void MainWindow::initMenu() {
+	dcdebug("initMenu\n");
+	mainMenu = createMenu();
+	
+	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
+
+#ifdef PORT_ME
+	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CTSTRING(MENU_OPEN_FILE_LIST));
+	file.AppendMenu(MF_STRING, IDC_OPEN_OWN_LIST, CTSTRING(MENU_OPEN_OWN_LIST));
+	file.AppendMenu(MF_STRING, IDC_MATCH_ALL, CTSTRING(MENU_OPEN_MATCH_ALL));
+	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CTSTRING(MENU_REFRESH_FILE_LIST));
+	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
+	file.AppendMenu(MF_SEPARATOR);
+	file.AppendMenu(MF_STRING, ID_FILE_QUICK_CONNECT, CTSTRING(MENU_QUICK_CONNECT));
+	file.AppendMenu(MF_STRING, IDC_FOLLOW, CTSTRING(MENU_FOLLOW_REDIRECT));
+	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
+	file.AppendMenu(MF_SEPARATOR);
+	file.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CTSTRING(MENU_SETTINGS));
+
+#endif
+	file->appendSeparatorItem();
+	file->appendItem(IDC_EXIT, TSTRING(MENU_EXIT), &MainWindow::handleExit);
+
+	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
+	
+#ifdef PORT_ME
+	view.AppendMenu(MF_STRING, ID_FILE_CONNECT, CTSTRING(MENU_PUBLIC_HUBS));
+	view.AppendMenu(MF_STRING, IDC_QUEUE, CTSTRING(MENU_DOWNLOAD_QUEUE));
+	view.AppendMenu(MF_STRING, IDC_VIEW_WAITING_USERS, CTSTRING(WAITING_USERS));
+	view.AppendMenu(MF_STRING, IDC_FINISHED, CTSTRING(FINISHED_DOWNLOADS));
+	view.AppendMenu(MF_STRING, IDC_FINISHED_UL, CTSTRING(FINISHED_UPLOADS));
+	view.AppendMenu(MF_STRING, IDC_FAVORITES, CTSTRING(MENU_FAVORITE_HUBS));
+	view.AppendMenu(MF_STRING, IDC_FAVUSERS, CTSTRING(MENU_FAVORITE_USERS));
+	view.AppendMenu(MF_STRING, ID_FILE_SEARCH, CTSTRING(MENU_SEARCH));
+	view.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CTSTRING(MENU_ADL_SEARCH));
+	view.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CTSTRING(MENU_SEARCH_SPY));
+	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
+	view.AppendMenu(MF_STRING, IDC_NOTEPAD, CTSTRING(MENU_NOTEPAD));
+	view.AppendMenu(MF_STRING, IDC_HASH_PROGRESS, CTSTRING(MENU_HASH_PROGRESS));
+	view.AppendMenu(MF_STRING, IDC_SYSTEM_LOG, CTSTRING(MENU_SYSTEM_LOG));
+	view.AppendMenu(MF_SEPARATOR);
+	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
+	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
+	view.AppendMenu(MF_STRING, ID_VIEW_TRANSFER_VIEW, CTSTRING(MENU_TRANSFER_VIEW));
+
+#endif
+
+	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
+	
+#ifdef PORT_ME
+	window.AppendMenu(MF_STRING, ID_WINDOW_CASCADE, CTSTRING(MENU_CASCADE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_HORZ, CTSTRING(MENU_HORIZONTAL_TILE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_VERT, CTSTRING(MENU_VERTICAL_TILE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_ARRANGE, CTSTRING(MENU_ARRANGE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_MINIMIZE_ALL, CTSTRING(MENU_MINIMIZE_ALL));
+	window.AppendMenu(MF_STRING, ID_WINDOW_RESTORE_ALL, CTSTRING(MENU_RESTORE_ALL));
+	window.AppendMenu(MF_SEPARATOR);
+	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CTSTRING(MENU_CLOSE_DISCONNECTED));
+	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_PM, CTSTRING(MENU_CLOSE_ALL_PM));
+	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_OFFLINE_PM, CTSTRING(MENU_CLOSE_ALL_OFFLINE_PM));
+	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_DIR_LIST, CTSTRING(MENU_CLOSE_ALL_DIR_LIST));
+	window.AppendMenu(MF_STRING, IDC_CLOSE_ALL_SEARCH_FRAME, CTSTRING(MENU_CLOSE_ALL_SEARCHFRAME));
+
+#endif
+
+	WidgetMenuPtr help = mainMenu->appendPopup(CTSTRING(MENU_HELP));
+
+#ifdef PORT_ME
+	help.AppendMenu(MF_STRING, IDC_HELP_CONTENTS, CTSTRING(MENU_CONTENTS));
+	help.AppendMenu(MF_SEPARATOR);
+	help.AppendMenu(MF_STRING, IDC_HELP_CHANGELOG, CTSTRING(MENU_CHANGELOG));
+	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CTSTRING(MENU_ABOUT));
+	help.AppendMenu(MF_SEPARATOR);
+	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CTSTRING(MENU_HOMEPAGE));
+	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CTSTRING(MENU_HELP_DOWNLOADS));
+	help.AppendMenu(MF_STRING, IDC_HELP_GEOIPFILE, CTSTRING(MENU_HELP_GEOIPFILE));
+	help.AppendMenu(MF_STRING, IDC_HELP_TRANSLATIONS, CTSTRING(MENU_HELP_TRANSLATIONS));
+	help.AppendMenu(MF_STRING, IDC_HELP_FAQ, CTSTRING(MENU_FAQ));
+	help.AppendMenu(MF_STRING, IDC_HELP_HELP_FORUM, CTSTRING(MENU_HELP_FORUM));
+	help.AppendMenu(MF_STRING, IDC_HELP_DISCUSS, CTSTRING(MENU_DISCUSS));
+	help.AppendMenu(MF_STRING, IDC_HELP_REQUEST_FEATURE, CTSTRING(MENU_REQUEST_FEATURE));
+	help.AppendMenu(MF_STRING, IDC_HELP_REPORT_BUG, CTSTRING(MENU_REPORT_BUG));
+	help.AppendMenu(MF_STRING, IDC_HELP_DONATE, CTSTRING(MENU_DONATE));
+
+#endif
+
+	mainMenu->attach(this);	
+}
+
+void MainWindow::initStatusBar() {
+	dcdebug("initStatusBar\n");
+	status = createStatusBarSections();
+	status->setSections(std::vector<unsigned>(8, 100));
+}
+
+void MainWindow::initMDI() {
+	dcdebug("initMDI\n");
+	mdi = createMDIParent();
+}
+
+void MainWindow::handleExit(WidgetMenuPtr, unsigned id) {
+	close(true);
+}
+ 
+void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
+	mdi->setBounds(0, 0, sz.newSize.x, sz.newSize.y);
+	status->refresh();	
+}
 
 #ifdef PORT_ME
 

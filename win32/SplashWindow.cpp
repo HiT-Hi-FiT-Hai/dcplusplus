@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include "stdafx.h"
 #include <client/DCPlusPlus.h>
 
@@ -45,7 +44,7 @@ SplashWindow::SplashWindow() {
 	tcs.style = cs.style | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 	tcs.exStyle = WS_EX_STATICEDGE;
 	tcs.caption = cs.caption;
-	/*
+	
 	text = createTextBox(tcs);
 
 	text->setFont(SmartWin::DefaultGuiFont);
@@ -54,7 +53,7 @@ SplashWindow::SplashWindow() {
 	::HideCaret(text->handle());
 	text->setBounds(tcs.location);
 	text->bringToFront();
-	text->updateWidget();*/
+	text->updateWidget();
 }
 
 void SplashWindow::operator()(const string& str) {
