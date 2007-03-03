@@ -27,8 +27,6 @@
 #include <client/ResourceManager.h>
 #include <client/version.h>
 
-namespace dcpp {
-
 MainWindow::MainWindow() :
 	status(0),
 	mdi(0)
@@ -1313,4 +1311,3 @@ LRESULT MainFrame::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 #endif
 
-}
