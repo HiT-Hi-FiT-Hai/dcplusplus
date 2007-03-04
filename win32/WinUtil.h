@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,35 +129,6 @@ public:
 
 class FlatTabCtrl;
 class UserCommand;
-
-template<class T, int title>
-class StaticFrame {
-public:
-	virtual ~StaticFrame() { frame = NULL; }
-
-	static T* frame;
-	static void openWindow() {
-		if(frame == NULL) {
-			frame = new T();
-			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, CTSTRING_I(ResourceManager::Strings(title)));
-		} else {
-			// match the behavior of MainFrame::onSelected()
-			HWND hWnd = frame->m_hWnd;
-			if(frame->MDIGetActive() != hWnd) {
-				frame->MDIActivate(hWnd);
-			} else if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
-				::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
-				frame->MDINext(hWnd);
-				hWnd = frame->MDIGetActive();
-			}
-			if(::IsIconic(hWnd))
-				::ShowWindow(hWnd, SW_RESTORE);
-		}
-	}
-};
-
-template<class T, int title>
-T* StaticFrame<T, title>::frame = NULL;
 
 #endif
 

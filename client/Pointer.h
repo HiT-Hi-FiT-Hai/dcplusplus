@@ -16,12 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(POINTER_H)
-#define POINTER_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#if !defined(DCPLUSPLUS_CLIENT_POINTER_H)
+#define DCPLUSPLUS_CLIENT_POINTER_H
 
 #include "Thread.h"
 

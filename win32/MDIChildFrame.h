@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#ifndef DCPLUSPLUS_WIN32_MDI_CHILD_FRAME_H_
+#define DCPLUSPLUS_WIN32_MDI_CHILD_FRAME_H_
 
-#include "FinishedULFrame.h"
+template<typename T>
+class MDIChildFrame : public SmartWin::WidgetFactory<SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> {
+public:
+	typedef SmartWin::WidgetFactory<SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> super;
+	MDIChildFrame(SmartWin::Widget* parent) : super(parent) {
+		typename T::Seed cs;
+		create(cs);
+	}
+	
+	virtual ~MDIChildFrame() {
+	
+	}
+	
+private:
+	
+};
 
-/**
- * @file
- * $Id: FinishedULFrame.cpp,v 1.32 2005/12/19 00:15:52 arnetheduck Exp $
- */
+#endif

@@ -62,7 +62,9 @@ private:
 	
 	// User actions
 	void handleExit(WidgetMenuPtr menu, unsigned id);
-	// Events
+	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
+	
+	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
 	
 #ifdef PORT_ME

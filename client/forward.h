@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
-#include "Resource.h"
+#ifndef DCPLUSPLUS_CLIENT_FORWARD_H_
+#define DCPLUSPLUS_CLIENT_FORWARD_H_
 
-// Only need this for older ATL:s
-#if _ATL_VER < 0x0700
-#include <atlimpl.cpp>
-#endif
+/** @file
+ * This file contains forward declarations for the various DC++ classes
+ */
 
-// Basic sanity check
-#if (_WTL_VER < 0x750)
-#error WTL not correctly installed, read compile.txt
-#endif
+#include "Pointer.h"
+
+class User;
+typedef Pointer<User> UserPtr;
+typedef std::vector<UserPtr> UserList;
+
+#endif /*DCPLUSPLUS_CLIENT_FORWARD_H_*/

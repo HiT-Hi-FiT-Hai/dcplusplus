@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,23 +16,35 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SYSTEM_FRAME_H)
-#define SYSTEM_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_SYSTEM_FRAME_H
+#define DCPLUSPLUS_WIN32_SYSTEM_FRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "StaticFrame.h"
 
+#include <client/LogManager.h>
+#include <client/ResourceManager.h>
+
+class SystemFrame : public StaticFrame<SystemFrame>,
+	private LogManagerListener
+{
+public:
+	enum { TITLE_RESOURCE = ResourceManager::SYSTEM_LOG };
+	
+	private:
+	WidgetTextBoxPtr log;
+
+	SystemFrame(WidgetMDIParentPtr parent);
+
+	void addLine(time_t t, const tstring& msg);
+};
+
+#ifdef PORT_ME
 #include "FlatTabCtrl.h"
 #include "../client/Text.h"
 
-#include "../client/LogManager.h"
 
 #define SYSTEM_LOG_MESSAGE_MAP 42
 
-class SystemFrame : public MDITabChildWindowImpl<SystemFrame>, public StaticFrame<SystemFrame, ResourceManager::SYSTEM_LOG>,
-	private LogManagerListener
-{
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("SystemFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
@@ -76,12 +88,10 @@ public:
 	}
 
 private:
-	CEdit ctrlPad;
 	CContainedWindow ctrlClientContainer;
-
-	void addLine(time_t t, const tstring& msg);
 
 	virtual void on(Message, time_t t, const string& message) { PostMessage(WM_SPEAKER, (WPARAM)(new pair<time_t, tstring>(t, Text::toT(message)))); }
 };
 
-#endif // !defined(SYSTEM_FRAME_H)
+#endif
+#endif

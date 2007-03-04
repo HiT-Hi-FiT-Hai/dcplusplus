@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include "stdafx.h"
 #include <client/DCPlusPlus.h>
 
@@ -233,6 +232,8 @@ void MainWindow::initMenu() {
 
 	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
 	
+	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleSystemLog);
+	
 #ifdef PORT_ME
 	view.AppendMenu(MF_STRING, ID_FILE_CONNECT, CTSTRING(MENU_PUBLIC_HUBS));
 	view.AppendMenu(MF_STRING, IDC_QUEUE, CTSTRING(MENU_DOWNLOAD_QUEUE));
@@ -308,8 +309,12 @@ void MainWindow::initMDI() {
 	mdi = createMDIParent();
 }
 
-void MainWindow::handleExit(WidgetMenuPtr, unsigned id) {
+void MainWindow::handleExit(WidgetMenuPtr /* menu */, unsigned /* id*/) {
 	close(true);
+}
+
+void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
+	
 }
  
 void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
