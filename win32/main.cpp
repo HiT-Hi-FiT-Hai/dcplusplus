@@ -305,10 +305,15 @@ int SmartWinMain(SmartWin::Application& app) {
 		startup(&callBack, splash);
 		splash->close();
 	}
-
-	MainWindow* wnd(new MainWindow);
-	int ret = app.run();
-
+	int ret = 255;
+	try {
+		MainWindow* wnd(new MainWindow);
+		ret = app.run();
+	} catch(const std::exception& e) {
+		printf("Exception: %s\n", e.what());
+	} catch(...) {
+		printf("Unknown exception");
+	}
 	shutdown();
 
 	::CoUninitialize();

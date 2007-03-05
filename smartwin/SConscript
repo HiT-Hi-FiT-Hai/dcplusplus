@@ -1,0 +1,10 @@
+# vim: set filetype=py
+ 
+Import('dev source_path')
+
+ret = []
+
+ret += dev.build('source/')
+ret += dev.build('SmartUtil/')
+
+Return('ret')

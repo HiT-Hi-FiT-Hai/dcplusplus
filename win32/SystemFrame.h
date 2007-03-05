@@ -28,12 +28,16 @@ class SystemFrame : public StaticFrame<SystemFrame>,
 	private LogManagerListener
 {
 public:
-	enum { TITLE_RESOURCE = ResourceManager::SYSTEM_LOG };
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
 	
-	private:
+private:
 	WidgetTextBoxPtr log;
-
-	SystemFrame(WidgetMDIParentPtr parent);
+	
+	friend class StaticFrame<SystemFrame>;
+	SystemFrame(Widget* parent);
+	
+	// Other events
+	void sized(const SmartWin::WidgetSizedEventResult& sz);
 
 	void addLine(time_t t, const tstring& msg);
 };

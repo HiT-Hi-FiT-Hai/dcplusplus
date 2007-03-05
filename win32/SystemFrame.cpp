@@ -23,10 +23,11 @@
 
 #include "StupidWin.h"
 
-SystemFrame::SystemFrame(WidgetMDIParentPtr parent) : 
+SystemFrame::SystemFrame(Widget* parent) : 
 	StaticFrame<SystemFrame>(parent), 
 	log(0) 
 {
+	/*
 	{
 		WidgetTextBox::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
@@ -35,6 +36,8 @@ SystemFrame::SystemFrame(WidgetMDIParentPtr parent) :
 		log = createTextBox(cs);
 	}
 	
+	onSized(&SystemFrame::sized);
+	
 	deque<pair<time_t, string> > oldMessages = LogManager::getInstance()->getLastLogs();
 	// Technically, we might miss a message or two here, but who cares...
 	LogManager::getInstance()->addListener(this);
@@ -42,25 +45,23 @@ SystemFrame::SystemFrame(WidgetMDIParentPtr parent) :
 	for(deque<pair<time_t, string> >::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
 		addLine(i->first, Text::toT(i->second));
 	}
-	
+	*/
 }
 
 void SystemFrame::addLine(time_t t, const tstring& msg) {
-	///@todo add GetWindowTextLength to smartwin & send patch
 	int limit = log->getTextLimit();
-	if(StupidWin::getWindowTextLength(log) + msg.size() > limit) {
-#ifdef PORT_ME
-		ctrlPad.SetRedraw(FALSE);
-#endif
-		///@todo add EM_LINEFROMCHAR to smartwin & send patch
+	if(StupidWin::getWindowTextLength(log) + static_cast<int>(msg.size()) > limit) {
+		StupidWin::setRedraw(log, false);
 		log->setSelection(0, StupidWin::lineIndex(log, StupidWin::lineFromChar(log, limit / 10)));
-		
 		log->replaceSelection(_T(""));
-#ifdef PORT_ME
-		ctrlPad.SetRedraw(TRUE);
-#endif
+		StupidWin::setRedraw(log, true);
 	}
 	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
+}
+
+void SystemFrame::sized(const SmartWin::WidgetSizedEventResult& sz) {
+	dcdebug("Sizing\n");
+	log->setBounds(0, 0, sz.newSize.x, sz.newSize.y);
 }
 
 #ifdef PORT_ME
@@ -89,19 +90,6 @@ LRESULT SystemFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	bHandled = FALSE;
 	return 0;
 
-}
-
-void SystemFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
-{
-	CRect rc;
-
-	GetClientRect(rc);
-
-	rc.bottom -= 1;
-	rc.top += 1;
-	rc.left +=1;
-	rc.right -=1;
-	ctrlPad.MoveWindow(rc);
 }
 
 LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {

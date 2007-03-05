@@ -21,21 +21,24 @@
 
 #include "MDIChildFrame.h"
 
+#include <client/ResourceManager.h>
+#include <client/Text.h>
+
 template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
 	StaticFrame(SmartWin::Widget* parent) : MDIChildFrame<T>(parent) { 
-	
+		//setText(Text::toT(ResourceManager::getInstance()->getString(T::TITLE_RESOURCE)));
 	}
 	
 	virtual ~StaticFrame() { 
 		frame = 0; 
 	}
 
-	static T* frame;
-	static void openWindow() {
+	static void openWindow(SmartWin::Widget* parent) {
 		
 		if(frame) {
+			frame->setActive();
 #ifdef PORT_ME
 			// match the behavior of MainFrame::onSelected()
 			HWND hWnd = frame->m_hWnd;
@@ -50,9 +53,12 @@ public:
 				::ShowWindow(hWnd, SW_RESTORE);
 #endif
 		} else {
-			return (frame = new T);
+			frame = new T(parent);
 		}
 	}
+	
+private:
+	static T* frame;
 };
 
 template<class T>

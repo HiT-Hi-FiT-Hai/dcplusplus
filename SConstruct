@@ -3,7 +3,7 @@
 from build_util import Dev
 
 gcc_flags = {
-	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
+	'common': ['-gstabs', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
 	'debug': [], 
 	'release' : ['-O2']
 }
@@ -15,7 +15,7 @@ msvc_flags = {
 }
 
 gcc_link_flags = {
-	'common' : ['-g', '-Wl,--no-undefined'],
+	'common' : ['-gstabs', '-Wl,--no-undefined'],
 	'debug' : [],
 	'release' : []				
 }
@@ -117,4 +117,5 @@ dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')
 dev.yassl = dev.build('yassl/')
 dev.client = dev.build('client/')
+dev.smartwin = dev.build('smartwin/')
 dev.win32 = dev.build('win32/')

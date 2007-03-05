@@ -22,10 +22,10 @@
 template<typename T>
 class MDIChildFrame : public SmartWin::WidgetFactory<SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> {
 public:
-	typedef SmartWin::WidgetFactory<SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> super;
-	MDIChildFrame(SmartWin::Widget* parent) : super(parent) {
-		typename T::Seed cs;
-		create(cs);
+	typedef SmartWin::WidgetFactory<SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
+	MDIChildFrame(SmartWin::Widget* parent) : FactoryType(parent) {
+		typename FactoryType::Seed cs;
+		createMDIChild(cs);
 	}
 	
 	virtual ~MDIChildFrame() {

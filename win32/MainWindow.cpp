@@ -22,6 +22,8 @@
 #include "MainWindow.h"
 #include "resource.h"
 
+#include "SystemFrame.h"
+
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
 #include <client/version.h>
@@ -314,7 +316,7 @@ void MainWindow::handleExit(WidgetMenuPtr /* menu */, unsigned /* id*/) {
 }
 
 void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
-	
+	SystemFrame::openWindow(mdi);
 }
  
 void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
