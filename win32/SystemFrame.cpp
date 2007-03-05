@@ -23,11 +23,12 @@
 
 #include "StupidWin.h"
 
+using namespace SmartWin;
+
 SystemFrame::SystemFrame(Widget* parent) : 
-	StaticFrame<SystemFrame>(parent), 
+	SmartWin::Widget(parent), 
 	log(0) 
 {
-	/*
 	{
 		WidgetTextBox::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
@@ -45,7 +46,6 @@ SystemFrame::SystemFrame(Widget* parent) :
 	for(deque<pair<time_t, string> >::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
 		addLine(i->first, Text::toT(i->second));
 	}
-	*/
 }
 
 void SystemFrame::addLine(time_t t, const tstring& msg) {

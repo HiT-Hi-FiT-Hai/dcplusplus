@@ -20,16 +20,13 @@
 #define DCPLUSPLUS_WIN32_MDI_CHILD_FRAME_H_
 
 template<typename T>
-class MDIChildFrame : public SmartWin::WidgetFactory<SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> {
+class MDIChildFrame : public SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget > {
 public:
-	typedef SmartWin::WidgetFactory<SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
-	MDIChildFrame(SmartWin::Widget* parent) : FactoryType(parent) {
-		typename FactoryType::Seed cs;
-		createMDIChild(cs);
-	}
-	
-	virtual ~MDIChildFrame() {
-	
+	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
+	MDIChildFrame() {
+		// If something fails here, you've not called SmartWin::Widget with a good parent
+		// (because of smartwin's shitty inheritance) from the most derived class 
+		FactoryType::createMDIChild();
 	}
 	
 private:

@@ -59,7 +59,7 @@ _CrtDbgBreak(); } } while(false)
 #endif
 #define dcdrun(exp) exp
 #else //_DEBUG
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define dcasserta(exp) __assume(exp)
 #else
 #define dcasserta(exp)
