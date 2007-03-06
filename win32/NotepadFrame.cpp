@@ -32,7 +32,7 @@ NotepadFrame::NotepadFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		pad = createTextBox(cs);
-		controls[0] = pad->handle();
+		controls.push_back(pad);
 	}
 	
 	pad->setTextLimit(0);
@@ -66,10 +66,6 @@ bool NotepadFrame::preClosing() {
 
 void NotepadFrame::layout() {
 	pad->setBounds(SmartWin::Point(0,0), getClientAreaSize());
-}
-
-void NotepadFrame::focused() {
-	pad->setFocus();
 }
 
 #ifdef PORT_ME

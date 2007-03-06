@@ -26,15 +26,13 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NOTEPAD;
 
 protected:
-	HWND controls[1];
-
 	friend class StaticFrame<NotepadFrame>;
 	friend class MDIChildFrame<NotepadFrame>;
+	
 	NotepadFrame(SmartWin::Widget* mdiParent);
 	virtual ~NotepadFrame();
 
 	void layout();
-	void focused();
 	bool preClosing();
 
 private:

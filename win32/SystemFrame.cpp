@@ -32,7 +32,7 @@ SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		log = createTextBox(cs);
-		controls[0] = log->handle();
+		controls.push_back(log);
 	}
 	
 	layout();
@@ -68,10 +68,6 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 
 void SystemFrame::layout() {
 	log->setBounds(SmartWin::Point(0,0), getClientAreaSize());
-}
-
-void SystemFrame::focused() {
-	log->setFocus();
 }
 
 void SystemFrame::spoken(WPARAM wp, LPARAM lp) {

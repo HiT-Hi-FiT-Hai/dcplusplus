@@ -31,15 +31,13 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
 
 protected:
-	HWND controls[1];
-
 	friend class StaticFrame<SystemFrame>;
 	friend class MDIChildFrame<SystemFrame>;
+	
 	SystemFrame(SmartWin::Widget* parent);
 	virtual ~SystemFrame();
 
 	void layout();
-	void focused();
 	void spoken(WPARAM wp, LPARAM lp);
 	bool preClosing();
 

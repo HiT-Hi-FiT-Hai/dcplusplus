@@ -345,7 +345,7 @@ void MainWindow::layout() {
 #endif
 	}
 
-	r.size.y -= rs.size.y;
+	r.size.y -= status->getSize().y;
 
 #ifdef PORT_ME
 	CRect rc = rect;

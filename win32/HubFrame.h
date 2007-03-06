@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,105 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(HUB_FRAME_H)
-#define HUB_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_HUB_FRAME_H
+#define DCPLUSPLUS_WIN32_HUB_FRAME_H
 
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
+#include "MDIChildFrame.h"
 
+#include <client/forward.h>
+#include <client/ClientListener.h>
+#include <client/TaskQueue.h>
+#include <client/User.h>
+
+class HubFrame : public MDIChildFrame<HubFrame>, public ClientListener
+{
+public:
+	static void openWindow(SmartWin::Widget* mdiParent, const tstring& url);
+
+protected:
+	friend class MDIChildFrame<HubFrame>;
+	
+	void layout();
+	void spoken(WPARAM wp, LPARAM lp);
+	bool preClosing();
+	void postClosing();
+
+
+private:
+	enum Tasks { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
+		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
+		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
+	};
+
+	struct UserTask : public Task {
+		UserTask(const OnlineUser& ou);
+
+		UserPtr user;
+		Identity identity;
+	};
+
+	struct PMTask : public StringTask {
+		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const string& m);
+		
+		UserPtr from;
+		UserPtr to;
+		UserPtr replyTo;
+
+		bool hub;
+		bool bot;
+	};
+
+	Client* client;
+	tstring url;
+	bool timeStamps;
+	bool updateUsers;
+	bool waitingForPW;
+	
+	TaskQueue tasks;
+
+	WidgetTextBoxPtr chat;
+	WidgetTextBoxPtr message;
+	WidgetTextBoxPtr filter;
+	WidgetComboBoxPtr filterType;
+	WidgetStatusBarSectionsPtr status;
+	
+	typedef HASH_MAP<tstring, HubFrame*> FrameMap;
+	typedef FrameMap::iterator FrameIter;
+	static FrameMap frames;
+
+	HubFrame(Widget* mdiParent, const tstring& url);
+	virtual ~HubFrame();
+	
+	void addLine(const tstring& aLine);
+	void addClientLine(const tstring& aLine, bool inChat = true);
+
+	string getUsersTextForStatusBar() const;
+	int64_t getAvailable() const;
+	
+	using MDIChildFrame<HubFrame>::speak;
+	void speak(Tasks s) { tasks.add(s, 0); speak(); }
+	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); speak(); }
+	void speak(Tasks s, const OnlineUser& u) { tasks.add(s, new UserTask(u)); updateUsers = true; }
+	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { tasks.add(PRIVATE_MESSAGE, new PMTask(from, to, replyTo, line));  speak(); }
+
+	// ClientListener
+	virtual void on(Connecting, Client*) throw();
+	virtual void on(Connected, Client*) throw();
+	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
+	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
+	virtual void on(ClientListener::UserRemoved, Client*, const OnlineUser&) throw();
+	virtual void on(Redirect, Client*, const string&) throw();
+	virtual void on(Failed, Client*, const string&) throw();
+	virtual void on(GetPassword, Client*) throw();
+	virtual void on(HubUpdated, Client*) throw();
+	virtual void on(Message, Client*, const OnlineUser&, const string&) throw();
+	virtual void on(StatusMessage, Client*, const string&) throw();
+	virtual void on(PrivateMessage, Client*, const OnlineUser&, const OnlineUser&, const OnlineUser&, const string&) throw();
+	virtual void on(NickTaken, Client*) throw();
+	virtual void on(SearchFlood, Client*, const string&) throw();
+};
+
+#ifdef PORT_ME
 #include "FlatTabCtrl.h"
 #include "TypedListViewCtrl.h"
 
@@ -60,7 +152,6 @@ public:
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
@@ -97,7 +188,6 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -113,9 +203,6 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void addLine(const tstring& aLine);
-	void addClientLine(const tstring& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
 	void handleTab(bool reverse);
@@ -163,11 +250,6 @@ private:
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
-	enum Tasks { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
-		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
-		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
-	};
-
 	enum {
 		IMAGE_USER = 0, IMAGE_OP
 	};
@@ -193,25 +275,6 @@ private:
 		GREATER,
 		LESS,
 		NOT_EQUAL
-	};
-
-	struct UserTask : public Task {
-		UserTask(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) { }
-
-		User::Ptr user;
-		Identity identity;
-	};
-
-	struct PMTask : public StringTask {
-		PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const string& m) : StringTask(m),
-			from(from_.getUser()), to(to_.getUser()), replyTo(replyTo_.getUser()), hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) { }
-
-		User::Ptr from;
-		User::Ptr to;
-		User::Ptr replyTo;
-
-		bool hub;
-		bool bot;
 	};
 
 	friend struct CompareItems;
@@ -259,17 +322,15 @@ private:
 
 
 	HubFrame(const tstring& aServer) :
-	waitingForPW(false), extraSort(false), server(aServer), closed(false),
-		showUsers(BOOLSETTING(GET_USER_INFO)), updateUsers(false), resort(false),
-		curCommandPosition(0), timeStamps(BOOLSETTING(TIME_STAMPS)), inTabComplete(false),
+	extraSort(false), 
+		showUsers(BOOLSETTING(GET_USER_INFO)), resort(false),
+		curCommandPosition(0), inTabComplete(false),
 		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
 		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
 		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
 	{
-		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
-		client->addListener(this);
 	}
 
 	virtual ~HubFrame() {
@@ -282,15 +343,10 @@ private:
 		clearTaskList();
 	}
 
-	typedef HASH_MAP<tstring, HubFrame*> FrameMap;
-	typedef FrameMap::iterator FrameIter;
-	static FrameMap frames;
-
 	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
 	typedef UserMap::iterator UserMapIter;
 
 	tstring redirect;
-	bool timeStamps;
 	bool showJoins;
 	bool favShowJoins;
 	tstring complete;
@@ -315,15 +371,6 @@ private:
 		}
 	};
 
-	string getUsersTextForStatusBar() const;
-
-	int64_t getAvailable() {
-		if (ctrlUsers.GetSelectedCount() > 1) {
-			return ctrlUsers.forEachSelectedT(CountAvailable()).available;
-		} else
-			return for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
-	}
-
 	const tstring& getNick(const User::Ptr& u);
 
 	Client* client;
@@ -338,24 +385,17 @@ private:
 	CMenu tabMenu;
 
 	CButton ctrlShowUsers;
-	CEdit ctrlClient;
-	CEdit ctrlMessage;
-	CEdit ctrlFilter;
-	CComboBox ctrlFilterSel;
 	typedef TypedListViewCtrl<UserInfo, IDC_USERS> CtrlUsers;
 	CtrlUsers ctrlUsers;
-	CStatusBarCtrl ctrlStatus;
 
 	tstring filter;
 
-	bool closed;
 	bool showUsers;
 
 	TStringMap tabParams;
 	bool tabMenuShown;
 
 	UserMap userMap;
-	TaskQueue tasks;
 	bool updateUsers;
 	bool resort;
 
@@ -402,26 +442,9 @@ private:
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, uint32_t /*aTick*/) throw();
 
-	// ClientListener
-	virtual void on(Connecting, Client*) throw();
-	virtual void on(Connected, Client*) throw();
-	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
-	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
-	virtual void on(ClientListener::UserRemoved, Client*, const OnlineUser&) throw();
-	virtual void on(Redirect, Client*, const string&) throw();
-	virtual void on(Failed, Client*, const string&) throw();
-	virtual void on(GetPassword, Client*) throw();
-	virtual void on(HubUpdated, Client*) throw();
-	virtual void on(Message, Client*, const OnlineUser&, const string&) throw();
-	virtual void on(StatusMessage, Client*, const string&) throw();
-	virtual void on(PrivateMessage, Client*, const OnlineUser&, const OnlineUser&, const OnlineUser&, const string&) throw();
-	virtual void on(NickTaken, Client*) throw();
-	virtual void on(SearchFlood, Client*, const string&) throw();
 
-	void speak(Tasks s) { tasks.add(s, 0); PostMessage(WM_SPEAKER); }
-	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); PostMessage(WM_SPEAKER); }
-	void speak(Tasks s, const OnlineUser& u) { tasks.add(s, new UserTask(u)); updateUsers = true; }
-	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { tasks.add(PRIVATE_MESSAGE, new PMTask(from, to, replyTo, line)); PostMessage(WM_SPEAKER); }
 };
+
+#endif
 
 #endif // !defined(HUB_FRAME_H)

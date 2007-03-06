@@ -29,4 +29,15 @@ class User;
 typedef Pointer<User> UserPtr;
 typedef std::vector<UserPtr> UserList;
 
+class Client;
+class AdcCommand;
+class ClientManager;
+class CID;
+class Identity;
+
+class OnlineUser;
+typedef OnlineUser* OnlineUserPtr;
+typedef std::vector<OnlineUserPtr> OnlineUserList;
+
+
 #endif /*DCPLUSPLUS_CLIENT_FORWARD_H_*/

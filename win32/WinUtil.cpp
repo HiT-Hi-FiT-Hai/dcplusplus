@@ -23,11 +23,13 @@
 #include "WinUtil.h"
 
 #include <client/SettingsManager.h>
+#include <client/StringTokenizer.h>
 
 tstring WinUtil::tth;
 HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
+SmartWin::FontPtr WinUtil::font;
 
 void WinUtil::init() {
 
@@ -37,6 +39,13 @@ void WinUtil::init() {
 	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
 	textColor = SETTING(TEXT_COLOR);
 	bgColor = SETTING(BACKGROUND_COLOR);
+
+	LOGFONT lf;
+	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
+	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
+
+	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
 
 #ifdef PORT_ME
 /** @todo fix this so that the system icon is used for dirs as well (we need
@@ -70,7 +79,6 @@ void WinUtil::init() {
 	lf2.lfWeight = lf.lfWeight;
 	lf2.lfItalic = lf.lfItalic;
 
-	font = ::CreateFontIndirect(&lf);
 	fontHeight = WinUtil::getTextHeight(mainWnd, font);
 	lf.lfWeight = FW_BOLD;
 	boldFont = ::CreateFontIndirect(&lf);
@@ -111,6 +119,39 @@ void WinUtil::uninit() {
 	::HtmlHelp(NULL, NULL, HH_UNINITIALIZE, helpCookie);
 #endif
 }
+
+tstring WinUtil::encodeFont(LOGFONT const& font)
+{
+	tstring res(font.lfFaceName);
+	res += _T(',');
+	res += Text::toT(Util::toString(font.lfHeight));
+	res += _T(',');
+	res += Text::toT(Util::toString(font.lfWeight));
+	res += _T(',');
+	res += Text::toT(Util::toString(font.lfItalic));
+	return res;
+}
+
+void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
+	StringTokenizer<tstring> st(setting, _T(','));
+	TStringList &sl = st.getTokens();
+
+	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(dest), &dest);
+	tstring face;
+	if(sl.size() == 4)
+	{
+		face = sl[0];
+		dest.lfHeight = Util::toInt(Text::fromT(sl[1]));
+		dest.lfWeight = Util::toInt(Text::fromT(sl[2]));
+		dest.lfItalic = (BYTE)Util::toInt(Text::fromT(sl[3]));
+	}
+
+	if(!face.empty()) {
+		::ZeroMemory(dest.lfFaceName, LF_FACESIZE);
+		_tcscpy(dest.lfFaceName, face.c_str());
+	}
+}
+
 
 #ifdef PORT_ME
 #include "Resource.h"
@@ -297,26 +338,6 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 }
 
 
-void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
-	StringTokenizer<tstring> st(setting, _T(','));
-	TStringList &sl = st.getTokens();
-
-	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(dest), &dest);
-	tstring face;
-	if(sl.size() == 4)
-	{
-		face = sl[0];
-		dest.lfHeight = Util::toInt(Text::fromT(sl[1]));
-		dest.lfWeight = Util::toInt(Text::fromT(sl[2]));
-		dest.lfItalic = (BYTE)Util::toInt(Text::fromT(sl[3]));
-	}
-
-	if(!face.empty()) {
-		::ZeroMemory(dest.lfFaceName, LF_FACESIZE);
-		_tcscpy(dest.lfFaceName, face.c_str());
-	}
-}
-
 int CALLBACK WinUtil::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
 	switch(uMsg) {
 	case BFFM_INITIALIZED:
@@ -381,18 +402,6 @@ bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* 
 		return true;
 	}
 	return false;
-}
-
-tstring WinUtil::encodeFont(LOGFONT const& font)
-{
-	tstring res(font.lfFaceName);
-	res += L',';
-	res += Text::toT(Util::toString(font.lfHeight));
-	res += L',';
-	res += Text::toT(Util::toString(font.lfWeight));
-	res += L',';
-	res += Text::toT(Util::toString(font.lfItalic));
-	return res;
 }
 
 void WinUtil::setClipboard(const tstring& str) {

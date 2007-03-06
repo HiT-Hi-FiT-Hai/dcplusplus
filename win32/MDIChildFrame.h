@@ -45,6 +45,11 @@ protected:
 	/** Override this to catch messages from speak */
 	void spoken(WPARAM, LPARAM) { }
 	
+	void focused() {
+		if(!controls.empty()) {
+			::SetFocus(controls[0]->handle());
+		}
+	}
 	/**
 	 * The first of two close phases, used to disconnect from other threads that might affect this window
 	 * @return True if close should be allowed, false otherwise
@@ -53,8 +58,8 @@ protected:
 	/** Second close phase, perform any additional cleanup here if you need */
 	void postClosing() { }
 	
-	/** Override this with any controls that you have that need coloring */
-	HWND controls[0];
+	/** This sets tab order and control coloring */
+	std::vector<SmartWin::Widget*> controls;
 private:
 	bool reallyClose;
 
@@ -68,8 +73,8 @@ private:
 		HDC hDC((HDC)wp);
 		T* t(static_cast<T*>(this));
 		
-		for(size_t i = 0; i < sizeof(t->controls)/sizeof(t->controls[0]); ++i) {
-			if(hWnd == t->controls[i]) {
+		for(size_t i = 0; i < controls.size(); ++i) {
+			if(hWnd == t->controls[i]->handle()) {
 				::SetBkColor(hDC, WinUtil::bgColor);
 				::SetTextColor(hDC, WinUtil::textColor);
 				return (LRESULT)WinUtil::bgBrush;

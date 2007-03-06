@@ -139,9 +139,13 @@ public:
 	static HBRUSH bgBrush;
 	static COLORREF textColor;
 	static COLORREF bgColor;
+	static SmartWin::FontPtr font;
 
 	static void init();
 	static void uninit();
+
+	static tstring encodeFont(LOGFONT const& font);
+	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
 #ifdef PORT_ME
 	static CImageList fileImages;
@@ -151,7 +155,6 @@ public:
 	typedef HASH_MAP<string, int> ImageMap;
 	typedef ImageMap::iterator ImageIter;
 	static ImageMap fileIndexes;
-	static HFONT font;
 	static int fontHeight;
 	static HFONT boldFont;
 	static HFONT systemFont;
@@ -171,8 +174,6 @@ public:
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
 		return Text::fromT(tstring(buf, x));
 	}
-
-	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 
@@ -210,7 +211,6 @@ public:
 		lastDirs.push_back(dir);
 	}
 
-	static tstring encodeFont(LOGFONT const& font);
 
 	static tstring getHelpFile() {
 		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");

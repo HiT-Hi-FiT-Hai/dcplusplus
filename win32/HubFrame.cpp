@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,542 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
 
 #include "HubFrame.h"
+
+#include <client/ClientManager.h>
+#include <client/Client.h>
+#include <client/LogManager.h>
+#include <client/User.h>
+#include <client/ResourceManager.h>
+
+HubFrame::FrameMap HubFrame::frames;
+
+HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) : 
+	SmartWin::Widget(mdiParent), 
+	client(0),
+	url(url_),
+	timeStamps(BOOLSETTING(TIME_STAMPS)), 
+	updateUsers(false), 
+	waitingForPW(false), 
+	chat(0),
+	message(0),
+	filter(0),
+	filterType(0),
+	status(0)
+{
+	{
+		WidgetTextBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		chat = createTextBox(cs);
+		
+		chat->setTextLimit(0);
+		chat->setFont(WinUtil::font);
+		controls.push_back(chat);
+#ifdef PORT_ME
+		/// @todo do we need this?§
+		ctrlClient.FmtLines(TRUE);
+		
+#endif
+	}
+	
+	{
+		WidgetTextBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		message = createTextBox(cs);
+		message->setFont(WinUtil::font);
+		controls.push_back(message);
+	}
+	
+	{
+		WidgetTextBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		filter = createTextBox(cs);
+		filter->setFont(WinUtil::font);
+		controls.push_back(filter);
+	}
+	{
+		WidgetComboBox::Seed cs;
+		
+		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
+		cs.exStyle =  WS_EX_CLIENTEDGE;
+		filterType = createComboBox(cs);
+		filterType->setFont(WinUtil::font);
+		controls.push_back(filterType);
+	}
+	
+	status = createStatusBarSections();
+	
+	client = ClientManager::getInstance()->getClient(Text::fromT(url));
+	client->addListener(this);
+	client->connect();
+}
+
+HubFrame::~HubFrame() {
+}
+
+bool HubFrame::preClosing() {
+#ifdef PORT_ME
+	FavoriteManager::getInstance()->removeListener(this);
+#endif
+	client->removeListener(this);
+	client->disconnect(true);
+	return true;
+}
+
+void HubFrame::postClosing() {
+#ifdef PORT_ME
+	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
+	FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
+
+	clearUserList();
+	clearTaskList();
+
+	WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER,
+		SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
+	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
+	if(fhe != NULL && !IsIconic()){
+		CRect rc;
+
+		//Get position of window
+		GetWindowRect(&rc);
+
+		//convert the position so it's relative to main window
+		::ScreenToClient(GetParent(), &rc.TopLeft());
+		::ScreenToClient(GetParent(), &rc.BottomRight());
+
+		//save the position
+		fhe->setBottom((uint16_t)(rc.bottom > 0 ? rc.bottom : 0));
+		fhe->setTop((uint16_t)(rc.top > 0 ? rc.top : 0));
+		fhe->setLeft((uint16_t)(rc.left > 0 ? rc.left : 0));
+		fhe->setRight((uint16_t)(rc.right > 0 ? rc.right : 0));
+
+		FavoriteManager::getInstance()->save();
+	}
+#endif	
+}
+
+void HubFrame::layout() {
+	SmartWin::Rectangle r(getClientAreaSize()); 
+	status->refresh();
+
+	SmartWin::Rectangle rs(status->getClientAreaSize());
+
+	{
+		std::vector<unsigned> w(4);
+		int tmp = (rs.size.x) > 332 ? 232 : ((rs.size.x > 132) ? rs.size.x -100 : 32);
+
+		w[0] = rs.size.x - tmp;
+		w[1] = w[0] + (tmp-32)/2;
+		w[2] = w[0] + (tmp-32);
+		w[3] = w[2] + 16;
+
+
+		status->setSections(w);
+#ifdef PORT_ME
+		ctrlLastLines.SetMaxTipWidth(w[0]);
+		// Strange, can't get the correct width of the last field...
+		ctrlStatus.GetRect(2, sr);
+		sr.left = sr.right + 2;
+		sr.right = sr.left + 16;
+		ctrlShowUsers.MoveWindow(sr);
+#endif
+	}
+	r.size.y -= status->getSize().y;
+	
+	int ymessage = message->getSize().y;
+	int xfilter = std::min(r.size.x / 4, 200l);
+	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
+	message->setBounds(rm);
+	
+	rm.pos.x += rm.size.x;
+	rm.size.x = xfilter * 2 / 3;
+	filter->setBounds(rm);
+	
+	rm.pos.x += rm.size.x;
+	rm.size.x = xfilter / 3;
+	filter->setBounds(rm);
+
+	r.size.y -= rm.size.y;
+	chat->setBounds(r);
+
+#ifdef PORT_ME	
+	CRect rc = rect;
+	rc.bottom -= h + 10;
+	if(!showUsers) {
+		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_LEFT);
+	} else {
+		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_NONE);
+	}
+	SetSplitterRect(rc);
+
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - h - 5;
+	rc.left +=2;
+	rc.right -= showUsers ? 202 : 2;
+	ctrlMessage.MoveWindow(rc);
+
+	if(showUsers){
+		rc.left = rc.right + 4;
+		rc.right = rc.left + 116;
+		ctrlFilter.MoveWindow(rc);
+
+		rc.left = rc.right + 4;
+		rc.right = rc.left + 76;
+		rc.top = rc.top + 0;
+		rc.bottom = rc.bottom + 120;
+		ctrlFilterSel.MoveWindow(rc);
+	}
+#endif
+}
+
+void HubFrame::openWindow(SmartWin::Widget* mdiParent, const tstring& url) {
+	FrameIter i = frames.find(url);
+	if(i == frames.end()) {
+		frames.insert(std::make_pair(url, new HubFrame(mdiParent, url)));
+	} else {
+#ifdef PORT_ME
+		if(::IsIconic(i->second->m_hWnd))
+			::ShowWindow(i->second->m_hWnd, SW_RESTORE);
+		i->second->MDIActivate(i->second->m_hWnd);
+#endif
+	}
+}
+
+void HubFrame::addLine(const tstring& aLine) {
+	int limit = chat->getTextLimit();
+	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(aLine.size()) > limit) {
+		StupidWin::setRedraw(chat, false);
+		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
+		chat->replaceSelection(_T(""));
+		StupidWin::setRedraw(chat, true);
+	}
+#ifdef PORT_ME	
+	BOOL noscroll = TRUE;
+	POINT p = ctrlClient.PosFromChar(ctrlClient.GetWindowTextLength() - 1);
+	CRect r;
+	ctrlClient.GetClientRect(r);
+
+	if( r.PtInRect(p) || MDIGetActive() != m_hWnd)
+		noscroll = FALSE;
+	else {
+		ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
+	}
+	if(BOOLSETTING(LOG_MAIN_CHAT)) {
+		StringMap params;
+		params["message"] = Text::fromT(aLine);
+		client->getHubIdentity().getParams(params, "hub", false);
+		params["hubURL"] = client->getHubUrl();
+		client->getMyIdentity().getParams(params, "my", true);
+		LOG(LogManager::CHAT, params);
+	}
+#endif
+	if(timeStamps) {
+		chat->addText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine));
+	} else {
+		chat->addText((_T("\r\n") + aLine));
+	}
+#ifdef PORT_ME
+	if(noscroll) {
+		ctrlClient.SetRedraw(TRUE);
+	}
+	if (BOOLSETTING(BOLD_HUB)) {
+		setDirty();
+	}
+#endif
+}
+
+void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
+	tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + aLine;
+
+	status->setText(line, 0);
+
+#ifdef PORT_ME
+	while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
+		lastLinesList.erase(lastLinesList.begin());
+	lastLinesList.push_back(line);
+
+	if (BOOLSETTING(BOLD_HUB)) {
+		setDirty();
+	}
+#endif
+	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
+		addLine(_T("*** ") + aLine);
+	}
+	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
+		StringMap params;
+		client->getHubIdentity().getParams(params, "hub", false);
+		params["hubURL"] = client->getHubUrl();
+		client->getMyIdentity().getParams(params, "my", true);
+		params["message"] = Text::fromT(aLine);
+		LOG(LogManager::STATUS, params);
+	}
+}
+
+void HubFrame::spoken(WPARAM, LPARAM) {
+	updateUsers = false;
+	TaskQueue::List t;
+	tasks.get(t);
+
+#ifdef PORT_ME
+	if(t.size() > 2) {
+		ctrlUsers.SetRedraw(FALSE);
+	}
+#endif
+
+	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
+		if(i->first == UPDATE_USER) {
+#ifdef PORT_ME
+			updateUser(*static_cast<UserTask*>(i->second));
+#endif
+		} else if(i->first == UPDATE_USER_JOIN) {
+#ifdef PORT_ME
+			UserTask& u = *static_cast<UserTask*>(i->second);
+			if(updateUser(u)) {
+				if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
+					addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
+				}
+			}
+#endif
+		} else if(i->first == REMOVE_USER) {
+#ifdef PORT_ME
+			UserTask& u = *static_cast<UserTask*>(i->second);
+			removeUser(u.user);
+			if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
+				addLine(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
+			}
+#endif
+		} else if(i->first == CONNECTED) {
+			addClientLine(TSTRING(CONNECTED));
+#ifdef PORT_ME
+			setTabColor(GREEN);
+#endif
+		} else if(i->first == DISCONNECTED) {
+#ifdef PORT_ME
+			clearUserList();
+			setTabColor(RED);
+#endif
+		} else if(i->first == ADD_CHAT_LINE) {
+			addLine(Text::toT(static_cast<StringTask*>(i->second)->str));
+		} else if(i->first == ADD_STATUS_LINE) {
+			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str));
+		} else if(i->first == ADD_SILENT_STATUS_LINE) {
+			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str), false);
+		} else if(i->first == SET_WINDOW_TITLE) {
+			setText(Text::toT(static_cast<StringTask*>(i->second)->str));
+		} else if(i->first == STATS) {
+			status->setText(Text::toT(getUsersTextForStatusBar()), 1);
+			status->setText(Text::toT(Util::formatBytes(getAvailable())), 2);
+		} else if(i->first == GET_PASSWORD) {
+			if(client->getPassword().size() > 0) {
+				client->password(client->getPassword());
+				addClientLine(TSTRING(STORED_PASSWORD_SENT));
+			} else {
+				if(!BOOLSETTING(PROMPT_PASSWORD)) {
+					message->setText(_T("/password "));
+					message->setFocus();
+					message->setSelection(10, 10);
+					waitingForPW = true;
+				} else {
+#ifdef PORT_ME
+					LineDlg linePwd;
+					linePwd.title = CTSTRING(ENTER_PASSWORD);
+					linePwd.description = CTSTRING(ENTER_PASSWORD);
+					linePwd.password = true;
+					if(linePwd.DoModal(m_hWnd) == IDOK) {
+						client->setPassword(Text::fromT(linePwd.line));
+						client->password(Text::fromT(linePwd.line));
+						waitingForPW = false;
+					} else {
+						client->disconnect(true);
+					}
+#endif
+				}
+			}
+		} else if(i->first == PRIVATE_MESSAGE) {
+#ifdef PORT_ME
+			PMTask& pm = *static_cast<PMTask*>(i->second);
+			if(pm.hub) {
+				if(BOOLSETTING(IGNORE_HUB_PMS)) {
+					addClientLine(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+				} else if(BOOLSETTING(POPUP_HUB_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
+					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
+				} else {
+					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+				}
+			} else if(pm.bot) {
+				if(BOOLSETTING(IGNORE_BOT_PMS)) {
+					addClientLine(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+				} else if(BOOLSETTING(POPUP_BOT_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
+					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
+				} else {
+					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+				}
+			} else {
+				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
+					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
+				} else {
+					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+				}
+			}
+#endif
+		}
+		delete i->second;
+	}
+#ifdef PORT_ME
+	if(resort && showUsers) {
+		ctrlUsers.resort();
+		resort = false;
+	}
+
+	if(t.size() > 2) {
+		ctrlUsers.SetRedraw(TRUE);
+	}
+#endif
+}
+
+HubFrame::UserTask::UserTask(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) { 
+
+}
+
+HubFrame::PMTask::PMTask(const OnlineUser& from_, const OnlineUser& to_, const OnlineUser& replyTo_, const string& m) : 
+	StringTask(m), from(from_.getUser()), to(to_.getUser()), replyTo(replyTo_.getUser()), 
+	hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) 
+{
+
+}
+
+void HubFrame::on(Connecting, Client*) throw() {
+	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getHubUrl() + "...");
+	speak(SET_WINDOW_TITLE, client->getHubUrl());
+}
+void HubFrame::on(Connected, Client*) throw() {
+	speak(CONNECTED);
+}
+void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() {
+	speak(UPDATE_USER_JOIN, user);
+}
+void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
+	for(OnlineUser::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+		tasks.add(UPDATE_USER, new UserTask(*(*i)));
+	}
+	updateUsers = true;
+}
+
+void HubFrame::on(ClientListener::UserRemoved, Client*, const OnlineUser& user) throw() {
+	speak(REMOVE_USER, user);
+}
+
+void HubFrame::on(Redirect, Client*, const string& line) throw() {
+	if(ClientManager::getInstance()->isConnected(line)) {
+		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
+		return;
+	}
+#ifdef PORT_ME
+	redirect = Text::toT(line);
+	if(BOOLSETTING(AUTO_FOLLOW)) {
+		PostMessage(WM_COMMAND, IDC_FOLLOW, 0);
+	} else {
+		speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
+	}
+#endif
+}
+
+void HubFrame::on(Failed, Client*, const string& line) throw() {
+	speak(ADD_STATUS_LINE, line);
+	speak(DISCONNECTED);
+}
+
+void HubFrame::on(GetPassword, Client*) throw() {
+	speak(GET_PASSWORD);
+}
+
+void HubFrame::on(HubUpdated, Client*) throw() {
+	string hubName = client->getHubName();
+	if(!client->getHubDescription().empty()) {
+		hubName += " - " + client->getHubDescription();
+	}
+	hubName += " (" + client->getHubUrl() + ")";
+#ifdef _DEBUG
+	string version = client->getHubIdentity().get("VE");
+	if(!version.empty()) {
+		hubName += " - " + version;
+	}
+#endif
+	speak(SET_WINDOW_TITLE, hubName);
+}
+
+void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() {
+	speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg));
+}
+
+void HubFrame::on(StatusMessage, Client*, const string& line) throw() {
+	if(SETTING(FILTER_MESSAGES)) {
+		if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
+			// Do nothing...
+		} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
+			speak(ADD_SILENT_STATUS_LINE, Util::toDOS(line));
+		} else {
+			speak(ADD_CHAT_LINE, Util::toDOS(line));
+		}
+	} else {
+		speak(ADD_CHAT_LINE, Util::toDOS(line));
+	}
+}
+
+void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() {
+	speak(from, to, replyTo, Util::formatMessage(from.getIdentity().getNick(), line));
+}
+
+void HubFrame::on(NickTaken, Client*) throw() {
+	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
+}
+
+void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
+	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
+}
+
+int64_t HubFrame::getAvailable() const {
+#ifdef PORT_ME
+	if (ctrlUsers.GetSelectedCount() > 1) {
+		return ctrlUsers.forEachSelectedT(CountAvailable()).available;
+	} else
+		return for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
+#endif
+	return 0;
+}
+
+
+string HubFrame::getUsersTextForStatusBar() const {
+#ifdef PORT_ME
+	size_t userCount = 0;
+	for(UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i){
+		UserInfo* ui = i->second;
+		if(!ui->isHidden())
+			userCount++;
+	}
+
+	string textForUsers;
+	if (ctrlUsers.GetSelectedCount() > 1)
+		textForUsers += Util::toString(ctrlUsers.GetSelectedCount()) + "/";
+	if (showUsers && (size_t)ctrlUsers.GetItemCount() < userCount)
+		textForUsers += Util::toString(ctrlUsers.GetItemCount()) + "/";
+	return textForUsers + Util::toString(userCount) + " " + STRING(HUB_USERS);
+#endif
+	return "Unknown";
+}
+
+#ifdef PORT_ME
+
 #include "LineDlg.h"
 #include "SearchFrm.h"
 #include "PrivateFrame.h"
@@ -37,8 +566,6 @@
 #include "../client/ConnectionManager.h"
 #include "../client/SearchManager.h"
 
-HubFrame::FrameMap HubFrame::frames;
-
 int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
 int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_IP, COLUMN_EMAIL, COLUMN_CID };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
@@ -49,31 +576,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 
-	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
-
-	ctrlClient.FmtLines(TRUE);
-	ctrlClient.LimitText(0);
-	ctrlClient.SetFont(WinUtil::font);
 	clientContainer.SubclassWindow(ctrlClient.m_hWnd);
-
-	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VSCROLL |
-		ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
-
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
-	ctrlMessage.SetFont(WinUtil::font);
-
-	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
-
-	ctrlFilterContainer.SubclassWindow(ctrlFilter.m_hWnd);
-	ctrlFilter.SetFont(WinUtil::font);
-
-	ctrlFilterSel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL |
-		WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE);
-
+	ctrlFilterContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	ctrlFilterSelContainer.SubclassWindow(ctrlFilterSel.m_hWnd);
-	ctrlFilterSel.SetFont(WinUtil::font);
 
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
@@ -133,7 +639,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlFilterSel.SetCurSel(COLUMN_LAST);
 
 	bHandled = FALSE;
-	client->connect();
 
 	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 	if(fhe != NULL){
@@ -149,19 +654,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	TimerManager::getInstance()->addListener(this);
 
 	return 1;
-}
-
-void HubFrame::openWindow(const tstring& aServer) {
-	FrameIter i = frames.find(aServer);
-	if(i == frames.end()) {
-		HubFrame* frm = new HubFrame(aServer);
-		frames[aServer] = frm;
-		frm->CreateEx(WinUtil::mdiClient);
-	} else {
-		if(::IsIconic(i->second->m_hWnd))
-			::ShowWindow(i->second->m_hWnd, SW_RESTORE);
-		i->second->MDIActivate(i->second->m_hWnd);
-	}
 }
 
 LRESULT HubFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -485,219 +977,6 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 static const COLORREF RED = RGB(255, 0, 0);
 static const COLORREF GREEN = RGB(0, 255, 0);
 
-LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /* lParam */, BOOL& /*bHandled*/) {
-	TaskQueue::List t;
-	tasks.get(t);
-
-	if(t.size() > 2) {
-		ctrlUsers.SetRedraw(FALSE);
-	}
-
-	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
-		if(i->first == UPDATE_USER) {
-			updateUser(*static_cast<UserTask*>(i->second));
-		} else if(i->first == UPDATE_USER_JOIN) {
-			UserTask& u = *static_cast<UserTask*>(i->second);
-			if(updateUser(u)) {
-				if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-					addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
-				}
-			}
-		} else if(i->first == REMOVE_USER) {
-			UserTask& u = *static_cast<UserTask*>(i->second);
-			removeUser(u.user);
-			if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-				addLine(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
-			}
-		} else if(i->first == CONNECTED) {
-			addClientLine(TSTRING(CONNECTED));
-			setTabColor(GREEN);
-		} else if(i->first == DISCONNECTED) {
-			clearUserList();
-			setTabColor(RED);
-		} else if(i->first == ADD_CHAT_LINE) {
-			addLine(Text::toT(static_cast<StringTask*>(i->second)->str));
-		} else if(i->first == ADD_STATUS_LINE) {
-			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str));
-		} else if(i->first == ADD_SILENT_STATUS_LINE) {
-			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str), false);
-		} else if(i->first == SET_WINDOW_TITLE) {
-			SetWindowText(Text::toT(static_cast<StringTask*>(i->second)->str).c_str());
-		} else if(i->first == STATS) {
-			ctrlStatus.SetText(1, Text::toT(getUsersTextForStatusBar()).c_str());
-			ctrlStatus.SetText(2, Text::toT(Util::formatBytes(getAvailable())).c_str());
-		} else if(i->first == GET_PASSWORD) {
-			if(client->getPassword().size() > 0) {
-				client->password(client->getPassword());
-				addClientLine(TSTRING(STORED_PASSWORD_SENT));
-			} else {
-				if(!BOOLSETTING(PROMPT_PASSWORD)) {
-					ctrlMessage.SetWindowText(_T("/password "));
-					ctrlMessage.SetFocus();
-					ctrlMessage.SetSel(10, 10);
-					waitingForPW = true;
-				} else {
-					LineDlg linePwd;
-					linePwd.title = CTSTRING(ENTER_PASSWORD);
-					linePwd.description = CTSTRING(ENTER_PASSWORD);
-					linePwd.password = true;
-					if(linePwd.DoModal(m_hWnd) == IDOK) {
-						client->setPassword(Text::fromT(linePwd.line));
-						client->password(Text::fromT(linePwd.line));
-						waitingForPW = false;
-					} else {
-						client->disconnect(true);
-					}
-				}
-			}
-		} else if(i->first == PRIVATE_MESSAGE) {
-			PMTask& pm = *static_cast<PMTask*>(i->second);
-			if(pm.hub) {
-				if(BOOLSETTING(IGNORE_HUB_PMS)) {
-					addClientLine(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
-				} else if(BOOLSETTING(POPUP_HUB_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
-					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
-				} else {
-					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
-				}
-			} else if(pm.bot) {
-				if(BOOLSETTING(IGNORE_BOT_PMS)) {
-					addClientLine(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
-				} else if(BOOLSETTING(POPUP_BOT_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
-					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
-				} else {
-					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
-				}
-			} else {
-				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
-					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
-				} else {
-					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
-				}
-			}
-		}
-
-		delete i->second;
-	}
-
-	if(resort && showUsers) {
-		ctrlUsers.resort();
-		resort = false;
-	}
-
-	if(t.size() > 2) {
-		ctrlUsers.SetRedraw(TRUE);
-	}
-
-	return 0;
-}
-
-void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
-	RECT rect;
-	GetClientRect(&rect);
-	// position bars and offset their dimensions
-	UpdateBarsPosition(rect, bResizeBars);
-
-	if(ctrlStatus.IsWindow()) {
-		CRect sr;
-		int w[4];
-		ctrlStatus.GetClientRect(sr);
-
-		int tmp = (sr.Width()) > 332 ? 232 : ((sr.Width() > 132) ? sr.Width()-100 : 32);
-
-		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-32)/2;
-		w[2] = w[0] + (tmp-32);
-		w[3] = w[2] + 16;
-
-		ctrlStatus.SetParts(4, w);
-
-		ctrlLastLines.SetMaxTipWidth(w[0]);
-
-		// Strange, can't get the correct width of the last field...
-		ctrlStatus.GetRect(2, sr);
-		sr.left = sr.right + 2;
-		sr.right = sr.left + 16;
-		ctrlShowUsers.MoveWindow(sr);
-	}
-	int h = WinUtil::fontHeight + 4;
-
-	CRect rc = rect;
-	rc.bottom -= h + 10;
-	if(!showUsers) {
-		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_LEFT);
-	} else {
-		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_NONE);
-	}
-	SetSplitterRect(rc);
-
-	rc = rect;
-	rc.bottom -= 2;
-	rc.top = rc.bottom - h - 5;
-	rc.left +=2;
-	rc.right -= showUsers ? 202 : 2;
-	ctrlMessage.MoveWindow(rc);
-
-	if(showUsers){
-		rc.left = rc.right + 4;
-		rc.right = rc.left + 116;
-		ctrlFilter.MoveWindow(rc);
-
-		rc.left = rc.right + 4;
-		rc.right = rc.left + 76;
-		rc.top = rc.top + 0;
-		rc.bottom = rc.bottom + 120;
-		ctrlFilterSel.MoveWindow(rc);
-	}
-}
-
-LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(!closed) {
-		TimerManager::getInstance()->removeListener(this);
-		FavoriteManager::getInstance()->removeListener(this);
-		client->removeListener(this);
-		client->disconnect(true);
-
-		closed = true;
-		PostMessage(WM_CLOSE);
-		return 0;
-	} else {
-		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
-		FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
-
-		clearUserList();
-		clearTaskList();
-
-		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER,
-			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-
-		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
-		if(fhe != NULL && !IsIconic()){
-			CRect rc;
-
-			//Get position of window
-			GetWindowRect(&rc);
-
-			//convert the position so it's relative to main window
-			::ScreenToClient(GetParent(), &rc.TopLeft());
-			::ScreenToClient(GetParent(), &rc.BottomRight());
-
-			//save the position
-			fhe->setBottom((uint16_t)(rc.bottom > 0 ? rc.bottom : 0));
-			fhe->setTop((uint16_t)(rc.top > 0 ? rc.top : 0));
-			fhe->setLeft((uint16_t)(rc.left > 0 ? rc.left : 0));
-			fhe->setRight((uint16_t)(rc.right > 0 ? rc.right : 0));
-
-			FavoriteManager::getInstance()->save();
-		}
-
-		bHandled = FALSE;
-		return 0;
-	}
-}
-
 void HubFrame::clearUserList() {
 	ctrlUsers.DeleteAllItems();
 	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
@@ -760,45 +1039,6 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 		}
 	}
 	return 0;
-}
-
-void HubFrame::addLine(const tstring& aLine) {
-	if(ctrlClient.GetWindowTextLength() > 25000) {
-		// We want to limit the buffer to 25000 characters...after that, w95 becomes sad...
-		ctrlClient.SetRedraw(FALSE);
-		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
-		ctrlClient.ReplaceSel(_T(""));
-		ctrlClient.SetRedraw(TRUE);
-	}
-	BOOL noscroll = TRUE;
-	POINT p = ctrlClient.PosFromChar(ctrlClient.GetWindowTextLength() - 1);
-	CRect r;
-	ctrlClient.GetClientRect(r);
-
-	if( r.PtInRect(p) || MDIGetActive() != m_hWnd)
-		noscroll = FALSE;
-	else {
-		ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
-	}
-	if(BOOLSETTING(LOG_MAIN_CHAT)) {
-		StringMap params;
-		params["message"] = Text::fromT(aLine);
-		client->getHubIdentity().getParams(params, "hub", false);
-		params["hubURL"] = client->getHubUrl();
-		client->getMyIdentity().getParams(params, "my", true);
-		LOG(LogManager::CHAT, params);
-	}
-	if(timeStamps) {
-		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
-	} else {
-		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
-	}
-	if(noscroll) {
-		ctrlClient.SetRedraw(TRUE);
-	}
-	if (BOOLSETTING(BOLD_HUB)) {
-		setDirty();
-	}
 }
 
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -1211,31 +1451,6 @@ LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 	return 0;
 }
 
-void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
-	tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + aLine;
-
-	ctrlStatus.SetText(0, line.c_str());
-	while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
-		lastLinesList.erase(lastLinesList.begin());
-	lastLinesList.push_back(line);
-
-	if (BOOLSETTING(BOLD_HUB)) {
-		setDirty();
-	}
-
-	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
-		addLine(_T("*** ") + aLine);
-	}
-	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
-		StringMap params;
-		client->getHubIdentity().getParams(params, "hub", false);
-		params["hubURL"] = client->getHubUrl();
-		client->getMyIdentity().getParams(params, "my", true);
-		params["message"] = Text::fromT(aLine);
-		LOG(LogManager::STATUS, params);
-	}
-}
-
 void HubFrame::resortUsers() {
 	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
 		i->second->resortForFavsFirst(true);
@@ -1269,89 +1484,6 @@ void HubFrame::on(Second, uint32_t /*aTick*/) throw() {
 		updateUsers = false;
 		PostMessage(WM_SPEAKER);
 	}
-}
-
-void HubFrame::on(Connecting, Client*) throw() {
-	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getHubUrl() + "...");
-	speak(SET_WINDOW_TITLE, client->getHubUrl());
-}
-void HubFrame::on(Connected, Client*) throw() {
-	speak(CONNECTED);
-}
-void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() {
-	speak(UPDATE_USER_JOIN, user);
-}
-void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
-	for(OnlineUser::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-		tasks.add(UPDATE_USER, new UserTask(*(*i)));
-	}
-	updateUsers = true;
-}
-
-void HubFrame::on(ClientListener::UserRemoved, Client*, const OnlineUser& user) throw() {
-	speak(REMOVE_USER, user);
-}
-
-void HubFrame::on(Redirect, Client*, const string& line) throw() {
-	if(ClientManager::getInstance()->isConnected(line)) {
-		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
-		return;
-	}
-
-	redirect = Text::toT(line);
-	if(BOOLSETTING(AUTO_FOLLOW)) {
-		PostMessage(WM_COMMAND, IDC_FOLLOW, 0);
-	} else {
-		speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
-	}
-}
-void HubFrame::on(Failed, Client*, const string& line) throw() {
-	speak(ADD_STATUS_LINE, line);
-	speak(DISCONNECTED);
-}
-void HubFrame::on(GetPassword, Client*) throw() {
-	speak(GET_PASSWORD);
-}
-void HubFrame::on(HubUpdated, Client*) throw() {
-	string hubName = client->getHubName();
-	if(!client->getHubDescription().empty()) {
-		hubName += " - " + client->getHubDescription();
-	}
-	hubName += " (" + client->getHubUrl() + ")";
-#ifdef _DEBUG
-	string version = client->getHubIdentity().get("VE");
-	if(!version.empty()) {
-		hubName += " - " + version;
-	}
-#endif
-	speak(SET_WINDOW_TITLE, hubName);
-}
-void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg) throw() {
-	speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg));
-}
-
-void HubFrame::on(StatusMessage, Client*, const string& line) {
-	if(SETTING(FILTER_MESSAGES)) {
-		if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
-			// Do nothing...
-		} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
-			speak(ADD_SILENT_STATUS_LINE, Util::toDOS(line));
-		} else {
-			speak(ADD_CHAT_LINE, Util::toDOS(line));
-		}
-	} else {
-		speak(ADD_CHAT_LINE, Util::toDOS(line));
-	}
-}
-
-void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) throw() {
-	speak(from, to, replyTo, Util::formatMessage(from.getIdentity().getNick(), line));
-}
-void HubFrame::on(NickTaken, Client*) throw() {
-	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
-}
-void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
-	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
 }
 
 LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -1565,19 +1697,4 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	return insert;
 }
 
-string HubFrame::getUsersTextForStatusBar() const {
-	size_t userCount = 0;
-	for(UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i){
-		UserInfo* ui = i->second;
-		if(!ui->isHidden())
-			userCount++;
-	}
-
-	string textForUsers;
-	if (ctrlUsers.GetSelectedCount() > 1)
-		textForUsers += Util::toString(ctrlUsers.GetSelectedCount()) + "/";
-	if (showUsers && (size_t)ctrlUsers.GetItemCount() < userCount)
-		textForUsers += Util::toString(ctrlUsers.GetItemCount()) + "/";
-	return textForUsers + Util::toString(userCount) + " " + STRING(HUB_USERS);
-}
 #endif

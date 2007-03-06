@@ -286,7 +286,7 @@ int SmartWinMain(SmartWin::Application& app) {
 
 	// For debugging
 	::LoadLibrary("exchndl.dll");
-	
+
 	// For SHBrowseForFolder, UPnP
 	/// @todo check return
 	::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);

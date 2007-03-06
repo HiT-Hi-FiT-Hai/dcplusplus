@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(TASK_H)
-#define TASK_H
+#ifndef DCPLUSPLUS_CLIENT_TASK_H
+#define DCPLUSPLUS_CLIENT_TASK_H
 
 #include "CriticalSection.h"
 
 struct Task {
-	virtual ~Task() = 0 { }
+	virtual ~Task() { };
 };
 struct StringTask : public Task {
 	StringTask(const string& str_) : str(str_) { }
@@ -60,4 +60,4 @@ private:
 	List tasks;
 };
 
-#endif TASK_H
+#endif
