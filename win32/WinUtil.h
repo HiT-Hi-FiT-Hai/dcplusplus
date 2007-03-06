@@ -136,9 +136,12 @@ class WinUtil {
 public:
 	static tstring tth;
 
-	static int getTextHeight(HWND wnd, HFONT fnt);
-	static int getTextHeight(HDC dc, HFONT fnt);
-	static int getTextHeight(HDC dc);
+	static HBRUSH bgBrush;
+	static COLORREF textColor;
+	static COLORREF bgColor;
+
+	static void init();
+	static void uninit();
 
 #ifdef PORT_ME
 	static CImageList fileImages;
@@ -148,9 +151,6 @@ public:
 	typedef HASH_MAP<string, int> ImageMap;
 	typedef ImageMap::iterator ImageIter;
 	static ImageMap fileIndexes;
-	static HBRUSH bgBrush;
-	static COLORREF textColor;
-	static COLORREF bgColor;
 	static HFONT font;
 	static int fontHeight;
 	static HFONT boldFont;
@@ -165,9 +165,6 @@ public:
 	static tstring commands;
 	static HHOOK hook;
 	static DWORD helpCookie;
-
-	static void init(HWND hWnd);
-	static void uninit();
 
 	static string getAppName() {
 		TCHAR buf[MAX_PATH+1];

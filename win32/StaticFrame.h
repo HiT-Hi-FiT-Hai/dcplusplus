@@ -19,6 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_STATIC_FRAME_H_
 #define DCPLUSPLUS_WIN32_STATIC_FRAME_H_
 
+#include "StupidWin.h"
 #include "MDIChildFrame.h"
 
 #include <client/ResourceManager.h>
@@ -35,10 +36,9 @@ public:
 		frame = 0; 
 	}
 
-	static void openWindow(SmartWin::Widget* parent) {
-		
+	static void openWindow(SmartWin::Widget* mdiParent) {
 		if(frame) {
-			frame->setActive();
+			
 #ifdef PORT_ME
 			// match the behavior of MainFrame::onSelected()
 			HWND hWnd = frame->m_hWnd;
@@ -49,15 +49,17 @@ public:
 				frame->MDINext(hWnd);
 				hWnd = frame->MDIGetActive();
 			}
-			if(::IsIconic(hWnd))
-				::ShowWindow(hWnd, SW_RESTORE);
 #endif
+			if(StupidWin::isIconic(frame)) {
+				frame->restore();
+			}
 		} else {
-			frame = new T(parent);
+			frame = new T(mdiParent);
 		}
 	}
 	
 private:
+	friend class MDIChildFrame<T>;
 	static T* frame;
 };
 

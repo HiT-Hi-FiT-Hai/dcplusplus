@@ -53,6 +53,8 @@ public:
 	Signal( const SlotType & Slot )
 		: itsSlot( Slot )
 	{}
+	
+	virtual ~Signal() { }
 
 	virtual ReturnType fire( Parameter & param )
 	{

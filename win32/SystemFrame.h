@@ -29,23 +29,31 @@ class SystemFrame : public StaticFrame<SystemFrame>,
 {
 public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
-	
+
+protected:
+	HWND controls[1];
+
+	friend class StaticFrame<SystemFrame>;
+	friend class MDIChildFrame<SystemFrame>;
+	SystemFrame(SmartWin::Widget* parent);
+	virtual ~SystemFrame();
+
+	void layout();
+	void focused();
+	void spoken(WPARAM wp, LPARAM lp);
+	bool preClosing();
+
 private:
 	WidgetTextBoxPtr log;
 	
-	friend class StaticFrame<SystemFrame>;
-	SystemFrame(Widget* parent);
-	
-	// Other events
-	void sized(const SmartWin::WidgetSizedEventResult& sz);
-
 	void addLine(time_t t, const tstring& msg);
+
+	// LogManagerListener
+	virtual void on(Message, time_t t, const string& message) throw();
 };
 
 #ifdef PORT_ME
 #include "FlatTabCtrl.h"
-#include "../client/Text.h"
-
 
 #define SYSTEM_LOG_MESSAGE_MAP 42
 
@@ -53,48 +61,19 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("SystemFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
 	SystemFrame() : ctrlClientContainer(_T("edit"), this, SYSTEM_LOG_MESSAGE_MAP) { }
-	virtual ~SystemFrame() { }
 
 	typedef MDITabChildWindowImpl<SystemFrame> baseClass;
 	BEGIN_MSG_MAP(SystemFrame)
-		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(SYSTEM_LOG_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		HWND hWnd = (HWND)lParam;
-		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlPad.m_hWnd) {
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
-		}
-		bHandled = FALSE;
-		return FALSE;
-	}
-
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlPad.SetFocus();
-		return 0;
-	}
-
 private:
 	CContainedWindow ctrlClientContainer;
 
-	virtual void on(Message, time_t t, const string& message) { PostMessage(WM_SPEAKER, (WPARAM)(new pair<time_t, tstring>(t, Text::toT(message)))); }
 };
 
 #endif

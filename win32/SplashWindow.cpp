@@ -28,30 +28,36 @@
 #include "WinUtil.h"
 
 SplashWindow::SplashWindow() {
-	int height = GetSystemMetrics(SM_CYFULLSCREEN);
-	int width = GetSystemMetrics(SM_CXFULLSCREEN);
-	Seed cs;
-	cs.location = SmartWin::Rectangle((height/2-20), (width / 2 - 150), 40, 300);
-	cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-	cs.exStyle = WS_EX_STATICEDGE;
-	cs.caption = APPNAME;
-	createWindow(cs);
-	
-	cs.style |= ES_CENTER | ES_READONLY | WS_VISIBLE;
-	
-	WidgetTextBox::Seed tcs;
-	tcs.location = cs.location;
-	tcs.style = cs.style | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-	tcs.exStyle = WS_EX_STATICEDGE;
-	tcs.caption = cs.caption;
-	
-	text = createTextBox(tcs);
+	{
+		Seed cs;
+		cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+		cs.exStyle = WS_EX_STATICEDGE;
+		cs.caption = APPNAME;
+		createWindow(cs);
+	}
+	tstring caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
+	{
+		WidgetTextBox::Seed cs;
+		cs.style = WS_POPUP | ES_CENTER | ES_READONLY;
+		cs.exStyle = WS_EX_STATICEDGE;
+		text = createTextBox(cs);
+	}
 
 	text->setFont(SmartWin::DefaultGuiFont);
 	
-	tcs.location.size.y = WinUtil::getTextHeight(text->handle(), text->getFont()->getHandle()) + 4;
+	SmartWin::Point textSize(text->getTextSize(caption));
+	SmartWin::Point desktopSize(getDesktopSize());
+	int xmid = desktopSize.x / 2;
+	int ymid = desktopSize.y / 2;
+	int xtext = 300;
+	int ytext = textSize.y + 6;
+	
+	SmartWin::Rectangle r(xmid - xtext/2, ymid - ytext/2, xtext, ytext);
+	setBounds(r);
+	text->setBounds(0, 0, xtext, ytext);
+
 	::HideCaret(text->handle());
-	text->setBounds(tcs.location);
+	text->setVisible(true);
 	text->bringToFront();
 	text->updateWidget();
 }

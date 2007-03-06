@@ -5,12 +5,19 @@
  * Stuff missing from SmartWin that should at some point be sent as a patch to them
  */
 namespace StupidWin {
-namespace { template<typename W, typename L> int sm(SmartWin::Widget* w, UINT m, W wp, L lp) { return ::SendMessage(w->handle(), m, static_cast<WPARAM>(wp), static_cast<LPARAM>(lp)); } }
+namespace { 
+	int sm(SmartWin::Widget* w, UINT m, WPARAM wp = 0, LPARAM lp = 0) { return ::SendMessage(w->handle(), m, wp, lp); } 
+}
 
-int getWindowTextLength(SmartWin::Widget* w) { return ::GetWindowTextLength(w->handle()); }
-int lineFromChar(SmartWin::Widget* w, int c = -1) { return sm(w, EM_LINEFROMCHAR, c, 0); }
-int lineIndex(SmartWin::Widget* w, int l = -1) { return sm(w, EM_LINEINDEX, l, 0); }
-void setRedraw(SmartWin::Widget* w, bool redraw) { sm(w, WM_SETREDRAW, redraw, 0); }
+inline int getWindowTextLength(SmartWin::Widget* w) { return ::GetWindowTextLength(w->handle()); }
+inline int lineFromChar(SmartWin::Widget* w, int c = -1) { return sm(w, EM_LINEFROMCHAR, c); }
+inline int lineIndex(SmartWin::Widget* w, int l = -1) { return sm(w, EM_LINEINDEX, l); }
+inline void setRedraw(SmartWin::Widget* w, bool redraw) { sm(w, WM_SETREDRAW, redraw); }
+inline BOOL isIconic(SmartWin::Widget* w) { return ::IsIconic(w->handle()); }
+inline BOOL postMessage(SmartWin::Widget* w, UINT m, WPARAM wp, LPARAM lp) { return ::PostMessage(w->handle(), m, wp, lp); }
+inline bool getModify(SmartWin::Widget* w) { return sm(w, EM_GETMODIFY) > 0; }
+inline void setModify(SmartWin::Widget* w, bool modified) { sm(w, EM_SETMODIFY, modified); }
+inline void emptyUndoBuffer(SmartWin::Widget* w) { sm(w, EM_EMPTYUNDOBUFFER); }
 }
 
 #endif /*STUPIDWIN_H_*/

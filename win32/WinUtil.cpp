@@ -22,26 +22,94 @@
 
 #include "WinUtil.h"
 
+#include <client/SettingsManager.h>
+
 tstring WinUtil::tth;
+HBRUSH WinUtil::bgBrush = NULL;
+COLORREF WinUtil::textColor = 0;
+COLORREF WinUtil::bgColor = 0;
 
-int WinUtil::getTextHeight(HWND wnd, HFONT fnt) {
-	HDC dc = ::GetDC(wnd);
-	int h = getTextHeight(dc, fnt);
-	::ReleaseDC(wnd, dc);
-	return h;
+void WinUtil::init() {
+
+	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
+
+	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
+	textColor = SETTING(TEXT_COLOR);
+	bgColor = SETTING(BACKGROUND_COLOR);
+
+#ifdef PORT_ME
+/** @todo fix this so that the system icon is used for dirs as well (we need
+			  to mask it so that incomplete folders appear correct */
+	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+		SHFILEINFO fi;
+		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
+		::SHGetFileInfo(_T("."), FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+		fileImages.AddIcon(fi.hIcon);
+		fileImages.AddIcon(ic);
+		::DestroyIcon(fi.hIcon);
+	} else {
+		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	}
+
+	fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	dirIconIndex = fileImageCount++;
+	dirMaskedIndex = fileImageCount++;
+
+	fileImageCount++;
+
+	userImages.CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+
+	LOGFONT lf, lf2;
+	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
+	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
+	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
+
+	lf2.lfHeight = lf.lfHeight;
+	lf2.lfWeight = lf.lfWeight;
+	lf2.lfItalic = lf.lfItalic;
+
+	font = ::CreateFontIndirect(&lf);
+	fontHeight = WinUtil::getTextHeight(mainWnd, font);
+	lf.lfWeight = FW_BOLD;
+	boldFont = ::CreateFontIndirect(&lf);
+	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
+	monoFont = (HFONT)::GetStockObject(BOOLSETTING(USE_OEM_MONOFONT)?OEM_FIXED_FONT:ANSI_FIXED_FONT);
+
+	if(BOOLSETTING(URL_HANDLER)) {
+		registerDchubHandler();
+		registerADChubHandler();
+		urlDcADCRegistered = true;
+	}
+	if(BOOLSETTING(MAGNET_REGISTER)) {
+		registerMagnetHandler();
+		urlMagnetRegistered = true;
+	}
+
+	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
+	::HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
+#endif
+
 }
 
-int WinUtil::getTextHeight(HDC dc, HFONT fnt) {
-	HGDIOBJ old = ::SelectObject(dc, fnt);
-	int h = getTextHeight(dc);
-	::SelectObject(dc, old);
-	return h;
-}
+void WinUtil::uninit() {
 
-int WinUtil::getTextHeight(HDC dc) {
-	TEXTMETRIC tm;
-	::GetTextMetrics(dc, &tm);
-	return tm.tmHeight;
+	::DeleteObject(bgBrush);
+
+#ifdef PORT_ME
+	fileImages.Destroy();
+	userImages.Destroy();
+	::DeleteObject(font);
+	::DeleteObject(boldFont);
+	::DeleteObject(monoFont);
+
+	mainMenu.DestroyMenu();
+
+	UnhookWindowsHookEx(hook);
+
+	::HtmlHelp(NULL, NULL, HH_UNINITIALIZE, helpCookie);
+#endif
 }
 
 #ifdef PORT_ME
@@ -72,9 +140,6 @@ int WinUtil::getTextHeight(HDC dc) {
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
-HBRUSH WinUtil::bgBrush = NULL;
-COLORREF WinUtil::textColor = 0;
-COLORREF WinUtil::bgColor = 0;
 HFONT WinUtil::font = NULL;
 int WinUtil::fontHeight = 0;
 HFONT WinUtil::boldFont = NULL;
@@ -231,83 +296,6 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 	return CallNextHookEx(WinUtil::hook, code, wParam, lParam);
 }
 
-
-void WinUtil::init(HWND hWnd) {
-	mainWnd = hWnd;
-
-/** @todo fix this so that the system icon is used for dirs as well (we need
-			  to mask it so that incomplete folders appear correct */
-#if 0
-	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
-		SHFILEINFO fi;
-		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
-		::SHGetFileInfo(_T("."), FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		fileImages.AddIcon(fi.hIcon);
-		fileImages.AddIcon(ic);
-		::DestroyIcon(fi.hIcon);
-	} else {
-		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	}
-#endif
-
-	fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	dirIconIndex = fileImageCount++;
-	dirMaskedIndex = fileImageCount++;
-
-	fileImageCount++;
-
-	userImages.CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-
-	LOGFONT lf, lf2;
-	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
-	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
-	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
-
-	lf2.lfHeight = lf.lfHeight;
-	lf2.lfWeight = lf.lfWeight;
-	lf2.lfItalic = lf.lfItalic;
-
-	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
-	textColor = SETTING(TEXT_COLOR);
-	bgColor = SETTING(BACKGROUND_COLOR);
-	font = ::CreateFontIndirect(&lf);
-	fontHeight = WinUtil::getTextHeight(mainWnd, font);
-	lf.lfWeight = FW_BOLD;
-	boldFont = ::CreateFontIndirect(&lf);
-	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
-	monoFont = (HFONT)::GetStockObject(BOOLSETTING(USE_OEM_MONOFONT)?OEM_FIXED_FONT:ANSI_FIXED_FONT);
-
-	if(BOOLSETTING(URL_HANDLER)) {
-		registerDchubHandler();
-		registerADChubHandler();
-		urlDcADCRegistered = true;
-	}
-	if(BOOLSETTING(MAGNET_REGISTER)) {
-		registerMagnetHandler();
-		urlMagnetRegistered = true;
-	}
-
-	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
-
-	HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
-}
-
-void WinUtil::uninit() {
-	HtmlHelp(NULL, NULL, HH_UNINITIALIZE, helpCookie);
-
-	fileImages.Destroy();
-	userImages.Destroy();
-	::DeleteObject(font);
-	::DeleteObject(boldFont);
-	::DeleteObject(bgBrush);
-	::DeleteObject(monoFont);
-
-	mainMenu.DestroyMenu();
-
-	UnhookWindowsHookEx(hook);
-
-}
 
 void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	StringTokenizer<tstring> st(setting, _T(','));

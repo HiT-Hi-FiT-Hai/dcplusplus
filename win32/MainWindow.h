@@ -55,6 +55,8 @@ private:
 	WidgetMDIParentPtr mdi;
 	WidgetMenuPtr mainMenu;
 
+	unsigned statusSizes[7];
+
 	void initWindow();
 	void initMenu();
 	void initStatusBar();
@@ -63,9 +65,12 @@ private:
 	// User actions
 	void handleExit(WidgetMenuPtr menu, unsigned id);
 	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
+	void handleNotepad(WidgetMenuPtr menu, unsigned id);
 	
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
+	
+	void layout();
 	
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
@@ -362,8 +367,6 @@ private:
 	bool closing;
 
 	int lastUpload;
-
-	int statusSizes[7];
 
 	HANDLE stopperThread;
 

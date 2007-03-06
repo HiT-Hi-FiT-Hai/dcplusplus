@@ -23,6 +23,7 @@
 #include "resource.h"
 
 #include "SystemFrame.h"
+#include "NotepadFrame.h"
 
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
@@ -32,8 +33,8 @@ MainWindow::MainWindow() :
 	status(0),
 	mdi(0)
 {
-	#ifdef PORT_ME
 	memset(statusSizes, 0, sizeof(statusSizes));
+	#ifdef PORT_ME
 
 	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
@@ -51,6 +52,8 @@ MainWindow::MainWindow() :
 	initStatusBar();
 	initMDI();
 
+	layout();
+	
 	onSized(&MainWindow::sized);
 	
 #ifdef PORT_ME
@@ -235,6 +238,7 @@ void MainWindow::initMenu() {
 	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
 	
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleSystemLog);
+	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleNotepad);
 	
 #ifdef PORT_ME
 	view.AppendMenu(MF_STRING, ID_FILE_CONNECT, CTSTRING(MENU_PUBLIC_HUBS));
@@ -248,7 +252,6 @@ void MainWindow::initMenu() {
 	view.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CTSTRING(MENU_ADL_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CTSTRING(MENU_SEARCH_SPY));
 	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
-	view.AppendMenu(MF_STRING, IDC_NOTEPAD, CTSTRING(MENU_NOTEPAD));
 	view.AppendMenu(MF_STRING, IDC_HASH_PROGRESS, CTSTRING(MENU_HASH_PROGRESS));
 	view.AppendMenu(MF_STRING, IDC_SYSTEM_LOG, CTSTRING(MENU_SYSTEM_LOG));
 	view.AppendMenu(MF_SEPARATOR);
@@ -301,13 +304,10 @@ void MainWindow::initMenu() {
 }
 
 void MainWindow::initStatusBar() {
-	dcdebug("initStatusBar\n");
 	status = createStatusBarSections();
-	status->setSections(std::vector<unsigned>(8, 100));
 }
 
 void MainWindow::initMDI() {
-	dcdebug("initMDI\n");
 	mdi = createMDIParent();
 }
 
@@ -318,10 +318,46 @@ void MainWindow::handleExit(WidgetMenuPtr /* menu */, unsigned /* id*/) {
 void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
 	SystemFrame::openWindow(mdi);
 }
+
+void MainWindow::handleNotepad(WidgetMenuPtr, unsigned) {
+	NotepadFrame::openWindow(mdi);
+}
  
 void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
-	mdi->setBounds(0, 0, sz.newSize.x, sz.newSize.y);
-	status->refresh();	
+	layout();
+}
+
+void MainWindow::layout() {
+	SmartWin::Rectangle r(getClientAreaSize()); 
+	status->refresh();
+
+	SmartWin::Rectangle rs(status->getClientAreaSize());
+	
+	{
+		std::vector<unsigned> w(8);
+		w[7] = rs.size.x - rs.pos.x - 16;
+#define setw(x) w[x] = (w[x+1] >= statusSizes[x]) ?  w[x+1] - statusSizes[x] : 0;
+		setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
+
+		status->setSections(w);
+#ifdef PORT_ME
+		ctrlLastLines.SetMaxTipWidth(w[0]);
+#endif
+	}
+
+	r.size.y -= rs.size.y;
+
+#ifdef PORT_ME
+	CRect rc = rect;
+	rc.top = rc.bottom - ctrlTab.getHeight();
+	if(ctrlTab.IsWindow())
+		ctrlTab.MoveWindow(rc);
+
+	CRect rc2 = rect;
+	rc2.bottom = rc.top;
+	SetSplitterRect(rc2);
+#endif
+	mdi->setBounds(r);
 }
 
 #ifdef PORT_ME
@@ -1100,34 +1136,6 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	WinUtil::openLink(site);
 
 	return 0;
-}
-
-void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
-{
-	RECT rect;
-	GetClientRect(&rect);
-	// position bars and offset their dimensions
-	UpdateBarsPosition(rect, bResizeBars);
-
-	if(ctrlStatus.IsWindow() && ctrlLastLines.IsWindow()) {
-		CRect sr;
-		int w[8];
-		ctrlStatus.GetClientRect(sr);
-		w[7] = sr.right - 16;
-#define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
-		setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
-
-		ctrlStatus.SetParts(8, w);
-		ctrlLastLines.SetMaxTipWidth(w[0]);
-	}
-	CRect rc = rect;
-	rc.top = rc.bottom - ctrlTab.getHeight();
-	if(ctrlTab.IsWindow())
-		ctrlTab.MoveWindow(rc);
-
-	CRect rc2 = rect;
-	rc2.bottom = rc.top;
-	SetSplitterRect(rc2);
 }
 
 static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");

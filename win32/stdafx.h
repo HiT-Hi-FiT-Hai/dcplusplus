@@ -26,6 +26,10 @@
 #include <SmartWin.h>
 #include <shlwapi.h>
 
+enum {
+	WM_SPEAKER  = WM_APP + 500
+};
+ 
 #ifdef PORT_ME
 
 // Fix nt4 startup
@@ -44,7 +48,6 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlsplit.h>
 #include <HtmlHelp.h>
-#define WM_SPEAKER (WM_APP + 500)
 
 #endif 
 #endif

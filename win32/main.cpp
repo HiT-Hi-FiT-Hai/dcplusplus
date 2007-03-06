@@ -181,9 +181,6 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		SetProcessDefaultLayout(LAYOUT_RTL);
 	}
 
-	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
-
 	MainFrame wndMain;
 
 	int nRet = theLoop.Run();
@@ -287,6 +284,9 @@ int SmartWinMain(SmartWin::Application& app) {
 
 	checkCommonControls();
 
+	// For debugging
+	::LoadLibrary("exchndl.dll");
+	
 	// For SHBrowseForFolder, UPnP
 	/// @todo check return
 	::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
@@ -302,9 +302,12 @@ int SmartWinMain(SmartWin::Application& app) {
 	
 	{
 		SplashWindow* splash(new SplashWindow);
-		startup(&callBack, splash);
+		startup(0, 0);
 		splash->close();
 	}
+
+	WinUtil::init();
+
 	int ret = 255;
 	try {
 		MainWindow* wnd(new MainWindow);
@@ -314,6 +317,8 @@ int SmartWinMain(SmartWin::Application& app) {
 	} catch(...) {
 		printf("Unknown exception");
 	}
+	WinUtil::uninit();
+	
 	shutdown();
 
 	::CoUninitialize();

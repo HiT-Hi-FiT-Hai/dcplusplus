@@ -23,21 +23,19 @@
 
 #include "StupidWin.h"
 
-using namespace SmartWin;
-
-SystemFrame::SystemFrame(Widget* parent) : 
-	SmartWin::Widget(parent), 
+SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) : 
+	SmartWin::Widget(mdiParent), 
 	log(0) 
 {
 	{
 		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-			WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		log = createTextBox(cs);
+		controls[0] = log->handle();
 	}
 	
-	onSized(&SystemFrame::sized);
+	layout();
 	
 	deque<pair<time_t, string> > oldMessages = LogManager::getInstance()->getLastLogs();
 	// Technically, we might miss a message or two here, but who cares...
@@ -46,6 +44,10 @@ SystemFrame::SystemFrame(Widget* parent) :
 	for(deque<pair<time_t, string> >::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
 		addLine(i->first, Text::toT(i->second));
 	}
+}
+
+SystemFrame::~SystemFrame() {
+	
 }
 
 void SystemFrame::addLine(time_t t, const tstring& msg) {
@@ -57,11 +59,33 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 		StupidWin::setRedraw(log, true);
 	}
 	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
+
+#ifdef PORT_ME
+	if(BOOLSETTING(BOLD_SYSTEM_LOG))
+		setDirty();
+#endif
 }
 
-void SystemFrame::sized(const SmartWin::WidgetSizedEventResult& sz) {
-	dcdebug("Sizing\n");
-	log->setBounds(0, 0, sz.newSize.x, sz.newSize.y);
+void SystemFrame::layout() {
+	log->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+}
+
+void SystemFrame::focused() {
+	log->setFocus();
+}
+
+void SystemFrame::spoken(WPARAM wp, LPARAM lp) {
+	std::auto_ptr<std::pair<time_t, tstring> > msg(reinterpret_cast<std::pair<time_t, tstring>*>(wp));
+	addLine(msg->first, msg->second);
+}
+
+bool SystemFrame::preClosing() {
+	LogManager::getInstance()->removeListener(this);
+	return true;	
+}
+
+void SystemFrame::on(Message, time_t t, const string& message) throw() { 
+	speak(reinterpret_cast<WPARAM>(new pair<time_t, tstring>(t, Text::toT(message)))); 
 }
 
 #ifdef PORT_ME
@@ -84,14 +108,6 @@ LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	return 1;
 }
 
-LRESULT SystemFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-
-	LogManager::getInstance()->removeListener(this);
-	bHandled = FALSE;
-	return 0;
-
-}
-
 LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;
@@ -106,15 +122,6 @@ LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 
 		bHandled = WinUtil::parseDBLClick(x, start, end);
 	}
-	return 0;
-}
-
-LRESULT SystemFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)wParam);
-
-	addLine(msg->first, msg->second);
-	if(BOOLSETTING(BOLD_SYSTEM_LOG))
-		setDirty();
 	return 0;
 }
 

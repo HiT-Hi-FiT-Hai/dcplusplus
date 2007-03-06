@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,76 +16,70 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+#include <client/File.h>
+#include <client/Text.h>
 
 #include "NotepadFrame.h"
-#include "WinUtil.h"
-#include "../client/File.h"
+
+NotepadFrame::NotepadFrame(SmartWin::Widget* mdiParent) : 
+	SmartWin::Widget(mdiParent), 
+	pad(0) 
+{
+	{
+		WidgetTextBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		pad = createTextBox(cs);
+		controls[0] = pad->handle();
+	}
+	
+	pad->setTextLimit(0);
+	try {
+		pad->setText(Text::toT(File(Util::getNotepadFile(), File::READ, File::OPEN).read()));
+	} catch(const FileException& e) {
+		// Ignore		
+	}
+	
+	StupidWin::setModify(pad, false);
+
+	layout();
+}
+
+NotepadFrame::~NotepadFrame() {
+
+}
+
+bool NotepadFrame::preClosing() {
+	if(StupidWin::getModify(pad)) {
+		try {
+			dcdebug("Writing notepad contents\n");
+			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(Text::fromT(pad->getText()));
+		} catch(const FileException& e) {
+			dcdebug("Writing failed: %s\n", e.getError().c_str());
+			///@todo Notify user			
+		}
+	}
+	return true;
+}
+
+void NotepadFrame::layout() {
+	pad->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+}
+
+void NotepadFrame::focused() {
+	pad->setFocus();
+}
+
+#ifdef PORT_ME
 
 LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
-
-	ctrlPad.LimitText(0);
-	ctrlPad.SetFont(WinUtil::font);
-	string tmp;
-	try {
-		tmp = File(Util::getNotepadFile(), File::READ, File::OPEN).read();
-	} catch(const FileException&) {
-		// ...
-	}
-
-	if(tmp.empty()) {
-		tmp = SETTING(NOTEPAD_TEXT);
-		if(!tmp.empty()) {
-			dirty = true;
-			SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, Util::emptyString);
-		}
-	}
-
-	ctrlPad.SetWindowText(Text::toT(tmp).c_str());
-	ctrlPad.EmptyUndoBuffer();
 	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
 
 	bHandled = FALSE;
 	return 1;
-}
-
-LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-
-	if(dirty || ctrlPad.GetModify()) {
-		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
-		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
-		try {
-			string tmp(Text::fromT(tstring(buf, ctrlPad.GetWindowTextLength())));
-			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
-		} catch(const FileException&) {
-			// Oops...
-		}
-	}
-
-	bHandled = FALSE;
-	return 0;
-
-}
-
-void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
-{
-	CRect rc;
-
-	GetClientRect(rc);
-
-	rc.bottom -= 1;
-	rc.top += 1;
-	rc.left +=1;
-	rc.right -=1;
-	ctrlPad.MoveWindow(rc);
-
 }
 
 LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
