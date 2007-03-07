@@ -15,12 +15,37 @@
 #define IDR_NET_STATS				114
 #define IDR_WAITING_USERS			115
 #define IDR_MAGNET					116
-#define IDB_FOLDERS					117
-#define IDB_ARROWS					118
-#define IDB_USERS					119
-#define IDB_TOOLBAR					120
-#define IDB_TOOLBAR20				121
-#define IDB_TOOLBAR20_HOT			122
+
+#define IDB_FOLDERS					150
+#define IDB_ARROWS					151
+#define IDB_USERS					152
+#define IDB_TOOLBAR					153
+#define IDB_TOOLBAR20				154
+#define IDB_TOOLBAR20_HOT			155
+
+#define IDD_ABOUTBOX 				200
+#define IDD_ADLS_PROPERTIES			201
+#define IDD_ADVANCED3PAGE			202
+#define IDD_ADVANCEDPAGE			203
+#define IDD_APPEARANCE2PAGE			204
+#define IDD_APPEARANCEPAGE			205
+#define IDD_CERTIFICATESPAGE		206
+#define IDD_DOWNLOADPAGE			207
+#define IDD_FAVORITE_DIRSPAGE		208
+#define IDD_FAVORITEHUB				209
+#define IDD_GENERALPAGE				210
+#define IDD_HASH_PROGRESS			211
+#define IDD_HUB_LIST				212
+#define IDD_LINE					213
+#define IDD_LOGPAGE					214
+#define IDD_MAGNET					215
+#define IDD_NETWORKPAGE				216
+#define IDD_QUEUEPAGE				217
+#define IDD_TABSPAGE				218
+#define IDD_UCPAGE					219
+#define IDD_UPLOADPAGE				220
+#define IDD_USER_COMMAND			221
+#define IDD_WINDOWSPAGE				222
 
 // Stuff not in the resource file
 #define IDC_EXIT 					1000
@@ -31,7 +56,6 @@
 #define IDC_VIEW_STATUS_BAR			1006
 #define IDC_VIEW_TOOLBAR			1007
 #define IDC_VIEW_TRANSFER_VIEW		1008
-
 
 #define IDC_ADD 2000
 #define IDC_ADD_MENU 2001

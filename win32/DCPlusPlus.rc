@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "win32/resource.h"
+#include "resource.h"
 #define WINVER 0x0500
 #include <winuser.h>
 #include <commctrl.h>
@@ -26,12 +26,12 @@ END
 // Bitmap
 //
 
-IDB_FOLDERS             BITMAP                  "res/folders.bmp"
-IDB_ARROWS              BITMAP                  "res/arrows.bmp"
-IDB_USERS               BITMAP                  "res/users.bmp"
-IDB_TOOLBAR             BITMAP                  "res/toolbar.bmp"
-IDB_TOOLBAR20           BITMAP                  "res/toolbar20.bmp"
-IDB_TOOLBAR20_HOT       BITMAP                  "res/toolbar20-highlight.bmp"
+IDB_FOLDERS             BITMAP                  "../res/folders.bmp"
+IDB_ARROWS              BITMAP                  "../res/arrows.bmp"
+IDB_USERS               BITMAP                  "../res/users.bmp"
+IDB_TOOLBAR             BITMAP                  "../res/toolbar.bmp"
+IDB_TOOLBAR20           BITMAP                  "../res/toolbar20.bmp"
+IDB_TOOLBAR20_HOT       BITMAP                  "../res/toolbar20-highlight.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -40,23 +40,23 @@ IDB_TOOLBAR20_HOT       BITMAP                  "res/toolbar20-highlight.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res/DCPlusPlus.ico"
-IDR_PUBLICHUBS          ICON                    "res/PublicHubs.ico"
-IDR_SEARCH              ICON                    "res/Search.ico"
-IDR_FAVORITES           ICON                    "res/Favorites.ico"
-IDR_PRIVATE             ICON                    "res/User.ico"
-IDR_DIRECTORY           ICON                    "res/Directory.ico"
-IDR_HUB                 ICON                    "res/Hub.ico"
-IDR_NOTEPAD             ICON                    "res/Notepad.ico"
-IDR_QUEUE               ICON                    "res/Queue.ico"
-IDR_FINISHED_DL         ICON                    "res/FinishedDL.ico"
-IDR_ADLSEARCH           ICON                    "res/ADLSearch.ico"
-IDR_FINISHED_UL         ICON                    "res/FinishedUL.ico"
-IDR_USERS               ICON                    "res/FavoriteUser.ico"
-IDR_SPY                 ICON                    "res/SearchSpy.ico"
-IDR_NET_STATS           ICON                    "res/NetStats.ico"
-IDR_WAITING_USERS       ICON                    "res/wuicon.ico"
-IDR_MAGNET              ICON                    "res/Magnet.ico"
+IDR_MAINFRAME           ICON                    "../res/DCPlusPlus.ico"
+IDR_PUBLICHUBS          ICON                    "../res/PublicHubs.ico"
+IDR_SEARCH              ICON                    "../res/Search.ico"
+IDR_FAVORITES           ICON                    "../res/Favorites.ico"
+IDR_PRIVATE             ICON                    "../res/User.ico"
+IDR_DIRECTORY           ICON                    "../res/Directory.ico"
+IDR_HUB                 ICON                    "../res/Hub.ico"
+IDR_NOTEPAD             ICON                    "../res/Notepad.ico"
+IDR_QUEUE               ICON                    "../res/Queue.ico"
+IDR_FINISHED_DL         ICON                    "../res/FinishedDL.ico"
+IDR_ADLSEARCH           ICON                    "../res/ADLSearch.ico"
+IDR_FINISHED_UL         ICON                    "../res/FinishedUL.ico"
+IDR_USERS               ICON                    "../res/FavoriteUser.ico"
+IDR_SPY                 ICON                    "../res/SearchSpy.ico"
+IDR_NET_STATS           ICON                    "../res/NetStats.ico"
+IDR_WAITING_USERS       ICON                    "../res/wuicon.ico"
+IDR_MAGNET              ICON                    "../res/Magnet.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

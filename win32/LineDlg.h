@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,71 +16,73 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(LINE_DLG_H)
-#define LINE_DLG_H
+#ifndef DCPLUSPLUS_WIN32_LINE_DLG_H
+#define DCPLUSPLUS_WIN32_LINE_DLG_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "resource.h"
 
-class LineDlg : public CDialogImpl<LineDlg>
+class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, LineDlg, SmartWin::MessageMapPolicyModalDialogWidget>
 {
-	CEdit ctrlLine;
-	CStatic ctrlDescription;
 public:
-	tstring line;
-	tstring description;
+	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, bool password_ = false, const tstring& initial_ = "") : SmartWin::Widget(parent), title(title_), desc(desc_), initial(initial_), password(password_) {
+		onInitDialog(&LineDlg::initDialog);
+		onFocus(&LineDlg::focus);	
+	}
+	
+	int run() { return createDialog(IDD_LINE); }
+	
+	tstring getLine() { return line->getText(); }
+private:
+	WidgetStaticPtr description;
+	WidgetTextBoxPtr line;
+	WidgetButtonPtr ok;
+	WidgetButtonPtr cancel;
+
 	tstring title;
+	tstring desc;
+	tstring initial;
 	bool password;
 
-	enum { IDD = IDD_LINE };
-
-	BEGIN_MSG_MAP(LineDlg)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
-		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
-		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-	END_MSG_MAP()
-
-	LineDlg() : password(false) { }
-
-	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlLine.SetFocus();
-		return FALSE;
+	void focus() {
+		line->setFocus();
 	}
+	
+	bool initDialog() {
+		ok = subclassButton(IDOK);
+		ok->onClicked(&LineDlg::okClicked);
 
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		ctrlLine.Attach(GetDlgItem(IDC_LINE));
-		ctrlLine.SetFocus();
-		ctrlLine.SetWindowText(line.c_str());
-		ctrlLine.SetSelAll(TRUE);
+		cancel = subclassButton(IDCANCEL);
+		cancel->onClicked(&LineDlg::cancelClicked);
+		
+		description = subclassStatic(IDC_DESCRIPTION);
+		description->setText(desc);
+		line = subclassTextBox(IDC_LINE);
+		line->setFocus();
+		line->setText(initial);
+		line->setSelection();
 		if(password) {
-			ctrlLine.SetWindowLong(GWL_STYLE, ctrlLine.GetWindowLong(GWL_STYLE) | ES_PASSWORD);
-			ctrlLine.SetPasswordChar('*');
+			line->setPassword();
 		}
+		
+		setText(title);
 
-		ctrlDescription.Attach(GetDlgItem(IDC_DESCRIPTION));
-		ctrlDescription.SetWindowText(description.c_str());
-
-		SetWindowText(title.c_str());
-
+#ifdef PORT_ME
 		CenterWindow(GetParent());
-		return FALSE;
+#endif
+		return false;
 	}
-
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		if(wID == IDOK) {
-			int len = ctrlLine.GetWindowTextLength() + 1;
-			AutoArray<TCHAR> buf(len);
-			GetDlgItemText(IDC_LINE, buf, len);
-			line = buf;
-		}
-		EndDialog(wID);
-		return 0;
+	
+	bool closing() {
+		endDialog(IDCANCEL);
+		return false;		
 	}
-
+	
+	void okClicked(WidgetButtonPtr) {
+		endDialog(IDOK);
+	}
+	void cancelClicked(WidgetButtonPtr) {
+		endDialog(IDCANCEL);
+	}
 };
 
 #endif // !defined(LINE_DLG_H)

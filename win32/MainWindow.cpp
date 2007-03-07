@@ -24,6 +24,9 @@
 
 #include "SystemFrame.h"
 #include "NotepadFrame.h"
+#include "HubFrame.h"
+
+#include "LineDlg.h"
 
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
@@ -225,6 +228,8 @@ void MainWindow::initMenu() {
 	mainMenu = createMenu();
 	
 	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
+	
+	file->appendItem(IDC_QUICK_CONNECT, TSTRING(MENU_QUICK_CONNECT), &MainWindow::handleQuickConnect);
 
 #ifdef PORT_ME
 	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CTSTRING(MENU_OPEN_FILE_LIST));
@@ -233,7 +238,6 @@ void MainWindow::initMenu() {
 	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CTSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
 	file.AppendMenu(MF_SEPARATOR);
-	file.AppendMenu(MF_STRING, ID_FILE_QUICK_CONNECT, CTSTRING(MENU_QUICK_CONNECT));
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CTSTRING(MENU_FOLLOW_REDIRECT));
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
 	file.AppendMenu(MF_SEPARATOR);
@@ -335,6 +339,25 @@ void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
 
 void MainWindow::handleNotepad(WidgetMenuPtr, unsigned) {
 	NotepadFrame::openWindow(mdi);
+}
+
+void MainWindow::handleQuickConnect(WidgetMenuPtr, unsigned) {
+	///@todo send user to settings
+	if(SETTING(NICK).empty())
+		return;
+
+	LineDlg dlg(this, TSTRING(QUICK_CONNECT), TSTRING(HUB_ADDRESS));
+	
+	if(dlg.run() == IDOK) {
+
+		tstring tmp = dlg.getLine();
+		// Strip out all the spaces
+		string::size_type i;
+		while((i = tmp.find(' ')) != string::npos)
+			tmp.erase(i, 1);
+
+		HubFrame::openWindow(this, tmp);
+	}
 }
  
 void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
@@ -1290,25 +1313,6 @@ LRESULT MainFrame::onCloseWindows(WORD , WORD wID, HWND , BOOL& ) {
 	case IDC_CLOSE_ALL_OFFLINE_PM:		PrivateFrame::closeAllOffline();	break;
 	case IDC_CLOSE_ALL_DIR_LIST:		DirectoryListingFrame::closeAll();	break;
 	case IDC_CLOSE_ALL_SEARCH_FRAME:	SearchFrame::closeAll();			break;
-	}
-	return 0;
-}
-
-LRESULT MainFrame::onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-	LineDlg dlg;
-	dlg.description = TSTRING(HUB_ADDRESS);
-	dlg.title = TSTRING(QUICK_CONNECT);
-	if(dlg.DoModal(m_hWnd) == IDOK){
-		if(SETTING(NICK).empty())
-			return 0;
-
-		tstring tmp = dlg.line;
-		// Strip out all the spaces
-		string::size_type i;
-		while((i = tmp.find(' ')) != string::npos)
-			tmp.erase(i, 1);
-
-		HubFrame::openWindow(tmp);
 	}
 	return 0;
 }

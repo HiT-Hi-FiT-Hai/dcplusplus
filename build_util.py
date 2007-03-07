@@ -16,6 +16,7 @@ class Dev:
 		self.env['SHLINKCOMSTR'] = "Linking $TARGET (shared)"
 		self.env['LINKCOMSTR'] = "Linking $TARGET (static)"
 		self.env['ARCOMSTR'] = "Archiving $TARGET"
+		self.env['RCCOMSTR'] = "Resource $TARGET"
 		
 		self.env.SConsignFile()
 		self.env.SetOption('implicit_cache', '1')
@@ -34,6 +35,7 @@ class Dev:
 				self.env['LINK'] = prefix + '-g++'
 				self.env['AR'] = prefix + '-ar'
 				self.env['RANLIB'] = prefix + '-ranlib'
+				self.env['RC'] = prefix + '-windres'
 				self.env['PROGSUFFIX'] = '.exe'
 				self.env['LIBPREFIX'] = 'lib'
 				self.env['LIBSUFFIX'] = '.a'
