@@ -6,6 +6,7 @@
 * [bug 1019] Reworked initial filelist dir (thanks mikael eman)
 * Moved to smartwin to enable mingw compiling
 * Removed notepad loading compatibility code for notepad texts from versions < 0.20
+* Fixed time issues with DC++ running for more than 49 days
 
 -- 0.699 2006-12-18 --
 * Switched to VC8/VS2005

@@ -152,7 +152,6 @@ void HubFrame::layout() {
 		w[2] = w[0] + (tmp-32);
 		w[3] = w[2] + 16;
 
-
 		status->setSections(w);
 #ifdef PORT_ME
 		ctrlLastLines.SetMaxTipWidth(w[0]);

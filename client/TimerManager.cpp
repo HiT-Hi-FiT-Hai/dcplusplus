@@ -21,7 +21,10 @@
 
 #include "TimerManager.h"
 
-#ifndef _WIN32
+#ifdef _WIN32
+DWORD TimerManager::lastTick = 0;
+uint32_t TimerManager::cycles = 0;
+#else
 timeval TimerManager::tv;
 #endif
 
@@ -43,4 +46,20 @@ int TimerManager::run() {
 	}
 
 	return 0;
+}
+
+uint64_t TimerManager::getTick() {
+#ifdef _WIN32
+	DWORD tick = ::GetTickCount();
+	if(tick < lastTick) {
+		cycles++;
+	}
+	lastTick = tick;
+	return static_cast<uint64_t>(cycles) * (static_cast<uint64_t>(std::numeric_limits<DWORD>::max()) + 1) + tick;
+#else
+	timeval tv2;
+	gettimeofday(&tv2, NULL);
+	/// @todo check conversions to use uint64_t fully
+	return static_cast<uint64_t>(((tv2.tv_sec - tv.tv_sec) * 1000 ) + ( (tv2.tv_usec - tv.tv_usec) / 1000));
+#endif
 }

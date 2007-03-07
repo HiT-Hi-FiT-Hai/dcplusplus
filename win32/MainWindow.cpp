@@ -28,10 +28,17 @@
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
 #include <client/version.h>
+#include <client/DownloadManager.h>
+#include <client/UploadManager.h>
+#include <client/Client.h>
+#include <client/TimerManager.h>
 
 MainWindow::MainWindow() :
 	status(0),
-	mdi(0)
+	mdi(0),
+	lastUp(0),
+	lastDown(0),
+	lastTick(GET_TICK())
 {
 	memset(statusSizes, 0, sizeof(statusSizes));
 	#ifdef PORT_ME
@@ -51,7 +58,9 @@ MainWindow::MainWindow() :
 	initMenu();
 	initStatusBar();
 	initMDI();
+	initSecond();
 
+	updateStatus();
 	layout();
 	
 	onSized(&MainWindow::sized);
@@ -110,7 +119,6 @@ MainWindow::MainWindow() :
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 	CreateSimpleStatusBar();
 
-	statusSizes[0] = WinUtil::getTextWidth(TSTRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
@@ -304,10 +312,16 @@ void MainWindow::initMenu() {
 }
 
 void MainWindow::initStatusBar() {
+	dcdebug("initStatusBar\n");
 	status = createStatusBarSections();
+	
+	statusSizes[STATUS_AWAY] = status->getTextSize(TSTRING(AWAY)).x + 12;
+	///@todo set to checkbox width + resizedrag width really
+	statusSizes[STATUS_DUMMY] = 32;
 }
 
 void MainWindow::initMDI() {
+	dcdebug("initMDI\n");
 	mdi = createMDIParent();
 }
 
@@ -327,6 +341,17 @@ void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
 	layout();
 }
 
+void MainWindow::initSecond() {
+	SmartWin::Command cmd(_T("1 second"));
+	createTimer(&MainWindow::eachSecond, 1000, cmd);	
+}
+
+void MainWindow::eachSecond(const SmartWin::CommandPtr&) {
+	updateStatus();
+	///@todo change smartwin to support recurring timers 
+	initSecond();
+}
+
 void MainWindow::layout() {
 	SmartWin::Rectangle r(getClientAreaSize()); 
 	status->refresh();
@@ -334,10 +359,9 @@ void MainWindow::layout() {
 	SmartWin::Rectangle rs(status->getClientAreaSize());
 	
 	{
-		std::vector<unsigned> w(8);
-		w[7] = rs.size.x - rs.pos.x - 16;
-#define setw(x) w[x] = (w[x+1] >= statusSizes[x]) ?  w[x+1] - statusSizes[x] : 0;
-		setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
+		std::vector<unsigned> w(STATUS_LAST);
+		w[0] = rs.size.x - rs.pos.x - std::accumulate(statusSizes+1, statusSizes+STATUS_LAST, 0); 
+		std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
 
 		status->setSections(w);
 #ifdef PORT_ME
@@ -358,6 +382,45 @@ void MainWindow::layout() {
 	SetSplitterRect(rc2);
 #endif
 	mdi->setBounds(r);
+}
+
+void MainWindow::updateStatus() {
+	uint64_t now = GET_TICK();
+	uint64_t tdiff = lastTick - now;
+	if(tdiff < 100) {
+		tdiff = 1;
+	}
+	
+	uint64_t up = Socket::getTotalUp();
+	uint64_t down = Socket::getTotalDown();
+	uint64_t updiff = up - lastUp;
+	uint64_t downdiff = down - lastDown;
+	
+	lastTick = now;
+	lastUp = up;
+	lastDown = down;
+
+	/** @todo move this to client/ */
+	SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + static_cast<int64_t>(updiff));
+	SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + static_cast<int64_t>(downdiff));
+
+	setStatus(STATUS_AWAY, Util::getAway() ? TSTRING(AWAY) : _T(""));
+	setStatus(STATUS_COUNTS, Client::getCounts());
+	setStatus(STATUS_SLOTS, Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
+	setStatus(STATUS_DOWN_TOTAL, Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
+	setStatus(STATUS_UP_TOTAL, Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
+	setStatus(STATUS_DOWN_DIFF, Text::toT("D: " + Util::formatBytes(downdiff*1000/tdiff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
+	setStatus(STATUS_UP_DIFF, Text::toT("U: " + Util::formatBytes(updiff*1000/tdiff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploadCount()) + ")"));
+}
+
+void MainWindow::setStatus(Status s, const tstring& text) {
+	int w = status->getTextSize(text).x + 12;
+	if(w > static_cast<int>(statusSizes[s])) {
+		dcdebug("Setting status size %d to %d\n", s, w);
+		statusSizes[s] = w;
+		layout();
+	}
+	status->setText(text, s);
 }
 
 #ifdef PORT_ME
@@ -693,26 +756,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		auto_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
 		TextFrame::openWindow(*file);
 		File::deleteFile(Text::fromT(*file));
-	} else if(wParam == STATS) {
-		auto_ptr<TStringList> pstr(reinterpret_cast<TStringList*>(lParam));
-		const TStringList& str = *pstr;
-		if(ctrlStatus.IsWindow()) {
-			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
-			bool u = false;
-			ctrlStatus.SetText(1, str[0].c_str());
-			for(int i = 1; i < 7; i++) {
-				int w = WinUtil::getTextWidth(str[i], dc);
-
-				if(statusSizes[i] < w) {
-					statusSizes[i] = w;
-					u = true;
-				}
-				ctrlStatus.SetText(i+1, str[i].c_str());
-			}
-			::ReleaseDC(ctrlStatus.m_hWnd, dc);
-			if(u)
-				UpdateLayout(TRUE);
-		}
 	} else if(wParam == AUTO_CONNECT) {
 		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
@@ -1268,27 +1311,6 @@ LRESULT MainFrame::onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		HubFrame::openWindow(tmp);
 	}
 	return 0;
-}
-
-void MainFrame::on(TimerManagerListener::Second, uint32_t aTick) throw() {
-	int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
-	int64_t updiff = Socket::getTotalUp() - lastUp;
-	int64_t downdiff = Socket::getTotalDown() - lastDown;
-
-	TStringList* str = new TStringList();
-	str->push_back(Util::getAway() ? TSTRING(AWAY) : _T(""));
-	str->push_back(Text::toT("H: " + Client::getCounts()));
-	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
-	str->push_back(Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
-	str->push_back(Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
-	str->push_back(Text::toT("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
-	str->push_back(Text::toT("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploadCount()) + ")"));
-	PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
-	SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + updiff);
-	SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + downdiff);
-	lastUpdate = aTick;
-	lastUp = Socket::getTotalUp();
-	lastDown = Socket::getTotalDown();
 }
 
 void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw() {

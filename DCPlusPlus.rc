@@ -1,7 +1,9 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "windows/resource.h"
+#include "win32/resource.h"
+#define WINVER 0x0500
 #include <winuser.h>
+#include <commctrl.h>
 /////////////////////////////////////////////////////////////////////////////
 // English (U.S.) resources
 
@@ -13,7 +15,7 @@
 
 1 TEXTINCLUDE 
 BEGIN
-    "windows/resource.h\0"
+    "win32/resource.h\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -54,7 +56,7 @@ IDR_USERS               ICON                    "res/FavoriteUser.ico"
 IDR_SPY                 ICON                    "res/SearchSpy.ico"
 IDR_NET_STATS           ICON                    "res/NetStats.ico"
 IDR_WAITING_USERS       ICON                    "res/wuicon.ico"
-IDI_MAGNET              ICON                    "res/Magnet.ico"
+IDR_MAGNET              ICON                    "res/Magnet.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -116,7 +118,7 @@ EXSTYLE WS_EX_STATICEDGE
 CAPTION "Advanced"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "",IDC_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,261,211
+    CONTROL "",IDC_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,261,211
 END
 
 IDD_DOWNLOADPAGE DIALOGEX 0, 0, 275, 225
@@ -327,7 +329,7 @@ CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     GROUPBOX        "",IDC_STATIC,6,0,240,138
-    ICON            IDI_MAGNET,IDC_STATIC,22,14,21,20
+    ICON            IDR_MAGNET,IDC_STATIC,22,14,21,20
     LTEXT           "Static",IDC_MAGNET_TEXT,60,12,174,24
     RTEXT           "Static",IDC_MAGNET_HASH,15,44,36,8
     EDITTEXT        IDC_MAGNET_DISP_HASH,56,42,178,12,ES_AUTOHSCROLL | ES_READONLY
@@ -843,13 +845,13 @@ END
 
 IDR_MAINFRAME ACCELERATORS 
 BEGIN
-    "P",            ID_FILE_CONNECT,        VIRTKEY, CONTROL, NOINVERT
-    "Q",            ID_FILE_QUICK_CONNECT,  VIRTKEY, CONTROL, NOINVERT
-    "R",            ID_FILE_RECONNECT,      VIRTKEY, CONTROL, NOINVERT
-    "S",            ID_FILE_SEARCH,         VIRTKEY, CONTROL, NOINVERT
-    "2",            ID_VIEW_STATUS_BAR,     VIRTKEY, CONTROL, NOINVERT
-    "1",            ID_VIEW_TOOLBAR,        VIRTKEY, CONTROL, NOINVERT
-    "3",            ID_VIEW_TRANSFER_VIEW,  VIRTKEY, CONTROL, NOINVERT
+    "P",            IDC_CONNECT,        VIRTKEY, CONTROL, NOINVERT
+    "Q",            IDC_QUICK_CONNECT,  VIRTKEY, CONTROL, NOINVERT
+    "R",            IDC_RECONNECT,      VIRTKEY, CONTROL, NOINVERT
+    "S",            IDC_SEARCH,         VIRTKEY, CONTROL, NOINVERT
+    "2",            IDC_VIEW_STATUS_BAR,     VIRTKEY, CONTROL, NOINVERT
+    "1",            IDC_VIEW_TOOLBAR,        VIRTKEY, CONTROL, NOINVERT
+    "3",            IDC_VIEW_TRANSFER_VIEW,  VIRTKEY, CONTROL, NOINVERT
     "F",            IDC_FAVORITES,          VIRTKEY, CONTROL, NOINVERT
     "U",            IDC_FAVUSERS,           VIRTKEY, CONTROL, NOINVERT
     "T",            IDC_FOLLOW,             VIRTKEY, CONTROL, NOINVERT

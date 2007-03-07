@@ -53,18 +53,8 @@ public:
 		join();
 	}
 
-	static time_t getTime() {
-		return (time_t)time(NULL);
-	}
-	static uint32_t getTick() {
-#ifdef _WIN32
-		return GetTickCount();
-#else
-		timeval tv2;
-		gettimeofday(&tv2, NULL);
-		return (uint32_t)((tv2.tv_sec - tv.tv_sec) * 1000 ) + ( (tv2.tv_usec - tv.tv_usec) / 1000);
-#endif
-	}
+	static time_t getTime() { return (time_t)time(NULL); }
+	static uint64_t getTick();
 private:
 
 	Semaphore s;
@@ -83,7 +73,10 @@ private:
 
 	virtual int run();
 
-#ifndef _WIN32
+#ifdef _WIN32
+	static DWORD lastTick;
+	static uint32_t cycles;
+#else
 	static timeval tv;
 #endif
 };

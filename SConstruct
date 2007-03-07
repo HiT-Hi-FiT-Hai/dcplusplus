@@ -3,7 +3,7 @@
 from build_util import Dev
 
 gcc_flags = {
-	'common': ['-gstabs', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
+	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
 	'debug': [], 
 	'release' : ['-O2']
 }
@@ -15,7 +15,7 @@ msvc_flags = {
 }
 
 gcc_link_flags = {
-	'common' : ['-gstabs', '-Wl,--no-undefined'],
+	'common' : ['-ggdb', '-Wl,--no-undefined'],
 	'debug' : [],
 	'release' : []				
 }

@@ -269,7 +269,7 @@ void callBack(void* ptr, const string& a) {
 }
 
 int SmartWinMain(SmartWin::Application& app) {
-
+	dcdebug("StartWinMain\n");
 #ifdef PORT_ME
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
@@ -301,9 +301,9 @@ int SmartWinMain(SmartWin::Application& app) {
 	}
 	
 	{
-		SplashWindow* splash(new SplashWindow);
+	//	SplashWindow* splash(new SplashWindow);
 		startup(0, 0);
-		splash->close();
+	//	splash->close();
 	}
 
 	WinUtil::init();

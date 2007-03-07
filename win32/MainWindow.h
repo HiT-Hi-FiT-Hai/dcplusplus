@@ -55,12 +55,29 @@ private:
 	WidgetMDIParentPtr mdi;
 	WidgetMenuPtr mainMenu;
 
-	unsigned statusSizes[7];
+	enum Status {
+		STATUS_STATUS,
+		STATUS_AWAY,
+		STATUS_COUNTS,
+		STATUS_SLOTS,
+		STATUS_DOWN_TOTAL,
+		STATUS_UP_TOTAL,
+		STATUS_DOWN_DIFF,
+		STATUS_UP_DIFF,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+	unsigned statusSizes[STATUS_LAST];
+
+	int64_t lastUp;
+	int64_t lastDown;
+	uint64_t lastTick;
 
 	void initWindow();
 	void initMenu();
 	void initStatusBar();
 	void initMDI();
+	void initSecond();
 	
 	// User actions
 	void handleExit(WidgetMenuPtr menu, unsigned id);
@@ -71,6 +88,9 @@ private:
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
 	
 	void layout();
+	void eachSecond(const SmartWin::CommandPtr& ptr);
+	void updateStatus();
+	void setStatus(Status s, const tstring& text);
 	
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
@@ -80,7 +100,6 @@ private:
 	enum {
 		DOWNLOAD_LISTING,
 		BROWSE_LISTING,
-		STATS,
 		AUTO_CONNECT,
 		PARSE_COMMAND_LINE,
 		VIEW_FILE_AND_DELETE,
@@ -389,8 +408,6 @@ private:
 
 	void autoConnect(const FavoriteHubEntry::List& fl);
 	void startSocket();
-
-	MainFrame(const MainFrame&) { dcassert(0); }
 
 	// LogManagerListener
 	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); }

@@ -141,8 +141,8 @@ public:
 	bool isConnected() { return connected; }
 
 	static string resolve(const string& aDns);
-	static int64_t getTotalDown() { return stats.totalDown; }
-	static int64_t getTotalUp() { return stats.totalUp; }
+	static uint64_t getTotalDown() { return stats.totalDown; }
+	static uint64_t getTotalUp() { return stats.totalUp; }
 
 #ifdef _WIN32
 	void setBlocking(bool block) throw() {
@@ -191,8 +191,8 @@ protected:
 
 	class Stats {
 	public:
-		int64_t totalDown;
-		int64_t totalUp;
+		uint64_t totalDown;
+		uint64_t totalUp;
 	};
 	static Stats stats;
 
