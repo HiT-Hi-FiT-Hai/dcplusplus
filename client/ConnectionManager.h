@@ -54,7 +54,7 @@ public:
 	const User::Ptr& getUser() const { return user; }
 
 	GETSET(State, state, State);
-	GETSET(uint32_t, lastAttempt, LastAttempt);
+	GETSET(uint64_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 	GETSET(string, token, Token);
 private:

@@ -114,7 +114,7 @@ public:
 	void loadQueue() throw();
 	void saveQueue() throw();
 
-	GETSET(uint32_t, lastSave, LastSave);
+	GETSET(uint64_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
 private:
 

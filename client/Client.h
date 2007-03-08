@@ -103,7 +103,7 @@ public:
 
 	GETSET(string, defpassword, Password);
 	GETSET(uint32_t, reconnDelay, ReconnDelay);
-	GETSET(uint32_t, lastActivity, LastActivity);
+	GETSET(uint64_t, lastActivity, LastActivity);
 	GETSET(bool, registered, Registered);
 	GETSET(bool, autoReconnect, AutoReconnect);
 

@@ -31,8 +31,8 @@ timeval TimerManager::tv;
 int TimerManager::run() {
 	int nextMin = 0;
 
-	uint32_t x = getTick();
-	uint32_t nextTick = x + 1000;
+	uint64_t x = getTick();
+	uint64_t nextTick = x + 1000;
 
 	while(!s.wait(nextTick > x ? nextTick - x : 0)) {
 		uint32_t z = getTick();

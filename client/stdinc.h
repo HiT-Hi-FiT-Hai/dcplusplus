@@ -118,6 +118,7 @@ typedef unsigned __int64 uint64_t;
 #include <functional>
 #include <memory>
 #include <numeric>
+#include <limits>
 
 #ifdef _STLPORT_VERSION
 # define HASH_SET hash_set

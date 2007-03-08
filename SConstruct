@@ -9,9 +9,11 @@ gcc_flags = {
 }
 
 msvc_flags = {
-	'common' : ['/W4', '/EHsc', '/Zi', '/GR', '/wd4100'],
-	'debug' : ['/MD'],
-	'release' : ['/O2', '/MD']
+	# 4512: assn not generated, 4100: <something annoying, forget which>, 4189: var init'd, unused, 4996: fn unsafe, use fn_s
+	# 4121: alignment of member sensitive to packing
+	'common' : ['/W4', '/EHsc', '/Zi', '/GR', '/wd4121', '/wd4100', '/wd4189', '/wd4996', '/wd4512'],
+	'debug' : ['/MT'],
+	'release' : ['/O2', '/MT']
 }
 
 gcc_link_flags = {
@@ -21,7 +23,7 @@ gcc_link_flags = {
 }
 
 msvc_link_flags = {
-	'common' : ['/DEBUG', '/FIXED:NO', '/INCREMENTAL:NO'],
+	'common' : ['/DEBUG', '/FIXED:NO', '/INCREMENTAL:NO', '/SUBSYSTEM:WINDOWS'],
 	'debug' : [],
 	'release' : []
 }
@@ -65,7 +67,9 @@ env.SConsignFile()
 env.Tool("gch", toolpath=".")
 
 if 'mingw' not in env['TOOLS'] and 'gcc' in env['TOOLS']:
-	env.Append(CCFLAGS=['-fvisibility=hidden'])
+	print "Non-mingw gcc builds not supported"
+	Exit(1)
+	#env.Append(CCFLAGS=['-fvisibility=hidden'])
 
 if 'mingw' in env['TOOLS']:
 	env.Append(CPPPATH = ['#/stlport/stlport/'])
@@ -86,6 +90,7 @@ if env['CC'] == 'cl':
 	# Embed generated manifest in file
 	env['SHLINKCOM'] = [env['SHLINKCOM'], 'mt.exe -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
 	env['LINKCOM'] = [env['LINKCOM'], 'mt.exe -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
+	env.Append(LIBS = ['User32', 'shell32', 'Advapi32'])
 else:
 	flags = gcc_flags
 	link_flags = gcc_link_flags

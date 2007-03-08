@@ -168,7 +168,7 @@ private:
 	Socket* socket;
 	uint16_t port;
 	bool stop;
-	uint32_t lastSearch;
+	uint64_t lastSearch;
 	friend class Singleton<SearchManager>;
 
 	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) { }

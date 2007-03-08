@@ -73,7 +73,7 @@ private:
 	NickMap users;
 
 	int supportFlags;
-	uint32_t lastUpdate;
+	uint64_t lastUpdate;
 	string lastMyInfoA, lastMyInfoB;
 
 	typedef list<pair<string, uint32_t> > FloodMap;
@@ -106,7 +106,7 @@ private:
 	void revConnectToMe(const OnlineUser& aUser);
 	void myInfo(bool alwaysSend);
 	void supports(const StringList& feat);
-	void clearFlooders(uint32_t tick);
+	void clearFlooders(uint64_t tick);
 
 	void updateFromTag(Identity& id, const string& tag);
 

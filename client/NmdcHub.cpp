@@ -248,7 +248,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		i = j + 1;
 
-		uint32_t tick = GET_TICK();
+		uint64_t tick = GET_TICK();
 		clearFlooders(tick);
 
 		seekers.push_back(make_pair(seeker, tick));
@@ -879,7 +879,7 @@ void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) {
 	}
 }
 
-void NmdcHub::clearFlooders(uint32_t aTick) {
+void NmdcHub::clearFlooders(uint64_t aTick) {
 	while(!seekers.empty() && seekers.front().second + (5 * 1000) < aTick) {
 		seekers.pop_front();
 	}

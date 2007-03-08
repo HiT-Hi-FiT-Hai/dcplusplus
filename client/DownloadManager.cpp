@@ -132,8 +132,8 @@ void DownloadManager::on(TimerManagerListener::Second, uint32_t aTick) throw() {
 		// Automatically remove or disconnect slow sources
 		if((uint32_t)(aTick / 1000) % SETTING(AUTODROP_INTERVAL) == 0) {
 			for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
-				uint32_t timeElapsed = GET_TICK() - (*i)->getStart();
-				uint32_t timeInactive = GET_TICK() - (*i)->getUserConnection().getLastActivity();
+				uint64_t timeElapsed = GET_TICK() - (*i)->getStart();
+				uint64_t timeInactive = GET_TICK() - (*i)->getUserConnection().getLastActivity();
 				uint64_t bytesDownloaded = (*i)->getTotal();
 				bool timeElapsedOk = timeElapsed >= (uint32_t)SETTING(AUTODROP_ELAPSED) * 1000;
 				bool timeInactiveOk = timeInactive <= (uint32_t)SETTING(AUTODROP_INACTIVITY) * 1000;

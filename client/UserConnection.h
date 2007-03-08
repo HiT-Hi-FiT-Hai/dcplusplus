@@ -145,8 +145,8 @@ public:
 	UserConnection& getUserConnection() { return userConnection; }
 	const UserConnection& getUserConnection() const { return userConnection; }
 
-	GETSET(uint32_t, start, Start);
-	GETSET(uint32_t, lastTick, LastTick);
+	GETSET(uint64_t, start, Start);
+	GETSET(uint64_t, lastTick, LastTick);
 	GETSET(int64_t, runningAverage, RunningAverage);
 	GETSET(TTHValue, tth, TTH);
 private:
@@ -315,7 +315,7 @@ public:
 	GETSET(string, hubUrl, HubUrl);
 	GETSET(string, token, Token);
 	GETSET(States, state, State);
-	GETSET(uint32_t, lastActivity, LastActivity);
+	GETSET(uint64_t, lastActivity, LastActivity);
 private:
 	BufferedSocket* socket;
 	bool secure;

@@ -113,7 +113,7 @@ public:
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
-	GETSET(uint32_t, lastGrant, LastGrant);
+	GETSET(uint64_t, lastGrant, LastGrant);
 private:
 	Upload::List uploads;
 	CriticalSection cs;
@@ -122,7 +122,7 @@ private:
 	typedef SlotSet::iterator SlotIter;
 	SlotSet reservedSlots;
 
-	typedef pair<User::Ptr, uint32_t> WaitingUser;
+	typedef pair<User::Ptr, uint64_t> WaitingUser;
 	typedef list<WaitingUser> UserList;
 
 	struct WaitingUserFresh {

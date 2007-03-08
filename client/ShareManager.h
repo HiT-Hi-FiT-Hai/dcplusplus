@@ -250,8 +250,8 @@ private:
 
 	volatile long refreshing;
 
-	uint32_t lastXmlUpdate;
-	uint32_t lastFullUpdate;
+	uint64_t lastXmlUpdate;
+	uint64_t lastFullUpdate;
 
 	mutable CriticalSection cs;
 

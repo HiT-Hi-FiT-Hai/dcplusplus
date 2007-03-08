@@ -243,7 +243,7 @@ int ConnectionManager::Server::run() throw() {
  * It's always the other fellow that starts sending if he made the connection.
  */
 void ConnectionManager::accept(const Socket& sock, bool secure) throw() {
-	uint32_t now = GET_TICK();
+	uint64_t now = GET_TICK();
 
 	if(now > floodCounter) {
 		floodCounter = now + FLOOD_ADD;

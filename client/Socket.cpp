@@ -142,7 +142,7 @@ namespace {
 		if(timeout == 0) {
 			return 0;
 		}
-		uint32_t now = GET_TICK();
+		uint64_t now = GET_TICK();
 		if(start + timeout < now)
 			throw SocketException(STRING(CONNECTION_TIMEOUT));
 		return start + timeout - now;
@@ -158,7 +158,7 @@ void Socket::socksConnect(const string& aAddr, uint16_t aPort, uint32_t timeout)
 	bool oldblock = getBlocking();
 	setBlocking(false);
 
-	uint32_t start = GET_TICK();
+	uint64_t start = GET_TICK();
 
 	connect(SETTING(SOCKS_SERVER), static_cast<uint16_t>(SETTING(SOCKS_PORT)));
 
@@ -216,7 +216,7 @@ void Socket::socksConnect(const string& aAddr, uint16_t aPort, uint32_t timeout)
 void Socket::socksAuth(uint32_t timeout) throw(SocketException) {
 	vector<uint8_t> connStr;
 
-	uint32_t start = GET_TICK();
+	uint64_t start = GET_TICK();
 
 	if(SETTING(SOCKS_USER).empty() && SETTING(SOCKS_PASSWORD).empty()) {
 		// No username and pw, easier...=)

@@ -136,7 +136,7 @@ void BufferedSocket::threadConnect(const string& aAddr, uint16_t aPort, bool pro
 		return;
 	fire(BufferedSocketListener::Connecting());
 
-	uint32_t startTime = GET_TICK();
+	uint64_t startTime = GET_TICK();
 	if(proxy) {
 		sock->socksConnect(aAddr, aPort, CONNECT_TIMEOUT);
 	} else {
