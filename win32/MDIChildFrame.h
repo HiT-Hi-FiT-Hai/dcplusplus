@@ -58,9 +58,30 @@ protected:
 	/** Second close phase, perform any additional cleanup here if you need */
 	void postClosing() { }
 	
-	/** This sets tab order and control coloring */
-	std::vector<SmartWin::Widget*> controls;
+	template<typename W>
+	void add_widget(W* widget) {
+		widget->onChar(&T::charred);
+		controls.push_back(widget); 
+	}
+	
+	template<typename W>
+	bool charred(W* widget, int key) { 
+		if(key == VK_TAB) {
+			for(WidgetList::size_type i = 0; i < controls.size(); ++i) {
+				if(controls[i] == widget) {
+					::SetFocus(controls[(i+1) % controls.size()]->handle());
+					return true;
+				}
+			}
+		}
+		return false; 
+	}
+
+	
 private:
+	/** This sets tab order and control coloring */
+	typedef std::vector<SmartWin::Widget*> WidgetList;
+	WidgetList controls;
 	bool reallyClose;
 
 	void sized(const SmartWin::WidgetSizedEventResult& sz) { static_cast<T*>(this)->layout(); }

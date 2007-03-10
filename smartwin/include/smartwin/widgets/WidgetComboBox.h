@@ -47,6 +47,7 @@
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectThreads.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectChar.h"
 #include "../xCeption.h"
 #include "SmartUtil.h"
 
@@ -76,6 +77,7 @@ class WidgetComboBox :
 	public AspectBorder< WidgetComboBox< EventHandlerClass, MessageMapPolicy > >,
 	public AspectClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectDblClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
+	public AspectChar< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectEnabled< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectFocus< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectFont< WidgetComboBox< EventHandlerClass, MessageMapPolicy > >,

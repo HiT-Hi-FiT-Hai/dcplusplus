@@ -32,15 +32,28 @@ public:
 	static void openWindow(SmartWin::Widget* mdiParent, const tstring& url);
 
 protected:
+	typedef MDIChildFrame<HubFrame> Base;
 	friend class MDIChildFrame<HubFrame>;
 	
 	void layout();
 	void spoken(WPARAM wp, LPARAM lp);
 	bool preClosing();
 	void postClosing();
-
+	
+	using Base::charred;
+	bool charred(WidgetTextBoxPtr w, int c);
+	bool enter();
 
 private:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_USERS,
+		STATUS_SHARED,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+	unsigned statusSizes[STATUS_LAST];
+	
 	enum Tasks { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
@@ -88,8 +101,13 @@ private:
 	void addLine(const tstring& aLine);
 	void addClientLine(const tstring& aLine, bool inChat = true);
 
-	string getUsersTextForStatusBar() const;
-	int64_t getAvailable() const;
+	void setStatus(Status s, const tstring& text);
+	tstring getStatusUsers() const;
+	tstring getStatusShared() const;
+	void updateStatus();
+	
+	void initSecond();
+	void eachSecond(const SmartWin::CommandPtr&);
 	
 	using MDIChildFrame<HubFrame>::speak;
 	void speak(Tasks s) { tasks.add(s, 0); speak(); }

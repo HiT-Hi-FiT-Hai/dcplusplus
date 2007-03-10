@@ -140,12 +140,27 @@ public:
 	static COLORREF textColor;
 	static COLORREF bgColor;
 	static SmartWin::FontPtr font;
+	static tstring commands;
 
 	static void init();
 	static void uninit();
 
 	static tstring encodeFont(LOGFONT const& font);
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
+
+	/**
+	 * Check if this is a common /-command.
+	 * @param cmd The whole text string, will be updated to contain only the command.
+	 * @param param Set to any parameters.
+	 * @param message Message that should be sent to the chat.
+	 * @param status Message that should be shown in the status line.
+	 * @return True if the command was processed, false otherwise.
+	 */
+	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
+
+	static void openFile(const tstring& file) {
+		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
 
 #ifdef PORT_ME
 	static CImageList fileImages;
@@ -165,7 +180,6 @@ public:
 	static HWND mainWnd;
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
-	static tstring commands;
 	static HHOOK hook;
 	static DWORD helpCookie;
 
@@ -176,16 +190,6 @@ public:
 	}
 
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
-
-	/**
-	 * Check if this is a common /-command.
-	 * @param cmd The whole text string, will be updated to contain only the command.
-	 * @param param Set to any parameters.
-	 * @param message Message that should be sent to the chat.
-	 * @param status Message that should be shown in the status line.
-	 * @return True if the command was processed, false otherwise.
-	 */
-	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
 
 	static int getTextWidth(const tstring& str, HWND hWnd) {
 		HDC dc = ::GetDC(hWnd);
@@ -239,9 +243,6 @@ public:
 	static bool urlMagnetRegistered;
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 	static void openLink(const tstring& url);
-	static void openFile(const tstring& file) {
-		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
-	}
 	static void openFolder(const tstring& file);
 
 	static int getIconIndex(const tstring& aFileName);

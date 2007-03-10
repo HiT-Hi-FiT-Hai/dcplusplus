@@ -43,7 +43,6 @@ MainWindow::MainWindow() :
 	lastDown(0),
 	lastTick(GET_TICK())
 {
-	memset(statusSizes, 0, sizeof(statusSizes));
 	#ifdef PORT_ME
 
 	links.homepage = _T("http://dcpp.net/");
@@ -318,7 +317,8 @@ void MainWindow::initMenu() {
 void MainWindow::initStatusBar() {
 	dcdebug("initStatusBar\n");
 	status = createStatusBarSections();
-	
+
+	memset(statusSizes, 0, sizeof(statusSizes));
 	statusSizes[STATUS_AWAY] = status->getTextSize(TSTRING(AWAY)).x + 12;
 	///@todo set to checkbox width + resizedrag width really
 	statusSizes[STATUS_DUMMY] = 32;
@@ -356,7 +356,7 @@ void MainWindow::handleQuickConnect(WidgetMenuPtr, unsigned) {
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 
-		HubFrame::openWindow(this, tmp);
+		HubFrame::openWindow(mdi, tmp);
 	}
 }
  

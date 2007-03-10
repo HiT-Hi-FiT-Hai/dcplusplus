@@ -29,7 +29,6 @@ class SystemFrame : public StaticFrame<SystemFrame>,
 {
 public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
-
 protected:
 	friend class StaticFrame<SystemFrame>;
 	friend class MDIChildFrame<SystemFrame>;

@@ -23,7 +23,13 @@
 #include "WinUtil.h"
 
 #include <client/SettingsManager.h>
+#include <client/ShareManager.h>
+#include <client/ClientManager.h>
+#include <client/HashManager.h>
+#include <client/ResourceManager.h>
+
 #include <client/StringTokenizer.h>
+#include <client/version.h>
 
 tstring WinUtil::tth;
 HBRUSH WinUtil::bgBrush = NULL;
@@ -151,6 +157,122 @@ void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 		_tcscpy(dest.lfFaceName, face.c_str());
 	}
 }
+
+#define LINE2 _T("-- http://dcplusplus.sourceforge.net <DC++ ") _T(VERSIONSTRING) _T(">")
+TCHAR *msgs[] = { _T("\r\n-- I'm a happy dc++ user. You could be happy too.\r\n") LINE2,
+_T("\r\n-- Neo-...what? Nope...never heard of it...\r\n") LINE2,
+_T("\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n") LINE2,
+_T("\r\n-- I share, therefore I am.\r\n") LINE2,
+_T("\r\n-- I came, I searched, I found...\r\n") LINE2,
+_T("\r\n-- I came, I shared, I sent...\r\n") LINE2,
+_T("\r\n-- I can set away mode, can't you?\r\n") LINE2,
+_T("\r\n-- I don't have to see any ads, do you?\r\n") LINE2,
+_T("\r\n-- I don't have to see those annoying kick messages, do you?\r\n") LINE2,
+_T("\r\n-- I can resume my files to a different filename, can you?\r\n") LINE2,
+_T("\r\n-- I can share huge amounts of files, can you?\r\n") LINE2,
+_T("\r\n-- My client doesn't spam the chat with useless debug messages, does yours?\r\n") LINE2,
+_T("\r\n-- I can add multiple users to the same download and have the client connect to another automatically when one goes offline, can you?\r\n") LINE2,
+_T("\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n") LINE2,
+_T("\r\n-- My client supports TTH hashes, does yours?\r\n") LINE2,
+_T("\r\n-- My client supports XML file lists, does yours?\r\n") LINE2
+};
+
+#define MSGS 16
+
+tstring WinUtil::commands = _T("/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /u <url>, /rebuild");
+
+bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status) {
+	string::size_type i = cmd.find(' ');
+	if(i != string::npos) {
+		param = cmd.substr(i+1);
+		cmd = cmd.substr(1, i - 1);
+	} else {
+		cmd = cmd.substr(1);
+	}
+
+	if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+		if(Util::stricmp(param.c_str(), _T("system")) == 0) {
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "system.log")));
+		} else if(Util::stricmp(param.c_str(), _T("downloads")) == 0) {
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatTime(SETTING(LOG_FILE_DOWNLOAD), time(NULL)))));
+		} else if(Util::stricmp(param.c_str(), _T("uploads")) == 0) {
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)))));
+		} else {
+			return false;
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("refresh"))==0) {
+		try {
+			ShareManager::getInstance()->setDirty();
+			ShareManager::getInstance()->refresh(true);
+		} catch(const ShareException& e) {
+			status = Text::toT(e.getError());
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
+		int j = Util::toInt(Text::fromT(param));
+		if(j > 0) {
+			SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
+			status = TSTRING(SLOTS_SET);
+			ClientManager::getInstance()->infoUpdated();
+		} else {
+			status = TSTRING(INVALID_NUMBER_OF_SLOTS);
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
+		if(!param.empty()) {
+#ifdef PORT_ME
+			SearchFrame::openWindow(param);
+#endif
+		} else {
+			status = TSTRING(SPECIFY_SEARCH_STRING);
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("dc++")) == 0) {
+		message = msgs[GET_TICK() % MSGS];
+	} else if(Util::stricmp(cmd.c_str(), _T("away")) == 0) {
+		if(Util::getAway() && param.empty()) {
+			Util::setAway(false);
+			Util::setManualAway(false);
+			status = TSTRING(AWAY_MODE_OFF);
+		} else {
+			Util::setAway(true);
+			Util::setManualAway(true);
+			Util::setAwayMessage(Text::fromT(param));
+			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("back")) == 0) {
+		Util::setAway(false);
+		status = TSTRING(AWAY_MODE_OFF);
+	} else if(Util::stricmp(cmd.c_str(), _T("g")) == 0) {
+		if(param.empty()) {
+			status = TSTRING(SPECIFY_SEARCH_STRING);
+		} else {
+#ifdef PORT_ME
+			WinUtil::openLink(_T("http://www.google.com/search?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
+#endif
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("imdb")) == 0) {
+		if(param.empty()) {
+			status = TSTRING(SPECIFY_SEARCH_STRING);
+		} else {
+#ifdef PORT_ME
+			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
+#endif
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("u")) == 0) {
+		if (param.empty()) {
+			status = TSTRING(SPECIFY_URL);
+		} else {
+#ifdef PORT_ME
+			WinUtil::openLink(Text::toT(Util::encodeURI(Text::fromT(param))));
+#endif
+		}
+	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
+		HashManager::getInstance()->rebuild();
+	} else {
+		return false;
+	}
+
+	return true;
+}
+
 
 
 #ifdef PORT_ME
@@ -496,113 +618,6 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 		}
 		i = j + 1;
 	}
-	return true;
-}
-
-#define LINE2 _T("-- http://dcplusplus.sourceforge.net <DC++ ") _T(VERSIONSTRING) _T(">")
-TCHAR *msgs[] = { _T("\r\n-- I'm a happy dc++ user. You could be happy too.\r\n") LINE2,
-_T("\r\n-- Neo-...what? Nope...never heard of it...\r\n") LINE2,
-_T("\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n") LINE2,
-_T("\r\n-- I share, therefore I am.\r\n") LINE2,
-_T("\r\n-- I came, I searched, I found...\r\n") LINE2,
-_T("\r\n-- I came, I shared, I sent...\r\n") LINE2,
-_T("\r\n-- I can set away mode, can't you?\r\n") LINE2,
-_T("\r\n-- I don't have to see any ads, do you?\r\n") LINE2,
-_T("\r\n-- I don't have to see those annoying kick messages, do you?\r\n") LINE2,
-_T("\r\n-- I can resume my files to a different filename, can you?\r\n") LINE2,
-_T("\r\n-- I can share huge amounts of files, can you?\r\n") LINE2,
-_T("\r\n-- My client doesn't spam the chat with useless debug messages, does yours?\r\n") LINE2,
-_T("\r\n-- I can add multiple users to the same download and have the client connect to another automatically when one goes offline, can you?\r\n") LINE2,
-_T("\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n") LINE2,
-_T("\r\n-- My client supports TTH hashes, does yours?\r\n") LINE2,
-_T("\r\n-- My client supports XML file lists, does yours?\r\n") LINE2
-};
-
-#define MSGS 16
-
-tstring WinUtil::commands = _T("/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /u <url>, /rebuild");
-
-bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status) {
-	string::size_type i = cmd.find(' ');
-	if(i != string::npos) {
-		param = cmd.substr(i+1);
-		cmd = cmd.substr(1, i - 1);
-	} else {
-		cmd = cmd.substr(1);
-	}
-
-	if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
-		if(Util::stricmp(param.c_str(), _T("system")) == 0) {
-			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "system.log")));
-		} else if(Util::stricmp(param.c_str(), _T("downloads")) == 0) {
-			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatTime(SETTING(LOG_FILE_DOWNLOAD), time(NULL)))));
-		} else if(Util::stricmp(param.c_str(), _T("uploads")) == 0) {
-			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)))));
-		} else {
-			return false;
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("refresh"))==0) {
-		try {
-			ShareManager::getInstance()->setDirty();
-			ShareManager::getInstance()->refresh(true);
-		} catch(const ShareException& e) {
-			status = Text::toT(e.getError());
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
-		int j = Util::toInt(Text::fromT(param));
-		if(j > 0) {
-			SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
-			status = TSTRING(SLOTS_SET);
-			ClientManager::getInstance()->infoUpdated();
-		} else {
-			status = TSTRING(INVALID_NUMBER_OF_SLOTS);
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
-		if(!param.empty()) {
-			SearchFrame::openWindow(param);
-		} else {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("dc++")) == 0) {
-		message = msgs[GET_TICK() % MSGS];
-	} else if(Util::stricmp(cmd.c_str(), _T("away")) == 0) {
-		if(Util::getAway() && param.empty()) {
-			Util::setAway(false);
-			Util::setManualAway(false);
-			status = TSTRING(AWAY_MODE_OFF);
-		} else {
-			Util::setAway(true);
-			Util::setManualAway(true);
-			Util::setAwayMessage(Text::fromT(param));
-			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("back")) == 0) {
-		Util::setAway(false);
-		status = TSTRING(AWAY_MODE_OFF);
-	} else if(Util::stricmp(cmd.c_str(), _T("g")) == 0) {
-		if(param.empty()) {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
-		} else {
-			WinUtil::openLink(_T("http://www.google.com/search?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("imdb")) == 0) {
-		if(param.empty()) {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
-		} else {
-			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("u")) == 0) {
-		if (param.empty()) {
-			status = TSTRING(SPECIFY_URL);
-		} else {
-			WinUtil::openLink(Text::toT(Util::encodeURI(Text::fromT(param))));
-		}
-	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
-		HashManager::getInstance()->rebuild();
-	} else {
-		return false;
-	}
-
 	return true;
 }
 

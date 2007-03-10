@@ -47,10 +47,9 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		chat = createTextBox(cs);
-		
 		chat->setTextLimit(0);
 		chat->setFont(WinUtil::font);
-		controls.push_back(chat);
+		add_widget(chat);
 #ifdef PORT_ME
 		/// @todo do we need this?§
 		ctrlClient.FmtLines(TRUE);
@@ -60,11 +59,11 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	
 	{
 		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		message = createTextBox(cs);
 		message->setFont(WinUtil::font);
-		controls.push_back(message);
+		add_widget(message);
 	}
 	
 	{
@@ -73,7 +72,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		filter = createTextBox(cs);
 		filter->setFont(WinUtil::font);
-		controls.push_back(filter);
+		add_widget(filter);
 	}
 	{
 		WidgetComboBox::Seed cs;
@@ -82,14 +81,21 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		cs.exStyle =  WS_EX_CLIENTEDGE;
 		filterType = createComboBox(cs);
 		filterType->setFont(WinUtil::font);
-		controls.push_back(filterType);
+		add_widget(filterType);
 	}
 	
 	status = createStatusBarSections();
+	memset(statusSizes, 0, sizeof(statusSizes));
+	///@todo get real resizer width
+	statusSizes[STATUS_DUMMY] = 16;
+	layout();
+	
+	initSecond();
 	
 	client = ClientManager::getInstance()->getClient(Text::fromT(url));
 	client->addListener(this);
 	client->connect();
+	
 }
 
 HubFrame::~HubFrame() {
@@ -138,19 +144,18 @@ void HubFrame::postClosing() {
 }
 
 void HubFrame::layout() {
+	const int border = 2;
+	
 	SmartWin::Rectangle r(getClientAreaSize()); 
 	status->refresh();
 
 	SmartWin::Rectangle rs(status->getClientAreaSize());
 
 	{
-		std::vector<unsigned> w(4);
-		int tmp = (rs.size.x) > 332 ? 232 : ((rs.size.x > 132) ? rs.size.x -100 : 32);
+		std::vector<unsigned> w(STATUS_LAST);
 
-		w[0] = rs.size.x - tmp;
-		w[1] = w[0] + (tmp-32)/2;
-		w[2] = w[0] + (tmp-32);
-		w[3] = w[2] + 16;
+		w[0] = rs.size.x - rs.pos.x - std::accumulate(statusSizes+1, statusSizes+STATUS_LAST, 0); 
+		std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
 
 		status->setSections(w);
 #ifdef PORT_ME
@@ -162,22 +167,20 @@ void HubFrame::layout() {
 		ctrlShowUsers.MoveWindow(sr);
 #endif
 	}
-	r.size.y -= status->getSize().y;
-	
-	int ymessage = message->getSize().y;
+	r.size.y -= status->getSize().y - border;
+	int ymessage = message->getTextSize("A").y + 10;
 	int xfilter = std::min(r.size.x / 4, 200l);
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
 	message->setBounds(rm);
 	
-	rm.pos.x += rm.size.x;
-	rm.size.x = xfilter * 2 / 3;
+	rm.pos.x += rm.size.x + border;
+	rm.size.x = xfilter * 2 / 3 - border;
 	filter->setBounds(rm);
 	
-	rm.pos.x += rm.size.x;
-	rm.size.x = xfilter / 3;
-	filter->setBounds(rm);
-
-	r.size.y -= rm.size.y;
+	rm.pos.x += rm.size.x + border;
+	rm.size.x = xfilter / 3 - border;
+	filterType->setBounds(rm);
+	r.size.y -= rm.size.y + border;
 	chat->setBounds(r);
 
 #ifdef PORT_ME	
@@ -212,18 +215,206 @@ void HubFrame::layout() {
 	}
 #endif
 }
+void HubFrame::updateStatus() {
+	setStatus(STATUS_USERS, getStatusUsers());
+	setStatus(STATUS_SHARED, getStatusShared());
+		
+}
+
+void HubFrame::initSecond() {
+	SmartWin::Command cmd(_T("1 second"));
+	createTimer(&HubFrame::eachSecond, 1000, cmd);	
+}
+
+void HubFrame::eachSecond(const SmartWin::CommandPtr&) {
+	updateStatus();
+	///@todo change smartwin to support recurring timers 
+	initSecond();
+}
+
 
 void HubFrame::openWindow(SmartWin::Widget* mdiParent, const tstring& url) {
 	FrameIter i = frames.find(url);
 	if(i == frames.end()) {
 		frames.insert(std::make_pair(url, new HubFrame(mdiParent, url)));
 	} else {
+		if(StupidWin::isIconic(i->second))
+			i->second->restore();
+	
 #ifdef PORT_ME
-		if(::IsIconic(i->second->m_hWnd))
-			::ShowWindow(i->second->m_hWnd, SW_RESTORE);
 		i->second->MDIActivate(i->second->m_hWnd);
 #endif
 	}
+}
+bool HubFrame::enter() {
+	tstring s = message->getText();
+	if(s.empty()) {
+		::MessageBeep(MB_ICONEXCLAMATION);
+		return false;
+	}
+
+#ifdef PORT_ME	
+	// save command in history, reset current buffer pointer to the newest command
+	curCommandPosition = prevCommands.size();		//this places it one position beyond a legal subscript
+	if (!curCommandPosition || curCommandPosition > 0 && prevCommands[curCommandPosition - 1] != s) {
+		++curCommandPosition;
+		prevCommands.push_back(s);
+	}
+	currentCommand = _T("");
+#endif
+	// Special command
+	if(s[0] == _T('/')) {
+		tstring cmd = s;
+		tstring param;
+		tstring msg;
+		tstring status;
+		if(WinUtil::checkCommand(cmd, param, msg, status)) {
+			if(!msg.empty()) {
+				client->hubMessage(Text::fromT(msg));
+			}
+			if(!status.empty()) {
+				addClientLine(status);
+			}
+		} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
+#ifdef PORT_ME
+			if(!param.empty()) {
+				redirect = param;
+				if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
+					HubFrame::openWindow(param);
+				} else {
+					BOOL whatever = FALSE;
+					onFollow(0, 0, 0, whatever);
+				}
+			} else {
+				addClientLine(TSTRING(SPECIFY_SERVER));
+			}
+#endif
+			} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
+			chat->setText(_T(""));
+		} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
+			timeStamps = !timeStamps;
+			if(timeStamps) {
+				addClientLine(TSTRING(TIMESTAMPS_ENABLED));
+			} else {
+				addClientLine(TSTRING(TIMESTAMPS_DISABLED));
+			}
+		} else if( (Util::stricmp(cmd.c_str(), _T("password")) == 0) && waitingForPW ) {
+			client->setPassword(Text::fromT(param));
+			client->password(Text::fromT(param));
+			waitingForPW = false;
+		} else if( Util::stricmp(cmd.c_str(), _T("showjoins")) == 0 ) {
+#ifdef PORT_ME
+				showJoins = !showJoins;
+				if(showJoins) {
+					addClientLine(TSTRING(JOIN_SHOWING_ON));
+				} else {
+					addClientLine(TSTRING(JOIN_SHOWING_OFF));
+				}
+#endif
+			} else if( Util::stricmp(cmd.c_str(), _T("favshowjoins")) == 0 ) {
+#ifdef PORT_ME
+				favShowJoins = !favShowJoins;
+				if(favShowJoins) {
+					addClientLine(TSTRING(FAV_JOIN_SHOWING_ON));
+				} else {
+					addClientLine(TSTRING(FAV_JOIN_SHOWING_OFF));
+				}
+#endif
+			} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
+			StupidWin::postMessage(this, WM_CLOSE);
+		} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
+#ifdef PORT_ME
+				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
+#endif 
+			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
+#ifdef PORT_ME
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
+				STRING(PORT) +
+				Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
+				Util::toString(SearchManager::getInstance()->getPort()) + "/" +
+					Util::toString(ConnectionManager::getInstance()->getSecurePort())
+					)));
+#endif
+			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
+#ifdef PORT_ME
+				addAsFavorite();
+#endif
+			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
+#ifdef PORT_ME
+				removeFavoriteHub();
+#endif
+			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
+#ifdef PORT_ME
+				if( !param.empty() ){
+					UserInfo* ui = findUser(param);
+					if(ui) {
+						ui->getList();
+					}
+				}
+#endif
+			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+#ifdef PORT_ME
+				StringMap params;
+				params["hubNI"] = client->getHubName();
+			params["hubURL"] = client->getHubUrl();
+			params["myNI"] = client->getMyNick();
+			if(param.empty()) {
+				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params, true))));
+			} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params, true))));
+				}
+#endif
+			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
+			addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
+		} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
+#ifdef PORT_ME
+				string::size_type j = param.find(_T(' '));
+				if(j != string::npos) {
+					tstring nick = param.substr(0, j);
+					UserInfo* ui = findUser(nick);
+
+					if(ui) {
+						if(param.size() > j + 1)
+							PrivateFrame::openWindow(ui->user, param.substr(j+1));
+						else
+							PrivateFrame::openWindow(ui->user);
+					}
+				} else if(!param.empty()) {
+					UserInfo* ui = findUser(param);
+					if(ui) {
+						PrivateFrame::openWindow(ui->user);
+					}
+				}
+#endif
+			} else {
+				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
+					client->hubMessage(Text::fromT(s));
+				} else {
+					addClientLine(TSTRING(UNKNOWN_COMMAND) + cmd);
+				}
+			}
+			message->setText(_T(""));
+	} else if(waitingForPW) {
+		addClientLine(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
+		message->setText(_T("/password "));
+		message->setFocus();
+		message->setSelection(10, 10);
+	} else {
+		client->hubMessage(Text::fromT(s));
+		message->setText(_T(""));
+	}
+	return true;
+}
+
+
+void HubFrame::setStatus(Status s, const tstring& text) {
+	int w = status->getTextSize(text).x + 12;
+	if(w > static_cast<int>(statusSizes[s])) {
+		dcdebug("Setting status size %d to %d\n", s, w);
+		statusSizes[s] = w;
+		layout();
+	}
+	status->setText(text, s);
 }
 
 void HubFrame::addLine(const tstring& aLine) {
@@ -347,9 +538,6 @@ void HubFrame::spoken(WPARAM, LPARAM) {
 			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str), false);
 		} else if(i->first == SET_WINDOW_TITLE) {
 			setText(Text::toT(static_cast<StringTask*>(i->second)->str));
-		} else if(i->first == STATS) {
-			status->setText(Text::toT(getUsersTextForStatusBar()), 1);
-			status->setText(Text::toT(Util::formatBytes(getAvailable())), 2);
 		} else if(i->first == GET_PASSWORD) {
 			if(client->getPassword().size() > 0) {
 				client->password(client->getPassword());
@@ -417,6 +605,129 @@ void HubFrame::spoken(WPARAM, LPARAM) {
 	}
 #endif
 }
+
+bool HubFrame::charred(WidgetTextBoxPtr ptr, int c) {
+	///@todo Investigate WM_CHAR vs WM_KEYDOWN
+	
+	switch(c) {
+	case VK_RETURN: return enter();
+	default:  return Base::charred(ptr, c);
+	}
+	
+#ifdef PORT_ME
+	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN)
+		complete.clear(), inTabComplete = false;
+
+	if (uMsg != WM_KEYDOWN) {
+		switch(wParam) {
+			case VK_RETURN:
+				if( (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ) {
+					bHandled = FALSE;
+				}
+				break;
+			case VK_TAB:
+				bHandled = TRUE;
+				break;
+			default:
+				bHandled = FALSE;
+				break;
+		}
+		return 0;
+	}
+
+	switch(wParam) {
+		case VK_TAB:
+				onTab();
+			break;
+		case VK_RETURN:
+			if( (GetKeyState(VK_CONTROL) & 0x8000) ||
+				(GetKeyState(VK_MENU) & 0x8000) ) {
+					bHandled = FALSE;
+				} else {
+					onEnter();
+				}
+				break;
+		case VK_UP:
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
+				//scroll up in chat command history
+				//currently beyond the last command?
+				if (curCommandPosition > 0) {
+					//check whether current command needs to be saved
+					if (curCommandPosition == prevCommands.size()) {
+						auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
+						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
+						currentCommand = tstring(messageContents.get());
+					}
+
+					//replace current chat buffer with current command
+					ctrlMessage.SetWindowText(prevCommands[--curCommandPosition].c_str());
+				}
+				// move cursor to end of line
+				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
+			} else {
+				bHandled = FALSE;
+			}
+
+			break;
+		case VK_DOWN:
+			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
+				//scroll down in chat command history
+
+				//currently beyond the last command?
+				if (curCommandPosition + 1 < prevCommands.size()) {
+					//replace current chat buffer with current command
+					ctrlMessage.SetWindowText(prevCommands[++curCommandPosition].c_str());
+				} else if (curCommandPosition + 1 == prevCommands.size()) {
+					//revert to last saved, unfinished command
+
+					ctrlMessage.SetWindowText(currentCommand.c_str());
+					++curCommandPosition;
+				}
+				// move cursor to end of line
+				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
+			} else {
+				bHandled = FALSE;
+			}
+
+			break;
+		case VK_PRIOR: // page up
+			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEUP);
+
+			break;
+		case VK_NEXT: // page down
+			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEDOWN);
+
+			break;
+		case VK_HOME:
+			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+				curCommandPosition = 0;
+
+				auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
+				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
+				currentCommand = tstring(messageContents.get());
+
+				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
+			} else {
+				bHandled = FALSE;
+			}
+
+			break;
+		case VK_END:
+			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+				curCommandPosition = prevCommands.size();
+
+				ctrlMessage.SetWindowText(currentCommand.c_str());
+			} else {
+				bHandled = FALSE;
+			}
+			break;
+		default:
+			bHandled = FALSE;
+	}
+	return 0;
+#endif
+}
+
 
 HubFrame::UserTask::UserTask(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) { 
 
@@ -519,18 +830,18 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
 }
 
-int64_t HubFrame::getAvailable() const {
+tstring HubFrame::getStatusShared() const {
 #ifdef PORT_ME
 	if (ctrlUsers.GetSelectedCount() > 1) {
 		return ctrlUsers.forEachSelectedT(CountAvailable()).available;
 	} else
 		return for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
 #endif
-	return 0;
+	return _T("0");
 }
 
 
-string HubFrame::getUsersTextForStatusBar() const {
+tstring HubFrame::getStatusUsers() const {
 #ifdef PORT_ME
 	size_t userCount = 0;
 	for(UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i){
@@ -539,14 +850,14 @@ string HubFrame::getUsersTextForStatusBar() const {
 			userCount++;
 	}
 
-	string textForUsers;
+	tstring textForUsers;
 	if (ctrlUsers.GetSelectedCount() > 1)
 		textForUsers += Util::toString(ctrlUsers.GetSelectedCount()) + "/";
 	if (showUsers && (size_t)ctrlUsers.GetItemCount() < userCount)
 		textForUsers += Util::toString(ctrlUsers.GetItemCount()) + "/";
 	return textForUsers + Util::toString(userCount) + " " + STRING(HUB_USERS);
 #endif
-	return "Unknown";
+	return _T("Unknown");
 }
 
 #ifdef PORT_ME
@@ -574,11 +885,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
-
-	clientContainer.SubclassWindow(ctrlClient.m_hWnd);
-	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
-	ctrlFilterContainer.SubclassWindow(ctrlMessage.m_hWnd);
-	ctrlFilterSelContainer.SubclassWindow(ctrlFilterSel.m_hWnd);
 
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
@@ -660,146 +966,6 @@ LRESULT HubFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 	if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
 		ctrlLastLines.RelayEvent(pMsg);
 	return 0;
-}
-
-void HubFrame::onEnter() {
-	if(ctrlMessage.GetWindowTextLength() > 0) {
-		AutoArray<TCHAR> msg(ctrlMessage.GetWindowTextLength()+1);
-		ctrlMessage.GetWindowText(msg, ctrlMessage.GetWindowTextLength()+1);
-		tstring s(msg, ctrlMessage.GetWindowTextLength());
-
-		// save command in history, reset current buffer pointer to the newest command
-		curCommandPosition = prevCommands.size();		//this places it one position beyond a legal subscript
-		if (!curCommandPosition || curCommandPosition > 0 && prevCommands[curCommandPosition - 1] != s) {
-			++curCommandPosition;
-			prevCommands.push_back(s);
-		}
-		currentCommand = _T("");
-
-		// Special command
-		if(s[0] == _T('/')) {
-			tstring cmd = s;
-			tstring param;
-			tstring message;
-			tstring status;
-			if(WinUtil::checkCommand(cmd, param, message, status)) {
-				if(!message.empty()) {
-					client->hubMessage(Text::fromT(message));
-				}
-				if(!status.empty()) {
-					addClientLine(status);
-				}
-			} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
-				if(!param.empty()) {
-					redirect = param;
-					if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
-						HubFrame::openWindow(param);
-					} else {
-						BOOL whatever = FALSE;
-						onFollow(0, 0, 0, whatever);
-					}
-				} else {
-					addClientLine(TSTRING(SPECIFY_SERVER));
-				}
-			} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
-				ctrlClient.SetWindowText(_T(""));
-			} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
-				timeStamps = !timeStamps;
-				if(timeStamps) {
-					addClientLine(TSTRING(TIMESTAMPS_ENABLED));
-				} else {
-					addClientLine(TSTRING(TIMESTAMPS_DISABLED));
-				}
-			} else if( (Util::stricmp(cmd.c_str(), _T("password")) == 0) && waitingForPW ) {
-				client->setPassword(Text::fromT(param));
-				client->password(Text::fromT(param));
-				waitingForPW = false;
-			} else if( Util::stricmp(cmd.c_str(), _T("showjoins")) == 0 ) {
-				showJoins = !showJoins;
-				if(showJoins) {
-					addClientLine(TSTRING(JOIN_SHOWING_ON));
-				} else {
-					addClientLine(TSTRING(JOIN_SHOWING_OFF));
-				}
-			} else if( Util::stricmp(cmd.c_str(), _T("favshowjoins")) == 0 ) {
-				favShowJoins = !favShowJoins;
-				if(favShowJoins) {
-					addClientLine(TSTRING(FAV_JOIN_SHOWING_ON));
-				} else {
-					addClientLine(TSTRING(FAV_JOIN_SHOWING_OFF));
-				}
-			} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
-				PostMessage(WM_CLOSE);
-			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
-				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
-			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
-					STRING(PORT) +
-					Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
-					Util::toString(SearchManager::getInstance()->getPort()) + "/" +
-					Util::toString(ConnectionManager::getInstance()->getSecurePort())
-					)));
-			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
-				addAsFavorite();
-			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
-				removeFavoriteHub();
-			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
-				if( !param.empty() ){
-					UserInfo* ui = findUser(param);
-					if(ui) {
-						ui->getList();
-					}
-				}
-			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
-				StringMap params;
-				params["hubNI"] = client->getHubName();
-				params["hubURL"] = client->getHubUrl();
-				params["myNI"] = client->getMyNick();
-				if(param.empty()) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params, true))));
-				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params, true))));
-				}
-			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
-				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
-			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
-				string::size_type j = param.find(_T(' '));
-				if(j != string::npos) {
-					tstring nick = param.substr(0, j);
-					UserInfo* ui = findUser(nick);
-
-					if(ui) {
-						if(param.size() > j + 1)
-							PrivateFrame::openWindow(ui->user, param.substr(j+1));
-						else
-							PrivateFrame::openWindow(ui->user);
-					}
-				} else if(!param.empty()) {
-					UserInfo* ui = findUser(param);
-					if(ui) {
-						PrivateFrame::openWindow(ui->user);
-					}
-				}
-			} else {
-				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
-					client->hubMessage(Text::fromT(s));
-				} else {
-					addClientLine(TSTRING(UNKNOWN_COMMAND) + cmd);
-				}
-			}
-			ctrlMessage.SetWindowText(_T(""));
-		} else if(waitingForPW) {
-			addClientLine(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
-			ctrlMessage.SetWindowText(_T("/password "));
-			ctrlMessage.SetFocus();
-			ctrlMessage.SetSel(10, 10);
-		} else {
-			client->hubMessage(Text::fromT(s));
-			ctrlMessage.SetWindowText(_T(""));
-		}
-	} else {
-		MessageBeep(MB_ICONEXCLAMATION);
-	}
 }
 
 struct CompareItems {
@@ -1260,119 +1426,6 @@ LRESULT HubFrame::onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN)
-		complete.clear(), inTabComplete = false;
-
-	if (uMsg != WM_KEYDOWN) {
-		switch(wParam) {
-			case VK_RETURN:
-				if( (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ) {
-					bHandled = FALSE;
-				}
-				break;
-			case VK_TAB:
-				bHandled = TRUE;
-				break;
-			default:
-				bHandled = FALSE;
-				break;
-		}
-		return 0;
-	}
-
-	switch(wParam) {
-		case VK_TAB:
-				onTab();
-			break;
-		case VK_RETURN:
-			if( (GetKeyState(VK_CONTROL) & 0x8000) ||
-				(GetKeyState(VK_MENU) & 0x8000) ) {
-					bHandled = FALSE;
-				} else {
-					onEnter();
-				}
-				break;
-		case VK_UP:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
-				//scroll up in chat command history
-				//currently beyond the last command?
-				if (curCommandPosition > 0) {
-					//check whether current command needs to be saved
-					if (curCommandPosition == prevCommands.size()) {
-						auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-						currentCommand = tstring(messageContents.get());
-					}
-
-					//replace current chat buffer with current command
-					ctrlMessage.SetWindowText(prevCommands[--curCommandPosition].c_str());
-				}
-				// move cursor to end of line
-				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
-			} else {
-				bHandled = FALSE;
-			}
-
-			break;
-		case VK_DOWN:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
-				//scroll down in chat command history
-
-				//currently beyond the last command?
-				if (curCommandPosition + 1 < prevCommands.size()) {
-					//replace current chat buffer with current command
-					ctrlMessage.SetWindowText(prevCommands[++curCommandPosition].c_str());
-				} else if (curCommandPosition + 1 == prevCommands.size()) {
-					//revert to last saved, unfinished command
-
-					ctrlMessage.SetWindowText(currentCommand.c_str());
-					++curCommandPosition;
-				}
-				// move cursor to end of line
-				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
-			} else {
-				bHandled = FALSE;
-			}
-
-			break;
-		case VK_PRIOR: // page up
-			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEUP);
-
-			break;
-		case VK_NEXT: // page down
-			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEDOWN);
-
-			break;
-		case VK_HOME:
-			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
-				curCommandPosition = 0;
-
-				auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-				currentCommand = tstring(messageContents.get());
-
-				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
-			} else {
-				bHandled = FALSE;
-			}
-
-			break;
-		case VK_END:
-			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
-				curCommandPosition = prevCommands.size();
-
-				ctrlMessage.SetWindowText(currentCommand.c_str());
-			} else {
-				bHandled = FALSE;
-			}
-			break;
-		default:
-			bHandled = FALSE;
-	}
-	return 0;
-}
-
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
 	if((wParam == BST_CHECKED)) {
@@ -1478,7 +1531,6 @@ void HubFrame::resortForFavsFirst(bool justDoIt /* = false */) {
 }
 
 void HubFrame::on(Second, uint32_t /*aTick*/) throw() {
-	updateStatusBar();
 	if(updateUsers) {
 		updateUsers = false;
 		PostMessage(WM_SPEAKER);

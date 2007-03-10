@@ -32,7 +32,7 @@ NotepadFrame::NotepadFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		pad = createTextBox(cs);
-		controls.push_back(pad);
+		add_widget(pad);
 	}
 	
 	pad->setTextLimit(0);
