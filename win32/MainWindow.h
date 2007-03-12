@@ -81,6 +81,7 @@ private:
 	
 	// User actions
 	void handleExit(WidgetMenuPtr menu, unsigned id);
+	void handlePublicHubs(WidgetMenuPtr menu, unsigned id);
 	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
 	void handleNotepad(WidgetMenuPtr menu, unsigned id);
 	void handleQuickConnect(WidgetMenuPtr menu, unsigned id);
@@ -155,7 +156,7 @@ private:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVert)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
-		COMMAND_ID_HANDLER(ID_FILE_CONNECT, onOpenWindows)
+		COMMAND_ID_HANDLER(ID_VIEW_CONNECT, onOpenWindows)
 		COMMAND_ID_HANDLER(ID_FILE_SEARCH, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FAVUSERS, onOpenWindows)

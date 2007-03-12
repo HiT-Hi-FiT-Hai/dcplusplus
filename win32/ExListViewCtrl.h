@@ -25,7 +25,133 @@
 
 #include "ListViewArrows.h"
 #include "WinUtil.h"
+#include "StupidWin.h"
 
+class ExListViewCtrl : public ListViewArrows<ExListViewCtrl>
+{
+	int sortColumn;
+	int sortType;
+	bool ascending;
+	int (*fun)(LPARAM, LPARAM);
+
+	//@fixme utility functions don't belong here, probably. Also from WTL at the moment -
+	bool SortItemsEx(PFNLVCOMPARE pfnCompare, LPARAM lParamSort) {
+		return ::SendMessage(this->handle(), LVM_SORTITEMSEX, (LPARAM)pfnCompare, (WPARAM)lParamSort);
+	}
+
+	// for listbox items
+	DWORD_PTR GetItemData(int nIndex) const
+	{
+		return (DWORD_PTR)::SendMessage(this->handle(), LB_GETITEMDATA, nIndex, 0L);
+	}
+
+	int GetItemText(int nItem, int nSubItem, LPTSTR lpszText, int nLen) const
+	{
+		LVITEM lvi = { 0 };
+		lvi.iSubItem = nSubItem;
+		lvi.cchTextMax = nLen;
+		lvi.pszText = lpszText;
+		return (int)::SendMessage(this->handle(), LVM_GETITEMTEXT, (WPARAM)nItem, (LPARAM)&lvi);
+	}
+
+	int GetItemCount() const
+		{ return (int) ::SendMessage(this->handle(), LVM_GETITEMCOUNT, 0, 0L); }
+public:
+	enum {
+		SORT_FUNC = 2,
+ 		SORT_STRING,
+		SORT_STRING_NOCASE,
+		SORT_INT,
+		SORT_FLOAT,
+		SORT_BYTES
+	};
+
+	typedef ListViewArrows<ExListViewCtrl> arrowBase;
+
+	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
+		bool doUpdateArrow = (aColumn != sortColumn || aAscending != ascending);
+
+		sortColumn = aColumn;
+		sortType = aType;
+		ascending = aAscending;
+		fun = aFun;
+		resort();
+		if (doUpdateArrow)
+			updateArrow();
+	}
+
+	void resort() {
+		if(sortColumn != -1) {
+			SortItemsEx(&CompareFunc, (LPARAM)this);
+		}
+	}
+
+	bool isAscending() { return ascending; }
+	int getSortColumn() { return sortColumn; }
+	int getSortType() { return sortType; }
+
+	bool onCharPress(int) {
+		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
+			int count = GetItemCount();
+			for(int i = 0; i < count; ++i)
+				ListView_SetItemState(this->handle(), i, LVIS_SELECTED, LVIS_SELECTED);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
+		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
+		TCHAR buf[128];
+		TCHAR buf2[128];
+
+		int na = (int)lParam1;
+		int nb = (int)lParam2;
+		// This is a trick, so that if fun() returns something bigger than one, use the
+		// internal default sort functions
+		int result = p->sortType;
+		if(result == SORT_FUNC) {
+			result = p->fun(p->GetItemData(na), p->GetItemData(nb));
+		}
+
+		if(result == SORT_STRING) {
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
+			result = lstrcmp(buf, buf2);
+		} else if(result == SORT_STRING_NOCASE) {
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
+			result = lstrcmpi(buf, buf2);
+		} else if(result == SORT_INT) {
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
+			result = compare(_tstoi(buf), _tstoi(buf2));
+		} else if(result == SORT_FLOAT) {
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
+			result = compare(_tstof(buf), _tstof(buf2));
+		} else if(result == SORT_BYTES) {
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
+#if PORT_ME
+			result = compare(WinUtil::toBytes(buf), WinUtil::toBytes(buf2));
+#endif
+ 		}
+		if(!p->ascending)
+			result = -result;
+		return result;
+	}
+
+	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1) {
+		this->onChar(&ExListViewCtrl::onCharPress);
+	}
+
+	virtual ~ExListViewCtrl() { }
+};
+
+#ifdef PORT_ME
 class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CControlWinTraits>,
 	public ListViewArrows<ExListViewCtrl>
 {
@@ -175,5 +301,7 @@ public:
 
 	virtual ~ExListViewCtrl() { }
 };
+
+#endif /* PORT_ME */
 
 #endif // !defined(EX_LIST_VIEW_CTRL_H)

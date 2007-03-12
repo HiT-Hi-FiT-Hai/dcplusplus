@@ -25,6 +25,7 @@
 #include "SystemFrame.h"
 #include "NotepadFrame.h"
 #include "HubFrame.h"
+#include "PublicHubsFrm.h"
 
 #include "LineDlg.h"
 
@@ -89,7 +90,7 @@ MainWindow::MainWindow() :
 	images.CreateFromImage(IDB_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	m_CmdBar.m_hImageList = images;
 
-	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
+	m_CmdBar.m_arrCommand.Add(ID_VIEW_CONNECT);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
 	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
 	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
@@ -153,7 +154,7 @@ MainWindow::MainWindow() :
 	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
 	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
-	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_FILE_CONNECT);
+	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_VIEW_CONNECT);
 	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
 	if(BOOLSETTING(OPEN_QUEUE)) PostMessage(WM_COMMAND, IDC_QUEUE);
@@ -247,12 +248,12 @@ void MainWindow::initMenu() {
 	file->appendItem(IDC_EXIT, TSTRING(MENU_EXIT), &MainWindow::handleExit);
 
 	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
-	
+
+	view->appendItem(IDC_PUBLIC_HUBS, TSTRING(MENU_PUBLIC_HUBS), &MainWindow::handlePublicHubs);
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleSystemLog);
 	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleNotepad);
 	
 #ifdef PORT_ME
-	view.AppendMenu(MF_STRING, ID_FILE_CONNECT, CTSTRING(MENU_PUBLIC_HUBS));
 	view.AppendMenu(MF_STRING, IDC_QUEUE, CTSTRING(MENU_DOWNLOAD_QUEUE));
 	view.AppendMenu(MF_STRING, IDC_VIEW_WAITING_USERS, CTSTRING(WAITING_USERS));
 	view.AppendMenu(MF_STRING, IDC_FINISHED, CTSTRING(FINISHED_DOWNLOADS));
@@ -331,6 +332,10 @@ void MainWindow::initMDI() {
 
 void MainWindow::handleExit(WidgetMenuPtr /* menu */, unsigned /* id*/) {
 	close(true);
+}
+
+void MainWindow::handlePublicHubs(WidgetMenuPtr, unsigned) {
+	PublicHubsFrame::openWindow(mdi);
 }
 
 void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
@@ -656,7 +661,7 @@ HWND MainFrame::createToolbar() {
 	int n = 0, bitmap = 0;
 
 	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FILE_CONNECT;
+	tb[n].idCommand = ID_VIEW_CONNECT;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
@@ -843,7 +848,7 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 LRESULT MainFrame::onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	switch(wID) {
 		case ID_FILE_SEARCH: SearchFrame::openWindow(); break;
-		case ID_FILE_CONNECT: PublicHubsFrame::openWindow(); break;
+		case ID_VIEW_CONNECT: PublicHubsFrame::openWindow(); break;
 		case IDC_FAVORITES: FavoriteHubsFrame::openWindow(); break;
 		case IDC_FAVUSERS: UsersFrame::openWindow(); break;
 		case IDC_NOTEPAD: NotepadFrame::openWindow(); break;
@@ -1008,7 +1013,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	{
 		int stringId = -1;
 		switch(idCtrl) {
-			case ID_FILE_CONNECT: stringId = ResourceManager::MENU_PUBLIC_HUBS; break;
+			case ID_VIEW_CONNECT: stringId = ResourceManager::MENU_PUBLIC_HUBS; break;
 			case ID_FILE_RECONNECT: stringId = ResourceManager::MENU_RECONNECT; break;
 			case IDC_FOLLOW: stringId = ResourceManager::MENU_FOLLOW_REDIRECT; break;
 			case IDC_FAVORITES: stringId = ResourceManager::MENU_FAVORITE_HUBS; break;

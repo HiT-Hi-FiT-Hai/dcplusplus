@@ -23,7 +23,71 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "FlatTabCtrl.h"
+#include "StaticFrame.h"
+
+class PublicHubsFrame : public StaticFrame<PublicHubsFrame> {
+public:
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
+
+	void onCreate(CREATESTRUCT *);
+
+protected:
+	friend class StaticFrame<PublicHubsFrame>;
+	friend class MDIChildFrame<PublicHubsFrame>;
+
+	PublicHubsFrame(SmartWin::Widget* mdiParent);
+	virtual ~PublicHubsFrame();
+
+	void layout();
+	bool preClosing();
+
+private:
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NAME = COLUMN_FIRST,
+		COLUMN_DESCRIPTION,
+		COLUMN_USERS,
+		COLUMN_SERVER,
+		COLUMN_COUNTRY,
+		COLUMN_SHARED,
+		COLUMN_MINSHARE,
+		COLUMN_MINSLOTS,
+		COLUMN_MAXHUBS,
+		COLUMN_MAXUSERS,
+		COLUMN_RELIABILITY,
+		COLUMN_RATING,
+		COLUMN_LAST
+	};
+
+	enum {
+		FINISHED,
+		LOADED_FROM_CACHE,
+		STARTING,
+		FAILED
+	};
+
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
+	};
+
+	int visibleHubs;
+	int users;
+
+	WidgetTextBoxPtr pad;
+
+	static int columnIndexes[];
+	static int columnSizes[];
+
+};
+
+#ifdef PORT_ME
+
 #include "ExListViewCtrl.h"
 
 #include "../client/FavoriteManager.h"
@@ -178,5 +242,7 @@ private:
 	bool parseFilter(FilterModes& mode, double& size);
 	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const FilterModes& mode, const double& size);
 };
+
+#endif /* PORT_ME */
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)

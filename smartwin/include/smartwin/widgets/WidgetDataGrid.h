@@ -1214,7 +1214,7 @@ std::vector< unsigned > WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::g
 template< class EventHandlerClass, class MessageMapPolicy >
 int WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getSelectedIndex() const
 {
-	unsigned tmpIdx = - 1;
+	int tmpIdx = - 1;
 	tmpIdx = ListView_GetNextItem( this->Widget::itsHandle, tmpIdx, LVNI_SELECTED );
 	return tmpIdx;
 }

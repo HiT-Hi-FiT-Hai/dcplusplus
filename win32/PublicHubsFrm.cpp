@@ -16,16 +16,185 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include "resource.h"
 
-#include "PublicHubsFrm.h"
 #include "HubFrame.h"
 #include "WinUtil.h"
+
+#include "../client/Client.h"
+#include "../client/StringTokenizer.h"
+#include "../client/version.h"
+
+#include "PublicHubsFrm.h"
+#include "client/File.h"
+
+#ifdef PORT_ME
 #include "PublicHubsListDlg.h"
+#endif
+
+int PublicHubsFrame::columnIndexes[] = {
+	COLUMN_NAME,
+	COLUMN_DESCRIPTION,
+	COLUMN_USERS,
+	COLUMN_SERVER,
+	COLUMN_COUNTRY,
+	COLUMN_SHARED,
+	COLUMN_MINSHARE,
+	COLUMN_MINSLOTS,
+	COLUMN_MAXHUBS,
+	COLUMN_MAXUSERS,
+	COLUMN_RELIABILITY,
+	COLUMN_RATING
+ };
+
+int PublicHubsFrame::columnSizes[] = { 200, 290, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
+
+static ResourceManager::Strings columnNames[] = {
+	ResourceManager::HUB_NAME,
+	ResourceManager::DESCRIPTION,
+	ResourceManager::USERS,
+	ResourceManager::HUB_ADDRESS,
+	ResourceManager::COUNTRY,
+	ResourceManager::SHARED,
+	ResourceManager::MIN_SHARE,
+	ResourceManager::MIN_SLOTS,
+	ResourceManager::MAX_HUBS,
+	ResourceManager::MAX_USERS,
+	ResourceManager::RELIABILITY,
+	ResourceManager::RATING,
+
+};
+
+void PublicHubsFrame::onCreate(CREATESTRUCT *)
+{
+#ifdef PORT_ME
+	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
+	ctrlStatus.Attach(m_hWndStatusBar);
+
+	int w[3] = { 0, 0, 0};
+	ctrlStatus.SetParts(3, w);
+
+	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, WS_EX_CLIENTEDGE, IDC_HUBLIST);
+	ctrlHubs.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+
+	// Create listview columns
+	WinUtil::splitTokens(columnIndexes, SETTING(PUBLICHUBSFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(PUBLICHUBSFRAME_WIDTHS), COLUMN_LAST);
+
+	for(int j=0; j<COLUMN_LAST; j++) {
+		int fmt = (j == COLUMN_USERS) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlHubs.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+	}
+
+	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+
+	ctrlHubs.SetBkColor(WinUtil::bgColor);
+	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
+	ctrlHubs.SetTextColor(WinUtil::textColor);
+
+	ctrlHubs.setSort(COLUMN_USERS, ExListViewCtrl::SORT_INT, false);
+	ctrlHubs.SetFocus();
+
+	ctrlConfigure.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_PUB_LIST_CONFIG);
+	ctrlConfigure.SetWindowText(CTSTRING(CONFIGURE));
+	ctrlConfigure.SetFont(WinUtil::systemFont);
+
+	ctrlRefresh.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_REFRESH);
+	ctrlRefresh.SetWindowText(CTSTRING(REFRESH));
+	ctrlRefresh.SetFont(WinUtil::systemFont);
+
+	ctrlLists.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_GROUPBOX, WS_EX_TRANSPARENT);
+	ctrlLists.SetFont(WinUtil::systemFont);
+	ctrlLists.SetWindowText(CTSTRING(CONFIGURED_HUB_LISTS));
+
+	ctrlPubLists.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE, IDC_PUB_LIST_DROPDOWN);
+	ctrlPubLists.SetFont(WinUtil::systemFont, FALSE);
+	// populate with values from the settings
+	updateDropDown();
+
+	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+	filterContainer.SubclassWindow(ctrlFilter.m_hWnd);
+	ctrlFilter.SetFont(WinUtil::systemFont);
+
+	ctrlFilterSel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE);
+	ctrlFilterSel.SetFont(WinUtil::systemFont, FALSE);
+
+	//populate the filter list with the column names
+	for(int j=0; j<COLUMN_LAST; j++) {
+		ctrlFilterSel.AddString(CTSTRING_I(columnNames[j]));
+	}
+	ctrlFilterSel.AddString(CTSTRING(ANY));
+	ctrlFilterSel.SetCurSel(COLUMN_LAST);
+
+	ctrlFilterDesc.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_GROUPBOX, WS_EX_TRANSPARENT);
+	ctrlFilterDesc.SetWindowText(CTSTRING(FILTER));
+	ctrlFilterDesc.SetFont(WinUtil::systemFont);
+
+	FavoriteManager::getInstance()->addListener(this);
+
+	hubs = FavoriteManager::getInstance()->getPublicHubs();
+	if(FavoriteManager::getInstance()->isDownloading())
+		ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_HUB_LIST));
+	else if(hubs.empty())
+		FavoriteManager::getInstance()->refresh();
+
+	updateList();
+
+	hubsMenu.CreatePopupMenu();
+	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));
+	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CTSTRING(ADD_TO_FAVORITES));
+	hubsMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
+	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
+#endif
+}
+
+
+PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
+	SmartWin::Widget(mdiParent),
+	pad(0)
+{
+	//create status bar
+	//divide status bar into parts
+	//create list of hubs
+	//create config/refresh/etc buttons
+}
+
+PublicHubsFrame::~PublicHubsFrame() {
+}
+
+bool PublicHubsFrame::preClosing() {
+	if(StupidWin::getModify(pad)) {
+		try {
+			dcdebug("Writing publicc ontents\n");
+			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(Text::fromT(pad->getText()));
+		} catch(const FileException& e) {
+			dcdebug("Writing failed: %s\n", e.getError().c_str());
+			///@todo Notify user			
+		}
+	}
+	return true;
+}
+
+void PublicHubsFrame::layout() {
+	pad->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+}
+
+#ifdef PORT_ME
+
+#include "Resource.h"
+
+#include "HubFrame.h"
+#include "WinUtil.h"
 
 #include "../client/Client.h"
 #include "../client/StringTokenizer.h"

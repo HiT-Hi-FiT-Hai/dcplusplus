@@ -455,7 +455,7 @@ void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( typen
 	const Command & command )
 #endif
 {
-	unsigned int event = - 1;
+	int event = - 1;
 	for ( int n = 1; n < 101; ++n )
 	{
 		typename std::map < UINT,

@@ -19,57 +19,51 @@
 #if !defined(LIST_VIEW_ARROWS_H)
 #define LIST_VIEW_ARROWS_H
 
+#include <SmartWin.h>
+
 template<class T>
-class ListViewArrows {
+class ListViewArrows : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, T> {
 public:
-	ListViewArrows() { }
+	ListViewArrows() {
+		this->onCreate(onCreate);
+		this->onClosing(onDestroy);
+	}
+
 	virtual ~ListViewArrows() { }
 
 	typedef ListViewArrows<T> thisClass;
 
-	BEGIN_MSG_MAP(thisClass)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
-		MESSAGE_HANDLER(WM_SETTINGCHANGE, onSettingChange)
-	END_MSG_MAP()
+#ifdef PORT_ME
+	MESSAGE_HANDLER(WM_SETTINGCHANGE, onSettingChange)
+#endif
 
 	void rebuildArrows()
 	{
 		POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
 		POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
 
-		CDC dc;
-		CBrushHandle brush;
-		CPen penLight;
-		CPen penShadow;
+		BufferedCanvas dc;
+		Pen penLight;
+		Pen penShadow;
 
 		const int bitmapWidth = 8;
 		const int bitmapHeight = 8;
-		const RECT rect = {0, 0, bitmapWidth, bitmapHeight};
+		const Rectangle rect = {0, 0, bitmapWidth, bitmapHeight};
 
-		T* pThis = (T*)this;
+		Brush brush(dc, COLOR_3DFACE);
+		Pen penLight(dc, COLOR_3DHIGHLIGHT, 1);
+		Pen penShadow(dc, COLOR_3DSHADOW, 1);
 
-		if(!dc.CreateCompatibleDC(pThis->GetDC()))
-			return;
+		if (!upArrow)
+			upArrow = Bitmap(::CreateCompatibleBitmap(::GetDC(NULL), bitmapWidth, bitmapHeight));
 
-		if(!brush.CreateSysColorBrush(COLOR_3DFACE))
-			return;
-
-		if(!penLight.CreatePen(PS_SOLID, 1, ::GetSysColor(COLOR_3DHIGHLIGHT)))
-			return;
-
-		if(!penShadow.CreatePen(PS_SOLID, 1, ::GetSysColor(COLOR_3DSHADOW)))
-			return;
-
-		if (upArrow.IsNull())
-			upArrow.CreateCompatibleBitmap(pThis->GetDC(), bitmapWidth, bitmapHeight);
-
-		if (downArrow.IsNull())
-			downArrow.CreateCompatibleBitmap(pThis->GetDC(), bitmapWidth, bitmapHeight);
+		if (!downArrow)
+			downArrow = Bitmap(::CreateCompatibleBitmap(::GetDC(NULL), bitmapWidth, bitmapHeight));
 
 		// create up arrow
-		dc.SelectBitmap(upArrow);
+		::SelectBitmap(dc.getDc(), upArrow.getBitmap());
 		dc.FillRect(&rect, brush);
+#ifdef PORT_ME
 		dc.SelectPen(penLight);
 		dc.Polyline(pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
 		dc.SelectPen(penShadow);
@@ -94,6 +88,7 @@ public:
 		}
 		dc.SelectPen(penShadow);
 		dc.Polyline(pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
+#endif
 	}
 
 	void updateArrow() {
@@ -122,19 +117,16 @@ public:
 		}
 	}
 
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	void onCreate(CREATESTRUCT* /* cs */) {
 		rebuildArrows();
 		T* pThis = (T*)this;
 		_Module.AddSettingChangeNotify(pThis->m_hWnd);
-		bHandled = FALSE;
-		return 0;
 	}
 
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	bool onDestroy() {
 		T* pThis = (T*)this;
 		_Module.RemoveSettingChangeNotify(pThis->m_hWnd);
-		bHandled = FALSE;
-		return 0;
+		return true;
 	}
 
 	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -143,8 +135,8 @@ public:
 		return 1;
 	}
 private:
-	CBitmap upArrow;
-	CBitmap downArrow;
+	auto_ptr<SmartWin::Bitmap> upArrow;
+	auto_ptr<SmartWin::Bitmap> downArrow;
 };
 
 #endif // !defined(LIST_VIEW_ARROWS_H)
