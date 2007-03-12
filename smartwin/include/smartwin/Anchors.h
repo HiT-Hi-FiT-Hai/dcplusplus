@@ -125,7 +125,7 @@ private:
 void resizeAnchoredItem( const AnchoredItem& item )
 {
 	::RECT r1, r2, newR;
-	::POINT p1;
+
 	int flags = SWP_NOZORDER;
 	if( ( (item.anchors & (AnchoredItem::left | AnchoredItem::right) ) == 0) && 
 		( (item.anchors & (AnchoredItem::top | AnchoredItem::bottom) ) == 0) )

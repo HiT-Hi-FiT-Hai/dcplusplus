@@ -18,10 +18,11 @@
 
 #include "stdafx.h"
 #include <client/DCPlusPlus.h>
-#include <client/File.h>
-#include <client/Text.h>
 
 #include "NotepadFrame.h"
+
+#include <client/File.h>
+#include <client/Text.h>
 
 NotepadFrame::NotepadFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent), 
@@ -69,14 +70,6 @@ void NotepadFrame::layout() {
 }
 
 #ifdef PORT_ME
-
-LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
-
-	bHandled = FALSE;
-	return 1;
-}
 
 LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();

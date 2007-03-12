@@ -15,11 +15,150 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+ 
+#include "stdafx.h"
+#include <client/DCPlusPlus.h>
 
+#include "FavHubsFrame.h"
+
+#include <client/ResourceManager.h>
+#include <client/FavoriteManager.h>
+
+FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) : 
+	SmartWin::Widget(mdiParent),
+	connect(0),
+	add(0),
+	remove(0),
+	properties(0),
+	up(0),
+	down(0) 
+{
+	{
+		WidgetDataGrid::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		hubs = createDataGrid(cs);
+		add_widget(hubs);
+	}
+	
+	{
+		WidgetButton::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
+
+		cs.caption = TSTRING(CONNECT);
+		connect = createButton(cs);
+		connect->onClicked(&FavHubsFrame::handleConnect);
+		add_widget(connect);
+		
+		cs.caption = TSTRING(NEW);
+		add = createButton(cs);
+		add->onClicked(&FavHubsFrame::handleAdd);
+		add_widget(add);
+		
+		cs.caption = TSTRING(REMOVE);
+		remove = createButton(cs);
+		remove->onClicked(&FavHubsFrame::handleRemove);
+		add_widget(remove);
+		
+		cs.caption = TSTRING(PROPERTIES);
+		properties = createButton(cs);
+		properties->onClicked(&FavHubsFrame::handleProperties);
+		add_widget(properties);
+		
+		cs.caption = TSTRING(MOVE_UP);
+		up = createButton(cs);
+		up->onClicked(&FavHubsFrame::handleUp);
+		add_widget(up);
+		
+		cs.caption = TSTRING(MOVE_DOWN);
+		down = createButton(cs);
+		down->onClicked(&FavHubsFrame::handleDown);
+		add_widget(down);
+	}
+	
+	layout();
+	
+	FavoriteManager::getInstance()->addListener(this);
+	
+}
+
+FavHubsFrame::~FavHubsFrame() {
+	
+}
+
+void FavHubsFrame::layout() {
+	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	
+	/// @todo dynamic width
+	const int ybutton = add->getTextSize("A").y + 10;
+	const int xbutton = 90;
+	const int xborder = 10;
+	
+	SmartWin::Rectangle rb(r.getBottom(ybutton));
+	r.cropBottom(ybutton);
+	hubs->setBounds(r);
+	
+	rb.size.x = xbutton;
+	connect->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	add->setBounds(rb);
+
+	rb.pos.x += xbutton + xborder;
+	remove->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	properties->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	up->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	down->setBounds(rb);
+}
+
+void FavHubsFrame::handleConnect(WidgetButtonPtr) {
+#ifdef PORT_ME
+	if(!checkNick())
+		return;
+
+	int i = -1;
+	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
+		HubFrame::openWindow(Text::toT(entry->getServer()));
+	}
+#endif
+}
+
+void FavHubsFrame::handleAdd(WidgetButtonPtr) {
+	
+}
+
+void FavHubsFrame::handleRemove(WidgetButtonPtr) {
+	
+}
+
+void FavHubsFrame::handleProperties(WidgetButtonPtr) {
+	
+}
+
+void FavHubsFrame::handleUp(WidgetButtonPtr) {
+	
+}
+
+void FavHubsFrame::handleDown(WidgetButtonPtr) {
+	
+}
+
+void FavHubsFrame::on(FavoriteAdded, const FavoriteHubEntryPtr e) throw() {
+	
+}
+
+void FavHubsFrame::on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw() {
+	
+}
 #ifdef PORT_ME
 
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
 #include "FavoritesFrm.h"
@@ -37,8 +176,6 @@ ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, Resou
 };
 
 LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_HUBLIST);
 	ctrlHubs.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
@@ -55,37 +192,6 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 
-	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_CONNECT);
-	ctrlConnect.SetWindowText(CTSTRING(CONNECT));
-	ctrlConnect.SetFont(WinUtil::font);
-
-	ctrlNew.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_NEWFAV);
-	ctrlNew.SetWindowText(CTSTRING(NEW));
-	ctrlNew.SetFont(WinUtil::font);
-
-	ctrlProps.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_EDIT);
-	ctrlProps.SetWindowText(CTSTRING(PROPERTIES));
-	ctrlProps.SetFont(WinUtil::font);
-
-	ctrlRemove.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_REMOVE);
-	ctrlRemove.SetWindowText(CTSTRING(REMOVE));
-	ctrlRemove.SetFont(WinUtil::font);
-
-	ctrlUp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_MOVE_UP);
-	ctrlUp.SetWindowText(CTSTRING(MOVE_UP));
-	ctrlUp.SetFont(WinUtil::font);
-
-	ctrlDown.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_MOVE_DOWN);
-	ctrlDown.SetWindowText(CTSTRING(MOVE_DOWN));
-	ctrlDown.SetFont(WinUtil::font);
-
-	FavoriteManager::getInstance()->addListener(this);
 	updateList(FavoriteManager::getInstance()->getFavoriteHubs());
 
 	hubsMenu.CreatePopupMenu();
@@ -305,42 +411,4 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	return 0;
 }
 
-void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
-{
-	RECT rect;
-	GetClientRect(&rect);
-	// position bars and offset their dimensions
-	UpdateBarsPosition(rect, bResizeBars);
-
-	CRect rc = rect;
-	rc.bottom -=28;
-	ctrlHubs.MoveWindow(rc);
-
-	const long bwidth = 90;
-	const long bspace = 10;
-
-	rc = rect;
-	rc.bottom -= 2;
-	rc.top = rc.bottom - 22;
-
-	rc.left = 2;
-	rc.right = rc.left + bwidth;
-	ctrlNew.MoveWindow(rc);
-
-	rc.OffsetRect(bwidth+2, 0);
-	ctrlProps.MoveWindow(rc);
-
-	rc.OffsetRect(bwidth+2, 0);
-	ctrlRemove.MoveWindow(rc);
-
-	rc.OffsetRect(bspace + bwidth +2, 0);
-	ctrlUp.MoveWindow(rc);
-
-	rc.OffsetRect(bwidth+2, 0);
-	ctrlDown.MoveWindow(rc);
-
-	rc.OffsetRect(bspace + bwidth +2, 0);
-	ctrlConnect.MoveWindow(rc);
-
-}
 #endif

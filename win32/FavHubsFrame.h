@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,50 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FAVORITE_HUBS_FRM_H)
-#define FAVORITE_HUBS_FRM_H
+#ifndef FAV_HUBS_FRAME_H
+#define FAV_HUBS_FRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "StaticFrame.h"
 
-#include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include <client/FavoriteManagerListener.h>
 
+class FavHubsFrame : public StaticFrame<FavHubsFrame>, private FavoriteManagerListener {
+public:
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NOTEPAD;
+
+protected:
+	friend class StaticFrame<FavHubsFrame>;
+	friend class MDIChildFrame<FavHubsFrame>;
+	
+	FavHubsFrame(SmartWin::Widget* mdiParent);
+	virtual ~FavHubsFrame();
+
+	void layout();
+
+private:
+
+	WidgetDataGridPtr hubs;
+	WidgetButtonPtr connect;
+	WidgetButtonPtr add;
+	WidgetButtonPtr remove;
+	WidgetButtonPtr properties;
+	WidgetButtonPtr up;
+	WidgetButtonPtr down;
+	
+	void handleConnect(WidgetButtonPtr);
+	void handleAdd(WidgetButtonPtr);
+	void handleRemove(WidgetButtonPtr);
+	void handleProperties(WidgetButtonPtr);
+	void handleUp(WidgetButtonPtr);
+	void handleDown(WidgetButtonPtr);
+
+	void addEntry(const FavoriteHubEntryPtr entry, int pos);
+	
+	virtual void on(FavoriteAdded, const FavoriteHubEntryPtr e) throw();
+	virtual void on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw();
+};
+
+#ifdef PORT_ME
 #include "../client/FavoriteManager.h"
 
 #define SERVER_MESSAGE_MAP 7
@@ -34,9 +68,6 @@ class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, publi
 	private FavoriteManagerListener
 {
 public:
-	FavoriteHubsFrame() : nosave(true) { }
-	virtual ~FavoriteHubsFrame() { }
-
 	DECLARE_FRAME_WND_CLASS_EX(_T("FavoriteHubsFrame"), IDR_FAVORITES, 0, COLOR_3DFACE);
 
 	BEGIN_MSG_MAP(FavoriteHubsFrame)
@@ -82,12 +113,6 @@ public:
 		return 0;
 	}
 
-
-	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlHubs.SetFocus();
-		return 0;
-	}
-
 private:
 
 	enum {
@@ -101,12 +126,6 @@ private:
 		COLUMN_LAST
 	};
 
-	CButton ctrlConnect;
-	CButton ctrlRemove;
-	CButton ctrlNew;
-	CButton ctrlProps;
-	CButton ctrlUp;
-	CButton ctrlDown;
 	CMenu hubsMenu;
 
 	ExListViewCtrl ctrlHubs;
@@ -127,9 +146,7 @@ private:
 		ctrlHubs.Invalidate();
 	}
 
-	void addEntry(const FavoriteHubEntry* entry, int pos);
-	virtual void on(FavoriteAdded, const FavoriteHubEntry* e) throw() { addEntry(e, ctrlHubs.GetItemCount()); }
-	virtual void on(FavoriteRemoved, const FavoriteHubEntry* e) throw() { ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)e)); }
 };
 
 #endif // !defined(FAVORITE_HUBS_FRM_H)
+#endif

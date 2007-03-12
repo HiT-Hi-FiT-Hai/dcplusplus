@@ -46,6 +46,7 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectThreads.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectChar.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -73,6 +74,7 @@ class WidgetButton :
 	// Aspects
 	public AspectBackgroundColor< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectBorder< WidgetButton< EventHandlerClass, MessageMapPolicy > >,
+	public AspectChar< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectClickable< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectDblClickable< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectEnabled< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,

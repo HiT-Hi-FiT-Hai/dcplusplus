@@ -39,35 +39,5 @@ private:
 	WidgetTextBoxPtr pad;
 };
 
-#ifdef PORT_ME
-#include "FlatTabCtrl.h"
-#include "WinUtil.h"
-
-#define NOTEPAD_MESSAGE_MAP 13
-
-class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, public StaticFrame<NotepadFrame, ResourceManager::NOTEPAD>
-{
-public:
-	DECLARE_FRAME_WND_CLASS_EX(_T("NotepadFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
-
-	NotepadFrame() : dirty(false),
-		ctrlClientContainer(_T("edit"), this, NOTEPAD_MESSAGE_MAP) { }
-	typedef MDITabChildWindowImpl<NotepadFrame> baseClass;
-	BEGIN_MSG_MAP(NotepadFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(NOTEPAD_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
-	END_MSG_MAP()
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
-private:
-
-	bool dirty;
-	CContainedWindow ctrlClientContainer;
-};
 #endif
 
-#endif // !defined(NOTEPAD_FRAME_H)

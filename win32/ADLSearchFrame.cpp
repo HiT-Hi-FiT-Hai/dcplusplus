@@ -546,4 +546,4 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	ctrlList.SetCheckState(index, search.isActive);
 }
 
-#endif#endif
+#endif

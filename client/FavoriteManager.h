@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FAVORITE_MANAGER_H)
-#define FAVORITE_MANAGER_H
+#ifndef DCPLUSPLUS_CLIENT_FAVORITE_MANAGER_H
+#define DCPLUSPLUS_CLIENT_FAVORITE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -33,6 +33,7 @@
 #include "Singleton.h"
 #include "ClientManagerListener.h"
 #include "ClientManager.h"
+#include "FavoriteManagerListener.h"
 
 class HubEntry {
 public:
@@ -105,32 +106,6 @@ public:
 
 private:
 	string nick;
-};
-
-class FavoriteManagerListener {
-public:
-	virtual ~FavoriteManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I }; };
-
-	typedef X<0> DownloadStarting;
-	typedef X<1> DownloadFailed;
-	typedef X<2> DownloadFinished;
-	typedef X<3> FavoriteAdded;
-	typedef X<4> FavoriteRemoved;
-	typedef X<5> UserAdded;
-	typedef X<6> UserRemoved;
-	typedef X<7> StatusChanged;
-	typedef X<8> LoadedFromCache;
-
-	virtual void on(DownloadStarting, const string&) throw() { }
-	virtual void on(DownloadFailed, const string&) throw() { }
-	virtual void on(DownloadFinished, const string&) throw() { }
-	virtual void on(FavoriteAdded, const FavoriteHubEntry*) throw() { }
-	virtual void on(FavoriteRemoved, const FavoriteHubEntry*) throw() { }
-	virtual void on(UserAdded, const FavoriteUser&) throw() { }
-	virtual void on(UserRemoved, const FavoriteUser&) throw() { }
-	virtual void on(StatusChanged, const User::Ptr&) throw() { }
-	virtual void on(LoadedFromCache, const string&) throw() { }
 };
 
 class SimpleXML;

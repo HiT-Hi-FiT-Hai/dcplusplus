@@ -29,7 +29,7 @@
 class HubFrame : public MDIChildFrame<HubFrame>, public ClientListener
 {
 public:
-	static void openWindow(SmartWin::Widget* mdiParent, const tstring& url);
+	static void openWindow(SmartWin::Widget* mdiParent, const string& url);
 
 protected:
 	typedef MDIChildFrame<HubFrame> Base;
@@ -91,11 +91,11 @@ private:
 	WidgetComboBoxPtr filterType;
 	WidgetStatusBarSectionsPtr status;
 	
-	typedef HASH_MAP<tstring, HubFrame*> FrameMap;
+	typedef HASH_MAP<string, HubFrame*> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 
-	HubFrame(Widget* mdiParent, const tstring& url);
+	HubFrame(Widget* mdiParent, const string& url);
 	virtual ~HubFrame();
 	
 	void addLine(const tstring& aLine);

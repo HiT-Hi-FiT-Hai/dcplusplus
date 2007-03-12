@@ -214,8 +214,8 @@ LRESULT WidgetMDIChild< EventHandlerClass, unUsed >::sendWidgetMessage( HWND hWn
 			{
 				// Here we basically "fake" a maximize to be able to display the
 				// border of the Widget
-				int cx = LOWORD( lPar );
-				int cy = HIWORD( lPar );
+				//int cx = LOWORD( lPar );
+				//int cy = HIWORD( lPar );
 				RECT rc;
 
 				// Getting size of PARENT Widget and setting size to fill that rectangle

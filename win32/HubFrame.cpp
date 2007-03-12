@@ -92,7 +92,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	
 	initSecond();
 	
-	client = ClientManager::getInstance()->getClient(Text::fromT(url));
+	client = ClientManager::getInstance()->getClient(url);
 	client->addListener(this);
 	client->connect();
 	
@@ -233,7 +233,7 @@ void HubFrame::eachSecond(const SmartWin::CommandPtr&) {
 }
 
 
-void HubFrame::openWindow(SmartWin::Widget* mdiParent, const tstring& url) {
+void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
 	FrameIter i = frames.find(url);
 	if(i == frames.end()) {
 		frames.insert(std::make_pair(url, new HubFrame(mdiParent, url)));

@@ -48,6 +48,7 @@
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectChar.h"
 #include "../xCeption.h"
 #include "SmartUtil.h"
 #include "WidgetDataGridEditBox.h"
@@ -360,6 +361,7 @@ class WidgetDataGrid :
 
 	// Aspect classes
 	public AspectBorder< WidgetDataGrid< EventHandlerClass, MessageMapPolicy > >,
+	public AspectChar< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectDblClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectEnabled< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,

@@ -1,5 +1,5 @@
 /*
-/*
+*
 * Based on a class by R. Engels
 * http://www.codeproject.com/shell/shellcontextmenu.asp
 */

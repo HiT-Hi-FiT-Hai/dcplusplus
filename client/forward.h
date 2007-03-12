@@ -25,19 +25,28 @@
 
 #include "Pointer.h"
 
-class User;
-typedef Pointer<User> UserPtr;
-typedef std::vector<UserPtr> UserList;
+class AdcCommand;
+
+class CID;
 
 class Client;
-class AdcCommand;
+
 class ClientManager;
-class CID;
+
+class FavoriteHubEntry;
+typedef FavoriteHubEntry* FavoriteHubEntryPtr;
+class FavoriteUser;
+
 class Identity;
 
 class OnlineUser;
 typedef OnlineUser* OnlineUserPtr;
 typedef std::vector<OnlineUserPtr> OnlineUserList;
+
+class User;
+typedef Pointer<User> UserPtr;
+typedef std::vector<UserPtr> UserList;
+
 
 
 #endif /*DCPLUSPLUS_CLIENT_FORWARD_H_*/

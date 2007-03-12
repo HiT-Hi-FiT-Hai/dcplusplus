@@ -370,6 +370,11 @@ void MainWindow::initSecond() {
 }
 
 void MainWindow::eachSecond(const SmartWin::CommandPtr&) {
+	static bool x = false;
+	if(!x) {
+		HubFrame::openWindow(mdi, "dev.myhub.org:666");
+		x=true;
+	}
 	updateStatus();
 	///@todo change smartwin to support recurring timers 
 	initSecond();

@@ -71,8 +71,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< class EventHandlerClass, class MessageMapPolicy >
 ListViewEditBox< EventHandlerClass, MessageMapPolicy >::ListViewEditBox( SmartWin::Widget * parent )
-	: WidgetTextBox< EventHandlerClass, MessageMapPolicy >( parent ),
-	Widget( parent )
+	: Widget( parent ), WidgetTextBox< EventHandlerClass, MessageMapPolicy >( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );

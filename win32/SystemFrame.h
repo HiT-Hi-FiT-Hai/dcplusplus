@@ -49,29 +49,4 @@ private:
 	virtual void on(Message, time_t t, const string& message) throw();
 };
 
-#ifdef PORT_ME
-#include "FlatTabCtrl.h"
-
-#define SYSTEM_LOG_MESSAGE_MAP 42
-
-public:
-	DECLARE_FRAME_WND_CLASS_EX(_T("SystemFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
-
-	SystemFrame() : ctrlClientContainer(_T("edit"), this, SYSTEM_LOG_MESSAGE_MAP) { }
-
-	typedef MDITabChildWindowImpl<SystemFrame> baseClass;
-	BEGIN_MSG_MAP(SystemFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-	ALT_MSG_MAP(SYSTEM_LOG_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
-	END_MSG_MAP()
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-private:
-	CContainedWindow ctrlClientContainer;
-
-};
-
-#endif
 #endif
