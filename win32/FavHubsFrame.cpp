@@ -20,6 +20,7 @@
 #include <client/DCPlusPlus.h>
 
 #include "FavHubsFrame.h"
+#include "HubFrame.h"
 
 #include <client/ResourceManager.h>
 #include <client/FavoriteManager.h>
@@ -39,6 +40,10 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = createDataGrid(cs);
 		add_widget(hubs);
+		/// @todo add column creation to Seed class maybe?
+		TStringList cols;
+		cols.push_back("1");cols.push_back("2");cols.push_back("3");cols.push_back("4");cols.push_back("5");cols.push_back("6");
+		hubs->createColumns(cols);
 	}
 	
 	{
@@ -78,6 +83,11 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 	
 	layout();
 	
+	const FavoriteHubEntry::List& fl = FavoriteManager::getInstance()->getFavoriteHubs();
+	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
+		addEntry(*i, hubs->getRowCount());
+	}
+
 	FavoriteManager::getInstance()->addListener(this);
 	
 }
@@ -117,17 +127,34 @@ void FavHubsFrame::layout() {
 	down->setBounds(rb);
 }
 
-void FavHubsFrame::handleConnect(WidgetButtonPtr) {
+void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int pos) {
+	TStringList l;
+	l.push_back(Text::toT(entry->getName()));
+	l.push_back(Text::toT(entry->getDescription()));
+	l.push_back(Text::toT(entry->getNick(false)));
+	l.push_back(tstring(entry->getPassword().size(), '*'));
+	l.push_back(Text::toT(entry->getServer()));
+	l.push_back(Text::toT(entry->getUserDescription()));
+	bool b = entry->getConnect();
+	int i = hubs->getRowNumberFromLParam(hubs->insertRow(l, reinterpret_cast<LPARAM>(entry), pos));
+	hubs->setRowChecked(i, b);
+}
+
+void FavHubsFrame::openSelected() {
 #ifdef PORT_ME
 	if(!checkNick())
 		return;
-
-	int i = -1;
-	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		HubFrame::openWindow(Text::toT(entry->getServer()));
-	}
 #endif
+	std::vector<unsigned> items = hubs->getSelectedRows();
+	for(std::vector<unsigned>::iterator i = items.begin(); i != items.end(); ++i) {
+		FavoriteHubEntry* entry = (FavoriteHubEntry*)hubs->getItemData(*i);
+		HubFrame::openWindow(getParent(), Text::toT(entry->getServer()));
+	}
+}
+
+
+void FavHubsFrame::handleConnect(WidgetButtonPtr) {
+	openSelected();
 }
 
 void FavHubsFrame::handleAdd(WidgetButtonPtr) {
@@ -208,31 +235,6 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	bHandled = FALSE;
 	return TRUE;
-}
-
-void FavoriteHubsFrame::openSelected() {
-	if(!checkNick())
-		return;
-
-	int i = -1;
-	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		HubFrame::openWindow(Text::toT(entry->getServer()));
-	}
-	return;
-}
-
-void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
-	TStringList l;
-	l.push_back(Text::toT(entry->getName()));
-	l.push_back(Text::toT(entry->getDescription()));
-	l.push_back(Text::toT(entry->getNick(false)));
-	l.push_back(tstring(entry->getPassword().size(), '*'));
-	l.push_back(Text::toT(entry->getServer()));
-	l.push_back(Text::toT(entry->getUserDescription()));
-	bool b = entry->getConnect();
-	int i = ctrlHubs.insert(pos, l, 0, (LPARAM)entry);
-	ctrlHubs.SetCheckState(i, b);
 }
 
 LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {

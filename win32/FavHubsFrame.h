@@ -53,6 +53,7 @@ private:
 	void handleUp(WidgetButtonPtr);
 	void handleDown(WidgetButtonPtr);
 
+	void openSelected();
 	void addEntry(const FavoriteHubEntryPtr entry, int pos);
 	
 	virtual void on(FavoriteAdded, const FavoriteHubEntryPtr e) throw();

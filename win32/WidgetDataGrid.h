@@ -6,6 +6,8 @@ class WidgetDataGrid : public SmartWin::WidgetDataGrid<EventHandlerClass, Messag
 private:
 	typedef SmartWin::WidgetDataGrid<EventHandlerClass, MessageMapPolicy> BaseType;
 public:
+	typedef WidgetDataGrid<EventHandlerClass, MessageMapPolicy>* ObjectType;
+	
 	// Constructor Taking pointer to parent
 	explicit WidgetDataGrid( SmartWin::Widget * parent ) : BaseType(parent) { }
 
@@ -20,6 +22,16 @@ public:
 			ret.clear();
 		}
 		return ret;
+	}
+	
+	LPARAM getItemData(int idx) {
+		LVITEM item;
+		item.iItem = idx;
+		item.mask = LVIF_PARAM;
+		if(!::SendMessage(this->handle(), LVM_GETITEM, reinterpret_cast<WPARAM>(&item), 0)) {
+			return 0;
+		}
+		return item.lParam;
 	}
 private:
 

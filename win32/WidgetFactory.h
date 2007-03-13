@@ -32,6 +32,15 @@ public:
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
+	
+	WidgetDataGridPtr createDataGrid( const typename WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() );
 };
+
+template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDataGridPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
+{
+	return SmartWin::WidgetCreator< WidgetDataGrid >::create( this, cs );
+}
 
 #endif /*WIDGETFACTORY2_H_*/

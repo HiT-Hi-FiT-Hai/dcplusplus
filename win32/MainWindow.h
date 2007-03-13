@@ -82,6 +82,7 @@ private:
 	// User actions
 	void handleExit(WidgetMenuPtr menu, unsigned id);
 	void handlePublicHubs(WidgetMenuPtr menu, unsigned id);
+	void handleFavHubs(WidgetMenuPtr menu, unsigned id);
 	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
 	void handleNotepad(WidgetMenuPtr menu, unsigned id);
 	void handleQuickConnect(WidgetMenuPtr menu, unsigned id);

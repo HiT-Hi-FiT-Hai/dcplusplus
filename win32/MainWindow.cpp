@@ -26,6 +26,7 @@
 #include "NotepadFrame.h"
 #include "HubFrame.h"
 #include "PublicHubsFrm.h"
+#include "FavHubsFrame.h"
 
 #include "LineDlg.h"
 
@@ -250,6 +251,7 @@ void MainWindow::initMenu() {
 	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
 
 	view->appendItem(IDC_PUBLIC_HUBS, TSTRING(MENU_PUBLIC_HUBS), &MainWindow::handlePublicHubs);
+	view->appendItem(IDC_FAVORITE_HUBS, TSTRING(MENU_FAVORITE_HUBS), &MainWindow::handleFavHubs);
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleSystemLog);
 	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleNotepad);
 	
@@ -258,7 +260,6 @@ void MainWindow::initMenu() {
 	view.AppendMenu(MF_STRING, IDC_VIEW_WAITING_USERS, CTSTRING(WAITING_USERS));
 	view.AppendMenu(MF_STRING, IDC_FINISHED, CTSTRING(FINISHED_DOWNLOADS));
 	view.AppendMenu(MF_STRING, IDC_FINISHED_UL, CTSTRING(FINISHED_UPLOADS));
-	view.AppendMenu(MF_STRING, IDC_FAVORITES, CTSTRING(MENU_FAVORITE_HUBS));
 	view.AppendMenu(MF_STRING, IDC_FAVUSERS, CTSTRING(MENU_FAVORITE_USERS));
 	view.AppendMenu(MF_STRING, ID_FILE_SEARCH, CTSTRING(MENU_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CTSTRING(MENU_ADL_SEARCH));
@@ -338,6 +339,10 @@ void MainWindow::handlePublicHubs(WidgetMenuPtr, unsigned) {
 	PublicHubsFrame::openWindow(mdi);
 }
 
+void MainWindow::handleFavHubs(WidgetMenuPtr, unsigned) {
+	FavHubsFrame::openWindow(mdi);
+}
+
 void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
 	SystemFrame::openWindow(mdi);
 }
@@ -375,11 +380,6 @@ void MainWindow::initSecond() {
 }
 
 void MainWindow::eachSecond(const SmartWin::CommandPtr&) {
-	static bool x = false;
-	if(!x) {
-		HubFrame::openWindow(mdi, "dev.myhub.org:666");
-		x=true;
-	}
 	updateStatus();
 	///@todo change smartwin to support recurring timers 
 	initSecond();
