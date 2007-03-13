@@ -228,6 +228,7 @@ private:
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
 };
 
 #endif // !defined(QUEUE_MANAGER_H)

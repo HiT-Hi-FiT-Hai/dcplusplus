@@ -1,5 +1,4 @@
 /*
-/*
 * Based on a class by R. Engels
 * http://www.codeproject.com/shell/shellcontextmenu.asp
 */
@@ -28,7 +27,6 @@ private:
 	LPITEMIDLIST* m_pidlArray;
 
 	void FreePIDLArray(LPITEMIDLIST* pidlArray);
-	void SHBindToParentEx(LPCITEMIDLIST pidl, REFIID riid, LPVOID* ppv, LPCITEMIDLIST* ppidlLast);
 	bool GetContextMenu(LPVOID* ppContextMenu, int& iMenuType);
 	void InvokeCommand(LPCONTEXTMENU pContextMenu, UINT idCommand);
 	static LRESULT CALLBACK HookWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

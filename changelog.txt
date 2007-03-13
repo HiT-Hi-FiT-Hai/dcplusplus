@@ -7,6 +7,18 @@
 * Moved to smartwin to enable mingw compiling
 * Removed notepad loading compatibility code for notepad texts from versions < 0.20
 * Fixed time issues with DC++ running for more than 49 days
+* [bug 980] Fixed PM's when popup is disabled (thanks ullner)
+* [bug 1066] Search for alternates not available on uploads (thanks ullner)
+* [bug 1104] Better error message on dupe source (thanks ullner)
+* [bug 1132] Download queue updated when users go offline (thanks stephan hohe)
+* [bug 1133] Fixed max tab rows being reset (thanks pothead)
+* [bug 1134] Use SO_REUSEADDR for connection manager socket (thanks mikael eman)
+* [bug 1136] Fixed dupe changelog rebuild (thanks pothead)
+* [bug 1139] Fixed download delay in some cases (thanks mikael eman)
+* [bug 1144] Added possibility to add many hub lists in one go (use ; as separator) (thanks poy)
+* [bug 1152] Only refresh if there are directories shared (thanks ullner)
+* [bug 1153] More shell menus (thanks poy)
+* [bug 1159] Removed unnecessary resume position reset (thanks cologic)
 
 -- 0.699 2006-12-18 --
 * Switched to VC8/VS2005

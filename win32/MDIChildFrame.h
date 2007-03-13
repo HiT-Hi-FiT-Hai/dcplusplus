@@ -22,8 +22,10 @@
 #include "StupidWin.h"
 #include "WinUtil.h"
 
+#include "WidgetFactory.h"
+
 template<typename T>
-class MDIChildFrame : public SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget > {
+class MDIChildFrame : public WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget > {
 public:
 	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
 	MDIChildFrame() : reallyClose(false) {

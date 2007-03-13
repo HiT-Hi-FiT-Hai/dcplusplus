@@ -26,6 +26,7 @@
 #include "../client/SettingsManager.h"
 #include "../client/Text.h"
 #include "../Client/FavoriteManager.h"
+#include "../client/StringTokenizer.h"
 #include "ExListViewCtrl.h"
 #include "LineDlg.h"
 
@@ -80,10 +81,19 @@ public:
 	}
 
 	LRESULT onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
-		TCHAR buf[256];
-		if(GetDlgItemText(IDC_LIST_EDIT_BOX, buf, 256)) {
-			ctrlList.insert(0, buf);
-		}
+		CEdit ctrlEdit;
+		ctrlEdit.Attach(GetDlgItem(IDC_LIST_EDIT_BOX));
+
+		TCHAR* buf = new TCHAR[ctrlEdit.GetWindowTextLength() + 1];
+		ctrlEdit.GetWindowText(buf, ctrlEdit.GetWindowTextLength() + 1);
+		tstring contents = buf;
+		delete[] buf;
+
+		StringTokenizer<tstring> t(contents, ';');
+		for(TStringList::reverse_iterator i = t.getTokens().rbegin(); i != t.getTokens().rend(); ++i)
+			if(!i->empty())
+				ctrlList.insert(0, *i);
+
 		bHandled = FALSE;
 		return 0;
 	}

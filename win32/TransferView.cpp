@@ -116,6 +116,12 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(itemI->user->getCID()));
 			transferMenu.AppendMenu(MF_SEPARATOR);
+
+			if(itemI->download) {
+				transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_ENABLED);
+			} else {
+				transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_DISABLED);
+			}
 		}
 
 		checkAdcItems(transferMenu);

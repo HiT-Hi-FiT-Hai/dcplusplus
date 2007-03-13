@@ -775,11 +775,17 @@ StringPairList ShareManager::getDirectories() const throw() {
 }
 
 int ShareManager::run() {
-	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
+	
+	StringPairList dirs = getDirectories();
+	// Don't need to refresh if no directories are shared
+	if(dirs.begin() == dirs.end())		
+		refreshDirs = false;
+
 	{
 		if(refreshDirs) {
+			LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
+			
 			lastFullUpdate = GET_TICK();
-			StringPairList dirs = getDirectories();
 
 			Directory::Map newDirs;
 			for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
@@ -798,11 +804,11 @@ int ShareManager::run() {
 				rebuildIndices();
 			}
 			refreshDirs = false;
+			
+			LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 		}
 	}
-
-
-	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
+	
 	if(update) {
 		ClientManager::getInstance()->infoUpdated();
 	}

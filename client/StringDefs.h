@@ -506,7 +506,7 @@ enum Strings { // @DontAdd
 	SETTINGS_SHARED_DIRECTORIES, // "Shared directories"
 	SETTINGS_SHOW_JOINS, // "Show joins / parts in chat by default"
 	SETTINGS_SHOW_PROGRESS_BARS, // "Show progress bars for transfers"
-	SETTINGS_SHOW_SHELL_MENU, // "Show shell menu in finished transfers"
+	SETTINGS_SHOW_SHELL_MENU, // "Show shell menu where possible"
 	SETTINGS_SKIP_ZERO_BYTE, // "Skip zero-byte files"
 	SETTINGS_SMALL_SEND_BUFFER, // "Use small send buffer (enable if uploads slow downloads a lot)"
 	SETTINGS_SOCKS5, // "SOCKS5"

@@ -203,10 +203,10 @@ public:
 
 			bool bShellMenuShown = false;
 			if(BOOLSETTING(SHOW_SHELL_MENU) && (ctrlList.GetSelectedCount() == 1)) {
-				tstring path = Text::toT(((FinishedItem*)ctrlList.GetItemData(ctrlList.GetSelectedIndex()))->getTarget());
-				if(GetFileAttributes(path.c_str()) != 0xFFFFFFFF) { // Check that the file still exists
+				string path = ((FinishedItem*)ctrlList.GetItemData(ctrlList.GetSelectedIndex()))->getTarget();
+				if(File::getSize(path) != 1) {
 					CShellContextMenu shellMenu;
-					shellMenu.SetPath(path);
+					shellMenu.SetPath(Text::toT(path));
 
 					CMenu* pShellMenu = shellMenu.GetMenu();
 					pShellMenu->AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));

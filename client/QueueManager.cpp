@@ -547,11 +547,11 @@ bool QueueManager::addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType add
 	bool wantConnection = (qi->getPriority() != QueueItem::PAUSED) && (qi->getStatus() != QueueItem::STATUS_RUNNING);
 
 	if(qi->isSource(aUser)) {
-		throw QueueException(STRING(DUPLICATE_SOURCE));
+		throw QueueException(STRING(DUPLICATE_SOURCE) + ": " + Util::getFileName(qi->getTarget()) + ", " + aUser->getFirstNick());
 	}
 
 	if(qi->isBadSourceExcept(aUser, addBad)) {
-		throw QueueException(STRING(DUPLICATE_SOURCE));
+		throw QueueException(STRING(DUPLICATE_SOURCE) + ": " + Util::getFileName(qi->getTarget()) + ", " + aUser->getFirstNick());
 	}
 
 	qi->addSource(aUser);
@@ -1307,6 +1307,17 @@ void QueueManager::on(ClientManagerListener::UserConnected, const User::Ptr& aUs
 
 	if(hasDown)
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
+}
+
+void QueueManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+	Lock l(cs);
+	for(int i = 0; i < QueueItem::LAST; ++i) {
+		QueueItem::UserListIter j = userQueue.getList(i).find(aUser);
+		if(j != userQueue.getList(i).end()) {
+			for(QueueItem::Iter m = j->second.begin(); m != j->second.end(); ++m)
+				fire(QueueManagerListener::StatusUpdated(), *m);
+		}
+	}
 }
 
 void QueueManager::on(TimerManagerListener::Second, uint32_t aTick) throw() {

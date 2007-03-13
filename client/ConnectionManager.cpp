@@ -155,7 +155,7 @@ void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw()
 					continue;
 				}
 
-				if( ((cqi->getLastAttempt() + 60*1000) < aTick) && !attemptDone ) {
+				if(cqi->getLastAttempt() == 0 || (((cqi->getLastAttempt() + 60*1000) < aTick) && !attemptDone)) {
 					cqi->setLastAttempt(aTick);
 
 					QueueItem::Priority prio = QueueManager::getInstance()->hasDownload(cqi->getUser());

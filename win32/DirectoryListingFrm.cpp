@@ -24,11 +24,13 @@
 #include "Resource.h"
 
 #include "DirectoryListingFrm.h"
+#include "ShellContextMenu.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
 
 #include "../client/File.h"
 #include "../client/QueueManager.h"
+#include "../client/ShareManager.h"
 #include "../client/StringTokenizer.h"
 #include "../client/ADLSearch.h"
 #include "../client/MerkleTree.h"
@@ -625,6 +627,19 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 		}
 
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
+			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe())) {
+				string path;
+				try {
+					path = ShareManager::getInstance()->toReal(Util::toAdcFile(dl->getPath(ii->file) + ii->file->getName()));
+				} catch(const ShareException&) { }
+				if(!path.empty() && (File::getSize(path) != -1)) {
+					CShellContextMenu shellMenu;
+					shellMenu.SetPath(Text::toT(path));
+					shellMenu.ShowContextMenu(m_hWnd, pt);
+					return TRUE;
+				}
+			}
+
 			//Append Favorite download dirs
 			StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 			if (spl.size() > 0) {

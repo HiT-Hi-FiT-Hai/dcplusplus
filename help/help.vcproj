@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="help"
 	ProjectGUID="{9011F311-1280-4C2D-888C-B3202DC2A6ED}"
 	RootNamespace="help"
@@ -80,17 +80,6 @@
 			<File
 				RelativePath=".\changelog.html"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Building changelog"
-						CommandLine="$(ProjectDir)gen_changelog.py&#x0D;&#x0A;"
-						AdditionalDependencies="$(SolutionDir)changelog.txt"
-						Outputs="changelog.html"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\chat_commands.html"
@@ -245,15 +234,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\settings_tabs.html"
+				>
+			</File>
+			<File
 				RelativePath=".\settings_usercommands.html"
 				>
 			</File>
 			<File
 				RelativePath=".\settings_windows.html"
-				>
-			</File>
-			<File
-				RelativePath=".\settings_tabs.html"
 				>
 			</File>
 			<File

@@ -605,7 +605,6 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 		d->resetPos();
 		failDownload(aSource, e.getError());
 	} catch(const FileException& e) {
-		d->resetPos();
 		failDownload(aSource, e.getError());
 	} catch(const Exception& e) {
 		// Nuke the bytes we have written, this is probably a compression error
