@@ -19,6 +19,7 @@
 * [bug 1152] Only refresh if there are directories shared (thanks ullner)
 * [bug 1153] More shell menus (thanks poy)
 * [bug 1159] Removed unnecessary resume position reset (thanks cologic)
+* Removed rollback support - advanced TTH resume is now always used (thanks cologic)
 
 -- 0.699 2006-12-18 --
 * Switched to VC8/VS2005

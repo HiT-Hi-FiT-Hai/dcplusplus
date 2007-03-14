@@ -59,7 +59,7 @@ public:
 		return s->flush();
 	}
 
-	virtual size_t write(const void* b, size_t len) throw(FileException) {
+	virtual void commitBytes(const void* b, size_t len) throw(FileException) {
 		uint8_t* xb = (uint8_t*)b;
 		size_t pos = 0;
 
@@ -87,7 +87,10 @@ public:
 			memcpy(buf, xb + pos, left);
 			bufPos = left;
 		}
+	}
 
+	virtual size_t write(const void* b, size_t len) throw(FileException) {
+		commitBytes(b, len);
 		checkTrees();
 		return s->write(b, len);
 	}

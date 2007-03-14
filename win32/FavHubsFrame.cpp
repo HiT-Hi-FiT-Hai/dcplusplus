@@ -40,10 +40,10 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = createDataGrid(cs);
 		add_widget(hubs);
-		/// @todo add column creation to Seed class maybe?
+/*		/// @todo add column creation to Seed class maybe?
 		TStringList cols;
 		cols.push_back("1");cols.push_back("2");cols.push_back("3");cols.push_back("4");cols.push_back("5");cols.push_back("6");
-		hubs->createColumns(cols);
+		hubs->createColumns(cols);*/
 	}
 	
 	{
@@ -81,7 +81,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		add_widget(down);
 	}
 	
-	layout();
+/*	layout();
 	
 	const FavoriteHubEntry::List& fl = FavoriteManager::getInstance()->getFavoriteHubs();
 	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
@@ -89,7 +89,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 	}
 
 	FavoriteManager::getInstance()->addListener(this);
-	
+	*/
 }
 
 FavHubsFrame::~FavHubsFrame() {

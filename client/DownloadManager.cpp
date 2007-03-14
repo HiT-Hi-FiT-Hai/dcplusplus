@@ -322,19 +322,13 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		}
 
-		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && start > 0 &&
+		if(d->getTreeValid() && start > 0 &&
 		   (d->getTigerTree().getLeaves().size() > 32 || // 32 leaves is 5 levels
 		    d->getTigerTree().getBlockSize() * 10 < d->getSize()))
 		{
 			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), start));
 		} else {
-			int rollback = SETTING(ROLLBACK);
-			if(rollback > start) {
-				d->setStartPos(0);
-			} else {
-				d->setStartPos(start - rollback);
-				d->setFlag(Download::FLAG_ROLLBACK);
-			}
+			d->setStartPos(start);
 		}
 
 	} else {
@@ -365,17 +359,18 @@ public:
 
 int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, int64_t startPos) {
 	// Always discard data until the last block
-	if(startPos < tt.getBlockSize())
-		return 0;
+	int64_t initPos = startPos, blockSize = tt.getBlockSize();
+	if(startPos < blockSize)
+		return startPos;
 
-	startPos -= (startPos % tt.getBlockSize());
+	startPos -= (startPos % blockSize);
 
 	DummyOutputStream dummy;
 
-	vector<uint8_t> buf((size_t)min((int64_t)1024*1024, tt.getBlockSize()));
+	vector<uint8_t> buf((size_t)min((int64_t)1024*1024, blockSize));
 
 	do {
-		int64_t blockPos = startPos - tt.getBlockSize();
+		int64_t blockPos = startPos - blockSize;
 
 		try {
 			MerkleCheckOutputStream<TigerTree, false> check(tt, &dummy, blockPos);
@@ -400,6 +395,11 @@ int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, i
 		}
 		startPos = blockPos;
 	} while(startPos > 0);
+
+	if (initPos/blockSize == startPos/blockSize) {
+		startPos = initPos;
+	}
+
 	return startPos;
 }
 
@@ -449,50 +449,6 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 	}
 }
 
-class RollbackException : public FileException {
-public:
-	RollbackException (const string& aError) : FileException(aError) { }
-};
-
-template<bool managed>
-class RollbackOutputStream : public OutputStream {
-public:
-	RollbackOutputStream(File* f, OutputStream* aStream, size_t bytes) : s(aStream), pos(0), bufSize(bytes), buf(new uint8_t[bytes]) {
-		size_t n = bytes;
-		f->read(buf, n);
-		f->movePos(-((int64_t)bytes));
-	}
-	virtual ~RollbackOutputStream() throw() { delete[] buf; if(managed) delete s; }
-
-	virtual size_t flush() throw(FileException) {
-		return s->flush();
-	}
-
-	virtual size_t write(const void* b, size_t len) throw(FileException) {
-		if(buf != NULL) {
-			size_t n = min(len, bufSize - pos);
-
-			uint8_t* wb = (uint8_t*)b;
-			if(memcmp(buf + pos, wb, n) != 0) {
-				throw RollbackException(STRING(ROLLBACK_INCONSISTENCY));
-			}
-			pos += n;
-			if(pos == bufSize) {
-				delete buf;
-				buf = NULL;
-			}
-		}
-		return s->write(b, len);
-	}
-
-private:
-	OutputStream* s;
-	size_t pos;
-	size_t bufSize;
-	uint8_t* buf;
-};
-
-
 bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool z) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
@@ -526,6 +482,11 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 		}
 
 		File* file = NULL;
+
+		typedef AutoArray<uint8_t> bufType;
+		auto_ptr<bufType> bufPtr;
+		size_t blockLeft;
+		int64_t blockPos;
 		try {
 			// Let's check if we can find this file in a any .SFV...
 			int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
@@ -533,6 +494,21 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 				file->setSize(d->getSize());
 			}
+
+			// read last blockPos bytes from file to prime TTH checking
+			// @todo, remove this check when it becomes required to perform
+			// transfers at all
+
+			// check blocksize here, allocate buffer accordingly.
+			if (d->getTreeValid()) {
+				blockLeft = d->getPos() % d->getTigerTree().getBlockSize();
+				blockPos = d->getPos() - blockLeft;
+
+				bufPtr = auto_ptr<bufType>(new AutoArray<uint8_t>(blockLeft));
+				file->setPos(blockPos);
+				file->read(&(*bufPtr)[0], blockLeft);
+			}
+
 			file->setPos(d->getPos());
 		} catch(const FileException& e) {
 			delete file;
@@ -560,16 +536,16 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			d->setFile(crc);
 		}
 
-		/** @todo check the rest of the file when resuming? */
-		if(d->getTreeValid()) {
-			if((d->getPos() % d->getTigerTree().getBlockSize()) == 0) {
-				d->setFile(new MerkleCheckOutputStream<TigerTree, true>(d->getTigerTree(), d->getFile(), d->getPos()));
-				d->setFlag(Download::FLAG_TTH_CHECK);
-			}
-		}
-		if(d->isSet(Download::FLAG_ROLLBACK)) {
-			d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
-		}
+		typedef MerkleCheckOutputStream<TigerTree, true> MerkleStream;
+		TigerTree tt;
+		if(d->getTreeValid())
+			tt = d->getTigerTree();
+		else
+			tt.getLeaves().push_back(d->getTTH());
+		MerkleStream* stream = new MerkleStream(tt, d->getFile(), blockPos);
+		stream->commitBytes(&(*bufPtr)[0], blockLeft);
+		d->setFile(stream);
+		d->setFlag(Download::FLAG_TTH_CHECK);
 
 	}
 
@@ -600,10 +576,6 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 			handleEndData(aSource);
 			aSource->setLineMode(0);
 		}
-	} catch(const RollbackException& e) {
-		QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY);
-		d->resetPos();
-		failDownload(aSource, e.getError());
 	} catch(const FileException& e) {
 		failDownload(aSource, e.getError());
 	} catch(const Exception& e) {
