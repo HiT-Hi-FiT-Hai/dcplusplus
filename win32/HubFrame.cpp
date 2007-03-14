@@ -92,6 +92,8 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	
 	initSecond();
 	
+	onSpeaker(&HubFrame::spoken);
+	
 	client = ClientManager::getInstance()->getClient(url);
 	client->addListener(this);
 	client->connect();
@@ -487,7 +489,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 }
 
-void HubFrame::spoken(WPARAM, LPARAM) {
+HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 	updateUsers = false;
 	TaskQueue::List t;
 	tasks.get(t);
@@ -604,6 +606,7 @@ void HubFrame::spoken(WPARAM, LPARAM) {
 		ctrlUsers.SetRedraw(TRUE);
 	}
 #endif
+	return 0;
 }
 
 bool HubFrame::charred(WidgetTextBoxPtr ptr, int c) {

@@ -35,6 +35,8 @@ class ClientManager;
 
 class FavoriteHubEntry;
 typedef FavoriteHubEntry* FavoriteHubEntryPtr;
+typedef std::vector<FavoriteHubEntryPtr> FavoriteHubEntryList;
+
 class FavoriteUser;
 
 class Identity;

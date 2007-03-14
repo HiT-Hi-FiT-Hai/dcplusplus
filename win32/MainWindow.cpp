@@ -35,6 +35,7 @@
 #include <client/version.h>
 #include <client/DownloadManager.h>
 #include <client/UploadManager.h>
+#include <client/FavoriteManager.h>
 #include <client/Client.h>
 #include <client/TimerManager.h>
 
@@ -68,6 +69,11 @@ MainWindow::MainWindow() :
 	layout();
 	
 	onSized(&MainWindow::sized);
+	onSpeaker(&MainWindow::spoken);
+	
+	if(!WinUtil::isShift())
+		speak(AUTO_CONNECT);
+
 	
 #ifdef PORT_ME
 	TimerManager::getInstance()->addListener(this);
@@ -169,9 +175,6 @@ MainWindow::MainWindow() :
 	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
 	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
 	if(!BOOLSETTING(SHOW_TRANSFERVIEW)) PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
-
-	if(!WinUtil::isShift())
-		PostMessage(WM_SPEAKER, AUTO_CONNECT);
 
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
 
@@ -372,6 +375,30 @@ void MainWindow::handleQuickConnect(WidgetMenuPtr, unsigned) {
  
 void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
 	layout();
+}
+
+HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
+	Speaker s = static_cast<Speaker>(lp);
+	
+	switch(s) {
+		case AUTO_CONNECT: {
+			autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());			
+		} break;
+			
+	}
+	
+	return 0;
+}
+
+void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
+	for(FavoriteHubEntryList::const_iterator i = fl.begin(); i != fl.end(); ++i) {
+		FavoriteHubEntry* entry = *i;
+		if(entry->getConnect()) {
+			if(!entry->getNick().empty() || !SETTING(NICK).empty()) {
+				HubFrame::openWindow(mdi, entry->getServer());
+			}
+		}
+	}
 }
 
 void MainWindow::initSecond() {
@@ -790,7 +817,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		TextFrame::openWindow(*file);
 		File::deleteFile(Text::fromT(*file));
 	} else if(wParam == AUTO_CONNECT) {
-		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
 	} else if(wParam == STATUS_MESSAGE) {
@@ -1048,18 +1074,6 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	return 0;
 }
 
-void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
-	missedAutoConnect = false;
-	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-		FavoriteHubEntry* entry = *i;
-		if(entry->getConnect()) {
-			if(!entry->getNick().empty() || !SETTING(NICK).empty())
-				HubFrame::openWindow(Text::toT(entry->getServer()));
-			else
-				missedAutoConnect = true;
-		}
-	}
-}
 
 void MainFrame::updateTray(bool add /* = true */) {
 	if(add) {

@@ -38,7 +38,7 @@ SplashWindow::SplashWindow() {
 	tstring caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 	{
 		WidgetTextBox::Seed cs;
-		cs.style = WS_POPUP | ES_CENTER | ES_READONLY;
+		cs.style = WS_CHILD | ES_CENTER | ES_READONLY;
 		cs.exStyle = WS_EX_STATICEDGE;
 		text = createTextBox(cs);
 	}

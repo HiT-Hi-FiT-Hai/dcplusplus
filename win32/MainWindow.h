@@ -19,6 +19,9 @@
 #if !defined(DCPLUSPLUS_WIN32_MAIN_WINDOW_H)
 #define DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 
+#include "AspectSpeaker.h"
+#include <client/forward.h>
+
 #ifdef PORT_ME
 
 #include "../client/TimerManager.h"
@@ -35,7 +38,7 @@
 #include "UPnP.h"
 #endif
 
-class MainWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, MainWindow>  
+class MainWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, MainWindow>, public AspectSpeaker<MainWindow>
 
 #ifdef PORT_ME
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
@@ -54,6 +57,15 @@ private:
 	WidgetStatusBarSectionsPtr status;
 	WidgetMDIParentPtr mdi;
 	WidgetMenuPtr mainMenu;
+
+	enum Speaker {
+		DOWNLOAD_LISTING,
+		BROWSE_LISTING,
+		AUTO_CONNECT,
+		PARSE_COMMAND_LINE,
+		VIEW_FILE_AND_DELETE,
+		STATUS_MESSAGE
+	};
 
 	enum Status {
 		STATUS_STATUS,
@@ -90,24 +102,18 @@ private:
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
 	
+	HRESULT spoken(LPARAM lp, WPARAM wp);
+	
 	void layout();
 	void eachSecond(const SmartWin::CommandPtr& ptr);
 	void updateStatus();
 	void setStatus(Status s, const tstring& text);
+	void autoConnect(const FavoriteHubEntryList& fl);
 	
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
 	CMDICommandBarCtrl m_CmdBar;
-
-	enum {
-		DOWNLOAD_LISTING,
-		BROWSE_LISTING,
-		AUTO_CONNECT,
-		PARSE_COMMAND_LINE,
-		VIEW_FILE_AND_DELETE,
-		STATUS_MESSAGE
-	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -387,8 +393,6 @@ private:
 
 	HANDLE stopperThread;
 
-	bool missedAutoConnect;
-
 	struct {
 		tstring homepage;
 		tstring downloads;
@@ -404,7 +408,6 @@ private:
 	HWND createToolbar();
 	void updateTray(bool add = true);
 
-	void autoConnect(const FavoriteHubEntry::List& fl);
 	void startSocket();
 
 	// LogManagerListener

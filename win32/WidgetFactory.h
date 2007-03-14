@@ -27,8 +27,11 @@
 template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy = SmartWin::MessageMapPolicyNormalWidget >
 class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy> {
 public:
+	WidgetFactory() : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>() { }
+	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>(parent) { }
+	
 	/// DataGrid class type.
-	typedef WidgetDataGrid< EventHandlerClass, MessageMapPolicy > WidgetDataGrid;
+	typedef ::WidgetDataGrid< EventHandlerClass, MessageMapPolicy > WidgetDataGrid;
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;

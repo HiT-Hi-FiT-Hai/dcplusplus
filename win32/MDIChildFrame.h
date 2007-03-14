@@ -23,9 +23,10 @@
 #include "WinUtil.h"
 
 #include "WidgetFactory.h"
+#include "AspectSpeaker.h"
 
 template<typename T>
-class MDIChildFrame : public WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget > {
+class MDIChildFrame : public AspectSpeaker<T>, public WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget > {
 public:
 	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
 	MDIChildFrame() : reallyClose(false) {
@@ -36,16 +37,11 @@ public:
 		onClosing(&T::closing);
 		onFocus(&T::focused);
 		onSized(&T::sized);
-		onRaw(&T::x_spoken, WM_SPEAKER);
 		onRaw(&T::ctlColor, WM_CTLCOLORSTATIC);
 		onRaw(&T::ctlColor, WM_CTLCOLOREDIT);
 	}
 	
 protected:
-	BOOL speak(WPARAM w = 0, LPARAM l = 0) { return StupidWin::postMessage(this, WM_SPEAKER, w, l); }
-	
-	/** Override this to catch messages from speak */
-	void spoken(WPARAM, LPARAM) { }
 	
 	void focused() {
 		if(!controls.empty()) {
@@ -87,9 +83,6 @@ private:
 	bool reallyClose;
 
 	void sized(const SmartWin::WidgetSizedEventResult& sz) { static_cast<T*>(this)->layout(); }
-	
-	/// Swap silly smartwin order of arguments...
-	HRESULT x_spoken(LPARAM lp, WPARAM wp) { return static_cast<T*>(this)->spoken(wp, lp), 0; }
 	
 	HRESULT ctlColor(LPARAM lp, WPARAM wp) {
 		HWND hWnd((HWND)lp);

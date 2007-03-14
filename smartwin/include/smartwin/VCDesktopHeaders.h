@@ -57,6 +57,7 @@
 */
 #pragma comment( lib, "Comdlg32.lib" )
 	#pragma comment( lib, "comctl32.lib" )
+#ifdef DLL
 	#ifdef _DEBUG
 		#ifdef _UNICODE
 			#pragma comment( lib, "SmartWinDU.lib" )
@@ -70,7 +71,7 @@
 			#pragma comment( lib, "SmartWin.lib" )
 		#endif
 	#endif
-
+#endif
 #endif
 #endif
 

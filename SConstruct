@@ -3,7 +3,7 @@
 from build_util import Dev
 
 gcc_flags = {
-	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
+	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
 	'debug': [], 
 	'release' : ['-O2']
 }
@@ -17,7 +17,7 @@ msvc_flags = {
 }
 
 gcc_link_flags = {
-	'common' : ['-ggdb', '-Wl,--no-undefined'],
+	'common' : ['-g', '-Wl,--no-undefined'],
 	'debug' : [],
 	'release' : []				
 }
@@ -86,10 +86,6 @@ if env['CC'] == 'cl':
 	link_flags = msvc_link_flags
 	defs = msvc_defs
 	
-	# This is for msvc8
-	# Embed generated manifest in file
-	env['SHLINKCOM'] = [env['SHLINKCOM'], 'mt.exe -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
-	env['LINKCOM'] = [env['LINKCOM'], 'mt.exe -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
 	env.Append(LIBS = ['User32', 'shell32', 'Advapi32'])
 else:
 	flags = gcc_flags

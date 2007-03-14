@@ -162,6 +162,10 @@ public:
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 
+	static bool isShift() { return (::GetKeyState(VK_SHIFT) & 0x8000) > 0; }
+	static bool isAlt() { return (::GetKeyState(VK_MENU) & 0x8000) > 0; }
+	static bool isCtrl() { return (::GetKeyState(VK_CONTROL) & 0x8000) > 0; }
+
 #ifdef PORT_ME
 	static CImageList fileImages;
 	static int fileImageCount;
@@ -273,10 +277,6 @@ public:
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
-
-	static bool isShift() { return (GetKeyState(VK_SHIFT) & 0x8000) > 0; }
-	static bool isAlt() { return (GetKeyState(VK_MENU) & 0x8000) > 0; }
-	static bool isCtrl() { return (GetKeyState(VK_CONTROL) & 0x8000) > 0; }
 
 	static tstring escapeMenu(tstring str) {
 		string::size_type i = 0;

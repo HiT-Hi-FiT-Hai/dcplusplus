@@ -105,7 +105,7 @@ void FavHubsFrame::layout() {
 	const int xborder = 10;
 	
 	SmartWin::Rectangle rb(r.getBottom(ybutton));
-	r.cropBottom(ybutton);
+	r.size.y -= ybutton;
 	hubs->setBounds(r);
 	
 	rb.size.x = xbutton;

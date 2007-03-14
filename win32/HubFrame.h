@@ -36,7 +36,7 @@ protected:
 	friend class MDIChildFrame<HubFrame>;
 	
 	void layout();
-	void spoken(WPARAM wp, LPARAM lp);
+	HRESULT spoken(LPARAM lp, WPARAM wp);
 	bool preClosing();
 	void postClosing();
 	

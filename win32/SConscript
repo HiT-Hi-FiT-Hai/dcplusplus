@@ -16,5 +16,4 @@ env.Append(CPPPATH=["#/smartwin/include", "#/"])
 env.Append(LIBPATH=["#/smartwin/lib"])
 
 ret = env.Program(target, [sources, dev.client, dev.zlib, dev.bzip2, dev.yassl, dev.smartwin])
-
 Return('ret')

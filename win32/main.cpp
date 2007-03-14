@@ -300,17 +300,16 @@ int SmartWinMain(SmartWin::Application& app) {
 		dcdebug("Failed reading exe\n");
 	}
 	
-	{
-	//	SplashWindow* splash(new SplashWindow);
-		startup(0, 0);
-	//	splash->close();
-	}
-
-	WinUtil::init();
 
 	int ret = 255;
 	try {
+		SplashWindow* splash(new SplashWindow);
+		startup(0, 0);
+	
+		WinUtil::init();
 		MainWindow* wnd(new MainWindow);
+		// Close splash here, closing it before mainwindow makes smartwin think that we're exiting
+		splash->close();
 		ret = app.run();
 	} catch(const std::exception& e) {
 		printf("Exception: %s\n", e.what());
