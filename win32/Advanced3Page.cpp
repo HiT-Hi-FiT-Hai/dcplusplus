@@ -31,7 +31,6 @@
 
 PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_ADVANCED, ResourceManager::SETTINGS_ADVANCED_SETTINGS },
-	{ IDC_SETTINGS_ROLLBACK, ResourceManager::SETTINGS_ROLLBACK },
 	{ IDC_SETTINGS_B, ResourceManager::B },
 	{ IDC_SETTINGS_WRITE_BUFFER, ResourceManager::SETTINGS_WRITE_BUFFER },
 	{ IDC_SETTINGS_KB, ResourceManager::KiB },

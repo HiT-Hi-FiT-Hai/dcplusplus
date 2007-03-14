@@ -239,8 +239,6 @@ void QueueFrame::QueueItemInfo::update() {
 						tmp += TSTRING(FILE_NOT_AVAILABLE);
 					} else if(j->isSet(QueueItem::Source::FLAG_PASSIVE)) {
 						tmp += TSTRING(PASSIVE_USER);
-					} else if(j->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
-						tmp += TSTRING(ROLLBACK_INCONSISTENCY);
 					} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
 						tmp += TSTRING(SFV_INCONSISTENCY);
 					} else if(j->isSet(QueueItem::Source::FLAG_BAD_TREE)) {

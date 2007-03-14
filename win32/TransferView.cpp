@@ -531,9 +531,6 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
 			statusString += _T("[Z]");
 		}
-		if(d->isSet(Download::FLAG_ROLLBACK)) {
-			statusString += _T("[R]");
-		}
 		if(!statusString.empty()) {
 			statusString += _T(" ");
 		}

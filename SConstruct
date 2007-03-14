@@ -118,6 +118,11 @@ SWIGScanner = SCons.Scanner.ClassicCPP(
 )
 env.Append(SCANNERS=[SWIGScanner])
 
+from makedefs import convert
+env.Command('client/StringDefs.cpp', 'client/StringDefs.h', lambda target, source, env: convert())
+env.Depends('client/StringDefs.cpp', 'client/StringDefs.h')
+env.SideEffect('Example.xml', 'client/StringDefs.cpp')
+
 dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')
 dev.yassl = dev.build('yassl/')
