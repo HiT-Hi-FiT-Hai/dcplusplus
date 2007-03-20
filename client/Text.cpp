@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "Text.h"
+#include "Util.h"
 
 #ifndef _WIN32
 #include <errno.h>
@@ -282,8 +283,8 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 }
 
 const string& Text::convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw() {
-	if(str.empty())
-		return tmp = str;
+	if(str.empty() || Util::stricmp(fromCharset, toCharset) == 0)
+		return str;
 	if((fromCharset.empty() || fromCharset == systemCharset) && (toCharset == utf8 || toLower(toCharset) == "utf-8"))
 		return acpToUtf8(str, tmp);
 	if((toCharset.empty() || toCharset == systemCharset) && (fromCharset == utf8 || toLower(fromCharset) == "utf-8"))

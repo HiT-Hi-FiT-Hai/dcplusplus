@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,45 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(RESOURCE_MANAGER_H)
-#define RESOURCE_MANAGER_H
+#ifndef DCPLUSPLUS_CLIENT_RESOURCE_MANAGER_H
+#define DCPLUSPLUS_CLIENT_RESOURCE_MANAGER_H
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
 #include "Singleton.h"
-
-class ResourceManager : public Singleton<ResourceManager> {
-public:
-
-#include "StringDefs.h"
-
-	void loadLanguage(const string& aFile);
-	const string& getString(Strings x) const { dcassert(x >= 0 && x < LAST); return strings[x]; }
-	const wstring& getStringW(Strings x) const { dcassert(x >= 0 && x < LAST); return wstrings[x]; }
-	bool isRTL() { return rtl; }
-private:
-	friend class Singleton<ResourceManager>;
-
-	typedef HASH_MAP<string, Strings> NameMap;
-	typedef NameMap::iterator NameIter;
-
-	ResourceManager() : rtl(false) {
-		createWide();
-	}
-
-	virtual ~ResourceManager() { }
-
-	static string strings[LAST];
-	static wstring wstrings[LAST];
-	static string names[LAST];
-
-	bool rtl;
-
-	void createWide();
-};
-
 
 #define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
 #define CSTRING(x) ResourceManager::getInstance()->getString(ResourceManager::x).c_str()
@@ -75,5 +44,48 @@ private:
 #define CTSTRING CSTRING
 #endif
 
+class ResourceManager : public Singleton<ResourceManager> {
+public:
+
+#include "StringDefs.h"
+
+	void loadLanguage(const string& aFile);
+	const string& getString(Strings x) const { dcassert(x >= 0 && x < LAST); return strings[x]; }
+	const wstring& getStringW(Strings x) const { dcassert(x >= 0 && x < LAST); return wstrings[x]; }
+	bool isRTL() { return rtl; }
+	
+	template<typename T>
+	TStringList getStrings(const T& t) const {
+		const size_t n = sizeof(t) / sizeof(t[0]);
+		TStringList ret(n);
+		for(size_t i = 0; i < n; ++i) {
+#ifdef UNICODE
+			ret[i] = wstrings[t[i]];
+#else
+			ret[i] = strings[t[i]];
+#endif
+		}
+		return ret;
+	}
+private:
+	friend class Singleton<ResourceManager>;
+
+	typedef HASH_MAP<string, Strings> NameMap;
+	typedef NameMap::iterator NameIter;
+
+	ResourceManager() : rtl(false) {
+		createWide();
+	}
+
+	virtual ~ResourceManager() { }
+
+	static string strings[LAST];
+	static wstring wstrings[LAST];
+	static string names[LAST];
+
+	bool rtl;
+
+	void createWide();
+};
 
 #endif // !defined(RESOURCE_MANAGER_H)

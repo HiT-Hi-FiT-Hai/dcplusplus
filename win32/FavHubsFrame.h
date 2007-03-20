@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef FAV_HUBS_FRAME_H
-#define FAV_HUBS_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_FAV_HUBS_FRAME_H
+#define DCPLUSPLUS_WIN32_FAV_HUBS_FRAME_H
 
 #include "StaticFrame.h"
 
@@ -25,7 +25,7 @@
 
 class FavHubsFrame : public StaticFrame<FavHubsFrame>, private FavoriteManagerListener {
 public:
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NOTEPAD;
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_HUBS;
 
 protected:
 	friend class StaticFrame<FavHubsFrame>;
@@ -37,6 +37,19 @@ protected:
 	void layout();
 
 private:
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NAME = COLUMN_FIRST,
+		COLUMN_DESCRIPTION,
+		COLUMN_NICK,
+		COLUMN_PASSWORD,
+		COLUMN_SERVER,
+		COLUMN_USERDESCRIPTION,
+		COLUMN_LAST
+	};
+
+	static int columnSizes[COLUMN_LAST];
+	static int columnIndexes[COLUMN_LAST];
 
 	WidgetDataGridPtr hubs;
 	WidgetButtonPtr connect;
@@ -61,9 +74,6 @@ private:
 };
 
 #ifdef PORT_ME
-#include "../client/FavoriteManager.h"
-
-#define SERVER_MESSAGE_MAP 7
 
 class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, public StaticFrame<FavoriteHubsFrame, ResourceManager::FAVORITE_HUBS>,
 	private FavoriteManagerListener
@@ -102,7 +112,6 @@ public:
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 	bool checkNick();
-	void UpdateLayout(BOOL bResizeBars = TRUE);
 
 	LRESULT onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
 		openSelected();
@@ -116,37 +125,9 @@ public:
 
 private:
 
-	enum {
-		COLUMN_FIRST,
-		COLUMN_NAME = COLUMN_FIRST,
-		COLUMN_DESCRIPTION,
-		COLUMN_NICK,
-		COLUMN_PASSWORD,
-		COLUMN_SERVER,
-		COLUMN_USERDESCRIPTION,
-		COLUMN_LAST
-	};
-
 	CMenu hubsMenu;
 
-	ExListViewCtrl ctrlHubs;
-
 	bool nosave;
-
-	static int columnSizes[COLUMN_LAST];
-	static int columnIndexes[COLUMN_LAST];
-
-	void openSelected();
-
-	void updateList(const FavoriteHubEntry::List& fl) {
-		ctrlHubs.SetRedraw(FALSE);
-		for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-			addEntry(*i, ctrlHubs.GetItemCount());
-		}
-		ctrlHubs.SetRedraw(TRUE);
-		ctrlHubs.Invalidate();
-	}
-
 };
 
 #endif // !defined(FAVORITE_HUBS_FRM_H)

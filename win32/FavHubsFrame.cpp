@@ -25,6 +25,13 @@
 #include <client/ResourceManager.h>
 #include <client/FavoriteManager.h>
 
+int FavHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
+int FavHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT, ResourceManager::DESCRIPTION,
+	ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
+};
+
+
 FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent),
 	connect(0),
@@ -40,10 +47,10 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = createDataGrid(cs);
 		add_widget(hubs);
-/*		/// @todo add column creation to Seed class maybe?
-		TStringList cols;
-		cols.push_back("1");cols.push_back("2");cols.push_back("3");cols.push_back("4");cols.push_back("5");cols.push_back("6");
-		hubs->createColumns(cols);*/
+		
+		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
+		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 	}
 	
 	{
@@ -81,7 +88,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		add_widget(down);
 	}
 	
-/*	layout();
+	layout();
 	
 	const FavoriteHubEntry::List& fl = FavoriteManager::getInstance()->getFavoriteHubs();
 	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
@@ -89,7 +96,6 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 	}
 
 	FavoriteManager::getInstance()->addListener(this);
-	*/
 }
 
 FavHubsFrame::~FavHubsFrame() {
@@ -152,7 +158,6 @@ void FavHubsFrame::openSelected() {
 	}
 }
 
-
 void FavHubsFrame::handleConnect(WidgetButtonPtr) {
 	openSelected();
 }
@@ -196,30 +201,11 @@ void FavHubsFrame::on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw() {
 #include "../client/StringTokenizer.h"
 #include "../client/version.h"
 
-int FavoriteHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
-int FavoriteHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT, ResourceManager::DESCRIPTION,
-ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
-};
-
 LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	ctrlHubs.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
-
-	// Create listview columns
-	WinUtil::splitTokens(columnIndexes, SETTING(FAVORITESFRAME_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(FAVORITESFRAME_WIDTHS), COLUMN_LAST);
-
-	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = LVCFMT_LEFT;
-		ctrlHubs.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
-	}
-
-	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
-
-	updateList(FavoriteManager::getInstance()->getFavoriteHubs());
 
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));

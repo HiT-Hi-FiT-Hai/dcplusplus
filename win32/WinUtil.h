@@ -19,6 +19,9 @@
 #if !defined(DCPLUSPLUS_WIN32_WIN_UTIL_H)
 #define DCPLUSPLUS_WIN32_WIN_UTIL_H
 
+#include <client/StringTokenizer.h>
+#include <client/Util.h>
+
 #ifdef PORT_ME
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
@@ -161,6 +164,21 @@ public:
 	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
+	
+	template<typename T>
+	static std::vector<int> splitTokens(const string& str, const T& defaults) {
+		const size_t n = sizeof(defaults) / sizeof(defaults[0]);
+		std::vector<int> ret(defaults, defaults + n);
+		StringTokenizer<string> tokens(str, ',') ;
+		const StringList& l = tokens.getTokens();
+		for(size_t i = 0; i < std::min(ret.size(), l.size()); ++i) {
+			ret[i] = Util::toInt(l[i]);
+		}
+		return ret;			
+	}
+	
+	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
+	
 
 	static bool isShift() { return (::GetKeyState(VK_SHIFT) & 0x8000) > 0; }
 	static bool isAlt() { return (::GetKeyState(VK_MENU) & 0x8000) > 0; }
@@ -274,7 +292,6 @@ public:
 	static pair<tstring, bool> getHubNames(const CID& cid) throw();
 	static pair<tstring, bool> getHubNames(const User::Ptr& u) { return getHubNames(u->getCID()); }
 
-	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 

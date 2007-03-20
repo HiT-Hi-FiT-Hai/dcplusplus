@@ -42,6 +42,20 @@ public:
 		return ret;
 	}
 	
+	void setColumnWidths(const std::vector<int>& widths) {
+		for(size_t i = 0; i < widths.size(); ++i) {
+			this->setColumnWidth(i, widths[i]);
+		}
+	}
+	
+	std::vector<int> getColumnWidths() {
+		std::vector<int> ret(this->getColumnCount());
+		for(size_t i = 0; i < ret.size(); ++i) {
+			ret[i] = ::SendMessage(this->handle(), LVM_GETCOLUMNWIDTH, static_cast<WPARAM>(i), 0);
+		}			
+		return ret;
+	}
+	
 	LPARAM getItemData(int idx) {
 		LVITEM item = { 0 };
 		item.iItem = idx;
