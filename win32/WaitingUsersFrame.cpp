@@ -17,12 +17,12 @@
  */
 
 #include "stdafx.h"
-#include "client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+#include "resource.h"
 
-#include "client/Client.h"
-#include "client/ClientManager.h"
-#include "client/QueueManager.h"
+#include <client/Client.h>
+#include <client/ClientManager.h>
+#include <client/QueueManager.h>
 
 #include "WaitingUsersFrame.h"
 
