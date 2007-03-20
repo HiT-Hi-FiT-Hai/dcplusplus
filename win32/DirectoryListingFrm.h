@@ -248,12 +248,8 @@ private:
 			DirectoryListing::Directory* dir;
 		};
 
-		ItemInfo(DirectoryListing::File* f, bool utf8) : type(FILE), file(f) {
-			if(utf8) {
-				columns[COLUMN_FILENAME] = Text::toT(f->getName());
-			} else {
-				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(f->getName()));
-			}
+		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) {
+			columns[COLUMN_FILENAME] = Text::toT(f->getName());
 			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
 			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
 				columns[COLUMN_TYPE].erase(0, 1);
@@ -262,12 +258,8 @@ private:
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
 			columns[COLUMN_TTH] = Text::toT(f->getTTH().toBase32());
 		}
-		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) {
-			if(utf8) {
-				columns[COLUMN_FILENAME] = Text::toT(d->getName());
-			} else {
-				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(d->getName()));
-			}
+		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) {
+			columns[COLUMN_FILENAME] = Text::toT(d->getName());			
 			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(d->getTotalSize()));
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		}

@@ -194,7 +194,7 @@ public:
 		}
 		return tmp;
 #else // _WIN32
-		return strerror(aError);
+		return Text::toUtf8(strerror(aError));
 #endif // _WIN32
 	}
 

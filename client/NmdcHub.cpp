@@ -178,7 +178,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				setAutoReconnect(false);
 			}
 		}
-		string line = fromAcp(aLine);
+		string line = toUtf8(aLine);
 		if(line[0] != '<') {
 			fire(ClientListener::StatusMessage(), this, unescape(line));
 			return;
@@ -220,7 +220,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		cmd = aLine;
 	} else {
 		cmd = aLine.substr(0, x);
-		param = fromAcp(aLine.substr(x+1));
+		param = toUtf8(aLine.substr(x+1));
 	}
 
 	if(cmd == "$Search") {
@@ -417,7 +417,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->nmdcConnect(server, static_cast<uint16_t>(Util::toInt(port)), getMyNick(), getHubUrl());
+		// For simplicity, we make the assumption that users on a hub have the same character encoding
+		ConnectionManager::getInstance()->nmdcConnect(server, (uint16_t)Util::toInt(port), getMyNick(), getHubUrl(), getEncoding());
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_NORMAL) {
 			return;
@@ -508,7 +509,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		}
 		state = STATE_IDENTIFY;
 
-		// Param must not be fromAcp'd...
+		// Param must not be toUtf8'd...
 		param = aLine.substr(6);
 
 		if(!param.empty()) {
@@ -618,10 +619,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				string tmp;
 				// Let's assume 10 characters per nick...
 				tmp.reserve(v.size() * (11 + 10 + getMyNick().length()));
-				string n = ' ' + toAcp(getMyNick()) + '|';
+				string n = ' ' + fromUtf8(getMyNick()) + '|';
 				for(OnlineUser::List::const_iterator i = v.begin(); i != v.end(); ++i) {
 					tmp += "$GetINFO ";
-					tmp += toAcp((*i)->getIdentity().getNick());
+					tmp += fromUtf8((*i)->getIdentity().getNick());
 					tmp += n;
 				}
 				if(!tmp.empty()) {
@@ -736,18 +737,18 @@ void NmdcHub::connectToMe(const OnlineUser& aUser) {
 	checkstate();
 	dcdebug("NmdcHub::connectToMe %s\n", aUser.getIdentity().getNick().c_str());
 	ConnectionManager::getInstance()->nmdcExpect(aUser.getIdentity().getNick(), getMyNick(), getHubUrl());
-	send("$ConnectToMe " + toAcp(aUser.getIdentity().getNick()) + " " + getLocalIp() + ":" + Util::toString(ConnectionManager::getInstance()->getPort()) + "|");
+	send("$ConnectToMe " + fromUtf8(aUser.getIdentity().getNick()) + " " + getLocalIp() + ":" + Util::toString(ConnectionManager::getInstance()->getPort()) + "|");
 }
 
 void NmdcHub::revConnectToMe(const OnlineUser& aUser) {
 	checkstate();
 	dcdebug("NmdcHub::revConnectToMe %s\n", aUser.getIdentity().getNick().c_str());
-	send("$RevConnectToMe " + toAcp(getMyNick()) + " " + toAcp(aUser.getIdentity().getNick()) + "|");
+	send("$RevConnectToMe " + fromUtf8(getMyNick()) + " " + fromUtf8(aUser.getIdentity().getNick()) + "|");
 }
 
 void NmdcHub::hubMessage(const string& aMessage) {
 	checkstate();
-	send(toAcp( "<" + getMyNick() + "> " + escape(aMessage) + "|" ) );
+	send(fromUtf8( "<" + getMyNick() + "> " + escape(aMessage) + "|" ) );
 }
 
 void NmdcHub::myInfo(bool alwaysSend) {
@@ -781,9 +782,9 @@ void NmdcHub::myInfo(bool alwaysSend) {
 
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	string myInfoA =
-		"$MyINFO $ALL " + toAcp(getMyNick()) + " " + toAcp(escape(getCurrentDescription())) +
+		"$MyINFO $ALL " + fromUtf8(getMyNick()) + " " + fromUtf8(escape(getCurrentDescription())) +
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin +
-		">$ $" + SETTING(UPLOAD_SPEED) + "\x01$" + toAcp(escape(SETTING(EMAIL))) + '$';
+		">$ $" + SETTING(UPLOAD_SPEED) + "\x01$" + fromUtf8(escape(SETTING(EMAIL))) + '$';
 	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
  
  	if(lastMyInfoA != myInfoA || alwaysSend || (lastMyInfoB != myInfoB && lastUpdate + 15*60*1000 < GET_TICK()) ){
@@ -799,7 +800,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-	string tmp = ((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : toAcp(escape(aString)));
+	string tmp = ((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : fromUtf8(escape(aString)));
 	string::size_type i;
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
@@ -814,7 +815,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	} else {
 		BUF_SIZE = getMyNick().length() + aString.length() + 64;
 		buf = new char[BUF_SIZE];
-		chars = snprintf(buf, BUF_SIZE, "$Search Hub:%s %c?%c?%s?%d?%s|", toAcp(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		chars = snprintf(buf, BUF_SIZE, "$Search Hub:%s %c?%c?%s?%d?%s|", fromUtf8(getMyNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	}
 	send(buf, chars);
 }
@@ -870,7 +871,7 @@ string NmdcHub::validateMessage(string tmp, bool reverse) {
 void NmdcHub::privateMessage(const OnlineUser& aUser, const string& aMessage) {
 	checkstate();
 
-	send("$To: " + toAcp(aUser.getIdentity().getNick()) + " From: " + toAcp(getMyNick()) + " $" + toAcp(escape("<" + getMyNick() + "> " + aMessage)) + "|");
+	send("$To: " + fromUtf8(aUser.getIdentity().getNick()) + " From: " + fromUtf8(getMyNick()) + " $" + fromUtf8(escape("<" + getMyNick() + "> " + aMessage)) + "|");
 	// Emulate a returning message...
 	Lock l(cs);
 	OnlineUser* ou = findUser(getMyNick());

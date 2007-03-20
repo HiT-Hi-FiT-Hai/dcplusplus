@@ -203,12 +203,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
-		tstring name;
-		if(dl->getUtf8()) {
-			name = Text::toT((*i)->getName());
-		} else {
-			name = Text::toT(Text::acpToUtf8((*i)->getName()));
-		}
+		tstring name = Text::toT((*i)->getName());
 		int index = (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
 		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), index, index, 0, 0, (LPARAM)*i, aParent, TVI_SORT);
 		if((*i)->getAdls())
@@ -326,10 +321,10 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	clearList();
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
-		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i, dl->getUtf8()), (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex());
+		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i), (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex());
 	}
 	for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
-		ItemInfo* ii = new ItemInfo(*j, dl->getUtf8());
+		ItemInfo* ii = new ItemInfo(*j);
 		ctrlList.insertItem(ctrlList.GetItemCount(), ii, WinUtil::getIconIndex(ii->getText(COLUMN_FILENAME)));
 	}
 	ctrlList.resort();
@@ -999,8 +994,6 @@ void DirectoryListingFrame::findFile(bool findNext)
 			return;
 
 		findStr = Text::fromT(dlg.line);
-		if(!dl->getUtf8())
-			findStr = Text::utf8ToAcp(findStr);
 		skipHits = 0;
 	} else {
 		skipHits++;

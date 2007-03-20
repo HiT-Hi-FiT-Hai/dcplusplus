@@ -318,41 +318,13 @@ QueueManager::~QueueManager() throw() {
 
 	if(!BOOLSETTING(KEEP_LISTS)) {
 		string path = Util::getListPath();
+		StringList filelists = File::findFiles(path, "*.xml.bz2");
+		StringList filelists2 = File::findFiles(path, "*.DcLst");
+		filelists.insert(filelists.end(), filelists2.begin(), filelists2.end());
 
-#ifdef _WIN32
-		WIN32_FIND_DATA data;
-		HANDLE hFind;
-
-		hFind = FindFirstFile(Text::toT(path + "\\*.xml.bz2").c_str(), &data);
-		if(hFind != INVALID_HANDLE_VALUE) {
-			do {
-				File::deleteFile(path + Text::fromT(data.cFileName));
-			} while(FindNextFile(hFind, &data));
-
-			FindClose(hFind);
+		for(StringIter i = filelists.begin(); i != filelists.end(); ++i) {
+			File::deleteFile(*i);
 		}
-
-		hFind = FindFirstFile(Text::toT(path + "\\*.DcLst").c_str(), &data);
-		if(hFind != INVALID_HANDLE_VALUE) {
-			do {
-				File::deleteFile(path + Text::fromT(data.cFileName));
-			} while(FindNextFile(hFind, &data));
-
-			FindClose(hFind);
-		}
-
-#else
-		DIR* dir = opendir(path.c_str());
-		if (dir) {
-			while (struct dirent* ent = readdir(dir)) {
-				if (fnmatch("*.xml.bz2", ent->d_name, 0) == 0 ||
-					fnmatch("*.DcLst", ent->d_name, 0) == 0) {
-					File::deleteFile(path + ent->d_name);
-				}
-			}
-			closedir(dir);
-		}
-#endif
 	}
 }
 

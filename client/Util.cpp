@@ -75,8 +75,6 @@ void WINAPI invalidParameterHandler(const wchar_t*, const wchar_t*, const wchar_
 #endif
 
 void Util::initialize() {
-	setlocale(LC_ALL, "");
-
 	Text::initialize();
 
 	sgenrand((unsigned long)time(NULL));
@@ -92,7 +90,7 @@ void Util::initialize() {
 #else
 	systemPath = "/etc/";
 	char* home = getenv("HOME");
-	configPath = home ? home + string("/.dc++/") : "/tmp/";
+	configPath = home ? Text::toUtf8(home) + "/.dc++/" : "/tmp/";
 	dataPath = configPath; // dataPath in linux is usually prefix + /share/app_name, so we can't represent it here
 #endif
 
@@ -275,7 +273,7 @@ string Util::getShortTimeString(time_t t) {
 	} else {
 		strftime(buf, 254, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm);
 	}
-	return Text::acpToUtf8(buf);
+	return Text::toUtf8(buf);
 }
 
 /**
@@ -714,7 +712,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 			buf = new char[bufsize];
 		}
 
-		return string(buf);
+		return Text::toUtf8(string(buf));
 #endif
 	}
 	return Util::emptyString;
@@ -791,8 +789,9 @@ uint32_t Util::rand() {
 }
 
 string Util::getOsVersion() {
-#ifdef _WIN32
 	string os;
+
+#ifdef _WIN32
 
 	OSVERSIONINFOEX ver;
 	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
@@ -841,18 +840,19 @@ string Util::getOsVersion() {
 		}
 	}
 
-	return os;
 
 #else // _WIN32
 	struct utsname n;
 
 	if(uname(&n) != 0) {
-		return "unix (unknown version)";
+		os = "unix (unknown version)";
+	} else {
+		os = Text::toUtf8(string(n.sysname) + " " + n.release + " (" + n.machine + ")");
 	}
 
-	return string(n.sysname) + " " + string(n.release) + " (" + string(n.machine) + ")";
-
 #endif // _WIN32
+
+	return os;
 }
 
 /*	getIpCountry

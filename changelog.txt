@@ -21,6 +21,7 @@
 * [bug 1159] Removed unnecessary resume position reset (thanks cologic)
 * Removed rollback support - advanced TTH resume is now always used (thanks cologic)
 * Switched to mingw/stlport5.1
+* Uninstaller removes adc registry key (thanks ullner)
 
 -- 0.699 2006-12-18 --
 * Switched to VC8/VS2005

@@ -23,7 +23,7 @@
 
 const string SimpleXML::utf8Header = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\r\n";
 
-string& SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false */, bool utf8 /* = true */) {
+string& SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false */, const string &encoding /* = "UTF-8" */) {
 	string::size_type i = 0;
 	const char* chars = aAttrib ? "<&>'\"" : "<&>";
 
@@ -56,11 +56,8 @@ string& SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = fals
 					i+=2;
 				}
 			}
-		}
-		if(!utf8) {
-			// Not very performant, but shouldn't happen very often
-			aString = Text::acpToUtf8(aString);
-		}
+		}	
+		aString = Text::toUtf8(aString, encoding);
 	} else {
 		while( (i = aString.find_first_of(chars, i)) != string::npos) {
 			switch(aString[i]) {
@@ -72,9 +69,8 @@ string& SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = fals
 			default: dcasserta(0);
 			}
 		}
-		if(!utf8) {
-			aString = Text::utf8ToAcp(aString);
-		}
+		// No need to convert back to acp since our utf8Header denotes we
+		// should store it as utf8.
 	}
 	return aString;
 }
@@ -182,7 +178,7 @@ string::size_type SimpleXMLReader::loadAttribs(const string& name, const string&
 		}
 		// Ok, we have an attribute...
 		attribs.push_back(make_pair(tmp.substr(i, j-i), tmp.substr(x, y-x)));
-		SimpleXML::escape(attribs.back().second, true, true, utf8);
+		SimpleXML::escape(attribs.back().second, true, true, encoding);
 
 		i = tmp.find_first_not_of(' ', y + 1);
 		if(tmp[i] == '/' || tmp[i] == '>') {
@@ -221,10 +217,12 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 			}
 
 			string str = tmp.substr(i, j - i);
-			if(str.find("encoding=\"utf-8\"") == string::npos) {
-				// Ugly pass to convert from some other codepage to utf-8; note that we convert from the ACP, not the one specified in the xml...
-				utf8 = false;
-			}
+			if((i = str.find("encoding=\"")) != string::npos) {
+				string::size_type k = str.find('\"', i + 10);
+				if(k != string::npos && k < j) {
+					encoding = str.substr(i + 10, k - i - 10);
+				}
+ 			}
 
 			i = j + 2;
 			continue;
@@ -248,7 +246,7 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 			{
 				if(!hasChildren) {
 					data = tmp.substr(start, i - start - 2);
-					SimpleXML::escape(data, false, true, utf8);
+					SimpleXML::escape(data, false, true, encoding);
 				} else {
 					data.clear();
 				}

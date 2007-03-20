@@ -169,6 +169,17 @@ string ClientManager::findHub(const string& ipPort) const {
 	return url;
 }
 
+string ClientManager::findHubEncoding(const string& aUrl) const {
+	Lock l(cs);
+
+	for(Client::List::const_iterator i = clients.begin(); i != clients.end(); ++i) {
+		if((*i)->getHubUrl() == aUrl) {
+			return (*i)->getEncoding();
+		}
+	}
+	return Text::getSystemCharset();
+}
+
 User::Ptr ClientManager::findLegacyUser(const string& aNick) const throw() {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);

@@ -59,6 +59,7 @@ public:
 	User::Ptr getUser(const CID& cid) throw();
 
 	string findHub(const string& ipPort) const;
+	string findHubEncoding(const string& aUrl) const;
 
 	User::Ptr findUser(const string& aNick, const string& aHubUrl) const throw() { return findUser(makeCid(aNick, aHubUrl)); }
 	User::Ptr findUser(const CID& cid) const throw();

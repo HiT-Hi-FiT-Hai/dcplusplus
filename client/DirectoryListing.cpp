@@ -131,8 +131,6 @@ private:
 };
 
 string DirectoryListing::loadXML(const string& xml, bool updating) {
-	setUtf8(true);
-
 	ListLoader ll(getRoot(), updating);
 	SimpleXMLReader(&ll).fromXML(xml);
 	return ll.getBase();
@@ -248,13 +246,9 @@ string DirectoryListing::getPath(const Directory* d) const {
 	return dir;
 }
 
-static inline const string& escaper(const string& n, string& tmp, bool utf8) {
-	return utf8 ? n : (tmp.clear(), Text::acpToUtf8(n, tmp));
-}
-
 void DirectoryListing::download(Directory* aDir, const string& aTarget, bool highPrio) {
 	string tmp;
-	string target = (aDir == getRoot()) ? aTarget : aTarget + escaper(aDir->getName(), tmp, getUtf8()) + PATH_SEPARATOR;
+	string target = (aDir == getRoot()) ? aTarget : aTarget + aDir->getName() + PATH_SEPARATOR;
 	// First, recurse over the directories
 	Directory::List& lst = aDir->directories;
 	sort(lst.begin(), lst.end(), Directory::DirSort());
@@ -267,7 +261,7 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget, bool hig
 	for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 		File* file = *i;
 		try {
-			download(file, target + escaper(file->getName(), tmp, getUtf8()), false, highPrio);
+			download(file, target + file->getName(), false, highPrio);
 		} catch(const QueueException&) {
 			// Catch it here to allow parts of directories to be added...
 		} catch(const FileException&) {

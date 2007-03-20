@@ -19,6 +19,12 @@ inline LRESULT sendMessage(SmartWin::Widget* w, UINT m, WPARAM wp = 0, LPARAM lp
 inline bool getModify(SmartWin::Widget* w) { return sm(w, EM_GETMODIFY) > 0; }
 inline void setModify(SmartWin::Widget* w, bool modified) { sm(w, EM_SETMODIFY, modified); }
 inline void emptyUndoBuffer(SmartWin::Widget* w) { sm(w, EM_EMPTYUNDOBUFFER); }
+inline DWORD_PTR getTreeItemData(SmartWin::Widget* w, SmartWin::TreeViewNode tvn) {
+	TVITEM item = { 0 };
+	item.hItem = tvn.handle;
+	item.mask = TVIF_PARAM;
+	return (DWORD_PTR)((BOOL)sm(w, TVM_GETITEM, 0, (LPARAM)&item) ? item.lParam : NULL);
+}
 }
 
 #endif /*STUPIDWIN_H_*/

@@ -21,24 +21,28 @@
 
 #include "Text.h"
 
-char Text::asciiLower[128];
-wchar_t Text::lower[65536];
+#ifndef _WIN32
+#include <errno.h>
+#include <iconv.h>
 
-// When using GNU C library; setlocale should be called before Text::initialize
+#ifndef ICONV_CONST
+ #define ICONV_CONST
+#endif
+
+#endif
+
+string Text::systemCharset;
+const string Text::utf8 = "UTF-8"; // optimization
 
 void Text::initialize() {
-	for(size_t i = 0; i < 65536; ++i) {
-#ifdef _WIN32
-		lower[i] = (wchar_t)CharLowerW((LPWSTR)i);
-#else
-		lower[i] = (char)towlower(i);
-#endif
-	}
+	setlocale(LC_ALL, "");
 
-	for(size_t i = 0; i < 128; ++i) {
-		asciiLower[i] = (char)lower[i];
-	}
-
+	char *ctype = setlocale(LC_CTYPE, NULL);
+	if(ctype) {
+		systemCharset = string(ctype);
+	} else {
+		dcdebug("Unable to determine the program's locale");
+ 	}
 }
 
 int Text::utf8ToWc(const char* str, wchar_t& c) {
@@ -142,19 +146,26 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	}
 	return tmp;
 #else
-	//convert from current locale multibyte (equivalent to CP_ACP?) to wide char
-	const char* src = str.c_str();
-	int n = mbsrtowcs(NULL, &src, 0, NULL);
-	if (n < 1) {
-		return tmp;
-	}
-	src = str.c_str();
-	tmp.resize(n);
-	n = mbsrtowcs(&tmp[0], &src, n, NULL);
-	if (n < 1) {
-		tmp.clear();
-		return tmp;
-	}
+	size_t rv;
+	wchar_t wc;
+	const char *src = str.c_str();
+	size_t n = str.length() + 1;
+	tmp.reserve(n);
+
+	while(n > 0) {
+		rv = mbrtowc(&wc, src, n, NULL);
+		if(rv == 0 || rv == (size_t)-2) {
+			break;
+		} else if(rv == (size_t)-1) {
+			tmp.push_back(L'_');
+			++src;
+			--n;
+		} else {
+			tmp.push_back(wc);
+			src += rv;
+			n -= rv;
+		}
+	}	
 	return tmp;
 #endif
 }
@@ -234,6 +245,14 @@ wstring& Text::utf8ToWide(const string& str, wstring& tgt) throw() {
 	return tgt;
 }
 
+wchar_t Text::toLower(wchar_t c) throw() {
+#ifdef _WIN32
+		return (wchar_t)CharLowerW((LPWSTR)c);
+#else
+		return (wchar_t)towlower(c);
+#endif
+}
+
 wstring& Text::toLower(const wstring& str, wstring& tmp) throw() {
 	tmp.reserve(str.length());
 	wstring::const_iterator end = str.end();
@@ -261,3 +280,57 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 	}
 	return tmp;
 }
+
+const string& Text::convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw() {
+	if(str.empty())
+		return tmp = str;
+	if((fromCharset.empty() || fromCharset == systemCharset) && (toCharset == utf8 || toLower(toCharset) == "utf-8"))
+		return acpToUtf8(str, tmp);
+	if((toCharset.empty() || toCharset == systemCharset) && (fromCharset == utf8 || toLower(fromCharset) == "utf-8"))
+		return utf8ToAcp(str, tmp);
+	
+#ifdef _WIN32
+	// We don't know how to convert arbitrary charsets
+	dcdebug("Unknown conversion from %s to %s\n", fromCharset.c_str(), toCharset.c_str());
+	return str;
+#else
+ 
+	// Initialize the converter
+	iconv_t cd = iconv_open(toCharset.c_str(), fromCharset.c_str());
+	if(cd == (iconv_t)-1)
+		return tmp = str;
+
+	size_t rv;
+	size_t len = str.length() * 2; // optimization
+	size_t inleft = str.length();
+	size_t outleft = len;
+	tmp.resize(len);
+	const char *inbuf = str.data();
+	char *outbuf = (char *)tmp.data();
+
+	while(inleft > 0) {
+		rv = iconv(cd, (ICONV_CONST char **)&inbuf, &inleft, &outbuf, &outleft);
+		if(rv == (size_t)-1) {
+			size_t used = outbuf - tmp.data();
+			if(errno == E2BIG) {
+				len *= 2;
+				tmp.resize(len);
+				outbuf = (char *)tmp.data() + used;
+				outleft = len - used;
+			} else if(errno == EILSEQ) {
+				++inbuf;
+				--inleft;
+				tmp[used] = '_';
+			} else {
+				tmp.replace(used, inleft, string(inleft, '_'));
+				inleft = 0;
+			}
+		}
+	}
+	iconv_close(cd);
+	if(outleft > 0) {
+		tmp.resize(len - outleft);
+	}
+	return tmp;
+#endif
+ }

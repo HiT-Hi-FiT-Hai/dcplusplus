@@ -106,6 +106,7 @@ public:
 	GETSET(uint64_t, lastActivity, LastActivity);
 	GETSET(bool, registered, Registered);
 	GETSET(bool, autoReconnect, AutoReconnect);
+	GETSET(string, encoding, Encoding);
 
 	GETSET(string, currentNick, CurrentNick);
 	GETSET(string, currentDescription, CurrentDescription);

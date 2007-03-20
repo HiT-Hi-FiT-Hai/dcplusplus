@@ -1,35 +1,30 @@
 The most important thing about compiling: If it didn't work, *you* screwed up.
 
-How to compile in 3 easy steps:
+How to compile in x easy steps:
 
-1) Download the source DC++ download site. Unpack the DC++ source.
-   Download WTL from http://sf.net/projects/wtl. Unpack it to the wtl folder.
+1a) Either install Mingw from www.mingw.org
+   - You'll need w32api, gcc and g++ (with dependencies), see their site for installation instructions
+   - You'll also have to install STLport later on
+   - Make sure gcc/g++ is in your path and before any cygwin installation
+   
+1b) or install Microsoft Visual C++ 8.0 (I don't use it so there might be minor compile problems)
+   - If you get errors about a missing file "natupnp.h", you need a more recent platform SDK - google.
+   - Make sure cl is in your path (open a VS command prompt when building)
 
-2) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
-   You have to do this if you get an error that "natupnp.h" is missing. Since all you need is this
-   one file, you can ask someone at the dev hub to supply it for you (or look for it in the DC++
-   bugzilla, it's attached to one of the bugs).
+2) Install the most recent development release of SCons (www.scons.org) and make sure you have it in your PATH
 
-3) Open the solution in vc8.0 (2005) and press your build button. If you find your executable unreasonably large, 
-   you probably compiled in debug mode - switch to release once you're done testing the code.
+3) Download and unzip STLport in the stlport folder, and install it so that the compiled libraries end up in 
+   stlport/lib. This step is optional when using MSVC++.
 
-Note;	You'll need DBGHELP.dll from the binary distribution unless you're using WinXP, otherwise 
-        you'll get errors saying symbols are missing when running your compiled executable. My copy 
-        says version 5.1.2600.1106 right now.
+4) Open a command prompt and type "scons" followed by some options:
+	"tools=mingw" - Use mingw for building (default)
+	"tools=default" - Use msvc for building (yes, the option value is strange)
+	"mode=debug" - Compile a debug build (default)
+	"mode=release" - Compile an optimized release build
 
 Note;	If you have problems, read the forum posts before posting. Somebody else has probably made your 
 	mistake already. The word to note in the last sentence is 'your', so let me articulate a bit more,
 	it works on my computer, so it's yours that is not correctly set up.
-
-Note;	To build the HTML Help file, you will need to download and install the HTML Help Workshop 
-	application.  The custom build setup relies on it being installed to the default path, which 
-	is: "C:\Program Files\HTML Help Workshop\"
-	http://msdn.microsoft.com/library/default.asp?url=/library/en-us/htmlhelp/html/hwMicrosoftHTMLHelpDownloads.asp
-
-Note;	You need to have python installed if you change StringDefs.h, as a small python script is automatically
-	run to generate StringDefs.cpp and Example.xml. To turn it off or change python path, go to 
-	client->Header Files->StringDefs.h->Properties->Custom build step and change the appropriate values.
-	The help file's changelog.html is also updated via a python script (courtesy of fusbar).
 
 By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
 to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...

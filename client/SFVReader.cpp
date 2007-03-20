@@ -51,50 +51,17 @@ bool SFVReader::tryFile(const string& sfvFile, const string& fileName) throw(Fil
 }
 
 void SFVReader::load(const string& fileName) throw() {
-#ifdef _WIN32
 	string path = Util::getFilePath(fileName);
 	string fname = Util::getFileName(fileName);
+	StringList files = File::findFiles(path, "*.sfv");
 
-	WIN32_FIND_DATA fd;
-	HANDLE hf = FindFirstFile(Text::toT(path + "*.sfv").c_str(), &fd);
-	if(hf == INVALID_HANDLE_VALUE) {
-		return;
-	}
-
-	do {
+	for(StringIter i = files.begin(); i != files.end(); ++i) {
 		try {
-			if(tryFile(path + Text::fromT(fd.cFileName), fname)) {
-				FindClose(hf);
+			if (tryFile(*i, fname)) {
 				return;
 			}
 		} catch(const FileException&) {
 			// Ignore...
 		}
-	} while(FindNextFile(hf, &fd));
-
-	FindClose(hf);
-
-#else
-	string path = Util::getFilePath(fileName);
-	string fname = Util::getFileName(fileName);
-
-	DIR* dir = opendir(path.c_str());
-	if (!dir)
-		return;
-	while (struct dirent* ent = readdir(dir)) {
-		if (fnmatch("*.sfv", ent->d_name, 0) == 0) {
-			try {
-				if(tryFile(path + Text::fromT(ent->d_name), fname)) {
-					closedir(dir);
-					return;
-				}
-			} catch(const FileException&) {
-				// Ignore...
-			}
-		}
 	}
-
-	closedir(dir);
-
-#endif
 }

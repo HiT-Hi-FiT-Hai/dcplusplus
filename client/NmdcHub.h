@@ -43,9 +43,9 @@ public:
 
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const OnlineUser& aUser, const string& aMessage);
-	virtual void sendUserCmd(const string& aUserCmd) throw() { send(toAcp(aUserCmd)); }
+	virtual void sendUserCmd(const string& aUserCmd) throw() { send(fromUtf8(aUserCmd)); }
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString, const string& aToken);
-	virtual void password(const string& aPass) { send("$MyPass " + toAcp(aPass) + "|"); }
+	virtual void password(const string& aPass) { send("$MyPass " + fromUtf8(aPass) + "|"); }
 	virtual void info(bool force) { myInfo(force); }
 
 	virtual size_t getUserCount() const { Lock l(cs); return users.size(); }
@@ -95,10 +95,10 @@ private:
 	OnlineUser* findUser(const string& aNick);
 	void putUser(const string& aNick);
 
-	string fromAcp(const string& str) const { return Text::acpToUtf8(str); }
-	string toAcp(const string& str) const { return Text::utf8ToAcp(str); }
+	string toUtf8(const string& str) const { return Text::toUtf8(str, getEncoding()); }
+	string fromUtf8(const string& str) const { return Text::fromUtf8(str, getEncoding()); }
 
-	void validateNick(const string& aNick) { send("$ValidateNick " + toAcp(aNick) + "|"); }
+	void validateNick(const string& aNick) { send("$ValidateNick " + fromUtf8(aNick) + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); }
 	void version() { send("$Version 1,0091|"); }
 	void getNickList() { send("$GetNickList|"); }

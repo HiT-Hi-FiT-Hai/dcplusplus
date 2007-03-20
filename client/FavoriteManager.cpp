@@ -274,7 +274,7 @@ void FavoriteManager::onHttpFinished(bool fromHttp) throw() {
 		} else {
 			i = 0;
 
-			string utfText = Text::acpToUtf8(*x);
+			string utfText = Text::toUtf8(*x);
 
 			while( (i < utfText.size()) && ((j=utfText.find("\r\n", i)) != string::npos)) {
 				StringTokenizer<string> tok(utfText.substr(i, j-i), '|');
@@ -363,6 +363,7 @@ void FavoriteManager::save() {
 			xml.addChildAttrib("Password", (*i)->getPassword());
 			xml.addChildAttrib("Server", (*i)->getServer());
 			xml.addChildAttrib("UserDescription", (*i)->getUserDescription());
+			xml.addChildAttrib("Encoding", (*i)->getEncoding());
 			xml.addChildAttrib("Bottom", Util::toString((*i)->getBottom()));
 			xml.addChildAttrib("Top", Util::toString((*i)->getTop()));
 			xml.addChildAttrib("Right", Util::toString((*i)->getRight()));
@@ -461,6 +462,7 @@ void FavoriteManager::load(SimpleXML& aXml) {
 			e->setPassword(aXml.getChildAttrib("Password"));
 			e->setServer(aXml.getChildAttrib("Server"));
 			e->setUserDescription(aXml.getChildAttrib("UserDescription"));
+			e->setEncoding(aXml.getChildAttrib("Encoding"));
 			e->setBottom((uint16_t)aXml.getIntChildAttrib("Bottom") );
 			e->setTop((uint16_t)aXml.getIntChildAttrib("Top"));
 			e->setRight((uint16_t)aXml.getIntChildAttrib("Right"));

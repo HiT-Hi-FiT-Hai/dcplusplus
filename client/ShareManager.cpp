@@ -571,10 +571,11 @@ public:
 	}
 
 	FileFindIter(const string& name) {
-		dir = opendir(name.c_str());
+		string filename = Text::fromUtf8(name);
+		dir = opendir(filename.c_str());
 		if (!dir)
 			return;
-		data.base = name;
+		data.base = filename;
 		data.ent = readdir(dir);
 		if (!data.ent) {
 			closedir(dir);
@@ -602,7 +603,7 @@ public:
 		DirData() : ent(NULL) {}
 		string getFileName() {
 			if (!ent) return Util::emptyString;
-			return string(ent->d_name);
+			return Text::toUtf8(ent->d_name);
 		}
 		bool isDirectory() {
 			struct stat inode;

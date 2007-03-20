@@ -20,66 +20,79 @@
 #if !defined(WAITING_QUEUE_FRAME_H)
 #define WAITING_QUEUE_FRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include "StaticFrame.h"
 #include "WinUtil.h"
-#include "../client/UploadManager.h"
+#include "client/UploadManager.h"
 
-#define UPLOADQUEUE_MESSAGE_MAP 666
-
-class WaitingUsersFrame : public MDITabChildWindowImpl<WaitingUsersFrame>, public UploadManagerListener, public StaticFrame<WaitingUsersFrame, ResourceManager::WAITING_USERS>
-{
+class WaitingUsersFrame : public StaticFrame<WaitingUsersFrame>, public UploadManagerListener {
 public:
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::WAITING_USERS;
 
-	// Base class typedef
-	typedef MDITabChildWindowImpl<WaitingUsersFrame> baseClass;
+protected:
+	friend class StaticFrame<WaitingUsersFrame>;
+	friend class MDIChildFrame<WaitingUsersFrame>;
 
 	// Constructor
-	WaitingUsersFrame() {
-		UploadManager::getInstance()->addListener(this);
+	WaitingUsersFrame(SmartWin::Widget* mdiParent);
+	virtual ~WaitingUsersFrame() { }
+
+	// Update control layouts
+	void layout();
+
+	// Message handlers
+	bool onClose();
+	void onGetList(WidgetMenuPtr, unsigned int);
+	void onCopyFilename(WidgetMenuPtr, unsigned int);
+	void onRemove(WidgetMenuPtr, unsigned int);
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	//LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	void onPrivateMessage(WidgetMenuPtr, unsigned int);
+	void onGrantSlot(WidgetMenuPtr, unsigned int);
+	void onAddToFavorites(WidgetMenuPtr, unsigned int);
+
+	void onRemoveUser(const User::Ptr);
+	void onAddFile(const User::Ptr, const string&);
+
+private:
+	enum {
+		SPEAK_ADD_FILE,
+		SPEAK_REMOVE_USER
+	};
+
+	bool closed;
+
+	struct UserPtr {
+		User::Ptr u;
+		UserPtr(User::Ptr u) : u(u) { }
+	};
+
+	// Contained controls
+	WidgetTreeViewPtr queued;
+	WidgetMenuPtr contextMenu;
+
+	SmartWin::TreeViewNode GetParentItem();
+
+	User::Ptr getSelectedUser() {
+		SmartWin::TreeViewNode selectedItem = GetParentItem();
+		return selectedItem.handle?reinterpret_cast<UserPtr *>(StupidWin::getTreeItemData(queued, selectedItem))->u:User::Ptr(0);
 	}
 
-	// Frame window declaration
-	DECLARE_FRAME_WND_CLASS_EX(_T("WaitingUsersFrame"), IDR_WAITING_USERS, 0, COLOR_3DFACE);
+	// Communication with manager
+	void LoadAll();
+	void UpdateSearch(int index, BOOL doDelete = TRUE);
 
-	// Inline message map
-	BEGIN_MSG_MAP(WaitingUsersFrame)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
+	// UploadManagerListener
+	virtual void on(UploadManagerListener::WaitingRemoveUser, const User::Ptr) throw();
+	virtual void on(UploadManagerListener::WaitingAddFile, const User::Ptr, const string&) throw();
+};
+
+#ifdef PORT_ME
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		COMMAND_HANDLER(IDC_GETLIST, BN_CLICKED, onGetList)
-		COMMAND_HANDLER(IDC_COPY_FILENAME, BN_CLICKED, onCopyFilename)
-		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
-		COMMAND_HANDLER(IDC_GRANTSLOT, BN_CLICKED, onGrantSlot)
-		COMMAND_HANDLER(IDC_ADD_TO_FAVORITES, BN_CLICKED, onAddToFavorites)
-		COMMAND_HANDLER(IDC_PRIVATEMESSAGE, BN_CLICKED, onPrivateMessage)
-		CHAIN_MSG_MAP(baseClass)
-		ALT_MSG_MAP(UPLOADQUEUE_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
-	END_MSG_MAP()
-
-	// Message handlers
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onGetList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onCopyFilename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	void onRemoveUser(const User::Ptr);
-	void onAddFile(const User::Ptr, const string&);
 
 	// Update colors
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -96,40 +109,6 @@ public:
 		return FALSE;
 	}
 
-	// Update control layouts
-	void UpdateLayout(BOOL bResizeBars = TRUE);
 
-private:
-	enum {
-		SPEAK_ADD_FILE,
-		SPEAK_REMOVE_USER
-	};
-
-	bool closed;
-
-	struct UserPtr {
-		User::Ptr u;
-		UserPtr(User::Ptr u) : u(u) { }
-	};
-
-	User::Ptr getSelectedUser() {
-		HTREEITEM selectedItem = GetParentItem();
-		return selectedItem?reinterpret_cast<UserPtr *>(ctrlQueued.GetItemData(selectedItem))->u:User::Ptr(0);
-	}
-
-	// Communication with manager
-	void LoadAll();
-	void UpdateSearch(int index, BOOL doDelete = TRUE);
-
-	// UploadManagerListener
-	virtual void on(UploadManagerListener::WaitingRemoveUser, const User::Ptr) throw();
-	virtual void on(UploadManagerListener::WaitingAddFile, const User::Ptr, const string&) throw();
-
-	HTREEITEM GetParentItem();
-
-	// Contained controls
-	CTreeViewCtrl ctrlQueued;
-	CMenu contextMenu;
-};
-
+#endif	/* PORT_ME */
 #endif	/* WAITING_QUEUE_FRAME_H */

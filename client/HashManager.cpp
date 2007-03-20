@@ -590,7 +590,7 @@ cleanup:
 static const int64_t BUF_SIZE = 0x1000000 - (0x1000000 % getpagesize());
 
 bool HashManager::Hasher::fastHash(const string& filename, u_int8_t* , TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
-	int fd = open(filename.c_str(), O_RDONLY);
+	int fd = open(Text::fromUtf8(filename).c_str(), O_RDONLY);
 	if(fd == -1)
 		return false;
 

@@ -128,14 +128,14 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
 #else
-	string cmd = "openssl genrsa -out \"" + Text::utf8ToAcp(SETTING(TLS_PRIVATE_KEY_FILE)) + "\" 2048";
+	string cmd = "openssl genrsa -out \"" + Text::fromUtf8(SETTING(TLS_PRIVATE_KEY_FILE)) + "\" 2048";
 	if (system(cmd.c_str()) == -1) {
 		throw CryptoException("Failed to spawn process: openssl");
 	}
 
-	cmd = "openssl req -x509 -new -batch -days 3650 -key \"" + Text::utf8ToAcp(SETTING(TLS_PRIVATE_KEY_FILE)) +
-		"\" -out \"" + Text::utf8ToAcp(SETTING(TLS_CERTIFICATE_FILE)) + "\" -subj \"/CN=" +
-		Text::utf8ToAcp(ClientManager::getInstance()->getMyCID().toBase32()) + "\"";
+	cmd = "openssl req -x509 -new -batch -days 3650 -key \"" + Text::fromUtf8(SETTING(TLS_PRIVATE_KEY_FILE)) +
+		"\" -out \"" + Text::fromUtf8(SETTING(TLS_CERTIFICATE_FILE)) + "\" -subj \"/CN=" +
+		ClientManager::getInstance()->getMyCID().toBase32() + "\"";
 	if (system(cmd.c_str()) == -1) {
 		throw CryptoException("Failed to spawn process: openssl");
 	}

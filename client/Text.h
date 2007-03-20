@@ -91,10 +91,10 @@ public:
 	static string& fromT(const tstring& str, string& tmp) throw() { return acpToUtf8(str, tmp); }
 #endif
 
-	static bool isAscii(const string& str) {
+	static bool isAscii(const string& str) throw() {
 		return isAscii(str.c_str());
 	}
-	static bool isAscii(const char* str) {
+	static bool isAscii(const char* str) throw() {
 		for(const uint8_t* p = (const uint8_t*)str; *p; ++p) {
 			if(*p & 0x80)
 				return false;
@@ -104,9 +104,9 @@ public:
 
 	static bool validateUtf8(const string& str) throw();
 
-	static char asciiToLower(char c) { dcassert((((uint8_t)c) & 0x80) == 0); return asciiLower[(uint8_t)c]; }
+	static char asciiToLower(char c) { dcassert((((uint8_t)c) & 0x80) == 0); return (char)tolower(c); }
 
-	static wchar_t toLower(wchar_t c) { return lower[(uint16_t)c]; }
+	static wchar_t toLower(wchar_t c) throw();
 	static wstring toLower(const wstring& str) throw() {
 		wstring tmp;
 		return toLower(str, tmp);
@@ -117,9 +117,27 @@ public:
 		return toLower(str, tmp);
 	}
 	static string& toLower(const string& str, string& tmp) throw();
+
+	static const string& convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw();
+	static string convert(const string& str, const string& fromCharset, const string& toCharset) throw() {
+		string tmp;
+		return convert(str, tmp, fromCharset, toCharset);
+	}
+
+	static string toUtf8(const string& str, const string& charset = systemCharset) throw() {
+		string tmp;
+		return convert(str, tmp, charset, utf8);
+	}
+	static string fromUtf8(const string& str, const string& charset = systemCharset) throw() {
+		string tmp;
+		return convert(str, tmp, utf8, charset);
+	}
+
+	static const string& getSystemCharset() throw() { return systemCharset; }
+	static const string utf8;
+
 private:
-	static char asciiLower[128];
-	static wchar_t lower[65536];
+	static string systemCharset;
 
 };
 
