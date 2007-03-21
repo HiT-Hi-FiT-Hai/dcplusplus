@@ -98,8 +98,8 @@ private:
 	HubFrame(Widget* mdiParent, const string& url);
 	virtual ~HubFrame();
 	
-	void addLine(const tstring& aLine);
-	void addClientLine(const tstring& aLine, bool inChat = true);
+	void addChat(const tstring& aLine);
+	void addStatus(const tstring& aLine, bool inChat = true);
 
 	void setStatus(Status s, const tstring& text);
 	tstring getStatusUsers() const;

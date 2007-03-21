@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,73 +16,236 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include <mmsystem.h>
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
 
 #include "PrivateFrame.h"
-#include "SearchFrm.h"
-#include "WinUtil.h"
 
-#include "../client/Client.h"
-#include "../client/ClientManager.h"
-#include "../client/Util.h"
-#include "../client/LogManager.h"
-#include "../client/UploadManager.h"
-#include "../client/ShareManager.h"
-#include "../client/FavoriteManager.h"
-#include "../client/QueueManager.h"
-#include "../client/StringTokenizer.h"
+#include <client/ClientManager.h>
+#include <client/Client.h>
+#include <client/LogManager.h>
+#include <client/User.h>
+#include <client/ResourceManager.h>
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
-LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_) : 
+	SmartWin::Widget(mdiParent), 
+	chat(0),
+	message(0),
+	status(0),
+	replyTo(replyTo_)
 {
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
+	{
+		WidgetTextBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		chat = createTextBox(cs);
+		chat->setTextLimit(0);
+		chat->setFont(WinUtil::font);
+		add_widget(chat);
+#ifdef PORT_ME
+		/// @todo do we need this?§
+		ctrlClient.FmtLines(TRUE);
+		
+#endif
+	}
+	
+	{
+		WidgetTextBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		message = createTextBox(cs);
+		message->setFont(WinUtil::font);
+		add_widget(message);
+	}
+	
+	status = createStatusBarSections();
+	memset(statusSizes, 0, sizeof(statusSizes));
+	///@todo get real resizer width
+	statusSizes[STATUS_DUMMY] = 16;
 
-	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
-
-	ctrlClient.FmtLines(TRUE);
-	ctrlClient.LimitText(0);
-	ctrlClient.SetFont(WinUtil::font);
-	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, WS_EX_CLIENTEDGE);
-
-	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
-	ctrlClientContainer.SubclassWindow(ctrlClient.m_hWnd);
-
-	ctrlMessage.SetFont(WinUtil::font);
-
-	tabMenu.CreatePopupMenu();
-	tabMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
-	tabMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
-	tabMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
-	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
-
-	PostMessage(WM_SPEAKER, USER_UPDATED);
-	created = true;
+	updateTitle();
+	layout();
+	
+	readLog();
+	
+	onSpeaker(&PrivateFrame::spoken);
 
 	ClientManager::getInstance()->addListener(this);
-
-	bHandled = FALSE;
-	return 1;
+	
+	frames.insert(std::make_pair(replyTo, this));
 }
 
-void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
-	PrivateFrame* p = NULL;
+PrivateFrame::~PrivateFrame() {
+	frames.erase(replyTo);
+}
+
+void PrivateFrame::addChat(const tstring& aLine) {
+	tstring line;
+	if(BOOLSETTING(TIME_STAMPS)) {
+		line = Text::toT("\r\n[" + Util::getShortTimeString() + "] ");
+	} else {
+		line = _T("\r\n");
+	}
+	line += aLine;
+
+	int limit = chat->getTextLimit();
+	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(line.size()) > limit) {
+		StupidWin::setRedraw(chat, false);
+		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
+		chat->replaceSelection(_T(""));
+		StupidWin::setRedraw(chat, true);
+	}
+#ifdef PORT_ME
+	if(!created) {
+		if(BOOLSETTING(POPUNDER_PM))
+			WinUtil::hiddenCreateEx(this);
+		else
+			CreateEx(WinUtil::mdiClient);
+	}
+#endif
+	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
+		StringMap params;
+		params["message"] = Text::fromT(aLine);
+		params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+		params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+		params["userCID"] = replyTo->getCID().toBase32();
+		params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
+		params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
+		LOG(LogManager::PM, params);
+	}
+
+	chat->addText(line);
+
+#ifdef PORT_ME
+	if (BOOLSETTING(BOLD_PM)) {
+		setDirty();
+	}
+#endif
+}
+
+void PrivateFrame::addStatus(const tstring& aLine, bool inChat /* = true */) {
+	tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + aLine;
+
+	setStatus(STATUS_STATUS, line);
+
+	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
+		addChat(_T("*** ") + aLine);
+	}
+}
+
+bool PrivateFrame::preClosing() {
+	ClientManager::getInstance()->removeListener(this);
+	return true;
+}
+
+void PrivateFrame::readLog() {
+	StringMap params;
+
+	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+	params["userCID"] = replyTo->getCID().toBase32();
+	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
+	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
+
+	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true));
+
+	try {
+		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
+			File f(path, File::READ, File::OPEN);
+
+			int64_t size = f.getSize();
+
+			if(size > 32*1024) {
+				f.setPos(size - 32*1024);
+			}
+
+			StringList lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
+
+			int linesCount = lines.size();
+
+			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG) + 1) : 0;
+
+			for(; i < (linesCount - 1); ++i){
+				addStatus(_T("- ") + Text::toT(lines[i]));
+			}
+
+			f.close();
+		}
+	} catch(const FileException&){
+	}
+}
+
+void PrivateFrame::layout() {
+	const int border = 2;
+	
+	SmartWin::Rectangle r(getClientAreaSize()); 
+	status->refresh();
+
+	SmartWin::Rectangle rs(status->getClientAreaSize());
+
+	{
+		std::vector<unsigned> w(STATUS_LAST);
+
+		w[0] = rs.size.x - rs.pos.x - std::accumulate(statusSizes+1, statusSizes+STATUS_LAST, 0); 
+		std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
+
+		status->setSections(w);
+#ifdef PORT_ME
+		ctrlLastLines.SetMaxTipWidth(w[0]);
+		// Strange, can't get the correct width of the last field...
+		ctrlStatus.GetRect(2, sr);
+		sr.left = sr.right + 2;
+		sr.right = sr.left + 16;
+		ctrlShowUsers.MoveWindow(sr);
+#endif
+	}
+	r.size.y -= status->getSize().y - border;
+	int ymessage = message->getTextSize("A").y + 10;
+	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x, ymessage);
+	message->setBounds(rm);
+}
+
+void PrivateFrame::updateTitle() {
+	pair<tstring, bool> hubs = WinUtil::getHubNames(replyTo);
+#ifdef PORT_ME
+	if(hubs.second) {
+		setTabColor(RGB(0, 255, 255));
+	} else {
+		setTabColor(RGB(255, 0, 0));
+	}
+#endif 
+	setText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first));
+}
+
+void PrivateFrame::openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
+	PrivateFrame* pf = 0;
+	FrameIter i = frames.find(replyTo_);
+	if(i == frames.end()) {
+		pf = new PrivateFrame(mdiParent, replyTo_);
+	} else {
+		pf = i->second;
+		if(StupidWin::isIconic(pf))
+			pf->restore();
+	
+#ifdef PORT_ME
+		i->second->MDIActivate(i->second->m_hWnd);
+#endif
+	}
+	if(!msg.empty())
+		pf->sendMessage(msg);
+	
+}
+
+void PrivateFrame::gotMessage(SmartWin::Widget* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
+	PrivateFrame* p = 0;
 	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 
 	FrameIter i = frames.find(user);
 	if(i == frames.end()) {
-		p = new PrivateFrame(user);
-		frames[user] = p;
-		p->readLog();
-		p->addLine(aMessage);
+		p = new PrivateFrame(mdiParent, user);
+		p->addChat(aMessage);
 		if(Util::getAway()) {
 			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
 				p->sendMessage(Text::toT(Util::getAwayMessage()));
@@ -101,183 +264,158 @@ void PrivateFrame::gotMessage(const User::Ptr& from, const User::Ptr& to, const 
 			else
 				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
 		}
-		i->second->addLine(aMessage);
+		i->second->addChat(aMessage);
 	}
 }
 
-void PrivateFrame::openWindow(const User::Ptr& replyTo, const tstring& msg) {
-	PrivateFrame* p = NULL;
-	FrameIter i = frames.find(replyTo);
-	if(i == frames.end()) {
-		p = new PrivateFrame(replyTo);
-		frames[replyTo] = p;
-		p->CreateEx(WinUtil::mdiClient);
-		p->readLog();
-	} else {
-		p = i->second;
-		if(::IsIconic(p->m_hWnd))
-			::ShowWindow(p->m_hWnd, SW_RESTORE);
-		p->MDIActivate(p->m_hWnd);
-	}
-	if(!msg.empty())
-		p->sendMessage(msg);
-}
 
-LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	switch(wParam) {
-	case VK_RETURN:
-		if( WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt() ) {
-			bHandled = FALSE;
-		} else {
-			if(uMsg == WM_KEYDOWN) {
-				onEnter();
-			}
-		}
-		break;
-	default:
-		bHandled = FALSE;
+bool PrivateFrame::enter() {
+	
+	tstring s = message->getText();
+	if(s.empty()) {
+		::MessageBeep(MB_ICONEXCLAMATION);
+		return false;
 	}
-	return 0;
-}
 
-void PrivateFrame::onEnter()
-{
 	bool resetText = true;
 
-	if(ctrlMessage.GetWindowTextLength() > 0) {
-		AutoArray<TCHAR> msg(ctrlMessage.GetWindowTextLength()+1);
-		ctrlMessage.GetWindowText(msg, ctrlMessage.GetWindowTextLength()+1);
-		tstring s(msg, ctrlMessage.GetWindowTextLength());
-
-		// Process special commands
-		if(s[0] == '/') {
-			tstring param;
-			tstring message;
-			tstring status;
-			if(WinUtil::checkCommand(s, param, message, status)) {
-				if(!message.empty()) {
-					sendMessage(message);
-				}
-				if(!status.empty()) {
-					addClientLine(status);
-				}
-			} else if(Util::stricmp(s.c_str(), _T("clear")) == 0) {
-				ctrlClient.SetWindowText(_T(""));
-			} else if(Util::stricmp(s.c_str(), _T("grant")) == 0) {
-				UploadManager::getInstance()->reserveSlot(getUser());
-				addClientLine(TSTRING(SLOT_GRANTED));
-			} else if(Util::stricmp(s.c_str(), _T("close")) == 0) {
-				PostMessage(WM_CLOSE);
-			} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
-				FavoriteManager::getInstance()->addFavoriteUser(getUser());
-				addStatus(TSTRING(FAVORITE_USER_ADDED));
-			} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
-				BOOL bTmp;
-				onGetList(0,0,0,bTmp);
-			} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
-				StringMap params;
-
-				params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
-				params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-				params["userCID"] = replyTo->getCID().toBase32();
-				params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
-				params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true))));
-			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
-				addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log <system, downloads, uploads>"));
-			} else {
-				if(replyTo->isOnline()) {
-					sendMessage(tstring(msg));
-				} else {
-					ctrlStatus.SetText(0, CTSTRING(USER_WENT_OFFLINE));
-					resetText = false;
-				}
+	// Process special commands
+	if(s[0] == '/') {
+		tstring param;
+		tstring message;
+		tstring status;
+#ifdef PORT_ME
+		if(WinUtil::checkCommand(s, param, message, status)) {
+			if(!message.empty()) {
+				sendMessage(message);
 			}
+			if(!status.empty()) {
+				addClientLine(status);
+			}
+		} else if(Util::stricmp(s.c_str(), _T("clear")) == 0) {
+			ctrlClient.SetWindowText(_T(""));
+		} else if(Util::stricmp(s.c_str(), _T("grant")) == 0) {
+			UploadManager::getInstance()->reserveSlot(getUser());
+			addClientLine(TSTRING(SLOT_GRANTED));
+		} else if(Util::stricmp(s.c_str(), _T("close")) == 0) {
+			PostMessage(WM_CLOSE);
+		} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
+			FavoriteManager::getInstance()->addFavoriteUser(getUser());
+			addStatus(TSTRING(FAVORITE_USER_ADDED));
+		} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
+			BOOL bTmp;
+			onGetList(0,0,0,bTmp);
+		} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
+			StringMap params;
+
+			params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
+			params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
+			params["userCID"] = replyTo->getCID().toBase32();
+			params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
+			params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true))));
+		} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
+			addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log <system, downloads, uploads>"));
 		} else {
 			if(replyTo->isOnline()) {
-				sendMessage(s);
+				sendMessage(tstring(msg));
 			} else {
 				ctrlStatus.SetText(0, CTSTRING(USER_WENT_OFFLINE));
 				resetText = false;
 			}
 		}
-		if(resetText)
-			ctrlMessage.SetWindowText(_T(""));
+#endif
+	} else {
+		if(replyTo->isOnline()) {
+			sendMessage(s);
+		} else {
+			setStatus(STATUS_STATUS, CTSTRING(USER_WENT_OFFLINE));
+			resetText = false;
+		}
 	}
+	
+	if(resetText) {
+		message->setText(_T(""));
+	}
+	return true;
+	
 }
 
 void PrivateFrame::sendMessage(const tstring& msg) {
 	ClientManager::getInstance()->privateMessage(replyTo, Text::fromT(msg));
 }
 
-LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(!closed) {
-		ClientManager::getInstance()->removeListener(this);
-
-		closed = true;
-		PostMessage(WM_CLOSE);
-		return 0;
-	} else {
-		frames.erase(replyTo);
-
-		bHandled = FALSE;
-		return 0;
+void PrivateFrame::setStatus(Status s, const tstring& text) {
+	int w = status->getTextSize(text).x + 12;
+	if(w > static_cast<int>(statusSizes[s])) {
+		dcdebug("Setting status size %d to %d\n", s, w);
+		statusSizes[s] = w;
+		layout();
 	}
+	status->setText(text, s);
 }
 
-void PrivateFrame::addLine(const tstring& aLine) {
-	if(!created) {
-		if(BOOLSETTING(POPUNDER_PM))
-			WinUtil::hiddenCreateEx(this);
-		else
-			CreateEx(WinUtil::mdiClient);
-	}
-
-	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
-		StringMap params;
-		params["message"] = Text::fromT(aLine);
-		params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
-		params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-		params["userCID"] = replyTo->getCID().toBase32();
-		params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
-		params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-		LOG(LogManager::PM, params);
-	}
-
-	tstring line;
-	if(BOOLSETTING(TIME_STAMPS)) {
-		line = Text::toT("\r\n[" + Util::getShortTimeString() + "] ");
-	} else {
-		line = _T("\r\n");
-	}
-	line += aLine;
-
-	ctrlClient.AppendText(line.c_str());
-
-	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
-
-	if (BOOLSETTING(BOLD_PM)) {
-		setDirty();
-	}
+HRESULT PrivateFrame::spoken(LPARAM, WPARAM) {
+	updateTitle();
+	return 0;
 }
 
-void PrivateFrame::addStatus(const tstring& aLine) {
-	if(!created) {
-		if(BOOLSETTING(POPUNDER_PM))
-			WinUtil::hiddenCreateEx(this);
-		else
-			CreateEx(WinUtil::mdiClient);
+bool PrivateFrame::charred(WidgetTextBoxPtr ptr, int c) {
+	///@todo Investigate WM_CHAR vs WM_KEYDOWN
+	
+	switch(c) {
+	case VK_RETURN: return enter();
+	default:  return Base::charred(ptr, c);
 	}
+	
+}
 
-	tstring line;
-	if(BOOLSETTING(TIME_STAMPS)) {
-		line = Text::toT("\r\n[" + Util::getShortTimeString() + "] ");
-	} else {
-		line = _T("\r\n");
-	}
-	line += aLine;
+void PrivateFrame::on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw() {
+	if(aUser.getUser() == replyTo)
+		speak(USER_UPDATED);
+}
+void PrivateFrame::on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
+	if(aUser == replyTo)
+		speak(USER_UPDATED);
+}
+void PrivateFrame::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+	if(aUser == replyTo)
+		speak(USER_UPDATED);
+}
 
-	ctrlClient.AppendText(line.c_str());
+#ifdef PORT_ME
+
+#include "stdafx.h"
+#include "../client/DCPlusPlus.h"
+#include "Resource.h"
+
+#include "PrivateFrame.h"
+#include "SearchFrm.h"
+#include "WinUtil.h"
+
+#include "../client/Client.h"
+#include "../client/ClientManager.h"
+#include "../client/Util.h"
+#include "../client/LogManager.h"
+#include "../client/UploadManager.h"
+#include "../client/ShareManager.h"
+#include "../client/FavoriteManager.h"
+#include "../client/QueueManager.h"
+#include "../client/StringTokenizer.h"
+
+LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	tabMenu.CreatePopupMenu();
+	tabMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
+	tabMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
+	tabMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
+	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
+
+	PostMessage(WM_SPEAKER, USER_UPDATED);
+	created = true;
+
+	bHandled = FALSE;
+	return 1;
 }
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -330,37 +468,6 @@ LRESULT PrivateFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	return 0;
 }
 
-void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
-	RECT rect;
-	GetClientRect(&rect);
-	// position bars and offset their dimensions
-	UpdateBarsPosition(rect, bResizeBars);
-
-	if(ctrlStatus.IsWindow()) {
-		CRect sr;
-		int w[1];
-		ctrlStatus.GetClientRect(sr);
-
-		w[0] = sr.right - 16;
-
-		ctrlStatus.SetParts(1, w);
-	}
-
-	int h = WinUtil::fontHeight + 4;
-
-	CRect rc = rect;
-	rc.bottom -= h + 10;
-	ctrlClient.MoveWindow(rc);
-
-	rc = rect;
-	rc.bottom -= 2;
-	rc.top = rc.bottom - h - 5;
-	rc.left +=2;
-	rc.right -=2;
-	ctrlMessage.MoveWindow(rc);
-
-}
-
 LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;
@@ -378,53 +485,7 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
-void PrivateFrame::updateTitle() {
-	pair<tstring, bool> hubs = WinUtil::getHubNames(replyTo);
-	if(hubs.second) {
-		setTabColor(RGB(0, 255, 255));
-	} else {
-		setTabColor(RGB(255, 0, 0));
-	}
-	SetWindowText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first).c_str());
-}
 
-
-void PrivateFrame::readLog() {
-	StringMap params;
-
-	params["hubNI"] = Util::toString(ClientManager::getInstance()->getHubNames(replyTo->getCID()));
-	params["hubURL"] = Util::toString(ClientManager::getInstance()->getHubs(replyTo->getCID()));
-	params["userCID"] = replyTo->getCID().toBase32();
-	params["userNI"] = ClientManager::getInstance()->getNicks(replyTo->getCID())[0];
-	params["myCID"] = ClientManager::getInstance()->getMe()->getCID().toBase32();
-
-	string path = Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params, true));
-
-	try {
-		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
-			File f(path, File::READ, File::OPEN);
-
-			int64_t size = f.getSize();
-
-			if(size > 32*1024) {
-				f.setPos(size - 32*1024);
-			}
-
-			StringList lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
-
-			int linesCount = lines.size();
-
-			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG) + 1) : 0;
-
-			for(; i < (linesCount - 1); ++i){
-				addStatus(_T("- ") + Text::toT(lines[i]));
-			}
-
-			f.close();
-		}
-	} catch(const FileException&){
-	}
-}
 
 void PrivateFrame::closeAll(){
 	for(FrameIter i = frames.begin(); i != frames.end(); ++i)

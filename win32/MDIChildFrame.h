@@ -49,11 +49,13 @@ protected:
 		}
 	}
 	/**
-	 * The first of two close phases, used to disconnect from other threads that might affect this window
+	 * The first of two close phases, used to disconnect from other threads that might affect this window.
+	 * This is where all stuff that might be affected by other threads goes - it should make sure
+	 * that no more messages can arrive from other threads
 	 * @return True if close should be allowed, false otherwise
 	 */
 	bool preClosing() { return true; }
-	/** Second close phase, perform any additional cleanup here if you need */
+	/** Second close phase, perform any cleanup that depends only on the UI thread */
 	void postClosing() { }
 	
 	template<typename W>

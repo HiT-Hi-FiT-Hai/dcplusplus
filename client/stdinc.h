@@ -85,6 +85,8 @@ typedef unsigned __int64 uint64_t;
 #include <winsock2.h>
 
 #include <windows.h>
+#include <mmsystem.h>
+
 #include <tchar.h>
 #include <shlobj.h>
 

@@ -21,6 +21,7 @@
 
 #include <client/StringTokenizer.h>
 #include <client/Util.h>
+#include <client/forward.h>
 
 #ifdef PORT_ME
 #include "../client/Util.h"
@@ -184,6 +185,12 @@ public:
 	static bool isAlt() { return (::GetKeyState(VK_MENU) & 0x8000) > 0; }
 	static bool isCtrl() { return (::GetKeyState(VK_CONTROL) & 0x8000) > 0; }
 
+	static tstring getNicks(const CID& cid) throw();
+	static tstring getNicks(const UserPtr& u);
+	/** @return Pair of hubnames as a string and a bool representing the user's online status */
+	static pair<tstring, bool> getHubNames(const CID& cid) throw();
+	static pair<tstring, bool> getHubNames(const UserPtr& u);
+
 #ifdef PORT_ME
 	static CImageList fileImages;
 	static int fileImageCount;
@@ -286,11 +293,6 @@ public:
 
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 
-	static tstring getNicks(const CID& cid) throw();
-	static tstring getNicks(const User::Ptr& u) { return getNicks(u->getCID()); }
-	/** @return Pair of hubnames as a string and a bool representing the user's online status */
-	static pair<tstring, bool> getHubNames(const CID& cid) throw();
-	static pair<tstring, bool> getHubNames(const User::Ptr& u) { return getHubNames(u->getCID()); }
 
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();

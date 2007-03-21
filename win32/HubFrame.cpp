@@ -98,9 +98,11 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	client->addListener(this);
 	client->connect();
 	
+	frames.insert(std::make_pair(url, this));
 }
 
 HubFrame::~HubFrame() {
+	frames.erase(url);
 }
 
 bool HubFrame::preClosing() {
@@ -238,7 +240,7 @@ void HubFrame::eachSecond(const SmartWin::CommandPtr&) {
 void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
 	FrameIter i = frames.find(url);
 	if(i == frames.end()) {
-		frames.insert(std::make_pair(url, new HubFrame(mdiParent, url)));
+		new HubFrame(mdiParent, url);
 	} else {
 		if(StupidWin::isIconic(i->second))
 			i->second->restore();
@@ -275,7 +277,7 @@ bool HubFrame::enter() {
 				client->hubMessage(Text::fromT(msg));
 			}
 			if(!status.empty()) {
-				addClientLine(status);
+				addStatus(status);
 			}
 		} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
 #ifdef PORT_ME
@@ -296,9 +298,9 @@ bool HubFrame::enter() {
 		} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
 			timeStamps = !timeStamps;
 			if(timeStamps) {
-				addClientLine(TSTRING(TIMESTAMPS_ENABLED));
+				addStatus(TSTRING(TIMESTAMPS_ENABLED));
 			} else {
-				addClientLine(TSTRING(TIMESTAMPS_DISABLED));
+				addStatus(TSTRING(TIMESTAMPS_DISABLED));
 			}
 		} else if( (Util::stricmp(cmd.c_str(), _T("password")) == 0) && waitingForPW ) {
 			client->setPassword(Text::fromT(param));
@@ -330,7 +332,7 @@ bool HubFrame::enter() {
 #endif 
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
 #ifdef PORT_ME
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
+				addStatus(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
 				STRING(PORT) +
 				Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
 				Util::toString(SearchManager::getInstance()->getPort()) + "/" +
@@ -367,7 +369,7 @@ bool HubFrame::enter() {
 				}
 #endif
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
-			addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
+			addChat(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
 		} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 #ifdef PORT_ME
 				string::size_type j = param.find(_T(' '));
@@ -392,12 +394,12 @@ bool HubFrame::enter() {
 				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
 					client->hubMessage(Text::fromT(s));
 				} else {
-					addClientLine(TSTRING(UNKNOWN_COMMAND) + cmd);
+					addStatus(TSTRING(UNKNOWN_COMMAND) + cmd);
 				}
 			}
 			message->setText(_T(""));
 	} else if(waitingForPW) {
-		addClientLine(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
+		addStatus(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
 		message->setText(_T("/password "));
 		message->setFocus();
 		message->setSelection(10, 10);
@@ -419,9 +421,17 @@ void HubFrame::setStatus(Status s, const tstring& text) {
 	status->setText(text, s);
 }
 
-void HubFrame::addLine(const tstring& aLine) {
+void HubFrame::addChat(const tstring& aLine) {
+	tstring line;
+	if(timeStamps) {
+		line = Text::toT("\r\n[" + Util::getShortTimeString() + "] ");
+	} else {
+		line = _T("\r\n");
+	}
+	line += aLine;
+
 	int limit = chat->getTextLimit();
-	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(aLine.size()) > limit) {
+	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(line.size()) > limit) {
 		StupidWin::setRedraw(chat, false);
 		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
 		chat->replaceSelection(_T(""));
@@ -447,11 +457,7 @@ void HubFrame::addLine(const tstring& aLine) {
 		LOG(LogManager::CHAT, params);
 	}
 #endif
-	if(timeStamps) {
-		chat->addText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine));
-	} else {
-		chat->addText((_T("\r\n") + aLine));
-	}
+	chat->addText(line);
 #ifdef PORT_ME
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
@@ -462,10 +468,10 @@ void HubFrame::addLine(const tstring& aLine) {
 #endif
 }
 
-void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
+void HubFrame::addStatus(const tstring& aLine, bool inChat /* = true */) {
 	tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + aLine;
 
-	status->setText(line, 0);
+	setStatus(STATUS_STATUS, line);
 
 #ifdef PORT_ME
 	while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
@@ -477,7 +483,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	}
 #endif
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
-		addLine(_T("*** ") + aLine);
+		addChat(_T("*** ") + aLine);
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		StringMap params;
@@ -523,7 +529,7 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 			}
 #endif
 		} else if(i->first == CONNECTED) {
-			addClientLine(TSTRING(CONNECTED));
+			addStatus(TSTRING(CONNECTED));
 #ifdef PORT_ME
 			setTabColor(GREEN);
 #endif
@@ -533,17 +539,17 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 			setTabColor(RED);
 #endif
 		} else if(i->first == ADD_CHAT_LINE) {
-			addLine(Text::toT(static_cast<StringTask*>(i->second)->str));
+			addChat(Text::toT(static_cast<StringTask*>(i->second)->str));
 		} else if(i->first == ADD_STATUS_LINE) {
-			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str));
+			addStatus(Text::toT(static_cast<StringTask*>(i->second)->str));
 		} else if(i->first == ADD_SILENT_STATUS_LINE) {
-			addClientLine(Text::toT(static_cast<StringTask*>(i->second)->str), false);
+			addStatus(Text::toT(static_cast<StringTask*>(i->second)->str), false);
 		} else if(i->first == SET_WINDOW_TITLE) {
 			setText(Text::toT(static_cast<StringTask*>(i->second)->str));
 		} else if(i->first == GET_PASSWORD) {
 			if(client->getPassword().size() > 0) {
 				client->password(client->getPassword());
-				addClientLine(TSTRING(STORED_PASSWORD_SENT));
+				addStatus(TSTRING(STORED_PASSWORD_SENT));
 			} else {
 				if(!BOOLSETTING(PROMPT_PASSWORD)) {
 					message->setText(_T("/password "));
@@ -571,25 +577,25 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 			PMTask& pm = *static_cast<PMTask*>(i->second);
 			if(pm.hub) {
 				if(BOOLSETTING(IGNORE_HUB_PMS)) {
-					addClientLine(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
 				} else if(BOOLSETTING(POPUP_HUB_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
 				}
 			} else if(pm.bot) {
 				if(BOOLSETTING(IGNORE_BOT_PMS)) {
-					addClientLine(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
 				} else if(BOOLSETTING(POPUP_BOT_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
 				}
 			} else {
 				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo) || pm.from == client->getMyIdentity().getUser()) {
 					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addLine(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
 				}
 			}
 #endif

@@ -273,7 +273,25 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	return true;
 }
 
+tstring WinUtil::getNicks(const CID& cid) throw() {
+	return Text::toT(Util::toString(ClientManager::getInstance()->getNicks(cid)));
+}
+tstring WinUtil::getNicks(const UserPtr& u) { 
+	return getNicks(u->getCID()); 
+}
 
+pair<tstring, bool> WinUtil::getHubNames(const CID& cid) throw() {
+	StringList hubs = ClientManager::getInstance()->getHubNames(cid);
+	if(hubs.empty()) {
+		return make_pair(TSTRING(OFFLINE), false);
+	} else {
+		return make_pair(Text::toT(Util::toString(hubs)), true);
+	}
+}
+
+pair<tstring, bool> WinUtil::getHubNames(const UserPtr& u) { 
+	return getHubNames(u->getCID()); 
+}
 
 #ifdef PORT_ME
 #include "Resource.h"
@@ -1103,19 +1121,6 @@ int WinUtil::getOsMinor()
 	GetVersionEx((OSVERSIONINFO*)&ver);
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	return ver.dwMinorVersion;
-}
-
-tstring WinUtil::getNicks(const CID& cid) throw() {
-	return Text::toT(Util::toString(ClientManager::getInstance()->getNicks(cid)));
-}
-
-pair<tstring, bool> WinUtil::getHubNames(const CID& cid) throw() {
-	StringList hubs = ClientManager::getInstance()->getHubNames(cid);
-	if(hubs.empty()) {
-		return make_pair(TSTRING(OFFLINE), false);
-	} else {
-		return make_pair(Text::toT(Util::toString(hubs)), true);
-	}
 }
 
 void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {
