@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,105 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(QUEUE_FRAME_H)
-#define QUEUE_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_QUEUE_FRAME_H
+#define DCPLUSPLUS_WIN32_QUEUE_FRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "StaticFrame.h"
 
+class QueueFrame : public StaticFrame<QueueFrame>, public ClientListener
+{
+public:
+
+protected:
+	typedef StaticFrame<QueueFrame> Base;
+	friend class StaticFrame<QueueFrame>;
+	friend class MDIChildFrame<QueueFrame>;
+	
+	void layout();
+	HRESULT spoken(LPARAM lp, WPARAM wp);
+	bool preClosing();
+	void postClosing();
+	
+private:
+	enum {
+		COLUMN_FIRST,
+		COLUMN_TARGET = COLUMN_FIRST,
+		COLUMN_STATUS,
+		COLUMN_SIZE,
+		COLUMN_DOWNLOADED,
+		COLUMN_PRIORITY,
+		COLUMN_USERS,
+		COLUMN_PATH,
+		COLUMN_EXACT_SIZE,
+		COLUMN_ERRORS,
+		COLUMN_ADDED,
+		COLUMN_TTH,
+		COLUMN_TYPE,
+		COLUMN_LAST
+	};
+	enum Status {
+		STATUS_STATUS,
+		STATUS_PARTIAL_COUNT,
+		STATUS_PARTIAL_BYTES,
+		STATUS_TOTAL_COUNT,
+		STATUS_TOTAL_BYTES,
+		STATUS_LAST
+	};
+	unsigned statusSizes[STATUS_LAST];
+	
+	enum Tasks {
+		ADD_ITEM,
+		REMOVE_ITEM,
+		UPDATE_ITEM
+	};
+
+	struct QueueItemInfoTask : FastAlloc<QueueItemInfoTask>, public Task {
+		QueueItemInfoTask(QueueItemInfo* ii_) : ii(ii_) { }
+		QueueItemInfo* ii;
+	};
+
+	struct UpdateTask : FastAlloc<UpdateTask>, public Task {
+		UpdateTask(const QueueItem& source) : target(source.getTarget()), priority(source.getPriority()),
+			status(source.getStatus()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
+		{
+		}
+
+		string target;
+		QueueItem::Priority priority;
+		QueueItem::Status status;
+		int64_t downloadedBytes;
+
+		QueueItem::SourceList sources;
+		QueueItem::SourceList badSources;
+	};
+
+	TaskQueue tasks;
+
+	WidgetStatusBarSectionsPtr status;
+	
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
+
+	QueueFrame(Widget* mdiParent);
+	virtual ~QueueFrame();
+	
+	void setStatus(Status s, const tstring& text);
+	void updateStatus();
+	
+	using MDIChildFrame<HubFrame>::speak;
+	void speak(Tasks s) { tasks.add(s, 0); speak(); }
+	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); speak(); }
+	void speak(Tasks s, const OnlineUser& u) { tasks.add(s, new UserTask(u)); updateUsers = true; }
+	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { tasks.add(PRIVATE_MESSAGE, new PMTask(from, to, replyTo, line));  speak(); }
+
+	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Moved, QueueItem* aQI, const string& oldTarget) throw();
+	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
+};
+
+#ifdef PORT_ME
 #include "FlatTabCtrl.h"
 #include "TypedListViewCtrl.h"
 
@@ -143,27 +235,6 @@ public:
 
 private:
 
-	enum {
-		COLUMN_FIRST,
-		COLUMN_TARGET = COLUMN_FIRST,
-		COLUMN_STATUS,
-		COLUMN_SIZE,
-		COLUMN_DOWNLOADED,
-		COLUMN_PRIORITY,
-		COLUMN_USERS,
-		COLUMN_PATH,
-		COLUMN_EXACT_SIZE,
-		COLUMN_ERRORS,
-		COLUMN_ADDED,
-		COLUMN_TTH,
-		COLUMN_TYPE,
-		COLUMN_LAST
-	};
-	enum Tasks {
-		ADD_ITEM,
-		REMOVE_ITEM,
-		UPDATE_ITEM
-	};
 
 	class QueueItemInfo;
 	friend class QueueItemInfo;
@@ -255,27 +326,6 @@ private:
 		QueueItemInfo& operator=(const QueueItemInfo&);
 	};
 
-	struct QueueItemInfoTask : FastAlloc<QueueItemInfoTask>, public Task {
-		QueueItemInfoTask(QueueItemInfo* ii_) : ii(ii_) { }
-		QueueItemInfo* ii;
-	};
-
-	struct UpdateTask : FastAlloc<UpdateTask>, public Task {
-		UpdateTask(const QueueItem& source) : target(source.getTarget()), priority(source.getPriority()),
-			status(source.getStatus()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
-		{
-		}
-
-		string target;
-		QueueItem::Priority priority;
-		QueueItem::Status status;
-		int64_t downloadedBytes;
-
-		QueueItem::SourceList sources;
-		QueueItem::SourceList badSources;
-	};
-
-	TaskQueue tasks;
 	bool spoken;
 
 	/** Single selection in the queue part */
@@ -314,16 +364,8 @@ private:
 	TypedListViewCtrl<QueueItemInfo, IDC_QUEUE> ctrlQueue;
 	CTreeViewCtrl ctrlDirs;
 
-	CStatusBarCtrl ctrlStatus;
-	int statusSizes[6];
-
 	int64_t queueSize;
 	int queueItems;
-
-	bool closed;
-
-	static int columnIndexes[COLUMN_LAST];
-	static int columnSizes[COLUMN_LAST];
 
 	void addQueueList(const QueueItem::StringMap& l);
 	void addQueueItem(QueueItemInfo* qi, bool noSort);
@@ -369,11 +411,6 @@ private:
 
 	const string& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *reinterpret_cast<string*>(ctrlDirs.GetItemData(ht)); }
 
-	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
-	virtual void on(QueueManagerListener::Moved, QueueItem* aQI, const string& oldTarget) throw();
-	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
-	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
-	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
 };
-
+#endif
 #endif // !defined(QUEUE_FRAME_H)
