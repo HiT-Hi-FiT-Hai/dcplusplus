@@ -27,6 +27,7 @@
 #include "HubFrame.h"
 #include "PublicHubsFrm.h"
 #include "FavHubsFrame.h"
+#include "QueueFrame.h"
 
 #include "LineDlg.h"
 
@@ -257,9 +258,9 @@ void MainWindow::initMenu() {
 	view->appendItem(IDC_FAVORITE_HUBS, TSTRING(MENU_FAVORITE_HUBS), &MainWindow::handleFavHubs);
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleSystemLog);
 	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleNotepad);
+	view->appendItem(IDC_QUEUE, TSTRING(MENU_DOWNLOAD_QUEUE), &MainWindow::handleQueue);
 	
 #ifdef PORT_ME
-	view.AppendMenu(MF_STRING, IDC_QUEUE, CTSTRING(MENU_DOWNLOAD_QUEUE));
 	view.AppendMenu(MF_STRING, IDC_VIEW_WAITING_USERS, CTSTRING(WAITING_USERS));
 	view.AppendMenu(MF_STRING, IDC_FINISHED, CTSTRING(FINISHED_DOWNLOADS));
 	view.AppendMenu(MF_STRING, IDC_FINISHED_UL, CTSTRING(FINISHED_UPLOADS));
@@ -352,6 +353,10 @@ void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
 
 void MainWindow::handleNotepad(WidgetMenuPtr, unsigned) {
 	NotepadFrame::openWindow(mdi);
+}
+
+void MainWindow::handleQueue(WidgetMenuPtr, unsigned) {
+	QueueFrame::openWindow(mdi);
 }
 
 void MainWindow::handleQuickConnect(WidgetMenuPtr, unsigned) {

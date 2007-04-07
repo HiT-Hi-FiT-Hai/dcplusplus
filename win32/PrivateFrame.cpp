@@ -34,7 +34,8 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 	chat(0),
 	message(0),
 	status(0),
-	replyTo(replyTo_)
+	replyTo(replyTo_),
+	layoutTable(1, 2)
 {
 	{
 		WidgetTextBox::Seed cs;
@@ -44,6 +45,8 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 		chat->setTextLimit(0);
 		chat->setFont(WinUtil::font);
 		add_widget(chat);
+		layoutTable.add(chat, SmartWin::Point(20, 20), 0, 0, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
+		
 #ifdef PORT_ME
 		/// @todo do we need this?§
 		ctrlClient.FmtLines(TRUE);
@@ -58,6 +61,7 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 		message = createTextBox(cs);
 		message->setFont(WinUtil::font);
 		add_widget(message);
+		layoutTable.add(message, SmartWin::Point(20, 20), 0, 1, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
 	}
 	
 	status = createStatusBarSections();
@@ -202,6 +206,7 @@ void PrivateFrame::layout() {
 #endif
 	}
 	r.size.y -= status->getSize().y - border;
+	layoutTable.resize(r);
 	int ymessage = message->getTextSize("A").y + 10;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x, ymessage);
 	message->setBounds(rm);

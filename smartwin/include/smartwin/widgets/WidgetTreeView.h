@@ -34,6 +34,7 @@
 #include "../xCeption.h"
 #include "../TrueWindow.h"
 #include "../MessageMapControl.h"
+#include "../aspects/AspectChar.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectClickable.h"
@@ -129,6 +130,7 @@ class WidgetTreeView :
 
 	// Aspects
 	public AspectBorder< WidgetTreeView< EventHandlerClass, MessageMapPolicy > >,
+	public AspectChar< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectSizable< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectSelection< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,

@@ -45,6 +45,8 @@ class OnlineUser;
 typedef OnlineUser* OnlineUserPtr;
 typedef std::vector<OnlineUserPtr> OnlineUserList;
 
+class QueueItem;
+
 class User;
 typedef Pointer<User> UserPtr;
 typedef std::vector<UserPtr> UserList;

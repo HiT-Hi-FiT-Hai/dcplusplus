@@ -21,9 +21,16 @@
 
 #include "StaticFrame.h"
 
-class QueueFrame : public StaticFrame<QueueFrame>, public ClientListener
+#include <client/TaskQueue.h>
+#include <client/FastAlloc.h>
+#include <client/QueueManagerListener.h>
+#include <client/QueueItem.h>
+#include <client/ClientListener.h>
+
+class QueueFrame : public StaticFrame<QueueFrame>, private ClientListener, private QueueManagerListener
 {
 public:
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::DOWNLOAD_QUEUE;
 
 protected:
 	typedef StaticFrame<QueueFrame> Base;
@@ -34,6 +41,8 @@ protected:
 	HRESULT spoken(LPARAM lp, WPARAM wp);
 	bool preClosing();
 	void postClosing();
+	
+	void splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt);
 	
 private:
 	enum {
@@ -58,6 +67,7 @@ private:
 		STATUS_PARTIAL_BYTES,
 		STATUS_TOTAL_COUNT,
 		STATUS_TOTAL_BYTES,
+		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	unsigned statusSizes[STATUS_LAST];
@@ -68,12 +78,102 @@ private:
 		UPDATE_ITEM
 	};
 
-	struct QueueItemInfoTask : FastAlloc<QueueItemInfoTask>, public Task {
+	class QueueItemInfo;
+	friend class QueueItemInfo;
+
+	class QueueItemInfo : public Flags, public FastAlloc<QueueItemInfo> {
+	public:
+
+		struct Display : public FastAlloc<Display> {
+			tstring columns[COLUMN_LAST];
+		};
+
+		enum {
+			MASK_TARGET = 1 << COLUMN_TARGET,
+			MASK_STATUS = 1 << COLUMN_STATUS,
+			MASK_SIZE = 1 << COLUMN_SIZE,
+			MASK_DOWNLOADED = 1 << COLUMN_DOWNLOADED,
+			MASK_PRIORITY = 1 << COLUMN_PRIORITY,
+			MASK_USERS = 1 << COLUMN_USERS,
+			MASK_PATH = 1 << COLUMN_PATH,
+			MASK_ERRORS = 1 << COLUMN_ERRORS,
+			MASK_ADDED = 1 << COLUMN_ADDED,
+			MASK_TTH = 1 << COLUMN_TTH,
+			MASK_TYPE = 1 << COLUMN_TYPE
+		};
+
+		QueueItemInfo(const QueueItem& aQI) : Flags(aQI), target(aQI.getTarget()),
+			path(Util::getFilePath(aQI.getTarget())),
+			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
+			added(aQI.getAdded()), tth(aQI.getTTH()), priority(aQI.getPriority()), status(aQI.getStatus()),
+			updateMask((uint32_t)-1), display(0), sources(aQI.getSources()), badSources(aQI.getBadSources())
+		{
+		}
+
+		~QueueItemInfo() { delete display; }
+
+		void update();
+
+		void remove();
+
+		// TypedListViewCtrl functions
+		const tstring& getText(int col) {
+			return getDisplay()->columns[col];
+		}
+		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
+			switch(col) {
+				case COLUMN_SIZE: case COLUMN_EXACT_SIZE: return compare(a->getSize(), b->getSize());
+				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
+				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
+				case COLUMN_ADDED: return compare(a->getAdded(), b->getAdded());
+				default: return lstrcmpi(a->getDisplay()->columns[col].c_str(), b->getDisplay()->columns[col].c_str());
+			}
+		}
+
+		QueueItem::SourceList& getSources() { return sources; }
+		QueueItem::SourceList& getBadSources() { return badSources; }
+
+		Display* getDisplay() {
+			if(!display) {
+				display = new Display;
+				update();
+			}
+			return display;
+		}
+
+		bool isSource(const User::Ptr& u) {
+			return find(sources.begin(), sources.end(), u) != sources.end();
+		}
+		bool isBadSource(const User::Ptr& u) {
+			return find(badSources.begin(), badSources.end(), u) != badSources.end();
+		}
+
+		GETSET(string, target, Target);
+		GETSET(string, path, Path);
+		GETSET(int64_t, size, Size);
+		GETSET(int64_t, downloadedBytes, DownloadedBytes);
+		GETSET(time_t, added, Added);
+		GETSET(QueueItem::Priority, priority, Priority);
+		GETSET(QueueItem::Status, status, Status);
+		GETSET(TTHValue, tth, TTH);
+		GETSET(QueueItem::SourceList, sources, Sources);
+		GETSET(QueueItem::SourceList, badSources, BadSources);
+		uint32_t updateMask;
+
+	private:
+
+		Display* display;
+
+		QueueItemInfo(const QueueItemInfo&);
+		QueueItemInfo& operator=(const QueueItemInfo&);
+	};
+
+	struct QueueItemInfoTask : public FastAlloc<QueueItemInfoTask>, public Task {
 		QueueItemInfoTask(QueueItemInfo* ii_) : ii(ii_) { }
 		QueueItemInfo* ii;
 	};
 
-	struct UpdateTask : FastAlloc<UpdateTask>, public Task {
+	struct UpdateTask : public FastAlloc<UpdateTask>, public Task {
 		UpdateTask(const QueueItem& source) : target(source.getTarget()), priority(source.getPriority()),
 			status(source.getStatus()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
 		{
@@ -91,6 +191,10 @@ private:
 	TaskQueue tasks;
 
 	WidgetStatusBarSectionsPtr status;
+	WidgetTreeViewPtr dirs;
+	WidgetDataGridPtr files;
+
+	WidgetSplitterCool* splitter;
 	
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -100,12 +204,13 @@ private:
 	
 	void setStatus(Status s, const tstring& text);
 	void updateStatus();
+	void updateQueue();
+
+	void addQueueList(const QueueItem::StringMap& l);
 	
-	using MDIChildFrame<HubFrame>::speak;
-	void speak(Tasks s) { tasks.add(s, 0); speak(); }
+	using MDIChildFrame<QueueFrame>::speak;
+	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }
 	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); speak(); }
-	void speak(Tasks s, const OnlineUser& u) { tasks.add(s, new UserTask(u)); updateUsers = true; }
-	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { tasks.add(PRIVATE_MESSAGE, new PMTask(from, to, replyTo, line));  speak(); }
 
 	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
 	virtual void on(QueueManagerListener::Moved, QueueItem* aQI, const string& oldTarget) throw();
@@ -234,98 +339,6 @@ public:
 	}
 
 private:
-
-
-	class QueueItemInfo;
-	friend class QueueItemInfo;
-
-	class QueueItemInfo : public Flags, public FastAlloc<QueueItemInfo> {
-	public:
-
-		struct Display : public FastAlloc<Display> {
-			tstring columns[COLUMN_LAST];
-		};
-
-		enum {
-			MASK_TARGET = 1 << COLUMN_TARGET,
-			MASK_STATUS = 1 << COLUMN_STATUS,
-			MASK_SIZE = 1 << COLUMN_SIZE,
-			MASK_DOWNLOADED = 1 << COLUMN_DOWNLOADED,
-			MASK_PRIORITY = 1 << COLUMN_PRIORITY,
-			MASK_USERS = 1 << COLUMN_USERS,
-			MASK_PATH = 1 << COLUMN_PATH,
-			MASK_ERRORS = 1 << COLUMN_ERRORS,
-			MASK_ADDED = 1 << COLUMN_ADDED,
-			MASK_TTH = 1 << COLUMN_TTH,
-			MASK_TYPE = 1 << COLUMN_TYPE
-		};
-
-		QueueItemInfo(const QueueItem& aQI) : Flags(aQI), target(aQI.getTarget()),
-			path(Util::getFilePath(aQI.getTarget())),
-			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
-			added(aQI.getAdded()), tth(aQI.getTTH()), priority(aQI.getPriority()), status(aQI.getStatus()),
-			updateMask((uint32_t)-1), display(0), sources(aQI.getSources()), badSources(aQI.getBadSources())
-		{
-		}
-
-		~QueueItemInfo() { delete display; }
-
-		void update();
-
-		void remove() { QueueManager::getInstance()->remove(getTarget()); }
-
-		// TypedListViewCtrl functions
-		const tstring& getText(int col) {
-			return getDisplay()->columns[col];
-		}
-		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
-			switch(col) {
-				case COLUMN_SIZE: case COLUMN_EXACT_SIZE: return compare(a->getSize(), b->getSize());
-				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
-				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
-				case COLUMN_ADDED: return compare(a->getAdded(), b->getAdded());
-				default: return lstrcmpi(a->getDisplay()->columns[col].c_str(), b->getDisplay()->columns[col].c_str());
-			}
-		}
-
-		QueueItem::SourceList& getSources() { return sources; }
-		QueueItem::SourceList& getBadSources() { return badSources; }
-
-		Display* getDisplay() {
-			if(!display) {
-				display = new Display;
-				update();
-			}
-			return display;
-		}
-
-		bool isSource(const User::Ptr& u) {
-			return find(sources.begin(), sources.end(), u) != sources.end();
-		}
-		bool isBadSource(const User::Ptr& u) {
-			return find(badSources.begin(), badSources.end(), u) != badSources.end();
-		}
-
-		GETSET(string, target, Target);
-		GETSET(string, path, Path);
-		GETSET(int64_t, size, Size);
-		GETSET(int64_t, downloadedBytes, DownloadedBytes);
-		GETSET(time_t, added, Added);
-		GETSET(QueueItem::Priority, priority, Priority);
-		GETSET(QueueItem::Status, status, Status);
-		GETSET(TTHValue, tth, TTH);
-		GETSET(QueueItem::SourceList, sources, Sources);
-		GETSET(QueueItem::SourceList, badSources, BadSources);
-		uint32_t updateMask;
-
-	private:
-
-		Display* display;
-
-		QueueItemInfo(const QueueItemInfo&);
-		QueueItemInfo& operator=(const QueueItemInfo&);
-	};
-
 	bool spoken;
 
 	/** Single selection in the queue part */
@@ -367,27 +380,10 @@ private:
 	int64_t queueSize;
 	int queueItems;
 
-	void addQueueList(const QueueItem::StringMap& l);
 	void addQueueItem(QueueItemInfo* qi, bool noSort);
 	HTREEITEM addDirectory(const string& dir, bool isFileList = false, HTREEITEM startAt = NULL);
 	void removeDirectory(const string& dir, bool isFileList = false);
 	void removeDirectories(HTREEITEM ht);
-
-	void updateQueue();
-	void updateStatus();
-
-	/**
-	 * This one is different from the others because when a lot of files are removed
-	 * at the same time, the WM_SPEAKER messages seem to get lost in the handling or
-	 * something, they're not correctly processed anyway...thanks windows.
-	 */
-	void speak(Tasks t, Task* p) {
-        tasks.add(t, p);
-		if(!spoken) {
-			spoken = true;
-			PostMessage(WM_SPEAKER);
-		}
-	}
 
 	bool isCurDir(const string& aDir) const { return Util::stricmp(curDir, aDir) == 0; }
 
