@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +42,7 @@
 #include "rsa.h"
 
 
-#define YASSL_VERSION "1.5.0"
+#define YASSL_VERSION "1.6.8"
 
 
 #if defined(__cplusplus)
@@ -197,11 +198,17 @@ enum {  /* ERR Constants */
     EVP_R_BAD_DECRYPT = 2
 };
 
-
+/*
+  Allow type used by SSL_set_fd to be changed, default to int
+  in order to be compatible with OpenSSL
+ */
+#ifndef YASSL_SOCKET_T_DEFINED
+typedef int YASSL_SOCKET_T;
+#endif
 
 SSL_CTX* SSL_CTX_new(SSL_METHOD*);
 SSL* SSL_new(SSL_CTX*);
-int  SSL_set_fd (SSL*, int);
+int  SSL_set_fd (SSL*, YASSL_SOCKET_T);
 int  SSL_connect(SSL*);
 int  SSL_write(SSL*, const void*, int);
 int  SSL_read(SSL*, void*, int);

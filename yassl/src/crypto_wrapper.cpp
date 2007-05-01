@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +35,6 @@
 #include "runtime.hpp"
 #include "crypto_wrapper.hpp"
 #include "cert_wrapper.hpp"
-#include <memory>
 
 #include "md5.hpp"
 #include "sha.hpp"
@@ -51,6 +51,7 @@
 #include "file.hpp"
 #include "coding.hpp"
 
+#include <memory>
 
 namespace yaSSL {
 

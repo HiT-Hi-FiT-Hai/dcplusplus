@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,22 +39,11 @@
     #include <c_asm.h>  // for asm overflow assembly
 #endif
 
-
-// 64bit multiply overflow intrinsic
-#if defined(_MSC_VER) && defined(_WIN64) && !defined(__INTEL_COMPILER) && \
-   !defined(TAOCRYPT_NATIVE_DWORD_AVAILABLE)
-    #ifdef __ia64__
-        #define myUMULH __UMULH
-    #elif  __x86_64__
-        #define myUMULH __umulh
-    #else
-        #error unknown 64bit windows
-    #endif
-
-extern "C" word myUMULH(word, word); 
-
-#pragma intrinsic (myUMULH)
+#if defined(_M_X64) || defined(_M_IA64)
+    #include <intrin.h> 
+#pragma intrinsic(_umul128)
 #endif
+
 
 #ifdef __GNUC__
     #include <signal.h>
@@ -184,9 +174,8 @@ DWord() {}
         #ifdef TAOCRYPT_NATIVE_DWORD_AVAILABLE
             r.whole_ = (dword)a * b;
 
-        #elif defined(_MSC_VER)
-            r.halfs_.low = a*b;
-            r.halfs_.high = myUMULH(a,b);
+        #elif defined(_M_X64) || defined(_M_IA64)
+            r.halfs_.low = _umul128(a, b, &r.halfs_.high);
 
         #elif defined(__alpha__)
             r.halfs_.low = a*b;
@@ -572,19 +561,24 @@ static word AtomicInverseModPower2(word A)
 class Portable
 {
 public:
-    static word TAOCRYPT_CDECL Add(word *C, const word *A, const word *B, unsigned int N);
-    static word TAOCRYPT_CDECL Subtract(word *C, const word *A, const word*B, unsigned int N);
-
+    static word TAOCRYPT_CDECL Add(word *C, const word *A, const word *B,
+                                   unsigned int N);
+    static word TAOCRYPT_CDECL Subtract(word *C, const word *A, const word*B,
+                                        unsigned int N);
     static void TAOCRYPT_CDECL Multiply2(word *C, const word *A, const word *B);
-    static word TAOCRYPT_CDECL Multiply2Add(word *C, const word *A, const word *B);
+    static word TAOCRYPT_CDECL Multiply2Add(word *C,
+                                            const word *A, const word *B);
     static void TAOCRYPT_CDECL Multiply4(word *C, const word *A, const word *B);
     static void TAOCRYPT_CDECL Multiply8(word *C, const word *A, const word *B);
     static unsigned int TAOCRYPT_CDECL MultiplyRecursionLimit() {return 8;}
 
-    static void TAOCRYPT_CDECL Multiply2Bottom(word *C, const word *A, const word *B);
-    static void TAOCRYPT_CDECL Multiply4Bottom(word *C, const word *A, const word *B);
-    static void TAOCRYPT_CDECL Multiply8Bottom(word *C, const word *A, const word *B);
-    static unsigned int TAOCRYPT_CDECL MultiplyBottomRecursionLimit() {return 8;}
+    static void TAOCRYPT_CDECL Multiply2Bottom(word *C, const word *A,
+                                               const word *B);
+    static void TAOCRYPT_CDECL Multiply4Bottom(word *C, const word *A,
+                                               const word *B);
+    static void TAOCRYPT_CDECL Multiply8Bottom(word *C, const word *A,
+                                               const word *B);
+    static unsigned int TAOCRYPT_CDECL MultiplyBottomRecursionLimit(){return 8;}
 
     static void TAOCRYPT_CDECL Square2(word *R, const word *A);
     static void TAOCRYPT_CDECL Square4(word *R, const word *A);
@@ -3404,7 +3398,7 @@ void Integer::DivideByPowerOf2(Integer &r, Integer &q, const Integer &a,
         CopyWords(r.reg_.get_buffer(), a.reg_.get_buffer(), wordCount);
         SetWords(r.reg_+wordCount, 0, r.reg_.size()-wordCount);
         if (n % WORD_BITS != 0)
-            r.reg_[wordCount-1] %= (1 << (n % WORD_BITS));
+          r.reg_[wordCount-1] %= (word(1) << (n % WORD_BITS));
     }
     else
     {

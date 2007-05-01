@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,7 +130,7 @@ void xorbuf(byte* buf, const byte* mask, unsigned int count)
 }
 
 
-unsigned int BytePrecision(unsigned long value)
+unsigned int BytePrecision(word value)
 {
     unsigned int i;
     for (i=sizeof(value); i; --i)
@@ -140,7 +141,7 @@ unsigned int BytePrecision(unsigned long value)
 }
 
 
-unsigned int BitPrecision(unsigned long value)
+unsigned int BitPrecision(word value)
 {
     if (!value)
         return 0;
@@ -161,7 +162,7 @@ unsigned int BitPrecision(unsigned long value)
 }
 
 
-unsigned long Crop(unsigned long value, unsigned int size)
+word Crop(word value, unsigned int size)
 {
     if (size < 8*sizeof(value))
         return (value & ((1L << size) - 1));
@@ -199,27 +200,32 @@ bool HaveCpuId()
     }
     return true;
 #else
-    typedef void (*SigHandler)(int);
+    word32 eax, ebx;
+    __asm__ __volatile
+    (
+        /* Put EFLAGS in eax and ebx */
+        "pushf;"
+        "pushf;"
+        "pop %0;"
+        "movl %0,%1;"
 
-    SigHandler oldHandler = signal(SIGILL, SigIllHandler);
-    if (oldHandler == SIG_ERR)
+        /* Flip the cpuid bit and store back in EFLAGS */
+        "xorl $0x200000,%0;"
+        "push %0;"
+        "popf;"
+
+        /* Read EFLAGS again */
+        "pushf;"
+        "pop %0;"
+        "popf"
+        : "=r" (eax), "=r" (ebx)
+        :
+        : "cc"
+    );
+
+    if (eax == ebx)
         return false;
-
-    bool result = true;
-    if (setjmp(s_env))
-        result = false;
-    else 
-        __asm__ __volatile
-        (
-            // save ebx in case -fPIC is being used
-            "push %%ebx; mov $0, %%eax; cpuid; pop %%ebx"
-            : 
-            :
-            : "%eax", "%ecx", "%edx" 
-        );
-
-    signal(SIGILL, oldHandler);
-    return result;
+    return true;
 #endif
 }
 

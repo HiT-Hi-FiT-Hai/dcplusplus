@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +35,6 @@
 #include "handshake.hpp"
 #include "yassl_int.hpp"
 #include <memory>
-
 
 namespace yaSSL {
 
@@ -626,7 +626,7 @@ void hmac(SSL& ssl, byte* digest, const byte* buffer, uint sz,
 void TLS_hmac(SSL& ssl, byte* digest, const byte* buffer, uint sz,
               ContentType content, bool verify)
 {
-    STL_NAMESPACE::auto_ptr<Digest> hmac;
+	STL_NAMESPACE::auto_ptr<Digest> hmac;
     opaque seq[SEQ_SZ] = { 0x00, 0x00, 0x00, 0x00 };
     opaque length[LENGTH_SZ];
     opaque inner[SIZEOF_ENUM + VERSION_SZ + LENGTH_SZ]; // type + version + len
@@ -980,7 +980,7 @@ int receiveData(SSL& ssl, Data& data, bool peek)
     ssl.verfiyHandShakeComplete();
     if (ssl.GetError()) return -1;
 
-    if (!ssl.bufferedData())
+    if (!ssl.HasData())
         processReply(ssl);
 
     if (peek)

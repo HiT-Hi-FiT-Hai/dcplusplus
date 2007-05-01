@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +97,17 @@ enum DNTags
     STATE_NAME          = 0x08,  // ST
     ORG_NAME            = 0x0a,  // O
     ORGUNIT_NAME        = 0x0b   // OU
+};
+
+
+enum PCKS12_Tags
+{
+    /* DATA                      = 1, */ // from ASN1
+    SIGNED_DATA               = 2,
+    ENVELOPED_DATA            = 3,
+    SIGNED_AND_ENVELOPED_DATA = 4,
+    DIGESTED_DATA             = 5,
+    ENCRYPTED_DATA            = 6
 };
 
 
@@ -195,6 +207,16 @@ private:
 };
 
 
+// PKCS12 BER Decoder
+class PKCS12_Decoder : public BER_Decoder {
+public:
+    explicit PKCS12_Decoder(Source& s) : BER_Decoder(s) {}
+    void Decode();
+private:
+    void ReadHeader();
+};
+
+
 // General PublicKey
 class PublicKey {
     byte*  key_;
@@ -241,6 +263,7 @@ private:
 typedef STL::list<Signer*> SignerList;
 
 
+enum ContentType { HUH = 651 };
 enum SigType  { SHAwDSA = 517, MD2wRSA = 646, MD5wRSA = 648, SHAwRSA =649};
 enum HashType { MD2h = 646, MD5h = 649, SHAh = 88 };
 enum KeyType  { DSAk = 515, RSAk = 645 };     // sums of algo OID
@@ -344,6 +367,12 @@ private:
     Signature_Encoder& operator=(const Signature_Encoder&); // and assign
 };
 
+
+// Get Cert in PEM format from BEGIN to END
+int GetCert(Source&);
+
+// Get Cert in PEM format from pkcs12 file
+int GetPKCS_Cert(const char* password, Source&);
 
 } // namespace
 

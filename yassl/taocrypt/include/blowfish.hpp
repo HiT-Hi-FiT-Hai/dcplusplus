@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,11 +67,11 @@ public:
     void SetKey(const byte* key, word32 sz, CipherDir fake = ENCRYPTION);
     void SetIV(const byte* iv) { memcpy(r_, iv, BLOCK_SIZE); }
 private:
-	static const word32 p_init_[ROUNDS + 2];
-	static const word32 s_init_[4 * 256];
+    static const word32 p_init_[ROUNDS + 2];
+    static const word32 s_init_[4 * 256];
 
-	word32 pbox_[ROUNDS + 2];
-	word32 sbox_[4 * 256];
+    word32 pbox_[ROUNDS + 2];
+    word32 sbox_[4 * 256];
 
     void crypt_block(const word32 in[2], word32 out[2]) const;
     void AsmProcess(const byte* in, byte* out) const;
@@ -89,7 +90,7 @@ typedef BlockCipher<DECRYPTION, Blowfish, CBC> Blowfish_CBC_Decryption;
 
 
 
-} // naemspace
+} // namespace
 
 #endif // TAO_CRYPT_BLOWFISH_HPP
 

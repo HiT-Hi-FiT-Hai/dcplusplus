@@ -20,5 +20,5 @@
 
 // Hm...version not updated it seems
 #if defined(HAVE_STLPORT) && (_STLPORT_VERSION != 0x512)
-#error I use STLport 5.1.2. Remove this if you know what you're doing.
+#error "I use STLport 5.1.2. Remove this if you know what you're doing."
 #endif

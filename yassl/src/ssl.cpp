@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +65,9 @@ int read_file(SSL_CTX* ctx, const char* file, int format, CertType type)
     if (format != SSL_FILETYPE_ASN1 && format != SSL_FILETYPE_PEM)
         return SSL_BAD_FILETYPE;
 
+    if (file == NULL || !file[0])
+      return SSL_BAD_FILE;
+
     FILE* input = fopen(file, "rb");
     if (!input)
         return SSL_BAD_FILE;
@@ -121,7 +125,7 @@ int read_file(SSL_CTX* ctx, const char* file, int format, CertType type)
                 EVP_BytesToKey(info.name, "MD5", info.iv, (byte*)password,
                                passwordSz, 1, key, iv);
 
-                STL::auto_ptr<BulkCipher> cipher;
+                STL_NAMESPACE::auto_ptr<BulkCipher> cipher;
                 if (strncmp(info.name, "DES-CBC", 7) == 0)
                     cipher.reset(NEW_YS DES);
                 else if (strncmp(info.name, "DES-EDE3-CBC", 13) == 0)
@@ -137,7 +141,7 @@ int read_file(SSL_CTX* ctx, const char* file, int format, CertType type)
                     return SSL_BAD_FILE;
                 }
                 cipher->set_decryptKey(key, info.iv);
-                STL::auto_ptr<x509> newx(NEW_YS x509(x->get_length()));   
+                STL_NAMESPACE::auto_ptr<x509> newx(NEW_YS x509(x->get_length()));   
                 cipher->decrypt(newx->use_buffer(), x->get_buffer(),
                                 x->get_length());
                 ysDelete(x);
@@ -235,7 +239,7 @@ void SSL_free(SSL* ssl)
 }
 
 
-int SSL_set_fd(SSL* ssl, int fd)
+int SSL_set_fd(SSL* ssl, YASSL_SOCKET_T fd)
 {
     ssl->useSocket().set_fd(fd);
     return SSL_SUCCESS;
@@ -406,7 +410,6 @@ int SSL_do_handshake(SSL* ssl)
 
 int SSL_clear(SSL* ssl)
 {
-    ssl->useSocket().closeSocket();
     GetErrors().Remove();
 
     return SSL_SUCCESS;
@@ -957,7 +960,7 @@ void ERR_print_errors_fp(FILE* /*fp*/)
 
 char* ERR_error_string(unsigned long errNumber, char* buffer)
 {
-    static char* msg = "Please supply a buffer for error string";
+  static char* msg = (char*)"Please supply a buffer for error string";
 
     if (buffer) {
         SetErrorString(YasslError(errNumber), buffer);

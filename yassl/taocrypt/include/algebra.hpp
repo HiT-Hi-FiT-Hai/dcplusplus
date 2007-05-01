@@ -2,7 +2,8 @@
  *
  * Copyright (C) 2003 Sawtooth Consulting Ltd.
  *
- * This file is part of yaSSL.
+ * This file is part of yaSSL, an SSL implementation written by Todd A Ouska
+ * (todd at yassl.com, see www.yassl.com).
  *
  * yaSSL is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +76,8 @@ public:
     typedef Integer Element;
 
     AbstractRing() : AbstractGroup() {m_mg.m_pRing = this;}
-    AbstractRing(const AbstractRing &source) {m_mg.m_pRing = this;}
+    AbstractRing(const AbstractRing &source) : AbstractGroup()
+                                                {m_mg.m_pRing = this;}
     AbstractRing& operator=(const AbstractRing &source) {return *this;}
 
     virtual bool IsUnit(const Element &a) const =0;
