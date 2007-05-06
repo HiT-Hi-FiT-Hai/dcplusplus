@@ -16,22 +16,171 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(TYPED_LIST_VIEW_CTRL_H)
-#define TYPED_LIST_VIEW_CTRL_H
+#ifndef DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_CTRL_H
+#define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_CTRL_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
+template<class T, class ContentType>
+class TypedListViewCtrl : public T::WidgetDataGrid
+{
+private:
+	typedef typename T::WidgetDataGrid BaseType;
+	typedef TypedListViewCtrl<T, ContentType> ThisType;
+	
+public:
+	typedef ThisType* ObjectType;
+
+	explicit TypedListViewCtrl( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent), sortColumn(-1), sortAscending(true) { }
+	
+	void resort() {
+		if(sortColumn != -1) {
+			ListView_SortItems(this->handle(), &compareFunc, reinterpret_cast< LPARAM >(this));
+		}
+	}
+
+	int insertItem(ContentType* item, int image) {
+		return insertItem(getSortPos(item), item, image);
+	}
+	int insertItem(int i, ContentType* item, int image) {
+		return insertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i,
+			LPSTR_TEXTCALLBACK, 0, 0, image, reinterpret_cast<LPARAM>(item));
+	}
+	
+	int insertItem(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int image, LPARAM lparam) {
+		LVITEM item = { mask };
+		item.iItem = i;
+		item.state = state;
+		item.stateMask = stateMask;
+		item.pszText = const_cast<LPTSTR>(text);
+		item.iImage = image;
+		item.lParam = lparam;
+		return ListView_InsertItem(this->handle(), &item);
+	}
+	
+	ContentType* getItemData(int iItem) { 
+		LVITEM item = { LVIF_PARAM };
+		if(ListView_GetItem(this->handle(), &item)) {
+			return reinterpret_cast<ContentType*>(item.lParam);
+		}
+		return 0;
+	}
+	
+	ContentType* getSelectedItem() { return this->hasSelection() ? getItemData(this->getSelectedIndex()) : 0; }
+
+	int findItem(ContentType* item) {
+		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
+		return ListView_FindItem(this->handle(), -1, &fi);
+	}
+	
+	struct CompFirst {
+		CompFirst() { }
+		bool operator()(ContentType& a, const tstring& b) {
+			return Util::stricmp(a.getText(0), b) < 0;
+		}
+	};
+	int findItem(const tstring& b, int start = -1, bool aPartial = false) {
+		LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
+		return ListView_FindItem(this->handle(), start, &fi);
+	}
+
+	void forEach(void (ContentType::*func)()) {
+		unsigned n = this->getRowCount();
+		for(unsigned i = 0; i < n; ++i)
+			(getItemData(i)->*func)();
+	}
+	void forEachSelected(void (ContentType::*func)()) {
+		int i = -1;
+		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
+			(getItemData(i)->*func)();
+	}
+	template<class _Function>
+	_Function forEachT(_Function pred) {
+		unsigned n = this->getRowCount();
+		for(unsigned i = 0; i < n; ++i)
+			pred(getItemData(i));
+		return pred;
+	}
+	template<class _Function>
+	_Function forEachSelectedT(_Function pred) {
+		int i = -1;
+		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
+			pred(getItemData(i));
+		return pred;
+	}
+
+	void updateItem(int i) {
+		unsigned k = this->getColumnCount();
+		for(unsigned j = 0; j < k; ++j)
+			ListView_SetItemText(this->handle(), i, j, LPSTR_TEXTCALLBACK);
+	}
+	void updateItem(ContentType* item) { int i = findItem(item); if(i != -1) updateItem(i); }
+	void deleteItem(ContentType* item) { int i = findItem(item); if(i != -1) this->removeRow(i); }
+
+	int getSortPos(ContentType* a) {
+		int high = this->getRowCount();
+		if((sortColumn == -1) || (high == 0))
+			return high;
+
+		high--;
+
+		int low = 0;
+		int mid = 0;
+		ContentType* b = NULL;
+		int comp = 0;
+		while( low <= high ) {
+			mid = (low + high) / 2;
+			b = getItemData(mid);
+			comp = ContentType::compareItems(a, b, sortColumn);
+
+			if(!sortAscending)
+				comp = -comp;
+
+			if(comp == 0) {
+				return mid;
+			} else if(comp < 0) {
+				high = mid - 1;
+			} else if(comp > 0) {
+				low = mid + 1;
+			}
+		}
+
+		comp = ContentType::compareItems(a, b, sortColumn);
+		if(!sortAscending)
+			comp = -comp;
+		if(comp > 0)
+			mid++;
+
+		return mid;
+	}
+
+	void setSortColumn(int aSortColumn) {
+		sortColumn = aSortColumn;
+		//TODO updateArrow();
+	}
+	int getSortColumn() { return sortColumn; }
+	bool isAscending() { return sortAscending; }
+
+private:
+
+	int sortColumn;
+	bool sortAscending;
+
+	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
+		ThisType* t = reinterpret_cast<ThisType*>(lParamSort);
+		int result = ContentType::compareItems((ContentType*)lParam1, (ContentType*)lParam2, t->sortColumn);
+		return (t->sortAscending ? result : -result);
+	}
+
+};
+
+#ifdef PORT_ME
 #include "ListViewArrows.h"
 #include "memdc.h"
 
-template<class T, int ctrlId>
-class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl<T, ctrlId>, CListViewCtrl, CControlWinTraits>,
+template<class T, class ContentType>
+class TypedListViewCtrl : public T::WidgetDataGrid,
 	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
 {
-public:
-	TypedListViewCtrl() : sortColumn(-1), sortAscending(true) { }
 
 	typedef TypedListViewCtrl<T, ctrlId> thisClass;
 	typedef CListViewCtrl baseClass;
@@ -127,114 +276,6 @@ public:
 		resort();
 		return 0;
 	}
-	void resort() {
-		if(sortColumn != -1) {
-			SortItems(&compareFunc, (LPARAM)this);
-		}
-	}
-
-	int insertItem(T* item, int image) {
-		return insertItem(getSortPos(item), item, image);
-	}
-	int insertItem(int i, T* item, int image) {
-		return InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i,
-			LPSTR_TEXTCALLBACK, 0, 0, image, (LPARAM)item);
-	}
-	T* getItemData(int iItem) { return (T*)GetItemData(iItem); }
-	T* getSelectedItem() { return (GetSelectedCount() > 0 ? getItemData(GetNextItem(-1, LVNI_SELECTED)) : NULL); }
-
-	int findItem(T* item) {
-		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
-		return FindItem(&fi, -1);
-	}
-	struct CompFirst {
-		CompFirst() { }
-		bool operator()(T& a, const tstring& b) {
-			return Util::stricmp(a.getText(0), b) < 0;
-		}
-	};
-	int findItem(const tstring& b, int start = -1, bool aPartial = false) {
-		LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
-		return FindItem(&fi, start);
-	}
-
-	void forEach(void (T::*func)()) {
-		int n = GetItemCount();
-		for(int i = 0; i < n; ++i)
-			(getItemData(i)->*func)();
-	}
-	void forEachSelected(void (T::*func)()) {
-		int i = -1;
-		while( (i = GetNextItem(i, LVNI_SELECTED)) != -1)
-			(getItemData(i)->*func)();
-	}
-	template<class _Function>
-	_Function forEachT(_Function pred) {
-		int n = GetItemCount();
-		for(int i = 0; i < n; ++i)
-			pred(getItemData(i));
-		return pred;
-	}
-	template<class _Function>
-	_Function forEachSelectedT(_Function pred) {
-		int i = -1;
-		while( (i = GetNextItem(i, LVNI_SELECTED)) != -1)
-			pred(getItemData(i));
-		return pred;
-	}
-
-	void updateItem(int i) {
-		int k = GetHeader().GetItemCount();
-		for(int j = 0; j < k; ++j)
-			SetItemText(i, j, LPSTR_TEXTCALLBACK);
-	}
-	void updateItem(T* item) { int i = findItem(item); if(i != -1) updateItem(i); }
-	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); }
-
-	int getSortPos(T* a) {
-		int high = GetItemCount();
-		if((sortColumn == -1) || (high == 0))
-			return high;
-
-		high--;
-
-		int low = 0;
-		int mid = 0;
-		T* b = NULL;
-		int comp = 0;
-		while( low <= high ) {
-			mid = (low + high) / 2;
-			b = getItemData(mid);
-			comp = T::compareItems(a, b, sortColumn);
-
-			if(!sortAscending)
-				comp = -comp;
-
-			if(comp == 0) {
-				return mid;
-			} else if(comp < 0) {
-				high = mid - 1;
-			} else if(comp > 0) {
-				low = mid + 1;
-			}
-		}
-
-		comp = T::compareItems(a, b, sortColumn);
-		if(!sortAscending)
-			comp = -comp;
-		if(comp > 0)
-			mid++;
-
-		return mid;
-	}
-
-	void setSortColumn(int aSortColumn) {
-		sortColumn = aSortColumn;
-		updateArrow();
-	}
-	int getSortColumn() { return sortColumn; }
-	bool isAscending() { return sortAscending; }
-
 	iterator begin() { return iterator(this); }
 	iterator end() { return iterator(this, GetItemCount()); }
 
@@ -267,16 +308,7 @@ public:
 		return 0;
 	}
 
-private:
-
-	int sortColumn;
-	bool sortAscending;
-
-	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
-		thisClass* t = (thisClass*)lParamSort;
-		int result = T::compareItems((T*)lParam1, (T*)lParam2, t->sortColumn);
-		return (t->sortAscending ? result : -result);
-	}
 };
+#endif
 
 #endif // !defined(TYPED_LIST_VIEW_CTRL_H)

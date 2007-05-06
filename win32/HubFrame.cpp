@@ -26,6 +26,13 @@
 #include <client/LogManager.h>
 #include <client/User.h>
 #include <client/ResourceManager.h>
+#include <client/FavoriteManager.h>
+
+int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_IP, COLUMN_EMAIL, COLUMN_CID };
+static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
+ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::IP_BARE, ResourceManager::EMAIL, ResourceManager::CID };
+
 
 HubFrame::FrameMap HubFrame::frames;
 
@@ -36,11 +43,14 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	timeStamps(BOOLSETTING(TIME_STAMPS)), 
 	updateUsers(false), 
 	waitingForPW(false), 
+	resort(false),
+	showUsers(true),
 	chat(0),
 	message(0),
 	filter(0),
 	filterType(0),
-	status(0)
+	status(0),
+	users(0)
 {
 	{
 		WidgetTextBox::Seed cs;
@@ -84,6 +94,21 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		add_widget(filterType);
 	}
 	
+	{
+		WidgetUsers::Seed cs;
+		
+		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
+		cs.exStyle =  WS_EX_CLIENTEDGE;
+		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
+		users->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+		users->setFont(WinUtil::font);
+		add_widget(users);
+
+		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
+		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
+	}
+	
 	status = createStatusBarSections();
 	memset(statusSizes, 0, sizeof(statusSizes));
 	///@todo get real resizer width
@@ -99,6 +124,8 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	client->connect();
 	
 	frames.insert(std::make_pair(url, this));
+	
+	FavoriteManager::getInstance()->addListener(this);
 }
 
 HubFrame::~HubFrame() {
@@ -106,9 +133,7 @@ HubFrame::~HubFrame() {
 }
 
 bool HubFrame::preClosing() {
-#ifdef PORT_ME
 	FavoriteManager::getInstance()->removeListener(this);
-#endif
 	client->removeListener(this);
 	client->disconnect(true);
 	return true;
@@ -119,32 +144,29 @@ void HubFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
 	FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
+#endif
 	clearUserList();
 	clearTaskList();
 
-	WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER,
-		SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-
-	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
-	if(fhe != NULL && !IsIconic()){
-		CRect rc;
-
+	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
+	
+	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(url));
+	if(fhe != NULL && !StupidWin::isIconic(this)){
 		//Get position of window
-		GetWindowRect(&rc);
 
 		//convert the position so it's relative to main window
-		::ScreenToClient(GetParent(), &rc.TopLeft());
-		::ScreenToClient(GetParent(), &rc.BottomRight());
+		SmartWin::Point pos = getPosition();
+		SmartWin::Point size = getSize();
 
 		//save the position
-		fhe->setBottom((uint16_t)(rc.bottom > 0 ? rc.bottom : 0));
-		fhe->setTop((uint16_t)(rc.top > 0 ? rc.top : 0));
-		fhe->setLeft((uint16_t)(rc.left > 0 ? rc.left : 0));
-		fhe->setRight((uint16_t)(rc.right > 0 ? rc.right : 0));
+		fhe->setBottom((uint16_t)std::max(pos.y + size.y, 0L));
+		fhe->setTop((uint16_t)std::max(pos.y, 0L));
+		fhe->setLeft((uint16_t)std::max(pos.x, 0L));
+		fhe->setRight((uint16_t)std::max(pos.x + size.x, 0L));
 
 		FavoriteManager::getInstance()->save();
 	}
-#endif	
 }
 
 void HubFrame::layout() {
@@ -231,6 +253,11 @@ void HubFrame::initSecond() {
 }
 
 void HubFrame::eachSecond(const SmartWin::CommandPtr&) {
+	if(updateUsers) {
+		updateUsers = false;
+		speak();
+	}
+	
 	updateStatus();
 	///@todo change smartwin to support recurring timers 
 	initSecond();
@@ -410,6 +437,17 @@ bool HubFrame::enter() {
 	return true;
 }
 
+void HubFrame::clearUserList() {
+	users->removeAllRows();
+	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+		delete i->second;
+	}
+	userMap.clear();
+}
+
+void HubFrame::clearTaskList() {
+	tasks.clear();
+}
 
 void HubFrame::setStatus(Status s, const tstring& text) {
 	int w = status->getTextSize(text).x + 12;
@@ -508,22 +546,20 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 
 	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
 		if(i->first == UPDATE_USER) {
-#ifdef PORT_ME
 			updateUser(*static_cast<UserTask*>(i->second));
-#endif
 		} else if(i->first == UPDATE_USER_JOIN) {
-#ifdef PORT_ME
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			if(updateUser(u)) {
+#ifdef PORT_ME
 				if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
 					addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
 				}
-			}
 #endif
+			}
 		} else if(i->first == REMOVE_USER) {
-#ifdef PORT_ME
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			removeUser(u.user);
+#ifdef PORT_ME
 			if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
 				addLine(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
 			}
@@ -534,8 +570,8 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 			setTabColor(GREEN);
 #endif
 		} else if(i->first == DISCONNECTED) {
-#ifdef PORT_ME
 			clearUserList();
+#ifdef PORT_ME
 			setTabColor(RED);
 #endif
 		} else if(i->first == ADD_CHAT_LINE) {
@@ -604,7 +640,7 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 	}
 #ifdef PORT_ME
 	if(resort && showUsers) {
-		ctrlUsers.resort();
+		users.resort();
 		resort = false;
 	}
 
@@ -614,6 +650,87 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 #endif
 	return 0;
 }
+
+bool HubFrame::updateUser(const UserTask& u) {
+	UserMapIter i = userMap.find(u.user);
+	if(i == userMap.end()) {
+		UserInfo* ui = new UserInfo(u);
+		userMap.insert(make_pair(u.user, ui));
+		if(!ui->isHidden() && showUsers)
+			users->insertItem(ui, getImage(u.identity));
+
+#ifdef PORT_ME
+		if(!filter.empty())
+			updateUserList(ui);
+#endif
+		return true;
+	} else {
+		UserInfo* ui = i->second;
+		if(!ui->isHidden() && u.identity.isHidden() && showUsers) {
+			users->deleteItem(ui);
+		}
+
+		resort = ui->update(u.identity, users->getSortColumn()) || resort;
+		if(showUsers) {
+			int pos = users->findItem(ui);
+			if(pos != -1) {
+				users->updateItem(pos);
+#ifdef PORT_ME
+				ctrlUsers.SetItem(pos, 0, LVIF_IMAGE, NULL, getImage(u.identity), 0, 0, NULL);
+#endif
+			}
+#ifdef PORT_ME
+			updateUserList(ui);
+#endif
+		}
+
+		return false;
+	}
+}
+
+bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
+	bool needsSort = (getIdentity().isOp() != identity.isOp());
+	tstring old;
+	if(sortCol != -1)
+		old = columns[sortCol];
+
+	columns[COLUMN_NICK] = Text::toT(identity.getNick());
+	columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
+	columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
+	columns[COLUMN_TAG] = Text::toT(identity.getTag());
+	columns[COLUMN_CONNECTION] = Text::toT(identity.getConnection());
+	string ip = identity.getIp();
+	string country = ip.empty()?Util::emptyString:Util::getIpCountry(ip);
+	if (!country.empty())
+		ip = country + " (" + ip + ")";
+	columns[COLUMN_IP] = Text::toT(ip);
+	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
+	columns[COLUMN_CID] = Text::toT(identity.getUser()->getCID().toBase32());
+
+	if(sortCol != -1) {
+		needsSort = needsSort || (old != columns[sortCol]);
+	}
+
+	setIdentity(identity);
+	return needsSort;
+}
+
+void HubFrame::removeUser(const User::Ptr& aUser) {
+	UserMapIter i = userMap.find(aUser);
+	if(i == userMap.end()) {
+		// Should never happen?
+		dcassert(i != userMap.end());
+		return;
+	}
+
+	UserInfo* ui = i->second;
+	if(!ui->isHidden() && showUsers)
+		users->deleteItem(ui);
+
+	userMap.erase(i);
+	delete ui;
+}
+
 
 bool HubFrame::charred(WidgetTextBoxPtr ptr, int c) {
 	///@todo Investigate WM_CHAR vs WM_KEYDOWN
@@ -737,6 +854,18 @@ bool HubFrame::charred(WidgetTextBoxPtr ptr, int c) {
 #endif
 }
 
+int HubFrame::getImage(const Identity& u) {
+	int image = u.isOp() ? IMAGE_OP : IMAGE_USER;
+
+	if(u.getUser()->isSet(User::DCPLUSPLUS))
+		image+=2;
+	if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !u.isTcpActive()) {
+		// Users we can't connect to...
+		image+=4;
+	}
+	return image;
+}
+
 
 HubFrame::UserTask::UserTask(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) { 
 
@@ -747,6 +876,29 @@ HubFrame::PMTask::PMTask(const OnlineUser& from_, const OnlineUser& to_, const O
 	hub(replyTo_.getIdentity().isHub()), bot(replyTo_.getIdentity().isBot()) 
 {
 
+}
+
+int HubFrame::UserInfo::compareItems(const HubFrame::UserInfo* a, const HubFrame::UserInfo* b, int col) {
+	if(col == COLUMN_NICK) {
+		bool a_isOp = a->getIdentity().isOp(),
+			b_isOp = b->getIdentity().isOp();
+		if(a_isOp && !b_isOp)
+			return -1;
+		if(!a_isOp && b_isOp)
+			return 1;
+		if(BOOLSETTING(SORT_FAVUSERS_FIRST)) {
+			bool a_isFav = FavoriteManager::getInstance()->isFavoriteUser(a->getIdentity().getUser()),
+				b_isFav = FavoriteManager::getInstance()->isFavoriteUser(b->getIdentity().getUser());
+			if(a_isFav && !b_isFav)
+				return -1;
+			if(!a_isFav && b_isFav)
+				return 1;
+		}
+	}
+	if(col == COLUMN_SHARED) {
+		return compare(a->identity.getBytesShared(), b->identity.getBytesShared());;
+	}
+	return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 }
 
 void HubFrame::on(Connecting, Client*) throw() {
@@ -840,18 +992,16 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 }
 
 tstring HubFrame::getStatusShared() const {
-#ifdef PORT_ME
-	if (ctrlUsers.GetSelectedCount() > 1) {
-		return ctrlUsers.forEachSelectedT(CountAvailable()).available;
-	} else
-		return for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
-#endif
-	return _T("0");
+	int64_t available;
+	if (users->getSelectedCount() > 1) {
+		available = users->forEachSelectedT(CountAvailable()).available;
+	} else {
+		available = std::for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
+	}
+	return Text::toT(Util::toString(available));
 }
 
-
 tstring HubFrame::getStatusUsers() const {
-#ifdef PORT_ME
 	size_t userCount = 0;
 	for(UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i){
 		UserInfo* ui = i->second;
@@ -860,14 +1010,28 @@ tstring HubFrame::getStatusUsers() const {
 	}
 
 	tstring textForUsers;
-	if (ctrlUsers.GetSelectedCount() > 1)
-		textForUsers += Util::toString(ctrlUsers.GetSelectedCount()) + "/";
-	if (showUsers && (size_t)ctrlUsers.GetItemCount() < userCount)
-		textForUsers += Util::toString(ctrlUsers.GetItemCount()) + "/";
+	if (users->getSelectedCount() > 1)
+		textForUsers += Util::toString(users->getSelectedCount()) + "/";
+	if (showUsers && users->getRowCount() < userCount)
+		textForUsers += Util::toString(users->getRowCount()) + "/";
 	return textForUsers + Util::toString(userCount) + " " + STRING(HUB_USERS);
-#endif
-	return _T("Unknown");
 }
+
+
+void HubFrame::on(FavoriteManagerListener::UserAdded, const FavoriteUser& /*aUser*/) throw() {
+	resortForFavsFirst();
+}
+void HubFrame::on(FavoriteManagerListener::UserRemoved, const FavoriteUser& /*aUser*/) throw() {
+	resortForFavsFirst();
+}
+
+void HubFrame::resortForFavsFirst(bool justDoIt /* = false */) {
+	if(justDoIt || BOOLSETTING(SORT_FAVUSERS_FIRST)) {
+		resort = true;
+		speak();
+	}
+}
+
 
 #ifdef PORT_ME
 
@@ -885,20 +1049,8 @@ tstring HubFrame::getStatusUsers() const {
 #include "../client/ConnectionManager.h"
 #include "../client/SearchManager.h"
 
-int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
-int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_IP, COLUMN_EMAIL, COLUMN_CID };
-static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::IP_BARE, ResourceManager::EMAIL, ResourceManager::CID };
-
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
-
-	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
-	ctrlUsers.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-
 	SetSplitterPanes(ctrlClient.m_hWnd, ctrlUsers.m_hWnd, false);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 7500;
@@ -908,16 +1060,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.SetFont(WinUtil::systemFont);
 	ctrlShowUsers.SetCheck(showUsers ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
-
-	WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(HUBFRAME_WIDTHS), COLUMN_LAST);
-
-	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_SHARED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlUsers.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
-	}
-
-	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextBkColor(WinUtil::bgColor);
@@ -964,7 +1106,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			MoveWindow(rc, TRUE);
 	}
 
-	FavoriteManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 
 	return 1;
@@ -1022,18 +1163,6 @@ void HubFrame::removeFavoriteHub() {
 	}
 }
 
-int HubFrame::getImage(const Identity& u) {
-	int image = u.isOp() ? IMAGE_OP : IMAGE_USER;
-
-	if(u.getUser()->isSet(User::DCPLUSPLUS))
-		image+=2;
-	if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !u.isTcpActive()) {
-		// Users we can't connect to...
-		image+=4;
-	}
-	return image;
-}
-
 LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	string nicks;
@@ -1064,55 +1193,6 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 }
 
 
-bool HubFrame::updateUser(const UserTask& u) {
-	UserMapIter i = userMap.find(u.user);
-	if(i == userMap.end()) {
-		UserInfo* ui = new UserInfo(u);
-		userMap.insert(make_pair(u.user, ui));
-		if(!ui->isHidden() && showUsers)
-			ctrlUsers.insertItem(ui, getImage(u.identity));
-
-		if(!filter.empty())
-			updateUserList(ui);
-
-		return true;
-	} else {
-		UserInfo* ui = i->second;
-		if(!ui->isHidden() && u.identity.isHidden() && showUsers) {
-			ctrlUsers.deleteItem(ui);
-		}
-
-		resort = ui->update(u.identity, ctrlUsers.getSortColumn()) || resort;
-		if(showUsers) {
-			int pos = ctrlUsers.findItem(ui);
-			if(pos != -1) {
-				ctrlUsers.updateItem(pos);
-				ctrlUsers.SetItem(pos, 0, LVIF_IMAGE, NULL, getImage(u.identity), 0, 0, NULL);
-			}
-
-			updateUserList(ui);
-		}
-
-		return false;
-	}
-}
-
-void HubFrame::removeUser(const User::Ptr& aUser) {
-	UserMapIter i = userMap.find(aUser);
-	if(i == userMap.end()) {
-		// Should never happen?
-		dcassert(i != userMap.end());
-		return;
-	}
-
-	UserInfo* ui = i->second;
-	if(!ui->isHidden() && showUsers)
-		ctrlUsers.deleteItem(ui);
-
-	userMap.erase(i);
-	delete ui;
-}
-
 HubFrame::UserInfo* HubFrame::findUser(const tstring& nick) {
 	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 		if(i->second->columns[COLUMN_NICK] == nick)
@@ -1121,47 +1201,8 @@ HubFrame::UserInfo* HubFrame::findUser(const tstring& nick) {
 	return 0;
 }
 
-bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
-	bool needsSort = (getIdentity().isOp() != identity.isOp());
-	tstring old;
-	if(sortCol != -1)
-		old = columns[sortCol];
-
-	columns[COLUMN_NICK] = Text::toT(identity.getNick());
-	columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(identity.getBytesShared()));
-	columns[COLUMN_DESCRIPTION] = Text::toT(identity.getDescription());
-	columns[COLUMN_TAG] = Text::toT(identity.getTag());
-	columns[COLUMN_CONNECTION] = Text::toT(identity.getConnection());
-	string ip = identity.getIp();
-	string country = ip.empty()?Util::emptyString:Util::getIpCountry(ip);
-	if (!country.empty())
-		ip = country + " (" + ip + ")";
-	columns[COLUMN_IP] = Text::toT(ip);
-	columns[COLUMN_EMAIL] = Text::toT(identity.getEmail());
-	columns[COLUMN_CID] = Text::toT(identity.getUser()->getCID().toBase32());
-
-	if(sortCol != -1) {
-		needsSort = needsSort || (old != columns[sortCol]);
-	}
-
-	setIdentity(identity);
-	return needsSort;
-}
-
 static const COLORREF RED = RGB(255, 0, 0);
 static const COLORREF GREEN = RGB(0, 255, 0);
-
-void HubFrame::clearUserList() {
-	ctrlUsers.DeleteAllItems();
-	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
-		delete i->second;
-	}
-	userMap.clear();
-}
-
-void HubFrame::clearTaskList() {
-	tasks.clear();
-}
 
 LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
@@ -1525,27 +1566,6 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::on(FavoriteManagerListener::UserAdded, const FavoriteUser& /*aUser*/) throw() {
-	resortForFavsFirst();
-}
-void HubFrame::on(FavoriteManagerListener::UserRemoved, const FavoriteUser& /*aUser*/) throw() {
-	resortForFavsFirst();
-}
-
-void HubFrame::resortForFavsFirst(bool justDoIt /* = false */) {
-	if(justDoIt || BOOLSETTING(SORT_FAVUSERS_FIRST)) {
-		resort = true;
-		PostMessage(WM_SPEAKER);
-	}
-}
-
-void HubFrame::on(Second, uint32_t /*aTick*/) throw() {
-	if(updateUsers) {
-		updateUsers = false;
-		PostMessage(WM_SPEAKER);
-	}
-}
-
 LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(uMsg == WM_CHAR && wParam == VK_TAB) {
 		handleTab(WinUtil::isShift());
@@ -1692,36 +1712,6 @@ void HubFrame::updateUserList(UserInfo* ui) {
 			}
 		}
 		ctrlUsers.SetRedraw(TRUE);
-	}
-}
-
-void HubFrame::handleTab(bool reverse) {
-	HWND focus = GetFocus();
-
-	if(reverse) {
-		if(focus == ctrlFilterSel.m_hWnd) {
-			ctrlFilter.SetFocus();
-		} else if(focus == ctrlFilter.m_hWnd) {
-			ctrlMessage.SetFocus();
-		} else if(focus == ctrlMessage.m_hWnd) {
-			ctrlUsers.SetFocus();
-		} else if(focus == ctrlUsers.m_hWnd) {
-			ctrlClient.SetFocus();
-		} else if(focus == ctrlClient.m_hWnd) {
-			ctrlFilterSel.SetFocus();
-		}
-	} else {
-		if(focus == ctrlClient.m_hWnd) {
-			ctrlUsers.SetFocus();
-		} else if(focus == ctrlUsers.m_hWnd) {
-			ctrlMessage.SetFocus();
-		} else if(focus == ctrlMessage.m_hWnd) {
-			ctrlFilter.SetFocus();
-		} else if(focus == ctrlFilter.m_hWnd) {
-			ctrlFilterSel.SetFocus();
-		} else if(focus == ctrlFilterSel.m_hWnd) {
-			ctrlClient.SetFocus();
-		}
 	}
 }
 

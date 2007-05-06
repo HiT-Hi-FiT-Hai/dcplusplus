@@ -20,13 +20,15 @@
 #define DCPLUSPLUS_WIN32_HUB_FRAME_H
 
 #include "MDIChildFrame.h"
+#include "TypedListViewCtrl.h"
 
 #include <client/forward.h>
 #include <client/ClientListener.h>
 #include <client/TaskQueue.h>
 #include <client/User.h>
+#include <client/FavoriteManagerListener.h>
 
-class HubFrame : public MDIChildFrame<HubFrame>, public ClientListener
+class HubFrame : public MDIChildFrame<HubFrame>, public ClientListener, private FavoriteManagerListener
 {
 public:
 	static void openWindow(SmartWin::Widget* mdiParent, const string& url);
@@ -45,6 +47,23 @@ protected:
 	bool enter();
 
 private:
+	enum {
+		IMAGE_USER = 0, IMAGE_OP
+	};
+
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NICK = COLUMN_FIRST,
+		COLUMN_SHARED,
+		COLUMN_DESCRIPTION,
+		COLUMN_TAG,
+		COLUMN_CONNECTION,
+		COLUMN_IP,
+		COLUMN_EMAIL,
+		COLUMN_CID,
+		COLUMN_LAST
+	};
+
 	enum Status {
 		STATUS_STATUS,
 		STATUS_USERS,
@@ -77,11 +96,48 @@ private:
 		bool bot;
 	};
 
+	friend struct CompareItems;
+	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
+	public:
+		UserInfo(const UserTask& u) : UserInfoBase(u.user) {
+			update(u.identity, -1);
+		}
+
+		const tstring& getText(int col) const {
+			return columns[col];
+		}
+
+		static int compareItems(const UserInfo* a, const UserInfo* b, int col);
+		bool update(const Identity& identity, int sortCol);
+
+		string getNick() const { return identity.getNick(); }
+		bool isHidden() const { return identity.isHidden(); }
+
+		tstring columns[COLUMN_LAST];
+		GETSET(Identity, identity, Identity);
+	};
+
+	typedef HASH_MAP<UserPtr, UserInfo*, User::HashFunction> UserMap;
+	typedef UserMap::iterator UserMapIter;
+
+	struct CountAvailable {
+		CountAvailable() : available(0) { }
+		int64_t available;
+		void operator()(UserInfo *ui) {
+			available += ui->getIdentity().getBytesShared();
+		}
+		void operator()(UserMap::const_reference ui) {
+			available += ui.second->getIdentity().getBytesShared();
+		}
+	};
+
 	Client* client;
 	tstring url;
 	bool timeStamps;
 	bool updateUsers;
 	bool waitingForPW;
+	bool resort;
+	bool showUsers;
 	
 	TaskQueue tasks;
 
@@ -90,7 +146,16 @@ private:
 	WidgetTextBoxPtr filter;
 	WidgetComboBoxPtr filterType;
 	WidgetStatusBarSectionsPtr status;
+
+	typedef TypedListViewCtrl<HubFrame, UserInfo> WidgetUsers;
+	typedef WidgetUsers* WidgetUsersPtr;
+	WidgetUsersPtr users;
 	
+	UserMap userMap;
+	
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
+
 	typedef HASH_MAP<string, HubFrame*> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
@@ -109,11 +174,26 @@ private:
 	void initSecond();
 	void eachSecond(const SmartWin::CommandPtr&);
 	
+	bool updateUser(const UserTask& u);
+	void removeUser(const UserPtr& aUser);
+
+	void updateUserList(UserInfo* ui = NULL);
+
+	void clearUserList();
+	void clearTaskList();
+
+	static int getImage(const Identity& u);
+
 	using MDIChildFrame<HubFrame>::speak;
 	void speak(Tasks s) { tasks.add(s, 0); speak(); }
 	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); speak(); }
 	void speak(Tasks s, const OnlineUser& u) { tasks.add(s, new UserTask(u)); updateUsers = true; }
 	void speak(const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line) { tasks.add(PRIVATE_MESSAGE, new PMTask(from, to, replyTo, line));  speak(); }
+
+	// FavoriteManagerListener
+	virtual void on(FavoriteManagerListener::UserAdded, const FavoriteUser& /*aUser*/) throw();
+	virtual void on(FavoriteManagerListener::UserRemoved, const FavoriteUser& /*aUser*/) throw();
+	void resortForFavsFirst(bool justDoIt = false);
 
 	// ClientListener
 	virtual void on(Connecting, Client*) throw();
@@ -268,23 +348,6 @@ private:
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
-	enum {
-		IMAGE_USER = 0, IMAGE_OP
-	};
-
-	enum {
-		COLUMN_FIRST,
-		COLUMN_NICK = COLUMN_FIRST,
-		COLUMN_SHARED,
-		COLUMN_DESCRIPTION,
-		COLUMN_TAG,
-		COLUMN_CONNECTION,
-		COLUMN_IP,
-		COLUMN_EMAIL,
-		COLUMN_CID,
-		COLUMN_LAST
-	};
-
 	enum FilterModes{
 		NONE,
 		EQUAL,
@@ -293,49 +356,6 @@ private:
 		GREATER,
 		LESS,
 		NOT_EQUAL
-	};
-
-	friend struct CompareItems;
-	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
-	public:
-		UserInfo(const UserTask& u) : UserInfoBase(u.user) {
-			update(u.identity, -1);
-		}
-
-		const tstring& getText(int col) const {
-			return columns[col];
-		}
-
-		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
-			if(col == COLUMN_NICK) {
-				bool a_isOp = a->getIdentity().isOp(),
-					b_isOp = b->getIdentity().isOp();
-				if(a_isOp && !b_isOp)
-					return -1;
-				if(!a_isOp && b_isOp)
-					return 1;
-				if(BOOLSETTING(SORT_FAVUSERS_FIRST)) {
-					bool a_isFav = FavoriteManager::getInstance()->isFavoriteUser(a->getIdentity().getUser()),
-						b_isFav = FavoriteManager::getInstance()->isFavoriteUser(b->getIdentity().getUser());
-					if(a_isFav && !b_isFav)
-						return -1;
-					if(!a_isFav && b_isFav)
-						return 1;
-				}
-			}
-			if(col == COLUMN_SHARED) {
-				return compare(a->identity.getBytesShared(), b->identity.getBytesShared());;
-			}
-			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
-		}
-
-		bool update(const Identity& identity, int sortCol);
-
-		string getNick() const { return identity.getNick(); }
-		bool isHidden() const { return identity.isHidden(); }
-
-		tstring columns[COLUMN_LAST];
-		GETSET(Identity, identity, Identity);
 	};
 
 
@@ -361,9 +381,6 @@ private:
 		clearTaskList();
 	}
 
-	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
-	typedef UserMap::iterator UserMapIter;
-
 	tstring redirect;
 	bool showJoins;
 	bool favShowJoins;
@@ -371,28 +388,14 @@ private:
 	StringList tabCompleteNicks;
 	bool inTabComplete;
 
-	bool waitingForPW;
 	bool extraSort;
 
 	TStringList prevCommands;
 	tstring currentCommand;
 	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
-	struct CountAvailable {
-		CountAvailable() : available(0) { }
-		int64_t available;
-		void operator()(UserInfo *ui) {
-			available += ui->getIdentity().getBytesShared();
-		}
-		void operator()(UserMap::const_reference ui) {
-			available += ui.second->getIdentity().getBytesShared();
-		}
-	};
-
 	const tstring& getNick(const User::Ptr& u);
 
-	Client* client;
-	tstring server;
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow clientContainer;
 	CContainedWindow showUsersContainer;
@@ -413,19 +416,12 @@ private:
 	TStringMap tabParams;
 	bool tabMenuShown;
 
-	UserMap userMap;
-	bool updateUsers;
-	bool resort;
-
 	StringMap ucLineParams;
 
 	enum { MAX_CLIENT_LINES = 5 };
 	TStringList lastLinesList;
 	tstring lastLines;
 	CToolTipCtrl ctrlLastLines;
-
-	static int columnIndexes[COLUMN_LAST];
-	static int columnSizes[COLUMN_LAST];
 
 	static bool compareCharsNoCase(string::value_type a, string::value_type b) {
 		return Text::toLower(a) == Text::toLower(b);
@@ -434,10 +430,6 @@ private:
 	string stripNick(const string& nick) const;
 	tstring scanNickPrefix(const tstring& prefix);
 
-	bool updateUser(const UserTask& u);
-	void removeUser(const User::Ptr& aUser);
-
-	void updateUserList(UserInfo* ui = NULL);
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 	UserInfo* findUser(const tstring& nick);
@@ -445,21 +437,7 @@ private:
 	void addAsFavorite();
 	void removeFavoriteHub();
 
-	void clearUserList();
-	void clearTaskList();
-
-	int getImage(const Identity& u);
-
 	void updateStatusBar() { if(m_hWnd) speak(STATS); }
-
-	// FavoriteManagerListener
-	virtual void on(FavoriteManagerListener::UserAdded, const FavoriteUser& /*aUser*/) throw();
-	virtual void on(FavoriteManagerListener::UserRemoved, const FavoriteUser& /*aUser*/) throw();
-	void resortForFavsFirst(bool justDoIt = false);
-
-	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, uint32_t /*aTick*/) throw();
-
 
 };
 

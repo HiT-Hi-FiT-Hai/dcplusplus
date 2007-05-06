@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_QUEUE_FRAME_H
 
 #include "StaticFrame.h"
+#include "TypedListViewCtrl.h"
 
 #include <client/TaskQueue.h>
 #include <client/FastAlloc.h>
@@ -105,8 +106,8 @@ private:
 		QueueItemInfo(const QueueItem& aQI) : Flags(aQI), target(aQI.getTarget()),
 			path(Util::getFilePath(aQI.getTarget())),
 			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
-			added(aQI.getAdded()), tth(aQI.getTTH()), priority(aQI.getPriority()), status(aQI.getStatus()),
-			updateMask((uint32_t)-1), display(0), sources(aQI.getSources()), badSources(aQI.getBadSources())
+			added(aQI.getAdded()), priority(aQI.getPriority()), status(aQI.getStatus()), tth(aQI.getTTH()), 
+			updateMask((uint32_t)-1), sources(aQI.getSources()), badSources(aQI.getBadSources()), display(0)
 		{
 		}
 
@@ -192,10 +193,25 @@ private:
 
 	WidgetStatusBarSectionsPtr status;
 	WidgetTreeViewPtr dirs;
-	WidgetDataGridPtr files;
+	typedef TypedListViewCtrl<QueueFrame, QueueItemInfo> WidgetFiles;
+	typedef WidgetFiles* WidgetFilesPtr;
+	
+	WidgetFilesPtr files;
 
 	WidgetSplitterCool* splitter;
 	
+	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
+	typedef DirectoryMap::iterator DirectoryIter;
+	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
+	DirectoryMap directories;
+
+	std::string curDir;
+	bool showTree;
+	bool dirty;
+	
+	int64_t queueSize;
+	int queueItems;
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -206,8 +222,17 @@ private:
 	void updateStatus();
 	void updateQueue();
 
+	void addQueueItem(QueueItemInfo* qi, bool noSort);
 	void addQueueList(const QueueItem::StringMap& l);
-	
+
+	HTREEITEM addDirectory(const string& dir, bool isFileList = false, HTREEITEM startAt = NULL);
+	void removeDirectories(HTREEITEM ht);
+	void removeDirectory(const string& dir, bool isFileList = false);
+
+	bool isCurDir(const string& aDir) const;
+
+	QueueItemInfo* getItemInfo(const string& target);
+
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }
 	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); speak(); }
@@ -221,10 +246,8 @@ private:
 
 #ifdef PORT_ME
 #include "FlatTabCtrl.h"
-#include "TypedListViewCtrl.h"
 
 #include "../client/QueueManager.h"
-#include "../client/FastAlloc.h"
 #include "../client/TaskQueue.h"
 
 #define SHOWTREE_MESSAGE_MAP 12
@@ -357,35 +380,15 @@ private:
 
 	CButton ctrlShowTree;
 	CContainedWindow showTreeContainer;
-	bool showTree;
 
 	bool usingDirMenu;
-
-	bool dirty;
 
 	int menuItems;
 	int readdItems;
 
 	HTREEITEM fileLists;
 
-	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
-	typedef DirectoryMap::iterator DirectoryIter;
-	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
-	DirectoryMap directories;
-	string curDir;
-
-	TypedListViewCtrl<QueueItemInfo, IDC_QUEUE> ctrlQueue;
 	CTreeViewCtrl ctrlDirs;
-
-	int64_t queueSize;
-	int queueItems;
-
-	void addQueueItem(QueueItemInfo* qi, bool noSort);
-	HTREEITEM addDirectory(const string& dir, bool isFileList = false, HTREEITEM startAt = NULL);
-	void removeDirectory(const string& dir, bool isFileList = false);
-	void removeDirectories(HTREEITEM ht);
-
-	bool isCurDir(const string& aDir) const { return Util::stricmp(curDir, aDir) == 0; }
 
 	void moveSelected();
 	void moveSelectedDir();
@@ -394,8 +397,6 @@ private:
 	void moveNode(HTREEITEM item, HTREEITEM parent);
 
 	void clearTree(HTREEITEM item);
-
-	QueueItemInfo* getItemInfo(const string& target);
 
 	void removeSelected();
 	void removeSelectedDir();

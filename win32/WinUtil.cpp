@@ -138,6 +138,17 @@ tstring WinUtil::encodeFont(LOGFONT const& font)
 	return res;
 }
 
+std::string WinUtil::toString(const std::vector<int>& tokens) {
+	std::string ret;
+	for(std::vector<int>::const_iterator i = tokens.begin(); i != tokens.end(); ++i) {
+		ret += Util::toString(*i);
+	}
+	if(!ret.empty())
+		ret.erase(ret.size()-1);
+	return ret;
+}
+
+
 void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	StringTokenizer<tstring> st(setting, _T(','));
 	TStringList &sl = st.getTokens();
@@ -292,6 +303,32 @@ pair<tstring, bool> WinUtil::getHubNames(const CID& cid) throw() {
 pair<tstring, bool> WinUtil::getHubNames(const UserPtr& u) { 
 	return getHubNames(u->getCID()); 
 }
+
+int WinUtil::getIconIndex(const tstring& aFileName) {
+#ifdef PORT_ME
+	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+		SHFILEINFO fi;
+		string x = Text::toLower(Util::getFileExt(Text::fromT(aFileName)));
+		if(!x.empty()) {
+			ImageIter j = fileIndexes.find(x);
+			if(j != fileIndexes.end())
+				return j->second;
+		}
+		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
+		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+		fileImages.AddIcon(fi.hIcon);
+		::DestroyIcon(fi.hIcon);
+
+		fileIndexes[x] = fileImageCount++;
+		return fileImageCount - 1;
+	} else {
+#endif
+		return 2;
+#ifdef PORT_ME
+	}
+#endif
+}
+
 
 #ifdef PORT_ME
 #include "Resource.h"
@@ -1057,27 +1094,6 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 	}
 	tmp.erase(tmp.size()-1, 1);
 	SettingsManager::getInstance()->set(widths, tmp);
-}
-
-int WinUtil::getIconIndex(const tstring& aFileName) {
-	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
-		SHFILEINFO fi;
-		string x = Text::toLower(Util::getFileExt(Text::fromT(aFileName)));
-		if(!x.empty()) {
-			ImageIter j = fileIndexes.find(x);
-			if(j != fileIndexes.end())
-				return j->second;
-		}
-		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
-		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		fileImages.AddIcon(fi.hIcon);
-		::DestroyIcon(fi.hIcon);
-
-		fileIndexes[x] = fileImageCount++;
-		return fileImageCount - 1;
-	} else {
-		return 2;
-	}
 }
 
 double WinUtil::toBytes(TCHAR* aSize) {

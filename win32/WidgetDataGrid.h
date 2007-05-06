@@ -56,10 +56,17 @@ public:
 		return ret;
 	}
 	
+	int getSelectedCount() {
+		return ListView_GetSelectedCount(this->handle());
+	}
+	
+	void setListViewStyle(int style) {
+		ListView_SetExtendedListViewStyle(this->handle(), style);
+	}
+	
 	LPARAM getItemData(int idx) {
-		LVITEM item = { 0 };
+		LVITEM item = { LVIF_PARAM };
 		item.iItem = idx;
-		item.mask = LVIF_PARAM;
 		if(!::SendMessage(this->handle(), LVM_GETITEM, 0, reinterpret_cast<LPARAM>(&item))) {
 			return 0;
 		}

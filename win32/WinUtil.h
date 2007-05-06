@@ -23,6 +23,23 @@
 #include <client/Util.h>
 #include <client/forward.h>
 
+
+class UserInfoBase {
+public:
+	UserInfoBase(const UserPtr& u) : user(u) { }
+
+	void getList() { };
+	void browseList() { };
+	void matchQueue() { };
+	void pm() { };
+	void grant() { };
+	void addFav() { };
+	void removeAll() { };
+
+	UserPtr& getUser() { return user; }
+	UserPtr user;
+};
+
 #ifdef PORT_ME
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
@@ -41,22 +58,6 @@ HLSCOLOR RGB2HLS (COLORREF rgb);
 COLORREF HLS2RGB (HLSCOLOR hls);
 
 COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
-
-class UserInfoBase {
-public:
-	UserInfoBase(const User::Ptr& u) : user(u) { }
-
-	void getList();
-	void browseList();
-	void matchQueue();
-	void pm();
-	void grant();
-	void addFav();
-	void removeAll();
-
-	User::Ptr& getUser() { return user; }
-	User::Ptr user;
-};
 
 template<class T>
 class UserInfoBaseHandler {
@@ -177,9 +178,10 @@ public:
 		}
 		return ret;			
 	}
-	
+	static std::string toString(const std::vector<int>& tokens);
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	
+	static int getIconIndex(const tstring& aFileName);
 
 	static bool isShift() { return (::GetKeyState(VK_SHIFT) & 0x8000) > 0; }
 	static bool isAlt() { return (::GetKeyState(VK_MENU) & 0x8000) > 0; }
@@ -273,8 +275,6 @@ public:
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 	static void openLink(const tstring& url);
 	static void openFolder(const tstring& file);
-
-	static int getIconIndex(const tstring& aFileName);
 
 	static int getDirIconIndex() { return dirIconIndex; }
 	static int getDirMaskedIndex() { return dirMaskedIndex; }
