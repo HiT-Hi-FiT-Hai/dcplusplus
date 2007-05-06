@@ -32,7 +32,7 @@ for i, source in enumerate(sources):
 	if source.find("version.cpp") != -1:
 		rev = ['DCPP_REVISION=' + getRevision()]
 		sources[i] = env.StaticObject(source, CPPDEFINES=env['CPPDEFINES'] + rev)
-
+	
 if 'gcc' in env['TOOLS']:
 	env['Gch'] = env.Gch('stdinc.h')[0]
 

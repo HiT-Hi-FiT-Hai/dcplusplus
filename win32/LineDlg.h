@@ -21,17 +21,16 @@
 
 #include "resource.h"
 
+#include <client/Util.h>
+
 class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, LineDlg, SmartWin::MessageMapPolicyModalDialogWidget>
 {
 public:
-	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, bool password_ = false, const tstring& initial_ = "") : SmartWin::Widget(parent), title(title_), desc(desc_), initial(initial_), password(password_) {
-		onInitDialog(&LineDlg::initDialog);
-		onFocus(&LineDlg::focus);	
-	}
+	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, bool password_ = false, const tstring& initial_ = Util::emptyStringT);
 	
 	int run() { return createDialog(IDD_LINE); }
 	
-	tstring getLine() { return line->getText(); }
+	tstring getLine() { return initial; }
 private:
 	WidgetStaticPtr description;
 	WidgetTextBoxPtr line;
@@ -43,46 +42,11 @@ private:
 	tstring initial;
 	bool password;
 
-	void focus() {
-		line->setFocus();
-	}
-	
-	bool initDialog() {
-		ok = subclassButton(IDOK);
-		ok->onClicked(&LineDlg::okClicked);
-
-		cancel = subclassButton(IDCANCEL);
-		cancel->onClicked(&LineDlg::cancelClicked);
-		
-		description = subclassStatic(IDC_DESCRIPTION);
-		description->setText(desc);
-		line = subclassTextBox(IDC_LINE);
-		line->setFocus();
-		line->setText(initial);
-		line->setSelection();
-		if(password) {
-			line->setPassword();
-		}
-		
-		setText(title);
-
-#ifdef PORT_ME
-		CenterWindow(GetParent());
-#endif
-		return false;
-	}
-	
-	bool closing() {
-		endDialog(IDCANCEL);
-		return false;		
-	}
-	
-	void okClicked(WidgetButtonPtr) {
-		endDialog(IDOK);
-	}
-	void cancelClicked(WidgetButtonPtr) {
-		endDialog(IDCANCEL);
-	}
+	void focus();
+	bool initDialog();
+	bool closing();
+	void okClicked(WidgetButtonPtr);
+	void cancelClicked(WidgetButtonPtr);
 };
 
 #endif // !defined(LINE_DLG_H)

@@ -30,6 +30,7 @@ class PrivateFrame : public MDIChildFrame<PrivateFrame>, private ClientManagerLi
 public:
 	static void gotMessage(SmartWin::Widget* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
 	static void openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
+	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); }
 
 	void sendMessage(const tstring& msg);
 
@@ -98,7 +99,6 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
-	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); }
 	static void closeAll();
 	static void closeAllOffline();
 

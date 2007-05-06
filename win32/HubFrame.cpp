@@ -20,6 +20,8 @@
 #include <client/DCPlusPlus.h>
 
 #include "HubFrame.h"
+#include "PrivateFrame.h"
+#include "LineDlg.h"
 
 #include <client/ClientManager.h>
 #include <client/Client.h>
@@ -45,13 +47,21 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	waitingForPW(false), 
 	resort(false),
 	showUsers(true),
+	showJoins(false),
+	favShowJoins(true),
 	chat(0),
 	message(0),
 	filter(0),
 	filterType(0),
 	status(0),
+	splitter(0),
 	users(0)
 {
+	{
+		splitter = createSplitterCool();
+		splitter->onMoved(&HubFrame::splitterMoved);
+	}
+
 	{
 		WidgetTextBox::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
@@ -169,6 +179,10 @@ void HubFrame::postClosing() {
 	}
 }
 
+void HubFrame::splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt) {
+	layout();
+}
+
 void HubFrame::layout() {
 	const int border = 2;
 	
@@ -206,9 +220,14 @@ void HubFrame::layout() {
 	rm.pos.x += rm.size.x + border;
 	rm.size.x = xfilter / 3 - border;
 	filterType->setBounds(rm);
+	
 	r.size.y -= rm.size.y + border;
-	chat->setBounds(r);
+	
+	SmartWin::Rectangle rsplit(splitter->getBounds());
 
+	chat->setBounds(0, 0, rsplit.pos.x, r.size.y);
+	users->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
+	
 #ifdef PORT_ME	
 	CRect rc = rect;
 	rc.bottom -= h + 10;
@@ -244,7 +263,6 @@ void HubFrame::layout() {
 void HubFrame::updateStatus() {
 	setStatus(STATUS_USERS, getStatusUsers());
 	setStatus(STATUS_SHARED, getStatusShared());
-		
 }
 
 void HubFrame::initSecond() {
@@ -284,7 +302,6 @@ bool HubFrame::enter() {
 		return false;
 	}
 
-#ifdef PORT_ME	
 	// save command in history, reset current buffer pointer to the newest command
 	curCommandPosition = prevCommands.size();		//this places it one position beyond a legal subscript
 	if (!curCommandPosition || curCommandPosition > 0 && prevCommands[curCommandPosition - 1] != s) {
@@ -292,7 +309,6 @@ bool HubFrame::enter() {
 		prevCommands.push_back(s);
 	}
 	currentCommand = _T("");
-#endif
 	// Special command
 	if(s[0] == _T('/')) {
 		tstring cmd = s;
@@ -307,20 +323,20 @@ bool HubFrame::enter() {
 				addStatus(status);
 			}
 		} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
-#ifdef PORT_ME
 			if(!param.empty()) {
 				redirect = param;
 				if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
-					HubFrame::openWindow(param);
+					HubFrame::openWindow(getParent(), param);
 				} else {
 					BOOL whatever = FALSE;
+#ifdef PORT_ME
 					onFollow(0, 0, 0, whatever);
+#endif
 				}
 			} else {
-				addClientLine(TSTRING(SPECIFY_SERVER));
+				addStatus(TSTRING(SPECIFY_SERVER));
 			}
-#endif
-			} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
+		} else if(Util::stricmp(cmd.c_str(), _T("clear")) == 0) {
 			chat->setText(_T(""));
 		} else if(Util::stricmp(cmd.c_str(), _T("ts")) == 0) {
 			timeStamps = !timeStamps;
@@ -375,56 +391,50 @@ bool HubFrame::enter() {
 				removeFavoriteHub();
 #endif
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
-#ifdef PORT_ME
 				if( !param.empty() ){
 					UserInfo* ui = findUser(param);
 					if(ui) {
 						ui->getList();
 					}
 				}
-#endif
 			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
-#ifdef PORT_ME
 				StringMap params;
 				params["hubNI"] = client->getHubName();
-			params["hubURL"] = client->getHubUrl();
-			params["myNI"] = client->getMyNick();
-			if(param.empty()) {
-				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params, true))));
-			} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
+				params["hubURL"] = client->getHubUrl();
+				params["myNI"] = client->getMyNick();
+				if(param.empty()) {
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params, true))));
+				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
 					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params, true))));
 				}
-#endif
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 			addChat(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
 		} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
-#ifdef PORT_ME
-				string::size_type j = param.find(_T(' '));
-				if(j != string::npos) {
-					tstring nick = param.substr(0, j);
-					UserInfo* ui = findUser(nick);
+			string::size_type j = param.find(_T(' '));
+			if(j != string::npos) {
+				tstring nick = param.substr(0, j);
+				UserInfo* ui = findUser(nick);
 
-					if(ui) {
-						if(param.size() > j + 1)
-							PrivateFrame::openWindow(ui->user, param.substr(j+1));
-						else
-							PrivateFrame::openWindow(ui->user);
-					}
-				} else if(!param.empty()) {
-					UserInfo* ui = findUser(param);
-					if(ui) {
-						PrivateFrame::openWindow(ui->user);
-					}
+				if(ui) {
+					if(param.size() > j + 1)
+						PrivateFrame::openWindow(getParent(), ui->user, param.substr(j+1));
+					else
+						PrivateFrame::openWindow(getParent(), ui->user);
 				}
-#endif
-			} else {
-				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
-					client->hubMessage(Text::fromT(s));
-				} else {
-					addStatus(TSTRING(UNKNOWN_COMMAND) + cmd);
+			} else if(!param.empty()) {
+				UserInfo* ui = findUser(param);
+				if(ui) {
+					PrivateFrame::openWindow(getParent(), ui->user);
 				}
 			}
-			message->setText(_T(""));
+		} else {
+			if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
+				client->hubMessage(Text::fromT(s));
+			} else {
+				addStatus(TSTRING(UNKNOWN_COMMAND) + cmd);
+			}
+		}
+		message->setText(_T(""));
 	} else if(waitingForPW) {
 		addStatus(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
 		message->setText(_T("/password "));
@@ -486,6 +496,7 @@ void HubFrame::addChat(const tstring& aLine) {
 	else {
 		ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
 	}
+#endif
 	if(BOOLSETTING(LOG_MAIN_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
@@ -494,7 +505,6 @@ void HubFrame::addChat(const tstring& aLine) {
 		client->getMyIdentity().getParams(params, "my", true);
 		LOG(LogManager::CHAT, params);
 	}
-#endif
 	chat->addText(line);
 #ifdef PORT_ME
 	if(noscroll) {
@@ -511,11 +521,11 @@ void HubFrame::addStatus(const tstring& aLine, bool inChat /* = true */) {
 
 	setStatus(STATUS_STATUS, line);
 
-#ifdef PORT_ME
 	while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
 		lastLinesList.erase(lastLinesList.begin());
 	lastLinesList.push_back(line);
 
+#ifdef PORT_ME
 	if (BOOLSETTING(BOLD_HUB)) {
 		setDirty();
 	}
@@ -593,29 +603,23 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 					message->setSelection(10, 10);
 					waitingForPW = true;
 				} else {
-#ifdef PORT_ME
-					LineDlg linePwd;
-					linePwd.title = CTSTRING(ENTER_PASSWORD);
-					linePwd.description = CTSTRING(ENTER_PASSWORD);
-					linePwd.password = true;
-					if(linePwd.DoModal(m_hWnd) == IDOK) {
-						client->setPassword(Text::fromT(linePwd.line));
-						client->password(Text::fromT(linePwd.line));
+					LineDlg linePwd(this, TSTRING(ENTER_PASSWORD), TSTRING(ENTER_PASSWORD), true);
+					if(linePwd.run() == IDOK) {
+						client->setPassword(Text::fromT(linePwd.getLine()));
+						client->password(Text::fromT(linePwd.getLine()));
 						waitingForPW = false;
 					} else {
 						client->disconnect(true);
 					}
-#endif
 				}
 			}
 		} else if(i->first == PRIVATE_MESSAGE) {
-#ifdef PORT_ME
 			PMTask& pm = *static_cast<PMTask*>(i->second);
 			if(pm.hub) {
 				if(BOOLSETTING(IGNORE_HUB_PMS)) {
 					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
 				} else if(BOOLSETTING(POPUP_HUB_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
-					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
+					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
 					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
 				}
@@ -623,32 +627,48 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 				if(BOOLSETTING(IGNORE_BOT_PMS)) {
 					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
 				} else if(BOOLSETTING(POPUP_BOT_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
-					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
+					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
 					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
 				}
 			} else {
 				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo) || pm.from == client->getMyIdentity().getUser()) {
-					PrivateFrame::gotMessage(pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
+					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
 					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
 				}
 			}
-#endif
 		}
 		delete i->second;
 	}
-#ifdef PORT_ME
 	if(resort && showUsers) {
-		users.resort();
+		users->resort();
 		resort = false;
 	}
 
+#ifdef PORT_ME
 	if(t.size() > 2) {
 		ctrlUsers.SetRedraw(TRUE);
 	}
 #endif
 	return 0;
+}
+
+HubFrame::UserInfo* HubFrame::findUser(const tstring& nick) {
+	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+		if(i->second->columns[COLUMN_NICK] == nick)
+			return i->second;
+	}
+	return 0;
+}
+
+const tstring& HubFrame::getNick(const User::Ptr& aUser) {
+	UserMapIter i = userMap.find(aUser);
+	if(i == userMap.end())
+		return Util::emptyStringT;
+
+	UserInfo* ui = i->second;
+	return ui->columns[COLUMN_NICK];
 }
 
 bool HubFrame::updateUser(const UserTask& u) {
@@ -1126,15 +1146,6 @@ struct CompareItems {
 	const int col;
 };
 
-const tstring& HubFrame::getNick(const User::Ptr& aUser) {
-	UserMapIter i = userMap.find(aUser);
-	if(i == userMap.end())
-		return Util::emptyStringT;
-
-	UserInfo* ui = i->second;
-	return ui->columns[COLUMN_NICK];
-}
-
 void HubFrame::addAsFavorite() {
 	FavoriteHubEntry* existingHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
 	if(!existingHub) {
@@ -1188,15 +1199,6 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	if(item->iItem != -1) {
 		ctrlUsers.getItemData(item->iItem)->getList();
-	}
-	return 0;
-}
-
-
-HubFrame::UserInfo* HubFrame::findUser(const tstring& nick) {
-	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
-		if(i->second->columns[COLUMN_NICK] == nick)
-			return i->second;
 	}
 	return 0;
 }

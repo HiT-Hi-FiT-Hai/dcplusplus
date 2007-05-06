@@ -46,6 +46,8 @@ protected:
 	bool charred(WidgetTextBoxPtr w, int c);
 	bool enter();
 
+	void splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt);
+	
 private:
 	enum {
 		IMAGE_USER = 0, IMAGE_OP
@@ -133,11 +135,14 @@ private:
 
 	Client* client;
 	tstring url;
+	tstring redirect;
 	bool timeStamps;
 	bool updateUsers;
 	bool waitingForPW;
 	bool resort;
 	bool showUsers;
+	bool showJoins;
+	bool favShowJoins;
 	
 	TaskQueue tasks;
 
@@ -146,13 +151,22 @@ private:
 	WidgetTextBoxPtr filter;
 	WidgetComboBoxPtr filterType;
 	WidgetStatusBarSectionsPtr status;
-
+	WidgetSplitterCool* splitter;
+	
 	typedef TypedListViewCtrl<HubFrame, UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 	
 	UserMap userMap;
 	
+	TStringList prevCommands;
+	tstring currentCommand;
+	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
+
+	enum { MAX_CLIENT_LINES = 5 };
+	TStringList lastLinesList;
+	tstring lastLines;
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -174,8 +188,10 @@ private:
 	void initSecond();
 	void eachSecond(const SmartWin::CommandPtr&);
 	
+	UserInfo* findUser(const tstring& nick);
 	bool updateUser(const UserTask& u);
 	void removeUser(const UserPtr& aUser);
+	const tstring& getNick(const User::Ptr& u);
 
 	void updateUserList(UserInfo* ui = NULL);
 
@@ -381,20 +397,12 @@ private:
 		clearTaskList();
 	}
 
-	tstring redirect;
-	bool showJoins;
-	bool favShowJoins;
 	tstring complete;
 	StringList tabCompleteNicks;
 	bool inTabComplete;
 
 	bool extraSort;
 
-	TStringList prevCommands;
-	tstring currentCommand;
-	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
-
-	const tstring& getNick(const User::Ptr& u);
 
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow clientContainer;
@@ -418,9 +426,6 @@ private:
 
 	StringMap ucLineParams;
 
-	enum { MAX_CLIENT_LINES = 5 };
-	TStringList lastLinesList;
-	tstring lastLines;
 	CToolTipCtrl ctrlLastLines;
 
 	static bool compareCharsNoCase(string::value_type a, string::value_type b) {
@@ -432,7 +437,6 @@ private:
 
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
-	UserInfo* findUser(const tstring& nick);
 
 	void addAsFavorite();
 	void removeFavoriteHub();
