@@ -79,8 +79,8 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FavoriteHubEntry() throw() : connect(false), encoding(Text::getSystemCharset()), bottom(0), top(0), left(0), right(0){ }
-	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), encoding(Text::getSystemCharset()), bottom(0), top(0), left(0), right(0){ }
+	FavoriteHubEntry() throw() : connect(false), encoding(Text::systemCharset), bottom(0), top(0), left(0), right(0){ }
+	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), encoding(Text::systemCharset), bottom(0), top(0), left(0), right(0){ }
 	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()),
 		password(rhs.getPassword()), connect(rhs.getConnect()), encoding(rhs.getEncoding()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), nick(rhs.nick){ }
 	~FavoriteHubEntry() throw() { }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(TEXT_H)
-#define TEXT_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef DCPLUSPLUS_CLIENT_TEXT_H
+#define DCPLUSPLUS_CLIENT_TEXT_H
 
 /**
  * Text handling routines for DC++. DC++ internally uses UTF-8 for
@@ -35,110 +31,94 @@
  * wstring - Wide string
  * tstring - GUI type string (acp string or wide string depending on build type)
  */
-class Text {
-public:
-	static void initialize();
+namespace Text {
+	extern const string utf8;
+	extern string systemCharset;
 
-	static string& acpToUtf8(const string& str, string& tmp) throw();
-	static string acpToUtf8(const string& str) throw() {
+	void initialize();
+
+	const string& acpToUtf8(const string& str, string& tmp) throw();
+	inline string acpToUtf8(const string& str) throw() {
 		string tmp;
 		return acpToUtf8(str, tmp);
 	}
 
-	static wstring& acpToWide(const string& str, wstring& tmp) throw();
-	static wstring acpToWide(const string& str) throw() {
+	const wstring& acpToWide(const string& str, wstring& tmp) throw();
+	inline wstring acpToWide(const string& str) throw() {
 		wstring tmp;
 		return acpToWide(str, tmp);
 	}
 
-	static string& utf8ToAcp(const string& str, string& tmp) throw();
-	static string utf8ToAcp(const string& str) throw() {
+	const string& utf8ToAcp(const string& str, string& tmp) throw();
+	inline string utf8ToAcp(const string& str) throw() {
 		string tmp;
 		return utf8ToAcp(str, tmp);
 	}
 
-	static wstring& utf8ToWide(const string& str, wstring& tmp) throw();
-	static wstring utf8ToWide(const string& str) throw() {
+	const wstring& utf8ToWide(const string& str, wstring& tmp) throw();
+	inline wstring utf8ToWide(const string& str) throw() {
 		wstring tmp;
 		return utf8ToWide(str, tmp);
 	}
 
-	static string& wideToAcp(const wstring& str, string& tmp) throw();
-	static string wideToAcp(const wstring& str) throw() {
+	const string& wideToAcp(const wstring& str, string& tmp) throw();
+	inline string wideToAcp(const wstring& str) throw() {
 		string tmp;
 		return wideToAcp(str, tmp);
 	}
-	static string& wideToUtf8(const wstring& str, string& tmp) throw();
-	static string wideToUtf8(const wstring& str) throw() {
+	
+	const string& wideToUtf8(const wstring& str, string& tmp) throw();
+	inline string wideToUtf8(const wstring& str) throw() {
 		string tmp;
 		return wideToUtf8(str, tmp);
 	}
 
-	static int utf8ToWc(const char* str, wchar_t& c);
-	static void wcToUtf8(wchar_t c, string& str);
+	int utf8ToWc(const char* str, wchar_t& c);
+	void wcToUtf8(wchar_t c, string& str);
 
 #ifdef UNICODE
-	static tstring toT(const string& str) throw() { return utf8ToWide(str); }
-	static tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
+	const tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
+	tstring toT(const string& str) throw() { return utf8ToWide(str); }
 
-	static string fromT(const tstring& str) throw() { return wideToUtf8(str); }
-	static string fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
+	const string& fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
+	string fromT(const tstring& str) throw() { return wideToUtf8(str); }
 #else
-	static tstring toT(const string& str) throw() { return utf8ToAcp(str); }
-	static tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToAcp(str, tmp); }
+	inline const tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToAcp(str, tmp); }
+	inline tstring toT(const string& str) throw() { return utf8ToAcp(str); }
 
-	static string fromT(const tstring& str) throw() { return acpToUtf8(str); }
-	static string& fromT(const tstring& str, string& tmp) throw() { return acpToUtf8(str, tmp); }
+	inline const string& fromT(const tstring& str, string& tmp) throw() { return acpToUtf8(str, tmp); }
+	inline string fromT(const tstring& str) throw() { return acpToUtf8(str); }
 #endif
 
-	static bool isAscii(const string& str) throw() {
-		return isAscii(str.c_str());
-	}
-	static bool isAscii(const char* str) throw() {
-		for(const uint8_t* p = (const uint8_t*)str; *p; ++p) {
-			if(*p & 0x80)
-				return false;
-		}
-		return true;
-	}
+	inline bool isAscii(const string& str) throw() { return isAscii(str.c_str()); }
+	bool isAscii(const char* str) throw();
+	
+	bool validateUtf8(const string& str) throw();
 
-	static bool validateUtf8(const string& str) throw();
+	inline char asciiToLower(char c) { dcassert((((uint8_t)c) & 0x80) == 0); return (char)tolower(c); }
 
-	static char asciiToLower(char c) { dcassert((((uint8_t)c) & 0x80) == 0); return (char)tolower(c); }
-
-	static wchar_t toLower(wchar_t c) throw();
-	static wstring toLower(const wstring& str) throw() {
+	wchar_t toLower(wchar_t c) throw();
+	
+	const wstring& toLower(const wstring& str, wstring& tmp) throw();
+	inline wstring toLower(const wstring& str) throw() {
 		wstring tmp;
 		return toLower(str, tmp);
 	}
-	static wstring& toLower(const wstring& str, wstring& tmp) throw();
-	static string toLower(const string& str) throw() {
+	
+	const string& toLower(const string& str, string& tmp) throw();
+	inline string toLower(const string& str) throw() {
 		string tmp;
 		return toLower(str, tmp);
 	}
-	static string& toLower(const string& str, string& tmp) throw();
 
-	static const string& convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw();
-	static string convert(const string& str, const string& fromCharset, const string& toCharset) throw() {
+	const string& convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw();
+	inline string convert(const string& str, const string& fromCharset, const string& toCharset) throw() {
 		string tmp;
 		return convert(str, tmp, fromCharset, toCharset);
 	}
 
-	static string toUtf8(const string& str, const string& charset = systemCharset) throw() {
-		string tmp;
-		return convert(str, tmp, charset, utf8);
-	}
-	static string fromUtf8(const string& str, const string& charset = systemCharset) throw() {
-		string tmp;
-		return convert(str, tmp, utf8, charset);
-	}
+	string toUtf8(const string& str, const string& charset = systemCharset) throw();
+	string fromUtf8(const string& str, const string& charset = systemCharset) throw();
+}
 
-	static const string& getSystemCharset() throw() { return systemCharset; }
-	static const string utf8;
-
-private:
-	static string systemCharset;
-
-};
-
-#endif // !defined(TEXT_H)
+#endif

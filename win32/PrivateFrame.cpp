@@ -27,6 +27,8 @@
 #include <client/User.h>
 #include <client/ResourceManager.h>
 
+#include <mmsystem.h>
+
 PrivateFrame::FrameMap PrivateFrame::frames;
 
 PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_) : 

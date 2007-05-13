@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@ void SSLSocket::accept(const Socket& listeningSocket) throw(SocketException) {
 		checkSSL(-1);
 
 	checkSSL(SSL_set_fd(ssl, sock));
+	/// @todo fix blocking if accept fails
 	checkSSL(SSL_accept(ssl));
 	dcdebug("Connected to SSL client using %s\n", SSL_get_cipher(ssl));
 }

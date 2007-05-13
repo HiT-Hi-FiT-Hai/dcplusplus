@@ -96,6 +96,7 @@ private:
 	void handlePublicHubs(WidgetMenuPtr menu, unsigned id);
 	void handleFavHubs(WidgetMenuPtr menu, unsigned id);
 	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
+	void handleAdlSearch(WidgetMenuPtr menu, unsigned id);
 	void handleNotepad(WidgetMenuPtr menu, unsigned id);
 	void handleQuickConnect(WidgetMenuPtr menu, unsigned id);
 	void handleQueue(WidgetMenuPtr menu, unsigned id);

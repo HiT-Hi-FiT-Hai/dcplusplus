@@ -28,6 +28,7 @@
 #include "PublicHubsFrm.h"
 #include "FavHubsFrame.h"
 #include "QueueFrame.h"
+#include "ADLSearchFrame.h"
 
 #include "LineDlg.h"
 
@@ -257,6 +258,7 @@ void MainWindow::initMenu() {
 	view->appendItem(IDC_PUBLIC_HUBS, TSTRING(MENU_PUBLIC_HUBS), &MainWindow::handlePublicHubs);
 	view->appendItem(IDC_FAVORITE_HUBS, TSTRING(MENU_FAVORITE_HUBS), &MainWindow::handleFavHubs);
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleSystemLog);
+	view->appendItem(IDC_ADL_SEARCH, TSTRING(MENU_ADL_SEARCH), &MainWindow::handleAdlSearch);
 	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleNotepad);
 	view->appendItem(IDC_QUEUE, TSTRING(MENU_DOWNLOAD_QUEUE), &MainWindow::handleQueue);
 	
@@ -353,6 +355,10 @@ void MainWindow::handleSystemLog(WidgetMenuPtr, unsigned) {
 
 void MainWindow::handleNotepad(WidgetMenuPtr, unsigned) {
 	NotepadFrame::openWindow(mdi);
+}
+
+void MainWindow::handleAdlSearch(WidgetMenuPtr, unsigned) {
+	ADLSearchFrame::openWindow(mdi);
 }
 
 void MainWindow::handleQueue(WidgetMenuPtr, unsigned) {

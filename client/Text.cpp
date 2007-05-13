@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #ifndef _WIN32
 #include <errno.h>
 #include <iconv.h>
+#include <langinfo.h>
 
 #ifndef ICONV_CONST
  #define ICONV_CONST
@@ -32,21 +33,35 @@
 
 #endif
 
-string Text::systemCharset;
-const string Text::utf8 = "UTF-8"; // optimization
+namespace Text {
 
-void Text::initialize() {
+const string utf8 = "utf-8"; // optimization
+string systemCharset;
+
+void initialize() {
 	setlocale(LC_ALL, "");
 
+#ifdef _WIN32
 	char *ctype = setlocale(LC_CTYPE, NULL);
 	if(ctype) {
 		systemCharset = string(ctype);
 	} else {
 		dcdebug("Unable to determine the program's locale");
- 	}
+	}
+#else
+	systemCharset = string(nl_langinfo(CODESET));
+#endif
 }
 
-int Text::utf8ToWc(const char* str, wchar_t& c) {
+bool isAscii(const char* str) throw() {
+	for(const uint8_t* p = (const uint8_t*)str; *p; ++p) {
+		if(*p & 0x80)
+			return false;
+	}
+	return true;
+}
+
+int utf8ToWc(const char* str, wchar_t& c) {
 	uint8_t c0 = (uint8_t)str[0];
 	if(c0 & 0x80) {									// 1xxx xxxx
 		if(c0 & 0x40) {								// 11xx xxxx
@@ -112,7 +127,7 @@ int Text::utf8ToWc(const char* str, wchar_t& c) {
 	dcassert(0);
 }
 
-void Text::wcToUtf8(wchar_t c, string& str) {
+void wcToUtf8(wchar_t c, string& str) {
 	if(c >= 0x0800) {
 		str += (char)(0x80 | 0x40 | 0x20 | (c >> 12));
 		str += (char)(0x80 | ((c >> 6) & 0x3f));
@@ -125,25 +140,24 @@ void Text::wcToUtf8(wchar_t c, string& str) {
 	}
 }
 
-string& Text::acpToUtf8(const string& str, string& tmp) throw() {
+const string& acpToUtf8(const string& str, string& tmp) throw() {
 	wstring wtmp;
 	return wideToUtf8(acpToWide(str, wtmp), tmp);
 }
 
-wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
+const wstring& acpToWide(const string& str, wstring& tmp) throw() {
 	if(str.empty())
-		return tmp;
+		return Util::emptyStringW;
 #ifdef _WIN32
 	int n = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), (int)str.length(), NULL, 0);
 	if(n == 0) {
-		return tmp;
+		return Util::emptyStringW;
 	}
 
 	tmp.resize(n);
 	n = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), (int)str.length(), &tmp[0], n);
 	if(n == 0) {
-		tmp.clear();
-		return tmp;
+		return Util::emptyStringW;
 	}
 	return tmp;
 #else
@@ -151,6 +165,8 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	wchar_t wc;
 	const char *src = str.c_str();
 	size_t n = str.length() + 1;
+	
+	tmp.clear();
 	tmp.reserve(n);
 
 	while(n > 0) {
@@ -171,48 +187,51 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 #endif
 }
 
-string& Text::wideToUtf8(const wstring& str, string& tgt) throw() {
+const string& wideToUtf8(const wstring& str, string& tgt) throw() {
+	if(str.empty()) {
+		return Util::emptyString;
+	}
+	
 	string::size_type n = str.length();
+	tgt.clear();
 	for(string::size_type i = 0; i < n; ++i) {
 		wcToUtf8(str[i], tgt);
 	}
 	return tgt;
 }
 
-string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
+const string& wideToAcp(const wstring& str, string& tmp) throw() {
 	if(str.empty())
-		return tmp;
+		return Util::emptyString;
 #ifdef _WIN32
 	int n = WideCharToMultiByte(CP_ACP, 0, str.c_str(), (int)str.length(), NULL, 0, NULL, NULL);
 	if(n == 0) {
-		return tmp;
+		return Util::emptyString;
 	}
 
 	tmp.resize(n);
 	n = WideCharToMultiByte(CP_ACP, 0, str.c_str(), (int)str.length(), &tmp[0], n, NULL, NULL);
 	if(n == 0) {
-		tmp.clear();
-		return tmp;
+		return Util::emptyString;
 	}
 	return tmp;
 #else
 	const wchar_t* src = str.c_str();
 	int n = wcsrtombs(NULL, &src, 0, NULL);
 	if(n < 1) {
-		return tmp;
+		return Util::emptyString;
 	}
 	src = str.c_str();
 	tmp.resize(n);
 	n = wcsrtombs(&tmp[0], &src, n, NULL);
 	if(n < 1) {
-		tmp.clear();
-		return tmp;
+		return Util::emptyString;
 	}
 	return tmp;
 #endif
 }
 
-bool Text::validateUtf8(const string& str) throw() {
+bool validateUtf8(const string& str) throw() {
 	string::size_type i = 0;
 	while(i < str.length()) {
 		wchar_t dummy = 0;
@@ -224,12 +243,12 @@ bool Text::validateUtf8(const string& str) throw() {
 	return true;
 }
 
-string& Text::utf8ToAcp(const string& str, string& tmp) throw() {
+const string& utf8ToAcp(const string& str, string& tmp) throw() {
 	wstring wtmp;
 	return wideToAcp(utf8ToWide(str, wtmp), tmp);
 }
 
-wstring& Text::utf8ToWide(const string& str, wstring& tgt) throw() {
+const wstring& utf8ToWide(const string& str, wstring& tgt) throw() {
 	tgt.reserve(str.length());
 	string::size_type n = str.length();
 	for(string::size_type i = 0; i < n; ) {
@@ -246,7 +265,7 @@ wstring& Text::utf8ToWide(const string& str, wstring& tgt) throw() {
 	return tgt;
 }
 
-wchar_t Text::toLower(wchar_t c) throw() {
+wchar_t toLower(wchar_t c) throw() {
 #ifdef _WIN32
 		return (wchar_t)CharLowerW((LPWSTR)c);
 #else
@@ -254,7 +273,10 @@ wchar_t Text::toLower(wchar_t c) throw() {
 #endif
 }
 
-wstring& Text::toLower(const wstring& str, wstring& tmp) throw() {
+const wstring& toLower(const wstring& str, wstring& tmp) throw() {
+	if(str.empty())
+		return Util::emptyStringW;
+	tmp.clear();
 	tmp.reserve(str.length());
 	wstring::const_iterator end = str.end();
 	for(wstring::const_iterator i = str.begin(); i != end; ++i) {
@@ -263,9 +285,9 @@ wstring& Text::toLower(const wstring& str, wstring& tmp) throw() {
 	return tmp;
 }
 
-string& Text::toLower(const string& str, string& tmp) throw() {
+const string& toLower(const string& str, string& tmp) throw() {
 	if(str.empty())
-		return tmp;
+		return Util::emptyString;
 	tmp.reserve(str.length());
 	const char* end = &str[0] + str.length();
 	for(const char* p = &str[0]; p < end;) {
@@ -282,15 +304,34 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 	return tmp;
 }
 
-const string& Text::convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw() {
-	if(str.empty() || Util::stricmp(fromCharset, toCharset) == 0)
-		return str;
-	if((fromCharset.empty() || fromCharset == systemCharset) && (toCharset == utf8 || toLower(toCharset) == "utf-8"))
+string toUtf8(const string& str, const string& toCharset) throw() {
+	string tmp;
+
+	if(toCharset == utf8 || toLower(toCharset, tmp) == utf8)
 		return acpToUtf8(str, tmp);
-	if((toCharset.empty() || toCharset == systemCharset) && (fromCharset == utf8 || toLower(fromCharset) == "utf-8"))
+	
+	return convert(str, tmp, utf8, toCharset);
+}
+
+string fromUtf8(const string& str, const string& fromCharset) throw() {
+	string tmp;
+
+	if(fromCharset == utf8 || toLower(fromCharset, tmp) == utf8)
 		return utf8ToAcp(str, tmp);
 	
+	return convert(str, tmp, fromCharset, utf8);
+}
+
+const string& convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw() {
+	if(str.empty() || Util::stricmp(fromCharset, toCharset) == 0)
+		return str;
+
 #ifdef _WIN32
+	if(toCharset == utf8 || toLower(toCharset, tmp) == utf8)
+		return acpToUtf8(str, tmp);
+	if(fromCharset == utf8 || toLower(fromCharset, tmp) == utf8)
+		return utf8ToAcp(str, tmp);
+
 	// We don't know how to convert arbitrary charsets
 	dcdebug("Unknown conversion from %s to %s\n", fromCharset.c_str(), toCharset.c_str());
 	return str;
@@ -299,7 +340,7 @@ const string& Text::convert(const string& str, string& tmp, const string& fromCh
 	// Initialize the converter
 	iconv_t cd = iconv_open(toCharset.c_str(), fromCharset.c_str());
 	if(cd == (iconv_t)-1)
-		return tmp = str;
+		return str;
 
 	size_t rv;
 	size_t len = str.length() * 2; // optimization
@@ -334,4 +375,5 @@ const string& Text::convert(const string& str, string& tmp, const string& fromCh
 	}
 	return tmp;
 #endif
- }
+}
+}

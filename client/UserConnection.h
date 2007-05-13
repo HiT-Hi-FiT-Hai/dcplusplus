@@ -330,7 +330,7 @@ private:
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection(bool secure_) throw() : encoding(Text::getSystemCharset()), state(STATE_UNCONNECTED),
+	UserConnection(bool secure_) throw() : encoding(Text::systemCharset), state(STATE_UNCONNECTED),
 		lastActivity(0), socket(0), secure(secure_), download(NULL) {
 	}
 

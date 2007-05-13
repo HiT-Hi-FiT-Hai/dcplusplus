@@ -16,21 +16,69 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * Automatic Directory Listing Search
- * Henrik Engstr�m, henrikengstrom on home point se
- */
+#ifndef DCPLUSPLUS_WIN32_ADL_SEARCH_FRAME_H
+#define DCPLUSPLUS_WIN32_ADL_SEARCH_FRAME_H
 
-#if !defined(ADL_SEARCH_FRAME_H)
-#define ADL_SEARCH_FRAME_H
+#include "StaticFrame.h"
+#include <client/ADLSearch.h>
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+class ADLSearchFrame : public StaticFrame<ADLSearchFrame> {
+public:
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::ADL_SEARCH;
 
-#include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
-#include "WinUtil.h"
+protected:
+	//typedef MDIChildFrame<ADLSearchFrame> Base;
+	friend class StaticFrame<ADLSearchFrame>;
+	friend class MDIChildFrame<ADLSearchFrame>;
+	
+	ADLSearchFrame(SmartWin::Widget* mdiParent);
+	virtual ~ADLSearchFrame();
+
+	void layout();
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+
+private:
+	enum {
+		COLUMN_FIRST,
+		COLUMN_ACTIVE_SEARCH_STRING = COLUMN_FIRST,
+		COLUMN_SOURCE_TYPE,
+		COLUMN_DEST_DIR,
+		COLUMN_MIN_FILE_SIZE,
+		COLUMN_MAX_FILE_SIZE,
+		COLUMN_LAST
+	};
+
+	static int columnSizes[COLUMN_LAST];
+	static int columnIndexes[COLUMN_LAST];
+
+	WidgetDataGridPtr items;
+	WidgetButtonPtr add;
+	WidgetButtonPtr remove;
+	WidgetButtonPtr properties;
+	WidgetButtonPtr up;
+	WidgetButtonPtr down;
+	WidgetButtonPtr help;
+	WidgetMenuPtr contextMenu;
+	
+	void handleAdd(WidgetButtonPtr);
+	void handleRemove(WidgetButtonPtr);
+	void handleProperties(WidgetButtonPtr);
+	void handleUp(WidgetButtonPtr);
+	void handleDown(WidgetButtonPtr);
+	void handleHelp(WidgetButtonPtr);
+//	void handleCheckBox(WidgetButtonPtr);
+
+	void popupNew(WidgetMenuPtr, unsigned);
+
+	void LoadAll();
+	void UpdateSearch(int index, BOOL doDelete);
+	
+	bool preClosing();
+//	virtual void on(FavoriteAdded, const FavoriteHubEntryPtr e) throw();
+//	virtual void on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw();
+};
+
+#ifdef PORT_ME
 
 #include "../client/ADLSearch.h"
 
@@ -141,4 +189,5 @@ private:
 	static int columnSizes[];
 };
 
+#endif 
 #endif // !defined(ADL_SEARCH_FRAME_H)

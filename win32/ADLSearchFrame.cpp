@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,186 +16,460 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * Automatic Directory Listing Search
- * Henrik Engstr�m, henrikengstrom at home se
- */
-
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "Resource.h"
-#include "../client/DCPlusPlus.h"
-#include "../client/Client.h"
+#include "resource.h"
+#include <client/DCPlusPlus.h>
+#include <client/Client.h>
 #include "ADLSearchFrame.h"
-#include "AdlsProperties.h"
+#include "ADLSProperties.h"
+#include <client/ResourceManager.h>
 
-int ADLSearchFrame::columnIndexes[] = {
-	COLUMN_ACTIVE_SEARCH_STRING,
-	COLUMN_SOURCE_TYPE,
-	COLUMN_DEST_DIR,
-	COLUMN_MIN_FILE_SIZE,
-	COLUMN_MAX_FILE_SIZE
-};
-int ADLSearchFrame::columnSizes[] = {
-	120,
-	90,
-	90,
-	90,
-	90
-};
-static ResourceManager::Strings columnNames[] = {
-	ResourceManager::ACTIVE_SEARCH_STRING,
-	ResourceManager::SOURCE_TYPE,
-	ResourceManager::DESTINATION,
-	ResourceManager::MIN_SIZE,
-	ResourceManager::MAX_SIZE,
+int ADLSearchFrame::columnIndexes[] = { COLUMN_ACTIVE_SEARCH_STRING, COLUMN_SOURCE_TYPE, COLUMN_DEST_DIR, COLUMN_MIN_FILE_SIZE, COLUMN_MAX_FILE_SIZE };
+int ADLSearchFrame::columnSizes[] = { 120, 90, 90, 90, 90 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::ACTIVE_SEARCH_STRING,
+	ResourceManager::SOURCE_TYPE, ResourceManager::DESTINATION, ResourceManager::MIN_SIZE, ResourceManager::MAX_SIZE,
 };
 
-// Frame creation
-LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+
+ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) : 
+	SmartWin::Widget(mdiParent),
+	add(0),
+	remove(0),
+	properties(0),
+	up(0),
+	down(0),
+	help(0)
 {
-	// Create status bar
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
-	int w[1] = { 0 };
-	ctrlStatus.SetParts(1, w);
-
-	// Create list control
-	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_ADLLIST);
-	ctrlList.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-
-	// Set background color
-	ctrlList.SetBkColor(WinUtil::bgColor);
-	ctrlList.SetTextBkColor(WinUtil::bgColor);
-	ctrlList.SetTextColor(WinUtil::textColor);
-
-	// Create listview columns
-	WinUtil::splitTokens(columnIndexes, SETTING(ADLSEARCHFRAME_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(ADLSEARCHFRAME_WIDTHS), COLUMN_LAST);
-	for(int j = 0; j < COLUMN_LAST; j++)
 	{
-		int fmt = LVCFMT_LEFT;
-		ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		WidgetDataGrid::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		items = createDataGrid(cs);
+	//	items->onClicked(&ADLSearchFrame::handleCheckBox);
+		add_widget(items);
+
+		items->setFullRowSelect(true); // should be in the style?
+
+		items->setCheckBoxes(true); // We need a onClicked, too
+		
+		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		items->setColumnOrder(WinUtil::splitTokens(SETTING(ADLSEARCHFRAME_ORDER), columnIndexes));
+		items->setColumnWidths(WinUtil::splitTokens(SETTING(ADLSEARCHFRAME_WIDTHS), columnSizes));
+
+		items->setBackgroundColor(WinUtil::bgColor);
+		items->setFont(WinUtil::font);
+#ifdef PORT_ME
+		ctrlList.SetTextBkColor(WinUtil::bgColor);
+#endif
+
 	}
-	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	
+	{
+		WidgetButton::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
+		
+		cs.caption = TSTRING(NEW);
+		add = createButton(cs);
+		add->onClicked(&ADLSearchFrame::handleAdd);
+		add_widget(add);
+		add->setFont(WinUtil::font);
+		
+		cs.caption = TSTRING(REMOVE);
+		remove = createButton(cs);
+		remove->onClicked(&ADLSearchFrame::handleRemove);
+		add_widget(remove);
+		remove->setFont(WinUtil::font);
+		
+		cs.caption = TSTRING(PROPERTIES);
+		properties = createButton(cs);
+		properties->onClicked(&ADLSearchFrame::handleProperties);
+		add_widget(properties);
+		properties->setFont(WinUtil::font);
+		
+		cs.caption = TSTRING(MOVE_UP);
+		up = createButton(cs);
+		up->onClicked(&ADLSearchFrame::handleUp);
+		add_widget(up);
+		up->setFont(WinUtil::font);
+		
+		cs.caption = TSTRING(MOVE_DOWN);
+		down = createButton(cs);
+		down->onClicked(&ADLSearchFrame::handleDown);
+		add_widget(down);
+		down->setFont(WinUtil::font);
 
-	// Create buttons
-	ctrlAdd.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_ADD);
-	ctrlAdd.SetWindowText(CTSTRING(NEW));
-	ctrlAdd.SetFont(WinUtil::font);
+		cs.caption = TSTRING(MENU_HELP);
+		help = createButton(cs);
+		help->onClicked(&ADLSearchFrame::handleHelp);
+		add_widget(help);
+		help->setFont(WinUtil::font);
+	}
+	{
+/*
+		contextMenu = createMenu();
+		
+		WidgetMenuPtr file = contextMenu->appendPopup(CSTRING(NEW));
 
-	ctrlEdit.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_EDIT);
-	ctrlEdit.SetWindowText(CTSTRING(PROPERTIES));
-	ctrlEdit.SetFont(WinUtil::font);
+		
+		file->appendItem(IDC_ADD, TSTRING(NEW), &ADLSearchFrame::popupNew);
+		contextMenu->attach(this);*
+	//	add_widget(file);
+	//	add_widget(contextMenu);
+		//contextMenu->setFont(WinUtil::font);
+	//	contextMenu->appendItem(1, TSTRING(NEW), &ADLSearchFrame::popupNew);
 
-	ctrlRemove.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_REMOVE);
-	ctrlRemove.SetWindowText(CTSTRING(REMOVE));
-	ctrlRemove.SetFont(WinUtil::font);
 
-	ctrlMoveUp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_MOVE_UP);
-	ctrlMoveUp.SetWindowText(CTSTRING(MOVE_UP));
-	ctrlMoveUp.SetFont(WinUtil::font);
+		//cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
+/*
+		//cs.caption = TSTRING(NEW);
+		add = createButton(cs);
+		add->onClicked(&ADLSearchFrame::handleAdd);
+		add_widget(add);
+		add->setFont(WinUtil::font);
+		*/
+#ifdef PORT_ME
+		
+		contextMenu.CreatePopupMenu();
+		contextMenu.AppendMenu(MF_STRING, IDC_ADD,    CTSTRING(NEW));
+		contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
+		contextMenu.AppendMenu(MF_STRING, IDC_EDIT,   CTSTRING(PROPERTIES));
+#endif
+	}
 
-	ctrlMoveDown.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_MOVE_DOWN);
-	ctrlMoveDown.SetWindowText(CTSTRING(MOVE_DOWN));
-	ctrlMoveDown.SetFont(WinUtil::font);
+	layout();
 
-	ctrlHelp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON , 0, IDC_HELP_FAQ);
-	ctrlHelp.SetWindowText(CTSTRING(MENU_HELP));
-	ctrlHelp.SetFont(WinUtil::font);
+	LoadAll();
+}
 
-	// Create context menu
-	contextMenu.CreatePopupMenu();
-	contextMenu.AppendMenu(MF_STRING, IDC_ADD,    CTSTRING(NEW));
-	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-	contextMenu.AppendMenu(MF_STRING, IDC_EDIT,   CTSTRING(PROPERTIES));
+ADLSearchFrame::~ADLSearchFrame() {
+	
+}
 
-	// Load all searches
+
+
+void ADLSearchFrame::layout() {
+	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	
+	/// @todo dynamic width
+	const int ybutton = add->getTextSize("A").y + 10;
+	const int xbutton = 90;
+	const int xborder = 10;
+	
+	SmartWin::Rectangle rb(r.getBottom(ybutton));
+	r.size.y -= ybutton;
+	items->setBounds(r);
+
+	rb.size.x = xbutton;
+	add->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	remove->setBounds(rb);
+
+	rb.pos.x += xbutton + xborder;
+	properties->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	up->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	down->setBounds(rb);
+	
+	rb.pos.x += xbutton + xborder;
+	help->setBounds(rb);
+}
+
+bool ADLSearchFrame::preClosing() {
+	
+
+	ADLSearchManager::getInstance()->Save();
+#ifdef PORT_ME
+		WinUtil::saveHeaderOrder(items, SettingsManager::ADLSEARCHFRAME_ORDER,
+			SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+#endif
+	return true;
+}
+
+void ADLSearchFrame::handleAdd(WidgetButtonPtr) {
+	ADLSearch search;
+#ifdef PORT_ME
+	ADLSProperties dlg(&search);
+	if(dlg.run == IDOK)
+	{
+		// Add new search to the end or if selected, just before
+		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+
+		int i = items->getSelectedRow();
+		if(i < 0)
+		{
+			// Add to end
+			collection.push_back(search);
+			i = collection.size() - 1;
+		}
+		else
+		{
+			// Add before selection
+			collection.insert(collection.begin() + i, search);
+		}
+
+		// Update list control
+		int j = i;
+		while(j < (int)collection.size())
+		{
+			UpdateSearch(j++);
+		}
+	}
+#endif
+}
+
+void ADLSearchFrame::handleRemove(WidgetButtonPtr) {
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+	int i;
+	while((i = items->getSelectedIndex()) >= 0)
+	{
+		collection.erase(collection.begin() + i);
+		items->removeRow(i);
+	}
+}
+
+void ADLSearchFrame::handleProperties(WidgetButtonPtr) {
+	// Get selection info
+	int i = items->getSelectedIndex();
+	if(i < 0)
+	{
+		// Nothing selected
+		return;
+	}
+
+	// Edit existing
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+	ADLSearch search = collection[i];
+
+	// Invoke dialog with selected search
+#ifdef PORT_ME
+	ADLSProperties dlg(&search);
+	if(dlg.run() == IDOK)
+	{
+		// Update search collection
+		collection[i] = search;
+
+		// Update list control
+		UpdateSearch(i);
+	}
+#endif
+}
+
+void ADLSearchFrame::handleUp(WidgetButtonPtr) {
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+
+	// Get selection
+	vector<unsigned int> sel = items->getSelectedRows();
+	
+	if(sel.size() < 1)
+	{
+		return;
+	}
+
+	// Find out where to insert
+	int i0 = sel[0];
+	if(i0 > 0)
+	{
+		i0 = i0 - 1;
+	}
+
+	// Backup selected searches
+	ADLSearchManager::SearchCollection backup;
+	int i;
+	for(i = 0; i < (int)sel.size(); ++i)
+	{
+		backup.push_back(collection[sel[i]]);
+	}
+
+	// Erase selected searches
+	for(i = sel.size() - 1; i >= 0; --i)
+	{
+		collection.erase(collection.begin() + sel[i]);
+	}
+
+	// Insert (grouped together)
+	for(i = 0; i < (int)sel.size(); ++i)
+	{
+		collection.insert(collection.begin() + i0 + i, backup[i]);
+	}
+
+	// Update UI
 	LoadAll();
 
-	bHandled = FALSE;
-	return TRUE;
-}
-
-// Close window
-LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	ADLSearchManager::getInstance()->Save();
-
-	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER,
-		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-
-	bHandled = FALSE;
-	return 0;
-}
-
-// Recalculate frame control layout
-void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
-{
-	RECT rect;
-	GetClientRect(&rect);
-
-	// Position bars and offset their dimensions
-	UpdateBarsPosition(rect, bResizeBars);
-	if(ctrlStatus.IsWindow())
+	// Restore selection
+	for(i = 0; i < (int)sel.size(); ++i)
 	{
-		CRect sr;
-		int w[1];
-		ctrlStatus.GetClientRect(sr);
-		w[0] = sr.Width() - 16;
-		ctrlStatus.SetParts(1, w);
+		items->setSelectedIndex(i0+i);
 	}
 
-	// Position list control
-	CRect rc = rect;
-	rc.top += 2;
-	rc.bottom -= 28;
-	ctrlList.MoveWindow(rc);
-
-	// Position buttons
-	const long bwidth = 90;
-	const long bspace = 10;
-	rc = rect;
-	rc.bottom -= 2;
-	rc.top = rc.bottom - 22;
-
-	rc.left = 2;
-	rc.right = rc.left + bwidth;
-	ctrlAdd.MoveWindow(rc);
-
-	rc.left += bwidth + 2;
-	rc.right = rc.left + bwidth;
-	ctrlEdit.MoveWindow(rc);
-
-	rc.left += bwidth + 2;
-	rc.right = rc.left + bwidth;
-	ctrlRemove.MoveWindow(rc);
-
-	rc.left += bspace;
-
-	rc.left += bwidth + 2;
-	rc.right = rc.left + bwidth;
-	ctrlMoveUp.MoveWindow(rc);
-
-	rc.left += bwidth + 2;
-	rc.right = rc.left + bwidth;
-	ctrlMoveDown.MoveWindow(rc);
-
-	rc.left += bspace;
-
-	rc.left += bwidth + 2;
-	rc.right = rc.left + bwidth;
-	ctrlHelp.MoveWindow(rc);
 
 }
+
+void ADLSearchFrame::handleDown(WidgetButtonPtr) {
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+
+	// Get selection
+	vector<unsigned int> sel = items->getSelectedRows();
+	
+	if(sel.size() < 1)
+	{
+		return;
+	}
+
+	// Find out where to insert
+	int i0 = sel[sel.size() - 1] + 2;
+	if(i0 > (int)collection.size())
+	{
+		i0 = collection.size();
+	}
+
+	// Backup selected searches
+	ADLSearchManager::SearchCollection backup;
+	int i;
+	for(i = 0; i < (int)sel.size(); ++i)
+	{
+		backup.push_back(collection[sel[i]]);
+	}
+
+	// Erase selected searches
+	
+	for(i = sel.size() - 1; i >= 0; --i)
+	{
+		collection.erase(collection.begin() + sel[i]);
+		if(i < i0)
+		{
+			i0--;
+		}
+	}
+
+	// Insert (grouped together)
+	for(i = 0; i < (int)sel.size(); ++i)
+	{
+		collection.insert(collection.begin() + i0 + i, backup[i]);
+	}
+
+	// Update UI
+	LoadAll();
+
+	// Restore selection
+	for(i = 0; i < (int)sel.size(); ++i)
+	{
+		items->setSelectedIndex(i0+i);
+	}
+}
+
+void ADLSearchFrame::handleHelp(WidgetButtonPtr) {
+#ifdef PORT_ME
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
+#endif
+}
+/*
+void ADLSearchFrame::handleCheckBox(WidgetButtonPtr) {
+	//int row = items->getSelectedIndex();
+	//items->setRowChecked(row, !items->getIsRowChecked(row));
+
+
+}
+*/
+void ADLSearchFrame::LoadAll()
+{
+	// Clear current contents
+	items->removeAllRows();
+
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+
+	// Load all searches
+	for(unsigned long l = 0; l < collection.size(); l++)
+	{
+		UpdateSearch(l, FALSE);
+	}
+
+	
+}
+
+void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete = false)
+{
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+
+	// Check args
+	if(index >= (int)collection.size())
+	{
+		return;
+	}
+	ADLSearch& search = collection[index];
+
+	// Delete
+	if(doDelete)
+	{
+		items->deleteColumn(index);
+	}
+
+	// Generate values
+	TStringList line;
+	tstring fs;
+	line.push_back(Text::toT(search.searchString));
+	line.push_back(search.SourceTypeToDisplayString(search.sourceType));
+	line.push_back(Text::toT(search.destDir));
+
+	fs = _T("");
+	if(search.minFileSize >= 0)
+	{
+		fs = Text::toT(Util::toString(search.minFileSize));
+		fs += _T(" ");
+		fs += search.SizeTypeToDisplayString(search.typeFileSize);
+	}
+	line.push_back(fs);
+
+	fs = _T("");
+	if(search.maxFileSize >= 0)
+	{
+		fs = Text::toT(Util::toString(search.maxFileSize));
+		fs += _T(" ");
+		fs += search.SizeTypeToDisplayString(search.typeFileSize);
+	}
+	line.push_back(fs);
+
+	// Insert
+	items->insertRow(line);
+	items->setRowChecked(index, search.isActive);
+}
+
+void ADLSearchFrame::popupNew(WidgetMenuPtr, unsigned) {
+	ADLSearch search;
+#ifdef PORT_ME
+	ADLSProperties dlg(&search);
+	if(dlg.run == IDOK)
+	{
+		// Add new search to the end or if selected, just before
+		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+
+		int i = items->getSelectedRow();
+		if(i < 0)
+		{
+			// Add to end
+			collection.push_back(search);
+			i = collection.size() - 1;
+		}
+		else
+		{
+			// Add before selection
+			collection.insert(collection.begin() + i, search);
+		}
+
+		// Update list control
+		int j = i;
+		while(j < (int)collection.size())
+		{
+			UpdateSearch(j++);
+		}
+	}
+#endif
+}
+
+#ifdef PORT_ME
 
 // Keyboard shortcuts
 LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
@@ -236,89 +510,7 @@ LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	return FALSE;
 }
 
-// Add new search
-LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	// Invoke edit dialog with fresh search
-	ADLSearch search;
-	ADLSProperties dlg(&search);
-	if(dlg.DoModal((HWND)*this) == IDOK)
-	{
-		// Add new search to the end or if selected, just before
-		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-
-		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
-		if(i < 0)
-		{
-			// Add to end
-			collection.push_back(search);
-			i = collection.size() - 1;
-		}
-		else
-		{
-			// Add before selection
-			collection.insert(collection.begin() + i, search);
-		}
-
-		// Update list control
-		int j = i;
-		while(j < (int)collection.size())
-		{
-			UpdateSearch(j++);
-		}
-		ctrlList.EnsureVisible(i, FALSE);
-	}
-
-	return 0;
-}
-
-// Edit existing search
-LRESULT ADLSearchFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	// Get selection info
-	int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
-	if(i < 0)
-	{
-		// Nothing selected
-		return 0;
-	}
-
-	// Edit existing
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-	ADLSearch search = collection[i];
-
-	// Invoke dialog with selected search
-	ADLSProperties dlg(&search);
-	if(dlg.DoModal((HWND)*this) == IDOK)
-	{
-		// Update search collection
-		collection[i] = search;
-
-		// Update list control
-		UpdateSearch(i);
-	}
-
-	return 0;
-}
-
-// Remove searches
-LRESULT ADLSearchFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Loop over all selected items
-	int i;
-	while((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) >= 0)
-	{
-		collection.erase(collection.begin() + i);
-		ctrlList.DeleteItem(i);
-	}
-	return 0;
-}
-
 // Help
-
 LRESULT ADLSearchFrame::onHelpButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
 	return 0;
@@ -327,121 +519,6 @@ LRESULT ADLSearchFrame::onHelpButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 LRESULT ADLSearchFrame::onHelpKey(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
-	return 0;
-}
-
-// Move selected entries up one step
-LRESULT ADLSearchFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Get selection
-	vector<int> sel;
-	int i = -1;
-	while((i = ctrlList.GetNextItem(i, LVNI_SELECTED)) >= 0)
-	{
-		sel.push_back(i);
-	}
-	if(sel.size() < 1)
-	{
-		return 0;
-	}
-
-	// Find out where to insert
-	int i0 = sel[0];
-	if(i0 > 0)
-	{
-		i0 = i0 - 1;
-	}
-
-	// Backup selected searches
-	ADLSearchManager::SearchCollection backup;
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		backup.push_back(collection[sel[i]]);
-	}
-
-	// Erase selected searches
-	for(i = sel.size() - 1; i >= 0; --i)
-	{
-		collection.erase(collection.begin() + sel[i]);
-	}
-
-	// Insert (grouped together)
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		collection.insert(collection.begin() + i0 + i, backup[i]);
-	}
-
-	// Update UI
-	LoadAll();
-
-	// Restore selection
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		ctrlList.SetItemState(i0 + i, LVNI_SELECTED, LVNI_SELECTED);
-	}
-
-	return 0;
-}
-
-// Move selected entries down one step
-LRESULT ADLSearchFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Get selection
-	vector<int> sel;
-	int i = -1;
-	while((i = ctrlList.GetNextItem(i, LVNI_SELECTED)) >= 0)
-	{
-		sel.push_back(i);
-	}
-	if(sel.size() < 1)
-	{
-		return 0;
-	}
-
-	// Find out where to insert
-	int i0 = sel[sel.size() - 1] + 2;
-	if(i0 > (int)collection.size())
-	{
-		i0 = collection.size();
-	}
-
-	// Backup selected searches
-	ADLSearchManager::SearchCollection backup;
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		backup.push_back(collection[sel[i]]);
-	}
-
-	// Erase selected searches
-	for(i = sel.size() - 1; i >= 0; --i)
-	{
-		collection.erase(collection.begin() + sel[i]);
-		if(i < i0)
-		{
-			i0--;
-		}
-	}
-
-	// Insert (grouped together)
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		collection.insert(collection.begin() + i0 + i, backup[i]);
-	}
-
-	// Update UI
-	LoadAll();
-
-	// Restore selection
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		ctrlList.SetItemState(i0 + i, LVNI_SELECTED, LVNI_SELECTED);
-	}
-	ctrlList.EnsureVisible(i0, FALSE);
-
 	return 0;
 }
 
@@ -481,69 +558,4 @@ LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 
 	return 0;
 }
-
-// Load all searches from manager
-void ADLSearchFrame::LoadAll()
-{
-	// Clear current contents
-	ctrlList.DeleteAllItems();
-
-	// Load all searches
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-	for(unsigned long l = 0; l < collection.size(); l++)
-	{
-		UpdateSearch(l, FALSE);
-	}
-}
-
-// Update a specific search item
-void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
-{
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Check args
-	if(index >= (int)collection.size())
-	{
-		return;
-	}
-	ADLSearch& search = collection[index];
-
-	// Delete from list control
-	if(doDelete)
-	{
-		ctrlList.DeleteItem(index);
-	}
-
-	// Generate values
-	TStringList line;
-	tstring fs;
-	line.push_back(Text::toT(search.searchString));
-	line.push_back(search.SourceTypeToDisplayString(search.sourceType));
-	line.push_back(Text::toT(search.destDir));
-
-	fs = _T("");
-	if(search.minFileSize >= 0)
-	{
-		fs = Text::toT(Util::toString(search.minFileSize));
-		fs += _T(" ");
-		fs += search.SizeTypeToDisplayString(search.typeFileSize);
-	}
-	line.push_back(fs);
-
-	fs = _T("");
-	if(search.maxFileSize >= 0)
-	{
-		fs = Text::toT(Util::toString(search.maxFileSize));
-		fs += _T(" ");
-		fs += search.SizeTypeToDisplayString(search.typeFileSize);
-	}
-	line.push_back(fs);
-
-	// Insert in list control
-	ctrlList.insert(index, line);
-
-	// Update 'Active' check box
-	ctrlList.SetCheckState(index, search.isActive);
-}
-
 #endif

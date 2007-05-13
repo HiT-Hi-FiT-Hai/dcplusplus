@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
+#ifdef PORT_ME
 #if !defined(ADLS_PROPERTIES_H)
 #define ADLS_PROPERTIES_H
 
@@ -68,3 +68,4 @@ private:
 };
 
 #endif // !defined(ADLS_PROPERTIES_H)
+#endif
