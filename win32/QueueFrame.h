@@ -197,8 +197,7 @@ private:
 	typedef WidgetFiles* WidgetFilesPtr;
 	
 	WidgetFilesPtr files;
-
-	WidgetSplitterCool* splitter;
+	WidgetSplitterCoolPtr splitter;
 	
 	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,39 +16,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(DIRECTORY_LISTING_FRM_H)
-#define DIRECTORY_LISTING_FRM_H
+#ifndef DCPLUSPLUS_WIN32_DIRECTORY_LISTING_FRAME_H
+#define DCPLUSPLUS_WIN32_DIRECTORY_LISTING_FRAME_H
 
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
-
-#include "../client/User.h"
-#include "../client/FastAlloc.h"
-
-#include "FlatTabCtrl.h"
+#include "MDIChildFrame.h"
 #include "TypedListViewCtrl.h"
-#include "WinUtil.h"
-#include "UCHandler.h"
 
-#include "../client/DirectoryListing.h"
-#include "../client/StringSearch.h"
-#include "../client/FavoriteManager.h"
+#include <client/forward.h>
+#include <client/FastAlloc.h>
+#include <client/DirectoryListing.h>
+#include <client/User.h>
 
-#define STATUS_MESSAGE_MAP 9
-#define CONTROL_MESSAGE_MAP 10
-class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>,
-	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
-
-{
+class DirectoryListingFrame : public MDIChildFrame<DirectoryListingFrame> {
 public:
-	static void openWindow(const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed);
-	static void openWindow(const User::Ptr& aUser, const string& txt, int64_t aSpeed);
-	static void closeAll();
+	static void openWindow(SmartWin::Widget* mdiParent, const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed);
+	static void openWindow(SmartWin::Widget* mdiParent, const User::Ptr& aUser, const string& txt, int64_t aSpeed);
 
-	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
-	typedef UCHandler<DirectoryListingFrame> ucBase;
-
+protected:
+	typedef MDIChildFrame<DirectoryListingFrame> Base;
+	friend class MDIChildFrame<DirectoryListingFrame>;
+	
+	void layout();
+	void postClosing();
+	
+	void splitterMoved(WidgetSplitterCoolPtr, const SmartWin::Point& pt);
+	
+private:
 	enum {
 		COLUMN_FILENAME,
 		COLUMN_TYPE,
@@ -58,7 +51,7 @@ public:
 		COLUMN_LAST
 	};
 
-	enum {
+	enum Status {
 		STATUS_TEXT,
 		STATUS_SPEED,
 		STATUS_TOTAL_FILES,
@@ -72,12 +65,136 @@ public:
 		STATUS_DUMMY,
 		STATUS_LAST
 	};
+	unsigned statusSizes[STATUS_LAST];
 
-	DirectoryListingFrame(const User::Ptr& aUser, int64_t aSpeed);
-	virtual ~DirectoryListingFrame() {
-		dcassert(lists.find(dl->getUser()) != lists.end());
-		lists.erase(dl->getUser());
-	}
+	class ItemInfo : public FastAlloc<ItemInfo> {
+	public:
+		enum ItemType {
+			FILE,
+			DIRECTORY
+		} type;
+
+		union {
+			DirectoryListing::File* file;
+			DirectoryListing::Directory* dir;
+		};
+
+		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) {
+			columns[COLUMN_FILENAME] = Text::toT(f->getName());
+			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
+			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
+				columns[COLUMN_TYPE].erase(0, 1);
+
+			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(f->getSize()));
+			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
+			columns[COLUMN_TTH] = Text::toT(f->getTTH().toBase32());
+		}
+		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) {
+			columns[COLUMN_FILENAME] = Text::toT(d->getName());			
+			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(d->getTotalSize()));
+			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
+		}
+
+		const tstring& getText(int col) {
+			return columns[col];
+		}
+
+		struct TotalSize {
+			TotalSize() : total(0) { }
+			void operator()(ItemInfo* a) { total += a->type == DIRECTORY ? a->dir->getTotalSize() : a->file->getSize(); }
+			int64_t total;
+		};
+
+		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
+			if(a->type == DIRECTORY) {
+				if(b->type == DIRECTORY) {
+					switch(col) {
+					case COLUMN_EXACTSIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
+					case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
+					default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+					}
+				} else {
+					return -1;
+				}
+			} else if(b->type == DIRECTORY) {
+				return 1;
+			} else {
+				switch(col) {
+				case COLUMN_EXACTSIZE: return compare(a->file->getSize(), b->file->getSize());
+				case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
+				default: return lstrcmp(a->columns[col].c_str(), b->columns[col].c_str());
+				}
+			}
+		}
+
+	private:
+		tstring columns[COLUMN_LAST];
+	};
+	
+	WidgetStatusBarSectionsPtr status;
+	WidgetTreeViewPtr dirs;
+	typedef TypedListViewCtrl<DirectoryListingFrame, ItemInfo> WidgetFiles;
+	typedef WidgetFiles* WidgetFilesPtr;
+	
+	WidgetFilesPtr files;
+	WidgetSplitterCoolPtr splitter;
+
+	WidgetButtonPtr find;
+	WidgetButtonPtr findNext;
+	WidgetButtonPtr listDiff;
+	WidgetButtonPtr matchQueue;
+
+	int64_t speed;		/**< Speed at which this file list was downloaded */
+
+	std::auto_ptr<DirectoryListing> dl;
+	
+	std::string error;
+	
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
+
+	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
+	typedef UserMap::iterator UserIter;
+
+	static UserMap lists;
+	
+	DirectoryListingFrame(SmartWin::Widget* mdiParent, const User::Ptr& aUser, int64_t aSpeed);
+	virtual ~DirectoryListingFrame();
+
+	void handleFind(WidgetButtonPtr);
+	void handleFindNext(WidgetButtonPtr);
+	void handleListDiff(WidgetButtonPtr);
+	void handleMatchQueue(WidgetButtonPtr);
+
+	void loadFile(const tstring& name, const tstring& dir);
+	void loadXML(const string& txt);
+	void refreshTree(const tstring& root);
+	
+	void initStatus();
+	void setStatus(Status s, const tstring& text);
+};
+
+
+#ifdef PORT_ME
+
+#include "FlatTabCtrl.h"
+#include "WinUtil.h"
+#include "UCHandler.h"
+
+#include "../client/StringSearch.h"
+#include "../client/FavoriteManager.h"
+
+#define STATUS_MESSAGE_MAP 9
+#define CONTROL_MESSAGE_MAP 10
+class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>,
+	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
+
+{
+public:
+	static void closeAll();
+
+	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
+	typedef UCHandler<DirectoryListingFrame> ucBase;
 
 
 	DECLARE_FRAME_WND_CLASS(_T("DirectoryListingFrame"), IDR_DIRECTORY)
@@ -144,9 +261,6 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void findFile(bool findNext);
 	void runUserCommand(UserCommand& uc);
-	void loadFile(const tstring& name, const tstring& dir);
-	void loadXML(const string& txt);
-	void refreshTree(const tstring& root);
 
 	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
 	void selectItem(const tstring& name);
@@ -158,15 +272,6 @@ public:
 
 	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
 		ctrlList.SetFocus();
-		return 0;
-	}
-
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		ctrlList.SetRedraw(FALSE);
-		clearList();
-		frames.erase(m_hWnd);
-		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::DIRECTORLISTINGFRAME_ORDER, SettingsManager::DIRECTORLISTINGFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-		bHandled = FALSE;
 		return 0;
 	}
 
@@ -189,24 +294,6 @@ public:
 		ctrlList.DeleteAllItems();
 	}
 
-	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		searching = true;
-		findFile(false);
-		searching = false;
-		updateStatus();
-		return 0;
-	}
-	LRESULT onNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		searching = true;
-		findFile(true);
-		searching = false;
-		updateStatus();
-		return 0;
-	}
-
-	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onListDiff(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -215,15 +302,6 @@ public:
 			onTab();
 		}
 		return 0;
-	}
-
-	void onTab() {
-		HWND focus = ::GetFocus();
-		if(focus == ctrlTree.m_hWnd) {
-			ctrlList.SetFocus();
-		} else if(focus == ctrlList.m_hWnd) {
-			ctrlTree.SetFocus();
-		}
 	}
 
 private:
@@ -235,70 +313,6 @@ private:
 	void up();
 	void back();
 	void forward();
-
-	class ItemInfo : public FastAlloc<ItemInfo> {
-	public:
-		enum ItemType {
-			FILE,
-			DIRECTORY
-		} type;
-
-		union {
-			DirectoryListing::File* file;
-			DirectoryListing::Directory* dir;
-		};
-
-		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) {
-			columns[COLUMN_FILENAME] = Text::toT(f->getName());
-			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
-			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
-				columns[COLUMN_TYPE].erase(0, 1);
-
-			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(f->getSize()));
-			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
-			columns[COLUMN_TTH] = Text::toT(f->getTTH().toBase32());
-		}
-		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) {
-			columns[COLUMN_FILENAME] = Text::toT(d->getName());			
-			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(d->getTotalSize()));
-			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
-		}
-
-		const tstring& getText(int col) {
-			return columns[col];
-		}
-
-		struct TotalSize {
-			TotalSize() : total(0) { }
-			void operator()(ItemInfo* a) { total += a->type == DIRECTORY ? a->dir->getTotalSize() : a->file->getSize(); }
-			int64_t total;
-		};
-
-		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
-			if(a->type == DIRECTORY) {
-				if(b->type == DIRECTORY) {
-					switch(col) {
-					case COLUMN_EXACTSIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
-					case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
-					default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
-					}
-				} else {
-					return -1;
-				}
-			} else if(b->type == DIRECTORY) {
-				return 1;
-			} else {
-				switch(col) {
-				case COLUMN_EXACTSIZE: return compare(a->file->getSize(), b->file->getSize());
-				case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
-				default: return lstrcmp(a->columns[col].c_str(), b->columns[col].c_str());
-				}
-			}
-		}
-
-	private:
-		tstring columns[COLUMN_LAST];
-	};
 
 	CMenu targetMenu;
 	CMenu targetDirMenu;
@@ -312,15 +326,7 @@ private:
 
 	deque<string> history;
 	size_t historyIndex;
-
-	CTreeViewCtrl ctrlTree;
-	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;
-	CStatusBarCtrl ctrlStatus;
 	HTREEITEM treeRoot;
-
-	CButton ctrlFind, ctrlFindNext;
-	CButton ctrlListDiff;
-	CButton ctrlMatchQueue;
 
 	string findStr;
 	tstring error;
@@ -328,31 +334,12 @@ private:
 
 	int skipHits;
 
-	size_t files;
-	int64_t speed;		/**< Speed at which this file list was downloaded */
-
 	bool updating;
 	bool searching;
 
-	int statusSizes[10];
-
-	auto_ptr<DirectoryListing> dl;
-
 	StringMap ucLineParams;
 
-	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
-	typedef UserMap::iterator UserIter;
-
-	static UserMap lists;
-
-	static int columnIndexes[COLUMN_LAST];
-	static int columnSizes[COLUMN_LAST];
-
-	typedef map< HWND , DirectoryListingFrame* > FrameMap;
-	typedef pair< HWND , DirectoryListingFrame* > FramePair;
-	typedef FrameMap::iterator FrameIter;
-
-	static FrameMap frames;
 };
 
 #endif // !defined(DIRECTORY_LISTING_FRM_H)
+#endif
