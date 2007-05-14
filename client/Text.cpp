@@ -304,22 +304,28 @@ const string& toLower(const string& str, string& tmp) throw() {
 	return tmp;
 }
 
-string toUtf8(const string& str, const string& toCharset) throw() {
-	string tmp;
-
-	if(toCharset == utf8 || toLower(toCharset, tmp) == utf8)
-		return acpToUtf8(str, tmp);
+const string& toUtf8(const string& str, const string& fromCharset, string& tmp) throw() {
+	if(str.empty() || fromCharset == utf8 || toLower(fromCharset, tmp) == utf8) {
+		return str;
+	}
 	
-	return convert(str, tmp, utf8, toCharset);
+#ifdef _WIN32
+	return acpToUtf8(str, tmp);
+#else
+	return convert(str, tmp, fromCharset, utf8);
+#endif
 }
 
-string fromUtf8(const string& str, const string& fromCharset) throw() {
-	string tmp;
-
-	if(fromCharset == utf8 || toLower(fromCharset, tmp) == utf8)
-		return utf8ToAcp(str, tmp);
+const string& fromUtf8(const string& str, const string& toCharset, string& tmp) throw() {
+	if(str.empty() || toCharset == utf8 || toLower(toCharset, tmp) == utf8) {
+		return str;
+	}
 	
-	return convert(str, tmp, fromCharset, utf8);
+#ifdef _WIN32
+	return utf8ToAcp(str, tmp);
+#else
+	return convert(str, tmp, utf8, toCharset);
+#endif
 }
 
 const string& convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw() {

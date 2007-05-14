@@ -117,8 +117,17 @@ namespace Text {
 		return convert(str, tmp, fromCharset, toCharset);
 	}
 
-	string toUtf8(const string& str, const string& charset = systemCharset) throw();
-	string fromUtf8(const string& str, const string& charset = systemCharset) throw();
+	const string& toUtf8(const string& str, const string& fromCharset, string& tmp) throw();
+	inline string toUtf8(const string& str, const string& fromCharset = systemCharset) {
+		string tmp;
+		return toUtf8(str, fromCharset, tmp);
+	}
+	
+	const string& fromUtf8(const string& str, const string& toCharset, string& tmp) throw();
+	inline string fromUtf8(const string& str, const string& toCharset = systemCharset) throw() {
+		string tmp;
+		return fromUtf8(str, toCharset, tmp);
+	}
 }
 
 #endif
