@@ -29,8 +29,8 @@
 #ifndef BasicTypes_h
 #define BasicTypes_h
 
-#include <string>
 #include "WindowsHeaders.h"
+#include <string>
 #include "../SmartUtil/tstring.h"
 
 namespace SmartWin

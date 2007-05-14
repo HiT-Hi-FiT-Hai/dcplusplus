@@ -47,7 +47,7 @@ public:
 	/** Basically just maps to the defines from winuser.h which is prefixed with CF_
 	  * in front of the name
 	  */
-	typedef enum ClipBoardFormat
+	enum ClipBoardFormat
 	{ TEXT = CF_TEXT, BITMAP = CF_BITMAP, PALETTE = CF_PALETTE, WAVE = CF_WAVE, UNICODETEXT = CF_UNICODETEXT
 	};
 

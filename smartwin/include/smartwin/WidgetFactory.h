@@ -97,28 +97,28 @@ class WidgetFactory
 {
 public:
 	/// MessageBox class and object type.
-	typedef WidgetMessageBox< SmartWin::Widget > WidgetMessageBox;
+	typedef SmartWin::WidgetMessageBox< SmartWin::Widget > WidgetMessageBox;
 
 	/// DataGrid class type.
-	typedef WidgetDataGrid< EventHandlerClass, MessageMapPolicy > WidgetDataGrid;
+	typedef SmartWin::WidgetDataGrid< EventHandlerClass, MessageMapPolicy > WidgetDataGrid;
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
 
 	/// TreeView class type.
-	typedef WidgetTreeView< EventHandlerClass, MessageMapPolicy > WidgetTreeView;
+	typedef SmartWin::WidgetTreeView< EventHandlerClass, MessageMapPolicy > WidgetTreeView;
 
 	/// TreeView object type.
 	typedef typename WidgetTreeView::ObjectType WidgetTreeViewPtr;
 
 	/// TextBox class type.
-	typedef WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
+	typedef SmartWin::WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
 
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
 	/// StatusBar class type.
-	typedef WidgetStatusBar< EventHandlerClass, MessageMapPolicy > WidgetStatusBar;
+	typedef SmartWin::WidgetStatusBar< EventHandlerClass, MessageMapPolicy > WidgetStatusBar;
 
 	/// StatusBar object type.
 	typedef typename WidgetStatusBar::ObjectType WidgetStatusBarPtr;
@@ -130,85 +130,85 @@ public:
 	typedef typename WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
 
 	/// Button class type.
-	typedef WidgetButton< EventHandlerClass, MessageMapPolicy > WidgetButton;
+	typedef SmartWin::WidgetButton< EventHandlerClass, MessageMapPolicy > WidgetButton;
 
 	/// Button object type.
 	typedef typename WidgetButton::ObjectType WidgetButtonPtr;
 
 	/// MDIWindow class type.
-	typedef WidgetMDIParent< EventHandlerClass, MessageMapPolicy > WidgetMDIParent;
+	typedef SmartWin::WidgetMDIParent< EventHandlerClass, MessageMapPolicy > WidgetMDIParent;
 
 	/// MDIWindow object type.
 	typedef typename WidgetMDIParent::ObjectType WidgetMDIParentPtr;
 
 	/// TabSheet class type.
-	typedef WidgetTabSheet< EventHandlerClass, MessageMapPolicy > WidgetTabSheet;
+	typedef SmartWin::WidgetTabSheet< EventHandlerClass, MessageMapPolicy > WidgetTabSheet;
 
 	/// TabSheet object type.
 	typedef typename WidgetTabSheet::ObjectType WidgetTabSheetPtr;
 
 	/// Slider class type.
-	typedef WidgetSlider< EventHandlerClass, MessageMapPolicy > WidgetSlider;
+	typedef SmartWin::WidgetSlider< EventHandlerClass, MessageMapPolicy > WidgetSlider;
 
 	/// Slider object type.
 	typedef typename WidgetSlider::ObjectType WidgetSliderPtr;
 
 	/// Spinner class type.
-	typedef WidgetSpinner< EventHandlerClass, MessageMapPolicy > WidgetSpinner;
+	typedef SmartWin::WidgetSpinner< EventHandlerClass, MessageMapPolicy > WidgetSpinner;
 
 	/// Spinner object type.
 	typedef typename WidgetSpinner::ObjectType WidgetSpinnerPtr;
 
 	/// GroupBox class type.
-	typedef WidgetGroupBox< EventHandlerClass, MessageMapPolicy > WidgetGroupBox;
+	typedef SmartWin::WidgetGroupBox< EventHandlerClass, MessageMapPolicy > WidgetGroupBox;
 
 	/// GroupBox object type.
 	typedef typename WidgetGroupBox::ObjectType WidgetGroupBoxPtr;
 
 	/// RadioButton class type.
-	typedef WidgetRadioButton< EventHandlerClass, MessageMapPolicy > WidgetRadioButton;
+	typedef SmartWin::WidgetRadioButton< EventHandlerClass, MessageMapPolicy > WidgetRadioButton;
 
 	/// RadioButton object type.
 	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
 
 	/// WidgetChooseFolder class type.
-	typedef WidgetChooseFolder< SmartWin::Widget > WidgetChooseFolder;
+	typedef SmartWin::WidgetChooseFolder< SmartWin::Widget > WidgetChooseFolder;
 
 	/// LoadFileDialog class type.
-	typedef WidgetLoadFile< SmartWin::Widget > WidgetLoadFile;
+	typedef SmartWin::WidgetLoadFile< SmartWin::Widget > WidgetLoadFile;
 
 	/// SaveFileDialog class and object type.
-	typedef WidgetSaveFile< SmartWin::Widget > WidgetSaveFile;
+	typedef SmartWin::WidgetSaveFile< SmartWin::Widget > WidgetSaveFile;
 
 	/// WidgetChooseColor class and object type.
-	typedef WidgetChooseColor< SmartWin::Widget > WidgetChooseColor;
+	typedef SmartWin::WidgetChooseColor< SmartWin::Widget > WidgetChooseColor;
 
 	/// ComboBox class type.
-	typedef WidgetComboBox< EventHandlerClass, MessageMapPolicy > WidgetComboBox;
+	typedef SmartWin::WidgetComboBox< EventHandlerClass, MessageMapPolicy > WidgetComboBox;
 
 	/// ComboBox object type.
 	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
 
 	/// Static class type.
-	typedef WidgetStatic< EventHandlerClass, MessageMapPolicy > WidgetStatic;
+	typedef SmartWin::WidgetStatic< EventHandlerClass, MessageMapPolicy > WidgetStatic;
 
 	/// Static object type.
 	typedef typename WidgetStatic::ObjectType WidgetStaticPtr;
 
 	/// Menu class type.
-	typedef WidgetMenu< EventHandlerClass, MessageMapPolicy > WidgetMenu;
+	typedef SmartWin::WidgetMenu< EventHandlerClass, MessageMapPolicy > WidgetMenu;
 
 	/// Menu object type.
 	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// CheckBox class type.
-	typedef WidgetCheckBox< EventHandlerClass, MessageMapPolicy > WidgetCheckBox;
+	typedef SmartWin::WidgetCheckBox< EventHandlerClass, MessageMapPolicy > WidgetCheckBox;
 
 	/// CheckBox object type.
 	typedef typename WidgetCheckBox::ObjectType WidgetCheckBoxPtr;
 
 	/// DateTimePicker class type.
-	typedef WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > WidgetDateTimePicker;
+	typedef SmartWin::WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > WidgetDateTimePicker;
 
 	/// DateTimePicker object type.
 	typedef typename WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
@@ -237,7 +237,7 @@ public:
 	typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicyNormalWidget > * WidgetWindowPtr;
 
 	/// ProgressBar class type.
-	typedef WidgetProgressBar< EventHandlerClass, MessageMapPolicy > WidgetProgressBar;
+	typedef SmartWin::WidgetProgressBar< EventHandlerClass, MessageMapPolicy > WidgetProgressBar;
 
 	/// ProgressBar object type.
 	typedef typename WidgetProgressBar::ObjectType WidgetProgressBarPtr;

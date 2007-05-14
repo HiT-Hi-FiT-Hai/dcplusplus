@@ -29,8 +29,8 @@
 #ifndef Font_h
 #define Font_h
 
-#include "SmartUtil.h"
 #include "WindowsHeaders.h"
+#include "SmartUtil.h"
 #include "WindowObject.h"
 #include "xCeption.h"
 #include "boost.h"
@@ -44,7 +44,7 @@ namespace SmartWin
 /** If you want to use one of the default fonts from windows you can use this enum
   * and the Constructor to the Font class which takes the FontType parameter.
   */
-typedef enum PredefinedFontTypes
+ enum PredefinedFontTypes
 	{
 		SystemFixedFont = SYSTEM_FIXED_FONT,
 		SystemFont = SYSTEM_FONT,

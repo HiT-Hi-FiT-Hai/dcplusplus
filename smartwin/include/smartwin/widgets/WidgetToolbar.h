@@ -110,7 +110,7 @@ class WidgetToolbar :
 	typedef MessageMapControl< EventHandlerClass, WidgetToolbar, MessageMapPolicy > MessageMapType;
 	typedef MessageMapControl< EventHandlerClass, WidgetToolbar, MessageMapPolicy > ThisMessageMap;
 	typedef ToolbarDispatcher< EventHandlerClass, WidgetToolbar, MessageMapType > DispatcherToolbar;
-	typedef AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > > AspectSizable;
+	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > > AspectSizable;
 	friend class WidgetCreator< WidgetToolbar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible.

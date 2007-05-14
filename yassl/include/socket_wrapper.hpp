@@ -37,6 +37,7 @@
 #include <assert.h>
 
 #ifdef _WIN32
+	#include <errno.h>
     #include <winsock2.h>
 #else 
     #include <sys/time.h>

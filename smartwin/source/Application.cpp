@@ -26,9 +26,9 @@
   OR TORT ( INCLUDING NEGLIGENCE OR OTHERWISE ) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "../include/smartwin/Application.h"
 #include "../SmartUtil/tstring.h"
 #include "../include/smartwin/BasicTypes.h"
-#include "../include/smartwin/Application.h"
 #include "../include/smartwin/widgets/WidgetWindow.h"
 #include "assert.h"
 

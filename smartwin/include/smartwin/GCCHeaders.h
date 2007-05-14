@@ -51,6 +51,7 @@
 	#define SmartWinRegisterClass RegisterClassEx
 
 	// Windows API files...
+	#include <errno.h>
 	#include <windows.h>
 	#include <tchar.h>
 	#include <winuser.h>

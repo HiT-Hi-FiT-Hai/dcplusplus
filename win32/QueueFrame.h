@@ -107,7 +107,7 @@ private:
 			path(Util::getFilePath(aQI.getTarget())),
 			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
 			added(aQI.getAdded()), priority(aQI.getPriority()), status(aQI.getStatus()), tth(aQI.getTTH()), 
-			updateMask((uint32_t)-1), sources(aQI.getSources()), badSources(aQI.getBadSources()), display(0)
+			sources(aQI.getSources()), badSources(aQI.getBadSources()), updateMask((uint32_t)-1), display(0)
 		{
 		}
 

@@ -304,7 +304,7 @@ bool HubFrame::enter() {
 
 	// save command in history, reset current buffer pointer to the newest command
 	curCommandPosition = prevCommands.size();		//this places it one position beyond a legal subscript
-	if (!curCommandPosition || curCommandPosition > 0 && prevCommands[curCommandPosition - 1] != s) {
+	if (curCommandPosition == 0 || (curCommandPosition > 0 && prevCommands[curCommandPosition - 1] != s)) {
 		++curCommandPosition;
 		prevCommands.push_back(s);
 	}

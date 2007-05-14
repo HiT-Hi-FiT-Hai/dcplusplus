@@ -39,7 +39,7 @@ namespace SmartWin
 // Enum containing the different platforms we're supposed to support,
 // SmartWinDesktop means BOTH Wine, MingW and VC++. SmartWinCE means Pocket PC or
 // Smart Phone 2003 and onwards!
-typedef enum Platform
+ enum Platform
 { SmartWinDesktop = 0, SmartWinCE = 1
 };
 

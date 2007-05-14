@@ -754,7 +754,7 @@ class Brush
 {
 public:
 
-	typedef enum SysColor
+	enum SysColor
 	{
 		Scrollbar = COLOR_SCROLLBAR,
 		Background = COLOR_BACKGROUND,

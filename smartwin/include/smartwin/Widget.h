@@ -29,9 +29,9 @@
 #ifndef Widget_h
 #define Widget_h
 
+#include "WindowsHeaders.h"
 #include "boost.h"
 #include "SmartUtil.h"
-#include "WindowsHeaders.h"
 #include "CallbackFuncPrototypes.h"
 #include "Message.h"
 #include "Font.h"

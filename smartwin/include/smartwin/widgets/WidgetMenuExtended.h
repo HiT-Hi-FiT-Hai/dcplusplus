@@ -957,7 +957,7 @@ class WidgetMenuExtended :
 	friend class WidgetCreator< WidgetMenuExtended >;
 
 	typedef WidgetMenuExtendedPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform > Implementation;
-	typedef DefaultMenuRenderer< EventHandlerClass, WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > > DefaultMenuRenderer;
+	typedef SmartWin::DefaultMenuRenderer< EventHandlerClass, WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > > DefaultMenuRenderer;
 	typedef typename WidgetMenuExtendedPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >::Dispatcher Dispatcher;
 	typedef typename WidgetMenuExtendedPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >::MessageMapType MessageMapType;
 public:

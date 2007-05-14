@@ -36,8 +36,8 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 	chat(0),
 	message(0),
 	status(0),
-	replyTo(replyTo_),
-	layoutTable(1, 2)
+	layoutTable(1, 2),
+	replyTo(replyTo)
 {
 	{
 		WidgetTextBox::Seed cs;

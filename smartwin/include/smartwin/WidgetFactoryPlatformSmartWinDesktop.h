@@ -52,19 +52,19 @@ class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClas
 {
 public:
 	/// RichEditBox class type.
-	typedef WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, RichTextBox< EventHandlerClass, MessageMapPolicy > > WidgetRichTextBox;
+	typedef SmartWin::WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, RichTextBox< EventHandlerClass, MessageMapPolicy > > WidgetRichTextBox;
 
 	/// RichEditBox object type.
 	typedef typename WidgetRichTextBox::ObjectType WidgetRichTextBoxPtr;
 
 	/// ExtendedMenu class type.
-	typedef WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > WidgetMenuExtended;
+	typedef SmartWin::WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > WidgetMenuExtended;
 
 	/// ExtendedMenu object type.
 	typedef typename WidgetMenuExtended::ObjectType WidgetMenuExtendedPtr;
 
 	/// ChooseFont class and object type.
-	typedef WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
+	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
 
 	/// Splitter class type.
 	typedef WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterThinPaint, MessageMapPolicyNormalWidget > WidgetSplitterThin;
@@ -79,13 +79,13 @@ public:
 	typedef typename WidgetSplitterCool::ObjectType WidgetSplitterCoolPtr;
 
 	/// Toolbar class type.
-	typedef WidgetToolbar< EventHandlerClass, MessageMapPolicy > WidgetToolbar;
+	typedef SmartWin::WidgetToolbar< EventHandlerClass, MessageMapPolicy > WidgetToolbar;
 
 	/// Toolbar object type.
 	typedef typename WidgetToolbar::ObjectType WidgetToolbarPtr;
 
 	/// Coolbar class type.
-	typedef WidgetCoolbar< EventHandlerClass, MessageMapPolicy > WidgetCoolbar;
+	typedef SmartWin::WidgetCoolbar< EventHandlerClass, MessageMapPolicy > WidgetCoolbar;
 
 	/// Coolbar object type.
 	typedef typename WidgetCoolbar::ObjectType WidgetCoolbarPtr;

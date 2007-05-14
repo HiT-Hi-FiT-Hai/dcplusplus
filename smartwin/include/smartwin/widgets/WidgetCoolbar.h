@@ -77,7 +77,7 @@ class WidgetCoolbar :
 {
 	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar, MessageMapPolicy > MessageMapType;
 	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar, MessageMapPolicy > ThisMessageMap;
-	typedef AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > > AspectSizable;
+	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > > AspectSizable;
 	friend class WidgetCreator< WidgetCoolbar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible
@@ -125,61 +125,61 @@ public:
 	static const Seed & getDefaultSeed();
 
 	/// ComboBox class type.
-	typedef WidgetComboBox< EventHandlerClass, MessageMapPolicy > WidgetComboBox;
+	typedef SmartWin::WidgetComboBox< EventHandlerClass, MessageMapPolicy > WidgetComboBox;
 
 	/// ComboBox object type.
 	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
 
 	/// TextBox class type.
-	typedef WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
+	typedef SmartWin::WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
 
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
 	/// Button class type.
-	typedef WidgetButton< EventHandlerClass, MessageMapPolicy > WidgetButton;
+	typedef SmartWin::WidgetButton< EventHandlerClass, MessageMapPolicy > WidgetButton;
 
 	/// Button object type.
 	typedef typename WidgetButton::ObjectType WidgetButtonPtr;
 
 	/// Button class type.
-	typedef WidgetTreeView< EventHandlerClass, MessageMapPolicy > WidgetTreeView;
+	typedef SmartWin::WidgetTreeView< EventHandlerClass, MessageMapPolicy > WidgetTreeView;
 
 	/// Button object type.
 	typedef typename WidgetTreeView::ObjectType WidgetTreeViewPtr;
 
 	/// CheckBox class type.
-	typedef WidgetCheckBox< EventHandlerClass, MessageMapPolicy > WidgetCheckBox;
+	typedef SmartWin::WidgetCheckBox< EventHandlerClass, MessageMapPolicy > WidgetCheckBox;
 
 	/// CheckBox object type.
 	typedef typename WidgetCheckBox::ObjectType WidgetCheckBoxPtr;
 
 	/// Spinner class type.
-	typedef WidgetSpinner< EventHandlerClass, MessageMapPolicy > WidgetSpinner;
+	typedef SmartWin::WidgetSpinner< EventHandlerClass, MessageMapPolicy > WidgetSpinner;
 
 	/// Spinner object type.
 	typedef typename WidgetSpinner::ObjectType WidgetSpinnerPtr;
 
 	/// GroupBox class type.
-	typedef WidgetGroupBox< EventHandlerClass, MessageMapPolicy > WidgetGroupBox;
+	typedef SmartWin::WidgetGroupBox< EventHandlerClass, MessageMapPolicy > WidgetGroupBox;
 
 	/// GroupBox object type.
 	typedef typename WidgetGroupBox::ObjectType WidgetGroupBoxPtr;
 
 	/// RadioButton class type.
-	typedef WidgetRadioButton< EventHandlerClass, MessageMapPolicy > WidgetRadioButton;
+	typedef SmartWin::WidgetRadioButton< EventHandlerClass, MessageMapPolicy > WidgetRadioButton;
 
 	/// RadioButton object type.
 	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
 
 	/// DateTimePicker class type.
-	typedef WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > WidgetDateTimePicker;
+	typedef SmartWin::WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > WidgetDateTimePicker;
 
 	/// DateTimePicker object type.
 	typedef typename WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
 
 	/// DateTimePicker class type.
-	typedef WidgetMenu< EventHandlerClass, MessageMapPolicy > WidgetMenu;
+	typedef SmartWin::WidgetMenu< EventHandlerClass, MessageMapPolicy > WidgetMenu;
 
 	/// DateTimePicker object type.
 	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;

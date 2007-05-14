@@ -33,6 +33,7 @@
 #ifndef yaSSL_INT_HPP
 #define yaSSL_INT_HPP
 
+#include <errno.h>
 #include "yassl_imp.hpp"
 #include "yassl_error.hpp"
 #include "crypto_wrapper.hpp"

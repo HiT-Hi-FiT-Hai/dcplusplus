@@ -108,7 +108,7 @@ namespace SmartUtil
 		tstring toDateString( const tstring & format ) const;
 
 		/// Converts the date to a unix timestamp
-		time_t DateTime::toUnixTimestamp() const;
+		time_t toUnixTimestamp() const;
 	};
 
 	// TODO: Comments....

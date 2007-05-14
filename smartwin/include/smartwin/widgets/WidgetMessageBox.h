@@ -68,7 +68,7 @@ public:
 
 	// Next three enums are here INTENTIONALLY to abstract away Win32API
 	/// Enums for which buttons you want the MessageBox to have.
-	typedef enum Buttons
+	enum Buttons
 	{
 		BOX_OK = MB_OK,
 		BOX_OKCANCEL = MB_OKCANCEL,
@@ -82,7 +82,7 @@ public:
 		};
 
 	/// Enums for which ICON you want the MessageBox to have.
-	typedef enum Icon
+	enum Icon
 	{
 		BOX_ICONEXCLAMATION = MB_ICONEXCLAMATION,
 		BOX_ICONHAND = MB_ICONHAND,
@@ -93,7 +93,7 @@ public:
 		};
 
 	/// Enums for Return Value that the MessageBox::show can return
-	typedef enum RetVal
+	enum RetVal
 	{
 		RETBOX_ABORT = IDABORT,
 		RETBOX_CANCEL = IDCANCEL,

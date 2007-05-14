@@ -107,7 +107,7 @@ void addAnchored( SmartWin::Widget* widget, int anchors )
   * IN: anchors:  a combination of AnchoredItem::left, AnchoredItem::right, AnchoredItem::top, AnchoredItem::bottom
   * See the AnchoredItem structure above for AnchoredItem::box and AnchoredItem::dialog
   */
-void AnchorManager::resizeAnchored()
+void resizeAnchored()
 {
 	for( vector<AnchoredItem>::const_iterator i = anchored.begin();
 		 i != anchored.end(); ++i )

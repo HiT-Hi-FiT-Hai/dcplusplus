@@ -1791,7 +1791,6 @@ RECT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getSubItemRect( int 
 template< class EventHandlerClass, class MessageMapPolicy >
 LRESULT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	static int lastLine;
 	switch ( msg )
 	{
 	// WinCE can't retrieve mouse pos in Double Click message handler since mouse
@@ -1919,7 +1918,6 @@ LRESULT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage
 			// TODO: Dispatch events
 			case NM_DBLCLK :
 				{
-					NMHDR * nm = reinterpret_cast< NMHDR * >( lPar );
 					LVHITTESTINFO info;
 					info.pt.x = itsXMousePosition;
 					info.pt.y = itsYMousePosition;

@@ -135,7 +135,7 @@ void WaitingUsersFrame::onAddToFavorites(WidgetMenuPtr, unsigned int) {
 	if (user) {
 #ifdef PORT_ME
 		FavoriteManager::getInstance()->addFavoriteUser(user);
-#endif PORT_ME
+#endif
 	}
 }
 

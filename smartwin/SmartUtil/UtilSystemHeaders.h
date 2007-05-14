@@ -46,7 +46,8 @@
 	#define NOMINMAX
 #endif
 
-#include "windows.h"
+#include <errno.h>
+#include <windows.h>
 #include <tchar.h>
 
 #endif

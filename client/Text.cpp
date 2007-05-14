@@ -267,7 +267,7 @@ const wstring& utf8ToWide(const string& str, wstring& tgt) throw() {
 
 wchar_t toLower(wchar_t c) throw() {
 #ifdef _WIN32
-		return (wchar_t)CharLowerW((LPWSTR)c);
+		return static_cast<wchar_t>(reinterpret_cast<ptrdiff_t>(CharLowerW((LPWSTR)c)));
 #else
 		return (wchar_t)towlower(c);
 #endif

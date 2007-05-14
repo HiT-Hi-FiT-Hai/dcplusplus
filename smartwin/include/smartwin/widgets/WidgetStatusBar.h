@@ -136,7 +136,7 @@ class WidgetStatusBar :
 	public AspectVisible< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >
 {
 	typedef MessageMapControl< EventHandlerClass, WidgetStatusBar, MessageMapPolicy > ThisMessageMap;
-	typedef AspectSizable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > > AspectSizable;
+	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > > AspectSizable;
 	friend class WidgetCreator< WidgetStatusBar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible.

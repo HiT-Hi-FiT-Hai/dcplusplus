@@ -38,6 +38,7 @@
     #pragma warning(disable:4786)
 #endif
 
+#include <errno.h>
 
 #include "yassl_types.hpp"  // SignatureAlgorithm
 #include "buffer.hpp"       // input_buffer

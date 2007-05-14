@@ -29,10 +29,10 @@
 #ifndef Application_h
 #define Application_h
 
+#include "WindowsHeaders.h"
 #include "boost.h"
 #include "SmartUtil.h"
 #include "CommandLine.h"
-#include "WindowsHeaders.h"
 #include "BasicTypes.h"
 #include "ApplicationPlatform.h"
 #include "Bitmap.h"
