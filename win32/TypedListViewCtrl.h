@@ -30,7 +30,28 @@ private:
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedListViewCtrl( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent), sortColumn(-1), sortAscending(true) { }
+	explicit TypedListViewCtrl( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent), sortColumn(-1), sortAscending(true) { 
+		
+	}
+	
+	virtual void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
+		BaseType::create(cs);
+		
+		typedef typename T::MessageMapType MessageMapType;
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->addNewSignal(
+			typename MessageMapType::SignalTupleType(
+				SmartWin::private_::SignalContent(
+					SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ),
+					reinterpret_cast< SmartWin::private_::SignalContent::voidFunctionTakingVoid >( 0 ),
+					ptrThis
+				),
+				typename MessageMapType::SignalType(
+					typename MessageMapType::SignalType::SlotType( & ContentDispatcher::dispatch )
+				)
+			)
+		);
+	}
 	
 	void resort() {
 		if(sortColumn != -1) {
@@ -169,6 +190,22 @@ private:
 		ThisType* t = reinterpret_cast<ThisType*>(lParamSort);
 		int result = ContentType::compareItems((ContentType*)lParam1, (ContentType*)lParam2, t->sortColumn);
 		return (t->sortAscending ? result : -result);
+	}
+	
+	struct ContentDispatcher {
+		static HRESULT dispatch(SmartWin::private_::SignalContent& params) {
+			NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
+			if(nm->item.mask & LVIF_TEXT) {
+				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+				const string& text = content->getText(nm->item.iSubItem);
+				strncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
+			}
+			return 0;
+		}
+	};
+	
+	void handleGetItem(ThisType* x, LPARAM lParam, int subItem, int item, tstring& insertionString) {
+		
 	}
 
 };
