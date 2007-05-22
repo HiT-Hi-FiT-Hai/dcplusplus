@@ -63,6 +63,7 @@ private:
 		COLUMN_LAST
 	};
 	enum Status {
+		STATUS_SHOW_TREE,
 		STATUS_STATUS,
 		STATUS_PARTIAL_COUNT,
 		STATUS_PARTIAL_BYTES,
@@ -198,6 +199,7 @@ private:
 	
 	WidgetFilesPtr files;
 	WidgetSplitterCoolPtr splitter;
+	WidgetCheckBoxPtr showTree;
 	
 	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
@@ -205,7 +207,7 @@ private:
 	DirectoryMap directories;
 
 	std::string curDir;
-	bool showTree;
+
 	bool dirty;
 	
 	int64_t queueSize;
@@ -220,6 +222,7 @@ private:
 	void setStatus(Status s, const tstring& text);
 	void updateStatus();
 	void updateQueue();
+	const std::string& getSelectedDir();
 
 	void addQueueItem(QueueItemInfo* qi, bool noSort);
 	void addQueueList(const QueueItem::StringMap& l);

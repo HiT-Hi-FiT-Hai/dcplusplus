@@ -377,6 +377,7 @@ class WidgetDataGrid :
 	public AspectThreads< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectVisible< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
 {
+protected:
 	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapTypeParam;
 	typedef MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy > MessageMapType;
 	typedef AspectListDispatcher< EventHandlerClass, WidgetDataGrid, MessageMapType > DispatcherList;

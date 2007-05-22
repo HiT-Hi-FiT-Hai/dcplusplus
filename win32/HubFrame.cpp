@@ -114,9 +114,11 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		users->setFont(WinUtil::font);
 		add_widget(users);
 
+		users->setSmallImageList(WinUtil::userImages);
 		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
+
 	}
 	
 	status = createStatusBarSections();
@@ -1086,8 +1088,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlUsers.SetTextColor(WinUtil::textColor);
 
 	ctrlUsers.setSortColumn(COLUMN_NICK);
-
-	ctrlUsers.SetImageList(WinUtil::userImages, LVSIL_SMALL);
 
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 

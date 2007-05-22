@@ -21,6 +21,7 @@
 #include <client/DCPlusPlus.h>
 
 #include "WinUtil.h"
+#include "resource.h"
 
 #include <client/SettingsManager.h>
 #include <client/ShareManager.h>
@@ -36,6 +37,11 @@ HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
 SmartWin::FontPtr WinUtil::font;
+SmartWin::ImageListPtr WinUtil::fileImages;
+int WinUtil::fileImageCount;
+int WinUtil::dirIconIndex;
+int WinUtil::dirMaskedIndex;
+SmartWin::ImageListPtr WinUtil::userImages;
 
 void WinUtil::init() {
 
@@ -53,6 +59,17 @@ void WinUtil::init() {
 
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
 
+	fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+	fileImages->addMultiple(SmartWin::Bitmap(IDB_FOLDERS));
+
+	dirIconIndex = fileImageCount++;
+	dirMaskedIndex = fileImageCount++;
+	// Unknown file
+	fileImageCount++;
+
+	userImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+	userImages->addMultiple(SmartWin::Bitmap(IDB_USERS));
+	
 #ifdef PORT_ME
 /** @todo fix this so that the system icon is used for dirs as well (we need
 			  to mask it so that incomplete folders appear correct */
@@ -66,14 +83,6 @@ void WinUtil::init() {
 	} else {
 		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	}
-
-	fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	dirIconIndex = fileImageCount++;
-	dirMaskedIndex = fileImageCount++;
-
-	fileImageCount++;
-
-	userImages.CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 
 	LOGFONT lf, lf2;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);

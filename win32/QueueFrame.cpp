@@ -44,7 +44,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	dirs(0),
 	files(0),
 	splitter(0),
-	showTree(true),
+	showTree(0),
 	dirty(true),
 	queueSize(0),
 	queueItems(0)
@@ -71,13 +71,23 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		files->setFont(WinUtil::font);
 		add_widget(files);
 
+		files->setSmallImageList(WinUtil::fileImages);
 		files->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
-		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
+		//files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
+	}
+	
+	{
+		WidgetCheckBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE;
+		cs.caption = _T("+/-");
+		showTree = createCheckBox(cs);
+		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 	}
 	
 	status = createStatusBarSections();
 	memset(statusSizes, 0, sizeof(statusSizes));
+	statusSizes[STATUS_SHOW_TREE] = 16;
 	///@todo get real resizer width
 	statusSizes[STATUS_DUMMY] = 16;
 
@@ -113,7 +123,7 @@ HRESULT QueueFrame::spoken(LPARAM, WPARAM) {
 				continue;
 			}
 
-			if(!showTree || isCurDir(ii->getPath()) ) {
+			if(!showTree->getChecked() || isCurDir(ii->getPath()) ) {
 #ifdef PORT_ME
 				dcassert(files->findItem(ii) != -1);
 				ctrlQueue.deleteItem(ii);
@@ -161,7 +171,7 @@ HRESULT QueueFrame::spoken(LPARAM, WPARAM) {
 
 			ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED;
 
-			if(!showTree || isCurDir(ii->getPath())) {
+			if(!showTree->getChecked() || isCurDir(ii->getPath())) {
 				dcassert(files->findItem(ii) != -1);
 				ii->update();
 				files->updateItem(ii);
@@ -170,6 +180,17 @@ HRESULT QueueFrame::spoken(LPARAM, WPARAM) {
 	}
 
 	return 0;
+}
+
+
+void QueueFrame::setStatus(Status s, const tstring& text) {
+	int w = status->getTextSize(text).x + 12;
+	if(w > static_cast<int>(statusSizes[s])) {
+		dcdebug("Setting status size %d to %d\n", s, w);
+		statusSizes[s] = w;
+		layout();
+	}
+	status->setText(text, s);
 }
 
 void QueueFrame::splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt) {
@@ -191,13 +212,13 @@ void QueueFrame::layout() {
 		std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
 
 		status->setSections(w);
+		RECT sr;
+		
+		::SendMessage(status->handle(), SB_GETRECT, STATUS_SHOW_TREE, reinterpret_cast<LPARAM>(&sr));
+		showTree->setBounds(SmartWin::Rectangle::FromRECT(sr));
+
 #ifdef PORT_ME
 		ctrlLastLines.SetMaxTipWidth(w[0]);
-		// Strange, can't get the correct width of the last field...
-		ctrlStatus.GetRect(2, sr);
-		sr.left = sr.right + 2;
-		sr.right = sr.left + 16;
-		ctrlShowUsers.MoveWindow(sr);
 #endif
 	}
 	
@@ -244,71 +265,35 @@ bool QueueFrame::isCurDir(const std::string& aDir) const {
 }
 
 void QueueFrame::updateStatus() {
-#ifdef PORT_ME
-	if(ctrlStatus.IsWindow()) {
-		int64_t total = 0;
-		int cnt = ctrlQueue.GetSelectedCount();
-		if(cnt == 0) {
-			cnt = ctrlQueue.GetItemCount();
-			if(showTree) {
-				for(int i = 0; i < cnt; ++i) {
-					QueueItemInfo* ii = ctrlQueue.getItemData(i);
-					total += (ii->getSize() > 0) ? ii->getSize() : 0;
-				}
-			} else {
-				total = queueSize;
-			}
-		} else {
-			int i = -1;
-			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				QueueItemInfo* ii = ctrlQueue.getItemData(i);
+	int64_t total = 0;
+	int cnt = files->getSelectedCount();
+	if(cnt == 0) {
+		cnt = files->getRowCount();
+		if(showTree->getChecked()) {
+			for(int i = 0; i < cnt; ++i) {
+				QueueItemInfo* ii = files->getItemData(i);
 				total += (ii->getSize() > 0) ? ii->getSize() : 0;
 			}
-
+		} else {
+			total = queueSize;
+		}
+	} else {
+		int i = -1;
+		while( (i = files->getNextItem(i, LVNI_SELECTED)) != -1) {
+			QueueItemInfo* ii = files->getItemData(i);
+			total += (ii->getSize() > 0) ? ii->getSize() : 0;
 		}
 
-		tstring tmp1 = Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt));
-		tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
-		bool u = false;
-
-		int w = WinUtil::getTextWidth(tmp1, ctrlStatus.m_hWnd);
-		if(statusSizes[1] < w) {
-			statusSizes[1] = w;
-			u = true;
-		}
-		ctrlStatus.SetText(2, tmp1.c_str());
-		w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
-		if(statusSizes[2] < w) {
-			statusSizes[2] = w;
-			u = true;
-		}
-		ctrlStatus.SetText(3, tmp2.c_str());
-
-		if(dirty) {
-			tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(queueItems));
-			tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(queueSize));
-
-			w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
-			if(statusSizes[3] < w) {
-				statusSizes[3] = w;
-				u = true;
-			}
-			ctrlStatus.SetText(4, tmp1.c_str());
-
-			w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
-			if(statusSizes[4] < w) {
-				statusSizes[4] = w;
-				u = true;
-			}
-			ctrlStatus.SetText(5, tmp2.c_str());
-
-			dirty = false;
-		}
-
-		if(u)
-			UpdateLayout(TRUE);
 	}
-#endif
+
+	setStatus(STATUS_PARTIAL_COUNT, Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt)));
+	setStatus(STATUS_PARTIAL_BYTES, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total)));
+	
+	if(dirty) {
+		setStatus(STATUS_TOTAL_COUNT, Text::toT(STRING(FILES) + ": " + Util::toString(queueItems)));
+		setStatus(STATUS_TOTAL_BYTES, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(queueSize)));
+		dirty = false;
+	}
 }
 
 bool QueueFrame::preClosing() {
@@ -324,9 +309,10 @@ void QueueFrame::postClosing() {
 		ht = ctrlDirs.GetNextSiblingItem(ht);
 	}
 
-	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_SHOW_TREE, ctrlShowTree.GetCheck() == BST_CHECKED);
 #endif
 	
+	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_SHOW_TREE, showTree->getChecked());
+
 	for(DirectoryIter i = directories.begin(); i != directories.end(); ++i) {
 		delete i->second;
 	}
@@ -352,7 +338,7 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	if(updateDir) {
 		addDirectory(dir, ii->isSet(QueueItem::FLAG_USER_LIST));
 	}
-	if(!showTree || isCurDir(dir)) {
+	if(!showTree->getChecked() || isCurDir(dir)) {
 		ii->update();
 		if(noSort) {
 			files->insertItem(files->getRowCount(), ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
@@ -360,6 +346,44 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 			files->insertItem(ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
 		}
 	}
+}
+
+void QueueFrame::updateQueue() {
+	files->removeAllRows();
+	pair<DirectoryIter, DirectoryIter> i;
+	if(showTree->getChecked()) {
+		i = directories.equal_range(getSelectedDir());
+	} else {
+		i.first = directories.begin();
+		i.second = directories.end();
+	}
+
+#ifdef PORT_ME
+	ctrlQueue.SetRedraw(FALSE);
+#endif
+	
+	for(DirectoryIter j = i.first; j != i.second; ++j) {
+		QueueItemInfo* ii = j->second;
+		ii->update();
+		files->insertItem(files->getRowCount(), ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
+	}
+	
+	files->resort();
+
+#ifdef PORT_ME
+	ctrlQueue.SetRedraw(TRUE);
+#endif
+	
+	curDir = getSelectedDir();
+	updateStatus();
+}
+
+const string& QueueFrame::getSelectedDir() {
+#ifdef PORT_ME
+	HTREEITEM ht = ctrlDirs.GetSelectedItem();
+	return ht == NULL ? Util::emptyString : getDir(ctrlDirs.GetSelectedItem());
+#endif
+	return Util::emptyString;
 }
 
 void QueueFrame::on(QueueManagerListener::Added, QueueItem* aQI) throw() {
@@ -731,13 +755,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	showTree = BOOLSETTING(QUEUEFRAME_SHOW_TREE);
-
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
-
 	ctrlDirs.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
-	ctrlQueue.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 
 	m_nProportionalPos = 2500;
 	SetSplitterPanes(ctrlDirs.m_hWnd, ctrlQueue.m_hWnd);
@@ -750,11 +768,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	ctrlDirs.SetBkColor(WinUtil::bgColor);
 	ctrlDirs.SetTextColor(WinUtil::textColor);
-
-	ctrlShowTree.Create(ctrlStatus.m_hWnd, rcDefault, _T("+/-"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	ctrlShowTree.SetButtonStyle(BS_AUTOCHECKBOX, false);
-	ctrlShowTree.SetCheck(showTree);
-	showTreeContainer.SubclassWindow(ctrlShowTree.m_hWnd);
 
 	singleMenu.CreatePopupMenu();
 	multiMenu.CreatePopupMenu();
@@ -862,7 +875,7 @@ void QueueFrame::moveSelected() {
 		}
 	} else if(n > 1) {
 		tstring name;
-		if(showTree) {
+		if(showTree->getChecked()) {
 			name = Text::toT(curDir);
 		}
 
@@ -1221,39 +1234,6 @@ void QueueFrame::setPriority(HTREEITEM ht, const QueueItem::Priority& p) {
 LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
 	updateQueue();
 	return 0;
-}
-
-void QueueFrame::onTab() {
-	if(showTree) {
-		HWND focus = ::GetFocus();
-		if(focus == ctrlDirs.m_hWnd) {
-			ctrlQueue.SetFocus();
-		} else if(focus == ctrlQueue.m_hWnd) {
-			ctrlDirs.SetFocus();
-		}
-	}
-}
-
-void QueueFrame::updateQueue() {
-	ctrlQueue.DeleteAllItems();
-	pair<DirectoryIter, DirectoryIter> i;
-	if(showTree) {
-		i = directories.equal_range(getSelectedDir());
-	} else {
-		i.first = directories.begin();
-		i.second = directories.end();
-	}
-
-	ctrlQueue.SetRedraw(FALSE);
-	for(DirectoryIter j = i.first; j != i.second; ++j) {
-		QueueItemInfo* ii = j->second;
-		ii->update();
-		ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
-	}
-	ctrlQueue.resort();
-	ctrlQueue.SetRedraw(TRUE);
-	curDir = getSelectedDir();
-	updateStatus();
 }
 
 void QueueFrame::clearTree(HTREEITEM item) {

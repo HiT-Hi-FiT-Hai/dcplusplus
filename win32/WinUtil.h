@@ -146,6 +146,11 @@ public:
 	static COLORREF bgColor;
 	static SmartWin::FontPtr font;
 	static tstring commands;
+	static SmartWin::ImageListPtr fileImages;
+	static int fileImageCount;
+	static int dirIconIndex;
+	static int dirMaskedIndex;
+	static SmartWin::ImageListPtr userImages;
 
 	static void init();
 	static void uninit();
@@ -194,8 +199,6 @@ public:
 	static pair<tstring, bool> getHubNames(const UserPtr& u);
 
 #ifdef PORT_ME
-	static CImageList fileImages;
-	static int fileImageCount;
 	static CImageList userImages;
 
 	typedef HASH_MAP<string, int> ImageMap;
@@ -205,8 +208,6 @@ public:
 	static HFONT boldFont;
 	static HFONT systemFont;
 	static HFONT monoFont;
-	static int dirIconIndex;
-	static int dirMaskedIndex;
 	static TStringList lastDirs;
 	static HWND mainWnd;
 	static HWND mdiClient;

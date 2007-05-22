@@ -37,17 +37,17 @@ public:
 	virtual void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
 		BaseType::create(cs);
 		
-		typedef typename T::MessageMapType MessageMapType;
+		typedef typename BaseType::MessageMapType MessageMapType;
 		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 		ptrThis->addNewSignal(
 			typename MessageMapType::SignalTupleType(
 				SmartWin::private_::SignalContent(
 					SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ),
-					reinterpret_cast< SmartWin::private_::SignalContent::voidFunctionTakingVoid >( 0 ),
+					reinterpret_cast< SmartWin::private_::SignalContent::voidFunctionTakingVoid >( &ContentDispatcher::dispatch ),
 					ptrThis
 				),
 				typename MessageMapType::SignalType(
-					typename MessageMapType::SignalType::SlotType( & ContentDispatcher::dispatch )
+					typename MessageMapType::SignalType::SlotType( &ContentDispatcher::dispatch )
 				)
 			)
 		);

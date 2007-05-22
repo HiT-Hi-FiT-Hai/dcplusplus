@@ -64,6 +64,10 @@ public:
 		ListView_SetExtendedListViewStyle(this->handle(), style);
 	}
 	
+	int getNextItem(int i, int type) {
+		return ListView_GetNextItem(this->handle(), i, type);
+	}
+	
 	LPARAM getItemData(int idx) {
 		LVITEM item = { LVIF_PARAM };
 		item.iItem = idx;
