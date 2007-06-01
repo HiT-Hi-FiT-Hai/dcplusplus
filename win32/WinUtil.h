@@ -187,6 +187,8 @@ public:
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	
 	static int getIconIndex(const tstring& aFileName);
+	static int getDirIconIndex() { return dirIconIndex; }
+	static int getDirMaskedIndex() { return dirMaskedIndex; }
 
 	static bool isShift() { return (::GetKeyState(VK_SHIFT) & 0x8000) > 0; }
 	static bool isAlt() { return (::GetKeyState(VK_MENU) & 0x8000) > 0; }
@@ -276,9 +278,6 @@ public:
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 	static void openLink(const tstring& url);
 	static void openFolder(const tstring& file);
-
-	static int getDirIconIndex() { return dirIconIndex; }
-	static int getDirMaskedIndex() { return dirMaskedIndex; }
 
 	static double toBytes(TCHAR* aSize);
 

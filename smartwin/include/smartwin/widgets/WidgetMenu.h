@@ -278,6 +278,15 @@ public:
 		itsChildren.push_back( retVal );
 		return retVal;
 	}
+	
+	const WidgetMenuPtr& appendPopup( const SmartUtil::tstring & name, const WidgetMenuPtr& menu)
+	{
+		HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
+
+		::AppendMenu( handle, MF_POPUP, reinterpret_cast< unsigned int >( menu->handle() ), name.c_str() );
+		itsChildren.push_back( menu );
+		return menu;
+	}
 
 	/// Returns the "System Menu"
 	/** The system menu is a special menu that ( normally ) is accessed by pressing

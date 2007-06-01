@@ -21,8 +21,11 @@
 
 #include "QueueFrame.h"
 #include "WinUtil.h"
+#include "resource.h"
 
 #include <client/QueueManager.h>
+#include <client/ResourceManager.h>
+#include <client/version.h>
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
 COLUMN_USERS, COLUMN_PATH, COLUMN_EXACT_SIZE, COLUMN_ERRORS, COLUMN_ADDED, COLUMN_TTH, COLUMN_TYPE };
@@ -33,6 +36,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, Res
 ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::EXACT_SIZE, ResourceManager::ERRORS,
 ResourceManager::ADDED, ResourceManager::TTH_ROOT, ResourceManager::TYPE };
 
+#define FILE_LIST_NAME _T("File Lists")
 
 void QueueFrame::QueueItemInfo::remove() { 
 	QueueManager::getInstance()->remove(getTarget()); 
@@ -46,8 +50,10 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	splitter(0),
 	showTree(0),
 	dirty(true),
+	usingDirMenu(false),
 	queueSize(0),
-	queueItems(0)
+	queueItems(0),
+	fileLists(0)
 {
 	{
 		splitter = createSplitterCool();
@@ -58,7 +64,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		WidgetTreeView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = createTreeView(cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
 		add_widget(dirs);
 	}
 	
@@ -85,6 +91,44 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 	}
 	
+	singleMenu = createMenu();
+	
+	singleMenu->appendItem(IDC_SEARCH_ALTERNATES, TSTRING(SEARCH_FOR_ALTERNATES), &QueueFrame::handleSearchAlternates);
+	singleMenu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), &QueueFrame::handleBitziLookup);
+	singleMenu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), &QueueFrame::handleCopyMagnet);
+	singleMenu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
+	priorityMenu = singleMenu->appendPopup(TSTRING(SET_PRIORITY));
+	browseMenu = singleMenu->appendPopup(TSTRING(GET_FILE_LIST));
+	pmMenu = singleMenu->appendPopup(TSTRING(SEND_PRIVATE_MESSAGE));
+	readdMenu = singleMenu->appendPopup(TSTRING(READD_SOURCE));
+	singleMenu->appendSeparatorItem();
+	removeMenu = singleMenu->appendPopup(TSTRING(REMOVE_SOURCE));
+	removeAllMenu = singleMenu->appendPopup(TSTRING(REMOVE_FROM_ALL));
+	singleMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
+
+	multiMenu->appendPopup(TSTRING(SET_PRIORITY), priorityMenu);
+	multiMenu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
+	multiMenu->appendSeparatorItem();
+	multiMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
+
+	priorityMenu->appendItem(IDC_PRIORITY_PAUSED, TSTRING(PAUSED), &QueueFrame::handlePriority);
+	priorityMenu->appendItem(IDC_PRIORITY_LOWEST, TSTRING(LOWEST), &QueueFrame::handlePriority);
+	priorityMenu->appendItem(IDC_PRIORITY_LOW, TSTRING(LOW), &QueueFrame::handlePriority);
+	priorityMenu->appendItem(IDC_PRIORITY_NORMAL, TSTRING(NORMAL), &QueueFrame::handlePriority);
+	priorityMenu->appendItem(IDC_PRIORITY_HIGH, TSTRING(HIGH), &QueueFrame::handlePriority);
+	priorityMenu->appendItem(IDC_PRIORITY_HIGHEST, TSTRING(HIGHEST), &QueueFrame::handlePriority);
+
+	dirMenu->appendPopup(TSTRING(SET_PRIORITY), priorityMenu);
+	dirMenu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
+	dirMenu->appendSeparatorItem();
+	dirMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
+
+	removeMenu->appendItem(IDC_REMOVE_SOURCES, TSTRING(ALL), &QueueFrame::handleRemoveSources);
+	removeMenu->appendSeparatorItem();
+
+	readdMenu->appendItem(IDC_READD, TSTRING(ALL), &QueueFrame::handleReadd);
+	readdMenu->appendSeparatorItem();
+
 	status = createStatusBarSections();
 	memset(statusSizes, 0, sizeof(statusSizes));
 	statusSizes[STATUS_SHOW_TREE] = 16;
@@ -124,10 +168,8 @@ HRESULT QueueFrame::spoken(LPARAM, WPARAM) {
 			}
 
 			if(!showTree->getChecked() || isCurDir(ii->getPath()) ) {
-#ifdef PORT_ME
 				dcassert(files->findItem(ii) != -1);
-				ctrlQueue.deleteItem(ii);
-#endif
+				files->deleteItem(ii);
 			}
 
 			if(!ii->isSet(QueueItem::FLAG_USER_LIST)) {
@@ -302,14 +344,11 @@ bool QueueFrame::preClosing() {
 }
 
 void QueueFrame::postClosing() {
-#ifdef PORT_ME
-	HTREEITEM ht = ctrlDirs.GetRootItem();
+	HTREEITEM ht = dirs->getRoot();
 	while(ht != NULL) {
 		clearTree(ht);
-		ht = ctrlDirs.GetNextSiblingItem(ht);
+		ht = dirs->getNextSibling(ht);
 	}
-
-#endif
 	
 	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_SHOW_TREE, showTree->getChecked());
 
@@ -376,14 +415,6 @@ void QueueFrame::updateQueue() {
 	
 	curDir = getSelectedDir();
 	updateStatus();
-}
-
-const string& QueueFrame::getSelectedDir() {
-#ifdef PORT_ME
-	HTREEITEM ht = ctrlDirs.GetSelectedItem();
-	return ht == NULL ? Util::emptyString : getDir(ctrlDirs.GetSelectedItem());
-#endif
-	return Util::emptyString;
 }
 
 void QueueFrame::on(QueueManagerListener::Added, QueueItem* aQI) throw() {
@@ -526,21 +557,24 @@ void QueueFrame::QueueItemInfo::update() {
 	}
 }
 
-HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, HTREEITEM startAt /* = NULL */) {
-#ifdef PORT_ME
-	TVINSERTSTRUCT tvi;
-	tvi.hInsertAfter = TVI_SORT;
-	tvi.item.mask = TVIF_IMAGE | TVIF_PARAM | TVIF_SELECTEDIMAGE | TVIF_TEXT;
-	tvi.item.iImage = tvi.item.iSelectedImage = WinUtil::getDirIconIndex();
+QueueFrame::DirItemInfo::DirItemInfo(const string& dir_) : dir(dir_), text(dir_.empty() ? Util::emptyStringT : Text::toT(dir_.substr(0, dir_.length()-1))) {
+	
+}
 
+int QueueFrame::DirItemInfo::getIcon() {
+	return WinUtil::getDirIconIndex();
+}
+
+int QueueFrame::DirItemInfo::getSelectedIcon() {
+	return WinUtil::getDirIconIndex();
+}
+
+HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, HTREEITEM startAt /* = NULL */) {
 	if(isFileList) {
 		// We assume we haven't added it yet, and that all filelists go to the same
 		// directory...
 		dcassert(fileLists == NULL);
-		tvi.hParent = NULL;
-		tvi.item.pszText = FILE_LIST_NAME;
-		tvi.item.lParam = (LPARAM) new string(dir);
-		fileLists = ctrlDirs.InsertItem(&tvi);
+		fileLists = dirs->insert(NULL, new DirItemInfo(dir, FILE_LIST_NAME));
 		return fileLists;
 	}
 
@@ -556,39 +590,31 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 		dcassert(dir[1] == ':');
 		dcassert(dir[2] == '\\');
 
-		next = ctrlDirs.GetRootItem();
+		next = dirs->getRoot();
 
 		while(next != NULL) {
 			if(next != fileLists) {
-				string* stmp = reinterpret_cast<string*>(ctrlDirs.GetItemData(next));
-				if(Util::strnicmp(*stmp, dir, 3) == 0)
+				if(Util::strnicmp(getDir(next), dir, 3) == 0)
 					break;
 			}
-			next = ctrlDirs.GetNextSiblingItem(next);
+			next = dirs->getNextSibling(next);
 		}
 
 		if(next == NULL) {
 			// First addition, set commonStart to the dir minus the last part...
 			i = dir.rfind('\\', dir.length()-2);
 			if(i != string::npos) {
-				tstring name = Text::toT(dir.substr(0, i));
-				tvi.hParent = NULL;
-				tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
-				tvi.item.lParam = (LPARAM)new string(dir.substr(0, i+1));
-				next = ctrlDirs.InsertItem(&tvi);
+				next = dirs->insert(NULL, new DirItemInfo(dir.substr(0, i+1)));
 			} else {
 				dcassert(dir.length() == 3);
-				tstring name = Text::toT(dir);
-				tvi.hParent = NULL;
-				tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
-				tvi.item.lParam = (LPARAM)new string(dir);
-				next = ctrlDirs.InsertItem(&tvi);
+				next = dirs->insert(NULL, new DirItemInfo(dir, Text::toT(dir)));
 			}
 		}
 
 		// Ok, next now points to x:\... find how much is common
 
-		string* rootStr = (string*)ctrlDirs.GetItemData(next);
+		DirItemInfo* rootInfo = dirs->getData(next);
+		const string& rootStr = rootInfo->getDir();
 
 		i = 0;
 
@@ -596,41 +622,37 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 			j = dir.find('\\', i);
 			if(j == string::npos)
 				break;
-			if(Util::strnicmp(dir.c_str() + i, rootStr->c_str() + i, j - i + 1) != 0)
+			if(Util::strnicmp(dir.c_str() + i, rootStr.c_str() + i, j - i + 1) != 0)
 				break;
 			i = j + 1;
 		}
 
-		if(i < rootStr->length()) {
+		if(i < rootStr.length()) {
 			HTREEITEM oldRoot = next;
 
 			// Create a new root
-			tstring name = Text::toT(rootStr->substr(0, i-1));
-			tvi.hParent = NULL;
-			tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
-			tvi.item.lParam = (LPARAM)new string(rootStr->substr(0, i));
-			HTREEITEM newRoot = ctrlDirs.InsertItem(&tvi);
+			HTREEITEM newRoot = dirs->insert(NULL, new DirItemInfo(rootStr.substr(0, i)));
 
-			parent = addDirectory(*rootStr, false, newRoot);
+			parent = addDirectory(rootStr, false, newRoot);
 
-			next = ctrlDirs.GetChildItem(oldRoot);
+			next = dirs->getChild(oldRoot);
 			while(next != NULL) {
 				moveNode(next, parent);
-				next = ctrlDirs.GetChildItem(oldRoot);
+				next = dirs->getChild(oldRoot);
 			}
-			delete rootStr;
-			ctrlDirs.DeleteItem(oldRoot);
+			delete rootInfo;
+			dirs->deleteItem(oldRoot);
 			parent = newRoot;
 		} else {
 			// Use this root as parent
 			parent = next;
-			next = ctrlDirs.GetChildItem(parent);
+			next = dirs->getChild(parent);
 		}
 	} else {
 		parent = startAt;
-		next = ctrlDirs.GetChildItem(parent);
+		next = dirs->getChild(parent);
 		i = getDir(parent).length();
-		dcassert(Util::strnicmp(getDir(parent), dir, getDir(parent).length()) == 0);
+		dcassert(Util::strnicmp(getDir(parent), dir, i) == 0);
 	}
 
 	HTREEITEM firstParent = parent;
@@ -644,48 +666,40 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 					i = n.length();
 
 					parent = next;
-					next = ctrlDirs.GetChildItem(next);
+					next = dirs->getChild(next);
 					break;
 				}
 			}
-			next = ctrlDirs.GetNextSiblingItem(next);
+			next = dirs->getNextSibling(next);
 		}
 
 		if(next == NULL) {
 			// We didn't find it, add...
 			j = dir.find('\\', i);
 			dcassert(j != string::npos);
-			tstring name = Text::toT(dir.substr(i, j-i));
-			tvi.hParent = parent;
-			tvi.item.pszText = const_cast<TCHAR*>(name.c_str());
-			tvi.item.lParam = (LPARAM) new string(dir.substr(0, j+1));
-
-			parent = ctrlDirs.InsertItem(&tvi);
-
+			parent = dirs->insert(parent, new DirItemInfo(dir.substr(0, j+1), Text::toT(dir.substr(i, j-i))));
 			i = j + 1;
 		}
 	}
 
+#ifdef PORT_ME
 	if(firstParent != NULL)
 		ctrlDirs.Expand(firstParent);
-
-	return parent;
 #endif
-	return 0;
+	return parent;
 }
 
 void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false */) {
-#ifdef PORT_ME
 	// First, find the last name available
 	string::size_type i = 0;
 
-	HTREEITEM next = ctrlDirs.GetRootItem();
+	HTREEITEM next = dirs->getRoot();
 	HTREEITEM parent = NULL;
 
 	if(isFileList) {
 		dcassert(fileLists != NULL);
-		delete (string*)ctrlDirs.GetItemData(fileLists);
-		ctrlDirs.DeleteItem(fileLists);
+		delete dirs->getData(fileLists);
+		dirs->deleteItem(fileLists);
 		fileLists = NULL;
 		return;
 	} else {
@@ -696,12 +710,12 @@ void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false *
 					if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
 						// Match!
 						parent = next;
-						next = ctrlDirs.GetChildItem(next);
+						next = dirs->getChild(next);
 						i = n.length();
 						break;
 					}
 				}
-				next = ctrlDirs.GetNextSiblingItem(next);
+				next = dirs->getNextSibling(next);
 			}
 			if(next == NULL)
 				break;
@@ -710,48 +724,355 @@ void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false *
 
 	next = parent;
 
-	while((ctrlDirs.GetChildItem(next) == NULL) && (directories.find(getDir(next)) == directories.end())) {
-		delete (string*)ctrlDirs.GetItemData(next);
-		parent = ctrlDirs.GetParentItem(next);
+	while((dirs->getChild(next) == NULL) && (directories.find(getDir(next)) == directories.end())) {
+		delete dirs->getData(next);
+		parent = dirs->getParent(next);
 
-		ctrlDirs.DeleteItem(next);
+		dirs->deleteItem(next);
 		if(parent == NULL)
 			break;
 		next = parent;
 	}
-#endif
 }
 
 void QueueFrame::removeDirectories(HTREEITEM ht) {
-#ifdef PORT_ME
-	HTREEITEM next = ctrlDirs.GetChildItem(ht);
+	HTREEITEM next = dirs->getChild(ht);
 	while(next != NULL) {
 		removeDirectories(next);
-		next = ctrlDirs.GetNextSiblingItem(ht);
+		next = dirs->getNextSibling(ht);
 	}
-	delete (string*)ctrlDirs.GetItemData(ht);
-	ctrlDirs.DeleteItem(ht);
+	delete dirs->getData(ht);
+	dirs->deleteItem(ht);
+}
+
+void QueueFrame::removeSelected() {
+#ifdef PORT_ME
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+		ctrlQueue.forEachSelected(&QueueItemInfo::remove);
 #endif
 }
 
+void QueueFrame::removeSelectedDir() {
+#ifdef PORT_ME
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+		removeDir(ctrlDirs.GetSelectedItem());
+#endif
+}
+
+void QueueFrame::moveSelected() {
+
+	int n = files->getSelectedCount();
+	if(n == 1) {
+		// Single file, get the full filename and move...
+		QueueItemInfo* ii = files->getSelectedItem();
+		tstring target = Text::toT(ii->getTarget());
+		tstring ext = Util::getFileExt(target);
+		tstring ext2;
+		if (!ext.empty())
+		{
+			ext = ext.substr(1); // remove leading dot so default extension works when browsing for file
+			ext2 = _T("*.") + ext;
+			ext2 += (TCHAR)0;
+			ext2 += _T("*.") + ext;
+		}
+		ext2 += _T("*.*");
+		ext2 += (TCHAR)0;
+		ext2 += _T("*.*");
+		ext2 += (TCHAR)0;
+
+		tstring path = Text::toT(ii->getPath());
+#ifdef PORT_ME
+		if(WinUtil::browseFile(target, handle(), true, path, ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
+			QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(target));
+		}
+#endif
+	} else if(n > 1) {
+		tstring name;
+		if(showTree->getChecked()) {
+			name = Text::toT(curDir);
+		}
+#ifdef PORT_ME
+		if(WinUtil::browseDirectory(name, handle())) {
+			int i = -1;
+			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				QueueItemInfo* ii = ctrlQueue.getItemData(i);
+				QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(name) + Util::getFileName(ii->getTarget()));
+			}
+		}
+#endif
+	}
+}
+
+void QueueFrame::moveSelectedDir() {
+	if(dirs->getSelected() == NULL)
+		return;
+
+	dcassert(!curDir.empty());
+	tstring name = Text::toT(curDir);
 
 #ifdef PORT_ME
+	if(WinUtil::browseDirectory(name, m_hWnd)) {
+		moveDir(ctrlDirs.GetSelectedItem(), Text::fromT(name));
+	}
+#endif
+}
 
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
+	HTREEITEM next = dirs->getChild(ht);
+	while(next != NULL) {
+		// must add path separator since getLastDir only give us the name
+		moveDir(next, target + Util::getLastDir(getDir(next)) + PATH_SEPARATOR);
+		next = dirs->getNextSibling(next);
+	}
+	const string& dir = getDir(ht);
 
-#include "QueueFrame.h"
-#include "SearchFrm.h"
-#include "PrivateFrame.h"
-#include "LineDlg.h"
+	DirectoryPair p = directories.equal_range(dir);
 
-#include "../client/StringTokenizer.h"
-#include "../client/ShareManager.h"
-#include "../client/ClientManager.h"
-#include "../client/version.h"
+	for(DirectoryIter i = p.first; i != p.second; ++i) {
+		QueueItemInfo* ii = i->second;
+		QueueManager::getInstance()->move(ii->getTarget(), target + Util::getFileName(ii->getTarget()));
+	}
+}
 
-#define FILE_LIST_NAME _T("File Lists")
+void QueueFrame::handleSearchAlternates(WidgetMenuPtr menu, unsigned id) {
+	if(files->getSelectedCount() == 1) {
+#ifdef PORT_ME
+		WinUtil::searchHash(files->getSelectedItem()->getTTH());
+#endif
+	}
+}
+
+void QueueFrame::handleBitziLookup(WidgetMenuPtr menu, unsigned id) {
+	if(files->getSelectedCount() == 1) {
+#ifdef PORT_ME
+		WinUtil::bitziLink(files->getSelectedItem()->getTTH());
+#endif
+	}
+}
+
+void QueueFrame::handleCopyMagnet(WidgetMenuPtr menu, unsigned id) {
+	if(files->getSelectedCount() == 1) {
+		QueueItemInfo* ii = files->getSelectedItem();
+#ifdef PORT_ME
+		WinUtil::copyMagnet(ii->getTTH(), Text::toT(Util::getFileName(ii->getTarget())));
+#endif
+	}
+}
+
+void QueueFrame::handleBrowseList(WidgetMenuPtr menu, unsigned id) {
+
+	if(files->getSelectedCount() == 1) {
+#ifdef PORT_ME
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+
+		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		try {
+			QueueManager::getInstance()->addList(s->getUser(), QueueItem::FLAG_CLIENT_VIEW);
+		} catch(const Exception&) {
+		}
+#endif
+	}
+}
+
+void QueueFrame::handleReadd(WidgetMenuPtr menu, unsigned id) {
+
+	if(files->getSelectedCount() == 1) {
+		QueueItemInfo* ii = files->getSelectedItem();
+
+#ifdef PORT_ME
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+
+		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		if(wID == IDC_READD) {
+			// re-add all sources
+			for(QueueItem::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ++s) {
+				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
+			}
+		} else {
+			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+			try {
+				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
+			} catch(const Exception& e) {
+				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
+			}
+		}
+#endif
+	}
+}
+
+void QueueFrame::handleRemoveSource(WidgetMenuPtr menu, unsigned id) {
+
+	if(files->getSelectedCount() == 1) {
+		QueueItemInfo* ii = files->getSelectedItem();
+
+		if(id == IDC_REMOVE_SOURCE) {
+			for(QueueItem::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
+				QueueManager::getInstance()->removeSource(ii->getTarget(), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			}
+		} else {
+#ifdef PORT_ME
+			CMenuItemInfo mi;
+			mi.fMask = MIIM_DATA;
+
+			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
+			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+			QueueManager::getInstance()->removeSource(ii->getTarget(), s->getUser(), QueueItem::Source::FLAG_REMOVED);
+#endif
+		}
+	}
+}
+
+void QueueFrame::handleRemoveSources(WidgetMenuPtr menu, unsigned id) {
+#ifdef PORT_ME
+	CMenuItemInfo mi;
+	mi.fMask = MIIM_DATA;
+	removeAllMenu.GetMenuItemInfo(wID, FALSE, &mi);
+	QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+	QueueManager::getInstance()->removeSource(s->getUser(), QueueItem::Source::FLAG_REMOVED);
+	return 0;
+#endif
+}
+
+void QueueFrame::handlePM(WidgetMenuPtr menu, unsigned id) {
+	if(files->getSelectedCount() == 1) {
+#ifdef PORT_ME
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+
+		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		PrivateFrame::openWindow(s->getUser());
+#endif
+	}
+}
+
+void QueueFrame::handlePriority(WidgetMenuPtr menu, unsigned id) {
+	QueueItem::Priority p;
+
+	switch(id) {
+		case IDC_PRIORITY_PAUSED: p = QueueItem::PAUSED; break;
+		case IDC_PRIORITY_LOWEST: p = QueueItem::LOWEST; break;
+		case IDC_PRIORITY_LOW: p = QueueItem::LOW; break;
+		case IDC_PRIORITY_NORMAL: p = QueueItem::NORMAL; break;
+		case IDC_PRIORITY_HIGH: p = QueueItem::HIGH; break;
+		case IDC_PRIORITY_HIGHEST: p = QueueItem::HIGHEST; break;
+		default: p = QueueItem::DEFAULT; break;
+	}
+
+	if(usingDirMenu) {
+		setPriority(dirs->getSelected(), p);
+	} else {
+		std::vector<size_t> selected = files->getSelectedRows();
+		for(std::vector<size_t>::iterator i = selected.begin(); i != selected.end(); ++i) {
+			QueueManager::getInstance()->setPriority(files->getItemData(*i)->getTarget(), p);
+		}
+	}
+}
+
+void QueueFrame::removeDir(HTREEITEM ht) {
+	if(ht == NULL)
+		return;
+	HTREEITEM child = dirs->getChild(ht);
+	while(child) {
+		removeDir(child);
+		child = dirs->getNextSibling(child);
+	}
+	const string& name = getDir(ht);
+	DirectoryPair dp = directories.equal_range(name);
+	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
+		QueueManager::getInstance()->remove(i->second->getTarget());
+	}
+}
+
+/*
+ * @param inc True = increase, False = decrease
+ */
+void QueueFrame::changePriority(bool inc){
+	std::vector<size_t> selected = files->getSelectedRows();
+	for(std::vector<size_t>::iterator i = selected.begin(); i != selected.end(); ++i) {
+		QueueItemInfo* ii = files->getItemData(*i);
+		QueueItem::Priority p = ii->getPriority();
+
+		if ((inc && p == QueueItem::HIGHEST) || (!inc && p == QueueItem::PAUSED)){
+			// Trying to go higher than HIGHEST or lower than PAUSED
+			// so do nothing
+			continue;
+		}
+
+		switch(p){
+			case QueueItem::HIGHEST: p = inc ? QueueItem::HIGHEST : QueueItem::HIGH; break;
+			case QueueItem::HIGH:    p = inc ? QueueItem::HIGHEST : QueueItem::NORMAL; break;
+			case QueueItem::NORMAL:  p = inc ? QueueItem::HIGH    : QueueItem::LOW; break;
+			case QueueItem::LOW:     p = inc ? QueueItem::NORMAL  : QueueItem::LOWEST; break;
+			case QueueItem::LOWEST:  p = inc ? QueueItem::LOW     : QueueItem::PAUSED; break;
+			case QueueItem::PAUSED:  p = inc ? QueueItem::LOWEST : QueueItem::PAUSED; break;
+		}
+
+		QueueManager::getInstance()->setPriority(ii->getTarget(), p);
+	}
+}
+
+void QueueFrame::setPriority(HTREEITEM ht, const QueueItem::Priority& p) {
+	if(ht == NULL)
+		return;
+	HTREEITEM child = dirs->getChild(ht);
+	while(child) {
+		setPriority(child, p);
+		child = dirs->getNextSibling(child);
+	}
+	const string& name = getDir(ht);
+	DirectoryPair dp = directories.equal_range(name);
+	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
+		QueueManager::getInstance()->setPriority(i->second->getTarget(), p);
+	}
+}
+
+
+void QueueFrame::clearTree(HTREEITEM item) {
+	HTREEITEM next = dirs->getChild(item);
+	while(next != NULL) {
+		clearTree(next);
+		next = dirs->getNextSibling(next);
+	}
+	delete dirs->getData(item);
+}
+
+// Put it here to avoid a copy for each recursion...
+static TCHAR tmpBuf[1024];
+void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
+	TVINSERTSTRUCT tvis;
+	memset(&tvis, 0, sizeof(tvis));
+	tvis.itemex.hItem = item;
+	tvis.itemex.mask = TVIF_CHILDREN | TVIF_HANDLE | TVIF_IMAGE | TVIF_INTEGRAL | TVIF_PARAM |
+		TVIF_SELECTEDIMAGE | TVIF_STATE | TVIF_TEXT;
+	tvis.itemex.pszText = tmpBuf;
+	tvis.itemex.cchTextMax = 1024;
+	dirs->getItem(&tvis.itemex);
+	tvis.hInsertAfter =	TVI_SORT;
+	tvis.hParent = parent;
+	HTREEITEM ht = dirs->insert(&tvis);
+	HTREEITEM next = dirs->getChild(item);
+	while(next != NULL) {
+		moveNode(next, ht);
+		next = dirs->getChild(item);
+	}
+	dirs->deleteItem(item);
+}
+
+const string& QueueFrame::getSelectedDir() {
+	DirItemInfo* info = dirs->getSelectedData();
+	return info == NULL ? Util::emptyString : info->getDir();
+}
+
+const string& QueueFrame::getDir(HTREEITEM item) {
+	DirItemInfo* info = dirs->getData(item);
+	return info == NULL ? Util::emptyString : info->getDir();
+}
+
+#ifdef PORT_ME
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -768,52 +1089,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	ctrlDirs.SetBkColor(WinUtil::bgColor);
 	ctrlDirs.SetTextColor(WinUtil::textColor);
-
-	singleMenu.CreatePopupMenu();
-	multiMenu.CreatePopupMenu();
-	browseMenu.CreatePopupMenu();
-	removeMenu.CreatePopupMenu();
-	removeAllMenu.CreatePopupMenu();
-	pmMenu.CreatePopupMenu();
-	priorityMenu.CreatePopupMenu();
-	dirMenu.CreatePopupMenu();
-	readdMenu.CreatePopupMenu();
-
-	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
-	singleMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CTSTRING(LOOKUP_AT_BITZI));
-	singleMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CTSTRING(COPY_MAGNET));
-	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
-	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)browseMenu, CTSTRING(GET_FILE_LIST));
-	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)pmMenu, CTSTRING(SEND_PRIVATE_MESSAGE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)readdMenu, CTSTRING(READD_SOURCE));
-	singleMenu.AppendMenu(MF_SEPARATOR);
-	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeMenu, CTSTRING(REMOVE_SOURCE));
-	singleMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)removeAllMenu, CTSTRING(REMOVE_FROM_ALL));
-	singleMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-
-	multiMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
-	multiMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
-	multiMenu.AppendMenu(MF_SEPARATOR);
-	multiMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-
-	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_PAUSED, CTSTRING(PAUSED));
-	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_LOWEST, CTSTRING(LOWEST));
-	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_LOW, CTSTRING(LOW));
-	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_NORMAL, CTSTRING(NORMAL));
-	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGH, CTSTRING(HIGH));
-	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGHEST, CTSTRING(HIGHEST));
-
-	dirMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)priorityMenu, CTSTRING(SET_PRIORITY));
-	dirMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
-	dirMenu.AppendMenu(MF_SEPARATOR);
-	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-
-	removeMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCES, CTSTRING(ALL));
-	removeMenu.AppendMenu(MF_SEPARATOR);
-
-	readdMenu.AppendMenu(MF_STRING, IDC_READD, CTSTRING(ALL));
-	readdMenu.AppendMenu(MF_SEPARATOR);
 
 
 	bHandled = FALSE;
@@ -835,87 +1110,6 @@ LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 		onTab();
 	}
 	return 0;
-}
-
-
-void QueueFrame::removeSelected() {
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
-		ctrlQueue.forEachSelected(&QueueItemInfo::remove);
-}
-
-void QueueFrame::removeSelectedDir() {
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
-		removeDir(ctrlDirs.GetSelectedItem());
-}
-
-void QueueFrame::moveSelected() {
-
-	int n = ctrlQueue.GetSelectedCount();
-	if(n == 1) {
-		// Single file, get the full filename and move...
-		QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
-		tstring target = Text::toT(ii->getTarget());
-		tstring ext = Util::getFileExt(target);
-		tstring ext2;
-		if (!ext.empty())
-		{
-			ext = ext.substr(1); // remove leading dot so default extension works when browsing for file
-			ext2 = _T("*.") + ext;
-			ext2 += (TCHAR)0;
-			ext2 += _T("*.") + ext;
-		}
-		ext2 += _T("*.*");
-		ext2 += (TCHAR)0;
-		ext2 += _T("*.*");
-		ext2 += (TCHAR)0;
-
-		tstring path = Text::toT(ii->getPath());
-		if(WinUtil::browseFile(target, m_hWnd, true, path, ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
-			QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(target));
-		}
-	} else if(n > 1) {
-		tstring name;
-		if(showTree->getChecked()) {
-			name = Text::toT(curDir);
-		}
-
-		if(WinUtil::browseDirectory(name, m_hWnd)) {
-			int i = -1;
-			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				QueueItemInfo* ii = ctrlQueue.getItemData(i);
-				QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(name) + Util::getFileName(ii->getTarget()));
-			}
-		}
-	}
-}
-
-void QueueFrame::moveSelectedDir() {
-	if(ctrlDirs.GetSelectedItem() == NULL)
-		return;
-
-	dcassert(!curDir.empty());
-	tstring name = Text::toT(curDir);
-
-	if(WinUtil::browseDirectory(name, m_hWnd)) {
-		moveDir(ctrlDirs.GetSelectedItem(), Text::fromT(name));
-	}
-}
-
-void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
-	HTREEITEM next = ctrlDirs.GetChildItem(ht);
-	while(next != NULL) {
-		// must add path separator since getLastDir only give us the name
-		moveDir(next, target + Util::getLastDir(getDir(next)) + PATH_SEPARATOR);
-		next = ctrlDirs.GetNextSiblingItem(next);
-	}
-	string* s = (string*)ctrlDirs.GetItemData(ht);
-
-	DirectoryPair p = directories.equal_range(*s);
-
-	for(DirectoryIter i = p.first; i != p.second; ++i) {
-		QueueItemInfo* ii = i->second;
-		QueueManager::getInstance()->move(ii->getTarget(), target + Util::getFileName(ii->getTarget()));
-	}
 }
 
 LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -1037,233 +1231,11 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	return FALSE;
 }
 
-LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		WinUtil::searchHash(ii->getTTH());
-	}
-	return 0;
-}
-
-LRESULT QueueFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		WinUtil::bitziLink(ii->getTTH());
-	}
-	return 0;
-}
-
-LRESULT QueueFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		WinUtil::copyMagnet(ii->getTTH(), Text::toT(Util::getFileName(ii->getTarget())));
-	}
-	return 0;
-}
-
-LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-
-		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
-		try {
-			QueueManager::getInstance()->addList(s->getUser(), QueueItem::FLAG_CLIENT_VIEW);
-		} catch(const Exception&) {
-		}
-	}
-	return 0;
-}
-
-LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-
-		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		if(wID == IDC_READD) {
-			// re-add all sources
-			for(QueueItem::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ++s) {
-				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
-			}
-		} else {
-			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
-			try {
-				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
-			} catch(const Exception& e) {
-				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
-			}
-		}
-	}
-	return 0;
-}
-
-LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		if(wID == IDC_REMOVE_SOURCE) {
-			for(QueueItem::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
-				QueueManager::getInstance()->removeSource(ii->getTarget(), si->getUser(), QueueItem::Source::FLAG_REMOVED);
-			}
-		} else {
-			CMenuItemInfo mi;
-			mi.fMask = MIIM_DATA;
-
-			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
-			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
-			QueueManager::getInstance()->removeSource(ii->getTarget(), s->getUser(), QueueItem::Source::FLAG_REMOVED);
-		}
-	}
-	return 0;
-}
-
-LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CMenuItemInfo mi;
-	mi.fMask = MIIM_DATA;
-	removeAllMenu.GetMenuItemInfo(wID, FALSE, &mi);
-	QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
-	QueueManager::getInstance()->removeSource(s->getUser(), QueueItem::Source::FLAG_REMOVED);
-	return 0;
-}
-
-LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-
-		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
-		PrivateFrame::openWindow(s->getUser());
-	}
-	return 0;
-}
-LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	QueueItem::Priority p;
-
-	switch(wID) {
-		case IDC_PRIORITY_PAUSED: p = QueueItem::PAUSED; break;
-		case IDC_PRIORITY_LOWEST: p = QueueItem::LOWEST; break;
-		case IDC_PRIORITY_LOW: p = QueueItem::LOW; break;
-		case IDC_PRIORITY_NORMAL: p = QueueItem::NORMAL; break;
-		case IDC_PRIORITY_HIGH: p = QueueItem::HIGH; break;
-		case IDC_PRIORITY_HIGHEST: p = QueueItem::HIGHEST; break;
-		default: p = QueueItem::DEFAULT; break;
-	}
-
-	if(usingDirMenu) {
-		setPriority(ctrlDirs.GetSelectedItem(), p);
-	} else {
-		int i = -1;
-		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->setPriority(ctrlQueue.getItemData(i)->getTarget(), p);
-		}
-	}
-
-	return 0;
-}
-
-void QueueFrame::removeDir(HTREEITEM ht) {
-	if(ht == NULL)
-		return;
-	HTREEITEM child = ctrlDirs.GetChildItem(ht);
-	while(child) {
-		removeDir(child);
-		child = ctrlDirs.GetNextSiblingItem(child);
-	}
-	const string& name = getDir(ht);
-	DirectoryPair dp = directories.equal_range(name);
-	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
-		QueueManager::getInstance()->remove(i->second->getTarget());
-	}
-}
-
-/*
- * @param inc True = increase, False = decrease
- */
-void QueueFrame::changePriority(bool inc){
-	int i = -1;
-	while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1){
-		QueueItem::Priority p = ctrlQueue.getItemData(i)->getPriority();
-
-		if ((inc && p == QueueItem::HIGHEST) || (!inc && p == QueueItem::PAUSED)){
-			// Trying to go higher than HIGHEST or lower than PAUSED
-			// so do nothing
-			continue;
-		}
-
-		switch(p){
-			case QueueItem::HIGHEST: p = QueueItem::HIGH; break;
-			case QueueItem::HIGH:    p = inc ? QueueItem::HIGHEST : QueueItem::NORMAL; break;
-			case QueueItem::NORMAL:  p = inc ? QueueItem::HIGH    : QueueItem::LOW; break;
-			case QueueItem::LOW:     p = inc ? QueueItem::NORMAL  : QueueItem::LOWEST; break;
-			case QueueItem::LOWEST:  p = inc ? QueueItem::LOW     : QueueItem::PAUSED; break;
-			case QueueItem::PAUSED:  p = QueueItem::LOWEST; break;
-		}
-
-		QueueManager::getInstance()->setPriority(ctrlQueue.getItemData(i)->getTarget(), p);
-	}
-}
-
-void QueueFrame::setPriority(HTREEITEM ht, const QueueItem::Priority& p) {
-	if(ht == NULL)
-		return;
-	HTREEITEM child = ctrlDirs.GetChildItem(ht);
-	while(child) {
-		setPriority(child, p);
-		child = ctrlDirs.GetNextSiblingItem(child);
-	}
-	const string& name = getDir(ht);
-	DirectoryPair dp = directories.equal_range(name);
-	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
-		QueueManager::getInstance()->setPriority(i->second->getTarget(), p);
-	}
-}
-
-
 LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
 	updateQueue();
 	return 0;
 }
 
-void QueueFrame::clearTree(HTREEITEM item) {
-	HTREEITEM next = ctrlDirs.GetChildItem(item);
-	while(next != NULL) {
-		clearTree(next);
-		next = ctrlDirs.GetNextSiblingItem(next);
-	}
-	delete (string*)ctrlDirs.GetItemData(item);
-}
 
-// Put it here to avoid a copy for each recursion...
-static TCHAR tmpBuf[1024];
-void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
-	TVINSERTSTRUCT tvis;
-	memset(&tvis, 0, sizeof(tvis));
-	tvis.itemex.hItem = item;
-	tvis.itemex.mask = TVIF_CHILDREN | TVIF_HANDLE | TVIF_IMAGE | TVIF_INTEGRAL | TVIF_PARAM |
-		TVIF_SELECTEDIMAGE | TVIF_STATE | TVIF_TEXT;
-	tvis.itemex.pszText = tmpBuf;
-	tvis.itemex.cchTextMax = 1024;
-	ctrlDirs.GetItem((TVITEM*)&tvis.itemex);
-	tvis.hInsertAfter =	TVI_SORT;
-	tvis.hParent = parent;
-	HTREEITEM ht = ctrlDirs.InsertItem(&tvis);
-	HTREEITEM next = ctrlDirs.GetChildItem(item);
-	while(next != NULL) {
-		moveNode(next, ht);
-		next = ctrlDirs.GetChildItem(item);
-	}
-	ctrlDirs.DeleteItem(item);
-}
 #endif
+

@@ -21,6 +21,7 @@
 
 #include "StaticFrame.h"
 #include "TypedListViewCtrl.h"
+#include "TypedTreeView.h"
 
 #include <client/TaskQueue.h>
 #include <client/FastAlloc.h>
@@ -78,6 +79,19 @@ private:
 		ADD_ITEM,
 		REMOVE_ITEM,
 		UPDATE_ITEM
+	};
+
+	class DirItemInfo : public FastAlloc<DirItemInfo> {
+	public:
+		DirItemInfo(const string& dir);
+		DirItemInfo(const string& dir_, const tstring& text_) : dir(dir_), text(text_) { }
+		const tstring& getText() const { return text; }
+		int getIcon();
+		int getSelectedIcon();
+		const string& getDir() const { return dir; }
+	private:
+		string dir;
+		tstring text;
 	};
 
 	class QueueItemInfo;
@@ -193,14 +207,31 @@ private:
 	TaskQueue tasks;
 
 	WidgetStatusBarSectionsPtr status;
-	WidgetTreeViewPtr dirs;
+	
+	typedef TypedTreeView<QueueFrame, DirItemInfo> WidgetDirs;
+	typedef WidgetDirs* WidgetDirsPtr;
+	WidgetDirsPtr dirs;
+	
 	typedef TypedListViewCtrl<QueueFrame, QueueItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
-	
 	WidgetFilesPtr files;
 	WidgetSplitterCoolPtr splitter;
 	WidgetCheckBoxPtr showTree;
-	
+
+	/** Single selection in the queue part */
+	WidgetMenuPtr singleMenu;
+	/** Multiple selection in the queue part */
+	WidgetMenuPtr multiMenu;
+	/** Tree part menu */
+	WidgetMenuPtr browseMenu;
+
+	WidgetMenuPtr removeMenu;
+	WidgetMenuPtr removeAllMenu;
+	WidgetMenuPtr pmMenu;
+	WidgetMenuPtr priorityMenu;
+	WidgetMenuPtr readdMenu;
+	WidgetMenuPtr dirMenu;
+
 	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
@@ -209,9 +240,12 @@ private:
 	std::string curDir;
 
 	bool dirty;
+	bool usingDirMenu;
 	
 	int64_t queueSize;
 	int queueItems;
+
+	HTREEITEM fileLists;
 
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -222,7 +256,6 @@ private:
 	void setStatus(Status s, const tstring& text);
 	void updateStatus();
 	void updateQueue();
-	const std::string& getSelectedDir();
 
 	void addQueueItem(QueueItemInfo* qi, bool noSort);
 	void addQueueList(const QueueItem::StringMap& l);
@@ -234,6 +267,36 @@ private:
 	bool isCurDir(const string& aDir) const;
 
 	QueueItemInfo* getItemInfo(const string& target);
+
+	void clearTree(HTREEITEM item);
+
+	void moveSelected();
+	void moveSelectedDir();
+	void moveDir(HTREEITEM ht, const string& target);
+
+	void moveNode(HTREEITEM item, HTREEITEM parent);
+
+	void removeSelected();
+	void removeSelectedDir();
+
+	const string& getSelectedDir();
+	const string& getDir(HTREEITEM ht);
+
+	void removeDir(HTREEITEM ht);
+	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
+	void changePriority(bool inc);
+
+	void handleSearchAlternates(WidgetMenuPtr menu, unsigned id);
+	void handleBitziLookup(WidgetMenuPtr menu, unsigned id);
+	void handleCopyMagnet(WidgetMenuPtr menu, unsigned id);
+	void handleMove(WidgetMenuPtr menu, unsigned id);
+	void handleRemove(WidgetMenuPtr menu, unsigned id);
+	void handlePriority(WidgetMenuPtr menu, unsigned id);
+	void handlePM(WidgetMenuPtr menu, unsigned id);
+	void handleRemoveSource(WidgetMenuPtr menu, unsigned id);
+	void handleRemoveSources(WidgetMenuPtr menu, unsigned id);
+	void handleBrowseList(WidgetMenuPtr menu, unsigned id);
+	void handleReadd(WidgetMenuPtr menu, unsigned id);
 
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }
@@ -318,19 +381,11 @@ public:
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void removeDir(HTREEITEM ht);
-	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
-	void changePriority(bool inc);
 
 	LRESULT onItemChangedQueue(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
 		if((lv->uNewState & LVIS_SELECTED) != (lv->uOldState & LVIS_SELECTED))
 			updateStatus();
-		return 0;
-	}
-
-	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
-		ctrlQueue.SetFocus();
 		return 0;
 	}
 
@@ -366,49 +421,11 @@ public:
 private:
 	bool spoken;
 
-	/** Single selection in the queue part */
-	CMenu singleMenu;
-	/** Multiple selection in the queue part */
-	CMenu multiMenu;
-	/** Tree part menu */
-	CMenu browseMenu;
 
-	CMenu removeMenu;
-	CMenu removeAllMenu;
-	CMenu pmMenu;
-	CMenu priorityMenu;
-	CMenu readdMenu;
-	CMenu dirMenu;
 
-	CButton ctrlShowTree;
-	CContainedWindow showTreeContainer;
-
-	bool usingDirMenu;
 
 	int menuItems;
 	int readdItems;
-
-	HTREEITEM fileLists;
-
-	CTreeViewCtrl ctrlDirs;
-
-	void moveSelected();
-	void moveSelectedDir();
-	void moveDir(HTREEITEM ht, const string& target);
-
-	void moveNode(HTREEITEM item, HTREEITEM parent);
-
-	void clearTree(HTREEITEM item);
-
-	void removeSelected();
-	void removeSelectedDir();
-
-	const string& getSelectedDir() {
-		HTREEITEM ht = ctrlDirs.GetSelectedItem();
-		return ht == NULL ? Util::emptyString : getDir(ctrlDirs.GetSelectedItem());
-	}
-
-	const string& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *reinterpret_cast<string*>(ctrlDirs.GetItemData(ht)); }
 
 };
 #endif
