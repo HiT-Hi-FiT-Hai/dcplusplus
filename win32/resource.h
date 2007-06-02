@@ -77,6 +77,8 @@
 #define IDC_REMOVE_SOURCES			1027
 #define IDC_READD					1028
 #define IDC_REMOVE_SOURCE			1029
+#define IDC_FINISHED_DL				1030
+#define IDC_FINISHED_UL				1031
 
 #define IDC_ADD 2000
 #define IDC_ADD_MENU 2001

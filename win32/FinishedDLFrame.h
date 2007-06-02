@@ -16,20 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_FINISHED_UL_FRAME_H
-#define DCPLUSPLUS_WIN32_FINISHED_UL_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_FINISHED_DL_FRAME_H
+#define DCPLUSPLUS_WIN32_FINISHED_DL_FRAME_H
 
 #include "FinishedFrameBase.h"
 
-class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, ResourceManager::FINISHED_UPLOADS, IDC_FINISHED_UL>
+class FinishedDLFrame : public FinishedFrameBase<FinishedDLFrame, ResourceManager::FINISHED_DOWNLOADS, IDC_FINISHED_DL>
 {
 public:
-	FinishedULFrame(SmartWin::Widget* mdiParent);
-	virtual ~FinishedULFrame() { }
+	FinishedDLFrame(SmartWin::Widget* mdiParent);
+	virtual ~FinishedDLFrame() { }
 
 #ifdef PORT_ME
-	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
 #endif
 };
 
-#endif // !defined(DCPLUSPLUS_WIN32_FINISHED_UL_FRAME_H)
+#endif // !defined(DCPLUSPLUS_WIN32_FINISHED_DL_FRAME_H)

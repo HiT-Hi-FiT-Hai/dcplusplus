@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
+#ifndef DCPLUSPLUS_CLIENT_FINISHED_MANAGER_LISTENER_H
+#define DCPLUSPLUS_CLIENT_FINISHED_MANAGER_LISTENER_H
 
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include "forward.h"
 
-#include "FinishedFrame.h"
+class FinishedManagerListener {
+public:
+	virtual ~FinishedManagerListener() { }
+	template<int I>	struct X { enum { TYPE = I }; };
 
+	typedef X<0> Added;
+	typedef X<1> Removed;
+	typedef X<2> RemovedAll;
 
-/**
- * @file
- * $Id: FinishedFrame.cpp,v 1.39 2005/12/19 00:15:52 arnetheduck Exp $
- */
-#endif
+	virtual void on(Added, bool, FinishedItemPtr) throw() { }
+	virtual void on(Removed, bool, FinishedItemPtr) throw() { }
+	virtual void on(RemovedAll, bool) throw() { }
+};
+
+#endif // !defined(DCPLUSPLUS_CLIENT_FINISHED_MANAGER_LISTENER_H)

@@ -39,6 +39,12 @@ typedef std::vector<FavoriteHubEntryPtr> FavoriteHubEntryList;
 
 class FavoriteUser;
 
+class FinishedItem;
+typedef FinishedItem* FinishedItemPtr;
+typedef std::vector<FinishedItemPtr> FinishedItemList;
+
+class FinishedManager;
+
 class Identity;
 
 class OnlineUser;

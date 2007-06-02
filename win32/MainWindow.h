@@ -100,6 +100,8 @@ private:
 	void handleNotepad(WidgetMenuPtr menu, unsigned id);
 	void handleQuickConnect(WidgetMenuPtr menu, unsigned id);
 	void handleQueue(WidgetMenuPtr menu, unsigned id);
+	void handleFinishedDL(WidgetMenuPtr menu, unsigned id);
+	void handleFinishedUL(WidgetMenuPtr menu, unsigned id);
 		
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
@@ -174,8 +176,6 @@ private:
 		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_NET_STATS, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_FINISHED, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_VIEW_WAITING_USERS, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_SYSTEM_LOG, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)

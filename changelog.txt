@@ -4,7 +4,7 @@
 * Fixed invalid share size
 * [bug 1127] Fixed crash on invalid file list (thanks steven sheehy)
 * [bug 1019] Reworked initial filelist dir (thanks mikael eman)
-* Moved to smartwin to enable mingw compiling
+* Moved to smartwin to enable mingw compiling (thanks cologic, ullner, poy)
 * Removed notepad loading compatibility code for notepad texts from versions < 0.20
 * Fixed time issues with DC++ running for more than 49 days
 * [bug 980] Fixed PM's when popup is disabled (thanks ullner)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,9 @@
 #include "DCPlusPlus.h"
 
 #include "FinishedManager.h"
+
 #include "ClientManager.h"
+#include "FinishedManagerListener.h"
 
 FinishedManager::~FinishedManager() throw() {
 	DownloadManager::getInstance()->removeListener(this);
@@ -31,41 +33,35 @@ FinishedManager::~FinishedManager() throw() {
 	for_each(uploads.begin(), uploads.end(), DeleteFunction());
 }
 
-void FinishedManager::remove(FinishedItem *item, bool upload /* = false */) {
+void FinishedManager::remove(FinishedItemPtr item, bool upload /* = false */) {
 	{
 		Lock l(cs);
-		FinishedItem::List *listptr = upload ? &uploads : &downloads;
-		FinishedItem::Iter it = find(listptr->begin(), listptr->end(), item);
+		FinishedItemList *listptr = upload ? &uploads : &downloads;
+		FinishedItemList::iterator it = find(listptr->begin(), listptr->end(), item);
 
 		if(it != listptr->end())
 			listptr->erase(it);
 		else
 			return;
 	}
-	if (!upload)
-		fire(FinishedManagerListener::RemovedDl(), item);
-	else
-		fire(FinishedManagerListener::RemovedUl(), item);
+	fire(FinishedManagerListener::Removed(), upload, item);
 	delete item;
 }
 
 void FinishedManager::removeAll(bool upload /* = false */) {
 	{
 		Lock l(cs);
-		FinishedItem::List *listptr = upload ? &uploads : &downloads;
+		FinishedItemList *listptr = upload ? &uploads : &downloads;
 		for_each(listptr->begin(), listptr->end(), DeleteFunction());
 		listptr->clear();
 	}
-	if (!upload)
-		fire(FinishedManagerListener::RemovedAllDl());
-	else
-		fire(FinishedManagerListener::RemovedAllUl());
+	fire(FinishedManagerListener::RemovedAll(), upload);
 }
 
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
 	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
-		FinishedItem *item = new FinishedItem(
+		FinishedItemPtr item = new FinishedItem(
 			d->getTarget(), Util::toString(ClientManager::getInstance()->getNicks(d->getUser()->getCID())),
 			Util::toString(ClientManager::getInstance()->getHubNames(d->getUser()->getCID())),
 			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
@@ -74,14 +70,14 @@ void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 			downloads.push_back(item);
 		}
 
-		fire(FinishedManagerListener::AddedDl(), item);
+		fire(FinishedManagerListener::Added(), false, item);
 	}
 }
 
 void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
 	if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
-		FinishedItem *item = new FinishedItem(
+		FinishedItemPtr item = new FinishedItem(
 			u->getSourceFile(), Util::toString(ClientManager::getInstance()->getNicks(u->getUser()->getCID())),
 			Util::toString(ClientManager::getInstance()->getHubNames(u->getUser()->getCID())),
 			u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
@@ -90,6 +86,6 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 			uploads.push_back(item);
 		}
 
-		fire(FinishedManagerListener::AddedUl(), item);
+		fire(FinishedManagerListener::Added(), true, item);
 	}
 }
