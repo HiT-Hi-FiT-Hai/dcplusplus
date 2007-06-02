@@ -131,6 +131,11 @@ public:
 		this->clientToScreen(pt);
 		return pt;
 	}
+	
+	void setColor(COLORREF text, COLORREF background) {
+		TreeView_SetTextColor(this->handle(), text);
+		TreeView_SetBkColor(this->handle(), background);
+	}
 private:
 
 	struct ContentDispatcher {

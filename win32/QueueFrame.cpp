@@ -66,6 +66,8 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
 		add_widget(dirs);
+		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
+		dirs->setNormalImageList(WinUtil::fileImages);
 	}
 	
 	{
@@ -81,6 +83,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		files->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		//files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
+		files->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 	
 	{
@@ -91,7 +94,6 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 	}
 	
-
 	status = createStatusBarSections();
 	memset(statusSizes, 0, sizeof(statusSizes));
 	statusSizes[STATUS_SHOW_TREE] = 16;
@@ -102,6 +104,8 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
 
+	onRaw(&QueueFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	
 	updateStatus();	
 	layout();
 }
@@ -1179,7 +1183,7 @@ HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 				dirs->select(ht);
 		}
 		usingDirMenu = true;
-
+		contextMenu = makeDirMenu();
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return TRUE;
@@ -1192,19 +1196,7 @@ HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	ctrlDirs.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
-
-	m_nProportionalPos = 2500;
-	SetSplitterPanes(ctrlDirs.m_hWnd, ctrlQueue.m_hWnd);
-
 	ctrlQueue.setSortColumn(COLUMN_TARGET);
-
-	ctrlQueue.SetBkColor(WinUtil::bgColor);
-	ctrlQueue.SetTextBkColor(WinUtil::bgColor);
-	ctrlQueue.SetTextColor(WinUtil::textColor);
-
-	ctrlDirs.SetBkColor(WinUtil::bgColor);
-	ctrlDirs.SetTextColor(WinUtil::textColor);
 
 	bHandled = FALSE;
 	return 1;

@@ -88,6 +88,13 @@ public:
 		this->clientToScreen(pt);
 		return pt;
 	}
+	
+	void setColor(COLORREF text, COLORREF background) {
+		ListView_SetTextColor(this->handle(), text);
+		ListView_SetTextBkColor(this->handle(), background);
+		ListView_SetBkColor(this->handle(), background);
+	}
+
 private:
 
 };
