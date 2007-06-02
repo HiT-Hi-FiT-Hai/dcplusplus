@@ -32,6 +32,25 @@ public:
 
 	explicit TypedTreeView( SmartWin::Widget* parent ) : SmartWin::Widget(parent), BaseType(parent) { }
 	
+	virtual void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
+		BaseType::create(cs);
+		
+		typedef typename BaseType::MessageMapType MessageMapType;
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->addNewSignal(
+			typename MessageMapType::SignalTupleType(
+				SmartWin::private_::SignalContent(
+					SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ),
+					reinterpret_cast< SmartWin::private_::SignalContent::voidFunctionTakingVoid >( &ContentDispatcher::dispatch ),
+					ptrThis
+				),
+				typename MessageMapType::SignalType(
+					typename MessageMapType::SignalType::SlotType( &ContentDispatcher::dispatch )
+				)
+			)
+		);
+	}
+
 	HTREEITEM insert(HTREEITEM parent, ContentType* data) {
 		TVINSERTSTRUCT item = { parent, TVI_SORT, {TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM | TVIF_TEXT} };
 		item.itemex.pszText = LPSTR_TEXTCALLBACK;
@@ -71,6 +90,10 @@ public:
 		return TreeView_GetSelection(this->handle());
 	}
 	
+	void select(HTREEITEM item) {
+		TreeView_SelectItem(this->handle(), item);
+	}
+	
 	HTREEITEM getNextSibling(HTREEITEM item) {
 		return TreeView_GetNextSibling(this->handle(), item);
 	}
@@ -86,6 +109,53 @@ public:
 	void deleteItem(HTREEITEM item) {
 		TreeView_DeleteItem(this->handle(), item);
 	}
+	
+	HTREEITEM hitTest(POINT& pt) {
+		return TreeView_HitTest(this->handle(), &pt);
+	}
+	
+	RECT getItemRect(HTREEITEM item) {
+		RECT rc;
+		TreeView_GetItemRect(this->handle(), item, &rc, TRUE);
+		return rc;
+	}
+	
+	POINT getContextMenuPos() {
+		HTREEITEM item = getSelected();
+		POINT pt = { 0 };
+		if(item != NULL) {
+			RECT trc = this->getItemRect(item);
+			pt.x = trc.left;
+			pt.y = trc.top + ((trc.bottom - trc.top) / 2);
+		} 
+		this->clientToScreen(pt);
+		return pt;
+	}
+private:
+
+	struct ContentDispatcher {
+		static HRESULT dispatch(SmartWin::private_::SignalContent& params) {
+			NMTVDISPINFO * nm = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
+			if(nm->item.mask & TVIF_TEXT) {
+				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+				const string& text = content->getText();
+				strncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
+				if(text.size() < nm->item.cchTextMax) {
+					nm->item.pszText[text.size()] = 0;
+				}
+			}
+			if(nm->item.mask & TVIF_IMAGE) {
+				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+				nm->item.iImage = content->getImage();
+			}
+			if(nm->item.mask & TVIF_SELECTEDIMAGE) {
+				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+				nm->item.iSelectedImage = content->getSelectedImage();
+			}
+			return 0;
+		}
+	};
+
 };
 
-#endif // !defined(TYPED_LIST_VIEW_CTRL_H)
+#endif // !defined(TYPED_TREE_VIEW_H)

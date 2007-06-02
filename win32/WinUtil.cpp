@@ -338,6 +338,14 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 #endif
 }
 
+tstring WinUtil::escapeMenu(tstring str) {
+	string::size_type i = 0;
+	while( (i = str.find(_T('&'), i)) != string::npos) {
+		str.insert(str.begin()+i, 1, _T('&'));
+		i += 2;
+	}
+	return str;
+}
 
 #ifdef PORT_ME
 #include "Resource.h"
@@ -1146,19 +1154,6 @@ int WinUtil::getOsMinor()
 	GetVersionEx((OSVERSIONINFO*)&ver);
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	return ver.dwMinorVersion;
-}
-
-void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {
-	int pos = aList.GetNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
-	if(pos >= 0) {
-		CRect lrc;
-		aList.GetItemRect(pos, &lrc, LVIR_LABEL);
-		aPt.x = lrc.left;
-		aPt.y = lrc.top + (lrc.Height() / 2);
-	} else {
-		aPt.x = aPt.y = 0;
-	}
-	aList.ClientToScreen(&aPt);
 }
 
 void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {

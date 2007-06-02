@@ -76,6 +76,18 @@ public:
 		}
 		return item.lParam;
 	}
+	
+	POINT getContextMenuPos() {
+		int pos = getNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
+		POINT pt = { 0 };
+		if(pos >= 0) {
+			RECT lrc = this->getItemRect(pos, LVIR_LABEL);
+			pt.x = lrc.left;
+			pt.y = lrc.top + ((lrc.bottom - lrc.top) / 2);
+		} 
+		this->clientToScreen(pt);
+		return pt;
+	}
 private:
 
 };

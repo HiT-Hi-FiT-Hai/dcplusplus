@@ -74,11 +74,15 @@
 #define IDC_BITZI_LOOKUP			1024
 #define IDC_COPY_MAGNET				1025
 #define IDC_MOVE					1026
-#define IDC_REMOVE_SOURCES			1027
-#define IDC_READD					1028
-#define IDC_REMOVE_SOURCE			1029
-#define IDC_FINISHED_DL				1030
-#define IDC_FINISHED_UL				1031
+#define IDC_FINISHED_DL				1027
+#define IDC_FINISHED_UL				1028
+
+// Stuff that uses multiple id's
+#define IDC_BROWSELIST				3000
+#define IDC_REMOVE_SOURCE			3200
+#define IDC_REMOVE_SOURCES			3400
+#define IDC_READD					3600
+#define IDC_PM						3800
 
 #define IDC_ADD 2000
 #define IDC_ADD_MENU 2001

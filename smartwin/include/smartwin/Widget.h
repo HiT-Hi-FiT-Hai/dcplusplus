@@ -180,6 +180,8 @@ public:
 	// The Widegt responsible for handling the events of the Widget
 	Widget * itsEventHandler;
 
+	bool clientToScreen(POINT& pt) { return ::ClientToScreen(handle(), &pt); }
+	bool screenToClient(POINT& pt) { return ::ScreenToClient(handle(), &pt); }
 protected:
 	// TODO: Can we remove these two?!?!?
 	bool isChild;

@@ -86,8 +86,8 @@ private:
 		DirItemInfo(const string& dir);
 		DirItemInfo(const string& dir_, const tstring& text_) : dir(dir_), text(text_) { }
 		const tstring& getText() const { return text; }
-		int getIcon();
-		int getSelectedIcon();
+		int getImage();
+		int getSelectedImage();
 		const string& getDir() const { return dir; }
 	private:
 		string dir;
@@ -218,19 +218,20 @@ private:
 	WidgetSplitterCoolPtr splitter;
 	WidgetCheckBoxPtr showTree;
 
-	/** Single selection in the queue part */
-	WidgetMenuPtr singleMenu;
-	/** Multiple selection in the queue part */
-	WidgetMenuPtr multiMenu;
-	/** Tree part menu */
-	WidgetMenuPtr browseMenu;
+	/** Currently shown context menu */
+	WidgetMenuPtr contextMenu;
 
-	WidgetMenuPtr removeMenu;
-	WidgetMenuPtr removeAllMenu;
-	WidgetMenuPtr pmMenu;
-	WidgetMenuPtr priorityMenu;
-	WidgetMenuPtr readdMenu;
-	WidgetMenuPtr dirMenu;
+	WidgetMenuPtr makeSingleMenu(QueueItemInfo* qii);
+	WidgetMenuPtr makeMultiMenu();
+	WidgetMenuPtr makeDirMenu();
+	
+	void addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addPriorityMenu(const WidgetMenuPtr& parent);
+	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
 
 	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
@@ -297,7 +298,9 @@ private:
 	void handleRemoveSources(WidgetMenuPtr menu, unsigned id);
 	void handleBrowseList(WidgetMenuPtr menu, unsigned id);
 	void handleReadd(WidgetMenuPtr menu, unsigned id);
-
+	
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }
 	void speak(Tasks s, const string& msg) { tasks.add(s, new StringTask(msg)); speak(); }
@@ -389,16 +392,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		usingDirMenu ? removeSelectedDir() : removeSelected();
-		return 0;
-	}
-
-	LRESULT onMove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		usingDirMenu ? moveSelectedDir() : moveSelected();
-		return 0;
-	}
-
 	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
@@ -420,10 +413,6 @@ public:
 
 private:
 	bool spoken;
-
-
-
-
 	int menuItems;
 	int readdItems;
 

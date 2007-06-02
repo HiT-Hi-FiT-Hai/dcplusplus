@@ -37,6 +37,7 @@ public:
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
 	
 	WidgetDataGridPtr createDataGrid( const typename WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() );
+	
 };
 
 template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >

@@ -91,43 +91,6 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 	}
 	
-	singleMenu = createMenu();
-	
-	singleMenu->appendItem(IDC_SEARCH_ALTERNATES, TSTRING(SEARCH_FOR_ALTERNATES), &QueueFrame::handleSearchAlternates);
-	singleMenu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), &QueueFrame::handleBitziLookup);
-	singleMenu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), &QueueFrame::handleCopyMagnet);
-	singleMenu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
-	priorityMenu = singleMenu->appendPopup(TSTRING(SET_PRIORITY));
-	browseMenu = singleMenu->appendPopup(TSTRING(GET_FILE_LIST));
-	pmMenu = singleMenu->appendPopup(TSTRING(SEND_PRIVATE_MESSAGE));
-	readdMenu = singleMenu->appendPopup(TSTRING(READD_SOURCE));
-	singleMenu->appendSeparatorItem();
-	removeMenu = singleMenu->appendPopup(TSTRING(REMOVE_SOURCE));
-	removeAllMenu = singleMenu->appendPopup(TSTRING(REMOVE_FROM_ALL));
-	singleMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
-
-	multiMenu->appendPopup(TSTRING(SET_PRIORITY), priorityMenu);
-	multiMenu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
-	multiMenu->appendSeparatorItem();
-	multiMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
-
-	priorityMenu->appendItem(IDC_PRIORITY_PAUSED, TSTRING(PAUSED), &QueueFrame::handlePriority);
-	priorityMenu->appendItem(IDC_PRIORITY_LOWEST, TSTRING(LOWEST), &QueueFrame::handlePriority);
-	priorityMenu->appendItem(IDC_PRIORITY_LOW, TSTRING(LOW), &QueueFrame::handlePriority);
-	priorityMenu->appendItem(IDC_PRIORITY_NORMAL, TSTRING(NORMAL), &QueueFrame::handlePriority);
-	priorityMenu->appendItem(IDC_PRIORITY_HIGH, TSTRING(HIGH), &QueueFrame::handlePriority);
-	priorityMenu->appendItem(IDC_PRIORITY_HIGHEST, TSTRING(HIGHEST), &QueueFrame::handlePriority);
-
-	dirMenu->appendPopup(TSTRING(SET_PRIORITY), priorityMenu);
-	dirMenu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
-	dirMenu->appendSeparatorItem();
-	dirMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
-
-	removeMenu->appendItem(IDC_REMOVE_SOURCES, TSTRING(ALL), &QueueFrame::handleRemoveSources);
-	removeMenu->appendSeparatorItem();
-
-	readdMenu->appendItem(IDC_READD, TSTRING(ALL), &QueueFrame::handleReadd);
-	readdMenu->appendSeparatorItem();
 
 	status = createStatusBarSections();
 	memset(statusSizes, 0, sizeof(statusSizes));
@@ -561,11 +524,11 @@ QueueFrame::DirItemInfo::DirItemInfo(const string& dir_) : dir(dir_), text(dir_.
 	
 }
 
-int QueueFrame::DirItemInfo::getIcon() {
+int QueueFrame::DirItemInfo::getImage() {
 	return WinUtil::getDirIconIndex();
 }
 
-int QueueFrame::DirItemInfo::getSelectedIcon() {
+int QueueFrame::DirItemInfo::getSelectedImage() {
 	return WinUtil::getDirIconIndex();
 }
 
@@ -903,6 +866,14 @@ void QueueFrame::handleReadd(WidgetMenuPtr menu, unsigned id) {
 	}
 }
 
+void QueueFrame::handleRemove(WidgetMenuPtr menu, unsigned id) {
+	usingDirMenu ? removeSelectedDir() : removeSelected();
+}
+
+void QueueFrame::handleMove(WidgetMenuPtr menu, unsigned id) {
+	usingDirMenu ? moveSelectedDir() : moveSelected();
+}
+
 void QueueFrame::handleRemoveSource(WidgetMenuPtr menu, unsigned id) {
 
 	if(files->getSelectedCount() == 1) {
@@ -1072,6 +1043,151 @@ const string& QueueFrame::getDir(HTREEITEM item) {
 	return info == NULL ? Util::emptyString : info->getDir();
 }
 
+QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
+	WidgetMenuPtr menu = createMenu();
+
+	menu->appendItem(IDC_SEARCH_ALTERNATES, TSTRING(SEARCH_FOR_ALTERNATES), &QueueFrame::handleSearchAlternates);
+	menu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), &QueueFrame::handleBitziLookup);
+	menu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), &QueueFrame::handleCopyMagnet);
+	menu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
+	addPriorityMenu(menu);
+	addBrowseMenu(menu, qii);
+	addPMMenu(menu, qii);
+	menu->appendSeparatorItem();
+	addReaddMenu(menu, qii);
+	addRemoveMenu(menu, qii);
+	addRemoveAllMenu(menu, qii);
+	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
+	
+	return menu;
+}
+
+QueueFrame::WidgetMenuPtr QueueFrame::makeMultiMenu() {
+	WidgetMenuPtr menu = createMenu();
+
+	addPriorityMenu(menu);
+	
+	menu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
+	menu->appendSeparatorItem();
+	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
+	return menu;
+}
+
+QueueFrame::WidgetMenuPtr QueueFrame::makeDirMenu() {
+	WidgetMenuPtr menu = createMenu();
+
+	addPriorityMenu(menu);
+	menu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
+	menu->appendSeparatorItem();
+	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &QueueFrame::handleRemove);
+	return menu;
+}
+
+void QueueFrame::addPriorityMenu(const WidgetMenuPtr& parent) {
+	WidgetMenuPtr menu = parent->appendPopup(TSTRING(SET_PRIORITY));
+	menu->appendItem(IDC_PRIORITY_PAUSED, TSTRING(PAUSED), &QueueFrame::handlePriority);
+	menu->appendItem(IDC_PRIORITY_LOWEST, TSTRING(LOWEST), &QueueFrame::handlePriority);
+	menu->appendItem(IDC_PRIORITY_LOW, TSTRING(LOW), &QueueFrame::handlePriority);
+	menu->appendItem(IDC_PRIORITY_NORMAL, TSTRING(NORMAL), &QueueFrame::handlePriority);
+	menu->appendItem(IDC_PRIORITY_HIGH, TSTRING(HIGH), &QueueFrame::handlePriority);
+	menu->appendItem(IDC_PRIORITY_HIGHEST, TSTRING(HIGHEST), &QueueFrame::handlePriority);
+}
+
+void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+	unsigned int pos = parent->getCount();
+	WidgetMenuPtr menu = parent->appendPopup(TSTRING(GET_FILE_LIST));
+	if(addUsers(menu, IDC_BROWSELIST, &QueueFrame::handleBrowseList, qii, false) == 0) {
+		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+	}
+}
+
+void QueueFrame::addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+	unsigned int pos = parent->getCount();
+	WidgetMenuPtr menu = parent->appendPopup(TSTRING(SEND_PRIVATE_MESSAGE));
+	if(addUsers(menu, IDC_PM, &QueueFrame::handlePM, qii, false) == 0) {
+		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+	}
+}
+void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+	unsigned int pos = parent->getCount();
+	WidgetMenuPtr menu = parent->appendPopup(TSTRING(READD_SOURCE));
+	
+	menu->appendItem(IDC_READD, TSTRING(ALL), &QueueFrame::handleReadd);
+	menu->appendSeparatorItem();
+	if(addUsers(menu, IDC_READD + 1, &QueueFrame::handleReadd, qii, true) == 0) {
+		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+	}
+}
+
+void QueueFrame::addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+	unsigned int pos = parent->getCount();
+	WidgetMenuPtr menu = parent->appendPopup(TSTRING(REMOVE_SOURCE));
+	menu->appendItem(IDC_REMOVE_SOURCE, TSTRING(ALL), &QueueFrame::handleRemoveSource);
+	menu->appendSeparatorItem();
+	if(addUsers(menu, IDC_REMOVE_SOURCE + 1, &QueueFrame::handleRemoveSource, qii, true) == 0) {
+		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+	}
+}
+
+void QueueFrame::addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+	unsigned int pos = parent->getCount();
+	WidgetMenuPtr menu = parent->appendPopup(TSTRING(REMOVE_FROM_ALL));
+	if(addUsers(menu, IDC_REMOVE_SOURCES, &QueueFrame::handleRemoveSources, qii, true) == 0) {
+		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+	}
+}
+
+unsigned int QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline) {
+	unsigned int id = startId;
+	for(QueueItem::SourceIter i = qii->getSources().begin(); i != qii->getSources().end(); ++i) {
+		QueueItem::Source& source = *i;
+		if(offline || source.getUser()->isOnline()) {
+			tstring nick = WinUtil::escapeMenu(WinUtil::getNicks(source.getUser()));
+			menu->appendItem(id++, nick, reinterpret_cast<ULONG_PTR>(&source), handler);
+		}
+	}
+	return id - startId;
+}
+
+HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	if (reinterpret_cast<HWND>(wParam) == files->handle() && files->getSelectedCount() > 0) {
+		if(pt.x == -1 && pt.y == -1) {
+			pt = files->getContextMenuPos();
+		}
+
+		usingDirMenu = false;
+
+		if(files->getSelectedCount() == 1) {
+			QueueItemInfo* ii = files->getSelectedItem();
+			contextMenu = makeSingleMenu(ii);
+		} else {
+			contextMenu = makeMultiMenu();
+		}
+		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+		return TRUE;
+	} else if (reinterpret_cast<HWND>(wParam) == dirs->handle() && dirs->getSelected() != NULL) {
+		if(pt.x == -1 && pt.y == -1) {
+			pt = dirs->getContextMenuPos();
+		} else {
+			// Strange, windows doesn't change the selection on right-click... (!)
+			POINT pt2 = pt;
+			dirs->screenToClient(pt2);
+			HTREEITEM ht = dirs->hitTest(pt2);
+			if(ht != NULL && ht != dirs->getSelected())
+				dirs->select(ht);
+		}
+		usingDirMenu = true;
+
+		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 #ifdef PORT_ME
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -1089,7 +1205,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	ctrlDirs.SetBkColor(WinUtil::bgColor);
 	ctrlDirs.SetTextColor(WinUtil::textColor);
-
 
 	bHandled = FALSE;
 	return 1;
@@ -1112,124 +1227,6 @@ LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	return 0;
 }
 
-LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if (reinterpret_cast<HWND>(wParam) == ctrlQueue && ctrlQueue.GetSelectedCount() > 0) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlQueue, pt);
-		}
-
-		usingDirMenu = false;
-		CMenuItemInfo mi;
-
-		while(browseMenu.GetMenuItemCount() > 0) {
-			browseMenu.RemoveMenu(0, MF_BYPOSITION);
-		}
-		while(removeMenu.GetMenuItemCount() > 2) {
-			removeMenu.RemoveMenu(2, MF_BYPOSITION);
-		}
-		while(removeAllMenu.GetMenuItemCount() > 0) {
-			removeAllMenu.RemoveMenu(0, MF_BYPOSITION);
-		}
-		while(pmMenu.GetMenuItemCount() > 0) {
-			pmMenu.RemoveMenu(0, MF_BYPOSITION);
-		}
-		while(readdMenu.GetMenuItemCount() > 2) {
-			readdMenu.RemoveMenu(2, MF_BYPOSITION);
-		}
-
-		if(ctrlQueue.GetSelectedCount() == 1) {
-			QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
-			menuItems = 0;
-			int pmItems = 0;
-
-			for(QueueItem::SourceIter i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
-				tstring nick = WinUtil::escapeMenu(WinUtil::getNicks(i->getUser()));
-				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPTSTR)nick.c_str();
-				mi.dwItemData = (ULONG_PTR)&(*i);
-				mi.wID = IDC_BROWSELIST + menuItems;
-				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
-				removeMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
-				mi.wID = IDC_REMOVE_SOURCES + menuItems;
-				removeAllMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				if(i->getUser()->isOnline()) {
-					mi.wID = IDC_PM + menuItems;
-					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
-					pmItems++;
-				}
-				menuItems++;
-			}
-			readdItems = 0;
-			for(QueueItem::SourceIter i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
-				tstring nick = WinUtil::getNicks(i->getUser());
-				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPTSTR)nick.c_str();
-				mi.dwItemData = (ULONG_PTR)&(*i);
-				mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
-				readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
-				readdItems++;
-			}
-
-			if(menuItems == 0) {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MFS_GRAYED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MFS_GRAYED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MFS_GRAYED);
-			}
-			else {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MFS_ENABLED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MFS_ENABLED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MFS_ENABLED);
-			}
-
-			if(pmItems == 0) {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)pmMenu, MFS_GRAYED);
-			}
-			else {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)pmMenu, MFS_ENABLED);
-			}
-
-			if(readdItems == 0) {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MFS_GRAYED);
-			}
-			else {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MFS_ENABLED);
- 			}
-
-			singleMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		} else {
-			multiMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		}
-
-		return TRUE;
-	} else if (reinterpret_cast<HWND>(wParam) == ctrlDirs && ctrlDirs.GetSelectedItem() != NULL) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlDirs, pt);
-		} else {
-			// Strange, windows doesn't change the selection on right-click... (!)
-			UINT a = 0;
-			ctrlDirs.ScreenToClient(&pt);
-			HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
-			if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
-				ctrlDirs.SelectItem(ht);
-			ctrlDirs.ClientToScreen(&pt);
-		}
-		usingDirMenu = true;
-
-		dirMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-
-		return TRUE;
-	}
-
-	bHandled = FALSE;
-	return FALSE;
-}
 
 LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
 	updateQueue();

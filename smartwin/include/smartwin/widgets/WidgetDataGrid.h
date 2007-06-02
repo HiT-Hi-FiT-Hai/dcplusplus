@@ -871,6 +871,12 @@ protected:
 #endif
 	}
 
+	// Returns the rect for the item per code (wraps ListView_GetItemRect)
+	RECT getItemRect( int item, int code );
+
+	// Returns the rect for the subitem item per code (wraps ListView_GetSubItemRect)
+	RECT getSubItemRect( int item, int subitem, int code );
+
 private:
 	// Edit row index and Edit column index, only used when grid is in "edit mode"
 	int itsEditRow;
@@ -904,12 +910,6 @@ private:
 
 	// Calculates the adjustment from the columns of an item.
 	int xoffFromColumn( int column, int & logicalColumn );
-
-	// Returns the rect for the item per code (wraps ListView_GetItemRect)
-	RECT getItemRect( int item, int code );
-
-	// Returns the rect for the subitem item per code (wraps ListView_GetSubItemRect)
-	RECT getSubItemRect( int item, int subitem, int code );
 
 	// Must override to get the LVN_BEGINLABELEDIT && NM_DBLCLK event handler (we
 	// don't have an event handler for them)...

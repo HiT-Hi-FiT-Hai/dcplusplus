@@ -142,6 +142,7 @@ class WidgetTreeView :
 	public AspectFocus< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectRaw< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
 {
+protected:
 	typedef MessageMapControl< EventHandlerClass, WidgetTreeView, MessageMapPolicy > MessageMapType;
 	typedef TreeViewDispatcher< EventHandlerClass, WidgetTreeView, MessageMapType > Dispatcher;
 
