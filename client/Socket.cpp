@@ -108,7 +108,7 @@ uint16_t Socket::bind(uint16_t aPort, const string& aIp /* = 0.0.0.0 */) throw (
 		sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 		check(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
 	}
-	int size = sizeof(sock_addr);
+	socklen_t size = sizeof(sock_addr);
 	getsockname(sock, (sockaddr*)&sock_addr, (socklen_t*)&size);
 	return ntohs(sock_addr.sin_port);
 }

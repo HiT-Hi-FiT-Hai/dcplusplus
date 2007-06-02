@@ -41,7 +41,7 @@ protected:
 		closed(false)
 	{
 		{
-			WidgetDataGrid::Seed cs;
+			typename MDIChildFrame<T>::WidgetDataGrid::Seed cs;
 			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
 			cs.exStyle = WS_EX_CLIENTEDGE;
 			items = createDataGrid(cs);
@@ -71,7 +71,7 @@ protected:
 
 		statusSizes[STATUS_COUNT] = statusSizes[STATUS_BYTES] = statusSizes[STATUS_SPEED] = 100;
 		statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
-		status = createStatusBarSections();
+		status = this->createStatusBarSections();
 
 		layout();
 
@@ -98,7 +98,7 @@ protected:
 	void layout() {
 		const int border = 2;
 
-		SmartWin::Rectangle r(getClientAreaSize());
+		SmartWin::Rectangle r(this->getClientAreaSize());
 		status->refresh();
 
 		{
@@ -164,9 +164,10 @@ private:
 
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
+	static ResourceManager::Strings columnNames[COLUMN_LAST];
 
-	WidgetDataGridPtr items;
-	WidgetStatusBarSectionsPtr status;
+	typename MDIChildFrame<T>::WidgetDataGridPtr items;
+	typename MDIChildFrame<T>::WidgetStatusBarSectionsPtr status;
 
 	bool in_UL, closed;
 
@@ -241,7 +242,9 @@ int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FIL
 
 template <class T, ResourceManager::Strings title, int id>
 int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH,
+
+template <class T, ResourceManager::Strings title, int id>
+ResourceManager::Strings FinishedFrameBase<T, title, id>::columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH,
 ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 
