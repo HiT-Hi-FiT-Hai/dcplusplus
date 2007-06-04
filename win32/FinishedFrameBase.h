@@ -23,17 +23,16 @@
 
 #include <client/FinishedManager.h>
 
-template<class T, ResourceManager::Strings title, int id>
+template<class T, bool in_UL>
 class FinishedFrameBase : public StaticFrame<T>, private FinishedManagerListener {
 public:
-	static const ResourceManager::Strings TITLE_RESOURCE = title;
+	static const ResourceManager::Strings TITLE_RESOURCE = in_UL ? ResourceManager::FINISHED_UPLOADS : ResourceManager::FINISHED_DOWNLOADS;
 
 protected:
 	friend class StaticFrame<T>;
 	friend class MDIChildFrame<T>;
 
 	FinishedFrameBase() :
-		in_UL(id == IDC_FINISHED_UL),
 		items(0),
 		status(0),
 		totalBytes(0),
@@ -169,7 +168,7 @@ private:
 	typename MDIChildFrame<T>::WidgetDataGridPtr items;
 	typename MDIChildFrame<T>::WidgetStatusBarSectionsPtr status;
 
-	bool in_UL, closed;
+	bool closed;
 
 	int64_t totalBytes, totalTime;
 
@@ -237,14 +236,14 @@ private:
 	}
 };
 
-template <class T, ResourceManager::Strings title, int id>
-int FinishedFrameBase<T, title, id>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
+template <class T, bool in_UL>
+int FinishedFrameBase<T, in_UL>::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
 
-template <class T, ResourceManager::Strings title, int id>
-int FinishedFrameBase<T, title, id>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
+template <class T, bool in_UL>
+int FinishedFrameBase<T, in_UL>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
 
-template <class T, ResourceManager::Strings title, int id>
-ResourceManager::Strings FinishedFrameBase<T, title, id>::columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH,
+template <class T, bool in_UL>
+ResourceManager::Strings FinishedFrameBase<T, in_UL>::columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH,
 ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 

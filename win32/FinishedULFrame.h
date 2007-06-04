@@ -21,7 +21,7 @@
 
 #include "FinishedFrameBase.h"
 
-class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, ResourceManager::FINISHED_UPLOADS, IDC_FINISHED_UL>
+class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, true>
 {
 public:
 	FinishedULFrame(SmartWin::Widget* mdiParent);

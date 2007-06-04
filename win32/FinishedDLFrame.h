@@ -21,14 +21,14 @@
 
 #include "FinishedFrameBase.h"
 
-class FinishedDLFrame : public FinishedFrameBase<FinishedDLFrame, ResourceManager::FINISHED_DOWNLOADS, IDC_FINISHED_DL>
+class FinishedDLFrame : public FinishedFrameBase<FinishedDLFrame, false>
 {
 public:
 	FinishedDLFrame(SmartWin::Widget* mdiParent);
 	virtual ~FinishedDLFrame() { }
 
 #ifdef PORT_ME
-	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedDLFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
 #endif
 };
 
