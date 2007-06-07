@@ -25,7 +25,8 @@
 #include <winsock2.h>
 #include <SmartWin.h>
 #include <shlwapi.h>
-
+#include <shlobj.h>
+#include <malloc.h>
 enum {
 	WM_SPEAKER  = WM_APP + 500
 };

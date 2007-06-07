@@ -27,6 +27,9 @@
 template< class T >
 class CShellContextMenu
 {
+	static IContextMenu2* g_IContext2;
+	static IContextMenu3* g_IContext3;
+
 public:
 	CShellContextMenu() : bDelete(false)
 	{
@@ -100,7 +103,7 @@ public:
 		bDelete = true;	// indicates that m_psfFolder should be deleted by CShellContextMenu
 	}
 
-	UINT ShowContextMenu(typename T::WidgetMenuPtr menu, T * mainWindow, POINT pt)
+	UINT ShowContextMenu(typename T::WidgetPopupMenuPtr menu, T * mainWindow, POINT pt)
 	{
 		int iMenuType = 0;	// to know which version of IContextMenu is supported
 		LPCONTEXTMENU pContextMenu;	// common pointer to IContextMenu and higher version interface
@@ -235,7 +238,9 @@ private:
 	}
 };
 
-static IContextMenu2* g_IContext2 = NULL;
-static IContextMenu3* g_IContext3 = NULL;
+template<class T>
+IContextMenu2* CShellContextMenu<T>::g_IContext2 = NULL;
+template<class T>
+IContextMenu3* CShellContextMenu<T>::g_IContext3 = NULL;
 
 #endif // !defined(DCPLUSPLUS_WIN32_SHELL_CONTEXT_MENU_H)

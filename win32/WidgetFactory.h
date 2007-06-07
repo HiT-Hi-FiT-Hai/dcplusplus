@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_WIDGETFACTORY2_H_
 
 #include "WidgetDataGrid.h"
+#include "WidgetPopupMenu.h"
 
 /**
  * This is where stuff that eventually should be moved to smartwin goes
@@ -29,15 +30,22 @@ class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType, EventH
 public:
 	WidgetFactory() : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>() { }
 	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>(parent) { }
-	
+
 	/// DataGrid class type.
 	typedef ::WidgetDataGrid< EventHandlerClass, MessageMapPolicy > WidgetDataGrid;
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
-	
+
 	WidgetDataGridPtr createDataGrid( const typename WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() );
-	
+
+	/// PopupMenu class type.
+	typedef ::WidgetPopupMenu< EventHandlerClass, MessageMapPolicy > WidgetPopupMenu;
+
+	/// PopupMenu object type.
+	typedef typename WidgetPopupMenu::ObjectType WidgetPopupMenuPtr;
+
+	WidgetPopupMenuPtr createPopupMenu();
 };
 
 template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
@@ -45,6 +53,13 @@ typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
 {
 	return SmartWin::WidgetCreator< WidgetDataGrid >::create( this, cs );
+}
+
+template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetPopupMenuPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createPopupMenu()
+{
+	return SmartWin::WidgetCreator< WidgetPopupMenu >::create( this );
 }
 
 #endif /*WIDGETFACTORY2_H_*/

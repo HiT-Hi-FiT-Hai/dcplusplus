@@ -30,6 +30,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = in_UL ? ResourceManager::FINISHED_UPLOADS : ResourceManager::FINISHED_DOWNLOADS;
 
 protected:
+	typedef StaticFrame<T> BaseType;
 	friend class StaticFrame<T>;
 	friend class MDIChildFrame<T>;
 
@@ -80,8 +81,7 @@ protected:
 		onRaw(&T::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
 		onRaw(&T::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 
-		mainMenu = createMenu();
-		contextMenu = mainMenu->appendPopup(Util::emptyStringT);
+		contextMenu = this->createPopupMenu();
 		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), &T::handleViewAsText);
 		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), &T::handleOpenFile);
 		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), &T::handleOpenFolder);
@@ -170,7 +170,7 @@ private:
 	typename MDIChildFrame<T>::WidgetDataGridPtr items;
 	typename MDIChildFrame<T>::WidgetStatusBarSectionsPtr status;
 
-	typename MDIChildFrame<T>::WidgetMenuPtr mainMenu, contextMenu;
+	typename MDIChildFrame<T>::WidgetPopupMenuPtr contextMenu;
 
 	bool closed;
 
@@ -230,7 +230,7 @@ private:
 					CShellContextMenu<T> shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
-					WidgetMenuPtr pShellMenu = mainMenu->appendPopup(Util::emptyStringT);
+					typename T::WidgetPopupMenuPtr pShellMenu = this->createPopupMenu();
 					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT), &T::handleViewAsText);
 					pShellMenu->appendItem(IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER), &T::handleOpenFolder);
 					pShellMenu->appendSeparatorItem();
@@ -251,7 +251,7 @@ private:
 		return FALSE;
 	}
 
-	void handleViewAsText(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleViewAsText(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 #ifdef PORT_ME
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
@@ -259,19 +259,19 @@ private:
 #endif
 	}
 
-	void handleOpenFile(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleOpenFile(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
 			WinUtil::openFile(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
 	}
 
-	void handleOpenFolder(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleOpenFolder(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
 			WinUtil::openFolder(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
 	}
 
-	void handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleRemove(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 		int i;
 		while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
 			FinishedManager::getInstance()->remove((FinishedItemPtr)items->getItemData(i), in_UL);
@@ -279,7 +279,7 @@ private:
 		}
 	}
 
-	void handleRemoveAll(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleRemoveAll(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 		FinishedManager::getInstance()->removeAll(in_UL);
 	}
 
