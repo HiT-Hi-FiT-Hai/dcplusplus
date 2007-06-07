@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_FINISHED_FRAME_BASE_H
 
 #include "StaticFrame.h"
+#include "ShellContextMenu.h"
 
 #include <client/FinishedManager.h>
 
@@ -33,8 +34,6 @@ protected:
 	friend class MDIChildFrame<T>;
 
 	FinishedFrameBase() :
-		items(0),
-		status(0),
 		totalBytes(0),
 		totalTime(0),
 		closed(false)
@@ -51,13 +50,10 @@ protected:
 			items->setColumnOrder(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER), columnIndexes));
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
 
-			items->setBackgroundColor(WinUtil::bgColor);
+			items->setColor(WinUtil::textColor, WinUtil::bgColor);
+			items->setSmallImageList(WinUtil::fileImages);
 
 #ifdef PORT_ME
-		ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
-		ctrlList.SetTextBkColor(WinUtil::bgColor);
-		ctrlList.SetTextColor(WinUtil::textColor);
-
 		for(int j=0; j<COLUMN_LAST; j++) {
 			int fmt = (j == COLUMN_SIZE || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 			ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
@@ -80,15 +76,27 @@ protected:
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
 		FinishedManager::getInstance()->unlockList();
 
+		onRaw(&T::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+		onRaw(&T::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
+		onRaw(&T::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+
+		mainMenu = createMenu();
+		contextMenu = mainMenu->appendPopup(Util::emptyStringT);
+		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), &T::handleViewAsText);
+		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), &T::handleOpenFile);
+		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), &T::handleOpenFolder);
+		contextMenu->appendSeparatorItem();
+		contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &T::handleRemove);
+		contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), &T::handleRemoveAll);
 #ifdef PORT_ME
-		ctxMenu.CreatePopupMenu();
-		ctxMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
-		ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FILE, CTSTRING(OPEN));
-		ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
-		ctxMenu.AppendMenu(MF_SEPARATOR);
-		ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-		ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CTSTRING(REMOVE_ALL));
-		ctxMenu.SetMenuDefaultItem(IDC_OPEN_FILE);
+		contextMenu->setMenuDefaultItem(IDC_OPEN_FILE);
+#endif
+		onRaw(&T::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+
+#if 1
+		// for testing purposes; adds 2 dummy lines into the list
+		addEntry(new FinishedItem("C:\\folder\\file.txt", "nicks", "hubs", 1024, 1024, 1000, GET_TIME(), false));
+		addEntry(new FinishedItem("C:\\folder\\file2.txt", "nicks2", "hubs2", 2048, 2048, 1000, GET_TIME(), false));
 #endif
 	}
 
@@ -113,22 +121,16 @@ protected:
 		items->setBounds(r);
 	}
 
-	HRESULT spoken(LPARAM lParam, WPARAM wParam) {
-		if(wParam == SPEAK_ADD_LINE) {
-			FinishedItemPtr entry = (FinishedItemPtr)lParam;
-			addEntry(entry);
-#ifdef PORT_ME
-			if(SettingsManager::getInstance()->get(in_UL ? SettingsManager::BOLD_FINISHED_UPLOADS : SettingsManager::BOLD_FINISHED_DOWNLOADS))
-				setDirty();
-#endif
-			updateStatus();
-		} else if(wParam == SPEAK_REMOVE) {
-			updateStatus();
-		} else if(wParam == SPEAK_REMOVE_ALL) {
-			items->removeAllRows();
-			updateStatus();
-		}
-		return 0;
+	bool preClosing() {
+		FinishedManager::getInstance()->removeListener(this);
+		return true;
+	}
+
+	void postClosing() {
+		items->removeAllRows();
+
+		SettingsManager::getInstance()->set(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER, WinUtil::toString(items->getColumnOrder()));
+		SettingsManager::getInstance()->set(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS, WinUtil::toString(items->getColumnWidths()));
 	}
 
 private:
@@ -168,9 +170,118 @@ private:
 	typename MDIChildFrame<T>::WidgetDataGridPtr items;
 	typename MDIChildFrame<T>::WidgetStatusBarSectionsPtr status;
 
+	typename MDIChildFrame<T>::WidgetMenuPtr mainMenu, contextMenu;
+
 	bool closed;
 
 	int64_t totalBytes, totalTime;
+
+	HRESULT spoken(LPARAM lParam, WPARAM wParam) {
+		if(wParam == SPEAK_ADD_LINE) {
+			FinishedItemPtr entry = (FinishedItemPtr)lParam;
+			addEntry(entry);
+#ifdef PORT_ME
+			if(SettingsManager::getInstance()->get(in_UL ? SettingsManager::BOLD_FINISHED_UPLOADS : SettingsManager::BOLD_FINISHED_DOWNLOADS))
+				setDirty();
+#endif
+			updateStatus();
+		} else if(wParam == SPEAK_REMOVE) {
+			updateStatus();
+		} else if(wParam == SPEAK_REMOVE_ALL) {
+			items->removeAllRows();
+			updateStatus();
+		}
+		return 0;
+	}
+
+	HRESULT handleDoubleClick(LPARAM lParam, WPARAM /*wParam*/) {
+		if(((LPNMHDR)lParam)->hwndFrom == items->handle()) {
+			LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
+			if(item->iItem != -1)
+				WinUtil::openFile(Text::toT(((FinishedItemPtr)items->getItemData(item->iItem))->getTarget()));
+		}
+		return 0;
+	}
+
+	HRESULT handleColumnClick(LPARAM lParam, WPARAM /*wParam*/) {
+		if(((LPNMHDR)lParam)->hwndFrom == items->handle()) {
+			//PORT_ME
+		}
+		return 0;
+	}
+
+	HRESULT handleKeyDown(LPARAM lParam, WPARAM /*wParam*/) {
+		if(((LPNMHDR)lParam)->hwndFrom == items->handle() && ((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
+			StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
+		return 0;
+	}
+
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam) {
+		if (reinterpret_cast<HWND>(wParam) == items->handle() && items->getSelectedCount() > 0) {
+			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
+			if(pt.x == -1 && pt.y == -1) {
+				pt = items->getContextMenuPos();
+			}
+
+			if(BOOLSETTING(SHOW_SHELL_MENU) && items->getSelectedCount() == 1) {
+				string path = ((FinishedItemPtr)items->getItemData(items->getSelectedIndex()))->getTarget();
+				if(File::getSize(path) != -1) {
+					CShellContextMenu<T> shellMenu;
+					shellMenu.SetPath(Text::utf8ToWide(path));
+
+					WidgetMenuPtr pShellMenu = mainMenu->appendPopup(Util::emptyStringT);
+					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT), &T::handleViewAsText);
+					pShellMenu->appendItem(IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER), &T::handleOpenFolder);
+					pShellMenu->appendSeparatorItem();
+					pShellMenu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), &T::handleRemove);
+					pShellMenu->appendItem(IDC_REMOVE_ALL, CTSTRING(REMOVE_ALL), &T::handleRemoveAll);
+					pShellMenu->appendSeparatorItem();
+
+					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
+					if(idCommand != 0)
+						StupidWin::postMessage(this, WM_COMMAND, idCommand);
+					return TRUE;
+				}
+			}
+
+			contextMenu->trackPopupMenu(static_cast<T*>(this), pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	void handleViewAsText(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+#ifdef PORT_ME
+		int i = -1;
+		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
+			TextFrame::openWindow(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
+#endif
+	}
+
+	void handleOpenFile(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+		int i = -1;
+		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
+			WinUtil::openFile(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
+	}
+
+	void handleOpenFolder(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+		int i = -1;
+		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
+			WinUtil::openFolder(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
+	}
+
+	void handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+		int i;
+		while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
+			FinishedManager::getInstance()->remove((FinishedItemPtr)items->getItemData(i), in_UL);
+			items->removeRow(i);
+		}
+	}
+
+	void handleRemoveAll(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+		FinishedManager::getInstance()->removeAll(in_UL);
+	}
 
 	void updateStatus() {
 		status->setText(Text::toT(Util::toString(items->getRowCount()) + ' ' + STRING(ITEMS)), STATUS_COUNT);
@@ -204,11 +315,7 @@ private:
 		totalBytes += entry->getChunkSize();
 		totalTime += entry->getMilliSeconds();
 
-#ifdef PORT_ME
-		int image = WinUtil::getIconIndex(Text::toT(entry->getTarget()));
-		int loc = ctrlList.insert(l, image, (LPARAM)entry);
-#endif
-		items->insertRow(l);
+		items->insertRow(l, (LPARAM)entry, -1, WinUtil::getIconIndex(Text::toT(entry->getTarget())));
 #ifdef PORT_ME
 		ctrlList.EnsureVisible(loc, FALSE);
 #endif
@@ -255,132 +362,9 @@ class FinishedFrameBase : public MDITabChildWindowImpl<T>, public StaticFrame<T,
 {
 public:
 	BEGIN_MSG_MAP(T)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_TOTAL, onRemove)
-		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
-		COMMAND_ID_HANDLER(IDC_OPEN_FILE, onOpenFile)
-		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpenFolder)
 		NOTIFY_HANDLER(id, LVN_COLUMNCLICK, onColumnClickFinished)
-		NOTIFY_HANDLER(id, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(id, NM_DBLCLK, onDoubleClick)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<T>)
 	END_MSG_MAP()
-
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		if(!closed) {
-			FinishedManager::getInstance()->removeListener(this);
-
-			closed = true;
-			PostMessage(WM_CLOSE);
-			return 0;
-		} else {
-			WinUtil::saveHeaderOrder(ctrlList,
-				in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER,
-				in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS,
-				COLUMN_LAST, columnIndexes, columnSizes);
-
-			bHandled = FALSE;
-			return 0;
-		}
-	}
-
-	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;
-
-		if(item->iItem != -1) {
-			FinishedItemPtr entry = (FinishedItemPtr)ctrlList.GetItemData(item->iItem);
-			WinUtil::openFile(Text::toT(entry->getTarget()));
-		}
-		return 0;
-	}
-
-	LRESULT onRemove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		switch(wID)
-		{
-		case IDC_REMOVE:
-			{
-				int i = -1;
-				while((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-					FinishedManager::getInstance()->remove((FinishedItemPtr)ctrlList.GetItemData(i), upload);
-					ctrlList.DeleteItem(i);
-				}
-				break;
-			}
-		case IDC_TOTAL:
-			FinishedManager::getInstance()->removeAll(upload);
-			break;
-		}
-		return 0;
-	}
-
-	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i;
-		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			FinishedItem * const entry = (FinishedItemPtr)ctrlList.GetItemData(i);
-			TextFrame::openWindow(Text::toT(entry->getTarget()));
-		}
-		return 0;
-	}
-
-	LRESULT onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i;
-		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			FinishedItem * const entry = (FinishedItemPtr)ctrlList.GetItemData(i);
-			WinUtil::openFile(Text::toT(entry->getTarget()));
-		}
-		return 0;
-	}
-
-	LRESULT onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i;
-		if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			FinishedItem * const entry = (FinishedItemPtr)ctrlList.GetItemData(i);
-			WinUtil::openFolder(Text::toT(entry->getTarget()));
-		}
-		return 0;
-	}
-
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		if (reinterpret_cast<HWND>(wParam) == ctrlList && ctrlList.GetSelectedCount() > 0) {
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-			if(pt.x == -1 && pt.y == -1) {
-				WinUtil::getContextMenuPos(ctrlList, pt);
-			}
-
-			bool bShellMenuShown = false;
-			if(BOOLSETTING(SHOW_SHELL_MENU) && (ctrlList.GetSelectedCount() == 1)) {
-				string path = ((FinishedItemPtr)ctrlList.GetItemData(ctrlList.GetSelectedIndex()))->getTarget();
-				if(File::getSize(path) != 1) {
-					CShellContextMenu shellMenu;
-					shellMenu.SetPath(Text::toT(path));
-
-					CMenu* pShellMenu = shellMenu.GetMenu();
-					pShellMenu->AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
-					pShellMenu->AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER));
-					pShellMenu->AppendMenu(MF_SEPARATOR);
-					pShellMenu->AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-					pShellMenu->AppendMenu(MF_STRING, IDC_TOTAL, CTSTRING(REMOVE_ALL));
-					pShellMenu->AppendMenu(MF_SEPARATOR);
-
-					UINT idCommand = shellMenu.ShowContextMenu(m_hWnd, pt);
-					if(idCommand != 0)
-						PostMessage(WM_COMMAND, idCommand);
-
-					bShellMenuShown = true;
-				}
-			}
-
-			if(!bShellMenuShown)
-				ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-
-			return TRUE;
-		}
-		bHandled = FALSE;
-		return FALSE;
-	}
 
 	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
@@ -416,18 +400,6 @@ public:
 		FinishedItemPtr d = (FinishedItemPtr)b;
 		return compare(c->getAvgSpeed(), d->getAvgSpeed());
 	}
-
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-
-		if(kd->wVKey == VK_DELETE) {
-			PostMessage(WM_COMMAND, IDC_REMOVE, 0);
-		}
-		return 0;
-	}
-
-protected:
-	CMenu ctxMenu;
 };
 
 #endif

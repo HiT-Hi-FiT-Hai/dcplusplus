@@ -76,6 +76,10 @@
 #define IDC_MOVE					1026
 #define IDC_FINISHED_DL				1027
 #define IDC_FINISHED_UL				1028
+#define IDC_VIEW_AS_TEXT			1029
+#define IDC_OPEN_FILE				1030
+#define IDC_OPEN_FOLDER				1031
+#define IDC_REMOVE_ALL				1032
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000
@@ -83,6 +87,8 @@
 #define IDC_REMOVE_SOURCES			3400
 #define IDC_READD					3600
 #define IDC_PM						3800
+#define ID_SHELLCONTEXTMENU_MIN				4000
+#define ID_SHELLCONTEXTMENU_MAX				6000
 
 #define IDC_ADD 2000
 #define IDC_ADD_MENU 2001

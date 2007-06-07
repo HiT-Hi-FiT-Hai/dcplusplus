@@ -168,10 +168,9 @@ public:
 	 */
 	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
 
-	static void openFile(const tstring& file) {
-		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
-	}
-	
+	static void openFile(const tstring& file);
+	static void openFolder(const tstring& file);
+
 	template<typename T>
 	static std::vector<int> splitTokens(const string& str, const T& defaults) {
 		const size_t n = sizeof(defaults) / sizeof(defaults[0]);
@@ -278,7 +277,6 @@ public:
 	static bool urlMagnetRegistered;
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 	static void openLink(const tstring& url);
-	static void openFolder(const tstring& file);
 
 	static double toBytes(TCHAR* aSize);
 

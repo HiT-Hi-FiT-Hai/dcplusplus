@@ -150,7 +150,7 @@ tstring WinUtil::encodeFont(LOGFONT const& font)
 std::string WinUtil::toString(const std::vector<int>& tokens) {
 	std::string ret;
 	for(std::vector<int>::const_iterator i = tokens.begin(); i != tokens.end(); ++i) {
-		ret += Util::toString(*i);
+		ret += Util::toString(*i) + ',';
 	}
 	if(!ret.empty())
 		ret.erase(ret.size()-1);
@@ -291,6 +291,17 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	}
 
 	return true;
+}
+
+void WinUtil::openFile(const tstring& file) {
+	::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
+}
+
+void WinUtil::openFolder(const tstring& file) {
+	if (File::getSize(Text::fromT(file)) != -1)
+		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, /select, \"" + (Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
+	else
+		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, \"" + Util::getFilePath(Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
 }
 
 tstring WinUtil::getNicks(const CID& cid) throw() {
@@ -1174,12 +1185,5 @@ void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
 	aPt.x = erc.Width() / 2;
 	aPt.y = erc.Height() / 2;
 	aEdit.ClientToScreen(&aPt);
-}
-
-void WinUtil::openFolder(const tstring& file) {
-	if (File::getSize(Text::fromT(file)) != -1)
-		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, /select, \"" + (Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
-	else
-		::ShellExecute(NULL, NULL, Text::toT("explorer.exe").c_str(), Text::toT("/e, \"" + Util::getFilePath(Text::fromT(file)) + "\"").c_str(), NULL, SW_SHOWNORMAL);
 }
 #endif
