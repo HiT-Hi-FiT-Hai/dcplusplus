@@ -208,6 +208,8 @@ private:
 
 	WidgetStatusBarSectionsPtr status;
 	
+	WidgetChildWindowPtr splitterContainer;
+	
 	typedef TypedTreeView<QueueFrame, DirItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
@@ -215,22 +217,22 @@ private:
 	typedef TypedListViewCtrl<QueueFrame, QueueItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
-	WidgetSplitterCoolPtr splitter;
+	WidgetChildWindow::WidgetSplitterCoolPtr splitter;
 	WidgetCheckBoxPtr showTree;
 
 	/** Currently shown context menu */
-	WidgetMenuPtr contextMenu;
+	WidgetPopupMenuPtr contextMenu;
 
-	WidgetMenuPtr makeSingleMenu(QueueItemInfo* qii);
-	WidgetMenuPtr makeMultiMenu();
-	WidgetMenuPtr makeDirMenu();
+	WidgetPopupMenuPtr makeSingleMenu(QueueItemInfo* qii);
+	WidgetPopupMenuPtr makeMultiMenu();
+	WidgetPopupMenuPtr makeDirMenu();
 	
-	void addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	void addPriorityMenu(const WidgetMenuPtr& parent);
-	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addBrowseMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveAllMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addPMMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addPriorityMenu(const WidgetPopupMenuPtr& parent);
+	void addReaddMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
 	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
 
 	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;

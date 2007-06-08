@@ -49,6 +49,16 @@ protected:
 	void splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt);
 	
 private:
+	enum FilterModes{
+		NONE,
+		EQUAL,
+		GREATER_EQUAL,
+		LESS_EQUAL,
+		GREATER,
+		LESS,
+		NOT_EQUAL
+	};
+
 	enum {
 		IMAGE_USER = 0, IMAGE_OP
 	};
@@ -167,6 +177,8 @@ private:
 	TStringList lastLinesList;
 	tstring lastLines;
 
+	tstring filterString;
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -197,6 +209,12 @@ private:
 
 	void clearUserList();
 	void clearTaskList();
+
+	void addAsFavorite();
+	void removeFavoriteHub();
+
+	bool parseFilter(FilterModes& mode, int64_t& size);
+	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 
 	static int getImage(const Identity& u);
 
@@ -364,15 +382,6 @@ private:
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
-	enum FilterModes{
-		NONE,
-		EQUAL,
-		GREATER_EQUAL,
-		LESS_EQUAL,
-		GREATER,
-		LESS,
-		NOT_EQUAL
-	};
 
 
 	HubFrame(const tstring& aServer) :
@@ -388,7 +397,6 @@ private:
 	}
 
 	virtual ~HubFrame() {
-		ClientManager::getInstance()->putClient(client);
 
 		dcassert(frames.find(server) != frames.end());
 		dcassert(frames[server] == this);
@@ -403,7 +411,6 @@ private:
 
 	bool extraSort;
 
-
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow clientContainer;
 	CContainedWindow showUsersContainer;
@@ -414,12 +421,6 @@ private:
 	CMenu tabMenu;
 
 	CButton ctrlShowUsers;
-	typedef TypedListViewCtrl<UserInfo, IDC_USERS> CtrlUsers;
-	CtrlUsers ctrlUsers;
-
-	tstring filter;
-
-	bool showUsers;
 
 	TStringMap tabParams;
 	bool tabMenuShown;
@@ -434,12 +435,6 @@ private:
 
 	string stripNick(const string& nick) const;
 	tstring scanNickPrefix(const tstring& prefix);
-
-	bool parseFilter(FilterModes& mode, int64_t& size);
-	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
-
-	void addAsFavorite();
-	void removeFavoriteHub();
 
 	void updateStatusBar() { if(m_hWnd) speak(STATS); }
 

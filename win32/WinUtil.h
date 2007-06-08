@@ -145,6 +145,7 @@ public:
 	static COLORREF textColor;
 	static COLORREF bgColor;
 	static SmartWin::FontPtr font;
+	static SmartWin::FontPtr monoFont;
 	static tstring commands;
 	static SmartWin::ImageListPtr fileImages;
 	static int fileImageCount;

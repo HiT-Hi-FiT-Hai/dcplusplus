@@ -29,6 +29,8 @@
 #include <client/User.h>
 #include <client/ResourceManager.h>
 #include <client/FavoriteManager.h>
+#include <client/ConnectionManager.h>
+#include <client/SearchManager.h>
 
 int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
 int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_IP, COLUMN_EMAIL, COLUMN_CID };
@@ -141,6 +143,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 }
 
 HubFrame::~HubFrame() {
+	ClientManager::getInstance()->putClient(client);
 	frames.erase(url);
 }
 
@@ -211,57 +214,31 @@ void HubFrame::layout() {
 	}
 	r.size.y -= status->getSize().y - border;
 	int ymessage = message->getTextSize("A").y + 10;
-	int xfilter = std::min(r.size.x / 4, 200l);
+	int xfilter = showUsers ? std::min(r.size.x / 4, 200l) : 0;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
 	message->setBounds(rm);
 	
 	rm.pos.x += rm.size.x + border;
-	rm.size.x = xfilter * 2 / 3 - border;
+	rm.size.x = showUsers ? xfilter * 2 / 3 - border : 0;
 	filter->setBounds(rm);
 	
 	rm.pos.x += rm.size.x + border;
-	rm.size.x = xfilter / 3 - border;
+	rm.size.x = showUsers ? xfilter / 3 - border : 0;
 	filterType->setBounds(rm);
 	
 	r.size.y -= rm.size.y + border;
 	
-	SmartWin::Rectangle rsplit(splitter->getBounds());
-
-	chat->setBounds(0, 0, rsplit.pos.x, r.size.y);
-	users->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
+	if(showUsers) {
+		SmartWin::Rectangle rsplit(splitter->getBounds());
 	
-#ifdef PORT_ME	
-	CRect rc = rect;
-	rc.bottom -= h + 10;
-	if(!showUsers) {
-		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_LEFT);
+		chat->setBounds(0, 0, rsplit.pos.x, r.size.y);
+		users->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
 	} else {
-		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_NONE);
+		chat->setBounds(0, 0, r.size.x, r.size.y);
+		users->setBounds(r.size.x, r.size.y, 0, 0);
 	}
-	SetSplitterRect(rc);
-
-	rc = rect;
-	rc.bottom -= 2;
-	rc.top = rc.bottom - h - 5;
-	rc.left +=2;
-	rc.right -= showUsers ? 202 : 2;
-	ctrlMessage.MoveWindow(rc);
-
-	if(showUsers){
-		rc.left = rc.right + 4;
-		rc.right = rc.left + 116;
-		ctrlFilter.MoveWindow(rc);
-
-		rc.left = rc.right + 4;
-		rc.right = rc.left + 76;
-		rc.top = rc.top + 0;
-		rc.bottom = rc.bottom + 120;
-		ctrlFilterSel.MoveWindow(rc);
-	}
-#endif
 }
+
 void HubFrame::updateStatus() {
 	setStatus(STATUS_USERS, getStatusUsers());
 	setStatus(STATUS_SHARED, getStatusShared());
@@ -352,23 +329,19 @@ bool HubFrame::enter() {
 			client->password(Text::fromT(param));
 			waitingForPW = false;
 		} else if( Util::stricmp(cmd.c_str(), _T("showjoins")) == 0 ) {
-#ifdef PORT_ME
 				showJoins = !showJoins;
 				if(showJoins) {
-					addClientLine(TSTRING(JOIN_SHOWING_ON));
+					addStatus(TSTRING(JOIN_SHOWING_ON));
 				} else {
-					addClientLine(TSTRING(JOIN_SHOWING_OFF));
+					addStatus(TSTRING(JOIN_SHOWING_OFF));
 				}
-#endif
 			} else if( Util::stricmp(cmd.c_str(), _T("favshowjoins")) == 0 ) {
-#ifdef PORT_ME
 				favShowJoins = !favShowJoins;
 				if(favShowJoins) {
-					addClientLine(TSTRING(FAV_JOIN_SHOWING_ON));
+					addStatus(TSTRING(FAV_JOIN_SHOWING_ON));
 				} else {
-					addClientLine(TSTRING(FAV_JOIN_SHOWING_OFF));
+					addStatus(TSTRING(FAV_JOIN_SHOWING_OFF));
 				}
-#endif
 			} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
 			StupidWin::postMessage(this, WM_CLOSE);
 		} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
@@ -376,22 +349,16 @@ bool HubFrame::enter() {
 				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
 #endif 
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-#ifdef PORT_ME
 				addStatus(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
 				STRING(PORT) +
 				Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
 				Util::toString(SearchManager::getInstance()->getPort()) + "/" +
 					Util::toString(ConnectionManager::getInstance()->getSecurePort())
 					)));
-#endif
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
-#ifdef PORT_ME
 				addAsFavorite();
-#endif
 			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
-#ifdef PORT_ME
 				removeFavoriteHub();
-#endif
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
 				if( !param.empty() ){
 					UserInfo* ui = findUser(param);
@@ -562,20 +529,16 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 		} else if(i->first == UPDATE_USER_JOIN) {
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			if(updateUser(u)) {
-#ifdef PORT_ME
 				if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-					addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
+					addStatus(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
 				}
-#endif
 			}
 		} else if(i->first == REMOVE_USER) {
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			removeUser(u.user);
-#ifdef PORT_ME
 			if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-				addLine(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
+				addStatus(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
 			}
-#endif
 		} else if(i->first == CONNECTED) {
 			addStatus(TSTRING(CONNECTED));
 #ifdef PORT_ME
@@ -681,10 +644,8 @@ bool HubFrame::updateUser(const UserTask& u) {
 		if(!ui->isHidden() && showUsers)
 			users->insertItem(ui, getImage(u.identity));
 
-#ifdef PORT_ME
-		if(!filter.empty())
+		if(!filterString.empty())
 			updateUserList(ui);
-#endif
 		return true;
 	} else {
 		UserInfo* ui = i->second;
@@ -701,9 +662,7 @@ bool HubFrame::updateUser(const UserTask& u) {
 				ctrlUsers.SetItem(pos, 0, LVIF_IMAGE, NULL, getImage(u.identity), 0, 0, NULL);
 #endif
 			}
-#ifdef PORT_ME
 			updateUserList(ui);
-#endif
 		}
 
 		return false;
@@ -992,12 +951,12 @@ void HubFrame::on(StatusMessage, Client*, const string& line) throw() {
 		if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
 			// Do nothing...
 		} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
-			speak(ADD_SILENT_STATUS_LINE, Util::toDOS(line));
+			speak(ADD_SILENT_STATUS_LINE, Text::toDOS(line));
 		} else {
-			speak(ADD_CHAT_LINE, Util::toDOS(line));
+			speak(ADD_CHAT_LINE, Text::toDOS(line));
 		}
 	} else {
-		speak(ADD_CHAT_LINE, Util::toDOS(line));
+		speak(ADD_CHAT_LINE, Text::toDOS(line));
 	}
 }
 
@@ -1054,6 +1013,185 @@ void HubFrame::resortForFavsFirst(bool justDoIt /* = false */) {
 	}
 }
 
+void HubFrame::addAsFavorite() {
+	FavoriteHubEntry* existingHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
+	if(!existingHub) {
+		FavoriteHubEntry aEntry;
+		aEntry.setServer(Text::fromT(url));
+		aEntry.setName(Text::fromT(getText()));
+		aEntry.setDescription(Text::fromT(getText()));
+		aEntry.setConnect(false);
+		aEntry.setNick(client->getMyNick());
+		FavoriteManager::getInstance()->addFavorite(aEntry);
+		addStatus(TSTRING(FAVORITE_HUB_ADDED));
+	} else {
+		addStatus(TSTRING(FAVORITE_HUB_ALREADY_EXISTS));
+	}
+}
+
+void HubFrame::removeFavoriteHub() {
+	FavoriteHubEntry* removeHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
+	if(removeHub) {
+		FavoriteManager::getInstance()->removeFavorite(removeHub);
+		addStatus(TSTRING(FAVORITE_HUB_REMOVED));
+	} else {
+		addStatus(TSTRING(FAVORITE_HUB_DOES_NOT_EXIST));
+	}
+}
+
+bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
+	tstring::size_type start = static_cast<tstring::size_type>(tstring::npos);
+	tstring::size_type end = static_cast<tstring::size_type>(tstring::npos);
+	int64_t multiplier = 1;
+
+	if(filterString.empty()) {
+		return false;
+	}
+	if(filterString.compare(0, 2, _T(">=")) == 0) {
+		mode = GREATER_EQUAL;
+		start = 2;
+	} else if(filterString.compare(0, 2, _T("<=")) == 0) {
+		mode = LESS_EQUAL;
+		start = 2;
+	} else if(filterString.compare(0, 2, _T("==")) == 0) {
+		mode = EQUAL;
+		start = 2;
+	} else if(filterString.compare(0, 2, _T("!=")) == 0) {
+		mode = NOT_EQUAL;
+		start = 2;
+	} else if(filterString[0] == _T('<')) {
+		mode = LESS;
+		start = 1;
+	} else if(filterString[0] == _T('>')) {
+		mode = GREATER;
+		start = 1;
+	} else if(filterString[0] == _T('=')) {
+		mode = EQUAL;
+		start = 1;
+	}
+
+	if(start == tstring::npos)
+		return false;
+	if(filterString.length() <= start)
+		return false;
+
+	if((end = Util::findSubString(filterString, _T("TiB"))) != tstring::npos) {
+		multiplier = 1024LL * 1024LL * 1024LL * 1024LL;
+	} else if((end = Util::findSubString(filterString, _T("GiB"))) != tstring::npos) {
+		multiplier = 1024*1024*1024;
+	} else if((end = Util::findSubString(filterString, _T("MiB"))) != tstring::npos) {
+		multiplier = 1024*1024;
+	} else if((end = Util::findSubString(filterString, _T("KiB"))) != tstring::npos) {
+		multiplier = 1024;
+	} else if((end = Util::findSubString(filterString, _T("TB"))) != tstring::npos) {
+		multiplier = 1000LL * 1000LL * 1000LL * 1000LL;
+	} else if((end = Util::findSubString(filterString, _T("GB"))) != tstring::npos) {
+		multiplier = 1000*1000*1000;
+	} else if((end = Util::findSubString(filterString, _T("MB"))) != tstring::npos) {
+		multiplier = 1000*1000;
+	} else if((end = Util::findSubString(filterString, _T("kB"))) != tstring::npos) {
+		multiplier = 1000;
+	} else if((end = Util::findSubString(filterString, _T("B"))) != tstring::npos) {
+		multiplier = 1;
+	}
+
+	if(end == tstring::npos) {
+		end = filterString.length();
+	}
+
+	tstring tmpSize = filterString.substr(start, end-start);
+	size = static_cast<int64_t>(Util::toDouble(Text::fromT(tmpSize)) * multiplier);
+
+	return true;
+}
+
+void HubFrame::updateUserList(UserInfo* ui) {
+	int64_t size = -1;
+	FilterModes mode = NONE;
+
+	int sel = filterType->getSelectedIndex();
+
+	bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
+
+	//single update?
+	//avoid refreshing the whole list and just update the current item
+	//instead
+	if(ui != NULL) {
+		if(ui->isHidden()) {
+			return;
+		}
+		if(filterString.empty()) {
+			if(users->findItem(ui) == -1) {
+				users->insertItem(ui, getImage(ui->getIdentity()));
+			}
+		} else {
+			if(matchFilter(*ui, sel, doSizeCompare, mode, size)) {
+				if(users->findItem(ui) == -1) {
+					users->insertItem(ui, getImage(ui->getIdentity()));
+				}
+			} else {
+				//deleteItem checks to see that the item exists in the list
+				//unnecessary to do it twice.
+				users->deleteItem(ui);
+			}
+		}
+	} else {
+#ifdef PORT_ME
+		ctrlUsers.SetRedraw(FALSE);
+#endif
+		users->removeAllRows();
+
+		if(filterString.empty()) {
+			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
+				UserInfo* ui = i->second;
+				if(!ui->isHidden())
+					users->insertItem(i->second, getImage(i->second->getIdentity()));
+			}
+		} else {
+			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
+				UserInfo* ui = i->second;
+				if(!ui->isHidden() && matchFilter(*ui, sel, doSizeCompare, mode, size)) {
+					users->insertItem(ui, getImage(ui->getIdentity()));
+				}
+			}
+		}
+#ifdef PORT_ME
+		ctrlUsers.SetRedraw(TRUE);
+#endif
+	}
+}
+
+bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, FilterModes mode, int64_t size) {
+
+	if(filterString.empty())
+		return true;
+
+	bool insert = false;
+	if(doSizeCompare) {
+		switch(mode) {
+			case EQUAL: insert = (size == ui.getIdentity().getBytesShared()); break;
+			case GREATER_EQUAL: insert = (size <= ui.getIdentity().getBytesShared()); break;
+			case LESS_EQUAL: insert = (size >= ui.getIdentity().getBytesShared()); break;
+			case GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
+			case LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
+			case NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;
+		}
+	} else {
+		if(sel >= COLUMN_LAST) {
+			for(int i = COLUMN_FIRST; i < COLUMN_LAST; ++i) {
+				if(Util::findSubString(ui.getText(i), filterString) != string::npos) {
+					insert = true;
+					break;
+				}
+			}
+		} else {
+			if(Util::findSubString(ui.getText(sel), filterString) != string::npos)
+				insert = true;
+		}
+	}
+
+	return insert;
+}
 
 #ifdef PORT_ME
 
@@ -1145,34 +1283,6 @@ struct CompareItems {
 	}
 	const int col;
 };
-
-void HubFrame::addAsFavorite() {
-	FavoriteHubEntry* existingHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
-	if(!existingHub) {
-		FavoriteHubEntry aEntry;
-		TCHAR buf[256];
-		this->GetWindowText(buf, 255);
-		aEntry.setServer(Text::fromT(server));
-		aEntry.setName(Text::fromT(buf));
-		aEntry.setDescription(Text::fromT(buf));
-		aEntry.setConnect(false);
-		aEntry.setNick(client->getMyNick());
-		FavoriteManager::getInstance()->addFavorite(aEntry);
-		addClientLine(TSTRING(FAVORITE_HUB_ADDED));
-	} else {
-		addClientLine(TSTRING(FAVORITE_HUB_ALREADY_EXISTS));
-	}
-}
-
-void HubFrame::removeFavoriteHub() {
-	FavoriteHubEntry* removeHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
-	if(removeHub) {
-		FavoriteManager::getInstance()->removeFavorite(removeHub);
-		addClientLine(TSTRING(FAVORITE_HUB_REMOVED));
-	} else {
-		addClientLine(TSTRING(FAVORITE_HUB_DOES_NOT_EXIST));
-	}
-}
 
 LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
@@ -1599,154 +1709,5 @@ LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
-bool HubFrame::parseFilter(FilterModes& mode, int64_t& size) {
-	tstring::size_type start = static_cast<tstring::size_type>(tstring::npos);
-	tstring::size_type end = static_cast<tstring::size_type>(tstring::npos);
-	int64_t multiplier = 1;
-
-	if(filter.empty()) {
-		return false;
-	}
-	if(filter.compare(0, 2, _T(">=")) == 0) {
-		mode = GREATER_EQUAL;
-		start = 2;
-	} else if(filter.compare(0, 2, _T("<=")) == 0) {
-		mode = LESS_EQUAL;
-		start = 2;
-	} else if(filter.compare(0, 2, _T("==")) == 0) {
-		mode = EQUAL;
-		start = 2;
-	} else if(filter.compare(0, 2, _T("!=")) == 0) {
-		mode = NOT_EQUAL;
-		start = 2;
-	} else if(filter[0] == _T('<')) {
-		mode = LESS;
-		start = 1;
-	} else if(filter[0] == _T('>')) {
-		mode = GREATER;
-		start = 1;
-	} else if(filter[0] == _T('=')) {
-		mode = EQUAL;
-		start = 1;
-	}
-
-	if(start == tstring::npos)
-		return false;
-	if(filter.length() <= start)
-		return false;
-
-	if((end = Util::findSubString(filter, _T("TiB"))) != tstring::npos) {
-		multiplier = 1024LL * 1024LL * 1024LL * 1024LL;
-	} else if((end = Util::findSubString(filter, _T("GiB"))) != tstring::npos) {
-		multiplier = 1024*1024*1024;
-	} else if((end = Util::findSubString(filter, _T("MiB"))) != tstring::npos) {
-		multiplier = 1024*1024;
-	} else if((end = Util::findSubString(filter, _T("KiB"))) != tstring::npos) {
-		multiplier = 1024;
-	} else if((end = Util::findSubString(filter, _T("TB"))) != tstring::npos) {
-		multiplier = 1000LL * 1000LL * 1000LL * 1000LL;
-	} else if((end = Util::findSubString(filter, _T("GB"))) != tstring::npos) {
-		multiplier = 1000*1000*1000;
-	} else if((end = Util::findSubString(filter, _T("MB"))) != tstring::npos) {
-		multiplier = 1000*1000;
-	} else if((end = Util::findSubString(filter, _T("kB"))) != tstring::npos) {
-		multiplier = 1000;
-	} else if((end = Util::findSubString(filter, _T("B"))) != tstring::npos) {
-		multiplier = 1;
-	}
-
-	if(end == tstring::npos) {
-		end = filter.length();
-	}
-
-	tstring tmpSize = filter.substr(start, end-start);
-	size = static_cast<int64_t>(Util::toDouble(Text::fromT(tmpSize)) * multiplier);
-
-	return true;
-}
-
-void HubFrame::updateUserList(UserInfo* ui) {
-	int64_t size = -1;
-	FilterModes mode = NONE;
-
-	int sel = ctrlFilterSel.GetCurSel();
-
-	bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
-
-	//single update?
-	//avoid refreshing the whole list and just update the current item
-	//instead
-	if(ui != NULL) {
-		if(ui->isHidden()) {
-			return;
-		}
-		if(filter.empty()) {
-			if(ctrlUsers.findItem(ui) == -1) {
-				ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
-			}
-		} else {
-			if(matchFilter(*ui, sel, doSizeCompare, mode, size)) {
-				if(ctrlUsers.findItem(ui) == -1) {
-					ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
-				}
-			} else {
-				//deleteItem checks to see that the item exists in the list
-				//unnecessary to do it twice.
-				ctrlUsers.deleteItem(ui);
-			}
-		}
-	} else {
-		ctrlUsers.SetRedraw(FALSE);
-		ctrlUsers.DeleteAllItems();
-
-		if(filter.empty()) {
-			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
-				UserInfo* ui = i->second;
-				if(!ui->isHidden())
-					ctrlUsers.insertItem(i->second, getImage(i->second->getIdentity()));
-			}
-		} else {
-			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
-				UserInfo* ui = i->second;
-				if(!ui->isHidden() && matchFilter(*ui, sel, doSizeCompare, mode, size)) {
-					ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
-				}
-			}
-		}
-		ctrlUsers.SetRedraw(TRUE);
-	}
-}
-
-bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, FilterModes mode, int64_t size) {
-
-	if(filter.empty())
-		return true;
-
-	bool insert = false;
-	if(doSizeCompare) {
-		switch(mode) {
-			case EQUAL: insert = (size == ui.getIdentity().getBytesShared()); break;
-			case GREATER_EQUAL: insert = (size <= ui.getIdentity().getBytesShared()); break;
-			case LESS_EQUAL: insert = (size >= ui.getIdentity().getBytesShared()); break;
-			case GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
-			case LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
-			case NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;
-		}
-	} else {
-		if(sel >= COLUMN_LAST) {
-			for(int i = COLUMN_FIRST; i < COLUMN_LAST; ++i) {
-				if(Util::findSubString(ui.getText(i), filter) != string::npos) {
-					insert = true;
-					break;
-				}
-			}
-		} else {
-			if(Util::findSubString(ui.getText(sel), filter) != string::npos)
-				insert = true;
-		}
-	}
-
-	return insert;
-}
 
 #endif

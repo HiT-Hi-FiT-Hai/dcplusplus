@@ -140,27 +140,27 @@ protected:
   * void paintSplitter( unsigned width, unsigned ySize, HWND handle ); <br>
   * Look at the WidgetSplitter solution for a quick example.
   */
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy = MessageMapPolicyNormalWidget >
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy = MessageMapPolicyNormalWidget >
 class WidgetSplitter :
-	public MessageMapControl< EventHandlerClass, WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy >,
 	public Painter,
 
 	// Aspects
-	public AspectSizable< EventHandlerClass, WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectSizable< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter, MessageMapPolicy >,
+		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy > >,
+	public AspectVisible< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >,
+		MessageMapControl< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy > >,
+	public AspectRaw< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >,
+		MessageMapControl< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >, MessageMapPolicy > >
 {
 	typedef MessageMapControl< EventHandlerClass, WidgetSplitter, MessageMapPolicy > ThisMessageMap;
 	friend class WidgetCreator< WidgetSplitter >;
 public:
 	/// Class type
-	typedef WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy > ThisType;
+	typedef WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy > ThisType;
 
 	/// Object type
-	typedef WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy > * ObjectType;
+	typedef WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -239,8 +239,8 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-const typename WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::Seed & WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::getDefaultSeed()
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+const typename WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::Seed & WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -279,34 +279,34 @@ const typename WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, Mess
 	return d_DefaultValues;
 }
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::Seed::Seed()
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::Seed::Seed()
 {
 	* this = WidgetSplitter::getDefaultSeed();
 }
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-unsigned WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::getWidth()
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+unsigned WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::getWidth()
 {
 	return itsWidth;
 }
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-void WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::setWidth( unsigned newWidth )
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+void WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::setWidth( unsigned newWidth )
 {
 	itsWidth = newWidth;
 	//::InvalidateRect( itsHandle, NULL, TRUE );
 	//::UpdateWindow( itsHandle );
 }
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-unsigned WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::getXPos()
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+unsigned WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::getXPos()
 {
 	return itsXPos;
 }
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::WidgetSplitter( SmartWin::Widget * parent )
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::WidgetSplitter( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 	, itsWidth( 8 )
 {
@@ -314,8 +314,8 @@ WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >:
 	xAssert( parent, _T( "Can't have a Splitter without a parent..." ) );
 }
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-void WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::create( const Seed & cs )
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+void WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::create( const Seed & cs )
 {
 	// TODO: MessageMap instead of MessageMapControl
 	this->ThisMessageMap::isSubclassed = false;
@@ -339,8 +339,8 @@ void WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPoli
 	}
 }
 
-template< template< class, class > class WidgetClassBase, typename EventHandlerClass, typename Painter, class MessageMapPolicy >
-LRESULT WidgetSplitter< WidgetClassBase, EventHandlerClass, Painter, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< typename EventHandlerClass, typename Painter, class MessageMapPolicy >
+LRESULT WidgetSplitter< EventHandlerClass, Painter, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	switch ( msg )
 	{

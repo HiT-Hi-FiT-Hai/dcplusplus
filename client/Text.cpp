@@ -383,3 +383,24 @@ const string& convert(const string& str, string& tmp, const string& fromCharset,
 #endif
 }
 }
+
+string Text::toDOS(string tmp) {
+	if(tmp.empty())
+		return Util::emptyString;
+
+	if(tmp[0] == '\r' && (tmp.size() == 1 || tmp[1] != '\n')) {
+		tmp.insert(1, "\n");
+	}
+	for(string::size_type i = 1; i < tmp.size() - 1; ++i) {
+		if(tmp[i] == '\r' && tmp[i+1] != '\n') {
+			// Mac ending
+			tmp.insert(i+1, "\n");
+			i++;
+		} else if(tmp[i] == '\n' && tmp[i-1] != '\r') {
+			// Unix encoding
+			tmp.insert(i, "\r");
+			i++;
+		}
+	}
+	return tmp;
+}

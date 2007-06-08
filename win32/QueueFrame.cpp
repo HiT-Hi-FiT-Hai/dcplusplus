@@ -45,6 +45,7 @@ void QueueFrame::QueueItemInfo::remove() {
 QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
 	status(0),
+	splitterContainer(0),
 	dirs(0),
 	files(0),
 	splitter(0),
@@ -55,16 +56,16 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	queueItems(0),
 	fileLists(0)
 {
-	{
-		splitter = createSplitterCool();
-		splitter->onMoved(&QueueFrame::splitterMoved);
-	}
+	splitterContainer = createWidgetChildWindow(); 
 		
+	splitter = splitterContainer->createSplitterCool();
+	splitter->onMoved(&QueueFrame::splitterMoved);
+	showTree = splitterContainer->createCheckBox();
 	{
 		WidgetTreeView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(splitter, cs);
 		add_widget(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
@@ -74,7 +75,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		WidgetFiles::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, cs);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(splitter, cs);
 		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		files->setFont(WinUtil::font);
 		add_widget(files);
@@ -1047,8 +1048,8 @@ const string& QueueFrame::getDir(HTREEITEM item) {
 	return info == NULL ? Util::emptyString : info->getDir();
 }
 
-QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
-	WidgetMenuPtr menu = createMenu();
+QueueFrame::WidgetPopupMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
+	WidgetPopupMenuPtr menu = createPopupMenu();
 
 	menu->appendItem(IDC_SEARCH_ALTERNATES, TSTRING(SEARCH_FOR_ALTERNATES), &QueueFrame::handleSearchAlternates);
 	menu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), &QueueFrame::handleBitziLookup);
@@ -1066,8 +1067,8 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
 	return menu;
 }
 
-QueueFrame::WidgetMenuPtr QueueFrame::makeMultiMenu() {
-	WidgetMenuPtr menu = createMenu();
+QueueFrame::WidgetPopupMenuPtr QueueFrame::makeMultiMenu() {
+	WidgetPopupMenuPtr menu = createPopupMenu();
 
 	addPriorityMenu(menu);
 	
@@ -1077,8 +1078,8 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeMultiMenu() {
 	return menu;
 }
 
-QueueFrame::WidgetMenuPtr QueueFrame::makeDirMenu() {
-	WidgetMenuPtr menu = createMenu();
+QueueFrame::WidgetPopupMenuPtr QueueFrame::makeDirMenu() {
+	WidgetPopupMenuPtr menu = createPopupMenu();
 
 	addPriorityMenu(menu);
 	menu->appendItem(IDC_MOVE, TSTRING(MOVE), &QueueFrame::handleMove);
@@ -1087,7 +1088,7 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeDirMenu() {
 	return menu;
 }
 
-void QueueFrame::addPriorityMenu(const WidgetMenuPtr& parent) {
+void QueueFrame::addPriorityMenu(const WidgetPopupMenuPtr& parent) {
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(SET_PRIORITY));
 	menu->appendItem(IDC_PRIORITY_PAUSED, TSTRING(PAUSED), &QueueFrame::handlePriority);
 	menu->appendItem(IDC_PRIORITY_LOWEST, TSTRING(LOWEST), &QueueFrame::handlePriority);
@@ -1097,7 +1098,7 @@ void QueueFrame::addPriorityMenu(const WidgetMenuPtr& parent) {
 	menu->appendItem(IDC_PRIORITY_HIGHEST, TSTRING(HIGHEST), &QueueFrame::handlePriority);
 }
 
-void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+void QueueFrame::addBrowseMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(GET_FILE_LIST));
 	if(addUsers(menu, IDC_BROWSELIST, &QueueFrame::handleBrowseList, qii, false) == 0) {
@@ -1105,14 +1106,14 @@ void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) 
 	}
 }
 
-void QueueFrame::addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+void QueueFrame::addPMMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(SEND_PRIVATE_MESSAGE));
 	if(addUsers(menu, IDC_PM, &QueueFrame::handlePM, qii, false) == 0) {
 		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
 	}
 }
-void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+void QueueFrame::addReaddMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(READD_SOURCE));
 	
@@ -1123,7 +1124,7 @@ void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	}
 }
 
-void QueueFrame::addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+void QueueFrame::addRemoveMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(REMOVE_SOURCE));
 	menu->appendItem(IDC_REMOVE_SOURCE, TSTRING(ALL), &QueueFrame::handleRemoveSource);
@@ -1133,7 +1134,7 @@ void QueueFrame::addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) 
 	}
 }
 
-void QueueFrame::addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
+void QueueFrame::addRemoveAllMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(REMOVE_FROM_ALL));
 	if(addUsers(menu, IDC_REMOVE_SOURCES, &QueueFrame::handleRemoveSources, qii, true) == 0) {

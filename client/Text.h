@@ -128,6 +128,8 @@ namespace Text {
 		string tmp;
 		return fromUtf8(str, toCharset, tmp);
 	}
+	
+	string toDOS(string tmp);
 }
 
 #endif

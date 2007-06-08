@@ -67,13 +67,13 @@ public:
 	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
 
 	/// Splitter class type.
-	typedef WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterThinPaint, MessageMapPolicyNormalWidget > WidgetSplitterThin;
+	typedef WidgetSplitter< EventHandlerClass, SplitterThinPaint, MessageMapPolicyNormalWidget > WidgetSplitterThin;
 
 	/// Splitter object type.
 	typedef typename WidgetSplitterThin::ObjectType WidgetSplitterThinPtr;
 
 	/// CoolSplitter class type.
-	typedef WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterCoolPaint, MessageMapPolicyNormalWidget > WidgetSplitterCool;
+	typedef WidgetSplitter< EventHandlerClass, SplitterCoolPaint, MessageMapPolicyNormalWidget > WidgetSplitterCool;
 
 	/// CoolSplitter object type.
 	typedef typename WidgetSplitterCool::ObjectType WidgetSplitterCoolPtr;
@@ -178,12 +178,12 @@ public:
 	  * See WidgetSplitter Solution for an Example.
 	  */
 	template< class SplitterType >
-	typename WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterType >::ObjectType createSplitter(
-			 const typename WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterType >::Seed & cs )// =
+	typename WidgetSplitter<EventHandlerClass, SplitterType >::ObjectType createSplitter(
+			 const typename WidgetSplitter< EventHandlerClass, SplitterType >::Seed & cs )// =
 				   // Commented out since GCC chokes on default parameters to template functions inside template template classes...!!
 				   //WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterType >::getDefaultSeed() )
 	{
-		return WidgetCreator< WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterType > >::create( this, cs );
+		return WidgetCreator< WidgetSplitter< EventHandlerClass, SplitterType > >::create( this, cs );
 	}
 
 	/// Creates a Tool Bar and returns a pointer to it.

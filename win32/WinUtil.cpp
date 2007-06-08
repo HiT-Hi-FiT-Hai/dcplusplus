@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
 SmartWin::FontPtr WinUtil::font;
+SmartWin::FontPtr WinUtil::monoFont;
 SmartWin::ImageListPtr WinUtil::fileImages;
 int WinUtil::fileImageCount;
 int WinUtil::dirIconIndex;
@@ -58,6 +59,7 @@ void WinUtil::init() {
 	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
 
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
+	monoFont = SmartWin::FontPtr(new SmartWin::Font((BOOLSETTING(USE_OEM_MONOFONT) ? SmartWin::OemFixedFont : SmartWin::AnsiFixedFont)));
 
 	fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
 	fileImages->addMultiple(SmartWin::Bitmap(IDB_FOLDERS));

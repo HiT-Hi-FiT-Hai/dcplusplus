@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,60 +16,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(TEXT_FRAME_H)
-#define TEXT_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_TEXT_FRAME_H
+#define DCPLUSPLUS_WIN32_TEXT_FRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "MDIChildFrame.h"
 
-#include "FlatTabCtrl.h"
-#include "WinUtil.h"
-
-class TextFrame : public MDITabChildWindowImpl<TextFrame>
+class TextFrame : public MDIChildFrame<TextFrame>
 {
 public:
-	static void openWindow(const tstring& aFileName);
-
-	DECLARE_FRAME_WND_CLASS_EX(_T("TextFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
-
-	TextFrame(const tstring& fileName) : file(fileName) { }
+	friend class MDIChildFrame<TextFrame>;
+	
+	TextFrame(SmartWin::Widget* mdiParent, const string& fileName);
 	virtual ~TextFrame() { }
-
-	typedef MDITabChildWindowImpl<TextFrame> baseClass;
-	BEGIN_MSG_MAP(TextFrame)
-		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		CHAIN_MSG_MAP(baseClass)
-	END_MSG_MAP()
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		HWND hWnd = (HWND)lParam;
-		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlPad.m_hWnd) {
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
-		}
-		bHandled = FALSE;
-		return FALSE;
-	}
-
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlPad.SetFocus();
-		return 0;
-	}
-
+protected:
+	void layout();
 private:
-
-	tstring file;
-	CEdit ctrlPad;
+	WidgetTextBoxPtr pad;
 };
 
-#endif // !defined(TEXT_FRAME_H)
+#endif 

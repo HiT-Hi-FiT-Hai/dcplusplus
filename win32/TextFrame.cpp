@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,68 +16,39 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
 
 #include "TextFrame.h"
-#include "WinUtil.h"
-#include "../client/File.h"
 
-#define MAX_TEXT_LEN 32768
+#include <client/File.h>
+#include <client/Text.h>
 
-void TextFrame::openWindow(const tstring& aFileName) {
-	TextFrame* frame = new TextFrame(aFileName);
-	frame->CreateEx(WinUtil::mdiClient);
-}
+static const size_t MAX_TEXT_LEN = 64*1024;
 
-LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+TextFrame::TextFrame(SmartWin::Widget* mdiParent, const string& fileName) : 
+	SmartWin::Widget(mdiParent), 
+	pad(0) 
 {
-	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
+	WidgetTextBox::Seed cs;
+	cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+	cs.exStyle = WS_EX_CLIENTEDGE;
+	
+	pad = createTextBox(cs);
+	add_widget(pad);
 
-	ctrlPad.LimitText(0);
-	ctrlPad.SetFont(WinUtil::monoFont);
-	string tmp;
+	pad->setFont(WinUtil::monoFont);
+	pad->setTextLimit(0);
+	
 	try {
-		tmp = Util::toDOS(File(Text::fromT(file), File::READ, File::OPEN).read(MAX_TEXT_LEN));
-		string::size_type i = 0;
-		while((i = tmp.find('\n', i)) != string::npos) {
-			if(i == 0 || tmp[i-1] != '\r') {
-				tmp.insert(i, 1, '\r');
-				i++;
-			}
-			i++;
-		}
-		ctrlPad.SetWindowText(Text::toT(tmp).c_str());
-		ctrlPad.EmptyUndoBuffer();
-		SetWindowText(Text::toT(Util::getFileName(Text::fromT(file))).c_str());
+		pad->setText(Text::toT(Text::toDOS(File(fileName, File::READ, File::OPEN).read(MAX_TEXT_LEN))));
 	} catch(const FileException& e) {
-		SetWindowText(Text::toT(Util::getFileName(Text::fromT(file)) + ": " + e.getError()).c_str());
+		pad->setText(e.getError());
 	}
+	setText(Text::toT(Util::getFileName(fileName)));
 
-	bHandled = FALSE;
-	return 1;
 }
 
-LRESULT TextFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	bHandled = FALSE;
-	return 0;
+void TextFrame::layout() {
+	pad->setBounds(SmartWin::Point(0,0), getClientAreaSize());
 }
-
-void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
-{
-	CRect rc;
-
-	GetClientRect(rc);
-
-	rc.bottom -= 1;
-	rc.top += 1;
-	rc.left +=1;
-	rc.right -=1;
-	ctrlPad.MoveWindow(rc);
-}
-#endif

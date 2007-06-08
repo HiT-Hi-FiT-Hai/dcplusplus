@@ -223,12 +223,12 @@ public:
 	/// WidgetChildWindow class type.
 	// The following line would work with an appropiate WidgetChildWindow::create
 	//typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicy > WidgetChildWindow;
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetChildWindow, EventHandlerClass, MessageMapPolicyNormalWidget > WidgetChildWindow;
+	typedef SmartWin::WidgetFactory< SmartWin::WidgetChildWindow, EventHandlerClass, MessageMapPolicyMDIChildWidget > WidgetChildWindow;
 
 	/// WidgetChildWindow object type.
 	// The following line would work with an appropiate WidgetChildWindow::create
 	//typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicy > * WidgetChildWindowPtr;
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetChildWindow, EventHandlerClass, MessageMapPolicyNormalWidget > * WidgetChildWindowPtr;
+	typedef SmartWin::WidgetFactory< SmartWin::WidgetChildWindow, EventHandlerClass, MessageMapPolicyMDIChildWidget > * WidgetChildWindowPtr;
 
 	/// WidgetWindow class type.
 	typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicyNormalWidget > WidgetWindow;

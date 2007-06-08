@@ -885,29 +885,6 @@ string Util::getIpCountry (string IP) {
 	return Util::emptyString; //if doesn't returned anything already, something is wrong...
 }
 
-string Util::toDOS(const string& tmp) {
-	if(tmp.empty())
-		return Util::emptyString;
-
-	string tmp2(tmp);
-
-	if(tmp2[0] == '\r' && (tmp2.size() == 1 || tmp2[1] != '\n')) {
-		tmp2.insert(1, "\n");
-	}
-	for(string::size_type i = 1; i < tmp2.size() - 1; ++i) {
-		if(tmp2[i] == '\r' && tmp2[i+1] != '\n') {
-			// Mac ending
-			tmp2.insert(i+1, "\n");
-			i++;
-		} else if(tmp2[i] == '\n' && tmp2[i-1] != '\r') {
-			// Unix encoding
-			tmp2.insert(i, "\r");
-			i++;
-		}
-	}
-	return tmp2;
-}
-
 string Util::formatMessage(const string& nick, const string& message) {
 	string tmp = '<' + nick + "> " + message;
 	// Check all '<' and '[' after newlines as they're probably pasts...
@@ -921,7 +898,7 @@ string Util::formatMessage(const string& nick, const string& message) {
 		}
 		i++;
 	}
-	return toDOS(tmp);
+	return Text::toDOS(tmp);
 }
 
 string Util::getTimeString() {
