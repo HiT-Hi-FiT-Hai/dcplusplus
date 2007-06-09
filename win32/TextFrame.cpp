@@ -46,7 +46,7 @@ TextFrame::TextFrame(SmartWin::Widget* mdiParent, const string& fileName) :
 		pad->setText(e.getError());
 	}
 	setText(Text::toT(Util::getFileName(fileName)));
-
+	layout();
 }
 
 void TextFrame::layout() {

@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_FINISHED_FRAME_BASE_H
 
 #include "StaticFrame.h"
+#include "TextFrame.h"
 #include "ShellContextMenu.h"
 
 #include <client/FinishedManager.h>
@@ -31,6 +32,7 @@ public:
 
 protected:
 	typedef StaticFrame<T> BaseType;
+	typedef MDIChildFrame<T> MDIChildType;
 	friend class StaticFrame<T>;
 	friend class MDIChildFrame<T>;
 
@@ -40,7 +42,7 @@ protected:
 		closed(false)
 	{
 		{
-			typename MDIChildFrame<T>::WidgetDataGrid::Seed cs;
+			typename MDIChildType::WidgetDataGrid::Seed cs;
 			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
 			cs.exStyle = WS_EX_CLIENTEDGE;
 			items = createDataGrid(cs);
@@ -167,10 +169,10 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static ResourceManager::Strings columnNames[COLUMN_LAST];
 
-	typename MDIChildFrame<T>::WidgetDataGridPtr items;
-	typename MDIChildFrame<T>::WidgetStatusBarSectionsPtr status;
+	typename MDIChildType::WidgetDataGridPtr items;
+	typename MDIChildType::WidgetStatusBarSectionsPtr status;
 
-	typename MDIChildFrame<T>::WidgetPopupMenuPtr contextMenu;
+	typename MDIChildType::WidgetPopupMenuPtr contextMenu;
 
 	bool closed;
 
@@ -252,11 +254,9 @@ private:
 	}
 
 	void handleViewAsText(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
-#ifdef PORT_ME
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			TextFrame::openWindow(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
-#endif
+			new TextFrame(MDIChildType::getParent(), Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
 	}
 
 	void handleOpenFile(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
