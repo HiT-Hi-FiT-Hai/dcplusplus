@@ -217,23 +217,11 @@ private:
 	typedef TypedListViewCtrl<QueueFrame, QueueItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
-	WidgetChildWindow::WidgetSplitterCoolPtr splitter;
+	WidgetSplitterCoolPtr splitter;
 	WidgetCheckBoxPtr showTree;
 
 	/** Currently shown context menu */
 	WidgetPopupMenuPtr contextMenu;
-
-	WidgetPopupMenuPtr makeSingleMenu(QueueItemInfo* qii);
-	WidgetPopupMenuPtr makeMultiMenu();
-	WidgetPopupMenuPtr makeDirMenu();
-	
-	void addBrowseMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveAllMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addPMMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addPriorityMenu(const WidgetPopupMenuPtr& parent);
-	void addReaddMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
 
 	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
@@ -288,6 +276,20 @@ private:
 	void removeDir(HTREEITEM ht);
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
 	void changePriority(bool inc);
+
+	WidgetPopupMenuPtr makeSingleMenu(QueueItemInfo* qii);
+	WidgetPopupMenuPtr makeMultiMenu();
+	WidgetPopupMenuPtr makeDirMenu();
+	
+	void addBrowseMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveAllMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addPMMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addPriorityMenu(const WidgetPopupMenuPtr& parent);
+	void addReaddMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
+
+	void handleShowTreeClicked();
 
 	void handleSearchAlternates(WidgetMenuPtr menu, unsigned id);
 	void handleBitziLookup(WidgetMenuPtr menu, unsigned id);

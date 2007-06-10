@@ -150,7 +150,6 @@ private:
 	bool updateUsers;
 	bool waitingForPW;
 	bool resort;
-	bool showUsers;
 	bool showJoins;
 	bool favShowJoins;
 	
@@ -162,7 +161,11 @@ private:
 	WidgetComboBoxPtr filterType;
 	WidgetStatusBarSectionsPtr status;
 	WidgetSplitterCool* splitter;
+	WidgetCheckBoxPtr showUsers;
 	
+	/** Currently shown context menu */
+	WidgetPopupMenuPtr contextMenu;
+
 	typedef TypedListViewCtrl<HubFrame, UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
@@ -212,6 +215,9 @@ private:
 
 	void addAsFavorite();
 	void removeFavoriteHub();
+	
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	void handleShowUsersClicked();
 
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);

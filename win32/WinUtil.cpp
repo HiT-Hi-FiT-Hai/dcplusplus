@@ -1181,11 +1181,4 @@ void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
 	}
 	aTree.ClientToScreen(&aPt);
 }
-void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
-	CRect erc;
-	aEdit.GetRect(&erc);
-	aPt.x = erc.Width() / 2;
-	aPt.y = erc.Height() / 2;
-	aEdit.ClientToScreen(&aPt);
-}
 #endif

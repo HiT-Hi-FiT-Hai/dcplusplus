@@ -48,7 +48,6 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	updateUsers(false), 
 	waitingForPW(false), 
 	resort(false),
-	showUsers(true),
 	showJoins(false),
 	favShowJoins(true),
 	chat(0),
@@ -57,12 +56,13 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	filterType(0),
 	status(0),
 	splitter(0),
+	showUsers(0),
 	users(0)
 {
-	{
-		splitter = createSplitterCool();
-		splitter->onMoved(&HubFrame::splitterMoved);
-	}
+
+	splitter = createSplitterCool();
+	splitter->onMoved(&HubFrame::splitterMoved);
+
 
 	{
 		WidgetTextBox::Seed cs;
@@ -123,6 +123,13 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 
 	}
 	
+	{
+		WidgetCheckBox::Seed cs;
+		cs.caption = _T("+/-");
+		showUsers = createCheckBox(cs);
+		showUsers->setChecked(BOOLSETTING(GET_USER_INFO));
+	}
+	
 	status = createStatusBarSections();
 	memset(statusSizes, 0, sizeof(statusSizes));
 	///@todo get real resizer width
@@ -138,6 +145,8 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	client->connect();
 	
 	frames.insert(std::make_pair(url, this));
+	
+	//showUsers->onClicked(&HubFrame::handleShowUsersClicked);
 	
 	FavoriteManager::getInstance()->addListener(this);
 }
@@ -155,8 +164,8 @@ bool HubFrame::preClosing() {
 }
 
 void HubFrame::postClosing() {
+	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers->getChecked());
 #ifdef PORT_ME
-	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
 	FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
 #endif
@@ -199,8 +208,8 @@ void HubFrame::layout() {
 	{
 		std::vector<unsigned> w(STATUS_LAST);
 
-		w[0] = rs.size.x - rs.pos.x - std::accumulate(statusSizes+1, statusSizes+STATUS_LAST, 0); 
-		std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
+		w[STATUS_STATUS] = rs.size.x - rs.pos.x - std::accumulate(statusSizes, statusSizes+STATUS_LAST, 0) - w[STATUS_STATUS]; 
+		std::copy(statusSizes, statusSizes + STATUS_LAST, w.begin());
 
 		status->setSections(w);
 #ifdef PORT_ME
@@ -214,27 +223,27 @@ void HubFrame::layout() {
 	}
 	r.size.y -= status->getSize().y - border;
 	int ymessage = message->getTextSize("A").y + 10;
-	int xfilter = showUsers ? std::min(r.size.x / 4, 200l) : 0;
+	int xfilter = showUsers->getChecked() ? std::min(r.size.x / 4, 200l) : 0;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
 	message->setBounds(rm);
 	
 	rm.pos.x += rm.size.x + border;
-	rm.size.x = showUsers ? xfilter * 2 / 3 - border : 0;
+	rm.size.x = showUsers->getChecked() ? xfilter * 2 / 3 - border : 0;
 	filter->setBounds(rm);
 	
 	rm.pos.x += rm.size.x + border;
-	rm.size.x = showUsers ? xfilter / 3 - border : 0;
+	rm.size.x = showUsers->getChecked() ? xfilter / 3 - border : 0;
 	filterType->setBounds(rm);
 	
 	r.size.y -= rm.size.y + border;
-	
-	if(showUsers) {
+		
+	if(showUsers->getChecked()) {
 		SmartWin::Rectangle rsplit(splitter->getBounds());
-	
+
 		chat->setBounds(0, 0, rsplit.pos.x, r.size.y);
 		users->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
 	} else {
-		chat->setBounds(0, 0, r.size.x, r.size.y);
+		chat->setBounds(r);
 		users->setBounds(r.size.x, r.size.y, 0, 0);
 	}
 }
@@ -346,7 +355,7 @@ bool HubFrame::enter() {
 			StupidWin::postMessage(this, WM_CLOSE);
 		} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 #ifdef PORT_ME
-				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
+				ctrlShowUsers.SetCheck(showUsers->getChecked() ? BST_UNCHECKED : BST_CHECKED);
 #endif 
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
 				addStatus(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
@@ -606,7 +615,7 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 		}
 		delete i->second;
 	}
-	if(resort && showUsers) {
+	if(resort && showUsers->getChecked()) {
 		users->resort();
 		resort = false;
 	}
@@ -641,7 +650,7 @@ bool HubFrame::updateUser(const UserTask& u) {
 	if(i == userMap.end()) {
 		UserInfo* ui = new UserInfo(u);
 		userMap.insert(make_pair(u.user, ui));
-		if(!ui->isHidden() && showUsers)
+		if(!ui->isHidden() && showUsers->getChecked())
 			users->insertItem(ui, getImage(u.identity));
 
 		if(!filterString.empty())
@@ -649,12 +658,12 @@ bool HubFrame::updateUser(const UserTask& u) {
 		return true;
 	} else {
 		UserInfo* ui = i->second;
-		if(!ui->isHidden() && u.identity.isHidden() && showUsers) {
+		if(!ui->isHidden() && u.identity.isHidden() && showUsers->getChecked()) {
 			users->deleteItem(ui);
 		}
 
 		resort = ui->update(u.identity, users->getSortColumn()) || resort;
-		if(showUsers) {
+		if(showUsers->getChecked()) {
 			int pos = users->findItem(ui);
 			if(pos != -1) {
 				users->updateItem(pos);
@@ -705,7 +714,7 @@ void HubFrame::removeUser(const User::Ptr& aUser) {
 	}
 
 	UserInfo* ui = i->second;
-	if(!ui->isHidden() && showUsers)
+	if(!ui->isHidden() && showUsers->getChecked())
 		users->deleteItem(ui);
 
 	userMap.erase(i);
@@ -993,7 +1002,7 @@ tstring HubFrame::getStatusUsers() const {
 	tstring textForUsers;
 	if (users->getSelectedCount() > 1)
 		textForUsers += Util::toString(users->getSelectedCount()) + "/";
-	if (showUsers && users->getRowCount() < userCount)
+	if (showUsers->getChecked() && users->getRowCount() < userCount)
 		textForUsers += Util::toString(users->getRowCount()) + "/";
 	return textForUsers + Util::toString(userCount) + " " + STRING(HUB_USERS);
 }
@@ -1193,6 +1202,66 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	return insert;
 }
 
+HRESULT HubFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
+	bool doMenu = false;
+
+	if(reinterpret_cast<HWND>(wParam) == chat->handle()) {
+		if(pt.x == -1 || pt.y == -1) {
+			pt = chat->getContextMenuPos();
+		}
+		
+		chat->screenToClient(pt);
+		tstring txt = chat->textUnderCursor(pt);
+		chat->clientToScreen(pt);
+		
+		if(!txt.empty()) {
+			// Possible nickname click, let's see if we can find one like it in the name list...
+			int pos = users->findItem(txt);
+			if(pos != -1) {
+				users->clearSelection();
+				users->setSelectedIndex(pos);
+#ifdef PORT_ME
+				ctrlUsers.EnsureVisible(pos, FALSE);
+#endif
+				doMenu = true;
+			}
+		}
+	}
+
+	if((doMenu || (reinterpret_cast<HWND>(wParam) == users->handle())) && users->hasSelection()) {
+		if(pt.x == -1 || pt.y == -1) {
+			pt = users->getContextMenuPos();
+		}
+
+#ifdef PORT_ME
+		tabMenuShown = false;
+		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
+		checkAdcItems(userMenu);
+		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		cleanMenu(userMenu);
+		return TRUE;
+#endif
+	}
+	return FALSE;
+}
+
+void HubFrame::handleShowUsersClicked() {
+	bool checked = showUsers->getChecked();
+	
+	users->setVisible(checked);
+	splitter->setVisible(checked);
+	
+	if(checked) {
+		updateUserList();
+	}
+	
+	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, checked);
+
+	layout();
+}
+
 #ifdef PORT_ME
 
 #include "LineDlg.h"
@@ -1350,7 +1419,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 					} catch(const Exception& e) {
 						addClientLine(Text::toT(e.getError()));
 					}
-				} else if(showUsers) {
+				} else if(showUsers->getChecked()) {
 					int items = ctrlUsers.GetItemCount();
 					int pos = -1;
 					ctrlUsers.SetRedraw(FALSE);
@@ -1379,75 +1448,6 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 	cleanMenu(tabMenu);
 	return TRUE;
-}
-
-LRESULT HubFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	HWND hWnd = (HWND)lParam;
-	HDC hDC = (HDC)wParam;
-	if(hWnd == ctrlClient.m_hWnd || hWnd == ctrlMessage.m_hWnd ||
-		hWnd == ctrlFilter.m_hWnd || hWnd == ctrlFilterSel.m_hWnd) {
-		::SetBkColor(hDC, WinUtil::bgColor);
-		::SetTextColor(hDC, WinUtil::textColor);
-		return (LRESULT)WinUtil::bgBrush;
-	} else {
-		return 0;
-	}
-}
-
-LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-	bool doMenu = false;
-
-	if(reinterpret_cast<HWND>(wParam) == ctrlClient) {
-		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlClient, pt);
-		}
-
-		tstring x;
-		ctrlClient.ScreenToClient(&pt);
-		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
-		ctrlClient.ClientToScreen(&pt);
-
-		tstring::size_type end = x.find_first_of(_T(" >\t"), start+1);
-		if(end == string::npos) // get EOL as well
-			end = x.length();
-		else if(end == start + 1) {
-			bHandled = FALSE;
-			return FALSE;
-		}
-
-		// Nickname click, let's see if we can find one like it in the name list...
-
-		int pos = ctrlUsers.findItem(x.substr(start, end - start));
-		if(pos != -1) {
-			int items = ctrlUsers.GetItemCount();
-			ctrlUsers.SetRedraw(FALSE);
-			for(int i = 0; i < items; ++i) {
-				ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
-			}
-			ctrlUsers.SetRedraw(TRUE);
-			ctrlUsers.EnsureVisible(pos, FALSE);
-
-			doMenu = true;
-		}
-	}
-
-	if((doMenu || (reinterpret_cast<HWND>(wParam) == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {
-		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlUsers, pt);
-		}
-
-		tabMenuShown = false;
-		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
-		checkAdcItems(userMenu);
-		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		cleanMenu(userMenu);
-		return TRUE;
-	} else {
-		bHandled = FALSE; //needed to popup context menu under userlist
-	}
-	return FALSE;
 }
 
 void HubFrame::runUserCommand(::UserCommand& uc) {
@@ -1564,7 +1564,7 @@ void HubFrame::onTab() {
 			if (tabCompleteNicks.empty()) return;
 
 			// Maybe it found a unique match. If userlist showing, highlight.
-			if (showUsers && tabCompleteNicks.size() == 2) {
+			if (showUsers->getChecked() && tabCompleteNicks.size() == 2) {
 				int i = ctrlUsers.findItem(Text::toT(tabCompleteNicks[1]));
 				ctrlUsers.SetItemState(i, LVNI_FOCUSED | LVNI_SELECTED, LVNI_FOCUSED | LVNI_SELECTED);
 				ctrlUsers.EnsureVisible(i, FALSE);
@@ -1588,31 +1588,6 @@ LRESULT HubFrame::onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	bHandled = FALSE;
-	if((wParam == BST_CHECKED)) {
-		showUsers = true;
-		ctrlUsers.SetRedraw(FALSE);
-		ctrlUsers.DeleteAllItems();
-
-		for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
-			UserInfo* ui = i->second;
-			if(!ui->isHidden())
-				ctrlUsers.insertItem(ui, getImage(ui->getIdentity()));
-		}
-
-		ctrlUsers.SetRedraw(TRUE);
-		ctrlUsers.resort();
-	} else {
-		showUsers = false;
-		ctrlUsers.DeleteAllItems();
-	}
-
-	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
-
-	UpdateLayout(FALSE);
-	return 0;
-}
 
 LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!redirect.empty()) {

@@ -21,6 +21,7 @@
 
 #include "WidgetDataGrid.h"
 #include "WidgetPopupMenu.h"
+#include "WidgetTextBox.h"
 
 /**
  * This is where stuff that eventually should be moved to smartwin goes
@@ -46,6 +47,15 @@ public:
 	typedef typename WidgetPopupMenu::ObjectType WidgetPopupMenuPtr;
 
 	WidgetPopupMenuPtr createPopupMenu();
+
+	/// TextBox class type.
+	typedef ::WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
+
+	/// TextBox object type.
+	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
+
+	WidgetTextBoxPtr createTextBox( const typename WidgetTextBox::Seed & cs = WidgetTextBox::getDefaultSeed() );
+
 };
 
 template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
@@ -60,6 +70,13 @@ typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createPopupMenu()
 {
 	return SmartWin::WidgetCreator< WidgetPopupMenu >::create( this );
+}
+
+template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTextBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTextBox( const typename WidgetTextBox::Seed & cs )
+{
+	return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
 }
 
 #endif /*WIDGETFACTORY2_H_*/

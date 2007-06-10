@@ -60,12 +60,11 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		
 	splitter = splitterContainer->createSplitterCool();
 	splitter->onMoved(&QueueFrame::splitterMoved);
-	showTree = splitterContainer->createCheckBox();
 	{
 		WidgetTreeView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(splitter, cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(splitterContainer, cs);
 		add_widget(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
@@ -75,7 +74,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		WidgetFiles::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(splitter, cs);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(splitterContainer, cs);
 		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		files->setFont(WinUtil::font);
 		add_widget(files);
@@ -89,7 +88,6 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	
 	{
 		WidgetCheckBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE;
 		cs.caption = _T("+/-");
 		showTree = createCheckBox(cs);
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
@@ -100,6 +98,8 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	statusSizes[STATUS_SHOW_TREE] = 16;
 	///@todo get real resizer width
 	statusSizes[STATUS_DUMMY] = 16;
+	
+	//showTree->onClicked(&QueueFrame::handleShowTreeClicked);
 
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
@@ -218,13 +218,14 @@ void QueueFrame::layout() {
 	{
 		std::vector<unsigned> w(STATUS_LAST);
 
-		w[0] = rs.size.x - rs.pos.x - std::accumulate(statusSizes+1, statusSizes+STATUS_LAST, 0); 
-		std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
+		w[STATUS_STATUS] = rs.size.x - rs.pos.x - std::accumulate(statusSizes, statusSizes+STATUS_LAST, 0) - w[STATUS_STATUS]; 
+		std::copy(statusSizes, statusSizes + STATUS_LAST, w.begin());
 
 		status->setSections(w);
 		RECT sr;
 		
 		::SendMessage(status->handle(), SB_GETRECT, STATUS_SHOW_TREE, reinterpret_cast<LPARAM>(&sr));
+		::MapWindowPoints(status->handle(), this->handle(), (POINT*)&sr, 2);
 		showTree->setBounds(SmartWin::Rectangle::FromRECT(sr));
 
 #ifdef PORT_ME
@@ -234,10 +235,17 @@ void QueueFrame::layout() {
 	
 	r.size.y -= rs.size.y;
 	
-	SmartWin::Rectangle rsplit(splitter->getBounds());
+	splitterContainer->setBounds(r);
 	
-	dirs->setBounds(0, 0, rsplit.pos.x, r.size.y);
-	files->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
+	SmartWin::Rectangle rsplit(splitter->getBounds());
+	if(showTree->getChecked()) {
+		SmartWin::Rectangle rsplit(splitter->getBounds());
+
+		dirs->setBounds(0, 0, rsplit.pos.x, r.size.y);
+		files->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
+	} else {
+		files->setBounds(r);
+	}	
 }
 
 void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
@@ -1157,7 +1165,7 @@ unsigned int QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startI
 HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	if (reinterpret_cast<HWND>(wParam) == files->handle() && files->getSelectedCount() > 0) {
-		if(pt.x == -1 && pt.y == -1) {
+		if(pt.x == -1 || pt.y == -1) {
 			pt = files->getContextMenuPos();
 		}
 
