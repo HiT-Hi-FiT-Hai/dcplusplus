@@ -19,10 +19,6 @@
 #ifndef DCPLUSPLUS_CLIENT_RESOURCE_MANAGER_H
 #define DCPLUSPLUS_CLIENT_RESOURCE_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "Singleton.h"
 
 #define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
@@ -42,6 +38,7 @@
 #else
 #define TSTRING STRING
 #define CTSTRING CSTRING
+#define CTSTRING_I CSTRING_I
 #endif
 
 class ResourceManager : public Singleton<ResourceManager> {

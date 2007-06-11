@@ -16,25 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(GENERAL_PAGE_H)
-#define GENERAL_PAGE_H
+#ifndef DCPLUSPLUS_WIN32_GENERAL_PAGE_H
+#define DCPLUSPLUS_WIN32_GENERAL_PAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <atlcrack.h>
 #include "PropPage.h"
+#include "WidgetFactory.h"
 
-class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
+class GeneralPage : public WidgetFactory<SmartWin::WidgetDialog, GeneralPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
 {
 public:
-	GeneralPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_GENERAL));
-		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	}
-	virtual ~GeneralPage() { }
+	GeneralPage();
+	virtual ~GeneralPage();
 
+	static Item items[];
+	static TextItem texts[];
+	
+	virtual void write();
+
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(GeneralPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
@@ -52,12 +51,10 @@ public:
 	virtual void write();
 
 private:
-	static Item items[];
-	static TextItem texts[];
 	CComboBox ctrlConnection;
 	CEdit nick;
 	CEdit desc;
-
+#endif
 };
 
 #endif // !defined(GENERAL_PAGE_H)

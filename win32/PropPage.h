@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,25 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(PROP_PAGE_H)
-#define PROP_PAGE_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef DCPLUSPLUS_WIN32_PROP_PAGE_H
+#define DCPLUSPLUS_WIN32_PROP_PAGE_H
 
 #define SETTINGS_BUF_LEN 1024
 
-class SettingsManager;
-#include "../client/ResourceManager.h"
+#include <client/ResourceManager.h>
 
 class PropPage
 {
 public:
-	PropPage(SettingsManager *src) : settings(src) { }
+	PropPage() { }
 	virtual ~PropPage() { }
 
-	virtual PROPSHEETPAGE *getPSP() = 0;
+	SmartWin::Widget* getWidget() { return boost::polymorphic_cast<SmartWin::Widget*>(this); }
 	virtual void write() = 0;
 
 	enum Type { T_STR, T_INT, T_BOOL, T_CUSTOM, T_END };
@@ -56,7 +51,6 @@ public:
 
 protected:
 
-	SettingsManager *settings;
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void translate(HWND page, TextItem* textItems);

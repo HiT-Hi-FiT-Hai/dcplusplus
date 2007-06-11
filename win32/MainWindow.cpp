@@ -31,8 +31,9 @@
 #include "ADLSearchFrame.h"
 #include "FinishedDLFrame.h"
 #include "FinishedULFrame.h"
-
 #include "LineDlg.h"
+#include "SettingsDialog.h"
+#include "TextFrame.h"
 
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
@@ -42,6 +43,8 @@
 #include <client/FavoriteManager.h>
 #include <client/Client.h>
 #include <client/TimerManager.h>
+#include <client/SearchManager.h>
+#include <client/ConnectionManager.h>
 
 MainWindow::MainWindow() :
 	status(0),
@@ -252,6 +255,7 @@ void MainWindow::initMenu() {
 	file.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CTSTRING(MENU_SETTINGS));
 
 #endif
+	file->appendItem(IDC_SETTINGS, TSTRING(MENU_SETTINGS), &MainWindow::handleSettings);
 	file->appendSeparatorItem();
 	file->appendItem(IDC_EXIT, TSTRING(MENU_EXIT), &MainWindow::handleExit);
 
@@ -400,15 +404,47 @@ void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
 
 HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 	Speaker s = static_cast<Speaker>(lp);
-	
+
 	switch(s) {
-		case AUTO_CONNECT: {
-			autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());			
-		} break;
-			
+	case DOWNLOAD_LISTING: {
+		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lp));
+#ifdef PORT_ME
+		DirectoryListingFrame::openWindow(i->file, i->dir, i->user, i->speed);
+#endif
+	} break;
+	case BROWSE_LISTING: {
+		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lp));
+#ifdef PORT_ME
+		DirectoryListingFrame::openWindow(i->user, i->text, 0);
+#endif
+	} break;
+	case AUTO_CONNECT: {
+		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());			
+	} break;
+	case PARSE_COMMAND_LINE: {
+#ifdef PORT_ME
+		parseCommandLine(GetCommandLine());
+#endif
+	} break;
+	case VIEW_FILE_AND_DELETE: {
+		auto_ptr<tstring> file(reinterpret_cast<tstring*>(lp));
+		new TextFrame(this, *file);
+		File::deleteFile(Text::fromT(*file));
+	} break;
+	case STATUS_MESSAGE: {
+		auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)lp);
+		tstring line = Text::toT("[" + Util::getShortTimeString(msg->first) + "] ") + msg->second;
+
+		setStatus(STATUS_STATUS, line);
+		while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
+			lastLinesList.erase(lastLinesList.begin());
+		if (line.find(_T('\r')) == tstring::npos) {
+			lastLinesList.push_back(line);
+		} else {
+			lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
+		}
 	}
-	
-	return 0;
+	}	
 }
 
 void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
@@ -554,6 +590,140 @@ MainWindow::~MainWindow() {
 	WinUtil::uninit();
 #endif
 }
+
+void MainWindow::handleSettings(WidgetMenuPtr, unsigned) {
+	
+	SettingsDialog dlg(this);
+
+	unsigned short lastTCP = static_cast<unsigned short>(SETTING(TCP_PORT));
+	unsigned short lastUDP = static_cast<unsigned short>(SETTING(UDP_PORT));
+	unsigned short lastTLS = static_cast<unsigned short>(SETTING(TLS_PORT));
+
+	int lastConn = SETTING(INCOMING_CONNECTIONS);
+
+	bool lastSortFavUsersFirst = BOOLSETTING(SORT_FAVUSERS_FIRST);
+
+	if(dlg.run() == IDOK) {
+		SettingsManager::getInstance()->save();
+#ifdef PORT_ME
+		if(missedAutoConnect && !SETTING(NICK).empty()) {
+			PostMessage(WM_SPEAKER, AUTO_CONNECT);
+		}
+#endif
+		if(SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastTCP || SETTING(UDP_PORT) != lastUDP || SETTING(TLS_PORT) != lastTLS) {
+			startSocket();
+		}
+		ClientManager::getInstance()->infoUpdated();
+
+#ifdef PORT_ME
+		if(BOOLSETTING(SORT_FAVUSERS_FIRST) != lastSortFavUsersFirst)
+			HubFrame::resortUsers();
+
+		if(BOOLSETTING(URL_HANDLER)) {
+			WinUtil::registerDchubHandler();
+			WinUtil::registerADChubHandler();
+			WinUtil::urlDcADCRegistered = true;
+		} else if(WinUtil::urlDcADCRegistered) {
+			WinUtil::unRegisterDchubHandler();
+			WinUtil::unRegisterADChubHandler();
+			WinUtil::urlDcADCRegistered = false;
+		}
+		if(BOOLSETTING(MAGNET_REGISTER)) {
+			WinUtil::registerMagnetHandler();
+			WinUtil::urlMagnetRegistered = true;
+		} else if(WinUtil::urlMagnetRegistered) {
+			WinUtil::unRegisterMagnetHandler();
+			WinUtil::urlMagnetRegistered = false;
+		}
+#endif
+	}
+}
+
+void MainWindow::startSocket() {
+	SearchManager::getInstance()->disconnect();
+	ConnectionManager::getInstance()->disconnect();
+
+	if(ClientManager::getInstance()->isActive()) {
+		try {
+			ConnectionManager::getInstance()->listen();
+		} catch(const Exception&) {
+			WidgetMessageBox().show(TSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		}
+		try {
+			SearchManager::getInstance()->listen();
+		} catch(const Exception&) {
+			WidgetMessageBox().show(CTSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		}
+	}
+
+	startUPnP();
+}
+
+void MainWindow::startUPnP() {
+#ifdef PORT_ME
+	stopUPnP();
+
+	if( SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_UPNP ) {
+		UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(ConnectionManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
+		UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", APPNAME " Search Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " UDP)", SearchManager::getInstance()->getPort() );
+
+		if ( FAILED(UPnP_UDPConnection->OpenPorts()) || FAILED(UPnP_TCPConnection->OpenPorts()) )
+		{
+			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
+			MessageBox(CTSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+
+			// We failed! thus reset the objects
+			delete UPnP_TCPConnection;
+			delete UPnP_UDPConnection;
+			UPnP_TCPConnection = UPnP_UDPConnection = NULL;
+		}
+		else
+		{
+			if(!BOOLSETTING(NO_IP_OVERRIDE)) {
+				// now lets configure the external IP (connect to me) address
+				string ExternalIP = UPnP_TCPConnection->GetExternalIP();
+				if ( !ExternalIP.empty() ) {
+					// woohoo, we got the external IP from the UPnP framework
+					SettingsManager::getInstance()->set(SettingsManager::EXTERNAL_IP, ExternalIP );
+				} else {
+					//:-( Looks like we have to rely on the user setting the external IP manually
+					// no need to do cleanup here because the mappings work
+					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
+					MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+				}
+			}
+		}
+	}
+#endif
+}
+
+void MainWindow::stopUPnP() {
+#ifdef PORT_ME
+	// Just check if the port mapping objects are initialized (NOT NULL)
+	if ( UPnP_TCPConnection != NULL )
+	{
+		if (FAILED(UPnP_TCPConnection->ClosePorts()) )
+		{
+			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
+		}
+		delete UPnP_TCPConnection;
+	}
+	if ( UPnP_UDPConnection != NULL )
+	{
+		if (FAILED(UPnP_UDPConnection->ClosePorts()) )
+		{
+			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
+		}
+		delete UPnP_UDPConnection;
+	}
+	// Not sure this is required (i.e. Objects are checked later in execution)
+	// But its better being on the save side :P
+	UPnP_TCPConnection = UPnP_UDPConnection = NULL;
+#endif
+}
+
+
+
 #ifdef PORT_ME
 DWORD WINAPI MainFrame::stopper(void* p) {
 	MainFrame* mf = (MainFrame*)p;
@@ -609,85 +779,6 @@ LRESULT MainFrame::onMatchAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	}
 	
 	return 0;
-}
-
-void MainFrame::startSocket() {
-	SearchManager::getInstance()->disconnect();
-	ConnectionManager::getInstance()->disconnect();
-
-	if(ClientManager::getInstance()->isActive()) {
-		try {
-			ConnectionManager::getInstance()->listen();
-		} catch(const Exception&) {
-			MessageBox(CTSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
-		}
-		try {
-			SearchManager::getInstance()->listen();
-		} catch(const Exception&) {
-			MessageBox(CTSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
-		}
-	}
-
-	startUPnP();
-}
-
-void MainFrame::startUPnP() {
-	stopUPnP();
-
-	if( SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_UPNP ) {
-		UPnP_TCPConnection = new UPnP( Util::getLocalIp(), "TCP", APPNAME " Download Port (" + Util::toString(ConnectionManager::getInstance()->getPort()) + " TCP)", ConnectionManager::getInstance()->getPort() );
-		UPnP_UDPConnection = new UPnP( Util::getLocalIp(), "UDP", APPNAME " Search Port (" + Util::toString(SearchManager::getInstance()->getPort()) + " UDP)", SearchManager::getInstance()->getPort() );
-
-		if ( FAILED(UPnP_UDPConnection->OpenPorts()) || FAILED(UPnP_TCPConnection->OpenPorts()) )
-		{
-			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
-			MessageBox(CTSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
-
-			// We failed! thus reset the objects
-			delete UPnP_TCPConnection;
-			delete UPnP_UDPConnection;
-			UPnP_TCPConnection = UPnP_UDPConnection = NULL;
-		}
-		else
-		{
-			if(!BOOLSETTING(NO_IP_OVERRIDE)) {
-				// now lets configure the external IP (connect to me) address
-				string ExternalIP = UPnP_TCPConnection->GetExternalIP();
-				if ( !ExternalIP.empty() ) {
-					// woohoo, we got the external IP from the UPnP framework
-					SettingsManager::getInstance()->set(SettingsManager::EXTERNAL_IP, ExternalIP );
-				} else {
-					//:-( Looks like we have to rely on the user setting the external IP manually
-					// no need to do cleanup here because the mappings work
-					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
-					MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
-				}
-			}
-		}
-	}
-}
-
-void MainFrame::stopUPnP() {
-	// Just check if the port mapping objects are initialized (NOT NULL)
-	if ( UPnP_TCPConnection != NULL )
-	{
-		if (FAILED(UPnP_TCPConnection->ClosePorts()) )
-		{
-			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
-		}
-		delete UPnP_TCPConnection;
-	}
-	if ( UPnP_UDPConnection != NULL )
-	{
-		if (FAILED(UPnP_UDPConnection->ClosePorts()) )
-		{
-			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
-		}
-		delete UPnP_UDPConnection;
-	}
-	// Not sure this is required (i.e. Objects are checked later in execution)
-	// But its better being on the save side :P
-	UPnP_TCPConnection = UPnP_UDPConnection = NULL;
 }
 
 HWND MainFrame::createToolbar() {
@@ -823,40 +914,6 @@ HWND MainFrame::createToolbar() {
 	return ctrlToolbar.m_hWnd;
 }
 
-LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-
-	if(wParam == DOWNLOAD_LISTING) {
-		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
-		DirectoryListingFrame::openWindow(i->file, i->dir, i->user, i->speed);
-	} else if(wParam == BROWSE_LISTING) {
-		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
-		DirectoryListingFrame::openWindow(i->user, i->text, 0);
-	} else if(wParam == VIEW_FILE_AND_DELETE) {
-		auto_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
-		TextFrame::openWindow(*file);
-		File::deleteFile(Text::fromT(*file));
-	} else if(wParam == AUTO_CONNECT) {
-	} else if(wParam == PARSE_COMMAND_LINE) {
-		parseCommandLine(GetCommandLine());
-	} else if(wParam == STATUS_MESSAGE) {
-		auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)lParam);
-		if(ctrlStatus.IsWindow()) {
-			tstring line = Text::toT("[" + Util::getShortTimeString(msg->first) + "] ") + msg->second;
-
-			ctrlStatus.SetText(0, line.c_str());
-			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
-				lastLinesList.erase(lastLinesList.begin());
-			if (line.find(_T('\r')) == tstring::npos) {
-				lastLinesList.push_back(line);
-			} else {
-				lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
-			}
-		}
-	}
-
-	return 0;
-}
-
 void MainFrame::parseCommandLine(const tstring& cmdLine)
 {
 	string::size_type i = 0;
@@ -904,52 +961,6 @@ LRESULT MainFrame::onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		case IDC_VIEW_WAITING_USERS: WaitingUsersFrame::openWindow(); break;
 		case IDC_SYSTEM_LOG: SystemFrame::openWindow(); break;
 		default: dcassert(0); break;
-	}
-	return 0;
-}
-
-LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	PropertiesDlg dlg(m_hWnd, SettingsManager::getInstance());
-
-	unsigned short lastTCP = static_cast<unsigned short>(SETTING(TCP_PORT));
-	unsigned short lastUDP = static_cast<unsigned short>(SETTING(UDP_PORT));
-	unsigned short lastTLS = static_cast<unsigned short>(SETTING(TLS_PORT));
-
-	int lastConn = SETTING(INCOMING_CONNECTIONS);
-
-	bool lastSortFavUsersFirst = BOOLSETTING(SORT_FAVUSERS_FIRST);
-
-	if(dlg.DoModal(m_hWnd) == IDOK)
-	{
-		SettingsManager::getInstance()->save();
-		if(missedAutoConnect && !SETTING(NICK).empty()) {
-			PostMessage(WM_SPEAKER, AUTO_CONNECT);
-		}
-		if(SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastTCP || SETTING(UDP_PORT) != lastUDP || SETTING(TLS_PORT) != lastTLS) {
-			startSocket();
-		}
-		ClientManager::getInstance()->infoUpdated();
-
-		if(BOOLSETTING(SORT_FAVUSERS_FIRST) != lastSortFavUsersFirst)
-			HubFrame::resortUsers();
-
-		if(BOOLSETTING(URL_HANDLER)) {
-			WinUtil::registerDchubHandler();
-			WinUtil::registerADChubHandler();
-			WinUtil::urlDcADCRegistered = true;
-		} else if(WinUtil::urlDcADCRegistered) {
-			WinUtil::unRegisterDchubHandler();
-			WinUtil::unRegisterADChubHandler();
-			WinUtil::urlDcADCRegistered = false;
-		}
-		if(BOOLSETTING(MAGNET_REGISTER)) {
-			WinUtil::registerMagnetHandler();
-			WinUtil::urlMagnetRegistered = true;
-		} else if(WinUtil::urlMagnetRegistered) {
-			WinUtil::unRegisterMagnetHandler();
-			WinUtil::urlMagnetRegistered = false;
-		}
 	}
 	return 0;
 }

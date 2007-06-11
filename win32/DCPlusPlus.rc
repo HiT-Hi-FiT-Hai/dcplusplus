@@ -1,7 +1,9 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#define WINVER 0x0500
+#define WINVER 0x0501
+#define _WIN32_IE 0x0501
+#define _WIN32_WINNT 0x0501
 #include <winuser.h>
 #include <commctrl.h>
 /////////////////////////////////////////////////////////////////////////////
@@ -557,6 +559,15 @@ BEGIN
     CONTROL         "",IDC_BOLD_BOOLEANS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,10,19,254,81
 END
 
+IDD_SETTINGS DIALOGEX 0, 0, 375, 275
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Settings"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,318,255,50,14
+    CONTROL         "",IDC_SETTINGS_PAGES,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | TVS_SINGLEEXPAND | TVS_FULLROWSELECT | WS_BORDER | WS_TABSTOP,7,7,90,225
+    PUSHBUTTON      "Cancel",IDCANCEL,318,205,50,14
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

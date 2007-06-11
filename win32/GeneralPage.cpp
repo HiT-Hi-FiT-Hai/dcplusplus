@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "GeneralPage.h"
-#include "../client/SettingsManager.h"
-#include "../client/Socket.h"
-#include "WinUtil.h"
+
+#include <client/SettingsManager.h>
 
 PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_PERSONAL_INFORMATION, ResourceManager::SETTINGS_PERSONAL_INFORMATION },
@@ -45,30 +43,46 @@ PropPage::Item GeneralPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-void GeneralPage::write()
-{
-	PropPage::write((HWND)(*this), items);
-}
+GeneralPage::GeneralPage() : PropPage() {
+#ifdef PORT_ME
+	SetTitle(CTSTRING(SETTINGS_GENERAL));
+	m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
+#endif
 
-LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
+	PropPage::translate(handle(), texts);
+	PropPage::read(handle(), items);
 
-	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i)
-		ctrlConnection.AddString(Text::toT(*i).c_str());
+	WidgetComboBoxPtr connections = subclassComboBox(IDC_CONNECTION);
 
-	PropPage::read((HWND)(*this), items);
+	int selected = 0, j = 0;
+	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i, ++j) {
+		connections->addValue(Text::toT(*i).c_str());
+		if(selected == 0 && SETTING(UPLOAD_SPEED) == *i) {
+			selected = j; 
+		}
+	}
 
-	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, Text::toT(SETTING(UPLOAD_SPEED)).c_str()));
-
+	connections->setSelectedIndex(selected);
+		
+#ifdef PORT_ME
 	nick.Attach(GetDlgItem(IDC_NICK));
 	nick.LimitText(35);
 	desc.Attach(GetDlgItem(IDC_DESCRIPTION));
 	desc.LimitText(35);
 	desc.Detach();
 	return TRUE;
+#endif
 }
+
+GeneralPage::~GeneralPage() {
+	
+}
+
+void GeneralPage::write() {
+	PropPage::write(handle(), items);
+}
+
+#ifdef PORT_ME
 
 LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {

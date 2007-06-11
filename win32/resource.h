@@ -46,6 +46,7 @@
 #define IDD_UPLOADPAGE				220
 #define IDD_USER_COMMAND			221
 #define IDD_WINDOWSPAGE				222
+#define IDD_SETTINGS				223
 
 // Stuff not in the resource file
 #define IDC_EXIT 					1000
@@ -80,6 +81,7 @@
 #define IDC_OPEN_FILE				1030
 #define IDC_OPEN_FOLDER				1031
 #define IDC_REMOVE_ALL				1032
+#define IDC_SETTINGS				1033
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000
@@ -381,3 +383,4 @@
 #define IDC_VERSION 2288
 #define IDC_WINDOWS_OPTIONS 2289
 #define IDC_WINDOWS_STARTUP 2290
+#define IDC_SETTINGS_PAGES 2291

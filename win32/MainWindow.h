@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(DCPLUSPLUS_WIN32_MAIN_WINDOW_H)
+#ifndef DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 #define DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 
 #include "AspectSpeaker.h"
@@ -54,9 +54,20 @@ public:
 
 private:
 	
-	WidgetStatusBarSectionsPtr status;
-	WidgetMDIParentPtr mdi;
-	WidgetMenuPtr mainMenu;
+	class DirectoryListInfo {
+	public:
+		DirectoryListInfo(const UserPtr& aUser, const tstring& aFile, const tstring& aDir, int64_t aSpeed) : user(aUser), file(aFile), dir(aDir), speed(aSpeed) { }
+		UserPtr user;
+		tstring file;
+		tstring dir;
+		int64_t speed;
+	};
+	class DirectoryBrowseInfo {
+	public:
+		DirectoryBrowseInfo(const UserPtr& ptr, string aText) : user(ptr), text(aText) { }
+		UserPtr user;
+		string text;
+	};
 
 	enum Speaker {
 		DOWNLOAD_LISTING,
@@ -79,11 +90,20 @@ private:
 		STATUS_DUMMY,
 		STATUS_LAST
 	};
+	
+	WidgetStatusBarSectionsPtr status;
+	WidgetMDIParentPtr mdi;
+	WidgetMenuPtr mainMenu;
+
 	unsigned statusSizes[STATUS_LAST];
 
 	int64_t lastUp;
 	int64_t lastDown;
 	uint64_t lastTick;
+
+	enum { MAX_CLIENT_LINES = 10 };
+	TStringList lastLinesList;
+	tstring lastLines;
 
 	void initWindow();
 	void initMenu();
@@ -102,7 +122,8 @@ private:
 	void handleQueue(WidgetMenuPtr menu, unsigned id);
 	void handleFinishedDL(WidgetMenuPtr menu, unsigned id);
 	void handleFinishedUL(WidgetMenuPtr menu, unsigned id);
-		
+	void handleSettings(WidgetMenuPtr menu, unsigned id);
+	
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
 	
@@ -113,7 +134,10 @@ private:
 	void updateStatus();
 	void setStatus(Status s, const tstring& text);
 	void autoConnect(const FavoriteHubEntryList& fl);
-	
+	void startSocket();
+	void startUPnP();
+	void stopUPnP();
+
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
@@ -246,9 +270,6 @@ private:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const tstring& cmdLine);
 
-	void startUPnP();
-	void stopUPnP();
-
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return WMU_WHERE_ARE_YOU;
 	}
@@ -351,26 +372,8 @@ private:
 
 private:
 
-	class DirectoryListInfo {
-	public:
-		DirectoryListInfo(const User::Ptr& aUser, const tstring& aFile, const tstring& aDir, int64_t aSpeed) : user(aUser), file(aFile), dir(aDir), speed(aSpeed) { }
-		User::Ptr user;
-		tstring file;
-		tstring dir;
-		int64_t speed;
-	};
-	class DirectoryBrowseInfo {
-	public:
-		DirectoryBrowseInfo(const User::Ptr& ptr, string aText) : user(ptr), text(aText) { }
-		User::Ptr user;
-		string text;
-	};
-
 	TransferView transferView;
 
-	enum { MAX_CLIENT_LINES = 10 };
-	TStringList lastLinesList;
-	tstring lastLines;
 	CToolTipCtrl ctrlLastLines;
 
 	CStatusBarCtrl ctrlStatus;
@@ -409,8 +412,6 @@ private:
 
 	HWND createToolbar();
 	void updateTray(bool add = true);
-
-	void startSocket();
 
 	// LogManagerListener
 	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); }

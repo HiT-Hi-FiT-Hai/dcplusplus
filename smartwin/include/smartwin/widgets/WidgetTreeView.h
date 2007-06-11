@@ -110,7 +110,12 @@ struct TreeViewNode
 	TreeViewNode() : handle( NULL )
 	{}
 
+	TreeViewNode(HTREEITEM handle_) : handle( handle_ )
+	{}
+
 	HTREEITEM handle;
+	
+	operator HTREEITEM() { return handle; }
 };
 
 /// TreeView class

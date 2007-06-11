@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,37 +16,38 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(PROPERTIES_DLG_H)
-#define PROPERTIES_DLG_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef DCPLUSPLUS_WIN32_SETTINGS_DIALOG_H
+#define DCPLUSPLUS_WIN32_SETTINGS_DIALOG_H
 
 #include "PropPage.h"
-#include "TreePropertySheet.h"
+#include "WidgetFactory.h"
 
-class PropertiesDlg : public TreePropertySheet
+class SettingsDialog : public WidgetFactory<SmartWin::WidgetModalDialog, SettingsDialog, SmartWin::MessageMapPolicyModalDialogWidget>
 {
 public:
-	enum { numPages = 15 };
+	SettingsDialog(SmartWin::Widget* parent);
+	
+	int run();
+	
+	virtual ~SettingsDialog();
 
-	BEGIN_MSG_MAP(PropertiesDlg)
-		COMMAND_ID_HANDLER(IDOK, onOK)
-		CHAIN_MSG_MAP(TreePropertySheet)
-	ALT_MSG_MAP(TreePropertySheet::TAB_MESSAGE_MAP)
-		MESSAGE_HANDLER(TCM_SETCURSEL, TreePropertySheet::onSetCurSel)
-	END_MSG_MAP()
-
-	PropertiesDlg(HWND parent, SettingsManager *s);
-	virtual ~PropertiesDlg();
-
+#ifdef PORT_ME
 	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
-protected:
+#endif
+	
+private:
+	typedef std::vector<PropPage*> PageList;
+	PageList pages;
+	
+	WidgetTreeViewPtr pageTree;
+	
+	void addPage(const tstring& title, PropPage* page);
 	void write();
-
-	PropPage *pages[numPages];
+	
+	bool initDialog();
+	
+	HTREEITEM createTree(const tstring& str, HTREEITEM parent, PropPage* page);	
+	HTREEITEM findItem(const tstring& str, HTREEITEM start);
 };
 
-#endif // !defined(PROPERTIES_DLG_H)
+#endif 
