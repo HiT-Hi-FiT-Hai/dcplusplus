@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,122 +16,133 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+#include "resource.h"
 
 #include "SpyFrame.h"
-#include "SearchFrm.h"
-#include "WinUtil.h"
 
-#include "../client/ShareManager.h"
-#include "../client/ResourceManager.h"
+#include <client/ShareManager.h>
 
 int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
 static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING, ResourceManager::COUNT, ResourceManager::TIME };
 
-LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
+	SmartWin::Widget(mdiParent),
+	total(0),
+	cur(0),
+	bIgnoreTTH(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES))
 {
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
+	ZeroMemory(perSecond, sizeof(perSecond));
 
-	ctrlSearches.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, WS_EX_CLIENTEDGE, IDC_RESULTS);
-	ctrlSearches.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-	ctrlSearches.SetBkColor(WinUtil::bgColor);
-	ctrlSearches.SetTextBkColor(WinUtil::bgColor);
-	ctrlSearches.SetTextColor(WinUtil::textColor);
+	{
+		WidgetDataGrid::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		searches = createDataGrid(cs);
+		add_widget(searches);
+		searches->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
-	ctrlIgnoreTth.Create(ctrlStatus.m_hWnd, rcDefault, CTSTRING(IGNORE_TTH_SEARCHES), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	ctrlIgnoreTth.SetButtonStyle(BS_AUTOCHECKBOX, false);
-	ctrlIgnoreTth.SetFont(WinUtil::systemFont);
-	ctrlIgnoreTth.SetCheck(ignoreTth);
-	ignoreTthContainer.SubclassWindow(ctrlIgnoreTth.m_hWnd);
+#ifdef PORT_ME
+		for(int j=0; j<COLUMN_LAST; j++) {
+			int fmt = (j == COLUMN_COUNT) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+			searches->InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		}
+#endif
+		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
+		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
+#ifdef PORT_ME
+		searches->setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
+#endif
 
-	WinUtil::splitTokens(columnIndexes, SETTING(SPYFRAME_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(SPYFRAME_WIDTHS), COLUMN_LAST);
-	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_COUNT) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlSearches.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 
-	ctrlSearches.setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
+	{
+		WidgetCheckBox::Seed cs;
+		cs.caption = TSTRING(IGNORE_TTH_SEARCHES);
+		ignoreTTH = createCheckBox(cs);
+		ignoreTTH->setChecked(bIgnoreTTH);
+#ifdef PORT_ME
+		ignoreTTH->setFont(WinUtil::systemFont);
+#endif
+
+		ignoreTTH->onClicked(&SpyFrame::handleIgnoreTTHClicked);
+	}
+
+	memset(statusSizes, 0, sizeof(statusSizes));
+	statusSizes[STATUS_IGNORE_TTH] = 150; ///@todo get real checkbox + text width
+	statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
+	status = this->createStatusBarSections();
+
+	layout();
+
+	onSpeaker(&SpyFrame::spoken);
 
 	ShareManager::getInstance()->setHits(0);
 
-	bHandled = FALSE;
-	return 1;
+	ClientManager::getInstance()->addListener(this);
+	TimerManager::getInstance()->addListener(this);
+
+	onRaw(&SpyFrame::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
+
+	contextMenu = createPopupMenu();
+	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), &SpyFrame::handleSearch);
+	onRaw(&SpyFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+
+#if 1
+	// for testing purposes; adds 2 dummy lines into the list
+	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 1")));
+	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 2")));
+#endif
 }
 
-LRESULT SpyFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(!closed){
-		ClientManager::getInstance()->removeListener(this);
-		TimerManager::getInstance()->removeListener(this);
-
-		bHandled = TRUE;
-		closed = true;
-		PostMessage(WM_CLOSE);
-		return 0;
-	} else {
-		WinUtil::saveHeaderOrder(ctrlSearches, SettingsManager::SPYFRAME_ORDER, SettingsManager::SPYFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-		if (ignoreTth != BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES))
-			SettingsManager::getInstance()->set(SettingsManager::SPY_FRAME_IGNORE_TTH_SEARCHES, ignoreTth);
-
-		bHandled = FALSE;
-		return 0;
-	}
+SpyFrame::~SpyFrame() {
 }
 
-LRESULT SpyFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-	if(l->iSubItem == ctrlSearches.getSortColumn()) {
-		if (!ctrlSearches.isAscending())
-			ctrlSearches.setSort(-1, ctrlSearches.getSortType());
-		else
-			ctrlSearches.setSortDirection(false);
-	} else {
-		if(l->iSubItem == COLUMN_COUNT) {
-			ctrlSearches.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
-		} else {
-			ctrlSearches.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-		}
-	}
-	return 0;
-}
+void SpyFrame::layout() {
+	const int border = 2;
 
-void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
-	RECT rect;
-	GetClientRect(&rect);
-	// position bars and offset their dimensions
-	UpdateBarsPosition(rect, bResizeBars);
+	SmartWin::Rectangle r(this->getClientAreaSize());
+	status->refresh();
 
-	if(ctrlStatus.IsWindow()) {
-		CRect sr;
-		int w[5];
-		ctrlStatus.GetClientRect(sr);
+	{
+		std::vector<unsigned> w(STATUS_LAST);
 
-		int tmp = (sr.Width()) > 616 ? 516 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		w[STATUS_STATUS] = status->getSize().x - std::accumulate(statusSizes, statusSizes+STATUS_LAST, 0) - w[STATUS_STATUS];
+		std::copy(statusSizes, statusSizes + STATUS_LAST, w.begin());
 
-		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-16)*1/4;
-		w[2] = w[0] + (tmp-16)*2/4;
-		w[3] = w[0] + (tmp-16)*3/4;
-		w[4] = w[0] + (tmp-16)*4/4;
+		status->setSections(w);
 
-		ctrlStatus.SetParts(5, w);
-
-		ctrlStatus.GetRect(0, sr);
-		ctrlIgnoreTth.MoveWindow(sr);
+		RECT sr;
+		::SendMessage(status->handle(), SB_GETRECT, STATUS_IGNORE_TTH, reinterpret_cast<LPARAM>(&sr));
+		::MapWindowPoints(status->handle(), this->handle(), (POINT*)&sr, 2);
+		ignoreTTH->setBounds(SmartWin::Rectangle::FromRECT(sr));
 	}
 
-	ctrlSearches.MoveWindow(&rect);
+	r.size.y -= status->getSize().y - border;
+	searches->setBounds(r);
 }
 
-LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(wParam == SEARCH) {
+bool SpyFrame::preClosing() {
+	ClientManager::getInstance()->removeListener(this);
+	TimerManager::getInstance()->removeListener(this);
+	return true;
+}
+
+void SpyFrame::postClosing() {
+	searches->removeAllRows();
+
+	SettingsManager::getInstance()->set(SettingsManager::SPYFRAME_ORDER, WinUtil::toString(searches->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::SPYFRAME_WIDTHS, WinUtil::toString(searches->getColumnWidths()));
+
+	SettingsManager::getInstance()->set(SettingsManager::SPY_FRAME_IGNORE_TTH_SEARCHES, bIgnoreTTH);
+}
+
+HRESULT SpyFrame::spoken(LPARAM lParam, WPARAM wParam) {
+	if(wParam == SPEAK_SEARCH) {
 		tstring* x = (tstring*)lParam;
 
 		total++;
@@ -139,85 +150,109 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		// Not thread safe, but who cares really...
 		perSecond[cur]++;
 
-		int j = ctrlSearches.find(*x);
+		int j = searches->findItem(*x);
 		if(j == -1) {
 			TStringList a;
 			a.push_back(*x);
 			a.push_back(Text::toT(Util::toString(1)));
 			a.push_back(Text::toT(Util::getTimeString()));
-			ctrlSearches.insert(a);
-			if(ctrlSearches.GetItemCount() > 500) {
-				ctrlSearches.DeleteItem(ctrlSearches.GetItemCount() - 1);
+			searches->insertRow(a);
+			if(searches->getRowCount() > 500) {
+				searches->removeRow(searches->getRowCount() - 1);
 			}
 		} else {
-			TCHAR tmp[32];
-			ctrlSearches.GetItemText(j, COLUMN_COUNT, tmp, 32);
-			ctrlSearches.SetItemText(j, COLUMN_COUNT, Text::toT(Util::toString(Util::toInt(Text::fromT(tmp))+1)).c_str());
-			ctrlSearches.GetItemText(j, COLUMN_TIME, tmp, 32);
-			ctrlSearches.SetItemText(j, COLUMN_TIME, Text::toT(Util::getTimeString()).c_str());
-			if(ctrlSearches.getSortColumn() == COLUMN_COUNT )
-				ctrlSearches.resort();
-			if(ctrlSearches.getSortColumn() == COLUMN_TIME )
-				ctrlSearches.resort();
+			searches->setCellText(COLUMN_COUNT, j, Text::toT(Util::toString(Util::toInt(Text::fromT(searches->getCellText(COLUMN_COUNT, j))) + 1)));
+			searches->setCellText(COLUMN_TIME, j, Text::toT(Util::getTimeString()));
+#ifdef PORT_ME
+			if(searches->getSortColumn() == COLUMN_COUNT )
+				searches->resort();
+			if(searches->getSortColumn() == COLUMN_TIME )
+				searches->resort();
+#endif
 		}
 		delete x;
 
-		ctrlStatus.SetText(1, Text::toT(STRING(TOTAL) + Util::toString(total)).c_str());
-		ctrlStatus.SetText(3, Text::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())).c_str());
+		setStatus(STATUS_TOTAL, Text::toT(STRING(TOTAL) + Util::toString(total)));
+		setStatus(STATUS_HITS, Text::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())));
 		double ratio = total > 0 ? ((double)ShareManager::getInstance()->getHits()) / (double)total : 0.0;
-		ctrlStatus.SetText(4, Text::toT(STRING(HIT_RATIO) + Util::toString(ratio)).c_str());
-	} else if(wParam == TICK_AVG) {
+		setStatus(STATUS_HIT_RATIO, Text::toT(STRING(HIT_RATIO) + Util::toString(ratio)));
+	} else if(wParam == SPEAK_TICK_AVG) {
 		float* x = (float*)lParam;
-		ctrlStatus.SetText(2, Text::toT(STRING(AVERAGE) + Util::toString(*x)).c_str());
+		setStatus(STATUS_AVG_PER_SECOND, Text::toT(STRING(AVERAGE) + Util::toString(*x)));
 		delete x;
 	}
-
 	return 0;
 }
 
-LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if (reinterpret_cast<HWND>(wParam) == ctrlSearches && ctrlSearches.GetSelectedCount() == 1) {
+HRESULT SpyFrame::handleColumnClick(LPARAM lParam, WPARAM /*wParam*/) {
+	if(((LPNMHDR)lParam)->hwndFrom == searches->handle()) {
+		LPNMLISTVIEW l = (LPNMLISTVIEW)lParam;
+#ifdef PORT_ME
+		if(l->iSubItem == searches->getSortColumn()) {
+			if (!searches->isAscending())
+				searches->setSort(-1, searches->getSortType());
+			else
+				searches->setSortDirection(false);
+		} else {
+			if(l->iSubItem == COLUMN_COUNT) {
+				searches->setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+			} else {
+				searches->setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			}
+		}
+#endif
+	}
+	return 0;
+}
+
+HRESULT SpyFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+	if (reinterpret_cast<HWND>(wParam) == searches->handle() && searches->getSelectedCount() == 1) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlSearches, pt);
+			pt = searches->getContextMenuPos();
 		}
 
-		int i = ctrlSearches.GetNextItem(-1, LVNI_SELECTED);
+		searchString = searches->getCellText(COLUMN_STRING, searches->getSelectedIndex());
 
-		CMenu mnu;
-		mnu.CreatePopupMenu();
-		mnu.AppendMenu(MF_STRING, IDC_SEARCH, CTSTRING(SEARCH));
-		AutoArray<TCHAR> buf(256);
-		ctrlSearches.GetItemText(i, COLUMN_STRING, buf, 256);
-		searchString = buf;
-
-		mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-
+		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
 	}
-
-	bHandled = FALSE;
 	return FALSE;
 }
 
-LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void SpyFrame::handleSearch(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+#ifdef PORT_ME
 	if(Util::strnicmp(searchString.c_str(), _T("TTH:"), 4) == 0)
 		SearchFrame::openWindow(searchString.substr(4), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 	else
 		SearchFrame::openWindow(searchString);
-	return 0;
+#endif
+}
+
+void SpyFrame::handleIgnoreTTHClicked(WidgetCheckBoxPtr) {
+	bIgnoreTTH = ignoreTTH->getChecked();
+}
+
+void SpyFrame::setStatus(Status s, const tstring& text) {
+	int w = status->getTextSize(text).x + 12;
+	if(w > static_cast<int>(statusSizes[s])) {
+		dcdebug("Setting status size %d to %d\n", s, w);
+		statusSizes[s] = w;
+		layout();
+	}
+	status->setText(text, s);
 }
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
-	if(ignoreTth && s.compare(0, 4, "TTH:") == 0)
+	if(bIgnoreTTH && s.compare(0, 4, "TTH:") == 0)
 		return;
 	tstring* x = new tstring(Text::toT(s));
 	tstring::size_type i = 0;
 	while( (i=x->find(_T('$'))) != string::npos) {
 		(*x)[i] = _T(' ');
 	}
-	PostMessage(WM_SPEAKER, SEARCH, (LPARAM)x);
+	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)x);
 }
 
 void SpyFrame::on(TimerManagerListener::Second, uint32_t) throw() {
@@ -229,6 +264,5 @@ void SpyFrame::on(TimerManagerListener::Second, uint32_t) throw() {
 
 	cur = (cur + 1) % AVG_TIME;
 	perSecond[cur] = 0;
-	PostMessage(WM_SPEAKER, TICK_AVG, (LPARAM)f);
+	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_TICK_AVG, (LPARAM)f);
 }
-#endif

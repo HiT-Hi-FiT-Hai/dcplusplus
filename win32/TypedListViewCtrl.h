@@ -80,6 +80,7 @@ public:
 	
 	ContentType* getItemData(int iItem) { 
 		LVITEM item = { LVIF_PARAM };
+        item.iItem = iItem;
 		if(ListView_GetItem(this->handle(), &item)) {
 			return reinterpret_cast<ContentType*>(item.lParam);
 		}

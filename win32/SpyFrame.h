@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,33 +16,36 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SPY_FRAME_H)
-#define SPY_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_SPY_FRAME_H
+#define DCPLUSPLUS_WIN32_SPY_FRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "StaticFrame.h"
 
-#include "../client/ClientManager.h"
-#include "../client/TimerManager.h"
+#include <client/ClientManager.h>
 
-#include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
-
-#define IGNORETTH_MESSAGE_MAP 7
-
-class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, public StaticFrame<SpyFrame, ResourceManager::SEARCH_SPY>,
-	private ClientManagerListener, private TimerManagerListener
-{
+class SpyFrame : public StaticFrame<SpyFrame>, private ClientManagerListener, private TimerManagerListener {
 public:
-	SpyFrame() : total(0), cur(0), closed(false), ignoreTth(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES)), ignoreTthContainer(WC_BUTTON, this, IGNORETTH_MESSAGE_MAP) {
-		ZeroMemory(perSecond, sizeof(perSecond));
-		ClientManager::getInstance()->addListener(this);
-		TimerManager::getInstance()->addListener(this);
-	}
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SEARCH_SPY;
 
-	virtual ~SpyFrame() {
-	}
+protected:
+	friend class StaticFrame<SpyFrame>;
+	friend class MDIChildFrame<SpyFrame>;
+
+	SpyFrame(SmartWin::Widget* mdiParent);
+	virtual ~SpyFrame();
+
+	void layout();
+
+	bool preClosing();
+	void postClosing();
+
+private:
+	enum { AVG_TIME = 60 };
+
+	enum {
+		SPEAK_SEARCH,
+		SPEAK_TICK_AVG
+	};
 
 	enum {
 		COLUMN_FIRST,
@@ -52,58 +55,40 @@ public:
 		COLUMN_LAST
 	};
 
-	static int columnIndexes[COLUMN_LAST];
-	static int columnSizes[COLUMN_LAST];
-
-	DECLARE_FRAME_WND_CLASS_EX(_T("SpyFrame"), IDR_SPY, 0, COLOR_3DFACE)
-
-	typedef MDITabChildWindowImpl<SpyFrame> baseClass;
-	BEGIN_MSG_MAP(SpyFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
-		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
-		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(IGNORETTH_MESSAGE_MAP)
-		MESSAGE_HANDLER(BM_SETCHECK, onIgnoreTth)
-	END_MSG_MAP()
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
-	LRESULT onIgnoreTth(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-		bHandled = FALSE;
-		ignoreTth = (wParam == BST_CHECKED);
-		return 0;
-	}
-
-private:
-
-	enum { AVG_TIME = 60 };
-	enum {
-		SEARCH,
-		TICK_AVG
+	enum Status {
+		STATUS_IGNORE_TTH,
+		STATUS_STATUS,
+		STATUS_TOTAL,
+		STATUS_AVG_PER_SECOND,
+		STATUS_HITS,
+		STATUS_HIT_RATIO,
+		STATUS_DUMMY,
+		STATUS_LAST
 	};
+	unsigned statusSizes[STATUS_LAST];
 
-	ExListViewCtrl ctrlSearches;
-	CStatusBarCtrl ctrlStatus;
-	CContainedWindow ignoreTthContainer;
-	CButton ctrlIgnoreTth;
-	int total;
-	int perSecond[AVG_TIME];
-	int cur;
+	static int columnSizes[COLUMN_LAST];
+	static int columnIndexes[COLUMN_LAST];
+
+	WidgetDataGridPtr searches;
+
+	WidgetCheckBoxPtr ignoreTTH;
+	bool bIgnoreTTH;
+
+	WidgetStatusBarSectionsPtr status;
+
+	WidgetPopupMenuPtr contextMenu;
+
+	int total, cur, perSecond[AVG_TIME];
 	tstring searchString;
 
-	bool closed;
-	bool ignoreTth;
+	HRESULT spoken(LPARAM lParam, WPARAM wParam);
+	HRESULT handleColumnClick(LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	void handleSearch(WidgetMenuPtr /*menu*/, unsigned /*id*/);
+	void handleIgnoreTTHClicked(WidgetCheckBoxPtr);
+
+	void setStatus(Status s, const tstring& text);
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::IncomingSearch, const string& s) throw();
@@ -112,4 +97,4 @@ private:
 	virtual void on(TimerManagerListener::Second, uint32_t) throw();
 };
 
-#endif // !defined(SPY_FRAME_H)
+#endif // !defined(DCPLUSPLUS_WIN32_SPY_FRAME_H)

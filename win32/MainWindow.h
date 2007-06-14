@@ -117,6 +117,7 @@ private:
 	void handleFavHubs(WidgetMenuPtr menu, unsigned id);
 	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
 	void handleAdlSearch(WidgetMenuPtr menu, unsigned id);
+    void handleSearchSpy(WidgetMenuPtr menu, unsigned id);
 	void handleNotepad(WidgetMenuPtr menu, unsigned id);
 	void handleQuickConnect(WidgetMenuPtr menu, unsigned id);
 	void handleQueue(WidgetMenuPtr menu, unsigned id);
@@ -197,7 +198,6 @@ private:
 		COMMAND_ID_HANDLER(IDC_FAVUSERS, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_QUEUE, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_NET_STATS, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_VIEW_WAITING_USERS, onOpenWindows)

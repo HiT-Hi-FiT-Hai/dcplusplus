@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_FINISHED_FRAME_BASE_H
 
 #include "StaticFrame.h"
+#include "TypedListViewCtrl.h"
 #include "TextFrame.h"
 #include "ShellContextMenu.h"
 
@@ -43,28 +44,25 @@ protected:
 	{
 		{
 			typename MDIChildType::WidgetDataGrid::Seed cs;
-			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
+			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
 			cs.exStyle = WS_EX_CLIENTEDGE;
-			items = createDataGrid(cs);
+			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);
 			items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 			add_widget(items);
 
+#ifdef PORT_ME
+			for(int j=0; j<COLUMN_LAST; j++) {
+				int fmt = (j == COLUMN_SIZE || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+				ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+			}
+#endif
 			items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 			items->setColumnOrder(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER), columnIndexes));
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
+			items->setSortColumn(COLUMN_DONE);
 
 			items->setColor(WinUtil::textColor, WinUtil::bgColor);
 			items->setSmallImageList(WinUtil::fileImages);
-
-#ifdef PORT_ME
-		for(int j=0; j<COLUMN_LAST; j++) {
-			int fmt = (j == COLUMN_SIZE || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-			ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
-		}
-
-		ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
-		ctrlList.setSort(COLUMN_DONE, ExListViewCtrl::SORT_STRING_NOCASE);
-#endif
 		}
 
 		statusSizes[STATUS_COUNT] = statusSizes[STATUS_BYTES] = statusSizes[STATUS_SPEED] = 100;
@@ -80,7 +78,6 @@ protected:
 		FinishedManager::getInstance()->unlockList();
 
 		onRaw(&T::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-		onRaw(&T::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
 		onRaw(&T::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 
 		contextMenu = this->createPopupMenu();
@@ -97,7 +94,7 @@ protected:
 
 #if 1
 		// for testing purposes; adds 2 dummy lines into the list
-		addEntry(new FinishedItem("C:\\folder\\file.txt", "nicks", "hubs", 1024, 1024, 1000, GET_TIME(), false));
+		addEntry(new FinishedItem("C:\\folder\\file.txt", "nicks", "hubs", 1024, 1024, 1000, GET_TIME() - 1000, false));
 		addEntry(new FinishedItem("C:\\folder\\file2.txt", "nicks2", "hubs2", 2048, 2048, 1000, GET_TIME(), false));
 #endif
 	}
@@ -169,7 +166,50 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static ResourceManager::Strings columnNames[COLUMN_LAST];
 
-	typename MDIChildType::WidgetDataGridPtr items;
+	class ItemInfo : public FastAlloc<ItemInfo> {
+	public:
+		ItemInfo(FinishedItemPtr entry_) : entry(entry_) {
+			columns[COLUMN_FILE] = Text::toT(Util::getFileName(entry->getTarget()));
+			columns[COLUMN_DONE] = Text::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime()));
+			columns[COLUMN_PATH] = Text::toT(Util::getFilePath(entry->getTarget()));
+			columns[COLUMN_NICK] = Text::toT(entry->getUser());
+			columns[COLUMN_HUB] = Text::toT(entry->getHub());
+			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(entry->getSize()));
+			columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s");
+			columns[COLUMN_CRC32] = entry->getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR);
+		}
+
+		FinishedItemPtr entry;
+
+		const string& getText(int col) const {
+			return columns[col];
+		}
+
+		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
+			switch(col) {
+				case COLUMN_SIZE: return compare(a->entry->getSize(), b->entry->getSize());
+				case COLUMN_SPEED: return compare(a->entry->getAvgSpeed(), b->entry->getAvgSpeed());
+				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+			}
+
+		}
+
+		void openFile() {
+			WinUtil::openFile(Text::toT(entry->getTarget()));
+		}
+
+		void openFolder() {
+			WinUtil::openFolder(Text::toT(entry->getTarget()));
+		}
+
+	private:
+		tstring columns[COLUMN_LAST];
+	};
+
+	typedef TypedListViewCtrl<T, ItemInfo> WidgetItems;
+	typedef WidgetItems* WidgetItemsPtr;
+	WidgetItemsPtr items;
+
 	typename MDIChildType::WidgetStatusBarSectionsPtr status;
 
 	typename MDIChildType::WidgetPopupMenuPtr contextMenu;
@@ -200,14 +240,7 @@ private:
 		if(((LPNMHDR)lParam)->hwndFrom == items->handle()) {
 			LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
 			if(item->iItem != -1)
-				WinUtil::openFile(Text::toT(((FinishedItemPtr)items->getItemData(item->iItem))->getTarget()));
-		}
-		return 0;
-	}
-
-	HRESULT handleColumnClick(LPARAM lParam, WPARAM /*wParam*/) {
-		if(((LPNMHDR)lParam)->hwndFrom == items->handle()) {
-			//PORT_ME
+				items->getItemData(item->iItem)->openFile();
 		}
 		return 0;
 	}
@@ -227,7 +260,7 @@ private:
 			}
 
 			if(BOOLSETTING(SHOW_SHELL_MENU) && items->getSelectedCount() == 1) {
-				string path = ((FinishedItemPtr)items->getItemData(items->getSelectedIndex()))->getTarget();
+				string path = items->getSelectedItem()->entry->getTarget();
 				if(File::getSize(path) != -1) {
 					CShellContextMenu<T> shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
@@ -256,25 +289,21 @@ private:
 	void handleViewAsText(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			new TextFrame(MDIChildType::getParent(), Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
+			new TextFrame(MDIChildType::getParent(), Text::toT(items->getItemData(i)->entry->getTarget()));
 	}
 
 	void handleOpenFile(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
-		int i = -1;
-		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			WinUtil::openFile(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
+		items->forEachSelected(&ItemInfo::openFile);
 	}
 
 	void handleOpenFolder(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
-		int i = -1;
-		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			WinUtil::openFolder(Text::toT(((FinishedItemPtr)items->getItemData(i))->getTarget()));
+		items->forEachSelected(&ItemInfo::openFolder);
 	}
 
 	void handleRemove(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 		int i;
 		while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
-			FinishedManager::getInstance()->remove((FinishedItemPtr)items->getItemData(i), in_UL);
+			FinishedManager::getInstance()->remove(items->getItemData(i)->entry, in_UL);
 			items->removeRow(i);
 		}
 	}
@@ -303,19 +332,10 @@ private:
 	}
 
 	void addEntry(FinishedItemPtr entry) {
-		TStringList l;
-		l.push_back(Text::toT(Util::getFileName(entry->getTarget())));
-		l.push_back(Text::toT(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime())));
-		l.push_back(Text::toT(Util::getFilePath(entry->getTarget())));
-		l.push_back(Text::toT(entry->getUser()));
-		l.push_back(Text::toT(entry->getHub()));
-		l.push_back(Text::toT(Util::formatBytes(entry->getSize())));
-		l.push_back(Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s"));
-		l.push_back(entry->getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR));
 		totalBytes += entry->getChunkSize();
 		totalTime += entry->getMilliSeconds();
 
-		items->insertRow(l, (LPARAM)entry, -1, WinUtil::getIconIndex(Text::toT(entry->getTarget())));
+		int loc = items->insertItem(new ItemInfo(entry), WinUtil::getIconIndex(Text::toT(entry->getTarget())));
 #ifdef PORT_ME
 		ctrlList.EnsureVisible(loc, FALSE);
 #endif
@@ -353,55 +373,5 @@ template <class T, bool in_UL>
 ResourceManager::Strings FinishedFrameBase<T, in_UL>::columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH,
 ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
-
-#ifdef PORT_ME
-
-template<class T, int title, int id>
-class FinishedFrameBase : public MDITabChildWindowImpl<T>, public StaticFrame<T, title>,
-	protected FinishedManagerListener
-{
-public:
-	BEGIN_MSG_MAP(T)
-		NOTIFY_HANDLER(id, LVN_COLUMNCLICK, onColumnClickFinished)
-		CHAIN_MSG_MAP(MDITabChildWindowImpl<T>)
-	END_MSG_MAP()
-
-	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlList.getSortColumn()) {
-			if (!ctrlList.isAscending())
-				ctrlList.setSort(-1, ctrlList.getSortType());
-			else
-				ctrlList.setSortDirection(false);
-		} else {
-			switch(l->iSubItem) {
-			case COLUMN_SIZE:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
-				break;
-			case COLUMN_SPEED:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSpeed);
-				break;
-			default:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-				break;
-			}
-		}
-		return 0;
-	}
-
-	static int sortSize(LPARAM a, LPARAM b) {
-		FinishedItemPtr c = (FinishedItemPtr)a;
-		FinishedItemPtr d = (FinishedItemPtr)b;
-		return compare(c->getSize(), d->getSize());
-	}
-
-	static int sortSpeed(LPARAM a, LPARAM b) {
-		FinishedItemPtr c = (FinishedItemPtr)a;
-		FinishedItemPtr d = (FinishedItemPtr)b;
-		return compare(c->getAvgSpeed(), d->getAvgSpeed());
-	}
-};
-
-#endif
 
 #endif // !defined(DCPLUSPLUS_WIN32_FINISHED_FRAME_BASE_H)

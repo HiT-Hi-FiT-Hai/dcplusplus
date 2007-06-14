@@ -20,10 +20,11 @@
 #define DCPLUSPLUS_WIN32_TYPED_TREE_VIEW_H
 
 
-template<class T, class ContentType, class BaseType = typename T::WidgetTreeView>
-class TypedTreeView : public BaseType
+template<class T, class ContentType>
+class TypedTreeView : public T::WidgetTreeView
 {
 private:
+	typedef typename T::WidgetTreeView BaseType;
 	typedef TypedTreeView<T, ContentType> ThisType;
 	
 public:

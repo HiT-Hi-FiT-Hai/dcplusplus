@@ -29,6 +29,7 @@
 #include "FavHubsFrame.h"
 #include "QueueFrame.h"
 #include "ADLSearchFrame.h"
+#include "SpyFrame.h"
 #include "FinishedDLFrame.h"
 #include "FinishedULFrame.h"
 #include "LineDlg.h"
@@ -265,6 +266,7 @@ void MainWindow::initMenu() {
 	view->appendItem(IDC_FAVORITE_HUBS, TSTRING(MENU_FAVORITE_HUBS), &MainWindow::handleFavHubs);
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleSystemLog);
 	view->appendItem(IDC_ADL_SEARCH, TSTRING(MENU_ADL_SEARCH), &MainWindow::handleAdlSearch);
+	view->appendItem(IDC_SEARCH_SPY, TSTRING(MENU_SEARCH_SPY), &MainWindow::handleSearchSpy);
 	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleNotepad);
 	view->appendItem(IDC_QUEUE, TSTRING(MENU_DOWNLOAD_QUEUE), &MainWindow::handleQueue);
 	view->appendItem(IDC_FINISHED_DL, TSTRING(FINISHED_DOWNLOADS), &MainWindow::handleFinishedDL);
@@ -275,7 +277,6 @@ void MainWindow::initMenu() {
 	view.AppendMenu(MF_STRING, IDC_FAVUSERS, CTSTRING(MENU_FAVORITE_USERS));
 	view.AppendMenu(MF_STRING, ID_FILE_SEARCH, CTSTRING(MENU_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CTSTRING(MENU_ADL_SEARCH));
-	view.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CTSTRING(MENU_SEARCH_SPY));
 	view.AppendMenu(MF_STRING, IDC_NET_STATS, CTSTRING(MENU_NETWORK_STATISTICS));
 	view.AppendMenu(MF_STRING, IDC_HASH_PROGRESS, CTSTRING(MENU_HASH_PROGRESS));
 	view.AppendMenu(MF_STRING, IDC_SYSTEM_LOG, CTSTRING(MENU_SYSTEM_LOG));
@@ -367,6 +368,10 @@ void MainWindow::handleAdlSearch(WidgetMenuPtr, unsigned) {
 	ADLSearchFrame::openWindow(mdi);
 }
 
+void MainWindow::handleSearchSpy(WidgetMenuPtr, unsigned) {
+	SpyFrame::openWindow(mdi);
+}
+
 void MainWindow::handleQueue(WidgetMenuPtr, unsigned) {
 	QueueFrame::openWindow(mdi);
 }
@@ -445,6 +450,7 @@ HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 		}
 	}
 	}	
+	return 0;
 }
 
 void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {

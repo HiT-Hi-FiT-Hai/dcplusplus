@@ -82,6 +82,7 @@
 #define IDC_OPEN_FOLDER				1031
 #define IDC_REMOVE_ALL				1032
 #define IDC_SETTINGS				1033
+#define IDC_SEARCH_SPY				1034
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000

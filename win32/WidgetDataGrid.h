@@ -77,6 +77,11 @@ public:
 		return item.lParam;
 	}
 	
+    int findItem(const tstring& b, int start = -1, bool aPartial = false) {
+        LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
+        return ListView_FindItem(this->handle(), start, &fi);
+    }
+
 	POINT getContextMenuPos() {
 		int pos = getNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
 		POINT pt = { 0 };
