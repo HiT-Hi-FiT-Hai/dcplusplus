@@ -28,18 +28,19 @@
 static const TCHAR SEPARATOR = _T('\\');
 static const size_t MAX_NAME_LENGTH = 256;
 
-SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : SmartWin::Widget(parent) {
+SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : SmartWin::Widget(parent), currentPage(0) {
 	onInitDialog(&SettingsDialog::initDialog);
 }
 
 bool SettingsDialog::initDialog() {
 	pageTree = subclassTreeView(IDC_SETTINGS_PAGES);
+	pageTree->onSelectionChanged(&SettingsDialog::selectionChanged);
 	
 	setText(TSTRING(SETTINGS));
 	
-	addPage(TSTRING(SETTINGS_GENERAL), new GeneralPage);
+	addPage(TSTRING(SETTINGS_GENERAL), new GeneralPage(this));
 	
-	return true;
+	return false;
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -52,6 +53,33 @@ int SettingsDialog::run() {
 
 void SettingsDialog::addPage(const tstring& title, PropPage* page) {
 	pages.push_back(page);
+	createTree(title, TVI_ROOT, page);
+}
+
+void SettingsDialog::selectionChanged(WidgetTreeViewPtr) {
+	HTREEITEM item = TreeView_GetSelection(pageTree->handle());
+	if(item == NULL) {
+		showPage(0);
+	} else {
+		TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
+		tvitem.hItem = item;
+		if(!TreeView_GetItem(pageTree->handle(), &tvitem)) {
+			showPage(0);
+		} else {
+			showPage(reinterpret_cast<PropPage*>(tvitem.lParam));
+		}
+	}
+}
+
+void SettingsDialog::showPage(PropPage* page) {
+	if(currentPage) {
+		::ShowWindow(dynamic_cast<SmartWin::Widget*>(currentPage)->handle(), SW_HIDE);
+		currentPage = 0;
+	}
+	if(page) {
+		::ShowWindow(dynamic_cast<SmartWin::Widget*>(page)->handle(), SW_SHOW);
+		currentPage = page;
+	}
 }
 
 HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropPage* page) {

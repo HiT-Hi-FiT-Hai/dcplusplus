@@ -43,11 +43,8 @@ PropPage::Item GeneralPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-GeneralPage::GeneralPage() : PropPage() {
-#ifdef PORT_ME
-	SetTitle(CTSTRING(SETTINGS_GENERAL));
-	m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-#endif
+GeneralPage::GeneralPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_GENERALPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);

@@ -38,6 +38,7 @@ public:
 private:
 	typedef std::vector<PropPage*> PageList;
 	PageList pages;
+	PropPage* currentPage;
 	
 	WidgetTreeViewPtr pageTree;
 	
@@ -45,6 +46,8 @@ private:
 	void write();
 	
 	bool initDialog();
+	void selectionChanged(WidgetTreeViewPtr);
+	void showPage(PropPage* page);
 	
 	HTREEITEM createTree(const tstring& str, HTREEITEM parent, PropPage* page);	
 	HTREEITEM findItem(const tstring& str, HTREEITEM start);
