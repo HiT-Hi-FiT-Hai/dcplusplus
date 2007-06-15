@@ -39,10 +39,11 @@ COLORREF WinUtil::bgColor = 0;
 SmartWin::FontPtr WinUtil::font;
 SmartWin::FontPtr WinUtil::monoFont;
 SmartWin::ImageListPtr WinUtil::fileImages;
+SmartWin::ImageListPtr WinUtil::userImages;
 int WinUtil::fileImageCount;
 int WinUtil::dirIconIndex;
 int WinUtil::dirMaskedIndex;
-SmartWin::ImageListPtr WinUtil::userImages;
+StringList WinUtil::lastDirs;
 
 void WinUtil::init() {
 
@@ -351,6 +352,30 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 #endif
 }
 
+void WinUtil::bitziLink(const TTHValue& aHash) {
+	// to use this free service by bitzi, we must not hammer or request information from bitzi
+	// except when the user requests it (a mass lookup isn't acceptable), and (if we ever fetch
+	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be
+	// tracked down and the code can be fixed
+#ifdef PORT_ME
+	openLink(_T("http://bitzi.com/lookup/tree:tiger:") + Text::toT(aHash.toBase32()));
+#endif
+}
+
+void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
+#ifdef PORT_ME
+	if(!aFile.empty()) {
+		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash.toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
+	}
+#endif
+}
+
+void WinUtil::searchHash(const TTHValue& aHash) {
+#ifdef PORT_ME
+	SearchFrame::openWindow(Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
+#endif
+}
+
 tstring WinUtil::escapeMenu(tstring str) {
 	string::size_type i = 0;
 	while( (i = str.find(_T('&'), i)) != string::npos) {
@@ -359,6 +384,84 @@ tstring WinUtil::escapeMenu(tstring str) {
 	}
 	return str;
 }
+
+void WinUtil::addLastDir(const string& dir) {
+	StringIter i = find(lastDirs.begin(), lastDirs.end(), dir); 
+	if(i != lastDirs.end()) {
+		lastDirs.erase(i);
+	}
+	while(lastDirs.size() >= 10) {
+		lastDirs.erase(lastDirs.begin());
+	}
+	lastDirs.push_back(dir);
+}
+
+static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
+	switch(uMsg) {
+	case BFFM_INITIALIZED:
+		SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
+		break;
+	}
+	return 0;
+}
+
+bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
+	TCHAR buf[MAX_PATH];
+	BROWSEINFO bi;
+	LPMALLOC ma;
+
+	ZeroMemory(&bi, sizeof(bi));
+
+	bi.hwndOwner = owner;
+	bi.pszDisplayName = buf;
+	bi.lpszTitle = CTSTRING(CHOOSE_FOLDER);
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
+	bi.lParam = (LPARAM)target.c_str();
+	bi.lpfn = &browseCallbackProc;
+	LPITEMIDLIST pidl = ::SHBrowseForFolder(&bi);
+	if(pidl != NULL) {
+		::SHGetPathFromIDList(pidl, buf);
+		target = buf;
+
+		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
+			target+=_T('\\');
+
+		if(::SHGetMalloc(&ma) != E_FAIL) {
+			ma->Free(pidl);
+			ma->Release();
+		}
+		return true;
+	}
+	return false;
+}
+
+bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
+	TCHAR buf[MAX_PATH];
+	OPENFILENAME ofn = { 0 };		// common dialog box structure
+	target = Text::toT(Util::validateFileName(Text::fromT(target)));
+	_tcscpy(buf, target.c_str());
+	// Initialize OPENFILENAME
+	ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400;
+	ofn.hwndOwner = owner;
+	ofn.lpstrFile = buf;
+	ofn.lpstrFilter = types;
+	ofn.lpstrDefExt = defExt;
+	ofn.nFilterIndex = 1;
+
+	if(!initialDir.empty()) {
+		ofn.lpstrInitialDir = initialDir.c_str();
+	}
+	ofn.nMaxFile = sizeof(buf);
+	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
+
+	// Display the Open dialog box.
+	if ( (save ? ::GetSaveFileName(&ofn) : ::GetOpenFileName(&ofn) ) ==TRUE) {
+		target = ofn.lpstrFile;
+		return true;
+	}
+	return false;
+}
+
 
 #ifdef PORT_ME
 #include "Resource.h"
@@ -398,7 +501,6 @@ CImageList WinUtil::fileImages;
 CImageList WinUtil::userImages;
 int WinUtil::dirIconIndex = 0;
 int WinUtil::dirMaskedIndex = 0;
-TStringList WinUtil::lastDirs;
 HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
@@ -545,72 +647,6 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 }
 
 
-int CALLBACK WinUtil::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
-	switch(uMsg) {
-	case BFFM_INITIALIZED:
-		SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
-		break;
-	}
-	return 0;
-}
-
-bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
-	TCHAR buf[MAX_PATH];
-	BROWSEINFO bi;
-	LPMALLOC ma;
-
-	ZeroMemory(&bi, sizeof(bi));
-
-	bi.hwndOwner = owner;
-	bi.pszDisplayName = buf;
-	bi.lpszTitle = CTSTRING(CHOOSE_FOLDER);
-	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
-	bi.lParam = (LPARAM)target.c_str();
-	bi.lpfn = &browseCallbackProc;
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if(pidl != NULL) {
-		SHGetPathFromIDList(pidl, buf);
-		target = buf;
-
-		if(target.size() > 0 && target[target.size()-1] != _T('\\'))
-			target+=_T('\\');
-
-		if(SHGetMalloc(&ma) != E_FAIL) {
-			ma->Free(pidl);
-			ma->Release();
-		}
-		return true;
-	}
-	return false;
-}
-
-bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
-	TCHAR buf[MAX_PATH];
-	OPENFILENAME ofn = { 0 };		// common dialog box structure
-	target = Text::toT(Util::validateFileName(Text::fromT(target)));
-	_tcscpy(buf, target.c_str());
-	// Initialize OPENFILENAME
-	ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400;
-	ofn.hwndOwner = owner;
-	ofn.lpstrFile = buf;
-	ofn.lpstrFilter = types;
-	ofn.lpstrDefExt = defExt;
-	ofn.nFilterIndex = 1;
-
-	if(!initialDir.empty()) {
-		ofn.lpstrInitialDir = initialDir.c_str();
-	}
-	ofn.nMaxFile = sizeof(buf);
-	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
-
-	// Display the Open dialog box.
-	if ( (save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn) ) ==TRUE) {
-		target = ofn.lpstrFile;
-		return true;
-	}
-	return false;
-}
-
 void WinUtil::setClipboard(const tstring& str) {
 	if(!::OpenClipboard(mainWnd)) {
 		return;
@@ -705,24 +741,6 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 	}
 	return true;
 }
-
-void WinUtil::bitziLink(const TTHValue& aHash) {
-	// to use this free service by bitzi, we must not hammer or request information from bitzi
-	// except when the user requests it (a mass lookup isn't acceptable), and (if we ever fetch
-	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be
-	// tracked down and the code can be fixed
-	openLink(_T("http://bitzi.com/lookup/tree:tiger:") + Text::toT(aHash.toBase32()));
-}
-
- void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
-	if(!aFile.empty()) {
-		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash.toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
-	}
-}
-
- void WinUtil::searchHash(const TTHValue& aHash) {
-	 SearchFrame::openWindow(Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
- }
 
  void WinUtil::registerDchubHandler() {
 	HKEY hk;

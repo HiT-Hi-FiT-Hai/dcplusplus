@@ -86,11 +86,11 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 
-	onRaw(&SpyFrame::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
+	searches->onRaw(&SpyFrame::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
 
 	contextMenu = createPopupMenu();
 	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), &SpyFrame::handleSearch);
-	onRaw(&SpyFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	searches->onRaw(&SpyFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
 
 #if 1
 	// for testing purposes; adds 2 dummy lines into the list
@@ -184,29 +184,27 @@ HRESULT SpyFrame::spoken(LPARAM lParam, WPARAM wParam) {
 	return 0;
 }
 
-HRESULT SpyFrame::handleColumnClick(LPARAM lParam, WPARAM /*wParam*/) {
-	if(((LPNMHDR)lParam)->hwndFrom == searches->handle()) {
-		LPNMLISTVIEW l = (LPNMLISTVIEW)lParam;
+HRESULT SpyFrame::handleColumnClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+	LPNMLISTVIEW l = (LPNMLISTVIEW)lParam;
 #ifdef PORT_ME
-		if(l->iSubItem == searches->getSortColumn()) {
-			if (!searches->isAscending())
-				searches->setSort(-1, searches->getSortType());
-			else
-				searches->setSortDirection(false);
+	if(l->iSubItem == searches->getSortColumn()) {
+		if (!searches->isAscending())
+			searches->setSort(-1, searches->getSortType());
+		else
+			searches->setSortDirection(false);
+	} else {
+		if(l->iSubItem == COLUMN_COUNT) {
+			searches->setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
 		} else {
-			if(l->iSubItem == COLUMN_COUNT) {
-				searches->setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
-			} else {
-				searches->setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-			}
+			searches->setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 		}
-#endif
 	}
+#endif
 	return 0;
 }
 
-HRESULT SpyFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
-	if (reinterpret_cast<HWND>(wParam) == searches->handle() && searches->getSelectedCount() == 1) {
+HRESULT SpyFrame::handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+	if(searches->getSelectedCount() == 1) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 		if(pt.x == -1 && pt.y == -1) {

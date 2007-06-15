@@ -21,6 +21,7 @@
 
 #include "MDIChildFrame.h"
 #include "TypedListViewCtrl.h"
+#include "TypedTreeView.h"
 
 #include <client/forward.h>
 #include <client/FastAlloc.h>
@@ -71,13 +72,18 @@ private:
 	public:
 		enum ItemType {
 			FILE,
-			DIRECTORY
+			DIRECTORY,
+			USER
 		} type;
 
 		union {
 			DirectoryListing::File* file;
 			DirectoryListing::Directory* dir;
 		};
+		
+		ItemInfo(const tstring& nick, DirectoryListing::Directory* d) : type(USER), dir(d) {
+			columns[COLUMN_FILENAME] = nick;
+		}
 
 		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) {
 			columns[COLUMN_FILENAME] = Text::toT(f->getName());
@@ -93,6 +99,20 @@ private:
 			columns[COLUMN_FILENAME] = Text::toT(d->getName());			
 			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(d->getTotalSize()));
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
+		}
+		
+		const tstring& getText() {
+			return columns[COLUMN_FILENAME];
+		}
+		
+		const int getImage() {
+			// TODO Fix mask
+			return WinUtil::dirIconIndex;
+		}
+		
+		const int getSelectedImage() {
+			// TODO Fix mask
+			return WinUtil::dirIconIndex;
 		}
 
 		const tstring& getText(int col) {
@@ -132,7 +152,9 @@ private:
 	};
 	
 	WidgetStatusBarSectionsPtr status;
-	WidgetTreeViewPtr dirs;
+	typedef TypedTreeView<DirectoryListingFrame, ItemInfo> WidgetDirs;
+	typedef WidgetDirs* WidgetDirsPtr;
+	WidgetDirsPtr dirs;
 	typedef TypedListViewCtrl<DirectoryListingFrame, ItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	
@@ -143,17 +165,21 @@ private:
 	WidgetButtonPtr findNext;
 	WidgetButtonPtr listDiff;
 	WidgetButtonPtr matchQueue;
-
+	
 	int64_t speed;		/**< Speed at which this file list was downloaded */
 
 	std::auto_ptr<DirectoryListing> dl;
 	
 	std::string error;
-	
+	bool usingDirMenu;
+	StringList targets;
+
+	HTREEITEM treeRoot;
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
+	typedef HASH_MAP_X(UserPtr, DirectoryListingFrame*, User::HashFunction, equal_to<UserPtr>, less<UserPtr>) UserMap;
 	typedef UserMap::iterator UserIter;
 
 	static UserMap lists;
@@ -161,10 +187,37 @@ private:
 	DirectoryListingFrame(SmartWin::Widget* mdiParent, const User::Ptr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame();
 
+	WidgetPopupMenuPtr makeSingleMenu(ItemInfo* ii);
+	WidgetPopupMenuPtr makeMultiMenu();
+	WidgetPopupMenuPtr makeDirMenu();
+	
+	void addTargets(const WidgetPopupMenuPtr& menu, ItemInfo* ii = 0);
+	void addUserCommands(const WidgetPopupMenuPtr& menu);
+	
 	void handleFind(WidgetButtonPtr);
 	void handleFindNext(WidgetButtonPtr);
 	void handleListDiff(WidgetButtonPtr);
 	void handleMatchQueue(WidgetButtonPtr);
+	
+	void handleDownload(WidgetMenuPtr, unsigned id);
+	void handleViewAsText(WidgetMenuPtr, unsigned id);
+	void handleSearchAlternates(WidgetMenuPtr, unsigned id);
+	void handleLookupBitzi(WidgetMenuPtr, unsigned id);
+	void handleCopyMagnet(WidgetMenuPtr, unsigned id);
+	void handleGoToDirectory(WidgetMenuPtr, unsigned id);
+	void handleDownloadLastDir(WidgetMenuPtr, unsigned id);
+	void handleDownloadTarget(WidgetMenuPtr, unsigned id);
+	void handleDownloadFavorite(WidgetMenuPtr, unsigned id);
+	void handleDownloadBrowse(WidgetMenuPtr, unsigned id);
+	
+	void download(const string& aDir);
+	void download(ItemInfo* ii, const string& aDir, bool view = false);
+	void downloadFiles(const string& aTarget, bool view = false);
+	
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+
+	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
+	void selectItem(const tstring& name);
 
 	void loadFile(const tstring& name, const tstring& dir);
 	void loadXML(const string& txt);
@@ -262,8 +315,6 @@ public:
 	void findFile(bool findNext);
 	void runUserCommand(UserCommand& uc);
 
-	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
-	void selectItem(const tstring& name);
 
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
@@ -322,11 +373,9 @@ private:
 	CContainedWindow treeContainer;
 	CContainedWindow listContainer;
 
-	StringList targets;
 
 	deque<string> history;
 	size_t historyIndex;
-	HTREEITEM treeRoot;
 
 	string findStr;
 	tstring error;

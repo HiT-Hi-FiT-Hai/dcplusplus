@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(DCPLUSPLUS_WIN32_WIN_UTIL_H)
+#ifndef DCPLUSPLUS_WIN32_WIN_UTIL_H
 #define DCPLUSPLUS_WIN32_WIN_UTIL_H
 
 #include <client/StringTokenizer.h>
 #include <client/Util.h>
 #include <client/forward.h>
-
+#include <client/MerkleTree.h>
 
 class UserInfoBase {
 public:
@@ -148,10 +148,11 @@ public:
 	static SmartWin::FontPtr monoFont;
 	static tstring commands;
 	static SmartWin::ImageListPtr fileImages;
+	static SmartWin::ImageListPtr userImages;
 	static int fileImageCount;
 	static int dirIconIndex;
 	static int dirMaskedIndex;
-	static SmartWin::ImageListPtr userImages;
+	static StringList lastDirs;
 
 	static void init();
 	static void uninit();
@@ -200,7 +201,18 @@ public:
 	static pair<tstring, bool> getHubNames(const CID& cid) throw();
 	static pair<tstring, bool> getHubNames(const UserPtr& u);
 
+	// Hash related
+	static void bitziLink(const TTHValue& /*aHash*/);
+	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
+	static void searchHash(const TTHValue& /*aHash*/);
+
 	static tstring escapeMenu(tstring str);
+
+	static void addLastDir(const string& dir);
+
+	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringT, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
+	static bool browseDirectory(tstring& target, HWND owner = NULL);
+
 #ifdef PORT_ME
 	static CImageList userImages;
 
@@ -211,7 +223,6 @@ public:
 	static HFONT boldFont;
 	static HFONT systemFont;
 	static HFONT monoFont;
-	static TStringList lastDirs;
 	static HWND mainWnd;
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
@@ -240,28 +251,10 @@ public:
 
 	static void setClipboard(const tstring& str);
 
-	static void addLastDir(const tstring& dir) {
-		if(find(lastDirs.begin(), lastDirs.end(), dir) != lastDirs.end()) {
-			return;
-		}
-		if(lastDirs.size() == 10) {
-			lastDirs.erase(lastDirs.begin());
-		}
-		lastDirs.push_back(dir);
-	}
-
-
 	static tstring getHelpFile() {
 		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	}
 
-	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
-	static bool browseDirectory(tstring& target, HWND owner = NULL);
-
-	// Hash related
-	static void bitziLink(const TTHValue& /*aHash*/);
-	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
-	static void searchHash(const TTHValue& /*aHash*/);
 
 	// URL related
 	static void registerDchubHandler();
@@ -310,8 +303,6 @@ public:
 		return hiddenCreateEx(*p);
 	}
 
-private:
-	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);
 #endif
 };
 

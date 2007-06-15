@@ -39,12 +39,11 @@ protected:
 
 	FinishedFrameBase() :
 		totalBytes(0),
-		totalTime(0),
-		closed(false)
+		totalTime(0)
 	{
 		{
 			typename MDIChildType::WidgetDataGrid::Seed cs;
-			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
+			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 			cs.exStyle = WS_EX_CLIENTEDGE;
 			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);
 			items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
@@ -53,7 +52,7 @@ protected:
 #ifdef PORT_ME
 			for(int j=0; j<COLUMN_LAST; j++) {
 				int fmt = (j == COLUMN_SIZE || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-				ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+				items->InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 			}
 #endif
 			items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -77,8 +76,8 @@ protected:
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
 		FinishedManager::getInstance()->unlockList();
 
-		onRaw(&T::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-		onRaw(&T::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+		items->onRaw(&T::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+		items->onRaw(&T::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 
 		contextMenu = this->createPopupMenu();
 		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), &T::handleViewAsText);
@@ -90,7 +89,7 @@ protected:
 #ifdef PORT_ME
 		contextMenu->setMenuDefaultItem(IDC_OPEN_FILE);
 #endif
-		onRaw(&T::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+		items->onRaw(&T::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
 
 #if 1
 		// for testing purposes; adds 2 dummy lines into the list
@@ -126,7 +125,7 @@ protected:
 	}
 
 	void postClosing() {
-		items->removeAllRows();
+		clearList();
 
 		SettingsManager::getInstance()->set(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER, WinUtil::toString(items->getColumnOrder()));
 		SettingsManager::getInstance()->set(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS, WinUtil::toString(items->getColumnWidths()));
@@ -214,8 +213,6 @@ private:
 
 	typename MDIChildType::WidgetPopupMenuPtr contextMenu;
 
-	bool closed;
-
 	int64_t totalBytes, totalTime;
 
 	HRESULT spoken(LPARAM lParam, WPARAM wParam) {
@@ -230,29 +227,29 @@ private:
 		} else if(wParam == SPEAK_REMOVE) {
 			updateStatus();
 		} else if(wParam == SPEAK_REMOVE_ALL) {
-			items->removeAllRows();
+			clearList();
 			updateStatus();
 		}
 		return 0;
 	}
 
-	HRESULT handleDoubleClick(LPARAM lParam, WPARAM /*wParam*/) {
-		if(((LPNMHDR)lParam)->hwndFrom == items->handle()) {
-			LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
-			if(item->iItem != -1)
-				items->getItemData(item->iItem)->openFile();
-		}
+	typedef SmartWin::WidgetDataGrid<T, SmartWin::MessageMapPolicyMDIChildWidget>* DataGridMessageType;
+
+	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+		LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
+		if(item->iItem != -1)
+			items->getItemData(item->iItem)->openFile();
 		return 0;
 	}
 
-	HRESULT handleKeyDown(LPARAM lParam, WPARAM /*wParam*/) {
-		if(((LPNMHDR)lParam)->hwndFrom == items->handle() && ((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
+	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+		if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
 			StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
 		return 0;
 	}
 
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam) {
-		if (reinterpret_cast<HWND>(wParam) == items->handle() && items->getSelectedCount() > 0) {
+	HRESULT handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+		if(items->getSelectedCount() > 0) {
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 			if(pt.x == -1 && pt.y == -1) {
@@ -304,6 +301,7 @@ private:
 		int i;
 		while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
 			FinishedManager::getInstance()->remove(items->getItemData(i)->entry, in_UL);
+			delete items->getItemData(i);
 			items->removeRow(i);
 		}
 	}
@@ -320,13 +318,13 @@ private:
 
 	void updateList(const FinishedItemList& fl) {
 #ifdef PORT_ME
-		ctrlList.SetRedraw(FALSE);
+		items->SetRedraw(FALSE);
 #endif
 		for(FinishedItemList::const_iterator i = fl.begin(); i != fl.end(); ++i)
 			addEntry(*i);
 #ifdef PORT_ME
-		ctrlList.SetRedraw(TRUE);
-		ctrlList.Invalidate();
+		items->SetRedraw(TRUE);
+		items->Invalidate();
 #endif
 		updateStatus();
 	}
@@ -337,8 +335,16 @@ private:
 
 		int loc = items->insertItem(new ItemInfo(entry), WinUtil::getIconIndex(Text::toT(entry->getTarget())));
 #ifdef PORT_ME
-		ctrlList.EnsureVisible(loc, FALSE);
+		items->EnsureVisible(loc, FALSE);
 #endif
+	}
+
+	void clearList() {
+		unsigned n = items->getRowCount();
+		for(unsigned i = 0; i < n; ++i)
+			delete items->getItemData(i);
+
+		items->removeAllRows();
 	}
 
 	virtual void on(Added, bool upload, FinishedItemPtr entry) throw() {

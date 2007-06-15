@@ -81,7 +81,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 
 		files->setSmallImageList(WinUtil::fileImages);
 		files->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
-		//files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
+		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
@@ -1180,16 +1180,15 @@ HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return TRUE;
-	} else if (reinterpret_cast<HWND>(wParam) == dirs->handle() && dirs->getSelected() != NULL) {
+	} else if (reinterpret_cast<HWND>(wParam) == dirs->handle()) {
 		if(pt.x == -1 && pt.y == -1) {
 			pt = dirs->getContextMenuPos();
 		} else {
-			// Strange, windows doesn't change the selection on right-click... (!)
-			POINT pt2 = pt;
-			dirs->screenToClient(pt2);
-			HTREEITEM ht = dirs->hitTest(pt2);
-			if(ht != NULL && ht != dirs->getSelected())
-				dirs->select(ht);
+			dirs->select(pt);
+		}
+		
+		if(dirs->getSelected() == NULL) {
+			return FALSE;
 		}
 		usingDirMenu = true;
 		contextMenu = makeDirMenu();

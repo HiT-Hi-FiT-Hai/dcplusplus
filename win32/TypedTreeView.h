@@ -93,6 +93,13 @@ public:
 	void select(HTREEITEM item) {
 		TreeView_SelectItem(this->handle(), item);
 	}
+
+	void select(POINT pt) {
+		this->screenToClient(pt);
+		HTREEITEM ht = this->hitTest(pt);
+		if(ht != NULL && ht != this->getSelected())
+			this->select(ht);
+	}
 	
 	HTREEITEM getNextSibling(HTREEITEM item) {
 		return TreeView_GetNextSibling(this->handle(), item);

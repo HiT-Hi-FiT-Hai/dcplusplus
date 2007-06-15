@@ -83,9 +83,13 @@ private:
 	tstring searchString;
 
 	HRESULT spoken(LPARAM lParam, WPARAM wParam);
-	HRESULT handleColumnClick(LPARAM lParam, WPARAM /*wParam*/);
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+
+	typedef SmartWin::WidgetDataGrid<SpyFrame, SmartWin::MessageMapPolicyMDIChildWidget>* DataGridMessageType;
+	HRESULT handleColumnClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+
 	void handleSearch(WidgetMenuPtr /*menu*/, unsigned /*id*/);
+
 	void handleIgnoreTTHClicked(WidgetCheckBoxPtr);
 
 	void setStatus(Status s, const tstring& text);
