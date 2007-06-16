@@ -45,7 +45,6 @@ void QueueFrame::QueueItemInfo::remove() {
 QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
 	status(0),
-	splitterContainer(0),
 	dirs(0),
 	files(0),
 	splitter(0),
@@ -55,26 +54,25 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	queueSize(0),
 	queueItems(0),
 	fileLists(0)
-{
-	splitterContainer = createWidgetChildWindow(); 
-		
-	splitter = splitterContainer->createSplitterCool();
+{		
+	splitter = createSplitterCool();
 	splitter->onMoved(&QueueFrame::splitterMoved);
 	{
 		WidgetTreeView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(splitterContainer, cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
 		add_widget(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
+		dirs->onSelectionChanged(&QueueFrame::handleSelectionChanged);
 	}
 	
 	{
 		WidgetFiles::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(splitterContainer, cs);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, cs);
 		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		files->setFont(WinUtil::font);
 		add_widget(files);
@@ -235,8 +233,6 @@ void QueueFrame::layout() {
 	
 	r.size.y -= rs.size.y;
 	
-	splitterContainer->setBounds(r);
-	
 	SmartWin::Rectangle rsplit(splitter->getBounds());
 	if(showTree->getChecked()) {
 		SmartWin::Rectangle rsplit(splitter->getBounds());
@@ -361,6 +357,10 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 			files->insertItem(ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
 		}
 	}
+}
+
+void QueueFrame::handleSelectionChanged(WidgetTreeViewPtr) {
+	updateQueue();
 }
 
 void QueueFrame::updateQueue() {
@@ -1226,13 +1226,6 @@ LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	}
 	return 0;
 }
-
-
-LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
-	updateQueue();
-	return 0;
-}
-
 
 #endif
 

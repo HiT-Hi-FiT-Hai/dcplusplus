@@ -124,6 +124,8 @@ private:
 	void handleFinishedDL(WidgetMenuPtr menu, unsigned id);
 	void handleFinishedUL(WidgetMenuPtr menu, unsigned id);
 	void handleSettings(WidgetMenuPtr menu, unsigned id);
+	void handleOpenFileList(WidgetMenuPtr menu, unsigned id);
+	void handleOpenOwnList(WidgetMenuPtr menu, unsigned id);
 	
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);

@@ -52,6 +52,7 @@ typedef OnlineUser* OnlineUserPtr;
 typedef std::vector<OnlineUserPtr> OnlineUserList;
 
 class QueueItem;
+class StringSearch;
 
 class User;
 typedef Pointer<User> UserPtr;

@@ -86,6 +86,7 @@
 #define IDC_DOWNLOAD				1035
 #define IDC_GO_TO_DIRECTORY			1036
 #define IDC_DOWNLOAD_BROWSE			1037
+#define IDC_OPEN_OWN_LIST			1038
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000

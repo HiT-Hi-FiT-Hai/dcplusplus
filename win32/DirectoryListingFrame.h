@@ -173,8 +173,17 @@ private:
 	std::string error;
 	bool usingDirMenu;
 	StringList targets;
+	deque<string> history;
+	size_t historyIndex;
 
 	HTREEITEM treeRoot;
+
+	string findStr;
+	string size;
+
+	int skipHits;
+	bool updating;
+	bool searching;
 
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -210,21 +219,36 @@ private:
 	void handleDownloadFavorite(WidgetMenuPtr, unsigned id);
 	void handleDownloadBrowse(WidgetMenuPtr, unsigned id);
 	
+	void handleSelectionChanged(WidgetTreeViewPtr);
+	
 	void download(const string& aDir);
 	void download(ItemInfo* ii, const string& aDir, bool view = false);
 	void downloadFiles(const string& aTarget, bool view = false);
 	
 	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
 
+	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
+	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
 	void selectItem(const tstring& name);
-
+	void clearList();
+	
 	void loadFile(const tstring& name, const tstring& dir);
 	void loadXML(const string& txt);
 	void refreshTree(const tstring& root);
-	
+
+	void addHistory(const string& name);
+	void up();
+	void back();
+	void forward();
+
 	void initStatus();
+	void updateStatus();
 	void setStatus(Status s, const tstring& text);
+	
+	void findFile(bool findNext);
+	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
+
 };
 
 
@@ -309,20 +333,10 @@ public:
 	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void downloadList(const tstring& aTarget, bool view = false);
-	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void findFile(bool findNext);
 	void runUserCommand(UserCommand& uc);
-
 
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
-		return 0;
-	}
-
-	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
-		ctrlList.SetFocus();
 		return 0;
 	}
 
@@ -336,15 +350,6 @@ public:
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 1;
 	}
-
-	void clearList() {
-		int j = ctrlList.GetItemCount();
-		for(int i = 0; i < j; i++) {
-			delete ctrlList.getItemData(i);
-		}
-		ctrlList.DeleteAllItems();
-	}
-
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -356,35 +361,6 @@ public:
 	}
 
 private:
-	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
-	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
-	void updateStatus();
-	void initStatus();
-	void addHistory(const string& name);
-	void up();
-	void back();
-	void forward();
-
-	CMenu targetMenu;
-	CMenu targetDirMenu;
-	CMenu fileMenu;
-	CMenu directoryMenu;
-	CContainedWindow statusContainer;
-	CContainedWindow treeContainer;
-	CContainedWindow listContainer;
-
-
-	deque<string> history;
-	size_t historyIndex;
-
-	string findStr;
-	tstring error;
-	string size;
-
-	int skipHits;
-
-	bool updating;
-	bool searching;
 
 	StringMap ucLineParams;
 

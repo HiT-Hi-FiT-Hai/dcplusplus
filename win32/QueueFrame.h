@@ -208,8 +208,6 @@ private:
 
 	WidgetStatusBarSectionsPtr status;
 	
-	WidgetChildWindowPtr splitterContainer;
-	
 	typedef TypedTreeView<QueueFrame, DirItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
@@ -303,6 +301,8 @@ private:
 	void handleBrowseList(WidgetMenuPtr menu, unsigned id);
 	void handleReadd(WidgetMenuPtr menu, unsigned id);
 	
+	void handleSelectionChanged(WidgetTreeViewPtr);
+
 	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
 	
 	using MDIChildFrame<QueueFrame>::speak;

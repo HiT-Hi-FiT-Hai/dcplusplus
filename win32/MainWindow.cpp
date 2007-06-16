@@ -35,6 +35,7 @@
 #include "LineDlg.h"
 #include "SettingsDialog.h"
 #include "TextFrame.h"
+#include "DirectoryListingFrame.h"
 
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
@@ -46,6 +47,7 @@
 #include <client/TimerManager.h>
 #include <client/SearchManager.h>
 #include <client/ConnectionManager.h>
+#include <client/ShareManager.h>
 
 MainWindow::MainWindow() :
 	status(0),
@@ -243,9 +245,10 @@ void MainWindow::initMenu() {
 	
 	file->appendItem(IDC_QUICK_CONNECT, TSTRING(MENU_QUICK_CONNECT), &MainWindow::handleQuickConnect);
 
+	file->appendItem(IDC_OPEN_FILE_LIST, TSTRING(MENU_OPEN_FILE_LIST), &MainWindow::handleOpenFileList);
+	file->appendItem(IDC_OPEN_OWN_LIST, TSTRING(MENU_OPEN_OWN_LIST), &MainWindow::handleOpenOwnList);
+
 #ifdef PORT_ME
-	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CTSTRING(MENU_OPEN_FILE_LIST));
-	file.AppendMenu(MF_STRING, IDC_OPEN_OWN_LIST, CTSTRING(MENU_OPEN_OWN_LIST));
 	file.AppendMenu(MF_STRING, IDC_MATCH_ALL, CTSTRING(MENU_OPEN_MATCH_ALL));
 	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CTSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
@@ -413,15 +416,11 @@ HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 	switch(s) {
 	case DOWNLOAD_LISTING: {
 		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lp));
-#ifdef PORT_ME
-		DirectoryListingFrame::openWindow(i->file, i->dir, i->user, i->speed);
-#endif
+		DirectoryListingFrame::openWindow(mdi, i->file, i->dir, i->user, i->speed);
 	} break;
 	case BROWSE_LISTING: {
 		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lp));
-#ifdef PORT_ME
-		DirectoryListingFrame::openWindow(i->user, i->text, 0);
-#endif
+		DirectoryListingFrame::openWindow(mdi, i->user, i->text, 0);
 	} break;
 	case AUTO_CONNECT: {
 		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());			
@@ -545,45 +544,6 @@ void MainWindow::setStatus(Status s, const tstring& text) {
 	}
 	status->setText(text, s);
 }
-
-#ifdef PORT_ME
-
-#include "Resource.h"
-
-#include "MainFrm.h"
-#include "AboutDlg.h"
-#include "HubFrame.h"
-#include "SearchFrm.h"
-#include "PublicHubsFrm.h"
-#include "PropertiesDlg.h"
-#include "UsersFrame.h"
-#include "DirectoryListingFrm.h"
-#include "FavoritesFrm.h"
-#include "NotepadFrame.h"
-#include "QueueFrame.h"
-#include "SpyFrame.h"
-#include "ADLSearchFrame.h"
-#include "TextFrame.h"
-#include "StatsFrame.h"
-#include "WaitingUsersFrame.h"
-#include "LineDlg.h"
-#include "HashProgressDlg.h"
-#include "UPnP.h"
-#include "SystemFrame.h"
-#include "PrivateFrame.h"
-
-#include "../client/ConnectionManager.h"
-#include "../client/DownloadManager.h"
-#include "../client/UploadManager.h"
-#include "../client/StringTokenizer.h"
-#include "../client/SimpleXML.h"
-#include "../client/ShareManager.h"
-#include "../client/version.h"
-
-MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0),
-lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()),
-closing(false), missedAutoConnect(false), UPnP_TCPConnection(NULL), UPnP_UDPConnection(NULL)
-#endif
 
 MainWindow::~MainWindow() {
 #ifdef PORT_ME
@@ -728,7 +688,27 @@ void MainWindow::stopUPnP() {
 #endif
 }
 
+static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
 
+void MainWindow::handleOpenFileList(WidgetMenuPtr ptr, unsigned id) {
+	tstring file;
+	if(WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
+		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
+		if(u) {
+			DirectoryListingFrame::openWindow(mdi, file, Text::toT(Util::emptyString), u, 0);
+		} else {
+#ifdef PORT_ME
+			MessageBox(CTSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
+#endif
+		}
+	}
+}
+
+void MainWindow::handleOpenOwnList(WidgetMenuPtr, unsigned) {
+	if(!ShareManager::getInstance()->getOwnListFile().empty()){
+		DirectoryListingFrame::openWindow(mdi, Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
+	}
+}
 
 #ifdef PORT_ME
 DWORD WINAPI MainFrame::stopper(void* p) {
@@ -1262,29 +1242,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	return 0;
 }
 
-static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
-
-LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	tstring file;
-	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getListPath()), types)) {
-		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
-		if(u) {
-			DirectoryListingFrame::openWindow(file, Text::toT(Util::emptyString), u, 0);
-		} else {
-			MessageBox(CTSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
-		}
-	}
-	return 0;
-}
-
-LRESULT MainFrame::onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(!ShareManager::getInstance()->getOwnListFile().empty()){
-		DirectoryListingFrame::openWindow(Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
-	}
-	return 0;
-}
-
-LRESULT MainFrame::onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+RESULT MainFrame::onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ShareManager::getInstance()->setDirty();
 	ShareManager::getInstance()->refresh(true);
 	return 0;
