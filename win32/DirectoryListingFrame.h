@@ -101,21 +101,17 @@ private:
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		}
 		
-		const tstring& getText() {
+		const tstring& getText() const {
 			return columns[COLUMN_FILENAME];
 		}
 		
-		const int getImage() {
-			// TODO Fix mask
-			return WinUtil::dirIconIndex;
-		}
+		int getImage() const;
 		
-		const int getSelectedImage() {
-			// TODO Fix mask
-			return WinUtil::dirIconIndex;
+		int getSelectedImage() const {
+			return getImage();
 		}
 
-		const tstring& getText(int col) {
+		const tstring& getText(int col) const {
 			return columns[col];
 		}
 
@@ -125,28 +121,7 @@ private:
 			int64_t total;
 		};
 
-		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
-			if(a->type == DIRECTORY) {
-				if(b->type == DIRECTORY) {
-					switch(col) {
-					case COLUMN_EXACTSIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
-					case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
-					default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
-					}
-				} else {
-					return -1;
-				}
-			} else if(b->type == DIRECTORY) {
-				return 1;
-			} else {
-				switch(col) {
-				case COLUMN_EXACTSIZE: return compare(a->file->getSize(), b->file->getSize());
-				case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
-				default: return lstrcmp(a->columns[col].c_str(), b->columns[col].c_str());
-				}
-			}
-		}
-
+		static int compareItems(ItemInfo* a, ItemInfo* b, int col);
 	private:
 		tstring columns[COLUMN_LAST];
 	};

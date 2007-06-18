@@ -28,6 +28,7 @@
 #include "Streams.h"
 #include "SSLSocket.h"
 #include "CryptoManager.h"
+#include "ZUtils.h"
 
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250

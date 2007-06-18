@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,31 +16,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(UC_PAGE_H)
-#define UC_PAGE_H
+#ifndef DCPLUSPLUS_WIN32_U_C_PAGE_H
+#define DCPLUSPLUS_WIN32_U_C_PAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <atlcrack.h>
 #include "PropPage.h"
-#include "ExListViewCtrl.h"
+#include "WidgetFactory.h"
 
 class UserCommand;
 
-class UCPage : public CPropertyPage<IDD_UCPAGE>, public PropPage
+class UCPage : public WidgetFactory<SmartWin::WidgetDialog, UCPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
 {
 public:
-	UCPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_USER_COMMANDS));
-		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	}
+	UCPage(SmartWin::Widget* parent);
+	virtual ~UCPage();
 
-	virtual ~UCPage() { 	ctrlCommands.Detach(); }
-
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(UCPage)
-		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_ADD_MENU, onAddMenu)
 		COMMAND_ID_HANDLER(IDC_REMOVE_MENU, onRemoveMenu)
@@ -52,7 +43,6 @@ public:
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onAddMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onChangeMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -62,18 +52,15 @@ public:
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+#endif
 
-	// Common PropPage interface
-	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
 
-protected:
-	ExListViewCtrl ctrlCommands;
-
+private:
 	static Item items[];
 	static TextItem texts[];
 
 	void addEntry(const UserCommand& uc, int pos);
 };
 
-#endif // !defined(UC_PAGE_H)
+#endif // !defined(DCPLUSPLUS_WIN32_U_C_PAGE_H)

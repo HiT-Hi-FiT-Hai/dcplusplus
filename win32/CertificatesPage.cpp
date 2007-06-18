@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,20 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "CertificatesPage.h"
-#include "CommandDlg.h"
 
-#include "../client/SettingsManager.h"
-#include "../client/FavoriteManager.h"
-#include "../client/CryptoManager.h"
-
-#include "WinUtil.h"
+#include <client/SettingsManager.h>
 
 PropPage::TextItem CertificatesPage::texts[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
@@ -49,18 +43,21 @@ PropPage::ListItem CertificatesPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_CLIENTS, },
 };
 
-LRESULT CertificatesPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_TLS_OPTIONS));
+CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_CERTIFICATESPAGE);
 
-	// Do specialized reading here
-	return TRUE;
+	PropPage::translate(handle(), texts);
+	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
+}
+
+CertificatesPage::~CertificatesPage() {
 }
 
 void CertificatesPage::write() {
-	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_TLS_OPTIONS));
+	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 }
+
+#ifdef PORT_ME
 
 LRESULT CertificatesPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_CERTIFICATESPAGE);
@@ -74,7 +71,7 @@ LRESULT CertificatesPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 LRESULT CertificatesPage::onBrowsePrivateKey(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring target = Text::toT(SETTING(TLS_PRIVATE_KEY_FILE));
-	CEdit edt(GetDlgItem(IDC_TLS_PRIVATE_KEY_FILE));
+	CEdit edt(::GetDlgItem(handle(), IDC_TLS_PRIVATE_KEY_FILE));
 
 	if(WinUtil::browseFile(target, m_hWnd, false, target)) {
 		edt.SetWindowText(&target[0]);
@@ -84,7 +81,7 @@ LRESULT CertificatesPage::onBrowsePrivateKey(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT CertificatesPage::onBrowseCertificate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring target = Text::toT(SETTING(TLS_CERTIFICATE_FILE));
-	CEdit edt(GetDlgItem(IDC_TLS_CERTIFICATE_FILE));
+	CEdit edt(::GetDlgItem(handle(), IDC_TLS_CERTIFICATE_FILE));
 
 	if(WinUtil::browseFile(target, m_hWnd, false, target)) {
 		edt.SetWindowText(&target[0]);
@@ -94,7 +91,7 @@ LRESULT CertificatesPage::onBrowseCertificate(WORD /*wNotifyCode*/, WORD /*wID*/
 
 LRESULT CertificatesPage::onBrowseTrustedPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring target = Text::toT(SETTING(TLS_TRUSTED_CERTIFICATES_PATH));
-	CEdit edt(GetDlgItem(IDC_TLS_TRUSTED_CERTIFICATES_PATH));
+	CEdit edt(::GetDlgItem(handle(), IDC_TLS_TRUSTED_CERTIFICATES_PATH));
 
 	if(WinUtil::browseDirectory(target, m_hWnd)) {
 		edt.SetWindowText(&target[0]);

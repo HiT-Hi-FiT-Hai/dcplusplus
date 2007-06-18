@@ -116,6 +116,7 @@ private:
 	void handlePublicHubs(WidgetMenuPtr menu, unsigned id);
 	void handleFavHubs(WidgetMenuPtr menu, unsigned id);
 	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
+	void handleSearch(WidgetMenuPtr menu, unsigned id);
 	void handleAdlSearch(WidgetMenuPtr menu, unsigned id);
     void handleSearchSpy(WidgetMenuPtr menu, unsigned id);
 	void handleNotepad(WidgetMenuPtr menu, unsigned id);
@@ -195,7 +196,6 @@ private:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVert)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(ID_VIEW_CONNECT, onOpenWindows)
-		COMMAND_ID_HANDLER(ID_FILE_SEARCH, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_FAVUSERS, onOpenWindows)
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onOpenWindows)

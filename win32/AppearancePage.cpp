@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "AppearancePage.h"
-#include "../client/SettingsManager.h"
-#include "../client/StringTokenizer.h"
 
-#include "WinUtil.h"
+#include <client/SettingsManager.h>
 
 PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_APPEARANCE_OPTIONS, ResourceManager::SETTINGS_OPTIONS },
@@ -35,7 +32,6 @@ PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_LANGUAGE_FILE },
 	{ IDC_BROWSE, ResourceManager::BROWSE_ACCEL },
 	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
-	{ IDC_SETTINGS_GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -61,22 +57,23 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-AppearancePage::~AppearancePage() { }
+AppearancePage::AppearancePage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_APPEARANCEPAGE);
+
+	PropPage::translate(handle(), texts);
+
+	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
+}
+
+AppearancePage::~AppearancePage() {
+}
 
 void AppearancePage::write()
 {
-	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
+	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 }
 
-LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-
-	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
-	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
-
-	return TRUE;
-}
+#ifdef PORT_ME
 
 LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	TCHAR buf[MAX_PATH];

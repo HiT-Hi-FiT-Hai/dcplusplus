@@ -59,23 +59,12 @@ public:
 		}
 	}
 
-	int insertItem(ContentType* item, int image) {
-		return insertItem(getSortPos(item), item, image);
+	int insertItem(ContentType* item) {
+		return insertItem(getSortPos(item), item);
 	}
-	int insertItem(int i, ContentType* item, int image) {
-		return insertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i,
-			LPSTR_TEXTCALLBACK, 0, 0, image, reinterpret_cast<LPARAM>(item));
-	}
-	
-	int insertItem(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int image, LPARAM lparam) {
-		LVITEM item = { mask };
-		item.iItem = i;
-		item.state = state;
-		item.stateMask = stateMask;
-		item.pszText = const_cast<LPTSTR>(text);
-		item.iImage = image;
-		item.lParam = lparam;
-		return ListView_InsertItem(this->handle(), &item);
+	int insertItem(int i, ContentType* item) {
+		return BaseType::insertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i,
+			LPSTR_TEXTCALLBACK, 0, 0, I_IMAGECALLBACK, reinterpret_cast<LPARAM>(item));
 	}
 	
 	ContentType* getItemData(int iItem) { 
@@ -86,7 +75,14 @@ public:
 		}
 		return 0;
 	}
-	
+
+	BOOL setItemData(int iItem, ContentType* lparam) {
+		LVITEM item = { LVIF_PARAM };
+		item.iItem = iItem;
+		item.lParam = reinterpret_cast<LPARAM>(lparam);
+		return ListView_SetItem(this->handle(), &item);
+	}
+
 	ContentType* getSelectedItem() { return this->hasSelection() ? getItemData(this->getSelectedIndex()) : 0; }
 
 	int findItem(ContentType* item) {
@@ -203,6 +199,10 @@ private:
 				if(text.size() < nm->item.cchTextMax) {
 					nm->item.pszText[text.size()] = 0;
 				}
+			}
+			if(nm->item.mask & LVIF_IMAGE) {
+				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+				nm->item.iImage = content->getImage();
 			}
 			return 0;
 		}

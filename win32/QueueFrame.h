@@ -136,6 +136,9 @@ private:
 		const tstring& getText(int col) {
 			return getDisplay()->columns[col];
 		}
+		int getImage() const {
+			return WinUtil::getIconIndex(Text::toT(getTarget()));
+		}
 		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
 			switch(col) {
 				case COLUMN_SIZE: case COLUMN_EXACT_SIZE: return compare(a->getSize(), b->getSize());

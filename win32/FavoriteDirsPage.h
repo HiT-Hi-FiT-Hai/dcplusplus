@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,31 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FAVORITE_DIRS_PAGE_H)
-#define FAVORITE_DIRS_PAGE_H
+#ifndef DCPLUSPLUS_WIN32_FAVORITE_DIRS_PAGE_H
+#define DCPLUSPLUS_WIN32_FAVORITE_DIRS_PAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <atlcrack.h>
 #include "PropPage.h"
-#include "ExListViewCtrl.h"
-#include "WinUtil.h"
+#include "WidgetFactory.h"
 
-class FavoriteDirsPage : public CPropertyPage<IDD_FAVORITE_DIRSPAGE>, public PropPage
+class FavoriteDirsPage : public WidgetFactory<SmartWin::WidgetDialog, FavoriteDirsPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
 {
 public:
-	FavoriteDirsPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_FAVORITE_DIRS_PAGE));
-		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	}
-	virtual ~FavoriteDirsPage() {
-		ctrlDirectories.Detach();
-	}
+	FavoriteDirsPage(SmartWin::Widget* parent);
+	virtual ~FavoriteDirsPage();
 
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(FavoriteDirsPage)
-		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		MESSAGE_HANDLER(WM_DROPFILES, onDropFiles)
 		NOTIFY_HANDLER(IDC_FAVORITE_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
@@ -52,7 +41,6 @@ public:
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onItemchangedDirectories(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
@@ -62,16 +50,16 @@ public:
 	LRESULT onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR);
+#endif
 
-	// Common PropPage interface
-	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
 
-protected:
+private:
 	static TextItem texts[];
-	ExListViewCtrl ctrlDirectories;
 
+#ifdef PORT_ME
 	void addDirectory(const tstring& aPath);
+#endif
 };
 
-#endif // !defined(FAVORITE_DIR_SPAGE_H)
+#endif // !defined(DCPLUSPLUS_WIN32_FAVORITE_DIRS_PAGE_H)

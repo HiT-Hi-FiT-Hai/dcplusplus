@@ -16,34 +16,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_TABS_PAGE_H
-#define DCPLUSPLUS_WIN32_TABS_PAGE_H
+#include "stdinc.h"
+#include "DCPlusPlus.h"
 
-#include "PropPage.h"
-#include "WidgetFactory.h"
+#include "Upload.h"
 
-class TabsPage : public WidgetFactory<SmartWin::WidgetDialog, TabsPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
-{
-public:
-	TabsPage(SmartWin::Widget* parent);
-	virtual ~TabsPage();
+#include "UserConnection.h"
+#include "Streams.h"
 
-#ifdef PORT_ME
-	BEGIN_MSG_MAP(TabsPage)
-		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-	END_MSG_MAP()
+Upload::Upload(UserConnection& conn) : Transfer(conn), stream(0) { 
+	conn.setUpload(this);
+}
 
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-#endif
+Upload::~Upload() { 
+	getUserConnection().setUpload(0);
+	delete stream; 
+}
 
-	virtual void write();
+void Upload::getParams(const UserConnection& aSource, StringMap& params) {
+	Transfer::getParams(aSource, params);
+	params["source"] = getSourceFile();
+}
 
-private:
-	static TextItem texts[];
-	static Item items[];
-	static ListItem listItems[];
-};
-
-#endif // !defined(DCPLUSPLUS_WIN32_TABS_PAGE_H)

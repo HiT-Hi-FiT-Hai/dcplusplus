@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(TRANSFER_VIEW_H)
-#define TRANSFER_VIEW_H
+#ifndef DCPLUSPLUS_WIN32_TRANSFER_VIEW_H
+#define DCPLUSPLUS_WIN32_TRANSFER_VIEW_H
 
 #if _MSC_VER > 1000
 #pragma once

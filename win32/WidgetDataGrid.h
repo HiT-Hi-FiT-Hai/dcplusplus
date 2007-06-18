@@ -64,6 +64,17 @@ public:
 		ListView_SetExtendedListViewStyle(this->handle(), style);
 	}
 	
+	int insertItem(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int image, LPARAM lparam) {
+		LVITEM item = { mask };
+		item.iItem = i;
+		item.state = state;
+		item.stateMask = stateMask;
+		item.pszText = const_cast<LPTSTR>(text);
+		item.iImage = image;
+		item.lParam = lparam;
+		return ListView_InsertItem(this->handle(), &item);
+	}
+
 	int getNextItem(int i, int type) {
 		return ListView_GetNextItem(this->handle(), i, type);
 	}

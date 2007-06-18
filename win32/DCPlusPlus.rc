@@ -22,19 +22,19 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-1 24 "../res/DCPlusPlus.Manifest"
+1 24 "res/DCPlusPlus.Manifest"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_FOLDERS             BITMAP                  "../res/folders.bmp"
-IDB_ARROWS              BITMAP                  "../res/arrows.bmp"
-IDB_USERS               BITMAP                  "../res/users.bmp"
-IDB_TOOLBAR             BITMAP                  "../res/toolbar.bmp"
-IDB_TOOLBAR20           BITMAP                  "../res/toolbar20.bmp"
-IDB_TOOLBAR20_HOT       BITMAP                  "../res/toolbar20-highlight.bmp"
+IDB_FOLDERS             BITMAP                  "res/folders.bmp"
+IDB_ARROWS              BITMAP                  "res/arrows.bmp"
+IDB_USERS               BITMAP                  "res/users.bmp"
+IDB_TOOLBAR             BITMAP                  "res/toolbar.bmp"
+IDB_TOOLBAR20           BITMAP                  "res/toolbar20.bmp"
+IDB_TOOLBAR20_HOT       BITMAP                  "res/toolbar20-highlight.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -43,23 +43,23 @@ IDB_TOOLBAR20_HOT       BITMAP                  "../res/toolbar20-highlight.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "../res/DCPlusPlus.ico"
-IDR_PUBLICHUBS          ICON                    "../res/PublicHubs.ico"
-IDR_SEARCH              ICON                    "../res/Search.ico"
-IDR_FAVORITES           ICON                    "../res/Favorites.ico"
-IDR_PRIVATE             ICON                    "../res/User.ico"
-IDR_DIRECTORY           ICON                    "../res/Directory.ico"
-IDR_HUB                 ICON                    "../res/Hub.ico"
-IDR_NOTEPAD             ICON                    "../res/Notepad.ico"
-IDR_QUEUE               ICON                    "../res/Queue.ico"
-IDR_FINISHED_DL         ICON                    "../res/FinishedDL.ico"
-IDR_ADLSEARCH           ICON                    "../res/ADLSearch.ico"
-IDR_FINISHED_UL         ICON                    "../res/FinishedUL.ico"
-IDR_USERS               ICON                    "../res/FavoriteUser.ico"
-IDR_SPY                 ICON                    "../res/SearchSpy.ico"
-IDR_NET_STATS           ICON                    "../res/NetStats.ico"
-IDR_WAITING_USERS       ICON                    "../res/wuicon.ico"
-IDR_MAGNET              ICON                    "../res/Magnet.ico"
+IDR_MAINFRAME           ICON                    "res/DCPlusPlus.ico"
+IDR_PUBLICHUBS          ICON                    "res/PublicHubs.ico"
+IDR_SEARCH              ICON                    "res/Search.ico"
+IDR_FAVORITES           ICON                    "res/Favorites.ico"
+IDR_PRIVATE             ICON                    "res/User.ico"
+IDR_DIRECTORY           ICON                    "res/Directory.ico"
+IDR_HUB                 ICON                    "res/Hub.ico"
+IDR_NOTEPAD             ICON                    "res/Notepad.ico"
+IDR_QUEUE               ICON                    "res/Queue.ico"
+IDR_FINISHED_DL         ICON                    "res/FinishedDL.ico"
+IDR_ADLSEARCH           ICON                    "res/ADLSearch.ico"
+IDR_FINISHED_UL         ICON                    "res/FinishedUL.ico"
+IDR_USERS               ICON                    "res/FavoriteUser.ico"
+IDR_SPY                 ICON                    "res/SearchSpy.ico"
+IDR_NET_STATS           ICON                    "res/NetStats.ico"
+IDR_WAITING_USERS       ICON                    "res/wuicon.ico"
+IDR_MAGNET              ICON                    "res/Magnet.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -115,8 +115,8 @@ BEGIN
     LTEXT           "idc_settings_mebibits",IDC_SETTINGS_MEBIBITS,156,71,102,8
 END
 
-IDD_ADVANCEDPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_ADVANCEDPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Advanced"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -124,8 +124,8 @@ BEGIN
     CONTROL "",IDC_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,261,211
 END
 
-IDD_DOWNLOADPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_DOWNLOADPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Downloads"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -152,8 +152,8 @@ BEGIN
     EDITTEXT        IDC_PROXY,14,192,247,14,ES_AUTOHSCROLL
 END
 
-IDD_UPLOADPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_UPLOADPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_STATICEDGE
 CAPTION "Sharing"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -176,8 +176,8 @@ BEGIN
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,247,204,14,14
 END
 
-IDD_APPEARANCEPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_APPEARANCEPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Appearance"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -194,8 +194,8 @@ BEGIN
     LTEXT           "Note; most of these options require that you restart DC++",IDC_SETTINGS_REQUIRES_RESTART,7,210,253,8
 END
 
-IDD_APPEARANCE2PAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_APPEARANCE2PAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_STATICEDGE
 CAPTION "Colors and sounds"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -217,8 +217,8 @@ BEGIN
     PUSHBUTTON      "&Browse...",IDC_BROWSE,210,109,50,12
 END
 
-IDD_LOGPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_LOGPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Logs"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -290,8 +290,8 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,88,104,50,14
 END
 
-IDD_UCPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_UCPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
@@ -378,8 +378,8 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,198,156,50,14
 END
 
-IDD_FAVORITE_DIRSPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_FAVORITE_DIRSPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_STATICEDGE
 CAPTION "Download to..."
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -391,8 +391,8 @@ BEGIN
     PUSHBUTTON      "&Add  folder",IDC_ADD,213,192,46,14
 END
 
-IDD_ADVANCED3PAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_ADVANCED3PAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_STATICEDGE
 CAPTION "Experts only"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -433,8 +433,8 @@ BEGIN
     LTEXT           "Auto-search limit",IDC_SETTINGS_AUTO_SEARCH_LIMIT,148,26,56,13
 END
 
-IDD_NETWORKPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_NETWORKPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
@@ -471,8 +471,8 @@ BEGIN
     EDITTEXT        IDC_PORT_TLS,230,61,30,14,ES_AUTOHSCROLL | ES_NUMBER
 END
 
-IDD_WINDOWSPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_WINDOWSPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Windows"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -485,8 +485,8 @@ BEGIN
     CONTROL         "",IDC_CONFIRM_OPTIONS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,13,157,248,48
 END
 
-IDD_QUEUEPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_QUEUEPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_STATICEDGE
 CAPTION "Queue"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -526,8 +526,8 @@ BEGIN
     CONTROL         "",IDC_OTHER_QUEUE_OPTIONS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,9,126,255,86
 END
 
-IDD_CERTIFICATESPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_CERTIFICATESPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Security Certificates"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -547,8 +547,8 @@ BEGIN
     PUSHBUTTON      "...",IDC_BROWSE_TRUSTED_PATH,248,42,20,14
 END
 
-IDD_TABSPAGE DIALOGEX 0, 0, 275, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_TABSPAGE DIALOGEX 100, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Tabs"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0

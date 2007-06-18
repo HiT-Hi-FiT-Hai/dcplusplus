@@ -118,6 +118,7 @@ private:
 		const tstring& getText(int col) const {
 			return columns[col];
 		}
+		int getImage() const;
 
 		static int compareItems(const UserInfo* a, const UserInfo* b, int col);
 		bool update(const Identity& identity, int sortCol);
@@ -221,8 +222,6 @@ private:
 
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
-
-	static int getImage(const Identity& u);
 
 	using MDIChildFrame<HubFrame>::speak;
 	void speak(Tasks s) { tasks.add(s, 0); speak(); }

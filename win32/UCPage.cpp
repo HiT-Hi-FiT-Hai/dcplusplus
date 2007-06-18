@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "UCPage.h"
-#include "CommandDlg.h"
 
-#include "../client/SettingsManager.h"
-#include "../client/FavoriteManager.h"
-#include "WinUtil.h"
+#include <client/SettingsManager.h>
+#include <client/FavoriteManager.h>
 
 PropPage::TextItem UCPage::texts[] = {
 	{ IDC_MOVE_UP, ResourceManager::MOVE_UP },
@@ -42,32 +39,65 @@ PropPage::Item UCPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items);
+UCPage::UCPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_UCPAGE);
 
-	CRect rc;
+	PropPage::translate(handle(), texts);
+	PropPage::read(handle(), items);
 
-	ctrlCommands.Attach(GetDlgItem(IDC_MENU_ITEMS));
-	ctrlCommands.GetClientRect(rc);
+	HWND commands = ::GetDlgItem(handle(), IDC_MENU_ITEMS);
+	ListView_SetExtendedListViewStyle(commands, LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
-	ctrlCommands.InsertColumn(0, CTSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width()/4, 0);
-	ctrlCommands.InsertColumn(1, CTSTRING(SETTINGS_COMMAND), LVCFMT_LEFT, rc.Width()*2 / 4, 1);
-	ctrlCommands.InsertColumn(2, CTSTRING(HUB), LVCFMT_LEFT, rc.Width() / 4, 2);
-	ctrlCommands.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH| LVCF_TEXT | LVCF_SUBITEM  };
 
-	// Do specialized reading here
+	lv.fmt = LVCFMT_LEFT;
+	lv.cx = 100;
+	lv.pszText = const_cast<LPTSTR>(CTSTRING(SETTINGS_NAME));
+	lv.iSubItem = 0;
+	ListView_InsertColumn(commands, 0, &lv);
+
+	lv.fmt = LVCFMT_CENTER;
+	RECT rc;
+	::GetClientRect(commands, &rc);
+	lv.cx = rc.right - rc.left - 220;
+	lv.pszText = const_cast<LPTSTR>(CTSTRING(SETTINGS_COMMAND));
+	lv.iSubItem = 1;
+	ListView_InsertColumn(commands, 1, &lv);
+
+	lv.fmt = LVCFMT_RIGHT;
+	lv.cx = 100;
+	lv.pszText = const_cast<LPTSTR>(CTSTRING(HUB));
+	lv.iSubItem = 2;
+	ListView_InsertColumn(commands, 2, &lv);
+
 	UserCommand::List lst = FavoriteManager::getInstance()->getUserCommands();
-	for(UserCommand::Iter i = lst.begin(); i != lst.end(); ++i) {
-		UserCommand& uc = *i;
+	for(UserCommand::List::const_iterator i = lst.begin(); i != lst.end(); ++i) {
+		const UserCommand& uc = *i;
 		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) {
-			addEntry(uc, ctrlCommands.GetItemCount());
+			addEntry(uc, ListView_GetItemCount(commands));
 		}
 	}
-
-	return TRUE;
 }
+
+UCPage::~UCPage() {
+}
+
+void UCPage::write() {
+	PropPage::write(handle(), items);
+}
+
+void UCPage::addEntry(const UserCommand& uc, int pos) {
+	HWND commands = ::GetDlgItem(handle(), IDC_MENU_ITEMS);
+	LVITEM lvi = { LVIF_TEXT | LVIF_PARAM };
+	lvi.iItem = pos;
+	lvi.pszText = const_cast<LPTSTR>(((uc.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : uc.getName()).c_str());
+	lvi.lParam = (LPARAM)uc.getId();
+	int i = ListView_InsertItem(commands, &lvi);
+	ListView_SetItemText(commands, i, 1, const_cast<LPTSTR>(uc.getCommand().c_str()));
+	ListView_SetItemText(commands, i, 2, const_cast<LPTSTR>(uc.getHub().c_str()));
+}
+
+#ifdef PORT_ME
 
 LRESULT UCPage::onAddMenu(WORD , WORD , HWND , BOOL& ) {
 	CommandDlg dlg;
@@ -178,21 +208,6 @@ LRESULT UCPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 	}
 
 	return 0;
-}
-
-void UCPage::addEntry(const UserCommand& uc, int pos) {
-	TStringList lst;
-	if(uc.getType() == UserCommand::TYPE_SEPARATOR)
-		lst.push_back(TSTRING(SEPARATOR));
-	else
-		lst.push_back(Text::toT(uc.getName()));
-	lst.push_back(Text::toT(uc.getCommand()));
-	lst.push_back(Text::toT(uc.getHub()));
-	ctrlCommands.insert(pos, lst, 0, (LPARAM)uc.getId());
-}
-
-void UCPage::write() {
-	PropPage::write((HWND)*this, items);
 }
 
 LRESULT UCPage::onHelpInfo(LPNMHDR /*pnmh*/) {

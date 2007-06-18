@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "AdvancedPage.h"
-#include "CommandDlg.h"
 
-#include "../client/SettingsManager.h"
-#include "../client/FavoriteManager.h"
-#include "WinUtil.h"
+#include <client/SettingsManager.h>
 
 PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };
 
@@ -54,17 +50,20 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_ADVANCED_BOOLEANS));
+AdvancedPage::AdvancedPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_ADVANCEDPAGE);
 
-	// Do specialized reading here
-	return TRUE;
+	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_ADVANCED_BOOLEANS));
+}
+
+AdvancedPage::~AdvancedPage() {
 }
 
 void AdvancedPage::write() {
-	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_ADVANCED_BOOLEANS));
+	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_ADVANCED_BOOLEANS));
 }
+
+#ifdef PORT_ME
 
 LRESULT AdvancedPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCEDPAGE);

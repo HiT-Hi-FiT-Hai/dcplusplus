@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "WindowsPage.h"
 
-#include "../client/SettingsManager.h"
-#include "../client/FavoriteManager.h"
-#include "WinUtil.h"
+#include <client/SettingsManager.h>
 
 PropPage::Item WindowsPage::items[] = { { 0, 0, PropPage::T_END } };
 
@@ -73,22 +70,25 @@ WindowsPage::ListItem WindowsPage::confirmItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-LRESULT WindowsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), textItem);
-	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_WINDOWS_STARTUP));
-	PropPage::read((HWND)*this, items, optionItems, GetDlgItem(IDC_WINDOWS_OPTIONS));
-	PropPage::read((HWND)*this, items, confirmItems, GetDlgItem(IDC_CONFIRM_OPTIONS));
+WindowsPage::WindowsPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_WINDOWSPAGE);
 
-	// Do specialized reading here
-	return TRUE;
+	PropPage::translate(handle(), textItem);
+	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_WINDOWS_STARTUP));
+	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_WINDOWS_OPTIONS));
+	PropPage::read(handle(), items, confirmItems, ::GetDlgItem(handle(), IDC_CONFIRM_OPTIONS));
+}
+
+WindowsPage::~WindowsPage() {
 }
 
 void WindowsPage::write() {
-	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_WINDOWS_STARTUP));
-	PropPage::write((HWND)*this, items, optionItems, GetDlgItem(IDC_WINDOWS_OPTIONS));
-	PropPage::write((HWND)*this, items, confirmItems, GetDlgItem(IDC_CONFIRM_OPTIONS));
+	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_WINDOWS_STARTUP));
+	PropPage::write(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_WINDOWS_OPTIONS));
+	PropPage::write(handle(), items, confirmItems, ::GetDlgItem(handle(), IDC_CONFIRM_OPTIONS));
 }
+
+#ifdef PORT_ME
 
 LRESULT WindowsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_WINDOWSPAGE);

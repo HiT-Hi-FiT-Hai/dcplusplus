@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,139 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(DOWNLOAD_MANAGER_H)
-#define DOWNLOAD_MANAGER_H
+#ifndef DCPLUSPLUS_CLIENT_DOWNLOAD_MANAGER_H
+#define DCPLUSPLUS_CLIENT_DOWNLOAD_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include "forward.h"
 
-#include "TimerManager.h"
-
-#include "UserConnection.h"
-#include "Singleton.h"
-#include "FilteredFile.h"
-#include "ZUtils.h"
-#include "MerkleTree.h"
+#include "DownloadManagerListener.h"
+#include "UserConnectionListener.h"
 #include "QueueItem.h"
-
-class ConnectionQueueItem;
-
-/**
- * Comes as an argument in the DownloadManagerListener functions.
- * Use it to retrieve information about the ongoing transfer.
- */
-class Download : public Transfer, public Flags {
-public:
-	static const string ANTI_FRAG_EXT;
-
-	typedef Download* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-
-	enum {
-		FLAG_USER_LIST = 0x01,
-		FLAG_RESUME = 0x02,
-		FLAG_ZDOWNLOAD = 0x04,
-		FLAG_CALC_CRC32 = 0x08,
-		FLAG_CRC32_OK = 0x10,
-		FLAG_ANTI_FRAG = 0x20,
-		FLAG_TREE_DOWNLOAD = 0x40,
-		FLAG_TREE_TRIED = 0x100,
-		FLAG_PARTIAL_LIST = 0x200,
-		FLAG_TTH_CHECK = 0x400
-	};
-
-	Download(UserConnection& conn) throw();
-	Download(UserConnection& conn, QueueItem& qi) throw();
-
-	virtual void getParams(const UserConnection& aSource, StringMap& params);
-
-	virtual ~Download();
-
-	/** @return Target filename without path. */
-	string getTargetFileName() {
-		return Util::getFileName(getTarget());
-	}
-
-	/** @internal */
-	string getDownloadTarget() {
-		const string& tgt = (getTempTarget().empty() ? getTarget() : getTempTarget());
-		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;
-	}
-
-	/** @internal */
-	TigerTree& getTigerTree() { return tt; }
-	string& getPFS() { return pfs; }
-	/** @internal */
-	AdcCommand getCommand(bool zlib);
-
-	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
-	GETSET(string, source, Source);
-	GETSET(string, target, Target);
-	GETSET(string, tempTarget, TempTarget);
-	GETSET(OutputStream*, file, File);
-	GETSET(CrcOS*, crcCalc, CrcCalc);
-	GETSET(bool, treeValid, TreeValid);
-
-private:
-	Download(const Download&);
-	Download& operator=(const Download&);
-
-	TigerTree tt;
-	string pfs;
-};
-
-/**
- * Use this listener interface to get progress information for downloads.
- *
- * @remarks All methods are sending a pointer to a Download but the receiver
- * (TransferView) is not using any of the methods in Download, only methods
- * from its super class, Transfer. The listener functions should send Transfer
- * objects instead.
- *
- * Changing this will will cause a problem with Download::List which is used
- * in the on Tick function. One solution is reimplement on Tick to call once
- * for every Downloads, sending one Download at a time. But maybe updating the
- * GUI is not DownloadManagers problem at all???
- */
-class DownloadManagerListener {
-public:
-	virtual ~DownloadManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I }; };
-
-	typedef X<0> Complete;
-	typedef X<1> Failed;
-	typedef X<2> Starting;
-	typedef X<3> Tick;
-
-	/**
-	 * This is the first message sent before a download starts.
-	 * No other messages will be sent before.
-	 */
-	virtual void on(Starting, Download*) throw() { }
-
-	/**
-	 * Sent once a second if something has actually been downloaded.
-	 */
-	virtual void on(Tick, const Download::List&) throw() { }
-
-	/**
-	 * This is the last message sent before a download is deleted.
-	 * No more messages will be sent after it.
-	 */
-	virtual void on(Complete, Download*) throw() { }
-
-	/**
-	 * This indicates some sort of failure with a particular download.
-	 * No more messages will be sent after it.
-	 *
-	 * @remarks Should send an error code instead of a string and let the GUI
-	 * display an error string.
-	 */
-	virtual void on(Failed, Download*, const string&) throw() { }
-};
-
+#include "TimerManager.h"
+#include "Singleton.h"
+#include "MerkleTree.h"
+#include "Speaker.h"
+#include "File.h"
 
 /**
  * Singleton. Use its listener interface to update the download list
@@ -161,8 +41,8 @@ class DownloadManager : public Speaker<DownloadManagerListener>,
 public:
 
 	/** @internal */
-	void addConnection(UserConnection::Ptr conn);
-	void checkIdle(const User::Ptr& user);
+	void addConnection(UserConnectionPtr conn);
+	void checkIdle(const UserPtr& user);
 
 	/** @return Running average download speed in Bytes/s */
 	int64_t getRunningAverage();
@@ -195,10 +75,10 @@ private:
 	} mover;
 
 	CriticalSection cs;
-	Download::List downloads;
-	UserConnection::List idlers;
+	DownloadList downloads;
+	UserConnectionList idlers;
 
-	void removeConnection(UserConnection::Ptr aConn);
+	void removeConnection(UserConnectionPtr aConn);
 	void removeDownload(Download* aDown);
 	void fileNotAvailable(UserConnection* aSource);
 	void noSlots(UserConnection* aSource);

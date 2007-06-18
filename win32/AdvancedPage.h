@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,44 +16,33 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(ADVANCED_PAGE_H)
-#define ADVANCED_PAGE_H
+#ifndef DCPLUSPLUS_WIN32_ADVANCED_PAGE_H
+#define DCPLUSPLUS_WIN32_ADVANCED_PAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <atlcrack.h>
 #include "PropPage.h"
+#include "WidgetFactory.h"
 
-class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
+class AdvancedPage : public WidgetFactory<SmartWin::WidgetDialog, AdvancedPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
 {
 public:
-	AdvancedPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_ADVANCED));
-		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	}
+	AdvancedPage(SmartWin::Widget* parent);
+	virtual ~AdvancedPage();
 
-	virtual ~AdvancedPage() { }
-
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(AdvancedPage)
-		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
+#endif
 
-	// Common PropPage interface
-	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
 
-protected:
-
+private:
 	static Item items[];
 	static ListItem listItems[];
 };
 
-#endif // !defined(ADVANCED_PAGE_H)
+#endif // !defined(DCPLUSPLUS_WIN32_ADVANCED_PAGE_H)

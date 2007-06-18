@@ -651,7 +651,7 @@ bool HubFrame::updateUser(const UserTask& u) {
 		UserInfo* ui = new UserInfo(u);
 		userMap.insert(make_pair(u.user, ui));
 		if(!ui->isHidden() && showUsers->getChecked())
-			users->insertItem(ui, getImage(u.identity));
+			users->insertItem(ui);
 
 		if(!filterString.empty())
 			updateUserList(ui);
@@ -844,12 +844,12 @@ bool HubFrame::charred(WidgetTextBoxPtr ptr, int c) {
 #endif
 }
 
-int HubFrame::getImage(const Identity& u) {
-	int image = u.isOp() ? IMAGE_OP : IMAGE_USER;
+int HubFrame::UserInfo::getImage() const {
+	int image = identity.isOp() ? IMAGE_OP : IMAGE_USER;
 
-	if(u.getUser()->isSet(User::DCPLUSPLUS))
+	if(identity.getUser()->isSet(User::DCPLUSPLUS))
 		image+=2;
-	if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !u.isTcpActive()) {
+	if(SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_PASSIVE && !identity.isTcpActive()) {
 		// Users we can't connect to...
 		image+=4;
 	}
@@ -1131,12 +1131,12 @@ void HubFrame::updateUserList(UserInfo* ui) {
 		}
 		if(filterString.empty()) {
 			if(users->findItem(ui) == -1) {
-				users->insertItem(ui, getImage(ui->getIdentity()));
+				users->insertItem(ui);
 			}
 		} else {
 			if(matchFilter(*ui, sel, doSizeCompare, mode, size)) {
 				if(users->findItem(ui) == -1) {
-					users->insertItem(ui, getImage(ui->getIdentity()));
+					users->insertItem(ui);
 				}
 			} else {
 				//deleteItem checks to see that the item exists in the list
@@ -1154,13 +1154,13 @@ void HubFrame::updateUserList(UserInfo* ui) {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
 				UserInfo* ui = i->second;
 				if(!ui->isHidden())
-					users->insertItem(i->second, getImage(i->second->getIdentity()));
+					users->insertItem(i->second);
 			}
 		} else {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 				UserInfo* ui = i->second;
 				if(!ui->isHidden() && matchFilter(*ui, sel, doSizeCompare, mode, size)) {
-					users->insertItem(ui, getImage(ui->getIdentity()));
+					users->insertItem(ui);
 				}
 			}
 		}

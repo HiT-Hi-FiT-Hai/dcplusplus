@@ -37,13 +37,13 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 		switch(i->type)
 		{
 		case T_STR:
-			if(!SettingsManager::getInstance()->isDefault(i->setting)) {
+			if(!settings->isDefault(i->setting)) {
 				::SetDlgItemText(page, i->itemID,
 					Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
 			}
 			break;
 		case T_INT:
-			if(!SettingsManager::getInstance()->isDefault(i->setting)) {
+			if(!settings->isDefault(i->setting)) {
 				::SetDlgItemInt(page, i->itemID,
 					settings->get((SettingsManager::IntSetting)i->setting, useDef), FALSE);
 			}
@@ -57,21 +57,23 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 	}
 
 	if(listItems != NULL) {
+		ListView_SetExtendedListViewStyle(list, LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+
 		RECT rc;
 		::GetClientRect(list, &rc);
-		ListView_SetExtendedListViewStyle(list, LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 		LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH };
-		lv.cx = rc.left - rc.right;
 		lv.fmt = LVCFMT_LEFT;
+		lv.cx = rc.right - rc.left;
+		ListView_InsertColumn(list, 0, &lv);
 
 		LVITEM lvi = { LVIF_TEXT };
-
 		for(int i = 0; listItems[i].setting != 0; i++) {
 			lvi.iItem = i;
 			lvi.pszText = const_cast<TCHAR*>(CTSTRING_I(listItems[i].desc));
 			ListView_InsertItem(list, &lvi);
-			ListView_SetCheckState(list, i, SettingsManager::getInstance()->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
+			ListView_SetCheckState(list, i, settings->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
 		}
+
 		ListView_SetColumnWidth(list, 0, LVSCW_AUTOSIZE);
 	}
 }

@@ -29,6 +29,7 @@ class Download;
 #include "User.h"
 #include "FastAlloc.h"
 #include "MerkleTree.h"
+#include "Flags.h"
 
 class QueueItem : public Flags, public FastAlloc<QueueItem> {
 public:

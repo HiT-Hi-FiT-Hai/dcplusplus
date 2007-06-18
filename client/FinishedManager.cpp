@@ -23,6 +23,8 @@
 
 #include "ClientManager.h"
 #include "FinishedManagerListener.h"
+#include "Download.h"
+#include "Upload.h"
 
 FinishedManager::~FinishedManager() throw() {
 	DownloadManager::getInstance()->removeListener(this);

@@ -23,6 +23,21 @@
 #include "resource.h"
 
 #include "GeneralPage.h"
+#include "NetworkPage.h"
+#include "DownloadPage.h"
+#include "FavoriteDirsPage.h"
+#include "QueuePage.h"
+#include "UploadPage.h"
+#include "AppearancePage.h"
+#include "Appearance2Page.h"
+#include "TabsPage.h"
+#include "WindowsPage.h"
+#include "AdvancedPage.h"
+#include "LogPage.h"
+#include "Advanced3Page.h"
+#include "UCPage.h"
+#include "CertificatesPage.h"
+
 #include <client/Pointer.h>
 
 static const TCHAR SEPARATOR = _T('\\');
@@ -39,6 +54,20 @@ bool SettingsDialog::initDialog() {
 	setText(TSTRING(SETTINGS));
 	
 	addPage(TSTRING(SETTINGS_GENERAL), new GeneralPage(this));
+	addPage(TSTRING(SETTINGS_NETWORK), new NetworkPage(this));
+	addPage(TSTRING(SETTINGS_DOWNLOADS), new DownloadPage(this));
+	addPage(TSTRING(SETTINGS_FAVORITE_DIRS_PAGE), new FavoriteDirsPage(this));
+	addPage(TSTRING(SETTINGS_QUEUE), new QueuePage(this));
+	addPage(TSTRING(SETTINGS_UPLOADS), new UploadPage(this));
+	addPage(TSTRING(SETTINGS_APPEARANCE), new AppearancePage(this));
+	addPage(TSTRING(SETTINGS_APPEARANCE2), new Appearance2Page(this));
+	addPage(TSTRING(SETTINGS_TABS), new TabsPage(this));
+	addPage(TSTRING(SETTINGS_WINDOWS), new WindowsPage(this));
+	addPage(TSTRING(SETTINGS_ADVANCED), new AdvancedPage(this));
+	addPage(TSTRING(SETTINGS_LOGS), new LogPage(this));
+	addPage(TSTRING(SETTINGS_ADVANCED3), new Advanced3Page(this));
+	addPage(TSTRING(SETTINGS_USER_COMMANDS), new UCPage(this));
+	addPage(TSTRING(SETTINGS_CERTIFICATES), new CertificatesPage(this));
 	
 	return false;
 }
@@ -149,40 +178,8 @@ void SettingsDialog::write() {
 
 #ifdef PORT_ME
 
-#include "DownloadPage.h"
-#include "UploadPage.h"
-#include "AppearancePage.h"
-#include "AdvancedPage.h"
-#include "LogPage.h"
-#include "UCPage.h"
-#include "FavoriteDirsPage.h"
-#include "Appearance2Page.h"
-#include "Advanced3Page.h"
-#include "NetworkPage.h"
-#include "WindowsPage.h"
-#include "QueuePage.h"
-#include "CertificatesPage.h"
-#include "TabsPage.h"
-
 PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS), 0, parent)
 {
-	int n = 0;
-	pages[n++] = new GeneralPage(s);
-	pages[n++] = new NetworkPage(s);
-	pages[n++] = new DownloadPage(s);
-	pages[n++] = new FavoriteDirsPage(s);
-	pages[n++] = new QueuePage(s);
-	pages[n++] = new UploadPage(s);
-	pages[n++] = new AppearancePage(s);
-	pages[n++] = new Appearance2Page(s);
-	pages[n++] = new TabsPage(s);
-	pages[n++] = new WindowsPage(s);
-	pages[n++] = new AdvancedPage(s);
-	pages[n++] = new LogPage(s);
-	pages[n++] = new Advanced3Page(s);
-	pages[n++] = new UCPage(s);
-	pages[n++] = new CertificatesPage(s);
-
 	// Hide "Apply" button
 	m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_NOCONTEXTHELP;
 	m_psh.dwFlags &= ~PSH_HASHELP;

@@ -62,9 +62,9 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), P
 	connections->setSelectedIndex(selected);
 		
 #ifdef PORT_ME
-	nick.Attach(GetDlgItem(IDC_NICK));
+	nick.Attach(::GetDlgItem(handle(), IDC_NICK));
 	nick.LimitText(35);
-	desc.Attach(GetDlgItem(IDC_DESCRIPTION));
+	desc.Attach(::GetDlgItem(handle(), IDC_DESCRIPTION));
 	desc.LimitText(35);
 	desc.Detach();
 	return TRUE;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "LogPage.h"
-#include "../client/SettingsManager.h"
-#include "../client/LogManager.h"
-#include "../client/File.h"
-#include "WinUtil.h"
 
+#include <client/SettingsManager.h>
+#include <client/LogManager.h>
 
 PropPage::TextItem LogPage::texts[] = {
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
@@ -54,12 +51,13 @@ PropPage::ListItem LogPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
+LogPage::LogPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_LOGPAGE);
 
-LRESULT LogPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_LOG_OPTIONS));
+	PropPage::translate(handle(), texts);
+	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
 
+#ifdef PORT_ME
 	for(int i = 0; i < LogManager::LAST; ++i) {
 		TStringPair pair;
 		pair.first = Text::toT(LogManager::getInstance()->getSetting(i, LogManager::FILE));
@@ -67,17 +65,46 @@ LRESULT LogPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		options.push_back(pair);
 	}
 
-	::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), false);
-	::EnableWindow(GetDlgItem(IDC_LOG_FILE), false);
+	::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), false);
+	::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), false);
 
 	oldSelection = -1;
-
-	// Do specialized reading here
-	return TRUE;
+#endif
 }
 
+LogPage::~LogPage() {
+}
+
+void LogPage::write()
+{
+	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
+
+	const string& s = SETTING(LOG_DIRECTORY);
+	if(s.length() > 0 && s[s.length() - 1] != '\\') {
+		SettingsManager::getInstance()->set(SettingsManager::LOG_DIRECTORY, s + '\\');
+	}
+	File::ensureDirectory(SETTING(LOG_DIRECTORY));
+
+#ifdef PORT_ME
+	//make sure we save the last edit too, the user
+	//might not have changed the selection
+	getValues();
+
+	for(int i = 0; i < LogManager::LAST; ++i) {
+		string tmp = Text::fromT(options[i].first);
+		if(Util::stricmp(Util::getFileExt(tmp), ".log") != 0)
+			tmp += ".log";
+
+		LogManager::getInstance()->saveSetting(i, LogManager::FILE, tmp);
+		LogManager::getInstance()->saveSetting(i, LogManager::FORMAT, Text::fromT(options[i].second));
+	}
+#endif
+}
+
+#ifdef PORT_ME
+
 LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
-	logOptions.Attach(GetDlgItem(IDC_LOG_OPTIONS));
+	logOptions.Attach(::GetDlgItem(handle(), IDC_LOG_OPTIONS));
 
 	getValues();
 
@@ -86,8 +113,8 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 	if(sel >= 0 && sel < LogManager::LAST) {
 		BOOL checkState = logOptions.GetCheckState(sel) == BST_CHECKED ? TRUE : FALSE;
 
-		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), checkState);
-		::EnableWindow(GetDlgItem(IDC_LOG_FILE), checkState);
+		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), checkState);
+		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), checkState);
 
 		SetDlgItemText(IDC_LOG_FILE, options[sel].first.c_str());
 		SetDlgItemText(IDC_LOG_FORMAT, options[sel].second.c_str());
@@ -95,8 +122,8 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 		//save the old selection so we know where to save the values
 		oldSelection = sel;
 	} else {
-		::EnableWindow(GetDlgItem(IDC_LOG_FORMAT), FALSE);
-		::EnableWindow(GetDlgItem(IDC_LOG_FILE), FALSE);
+		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), FALSE);
+		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), FALSE);
 
 		SetDlgItemText(IDC_LOG_FILE, _T(""));
 		SetDlgItemText(IDC_LOG_FORMAT, _T(""));
@@ -114,30 +141,6 @@ void LogPage::getValues() {
 			options[oldSelection].first = buf;
 		if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
 			options[oldSelection].second = buf;
-	}
-}
-
-void LogPage::write()
-{
-	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_LOG_OPTIONS));
-
-	const string& s = SETTING(LOG_DIRECTORY);
-	if(s.length() > 0 && s[s.length() - 1] != '\\') {
-		SettingsManager::getInstance()->set(SettingsManager::LOG_DIRECTORY, s + '\\');
-	}
-	File::ensureDirectory(SETTING(LOG_DIRECTORY));
-
-	//make sure we save the last edit too, the user
-	//might not have changed the selection
-	getValues();
-
-	for(int i = 0; i < LogManager::LAST; ++i) {
-		string tmp = Text::fromT(options[i].first);
-		if(Util::stricmp(Util::getFileExt(tmp), ".log") != 0)
-			tmp += ".log";
-
-		LogManager::getInstance()->saveSetting(i, LogManager::FILE, tmp);
-		LogManager::getInstance()->saveSetting(i, LogManager::FORMAT, Text::fromT(options[i].second));
 	}
 }
 

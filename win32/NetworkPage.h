@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,27 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(NETWORK_PAGE_H)
-#define NETWORK_PAGE_H
+#ifndef DCPLUSPLUS_WIN32_NETWORK_PAGE_H
+#define DCPLUSPLUS_WIN32_NETWORK_PAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <atlcrack.h>
 #include "PropPage.h"
+#include "WidgetFactory.h"
 
-class NetworkPage : public CPropertyPage<IDD_NETWORKPAGE>, public PropPage
+class NetworkPage : public WidgetFactory<SmartWin::WidgetDialog, NetworkPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
 {
 public:
-	NetworkPage(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_NETWORK));
-		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	}
-	virtual ~NetworkPage() { }
+	NetworkPage(SmartWin::Widget* parent);
+	virtual ~NetworkPage();
 
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(NetworkPage)
-		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_DIRECT, onClickedActive)
 		COMMAND_ID_HANDLER(IDC_FIREWALL_UPNP, onClickedActive)
@@ -47,21 +40,22 @@ public:
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
+#endif
 
-	// Common PropPage interface
-	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
 
 private:
 	static Item items[];
 	static TextItem texts[];
+
+#ifdef PORT_ME
 	CEdit desc;
+#endif
 
 	void fixControls();
 };
 
-#endif // !defined(NETWORK_PAGE_H)
+#endif // !defined(DCPLUSPLUS_WIN32_NETWORK_PAGE_H)

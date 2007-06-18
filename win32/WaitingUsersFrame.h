@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,14 @@
  */
 
 
-#if !defined(WAITING_QUEUE_FRAME_H)
-#define WAITING_QUEUE_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_WAITING_QUEUE_FRAME_H
+#define DCPLUSPLUS_WIN32_WAITING_QUEUE_FRAME_H
 
 #include "StaticFrame.h"
 #include "WinUtil.h"
-#include "client/UploadManager.h"
+
+#include <client/forward.h>
+#include <client/UploadManagerListener.h>
 
 class WaitingUsersFrame : public StaticFrame<WaitingUsersFrame>, public UploadManagerListener {
 public:
@@ -51,8 +53,8 @@ protected:
 	void onGrantSlot(WidgetMenuPtr, unsigned int);
 	void onAddToFavorites(WidgetMenuPtr, unsigned int);
 
-	void onRemoveUser(const User::Ptr);
-	void onAddFile(const User::Ptr, const string&);
+	void onRemoveUser(const UserPtr);
+	void onAddFile(const UserPtr, const string&);
 
 private:
 	enum {
@@ -62,9 +64,9 @@ private:
 
 	bool closed;
 
-	struct UserPtr {
-		User::Ptr u;
-		UserPtr(User::Ptr u) : u(u) { }
+	struct UserItem {
+		UserPtr u;
+		UserItem(UserPtr u) : u(u) { }
 	};
 
 	// Contained controls
@@ -73,9 +75,9 @@ private:
 
 	SmartWin::TreeViewNode GetParentItem();
 
-	User::Ptr getSelectedUser() {
+	UserPtr getSelectedUser() {
 		SmartWin::TreeViewNode selectedItem = GetParentItem();
-		return selectedItem.handle?reinterpret_cast<UserPtr *>(StupidWin::getTreeItemData(queued, selectedItem))->u:User::Ptr(0);
+		return selectedItem.handle?reinterpret_cast<UserItem *>(StupidWin::getTreeItemData(queued, selectedItem))->u:UserPtr(0);
 	}
 
 	// Communication with manager
@@ -83,8 +85,8 @@ private:
 	void UpdateSearch(int index, BOOL doDelete = TRUE);
 
 	// UploadManagerListener
-	virtual void on(UploadManagerListener::WaitingRemoveUser, const User::Ptr) throw();
-	virtual void on(UploadManagerListener::WaitingAddFile, const User::Ptr, const string&) throw();
+	virtual void on(UploadManagerListener::WaitingRemoveUser, const UserPtr) throw();
+	virtual void on(UploadManagerListener::WaitingAddFile, const UserPtr, const string&) throw();
 };
 
 #ifdef PORT_ME

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,64 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(UPLOAD_MANAGER_H)
-#define UPLOAD_MANAGER_H
+#ifndef DCPLUSPLUS_CLIENT_UPLOAD_MANAGER_H
+#define DCPLUSPLUS_CLIENT_UPLOAD_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "UserConnection.h"
+#include "forward.h"
+#include "UserConnectionListener.h"
 #include "Singleton.h"
-
+#include "UploadManagerListener.h"
 #include "ClientManagerListener.h"
 #include "MerkleTree.h"
-
-class InputStream;
-
-class Upload : public Transfer, public Flags {
-public:
-	enum Flags {
-		FLAG_USER_LIST = 0x01,
-		FLAG_TTH_LEAVES = 0x02,
-		FLAG_ZUPLOAD = 0x04,
-		FLAG_PARTIAL_LIST = 0x08,
-		FLAG_PENDING_KICK = 0x10
-	};
-
-	typedef Upload* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-
-	Upload(UserConnection& conn);
-	virtual ~Upload();
-
-	virtual void getParams(const UserConnection& aSource, StringMap& params);
-
-	GETSET(string, sourceFile, SourceFile);
-	GETSET(InputStream*, stream, Stream);
-};
-
-class UploadManagerListener {
-public:
-	virtual ~UploadManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I }; };
-
-	typedef X<0> Complete;
-	typedef X<1> Failed;
-	typedef X<2> Starting;
-	typedef X<3> Tick;
-	typedef X<4> WaitingAddFile;
-	typedef X<5> WaitingRemoveUser;
-
-	virtual void on(Starting, Upload*) throw() { }
-	virtual void on(Tick, const Upload::List&) throw() { }
-	virtual void on(Complete, Upload*) throw() { }
-	virtual void on(Failed, Upload*, const string&) throw() { }
-	virtual void on(WaitingAddFile, const User::Ptr, const string&) throw() { }
-	virtual void on(WaitingRemoveUser, const User::Ptr) throw() { }
-
-};
+#include "User.h"
+#include "Util.h"
+#include "TimerManager.h"
+#include "Speaker.h"
 
 class UploadManager : private ClientManagerListener, private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
@@ -106,19 +61,16 @@ public:
 	const FileSet& getWaitingUserFiles(const User::Ptr &);
 
 	/** @internal */
-	void addConnection(UserConnection::Ptr conn) {
-		conn->addListener(this);
-		conn->setState(UserConnection::STATE_GET);
-	}
+	void addConnection(UserConnectionPtr conn);
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
 	GETSET(uint64_t, lastGrant, LastGrant);
 private:
-	Upload::List uploads;
+	UploadList uploads;
 	CriticalSection cs;
 
-	typedef HASH_SET<User::Ptr, User::HashFunction> SlotSet;
+	typedef HASH_SET<UserPtr, User::HashFunction> SlotSet;
 	typedef SlotSet::iterator SlotIter;
 	SlotSet reservedSlots;
 

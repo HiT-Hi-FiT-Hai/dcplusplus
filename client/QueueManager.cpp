@@ -29,7 +29,8 @@
 #include "LogManager.h"
 #include "ResourceManager.h"
 #include "version.h"
-
+#include "Download.h"
+#include "Transfer.h"
 #include "UserConnection.h"
 #include "SimpleXML.h"
 #include "StringTokenizer.h"

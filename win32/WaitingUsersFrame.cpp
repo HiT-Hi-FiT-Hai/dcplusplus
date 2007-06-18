@@ -18,13 +18,17 @@
 
 #include "stdafx.h"
 #include <client/DCPlusPlus.h>
+
 #include "resource.h"
 
-#include <client/Client.h>
-#include <client/ClientManager.h>
-#include <client/QueueManager.h>
-
 #include "WaitingUsersFrame.h"
+#include "PrivateFrame.h"
+
+#include <client/Client.h>
+#include <client/QueueManager.h>
+#include <client/FavoriteManager.h>
+#include <client/UploadManager.h>
+
 
 // Constructor
 WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) {
@@ -86,7 +90,7 @@ bool WaitingUsersFrame::onClose()
 		// SmartWin doesn't appear to have any way to access the item data,
 		// rather than text. TVM_GETITEM, at least, appears nowhere in it.
 		while (userNode.handle) {
-			delete reinterpret_cast<UserPtr *>(StupidWin::getTreeItemData(queued, userNode));
+			delete reinterpret_cast<UserItem *>(StupidWin::getTreeItemData(queued, userNode));
 			queued->getNode(userNode, TVGN_NEXT, userNode);
 		}
 
@@ -115,27 +119,23 @@ void WaitingUsersFrame::LoadAll()
 }
 
 void WaitingUsersFrame::onPrivateMessage(WidgetMenuPtr, unsigned int) {
-	User::Ptr user = getSelectedUser();
+	UserPtr user = getSelectedUser();
 	if (user) {
-#ifdef PORT_ME
-		PrivateFrame::openWindow(user);
-#endif
+		PrivateFrame::openWindow(getParent(), user);
 	}
 }
 
 void WaitingUsersFrame::onGrantSlot(WidgetMenuPtr, unsigned int) {
-	User::Ptr user = getSelectedUser();
+	UserPtr user = getSelectedUser();
 	if (user) {
 		UploadManager::getInstance()->reserveSlot(user);
 	}
 }
 
 void WaitingUsersFrame::onAddToFavorites(WidgetMenuPtr, unsigned int) {
-	User::Ptr user = getSelectedUser();
+	UserPtr user = getSelectedUser();
 	if (user) {
-#ifdef PORT_ME
 		FavoriteManager::getInstance()->addFavoriteUser(user);
-#endif
 	}
 }
 
@@ -151,7 +151,7 @@ SmartWin::TreeViewNode WaitingUsersFrame::GetParentItem() {
 
 void WaitingUsersFrame::onGetList(WidgetMenuPtr, unsigned int)
 {
-	User::Ptr user = getSelectedUser();
+	UserPtr user = getSelectedUser();
 	if (user) {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
 	}
@@ -179,19 +179,19 @@ void WaitingUsersFrame::onCopyFilename(WidgetMenuPtr, unsigned int) {
 // Remove queued item
 void WaitingUsersFrame::onRemove(WidgetMenuPtr, unsigned int)
 {
-	User::Ptr user = getSelectedUser();
+	UserPtr user = getSelectedUser();
 	if (user) {
 		UploadManager::getInstance()->clearUserFiles(user);
 	}
 }
 
 // UploadManagerListener
-void WaitingUsersFrame::on(UploadManagerListener::WaitingRemoveUser, const User::Ptr aUser) throw() {
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_REMOVE_USER, (LPARAM)new UserPtr(aUser));
+void WaitingUsersFrame::on(UploadManagerListener::WaitingRemoveUser, const UserPtr aUser) throw() {
+	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_REMOVE_USER, (LPARAM)new UserItem(aUser));
 }
 
-void WaitingUsersFrame::on(UploadManagerListener::WaitingAddFile, const User::Ptr aUser, const string& aFilename) throw() {
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_ADD_FILE, (LPARAM)new pair<User::Ptr, string>(aUser, aFilename));
+void WaitingUsersFrame::on(UploadManagerListener::WaitingAddFile, const UserPtr aUser, const string& aFilename) throw() {
+	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_ADD_FILE, (LPARAM)new pair<UserItem, string>(aUser, aFilename));
 }
 
 #ifdef PORT_ME

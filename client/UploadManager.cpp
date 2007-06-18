@@ -32,24 +32,12 @@
 #include "AdcCommand.h"
 #include "FavoriteManager.h"
 #include "CryptoManager.h"
+#include "Upload.h"
+#include "UserConnection.h"
 
 #include <functional>
 
 static const string UPLOAD_AREA = "Uploads";
-
-Upload::Upload(UserConnection& conn) : Transfer(conn), stream(0) { 
-	conn.setUpload(this);
-}
-
-Upload::~Upload() { 
-	getUserConnection().setUpload(0);
-	delete stream; 
-}
-
-void Upload::getParams(const UserConnection& aSource, StringMap& params) {
-	Transfer::getParams(aSource, params);
-	params["source"] = getSourceFile();
-}
 
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) {
 	ClientManager::getInstance()->addListener(this);
@@ -240,7 +228,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 int64_t UploadManager::getRunningAverage() {
 	Lock l(cs);
 	int64_t avg = 0;
-	for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+	for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
 		Upload* u = *i;
 		avg += (int)u->getRunningAverage();
 	}
@@ -410,6 +398,11 @@ const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const User::Ptr
 	return waitingFiles.find(u)->second;
 }
 
+void UploadManager::addConnection(UserConnectionPtr conn) {
+	conn->addListener(this);
+	conn->setState(UserConnection::STATE_GET);
+}
+
 void UploadManager::removeConnection(UserConnection* aSource) {
 	dcassert(aSource->getUpload() == NULL);
 	aSource->removeListener(this);
@@ -438,7 +431,7 @@ void UploadManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw
 		waitingUsers.erase(i, waitingUsers.end());
 
 		if( BOOLSETTING(AUTO_KICK) ) {
-			for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+			for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
 				Upload* u = *i;
 				if(u->getUser()->isOnline()) {
 					u->unsetFlag(Upload::FLAG_PENDING_KICK);
@@ -492,9 +485,9 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 // TimerManagerListener
 void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 	Lock l(cs);
-	Upload::List ticks;
+	UploadList ticks;
 
-	for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+	for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
 		ticks.push_back(*i);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(USER_CONNECTION_H)
-#define USER_CONNECTION_H
+#ifndef DCPLUSPLUS_CLIENT_USER_CONNECTION_H
+#define DCPLUSPLUS_CLIENT_USER_CONNECTION_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
+#include "forward.h"
 #include "TimerManager.h"
-
+#include "UserConnectionListener.h"
+#include "BufferedSocketListener.h"
 #include "BufferedSocket.h"
 #include "CriticalSection.h"
 #include "File.h"
@@ -32,154 +30,11 @@
 #include "AdcCommand.h"
 #include "MerkleTree.h"
 
-class UserConnection;
-
-class UserConnectionListener {
-public:
-	virtual ~UserConnectionListener() { }
-	template<int I>	struct X { enum { TYPE = I }; };
-
-	typedef X<0> BytesSent;
-	typedef X<1> Connected;
-	typedef X<2> Data;
-	typedef X<3> Failed;
-	typedef X<4> CLock;
-	typedef X<5> Key;
-	typedef X<6> Direction;
-	typedef X<7> Get;
-	typedef X<8> Error;
-	typedef X<10> Sending;
-	typedef X<11> FileLength;
-	typedef X<12> Send;
-	typedef X<13> GetListLength;
-	typedef X<14> MaxedOut;
-	typedef X<15> ModeChange;
-	typedef X<16> MyNick;
-	typedef X<17> TransmitDone;
-	typedef X<18> Supports;
-	typedef X<19> FileNotAvailable;
-	typedef X<20> ADCGet;
-	typedef X<21> ADCSnd;
-	typedef X<22> ADCSta;
-
-	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw() { }
-	virtual void on(Connected, UserConnection*) throw() { }
-	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw() { }
-	virtual void on(Error, UserConnection*, const string&) throw() { }
-	virtual void on(Failed, UserConnection*, const string&) throw() { }
-	virtual void on(CLock, UserConnection*, const string&, const string&) throw() { }
-	virtual void on(Key, UserConnection*, const string&) throw() { }
-	virtual void on(Direction, UserConnection*, const string&, const string&) throw() { }
-	virtual void on(Get, UserConnection*, const string&, int64_t) throw() { }
-	virtual void on(Sending, UserConnection*, int64_t) throw() { }
-	virtual void on(FileLength, UserConnection*, int64_t) throw() { }
-	virtual void on(Send, UserConnection*) throw() { }
-	virtual void on(GetListLength, UserConnection*) throw() { }
-	virtual void on(MaxedOut, UserConnection*) throw() { }
-	virtual void on(ModeChange, UserConnection*) throw() { }
-	virtual void on(MyNick, UserConnection*, const string&) throw() { }
-	virtual void on(TransmitDone, UserConnection*) throw() { }
-	virtual void on(Supports, UserConnection*, const StringList&) throw() { }
-	virtual void on(FileNotAvailable, UserConnection*) throw() { }
-
-	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::RES, UserConnection*, const AdcCommand&) throw() { }
-	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw() { }
-};
-
-class ConnectionQueueItem;
-
-class Transfer {
-public:
-	static const string TYPE_FILE;		///< File transfer
-	static const string TYPE_LIST;		///< Partial file list
-	static const string TYPE_TTHL;		///< TTH Leaves
-
-	static const string USER_LIST_NAME;
-	static const string USER_LIST_NAME_BZ;
-
-	Transfer(UserConnection& conn);
-	virtual ~Transfer() { };
-
-	int64_t getPos() const { return pos; }
-	void setPos(int64_t aPos) { pos = aPos; }
-
-	void resetPos() { pos = getStartPos(); }
-	void setStartPos(int64_t aPos) { startPos = aPos; pos = aPos; }
-	int64_t getStartPos() const { return startPos; }
-
-	void addPos(int64_t aBytes, int64_t aActual) { pos += aBytes; actual+= aActual; }
-
-	enum { AVG_PERIOD = 30000 };
-	void updateRunningAverage();
-
-	int64_t getTotal() const { return getPos() - getStartPos(); }
-	int64_t getActual() const { return actual; }
-
-	int64_t getSize() const { return size; }
-	void setSize(int64_t aSize) { size = aSize; }
-
-	int64_t getAverageSpeed() const {
-		int64_t diff = (int64_t)(GET_TICK() - getStart());
-		return (diff > 0) ? (getTotal() * (int64_t)1000 / diff) : 0;
-	}
-
-	int64_t getSecondsLeft() {
-		updateRunningAverage();
-		int64_t avg = getRunningAverage();
-		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
-	}
-
-	int64_t getBytesLeft() const {
-		return getSize() - getPos();
-	}
-
-	virtual void getParams(const UserConnection& aSource, StringMap& params);
-
-	User::Ptr getUser();
-
-	UserConnection& getUserConnection() { return userConnection; }
-	const UserConnection& getUserConnection() const { return userConnection; }
-
-	GETSET(uint64_t, start, Start);
-	GETSET(uint64_t, lastTick, LastTick);
-	GETSET(int64_t, runningAverage, RunningAverage);
-	GETSET(TTHValue, tth, TTH);
-private:
-	Transfer(const Transfer&);
-	Transfer& operator=(const Transfer&);
-
-	/** Bytes on last avg update */
-	int64_t last;
-	/** Total actual bytes transfered this session (compression?) */
-	int64_t actual;
-	/** Write position in file */
-	int64_t pos;
-	/** Starting position */
-	int64_t startPos;
-	/** Target size of this transfer */
-	int64_t size;
-
-	UserConnection& userConnection;
-};
-
-class ServerSocket;
-class Upload;
-class Download;
-
 class UserConnection : public Speaker<UserConnectionListener>,
 	private BufferedSocketListener, public Flags, private CommandHandler<UserConnection>
 {
 public:
 	friend class ConnectionManager;
-
-	typedef UserConnection* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
 
 	static const string FEATURE_GET_ZBLOCK;
 	static const string FEATURE_MINISLOTS;
@@ -353,24 +208,12 @@ private:
 		socket->write(aString);
 	}
 
-	virtual void on(Connected) throw() {
-		lastActivity = GET_TICK();
-		fire(UserConnectionListener::Connected(), this);
-	}
+	virtual void on(Connected) throw();
 	virtual void on(Line, const string&) throw();
-	virtual void on(Data, uint8_t* data, size_t len) throw() {
-		lastActivity = GET_TICK();
-		fire(UserConnectionListener::Data(), this, data, len);
-	}
-	virtual void on(BytesSent, size_t bytes, size_t actual) throw() {
-		lastActivity = GET_TICK();
-		fire(UserConnectionListener::BytesSent(), this, bytes, actual);
-	}
-	virtual void on(ModeChange) throw() {
-		lastActivity = GET_TICK();
-		fire(UserConnectionListener::ModeChange(), this);
-	}
-	virtual void on(TransmitDone) throw() { fire(UserConnectionListener::TransmitDone(), this); }
+	virtual void on(Data, uint8_t* data, size_t len) throw();
+	virtual void on(BytesSent, size_t bytes, size_t actual) throw() ;
+	virtual void on(ModeChange) throw();
+	virtual void on(TransmitDone) throw();
 	virtual void on(Failed, const string&) throw();
 };
 

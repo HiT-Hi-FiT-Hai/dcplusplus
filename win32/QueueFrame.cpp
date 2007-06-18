@@ -352,9 +352,9 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	if(!showTree->getChecked() || isCurDir(dir)) {
 		ii->update();
 		if(noSort) {
-			files->insertItem(files->getRowCount(), ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
+			files->insertItem(files->getRowCount(), ii);
 		} else {
-			files->insertItem(ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
+			files->insertItem(ii);
 		}
 	}
 }
@@ -380,7 +380,7 @@ void QueueFrame::updateQueue() {
 	for(DirectoryIter j = i.first; j != i.second; ++j) {
 		QueueItemInfo* ii = j->second;
 		ii->update();
-		files->insertItem(files->getRowCount(), ii, WinUtil::getIconIndex(Text::toT(ii->getTarget())));
+		files->insertItem(files->getRowCount(), ii);
 	}
 	
 	files->resort();

@@ -145,7 +145,7 @@ private:
 	ConnectionQueueItem::List uploads;
 
 	/** All active connections */
-	UserConnection::List userConnections;
+	UserConnectionList userConnections;
 
 	User::List checkIdle;
 

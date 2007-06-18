@@ -205,7 +205,7 @@ void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw()
 void ConnectionManager::on(TimerManagerListener::Minute, uint32_t aTick) throw() {
 	Lock l(cs);
 
-	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+	for(UserConnectionList::iterator j = userConnections.begin(); j != userConnections.end(); ++j) {
 		if(((*j)->getLastActivity() + 180*1000) < aTick) {
 			(*j)->disconnect(true);
 		}
@@ -673,7 +673,7 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 
 void ConnectionManager::disconnect(const User::Ptr& aUser, int isDownload) {
 	Lock l(cs);
-	for(UserConnection::Iter i = userConnections.begin(); i != userConnections.end(); ++i) {
+	for(UserConnectionList::iterator i = userConnections.begin(); i != userConnections.end(); ++i) {
 		UserConnection* uc = *i;
 		if(uc->getUser() == aUser && uc->isSet(isDownload ? UserConnection::FLAG_DOWNLOAD : UserConnection::FLAG_UPLOAD)) {
 			uc->disconnect(true);
@@ -688,7 +688,7 @@ void ConnectionManager::shutdown() {
 	disconnect();
 	{
 		Lock l(cs);
-		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+		for(UserConnectionList::iterator j = userConnections.begin(); j != userConnections.end(); ++j) {
 			(*j)->disconnect(true);
 		}
 	}

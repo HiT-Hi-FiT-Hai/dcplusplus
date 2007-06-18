@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,45 +16,33 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(ADVANCED3_PAGE_H)
-#define ADVANCED3_PAGE_H
+#ifndef DCPLUSPLUS_WIN32_ADVANCED_3_PAGE_H
+#define DCPLUSPLUS_WIN32_ADVANCED_3_PAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <atlcrack.h>
 #include "PropPage.h"
-#include "ExListViewCtrl.h"
+#include "WidgetFactory.h"
 
-class Advanced3Page : public CPropertyPage<IDD_ADVANCED3PAGE>, public PropPage
+class Advanced3Page : public WidgetFactory<SmartWin::WidgetDialog, Advanced3Page, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
 {
 public:
-	Advanced3Page(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_ADVANCED3));
-		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	}
+	Advanced3Page(SmartWin::Widget* parent);
+	virtual ~Advanced3Page();
 
-	virtual ~Advanced3Page() { }
-
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(Advanced3Page)
-		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
+#endif
 
-	// Common PropPage interface
-	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
 
-protected:
-
+private:
 	static Item items[];
 	static TextItem texts[];
 };
 
-#endif // !defined(ADVANCED3_PAGE_H)
+#endif // !defined(DCPLUSPLUS_WIN32_ADVANCED_3_PAGE_H)

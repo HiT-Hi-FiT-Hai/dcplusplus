@@ -38,6 +38,35 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, Resourc
 
 DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
 
+int DirectoryListingFrame::ItemInfo::getImage() const {
+	if(type == DIRECTORY) {
+		return dir->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
+	}
+	return WinUtil::getIconIndex(getText(COLUMN_FILENAME));
+}
+
+int DirectoryListingFrame::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
+	if(a->type == DIRECTORY) {
+		if(b->type == DIRECTORY) {
+			switch(col) {
+			case COLUMN_EXACTSIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
+			case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
+			default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+			}
+		} else {
+			return -1;
+		}
+	} else if(b->type == DIRECTORY) {
+		return 1;
+	} else {
+		switch(col) {
+		case COLUMN_EXACTSIZE: return compare(a->file->getSize(), b->file->getSize());
+		case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
+		default: return lstrcmp(a->columns[col].c_str(), b->columns[col].c_str());
+		}
+	}
+}
+
 void DirectoryListingFrame::openWindow(SmartWin::Widget* mdiParent, const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
@@ -746,11 +775,11 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	clearList();
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
-		files->insertItem(files->getRowCount(), new ItemInfo(*i), (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex());
+		files->insertItem(files->getRowCount(), new ItemInfo(*i));
 	}
 	for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 		ItemInfo* ii = new ItemInfo(*j);
-		files->insertItem(files->getRowCount(), ii, WinUtil::getIconIndex(ii->getText(COLUMN_FILENAME)));
+		files->insertItem(files->getRowCount(), ii);
 	}
 #ifdef PORT_ME
 	ctrlList.resort();

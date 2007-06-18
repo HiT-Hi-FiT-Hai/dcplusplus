@@ -422,7 +422,7 @@ StringList File::findFiles(const string& path, const string& pattern) {
 		::FindClose(hFind);
 	}
 #else
-	DIR* dir = opendir(Text::fromUtf8(Util::getConfigPath()).c_str());
+	DIR* dir = opendir(Text::fromUtf8(path).c_str());
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
 			if (fnmatch(pattern.c_str(), ent->d_name, 0) == 0) {

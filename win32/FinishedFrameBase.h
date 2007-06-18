@@ -24,6 +24,7 @@
 #include "TextFrame.h"
 #include "ShellContextMenu.h"
 
+#include <client/File.h>
 #include <client/FinishedManager.h>
 
 template<class T, bool in_UL>
@@ -183,7 +184,10 @@ private:
 		const string& getText(int col) const {
 			return columns[col];
 		}
-
+		int getImage() const {
+			return WinUtil::getIconIndex(Text::toT(entry->getTarget()));
+		}
+		
 		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
 			switch(col) {
 				case COLUMN_SIZE: return compare(a->entry->getSize(), b->entry->getSize());
@@ -333,7 +337,7 @@ private:
 		totalBytes += entry->getChunkSize();
 		totalTime += entry->getMilliSeconds();
 
-		int loc = items->insertItem(new ItemInfo(entry), WinUtil::getIconIndex(Text::toT(entry->getTarget())));
+		int loc = items->insertItem(new ItemInfo(entry));
 #ifdef PORT_ME
 		items->EnsureVisible(loc, FALSE);
 #endif

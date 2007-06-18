@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,47 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(BUFFERED_SOCKET_H)
-#define BUFFERED_SOCKET_H
+#ifndef DCPLUSPLUS_CLIENT_BUFFERED_SOCKET_H
+#define DCPLUSPLUS_CLIENT_BUFFERED_SOCKET_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
+#include "forward.h"
+#include "BufferedSocketListener.h"
 #include "Semaphore.h"
 #include "Thread.h"
 #include "Speaker.h"
 #include "Util.h"
-#include "ZUtils.h"
 #include "Socket.h"
-
-class InputStream;
-class Socket;
-class SocketException;
-
-class BufferedSocketListener {
-public:
-	virtual ~BufferedSocketListener() { }
-	template<int I>	struct X { enum { TYPE = I }; };
-
-	typedef X<0> Connecting;
-	typedef X<1> Connected;
-	typedef X<2> Line;
-	typedef X<3> Data;
-	typedef X<4> BytesSent;
-	typedef X<5> ModeChange;
-	typedef X<6> TransmitDone;
-	typedef X<7> Failed;
-
-	virtual void on(Connecting) throw() { }
-	virtual void on(Connected) throw() { }
-	virtual void on(Line, const string&) throw() { }
-	virtual void on(Data, uint8_t*, size_t) throw() { }
-	virtual void on(BytesSent, size_t, size_t) throw() { }
-	virtual void on(ModeChange) throw() { }
-	virtual void on(TransmitDone) throw() { }
-	virtual void on(Failed, const string&) throw() { }
-};
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Thread
 {

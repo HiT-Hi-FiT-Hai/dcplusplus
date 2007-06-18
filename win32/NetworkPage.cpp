@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "NetworkPage.h"
-#include "../client/SettingsManager.h"
-#include "../client/Socket.h"
+
+#include <client/SettingsManager.h>
+#include <client/Socket.h>
 #include "WinUtil.h"
 
 PropPage::TextItem NetworkPage::texts[] = {
@@ -64,35 +64,83 @@ PropPage::Item NetworkPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
+NetworkPage::NetworkPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_NETWORKPAGE);
+
+	PropPage::translate(handle(), texts);
+
+	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 //WinXP & WinSvr2003
+		|| WinUtil::getOsMajor() >= 6 )) //Vista
+	{
+		::EnableWindow(::GetDlgItem(handle(), IDC_FIREWALL_UPNP), FALSE);
+	}
+	switch(SETTING(INCOMING_CONNECTIONS)) {
+		case SettingsManager::INCOMING_DIRECT: ::CheckDlgButton(handle(), IDC_DIRECT, BST_CHECKED); break;
+		case SettingsManager::INCOMING_FIREWALL_UPNP: ::CheckDlgButton(handle(), IDC_FIREWALL_UPNP, BST_CHECKED); break;
+		case SettingsManager::INCOMING_FIREWALL_NAT: ::CheckDlgButton(handle(), IDC_FIREWALL_NAT, BST_CHECKED); break;
+		case SettingsManager::INCOMING_FIREWALL_PASSIVE: ::CheckDlgButton(handle(), IDC_FIREWALL_PASSIVE, BST_CHECKED); break;
+		default: ::CheckDlgButton(handle(), IDC_DIRECT, BST_CHECKED); break;
+	}
+
+	switch(SETTING(OUTGOING_CONNECTIONS)) {
+		case SettingsManager::OUTGOING_DIRECT: ::CheckDlgButton(handle(), IDC_DIRECT_OUT, BST_CHECKED); break;
+		case SettingsManager::OUTGOING_SOCKS5: ::CheckDlgButton(handle(), IDC_SOCKS5, BST_CHECKED); break;
+		default: ::CheckDlgButton(handle(), IDC_DIRECT_OUT, BST_CHECKED); break;
+	}
+
+	PropPage::read(handle(), items);
+
+	fixControls();
+
+#ifdef PORT_ME
+	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_SERVER));
+	desc.LimitText(250);
+	desc.Detach();
+	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_PORT));
+	desc.LimitText(5);
+	desc.Detach();
+	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_USER));
+	desc.LimitText(250);
+	desc.Detach();
+	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_PASSWORD));
+	desc.LimitText(250);
+	desc.Detach();
+#endif
+}
+
+NetworkPage::~NetworkPage() {
+}
+
 void NetworkPage::write()
 {
 	TCHAR tmp[1024];
-	GetDlgItemText(IDC_SOCKS_SERVER, tmp, 1024);
+	::GetDlgItemText(handle(), IDC_EXTERNAL_IP, tmp, 1024);
 	tstring x = tmp;
 	tstring::size_type i;
 
 	while((i = x.find(' ')) != string::npos)
 		x.erase(i, 1);
-	SetDlgItemText(IDC_SOCKS_SERVER, x.c_str());
+	::SetDlgItemText(handle(), IDC_EXTERNAL_IP, x.c_str());
 
-	GetDlgItemText(IDC_SERVER, tmp, 1024);
+	::GetDlgItemText(handle(), IDC_SOCKS_SERVER, tmp, 1024);
 	x = tmp;
 
 	while((i = x.find(' ')) != string::npos)
 		x.erase(i, 1);
+	::SetDlgItemText(handle(), IDC_SOCKS_SERVER, x.c_str());
 
-	SetDlgItemText(IDC_SERVER, x.c_str());
+	PropPage::write(handle(), items);
 
-	PropPage::write((HWND)(*this), items);
+	SettingsManager* settings = SettingsManager::getInstance();
 
 	// Set connection active/passive
 	int ct = SettingsManager::INCOMING_DIRECT;
 
-	if(IsDlgButtonChecked(IDC_FIREWALL_UPNP))
+	if(::IsDlgButtonChecked(handle(), IDC_FIREWALL_UPNP))
 		ct = SettingsManager::INCOMING_FIREWALL_UPNP;
-	else if(IsDlgButtonChecked(IDC_FIREWALL_NAT))
+	else if(::IsDlgButtonChecked(handle(), IDC_FIREWALL_NAT))
 		ct = SettingsManager::INCOMING_FIREWALL_NAT;
-	else if(IsDlgButtonChecked(IDC_FIREWALL_PASSIVE))
+	else if(::IsDlgButtonChecked(handle(), IDC_FIREWALL_PASSIVE))
 		ct = SettingsManager::INCOMING_FIREWALL_PASSIVE;
 
 	if(SETTING(INCOMING_CONNECTIONS) != ct) {
@@ -101,78 +149,37 @@ void NetworkPage::write()
 
 	ct = SettingsManager::OUTGOING_DIRECT;
 
-	if(IsDlgButtonChecked(IDC_SOCKS5))
+	if(::IsDlgButtonChecked(handle(), IDC_SOCKS5))
 		ct = SettingsManager::OUTGOING_SOCKS5;
 
 	if(SETTING(OUTGOING_CONNECTIONS) != ct) {
 		settings->set(SettingsManager::OUTGOING_CONNECTIONS, ct);
 		Socket::socksUpdated();
 	}
-
-}
-
-LRESULT NetworkPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-
-	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 //WinXP & WinSvr2003
-		|| WinUtil::getOsMajor() >= 6 )) //Vista
-	{
-		::EnableWindow(GetDlgItem(IDC_FIREWALL_UPNP), FALSE);
-	}
-	switch(SETTING(INCOMING_CONNECTIONS)) {
-		case SettingsManager::INCOMING_DIRECT: CheckDlgButton(IDC_DIRECT, BST_CHECKED); break;
-		case SettingsManager::INCOMING_FIREWALL_UPNP: CheckDlgButton(IDC_FIREWALL_UPNP, BST_CHECKED); break;
-		case SettingsManager::INCOMING_FIREWALL_NAT: CheckDlgButton(IDC_FIREWALL_NAT, BST_CHECKED); break;
-		case SettingsManager::INCOMING_FIREWALL_PASSIVE: CheckDlgButton(IDC_FIREWALL_PASSIVE, BST_CHECKED); break;
-		default: CheckDlgButton(IDC_DIRECT, BST_CHECKED); break;
-	}
-
-	switch(SETTING(OUTGOING_CONNECTIONS)) {
-		case SettingsManager::OUTGOING_DIRECT: CheckDlgButton(IDC_DIRECT_OUT, BST_CHECKED); break;
-		case SettingsManager::OUTGOING_SOCKS5: CheckDlgButton(IDC_SOCKS5, BST_CHECKED); break;
-		default: CheckDlgButton(IDC_DIRECT_OUT, BST_CHECKED); break;
-	}
-
-	PropPage::read((HWND)(*this), items);
-
-	fixControls();
-
-	desc.Attach(GetDlgItem(IDC_SOCKS_SERVER));
-	desc.LimitText(250);
-	desc.Detach();
-	desc.Attach(GetDlgItem(IDC_SOCKS_PORT));
-	desc.LimitText(5);
-	desc.Detach();
-	desc.Attach(GetDlgItem(IDC_SOCKS_USER));
-	desc.LimitText(250);
-	desc.Detach();
-	desc.Attach(GetDlgItem(IDC_SOCKS_PASSWORD));
-	desc.LimitText(250);
-	desc.Detach();
-	return TRUE;
 }
 
 void NetworkPage::fixControls() {
-	BOOL direct = IsDlgButtonChecked(IDC_DIRECT) == BST_CHECKED;
-	BOOL upnp = IsDlgButtonChecked(IDC_FIREWALL_UPNP) == BST_CHECKED;
-	BOOL nat = IsDlgButtonChecked(IDC_FIREWALL_NAT) == BST_CHECKED;
+	BOOL direct = ::IsDlgButtonChecked(handle(), IDC_DIRECT) == BST_CHECKED;
+	BOOL upnp = ::IsDlgButtonChecked(handle(), IDC_FIREWALL_UPNP) == BST_CHECKED;
+	BOOL nat = ::IsDlgButtonChecked(handle(), IDC_FIREWALL_NAT) == BST_CHECKED;
 
-	::EnableWindow(GetDlgItem(IDC_EXTERNAL_IP), direct || upnp || nat);
-	::EnableWindow(GetDlgItem(IDC_OVERRIDE), direct || upnp || nat);
+	::EnableWindow(::GetDlgItem(handle(), IDC_EXTERNAL_IP), direct || upnp || nat);
+	::EnableWindow(::GetDlgItem(handle(), IDC_OVERRIDE), direct || upnp || nat);
 
-	::EnableWindow(GetDlgItem(IDC_PORT_TCP), direct || upnp || nat);
-	::EnableWindow(GetDlgItem(IDC_PORT_UDP), direct || upnp || nat);
-	::EnableWindow(GetDlgItem(IDC_PORT_TLS), direct || upnp || nat);
+	::EnableWindow(::GetDlgItem(handle(), IDC_PORT_TCP), direct || upnp || nat);
+	::EnableWindow(::GetDlgItem(handle(), IDC_PORT_UDP), direct || upnp || nat);
+	::EnableWindow(::GetDlgItem(handle(), IDC_PORT_TLS), direct || upnp || nat);
 
-	BOOL socks = IsDlgButtonChecked(IDC_SOCKS5);
-	::EnableWindow(GetDlgItem(IDC_SOCKS_SERVER), socks);
-	::EnableWindow(GetDlgItem(IDC_SOCKS_PORT), socks);
-	::EnableWindow(GetDlgItem(IDC_SOCKS_USER), socks);
-	::EnableWindow(GetDlgItem(IDC_SOCKS_PASSWORD), socks);
-	::EnableWindow(GetDlgItem(IDC_SOCKS_RESOLVE), socks);
+	BOOL socks = ::IsDlgButtonChecked(handle(), IDC_SOCKS5);
+	::EnableWindow(::GetDlgItem(handle(), IDC_SOCKS_SERVER), socks);
+	::EnableWindow(::GetDlgItem(handle(), IDC_SOCKS_PORT), socks);
+	::EnableWindow(::GetDlgItem(handle(), IDC_SOCKS_USER), socks);
+	::EnableWindow(::GetDlgItem(handle(), IDC_SOCKS_PASSWORD), socks);
+	::EnableWindow(::GetDlgItem(handle(), IDC_SOCKS_RESOLVE), socks);
 
 }
+
+#ifdef PORT_ME
 
 LRESULT NetworkPage::onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	fixControls();

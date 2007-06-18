@@ -32,6 +32,9 @@
 #include "File.h"
 #include "FilteredFile.h"
 #include "BZUtils.h"
+#include "Transfer.h"
+#include "UserConnection.h"
+#include "Download.h"
 
 #ifndef _WIN32
 #include <sys/types.h>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "QueuePage.h"
-#include "CommandDlg.h"
 
-#include "../client/SettingsManager.h"
-#include "WinUtil.h"
+#include <client/SettingsManager.h>
 
 PropPage::TextItem QueuePage::texts[] = {
 	{ IDC_SETTINGS_AUTOPRIO, ResourceManager::SETTINGS_PRIO_AUTOPRIO },
@@ -82,25 +79,29 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-LRESULT QueuePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items, 0, 0);
-	PropPage::read((HWND)*this, items, optionItems, GetDlgItem(IDC_OTHER_QUEUE_OPTIONS));
+QueuePage::QueuePage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_QUEUEPAGE);
 
-	// Do specialized reading here
-	return TRUE;
+	PropPage::translate(handle(), texts);
+	PropPage::read(handle(), items, 0, 0);
+	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));
+}
+
+QueuePage::~QueuePage() {
 }
 
 void QueuePage::write() {
-	PropPage::write((HWND)*this, items, 0, 0);
-	PropPage::write((HWND)*this, items, optionItems, GetDlgItem(IDC_OTHER_QUEUE_OPTIONS));
+	PropPage::write(handle(), items, 0, 0);
+	PropPage::write(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));
 
+	SettingsManager* settings = SettingsManager::getInstance();
 	if(SETTING(AUTODROP_INTERVAL) < 1)
 		settings->set(SettingsManager::AUTODROP_INTERVAL, 1);
 	if(SETTING(AUTODROP_ELAPSED) < 1)
 		settings->set(SettingsManager::AUTODROP_ELAPSED, 1);
 }
+
+#ifdef PORT_ME
 
 LRESULT QueuePage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_QUEUEPAGE);

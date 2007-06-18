@@ -23,6 +23,7 @@
 #include "SpyFrame.h"
 
 #include <client/ShareManager.h>
+#include "SearchFrame.h"
 
 int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
@@ -220,12 +221,10 @@ HRESULT SpyFrame::handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /
 }
 
 void SpyFrame::handleSearch(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
-#ifdef PORT_ME
 	if(Util::strnicmp(searchString.c_str(), _T("TTH:"), 4) == 0)
-		SearchFrame::openWindow(searchString.substr(4), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
+		SearchFrame::openWindow(getParent(), searchString.substr(4), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 	else
-		SearchFrame::openWindow(searchString);
-#endif
+		SearchFrame::openWindow(getParent(), searchString);
 }
 
 void SpyFrame::handleIgnoreTTHClicked(WidgetCheckBoxPtr) {

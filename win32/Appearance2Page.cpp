@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "Appearance2Page.h"
-#include "../client/SettingsManager.h"
-#include "../client/StringTokenizer.h"
+
+#include <client/SettingsManager.h>
 #include "WinUtil.h"
 
 PropPage::TextItem Appearance2Page::texts[] = {
@@ -50,33 +49,37 @@ PropPage::Item Appearance2Page::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-Appearance2Page::~Appearance2Page()
-{
-	::DeleteObject(bgbrush);
-	::DeleteObject(fontObj);
-}
+Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_APPEARANCE2PAGE);
 
-LRESULT Appearance2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
+	PropPage::translate(handle(), texts);
 
-	PropPage::read((HWND)*this, items, 0, 0);
+#ifdef PORT_ME
+	ctrlExample.Attach(::GetDlgItem(handle(), IDC_COLOREXAMPLE));
+#endif
+
+	PropPage::read(handle(), items, 0, 0);
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
 
-	// Do specialized reading here
 	fg = SETTING(TEXT_COLOR);
 	bg = SETTING(BACKGROUND_COLOR);
 	bgbrush = ::CreateSolidBrush(bg);
 	fontObj = ::CreateFontIndirect(&font);
 	upBar = SETTING(UPLOAD_BAR_COLOR);
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
-	return TRUE;
+}
+
+Appearance2Page::~Appearance2Page()
+{
+	::DeleteObject(bgbrush);
+	::DeleteObject(fontObj);
 }
 
 void Appearance2Page::write()
 {
-	PropPage::write((HWND)*this, items, 0,0);
+	PropPage::write(handle(), items, 0,0);
+
+	SettingsManager* settings = SettingsManager::getInstance();
 
 	settings->set(SettingsManager::TEXT_COLOR, (int)fg);
 	settings->set(SettingsManager::BACKGROUND_COLOR, (int)bg);
@@ -86,6 +89,8 @@ void Appearance2Page::write()
 	tstring f = WinUtil::encodeFont(font);
 	settings->set(SettingsManager::TEXT_FONT, Text::fromT(f));
 }
+
+#ifdef PORT_ME
 
 LRESULT Appearance2Page::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	TCHAR buf[MAX_PATH];

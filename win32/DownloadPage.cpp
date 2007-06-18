@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "DownloadPage.h"
-#include "WinUtil.h"
-#include "PublicHubsListDlg.h"
 
-#include "../client/SettingsManager.h"
+#include <client/SettingsManager.h>
 
 PropPage::TextItem DownloadPage::texts[] = {
 	{ IDC_SETTINGS_DIRECTORIES, ResourceManager::SETTINGS_DIRECTORIES },
@@ -54,25 +51,29 @@ PropPage::Item DownloadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-LRESULT DownloadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items);
+DownloadPage::DownloadPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_DOWNLOADPAGE);
 
+	PropPage::translate(handle(), texts);
+	PropPage::read(handle(), items);
+
+#ifdef PORT_ME
 	CUpDownCtrl spin;
-	spin.Attach(GetDlgItem(IDC_SLOTSSPIN));
+	spin.Attach(::GetDlgItem(handle(), IDC_SLOTSSPIN));
 	spin.SetRange32(0, 100);
 	spin.Detach();
-	spin.Attach(GetDlgItem(IDC_SPEEDSPIN));
+	spin.Attach(::GetDlgItem(handle(), IDC_SPEEDSPIN));
 	spin.SetRange32(0, 10000);
-	// Do specialized reading here
-	return TRUE;
+#endif
+}
+
+DownloadPage::~DownloadPage() {
 }
 
 void DownloadPage::write()
 {
 
-	PropPage::write((HWND)*this, items);
+	PropPage::write(handle(), items);
 
 	const string& s = SETTING(DOWNLOAD_DIRECTORY);
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
@@ -84,6 +85,8 @@ void DownloadPage::write()
 	}
 
 }
+
+#ifdef PORT_ME
 
 LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {

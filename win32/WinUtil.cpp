@@ -31,6 +31,7 @@
 
 #include <client/StringTokenizer.h>
 #include <client/version.h>
+#include <client/File.h>
 
 tstring WinUtil::tth;
 HBRUSH WinUtil::bgBrush = NULL;
@@ -462,6 +463,29 @@ bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* 
 	return false;
 }
 
+int WinUtil::getOsMajor() {
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver))
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMajorVersion;
+}
+
+int WinUtil::getOsMinor() {
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver))
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMinorVersion;
+}
 
 #ifdef PORT_ME
 #include "Resource.h"
@@ -1160,31 +1184,6 @@ double WinUtil::toBytes(TCHAR* aSize) {
 	} else {
 		return bytes;
 	}
-}
-
-int WinUtil::getOsMajor() {
-	OSVERSIONINFOEX ver;
-	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
-	if(!GetVersionEx((OSVERSIONINFO*)&ver))
-	{
-		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	}
-	GetVersionEx((OSVERSIONINFO*)&ver);
-	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	return ver.dwMajorVersion;
-}
-
-int WinUtil::getOsMinor()
-{
-	OSVERSIONINFOEX ver;
-	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
-	if(!GetVersionEx((OSVERSIONINFO*)&ver))
-	{
-		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	}
-	GetVersionEx((OSVERSIONINFO*)&ver);
-	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	return ver.dwMinorVersion;
 }
 
 void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {

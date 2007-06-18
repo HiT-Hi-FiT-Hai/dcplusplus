@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "FavoriteDirsPage.h"
-#include "WinUtil.h"
-#include "LineDlg.h"
 
-#include "../client/Util.h"
-#include "../client/SettingsManager.h"
-#include "../client/FavoriteManager.h"
+#include <client/SettingsManager.h>
+#include <client/FavoriteManager.h>
 
 PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, ResourceManager::SETTINGS_FAVORITE_DIRS },
@@ -38,30 +34,48 @@ PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-LRESULT FavoriteDirsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	ctrlDirectories.Attach(GetDlgItem(IDC_FAVORITE_DIRECTORIES));
-	ctrlDirectories.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_FAVORITE_DIRSPAGE);
 
-	// Prepare shared dir list
-	ctrlDirectories.InsertColumn(0, CTSTRING(FAVORITE_DIR_NAME), LVCFMT_LEFT, 80, 0);
-	ctrlDirectories.InsertColumn(1, CTSTRING(DIRECTORY), LVCFMT_LEFT, 197, 1);
-	StringPairList directories = FavoriteManager::getInstance()->getFavoriteDirs();
-	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
-	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->second));
-		ctrlDirectories.SetItemText(i, 1, Text::toT(j->first).c_str());
+	PropPage::translate(handle(), texts);
+
+	HWND directories = ::GetDlgItem(handle(), IDC_FAVORITE_DIRECTORIES);
+	ListView_SetExtendedListViewStyle(directories, LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+
+	LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH| LVCF_TEXT | LVCF_SUBITEM  };
+	lv.fmt = LVCFMT_LEFT;
+
+	lv.cx = 100;
+	lv.pszText = const_cast<LPTSTR>(CTSTRING(FAVORITE_DIR_NAME));
+	lv.iSubItem = 0;
+	ListView_InsertColumn(directories, 0, &lv);
+
+	RECT rc;
+	::GetClientRect(directories, &rc);
+	lv.cx = rc.right - rc.left - 120;
+	lv.pszText = const_cast<LPTSTR>(CTSTRING(DIRECTORY));
+	lv.iSubItem = 1;
+	ListView_InsertColumn(directories, 1, &lv);
+
+	LVITEM lvi = { LVIF_TEXT };
+	StringPairList dirs = FavoriteManager::getInstance()->getFavoriteDirs();
+	for(StringPairIter j = dirs.begin(); j != dirs.end(); j++) {
+		lvi.iItem = ListView_GetItemCount(directories);
+		lvi.pszText = const_cast<LPTSTR>(Text::toT(j->second).c_str());
+		int i = ListView_InsertItem(directories, &lvi);
+		ListView_SetItemText(directories, i, 1, const_cast<LPTSTR>(Text::toT(j->first).c_str()));
 	}
-
-	return TRUE;
 }
 
+FavoriteDirsPage::~FavoriteDirsPage() {
+}
 
 void FavoriteDirsPage::write()
 {
-//	PropPage::write((HWND)*this, items);
+//	PropPage::write(handle(), items);
 }
+
+#ifdef PORT_ME
 
 LRESULT FavoriteDirsPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/){
 	HDROP drop = (HDROP)wParam;
@@ -85,8 +99,8 @@ LRESULT FavoriteDirsPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 LRESULT FavoriteDirsPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
-	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
-	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
+	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
+	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
 	return 0;
 }
 

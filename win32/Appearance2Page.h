@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(APPEARANCE2_PAGE_H)
-#define APPEARANCE2_PAGE_H
+#ifndef DCPLUSPLUS_WIN32_APPEARANCE_2_PAGE_H
+#define DCPLUSPLUS_WIN32_APPEARANCE_2_PAGE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <atlcrack.h>
 #include "PropPage.h"
-#include "ExListViewCtrl.h"
+#include "WidgetFactory.h"
 
-class Appearance2Page : public CPropertyPage<IDD_APPEARANCE2PAGE>, public PropPage
+class Appearance2Page : public WidgetFactory<SmartWin::WidgetDialog, Appearance2Page, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
 {
 public:
-	Appearance2Page(SettingsManager *s) : PropPage(s) {
-		SetTitle(CTSTRING(SETTINGS_APPEARANCE2));
-		m_psp.dwFlags |= PSP_HASHELP | PSP_RTLREADING;
-	}
-
+	Appearance2Page(SmartWin::Widget* parent);
 	virtual ~Appearance2Page();
 
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(Appearance2Page)
-		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_HANDLER(IDC_BROWSE, BN_CLICKED, onBrowse)
@@ -49,7 +40,6 @@ public:
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClickedText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -57,23 +47,21 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onPickColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
+#endif
 
-	// Common PropPage interface
-	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
 
-protected:
-	string EncodeFont(LOGFONT const& font);
-	void DecodeFont(string setting, LOGFONT &dest);
-
+private:
 	static Item items[];
 	static TextItem texts[];
 
+#ifdef PORT_ME
 	CStatic ctrlExample;
+#endif
 	COLORREF fg, bg, upBar, downBar;
 	HBRUSH bgbrush;
 	HFONT fontObj;
 	LOGFONT font;
 };
 
-#endif // !defined(APPEARANCE2_PAGE_H)
+#endif // !defined(DCPLUSPLUS_WIN32_APPEARANCE_2_PAGE_H)

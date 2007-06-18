@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
+
+#include "resource.h"
 
 #include "Advanced3Page.h"
-#include "CommandDlg.h"
 
-#include "../client/SettingsManager.h"
-#include "../client/FavoriteManager.h"
-#include "WinUtil.h"
+#include <client/SettingsManager.h>
 
 PropPage::TextItem Advanced3Page::texts[] = {
-	{ IDC_SETTINGS_ADVANCED, ResourceManager::SETTINGS_ADVANCED_SETTINGS },
 	{ IDC_SETTINGS_B, ResourceManager::B },
 	{ IDC_SETTINGS_WRITE_BUFFER, ResourceManager::SETTINGS_WRITE_BUFFER },
 	{ IDC_SETTINGS_KB, ResourceManager::KiB },
@@ -49,7 +44,10 @@ PropPage::TextItem Advanced3Page::texts[] = {
 };
 
 PropPage::Item Advanced3Page::items[] = {
+#ifdef PORT_ME
+	// no SettingsManager::ROLLBACK
 	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT },
+#endif
 	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
 	{ IDC_MAX_HASH_SPEED, SettingsManager::MAX_HASH_SPEED, PropPage::T_INT },
 	{ IDC_SHOW_LAST_LINES_LOG, SettingsManager::SHOW_LAST_LINES_LOG, PropPage::T_INT },
@@ -65,23 +63,27 @@ PropPage::Item Advanced3Page::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-LRESULT Advanced3Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PropPage::translate((HWND)(*this), texts);
-	PropPage::read((HWND)*this, items, 0, 0);
+Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+	createDialog(IDD_ADVANCED3PAGE);
 
+	PropPage::translate(handle(), texts);
+	PropPage::read(handle(), items, 0, 0);
+
+#ifdef PORT_ME
 	CUpDownCtrl spin;
-	spin.Attach(GetDlgItem(IDC_SEARCH_HISTORY_SPIN));
+	spin.Attach(::GetDlgItem(handle(), IDC_SEARCH_HISTORY_SPIN));
 	spin.SetRange32(0, 100);
 	SetDlgItemText(IDC_SEARCH_HISTORY,Text::toT(Util::toString( SETTING(SEARCH_HISTORY))).c_str());
+#endif
+}
 
-	// Do specialized reading here
-	return TRUE;
+Advanced3Page::~Advanced3Page() {
 }
 
 void Advanced3Page::write() {
-	PropPage::write((HWND)*this, items, 0, 0);
+	PropPage::write(handle(), items, 0, 0);
 
+	SettingsManager* settings = SettingsManager::getInstance();
 	if(SETTING(SET_MINISLOT_SIZE) < 64)
 		settings->set(SettingsManager::SET_MINISLOT_SIZE, 64);
 	if(SETTING(AUTO_SEARCH_LIMIT) > 5)
@@ -89,6 +91,8 @@ void Advanced3Page::write() {
 	else if(SETTING(AUTO_SEARCH_LIMIT) < 1)
 		settings->set(SettingsManager::AUTO_SEARCH_LIMIT, 1);
 }
+
+#ifdef PORT_ME
 
 LRESULT Advanced3Page::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED3PAGE);
