@@ -22,6 +22,8 @@
 #include "AspectSpeaker.h"
 #include <client/forward.h>
 
+#include "TransferView.h"
+
 #ifdef PORT_ME
 
 #include "../client/TimerManager.h"
@@ -34,7 +36,6 @@
 
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
-#include "TransferView.h"
 #include "UPnP.h"
 #endif
 

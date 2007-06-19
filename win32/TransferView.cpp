@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
+ 
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+#include <client/DCPlusPlus.h>
 
-#include "../client/ResourceManager.h"
-#include "../client/QueueManager.h"
-#include "../client/ConnectionManager.h"
-#include "../client/ClientManager.h"
-
-#include "WinUtil.h"
 #include "TransferView.h"
+#include "resource.h"
+
+#include <client/ResourceManager.h>
+#include <client/SettingsManager.h>
+#include <client/ConnectionManager.h>
+#include <client/DownloadManager.h>
+#include <client/UploadManager.h>
+#include <client/QueueManager.h>
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125 };
@@ -37,106 +37,103 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::USER, Resourc
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
 ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
 
-TransferView::~TransferView() {
-	arrows.Destroy();
-}
+TransferView::TransferView(SmartWin::Widget* parent) : 
+	SmartWin::Widget(parent),
+	transfers(0)
+{
+	arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+	arrows->addMultiple(SmartWin::Bitmap(IDB_ARROWS), RGB(255, 0, 255));
+	{
+		WidgetTransfers::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
+		cs.exStyle = WS_EX_CLIENTEDGE;
+		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, cs);
+		transfers->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+		transfers->setFont(WinUtil::font);
+		//add_widget(transfers);
 
-LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-
-	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
-	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
-
-	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
-
-	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_SIZE || j == COLUMN_TIMELEFT || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlTransfers.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+		transfers->setSmallImageList(arrows);
+		transfers->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
+		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
+		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 
-	ctrlTransfers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
-
-	ctrlTransfers.SetBkColor(WinUtil::bgColor);
-	ctrlTransfers.SetTextBkColor(WinUtil::bgColor);
-	ctrlTransfers.SetTextColor(WinUtil::textColor);
-
-	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
-	ctrlTransfers.setSortColumn(COLUMN_USER);
-
-	transferMenu.CreatePopupMenu();
-	appendUserItems(transferMenu);
-	transferMenu.AppendMenu(MF_SEPARATOR);
-	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
-	transferMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
-	transferMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
-	transferMenu.AppendMenu(MF_SEPARATOR);
-	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(CLOSE_CONNECTION));
-	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
-
+#ifdef PORT_ME
+	transfers->setSortColumn(COLUMN_USER);
+#endif
+	
+	
+	onSized(&TransferView::handleSized);
+	onRaw(&TransferView::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
-	return 0;
 }
 
-void TransferView::prepareClose() {
-	WinUtil::saveHeaderOrder(ctrlTransfers, SettingsManager::MAINFRAME_ORDER,
-		SettingsManager::MAINFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+TransferView::~TransferView() {
+	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, WinUtil::toString(transfers->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, WinUtil::toString(transfers->getColumnWidths()));
 
 	ConnectionManager::getInstance()->removeListener(this);
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
-
 }
 
-LRESULT TransferView::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	RECT rc;
-	GetClientRect(&rc);
-	ctrlTransfers.MoveWindow(&rc);
-
-	return 0;
+void TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
+	transfers->setBounds(SmartWin::Point(0,0), getClientAreaSize());
 }
 
-LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if (reinterpret_cast<HWND>(wParam) == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) {
+TransferView::WidgetPopupMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
+	WidgetPopupMenuPtr menu = createPopupMenu();
+	
+#ifdef PORT_ME
+	appendUserItems(transferMenu);
+	transferMenu.AppendMenu(MF_SEPARATOR);
+#endif
+	
+	menu->appendItem(IDC_FORCE, TSTRING(FORCE_ATTEMPT), &TransferView::handleForce);
+	if(ii->download) {
+		menu->appendItem(IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES), &TransferView::handleSearchAlternates);
+	}
+	menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), &TransferView::handleCopyNick);
+	menu->appendSeparatorItem();
+	menu->appendItem(IDC_REMOVE, TSTRING(CLOSE_CONNECTION), &TransferView::handleRemove);
+
+#ifdef PORT_ME
+	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
+#endif
+	return menu;
+}
+
+HRESULT TransferView::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+	if (reinterpret_cast<HWND>(wParam) == transfers->handle() && transfers->hasSelection()) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlTransfers, pt);
+			pt = transfers->getContextMenuPos();
 		}
 
+		/// @todo Fix multiple selection menu...
 		int i = -1;
-		ItemInfo* itemI;
-		bool bCustomMenu = false;
-		if( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			itemI = ctrlTransfers.getItemData(i);
-			bCustomMenu = true;
-
-			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(itemI->user->getCID()));
-			transferMenu.AppendMenu(MF_SEPARATOR);
-
-			if(itemI->download) {
-				transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_ENABLED);
-			} else {
-				transferMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_DISABLED);
-			}
-		}
-
+		ItemInfo* ii = transfers->getSelectedItem();
+#ifdef PORT_ME
 		checkAdcItems(transferMenu);
-		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+#endif
+		WidgetPopupMenuPtr contextMenu = makeContextMenu(ii);
+		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		if ( bCustomMenu ) {
-			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-			cleanMenu(transferMenu);
-		}
 		return TRUE;
 	}
-	bHandled = FALSE;
 	return FALSE;
 }
 
+void TransferView::handleRemove(WidgetMenuPtr, unsigned) {
+	transfers->forEachSelected(&ItemInfo::disconnect);
+}
+
+#ifdef PORT_ME
 void TransferView::runUserCommand(UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
 		return;
@@ -144,8 +141,8 @@ void TransferView::runUserCommand(UserCommand& uc) {
 	StringMap ucParams = ucLineParams;
 
 	int i = -1;
-	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ItemInfo* itemI = ctrlTransfers.getItemData(i);
+	while((i = transfers->GetNextItem(i, LVNI_SELECTED)) != -1) {
+		ItemInfo* itemI = transfers->getItemData(i);
 		if(!itemI->user->isOnline())
 			continue;
 
@@ -158,31 +155,32 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		ClientManager::getInstance()->userCommand(itemI->user, uc, tmp, true);
 	}
 }
+#endif
 
-
-LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void TransferView::handleForce(WidgetMenuPtr, unsigned id) {
 	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CTSTRING(CONNECTING_FORCED));
-		ConnectionManager::getInstance()->force(ctrlTransfers.getItemData(i)->user);
+	while( (i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
+		transfers->setCellText(i, COLUMN_STATUS, TSTRING(CONNECTING_FORCED));
+		ConnectionManager::getInstance()->force(transfers->getItemData(i)->user);
 	}
-	return 0;
 }
 
 void TransferView::ItemInfo::removeAll() {
 	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 }
 
-LRESULT TransferView::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void TransferView::handleCopyNick(WidgetMenuPtr, unsigned id) {
 	int i = -1;
 
 	/// @todo Fix when more items are selected
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		WinUtil::setClipboard(WinUtil::getNicks(ctrlTransfers.getItemData(i)->user));
+	while( (i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
+#ifdef PORT_ME
+		WinUtil::setClipboard(WinUtil::getNicks(transfers->getItemData(i)->user));
+#endif
 	}
-	return 0;
 }
 
+#ifdef PORT_ME
 LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
 	if(!BOOLSETTING(SHOW_PROGRESS_BARS)) {
 		bHandled = FALSE;
@@ -212,10 +210,10 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
 				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
 
-				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
+				transfers->GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
 				buf[255] = 0;
 
-				ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
+				transfers->GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
 				CRect rc2 = rc;
 				rc2.left += 6;
 
@@ -292,10 +290,11 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	if (item->iItem != -1 ) {
-		ctrlTransfers.getItemData(item->iItem)->pm();
+		transfers->getItemData(item->iItem)->pm();
 	}
 	return 0;
 }
+#endif
 
 int TransferView::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
 	if(BOOLSETTING(ALT_SORT_ORDER)) {
@@ -325,38 +324,40 @@ int TransferView::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
 	}
 }
 
-LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+HRESULT TransferView::handleSpeaker(LPARAM lParam, WPARAM wParam) {
 	TaskQueue::List t;
 	tasks.get(t);
+#ifdef PORT_ME
 	if(t.size() > 2) {
-		ctrlTransfers.SetRedraw(FALSE);
+		transfers->SetRedraw(FALSE);
 	}
-
+#endif
+	
 	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
 		if(i->first == ADD_ITEM) {
 			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
 			ItemInfo* ii = new ItemInfo(ui->user, ui->download);
 			ii->update(*ui);
-			ctrlTransfers.insertItem(ii, ii->download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
+			transfers->insertItem(ii);
 		} else if(i->first == REMOVE_ITEM) {
 			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
-			int ic = ctrlTransfers.GetItemCount();
+			int ic = transfers->getRowCount();
 			for(int i = 0; i < ic; ++i) {
-				ItemInfo* ii = ctrlTransfers.getItemData(i);
+				ItemInfo* ii = transfers->getItemData(i);
 				if(*ui == *ii) {
-					ctrlTransfers.DeleteItem(i);
+					transfers->removeRow(i);
 					delete ii;
 					break;
 				}
 			}
 		} else if(i->first == UPDATE_ITEM) {
 			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
-			int ic = ctrlTransfers.GetItemCount();
+			int ic = transfers->getRowCount();
 			for(int i = 0; i < ic; ++i) {
-				ItemInfo* ii = ctrlTransfers.getItemData(i);
+				ItemInfo* ii = transfers->getItemData(i);
 				if(ii->download == ui->download && ii->user == ui->user) {
 					ii->update(*ui);
-					ctrlTransfers.updateItem(i);
+					transfers->updateItem(i);
 					break;
 				}
 			}
@@ -364,20 +365,22 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	}
 
 	if(!t.empty()) {
-		ctrlTransfers.resort();
+		transfers->resort();
+#ifdef PORT_ME
 		if(t.size() > 2) {
-			ctrlTransfers.SetRedraw(TRUE);
+			transfers->SetRedraw(TRUE);
 		}
+#endif
 	}
 
 	return 0;
 }
 
-LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+void TransferView::handleSearchAlternates(WidgetMenuPtr, unsigned) {
+	int i = transfers->getNextItem(-1, LVNI_SELECTED);
 
 	if(i != -1) {
-		ItemInfo *ii = ctrlTransfers.getItemData(i);
+		ItemInfo *ii = transfers->getItemData(i);
 
 		string target = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
 
@@ -386,11 +389,9 @@ LRESULT TransferView::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 			WinUtil::searchHash(tth);
 		}
 	}
-
-	return 0;
 }
 
-TransferView::ItemInfo::ItemInfo(const User::Ptr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
+TransferView::ItemInfo::ItemInfo(const UserPtr& u, bool aDownload) : UserInfoBase(u), download(aDownload), transferFailed(false),
 	status(STATUS_WAITING), pos(0), size(0), start(0), actual(0), speed(0), timeLeft(0)
 {
 	columns[COLUMN_USER] = WinUtil::getNicks(u);
@@ -447,7 +448,7 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 	}
 }
 
-void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) {
+void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw() {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
@@ -456,7 +457,7 @@ void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCq
 	speak(ADD_ITEM, ui);
 }
 
-void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) {
+void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw() {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
 	ui->setStatusString((aCqi->getState() == ConnectionQueueItem::CONNECTING) ? TSTRING(CONNECTING) : TSTRING(WAITING_TO_RETRY));
@@ -464,11 +465,11 @@ void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueI
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) {
+void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw() {
 	speak(REMOVE_ITEM, new UpdateInfo(aCqi->getUser(), aCqi->getDownload()));
 }
 
-void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) {
+void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw() {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 	if(aCqi->getUser()->isSet(User::OLD_CLIENT)) {
 		ui->setStatusString(TSTRING(SOURCE_TOO_OLD));
@@ -478,7 +479,7 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
+void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) throw() {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUser(), true);
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
 	ui->setPos(aDownload->getTotal());
@@ -501,10 +502,10 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
+void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
 	AutoArray<TCHAR> buf(TSTRING(DOWNLOADED_BYTES).size() + 64);
 
-	for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
+	for(DownloadList::const_iterator j = dl.begin(); j != dl.end(); ++j) {
 		Download* d = *j;
 
 		UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
@@ -540,10 +541,10 @@ void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 		tasks.add(UPDATE_ITEM, ui);
 	}
 
-	PostMessage(WM_SPEAKER);
+	speak();
 }
 
-void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) {
+void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw() {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUser(), true, true);
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setPos(0);
@@ -557,7 +558,7 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
+void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() {
 	UpdateInfo* ui = new UpdateInfo(aUpload->getUser(), false);
 
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
@@ -581,10 +582,10 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 	speak(UPDATE_ITEM, ui);
 }
 
-void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
+void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw() {
 	AutoArray<TCHAR> buf(TSTRING(UPLOADED_BYTES).size() + 64);
 
-	for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
+	for(UploadList::const_iterator j = ul.begin(); j != ul.end(); ++j) {
 		Upload* u = *j;
 
 		UpdateInfo* ui = new UpdateInfo(u->getUser(), false);
@@ -618,7 +619,7 @@ void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 		tasks.add(UPDATE_ITEM, ui);
 	}
 
-	PostMessage(WM_SPEAKER);
+	speak();
 }
 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
@@ -634,4 +635,3 @@ void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 void TransferView::ItemInfo::disconnect() {
 	ConnectionManager::getInstance()->disconnect(user, download);
 }
-#endif

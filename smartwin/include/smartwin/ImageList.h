@@ -117,6 +117,17 @@ public:
 	  */
 	unsigned int addMultiple( const Bitmap & bitmap, const Bitmap & mask );
 
+	/** Note, you need to set the flag ILC_MASK on the constructor for this to work.
+	  * <br>
+	  * The mask is color; where the bitmap has that color, the shown image will
+	  * be transparent. <br>
+	  * The bitmap parameter specifies a bitmap with several images. The
+	  * number of images is calculated by the bitmap width, e.g. if the image list is
+	  * 32x32 and you add a 128x32 bitmap, it will add four 32x32 bitmaps (note, the
+	  * height must be the same of the image list) Returns the number of images
+	  * added.
+	  */
+	unsigned int addMultiple(const Bitmap& bitmap, COLORREF mask);
 	/// Add an icon to the list
 	/** Note, you need to set the flag ILC_MASK on the constructor to support
 	  * transparency. <br>
@@ -144,6 +155,8 @@ private:
 
 	// Add a bitmap with multiple images, helper method
 	unsigned int addMultiple( int count, HBITMAP bitmap, HBITMAP mask );
+
+	unsigned int addMultiple( int count, HBITMAP bitmap, COLORREF mask );
 
 	HIMAGELIST itsImageList;
 	unsigned itsFlags;

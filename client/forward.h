@@ -72,6 +72,8 @@ class SocketException;
 
 class StringSearch;
 
+class Transfer;
+
 class UnZFilter;
 
 class Upload;

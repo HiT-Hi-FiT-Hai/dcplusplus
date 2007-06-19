@@ -331,7 +331,7 @@ void QueueFrame::postClosing() {
 	files->removeAllRows();
 	
 	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_ORDER, WinUtil::toString(files->getColumnOrder()));
-	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_ORDER, WinUtil::toString(files->getColumnWidths()));
+	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_WIDTHS, WinUtil::toString(files->getColumnWidths()));
 }
 
 void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {

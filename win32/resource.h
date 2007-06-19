@@ -89,7 +89,8 @@
 #define IDC_OPEN_OWN_LIST			1038
 #define IDC_DOWNLOADTO				1039
 #define IDC_DOWNLOADDIRTO			1040
-
+#define IDC_COPY_NICK				1041
+#define IDC_FORCE					1042
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000

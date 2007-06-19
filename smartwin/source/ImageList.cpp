@@ -82,13 +82,20 @@ void ImageList::add( const Bitmap & bitmap, const Bitmap & mask )
 unsigned int ImageList::addMultiple( const Bitmap & bitmap )
 {
 	int count = bitmap.getBitmapSize().x / getImageSize().x + 1;
-	return addMultiple( count, bitmap.getBitmap(), NULL );
+	return addMultiple( count, bitmap.getBitmap(), (HBITMAP)NULL );
 }
 
 unsigned int ImageList::addMultiple( const Bitmap & bitmap, const Bitmap & mask )
 {
 	int count = bitmap.getBitmapSize().x / getImageSize().x + 1;
 	return addMultiple( count, bitmap.getBitmap(), mask.getBitmap() );
+}
+
+
+unsigned int ImageList::addMultiple( const Bitmap & bitmap, COLORREF mask )
+{
+	int count = bitmap.getBitmapSize().x / getImageSize().x + 1;
+	return addMultiple( count, bitmap.getBitmap(), mask );
 }
 
 void ImageList::add( const Icon & icon )
@@ -162,6 +169,25 @@ unsigned int ImageList::addMultiple( int count, HBITMAP bitmap, HBITMAP mask )
 	}
 	ImageListPtr imageList( new ImageList( list ) );
 	int success = ImageList_Add( list, bitmap, mask );
+	if ( success == - 1 )
+	{
+		xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
+		throw x;
+	}
+	add( imageList );
+	return imageList->getImageCount();
+}
+
+unsigned int ImageList::addMultiple( int count, HBITMAP bitmap, COLORREF mask )
+{
+	HIMAGELIST list = ::ImageList_Create( getImageSize().x, getImageSize().y, itsFlags, count, 0 );
+	if ( !list )
+	{
+		xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
+		throw x;
+	}
+	ImageListPtr imageList( new ImageList( list ) );
+	int success = ImageList_AddMasked( list, bitmap, mask );
 	if ( success == - 1 )
 	{
 		xCeption x( _T( "Couldn't add bitmap to ImageList" ) );

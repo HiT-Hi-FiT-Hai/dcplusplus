@@ -64,7 +64,7 @@ void WinUtil::init() {
 	monoFont = SmartWin::FontPtr(new SmartWin::Font((BOOLSETTING(USE_OEM_MONOFONT) ? SmartWin::OemFixedFont : SmartWin::AnsiFixedFont)));
 
 	fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-	fileImages->addMultiple(SmartWin::Bitmap(IDB_FOLDERS));
+	fileImages->addMultiple(SmartWin::Bitmap(IDB_FOLDERS), RGB(255, 0, 255));
 
 	dirIconIndex = fileImageCount++;
 	dirMaskedIndex = fileImageCount++;

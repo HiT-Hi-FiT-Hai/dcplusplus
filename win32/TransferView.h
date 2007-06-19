@@ -19,29 +19,189 @@
 #ifndef DCPLUSPLUS_WIN32_TRANSFER_VIEW_H
 #define DCPLUSPLUS_WIN32_TRANSFER_VIEW_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include <client/DownloadManagerListener.h>
+#include <client/UploadManagerListener.h>
+#include <client/ConnectionManagerListener.h>
+#include <client/TaskQueue.h>
+#include <client/forward.h>
+#include <client/Util.h>
+#include <client/Download.h>
+#include <client/Upload.h>
 
-#include "../client/DownloadManager.h"
-#include "../client/UploadManager.h"
-#include "../client/ConnectionManagerListener.h"
-#include "../client/TaskQueue.h"
-
-#include "UCHandler.h"
+#include "AspectSpeaker.h"
 #include "TypedListViewCtrl.h"
+#include "WidgetFactory.h"
+
 #include "WinUtil.h"
 
-class TransferView : public CWindowImpl<TransferView>, private DownloadManagerListener,
-	private UploadManagerListener, private ConnectionManagerListener,
-	public UserInfoBaseHandler<TransferView>, public UCHandler<TransferView>
+#ifdef PORT_ME
+#include "UCHandler.h"
+#endif
+
+class TransferView : public WidgetFactory<SmartWin::WidgetChildWindow, TransferView>, 
+	private DownloadManagerListener, private UploadManagerListener, private ConnectionManagerListener,
+	public AspectSpeaker<TransferView>
 {
 public:
-	DECLARE_WND_CLASS(_T("TransferView"))
+	TransferView(SmartWin::Widget*);
+	virtual ~TransferView();
+	
+private:
+	
+	enum {
+		ADD_ITEM,
+		REMOVE_ITEM,
+		UPDATE_ITEM,
+	};
 
-	TransferView() { }
-	virtual ~TransferView(void);
+	enum {
+		COLUMN_FIRST,
+		COLUMN_USER = COLUMN_FIRST,
+		COLUMN_HUB,
+		COLUMN_STATUS,
+		COLUMN_TIMELEFT,
+		COLUMN_SPEED,
+		COLUMN_FILE,
+		COLUMN_SIZE,
+		COLUMN_PATH,
+		COLUMN_IP,
+		COLUMN_RATIO,
+		COLUMN_CID,
+		COLUMN_LAST
+	};
 
+	enum {
+		IMAGE_DOWNLOAD = 0,
+		IMAGE_UPLOAD
+	};
+
+	struct UpdateInfo;
+	class ItemInfo : public UserInfoBase {
+	public:
+		enum Status {
+			STATUS_RUNNING,
+			STATUS_WAITING
+		};
+
+		ItemInfo(const UserPtr& u, bool aDownload);
+
+		bool download;
+		bool transferFailed;
+		Status status;
+		int64_t pos;
+		int64_t size;
+		int64_t start;
+		int64_t actual;
+		int64_t speed;
+		int64_t timeLeft;
+
+		tstring columns[COLUMN_LAST];
+		void update(const UpdateInfo& ui);
+
+		void disconnect();
+		void removeAll();
+		void deleteSelf() { delete this; }
+
+		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
+
+		const tstring& getText(int col) const {
+			return columns[col];
+		}
+		int getImage() const {
+			return download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD;
+		}
+
+		static int compareItems(ItemInfo* a, ItemInfo* b, int col);
+	};
+
+	struct UpdateInfo : public Task {
+		enum {
+			MASK_POS = 1 << 0,
+			MASK_SIZE = 1 << 1,
+			MASK_START = 1 << 2,
+			MASK_ACTUAL = 1 << 3,
+			MASK_SPEED = 1 << 4,
+			MASK_FILE = 1 << 5,
+			MASK_STATUS = 1 << 6,
+			MASK_TIMELEFT = 1 << 7,
+			MASK_IP = 1 << 8,
+			MASK_STATUS_STRING = 1 << 9,
+			MASK_COUNTRY = 1 << 10,
+		};
+
+		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
+
+		UpdateInfo(const UserPtr& aUser, bool isDownload, bool isTransferFailed = false) : updateMask(0), user(aUser), download(isDownload), transferFailed(isTransferFailed) { }
+
+		uint32_t updateMask;
+
+		UserPtr user;
+		bool download;
+		bool transferFailed;
+		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
+		ItemInfo::Status status;
+		void setPos(int64_t aPos) { pos = aPos; updateMask |= MASK_POS; }
+		int64_t pos;
+		void setSize(int64_t aSize) { size = aSize; updateMask |= MASK_SIZE; }
+		int64_t size;
+		void setStart(int64_t aStart) { start = aStart; updateMask |= MASK_START; }
+		int64_t start;
+		void setActual(int64_t aActual) { actual = aActual; updateMask |= MASK_ACTUAL; }
+		int64_t actual;
+		void setSpeed(int64_t aSpeed) { speed = aSpeed; updateMask |= MASK_SPEED; }
+		int64_t speed;
+		void setTimeLeft(int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
+		int64_t timeLeft;
+		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
+		tstring statusString;
+		void setFile(const tstring& aFile) { file = Util::getFileName(aFile); path = Util::getFilePath(aFile); updateMask|= MASK_FILE; }
+		tstring file;
+		tstring path;
+		void setIP(const tstring& aIP) { IP = aIP; updateMask |= MASK_IP; }
+		tstring IP;
+	};
+
+	static int columnIndexes[];
+	static int columnSizes[];
+
+	typedef TypedListViewCtrl<TransferView, ItemInfo> WidgetTransfers;
+	typedef WidgetTransfers* WidgetTransfersPtr;
+	WidgetTransfersPtr transfers;
+	SmartWin::ImageListPtr arrows;
+
+	TaskQueue tasks;
+
+	void handleSized(const SmartWin::WidgetSizedEventResult& sz);
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	HRESULT handleSpeaker(LPARAM lParam, WPARAM wParam);
+	void handleForce(WidgetMenuPtr, unsigned);
+	void handleSearchAlternates(WidgetMenuPtr, unsigned);
+	void handleCopyNick(WidgetMenuPtr, unsigned);
+	void handleRemove(WidgetMenuPtr, unsigned);
+
+	WidgetPopupMenuPtr makeContextMenu(ItemInfo* ii);
+
+	using AspectSpeaker<TransferView>::speak;
+	
+	void speak(int type, UpdateInfo* ui) { tasks.add(type, ui); speak(); }
+
+	virtual void on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw();
+	virtual void on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw();
+	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();
+	virtual void on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw();
+
+	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw() { onTransferComplete(aDownload, false);}
+	virtual void on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw();
+	virtual void on(DownloadManagerListener::Starting, Download* aDownload) throw();
+	virtual void on(DownloadManagerListener::Tick, const DownloadList& aDownload) throw();
+
+	virtual void on(UploadManagerListener::Starting, Upload* aUpload) throw();
+	virtual void on(UploadManagerListener::Tick, const UploadList& aUpload) throw();
+	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw() { onTransferComplete(aUpload, true); }
+
+	void onTransferComplete(Transfer* aTransfer, bool isUpload);
+
+#ifdef PORT_ME
 	typedef UserInfoBaseHandler<TransferView> uibBase;
 	typedef UCHandler<TransferView> ucBase;
 
@@ -87,11 +247,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlTransfers.forEachSelected(&ItemInfo::disconnect);
-		return 0;
-	}
-
 	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		ctrlTransfers.forEachSelected(&ItemInfo::removeAll);
 		return 0;
@@ -116,144 +271,13 @@ private:
 public:
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
 private:
-	enum {
-		ADD_ITEM,
-		REMOVE_ITEM,
-		UPDATE_ITEM,
-	};
-
-	enum {
-		COLUMN_FIRST,
-		COLUMN_USER = COLUMN_FIRST,
-		COLUMN_HUB,
-		COLUMN_STATUS,
-		COLUMN_TIMELEFT,
-		COLUMN_SPEED,
-		COLUMN_FILE,
-		COLUMN_SIZE,
-		COLUMN_PATH,
-		COLUMN_IP,
-		COLUMN_RATIO,
-		COLUMN_CID,
-		COLUMN_LAST
-	};
-
-	enum {
-		IMAGE_DOWNLOAD = 0,
-		IMAGE_UPLOAD
-	};
-
-	struct UpdateInfo;
-	class ItemInfo : public UserInfoBase {
-	public:
-		enum Status {
-			STATUS_RUNNING,
-			STATUS_WAITING
-		};
-
-		ItemInfo(const User::Ptr& u, bool aDownload);
-
-		bool download;
-		bool transferFailed;
-		Status status;
-		int64_t pos;
-		int64_t size;
-		int64_t start;
-		int64_t actual;
-		int64_t speed;
-		int64_t timeLeft;
-
-		tstring columns[COLUMN_LAST];
-		void update(const UpdateInfo& ui);
-
-		void disconnect();
-		void removeAll();
-		void deleteSelf() { delete this; }
-
-		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
-
-		const tstring& getText(int col) const {
-			return columns[col];
-		}
-
-		static int compareItems(ItemInfo* a, ItemInfo* b, int col);
-	};
-
-	struct UpdateInfo : public Task {
-		enum {
-			MASK_POS = 1 << 0,
-			MASK_SIZE = 1 << 1,
-			MASK_START = 1 << 2,
-			MASK_ACTUAL = 1 << 3,
-			MASK_SPEED = 1 << 4,
-			MASK_FILE = 1 << 5,
-			MASK_STATUS = 1 << 6,
-			MASK_TIMELEFT = 1 << 7,
-			MASK_IP = 1 << 8,
-			MASK_STATUS_STRING = 1 << 9,
-			MASK_COUNTRY = 1 << 10,
-		};
-
-		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
-
-		UpdateInfo(const User::Ptr& aUser, bool isDownload, bool isTransferFailed = false) : updateMask(0), user(aUser), download(isDownload), transferFailed(isTransferFailed) { }
-
-		uint32_t updateMask;
-
-		User::Ptr user;
-		bool download;
-		bool transferFailed;
-		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
-		ItemInfo::Status status;
-		void setPos(int64_t aPos) { pos = aPos; updateMask |= MASK_POS; }
-		int64_t pos;
-		void setSize(int64_t aSize) { size = aSize; updateMask |= MASK_SIZE; }
-		int64_t size;
-		void setStart(int64_t aStart) { start = aStart; updateMask |= MASK_START; }
-		int64_t start;
-		void setActual(int64_t aActual) { actual = aActual; updateMask |= MASK_ACTUAL; }
-		int64_t actual;
-		void setSpeed(int64_t aSpeed) { speed = aSpeed; updateMask |= MASK_SPEED; }
-		int64_t speed;
-		void setTimeLeft(int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
-		int64_t timeLeft;
-		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
-		tstring statusString;
-		void setFile(const tstring& aFile) { file = Util::getFileName(aFile); path = Util::getFilePath(aFile); updateMask|= MASK_FILE; }
-		tstring file;
-		tstring path;
-		void setIP(const tstring& aIP) { IP = aIP; updateMask |= MASK_IP; }
-		tstring IP;
-	};
-
-	void speak(int type, UpdateInfo* ui) { tasks.add(type, ui); PostMessage(WM_SPEAKER); }
-
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS> ctrlTransfers;
-	static int columnIndexes[];
-	static int columnSizes[];
 
 	CMenu transferMenu;
-	CImageList arrows;
-
-	TaskQueue tasks;
 
 	StringMap ucLineParams;
 
-	virtual void on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw();
-	virtual void on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw();
-	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();
-	virtual void on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw();
-
-	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw() { onTransferComplete(aDownload, false);}
-	virtual void on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw();
-	virtual void on(DownloadManagerListener::Starting, Download* aDownload) throw();
-	virtual void on(DownloadManagerListener::Tick, const Download::List& aDownload) throw();
-
-	virtual void on(UploadManagerListener::Starting, Upload* aUpload) throw();
-	virtual void on(UploadManagerListener::Tick, const Upload::List& aUpload) throw();
-	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw() { onTransferComplete(aUpload, true); }
-
-	void onTransferComplete(Transfer* aTransfer, bool isUpload);
+#endif
 };
 
 #endif // !defined(TRANSFER_VIEW_H)
