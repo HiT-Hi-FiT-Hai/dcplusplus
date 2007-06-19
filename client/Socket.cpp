@@ -83,7 +83,11 @@ void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
 	sockaddr_in sock_addr;
 	socklen_t sz = sizeof(sock_addr);
 
-	sock = check(::accept(listeningSocket.sock, (sockaddr*)&sock_addr, &sz));
+	do {
+		sock = ::accept(listeningSocket.sock, (sockaddr*)&sock_addr, &sz);
+	} while (sock < 0 && getLastError() == EINTR);
+	check(sock);
+
 #ifdef _WIN32
 	// Make sure we disable any inherited windows message things for this socket.
 	::WSAAsyncSelect(sock, NULL, 0, 0);
@@ -132,7 +136,12 @@ void Socket::connect(const string& aAddr, uint16_t aPort) throw(SocketException)
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = inet_addr(addr.c_str());
 
-	check(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)), true);
+	int result;
+	do {
+		result = ::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr));
+	} while (result < 0 && getLastError() == EINTR);
+	check(result, true);
+
 	connected = true;
 	setIp(addr);
 }
@@ -282,16 +291,21 @@ void Socket::setSocketOpt(int option, int val) throw(SocketException) {
 
 int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 	int len = 0;
-	if(type == TYPE_TCP) {
-		len = check(::recv(sock, (char*)aBuffer, aBufLen, 0), true);
-	} else {
-		dcassert(type == TYPE_UDP);
-		len = check(::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL), true);
-	}
+
+	dcassert(type == TYPE_TCP || type == TYPE_UDP);
+	do {
+		if(type == TYPE_TCP) {
+			len = ::recv(sock, (char*)aBuffer, aBufLen, 0);
+		} else {
+			len = ::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL);
+		}
+	} while (len < 0 && getLastError() == EINTR);
+	check(len, true);
+
 	if(len > 0) {
 		stats.totalDown += len;
-		//dcdebug("In: %.*s\n", len, (char*)aBuffer);
 	}
+
 	return len;
 }
 
@@ -301,8 +315,12 @@ int Socket::read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException)
 	sockaddr_in remote_addr = { 0 };
 	socklen_t addr_length = sizeof(remote_addr);
 
-	int len = check(::recvfrom(sock, (char*)aBuffer, aBufLen, 0, (sockaddr*)&remote_addr, &addr_length), true);
+	int len;
+	do {
+		len = ::recvfrom(sock, (char*)aBuffer, aBufLen, 0, (sockaddr*)&remote_addr, &addr_length);
+	} while (len < 0 && getLastError() == EINTR);
 
+	check(len, true);
 	if(len > 0) {
 		aIP = inet_ntoa(remote_addr.sin_addr);
 		stats.totalDown += len;
@@ -349,12 +367,16 @@ void Socket::writeAll(const void* aBuffer, int aLen, uint32_t timeout) throw(Soc
 }
 
 int Socket::write(const void* aBuffer, int aLen) throw(SocketException) {
-	int i = check(::send(sock, (const char*)aBuffer, aLen, 0), true);
-	if(i > 0) {
-		stats.totalUp += i;
-//		dcdebug("Out: %.*s\n", i, (char*)aBuffer);
+	int sent;
+	do {
+		sent = ::send(sock, (const char*)aBuffer, aLen, 0);
+	} while (sent < 0 && getLastError() == EINTR);
+
+	check(sent, true);
+	if(sent > 0) {
+		stats.totalUp += sent;
 	}
-	return i;
+	return sent;
 }
 
 /**
@@ -382,6 +404,7 @@ void Socket::writeTo(const string& aAddr, uint16_t aPort, const void* aBuffer, i
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
 
+	int sent;
 	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5 && proxy) {
 		if(udpServer.empty() || udpPort == 0) {
 			throw SocketException(STRING(SOCKS_SETUP_ERROR));
@@ -412,14 +435,20 @@ void Socket::writeTo(const string& aAddr, uint16_t aPort, const void* aBuffer, i
 
 		connStr.insert(connStr.end(), buf, buf + aLen);
 
-		stats.totalUp += check(::sendto(sock, (const char*)&connStr[0], connStr.size(), 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr)));
+		do {
+			sent = ::sendto(sock, (const char*)&connStr[0], connStr.size(), 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+		} while (sent < 0 && getLastError() == EINTR);
 	} else {
 		serv_addr.sin_port = htons(aPort);
 		serv_addr.sin_family = AF_INET;
 		serv_addr.sin_addr.s_addr = inet_addr(resolve(aAddr).c_str());
-
-		stats.totalUp += check(::sendto(sock, (const char*)aBuffer, (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr)));
+		do {
+			sent = ::sendto(sock, (const char*)aBuffer, (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+		} while (sent < 0 && getLastError() == EINTR);
 	}
+
+	check(sent);
+	stats.totalUp += sent;
 }
 
 /**
@@ -440,12 +469,16 @@ int Socket::wait(uint32_t millis, int waitFor) throw(SocketException) {
 	if(waitFor & WAIT_CONNECT) {
 		dcassert(!(waitFor & WAIT_READ) && !(waitFor & WAIT_WRITE));
 
-		FD_ZERO(&wfd);
-		FD_ZERO(&efd);
+		int result;
+		do {
+			FD_ZERO(&wfd);
+			FD_ZERO(&efd);
 
-		FD_SET(sock, &wfd);
-		FD_SET(sock, &efd);
-		check(select((int)(sock+1), 0, &wfd, &efd, &tv));
+			FD_SET(sock, &wfd);
+			FD_SET(sock, &efd);
+			result = select((int)(sock+1), 0, &wfd, &efd, &tv);
+		} while (result < 0 && getLastError() == EINTR);
+		check(result);
 
 		if(FD_ISSET(sock, &wfd)) {
 			return WAIT_CONNECT;
@@ -464,20 +497,26 @@ int Socket::wait(uint32_t millis, int waitFor) throw(SocketException) {
 		return 0;
 	}
 
-	if(waitFor & WAIT_READ) {
-		dcassert(!(waitFor & WAIT_CONNECT));
-		rfdp = &rfd;
-		FD_ZERO(rfdp);
-		FD_SET(sock, rfdp);
-	}
-	if(waitFor & WAIT_WRITE) {
-		dcassert(!(waitFor & WAIT_CONNECT));
-		wfdp = &wfd;
-		FD_ZERO(wfdp);
-		FD_SET(sock, wfdp);
-	}
+	int result;
+	do {
+		if(waitFor & WAIT_READ) {
+			dcassert(!(waitFor & WAIT_CONNECT));
+			rfdp = &rfd;
+			FD_ZERO(rfdp);
+			FD_SET(sock, rfdp);
+		}
+		if(waitFor & WAIT_WRITE) {
+			dcassert(!(waitFor & WAIT_CONNECT));
+			wfdp = &wfd;
+			FD_ZERO(wfdp);
+			FD_SET(sock, wfdp);
+		}
+
+		result = select((int)(sock+1), rfdp, wfdp, NULL, &tv);
+	} while (result < 0 && getLastError() == EINTR);
+	check(result);
+
 	waitFor = WAIT_NONE;
-	check(select((int)(sock+1), rfdp, wfdp, NULL, &tv));
 
 	if(rfdp && FD_ISSET(sock, rfdp)) {
 		waitFor |= WAIT_READ;

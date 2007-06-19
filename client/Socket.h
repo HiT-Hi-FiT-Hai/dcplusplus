@@ -28,7 +28,8 @@
 
 #ifdef _WIN32
 // Berkely constants converted to the windows equivs...
-#	define EADDRNOTAVAIL			WSAEADDRNOTAVAIL
+#define EADDRNOTAVAIL WSAEADDRNOTAVAIL
+#define EINTR         WSAEINTR
 
 typedef int socklen_t;
 typedef SOCKET socket_t;

@@ -26,6 +26,7 @@
 * yassl upgraded
 * gcc 4.3 compile fix (thanks steven sheehy)
 * Some upgrades to the charset handling (thanks steven sheehy)
+* Fixed socket signal interrupts (thanks mikael eman)
 
 -- 0.699 2006-12-18 --
 * Switched to VC8/VS2005
