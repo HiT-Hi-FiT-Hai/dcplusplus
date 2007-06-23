@@ -44,8 +44,6 @@ protected:
 	bool preClosing();
 	void postClosing();
 	
-	void splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt);
-	
 private:
 	enum {
 		COLUMN_FIRST,
@@ -218,7 +216,7 @@ private:
 	typedef TypedListViewCtrl<QueueFrame, QueueItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
-	WidgetSplitterCoolPtr splitter;
+	WidgetVPanedPtr paned;
 	WidgetCheckBoxPtr showTree;
 
 	/** Currently shown context menu */

@@ -22,6 +22,7 @@
 #include "WidgetDataGrid.h"
 #include "WidgetPopupMenu.h"
 #include "WidgetTextBox.h"
+#include "WidgetPaned.h"
 
 /**
  * This is where stuff that eventually should be moved to smartwin goes
@@ -38,7 +39,9 @@ public:
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
 
-	WidgetDataGridPtr createDataGrid( const typename WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() );
+	WidgetDataGridPtr createDataGrid( const typename WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() ) {
+		return SmartWin::WidgetCreator< WidgetDataGrid >::create( this, cs );
+	}
 
 	/// PopupMenu class type.
 	typedef ::WidgetPopupMenu< EventHandlerClass, MessageMapPolicy > WidgetPopupMenu;
@@ -46,7 +49,9 @@ public:
 	/// PopupMenu object type.
 	typedef typename WidgetPopupMenu::ObjectType WidgetPopupMenuPtr;
 
-	WidgetPopupMenuPtr createPopupMenu();
+	WidgetPopupMenuPtr createPopupMenu() {
+		return SmartWin::WidgetCreator< WidgetPopupMenu >::create( this );
+	}
 
 	/// TextBox class type.
 	typedef ::WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
@@ -54,29 +59,30 @@ public:
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
-	WidgetTextBoxPtr createTextBox( const typename WidgetTextBox::Seed & cs = WidgetTextBox::getDefaultSeed() );
+	WidgetTextBoxPtr createTextBox( const typename WidgetTextBox::Seed & cs = WidgetTextBox::getDefaultSeed() ) {
+		return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
+	}
+
+	/// VPaned class type.
+	typedef WidgetPaned< EventHandlerClass, false, SmartWin::MessageMapPolicyNormalWidget > WidgetVPaned;
+
+	/// VPaned object type.
+	typedef typename WidgetVPaned::ObjectType WidgetVPanedPtr;
+
+	WidgetVPanedPtr createVPaned( const typename WidgetVPaned::Seed & cs = WidgetVPaned::getDefaultSeed() ) {
+		return SmartWin::WidgetCreator< WidgetVPaned >::create( this, cs );
+	}
+
+	/// HPaned class type.
+	typedef WidgetPaned< EventHandlerClass, true, SmartWin::MessageMapPolicyNormalWidget > WidgetHPaned;
+
+	/// HPaned object type.
+	typedef typename WidgetHPaned::ObjectType WidgetHPanedPtr;
+
+	WidgetHPanedPtr createHPaned( const typename WidgetHPaned::Seed & cs = WidgetHPaned::getDefaultSeed() ) {
+		return SmartWin::WidgetCreator< WidgetHPaned >::create( this, cs );
+	}
 
 };
-
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDataGridPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
-{
-	return SmartWin::WidgetCreator< WidgetDataGrid >::create( this, cs );
-}
-
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetPopupMenuPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createPopupMenu()
-{
-	return SmartWin::WidgetCreator< WidgetPopupMenu >::create( this );
-}
-
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTextBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTextBox( const typename WidgetTextBox::Seed & cs )
-{
-	return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
-}
 
 #endif /*WIDGETFACTORY2_H_*/

@@ -47,7 +47,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	status(0),
 	dirs(0),
 	files(0),
-	splitter(0),
+	paned(0),
 	showTree(0),
 	dirty(true),
 	usingDirMenu(false),
@@ -55,8 +55,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	queueItems(0),
 	fileLists(0)
 {		
-	splitter = createSplitterCool();
-	splitter->onMoved(&QueueFrame::splitterMoved);
+	paned = createVPaned();
 	{
 		WidgetTreeView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
@@ -66,6 +65,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
 		dirs->onSelectionChanged(&QueueFrame::handleSelectionChanged);
+		paned->setFirst(dirs);
 	}
 	
 	{
@@ -82,6 +82,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
+		paned->setSecond(files);
 	}
 	
 	{
@@ -201,10 +202,6 @@ void QueueFrame::setStatus(Status s, const tstring& text) {
 	status->setText(text, s);
 }
 
-void QueueFrame::splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt) {
-	layout();
-}
-
 void QueueFrame::layout() {
 	const int border = 2;
 	
@@ -233,15 +230,7 @@ void QueueFrame::layout() {
 	
 	r.size.y -= rs.size.y;
 	
-	SmartWin::Rectangle rsplit(splitter->getBounds());
-	if(showTree->getChecked()) {
-		SmartWin::Rectangle rsplit(splitter->getBounds());
-
-		dirs->setBounds(0, 0, rsplit.pos.x, r.size.y);
-		files->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
-	} else {
-		files->setBounds(r);
-	}	
+	paned->setBounds(r);
 }
 
 void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
