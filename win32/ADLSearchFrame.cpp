@@ -104,6 +104,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) :
 		add_widget(help);
 		help->setFont(WinUtil::font);
 	}
+	initStatus();
 	{
 /*
 		contextMenu = createMenu();
@@ -149,6 +150,10 @@ ADLSearchFrame::~ADLSearchFrame() {
 
 void ADLSearchFrame::layout() {
 	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+	
+	SmartWin::Rectangle rs = layoutStatus();
+	
+	r.size.y -= rs.size.y;
 	
 	/// @todo dynamic width
 	const int ybutton = add->getTextSize("A").y + 10;

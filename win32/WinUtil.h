@@ -210,6 +210,7 @@ public:
 
 	static void addLastDir(const string& dir);
 
+	static void openLink(const tstring& url);
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringT, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
@@ -273,7 +274,6 @@ public:
 	static bool urlDcADCRegistered;
 	static bool urlMagnetRegistered;
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
-	static void openLink(const tstring& url);
 
 	static double toBytes(TCHAR* aSize);
 

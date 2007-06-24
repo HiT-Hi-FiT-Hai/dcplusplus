@@ -207,7 +207,8 @@ LRESULT WidgetMDIChild< EventHandlerClass, unUsed >::sendWidgetMessage( HWND hWn
 	bool returnNothing = false;
 	switch ( msg )
 	{
-		// First the stuff we HAVE to do something about...
+#if 0
+	// First the stuff we HAVE to do something about...
 		case WM_SIZE :
 		{
 			if ( wPar == SIZE_MAXIMIZED )
@@ -230,6 +231,7 @@ LRESULT WidgetMDIChild< EventHandlerClass, unUsed >::sendWidgetMessage( HWND hWn
 				returnNothing = true;
 			} break;
 		}
+#endif
 		default:
 		{
 			return MessageMap< EventHandlerClass, unUsed >::sendWidgetMessage( hWnd, msg, wPar, lPar );

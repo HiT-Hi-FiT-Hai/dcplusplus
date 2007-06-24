@@ -46,9 +46,17 @@ TextFrame::TextFrame(SmartWin::Widget* mdiParent, const string& fileName) :
 		pad->setText(e.getError());
 	}
 	setText(Text::toT(Util::getFileName(fileName)));
+	initStatus();
 	layout();
 }
 
 void TextFrame::layout() {
-	pad->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+	const int border = 2;
+
+	SmartWin::Rectangle r(this->getClientAreaSize());
+
+	SmartWin::Rectangle rs = layoutStatus();
+
+	r.size.y -= rs.size.y + border;
+	pad->setBounds(r);
 }

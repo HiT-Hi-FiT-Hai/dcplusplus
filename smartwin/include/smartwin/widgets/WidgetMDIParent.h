@@ -102,6 +102,15 @@ public:
 		/// Doesn't fill any values
 		Seed( DontInitialize )
 		{}
+		
+		/** 
+		 * First child id for mdi menu, must be different from any other main menu id. 
+		 * Also, the menuHandle parameter of cs should point to the menu that will receive 
+		 * 
+		 **/
+		UINT idFirstChild;
+		
+		HMENU windowMenu;
 	};
 
 	/// Default values for creation
@@ -117,6 +126,19 @@ public:
 	  */
 	virtual void create( const Seed & cs = getDefaultSeed() );
 
+	
+	void cascade() {
+		::SendMessage(this->handle(), WM_MDICASCADE, 0, 0);
+	}
+	
+	void tile(bool horizontal) {
+		::SendMessage(this->handle(), WM_MDITILE, horizontal ? MDITILE_HORIZONTAL : MDITILE_VERTICAL, 0);
+	}
+	
+	void arrange() {
+		::SendMessage(this->handle(), WM_MDIICONARRANGE, 0, 0);
+	}
+	
 protected:
 	/// Constructor Taking pointer to parent
 	explicit WidgetMDIParent( SmartWin::Widget * parent );
@@ -141,6 +163,8 @@ const typename WidgetMDIParent< EventHandlerClass, unUsed >::Seed & WidgetMDIPar
 		Application::instance().setSystemClassName( d_DefaultValues, _T( "MDICLIENT" ) );
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL;
 		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
+		d_DefaultValues.idFirstChild = 0;
+		d_DefaultValues.windowMenu = NULL;
 		//TODO: initialize the values here
 		d_NeedsInit = false;
 	}
@@ -170,17 +194,29 @@ WidgetMDIParent< EventHandlerClass, unUsed >::WidgetMDIParent( SmartWin::Widget 
 template< class EventHandlerClass, class unUsed >
 void WidgetMDIParent< EventHandlerClass, unUsed >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
+	CLIENTCREATESTRUCT ccs;
+	ccs.hWindowMenu = cs.windowMenu;
+	ccs.idFirstChild = cs.idFirstChild;
+	
+	this->Widget::itsHandle = ::CreateWindowEx( cs.exStyle,
+		cs.getClassName().c_str(),
+		cs.caption.c_str(),
+		cs.style,
+		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
+		this->Widget::itsParent ? this->Widget::itsParent->handle() : 0,
+		NULL,
+		Application::instance().getAppHandle(),
+		reinterpret_cast< LPVOID >( &ccs ) );
+	if ( !this->Widget::itsHandle )
 	{
-		typename WidgetMDIParent::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
+		// The most common error is to forget WS_CHILD in the styles
+		xCeption x( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
+		throw x;
 	}
+	this->Widget::isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
+	Application::instance().registerWidget( this );
+
 	ThisMessageMap::createMessageMap();
-	//TODO: use Seed parameters
 }
 
 // end namespace SmartWin

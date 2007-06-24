@@ -28,10 +28,23 @@
 #include <client/User.h>
 #include <client/FavoriteManagerListener.h>
 
-class HubFrame : public MDIChildFrame<HubFrame>, public ClientListener, private FavoriteManagerListener
+class HubFrame : 
+	public MDIChildFrame<HubFrame>, 
+	public ClientListener, 
+	private FavoriteManagerListener
 {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_USERS,
+		STATUS_SHARED,
+		STATUS_SHOW_USERS,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+	
 	static void openWindow(SmartWin::Widget* mdiParent, const string& url);
+	static void closeDisconnected();
 
 protected:
 	typedef MDIChildFrame<HubFrame> Base;
@@ -45,8 +58,6 @@ protected:
 	using Base::charred;
 	bool charred(WidgetTextBoxPtr w, int c);
 	bool enter();
-
-	void splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt);
 	
 private:
 	enum FilterModes{
@@ -76,15 +87,6 @@ private:
 		COLUMN_LAST
 	};
 
-	enum Status {
-		STATUS_STATUS,
-		STATUS_USERS,
-		STATUS_SHARED,
-		STATUS_DUMMY,
-		STATUS_LAST
-	};
-	unsigned statusSizes[STATUS_LAST];
-	
 	enum Tasks { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
@@ -160,13 +162,9 @@ private:
 	WidgetTextBoxPtr message;
 	WidgetTextBoxPtr filter;
 	WidgetComboBoxPtr filterType;
-	WidgetStatusBarSectionsPtr status;
-	WidgetSplitterCool* splitter;
+	WidgetVPanedPtr paned;
 	WidgetCheckBoxPtr showUsers;
 	
-	/** Currently shown context menu */
-	WidgetPopupMenuPtr contextMenu;
-
 	typedef TypedListViewCtrl<HubFrame, UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
@@ -196,7 +194,6 @@ private:
 	void addChat(const tstring& aLine);
 	void addStatus(const tstring& aLine, bool inChat = true);
 
-	void setStatus(Status s, const tstring& text);
 	tstring getStatusUsers() const;
 	tstring getStatusShared() const;
 	void updateStatus();
@@ -218,7 +215,7 @@ private:
 	void removeFavoriteHub();
 	
 	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
-	void handleShowUsersClicked();
+	void handleShowUsersClicked(WidgetCheckBoxPtr);
 
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
@@ -347,7 +344,6 @@ public:
 
 	static void openWindow(const tstring& server);
 	static void resortUsers();
-	static void closeDisconnected();
 
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();

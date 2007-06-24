@@ -87,7 +87,8 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		down->onClicked(&FavHubsFrame::handleDown);
 		add_widget(down);
 	}
-	
+
+	initStatus();
 	layout();
 	
 	const FavoriteHubEntry::List& fl = FavoriteManager::getInstance()->getFavoriteHubs();
@@ -103,7 +104,12 @@ FavHubsFrame::~FavHubsFrame() {
 }
 
 void FavHubsFrame::layout() {
+	const int border = 2;
+	
 	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+
+	SmartWin::Rectangle rs = layoutStatus();
+	r.size.y -= rs.size.y + border;
 	
 	/// @todo dynamic width
 	const int ybutton = add->getTextSize("A").y + 10;

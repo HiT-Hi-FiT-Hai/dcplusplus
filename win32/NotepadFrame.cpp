@@ -36,6 +36,8 @@ NotepadFrame::NotepadFrame(SmartWin::Widget* mdiParent) :
 		add_widget(pad);
 	}
 	
+	initStatus();
+	
 	pad->setTextLimit(0);
 	try {
 		pad->setText(Text::toT(File(Util::getNotepadFile(), File::READ, File::OPEN).read()));
@@ -66,7 +68,14 @@ bool NotepadFrame::preClosing() {
 }
 
 void NotepadFrame::layout() {
-	pad->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+	const int border = 2;
+	
+	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
+
+	SmartWin::Rectangle rs = layoutStatus();
+	r.size.y -= rs.size.y + border;
+
+	pad->setBounds(r);
 }
 
 #ifdef PORT_ME

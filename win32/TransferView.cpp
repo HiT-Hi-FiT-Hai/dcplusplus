@@ -41,6 +41,8 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 	SmartWin::Widget(parent),
 	transfers(0)
 {
+	createWindow();
+	
 	arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
 	arrows->addMultiple(SmartWin::Bitmap(IDB_ARROWS), RGB(255, 0, 255));
 	{
@@ -57,12 +59,8 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
+		transfers->setSortColumn(COLUMN_USER);
 	}
-
-#ifdef PORT_ME
-	transfers->setSortColumn(COLUMN_USER);
-#endif
-	
 	
 	onSized(&TransferView::handleSized);
 	onRaw(&TransferView::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));

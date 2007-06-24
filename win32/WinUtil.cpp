@@ -268,25 +268,19 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		if(param.empty()) {
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		} else {
-#ifdef PORT_ME
 			WinUtil::openLink(_T("http://www.google.com/search?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
-#endif
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("imdb")) == 0) {
 		if(param.empty()) {
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		} else {
-#ifdef PORT_ME
 			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
-#endif
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("u")) == 0) {
 		if (param.empty()) {
 			status = TSTRING(SPECIFY_URL);
 		} else {
-#ifdef PORT_ME
 			WinUtil::openLink(Text::toT(Util::encodeURI(Text::fromT(param))));
-#endif
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
 		HashManager::getInstance()->rebuild();
@@ -358,17 +352,15 @@ void WinUtil::bitziLink(const TTHValue& aHash) {
 	// except when the user requests it (a mass lookup isn't acceptable), and (if we ever fetch
 	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be
 	// tracked down and the code can be fixed
-#ifdef PORT_ME
 	openLink(_T("http://bitzi.com/lookup/tree:tiger:") + Text::toT(aHash.toBase32()));
-#endif
 }
 
 void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
-#ifdef PORT_ME
 	if(!aFile.empty()) {
+#ifdef PORT_ME
 		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash.toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
-	}
 #endif
+	}
 }
 
 void WinUtil::searchHash(const TTHValue& aHash) {
@@ -939,8 +931,10 @@ void WinUtil::unRegisterMagnetHandler() {
 	SHDeleteKey(HKEY_CLASSES_ROOT, _T("magnet"));
 	SHDeleteKey(HKEY_LOCAL_MACHINE, _T("magnet"));
 }
+#endif
 
 void WinUtil::openLink(const tstring& url) {
+#ifdef PORT_ME
 	CRegKey key;
 	TCHAR regbuf[MAX_PATH];
 	ULONG len = MAX_PATH;
@@ -998,10 +992,11 @@ void WinUtil::openLink(const tstring& url) {
 			}
 		}
 	}
-
+#endif
 	::ShellExecute(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
+#ifdef PORT_ME
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
 	uint16_t port = 411;

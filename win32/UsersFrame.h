@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,31 +16,97 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(USERS_FRAME_H)
-#define USERS_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_USERS_FRAME_H
+#define DCPLUSPLUS_WIN32_USERS_FRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include <client/FavoriteManagerListener.h>
 
-#include "FlatTabCtrl.h"
-#include "TypedListViewCtrl.h"
+#include "StaticFrame.h"
 #include "WinUtil.h"
+#include "TypedListViewCtrl.h"
 
-#include "../client/FavoriteManager.h"
-
-class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS>,
-	private FavoriteManagerListener, public UserInfoBaseHandler<UsersFrame> {
+class UsersFrame : 
+	public StaticFrame<UsersFrame>, 
+	private FavoriteManagerListener
+#ifdef PORT_ME
+	public UserInfoBaseHandler<UsersFrame>
+#endif
+{
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_USERS;
 
-	UsersFrame() : closed(false), startup(true) { }
+protected:
+	friend class StaticFrame<UsersFrame>;
+	friend class MDIChildFrame<UsersFrame>;
+	
+	void layout();
+	HRESULT spoken(LPARAM lp, WPARAM wp);
+	bool preClosing();
+	void postClosing();
+
+private:
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NICK = COLUMN_FIRST,
+		COLUMN_HUB,
+		COLUMN_SEEN,
+		COLUMN_DESCRIPTION,
+		COLUMN_CID,
+		COLUMN_LAST
+	};
+
+	enum {
+		USER_UPDATED
+	};
+
+	class UserInfo : public UserInfoBase {
+	public:
+		UserInfo(const FavoriteUser& u);
+		
+		const tstring& getText(int col) const {
+			return columns[col];
+		}
+
+		int getImage() const {
+			return 0;
+		}
+
+		static int compareItems(UserInfo* a, UserInfo* b, int col) {
+			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+		}
+
+		void remove();
+
+		void update(const FavoriteUser& u);
+
+		tstring columns[COLUMN_LAST];
+	};
+	
+	typedef TypedListViewCtrl<UsersFrame, UserInfo> WidgetUsers;
+	typedef WidgetUsers* WidgetUsersPtr;
+	WidgetUsersPtr users;
+
+	bool startup;
+
+	static int columnSizes[COLUMN_LAST];
+	static int columnIndexes[COLUMN_LAST];
+
+	UsersFrame(SmartWin::Widget* mdiParent);
 	virtual ~UsersFrame() { }
 
-	DECLARE_FRAME_WND_CLASS_EX(_T("UsersFrame"), IDR_USERS, 0, COLOR_3DFACE);
+	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
+	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
+	virtual void on(StatusChanged, const UserPtr& aUser) throw() { speak(USER_UPDATED, (LPARAM)new UserInfoBase(aUser)); }
 
-	typedef MDITabChildWindowImpl<UsersFrame> baseClass;
-	typedef UserInfoBaseHandler<UsersFrame> uibBase;
+	void addUser(const FavoriteUser& aUser);
+	void updateUser(const UserPtr& aUser);
+	void removeUser(const FavoriteUser& aUser);
 
+#ifdef PORT_ME
 	BEGIN_MSG_MAP(UsersFrame)
 		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
@@ -69,74 +135,16 @@ public:
 	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-
-	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlUsers.SetFocus();
-		return 0;
-	}
-
-private:
-	class UserInfo;
 public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
-	enum {
-		COLUMN_FIRST,
-		COLUMN_NICK = COLUMN_FIRST,
-		COLUMN_HUB,
-		COLUMN_SEEN,
-		COLUMN_DESCRIPTION,
-		COLUMN_CID,
-		COLUMN_LAST
-	};
-
-	enum {
-		USER_UPDATED
-	};
-
-	class UserInfo : public UserInfoBase {
-	public:
-		UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) {
-			update(u);
-		}
-
-		const tstring& getText(int col) const {
-			return columns[col];
-		}
-
-		static int compareItems(UserInfo* a, UserInfo* b, int col) {
-			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
-		}
-
-		void remove() { FavoriteManager::getInstance()->removeFavoriteUser(user); }
-
-		void update(const FavoriteUser& u);
-
-		tstring columns[COLUMN_LAST];
-	};
-
-	CStatusBarCtrl ctrlStatus;
-	CMenu usersMenu;
-
-	TypedListViewCtrl<UserInfo, IDC_USERS> ctrlUsers;
 
 	bool closed;
 
-	bool startup;
-	static int columnSizes[COLUMN_LAST];
-	static int columnIndexes[COLUMN_LAST];
 
 	// FavoriteManagerListener
-	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
-	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
-	virtual void on(StatusChanged, const User::Ptr& aUser) throw() { PostMessage(WM_SPEAKER, (WPARAM)USER_UPDATED, (LPARAM)new UserInfoBase(aUser)); }
 
-	void addUser(const FavoriteUser& aUser);
-	void updateUser(const User::Ptr& aUser);
-	void removeUser(const FavoriteUser& aUser);
+#endif
 };
 
 #endif // !defined(USERS_FRAME_H)

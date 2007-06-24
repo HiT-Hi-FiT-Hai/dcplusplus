@@ -32,6 +32,17 @@
 class QueueFrame : public StaticFrame<QueueFrame>, private ClientListener, private QueueManagerListener
 {
 public:
+	enum Status {
+		STATUS_SHOW_TREE,
+		STATUS_STATUS,
+		STATUS_PARTIAL_COUNT,
+		STATUS_PARTIAL_BYTES,
+		STATUS_TOTAL_COUNT,
+		STATUS_TOTAL_BYTES,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::DOWNLOAD_QUEUE;
 
 protected:
@@ -61,18 +72,6 @@ private:
 		COLUMN_TYPE,
 		COLUMN_LAST
 	};
-	enum Status {
-		STATUS_SHOW_TREE,
-		STATUS_STATUS,
-		STATUS_PARTIAL_COUNT,
-		STATUS_PARTIAL_BYTES,
-		STATUS_TOTAL_COUNT,
-		STATUS_TOTAL_BYTES,
-		STATUS_DUMMY,
-		STATUS_LAST
-	};
-	unsigned statusSizes[STATUS_LAST];
-	
 	enum Tasks {
 		ADD_ITEM,
 		REMOVE_ITEM,
@@ -207,8 +206,6 @@ private:
 
 	TaskQueue tasks;
 
-	WidgetStatusBarSectionsPtr status;
-	
 	typedef TypedTreeView<QueueFrame, DirItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
@@ -243,7 +240,6 @@ private:
 	QueueFrame(Widget* mdiParent);
 	virtual ~QueueFrame();
 	
-	void setStatus(Status s, const tstring& text);
 	void updateStatus();
 	void updateQueue();
 
@@ -288,7 +284,7 @@ private:
 	void addReaddMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
 	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
 
-	void handleShowTreeClicked();
+	void handleShowTreeClicked(WidgetCheckBoxPtr);
 
 	void handleSearchAlternates(WidgetMenuPtr menu, unsigned id);
 	void handleBitziLookup(WidgetMenuPtr menu, unsigned id);
@@ -337,8 +333,6 @@ public:
 	{
 	}
 
-	virtual ~QueueFrame() { }
-
 	typedef MDITabChildWindowImpl<QueueFrame> baseClass;
 	typedef CSplitterImpl<QueueFrame> splitBase;
 
@@ -349,7 +343,6 @@ public:
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_ITEMCHANGED, onItemChangedQueue)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)

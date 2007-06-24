@@ -24,9 +24,14 @@
 
 #include "WidgetFactory.h"
 #include "AspectSpeaker.h"
+#include "AspectStatus.h"
 
 template<typename T>
-class MDIChildFrame : public AspectSpeaker<T>, public WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget > {
+class MDIChildFrame : 
+	public WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget >,
+	public AspectSpeaker<T>, 
+	public AspectStatus<T, SmartWin::MessageMapPolicyMDIChildWidget>
+{
 public:
 	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
 	MDIChildFrame() : reallyClose(false) {

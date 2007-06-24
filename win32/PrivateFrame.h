@@ -25,12 +25,22 @@
 #include <client/ClientManagerListener.h>
 #include <client/User.h>
 
-class PrivateFrame : public MDIChildFrame<PrivateFrame>, private ClientManagerListener
+class PrivateFrame : 
+	public MDIChildFrame<PrivateFrame>, 
+	private ClientManagerListener
 {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+	
 	static void gotMessage(SmartWin::Widget* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
 	static void openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); }
+	static void closeAll();
+	static void closeAllOffline();
 
 	void sendMessage(const tstring& msg);
 
@@ -47,19 +57,11 @@ protected:
 	bool enter();
 
 private:
-	enum Status {
-		STATUS_STATUS,
-		STATUS_DUMMY,
-		STATUS_LAST
-	};
-	unsigned statusSizes[STATUS_LAST];
-	
 	enum Tasks { USER_UPDATED
 	};
 
 	WidgetTextBoxPtr chat;
 	WidgetTextBoxPtr message;
-	WidgetStatusBarSectionsPtr status;
 	TableLayout layoutTable;
 	
 	typedef HASH_MAP<UserPtr, PrivateFrame*, User::HashFunction> FrameMap;
@@ -76,8 +78,6 @@ private:
 	void addStatus(const tstring& aLine, bool inChat = true);
 	void updateTitle();
 	
-	void setStatus(Status s, const tstring& text);
-
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw();
 	virtual void on(ClientManagerListener::UserConnected, const UserPtr& aUser) throw();
@@ -99,8 +99,6 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
-	static void closeAll();
-	static void closeAllOffline();
 
 	DECLARE_FRAME_WND_CLASS_EX(_T("PrivateFrame"), IDR_PRIVATE, 0, COLOR_3DFACE);
 

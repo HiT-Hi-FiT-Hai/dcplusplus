@@ -37,8 +37,29 @@ int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
 ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::IP_BARE, ResourceManager::EMAIL, ResourceManager::CID };
 
-
 HubFrame::FrameMap HubFrame::frames;
+
+void HubFrame::closeDisconnected() {
+	for(FrameIter i=frames.begin(); i!= frames.end(); ++i) {
+		if (!(i->second->client->isConnected())) {
+			::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
+		}
+	}
+}
+
+void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
+	FrameIter i = frames.find(url);
+	if(i == frames.end()) {
+		new HubFrame(mdiParent, url);
+	} else {
+		if(StupidWin::isIconic(i->second))
+			i->second->restore();
+	
+#ifdef PORT_ME
+		i->second->MDIActivate(i->second->m_hWnd);
+#endif
+	}
+}
 
 HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) : 
 	SmartWin::Widget(mdiParent), 
@@ -48,21 +69,19 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	updateUsers(false), 
 	waitingForPW(false), 
 	resort(false),
-	showJoins(false),
-	favShowJoins(true),
+	showJoins(BOOLSETTING(SHOW_JOINS)),
+	favShowJoins(BOOLSETTING(FAV_SHOW_JOINS)),
 	chat(0),
 	message(0),
 	filter(0),
 	filterType(0),
-	status(0),
-	splitter(0),
+	paned(0),
 	showUsers(0),
 	users(0)
 {
 
-	splitter = createSplitterCool();
-	splitter->onMoved(&HubFrame::splitterMoved);
-
+	paned = createVPaned();
+	paned->setRelativePos(0.7);
 
 	{
 		WidgetTextBox::Seed cs;
@@ -72,6 +91,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		chat->setTextLimit(0);
 		chat->setFont(WinUtil::font);
 		add_widget(chat);
+		paned->setFirst(chat);
 #ifdef PORT_ME
 		/// @todo do we need this?§
 		ctrlClient.FmtLines(TRUE);
@@ -104,6 +124,12 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		filterType = createComboBox(cs);
 		filterType->setFont(WinUtil::font);
 		add_widget(filterType);
+		
+		for(int j=0; j<COLUMN_LAST; j++) {
+			filterType->addValue(TSTRING_I(columnNames[j]));
+		}
+		filterType->addValue(CTSTRING(ANY));
+		filterType->setSelectedIndex(COLUMN_LAST);
 	}
 	
 	{
@@ -115,12 +141,14 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		users->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		users->setFont(WinUtil::font);
 		add_widget(users);
-
+		paned->setSecond(users);
+		
 		users->setSmallImageList(WinUtil::userImages);
 		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
-
+		users->setColor(WinUtil::textColor, WinUtil::bgColor);
+		users->setSortColumn(COLUMN_NICK);
 	}
 	
 	{
@@ -129,11 +157,12 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		showUsers = createCheckBox(cs);
 		showUsers->setChecked(BOOLSETTING(GET_USER_INFO));
 	}
-	
-	status = createStatusBarSections();
-	memset(statusSizes, 0, sizeof(statusSizes));
+
+	initStatus();
 	///@todo get real resizer width
+	statusSizes[STATUS_SHOW_USERS] = 16;
 	statusSizes[STATUS_DUMMY] = 16;
+
 	layout();
 	
 	initSecond();
@@ -146,7 +175,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	
 	frames.insert(std::make_pair(url, this));
 	
-	//showUsers->onClicked(&HubFrame::handleShowUsersClicked);
+	showUsers->onClicked(&HubFrame::handleShowUsersClicked);
 	
 	FavoriteManager::getInstance()->addListener(this);
 }
@@ -193,35 +222,15 @@ void HubFrame::postClosing() {
 	}
 }
 
-void HubFrame::splitterMoved(WidgetSplitterCool*, const SmartWin::Point& pt) {
-	layout();
-}
-
 void HubFrame::layout() {
 	const int border = 2;
 	
 	SmartWin::Rectangle r(getClientAreaSize()); 
-	status->refresh();
 
-	SmartWin::Rectangle rs(status->getClientAreaSize());
-
-	{
-		std::vector<unsigned> w(STATUS_LAST);
-
-		w[STATUS_STATUS] = rs.size.x - rs.pos.x - std::accumulate(statusSizes, statusSizes+STATUS_LAST, 0) - w[STATUS_STATUS]; 
-		std::copy(statusSizes, statusSizes + STATUS_LAST, w.begin());
-
-		status->setSections(w);
-#ifdef PORT_ME
-		ctrlLastLines.SetMaxTipWidth(w[0]);
-		// Strange, can't get the correct width of the last field...
-		ctrlStatus.GetRect(2, sr);
-		sr.left = sr.right + 2;
-		sr.right = sr.left + 16;
-		ctrlShowUsers.MoveWindow(sr);
-#endif
-	}
-	r.size.y -= status->getSize().y - border;
+	SmartWin::Rectangle rs = layoutStatus();
+	mapWidget(STATUS_SHOW_USERS, showUsers);
+	
+	r.size.y -= rs.size.y + border;
 	int ymessage = message->getTextSize("A").y + 10;
 	int xfilter = showUsers->getChecked() ? std::min(r.size.x / 4, 200l) : 0;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
@@ -236,16 +245,14 @@ void HubFrame::layout() {
 	filterType->setBounds(rm);
 	
 	r.size.y -= rm.size.y + border;
-		
-	if(showUsers->getChecked()) {
-		SmartWin::Rectangle rsplit(splitter->getBounds());
 
-		chat->setBounds(0, 0, rsplit.pos.x, r.size.y);
-		users->setBounds(rsplit.pos.x + rsplit.size.x, 0, r.size.x - (rsplit.pos.x + rsplit.size.x), r.size.y);
-	} else {
-		chat->setBounds(r);
-		users->setBounds(r.size.x, r.size.y, 0, 0);
+	bool checked = showUsers->getChecked();
+	if(checked && !paned->getSecond()) {
+		paned->setSecond(users);
+	} else if(!checked && paned->getSecond()) {
+		paned->setSecond(0);
 	}
+	paned->setRect(r);
 }
 
 void HubFrame::updateStatus() {
@@ -269,20 +276,6 @@ void HubFrame::eachSecond(const SmartWin::CommandPtr&) {
 	initSecond();
 }
 
-
-void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
-	FrameIter i = frames.find(url);
-	if(i == frames.end()) {
-		new HubFrame(mdiParent, url);
-	} else {
-		if(StupidWin::isIconic(i->second))
-			i->second->restore();
-	
-#ifdef PORT_ME
-		i->second->MDIActivate(i->second->m_hWnd);
-#endif
-	}
-}
 bool HubFrame::enter() {
 	tstring s = message->getText();
 	if(s.empty()) {
@@ -435,16 +428,6 @@ void HubFrame::clearUserList() {
 
 void HubFrame::clearTaskList() {
 	tasks.clear();
-}
-
-void HubFrame::setStatus(Status s, const tstring& text) {
-	int w = status->getTextSize(text).x + 12;
-	if(w > static_cast<int>(statusSizes[s])) {
-		dcdebug("Setting status size %d to %d\n", s, w);
-		statusSizes[s] = w;
-		layout();
-	}
-	status->setText(text, s);
 }
 
 void HubFrame::addChat(const tstring& aLine) {
@@ -1247,11 +1230,11 @@ HRESULT HubFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 	return FALSE;
 }
 
-void HubFrame::handleShowUsersClicked() {
+void HubFrame::handleShowUsersClicked(WidgetCheckBoxPtr) {
 	bool checked = showUsers->getChecked();
 	
 	users->setVisible(checked);
-	splitter->setVisible(checked);
+	paned->setVisible(checked);
 	
 	if(checked) {
 		updateUserList();
@@ -1280,21 +1263,8 @@ void HubFrame::handleShowUsersClicked() {
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	SetSplitterPanes(ctrlClient.m_hWnd, ctrlUsers.m_hWnd, false);
-	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-	m_nProportionalPos = 7500;
 
-	ctrlShowUsers.Create(ctrlStatus.m_hWnd, rcDefault, _T("+/-"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	ctrlShowUsers.SetButtonStyle(BS_AUTOCHECKBOX, false);
-	ctrlShowUsers.SetFont(WinUtil::systemFont);
-	ctrlShowUsers.SetCheck(showUsers ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
-
-	ctrlUsers.SetBkColor(WinUtil::bgColor);
-	ctrlUsers.SetTextBkColor(WinUtil::bgColor);
-	ctrlUsers.SetTextColor(WinUtil::textColor);
-
-	ctrlUsers.setSortColumn(COLUMN_NICK);
 
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 
@@ -1311,15 +1281,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
 	tabMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
-
-	showJoins = BOOLSETTING(SHOW_JOINS);
-	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
-
-	for(int j=0; j<COLUMN_LAST; j++) {
-		ctrlFilterSel.AddString(CTSTRING_I(columnNames[j]));
-	}
-	ctrlFilterSel.AddString(CTSTRING(ANY));
-	ctrlFilterSel.SetCurSel(COLUMN_LAST);
 
 	bHandled = FALSE;
 
@@ -1643,14 +1604,6 @@ LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 void HubFrame::resortUsers() {
 	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
 		i->second->resortForFavsFirst(true);
-}
-
-void HubFrame::closeDisconnected() {
-	for(FrameIter i=frames.begin(); i!= frames.end(); ++i) {
-		if (!(i->second->client->isConnected())) {
-			i->second->PostMessage(WM_CLOSE);
-		}
-	}
 }
 
 LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {

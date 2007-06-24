@@ -163,8 +163,8 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
 	pad(0)
 {
-	//create status bar
-	//divide status bar into parts
+	initStatus();
+	
 	//create list of hubs
 	//create config/refresh/etc buttons
 }
@@ -173,20 +173,19 @@ PublicHubsFrame::~PublicHubsFrame() {
 }
 
 bool PublicHubsFrame::preClosing() {
-	if(StupidWin::getModify(pad)) {
-		try {
-			dcdebug("Writing publicc ontents\n");
-			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(Text::fromT(pad->getText()));
-		} catch(const FileException& e) {
-			dcdebug("Writing failed: %s\n", e.getError().c_str());
-			///@todo Notify user			
-		}
-	}
 	return true;
 }
 
 void PublicHubsFrame::layout() {
-	pad->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+	const int border = 2;
+
+	SmartWin::Rectangle r(getClientAreaSize()); 
+	
+	SmartWin::Rectangle rs = layoutStatus();
+
+	r.size.y -= rs.size.y + border;
+
+	pad->setBounds(r);
 }
 
 #ifdef PORT_ME

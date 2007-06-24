@@ -27,6 +27,10 @@
 
 class PublicHubsFrame : public StaticFrame<PublicHubsFrame> {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
 
 	void onCreate(CREATESTRUCT *);
@@ -163,46 +167,7 @@ public:
 		return FALSE;
 	}
 
-	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlHubs.SetFocus();
-		return 0;
-	}
-
 private:
-	enum {
-		COLUMN_FIRST,
-		COLUMN_NAME = COLUMN_FIRST,
-		COLUMN_DESCRIPTION,
-		COLUMN_USERS,
-		COLUMN_SERVER,
-		COLUMN_COUNTRY,
-		COLUMN_SHARED,
-		COLUMN_MINSHARE,
-		COLUMN_MINSLOTS,
-		COLUMN_MAXHUBS,
-		COLUMN_MAXUSERS,
-		COLUMN_RELIABILITY,
-		COLUMN_RATING,
-		COLUMN_LAST
-	};
-
-	enum {
-		FINISHED,
-		LOADED_FROM_CACHE,
-		STARTING,
-		FAILED
-	};
-
-	enum FilterModes{
-		NONE,
-		EQUAL,
-		GREATER_EQUAL,
-		LESS_EQUAL,
-		GREATER,
-		LESS,
-		NOT_EQUAL
-	};
-
 	int visibleHubs;
 	int users;
 	CStatusBarCtrl ctrlStatus;

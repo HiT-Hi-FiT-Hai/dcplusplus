@@ -23,6 +23,11 @@
 
 class NotepadFrame : public StaticFrame<NotepadFrame> {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
+	
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NOTEPAD;
 
 protected:

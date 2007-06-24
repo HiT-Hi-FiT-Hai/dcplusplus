@@ -31,11 +31,71 @@
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
+void PrivateFrame::openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
+	PrivateFrame* pf = 0;
+	FrameIter i = frames.find(replyTo_);
+	if(i == frames.end()) {
+		pf = new PrivateFrame(mdiParent, replyTo_);
+	} else {
+		pf = i->second;
+		if(StupidWin::isIconic(pf))
+			pf->restore();
+	
+#ifdef PORT_ME
+		i->second->MDIActivate(i->second->m_hWnd);
+#endif
+	}
+	if(!msg.empty())
+		pf->sendMessage(msg);
+	
+}
+
+void PrivateFrame::gotMessage(SmartWin::Widget* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
+	PrivateFrame* p = 0;
+	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
+
+	FrameIter i = frames.find(user);
+	if(i == frames.end()) {
+		p = new PrivateFrame(mdiParent, user);
+		p->addChat(aMessage);
+		if(Util::getAway()) {
+			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
+				p->sendMessage(Text::toT(Util::getAwayMessage()));
+		}
+
+		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
+			if (SETTING(BEEPFILE).empty())
+				MessageBeep(MB_OK);
+			else
+				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
+		}
+	} else {
+		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
+			if (SETTING(BEEPFILE).empty())
+				MessageBeep(MB_OK);
+			else
+				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
+		}
+		i->second->addChat(aMessage);
+	}
+}
+
+void PrivateFrame::closeAll(){
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
+		::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
+}
+
+void PrivateFrame::closeAllOffline() {
+	for(FrameIter i = frames.begin(); i != frames.end(); ++i) {
+		if(!i->first->isOnline())
+			::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
+	}
+}
+
 PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_) : 
 	SmartWin::Widget(mdiParent), 
 	chat(0),
 	message(0),
-	status(0),
 	layoutTable(1, 2),
 	replyTo(replyTo)
 {
@@ -66,9 +126,8 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 		layoutTable.add(message, SmartWin::Point(20, 20), 0, 1, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
 	}
 	
-	status = createStatusBarSections();
-	memset(statusSizes, 0, sizeof(statusSizes));
-	///@todo get real resizer width
+	initStatus();
+
 	statusSizes[STATUS_DUMMY] = 16;
 
 	updateTitle();
@@ -187,27 +246,15 @@ void PrivateFrame::layout() {
 	const int border = 2;
 	
 	SmartWin::Rectangle r(getClientAreaSize()); 
-	status->refresh();
-
-	SmartWin::Rectangle rs(status->getClientAreaSize());
+	
+	SmartWin::Rectangle rs = layoutStatus();
 
 	{
-		std::vector<unsigned> w(STATUS_LAST);
-
-		w[0] = rs.size.x - rs.pos.x - std::accumulate(statusSizes+1, statusSizes+STATUS_LAST, 0); 
-		std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
-
-		status->setSections(w);
 #ifdef PORT_ME
 		ctrlLastLines.SetMaxTipWidth(w[0]);
-		// Strange, can't get the correct width of the last field...
-		ctrlStatus.GetRect(2, sr);
-		sr.left = sr.right + 2;
-		sr.right = sr.left + 16;
-		ctrlShowUsers.MoveWindow(sr);
 #endif
 	}
-	r.size.y -= status->getSize().y - border;
+	r.size.y -= rs.size.y + border;
 	layoutTable.resize(r);
 	int ymessage = message->getTextSize("A").y + 10;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x, ymessage);
@@ -225,56 +272,6 @@ void PrivateFrame::updateTitle() {
 #endif 
 	setText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first));
 }
-
-void PrivateFrame::openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
-	PrivateFrame* pf = 0;
-	FrameIter i = frames.find(replyTo_);
-	if(i == frames.end()) {
-		pf = new PrivateFrame(mdiParent, replyTo_);
-	} else {
-		pf = i->second;
-		if(StupidWin::isIconic(pf))
-			pf->restore();
-	
-#ifdef PORT_ME
-		i->second->MDIActivate(i->second->m_hWnd);
-#endif
-	}
-	if(!msg.empty())
-		pf->sendMessage(msg);
-	
-}
-
-void PrivateFrame::gotMessage(SmartWin::Widget* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
-	PrivateFrame* p = 0;
-	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
-
-	FrameIter i = frames.find(user);
-	if(i == frames.end()) {
-		p = new PrivateFrame(mdiParent, user);
-		p->addChat(aMessage);
-		if(Util::getAway()) {
-			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
-				p->sendMessage(Text::toT(Util::getAwayMessage()));
-		}
-
-		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
-			if (SETTING(BEEPFILE).empty())
-				MessageBeep(MB_OK);
-			else
-				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
-		}
-	} else {
-		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
-			if (SETTING(BEEPFILE).empty())
-				MessageBeep(MB_OK);
-			else
-				::PlaySound(Text::toT(SETTING(BEEPFILE)).c_str(), NULL, SND_FILENAME | SND_ASYNC);
-		}
-		i->second->addChat(aMessage);
-	}
-}
-
 
 bool PrivateFrame::enter() {
 	
@@ -350,16 +347,6 @@ bool PrivateFrame::enter() {
 
 void PrivateFrame::sendMessage(const tstring& msg) {
 	ClientManager::getInstance()->privateMessage(replyTo, Text::fromT(msg));
-}
-
-void PrivateFrame::setStatus(Status s, const tstring& text) {
-	int w = status->getTextSize(text).x + 12;
-	if(w > static_cast<int>(statusSizes[s])) {
-		dcdebug("Setting status size %d to %d\n", s, w);
-		statusSizes[s] = w;
-		layout();
-	}
-	status->setText(text, s);
 }
 
 HRESULT PrivateFrame::spoken(LPARAM, WPARAM) {
@@ -490,19 +477,5 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 		bHandled = WinUtil::parseDBLClick(x, start, end);
 	}
 	return 0;
-}
-
-
-
-void PrivateFrame::closeAll(){
-	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
-		i->second->PostMessage(WM_CLOSE, 0, 0);
-}
-
-void PrivateFrame::closeAllOffline() {
-	for(FrameIter i = frames.begin(); i != frames.end(); ++i) {
-		if(!i->first->isOnline())
-			i->second->PostMessage(WM_CLOSE, 0, 0);
-	}
 }
 #endif

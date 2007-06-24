@@ -24,6 +24,10 @@
 class TextFrame : public MDIChildFrame<TextFrame>
 {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
 	friend class MDIChildFrame<TextFrame>;
 	
 	TextFrame(SmartWin::Widget* mdiParent, const string& fileName);

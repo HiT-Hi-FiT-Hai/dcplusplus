@@ -23,6 +23,8 @@
 #include "SpyFrame.h"
 
 #include <client/ShareManager.h>
+#include <client/ClientManager.h>
+
 #include "SearchFrame.h"
 
 int SpyFrame::columnSizes[] = { 305, 70, 85 };
@@ -31,9 +33,9 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING
 
 SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
+	bIgnoreTTH(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES)),
 	total(0),
-	cur(0),
-	bIgnoreTTH(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES))
+	cur(0)
 {
 	ZeroMemory(perSecond, sizeof(perSecond));
 
@@ -73,10 +75,9 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 		ignoreTTH->onClicked(&SpyFrame::handleIgnoreTTHClicked);
 	}
 
-	memset(statusSizes, 0, sizeof(statusSizes));
+	initStatus();
 	statusSizes[STATUS_IGNORE_TTH] = 150; ///@todo get real checkbox + text width
 	statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
-	status = this->createStatusBarSections();
 
 	layout();
 
@@ -85,7 +86,6 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 	ShareManager::getInstance()->setHits(0);
 
 	ClientManager::getInstance()->addListener(this);
-	TimerManager::getInstance()->addListener(this);
 
 	searches->onRaw(&SpyFrame::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
 
@@ -93,6 +93,7 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), &SpyFrame::handleSearch);
 	searches->onRaw(&SpyFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
 
+	initSecond();
 #if 1
 	// for testing purposes; adds 2 dummy lines into the list
 	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 1")));
@@ -107,29 +108,35 @@ void SpyFrame::layout() {
 	const int border = 2;
 
 	SmartWin::Rectangle r(this->getClientAreaSize());
-	status->refresh();
 
-	{
-		std::vector<unsigned> w(STATUS_LAST);
+	SmartWin::Rectangle rs = layoutStatus();
+	mapWidget(STATUS_IGNORE_TTH, ignoreTTH);
 
-		w[STATUS_STATUS] = status->getSize().x - std::accumulate(statusSizes, statusSizes+STATUS_LAST, 0) - w[STATUS_STATUS];
-		std::copy(statusSizes, statusSizes + STATUS_LAST, w.begin());
-
-		status->setSections(w);
-
-		RECT sr;
-		::SendMessage(status->handle(), SB_GETRECT, STATUS_IGNORE_TTH, reinterpret_cast<LPARAM>(&sr));
-		::MapWindowPoints(status->handle(), this->handle(), (POINT*)&sr, 2);
-		ignoreTTH->setBounds(SmartWin::Rectangle::FromRECT(sr));
-	}
-
-	r.size.y -= status->getSize().y - border;
+	r.size.y -= rs.size.y + border;
 	searches->setBounds(r);
+}
+
+void SpyFrame::initSecond() {
+	SmartWin::Command cmd(_T("1 second"));
+	createTimer(&SpyFrame::eachSecond, 1000, cmd);	
+}
+
+void SpyFrame::eachSecond(const SmartWin::CommandPtr& ptr) {
+	float x = 0.0;
+	for(int i = 0; i < AVG_TIME; ++i) {
+		x += (float)perSecond[i];
+	}
+	x /= AVG_TIME;
+
+	cur = (cur + 1) % AVG_TIME;
+	perSecond[cur] = 0;
+	setStatus(STATUS_AVG_PER_SECOND, Text::toT(STRING(AVERAGE) + Util::toString(x)));
+
+	initSecond();
 }
 
 bool SpyFrame::preClosing() {
 	ClientManager::getInstance()->removeListener(this);
-	TimerManager::getInstance()->removeListener(this);
 	return true;
 }
 
@@ -177,10 +184,6 @@ HRESULT SpyFrame::spoken(LPARAM lParam, WPARAM wParam) {
 		setStatus(STATUS_HITS, Text::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())));
 		double ratio = total > 0 ? ((double)ShareManager::getInstance()->getHits()) / (double)total : 0.0;
 		setStatus(STATUS_HIT_RATIO, Text::toT(STRING(HIT_RATIO) + Util::toString(ratio)));
-	} else if(wParam == SPEAK_TICK_AVG) {
-		float* x = (float*)lParam;
-		setStatus(STATUS_AVG_PER_SECOND, Text::toT(STRING(AVERAGE) + Util::toString(*x)));
-		delete x;
 	}
 	return 0;
 }
@@ -231,16 +234,6 @@ void SpyFrame::handleIgnoreTTHClicked(WidgetCheckBoxPtr) {
 	bIgnoreTTH = ignoreTTH->getChecked();
 }
 
-void SpyFrame::setStatus(Status s, const tstring& text) {
-	int w = status->getTextSize(text).x + 12;
-	if(w > static_cast<int>(statusSizes[s])) {
-		dcdebug("Setting status size %d to %d\n", s, w);
-		statusSizes[s] = w;
-		layout();
-	}
-	status->setText(text, s);
-}
-
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
 	if(bIgnoreTTH && s.compare(0, 4, "TTH:") == 0)
 		return;
@@ -250,16 +243,4 @@ void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw(
 		(*x)[i] = _T(' ');
 	}
 	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)x);
-}
-
-void SpyFrame::on(TimerManagerListener::Second, uint32_t) throw() {
-	float* f = new float(0.0);
-	for(int i = 0; i < AVG_TIME; ++i) {
-		(*f) += (float)perSecond[i];
-	}
-	(*f) /= AVG_TIME;
-
-	cur = (cur + 1) % AVG_TIME;
-	perSecond[cur] = 0;
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_TICK_AVG, (LPARAM)f);
 }

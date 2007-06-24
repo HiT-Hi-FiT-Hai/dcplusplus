@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#include "stdafx.h"
+#include <client/DCPlusPlus.h>
+#include "resource.h"
+
+#include "StatsFrame.h"
+
+#include <client/TimerManager.h>
+
+StatsFrame::StatsFrame(SmartWin::Widget* mdiParent) : 
+	SmartWin::Widget(mdiParent) 
+#ifdef PORT_ME 
+	width(0), 
+	height(0), 
+	timerId(0), 
+	twidth(0), 
+	lastTick(GET_TICK()), 
+	scrollTick(0),
+	lastUp(Socket::getTotalUp()), 
+	lastDown(Socket::getTotalDown()), 
+	max(0)
+#endif
+{
+#ifdef PORT_ME
+	backgr.CreateSolidBrush(WinUtil::bgColor);
+upload.CreatePen(PS_SOLID, 0, SETTING(UPLOAD_BAR_COLOR));
+download.CreatePen(PS_SOLID, 0, SETTING(DOWNLOAD_BAR_COLOR));
+foregr.CreatePen(PS_SOLID, 0, WinUtil::textColor);
+#endif
+
+}
 
 #ifdef PORT_ME
 

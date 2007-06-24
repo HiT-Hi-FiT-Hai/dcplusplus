@@ -30,6 +30,15 @@
 template<class T, bool in_UL>
 class FinishedFrameBase : public StaticFrame<T>, private FinishedManagerListener {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_COUNT,
+		STATUS_BYTES,
+		STATUS_SPEED,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+
 	static const ResourceManager::Strings TITLE_RESOURCE = in_UL ? ResourceManager::FINISHED_UPLOADS : ResourceManager::FINISHED_DOWNLOADS;
 
 protected:
@@ -65,9 +74,9 @@ protected:
 			items->setSmallImageList(WinUtil::fileImages);
 		}
 
-		statusSizes[STATUS_COUNT] = statusSizes[STATUS_BYTES] = statusSizes[STATUS_SPEED] = 100;
-		statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
-		status = this->createStatusBarSections();
+		this->initStatus();
+
+		this->statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
 
 		layout();
 
@@ -105,18 +114,9 @@ protected:
 		const int border = 2;
 
 		SmartWin::Rectangle r(this->getClientAreaSize());
-		status->refresh();
 
-		{
-			std::vector<unsigned> w(STATUS_LAST);
-
-			w[0] = status->getSize().x - std::accumulate(statusSizes+1, statusSizes+STATUS_LAST, 0);
-			std::copy(statusSizes+1, statusSizes + STATUS_LAST, w.begin()+1);
-
-			status->setSections(w);
-		}
-
-		r.size.y -= status->getSize().y - border;
+		SmartWin::Rectangle rs = this->layoutStatus();
+		r.size.y -= rs.size.y + border;
 		items->setBounds(r);
 	}
 
@@ -151,16 +151,6 @@ private:
 		COLUMN_CRC32,
 		COLUMN_LAST
 	};
-
-	enum Status {
-		STATUS_STATUS,
-		STATUS_COUNT,
-		STATUS_BYTES,
-		STATUS_SPEED,
-		STATUS_DUMMY,
-		STATUS_LAST
-	};
-	unsigned statusSizes[STATUS_LAST];
 
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
@@ -212,8 +202,6 @@ private:
 	typedef TypedListViewCtrl<T, ItemInfo> WidgetItems;
 	typedef WidgetItems* WidgetItemsPtr;
 	WidgetItemsPtr items;
-
-	typename MDIChildType::WidgetStatusBarSectionsPtr status;
 
 	typename MDIChildType::WidgetPopupMenuPtr contextMenu;
 
@@ -315,9 +303,9 @@ private:
 	}
 
 	void updateStatus() {
-		status->setText(Text::toT(Util::toString(items->getRowCount()) + ' ' + STRING(ITEMS)), STATUS_COUNT);
-		status->setText(Text::toT(Util::formatBytes(totalBytes)), STATUS_BYTES);
-		status->setText(Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s"), STATUS_SPEED);
+		setStatus(STATUS_COUNT, Text::toT(Util::toString(items->getRowCount()) + ' ' + STRING(ITEMS)));
+		setStatus(STATUS_BYTES, Text::toT(Util::formatBytes(totalBytes)));
+		setStatus(STATUS_SPEED, Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s"));
 	}
 
 	void updateList(const FinishedItemList& fl) {

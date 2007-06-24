@@ -23,8 +23,16 @@
 
 #include <client/FavoriteManagerListener.h>
 
-class FavHubsFrame : public StaticFrame<FavHubsFrame>, private FavoriteManagerListener {
+class FavHubsFrame : 
+	public StaticFrame<FavHubsFrame>, 
+	private FavoriteManagerListener 
+{
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
+	
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_HUBS;
 
 protected:

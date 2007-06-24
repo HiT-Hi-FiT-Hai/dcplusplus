@@ -44,7 +44,6 @@ void QueueFrame::QueueItemInfo::remove() {
 
 QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
-	status(0),
 	dirs(0),
 	files(0),
 	paned(0),
@@ -56,6 +55,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	fileLists(0)
 {		
 	paned = createVPaned();
+	paned->setRelativePos(0.3);
 	{
 		WidgetTreeView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
@@ -82,6 +82,8 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
+		files->setSortColumn(COLUMN_TARGET);
+
 		paned->setSecond(files);
 	}
 	
@@ -92,13 +94,12 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
 	}
 	
-	status = createStatusBarSections();
-	memset(statusSizes, 0, sizeof(statusSizes));
+	initStatus();
 	statusSizes[STATUS_SHOW_TREE] = 16;
 	///@todo get real resizer width
 	statusSizes[STATUS_DUMMY] = 16;
 	
-	//showTree->onClicked(&QueueFrame::handleShowTreeClicked);
+	showTree->onClicked(&QueueFrame::handleShowTreeClicked);
 
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
@@ -191,38 +192,13 @@ HRESULT QueueFrame::spoken(LPARAM, WPARAM) {
 	return 0;
 }
 
-
-void QueueFrame::setStatus(Status s, const tstring& text) {
-	int w = status->getTextSize(text).x + 12;
-	if(w > static_cast<int>(statusSizes[s])) {
-		dcdebug("Setting status size %d to %d\n", s, w);
-		statusSizes[s] = w;
-		layout();
-	}
-	status->setText(text, s);
-}
-
 void QueueFrame::layout() {
-	const int border = 2;
-	
 	SmartWin::Rectangle r(getClientAreaSize()); 
-	status->refresh();
 
-	SmartWin::Rectangle rs(status->getClientAreaSize());
+	SmartWin::Rectangle rs = layoutStatus();
 
+	mapWidget(STATUS_SHOW_TREE, showTree);
 	{
-		std::vector<unsigned> w(STATUS_LAST);
-
-		w[STATUS_STATUS] = rs.size.x - rs.pos.x - std::accumulate(statusSizes, statusSizes+STATUS_LAST, 0) - w[STATUS_STATUS]; 
-		std::copy(statusSizes, statusSizes + STATUS_LAST, w.begin());
-
-		status->setSections(w);
-		RECT sr;
-		
-		::SendMessage(status->handle(), SB_GETRECT, STATUS_SHOW_TREE, reinterpret_cast<LPARAM>(&sr));
-		::MapWindowPoints(status->handle(), this->handle(), (POINT*)&sr, 2);
-		showTree->setBounds(SmartWin::Rectangle::FromRECT(sr));
-
 #ifdef PORT_ME
 		ctrlLastLines.SetMaxTipWidth(w[0]);
 #endif
@@ -230,7 +206,14 @@ void QueueFrame::layout() {
 	
 	r.size.y -= rs.size.y;
 	
-	paned->setBounds(r);
+	bool checked = showTree->getChecked();
+	if(checked && !paned->getFirst()) {
+		paned->setFirst(dirs);
+	} else if(!checked && paned->getFirst()) {
+		paned->setFirst(0);
+	}
+	paned->setRect(r);
+	
 }
 
 void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
@@ -346,6 +329,15 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 			files->insertItem(ii);
 		}
 	}
+}
+
+void QueueFrame::handleShowTreeClicked(WidgetCheckBoxPtr) {
+	bool checked = showTree->getChecked();
+	
+	dirs->setVisible(checked);
+	paned->setVisible(checked);
+	
+	layout();
 }
 
 void QueueFrame::handleSelectionChanged(WidgetTreeViewPtr) {
@@ -1190,15 +1182,6 @@ HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 }
 
 #ifdef PORT_ME
-
-LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	ctrlQueue.setSortColumn(COLUMN_TARGET);
-
-	bHandled = FALSE;
-	return 1;
-}
-
 
 LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;

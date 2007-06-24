@@ -46,6 +46,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) {
 		//add_widget(queued);
 	}
 
+	initStatus();
 	// Create context menu
 	contextMenu = createMenu();
 	contextMenu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), &WaitingUsersFrame::onGetList);
@@ -69,7 +70,15 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) {
 // Recalculate frame control layout
 void WaitingUsersFrame::layout()
 {
-	queued->setBounds(SmartWin::Rectangle(SmartWin::Point(0, 0), getClientAreaSize()));
+	const int border = 2;
+
+	SmartWin::Rectangle r(this->getClientAreaSize());
+
+	SmartWin::Rectangle rs = layoutStatus();
+
+	r.size.y -= rs.size.y + border;
+
+	queued->setBounds(r);
 }
 
 bool WaitingUsersFrame::onClose()

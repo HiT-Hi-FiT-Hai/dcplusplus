@@ -30,30 +30,8 @@
 
 class DirectoryListingFrame : public MDIChildFrame<DirectoryListingFrame> {
 public:
-	static void openWindow(SmartWin::Widget* mdiParent, const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed);
-	static void openWindow(SmartWin::Widget* mdiParent, const User::Ptr& aUser, const string& txt, int64_t aSpeed);
-
-protected:
-	typedef MDIChildFrame<DirectoryListingFrame> Base;
-	friend class MDIChildFrame<DirectoryListingFrame>;
-	
-	void layout();
-	void postClosing();
-	
-	void splitterMoved(WidgetSplitterCoolPtr, const SmartWin::Point& pt);
-	
-private:
-	enum {
-		COLUMN_FILENAME,
-		COLUMN_TYPE,
-		COLUMN_EXACTSIZE,
-		COLUMN_SIZE,
-		COLUMN_TTH,
-		COLUMN_LAST
-	};
-
 	enum Status {
-		STATUS_TEXT,
+		STATUS_STATUS,
 		STATUS_SPEED,
 		STATUS_TOTAL_FILES,
 		STATUS_TOTAL_SIZE,
@@ -66,7 +44,27 @@ private:
 		STATUS_DUMMY,
 		STATUS_LAST
 	};
-	unsigned statusSizes[STATUS_LAST];
+
+	static void openWindow(SmartWin::Widget* mdiParent, const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed);
+	static void openWindow(SmartWin::Widget* mdiParent, const User::Ptr& aUser, const string& txt, int64_t aSpeed);
+	static void closeAll();
+
+protected:
+	typedef MDIChildFrame<DirectoryListingFrame> Base;
+	friend class MDIChildFrame<DirectoryListingFrame>;
+	
+	void layout();
+	void postClosing();
+
+private:
+	enum {
+		COLUMN_FILENAME,
+		COLUMN_TYPE,
+		COLUMN_EXACTSIZE,
+		COLUMN_SIZE,
+		COLUMN_TTH,
+		COLUMN_LAST
+	};
 
 	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
@@ -126,7 +124,6 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	WidgetStatusBarSectionsPtr status;
 	typedef TypedTreeView<DirectoryListingFrame, ItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
@@ -134,7 +131,7 @@ private:
 	typedef WidgetFiles* WidgetFilesPtr;
 	
 	WidgetFilesPtr files;
-	WidgetSplitterCoolPtr splitter;
+	WidgetVPanedPtr paned;
 
 	WidgetButtonPtr find;
 	WidgetButtonPtr findNext;
@@ -207,6 +204,7 @@ private:
 	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
 	void selectItem(const tstring& name);
 	void clearList();
+	void setWindowTitle();
 	
 	void loadFile(const tstring& name, const tstring& dir);
 	void loadXML(const string& txt);
@@ -219,7 +217,6 @@ private:
 
 	void initStatus();
 	void updateStatus();
-	void setStatus(Status s, const tstring& text);
 	
 	void findFile(bool findNext);
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
@@ -243,7 +240,6 @@ class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame
 
 {
 public:
-	static void closeAll();
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 	typedef UCHandler<DirectoryListingFrame> ucBase;
@@ -313,13 +309,6 @@ public:
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
 		return 0;
-	}
-
-	void setWindowTitle() {
-		if(error.empty())
-			SetWindowText((WinUtil::getNicks(dl->getUser()) + _T(" - ") + WinUtil::getHubNames(dl->getUser()).first).c_str());
-		else
-			SetWindowText(error.c_str());
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {

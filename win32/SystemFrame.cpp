@@ -34,7 +34,8 @@ SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) :
 		log = createTextBox(cs);
 		add_widget(log);
 	}
-	
+
+	initStatus();
 	layout();
 	
 	deque<pair<time_t, string> > oldMessages = LogManager::getInstance()->getLastLogs();
@@ -67,7 +68,15 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 }
 
 void SystemFrame::layout() {
-	log->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+	const int border = 2;
+
+	SmartWin::Rectangle r(this->getClientAreaSize());
+
+	SmartWin::Rectangle rs = layoutStatus();
+
+	r.size.y -= rs.size.y + border;
+
+	log->setBounds(r);
 }
 
 void SystemFrame::spoken(WPARAM wp, LPARAM lp) {

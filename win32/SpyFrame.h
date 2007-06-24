@@ -21,10 +21,21 @@
 
 #include "StaticFrame.h"
 
-#include <client/ClientManager.h>
+#include <client/ClientManagerListener.h>
 
-class SpyFrame : public StaticFrame<SpyFrame>, private ClientManagerListener, private TimerManagerListener {
+class SpyFrame : public StaticFrame<SpyFrame>, private ClientManagerListener {
 public:
+	enum Status {
+		STATUS_IGNORE_TTH,
+		STATUS_STATUS,
+		STATUS_TOTAL,
+		STATUS_AVG_PER_SECOND,
+		STATUS_HITS,
+		STATUS_HIT_RATIO,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SEARCH_SPY;
 
 protected:
@@ -43,8 +54,7 @@ private:
 	enum { AVG_TIME = 60 };
 
 	enum {
-		SPEAK_SEARCH,
-		SPEAK_TICK_AVG
+		SPEAK_SEARCH
 	};
 
 	enum {
@@ -55,18 +65,6 @@ private:
 		COLUMN_LAST
 	};
 
-	enum Status {
-		STATUS_IGNORE_TTH,
-		STATUS_STATUS,
-		STATUS_TOTAL,
-		STATUS_AVG_PER_SECOND,
-		STATUS_HITS,
-		STATUS_HIT_RATIO,
-		STATUS_DUMMY,
-		STATUS_LAST
-	};
-	unsigned statusSizes[STATUS_LAST];
-
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
@@ -75,12 +73,13 @@ private:
 	WidgetCheckBoxPtr ignoreTTH;
 	bool bIgnoreTTH;
 
-	WidgetStatusBarSectionsPtr status;
-
 	WidgetPopupMenuPtr contextMenu;
 
 	int total, cur, perSecond[AVG_TIME];
 	tstring searchString;
+
+	void initSecond();
+	void eachSecond(const SmartWin::CommandPtr& ptr);
 
 	HRESULT spoken(LPARAM lParam, WPARAM wParam);
 
@@ -92,13 +91,8 @@ private:
 
 	void handleIgnoreTTHClicked(WidgetCheckBoxPtr);
 
-	void setStatus(Status s, const tstring& text);
-
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::IncomingSearch, const string& s) throw();
-
-	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second, uint32_t) throw();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_SPY_FRAME_H)

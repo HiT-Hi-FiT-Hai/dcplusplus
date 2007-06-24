@@ -16,9 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-#ifndef DCPLUSPLUS_WIN32_WAITING_QUEUE_FRAME_H
-#define DCPLUSPLUS_WIN32_WAITING_QUEUE_FRAME_H
+#ifndef DCPLUSPLUS_WIN32_WAITING_USERS_FRAME_H
+#define DCPLUSPLUS_WIN32_WAITING_USERS_FRAME_H
 
 #include "StaticFrame.h"
 #include "WinUtil.h"
@@ -28,6 +27,10 @@
 
 class WaitingUsersFrame : public StaticFrame<WaitingUsersFrame>, public UploadManagerListener {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::WAITING_USERS;
 
 protected:

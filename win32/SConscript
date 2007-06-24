@@ -4,8 +4,8 @@ Import('dev source_path')
 
 env, target, sources = dev.prepare_build(source_path, 'DCPlusPlus')
 
-# Anonymous namespace issues
-#env['Gch'] = env.Gch('stdafx.h')[0]
+if int(ARGUMENTS.get('gch', 0)):
+    env['Gch'] = env.Gch('stdafx.h')[0]
 
 res = env.RES(dev.get_sources(source_path, '*.rc'))
 env.Depends(res, 'resource.h')

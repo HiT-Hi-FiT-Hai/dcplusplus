@@ -75,25 +75,13 @@ void SearchFrame::layout() {
 	const int border = 2;
 
 	SmartWin::Rectangle r(getClientAreaSize()); 
-	status->refresh();
+	
+	SmartWin::Rectangle rs = layoutStatus();
+	mapWidget(STATUS_SHOW_UI, showUI);
 
-	{
-		std::vector<unsigned> w(STATUS_LAST);
-
-		w[STATUS_STATUS] = status->getSize().x - std::accumulate(statusSizes, statusSizes+STATUS_LAST, 0) - w[STATUS_STATUS];
-		std::copy(statusSizes, statusSizes + STATUS_LAST, w.begin());
-
-		status->setSections(w);
-
-		RECT sr;
-		::SendMessage(status->handle(), SB_GETRECT, STATUS_SHOW_UI, reinterpret_cast<LPARAM>(&sr));
-		::MapWindowPoints(status->handle(), this->handle(), (POINT*)&sr, 2);
-		showUI->setBounds(SmartWin::Rectangle::FromRECT(sr));
-	}
-
-	r.size.y -= status->getSize().y - border;
+	r.size.y -= rs.size.y + border;
 	RECT rect = r, initialRect = rect;
-	if(showUI) {
+	if(showUI->getChecked()) {
 		const int width = 220, spacing = 50, labelH = 16, comboH = 140, lMargin = 2, rMargin = 4;
 
 		rect.left += width;
@@ -533,10 +521,10 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		showUI->onClicked(&SearchFrame::handleShowUIClicked);
 	}
 
-	memset(statusSizes, 0, sizeof(statusSizes));
+	initStatus();
+	
 	statusSizes[STATUS_SHOW_UI] = 16; ///@todo get real checkbox width
 	statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
-	status = this->createStatusBarSections();
 
 	layout();
 
@@ -808,16 +796,6 @@ void SearchFrame::handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 		delete results->getItemData(i);
 		results->removeRow(i);
 	}
-}
-
-void SearchFrame::setStatus(Status s, const tstring& text) {
-	int w = status->getTextSize(text).x + 12;
-	if(w > static_cast<int>(statusSizes[s])) {
-		dcdebug("Setting status size %d to %d\n", s, w);
-		statusSizes[s] = w;
-		layout();
-	}
-	status->setText(text, s);
 }
 
 SearchFrame::WidgetPopupMenuPtr SearchFrame::makeMenu() {

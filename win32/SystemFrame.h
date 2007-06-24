@@ -28,6 +28,10 @@ class SystemFrame : public StaticFrame<SystemFrame>,
 	private LogManagerListener
 {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_LAST
+	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
 protected:
 	friend class StaticFrame<SystemFrame>;

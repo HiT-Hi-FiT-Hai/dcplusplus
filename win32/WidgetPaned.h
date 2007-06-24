@@ -54,13 +54,22 @@ public:
 
 	static const Seed & getDefaultSeed();
 
-	void setRelativePos(double pos);
+	void setRelativePos(double pos_) {
+		pos = pos_;
+		resizeChildren();
+	}
 	
+	SmartWin::Widget* getFirst() {
+		return children.first;
+	}
 	void setFirst(SmartWin::Widget* child) {
 		children.first = child;
 		resizeChildren();
 	}
 	
+	SmartWin::Widget* getSecond() {
+		return children.second;
+	}
 	void setSecond(SmartWin::Widget* child) {
 		children.second = child;
 		resizeChildren();
@@ -68,6 +77,11 @@ public:
 
 	virtual void create( const Seed & cs = getDefaultSeed() );
 
+	void setRect(SmartWin::Rectangle r) {
+		rect = r;
+		resizeChildren();
+	}
+	
 protected:
 	// Constructor Taking pointer to parent
 	explicit WidgetPaned( SmartWin::Widget * parent );
@@ -85,8 +99,9 @@ private:
 	
 	bool moving;
 	
-	RECT getSplitterRect();
+	SmartWin::Rectangle rect;
 	
+	SmartWin::Rectangle getSplitterRect();
 	void resizeChildren();
 	
 	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
@@ -106,6 +121,7 @@ const typename WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::S
 		wc.hInstance = SmartWin::Application::instance().getAppHandle();
 		wc.lpszClassName = d_DefaultValues.getClassName().c_str();
 		wc.hbrBackground = ( HBRUSH )( COLOR_3DFACE + 1 );
+		wc.hCursor = LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE );
 		wc.lpfnWndProc = SmartWin::MessageMapPolicyNormalWidget::mainWndProc_;
 		ATOM registeredClass = SmartWinRegisterClass( & wc );
 		if ( 0 == registeredClass )
@@ -153,7 +169,7 @@ void WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::create( con
 }
 
 template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-RECT WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::getSplitterRect()
+SmartWin::Rectangle WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::getSplitterRect()
 {
 	// Sanity check
 	if(pos < 0.) {
@@ -162,46 +178,64 @@ RECT WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::getSplitter
 		pos = 1.0;
 	}
 	
-	RECT rc = { 0 };
+	SmartWin::Rectangle rc;
 	if(!children.first || !children.second) {
 		return rc;
 	}
+
+	if(horizontal) {
+		rc.size.x = rect.size.x;
+		rc.pos.x = rect.pos.x;
+
+		int cwidth = rect.size.y;
+		int swidth = ::GetSystemMetrics(SM_CYEDGE) + 2;
+		int realpos = static_cast<int>(pos * cwidth);
+		rc.pos.y = realpos - swidth / 2;
+		rc.size.y = swidth;
+	} else {
+		rc.size.y = rect.size.y;
+		rc.pos.y = rect.pos.y;
 	
-	::GetClientRect(this->SmartWin::Widget::handle(), &rc);
-	int cwidth = rc.right - rc.left;
-	int swidth = ::GetSystemMetrics(SM_CXEDGE) + 2;
-	int realpos = static_cast<int>(pos * cwidth);
-	rc.left = realpos - swidth / 2;
-	rc.right = realpos - (swidth - swidth/2); // Catch odd size
+		int cwidth = rect.size.x;
+		int swidth = ::GetSystemMetrics(SM_CXEDGE) + 2;
+		int realpos = static_cast<int>(pos * cwidth);
+		rc.pos.x = realpos - swidth / 2;
+		rc.size.x = swidth;
+	}
 	return rc;
 }
 
 template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
 void WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::resizeChildren( )
 {
-	RECT rc;
-	::GetClientRect(this->SmartWin::Widget::handle(), &rc);
-	
 	if(!children.first) {
 		if(children.second) {
-			::MoveWindow(children.second->handle(), rc.left, rc.top, rc.right-rc.left, rc.bottom - rc.top, TRUE);
+			::MoveWindow(children.second->handle(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, TRUE);
 		}
 		return;
 	}
 	if(!children.second) {
-		::MoveWindow(children.first->handle(), rc.left, rc.top, rc.right-rc.left, rc.bottom - rc.top, TRUE);
+		::MoveWindow(children.first->handle(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, TRUE);
 		return;
 	}
 	
-	RECT left = rc, right = rc;
-	RECT rcSplit = getSplitterRect();
-	left.right = rcSplit.left;
-	right.left = rcSplit.right;
+	SmartWin::Rectangle left = rect, right = rect;
+	SmartWin::Rectangle rcSplit = getSplitterRect();
+	
+	if(horizontal) {
+		left.size.y = rcSplit.pos.y - left.pos.y;
+		right.pos.y = rcSplit.pos.y + rcSplit.size.y;
+		right.size.y = rect.size.y - rcSplit.size.y - left.size.y;		
+	} else {
+		left.size.x = rcSplit.pos.x - left.pos.x;
+		right.pos.x = rcSplit.pos.x + rcSplit.size.x;
+		right.size.x = rect.size.x - rcSplit.size.x - left.size.x;
+	}
 
-	::MoveWindow(children.first->handle(), left.left, left.top, left.right-left.left, left.bottom - left.top, TRUE);
-	::MoveWindow(children.second->handle(), right.left, right.top, right.right-right.left, right.bottom - right.top, TRUE);
+	::MoveWindow(children.first->handle(), left.pos.x, left.pos.y, left.size.x, left.size.y, TRUE);
+	::MoveWindow(children.second->handle(), right.pos.x, right.pos.y, right.size.x, right.size.y, TRUE);
 
-	::InvalidateRect(this->SmartWin::Widget::handle(), &rcSplit, TRUE);
+	this->setBounds(rcSplit);
 }
 
 template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
@@ -211,12 +245,8 @@ LRESULT WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::sendWidg
 	{
 		case WM_LBUTTONDOWN :
 		{
-			POINT pt = { GET_X_LPARAM(lPar), GET_Y_LPARAM(lPar) };
-			RECT rc = getSplitterRect();
-
-			if(::PtInRect(&rc, pt)) {
-				::SetCapture( this->SmartWin::Widget::handle() );
-			}
+			::SetCapture( this->SmartWin::Widget::handle() );
+			moving = true;
 
 			return 0;
 		}
@@ -224,12 +254,13 @@ LRESULT WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::sendWidg
 		{
 			if ( wPar & MK_LBUTTON && moving )
 			{
+				POINT pt = { GET_X_LPARAM(lPar), GET_Y_LPARAM(lPar) };
+				this->clientToScreen(pt);
+				this->getParent()->screenToClient(pt);
 				
-				RECT rc;
-				::GetClientRect(this->SmartWin::Widget::handle(), &rc);
-				int x = GET_X_LPARAM(lPar);
-				int w = rc.right - rc.left;
-				pos = (static_cast<double>(w - x) / static_cast<double>(w));
+				int x = horizontal ? pt.y : pt.x;
+				int w = horizontal ? rect.size.y : rect.size.x;
+				pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));
 				resizeChildren();
 			}
 			return 0;
@@ -241,16 +272,6 @@ LRESULT WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::sendWidg
 
 			return 0;
 		}
-		case WM_SIZE :
-		{
-			resizeChildren();
-			return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
-		} break;
-		case WM_MOVE :
-		{
-			resizeChildren();
-			return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
-		} break;
 		default:
 			return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
 	}

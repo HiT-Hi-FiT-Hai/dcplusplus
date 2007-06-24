@@ -19,10 +19,16 @@
 #ifndef DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 #define DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 
-#include "AspectSpeaker.h"
 #include <client/forward.h>
 
+#include <client/QueueManagerListener.h>
+#include <client/LogManager.h>
+#include <client/HttpConnection.h>
+
 #include "TransferView.h"
+#include "WidgetFactory.h"
+#include "AspectStatus.h"
+#include "AspectSpeaker.h"
 
 #ifdef PORT_ME
 
@@ -39,17 +45,33 @@
 #include "UPnP.h"
 #endif
 
-class MainWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, MainWindow>, public AspectSpeaker<MainWindow>
+class MainWindow : 
+	public WidgetFactory<SmartWin::WidgetWindow, MainWindow>, 
+	public AspectSpeaker<MainWindow>,
+	private HttpConnectionListener, 
+	private QueueManagerListener, 
+	private LogManagerListener,
+	public AspectStatus<MainWindow, SmartWin::MessageMapPolicyNormalWidget>
 
 #ifdef PORT_ME
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
-		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
-		private LogManagerListener
+		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,  
 #endif
-
 {
 public:
+	enum Status {
+		STATUS_STATUS,
+		STATUS_AWAY,
+		STATUS_COUNTS,
+		STATUS_SLOTS,
+		STATUS_DOWN_TOTAL,
+		STATUS_UP_TOTAL,
+		STATUS_DOWN_DIFF,
+		STATUS_UP_DIFF,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+
 	MainWindow();
 	virtual ~MainWindow();
 
@@ -79,24 +101,34 @@ private:
 		STATUS_MESSAGE
 	};
 
-	enum Status {
-		STATUS_STATUS,
-		STATUS_AWAY,
-		STATUS_COUNTS,
-		STATUS_SLOTS,
-		STATUS_DOWN_TOTAL,
-		STATUS_UP_TOTAL,
-		STATUS_DOWN_DIFF,
-		STATUS_UP_DIFF,
-		STATUS_DUMMY,
-		STATUS_LAST
-	};
-	
-	WidgetStatusBarSectionsPtr status;
+	struct {
+		tstring homepage;
+		tstring downloads;
+		tstring geoipfile;
+		tstring translations;
+		tstring faq;
+		tstring help;
+		tstring discuss;
+		tstring features;
+		tstring bugs;
+	} links;
+
+
+	WidgetHPanedPtr paned;
 	WidgetMDIParentPtr mdi;
 	WidgetMenuPtr mainMenu;
+	TransferView* transfers;
 
-	unsigned statusSizes[STATUS_LAST];
+	/** Is the tray icon visible? */
+	bool trayIcon;
+	/** Was the window maximized when minimizing it? */
+	bool maximized;
+	uint32_t lastMove;
+
+	HttpConnection* c;
+	string versionInfo;
+
+	HANDLE stopperThread;
 
 	int64_t lastUp;
 	int64_t lastDown;
@@ -110,38 +142,58 @@ private:
 	void initMenu();
 	void initStatusBar();
 	void initMDI();
+	void initTransfers();
 	void initSecond();
 	
 	// User actions
 	void handleExit(WidgetMenuPtr menu, unsigned id);
-	void handlePublicHubs(WidgetMenuPtr menu, unsigned id);
-	void handleFavHubs(WidgetMenuPtr menu, unsigned id);
-	void handleSystemLog(WidgetMenuPtr menu, unsigned id);
-	void handleSearch(WidgetMenuPtr menu, unsigned id);
-	void handleAdlSearch(WidgetMenuPtr menu, unsigned id);
-    void handleSearchSpy(WidgetMenuPtr menu, unsigned id);
-	void handleNotepad(WidgetMenuPtr menu, unsigned id);
+	void handleOpenWindow(WidgetMenuPtr menu, unsigned id);
 	void handleQuickConnect(WidgetMenuPtr menu, unsigned id);
-	void handleQueue(WidgetMenuPtr menu, unsigned id);
-	void handleFinishedDL(WidgetMenuPtr menu, unsigned id);
-	void handleFinishedUL(WidgetMenuPtr menu, unsigned id);
 	void handleSettings(WidgetMenuPtr menu, unsigned id);
 	void handleOpenFileList(WidgetMenuPtr menu, unsigned id);
 	void handleOpenOwnList(WidgetMenuPtr menu, unsigned id);
+	void handleRefreshFileList(WidgetMenuPtr menu, unsigned id);
+	void handleMatchAll(WidgetMenuPtr menu, unsigned id);
+	void handleOpenDownloadsDir(WidgetMenuPtr menu, unsigned id);
+	void handleLink(WidgetMenuPtr menu, unsigned id);
+	void handleAbout(WidgetMenuPtr menu, unsigned id);
+	void handleMDIReorder(WidgetMenuPtr menu, unsigned id);
+	void handleHelp(WidgetMenuPtr menu, unsigned id);
+	void handleHashProgress(WidgetMenuPtr menu, unsigned id);
+	void handleCloseWindows(WidgetMenuPtr menu, unsigned id);
+	void handleMinimizeAll(WidgetMenuPtr menu, unsigned id);
+	void handleRestoreAll(WidgetMenuPtr menu, unsigned id);
 	
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
 	
 	HRESULT spoken(LPARAM lp, WPARAM wp);
+	HRESULT trayMessage(LPARAM lp, WPARAM wp);
 	
 	void layout();
 	void eachSecond(const SmartWin::CommandPtr& ptr);
 	void updateStatus();
-	void setStatus(Status s, const tstring& text);
+	void updateTray(bool add = true);
 	void autoConnect(const FavoriteHubEntryList& fl);
 	void startSocket();
 	void startUPnP();
 	void stopUPnP();
+
+	bool closing();
+	
+	static DWORD WINAPI stopper(void* p);
+
+	// LogManagerListener
+	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { speak(STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); }
+
+	// HttpConnectionListener
+	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, string const& /*aLine*/) throw();
+	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw();
+
+	// QueueManagerListener
+	virtual void on(QueueManagerListener::Finished, QueueItem* qi, const string& dir, int64_t speed) throw();
+	virtual void on(PartialList, const UserPtr&, const string& text) throw();
+
 
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
@@ -196,39 +248,11 @@ private:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVert)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
-		COMMAND_ID_HANDLER(ID_VIEW_CONNECT, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_FAVORITES, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_FAVUSERS, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_NOTEPAD, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_QUEUE, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_NET_STATS, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_VIEW_WAITING_USERS, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_SYSTEM_LOG, onOpenWindows)
-		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_GEOIPFILE, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_TRANSLATIONS, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_HELP_FORUM, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onMenuHelp)
-		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
-		COMMAND_ID_HANDLER(IDC_OPEN_OWN_LIST, onOpenOwnList)
 		COMMAND_ID_HANDLER(IDC_TRAY_QUIT, onTrayQuit)
 		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		COMMAND_ID_HANDLER(ID_WINDOW_RESTORE_ALL, onWindowRestoreAll)
-		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseWindows)
-		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_PM, onCloseWindows)
-		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_OFFLINE_PM, onCloseWindows)
-		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_DIR_LIST, onCloseWindows)
-		COMMAND_ID_HANDLER(IDC_CLOSE_ALL_SEARCH_FRAME, onCloseWindows)
-		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onOpenDownloads)
-		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
 		COMMAND_ID_HANDLER(IDC_HASH_PROGRESS, onHashProgress)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
@@ -245,17 +269,10 @@ private:
 
 
 	LRESULT onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHashProgress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onMatchAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLink(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -265,11 +282,7 @@ private:
 	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onMenuHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onOpenWindows(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const tstring& cmdLine);
 
@@ -324,111 +337,15 @@ private:
 		return 0;
 	}
 
-	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		WinUtil::openFile(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
-		return 0;
-	}
-
-	LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		MDICascade();
-		return 0;
-	}
-
-	LRESULT OnWindowTile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		MDITile();
-		return 0;
-	}
-
-	LRESULT OnWindowTileVert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		MDITile(MDITILE_VERTICAL);
-		return 0;
-	}
-
-	LRESULT OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		MDIIconArrange();
-		return 0;
-	}
-
-	LRESULT onWindowMinimizeAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		HWND tmpWnd = GetWindow(GW_CHILD); //getting client window
-		tmpWnd = ::GetWindow(tmpWnd, GW_CHILD); //getting first child window
-		while (tmpWnd!=NULL) {
-			::CloseWindow(tmpWnd);
-			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
-		}
-		return 0;
-	}
-	 LRESULT onWindowRestoreAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		HWND tmpWnd = GetWindow(GW_CHILD); //getting client window
-		HWND ClientWnd = tmpWnd; //saving client window handle
-		tmpWnd = ::GetWindow(tmpWnd, GW_CHILD); //getting first child window
-		BOOL bmax;
-		while (tmpWnd!=NULL) {
-			::ShowWindow(tmpWnd, SW_RESTORE);
-			::SendMessage(ClientWnd,WM_MDIGETACTIVE,NULL,(LPARAM)&bmax);
-			if(bmax)break; //bmax will be true if active child
-					//window is maximized, so if bmax then break
-			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
-		}
-		return 0;
-	}
-
 private:
-
-	TransferView transferView;
 
 	CToolTipCtrl ctrlLastLines;
 
-	CStatusBarCtrl ctrlStatus;
 	FlatTabCtrl ctrlTab;
-	HttpConnection* c;
-	string versionInfo;
 	CImageList images;
 	CImageList largeImages, largeImagesHot;
 
-	UINT trayMessage;
-	/** Is the tray icon visible? */
-	bool trayIcon;
-	/** Was the window maximized when minimizing it? */
-	bool maximized;
-	uint32_t lastMove;
-
-	bool oldshutdown;
-
-	bool closing;
-
-	int lastUpload;
-
-	HANDLE stopperThread;
-
-	struct {
-		tstring homepage;
-		tstring downloads;
-		tstring geoipfile;
-		tstring translations;
-		tstring faq;
-		tstring help;
-		tstring discuss;
-		tstring features;
-		tstring bugs;
-	} links;
-
 	HWND createToolbar();
-	void updateTray(bool add = true);
-
-	// LogManagerListener
-	virtual void on(LogManagerListener::Message, time_t t, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new pair<time_t, tstring>(t, tstring(Text::toT(m)))); }
-
-	// TimerManagerListener
-	virtual void on(TimerManagerListener::Second type, uint32_t aTick) throw();
-
-	// HttpConnectionListener
-	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, string const& /*aLine*/) throw();
-	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw();
-
-	// QueueManagerListener
-	virtual void on(QueueManagerListener::Finished, QueueItem* qi, const string& dir, int64_t speed) throw();
-	virtual void on(PartialList, const User::Ptr&, const string& text) throw();
 
 	// UPnP connectors
 	UPnP* UPnP_TCPConnection;

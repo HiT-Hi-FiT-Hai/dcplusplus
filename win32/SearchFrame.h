@@ -25,8 +25,21 @@
 #include <client/SearchManager.h>
 #include <client/ClientManagerListener.h>
 
-class SearchFrame : public MDIChildFrame<SearchFrame>, private SearchManagerListener, private ClientManagerListener {
+class SearchFrame : 
+	public MDIChildFrame<SearchFrame>, 
+	private SearchManagerListener, 
+	private ClientManagerListener 
+{
 public:
+	enum Status {
+		STATUS_SHOW_UI,
+		STATUS_STATUS,
+		STATUS_COUNT,
+		STATUS_FILTERED,
+		STATUS_DUMMY,
+		STATUS_LAST
+	};
+
 	static void openWindow(SmartWin::Widget* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
 	static void closeAll();
 
@@ -64,16 +77,6 @@ private:
 		COLUMN_LAST
 	};
 
-	enum Status {
-		STATUS_SHOW_UI,
-		STATUS_STATUS,
-		STATUS_COUNT,
-		STATUS_FILTERED,
-		STATUS_DUMMY,
-		STATUS_LAST
-	};
-	unsigned statusSizes[STATUS_LAST];
-
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -106,7 +109,7 @@ private:
 			const tstring& tgt;
 		};
 		struct CheckTTH {
-			CheckTTH() : op(true), firstHubs(true), hasTTH(false), firstTTH(true) { }
+			CheckTTH() : firstHubs(true), op(true), hasTTH(false), firstTTH(true) { }
 			void operator()(SearchInfo* si);
 			bool firstHubs;
 			StringList hubs;
@@ -181,8 +184,6 @@ private:
 	bool bShowUI;
 	bool isHash;
 
-	WidgetStatusBarSectionsPtr status;
-
 	/** Currently shown context menu */
 	WidgetPopupMenuPtr contextMenu;
 
@@ -197,7 +198,6 @@ private:
 
 	TStringList currentSearch;
 	StringList targets;
-
 
 	CriticalSection cs;
 
@@ -239,8 +239,6 @@ private:
 	void handleBitziLookup(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 	void handleCopyMagnet(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 	void handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-
-	void setStatus(Status s, const tstring& text);
 
 	WidgetPopupMenuPtr makeMenu();
 	void addTargetMenu(const WidgetPopupMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
