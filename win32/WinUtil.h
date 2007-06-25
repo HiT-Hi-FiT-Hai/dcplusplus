@@ -128,6 +128,8 @@ public:
 	static int getOsMajor();
 	static int getOsMinor();
 
+	static void setClipboard(const tstring& str);
+
 #ifdef PORT_ME
 	static CImageList userImages;
 
@@ -164,7 +166,6 @@ public:
 		return sz.cx;
 	}
 
-	static void setClipboard(const tstring& str);
 
 	static tstring getHelpFile() {
 		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");

@@ -36,8 +36,10 @@ public:
 	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
 	MDIChildFrame() : reallyClose(false) {
 		// If something fails here, you've not called SmartWin::Widget with a good parent
-		// (because of smartwin's shitty inheritance) from the most derived class 
-		FactoryType::createMDIChild();
+		// (because of smartwin's shitty inheritance) from the most derived class
+		typename FactoryType::Seed cs;
+		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
+		FactoryType::createMDIChild(cs);
 
 		onClosing(&T::closing);
 		onFocus(&T::focused);
@@ -64,7 +66,7 @@ protected:
 	void postClosing() { }
 	
 	template<typename W>
-	void add_widget(W* widget) {
+	void addWidget(W* widget) {
 		widget->onChar(&T::charred);
 		controls.push_back(widget); 
 	}

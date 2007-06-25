@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,24 +16,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(PUBLIC_HUBS_FRM_H)
-#define PUBLIC_HUBS_FRM_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef DCPLUSPLUS_WIN32_PUBLIC_HUBS_FRAME_H
+#define DCPLUSPLUS_WIN32_PUBLIC_HUBS_FRAME_H
 
 #include "StaticFrame.h"
 
-class PublicHubsFrame : public StaticFrame<PublicHubsFrame> {
+#include "TypedListViewCtrl.h"
+
+#include <client/FavoriteManager.h>
+
+class PublicHubsFrame : 
+	public StaticFrame<PublicHubsFrame>,
+	public FavoriteManagerListener
+{
 public:
 	enum Status {
 		STATUS_STATUS,
+		STATUS_HUBS,
+		STATUS_USERS,
+		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
-
-	void onCreate(CREATESTRUCT *);
 
 protected:
 	friend class StaticFrame<PublicHubsFrame>;
@@ -44,7 +48,8 @@ protected:
 
 	void layout();
 	bool preClosing();
-
+	void postClosing();
+	HRESULT spoken(LPARAM lParam, WPARAM wParam);
 private:
 	enum {
 		COLUMN_FIRST,
@@ -79,14 +84,66 @@ private:
 		LESS,
 		NOT_EQUAL
 	};
+	
+	class HubInfo {
+	public:
+		HubInfo(const HubEntry* entry_);
+		
+		static int compareItems(const HubInfo* a, const HubInfo* b, int col);
+		const tstring& getText(int column) const { return columns[column]; }
+		int getImage() const { return 0; }
+		const HubEntry* entry;
+		tstring columns[COLUMN_LAST];
+	};
+
+	typedef TypedListViewCtrl<PublicHubsFrame, HubInfo> WidgetHubs;
+	typedef WidgetHubs* WidgetHubsPtr;
+	WidgetHubsPtr hubs;
+
+	WidgetButtonPtr configure;
+	WidgetButtonPtr refresh;
+	WidgetButtonPtr lists;
+	WidgetButtonPtr filterDesc;
+	WidgetTextBoxPtr filter;
+	WidgetComboBoxPtr pubLists;
+	WidgetComboBoxPtr filterSel;
 
 	int visibleHubs;
 	int users;
+	
+	string filterString;
 
-	WidgetTextBoxPtr pad;
-
+	HubEntry::List entries;
+	
 	static int columnIndexes[];
 	static int columnSizes[];
+
+	using AspectSpeaker<PublicHubsFrame>::speak;
+	
+	void handleConfigure(WidgetButtonPtr);
+	void handleRefresh(WidgetButtonPtr);
+	void handleConnect(WidgetMenuPtr, unsigned);
+	void handleAdd(WidgetMenuPtr, unsigned);
+	void handleCopyHub(WidgetMenuPtr, unsigned);
+	HRESULT handleContextMenu(LPARAM, WPARAM);
+
+	bool checkNick();
+	void updateStatus();
+	void updateList();
+	void updateDropDown();
+
+	bool parseFilter(FilterModes& mode, double& size);
+	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const FilterModes& mode, const double& size);
+
+	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
+	virtual void on(DownloadFailed, const string& l) throw() { speak(FAILED, l); }
+	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
+	virtual void on(LoadedFromCache, const string& l) throw() { speak(LOADED_FROM_CACHE, l); }
+
+	void speak(int x, const string& l) {
+		speak(static_cast<WPARAM>(x), reinterpret_cast<LPARAM>(new tstring(Text::toT(l))));
+	}
+
 
 };
 
@@ -100,7 +157,7 @@ private:
 #include "WinUtil.h"
 
 #define FILTER_MESSAGE_MAP 8
-class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS>,
+class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, >,
 	private FavoriteManagerListener
 {
 public:
@@ -151,61 +208,9 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onListSelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-	bool checkNick();
-
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		HWND hWnd = (HWND)lParam;
-		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlPubLists.m_hWnd || hWnd == ctrlFilter.m_hWnd || hWnd == ctrlFilterSel.m_hWnd) {
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
-		}
-		bHandled = FALSE;
-		return FALSE;
-	}
-
 private:
-	int visibleHubs;
-	int users;
-	CStatusBarCtrl ctrlStatus;
-	CButton ctrlConfigure;
-	CButton ctrlRefresh;
-	CButton ctrlLists;
-	CButton ctrlFilterDesc;
-	CEdit ctrlFilter;
-	CMenu hubsMenu;
-
 	CContainedWindow filterContainer;
-	CComboBox ctrlPubLists;
-	CComboBox ctrlFilterSel;
-	ExListViewCtrl ctrlHubs;
 
-	HubEntry::List hubs;
-	string filter;
-
-	bool closed;
-
-	static int columnIndexes[];
-	static int columnSizes[];
-
-	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
-	virtual void on(DownloadFailed, const string& l) throw() { speak(FAILED, l); }
-	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
-	virtual void on(LoadedFromCache, const string& l) throw() { speak(LOADED_FROM_CACHE, l); }
-
-	void speak(int x, const string& l) {
-		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(Text::toT(l)));
-	}
-
-	void updateStatus();
-	void updateList();
-	void updateDropDown();
-
-	bool parseFilter(FilterModes& mode, double& size);
-	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const FilterModes& mode, const double& size);
 };
 
 #endif /* PORT_ME */

@@ -46,11 +46,14 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = createDataGrid(cs);
-		add_widget(hubs);
+		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+		hubs->setFont(WinUtil::font);
+		addWidget(hubs);
 		
 		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
+		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 	
 	{
@@ -60,35 +63,37 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		cs.caption = TSTRING(CONNECT);
 		connect = createButton(cs);
 		connect->onClicked(&FavHubsFrame::handleConnect);
-		add_widget(connect);
+		addWidget(connect);
 		
 		cs.caption = TSTRING(NEW);
 		add = createButton(cs);
 		add->onClicked(&FavHubsFrame::handleAdd);
-		add_widget(add);
+		addWidget(add);
 		
 		cs.caption = TSTRING(REMOVE);
 		remove = createButton(cs);
 		remove->onClicked(&FavHubsFrame::handleRemove);
-		add_widget(remove);
+		addWidget(remove);
 		
 		cs.caption = TSTRING(PROPERTIES);
 		properties = createButton(cs);
 		properties->onClicked(&FavHubsFrame::handleProperties);
-		add_widget(properties);
+		addWidget(properties);
 		
 		cs.caption = TSTRING(MOVE_UP);
 		up = createButton(cs);
 		up->onClicked(&FavHubsFrame::handleUp);
-		add_widget(up);
+		addWidget(up);
 		
 		cs.caption = TSTRING(MOVE_DOWN);
 		down = createButton(cs);
 		down->onClicked(&FavHubsFrame::handleDown);
-		add_widget(down);
+		addWidget(down);
 	}
 
 	initStatus();
+	statusSizes[STATUS_DUMMY] = 16;
+
 	layout();
 	
 	const FavoriteHubEntry::List& fl = FavoriteManager::getInstance()->getFavoriteHubs();

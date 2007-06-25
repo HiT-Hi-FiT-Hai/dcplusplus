@@ -58,7 +58,7 @@ UsersFrame::UsersFrame(SmartWin::Widget* mdiParent) :
 		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
 		users->setListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		users->setFont(WinUtil::font);
-		add_widget(users);
+		addWidget(users);
 		
 		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));

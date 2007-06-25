@@ -119,6 +119,7 @@
 #define IDC_HELP_REPORT_BUG			1068
 #define IDC_HELP_DONATE				1069
 #define IDC_MATCH_QUEUE				1070
+#define IDC_COPY_HUB				1071
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000

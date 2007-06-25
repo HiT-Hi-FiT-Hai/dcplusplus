@@ -43,7 +43,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) {
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		queued = createTreeView(cs);
 		// @todo subclass WidgetTreeView to have onChar so MDIChildFrame can tab around it
-		//add_widget(queued);
+		//addWidget(queued);
 	}
 
 	initStatus();

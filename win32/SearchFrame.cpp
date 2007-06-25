@@ -362,7 +362,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		searchBox = createTextBox(cs);
 		searchBox->setFont(WinUtil::font);
-		add_widget(searchBox);
+		addWidget(searchBox);
 
 #ifdef PORT_ME
 		ctrlSearchBox.Create(handle(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
@@ -392,7 +392,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		mode = createComboBox(cs);
 		mode->setFont(WinUtil::font);
-		add_widget(mode);
+		addWidget(mode);
 
 		mode->addValue(TSTRING(NORMAL));
 		mode->addValue(TSTRING(AT_LEAST));
@@ -405,7 +405,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		size = createTextBox(cs);
 		size->setFont(WinUtil::font);
-		add_widget(size);
+		addWidget(size);
 	}
 
 	{
@@ -414,7 +414,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		sizeMode = createComboBox(cs);
 		sizeMode->setFont(WinUtil::font);
-		add_widget(sizeMode);
+		addWidget(sizeMode);
 
 		sizeMode->addValue(TSTRING(B));
 		sizeMode->addValue(TSTRING(KiB));
@@ -432,7 +432,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		fileType = createComboBox(cs);
 		fileType->setFont(WinUtil::font);
-		add_widget(fileType);
+		addWidget(fileType);
 
 		fileType->addValue(TSTRING(ANY));
 		fileType->addValue(TSTRING(AUDIO));
@@ -466,7 +466,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
 		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-		add_widget(hubs);
+		addWidget(hubs);
 
 		TStringList dummy;
 		dummy.push_back(Util::emptyStringT);
@@ -492,7 +492,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		results = SmartWin::WidgetCreator<WidgetResults>::create(this, cs);
 		results->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		add_widget(results);
+		addWidget(results);
 
 #ifdef PORT_ME
 		for(int j=0; j<COLUMN_LAST; j++) {

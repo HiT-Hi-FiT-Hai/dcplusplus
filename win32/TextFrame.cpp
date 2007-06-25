@@ -35,7 +35,7 @@ TextFrame::TextFrame(SmartWin::Widget* mdiParent, const string& fileName) :
 	cs.exStyle = WS_EX_CLIENTEDGE;
 	
 	pad = createTextBox(cs);
-	add_widget(pad);
+	addWidget(pad);
 
 	pad->setFont(WinUtil::monoFont);
 	pad->setTextLimit(0);

@@ -53,7 +53,7 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, cs);
 		transfers->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		transfers->setFont(WinUtil::font);
-		//add_widget(transfers);
+		//addWidget(transfers);
 
 		transfers->setSmallImageList(arrows);
 		transfers->createColumns(ResourceManager::getInstance()->getStrings(columnNames));

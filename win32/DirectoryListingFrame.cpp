@@ -140,7 +140,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::Widget* mdiParent, const 
 		cs.style = WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
-		add_widget(dirs);
+		addWidget(dirs);
 		paned->setFirst(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
@@ -154,7 +154,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::Widget* mdiParent, const 
 		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, cs);
 		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		files->setFont(WinUtil::font);
-		add_widget(files);
+		addWidget(files);
 		paned->setSecond(files);
 
 		files->setSmallImageList(WinUtil::fileImages);

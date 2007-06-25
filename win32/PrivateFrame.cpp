@@ -106,7 +106,7 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 		chat = createTextBox(cs);
 		chat->setTextLimit(0);
 		chat->setFont(WinUtil::font);
-		add_widget(chat);
+		addWidget(chat);
 		layoutTable.add(chat, SmartWin::Point(20, 20), 0, 0, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
 		
 #ifdef PORT_ME
@@ -122,7 +122,7 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		message = createTextBox(cs);
 		message->setFont(WinUtil::font);
-		add_widget(message);
+		addWidget(message);
 		layoutTable.add(message, SmartWin::Point(20, 20), 0, 1, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
 	}
 	

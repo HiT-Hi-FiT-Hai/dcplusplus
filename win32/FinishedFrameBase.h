@@ -57,7 +57,7 @@ protected:
 			cs.exStyle = WS_EX_CLIENTEDGE;
 			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);
 			items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-			add_widget(items);
+			addWidget(items);
 
 #ifdef PORT_ME
 			for(int j=0; j<COLUMN_LAST; j++) {

@@ -25,7 +25,7 @@
 #include "SystemFrame.h"
 #include "NotepadFrame.h"
 #include "HubFrame.h"
-#include "PublicHubsFrm.h"
+#include "PublicHubsFrame.h"
 #include "FavHubsFrame.h"
 #include "QueueFrame.h"
 #include "SearchFrame.h"
@@ -286,7 +286,7 @@ void MainWindow::initMenu() {
 	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleOpenWindow);
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleOpenWindow);
 	view->appendItem(IDC_NET_STATS, TSTRING(MENU_NETWORK_STATISTICS), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_HASH_PROGRESS, TSTRING(MENU_HASH_PROGRESS), &MainWindow::handleOpenWindow);
+	view->appendItem(IDC_HASH_PROGRESS, TSTRING(MENU_HASH_PROGRESS), &MainWindow::handleHashProgress);
 #ifdef PORT_ME
 	view.AppendMenu(MF_SEPARATOR);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
@@ -944,18 +944,20 @@ void MainWindow::handleRestoreAll(WidgetMenuPtr, unsigned) {
 
 void MainWindow::handleOpenWindow(WidgetMenuPtr, unsigned id) {
 	switch(id) {
-		case IDC_SEARCH: SearchFrame::openWindow(mdi); break;
-		case IDC_CONNECT: PublicHubsFrame::openWindow(mdi); break;
-		case IDC_FAVORITES: FavHubsFrame::openWindow(mdi); break;
-		case IDC_FAVUSERS: UsersFrame::openWindow(mdi); break;
-		case IDC_NOTEPAD: NotepadFrame::openWindow(mdi); break;
-		case IDC_QUEUE: QueueFrame::openWindow(mdi); break;
-		case IDC_SEARCH_SPY: SpyFrame::openWindow(mdi); break;
-		case IDC_ADL_SEARCH: ADLSearchFrame::openWindow(mdi); break;
-		case IDC_NET_STATS: StatsFrame::openWindow(mdi); break;
-		case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(mdi); break;
-		case IDC_SYSTEM_LOG: SystemFrame::openWindow(mdi); break;
-		default: dcassert(0); break;
+	case IDC_PUBLIC_HUBS: PublicHubsFrame::openWindow(mdi); break;
+	case IDC_FAVORITE_HUBS: FavHubsFrame::openWindow(mdi); break;
+	case IDC_FAVUSERS: UsersFrame::openWindow(mdi); break;
+	case IDC_QUEUE: QueueFrame::openWindow(mdi); break;
+	case IDC_FINISHED_DL: FinishedDLFrame::openWindow(mdi); break;
+	case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(mdi); break;
+	case IDC_FINISHED_UL: FinishedULFrame::openWindow(mdi); break;
+	case IDC_SEARCH: SearchFrame::openWindow(mdi); break;
+	case IDC_ADL_SEARCH: ADLSearchFrame::openWindow(mdi); break;
+	case IDC_SEARCH_SPY: SpyFrame::openWindow(mdi); break;
+	case IDC_NOTEPAD: NotepadFrame::openWindow(mdi); break;
+	case IDC_SYSTEM_LOG: SystemFrame::openWindow(mdi); break;
+	case IDC_NET_STATS: StatsFrame::openWindow(mdi); break;
+	default: dcassert(0); break;
 	}
 }
 

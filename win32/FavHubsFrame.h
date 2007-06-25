@@ -30,6 +30,7 @@ class FavHubsFrame :
 public:
 	enum Status {
 		STATUS_STATUS,
+		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	

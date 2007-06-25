@@ -46,7 +46,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		items = createDataGrid(cs);
 	//	items->onClicked(&ADLSearchFrame::handleCheckBox);
-		add_widget(items);
+		addWidget(items);
 
 		items->setFullRowSelect(true); // should be in the style?
 
@@ -71,37 +71,37 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) :
 		cs.caption = TSTRING(NEW);
 		add = createButton(cs);
 		add->onClicked(&ADLSearchFrame::handleAdd);
-		add_widget(add);
+		addWidget(add);
 		add->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(REMOVE);
 		remove = createButton(cs);
 		remove->onClicked(&ADLSearchFrame::handleRemove);
-		add_widget(remove);
+		addWidget(remove);
 		remove->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(PROPERTIES);
 		properties = createButton(cs);
 		properties->onClicked(&ADLSearchFrame::handleProperties);
-		add_widget(properties);
+		addWidget(properties);
 		properties->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(MOVE_UP);
 		up = createButton(cs);
 		up->onClicked(&ADLSearchFrame::handleUp);
-		add_widget(up);
+		addWidget(up);
 		up->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(MOVE_DOWN);
 		down = createButton(cs);
 		down->onClicked(&ADLSearchFrame::handleDown);
-		add_widget(down);
+		addWidget(down);
 		down->setFont(WinUtil::font);
 
 		cs.caption = TSTRING(MENU_HELP);
 		help = createButton(cs);
 		help->onClicked(&ADLSearchFrame::handleHelp);
-		add_widget(help);
+		addWidget(help);
 		help->setFont(WinUtil::font);
 	}
 	initStatus();
@@ -114,8 +114,8 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) :
 		
 		file->appendItem(IDC_ADD, TSTRING(NEW), &ADLSearchFrame::popupNew);
 		contextMenu->attach(this);*
-	//	add_widget(file);
-	//	add_widget(contextMenu);
+	//	addWidget(file);
+	//	addWidget(contextMenu);
 		//contextMenu->setFont(WinUtil::font);
 	//	contextMenu->appendItem(1, TSTRING(NEW), &ADLSearchFrame::popupNew);
 
@@ -125,7 +125,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) :
 		//cs.caption = TSTRING(NEW);
 		add = createButton(cs);
 		add->onClicked(&ADLSearchFrame::handleAdd);
-		add_widget(add);
+		addWidget(add);
 		add->setFont(WinUtil::font);
 		*/
 #ifdef PORT_ME

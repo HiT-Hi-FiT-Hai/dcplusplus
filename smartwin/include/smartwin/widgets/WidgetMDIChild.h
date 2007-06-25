@@ -76,7 +76,10 @@ public:
 	public:
 		typedef typename WidgetMDIChild::ThisType WidgetType;
 
-		//TODO: put variables to be filled here
+		HICON smallIcon;
+		HICON icon;
+		HBRUSH background;
+		
 
 		/// Fills with default parameters
 		Seed();
@@ -124,6 +127,9 @@ const typename WidgetMDIChild< EventHandlerClass, unUsed >::Seed & WidgetMDIChil
 	{
 		d_DefaultValues.exStyle = WS_EX_MDICHILD;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
+		d_DefaultValues.background = ( HBRUSH )( COLOR_WINDOW + 1 );
+		d_DefaultValues.icon = NULL;
+		d_DefaultValues.smallIcon = NULL;
 		//TODO: initialize the values here
 		d_NeedsInit = false;
 	}
@@ -161,12 +167,12 @@ void WidgetMDIChild< EventHandlerClass, unUsed >::createMDIChild( Seed cs )
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = Application::instance().getAppHandle();
-	wc.hIcon = LoadIcon( 0, IDI_APPLICATION );
-	wc.hCursor = LoadCursor( 0, IDC_ARROW );
-	wc.hbrBackground = ( HBRUSH )( COLOR_BTNTEXT );
+	wc.hIcon = cs.icon;
+	wc.hCursor = NULL;
+	wc.hbrBackground = cs.background;
 	wc.lpszMenuName = 0;
 	wc.lpszClassName = itsRegisteredClassName.c_str();
-	wc.hIconSm = LoadIcon( 0, IDI_APPLICATION );
+	wc.hIconSm = cs.smallIcon;
 
 	ATOM registeredClass = SmartWinRegisterClass( & wc );
 	if ( 0 == registeredClass )

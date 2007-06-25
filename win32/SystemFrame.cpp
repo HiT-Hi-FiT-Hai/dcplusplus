@@ -32,7 +32,7 @@ SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		log = createTextBox(cs);
-		add_widget(log);
+		addWidget(log);
 	}
 
 	initStatus();

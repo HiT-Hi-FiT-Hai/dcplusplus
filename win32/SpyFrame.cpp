@@ -44,7 +44,7 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		searches = createDataGrid(cs);
-		add_widget(searches);
+		addWidget(searches);
 		searches->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
 #ifdef PORT_ME

@@ -55,6 +55,8 @@ typedef std::vector<FinishedItemPtr> FinishedItemList;
 
 class FinishedManager;
 
+class HubEntry;
+
 class Identity;
 
 class InputStream;

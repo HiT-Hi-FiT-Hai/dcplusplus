@@ -479,6 +479,64 @@ int WinUtil::getOsMinor() {
 	return ver.dwMinorVersion;
 }
 
+void WinUtil::setClipboard(const tstring& str) {
+#ifdef PORT_ME
+	if(!::OpenClipboard(mainWnd)) {
+		return;
+	}
+
+	EmptyClipboard();
+
+#ifdef UNICODE
+	OSVERSIONINFOEX ver;
+	if( WinUtil::getVersionInfo(ver) ) {
+		if( ver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS ) {
+			string tmp = Text::wideToAcp(str);
+
+			HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (tmp.size() + 1) * sizeof(char));
+			if (hglbCopy == NULL) {
+				CloseClipboard();
+				return;
+			}
+
+			// Lock the handle and copy the text to the buffer.
+			char* lptstrCopy = (char*)GlobalLock(hglbCopy);
+			strcpy(lptstrCopy, tmp.c_str());
+			GlobalUnlock(hglbCopy);
+
+			SetClipboardData(CF_TEXT, hglbCopy);
+
+			CloseClipboard();
+
+			return;
+		}
+	}
+#endif
+
+	// Allocate a global memory object for the text.
+	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1) * sizeof(TCHAR));
+	if (hglbCopy == NULL) {
+		CloseClipboard();
+		return;
+	}
+
+	// Lock the handle and copy the text to the buffer.
+	TCHAR* lptstrCopy = (TCHAR*)GlobalLock(hglbCopy);
+	_tcscpy(lptstrCopy, str.c_str());
+	GlobalUnlock(hglbCopy);
+
+	// Place the handle on the clipboard.
+#ifdef UNICODE
+	SetClipboardData(CF_UNICODETEXT, hglbCopy);
+#else
+	SetClipboardData(CF_TEXT hglbCopy);
+#endif
+
+	CloseClipboard();
+#endif
+}
+
+
 #ifdef PORT_ME
 #include "Resource.h"
 
@@ -624,62 +682,6 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 		}
 	}
 	return CallNextHookEx(WinUtil::hook, code, wParam, lParam);
-}
-
-
-void WinUtil::setClipboard(const tstring& str) {
-	if(!::OpenClipboard(mainWnd)) {
-		return;
-	}
-
-	EmptyClipboard();
-
-#ifdef UNICODE
-	OSVERSIONINFOEX ver;
-	if( WinUtil::getVersionInfo(ver) ) {
-		if( ver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS ) {
-			string tmp = Text::wideToAcp(str);
-
-			HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (tmp.size() + 1) * sizeof(char));
-			if (hglbCopy == NULL) {
-				CloseClipboard();
-				return;
-			}
-
-			// Lock the handle and copy the text to the buffer.
-			char* lptstrCopy = (char*)GlobalLock(hglbCopy);
-			strcpy(lptstrCopy, tmp.c_str());
-			GlobalUnlock(hglbCopy);
-
-			SetClipboardData(CF_TEXT, hglbCopy);
-
-			CloseClipboard();
-
-			return;
-		}
-	}
-#endif
-
-	// Allocate a global memory object for the text.
-	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1) * sizeof(TCHAR));
-	if (hglbCopy == NULL) {
-		CloseClipboard();
-		return;
-	}
-
-	// Lock the handle and copy the text to the buffer.
-	TCHAR* lptstrCopy = (TCHAR*)GlobalLock(hglbCopy);
-	_tcscpy(lptstrCopy, str.c_str());
-	GlobalUnlock(hglbCopy);
-
-	// Place the handle on the clipboard.
-#ifdef UNICODE
-	SetClipboardData(CF_UNICODETEXT, hglbCopy);
-#else
-	SetClipboardData(CF_TEXT hglbCopy);
-#endif
-
-	CloseClipboard();
 }
 
 void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {

@@ -79,7 +79,6 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	showUsers(0),
 	users(0)
 {
-
 	paned = createVPaned();
 	paned->setRelativePos(0.7);
 
@@ -90,7 +89,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		chat = createTextBox(cs);
 		chat->setTextLimit(0);
 		chat->setFont(WinUtil::font);
-		add_widget(chat);
+		addWidget(chat);
 		paned->setFirst(chat);
 #ifdef PORT_ME
 		/// @todo do we need this?§
@@ -105,7 +104,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		message = createTextBox(cs);
 		message->setFont(WinUtil::font);
-		add_widget(message);
+		addWidget(message);
 	}
 	
 	{
@@ -114,7 +113,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		filter = createTextBox(cs);
 		filter->setFont(WinUtil::font);
-		add_widget(filter);
+		addWidget(filter);
 	}
 	{
 		WidgetComboBox::Seed cs;
@@ -123,7 +122,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		cs.exStyle =  WS_EX_CLIENTEDGE;
 		filterType = createComboBox(cs);
 		filterType->setFont(WinUtil::font);
-		add_widget(filterType);
+		addWidget(filterType);
 		
 		for(int j=0; j<COLUMN_LAST; j++) {
 			filterType->addValue(TSTRING_I(columnNames[j]));
@@ -140,7 +139,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
 		users->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		users->setFont(WinUtil::font);
-		add_widget(users);
+		addWidget(users);
 		paned->setSecond(users);
 		
 		users->setSmallImageList(WinUtil::userImages);

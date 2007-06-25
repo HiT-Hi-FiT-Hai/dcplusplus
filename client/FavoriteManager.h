@@ -19,10 +19,6 @@
 #ifndef DCPLUSPLUS_CLIENT_FAVORITE_MANAGER_H
 #define DCPLUSPLUS_CLIENT_FAVORITE_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "SettingsManager.h"
 
 #include "CriticalSection.h"
