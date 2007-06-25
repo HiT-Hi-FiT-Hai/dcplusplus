@@ -22,6 +22,8 @@
 #include "MDIChildFrame.h"
 #include "TypedListViewCtrl.h"
 
+#include "UserInfoBase.h"
+
 #include <client/forward.h>
 #include <client/ClientListener.h>
 #include <client/TaskQueue.h>
@@ -31,7 +33,8 @@
 class HubFrame : 
 	public MDIChildFrame<HubFrame>, 
 	public ClientListener, 
-	private FavoriteManagerListener
+	private FavoriteManagerListener,
+	public AspectUserInfo<HubFrame>
 {
 public:
 	enum Status {
@@ -49,6 +52,7 @@ public:
 protected:
 	typedef MDIChildFrame<HubFrame> Base;
 	friend class MDIChildFrame<HubFrame>;
+	friend class AspectUserInfo<HubFrame>;
 	
 	void layout();
 	HRESULT spoken(LPARAM lp, WPARAM wp);
@@ -194,6 +198,8 @@ private:
 	void addChat(const tstring& aLine);
 	void addStatus(const tstring& aLine, bool inChat = true);
 
+	WidgetUsersPtr getUserList() { return users; }
+	
 	tstring getStatusUsers() const;
 	tstring getStatusShared() const;
 	void updateStatus();

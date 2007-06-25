@@ -21,7 +21,7 @@
 
 #include "LineDlg.h"
 
-LineDlg::LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, bool password_, const tstring& initial_) : 
+LineDlg::LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_, bool password_) : 
 	SmartWin::Widget(parent), 
 	title(title_), 
 	desc(desc_), 

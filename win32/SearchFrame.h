@@ -25,10 +25,13 @@
 #include <client/SearchManager.h>
 #include <client/ClientManagerListener.h>
 
+#include "UserInfoBase.h"
+
 class SearchFrame : 
 	public MDIChildFrame<SearchFrame>, 
 	private SearchManagerListener, 
-	private ClientManagerListener 
+	private ClientManagerListener,
+	public AspectUserInfo<SearchFrame>
 {
 public:
 	enum Status {
@@ -45,7 +48,7 @@ public:
 
 protected:
 	friend class MDIChildFrame<SearchFrame>;
-
+	friend class AspectUserInfo<SearchFrame>;
 	void layout();
 
 	bool preClosing();
@@ -184,9 +187,6 @@ private:
 	bool bShowUI;
 	bool isHash;
 
-	/** Currently shown context menu */
-	WidgetPopupMenuPtr contextMenu;
-
 	tstring initialString;
 	int64_t initialSize;
 	SearchManager::SizeModes initialMode;
@@ -244,6 +244,8 @@ private:
 	void addTargetMenu(const WidgetPopupMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
 	void addTargetDirMenu(const WidgetPopupMenuPtr& parent, const StringPairList& favoriteDirs);
 
+	WidgetResultsPtr getUserList() { return results; }
+	
 	// SearchManagerListener
 	virtual void on(SearchManagerListener::SR, SearchResult* aResult) throw();
 

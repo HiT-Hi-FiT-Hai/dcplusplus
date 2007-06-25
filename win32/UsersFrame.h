@@ -25,12 +25,12 @@
 #include "WinUtil.h"
 #include "TypedListViewCtrl.h"
 
+#include "UserInfoBase.h"
+
 class UsersFrame : 
 	public StaticFrame<UsersFrame>, 
-	private FavoriteManagerListener
-#ifdef PORT_ME
-	public UserInfoBaseHandler<UsersFrame>
-#endif
+	private FavoriteManagerListener,
+	public AspectUserInfo<UsersFrame>
 {
 public:
 	enum Status {
@@ -42,6 +42,7 @@ public:
 protected:
 	friend class StaticFrame<UsersFrame>;
 	friend class MDIChildFrame<UsersFrame>;
+	friend class AspectUserInfo<UsersFrame>;
 	
 	void layout();
 	HRESULT spoken(LPARAM lp, WPARAM wp);
@@ -98,14 +99,21 @@ private:
 	UsersFrame(SmartWin::Widget* mdiParent);
 	virtual ~UsersFrame() { }
 
+	// FavoriteManagerListener
 	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
 	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
-	virtual void on(StatusChanged, const UserPtr& aUser) throw() { speak(USER_UPDATED, (LPARAM)new UserInfoBase(aUser)); }
+	virtual void on(StatusChanged, const UserPtr& aUser) throw() { speak(USER_UPDATED, reinterpret_cast<LPARAM>(new UserInfoBase(aUser))); }
 
 	void addUser(const FavoriteUser& aUser);
 	void updateUser(const UserPtr& aUser);
 	void removeUser(const FavoriteUser& aUser);
 
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	void handleRemove(WidgetMenuPtr menu, unsigned id);
+	void handleProperties(WidgetMenuPtr menu, unsigned id); 
+	
+	WidgetUsersPtr getUserList() { return users; }
+	
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(UsersFrame)
 		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
@@ -113,36 +121,15 @@ private:
 		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClick)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
 		COMMAND_ID_HANDLER(IDC_CONNECT, onConnect)
 		CHAIN_MSG_MAP(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-
-public:
-	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
-private:
-
-	bool closed;
-
-
-	// FavoriteManagerListener
 
 #endif
 };

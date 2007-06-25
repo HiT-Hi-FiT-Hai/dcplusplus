@@ -1151,7 +1151,8 @@ HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 		}
 
 		usingDirMenu = false;
-
+		WidgetPopupMenuPtr contextMenu;
+		
 		if(files->getSelectedCount() == 1) {
 			QueueItemInfo* ii = files->getSelectedItem();
 			contextMenu = makeSingleMenu(ii);
@@ -1172,7 +1173,7 @@ HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 			return FALSE;
 		}
 		usingDirMenu = true;
-		contextMenu = makeDirMenu();
+		WidgetPopupMenuPtr contextMenu = makeDirMenu();
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return TRUE;

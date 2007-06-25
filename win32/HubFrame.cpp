@@ -560,7 +560,7 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 					message->setSelection(10, 10);
 					waitingForPW = true;
 				} else {
-					LineDlg linePwd(this, TSTRING(ENTER_PASSWORD), TSTRING(ENTER_PASSWORD), true);
+					LineDlg linePwd(this, TSTRING(ENTER_PASSWORD), TSTRING(ENTER_PASSWORD), Util::emptyStringT, true);
 					if(linePwd.run() == IDOK) {
 						client->setPassword(Text::fromT(linePwd.getLine()));
 						client->password(Text::fromT(linePwd.getLine()));
@@ -1218,14 +1218,19 @@ HRESULT HubFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 			pt = users->getContextMenuPos();
 		}
 
+		WidgetPopupMenuPtr menu = createPopupMenu();
+		appendUserItems(menu);
+		
+
 #ifdef PORT_ME
+		menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), &T::handleCopyNick);
+		userMenu.SetMenuDefaultItem(IDC_GETLIST);
 		tabMenuShown = false;
 		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
-		checkAdcItems(userMenu);
-		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		cleanMenu(userMenu);
-		return TRUE;
 #endif
+		
+		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -1275,7 +1280,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	userMenu.CreatePopupMenu();
 	appendUserItems(userMenu);
 	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
-	userMenu.SetMenuDefaultItem(IDC_GETLIST);
 
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));

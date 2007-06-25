@@ -216,9 +216,6 @@ private:
 	WidgetVPanedPtr paned;
 	WidgetCheckBoxPtr showTree;
 
-	/** Currently shown context menu */
-	WidgetPopupMenuPtr contextMenu;
-
 	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;

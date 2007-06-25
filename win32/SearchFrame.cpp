@@ -668,7 +668,7 @@ HRESULT SearchFrame::handleContextMenu(DataGridMessageType, LPARAM lParam, WPARA
 			pt = results->getContextMenuPos();
 		}
 
-		contextMenu = makeMenu();
+		WidgetPopupMenuPtr contextMenu = makeMenu();
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
 	}

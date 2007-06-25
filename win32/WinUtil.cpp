@@ -600,42 +600,6 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S) {
 	return HLS2RGB (HLS(h, l, s));
 }
 
-void UserInfoBase::matchQueue() {
-	try {
-		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
-	} catch(const Exception& e) {
-		LogManager::getInstance()->message(e.getError());
-	}
-}
-void UserInfoBase::getList() {
-	try {
-		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
-	} catch(const Exception& e) {
-		LogManager::getInstance()->message(e.getError());
-	}
-}
-void UserInfoBase::browseList() {
-	if(user->getCID().isZero())
-		return;
-	try {
-		QueueManager::getInstance()->addPfs(user, "");
-	} catch(const Exception& e) {
-		LogManager::getInstance()->message(e.getError());
-	}
-}
-void UserInfoBase::addFav() {
-	FavoriteManager::getInstance()->addFavoriteUser(user);
-}
-void UserInfoBase::pm() {
-	PrivateFrame::openWindow(user);
-}
-void UserInfoBase::grant() {
-	UploadManager::getInstance()->reserveSlot(user);
-}
-void UserInfoBase::removeAll() {
-	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
-}
-
 bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
 	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);

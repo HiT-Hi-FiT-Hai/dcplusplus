@@ -26,7 +26,7 @@
 class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, LineDlg, SmartWin::MessageMapPolicyModalDialogWidget>
 {
 public:
-	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, bool password_ = false, const tstring& initial_ = Util::emptyStringT);
+	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_ = Util::emptyStringT, bool password_ = false);
 	
 	int run() { return createDialog(IDD_LINE); }
 	

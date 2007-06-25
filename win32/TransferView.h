@@ -32,21 +32,26 @@
 #include "TypedListViewCtrl.h"
 #include "WidgetFactory.h"
 
-#include "WinUtil.h"
+#include "UserInfoBase.h"
 
 #ifdef PORT_ME
 #include "UCHandler.h"
 #endif
 
-class TransferView : public WidgetFactory<SmartWin::WidgetChildWindow, TransferView>, 
-	private DownloadManagerListener, private UploadManagerListener, private ConnectionManagerListener,
-	public AspectSpeaker<TransferView>
+class TransferView : 
+	public WidgetFactory<SmartWin::WidgetChildWindow, TransferView>, 
+	private DownloadManagerListener, 
+	private UploadManagerListener, 
+	private ConnectionManagerListener,
+	public AspectSpeaker<TransferView>,
+	public AspectUserInfo<TransferView>
 {
 public:
 	TransferView(SmartWin::Widget*);
 	virtual ~TransferView();
 	
 private:
+	friend class AspectUserInfo<TransferView>;
 	
 	enum {
 		ADD_ITEM,
@@ -181,6 +186,8 @@ private:
 
 	WidgetPopupMenuPtr makeContextMenu(ItemInfo* ii);
 
+	WidgetTransfersPtr getUserList() { return transfers; }
+	
 	using AspectSpeaker<TransferView>::speak;
 	
 	void speak(int type, UpdateInfo* ui) { tasks.add(type, ui); speak(); }
@@ -264,14 +271,6 @@ private:
 		return NFR_ANSI;
 #endif
 	}
-
-private:
-	/** Parameter map for user commands */
-	class ItemInfo;
-public:
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; }
-private:
-	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS> ctrlTransfers;
 
 	CMenu transferMenu;
 

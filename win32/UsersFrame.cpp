@@ -20,6 +20,7 @@
 #include <client/DCPlusPlus.h>
 
 #include "UsersFrame.h"
+#include "LineDlg.h"
 
 #include <client/FavoriteManager.h>
 #include <client/ResourceManager.h>
@@ -136,9 +137,48 @@ void UsersFrame::postClosing() {
 
 HRESULT UsersFrame::spoken(LPARAM lp, WPARAM wp) {
 	if(wp == USER_UPDATED) {
-		UserInfoBase* uib = (UserInfoBase*)lp;
+		std::auto_ptr<UserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lp));
 		updateUser(uib->user);
-		delete uib;
+	}
+	return 0;
+}
+
+HRESULT UsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+	if (reinterpret_cast<HWND>(wParam) == users->handle() && users->hasSelection()) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
+		if(pt.x == -1 && pt.y == -1) {
+			pt = users->getContextMenuPos();
+		}
+
+		WidgetPopupMenuPtr menu = createPopupMenu();
+		appendUserItems(menu);
+		menu->appendSeparatorItem();
+		menu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), &UsersFrame::handleProperties);
+		menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &UsersFrame::handleRemove);
+		
+		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+		return TRUE;
+	}
+	return FALSE;
+}
+
+void UsersFrame::handleRemove(WidgetMenuPtr, unsigned) {
+	users->forEachSelected(&UsersFrame::UserInfo::remove);
+}
+
+void UsersFrame::handleProperties(WidgetMenuPtr, unsigned) {
+	if(users->getSelectedCount() == 1) {
+		int i = users->getSelectedIndex();
+		UserInfo* ui = users->getItemData(i);
+		LineDlg dlg(this, ui->columns[COLUMN_NICK], TSTRING(DESCRIPTION), ui->columns[COLUMN_DESCRIPTION]);
+
+		if(dlg.run() == IDOK) {
+			FavoriteManager::getInstance()->setUserDescription(ui->user, Text::fromT(dlg.getLine()));
+			ui->columns[COLUMN_DESCRIPTION] = dlg.getLine();
+			users->updateItem(i);
+		}
 	}
 }
 
@@ -150,66 +190,6 @@ HRESULT UsersFrame::spoken(LPARAM lp, WPARAM wp) {
 #include "LineDlg.h"
 
 #include "HubFrame.h"
-
-LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-
-
-	usersMenu.CreatePopupMenu();
-	appendUserItems(usersMenu);
-	usersMenu.AppendMenu(MF_SEPARATOR);
-	usersMenu.AppendMenu(MF_STRING, IDC_EDIT, CTSTRING(PROPERTIES));
-	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-
-
-
-	bHandled = FALSE;
-	return TRUE;
-
-}
-
-LRESULT UsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if (reinterpret_cast<HWND>(wParam) == ctrlUsers && ctrlUsers.GetSelectedCount() > 0 ) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlUsers, pt);
-		}
-
-		checkAdcItems(usersMenu);
-		usersMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-
-		return TRUE;
-	}
-	bHandled = FALSE;
-	return FALSE;
-}
-
-LRESULT UsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while( (i = ctrlUsers.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		ctrlUsers.getItemData(i)->remove();
-	}
-	return 0;
-}
-
-LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlUsers.GetSelectedCount() == 1) {
-		int i = ctrlUsers.GetNextItem(-1, LVNI_SELECTED);
-		UserInfo* ui = ctrlUsers.getItemData(i);
-		dcassert(i != -1);
-		LineDlg dlg;
-		dlg.description = TSTRING(DESCRIPTION);
-		dlg.title = ui->columns[COLUMN_NICK];
-		dlg.line = ui->columns[COLUMN_DESCRIPTION];
-		if(dlg.DoModal(m_hWnd)) {
-			FavoriteManager::getInstance()->setUserDescription(ui->user, Text::fromT(dlg.line));
-			ui->columns[COLUMN_DESCRIPTION] = dlg.line;
-			ctrlUsers.updateItem(i);
-		}
-	}
-	return 0;
-}
 
 LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;

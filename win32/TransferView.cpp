@@ -22,6 +22,7 @@
 
 #include "TransferView.h"
 #include "resource.h"
+#include "WinUtil.h"
 
 #include <client/ResourceManager.h>
 #include <client/SettingsManager.h>
@@ -86,10 +87,8 @@ void TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 TransferView::WidgetPopupMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	WidgetPopupMenuPtr menu = createPopupMenu();
 	
-#ifdef PORT_ME
-	appendUserItems(transferMenu);
-	transferMenu.AppendMenu(MF_SEPARATOR);
-#endif
+	appendUserItems(menu);
+	menu->appendSeparatorItem();
 	
 	menu->appendItem(IDC_FORCE, TSTRING(FORCE_ATTEMPT), &TransferView::handleForce);
 	if(ii->download) {

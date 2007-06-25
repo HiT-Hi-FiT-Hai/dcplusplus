@@ -118,6 +118,7 @@
 #define IDC_HELP_REQUEST_FEATURE	1067
 #define IDC_HELP_REPORT_BUG			1068
 #define IDC_HELP_DONATE				1069
+#define IDC_MATCH_QUEUE				1070
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000
