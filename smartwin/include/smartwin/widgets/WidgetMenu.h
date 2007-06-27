@@ -46,11 +46,25 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-struct WidgetMenuDispatcher
+struct WidgetMenuSimpleDispatcher
+{
+	typedef boost::function<void ()> F;
+
+	WidgetMenuSimpleDispatcher(const F& f_) : f(f_) { }
+
+	HRESULT operator()(private_::SignalContent& params) {
+		f();
+		return 1;
+	}
+
+	F f;
+};
+
+struct WidgetMenuIdDispatcher
 {
 	typedef boost::function<void (unsigned)> F;
 
-	WidgetMenuDispatcher(const F& f_) : f(f_) { }
+	WidgetMenuIdDispatcher(const F& f_) : f(f_) { }
 
 	HRESULT operator()(private_::SignalContent& params) {
 		f(LOWORD(params.Msg.WParam ));
@@ -288,8 +302,9 @@ class WidgetMenu :
 {
 protected:
 	typedef typename WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >::MessageMapType MessageMapType;
-	typedef WidgetMenuDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	typedef WidgetMenuSimpleDispatcher SimpleDispatcher;
+	typedef WidgetMenuIdDispatcher IdDispatcher;
+	typedef AspectAdapter<IdDispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
 	// friends
 	friend class WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >;
@@ -334,7 +349,7 @@ public:
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, menuVoidFunctionTakingUInt eventHandler ) {
 		appendItem(id, name, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
 	}
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, const Dispatcher::F& f ) {
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, const IdDispatcher::F& f ) {
 		appendItem(id, name, NULL, f);
 	}
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, itsVoidMenuFunctionTakingUInt eventHandler ) {
@@ -343,7 +358,8 @@ public:
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, menuVoidFunctionTakingUInt eventHandler ) {
 		appendItem(id, name, data, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
 	}
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const Dispatcher::F& f );
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const IdDispatcher::F& f );
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const SimpleDispatcher::F& f );
 
 	ULONG_PTR getData(unsigned int id);
 
@@ -473,7 +489,7 @@ private:
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
 	( unsigned int id, const SmartUtil::tstring & name
-	, ULONG_PTR data, const Dispatcher::F& f
+	, ULONG_PTR data, const IdDispatcher::F& f
 	)
 {
 	HMENU handle = reinterpret_cast< HMENU >( this->handle() );
@@ -488,7 +504,29 @@ void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
 
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
-		Message( WM_COMMAND, id ), Dispatcher(f)
+		Message( WM_COMMAND, id ), IdDispatcher(f)
+	);
+}
+
+template< class EventHandlerClass, class MessageMapPolicy >
+void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
+	( unsigned int id, const SmartUtil::tstring & name
+	, ULONG_PTR data, const SimpleDispatcher::F& f
+	)
+{
+	HMENU handle = reinterpret_cast< HMENU >( this->handle() );
+	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
+	
+	mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+	mii.fType = MFT_STRING;
+	mii.dwTypeData = const_cast<LPTSTR>(name.c_str());
+	mii.dwItemData = data;
+	mii.wID = id;
+	::InsertMenuItem(handle, this->getCount(), TRUE, &mii);
+
+	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+	ptrThis->setCallback(
+		Message( WM_COMMAND, id ), SimpleDispatcher(f)
 	);
 }
 
