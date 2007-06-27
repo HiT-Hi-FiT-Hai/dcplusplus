@@ -29,7 +29,7 @@
 #ifndef MessageMapBase_h
 #define MessageMapBase_h
 
-#include "SigSlots.h"
+#include "SignalParams.h"
 
 namespace SmartWin
 {
@@ -37,67 +37,30 @@ namespace SmartWin
 
 // Internally used class
 // TODO: Move into "private_" namespace ...?!?
-template< class SignalTupleType, class SignalCollectionType >
 class MessageMapBase
 {
 public:
-	// Adds a new Signal into the Signal collection!
-	void addNewSignal( const SignalTupleType & Signal )
-	{
-		xAssert( ( Signal.template get< 0 >().FunctionThis == 0 || Signal.template get< 0 >().Function == 0 )
-			&& ( Signal.template get< 0 >().FunctionThis != 0 || Signal.template get< 0 >().Function != 0 ),
-			_T( "Only ONE of the functors should be defined." ) );
-
-		// First we must check if there already exists a Signal of the given message
-		// Since SmartWin doesn't support more than ONE event handler for every event (per control basis) we must DELETE the former
-		// event handler if there is one!!
-		for ( typename SignalCollectionType::iterator idx = itsSignals.begin();
-			idx != itsSignals.end();
-			++idx )
-		{
-			if ( idx->template get< 0 >().Msg == Signal.template get< 0 >().Msg )
-			{
-				* idx = Signal;
-				return;
-			}
-		}
-
-		// Not found, adding new one
-		itsSignals.push_back( Signal );
-	}
+	typedef boost::function<HRESULT(private_::SignalContent&)> CallbackType;
+	
+	// We only support one Callback per message, so a map is appropriate
+	typedef std::map<Message, CallbackType> CallbackCollectionType;
+	
+	/// Adds a new Callback into the Callback collection or replaces the existing one
+	void setCallback(const Message& msg, const CallbackType& callback );
 
 	virtual ~MessageMapBase()
 	{}
 
 protected:
-	SignalCollectionType & getSignals()
-	{ return itsSignals;
+	CallbackCollectionType & getCallbacks() { 
+		return itsCallbacks;
 	}
 
 	// Returns true if fired, else false
-	virtual bool tryFire( const Message & msg, HRESULT & retVal )
-	{
-		// First we must create a "comparable" message...
-		Message msgComparer( msg.Handle, msg.Msg, msg.WParam, msg.LParam, false );
-		for ( typename SignalCollectionType::iterator idx = itsSignals.begin();
-			idx != itsSignals.end();
-			++idx )
-		{
-			if ( idx->template get< 0 >().Msg == msgComparer )
-			{
-				private_::SignalContent params( msg, idx->template get< 0 >().Function, idx->template get< 0 >().FunctionThis, idx->template get< 0 >().This, true );
-				retVal = idx->template get< 1 >().fire( params );
-				if ( params.RunDefaultHandling )
-					return false;
-				return true;
-			}
-		}
-		return false;
-	}
-
+	virtual bool tryFire( const Message & msg, HRESULT & retVal );
 private:
 	// Contains the list of signals we're (this window) processing
-	SignalCollectionType itsSignals;
+	CallbackCollectionType itsCallbacks;
 };
 
 // end namespace SmartWin

@@ -286,7 +286,7 @@ int SmartWinMain(SmartWin::Application& app) {
 
 	// For debugging
 	::LoadLibrary("exchndl.dll");
-
+	
 	// For SHBrowseForFolder, UPnP
 	/// @todo check return
 	::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
@@ -300,7 +300,6 @@ int SmartWinMain(SmartWin::Application& app) {
 		dcdebug("Failed reading exe\n");
 	}
 	
-
 	int ret = 255;
 	try {
 		SplashWindow* splash(new SplashWindow);

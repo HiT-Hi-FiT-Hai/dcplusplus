@@ -19,7 +19,6 @@
 #ifndef DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_CTRL_H
 #define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_CTRL_H
 
-
 template<class T, class ContentType>
 class TypedListViewCtrl : public T::WidgetDataGrid
 {
@@ -39,17 +38,8 @@ public:
 		
 		typedef typename BaseType::MessageMapType MessageMapType;
 		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-		ptrThis->addNewSignal(
-			typename MessageMapType::SignalTupleType(
-				SmartWin::private_::SignalContent(
-					SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ),
-					reinterpret_cast< SmartWin::private_::SignalContent::voidFunctionTakingVoid >( &ContentDispatcher::dispatch ),
-					ptrThis
-				),
-				typename MessageMapType::SignalType(
-					typename MessageMapType::SignalType::SlotType( &ContentDispatcher::dispatch )
-				)
-			)
+		ptrThis->setCallback(
+			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &TypedListViewDispatcher
 		);
 	}
 	
@@ -189,29 +179,23 @@ private:
 		return (t->sortAscending ? result : -result);
 	}
 	
-	struct ContentDispatcher {
-		static HRESULT dispatch(SmartWin::private_::SignalContent& params) {
-			NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
-			if(nm->item.mask & LVIF_TEXT) {
-				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
-				const string& text = content->getText(nm->item.iSubItem);
-				strncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
-				if(text.size() < nm->item.cchTextMax) {
-					nm->item.pszText[text.size()] = 0;
-				}
+	static HRESULT TypedListViewDispatcher(SmartWin::private_::SignalContent& params) {
+		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
+		if(nm->item.mask & LVIF_TEXT) {
+			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+			const string& text = content->getText(nm->item.iSubItem);
+			strncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
+			if(text.size() < nm->item.cchTextMax) {
+				nm->item.pszText[text.size()] = 0;
 			}
-			if(nm->item.mask & LVIF_IMAGE) {
-				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
-				nm->item.iImage = content->getImage();
-			}
-			return 0;
 		}
-	};
-	
-	void handleGetItem(ThisType* x, LPARAM lParam, int subItem, int item, tstring& insertionString) {
-		
+		if(nm->item.mask & LVIF_IMAGE) {
+			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+			nm->item.iImage = content->getImage();
+		}
+		return 0;
 	}
-
+	
 };
 
 #ifdef PORT_ME

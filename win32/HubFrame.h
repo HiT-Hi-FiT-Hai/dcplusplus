@@ -205,7 +205,7 @@ private:
 	void updateStatus();
 	
 	void initSecond();
-	void eachSecond(const SmartWin::CommandPtr&);
+	bool eachSecond();
 	
 	UserInfo* findUser(const tstring& nick);
 	bool updateUser(const UserTask& u);

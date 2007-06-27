@@ -46,8 +46,10 @@ protected:
 	typedef MDIChildFrame<T> MDIChildType;
 	friend class StaticFrame<T>;
 	friend class MDIChildFrame<T>;
-
+	typedef FinishedFrameBase<T, in_UL> ThisType;
+	
 	FinishedFrameBase() :
+		SmartWin::Widget(0),
 		totalBytes(0),
 		totalTime(0)
 	{
@@ -80,26 +82,26 @@ protected:
 
 		layout();
 
-		onSpeaker(&T::spoken);
+		onSpeaker(boost::bind(&ThisType::spoken, this, _1, _2));
 
 		FinishedManager::getInstance()->addListener(this);
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
 		FinishedManager::getInstance()->unlockList();
 
-		items->onRaw(&T::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-		items->onRaw(&T::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+		items->onRaw(boost::bind(&ThisType::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+		items->onRaw(boost::bind(&ThisType::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 
 		contextMenu = this->createPopupMenu();
-		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), &T::handleViewAsText);
-		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), &T::handleOpenFile);
-		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), &T::handleOpenFolder);
+		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), boost::bind(&ThisType::handleViewAsText, this, _1));
+		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), boost::bind(&ThisType::handleOpenFile, this, _1));
+		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), boost::bind(&ThisType::handleOpenFolder, this, _1));
 		contextMenu->appendSeparatorItem();
-		contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &T::handleRemove);
-		contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), &T::handleRemoveAll);
+		contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), boost::bind(&ThisType::handleRemove, this, _1));
+		contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), boost::bind(&ThisType::handleRemoveAll, this, _1));
 #ifdef PORT_ME
 		contextMenu->setMenuDefaultItem(IDC_OPEN_FILE);
 #endif
-		items->onRaw(&T::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+		onRaw(boost::bind(&ThisType::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 #if 1
 		// for testing purposes; adds 2 dummy lines into the list
@@ -227,21 +229,21 @@ private:
 
 	typedef SmartWin::WidgetDataGrid<T, SmartWin::MessageMapPolicyMDIChildWidget>* DataGridMessageType;
 
-	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+	HRESULT handleDoubleClick(LPARAM lParam, WPARAM /*wParam*/) {
 		LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
 		if(item->iItem != -1)
 			items->getItemData(item->iItem)->openFile();
 		return 0;
 	}
 
-	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+	HRESULT handleKeyDown(LPARAM lParam, WPARAM /*wParam*/) {
 		if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
 			StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
 		return 0;
 	}
 
-	HRESULT handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
-		if(items->getSelectedCount() > 0) {
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam) {
+		if(reinterpret_cast<HWND>(wParam) == items->handle() && items->hasSelection()) {
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 			if(pt.x == -1 && pt.y == -1) {
@@ -255,11 +257,12 @@ private:
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
 					typename T::WidgetPopupMenuPtr pShellMenu = this->createPopupMenu();
-					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT), &T::handleViewAsText);
-					pShellMenu->appendItem(IDC_OPEN_FOLDER, CTSTRING(OPEN_FOLDER), &T::handleOpenFolder);
+					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), boost::bind(&ThisType::handleViewAsText, this, _1));
+					pShellMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), boost::bind(&ThisType::handleOpenFile, this, _1));
+					pShellMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), boost::bind(&ThisType::handleOpenFolder, this, _1));
 					pShellMenu->appendSeparatorItem();
-					pShellMenu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), &T::handleRemove);
-					pShellMenu->appendItem(IDC_REMOVE_ALL, CTSTRING(REMOVE_ALL), &T::handleRemoveAll);
+					pShellMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), boost::bind(&ThisType::handleRemove, this, _1));
+					pShellMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), boost::bind(&ThisType::handleRemoveAll, this, _1));
 					pShellMenu->appendSeparatorItem();
 
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
@@ -275,21 +278,21 @@ private:
 		return FALSE;
 	}
 
-	void handleViewAsText(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleViewAsText(unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
 			new TextFrame(MDIChildType::getParent(), Text::toT(items->getItemData(i)->entry->getTarget()));
 	}
 
-	void handleOpenFile(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleOpenFile(unsigned /*id*/) {
 		items->forEachSelected(&ItemInfo::openFile);
 	}
 
-	void handleOpenFolder(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleOpenFolder(unsigned /*id*/) {
 		items->forEachSelected(&ItemInfo::openFolder);
 	}
 
-	void handleRemove(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleRemove(unsigned /*id*/) {
 		int i;
 		while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
 			FinishedManager::getInstance()->remove(items->getItemData(i)->entry, in_UL);
@@ -298,7 +301,7 @@ private:
 		}
 	}
 
-	void handleRemoveAll(typename BaseType::FactoryType::WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+	void handleRemoveAll(unsigned /*id*/) {
 		FinishedManager::getInstance()->removeAll(in_UL);
 	}
 

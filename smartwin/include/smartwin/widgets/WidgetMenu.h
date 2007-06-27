@@ -35,7 +35,7 @@
 #include "../WindowsHeaders.h"
 #include "../aspects/AspectGetParent.h"
 #include "SmartUtil.h"
-#include "../StayAliveDeleter.h"
+#include "../aspects/AspectAdapter.h"
 #include <vector>
 
 namespace SmartWin
@@ -46,60 +46,18 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class WidgetMenuDispatcher
+struct WidgetMenuDispatcher
 {
-	static EventHandlerClass * getParent( Widget * parentGiven )
-	{
-		Widget * tmpParent = parentGiven;
-		EventHandlerClass * ptrMainParent;
-		while ( true )
-		{
-			ptrMainParent = dynamic_cast< EventHandlerClass * >( tmpParent );
-			if ( ptrMainParent != 0 )
-				break;
-			tmpParent = tmpParent->getParent();
-			if ( 0 == tmpParent )
-				throw xCeption( _T( "Serious error while trying to get MainWindow parent to menu, menu probably not attached to Main WidgetFactory..." ) );
-		}
-		return ptrMainParent;
-	}
+	typedef boost::function<void (unsigned)> F;
 
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		EventHandlerClass * ptrMainParent = getParent( params.This->getParent() );
-		typename WidgetType::menuVoidFunctionTakingUInt func =
-			reinterpret_cast< typename WidgetType::menuVoidFunctionTakingUInt >( params.Function );
+	WidgetMenuDispatcher(const F& f_) : f(f_) { }
 
-		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
-
-		func
-			( dynamic_cast< EventHandlerClass * >( 0 )
-			, ptrThis
-			, LOWORD( params.Msg.WParam )
-			);
-
+	HRESULT operator()(private_::SignalContent& params) {
+		f(LOWORD(params.Msg.WParam ));
 		return 1;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		EventHandlerClass * ptrMainParent = getParent( params.This->getParent() );
-		typename WidgetType::itsVoidMenuFunctionTakingUInt func =
-			reinterpret_cast< typename WidgetType::itsVoidMenuFunctionTakingUInt >( params.FunctionThis );
-
-		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
-
-		( ( * boost::polymorphic_cast< EventHandlerClass * >( ptrMainParent ) ).*func )
-			( ptrThis
-			, LOWORD( params.Msg.WParam )
-			);
-
-		return 1;
-	}
+	F f;
 };
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -113,11 +71,11 @@ template< class EventHandlerClass, class MessageMapPolicy >
 class WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, SmartWinCE > :
 	public MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >
 {
+protected:
+	typedef MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > MessageMapType;
+
 public:
 	typedef boost::shared_ptr< WidgetMenu< EventHandlerClass, MessageMapPolicy > > WidgetMenuPtr;
-	typedef MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > ThisMessageMap;
-	typedef MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > MessageMapType;
-	typedef WidgetMenuDispatcher< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapType > DispatcherMenu;
 
 	/// Actually creates the Menu
 	/** You should call WidgetFactory::createMenu if you instantiate class directly.
@@ -183,7 +141,7 @@ public:
 	}
 
 	WidgetMenuPlatformImplementation()
-		: itsCmdBar( 0 )
+		: Widget(0), itsCmdBar( 0 )
 	{}
 
 	virtual ~WidgetMenuPlatformImplementation()
@@ -205,11 +163,11 @@ template< class EventHandlerClass, class MessageMapPolicy >
 class WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, SmartWinDesktop > :
 	public MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >
 {
+protected:
+	typedef MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > MessageMapType;
+	WidgetMenuPlatformImplementation() : Widget(0) { }
 public:
 	typedef boost::shared_ptr< WidgetMenu< EventHandlerClass, MessageMapPolicy > > WidgetMenuPtr;
-	typedef MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > ThisMessageMap;
-	typedef MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > MessageMapType;
-	typedef WidgetMenuDispatcher< EventHandlerClass, WidgetMenu< EventHandlerClass, MessageMapPolicy >, MessageMapType > DispatcherMenu;
 
 	/// Attaches the menu to a parent window
 	/** Note! Menus can be switched between at runtime, you can have several menus
@@ -325,12 +283,13 @@ private:
   */
 template< class EventHandlerClass, class MessageMapPolicy >
 class WidgetMenu :
-	public WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >
+	public WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >,
+	public boost::enable_shared_from_this<WidgetMenu<EventHandlerClass, MessageMapPolicy> >
 {
 protected:
-	typedef typename WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >::ThisMessageMap ThisMessageMap;
-	typedef typename WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >::ThisMessageMap MessageMapType;
-	typedef typename WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >::DispatcherMenu DispatcherMenu;
+	typedef typename WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >::MessageMapType MessageMapType;
+	typedef WidgetMenuDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
 	// friends
 	friend class WidgetMenuPlatformImplementation< EventHandlerClass, MessageMapPolicy, CurrentPlatform >;
@@ -359,7 +318,7 @@ public:
 	/// Appends a "normal" menu item
 	/** eventHandler is the function that will receive the "click" event from the
 	  * menu item. <br>
-	  * Event handler's signature must be "void foo( WidgetMenuPtr, unsigned int )" 
+	  * Event handler's signature must be "void foo(unsigned int )" 
 	  * and it must be contained as a member <br>
 	  * of the class that is defined as the EventHandlerClass, normally either the 
 	  * WidgetWindow derived class or the class derived from WidgetMenu. <br>
@@ -369,10 +328,22 @@ public:
 	  * even in fact across menu objects, therefore this number should be unique 
 	  * across the application. 
 	  */
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, itsVoidMenuFunctionTakingUInt eventHandler );
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, menuVoidFunctionTakingUInt eventHandler );
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, itsVoidMenuFunctionTakingUInt eventHandler );
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, menuVoidFunctionTakingUInt eventHandler );
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, itsVoidMenuFunctionTakingUInt eventHandler ) {
+		appendItem(id, name, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
+	}
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, menuVoidFunctionTakingUInt eventHandler ) {
+		appendItem(id, name, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
+	}
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, const Dispatcher::F& f ) {
+		appendItem(id, name, NULL, f);
+	}
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, itsVoidMenuFunctionTakingUInt eventHandler ) {
+		appendItem(id, name, data, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
+	}
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, menuVoidFunctionTakingUInt eventHandler ) {
+		appendItem(id, name, data, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
+	}
+	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const Dispatcher::F& f );
 
 	ULONG_PTR getData(unsigned int id);
 
@@ -502,58 +473,7 @@ private:
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
 	( unsigned int id, const SmartUtil::tstring & name
-	, itsVoidMenuFunctionTakingUInt eventHandler
-	)
-{
-	HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
-	::AppendMenu( handle, MF_STRING, id, name.c_str() );
-
-	xAssert( !isSysMenu || id < SC_SIZE, _T( "Can't add sysmenu item with that high value; value cannot be higher than SC_SIZE - 1" ) );
-
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( isSysMenu ? WM_SYSCOMMAND : WM_COMMAND, id )
-				, reinterpret_cast< itsVoidFunction >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherMenu::dispatchThis )
-				)
-			)
-		);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
-	( unsigned int id, const SmartUtil::tstring & name
-	, menuVoidFunctionTakingUInt eventHandler
-	)
-{
-	HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
-	::AppendMenu( handle, MF_STRING, id, const_cast < TCHAR * >( name.c_str() ) );
-
-	xAssert( !isSysMenu || id < SC_SIZE, _T( "Can't add sysmenu item with that high value; value cannot be higher than SC_SIZE - 1 SC_SIZE - 1" ) );
-
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( isSysMenu ? WM_SYSCOMMAND : WM_COMMAND, id )
-				, reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherMenu::dispatch )
-				)
-			)
-		);
-}
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
-	( unsigned int id, const SmartUtil::tstring & name
-	, ULONG_PTR data, itsVoidMenuFunctionTakingUInt eventHandler
+	, ULONG_PTR data, const Dispatcher::F& f
 	)
 {
 	HMENU handle = reinterpret_cast< HMENU >( this->handle() );
@@ -567,49 +487,9 @@ void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
 	::InsertMenuItem(handle, this->getCount(), TRUE, &mii);
 
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( SmartWin::private_::SignalContent
-				( SmartWin::Message( WM_COMMAND, id )
-				, reinterpret_cast< SmartWin::itsVoidFunction >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherMenu::dispatchThis )
-				)
-			)
-		);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendItem
-	( unsigned int id, const SmartUtil::tstring & name
-	, ULONG_PTR data, menuVoidFunctionTakingUInt eventHandler
-	)
-{
-	HMENU handle = reinterpret_cast< HMENU >( this->handle());
-	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
-
-	mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-	mii.fType = MFT_STRING;
-	mii.dwTypeData = const_cast<LPTSTR>(name.c_str());
-	mii.dwItemData = data;
-	mii.wID = id;
-	::InsertMenuItem(handle, this->getCount(), TRUE, &mii);
-	
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( SmartWin::private_::SignalContent
-				( SmartWin::Message( WM_COMMAND, id )
-				, reinterpret_cast< SmartWin::private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherMenu::dispatch )
-				)
-			)
-		);
+	ptrThis->setCallback(
+		Message( WM_COMMAND, id ), Dispatcher(f)
+	);
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -628,24 +508,9 @@ void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendCheckedItem
 	, itsVoidMenuFunctionTakingUInt eventHandler
 	)
 {
-	HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
-	::AppendMenu( handle, MF_STRING | MF_CHECKED, id, name.c_str() );
-
-	xAssert( !isSysMenu || id < SC_SIZE, _T( "Can't add sysmenu item with that high value; value cannot be higher than SC_SIZE - 1 SC_SIZE - 1" ) );
-
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( isSysMenu ? WM_SYSCOMMAND : WM_COMMAND, id )
-				, reinterpret_cast< itsVoidFunction >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherMenu::dispatchThis )
-				)
-			)
-		);
+	/// @todo This is not quite the same as appending a real checked item...
+	appendItem(id, name, eventHandler);
+	checkItem(id, true);
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -654,24 +519,8 @@ void WidgetMenu< EventHandlerClass, MessageMapPolicy >::appendCheckedItem
 	, menuVoidFunctionTakingUInt eventHandler
 	)
 {
-	HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
-	::AppendMenu( handle, MF_STRING | MF_CHECKED, id, name.c_str() );
-
-	xAssert( !isSysMenu || id < SC_SIZE, _T( "Can't add sysmenu item with that high value; value cannot be higher than SC_SIZE - 1 SC_SIZE - 1" ) );
-
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( isSysMenu ? WM_SYSCOMMAND : WM_COMMAND, id )
-				, reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherMenu::dispatch )
-				)
-			)
-		);
+	appendItem(id, name, eventHandler);
+	checkItem(id, true);
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >

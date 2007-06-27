@@ -32,6 +32,7 @@
 #include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -48,58 +49,30 @@ namespace SmartWin
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectUpdate
 {
-	typedef AspectVoidVoidDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectUpdate
 	/// Sets the event handler for the Updated event.
 	/** When the Widget value/text is being updated this event will be raised.
 	  */
-	void onUpdate( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler );
-	void onUpdate( typename MessageMapType::voidFunctionTakingVoid eventHandler );
+	void onUpdate( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
+		onUpdate(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onUpdate( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
+		onUpdate(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onClicked(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			WidgetType::getUpdateMessage(), Dispatcher(f)
+		);
+	}
 
 protected:
 	virtual ~AspectUpdate()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectUpdate< EventHandlerClass, WidgetType, MessageMapType >::onUpdate( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getUpdateMessage(),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectUpdate< EventHandlerClass, WidgetType, MessageMapType >::onUpdate( typename MessageMapType::voidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getUpdateMessage(),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

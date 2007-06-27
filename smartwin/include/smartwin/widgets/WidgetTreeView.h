@@ -46,6 +46,7 @@
 #include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectAdapter.h"
 #include <commctrl.h>
 
 namespace SmartWin
@@ -56,46 +57,24 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class TreeViewDispatcher
+struct TreeViewDispatcher
 {
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::boolFunctionTakingTstring func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingTstring >( params.Function );
+	typedef boost::function<bool (const SmartUtil::tstring&)> F;
 
+	TreeViewDispatcher(const F& f_) : f(f_) { }
+
+	HRESULT operator()(private_::SignalContent& params) {
 		bool update = false;
 		NMTVDISPINFO * nmDisp = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
 		if ( nmDisp->item.pszText != 0 )
 		{
 			SmartUtil::tstring newText = nmDisp->item.pszText;
-			update = func
-				( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-				, boost::polymorphic_cast< WidgetType * >( params.This )
-				, newText
-				);
+			update = f(newText);
 		}
 		return update ? TRUE : FALSE;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsBoolFunctionTakingTstring func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingTstring >( params.FunctionThis );
-
-		bool update = false;
-		NMTVDISPINFO * nmDisp = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
-		if ( nmDisp->item.pszText != 0 )
-		{
-			SmartUtil::tstring newText = nmDisp->item.pszText;
-			update = ( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )
-				( boost::polymorphic_cast< WidgetType * >( params.This )
-				, newText
-				);
-		}
-		return update ? TRUE : FALSE;
-	}
+	F f;
 };
 
 /// One "node" in the TreeView.
@@ -149,9 +128,9 @@ class WidgetTreeView :
 {
 protected:
 	typedef MessageMapControl< EventHandlerClass, WidgetTreeView, MessageMapPolicy > MessageMapType;
-	typedef TreeViewDispatcher< EventHandlerClass, WidgetTreeView, MessageMapType > Dispatcher;
+	typedef TreeViewDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
-	typedef MessageMapControl< EventHandlerClass, WidgetTreeView, MessageMapPolicy > ThisMessageMap;
 	friend class WidgetCreator< WidgetTreeView >;
 public:
 	/// Class type
@@ -335,8 +314,18 @@ public:
 	  * Return true from your event handler if you wish the label to actually become
 	  * updated or false if you want to disallow the item to actually become updated!
 	  */
-	void onValidateEditLabels( typename MessageMapType::itsBoolFunctionTakingTstring eventHandler );
-	void onValidateEditLabels( typename MessageMapType::boolFunctionTakingTstring eventHandler );
+	void onValidateEditLabels( typename MessageMapType::itsBoolFunctionTakingTstring eventHandler ) {
+		onValidateEditLabels(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
+	}
+	void onValidateEditLabels( typename MessageMapType::boolFunctionTakingTstring eventHandler ) {
+		onValidateEditLabels(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
+	}
+	void onValidateEditLabels(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			typename MessageMapType::SignalTupleType( Message( WM_NOTIFY, TVN_ENDLABELEDIT ), Dispatcher(f))
+		);		
+	}
 
 	// work around for Microsoft Express 2005
 	typedef typename MessageMapType::itsBoolFunctionTakingTstring onValidateEditLabelsParm1;
@@ -409,7 +398,7 @@ WidgetTreeView< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
 template< class EventHandlerClass, class MessageMapPolicy >
 LRESULT WidgetTreeView< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -598,42 +587,6 @@ void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setSelectedIndex( in
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::onValidateEditLabels( onValidateEditLabelsParm1 eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_NOTIFY, TVN_ENDLABELEDIT )
-				, reinterpret_cast< itsVoidFunction >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-				)
-			)
-		);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::onValidateEditLabels( onValidateEditLabelsParm2 eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_NOTIFY, TVN_ENDLABELEDIT )
-				, reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-				)
-			)
-		);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
 Message & WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, TVN_SELCHANGED );
@@ -674,7 +627,7 @@ void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setHasButtons( cs.hasButtonsFlag );
 	setHasLines( cs.hasLinesFlag );
 	setLinesAtRoot( cs.linesAtRootFlag );

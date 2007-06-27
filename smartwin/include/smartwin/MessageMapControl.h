@@ -35,7 +35,6 @@
 #include "Widget.h"
 #include "BasicTypes.h"
 #include "Message.h"
-#include "DestructionClass.h"
 #include "MessageMapBase.h"
 #include "CanvasClasses.h"
 #include "SignalParams.h"
@@ -58,15 +57,13 @@ namespace SmartWin
   */
 template< class EventHandlerClass, class WidgetType, class MessageMapPolicy >
 class MessageMapControl
-	: public virtual Widget,
-	public MessageMapPolicy,
-	public MessageMapBase< boost::tuple< private_::SignalContent, SigSlot::Signal< HRESULT, private_::SignalContent > >,
-		std::vector< boost::tuple < private_::SignalContent, SigSlot::Signal< HRESULT, private_::SignalContent > > > >
+	: public MessageMapPolicy,
+	public MessageMapBase
 {
 public:
-	typedef SigSlot::Signal< HRESULT, private_::SignalContent > SignalType;
-	typedef boost::tuple< private_::SignalContent, SignalType > SignalTupleType;
-	typedef std::vector< SignalTupleType > SignalCollection;
+	typedef MessageMapBase::CallbackType SignalType;
+	typedef std::pair< Message, SignalType > SignalTupleType;
+	typedef MessageMapBase::CallbackCollectionType SignalCollection;
 	const static bool IsControl = true;
 
 	// Member event handler definitions (here you have the "this" pointer so
@@ -277,8 +274,9 @@ protected:
 	// TODO: Aspect class or maybe inherit WidgetSpliter from MessageMap instead of MessageMap?!?!?
 	bool isSubclassed;
 
+	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MessageMapControl()
-		: itsDefaultWindowProc( 0 ),
+		: Widget(0), itsDefaultWindowProc( 0 ),
 		isSubclassed( true )
 	{}
 
@@ -330,8 +328,8 @@ protected:
 	/// make the Windows Message Procedure dispatching map right.
 	void createMessageMap()
 	{
-		::SetProp( itsHandle, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( dynamic_cast< Widget * >( this ) ) );
-		itsDefaultWindowProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( itsHandle, GWL_WNDPROC, ( LONG_PTR ) this->mainWndProc_ ) );
+		::SetProp( this->itsHandle, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( dynamic_cast< Widget * >( this ) ) );
+		itsDefaultWindowProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( this->itsHandle, GWL_WNDPROC, ( LONG_PTR ) this->mainWndProc_ ) );
 	}
 };
 

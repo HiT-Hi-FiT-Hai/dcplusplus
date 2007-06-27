@@ -31,43 +31,26 @@
 
 #include "boost.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectActivateDispatcher
+template<class EventHandlerClass>
+struct AspectActivateDispatcher
 {
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingBool func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingBool >( params.Function );
+	typedef boost::function<void (bool)> F;
 
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
+	AspectActivateDispatcher(const F& f_, EventHandlerClass* parent_) : f(f_), parent(parent_) { }
 
-		func(
-			ThisParent,
-			LOWORD( params.Msg.WParam ) == WA_ACTIVE || LOWORD( params.Msg.WParam ) == WA_CLICKACTIVE
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
+	HRESULT operator()(private_::SignalContent& params) {
+		f(LOWORD( params.Msg.WParam ) == WA_ACTIVE || LOWORD( params.Msg.WParam ) == WA_CLICKACTIVE);
+		return parent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingBool func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingBool >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			LOWORD( params.Msg.WParam ) == WA_ACTIVE || LOWORD( params.Msg.WParam ) == WA_CLICKACTIVE
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
+	F f;
+	EventHandlerClass* parent;
 };
 
 /// Aspect class used by Widgets that can be activated.
@@ -79,7 +62,8 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectActivate
 {
-	typedef AspectActivateDispatcher< EventHandlerClass, WidgetType, MessageMapType > Dispatcher;
+	typedef AspectActivateDispatcher<EventHandlerClass> Dispatcher;
+	typedef AspectAdapter<typename Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// Activates the Widget
 	/** Changes the activated property of the Widget. <br>
@@ -101,8 +85,19 @@ public:
 	  * called with either true or false indicating the active state of the Widget.
 	  * Parameter passed is bool
 	  */
-	void onActivate( typename MessageMapType::itsVoidFunctionTakingBool eventHandler );
-	void onActivate( typename MessageMapType::voidFunctionTakingBool eventHandler );
+	void onActivate( typename MessageMapType::itsVoidFunctionTakingBool eventHandler ) {
+		onActivate(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onActivate( typename MessageMapType::voidFunctionTakingBool eventHandler ) {
+		onActivate(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+
+	void onActivate(const typename Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message(WM_ACTIVATE), Dispatcher(f, internal_::getTypedParentOrThrow<EventHandlerClass*>(this) )
+		);
+	}
 
 protected:
 	virtual ~AspectActivate()
@@ -122,40 +117,6 @@ template< class EventHandlerClass, class WidgetType, class MessageMapType >
 bool AspectActivate< EventHandlerClass, WidgetType, MessageMapType >::getActive() const
 {
 	return ::GetActiveWindow() == static_cast< const WidgetType * >( this )->handle();
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectActivate< EventHandlerClass, WidgetType, MessageMapType >::onActivate( typename MessageMapType::itsVoidFunctionTakingBool eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_ACTIVATE ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectActivate< EventHandlerClass, WidgetType, MessageMapType >::onActivate( typename MessageMapType::voidFunctionTakingBool eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_ACTIVATE ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
 }
 
 // end namespace SmartWin

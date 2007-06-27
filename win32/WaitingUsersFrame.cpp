@@ -31,9 +31,9 @@
 
 
 // Constructor
-WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) {
-	onClosing(&WaitingUsersFrame::onClose);
-
+WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) :
+	SmartWin::Widget(mdiParent)
+{
 	UploadManager::getInstance()->addListener(this);
 
 	// Create tree control
@@ -43,28 +43,19 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) {
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		queued = createTreeView(cs);
 		// @todo subclass WidgetTreeView to have onChar so MDIChildFrame can tab around it
-		//addWidget(queued);
+		addWidget(queued);
+#ifdef PORT_ME
+		queued->setColor(WinUtil::textColor, WinUtil::bgColor);
+#endif
 	}
 
 	initStatus();
-	// Create context menu
-	contextMenu = createMenu();
-	contextMenu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), &WaitingUsersFrame::onGetList);
-	contextMenu->appendItem(IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME), &WaitingUsersFrame::onCopyFilename);
-	contextMenu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), &WaitingUsersFrame::onRemove);
-	contextMenu->appendItem(IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT), &WaitingUsersFrame::onGrantSlot);
-	contextMenu->appendItem(IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES), &WaitingUsersFrame::onAddToFavorites);
-	contextMenu->appendItem(IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE), &WaitingUsersFrame::onPrivateMessage);
 
-#ifdef PORT_ME
-	ctrlQueued->SetBkColor(WinUtil::bgColor);
-	ctrlQueued->SetTextColor(WinUtil::textColor);
-#endif
-
-	closed = false;
-
+	layout();
+	
+	onSpeaker(&WaitingUsersFrame::spoken);
 	// Load all waiting users & files.
-	LoadAll();
+	loadAll();
 }
 
 // Recalculate frame control layout
@@ -81,34 +72,67 @@ void WaitingUsersFrame::layout()
 	queued->setBounds(r);
 }
 
-bool WaitingUsersFrame::onClose()
-{
-	if (!closed) {
-		UploadManager::getInstance()->removeListener(this);
+bool WaitingUsersFrame::preClosing() {
+	UploadManager::getInstance()->removeListener(this);
+	return true;
+}
+void WaitingUsersFrame::postClosing() {
+	
+	// This looks like the correct way of doing this according to
+	// the getNode implementation, but the abstraction leakage is
+	// horrid.
+	SmartWin::TreeViewNode userNode;
+	queued->getNode(SmartWin::TreeViewNode(), TVGN_ROOT, userNode);
 
-		closed = true;
-		StupidWin::postMessage(this, WM_CLOSE);
-		return true;
-	} else {
-		// This looks like the correct way of doing this according to
-		// the getNode implementation, but the abstraction leakage is
-		// horrid.
-		SmartWin::TreeViewNode userNode;
-		queued->getNode(SmartWin::TreeViewNode(), TVGN_ROOT, userNode);
-
-		// SmartWin doesn't appear to have any way to access the item data,
-		// rather than text. TVM_GETITEM, at least, appears nowhere in it.
-		while (userNode.handle) {
-			delete reinterpret_cast<UserItem *>(StupidWin::getTreeItemData(queued, userNode));
-			queued->getNode(userNode, TVGN_NEXT, userNode);
-		}
-
-		return true;
+	// SmartWin doesn't appear to have any way to access the item data,
+	// rather than text. TVM_GETITEM, at least, appears nowhere in it.
+	while (userNode.handle) {
+		delete reinterpret_cast<UserItem *>(StupidWin::getTreeItemData(queued, userNode));
+		queued->getNode(userNode, TVGN_NEXT, userNode);
 	}
 }
 
+HRESULT WaitingUsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+
+	if(reinterpret_cast<HWND>(wParam) == queued->handle()) {
+		if(pt.x == -1 || pt.y == -1) {
+			//pt = queued->getContextMenuPos();
+		}
+		WidgetPopupMenuPtr menu = createPopupMenu();
+		menu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), &WaitingUsersFrame::onGetList);
+		menu->appendItem(IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME), &WaitingUsersFrame::onCopyFilename);
+		menu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), &WaitingUsersFrame::onRemove);
+		menu->appendItem(IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT), &WaitingUsersFrame::onGrantSlot);
+		menu->appendItem(IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES), &WaitingUsersFrame::onAddToFavorites);
+		menu->appendItem(IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE), &WaitingUsersFrame::onPrivateMessage);
+		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+HRESULT WaitingUsersFrame::spoken(LPARAM lParam, WPARAM wParam) {
+	if(wParam == SPEAK_ADD_FILE) {
+		boost::scoped_ptr<pair<UserPtr, string> > p((pair<UserPtr, string> *)lParam);
+		onAddFile(p->first, p->second);
+#ifdef PORT_ME
+		if(BOOLSETTING(BOLD_WAITING_USERS))
+			setDirty();
+#endif
+	} else if(wParam == SPEAK_REMOVE_USER) {
+		boost::scoped_ptr<UserItem> p(reinterpret_cast<UserItem *>(lParam));
+		onRemoveUser(p->u);
+#ifdef PORT_ME
+		if(BOOLSETTING(BOLD_WAITING_USERS))
+			setDirty();
+#endif
+	}
+	return 0;
+}
+
 // Load all searches from manager
-void WaitingUsersFrame::LoadAll()
+void WaitingUsersFrame::loadAll()
 {
 #ifdef PORT_ME
 	// @todo Relies on apparently unimplemented WinUtil
@@ -196,11 +220,11 @@ void WaitingUsersFrame::onRemove(WidgetMenuPtr, unsigned int)
 
 // UploadManagerListener
 void WaitingUsersFrame::on(UploadManagerListener::WaitingRemoveUser, const UserPtr aUser) throw() {
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_REMOVE_USER, (LPARAM)new UserItem(aUser));
+	speak(SPEAK_REMOVE_USER, (LPARAM)new UserItem(aUser));
 }
 
 void WaitingUsersFrame::on(UploadManagerListener::WaitingAddFile, const UserPtr aUser, const string& aFilename) throw() {
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_ADD_FILE, (LPARAM)new pair<UserItem, string>(aUser, aFilename));
+	speak(SPEAK_ADD_FILE, (LPARAM)new pair<UserPtr, string>(aUser, aFilename));
 }
 
 #ifdef PORT_ME
@@ -242,8 +266,10 @@ LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 
 	return FALSE;
 }
+#endif
 
-void WaitingUsersFrame::onRemoveUser(const User::Ptr aUser) {
+void WaitingUsersFrame::onRemoveUser(const UserPtr& aUser) {
+#ifdef PORT_ME
 	HTREEITEM userNode = queued->GetRootItem();
 
 	while (userNode) {
@@ -255,9 +281,11 @@ void WaitingUsersFrame::onRemoveUser(const User::Ptr aUser) {
 		}
 		userNode = queued->GetNextSiblingItem(userNode);
 	}
+#endif
 }
 
-void WaitingUsersFrame::onAddFile(const User::Ptr aUser, const string& aFile) {
+void WaitingUsersFrame::onAddFile(const UserPtr& aUser, const string& aFile) {
+#ifdef PORT_ME
 	HTREEITEM userNode = queued->GetRootItem();
 
 	while (userNode) {
@@ -289,21 +317,6 @@ void WaitingUsersFrame::onAddFile(const User::Ptr aUser, const string& aFile) {
 		0, 0, 0, 0, (LPARAM)new UserPtr(aUser),	TVI_ROOT, TVI_LAST);
 	queued->InsertItem(Text::toT(aFile).c_str(), userNode, TVI_LAST);
 	queued->Expand(userNode);
+#endif
 }
 
-LRESULT WaitingUsersFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(wParam == SPEAK_ADD_FILE) {
-		const pair<User::Ptr, string> *p = (pair<User::Ptr, string> *)lParam;
-		onAddFile(p->first, p->second);
-		delete p;
-		if(BOOLSETTING(BOLD_WAITING_USERS))
-			setDirty();
-	} else if(wParam == SPEAK_REMOVE_USER) {
-		onRemoveUser(reinterpret_cast<UserPtr *>(lParam)->u);
-		delete reinterpret_cast<UserPtr *>(lParam);
-		if(BOOLSETTING(BOLD_WAITING_USERS))
-			setDirty();
-	}
-	return 0;
-}
-#endif

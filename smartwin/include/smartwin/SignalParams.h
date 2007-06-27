@@ -56,34 +56,15 @@ public:
 class SignalContent
 {
 public:
-	typedef void ( * voidFunctionTakingVoid )();
-	SignalContent( const Message & msg, voidFunctionTakingVoid function, Widget * ptrThis, bool isControl )
-		: Msg( msg ), Function( function ), FunctionThis( 0 ), This( ptrThis ), IsControl( isControl ), RunDefaultHandling( false )
+	SignalContent( const Message & msg, bool isControl )
+		: Msg( msg ), IsControl( isControl ), RunDefaultHandling( false )
 	{}
 
-	SignalContent( const Message & msg, voidFunctionTakingVoid function, Widget * ptrThis )
-		: Msg( msg ), Function( function ), FunctionThis( 0 ), This( ptrThis ), IsControl( false ), RunDefaultHandling( false )
+	SignalContent( const Message & msg )
+		: Msg( msg ), IsControl( false ), RunDefaultHandling( false )
 	{}
-
-	SignalContent( const Message & msg, itsVoidFunction function, Widget * ptrThis, bool isControl )
-		: Msg( msg ), Function( 0 ), FunctionThis( function ), This( ptrThis ), IsControl( isControl ), RunDefaultHandling( false )
-	{
-	}
-
-	SignalContent( const Message & msg, itsVoidFunction function, Widget * ptrThis )
-		: Msg( msg ), Function( 0 ), FunctionThis( function ), This( ptrThis ), IsControl( false ), RunDefaultHandling( false )
-	{
-	}
-
-	SignalContent( const Message & msg, voidFunctionTakingVoid function, itsVoidFunction functionThis, Widget * ptrThis, bool isControl )
-		: Msg( msg ), Function( function ), FunctionThis( functionThis ), This( ptrThis ), IsControl( isControl ), RunDefaultHandling( false )
-	{
-	}
 
 	Message Msg;
-	voidFunctionTakingVoid Function;
-	itsVoidFunction FunctionThis;
-	Widget * This;
 	bool IsControl;
 	bool RunDefaultHandling;
 };

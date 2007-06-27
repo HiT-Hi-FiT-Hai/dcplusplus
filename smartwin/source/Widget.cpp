@@ -148,6 +148,39 @@ Utilities::CriticalSection & Widget::getCriticalSection()
 	return * itsCriticalSection;
 }
 
+void Widget::killMe()
+{
+	eraseMeFromParentsChildren();
+	Widget::kill();
+}
+
+void Widget::killChildren()
+{
+	// A dialog doesn't clean up after itself when destroyed... Don't know why...
+	for ( std::vector < Widget * >::iterator idx = itsChildren.begin();
+		idx != itsChildren.end();
+		++idx )
+	{
+		( * idx )->kill();
+	}
+}
+
+void Widget::eraseMeFromParentsChildren()
+{
+	if ( ! itsParent ) return;
+
+	for ( std::vector < Widget * >::iterator idx = itsParent->itsChildren.begin();
+		idx != itsParent->itsChildren.end();
+		++idx )
+	{
+		if ( * idx == this )
+		{
+			itsParent->itsChildren.erase( idx );
+			break;
+		}
+	}
+}
+
 void Widget::addRemoveStyle( DWORD addStyle, bool add )
 {
 	DWORD newStyle = GetWindowStyle( itsHandle );

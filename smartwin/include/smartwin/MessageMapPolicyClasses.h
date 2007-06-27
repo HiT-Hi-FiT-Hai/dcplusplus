@@ -29,7 +29,7 @@
 #ifndef MessageMapPolicyClasses_h
 #define MessageMapPolicyClasses_h
 
-#include "DestructionClass.h"
+#include "Widget.h"
 
 namespace SmartWin
 {
@@ -40,9 +40,11 @@ namespace SmartWin
   * MessageMapPolicyDialogWidget
   */
 class MessageMapPolicyDialogWidget
-	: protected private_::DestructionClass
+	: public virtual Widget
 {
 protected:
+	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
+	MessageMapPolicyDialogWidget() : Widget(0) { }
 	LRESULT kill()
 	{
 		killChildren();
@@ -119,9 +121,11 @@ public:
   * MessageMapPolicyModalDialogWidget
   */
 class MessageMapPolicyModalDialogWidget
-	: protected private_::DestructionClass
+	: public virtual Widget
 {
 protected:
+	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
+	MessageMapPolicyModalDialogWidget() : Widget(0) { }
 
 /*	Debugging problems with menus and WidgetModalDialogs.
 
@@ -242,7 +246,7 @@ public:
   * SmartWin will assume this is the one you're after!
   */
 class MessageMapPolicyNormalWidget
-	: protected private_::DestructionClass
+	: public virtual Widget
 {
 protected:
 	LRESULT kill()
@@ -251,6 +255,8 @@ protected:
 		return 0;
 	}
 
+	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
+	MessageMapPolicyNormalWidget() : Widget(0) { }
 	// TODO: Protected??
 public:
 	LRESULT returnFromCloseMsg( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
@@ -297,7 +303,7 @@ public:
   * Child Container Widget
   */
 class MessageMapPolicyMDIChildWidget
-	: protected private_::DestructionClass
+	: public virtual Widget
 {
 protected:
 	LRESULT kill()
@@ -305,7 +311,9 @@ protected:
 		killMe();
 		return 0;
 	}
-
+	
+	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
+	MessageMapPolicyMDIChildWidget() : Widget(0) { }
 	// TODO: Protected??
 public:
 	LRESULT returnFromCloseMsg( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )

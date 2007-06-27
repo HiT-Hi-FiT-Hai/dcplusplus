@@ -150,7 +150,7 @@ WidgetMDIChild< EventHandlerClass, unUsed >::~WidgetMDIChild()
 
 template< class EventHandlerClass, class unUsed >
 WidgetMDIChild< EventHandlerClass, unUsed >::WidgetMDIChild( Widget * parent )
-	: WidgetWindowBase< EventHandlerClass, unUsed >( parent )
+	: Widget(parent), WidgetWindowBase< EventHandlerClass, unUsed >( parent )
 {}
 
 template< class EventHandlerClass, class unUsed >

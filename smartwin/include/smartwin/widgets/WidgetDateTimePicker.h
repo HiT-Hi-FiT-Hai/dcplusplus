@@ -44,6 +44,7 @@
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectThreads.h"
+#include "../aspects/AspectAdapter.h"
 #include "../xCeption.h"
 #include "../Message.h"
 
@@ -51,41 +52,24 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
+
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectDateTimePickerDispatcher
+struct AspectDateTimePickerDispatcher
 {
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingSystemTime func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingSystemTime >( params.Function );
+	typedef boost::function<void (const SYSTEMTIME &)> F;
 
-		func(
-			internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ),
-			boost::polymorphic_cast< WidgetType * >( params.This ),
-			reinterpret_cast< NMDATETIMECHANGE * >( params.Msg.LParam )->st
-			);
+	AspectDateTimePickerDispatcher(const F& f_) : f(f_) { }
+
+	HRESULT operator()(private_::SignalContent& params) {
+		f(reinterpret_cast< NMDATETIMECHANGE * >( params.Msg.LParam )->st);
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingSystemTime func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingSystemTime >( params.FunctionThis );
-
-		NMDATETIMECHANGE * tmp = reinterpret_cast< NMDATETIMECHANGE * >( params.Msg.LParam );
-		( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )(
-			boost::polymorphic_cast< WidgetType * >( params.This ),
-			tmp->st
-			);
-		return 0;
-	}
+	F f;
 };
-
 /// DateTimePicker Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -114,9 +98,8 @@ class WidgetDateTimePicker :
 	public AspectVisible< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
 {
 	typedef MessageMapControl< EventHandlerClass, WidgetDateTimePicker, MessageMapPolicy > MessageMapType;
-	typedef AspectDateTimePickerDispatcher< EventHandlerClass, WidgetDateTimePicker, MessageMapType > DispatcherDateTimePicker;
-
-	typedef MessageMapControl< EventHandlerClass, WidgetDateTimePicker, MessageMapPolicy > ThisMessageMap;
+	typedef AspectEnableDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 	friend class WidgetCreator< WidgetDateTimePicker >;
 
 public:
@@ -173,8 +156,20 @@ public:
 	  * If you supply an event handler for this event your handler will be called 
 	  * when the WidgetDateTimePicker date value is changed. 
 	  */
-	void onDateTimeChanged( typename MessageMapType::itsVoidFunctionTakingSystemTime eventHandler );
-	void onDateTimeChanged( typename MessageMapType::voidFunctionTakingSystemTime eventHandler );
+	void onDateTimeChanged( typename MessageMapType::itsVoidFunctionTakingSystemTime eventHandler ) {
+		onDateTimeChanged(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
+	}
+	void onDateTimeChanged( typename MessageMapType::voidFunctionTakingSystemTime eventHandler ) {
+		onDateTimeChanged(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
+	}
+	void onDateTimeChanged(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			typename MessageMapType::SignalTupleType(
+				Message( WM_NOTIFY, DTN_DATETIMECHANGE ), Dispatcher(f)
+			)
+		);
+	}
 
 	/// Retrieves the time value of the DateTimePicker control
 	/** Returns a SYSTEMTIME struct containing down to resolution in milliseconds the
@@ -302,7 +297,7 @@ WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
 template< class EventHandlerClass, class MessageMapPolicy >
 LRESULT WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -310,42 +305,6 @@ Message & WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::getClickM
 {
 	static Message retVal = Message( WM_NOTIFY, DTN_DROPDOWN );
 	return retVal;
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::onDateTimeChanged( typename MessageMapControl< EventHandlerClass, WidgetDateTimePicker, MessageMapPolicy >::itsVoidFunctionTakingSystemTime eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_NOTIFY, DTN_DATETIMECHANGE ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherDateTimePicker::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::onDateTimeChanged( typename MessageMapControl< EventHandlerClass, WidgetDateTimePicker, MessageMapPolicy >::voidFunctionTakingSystemTime eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_NOTIFY, DTN_DATETIMECHANGE ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherDateTimePicker::dispatch )
-			)
-		)
-	);
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -388,7 +347,7 @@ void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::create( const 
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	//TODO: use CreationalInfo parameters
 	setFont( cs.font );
 	setFormat( cs.format );

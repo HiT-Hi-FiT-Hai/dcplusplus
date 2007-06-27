@@ -117,11 +117,10 @@ void SpyFrame::layout() {
 }
 
 void SpyFrame::initSecond() {
-	SmartWin::Command cmd(_T("1 second"));
-	createTimer(&SpyFrame::eachSecond, 1000, cmd);	
+	createTimer(boost::bind(&SpyFrame::eachSecond, this), 1000);
 }
 
-void SpyFrame::eachSecond(const SmartWin::CommandPtr& ptr) {
+bool SpyFrame::eachSecond() {
 	float x = 0.0;
 	for(int i = 0; i < AVG_TIME; ++i) {
 		x += (float)perSecond[i];
@@ -131,8 +130,7 @@ void SpyFrame::eachSecond(const SmartWin::CommandPtr& ptr) {
 	cur = (cur + 1) % AVG_TIME;
 	perSecond[cur] = 0;
 	setStatus(STATUS_AVG_PER_SECOND, Text::toT(STRING(AVERAGE) + Util::toString(x)));
-
-	initSecond();
+	return true;
 }
 
 bool SpyFrame::preClosing() {

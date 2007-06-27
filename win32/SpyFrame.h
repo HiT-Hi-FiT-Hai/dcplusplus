@@ -79,7 +79,7 @@ private:
 	tstring searchString;
 
 	void initSecond();
-	void eachSecond(const SmartWin::CommandPtr& ptr);
+	bool eachSecond();
 
 	HRESULT spoken(LPARAM lParam, WPARAM wParam);
 

@@ -51,48 +51,25 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
+
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class WidgetTabSheetDispatcher
+struct WidgetTabSheetDispatcher
 {
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( params.This );
-		bool retVal;
-		unsigned param = TabCtrl_GetCurSel( This->handle() );
-		typename MessageMapType::boolFunctionTakingUnsigned func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingUnsigned >( params.Function );
+	typedef boost::function<bool (unsigned)> F;
 
-		retVal = func
-			( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-			, boost::polymorphic_cast< WidgetType * >( params.This )
-			, param
-			);
+	WidgetTabSheetDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 
-		return retVal ? FALSE : TRUE;
+	HRESULT operator()(private_::SignalContent& params) {
+		unsigned param = TabCtrl_GetCurSel( widget->handle() );
+		return f(param) ? FALSE : TRUE; /// @todo should this really be the inverse?
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( params.This );
-		bool retVal;
-		unsigned param = TabCtrl_GetCurSel( This->handle() );
-		typename MessageMapType::itsBoolFunctionTakingUnsigned func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingUnsigned >( params.FunctionThis );
-
-		retVal = ( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )
-			( boost::polymorphic_cast< WidgetType * >( params.This )
-			, param
-			);
-
-		return retVal ? FALSE : TRUE;
-	}
+	F f;
+	Widget* widget;
 };
-
 /// Tab Sheet Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -127,7 +104,9 @@ class WidgetTabSheet :
 	public AspectVisible< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
 {
 	typedef MessageMapControl< EventHandlerClass, WidgetTabSheet, MessageMapPolicy > MessageMapType;
-	typedef WidgetTabSheetDispatcher< EventHandlerClass, WidgetTabSheet, MessageMapType > Dispatcher;
+	typedef WidgetTabSheetDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+
 	friend class WidgetCreator< WidgetTabSheet >;
 
 public:
@@ -185,8 +164,20 @@ public:
 	  * to change and the onSelectionChanged event will not fire ( good for
 	  * validation of fields etc...)
 	  */
-	void onSelectionChanging( typename ThisMessageMap::itsBoolFunctionTakingUnsigned eventHandler );
-	void onSelectionChanging( typename ThisMessageMap::boolFunctionTakingUnsigned eventHandler );
+	void onSelectionChanging( typename ThisMessageMap::itsBoolFunctionTakingUnsigned eventHandler ) {
+		onSelectionChanging(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
+	}
+	void onSelectionChanging( typename ThisMessageMap::boolFunctionTakingUnsigned eventHandler ) {
+		onSelectionChanging(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
+	}
+	void onSelectionChanging(const typename Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			typename MessageMapType::SignalTupleType(
+				Message( WM_NOTIFY, TCN_SELCHANGING ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+			)
+		);
+	}
 
 	// Commented in AspectSelection
 	void setSelectedIndex( int idx );
@@ -334,46 +325,6 @@ SmartUtil::tstring WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::getSel
 		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
 	}
 	return buffer;
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::onSelectionChanging(
-	typename MessageMapControl< EventHandlerClass, WidgetTabSheet, MessageMapPolicy >::itsBoolFunctionTakingUnsigned
-	eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_NOTIFY, TCN_SELCHANGING )
-				, reinterpret_cast< itsVoidFunction >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-				)
-			)
-		);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::onSelectionChanging(
-	typename MessageMapControl< EventHandlerClass, WidgetTabSheet, MessageMapPolicy >::boolFunctionTakingUnsigned
-	eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_NOTIFY, TCN_SELCHANGING )
-				, reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-				)
-			)
-		);
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >

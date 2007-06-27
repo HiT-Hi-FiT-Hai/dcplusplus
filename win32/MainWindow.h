@@ -171,7 +171,7 @@ private:
 	HRESULT trayMessage(LPARAM lp, WPARAM wp);
 	
 	void layout();
-	void eachSecond(const SmartWin::CommandPtr& ptr);
+	bool eachSecond();
 	void updateStatus();
 	void updateTray(bool add = true);
 	void autoConnect(const FavoriteHubEntryList& fl);

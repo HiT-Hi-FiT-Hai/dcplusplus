@@ -33,19 +33,19 @@ class MDIChildFrame :
 	public AspectStatus<T, SmartWin::MessageMapPolicyMDIChildWidget>
 {
 public:
+	typedef MDIChildFrame<T> ThisType;
+	
 	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
-	MDIChildFrame() : reallyClose(false) {
-		// If something fails here, you've not called SmartWin::Widget with a good parent
-		// (because of smartwin's shitty inheritance) from the most derived class
+	MDIChildFrame() : SmartWin::Widget(0), reallyClose(false) {
 		typename FactoryType::Seed cs;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		FactoryType::createMDIChild(cs);
 
-		onClosing(&T::closing);
-		onFocus(&T::focused);
-		onSized(&T::sized);
-		onRaw(&T::ctlColor, WM_CTLCOLORSTATIC);
-		onRaw(&T::ctlColor, WM_CTLCOLOREDIT);
+		onClosing(boost::bind(&ThisType::closing, this));
+		onFocus(boost::bind(&ThisType::focused, this));
+		onSized(boost::bind(&ThisType::sized, this, _1));
+		onRaw(boost::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLORSTATIC);
+		onRaw(boost::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLOREDIT);
 	}
 	
 protected:

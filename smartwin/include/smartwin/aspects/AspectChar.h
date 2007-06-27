@@ -31,79 +31,23 @@
 
 #include "boost.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectChar. Since AspectChar is used both in WidgetWindowBase (container
-// widgets) and Control Widgets we need to specialize which implementation to use
-// here!!
-template< class WindowOriginalType, class WidgetType, class MessageMapType, bool IsControl >
-class AspectCharDispatcher
-{
-};
 
-template< class WindowOriginalType, class WidgetType, class MessageMapType >
-class AspectCharDispatcher<WindowOriginalType, WidgetType, MessageMapType, true/*Control Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::boolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingInt >( params.Function );
-
-		WindowOriginalType * ThisParent = internal_::getTypedParentOrThrow < WindowOriginalType * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		bool handled = func( ThisParent,
-			This,
-			static_cast< int >( params.Msg.WParam )
-			);
-
-		if ( !handled )
-			params.RunDefaultHandling = true;
-		return 0;
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsBoolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingInt >( params.FunctionThis );
-
-		WindowOriginalType * ThisParent = internal_::getTypedParentOrThrow < WindowOriginalType * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		bool handled = ( ( * ThisParent ).*func )(
-			This,
-			static_cast< int >( params.Msg.WParam )
-			);
-
-		if ( !handled )
-			params.RunDefaultHandling = true;
-		return 0;
-	}
-};
-
-template< class WindowOriginalType, class WidgetType, class MessageMapType >
-class AspectCharDispatcher<WindowOriginalType, WidgetType, MessageMapType, false/*Container Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::boolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingInt >( params.Function );
-
-		WindowOriginalType * ThisParent = internal_::getTypedParentOrThrow < WindowOriginalType * >( params.This );
-
-		bool handled = func(
-			ThisParent,
-			static_cast< int >( params.Msg.WParam )
-			);
-
+template<typename EventHandlerClass>
+struct AspectCharDispatcher {
+	typedef boost::function<bool (int)> F;
+	
+	AspectCharDispatcher(const F& f_, EventHandlerClass* parent_) : f(f_), parent(parent_) { }
+	
+	HRESULT operator()(private_::SignalContent& params) {
+		bool handled = f(static_cast<int>(params.Msg.WParam));
 		if ( handled ) // TODO: Check up this logic
-			return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
+			return parent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
 		else
 		{
 			params.RunDefaultHandling = true;
@@ -111,25 +55,8 @@ public:
 		}
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsBoolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingInt >( params.FunctionThis );
-
-		WindowOriginalType * ThisParent = internal_::getTypedParentOrThrow < WindowOriginalType * >( params.This );
-
-		bool handled = ( ( * ThisParent ).*func )(
-			static_cast< int >( params.Msg.WParam )
-			);
-
-		if ( handled ) // TODO: Check up this logic
-			return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-		else
-		{
-			params.RunDefaultHandling = true;
-			return 0;
-		}
-	}
+	F f;
+	EventHandlerClass* parent;
 };
 
 /// Aspect class used by Widgets that have the possibility of trapping "char events".
@@ -137,11 +64,11 @@ public:
   * E.g. the WidgetTextBox can trap "char events" therefore they realize the
   * AspectChar through inheritance.
   */
-template< class WindowOriginalType, class WidgetType, class MessageMapType >
+template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectChar
 {
-	typedef AspectCharDispatcher< WindowOriginalType, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
-
+	typedef AspectCharDispatcher<EventHandlerClass> Dispatcher;
+	typedef AspectAdapter<typename Dispatcher::F, EventHandlerClass, MessageMapType::IsControl > Adapter;
 public:
 	/// \ingroup EventHandlersAspectChar
 	/// Setting the event handler for the "char" event
@@ -155,9 +82,19 @@ public:
 	  * you include ES_WANTRETURN in the style field of of the creational structure
 	  * passed when you createTextBox( cs ).
 	  */
-	void onChar( typename MessageMapType::itsBoolFunctionTakingInt eventHandler );
-	void onChar( typename MessageMapType::boolFunctionTakingInt eventHandler );
+	void onChar( typename MessageMapType::itsBoolFunctionTakingInt eventHandler ) {
+		onChar(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onChar( typename MessageMapType::boolFunctionTakingInt eventHandler ) {
+		onChar(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
 
+	void onChar(const typename Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_CHAR ), Dispatcher(f, internal_::getTypedParentOrThrow<EventHandlerClass*>(this) )
+		);
+	}
 protected:
 	virtual ~AspectChar()
 	{}
@@ -166,41 +103,6 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class WindowOriginalType, class WidgetType, class MessageMapType >
-void AspectChar< WindowOriginalType, WidgetType, MessageMapType >::onChar( typename MessageMapType::itsBoolFunctionTakingInt eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_CHAR ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class WindowOriginalType, class WidgetType, class MessageMapType >
-void AspectChar< WindowOriginalType, WidgetType, MessageMapType >::onChar( typename MessageMapType::boolFunctionTakingInt eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_CHAR ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
 // end namespace SmartWin
 }
 

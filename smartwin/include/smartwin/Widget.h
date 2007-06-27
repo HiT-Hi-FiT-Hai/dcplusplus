@@ -43,12 +43,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Forwards declarations of friends
-namespace private_
-{
-	class DestructionClass;
-}
-
 class Application;
 
 namespace private_
@@ -196,11 +190,12 @@ protected:
 	// Widget will almost ALLWAYS be deleted from a pointer to a Widget
 	virtual ~Widget();
 
-	// Note!
-	// To relieve the client from calling this constructor explicitly (it's a
-	// diamond inheritance relationship (virtual inheritance) ). We MUST have a
-	// default non parameter Constructor to this class...
-	Widget( Widget * parent = 0, HWND hWnd = NULL, bool doReg = true );
+	// While the two last parameters here hanve defaults,
+	// the first one does not to ensure that anyone constructing 
+	// Widgets doesn't forget to initialize this virtually inherited
+	// class correctly...
+	// See: http://geneura.ugr.es/~jmerelo/c++-faq/multiple-inheritance.html#faq-25.12
+	Widget( Widget * parent, HWND hWnd = NULL, bool doReg = true );
 
 	// Creates the Widget, should NOT be called directly but overridden in the
 	// derived class (with no parameters)
@@ -208,9 +203,17 @@ protected:
 
 	virtual void registerWidget();
 
+	// Kills the "this" Widget
+	void killMe();
+
+	// Kills all children to the this Widget
+	void killChildren();
+
+	// Erases the "this" widget from its parent's list of children.
+	void eraseMeFromParentsChildren();
+
 private:
 	friend class Application;
-	friend class private_::DestructionClass;
 
 	std::auto_ptr< Utilities::CriticalSection > itsCriticalSection;
 

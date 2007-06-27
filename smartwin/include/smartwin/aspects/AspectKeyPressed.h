@@ -32,104 +32,27 @@
 #include "boost.h"
 #include "../SignalParams.h"
 
+#include "AspectAdapter.h"
+
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectKeyPressed Since AspectKeyPressed is used both in WidgetWindowBase
-// (container widgets) and Control Widgets we need to specialize which
-// implementation to use here!!
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectKeyPressedDispatcher
+struct AspectKeyPressedDispatcher
 {
-};
+	typedef boost::function<bool (int)> F;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectKeyPressedDispatcher<EventHandlerClass, WidgetType, MessageMapType, true/*Control Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::boolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingInt >( params.Function );
+	AspectKeyPressedDispatcher(const F& f_) : f(f_) { }
 
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		bool handled = func( ThisParent,
-			This,
-			static_cast< int >( params.Msg.WParam )
-			);
+	HRESULT operator()(private_::SignalContent& params) {
+		bool handled = f(static_cast< int >( params.Msg.WParam ));
 
 		if ( !handled )
 			params.RunDefaultHandling = true;
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsBoolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingInt >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		bool handled = ( ( * ThisParent ).*func )(
-			This,
-			static_cast< int >( params.Msg.WParam )
-			);
-
-		if ( !handled )
-			params.RunDefaultHandling = true;
-		return 0;
-	}
-};
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectKeyPressedDispatcher<EventHandlerClass, WidgetType, MessageMapType, false/*Container Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::boolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingInt >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		bool handled = func(
-			ThisParent,
-			static_cast< int >( params.Msg.WParam )
-			);
-
-		if ( handled ) // TODO: Check up this logic
-			return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-		else
-		{
-			params.RunDefaultHandling = true;
-			return 0;
-		}
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsBoolFunctionTakingInt func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingInt >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		bool handled = ( ( * ThisParent ).*func )(
-			static_cast< int >( params.Msg.WParam )
-			);
-
-		if ( handled ) // TODO: Check up this logic
-			return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-		else
-		{
-			params.RunDefaultHandling = true;
-			return 0;
-		}
-	}
+	F f;
 };
 
 /// Aspect class used by Widgets that have the possibility of trapping "key pressed events".
@@ -139,7 +62,8 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectKeyPressed
 {
-	typedef AspectKeyPressedDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectKeyPressedDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
 public:
 	/// \ingroup EventHandlersAspectKeyPressed
@@ -158,8 +82,19 @@ public:
 	  * Use virtualKeyToChar to transform virtual key code to a char, though this
 	  * will obviously not work for e.g. arrow keys etc...
 	  */
-	void onKeyPressed( typename MessageMapType::itsBoolFunctionTakingInt eventHandler );
-	void onKeyPressed( typename MessageMapType::boolFunctionTakingInt eventHandler );
+	void onKeyPressed( typename MessageMapType::itsBoolFunctionTakingInt eventHandler ) {
+		onKeyPressed(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onKeyPressed( typename MessageMapType::boolFunctionTakingInt eventHandler ) {
+		onKeyPressed(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onEnabled(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_KEYDOWN ), Dispatcher(f)
+		);
+	}
+
 
 	/// Get ascii character from a Virtual Key
 	/** Use this to convert from the input to the response to onKeyPressed to a
@@ -192,40 +127,6 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectKeyPressed< EventHandlerClass, WidgetType, MessageMapType >::onKeyPressed( typename MessageMapType::itsBoolFunctionTakingInt eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_KEYDOWN ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectKeyPressed< EventHandlerClass, WidgetType, MessageMapType >::onKeyPressed( typename MessageMapType::boolFunctionTakingInt eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_KEYDOWN ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 char AspectKeyPressed< EventHandlerClass, WidgetType, MessageMapType >::

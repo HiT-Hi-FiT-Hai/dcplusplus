@@ -335,6 +335,7 @@ HRESULT PublicHubsFrame::spoken(LPARAM lParam, WPARAM wParam) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
 		setStatus(STATUS_STATUS, TSTRING(DOWNLOAD_FAILED) + (*x));
 	}
+	return 0;
 }
 
 bool PublicHubsFrame::parseFilter(FilterModes& mode, double& size) {

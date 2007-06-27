@@ -31,89 +31,24 @@
 
 #include "boost.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectActivate Since AspectMouse is used both in WidgetWindowBase (container
-// widgets) and Control Widgets we need to specialize which implementation to use
-// here!!
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectMouseDispatcher
+struct AspectMouseDispatcher
 {
-};
+	typedef boost::function<void (const MouseEventResult &)> F;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectMouseDispatcher<EventHandlerClass, WidgetType, MessageMapType, true/*Control Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingMouseEventResult func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingMouseEventResult >( params.Function );
+	AspectMouseDispatcher(const F& f_) : f(f_) { }
 
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		func( ThisParent,
-			This,
-			private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
+	HRESULT operator()(private_::SignalContent& params) {
+		f(private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingMouseEventResult func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingMouseEventResult >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			This,
-			private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
-		return 0;
-	}
-};
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectMouseDispatcher<EventHandlerClass, WidgetType, MessageMapType, false/*Container Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingMouseEventResult func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingMouseEventResult >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		func(
-			ThisParent,
-			private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingMouseEventResult func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingMouseEventResult >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
+	F f;
 };
 
 /// Aspect class used by Widgets that have the possibility of trapping "mouse
@@ -125,7 +60,9 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectMouseClicks
 {
-	typedef AspectMouseDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectMouseDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+
 public:
 	/// \ingroup EventHandlersAspectMouseClicks
 	/// Left mouse button pressed and released event handler setter
@@ -134,9 +71,16 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onLeftMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onLeftMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
-
+	void onLeftMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onLeftMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onLeftMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onLeftMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onLeftMouseUp(const Dispatcher::F& f) {
+		onMouse(WM_LBUTTONUP, f);
+	}
+	
 	/// \ingroup EventHandlersAspectMouseClicks
 	/// Right mouse button pressed and released event handler setter
 	/** If supplied, function will be called when user releases the Right Mouse
@@ -144,8 +88,15 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onRightMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onRightMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
+	void onRightMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onRightMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onRightMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onRightMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onRightMouseUp(const Dispatcher::F& f) {
+		onRightMouseUp(WM_RBUTTONUP, f);
+	}
 
 	/// \ingroup EventHandlersAspectMouseClicks
 	/// Middle mouse button pressed and released event handler setter
@@ -154,8 +105,15 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onMiddleMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onMiddleMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
+	void onMiddleMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onMiddleMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMiddleMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onMiddleMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMiddleMouseUp(const Dispatcher::F& f) {
+		onMiddleMouseUp(WM_MBUTTONUP, f);
+	}
 
 	/// \ingroup EventHandlersAspectMouseClicks
 	/// Left mouse button pressed event handler setter
@@ -164,8 +122,15 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onLeftMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onLeftMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
+	void onLeftMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onLeftMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onLeftMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onLeftMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onLeftMouseDown(const Dispatcher::F& f) {
+		onMouse(WM_LBUTTONDOWN, f);
+	}
 
 	/// \ingroup EventHandlersAspectMouseClicks
 	/// Right mouse button pressed event handler setter
@@ -174,8 +139,15 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onRightMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onRightMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
+	void onRightMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onRightMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onRightMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onRightMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onRightMouseDown(const Dispatcher::F& f) {
+		onMouse(WM_RBUTTONDOWN, f);
+	}
 
 	/// Middle mouse button pressed event handler setter
 	/** If supplied, function will be called when user press the Middle Mouse button
@@ -183,8 +155,15 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onMiddleMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
-	void onMiddleMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
+	void onMiddleMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onMiddleMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMiddleMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onMiddleMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMiddleMouseDown(const Dispatcher::F& f) {
+		onMouse(WM_MBUTTONDOWN, f);
+	}
 
 
 
@@ -194,8 +173,15 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onLeftMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onLeftMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
+	void onLeftMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onLeftMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onLeftMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onLeftMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onLeftMouseDblClick(const Dispatcher::F& f) {
+		onMouse(WM_LBUTTONDBLCLK, f);
+	}
 
 	/// Right mouse button double-clicked event handler setter
 	/** If supplied, function will be called when user  double clicks the Right mouse button
@@ -203,8 +189,15 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onRightMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onRightMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
+	void onRightMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onRightMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onRightMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onRightMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onRightMouseDblClick(const Dispatcher::F& f) {
+		onMouse(WM_RBUTTONDBLCLK, f);
+	}
 
 
 
@@ -214,333 +207,27 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onMouseMove( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler );
-	void onMouseMove( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler );
+	void onMouseMove( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
+		onMouseMove(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMouseMove( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
+		onMouseMove(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMouseMove(const Dispatcher::F& f) {
+		onMouse(WM_MOUSEMOVE, f);
+	}
 
 protected:
+	
+	void onMouse(UINT msg, const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( msg ), Dispatcher(f)
+		);
+	}
 	virtual ~AspectMouseClicks()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onLeftMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_LBUTTONUP ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onLeftMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_LBUTTONUP ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onRightMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_RBUTTONUP ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onRightMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_RBUTTONUP ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onMiddleMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MBUTTONUP ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onMiddleMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MBUTTONUP ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onLeftMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_LBUTTONDOWN ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onLeftMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_LBUTTONDOWN ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-// Right Mouse button down
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onRightMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_RBUTTONDOWN ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onRightMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_RBUTTONDOWN ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onMiddleMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MBUTTONDOWN ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onMiddleMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MBUTTONDOWN ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-
-
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onLeftMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_LBUTTONDBLCLK ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onLeftMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_LBUTTONDBLCLK ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onRightMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_RBUTTONDBLCLK ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onRightMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_RBUTTONDBLCLK ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-
-
-// Mouse Movement
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onMouseMove( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MOUSEMOVE ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectMouseClicks< EventHandlerClass, WidgetType, MessageMapType >::onMouseMove(
-			typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MOUSEMOVE ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

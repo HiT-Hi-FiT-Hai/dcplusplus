@@ -28,8 +28,8 @@ public:
 	}
 	
 	template<typename F>
-	void onSpeaker(F t) {
-		static_cast<T*>(this)->onRaw(t, WM_SPEAKER);
+	void onSpeaker(const F& f) {
+		static_cast<T*>(this)->onRaw(f, WM_SPEAKER);
 	}
 	
 	BOOL speak(LPARAM l = 0, WPARAM w = 0) { return StupidWin::postMessage(static_cast<T*>(this), WM_SPEAKER, w, l); }

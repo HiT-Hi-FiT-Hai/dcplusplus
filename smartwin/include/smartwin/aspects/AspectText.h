@@ -32,93 +32,24 @@
 #include "boost.h"
 #include "SmartUtil.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectText Since AspectText is used both in WidgetWindowBase (container
-// widgets) and Control Widgets we need to specialize which implementation to use
-// here!!
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectTextDispatcher
+struct AspectTextDispatcher
 {
-};
+	typedef boost::function<void (const SmartUtil::tstring &)> F;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectTextDispatcher< EventHandlerClass, WidgetType, MessageMapType, true >
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingConstString func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingConstString >( params.Function );
+	AspectTextDispatcher(const F& f_) : f(f_) { }
 
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		func( ThisParent,
-			This,
-			SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) )
-			);
-
+	HRESULT operator()(private_::SignalContent& params) {
+		f(SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) ));
 		params.RunDefaultHandling = true;
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingConstString func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingConstString >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			This,
-			SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) )
-			);
-
-		params.RunDefaultHandling = true;
-		return 0;
-	}
-};
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectTextDispatcher< EventHandlerClass, WidgetType, MessageMapType, false >
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingConstString func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingConstString >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		func(
-			ThisParent,
-			SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) )
-			);
-
-		params.RunDefaultHandling = true;
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingConstString func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingConstString >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) )
-			);
-
-		params.RunDefaultHandling = true;
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
+	F f;
 };
 
 /// Aspect class used by Widgets that have the possibility of setting the "text"
@@ -130,7 +61,8 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectText
 {
-	typedef AspectTextDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectTextDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// Sets the text of the AspectText realizing class
 	/** The txt parameter is the new text to put into the realizing object.
@@ -159,8 +91,18 @@ public:
 	  * The parameter passed is SmartUtil::tstring & which is the new text of the
 	  * Widget.
 	  */
-	void onTextChanging( typename MessageMapType::itsVoidFunctionTakingConstString eventHandler );
-	void onTextChanging( typename MessageMapType::voidFunctionTakingConstString eventHandler );
+	void onTextChanging( typename MessageMapType::itsVoidFunctionTakingConstString eventHandler ) {
+		onTextChanging(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onTextChanging( typename MessageMapType::voidFunctionTakingConstString eventHandler ) {
+		onTextChanging(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onTextChanging(const typename Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_SETTEXT ), Dispatcher(f)
+		);
+	}
 
 protected:
 	virtual ~AspectText()
@@ -210,40 +152,6 @@ SmartUtil::tstring AspectText< EventHandlerClass, WidgetType, MessageMapType >::
 	::SendMessage( static_cast< const WidgetType * >( this )->handle(), WM_GETTEXT, ( WPARAM ) textLength, ( LPARAM ) txt.get() );
 	SmartUtil::tstring retVal = txt.get();
 	return retVal;
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectText< EventHandlerClass, WidgetType, MessageMapType >::onTextChanging( typename MessageMapType::itsVoidFunctionTakingConstString eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_SETTEXT ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & AspectText::Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectText< EventHandlerClass, WidgetType, MessageMapType >::onTextChanging( typename MessageMapType::voidFunctionTakingConstString eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_SETTEXT ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & AspectText::Dispatcher::dispatch )
-			)
-		)
-	);
 }
 
 // end namespace SmartWin

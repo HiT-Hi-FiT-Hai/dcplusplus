@@ -260,19 +260,17 @@ void HubFrame::updateStatus() {
 }
 
 void HubFrame::initSecond() {
-	SmartWin::Command cmd(_T("1 second"));
-	createTimer(&HubFrame::eachSecond, 1000, cmd);	
+	createTimer(boost::bind(&HubFrame::eachSecond, this), 1000);
 }
 
-void HubFrame::eachSecond(const SmartWin::CommandPtr&) {
+bool HubFrame::eachSecond() {
 	if(updateUsers) {
 		updateUsers = false;
 		speak();
 	}
 	
 	updateStatus();
-	///@todo change smartwin to support recurring timers 
-	initSecond();
+	return true;
 }
 
 bool HubFrame::enter() {

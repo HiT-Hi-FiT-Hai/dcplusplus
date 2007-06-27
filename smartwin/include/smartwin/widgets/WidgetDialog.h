@@ -73,7 +73,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< class EventHandlerClass, class unUsed >
 WidgetDialog< EventHandlerClass, unUsed >::WidgetDialog( Widget * parent )
-	: WidgetWindowBase< EventHandlerClass, MessageMapPolicyDialogWidget >( parent )
+	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyDialogWidget >( parent )
 {}
 
 template< class EventHandlerClass, class unUsed >

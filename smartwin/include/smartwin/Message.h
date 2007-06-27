@@ -70,7 +70,7 @@ public:
 	  * WM_COMMAND, WM_NOTIFY or similar type of Message
 	  */
 	Message( UINT msg, LPARAM extraCode );
-
+	
 	// Note!
 	// We're asserting this constructor call comes from the mainWndProc...
 	// We're also ONLY storing enough information in this struct to IDENTIFY the

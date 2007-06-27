@@ -37,94 +37,22 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectPainting Since AspectPainting is used both in WidgetWindowBase
-// (container widgets) and Control Widgets we need to specialize which
-// implementation to use here!!
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectPaintingDispatcher
-{
-};
+struct AspectPaintingDispatcher {
+	typedef boost::function<void (Canvas&)> F;
+	
+	AspectPaintingDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectPaintingDispatcher<EventHandlerClass, WidgetType, MessageMapType, true/*Control Widget*/>
-{
-public:
-	static HRESULT dispatchPaintThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingCanvas func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingCanvas >( params.FunctionThis );
+	HRESULT operator()(private_::SignalContent& params) {
+		PaintCanvas canvas( widget->handle() );
 
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		SmartWin::PaintCanvas canvas( This->handle() );
-
-		( ( * ThisParent ).*func )(
-			This,
-			canvas
-			);
-
+		f(canvas);
 		return 0;
 	}
 
-	static HRESULT dispatchPaint( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingCanvas func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingCanvas >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		SmartWin::PaintCanvas canvas( This->handle() );
-
-		func(
-			ThisParent,
-			This,
-			canvas
-			);
-
-		return 0;
-	}
+	F f;
+	Widget* widget;
 };
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectPaintingDispatcher<EventHandlerClass, WidgetType, MessageMapType, false/*Container Widget*/>
-{
-public:
-	static HRESULT dispatchPaintThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingCanvas func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingCanvas >( params.FunctionThis );
-
-		SmartWin::PaintCanvas canvas( params.This->handle() );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			canvas
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-
-	static HRESULT dispatchPaint( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingCanvas func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingCanvas >( params.Function );
-
-		SmartWin::PaintCanvas canvas( params.This->handle() );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		func(
-			ThisParent,
-			canvas
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-};
 
 /// Aspect class used by Widgets that can be custom painted.
 /** \ingroup AspectClasses
@@ -133,7 +61,8 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectPainting
 {
-	typedef AspectPaintingDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectPaintingDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectPainting
 	/// Painting event handler setter
@@ -141,52 +70,24 @@ public:
 	  * paint stuff onto the window with. <br>
 	  * Parameters passed is Canvas &
 	  */
-	void onPainting( typename MessageMapType::itsVoidFunctionTakingCanvas eventHandler );
-	void onPainting( typename MessageMapType::voidFunctionTakingCanvas eventHandler );
+	void onPainting( typename MessageMapType::itsVoidFunctionTakingCanvas eventHandler ) {
+		onPainting(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onPainting( typename MessageMapType::voidFunctionTakingCanvas eventHandler ) {
+		onPainting(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+
+	void onPainting(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_PAINT ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+		);
+	}
 
 protected:
 	virtual ~AspectPainting()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectPainting< EventHandlerClass, WidgetType, MessageMapType >::onPainting( typename MessageMapType::itsVoidFunctionTakingCanvas eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_PAINT ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchPaintThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectPainting< EventHandlerClass, WidgetType, MessageMapType >::onPainting( typename MessageMapType::voidFunctionTakingCanvas eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_PAINT ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchPaint )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

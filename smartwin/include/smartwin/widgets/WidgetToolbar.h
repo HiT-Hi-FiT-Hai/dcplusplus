@@ -42,6 +42,7 @@
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectRaw.h"
+#include "../aspects/AspectAdapter.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -52,36 +53,18 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class ToolbarDispatcher
+struct ToolbarDispatcher
 {
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingUInt func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingUInt >( params.Function );
+	typedef boost::function<void (unsigned)> F;
 
-		func
-			( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-			, boost::polymorphic_cast< WidgetType * >( params.This )
-			, params.Msg.WParam
-			);
+	ToolbarDispatcher(const F& f_) : f(f_) { }
 
+	HRESULT operator()(private_::SignalContent& params) {
+		f(static_cast< unsigned >( params.Msg.WParam ));
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingUInt func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingUInt >( params.FunctionThis );
-
-		( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )
-			( boost::polymorphic_cast< WidgetType * >( params.This )
-			, params.Msg.WParam
-			);
-
-		return 0;
-	}
+	F f;
 };
 
 // TODO: Give support for multiple bitmaps...
@@ -109,7 +92,8 @@ class WidgetToolbar :
 {
 	typedef MessageMapControl< EventHandlerClass, WidgetToolbar, MessageMapPolicy > MessageMapType;
 	typedef MessageMapControl< EventHandlerClass, WidgetToolbar, MessageMapPolicy > ThisMessageMap;
-	typedef ToolbarDispatcher< EventHandlerClass, WidgetToolbar, MessageMapType > DispatcherToolbar;
+	typedef ToolbarDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > > AspectSizable;
 	friend class WidgetCreator< WidgetToolbar >;
 public:
@@ -527,7 +511,7 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
 {
 	addButton( id, bitmapIdx, _T( "" ), _T( "" ), false, eventHandler );
 }
-
+#ifdef PORT_ME
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
 	( unsigned int id, int bitmapIdx, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
@@ -561,7 +545,7 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
 	}
 
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
+	ptrThis->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_COMMAND, id )
@@ -608,7 +592,7 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
 	}
 
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal
+	ptrThis->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_COMMAND, id )
@@ -621,6 +605,7 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
 			)
 		);
 }
+#endif
 
 template< class EventHandlerClass, class MessageMapPolicy >
 	void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setNormalImageList( ImageListPtr normalImageList )

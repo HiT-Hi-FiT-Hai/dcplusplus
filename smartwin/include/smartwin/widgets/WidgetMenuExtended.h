@@ -704,6 +704,7 @@ class WidgetMenuExtendedDispatcher
 	}
 
 public:
+#ifdef PORT_ME
 	static HRESULT dispatch( private_::SignalContent & params )
 	{
 		EventHandlerClass * ptrMainParent = getParent( params.This->getParent() );
@@ -841,6 +842,7 @@ public:
 			);
 		return 0;
 	}
+#endif
 };
 
 // Menu Renderer static data members initialization
@@ -1647,6 +1649,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::create( HMENU so
 	onMeasureItem( & DefaultMenuRenderer::measureItem );
 }
 
+#ifdef PORT_ME
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onDrawItem( boolDrawItemFunction eventHandler )
 {
@@ -1654,7 +1657,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onDrawItem( bool
 	MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
 
 	// setup slot
-	This->addNewSignal
+	This->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_DRAWITEM )
@@ -1675,7 +1678,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onDrawItem( itsB
 	MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
 
 	// setup slot
-	This->addNewSignal
+	This->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_DRAWITEM )
@@ -1696,7 +1699,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onMeasureItem( b
 	MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
 
 	// setup slot
-	This->addNewSignal
+	This->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_MEASUREITEM )
@@ -1717,7 +1720,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onMeasureItem( i
 	MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
 
 	// setup slot
-	This->addNewSignal
+	This->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_MEASUREITEM )
@@ -1738,7 +1741,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onPopup( voidPop
 	MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
 
 	// setup slot
-	This->addNewSignal
+	This->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_INITMENUPOPUP )
@@ -1759,7 +1762,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onPopup( itsVoid
 	MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
 
 	// setup slot
-	This->addNewSignal
+	This->setCallback
 		( typename MessageMapType::SignalTupleType
 			( private_::SignalContent
 				( Message( WM_INITMENUPOPUP )
@@ -1772,6 +1775,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::onPopup( itsVoid
 			)
 		);
 }
+#endif
 
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::appendSeparatorItem()
@@ -1806,7 +1810,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::setItemCommandHa
 	if ( eventHandler != 0 )
 	{
 		MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
-		This->addNewSignal
+		This->setCallback
 			( typename MessageMapType::SignalTupleType
 				( private_::SignalContent
 					( Message( isSysMenu ? WM_SYSCOMMAND : WM_COMMAND, itemID )
@@ -1821,6 +1825,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::setItemCommandHa
 	}
 }
 
+#ifdef PORT_ME
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::setItemCommandHandler( unsigned itemID, menuExtendedVoidFunctionTakingUInt eventHandler )
 {
@@ -1828,7 +1833,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::setItemCommandHa
 	if ( eventHandler != 0 )
 	{
 		MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( this );
-		This->addNewSignal
+		This->setCallback
 			( typename MessageMapType::SignalTupleType
 				( private_::SignalContent
 					( Message( isSysMenu ? WM_SYSCOMMAND : WM_COMMAND, itemID )
@@ -1842,7 +1847,7 @@ void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::setItemCommandHa
 			);
 	}
 }
-
+#endif
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >::removeItem( unsigned itemIndex )
 {

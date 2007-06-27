@@ -32,6 +32,7 @@
 #include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -45,7 +46,8 @@ namespace SmartWin
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectScrollable
 {
-	typedef AspectVoidVoidDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectScrollable
 	/// Setting the event handler for the "scrolling horizontally" event
@@ -54,8 +56,18 @@ public:
 	  * <br>
 	  * No parameters are passed.
 	  */
-	void onScrollHorz( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler );
-	void onScrollHorz( typename MessageMapType::voidFunctionTakingVoid eventHandler );
+	void onScrollHorz( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
+		onScrollHorz(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onScrollHorz( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
+		onScrollHorz(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onScrollHorz(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_HSCROLL ), Dispatcher(f)
+		);
+	}
 
 	/// \ingroup EventHandlersAspectScrollable
 	/// Setting the event handler for the "scrolling vertically" event
@@ -64,88 +76,23 @@ public:
 	  * <br>
 	  * No parameters are passed.
 	  */
-	void onScrollVert( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler );
-	void onScrollVert( typename MessageMapType::voidFunctionTakingVoid eventHandler );
+	void onScrollVert( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
+		onScrollVert(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onScrollVert( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
+		onScrollVert(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onScrollVert(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_VSCROLL ), Dispatcher(f)
+		);
+	}
 
 protected:
 	virtual ~AspectScrollable()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectScrollable< EventHandlerClass, WidgetType, MessageMapType >::onScrollHorz( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_HSCROLL ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectScrollable< EventHandlerClass, WidgetType, MessageMapType >::onScrollHorz( typename MessageMapType::voidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_HSCROLL ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectScrollable< EventHandlerClass, WidgetType, MessageMapType >::onScrollVert( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_VSCROLL ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectScrollable< EventHandlerClass, WidgetType, MessageMapType >::onScrollVert( typename MessageMapType::voidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_VSCROLL ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

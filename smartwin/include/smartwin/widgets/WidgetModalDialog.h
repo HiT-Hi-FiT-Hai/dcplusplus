@@ -34,28 +34,17 @@
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class WidgetModalDialogDispatcher
+struct WidgetModalDialogDispatcher
 {
-public:
-	static HRESULT dispatchInitDialog( private_::SignalContent & params )
-	{
-		typename MessageMapType::boolFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingVoid >( params.Function );
+	typedef boost::function<bool ()> F;
+	
+	WidgetModalDialogDispatcher(const F& f_) : f(f_) { }
 
-		bool retVal = func( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) );
-		return retVal ? TRUE : FALSE;
+	HRESULT operator()(private_::SignalContent& params) {
+		return f() ? TRUE : FALSE;
 	}
 
-	static HRESULT dispatchInitDialogThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsBoolFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingVoid >( params.FunctionThis );
-
-		bool retVal = ( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )();
-		return retVal ? TRUE : FALSE;
-	}
+	F f;
 };
 
 /// Modal Dialog class
@@ -80,9 +69,10 @@ template< class EventHandlerClass, class MessageMapPolicy >
 class WidgetModalDialog
 	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >
 {
-	typedef MessageMap< EventHandlerClass, MessageMapPolicy > ThisMessageMap;
 	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapType;
-	typedef WidgetModalDialogDispatcher< EventHandlerClass, WidgetModalDialog, MessageMapType > DispatcherModalDialog;
+	typedef WidgetModalDialogDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+
 public:
 	/// Class type
 	typedef WidgetModalDialog< EventHandlerClass, MessageMapPolicy > ThisType;
@@ -142,15 +132,18 @@ public:
 	  * which control to initially have focus according to the tab order of the 
 	  * controls!       
 	  */
-#ifdef _MSC_VER
-	void onInitDialog( boolFunctionTakingVoid eventHandler );
-	void onInitDialog( itsBoolFunctionTakingVoid eventHandler );
-#endif
-
-#ifdef __GNUC__
-	void onInitDialog( typename ThisMessageMap::boolFunctionTakingVoid eventHandler );
-	void onInitDialog( typename ThisMessageMap::itsBoolFunctionTakingVoid eventHandler );
-#endif
+	void onInitDialog( typename MessageMapType::boolFunctionTakingVoid eventHandler ) {
+		onInitDialog(Adapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));
+	}
+	void onInitDialog( typename MessageMapType::itsBoolFunctionTakingVoid eventHandler ) {
+		onInitDialog(Adapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));
+	}
+	void onInitDialog(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_INITDIALOG ), Dispatcher(f)
+		);
+	}
 
 
 
@@ -179,7 +172,7 @@ private:
 template< class EventHandlerClass, class MessageMapPolicy >
 WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::
 WidgetModalDialog( Widget * parent )
-	: WidgetWindowBase< EventHandlerClass, MessageMapPolicy >( parent )
+	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicy >( parent )
 {
 	// Default parameters for pure modal dialogs
 #ifdef WINCE
@@ -263,58 +256,6 @@ void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::endDialog( int re
 	// Causes createDialog() to return with retv.
 	//
 	::EndDialog( this->handle(), static_cast< INT_PTR >( retv ) );
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-
-#ifdef _MSC_VER
-void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::
-onInitDialog( itsBoolFunctionTakingVoid eventHandler )
-#endif
-
-#ifdef __GNUC__
-void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::
-onInitDialog( typename ThisMessageMap::itsBoolFunctionTakingVoid eventHandler )
-#endif
-{
-	this->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_INITDIALOG )
-				, reinterpret_cast< itsVoidFunction >( eventHandler )
-				, this
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherModalDialog::dispatchInitDialogThis )
-				)
-			)
-		);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-
-#ifdef _MSC_VER
-void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::
-onInitDialog( boolFunctionTakingVoid eventHandler )
-#endif
-
-#ifdef __GNUC__
-void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::
-onInitDialog( typename ThisMessageMap::boolFunctionTakingVoid eventHandler )
-#endif
-{
-	this->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_INITDIALOG )
-				, reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, this
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherModalDialog::dispatchInitDialog )
-				)
-			)
-		);
 }
 
 // end namespace SmartWin

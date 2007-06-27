@@ -28,7 +28,7 @@
 template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
-	StaticFrame() { 
+	StaticFrame() : SmartWin::Widget(0) { 
 		setText(Text::toT(ResourceManager::getInstance()->getString(T::TITLE_RESOURCE)));
 	}
 	

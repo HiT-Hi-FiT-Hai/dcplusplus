@@ -31,93 +31,22 @@
 
 #include "boost.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectRaw Since AspectRaw is used both in WidgetWindowBase (container
-// widgets) and Control Widgets we need to specialize which implementation to use
-// here!!
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectRawDispatcher
-{
-};
+struct AspectRawDispatcher {
+	typedef boost::function<HRESULT (LPARAM, WPARAM)> F;
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectRawDispatcher<EventHandlerClass, WidgetType, MessageMapType, true/*Control Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::hresultFunctionTakingLparamWparam func =
-			reinterpret_cast< typename MessageMapType::hresultFunctionTakingLparamWparam >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		HRESULT hRes = func( ThisParent,
-			This,
-			params.Msg.LParam,
-			params.Msg.WParam
-			);
-
-		return hRes;
+	AspectRawDispatcher(const F& f_) : f(f_) { }
+	
+	HRESULT operator()(private_::SignalContent& params) {
+		return f(params.Msg.LParam, params.Msg.WParam);
 	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsHresultFunctionTakingLparamWparam func =
-			reinterpret_cast< typename MessageMapType::itsHresultFunctionTakingLparamWparam >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		HRESULT hRes = ( ( * ThisParent ).*func )(
-			This,
-			params.Msg.LParam,
-			params.Msg.WParam
-			);
-
-		return hRes;
-	}
-};
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectRawDispatcher< EventHandlerClass, WidgetType, MessageMapType, false >
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::hresultFunctionTakingLparamWparam func =
-			reinterpret_cast< typename MessageMapType::hresultFunctionTakingLparamWparam >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		HRESULT hRes = func(
-			ThisParent,
-			params.Msg.LParam,
-			params.Msg.WParam
-			);
-
-		return hRes;
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsHresultFunctionTakingLparamWparam func =
-			reinterpret_cast< typename MessageMapType::itsHresultFunctionTakingLparamWparam >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		HRESULT hRes = ( ( * ThisParent ).*func )(
-			params.Msg.LParam,
-			params.Msg.WParam
-			);
-
-		return hRes;
-	}
+	
+	F f;
 };
 
 /// Aspect class used by Widgets that can handle "raw" events.
@@ -133,7 +62,8 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectRaw
 {
-	typedef AspectRawDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectRawDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectRaw
 	/// Setting the member event handler for a "raw" event
@@ -152,52 +82,24 @@ public:
 	  * Two parameters are passed: LPARAM and WPARAM <br>
 	  * Return value is HRESULT which will be passed on to the System
 	  */
-	void onRaw( typename MessageMapType::itsHresultFunctionTakingLparamWparam eventHandler, const Message & msg );
-	void onRaw( typename MessageMapType::hresultFunctionTakingLparamWparam eventHandler, const Message & msg );
+	void onRaw( typename MessageMapType::itsHresultFunctionTakingLparamWparam eventHandler, const Message & msg ) {
+		onRaw( Adapter::adapt2(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
+	}
+	void onRaw( typename MessageMapType::hresultFunctionTakingLparamWparam eventHandler, const Message & msg ) {
+		onRaw( Adapter::adapt2(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
+	}
+
+	void onRaw(const Dispatcher::F& f, const Message & msg) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			msg, Dispatcher(f)
+		);
+	}
 
 protected:
 	virtual ~AspectRaw()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectRaw< EventHandlerClass, WidgetType, MessageMapType >::onRaw( typename MessageMapType::itsHresultFunctionTakingLparamWparam eventHandler,
-	const Message & msg )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				msg,
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectRaw< EventHandlerClass, WidgetType, MessageMapType >::onRaw( typename MessageMapType::hresultFunctionTakingLparamWparam eventHandler,
-	const Message & msg )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				msg,
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

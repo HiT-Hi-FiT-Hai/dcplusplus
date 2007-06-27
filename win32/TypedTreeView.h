@@ -37,17 +37,9 @@ public:
 		
 		typedef typename BaseType::MessageMapType MessageMapType;
 		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-		ptrThis->addNewSignal(
-			typename MessageMapType::SignalTupleType(
-				SmartWin::private_::SignalContent(
-					SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ),
-					reinterpret_cast< SmartWin::private_::SignalContent::voidFunctionTakingVoid >( &ContentDispatcher::dispatch ),
-					ptrThis
-				),
-				typename MessageMapType::SignalType(
-					typename MessageMapType::SignalType::SlotType( &ContentDispatcher::dispatch )
-				)
-			)
+		ptrThis->setCallback(
+			SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ),
+			&TypedTreeViewDispatcher
 		);
 	}
 
@@ -145,28 +137,26 @@ public:
 	}
 private:
 
-	struct ContentDispatcher {
-		static HRESULT dispatch(SmartWin::private_::SignalContent& params) {
-			NMTVDISPINFO * nm = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
-			if(nm->item.mask & TVIF_TEXT) {
-				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
-				const string& text = content->getText();
-				strncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
-				if(text.size() < nm->item.cchTextMax) {
-					nm->item.pszText[text.size()] = 0;
-				}
+	static HRESULT TypedTreeViewDispatcher(SmartWin::private_::SignalContent& params) {
+		NMTVDISPINFO * nm = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
+		if(nm->item.mask & TVIF_TEXT) {
+			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+			const string& text = content->getText();
+			strncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
+			if(text.size() < nm->item.cchTextMax) {
+				nm->item.pszText[text.size()] = 0;
 			}
-			if(nm->item.mask & TVIF_IMAGE) {
-				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
-				nm->item.iImage = content->getImage();
-			}
-			if(nm->item.mask & TVIF_SELECTEDIMAGE) {
-				ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
-				nm->item.iSelectedImage = content->getSelectedImage();
-			}
-			return 0;
 		}
-	};
+		if(nm->item.mask & TVIF_IMAGE) {
+			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+			nm->item.iImage = content->getImage();
+		}
+		if(nm->item.mask & TVIF_SELECTEDIMAGE) {
+			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
+			nm->item.iSelectedImage = content->getSelectedImage();
+		}
+		return 0;
+	}
 
 };
 

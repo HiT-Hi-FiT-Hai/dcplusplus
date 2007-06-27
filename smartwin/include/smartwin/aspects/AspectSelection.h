@@ -35,88 +35,21 @@
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectSelectionDispatcher
+template<typename WidgetType>
+struct AspectSelectionDispatcher
 {
-};
+	typedef boost::function<void ()> F;
+	
+	AspectSelectionDispatcher(const F& f_) : f(f_) { }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectSelectionDispatcher<EventHandlerClass, WidgetType, MessageMapType, true/*Control Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
+	HRESULT operator()(private_::SignalContent& params) {
 		if ( !WidgetType::isValidSelectionChanged( params.Msg.LParam ) )
 			return 0;
-
-		typename MessageMapType::voidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingVoid >( ( void( * )() ) params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		func(
-			ThisParent,
-			This
-			);
-
+		f();
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		if ( !WidgetType::isValidSelectionChanged( params.Msg.LParam ) )
-			return 0;
-
-		typename MessageMapType::itsVoidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingVoid >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		( ( * ThisParent ).*func )( This );
-
-		return 0;
-	}
-};
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectSelectionDispatcher<EventHandlerClass, WidgetType, MessageMapType, false/*Container Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		if ( !WidgetType::isValidSelectionChanged( params.Msg.LParam ) )
-			return 0;
-
-		typename MessageMapType::voidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingVoid >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		func(
-			ThisParent
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		if ( !WidgetType::isValidSelectionChanged( params.Msg.LParam ) )
-			return 0;
-
-		typename MessageMapType::itsVoidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingVoid >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
+	F f;
 };
 
 /// Aspect class used by Widgets that have the possibility of being "selecting"
@@ -128,7 +61,8 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectSelection
 {
-	typedef AspectSelectionDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectSelectionDispatcher<WidgetType> Dispatcher;
+	typedef AspectAdapter<typename Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectSelection
 	/// Setting the event handler for the "selection changed" event
@@ -136,8 +70,18 @@ public:
 	  * changed either due to user interaction or due to some other reason. <br>
 	  * No parameters are passed.
 	  */
-	void onSelectionChanged( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler );
-	void onSelectionChanged( typename MessageMapType::voidFunctionTakingVoid eventHandler );
+	void onSelectionChanged( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
+		onSelectionChanged(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));		
+	}
+	void onSelectionChanged( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
+		onSelectionChanged(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));		
+	}
+	void onSelectionChanged(const typename Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			WidgetType::getSelectionChangedMessage(), Dispatcher(f)
+		);
+	}
 
 	/// Sets the selected index of the Widget
 	/** The idx parameter is the (zero indexed) value of the item to set as the
@@ -159,45 +103,6 @@ protected:
 	virtual ~AspectSelection()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSelection< EventHandlerClass, WidgetType, MessageMapType >::onSelectionChanged( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getSelectionChangedMessage(),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSelection< EventHandlerClass, WidgetType, MessageMapType >::onSelectionChanged( typename MessageMapType::voidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getSelectionChangedMessage(),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

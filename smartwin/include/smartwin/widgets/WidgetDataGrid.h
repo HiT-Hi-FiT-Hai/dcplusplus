@@ -62,6 +62,7 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
+#ifdef PORT_ME
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectListDispatcher
 {
@@ -340,7 +341,7 @@ public:
 			return iconIndex;
 		}
 };
-
+#endif
 /// List View Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -380,13 +381,9 @@ class WidgetDataGrid :
 protected:
 	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapTypeParam;
 	typedef MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy > MessageMapType;
-	typedef AspectListDispatcher< EventHandlerClass, WidgetDataGrid, MessageMapType > DispatcherList;
 
 	// Need to be friend to access private data...
-	friend class AspectListDispatcher< EventHandlerClass, WidgetDataGrid, MessageMapType >;
 	friend class WidgetCreator< WidgetDataGrid >;
-
-	typedef MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy > ThisMessageMap;
 
 public:
 	/// Class type
@@ -428,7 +425,7 @@ public:
 
 	// Contract needed by AspectDblClickable Aspect class
 	static Message & getDblClickMessage();
-
+#ifdef PORT_ME
 	/// \ingroup EventHandlersWidgetDataGrid
 	/// Validation event handler setter
 	/** If supplied event handler is called after a cell has been edited but before
@@ -481,7 +478,7 @@ public:
 	  */
 		void onCustomPainting( typename MessageMapType::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler );
 		void onCustomPainting( typename MessageMapType::voidUnsignedUnsignedBoolCanvasRectangle eventHandler );
-
+#endif
 	/// \ingroup EventHandlersWidgetDataGrid
 	/// Event handler for the SortItems event
 	/** When you sort a WidgetDataGrid you need to supply a callback function for
@@ -500,6 +497,7 @@ public:
 	void onSortItems( typename MessageMapType::itsIntLparamLparam );
 	void onSortItems( typename MessageMapType::intCallbackCompareFunc );
 
+#ifdef PORT_ME
 	/// \ingroup EventHandlersWidgetDataGrid
 	/// Event Handler for the Column Header Click event
 	/** This Event is raised whenever one of the headers is clicked, it is useful to
@@ -509,7 +507,7 @@ public:
 	  */
 	void onColumnHeaderClick( typename MessageMapType::itsVoidFunctionTakingInt );
 	void onColumnHeaderClick( typename MessageMapType::voidFunctionTakingInt );
-
+#endif
 	/// Sorts the list
 	/** Call this function to sort the list, it's IMPERATIVE that you before calling
 	  * this function defines an event handler for the SortItems event. <br>
@@ -982,14 +980,14 @@ Message & WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getDblClickMess
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
-
+#ifdef PORT_ME
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsBoolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_ENDLABELEDIT ),
@@ -1009,7 +1007,7 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onValidate( typename
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_ENDLABELEDIT ),
@@ -1027,7 +1025,7 @@ template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsVoidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_GETDISPINFO ),
@@ -1045,7 +1043,7 @@ template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::voidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_GETDISPINFO ),
@@ -1077,7 +1075,7 @@ template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, NM_CUSTOMDRAW ),
@@ -1095,7 +1093,7 @@ template< class EventHandlerClass, class MessageMapPolicy >
 	void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, NM_CUSTOMDRAW ),
@@ -1108,7 +1106,7 @@ template< class EventHandlerClass, class MessageMapPolicy >
 		)
 	);
 }
-
+#endif
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsIntLparamLparam eventHandler )
 {
@@ -1122,12 +1120,12 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onSortItems( typenam
 	itsMemberSortFunction = 0;
 	itsGlobalSortFunction = eventHandler;
 }
-
+#ifdef PORT_ME
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsVoidFunctionTakingInt eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_COLUMNCLICK ),
@@ -1145,7 +1143,7 @@ template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::voidFunctionTakingInt eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
+	ptrThis->setCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_COLUMNCLICK ),
@@ -1158,6 +1156,7 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onColumnHeaderClick(
 		)
 	);
 }
+#endif
 
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sortList()
@@ -1714,7 +1713,7 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	//TODO: use CreationalInfo parameters
 
 #ifdef WINCE
@@ -1725,7 +1724,9 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 	// Setting default event handler for beenValidate to a function returning "read
 	// only" property of control Note! If you supply a beenValidate event handler
 	// this will have no effect
+#ifdef PORT_ME
 	onValidate( WidgetDataGrid::defaultValidate );
+#endif
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -1948,11 +1949,11 @@ LRESULT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage
 					}
 				} break;
 			default:
-				return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+				return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 			}
 		} break;
 	}
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 // end namespace SmartWin

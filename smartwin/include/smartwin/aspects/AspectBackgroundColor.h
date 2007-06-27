@@ -31,49 +31,26 @@
 
 #include "boost.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectBackgroundColorDispatcher
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-		typename MessageMapType::brushFunctionTakingCanvas func =
-			reinterpret_cast< typename MessageMapType::brushFunctionTakingCanvas >( params.Function );
+struct AspectBackgroundColorDispatcher {
+	typedef boost::function<BrushPtr (Canvas&)> F;
+	
+	AspectBackgroundColorDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
 
-		FreeCanvas canvas( This->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
+	HRESULT operator()(private_::SignalContent& params) {
+		FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
 
-		BrushPtr retBrush = func( internal_::getTypedParentOrThrow < EventHandlerClass * >( This ),
-			This,
-			canvas
-			);
-		return retBrush.get() == NULL
-			? 0
-			: reinterpret_cast< HRESULT >( retBrush->getBrushHandle() );
+		BrushPtr retBrush = f(canvas);
+		return retBrush ? reinterpret_cast< HRESULT >( retBrush->getBrushHandle() ) : 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-		typename MessageMapType::itsBrushFunctionTakingCanvas func =
-			reinterpret_cast< typename MessageMapType::itsBrushFunctionTakingCanvas >( params.FunctionThis );
-
-		FreeCanvas canvas( This->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
-
-		BrushPtr retBrush = ( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( This ) ).*func )(
-			This,
-			canvas
-			);
-
-		return retBrush.get() == NULL
-			? 0
-			: reinterpret_cast< HRESULT >( retBrush->getBrushHandle() );
-	}
+	F f;
+	Widget* widget;
 };
 
 /// Aspect class used by Widgets that have the possibility of handling the
@@ -85,7 +62,8 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectBackgroundColor
 {
-	typedef AspectBackgroundColorDispatcher< EventHandlerClass, WidgetType, MessageMapType > Dispatcher;
+	typedef AspectBackgroundColorDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectBackgroundColor
 	/// Setting the event handler for the "erase background" event
@@ -101,50 +79,25 @@ public:
 	  * e.g. as member of class since otherwise the brush will be released before it
 	  * is returned to the system and cannot be used!
 	  */
-	void onBackgroundColor( typename MessageMapType::itsBrushFunctionTakingCanvas eventHandler );
-	void onBackgroundColor( typename MessageMapType::brushFunctionTakingCanvas eventHandler );
+	void onBackgroundColor( typename MessageMapType::itsBrushFunctionTakingCanvas eventHandler ) {
+		onBackgroundColor(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	
+	void onBackgroundColor( typename MessageMapType::brushFunctionTakingCanvas eventHandler ) {
+		onBackgroundColor(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+
+	void onBackgroundColor(const typename Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			WidgetType::getBackgroundColorMessage(), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+		);
+	}
 
 protected:
 	virtual ~AspectBackgroundColor()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectBackgroundColor< EventHandlerClass, WidgetType, MessageMapType >::onBackgroundColor( typename MessageMapType::itsBrushFunctionTakingCanvas eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getBackgroundColorMessage(),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType( typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis ) )
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectBackgroundColor< EventHandlerClass, WidgetType, MessageMapType >::onBackgroundColor( typename MessageMapType::brushFunctionTakingCanvas eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getBackgroundColorMessage(),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

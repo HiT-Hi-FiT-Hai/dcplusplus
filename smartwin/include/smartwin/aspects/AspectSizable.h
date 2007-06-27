@@ -33,164 +33,37 @@
 #include "../SignalParams.h"
 #include "../Place.h"
 #include "AspectGetParent.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
+struct AspectSizeDispatcher {
+	typedef boost::function<void (const WidgetSizedEventResult & )> F;
 
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectSize Since AspectSize is used both in WidgetWindowBase (container
-// widgets) and Control Widgets we need to specialize which implementation to use
-// here!!
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectSizeDispatcher
-{
-};
+	AspectSizeDispatcher(const F& f_) : f(f_) { }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectSizeDispatcher<EventHandlerClass, WidgetType, MessageMapType, true/*Control Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingWindowSizedEventResult func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingWindowSizedEventResult >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		func(
-			ThisParent,
-			This,
-			private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
+	HRESULT operator()(private_::SignalContent& params) {
+		f(private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			This,
-			private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
-		return 0;
-	}
+	F f;
 };
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectSizeDispatcher<EventHandlerClass, WidgetType, MessageMapType, false/*Container Widget*/>
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingWindowSizedEventResult func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingWindowSizedEventResult >( params.Function );
+struct AspectMoveDispatcher {
+	typedef boost::function<void (const Point & )> F;
 
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
+	AspectMoveDispatcher(const F& f_) : f(f_) { }
 
-		func(
-			ThisParent,
-			private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam )
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-};
-
-// Dispatcher class with specializations for dispatching event to event handlers of
-// the AspectSize Since AspectSize is used both in WidgetWindowBase (container
-// widgets) and Control Widgets we need to specialize which implementation to use
-// here!!
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectMoveDispatcher
-{
-};
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectMoveDispatcher< EventHandlerClass, WidgetType, MessageMapType, true >
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingPoint func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingPoint >( params.Function );
-
-		func(
-			internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This->getParent() ),
-			boost::polymorphic_cast< WidgetType * >( params.This ),
-			Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) )
-			);
-
+	HRESULT operator()(private_::SignalContent& params) {
+		f(Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) ));
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingPoint func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingPoint >( params.FunctionThis );
-
-		( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This->getParent() ) ).*func )(
-			boost::polymorphic_cast< WidgetType * >( params.This ),
-			Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) )
-			);
-
-		return 0;
-	}
+	F f;
 };
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectMoveDispatcher< EventHandlerClass, WidgetType, MessageMapType, false >
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingPoint func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingPoint >( params.Function );
-
-		func(
-			internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ),
-			Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) )
-			);
-
-		MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( params.This );
-		return This->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingPoint func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingPoint >( params.FunctionThis );
-
-		( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )(
-			Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) )
-			);
-
-		MessageMapType * This = boost::polymorphic_cast< MessageMapType * >( params.This );
-		return This->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-};
 
 /// \ingroup AspectClasses
 /// \ingroup WidgetLayout
@@ -213,8 +86,10 @@ public:
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectSizable
 {
-	typedef AspectSizeDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > DispatcherSize;
-	typedef AspectMoveDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > DispatcherMove;
+	typedef AspectSizeDispatcher SizeDispatcher;
+	typedef AspectAdapter<SizeDispatcher::F, EventHandlerClass, MessageMapType::IsControl> SizeAdapter;
+	typedef AspectMoveDispatcher MoveDispatcher;
+	typedef AspectAdapter<MoveDispatcher::F, EventHandlerClass, MessageMapType::IsControl> MoveAdapter;
 public:
 	/// Sets the new size and position of the window
 	/** The input parameter Rectangle defines the new size (and position) of the
@@ -392,16 +267,38 @@ public:
 	  * parameter passed is WidgetSizedEventResult which contains the new size
 	  * information.
 	  */
-	void onSized( typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult eventHandler );
-	void onSized( typename MessageMapType::voidFunctionTakingWindowSizedEventResult eventHandler );
+	void onSized( typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult eventHandler ) {
+		onSized(SizeAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onSized( typename MessageMapType::voidFunctionTakingWindowSizedEventResult eventHandler ) {
+		onSized(SizeAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onSized(const SizeDispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_SIZE ), SizeDispatcher(f)
+		);
+	}
 
 	/// \ingroup EventHandlersAspectSizable
 	// Setting the event handler for the "moved" event
 	/** This event will be raised when the Widget is being moved. The parameter
 	  * passed is Point which is the new position of the Widget
 	  */
-	void onMoved( typename MessageMapType::itsVoidFunctionTakingPoint eventHandler );
-	void onMoved( typename MessageMapType::voidFunctionTakingPoint eventHandler );
+	void onMoved( typename MessageMapType::itsVoidFunctionTakingPoint eventHandler ) {
+		onMoved(MoveAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMoved( typename MessageMapType::voidFunctionTakingPoint eventHandler ) {
+		onMoved(MoveAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onMoved(const SizeDispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			typename MessageMapType::SignalTupleType(
+				Message( WM_MOVE ), MoveDispatcher(f)
+			)
+		);
+	}
 
 protected:
 	virtual ~AspectSizable()
@@ -644,79 +541,6 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::bringToBott
 	::SetWindowPos( static_cast< WidgetType * >( this )->handle(), HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
-// Preparation of event handlers
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::onSized( typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_SIZE ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherSize::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::onSized( typename MessageMapType::voidFunctionTakingWindowSizedEventResult eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_SIZE ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherSize::dispatch )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::onMoved( typename MessageMapType::itsVoidFunctionTakingPoint eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MOVE ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherMove::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::onMoved( typename MessageMapType::voidFunctionTakingPoint eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_MOVE ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherMove::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

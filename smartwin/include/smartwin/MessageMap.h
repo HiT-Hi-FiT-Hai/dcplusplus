@@ -40,7 +40,6 @@
 #include "Command.h"
 #include "widgets/WidgetMenu.h"
 #include "widgets/WidgetMenuExtended.h"
-#include "DestructionClass.h"
 #include "SigSlots.h"
 #include "MessageMapBase.h"
 #include "CanvasClasses.h"
@@ -69,13 +68,12 @@ template< class EventHandlerClass, class MessageMapPolicy >
 class MessageMap
 	: public virtual Widget
 	, public MessageMapPolicy
-	, public MessageMapBase< boost::tuple< private_::SignalContent, SigSlot::Signal< HRESULT, private_::SignalContent > >
-	, std::vector< boost::tuple < private_::SignalContent, SigSlot::Signal< HRESULT, private_::SignalContent > > > >
+	, public MessageMapBase
 {
 public:
-	typedef SigSlot::Signal< HRESULT, private_::SignalContent > SignalType;
-	typedef boost::tuple< private_::SignalContent, SignalType > SignalTupleType;
-	typedef std::vector< SignalTupleType > SignalCollection;
+	typedef MessageMapBase::CallbackType SignalType;
+	typedef std::pair< Message, SignalType > SignalTupleType;
+	typedef MessageMapBase::CallbackCollectionType SignalCollection;
 
 	// Contract needed by Aspects in order to know which instantiation of template
 	// aspect dispatcher class is needed
@@ -225,7 +223,8 @@ public:
 	typedef boost::tuple< itsVoidFunctionTakingCommand, CommandPtr > TupleCommandFunctionThis;
 
 protected:
-	MessageMap()
+	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
+	MessageMap() : SmartWin::Widget(0)
 	{}
 
 	virtual ~MessageMap()

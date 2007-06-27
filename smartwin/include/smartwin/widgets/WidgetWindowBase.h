@@ -52,6 +52,7 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectDragDrop.h"
+#include "../aspects/AspectAdapter.h"
 #include "../MessageMap.h"
 #include "../BasicTypes.h"
 #include <sstream>
@@ -70,83 +71,44 @@ class OuterMostWidget
 {
 };
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class WidgetWindowBaseDispatcher
+struct WidgetWindowBaseCloseDispatcher
 {
-public:
-	static HRESULT dispatchCreate( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingSeedPointer func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingSeedPointer >( params.Function );
+	typedef boost::function<bool ()> F;
+	
+	WidgetWindowBaseCloseDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 
-		//(HC) Unfortunately, we cannot pass a "full" Seed to the dispatcher.
-		CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( params.Msg.LParam );
-		SmartWin::Seed smCs;
+	HRESULT operator()(private_::SignalContent& params) {
+		bool destroy = f();
 
-		smCs.exStyle = cs->dwExStyle;
-		smCs.style = cs->style;
-		smCs.location = Rectangle( cs->x, cs->y, cs->cx, cs->cy );
-
-		func(
-			internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ),
-			( smCs )
-			);
-		return 0;
-	}
-
-	static HRESULT dispatchCreateThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingSeedPointer func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingSeedPointer >( params.FunctionThis );
-
-		//(HC) Unfortunately, we cannot pass a "full" Seed to the dispatcher.
-		CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( params.Msg.LParam );
-		SmartWin::Seed smCs;
-
-		smCs.exStyle = cs->dwExStyle;
-		smCs.style = cs->style;
-		smCs.location = Rectangle( cs->x, cs->y, cs->cx, cs->cy );
-
-		( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )(
-			( smCs )
-			);
-		return 0;
-	}
-
-	static HRESULT dispatchClose( private_::SignalContent & params )
-	{
-		typename MessageMapType::boolFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::boolFunctionTakingVoid >( params.Function );
-
-		bool destroy = func(
-			internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-			);
-
-		if ( destroy )
-		{
-			::DestroyWindow( params.This->handle() );
+		if ( destroy ) {
+			::DestroyWindow( widget->handle() );
 			return TRUE;
 		}
 
 		return FALSE;
 	}
 
-	static HRESULT dispatchCloseThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsBoolFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::itsBoolFunctionTakingVoid >( params.FunctionThis );
+	F f;
+	Widget* widget;
+};
 
-		bool destroy = ( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )(
-			);
+struct WidgetWindowBaseTimerDispatcher
+{
+	typedef boost::function<bool ()> F;
+	
+	WidgetWindowBaseTimerDispatcher(const F& f_) : f(f_) { }
 
-		if ( destroy )
-		{
-			::DestroyWindow( params.This->handle() );
-			return TRUE;
+	HRESULT operator()(private_::SignalContent& params) {
+		bool keep = f();
+		
+		if(!keep) {
+			::KillTimer(reinterpret_cast<HWND>(params.Msg.Handle), params.Msg.WParam);
+			// TODO remove from message map as well...
 		}
-
 		return FALSE;
 	}
+
+	F f;
 };
 
 /// Main Window class
@@ -206,10 +168,12 @@ public:
 	/// Object type
 	typedef WidgetWindowBase< EventHandlerClass, MessageMapPolicy > * ObjectType;
 
-	// TODO: One of these should be removed, goes for WHOLE LIBRARY!!!!!!
 	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapType;
-	typedef MessageMap< EventHandlerClass, MessageMapPolicy > ThisMessageMap;
-	typedef WidgetWindowBaseDispatcher< EventHandlerClass, WidgetWindowBase, MessageMapType > DispatcherWindowBase;
+private:
+	typedef WidgetWindowBaseCloseDispatcher CloseDispatcher;
+	typedef AspectAdapter<CloseDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CloseAdapter;
+	typedef WidgetWindowBaseTimerDispatcher TimerDispatcher;
+public:
 
 	// Removing compiler hickup...
 	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
@@ -229,34 +193,27 @@ public:
 	  * If you return true from your event handler the window is closed, otherwise 
 	  * the window is NOT allowed to actually close!!       
 	  */
-#ifdef _MSC_VER
-	void onClosing( itsBoolFunctionTakingVoid eventHandler );
-	void onClosing( boolFunctionTakingVoid eventHandler );
-#endif
-#ifdef __GNUC__
-	void onClosing( typename ThisMessageMap::itsBoolFunctionTakingVoid eventHandler );
-	void onClosing( typename ThisMessageMap::boolFunctionTakingVoid eventHandler );
-#endif
-
+	void onClosing( typename MessageMapType::itsBoolFunctionTakingVoid eventHandler ) {
+		onClosing(CloseAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
+	}
+	void onClosing( typename MessageMapType::boolFunctionTakingVoid eventHandler ) {
+		onClosing(CloseAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
+	}
+	void onClosing(const CloseDispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			Message( WM_CLOSE ), CloseDispatcher(f, boost::polymorphic_cast<Widget*>(this))
+		);
+	}
             
 	// TODO: Outfactor into "time Aspect" class
 	/// Creates a timer object.
-	/** The supplied function must have the signature void foo( const CommandPtr &
-	  * command ) <br>
-	  * The command parameter is a custom command object associated with your timer 
-	  * event. <br>
-	  * The supplied Command will then be passed (as a shared_ptr) to your supplied 
-	  * event handler function after the  specified (in milliSeconds parameter) time 
-	  * has elapsed. 
+	/** The supplied function must have the signature bool foo() <br>
+	  * The event function will be called when at least milliSeconds seconds have elapsed.
+	  * If your event handler returns true, it will keep getting called periodically, otherwise 
+	  * it will be removed.
 	  */
-#ifdef _MSC_VER
-	void createTimer( itsVoidFunctionTakingCommand eventHandler, unsigned int milliSecond, const SmartWin::Command & command );
-	void createTimer( voidFunctionTakingCommand eventHandler, unsigned int milliSecond, const SmartWin::Command & command );
-#endif
-#ifdef __GNUC__
-	void createTimer( typename ThisMessageMap::itsVoidFunctionTakingCommand eventHandler, unsigned int milliSecond, const SmartWin::Command & command );
-	void createTimer( typename ThisMessageMap::voidFunctionTakingCommand eventHandler, unsigned int milliSecond, const SmartWin::Command & command );
-#endif
+	void createTimer(const TimerDispatcher::F& f, unsigned int milliSeconds);
 
 	/// Closes the window
 	/** Call this function to raise the "Closing" event. <br>
@@ -333,16 +290,7 @@ protected:
 	virtual ~WidgetWindowBase()
 	{}
 
-private:
-	// Static/Global timer map
-	std::map< UINT, typename ThisMessageMap::TupleCommandFunctionGlobal > itsTimerMap;
 
-	// Member timer map
-	std::map< UINT, typename ThisMessageMap::TupleCommandFunctionThis > itsTimerMapThis;
-
-	static void CALLBACK timerProcThis( HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime );
-
-	static void CALLBACK timerProc( HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime );
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,132 +299,21 @@ private:
 template< class EventHandlerClass, class MessageMapPolicy >
 LRESULT WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
-
-#ifdef _MSC_VER
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::onClosing( itsBoolFunctionTakingVoid eventHandler )
-#endif
-
-#ifdef __GNUC__
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::onClosing( typename ThisMessageMap::itsBoolFunctionTakingVoid eventHandler )
-#endif
+void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( const TimerDispatcher::F& f,
+	unsigned int milliSecond)
 {
-	this->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_CLOSE ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				this
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherWindowBase::dispatchCloseThis )
-			)
-		)
+
+	UINT_PTR id = ::SetTimer( this->Widget::itsHandle, 0, static_cast< UINT >( milliSecond ), NULL);
+	
+	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+	ptrThis->setCallback(
+		Message( WM_TIMER, id ), TimerDispatcher(f)
 	);
-}
 
-
-template< class EventHandlerClass, class MessageMapPolicy >
-
-#ifdef _MSC_VER
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::onClosing( boolFunctionTakingVoid eventHandler )
-#endif
-
-#ifdef __GNUC__
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::onClosing( typename ThisMessageMap::boolFunctionTakingVoid eventHandler )
-#endif
-{
-	this->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_CLOSE ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				this
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherWindowBase::dispatchClose )
-			)
-		)
-	);
-}
-
-
-template< class EventHandlerClass, class MessageMapPolicy >
-#ifdef _MSC_VER
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( voidFunctionTakingCommand eventHandler,
-	unsigned milliSecond,
-	const Command & command )
-#endif
-
-#ifdef __GNUC__
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( typename ThisMessageMap::voidFunctionTakingCommand eventHandler,
-	unsigned milliSecond,
-	const Command & command )
-#endif
-{
-	unsigned int event = - 1;
-	for ( int n = 0; n < 100; ++n )
-	{
-		typename std::map < UINT,
-		typename ThisMessageMap::TupleCommandFunctionGlobal >::iterator idx
-		= itsTimerMap.find( n );
-		if ( idx == itsTimerMap.end() )
-		{
-			event = n;
-			break;
-		}
-	}
-	if ( event == - 1 )
-	{
-		xCeption x( _T( "More than 100 timers defined" ) );
-		throw x;
-	}
-	CommandPtr comPtr( command.clone().release() );
-
-	itsTimerMap[event] = typename ThisMessageMap::TupleCommandFunctionGlobal( eventHandler, comPtr );
-	::SetTimer( this->Widget::itsHandle, event, static_cast< UINT >( milliSecond ), static_cast< TIMERPROC >( timerProc ) );
-}
-
-
-template< class EventHandlerClass, class MessageMapPolicy >
-
-#ifdef _MSC_VER
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( itsVoidFunctionTakingCommand eventHandler,
-	unsigned milliSecond,
-	const Command & command )
-#endif
-
-#ifdef __GNUC__
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( typename ThisMessageMap::itsVoidFunctionTakingCommand eventHandler,
-	unsigned milliSecond,
-	const Command & command )
-#endif
-{
-	int event = - 1;
-	for ( int n = 1; n < 101; ++n )
-	{
-		typename std::map < UINT,
-		typename ThisMessageMap::TupleCommandFunctionThis >::iterator idx
-		= itsTimerMapThis.find( n );
-		if ( idx == itsTimerMapThis.end() )
-		{
-			event = n;
-			break;
-		}
-	}
-	if ( event == - 1 )
-	{
-		xCeption x( _T( "More than 100 timers defined" ) );
-		throw x;
-	}
-
-	CommandPtr comPtr( command.clone().release() );
-
-	itsTimerMapThis[event] = typename ThisMessageMap::TupleCommandFunctionThis( eventHandler, comPtr );
-	::SetTimer( this->Widget::itsHandle, event, static_cast< UINT >( milliSecond ), static_cast< TIMERPROC >( timerProcThis ) );
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -575,34 +412,6 @@ WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::WidgetWindowBase( Widge
 	: Widget( parent, 0, true )
 {
 	this->Widget::itsCtrlId = 0;
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void CALLBACK WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::timerProcThis( HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime )
-{
-	Widget * tmp = reinterpret_cast< Widget * >( ::GetProp( hWnd, _T( "_mainWndProc" ) ) );
-	WidgetWindowBase * This = boost::polymorphic_cast< WidgetWindowBase * >( tmp );
-	xAssert( This && hWnd == This->handle(), _T( "Internal Error. Couldn't extract the window handle out from the WidgetFactory" ) );
-	::KillTimer( This->handle(), idEvent );
-
-	typename ThisMessageMap::itsVoidFunctionTakingCommand func =
-		static_cast< typename ThisMessageMap::itsVoidFunctionTakingCommand >( This->itsTimerMapThis[idEvent].template get< 0 >() );
-	( ( * ( boost::polymorphic_cast< EventHandlerClass * >( This ) ) ).*func )( This->itsTimerMapThis[idEvent].template get< 1 >() );
-	This->itsTimerMapThis.erase( idEvent );
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-void CALLBACK WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::timerProc( HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime )
-{
-	Widget * tmp = reinterpret_cast< Widget * >( ::GetProp( hWnd, _T( "_mainWndProc" ) ) );
-	WidgetWindowBase * This = boost::polymorphic_cast< WidgetWindowBase * >( tmp );
-	xAssert( This && hWnd == This->handle(), _T( "Internal Error. Couldn't extract the window handle out from the WidgetFactory" ) );
-	::KillTimer( This->handle(), idEvent );
-
-	typename ThisMessageMap::voidFunctionTakingCommand func =
-		static_cast< typename ThisMessageMap::voidFunctionTakingCommand >( This->itsTimerMap[idEvent].template get< 0 >() );
-	( * func )( boost::polymorphic_cast< EventHandlerClass * > ( This ), This->itsTimerMap[idEvent].template get< 1 >() );
-	This->itsTimerMap.erase( idEvent );
 }
 
 // end namespace SmartWin

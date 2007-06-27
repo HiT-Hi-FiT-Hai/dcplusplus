@@ -25,14 +25,16 @@
 #include <client/forward.h>
 #include <client/UploadManagerListener.h>
 
-class WaitingUsersFrame : public StaticFrame<WaitingUsersFrame>, public UploadManagerListener {
+class WaitingUsersFrame : 
+	public StaticFrame<WaitingUsersFrame>, 
+	public UploadManagerListener 
+{
 public:
 	enum Status {
 		STATUS_STATUS,
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::WAITING_USERS;
-
 protected:
 	friend class StaticFrame<WaitingUsersFrame>;
 	friend class MDIChildFrame<WaitingUsersFrame>;
@@ -41,31 +43,30 @@ protected:
 	WaitingUsersFrame(SmartWin::Widget* mdiParent);
 	virtual ~WaitingUsersFrame() { }
 
+	bool preClosing();
+	void postClosing();
 	// Update control layouts
 	void layout();
 
 	// Message handlers
-	bool onClose();
 	void onGetList(WidgetMenuPtr, unsigned int);
 	void onCopyFilename(WidgetMenuPtr, unsigned int);
 	void onRemove(WidgetMenuPtr, unsigned int);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	HRESULT spoken(LPARAM lp, WPARAM wp);
 	//LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	void onPrivateMessage(WidgetMenuPtr, unsigned int);
 	void onGrantSlot(WidgetMenuPtr, unsigned int);
 	void onAddToFavorites(WidgetMenuPtr, unsigned int);
 
-	void onRemoveUser(const UserPtr);
-	void onAddFile(const UserPtr, const string&);
+	void onRemoveUser(const UserPtr&);
+	void onAddFile(const UserPtr&, const string&);
 
 private:
 	enum {
 		SPEAK_ADD_FILE,
 		SPEAK_REMOVE_USER
 	};
-
-	bool closed;
 
 	struct UserItem {
 		UserPtr u;
@@ -74,7 +75,6 @@ private:
 
 	// Contained controls
 	WidgetTreeViewPtr queued;
-	WidgetMenuPtr contextMenu;
 
 	SmartWin::TreeViewNode GetParentItem();
 
@@ -84,8 +84,8 @@ private:
 	}
 
 	// Communication with manager
-	void LoadAll();
-	void UpdateSearch(int index, BOOL doDelete = TRUE);
+	void loadAll();
+	void updateSearch(int index, BOOL doDelete = TRUE);
 
 	// UploadManagerListener
 	virtual void on(UploadManagerListener::WaitingRemoveUser, const UserPtr) throw();

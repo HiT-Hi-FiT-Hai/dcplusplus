@@ -35,75 +35,18 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType, bool IsControl >
-class AspectVoidVoidDispatcher
+struct AspectVoidVoidDispatcher
 {
-};
+	typedef boost::function<void ()> F;
+	
+	AspectVoidVoidDispatcher(const F& f_) : f(f_) { }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectVoidVoidDispatcher< EventHandlerClass, WidgetType, MessageMapType, true /*Control Widget*/ >
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingVoid >( ( void( * )() ) params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		func(
-			ThisParent,
-			This
-			);
-
+	HRESULT operator()(private_::SignalContent& params) {
+		f();
 		return 0;
 	}
 
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingVoid >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-		WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-
-		( ( * ThisParent ).*func )( This );
-
-		return 0;
-	}
-};
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectVoidVoidDispatcher<EventHandlerClass, WidgetType, MessageMapType, false /*Container Widget*/ >
-{
-public:
-	static HRESULT dispatch( private_::SignalContent & params )
-	{
-		typename MessageMapType::voidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::voidFunctionTakingVoid >( params.Function );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		func(
-			ThisParent
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
-
-	static HRESULT dispatchThis( private_::SignalContent & params )
-	{
-		typename MessageMapType::itsVoidFunctionTakingVoid func =
-			reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingVoid >( params.FunctionThis );
-
-		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This );
-
-		( ( * ThisParent ).*func )(
-			);
-
-		return ThisParent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
-	}
+	F f;
 };
 
 // end namespace SmartWin

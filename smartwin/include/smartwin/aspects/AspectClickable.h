@@ -32,6 +32,7 @@
 #include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -46,7 +47,9 @@ namespace SmartWin
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectClickable
 {
-	typedef AspectVoidVoidDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+
 public:
 	/// \ingroup EventHandlersAspectClickable
 	/// Setting the event handler for the "clicked" event
@@ -55,52 +58,25 @@ public:
 	  * pressing the button and releasing it, for another Widget it might be
 	  * something else. No parameters are passed.
 	  */
-	void onClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler );
-	void onClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler );
+	void onClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
+		onClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
+		onClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+
+	void onClicked(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			WidgetType::getClickMessage(), Dispatcher(f)
+		);
+	}
 
 protected:
 	virtual ~AspectClickable()
 	{}
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectClickable< EventHandlerClass, WidgetType, MessageMapType >::onClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getClickMessage(),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				 typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectClickable< EventHandlerClass, WidgetType, MessageMapType >::onClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getClickMessage(),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

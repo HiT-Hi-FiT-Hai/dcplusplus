@@ -56,6 +56,7 @@
 #include <client/QueueManager.h>
 
 MainWindow::MainWindow() :
+	SmartWin::Widget(0),
 	paned(0),
 	mdi(0),
 	transfers(0),
@@ -450,14 +451,12 @@ void MainWindow::handleMDIReorder(WidgetMenuPtr, unsigned id) {
 }
 
 void MainWindow::initSecond() {
-	SmartWin::Command cmd(_T("1 second"));
-	createTimer(&MainWindow::eachSecond, 1000, cmd);	
+	createTimer(boost::bind(&MainWindow::eachSecond, this), 1000);
 }
 
-void MainWindow::eachSecond(const SmartWin::CommandPtr&) {
+bool MainWindow::eachSecond() {
 	updateStatus();
-	///@todo change smartwin to support recurring timers 
-	initSecond();
+	return true;
 }
 
 void MainWindow::layout() {

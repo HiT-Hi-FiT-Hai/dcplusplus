@@ -208,7 +208,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, SmartWinDesktop >::WidgetFactoryPlatformImplementation()
-	: ContainerWidgetType< EventHandlerClass, MessageMapPolicy >( 0 )
+	: Widget(0), ContainerWidgetType< EventHandlerClass, MessageMapPolicy >( 0 )
 {}
 
 // end namespace SmartWin

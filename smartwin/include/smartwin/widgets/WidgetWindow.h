@@ -32,10 +32,35 @@
 #include "WidgetWindowBase.h"
 #include "../aspects/AspectThreads.h"
 #include <sstream>
+#include "../SignalParams.h"
+#include "../aspects/AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
+
+struct WidgetWindowCreateDispatcher
+{
+	typedef boost::function<void (SmartWin::Seed&)> F;
+
+	WidgetWindowCreateDispatcher(const F& f_) : f(f_) { }
+
+	HRESULT operator()(private_::SignalContent& params) {
+
+		CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( params.Msg.LParam );
+		SmartWin::Seed smCs;
+
+		smCs.exStyle = cs->dwExStyle;
+		smCs.style = cs->style;
+		smCs.location = Rectangle( cs->x, cs->y, cs->cx, cs->cy );
+
+		f(smCs);
+		return 0;
+	}
+
+	F f;
+};
+
 
 /// "Window" class
 /** \ingroup WidgetControls
@@ -53,8 +78,10 @@ template< class EventHandlerClass, class MessageMapPolicy = MessageMapPolicyNorm
 class WidgetWindow
 	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicy >
 {
-	typedef typename WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::ThisMessageMap ThisMessageMap;
-	typedef typename WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::ThisMessageMap MessageMapType;
+	typedef typename WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::MessageMapType MessageMapType;
+	typedef WidgetWindowCreateDispatcher CreateDispatcher;
+	typedef AspectAdapter<CreateDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CreateAdapter;
+
 public:
 	/// Class type
 	typedef WidgetWindow< EventHandlerClass, MessageMapPolicy > ThisType;
@@ -122,8 +149,6 @@ public:
 	  */
 	virtual void createInvisibleWindow( Seed = getDefaultSeed() );
 
-
-
 	// TODO: Check up if the CREATESTRUCT * actualy IS modyfiable...!!
 	/// Setting the event handler for the "create" event
 	/** The event handler must have the signature "void foo( CREATESTRUCT * )" where
@@ -133,17 +158,18 @@ public:
 	  * The argument CREATESTRUCT sent into your handler is modifiable so that you 
 	  * can add/remove styles and add remove EX styles etc.       
 	  */
-#ifdef _MSC_VER
-	void onCreate( itsVoidFunctionTakingSeedPointer eventHandler );
-	void onCreate( voidFunctionTakingSeedPointer eventHandler );
-#endif
-
-#ifdef __GNUC__
-	void onCreate( typename ThisMessageMap::itsVoidFunctionTakingSeedPointer eventHandler );
-	void onCreate( typename ThisMessageMap::voidFunctionTakingSeedPointer eventHandler );
-#endif
-
-
+	void onCreate( typename MessageMapType::itsVoidFunctionTakingSeedPointer eventHandler ) {
+		onCreate(CreateAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
+	}
+	void onCreate( typename MessageMapType::voidFunctionTakingSeedPointer eventHandler ) {
+		onCreate(CreateAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
+	}
+	void onCreate(const CreateDispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			typename MessageMapType::SignalTupleType(Message( WM_CREATE ), CreateDispatcher(f))
+		);
+	}
 
 
 	// TODO: Fix! This doesn't work if you have an application with multiple windows in addition to that it's a member method plus lots of other architectual issues!!
@@ -203,7 +229,7 @@ public:
 
 protected:
 	// Unlike WidgetWindow, WidgetChildWindow must have a parent!!!
-	explicit WidgetChildWindow( Widget * parent ) : WidgetWindow< EventHandlerClass, MessageMapPolicy >( parent ) //Long name to satisfy devcpp
+	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow< EventHandlerClass, MessageMapPolicy >( parent ) //Long name to satisfy devcpp
 	{};
 };
 
@@ -243,7 +269,7 @@ WidgetWindow< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
 
 template< class EventHandlerClass, class MessageMapPolicy >
 WidgetWindow< EventHandlerClass, MessageMapPolicy >::WidgetWindow( Widget * parent )
-	: WidgetWindowBase< EventHandlerClass, MessageMapPolicy >( parent )
+	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicy >( parent )
 {}
 
 template< class EventHandlerClass, class MessageMapPolicy >
@@ -300,54 +326,6 @@ void WidgetWindow< EventHandlerClass, MessageMapPolicy >::createWindow( Seed cs 
 	}
 	Application::instance().addLocalWindowClassToUnregister( cs );
 	Widget::create( cs );
-}
-
-
-template< class EventHandlerClass, class MessageMapPolicy >
-#ifdef _MSC_VER
-void WidgetWindow< EventHandlerClass, MessageMapPolicy >::onCreate( itsVoidFunctionTakingSeedPointer eventHandler )
-#endif
-
-#ifdef __GNUC__
-void WidgetWindow< EventHandlerClass, MessageMapPolicy >::onCreate( typename ThisMessageMap::itsVoidFunctionTakingSeedPointer eventHandler )
-#endif
-{
-	this->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_CREATE )
-				, reinterpret_cast< itsVoidFunction >( eventHandler )
-				, this
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::DispatcherWindowBase::dispatchCreateThis )
-				)
-			)
-		);
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-
-#ifdef _MSC_VER
-void WidgetWindow< EventHandlerClass, MessageMapPolicy >::onCreate( voidFunctionTakingSeedPointer eventHandler )
-#endif
-
-#ifdef __GNUC__
-void WidgetWindow< EventHandlerClass, MessageMapPolicy >::onCreate( typename ThisMessageMap::voidFunctionTakingSeedPointer eventHandler )
-#endif
-{
-	this->addNewSignal
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_CREATE )
-				, reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, this
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::DispatcherWindowBase::dispatchCreate )
-				)
-			)
-		);
 }
 
 template< class Parent, class WidgetMessageMapType >

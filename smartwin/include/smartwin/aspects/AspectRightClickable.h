@@ -32,6 +32,7 @@
 #include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -45,69 +46,37 @@ namespace SmartWin
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectRightClickable
 {
-	typedef AspectVoidVoidDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectRightClickable
 	/// Setting the event handler for the "Right Clicked" event
 	/** All Widgets that realize this Aspect will raise this event when Widget is
 	  * being Right Clicked. No parameters are passed.
 	  */
-	void onRightClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler );
-	void onRightClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler );
+	void onRightClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
+		onRightClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+	void onRightClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
+		onRightClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+
+	void onRightClicked(const Dispatcher::F& f) {
+#ifdef WINCE
+	static Message msg = Message( WM_NOTIFY, GN_CONTEXTMENU );
+#else
+	static Message msg = Message( WM_NOTIFY, NM_RCLICK );
+#endif
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			msg, Dispatcher(f)
+		);
+	}
 
 protected:
 	virtual ~AspectRightClickable()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectRightClickable< EventHandlerClass, WidgetType, MessageMapType >::onRightClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler )
-{
-#ifdef WINCE
-	static Message msg = Message( WM_NOTIFY, GN_CONTEXTMENU );
-#else
-	static Message msg = Message( WM_NOTIFY, NM_RCLICK );
-#endif
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				msg,
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectRightClickable< EventHandlerClass, WidgetType, MessageMapType >::onRightClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler )
-{
-#ifdef WINCE
-	static Message msg = Message( WM_NOTIFY, GN_CONTEXTMENU );
-#else
-	static Message msg = Message( WM_NOTIFY, NM_RCLICK );
-#endif
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				msg,
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }

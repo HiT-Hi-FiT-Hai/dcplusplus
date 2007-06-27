@@ -52,7 +52,9 @@ Message::Message( UINT msg, LPARAM extraCode )
 		break;
 	case WM_SYSCOMMAND :
 	case WM_COMMAND :
+	case WM_TIMER:
 		WParam = extraCode;
+		break;
 	}
 }
 
@@ -100,6 +102,7 @@ bool operator <( const Message & left, const Message & right )
 	{
 	case WM_SYSCOMMAND :
 	case WM_COMMAND :
+	case WM_TIMER:
 		if ( left.WParam < right.WParam )
 			return true;
 		break;
@@ -119,6 +122,7 @@ bool operator == ( const Message & left, const Message & right )
 		{
 		case WM_SYSCOMMAND :
 		case WM_COMMAND :
+		case WM_TIMER:
 			if ( left.WParam == right.WParam )
 				return true;
 			break;

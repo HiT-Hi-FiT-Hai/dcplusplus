@@ -32,6 +32,7 @@
 #include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
+#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -46,59 +47,32 @@ namespace SmartWin
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectDblClickable
 {
-	typedef AspectVoidVoidDispatcher< EventHandlerClass, WidgetType, MessageMapType, MessageMapType::IsControl > Dispatcher;
+	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectDblClickable
 	/// Setting the event handler for the "Double Clicked" event
 	/** All Widgets that realize this Aspect will raise this event when Widget is
 	  * being Double Clicked. No parameters are passed.
 	  */
-	void onDblClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler );
-	void onDblClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler );
+	void onDblClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
+		onDblClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+		}
+	void onDblClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
+		onDblClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
+	}
+
+	void onDblClicked(const Dispatcher::F& f) {
+		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		ptrThis->setCallback(
+			WidgetType::getDblClickMessage(), Dispatcher(f)
+		);
+	}
 
 protected:
 	virtual ~AspectDblClickable()
 	{}
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Implementation of class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectDblClickable< EventHandlerClass, WidgetType, MessageMapType >::onDblClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getDblClickMessage(),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatchThis )
-			)
-		)
-	);
-}
-
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectDblClickable< EventHandlerClass, WidgetType, MessageMapType >::onDblClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->addNewSignal(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				WidgetType::getDblClickMessage(),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & Dispatcher::dispatch )
-			)
-		)
-	);
-}
 
 // end namespace SmartWin
 }
