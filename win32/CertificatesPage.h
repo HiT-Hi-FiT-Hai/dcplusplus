@@ -30,18 +30,10 @@ public:
 
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(CertificatesPage)
-		COMMAND_ID_HANDLER(IDC_BROWSE_PRIVATE_KEY, onBrowsePrivateKey)
-		COMMAND_ID_HANDLER(IDC_BROWSE_CERTIFICATE, onBrowseCertificate)
-		COMMAND_ID_HANDLER(IDC_BROWSE_TRUSTED_PATH, onBrowseTrustedPath)
-		COMMAND_ID_HANDLER(IDC_GENERATE_CERTS, onGenerateCerts)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 	END_MSG_MAP()
 
-	LRESULT onBrowsePrivateKey(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onBrowseCertificate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onBrowseTrustedPath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGenerateCerts(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 #endif
@@ -52,6 +44,11 @@ private:
 	static Item items[];
 	static TextItem texts[];
 	static ListItem listItems[];
+
+	void handleBrowsePrivateKeyClicked(WidgetButtonPtr);
+	void handleBrowseCertificateClicked(WidgetButtonPtr);
+	void handleBrowseTrustedPathClicked(WidgetButtonPtr);
+	void handleGenerateCertsClicked(WidgetButtonPtr);
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_CERTIFICATES_PAGE_H)

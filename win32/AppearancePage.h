@@ -31,12 +31,10 @@ public:
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(AppearancePage)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_BROWSE, onBrowse)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 #endif
 
@@ -46,6 +44,8 @@ private:
 	static Item items[];
 	static TextItem texts[];
 	static ListItem listItems[];
+
+	void handleBrowse(WidgetButtonPtr);
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_APPEARANCE_PAGE_H)

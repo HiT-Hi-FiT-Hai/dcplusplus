@@ -25,6 +25,10 @@
 
 #include <client/SettingsManager.h>
 #include <client/FavoriteManager.h>
+#include <client/version.h>
+#include "WinUtil.h"
+#include "StupidWin.h"
+#include "LineDlg.h"
 
 PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, ResourceManager::SETTINGS_FAVORITE_DIRS },
@@ -39,32 +43,36 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : SmartWin::Widget(
 
 	PropPage::translate(handle(), texts);
 
-	HWND directories = ::GetDlgItem(handle(), IDC_FAVORITE_DIRECTORIES);
-	ListView_SetExtendedListViewStyle(directories, LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	directories = static_cast<WidgetDataGridPtr>(subclassList(IDC_FAVORITE_DIRECTORIES));
+	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
-	LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH| LVCF_TEXT | LVCF_SUBITEM  };
-	lv.fmt = LVCFMT_LEFT;
+	TStringList columns;
+	columns.push_back(TSTRING(FAVORITE_DIR_NAME));
+	columns.push_back(TSTRING(DIRECTORY));
+	directories->createColumns(columns);
+	directories->setColumnWidth(0, 100);
+	directories->setColumnWidth(1, directories->getSize().x - 120);
 
-	lv.cx = 100;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(FAVORITE_DIR_NAME));
-	lv.iSubItem = 0;
-	ListView_InsertColumn(directories, 0, &lv);
-
-	RECT rc;
-	::GetClientRect(directories, &rc);
-	lv.cx = rc.right - rc.left - 120;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(DIRECTORY));
-	lv.iSubItem = 1;
-	ListView_InsertColumn(directories, 1, &lv);
-
-	LVITEM lvi = { LVIF_TEXT };
 	StringPairList dirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	for(StringPairIter j = dirs.begin(); j != dirs.end(); j++) {
-		lvi.iItem = ListView_GetItemCount(directories);
-		lvi.pszText = const_cast<LPTSTR>(Text::toT(j->second).c_str());
-		int i = ListView_InsertItem(directories, &lvi);
-		ListView_SetItemText(directories, i, 1, const_cast<LPTSTR>(Text::toT(j->first).c_str()));
+		TStringList row;
+		row.push_back(Text::toT(j->second));
+		row.push_back(Text::toT(j->first));
+		directories->insertRow(row);
 	}
+
+	directories->onRaw(&FavoriteDirsPage::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+	directories->onRaw(&FavoriteDirsPage::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+	directories->onRaw(&FavoriteDirsPage::handleItemChanged, SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+
+	WidgetButtonPtr button = subclassButton(IDC_RENAME);
+	button->onClicked(&FavoriteDirsPage::handleRenameClicked);
+
+	button = subclassButton(IDC_REMOVE);
+	button->onClicked(&FavoriteDirsPage::handleRemoveClicked);
+
+	button = subclassButton(IDC_ADD);
+	button->onClicked(&FavoriteDirsPage::handleAddClicked);
 }
 
 FavoriteDirsPage::~FavoriteDirsPage() {
@@ -73,6 +81,87 @@ FavoriteDirsPage::~FavoriteDirsPage() {
 void FavoriteDirsPage::write()
 {
 //	PropPage::write(handle(), items);
+}
+
+HRESULT FavoriteDirsPage::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+#ifdef PORT_ME // posting messages doesn't seem to do anything
+	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
+	if(item->iItem >= 0) {
+		StupidWin::postMessage(this, WM_COMMAND, IDC_RENAME);
+	} else if(item->iItem == -1) {
+		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
+	}
+#endif
+	return 0;
+}
+
+HRESULT FavoriteDirsPage::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+#ifdef PORT_ME // posting messages doesn't seem to do anything
+	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
+	case VK_INSERT:
+		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
+		break;
+	case VK_DELETE:
+		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
+		break;
+	}
+#endif
+	return 0;
+}
+
+HRESULT FavoriteDirsPage::handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
+	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
+	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
+	return 0;
+}
+
+void FavoriteDirsPage::handleRenameClicked(WidgetButtonPtr) {
+	int i = -1;
+	while((i = directories->getNextItem(i, LVNI_SELECTED)) != -1) {
+		tstring old = directories->getCellText(0, i);
+		LineDlg dlg(this, TSTRING(FAVORITE_DIR_NAME), TSTRING(FAVORITE_DIR_NAME_LONG), old);
+		if(dlg.run() == IDOK) {
+			tstring line = dlg.getLine();
+			if (FavoriteManager::getInstance()->renameFavoriteDir(Text::fromT(old), Text::fromT(line))) {
+				directories->setCellText(0, i, line);
+			} else {
+				createMessageBox().show(TSTRING(DIRECTORY_ADD_ERROR), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			}
+		}
+	}
+}
+
+void FavoriteDirsPage::handleRemoveClicked(WidgetButtonPtr) {
+	int i = -1;
+	while((i = directories->getNextItem(-1, LVNI_SELECTED)) != -1)
+		if(FavoriteManager::getInstance()->removeFavoriteDir(Text::fromT(directories->getCellText(1, i))))
+			directories->removeRow(i);
+}
+
+void FavoriteDirsPage::handleAddClicked(WidgetButtonPtr) {
+	tstring target;
+	if(WinUtil::browseDirectory(target, handle()))
+		addDirectory(target);
+}
+
+void FavoriteDirsPage::addDirectory(const tstring& aPath) {
+	tstring path = aPath;
+	if( path[ path.length() -1 ] != PATH_SEPARATOR )
+		path += PATH_SEPARATOR;
+
+	LineDlg dlg(this, TSTRING(FAVORITE_DIR_NAME), TSTRING(FAVORITE_DIR_NAME_LONG), Util::getLastDir(path));
+	if(dlg.run() == IDOK) {
+		tstring line = dlg.getLine();
+		if (FavoriteManager::getInstance()->addFavoriteDir(Text::fromT(path), Text::fromT(line))) {
+			TStringList row;
+			row.push_back(line);
+			row.push_back(path);
+			directories->insertRow(row);
+		} else {
+			createMessageBox().show(TSTRING(DIRECTORY_ADD_ERROR), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		}
+	}
 }
 
 #ifdef PORT_ME
@@ -96,102 +185,6 @@ LRESULT FavoriteDirsPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 	return 0;
 }
 
-LRESULT FavoriteDirsPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
-	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
-	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
-	return 0;
-}
-
-LRESULT FavoriteDirsPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
-	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	switch(kd->wVKey) {
-	case VK_INSERT:
-		PostMessage(WM_COMMAND, IDC_ADD, 0);
-		break;
-	case VK_DELETE:
-		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
-		break;
-	default:
-		bHandled = FALSE;
-	}
-	return 0;
-}
-
-LRESULT FavoriteDirsPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-
-	if(item->iItem >= 0) {
-		PostMessage(WM_COMMAND, IDC_RENAME, 0);
-	} else if(item->iItem == -1) {
-		PostMessage(WM_COMMAND, IDC_ADD, 0);
-	}
-
-	return 0;
-}
-
-LRESULT FavoriteDirsPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	tstring target;
-	if(WinUtil::browseDirectory(target, m_hWnd)) {
-		addDirectory(target);
-	}
-
-	return 0;
-}
-
-LRESULT FavoriteDirsPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	TCHAR buf[MAX_PATH];
-	LVITEM item;
-	::ZeroMemory(&item, sizeof(item));
-	item.mask = LVIF_TEXT;
-	item.cchTextMax = sizeof(buf);
-	item.pszText = buf;
-
-	int i = -1;
-	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		item.iItem = i;
-		item.iSubItem = 1;
-		ctrlDirectories.GetItem(&item);
-		if(FavoriteManager::getInstance()->removeFavoriteDir(Text::fromT(buf)))
-			ctrlDirectories.DeleteItem(i);
-	}
-
-	return 0;
-}
-
-LRESULT FavoriteDirsPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	TCHAR buf[MAX_PATH];
-	LVITEM item;
-	::ZeroMemory(&item, sizeof(item));
-	item.mask = LVIF_TEXT;
-	item.cchTextMax = sizeof(buf);
-	item.pszText = buf;
-
-	int i = -1;
-	while((i = ctrlDirectories.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		item.iItem = i;
-		item.iSubItem = 0;
-		ctrlDirectories.GetItem(&item);
-
-		LineDlg virt;
-		virt.title = TSTRING(FAVORITE_DIR_NAME);
-		virt.description = TSTRING(FAVORITE_DIR_NAME_LONG);
-		virt.line = tstring(buf);
-		if(virt.DoModal(m_hWnd) == IDOK) {
-			if (FavoriteManager::getInstance()->renameFavoriteDir(Text::fromT(buf), Text::fromT(virt.line))) {
-				ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
-			} else {
-				MessageBox(CTSTRING(DIRECTORY_ADD_ERROR));
-			}
-		}
-	}
-	return 0;
-}
-
 LRESULT FavoriteDirsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FAVORITE_DIRSPAGE);
 	return 0;
@@ -200,24 +193,5 @@ LRESULT FavoriteDirsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 LRESULT FavoriteDirsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FAVORITE_DIRSPAGE);
 	return 0;
-}
-
-void FavoriteDirsPage::addDirectory(const tstring& aPath){
-	tstring path = aPath;
-	if( path[ path.length() -1 ] != PATH_SEPARATOR )
-		path += PATH_SEPARATOR;
-
-	LineDlg virt;
-	virt.title = TSTRING(FAVORITE_DIR_NAME);
-	virt.description = TSTRING(FAVORITE_DIR_NAME_LONG);
-	virt.line = Util::getLastDir(path);
-	if(virt.DoModal(m_hWnd) == IDOK) {
-		if (FavoriteManager::getInstance()->addFavoriteDir(Text::fromT(path), Text::fromT(virt.line))) {
-			int j = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), virt.line );
-			ctrlDirectories.SetItemText(j, 1, path.c_str());
-		} else {
-			MessageBox(CTSTRING(DIRECTORY_ADD_ERROR));
-		}
-	}
 }
 #endif

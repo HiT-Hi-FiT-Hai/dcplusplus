@@ -30,22 +30,11 @@ public:
 
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(Appearance2Page)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_HANDLER(IDC_BROWSE, BN_CLICKED, onBrowse)
-		COMMAND_ID_HANDLER(IDC_SELTEXT, onClickedText)
-		COMMAND_ID_HANDLER(IDC_SELWINCOLOR, onClickedBackground)
-		COMMAND_ID_HANDLER(IDC_SETTINGS_UPLOAD_BAR_COLOR, onPickColor)
-		COMMAND_ID_HANDLER(IDC_SETTINGS_DOWNLOAD_BAR_COLOR, onPickColor)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
-	LRESULT onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClickedText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClickedBackground(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onPickColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 #endif
 
@@ -55,13 +44,19 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-#ifdef PORT_ME
-	CStatic ctrlExample;
-#endif
+	WidgetStaticPtr example;
+
 	COLORREF fg, bg, upBar, downBar;
 	HBRUSH bgbrush;
 	HFONT fontObj;
 	LOGFONT font;
+
+	HRESULT handleExampleColor(WidgetStaticPtr, LPARAM /*lParam*/, WPARAM wParam);
+	void handleBackgroundClicked(WidgetButtonPtr);
+	void handleTextClicked(WidgetButtonPtr);
+	void handleULClicked(WidgetButtonPtr);
+	void handleDLClicked(WidgetButtonPtr);
+	void handleBrowseClicked(WidgetButtonPtr);
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_APPEARANCE_2_PAGE_H)

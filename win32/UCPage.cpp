@@ -25,6 +25,8 @@
 
 #include <client/SettingsManager.h>
 #include <client/FavoriteManager.h>
+#include "StupidWin.h"
+#include "CommandDlg.h"
 
 PropPage::TextItem UCPage::texts[] = {
 	{ IDC_MOVE_UP, ResourceManager::MOVE_UP },
@@ -45,38 +47,42 @@ UCPage::UCPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	HWND commands = ::GetDlgItem(handle(), IDC_MENU_ITEMS);
-	ListView_SetExtendedListViewStyle(commands, LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	commands = static_cast<WidgetDataGridPtr>(subclassList(IDC_MENU_ITEMS));
+	commands->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
-	LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH| LVCF_TEXT | LVCF_SUBITEM  };
-
-	lv.fmt = LVCFMT_LEFT;
-	lv.cx = 100;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(SETTINGS_NAME));
-	lv.iSubItem = 0;
-	ListView_InsertColumn(commands, 0, &lv);
-
-	lv.fmt = LVCFMT_CENTER;
-	RECT rc;
-	::GetClientRect(commands, &rc);
-	lv.cx = rc.right - rc.left - 220;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(SETTINGS_COMMAND));
-	lv.iSubItem = 1;
-	ListView_InsertColumn(commands, 1, &lv);
-
-	lv.fmt = LVCFMT_RIGHT;
-	lv.cx = 100;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(HUB));
-	lv.iSubItem = 2;
-	ListView_InsertColumn(commands, 2, &lv);
+	TStringList columns;
+	columns.push_back(TSTRING(SETTINGS_NAME));
+	columns.push_back(TSTRING(SETTINGS_COMMAND));
+	columns.push_back(TSTRING(HUB));
+	commands->createColumns(columns);
+	commands->setColumnWidth(0, 100);
+	commands->setColumnWidth(1, commands->getSize().x - 220);
+	commands->setColumnWidth(2, 100);
 
 	UserCommand::List lst = FavoriteManager::getInstance()->getUserCommands();
 	for(UserCommand::List::const_iterator i = lst.begin(); i != lst.end(); ++i) {
 		const UserCommand& uc = *i;
-		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) {
-			addEntry(uc, ListView_GetItemCount(commands));
-		}
+		if(!uc.isSet(UserCommand::FLAG_NOSAVE))
+			addEntry(uc);
 	}
+
+	commands->onRaw(&UCPage::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+	commands->onRaw(&UCPage::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+
+	WidgetButtonPtr button = subclassButton(IDC_ADD_MENU);
+	button->onClicked(&UCPage::handleAddClicked);
+
+	button = subclassButton(IDC_CHANGE_MENU);
+	button->onClicked(&UCPage::handleChangeClicked);
+
+	button = subclassButton(IDC_MOVE_UP);
+	button->onClicked(&UCPage::handleMoveUpClicked);
+
+	button = subclassButton(IDC_MOVE_DOWN);
+	button->onClicked(&UCPage::handleMoveDownClicked);
+
+	button = subclassButton(IDC_REMOVE_MENU);
+	button->onClicked(&UCPage::handleRemoveClicked);
 }
 
 UCPage::~UCPage() {
@@ -86,129 +92,121 @@ void UCPage::write() {
 	PropPage::write(handle(), items);
 }
 
-void UCPage::addEntry(const UserCommand& uc, int pos) {
-	HWND commands = ::GetDlgItem(handle(), IDC_MENU_ITEMS);
-	LVITEM lvi = { LVIF_TEXT | LVIF_PARAM };
-	lvi.iItem = pos;
-	lvi.pszText = const_cast<LPTSTR>(((uc.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : uc.getName()).c_str());
-	lvi.lParam = (LPARAM)uc.getId();
-	int i = ListView_InsertItem(commands, &lvi);
-	ListView_SetItemText(commands, i, 1, const_cast<LPTSTR>(uc.getCommand().c_str()));
-	ListView_SetItemText(commands, i, 2, const_cast<LPTSTR>(uc.getHub().c_str()));
-}
-
-#ifdef PORT_ME
-
-LRESULT UCPage::onAddMenu(WORD , WORD , HWND , BOOL& ) {
-	CommandDlg dlg;
-
-	if(dlg.DoModal() == IDOK) {
-		addEntry(FavoriteManager::getInstance()->addUserCommand(dlg.type, dlg.ctx,
-			0, Text::fromT(dlg.name), Text::fromT(dlg.command), Text::fromT(dlg.hub)), ctrlCommands.GetItemCount());
+HRESULT UCPage::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+#ifdef PORT_ME // posting messages doesn't seem to do anything
+	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
+	if(item->iItem >= 0) {
+		StupidWin::postMessage(this, WM_COMMAND, IDC_CHANGE_MENU);
+	} else if(item->iItem == -1) {
+		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD_MENU);
 	}
+#endif
 	return 0;
 }
 
-LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
-	if(ctrlCommands.GetSelectedCount() == 1) {
-		int sel = ctrlCommands.GetSelectedIndex();
+HRESULT UCPage::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+#ifdef PORT_ME // posting messages doesn't seem to do anything
+	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
+	case VK_INSERT:
+		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD_MENU);
+		break;
+	case VK_DELETE:
+		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE_MENU);
+		break;
+	}
+#endif
+	return 0;
+}
+
+void UCPage::handleAddClicked(WidgetButtonPtr) {
+	CommandDlg dlg(this);
+	if(dlg.run() == IDOK)
+		addEntry(FavoriteManager::getInstance()->addUserCommand(dlg.getType(), dlg.getCtx(), 0, Text::fromT(dlg.getName()), Text::fromT(dlg.getCommand()), Text::fromT(dlg.getHub())));
+}
+
+void UCPage::handleChangeClicked(WidgetButtonPtr) {
+	if(commands->getSelectedCount() == 1) {
+		int i = commands->getSelectedIndex();
 		UserCommand uc;
-		FavoriteManager::getInstance()->getUserCommand(ctrlCommands.GetItemData(sel), uc);
+		FavoriteManager::getInstance()->getUserCommand(commands->getItemData(i), uc);
 
-		CommandDlg dlg;
-		dlg.type = uc.getType();
-		dlg.ctx = uc.getCtx();
-		dlg.name = Text::toT(uc.getName());
-		dlg.command = Text::toT(uc.getCommand());
-		dlg.hub = Text::toT(uc.getHub());
+		CommandDlg dlg(this, uc.getType(), uc.getCtx(), Text::toT(uc.getName()), Text::toT(uc.getCommand()), Text::toT(uc.getHub()));
+		if(dlg.run() == IDOK) {
+			commands->setCellText(0, i, (dlg.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : dlg.getName());
+			commands->setCellText(1, i, dlg.getCommand());
+			commands->setCellText(2, i, dlg.getHub());
 
-		if(dlg.DoModal() == IDOK) {
-			if(dlg.type == UserCommand::TYPE_SEPARATOR)
-				ctrlCommands.SetItemText(sel, 0, CTSTRING(SEPARATOR));
-			else
-				ctrlCommands.SetItemText(sel, 0, dlg.name.c_str());
-			ctrlCommands.SetItemText(sel, 1, dlg.command.c_str());
-			ctrlCommands.SetItemText(sel, 2, dlg.hub.c_str());
-			uc.setName(Text::fromT(dlg.name));
-			uc.setCommand(Text::fromT(dlg.command));
-			uc.setHub(Text::fromT(dlg.hub));
-			uc.setType(dlg.type);
-			uc.setCtx(dlg.ctx);
+			uc.setName(Text::fromT(dlg.getName()));
+			uc.setCommand(Text::fromT(dlg.getCommand()));
+			uc.setHub(Text::fromT(dlg.getHub()));
+			uc.setType(dlg.getType());
+			uc.setCtx(dlg.getCtx());
 			FavoriteManager::getInstance()->updateUserCommand(uc);
 		}
 	}
-	return 0;
 }
 
-LRESULT UCPage::onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlCommands.GetSelectedCount() == 1) {
-		int i = ctrlCommands.GetNextItem(-1, LVNI_SELECTED);
-		FavoriteManager::getInstance()->removeUserCommand(ctrlCommands.GetItemData(i));
-		ctrlCommands.DeleteItem(i);
-	}
-	return 0;
-}
-
-LRESULT UCPage::onMoveUp(WORD , WORD , HWND , BOOL& ) {
-	int i = ctrlCommands.GetSelectedIndex();
-	if(i != -1 && i != 0) {
-		int n = ctrlCommands.GetItemData(i);
+void UCPage::handleMoveUpClicked(WidgetButtonPtr) {
+	if(commands->getSelectedCount() == 1) {
+		int i = commands->getSelectedIndex();
+		if(i == 0)
+			return;
+		int n = commands->getItemData(i);
 		FavoriteManager::getInstance()->moveUserCommand(n, -1);
-		ctrlCommands.SetRedraw(FALSE);
-		ctrlCommands.DeleteItem(i);
+#ifdef PORT_ME
+		commands->SetRedraw(FALSE);
+#endif
+		commands->removeRow(i);
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
-		addEntry(uc, i-1);
-		ctrlCommands.SelectItem(i-1);
-		ctrlCommands.EnsureVisible(i-1, FALSE);
-		ctrlCommands.SetRedraw(TRUE);
+		addEntry(uc, --i);
+		commands->setSelectedIndex(i);
+#ifdef PORT_ME
+		commands->EnsureVisible(i, FALSE);
+		commands->SetRedraw(TRUE);
+#endif
 	}
-	return 0;
 }
 
-LRESULT UCPage::onMoveDown(WORD , WORD , HWND , BOOL& ) {
-	int i = ctrlCommands.GetSelectedIndex();
-	if(i != -1 && i != (ctrlCommands.GetItemCount()-1) ) {
-		int n = ctrlCommands.GetItemData(i);
+void UCPage::handleMoveDownClicked(WidgetButtonPtr) {
+	if(commands->getSelectedCount() == 1) {
+		int i = commands->getSelectedIndex();
+		if(i == commands->getRowCount() - 1)
+			return;
+		int n = commands->getItemData(i);
 		FavoriteManager::getInstance()->moveUserCommand(n, 1);
-		ctrlCommands.SetRedraw(FALSE);
-		ctrlCommands.DeleteItem(i);
+#ifdef PORT_ME
+		commands->SetRedraw(FALSE);
+#endif
+		commands->removeRow(i);
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
-		addEntry(uc, i+1);
-		ctrlCommands.SelectItem(i+1);
-		ctrlCommands.EnsureVisible(i+1, FALSE);
-		ctrlCommands.SetRedraw(TRUE);
+		addEntry(uc, ++i);
+		commands->setSelectedIndex(i);
+#ifdef PORT_ME
+		commands->EnsureVisible(i, FALSE);
+		commands->SetRedraw(TRUE);
+#endif
 	}
-	return 0;
 }
 
-LRESULT UCPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
-	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	switch(kd->wVKey) {
-	case VK_INSERT:
-		PostMessage(WM_COMMAND, IDC_ADD_MENU, 0);
-		break;
-	case VK_DELETE:
-		PostMessage(WM_COMMAND, IDC_REMOVE_MENU, 0);
-		break;
-	default:
-		bHandled = FALSE;
+void UCPage::handleRemoveClicked(WidgetButtonPtr) {
+	if(commands->getSelectedCount() == 1) {
+		int i = commands->getSelectedIndex();
+		FavoriteManager::getInstance()->removeUserCommand(commands->getItemData(i));
+		commands->removeRow(i);
 	}
-	return 0;
 }
 
-LRESULT UCPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-
-	if(item->iItem >= 0) {
-		PostMessage(WM_COMMAND, IDC_CHANGE_MENU, 0);
-	} else if(item->iItem == -1) {
-		PostMessage(WM_COMMAND, IDC_ADD_MENU, 0);
-	}
-
-	return 0;
+void UCPage::addEntry(const UserCommand& uc, int index) {
+	TStringList row;
+	row.push_back((uc.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : Text::toT(uc.getName()));
+	row.push_back(Text::toT(uc.getCommand()));
+	row.push_back(Text::toT(uc.getHub()));
+	commands->insertRow(row, (LPARAM)uc.getId(), index);
 }
+
+#ifdef PORT_ME
 
 LRESULT UCPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);

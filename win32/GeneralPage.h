@@ -31,12 +31,10 @@ public:
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(GeneralPage)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onTextChanged)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onTextChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 #endif
 
@@ -46,11 +44,8 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-#ifdef PORT_ME
-	CComboBox ctrlConnection;
-	CEdit nick;
-	CEdit desc;
-#endif
+	typedef SmartWin::WidgetTextBox<GeneralPage, SmartWin::MessageMapPolicyDialogWidget>* TextBoxMessageType;
+	HRESULT handleTextChanged(TextBoxMessageType textBox, LPARAM /*lParam*/, WPARAM /*wParam*/);
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_GENERAL_PAGE_H)

@@ -60,60 +60,46 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), P
 	}
 
 	connections->setSelectedIndex(selected);
-		
-#ifdef PORT_ME
-	nick.Attach(::GetDlgItem(handle(), IDC_NICK));
-	nick.LimitText(35);
-	desc.Attach(::GetDlgItem(handle(), IDC_DESCRIPTION));
-	desc.LimitText(35);
-	desc.Detach();
-	return TRUE;
-#endif
+
+	WidgetTextBoxPtr textBox;
+#define TEXTBOX_ATTACH(id) \
+	textBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(id)); \
+	textBox->setTextLimit(35); \
+	textBox->onRaw(&GeneralPage::handleTextChanged, SmartWin::Message(WM_COMMAND, EN_CHANGE))
+	TEXTBOX_ATTACH(IDC_NICK);
+	TEXTBOX_ATTACH(IDC_DESCRIPTION);
+#undef TEXTBOX_ATTACH
 }
 
 GeneralPage::~GeneralPage() {
-	
 }
 
 void GeneralPage::write() {
 	PropPage::write(handle(), items);
 }
 
-#ifdef PORT_ME
+HRESULT GeneralPage::handleTextChanged(TextBoxMessageType textBox, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+	tstring text = textBox->getText();
+	bool update = false;
 
-LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
-{
-	TCHAR buf[SETTINGS_BUF_LEN];
-
-	GetDlgItemText(wID, buf, SETTINGS_BUF_LEN);
-	tstring old = buf;
-
-	// Strip ' ' from nick
-	TCHAR *b = buf, *f = buf, c;
-	while( (c = *b++) != 0 )
-	{
-		if(c != ' ')
-			*f++ = c;
+	// Strip ' '
+	tstring::size_type i;
+	while((i = text.find(' ')) != string::npos) {
+		text.erase(i, 1);
+		update = true;
 	}
 
-	*f = '\0';
-
-	if(old != buf)
-	{
+	if(update) {
 		// Something changed; update window text without changing cursor pos
-		CEdit tmp;
-		tmp.Attach(hWndCtl);
-		int start, end;
-		tmp.GetSel(start, end);
-		tmp.SetWindowText(buf);
-		if(start > 0) start--;
-		if(end > 0) end--;
-		tmp.SetSel(start, end);
-		tmp.Detach();
+		long caretPos = textBox->getCaretPos() - 1;
+		textBox->setText(text);
+		textBox->setSelection(caretPos, caretPos);
 	}
 
-	return TRUE;
+	return 0;
 }
+
+#ifdef PORT_ME
 
 LRESULT GeneralPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);

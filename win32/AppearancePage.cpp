@@ -24,6 +24,7 @@
 #include "AppearancePage.h"
 
 #include <client/SettingsManager.h>
+#include "WinUtil.h"
 
 PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_APPEARANCE_OPTIONS, ResourceManager::SETTINGS_OPTIONS },
@@ -61,8 +62,10 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : SmartWin::Widget(pare
 	createDialog(IDD_APPEARANCEPAGE);
 
 	PropPage::translate(handle(), texts);
-
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
+
+	WidgetButtonPtr browse = subclassButton(IDC_BROWSE);
+	browse->onClicked(&AppearancePage::handleBrowse);
 }
 
 AppearancePage::~AppearancePage() {
@@ -73,20 +76,19 @@ void AppearancePage::write()
 	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 }
 
-#ifdef PORT_ME
-
-LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void AppearancePage::handleBrowse(WidgetButtonPtr) {
 	TCHAR buf[MAX_PATH];
 	static const TCHAR types[] = _T("Language Files\0*.xml\0All Files\0*.*\0");
 
-	GetDlgItemText(IDC_LANGUAGE, buf, MAX_PATH);
+	::GetDlgItemText(handle(), IDC_LANGUAGE, buf, MAX_PATH);
 	tstring x = buf;
 
-	if(WinUtil::browseFile(x, m_hWnd, false, Text::toT(Util::getDataPath()), types) == IDOK) {
-		SetDlgItemText(IDC_LANGUAGE, x.c_str());
+	if(WinUtil::browseFile(x, handle(), false, Text::toT(Util::getDataPath()), types) == IDOK) {
+		::SetDlgItemText(handle(), IDC_LANGUAGE, x.c_str());
 	}
-	return 0;
 }
+
+#ifdef PORT_ME
 
 LRESULT AppearancePage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCEPAGE);

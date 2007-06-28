@@ -256,7 +256,7 @@ typename WidgetChooseColor< Parent >::ColorParams WidgetChooseColor< Parent >::s
 	cc.hwndOwner = itsParent->handle();
 	cc.hInstance = NULL;
 	cc.rgbResult = colorParams.itsColor;
-	cc.lpCustColors = colorParams.itsCustomColors;
+	cc.lpCustColors = itsColorParams.itsCustomColors;
 	cc.Flags = CC_ANYCOLOR | CC_RGBINIT;
 	if ( !basic )
 		cc.Flags |= CC_FULLOPEN;
@@ -266,13 +266,12 @@ typename WidgetChooseColor< Parent >::ColorParams WidgetChooseColor< Parent >::s
 	cc.lpfnHook = NULL;
 	cc.lpTemplateName = NULL;
 
-	colorParams.itsUserPressedOk = ::ChooseColor( & cc ) == TRUE;
-	if ( colorParams.itsUserPressedOk )
+	itsColorParams.itsUserPressedOk = ::ChooseColor( & cc ) == TRUE;
+	if ( itsColorParams.itsUserPressedOk )
 	{
-		colorParams.itsColor = cc.rgbResult;
-		itsColorParams = colorParams;
+		itsColorParams.itsColor = cc.rgbResult;
 	}
-	return colorParams;
+	return itsColorParams;
 }
 
 template< class Parent >

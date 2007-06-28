@@ -25,6 +25,7 @@
 
 #include <client/SettingsManager.h>
 #include <client/LogManager.h>
+#include "WinUtil.h"
 
 PropPage::TextItem LogPage::texts[] = {
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
@@ -57,7 +58,6 @@ LogPage::LogPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage(
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
 
-#ifdef PORT_ME
 	for(int i = 0; i < LogManager::LAST; ++i) {
 		TStringPair pair;
 		pair.first = Text::toT(LogManager::getInstance()->getSetting(i, LogManager::FILE));
@@ -69,7 +69,12 @@ LogPage::LogPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage(
 	::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), false);
 
 	oldSelection = -1;
-#endif
+
+	WidgetButtonPtr browse = subclassButton(IDC_BROWSE_LOG);
+	browse->onClicked(&LogPage::handleBrowseClicked);
+
+	WidgetDataGridPtr dataGrid = static_cast<WidgetDataGridPtr>(subclassList(IDC_LOG_OPTIONS));
+	dataGrid->onRaw(&LogPage::handleItemChanged, SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 }
 
 LogPage::~LogPage() {
@@ -85,7 +90,6 @@ void LogPage::write()
 	}
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 
-#ifdef PORT_ME
 	//make sure we save the last edit too, the user
 	//might not have changed the selection
 	getValues();
@@ -98,26 +102,32 @@ void LogPage::write()
 		LogManager::getInstance()->saveSetting(i, LogManager::FILE, tmp);
 		LogManager::getInstance()->saveSetting(i, LogManager::FORMAT, Text::fromT(options[i].second));
 	}
-#endif
 }
 
-#ifdef PORT_ME
+void LogPage::handleBrowseClicked(WidgetButtonPtr) {
+	tstring dir = Text::toT(SETTING(LOG_DIRECTORY));
+	if(WinUtil::browseDirectory(dir, handle()))
+	{
+		// Adjust path string
+		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
+			dir += '\\';
 
-LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
-	logOptions.Attach(::GetDlgItem(handle(), IDC_LOG_OPTIONS));
+		::SetDlgItemText(handle(), IDC_LOG_DIRECTORY, dir.c_str());
+	}
+}
 
+HRESULT LogPage::handleItemChanged(DataGridMessageType dataGrid, LPARAM /*lParam*/, WPARAM /*wParam*/) {
 	getValues();
 
-	int sel = logOptions.GetSelectedIndex();
+	int sel = dataGrid->getSelectedIndex();
 
 	if(sel >= 0 && sel < LogManager::LAST) {
-		BOOL checkState = logOptions.GetCheckState(sel) == BST_CHECKED ? TRUE : FALSE;
-
+		BOOL checkState = dataGrid->getIsRowChecked(sel) ? TRUE : FALSE;
 		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), checkState);
 		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), checkState);
 
-		SetDlgItemText(IDC_LOG_FILE, options[sel].first.c_str());
-		SetDlgItemText(IDC_LOG_FORMAT, options[sel].second.c_str());
+		::SetDlgItemText(handle(), IDC_LOG_FILE, options[sel].first.c_str());
+		::SetDlgItemText(handle(), IDC_LOG_FORMAT, options[sel].second.c_str());
 
 		//save the old selection so we know where to save the values
 		oldSelection = sel;
@@ -125,11 +135,10 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), FALSE);
 		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), FALSE);
 
-		SetDlgItemText(IDC_LOG_FILE, _T(""));
-		SetDlgItemText(IDC_LOG_FORMAT, _T(""));
+		::SetDlgItemText(handle(), IDC_LOG_FILE, _T(""));
+		::SetDlgItemText(handle(), IDC_LOG_FORMAT, _T(""));
 	}
 
-	logOptions.Detach();
 	return 0;
 }
 
@@ -137,26 +146,14 @@ void LogPage::getValues() {
 	if(oldSelection >= 0) {
 		TCHAR buf[512];
 
-		if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
+		if(::GetDlgItemText(handle(), IDC_LOG_FILE, buf, 512) > 0)
 			options[oldSelection].first = buf;
-		if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
+		if(::GetDlgItemText(handle(), IDC_LOG_FORMAT, buf, 512) > 0)
 			options[oldSelection].second = buf;
 	}
 }
 
-LRESULT LogPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	tstring dir = Text::toT(SETTING(LOG_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, m_hWnd))
-	{
-		// Adjust path string
-		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
-			dir += '\\';
-
-		SetDlgItemText(IDC_LOG_DIRECTORY, dir.c_str());
-	}
-	return 0;
-}
+#ifdef PORT_ME
 
 LRESULT LogPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_LOGPAGE);

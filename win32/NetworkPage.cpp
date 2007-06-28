@@ -92,20 +92,27 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), P
 
 	fixControls();
 
-#ifdef PORT_ME
-	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_SERVER));
-	desc.LimitText(250);
-	desc.Detach();
-	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_PORT));
-	desc.LimitText(5);
-	desc.Detach();
-	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_USER));
-	desc.LimitText(250);
-	desc.Detach();
-	desc.Attach(::GetDlgItem(handle(), IDC_SOCKS_PASSWORD));
-	desc.LimitText(250);
-	desc.Detach();
-#endif
+	WidgetRadioButtonPtr radioButton;
+#define RADIO_ATTACH(id) \
+	radioButton = subclassRadioButton(id); \
+	radioButton->onClicked(&NetworkPage::fixControls)
+	RADIO_ATTACH(IDC_DIRECT);
+	RADIO_ATTACH(IDC_FIREWALL_UPNP);
+	RADIO_ATTACH(IDC_FIREWALL_NAT);
+	RADIO_ATTACH(IDC_FIREWALL_PASSIVE);
+	RADIO_ATTACH(IDC_DIRECT_OUT);
+	RADIO_ATTACH(IDC_SOCKS5);
+#undef RADIO_ATTACH
+
+	WidgetTextBoxPtr textBox;
+#define TEXTBOX_ATTACH(id) \
+	textBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(id)); \
+	textBox->setTextLimit(250)
+	TEXTBOX_ATTACH(IDC_SOCKS_SERVER);
+	TEXTBOX_ATTACH(IDC_SOCKS_PORT);
+	TEXTBOX_ATTACH(IDC_SOCKS_USER);
+	TEXTBOX_ATTACH(IDC_SOCKS_PASSWORD);
+#undef TEXTBOX_ATTACH
 }
 
 NetworkPage::~NetworkPage() {
@@ -180,11 +187,6 @@ void NetworkPage::fixControls() {
 }
 
 #ifdef PORT_ME
-
-LRESULT NetworkPage::onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	fixControls();
-	return 0;
-}
 
 LRESULT NetworkPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_NETWORKPAGE);

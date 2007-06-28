@@ -25,6 +25,11 @@
 
 #include <client/SettingsManager.h>
 #include <client/ShareManager.h>
+#include <client/version.h>
+#include "WinUtil.h"
+#include "StupidWin.h"
+#include "LineDlg.h"
+#include "HashProgressDlg.h"
 
 PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
@@ -53,52 +58,51 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), Pro
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	HWND directories = ::GetDlgItem(handle(), IDC_DIRECTORIES);
-	ListView_SetExtendedListViewStyle(directories, LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
+	directories = static_cast<WidgetDataGridPtr>(subclassList(IDC_DIRECTORIES));
+	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
-	LVCOLUMN lv = { LVCF_FMT | LVCF_WIDTH| LVCF_TEXT | LVCF_SUBITEM  };
+	TStringList columns;
+	columns.push_back(TSTRING(VIRTUAL_NAME));
+	columns.push_back(TSTRING(DIRECTORY));
+	columns.push_back(TSTRING(SIZE));
+	directories->createColumns(columns);
+	directories->setColumnWidth(0, 100);
+	directories->setColumnWidth(1, directories->getSize().x - 220);
+	directories->setColumnWidth(2, 100);
 
-	lv.fmt = LVCFMT_LEFT;
-	lv.cx = 100;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(VIRTUAL_NAME));
-	lv.iSubItem = 0;
-	ListView_InsertColumn(directories, 0, &lv);
-
-	lv.fmt = LVCFMT_CENTER;
-	RECT rc;
-	::GetClientRect(directories, &rc);
-	lv.cx = rc.right - rc.left - 220;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(DIRECTORY));
-	lv.iSubItem = 1;
-	ListView_InsertColumn(directories, 1, &lv);
-
-	lv.fmt = LVCFMT_RIGHT;
-	lv.cx = 100;
-	lv.pszText = const_cast<LPTSTR>(CTSTRING(SIZE));
-	lv.iSubItem = 2;
-	ListView_InsertColumn(directories, 2, &lv);
-
-	LVITEM lvi = { LVIF_TEXT };
 	StringPairList dirs = ShareManager::getInstance()->getDirectories();
 	for(StringPairIter j = dirs.begin(); j != dirs.end(); j++) {
-		lvi.iItem = ListView_GetItemCount(directories);
-		lvi.pszText = const_cast<LPTSTR>(Text::toT(j->first).c_str());
-		int i = ListView_InsertItem(directories, &lvi);
-		ListView_SetItemText(directories, i, 1, const_cast<LPTSTR>(Text::toT(j->second).c_str()));
-		ListView_SetItemText(directories, i, 2, const_cast<LPTSTR>(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str()));
+		TStringList row;
+		row.push_back(Text::toT(j->first));
+		row.push_back(Text::toT(j->second));
+		row.push_back(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second)));
+		directories->insertRow(row);
 	}
 
-#ifdef PORT_ME
-	ctrlTotal.Attach(::GetDlgItem(handle(), IDC_TOTAL));
-	ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
+	directories->onRaw(&UploadPage::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+	directories->onRaw(&UploadPage::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+	directories->onRaw(&UploadPage::handleItemChanged, SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
-	CUpDownCtrl updown;
-	updown.Attach(::GetDlgItem(handle(), IDC_SLOTSPIN));
-	updown.SetRange(1, UD_MAXVAL);
-	updown.Detach();
-	updown.Attach(::GetDlgItem(handle(), IDC_MIN_UPLOAD_SPIN));
-	updown.SetRange32(0, UD_MAXVAL);
-#endif
+	WidgetCheckBoxPtr shareHidden = subclassCheckBox(IDC_SHAREHIDDEN);
+	shareHidden->onClicked(&UploadPage::handleShareHiddenClicked);
+
+	total = subclassStatic(IDC_TOTAL);
+	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+
+	WidgetButtonPtr button = subclassButton(IDC_RENAME);
+	button->onClicked(&UploadPage::handleRenameClicked);
+
+	button = subclassButton(IDC_REMOVE);
+	button->onClicked(&UploadPage::handleRemoveClicked);
+
+	button = subclassButton(IDC_ADD);
+	button->onClicked(&UploadPage::handleAddClicked);
+
+	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SLOTSPIN);
+	spinner->setRange(1, UD_MAXVAL);
+
+	spinner = subclassSpinner(IDC_MIN_UPLOAD_SPIN);
+	spinner->setRange(0, UD_MAXVAL);
 }
 
 UploadPage::~UploadPage() {
@@ -112,6 +116,135 @@ void UploadPage::write()
 		SettingsManager::getInstance()->set(SettingsManager::SLOTS, 1);
 
 	ShareManager::getInstance()->refresh();
+}
+
+HRESULT UploadPage::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+#ifdef PORT_ME // posting messages doesn't seem to do anything
+	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
+	if(item->iItem >= 0) {
+		StupidWin::postMessage(this, WM_COMMAND, IDC_RENAME);
+	} else if(item->iItem == -1) {
+		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
+	}
+#endif
+	return 0;
+}
+
+HRESULT UploadPage::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+#ifdef PORT_ME // posting messages doesn't seem to do anything
+	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
+	case VK_INSERT:
+		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
+		break;
+	case VK_DELETE:
+		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
+		break;
+	}
+#endif
+	return 0;
+}
+
+HRESULT UploadPage::handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
+	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
+	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
+	return 0;
+}
+
+void UploadPage::handleShareHiddenClicked(WidgetCheckBoxPtr checkBox) {
+	// Save the checkbox state so that ShareManager knows to include/exclude hidden files
+	Item i = items[1]; // The checkbox. Explicit index used - bad!
+	SettingsManager::getInstance()->set((SettingsManager::IntSetting)i.setting, checkBox->getChecked());
+
+	// Refresh the share. This is a blocking refresh. Might cause problems?
+	// Hopefully people won't click the checkbox enough for it to be an issue. :-)
+	ShareManager::getInstance()->setDirty();
+	ShareManager::getInstance()->refresh(true, false, true);
+
+	// Clear the GUI list, for insertion of updated shares
+	directories->removeAllRows();
+	StringPairList dirs = ShareManager::getInstance()->getDirectories();
+	for(StringPairIter j = dirs.begin(); j != dirs.end(); j++)
+	{
+		TStringList row;
+		row.push_back(Text::toT(j->first));
+		row.push_back(Text::toT(j->second));
+		row.push_back(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second)));
+		directories->insertRow(row);
+	}
+
+	// Display the new total share size
+	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+}
+
+void UploadPage::handleRenameClicked(WidgetButtonPtr) {
+	bool setDirty = false;
+
+	int i = -1;
+	while((i = directories->getNextItem(i, LVNI_SELECTED)) != -1) {
+		tstring vName = directories->getCellText(0, i);
+		tstring rPath = directories->getCellText(1, i);
+		try {
+			LineDlg dlg(this, TSTRING(VIRTUAL_NAME), TSTRING(VIRTUAL_NAME_LONG), vName);
+			if(dlg.run() == IDOK) {
+				tstring line = dlg.getLine();
+				if (Util::stricmp(vName, line) != 0) {
+					ShareManager::getInstance()->renameDirectory(Text::fromT(rPath), Text::fromT(line));
+					directories->setCellText(0, i, line);
+
+					setDirty = true;
+				} else {
+					createMessageBox().show(TSTRING(SKIP_RENAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONINFORMATION);
+				}
+			}
+		} catch(const ShareException& e) {
+			createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		}
+	}
+
+	if(setDirty)
+		ShareManager::getInstance()->setDirty();
+}
+
+void UploadPage::handleRemoveClicked(WidgetButtonPtr) {
+	int i = -1;
+	while((i = directories->getNextItem(-1, LVNI_SELECTED)) != -1) {
+		ShareManager::getInstance()->removeDirectory(Text::fromT(directories->getCellText(1, i)));
+		total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+		directories->removeRow(i);
+	}
+}
+
+void UploadPage::handleAddClicked(WidgetButtonPtr) {
+	tstring target;
+	if(WinUtil::browseDirectory(target, handle())) {
+		addDirectory(target);
+#ifdef PORT_ME
+		HashProgressDlg(this, true).run();
+#endif
+	}
+}
+
+void UploadPage::addDirectory(const tstring& aPath) {
+	tstring path = aPath;
+	if( path[ path.length() -1 ] != _T('\\') )
+		path += _T('\\');
+
+	try {
+		LineDlg dlg(this, TSTRING(VIRTUAL_NAME), TSTRING(VIRTUAL_NAME_LONG), Text::toT(ShareManager::getInstance()->validateVirtual(Util::getLastDir(Text::fromT(path)))));
+		if(dlg.run() == IDOK) {
+			tstring line = dlg.getLine();
+			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(line));
+			TStringList row;
+			row.push_back(line);
+			row.push_back(path);
+			row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))));
+			directories->insertRow(row);
+			total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
+		}
+	} catch(const ShareException& e) {
+		createMessageBox().show(Text::toT(e.getError()), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+	}
 }
 
 #ifdef PORT_ME
@@ -135,150 +268,6 @@ LRESULT UploadPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	return 0;
 }
 
-LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
-	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
-	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
-	return 0;
-}
-
-LRESULT UploadPage::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
-	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	switch(kd->wVKey) {
-	case VK_INSERT:
-		PostMessage(WM_COMMAND, IDC_ADD, 0);
-		break;
-	case VK_DELETE:
-		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
-		break;
-	default:
-		bHandled = FALSE;
-	}
-	return 0;
-}
-
-LRESULT UploadPage::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-
-	if(item->iItem >= 0) {
-		PostMessage(WM_COMMAND, IDC_RENAME, 0);
-	} else if(item->iItem == -1) {
-		PostMessage(WM_COMMAND, IDC_ADD, 0);
-	}
-
-	return 0;
-}
-
-LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	tstring target;
-	if(WinUtil::browseDirectory(target, m_hWnd)) {
-		addDirectory(target);
-		HashProgressDlg(true).DoModal();
-	}
-
-	return 0;
-}
-
-LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	TCHAR buf[MAX_PATH];
-	LVITEM item;
-	::ZeroMemory(&item, sizeof(item));
-	item.mask = LVIF_TEXT;
-	item.cchTextMax = sizeof(buf);
-	item.pszText = buf;
-
-	int i = -1;
-	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		item.iItem = i;
-		item.iSubItem = 1;
-		ctrlDirectories.GetItem(&item);
-		ShareManager::getInstance()->removeDirectory(Text::fromT(buf));
-		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
-		ctrlDirectories.DeleteItem(i);
-	}
-
-	return 0;
-}
-
-LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	TCHAR buf[MAX_PATH];
-	LVITEM item;
-	::ZeroMemory(&item, sizeof(item));
-	item.mask = LVIF_TEXT;
-	item.cchTextMax = sizeof(buf);
-	item.pszText = buf;
-
-	bool setDirty = false;
-
-	int i = -1;
-	while((i = ctrlDirectories.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		item.iItem = i;
-		item.iSubItem = 0;
-		ctrlDirectories.GetItem(&item);
-		tstring vName = buf;
-		item.iSubItem = 1;
-		ctrlDirectories.GetItem(&item);
-		tstring rPath = buf;
-		try {
-			LineDlg virt;
-			virt.title = TSTRING(VIRTUAL_NAME);
-			virt.description = TSTRING(VIRTUAL_NAME_LONG);
-			virt.line = vName;
-			if(virt.DoModal(m_hWnd) == IDOK) {
-				if (Util::stricmp(buf, virt.line) != 0) {
-					ShareManager::getInstance()->renameDirectory(Text::fromT(rPath), Text::fromT(virt.line));
-					ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
-
-					setDirty = true;
-				} else {
-					MessageBox(CTSTRING(SKIP_RENAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONINFORMATION | MB_OK);
-				}
-			}
-		} catch(const ShareException& e) {
-			MessageBox(Text::toT(e.getError()).c_str(), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
-		}
-	}
-
-	if( setDirty )
-		ShareManager::getInstance()->setDirty();
-
-	return 0;
-}
-
-LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	// Save the checkbox state so that ShareManager knows to include/exclude hidden files
-	Item i = items[1]; // The checkbox. Explicit index used - bad!
-	if(::IsDlgButtonChecked((HWND)* this, i.itemID) == BST_CHECKED){
-		settings->set((SettingsManager::IntSetting)i.setting, true);
-	} else {
-		settings->set((SettingsManager::IntSetting)i.setting, false);
-	}
-
-	// Refresh the share. This is a blocking refresh. Might cause problems?
-	// Hopefully people won't click the checkbox enough for it to be an issue. :-)
-	ShareManager::getInstance()->setDirty();
-	ShareManager::getInstance()->refresh(true, false, true);
-
-	// Clear the GUI list, for insertion of updated shares
-	ctrlDirectories.DeleteAllItems();
-	StringPairList directories = ShareManager::getInstance()->getDirectories();
-	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
-	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->first));
-		ctrlDirectories.SetItemText(i, 1, Text::toT(j->second).c_str() );
-		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
-	}
-
-	// Display the new total share size
-	ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
-	return 0;
-}
-
 LRESULT UploadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UPLOADPAGE);
 	return 0;
@@ -287,28 +276,5 @@ LRESULT UploadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 LRESULT UploadPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UPLOADPAGE);
 	return 0;
-}
-
-void UploadPage::addDirectory(const tstring& aPath){
-	tstring path = aPath;
-	if( path[ path.length() -1 ] != _T('\\') )
-		path += _T('\\');
-
-	try {
-		LineDlg virt;
-		virt.title = TSTRING(VIRTUAL_NAME);
-		virt.description = TSTRING(VIRTUAL_NAME_LONG);
-		virt.line = Text::toT(ShareManager::getInstance()->validateVirtual(
-			Util::getLastDir(Text::fromT(path))));
-		if(virt.DoModal(m_hWnd) == IDOK) {
-			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(virt.line));
-			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), virt.line );
-			ctrlDirectories.SetItemText(i, 1, path.c_str());
-			ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))).c_str());
-			ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
-		}
-	} catch(const ShareException& e) {
-		MessageBox(Text::toT(e.getError()).c_str(), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
-	}
 }
 #endif

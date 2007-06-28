@@ -33,25 +33,11 @@ public:
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(UCPage)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_ADD_MENU, onAddMenu)
-		COMMAND_ID_HANDLER(IDC_REMOVE_MENU, onRemoveMenu)
-		COMMAND_ID_HANDLER(IDC_CHANGE_MENU, onChangeMenu)
-		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp)
-		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown)
-		NOTIFY_HANDLER(IDC_MENU_ITEMS, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_MENU_ITEMS, NM_DBLCLK, onDoubleClick)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onAddMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onChangeMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 #endif
 
 	virtual void write();
@@ -60,7 +46,19 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	void addEntry(const UserCommand& uc, int pos);
+	WidgetDataGridPtr commands;
+
+	typedef SmartWin::WidgetDataGrid<UCPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+
+	void handleAddClicked(WidgetButtonPtr);
+	void handleChangeClicked(WidgetButtonPtr);
+	void handleMoveUpClicked(WidgetButtonPtr);
+	void handleMoveDownClicked(WidgetButtonPtr);
+	void handleRemoveClicked(WidgetButtonPtr);
+
+	void addEntry(const UserCommand& uc, int index = -1);
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_U_C_PAGE_H)

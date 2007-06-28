@@ -31,17 +31,10 @@ public:
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(NetworkPage)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_DIRECT, onClickedActive)
-		COMMAND_ID_HANDLER(IDC_FIREWALL_UPNP, onClickedActive)
-		COMMAND_ID_HANDLER(IDC_FIREWALL_NAT, onClickedActive)
-		COMMAND_ID_HANDLER(IDC_FIREWALL_PASSIVE, onClickedActive)
-		COMMAND_ID_HANDLER(IDC_DIRECT_OUT, onClickedActive)
-		COMMAND_ID_HANDLER(IDC_SOCKS5, onClickedActive)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 #endif
 
@@ -51,11 +44,8 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-#ifdef PORT_ME
-	CEdit desc;
-#endif
-
 	void fixControls();
+	void fixControls(WidgetRadioButtonPtr) { fixControls(); }
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_NETWORK_PAGE_H)

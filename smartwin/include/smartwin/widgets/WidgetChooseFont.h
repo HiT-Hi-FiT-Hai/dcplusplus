@@ -63,10 +63,7 @@ public:
 	typedef WidgetChooseFont< Parent > ObjectType;
 
 	/// Shows the dialog
-	/** Returns a valid FontPtr if user presses Ok or an empty FontPtr if user press
-	  * cancel.
-	  */
-	FontPtr showDialog();
+	bool showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors);
 
 	/// Constructor Taking pointer to parent
 	explicit WidgetChooseFont( Parent * parent = 0 );
@@ -86,37 +83,25 @@ typedef WidgetChooseFont< FreeCommonDialog > WidgetChooseFontFree;
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< class Parent >
-FontPtr WidgetChooseFont< Parent >::showDialog()
+bool WidgetChooseFont< Parent >::showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors)
 {
 	CHOOSEFONT cf;
-	LOGFONT lf; // logical font structure
-	DWORD rgbCurrent = 0; // current text color
 
 	// Initialize CHOOSEFONT
 	ZeroMemory( & cf, sizeof( CHOOSEFONT ) );
 	cf.lStructSize = sizeof( CHOOSEFONT );
 	cf.hwndOwner = itsParent->handle();
-	cf.lpLogFont = & lf;
-	cf.rgbColors = rgbCurrent;
-	cf.Flags = CF_SCREENFONTS | CF_EFFECTS;
+	cf.Flags = dwFlags | CF_INITTOLOGFONTSTRUCT;
+	cf.lpLogFont = lplf;
+	cf.rgbColors = rgbColors;
 
 	if ( ::ChooseFont( & cf ) )
 	{
-		FontPtr retVal(
-			new Font
-				( lf.lfFaceName
-				, lf.lfHeight
-				, lf.lfWidth
-				, lf.lfWeight
-				, lf.lfCharSet
-				, TRUE == lf.lfItalic
-				, TRUE == lf.lfUnderline
-				, TRUE == lf.lfStrikeOut
-				)
-			);
-		return retVal;
+		lplf = cf.lpLogFont;
+		rgbColors = cf.rgbColors;
+		return true;
 	}
-	return FontPtr();
+	return false;
 }
 
 template< class Parent >

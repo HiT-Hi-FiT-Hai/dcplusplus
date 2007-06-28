@@ -69,12 +69,8 @@ Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : SmartWin::Widget(parent
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 
-#ifdef PORT_ME
-	CUpDownCtrl spin;
-	spin.Attach(::GetDlgItem(handle(), IDC_SEARCH_HISTORY_SPIN));
-	spin.SetRange32(0, 100);
-	SetDlgItemText(IDC_SEARCH_HISTORY,Text::toT(Util::toString( SETTING(SEARCH_HISTORY))).c_str());
-#endif
+	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SEARCH_HISTORY_SPIN);
+	spinner->setRange(0, 100);
 }
 
 Advanced3Page::~Advanced3Page() {

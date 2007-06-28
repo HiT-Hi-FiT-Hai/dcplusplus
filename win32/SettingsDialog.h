@@ -30,10 +30,6 @@ public:
 	int run();
 	
 	virtual ~SettingsDialog();
-
-#ifdef PORT_ME
-	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-#endif
 	
 private:
 	typedef std::vector<PropPage*> PageList;
@@ -46,6 +42,8 @@ private:
 	void write();
 	
 	bool initDialog();
+	void handleOKClicked(WidgetButtonPtr);
+	void handleCancelClicked(WidgetButtonPtr);
 	void selectionChanged(WidgetTreeViewPtr);
 	void showPage(PropPage* page);
 	

@@ -53,20 +53,32 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : SmartWin::Widget(pa
 	createDialog(IDD_APPEARANCE2PAGE);
 
 	PropPage::translate(handle(), texts);
-
-#ifdef PORT_ME
-	ctrlExample.Attach(::GetDlgItem(handle(), IDC_COLOREXAMPLE));
-#endif
-
 	PropPage::read(handle(), items, 0, 0);
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
-
 	fg = SETTING(TEXT_COLOR);
 	bg = SETTING(BACKGROUND_COLOR);
 	bgbrush = ::CreateSolidBrush(bg);
 	fontObj = ::CreateFontIndirect(&font);
 	upBar = SETTING(UPLOAD_BAR_COLOR);
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
+
+	example = subclassStatic(IDC_COLOREXAMPLE);
+	example->onRaw(&Appearance2Page::handleExampleColor, WM_CTLCOLORSTATIC);
+
+	WidgetButtonPtr button = subclassButton(IDC_SELWINCOLOR);
+	button->onClicked(&Appearance2Page::handleBackgroundClicked);
+
+	button = subclassButton(IDC_SELTEXT);
+	button->onClicked(&Appearance2Page::handleTextClicked);
+
+	button = subclassButton(IDC_SETTINGS_UPLOAD_BAR_COLOR);
+	button->onClicked(&Appearance2Page::handleULClicked);
+
+	button = subclassButton(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
+	button->onClicked(&Appearance2Page::handleDLClicked);
+
+	button = subclassButton(IDC_BROWSE);
+	button->onClicked(&Appearance2Page::handleBrowseClicked);
 }
 
 Appearance2Page::~Appearance2Page()
@@ -90,91 +102,63 @@ void Appearance2Page::write()
 	settings->set(SettingsManager::TEXT_FONT, Text::fromT(f));
 }
 
-#ifdef PORT_ME
-
-LRESULT Appearance2Page::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	TCHAR buf[MAX_PATH];
-
-	GetDlgItemText(IDC_BEEPFILE, buf, MAX_PATH);
-	tstring x = buf;
-
-	if(WinUtil::browseFile(x, m_hWnd, false) == IDOK) {
-		SetDlgItemText(IDC_BEEPFILE, x.c_str());
-	}
-	return 0;
+HRESULT Appearance2Page::handleExampleColor(WidgetStaticPtr, LPARAM /*lParam*/, WPARAM wParam) {
+	HDC hDC((HDC)wParam);
+	::SetBkMode(hDC, TRANSPARENT);
+	::SetTextColor(hDC, fg);
+	::SelectObject(hDC, fontObj);
+	return (LRESULT)bgbrush;
 }
 
-LRESULT Appearance2Page::onClickedBackground(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	CColorDialog d(SETTING(BACKGROUND_COLOR), 0, *this);
-	if(d.DoModal() == IDOK)
-	{
+void Appearance2Page::handleBackgroundClicked(WidgetButtonPtr) {
+	WidgetChooseColor::ColorParams initialColorParams(bg),
+		colorParams = createChooseColor().showDialog(initialColorParams);
+	if(colorParams.userPressedOk()) {
 		::DeleteObject(bgbrush);
-		bg = d.GetColor();
+		bg = colorParams.getColor();
 		bgbrush = CreateSolidBrush(bg);
-		ctrlExample.Invalidate();
+		example->invalidateWidget();
 	}
-	return TRUE;
 }
 
-
-LRESULT Appearance2Page::onClickedText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	LOGFONT tmp = font;
-	CFontDialog d(&tmp, CF_EFFECTS | CF_SCREENFONTS, NULL, *this);
-	d.m_cf.rgbColors = fg;
-	if(d.DoModal() == IDOK)
-	{
-		font = tmp;
-		fg = d.GetColor();
+void Appearance2Page::handleTextClicked(WidgetButtonPtr) {
+	LOGFONT font_ = font;
+	DWORD fg_ = fg;
+	if(createChooseFont().showDialog(CF_EFFECTS | CF_SCREENFONTS, &font_, fg_)) {
+		font = font_;
+		fg = fg_;
 		::DeleteObject(fontObj);
 		fontObj = ::CreateFontIndirect(&font);
-		ctrlExample.Invalidate();
+		example->invalidateWidget();
 	}
-	return TRUE;
 }
 
-LRESULT Appearance2Page::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-{
-	HWND hwnd = (HWND)lParam;
-
-	if(hwnd == (HWND)ctrlExample)
-	{
-		HDC hdc = (HDC)wParam;
-		::SetBkMode(hdc, TRANSPARENT);
-		::SetTextColor(hdc, fg);
-		::SelectObject(hdc, fontObj);
-		return (LRESULT)bgbrush;
-	}
-	else
-		return FALSE;
+void Appearance2Page::handleULClicked(WidgetButtonPtr) {
+	WidgetChooseColor::ColorParams initialColorParams(upBar),
+		colorParams = createChooseColor().showDialog(initialColorParams);
+	if(colorParams.userPressedOk())
+		upBar = colorParams.getColor();
 }
 
-LRESULT Appearance2Page::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	switch (wID) {
-		case IDC_SETTINGS_UPLOAD_BAR_COLOR:
-			{
-				CColorDialog colPicker(upBar, 0, *this);
-				if(colPicker.DoModal() == IDOK)
-				{
-					upBar = colPicker.GetColor();
-				}
-			}
-			break;
-		case IDC_SETTINGS_DOWNLOAD_BAR_COLOR:
-			{
-				CColorDialog colPicker(downBar, 0, *this);
-				if(colPicker.DoModal() == IDOK)
-				{
-					downBar = colPicker.GetColor();
-				}
-			}
-			break;
-		default:
-			break;
-	}
-	return true;
+void Appearance2Page::handleDLClicked(WidgetButtonPtr) {
+	WidgetChooseColor::ColorParams initialColorParams(downBar),
+		colorParams = createChooseColor().showDialog(initialColorParams);
+	if(colorParams.userPressedOk())
+		downBar = colorParams.getColor();
 }
+
+void Appearance2Page::handleBrowseClicked(WidgetButtonPtr) {
+	TCHAR buf[MAX_PATH];
+
+	::GetDlgItemText(handle(), IDC_BEEPFILE, buf, MAX_PATH);
+	tstring x = buf;
+
+	if(WinUtil::browseFile(x, handle(), false) == IDOK) {
+		::SetDlgItemText(handle(), IDC_BEEPFILE, x.c_str());
+	}
+}
+
+#ifdef PORT_ME
 
 LRESULT Appearance2Page::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCE2PAGE);

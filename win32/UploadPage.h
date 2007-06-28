@@ -32,25 +32,11 @@ public:
 	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_DROPFILES, onDropFiles)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, NM_DBLCLK, onDoubleClick)
-		COMMAND_ID_HANDLER(IDC_ADD, onClickedAdd)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onClickedRemove)
-		COMMAND_ID_HANDLER(IDC_RENAME, onClickedRename)
-		COMMAND_ID_HANDLER(IDC_SHAREHIDDEN, onClickedShareHidden)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onItemchangedDirectories(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR);
 #endif
 
@@ -60,11 +46,20 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-#ifdef PORT_ME
-	CStatic ctrlTotal;
+	WidgetDataGridPtr directories;
+	WidgetStaticPtr total;
+
+	typedef SmartWin::WidgetDataGrid<UploadPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/);
+
+	void handleShareHiddenClicked(WidgetCheckBoxPtr checkBox);
+	void handleRenameClicked(WidgetButtonPtr);
+	void handleRemoveClicked(WidgetButtonPtr);
+	void handleAddClicked(WidgetButtonPtr);
 
 	void addDirectory(const tstring& aPath);
-#endif
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_UPLOAD_PAGE_H)

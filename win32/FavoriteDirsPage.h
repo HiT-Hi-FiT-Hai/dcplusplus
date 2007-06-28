@@ -32,23 +32,11 @@ public:
 	BEGIN_MSG_MAP(FavoriteDirsPage)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		MESSAGE_HANDLER(WM_DROPFILES, onDropFiles)
-		NOTIFY_HANDLER(IDC_FAVORITE_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
-		NOTIFY_HANDLER(IDC_FAVORITE_DIRECTORIES, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_FAVORITE_DIRECTORIES, NM_DBLCLK, onDoubleClick)
-		COMMAND_ID_HANDLER(IDC_ADD, onClickedAdd)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onClickedRemove)
-		COMMAND_ID_HANDLER(IDC_RENAME, onClickedRename)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onItemchangedDirectories(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR);
 #endif
 
@@ -57,9 +45,18 @@ public:
 private:
 	static TextItem texts[];
 
-#ifdef PORT_ME
+	WidgetDataGridPtr directories;
+
+	typedef SmartWin::WidgetDataGrid<FavoriteDirsPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/);
+
+	void handleRenameClicked(WidgetButtonPtr);
+	void handleRemoveClicked(WidgetButtonPtr);
+	void handleAddClicked(WidgetButtonPtr);
+
 	void addDirectory(const tstring& aPath);
-#endif
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_FAVORITE_DIRS_PAGE_H)

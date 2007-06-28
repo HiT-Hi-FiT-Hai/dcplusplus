@@ -34,6 +34,7 @@
 #include "FinishedDLFrame.h"
 #include "FinishedULFrame.h"
 #include "LineDlg.h"
+#include "HashProgressDlg.h"
 #include "SettingsDialog.h"
 #include "TextFrame.h"
 #include "DirectoryListingFrame.h"
@@ -41,6 +42,7 @@
 #include "StatsFrame.h"
 #include "UsersFrame.h"
 #include "WaitingUsersFrame.h"
+#include "AboutDlg.h"
 
 #include <client/SettingsManager.h>
 #include <client/ResourceManager.h>
@@ -915,10 +917,7 @@ void MainWindow::handleHashProgress(WidgetMenuPtr, unsigned) {
 }
 
 void MainWindow::handleAbout(WidgetMenuPtr, unsigned) {
-#ifdef PORT_ME
-	AboutDlg dlg;
-	dlg.DoModal(m_hWnd);
-#endif
+	AboutDlg(this).run();
 }
 
 void MainWindow::handleOpenDownloadsDir(WidgetMenuPtr, unsigned) {

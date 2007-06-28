@@ -31,15 +31,11 @@ public:
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(LogPage)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_BROWSE_LOG, onClickedBrowseDir)
-		NOTIFY_HANDLER(IDC_LOG_OPTIONS, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 #endif
 
 	virtual void write();
@@ -49,9 +45,6 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-#ifdef PORT_ME
-	ExListViewCtrl logOptions;
-
 	int oldSelection;
 
 	//store all log options here so we can discard them
@@ -59,8 +52,12 @@ private:
 	//.first is filename and .second is format
 	TStringPairList options;
 
+	void handleBrowseClicked(WidgetButtonPtr);
+
+	typedef SmartWin::WidgetDataGrid<LogPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	HRESULT handleItemChanged(DataGridMessageType dataGrid, LPARAM /*lParam*/, WPARAM /*wParam*/);
+
 	void getValues();
-#endif
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_LOG_PAGE_H)

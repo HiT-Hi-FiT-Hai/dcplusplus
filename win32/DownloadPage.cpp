@@ -24,6 +24,7 @@
 #include "DownloadPage.h"
 
 #include <client/SettingsManager.h>
+#include "WinUtil.h"
 
 PropPage::TextItem DownloadPage::texts[] = {
 	{ IDC_SETTINGS_DIRECTORIES, ResourceManager::SETTINGS_DIRECTORIES },
@@ -57,14 +58,20 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : SmartWin::Widget(parent),
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-#ifdef PORT_ME
-	CUpDownCtrl spin;
-	spin.Attach(::GetDlgItem(handle(), IDC_SLOTSSPIN));
-	spin.SetRange32(0, 100);
-	spin.Detach();
-	spin.Attach(::GetDlgItem(handle(), IDC_SPEEDSPIN));
-	spin.SetRange32(0, 10000);
-#endif
+	WidgetButtonPtr button = subclassButton(IDC_BROWSEDIR);
+	button->onClicked(&DownloadPage::handleBrowseDir);
+
+	button = subclassButton(IDC_BROWSETEMPDIR);
+	button->onClicked(&DownloadPage::handleBrowseTempDir);
+
+	button = subclassButton(IDC_SETTINGS_LIST_CONFIG);
+	button->onClicked(&DownloadPage::handleConfigHubLists);
+
+	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SLOTSSPIN);
+	spinner->setRange(0, 100);
+
+	spinner = subclassSpinner(IDC_SPEEDSPIN);
+	spinner->setRange(0, 10000);
 }
 
 DownloadPage::~DownloadPage() {
@@ -86,41 +93,38 @@ void DownloadPage::write()
 
 }
 
-#ifdef PORT_ME
-
-LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+void DownloadPage::handleBrowseDir(WidgetButtonPtr) {
 	tstring dir = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, m_hWnd))
+	if(WinUtil::browseDirectory(dir, handle()))
 	{
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
 
-		SetDlgItemText(IDC_DOWNLOADDIR, dir.c_str());
+		::SetDlgItemText(handle(), IDC_DOWNLOADDIR, dir.c_str());
 	}
-	return 0;
 }
 
-LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+void DownloadPage::handleBrowseTempDir(WidgetButtonPtr) {
 	tstring dir = Text::toT(SETTING(TEMP_DOWNLOAD_DIRECTORY));
-	if(WinUtil::browseDirectory(dir, m_hWnd))
+	if(WinUtil::browseDirectory(dir, handle()))
 	{
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
 			dir += '\\';
 
-		SetDlgItemText(IDC_TEMP_DOWNLOAD_DIRECTORY, dir.c_str());
+		::SetDlgItemText(handle(), IDC_TEMP_DOWNLOAD_DIRECTORY, dir.c_str());
 	}
-	return 0;
 }
 
-LRESULT DownloadPage::onClickedListConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void DownloadPage::handleConfigHubLists(WidgetButtonPtr) {
+#ifdef PORT_ME
 	PublicHubListDlg dlg;
 	dlg.DoModal(m_hWnd);
-	return 0;
+#endif
 }
+
+#ifdef PORT_ME
 
 LRESULT DownloadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_DOWNLOADPAGE);

@@ -48,6 +48,12 @@ SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : SmartWin::Widget(pare
 }
 
 bool SettingsDialog::initDialog() {
+	WidgetButtonPtr button = subclassButton(IDOK);
+	button->onClicked(&SettingsDialog::handleOKClicked);
+
+	button = subclassButton(IDCANCEL);
+	button->onClicked(&SettingsDialog::handleCancelClicked);
+
 	pageTree = subclassTreeView(IDC_SETTINGS_PAGES);
 	pageTree->onSelectionChanged(&SettingsDialog::selectionChanged);
 	
@@ -73,7 +79,10 @@ bool SettingsDialog::initDialog() {
 }
 
 SettingsDialog::~SettingsDialog() {
+#ifdef PORT_ME
+	// crashes...
 	std::for_each(pages.begin(), pages.end(), DeleteFunction());
+#endif
 }
 
 int SettingsDialog::run() {
@@ -83,6 +92,15 @@ int SettingsDialog::run() {
 void SettingsDialog::addPage(const tstring& title, PropPage* page) {
 	pages.push_back(page);
 	createTree(title, TVI_ROOT, page);
+}
+
+void SettingsDialog::handleOKClicked(WidgetButtonPtr) {
+	write();
+	endDialog(IDOK);
+}
+
+void SettingsDialog::handleCancelClicked(WidgetButtonPtr) {
+	endDialog(IDCANCEL);
 }
 
 void SettingsDialog::selectionChanged(WidgetTreeViewPtr) {
@@ -185,10 +203,4 @@ PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertyShee
 	m_psh.dwFlags &= ~PSH_HASHELP;
 }
 
-LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
-{
-	write();
-	bHandled = FALSE;
-	return TRUE;
-}
 #endif

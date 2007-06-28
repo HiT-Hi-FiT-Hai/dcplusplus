@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,73 +16,61 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(COMMAND_DLG_H)
-#define COMMAND_DLG_H
+#ifndef DCPLUSPLUS_WIN32_COMMAND_DLG_H
+#define DCPLUSPLUS_WIN32_COMMAND_DLG_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include <client/Util.h>
 
-class CommandDlg : public CDialogImpl<CommandDlg>
+class CommandDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, CommandDlg, SmartWin::MessageMapPolicyModalDialogWidget>
 {
-	CEdit ctrlName;
-	CEdit ctrlCommand;
-	CEdit ctrlHub;
-	CEdit ctrlNick;
-	CButton ctrlSeparator;
-	CButton ctrlRaw;
-	CButton ctrlChat;
-	CButton ctrlPM;
-	CButton ctrlHubMenu;
-	CButton ctrlUserMenu;
-	CButton ctrlSearchMenu;
-	CButton ctrlFilelistMenu;
-	CButton ctrlOnce;
-	CEdit ctrlResult;
-
 public:
+	CommandDlg(SmartWin::Widget* parent, int type_ = 0, int ctx_ = 0, const tstring& name_ = Util::emptyStringT, const tstring& command_ = Util::emptyStringT, const tstring& hub_ = Util::emptyStringT);
+	virtual ~CommandDlg();
+
+	int run() { return createDialog(IDD_USER_COMMAND); }
+
+#ifdef PORT_ME
+	BEGIN_MSG_MAP(CommandDlg)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
+	END_MSG_MAP()
+
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+#endif
+
+	int getType() { return type; }
+	int getCtx() { return ctx; }
+	tstring getName() { return name; }
+	tstring getCommand() { return command; }
+	tstring getHub() { return hub; }
+
+private:
+	WidgetRadioButtonPtr separator, raw, chat, PM;
+	WidgetCheckBoxPtr hubMenu, userMenu, searchMenu, fileListMenu;
+	WidgetTextBoxPtr nameBox, commandBox, hubBox, nick;
+	WidgetCheckBoxPtr once;
+	WidgetTextBoxPtr result;
+	WidgetCheckBoxPtr openHelp;
+
 	int type;
 	int ctx;
 	tstring name;
 	tstring command;
 	tstring hub;
 
-	enum { IDD = IDD_USER_COMMAND };
+	bool handleInitDialog();
+	void handleFocus();
+	void handleTypeChanged(WidgetRadioButtonPtr);
 
-	BEGIN_MSG_MAP(CommandDlg)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
-		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-		COMMAND_ID_HANDLER(IDHELP, onHelpCmd)
-		COMMAND_ID_HANDLER(IDC_SETTINGS_SEPARATOR, onType)
-		COMMAND_ID_HANDLER(IDC_SETTINGS_RAW, onType)
-		COMMAND_ID_HANDLER(IDC_SETTINGS_CHAT, onType)
-		COMMAND_ID_HANDLER(IDC_SETTINGS_PM, onType)
-		COMMAND_HANDLER(IDC_COMMAND, EN_CHANGE, onChange)
-		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onChange)
-	END_MSG_MAP()
+	typedef SmartWin::WidgetTextBox<CommandDlg, SmartWin::MessageMapPolicyModalDialogWidget>* TextBoxMessageType;
+	HRESULT handleTextChanged(TextBoxMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/);
 
-	CommandDlg() : type(0), ctx(0) { }
+	void handleOKClicked(WidgetButtonPtr);
+	void handleCancelClicked(WidgetButtonPtr);
+	void handleHelpClicked(WidgetButtonPtr);
 
-	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlName.SetFocus();
-		return FALSE;
-	}
-
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelpCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onType(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-private:
 	void updateType();
 	void updateCommand();
 	void updateControls();
-	void updateContext();
 };
 
-#endif // !defined(COMMAND_DLG_H)
+#endif // !defined(DCPLUSPLUS_WIN32_COMMAND_DLG_H)
