@@ -184,7 +184,7 @@ private:
 	void handleCopyNick(WidgetMenuPtr, unsigned);
 	void handleRemove(WidgetMenuPtr, unsigned);
 
-	WidgetPopupMenuPtr makeContextMenu(ItemInfo* ii);
+	WidgetMenuPtr makeContextMenu(ItemInfo* ii);
 
 	WidgetTransfersPtr getUserList() { return transfers; }
 	

@@ -1,8 +1,6 @@
 #ifndef AspectAdapter_h_
 #define AspectAdapter_h_
 
-#include "boost.h"
-
 namespace SmartWin {
 
 /**

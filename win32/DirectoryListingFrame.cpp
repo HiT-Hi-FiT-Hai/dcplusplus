@@ -353,8 +353,8 @@ void DirectoryListingFrame::setWindowTitle() {
 		setText(error.c_str());
 }
 
-DirectoryListingFrame::WidgetPopupMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
-	WidgetPopupMenuPtr menu = createPopupMenu();
+DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
+	WidgetMenuPtr menu = createMenu(true);
 	
 	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), &DirectoryListingFrame::handleDownload);
 	addTargets(menu, ii);
@@ -375,39 +375,37 @@ DirectoryListingFrame::WidgetPopupMenuPtr DirectoryListingFrame::makeSingleMenu(
 		menu->appendItem(IDC_GO_TO_DIRECTORY, TSTRING(GO_TO_DIRECTORY), &DirectoryListingFrame::handleGoToDirectory);
 	}
 	
+	addUserCommands(menu);
+	menu->setDefaultItem(IDC_DOWNLOAD);
+	return menu;
+}
+
+DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
+	WidgetMenuPtr menu = createMenu(true);
+	
+	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), &DirectoryListingFrame::handleDownload);
+	addTargets(menu);
+	addUserCommands(menu);
+	
 #ifdef PORT_ME
 	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 #endif
 	return menu;
 }
 
-DirectoryListingFrame::WidgetPopupMenuPtr DirectoryListingFrame::makeMultiMenu() {
-	WidgetPopupMenuPtr menu = createPopupMenu();
-	
-	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), &DirectoryListingFrame::handleDownload);
-	addTargets(menu);
-
-#ifdef PORT_ME
-	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
-#endif
-	return menu;
-}
-
-DirectoryListingFrame::WidgetPopupMenuPtr DirectoryListingFrame::makeDirMenu() {
-	WidgetPopupMenuPtr menu = createPopupMenu();
+DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeDirMenu() {
+	WidgetMenuPtr menu = createMenu(true);
 	
 	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), &DirectoryListingFrame::handleDownload);
 	addTargets(menu);
 	return menu;
 }
 
-void DirectoryListingFrame::addUserCommands(const WidgetPopupMenuPtr& parent) {
-#ifdef PORT_ME
-	prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, ClientManager::getInstance()->getHubs(dl->getUser()->getCID()));
-#endif
+void DirectoryListingFrame::addUserCommands(const WidgetMenuPtr& parent) {
+	prepareMenu(parent, UserCommand::CONTEXT_FILELIST, ClientManager::getInstance()->getHubs(dl->getUser()->getCID()));
 }
 
-void DirectoryListingFrame::addTargets(const WidgetPopupMenuPtr& parent, ItemInfo* ii) {
+void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii) {
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_TO));
 	
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
@@ -446,7 +444,7 @@ void DirectoryListingFrame::addTargets(const WidgetPopupMenuPtr& parent, ItemInf
 HRESULT DirectoryListingFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	
-	WidgetPopupMenuPtr contextMenu;
+	WidgetMenuPtr contextMenu;
 	if(reinterpret_cast<HWND>(wParam) == files->handle() && files->hasSelection()) {
 		if(pt.x == -1 && pt.y == -1) {
 			pt = files->getContextMenuPos();
@@ -944,6 +942,50 @@ void DirectoryListingFrame::findFile(bool findNext)
 	}
 }
 
+void DirectoryListingFrame::runUserCommand(const UserCommand& uc) {
+	if(!WinUtil::getUCParams(this, uc, ucLineParams))
+		return;
+
+	StringMap ucParams = ucLineParams;
+
+	set<UserPtr> users;
+
+	int sel = -1;
+	while((sel = files->getNextItem(sel, LVNI_SELECTED)) != -1) {
+		ItemInfo* ii = files->getItemData(sel);
+		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
+			if(users.find(dl->getUser()) != users.end())
+				continue;
+			users.insert(dl->getUser());
+		}
+		if(!dl->getUser()->isOnline())
+			return;
+		ucParams["fileTR"] = "NONE";
+		if(ii->type == ItemInfo::FILE) {
+			ucParams["type"] = "File";
+			ucParams["fileFN"] = dl->getPath(ii->file) + ii->file->getName();
+			ucParams["fileSI"] = Util::toString(ii->file->getSize());
+			ucParams["fileSIshort"] = Util::formatBytes(ii->file->getSize());
+			ucParams["fileTR"] = ii->file->getTTH().toBase32();
+		} else {
+			ucParams["type"] = "Directory";
+			ucParams["fileFN"] = dl->getPath(ii->dir) + ii->dir->getName();
+			ucParams["fileSI"] = Util::toString(ii->dir->getTotalSize());
+			ucParams["fileSIshort"] = Util::formatBytes(ii->dir->getTotalSize());
+		}
+
+		// compatibility with 0.674 and earlier
+		ucParams["file"] = ucParams["fileFN"];
+		ucParams["filesize"] = ucParams["fileSI"];
+		ucParams["filesizeshort"] = ucParams["fileSIshort"];
+		ucParams["tth"] = ucParams["fileTR"];
+
+		StringMap tmp = ucParams;
+		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
+	}
+}
+
+
 #ifdef PORT_ME
 
 LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -1015,50 +1057,6 @@ LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		}
 	}
 	return 0;
-}
-
-void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
-		return;
-
-	StringMap ucParams = ucLineParams;
-
-	set<User::Ptr> nicks;
-
-	int sel = -1;
-	while((sel = ctrlList.GetNextItem(sel, LVNI_SELECTED)) != -1) {
-		ItemInfo* ii = ctrlList.getItemData(sel);
-		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
-			if(nicks.find(dl->getUser()) != nicks.end())
-				continue;
-			nicks.insert(dl->getUser());
-		}
-		if(!dl->getUser()->isOnline())
-			return;
-		ucParams["fileTR"] = "NONE";
-		if(ii->type == ItemInfo::FILE) {
-			ucParams["type"] = "File";
-			ucParams["fileFN"] = dl->getPath(ii->file) + ii->file->getName();
-			ucParams["fileSI"] = Util::toString(ii->file->getSize());
-			ucParams["fileSIshort"] = Util::formatBytes(ii->file->getSize());
-			ucParams["fileTR"] = ii->file->getTTH().toBase32();
-		} else {
-			ucParams["type"] = "Directory";
-			ucParams["fileFN"] = dl->getPath(ii->dir) + ii->dir->getName();
-			ucParams["fileSI"] = Util::toString(ii->dir->getTotalSize());
-			ucParams["fileSIshort"] = Util::formatBytes(ii->dir->getTotalSize());
-		}
-
-		// compatibility with 0.674 and earlier
-		ucParams["file"] = ucParams["fileFN"];
-		ucParams["filesize"] = ucParams["fileSI"];
-		ucParams["filesizeshort"] = ucParams["fileSIshort"];
-		ucParams["tth"] = ucParams["fileTR"];
-
-		StringMap tmp = ucParams;
-		User::Ptr tmpPtr = dl->getUser();
-		ClientManager::getInstance()->userCommand(dl->getUser(), uc, tmp, true);
-	}
 }
 
 #endif

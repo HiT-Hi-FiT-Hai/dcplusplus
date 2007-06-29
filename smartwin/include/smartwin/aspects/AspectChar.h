@@ -29,7 +29,6 @@
 #ifndef AspectChar_h
 #define AspectChar_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
 
@@ -40,7 +39,7 @@ namespace SmartWin
 
 template<typename EventHandlerClass>
 struct AspectCharDispatcher {
-	typedef boost::function<bool (int)> F;
+	typedef std::tr1::function<bool (int)> F;
 	
 	AspectCharDispatcher(const F& f_, EventHandlerClass* parent_) : f(f_), parent(parent_) { }
 	

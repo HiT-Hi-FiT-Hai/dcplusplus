@@ -4,7 +4,7 @@ Import('dev source_path')
 
 env, target, sources = dev.prepare_build(source_path, 'DCPlusPlus')
 
-if int(ARGUMENTS.get('gch', 0)):
+if 'gcc' in env['TOOLS']:
     env['Gch'] = env.Gch('stdafx.h')[0]
 
 res = env.RES(dev.get_sources(source_path, '*.rc'))
@@ -13,7 +13,6 @@ sources += res
 
 env.Prepend(LIBS=["comctl32", "ws2_32", "ole32", "gdi32", "comdlg32", "winmm"])
 env.Append(CPPPATH=['#/yassl/include', "#/smartwin/include", "#/"])
-env.Append(LIBPATH=["#/smartwin/lib"])
 
-ret = env.Program(target, [sources, dev.client, dev.zlib, dev.bzip2, dev.yassl, dev.smartwin])
+ret = env.Program(target, [sources, dev.boost, dev.client, dev.zlib, dev.bzip2, dev.yassl, dev.smartwin])
 Return('ret')

@@ -30,8 +30,8 @@
 #define Icon_h
 
 #include "WindowsHeaders.h"
-#include "boost.h"
 #include "SmartUtil.h"
+#include <memory>
 
 namespace SmartWin
 {
@@ -44,7 +44,7 @@ class Icon;
 /// Icon pointer
 /** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
   */
-typedef boost::shared_ptr< Icon > IconPtr;
+typedef std::tr1::shared_ptr< Icon > IconPtr;
 
 /// Class encapsulating an HICON and ensuring that the contained HICON is freed
 /// upon destruction of this object

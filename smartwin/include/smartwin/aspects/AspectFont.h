@@ -29,7 +29,6 @@
 #ifndef AspectFont_h
 #define AspectFont_h
 
-#include "boost.h"
 #include "../Widget.h"
 #include "../TrueWindow.h"
 #include "../Font.h"
@@ -87,7 +86,7 @@ template< class WidgetType >
 FontPtr AspectFont< WidgetType >::getFont()
 {
 	HFONT font = ( HFONT )::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_GETFONT, 0, 0 );
-	boost::shared_ptr< Font > retVal( new Font( font, false ) );
+	std::tr1::shared_ptr< Font > retVal( new Font( font, false ) );
 	return retVal;
 }
 

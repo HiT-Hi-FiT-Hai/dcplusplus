@@ -89,7 +89,7 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 
 	searches->onRaw(&SpyFrame::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
 
-	contextMenu = createPopupMenu();
+	contextMenu = createMenu(true);
 	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), &SpyFrame::handleSearch);
 	searches->onRaw(&SpyFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
 

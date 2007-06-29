@@ -240,9 +240,9 @@ private:
 	void handleCopyMagnet(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 	void handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 
-	WidgetPopupMenuPtr makeMenu();
-	void addTargetMenu(const WidgetPopupMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
-	void addTargetDirMenu(const WidgetPopupMenuPtr& parent, const StringPairList& favoriteDirs);
+	WidgetMenuPtr makeMenu();
+	void addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
+	void addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs);
 
 	WidgetResultsPtr getUserList() { return results; }
 	

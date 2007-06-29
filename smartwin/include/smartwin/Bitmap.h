@@ -26,12 +26,12 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef Bimap_h
-#define Bimap_h
+#ifndef Bitmap_h
+#define Bitmap_h
 
 #include "WindowsHeaders.h"
-#include "boost.h"
 #include "SmartUtil.h"
+#include <memory>
 
 namespace SmartWin
 {
@@ -46,7 +46,7 @@ class Bitmap;
 /// Bitmap pointer
 /** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
   */
-typedef boost::shared_ptr< Bitmap > BitmapPtr;
+typedef std::tr1::shared_ptr< Bitmap > BitmapPtr;
 
 /// Class encapsulating an HBITMAP and ensuring that the contained HBITMAP is freed
 /// upon destruction of this object

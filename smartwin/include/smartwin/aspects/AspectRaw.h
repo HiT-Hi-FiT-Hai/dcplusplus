@@ -29,7 +29,6 @@
 #ifndef AspectRaw_h
 #define AspectRaw_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
 
@@ -38,7 +37,7 @@ namespace SmartWin
 // begin namespace SmartWin
 
 struct AspectRawDispatcher {
-	typedef boost::function<HRESULT (LPARAM, WPARAM)> F;
+	typedef std::tr1::function<HRESULT (LPARAM, WPARAM)> F;
 
 	AspectRawDispatcher(const F& f_) : f(f_) { }
 	

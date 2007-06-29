@@ -31,7 +31,6 @@
 
 #ifndef WINCE // Not supported on WINCE platform
 
-#include "boost.h"
 #include "../SignalParams.h"
 #include <vector>
 #include <shellapi.h>
@@ -40,7 +39,7 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 struct AspectDragDropDispatcher {
-	typedef boost::function<void (std::vector< SmartUtil::tstring>, Point )> F;
+	typedef std::tr1::function<void (std::vector< SmartUtil::tstring>, Point )> F;
 
 	AspectDragDropDispatcher(const F& f_) : f(f_) { }
 	

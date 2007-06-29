@@ -86,6 +86,8 @@ class User;
 typedef Pointer<User> UserPtr;
 typedef std::vector<UserPtr> UserList;
 
+class UserCommand;
+
 class UserConnection;
 typedef UserConnection* UserConnectionPtr;
 typedef std::vector<UserConnectionPtr> UserConnectionList;

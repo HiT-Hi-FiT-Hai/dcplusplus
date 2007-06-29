@@ -29,7 +29,6 @@
 #ifndef AspectEraseBackground_h
 #define AspectEraseBackground_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 
 namespace SmartWin
@@ -37,7 +36,7 @@ namespace SmartWin
 // begin namespace SmartWin
 
 struct AspectEraseBackgroundDispatcher {
-	typedef boost::function<void (Canvas&)> F;
+	typedef std::tr1::function<void (Canvas&)> F;
 	
 	AspectEraseBackgroundDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
 

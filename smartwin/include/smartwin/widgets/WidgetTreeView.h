@@ -59,7 +59,7 @@ class WidgetCreator;
 
 struct TreeViewDispatcher
 {
-	typedef boost::function<bool (const SmartUtil::tstring&)> F;
+	typedef std::tr1::function<bool (const SmartUtil::tstring&)> F;
 
 	TreeViewDispatcher(const F& f_) : f(f_) { }
 

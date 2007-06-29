@@ -29,7 +29,6 @@
 #ifndef AspectUpdate_h
 #define AspectUpdate_h
 
-#include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"

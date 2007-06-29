@@ -9,7 +9,6 @@ env.Append(CPPPATH=["../include"])
 ret = []
 
 ret += env.StaticLibrary(target, sources)
-ret += dev.build('boost/signals/')
 
 Return('ret')
 

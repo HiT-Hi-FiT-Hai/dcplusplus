@@ -31,6 +31,7 @@
 #include "../include/smartwin/BasicTypes.h"
 #include "../include/smartwin/widgets/WidgetWindow.h"
 #include "assert.h"
+#include <boost/lexical_cast.hpp>
 
 using namespace SmartWin;
 

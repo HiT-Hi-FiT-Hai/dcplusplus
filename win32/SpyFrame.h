@@ -73,7 +73,7 @@ private:
 	WidgetCheckBoxPtr ignoreTTH;
 	bool bIgnoreTTH;
 
-	WidgetPopupMenuPtr contextMenu;
+	WidgetMenuPtr contextMenu;
 
 	int total, cur, perSecond[AVG_TIME];
 	tstring searchString;

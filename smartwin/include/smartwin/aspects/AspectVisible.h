@@ -29,7 +29,6 @@
 #ifndef AspectVisible_h
 #define AspectVisible_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 
 namespace SmartWin
@@ -38,7 +37,7 @@ namespace SmartWin
 
 struct AspectVisibleDispatcher
 {
-	typedef boost::function<void (bool)> F;
+	typedef std::tr1::function<void (bool)> F;
 
 	AspectVisibleDispatcher(const F& f_) : f(f_) { }
 

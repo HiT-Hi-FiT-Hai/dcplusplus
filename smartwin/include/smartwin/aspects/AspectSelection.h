@@ -29,7 +29,6 @@
 #ifndef AspectSelection_h
 #define AspectSelection_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 
 namespace SmartWin
@@ -38,7 +37,7 @@ namespace SmartWin
 template<typename WidgetType>
 struct AspectSelectionDispatcher
 {
-	typedef boost::function<void ()> F;
+	typedef std::tr1::function<void ()> F;
 	
 	AspectSelectionDispatcher(const F& f_) : f(f_) { }
 

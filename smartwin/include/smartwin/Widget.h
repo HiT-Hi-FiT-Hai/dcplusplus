@@ -30,7 +30,6 @@
 #define Widget_h
 
 #include "WindowsHeaders.h"
-#include "boost.h"
 #include "SmartUtil.h"
 #include "CallbackFuncPrototypes.h"
 #include "Message.h"
@@ -38,6 +37,8 @@
 #include "Threads.h"
 #include <vector>
 #include <map>
+#include <memory>
+#include <boost/noncopyable.hpp>
 
 namespace SmartWin
 {

@@ -29,7 +29,6 @@
 #ifndef AspectScrollable_h
 #define AspectScrollable_h
 
-#include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"

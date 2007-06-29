@@ -58,7 +58,7 @@ class WidgetCreator;
 
 struct WidgetTabSheetDispatcher
 {
-	typedef boost::function<bool (unsigned)> F;
+	typedef std::tr1::function<bool (unsigned)> F;
 
 	WidgetTabSheetDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 

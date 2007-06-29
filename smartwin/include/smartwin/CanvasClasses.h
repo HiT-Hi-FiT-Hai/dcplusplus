@@ -32,7 +32,6 @@
 #include "Widget.h"
 #include "BasicTypes.h"
 #include "Bitmap.h"
-#include "boost.h"
 
 namespace SmartWin
 {
@@ -883,7 +882,7 @@ private:
 /// Brush pointer
 /** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
   */
-typedef boost::shared_ptr< Brush > BrushPtr;
+typedef std::tr1::shared_ptr< Brush > BrushPtr;
 
 // end namespace SmartWin
 }

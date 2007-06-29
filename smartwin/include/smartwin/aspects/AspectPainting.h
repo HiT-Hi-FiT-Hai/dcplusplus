@@ -29,7 +29,6 @@
 #ifndef AspectPainting_h
 #define AspectPainting_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 #include "../CanvasClasses.h"
 
@@ -38,7 +37,7 @@ namespace SmartWin
 // begin namespace SmartWin
 
 struct AspectPaintingDispatcher {
-	typedef boost::function<void (Canvas&)> F;
+	typedef std::tr1::function<void (Canvas&)> F;
 	
 	AspectPaintingDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
 

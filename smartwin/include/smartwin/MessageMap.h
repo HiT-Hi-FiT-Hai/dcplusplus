@@ -30,7 +30,6 @@
 #define MessageMap_h
 
 #include <list>
-#include "boost.h"
 #include "WindowsHeaders.h"
 #include "Application.h"
 #include "MessageMapPolicyClasses.h"
@@ -40,7 +39,6 @@
 #include "Command.h"
 #include "widgets/WidgetMenu.h"
 #include "widgets/WidgetMenuExtended.h"
-#include "SigSlots.h"
 #include "MessageMapBase.h"
 #include "CanvasClasses.h"
 #include <vector>
@@ -217,10 +215,6 @@ public:
 	/// \ingroup eventsSignatures
 	/// Typedef of a static/global function taking a pointer to the original class and a Canvas & returning void
 	typedef void ( * voidFunctionTakingCanvas )( EventHandlerClass *, Canvas & );
-
-	// Typedefs needed for creating Command objects to pass into
-	typedef boost::tuple< voidFunctionTakingCommand, CommandPtr > TupleCommandFunctionGlobal;
-	typedef boost::tuple< itsVoidFunctionTakingCommand, CommandPtr > TupleCommandFunctionThis;
 
 protected:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance

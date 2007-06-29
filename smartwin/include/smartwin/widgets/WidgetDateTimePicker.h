@@ -59,7 +59,7 @@ class WidgetCreator;
 
 struct AspectDateTimePickerDispatcher
 {
-	typedef boost::function<void (const SYSTEMTIME &)> F;
+	typedef std::tr1::function<void (const SYSTEMTIME &)> F;
 
 	AspectDateTimePickerDispatcher(const F& f_) : f(f_) { }
 

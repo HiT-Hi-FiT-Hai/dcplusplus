@@ -31,7 +31,6 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include "boost.h"
 #include "SmartUtil.h"
 #include "../Widget.h"
 #include "../MessageMapControl.h"
@@ -55,7 +54,7 @@ class WidgetCreator;
 
 struct ToolbarDispatcher
 {
-	typedef boost::function<void (unsigned)> F;
+	typedef std::tr1::function<void (unsigned)> F;
 
 	ToolbarDispatcher(const F& f_) : f(f_) { }
 

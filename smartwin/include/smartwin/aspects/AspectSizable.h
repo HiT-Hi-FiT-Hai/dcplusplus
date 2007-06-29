@@ -29,17 +29,18 @@
 #ifndef AspectSizable_h
 #define AspectSizable_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 #include "../Place.h"
 #include "AspectGetParent.h"
 #include "AspectAdapter.h"
+#include <functional>
+#include <boost/cast.hpp>
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 struct AspectSizeDispatcher {
-	typedef boost::function<void (const WidgetSizedEventResult & )> F;
+	typedef std::tr1::function<void (const WidgetSizedEventResult & )> F;
 
 	AspectSizeDispatcher(const F& f_) : f(f_) { }
 
@@ -52,7 +53,7 @@ struct AspectSizeDispatcher {
 };
 
 struct AspectMoveDispatcher {
-	typedef boost::function<void (const Point & )> F;
+	typedef std::tr1::function<void (const Point & )> F;
 
 	AspectMoveDispatcher(const F& f_) : f(f_) { }
 

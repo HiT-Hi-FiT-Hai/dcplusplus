@@ -27,8 +27,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "../include/smartwin/WindowsHeaders.h"
-#include "boost.h"
 #include "../include/smartwin/LibraryLoader.h"
+#include <utility>
 
 namespace SmartWin
 {
@@ -43,12 +43,12 @@ LibraryLoader::~LibraryLoader()
 		return;
 
 	// Decreasing reference count
-	LibraryLoader::itsLibrariesLoaded[itsLibraryName].get< 0 >() -= 1;
+	LibraryLoader::itsLibrariesLoaded[itsLibraryName].first -= 1;
 
 	// Checking to see if last instance and if so freeing library and removing map entry
-	if ( 0 == LibraryLoader::itsLibrariesLoaded[itsLibraryName].get< 0 >() )
+	if ( 0 == LibraryLoader::itsLibrariesLoaded[itsLibraryName].first )
 	{
-		::FreeLibrary( LibraryLoader::itsLibrariesLoaded[itsLibraryName].get< 1 >() );
+		::FreeLibrary( LibraryLoader::itsLibrariesLoaded[itsLibraryName].second );
 		LibraryLoader::itsLibrariesLoaded.erase( itsLibraryName );
 	}
 }
@@ -69,7 +69,7 @@ void LibraryLoader::load( const SmartUtil::tstring & libraryName )
 
 	hasCalledLoad = true;
 
-	std::map< SmartUtil::tstring, boost::tuple< int, HMODULE > >::const_iterator exists = LibraryLoader::itsLibrariesLoaded.find( libraryName );
+	std::map< SmartUtil::tstring, std::pair< int, HMODULE > >::const_iterator exists = LibraryLoader::itsLibrariesLoaded.find( libraryName );
 	if ( LibraryLoader::itsLibrariesLoaded.end() == exists )
 	{
 		// Loading library
@@ -79,12 +79,12 @@ void LibraryLoader::load( const SmartUtil::tstring & libraryName )
 		xAssert( itsHMod != 0, _T( "Error while trying to load library or dll!" ) );
 
 		// SUCCESS!
-		itsLibrariesLoaded[libraryName].get< 1 >() = itsHMod;
-		itsLibrariesLoaded[libraryName].get< 0 >() = 1;
+		itsLibrariesLoaded[libraryName].second = itsHMod;
+		itsLibrariesLoaded[libraryName].first = 1;
 	}
 	else
 	{
-		itsLibrariesLoaded[libraryName].get< 0 >() += 1;
+		itsLibrariesLoaded[libraryName].first += 1;
 	}
 }
 
@@ -117,7 +117,7 @@ LibraryLoader::LibraryLoader()
 
 // Static members definitions!
 Utilities::CriticalSection LibraryLoader::itsCs;
-std::map< SmartUtil::tstring, boost::tuple< int, HMODULE > > LibraryLoader::itsLibrariesLoaded;
+std::map< SmartUtil::tstring, std::pair< int, HMODULE > > LibraryLoader::itsLibrariesLoaded;
 
 // end namespace SmartWin
 }

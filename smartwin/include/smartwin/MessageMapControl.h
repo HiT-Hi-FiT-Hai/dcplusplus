@@ -29,7 +29,6 @@
 #ifndef MessageMapControl_h
 #define MessageMapControl_h
 
-#include "boost.h"
 #include "WindowsHeaders.h"
 #include "MessageMapPolicyClasses.h"
 #include "Widget.h"
@@ -38,7 +37,6 @@
 #include "MessageMapBase.h"
 #include "CanvasClasses.h"
 #include "SignalParams.h"
-#include "SigSlots.h"
 
 namespace SmartWin
 {

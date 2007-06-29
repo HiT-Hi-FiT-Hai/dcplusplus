@@ -30,7 +30,7 @@
 #define StringConversion_h
 
 #include <string>
-#include <boost.h>
+#include <boost/scoped_array.hpp>
 #include "UtilSystemHeaders.h"
 #include "xCeptionSmartUtilities.h"
 

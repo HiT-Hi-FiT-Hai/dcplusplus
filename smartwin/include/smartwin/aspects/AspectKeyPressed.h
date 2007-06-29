@@ -29,10 +29,11 @@
 #ifndef AspectKeyPressed_h
 #define AspectKeyPressed_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 
 #include "AspectAdapter.h"
+#include <functional>
+#include <boost/cast.hpp>
 
 namespace SmartWin
 {
@@ -40,7 +41,7 @@ namespace SmartWin
 
 struct AspectKeyPressedDispatcher
 {
-	typedef boost::function<bool (int)> F;
+	typedef std::tr1::function<bool (int)> F;
 
 	AspectKeyPressedDispatcher(const F& f_) : f(f_) { }
 

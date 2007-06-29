@@ -31,7 +31,6 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include "boost.h"
 #include "SmartUtil.h"
 #include "../Widget.h"
 #include "../MessageMapControl.h"

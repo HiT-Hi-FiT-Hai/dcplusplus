@@ -22,6 +22,7 @@
 
 #include "WinUtil.h"
 #include "resource.h"
+#include "LineDlg.h"
 
 #include <client/SettingsManager.h>
 #include <client/ShareManager.h>
@@ -32,6 +33,7 @@
 #include <client/StringTokenizer.h>
 #include <client/version.h>
 #include <client/File.h>
+#include <client/UserCommand.h>
 
 tstring WinUtil::tth;
 HBRUSH WinUtil::bgBrush = NULL;
@@ -536,6 +538,30 @@ void WinUtil::setClipboard(const tstring& str) {
 #endif
 }
 
+bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, StringMap& sm) throw() {
+	string::size_type i = 0;
+	StringMap done;
+
+	while( (i = uc.getCommand().find("%[line:", i)) != string::npos) {
+		i += 7;
+		string::size_type j = uc.getCommand().find(']', i);
+		if(j == string::npos)
+			break;
+
+		string name = uc.getCommand().substr(i, j-i);
+		if(done.find(name) == done.end()) {
+			LineDlg dlg(parent, Text::toT(uc.getName()), Text::toT(name), Text::toT(sm["line:" + name]));
+			if(dlg.run() == IDOK) {
+				done[name] = sm["line:" + name] = Text::fromT(dlg.getLine());
+			} else {
+				return false;
+			}
+		}
+		i = j + 1;
+	}
+	return true;
+}
+
 
 #ifdef PORT_ME
 #include "Resource.h"
@@ -696,35 +722,7 @@ void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1
 	}
 }
 
-bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) throw() {
-	string::size_type i = 0;
-	StringMap done;
-
-	while( (i = uc.getCommand().find("%[line:", i)) != string::npos) {
-		i += 7;
-		string::size_type j = uc.getCommand().find(']', i);
-		if(j == string::npos)
-			break;
-
-		string name = uc.getCommand().substr(i, j-i);
-		if(done.find(name) == done.end()) {
-			LineDlg dlg;
-			dlg.title = Text::toT(uc.getName());
-			dlg.description = Text::toT(name);
-			dlg.line = Text::toT(sm["line:" + name]);
-			if(dlg.DoModal(parent) == IDOK) {
-				sm["line:" + name] = Text::fromT(dlg.line);
-				done[name] = Text::fromT(dlg.line);
-			} else {
-				return false;
-			}
-		}
-		i = j + 1;
-	}
-	return true;
-}
-
- void WinUtil::registerDchubHandler() {
+void WinUtil::registerDchubHandler() {
 	HKEY hk;
 	TCHAR Buf[512];
 	tstring app = _T("\"") + Text::toT(getAppName()) + _T("\" %1");

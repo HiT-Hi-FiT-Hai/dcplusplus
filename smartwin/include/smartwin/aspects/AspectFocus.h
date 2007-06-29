@@ -29,11 +29,11 @@
 #ifndef AspectFocus_h
 #define AspectFocus_h
 
-#include "boost.h"
-
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
+#include <boost/cast.hpp>
+#include <functional>
 
 namespace SmartWin
 {
@@ -42,7 +42,7 @@ namespace SmartWin
 class AspectFocusDispatcher
 {
 public:
-	typedef boost::function<void ()> F;
+	typedef std::tr1::function<void ()> F;
 	
 	AspectFocusDispatcher(const F& f_) : f(f_) { }
 

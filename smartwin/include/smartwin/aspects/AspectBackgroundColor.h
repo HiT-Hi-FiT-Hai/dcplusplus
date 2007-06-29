@@ -29,16 +29,16 @@
 #ifndef AspectBackgroundColor_h
 #define AspectBackgroundColor_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
+#include <boost/cast.hpp>
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
 struct AspectBackgroundColorDispatcher {
-	typedef boost::function<BrushPtr (Canvas&)> F;
+	typedef std::tr1::function<BrushPtr (Canvas&)> F;
 	
 	AspectBackgroundColorDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
 

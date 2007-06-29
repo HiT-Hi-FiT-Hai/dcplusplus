@@ -30,7 +30,6 @@
 #define RegKey_H
 
 #include "UtilSystemHeaders.h"
-#include <boost.h>
 #include <string.h>
 #include "tstring.h"
 #include "xCeptionSmartUtilities.h"

@@ -87,7 +87,7 @@ namespace SmartWin
   * this is with purpose to make the library easier to use and more transparent for
   * C#, Java and newbie developers. <br>
   * Some functions returns stack objects, e.g. createMenu which returns a
-  * boost::shared_ptr and createMessageBox which returns a stack object, these also
+  * std::tr1::shared_ptr and createMessageBox which returns a stack object, these also
   * should just get to "live their own life" and should not be tampered with in any
   * "memory ways".
   */
@@ -322,10 +322,10 @@ public:
 	WidgetTreeViewPtr subclassTreeView( unsigned id );
 
 	/// Creates a Menu and returns a pointer to it.
-	/** The returned object is of type boost::shared_ptr< WidgetMenu >, but you should use the typedef WidgetMenuPtr and not < br >
+	/** The returned object is of type std::tr1::shared_ptr< WidgetMenu >, but you should use the typedef WidgetMenuPtr and not < br >
 	  * the shared_ptr itself since this may change in future releases.
 	  */
-	WidgetMenuPtr createMenu();
+	WidgetMenuPtr createMenu(const typename WidgetMenu::Seed& cs = WidgetMenu::Seed());
 
 	/// Creates a Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -615,9 +615,9 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 
 template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetMenuPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMenu()
+WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMenu(const typename WidgetMenu::Seed & cs)
 {
-	return WidgetCreator< WidgetMenu >::create( this );
+	return WidgetCreator< WidgetMenu >::create( this, cs );
 }
 
 template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >

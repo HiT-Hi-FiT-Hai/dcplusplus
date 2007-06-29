@@ -32,7 +32,6 @@
 #include "SmartUtil.h"
 #include <memory>
 #include <typeinfo>
-#include "boost.h"
 
 namespace SmartWin
 {
@@ -118,7 +117,7 @@ private:
 /** Wraps up a Command to a Smart Pointer, help abstracts away the internals of the
   * library!
   */
-typedef boost::shared_ptr< Command > CommandPtr;
+typedef std::tr1::shared_ptr< Command > CommandPtr;
 
 // end namespace SmartWin
 }

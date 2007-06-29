@@ -151,7 +151,7 @@ HRESULT UsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 			pt = users->getContextMenuPos();
 		}
 
-		WidgetPopupMenuPtr menu = createPopupMenu();
+		WidgetMenuPtr menu = createMenu(true);
 		appendUserItems(menu);
 		menu->appendSeparatorItem();
 		menu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), &UsersFrame::handleProperties);

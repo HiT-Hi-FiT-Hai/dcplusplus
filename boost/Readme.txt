@@ -1,0 +1,3 @@
+This is a watered-down version of boost, with the parts that DC++/Smartwin needs...
+Essentially, all libraries that require compiling and are not used have been
+removed. 

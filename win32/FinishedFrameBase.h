@@ -91,7 +91,7 @@ protected:
 		items->onRaw(boost::bind(&ThisType::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
 		items->onRaw(boost::bind(&ThisType::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 
-		contextMenu = this->createPopupMenu();
+		contextMenu = this->createMenu(true);
 		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), boost::bind(&ThisType::handleViewAsText, this, _1));
 		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), boost::bind(&ThisType::handleOpenFile, this, _1));
 		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), boost::bind(&ThisType::handleOpenFolder, this, _1));
@@ -205,7 +205,7 @@ private:
 	typedef WidgetItems* WidgetItemsPtr;
 	WidgetItemsPtr items;
 
-	typename MDIChildType::WidgetPopupMenuPtr contextMenu;
+	typename MDIChildType::WidgetMenuPtr contextMenu;
 
 	int64_t totalBytes, totalTime;
 
@@ -256,7 +256,7 @@ private:
 					CShellContextMenu<T> shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
-					typename T::WidgetPopupMenuPtr pShellMenu = this->createPopupMenu();
+					typename T::WidgetMenuPtr pShellMenu = this->createMenu(true);
 					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), boost::bind(&ThisType::handleViewAsText, this, _1));
 					pShellMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), boost::bind(&ThisType::handleOpenFile, this, _1));
 					pShellMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), boost::bind(&ThisType::handleOpenFolder, this, _1));

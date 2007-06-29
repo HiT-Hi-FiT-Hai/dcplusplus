@@ -30,14 +30,13 @@
 #ifndef WidgetMenuExtended_h
 #define WidgetMenuExtended_h
 
-#include "boost.h"
 #include "../MessageMapControl.h"
 #include "../WindowsHeaders.h"
 #include "../aspects/AspectGetParent.h"
 #include "SmartUtil.h"
 #include "../CanvasClasses.h"
-#include "../StayAliveDeleter.h"
 #include <vector>
+#include <boost/cast.hpp>
 
 namespace SmartWin
 {
@@ -76,7 +75,7 @@ struct MenuItemData
   * Each Menu Item can have different colors and so on, use this smart pointer to set
   * those values!
   */
-typedef boost::shared_ptr< MenuItemData > MenuItemDataPtr;
+typedef std::tr1::shared_ptr< MenuItemData > MenuItemDataPtr;
 
 namespace private_
 {
@@ -413,7 +412,7 @@ public:
 		if ( menu->drawSidebar )
 		{
 			// get title font
-			boost::shared_ptr< Font > font = menu->itsTitleFont;
+			std::tr1::shared_ptr< Font > font = menu->itsTitleFont;
 
 			// get logical info for title font
 			::GetObject( font->getHandle(), sizeof( LOGFONT ), & lf );
@@ -712,7 +711,7 @@ public:
 			reinterpret_cast< typename WidgetType::menuExtendedVoidFunctionTakingUInt >( params.Function );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		func
 			( dynamic_cast< EventHandlerClass * >( 0 )
@@ -729,7 +728,7 @@ public:
 			reinterpret_cast< typename WidgetType::itsVoidMenuExtendedFunctionTakingUInt >( params.FunctionThis );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		( ( * boost::polymorphic_cast< EventHandlerClass * >( ptrMainParent ) ).*func )
 			( ptrThis
@@ -745,7 +744,7 @@ public:
 			reinterpret_cast< typename WidgetType::boolDrawItemFunction >( params.Function );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		// call the callback
 		bool handled = func
@@ -764,7 +763,7 @@ public:
 			reinterpret_cast< typename WidgetType::itsBoolDrawItemFunction >( params.FunctionThis );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		// call method
 		bool handled = ( ( * boost::polymorphic_cast< EventHandlerClass * >( params.This->getParent() ) ).*func )
@@ -782,7 +781,7 @@ public:
 			reinterpret_cast< typename WidgetType::boolMeasureItemFunction >( params.Function );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		// call the callback
 		bool handled = func
@@ -800,7 +799,7 @@ public:
 			reinterpret_cast< typename WidgetType::itsBoolMeasureItemFunction >( params.FunctionThis );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		// call method
 		bool handled = ( ( * boost::polymorphic_cast< EventHandlerClass * >( params.This->getParent() ) ).*func )
@@ -817,7 +816,7 @@ public:
 			reinterpret_cast< typename WidgetType::voidPopupFunction >( params.Function );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		// call the callback
 		func
@@ -834,7 +833,7 @@ public:
 			reinterpret_cast< typename WidgetType::itsVoidPopupFunction >( params.FunctionThis );
 
 		StayAliveDeleter< WidgetType > deleter;
-		boost::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
+		std::tr1::shared_ptr< WidgetType > ptrThis( boost::polymorphic_cast< WidgetType * >( params.This ), deleter );
 
 		// call method
 		( ( * boost::polymorphic_cast< EventHandlerClass * >( params.This->getParent() ) ).*func )
@@ -872,7 +871,7 @@ class WidgetMenuExtendedPlatformImplementation< EventHandlerClass, MessageMapPol
 	friend class DefaultMenuRenderer< EventHandlerClass, WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > >;
 public:
 
-	typedef boost::shared_ptr< WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > > WidgetMenuExtendedPtr;
+	typedef std::tr1::shared_ptr< WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > > WidgetMenuExtendedPtr;
 	typedef MessageMapControl< EventHandlerClass, WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > MessageMapType;
 	typedef WidgetMenuExtendedDispatcher< EventHandlerClass, WidgetMenuExtended< EventHandlerClass, MessageMapPolicy >, MessageMapType > Dispatcher;
 

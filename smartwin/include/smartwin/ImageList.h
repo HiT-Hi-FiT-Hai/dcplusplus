@@ -30,7 +30,6 @@
 #define ImageList_h
 
 #include "WindowsHeaders.h"
-#include "boost.h"
 #include "SmartUtil.h"
 #include "Bitmap.h"
 #include "Icon.h"
@@ -46,7 +45,7 @@ class ImageList;
 /// ImageList pointer
 /** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
   */
-typedef boost::shared_ptr< ImageList > ImageListPtr;
+typedef std::tr1::shared_ptr< ImageList > ImageListPtr;
 
 /// Class encapsulating an HIMAGELIST and ensuring that the contained HIMAGELIST is
 /// freed upon destruction of this object

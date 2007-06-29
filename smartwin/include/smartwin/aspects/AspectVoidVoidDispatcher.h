@@ -29,15 +29,13 @@
 #ifndef AspectVoidVoidDispatcher_h
 #define AspectVoidVoidDispatcher_h
 
-#include "boost.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin
 
 struct AspectVoidVoidDispatcher
 {
-	typedef boost::function<void ()> F;
+	typedef std::tr1::function<void ()> F;
 	
 	AspectVoidVoidDispatcher(const F& f_) : f(f_) { }
 

@@ -49,7 +49,6 @@
 #endif
 
 #include "WindowsHeaders.h"
-#include "boost.h"
 #include "SmartUtil.h"
 #include "Application.h"
 #include "WidgetFactory.h"
@@ -99,5 +98,6 @@
 namespace sw = SmartWin;
 
 // 2005.05.03 was there 18427 lines of code in SmartWin
+// There are considerably less now I hope =) /arnetheduck
 
 #endif

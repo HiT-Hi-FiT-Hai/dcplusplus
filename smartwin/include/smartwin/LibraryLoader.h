@@ -34,6 +34,7 @@
 #include "WindowsHeaders.h"
 #include "xCeption.h"
 #include <map>
+#include <utility>
 
 namespace SmartWin
 {
@@ -118,7 +119,7 @@ private:
 	SmartUtil::tstring itsLibraryName;
 	HMODULE itsHMod;
 	static Utilities::CriticalSection itsCs;
-	static std::map< SmartUtil::tstring, boost::tuple< int, HMODULE > > itsLibrariesLoaded;
+	static std::map< SmartUtil::tstring, std::pair< int, HMODULE > > itsLibrariesLoaded;
 	bool hasCalledLoad;
 };
 

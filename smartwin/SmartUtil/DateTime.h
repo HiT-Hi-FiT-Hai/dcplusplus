@@ -29,7 +29,6 @@
 #ifndef DateTime_H
 #define DateTime_H
 
-#include <boost.h>
 #include <string.h>
 #include "UtilSystemHeaders.h"
 #include "TimeSpan.h"

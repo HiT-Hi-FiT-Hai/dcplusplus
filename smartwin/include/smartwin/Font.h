@@ -33,7 +33,7 @@
 #include "SmartUtil.h"
 #include "WindowObject.h"
 #include "xCeption.h"
-#include "boost.h"
+#include <memory>
 
 namespace SmartWin
 {
@@ -177,12 +177,12 @@ private:
 /// Font OBJECT type.
 /** Use this typedefed pointer to ensure compatibility in future versions of SmartWin++
   */
-typedef boost::shared_ptr< Font > FontPtr;
+typedef std::tr1::shared_ptr< Font > FontPtr;
 
 //TODO: shouldn't this be within #ifndef WINCE ... #endif
 /// \ingroup GlobalStuff
 /// Creates a Font from a StockId value and returns a pointer to it.
-/** The returned object is of type boost::shared_ptr< Font >, but you should use the
+/** The returned object is of type std::tr1::shared_ptr< Font >, but you should use the
   * typedef FontPtr and not <br>
   * the shared_ptr itself since this may change in future releases.
   */
@@ -190,7 +190,7 @@ FontPtr createFont( PredefinedFontTypes fontType );
 
 /// \ingroup GlobalStuff
 /// Creates a Font and returns a pointer to it.
-/** The returned object is of type boost::shared_ptr< Font >, but you should use the
+/** The returned object is of type std::tr1::shared_ptr< Font >, but you should use the
   * typedef FontPtr and not <br>
   * the shared_ptr itself since this may change in future releases.
   */

@@ -60,7 +60,7 @@ inline Target getTypedParentOrThrow( Source * source )
 }
 
 template< class Target, class Source >
-inline Target getTypedParentOrThrow( const boost::shared_ptr<Source>& source )
+inline Target getTypedParentOrThrow( const std::tr1::shared_ptr<Source>& source )
 {
 	// The easy shortcut
 	Target tmp = boost::dynamic_pointer_cast< typename boost::remove_pointer<Target>::type >( source ).get();

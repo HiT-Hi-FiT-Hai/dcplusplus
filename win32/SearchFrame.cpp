@@ -668,7 +668,7 @@ HRESULT SearchFrame::handleContextMenu(DataGridMessageType, LPARAM lParam, WPARA
 			pt = results->getContextMenuPos();
 		}
 
-		WidgetPopupMenuPtr contextMenu = makeMenu();
+		WidgetMenuPtr contextMenu = makeMenu();
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
 	}
@@ -798,8 +798,8 @@ void SearchFrame::handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
 	}
 }
 
-SearchFrame::WidgetPopupMenuPtr SearchFrame::makeMenu() {
-	WidgetPopupMenuPtr menu = createPopupMenu();
+SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
+	WidgetMenuPtr menu = createMenu(true);
 
 	StringPairList favoriteDirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	SearchInfo::CheckTTH checkTTH = results->forEachSelectedT(SearchInfo::CheckTTH());
@@ -829,7 +829,7 @@ SearchFrame::WidgetPopupMenuPtr SearchFrame::makeMenu() {
 	return menu;
 }
 
-void SearchFrame::addTargetMenu(const WidgetPopupMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH) {
+void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH) {
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_TO));
 
 	int n = 0;
@@ -859,7 +859,7 @@ void SearchFrame::addTargetMenu(const WidgetPopupMenuPtr& parent, const StringPa
 	}
 }
 
-void SearchFrame::addTargetDirMenu(const WidgetPopupMenuPtr& parent, const StringPairList& favoriteDirs) {
+void SearchFrame::addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs) {
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_WHOLE_DIR_TO));
 
 	int n = 0;

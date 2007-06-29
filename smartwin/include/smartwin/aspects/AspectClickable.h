@@ -29,10 +29,10 @@
 #ifndef AspectClickable_h
 #define AspectClickable_h
 
-#include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
+#include <boost/cast.hpp>
 
 namespace SmartWin
 {

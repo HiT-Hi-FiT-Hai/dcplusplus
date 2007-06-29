@@ -28,6 +28,7 @@
 */
 #include "UtilSystemHeaders.h"
 #include "DateTime.h"
+#include <boost/lexical_cast.hpp>
 
 namespace SmartUtil
 {

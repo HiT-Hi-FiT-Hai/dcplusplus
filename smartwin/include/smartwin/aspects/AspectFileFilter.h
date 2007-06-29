@@ -36,8 +36,6 @@
 #include "../WindowsHeaders.h"
 #include "commdlg.h"
 
-#include "boost.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin

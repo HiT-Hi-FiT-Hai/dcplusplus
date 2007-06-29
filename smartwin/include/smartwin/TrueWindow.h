@@ -30,7 +30,6 @@
 #define TrueWindow_h
 
 #include <list>
-#include "boost.h"
 #include "WindowObject.h"
 
 namespace SmartWin
@@ -50,13 +49,13 @@ public:
 	{}
 
 protected:
-	void addObject( const boost::shared_ptr< WindowObject > obj )
+	void addObject( const std::tr1::shared_ptr< WindowObject > obj )
 	{
 		itsWindowObjects.push_back( obj );
 	}
 
 private:
-	std::list< boost::shared_ptr< WindowObject > > itsWindowObjects;
+	std::list< std::tr1::shared_ptr< WindowObject > > itsWindowObjects;
 };
 
 // end namespace SmartWin

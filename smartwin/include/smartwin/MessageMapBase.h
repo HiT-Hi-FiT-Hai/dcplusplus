@@ -31,6 +31,9 @@
 
 #include "SignalParams.h"
 
+#include <functional>
+#include <map>
+
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -40,7 +43,7 @@ namespace SmartWin
 class MessageMapBase
 {
 public:
-	typedef boost::function<HRESULT(private_::SignalContent&)> CallbackType;
+	typedef std::tr1::function<HRESULT(private_::SignalContent&)> CallbackType;
 	
 	// We only support one Callback per message, so a map is appropriate
 	typedef std::map<Message, CallbackType> CallbackCollectionType;

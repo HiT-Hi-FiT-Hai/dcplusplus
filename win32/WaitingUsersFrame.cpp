@@ -99,7 +99,7 @@ HRESULT WaitingUsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 		if(pt.x == -1 || pt.y == -1) {
 			//pt = queued->getContextMenuPos();
 		}
-		WidgetPopupMenuPtr menu = createPopupMenu();
+		WidgetMenuPtr menu = createMenu(true);
 		menu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), &WaitingUsersFrame::onGetList);
 		menu->appendItem(IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME), &WaitingUsersFrame::onCopyFilename);
 		menu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), &WaitingUsersFrame::onRemove);

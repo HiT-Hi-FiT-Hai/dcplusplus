@@ -29,10 +29,10 @@
 #ifndef AspectEnabled_h
 #define AspectEnabled_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 
 #include "AspectAdapter.h"
+#include <boost/cast.hpp>
 
 namespace SmartWin
 {
@@ -40,7 +40,7 @@ namespace SmartWin
 
 struct AspectEnableDispatcher
 {
-	typedef boost::function<void (bool)> F;
+	typedef std::tr1::function<void (bool)> F;
 
 	AspectEnableDispatcher(const F& f_) : f(f_) { }
 

@@ -130,6 +130,8 @@ public:
 
 	static void setClipboard(const tstring& str);
 
+	static bool getUCParams(SmartWin::Widget* parent, const UserCommand& cmd, StringMap& sm) throw();
+
 #ifdef PORT_ME
 	static CImageList userImages;
 
@@ -195,9 +197,6 @@ public:
 	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
 	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
 	static void getContextMenuPos(CEdit& aEdit,			POINT& aPt);
-
-	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
-
 
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();

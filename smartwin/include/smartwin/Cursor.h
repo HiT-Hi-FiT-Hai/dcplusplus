@@ -30,7 +30,6 @@
 #define Cursor_h
 
 #include "WindowsHeaders.h"
-#include "boost.h"
 
 namespace SmartWin
 {
@@ -56,9 +55,9 @@ class Cursor
 		}
 	};
 
-	boost::shared_ptr< Implementation > itsImplementation;
+	std::tr1::shared_ptr< Implementation > itsImplementation;
 
-	Cursor( boost::shared_ptr< Implementation > implementation )
+	Cursor( std::tr1::shared_ptr< Implementation > implementation )
 		: itsImplementation( implementation )
 	{}
 
@@ -69,7 +68,7 @@ public:
 	  */
 	static Cursor getWaitCursor()
 	{
-		boost::shared_ptr< Implementation > implementation( new Implementation( ::SetCursor( ::LoadCursor( 0, IDC_WAIT ) ) ) );
+		std::tr1::shared_ptr< Implementation > implementation( new Implementation( ::SetCursor( ::LoadCursor( 0, IDC_WAIT ) ) ) );
 		return Cursor( implementation );
 	}
 };

@@ -20,7 +20,6 @@
 #define DCPLUSPLUS_WIN32_WIDGETFACTORY2_H_
 
 #include "WidgetDataGrid.h"
-#include "WidgetPopupMenu.h"
 #include "WidgetTextBox.h"
 #include "WidgetPaned.h"
 
@@ -41,16 +40,6 @@ public:
 
 	WidgetDataGridPtr createDataGrid( const typename WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() ) {
 		return SmartWin::WidgetCreator< WidgetDataGrid >::create( this, cs );
-	}
-
-	/// PopupMenu class type.
-	typedef ::WidgetPopupMenu< EventHandlerClass, MessageMapPolicy > WidgetPopupMenu;
-
-	/// PopupMenu object type.
-	typedef typename WidgetPopupMenu::ObjectType WidgetPopupMenuPtr;
-
-	WidgetPopupMenuPtr createPopupMenu() {
-		return SmartWin::WidgetCreator< WidgetPopupMenu >::create( this );
 	}
 
 	/// TextBox class type.

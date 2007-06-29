@@ -146,7 +146,7 @@ public:
 	}
 
 	/// Creates an Extended Menu
-	/** The returned object is of type boost::shared_ptr< WidgetMenuExtended >, but
+	/** The returned object is of type std::tr1::shared_ptr< WidgetMenuExtended >, but
 	  * you should use the typedef WidgetMenuExtendedPtr and not <br>
 	  * the shared_ptr itself since this may change in future releases.
 	  */

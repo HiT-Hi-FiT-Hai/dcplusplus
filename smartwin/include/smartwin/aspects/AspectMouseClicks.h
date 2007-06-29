@@ -29,7 +29,6 @@
 #ifndef AspectMouseClicks_h
 #define AspectMouseClicks_h
 
-#include "boost.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
 
@@ -39,7 +38,7 @@ namespace SmartWin
 
 struct AspectMouseDispatcher
 {
-	typedef boost::function<void (const MouseEventResult &)> F;
+	typedef std::tr1::function<void (const MouseEventResult &)> F;
 
 	AspectMouseDispatcher(const F& f_) : f(f_) { }
 

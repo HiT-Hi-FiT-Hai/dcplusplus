@@ -47,7 +47,7 @@ class WidgetCreator
 public:
 	static typename WidgetType::ObjectType create( Widget * parent, const typename WidgetType::Seed & cs )
 	{
-		typename WidgetType::ObjectType retVal = new WidgetType( parent );
+		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
 		retVal->create( cs );
 		return retVal;
 	}
@@ -55,7 +55,7 @@ public:
 	template< class ContainerType >
 	static typename WidgetType::ObjectType create( Widget * parent, ContainerType * container, const typename WidgetType::Seed & cs )
 	{
-		typename WidgetType::ObjectType retVal = new WidgetType( parent );
+		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
 		retVal->create( container, cs );
 		return retVal;
 	}
@@ -69,7 +69,7 @@ public:
 
 	static typename WidgetType::ObjectType subclass( Widget * parent, unsigned id )
 	{
-		typename WidgetType::ObjectType retVal = new WidgetType( parent );
+		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
 		retVal->subclass( id );
 		return retVal;
 	}

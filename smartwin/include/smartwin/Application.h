@@ -30,7 +30,6 @@
 #define Application_h
 
 #include "WindowsHeaders.h"
-#include "boost.h"
 #include "SmartUtil.h"
 #include "CommandLine.h"
 #include "BasicTypes.h"
@@ -40,6 +39,9 @@
 #include "xCeption.h"
 #include <vector>
 #include <list>
+#include <memory>
+#include <boost/utility.hpp>
+#include <boost/signal.hpp>
 
 #ifdef _MSC_VER
 #ifndef WINCE
@@ -206,7 +208,7 @@ public:
 	bool isAppAlreadyRunning();
 
 	/// Since boost::signal is noncopyable we use smart pointers of signals
-	typedef boost::shared_ptr < boost::signal < void () > > SignalPtr;
+	typedef std::tr1::shared_ptr < boost::signal < void () > > SignalPtr;
 
 	/// Adds a waitable event HANDLE and the according signal
 	/** You can feed in here HANDLEs of thread handles, console inputs, mutexes,

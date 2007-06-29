@@ -41,7 +41,7 @@ namespace SmartWin
 
 struct WidgetWindowCreateDispatcher
 {
-	typedef boost::function<void (SmartWin::Seed&)> F;
+	typedef std::tr1::function<void (SmartWin::Seed&)> F;
 
 	WidgetWindowCreateDispatcher(const F& f_) : f(f_) { }
 

@@ -84,8 +84,8 @@ void TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 	transfers->setBounds(SmartWin::Point(0,0), getClientAreaSize());
 }
 
-TransferView::WidgetPopupMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
-	WidgetPopupMenuPtr menu = createPopupMenu();
+TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
+	WidgetMenuPtr menu = createMenu(true);
 	
 	appendUserItems(menu);
 	menu->appendSeparatorItem();
@@ -118,7 +118,7 @@ HRESULT TransferView::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 #ifdef PORT_ME
 		checkAdcItems(transferMenu);
 #endif
-		WidgetPopupMenuPtr contextMenu = makeContextMenu(ii);
+		WidgetMenuPtr contextMenu = makeContextMenu(ii);
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return TRUE;

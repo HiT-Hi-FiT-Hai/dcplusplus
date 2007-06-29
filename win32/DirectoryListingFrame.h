@@ -22,13 +22,17 @@
 #include "MDIChildFrame.h"
 #include "TypedListViewCtrl.h"
 #include "TypedTreeView.h"
+#include "AspectUserCommand.h"
 
 #include <client/forward.h>
 #include <client/FastAlloc.h>
 #include <client/DirectoryListing.h>
 #include <client/User.h>
 
-class DirectoryListingFrame : public MDIChildFrame<DirectoryListingFrame> {
+class DirectoryListingFrame : 
+	public MDIChildFrame<DirectoryListingFrame>,
+	public AspectUserCommand<DirectoryListingFrame>
+{
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -52,6 +56,7 @@ public:
 protected:
 	typedef MDIChildFrame<DirectoryListingFrame> Base;
 	friend class MDIChildFrame<DirectoryListingFrame>;
+	friend class AspectUserCommand<DirectoryListingFrame>;
 	
 	void layout();
 	void postClosing();
@@ -157,6 +162,8 @@ private:
 	bool updating;
 	bool searching;
 
+	StringMap ucLineParams;
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -168,12 +175,14 @@ private:
 	DirectoryListingFrame(SmartWin::Widget* mdiParent, const User::Ptr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame();
 
-	WidgetPopupMenuPtr makeSingleMenu(ItemInfo* ii);
-	WidgetPopupMenuPtr makeMultiMenu();
-	WidgetPopupMenuPtr makeDirMenu();
+	WidgetMenuPtr makeSingleMenu(ItemInfo* ii);
+	WidgetMenuPtr makeMultiMenu();
+	WidgetMenuPtr makeDirMenu();
 	
-	void addTargets(const WidgetPopupMenuPtr& menu, ItemInfo* ii = 0);
-	void addUserCommands(const WidgetPopupMenuPtr& menu);
+	void runUserCommand(const UserCommand& uc);
+		
+	void addTargets(const WidgetMenuPtr& menu, ItemInfo* ii = 0);
+	void addUserCommands(const WidgetMenuPtr& menu);
 	
 	void handleFind(WidgetButtonPtr);
 	void handleFindNext(WidgetButtonPtr);
@@ -304,7 +313,6 @@ public:
 	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void runUserCommand(UserCommand& uc);
 
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
@@ -326,7 +334,6 @@ public:
 
 private:
 
-	StringMap ucLineParams;
 
 };
 

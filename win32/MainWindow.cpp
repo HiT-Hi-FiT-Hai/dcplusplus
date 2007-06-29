@@ -249,7 +249,7 @@ void MainWindow::initWindow() {
 
 void MainWindow::initMenu() {
 	dcdebug("initMenu\n");
-	mainMenu = createMenu();
+	mainMenu = createMenu(false);
 	
 	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
 	

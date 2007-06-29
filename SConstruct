@@ -2,6 +2,14 @@
 
 from build_util import Dev
 
+opts = Options('custom.py', ARGUMENTS)
+
+opts.AddOptions(
+	EnumOption('tools', 'Toolset to compile with, default = platform default (msvc under windows)', 'mingw', ['mingw', 'default']),
+	EnumOption('mode', 'Compile mode', 'debug', ['debug', 'release']),
+	BoolOption('nativestl', 'Try to use native STL instead of STLPort', 'no')
+)
+
 gcc_flags = {
 	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
 	'debug': [], 
@@ -44,21 +52,17 @@ gcc_defs = {
 
 import os,sys
 
-if sys.platform == 'win32':
-	tooldef = 'mingw'
-else:
-	tooldef = 'default'
-
-mode = ARGUMENTS.get('mode', 'debug')
-tools = ARGUMENTS.get('tools', tooldef)
-
-if mode not in gcc_flags:
-	print "Unknown mode, exiting"
-	Exit(1)
+tools = ARGUMENTS.get('tools', 'mingw')
 
 toolset = [tools, 'swig']
 
-env = Environment(tools = toolset, ENV=os.environ)
+env = Environment(tools = toolset, options=opts, ENV=os.environ)
+Help(opts.GenerateHelpText(env))
+
+mode = env['mode']
+if mode not in gcc_flags:
+	print "Unknown mode, exiting"
+	Exit(1)
 
 dev = Dev(mode, tools, env)
 dev.prepare()
@@ -66,20 +70,21 @@ dev.prepare()
 env.SConsignFile()
 env.Tool("gch", toolpath=".")
 
-if 'mingw' not in env['TOOLS'] and 'gcc' in env['TOOLS']:
-	print "Non-mingw gcc builds not supported"
-	Exit(1)
-	#env.Append(CCFLAGS=['-fvisibility=hidden'])
+env.Append(CPPPATH = ["#/boost/boost/tr1/tr1/", "#/boost/"])
 
-if 'mingw' in env['TOOLS']:
+if not env['nativestl']:
 	env.Append(CPPPATH = ['#/stlport/stlport/'])
 	env.Append(LIBPATH = ['#/stlport/lib/'])
 	env.Append(CPPDEFINES = ['HAVE_STLPORT', '_STLP_USE_STATIC_LIB=1'])
-	
 	if mode == 'debug':
 		env.Append(LIBS = ['stlportg.5.1'])
 	else:
 		env.Append(LIBS = ['stlport.5.1'])	
+	
+
+if 'mingw' not in env['TOOLS'] and 'gcc' in env['TOOLS']:
+	print "Non-mingw gcc builds not supported"
+	Exit(1)
 
 if env['CC'] == 'cl':
 	flags = msvc_flags
@@ -121,6 +126,7 @@ env.SideEffect('Example.xml', 'client/StringDefs.cpp')
 
 dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')
+dev.boost = dev.build('boost/')
 dev.yassl = dev.build('yassl/')
 dev.client = dev.build('client/')
 env.Depends(dev.client, 'client/StringDefs.cpp')

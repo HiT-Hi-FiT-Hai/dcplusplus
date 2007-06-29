@@ -269,16 +269,16 @@ private:
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
 	void changePriority(bool inc);
 
-	WidgetPopupMenuPtr makeSingleMenu(QueueItemInfo* qii);
-	WidgetPopupMenuPtr makeMultiMenu();
-	WidgetPopupMenuPtr makeDirMenu();
+	WidgetMenuPtr makeSingleMenu(QueueItemInfo* qii);
+	WidgetMenuPtr makeMultiMenu();
+	WidgetMenuPtr makeDirMenu();
 	
-	void addBrowseMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addRemoveAllMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addPMMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
-	void addPriorityMenu(const WidgetPopupMenuPtr& parent);
-	void addReaddMenu(const WidgetPopupMenuPtr& parent, QueueItemInfo* qii);
+	void addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
+	void addPriorityMenu(const WidgetMenuPtr& parent);
+	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
 	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
 
 	void handleShowTreeClicked(WidgetCheckBoxPtr);

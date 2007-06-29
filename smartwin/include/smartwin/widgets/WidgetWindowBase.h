@@ -73,7 +73,7 @@ class OuterMostWidget
 
 struct WidgetWindowBaseCloseDispatcher
 {
-	typedef boost::function<bool ()> F;
+	typedef std::tr1::function<bool ()> F;
 	
 	WidgetWindowBaseCloseDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 
@@ -94,7 +94,7 @@ struct WidgetWindowBaseCloseDispatcher
 
 struct WidgetWindowBaseTimerDispatcher
 {
-	typedef boost::function<bool ()> F;
+	typedef std::tr1::function<bool ()> F;
 	
 	WidgetWindowBaseTimerDispatcher(const F& f_) : f(f_) { }
 

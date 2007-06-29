@@ -46,7 +46,6 @@
 #include "../aspects/AspectBorder.h"
 #include "../TrueWindow.h"
 #include "../xCeption.h"
-#include "boost.h"
 
 namespace SmartWin
 {

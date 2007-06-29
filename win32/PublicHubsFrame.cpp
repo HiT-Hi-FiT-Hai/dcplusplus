@@ -459,7 +459,7 @@ HRESULT PublicHubsFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 			pt = hubs->getContextMenuPos();
 		}
 
-		WidgetPopupMenuPtr menu = createPopupMenu();
+		WidgetMenuPtr menu = createMenu(true);
 		menu->appendItem(IDC_CONNECT, TSTRING(CONNECT), &PublicHubsFrame::handleConnect);
 		menu->appendItem(IDC_ADD, TSTRING(ADD_TO_FAVORITES), &PublicHubsFrame::handleAdd);
 		menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), &PublicHubsFrame::handleCopyHub);

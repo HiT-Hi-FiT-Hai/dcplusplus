@@ -29,7 +29,6 @@
 #ifndef AspectRightClickable_h
 #define AspectRightClickable_h
 
-#include "boost.h"
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"

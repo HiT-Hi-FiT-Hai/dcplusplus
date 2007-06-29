@@ -29,7 +29,9 @@
 #ifndef AspectText_h
 #define AspectText_h
 
-#include "boost.h"
+#include <functional>
+#include <boost/cast.hpp>
+
 #include "SmartUtil.h"
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
@@ -39,7 +41,7 @@ namespace SmartWin
 // begin namespace SmartWin
 struct AspectTextDispatcher
 {
-	typedef boost::function<void (const SmartUtil::tstring &)> F;
+	typedef std::tr1::function<void (const SmartUtil::tstring &)> F;
 
 	AspectTextDispatcher(const F& f_) : f(f_) { }
 

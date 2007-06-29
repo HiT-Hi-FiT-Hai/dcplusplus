@@ -1215,7 +1215,7 @@ HRESULT HubFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 			pt = users->getContextMenuPos();
 		}
 
-		WidgetPopupMenuPtr menu = createPopupMenu();
+		WidgetMenuPtr menu = createMenu(true);
 		appendUserItems(menu);
 		
 

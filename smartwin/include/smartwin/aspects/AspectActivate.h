@@ -29,7 +29,8 @@
 #ifndef AspectActivate_h
 #define AspectActivate_h
 
-#include "boost.h"
+#include <boost/cast.hpp>
+
 #include "../SignalParams.h"
 #include "AspectAdapter.h"
 
@@ -40,7 +41,7 @@ namespace SmartWin
 template<class EventHandlerClass>
 struct AspectActivateDispatcher
 {
-	typedef boost::function<void (bool)> F;
+	typedef std::tr1::function<void (bool)> F;
 
 	AspectActivateDispatcher(const F& f_, EventHandlerClass* parent_) : f(f_), parent(parent_) { }
 

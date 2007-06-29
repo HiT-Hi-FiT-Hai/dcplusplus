@@ -36,7 +36,7 @@ namespace SmartWin
 // begin namespace SmartWin
 struct WidgetModalDialogDispatcher
 {
-	typedef boost::function<bool ()> F;
+	typedef std::tr1::function<bool ()> F;
 	
 	WidgetModalDialogDispatcher(const F& f_) : f(f_) { }
 
