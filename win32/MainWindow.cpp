@@ -911,9 +911,7 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 #endif
 
 void MainWindow::handleHashProgress(WidgetMenuPtr, unsigned) {
-#ifdef PORT_ME
-	HashProgressDlg(false).DoModal(m_hWnd);
-#endif
+	HashProgressDlg(this, false).run();
 }
 
 void MainWindow::handleAbout(WidgetMenuPtr, unsigned) {

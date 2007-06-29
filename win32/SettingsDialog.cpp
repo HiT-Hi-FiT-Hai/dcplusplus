@@ -38,8 +38,6 @@
 #include "UCPage.h"
 #include "CertificatesPage.h"
 
-#include <client/Pointer.h>
-
 static const TCHAR SEPARATOR = _T('\\');
 static const size_t MAX_NAME_LENGTH = 256;
 
@@ -79,10 +77,6 @@ bool SettingsDialog::initDialog() {
 }
 
 SettingsDialog::~SettingsDialog() {
-#ifdef PORT_ME
-	// crashes...
-	std::for_each(pages.begin(), pages.end(), DeleteFunction());
-#endif
 }
 
 int SettingsDialog::run() {

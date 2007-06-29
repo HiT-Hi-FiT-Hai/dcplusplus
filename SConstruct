@@ -7,7 +7,8 @@ opts = Options('custom.py', ARGUMENTS)
 opts.AddOptions(
 	EnumOption('tools', 'Toolset to compile with, default = platform default (msvc under windows)', 'mingw', ['mingw', 'default']),
 	EnumOption('mode', 'Compile mode', 'debug', ['debug', 'release']),
-	BoolOption('nativestl', 'Try to use native STL instead of STLPort', 'no')
+	BoolOption('nativestl', 'Try to use native STL instead of STLPort', 'no'),
+	BoolOption('gch', 'Use GCH when compiling GUI (disable if you have linking problems with mingw)', 'yes')
 )
 
 gcc_flags = {

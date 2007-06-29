@@ -219,9 +219,7 @@ void UploadPage::handleAddClicked(WidgetButtonPtr) {
 	tstring target;
 	if(WinUtil::browseDirectory(target, handle())) {
 		addDirectory(target);
-#ifdef PORT_ME
 		HashProgressDlg(this, true).run();
-#endif
 	}
 }
 

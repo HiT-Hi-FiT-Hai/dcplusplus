@@ -38,8 +38,7 @@ private:
 	bool handleInitDialog();
 	void handleOKClicked(WidgetButtonPtr);
 
-	void updateStats();
-	void updateStats(const SmartWin::CommandPtr&) { updateStats(); }
+	bool updateStats();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_HASH_PROGESS_DLG_H)
