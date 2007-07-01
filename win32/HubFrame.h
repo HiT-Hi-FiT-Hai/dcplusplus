@@ -21,7 +21,7 @@
 
 #include "MDIChildFrame.h"
 #include "TypedListViewCtrl.h"
-
+#include "AspectUserCommand.h"
 #include "UserInfoBase.h"
 
 #include <client/forward.h>
@@ -34,7 +34,8 @@ class HubFrame :
 	public MDIChildFrame<HubFrame>, 
 	public ClientListener, 
 	private FavoriteManagerListener,
-	public AspectUserInfo<HubFrame>
+	public AspectUserInfo<HubFrame>,
+	public AspectUserCommand<HubFrame>
 {
 public:
 	enum Status {
@@ -48,11 +49,13 @@ public:
 	
 	static void openWindow(SmartWin::Widget* mdiParent, const string& url);
 	static void closeDisconnected();
+	static void resortUsers();
 
 protected:
 	typedef MDIChildFrame<HubFrame> Base;
 	friend class MDIChildFrame<HubFrame>;
 	friend class AspectUserInfo<HubFrame>;
+	friend class AspectUserCommand<HubFrame>;
 	
 	void layout();
 	HRESULT spoken(LPARAM lp, WPARAM wp);
@@ -93,7 +96,7 @@ private:
 
 	enum Tasks { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
-		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
+		PRIVATE_MESSAGE, CONNECTED, DISCONNECTED
 	};
 
 	struct UserTask : public Task {
@@ -185,6 +188,12 @@ private:
 
 	tstring filterString;
 
+	StringMap ucLineParams;
+
+	tstring complete;
+	StringList tabCompleteNicks;
+	bool inTabComplete;
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
@@ -220,11 +229,18 @@ private:
 	void addAsFavorite();
 	void removeFavoriteHub();
 	
+	void runUserCommand(const ::UserCommand& uc);
+
 	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
 	void handleShowUsersClicked(WidgetCheckBoxPtr);
+	void handleCopyNick();
+	void handleDoubleClickUsers();
 
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
+
+	string stripNick(const string& nick) const;
+	tstring scanNickPrefix(const tstring& prefix);
 
 	using MDIChildFrame<HubFrame>::speak;
 	void speak(Tasks s) { tasks.add(s, 0); speak(); }
@@ -326,7 +342,6 @@ public:
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -346,15 +361,6 @@ public:
 	void onEnter();
 	void onTab();
 	void handleTab(bool reverse);
-	void runUserCommand(::UserCommand& uc);
-
-	static void openWindow(const tstring& server);
-	static void resortUsers();
-
-	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlMessage.SetFocus();
-		return 0;
-	}
 
 	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
@@ -371,11 +377,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
-		updateStatusBar();
-		return 0;
-	}
-
 	LRESULT onKeyDownUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* l = (NMLVKEYDOWN*)pnmh;
 		if(l->wVKey == VK_TAB) {
@@ -384,67 +385,14 @@ public:
 		return 0;
 	}
 
-private:
-	class UserInfo;
-public:
-	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
-private:
-
-
-	HubFrame(const tstring& aServer) :
-	extraSort(false), 
-		showUsers(BOOLSETTING(GET_USER_INFO)), resort(false),
-		curCommandPosition(0), inTabComplete(false),
-		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
-		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
-		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP),
-		ctrlFilterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP),
-		ctrlFilterSelContainer(WC_COMBOBOX, this, FILTER_MESSAGE_MAP)
-	{
-	}
-
-	virtual ~HubFrame() {
-
-		dcassert(frames.find(server) != frames.end());
-		dcassert(frames[server] == this);
-		frames.erase(server);
-
-		clearTaskList();
-	}
-
-	tstring complete;
-	StringList tabCompleteNicks;
-	bool inTabComplete;
-
 	bool extraSort;
 
-	CContainedWindow ctrlMessageContainer;
-	CContainedWindow clientContainer;
-	CContainedWindow showUsersContainer;
-	CContainedWindow ctrlFilterContainer;
-	CContainedWindow ctrlFilterSelContainer;
-
-	CMenu userMenu;
 	CMenu tabMenu;
-
-	CButton ctrlShowUsers;
 
 	TStringMap tabParams;
 	bool tabMenuShown;
 
-	StringMap ucLineParams;
-
 	CToolTipCtrl ctrlLastLines;
-
-	static bool compareCharsNoCase(string::value_type a, string::value_type b) {
-		return Text::toLower(a) == Text::toLower(b);
-	}
-
-	string stripNick(const string& nick) const;
-	tstring scanNickPrefix(const tstring& prefix);
-
-	void updateStatusBar() { if(m_hWnd) speak(STATS); }
-
 };
 
 #endif

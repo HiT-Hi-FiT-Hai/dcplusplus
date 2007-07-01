@@ -65,6 +65,14 @@ public:
 		return reinterpret_cast<ContentType*>(tvitem.lParam);
 	}
 	
+	void expand(HTREEITEM item) {
+		TreeView_Expand(this->handle(), item, TVE_EXPAND);
+	}
+	
+	void ensureVisible(HTREEITEM item) {
+		TreeView_EnsureVisible(this->handle(), item);
+	}
+	
 	void getItem(TVITEMEX* item) {
 		TreeView_GetItem(this->handle(), item);
 	}

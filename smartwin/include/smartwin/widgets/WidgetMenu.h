@@ -190,7 +190,7 @@ protected:
 	WidgetMenuPlatformImplementation() : Widget(0) { }
 public:
 	struct Seed {
-		Seed(bool popup_) : popup(popup) { }
+		Seed(bool popup_) : popup(popup_) { }
 		Seed() : popup(false) { }
 		bool popup;
 	};

@@ -44,6 +44,9 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 
 Client::~Client() throw() {
 	dcassert(!socket);
+	
+	// In case we were deleted before we Failed
+	FavoriteManager::getInstance()->removeUserCommand(getHubUrl());
 	TimerManager::getInstance()->removeListener(this);
 	updateCounts(true);
 }
@@ -119,6 +122,7 @@ void Client::on(Connected) throw() {
 
 void Client::on(Failed, const string& aLine) throw() {
 	state = STATE_DISCONNECTED;
+	FavoriteManager::getInstance()->removeUserCommand(getHubUrl());
 	socket->removeListener(this);
 	fire(ClientListener::Failed(), this, aLine);
 }

@@ -105,6 +105,10 @@ public:
 		return pt;
 	}
 	
+	void ensureVisible(int i, bool partial = false) {
+		ListView_EnsureVisible(this->handle(), i, false);
+	}
+	
 	void setColor(COLORREF text, COLORREF background) {
 		ListView_SetTextColor(this->handle(), text);
 		ListView_SetTextBkColor(this->handle(), background);

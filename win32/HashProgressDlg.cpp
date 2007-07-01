@@ -57,7 +57,7 @@ bool HashProgressDlg::handleInitDialog() {
 
 	HashManager::getInstance()->setPriority(Thread::NORMAL);
 
-	createTimer(boost::bind(&HashProgressDlg::updateStats, this), 1000);
+	createTimer(std::tr1::bind(&HashProgressDlg::updateStats, this), 1000);
 
 	return false;
 }

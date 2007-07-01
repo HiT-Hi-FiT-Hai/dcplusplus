@@ -1,6 +1,8 @@
 #ifndef AspectAdapter_h_
 #define AspectAdapter_h_
 
+#include <functional>
+
 namespace SmartWin {
 
 /**
@@ -16,19 +18,19 @@ struct AspectAdapter<Ret, EventHandlerClass, true> {
 	template<typename WidgetTypePtr, typename FuncType>
 	static Ret adapt0(WidgetTypePtr This, FuncType eventHandler) {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
-		return boost::bind(eventHandler, ThisParent, This);
+		return std::tr1::bind(eventHandler, ThisParent, This);
 	}
 
 	template<typename WidgetTypePtr, typename FuncType>
 	static Ret adapt1(WidgetTypePtr This, FuncType eventHandler) {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
-		return boost::bind(eventHandler, ThisParent, This, _1);
+		return std::tr1::bind(eventHandler, ThisParent, This, _1);
 	}
 
 	template<typename WidgetTypePtr, typename FuncType>
 	static Ret adapt2(WidgetTypePtr This, FuncType eventHandler) {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
-		return boost::bind(eventHandler, ThisParent, This, _1, _2);
+		return std::tr1::bind(eventHandler, ThisParent, This, _1, _2);
 	}
 	
 };
@@ -39,19 +41,19 @@ struct AspectAdapter<Ret, EventHandlerClass, false> {
 	template<typename WidgetTypePtr, typename FuncType>
 	static Ret adapt0(WidgetTypePtr This, FuncType eventHandler) {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
-		return boost::bind(eventHandler, ThisParent);
+		return std::tr1::bind(eventHandler, ThisParent);
 	}
 	
 	template<typename WidgetTypePtr, typename FuncType>
 	static Ret adapt1(WidgetTypePtr This, FuncType eventHandler) {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
-		return boost::bind(eventHandler, ThisParent, _1);
+		return std::tr1::bind(eventHandler, ThisParent, _1);
 	}
 	
 	template<typename WidgetTypePtr, typename FuncType>
 	static Ret adapt2(WidgetTypePtr This, FuncType eventHandler) {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
-		return boost::bind(eventHandler, ThisParent, _1, _2);
+		return std::tr1::bind(eventHandler, ThisParent, _1, _2);
 	}
 	
 };

@@ -41,11 +41,11 @@ public:
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		FactoryType::createMDIChild(cs);
 
-		onClosing(boost::bind(&ThisType::closing, this));
-		onFocus(boost::bind(&ThisType::focused, this));
-		onSized(boost::bind(&ThisType::sized, this, _1));
-		onRaw(boost::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLORSTATIC);
-		onRaw(boost::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLOREDIT);
+		onClosing(std::tr1::bind(&ThisType::closing, this));
+		onFocus(std::tr1::bind(&ThisType::focused, this));
+		onSized(std::tr1::bind(&ThisType::sized, this, _1));
+		onRaw(std::tr1::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLORSTATIC);
+		onRaw(std::tr1::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLOREDIT);
 	}
 	
 protected:

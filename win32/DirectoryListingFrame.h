@@ -200,6 +200,7 @@ private:
 	void handleDownloadFavorite(WidgetMenuPtr, unsigned id);
 	void handleDownloadBrowse(WidgetMenuPtr, unsigned id);
 	
+	void handleDoubleClickFiles();
 	void handleSelectionChanged(WidgetTreeViewPtr);
 	
 	void download(const string& aDir);
@@ -207,8 +208,9 @@ private:
 	void downloadFiles(const string& aTarget, bool view = false);
 	
 	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
-
-	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
+	HRESULT handleXButtonUp(LPARAM lParam, WPARAM wParam);
+	
+	void changeDir(DirectoryListing::Directory* d);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
 	void selectItem(const tstring& name);
@@ -224,7 +226,7 @@ private:
 	void back();
 	void forward();
 
-	void initStatus();
+	void initStatusText();
 	void updateStatus();
 	
 	void findFile(bool findNext);
@@ -232,110 +234,4 @@ private:
 
 };
 
-
-#ifdef PORT_ME
-
-#include "FlatTabCtrl.h"
-#include "WinUtil.h"
-#include "UCHandler.h"
-
-#include "../client/StringSearch.h"
-#include "../client/FavoriteManager.h"
-
-#define STATUS_MESSAGE_MAP 9
-#define CONTROL_MESSAGE_MAP 10
-class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>,
-	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
-
-{
-public:
-
-	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
-	typedef UCHandler<DirectoryListingFrame> ucBase;
-
-
-	DECLARE_FRAME_WND_CLASS(_T("DirectoryListingFrame"), IDR_DIRECTORY)
-
-	BEGIN_MSG_MAP(DirectoryListingFrame)
-		NOTIFY_HANDLER(IDC_FILES, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
-		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, ctrlList.onColumnClick)
-		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
-		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
-		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
-		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
-		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
-		COMMAND_ID_HANDLER(IDC_GO_TO_DIRECTORY, onGoToDirectory)
-		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
-		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
-		COMMAND_ID_HANDLER(IDC_BITZI_LOOKUP, onBitziLookup)
-		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET_DIR, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + FavoriteManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
-		CHAIN_COMMANDS(ucBase)
-		CHAIN_MSG_MAP(baseClass)
-		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
-	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
-		COMMAND_ID_HANDLER(IDC_FIND, onFind)
-		COMMAND_ID_HANDLER(IDC_NEXT, onNext)
-		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
-		COMMAND_ID_HANDLER(IDC_FILELIST_DIFF, onListDiff)
-	ALT_MSG_MAP(CONTROL_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_XBUTTONUP, onXButtonUp)
-	END_MSG_MAP()
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadTargetDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onXButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
-		updateStatus();
-		return 0;
-	}
-
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 1;
-	}
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
-	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
-		if(kd->wVKey == VK_TAB) {
-			onTab();
-		}
-		return 0;
-	}
-
-private:
-
-
-};
-
-#endif // !defined(DIRECTORY_LISTING_FRM_H)
 #endif

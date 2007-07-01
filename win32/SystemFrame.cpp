@@ -20,8 +20,8 @@
 #include <client/DCPlusPlus.h>
 
 #include "SystemFrame.h"
-
-#include "StupidWin.h"
+#include "HoldRedraw.h"
+#include "WinUtil.h"
 
 SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent), 
@@ -33,6 +33,7 @@ SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		log = createTextBox(cs);
 		addWidget(log);
+		log->setFont(WinUtil::font);
 	}
 
 	initStatus();
@@ -54,10 +55,9 @@ SystemFrame::~SystemFrame() {
 void SystemFrame::addLine(time_t t, const tstring& msg) {
 	int limit = log->getTextLimit();
 	if(StupidWin::getWindowTextLength(log) + static_cast<int>(msg.size()) > limit) {
-		StupidWin::setRedraw(log, false);
+		HoldRedraw hold(log);
 		log->setSelection(0, StupidWin::lineIndex(log, StupidWin::lineFromChar(log, limit / 10)));
 		log->replaceSelection(_T(""));
-		StupidWin::setRedraw(log, true);
 	}
 	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
 
@@ -94,24 +94,6 @@ void SystemFrame::on(Message, time_t t, const string& message) throw() {
 }
 
 #ifdef PORT_ME
-
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
-
-#include "SystemFrame.h"
-#include "WinUtil.h"
-#include "../client/File.h"
-
-LRESULT SystemFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	ctrlPad.SetFont(WinUtil::font);
-
-	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
-
-	bHandled = FALSE;
-	return 1;
-}
 
 LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();

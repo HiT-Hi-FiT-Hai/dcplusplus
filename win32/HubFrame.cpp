@@ -22,6 +22,7 @@
 #include "HubFrame.h"
 #include "PrivateFrame.h"
 #include "LineDlg.h"
+#include "HoldRedraw.h"
 
 #include <client/ClientManager.h>
 #include <client/Client.h>
@@ -77,7 +78,9 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	filterType(0),
 	paned(0),
 	showUsers(0),
-	users(0)
+	users(0),
+	curCommandPosition(0),
+	inTabComplete(false)
 {
 	paned = createVPaned();
 	paned->setRelativePos(0.7);
@@ -148,6 +151,9 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		users->setColor(WinUtil::textColor, WinUtil::bgColor);
 		users->setSortColumn(COLUMN_NICK);
+		
+		users->onSelectionChanged(std::tr1::bind(&HubFrame::updateStatus, this));
+		users->onDblClicked(std::tr1::bind(&HubFrame::handleDoubleClickUsers, this));
 	}
 	
 	{
@@ -182,6 +188,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 HubFrame::~HubFrame() {
 	ClientManager::getInstance()->putClient(client);
 	frames.erase(url);
+	clearTaskList();
 }
 
 bool HubFrame::preClosing() {
@@ -193,10 +200,7 @@ bool HubFrame::preClosing() {
 
 void HubFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers->getChecked());
-#ifdef PORT_ME
-	FavoriteManager::getInstance()->removeUserCommand(Text::fromT(server));
 
-#endif
 	clearUserList();
 	clearTaskList();
 
@@ -260,7 +264,7 @@ void HubFrame::updateStatus() {
 }
 
 void HubFrame::initSecond() {
-	createTimer(boost::bind(&HubFrame::eachSecond, this), 1000);
+	createTimer(std::tr1::bind(&HubFrame::eachSecond, this), 1000);
 }
 
 bool HubFrame::eachSecond() {
@@ -344,38 +348,36 @@ bool HubFrame::enter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
 			StupidWin::postMessage(this, WM_CLOSE);
 		} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
-#ifdef PORT_ME
-				ctrlShowUsers.SetCheck(showUsers->getChecked() ? BST_UNCHECKED : BST_CHECKED);
-#endif 
-			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addStatus(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
-				STRING(PORT) +
-				Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
-				Util::toString(SearchManager::getInstance()->getPort()) + "/" +
-					Util::toString(ConnectionManager::getInstance()->getSecurePort())
-					)));
-			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
-				addAsFavorite();
-			} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
-				removeFavoriteHub();
-			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
-				if( !param.empty() ){
-					UserInfo* ui = findUser(param);
-					if(ui) {
-						ui->getList();
-					}
+			showUsers->setChecked(!showUsers->getChecked());
+		} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
+			addStatus(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
+			STRING(PORT) +
+			Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
+			Util::toString(SearchManager::getInstance()->getPort()) + "/" +
+				Util::toString(ConnectionManager::getInstance()->getSecurePort())
+				)));
+		} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
+			addAsFavorite();
+		} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
+			removeFavoriteHub();
+		} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
+			if( !param.empty() ){
+				UserInfo* ui = findUser(param);
+				if(ui) {
+					ui->getList();
 				}
-			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
-				StringMap params;
-				params["hubNI"] = client->getHubName();
-				params["hubURL"] = client->getHubUrl();
-				params["myNI"] = client->getMyNick();
-				if(param.empty()) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params, true))));
-				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params, true))));
-				}
-			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
+			}
+		} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+			StringMap params;
+			params["hubNI"] = client->getHubName();
+			params["hubURL"] = client->getHubUrl();
+			params["myNI"] = client->getMyNick();
+			if(param.empty()) {
+				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params, true))));
+			} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
+				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params, true))));
+			}
+		} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 			addChat(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>, /removefavorite"));
 		} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 			string::size_type j = param.find(_T(' '));
@@ -438,10 +440,9 @@ void HubFrame::addChat(const tstring& aLine) {
 
 	int limit = chat->getTextLimit();
 	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(line.size()) > limit) {
-		StupidWin::setRedraw(chat, false);
+		HoldRedraw hold(chat);
 		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
 		chat->replaceSelection(_T(""));
-		StupidWin::setRedraw(chat, true);
 	}
 #ifdef PORT_ME	
 	BOOL noscroll = TRUE;
@@ -506,11 +507,7 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 	TaskQueue::List t;
 	tasks.get(t);
 
-#ifdef PORT_ME
-	if(t.size() > 2) {
-		ctrlUsers.SetRedraw(FALSE);
-	}
-#endif
+	HoldRedraw hold(users);
 
 	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
 		if(i->first == UPDATE_USER) {
@@ -600,11 +597,6 @@ HRESULT HubFrame::spoken(LPARAM, WPARAM) {
 		resort = false;
 	}
 
-#ifdef PORT_ME
-	if(t.size() > 2) {
-		ctrlUsers.SetRedraw(TRUE);
-	}
-#endif
 	return 0;
 }
 
@@ -647,9 +639,6 @@ bool HubFrame::updateUser(const UserTask& u) {
 			int pos = users->findItem(ui);
 			if(pos != -1) {
 				users->updateItem(pos);
-#ifdef PORT_ME
-				ctrlUsers.SetItem(pos, 0, LVIF_IMAGE, NULL, getImage(u.identity), 0, 0, NULL);
-#endif
 			}
 			updateUserList(ui);
 		}
@@ -1125,9 +1114,7 @@ void HubFrame::updateUserList(UserInfo* ui) {
 			}
 		}
 	} else {
-#ifdef PORT_ME
-		ctrlUsers.SetRedraw(FALSE);
-#endif
+		HoldRedraw hold(users);
 		users->removeAllRows();
 
 		if(filterString.empty()) {
@@ -1144,14 +1131,10 @@ void HubFrame::updateUserList(UserInfo* ui) {
 				}
 			}
 		}
-#ifdef PORT_ME
-		ctrlUsers.SetRedraw(TRUE);
-#endif
 	}
 }
 
 bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, FilterModes mode, int64_t size) {
-
 	if(filterString.empty())
 		return true;
 
@@ -1202,9 +1185,7 @@ HRESULT HubFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 			if(pos != -1) {
 				users->clearSelection();
 				users->setSelectedIndex(pos);
-#ifdef PORT_ME
-				ctrlUsers.EnsureVisible(pos, FALSE);
-#endif
+				users->ensureVisible(pos);
 				doMenu = true;
 			}
 		}
@@ -1218,13 +1199,12 @@ HRESULT HubFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 		WidgetMenuPtr menu = createMenu(true);
 		appendUserItems(menu);
 		
-
+		menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), std::tr1::bind(&HubFrame::handleCopyNick, this));
+		menu->setDefaultItem(IDC_GETLIST);
 #ifdef PORT_ME
-		menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), &T::handleCopyNick);
-		userMenu.SetMenuDefaultItem(IDC_GETLIST);
 		tabMenuShown = false;
-		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
 #endif
+		prepareMenu(menu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
 		
 		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
@@ -1274,10 +1254,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	ctrlLastLines.AddTool(&ti);
 
-	userMenu.CreatePopupMenu();
-	appendUserItems(userMenu);
-	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
-
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
@@ -1294,8 +1270,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		if(! (rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0) )
 			MoveWindow(rc, TRUE);
 	}
-
-	TimerManager::getInstance()->addListener(this);
 
 	return 1;
 }
@@ -1314,13 +1288,14 @@ struct CompareItems {
 	}
 	const int col;
 };
+#endif
 
-LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void HubFrame::handleCopyNick() {
 	int i=-1;
 	string nicks;
 
-	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		nicks += ctrlUsers.getItemData(i)->getNick();
+	while( (i = users->getNextItem(i, LVNI_SELECTED)) != -1) {
+		nicks += users->getItemData(i)->getNick();
 		nicks += ' ';
 	}
 	if(!nicks.empty()) {
@@ -1328,22 +1303,22 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		nicks.erase(nicks.length() - 1);
 		WinUtil::setClipboard(Text::toT(nicks));
 	}
-	return 0;
 }
 
+#ifdef PORT_ME
 LRESULT HubFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	WinUtil::setClipboard(Text::toT(client->getHubUrl()));
 	return 0;
 }
+#endif
 
-LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-	if(item->iItem != -1) {
-		ctrlUsers.getItemData(item->iItem)->getList();
+void HubFrame::handleDoubleClickUsers() {
+	if(users->hasSelection()) {
+		users->getSelectedItem()->getList();
 	}
-	return 0;
 }
 
+#ifdef PORT_ME
 static const COLORREF RED = RGB(255, 0, 0);
 static const COLORREF GREEN = RGB(0, 255, 0);
 
@@ -1411,9 +1386,10 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	cleanMenu(tabMenu);
 	return TRUE;
 }
+#endif
 
-void HubFrame::runUserCommand(::UserCommand& uc) {
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
+void HubFrame::runUserCommand(const ::UserCommand& uc) {
+	if(!WinUtil::getUCParams(this, uc, ucLineParams))
 		return;
 
 	StringMap ucParams = ucLineParams;
@@ -1421,20 +1397,24 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 	client->getMyIdentity().getParams(ucParams, "my", true);
 	client->getHubIdentity().getParams(ucParams, "hub", false);
 
+#ifdef PORT_ME
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
 		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams, false));
 	} else {
+#endif
 		int sel = -1;
-		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
-			UserInfo* u = ctrlUsers.getItemData(sel);
+		while((sel = users->getNextItem(sel, LVNI_SELECTED)) != -1) {
+			UserInfo* u = users->getItemData(sel);
 			StringMap tmp = ucParams;
 
 			u->getIdentity().getParams(tmp, "user", true);
 			client->escapeParams(tmp);
 			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false));
 		}
+#ifdef PORT_ME
 	}
+#endif
 }
 
 string HubFrame::stripNick(const string& nick) const {
@@ -1448,6 +1428,10 @@ string HubFrame::stripNick(const string& nick) const {
 		ret = nick;
 	}
 	return ret;
+}
+
+static bool compareCharsNoCase(string::value_type a, string::value_type b) {
+	return Text::toLower(a) == Text::toLower(b);
 }
 
 //Has fun side-effects. Otherwise needs reference arguments or multiple-return-values.
@@ -1475,6 +1459,7 @@ tstring HubFrame::scanNickPrefix(const tstring& prefixT) {
 
 	return Text::toT(maxPrefix);
 }
+#ifdef PORT_ME
 
 void HubFrame::onTab() {
 	if(ctrlMessage.GetWindowTextLength() == 0) {
@@ -1602,11 +1587,14 @@ LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 	return 0;
 }
 
+#endif
+
 void HubFrame::resortUsers() {
 	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
 		i->second->resortForFavsFirst(true);
 }
 
+#ifdef PORT_ME
 LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(uMsg == WM_CHAR && wParam == VK_TAB) {
 		handleTab(WinUtil::isShift());

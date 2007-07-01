@@ -117,7 +117,7 @@ void SpyFrame::layout() {
 }
 
 void SpyFrame::initSecond() {
-	createTimer(boost::bind(&SpyFrame::eachSecond, this), 1000);
+	createTimer(std::tr1::bind(&SpyFrame::eachSecond, this), 1000);
 }
 
 bool SpyFrame::eachSecond() {

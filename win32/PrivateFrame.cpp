@@ -20,6 +20,7 @@
 #include <client/DCPlusPlus.h>
 
 #include "PrivateFrame.h"
+#include "HoldRedraw.h"
 
 #include <client/ClientManager.h>
 #include <client/Client.h>
@@ -139,6 +140,8 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 
 	ClientManager::getInstance()->addListener(this);
 	
+	speak(USER_UPDATED);
+	
 	frames.insert(std::make_pair(replyTo, this));
 }
 
@@ -157,10 +160,9 @@ void PrivateFrame::addChat(const tstring& aLine) {
 
 	int limit = chat->getTextLimit();
 	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(line.size()) > limit) {
-		StupidWin::setRedraw(chat, false);
+		HoldRedraw hold(chat);
 		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
 		chat->replaceSelection(_T(""));
-		StupidWin::setRedraw(chat, true);
 	}
 #ifdef PORT_ME
 	if(!created) {
@@ -405,7 +407,6 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	tabMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
 
-	PostMessage(WM_SPEAKER, USER_UPDATED);
 	created = true;
 
 	bHandled = FALSE;

@@ -9,14 +9,15 @@ class Dev:
 		self.env = env
 	
 	def prepare(self):
-		self.env['CCCOMSTR'] = "Compiling $TARGET (static)"
-		self.env['SHCCCOMSTR'] = "Compiling $TARGET (shared)"
-		self.env['CXXCOMSTR'] = "Compiling $TARGET (static)"
-		self.env['SHCXXCOMSTR'] = "Compiling $TARGET (shared)"
-		self.env['SHLINKCOMSTR'] = "Linking $TARGET (shared)"
-		self.env['LINKCOMSTR'] = "Linking $TARGET (static)"
-		self.env['ARCOMSTR'] = "Archiving $TARGET"
-		self.env['RCCOMSTR'] = "Resource $TARGET"
+		if not self.env['verbose']:
+			self.env['CCCOMSTR'] = "Compiling $TARGET (static)"
+			self.env['SHCCCOMSTR'] = "Compiling $TARGET (shared)"
+			self.env['CXXCOMSTR'] = "Compiling $TARGET (static)"
+			self.env['SHCXXCOMSTR'] = "Compiling $TARGET (shared)"
+			self.env['SHLINKCOMSTR'] = "Linking $TARGET (shared)"
+			self.env['LINKCOMSTR'] = "Linking $TARGET (static)"
+			self.env['ARCOMSTR'] = "Archiving $TARGET"
+			self.env['RCCOMSTR'] = "Resource $TARGET"
 		
 		self.env.SConsignFile()
 		self.env.SetOption('implicit_cache', '1')

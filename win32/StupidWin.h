@@ -12,7 +12,6 @@ namespace {
 inline int getWindowTextLength(SmartWin::Widget* w) { return ::GetWindowTextLength(w->handle()); }
 inline int lineFromChar(SmartWin::Widget* w, int c = -1) { return sm(w, EM_LINEFROMCHAR, c); }
 inline int lineIndex(SmartWin::Widget* w, int l = -1) { return sm(w, EM_LINEINDEX, l); }
-inline void setRedraw(SmartWin::Widget* w, bool redraw) { sm(w, WM_SETREDRAW, redraw); }
 inline BOOL isIconic(SmartWin::Widget* w) { return ::IsIconic(w->handle()); }
 inline BOOL postMessage(SmartWin::Widget* w, UINT m, WPARAM wp = 0, LPARAM lp = 0) { return ::PostMessage(w->handle(), m, wp, lp); }
 inline LRESULT sendMessage(SmartWin::Widget* w, UINT m, WPARAM wp = 0, LPARAM lp = 0) { return ::SendMessage(w->handle(), m, wp, lp); }

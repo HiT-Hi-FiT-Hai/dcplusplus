@@ -21,6 +21,7 @@
 
 #include "DirectoryListingFrame.h"
 #include "LineDlg.h"
+#include "HoldRedraw.h"
 
 #include "resource.h"
 
@@ -39,9 +40,10 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, Resourc
 DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
 
 int DirectoryListingFrame::ItemInfo::getImage() const {
-	if(type == DIRECTORY) {
+	if(type == DIRECTORY || type == USER) {
 		return dir->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
 	}
+	
 	return WinUtil::getIconIndex(getText(COLUMN_FILENAME));
 }
 
@@ -163,7 +165,9 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::Widget* mdiParent, const 
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
 		files->setSortColumn(COLUMN_FILENAME);
-
+		
+		files->onSelectionChanged(std::tr1::bind(&DirectoryListingFrame::updateStatus, this));
+		files->onDblClicked(std::tr1::bind(&DirectoryListingFrame::handleDoubleClickFiles, this));
 	}
 	
 	{
@@ -198,15 +202,17 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::Widget* mdiParent, const 
 	setStatus(STATUS_NEXT, TSTRING(NEXT));
 
 	onRaw(&DirectoryListingFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	onRaw(&DirectoryListingFrame::handleXButtonUp, SmartWin::Message(WM_XBUTTONUP));
 
 	string nick = ClientManager::getInstance()->getNicks(dl->getUser()->getCID())[0];
 	treeRoot = dirs->insert(NULL, new ItemInfo(nick, dl->getRoot()));
 
 	setWindowTitle();
 
+	layout();
+	
 	lists.insert(std::make_pair(aUser, this));
 }
-
 
 DirectoryListingFrame::~DirectoryListingFrame() {
 	dcassert(lists.find(dl->getUser()) != lists.end());
@@ -236,7 +242,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 }
 
 
-void DirectoryListingFrame::initStatus() {
+void DirectoryListingFrame::initStatusText() {
 	setStatus(STATUS_TOTAL_FILES, Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true))));
 	setStatus(STATUS_TOTAL_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true))));
 	setStatus(STATUS_SPEED, Text::toT(STRING(SPEED) + ": " + Util::formatBytes(speed) + "/s"));
@@ -265,30 +271,24 @@ void DirectoryListingFrame::layout() {
 }
 
 void DirectoryListingFrame::postClosing() {
-#ifdef PORT_ME
 	clearList();
-#endif
 
 	SettingsManager::getInstance()->set(SettingsManager::DIRECTORLISTINGFRAME_ORDER, WinUtil::toString(files->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::DIRECTORLISTINGFRAME_WIDTHS, WinUtil::toString(files->getColumnWidths()));
 }
 
 void DirectoryListingFrame::handleFind(WidgetButtonPtr) {
-#ifdef PORT_ME
 	searching = true;
 	findFile(false);
 	searching = false;
 	updateStatus();
-#endif
 }
 
 void DirectoryListingFrame::handleFindNext(WidgetButtonPtr) {
-#ifdef PORT_ME
 	searching = true;
 	findFile(true);
 	searching = false;
 	updateStatus();
-#endif
 }
 
 void DirectoryListingFrame::handleMatchQueue(WidgetButtonPtr) {
@@ -315,9 +315,7 @@ void DirectoryListingFrame::handleListDiff(WidgetButtonPtr) {
 }
 
 void DirectoryListingFrame::refreshTree(const tstring& root) {
-#ifdef PORT_ME
-	ctrlTree.SetRedraw(FALSE);
-#endif
+	HoldRedraw hold(dirs);
 	
 	HTREEITEM ht = findItem(treeRoot, root);
 	if(ht == NULL) {
@@ -332,18 +330,11 @@ void DirectoryListingFrame::refreshTree(const tstring& root) {
 	}
 
 	updateTree(d, ht);
-
-#ifdef PORT_ME
-	ctrlTree.Expand(treeRoot);
 	
-	int index = d->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
-	ctrlTree.SetItemImage(ht, index, index);
-
-	ctrlTree.SelectItem(NULL);
+	dirs->select(NULL);
 	selectItem(root);
-	
-	ctrlTree.SetRedraw(TRUE);
-#endif
+
+	dirs->expand(treeRoot);
 }
 
 void DirectoryListingFrame::setWindowTitle() {
@@ -387,9 +378,8 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 	addTargets(menu);
 	addUserCommands(menu);
 	
-#ifdef PORT_ME
-	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
-#endif
+	menu->setDefaultItem(IDC_DOWNLOAD);
+
 	return menu;
 }
 
@@ -693,9 +683,7 @@ HTREEITEM DirectoryListingFrame::findItem(HTREEITEM ht, const tstring& name) {
 void DirectoryListingFrame::selectItem(const tstring& name) {
 	HTREEITEM ht = findItem(treeRoot, name);
 	if(ht != NULL) {
-#ifdef PORT_ME
-		ctrlTree.EnsureVisible(ht);
-#endif
+		dirs->ensureVisible(ht);
 		dirs->select(ht);
 	}
 }
@@ -735,15 +723,13 @@ void DirectoryListingFrame::handleSelectionChanged(WidgetTreeViewPtr) {
 	if(d == 0) {
 		return;
 	}
-	changeDir(d, TRUE);
+	HoldRedraw hold(files);
+	changeDir(d);
 	addHistory(dl->getPath(d));
 }
 
-void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enableRedraw) {
-#ifdef PORT_ME
-	ctrlList.SetRedraw(FALSE);
-#endif
-	
+void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
+
 	updating = true;
 	clearList();
 
@@ -754,10 +740,7 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 		ItemInfo* ii = new ItemInfo(*j);
 		files->insertItem(files->getRowCount(), ii);
 	}
-#ifdef PORT_ME
-	ctrlList.resort();
-	ctrlList.SetRedraw(enableRedraw);
-#endif
+	files->resort();
 	
 	updating = false;
 	updateStatus();
@@ -837,7 +820,7 @@ HTREEITEM DirectoryListingFrame::findFile(const StringSearch& str, HTREEITEM roo
 	}
 
 	// Force list pane to contain files of current dir
-	changeDir(dir, FALSE);
+	changeDir(dir);
 
 	// Check file names in list pane
 	for(int i=0; i<files->getRowCount(); i++) {
@@ -886,13 +869,14 @@ void DirectoryListingFrame::findFile(bool findNext)
 	if(findStr.empty())
 		return;
 
+	HoldRedraw hold(files);
+	HoldRedraw hold2(dirs);
+	
 	// Do a search
 	int foundFile = -1, skipHitsTmp = skipHits;
 	HTREEITEM const oldDir = dirs->getSelected();
 	HTREEITEM const foundDir = findFile(StringSearch(findStr), treeRoot, foundFile, skipHitsTmp);
-#ifdef PORT_ME
-	ctrlTree.SetRedraw(TRUE);
-#endif
+
 	if(foundDir) {
 		// Highlight the directory tree and list if the parent dir/a matched dir was found
 		if(foundFile >= 0) {
@@ -901,7 +885,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 			if(oldDir == foundDir)
 				dirs->select(NULL);
 
-				dirs->select(foundDir);
+			dirs->select(foundDir);
 		} else {
 			// Got a dir; select its parent directory in the tree if there is one
 			HTREEITEM parentItem = dirs->getParent(foundDir);
@@ -927,10 +911,8 @@ void DirectoryListingFrame::findFile(bool findNext)
 		// Highlight and focus the dir/file if possible
 		if(foundFile >= 0) {
 			files->setFocus();
-#ifdef PORT_ME
-			ctrlList.EnsureVisible(foundFile, FALSE);
-			ctrlList.SetItemState(foundFile, LVIS_SELECTED | LVIS_FOCUSED, (UINT)-1);
-#endif
+			files->setSelectedIndex(foundFile);
+			files->ensureVisible(foundFile);
 		} else {
 			dirs->setFocus();
 		}
@@ -985,41 +967,37 @@ void DirectoryListingFrame::runUserCommand(const UserCommand& uc) {
 	}
 }
 
+void DirectoryListingFrame::handleDoubleClickFiles() {
 
-#ifdef PORT_ME
-
-LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
-
-	HTREEITEM t = ctrlTree.GetSelectedItem();
-	if(t != NULL && item->iItem != -1) {
-		ItemInfo* ii = ctrlList.getItemData(item->iItem);
+	HTREEITEM t = dirs->getSelected();
+	int i = files->getSelectedIndex();
+	if(t != NULL && i != -1) {
+		ItemInfo* ii = files->getItemData(i);
 
 		if(ii->type == ItemInfo::FILE) {
 			try {
 				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + Text::fromT(ii->getText(COLUMN_FILENAME)), false, WinUtil::isShift());
 			} catch(const Exception& e) {
-				ctrlStatus.SetText(STATUS_STATUS, Text::toT(e.getError()).c_str());
+				setStatus(STATUS_STATUS, Text::toT(e.getError()));
 			}
 		} else {
-			HTREEITEM ht = ctrlTree.GetChildItem(t);
+			HTREEITEM ht = dirs->getChild(t);
 			while(ht != NULL) {
-				if((DirectoryListing::Directory*)ctrlTree.GetItemData(ht) == ii->dir) {
-					ctrlTree.SelectItem(ht);
+				if(dirs->getData(ht)->dir == ii->dir) {
+					dirs->select(ht);
 					break;
 				}
-				ht = ctrlTree.GetNextSiblingItem(ht);
+				ht = dirs->getNextSibling(ht);
 			}
 		}
 	}
-	return 0;
 }
 
-HRESULT DirectoryListingFrame::onXButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /* lParam */, BOOL& /* bHandled */) {
-	if(GET_XBUTTON_WPARAM(wParam) & XBUTTON1) {
+HRESULT DirectoryListingFrame::handleXButtonUp(LPARAM, WPARAM wp) {
+	if(HIWORD(wp) & XBUTTON1) {
 		back();
 		return TRUE;
-	} else if(GET_XBUTTON_WPARAM(wParam) & XBUTTON2) {
+	} else if(HIWORD(wp) & XBUTTON2) {
 		forward();
 		return TRUE;
 	}
@@ -1027,6 +1005,7 @@ HRESULT DirectoryListingFrame::onXButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM 
 	return FALSE;
 }
 
+#ifdef PORT_ME
 LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 	if(kd->wVKey == VK_BACK) {

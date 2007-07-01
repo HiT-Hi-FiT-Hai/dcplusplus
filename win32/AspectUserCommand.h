@@ -59,10 +59,9 @@ public:
 					StringTokenizer<tstring> t(Text::toT(uc->getName()), _T('\\'));
 					for(TStringIter i = t.getTokens().begin(); i != t.getTokens().end(); ++i) {
 						if(i+1 == t.getTokens().end()) {
-							cur->appendItem(IDC_USER_COMMAND + n, *i, boost::bind(&T::runUserCommand, static_cast<T*>(this), boost::cref(*uc)));
+							cur->appendItem(IDC_USER_COMMAND + n, *i, std::tr1::bind(&T::runUserCommand, static_cast<T*>(this), boost::cref(*uc)));
 						} else {
 							bool found = false;
-							TCHAR buf[1024];
 							// Let's see if we find an existing item...
 							for(int k = 0; k < cur->getCount(); k++) {
 								if(cur->isPopup(k, true) && Util::stricmp(cur->getText(k, true), *i) == 0) {

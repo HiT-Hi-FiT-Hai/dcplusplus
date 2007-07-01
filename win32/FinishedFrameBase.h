@@ -82,26 +82,26 @@ protected:
 
 		layout();
 
-		onSpeaker(boost::bind(&ThisType::spoken, this, _1, _2));
+		onSpeaker(std::tr1::bind(&ThisType::spoken, this, _1, _2));
 
 		FinishedManager::getInstance()->addListener(this);
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
 		FinishedManager::getInstance()->unlockList();
 
-		items->onRaw(boost::bind(&ThisType::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-		items->onRaw(boost::bind(&ThisType::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+		items->onRaw(std::tr1::bind(&ThisType::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+		items->onRaw(std::tr1::bind(&ThisType::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 
 		contextMenu = this->createMenu(true);
-		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), boost::bind(&ThisType::handleViewAsText, this, _1));
-		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), boost::bind(&ThisType::handleOpenFile, this, _1));
-		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), boost::bind(&ThisType::handleOpenFolder, this, _1));
+		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this, _1));
+		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this, _1));
+		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this, _1));
 		contextMenu->appendSeparatorItem();
-		contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), boost::bind(&ThisType::handleRemove, this, _1));
-		contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), boost::bind(&ThisType::handleRemoveAll, this, _1));
+		contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this, _1));
+		contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this, _1));
 #ifdef PORT_ME
 		contextMenu->setMenuDefaultItem(IDC_OPEN_FILE);
 #endif
-		onRaw(boost::bind(&ThisType::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+		onRaw(std::tr1::bind(&ThisType::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 #if 1
 		// for testing purposes; adds 2 dummy lines into the list
@@ -257,12 +257,12 @@ private:
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
 					typename T::WidgetMenuPtr pShellMenu = this->createMenu(true);
-					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), boost::bind(&ThisType::handleViewAsText, this, _1));
-					pShellMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), boost::bind(&ThisType::handleOpenFile, this, _1));
-					pShellMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), boost::bind(&ThisType::handleOpenFolder, this, _1));
+					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this, _1));
+					pShellMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this, _1));
+					pShellMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this, _1));
 					pShellMenu->appendSeparatorItem();
-					pShellMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), boost::bind(&ThisType::handleRemove, this, _1));
-					pShellMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), boost::bind(&ThisType::handleRemoveAll, this, _1));
+					pShellMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this, _1));
+					pShellMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this, _1));
 					pShellMenu->appendSeparatorItem();
 
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);

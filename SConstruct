@@ -8,13 +8,21 @@ opts.AddOptions(
 	EnumOption('tools', 'Toolset to compile with, default = platform default (msvc under windows)', 'mingw', ['mingw', 'default']),
 	EnumOption('mode', 'Compile mode', 'debug', ['debug', 'release']),
 	BoolOption('nativestl', 'Try to use native STL instead of STLPort', 'no'),
-	BoolOption('gch', 'Use GCH when compiling GUI (disable if you have linking problems with mingw)', 'yes')
+	BoolOption('gch', 'Use GCH when compiling GUI (disable if you have linking problems with mingw)', 'yes'),
+	BoolOption('verbose', 'Show verbose command lines', 'no'),
+	BoolOption('savetemps', 'Save intermediate compilation files (assembly output)', 'no')
 )
 
 gcc_flags = {
-	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-pipe', '-fexceptions'],
+	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-fexceptions', '-mthreads'],
 	'debug': [], 
 	'release' : ['-O2']
+}
+
+gcc_xxflags = {
+	'common' : [],
+	'debug' : [],
+	'release' : ['-fno-enforce-eh-specs']
 }
 
 msvc_flags = {
@@ -25,8 +33,14 @@ msvc_flags = {
 	'release' : ['/O2', '/MT']
 }
 
+msvc_xxflags = {
+	'common' : [],
+	'debug' : [],
+	'release' : []
+}
+
 gcc_link_flags = {
-	'common' : ['-g', '-Wl,--no-undefined'],
+	'common' : ['-g', '-Wl,--no-undefined', '-time'],
 	'debug' : [],
 	'release' : []				
 }
@@ -60,6 +74,10 @@ toolset = [tools, 'swig']
 env = Environment(tools = toolset, options=opts, ENV=os.environ)
 Help(opts.GenerateHelpText(env))
 
+if 'mingw' not in env['TOOLS'] and 'gcc' in env['TOOLS']:
+	print "Non-mingw gcc builds not supported"
+	Exit(1)
+
 mode = env['mode']
 if mode not in gcc_flags:
 	print "Unknown mode, exiting"
@@ -82,19 +100,19 @@ if not env['nativestl']:
 	else:
 		env.Append(LIBS = ['stlport.5.1'])	
 	
-
-if 'mingw' not in env['TOOLS'] and 'gcc' in env['TOOLS']:
-	print "Non-mingw gcc builds not supported"
-	Exit(1)
-
+if env['savetemps'] and 'gcc' in env['TOOLS']:
+	env.Append(CCFLAGS = ['-save-temps', '-fverbose-asm'])
+	
 if env['CC'] == 'cl':
 	flags = msvc_flags
+	xxflags = msvc_xxflags
 	link_flags = msvc_link_flags
 	defs = msvc_defs
 	
 	env.Append(LIBS = ['User32', 'shell32', 'Advapi32'])
 else:
 	flags = gcc_flags
+	xxflags = gcc_xxflags
 	link_flags = gcc_link_flags
 	defs = gcc_defs
 
@@ -108,8 +126,6 @@ env.Append(LINKFLAGS = link_flags[mode])
 env.Append(LINKFLAGS = link_flags['common'])
 
 env.SourceCode('.', None)
-env.SetOption('implicit_cache', '1')
-env.SetOption('max_drift', 60*10)
 
 import SCons.Scanner
 SWIGScanner = SCons.Scanner.ClassicCPP(

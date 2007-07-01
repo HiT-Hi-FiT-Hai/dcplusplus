@@ -386,11 +386,11 @@ HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 
 	switch(s) {
 	case DOWNLOAD_LISTING: {
-		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lp));
+		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(wp));
 		DirectoryListingFrame::openWindow(mdi, i->file, i->dir, i->user, i->speed);
 	} break;
 	case BROWSE_LISTING: {
-		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lp));
+		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(wp));
 		DirectoryListingFrame::openWindow(mdi, i->user, i->text, 0);
 	} break;
 	case AUTO_CONNECT: {
@@ -402,12 +402,12 @@ HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 #endif
 	} break;
 	case VIEW_FILE_AND_DELETE: {
-		auto_ptr<tstring> file(reinterpret_cast<tstring*>(lp));
+		auto_ptr<tstring> file(reinterpret_cast<tstring*>(wp));
 		new TextFrame(this, *file);
 		File::deleteFile(Text::fromT(*file));
 	} break;
 	case STATUS_MESSAGE: {
-		auto_ptr<pair<time_t, tstring> > msg((pair<time_t, tstring>*)lp);
+		auto_ptr<pair<time_t, tstring> > msg(reinterpret_cast<std::pair<time_t, tstring>*>(wp));
 		tstring line = Text::toT("[" + Util::getShortTimeString(msg->first) + "] ") + msg->second;
 
 		setStatus(STATUS_STATUS, line);
@@ -418,7 +418,7 @@ HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 		} else {
 			lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
 		}
-	}
+	} break;
 	}	
 	return 0;
 }
@@ -453,7 +453,7 @@ void MainWindow::handleMDIReorder(WidgetMenuPtr, unsigned id) {
 }
 
 void MainWindow::initSecond() {
-	createTimer(boost::bind(&MainWindow::eachSecond, this), 1000);
+	createTimer(std::tr1::bind(&MainWindow::eachSecond, this), 1000);
 }
 
 bool MainWindow::eachSecond() {

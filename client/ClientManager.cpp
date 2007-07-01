@@ -486,7 +486,6 @@ CID ClientManager::getMyCID() {
 }
 
 void ClientManager::on(Failed, Client* client, const string&) throw() {
-	FavoriteManager::getInstance()->removeUserCommand(client->getHubUrl());
 	fire(ClientManagerListener::ClientDisconnected(), client);
 }
 
