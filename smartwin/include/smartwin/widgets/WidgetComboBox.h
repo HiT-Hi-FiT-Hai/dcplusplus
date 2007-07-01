@@ -88,7 +88,7 @@ class WidgetComboBox :
 	public AspectRaw< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectSelection< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectSizable< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
+	public AspectText< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectThreads< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectVisible< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
 {

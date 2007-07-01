@@ -113,6 +113,7 @@ void SearchFrame::layout() {
 		int w2 = width - rMargin - lMargin;
 		rect.top += spacing;
 		rect.bottom = rect.top + comboH;
+		rect.left = lMargin;
 		rect.right = w2/3;
 		mode->setBounds(SmartWin::Rectangle::FromRECT(rect));
 
