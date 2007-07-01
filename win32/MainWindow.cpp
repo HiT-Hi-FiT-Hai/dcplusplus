@@ -17,7 +17,7 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "MainWindow.h"
 #include "resource.h"
@@ -44,18 +44,18 @@
 #include "WaitingUsersFrame.h"
 #include "AboutDlg.h"
 
-#include <client/SettingsManager.h>
-#include <client/ResourceManager.h>
-#include <client/version.h>
-#include <client/DownloadManager.h>
-#include <client/UploadManager.h>
-#include <client/FavoriteManager.h>
-#include <client/Client.h>
-#include <client/TimerManager.h>
-#include <client/SearchManager.h>
-#include <client/ConnectionManager.h>
-#include <client/ShareManager.h>
-#include <client/QueueManager.h>
+#include <dcpp/SettingsManager.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/version.h>
+#include <dcpp/DownloadManager.h>
+#include <dcpp/UploadManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/Client.h>
+#include <dcpp/TimerManager.h>
+#include <dcpp/SearchManager.h>
+#include <dcpp/ConnectionManager.h>
+#include <dcpp/ShareManager.h>
+#include <dcpp/QueueManager.h>
 
 MainWindow::MainWindow() :
 	SmartWin::Widget(0),

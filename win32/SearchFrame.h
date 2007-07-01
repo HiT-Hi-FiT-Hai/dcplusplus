@@ -21,9 +21,10 @@
 
 #include "MDIChildFrame.h"
 #include "TypedListViewCtrl.h"
+#include "AspectUserCommand.h"
 
-#include <client/SearchManager.h>
-#include <client/ClientManagerListener.h>
+#include <dcpp/SearchManager.h>
+#include <dcpp/ClientManagerListener.h>
 
 #include "UserInfoBase.h"
 
@@ -31,7 +32,8 @@ class SearchFrame :
 	public MDIChildFrame<SearchFrame>, 
 	private SearchManagerListener, 
 	private ClientManagerListener,
-	public AspectUserInfo<SearchFrame>
+	public AspectUserInfo<SearchFrame>,
+	public AspectUserCommand<SearchFrame>
 {
 public:
 	enum Status {
@@ -49,11 +51,13 @@ public:
 protected:
 	friend class MDIChildFrame<SearchFrame>;
 	friend class AspectUserInfo<SearchFrame>;
+	friend class AspectUserCommand<SearchFrame>;
+	
 	void layout();
-
 	bool preClosing();
 	void postClosing();
-
+	void initSecond();
+	bool eachSecond();
 private:
 	enum Speakers {
 		SPEAK_ADD_RESULT,
@@ -157,7 +161,7 @@ private:
 	static FrameSet frames;
 
 	WidgetStaticPtr searchLabel;
-	WidgetTextBoxPtr searchBox;
+	WidgetComboBoxPtr searchBox;
 	WidgetButtonPtr purge;
 
 	WidgetStaticPtr sizeLabel;
@@ -201,12 +205,7 @@ private:
 
 	CriticalSection cs;
 
-#ifdef PORT_ME
 	StringMap ucLineParams;
-
-	// Timer ID, needed to turn off timer
-	UINT timerID;
-#endif
 
 	SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
 	virtual ~SearchFrame();
@@ -215,7 +214,6 @@ private:
 
 	void handlePurgeClicked(WidgetButtonPtr);
 	void handleSlotsClicked(WidgetCheckBoxPtr);
-	void handleDoSearchClicked(WidgetButtonPtr);
 	void handleShowUIClicked(WidgetCheckBoxPtr);
 
 	typedef SmartWin::WidgetDataGrid<SearchFrame, SmartWin::MessageMapPolicyMDIChildWidget>* DataGridMessageType;
@@ -240,6 +238,10 @@ private:
 	void handleCopyMagnet(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 	void handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 
+	void runUserCommand(const UserCommand& uc);
+
+	void runSearch();
+
 	WidgetMenuPtr makeMenu();
 	void addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH);
 	void addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs);
@@ -258,6 +260,7 @@ private:
 	void onHubChanged(HubInfo* info);
 	void onHubRemoved(HubInfo* info);
 
+	using AspectSpeaker<SearchFrame>::speak;
 	void speak(Speakers s, Client* aClient);
 };
 
@@ -270,8 +273,6 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("SearchFrame"), IDR_SEARCH, 0, COLOR_3DFACE)
 
 	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
-	typedef UCHandler<SearchFrame> ucBase;
-	typedef UserInfoBaseHandler<SearchFrame> uicBase;
 
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
@@ -290,20 +291,11 @@ public:
 	END_MSG_MAP()
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onCtlColor(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void runUserCommand(UserCommand& uc);
 
 private:
-	class SearchInfo;
-public:
-	TypedListViewCtrl<SearchInfo, IDC_RESULTS>& getUserList() { return ctrlResults; }
-
-private:
-	void onEnter();
 	void onTab(bool shift);
 };
 

@@ -24,10 +24,10 @@
 #include "TypedTreeView.h"
 #include "AspectUserCommand.h"
 
-#include <client/forward.h>
-#include <client/FastAlloc.h>
-#include <client/DirectoryListing.h>
-#include <client/User.h>
+#include <dcpp/forward.h>
+#include <dcpp/FastAlloc.h>
+#include <dcpp/DirectoryListing.h>
+#include <dcpp/User.h>
 
 class DirectoryListingFrame : 
 	public MDIChildFrame<DirectoryListingFrame>,

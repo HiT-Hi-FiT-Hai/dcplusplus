@@ -19,7 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_ABOUT_DLG_H
 #define DCPLUSPLUS_WIN32_ABOUT_DLG_H
 
-#include <client/HttpConnection.h>
+#include <dcpp/HttpConnection.h>
 #include "resource.h"
 #include "AspectSpeaker.h"
 

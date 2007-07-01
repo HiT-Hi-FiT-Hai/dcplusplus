@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "Advanced3Page.h"
 
-#include <client/SettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_B, ResourceManager::B },

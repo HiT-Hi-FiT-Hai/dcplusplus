@@ -17,21 +17,21 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "HubFrame.h"
 #include "PrivateFrame.h"
 #include "LineDlg.h"
 #include "HoldRedraw.h"
 
-#include <client/ClientManager.h>
-#include <client/Client.h>
-#include <client/LogManager.h>
-#include <client/User.h>
-#include <client/ResourceManager.h>
-#include <client/FavoriteManager.h>
-#include <client/ConnectionManager.h>
-#include <client/SearchManager.h>
+#include <dcpp/ClientManager.h>
+#include <dcpp/Client.h>
+#include <dcpp/LogManager.h>
+#include <dcpp/User.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/ConnectionManager.h>
+#include <dcpp/SearchManager.h>
 
 int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100, 100, 125 };
 int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_IP, COLUMN_EMAIL, COLUMN_CID };

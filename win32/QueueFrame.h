@@ -23,11 +23,11 @@
 #include "TypedListViewCtrl.h"
 #include "TypedTreeView.h"
 
-#include <client/TaskQueue.h>
-#include <client/FastAlloc.h>
-#include <client/QueueManagerListener.h>
-#include <client/QueueItem.h>
-#include <client/ClientListener.h>
+#include <dcpp/TaskQueue.h>
+#include <dcpp/FastAlloc.h>
+#include <dcpp/QueueManagerListener.h>
+#include <dcpp/QueueItem.h>
+#include <dcpp/ClientListener.h>
 
 class QueueFrame : public StaticFrame<QueueFrame>, private ClientListener, private QueueManagerListener
 {

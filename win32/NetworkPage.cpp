@@ -17,14 +17,14 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "NetworkPage.h"
 
-#include <client/SettingsManager.h>
-#include <client/Socket.h>
+#include <dcpp/SettingsManager.h>
+#include <dcpp/Socket.h>
 #include "WinUtil.h"
 
 PropPage::TextItem NetworkPage::texts[] = {

@@ -17,12 +17,12 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 #include "resource.h"
 
 #include "StatsFrame.h"
 
-#include <client/TimerManager.h>
+#include <dcpp/TimerManager.h>
 
 StatsFrame::StatsFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent) 

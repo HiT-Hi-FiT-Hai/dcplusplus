@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "UsersFrame.h"
 #include "LineDlg.h"
 
-#include <client/FavoriteManager.h>
-#include <client/ResourceManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/ResourceManager.h>
 
 int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION, COLUMN_CID };
 int UsersFrame::columnSizes[] = { 200, 300, 150, 200, 125 };

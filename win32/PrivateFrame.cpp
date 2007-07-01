@@ -17,16 +17,16 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "PrivateFrame.h"
 #include "HoldRedraw.h"
 
-#include <client/ClientManager.h>
-#include <client/Client.h>
-#include <client/LogManager.h>
-#include <client/User.h>
-#include <client/ResourceManager.h>
+#include <dcpp/ClientManager.h>
+#include <dcpp/Client.h>
+#include <dcpp/LogManager.h>
+#include <dcpp/User.h>
+#include <dcpp/ResourceManager.h>
 
 #include <mmsystem.h>
 

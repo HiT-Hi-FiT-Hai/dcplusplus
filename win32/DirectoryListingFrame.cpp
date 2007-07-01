@@ -17,7 +17,7 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "DirectoryListingFrame.h"
 #include "LineDlg.h"
@@ -25,12 +25,12 @@
 
 #include "resource.h"
 
-#include <client/ResourceManager.h>
-#include <client/ADLSearch.h>
-#include <client/QueueManager.h>
-#include <client/FavoriteManager.h>
-#include <client/File.h>
-#include <client/StringSearch.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/ADLSearch.h>
+#include <dcpp/QueueManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/File.h>
+#include <dcpp/StringSearch.h>
 
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
 int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };

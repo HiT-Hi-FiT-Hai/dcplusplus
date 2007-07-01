@@ -18,22 +18,22 @@
 
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "WinUtil.h"
 #include "resource.h"
 #include "LineDlg.h"
 
-#include <client/SettingsManager.h>
-#include <client/ShareManager.h>
-#include <client/ClientManager.h>
-#include <client/HashManager.h>
-#include <client/ResourceManager.h>
+#include <dcpp/SettingsManager.h>
+#include <dcpp/ShareManager.h>
+#include <dcpp/ClientManager.h>
+#include <dcpp/HashManager.h>
+#include <dcpp/ResourceManager.h>
 
-#include <client/StringTokenizer.h>
-#include <client/version.h>
-#include <client/File.h>
-#include <client/UserCommand.h>
+#include <dcpp/StringTokenizer.h>
+#include <dcpp/version.h>
+#include <dcpp/File.h>
+#include <dcpp/UserCommand.h>
 
 tstring WinUtil::tth;
 HBRUSH WinUtil::bgBrush = NULL;

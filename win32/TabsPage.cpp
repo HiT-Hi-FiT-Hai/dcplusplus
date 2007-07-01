@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "TabsPage.h"
 
-#include <client/SettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 PropPage::Item TabsPage::items[] = {
 	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },

@@ -21,8 +21,8 @@
 
 #include "StaticFrame.h"
 
-#include <client/LogManager.h>
-#include <client/ResourceManager.h>
+#include <dcpp/LogManager.h>
+#include <dcpp/ResourceManager.h>
 
 class SystemFrame : public StaticFrame<SystemFrame>,
 	private LogManagerListener

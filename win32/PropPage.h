@@ -21,7 +21,7 @@
 
 #define SETTINGS_BUF_LEN 1024
 
-#include <client/ResourceManager.h>
+#include <dcpp/ResourceManager.h>
 
 class PropPage
 {

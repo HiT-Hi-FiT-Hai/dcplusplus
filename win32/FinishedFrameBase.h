@@ -24,8 +24,8 @@
 #include "TextFrame.h"
 #include "ShellContextMenu.h"
 
-#include <client/File.h>
-#include <client/FinishedManager.h>
+#include <dcpp/File.h>
+#include <dcpp/FinishedManager.h>
 
 template<class T, bool in_UL>
 class FinishedFrameBase : public StaticFrame<T>, private FinishedManagerListener {

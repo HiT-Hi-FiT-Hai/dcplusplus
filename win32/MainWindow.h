@@ -19,11 +19,11 @@
 #ifndef DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 #define DCPLUSPLUS_WIN32_MAIN_WINDOW_H
 
-#include <client/forward.h>
+#include <dcpp/forward.h>
 
-#include <client/QueueManagerListener.h>
-#include <client/LogManager.h>
-#include <client/HttpConnection.h>
+#include <dcpp/QueueManagerListener.h>
+#include <dcpp/LogManager.h>
+#include <dcpp/HttpConnection.h>
 
 #include "TransferView.h"
 #include "WidgetFactory.h"

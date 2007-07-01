@@ -17,15 +17,15 @@
  */
  
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "QueueFrame.h"
 #include "WinUtil.h"
 #include "resource.h"
 
-#include <client/QueueManager.h>
-#include <client/ResourceManager.h>
-#include <client/version.h>
+#include <dcpp/QueueManager.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/version.h>
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
 COLUMN_USERS, COLUMN_PATH, COLUMN_EXACT_SIZE, COLUMN_ERRORS, COLUMN_ADDED, COLUMN_TTH, COLUMN_TYPE };

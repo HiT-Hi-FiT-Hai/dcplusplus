@@ -19,14 +19,14 @@
 #ifndef DCPLUSPLUS_WIN32_TRANSFER_VIEW_H
 #define DCPLUSPLUS_WIN32_TRANSFER_VIEW_H
 
-#include <client/DownloadManagerListener.h>
-#include <client/UploadManagerListener.h>
-#include <client/ConnectionManagerListener.h>
-#include <client/TaskQueue.h>
-#include <client/forward.h>
-#include <client/Util.h>
-#include <client/Download.h>
-#include <client/Upload.h>
+#include <dcpp/DownloadManagerListener.h>
+#include <dcpp/UploadManagerListener.h>
+#include <dcpp/ConnectionManagerListener.h>
+#include <dcpp/TaskQueue.h>
+#include <dcpp/forward.h>
+#include <dcpp/Util.h>
+#include <dcpp/Download.h>
+#include <dcpp/Upload.h>
 
 #include "AspectSpeaker.h"
 #include "TypedListViewCtrl.h"

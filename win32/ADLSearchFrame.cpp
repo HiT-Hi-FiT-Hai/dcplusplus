@@ -18,11 +18,11 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include <client/DCPlusPlus.h>
-#include <client/Client.h>
+#include <dcpp/DCPlusPlus.h>
+#include <dcpp/Client.h>
 #include "ADLSearchFrame.h"
 #include "ADLSProperties.h"
-#include <client/ResourceManager.h>
+#include <dcpp/ResourceManager.h>
 
 int ADLSearchFrame::columnIndexes[] = { COLUMN_ACTIVE_SEARCH_STRING, COLUMN_SOURCE_TYPE, COLUMN_DEST_DIR, COLUMN_MIN_FILE_SIZE, COLUMN_MAX_FILE_SIZE };
 int ADLSearchFrame::columnSizes[] = { 120, 90, 90, 90, 90 };

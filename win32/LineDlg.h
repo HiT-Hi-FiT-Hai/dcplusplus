@@ -21,7 +21,7 @@
 
 #include "resource.h"
 
-#include <client/Util.h>
+#include <dcpp/Util.h>
 
 class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, LineDlg, SmartWin::MessageMapPolicyModalDialogWidget>
 {

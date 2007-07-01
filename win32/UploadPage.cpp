@@ -17,15 +17,15 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "UploadPage.h"
 
-#include <client/SettingsManager.h>
-#include <client/ShareManager.h>
-#include <client/version.h>
+#include <dcpp/SettingsManager.h>
+#include <dcpp/ShareManager.h>
+#include <dcpp/version.h>
 #include "WinUtil.h"
 #include "StupidWin.h"
 #include "LineDlg.h"

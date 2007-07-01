@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "AboutDlg.h"
 
-#include <client/SimpleXML.h>
-#include <client/ResourceManager.h>
-#include <client/version.h>
+#include <dcpp/SimpleXML.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/version.h>
 #include "WinUtil.h"
 
 static const char thanks[] = "Big thanks to all donators and people who have contributed with ideas "

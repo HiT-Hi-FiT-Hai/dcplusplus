@@ -19,8 +19,8 @@
 #ifndef DCPLUSPLUS_WIN32_USER_COMMAND_H
 #define DCPLUSPLUS_WIN32_USER_COMMAND_H
 
-#include <client/FavoriteManager.h>
-#include <client/StringTokenizer.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/StringTokenizer.h>
 #include "resource.h"
 
 template<class T>

@@ -23,7 +23,7 @@
 
 #include "TypedListViewCtrl.h"
 
-#include <client/FavoriteManager.h>
+#include <dcpp/FavoriteManager.h>
 
 class PublicHubsFrame : 
 	public StaticFrame<PublicHubsFrame>,

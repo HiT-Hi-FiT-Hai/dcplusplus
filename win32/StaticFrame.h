@@ -22,8 +22,8 @@
 #include "StupidWin.h"
 #include "MDIChildFrame.h"
 
-#include <client/ResourceManager.h>
-#include <client/Text.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/Text.h>
 
 template<class T>
 class StaticFrame : public MDIChildFrame<T> {

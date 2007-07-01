@@ -19,10 +19,10 @@
 #ifndef DCPLUSPLUS_WIN32_WIN_UTIL_H
 #define DCPLUSPLUS_WIN32_WIN_UTIL_H
 
-#include <client/StringTokenizer.h>
-#include <client/Util.h>
-#include <client/forward.h>
-#include <client/MerkleTree.h>
+#include <dcpp/StringTokenizer.h>
+#include <dcpp/Util.h>
+#include <dcpp/forward.h>
+#include <dcpp/MerkleTree.h>
 
 #ifdef PORT_ME
 #include "../client/Util.h"

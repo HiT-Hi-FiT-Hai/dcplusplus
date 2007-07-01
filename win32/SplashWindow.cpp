@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "SplashWindow.h"
 
-#include <client/version.h>
-#include <client/Text.h>
-#include <client/ResourceManager.h>
+#include <dcpp/version.h>
+#include <dcpp/Text.h>
+#include <dcpp/ResourceManager.h>
 
 #include "WinUtil.h"
 

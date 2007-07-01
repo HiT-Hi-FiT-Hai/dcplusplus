@@ -19,8 +19,8 @@
 #ifndef USERINFOBASE_H_
 #define USERINFOBASE_H_
 
-#include <client/forward.h>
-#include <client/ResourceManager.h>
+#include <dcpp/forward.h>
+#include <dcpp/ResourceManager.h>
 #include "resource.h"
 
 class UserInfoBase {

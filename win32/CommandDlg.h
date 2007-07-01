@@ -19,7 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_COMMAND_DLG_H
 #define DCPLUSPLUS_WIN32_COMMAND_DLG_H
 
-#include <client/Util.h>
+#include <dcpp/Util.h>
 
 class CommandDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, CommandDlg, SmartWin::MessageMapPolicyModalDialogWidget>
 {

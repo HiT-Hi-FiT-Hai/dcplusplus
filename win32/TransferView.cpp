@@ -18,18 +18,18 @@
 
  
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "TransferView.h"
 #include "resource.h"
 #include "WinUtil.h"
 
-#include <client/ResourceManager.h>
-#include <client/SettingsManager.h>
-#include <client/ConnectionManager.h>
-#include <client/DownloadManager.h>
-#include <client/UploadManager.h>
-#include <client/QueueManager.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/SettingsManager.h>
+#include <dcpp/ConnectionManager.h>
+#include <dcpp/DownloadManager.h>
+#include <dcpp/UploadManager.h>
+#include <dcpp/QueueManager.h>
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125 };

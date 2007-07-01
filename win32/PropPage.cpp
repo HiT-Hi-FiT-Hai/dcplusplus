@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "PropPage.h"
 
-#include <client/SettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = 0 */)
 {

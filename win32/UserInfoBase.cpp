@@ -17,15 +17,15 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "UserInfoBase.h"
 
-#include <client/QueueManager.h>
-#include <client/LogManager.h>
-#include <client/FavoriteManager.h>
-#include <client/UploadManager.h>
-#include <client/User.h>
+#include <dcpp/QueueManager.h>
+#include <dcpp/LogManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/UploadManager.h>
+#include <dcpp/User.h>
 
 #include "PrivateFrame.h"
 

@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "GeneralPage.h"
 
-#include <client/SettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_PERSONAL_INFORMATION, ResourceManager::SETTINGS_PERSONAL_INFORMATION },

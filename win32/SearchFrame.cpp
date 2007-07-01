@@ -17,14 +17,14 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 #include "resource.h"
 
 #include "SearchFrame.h"
 
-#include <client/ResourceManager.h>
-#include <client/FavoriteManager.h>
-#include <client/QueueManager.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/QueueManager.h>
 
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH, COLUMN_CID };
@@ -91,12 +91,9 @@ void SearchFrame::layout() {
 		rect.right = width - rMargin;
 		rect.left = lMargin;
 		rect.top += 25;
-#ifdef PORT_ME
 		rect.bottom = rect.top + comboH + 21;
-#else
-		rect.bottom = rect.top + 21; //@todo add + comboH when searchBox is a ComboBox
-#endif
 		searchBox->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		rect.bottom -= comboH;
 
 		searchLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
 
@@ -106,7 +103,12 @@ void SearchFrame::layout() {
 		rect.top += 25;
 		rect.bottom = rect.top + 21;
 		purge->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
+		
+		// "Search"
+		rect.right = width - rMargin;
+		rect.left = rect.right - 100;
+		doSearch->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		
 		// "Size"
 		int w2 = width - rMargin - lMargin;
 		rect.top += spacing;
@@ -160,12 +162,6 @@ void SearchFrame::layout() {
 
 		hubsLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
 
-		// "Search"
-		rect.right = width - rMargin;
-		rect.left = rect.right - 100;
-		rect.top = rect.bottom + labelH;
-		rect.bottom = rect.top + 21;
-		doSearch->setBounds(SmartWin::Rectangle::FromRECT(rect));
 	} else {
 		results->setBounds(SmartWin::Rectangle::FromRECT(rect));
 
@@ -341,37 +337,48 @@ void SearchFrame::SearchInfo::update() {
 
 SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	SmartWin::Widget(mdiParent),
+	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
 	bShowUI(true),
 	isHash(false),
 	initialString(initialString_),
 	initialSize(initialSize_),
 	initialMode(initialMode_),
 	initialType(initialType_),
-	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
-#ifdef PORT_ME
-	timerID(0),
-#endif
 	droppedResults(0)
 {
-	searchLabel = createStatic();
-	searchLabel->setText(TSTRING(SEARCH_FOR));
+	{
+		WidgetStatic::Seed cs;
+		cs.exStyle = WS_EX_TRANSPARENT;
+		
+		searchLabel = createStatic(cs);
+		searchLabel->setText(TSTRING(SEARCH_FOR));
+
+		sizeLabel = createStatic(cs);
+		sizeLabel->setText(TSTRING(SIZE));
+		
+		typeLabel = createStatic(cs);
+		typeLabel->setText(TSTRING(FILE_TYPE));
+
+		optionLabel = createStatic();
+		optionLabel->setText(TSTRING(SEARCH_OPTIONS));
+
+		hubsLabel = createStatic();
+		hubsLabel->setText(TSTRING(HUBS));
+
+	}
 
 	{
-		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
+		WidgetComboBox::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		searchBox = createTextBox(cs);
+		cs.extended = true;
+		searchBox = createComboBox(cs);
 		searchBox->setFont(WinUtil::font);
 		addWidget(searchBox);
-
-#ifdef PORT_ME
-		ctrlSearchBox.Create(handle(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-			WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL, 0);
+		
 		for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
-			ctrlSearchBox.InsertString(0, i->c_str());
+			searchBox->insertValue(0, *i);
 		}
-		ctrlSearchBox.SetExtendedUI();
-#endif
 	}
 
 	{
@@ -382,9 +389,6 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 		purge->onClicked(&SearchFrame::handlePurgeClicked);
 	}
-
-	sizeLabel = createStatic();
-	sizeLabel->setText(TSTRING(SIZE));
 
 	{
 		WidgetComboBox::Seed cs;
@@ -423,9 +427,6 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		sizeMode->setSelectedIndex((initialSize == 0) ? 2 : 0);
 	}
 
-	typeLabel = createStatic();
-	typeLabel->setText(TSTRING(FILE_TYPE));
-
 	{
 		WidgetComboBox::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
@@ -445,9 +446,6 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		fileType->addValue(_T("TTH"));
 	}
 
-	optionLabel = createStatic();
-	optionLabel->setText(TSTRING(SEARCH_OPTIONS));
-
 	{
 		WidgetCheckBox::Seed cs;
 		cs.caption = TSTRING(ONLY_FREE_SLOTS);
@@ -456,9 +454,6 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 		slots->onClicked(&SearchFrame::handleSlotsClicked);
 	}
-
-	hubsLabel = createStatic();
-	hubsLabel->setText(TSTRING(HUBS));
 
 	{
 		WidgetDataGrid::Seed cs;
@@ -483,7 +478,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		cs.caption = TSTRING(SEARCH);
 		doSearch = createButton(cs);
 
-		doSearch->onClicked(&SearchFrame::handleDoSearchClicked);
+		doSearch->onClicked(std::tr1::bind(&SearchFrame::runSearch, this));
 	}
 
 	{
@@ -494,12 +489,6 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		results->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		addWidget(results);
 
-#ifdef PORT_ME
-		for(int j=0; j<COLUMN_LAST; j++) {
-			int fmt = (j == COLUMN_SIZE || j == COLUMN_EXACT_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-			results->InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
-		}
-#endif
 		results->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		results->setColumnOrder(WinUtil::splitTokens(SETTING(SEARCHFRAME_ORDER), columnIndexes));
 		results->setColumnWidths(WinUtil::splitTokens(SETTING(SEARCHFRAME_WIDTHS), columnSizes));
@@ -552,16 +541,12 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	if(!initialString.empty()) {
 		lastSearches.push_back(initialString);
-#ifdef PORT_ME
-		ctrlSearchBox.InsertString(0, initialString.c_str());
-		ctrlSearchBox.SetCurSel(0);
-#endif
+		searchBox->insertValue(0, initialString);
+		searchBox->setSelectedIndex(0);
 		mode->setSelectedIndex(initialMode);
 		size->setText(Text::toT(Util::toString(initialSize)));
 		fileType->setSelectedIndex(initialType);
-#ifdef PORT_ME
-		onEnter();
-#endif
+		runSearch();
 	} else {
 		setText(TSTRING(SEARCH));
 		mode->setSelectedIndex(1);
@@ -613,20 +598,12 @@ HRESULT SearchFrame::spoken(LPARAM lParam, WPARAM wParam) {
 }
 
 void SearchFrame::handlePurgeClicked(WidgetButtonPtr) {
-#ifdef PORT_ME
-	searchBox->ResetContent();
-#endif
+	searchBox->removeAllItems();
 	lastSearches.clear();
 }
 
 void SearchFrame::handleSlotsClicked(WidgetCheckBoxPtr) {
 	onlyFree = slots->getChecked();
-}
-
-void SearchFrame::handleDoSearchClicked(WidgetButtonPtr) {
-#ifdef PORT_ME
-	onEnter();
-#endif
 }
 
 void SearchFrame::handleShowUIClicked(WidgetCheckBoxPtr) {
@@ -814,17 +791,12 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	menu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), &SearchFrame::handleBitziLookup);
 	menu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), &SearchFrame::handleCopyMagnet);
 	menu->appendSeparatorItem();
-#ifdef PORT_ME
 	appendUserItems(menu);
-#endif
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &SearchFrame::handleRemove);
-#ifdef PORT_ME
-	menu->SetMenuDefaultItem(IDC_DOWNLOAD);
-
 	prepareMenu(menu, UserCommand::CONTEXT_SEARCH, checkTTH.hubs);
-	checkAdcItems(menu);
-#endif
+
+	menu->setDefaultItem(IDC_DOWNLOAD);
 
 	return menu;
 }
@@ -890,7 +862,7 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		if(isHash) {
 			if(aResult->getType() != SearchResult::TYPE_FILE || TTHValue(Text::fromT(currentSearch[0])) != aResult->getTTH()) {
 				droppedResults++;
-				StupidWin::postMessage(this, WM_SPEAKER, SPEAK_FILTER_RESULT);
+				speak(SPEAK_FILTER_RESULT);
 				return;
 			}
 		} else {
@@ -901,7 +873,7 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 					)
 				{
 					droppedResults++;
-					StupidWin::postMessage(this, WM_SPEAKER, SPEAK_FILTER_RESULT);
+					speak(SPEAK_FILTER_RESULT);
 					return;
 				}
 			}
@@ -912,12 +884,12 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	if((onlyFree && aResult->getFreeSlots() < 1))
 	{
 		droppedResults++;
-		StupidWin::postMessage(this, WM_SPEAKER, SPEAK_FILTER_RESULT);
+		speak(SPEAK_FILTER_RESULT);
 		return;
 	}
 
 	SearchInfo* i = new SearchInfo(aResult);
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_ADD_RESULT, (LPARAM)i);
+	speak(SPEAK_ADD_RESULT, reinterpret_cast<WPARAM>(i));
 }
 
 void SearchFrame::onHubAdded(HubInfo* info) {
@@ -963,43 +935,37 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 
 void SearchFrame::speak(Speakers s, Client* aClient) {
 	HubInfo* hubInfo = new HubInfo(Text::toT(aClient->getHubUrl()), Text::toT(aClient->getHubName()), aClient->getMyIdentity().isOp());
-	StupidWin::postMessage(this, WM_SPEAKER, WPARAM(s), LPARAM(hubInfo));
+	speak(s, reinterpret_cast<WPARAM>(hubInfo));
 }
 
-#ifdef PORT_ME
-
-void SearchFrame::onEnter() {
+void SearchFrame::runSearch() {
 	StringList clients;
 
 	// Change Default Settings If Changed
 	if (onlyFree != BOOLSETTING(SEARCH_ONLY_FREE_SLOTS))
 		SettingsManager::getInstance()->set(SettingsManager::SEARCH_ONLY_FREE_SLOTS, onlyFree);
-	if (!initialType && ctrlFiletype.GetCurSel() != SETTING(LAST_SEARCH_TYPE))
-		SettingsManager::getInstance()->set(SettingsManager::LAST_SEARCH_TYPE, ctrlFiletype.GetCurSel());
+	if (!initialType && fileType->getSelectedIndex() != SETTING(LAST_SEARCH_TYPE))
+		SettingsManager::getInstance()->set(SettingsManager::LAST_SEARCH_TYPE, fileType->getSelectedIndex());
 
-	if(!(ctrlSearch.GetWindowTextLength() > 0))
+	tstring s = searchBox->getText();
+	
+	if(s.empty())
 		return;
 
-	int n = hubs->GetItemCount();
+	int n = hubs->getRowCount();
 	for(int i = 0; i < n; i++) {
-		if(hubs->GetCheckState(i)) {
+		if(hubs->getIsRowChecked(i)) {
 			clients.push_back(Text::fromT(hubs->getItemData(i)->url));
 		}
 	}
 
-	if(!clients.size())
+	if(clients.empty())
 		return;
 
-	tstring s(ctrlSearch.GetWindowTextLength() + 1, _T('\0'));
-	ctrlSearch.GetWindowText(&s[0], s.size());
-	s.resize(s.size()-1);
+	tstring tsize = size->getText();
 
-	tstring size(ctrlSize.GetWindowTextLength() + 1, _T('\0'));
-	ctrlSize.GetWindowText(&size[0], size.size());
-	size.resize(size.size()-1);
-
-	double lsize = Util::toDouble(Text::fromT(size));
-	switch(ctrlSizeMode.GetCurSel()) {
+	double lsize = Util::toDouble(Text::fromT(tsize));
+	switch(sizeMode->getSelectedIndex()) {
 	case 1:
 		lsize*=1024.0; break;
 	case 2:
@@ -1010,19 +976,17 @@ void SearchFrame::onEnter() {
 
 	int64_t llsize = (int64_t)lsize;
 
-	for(int i = 0; i != results->GetItemCount(); i++) {
-		delete results->getItemData(i);
-	}
-	results->DeleteAllItems();
+	results->forEachT(DeleteFunction());
+	results->removeAllRows();
 
 	{
 		Lock l(cs);
-		search = StringTokenizer<tstring>(s, ' ').getTokens();
+		currentSearch = StringTokenizer<tstring>(s, ' ').getTokens();
 		s.clear();
 		//strip out terms beginning with -
-		for(TStringList::iterator si = search.begin(); si != search.end(); ) {
+		for(TStringList::iterator si = currentSearch.begin(); si != currentSearch.end(); ) {
 			if(si->empty()) {
-				si = search.erase(si);
+				si = currentSearch.erase(si);
 				continue;
 			}
 			if ((*si)[0] != _T('-')) 
@@ -1034,21 +998,20 @@ void SearchFrame::onEnter() {
 	}
 
 
-	SearchManager::SizeModes mode((SearchManager::SizeModes)ctrlMode.GetCurSel());
+	SearchManager::SizeModes mode((SearchManager::SizeModes)sizeMode->getSelectedIndex());
 	if(llsize == 0)
 		mode = SearchManager::SIZE_DONTCARE;
 
-	int ftype = ctrlFiletype.GetCurSel();
-
+	int ftype = fileType->getSelectedIndex();
 
 	// Add new searches to the last-search dropdown list
 	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end())
 	{
 		int i = max(SETTING(SEARCH_HISTORY)-1, 0);
 
-		if(ctrlSearchBox.GetCount() > i)
-			ctrlSearchBox.DeleteString(i);
-		ctrlSearchBox.InsertString(0, s.c_str());
+		if(searchBox->getCount() > i)
+			searchBox->removeItem(i);
+		searchBox->insertValue(0, s);
 
 		while(lastSearches.size() > (TStringList::size_type)i) {
 			lastSearches.erase(lastSearches.begin());
@@ -1056,60 +1019,57 @@ void SearchFrame::onEnter() {
 		lastSearches.push_back(s);
 	}
 
-	ctrlStatus.SetText(1, (TSTRING(SEARCHING_FOR) + s + _T("...")).c_str());
-	ctrlStatus.SetText(2, _T(""));
-	ctrlStatus.SetText(3, _T(""));
+	setStatus(STATUS_STATUS, TSTRING(SEARCHING_FOR) + s + _T("..."));
+	setStatus(STATUS_COUNT, Util::emptyStringT);
+	setStatus(STATUS_FILTERED, Util::emptyStringT);
 	droppedResults = 0;
 	isHash = (ftype == SearchManager::TYPE_TTH);
 
-	SetWindowText((TSTRING(SEARCH) + _T(" - ") + s).c_str());
+	setText(TSTRING(SEARCH) + _T(" - ") + s);
 
 	if(SearchManager::getInstance()->okToSearch()) {
 		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize,
 			(SearchManager::TypeModes)ftype, mode, "manual");
 		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
-			ctrlSearch.SetWindowText(_T(""));
+			searchBox->setText(Util::emptyStringT);
 	} else {
 		int32_t waitFor = SearchManager::getInstance()->timeToSearch();
 		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
 		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
 
-		ctrlStatus.SetText(1, buf);
-		ctrlStatus.SetText(2, _T(""));
-		ctrlStatus.SetText(3, _T(""));
+		setStatus(STATUS_STATUS, tstring(buf));
+		setStatus(STATUS_COUNT, Util::emptyStringT);
+		setStatus(STATUS_FILTERED, Util::emptyStringT);
 
-		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
+		setText(TSTRING(SEARCH) + _T(" - ") + tstring(buf));
 		// Start the countdown timer
-		timerID = SetTimer(1, 1000);
+		initSecond();
 	}
-
 }
 
-LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+void SearchFrame::initSecond() {
+	createTimer(std::tr1::bind(&SearchFrame::eachSecond, this), 1000);
+}
+
+bool SearchFrame::eachSecond() {
 	int32_t waitFor = SearchManager::getInstance()->timeToSearch();
 	if(waitFor > 0) {
 		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
 		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
 
-		ctrlStatus.SetText(1, buf);
-		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
-	} else {
-		if(timerID != 0) {
-			KillTimer(timerID);
-			timerID = 0;
-		}
-
-		ctrlStatus.SetText(1, (TSTRING(SEARCHING_READY)).c_str());
-		SetWindowText((TSTRING(SEARCH) + _T(" - ") + TSTRING(SEARCHING_READY)).c_str());
-	}
-
-	ctrlStatus.SetText(2, _T(""));
-	ctrlStatus.SetText(3, _T(""));
-	return 0;
+		setStatus(STATUS_STATUS, tstring(buf));
+		setText(TSTRING(SEARCH) + _T(" - ") + tstring(buf));
+		return true;
+	} 
+	
+	setStatus(STATUS_STATUS, TSTRING(SEARCHING_READY));
+	setText(TSTRING(SEARCH) + _T(" - ") + TSTRING(SEARCHING_READY));
+	
+	return false;
 }
 
-void SearchFrame::runUserCommand(UserCommand& uc) {
-	if(!WinUtil::getUCParams(handle(), uc, ucLineParams))
+void SearchFrame::runUserCommand(const UserCommand& uc) {
+	if(!WinUtil::getUCParams(this, uc, ucLineParams))
 		return;
 
 	StringMap ucParams = ucLineParams;
@@ -1117,7 +1077,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 	set<CID> users;
 
 	int sel = -1;
-	while((sel = results->GetNextItem(sel, LVNI_SELECTED)) != -1) {
+	while((sel = results->getNextItem(sel, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = results->getItemData(sel)->sr;
 
 		if(!sr->getUser()->isOnline())
@@ -1147,21 +1107,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 	}
 }
 
-LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	HWND hWnd = (HWND)lParam;
-	HDC hDC = (HDC)wParam;
-
-	if(hWnd == searchLabel.handle() || hWnd == sizeLabel.handle() || hWnd == optionLabel.handle() || hWnd == typeLabel.handle()
-		|| hWnd == hubsLabel.handle() || hWnd == ctrlSlots.handle()) {
-		::SetBkColor(hDC, ::GetSysColor(COLOR_3DFACE));
-		::SetTextColor(hDC, ::GetSysColor(COLOR_BTNTEXT));
-		return (LRESULT)::GetSysColorBrush(COLOR_3DFACE);
-	} else {
-		::SetBkColor(hDC, WinUtil::bgColor);
-		::SetTextColor(hDC, WinUtil::textColor);
-		return (LRESULT)WinUtil::bgBrush;
-	}
-}
+#ifdef PORT_ME
 
 LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	switch(wParam) {

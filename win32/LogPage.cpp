@@ -17,14 +17,14 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "LogPage.h"
 
-#include <client/SettingsManager.h>
-#include <client/LogManager.h>
+#include <dcpp/SettingsManager.h>
+#include <dcpp/LogManager.h>
 #include "WinUtil.h"
 
 PropPage::TextItem LogPage::texts[] = {

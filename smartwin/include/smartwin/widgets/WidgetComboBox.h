@@ -48,6 +48,7 @@
 #include "../aspects/AspectThreads.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectChar.h"
+#include "../aspects/AspectText.h"
 #include "../xCeption.h"
 #include "SmartUtil.h"
 
@@ -87,6 +88,7 @@ class WidgetComboBox :
 	public AspectRaw< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectSelection< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectSizable< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
+	public AspectText< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectThreads< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
 	public AspectVisible< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
 {
@@ -112,6 +114,8 @@ public:
 
 		FontPtr font;
 
+		/// Use extended ui
+		bool extended;
 		/// Fills with default parameters
 		// explicit to avoid conversion through SmartWin::CreationalStruct
 		explicit Seed();
@@ -163,6 +167,11 @@ public:
 	  */
 	int addValue( const SmartUtil::tstring & val );
 
+	/// Appends a value to the ComboBox.
+	/** The return value is the index of the new item appended.
+	  */
+	int insertValue(int pos, const SmartUtil::tstring & val );
+
 	/// Returns the number of items present in the ComboBox.
 	/** Returns the number of items present in the ComboBox.
 	  */
@@ -211,6 +220,7 @@ const typename WidgetComboBox< EventHandlerClass, MessageMapPolicy >::Seed & Wid
 		Application::instance().setSystemClassName( d_DefaultValues, WC_COMBOBOX );
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_VSCROLL;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
+		d_DefaultValues.extended = true;
 		d_NeedsInit = false;
 	}
 	return d_DefaultValues;
@@ -305,6 +315,19 @@ int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::addValue( const Smart
 }
 
 template< class EventHandlerClass, class MessageMapPolicy >
+int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::insertValue( int pos, const SmartUtil::tstring & val )
+{
+	int newIdx = ComboBox_InsertString( this->Widget::itsHandle, pos, ( TCHAR * ) val.c_str() );
+	if ( newIdx == CB_ERR )
+	{
+		xCeption x( _T( "Error while trying to insert string into ComboBox" ) );
+		throw x;
+	}
+	return newIdx;
+}
+
+
+template< class EventHandlerClass, class MessageMapPolicy >
 int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getCount()
 {
 	return ComboBox_GetCount( this->Widget::itsHandle ); // Number of items present.
@@ -344,6 +367,9 @@ void WidgetComboBox< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 	}
 	ThisMessageMap::createMessageMap();
 	setFont( cs.font );
+	if(cs.extended) {
+		::SendMessage(this->handle(), CB_SETEXTENDEDUI, TRUE, 0);
+	}
 }
 
 // end namespace SmartWin

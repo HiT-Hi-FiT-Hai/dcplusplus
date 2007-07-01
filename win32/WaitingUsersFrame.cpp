@@ -17,17 +17,17 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "WaitingUsersFrame.h"
 #include "PrivateFrame.h"
 
-#include <client/Client.h>
-#include <client/QueueManager.h>
-#include <client/FavoriteManager.h>
-#include <client/UploadManager.h>
+#include <dcpp/Client.h>
+#include <dcpp/QueueManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/UploadManager.h>
 
 
 // Constructor

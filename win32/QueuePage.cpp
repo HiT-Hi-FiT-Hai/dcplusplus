@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "QueuePage.h"
 
-#include <client/SettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 PropPage::TextItem QueuePage::texts[] = {
 	{ IDC_SETTINGS_AUTOPRIO, ResourceManager::SETTINGS_PRIO_AUTOPRIO },

@@ -21,7 +21,7 @@
 
 #include "StaticFrame.h"
 
-#include <client/FavoriteManagerListener.h>
+#include <dcpp/FavoriteManagerListener.h>
 
 class FavHubsFrame : 
 	public StaticFrame<FavHubsFrame>, 

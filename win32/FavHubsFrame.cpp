@@ -17,13 +17,13 @@
  */
  
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "FavHubsFrame.h"
 #include "HubFrame.h"
 
-#include <client/ResourceManager.h>
-#include <client/FavoriteManager.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/FavoriteManager.h>
 
 int FavHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
 int FavHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };

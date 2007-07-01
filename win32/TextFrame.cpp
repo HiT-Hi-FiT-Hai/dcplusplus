@@ -17,12 +17,12 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "TextFrame.h"
 
-#include <client/File.h>
-#include <client/Text.h>
+#include <dcpp/File.h>
+#include <dcpp/Text.h>
 
 static const size_t MAX_TEXT_LEN = 64*1024;
 

@@ -19,7 +19,7 @@ def convert():
 	import re
 	import codecs
 	from xml.sax.saxutils import quoteattr, escape
-	version = re.search("VERSIONSTRING (\S+)", file("client/version.h").read()).group(1)
+	version = re.search("VERSIONSTRING (\S+)", file("dcpp/version.h").read()).group(1)
 	
 	varstr = "";
 	strings = "";
@@ -39,7 +39,7 @@ def convert():
 	recodeattr = lambda s: encoder(decoder(quoteattr(s))[0])[0]
 	recodeval = lambda s: encoder(decoder(escape(s, {"\\\\":"\\","\\t":"\t"}))[0])[0]
 	
-	for x in file("client/StringDefs.h", "r"):
+	for x in file("dcpp/StringDefs.h", "r"):
 	    if x.startswith("// @Strings: "):
 	        varstr = x[13:].strip();
 	    elif x.startswith("// @Names: "):
@@ -58,7 +58,7 @@ def convert():
 	example += '\t</Strings>\n';
 	example += '</Language>\n';
 	
-	file('client/StringDefs.cpp', 'w').write(prolog + varstr + " = {\n" + strings + "};\n" + varname + " = {\n" + names + "};\n");
+	file('dcpp/StringDefs.cpp', 'w').write(prolog + varstr + " = {\n" + strings + "};\n" + varname + " = {\n" + names + "};\n");
 	file('Example.xml', 'w').write(example);
 
 if __name__ == "__main__":

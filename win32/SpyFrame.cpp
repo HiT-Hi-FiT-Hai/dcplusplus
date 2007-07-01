@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 #include "resource.h"
 
 #include "SpyFrame.h"
 
-#include <client/ShareManager.h>
-#include <client/ClientManager.h>
+#include <dcpp/ShareManager.h>
+#include <dcpp/ClientManager.h>
 
 #include "SearchFrame.h"
 

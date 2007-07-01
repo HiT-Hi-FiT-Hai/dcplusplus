@@ -24,11 +24,11 @@
 #include "AspectUserCommand.h"
 #include "UserInfoBase.h"
 
-#include <client/forward.h>
-#include <client/ClientListener.h>
-#include <client/TaskQueue.h>
-#include <client/User.h>
-#include <client/FavoriteManagerListener.h>
+#include <dcpp/forward.h>
+#include <dcpp/ClientListener.h>
+#include <dcpp/TaskQueue.h>
+#include <dcpp/User.h>
+#include <dcpp/FavoriteManagerListener.h>
 
 class HubFrame : 
 	public MDIChildFrame<HubFrame>, 
@@ -272,17 +272,6 @@ private:
 
 #ifdef PORT_ME
 #include "FlatTabCtrl.h"
-#include "TypedListViewCtrl.h"
-
-#include "../client/Client.h"
-#include "../client/User.h"
-#include "../client/ClientManager.h"
-#include "../client/TimerManager.h"
-#include "../client/FastAlloc.h"
-#include "../client/TaskQueue.h"
-
-#include "WinUtil.h"
-#include "UCHandler.h"
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 #define FILTER_MESSAGE_MAP 8
@@ -297,7 +286,6 @@ public:
 
 	typedef CSplitterImpl<HubFrame> splitBase;
 	typedef MDITabChildWindowImpl<HubFrame> baseClass;
-	typedef UCHandler<HubFrame> ucBase;
 	typedef UserInfoBaseHandler<HubFrame> uibBase;
 
 	BEGIN_MSG_MAP(HubFrame)

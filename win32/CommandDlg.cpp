@@ -17,16 +17,16 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "CommandDlg.h"
 
-#include <client/ResourceManager.h>
-#include <client/UserCommand.h>
-#include <client/NmdcHub.h>
-#include <client/version.h>
+#include <dcpp/ResourceManager.h>
+#include <dcpp/UserCommand.h>
+#include <dcpp/NmdcHub.h>
+#include <dcpp/version.h>
 
 CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
 	SmartWin::Widget(parent),

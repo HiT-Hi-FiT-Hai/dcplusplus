@@ -21,7 +21,7 @@
 
 #include "StaticFrame.h"
 
-#include <client/ClientManagerListener.h>
+#include <dcpp/ClientManagerListener.h>
 
 class SpyFrame : public StaticFrame<SpyFrame>, private ClientManagerListener {
 public:

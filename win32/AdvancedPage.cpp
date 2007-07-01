@@ -17,13 +17,13 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "AdvancedPage.h"
 
-#include <client/SettingsManager.h>
+#include <dcpp/SettingsManager.h>
 
 PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };
 

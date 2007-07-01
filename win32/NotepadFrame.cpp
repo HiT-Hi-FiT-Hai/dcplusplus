@@ -17,12 +17,12 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "NotepadFrame.h"
 
-#include <client/File.h>
-#include <client/Text.h>
+#include <dcpp/File.h>
+#include <dcpp/Text.h>
 
 NotepadFrame::NotepadFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent), 

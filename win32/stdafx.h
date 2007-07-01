@@ -19,7 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_STDAFX_H
 #define DCPLUSPLUS_WIN32_STDAFX_H
 
-#include <client/stdinc.h>
+#include <dcpp/stdinc.h>
 
 #include <SmartWin.h>
 #include <shlwapi.h>

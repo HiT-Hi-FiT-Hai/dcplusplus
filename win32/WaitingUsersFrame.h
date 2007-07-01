@@ -22,8 +22,8 @@
 #include "StaticFrame.h"
 #include "WinUtil.h"
 
-#include <client/forward.h>
-#include <client/UploadManagerListener.h>
+#include <dcpp/forward.h>
+#include <dcpp/UploadManagerListener.h>
 
 class WaitingUsersFrame : 
 	public StaticFrame<WaitingUsersFrame>, 

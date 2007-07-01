@@ -17,14 +17,14 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "HashProgressDlg.h"
 
-#include <client/HashManager.h>
-#include <client/ResourceManager.h>
+#include <dcpp/HashManager.h>
+#include <dcpp/ResourceManager.h>
 
 HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
 	SmartWin::Widget(parent),

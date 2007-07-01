@@ -17,14 +17,14 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "resource.h"
 
 #include "CertificatesPage.h"
 
-#include <client/SettingsManager.h>
-#include <client/CryptoManager.h>
+#include <dcpp/SettingsManager.h>
+#include <dcpp/CryptoManager.h>
 #include "WinUtil.h"
 
 PropPage::TextItem CertificatesPage::texts[] = {

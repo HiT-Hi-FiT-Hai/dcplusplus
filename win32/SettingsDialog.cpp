@@ -17,7 +17,7 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "SettingsDialog.h"
 #include "resource.h"

@@ -17,16 +17,16 @@
  */
 
 #include "stdafx.h"
-#include <client/DCPlusPlus.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include "SingleInstance.h"
 #include "WinUtil.h"
 #include "MainWindow.h"
 #include "SplashWindow.h"
 
-#include <client/MerkleTree.h>
-#include <client/File.h>
-#include <client/Text.h>
+#include <dcpp/MerkleTree.h>
+#include <dcpp/File.h>
+#include <dcpp/Text.h>
 
 #ifdef PORT_ME
 

@@ -19,7 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_USERS_FRAME_H
 #define DCPLUSPLUS_WIN32_USERS_FRAME_H
 
-#include <client/FavoriteManagerListener.h>
+#include <dcpp/FavoriteManagerListener.h>
 
 #include "StaticFrame.h"
 #include "WinUtil.h"

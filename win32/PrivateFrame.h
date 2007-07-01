@@ -22,8 +22,8 @@
 #include "MDIChildFrame.h"
 #include "TableLayout.h"
 
-#include <client/ClientManagerListener.h>
-#include <client/User.h>
+#include <dcpp/ClientManagerListener.h>
+#include <dcpp/User.h>
 
 class PrivateFrame : 
 	public MDIChildFrame<PrivateFrame>, 
