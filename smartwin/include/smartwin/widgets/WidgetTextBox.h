@@ -118,7 +118,7 @@ public:
 	typedef WidgetTextBox< EventHandlerClass, TextBoxType > ThisType;
 
 	/// Object type
-	typedef WidgetTextBox< EventHandlerClass, TextBoxType > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Info for creation
 	/** This class contains all of the values needed to create the widget. It also
@@ -144,9 +144,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// Contract needed by AspectUpdate Aspect class
 	static inline Message & getUpdateMessage();
@@ -316,12 +313,6 @@ template< class EventHandlerClass, class TextBoxType >
 WidgetTextBox< EventHandlerClass, TextBoxType >::Seed::Seed()
 {
 	* this = WidgetTextBox::getDefaultSeed();
-}
-
-template< class EventHandlerClass, class TextBoxType >
-LRESULT WidgetTextBox< EventHandlerClass, TextBoxType >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass, class TextBoxType >

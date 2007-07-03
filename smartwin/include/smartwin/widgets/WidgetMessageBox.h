@@ -59,7 +59,7 @@ public:
 	/// Object type
 	/** Note, not a pointer!!!!
 	  */
-	typedef WidgetMessageBox< Parent > ObjectType;
+	typedef ThisType ObjectType;
 
 	~WidgetMessageBox()
 	{}

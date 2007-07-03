@@ -60,7 +60,7 @@ public:
 	/// Object type
 	/** Note, not a pointer!!!!
 	  */
-	typedef WidgetChooseColor< Parent > ObjectType;
+	typedef ThisType ObjectType;
 
 	/// Helper class for WidgetChooseColor
 	/** Is used as the parameter to the WidgetChooseColor to set the custom colors

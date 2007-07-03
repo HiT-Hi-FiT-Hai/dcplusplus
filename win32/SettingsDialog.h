@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class SettingsDialog : public WidgetFactory<SmartWin::WidgetModalDialog, SettingsDialog, SmartWin::MessageMapPolicyModalDialogWidget>
+class SettingsDialog : public WidgetFactory<SmartWin::WidgetModalDialog, SettingsDialog>
 {
 public:
 	SettingsDialog(SmartWin::Widget* parent);

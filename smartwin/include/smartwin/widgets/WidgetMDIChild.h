@@ -65,7 +65,7 @@ public:
 	typedef WidgetMDIChild< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetMDIChild< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

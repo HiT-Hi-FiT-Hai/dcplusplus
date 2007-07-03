@@ -216,7 +216,7 @@ private:
 	void handleSlotsClicked(WidgetCheckBoxPtr);
 	void handleShowUIClicked(WidgetCheckBoxPtr);
 
-	typedef SmartWin::WidgetDataGrid<SearchFrame, SmartWin::MessageMapPolicyMDIChildWidget>* DataGridMessageType;
+	typedef SmartWin::WidgetDataGrid<SearchFrame>* DataGridMessageType;
 
 	HRESULT handleHubItemChanged(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 

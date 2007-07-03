@@ -46,8 +46,8 @@ namespace SmartWin
 /** Desktop version dependant functions which does not exist in Windows CE version of
   * Windows API will be here
   */
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, SmartWinDesktop >
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, SmartWinDesktop >
 	: public ContainerWidgetType< EventHandlerClass >
 {
 public:
@@ -130,18 +130,6 @@ public:
 	  */
 	WidgetRichTextBoxPtr subclassRichTextBox( unsigned id )
 	{
-		// If this one fizzles you have tried to call this function from a derived
-		// class which not is derived from MessageMapPolicyDialogWidget, like for
-		// instance both the MessageMapPolicyNormalWidget and the
-		// MessageMapPolicyMDIChildWidget classes cannot logically subclass a
-		// dialog item since they're NOT dialog Widgets therefore they will give
-		// you a compile error if you try to call this function from Widgets
-		// implementing the those classes! Only the MessageMapPolicyDialogWidget
-		// can logically call this function and therefore it's the only one which
-		// will not give you a compile time error here...
-		typename MessageMapPolicy::canSubclassControls checker;
-		//TODO: this error was catched by devcpp ... what was intended?
-		//return WidgetCreator< WidgetRichTextBox >::subclass( this, cs );
 		return WidgetCreator< WidgetRichTextBox >::subclass( this, id );
 	}
 
@@ -206,8 +194,8 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, SmartWinDesktop >::WidgetFactoryPlatformImplementation()
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, SmartWinDesktop >::WidgetFactoryPlatformImplementation()
 	: Widget(0), ContainerWidgetType< EventHandlerClass >( 0 )
 {}
 

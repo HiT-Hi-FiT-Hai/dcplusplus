@@ -21,7 +21,7 @@
 
 #include <dcpp/Util.h>
 
-class CommandDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, CommandDlg, SmartWin::MessageMapPolicyModalDialogWidget>
+class CommandDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, CommandDlg>
 {
 public:
 	CommandDlg(SmartWin::Widget* parent, int type_ = 0, int ctx_ = 0, const tstring& name_ = Util::emptyStringT, const tstring& command_ = Util::emptyStringT, const tstring& hub_ = Util::emptyStringT);
@@ -61,7 +61,7 @@ private:
 	void handleFocus();
 	void handleTypeChanged(WidgetRadioButtonPtr);
 
-	typedef SmartWin::WidgetTextBox<CommandDlg, SmartWin::MessageMapPolicyModalDialogWidget>* TextBoxMessageType;
+	typedef SmartWin::WidgetTextBox<CommandDlg>* TextBoxMessageType;
 	HRESULT handleTextChanged(TextBoxMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/);
 
 	void handleOKClicked(WidgetButtonPtr);

@@ -26,11 +26,11 @@
 /**
  * This is where stuff that eventually should be moved to smartwin goes
  */
-template< template< class> class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy = SmartWin::MessageMapPolicyNormalWidget >
-class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy> {
+template< template< class> class ContainerWidgetType, class EventHandlerClass>
+class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass> {
 public:
-	WidgetFactory() : SmartWin::Widget(0), SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>() { }
-	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>(parent) { }
+	WidgetFactory() : SmartWin::Widget(0), SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass>() { }
+	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass>(parent) { }
 
 	/// DataGrid class type.
 	typedef ::WidgetDataGrid< EventHandlerClass > WidgetDataGrid;

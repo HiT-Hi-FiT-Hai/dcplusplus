@@ -93,7 +93,7 @@ public:
 	typedef WidgetGroupBox< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetGroupBox< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -147,8 +147,6 @@ protected:
 	// WidgetFactory class which is friend
 	virtual ~WidgetGroupBox()
 	{}
-
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 private:
 	std::list< typename WidgetRadioButton< EventHandlerClass >::ObjectType > itsChildrenBtns;
@@ -231,6 +229,7 @@ template< class EventHandlerClass >
 	itsChildrenBtns.push_back( btn );
 }
 
+#ifdef PORT_ME
 template< class EventHandlerClass >
 LRESULT WidgetGroupBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
@@ -250,7 +249,7 @@ LRESULT WidgetGroupBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT 
 	}
 	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
-
+#endif
 // end namespace SmartWin
 }
 

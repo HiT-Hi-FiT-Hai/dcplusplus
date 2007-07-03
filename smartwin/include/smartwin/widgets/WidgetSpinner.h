@@ -83,7 +83,7 @@ public:
 	typedef WidgetSpinner< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetSpinner< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -112,9 +112,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	/// Sets the range of the Spinner
 	/** The range is the unique values of the control, use this function to set the
@@ -189,12 +186,6 @@ template< class EventHandlerClass >
 WidgetSpinner< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetSpinner::getDefaultSeed();
-}
-
-template< class EventHandlerClass >
-LRESULT WidgetSpinner< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass >

@@ -142,25 +142,25 @@ protected:
   */
 template< typename EventHandlerClass, typename Painter >
 class WidgetSplitter :
-	public MessageMapControl< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter > >,
+	public MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget>,
 	public Painter,
 
 	// Aspects
 	public AspectSizable< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter > > >,
+		MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > >,
 	public AspectVisible< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter > > >,
+		MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > >,
 	public AspectRaw< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter > > >
+		MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetSplitter > MessageMapType;
+	typedef MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > MessageMapType;
 	friend class WidgetCreator< WidgetSplitter >;
 public:
 	/// Class type
 	typedef WidgetSplitter< EventHandlerClass, Painter > ThisType;
 
 	/// Object type
-	typedef WidgetSplitter< EventHandlerClass, Painter > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -232,7 +232,6 @@ private:
 	unsigned itsOldX;
 	unsigned itsOldY;
 
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,7 +337,7 @@ void WidgetSplitter< EventHandlerClass, Painter >::create( const Seed & cs )
 	  throw x;
 	}
 }
-
+#ifdef PORT_ME
 template< typename EventHandlerClass, typename Painter >
 LRESULT WidgetSplitter< EventHandlerClass, Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
@@ -474,7 +473,7 @@ LRESULT WidgetSplitter< EventHandlerClass, Painter >::sendWidgetMessage( HWND hW
 	// Removing compiler hickup...
 	return 0;
 }
-
+#endif
 // end namespace SmartWin
 }
 

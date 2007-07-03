@@ -235,9 +235,6 @@ public:
 		BOOST_STATIC_ASSERT( sizeof( HWND ) == sizeof( HMENU ) );
 		this->Widget::itsHandle = reinterpret_cast< HWND >( handle );
 
-		// Menu controls uses the Windows Message Procedure of the parent window
-		this->MessageMapType::itsDefaultWindowProc = NULL;
-
 		this->Widget::registerWidget();
 	}
 

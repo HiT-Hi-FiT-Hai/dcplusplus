@@ -82,7 +82,7 @@ public:
 	typedef WidgetProgressBar< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetProgressBar< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -108,9 +108,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	//virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar );
 
 #ifdef COMCTRL_V6
 	/// Sets the Vertical property of the control

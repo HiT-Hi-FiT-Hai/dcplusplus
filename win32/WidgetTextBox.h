@@ -23,8 +23,10 @@ template< class EventHandlerClass >
 class WidgetTextBox : public SmartWin::WidgetTextBox<EventHandlerClass> {
 private:
 	typedef SmartWin::WidgetTextBox<EventHandlerClass> BaseType;
+	typedef WidgetTextBox<EventHandlerClass> ThisType;
 public:
-	typedef WidgetTextBox<EventHandlerClass>* ObjectType;
+	
+	typedef ThisType* ObjectType;
 
 	explicit WidgetTextBox( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent) { }
 

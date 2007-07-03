@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class AdvancedPage : public WidgetFactory<SmartWin::WidgetDialog, AdvancedPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
+class AdvancedPage : public WidgetFactory<SmartWin::WidgetDialog, AdvancedPage>, public PropPage
 {
 public:
 	AdvancedPage(SmartWin::Widget* parent);

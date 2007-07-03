@@ -83,7 +83,7 @@ private:
 
 	HRESULT spoken(LPARAM lParam, WPARAM wParam);
 
-	typedef SmartWin::WidgetDataGrid<SpyFrame, SmartWin::MessageMapPolicyMDIChildWidget>* DataGridMessageType;
+	typedef SmartWin::WidgetDataGrid<SpyFrame>* DataGridMessageType;
 	HRESULT handleColumnClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 	HRESULT handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 

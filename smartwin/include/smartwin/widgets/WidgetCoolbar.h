@@ -36,6 +36,12 @@
 #include "../MessageMapControl.h"
 #include "../xCeption.h"
 #include "../BasicTypes.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectFont.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectVisible.h"
+
 
 #include "WidgetComboBox.h"
 #include "WidgetTextBox.h"
@@ -77,7 +83,7 @@ class WidgetCoolbar :
 {
 	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar > MessageMapType;
 	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar > ThisMessageMap;
-	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > > AspectSizable;
+	typedef AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > > AspectSizable;
 	friend class WidgetCreator< WidgetCoolbar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible
@@ -97,7 +103,7 @@ public:
 	typedef WidgetCoolbar< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetCoolbar< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

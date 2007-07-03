@@ -24,7 +24,7 @@
 
 class UserCommand;
 
-class UCPage : public WidgetFactory<SmartWin::WidgetDialog, UCPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
+class UCPage : public WidgetFactory<SmartWin::WidgetDialog, UCPage>, public PropPage
 {
 public:
 	UCPage(SmartWin::Widget* parent);
@@ -48,7 +48,7 @@ private:
 
 	WidgetDataGridPtr commands;
 
-	typedef SmartWin::WidgetDataGrid<UCPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	typedef SmartWin::WidgetDataGrid<UCPage>* DataGridMessageType;
 	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 

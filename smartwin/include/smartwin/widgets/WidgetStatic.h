@@ -94,7 +94,7 @@ public:
 	typedef WidgetStatic< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetStatic< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -120,9 +120,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// Contract needed by AspectClickable Aspect class
 	static inline Message & getClickMessage();
@@ -185,12 +182,6 @@ template< class EventHandlerClass >
 WidgetStatic< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetStatic::getDefaultSeed();
-}
-
-template< class EventHandlerClass >
-LRESULT WidgetStatic< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass >

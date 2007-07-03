@@ -40,17 +40,17 @@ namespace SmartWin
 /** Windows CE dependant functions which does not exist in Desktop version of Windows
   * API will be here
   */
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, SmartWinCE >
-	: public ContainerWidgetType< EventHandlerClass, MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, SmartWinCE >
+	: public ContainerWidgetType< EventHandlerClass >
 {
 public:
 	WidgetFactoryPlatformImplementation()
-		: ContainerWidgetType< EventHandlerClass, MessageMapPolicy >( 0 )
+		: ContainerWidgetType< EventHandlerClass >( 0 )
 	{}
 
 	WidgetFactoryPlatformImplementation( SmartWin::Widget * parent )
-		: ContainerWidgetType< EventHandlerClass, MessageMapPolicy >( parent )
+		: ContainerWidgetType< EventHandlerClass >( parent )
 	{}
 };
 

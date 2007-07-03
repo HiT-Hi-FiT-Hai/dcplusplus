@@ -102,7 +102,7 @@ public:
 	typedef WidgetDateTimePicker< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetDateTimePicker< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Message map type
 	typedef MessageMapControl< EventHandlerClass, ThisType > MessageMapType;
@@ -143,9 +143,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// Aspect expectation implementation
 	static Message & getClickMessage();
@@ -293,12 +290,6 @@ template< class EventHandlerClass >
 WidgetDateTimePicker< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetDateTimePicker::getDefaultSeed();
-}
-
-template< class EventHandlerClass >
-LRESULT WidgetDateTimePicker< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass >

@@ -166,7 +166,7 @@ public:
 	typedef WidgetWindowBase< EventHandlerClass, MessageMapPolicy > ThisType;
 
 	/// Object type
-	typedef WidgetWindowBase< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapType;
 private:
@@ -174,9 +174,6 @@ private:
 	typedef AspectAdapter<CloseDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CloseAdapter;
 	typedef WidgetWindowBaseTimerDispatcher TimerDispatcher;
 public:
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// The next line must be included in Widgets that are supposed to support being
 	// Maximized, Minimized or Restored. It's a Magic Enum construct and can be

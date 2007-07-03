@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class LogPage : public WidgetFactory<SmartWin::WidgetDialog, LogPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
+class LogPage : public WidgetFactory<SmartWin::WidgetDialog, LogPage>, public PropPage
 {
 public:
 	LogPage(SmartWin::Widget* parent);
@@ -54,7 +54,7 @@ private:
 
 	void handleBrowseClicked(WidgetButtonPtr);
 
-	typedef SmartWin::WidgetDataGrid<LogPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	typedef SmartWin::WidgetDataGrid<LogPage>* DataGridMessageType;
 	HRESULT handleItemChanged(DataGridMessageType dataGrid, LPARAM /*lParam*/, WPARAM /*wParam*/);
 
 	void getValues();

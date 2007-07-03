@@ -51,7 +51,7 @@ public:
 	typedef ListViewEditBox< EventHandlerClass > ThisType;
 
 	// Object type
-	typedef ListViewEditBox< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	void createSubclass( HWND hWnd );
 
@@ -62,8 +62,6 @@ public:
 
 	Rectangle itsRect;
 
-private:
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,16 +79,10 @@ template< class EventHandlerClass >
 void ListViewEditBox< EventHandlerClass >::createSubclass( HWND hWnd )
 {
 	this->Widget::itsHandle = hWnd;
-	::SetWindowLongPtr( this->Widget::itsHandle, GWL_ID, reinterpret_cast< LONG >( this->Widget::itsCtrlId ) );
-	this->Widget::itsCtrlId = reinterpret_cast< HMENU >( GetWindowLongPtr( this->Widget::itsHandle, GWL_ID ) );
-
-	// Have to cast to Widget, it looks weird but otherwise we can't extract it
-	// since we're using reinterpret to get it back again...
-	::SetProp( this->Widget::itsHandle, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( static_cast< Widget * >( this ) ) );
-	MessageMapControl< EventHandlerClass, WidgetTextBox< EventHandlerClass > >::itsDefaultWindowProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( this->Widget::itsHandle, GWL_WNDPROC, reinterpret_cast< LONG_PTR >( WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >::wndProc ) ) );
+	this->createMessageMap();
 	Widget::registerWidget();
 }
-
+#ifdef PORT_ME
 template< class EventHandlerClass >
 LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
@@ -118,7 +110,7 @@ LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT
 	}
 	return WidgetTextBox< EventHandlerClass >::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
-
+#endif
 // end namespace private_
 }
 

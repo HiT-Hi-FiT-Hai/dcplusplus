@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class FavoriteDirsPage : public WidgetFactory<SmartWin::WidgetDialog, FavoriteDirsPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
+class FavoriteDirsPage : public WidgetFactory<SmartWin::WidgetDialog, FavoriteDirsPage>, public PropPage
 {
 public:
 	FavoriteDirsPage(SmartWin::Widget* parent);
@@ -47,7 +47,7 @@ private:
 
 	WidgetDataGridPtr directories;
 
-	typedef SmartWin::WidgetDataGrid<FavoriteDirsPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	typedef SmartWin::WidgetDataGrid<FavoriteDirsPage>* DataGridMessageType;
 	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 	HRESULT handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/);

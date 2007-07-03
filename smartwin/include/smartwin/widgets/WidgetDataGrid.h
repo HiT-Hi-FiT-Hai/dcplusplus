@@ -390,7 +390,7 @@ public:
 	typedef WidgetDataGrid< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetDataGrid< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -909,9 +909,6 @@ private:
 	// Calculates the adjustment from the columns of an item.
 	int xoffFromColumn( int column, int & logicalColumn );
 
-	// Must override to get the LVN_BEGINLABELEDIT && NM_DBLCLK event handler (we
-	// don't have an event handler for them)...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 #ifdef WINCE
 	HIMAGELIST itsHImageList;
 #endif
@@ -1789,6 +1786,7 @@ RECT WidgetDataGrid< EventHandlerClass >::getSubItemRect( int item, int subitem,
 	return r;
 }
 
+#ifdef PORT_ME
 // TODO: Should these
 template< class EventHandlerClass >
 LRESULT WidgetDataGrid< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
@@ -1955,7 +1953,7 @@ LRESULT WidgetDataGrid< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT 
 	}
 	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
-
+#endif
 // end namespace SmartWin
 }
 

@@ -69,7 +69,7 @@ public:
 	/// Object type
 	/** Note, not a pointer!!!!
 	  */
-	typedef WidgetLoadFile< Parent > ObjectType;
+	typedef ThisType ObjectType;
 
 	/// Shows the dialog
 	/** Returns string() or "empty string" if user press cancel. <br>

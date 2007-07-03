@@ -91,9 +91,9 @@ namespace SmartWin
   * should just get to "live their own life" and should not be tampered with in any
   * "memory ways".
   */
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy = MessageMapPolicyNormalWidget >
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
 class WidgetFactory
-	: public WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, CurrentPlatform >
+	: public WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, CurrentPlatform >
 {
 public:
 	/// MessageBox class and object type.
@@ -213,13 +213,6 @@ public:
 	/// DateTimePicker object type.
 	typedef typename WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
 
-	//TODO: If we set the policyclass to the MessageMapPolicy (which appears
-	//TODO: logicaly) we get bugs when creating widget child widgets within e.g. a
-	//TODO: MDIChild or a WidgetDialog since the creational params aren't right...
-	//TODO: If we set it like it is now we basically can't create a
-	//TODO: WidgetChildWidget and trap events in the container widget which is it's
-	//TODO: parent since the type would be wrong...
-
 	/// WidgetChildWindow class type.
 	typedef SmartWin::WidgetChildWindow<EventHandlerClass > WidgetChildWindow;
 
@@ -227,7 +220,7 @@ public:
 	typedef typename WidgetChildWindow::ObjectType WidgetChildWindowPtr;
 
 	/// WidgetWindow class type.
-	typedef SmartWin::WidgetWindow< EventHandlerClass, MessageMapPolicy > WidgetWindow;
+	typedef SmartWin::WidgetWindow< EventHandlerClass > WidgetWindow;
 
 	/// WidgetWindow object type.
 	typedef typename WidgetWindow::ObjectType WidgetWindowPtr;
@@ -476,407 +469,287 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetFactory()
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetFactory()
 		: Widget( 0 )
-		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, CurrentPlatform >()
+		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, CurrentPlatform >()
 {}
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetFactory( SmartWin::Widget * parent )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetFactory( SmartWin::Widget * parent )
 		: Widget( parent )
-		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, CurrentPlatform >( parent )
+		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, CurrentPlatform >( parent )
 {}
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetChooseFolder
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createChooseFolder()
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetChooseFolder
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createChooseFolder()
 {
 	WidgetChooseFolder retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetLoadFile
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createLoadFile()
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetLoadFile
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createLoadFile()
 {
 	WidgetLoadFile retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSaveFile
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createSaveFile()
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSaveFile
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createSaveFile()
 {
 	WidgetSaveFile retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetChooseColor
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createChooseColor()
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetChooseColor
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createChooseColor()
 {
 	WidgetChooseColor retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetMessageBox
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMessageBox()
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetMessageBox
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createMessageBox()
 {
 	WidgetMessageBox retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDataGridPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDataGridPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
 {
 	return WidgetCreator< WidgetDataGrid >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDataGridPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassList( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDataGridPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassList( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetDataGrid >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetCheckBoxPtr
-	WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createCheckBox( const typename WidgetCheckBox::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetCheckBoxPtr
+	WidgetFactory< ContainerWidgetType, EventHandlerClass >::createCheckBox( const typename WidgetCheckBox::Seed & cs )
 {
 	return WidgetCreator< WidgetCheckBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetCheckBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassCheckBox( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetCheckBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassCheckBox( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetCheckBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetChildWindowPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetChildWindowPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs )
 {
 	WidgetChildWindowPtr retVal = new WidgetChildWindow( this );
 	retVal->createWindow( cs );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTreeViewPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTreeView( const typename WidgetTreeView::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTreeViewPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createTreeView( const typename WidgetTreeView::Seed & cs )
 {
 	return WidgetCreator< WidgetTreeView >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTreeViewPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassTreeView( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTreeViewPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassTreeView( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetTreeView >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetMenuPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMenu(const typename WidgetMenu::Seed & cs)
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetMenuPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createMenu(const typename WidgetMenu::Seed & cs)
 {
 	return WidgetCreator< WidgetMenu >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTextBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTextBox( const typename WidgetTextBox::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTextBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createTextBox( const typename WidgetTextBox::Seed & cs )
 {
 	return WidgetCreator< WidgetTextBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTextBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassTextBox( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTextBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassTextBox( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetTextBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStatusBarPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createStatusBar( const typename WidgetStatusBar::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStatusBarPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createStatusBar( const typename WidgetStatusBar::Seed & cs )
 {
 	return WidgetCreator< WidgetStatusBar >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStatusBarSectionsPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStatusBarSectionsPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs )
 {
 	return WidgetCreator< WidgetStatusBarSections >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetButtonPtr
-	WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createButton( const typename WidgetButton::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetButtonPtr
+	WidgetFactory< ContainerWidgetType, EventHandlerClass >::createButton( const typename WidgetButton::Seed & cs )
 {
 	return WidgetCreator< WidgetButton >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetMDIParentPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMDIParent( const typename WidgetMDIParent::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetMDIParentPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createMDIParent( const typename WidgetMDIParent::Seed & cs )
 {
 	return WidgetCreator< WidgetMDIParent >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTabSheetPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTabSheet( const typename WidgetTabSheet::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTabSheetPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createTabSheet( const typename WidgetTabSheet::Seed & cs )
 {
 	return WidgetCreator< WidgetTabSheet >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSliderPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createSlider( const typename WidgetSlider::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSliderPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createSlider( const typename WidgetSlider::Seed & cs )
 {
 	return WidgetCreator< WidgetSlider >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSpinnerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createSpinner( const typename WidgetSpinner::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSpinnerPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createSpinner( const typename WidgetSpinner::Seed & cs )
 {
 	return WidgetCreator< WidgetSpinner >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetProgressBarPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createProgressBar( const typename WidgetProgressBar::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetProgressBarPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createProgressBar( const typename WidgetProgressBar::Seed & cs )
 {
 	return WidgetCreator< WidgetProgressBar >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetButtonPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassButton( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetButtonPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassButton( unsigned id )
 {
 	return WidgetCreator< WidgetButton >::subclass( this, id );
 }
 
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetProgressBarPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassProgressBar( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetProgressBarPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassProgressBar( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetProgressBar >::subclass( this, id );
 }
 
 
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSliderPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassSlider( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSliderPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassSlider( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetSlider >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSpinnerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassSpinner( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSpinnerPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassSpinner( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetSpinner >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetGroupBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createGroupBox( const typename WidgetGroupBox::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetGroupBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createGroupBox( const typename WidgetGroupBox::Seed & cs )
 {
 	return WidgetCreator< WidgetGroupBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetGroupBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassGroupBox( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetGroupBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassGroupBox( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetGroupBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDateTimePickerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDateTimePickerPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs )
 {
 	return WidgetCreator< WidgetDateTimePicker >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDateTimePickerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassDateTimePicker( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDateTimePickerPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassDateTimePicker( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetDateTimePicker >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetRadioButtonPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetRadioButtonPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs )
 {
 	WidgetRadioButtonPtr retVal = WidgetCreator< WidgetRadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs );
 	parent->addChild( retVal );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetRadioButtonPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassRadioButton( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetRadioButtonPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassRadioButton( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	WidgetRadioButtonPtr retVal = WidgetCreator< WidgetRadioButton >::subclass( this, id );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetComboBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createComboBox( const typename WidgetComboBox::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetComboBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createComboBox( const typename WidgetComboBox::Seed & cs )
 {
 	return WidgetCreator< WidgetComboBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetComboBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassComboBox( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetComboBoxPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassComboBox( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetComboBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStaticPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createStatic( const typename WidgetStatic::Seed & cs )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStaticPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::createStatic( const typename WidgetStatic::Seed & cs )
 {
 	return WidgetCreator< WidgetStatic >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStaticPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassStatic( unsigned id )
+template< template< class > class ContainerWidgetType, class EventHandlerClass >
+typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStaticPtr
+WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassStatic( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetStatic >::subclass( this, id );
 }
 

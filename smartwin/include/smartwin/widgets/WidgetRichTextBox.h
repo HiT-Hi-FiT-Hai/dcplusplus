@@ -80,7 +80,7 @@ public:
 	typedef WidgetRichTextBox< EventHandlerClass, TextBoxType > ThisType;
 
 	/// Object type
-	typedef WidgetRichTextBox< EventHandlerClass, TextBoxType > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -110,9 +110,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	/// Actually creates the Rich Edit Control
 	/** You should call WidgetFactory::createRichTextBox if you instantiate class
@@ -164,12 +161,6 @@ template< class EventHandlerClass, class TextBoxType >
 WidgetRichTextBox< EventHandlerClass, TextBoxType >::Seed::Seed()
 {
 	* this = WidgetRichTextBox::getDefaultSeed();
-}
-
-template< class EventHandlerClass, class TextBoxType >
-LRESULT WidgetRichTextBox< EventHandlerClass, TextBoxType >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass, class TextBoxType >

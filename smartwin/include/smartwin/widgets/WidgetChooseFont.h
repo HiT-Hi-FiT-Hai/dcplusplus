@@ -60,7 +60,7 @@ public:
 	/// Object type
 	/** Note, not a pointer!!!!
 	  */
-	typedef WidgetChooseFont< Parent > ObjectType;
+	typedef ThisType ObjectType;
 
 	/// Shows the dialog
 	bool showDialog(DWORD dwFlags, LPLOGFONT lplf, DWORD& rgbColors);

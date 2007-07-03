@@ -95,7 +95,7 @@ public:
 	typedef WidgetButton< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetButton< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also

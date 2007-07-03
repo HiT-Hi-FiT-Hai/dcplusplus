@@ -114,7 +114,7 @@ public:
 	typedef WidgetTabSheet< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetTabSheet< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -140,9 +140,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// AspectSelection expectation implementation
 	static Message & getSelectionChangedMessage();
@@ -291,12 +288,6 @@ WidgetTabSheet< EventHandlerClass >::Seed::Seed()
 }
 
 template< class EventHandlerClass >
-LRESULT WidgetTabSheet< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
-}
-
-template< class EventHandlerClass >
 Message & WidgetTabSheet< EventHandlerClass >::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, TCN_SELCHANGE );
@@ -423,7 +414,7 @@ template< class EventHandlerClass >
 void WidgetTabSheet< EventHandlerClass >::setFlatSeparators( bool value )
 {
 	setFlatButtonStyle();
-	sendWidgetMessage( this->Widget::itsHandle, TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, TCS_EX_FLATSEPARATORS );
+	this->sendMessage( TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, TCS_EX_FLATSEPARATORS );
 }
 
 template< class EventHandlerClass >

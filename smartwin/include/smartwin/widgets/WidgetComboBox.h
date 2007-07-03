@@ -99,7 +99,7 @@ public:
 	typedef WidgetComboBox< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetComboBox< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -127,9 +127,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// Aspect expectation implementation
 	static Message & getSelectionChangedMessage();
@@ -230,12 +227,6 @@ template< class EventHandlerClass >
 WidgetComboBox< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetComboBox::getDefaultSeed();
-}
-
-template< class EventHandlerClass >
-LRESULT WidgetComboBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 template< class EventHandlerClass >

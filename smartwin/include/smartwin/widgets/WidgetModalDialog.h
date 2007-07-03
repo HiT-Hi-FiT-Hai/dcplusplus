@@ -80,7 +80,7 @@ public:
 	/// Object type
 	/** Note, not a pointer!!!!
 	  */
-	typedef WidgetModalDialog< EventHandlerClass > ObjectType;
+	typedef ThisType ObjectType;
 
 	/// Creates a Modal Dialog Window from a resource id.
 	/** This version creates a window from a Dialog Resource ID. <br>
@@ -199,7 +199,7 @@ int WidgetModalDialog< EventHandlerClass >::createDialog( unsigned resourceId )
 		( ( Application::instance().getAppHandle() )
 		, ( MAKEINTRESOURCE( resourceId ) )
 		, ( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 )
-		, ( (DLGPROC)WidgetWindowBase< EventHandlerClass, SmartWin::MessageMapPolicyModalDialogWidget >::wndProc )
+		, ( (DLGPROC)WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >::wndProc )
 		, ( reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) ) )
 		);
 	if ( retv == - 1 )
@@ -241,7 +241,7 @@ int WidgetModalDialog< EventHandlerClass >::createDialog()
 		( Application::instance().getAppHandle() // HINSTANCE hInstance
 		, ( DLGTEMPLATE * ) dlg_menu_winclass_title // LPCDLGTEMPLATE hDialogTemplate
 		, this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 // HWND hWndParent
-		, WidgetWindowBase< EventHandlerClass, SmartWin::MessageMapPolicyModalDialogWidget >::mainWndProc_ // DLGPROC lpDialogFunc
+		, (DLGPROC)WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >::wndProc // DLGPROC lpDialogFunc
 		, reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) )
 		); // LPARAM dwInitParam
 

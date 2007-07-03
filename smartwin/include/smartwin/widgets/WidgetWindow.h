@@ -75,17 +75,17 @@ struct WidgetWindowCreateDispatcher
   * Class is a public superclass of WidgetWindowBase and therefore can use all 
   * features of WidgetWindowBase.   
   */
-template< class EventHandlerClass, class MessageMapPolicy = MessageMapPolicyNormalWidget >
+template< class EventHandlerClass >
 class WidgetWindow
-	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicy >
+	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyNormalWidget >
 {
-	typedef typename WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::MessageMapType MessageMapType;
+	typedef typename WidgetWindowBase< EventHandlerClass, MessageMapPolicyNormalWidget >::MessageMapType MessageMapType;
 	typedef WidgetWindowCreateDispatcher CreateDispatcher;
 	typedef AspectAdapter<CreateDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CreateAdapter;
 
 public:
 	/// Class type
-	typedef WidgetWindow< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetWindow< EventHandlerClass > ThisType;
 
 	/// Object type
 	typedef ThisType* ObjectType;
@@ -192,7 +192,7 @@ private:
 
 template< class EventHandlerClass >
 class WidgetChildWindow
-	: public WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >
+	: public WidgetWindow< EventHandlerClass >
 {
 public:
 	typedef WidgetChildWindow<EventHandlerClass> ThisType;
@@ -204,7 +204,7 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >::Seed
+		: public WidgetWindow< EventHandlerClass >::Seed
 	{
 	public:
 		/// Fills with default parameters
@@ -228,20 +228,20 @@ public:
 	  */
 	virtual void createWindow( Seed cs = getDefaultSeed() )
 	{
-		WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >::createWindow( cs );
+		WidgetWindow< EventHandlerClass >::createWindow( cs );
 	}
 
 protected:
 	// Unlike WidgetWindow, WidgetChildWindow must have a parent!!!
-	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >( parent ) //Long name to satisfy devcpp
+	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow< EventHandlerClass >( parent ) //Long name to satisfy devcpp
 	{};
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetWindow< EventHandlerClass, MessageMapPolicy >::Seed & WidgetWindow< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetWindow< EventHandlerClass >::Seed & WidgetWindow< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -265,34 +265,34 @@ const typename WidgetWindow< EventHandlerClass, MessageMapPolicy >::Seed & Widge
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetWindow< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetWindow< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetWindow::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetWindow< EventHandlerClass, MessageMapPolicy >::WidgetWindow( Widget * parent )
-	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicy >( parent )
+template< class EventHandlerClass >
+WidgetWindow< EventHandlerClass >::WidgetWindow( Widget * parent )
+	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyNormalWidget >( parent )
 {}
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetWindow< EventHandlerClass, MessageMapPolicy >::~WidgetWindow()
+template< class EventHandlerClass >
+WidgetWindow< EventHandlerClass >::~WidgetWindow()
 {
 	::UnregisterClass( itsRegisteredClassName.c_str(), Application::instance().getAppHandle() );
 }
 
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindow< EventHandlerClass, MessageMapPolicy >::createInvisibleWindow( Seed cs )
+template< class EventHandlerClass >
+void WidgetWindow< EventHandlerClass >::createInvisibleWindow( Seed cs )
 {
 	cs.style=  cs.style & ( ~ WS_VISIBLE );
-	WidgetWindow< EventHandlerClass, MessageMapPolicy >::createWindow( cs );
+	WidgetWindow< EventHandlerClass >::createWindow( cs );
 }
 
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindow< EventHandlerClass, MessageMapPolicy >::createWindow( Seed cs )
+template< class EventHandlerClass >
+void WidgetWindow< EventHandlerClass >::createWindow( Seed cs )
 {
 	Application::instance().generateLocalClassName( cs );
 	itsRegisteredClassName = cs.getClassName();
@@ -304,7 +304,7 @@ void WidgetWindow< EventHandlerClass, MessageMapPolicy >::createWindow( Seed cs 
 #endif //! WINCE
 	// This are window class styles, not window styles ...
 	ws.style = CS_DBLCLKS;	// Allow double click messages
-	ws.lpfnWndProc = MessageMapPolicy::mainWndProc_;
+	ws.lpfnWndProc = &MessageMapType::wndProc;
 	ws.cbClsExtra = 0;
 	ws.cbWndExtra = 0;
 	ws.hInstance = Application::instance().getAppHandle();
@@ -332,8 +332,8 @@ void WidgetWindow< EventHandlerClass, MessageMapPolicy >::createWindow( Seed cs 
 	Widget::create( cs );
 }
 
-template< class Parent, class WidgetMessageMapType >
-void WidgetWindow< Parent, WidgetMessageMapType >::activatePreviousInstance()
+template< class Parent >
+void WidgetWindow< Parent >::activatePreviousInstance()
 {
 	int iTries = 5;
 	while ( iTries-- > 0 )

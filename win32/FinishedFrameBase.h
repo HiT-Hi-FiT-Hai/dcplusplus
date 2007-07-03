@@ -227,8 +227,6 @@ private:
 		return 0;
 	}
 
-	typedef SmartWin::WidgetDataGrid<T, SmartWin::MessageMapPolicyMDIChildWidget>* DataGridMessageType;
-
 	HRESULT handleDoubleClick(LPARAM lParam, WPARAM /*wParam*/) {
 		LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
 		if(item->iItem != -1)

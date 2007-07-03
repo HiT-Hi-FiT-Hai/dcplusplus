@@ -23,7 +23,7 @@
 
 #include <dcpp/Util.h>
 
-class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, LineDlg, SmartWin::MessageMapPolicyModalDialogWidget>
+class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, LineDlg>
 {
 public:
 	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_ = Util::emptyStringT, bool password_ = false);

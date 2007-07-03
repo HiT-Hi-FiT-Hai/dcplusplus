@@ -53,7 +53,7 @@ public:
 	typedef WidgetDialog< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetDialog< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Creates a Dialog Window
 	/** This version creates a window from the given Dialog Resource Id.
@@ -82,7 +82,7 @@ void WidgetDialog< EventHandlerClass >::createDialog( unsigned resourceId )
 	this->Widget::itsHandle = ::CreateDialogParam( Application::instance().getAppHandle(),
 		MAKEINTRESOURCE( resourceId ),
 		( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 ),
-		( WidgetWindowBase< EventHandlerClass, SmartWin::MessageMapPolicyModalDialogWidget >::mainWndProc_ ),
+		( (DLGPROC)WidgetWindowBase< EventHandlerClass, SmartWin::MessageMapPolicyModalDialogWidget >::wndProc ),
 		reinterpret_cast< LPARAM >( boost::polymorphic_cast< Widget * >( this ) ) );
 
 	if ( !this->Widget::itsHandle ) {

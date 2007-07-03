@@ -113,7 +113,7 @@ public:
 	typedef WidgetToolbar< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetToolbar< EventHandlerClass > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -345,7 +345,6 @@ private:
 		ImageListPtr itsDisabledImageList;
 
 		//void addBitmap( HBITMAP hBit, unsigned int noButtonsInBitmap );
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -706,6 +705,7 @@ void WidgetToolbar< EventHandlerClass >::create( const Seed & cs )
 	////TODO: use CreationalInfo parameters
 }
 
+#ifdef PORT_ME
 template< class EventHandlerClass >
 LRESULT WidgetToolbar< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
@@ -732,9 +732,9 @@ LRESULT WidgetToolbar< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT m
 	// Removing compiler hickup...
 	return 0;
 }
+#endif
 
 // end namespace SmartWin
 }
-
 #endif
 #endif

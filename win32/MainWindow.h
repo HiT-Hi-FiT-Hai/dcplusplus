@@ -51,7 +51,7 @@ class MainWindow :
 	private HttpConnectionListener, 
 	private QueueManagerListener, 
 	private LogManagerListener,
-	public AspectStatus<MainWindow, SmartWin::MessageMapPolicyNormalWidget>
+	public AspectStatus<MainWindow>
 
 #ifdef PORT_ME
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,

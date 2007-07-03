@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class GeneralPage : public WidgetFactory<SmartWin::WidgetDialog, GeneralPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
+class GeneralPage : public WidgetFactory<SmartWin::WidgetDialog, GeneralPage>, public PropPage
 {
 public:
 	GeneralPage(SmartWin::Widget* parent);
@@ -44,7 +44,7 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	typedef SmartWin::WidgetTextBox<GeneralPage, SmartWin::MessageMapPolicyDialogWidget>* TextBoxMessageType;
+	typedef SmartWin::WidgetTextBox<GeneralPage>* TextBoxMessageType;
 	HRESULT handleTextChanged(TextBoxMessageType textBox, LPARAM /*lParam*/, WPARAM /*wParam*/);
 };
 

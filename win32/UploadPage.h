@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class UploadPage : public WidgetFactory<SmartWin::WidgetDialog, UploadPage, SmartWin::MessageMapPolicyDialogWidget>, public PropPage
+class UploadPage : public WidgetFactory<SmartWin::WidgetDialog, UploadPage>, public PropPage
 {
 public:
 	UploadPage(SmartWin::Widget* parent);
@@ -49,7 +49,7 @@ private:
 	WidgetDataGridPtr directories;
 	WidgetStaticPtr total;
 
-	typedef SmartWin::WidgetDataGrid<UploadPage, SmartWin::MessageMapPolicyDialogWidget>* DataGridMessageType;
+	typedef SmartWin::WidgetDataGrid<UploadPage>* DataGridMessageType;
 	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
 	HRESULT handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/);
