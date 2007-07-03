@@ -47,6 +47,8 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectAdapter.h"
+#include "../BasicTypes.h"
+
 #include <commctrl.h>
 
 namespace SmartWin
@@ -107,37 +109,37 @@ struct TreeViewNode
    * Another good example of a tree view is the Explorer of Windows, it has a tree
    * view to the left where you can see the different directories.
    */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetTreeView :
-	public MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > >,
 	private virtual TrueWindow,
 
 	// Aspects
-	public AspectBorder< WidgetTreeView< EventHandlerClass, MessageMapPolicy > >,
-	public AspectChar< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSelection< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRightClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetTreeView< EventHandlerClass, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBorder< WidgetTreeView< EventHandlerClass > >,
+	public AspectChar< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectSelection< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectRightClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectFont< WidgetTreeView< EventHandlerClass > >,
+	public AspectVisible< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >
 {
 protected:
-	typedef MessageMapControl< EventHandlerClass, WidgetTreeView, MessageMapPolicy > MessageMapType;
+	typedef MessageMapControl< EventHandlerClass, WidgetTreeView > MessageMapType;
 	typedef TreeViewDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
 	friend class WidgetCreator< WidgetTreeView >;
 public:
 	/// Class type
-	typedef WidgetTreeView< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetTreeView< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetTreeView< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetTreeView< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	 /** This class contains all of the values needed to create the widget. It also
@@ -369,8 +371,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetTreeView< EventHandlerClass, MessageMapPolicy >::Seed & WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetTreeView< EventHandlerClass >::Seed & WidgetTreeView< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -389,20 +391,20 @@ const typename WidgetTreeView< EventHandlerClass, MessageMapPolicy >::Seed & Wid
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetTreeView< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetTreeView< EventHandlerClass >::Seed::Seed()
 {
 	 * this = WidgetTreeView::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetTreeView< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetTreeView< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-TreeViewNode WidgetTreeView< EventHandlerClass, MessageMapPolicy >::insertNode( const SmartUtil::tstring & text, const TreeViewNode & parent, unsigned param, int iconIndex, int selectedIconIndex )
+template< class EventHandlerClass >
+TreeViewNode WidgetTreeView< EventHandlerClass >::insertNode( const SmartUtil::tstring & text, const TreeViewNode & parent, unsigned param, int iconIndex, int selectedIconIndex )
 {
 	TVINSERTSTRUCT tv;
 	ZeroMemory( & tv, sizeof( TVINSERTSTRUCT ) );
@@ -434,28 +436,28 @@ TreeViewNode WidgetTreeView< EventHandlerClass, MessageMapPolicy >::insertNode( 
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetTreeView< EventHandlerClass, MessageMapPolicy >::
+template< class EventHandlerClass >
+bool WidgetTreeView< EventHandlerClass >::
 getNode( const TreeViewNode & node, unsigned flag, TreeViewNode & resultNode )
 {
 	resultNode.handle = TreeView_GetNextItem( this->Widget::itsHandle, node.handle, flag );
 	return ( NULL != resultNode.handle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::DeleteAllItems()
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::DeleteAllItems()
 {
 	TreeView_DeleteAllItems( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::deleteNode( const TreeViewNode & node )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::deleteNode( const TreeViewNode & node )
 {
 	TreeView_DeleteItem( this->Widget::itsHandle, node.handle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::deleteChildrenOfNode( const TreeViewNode & node )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::deleteChildrenOfNode( const TreeViewNode & node )
 {
 	TreeViewNode next_node, current_node;
 
@@ -470,70 +472,70 @@ void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::deleteChildrenOfNode
 	deleteNode( current_node );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::editLabel( const TreeViewNode & node )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::editLabel( const TreeViewNode & node )
 {
 	TreeView_EditLabel( this->Widget::itsHandle, node.handle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::ensureVisible( const TreeViewNode & node )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::ensureVisible( const TreeViewNode & node )
 {
 	TreeView_EnsureVisible( this->Widget::itsHandle, node.handle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setHasButtons( bool value )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setHasButtons( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_HASBUTTONS, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setLinesAtRoot( bool value )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setLinesAtRoot( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_LINESATROOT, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setHasLines( bool value )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setHasLines( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_HASLINES, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setTrackSelect( bool value )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setTrackSelect( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_TRACKSELECT, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setFullRowSelect( bool value )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setFullRowSelect( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_FULLROWSELECT, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setEditLabels( bool value )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setEditLabels( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_EDITLABELS, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setNormalImageList( ImageListPtr imageList )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setNormalImageList( ImageListPtr imageList )
 {
 	  itsNormalImageList = imageList;
 	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_NORMAL );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setStateImageList( ImageListPtr imageList )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setStateImageList( ImageListPtr imageList )
 {
 	  itsStateImageList = imageList;
 	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_STATE );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getSelectedItemText()
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetTreeView< EventHandlerClass >::getSelectedItemText()
 {
 	TreeViewNode selNode;
 	HTREEITEM hSelItem = TreeView_GetSelection( this->Widget::itsHandle );
@@ -542,8 +544,8 @@ SmartUtil::tstring WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getSel
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getText( const TreeViewNode & node )
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetTreeView< EventHandlerClass >::getText( const TreeViewNode & node )
 {
 	TVITEMEX item;
 	item.mask = TVIF_HANDLE | TVIF_TEXT;
@@ -560,8 +562,8 @@ SmartUtil::tstring WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getTex
 	return _T( "" );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getSelectedIndex() const
+template< class EventHandlerClass >
+int WidgetTreeView< EventHandlerClass >::getSelectedIndex() const
 {
 	HTREEITEM hSelItem = TreeView_GetSelection( this->Widget::itsHandle );
 	TVITEM item;
@@ -573,8 +575,8 @@ int WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getSelectedIndex() co
 	return 0;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setSelectedIndex( int idx )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::setSelectedIndex( int idx )
 {
 	TVITEM item;
 	item.mask = TVIF_PARAM;
@@ -586,37 +588,37 @@ void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::setSelectedIndex( in
 	TreeView_Select( this->Widget::itsHandle, item.hItem, TVGN_FIRSTVISIBLE );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getSelectionChangedMessage()
+template< class EventHandlerClass >
+Message & WidgetTreeView< EventHandlerClass >::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, TVN_SELCHANGED );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetTreeView< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetTreeView< EventHandlerClass, MessageMapPolicy >::getDblClickMessage()
+template< class EventHandlerClass >
+Message & WidgetTreeView< EventHandlerClass >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetTreeView< EventHandlerClass, MessageMapPolicy >::WidgetTreeView( Widget * parent )
+template< class EventHandlerClass >
+WidgetTreeView< EventHandlerClass >::WidgetTreeView( Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a list view without a parent...
 	xAssert( parent, _T( "Cant have a WidgetTreeView without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTreeView< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetTreeView< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );

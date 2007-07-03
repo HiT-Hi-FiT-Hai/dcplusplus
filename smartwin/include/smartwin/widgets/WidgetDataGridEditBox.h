@@ -42,16 +42,16 @@ namespace private_
 
 // Class is only to make subclassing of Edit Control in List View possible
 // TODO: Make window NOT hide the leftmost cell of row when entering "edit modus"..
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class ListViewEditBox :
-	public WidgetTextBox< EventHandlerClass, MessageMapPolicy >
+	public WidgetTextBox< EventHandlerClass >
 {
 public:
 	// Class type
-	typedef ListViewEditBox< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef ListViewEditBox< EventHandlerClass > ThisType;
 
 	// Object type
-	typedef ListViewEditBox< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef ListViewEditBox< EventHandlerClass > * ObjectType;
 
 	void createSubclass( HWND hWnd );
 
@@ -69,16 +69,16 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class MessageMapPolicy >
-ListViewEditBox< EventHandlerClass, MessageMapPolicy >::ListViewEditBox( SmartWin::Widget * parent )
-	: Widget( parent ), WidgetTextBox< EventHandlerClass, MessageMapPolicy >( parent )
+template< class EventHandlerClass >
+ListViewEditBox< EventHandlerClass >::ListViewEditBox( SmartWin::Widget * parent )
+	: Widget( parent ), WidgetTextBox< EventHandlerClass >( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void ListViewEditBox< EventHandlerClass, MessageMapPolicy >::createSubclass( HWND hWnd )
+template< class EventHandlerClass >
+void ListViewEditBox< EventHandlerClass >::createSubclass( HWND hWnd )
 {
 	this->Widget::itsHandle = hWnd;
 	::SetWindowLongPtr( this->Widget::itsHandle, GWL_ID, reinterpret_cast< LONG >( this->Widget::itsCtrlId ) );
@@ -87,12 +87,12 @@ void ListViewEditBox< EventHandlerClass, MessageMapPolicy >::createSubclass( HWN
 	// Have to cast to Widget, it looks weird but otherwise we can't extract it
 	// since we're using reinterpret to get it back again...
 	::SetProp( this->Widget::itsHandle, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( static_cast< Widget * >( this ) ) );
-	MessageMapControl< EventHandlerClass, WidgetTextBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >::itsDefaultWindowProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( this->Widget::itsHandle, GWL_WNDPROC, reinterpret_cast< LONG_PTR >( WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >::mainWndProc_ ) ) );
+	MessageMapControl< EventHandlerClass, WidgetTextBox< EventHandlerClass > >::itsDefaultWindowProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( this->Widget::itsHandle, GWL_WNDPROC, reinterpret_cast< LONG_PTR >( WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >::wndProc ) ) );
 	Widget::registerWidget();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT ListViewEditBox< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 #ifdef _MSC_VER
 #pragma warning( disable : 4060 )
@@ -116,7 +116,7 @@ LRESULT ListViewEditBox< EventHandlerClass, MessageMapPolicy >::sendWidgetMessag
 		} break;
 #endif
 	}
-	return WidgetTextBox< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return WidgetTextBox< EventHandlerClass >::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 // end namespace private_

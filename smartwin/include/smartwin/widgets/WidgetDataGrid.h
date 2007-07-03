@@ -53,6 +53,7 @@
 #include "SmartUtil.h"
 #include "WidgetDataGridEditBox.h"
 #include "../ImageList.h"
+#include "../BasicTypes.h"
 
 namespace SmartWin
 {
@@ -355,42 +356,41 @@ public:
   * source of error when you get unwanted behaviour. This means you often will have
   * to "map" an LPARAM value to a physical rownumber and vice versa.
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetDataGrid :
-	public MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > >,
 	private virtual TrueWindow,
 
 	// Aspect classes
-	public AspectBorder< WidgetDataGrid< EventHandlerClass, MessageMapPolicy > >,
-	public AspectChar< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetDataGrid< EventHandlerClass, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRightClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectScrollable< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSelection< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBorder< WidgetDataGrid< EventHandlerClass > >,
+	public AspectChar< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectFont< WidgetDataGrid< EventHandlerClass > >,
+	public AspectKeyPressed< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectRightClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectScrollable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectSelection< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >
 {
 protected:
-	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapTypeParam;
-	typedef MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy > MessageMapType;
+	typedef MessageMapControl< EventHandlerClass, WidgetDataGrid > MessageMapType;
 
 	// Need to be friend to access private data...
 	friend class WidgetCreator< WidgetDataGrid >;
 
 public:
 	/// Class type
-	typedef WidgetDataGrid< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetDataGrid< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetDataGrid< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetDataGrid< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -921,8 +921,8 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::Seed & WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetDataGrid< EventHandlerClass >::Seed & WidgetDataGrid< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -938,21 +938,21 @@ const typename WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::Seed & Wid
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetDataGrid< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetDataGrid::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getSelectionChangedMessage()
+template< class EventHandlerClass >
+Message & WidgetDataGrid< EventHandlerClass >::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::isValidSelectionChanged( LPARAM lPar )
+template< class EventHandlerClass >
+bool WidgetDataGrid< EventHandlerClass >::isValidSelectionChanged( LPARAM lPar )
 {
 	//TODO: Make support for CHOOSING how onSelectedChanged is supposed to behave,
 	//TODO: make non static function and pure abstract in base class and override
@@ -967,22 +967,22 @@ bool WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::isValidSelectionChan
 	return false;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetDataGrid< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getDblClickMessage()
+template< class EventHandlerClass >
+Message & WidgetDataGrid< EventHandlerClass >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 #ifdef PORT_ME
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsBoolValidationFunc eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsBoolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
@@ -1001,8 +1001,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onValidate( typename
 	);
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::boolValidationFunc eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::boolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
@@ -1021,8 +1021,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onValidate( typename
 	);
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsVoidGetItemFunc eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1039,8 +1039,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetItem( typename 
 	);
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::voidGetItemFunc eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1057,22 +1057,22 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetItem( typename 
 	);
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsVoidGetIconFunc eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetIconFunc eventHandler )
 {
 	itsGlobalGetIconFunction = 0;
 	itsMemberGetIconFunction = eventHandler;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::voidGetIconFunc eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetIconFunc eventHandler )
 {
 	itsGlobalGetIconFunction = eventHandler;
 	itsMemberGetIconFunction = 0;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1089,8 +1089,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onCustomPainting( ty
 	);
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-	void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
+template< class EventHandlerClass >
+	void WidgetDataGrid< EventHandlerClass >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1107,22 +1107,22 @@ template< class EventHandlerClass, class MessageMapPolicy >
 	);
 }
 #endif
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsIntLparamLparam eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsIntLparamLparam eventHandler )
 {
 	itsGlobalSortFunction = 0;
 	itsMemberSortFunction = eventHandler;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::intCallbackCompareFunc eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::intCallbackCompareFunc eventHandler )
 {
 	itsMemberSortFunction = 0;
 	itsGlobalSortFunction = eventHandler;
 }
 #ifdef PORT_ME
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::itsVoidFunctionTakingInt eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidFunctionTakingInt eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1139,8 +1139,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onColumnHeaderClick(
 	);
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid, MessageMapPolicy >::voidFunctionTakingInt eventHandler )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidFunctionTakingInt eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1158,8 +1158,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::onColumnHeaderClick(
 }
 #endif
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sortList()
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::sortList()
 {
 	xAssert( itsGlobalSortFunction || itsMemberSortFunction, _T( "No sort event handlers defined" ) );
 
@@ -1167,8 +1167,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sortList()
 		_T( "ListView_SortItems fizzled" ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getCellText( unsigned int column, unsigned int row )
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getCellText( unsigned int column, unsigned int row )
 {
 	// TODO: Fix
 	const int BUFFER_MAX = 2048;
@@ -1178,8 +1178,8 @@ SmartUtil::tstring WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getCel
 	return buffer;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getCellTextByLParam( unsigned int column, LPARAM lParam )
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getCellTextByLParam( unsigned int column, LPARAM lParam )
 {
 	LVFINDINFO lvfi;
 	lvfi.flags = LVFI_PARAM;
@@ -1190,14 +1190,14 @@ SmartUtil::tstring WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getCel
 	return this->getCellText( column, row );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::hasSelection()
+template< class EventHandlerClass >
+bool WidgetDataGrid< EventHandlerClass >::hasSelection()
 {
 	return ListView_GetSelectedCount( this->Widget::itsHandle ) > 0;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-std::vector< unsigned > WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getSelectedRows()
+template< class EventHandlerClass >
+std::vector< unsigned > WidgetDataGrid< EventHandlerClass >::getSelectedRows()
 {
 	std::vector< unsigned > retVal;
 	int tmpIdx = - 1;
@@ -1211,16 +1211,16 @@ std::vector< unsigned > WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::g
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getSelectedIndex() const
+template< class EventHandlerClass >
+int WidgetDataGrid< EventHandlerClass >::getSelectedIndex() const
 {
 	int tmpIdx = - 1;
 	tmpIdx = ListView_GetNextItem( this->Widget::itsHandle, tmpIdx, LVNI_SELECTED );
 	return tmpIdx;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setSelectedIndex( int idx )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setSelectedIndex( int idx )
 {
 	// TODO: Check if this is working right...
 	LVITEM it;
@@ -1241,8 +1241,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setSelectedIndex( in
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::clearSelection()
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::clearSelection()
 {
 	LVITEM it;
 	ZeroMemory( & it, sizeof( LVITEM ) );
@@ -1263,15 +1263,15 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::clearSelection()
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setCellText( unsigned column, unsigned row, const SmartUtil::tstring & newVal )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setCellText( unsigned column, unsigned row, const SmartUtil::tstring & newVal )
 {
 	// const bug inn Windows API
 	ListView_SetItemText( this->Widget::itsHandle, row, column, const_cast < TCHAR * >( newVal.c_str() ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setItemIcon( unsigned row, int newIconIndex )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setItemIcon( unsigned row, int newIconIndex )
 {
 	LVITEM it;
 	ZeroMemory( & it, sizeof( LVITEM ) );
@@ -1293,33 +1293,33 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setItemIcon( unsigne
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getReadOnly()
+template< class EventHandlerClass >
+bool WidgetDataGrid< EventHandlerClass >::getReadOnly()
 {
 	return isReadOnly;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setReadOnly( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setReadOnly( bool value )
 {
 	isReadOnly = value;
 	this->Widget::addRemoveStyle( LVS_EDITLABELS, !value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setBackgroundColor( COLORREF bgColor )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setBackgroundColor( COLORREF bgColor )
 {
 	ListView_SetBkColor( this->Widget::handle(), bgColor );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-unsigned WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getColumnCount()
+template< class EventHandlerClass >
+unsigned WidgetDataGrid< EventHandlerClass >::getColumnCount()
 {
 	return itsNoColumns;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getColumnName( unsigned col )
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getColumnName( unsigned col )
 {
 	// TODO: Fix
 	const int BUFFER_MAX = 2048;
@@ -1332,32 +1332,32 @@ SmartUtil::tstring WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getCol
 	return colInfo.pszText;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getIsRowChecked( unsigned row )
+template< class EventHandlerClass >
+bool WidgetDataGrid< EventHandlerClass >::getIsRowChecked( unsigned row )
 {
 	return ListView_GetCheckState( this->Widget::itsHandle, row ) == TRUE;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setRowChecked( unsigned row, bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setRowChecked( unsigned row, bool value )
 {
 	ListView_SetCheckState( this->Widget::itsHandle, row, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setFullRowSelect( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setFullRowSelect( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_FULLROWSELECT, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setItemCount( unsigned size )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setItemCount( unsigned size )
 {
 	ListView_SetItemCount( this->Widget::itsHandle, size );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-unsigned WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getRowNumberFromLParam( unsigned lParam )
+template< class EventHandlerClass >
+unsigned WidgetDataGrid< EventHandlerClass >::getRowNumberFromLParam( unsigned lParam )
 {
 	LVFINDINFO lv;
 	lv.flags = LVFI_PARAM;
@@ -1365,29 +1365,29 @@ unsigned WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getRowNumberFrom
 	return ( unsigned ) ListView_FindItem( this->Widget::itsHandle, - 1, & lv );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setNormalImageList( ImageListPtr imageList )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setNormalImageList( ImageListPtr imageList )
 {
 	  itsNormalImageList = imageList;
 	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_NORMAL );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setSmallImageList( ImageListPtr imageList )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setSmallImageList( ImageListPtr imageList )
 {
 	  itsSmallImageList = imageList;
 	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_SMALL );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setStateImageList( ImageListPtr imageList )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setStateImageList( ImageListPtr imageList )
 {
 	  itsStateImageList = imageList;
 	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_STATE );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setView( int view )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setView( int view )
 {
 	if ( ( view & LVS_TYPEMASK ) != view )
 	{
@@ -1402,8 +1402,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setView( int view )
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::redrawItems( int firstRow, int lastRow )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::redrawItems( int firstRow, int lastRow )
 {
 	if( ListView_RedrawItems( this->Widget::handle(), firstRow, lastRow ) == FALSE )
 	{
@@ -1411,52 +1411,52 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::redrawItems( int fir
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::redrawItems()
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::redrawItems()
 {
 	this->redrawItems( 0, this->getRowCount() );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setCheckBoxes( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setCheckBoxes( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_CHECKBOXES, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setSingleRowSelection( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setSingleRowSelection( bool value )
 {
 	this->Widget::addRemoveStyle( LVS_SINGLESEL, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setGridLines( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setGridLines( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_GRIDLINES, value );
 }
 
 #ifndef WINCE
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setHoover( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setHoover( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_TWOCLICKACTIVATE, value );
 }
 #endif
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setHeaderDragDrop( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setHeaderDragDrop( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_HEADERDRAGDROP, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setAlwaysShowSelection( bool value )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setAlwaysShowSelection( bool value )
 {
 	this->Widget::addRemoveStyle( LVS_SHOWSELALWAYS, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::createColumns( const std::vector< SmartUtil::tstring > & colNames )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::createColumns( const std::vector< SmartUtil::tstring > & colNames )
 {
 	// Deleting all data
 	if ( itsNoColumns != 0 )
@@ -1485,16 +1485,16 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::createColumns( const
 	itsNoColumns = static_cast< unsigned >( colNames.size() );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::deleteColumn( unsigned columnNo )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::deleteColumn( unsigned columnNo )
 {
 	xAssert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
 	ListView_DeleteColumn( this->Widget::itsHandle, columnNo );
 	--itsNoColumns;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setColumnWidth( unsigned columnNo, int width )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::setColumnWidth( unsigned columnNo, int width )
 {
 	if ( ListView_SetColumnWidth( this->Widget::itsHandle, columnNo, width ) == FALSE )
 	{
@@ -1503,26 +1503,26 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::setColumnWidth( unsi
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::removeAllRows()
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::removeAllRows()
 {
 	ListView_DeleteAllItems( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::removeRow( unsigned row )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::removeRow( unsigned row )
 {
 	ListView_DeleteItem( this->Widget::itsHandle, row );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-unsigned WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getRowCount()
+template< class EventHandlerClass >
+unsigned WidgetDataGrid< EventHandlerClass >::getRowCount()
 {
 	return ListView_GetItemCount( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LPARAM WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::insertRow( const std::vector< SmartUtil::tstring > & row, LPARAM lPar, int index, int iconIndex )
+template< class EventHandlerClass >
+LPARAM WidgetDataGrid< EventHandlerClass >::insertRow( const std::vector< SmartUtil::tstring > & row, LPARAM lPar, int index, int iconIndex )
 {
 		xAssert( itsNoColumns == row.size() && itsNoColumns != 0, _T( "Tried to add a row into a WidgetDataGridView with wrong number of columns" ) );
 		if ( index == - 1 )
@@ -1567,8 +1567,8 @@ LPARAM WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::insertRow( const s
 		return lvi.lParam;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::insertRow( int index, int iconIndex )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::insertRow( int index, int iconIndex )
 {
 		if ( index == - 1 )
 		{
@@ -1608,8 +1608,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::insertRow( int index
 		}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::insertCallbackRow( const LPARAM lParam )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::insertCallbackRow( const LPARAM lParam )
 {
 		//assert( (itsMessageMap.find( Message( WM_NOTIFY, LVN_GETDISPINFO ) ) != itsMessageMap.end() ||
 		// itsMessageMapThis.find( Message( WM_NOTIFY, LVN_GETDISPINFO ) ) != itsMessageMapThis.end() )
@@ -1649,8 +1649,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::insertCallbackRow( c
 		}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::addRemoveListViewExtendedStyle( DWORD addStyle, bool add )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::addRemoveListViewExtendedStyle( DWORD addStyle, bool add )
 {
 	DWORD newStyle = ListView_GetExtendedListViewStyle( this->Widget::itsHandle );
 	if ( add && ( newStyle & addStyle ) != addStyle )
@@ -1665,8 +1665,8 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::addRemoveListViewExt
 }
 
 // Constructor
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::WidgetDataGrid( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetDataGrid< EventHandlerClass >::WidgetDataGrid( SmartWin::Widget * parent )
 	: Widget( parent, 0 ),
 	itsGlobalSortFunction( 0 ),
 	itsMemberSortFunction( 0 ),
@@ -1683,8 +1683,8 @@ WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::WidgetDataGrid( SmartWin:
 	xAssert( parent, _T( "Cant have a WidgetDataGrid without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int CALLBACK WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort )
+template< class EventHandlerClass >
+int CALLBACK WidgetDataGrid< EventHandlerClass >::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort )
 {
 	WidgetDataGrid * This = reinterpret_cast< WidgetDataGrid * > ( lParamSort );
 	if ( This->itsGlobalSortFunction )
@@ -1699,8 +1699,8 @@ int CALLBACK WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::CompareFunc(
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetDataGrid< EventHandlerClass >::create( const Seed & cs )
 {
 	//// Dirty hack!!
 	////this->Widget::itsCtrlId = (HMENU)++this->Widget::itsInstanceNo;
@@ -1729,16 +1729,16 @@ void WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 #endif
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
+template< class EventHandlerClass >
+bool WidgetDataGrid< EventHandlerClass >::defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
 {
 	list->updateWidget();
 	return !list->getReadOnly();
 }
 
 // Calculates the adjustment from the columns of an item.
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::xoffFromColumn( int column, int & logicalColumn )
+template< class EventHandlerClass >
+int WidgetDataGrid< EventHandlerClass >::xoffFromColumn( int column, int & logicalColumn )
 {
 	HWND hWnd = this->Widget::itsHandle;
 
@@ -1773,16 +1773,16 @@ int WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::xoffFromColumn( int c
 	return xOffset;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-RECT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getItemRect( int item, int code )
+template< class EventHandlerClass >
+RECT WidgetDataGrid< EventHandlerClass >::getItemRect( int item, int code )
 {
 	RECT r;
 	ListView_GetItemRect( this->Widget::itsHandle, item, & r, code );
 	return r;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-RECT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getSubItemRect( int item, int subitem, int code )
+template< class EventHandlerClass >
+RECT WidgetDataGrid< EventHandlerClass >::getSubItemRect( int item, int subitem, int code )
 {
 	RECT r;
 	ListView_GetSubItemRect( this->Widget::itsHandle, item, subitem, code, & r );
@@ -1790,8 +1790,8 @@ RECT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::getSubItemRect( int 
 }
 
 // TODO: Should these
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetDataGrid< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	switch ( msg )
 	{
@@ -1877,8 +1877,8 @@ LRESULT WidgetDataGrid< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage
 						throw err;
 					}
 
-					private_::ListViewEditBox< WidgetDataGrid, MessageMapPolicy > * text
-						= new private_::ListViewEditBox< WidgetDataGrid, MessageMapPolicy >( this );
+					private_::ListViewEditBox< WidgetDataGrid > * text
+						= new private_::ListViewEditBox< WidgetDataGrid >( this );
 					text->createSubclass( editControl );
 
 #ifndef WINCE

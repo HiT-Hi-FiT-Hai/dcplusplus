@@ -34,7 +34,6 @@
 #include "Widget.h"
 #include "BasicTypes.h"
 #include "Message.h"
-#include "MessageMapBase.h"
 #include "CanvasClasses.h"
 #include "SignalParams.h"
 
@@ -53,10 +52,8 @@ namespace SmartWin
   * WITHOUT fiddling with this class by using AspectRaw::onRaw Event Handler
   * Setters...
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapPolicy >
-class MessageMapControl
-	: public MessageMapPolicy,
-	public MessageMapBase
+template< class EventHandlerClass, class WidgetType >
+class MessageMapControl : public MessageMapPolicyBase<MessageMapPolicySubclassedWidget>
 {
 public:
 	typedef MessageMapBase::CallbackType SignalType;
@@ -265,70 +262,12 @@ public:
 	typedef void ( * voidMeasureItemFunction ) ( EventHandlerClass *, WidgetType *, MEASUREITEMSTRUCT * );
 
 protected:
-	// Function pointer to the default (windows) WndMsgProc
-	WNDPROC itsDefaultWindowProc;
-
-	// False if not control window (normal window), true if control is a subclassed dialog item
-	// TODO: Aspect class or maybe inherit WidgetSpliter from MessageMap instead of MessageMap?!?!?
-	bool isSubclassed;
-
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MessageMapControl()
-		: Widget(0), itsDefaultWindowProc( 0 ),
-		isSubclassed( true )
-	{}
+		: Widget(0) { }
 
 	virtual ~MessageMapControl()
 	{}
-
-	// Main Window Message Procedure.
-	// This is the fallback event handler checker, the final line before message is
-	// (eventually) passed on to windows
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-	{
-		HRESULT retVal;
-		if ( tryFire( Message( hWnd, msg, wPar, lPar, true ), retVal ) )
-		{
-			return retVal; // If the message was handled ...
-		}
-
-		// Either there was no handler for the msg or the handler choose not to
-		// handle it. The KeyPress handler can choose to not handle some keys, for
-		// example.
-		switch ( msg )
-		{
-			// First the stuff we HAVE to do something about...
-#ifdef WINCE
-			case WM_DESTROY :
-#else
-			case WM_NCDESTROY :
-#endif
-			{
-				return MessageMapPolicy::kill();
-			}
-		}
-
-		// Nobody was interested in this one...
-		// TODO: Make this policy some way or another...!!
-		if ( this->isSubclassed && itsDefaultWindowProc != 0 )
-		{
-			// If control is subclassed we need to dispatch message to the original Windows Message Procedure
-			return ::CallWindowProc( itsDefaultWindowProc, hWnd, msg, wPar, lPar );
-		}
-		else
-		{
-			// otherwise we can call the default Windows Message Procedure
-			return MessageMapPolicy::returnFromUnhandledWindowProc( hWnd, msg, wPar, lPar );
-		}
-	}
-
-	/// Call this function from your overridden create() if you add a new Widget to
-	/// make the Windows Message Procedure dispatching map right.
-	void createMessageMap()
-	{
-		::SetProp( this->itsHandle, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( dynamic_cast< Widget * >( this ) ) );
-		itsDefaultWindowProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( this->itsHandle, GWL_WNDPROC, ( LONG_PTR ) this->mainWndProc_ ) );
-	}
 };
 
 // end namespace SmartWin

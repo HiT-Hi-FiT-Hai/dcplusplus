@@ -33,6 +33,8 @@
 
 #include "SmartUtil.h"
 #include "WidgetWindow.h"
+#include "../BasicTypes.h"
+
 #include <sstream>
 
 namespace SmartWin
@@ -54,16 +56,16 @@ namespace SmartWin
   * Related classes: <br>
   * WidgetMDIParent 
   */
-template< class EventHandlerClass, class unUsed >
+template< class EventHandlerClass >
 class WidgetMDIChild
-	: public WidgetWindowBase< EventHandlerClass, unUsed >
+	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyMDIChildWidget >
 {
 public:
 	/// Class type
-	typedef WidgetMDIChild< EventHandlerClass, unUsed > ThisType;
+	typedef WidgetMDIChild< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetMDIChild< EventHandlerClass, unUsed > * ObjectType;
+	typedef WidgetMDIChild< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -106,10 +108,6 @@ protected:
 
 	SmartUtil::tstring getNewClassName();
 
-	// Since we need custom handling of e.g. WM_SIZE for MDIChildWidgets we must
-	// override the sendWidgetMessage and dispatch those messages here...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
-
 private:
 	SmartUtil::tstring itsRegisteredClassName;
 };
@@ -117,8 +115,8 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class unUsed >
-const typename WidgetMDIChild< EventHandlerClass, unUsed >::Seed & WidgetMDIChild< EventHandlerClass, unUsed >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetMDIChild< EventHandlerClass >::Seed & WidgetMDIChild< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -136,25 +134,25 @@ const typename WidgetMDIChild< EventHandlerClass, unUsed >::Seed & WidgetMDIChil
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class unUsed >
-WidgetMDIChild< EventHandlerClass, unUsed >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetMDIChild< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetMDIChild::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class unUsed >
-WidgetMDIChild< EventHandlerClass, unUsed >::~WidgetMDIChild()
+template< class EventHandlerClass >
+WidgetMDIChild< EventHandlerClass >::~WidgetMDIChild()
 {
 	::UnregisterClass( itsRegisteredClassName.c_str(), Application::instance().getAppHandle() );
 }
 
-template< class EventHandlerClass, class unUsed >
-WidgetMDIChild< EventHandlerClass, unUsed >::WidgetMDIChild( Widget * parent )
-	: Widget(parent), WidgetWindowBase< EventHandlerClass, unUsed >( parent )
+template< class EventHandlerClass >
+WidgetMDIChild< EventHandlerClass >::WidgetMDIChild( Widget * parent )
+	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyMDIChildWidget >( parent )
 {}
 
-template< class EventHandlerClass, class unUsed >
-void WidgetMDIChild< EventHandlerClass, unUsed >::createMDIChild( Seed cs )
+template< class EventHandlerClass >
+void WidgetMDIChild< EventHandlerClass >::createMDIChild( Seed cs )
 {
 	Application::instance().generateLocalClassName( cs );
 	itsRegisteredClassName = cs.getClassName();
@@ -163,7 +161,7 @@ void WidgetMDIChild< EventHandlerClass, unUsed >::createMDIChild( Seed cs )
 	SMARTWIN_WNDCLASSEX wc;
 	wc.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
 	wc.style = 0;
-	wc.lpfnWndProc = EventHandlerClass::mainWndProc_;
+	wc.lpfnWndProc = EventHandlerClass::wndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = Application::instance().getAppHandle();
@@ -199,63 +197,12 @@ void WidgetMDIChild< EventHandlerClass, unUsed >::createMDIChild( Seed cs )
 	this->registerWidget();
 }
 
-template< class EventHandlerClass, class unUsed >
-SmartUtil::tstring WidgetMDIChild< EventHandlerClass, unUsed >::getNewClassName()
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetMDIChild< EventHandlerClass >::getNewClassName()
 {
 	std::basic_stringstream< TCHAR > className;
 	className << _T( "WidgetFactory" ) << ++this->Widget::itsInstanceNo;
 	return className.str();
-}
-
-template< class EventHandlerClass, class unUsed >
-LRESULT WidgetMDIChild< EventHandlerClass, unUsed >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	bool returnNothing = false;
-	switch ( msg )
-	{
-#if 0
-	// First the stuff we HAVE to do something about...
-		case WM_SIZE :
-		{
-			if ( wPar == SIZE_MAXIMIZED )
-			{
-				// Here we basically "fake" a maximize to be able to display the
-				// border of the Widget
-				//int cx = LOWORD( lPar );
-				//int cy = HIWORD( lPar );
-				RECT rc;
-
-				// Getting size of PARENT Widget and setting size to fill that rectangle
-				::GetClientRect( this->getParent()->handle(), & rc );
-				SetWindowPos( this->handle(), 0, 0, 0, rc.right, rc.bottom, SWP_NOZORDER );
-
-				// now "manipulating" the parameters sent(?) to the event handler
-				::GetClientRect( this->handle(), & rc );
-				lPar = MAKELONG( rc.right, rc.bottom );
-
-				// We CAN'T call defproc here since it will "undo" our logic
-				returnNothing = true;
-			} break;
-		}
-#endif
-		default:
-		{
-			return MessageMap< EventHandlerClass, unUsed >::sendWidgetMessage( hWnd, msg, wPar, lPar );
-		}
-	}
-
-	// Checking event handlers
-	HRESULT retVal = 0;
-	Message msgObj( hWnd, msg, wPar, lPar, true );
-	if ( this->tryFire( msgObj, retVal ) )
-	{
-		wPar = msgObj.WParam;
-		lPar = msgObj.LParam;
-	}
-	if ( returnNothing )
-		return retVal;
-	else
-		return MessageMap< EventHandlerClass, unUsed >::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 // end namespace SmartWin

@@ -66,36 +66,36 @@ class WidgetCreator;
   * Class for creating a button control Widget. <br>
   * A button is a Widget which can be pressed, it can contain descriptive text etc.
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetButton :
-	public MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > >,
 	public virtual TrueWindow,
 
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectBorder< WidgetButton< EventHandlerClass, MessageMapPolicy > >,
-	public AspectChar< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectClickable< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetButton< EventHandlerClass, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBackgroundColor< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectBorder< WidgetButton< EventHandlerClass > >,
+	public AspectChar< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectClickable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectFont< WidgetButton< EventHandlerClass > >,
+	public AspectKeyPressed< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectPainting< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectText< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetButton, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetButton<EventHandlerClass> > MessageMapType;
 	friend class WidgetCreator< WidgetButton >;
 public:
 	/// Class type
-	typedef WidgetButton< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetButton< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetButton< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetButton< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -121,9 +121,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// Contract needed by AspectClickable Aspect class
 	static inline Message & getClickMessage();
@@ -155,8 +152,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetButton< EventHandlerClass, MessageMapPolicy >::Seed & WidgetButton< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetButton< EventHandlerClass >::Seed & WidgetButton< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -171,50 +168,43 @@ const typename WidgetButton< EventHandlerClass, MessageMapPolicy >::Seed & Widge
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetButton< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetButton< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetButton::getDefaultSeed();
 }
 
-// Contract needed by AspectClickable Aspect class
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetButton< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetButton< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetButton< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetButton< EventHandlerClass, MessageMapPolicy >::getDblClickMessage()
+template< class EventHandlerClass >
+Message & WidgetButton< EventHandlerClass >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetButton< EventHandlerClass, MessageMapPolicy >::getBackgroundColorMessage()
+template< class EventHandlerClass >
+Message & WidgetButton< EventHandlerClass >::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORBTN );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetButton< EventHandlerClass, MessageMapPolicy >::WidgetButton( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetButton< EventHandlerClass >::WidgetButton( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetButton< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetButton< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -225,7 +215,7 @@ void WidgetButton< EventHandlerClass, MessageMapPolicy >::create( const Seed & c
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 }
 

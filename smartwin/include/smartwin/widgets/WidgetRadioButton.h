@@ -65,34 +65,34 @@ class WidgetCreator;
    * By selecting one of the Radio Buttons grouped together you will also deselect the
    * previously selected one.
    */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetRadioButton :
-	public MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > >,
 	public virtual TrueWindow,
 
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectBorder< WidgetRadioButton< EventHandlerClass, MessageMapPolicy > >,
-	public AspectClickable< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetRadioButton< EventHandlerClass, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBackgroundColor< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectBorder< WidgetRadioButton< EventHandlerClass > >,
+	public AspectClickable< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectFont< WidgetRadioButton< EventHandlerClass > >,
+	public AspectPainting< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectText< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetRadioButton, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetRadioButton > MessageMapType;
 	friend class WidgetCreator< WidgetRadioButton >;
 public:
 	/// Class type
-	typedef WidgetRadioButton< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetRadioButton< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetRadioButton< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetRadioButton< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -164,8 +164,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::Seed & WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetRadioButton< EventHandlerClass >::Seed & WidgetRadioButton< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -180,61 +180,61 @@ const typename WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::Seed & 
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetRadioButton< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetRadioButton::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetRadioButton< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetRadioButton< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::getDblClickMessage()
+template< class EventHandlerClass >
+Message & WidgetRadioButton< EventHandlerClass >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::getBackgroundColorMessage()
+template< class EventHandlerClass >
+Message & WidgetRadioButton< EventHandlerClass >::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORBTN );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::WidgetRadioButton( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetRadioButton< EventHandlerClass >::WidgetRadioButton( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::getChecked()
+template< class EventHandlerClass >
+bool WidgetRadioButton< EventHandlerClass >::getChecked()
 {
 	return ::SendMessage( this->Widget::itsHandle, BM_GETCHECK, 0, 0 ) == BST_CHECKED;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::setChecked( bool value )
+template< class EventHandlerClass >
+void WidgetRadioButton< EventHandlerClass >::setChecked( bool value )
 {
 	::SendMessage( this->Widget::itsHandle, BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED, 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::create( EventHandlerClass * parent, const Seed & cs )
+template< class EventHandlerClass >
+void WidgetRadioButton< EventHandlerClass >::create( EventHandlerClass * parent, const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -246,7 +246,7 @@ void WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::create( EventHand
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
 	this->Widget::itsParent = parent;
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 	// TODO: this was registered with the application when Widget::create was
 	// called. Will they collide?

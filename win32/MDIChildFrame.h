@@ -28,14 +28,14 @@
 
 template<typename T>
 class MDIChildFrame : 
-	public WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget >,
+	public WidgetFactory< SmartWin::WidgetMDIChild, T >,
 	public AspectSpeaker<T>, 
-	public AspectStatus<T, SmartWin::MessageMapPolicyMDIChildWidget>
+	public AspectStatus<T>
 {
 public:
 	typedef MDIChildFrame<T> ThisType;
 	
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T, SmartWin::MessageMapPolicyMDIChildWidget> FactoryType;
+	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T> FactoryType;
 	MDIChildFrame() : SmartWin::Widget(0), reallyClose(false) {
 		typename FactoryType::Seed cs;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);

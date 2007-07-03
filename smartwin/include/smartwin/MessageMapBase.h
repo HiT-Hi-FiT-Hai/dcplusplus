@@ -30,6 +30,7 @@
 #define MessageMapBase_h
 
 #include "SignalParams.h"
+#include "Widget.h"
 
 #include <functional>
 #include <map>
@@ -40,10 +41,10 @@ namespace SmartWin
 
 // Internally used class
 // TODO: Move into "private_" namespace ...?!?
-class MessageMapBase
+class MessageMapBase : public virtual Widget
 {
 public:
-	typedef std::tr1::function<HRESULT(private_::SignalContent&)> CallbackType;
+	typedef std::tr1::function<LRESULT(private_::SignalContent&)> CallbackType;
 	
 	// We only support one Callback per message, so a map is appropriate
 	typedef std::map<Message, CallbackType> CallbackCollectionType;
@@ -51,16 +52,27 @@ public:
 	/// Adds a new Callback into the Callback collection or replaces the existing one
 	void setCallback(const Message& msg, const CallbackType& callback );
 
+	MessageMapBase() : Widget(0) { }
 	virtual ~MessageMapBase()
 	{}
 
-protected:
+public:
 	CallbackCollectionType & getCallbacks() { 
 		return itsCallbacks;
 	}
 
 	// Returns true if fired, else false
-	virtual bool tryFire( const Message & msg, HRESULT & retVal );
+	bool tryFire( const Message & msg, LRESULT & retVal );
+	
+	// TODO Investigate if it's worth the template bloat to resolve these at compile time...
+	/** This method will be called if a message is handled by a callback */
+	virtual LRESULT returnHandled(LRESULT result, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = 0;
+	
+	/** This method will be called if a message is not handled by a callback */
+	virtual LRESULT returnUnhandled(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = 0;
+	
+	/** This will be called when it's time to delete the widget */
+	virtual void kill() = 0;
 private:
 	// Contains the list of signals we're (this window) processing
 	CallbackCollectionType itsCallbacks;

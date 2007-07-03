@@ -19,25 +19,25 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETPANED_H_
 #define DCPLUSPLUS_WIN32_WIDGETPANED_H_
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy = SmartWin::MessageMapPolicyNormalWidget >
+template< typename EventHandlerClass, bool horizontal >
 class WidgetPaned :
-	public SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >, MessageMapPolicy >,
+	public SmartWin::MessageMap< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal > >,
 
-	public SmartWin::AspectSizable< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal, MessageMapPolicy >,
-		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal, MessageMapPolicy >, MessageMapPolicy > >,
-	public SmartWin::AspectVisible< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >,
-		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >, MessageMapPolicy > >,
-	public SmartWin::AspectRaw< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >,
-		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >, MessageMapPolicy > >
+	public SmartWin::AspectSizable< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal >,
+		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >,
+	public SmartWin::AspectVisible< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal >,
+		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal > > >,
+	public SmartWin::AspectRaw< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal >,
+		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal > > >
 {
-	typedef SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned, MessageMapPolicy > ThisMessageMap;
+	typedef SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned > MessageMapType;
 	friend class SmartWin::WidgetCreator< WidgetPaned >;
 public:
 	/// Class type
-	typedef WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy > ThisType;
+	typedef WidgetPaned< EventHandlerClass, horizontal > ThisType;
 
 	/// Object type
-	typedef WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy > * ObjectType;
+	typedef WidgetPaned< EventHandlerClass, horizontal > * ObjectType;
 
 	class Seed
 		: public SmartWin::Seed
@@ -107,8 +107,8 @@ private:
 	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 };
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-const typename WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::Seed & WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::getDefaultSeed()
+template< typename EventHandlerClass, bool horizontal >
+const typename WidgetPaned< EventHandlerClass, horizontal >::Seed & WidgetPaned< EventHandlerClass, horizontal >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( SmartWin::DontInitializeMe );
@@ -122,7 +122,7 @@ const typename WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::S
 		wc.lpszClassName = d_DefaultValues.getClassName().c_str();
 		wc.hbrBackground = ( HBRUSH )( COLOR_3DFACE + 1 );
 		wc.hCursor = LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE );
-		wc.lpfnWndProc = SmartWin::MessageMapPolicyNormalWidget::mainWndProc_;
+		wc.lpfnWndProc = ThisType::wndProc;
 		ATOM registeredClass = SmartWinRegisterClass( & wc );
 		if ( 0 == registeredClass )
 		{
@@ -136,14 +136,14 @@ const typename WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::S
 	return d_DefaultValues;
 }
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::Seed::Seed()
+template< typename EventHandlerClass, bool horizontal >
+WidgetPaned< EventHandlerClass, horizontal >::Seed::Seed()
 {
 	* this = WidgetPaned::getDefaultSeed();
 }
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::WidgetPaned( SmartWin::Widget * parent )
+template< typename EventHandlerClass, bool horizontal >
+WidgetPaned< EventHandlerClass, horizontal >::WidgetPaned( SmartWin::Widget * parent )
 	: SmartWin::Widget( parent, 0 )
 	, pos(0.5)
 	, moving(false)
@@ -151,11 +151,11 @@ WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::WidgetPaned( Sma
 	children.first = children.second = 0;
 }
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-void WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::create( const Seed & cs )
+template< typename EventHandlerClass, bool horizontal >
+void WidgetPaned< EventHandlerClass, horizontal >::create( const Seed & cs )
 {
 	// TODO: MessageMap instead of MessageMapControl
-	this->ThisMessageMap::isSubclassed = false;
+	this->MessageMapType::isSubclassed = false;
 	// TODO: use CreationalInfo parameters
 	if ( cs.style & WS_CHILD )
 		SmartWin::Widget::create( cs );
@@ -168,8 +168,8 @@ void WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::create( con
 	}
 }
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-SmartWin::Rectangle WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::getSplitterRect()
+template< typename EventHandlerClass, bool horizontal >
+SmartWin::Rectangle WidgetPaned< EventHandlerClass, horizontal >::getSplitterRect()
 {
 	// Sanity check
 	if(pos < 0.) {
@@ -205,8 +205,8 @@ SmartWin::Rectangle WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy
 	return rc;
 }
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-void WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::resizeChildren( )
+template< typename EventHandlerClass, bool horizontal >
+void WidgetPaned< EventHandlerClass, horizontal >::resizeChildren( )
 {
 	if(!children.first) {
 		if(children.second) {
@@ -238,8 +238,8 @@ void WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::resizeChild
 	this->setBounds(rcSplit);
 }
 
-template< typename EventHandlerClass, bool horizontal, class MessageMapPolicy >
-LRESULT WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< typename EventHandlerClass, bool horizontal >
+LRESULT WidgetPaned< EventHandlerClass, horizontal >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	switch ( msg )
 	{
@@ -273,7 +273,7 @@ LRESULT WidgetPaned< EventHandlerClass, horizontal, MessageMapPolicy >::sendWidg
 			return 0;
 		}
 		default:
-			return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+			return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 	}
 
 	// Removing compiler hickup...

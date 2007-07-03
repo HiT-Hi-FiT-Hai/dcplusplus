@@ -60,30 +60,30 @@ class WidgetCreator;
   * volume control of a music  player which has two buttons, one for louder and the
   * other for softer.
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetSpinner :
-	public MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > >,
 
 	// Aspects
-	public AspectBorder< WidgetSpinner< EventHandlerClass, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectScrollable< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBorder< WidgetSpinner< EventHandlerClass > >,
+	public AspectEnabled< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectKeyPressed< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectPainting< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectScrollable< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetSpinner, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetSpinner > MessageMapType;
 	friend class WidgetCreator< WidgetSpinner >;
 public:
 	/// Class type
-	typedef WidgetSpinner< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetSpinner< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetSpinner< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetSpinner< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -166,8 +166,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetSpinner< EventHandlerClass, MessageMapPolicy >::Seed & WidgetSpinner< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetSpinner< EventHandlerClass >::Seed & WidgetSpinner< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -185,33 +185,33 @@ const typename WidgetSpinner< EventHandlerClass, MessageMapPolicy >::Seed & Widg
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetSpinner< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetSpinner< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetSpinner::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetSpinner< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetSpinner< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSpinner< EventHandlerClass, MessageMapPolicy >::setRange( int minimum, int maximum )
+template< class EventHandlerClass >
+void WidgetSpinner< EventHandlerClass >::setRange( int minimum, int maximum )
 {
 	::SendMessage( this->Widget::itsHandle, UDM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSpinner< EventHandlerClass, MessageMapPolicy >::assignBuddy( Widget * buddy )
+template< class EventHandlerClass >
+void WidgetSpinner< EventHandlerClass >::assignBuddy( Widget * buddy )
 {
 	assert( buddy && buddy->handle() );
 	::SendMessage( this->Widget::itsHandle, UDM_SETBUDDY, reinterpret_cast< WPARAM >( buddy->handle() ), 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetSpinner< EventHandlerClass, MessageMapPolicy >::getValue()
+template< class EventHandlerClass >
+int WidgetSpinner< EventHandlerClass >::getValue()
 {
 #ifdef WINCE
 	LRESULT retVal = ::SendMessage( this->Widget::itsHandle, UDM_GETPOS, 0, 0 );
@@ -226,8 +226,8 @@ int WidgetSpinner< EventHandlerClass, MessageMapPolicy >::getValue()
 #endif //! WINCE
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetSpinner< EventHandlerClass, MessageMapPolicy >::setValue( int v )
+template< class EventHandlerClass >
+int WidgetSpinner< EventHandlerClass >::setValue( int v )
 {
 #ifdef WINCE
 	return ::SendMessage( this->Widget::itsHandle, UDM_SETPOS, 0, v );
@@ -236,16 +236,16 @@ int WidgetSpinner< EventHandlerClass, MessageMapPolicy >::setValue( int v )
 #endif
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetSpinner< EventHandlerClass, MessageMapPolicy >::WidgetSpinner( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetSpinner< EventHandlerClass >::WidgetSpinner( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Spinner without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSpinner< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetSpinner< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -256,7 +256,7 @@ void WidgetSpinner< EventHandlerClass, MessageMapPolicy >::create( const Seed & 
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setRange( cs.minValue, cs.maxValue );
 	//TODO: use CreationalInfo parameters
 }

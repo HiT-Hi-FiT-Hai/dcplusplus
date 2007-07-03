@@ -68,38 +68,38 @@ class WidgetCreator;
   * A ComboBox is a drop down "curtain" making it possible for the user to choose one
   * value at a time from a list of values.
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetComboBox :
-	public MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > >,
 	private virtual TrueWindow,
 
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectBorder< WidgetComboBox< EventHandlerClass, MessageMapPolicy > >,
-	public AspectChar< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetComboBox< EventHandlerClass, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSelection< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBackgroundColor< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectBorder< WidgetComboBox< EventHandlerClass > >,
+	public AspectChar< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectFont< WidgetComboBox< EventHandlerClass > >,
+	public AspectKeyPressed< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectPainting< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectSelection< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectText< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetComboBox, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetComboBox > MessageMapType;
 	friend class WidgetCreator< WidgetComboBox >;
 public:
 	/// Class type
-	typedef WidgetComboBox< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetComboBox< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetComboBox< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetComboBox< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -209,8 +209,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetComboBox< EventHandlerClass, MessageMapPolicy >::Seed & WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetComboBox< EventHandlerClass >::Seed & WidgetComboBox< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -226,61 +226,61 @@ const typename WidgetComboBox< EventHandlerClass, MessageMapPolicy >::Seed & Wid
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetComboBox< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetComboBox< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetComboBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetComboBox< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetComboBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getSelectionChangedMessage()
+template< class EventHandlerClass >
+Message & WidgetComboBox< EventHandlerClass >::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_COMMAND, CBN_SELENDOK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetComboBox< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, CBN_DROPDOWN );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getDblClickMessage()
+template< class EventHandlerClass >
+Message & WidgetComboBox< EventHandlerClass >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, CBN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getBackgroundColorMessage()
+template< class EventHandlerClass >
+Message & WidgetComboBox< EventHandlerClass >::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORLISTBOX );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getSelectedIndex() const
+template< class EventHandlerClass >
+int WidgetComboBox< EventHandlerClass >::getSelectedIndex() const
 {
 	int retVal = ComboBox_GetCurSel( this->Widget::itsHandle );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetComboBox< EventHandlerClass, MessageMapPolicy >::setSelectedIndex( int idx )
+template< class EventHandlerClass >
+void WidgetComboBox< EventHandlerClass >::setSelectedIndex( int idx )
 {
 	ComboBox_SetCurSel( this->Widget::itsHandle, idx );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getSelectedValue()
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetComboBox< EventHandlerClass >::getSelectedValue()
 {
 	int txtLength = ::GetWindowTextLength( this->Widget::itsHandle );
 	boost::scoped_array< TCHAR >
@@ -290,20 +290,20 @@ SmartUtil::tstring WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getSel
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetComboBox< EventHandlerClass, MessageMapPolicy >::removeAllItems()
+template< class EventHandlerClass >
+void WidgetComboBox< EventHandlerClass >::removeAllItems()
 {
 	ComboBox_ResetContent( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetComboBox< EventHandlerClass, MessageMapPolicy >::removeItem( int index )
+template< class EventHandlerClass >
+void WidgetComboBox< EventHandlerClass >::removeItem( int index )
 {
 	ComboBox_DeleteString( this->Widget::itsHandle, index );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::addValue( const SmartUtil::tstring & val )
+template< class EventHandlerClass >
+int WidgetComboBox< EventHandlerClass >::addValue( const SmartUtil::tstring & val )
 {
 	int newIdx = ComboBox_AddString( this->Widget::itsHandle, ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
@@ -314,8 +314,8 @@ int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::addValue( const Smart
 	return newIdx;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::insertValue( int pos, const SmartUtil::tstring & val )
+template< class EventHandlerClass >
+int WidgetComboBox< EventHandlerClass >::insertValue( int pos, const SmartUtil::tstring & val )
 {
 	int newIdx = ComboBox_InsertString( this->Widget::itsHandle, pos, ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
@@ -327,14 +327,14 @@ int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::insertValue( int pos,
 }
 
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getCount()
+template< class EventHandlerClass >
+int WidgetComboBox< EventHandlerClass >::getCount()
 {
 	return ComboBox_GetCount( this->Widget::itsHandle ); // Number of items present.
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getValue( int index )
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetComboBox< EventHandlerClass >::getValue( int index )
 {
 	// Uses CB_GETLBTEXTLEN and CB_GETLBTEXT
 	int txtLength = ComboBox_GetLBTextLen( this->Widget::itsHandle, index );
@@ -345,16 +345,16 @@ SmartUtil::tstring WidgetComboBox< EventHandlerClass, MessageMapPolicy >::getVal
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetComboBox< EventHandlerClass, MessageMapPolicy >::WidgetComboBox( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetComboBox< EventHandlerClass >::WidgetComboBox( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a ComboBox without a parent...
 	xAssert( parent, _T( "Cant have a WidgetComboBox without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetComboBox< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetComboBox< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -365,7 +365,7 @@ void WidgetComboBox< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 	if(cs.extended) {
 		::SendMessage(this->handle(), CB_SETEXTENDEDUI, TRUE, 0);

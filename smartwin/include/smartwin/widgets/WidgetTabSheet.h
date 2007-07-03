@@ -84,26 +84,26 @@ struct WidgetTabSheetDispatcher
   * Normally you would add up one WidgetChildWindow for each Tab Page the Tab Control
   * has.
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetTabSheet :
-	public MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > >,
 	private virtual TrueWindow,
 
 	// Aspects
-	public AspectBorder< WidgetTabSheet< EventHandlerClass, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetTabSheet< EventHandlerClass, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSelection< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBorder< WidgetTabSheet< EventHandlerClass > >,
+	public AspectEnabled< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectFont< WidgetTabSheet< EventHandlerClass > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectPainting< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectSelection< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectText< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetTabSheet, MessageMapPolicy > MessageMapType;
+	typedef MessageMapControl< EventHandlerClass, WidgetTabSheet > MessageMapType;
 	typedef WidgetTabSheetDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
@@ -111,10 +111,10 @@ class WidgetTabSheet :
 
 public:
 	/// Class type
-	typedef WidgetTabSheet< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetTabSheet< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetTabSheet< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetTabSheet< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -141,8 +141,6 @@ public:
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
 
-	typedef MessageMapControl< EventHandlerClass, WidgetTabSheet, MessageMapPolicy > ThisMessageMap;
-
 	// Removing compiler hickup...
 	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
@@ -164,10 +162,10 @@ public:
 	  * to change and the onSelectionChanged event will not fire ( good for
 	  * validation of fields etc...)
 	  */
-	void onSelectionChanging( typename ThisMessageMap::itsBoolFunctionTakingUnsigned eventHandler ) {
+	void onSelectionChanging( typename MessageMapType::itsBoolFunctionTakingUnsigned eventHandler ) {
 		onSelectionChanging(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
 	}
-	void onSelectionChanging( typename ThisMessageMap::boolFunctionTakingUnsigned eventHandler ) {
+	void onSelectionChanging( typename MessageMapType::boolFunctionTakingUnsigned eventHandler ) {
 		onSelectionChanging(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
 	}
 	void onSelectionChanging(const typename Dispatcher::F& f) {
@@ -270,8 +268,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::Seed & WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetTabSheet< EventHandlerClass >::Seed & WidgetTabSheet< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -286,34 +284,34 @@ const typename WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::Seed & Wid
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetTabSheet< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetTabSheet::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetTabSheet< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::getSelectionChangedMessage()
+template< class EventHandlerClass >
+Message & WidgetTabSheet< EventHandlerClass >::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, TCN_SELCHANGE );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::getSelectedIndex() const
+template< class EventHandlerClass >
+int WidgetTabSheet< EventHandlerClass >::getSelectedIndex() const
 {
 	int retVal = TabCtrl_GetCurSel( this->Widget::itsHandle );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartUtil::tstring WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::getSelectedHeader() const
+template< class EventHandlerClass >
+SmartUtil::tstring WidgetTabSheet< EventHandlerClass >::getSelectedHeader() const
 {
 	TCITEM item;
 	item.mask = TCIF_TEXT;
@@ -327,14 +325,14 @@ SmartUtil::tstring WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::getSel
 	return buffer;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setSelectedIndex( int idx )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setSelectedIndex( int idx )
 {
 	TabCtrl_SetCurSel( this->Widget::itsHandle, idx );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-unsigned int WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::addPage( const SmartUtil::tstring & header, unsigned index )
+template< class EventHandlerClass >
+unsigned int WidgetTabSheet< EventHandlerClass >::addPage( const SmartUtil::tstring & header, unsigned index )
 {
 	TCITEM item;
 	item.mask = TCIF_TEXT;
@@ -348,16 +346,16 @@ unsigned int WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::addPage( con
 	return ( unsigned int ) newIdx;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::WidgetTabSheet( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetTabSheet< EventHandlerClass >::WidgetTabSheet( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a ComboBox without a parent...
 	xAssert( parent, _T( "Cant have a WidgetTabSheet without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -368,68 +366,68 @@ void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setTabsAtBottom( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setTabsAtBottom( bool value )
 {
 	this->addRemoveStyle( TCS_BOTTOM, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setButtonStyle( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setButtonStyle( bool value )
 {
 	this->addRemoveStyle( TCS_BUTTONS, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setFlatButtonStyle( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setFlatButtonStyle( bool value )
 {
 	this->addRemoveStyle( TCS_BUTTONS, value );
 	this->addRemoveStyle( TCS_FLATBUTTONS, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setHotTrack( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setHotTrack( bool value )
 {
 	this->addRemoveStyle( TCS_HOTTRACK, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setMultiline( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setMultiline( bool value )
 {
 	this->addRemoveStyle( TCS_MULTILINE, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setRaggedRight( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setRaggedRight( bool value )
 {
 	this->addRemoveStyle( TCS_RAGGEDRIGHT, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setVerticalTabs( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setVerticalTabs( bool value )
 {
 	this->addRemoveStyle( TCS_VERTICAL, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setRightTabs( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setRightTabs( bool value )
 {
 	this->addRemoveStyle( TCS_VERTICAL | TCS_RIGHT, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::setFlatSeparators( bool value )
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setFlatSeparators( bool value )
 {
 	setFlatButtonStyle();
 	sendWidgetMessage( this->Widget::itsHandle, TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, TCS_EX_FLATSEPARATORS );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SmartWin::Rectangle WidgetTabSheet< EventHandlerClass, MessageMapPolicy >::getUsableArea() const
+template< class EventHandlerClass >
+SmartWin::Rectangle WidgetTabSheet< EventHandlerClass >::getUsableArea() const
 {
 	::RECT d_Answer;
 	Point d_Size = this->getClientAreaSize();

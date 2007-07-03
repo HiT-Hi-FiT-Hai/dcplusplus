@@ -65,30 +65,30 @@ class WidgetCreator;
   * you can move the thumbtrack up and down, it is quite similar in functionality to
   * the WidgetSpinner control, but have another visual appearance.
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetSlider :
-	public MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > >,
 
 	// Aspects
-	public AspectBorder< WidgetSlider< EventHandlerClass, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectScrollable< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBorder< WidgetSlider< EventHandlerClass > >,
+	public AspectEnabled< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectKeyPressed< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectPainting< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectScrollable< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetSlider, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetSlider > MessageMapType;
 	friend class WidgetCreator< WidgetSlider >;
 public:
 	/// Class type
-	typedef WidgetSlider< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetSlider< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetSlider< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetSlider< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -236,8 +236,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetSlider< EventHandlerClass, MessageMapPolicy >::Seed & WidgetSlider< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetSlider< EventHandlerClass >::Seed & WidgetSlider< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -252,113 +252,113 @@ const typename WidgetSlider< EventHandlerClass, MessageMapPolicy >::Seed & Widge
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetSlider< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetSlider< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetSlider::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetSlider< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetSlider< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setAutoTicks( bool value )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setAutoTicks( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_AUTOTICKS, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setHorizontal( bool value )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setHorizontal( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_HORZ, value );
 	this->Widget::addRemoveStyle( TBS_VERT, !value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setShowTicksLeft( bool value )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setShowTicksLeft( bool value )
 {
 	// TODO: Add assertion that the TBS_VERT is set!
 	this->Widget::addRemoveStyle( TBS_LEFT, value );
 	this->Widget::addRemoveStyle( TBS_RIGHT, !value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setShowTicksTop( bool value )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setShowTicksTop( bool value )
 {
 	// TODO: Add assertion that the TBS_HORZ is set!
 	this->Widget::addRemoveStyle( TBS_TOP, value );
 	this->Widget::addRemoveStyle( TBS_BOTTOM, !value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setShowTicksBoth( bool value )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setShowTicksBoth( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_BOTH, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setShowTicks( bool value )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setShowTicks( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_NOTICKS, !value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setRange( short minimum, short maximum )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setRange( short minimum, short maximum )
 {
 	::SendMessage( this->Widget::itsHandle, TBM_SETRANGE, static_cast< WPARAM >( TRUE ), MAKELONG( minimum, maximum ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetSlider< EventHandlerClass, MessageMapPolicy >::getMaxValue()
+template< class EventHandlerClass >
+int WidgetSlider< EventHandlerClass >::getMaxValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, TBM_GETRANGEMAX, 0, 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetSlider< EventHandlerClass, MessageMapPolicy >::getMinValue()
+template< class EventHandlerClass >
+int WidgetSlider< EventHandlerClass >::getMinValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, TBM_GETRANGEMIN, 0, 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setPosition( int newPosition )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setPosition( int newPosition )
 {
 	::SendMessage( this->Widget::itsHandle, TBM_SETPOS, static_cast< WPARAM >( TRUE ), static_cast< LPARAM >( newPosition ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::setTickFrequency( unsigned frequency )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::setTickFrequency( unsigned frequency )
 {
 	::SendMessage( this->Widget::itsHandle, TBM_SETTICFREQ, static_cast< LPARAM >( frequency ), 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetSlider< EventHandlerClass, MessageMapPolicy >::getPosition()
+template< class EventHandlerClass >
+int WidgetSlider< EventHandlerClass >::getPosition()
 {
 	return ::SendMessage( this->Widget::itsHandle, TBM_GETPOS, 0, 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::assignBuddy( bool beginning, Widget * buddy )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::assignBuddy( bool beginning, Widget * buddy )
 {
 	assert( buddy && buddy->handle() );
 	::SendMessage( this->Widget::itsHandle, TBM_SETBUDDY, static_cast< WPARAM >( beginning ? TRUE : FALSE ),
 		reinterpret_cast< LPARAM >( buddy->handle() ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetSlider< EventHandlerClass, MessageMapPolicy >::WidgetSlider( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetSlider< EventHandlerClass >::WidgetSlider( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Slider without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetSlider< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetSlider< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -369,7 +369,7 @@ void WidgetSlider< EventHandlerClass, MessageMapPolicy >::create( const Seed & c
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 }
 
 // end namespace SmartWin

@@ -62,27 +62,27 @@ class WidgetCreator;
   * A ProgressBar is a Widget which can be used to show e.g. percentage of lengthy 
   * jobs, often used when downloading from internet or installing applications etc.   
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetProgressBar :
-	public MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > >,
 
 	// Aspects
-	public AspectBorder< WidgetProgressBar< EventHandlerClass, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBorder< WidgetProgressBar< EventHandlerClass > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
+	public AspectPainting< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetProgressBar, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetProgressBar > MessageMapType;
 	friend class WidgetCreator< WidgetProgressBar >;
 public:
 	/// Class type
-	typedef WidgetProgressBar< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetProgressBar< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetProgressBar< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetProgressBar< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -193,8 +193,8 @@ protected:
 // Implementation of class
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::Seed & WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetProgressBar< EventHandlerClass >::Seed & WidgetProgressBar< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -209,86 +209,86 @@ const typename WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::Seed & 
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetProgressBar< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetProgressBar::getDefaultSeed();
 }
 
 #ifdef COMCTRL_V6
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::setHorizontal( bool value )
+template< class EventHandlerClass >
+void WidgetProgressBar< EventHandlerClass >::setHorizontal( bool value )
 {
 	this->Widget::addRemoveStyle( PBS_VERTICAL, !value );
 }
 #endif
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::addToPosition( int positiondelta )
+template< class EventHandlerClass >
+void WidgetProgressBar< EventHandlerClass >::addToPosition( int positiondelta )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_DELTAPOS, static_cast< WPARAM >( positiondelta ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::addStep( void )
+template< class EventHandlerClass >
+void WidgetProgressBar< EventHandlerClass >::addStep( void )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_STEPIT, static_cast< WPARAM >( 0 ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::setRange( int minimum, int maximum )
+template< class EventHandlerClass >
+void WidgetProgressBar< EventHandlerClass >::setRange( int minimum, int maximum )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::getMaxValue()
+template< class EventHandlerClass >
+int WidgetProgressBar< EventHandlerClass >::getMaxValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, PBM_GETRANGE, static_cast< WPARAM >( FALSE ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::getMinValue()
+template< class EventHandlerClass >
+int WidgetProgressBar< EventHandlerClass >::getMinValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, PBM_GETRANGE, static_cast< WPARAM >( TRUE ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::setPosition( int newPosition )
+template< class EventHandlerClass >
+void WidgetProgressBar< EventHandlerClass >::setPosition( int newPosition )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_SETPOS, static_cast< WPARAM >( newPosition ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::setStep( unsigned stepsize )
+template< class EventHandlerClass >
+void WidgetProgressBar< EventHandlerClass >::setStep( unsigned stepsize )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( stepsize ), 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-unsigned int WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::getStep( void )
+template< class EventHandlerClass >
+unsigned int WidgetProgressBar< EventHandlerClass >::getStep( void )
 {
 	unsigned int stepsize = ::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( 1 ), 0 );
 	::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( stepsize ), 0 );
 	return stepsize;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::getPosition()
+template< class EventHandlerClass >
+int WidgetProgressBar< EventHandlerClass >::getPosition()
 {
 	return ::SendMessage( this->Widget::itsHandle, PBM_GETPOS, 0, 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::WidgetProgressBar( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetProgressBar< EventHandlerClass >::WidgetProgressBar( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Progressbar without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetProgressBar< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -299,7 +299,7 @@ void WidgetProgressBar< EventHandlerClass, MessageMapPolicy >::create( const See
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 }
 
 // end namespace SmartWin

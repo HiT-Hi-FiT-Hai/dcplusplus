@@ -62,7 +62,7 @@ class WidgetCreator;
   * where you can add text there are several smaller sections which divides the
   * status bar into smaller areas where you can separate information.
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class Section
 {
 public:
@@ -78,7 +78,7 @@ public:
 };
 
 // Forward declaration
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
+template< class EventHandlerClass, class TypeOfStatusBar >
 class WidgetStatusBar;
 
 // Note, this Aspect class indirectly brings in AspectText while the Section one DOES NOT!
@@ -89,9 +89,9 @@ class WidgetStatusBar;
   * Use the setText member ( which is included by inheritance to AspectText ) to set
   * the text of the Status Bar Control!
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class NoSection :
-	public AspectText< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, NoSection< EventHandlerClass, MessageMapPolicy > >, MessageMapControl< EventHandlerClass, WidgetStatusBar < EventHandlerClass, MessageMapPolicy, NoSection< EventHandlerClass, MessageMapPolicy > >, MessageMapPolicy > >
+	public AspectText< EventHandlerClass, WidgetStatusBar< EventHandlerClass, NoSection< EventHandlerClass > >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, NoSection< EventHandlerClass > > > >
 {
 };
 
@@ -115,28 +115,28 @@ class NoSection :
   * The default one is the flat one, use Section as the last template parameter to
   * use the one with sections!
   */
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar = NoSection< EventHandlerClass, MessageMapPolicy > >
+template< class EventHandlerClass, class TypeOfStatusBar = NoSection< EventHandlerClass > >
 class WidgetStatusBar :
 	public TypeOfStatusBar,
-	public MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > >,
 	private virtual TrueWindow,
 
 	// Aspects
-	public AspectBorder< WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar > >,
-	public AspectClickable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
-	public AspectFont< WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
-	public AspectRightClickable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
+	public AspectBorder< WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > >,
+	public AspectClickable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
+	public AspectFont< WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
+	public AspectPainting< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
+	public AspectRaw< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
+	public AspectRightClickable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
 	// GCC chokes on private inheritance here since we're casting to WidgetType in some of the member functions in AspectSizable!!
-	protected AspectSizable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > >
+	protected AspectSizable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
+	public AspectThreads< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
+	public AspectVisible< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetStatusBar, MessageMapPolicy > ThisMessageMap;
-	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >, MessageMapPolicy > > AspectSizable;
+	typedef MessageMapControl< EventHandlerClass, WidgetStatusBar > MessageMapType;
+	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > > AspectSizable;
 	friend class WidgetCreator< WidgetStatusBar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible.
@@ -153,10 +153,10 @@ public:
 	using AspectSizable::onMoved;
 
 	/// Class type
-	typedef WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar > ThisType;
+	typedef WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > ThisType;
 
 	/// Object type
-	typedef WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar > * ObjectType;
+	typedef WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -182,9 +182,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	/// Refreshes the status bar, must be called after main window has been resized
 	/** Refreshes the status bar, call this one whenever you need to redraw the
@@ -223,8 +220,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-const typename WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::Seed & WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::getDefaultSeed()
+template< class EventHandlerClass, class TypeOfStatusBar >
+const typename WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::Seed & WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -239,17 +236,17 @@ const typename WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatu
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::Seed::Seed()
+template< class EventHandlerClass, class TypeOfStatusBar >
+WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::Seed::Seed()
 {
 	* this = WidgetStatusBar::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void Section< EventHandlerClass, MessageMapPolicy >::setSections( const std::vector< unsigned > & width )
+template< class EventHandlerClass >
+void Section< EventHandlerClass >::setSections( const std::vector< unsigned > & width )
 {
-	WidgetStatusBar< EventHandlerClass, MessageMapPolicy, Section< EventHandlerClass, MessageMapPolicy > > * This
-		= static_cast< WidgetStatusBar < EventHandlerClass, MessageMapPolicy, Section< EventHandlerClass, MessageMapPolicy > > * >( this );
+	WidgetStatusBar< EventHandlerClass, Section< EventHandlerClass > > * This
+		= static_cast< WidgetStatusBar < EventHandlerClass, Section< EventHandlerClass > > * >( this );
 
 	std::vector< unsigned > newVec( width );
 	std::vector< unsigned >::const_iterator origIdx = width.begin();
@@ -266,22 +263,16 @@ void Section< EventHandlerClass, MessageMapPolicy >::setSections( const std::vec
 	::SendMessage( This->handle(), SB_SETPARTS, static_cast< WPARAM >( size ), reinterpret_cast< LPARAM >( intArr ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void Section< EventHandlerClass, MessageMapPolicy >::setText( const SmartUtil::tstring & newText, unsigned partNo )
+template< class EventHandlerClass >
+void Section< EventHandlerClass >::setText( const SmartUtil::tstring & newText, unsigned partNo )
 {
-	WidgetStatusBar< EventHandlerClass, MessageMapPolicy, Section< EventHandlerClass, MessageMapPolicy > > * This
-		= static_cast< WidgetStatusBar < EventHandlerClass, MessageMapPolicy, Section< EventHandlerClass, MessageMapPolicy > > * >( this );
+	WidgetStatusBar< EventHandlerClass, Section< EventHandlerClass > > * This
+		= static_cast< WidgetStatusBar < EventHandlerClass, Section< EventHandlerClass > > * >( this );
 	::SendMessage( This->handle(), SB_SETTEXT, static_cast< WPARAM >( partNo ), reinterpret_cast< LPARAM >( newText.c_str() ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-LRESULT WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
-}
-
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-void WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::refresh()
+template< class EventHandlerClass, class TypeOfStatusBar >
+void WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::refresh()
 {
 	// A status bar can't really be resized since its size is controlled by the
 	// parent window. But to not let the status bar "hang" we need to refresh its
@@ -295,30 +286,30 @@ void WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::re
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-Message & WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::getClickMessage()
+template< class EventHandlerClass, class TypeOfStatusBar >
+Message & WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-Message & WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::getDblClickMessage()
+template< class EventHandlerClass, class TypeOfStatusBar >
+Message & WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::WidgetStatusBar( SmartWin::Widget * parent )
+template< class EventHandlerClass, class TypeOfStatusBar >
+WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::WidgetStatusBar( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a ComboBox without a parent...
 	xAssert( parent, _T( "Cant have a WidgetStatusBar without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TypeOfStatusBar >
-void WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::create( const Seed & cs )
+template< class EventHandlerClass, class TypeOfStatusBar >
+void WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -329,7 +320,7 @@ void WidgetStatusBar< EventHandlerClass, MessageMapPolicy, TypeOfStatusBar >::cr
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 }
 

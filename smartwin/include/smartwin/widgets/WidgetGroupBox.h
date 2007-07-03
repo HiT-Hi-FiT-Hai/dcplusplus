@@ -66,34 +66,34 @@ class WidgetCreator;
   * A Group Box Widget is a Widget which can contain other Widgets, normally you would 
   * add up your WidgetRadioButtons into an object of this type   
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetGroupBox :
-	public MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > >,
 	public virtual TrueWindow,
 
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectBorder< WidgetGroupBox< EventHandlerClass, MessageMapPolicy > >,
-	public AspectClickable< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEraseBackground< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetGroupBox< EventHandlerClass, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBackgroundColor< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectBorder< WidgetGroupBox< EventHandlerClass > >,
+	public AspectClickable< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectEraseBackground< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectFont< WidgetGroupBox< EventHandlerClass > >,
+	public AspectRaw< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectText< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetGroupBox, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetGroupBox > MessageMapType;
 	friend class WidgetCreator< WidgetGroupBox >;
 public:
 	/// Class type
-	typedef WidgetGroupBox< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetGroupBox< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetGroupBox< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetGroupBox< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -137,7 +137,7 @@ public:
 	virtual void create( const Seed & cs = getDefaultSeed() );
 
 	/// Add a radio button to the group box
-	void addChild( typename WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::ObjectType btn );
+	void addChild( typename WidgetRadioButton< EventHandlerClass >::ObjectType btn );
 
 protected:
 	/// Constructor Taking pointer to parent
@@ -151,15 +151,15 @@ protected:
 	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 private:
-	std::list< typename WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::ObjectType > itsChildrenBtns;
+	std::list< typename WidgetRadioButton< EventHandlerClass >::ObjectType > itsChildrenBtns;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::Seed & WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetGroupBox< EventHandlerClass >::Seed & WidgetGroupBox< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -174,43 +174,43 @@ const typename WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::Seed & Wid
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetGroupBox< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetGroupBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::getBackgroundColorMessage()
+template< class EventHandlerClass >
+Message & WidgetGroupBox< EventHandlerClass >::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORBTN );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetGroupBox< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::getDblClickMessage()
+template< class EventHandlerClass >
+Message & WidgetGroupBox< EventHandlerClass >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::WidgetGroupBox( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetGroupBox< EventHandlerClass >::WidgetGroupBox( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetGroupBox< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -221,25 +221,25 @@ void WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-	void WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::addChild( typename WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::ObjectType btn )
+template< class EventHandlerClass >
+	void WidgetGroupBox< EventHandlerClass >::addChild( typename WidgetRadioButton< EventHandlerClass >::ObjectType btn )
 {
 	itsChildrenBtns.push_back( btn );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetGroupBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	switch ( msg )
 	{
 		// Checking to see if it's a click event which should be routed to one of the children
 		case WM_COMMAND :
 		{
-			for ( typename std::list< typename WidgetRadioButton< EventHandlerClass, MessageMapPolicy >::ObjectType >::iterator idx = itsChildrenBtns.begin();
+			for ( typename std::list< typename WidgetRadioButton< EventHandlerClass >::ObjectType >::iterator idx = itsChildrenBtns.begin();
 				idx != itsChildrenBtns.end();
 				++idx )
 			{
@@ -248,7 +248,7 @@ LRESULT WidgetGroupBox< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage
 			}
 		}
 	}
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
 // end namespace SmartWin

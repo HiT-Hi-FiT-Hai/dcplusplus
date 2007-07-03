@@ -44,16 +44,16 @@ namespace SmartWin
   * Class is a public superclass of WidgetWindowBase and therefor can use all features 
   * of WidgetWindowBase. 
   */
-template< class EventHandlerClass, class unUsed > /*We must have the unUsed template parameter here to make WidgetFactorys' template parameters come out right*/
+template< class EventHandlerClass > 
 class WidgetDialog
 	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyDialogWidget >
 {
 public:
 	/// Class type
-	typedef WidgetDialog< EventHandlerClass, unUsed > ThisType;
+	typedef WidgetDialog< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetDialog< EventHandlerClass, unUsed > * ObjectType;
+	typedef WidgetDialog< EventHandlerClass > * ObjectType;
 
 	/// Creates a Dialog Window
 	/** This version creates a window from the given Dialog Resource Id.
@@ -71,13 +71,13 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class unUsed >
-WidgetDialog< EventHandlerClass, unUsed >::WidgetDialog( Widget * parent )
+template< class EventHandlerClass >
+WidgetDialog< EventHandlerClass >::WidgetDialog( Widget * parent )
 	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyDialogWidget >( parent )
 {}
 
-template< class EventHandlerClass, class unUsed >
-void WidgetDialog< EventHandlerClass, unUsed >::createDialog( unsigned resourceId )
+template< class EventHandlerClass >
+void WidgetDialog< EventHandlerClass >::createDialog( unsigned resourceId )
 {
 	this->Widget::itsHandle = ::CreateDialogParam( Application::instance().getAppHandle(),
 		MAKEINTRESOURCE( resourceId ),

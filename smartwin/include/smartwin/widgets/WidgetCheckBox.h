@@ -62,34 +62,34 @@ class WidgetCreator;
   * out". <br>
   * It can contain descriptive text etc. 
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetCheckBox :
-	public MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > >,
 	private virtual TrueWindow,
 
 	// Aspect classes
-	public AspectBackgroundColor< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectBorder< WidgetCheckBox< EventHandlerClass, MessageMapPolicy > >,
-	public AspectClickable< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectDblClickable< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetCheckBox< EventHandlerClass, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectBackgroundColor< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectBorder< WidgetCheckBox< EventHandlerClass > >,
+	public AspectClickable< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectDblClickable< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectFont< WidgetCheckBox< EventHandlerClass > >,
+	public AspectPainting< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectText< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetCheckBox, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetCheckBox > MessageMapType;
 	friend class WidgetCreator< WidgetCheckBox >;
 public:
 	/// Class type
-	typedef WidgetCheckBox< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetCheckBox< EventHandlerClass > ThisType;
 
 	/// Class type
-	typedef WidgetCheckBox< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetCheckBox< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -115,9 +115,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
 
 	// Contract needed by AspectClickable Aspect class
 	static inline Message & getClickMessage();
@@ -159,8 +156,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::Seed & WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetCheckBox< EventHandlerClass >::Seed & WidgetCheckBox< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -175,63 +172,57 @@ const typename WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::Seed & Wid
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetCheckBox< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetCheckBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::setChecked( bool value )
+template< class EventHandlerClass >
+void WidgetCheckBox< EventHandlerClass >::setChecked( bool value )
 {
 	::SendMessage( this->Widget::itsHandle, BM_SETCHECK, static_cast< WPARAM >( value ? BST_CHECKED : BST_UNCHECKED ), 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
-}
-
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetCheckBox< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::getDblClickMessage()
+template< class EventHandlerClass >
+Message & WidgetCheckBox< EventHandlerClass >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::getBackgroundColorMessage()
+template< class EventHandlerClass >
+Message & WidgetCheckBox< EventHandlerClass >::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORBTN );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::getChecked()
+template< class EventHandlerClass >
+bool WidgetCheckBox< EventHandlerClass >::getChecked()
 {
 	return ::SendMessage( this->Widget::itsHandle, BM_GETCHECK, 0, 0 ) == BST_CHECKED;
 }
 
 // Protected to avoid direct instantiation, you can inherit and use WidgetFactory
 // class which is friend
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::WidgetCheckBox( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetCheckBox< EventHandlerClass >::WidgetCheckBox( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetCheckBox< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -242,7 +233,7 @@ void WidgetCheckBox< EventHandlerClass, MessageMapPolicy >::create( const Seed &
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 }
 

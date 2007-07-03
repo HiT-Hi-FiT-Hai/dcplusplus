@@ -37,6 +37,7 @@
 #include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectRaw.h"
 #include "../xCeption.h"
+#include "../BasicTypes.h"
 
 namespace SmartWin
 {
@@ -62,25 +63,25 @@ class WidgetCreator;
   * Related class : <br>
   * WidgetMDIChild 
   */
-template< class EventHandlerClass, class unUsed >
+template< class EventHandlerClass >
 class WidgetMDIParent :
-	public MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapPolicyNormalWidget >,
+	public MessageMapControl< EventHandlerClass, WidgetMDIParent<EventHandlerClass> >,
 
 	// Aspects
-	public AspectSizable< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapPolicyNormalWidget > >,
-	public AspectVisible< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapPolicyNormalWidget > >,
-	public AspectEnabled< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapPolicyNormalWidget > >,
-	public AspectFocus< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapPolicyNormalWidget > >,
-	public AspectRaw< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass, unUsed >, MessageMapPolicyNormalWidget > >
+	public AspectSizable< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
+	public AspectEnabled< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetMDIParent, MessageMapPolicyNormalWidget > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetMDIParent > MessageMapType;
 	friend class WidgetCreator< WidgetMDIParent >;
 public:
 	/// Class type
-	typedef WidgetMDIParent< EventHandlerClass, unUsed > ThisType;
+	typedef WidgetMDIParent< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetMDIParent< EventHandlerClass, unUsed > * ObjectType;
+	typedef ThisType * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -116,9 +117,6 @@ public:
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
 
-	// Removing compiler hickup...
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar );
-
 	/// Actually creates the MDI EventHandlerClass Control
 	/** You should call WidgetFactory::createMDIParent if you instantiate class
 	  * directly. <br>
@@ -152,8 +150,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class unUsed >
-const typename WidgetMDIParent< EventHandlerClass, unUsed >::Seed & WidgetMDIParent< EventHandlerClass, unUsed >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetMDIParent< EventHandlerClass >::Seed & WidgetMDIParent< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -171,28 +169,22 @@ const typename WidgetMDIParent< EventHandlerClass, unUsed >::Seed & WidgetMDIPar
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class unUsed >
-WidgetMDIParent< EventHandlerClass, unUsed >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetMDIParent< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetMDIParent::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class unUsed >
-LRESULT WidgetMDIParent< EventHandlerClass, unUsed >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
-}
-
-template< class EventHandlerClass, class unUsed >
-WidgetMDIParent< EventHandlerClass, unUsed >::WidgetMDIParent( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetMDIParent< EventHandlerClass >::WidgetMDIParent( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-template< class EventHandlerClass, class unUsed >
-void WidgetMDIParent< EventHandlerClass, unUsed >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetMDIParent< EventHandlerClass >::create( const Seed & cs )
 {
 	CLIENTCREATESTRUCT ccs;
 	ccs.hWindowMenu = cs.windowMenu;
@@ -216,7 +208,7 @@ void WidgetMDIParent< EventHandlerClass, unUsed >::create( const Seed & cs )
 	this->Widget::isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
 	Application::instance().registerWidget( this );
 
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 }
 
 // end namespace SmartWin

@@ -19,12 +19,12 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 #define DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 
-template< class EventHandlerClass, class MessageMapPolicy >
-class WidgetTextBox : public SmartWin::WidgetTextBox<EventHandlerClass, MessageMapPolicy> {
+template< class EventHandlerClass >
+class WidgetTextBox : public SmartWin::WidgetTextBox<EventHandlerClass> {
 private:
-	typedef SmartWin::WidgetTextBox<EventHandlerClass, MessageMapPolicy> BaseType;
+	typedef SmartWin::WidgetTextBox<EventHandlerClass> BaseType;
 public:
-	typedef WidgetTextBox<EventHandlerClass, MessageMapPolicy>* ObjectType;
+	typedef WidgetTextBox<EventHandlerClass>* ObjectType;
 
 	explicit WidgetTextBox( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent) { }
 

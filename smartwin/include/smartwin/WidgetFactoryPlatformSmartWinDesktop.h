@@ -46,19 +46,19 @@ namespace SmartWin
 /** Desktop version dependant functions which does not exist in Windows CE version of
   * Windows API will be here
   */
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, SmartWinDesktop >
-	: public ContainerWidgetType< EventHandlerClass, MessageMapPolicy >
+	: public ContainerWidgetType< EventHandlerClass >
 {
 public:
 	/// RichEditBox class type.
-	typedef SmartWin::WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, RichTextBox< EventHandlerClass, MessageMapPolicy > > WidgetRichTextBox;
+	typedef SmartWin::WidgetRichTextBox< EventHandlerClass, RichTextBox< EventHandlerClass > > WidgetRichTextBox;
 
 	/// RichEditBox object type.
 	typedef typename WidgetRichTextBox::ObjectType WidgetRichTextBoxPtr;
 
 	/// ExtendedMenu class type.
-	typedef SmartWin::WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > WidgetMenuExtended;
+	typedef SmartWin::WidgetMenuExtended< EventHandlerClass > WidgetMenuExtended;
 
 	/// ExtendedMenu object type.
 	typedef typename WidgetMenuExtended::ObjectType WidgetMenuExtendedPtr;
@@ -67,25 +67,25 @@ public:
 	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
 
 	/// Splitter class type.
-	typedef WidgetSplitter< EventHandlerClass, SplitterThinPaint, MessageMapPolicyNormalWidget > WidgetSplitterThin;
+	typedef WidgetSplitter< EventHandlerClass, SplitterThinPaint > WidgetSplitterThin;
 
 	/// Splitter object type.
 	typedef typename WidgetSplitterThin::ObjectType WidgetSplitterThinPtr;
 
 	/// CoolSplitter class type.
-	typedef WidgetSplitter< EventHandlerClass, SplitterCoolPaint, MessageMapPolicyNormalWidget > WidgetSplitterCool;
+	typedef WidgetSplitter< EventHandlerClass, SplitterCoolPaint > WidgetSplitterCool;
 
 	/// CoolSplitter object type.
 	typedef typename WidgetSplitterCool::ObjectType WidgetSplitterCoolPtr;
 
 	/// Toolbar class type.
-	typedef SmartWin::WidgetToolbar< EventHandlerClass, MessageMapPolicy > WidgetToolbar;
+	typedef SmartWin::WidgetToolbar< EventHandlerClass > WidgetToolbar;
 
 	/// Toolbar object type.
 	typedef typename WidgetToolbar::ObjectType WidgetToolbarPtr;
 
 	/// Coolbar class type.
-	typedef SmartWin::WidgetCoolbar< EventHandlerClass, MessageMapPolicy > WidgetCoolbar;
+	typedef SmartWin::WidgetCoolbar< EventHandlerClass > WidgetCoolbar;
 
 	/// Coolbar object type.
 	typedef typename WidgetCoolbar::ObjectType WidgetCoolbarPtr;
@@ -102,7 +102,7 @@ public:
 	  * since it explicitly sets the parent of the Widget.
 	  */
 	WidgetFactoryPlatformImplementation( Widget * parent )
-		: ContainerWidgetType< EventHandlerClass, MessageMapPolicy >( parent )
+		: ContainerWidgetType< EventHandlerClass >( parent )
 	{}
 
 	/// Creates a WidgetChooseFont and returns it.
@@ -206,9 +206,9 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, SmartWinDesktop >::WidgetFactoryPlatformImplementation()
-	: Widget(0), ContainerWidgetType< EventHandlerClass, MessageMapPolicy >( 0 )
+	: Widget(0), ContainerWidgetType< EventHandlerClass >( 0 )
 {}
 
 // end namespace SmartWin

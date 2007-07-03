@@ -296,11 +296,6 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
-}
 
 template< class EventHandlerClass, class MessageMapPolicy >
 void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( const TimerDispatcher::F& f,

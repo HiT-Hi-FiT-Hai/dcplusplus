@@ -33,10 +33,8 @@
 #include "SmartUtil.h"
 #include "CallbackFuncPrototypes.h"
 #include "Message.h"
-#include "Font.h"
 #include "Threads.h"
 #include <vector>
-#include <map>
 #include <memory>
 #include <boost/noncopyable.hpp>
 
@@ -96,12 +94,20 @@ public:
 	{ return itsCtrlId;
 	}
 
+	// TODO These need to be moved to an appropriate location so that they're only
+	// available when the handle is a HWND...
 	/// Send a message to the Widget
 	/** If you need to be able to send a message to a Widget then use this function
 	  * as it will unroll into <br>
 	  * a ::SendMessage from the Windows API
 	  */
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar ) = 0;
+	LRESULT sendMessage( UINT msg, WPARAM wParam = 0, LPARAM lParam = 0 ) {
+		return ::SendMessage(handle(), msg, wParam, lParam);
+	}
+	
+	bool postMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) {
+		return ::PostMessage(handle(), msg, wParam, lParam);
+	}
 
 	// TODO: Change all references to typedefed WidgetPtr...??
 	/// Returns the parent Widget of the Widget
@@ -112,33 +118,6 @@ public:
 	Widget * getParent() const
 	{ return itsParent;
 	}
-
-	/// Returns the event handling Widget of the Widget
-	/** Almost all Widgets have got an "event handling" Widget which is the Widget
-	  * handling the events the Widget generates. For most Widgets this will be the
-	  * parent Widget or the Widget itself if the Widget is contained in its own
-	  * class. But for some Widgets, e.g. Widgets which have parents of type
-	  * WidgetChildWindow the Widgets event handling Widget is neither the parent nor
-	  * the Widget object, for such Widgets this function will return that very
-	  * Widget object which is responsible for handling the events in that Widget. To
-	  * "override" that Widget (which you SHOULD if you're adding Widget into a
-	  * WidgetChildWindow) use the setEventHandlingWidget function.
-	  */
-	//Widget * getEventHandler() const { return itsEventHandler==0?itsParent:itsEventHandler; }
-
-	/// Sets the event handling Widget of the Widget
-	/** Almost all Widgets have got an "event handling" Widget which is the Widget
-	  * handling the events the Widget generates. For most Widgets this will be the
-	  * parent Widget or the Widget itself if the Widget is contained in its own
-	  * class. But for some Widgets, e.g. typically Widgets which have parents of
-	  * type WidgetChildWindow the Widgets event handling Widget is neither the
-	  * parent nor the Widget object, for such Widgets this function will return that
-	  * very Widget object which is responsible for handling the events in that
-	  * Widget. To "override" that Widget (which you SHOULD if you're adding Widget
-	  * into a WidgetChildWindow) use this function. To later retrieve that Widget
-	  * use the getEventHandler function.
-	  */
-	//void setEventHandler( Widget * eventHandler ) { itsEventHandler = eventHandler; }
 
 	/// Repaints the whole window
 	/** Invalidate the window and repaints it.
@@ -171,9 +150,6 @@ public:
 	  * style (if true add style, else remove)
 	  */
 	void addRemoveExStyle( DWORD addStyle, bool add );
-
-	// The Widegt responsible for handling the events of the Widget
-	Widget * itsEventHandler;
 
 	bool clientToScreen(POINT& pt) { return ::ClientToScreen(handle(), &pt); }
 	bool screenToClient(POINT& pt) { return ::ScreenToClient(handle(), &pt); }

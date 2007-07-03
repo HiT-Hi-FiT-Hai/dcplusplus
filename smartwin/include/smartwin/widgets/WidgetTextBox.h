@@ -54,10 +54,10 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class MessageMapPolicy, class unUsed >
+template< class EventHandlerClass, class unUsed >
 class WidgetTextBox;
 
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class NormalTextBox
 {
 public:
@@ -71,7 +71,7 @@ public:
 	{};
 	enum canSetReadOnly
 	{};
-	typedef WidgetTextBox< EventHandlerClass, MessageMapPolicy, NormalTextBox< EventHandlerClass, MessageMapPolicy > > TextBoxType;
+	typedef WidgetTextBox< EventHandlerClass, NormalTextBox< EventHandlerClass > > TextBoxType;
 };
 
 #ifdef _MSC_VER
@@ -92,33 +92,33 @@ public:
   * Related classes <br>
   * < ul > < li >WidgetRichTextBox< /li > < /ul >
   */
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType = NormalTextBox< EventHandlerClass, MessageMapPolicy > >
+template< class EventHandlerClass, class TextBoxType = NormalTextBox< EventHandlerClass > >
 class WidgetTextBox :
-	public MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType >,
 	private virtual TrueWindow,
 
 	// Aspect classes
 	public AspectBorder< typename TextBoxType::TextBoxType >,
-	public AspectSizable< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectText< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
+	public AspectSizable< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectText< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
 	public AspectFont< typename TextBoxType::TextBoxType >,
-	public AspectVisible< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectChar< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectUpdate< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectBackgroundColor< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > >
+	public AspectVisible< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectEnabled< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectChar< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectKeyPressed< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectFocus< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectUpdate< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectBackgroundColor< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectRaw< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >
 {
-	typedef MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > MessageMapType;
 	friend class WidgetCreator< WidgetTextBox >;
 public:
 	/// Class type
-	typedef WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType > ThisType;
+	typedef WidgetTextBox< EventHandlerClass, TextBoxType > ThisType;
 
 	/// Object type
-	typedef WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType > * ObjectType;
+	typedef WidgetTextBox< EventHandlerClass, TextBoxType > * ObjectType;
 
 	/// Info for creation
 	/** This class contains all of the values needed to create the widget. It also
@@ -129,7 +129,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::ThisType WidgetType;
+		typedef typename WidgetTextBox< EventHandlerClass, TextBoxType >::ThisType WidgetType;
 
 		FontPtr font;
 
@@ -295,8 +295,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-const typename WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::Seed & WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::getDefaultSeed()
+template< class EventHandlerClass, class TextBoxType >
+const typename WidgetTextBox< EventHandlerClass, TextBoxType >::Seed & WidgetTextBox< EventHandlerClass, TextBoxType >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -312,27 +312,27 @@ const typename WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::Seed::Seed()
+template< class EventHandlerClass, class TextBoxType >
+WidgetTextBox< EventHandlerClass, TextBoxType >::Seed::Seed()
 {
 	* this = WidgetTextBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-LRESULT WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass, class TextBoxType >
+LRESULT WidgetTextBox< EventHandlerClass, TextBoxType >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-Message & WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::getUpdateMessage()
+template< class EventHandlerClass, class TextBoxType >
+Message & WidgetTextBox< EventHandlerClass, TextBoxType >::getUpdateMessage()
 {
 	static Message retVal = Message( WM_COMMAND, EN_UPDATE );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-Message & WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::getBackgroundColorMessage()
+template< class EventHandlerClass, class TextBoxType >
+Message & WidgetTextBox< EventHandlerClass, TextBoxType >::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLOREDIT );
 	return retVal;
@@ -340,23 +340,23 @@ Message & WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::get
 
 
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setSelection( long start, long end )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setSelection( long start, long end )
 {
 	::SendMessage( this->Widget::itsHandle, EM_SETSEL, start, end );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-SmartUtil::tstring WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::getSelection() const
+template< class EventHandlerClass, class TextBoxType >
+SmartUtil::tstring WidgetTextBox< EventHandlerClass, TextBoxType >::getSelection() const
 {
 	DWORD start, end;
 	::SendMessage( this->Widget::itsHandle, EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
-	SmartUtil::tstring retVal = this->AspectText< EventHandlerClass, typename TextBoxType::TextBoxType, ThisMessageMap >::getText().substr( start, end - start );
+	SmartUtil::tstring retVal = this->AspectText< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapType >::getText().substr( start, end - start );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::replaceSelection( const SmartUtil::tstring & txt, bool canUndo )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::replaceSelection( const SmartUtil::tstring & txt, bool canUndo )
 {
 	::SendMessage( this->Widget::itsHandle, EM_REPLACESEL, static_cast< WPARAM >( canUndo ? TRUE : FALSE ), reinterpret_cast< LPARAM >( txt.c_str() ) );
 }
@@ -364,16 +364,16 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::replaceS
 
 
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::addText( const SmartUtil::tstring & addtxt )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::addText( const SmartUtil::tstring & addtxt )
 {
 	setSelection( ( long ) this->getText().size() );
 	replaceSelection( addtxt ); 
 }
 
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::addTextLines( const SmartUtil::tstring & addtxt )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::addTextLines( const SmartUtil::tstring & addtxt )
 {
 	setSelection( ( long ) this->getText().size() );
 	replaceSelection( this->replaceEndlWithLfCr( addtxt ) ); 
@@ -381,44 +381,44 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::addTextL
 
 
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-long WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::findText( const SmartUtil::tstring & txt, unsigned offset ) const
+template< class EventHandlerClass, class TextBoxType >
+long WidgetTextBox< EventHandlerClass, TextBoxType >::findText( const SmartUtil::tstring & txt, unsigned offset ) const
 {
-	const SmartUtil::tstring & txtOfBox = this->AspectText< EventHandlerClass, WidgetTextBox, ThisMessageMap >::getText();
+	const SmartUtil::tstring & txtOfBox = this->AspectText< EventHandlerClass, WidgetTextBox, MessageMapType >::getText();
 	size_t position = txtOfBox.find( txt, offset );
 	if ( position == std::string::npos )
 		return - 1;
 	return static_cast< long >( position );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-long WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::getCaretPos()
+template< class EventHandlerClass, class TextBoxType >
+long WidgetTextBox< EventHandlerClass, TextBoxType >::getCaretPos()
 {
 	DWORD start, end;
 	::SendMessage( this->Widget::itsHandle, EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
 	return static_cast< long >( end );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::showCaret()
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::showCaret()
 {
 	::SendMessage( this->Widget::itsHandle, EM_SCROLLCARET, 0, 0 );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setScrollBarHorizontally( bool value )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setScrollBarHorizontally( bool value )
 {
 	Widget::addRemoveStyle( WS_HSCROLL, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setScrollBarVertically( bool value )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setScrollBarVertically( bool value )
 {
 	Widget::addRemoveStyle( WS_VSCROLL, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setUpperCase( bool value )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setUpperCase( bool value )
 {
 	// If you get a compile time error her, you are trying to call this function
 	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
@@ -427,8 +427,8 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setUpper
 	this->Widget::addRemoveStyle( ES_UPPERCASE, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setLowerCase( bool value )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setLowerCase( bool value )
 {
 	// If you get a compile time error her, you are trying to call this function
 	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
@@ -437,8 +437,8 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setLower
 	this->Widget::addRemoveStyle( ES_LOWERCASE, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setReadOnly( bool value )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setReadOnly( bool value )
 {
 	// If you get a compile time error here, you are trying to call this function
 	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
@@ -454,8 +454,8 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setReadO
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setNumbersOnly( bool value )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setNumbersOnly( bool value )
 {
 	// If you get a compile time error her, you are trying to call this function
 	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
@@ -464,8 +464,8 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setNumbe
 	this->Widget::addRemoveStyle( ES_NUMBER, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setPassword( bool value, TCHAR pwdChar )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setPassword( bool value, TCHAR pwdChar )
 {
 	// If you get a compile time error her, you are trying to call this function
 	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
@@ -481,35 +481,35 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setPassw
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setBorder( bool value )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::setBorder( bool value )
 {
 	this->Widget::addRemoveStyle( WS_BORDER, value );
 }
 
-template< class EventHandlerClass, class WidgetMessageMapType, class TextBoxType > 
-void WidgetTextBox< EventHandlerClass, WidgetMessageMapType, TextBoxType>::setTextLimit( DWORD maxChars ) 
+template< class EventHandlerClass, class TextBoxType > 
+void WidgetTextBox< EventHandlerClass, TextBoxType>::setTextLimit( DWORD maxChars ) 
 { 
 	::SendMessage( this->Widget::itsHandle, EM_LIMITTEXT, static_cast< WPARAM >(maxChars), 0 ); 
 } 
  
-template< class EventHandlerClass, class WidgetMessageMapType, class TextBoxType > 
-DWORD WidgetTextBox< EventHandlerClass, WidgetMessageMapType, TextBoxType>::getTextLimit() const 
+template< class EventHandlerClass, class TextBoxType > 
+DWORD WidgetTextBox< EventHandlerClass, TextBoxType>::getTextLimit() const 
 { 
 	return static_cast< DWORD >( ::SendMessage( this->Widget::itsHandle, EM_GETLIMITTEXT , 0, 0 ) );
 }
 
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::WidgetTextBox( SmartWin::Widget * parent )
+template< class EventHandlerClass, class TextBoxType >
+WidgetTextBox< EventHandlerClass, TextBoxType >::WidgetTextBox( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::create( const typename WidgetTextBox::Seed & cs )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetTextBox< EventHandlerClass, TextBoxType >::create( const typename WidgetTextBox::Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -520,7 +520,7 @@ void WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::create( 
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 }
 

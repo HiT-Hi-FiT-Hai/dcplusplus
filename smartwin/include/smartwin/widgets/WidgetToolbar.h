@@ -43,6 +43,7 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectAdapter.h"
 #include "../xCeption.h"
+#include "../BasicTypes.h"
 
 namespace SmartWin
 {
@@ -76,24 +77,23 @@ struct ToolbarDispatcher
   * of buttons, one for going "home", one to stop rendering of the current page, one 
   * to view the log of URL's you have been to etc...   
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetToolbar :
-	public MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > >,
 	private virtual TrueWindow,
 
 	// Aspects
-	public AspectEnabled< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetToolbar< EventHandlerClass, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	private AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectEnabled< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >,
+	public AspectFont< WidgetToolbar< EventHandlerClass > >,
+	public AspectRaw< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >,
+	private AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetToolbar, MessageMapPolicy > MessageMapType;
-	typedef MessageMapControl< EventHandlerClass, WidgetToolbar, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, WidgetToolbar > MessageMapType;
 	typedef ToolbarDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
-	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > > AspectSizable;
+	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > > AspectSizable;
 	friend class WidgetCreator< WidgetToolbar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible.
@@ -110,10 +110,10 @@ public:
 	using AspectSizable::onMoved;
 
 	/// Class type
-	typedef WidgetToolbar< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetToolbar< EventHandlerClass > ThisType;
 
 	/// Object type
-	typedef WidgetToolbar< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef WidgetToolbar< EventHandlerClass > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -177,8 +177,8 @@ public:
 	  * Parameters passed expected by event handler is unsigned int which is the id 
 	  * of the toolbar button.       
 	  */
-	void addButton( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler );
-	void addButton( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, typename ThisMessageMap::voidFunctionTakingUInt eventHandler );
+	void addButton( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
+	void addButton( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, typename MessageMapType::voidFunctionTakingUInt eventHandler );
 
 	/// \ingroup EventHandlersWidgetToolbar
 	/// Adds a button to the toolbar
@@ -192,8 +192,8 @@ public:
 	  * Parameters passed expected by event handler is unsigned int which is the id 
 	  * of the toolbar button.       
 	  */
-	void addButton( unsigned int id, const SmartUtil::tstring & text, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler );
-	void addButton( unsigned int id, const SmartUtil::tstring & text, typename ThisMessageMap::voidFunctionTakingUInt eventHandler );
+	void addButton( unsigned int id, const SmartUtil::tstring & text, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
+	void addButton( unsigned int id, const SmartUtil::tstring & text, typename MessageMapType::voidFunctionTakingUInt eventHandler );
 
 	/// \ingroup EventHandlersWidgetToolbar
 	/// Adds a button to the toolbar
@@ -211,8 +211,8 @@ public:
 	  * of the toolbar button. <br>
 	  * You must call setNormalImageList BEFORE setting event handlers with iconIndex's
 	  */
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & toolTip, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler );
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & toolTip, typename ThisMessageMap::voidFunctionTakingUInt eventHandler );
+		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & toolTip, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
+		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & toolTip, typename MessageMapType::voidFunctionTakingUInt eventHandler );
 
 	/// \ingroup EventHandlersWidgetToolbar
 	/// Adds a button to the toolbar
@@ -229,8 +229,8 @@ public:
 	  * You must call setNormalImageList BEFORE setting event handlers with
 	  * iconIndex's
 	  */
-		void addButton( unsigned int id, int iconIndex, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler );
-		void addButton( unsigned int id, int iconIndex, typename ThisMessageMap::voidFunctionTakingUInt eventHandler );
+		void addButton( unsigned int id, int iconIndex, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
+		void addButton( unsigned int id, int iconIndex, typename MessageMapType::voidFunctionTakingUInt eventHandler );
 
 	/// \ingroup EventHandlersWidgetToolbar
 	/// Adds a button to the toolbar
@@ -250,8 +250,8 @@ public:
 	  * You must call setNormalImageList BEFORE setting event handlers with
 	  * iconIndex's
 	  */
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler );
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename ThisMessageMap::voidFunctionTakingUInt eventHandler );
+		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
+		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename MessageMapType::voidFunctionTakingUInt eventHandler );
 
 		/// Set the image list with the normal button images.
 		/** normalImageList is the image list that contains the images
@@ -352,8 +352,8 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetToolbar< EventHandlerClass, MessageMapPolicy >::Seed & WidgetToolbar< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetToolbar< EventHandlerClass >::Seed & WidgetToolbar< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -372,14 +372,14 @@ const typename WidgetToolbar< EventHandlerClass, MessageMapPolicy >::Seed & Widg
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetToolbar< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetToolbar< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetToolbar::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::refresh()
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::refresh()
 {
 	 SmartWin::Rectangle rect;
 	if ( ::MoveWindow( this->handle(),
@@ -390,8 +390,8 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::refresh()
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setButtonSize( unsigned int width, unsigned int height )
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::setButtonSize( unsigned int width, unsigned int height )
 {
 	if ( ::SendMessage( this->Widget::itsHandle, TB_SETBUTTONSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE ||
 		::SendMessage( this->Widget::itsHandle, TB_SETBITMAPSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE )
@@ -402,8 +402,8 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setButtonSize( unsign
 }
 
 /*
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addBitmap( HBITMAP hBit, unsigned int noButtonsInBitmap )
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addBitmap( HBITMAP hBit, unsigned int noButtonsInBitmap )
 {
 	TBADDBITMAP tb;
 	tb.hInst = NULL;
@@ -415,16 +415,16 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addBitmap( HBITMAP hB
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-	void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addBitmap( BitmapPtr bitmap, unsigned int noButtonsInBitmap )
+template< class EventHandlerClass >
+	void WidgetToolbar< EventHandlerClass >::addBitmap( BitmapPtr bitmap, unsigned int noButtonsInBitmap )
 {
 	itsBitmaps.push_back( bitmap );
 	this->addBitmap( bitmap->getBitmap(), noButtonsInBitmap );
 }
 */
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addSeparator()
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addSeparator()
 {
 	TBBUTTON tb[1];
 	tb[0].iBitmap = - 2;
@@ -439,82 +439,82 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addSeparator()
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler
+	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, - 2, text, toolTip, false, eventHandler );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, typename ThisMessageMap::voidFunctionTakingUInt eventHandler
+	, typename MessageMapType::voidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, - 2, text, toolTip, false, eventHandler );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, const SmartUtil::tstring & text
-	, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler
+	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, - 2, text, _T( "" ), false, eventHandler );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, const SmartUtil::tstring & text
-	, typename ThisMessageMap::voidFunctionTakingUInt eventHandler
+	, typename MessageMapType::voidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, - 2, text, _T( "" ), false, eventHandler );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, int bitmapIdx, const SmartUtil::tstring & toolTip
-	, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler
+	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, bitmapIdx, _T( "" ), toolTip, false, eventHandler );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, int bitmapIdx, const SmartUtil::tstring & toolTip
-	, typename ThisMessageMap::voidFunctionTakingUInt eventHandler
+	, typename MessageMapType::voidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, bitmapIdx, _T( "" ), toolTip, false, eventHandler );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, int bitmapIdx
-	, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler
+	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, bitmapIdx, _T( "" ), _T( "" ), false, eventHandler );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, int bitmapIdx
-	, typename ThisMessageMap::voidFunctionTakingUInt eventHandler
+	, typename MessageMapType::voidFunctionTakingUInt eventHandler
 	)
 {
 	addButton( id, bitmapIdx, _T( "" ), _T( "" ), false, eventHandler );
 }
 #ifdef PORT_ME
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned int id, int bitmapIdx, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, bool checkButton, typename ThisMessageMap::itsVoidFunctionTakingUInt eventHandler
+	, bool checkButton, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
 	)
 {
 	// Checking if tooltip id exists from before
@@ -558,10 +558,10 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
 		);
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::addButton
 	( unsigned id, int bitmapIdx, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, bool checkButton, typename ThisMessageMap::voidFunctionTakingUInt eventHandler
+	, bool checkButton, typename MessageMapType::voidFunctionTakingUInt eventHandler
 	)
 {
 	// Checking if tooltip id exists from before
@@ -606,35 +606,35 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::addButton
 }
 #endif
 
-template< class EventHandlerClass, class MessageMapPolicy >
-	void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setNormalImageList( ImageListPtr normalImageList )
+template< class EventHandlerClass >
+	void WidgetToolbar< EventHandlerClass >::setNormalImageList( ImageListPtr normalImageList )
 	{
 		itsNormalImageList = normalImageList;
 		::SendMessage( this->Widget::itsHandle, TB_SETIMAGELIST, 0, reinterpret_cast< LPARAM >( itsNormalImageList->getImageList() ) );
 	}
 
-	template< class EventHandlerClass, class MessageMapPolicy >
-	void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setHotImageList( ImageListPtr hotImageList )
+	template< class EventHandlerClass >
+	void WidgetToolbar< EventHandlerClass >::setHotImageList( ImageListPtr hotImageList )
 	{
 		itsHotImageList = hotImageList;
 		::SendMessage( this->Widget::itsHandle, TB_SETHOTIMAGELIST, 0, reinterpret_cast< LPARAM >( itsHotImageList->getImageList() ) );
 	}
 
-	template< class EventHandlerClass, class MessageMapPolicy >
-	void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setDisabledImageList( ImageListPtr disabledImageList )
+	template< class EventHandlerClass >
+	void WidgetToolbar< EventHandlerClass >::setDisabledImageList( ImageListPtr disabledImageList )
 	{
 		itsDisabledImageList = disabledImageList;
 		::SendMessage( this->Widget::itsHandle, TB_SETDISABLEDIMAGELIST, 0, reinterpret_cast< LPARAM >( itsDisabledImageList->getImageList() ) );
 	}
 
-	template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setButtonVisible( unsigned int id, bool show )
+	template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::setButtonVisible( unsigned int id, bool show )
 {
 	::SendMessage( this->Widget::itsHandle, TB_HIDEBUTTON, static_cast< LPARAM >( id ), MAKELONG( ( show ? FALSE : TRUE ), 0 ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetToolbar< EventHandlerClass, MessageMapPolicy >::getButtonVisible( unsigned int id )
+template< class EventHandlerClass >
+bool WidgetToolbar< EventHandlerClass >::getButtonVisible( unsigned int id )
 {
 	TBBUTTONINFO tb =
 	{0
@@ -646,14 +646,14 @@ bool WidgetToolbar< EventHandlerClass, MessageMapPolicy >::getButtonVisible( uns
 	return ( tb.fsState & TBSTATE_HIDDEN ) == 0;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::setButtonEnabled( unsigned id, bool enable )
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::setButtonEnabled( unsigned id, bool enable )
 {
 	::SendMessage( this->Widget::itsHandle, TB_ENABLEBUTTON, static_cast< LPARAM >( id ), MAKELONG( ( enable ? TRUE : FALSE ), 0 ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetToolbar< EventHandlerClass, MessageMapPolicy >::getButtonEnabled( unsigned int id )
+template< class EventHandlerClass >
+bool WidgetToolbar< EventHandlerClass >::getButtonEnabled( unsigned int id )
 {
 	TBBUTTONINFO tb =
 	{0
@@ -665,8 +665,8 @@ bool WidgetToolbar< EventHandlerClass, MessageMapPolicy >::getButtonEnabled( uns
 	return ( tb.fsState & TBSTATE_ENABLED ) == TBSTATE_ENABLED;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-bool WidgetToolbar< EventHandlerClass, MessageMapPolicy >::getButtonChecked( unsigned int id )
+template< class EventHandlerClass >
+bool WidgetToolbar< EventHandlerClass >::getButtonChecked( unsigned int id )
 {
 	TBBUTTONINFO tb =
 	{0
@@ -678,16 +678,16 @@ bool WidgetToolbar< EventHandlerClass, MessageMapPolicy >::getButtonChecked( uns
 	return ( tb.fsState & TBSTATE_CHECKED ) == TBSTATE_CHECKED;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetToolbar< EventHandlerClass, MessageMapPolicy >::WidgetToolbar( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetToolbar< EventHandlerClass >::WidgetToolbar( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetToolbar< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -698,7 +698,7 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::create( const Seed & 
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 
 	//// Telling the toolbar what the size of TBBUTTON struct is
 	::SendMessage( this->Widget::itsHandle, TB_BUTTONSTRUCTSIZE, ( WPARAM ) sizeof( TBBUTTON ), 0 );
@@ -706,8 +706,8 @@ void WidgetToolbar< EventHandlerClass, MessageMapPolicy >::create( const Seed & 
 	////TODO: use CreationalInfo parameters
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetToolbar< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetToolbar< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	// First the stuff we HAVE to do something about...
 	switch ( msg )
@@ -723,11 +723,11 @@ LRESULT WidgetToolbar< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage(
 					lpttt->lpszText = const_cast < TCHAR * >( itsToolTips[lpttt->hdr.idFrom].c_str() );
 				} break;
 				default:
-					return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+					return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 			}
 		} break;
 		default:
-			return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+			return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 	}
 	// Removing compiler hickup...
 	return 0;

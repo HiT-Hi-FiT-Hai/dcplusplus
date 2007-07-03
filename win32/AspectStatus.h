@@ -19,7 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 #define DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 
-template<class T, class MessageMapType>
+template<class T>
 class AspectStatus {
 protected:
 	AspectStatus() : status(0) {
@@ -63,7 +63,7 @@ protected:
 		::MoveWindow(widget->handle(), sr.left, sr.top, sr.right - sr.left, sr.bottom - sr.top, TRUE);
 	}
 	
-	SmartWin::WidgetStatusBar<T, MessageMapType, SmartWin::Section<T, MessageMapType> >* status;
+	SmartWin::WidgetStatusBar<T, SmartWin::Section<T> >* status;
 
 	std::vector<unsigned> statusSizes;
 

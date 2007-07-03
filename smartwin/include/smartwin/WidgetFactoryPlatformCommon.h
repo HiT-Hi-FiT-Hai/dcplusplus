@@ -38,7 +38,7 @@ namespace SmartWin
   * implement so that platform dependant code can be stuffed in here instead of
   * having lots of #ifdefs layingn around everywhere
   */
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy, Platform >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy, Platform >
 class WidgetFactoryPlatformImplementation
 {
 };

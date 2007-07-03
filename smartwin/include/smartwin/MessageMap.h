@@ -29,7 +29,6 @@
 #ifndef MessageMap_h
 #define MessageMap_h
 
-#include <list>
 #include "WindowsHeaders.h"
 #include "Application.h"
 #include "MessageMapPolicyClasses.h"
@@ -37,9 +36,6 @@
 #include "BasicTypes.h"
 #include "Message.h"
 #include "Command.h"
-#include "widgets/WidgetMenu.h"
-#include "widgets/WidgetMenuExtended.h"
-#include "MessageMapBase.h"
 #include "CanvasClasses.h"
 #include <vector>
 
@@ -63,10 +59,7 @@ namespace SmartWin
   * </ul>
   */
 template< class EventHandlerClass, class MessageMapPolicy >
-class MessageMap
-	: public virtual Widget
-	, public MessageMapPolicy
-	, public MessageMapBase
+class MessageMap : public MessageMapPolicyBase<MessageMapPolicy>
 {
 public:
 	typedef MessageMapBase::CallbackType SignalType;
@@ -223,186 +216,6 @@ protected:
 
 	virtual ~MessageMap()
 	{}
-
-	virtual LRESULT sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-	{
-		HRESULT retVal = 0;
-		Message msgObj( hWnd, msg, wPar, lPar, true );
-		if ( tryFire( msgObj, retVal ) )
-		{
-			wPar = msgObj.WParam;
-			lPar = msgObj.LParam;
-			return retVal;
-		}
-
-		// Then the stuff we HAVE to do something about...
-		switch ( msg )
-		{
-			case WM_DESTROY :
-			{
-					if ( Application::instance().lastWidget( this ) )
-					{
-						::PostQuitMessage( EXIT_SUCCESS );
-					}
-#ifdef WINCE
-				return MessageMapPolicy::kill();
-#else
-				return 0;
-#endif
-			} break;
-#ifndef WINCE
-			case WM_NCDESTROY :
-			{
-				return MessageMapPolicy::kill();
-			}
-#endif
-			// Messages that's supposed to be dispatched to child Widgets!
-			case WM_CTLCOLORSTATIC :
-			case WM_CTLCOLORBTN :
-			case WM_CTLCOLOREDIT :
-			case WM_CTLCOLORLISTBOX :
-			case WM_CTLCOLORSCROLLBAR :
-			case WM_DRAWITEM :
-			case WM_SYSCOMMAND :
-			case WM_COMMAND :
-			case WM_NOTIFY :
-			case WM_HSCROLL :
-			case WM_VSCROLL :
-			case WM_MEASUREITEM :
-			case WM_INITMENUPOPUP :
-			{
-				return mainWndRouteChild( hWnd, msg, wPar, lPar );
-			}
-			case WM_CLOSE :
-				return MessageMapPolicy::returnFromCloseMsg( hWnd, msg, wPar, lPar );
-		}
-
-		// Nobody was interested in this one...
-		return MessageMapPolicy::returnFromUnhandledWindowProc( hWnd, msg, wPar, lPar );
-	}
-
-private:
-	// Routes a message from a "normal" window to one of its embedded control windows.
-	virtual LRESULT mainWndRouteChild( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
-		// Checking to see if this is a message to a menu
-		if ( ( msg == WM_COMMAND && lPar == 0 && HIWORD( wPar ) == 0 ) || msg == WM_SYSCOMMAND || msg == WM_INITMENUPOPUP )
-		{
-			// We can have "user defined" sysmenu commands (by e.g. adding items to the sysmenu) but none will be
-			// of higher or same value as SC_SIZE
-			if ( WM_SYSCOMMAND == msg )
-			{
-				if ( wPar >= SC_SIZE )
-					return MessageMapPolicy::returnFromUnhandledWindowProc( hWnd, msg, wPar, lPar );
-			}
-			// Is Menu or extended menu message!
-			for ( std::list < Widget * >::iterator idx = private_::getApplicationWidgets().begin();
-				idx != private_::getApplicationWidgets().end();
-				++idx )
-			{
-				// TODO: Should we implement our own RTTI for uses such as this?
-				// TODO: Should also become a specialization...
-				// to make things go faster etc...
-				WidgetMenu< EventHandlerClass, MessageMapPolicy > * ptr = dynamic_cast< WidgetMenu< EventHandlerClass, MessageMapPolicy > * >( * idx );
-#ifndef WINCE
-				WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > * extPtr = dynamic_cast< WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > * >( * idx );
-#endif
-				if ( ( ptr )
-#ifndef WINCE
-					|| ( extPtr )
-#endif
-					)
-				{
-					if( msg == WM_INITMENUPOPUP && extPtr )
-					{
-						HMENU handle = reinterpret_cast< HMENU >( extPtr->handle() );
-						if( handle != (HMENU) wPar )
-							continue;
-					}
-					// function returns 1 of message was handled...
-					// Need to iterate ALL menus until Event Handler is found...
-					LRESULT retVal = ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-					if ( retVal != 0 )
-					{
-						return retVal;
-					}
-				}
-			}
-		}
-		else
-		{
-			for ( std::list < Widget * >::iterator idx = private_::getApplicationWidgets().begin();
-				idx != private_::getApplicationWidgets().end();
-				++idx )
-			{
-				// BUG in compiler (need to dereference iterator to pointer)
-				if ( msg == WM_NOTIFY && ( * idx )->handle() == ( ( NMHDR * ) lPar )->hwndFrom )
-				{
-					return ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-				}
-				else if ( msg == WM_COMMAND && ( * idx )->handle() == ( HANDLE ) lPar )
-				{
-					return ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-				}
-				else if ( ( msg == WM_VSCROLL || msg == WM_HSCROLL ) && ( * idx )->handle() == ( HANDLE ) lPar )
-				{
-					int scrollReq = ( wPar & 0xf ); // SB_THUMBPOSITION(4) or SB_ENDSCROLL(8)
-					if ( SB_ENDSCROLL == scrollReq )
-					{
-						return MessageMapPolicy::returnFromUnhandledWindowProc( hWnd, msg, wPar, lPar );
-					}
-					else
-					{
-						return ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-					}
-				}
-				else if ( msg == WM_DRAWITEM && ( * idx )->handle() == reinterpret_cast< DRAWITEMSTRUCT * >( lPar )->hwndItem )
-				{
-				#ifndef WINCE
-					// Trick to fix BUG #1598489
-					// During Fast-User-Switching ::GetForegroundWindows() returns NULL,
-					// And we should not try to draw on locked DC
-					if (::GetForegroundWindow() != NULL)
-				#endif
-						return ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-				}
-				else if (
-					( msg == WM_CTLCOLORSTATIC ||
-					  msg == WM_CTLCOLORBTN ||
-					  msg == WM_CTLCOLOREDIT ||
-					  msg == WM_CTLCOLORLISTBOX ||
-					  msg == WM_CTLCOLORSCROLLBAR )
-					 && ( * idx )->handle() == reinterpret_cast< HANDLE >( lPar ) )
-				{
-					return ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-				}
-#ifndef WINCE
-				else if ( msg == WM_MEASUREITEM )
-				{
-					WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > * menuPtr = dynamic_cast< WidgetMenuExtended< EventHandlerClass, MessageMapPolicy > * >( * idx );
-
-					if ( menuPtr != 0 )   // if processing extended menu
-					{
-						// check to see if the item belongs to this menu
-						HMENU handle = reinterpret_cast< HMENU >( menuPtr->handle() );
-
-						// get message data
-						MEASUREITEMSTRUCT * ptr = reinterpret_cast< MEASUREITEMSTRUCT * >( lPar );
-
-						// get item data
-						private_::ItemDataWrapper * data = reinterpret_cast< private_::ItemDataWrapper * >( ptr->itemData );
-
-						if ( ( data != 0 ) && ( data->menu == handle ) ) // if item belongs to current menu
-							return ( * idx )->sendWidgetMessage( hWnd, msg, wPar, lPar );
-					}
-				}
-#endif
-			}
-		}
-
-		// Nobody was interested in this one...
-		return MessageMapPolicy::returnFromUnhandledWindowProc( hWnd, msg, wPar, lPar );
-	}
 };
 
 // end namespace SmartWin

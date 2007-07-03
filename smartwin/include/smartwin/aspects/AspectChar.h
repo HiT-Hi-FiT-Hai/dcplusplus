@@ -46,7 +46,7 @@ struct AspectCharDispatcher {
 	HRESULT operator()(private_::SignalContent& params) {
 		bool handled = f(static_cast<int>(params.Msg.WParam));
 		if ( handled ) // TODO: Check up this logic
-			return parent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
+			return TRUE;
 		else
 		{
 			params.RunDefaultHandling = true;
@@ -89,7 +89,7 @@ public:
 	}
 
 	void onChar(const typename Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_CHAR ), Dispatcher(f, internal_::getTypedParentOrThrow<EventHandlerClass*>(this) )
 		);

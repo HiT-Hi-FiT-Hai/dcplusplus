@@ -65,22 +65,22 @@ struct WidgetModalDialogDispatcher
   * "createDialog()", either in the contructor, or in some intialization routine 
   * called before createDialog();   
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetModalDialog
 	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >
 {
-	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapType;
+	typedef MessageMap< EventHandlerClass, MessageMapPolicyModalDialogWidget > MessageMapType;
 	typedef WidgetModalDialogDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
 public:
 	/// Class type
-	typedef WidgetModalDialog< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetModalDialog< EventHandlerClass > ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
 	  */
-	typedef WidgetModalDialog< EventHandlerClass, MessageMapPolicy > ObjectType;
+	typedef WidgetModalDialog< EventHandlerClass > ObjectType;
 
 	/// Creates a Modal Dialog Window from a resource id.
 	/** This version creates a window from a Dialog Resource ID. <br>
@@ -145,8 +145,6 @@ public:
 		);
 	}
 
-
-
 protected:
 	// Protected since this Widget we HAVE to inherit from
 	explicit WidgetModalDialog( Widget * parent = 0 );
@@ -169,10 +167,10 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::
+template< class EventHandlerClass >
+WidgetModalDialog< EventHandlerClass >::
 WidgetModalDialog( Widget * parent )
-	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicy >( parent )
+	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >( parent )
 {
 	// Default parameters for pure modal dialogs
 #ifdef WINCE
@@ -188,8 +186,8 @@ WidgetModalDialog( Widget * parent )
 	itsDefaultDlgTemplate.y = 0;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::createDialog( unsigned resourceId )
+template< class EventHandlerClass >
+int WidgetModalDialog< EventHandlerClass >::createDialog( unsigned resourceId )
 {
 	// Must register the widget in order not to close app when this closes...!
 	Application::instance().registerWidget( this );
@@ -201,7 +199,7 @@ int WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::createDialog( unsi
 		( ( Application::instance().getAppHandle() )
 		, ( MAKEINTRESOURCE( resourceId ) )
 		, ( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 )
-		, ( WidgetWindowBase< EventHandlerClass, SmartWin::MessageMapPolicyModalDialogWidget >::mainWndProc_ )
+		, ( (DLGPROC)WidgetWindowBase< EventHandlerClass, SmartWin::MessageMapPolicyModalDialogWidget >::wndProc )
 		, ( reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) ) )
 		);
 	if ( retv == - 1 )
@@ -215,8 +213,8 @@ int WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::createDialog( unsi
 // createDialog() with this protected call. The calling layer is prevented from
 // doing so.
 //
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::setDlgTemplate( DLGTEMPLATE inTemplate )
+template< class EventHandlerClass >
+void WidgetModalDialog< EventHandlerClass >::setDlgTemplate( DLGTEMPLATE inTemplate )
 {
 	itsDefaultDlgTemplate = inTemplate;
 }
@@ -225,8 +223,8 @@ void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::setDlgTemplate( D
 // derived dialog class can control the DLGTEMPLATE parameters. instead of the
 // calling layer.
 //
-template< class EventHandlerClass, class MessageMapPolicy >
-int WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::createDialog()
+template< class EventHandlerClass >
+int WidgetModalDialog< EventHandlerClass >::createDialog()
 {
 	// Must register the widget in order not to close app when this closes...!
 	Application::instance().registerWidget( this );
@@ -250,8 +248,8 @@ int WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::createDialog()
 	return static_cast< int >( retv );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetModalDialog< EventHandlerClass, MessageMapPolicy >::endDialog( int retv )
+template< class EventHandlerClass >
+void WidgetModalDialog< EventHandlerClass >::endDialog( int retv )
 {
 	// Causes createDialog() to return with retv.
 	//

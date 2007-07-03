@@ -34,6 +34,7 @@
 #include <sstream>
 #include "../SignalParams.h"
 #include "../aspects/AspectAdapter.h"
+#include "../BasicTypes.h"
 
 namespace SmartWin
 {
@@ -87,7 +88,7 @@ public:
 	typedef WidgetWindow< EventHandlerClass, MessageMapPolicy > ThisType;
 
 	/// Object type
-	typedef WidgetWindow< EventHandlerClass, MessageMapPolicy > * ObjectType;
+	typedef ThisType* ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -189,18 +190,21 @@ private:
 	SmartUtil::tstring itsRegisteredClassName;
 };
 
-template< class EventHandlerClass, class MessageMapPolicy = MessageMapPolicyNormalWidget >
+template< class EventHandlerClass >
 class WidgetChildWindow
-	: public WidgetWindow< EventHandlerClass, MessageMapPolicy >
+	: public WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >
 {
 public:
+	typedef WidgetChildWindow<EventHandlerClass> ThisType;
+	typedef ThisType* ObjectType;
+	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
 	class Seed
-		: public WidgetWindow< EventHandlerClass, MessageMapPolicy >::Seed
+		: public WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >::Seed
 	{
 	public:
 		/// Fills with default parameters
@@ -224,12 +228,12 @@ public:
 	  */
 	virtual void createWindow( Seed cs = getDefaultSeed() )
 	{
-		WidgetWindow< EventHandlerClass, MessageMapPolicy >::createWindow( cs );
+		WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >::createWindow( cs );
 	}
 
 protected:
 	// Unlike WidgetWindow, WidgetChildWindow must have a parent!!!
-	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow< EventHandlerClass, MessageMapPolicy >( parent ) //Long name to satisfy devcpp
+	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow< EventHandlerClass, MessageMapPolicyNormalWidget >( parent ) //Long name to satisfy devcpp
 	{};
 };
 
@@ -349,8 +353,8 @@ void WidgetWindow< Parent, WidgetMessageMapType >::activatePreviousInstance()
 	}
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetChildWindow< EventHandlerClass, MessageMapPolicy >::Seed & WidgetChildWindow< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetChildWindow< EventHandlerClass >::Seed & WidgetChildWindow< EventHandlerClass >::getDefaultSeed()
 {
 	static Seed d_DefaultValues;
 
@@ -359,8 +363,8 @@ const typename WidgetChildWindow< EventHandlerClass, MessageMapPolicy >::Seed & 
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetChildWindow< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetChildWindow< EventHandlerClass >::Seed::Seed()
 {
 	this->style = WS_VISIBLE | WS_CHILD;
 }

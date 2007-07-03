@@ -79,35 +79,36 @@ struct AspectDateTimePickerDispatcher
   * day. It resembles a calender and is quite neat to use if you need to specifically 
   * declare a point in time within 1800 - 2100   
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class WidgetDateTimePicker :
-	public MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy >,
+	public MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > >,
 	private virtual TrueWindow,
 
 	// Aspects
-	public AspectClickable< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectFont< WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectSizable< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >, MessageMapPolicy > >
+	public AspectClickable< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass> > >,
+	public AspectEnabled< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectFocus< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectFont< WidgetDateTimePicker< EventHandlerClass > >,
+	public AspectKeyPressed< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectPainting< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectRaw< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectSizable< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectThreads< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectVisible< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetDateTimePicker, MessageMapPolicy > MessageMapType;
+public:
+	/// Class type
+	typedef WidgetDateTimePicker< EventHandlerClass > ThisType;
+
+	/// Object type
+	typedef WidgetDateTimePicker< EventHandlerClass > * ObjectType;
+
+	/// Message map type
+	typedef MessageMapControl< EventHandlerClass, ThisType > MessageMapType;
 	typedef AspectEnableDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 	friend class WidgetCreator< WidgetDateTimePicker >;
-
-public:
-	/// Class type
-	typedef WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > ThisType;
-
-	/// Object type
-	typedef WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -262,8 +263,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-const typename WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::Seed & WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::getDefaultSeed()
+template< class EventHandlerClass >
+const typename WidgetDateTimePicker< EventHandlerClass >::Seed & WidgetDateTimePicker< EventHandlerClass >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -288,55 +289,55 @@ const typename WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::Seed
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::Seed::Seed()
+template< class EventHandlerClass >
+WidgetDateTimePicker< EventHandlerClass >::Seed::Seed()
 {
 	* this = WidgetDateTimePicker::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-LRESULT WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass >
+LRESULT WidgetDateTimePicker< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-Message & WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::getClickMessage()
+template< class EventHandlerClass >
+Message & WidgetDateTimePicker< EventHandlerClass >::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, DTN_DROPDOWN );
 	return retVal;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-SYSTEMTIME WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::getDateTime()
+template< class EventHandlerClass >
+SYSTEMTIME WidgetDateTimePicker< EventHandlerClass >::getDateTime()
 {
 	SYSTEMTIME st;
 	DateTime_GetSystemtime( this->Widget::itsHandle, & st );
 	return st;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setDateTime( const SYSTEMTIME & st )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setDateTime( const SYSTEMTIME & st )
 {
 	DateTime_SetSystemtime( this->Widget::itsHandle, GDT_VALID, & st );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setFormat( const SmartUtil::tstring & format )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setFormat( const SmartUtil::tstring & format )
 {
 	DateTime_SetFormat( this->Widget::itsHandle, format.c_str() );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::WidgetDateTimePicker( SmartWin::Widget * parent )
+template< class EventHandlerClass >
+WidgetDateTimePicker< EventHandlerClass >::WidgetDateTimePicker( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::create( const Seed & cs )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::create( const Seed & cs )
 {
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -360,38 +361,38 @@ void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::create( const 
 	setTitleTextColor( cs.titleTextColor );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setBackgroundColor( COLORREF color )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setBackgroundColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_BACKGROUND, color );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setMonthBackgroundColor( COLORREF color )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setMonthBackgroundColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_MONTHBK, color );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setMonthTextColor( COLORREF color )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setMonthTextColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TEXT, color );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setTitleBackgroundColor( COLORREF color )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setTitleBackgroundColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TITLEBK, color );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setTitleTextColor( COLORREF color )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setTitleTextColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TITLETEXT, color );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy >::setTrailingTextColor( COLORREF color )
+template< class EventHandlerClass >
+void WidgetDateTimePicker< EventHandlerClass >::setTrailingTextColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TRAILINGTEXT, color );
 }

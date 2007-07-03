@@ -91,7 +91,7 @@ namespace SmartWin
   * should just get to "live their own life" and should not be tampered with in any
   * "memory ways".
   */
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy = MessageMapPolicyNormalWidget >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy = MessageMapPolicyNormalWidget >
 class WidgetFactory
 	: public WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, CurrentPlatform >
 {
@@ -100,73 +100,73 @@ public:
 	typedef SmartWin::WidgetMessageBox< SmartWin::Widget > WidgetMessageBox;
 
 	/// DataGrid class type.
-	typedef SmartWin::WidgetDataGrid< EventHandlerClass, MessageMapPolicy > WidgetDataGrid;
+	typedef SmartWin::WidgetDataGrid< EventHandlerClass > WidgetDataGrid;
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
 
 	/// TreeView class type.
-	typedef SmartWin::WidgetTreeView< EventHandlerClass, MessageMapPolicy > WidgetTreeView;
+	typedef SmartWin::WidgetTreeView< EventHandlerClass > WidgetTreeView;
 
 	/// TreeView object type.
 	typedef typename WidgetTreeView::ObjectType WidgetTreeViewPtr;
 
 	/// TextBox class type.
-	typedef SmartWin::WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
+	typedef SmartWin::WidgetTextBox< EventHandlerClass > WidgetTextBox;
 
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
 	/// StatusBar class type.
-	typedef SmartWin::WidgetStatusBar< EventHandlerClass, MessageMapPolicy > WidgetStatusBar;
+	typedef SmartWin::WidgetStatusBar< EventHandlerClass > WidgetStatusBar;
 
 	/// StatusBar object type.
 	typedef typename WidgetStatusBar::ObjectType WidgetStatusBarPtr;
 
 	/// StatusBarSections class type.
-	typedef SmartWin::WidgetStatusBar< EventHandlerClass, MessageMapPolicy, Section< EventHandlerClass, MessageMapPolicy > > WidgetStatusBarSections;
+	typedef SmartWin::WidgetStatusBar< EventHandlerClass, Section< EventHandlerClass > > WidgetStatusBarSections;
 
 	/// StatusBarSections object type.
 	typedef typename WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
 
 	/// Button class type.
-	typedef SmartWin::WidgetButton< EventHandlerClass, MessageMapPolicy > WidgetButton;
+	typedef SmartWin::WidgetButton< EventHandlerClass > WidgetButton;
 
 	/// Button object type.
 	typedef typename WidgetButton::ObjectType WidgetButtonPtr;
 
 	/// MDIWindow class type.
-	typedef SmartWin::WidgetMDIParent< EventHandlerClass, MessageMapPolicy > WidgetMDIParent;
+	typedef SmartWin::WidgetMDIParent< EventHandlerClass > WidgetMDIParent;
 
 	/// MDIWindow object type.
 	typedef typename WidgetMDIParent::ObjectType WidgetMDIParentPtr;
 
 	/// TabSheet class type.
-	typedef SmartWin::WidgetTabSheet< EventHandlerClass, MessageMapPolicy > WidgetTabSheet;
+	typedef SmartWin::WidgetTabSheet< EventHandlerClass > WidgetTabSheet;
 
 	/// TabSheet object type.
 	typedef typename WidgetTabSheet::ObjectType WidgetTabSheetPtr;
 
 	/// Slider class type.
-	typedef SmartWin::WidgetSlider< EventHandlerClass, MessageMapPolicy > WidgetSlider;
+	typedef SmartWin::WidgetSlider< EventHandlerClass > WidgetSlider;
 
 	/// Slider object type.
 	typedef typename WidgetSlider::ObjectType WidgetSliderPtr;
 
 	/// Spinner class type.
-	typedef SmartWin::WidgetSpinner< EventHandlerClass, MessageMapPolicy > WidgetSpinner;
+	typedef SmartWin::WidgetSpinner< EventHandlerClass > WidgetSpinner;
 
 	/// Spinner object type.
 	typedef typename WidgetSpinner::ObjectType WidgetSpinnerPtr;
 
 	/// GroupBox class type.
-	typedef SmartWin::WidgetGroupBox< EventHandlerClass, MessageMapPolicy > WidgetGroupBox;
+	typedef SmartWin::WidgetGroupBox< EventHandlerClass > WidgetGroupBox;
 
 	/// GroupBox object type.
 	typedef typename WidgetGroupBox::ObjectType WidgetGroupBoxPtr;
 
 	/// RadioButton class type.
-	typedef SmartWin::WidgetRadioButton< EventHandlerClass, MessageMapPolicy > WidgetRadioButton;
+	typedef SmartWin::WidgetRadioButton< EventHandlerClass > WidgetRadioButton;
 
 	/// RadioButton object type.
 	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
@@ -184,31 +184,31 @@ public:
 	typedef SmartWin::WidgetChooseColor< SmartWin::Widget > WidgetChooseColor;
 
 	/// ComboBox class type.
-	typedef SmartWin::WidgetComboBox< EventHandlerClass, MessageMapPolicy > WidgetComboBox;
+	typedef SmartWin::WidgetComboBox< EventHandlerClass > WidgetComboBox;
 
 	/// ComboBox object type.
 	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
 
 	/// Static class type.
-	typedef SmartWin::WidgetStatic< EventHandlerClass, MessageMapPolicy > WidgetStatic;
+	typedef SmartWin::WidgetStatic< EventHandlerClass > WidgetStatic;
 
 	/// Static object type.
 	typedef typename WidgetStatic::ObjectType WidgetStaticPtr;
 
 	/// Menu class type.
-	typedef SmartWin::WidgetMenu< EventHandlerClass, MessageMapPolicy > WidgetMenu;
+	typedef SmartWin::WidgetMenu< EventHandlerClass > WidgetMenu;
 
 	/// Menu object type.
 	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// CheckBox class type.
-	typedef SmartWin::WidgetCheckBox< EventHandlerClass, MessageMapPolicy > WidgetCheckBox;
+	typedef SmartWin::WidgetCheckBox< EventHandlerClass > WidgetCheckBox;
 
 	/// CheckBox object type.
 	typedef typename WidgetCheckBox::ObjectType WidgetCheckBoxPtr;
 
 	/// DateTimePicker class type.
-	typedef SmartWin::WidgetDateTimePicker< EventHandlerClass, MessageMapPolicy > WidgetDateTimePicker;
+	typedef SmartWin::WidgetDateTimePicker< EventHandlerClass > WidgetDateTimePicker;
 
 	/// DateTimePicker object type.
 	typedef typename WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
@@ -221,23 +221,19 @@ public:
 	//TODO: parent since the type would be wrong...
 
 	/// WidgetChildWindow class type.
-	// The following line would work with an appropiate WidgetChildWindow::create
-	//typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicy > WidgetChildWindow;
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetChildWindow, EventHandlerClass, MessageMapPolicyNormalWidget > WidgetChildWindow;
+	typedef SmartWin::WidgetChildWindow<EventHandlerClass > WidgetChildWindow;
 
 	/// WidgetChildWindow object type.
-	// The following line would work with an appropiate WidgetChildWindow::create
-	//typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicy > * WidgetChildWindowPtr;
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetChildWindow, EventHandlerClass, MessageMapPolicyNormalWidget > * WidgetChildWindowPtr;
+	typedef typename WidgetChildWindow::ObjectType WidgetChildWindowPtr;
 
 	/// WidgetWindow class type.
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicyNormalWidget > WidgetWindow;
+	typedef SmartWin::WidgetWindow< EventHandlerClass, MessageMapPolicy > WidgetWindow;
 
 	/// WidgetWindow object type.
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetWindow, EventHandlerClass, MessageMapPolicyNormalWidget > * WidgetWindowPtr;
+	typedef typename WidgetWindow::ObjectType WidgetWindowPtr;
 
 	/// ProgressBar class type.
-	typedef SmartWin::WidgetProgressBar< EventHandlerClass, MessageMapPolicy > WidgetProgressBar;
+	typedef SmartWin::WidgetProgressBar< EventHandlerClass > WidgetProgressBar;
 
 	/// ProgressBar object type.
 	typedef typename WidgetProgressBar::ObjectType WidgetProgressBarPtr;
@@ -480,19 +476,19 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetFactory()
 		: Widget( 0 )
 		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, CurrentPlatform >()
 {}
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetFactory( SmartWin::Widget * parent )
 		: Widget( parent )
 		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, MessageMapPolicy, CurrentPlatform >( parent )
 {}
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetChooseFolder
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createChooseFolder()
 {
@@ -500,7 +496,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::creat
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetLoadFile
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createLoadFile()
 {
@@ -508,7 +504,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::creat
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSaveFile
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createSaveFile()
 {
@@ -516,7 +512,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::creat
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetChooseColor
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createChooseColor()
 {
@@ -524,7 +520,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::creat
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetMessageBox
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMessageBox()
 {
@@ -532,14 +528,14 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::creat
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDataGridPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
 {
 	return WidgetCreator< WidgetDataGrid >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDataGridPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassList( unsigned id )
 {
@@ -556,14 +552,14 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetDataGrid >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetCheckBoxPtr
 	WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createCheckBox( const typename WidgetCheckBox::Seed & cs )
 {
 	return WidgetCreator< WidgetCheckBox >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetCheckBoxPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassCheckBox( unsigned id )
 {
@@ -580,7 +576,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetCheckBox >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetChildWindowPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs )
 {
@@ -589,14 +585,14 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::creat
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTreeViewPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTreeView( const typename WidgetTreeView::Seed & cs )
 {
 	return WidgetCreator< WidgetTreeView >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTreeViewPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassTreeView( unsigned id )
 {
@@ -613,21 +609,21 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetTreeView >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetMenuPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMenu(const typename WidgetMenu::Seed & cs)
 {
 	return WidgetCreator< WidgetMenu >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTextBoxPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTextBox( const typename WidgetTextBox::Seed & cs )
 {
 	return WidgetCreator< WidgetTextBox >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTextBoxPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassTextBox( unsigned id )
 {
@@ -644,81 +640,71 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetTextBox >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStatusBarPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createStatusBar( const typename WidgetStatusBar::Seed & cs )
 {
 	return WidgetCreator< WidgetStatusBar >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStatusBarSectionsPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs )
 {
 	return WidgetCreator< WidgetStatusBarSections >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetButtonPtr
 	WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createButton( const typename WidgetButton::Seed & cs )
 {
 	return WidgetCreator< WidgetButton >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetMDIParentPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createMDIParent( const typename WidgetMDIParent::Seed & cs )
 {
 	return WidgetCreator< WidgetMDIParent >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetTabSheetPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createTabSheet( const typename WidgetTabSheet::Seed & cs )
 {
 	return WidgetCreator< WidgetTabSheet >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSliderPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createSlider( const typename WidgetSlider::Seed & cs )
 {
 	return WidgetCreator< WidgetSlider >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSpinnerPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createSpinner( const typename WidgetSpinner::Seed & cs )
 {
 	return WidgetCreator< WidgetSpinner >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetProgressBarPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createProgressBar( const typename WidgetProgressBar::Seed & cs )
 {
 	return WidgetCreator< WidgetProgressBar >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetButtonPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassButton( unsigned id )
 {
-	// If this one fizzles you have tried to call this function from a derived
-	// class which not is derived from MessageMapPolicyDialogWidget, like for
-	// instance both the MessageMapPolicyNormalWidget and the
-	// MessageMapPolicyMDIChildWidget classes cannot logically subclass a dialog
-	// item since they're NOT dialog Widgets therefore they will give you a compile
-	// error if you try to call this function from Widgets implementing the those
-	// classes! Only the MessageMapPolicyDialogWidget can logically call this
-	// function and therefore it's the only one which will not give you a compile
-	// time error here...
-	typename MessageMapPolicy::canSubclassControls checker;
 	return WidgetCreator< WidgetButton >::subclass( this, id );
 }
 
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetProgressBarPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassProgressBar( unsigned id )
 {
@@ -737,7 +723,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 
 
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSliderPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassSlider( unsigned id )
 {
@@ -754,7 +740,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetSlider >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetSpinnerPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassSpinner( unsigned id )
 {
@@ -771,14 +757,14 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetSpinner >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetGroupBoxPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createGroupBox( const typename WidgetGroupBox::Seed & cs )
 {
 	return WidgetCreator< WidgetGroupBox >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetGroupBoxPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassGroupBox( unsigned id )
 {
@@ -795,14 +781,14 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetGroupBox >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDateTimePickerPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs )
 {
 	return WidgetCreator< WidgetDateTimePicker >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetDateTimePickerPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassDateTimePicker( unsigned id )
 {
@@ -819,7 +805,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetDateTimePicker >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetRadioButtonPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs )
 {
@@ -828,7 +814,7 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::creat
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetRadioButtonPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassRadioButton( unsigned id )
 {
@@ -846,14 +832,14 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return retVal;
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetComboBoxPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createComboBox( const typename WidgetComboBox::Seed & cs )
 {
 	return WidgetCreator< WidgetComboBox >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetComboBoxPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassComboBox( unsigned id )
 {
@@ -870,14 +856,14 @@ WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subcl
 	return WidgetCreator< WidgetComboBox >::subclass( this, id );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStaticPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::createStatic( const typename WidgetStatic::Seed & cs )
 {
 	return WidgetCreator< WidgetStatic >::create( this, cs );
 }
 
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
+template< template< class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy >
 typename WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::WidgetStaticPtr
 WidgetFactory< ContainerWidgetType, EventHandlerClass, MessageMapPolicy >::subclassStatic( unsigned id )
 {

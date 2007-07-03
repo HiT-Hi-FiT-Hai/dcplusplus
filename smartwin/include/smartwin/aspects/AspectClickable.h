@@ -66,7 +66,7 @@ public:
 	}
 
 	void onClicked(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase* ptrThis = boost::polymorphic_cast< MessageMapBase* >( this );
 		ptrThis->setCallback(
 			WidgetType::getClickMessage(), Dispatcher(f)
 		);

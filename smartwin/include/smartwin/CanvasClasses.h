@@ -32,6 +32,7 @@
 #include "Widget.h"
 #include "BasicTypes.h"
 #include "Bitmap.h"
+#include "Font.h"
 
 namespace SmartWin
 {

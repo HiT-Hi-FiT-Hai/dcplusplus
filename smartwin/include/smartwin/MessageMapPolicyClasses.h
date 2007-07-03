@@ -29,27 +29,96 @@
 #ifndef MessageMapPolicyClasses_h
 #define MessageMapPolicyClasses_h
 
-#include "Widget.h"
+#include "MessageMapBase.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
+
+template<typename Policy>
+struct MessageMapPolicyBase : public Policy {
+	MessageMapPolicyBase() : Widget(0) { }
+	
+	static LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+				
+		// Check if this is an init type message - a message that will set the window pointer correctly
+		Policy::initPolicy(hwnd, uMsg, wParam, lParam);
+
+		HWND handler = NULL;
+		
+		// Check who should handle the message - parent or child
+		switch(uMsg) {
+		case WM_CTLCOLORSTATIC :
+		case WM_CTLCOLORBTN :
+		case WM_CTLCOLOREDIT :
+		case WM_CTLCOLORLISTBOX :
+		case WM_CTLCOLORSCROLLBAR :
+		{
+			handler = reinterpret_cast<HWND>(lParam);
+			break;
+		}
+		case WM_DRAWITEM : {
+			/// @todo Not sure who should handle these....
+			handler = hwnd;
+		} break;
+		case WM_NOTIFY : {
+			NMHDR* nmhdr = reinterpret_cast<NMHDR*>(lParam);
+			handler = nmhdr->hwndFrom;
+		}
+		/// @todo Not sure who should handle these....
+		case WM_HSCROLL :
+		case WM_VSCROLL :
+		case WM_MEASUREITEM :
+		case WM_INITMENUPOPUP : {
+			handler = hwnd;
+		} break;
+		default: {
+			// By default, widgets handle their own messages
+			handler = hwnd;
+		}
+		}
+		
+		// Try to get the this pointer
+		/// @todo Maybe cast this to the actual widget type?
+		MessageMapBase* This = reinterpret_cast<MessageMapBase*>(::GetProp( handler, _T( "_mainWndProc" )));
+		
+#ifdef WINCE
+		if(uMsg == WM_DESTROY) {
+#else
+		if(uMsg == WM_NCDESTROY) {
+#endif
+			This->kill();
+		}
+
+		Message msgObj( hwnd, uMsg, wParam, lParam, true );
+		HRESULT hres = 0;
+		if(This->tryFire(msgObj, hres)) {
+			return This->returnHandled(hres, hwnd, uMsg, wParam, lParam);
+		}
+		
+		if(handler != hwnd) {
+			This = reinterpret_cast<MessageMapBase*>(::GetProp(handler, _T("_mainWndProc")));
+		}
+		
+		return This->returnUnhandled(hwnd, uMsg, wParam, lParam);
+	}
+};
 
 /// Aspect classes for a MessageMapPolicyDialogWidget
 /** Used as the third template argument to WidgetFactory if you're creating a
   * MessageMapPolicyDialogWidget
   */
 class MessageMapPolicyDialogWidget
-	: public virtual Widget
+	: public MessageMapBase
 {
 protected:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MessageMapPolicyDialogWidget() : Widget(0) { }
-	LRESULT kill()
+	
+	virtual void kill()
 	{
 		killChildren();
 		killMe();
-		return 0;
 	}
 
 	// The WidgetDialog CAN subclass existing controls (from the dialog resource)
@@ -64,25 +133,17 @@ protected:
 
 	// TODO: Protected??
 public:
-	LRESULT returnFromCloseMsg( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
-		// The dialog internals in windows api ensures we don't HAVE to call
-		// DestroyWindow like we have to in other Widget types! But since users of
-		// SmartWin may EXPLICITLY call close on Widget we STILL need to call
-		// DestroyWindow anyway!
-		::DestroyWindow( itsHandle );
-		return TRUE;
-	}
-
-	LRESULT returnFromHandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	LRESULT returnHandled(LRESULT, HWND, UINT, WPARAM, LPARAM) 
 	{
 		// A dialog Widget should return TRUE to the windows internal dialog
 		// message handler procedure to tell windows that it have handled the
 		// message
+		/// @todo We should SetWindowLong with the actual result in some cases, see DialogProc docs
 		return TRUE;
+		
 	}
 
-	LRESULT returnFromUnhandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
 		// As opposed to a "normal" Widget the dialog Widget should NOT return
 		// ::DefaultMessageProc or something similar since this is done internally
@@ -93,26 +154,15 @@ public:
 			return TRUE;
 		return FALSE;
 	}
-
-	// STATIC EXTRACTER/Dialog Message Procedure, extracts the this pointer and
-	// dispatches the message to the this Widget, only for subclassed dialog
-	// templete Widgets
-	static INT_PTR CALLBACK mainWndProc_( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
-	{
-		Widget * This = reinterpret_cast< Widget * >( ::GetProp( hWnd, _T( "_mainWndProc" ) ) );
-		if ( !This )
+	
+	static void initPolicy(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+		if ( uMsg == WM_INITDIALOG )
 		{
-			if ( uMsg == WM_INITDIALOG )
-			{
-				// extracting the this pointer and stuffing it into the Window with SetProp
-				This = reinterpret_cast< Widget * >( lParam );
-				::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
-				private_::setHandle( This, hWnd );
-			}
-			else
-				return FALSE;
+			// extracting the this pointer and stuffing it into the Window with SetProp
+			MessageMapBase* This = reinterpret_cast< MessageMapBase * >( lParam );
+			::SetProp( hwnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
+			private_::setHandle( This, hwnd );
 		}
-		return This->sendWidgetMessage( hWnd, uMsg, wParam, lParam );
 	}
 };
 
@@ -121,37 +171,13 @@ public:
   * MessageMapPolicyModalDialogWidget
   */
 class MessageMapPolicyModalDialogWidget
-	: public virtual Widget
+	: public MessageMapPolicyDialogWidget
 {
 protected:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MessageMapPolicyModalDialogWidget() : Widget(0) { }
 
-/*	Debugging problems with menus and WidgetModalDialogs.
-
-	void snapUserData( char header[], HWND	hw )
-	{
-		std::stringstream msg;
-		msg << header << std::hex << ::GetWindowLong( hw, GWL_USERDATA ) << std::endl;
-		_RPT0( _CRT_WARN, msg.str().c_str() );
-
-		if ( ::IsMenu( hw ) ) {
-			_RPT0( _CRT_WARN, _T("Aha, it is a menu") );
-		}
-	}
-
-	void snapChildren()
-	{
-		snapUserData( "kill called on ! isChild ", this->handle() );
-
-		int sz= (int)itsChildren.size();
-		for ( int c=0; c < sz; c++ ) {
-			snapUserData( "  children are ", itsChildren[c]->handle() );
-		}
-	}
-*/
-
-	LRESULT kill()
+	virtual void kill()
 	{
 		// Handle either the Modal dialog widget or something created inside it.
 		// We can differentiate because "modal dialog boxes cannot have the WS_CHILD style".
@@ -169,8 +195,6 @@ protected:
 			eraseMeFromParentsChildren();
 			eraseFromApplicationWidgets( this );
 		}
-
-		return 0;
 	}
 
 	// Remove from the Application based list of widgets.
@@ -189,55 +213,6 @@ protected:
 		}
 	}
 
-
-
-	enum canSubclassControls
-	{ Yup_we_can_do
-	};
-
-	// TODO: Protected??
-public:
-	LRESULT returnFromCloseMsg( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
-		// make sure we tidy up, re-enable the parent window etc.
-		::EndDialog( itsHandle, IDOK );
-		return TRUE;
-	}
-
-	LRESULT returnFromHandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
-		// yes, it's been handled.
-		return TRUE;
-	}
-
-	LRESULT returnFromUnhandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
-		// see MessageMapPolicyDialogWidget
-		if ( WM_INITDIALOG == msg )
-			return TRUE;
-		return FALSE;
-	}
-
-	// STATIC EXTRACTER/Dialog Message Procedure, extracts the this pointer and
-	// dispatches the message to the this Widget, only for subclassed dialog
-	// templete Widgets
-	static INT_PTR CALLBACK mainWndProc_( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
-	{
-		Widget * This = reinterpret_cast< Widget * >( ::GetProp( hWnd, _T( "_mainWndProc" ) ) );
-		if ( !This )
-		{
-			if ( uMsg == WM_INITDIALOG )
-			{
-				// extracting the this pointer and stuffing it into the Window with SetProp
-				This = reinterpret_cast< Widget * >( lParam );
-				::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
-				private_::setHandle( This, hWnd );
-			}
-			else
-				return FALSE;
-		}
-		return This->sendWidgetMessage( hWnd, uMsg, wParam, lParam );
-	}
 };
 
 /// Aspect classes for a normal Container Widget
@@ -246,55 +221,62 @@ public:
   * SmartWin will assume this is the one you're after!
   */
 class MessageMapPolicyNormalWidget
-	: public virtual Widget
+	: public MessageMapBase
 {
 protected:
-	LRESULT kill()
+	virtual void kill()
 	{
 		killMe();
-		return 0;
 	}
 
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MessageMapPolicyNormalWidget() : Widget(0) { }
 	// TODO: Protected??
 public:
-	LRESULT returnFromCloseMsg( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	virtual LRESULT returnHandled( LRESULT hres, HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
-		return ::DefWindowProc( hWnd, msg, wPar, lPar );
+		return hres;
 	}
 
-	LRESULT returnFromHandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
-		return 0;
-	}
-
-	LRESULT returnFromUnhandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	virtual LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
 		return ::DefWindowProc( hWnd, msg, wPar, lPar );
 	}
 
 	// STATIC EXTRACTER/Windows Message Procedure, extracts the this pointer and
 	// dispatches the message to the this Widget
-	static LRESULT CALLBACK mainWndProc_( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	static void initPolicy( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	{
-		Widget * This = reinterpret_cast< Widget * >( ::GetProp( hWnd, _T( "_mainWndProc" ) ) );
-		if ( !This )
-		{
-			if ( uMsg == WM_NCCREATE )
-			{
-				// extracting the this pointer and stuffing it into the Window with SetProp
-				CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-				This = reinterpret_cast< Widget * >( cs->lpCreateParams );
-				::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
-				private_::setHandle( This, hWnd );
-			}
-			// TODO: Should be revised to let WM_CREATE messages be handled
-			else if ( uMsg != WM_CREATE )
-				return ::DefWindowProc( hWnd, uMsg, wParam, lParam );
+		if ( uMsg == WM_NCCREATE ) {
+			// extracting the this pointer and stuffing it into the Window with SetProp
+			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
+			MessageMapBase* This = reinterpret_cast< MessageMapBase * >( cs->lpCreateParams );
+			::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
+			private_::setHandle( This, hWnd );
 		}
-		return This->sendWidgetMessage( hWnd, uMsg, wParam, lParam );
 	}
+};
+
+class MessageMapPolicySubclassedWidget : public MessageMapPolicyNormalWidget {
+public:
+	MessageMapPolicySubclassedWidget() : Widget(0), oldProc(0) { }
+	
+	virtual LRESULT returnUnhandled(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
+		if(oldProc) {
+			return ::CallWindowProc(oldProc, hWnd, msg, wPar, lPar);
+		}
+		return MessageMapPolicyNormalWidget::returnUnhandled(hWnd, msg, wPar, lPar);
+	}
+
+	/// Call this function from your overridden create() if you add a new Widget to
+	/// make the Windows Message Procedure dispatching map right.
+	void createMessageMap() {
+		::SetProp( handle(), _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( this ) );
+		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicyBase<MessageMapPolicySubclassedWidget>::wndProc ) );
+	}
+	
+private:
+	WNDPROC oldProc;	
 };
 
 #ifndef WINCE // MDI Widgets doesn't exist on CE
@@ -303,25 +285,24 @@ public:
   * Child Container Widget
   */
 class MessageMapPolicyMDIChildWidget
-	: public virtual Widget
+	: public MessageMapBase
 {
 protected:
-	LRESULT kill()
+	virtual void kill()
 	{
 		killMe();
-		return 0;
 	}
 	
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MessageMapPolicyMDIChildWidget() : Widget(0) { }
 	// TODO: Protected??
 public:
-	LRESULT returnFromCloseMsg( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	virtual LRESULT returnClose( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
 		return ::DefMDIChildProc( hWnd, msg, wPar, lPar );
 	}
 
-	LRESULT returnFromHandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	virtual LRESULT returnHandled(HRESULT hres, HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
 		switch ( msg )
 		{
@@ -334,33 +315,34 @@ public:
 		}
 	}
 
-	LRESULT returnFromUnhandledWindowProc( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	virtual LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
 		return ::DefMDIChildProc( hWnd, msg, wPar, lPar );
 	}
 
 	// STATIC EXTRACTER/Windows Message Procedure, extracts the this pointer and
 	// dispatches the message to the this Widget
-	static LRESULT CALLBACK mainWndProc_( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	static void initPolicy( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	{
-		Widget * This = reinterpret_cast< Widget * >( ::GetProp( hWnd, _T( "_mainWndProc" ) ) );
-		if ( !This )
+		if ( uMsg == WM_NCCREATE )
 		{
-			if ( uMsg == WM_NCCREATE )
-			{
-				// extracting the this pointer and stuffing it into the Window with SetProp
-				CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-				This = reinterpret_cast< Widget * >( ( reinterpret_cast< MDICREATESTRUCT * >
-						( cs->lpCreateParams )->lParam ) );
+			// extracting the this pointer and stuffing it into the Window with SetProp
+			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
+			MessageMapBase* This = reinterpret_cast< MessageMapBase * >( ( reinterpret_cast< MDICREATESTRUCT * >
+					( cs->lpCreateParams )->lParam ) );
 
-				::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
-				private_::setHandle( This, hWnd );
-			}
-			// TODO: Should be revised to let WM_CREATE messages be handled
-			else if ( uMsg != WM_CREATE )// DefMDIChildProc instead, need own MDI Child class...
-				return ::DefMDIChildProc( hWnd, uMsg, wParam, lParam );
+			::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
+			private_::setHandle( This, hWnd );
 		}
-		return This->sendWidgetMessage( hWnd, uMsg, wParam, lParam );
+	}
+};
+
+template<typename WidgetType>
+class MessageMapPolicyMDIFrameWidget : public MessageMapPolicyNormalWidget {
+public:
+	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
+	{
+		return ::DefFrameProc( hWnd, static_cast<WidgetType>(this)->getMDIClient(), msg, wPar, lPar );
 	}
 };
 #endif //! WINCE

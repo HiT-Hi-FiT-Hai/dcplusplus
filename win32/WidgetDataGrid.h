@@ -19,12 +19,14 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETDATAGRID_H_
 #define DCPLUSPLUS_WIN32_WIDGETDATAGRID_H_
 
-template< class EventHandlerClass, class MessageMapPolicy >
-class WidgetDataGrid : public SmartWin::WidgetDataGrid<EventHandlerClass, MessageMapPolicy> {
+template< class EventHandlerClass>
+class WidgetDataGrid : public SmartWin::WidgetDataGrid<EventHandlerClass> {
 private:
-	typedef SmartWin::WidgetDataGrid<EventHandlerClass, MessageMapPolicy> BaseType;
+	typedef SmartWin::WidgetDataGrid<EventHandlerClass> BaseType;
 public:
-	typedef WidgetDataGrid<EventHandlerClass, MessageMapPolicy>* ObjectType;
+	typedef WidgetDataGrid<EventHandlerClass> ThisType;
+	
+	typedef ThisType* ObjectType;
 	
 	// Constructor Taking pointer to parent
 	explicit WidgetDataGrid( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent) { }

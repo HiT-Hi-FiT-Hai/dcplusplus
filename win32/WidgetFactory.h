@@ -26,14 +26,14 @@
 /**
  * This is where stuff that eventually should be moved to smartwin goes
  */
-template< template< class, class > class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy = SmartWin::MessageMapPolicyNormalWidget >
+template< template< class> class ContainerWidgetType, class EventHandlerClass, class MessageMapPolicy = SmartWin::MessageMapPolicyNormalWidget >
 class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy> {
 public:
 	WidgetFactory() : SmartWin::Widget(0), SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>() { }
 	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass, MessageMapPolicy>(parent) { }
 
 	/// DataGrid class type.
-	typedef ::WidgetDataGrid< EventHandlerClass, MessageMapPolicy > WidgetDataGrid;
+	typedef ::WidgetDataGrid< EventHandlerClass > WidgetDataGrid;
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
@@ -43,7 +43,7 @@ public:
 	}
 
 	/// TextBox class type.
-	typedef ::WidgetTextBox< EventHandlerClass, MessageMapPolicy > WidgetTextBox;
+	typedef ::WidgetTextBox< EventHandlerClass > WidgetTextBox;
 
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
@@ -53,7 +53,7 @@ public:
 	}
 
 	/// VPaned class type.
-	typedef WidgetPaned< EventHandlerClass, false, SmartWin::MessageMapPolicyNormalWidget > WidgetVPaned;
+	typedef WidgetPaned< EventHandlerClass, false > WidgetVPaned;
 
 	/// VPaned object type.
 	typedef typename WidgetVPaned::ObjectType WidgetVPanedPtr;
@@ -63,7 +63,7 @@ public:
 	}
 
 	/// HPaned class type.
-	typedef WidgetPaned< EventHandlerClass, true, SmartWin::MessageMapPolicyNormalWidget > WidgetHPaned;
+	typedef WidgetPaned< EventHandlerClass, true > WidgetHPaned;
 
 	/// HPaned object type.
 	typedef typename WidgetHPaned::ObjectType WidgetHPanedPtr;

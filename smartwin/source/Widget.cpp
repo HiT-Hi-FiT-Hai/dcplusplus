@@ -126,7 +126,7 @@ void Widget::create( const SmartWin::Seed & cs )
 }
 
 Widget::Widget( Widget * parent, HWND hWnd, bool doReg )
-	: itsEventHandler( 0 ),
+	: 
 	isChild( false ),
 	itsHandle( hWnd ),
 	itsParent( parent ),

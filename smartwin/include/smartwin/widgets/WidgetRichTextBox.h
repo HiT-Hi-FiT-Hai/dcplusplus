@@ -44,16 +44,16 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
+template< class EventHandlerClass, class TextBoxType >
 class WidgetRichTextBox;
 
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass >
 class RichTextBox
 {
 public:
 	enum canSetReadOnly
 	{};
-	typedef WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, RichTextBox< EventHandlerClass, MessageMapPolicy > > TextBoxType;
+	typedef WidgetRichTextBox< EventHandlerClass, RichTextBox< EventHandlerClass > > TextBoxType;
 };
 
 /// RichEdit Control class
@@ -68,19 +68,19 @@ public:
   * A good example of the difference between those Widgets is the difference between 
   * notepad ( WidgetTextBox ) and wordpad ( WidgetRichTextBox )   
   */
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType /*only her to get the number of template parameters right in the base class*/ >
+template< class EventHandlerClass, class TextBoxType /*only her to get the number of template parameters right in the base class*/ >
 class WidgetRichTextBox :
 	private virtual TrueWindow,
-	public WidgetTextBox< EventHandlerClass, MessageMapPolicy, /*This is to DISABLE the OnlyEditControl thingies, Magic Enum Construct!*/RichTextBox< EventHandlerClass, MessageMapPolicy > >
+	public WidgetTextBox< EventHandlerClass, /*This is to DISABLE the OnlyEditControl thingies, Magic Enum Construct!*/RichTextBox< EventHandlerClass > >
 {
-	typedef MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapPolicy > ThisMessageMap;
+	typedef MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > MessageMapType;
 	friend class WidgetCreator< WidgetRichTextBox >;
 public:
 	/// Class type
-	typedef WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType > ThisType;
+	typedef WidgetRichTextBox< EventHandlerClass, TextBoxType > ThisType;
 
 	/// Object type
-	typedef WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType > * ObjectType;
+	typedef WidgetRichTextBox< EventHandlerClass, TextBoxType > * ObjectType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -141,8 +141,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-const typename WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::Seed & WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::getDefaultSeed()
+template< class EventHandlerClass, class TextBoxType >
+const typename WidgetRichTextBox< EventHandlerClass, TextBoxType >::Seed & WidgetRichTextBox< EventHandlerClass, TextBoxType >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -160,20 +160,20 @@ const typename WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxTy
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::Seed::Seed()
+template< class EventHandlerClass, class TextBoxType >
+WidgetRichTextBox< EventHandlerClass, TextBoxType >::Seed::Seed()
 {
 	* this = WidgetRichTextBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-LRESULT WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< class EventHandlerClass, class TextBoxType >
+LRESULT WidgetRichTextBox< EventHandlerClass, TextBoxType >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
-	return ThisMessageMap::sendWidgetMessage( hWnd, msg, wPar, lPar );
+	return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::create( const Seed & cs )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetRichTextBox< EventHandlerClass, TextBoxType >::create( const Seed & cs )
 {
 	// Need to load up RichEdit library!
 	static LibraryLoader richEditLibrary( _T( "riched20.dll" ) );
@@ -187,24 +187,24 @@ void WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::crea
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	setFont( cs.font );
 	setBackgroundColor( cs.backgroundColor );
 	setScrollBarHorizontally( cs.scrollBarHorizontallyFlag );
 	setScrollBarVertically( cs.scrollBarVerticallyFlag );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::WidgetRichTextBox( SmartWin::Widget * parent )
-	: WidgetTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >( parent )
+template< class EventHandlerClass, class TextBoxType >
+WidgetRichTextBox< EventHandlerClass, TextBoxType >::WidgetRichTextBox( SmartWin::Widget * parent )
+	: WidgetTextBox< EventHandlerClass, TextBoxType >( parent )
 	, Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy, class TextBoxType >
-void WidgetRichTextBox< EventHandlerClass, MessageMapPolicy, TextBoxType >::setBackgroundColor( COLORREF color )
+template< class EventHandlerClass, class TextBoxType >
+void WidgetRichTextBox< EventHandlerClass, TextBoxType >::setBackgroundColor( COLORREF color )
 {
 	::SendMessage( this->Widget::itsHandle, EM_SETBKGNDCOLOR, 0, static_cast< LPARAM >( color ) );
 }
