@@ -139,7 +139,7 @@ public:
 		onInitDialog(Adapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));
 	}
 	void onInitDialog(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_INITDIALOG ), Dispatcher(f)
 		);

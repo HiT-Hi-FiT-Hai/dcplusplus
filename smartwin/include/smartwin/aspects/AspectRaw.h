@@ -89,7 +89,7 @@ public:
 	}
 
 	void onRaw(const Dispatcher::F& f, const Message & msg) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			msg, Dispatcher(f)
 		);

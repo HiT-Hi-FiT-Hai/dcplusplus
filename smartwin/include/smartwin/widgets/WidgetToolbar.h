@@ -319,7 +319,7 @@ protected:
 	// intuitive interfaces...)
 	virtual bool tryFire( const Message & msg, HRESULT & retVal )
 	{
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 
 		// First we must create a "comparable" message...
 		for ( typename MessageMapType::SignalCollection::iterator idx = this->getSignals().begin();

@@ -40,7 +40,6 @@ struct MessageMapPolicyBase : public Policy {
 	MessageMapPolicyBase() : Widget(0) { }
 	
 	static LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-				
 		// Check if this is an init type message - a message that will set the window pointer correctly
 		Policy::initPolicy(hwnd, uMsg, wParam, lParam);
 
@@ -72,32 +71,49 @@ struct MessageMapPolicyBase : public Policy {
 		case WM_INITMENUPOPUP : {
 			handler = hwnd;
 		} break;
+		case WM_COMMAND: {
+			if(lParam != 0) {
+				handler = reinterpret_cast<HWND>(lParam);
+			} break;
+		}
 		default: {
 			// By default, widgets handle their own messages
 			handler = hwnd;
 		}
 		}
+		Message msgObj( hwnd, uMsg, wParam, lParam, true );
 		
+		if((uMsg == WM_COMMAND || uMsg == WM_SYSCOMMAND) && lParam == 0) {
+			if(Application::instance().handleCommand(msgObj, handler)) {
+				return 0;
+			}
+		}
 		// Try to get the this pointer
 		/// @todo Maybe cast this to the actual widget type?
 		MessageMapBase* This = reinterpret_cast<MessageMapBase*>(::GetProp( handler, _T( "_mainWndProc" )));
 		
+		if(!This) {
+			return::DefWindowProc(hwnd, uMsg, wParam, lParam);
+		}
 #ifdef WINCE
 		if(uMsg == WM_DESTROY) {
 #else
 		if(uMsg == WM_NCDESTROY) {
 #endif
 			This->kill();
+			return 0;
 		}
 
-		Message msgObj( hwnd, uMsg, wParam, lParam, true );
 		HRESULT hres = 0;
 		if(This->tryFire(msgObj, hres)) {
 			return This->returnHandled(hres, hwnd, uMsg, wParam, lParam);
 		}
 		
 		if(handler != hwnd) {
-			This = reinterpret_cast<MessageMapBase*>(::GetProp(handler, _T("_mainWndProc")));
+			This = reinterpret_cast<MessageMapBase*>(::GetProp( hwnd, _T( "_mainWndProc" )));
+			if(!This) {
+				return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
+			}
 		}
 		
 		return This->returnUnhandled(hwnd, uMsg, wParam, lParam);
@@ -120,16 +136,6 @@ protected:
 		killChildren();
 		killMe();
 	}
-
-	// The WidgetDialog CAN subclass existing controls (from the dialog resource)
-	// and therefore we add this enum to tell smartwin that all the "subclassXXX"
-	// functions are "callable". If you get a compiling error here you are probably
-	// trying to call "subclassXXX" on a Normal or MDI Widget type which doesn't
-	// work! Think of it as a safety hatch to make it more difficult for you to
-	// shoot yourself in the leg!
-	enum canSubclassControls
-	{ Yup_we_can_do
-	};
 
 	// TODO: Protected??
 public:
@@ -159,7 +165,7 @@ public:
 		if ( uMsg == WM_INITDIALOG )
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
-			MessageMapBase* This = reinterpret_cast< MessageMapBase * >( lParam );
+			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( lParam ));
 			::SetProp( hwnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
 			private_::setHandle( This, hwnd );
 		}
@@ -250,7 +256,7 @@ public:
 		if ( uMsg == WM_NCCREATE ) {
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-			MessageMapBase* This = reinterpret_cast< MessageMapBase * >( cs->lpCreateParams );
+			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
 			::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
 			private_::setHandle( This, hWnd );
 		}
@@ -271,7 +277,7 @@ public:
 	/// Call this function from your overridden create() if you add a new Widget to
 	/// make the Windows Message Procedure dispatching map right.
 	void createMessageMap() {
-		::SetProp( handle(), _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( this ) );
+		::SetProp( handle(), _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( static_cast<MessageMapBase*>(this) ) );
 		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicyBase<MessageMapPolicySubclassedWidget>::wndProc ) );
 	}
 	
@@ -328,8 +334,8 @@ public:
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-			MessageMapBase* This = reinterpret_cast< MessageMapBase * >( ( reinterpret_cast< MDICREATESTRUCT * >
-					( cs->lpCreateParams )->lParam ) );
+			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( ( reinterpret_cast< MDICREATESTRUCT * >
+					( cs->lpCreateParams )->lParam ) ));
 
 			::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
 			private_::setHandle( This, hWnd );

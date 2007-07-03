@@ -173,6 +173,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	initSecond();
 	
 	onSpeaker(&HubFrame::spoken);
+	onRaw(&HubFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
 	
 	client = ClientManager::getInstance()->getClient(url);
 	client->addListener(this);

@@ -77,7 +77,7 @@ public:
 	}
 
 	void onPainting(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_PAINT ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
 		);

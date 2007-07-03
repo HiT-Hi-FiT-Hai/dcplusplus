@@ -320,7 +320,7 @@ public:
 		onValidateEditLabels(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
 	}
 	void onValidateEditLabels(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			typename MessageMapType::SignalTupleType( Message( WM_NOTIFY, TVN_ENDLABELEDIT ), Dispatcher(f))
 		);		

@@ -42,6 +42,9 @@
 #include <memory>
 #include <boost/utility.hpp>
 #include <boost/signal.hpp>
+#include <map>
+#include "Message.h"
+#include "MessageMapBase.h"
 
 #ifdef _MSC_VER
 #ifndef WINCE
@@ -250,10 +253,18 @@ public:
 	  * application finishes. The class name is taken from the Seed passed.
 	  */
 	void addLocalWindowClassToUnregister( const Seed & );
+	
+	void registerCommand(const Message& msg, const MessageMapBase::CallbackType &callback, HANDLE owner);
+	bool handleCommand(const Message& msg, HANDLE handler);
+	void clearCommands(HANDLE owner);
+	
 private:
 	// Unregister this classes when the application finishes
 	static std::list< SmartUtil::tstring > itsClassesToUnregister;
 
+	typedef std::multimap<Message, std::pair<MessageMapBase::CallbackType, HANDLE> > CommandMap;
+	static CommandMap commands;
+	
 	// To determine if a copy of an application is already running
 	static HANDLE itsMutex;
 

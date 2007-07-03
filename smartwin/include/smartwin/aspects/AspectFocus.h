@@ -98,7 +98,7 @@ public:
 	}
 	
 	void onKillFocus(const KillFocusDispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			typename MessageMapType::SignalTupleType(Message( WM_KILLFOCUS ), KillFocusDispatcher(f))
 		);
@@ -118,7 +118,7 @@ public:
 	}
 	
 	void onFocus(const FocusDispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_SETFOCUS ), FocusDispatcher(f)
 		);

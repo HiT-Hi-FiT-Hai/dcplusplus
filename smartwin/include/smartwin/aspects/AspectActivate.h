@@ -38,20 +38,18 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-template<class EventHandlerClass>
 struct AspectActivateDispatcher
 {
 	typedef std::tr1::function<void (bool)> F;
 
-	AspectActivateDispatcher(const F& f_, EventHandlerClass* parent_) : f(f_), parent(parent_) { }
+	AspectActivateDispatcher(const F& f_) : f(f_) { }
 
 	HRESULT operator()(private_::SignalContent& params) {
 		f(LOWORD( params.Msg.WParam ) == WA_ACTIVE || LOWORD( params.Msg.WParam ) == WA_CLICKACTIVE);
-		return parent->returnFromHandledWindowProc( reinterpret_cast< HWND >( params.Msg.Handle ), params.Msg.Msg, params.Msg.WParam, params.Msg.LParam );
+		return 0;
 	}
 
 	F f;
-	EventHandlerClass* parent;
 };
 
 /// Aspect class used by Widgets that can be activated.
@@ -63,8 +61,8 @@ struct AspectActivateDispatcher
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectActivate
 {
-	typedef AspectActivateDispatcher<EventHandlerClass> Dispatcher;
-	typedef AspectAdapter<typename Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	typedef AspectActivateDispatcher Dispatcher;
+	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// Activates the Widget
 	/** Changes the activated property of the Widget. <br>
@@ -93,10 +91,10 @@ public:
 		onActivate(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 
-	void onActivate(const typename Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+	void onActivate(const Dispatcher::F& f) {
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
-			Message(WM_ACTIVATE), Dispatcher(f, internal_::getTypedParentOrThrow<EventHandlerClass*>(this) )
+			Message(WM_ACTIVATE), Dispatcher(f)
 		);
 	}
 

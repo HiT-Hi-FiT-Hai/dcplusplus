@@ -502,6 +502,7 @@ public:
 	// TODO: Fix...!!
 	virtual ~WidgetMenu()
 	{
+		Application::instance().clearCommands(this->handle());
 		::DestroyMenu( this->handle() );
 	}
 
@@ -534,10 +535,7 @@ void WidgetMenu< EventHandlerClass >::appendItem
 	mii.wID = id;
 	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
 
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
-		Message( WM_COMMAND, id ), IdDispatcher(f)
-	);
+	Application::instance().registerCommand(Message(WM_COMMAND, id), IdDispatcher(f), this->handle());
 }
 
 template< class EventHandlerClass >
@@ -555,10 +553,7 @@ void WidgetMenu< EventHandlerClass >::appendItem
 	mii.wID = id;
 	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
 
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
-		Message( WM_COMMAND, id ), SimpleDispatcher(f)
-	);
+	Application::instance().registerCommand(Message(WM_COMMAND, id), SimpleDispatcher(f), this->handle());
 }
 
 template< class EventHandlerClass >

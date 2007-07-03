@@ -166,7 +166,7 @@ public:
 		onCreate(CreateAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
 	}
 	void onCreate(const CreateDispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			typename MessageMapType::SignalTupleType(Message( WM_CREATE ), CreateDispatcher(f))
 		);

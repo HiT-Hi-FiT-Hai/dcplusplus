@@ -166,7 +166,7 @@ public:
 		onSelectionChanging(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
 	}
 	void onSelectionChanging(const typename Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			typename MessageMapType::SignalTupleType(
 				Message( WM_NOTIFY, TCN_SELCHANGING ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )

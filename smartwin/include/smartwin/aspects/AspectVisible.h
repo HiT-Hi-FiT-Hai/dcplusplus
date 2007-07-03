@@ -93,7 +93,7 @@ public:
 		onVisibilityChanged(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 	void onVisibilityChanged(const typename Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase *ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_SHOWWINDOW ), Dispatcher(f, internal_::getTypedParentOrThrow<EventHandlerClass*>(this) )
 		);

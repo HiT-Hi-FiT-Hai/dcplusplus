@@ -88,7 +88,7 @@ public:
 	}
 
 	void onBackgroundColor(const typename Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			WidgetType::getBackgroundColorMessage(), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
 		);

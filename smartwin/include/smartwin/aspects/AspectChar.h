@@ -37,25 +37,22 @@ namespace SmartWin
 // begin namespace SmartWin
 
 
-template<typename EventHandlerClass>
 struct AspectCharDispatcher {
 	typedef std::tr1::function<bool (int)> F;
 	
-	AspectCharDispatcher(const F& f_, EventHandlerClass* parent_) : f(f_), parent(parent_) { }
+	AspectCharDispatcher(const F& f_) : f(f_) { }
 	
 	HRESULT operator()(private_::SignalContent& params) {
 		bool handled = f(static_cast<int>(params.Msg.WParam));
-		if ( handled ) // TODO: Check up this logic
+		if ( handled ) {
 			return TRUE;
-		else
-		{
+		} else {
 			params.RunDefaultHandling = true;
 			return 0;
 		}
 	}
 
 	F f;
-	EventHandlerClass* parent;
 };
 
 /// Aspect class used by Widgets that have the possibility of trapping "char events".
@@ -66,7 +63,7 @@ struct AspectCharDispatcher {
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
 class AspectChar
 {
-	typedef AspectCharDispatcher<EventHandlerClass> Dispatcher;
+	typedef AspectCharDispatcher Dispatcher;
 	typedef AspectAdapter<typename Dispatcher::F, EventHandlerClass, MessageMapType::IsControl > Adapter;
 public:
 	/// \ingroup EventHandlersAspectChar
@@ -91,7 +88,7 @@ public:
 	void onChar(const typename Dispatcher::F& f) {
 		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
-			Message( WM_CHAR ), Dispatcher(f, internal_::getTypedParentOrThrow<EventHandlerClass*>(this) )
+			Message( WM_CHAR ), Dispatcher(f)
 		);
 	}
 protected:

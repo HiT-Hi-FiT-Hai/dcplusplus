@@ -100,7 +100,7 @@ public:
 		onTextChanging(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 	void onTextChanging(const typename Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_SETTEXT ), Dispatcher(f)
 		);

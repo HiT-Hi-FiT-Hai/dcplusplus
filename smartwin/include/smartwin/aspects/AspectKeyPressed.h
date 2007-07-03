@@ -90,7 +90,7 @@ public:
 		onKeyPressed(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 	void onKeyPressed(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_KEYDOWN ), Dispatcher(f)
 		);

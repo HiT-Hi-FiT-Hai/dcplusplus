@@ -197,7 +197,7 @@ public:
 		onClosing(CloseAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
 	}
 	void onClosing(const CloseDispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_CLOSE ), CloseDispatcher(f, boost::polymorphic_cast<Widget*>(this))
 		);
@@ -301,7 +301,7 @@ void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( const
 
 	UINT_PTR id = ::SetTimer( this->Widget::itsHandle, 0, static_cast< UINT >( milliSecond ), NULL);
 	
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+	MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 	ptrThis->setCallback(
 		Message( WM_TIMER, id ), TimerDispatcher(f)
 	);

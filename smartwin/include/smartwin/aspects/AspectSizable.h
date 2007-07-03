@@ -275,7 +275,7 @@ public:
 		onSized(SizeAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 	void onSized(const SizeDispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_SIZE ), SizeDispatcher(f)
 		);
@@ -293,7 +293,7 @@ public:
 		onMoved(MoveAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 	void onMoved(const SizeDispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			typename MessageMapType::SignalTupleType(
 				Message( WM_MOVE ), MoveDispatcher(f)

@@ -62,7 +62,7 @@ public:
 		onScrollHorz(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 	void onScrollHorz(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_HSCROLL ), Dispatcher(f)
 		);
@@ -82,7 +82,7 @@ public:
 		onScrollVert(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 	void onScrollVert(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( WM_VSCROLL ), Dispatcher(f)
 		);

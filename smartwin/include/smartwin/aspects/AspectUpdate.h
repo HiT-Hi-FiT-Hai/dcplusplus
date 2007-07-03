@@ -61,8 +61,8 @@ public:
 	void onUpdate( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
 		onUpdate(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
-	void onClicked(const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+	void onUpdate(const Dispatcher::F& f) {
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			WidgetType::getUpdateMessage(), Dispatcher(f)
 		);

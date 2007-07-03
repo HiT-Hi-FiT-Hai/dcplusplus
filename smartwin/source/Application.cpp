@@ -318,6 +318,36 @@ Application & Application::instance()
 	return * itsInstance;
 }
 
+Application::CommandMap Application::commands;
+
+void Application::registerCommand(const Message& msg, const MessageMapBase::CallbackType &callback, HANDLE owner) {
+	commands.insert(std::make_pair(msg, std::make_pair(callback, owner)));
+}
+
+bool Application::handleCommand(const Message& msg, HANDLE handler) {
+	// TODO Prefer command with correct owner...
+	Message msgComparer( msg.Handle, msg.Msg, msg.WParam, msg.LParam, false );
+	CommandMap::iterator i = commands.find(msgComparer);
+	if(i != commands.end()) {
+		private_::SignalContent params( msg, true );
+		i->second.first( params );
+		if ( params.RunDefaultHandling )
+			return false;
+		return true;
+	}
+	return false;
+}
+
+void Application::clearCommands(HANDLE owner) {
+	for(CommandMap::iterator i = commands.begin(); i != commands.end(); ) {
+		if(i->second.second == owner) {
+			commands.erase(i++);
+		} else {
+			++i;
+		}
+	}
+}
+
 bool Application::lastWidget( const Widget * This ) const
 {
 	int x = 0;

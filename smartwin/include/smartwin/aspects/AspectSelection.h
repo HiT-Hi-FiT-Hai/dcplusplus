@@ -76,7 +76,7 @@ public:
 		onSelectionChanged(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));		
 	}
 	void onSelectionChanged(const typename Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			WidgetType::getSelectionChangedMessage(), Dispatcher(f)
 		);

@@ -123,6 +123,7 @@ void Widget::create( const SmartWin::Seed & cs )
 	}
 	isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
 	Application::instance().registerWidget( this );
+
 }
 
 Widget::Widget( Widget * parent, HWND hWnd, bool doReg )

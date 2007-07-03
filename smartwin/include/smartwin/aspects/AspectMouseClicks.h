@@ -219,7 +219,7 @@ public:
 protected:
 	
 	void onMouse(UINT msg, const Dispatcher::F& f) {
-		MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
 			Message( msg ), Dispatcher(f)
 		);
