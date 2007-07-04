@@ -294,6 +294,9 @@ bool HubFrame::eachSecond() {
 }
 
 bool HubFrame::enter() {
+	if(isShiftPressed() || isControlPressed() || isAltPressed()) {
+		return false;
+	}
 	tstring s = message->getText();
 	if(s.empty()) {
 		::MessageBeep(MB_ICONEXCLAMATION);
@@ -707,7 +710,7 @@ void HubFrame::removeUser(const User::Ptr& aUser) {
 }
 
 bool HubFrame::historyActive() {
-	return isAltPressed() || (isControlPressed() ^ BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY));
+	return isAltPressed() || (isControlPressed() && BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY));
 }
 
 bool HubFrame::handleKeyDown(WidgetUsersPtr ptr, int c) {
@@ -721,6 +724,32 @@ bool HubFrame::handleKeyDown(WidgetUsersPtr ptr, int c) {
 	return BaseType::handleKeyDown(ptr, c);
 }
 
+bool HubFrame::handleChar(WidgetTextBoxPtr ptr, int c) {
+	switch(c) {
+	case VK_RETURN: {
+		if(!(isShiftPressed() || isControlPressed() || isAltPressed())) {
+			return true;
+		}
+	} break;
+	case VK_UP:
+	case VK_DOWN:
+	case VK_END:
+	case VK_HOME:
+	{
+		if(historyActive()) {
+			return true;
+		}
+	} break;
+	case VK_PRIOR:
+	case VK_NEXT: {
+		if(ptr == message) {
+			return true;
+		}
+	}
+	}
+	
+	return BaseType::handleChar(ptr, c);
+}
 bool HubFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {
 	if(!complete.empty() && c != VK_TAB)
 		complete.clear(), inTabComplete = false;
@@ -813,7 +842,6 @@ int HubFrame::UserInfo::getImage() const {
 	}
 	return image;
 }
-
 
 HubFrame::UserTask::UserTask(const OnlineUser& ou) : user(ou.getUser()), identity(ou.getIdentity()) { 
 

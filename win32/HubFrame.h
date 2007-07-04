@@ -231,6 +231,8 @@ private:
 	
 	void runUserCommand(const ::UserCommand& uc);
 
+	using BaseType::handleChar;
+	bool handleChar(WidgetTextBoxPtr w, int c);
 	using BaseType::handleKeyDown;
 	bool handleKeyDown(WidgetTextBoxPtr w, int c);
 	bool handleKeyDown(WidgetUsersPtr w, int c);
