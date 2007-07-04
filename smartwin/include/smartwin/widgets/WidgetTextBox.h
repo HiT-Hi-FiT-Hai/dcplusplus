@@ -36,8 +36,7 @@
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectKeyPressed.h"
-#include "../aspects/AspectChar.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../TrueWindow.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectUpdate.h"
@@ -104,8 +103,7 @@ class WidgetTextBox :
 	public AspectFont< typename TextBoxType::TextBoxType >,
 	public AspectVisible< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
 	public AspectEnabled< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
-	public AspectChar< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
-	public AspectKeyPressed< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
+	public AspectKeyboard< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
 	public AspectFocus< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
 	public AspectUpdate< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
 	public AspectBackgroundColor< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,

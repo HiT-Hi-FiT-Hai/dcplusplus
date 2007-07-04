@@ -34,7 +34,6 @@
 #include "../xCeption.h"
 #include "../TrueWindow.h"
 #include "../MessageMapControl.h"
-#include "../aspects/AspectChar.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectClickable.h"
@@ -47,6 +46,7 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectAdapter.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../BasicTypes.h"
 
 #include <commctrl.h>
@@ -116,7 +116,6 @@ class WidgetTreeView :
 
 	// Aspects
 	public AspectBorder< WidgetTreeView< EventHandlerClass > >,
-	public AspectChar< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
 	public AspectSizable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
 	public AspectSelection< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
 	public AspectClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
@@ -126,6 +125,7 @@ class WidgetTreeView :
 	public AspectVisible< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
 	public AspectEnabled< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
 	public AspectFocus< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
+	public AspectKeyboard<EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >
 {
 protected:

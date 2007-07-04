@@ -356,12 +356,10 @@ HRESULT PrivateFrame::spoken(LPARAM, WPARAM) {
 	return 0;
 }
 
-bool PrivateFrame::charred(WidgetTextBoxPtr ptr, int c) {
-	///@todo Investigate WM_CHAR vs WM_KEYDOWN
-	
+bool PrivateFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {	
 	switch(c) {
 	case VK_RETURN: return enter();
-	default:  return Base::charred(ptr, c);
+	default:  return Base::handleKeyDown(ptr, c);
 	}
 	
 }

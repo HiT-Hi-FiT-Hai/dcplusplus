@@ -62,9 +62,10 @@ protected:
 	bool preClosing();
 	void postClosing();
 	
-	using Base::charred;
-	bool charred(WidgetTextBoxPtr w, int c);
+	using Base::handleKeyDown;
+	bool handleKeyDown(WidgetTextBoxPtr w, int c);
 	bool enter();
+	bool tab();
 	
 private:
 	enum FilterModes{
@@ -228,6 +229,7 @@ private:
 
 	void addAsFavorite();
 	void removeFavoriteHub();
+	bool historyActive();
 	
 	void runUserCommand(const ::UserCommand& uc);
 
@@ -346,6 +348,7 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	
 	void onEnter();
 	void onTab();
 	void handleTab(bool reverse);

@@ -801,6 +801,9 @@ public:
 	/** Returns the Handle to the brush
 	  */
 	HBRUSH getBrushHandle();
+	
+	/// Constructor for a free brush (not tied to a canvas)
+	Brush(COLORREF color);
 
 	/// Constructor taking a Canvas and a COLORREF
 	/** Build a COLORREF argument with windows.h's RGB( red, green, blue )
@@ -843,7 +846,7 @@ private:
 	HBRUSH itsBrush;
 
 	// Handle to its Device Context.
-	Canvas & itsCanvas;
+	Canvas* itsCanvas;
 };
 
 /// Class for control of the text color lifetime

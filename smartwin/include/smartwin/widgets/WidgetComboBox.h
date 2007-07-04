@@ -42,12 +42,11 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectKeyPressed.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectThreads.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectChar.h"
 #include "../aspects/AspectText.h"
 #include "../xCeption.h"
 #include "SmartUtil.h"
@@ -76,13 +75,12 @@ class WidgetComboBox :
 	// Aspects
 	public AspectBackgroundColor< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectBorder< WidgetComboBox< EventHandlerClass > >,
-	public AspectChar< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectDblClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectEnabled< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectFocus< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectFont< WidgetComboBox< EventHandlerClass > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
+	public AspectKeyboard< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectMouseClicks< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectPainting< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,

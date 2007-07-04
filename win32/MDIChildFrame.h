@@ -41,16 +41,14 @@ public:
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		FactoryType::createMDIChild(cs);
 
-		onClosing(std::tr1::bind(&ThisType::closing, this));
-		onFocus(std::tr1::bind(&ThisType::focused, this));
+		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
+		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
 		onSized(std::tr1::bind(&ThisType::sized, this, _1));
-		onRaw(std::tr1::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLORSTATIC);
-		onRaw(std::tr1::bind(&ThisType::ctlColor, this, _1, _2), WM_CTLCOLOREDIT);
 	}
 	
 protected:
 	
-	void focused() {
+	void handleFocus() {
 		if(!controls.empty()) {
 			::SetFocus(controls[0]->handle());
 		}
@@ -67,23 +65,36 @@ protected:
 	
 	template<typename W>
 	void addWidget(W* widget) {
-		widget->onChar(&T::charred);
+		widget->onKeyDown(std::tr1::bind((bool (T::*)(W*, int))&T::handleKeyDown, static_cast<T*>(this), widget, _1));
+		widget->onChar(std::tr1::bind((bool (T::*)(W*, int))&T::handleChar, static_cast<T*>(this), widget, _1));
+		//TODO Fix widgets that don't support this... widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
 		controls.push_back(widget); 
 	}
-	
+
 	template<typename W>
-	bool charred(W* widget, int key) { 
+	bool handleKeyDown(W* widget, int key) { 
 		if(key == VK_TAB) {
 			for(WidgetList::size_type i = 0; i < controls.size(); ++i) {
 				if(controls[i] == widget) {
-					::SetFocus(controls[(i+1) % controls.size()]->handle());
+					size_t pos = (widget->isShiftPressed() ? i + controls.size() - 1 : i + 1) % controls.size();
+					::SetFocus(controls[pos]->handle());
 					return true;
 				}
 			}
 		}
 		return false; 
 	}
-
+	
+	template<typename W>
+	bool handleChar(W* widget, int key) {
+		if(key == VK_TAB && !widget->isControlPressed() && !widget->isAltPressed()) {
+			if(std::find(controls.begin(), controls.end(), static_cast<SmartWin::Widget*>(widget)) != controls.end()) {
+				// Eat tab chars so they're not passed to the control...
+				return true;
+			}
+		}
+		return false;
+	}
 	
 private:
 	/** This sets tab order and control coloring */
@@ -92,29 +103,20 @@ private:
 	bool reallyClose;
 
 	void sized(const SmartWin::WidgetSizedEventResult& sz) { static_cast<T*>(this)->layout(); }
-	
-	HRESULT ctlColor(LPARAM lp, WPARAM wp) {
-		HWND hWnd((HWND)lp);
-		HDC hDC((HDC)wp);
-		T* t(static_cast<T*>(this));
-		
-		for(size_t i = 0; i < controls.size(); ++i) {
-			if(hWnd == t->controls[i]->handle()) {
-				::SetBkColor(hDC, WinUtil::bgColor);
-				::SetTextColor(hDC, WinUtil::textColor);
-				return (LRESULT)WinUtil::bgBrush;
-			}
-		}
-		return 0;				
+	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
+		canvas.setBkMode(true);
+		canvas.setBkColor(WinUtil::bgColor);
+		canvas.setTextColor(WinUtil::textColor);
+		return WinUtil::bgBrush;
 	}
 	
-	bool closing() {
+	bool handleClosing() {
 		if(reallyClose) {
 			static_cast<T*>(this)->postClosing();
 			return true;
 		} else if(static_cast<T*>(this)->preClosing()) {
 			reallyClose = true;
-			StupidWin::postMessage(this, WM_CLOSE, 0, 0);
+			this->close(true);
 			return false;
 		}
 		return false;

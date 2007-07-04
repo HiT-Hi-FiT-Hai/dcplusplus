@@ -52,8 +52,8 @@ protected:
 	HRESULT spoken(LPARAM lp, WPARAM wp);
 	bool preClosing();
 	
-	using Base::charred;
-	bool charred(WidgetTextBoxPtr w, int c);
+	using Base::handleKeyDown;
+	bool handleKeyDown(WidgetTextBoxPtr w, int c);
 	bool enter();
 
 private:

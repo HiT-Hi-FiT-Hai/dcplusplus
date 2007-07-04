@@ -68,7 +68,7 @@ class WidgetSpinner :
 	public AspectBorder< WidgetSpinner< EventHandlerClass > >,
 	public AspectEnabled< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
 	public AspectFocus< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
+	public AspectKeyboard< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
 	public AspectMouseClicks< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
 	public AspectPainting< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,

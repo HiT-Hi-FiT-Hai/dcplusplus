@@ -40,13 +40,12 @@
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectKeyPressed.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectThreads.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectChar.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -74,13 +73,12 @@ class WidgetButton :
 	// Aspects
 	public AspectBackgroundColor< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectBorder< WidgetButton< EventHandlerClass > >,
-	public AspectChar< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectClickable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectDblClickable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectEnabled< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectFocus< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectFont< WidgetButton< EventHandlerClass > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
+	public AspectKeyboard< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectPainting< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectSizable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,

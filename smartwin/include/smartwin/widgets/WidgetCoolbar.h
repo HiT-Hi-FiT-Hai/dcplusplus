@@ -81,9 +81,8 @@ class WidgetCoolbar :
 	private AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar > MessageMapType;
-	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar > ThisMessageMap;
-	typedef AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > > AspectSizable;
+	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar<EventHandlerClass> > MessageMapType;
+	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapType > AspectSizable;
 	friend class WidgetCreator< WidgetCoolbar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible
@@ -310,7 +309,7 @@ void WidgetCoolbar< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	ThisMessageMap::createMessageMap();
+	MessageMapType::createMessageMap();
 	//TODO: use CreationalInfo parameters
 }
 

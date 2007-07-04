@@ -46,7 +46,7 @@
 #endif
 
 class MainWindow : 
-	public WidgetFactory<SmartWin::WidgetWindow, MainWindow>, 
+	public WidgetFactory<SmartWin::WidgetMDIFrame, MainWindow>, 
 	public AspectSpeaker<MainWindow>,
 	private HttpConnectionListener, 
 	private QueueManagerListener, 
@@ -115,7 +115,6 @@ private:
 
 
 	WidgetHPanedPtr paned;
-	WidgetMDIParentPtr mdi;
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
 

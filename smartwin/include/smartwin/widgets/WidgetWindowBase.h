@@ -41,8 +41,7 @@
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectKeyPressed.h"
-#include "../aspects/AspectChar.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectGetParent.h"
@@ -148,8 +147,7 @@ class WidgetWindowBase :
 	public AspectText< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
 	public AspectMouseClicks< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
 	public AspectVisible< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectChar< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
+	public AspectKeyboard< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
 	public AspectFocus< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
 	public AspectActivate< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
 	public AspectEraseBackground< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,

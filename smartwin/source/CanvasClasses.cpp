@@ -353,7 +353,7 @@ Pen::~Pen()
 
 Canvas & Brush::getCanvas()
 {
-	return itsCanvas;
+	return *itsCanvas;
 }
 
 HBRUSH Brush::getBrushHandle()
@@ -361,33 +361,37 @@ HBRUSH Brush::getBrushHandle()
 	return itsBrush;
 }
 
+Brush::Brush(COLORREF color) : itsBrushOld(NULL), isSysColor(false), itsBrush(NULL), itsCanvas(0) {
+	itsBrush = ::CreateSolidBrush(color);
+}
+
 Brush::Brush( Canvas & canvas, COLORREF color )
 	: isSysColor( false ),
-	itsCanvas( canvas )
+	itsCanvas( &canvas )
 {
 	itsBrush = ::CreateSolidBrush( color );
-	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas.getDc(), itsBrush );
+	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas->getDc(), itsBrush );
 }
 
 Brush::Brush( Canvas & canvas, BitmapPtr bitmap )
 	: isSysColor( false ),
-	itsCanvas( canvas )
+	itsCanvas( &canvas )
 {
 	itsBrush = ::CreatePatternBrush( bitmap->getBitmap() );
-	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas.getDc(), itsBrush );
+	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas->getDc(), itsBrush );
 }
 
 Brush::Brush( Canvas & canvas, Brush::SysColor color )
 	: isSysColor( true ),
-	itsCanvas( canvas )
+	itsCanvas( &canvas )
 {
 	itsBrush = ::GetSysColorBrush( ( int ) color );
-	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas.getDc(), itsBrush );
+	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas->getDc(), itsBrush );
 }
 
 Brush::Brush( Canvas & canvas )
 	: isSysColor( true ),
-	itsCanvas( canvas )
+	itsCanvas( &canvas )
 {
 	itsBrush = ( HBRUSH )::GetStockObject( NULL_BRUSH );
 }
@@ -396,7 +400,8 @@ Brush::~Brush()
 {
 	if ( !isSysColor )
 	{
-		::SelectObject( itsCanvas.getDc(), itsBrushOld );
+		if(itsCanvas)
+			::SelectObject( itsCanvas->getDc(), itsBrushOld );
 		::DeleteObject( itsBrush );
 	}
 }

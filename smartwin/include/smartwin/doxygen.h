@@ -37,7 +37,7 @@
   * \EventHandlerGenericInfo
   */
 
-/** \defgroup EventHandlersAspectKeyPressed Event Handlers for AspectKeyPressed
+/** \defgroup EventHandlersAspectKeyboard Event Handlers for AspectKeyboard
   * \EventHandlerGenericInfo
   */
 

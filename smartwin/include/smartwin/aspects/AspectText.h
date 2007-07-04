@@ -85,7 +85,10 @@ public:
 	/// Gets the text of the AspectText realizing class
 	/** The Return value is the text of the realizing class.
 	  */
-	SmartUtil::tstring getText() const;
+	SmartUtil::tstring getText();
+	
+	/// Length in characters of the text
+	size_t length();
 
 	/// \ingroup EventHandlersAspectText
 	/// Setting the event handler for the "setText" event
@@ -142,17 +145,20 @@ void AspectText< EventHandlerClass, WidgetType, MessageMapType >::setTextLines( 
 	setText( replaceEndlWithLfCr( inTxt ) );
 }
 
+template< class EventHandlerClass, class WidgetType, class MessageMapType >
+size_t AspectText< EventHandlerClass, WidgetType, MessageMapType >::length( ) {
+	return static_cast<size_t>(static_cast<const WidgetType*>(this)->sendMessage(WM_GETTEXTLENGTH));
+}
 
 
 template< class EventHandlerClass, class WidgetType, class MessageMapType >
-SmartUtil::tstring AspectText< EventHandlerClass, WidgetType, MessageMapType >::getText() const
+SmartUtil::tstring AspectText< EventHandlerClass, WidgetType, MessageMapType >::getText()
 {
-	LRESULT textLength = ::SendMessage( static_cast< const WidgetType * >( this )->handle(), WM_GETTEXTLENGTH, 0, 0 );
+	size_t textLength = length();
 	if ( textLength == 0 )
 		return _T( "" );
-	boost::scoped_array< TCHAR > txt( new TCHAR[++textLength] );
-	::SendMessage( static_cast< const WidgetType * >( this )->handle(), WM_GETTEXT, ( WPARAM ) textLength, ( LPARAM ) txt.get() );
-	SmartUtil::tstring retVal = txt.get();
+	SmartUtil::tstring retVal(textLength + 1, 0);
+	retVal.resize(static_cast<WidgetType*>(this)->sendMessage(WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
 	return retVal;
 }
 

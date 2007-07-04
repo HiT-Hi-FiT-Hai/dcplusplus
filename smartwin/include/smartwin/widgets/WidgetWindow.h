@@ -42,26 +42,21 @@ namespace SmartWin
 
 struct WidgetWindowCreateDispatcher
 {
-	typedef std::tr1::function<void (SmartWin::Seed&)> F;
+	typedef std::tr1::function<void (const CREATESTRUCT&)> F;
 
 	WidgetWindowCreateDispatcher(const F& f_) : f(f_) { }
 
 	HRESULT operator()(private_::SignalContent& params) {
 
 		CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( params.Msg.LParam );
-		SmartWin::Seed smCs;
 
-		smCs.exStyle = cs->dwExStyle;
-		smCs.style = cs->style;
-		smCs.location = Rectangle( cs->x, cs->y, cs->cx, cs->cy );
-
-		f(smCs);
+		f(*cs);
+		
 		return 0;
 	}
 
 	F f;
 };
-
 
 /// "Window" class
 /** \ingroup WidgetControls
@@ -249,11 +244,11 @@ const typename WidgetWindow< EventHandlerClass >::Seed & WidgetWindow< EventHand
 	if ( d_NeedsInit )
 	{
 		d_DefaultValues.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
-		d_DefaultValues.background = ( HBRUSH )( COLOR_BTNFACE + 1 );
+		d_DefaultValues.background = ( HBRUSH )( COLOR_APPWORKSPACE + 1 );
 		d_DefaultValues.caption = _T( "" );
 #ifndef WINCE
-		d_DefaultValues.cursor = LoadCursor( 0, IDC_ARROW );
-		d_DefaultValues.icon = LoadIcon( 0, IDI_APPLICATION );
+		d_DefaultValues.cursor = NULL;
+		d_DefaultValues.icon = NULL;
 #else
 		d_DefaultValues.cursor = 0;
 		d_DefaultValues.icon = 0;

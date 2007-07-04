@@ -51,11 +51,10 @@ struct MessageMapPolicyBase : public Policy {
 		case WM_CTLCOLORBTN :
 		case WM_CTLCOLOREDIT :
 		case WM_CTLCOLORLISTBOX :
-		case WM_CTLCOLORSCROLLBAR :
-		{
+		case WM_CTLCOLORSCROLLBAR : {
 			handler = reinterpret_cast<HWND>(lParam);
-			break;
-		}
+			
+		} break;
 		case WM_DRAWITEM : {
 			/// @todo Not sure who should handle these....
 			handler = hwnd;
@@ -63,7 +62,7 @@ struct MessageMapPolicyBase : public Policy {
 		case WM_NOTIFY : {
 			NMHDR* nmhdr = reinterpret_cast<NMHDR*>(lParam);
 			handler = nmhdr->hwndFrom;
-		}
+		} break;
 		/// @todo Not sure who should handle these....
 		case WM_HSCROLL :
 		case WM_VSCROLL :
@@ -74,8 +73,10 @@ struct MessageMapPolicyBase : public Policy {
 		case WM_COMMAND: {
 			if(lParam != 0) {
 				handler = reinterpret_cast<HWND>(lParam);
-			} break;
-		}
+			} else {
+				handler = hwnd;
+			}
+		} break;
 		default: {
 			// By default, widgets handle their own messages
 			handler = hwnd;
@@ -334,8 +335,9 @@ public:
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( ( reinterpret_cast< MDICREATESTRUCT * >
-					( cs->lpCreateParams )->lParam ) ));
+			MDICREATESTRUCT * mcs = reinterpret_cast< MDICREATESTRUCT*>(cs->lpCreateParams);
+			
+			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( mcs->lParam ));
 
 			::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
 			private_::setHandle( This, hWnd );
@@ -346,9 +348,15 @@ public:
 template<typename WidgetType>
 class MessageMapPolicyMDIFrameWidget : public MessageMapPolicyNormalWidget {
 public:
+	MessageMapPolicyMDIFrameWidget() : Widget(0) { }
+	
 	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
-		return ::DefFrameProc( hWnd, static_cast<WidgetType>(this)->getMDIClient(), msg, wPar, lPar );
+		WidgetType* This = static_cast<WidgetType*>(this);
+		if(This->getMDIClient()) {
+			return ::DefFrameProc( hWnd, This->getMDIClient()->handle(), msg, wPar, lPar );
+		}
+		return MessageMapPolicyNormalWidget::returnUnhandled(hWnd, msg, wPar, lPar);
 	}
 };
 #endif //! WINCE

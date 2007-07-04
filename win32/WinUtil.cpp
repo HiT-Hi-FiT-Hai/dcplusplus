@@ -36,7 +36,7 @@
 #include <dcpp/UserCommand.h>
 
 tstring WinUtil::tth;
-HBRUSH WinUtil::bgBrush = NULL;
+SmartWin::BrushPtr WinUtil::bgBrush;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
 SmartWin::FontPtr WinUtil::font;
@@ -53,9 +53,9 @@ void WinUtil::init() {
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 
-	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
 	textColor = SETTING(TEXT_COLOR);
 	bgColor = SETTING(BACKGROUND_COLOR);
+	bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bgColor));
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -74,7 +74,7 @@ void WinUtil::init() {
 	fileImageCount++;
 
 	userImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-	userImages->addMultiple(SmartWin::Bitmap(IDB_USERS));
+	userImages->addMultiple(SmartWin::Bitmap(IDB_USERS), RGB(255, 0, 255));
 	
 #ifdef PORT_ME
 /** @todo fix this so that the system icon is used for dirs as well (we need
@@ -123,8 +123,6 @@ void WinUtil::init() {
 }
 
 void WinUtil::uninit() {
-
-	::DeleteObject(bgBrush);
 
 #ifdef PORT_ME
 	fileImages.Destroy();

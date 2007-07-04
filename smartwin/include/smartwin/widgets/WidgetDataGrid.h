@@ -33,7 +33,7 @@
 #include "../MessageMap.h"
 #include "../MessageMapControl.h"
 #include "../TrueWindow.h"
-#include "../aspects/AspectKeyPressed.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectClickable.h"
@@ -48,7 +48,6 @@
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectChar.h"
 #include "../xCeption.h"
 #include "SmartUtil.h"
 #include "WidgetDataGridEditBox.h"
@@ -363,13 +362,12 @@ class WidgetDataGrid :
 
 	// Aspect classes
 	public AspectBorder< WidgetDataGrid< EventHandlerClass > >,
-	public AspectChar< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectDblClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectEnabled< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectFocus< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectFont< WidgetDataGrid< EventHandlerClass > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
+	public AspectKeyboard< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectMouseClicks< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
 	public AspectRightClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,

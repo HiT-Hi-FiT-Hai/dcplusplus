@@ -691,127 +691,83 @@ void HubFrame::removeUser(const User::Ptr& aUser) {
 	delete ui;
 }
 
+bool HubFrame::historyActive() {
+	return isAltPressed() || (isControlPressed() ^ BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY));
+}
 
-bool HubFrame::charred(WidgetTextBoxPtr ptr, int c) {
-	///@todo Investigate WM_CHAR vs WM_KEYDOWN
-	
-	switch(c) {
-	case VK_RETURN: return enter();
-	default:  return Base::charred(ptr, c);
-	}
-	
-#ifdef PORT_ME
-	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN)
+bool HubFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {
+	if(!complete.empty() && c != VK_TAB)
 		complete.clear(), inTabComplete = false;
 
-	if (uMsg != WM_KEYDOWN) {
-		switch(wParam) {
-			case VK_RETURN:
-				if( (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ) {
-					bHandled = FALSE;
+	switch(c) {
+	case VK_TAB: return tab();
+	case VK_RETURN: return enter();
+	case VK_UP:
+		if ( historyActive() ) {
+			//scroll up in chat command history
+			//currently beyond the last command?
+			if (curCommandPosition > 0) {
+				//check whether current command needs to be saved
+				if (curCommandPosition == prevCommands.size()) {
+					currentCommand = message->getText();
 				}
-				break;
-			case VK_TAB:
-				bHandled = TRUE;
-				break;
-			default:
-				bHandled = FALSE;
-				break;
-		}
-		return 0;
+
+				//replace current chat buffer with current command
+				message->setText(prevCommands[--curCommandPosition]);
+			}
+			// move cursor to end of line
+			message->setSelection(message->length(), message->length());
+			return true;
+		} 
+		break;
+	case VK_DOWN:
+		if ( historyActive() ) {
+			//scroll down in chat command history
+
+			//currently beyond the last command?
+			if (curCommandPosition + 1 < prevCommands.size()) {
+				//replace current chat buffer with current command
+				message->setText(prevCommands[++curCommandPosition]);
+			} else if (curCommandPosition + 1 == prevCommands.size()) {
+				//revert to last saved, unfinished command
+
+				message->setText(currentCommand);
+				++curCommandPosition;
+			}
+			// move cursor to end of line
+			message->setSelection(message->length(), message->length());
+			return true;
+		} 
+		break;
+	case VK_PRIOR: // page up
+		if(ptr == message) {
+			chat->sendMessage(WM_VSCROLL, SB_PAGEUP);
+			return true;
+		} break;
+	case VK_NEXT: // page down
+		if(ptr == message) {
+			chat->sendMessage(WM_VSCROLL, SB_PAGEDOWN);
+			return true;
+		} break;
+	case VK_HOME:
+		if (!prevCommands.empty() && historyActive() ) {
+			curCommandPosition = 0;
+			currentCommand = message->getText();
+
+			message->setText(prevCommands[curCommandPosition]);
+			return true;
+		} 
+		break;
+	case VK_END:
+		if (historyActive()) {
+			curCommandPosition = prevCommands.size();
+
+			message->setText(currentCommand);
+			return true;
+		} 
+		break;
 	}
-
-	switch(wParam) {
-		case VK_TAB:
-				onTab();
-			break;
-		case VK_RETURN:
-			if( (GetKeyState(VK_CONTROL) & 0x8000) ||
-				(GetKeyState(VK_MENU) & 0x8000) ) {
-					bHandled = FALSE;
-				} else {
-					onEnter();
-				}
-				break;
-		case VK_UP:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
-				//scroll up in chat command history
-				//currently beyond the last command?
-				if (curCommandPosition > 0) {
-					//check whether current command needs to be saved
-					if (curCommandPosition == prevCommands.size()) {
-						auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-						currentCommand = tstring(messageContents.get());
-					}
-
-					//replace current chat buffer with current command
-					ctrlMessage.SetWindowText(prevCommands[--curCommandPosition].c_str());
-				}
-				// move cursor to end of line
-				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
-			} else {
-				bHandled = FALSE;
-			}
-
-			break;
-		case VK_DOWN:
-			if ( (GetKeyState(VK_MENU) & 0x8000) ||	( ((GetKeyState(VK_CONTROL) & 0x8000) == 0) ^ (BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY) == true) ) ) {
-				//scroll down in chat command history
-
-				//currently beyond the last command?
-				if (curCommandPosition + 1 < prevCommands.size()) {
-					//replace current chat buffer with current command
-					ctrlMessage.SetWindowText(prevCommands[++curCommandPosition].c_str());
-				} else if (curCommandPosition + 1 == prevCommands.size()) {
-					//revert to last saved, unfinished command
-
-					ctrlMessage.SetWindowText(currentCommand.c_str());
-					++curCommandPosition;
-				}
-				// move cursor to end of line
-				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
-			} else {
-				bHandled = FALSE;
-			}
-
-			break;
-		case VK_PRIOR: // page up
-			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEUP);
-
-			break;
-		case VK_NEXT: // page down
-			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEDOWN);
-
-			break;
-		case VK_HOME:
-			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
-				curCommandPosition = 0;
-
-				auto_ptr<TCHAR> messageContents(new TCHAR[ctrlMessage.GetWindowTextLength()+2]);
-				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
-				currentCommand = tstring(messageContents.get());
-
-				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
-			} else {
-				bHandled = FALSE;
-			}
-
-			break;
-		case VK_END:
-			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
-				curCommandPosition = prevCommands.size();
-
-				ctrlMessage.SetWindowText(currentCommand.c_str());
-			} else {
-				bHandled = FALSE;
-			}
-			break;
-		default:
-			bHandled = FALSE;
-	}
-	return 0;
-#endif
+	return false;
 }
 
 int HubFrame::UserInfo::getImage() const {
@@ -1460,21 +1416,16 @@ tstring HubFrame::scanNickPrefix(const tstring& prefixT) {
 
 	return Text::toT(maxPrefix);
 }
-#ifdef PORT_ME
 
-void HubFrame::onTab() {
-	if(ctrlMessage.GetWindowTextLength() == 0) {
-		handleTab(WinUtil::isShift());
-		return;
+bool HubFrame::tab() {
+	if(message->length() == 0) {
+		return false;
 	}
 
 	HWND focus = GetFocus();
-	if( (focus == ctrlMessage.m_hWnd) && !WinUtil::isShift() )
+	if( (focus == message->handle()) && !isShiftPressed() )
 	{
-		int n = ctrlMessage.GetWindowTextLength();
-		AutoArray<TCHAR> buf(n+1);
-		ctrlMessage.GetWindowText(buf, n+1);
-		tstring text(buf, n);
+		tstring text = message->getText();
 		string::size_type textStart = text.find_last_of(_T(" \n\t"));
 
 		if(complete.empty()) {
@@ -1485,13 +1436,9 @@ void HubFrame::onTab() {
 			}
 			if(complete.empty()) {
 				// Still empty, no text entered...
-				ctrlUsers.SetFocus();
-				return;
+				return false;
 			}
-			int y = ctrlUsers.GetItemCount();
-
-			for(int x = 0; x < y; ++x)
-				ctrlUsers.SetItemState(x, 0, LVNI_FOCUSED | LVNI_SELECTED);
+			users->clearSelection();
 		}
 
 		if(textStart == string::npos)
@@ -1504,32 +1451,37 @@ void HubFrame::onTab() {
 			tstring nicks;
 			for (StringList::const_iterator i = tabCompleteNicks.begin(); i < tabCompleteNicks.end(); i+=2)
 				nicks.append(Text::toT(*i + " "));
-			addClientLine(nicks);
+			addChat(nicks);
 			inTabComplete = false;
 		} else {
 			// First tab. Maximally extend proposed nick.
 			tstring nick = scanNickPrefix(complete);
-			if (tabCompleteNicks.empty()) return;
+			if (tabCompleteNicks.empty()) return true;
 
 			// Maybe it found a unique match. If userlist showing, highlight.
 			if (showUsers->getChecked() && tabCompleteNicks.size() == 2) {
-				int i = ctrlUsers.findItem(Text::toT(tabCompleteNicks[1]));
-				ctrlUsers.SetItemState(i, LVNI_FOCUSED | LVNI_SELECTED, LVNI_FOCUSED | LVNI_SELECTED);
-				ctrlUsers.EnsureVisible(i, FALSE);
+				int i = users->findItem(Text::toT(tabCompleteNicks[1]));
+				users->setSelectedIndex(i);
+				users->ensureVisible(i);
 			}
 
-			ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
+			message->setSelection(textStart, -1);
+			
 			// no shift, use partial nick when appropriate
-			if(GetAsyncKeyState(VK_SHIFT) & 0x8000) {
-				ctrlMessage.ReplaceSel(nick.c_str());
+			if(isShiftPressed) {
+				message->replaceSelection(nick);
 			} else {
-				ctrlMessage.ReplaceSel(Text::toT(stripNick(Text::fromT(nick))).c_str());
+				message->replaceSelection(Text::toT(stripNick(Text::fromT(nick))));
 			}
 
 			inTabComplete = true;
+			return true;
 		}
 	}
+	return false;
 }
+
+#ifdef PORT_ME
 
 LRESULT HubFrame::onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	client->reconnect();

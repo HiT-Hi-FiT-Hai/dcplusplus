@@ -54,6 +54,7 @@
 #include "widgets/WidgetTreeView.h"
 #include "widgets/WidgetWindowBase.h"
 #include "widgets/WidgetWindow.h"
+#include "widgets/WidgetMDIFrame.h"
 #include "widgets/WidgetDialog.h"
 #include "widgets/WidgetProgressBar.h"
 #include "WidgetFactoryPlatformImplementation.h"
@@ -224,6 +225,12 @@ public:
 
 	/// WidgetWindow object type.
 	typedef typename WidgetWindow::ObjectType WidgetWindowPtr;
+
+	/// WidgetMDIFrame class type.
+	typedef SmartWin::WidgetMDIFrame< EventHandlerClass > WidgetMDIFrame;
+
+	/// WidgetWindow object type.
+	typedef typename WidgetMDIFrame::ObjectType WidgetMDIFramePtr;
 
 	/// ProgressBar class type.
 	typedef SmartWin::WidgetProgressBar< EventHandlerClass > WidgetProgressBar;

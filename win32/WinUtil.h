@@ -52,7 +52,7 @@ class WinUtil {
 public:
 	static tstring tth;
 
-	static HBRUSH bgBrush;
+	static SmartWin::BrushPtr bgBrush;
 	static COLORREF textColor;
 	static COLORREF bgColor;
 	static SmartWin::FontPtr font;

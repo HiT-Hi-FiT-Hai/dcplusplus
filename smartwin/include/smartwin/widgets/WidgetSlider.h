@@ -37,7 +37,7 @@
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectRaw.h"
-#include "../aspects/AspectKeyPressed.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectBorder.h"
@@ -73,7 +73,7 @@ class WidgetSlider :
 	public AspectBorder< WidgetSlider< EventHandlerClass > >,
 	public AspectEnabled< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
 	public AspectFocus< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
+	public AspectKeyboard< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
 	public AspectMouseClicks< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
 	public AspectPainting< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,

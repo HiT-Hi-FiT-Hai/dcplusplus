@@ -60,7 +60,6 @@
 MainWindow::MainWindow() :
 	SmartWin::Widget(0),
 	paned(0),
-	mdi(0),
 	transfers(0),
 	trayIcon(false),
 	maximized(false),
@@ -344,8 +343,7 @@ void MainWindow::initStatusBar() {
 
 void MainWindow::initMDI() {
 	dcdebug("initMDI\n");
-	mdi = createMDIParent();
-	paned->setFirst(mdi);
+	paned->setFirst(getMDIClient());
 }
 
 void MainWindow::initTransfers() {
@@ -373,7 +371,7 @@ void MainWindow::handleQuickConnect(WidgetMenuPtr, unsigned) {
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 
-		HubFrame::openWindow(mdi, tmp);
+		HubFrame::openWindow(getMDIClient(), tmp);
 	}
 }
  
@@ -387,11 +385,11 @@ HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 	switch(s) {
 	case DOWNLOAD_LISTING: {
 		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(wp));
-		DirectoryListingFrame::openWindow(mdi, i->file, i->dir, i->user, i->speed);
+		DirectoryListingFrame::openWindow(getMDIClient(), i->file, i->dir, i->user, i->speed);
 	} break;
 	case BROWSE_LISTING: {
 		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(wp));
-		DirectoryListingFrame::openWindow(mdi, i->user, i->text, 0);
+		DirectoryListingFrame::openWindow(getMDIClient(), i->user, i->text, 0);
 	} break;
 	case AUTO_CONNECT: {
 		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());			
@@ -428,7 +426,7 @@ void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
 		FavoriteHubEntry* entry = *i;
 		if(entry->getConnect()) {
 			if(!entry->getNick().empty() || !SETTING(NICK).empty()) {
-				HubFrame::openWindow(mdi, entry->getServer());
+				HubFrame::openWindow(getMDIClient(), entry->getServer());
 			}
 		}
 	}
@@ -445,10 +443,10 @@ HRESULT MainWindow::trayMessage(LPARAM lp, WPARAM wp) {
 
 void MainWindow::handleMDIReorder(WidgetMenuPtr, unsigned id) {
 	switch(id) {
-	case IDC_MDI_CASCADE: mdi->cascade(); break;
-	case IDC_MDI_TILE_VERT: mdi->tile(false); break;
-	case IDC_MDI_TILE_HORZ: mdi->tile(true); break;
-	case IDC_MDI_ARRANGE: mdi->arrange(); break;
+	case IDC_MDI_CASCADE: getMDIClient()->cascade(); break;
+	case IDC_MDI_TILE_VERT: getMDIClient()->tile(false); break;
+	case IDC_MDI_TILE_HORZ: getMDIClient()->tile(true); break;
+	case IDC_MDI_ARRANGE: getMDIClient()->arrange(); break;
 	}
 }
 
@@ -658,7 +656,7 @@ void MainWindow::handleOpenFileList(WidgetMenuPtr ptr, unsigned id) {
 	if(WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
 		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if(u) {
-			DirectoryListingFrame::openWindow(mdi, file, Text::toT(Util::emptyString), u, 0);
+			DirectoryListingFrame::openWindow(getMDIClient(), file, Text::toT(Util::emptyString), u, 0);
 		} else {
 #ifdef PORT_ME
 			MessageBox(CTSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
@@ -669,7 +667,7 @@ void MainWindow::handleOpenFileList(WidgetMenuPtr ptr, unsigned id) {
 
 void MainWindow::handleOpenOwnList(WidgetMenuPtr, unsigned) {
 	if(!ShareManager::getInstance()->getOwnListFile().empty()){
-		DirectoryListingFrame::openWindow(mdi, Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
+		DirectoryListingFrame::openWindow(getMDIClient(), Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
 	}
 }
 
@@ -703,7 +701,7 @@ DWORD WINAPI MainWindow::stopper(void* p) {
 	MainWindow* mf = reinterpret_cast<MainWindow*>(p);
 	HWND wnd, wnd2 = NULL;
 
-	while( (wnd=::GetWindow(mf->mdi->handle(), GW_CHILD)) != NULL) {
+	while( (wnd=::GetWindow(mf->getMDIClient()->handle(), GW_CHILD)) != NULL) {
 		if(wnd == wnd2)
 			Sleep(100);
 		else {
@@ -923,7 +921,7 @@ void MainWindow::handleOpenDownloadsDir(WidgetMenuPtr, unsigned) {
 }
 
 void MainWindow::handleMinimizeAll(WidgetMenuPtr, unsigned) {
-	HWND tmpWnd = ::GetWindow(mdi->handle(), GW_CHILD); //getting first child window
+	HWND tmpWnd = ::GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
 		::CloseWindow(tmpWnd);
 		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
@@ -931,28 +929,28 @@ void MainWindow::handleMinimizeAll(WidgetMenuPtr, unsigned) {
 }
 
 void MainWindow::handleRestoreAll(WidgetMenuPtr, unsigned) {
-	HWND tmpWnd = ::GetWindow(mdi->handle(), GW_CHILD); //getting first child window
+	HWND tmpWnd = ::GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
-		::SendMessage(mdi->handle(), WM_MDIRESTORE, (WPARAM)tmpWnd, 0);
+		::SendMessage(getMDIClient()->handle(), WM_MDIRESTORE, (WPARAM)tmpWnd, 0);
 		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
 	}
 }
 
 void MainWindow::handleOpenWindow(WidgetMenuPtr, unsigned id) {
 	switch(id) {
-	case IDC_PUBLIC_HUBS: PublicHubsFrame::openWindow(mdi); break;
-	case IDC_FAVORITE_HUBS: FavHubsFrame::openWindow(mdi); break;
-	case IDC_FAVUSERS: UsersFrame::openWindow(mdi); break;
-	case IDC_QUEUE: QueueFrame::openWindow(mdi); break;
-	case IDC_FINISHED_DL: FinishedDLFrame::openWindow(mdi); break;
-	case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(mdi); break;
-	case IDC_FINISHED_UL: FinishedULFrame::openWindow(mdi); break;
-	case IDC_SEARCH: SearchFrame::openWindow(mdi); break;
-	case IDC_ADL_SEARCH: ADLSearchFrame::openWindow(mdi); break;
-	case IDC_SEARCH_SPY: SpyFrame::openWindow(mdi); break;
-	case IDC_NOTEPAD: NotepadFrame::openWindow(mdi); break;
-	case IDC_SYSTEM_LOG: SystemFrame::openWindow(mdi); break;
-	case IDC_NET_STATS: StatsFrame::openWindow(mdi); break;
+	case IDC_PUBLIC_HUBS: PublicHubsFrame::openWindow(getMDIClient()); break;
+	case IDC_FAVORITE_HUBS: FavHubsFrame::openWindow(getMDIClient()); break;
+	case IDC_FAVUSERS: UsersFrame::openWindow(getMDIClient()); break;
+	case IDC_QUEUE: QueueFrame::openWindow(getMDIClient()); break;
+	case IDC_FINISHED_DL: FinishedDLFrame::openWindow(getMDIClient()); break;
+	case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(getMDIClient()); break;
+	case IDC_FINISHED_UL: FinishedULFrame::openWindow(getMDIClient()); break;
+	case IDC_SEARCH: SearchFrame::openWindow(getMDIClient()); break;
+	case IDC_ADL_SEARCH: ADLSearchFrame::openWindow(getMDIClient()); break;
+	case IDC_SEARCH_SPY: SpyFrame::openWindow(getMDIClient()); break;
+	case IDC_NOTEPAD: NotepadFrame::openWindow(getMDIClient()); break;
+	case IDC_SYSTEM_LOG: SystemFrame::openWindow(getMDIClient()); break;
+	case IDC_NET_STATS: StatsFrame::openWindow(getMDIClient()); break;
 	default: dcassert(0); break;
 	}
 }

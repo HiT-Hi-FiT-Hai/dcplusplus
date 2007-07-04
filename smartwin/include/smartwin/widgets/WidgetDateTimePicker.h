@@ -40,7 +40,7 @@
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectKeyPressed.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectThreads.h"
@@ -89,7 +89,7 @@ class WidgetDateTimePicker :
 	public AspectEnabled< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
 	public AspectFocus< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
 	public AspectFont< WidgetDateTimePicker< EventHandlerClass > >,
-	public AspectKeyPressed< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
+	public AspectKeyboard< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
 	public AspectMouseClicks< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
 	public AspectPainting< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
