@@ -131,7 +131,7 @@ bool operator == ( const Message & left, const Message & right )
 				return true;
 			break;
 		default:
-			return left.Msg == right.Msg;
+			return true;
 		}
 	}
 	return false;

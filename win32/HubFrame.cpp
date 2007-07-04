@@ -38,32 +38,43 @@ int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
 ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::IP_BARE, ResourceManager::EMAIL, ResourceManager::CID };
 
-HubFrame::FrameMap HubFrame::frames;
+HubFrame::FrameList HubFrame::frames;
 
 void HubFrame::closeDisconnected() {
 	for(FrameIter i=frames.begin(); i!= frames.end(); ++i) {
-		if (!(i->second->client->isConnected())) {
-			::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
+		HubFrame* frame = *i;
+		if (!(frame->client->isConnected())) {
+			::PostMessage(frame->handle(), WM_CLOSE, 0, 0);
 		}
 	}
 }
 
 void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
-	FrameIter i = frames.find(url);
-	if(i == frames.end()) {
-		new HubFrame(mdiParent, url);
-	} else {
-		if(StupidWin::isIconic(i->second))
-			i->second->restore();
-	
-#ifdef PORT_ME
-		i->second->MDIActivate(i->second->m_hWnd);
-#endif
+	for(FrameIter i = frames.begin(); i!= frames.end(); ++i) {
+		HubFrame* frame = *i;
+		if(frame->url == url) {
+			if(StupidWin::isIconic(frame))
+				frame->restore();
+		
+	#ifdef PORT_ME
+			i->second->MDIActivate(i->second->m_hWnd);
+	#endif
+			return;
+		}
 	}
+
+	new HubFrame(mdiParent, url);
 }
 
 HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) : 
 	SmartWin::Widget(mdiParent), 
+	chat(0),
+	message(0),
+	filter(0),
+	filterType(0),
+	paned(0),
+	showUsers(0),
+	users(0),
 	client(0),
 	url(url_),
 	timeStamps(BOOLSETTING(TIME_STAMPS)), 
@@ -72,13 +83,6 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	resort(false),
 	showJoins(BOOLSETTING(SHOW_JOINS)),
 	favShowJoins(BOOLSETTING(FAV_SHOW_JOINS)),
-	chat(0),
-	message(0),
-	filter(0),
-	filterType(0),
-	paned(0),
-	showUsers(0),
-	users(0),
 	curCommandPosition(0),
 	inTabComplete(false)
 {
@@ -179,16 +183,27 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	client->addListener(this);
 	client->connect();
 	
-	frames.insert(std::make_pair(url, this));
+	frames.push_back(this);
 	
 	showUsers->onClicked(&HubFrame::handleShowUsersClicked);
 	
+	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(url));
+	if(fhe != NULL){
+		//retrieve window position
+		SmartWin::Rectangle rc(fhe->getLeft(), fhe->getTop(), fhe->getRight() - fhe->getLeft(), fhe->getBottom() - fhe->getTop());
+
+		//check that we have a window position stored
+		if(rc.pos.x >= 0 && rc.pos.y >= 0 && rc.size.x > 0 && rc.size.y > 0) {
+			setBounds(rc);
+		}
+	}
+
 	FavoriteManager::getInstance()->addListener(this);
 }
 
 HubFrame::~HubFrame() {
 	ClientManager::getInstance()->putClient(client);
-	frames.erase(url);
+	frames.erase(std::remove(frames.begin(), frames.end(), this), frames.end());
 	clearTaskList();
 }
 
@@ -695,13 +710,30 @@ bool HubFrame::historyActive() {
 	return isAltPressed() || (isControlPressed() ^ BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY));
 }
 
+bool HubFrame::handleKeyDown(WidgetUsersPtr ptr, int c) {
+	if(c == VK_RETURN) {
+		int item = users->getNextItem(-1, LVNI_FOCUSED);
+		if(item != -1) {
+			users->getItemData(item)->getList();
+		}
+		return true;
+	}
+	return BaseType::handleKeyDown(ptr, c);
+}
+
 bool HubFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {
 	if(!complete.empty() && c != VK_TAB)
 		complete.clear(), inTabComplete = false;
 
 	switch(c) {
-	case VK_TAB: return tab();
-	case VK_RETURN: return enter();
+	case VK_TAB: 
+		if(tab())
+			return true;
+		break;
+	case VK_RETURN: 
+		if(enter())
+			return true;
+		break;
 	case VK_UP:
 		if ( historyActive() ) {
 			//scroll up in chat command history
@@ -767,7 +799,7 @@ bool HubFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {
 		} 
 		break;
 	}
-	return false;
+	return BaseType::handleKeyDown(ptr, c);
 }
 
 int HubFrame::UserInfo::getImage() const {
@@ -1218,15 +1250,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	bHandled = FALSE;
 
-	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
-	if(fhe != NULL){
-		//retrieve window position
-		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
-
-		//check that we have a window position stored
-		if(! (rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0) )
-			MoveWindow(rc, TRUE);
-	}
 
 	return 1;
 }
@@ -1514,18 +1537,6 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 }
 
-LRESULT HubFrame::onEnterUsers(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
-	int item = ctrlUsers.GetNextItem(-1, LVNI_FOCUSED);
-	if(item != -1) {
-		try {
-			QueueManager::getInstance()->addList((ctrlUsers.getItemData(item))->user, QueueItem::FLAG_CLIENT_VIEW);
-		} catch(const Exception& e) {
-			addClientLine(Text::toT(e.getError()));
-		}
-	}
-	return 0;
-}
-
 LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMTTDISPINFO* nm = (NMTTDISPINFO*)pnmh;
 	lastLines.clear();
@@ -1544,7 +1555,7 @@ LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 
 void HubFrame::resortUsers() {
 	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
-		i->second->resortForFavsFirst(true);
+		(*i)->resortForFavsFirst(true);
 }
 
 #ifdef PORT_ME

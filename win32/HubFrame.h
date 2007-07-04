@@ -32,11 +32,16 @@
 
 class HubFrame : 
 	public MDIChildFrame<HubFrame>, 
-	public ClientListener, 
+	private ClientListener, 
 	private FavoriteManagerListener,
 	public AspectUserInfo<HubFrame>,
 	public AspectUserCommand<HubFrame>
 {
+	typedef MDIChildFrame<HubFrame> BaseType;
+	friend class MDIChildFrame<HubFrame>;
+	friend class AspectUserInfo<HubFrame>;
+	friend class AspectUserCommand<HubFrame>;
+
 public:
 	enum Status {
 		STATUS_STATUS,
@@ -50,24 +55,9 @@ public:
 	static void openWindow(SmartWin::Widget* mdiParent, const string& url);
 	static void closeDisconnected();
 	static void resortUsers();
-
-protected:
-	typedef MDIChildFrame<HubFrame> Base;
-	friend class MDIChildFrame<HubFrame>;
-	friend class AspectUserInfo<HubFrame>;
-	friend class AspectUserCommand<HubFrame>;
-	
-	void layout();
-	HRESULT spoken(LPARAM lp, WPARAM wp);
-	bool preClosing();
-	void postClosing();
-	
-	using Base::handleKeyDown;
-	bool handleKeyDown(WidgetTextBoxPtr w, int c);
-	bool enter();
-	bool tab();
 	
 private:
+
 	enum FilterModes{
 		NONE,
 		EQUAL,
@@ -154,18 +144,6 @@ private:
 		}
 	};
 
-	Client* client;
-	tstring url;
-	tstring redirect;
-	bool timeStamps;
-	bool updateUsers;
-	bool waitingForPW;
-	bool resort;
-	bool showJoins;
-	bool favShowJoins;
-	
-	TaskQueue tasks;
-
 	WidgetTextBoxPtr chat;
 	WidgetTextBoxPtr message;
 	WidgetTextBoxPtr filter;
@@ -179,6 +157,18 @@ private:
 	
 	UserMap userMap;
 	
+	Client* client;
+	tstring url;
+	tstring redirect;
+	bool timeStamps;
+	bool updateUsers;
+	bool waitingForPW;
+	bool resort;
+	bool showJoins;
+	bool favShowJoins;
+	
+	TaskQueue tasks;
+
 	TStringList prevCommands;
 	tstring currentCommand;
 	TStringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
@@ -198,12 +188,20 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	typedef HASH_MAP<string, HubFrame*> FrameMap;
-	typedef FrameMap::iterator FrameIter;
-	static FrameMap frames;
+	typedef std::vector<HubFrame*> FrameList;
+	typedef FrameList::iterator FrameIter;
+	static FrameList frames;
 
 	HubFrame(Widget* mdiParent, const string& url);
 	virtual ~HubFrame();
+	
+	void layout();
+	HRESULT spoken(LPARAM lp, WPARAM wp);
+	bool preClosing();
+	void postClosing();
+	
+	bool enter();
+	bool tab();
 	
 	void addChat(const tstring& aLine);
 	void addStatus(const tstring& aLine, bool inChat = true);
@@ -233,6 +231,9 @@ private:
 	
 	void runUserCommand(const ::UserCommand& uc);
 
+	using BaseType::handleKeyDown;
+	bool handleKeyDown(WidgetTextBoxPtr w, int c);
+	bool handleKeyDown(WidgetUsersPtr w, int c);
 	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
 	void handleShowUsersClicked(WidgetCheckBoxPtr);
 	void handleCopyNick();
@@ -348,11 +349,6 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	
-	void onEnter();
-	void onTab();
-	void handleTab(bool reverse);
-
 	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
 		return 0;
@@ -367,16 +363,6 @@ public:
 		PostMessage(WM_CLOSE);
 		return 0;
 	}
-
-	LRESULT onKeyDownUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* l = (NMLVKEYDOWN*)pnmh;
-		if(l->wVKey == VK_TAB) {
-			onTab();
-		}
-		return 0;
-	}
-
-	bool extraSort;
 
 	CMenu tabMenu;
 
