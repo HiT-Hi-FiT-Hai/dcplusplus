@@ -30,6 +30,7 @@
 #define WidgetCheckBox_h
 
 #include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../TrueWindow.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectClickable.h"
@@ -64,7 +65,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetCheckBox :
-	public MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspect classes
@@ -233,7 +234,7 @@ void WidgetCheckBox< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 }
 

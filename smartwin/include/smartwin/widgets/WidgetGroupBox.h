@@ -30,6 +30,7 @@
 #define WidgetGroupBox_h
 
 #include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../TrueWindow.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
@@ -68,7 +69,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetGroupBox :
-	public MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	public virtual TrueWindow,
 
 	// Aspects
@@ -219,7 +220,7 @@ void WidgetGroupBox< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 }
 

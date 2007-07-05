@@ -30,7 +30,6 @@
 #define MessageMapControl_h
 
 #include "WindowsHeaders.h"
-#include "MessageMapPolicyClasses.h"
 #include "Widget.h"
 #include "BasicTypes.h"
 #include "Message.h"
@@ -41,24 +40,11 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-/// The "fallback" WndMsgProc handler
-/** Is the "default" message handler class for all Control Widgets. (those which does
-  * NOT derive from WidgetWindowBase) <br>
-  * If a message is not handled by anything else it goes into this class to check if
-  * we should handle this message or not. <br>
-  * If the message is NOT handled it is returned to windows OS for handling. <br>
-  * Shouldn't be of much interest directly to a user of SmartWin unless derived from
-  * to make your own message dispatching logic, and even that's easy to achieve
-  * WITHOUT fiddling with this class by using AspectRaw::onRaw Event Handler
-  * Setters...
-  */
+/// Legacy support class
 template< class EventHandlerClass, class WidgetType >
-class MessageMapControl : public MessageMapPolicyBase<MessageMapPolicySubclassedWidget>
+class MessageMapControl
 {
 public:
-	typedef MessageMapBase::CallbackType SignalType;
-	typedef std::pair< Message, SignalType > SignalTupleType;
-	typedef MessageMapBase::CallbackCollectionType SignalCollection;
 	const static bool IsControl = true;
 
 	// Member event handler definitions (here you have the "this" pointer so
@@ -261,13 +247,10 @@ public:
 	///  Typedef of a static/global function taking a pointer to the original class and a pointer to the this Widget class and a MEASUREITEMSTRUCT * returning void
 	typedef void ( * voidMeasureItemFunction ) ( EventHandlerClass *, WidgetType *, MEASUREITEMSTRUCT * );
 
-protected:
+private:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	MessageMapControl()
-		: Widget(0) { }
-
-	virtual ~MessageMapControl()
-	{}
+	MessageMapControl();
+	~MessageMapControl();
 };
 
 // end namespace SmartWin

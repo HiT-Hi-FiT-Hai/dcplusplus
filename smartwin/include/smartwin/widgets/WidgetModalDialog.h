@@ -67,13 +67,15 @@ struct WidgetModalDialogDispatcher
   */
 template< class EventHandlerClass >
 class WidgetModalDialog
-	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >
+	: public WidgetWindowBase< EventHandlerClass, Policies::ModalDialog >
 {
-	typedef MessageMap< EventHandlerClass, MessageMapPolicyModalDialogWidget > MessageMapType;
+	typedef MessageMap< EventHandlerClass > MessageMapType;
 	typedef WidgetModalDialogDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
 public:
+	typedef WidgetWindowBase< EventHandlerClass, Policies::ModalDialog > BaseType;
+	
 	/// Class type
 	typedef WidgetModalDialog< EventHandlerClass > ThisType;
 
@@ -170,7 +172,7 @@ private:
 template< class EventHandlerClass >
 WidgetModalDialog< EventHandlerClass >::
 WidgetModalDialog( Widget * parent )
-	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >( parent )
+	: Widget(parent), BaseType( parent )
 {
 	// Default parameters for pure modal dialogs
 #ifdef WINCE
@@ -199,7 +201,7 @@ int WidgetModalDialog< EventHandlerClass >::createDialog( unsigned resourceId )
 		( ( Application::instance().getAppHandle() )
 		, ( MAKEINTRESOURCE( resourceId ) )
 		, ( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 )
-		, ( (DLGPROC)WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >::wndProc )
+		, ( (DLGPROC)&ThisType::wndProc )
 		, ( reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) ) )
 		);
 	if ( retv == - 1 )
@@ -241,7 +243,7 @@ int WidgetModalDialog< EventHandlerClass >::createDialog()
 		( Application::instance().getAppHandle() // HINSTANCE hInstance
 		, ( DLGTEMPLATE * ) dlg_menu_winclass_title // LPCDLGTEMPLATE hDialogTemplate
 		, this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 // HWND hWndParent
-		, (DLGPROC)WidgetWindowBase< EventHandlerClass, MessageMapPolicyModalDialogWidget >::wndProc // DLGPROC lpDialogFunc
+		, (DLGPROC)&ThisType::wndProc // DLGPROC lpDialogFunc
 		, reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) )
 		); // LPARAM dwInitParam
 

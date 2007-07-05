@@ -30,6 +30,7 @@
 #define WidgetSlider_h
 
 #include "../Widget.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectEnabled.h"
@@ -67,7 +68,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetSlider :
-	public MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
 	public AspectBorder< WidgetSlider< EventHandlerClass > >,
@@ -360,7 +361,7 @@ void WidgetSlider< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 }
 
 // end namespace SmartWin

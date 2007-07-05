@@ -178,7 +178,7 @@ void WidgetRichTextBox< EventHandlerClass, TextBoxType >::create( const Seed & c
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 	setBackgroundColor( cs.backgroundColor );
 	setScrollBarHorizontally( cs.scrollBarHorizontallyFlag );

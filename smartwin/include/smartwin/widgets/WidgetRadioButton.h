@@ -30,6 +30,7 @@
 #define WidgetRadioButton_h
 
 #include "../Widget.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectText.h"
@@ -40,6 +41,7 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectBorder.h"
 #include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../TrueWindow.h"
 #include "../aspects/AspectFont.h"
 #include "../xCeption.h"
@@ -67,7 +69,7 @@ class WidgetCreator;
    */
 template< class EventHandlerClass >
 class WidgetRadioButton :
-	public MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	public virtual TrueWindow,
 
 	// Aspects
@@ -237,7 +239,7 @@ void WidgetRadioButton< EventHandlerClass >::create( EventHandlerClass * parent,
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
 	this->Widget::itsParent = parent;
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 	// TODO: this was registered with the application when Widget::create was
 	// called. Will they collide?

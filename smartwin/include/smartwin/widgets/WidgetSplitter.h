@@ -32,7 +32,8 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "../WindowsHeaders.h"
-#include "../MessageMap.h"
+#include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectVisible.h"
@@ -142,18 +143,18 @@ protected:
   */
 template< typename EventHandlerClass, typename Painter >
 class WidgetSplitter :
-	public MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget>,
+	public MessageMapPolicy<Policies::Normal>,
 	public Painter,
 
 	// Aspects
 	public AspectSizable< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter >,
-		MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > >,
+		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter  > > >,
 	public AspectVisible< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter >,
-		MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > >,
+		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter  > > >,
 	public AspectRaw< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter >,
-		MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > >
+		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter  > > >
 {
-	typedef MessageMap< EventHandlerClass, MessageMapPolicyNormalWidget > MessageMapType;
+	typedef MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter > > MessageMapType;
 	friend class WidgetCreator< WidgetSplitter >;
 public:
 	/// Class type
@@ -258,7 +259,7 @@ const typename WidgetSplitter< EventHandlerClass, Painter >::Seed & WidgetSplitt
 		wc.lpszClassName = d_DefaultValues.getClassName().c_str();
 		wc.hbrBackground = ( HBRUSH )( COLOR_GRAYTEXT + 1 );
 		wc.hCursor = LoadCursor( 0, IDC_SIZEWE );
-		wc.lpfnWndProc = &MessageMapType::wndProc;
+		wc.lpfnWndProc = &ThisType::wndProc;
 #ifndef WINCE
 		wc.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
 		wc.hIcon = LoadIcon( 0, IDI_APPLICATION );
@@ -316,8 +317,6 @@ WidgetSplitter< EventHandlerClass, Painter >::WidgetSplitter( SmartWin::Widget *
 template< typename EventHandlerClass, typename Painter >
 void WidgetSplitter< EventHandlerClass, Painter >::create( const Seed & cs )
 {
-	// TODO: MessageMap instead of MessageMapControl
-	this->MessageMapType::isSubclassed = false;
 	// TODO: use CreationalInfo parameters
 	if ( cs.style & WS_CHILD )
 		Widget::create( cs );
@@ -328,7 +327,7 @@ void WidgetSplitter< EventHandlerClass, Painter >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	//MessageMapType::createMessageMap();
+	//ThisType::createMessageMap();
 	RECT rc;
 	::GetWindowRect( this->Widget::itsParent->handle(), & rc );
 	if ( !::MoveWindow( this->Widget::itsHandle, rc.right / 2, 0, getWidth(), rc.bottom, TRUE ) )

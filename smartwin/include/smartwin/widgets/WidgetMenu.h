@@ -85,7 +85,7 @@ class WidgetMenuPlatformImplementation;
 /// Specialized functions in menu for Windows CE Windows API version
 template< class EventHandlerClass >
 class WidgetMenuPlatformImplementation< EventHandlerClass, SmartWinCE > :
-	public MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass > >
+	public virtual Widget
 {
 protected:
 	typedef WidgetMenu<EventHandlerClass> WidgetMenuType;
@@ -184,7 +184,7 @@ private:
 /// Specialized functions in menu for desktop Windows API version
 template< class EventHandlerClass >
 class WidgetMenuPlatformImplementation< EventHandlerClass, SmartWinDesktop > :
-	public MessageMapControl< EventHandlerClass, WidgetMenu< EventHandlerClass > >
+	public virtual Widget
 {
 protected:
 	typedef WidgetMenu<EventHandlerClass> WidgetMenuType;

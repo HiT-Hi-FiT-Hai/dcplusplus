@@ -111,7 +111,7 @@ struct TreeViewNode
    */
 template< class EventHandlerClass >
 class WidgetTreeView :
-	public MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspects
@@ -620,7 +620,7 @@ void WidgetTreeView< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setHasButtons( cs.hasButtonsFlag );
 	setHasLines( cs.hasLinesFlag );
 	setLinesAtRoot( cs.linesAtRootFlag );

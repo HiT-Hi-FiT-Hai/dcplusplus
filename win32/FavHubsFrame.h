@@ -44,6 +44,8 @@ protected:
 	virtual ~FavHubsFrame();
 
 	void layout();
+	
+	bool preClosing();
 
 private:
 	enum {
@@ -74,6 +76,7 @@ private:
 	void handleProperties(WidgetButtonPtr);
 	void handleUp(WidgetButtonPtr);
 	void handleDown(WidgetButtonPtr);
+	void handleDoubleClick();
 
 	void openSelected();
 	void addEntry(const FavoriteHubEntryPtr entry, int pos);

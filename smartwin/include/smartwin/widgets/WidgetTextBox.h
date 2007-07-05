@@ -93,7 +93,7 @@ public:
   */
 template< class EventHandlerClass, class TextBoxType = NormalTextBox< EventHandlerClass > >
 class WidgetTextBox :
-	public MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspect classes
@@ -522,7 +522,7 @@ void WidgetTextBox< EventHandlerClass, TextBoxType >::create( const typename Wid
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 }
 

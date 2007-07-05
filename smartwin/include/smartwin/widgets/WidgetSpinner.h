@@ -30,6 +30,7 @@
 #define WidgetSpinner_h
 
 #include "../Widget.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectEnabled.h"
@@ -62,7 +63,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetSpinner :
-	public MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
 	public AspectBorder< WidgetSpinner< EventHandlerClass > >,
@@ -247,7 +248,7 @@ void WidgetSpinner< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setRange( cs.minValue, cs.maxValue );
 	//TODO: use CreationalInfo parameters
 }

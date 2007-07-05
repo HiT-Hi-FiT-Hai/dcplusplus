@@ -86,7 +86,7 @@ struct WidgetTabSheetDispatcher
   */
 template< class EventHandlerClass >
 class WidgetTabSheet :
-	public MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspects
@@ -357,7 +357,7 @@ void WidgetTabSheet< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 }
 

@@ -65,7 +65,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetMDIParent :
-	public MessageMapControl< EventHandlerClass, WidgetMDIParent<EventHandlerClass> >,
+	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
 	public AspectSizable< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
@@ -208,7 +208,7 @@ void WidgetMDIParent< EventHandlerClass >::create( const Seed & cs )
 	this->Widget::isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
 	Application::instance().registerWidget( this );
 
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 }
 
 // end namespace SmartWin

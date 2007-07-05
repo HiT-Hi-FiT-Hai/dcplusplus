@@ -72,9 +72,10 @@ struct WidgetWindowCreateDispatcher
   */
 template< class EventHandlerClass >
 class WidgetWindow
-	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyNormalWidget >
+	: public WidgetWindowBase< EventHandlerClass, Policies::Normal >
 {
-	typedef typename WidgetWindowBase< EventHandlerClass, MessageMapPolicyNormalWidget >::MessageMapType MessageMapType;
+	typedef WidgetWindowBase< EventHandlerClass, Policies::Normal > BaseType;
+	typedef typename BaseType::MessageMapType MessageMapType;
 	typedef WidgetWindowCreateDispatcher CreateDispatcher;
 	typedef AspectAdapter<CreateDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CreateAdapter;
 
@@ -268,7 +269,7 @@ WidgetWindow< EventHandlerClass >::Seed::Seed()
 
 template< class EventHandlerClass >
 WidgetWindow< EventHandlerClass >::WidgetWindow( Widget * parent )
-	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyNormalWidget >( parent )
+	: Widget(parent), BaseType( parent )
 {}
 
 template< class EventHandlerClass >
@@ -299,7 +300,7 @@ void WidgetWindow< EventHandlerClass >::createWindow( Seed cs )
 #endif //! WINCE
 	// This are window class styles, not window styles ...
 	ws.style = CS_DBLCLKS;	// Allow double click messages
-	ws.lpfnWndProc = &MessageMapType::wndProc;
+	ws.lpfnWndProc = &ThisType::wndProc;
 	ws.cbClsExtra = 0;
 	ws.cbWndExtra = 0;
 	ws.hInstance = Application::instance().getAppHandle();

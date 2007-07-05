@@ -31,6 +31,7 @@
 
 #include "../Widget.h"
 #include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
@@ -69,7 +70,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetStatic :
-	public MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspects
@@ -225,7 +226,7 @@ void WidgetStatic< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 }
 

@@ -32,6 +32,7 @@
 #include "../WindowsHeaders.h"
 #include "../MessageMap.h"
 #include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../TrueWindow.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectSizable.h"
@@ -357,7 +358,7 @@ public:
   */
 template< class EventHandlerClass >
 class WidgetDataGrid :
-	public MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspect classes
@@ -1708,7 +1709,7 @@ void WidgetDataGrid< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	//TODO: use CreationalInfo parameters
 
 #ifdef WINCE

@@ -52,9 +52,9 @@ namespace SmartWin
   */
 template< class EventHandlerClass >
 class WidgetMDIFrame
-	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyMDIFrameWidget<WidgetMDIFrame<EventHandlerClass> > >
+	: public WidgetWindowBase< EventHandlerClass, Policies::MDIFrame<WidgetMDIFrame<EventHandlerClass> > >
 {
-	typedef WidgetWindowBase< EventHandlerClass, MessageMapPolicyMDIFrameWidget<WidgetMDIFrame<EventHandlerClass> > > BaseType;
+	typedef WidgetWindowBase< EventHandlerClass, Policies::MDIFrame<WidgetMDIFrame<EventHandlerClass> > > BaseType;
 	typedef typename BaseType::MessageMapType MessageMapType;
 
 public:
@@ -205,7 +205,7 @@ void WidgetMDIFrame< EventHandlerClass >::createWindow( Seed cs )
 #endif //! WINCE
 	// This are window class styles, not window styles ...
 	ws.style = CS_DBLCLKS;	// Allow double click messages
-	ws.lpfnWndProc = &MessageMapType::wndProc;
+	ws.lpfnWndProc = &ThisType::wndProc;
 	ws.cbClsExtra = 0;
 	ws.cbWndExtra = 0;
 	ws.hInstance = Application::instance().getAppHandle();

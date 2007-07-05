@@ -118,7 +118,7 @@ class NoSection :
 template< class EventHandlerClass, class TypeOfStatusBar = NoSection< EventHandlerClass > >
 class WidgetStatusBar :
 	public TypeOfStatusBar,
-	public MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspects
@@ -320,7 +320,7 @@ void WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::create( const Seed &
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 }
 

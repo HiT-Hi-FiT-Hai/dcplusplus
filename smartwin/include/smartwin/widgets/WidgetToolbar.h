@@ -79,7 +79,7 @@ struct ToolbarDispatcher
   */
 template< class EventHandlerClass >
 class WidgetToolbar :
-	public MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspects
@@ -697,7 +697,7 @@ void WidgetToolbar< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 
 	//// Telling the toolbar what the size of TBBUTTON struct is
 	::SendMessage( this->Widget::itsHandle, TB_BUTTONSTRUCTSIZE, ( WPARAM ) sizeof( TBBUTTON ), 0 );

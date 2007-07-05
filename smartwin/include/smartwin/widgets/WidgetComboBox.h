@@ -31,6 +31,7 @@
 
 #include <commctrl.h>
 #include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../TrueWindow.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectSelection.h"
@@ -69,7 +70,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetComboBox :
-	public MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspects
@@ -354,7 +355,7 @@ void WidgetComboBox< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	setFont( cs.font );
 	if(cs.extended) {
 		::SendMessage(this->handle(), CB_SETEXTENDEDUI, TRUE, 0);

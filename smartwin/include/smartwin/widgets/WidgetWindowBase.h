@@ -80,7 +80,7 @@ struct WidgetWindowBaseCloseDispatcher
 		bool destroy = f();
 
 		if ( destroy ) {
-			::DestroyWindow( widget->handle() );
+			params.RunDefaultHandling = true;
 			return TRUE;
 		}
 
@@ -136,37 +136,37 @@ struct WidgetWindowBaseTimerDispatcher
   * the library residing in the SmartWinUnitTests directory for an example of how to 
   * use  this class with the factory class WidgetFactory.   
   */
-template< class EventHandlerClass, class MessageMapPolicy >
+template< class EventHandlerClass, class Policy >
 class WidgetWindowBase :
-	public MessageMap< EventHandlerClass, MessageMapPolicy >,
+	public MessageMapPolicy< Policy >,
 
 	// Aspects
 	public AspectBorder< EventHandlerClass >,
-	public AspectSizable< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
+	public AspectSizable< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
 	public AspectFont< EventHandlerClass >,
-	public AspectText< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectVisible< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectKeyboard< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectFocus< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectActivate< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectEraseBackground< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectPainting< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectEnabled< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectRaw< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectThreads< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
-	public AspectDragDrop< EventHandlerClass, WidgetWindowBase< EventHandlerClass, MessageMapPolicy >, MessageMap< EventHandlerClass, MessageMapPolicy > >,
+	public AspectText< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectMouseClicks< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectVisible< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectKeyboard< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectFocus< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectActivate< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectEraseBackground< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectPainting< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectEnabled< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectRaw< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectThreads< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectDragDrop< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
 
 	public OuterMostWidget
 {
 public:
 	/// Class type
-	typedef WidgetWindowBase< EventHandlerClass, MessageMapPolicy > ThisType;
+	typedef WidgetWindowBase< EventHandlerClass, Policy > ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
 
-	typedef MessageMap< EventHandlerClass, MessageMapPolicy > MessageMapType;
+	typedef MessageMap< EventHandlerClass > MessageMapType;
 private:
 	typedef WidgetWindowBaseCloseDispatcher CloseDispatcher;
 	typedef AspectAdapter<CloseDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CloseAdapter;
@@ -292,8 +292,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( const TimerDispatcher::F& f,
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::createTimer( const TimerDispatcher::F& f,
 	unsigned int milliSecond)
 {
 
@@ -306,8 +306,8 @@ void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::createTimer( const
 
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::close( bool asyncron )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::close( bool asyncron )
 {
 	if ( asyncron )
 		::PostMessage( this->Widget::itsHandle, WM_CLOSE, 0, 0 ); // Return now
@@ -316,8 +316,8 @@ void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::close( bool asyncr
 }
 
 #ifndef WINCE
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::animateSlide( bool show, bool left, unsigned int time )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::animateSlide( bool show, bool left, unsigned int time )
 {
 	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( time ),
 		show ?
@@ -330,75 +330,75 @@ void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::animateSlide( bool
 }
 
 //HC: This function gives problems with some non-Microsoft visual styles
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::animateBlend( bool show, int msTime )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::animateBlend( bool show, int msTime )
 {
 	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( msTime ), show ? AW_BLEND : AW_HIDE | AW_BLEND );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::animateCollapse( bool show, int msTime )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::animateCollapse( bool show, int msTime )
 {
 	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( msTime ), show ? AW_CENTER : AW_HIDE | AW_CENTER );
 }
 #endif
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setMinimizeBox( bool value )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setMinimizeBox( bool value )
 {
 	Widget::addRemoveStyle( WS_MINIMIZEBOX, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setMaximizeBox( bool value )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setMaximizeBox( bool value )
 {
 	Widget::addRemoveStyle( WS_MAXIMIZEBOX, value );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setIconSmall( int resourceId )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setIconSmall( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setIconLarge( int resourceId )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setIconLarge( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setIconSmall( const SmartUtil::tstring & filePathName )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setIconSmall( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR | LR_LOADFROMFILE );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setIconLarge( const SmartUtil::tstring & filePathName )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setIconLarge( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setCursor( int resourceId )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setCursor( int resourceId )
 {
 	HCURSOR hCur = ::LoadCursor( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) );
 	::SetClassLongPtr( this->Widget::itsHandle, GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-void WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::setCursor( const SmartUtil::tstring & filePathName )
+template< class EventHandlerClass, class Policy >
+void WidgetWindowBase< EventHandlerClass, Policy >::setCursor( const SmartUtil::tstring & filePathName )
 {
 	HICON hCur = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
 	::SetClassLongPtr( this->Widget::itsHandle, GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
-template< class EventHandlerClass, class MessageMapPolicy >
-WidgetWindowBase< EventHandlerClass, MessageMapPolicy >::WidgetWindowBase( Widget * parent )
+template< class EventHandlerClass, class Policy >
+WidgetWindowBase< EventHandlerClass, Policy >::WidgetWindowBase( Widget * parent )
 	: Widget( parent, 0, true )
 {
 	this->Widget::itsCtrlId = 0;

@@ -21,16 +21,16 @@
 
 template< typename EventHandlerClass, bool horizontal >
 class WidgetPaned :
-	public SmartWin::MessageMap< EventHandlerClass, SmartWin::MessageMapPolicyNormalWidget >,
+	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,
 
 	public SmartWin::AspectSizable< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal >,
-		SmartWin::MessageMap< EventHandlerClass, SmartWin::MessageMapPolicyNormalWidget > >,
+		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >,
 	public SmartWin::AspectVisible< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal >,
-		SmartWin::MessageMap< EventHandlerClass, SmartWin::MessageMapPolicyNormalWidget > >,
+		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >,
 	public SmartWin::AspectRaw< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal >,
-		SmartWin::MessageMap< EventHandlerClass, SmartWin::MessageMapPolicyNormalWidget > >
+		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >
 {
-	typedef SmartWin::MessageMap< EventHandlerClass, SmartWin::MessageMapPolicyNormalWidget > MessageMapType;
+	typedef SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > MessageMapType;
 	friend class SmartWin::WidgetCreator< WidgetPaned >;
 public:
 	/// Class type

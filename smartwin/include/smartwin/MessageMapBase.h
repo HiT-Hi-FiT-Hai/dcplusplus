@@ -63,14 +63,7 @@ public:
 
 	// Returns true if fired, else false
 	bool tryFire( const Message & msg, LRESULT & retVal );
-	
-	// TODO Investigate if it's worth the template bloat to resolve these at compile time...
-	/** This method will be called if a message is handled by a callback */
-	virtual LRESULT returnHandled(LRESULT result, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = 0;
-	
-	/** This method will be called if a message is not handled by a callback */
-	virtual LRESULT returnUnhandled(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) = 0;
-	
+		
 	/** This will be called when it's time to delete the widget */
 	virtual void kill() = 0;
 private:

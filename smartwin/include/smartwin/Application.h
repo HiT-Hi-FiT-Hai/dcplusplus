@@ -65,6 +65,9 @@ namespace SmartWin
 // Forward declaration of friends
 class Widget;
 
+namespace Policies {
+class ModalDialog;
+}
 namespace private_
 {
 	std::list < Widget * > & getApplicationWidgets();
@@ -123,7 +126,7 @@ class Application
 #endif
 
 	friend class Widget;
-	friend class MessageMapPolicyModalDialogWidget;
+	friend class Policies::ModalDialog;
 	friend std::list < Widget * > & private_::getApplicationWidgets();
 public:
 	// Registers a Widget meaning that the Widget is added to the applications list

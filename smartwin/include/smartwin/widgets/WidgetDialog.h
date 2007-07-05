@@ -46,9 +46,10 @@ namespace SmartWin
   */
 template< class EventHandlerClass > 
 class WidgetDialog
-	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyDialogWidget >
+	: public WidgetWindowBase< EventHandlerClass, Policies::Dialog >
 {
 public:
+	typedef WidgetWindowBase< EventHandlerClass, Policies::Dialog > BaseType;
 	/// Class type
 	typedef WidgetDialog< EventHandlerClass > ThisType;
 
@@ -73,7 +74,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< class EventHandlerClass >
 WidgetDialog< EventHandlerClass >::WidgetDialog( Widget * parent )
-	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyDialogWidget >( parent )
+	: Widget(parent), BaseType( parent )
 {}
 
 template< class EventHandlerClass >
@@ -82,7 +83,7 @@ void WidgetDialog< EventHandlerClass >::createDialog( unsigned resourceId )
 	this->Widget::itsHandle = ::CreateDialogParam( Application::instance().getAppHandle(),
 		MAKEINTRESOURCE( resourceId ),
 		( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 ),
-		( (DLGPROC)WidgetWindowBase< EventHandlerClass, SmartWin::MessageMapPolicyModalDialogWidget >::wndProc ),
+		( (DLGPROC)&ThisType::wndProc ),
 		reinterpret_cast< LPARAM >( boost::polymorphic_cast< Widget * >( this ) ) );
 
 	if ( !this->Widget::itsHandle ) {

@@ -31,7 +31,6 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT,
 	ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
 };
 
-
 FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent),
 	connect(0),
@@ -54,6 +53,8 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
+		
+		hubs->onDblClicked(std::tr1::bind(&FavHubsFrame::handleDoubleClick, this));
 	}
 	
 	{
@@ -258,18 +259,19 @@ LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 	return FALSE;
 }
 
-LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+#endif
 
-	if(item->iItem == -1) {
-		PostMessage(WM_COMMAND, IDC_NEWFAV, 0);
+void FavHubsFrame::handleDoubleClick() {
+	if(hubs->hasSelection()) {
+		openSelected();
 	} else {
-		PostMessage(WM_COMMAND, IDC_CONNECT, 0);
+#ifdef PORT_ME
+		PostMessage(WM_COMMAND, IDC_NEW, 0);
+#endif
 	}
-
-	return 0;
 }
 
+#ifdef PORT_ME
 LRESULT FavoriteHubsFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
 	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 	switch(kd->wVKey) {
@@ -400,14 +402,12 @@ LRESULT FavoriteHubsFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	return 0;
 }
 
-LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+#endif
+
+bool FavHubsFrame::preClosing() {
 	FavoriteManager::getInstance()->removeListener(this);
 
-	WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::FAVORITESFRAME_ORDER,
-		SettingsManager::FAVORITESFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-
-	bHandled = FALSE;
-	return 0;
+	SettingsManager::getInstance()->set(SettingsManager::FAVHUBSFRAME_ORDER, WinUtil::toString(hubs->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::FAVHUBSFRAME_WIDTHS, WinUtil::toString(hubs->getColumnWidths()));
+	return true;
 }
-
-#endif

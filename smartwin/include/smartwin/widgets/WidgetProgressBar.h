@@ -30,6 +30,7 @@
 #define WidgetProgressBar_h
 
 #include "../Widget.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectEnabled.h"
@@ -64,7 +65,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetProgressBar :
-	public MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
 	public AspectBorder< WidgetProgressBar< EventHandlerClass > >,
@@ -296,7 +297,7 @@ void WidgetProgressBar< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 }
 
 // end namespace SmartWin

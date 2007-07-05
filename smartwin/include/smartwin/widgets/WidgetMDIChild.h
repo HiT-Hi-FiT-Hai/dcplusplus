@@ -58,9 +58,11 @@ namespace SmartWin
   */
 template< class EventHandlerClass >
 class WidgetMDIChild
-	: public WidgetWindowBase< EventHandlerClass, MessageMapPolicyMDIChildWidget >
+	: public WidgetWindowBase< EventHandlerClass, Policies::MDIChild >
 {
 public:
+	typedef WidgetWindowBase<EventHandlerClass, Policies::MDIChild> BaseType;
+	
 	/// Class type
 	typedef WidgetMDIChild< EventHandlerClass > ThisType;
 
@@ -148,7 +150,7 @@ WidgetMDIChild< EventHandlerClass >::~WidgetMDIChild()
 
 template< class EventHandlerClass >
 WidgetMDIChild< EventHandlerClass >::WidgetMDIChild( Widget * parent )
-	: Widget(parent), WidgetWindowBase< EventHandlerClass, MessageMapPolicyMDIChildWidget >( parent )
+	: Widget(parent), BaseType( parent )
 {}
 
 template< class EventHandlerClass >
@@ -161,7 +163,7 @@ void WidgetMDIChild< EventHandlerClass >::createMDIChild( Seed cs )
 	SMARTWIN_WNDCLASSEX wc;
 	wc.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
 	wc.style = 0;
-	wc.lpfnWndProc = EventHandlerClass::wndProc;
+	wc.lpfnWndProc = &ThisType::wndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = Application::instance().getAppHandle();

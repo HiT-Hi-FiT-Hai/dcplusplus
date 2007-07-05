@@ -31,7 +31,6 @@
 
 #include "WindowsHeaders.h"
 #include "Application.h"
-#include "MessageMapPolicyClasses.h"
 #include "Widget.h"
 #include "BasicTypes.h"
 #include "Message.h"
@@ -43,29 +42,11 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-/// The "fallback" WndMsgProc handler
-/** Is the "default" message handler class for all Container Widgets (every Widget
-  * which inherits from WidgetWindowBase). <br>
-  * If a message is not handled by anything else it goes into this class to check if
-  * we should handle this message or not. <br>
-  * If the message is NOT handled it is returned to windows OS for handling. <br>
-  * Shouldn't be of much interest directly to a user of SmartWin unless it is being
-  * overridden to handle messages not possible to reach with event handlers in
-  * SmartWin. Even this is possible through using the AspectRaw::onRaw instead of
-  * overriding functions in this class! <br>
-  * Related classes
-  * <ul>
-  * <li>MessageMapControl</li>
-  * </ul>
-  */
-template< class EventHandlerClass, class MessageMapPolicy >
-class MessageMap : public MessageMapPolicyBase<MessageMapPolicy>
+/// Legacy support class
+template< class EventHandlerClass >
+class MessageMap
 {
 public:
-	typedef MessageMapBase::CallbackType SignalType;
-	typedef std::pair< Message, SignalType > SignalTupleType;
-	typedef MessageMapBase::CallbackCollectionType SignalCollection;
-
 	// Contract needed by Aspects in order to know which instantiation of template
 	// aspect dispatcher class is needed
 	const static bool IsControl = false;
@@ -209,13 +190,10 @@ public:
 	/// Typedef of a static/global function taking a pointer to the original class and a Canvas & returning void
 	typedef void ( * voidFunctionTakingCanvas )( EventHandlerClass *, Canvas & );
 
-protected:
-	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	MessageMap() : SmartWin::Widget(0)
-	{}
-
-	virtual ~MessageMap()
-	{}
+private:
+	// We no longer instantiate this
+	MessageMap();
+	~MessageMap();
 };
 
 // end namespace SmartWin

@@ -31,6 +31,7 @@
 
 #include "SmartUtil.h"
 #include "../MessageMapControl.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../TrueWindow.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectFont.h"
@@ -81,7 +82,7 @@ struct AspectDateTimePickerDispatcher
   */
 template< class EventHandlerClass >
 class WidgetDateTimePicker :
-	public MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 	private virtual TrueWindow,
 
 	// Aspects
@@ -339,7 +340,7 @@ void WidgetDateTimePicker< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	//TODO: use CreationalInfo parameters
 	setFont( cs.font );
 	setFormat( cs.format );

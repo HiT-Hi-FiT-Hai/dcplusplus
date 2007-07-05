@@ -32,6 +32,7 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "SmartUtil.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../Widget.h"
 #include "../MessageMapControl.h"
 #include "../xCeption.h"
@@ -71,7 +72,7 @@ class WidgetCreator;
   */
 template< class EventHandlerClass >
 class WidgetCoolbar :
-	public MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > >,
+	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
 	public AspectEnabled< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >,
@@ -309,7 +310,7 @@ void WidgetCoolbar< EventHandlerClass >::create( const Seed & cs )
 		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
 		Widget::create( d_YouMakeMeDoNastyStuff );
 	}
-	MessageMapType::createMessageMap();
+	ThisType::createMessageMap();
 	//TODO: use CreationalInfo parameters
 }
 
