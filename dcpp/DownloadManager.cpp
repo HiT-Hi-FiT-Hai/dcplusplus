@@ -432,10 +432,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 
 		File* file = NULL;
 
-		typedef AutoArray<uint8_t> bufType;
-		auto_ptr<bufType> bufPtr;
-		size_t blockLeft;
-		int64_t blockPos;
 		try {
 			// Let's check if we can find this file in a any .SFV...
 			int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
@@ -443,22 +439,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 				file->setSize(d->getSize());
 			}
-
-			// read last blockPos bytes from file to prime TTH checking
-			// @todo, remove this check when it becomes required to perform
-			// transfers at all
-
-			// check blocksize here, allocate buffer accordingly.
-			if (d->getTreeValid()) {
-				blockLeft = d->getPos() % d->getTigerTree().getBlockSize();
-				blockPos = d->getPos() - blockLeft;
-
-				bufPtr = auto_ptr<bufType>(new AutoArray<uint8_t>(blockLeft));
-				file->setPos(blockPos);
-				file->read(&(*bufPtr)[0], blockLeft);
-			}
-
-			file->setPos(d->getPos());
 		} catch(const FileException& e) {
 			delete file;
 			failDownload(aSource, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
@@ -470,7 +450,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 		}
 
 		d->setFile(file);
-
 
 		if(SETTING(BUFFER_SIZE) > 0 ) {
 			d->setFile(new BufferedOutputStream<true>(d->getFile()));
@@ -485,17 +464,36 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			d->setFile(crc);
 		}
 
-		typedef MerkleCheckOutputStream<TigerTree, true> MerkleStream;
-		TigerTree tt;
-		if(d->getTreeValid())
-			tt = d->getTigerTree();
-		else
-			tt.getLeaves().push_back(d->getTTH());
-		MerkleStream* stream = new MerkleStream(tt, d->getFile(), blockPos);
-		stream->commitBytes(&(*bufPtr)[0], blockLeft);
-		d->setFile(stream);
-		d->setFlag(Download::FLAG_TTH_CHECK);
-
+		if(!d->isSet(Download::FLAG_USER_LIST)) {
+			typedef MerkleCheckOutputStream<TigerTree, true> MerkleStream;
+			TigerTree tt(d->getSize());
+			if(d->getTreeValid())
+				tt = d->getTigerTree();
+			else
+				tt.getLeaves().push_back(d->getTTH());
+			
+			int64_t blockLeft = d->getPos() % d->getTigerTree().getBlockSize();
+			int64_t blockPos = d->getPos() - blockLeft;
+			
+			MerkleStream* stream = new MerkleStream(tt, d->getFile(), blockPos);
+// @todo catch exceptions
+			if(blockLeft > 0) {
+				std::vector<uint8_t> buf(std::min(blockLeft, static_cast<int64_t>(64*1024)));
+			
+				file->setPos(blockPos);
+				
+				while(blockLeft > 0) {
+					size_t x = static_cast<size_t>(std::min(blockLeft, static_cast<int64_t>(buf.size())));
+					size_t n = file->read(&buf[0], x);
+					blockLeft -= n;
+					stream->commitBytes(&buf[0], n);
+				}
+			}			
+			d->setFile(stream);
+			d->setFlag(Download::FLAG_TTH_CHECK);
+		}
+		
+		file->setPos(d->getPos());
 	}
 
 	if(z) {

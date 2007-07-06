@@ -65,6 +65,7 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 	
 	onSized(&TransferView::handleSized);
 	onRaw(&TransferView::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
 	
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);

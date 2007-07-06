@@ -118,7 +118,7 @@ private:
 
 	void sized(const SmartWin::WidgetSizedEventResult& sz) { 
 		static_cast<T*>(this)->layout();
-		SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, sz.isMaximized);
+		SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, ::IsZoomed(this->handle()) > 0);
 	}
 	
 	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
