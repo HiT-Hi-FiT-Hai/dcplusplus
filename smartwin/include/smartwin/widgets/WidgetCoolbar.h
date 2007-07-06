@@ -82,6 +82,7 @@ class WidgetCoolbar :
 	private AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar<EventHandlerClass> > MessageMapType;
 	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapType > AspectSizable;
 	friend class WidgetCreator< WidgetCoolbar >;
@@ -301,16 +302,8 @@ WidgetCoolbar< EventHandlerClass >::WidgetCoolbar( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetCoolbar< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetCoolbar::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	//TODO: use CreationalInfo parameters
 }
 

@@ -31,6 +31,7 @@
 
 #include "SignalParams.h"
 #include "Widget.h"
+#include "Atom.h"
 
 #include <functional>
 #include <map>
@@ -39,8 +40,7 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-// Internally used class
-// TODO: Move into "private_" namespace ...?!?
+/// Base class for widgets that respond to messages
 class MessageMapBase : public virtual Widget
 {
 public:
@@ -53,10 +53,8 @@ public:
 	void setCallback(const Message& msg, const CallbackType& callback );
 
 	MessageMapBase() : Widget(0) { }
-	virtual ~MessageMapBase()
-	{}
+	virtual ~MessageMapBase() { }
 
-public:
 	CallbackCollectionType & getCallbacks() { 
 		return itsCallbacks;
 	}
@@ -66,6 +64,9 @@ public:
 		
 	/** This will be called when it's time to delete the widget */
 	virtual void kill() = 0;
+	
+	/// The ATOM with which the pointer to the MessageMapBase is registered on the HWND
+	static GlobalAtom propAtom;
 private:
 	// Contains the list of signals we're (this window) processing
 	CallbackCollectionType itsCallbacks;

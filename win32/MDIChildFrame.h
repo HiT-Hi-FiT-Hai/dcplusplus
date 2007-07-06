@@ -76,7 +76,6 @@ protected:
 	
 	template<typename A, typename B, typename C>
 	void addColor(SmartWin::AspectBackgroundColor<A, B, C>* widget) {
-		dcdebug("Adding background color event for %s", typeid(*widget).name());
 		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
 		
 	}
@@ -123,7 +122,6 @@ private:
 	}
 	
 	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
-		dcdebug("setting background\n");
 		canvas.setBkMode(true);
 		canvas.setBkColor(WinUtil::bgColor);
 		canvas.setTextColor(WinUtil::textColor);

@@ -103,6 +103,7 @@ class WidgetTabSheet :
 	public AspectThreads< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetTabSheet > MessageMapType;
 	typedef WidgetTabSheetDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
@@ -348,16 +349,8 @@ WidgetTabSheet< EventHandlerClass >::WidgetTabSheet( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetTabSheet< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetTabSheet::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 }
 

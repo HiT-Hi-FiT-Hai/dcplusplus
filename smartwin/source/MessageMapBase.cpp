@@ -30,6 +30,8 @@
 #include "../include/smartwin/MessageMapBase.h"
 namespace SmartWin {
 
+GlobalAtom MessageMapBase::propAtom(_T("SmartWin::MessageMapBase*"));
+
 void MessageMapBase::setCallback( const Message& msg, const CallbackType& callback )
 {
 	CallbackCollectionType::iterator i = itsCallbacks.find(msg);

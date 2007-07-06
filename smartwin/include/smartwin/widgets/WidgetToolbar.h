@@ -90,6 +90,7 @@ class WidgetToolbar :
 	private AspectSizable< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetToolbar > MessageMapType;
 	typedef ToolbarDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
@@ -688,16 +689,8 @@ WidgetToolbar< EventHandlerClass >::WidgetToolbar( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetToolbar< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetToolbar::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 
 	//// Telling the toolbar what the size of TBBUTTON struct is
 	::SendMessage( this->Widget::itsHandle, TB_BUTTONSTRUCTSIZE, ( WPARAM ) sizeof( TBBUTTON ), 0 );

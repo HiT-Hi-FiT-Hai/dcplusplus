@@ -74,6 +74,7 @@ class WidgetMDIParent :
 	public AspectFocus< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
 	public AspectRaw< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetMDIParent > MessageMapType;
 	friend class WidgetCreator< WidgetMDIParent >;
 public:

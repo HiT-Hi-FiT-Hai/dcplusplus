@@ -31,6 +31,7 @@
 
 #include "MessageMapBase.h"
 #include "Application.h"
+#include <boost/cast.hpp>
 
 namespace SmartWin
 {
@@ -45,15 +46,17 @@ public:
 		// Check if this is an init type message - a message that will set the window pointer correctly
 		Policy::initPolicy(hwnd, uMsg, wParam, lParam);
 
+		// We dispatch certain messages back to the child widget, so that their
+		// potential callbacks will die along with the child when the time has come
 		HWND handler = getHandler(hwnd, uMsg, wParam, lParam);
 		
 		Message msgObj( hwnd, uMsg, wParam, lParam, true );
 		
 		// Try to get the this pointer
 		/// @todo Maybe cast this to the actual widget type?
-		Policy* This = reinterpret_cast<Policy*>(::GetProp( handler, _T( "_mainWndProc" )));
+		MessageMapBase* map = reinterpret_cast<MessageMapBase*>(::GetProp( handler, MessageMapBase::propAtom ));
 		
-		if(!This) {
+		if(!map) {
 			return Policy::returnUnknown(hwnd, uMsg, wParam, lParam);
 		}
 #ifdef WINCE
@@ -62,7 +65,7 @@ public:
 		if(uMsg == WM_NCDESTROY) {
 #endif
 			
-			This->kill();
+			map->kill();
 			return Policy::returnDestroyed(hwnd, uMsg, wParam, lParam);
 		}
 
@@ -73,16 +76,18 @@ public:
 		}
 
 		HRESULT hres = 0;
-		if(This->tryFire(msgObj, hres)) {
+		if(map->tryFire(msgObj, hres)) {
 			return Policy::returnHandled(hres, hwnd, uMsg, wParam, lParam);
 		}
 		
 		if(handler != hwnd) {
-			This = reinterpret_cast<Policy*>(::GetProp( hwnd, _T( "_mainWndProc" )));
-			if(!This) {
+			map = reinterpret_cast<Policy*>(::GetProp( hwnd, MessageMapBase::propAtom ));
+			if(!map) {
 				return Policy::returnUnknown(hwnd, uMsg, wParam, lParam);
 			}
-		}
+		} 
+		
+		Policy* This = reinterpret_cast<Policy*>(map);
 		
 		return This->returnUnhandled(hwnd, uMsg, wParam, lParam);
 	}
@@ -183,8 +188,8 @@ public:
 		if ( uMsg == WM_INITDIALOG )
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
-			Dialog* This = dynamic_cast<Dialog*>(reinterpret_cast< Widget * >( lParam ));
-			::SetProp( hwnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
+			MessageMapBase* This = boost::polymorphic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( lParam ));
+			::SetProp( hwnd, MessageMapBase::propAtom, reinterpret_cast< HANDLE >( This ) );
 			private_::setHandle( This, hwnd );
 		}
 	}
@@ -281,8 +286,8 @@ public:
 		if ( uMsg == WM_NCCREATE ) {
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-			Normal* This = dynamic_cast<Normal*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
-			::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
+			MessageMapBase* This = boost::polymorphic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
+			::SetProp( hWnd, MessageMapBase::propAtom, reinterpret_cast< HANDLE >( This ) );
 			private_::setHandle( This, hWnd );
 		}
 	}
@@ -298,11 +303,21 @@ public:
 		}
 		return Normal::returnUnhandled(hWnd, msg, wPar, lPar);
 	}
+	
+	virtual void subclass( unsigned id ) {
+		Widget::subclass(id);
+		createMessageMap();
+	}
+
+	virtual void create( const SmartWin::Seed & cs) {
+		Normal::create(cs);
+		createMessageMap();
+	}
 
 	/// Call this function from your overridden create() if you add a new Widget to
 	/// make the Windows Message Procedure dispatching map right.
 	void createMessageMap() {
-		::SetProp( handle(), _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( static_cast<Subclassed*>(this) ) );
+		::SetProp( handle(), MessageMapBase::propAtom, reinterpret_cast< HANDLE >( static_cast<MessageMapBase*>(this) ) );
 		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
 	}
 	
@@ -340,7 +355,7 @@ public:
 				return ::DefMDIChildProc( hWnd, msg, wPar, lPar );
 			}
 			default:
-				return 0;
+				return hres;
 		}
 	}
 
@@ -363,9 +378,9 @@ public:
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
 			MDICREATESTRUCT * mcs = reinterpret_cast< MDICREATESTRUCT*>(cs->lpCreateParams);
 			
-			MDIChild* This = dynamic_cast<MDIChild*>(reinterpret_cast< Widget * >( mcs->lParam ));
+			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( mcs->lParam ));
 
-			::SetProp( hWnd, _T( "_mainWndProc" ), reinterpret_cast< HANDLE >( This ) );
+			::SetProp( hWnd, MessageMapBase::propAtom, reinterpret_cast< HANDLE >( This ) );
 			private_::setHandle( This, hWnd );
 		}
 	}

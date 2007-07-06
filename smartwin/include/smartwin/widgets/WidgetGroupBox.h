@@ -87,6 +87,7 @@ class WidgetGroupBox :
 	public AspectThreads< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetGroupBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetGroupBox< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetGroupBox > MessageMapType;
 	friend class WidgetCreator< WidgetGroupBox >;
 public:
@@ -211,16 +212,8 @@ WidgetGroupBox< EventHandlerClass >::WidgetGroupBox( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetGroupBox< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetGroupBox::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 }
 

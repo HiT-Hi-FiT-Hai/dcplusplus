@@ -76,6 +76,7 @@ class WidgetProgressBar :
 	public AspectThreads< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetProgressBar > MessageMapType;
 	friend class WidgetCreator< WidgetProgressBar >;
 public:
@@ -288,16 +289,8 @@ WidgetProgressBar< EventHandlerClass >::WidgetProgressBar( SmartWin::Widget * pa
 template< class EventHandlerClass >
 void WidgetProgressBar< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetProgressBar::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 }
 
 // end namespace SmartWin

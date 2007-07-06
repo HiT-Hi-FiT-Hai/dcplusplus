@@ -162,6 +162,12 @@ protected:
 	  */
 	void setDlgTemplate( DLGTEMPLATE inTemplate );
 
+	/// Called by default when WM_CLOSE is posted to the dialog
+	bool defaultClosing() {
+		endDialog(IDCANCEL);
+		return true;
+	}
+	
 private:
 	DLGTEMPLATE itsDefaultDlgTemplate; // For pure modal dialogs without resource files
 };
@@ -186,6 +192,8 @@ WidgetModalDialog( Widget * parent )
 	itsDefaultDlgTemplate.cy = 160; // 8 vertical units are the height of one character
 	itsDefaultDlgTemplate.x = 0;
 	itsDefaultDlgTemplate.y = 0;
+	
+	onClosing(std::tr1::bind(&ThisType::defaultClosing, this));
 }
 
 template< class EventHandlerClass >

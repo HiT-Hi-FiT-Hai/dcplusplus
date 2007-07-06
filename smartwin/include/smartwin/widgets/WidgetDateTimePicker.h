@@ -99,6 +99,7 @@ class WidgetDateTimePicker :
 	public AspectVisible< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >
 {
 public:
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	/// Class type
 	typedef WidgetDateTimePicker< EventHandlerClass > ThisType;
 
@@ -331,16 +332,8 @@ WidgetDateTimePicker< EventHandlerClass >::WidgetDateTimePicker( SmartWin::Widge
 template< class EventHandlerClass >
 void WidgetDateTimePicker< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetDateTimePicker::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	//TODO: use CreationalInfo parameters
 	setFont( cs.font );
 	setFormat( cs.format );

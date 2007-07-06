@@ -87,6 +87,7 @@ class WidgetRadioButton :
 	public AspectThreads< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetRadioButton > MessageMapType;
 	friend class WidgetCreator< WidgetRadioButton >;
 public:
@@ -229,17 +230,8 @@ void WidgetRadioButton< EventHandlerClass >::setChecked( bool value )
 template< class EventHandlerClass >
 void WidgetRadioButton< EventHandlerClass >::create( EventHandlerClass * parent, const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetRadioButton::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	this->Widget::itsParent = parent;
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 	// TODO: this was registered with the application when Widget::create was
 	// called. Will they collide?

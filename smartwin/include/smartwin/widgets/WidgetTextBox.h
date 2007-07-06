@@ -109,6 +109,7 @@ class WidgetTextBox :
 	public AspectBackgroundColor< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >,
 	public AspectRaw< EventHandlerClass, typename TextBoxType::TextBoxType, MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > MessageMapType;
 	friend class WidgetCreator< WidgetTextBox >;
 public:
@@ -513,16 +514,8 @@ WidgetTextBox< EventHandlerClass, TextBoxType >::WidgetTextBox( SmartWin::Widget
 template< class EventHandlerClass, class TextBoxType >
 void WidgetTextBox< EventHandlerClass, TextBoxType >::create( const typename WidgetTextBox::Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetTextBox::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 }
 

@@ -77,6 +77,7 @@ class WidgetSpinner :
 	public AspectSizable< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetSpinner > MessageMapType;
 	friend class WidgetCreator< WidgetSpinner >;
 public:
@@ -239,16 +240,8 @@ WidgetSpinner< EventHandlerClass >::WidgetSpinner( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetSpinner< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetSpinner::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setRange( cs.minValue, cs.maxValue );
 	//TODO: use CreationalInfo parameters
 }

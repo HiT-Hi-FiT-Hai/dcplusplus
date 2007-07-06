@@ -129,6 +129,7 @@ class WidgetTreeView :
 	public AspectRaw< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >
 {
 protected:
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetTreeView > MessageMapType;
 	typedef TreeViewDispatcher Dispatcher;
 	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
@@ -611,16 +612,9 @@ WidgetTreeView< EventHandlerClass >::WidgetTreeView( Widget * parent )
 template< class EventHandlerClass >
 void WidgetTreeView< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetTreeView::Seed d_YouMakeMeDoNastyStuff = cs;
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
 	setHasButtons( cs.hasButtonsFlag );
 	setHasLines( cs.hasLinesFlag );
 	setLinesAtRoot( cs.linesAtRootFlag );

@@ -88,6 +88,7 @@ class WidgetStatic :
 	public AspectText< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetStatic > MessageMapType;
 	friend class WidgetCreator< WidgetStatic >;
 public:
@@ -217,16 +218,8 @@ WidgetStatic< EventHandlerClass >::WidgetStatic( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetStatic< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetStatic::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 }
 

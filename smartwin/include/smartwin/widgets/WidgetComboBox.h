@@ -91,6 +91,7 @@ class WidgetComboBox :
 	public AspectThreads< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetComboBox > MessageMapType;
 	friend class WidgetCreator< WidgetComboBox >;
 public:
@@ -346,16 +347,8 @@ WidgetComboBox< EventHandlerClass >::WidgetComboBox( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetComboBox< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetComboBox::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 	if(cs.extended) {
 		::SendMessage(this->handle(), CB_SETEXTENDEDUI, TRUE, 0);

@@ -135,6 +135,7 @@ class WidgetStatusBar :
 	public AspectThreads< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,
 	public AspectVisible< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetStatusBar > MessageMapType;
 	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > > AspectSizable;
 	friend class WidgetCreator< WidgetStatusBar >;
@@ -311,16 +312,8 @@ WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::WidgetStatusBar( SmartWin
 template< class EventHandlerClass, class TypeOfStatusBar >
 void WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetStatusBar::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 }
 

@@ -379,6 +379,7 @@ class WidgetDataGrid :
 	public AspectVisible< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >
 {
 protected:
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetDataGrid > MessageMapType;
 
 	// Need to be friend to access private data...
@@ -1698,18 +1699,8 @@ int CALLBACK WidgetDataGrid< EventHandlerClass >::CompareFunc( LPARAM lParam1, L
 template< class EventHandlerClass >
 void WidgetDataGrid< EventHandlerClass >::create( const Seed & cs )
 {
-	//// Dirty hack!!
-	////this->Widget::itsCtrlId = (HMENU)++this->Widget::itsInstanceNo;
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetDataGrid::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	//TODO: use CreationalInfo parameters
 
 #ifdef WINCE

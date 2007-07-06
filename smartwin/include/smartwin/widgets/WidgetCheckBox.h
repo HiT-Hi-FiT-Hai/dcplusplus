@@ -83,6 +83,7 @@ class WidgetCheckBox :
 	public AspectThreads< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetCheckBox > MessageMapType;
 	friend class WidgetCreator< WidgetCheckBox >;
 public:
@@ -225,16 +226,8 @@ WidgetCheckBox< EventHandlerClass >::WidgetCheckBox( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetCheckBox< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetCheckBox::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 }
 

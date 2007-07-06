@@ -82,6 +82,7 @@ class WidgetSlider :
 	public AspectSizable< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetSlider > MessageMapType;
 	friend class WidgetCreator< WidgetSlider >;
 public:
@@ -352,16 +353,8 @@ WidgetSlider< EventHandlerClass >::WidgetSlider( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetSlider< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetSlider::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 }
 
 // end namespace SmartWin

@@ -87,6 +87,7 @@ class WidgetButton :
 	public AspectThreads< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
 	public AspectVisible< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >
 {
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetButton<EventHandlerClass> > MessageMapType;
 	friend class WidgetCreator< WidgetButton >;
 public:
@@ -205,16 +206,8 @@ WidgetButton< EventHandlerClass >::WidgetButton( SmartWin::Widget * parent )
 template< class EventHandlerClass >
 void WidgetButton< EventHandlerClass >::create( const Seed & cs )
 {
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetButton::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	PolicyType::create(cs);
 	setFont( cs.font );
 }
 
