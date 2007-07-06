@@ -40,6 +40,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_USERS;
 
 protected:
+	typedef StaticFrame<UsersFrame> BaseType;
 	friend class StaticFrame<UsersFrame>;
 	friend class MDIChildFrame<UsersFrame>;
 	friend class AspectUserInfo<UsersFrame>;

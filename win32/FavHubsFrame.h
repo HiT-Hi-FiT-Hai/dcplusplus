@@ -37,6 +37,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_HUBS;
 
 protected:
+	typedef StaticFrame<FavHubsFrame> BaseType;
 	friend class StaticFrame<FavHubsFrame>;
 	friend class MDIChildFrame<FavHubsFrame>;
 	

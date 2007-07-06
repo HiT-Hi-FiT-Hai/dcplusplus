@@ -36,6 +36,7 @@ protected:
 	}
 	
 private:
+	typedef StaticFrame<StatsFrame> BaseType;
 	friend class StaticFrame<StatsFrame>;
 	friend class MDIChildFrame<StatsFrame>;
 

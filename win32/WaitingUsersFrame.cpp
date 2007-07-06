@@ -32,7 +32,8 @@
 
 // Constructor
 WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) :
-	SmartWin::Widget(mdiParent)
+	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent)
 {
 	UploadManager::getInstance()->addListener(this);
 

@@ -101,6 +101,13 @@ public:
 	  * container window.
 	  */
 	virtual void createMDIChild( Seed cs = getDefaultSeed() );
+	
+	void activate() {
+		if(::IsIconic(this->handle())) {
+			this->getParent()->sendMessage(WM_MDIRESTORE, reinterpret_cast<WPARAM>(this->handle()));
+		}
+		this->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(this->handle()));
+	}
 
 protected:
 	// Protected since this Widget we HAVE to inherit from

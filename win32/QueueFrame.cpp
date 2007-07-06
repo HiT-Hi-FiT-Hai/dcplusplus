@@ -44,6 +44,7 @@ void QueueFrame::QueueItemInfo::remove() {
 
 QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent),
 	dirs(0),
 	files(0),
 	paned(0),

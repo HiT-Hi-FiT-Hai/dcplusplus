@@ -48,8 +48,9 @@ protected:
 	friend class MDIChildFrame<T>;
 	typedef FinishedFrameBase<T, in_UL> ThisType;
 	
-	FinishedFrameBase() :
-		SmartWin::Widget(0),
+	FinishedFrameBase(SmartWin::Widget* mdiParent) :
+		SmartWin::Widget(mdiParent),
+		BaseType(mdiParent),
 		totalBytes(0),
 		totalTime(0)
 	{

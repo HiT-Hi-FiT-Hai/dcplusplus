@@ -27,6 +27,7 @@ public:
 	FinishedDLFrame(SmartWin::Widget* mdiParent);
 	virtual ~FinishedDLFrame() { }
 
+	typedef FinishedFrameBase<FinishedDLFrame, false> BaseType;
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedDLFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
 #endif

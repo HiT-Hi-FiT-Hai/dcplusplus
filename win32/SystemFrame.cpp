@@ -25,6 +25,7 @@
 
 SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent), 
+	BaseType(mdiParent),
 	log(0) 
 {
 	{

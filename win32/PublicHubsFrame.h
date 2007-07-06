@@ -40,6 +40,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
 
 protected:
+	typedef StaticFrame<PublicHubsFrame> BaseType;
 	friend class StaticFrame<PublicHubsFrame>;
 	friend class MDIChildFrame<PublicHubsFrame>;
 

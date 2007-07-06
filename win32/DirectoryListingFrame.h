@@ -54,7 +54,7 @@ public:
 	static void closeAll();
 
 protected:
-	typedef MDIChildFrame<DirectoryListingFrame> Base;
+	typedef MDIChildFrame<DirectoryListingFrame> BaseType;
 	friend class MDIChildFrame<DirectoryListingFrame>;
 	friend class AspectUserCommand<DirectoryListingFrame>;
 	

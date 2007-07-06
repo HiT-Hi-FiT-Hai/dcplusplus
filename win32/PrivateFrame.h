@@ -45,14 +45,16 @@ public:
 	void sendMessage(const tstring& msg);
 
 protected:
-	typedef MDIChildFrame<PrivateFrame> Base;
+	typedef MDIChildFrame<PrivateFrame> BaseType;
 	friend class MDIChildFrame<PrivateFrame>;
 	
 	void layout();
 	HRESULT spoken(LPARAM lp, WPARAM wp);
 	bool preClosing();
 	
-	using Base::handleKeyDown;
+	using BaseType::handleChar;
+	using BaseType::handleKeyDown;
+	bool handleChar(WidgetTextBoxPtr w, int c);
 	bool handleKeyDown(WidgetTextBoxPtr w, int c);
 	bool enter();
 

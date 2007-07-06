@@ -47,6 +47,7 @@ void UsersFrame::UserInfo::remove() {
 
 UsersFrame::UsersFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent),
 	users(0),
 	startup(true)
 {

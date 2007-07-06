@@ -126,17 +126,29 @@ public:
 
 	
 	void cascade() {
-		::SendMessage(this->handle(), WM_MDICASCADE, 0, 0);
+		this->sendMessage(WM_MDICASCADE);
 	}
 	
 	void tile(bool horizontal) {
-		::SendMessage(this->handle(), WM_MDITILE, horizontal ? MDITILE_HORIZONTAL : MDITILE_VERTICAL, 0);
+		this->sendMessage(WM_MDITILE, horizontal ? MDITILE_HORIZONTAL : MDITILE_VERTICAL);
 	}
 	
 	void arrange() {
-		::SendMessage(this->handle(), WM_MDIICONARRANGE, 0, 0);
+		this->sendMessage(WM_MDIICONARRANGE);
 	}
 	
+	HWND getActive() {
+		return reinterpret_cast<HWND>(this->sendMessage(WM_MDIGETACTIVE));
+	}
+	
+	void setActive(SmartWin::Widget* widget) {
+		// TODO check that this is an instance of mdichild
+		this->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(widget->handle()));
+	}
+	
+	void next() {
+		this->sendMessage(WM_MDINEXT);
+	}
 protected:
 	/// Constructor Taking pointer to parent
 	explicit WidgetMDIParent( SmartWin::Widget * parent );

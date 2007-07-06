@@ -49,6 +49,7 @@ public:
 	static void closeAll();
 
 protected:
+	typedef MDIChildFrame<SearchFrame> BaseType;
 	friend class MDIChildFrame<SearchFrame>;
 	friend class AspectUserInfo<SearchFrame>;
 	friend class AspectUserCommand<SearchFrame>;

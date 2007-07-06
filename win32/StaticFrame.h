@@ -28,7 +28,7 @@
 template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
-	StaticFrame() : SmartWin::Widget(0) { 
+	StaticFrame(SmartWin::Widget* mdiClient) : SmartWin::Widget(mdiClient), MDIChildFrame<T>(mdiClient) { 
 		setText(Text::toT(ResourceManager::getInstance()->getString(T::TITLE_RESOURCE)));
 	}
 	
@@ -36,25 +36,17 @@ public:
 		frame = 0; 
 	}
 
-	static void openWindow(SmartWin::Widget* mdiParent) {
+	template<typename WidgetMDIParent>
+	static void openWindow(WidgetMDIParent* mdiClient) {
 		if(frame) {
-			
-#ifdef PORT_ME
-			// match the behavior of MainFrame::onSelected()
-			HWND hWnd = frame->m_hWnd;
-			if(frame->MDIGetActive() != hWnd) {
-				frame->MDIActivate(hWnd);
+			HWND active = mdiClient->getActive();
+			if(active != frame->handle()) {
+				frame->activate();
 			} else if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
-				::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
-				frame->MDINext(hWnd);
-				hWnd = frame->MDIGetActive();
-			}
-#endif
-			if(StupidWin::isIconic(frame)) {
-				frame->restore();
+				mdiClient->next();
 			}
 		} else {
-			frame = new T(mdiParent);
+			frame = new T(mdiClient);
 		}
 	}
 	
@@ -64,6 +56,6 @@ private:
 };
 
 template<class T>
-T* StaticFrame<T>::frame = NULL;
+T* StaticFrame<T>::frame = 0;
 
 #endif /*STATICFRAME_H_*/

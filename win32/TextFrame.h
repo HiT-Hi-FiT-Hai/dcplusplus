@@ -24,18 +24,21 @@
 class TextFrame : public MDIChildFrame<TextFrame>
 {
 public:
+	TextFrame(SmartWin::Widget* mdiParent, const string& fileName);
 	enum Status {
 		STATUS_STATUS,
 		STATUS_LAST
 	};
-	friend class MDIChildFrame<TextFrame>;
 	
-	TextFrame(SmartWin::Widget* mdiParent, const string& fileName);
-	virtual ~TextFrame() { }
-protected:
-	void layout();
 private:
+	typedef MDIChildFrame<TextFrame> BaseType;
+	friend class MDIChildFrame<TextFrame>;
+
 	WidgetTextBoxPtr pad;
+	
+	virtual ~TextFrame() { }
+	
+	void layout();
 };
 
 #endif 

@@ -30,9 +30,9 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::ACTIVE_SEARCH
 	ResourceManager::SOURCE_TYPE, ResourceManager::DESTINATION, ResourceManager::MIN_SIZE, ResourceManager::MAX_SIZE,
 };
 
-
 ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent),
 	add(0),
 	remove(0),
 	properties(0),

@@ -34,6 +34,7 @@ public:
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
 protected:
+	typedef StaticFrame<SystemFrame> BaseType;
 	friend class StaticFrame<SystemFrame>;
 	friend class MDIChildFrame<SystemFrame>;
 	

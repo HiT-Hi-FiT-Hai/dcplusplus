@@ -95,6 +95,7 @@ void PrivateFrame::closeAllOffline() {
 
 PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_) : 
 	SmartWin::Widget(mdiParent), 
+	BaseType(mdiParent),
 	chat(0),
 	message(0),
 	layoutTable(1, 2),
@@ -275,7 +276,19 @@ void PrivateFrame::updateTitle() {
 	setText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first));
 }
 
+bool PrivateFrame::handleChar(WidgetTextBoxPtr w, int c) {
+	if(c == VK_RETURN) {
+		if(!(isShiftPressed() || isControlPressed() || isAltPressed())) {
+			return true;
+		}
+	}
+	return BaseType::handleChar(w, c);
+}
+
 bool PrivateFrame::enter() {
+	if(isShiftPressed() || isControlPressed() || isAltPressed()) {
+		return false;
+	}
 	
 	tstring s = message->getText();
 	if(s.empty()) {
@@ -357,11 +370,11 @@ HRESULT PrivateFrame::spoken(LPARAM, WPARAM) {
 }
 
 bool PrivateFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {	
-	switch(c) {
-	case VK_RETURN: return enter();
-	default:  return Base::handleKeyDown(ptr, c);
+	if(c == VK_RETURN && enter()) {
+		return true;
 	}
 	
+	return BaseType::handleKeyDown(ptr, c);
 }
 
 void PrivateFrame::on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw() {

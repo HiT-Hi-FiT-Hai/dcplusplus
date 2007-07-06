@@ -39,6 +39,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SEARCH_SPY;
 
 protected:
+	typedef StaticFrame<SpyFrame> BaseType;
 	friend class StaticFrame<SpyFrame>;
 	friend class MDIChildFrame<SpyFrame>;
 

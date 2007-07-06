@@ -46,7 +46,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::DOWNLOAD_QUEUE;
 
 protected:
-	typedef StaticFrame<QueueFrame> Base;
+	typedef StaticFrame<QueueFrame> BaseType;
 	friend class StaticFrame<QueueFrame>;
 	friend class MDIChildFrame<QueueFrame>;
 	

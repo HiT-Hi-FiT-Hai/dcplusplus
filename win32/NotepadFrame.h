@@ -31,6 +31,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NOTEPAD;
 
 protected:
+	typedef StaticFrame<NotepadFrame> BaseType;
 	friend class StaticFrame<NotepadFrame>;
 	friend class MDIChildFrame<NotepadFrame>;
 	

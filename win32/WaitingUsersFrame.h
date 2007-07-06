@@ -36,6 +36,7 @@ public:
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::WAITING_USERS;
 protected:
+	typedef StaticFrame<WaitingUsersFrame> BaseType;
 	friend class StaticFrame<WaitingUsersFrame>;
 	friend class MDIChildFrame<WaitingUsersFrame>;
 

@@ -33,6 +33,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING
 
 SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent),
 	bIgnoreTTH(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES)),
 	total(0),
 	cur(0)

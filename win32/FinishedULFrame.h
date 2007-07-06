@@ -27,6 +27,7 @@ public:
 	FinishedULFrame(SmartWin::Widget* mdiParent);
 	virtual ~FinishedULFrame() { }
 
+	typedef FinishedFrameBase<FinishedULFrame, true> BaseType;
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
 #endif

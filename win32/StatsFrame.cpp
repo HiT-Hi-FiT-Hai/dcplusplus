@@ -25,7 +25,8 @@
 #include <dcpp/TimerManager.h>
 
 StatsFrame::StatsFrame(SmartWin::Widget* mdiParent) : 
-	SmartWin::Widget(mdiParent) 
+	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent)
 #ifdef PORT_ME 
 	width(0), 
 	height(0), 

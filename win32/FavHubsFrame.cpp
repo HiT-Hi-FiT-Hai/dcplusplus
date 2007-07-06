@@ -33,6 +33,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT,
 
 FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) : 
 	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent),
 	connect(0),
 	add(0),
 	remove(0),

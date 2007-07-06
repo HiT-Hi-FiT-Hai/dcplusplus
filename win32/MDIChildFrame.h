@@ -25,6 +25,7 @@
 #include "WidgetFactory.h"
 #include "AspectSpeaker.h"
 #include "AspectStatus.h"
+#include <dcpp/SettingsManager.h>
 
 template<typename T>
 class MDIChildFrame : 
@@ -35,11 +36,12 @@ class MDIChildFrame :
 public:
 	typedef MDIChildFrame<T> ThisType;
 	
-	typedef SmartWin::WidgetFactory< SmartWin::WidgetMDIChild, T> FactoryType;
-	MDIChildFrame() : SmartWin::Widget(0), reallyClose(false) {
-		typename FactoryType::Seed cs;
+	MDIChildFrame(SmartWin::Widget* mdiClient) : SmartWin::Widget(mdiClient), reallyClose(false) {
+		typename ThisType::Seed cs;
+		cs.style |= BOOLSETTING(MDI_MAXIMIZED) ? WS_MAXIMIZE : 0;
+		
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
-		FactoryType::createMDIChild(cs);
+		this->createMDIChild(cs);
 
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
@@ -74,7 +76,9 @@ protected:
 	
 	template<typename A, typename B, typename C>
 	void addColor(SmartWin::AspectBackgroundColor<A, B, C>* widget) {
+		dcdebug("Adding background color event for %s", typeid(*widget).name());
 		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+		
 	}
 	
 	// Catch-rest for the above
@@ -84,7 +88,7 @@ protected:
 	
 	template<typename W>
 	bool handleKeyDown(W* widget, int key) { 
-		if(key == VK_TAB) {
+		if(key == VK_TAB && !widget->isControlPressed() && !widget->isAltPressed()) {
 			for(WidgetList::size_type i = 0; i < controls.size(); ++i) {
 				if(controls[i] == widget) {
 					size_t pos = (widget->isShiftPressed() ? i + controls.size() - 1 : i + 1) % controls.size();
@@ -113,8 +117,13 @@ private:
 	WidgetList controls;
 	bool reallyClose;
 
-	void sized(const SmartWin::WidgetSizedEventResult& sz) { static_cast<T*>(this)->layout(); }
+	void sized(const SmartWin::WidgetSizedEventResult& sz) { 
+		static_cast<T*>(this)->layout();
+		SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, sz.isMaximized);
+	}
+	
 	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
+		dcdebug("setting background\n");
 		canvas.setBkMode(true);
 		canvas.setBkColor(WinUtil::bgColor);
 		canvas.setTextColor(WinUtil::textColor);

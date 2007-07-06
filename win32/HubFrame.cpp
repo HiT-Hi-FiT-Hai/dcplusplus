@@ -68,6 +68,7 @@ void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
 
 HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) : 
 	SmartWin::Widget(mdiParent), 
+	BaseType(mdiParent),
 	chat(0),
 	message(0),
 	filter(0),
@@ -974,7 +975,7 @@ tstring HubFrame::getStatusShared() const {
 	} else {
 		available = std::for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
 	}
-	return Text::toT(Util::toString(available));
+	return Text::toT(Util::formatBytes(available));
 }
 
 tstring HubFrame::getStatusUsers() const {

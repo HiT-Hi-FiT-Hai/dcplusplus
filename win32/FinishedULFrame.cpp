@@ -23,6 +23,7 @@
 #include "FinishedULFrame.h"
 
 FinishedULFrame::FinishedULFrame(SmartWin::Widget* mdiParent) :
-	SmartWin::Widget(mdiParent)
+	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent)
 {
 }

@@ -32,7 +32,7 @@ public:
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::ADL_SEARCH;
 
 protected:
-	//typedef MDIChildFrame<ADLSearchFrame> Base;
+	typedef StaticFrame<ADLSearchFrame> BaseType;
 	friend class StaticFrame<ADLSearchFrame>;
 	friend class MDIChildFrame<ADLSearchFrame>;
 	

@@ -338,6 +338,7 @@ void SearchFrame::SearchInfo::update() {
 
 SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	SmartWin::Widget(mdiParent),
+	BaseType(mdiParent),
 	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
 	bShowUI(true),
 	isHash(false),
