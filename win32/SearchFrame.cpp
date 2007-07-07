@@ -71,271 +71,6 @@ void SearchFrame::closeAll() {
 		StupidWin::postMessage(*i, WM_CLOSE);
 }
 
-void SearchFrame::layout() {
-	const int border = 2;
-
-	SmartWin::Rectangle r(getClientAreaSize()); 
-	
-	SmartWin::Rectangle rs = layoutStatus();
-	mapWidget(STATUS_SHOW_UI, showUI);
-
-	r.size.y -= rs.size.y + border;
-	RECT rect = r, initialRect = rect;
-	if(showUI->getChecked()) {
-		const int width = 220, spacing = 50, labelH = 16, comboH = 140, lMargin = 2, rMargin = 4;
-
-		rect.left += width;
-		results->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
-		// "Search for"
-		rect.right = width - rMargin;
-		rect.left = lMargin;
-		rect.top += 25;
-		rect.bottom = rect.top + comboH + 21;
-		searchBox->setBounds(SmartWin::Rectangle::FromRECT(rect));
-		rect.bottom -= comboH;
-
-		searchLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		// "Purge"
-		rect.right = rect.left + spacing;
-		rect.left = lMargin;
-		rect.top += 25;
-		rect.bottom = rect.top + 21;
-		purge->setBounds(SmartWin::Rectangle::FromRECT(rect));
-		
-		// "Search"
-		rect.right = width - rMargin;
-		rect.left = rect.right - 100;
-		doSearch->setBounds(SmartWin::Rectangle::FromRECT(rect));
-		
-		// "Size"
-		int w2 = width - rMargin - lMargin;
-		rect.top += spacing;
-		rect.bottom = rect.top + comboH;
-		rect.left = lMargin;
-		rect.right = w2/3;
-		mode->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
-		sizeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		rect.left = rect.right + lMargin;
-		rect.right += w2/3;
-		rect.bottom = rect.top + 21;
-		size->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
-		rect.left = rect.right + lMargin;
-		rect.right = width - rMargin;
-		rect.bottom = rect.top + comboH;
-		sizeMode->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
-		// "File type"
-		rect.left = lMargin;
-		rect.right = width - rMargin;
-		rect.top += spacing;
-		rect.bottom = rect.top + comboH + 21;
-		fileType->setBounds(SmartWin::Rectangle::FromRECT(rect));
-		rect.bottom -= comboH;
-
-		typeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		// "Search options"
-		rect.left = lMargin;
-		rect.right = width - rMargin;
-		rect.top += spacing;
-		rect.bottom += spacing;
-		slots->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
-		optionLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		// "Hubs"
-		rect.left = lMargin;
-		rect.right = width - rMargin;
-		rect.top += spacing;
-		rect.bottom = rect.top + comboH;
-		if(rect.bottom + labelH + 21 > initialRect.bottom) {
-			rect.bottom = initialRect.bottom - labelH - 21;
-			if(rect.bottom < rect.top + (labelH*3)/2)
-				rect.bottom = rect.top + (labelH*3)/2;
-		}
-
-		hubs->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
-		hubsLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-	} else {
-		results->setBounds(SmartWin::Rectangle::FromRECT(rect));
-
-		SmartWin::Rectangle rNULL(0, 0, 0, 0);
-		searchBox->setBounds(rNULL);
-		mode->setBounds(rNULL);
-		purge->setBounds(rNULL);
-		size->setBounds(rNULL);
-		sizeMode->setBounds(rNULL);
-		fileType->setBounds(rNULL);
-	}
-}
-
-bool SearchFrame::preClosing() {
-	SearchManager::getInstance()->removeListener(this);
-	ClientManager::getInstance()->removeListener(this);
-
-	frames.erase(this);
-
-	return true;
-}
-
-void SearchFrame::postClosing() {
-#ifdef PORT_ME
-	for(int i = 0; i < results->GetItemCount(); i++) {
-		delete results->getItemData(i);
-	}
-	results->DeleteAllItems();
-	for(int i = 0; i < hubs->GetItemCount(); i++) {
-		delete hubs->getItemData(i);
-	}
-	hubs->DeleteAllItems();
-
-	WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
-		SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-#endif
-}
-
-void SearchFrame::SearchInfo::view() {
-	try {
-		if(sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->add(Util::getTempPath() + sr->getFileName(),
-				sr->getSize(), sr->getTTH(), sr->getUser(), 
-				QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
-		}
-	} catch(const Exception&) {
-	}
-}
-
-void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
-	try {
-		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			string target = Text::fromT(tgt + si->columns[COLUMN_FILENAME]);
-			QueueManager::getInstance()->add(target, si->sr->getSize(),
-				si->sr->getTTH(), si->sr->getUser());
-
-			if(WinUtil::isShift())
-				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
-		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
-				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
-		}
-	} catch(const Exception&) {
-	}
-}
-
-void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
-	try {
-		QueueItem::Priority prio = WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT;
-		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->addDirectory(Text::fromT(si->columns[COLUMN_PATH]), 
-				si->sr->getUser(), Text::fromT(tgt), prio);
-		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), 
-				Text::fromT(tgt), prio);
-		}
-	} catch(const Exception&) {
-	}
-}
-
-void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
-	try {
-		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			string target = Text::fromT(tgt);
-			QueueManager::getInstance()->add(target, si->sr->getSize(),
-				si->sr->getTTH(), si->sr->getUser());
-
-			if(WinUtil::isShift())
-				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
-		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
-				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
-		}
-	} catch(const Exception&) {
-	}
-}
-
-void SearchFrame::SearchInfo::getList() {
-	try {
-		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW, Text::fromT(columns[COLUMN_PATH]));
-	} catch(const Exception&) {
-		// Ignore for now...
-	}
-}
-
-void SearchFrame::SearchInfo::browseList() {
-	try {
-		QueueManager::getInstance()->addPfs(sr->getUser(), Text::fromT(columns[COLUMN_PATH]));
-	} catch(const Exception&) {
-		// Ignore for now...
-	}
-}
-
-void SearchFrame::SearchInfo::CheckTTH::operator()(SearchInfo* si) {
-	if(firstTTH) {
-		tth = si->columns[COLUMN_TTH];
-		hasTTH = true;
-		firstTTH = false;
-	} else if(hasTTH) {
-		if(tth != si->columns[COLUMN_TTH]) {
-			hasTTH = false;
-		}
-	}
-
-	if(firstHubs && hubs.empty()) {
-		hubs = ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID());
-		firstHubs = false;
-	} else if(!hubs.empty()) {
-		Util::intersect(hubs, ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID()));
-	}
-}
-
-void SearchFrame::SearchInfo::update() {
-	if(sr->getType() == SearchResult::TYPE_FILE) {
-		if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-			columns[COLUMN_FILENAME] = Text::toT(sr->getFile());
-		} else {
-			columns[COLUMN_FILENAME] = Text::toT(Util::getFileName(sr->getFile()));
-			columns[COLUMN_PATH] = Text::toT(Util::getFilePath(sr->getFile()));
-		}
-
-		columns[COLUMN_TYPE] = Text::toT(Util::getFileExt(Text::fromT(columns[COLUMN_FILENAME])));
-		if(!columns[COLUMN_TYPE].empty() && columns[COLUMN_TYPE][0] == _T('.'))
-			columns[COLUMN_TYPE].erase(0, 1);
-		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
-		columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
-	} else {
-		columns[COLUMN_FILENAME] = Text::toT(sr->getFileName());
-		columns[COLUMN_PATH] = Text::toT(sr->getFile());
-		columns[COLUMN_TYPE] = TSTRING(DIRECTORY);
-		if(sr->getSize() > 0) {
-			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
-			columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
-		}
-	}
-	columns[COLUMN_NICK] = WinUtil::getNicks(sr->getUser());
-	columns[COLUMN_CONNECTION] = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
-	columns[COLUMN_HUB] = Text::toT(sr->getHubName());
-	columns[COLUMN_SLOTS] = Text::toT(sr->getSlotString());
-	columns[COLUMN_IP] = Text::toT(sr->getIP());
-	if (!columns[COLUMN_IP].empty()) {
-		// Only attempt to grab a country mapping if we actually have an IP address
-		tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
-		if(!tmpCountry.empty())
-			columns[COLUMN_IP] = tmpCountry + _T(" (") + columns[COLUMN_IP] + _T(")");
-	}
-	if(sr->getType() == SearchResult::TYPE_FILE) {
-        columns[COLUMN_TTH] = Text::toT(sr->getTTH().toBase32());
-	}
-	columns[COLUMN_CID] = Text::toT(sr->getUser()->getCID().toBase32());
-
-}
-
 SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	SmartWin::Widget(mdiParent),
 	BaseType(mdiParent),
@@ -373,7 +108,6 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		WidgetComboBox::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
 		cs.exStyle = WS_EX_CLIENTEDGE;
-		cs.extended = true;
 		searchBox = createComboBox(cs);
 		searchBox->setFont(WinUtil::font);
 		addWidget(searchBox);
@@ -559,11 +293,281 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 SearchFrame::~SearchFrame() {
 }
 
+void SearchFrame::layout() {
+	const int border = 2;
+
+	SmartWin::Rectangle r(getClientAreaSize()); 
+	
+	SmartWin::Rectangle rs = layoutStatus();
+	mapWidget(STATUS_SHOW_UI, showUI);
+
+	r.size.y -= rs.size.y + border;
+	RECT rect = r, initialRect = rect;
+	if(showUI->getChecked()) {
+		const int width = 220, spacing = 50, labelH = 16, comboH = 140, lMargin = 2, rMargin = 4;
+
+		rect.left += width;
+		results->setBounds(SmartWin::Rectangle::FromRECT(rect));
+
+		// "Search for"
+		rect.right = width - rMargin;
+		rect.left = lMargin;
+		rect.top += 25;
+		rect.bottom = rect.top + comboH + 21;
+		searchBox->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		rect.bottom -= comboH;
+
+		searchLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
+
+		// "Purge"
+		rect.right = rect.left + spacing;
+		rect.left = lMargin;
+		rect.top += 25;
+		rect.bottom = rect.top + 21;
+		purge->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		
+		// "Search"
+		rect.right = width - rMargin;
+		rect.left = rect.right - 100;
+		doSearch->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		
+		// "Size"
+		int w2 = width - rMargin - lMargin;
+		rect.top += spacing;
+		rect.bottom = rect.top + comboH;
+		rect.left = lMargin;
+		rect.right = w2/3;
+		mode->setBounds(SmartWin::Rectangle::FromRECT(rect));
+
+		sizeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
+
+		rect.left = rect.right + lMargin;
+		rect.right += w2/3;
+		rect.bottom = rect.top + 21;
+		size->setBounds(SmartWin::Rectangle::FromRECT(rect));
+
+		rect.left = rect.right + lMargin;
+		rect.right = width - rMargin;
+		rect.bottom = rect.top + comboH;
+		sizeMode->setBounds(SmartWin::Rectangle::FromRECT(rect));
+
+		// "File type"
+		rect.left = lMargin;
+		rect.right = width - rMargin;
+		rect.top += spacing;
+		rect.bottom = rect.top + comboH + 21;
+		fileType->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		rect.bottom -= comboH;
+
+		typeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
+
+		// "Search options"
+		rect.left = lMargin;
+		rect.right = width - rMargin;
+		rect.top += spacing;
+		rect.bottom += spacing;
+		slots->setBounds(SmartWin::Rectangle::FromRECT(rect));
+
+		optionLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
+
+		// "Hubs"
+		rect.left = lMargin;
+		rect.right = width - rMargin;
+		rect.top += spacing;
+		rect.bottom = rect.top + comboH;
+		if(rect.bottom + labelH + 21 > initialRect.bottom) {
+			rect.bottom = initialRect.bottom - labelH - 21;
+			if(rect.bottom < rect.top + (labelH*3)/2)
+				rect.bottom = rect.top + (labelH*3)/2;
+		}
+
+		hubs->setBounds(SmartWin::Rectangle::FromRECT(rect));
+
+		hubsLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
+
+	} else {
+		results->setBounds(SmartWin::Rectangle::FromRECT(rect));
+
+		SmartWin::Rectangle rNULL(0, 0, 0, 0);
+		searchBox->setBounds(rNULL);
+		mode->setBounds(rNULL);
+		purge->setBounds(rNULL);
+		size->setBounds(rNULL);
+		sizeMode->setBounds(rNULL);
+		fileType->setBounds(rNULL);
+		
+		sizeLabel->setBounds(rNULL);
+		typeLabel->setBounds(rNULL);
+		optionLabel->setBounds(rNULL);
+		hubsLabel->setBounds(rNULL);
+	}
+}
+
+bool SearchFrame::preClosing() {
+	SearchManager::getInstance()->removeListener(this);
+	ClientManager::getInstance()->removeListener(this);
+
+	frames.erase(this);
+
+	return true;
+}
+
+void SearchFrame::postClosing() {
+#ifdef PORT_ME
+	for(int i = 0; i < results->GetItemCount(); i++) {
+		delete results->getItemData(i);
+	}
+	results->DeleteAllItems();
+	for(int i = 0; i < hubs->GetItemCount(); i++) {
+		delete hubs->getItemData(i);
+	}
+	hubs->DeleteAllItems();
+
+	WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
+		SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+#endif
+}
+
+void SearchFrame::SearchInfo::view() {
+	try {
+		if(sr->getType() == SearchResult::TYPE_FILE) {
+			QueueManager::getInstance()->add(Util::getTempPath() + sr->getFileName(),
+				sr->getSize(), sr->getTTH(), sr->getUser(), 
+				QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT);
+		}
+	} catch(const Exception&) {
+	}
+}
+
+void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
+	try {
+		if(si->sr->getType() == SearchResult::TYPE_FILE) {
+			string target = Text::fromT(tgt + si->columns[COLUMN_FILENAME]);
+			QueueManager::getInstance()->add(target, si->sr->getSize(),
+				si->sr->getTTH(), si->sr->getUser());
+
+			if(WinUtil::isShift())
+				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
+		} else {
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
+				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+		}
+	} catch(const Exception&) {
+	}
+}
+
+void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
+	try {
+		QueueItem::Priority prio = WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT;
+		if(si->sr->getType() == SearchResult::TYPE_FILE) {
+			QueueManager::getInstance()->addDirectory(Text::fromT(si->columns[COLUMN_PATH]), 
+				si->sr->getUser(), Text::fromT(tgt), prio);
+		} else {
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), 
+				Text::fromT(tgt), prio);
+		}
+	} catch(const Exception&) {
+	}
+}
+
+void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
+	try {
+		if(si->sr->getType() == SearchResult::TYPE_FILE) {
+			string target = Text::fromT(tgt);
+			QueueManager::getInstance()->add(target, si->sr->getSize(),
+				si->sr->getTTH(), si->sr->getUser());
+
+			if(WinUtil::isShift())
+				QueueManager::getInstance()->setPriority(target, QueueItem::HIGHEST);
+		} else {
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt),
+				WinUtil::isShift() ? QueueItem::HIGHEST : QueueItem::DEFAULT);
+		}
+	} catch(const Exception&) {
+	}
+}
+
+void SearchFrame::SearchInfo::getList() {
+	try {
+		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW, Text::fromT(columns[COLUMN_PATH]));
+	} catch(const Exception&) {
+		// Ignore for now...
+	}
+}
+
+void SearchFrame::SearchInfo::browseList() {
+	try {
+		QueueManager::getInstance()->addPfs(sr->getUser(), Text::fromT(columns[COLUMN_PATH]));
+	} catch(const Exception&) {
+		// Ignore for now...
+	}
+}
+
+void SearchFrame::SearchInfo::CheckTTH::operator()(SearchInfo* si) {
+	if(firstTTH) {
+		tth = si->columns[COLUMN_TTH];
+		hasTTH = true;
+		firstTTH = false;
+	} else if(hasTTH) {
+		if(tth != si->columns[COLUMN_TTH]) {
+			hasTTH = false;
+		}
+	}
+
+	if(firstHubs && hubs.empty()) {
+		hubs = ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID());
+		firstHubs = false;
+	} else if(!hubs.empty()) {
+		Util::intersect(hubs, ClientManager::getInstance()->getHubs(si->sr->getUser()->getCID()));
+	}
+}
+
+void SearchFrame::SearchInfo::update() {
+	if(sr->getType() == SearchResult::TYPE_FILE) {
+		if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
+			columns[COLUMN_FILENAME] = Text::toT(sr->getFile());
+		} else {
+			columns[COLUMN_FILENAME] = Text::toT(Util::getFileName(sr->getFile()));
+			columns[COLUMN_PATH] = Text::toT(Util::getFilePath(sr->getFile()));
+		}
+
+		columns[COLUMN_TYPE] = Text::toT(Util::getFileExt(Text::fromT(columns[COLUMN_FILENAME])));
+		if(!columns[COLUMN_TYPE].empty() && columns[COLUMN_TYPE][0] == _T('.'))
+			columns[COLUMN_TYPE].erase(0, 1);
+		columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
+		columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
+	} else {
+		columns[COLUMN_FILENAME] = Text::toT(sr->getFileName());
+		columns[COLUMN_PATH] = Text::toT(sr->getFile());
+		columns[COLUMN_TYPE] = TSTRING(DIRECTORY);
+		if(sr->getSize() > 0) {
+			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
+			columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
+		}
+	}
+	columns[COLUMN_NICK] = WinUtil::getNicks(sr->getUser());
+	columns[COLUMN_CONNECTION] = Text::toT(ClientManager::getInstance()->getConnection(sr->getUser()->getCID()));
+	columns[COLUMN_HUB] = Text::toT(sr->getHubName());
+	columns[COLUMN_SLOTS] = Text::toT(sr->getSlotString());
+	columns[COLUMN_IP] = Text::toT(sr->getIP());
+	if (!columns[COLUMN_IP].empty()) {
+		// Only attempt to grab a country mapping if we actually have an IP address
+		tstring tmpCountry = Text::toT(Util::getIpCountry(sr->getIP()));
+		if(!tmpCountry.empty())
+			columns[COLUMN_IP] = tmpCountry + _T(" (") + columns[COLUMN_IP] + _T(")");
+	}
+	if(sr->getType() == SearchResult::TYPE_FILE) {
+        columns[COLUMN_TTH] = Text::toT(sr->getTTH().toBase32());
+	}
+	columns[COLUMN_CID] = Text::toT(sr->getUser()->getCID().toBase32());
+
+}
+
 HRESULT SearchFrame::spoken(LPARAM lParam, WPARAM wParam) {
- 	switch(wParam) {
+ 	switch(lParam) {
 	case SPEAK_ADD_RESULT:
 		{
-			SearchInfo* si = (SearchInfo*)lParam;
+			SearchInfo* si = reinterpret_cast<SearchInfo*>(wParam);
 			SearchResult* sr = si->sr;
 			// Check previous search results for dupes
 			for(int i = 0, j = results->getRowCount(); i < j; ++i) {
@@ -587,13 +591,13 @@ HRESULT SearchFrame::spoken(LPARAM lParam, WPARAM wParam) {
 		setStatus(STATUS_FILTERED, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)));
 		break;
 	case SPEAK_HUB_ADDED:
-		onHubAdded((HubInfo*)(lParam));
+		onHubAdded(reinterpret_cast<HubInfo*>(wParam));
 		break;
 	case SPEAK_HUB_CHANGED:
-		onHubChanged((HubInfo*)(lParam));
+		onHubChanged(reinterpret_cast<HubInfo*>(wParam));
 		break;
 	case SPEAK_HUB_REMOVED:
- 		onHubRemoved((HubInfo*)(lParam));
+ 		onHubRemoved(reinterpret_cast<HubInfo*>(wParam));
 		break;
  	}
 	return 0;
@@ -1131,27 +1135,6 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 		bHandled = FALSE;
 	}
 	return 0;
-}
-
-void SearchFrame::onTab(bool shift) {
-	HWND wnds[] = {
-		ctrlSearch.handle(), ctrlPurge.handle(), ctrlMode.handle(), ctrlSize.handle(), ctrlSizeMode.handle(),
-		ctrlFiletype.handle(), ctrlSlots.handle(), ctrlDoSearch.handle(), ctrlSearch.handle(),
-		results->handle()
-	};
-
-	HWND focus = GetFocus();
-	if(focus == ctrlSearchBox.handle())
-		focus = ctrlSearch.handle();
-
-	static const int size = sizeof(wnds) / sizeof(wnds[0]);
-	int i;
-	for(i = 0; i < size; i++) {
-		if(wnds[i] == focus)
-			break;
-	}
-
-	::SetFocus(wnds[(i + (shift ? -1 : 1)) % size]);
 }
 
 LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

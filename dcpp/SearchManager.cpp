@@ -68,6 +68,28 @@ AdcCommand SearchResult::toRES(char type) const {
 	return cmd;
 }
 
+SearchManager::SearchManager() : 
+	socket(NULL), 
+	port(0), 
+	stop(false), 
+	lastSearch(GET_TICK()) 
+{ 
+
+}
+
+SearchManager::~SearchManager() throw() {
+	if(socket) {
+		stop = true;
+		socket->disconnect();
+#ifdef _WIN32
+		join();
+#endif
+		delete socket;
+	}
+}
+
+
+
 void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */, const string& aToken /* = Util::emptyString */) {
 	if(okToSearch()) {
 		ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName, aToken);

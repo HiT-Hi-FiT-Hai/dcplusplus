@@ -156,7 +156,7 @@ public:
 	void onRES(const AdcCommand& cmd, const User::Ptr& from, const string& removeIp = Util::emptyString);
 
 	int32_t timeToSearch() {
-		return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);
+		return 5 - (static_cast<int32_t>(GET_TICK() - lastSearch) / 1000);
 	}
 
 	bool okToSearch() {
@@ -171,21 +171,11 @@ private:
 	uint64_t lastSearch;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) { }
+	SearchManager();
 
 	virtual int run();
 
-	virtual ~SearchManager() throw() {
-		if(socket) {
-			stop = true;
-			socket->disconnect();
-#ifdef _WIN32
-			join();
-#endif
-			delete socket;
-		}
-	}
-
+	virtual ~SearchManager() throw();
 	void onData(const uint8_t* buf, size_t aLen, const string& address);
 };
 
