@@ -46,7 +46,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = createDataGrid(cs);
-		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+		hubs->setListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		hubs->setFont(WinUtil::font);
 		addWidget(hubs);
 		
@@ -215,11 +215,6 @@ void FavHubsFrame::on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw() {
 #include "../client/version.h"
 
 LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	ctrlHubs.SetExtendedListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
-	ctrlHubs.SetBkColor(WinUtil::bgColor);
-	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
-	ctrlHubs.SetTextColor(WinUtil::textColor);
-
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CTSTRING(CONNECT));
 	hubsMenu.AppendMenu(MF_STRING, IDC_NEWFAV, CTSTRING(NEW));

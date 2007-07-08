@@ -139,6 +139,10 @@ public:
 		return pt;
 	}
 	
+	void setItemState(HTREEITEM item, int state, int mask) {
+		TreeView_SetItemState(this->handle(), item, state, mask);
+	}
+	
 	void setColor(COLORREF text, COLORREF background) {
 		TreeView_SetTextColor(this->handle(), text);
 		TreeView_SetBkColor(this->handle(), background);

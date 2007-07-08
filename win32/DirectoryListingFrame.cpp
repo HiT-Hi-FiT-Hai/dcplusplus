@@ -74,9 +74,7 @@ void DirectoryListingFrame::openWindow(SmartWin::Widget* mdiParent, const tstrin
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
 		if(!BOOLSETTING(POPUNDER_FILELIST)) {
-#ifdef PORT_ME
-			i->second->MDIActivate(i->second->m_hWnd);
-#endif
+			i->second->activate();
 		}
 	} else {
 		DirectoryListingFrame* frame = new DirectoryListingFrame(mdiParent, aUser, aSpeed);
@@ -692,13 +690,12 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
 		HTREEITEM ht = dirs->insert(aParent, new ItemInfo(*i));
-#ifdef PORT_ME
 		if((*i)->getAdls())
-			ctrlTree.SetItemState(ht, TVIS_BOLD, TVIS_BOLD);
-#endif
+			dirs->setItemState(ht, TVIS_BOLD, TVIS_BOLD);
 		updateTree(*i, ht);
 	}
 }
+
 void DirectoryListingFrame::updateStatus() {
 	if(!searching && !updating) {
 		int cnt = files->getSelectedCount();

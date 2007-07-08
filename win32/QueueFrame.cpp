@@ -22,6 +22,8 @@
 #include "QueueFrame.h"
 #include "WinUtil.h"
 #include "resource.h"
+#include "HoldRedraw.h"
+#include "PrivateFrame.h"
 
 #include <dcpp/QueueManager.h>
 #include <dcpp/ResourceManager.h>
@@ -65,7 +67,7 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 		addWidget(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
-		dirs->onSelectionChanged(&QueueFrame::handleSelectionChanged);
+		dirs->onSelectionChanged(std::tr1::bind(&QueueFrame::updateFiles, this));
 		paned->setFirst(dirs);
 	}
 	
@@ -219,10 +221,9 @@ void QueueFrame::layout() {
 }
 
 void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
-#ifdef PORT_ME
-	ctrlQueue.SetRedraw(FALSE);
-	ctrlDirs.SetRedraw(FALSE);
-#endif
+	HoldRedraw hold(files);
+	HoldRedraw hold2(dirs);
+
 	for(QueueItem::StringMap::const_iterator j = li.begin(); j != li.end(); ++j) {
 		QueueItem* aQI = j->second;
 		QueueItemInfo* ii = new QueueItemInfo(*aQI);
@@ -230,11 +231,6 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 	}
 
 	files->resort();
-#ifdef PORT_ME
-	ctrlQueue.SetRedraw(TRUE);
-	ctrlDirs.SetRedraw(TRUE);
-	ctrlDirs.Invalidate();
-#endif
 }
 
 QueueFrame::QueueItemInfo* QueueFrame::getItemInfo(const string& target) {
@@ -342,11 +338,9 @@ void QueueFrame::handleShowTreeClicked(WidgetCheckBoxPtr) {
 	layout();
 }
 
-void QueueFrame::handleSelectionChanged(WidgetTreeViewPtr) {
-	updateQueue();
-}
+void QueueFrame::updateFiles() {
+	HoldRedraw hold(files);
 
-void QueueFrame::updateQueue() {
 	files->removeAllRows();
 	pair<DirectoryIter, DirectoryIter> i;
 	if(showTree->getChecked()) {
@@ -356,10 +350,6 @@ void QueueFrame::updateQueue() {
 		i.second = directories.end();
 	}
 
-#ifdef PORT_ME
-	ctrlQueue.SetRedraw(FALSE);
-#endif
-	
 	for(DirectoryIter j = i.first; j != i.second; ++j) {
 		QueueItemInfo* ii = j->second;
 		ii->update();
@@ -368,10 +358,6 @@ void QueueFrame::updateQueue() {
 	
 	files->resort();
 
-#ifdef PORT_ME
-	ctrlQueue.SetRedraw(TRUE);
-#endif
-	
 	curDir = getSelectedDir();
 	updateStatus();
 }
@@ -641,10 +627,8 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 		}
 	}
 
-#ifdef PORT_ME
 	if(firstParent != NULL)
-		ctrlDirs.Expand(firstParent);
-#endif
+		dirs->expand(firstParent);
 	return parent;
 }
 
@@ -705,17 +689,13 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 }
 
 void QueueFrame::removeSelected() {
-#ifdef PORT_ME
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
-		ctrlQueue.forEachSelected(&QueueItemInfo::remove);
-#endif
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
+		files->forEachSelected(&QueueItemInfo::remove);
 }
 
 void QueueFrame::removeSelectedDir() {
-#ifdef PORT_ME
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
-		removeDir(ctrlDirs.GetSelectedItem());
-#endif
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
+		removeDir(dirs->getSelected());
 }
 
 void QueueFrame::moveSelected() {
@@ -740,25 +720,22 @@ void QueueFrame::moveSelected() {
 		ext2 += (TCHAR)0;
 
 		tstring path = Text::toT(ii->getPath());
-#ifdef PORT_ME
+		
 		if(WinUtil::browseFile(target, handle(), true, path, ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
 			QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(target));
 		}
-#endif
 	} else if(n > 1) {
 		tstring name;
 		if(showTree->getChecked()) {
 			name = Text::toT(curDir);
 		}
-#ifdef PORT_ME
 		if(WinUtil::browseDirectory(name, handle())) {
 			int i = -1;
-			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				QueueItemInfo* ii = ctrlQueue.getItemData(i);
+			while( (i = files->getNextItem(i, LVNI_SELECTED)) != -1) {
+				QueueItemInfo* ii = files->getItemData(i);
 				QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(name) + Util::getFileName(ii->getTarget()));
 			}
 		}
-#endif
 	}
 }
 
@@ -769,11 +746,9 @@ void QueueFrame::moveSelectedDir() {
 	dcassert(!curDir.empty());
 	tstring name = Text::toT(curDir);
 
-#ifdef PORT_ME
-	if(WinUtil::browseDirectory(name, m_hWnd)) {
-		moveDir(ctrlDirs.GetSelectedItem(), Text::fromT(name));
+	if(WinUtil::browseDirectory(name, handle())) {
+		moveDir(dirs->getSelected(), Text::fromT(name));
 	}
-#endif
 }
 
 void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
@@ -795,43 +770,31 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 
 void QueueFrame::handleSearchAlternates(WidgetMenuPtr menu, unsigned id) {
 	if(files->getSelectedCount() == 1) {
-#ifdef PORT_ME
 		WinUtil::searchHash(files->getSelectedItem()->getTTH());
-#endif
 	}
 }
 
 void QueueFrame::handleBitziLookup(WidgetMenuPtr menu, unsigned id) {
 	if(files->getSelectedCount() == 1) {
-#ifdef PORT_ME
 		WinUtil::bitziLink(files->getSelectedItem()->getTTH());
-#endif
 	}
 }
 
 void QueueFrame::handleCopyMagnet(WidgetMenuPtr menu, unsigned id) {
 	if(files->getSelectedCount() == 1) {
 		QueueItemInfo* ii = files->getSelectedItem();
-#ifdef PORT_ME
 		WinUtil::copyMagnet(ii->getTTH(), Text::toT(Util::getFileName(ii->getTarget())));
-#endif
 	}
 }
 
 void QueueFrame::handleBrowseList(WidgetMenuPtr menu, unsigned id) {
 
 	if(files->getSelectedCount() == 1) {
-#ifdef PORT_ME
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-
-		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		QueueItem::Source* s = (QueueItem::Source*)menu->getData(id);
 		try {
 			QueueManager::getInstance()->addList(s->getUser(), QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception&) {
 		}
-#endif
 	}
 }
 
@@ -840,25 +803,19 @@ void QueueFrame::handleReadd(WidgetMenuPtr menu, unsigned id) {
 	if(files->getSelectedCount() == 1) {
 		QueueItemInfo* ii = files->getSelectedItem();
 
-#ifdef PORT_ME
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-
-		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		if(wID == IDC_READD) {
+		if(id == IDC_READD) {
 			// re-add all sources
 			for(QueueItem::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ++s) {
 				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
 			}
 		} else {
-			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+			QueueItem::Source* s = (QueueItem::Source*)menu->getData(id);
 			try {
 				QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
 			} catch(const Exception& e) {
-				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
+				setStatus(STATUS_STATUS, Text::toT(e.getError()));
 			}
 		}
-#endif
 	}
 }
 
@@ -880,39 +837,21 @@ void QueueFrame::handleRemoveSource(WidgetMenuPtr menu, unsigned id) {
 				QueueManager::getInstance()->removeSource(ii->getTarget(), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {
-#ifdef PORT_ME
-			CMenuItemInfo mi;
-			mi.fMask = MIIM_DATA;
-
-			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
-			QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+			QueueItem::Source* s = (QueueItem::Source*)menu->getData(id);
 			QueueManager::getInstance()->removeSource(ii->getTarget(), s->getUser(), QueueItem::Source::FLAG_REMOVED);
-#endif
 		}
 	}
 }
 
 void QueueFrame::handleRemoveSources(WidgetMenuPtr menu, unsigned id) {
-#ifdef PORT_ME
-	CMenuItemInfo mi;
-	mi.fMask = MIIM_DATA;
-	removeAllMenu.GetMenuItemInfo(wID, FALSE, &mi);
-	QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+	QueueItem::Source* s = (QueueItem::Source*)menu->getData(id);
 	QueueManager::getInstance()->removeSource(s->getUser(), QueueItem::Source::FLAG_REMOVED);
-	return 0;
-#endif
 }
 
 void QueueFrame::handlePM(WidgetMenuPtr menu, unsigned id) {
 	if(files->getSelectedCount() == 1) {
-#ifdef PORT_ME
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-
-		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
-		PrivateFrame::openWindow(s->getUser());
-#endif
+		QueueItem::Source* s = (QueueItem::Source*)menu->getData(id);
+		PrivateFrame::openWindow(getParent(), s->getUser());
 	}
 }
 
@@ -1093,7 +1032,7 @@ void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) 
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(GET_FILE_LIST));
 	if(addUsers(menu, IDC_BROWSELIST, &QueueFrame::handleBrowseList, qii, false) == 0) {
-		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
 }
 
@@ -1101,7 +1040,7 @@ void QueueFrame::addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(SEND_PRIVATE_MESSAGE));
 	if(addUsers(menu, IDC_PM, &QueueFrame::handlePM, qii, false) == 0) {
-		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
 }
 void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
@@ -1111,7 +1050,7 @@ void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	menu->appendItem(IDC_READD, TSTRING(ALL), &QueueFrame::handleReadd);
 	menu->appendSeparatorItem();
 	if(addUsers(menu, IDC_READD + 1, &QueueFrame::handleReadd, qii, true) == 0) {
-		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
 }
 
@@ -1121,7 +1060,7 @@ void QueueFrame::addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) 
 	menu->appendItem(IDC_REMOVE_SOURCE, TSTRING(ALL), &QueueFrame::handleRemoveSource);
 	menu->appendSeparatorItem();
 	if(addUsers(menu, IDC_REMOVE_SOURCE + 1, &QueueFrame::handleRemoveSource, qii, true) == 0) {
-		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
 }
 
@@ -1129,7 +1068,7 @@ void QueueFrame::addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qi
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(REMOVE_FROM_ALL));
 	if(addUsers(menu, IDC_REMOVE_SOURCES, &QueueFrame::handleRemoveSources, qii, true) == 0) {
-		::EnableMenuItem(reinterpret_cast<HMENU>(menu->handle()), pos, MF_BYPOSITION | MF_GRAYED);
+		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
 }
 

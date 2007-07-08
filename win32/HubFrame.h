@@ -108,7 +108,6 @@ private:
 		bool bot;
 	};
 
-	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
 		UserInfo(const UserTask& u) : UserInfoBase(u.user) {
@@ -241,6 +240,7 @@ private:
 	void handleCopyNick();
 	void handleDoubleClickUsers();
 
+	void updateFilter();
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 

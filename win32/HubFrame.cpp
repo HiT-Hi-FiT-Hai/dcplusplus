@@ -53,12 +53,7 @@ void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
 	for(FrameIter i = frames.begin(); i!= frames.end(); ++i) {
 		HubFrame* frame = *i;
 		if(frame->url == url) {
-			if(StupidWin::isIconic(frame))
-				frame->restore();
-		
-	#ifdef PORT_ME
-			i->second->MDIActivate(i->second->m_hWnd);
-	#endif
+			frame->activate();
 			return;
 		}
 	}
@@ -137,6 +132,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		}
 		filterType->addValue(CTSTRING(ANY));
 		filterType->setSelectedIndex(COLUMN_LAST);
+		filterType->onSelectionChanged(std::tr1::bind(&HubFrame::updateUserList, this, (UserInfo*)0));
 	}
 	
 	{
@@ -749,6 +745,9 @@ bool HubFrame::handleChar(WidgetTextBoxPtr ptr, int c) {
 		}
 	}
 	}
+	if(ptr == filter) {
+		updateFilter();
+	}
 	
 	return BaseType::handleChar(ptr, c);
 }
@@ -1248,25 +1247,8 @@ void HubFrame::handleShowUsersClicked(WidgetCheckBoxPtr) {
 
 #ifdef PORT_ME
 
-#include "LineDlg.h"
-#include "SearchFrm.h"
-#include "PrivateFrame.h"
-
-#include "../client/QueueManager.h"
-#include "../client/ShareManager.h"
-#include "../client/Util.h"
-#include "../client/StringTokenizer.h"
-#include "../client/FavoriteManager.h"
-#include "../client/LogManager.h"
-#include "../client/AdcCommand.h"
-#include "../client/ConnectionManager.h"
-#include "../client/SearchManager.h"
-
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-
-	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
-
 	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 
 	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
@@ -1279,8 +1261,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
 
 	bHandled = FALSE;
-
-
 	return 1;
 }
 
@@ -1291,13 +1271,6 @@ LRESULT HubFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 	return 0;
 }
 
-struct CompareItems {
-	CompareItems(int aCol) : col(aCol) { }
-	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) const {
-		return HubFrame::UserInfo::compareItems(&a, &b, col) < 0;
-	}
-	const int col;
-};
 #endif
 
 void HubFrame::handleCopyNick() {
@@ -1588,37 +1561,10 @@ void HubFrame::resortUsers() {
 		(*i)->resortForFavsFirst(true);
 }
 
-#ifdef PORT_ME
-LRESULT HubFrame::onFilterChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(uMsg == WM_CHAR && wParam == VK_TAB) {
-		handleTab(WinUtil::isShift());
-		return 0;
+void HubFrame::updateFilter() {
+	tstring newFilter = filter->getText();
+	if(newFilter != filterString) {
+		filterString = newFilter;
+		updateUserList();
 	}
-
-	TCHAR *buf = new TCHAR[ctrlFilter.GetWindowTextLength()+1];
-	ctrlFilter.GetWindowText(buf, ctrlFilter.GetWindowTextLength()+1);
-	filter = buf;
-	delete[] buf;
-
-	updateUserList();
-
-	bHandled = FALSE;
-
-	return 0;
 }
-
-LRESULT HubFrame::onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
-	TCHAR *buf = new TCHAR[ctrlFilter.GetWindowTextLength()+1];
-	ctrlFilter.GetWindowText(buf, ctrlFilter.GetWindowTextLength()+1);
-	filter = buf;
-	delete[] buf;
-
-	updateUserList();
-
-	bHandled = FALSE;
-
-	return 0;
-}
-
-
-#endif

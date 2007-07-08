@@ -376,7 +376,7 @@ public:
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const IdDispatcher::F& f );
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const SimpleDispatcher::F& f );
 
-	ULONG_PTR getData(unsigned int id);
+	ULONG_PTR getData(unsigned int id, bool byPosition = false);
 
 	/// \ingroup EventHandlersWidgetMenu
 	/// Appends a checked menu item
@@ -557,10 +557,10 @@ void WidgetMenu< EventHandlerClass >::appendItem
 }
 
 template< class EventHandlerClass >
-ULONG_PTR WidgetMenu< EventHandlerClass >::getData(unsigned int id) {
+ULONG_PTR WidgetMenu< EventHandlerClass >::getData(unsigned int id, bool byPosition) {
 	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
 	mii.fMask = MIIM_DATA;
-	::GetMenuItemInfo(this->handle(), id, FALSE, &mii);
+	::GetMenuItemInfo(this->handle(), id, byPosition, &mii);
 	return mii.dwItemData;
 }
 

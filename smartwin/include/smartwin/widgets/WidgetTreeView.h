@@ -153,10 +153,6 @@ public:
 	public:
 		typedef typename WidgetTreeView::ThisType WidgetType;
 
-		bool hasButtonsFlag;
-		bool hasLinesFlag;
-		bool linesAtRootFlag;
-		bool trackSelectFlag;
 		FontPtr font;
 
 		/// Fills with default parameters
@@ -379,10 +375,6 @@ const typename WidgetTreeView< EventHandlerClass >::Seed & WidgetTreeView< Event
 	{
 		Application::instance().setSystemClassName( d_DefaultValues, WC_TREEVIEW );
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
-		d_DefaultValues.hasButtonsFlag = true;
-		d_DefaultValues.hasLinesFlag = true;
-		d_DefaultValues.linesAtRootFlag = true;
-		d_DefaultValues.trackSelectFlag = true;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;
 	}
@@ -615,10 +607,6 @@ void WidgetTreeView< EventHandlerClass >::create( const Seed & cs )
 	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
 	PolicyType::create(cs);
 
-	setHasButtons( cs.hasButtonsFlag );
-	setHasLines( cs.hasLinesFlag );
-	setLinesAtRoot( cs.linesAtRootFlag );
-	setTrackSelect( cs.trackSelectFlag );
 	setFont( cs.font );
 }
 

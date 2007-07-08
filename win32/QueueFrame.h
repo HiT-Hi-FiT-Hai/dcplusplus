@@ -232,7 +232,7 @@ private:
 	virtual ~QueueFrame();
 	
 	void updateStatus();
-	void updateQueue();
+	void updateFiles();
 
 	void addQueueItem(QueueItemInfo* qi, bool noSort);
 	void addQueueList(const QueueItem::StringMap& l);
@@ -294,8 +294,6 @@ private:
 	void handleBrowseList(WidgetMenuPtr menu, unsigned id);
 	void handleReadd(WidgetMenuPtr menu, unsigned id);
 	
-	void handleSelectionChanged(WidgetTreeViewPtr);
-
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	
 	using MDIChildFrame<QueueFrame>::speak;
