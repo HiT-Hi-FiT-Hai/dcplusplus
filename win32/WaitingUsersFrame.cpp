@@ -54,7 +54,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) :
 
 	layout();
 	
-	onSpeaker(&WaitingUsersFrame::spoken);
+	onSpeaker(std::tr1::bind(&WaitingUsersFrame::handleSpeaker, this, _1, _2));
 	// Load all waiting users & files.
 	loadAll();
 }
@@ -93,7 +93,7 @@ void WaitingUsersFrame::postClosing() {
 	}
 }
 
-HRESULT WaitingUsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+HRESULT WaitingUsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 	if(reinterpret_cast<HWND>(wParam) == queued->handle()) {
@@ -113,7 +113,7 @@ HRESULT WaitingUsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 	return FALSE;
 }
 
-HRESULT WaitingUsersFrame::spoken(LPARAM lParam, WPARAM wParam) {
+HRESULT WaitingUsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if(wParam == SPEAK_ADD_FILE) {
 		boost::scoped_ptr<pair<UserPtr, string> > p((pair<UserPtr, string> *)lParam);
 		onAddFile(p->first, p->second);

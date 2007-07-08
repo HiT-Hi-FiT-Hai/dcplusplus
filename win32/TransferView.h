@@ -31,6 +31,7 @@
 #include "AspectSpeaker.h"
 #include "TypedListViewCtrl.h"
 #include "WidgetFactory.h"
+#include "AspectUserCommand.h"
 
 #include "UserInfoBase.h"
 
@@ -44,7 +45,8 @@ class TransferView :
 	private UploadManagerListener, 
 	private ConnectionManagerListener,
 	public AspectSpeaker<TransferView>,
-	public AspectUserInfo<TransferView>
+	public AspectUserInfo<TransferView>,
+	public AspectUserCommand<TransferView>
 {
 public:
 	TransferView(SmartWin::Widget*);
@@ -175,14 +177,17 @@ private:
 	SmartWin::ImageListPtr arrows;
 
 	TaskQueue tasks;
+	StringMap ucLineParams;
 
 	void handleSized(const SmartWin::WidgetSizedEventResult& sz);
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
-	HRESULT handleSpeaker(LPARAM lParam, WPARAM wParam);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
 	void handleForce(WidgetMenuPtr, unsigned);
 	void handleSearchAlternates(WidgetMenuPtr, unsigned);
 	void handleCopyNick(WidgetMenuPtr, unsigned);
 	void handleRemove(WidgetMenuPtr, unsigned);
+	void runUserCommand(const UserCommand& uc);
 
 	WidgetMenuPtr makeContextMenu(ItemInfo* ii);
 
@@ -219,8 +224,6 @@ private:
 		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
 		NOTIFY_HANDLER(IDC_TRANSFERS, NM_DBLCLK, onDoubleClickTransfers)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(WM_NOTIFYFORMAT, onNotifyFormat)
@@ -234,15 +237,12 @@ private:
 	END_MSG_MAP()
 
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	void runUserCommand(UserCommand& uc);
 
 	void prepareClose();
 
@@ -260,7 +260,6 @@ private:
 	}
 
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ctrlTransfers.forEach(&ItemInfo::deleteSelf);
 		return 0;
 	}
 
@@ -274,7 +273,6 @@ private:
 
 	CMenu transferMenu;
 
-	StringMap ucLineParams;
 
 #endif
 };

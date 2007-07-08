@@ -33,21 +33,20 @@ public:
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SYSTEM_LOG;
-protected:
+private:
 	typedef StaticFrame<SystemFrame> BaseType;
 	friend class StaticFrame<SystemFrame>;
 	friend class MDIChildFrame<SystemFrame>;
+	
+	WidgetTextBoxPtr log;
 	
 	SystemFrame(SmartWin::Widget* parent);
 	virtual ~SystemFrame();
 
 	void layout();
-	void spoken(WPARAM wp, LPARAM lp);
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool preClosing();
 
-private:
-	WidgetTextBoxPtr log;
-	
 	void addLine(time_t t, const tstring& msg);
 
 	// LogManagerListener

@@ -53,8 +53,8 @@ protected:
 	void onGetList(WidgetMenuPtr, unsigned int);
 	void onCopyFilename(WidgetMenuPtr, unsigned int);
 	void onRemove(WidgetMenuPtr, unsigned int);
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
-	HRESULT spoken(LPARAM lp, WPARAM wp);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	//LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	void onPrivateMessage(WidgetMenuPtr, unsigned int);
 	void onGrantSlot(WidgetMenuPtr, unsigned int);

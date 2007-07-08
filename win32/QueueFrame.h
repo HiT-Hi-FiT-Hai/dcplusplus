@@ -45,17 +45,11 @@ public:
 
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::DOWNLOAD_QUEUE;
 
-protected:
+private:
 	typedef StaticFrame<QueueFrame> BaseType;
 	friend class StaticFrame<QueueFrame>;
 	friend class MDIChildFrame<QueueFrame>;
 	
-	void layout();
-	HRESULT spoken(LPARAM lp, WPARAM wp);
-	bool preClosing();
-	void postClosing();
-	
-private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_TARGET = COLUMN_FIRST,
@@ -281,6 +275,11 @@ private:
 	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
 	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
 
+	void layout();
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	bool preClosing();
+	void postClosing();
+	
 	void handleShowTreeClicked(WidgetCheckBoxPtr);
 
 	void handleSearchAlternates(WidgetMenuPtr menu, unsigned id);
@@ -297,7 +296,7 @@ private:
 	
 	void handleSelectionChanged(WidgetTreeViewPtr);
 
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }

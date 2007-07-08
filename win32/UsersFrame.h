@@ -39,18 +39,12 @@ public:
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_USERS;
 
-protected:
+private:
 	typedef StaticFrame<UsersFrame> BaseType;
 	friend class StaticFrame<UsersFrame>;
 	friend class MDIChildFrame<UsersFrame>;
 	friend class AspectUserInfo<UsersFrame>;
 	
-	void layout();
-	HRESULT spoken(LPARAM lp, WPARAM wp);
-	bool preClosing();
-	void postClosing();
-
-private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_NICK = COLUMN_FIRST,
@@ -100,10 +94,10 @@ private:
 	UsersFrame(SmartWin::Widget* mdiParent);
 	virtual ~UsersFrame() { }
 
-	// FavoriteManagerListener
-	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
-	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
-	virtual void on(StatusChanged, const UserPtr& aUser) throw() { speak(USER_UPDATED, reinterpret_cast<LPARAM>(new UserInfoBase(aUser))); }
+	void layout();
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	bool preClosing();
+	void postClosing();
 
 	void addUser(const FavoriteUser& aUser);
 	void updateUser(const UserPtr& aUser);
@@ -114,7 +108,12 @@ private:
 	void handleProperties(WidgetMenuPtr menu, unsigned id); 
 	
 	WidgetUsersPtr getUserList() { return users; }
-	
+
+	// FavoriteManagerListener
+	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
+	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
+	virtual void on(StatusChanged, const UserPtr& aUser) throw() { speak(USER_UPDATED, reinterpret_cast<LPARAM>(new UserInfoBase(aUser))); }
+
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(UsersFrame)
 		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)

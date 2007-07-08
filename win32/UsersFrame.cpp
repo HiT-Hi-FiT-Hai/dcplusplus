@@ -80,7 +80,7 @@ UsersFrame::UsersFrame(SmartWin::Widget* mdiParent) :
 	FavoriteManager::getInstance()->addListener(this);
 
 	startup = false;
-	onSpeaker(&UsersFrame::spoken);
+	onSpeaker(std::tr1::bind(&UsersFrame::handleSpeaker, this, _1, _2));
 
 }
 
@@ -136,9 +136,9 @@ void UsersFrame::postClosing() {
 	}
 }
 
-HRESULT UsersFrame::spoken(LPARAM lp, WPARAM wp) {
-	if(wp == USER_UPDATED) {
-		std::auto_ptr<UserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lp));
+HRESULT UsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+	if(wParam == USER_UPDATED) {
+		std::auto_ptr<UserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lParam));
 		updateUser(uib->user);
 	}
 	return 0;

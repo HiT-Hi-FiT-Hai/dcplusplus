@@ -137,7 +137,7 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 	
 	readLog();
 	
-	onSpeaker(&PrivateFrame::spoken);
+	onSpeaker(std::tr1::bind(&PrivateFrame::handleSpeaker, this, _1, _2));
 
 	ClientManager::getInstance()->addListener(this);
 	
@@ -364,7 +364,7 @@ void PrivateFrame::sendMessage(const tstring& msg) {
 	ClientManager::getInstance()->privateMessage(replyTo, Text::fromT(msg));
 }
 
-HRESULT PrivateFrame::spoken(LPARAM, WPARAM) {
+HRESULT PrivateFrame::handleSpeaker(WPARAM, LPARAM) {
 	updateTitle();
 	return 0;
 }

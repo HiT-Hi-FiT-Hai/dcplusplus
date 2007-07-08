@@ -39,7 +39,7 @@ public:
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
 
-protected:
+private:
 	typedef StaticFrame<PublicHubsFrame> BaseType;
 	friend class StaticFrame<PublicHubsFrame>;
 	friend class MDIChildFrame<PublicHubsFrame>;
@@ -47,11 +47,6 @@ protected:
 	PublicHubsFrame(SmartWin::Widget* mdiParent);
 	virtual ~PublicHubsFrame();
 
-	void layout();
-	bool preClosing();
-	void postClosing();
-	HRESULT spoken(LPARAM lParam, WPARAM wParam);
-private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_NAME = COLUMN_FIRST,
@@ -121,12 +116,16 @@ private:
 
 	using AspectSpeaker<PublicHubsFrame>::speak;
 	
+	void layout();
+	bool preClosing();
+	void postClosing();
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleConfigure(WidgetButtonPtr);
 	void handleRefresh(WidgetButtonPtr);
 	void handleConnect(WidgetMenuPtr, unsigned);
 	void handleAdd(WidgetMenuPtr, unsigned);
 	void handleCopyHub(WidgetMenuPtr, unsigned);
-	HRESULT handleContextMenu(LPARAM, WPARAM);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
 	bool checkNick();
 	void updateStatus();
@@ -173,12 +172,6 @@ public:
 	typedef MDITabChildWindowImpl<PublicHubsFrame> baseClass;
 	BEGIN_MSG_MAP(PublicHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_ID_HANDLER(IDC_FILTER_FOCUS, onFilterFocus)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_REFRESH, onClickedRefresh)
@@ -203,10 +196,7 @@ public:
 	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedConfigure(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onListSelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 private:

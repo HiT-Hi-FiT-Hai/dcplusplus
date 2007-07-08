@@ -44,21 +44,10 @@ public:
 
 	void sendMessage(const tstring& msg);
 
-protected:
+private:
 	typedef MDIChildFrame<PrivateFrame> BaseType;
 	friend class MDIChildFrame<PrivateFrame>;
 	
-	void layout();
-	HRESULT spoken(LPARAM lp, WPARAM wp);
-	bool preClosing();
-	
-	using BaseType::handleChar;
-	using BaseType::handleKeyDown;
-	bool handleChar(WidgetTextBoxPtr w, int c);
-	bool handleKeyDown(WidgetTextBoxPtr w, int c);
-	bool enter();
-
-private:
 	enum Tasks { USER_UPDATED
 	};
 
@@ -75,6 +64,16 @@ private:
 	PrivateFrame(Widget* mdiParent, const UserPtr& replyTo_);
 	virtual ~PrivateFrame();
 	
+	void layout();
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	bool preClosing();
+	
+	using BaseType::handleChar;
+	using BaseType::handleKeyDown;
+	bool handleChar(WidgetTextBoxPtr w, int c);
+	bool handleKeyDown(WidgetTextBoxPtr w, int c);
+	bool enter();
+
 	void readLog();
 	void addChat(const tstring& aLine);
 	void addStatus(const tstring& aLine, bool inChat = true);

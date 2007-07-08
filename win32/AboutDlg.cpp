@@ -47,25 +47,25 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 
 AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::Widget(parent) {
 	onInitDialog(&AboutDlg::handleInitDialog);
-	onSpeaker(&AboutDlg::spoken);
+	onSpeaker(std::tr1::bind(&AboutDlg::handleSpeaker, this, _1, _2));
 }
 
 AboutDlg::~AboutDlg() {
 }
 
 bool AboutDlg::handleInitDialog() {
-	::SetDlgItemText(handle(), IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2006 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/").c_str());
-	::SetDlgItemText(handle(), IDC_TTH, WinUtil::tth.c_str());
-	::SetDlgItemText(handle(), IDC_THANKS, Text::toT(thanks).c_str());
-	::SetDlgItemText(handle(), IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
+	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2006 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+	setItemText(IDC_TTH, WinUtil::tth);
+	setItemText(IDC_THANKS, Text::toT(thanks));
+	setItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + Util::formatBytes(SETTING(TOTAL_DOWNLOAD))));
 	if(SETTING(TOTAL_DOWNLOAD) > 0) {
 		char buf[64];
 		sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
-		::SetDlgItemText(handle(), IDC_RATIO, Text::toT(buf).c_str());
+		setItemText(IDC_RATIO, Text::toT(buf));
 	}
-	::SetDlgItemText(handle(), IDC_LATEST, CTSTRING(DOWNLOADING));
+	setItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
 
-	subclassButton(IDOK)->onClicked(&AboutDlg::handleOKClicked);
+	subclassButton(IDOK)->onClicked(boost::bind(&AboutDlg::endDialog, this, IDOK));
 
 #ifdef PORT_ME
 	CenterWindow(GetParent());
@@ -77,17 +77,14 @@ bool AboutDlg::handleInitDialog() {
 	return false;
 }
 
-HRESULT AboutDlg::spoken(LPARAM lParam, WPARAM wParam) {
- 	if(wParam == SPEAK_VERSIONDATA) {
-		tstring* x = (tstring*)lParam;
-		::SetDlgItemText(handle(), IDC_LATEST, x->c_str());
-		delete x;
-	}
+HRESULT AboutDlg::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+ 	switch(wParam) {
+ 	case SPEAK_VERSIONDATA: {
+  		boost::scoped_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
+		setItemText(IDC_LATEST, *x);
+	} break;
+ 	}
 	return 0;
-}
-
-void AboutDlg::handleOKClicked(WidgetButtonPtr) {
-	endDialog(IDOK);
 }
 
 void AboutDlg::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw() {
@@ -102,7 +99,7 @@ void AboutDlg::on(HttpConnectionListener::Complete, HttpConnection* conn, const 
 			xml.stepIn();
 			if(xml.findChild("Version")) {
 				tstring* x = new tstring(Text::toT(xml.getChildData()));
-				speak((LPARAM)x, SPEAK_VERSIONDATA);
+				speak(SPEAK_VERSIONDATA, reinterpret_cast<LPARAM>(x));
 			}
 		}
 	}
@@ -111,6 +108,6 @@ void AboutDlg::on(HttpConnectionListener::Complete, HttpConnection* conn, const 
 
 void AboutDlg::on(HttpConnectionListener::Failed, HttpConnection* conn, const string& aLine) throw() {
 	tstring* x = new tstring(Text::toT(aLine));
-	speak((LPARAM)x, SPEAK_VERSIONDATA);
+	speak(SPEAK_VERSIONDATA, reinterpret_cast<LPARAM>(x));
 	conn->removeListener(this);
 }

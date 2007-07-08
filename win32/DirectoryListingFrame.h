@@ -207,8 +207,8 @@ private:
 	void download(ItemInfo* ii, const string& aDir, bool view = false);
 	void downloadFiles(const string& aTarget, bool view = false);
 	
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
-	HRESULT handleXButtonUp(LPARAM lParam, WPARAM wParam);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	HRESULT handleXButtonUp(WPARAM wParam, LPARAM lParam);
 	
 	void changeDir(DirectoryListing::Directory* d);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);

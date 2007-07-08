@@ -90,19 +90,18 @@ MainWindow::MainWindow() :
 	updateStatus();
 	layout();
 	
-	onSized(&MainWindow::sized);
-	onSpeaker(&MainWindow::spoken);
+	onSized(std::tr1::bind(&MainWindow::sized, this, _1));
+	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
 	
 	if(!WinUtil::isShift())
 		speak(AUTO_CONNECT);
-
 	
 	QueueManager::getInstance()->addListener(this);
 	LogManager::getInstance()->addListener(this);
 
 	onClosing(&MainWindow::closing);
 	
-	onRaw(&MainWindow::trayMessage, SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
+	onRaw(std::tr1::bind(&MainWindow::trayMessage, this, _1, _2), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
 
 	TimerManager::getInstance()->start();
 
@@ -379,16 +378,16 @@ void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
 	layout();
 }
 
-HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
-	Speaker s = static_cast<Speaker>(lp);
+HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+	Speaker s = static_cast<Speaker>(wParam);
 
 	switch(s) {
 	case DOWNLOAD_LISTING: {
-		auto_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(wp));
+		boost::scoped_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
 		DirectoryListingFrame::openWindow(getMDIClient(), i->file, i->dir, i->user, i->speed);
 	} break;
 	case BROWSE_LISTING: {
-		auto_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(wp));
+		boost::scoped_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
 		DirectoryListingFrame::openWindow(getMDIClient(), i->user, i->text, 0);
 	} break;
 	case AUTO_CONNECT: {
@@ -400,12 +399,12 @@ HRESULT MainWindow::spoken(LPARAM lp, WPARAM wp) {
 #endif
 	} break;
 	case VIEW_FILE_AND_DELETE: {
-		auto_ptr<tstring> file(reinterpret_cast<tstring*>(wp));
+		boost::scoped_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
 		new TextFrame(this, *file);
 		File::deleteFile(Text::fromT(*file));
 	} break;
 	case STATUS_MESSAGE: {
-		auto_ptr<pair<time_t, tstring> > msg(reinterpret_cast<std::pair<time_t, tstring>*>(wp));
+		boost::scoped_ptr<pair<time_t, tstring> > msg(reinterpret_cast<std::pair<time_t, tstring>*>(lParam));
 		tstring line = Text::toT("[" + Util::getShortTimeString(msg->first) + "] ") + msg->second;
 
 		setStatus(STATUS_STATUS, line);
@@ -436,7 +435,7 @@ bool MainWindow::closing() {
 	return true;
 }
 
-HRESULT MainWindow::trayMessage(LPARAM lp, WPARAM wp) {
+HRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
 	updateTray(true);
 	return 0;
 }

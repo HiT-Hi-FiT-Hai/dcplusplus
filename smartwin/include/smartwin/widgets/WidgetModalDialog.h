@@ -30,6 +30,7 @@
 #define WidgetModalDialog_h
 
 #include "WidgetWindowBase.h"
+#include "../aspects/AspectDialog.h"
 
 namespace SmartWin
 {
@@ -66,8 +67,9 @@ struct WidgetModalDialogDispatcher
   * called before createDialog();   
   */
 template< class EventHandlerClass >
-class WidgetModalDialog
-	: public WidgetWindowBase< EventHandlerClass, Policies::ModalDialog >
+class WidgetModalDialog : 
+	public WidgetWindowBase< EventHandlerClass, Policies::ModalDialog >,
+	public AspectDialog<WidgetModalDialog<EventHandlerClass> >
 {
 	typedef MessageMap< EventHandlerClass > MessageMapType;
 	typedef WidgetModalDialogDispatcher Dispatcher;

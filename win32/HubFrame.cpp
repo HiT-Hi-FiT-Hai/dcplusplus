@@ -177,8 +177,8 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	
 	initSecond();
 	
-	onSpeaker(&HubFrame::spoken);
-	onRaw(&HubFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	onSpeaker(std::tr1::bind(&HubFrame::handleSpeaker, this, _1, _2));
+	onRaw(std::tr1::bind(&HubFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	
 	client = ClientManager::getInstance()->getClient(url);
 	client->addListener(this);
@@ -187,18 +187,19 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	frames.push_back(this);
 	
 	showUsers->onClicked(&HubFrame::handleShowUsersClicked);
-	
-	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(url));
-	if(fhe != NULL){
-		//retrieve window position
-		SmartWin::Rectangle rc(fhe->getLeft(), fhe->getTop(), fhe->getRight() - fhe->getLeft(), fhe->getBottom() - fhe->getTop());
 
-		//check that we have a window position stored
-		if(rc.pos.x >= 0 && rc.pos.y >= 0 && rc.size.x > 0 && rc.size.y > 0) {
-			setBounds(rc);
+	if(!BOOLSETTING(MDI_MAXIMIZED)) {
+		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(url));
+		if(fhe != NULL){
+			//retrieve window position
+			SmartWin::Rectangle rc(fhe->getLeft(), fhe->getTop(), fhe->getRight() - fhe->getLeft(), fhe->getBottom() - fhe->getTop());
+	
+			//check that we have a window position stored
+			if(rc.pos.x >= 0 && rc.pos.y >= 0 && rc.size.x > 0 && rc.size.y > 0) {
+				setBounds(rc);
+			}
 		}
 	}
-
 	FavoriteManager::getInstance()->addListener(this);
 }
 
@@ -522,7 +523,7 @@ void HubFrame::addStatus(const tstring& aLine, bool inChat /* = true */) {
 	}
 }
 
-HRESULT HubFrame::spoken(LPARAM, WPARAM) {
+HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 	updateUsers = false;
 	TaskQueue::List t;
 	tasks.get(t);
@@ -1183,7 +1184,7 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	return insert;
 }
 
-HRESULT HubFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
 	bool doMenu = false;

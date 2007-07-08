@@ -202,9 +202,9 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::Widget* mdiParent, const 
 	setStatus(STATUS_FIND, TSTRING(FIND));
 	setStatus(STATUS_NEXT, TSTRING(NEXT));
 
-	onRaw(&DirectoryListingFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
-	onRaw(&DirectoryListingFrame::handleXButtonUp, SmartWin::Message(WM_XBUTTONUP));
-
+	onRaw(std::tr1::bind(&DirectoryListingFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
+	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	string nick = ClientManager::getInstance()->getNicks(dl->getUser()->getCID())[0];
 	treeRoot = dirs->insert(NULL, new ItemInfo(nick, dl->getRoot()));
 
@@ -432,7 +432,7 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 	}
 }
 
-HRESULT DirectoryListingFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+HRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	
 	WidgetMenuPtr contextMenu;
@@ -994,11 +994,11 @@ void DirectoryListingFrame::handleDoubleClickFiles() {
 	}
 }
 
-HRESULT DirectoryListingFrame::handleXButtonUp(LPARAM, WPARAM wp) {
-	if(HIWORD(wp) & XBUTTON1) {
+HRESULT DirectoryListingFrame::handleXButtonUp(WPARAM wParam, LPARAM lParam) {
+	if(HIWORD(wParam) & XBUTTON1) {
 		back();
 		return TRUE;
-	} else if(HIWORD(wp) & XBUTTON2) {
+	} else if(HIWORD(wParam) & XBUTTON2) {
 		forward();
 		return TRUE;
 	}

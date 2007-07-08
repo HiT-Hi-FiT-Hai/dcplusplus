@@ -32,7 +32,7 @@ public:
 		static_cast<T*>(this)->onRaw(f, WM_SPEAKER);
 	}
 	
-	BOOL speak(LPARAM l = 0, WPARAM w = 0) { return static_cast<T*>(this)->postMessage(WM_SPEAKER, w, l); }
+	BOOL speak(WPARAM w = 0, LPARAM l = 0) { return static_cast<T*>(this)->postMessage(WM_SPEAKER, w, l); }
 	
 private:
 };

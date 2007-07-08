@@ -82,11 +82,11 @@ private:
 	void initSecond();
 	bool eachSecond();
 
-	HRESULT spoken(LPARAM lParam, WPARAM wParam);
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	typedef SmartWin::WidgetDataGrid<SpyFrame>* DataGridMessageType;
-	HRESULT handleColumnClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
-	HRESULT handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleColumnClick(WPARAM wParam, LPARAM lParam);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
 	void handleSearch(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 

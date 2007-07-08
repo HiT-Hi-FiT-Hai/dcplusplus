@@ -187,9 +187,11 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
 	updateList();
 
 	layout();
-	onSpeaker(&PublicHubsFrame::spoken);
-
-	entries = FavoriteManager::getInstance()->getPublicHubs();
+	
+	onSpeaker(std::tr1::bind(&PublicHubsFrame::handleSpeaker, this, _1, _2));
+	onRaw(std::tr1::bind(&PublicHubsFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+	
+	entries	 = FavoriteManager::getInstance()->getPublicHubs();
 	if(FavoriteManager::getInstance()->isDownloading()) {
 		setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_HUB_LIST));
 	} else if(entries.empty()) {
@@ -323,7 +325,7 @@ void PublicHubsFrame::updateList() {
 	updateStatus();
 }
 
-HRESULT PublicHubsFrame::spoken(LPARAM lParam, WPARAM wParam) {
+HRESULT PublicHubsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if((wParam == FINISHED) || (wParam == LOADED_FROM_CACHE)) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
 		entries = FavoriteManager::getInstance()->getPublicHubs();
@@ -452,7 +454,7 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 	return insert;
 }
 
-HRESULT PublicHubsFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if(reinterpret_cast<HWND>(wParam) == hubs->handle() && hubs->hasSelection()) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 

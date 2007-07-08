@@ -37,12 +37,12 @@ namespace SmartWin
 // begin namespace SmartWin
 
 struct AspectRawDispatcher {
-	typedef std::tr1::function<HRESULT (LPARAM, WPARAM)> F;
+	typedef std::tr1::function<HRESULT (WPARAM, LPARAM)> F;
 
 	AspectRawDispatcher(const F& f_) : f(f_) { }
 	
 	HRESULT operator()(private_::SignalContent& params) {
-		return f(params.Msg.LParam, params.Msg.WParam);
+		return f(params.Msg.WParam, params.Msg.LParam);
 	}
 	
 	F f;
@@ -82,12 +82,14 @@ public:
 	  * Return value is HRESULT which will be passed on to the System
 	  */
 	void onRaw( typename MessageMapType::itsHresultFunctionTakingLparamWparam eventHandler, const Message & msg ) {
-		onRaw( Adapter::adapt2(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
+		onRaw( Adapter::adapt2i(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
 	}
 	void onRaw( typename MessageMapType::hresultFunctionTakingLparamWparam eventHandler, const Message & msg ) {
-		onRaw( Adapter::adapt2(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
+		onRaw( Adapter::adapt2i(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
 	}
 
+	/// WARNING, this function uses the natural wparam/lparam order, not the inverted that previous
+	/// smartwin versions did. The two functions above emulate the old behaviour though...
 	void onRaw(const Dispatcher::F& f, const Message & msg) {
 		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(

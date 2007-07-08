@@ -32,7 +32,14 @@ struct AspectAdapter<Ret, EventHandlerClass, true> {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
 		return std::tr1::bind(eventHandler, ThisParent, This, _1, _2);
 	}
-	
+
+	// Two parameters with order inverted
+	template<typename WidgetTypePtr, typename FuncType>
+	static Ret adapt2i(WidgetTypePtr This, FuncType eventHandler) {
+		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
+		return std::tr1::bind(eventHandler, ThisParent, This, _2, _1);
+	}
+
 };
 
 template<typename Ret, typename EventHandlerClass>
@@ -55,7 +62,14 @@ struct AspectAdapter<Ret, EventHandlerClass, false> {
 		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
 		return std::tr1::bind(eventHandler, ThisParent, _1, _2);
 	}
-	
+
+	// Two parameters with order inverted
+	template<typename WidgetTypePtr, typename FuncType>
+	static Ret adapt2i(WidgetTypePtr This, FuncType eventHandler) {
+		EventHandlerClass * ThisParent = internal_::getTypedParentOrThrow < EventHandlerClass * >( This );
+		return std::tr1::bind(eventHandler, ThisParent, _2, _1);
+	}
+
 };
 
 }

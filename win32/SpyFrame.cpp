@@ -82,17 +82,17 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 
 	layout();
 
-	onSpeaker(&SpyFrame::spoken);
+	onSpeaker(std::tr1::bind(&SpyFrame::handleSpeaker, this, _1, _2)) ;
 
 	ShareManager::getInstance()->setHits(0);
 
 	ClientManager::getInstance()->addListener(this);
 
-	searches->onRaw(&SpyFrame::handleColumnClick, SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
+	searches->onRaw(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
 
 	contextMenu = createMenu(true);
 	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), &SpyFrame::handleSearch);
-	searches->onRaw(&SpyFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	searches->onRaw(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 	initSecond();
 #if 1
@@ -148,7 +148,7 @@ void SpyFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::SPY_FRAME_IGNORE_TTH_SEARCHES, bIgnoreTTH);
 }
 
-HRESULT SpyFrame::spoken(LPARAM lParam, WPARAM wParam) {
+HRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if(wParam == SPEAK_SEARCH) {
 		tstring* x = (tstring*)lParam;
 
@@ -187,7 +187,7 @@ HRESULT SpyFrame::spoken(LPARAM lParam, WPARAM wParam) {
 	return 0;
 }
 
-HRESULT SpyFrame::handleColumnClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT SpyFrame::handleColumnClick(WPARAM wParam, LPARAM lParam) {
 	LPNMLISTVIEW l = (LPNMLISTVIEW)lParam;
 #ifdef PORT_ME
 	if(l->iSubItem == searches->getSortColumn()) {
@@ -206,7 +206,7 @@ HRESULT SpyFrame::handleColumnClick(DataGridMessageType, LPARAM lParam, WPARAM /
 	return 0;
 }
 
-HRESULT SpyFrame::handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if(searches->getSelectedCount() == 1) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
@@ -241,5 +241,5 @@ void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw(
 	while( (i=x->find(_T('$'))) != string::npos) {
 		(*x)[i] = _T(' ');
 	}
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)x);
+	speak(SPEAK_SEARCH, static_cast<LPARAM>(SPEAK_SEARCH));
 }

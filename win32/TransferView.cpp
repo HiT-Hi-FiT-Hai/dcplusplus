@@ -23,6 +23,7 @@
 #include "TransferView.h"
 #include "resource.h"
 #include "WinUtil.h"
+#include "HoldRedraw.h"
 
 #include <dcpp/ResourceManager.h>
 #include <dcpp/SettingsManager.h>
@@ -53,7 +54,6 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, cs);
 		transfers->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		transfers->setFont(WinUtil::font);
-		//addWidget(transfers);
 
 		transfers->setSmallImageList(arrows);
 		transfers->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -64,7 +64,8 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 	}
 	
 	onSized(&TransferView::handleSized);
-	onRaw(&TransferView::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	onRaw(std::tr1::bind(&TransferView::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
 	
 	ConnectionManager::getInstance()->addListener(this);
@@ -73,16 +74,24 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 }
 
 TransferView::~TransferView() {
-	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, WinUtil::toString(transfers->getColumnOrder()));
-	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, WinUtil::toString(transfers->getColumnWidths()));
 
-	ConnectionManager::getInstance()->removeListener(this);
-	DownloadManager::getInstance()->removeListener(this);
-	UploadManager::getInstance()->removeListener(this);
 }
 
 void TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 	transfers->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+}
+
+HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
+	ConnectionManager::getInstance()->removeListener(this);
+	DownloadManager::getInstance()->removeListener(this);
+	UploadManager::getInstance()->removeListener(this);
+
+	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, WinUtil::toString(transfers->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, WinUtil::toString(transfers->getColumnWidths()));
+
+	transfers->forEach(&ItemInfo::deleteSelf);
+
+	return 0;
 }
 
 TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
@@ -98,14 +107,11 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), &TransferView::handleCopyNick);
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_REMOVE, TSTRING(CLOSE_CONNECTION), &TransferView::handleRemove);
-
-#ifdef PORT_ME
-	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
-#endif
+	menu->setDefaultItem(IDC_PRIVATEMESSAGE);
 	return menu;
 }
 
-HRESULT TransferView::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if (reinterpret_cast<HWND>(wParam) == transfers->handle() && transfers->hasSelection()) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
@@ -131,15 +137,14 @@ void TransferView::handleRemove(WidgetMenuPtr, unsigned) {
 	transfers->forEachSelected(&ItemInfo::disconnect);
 }
 
-#ifdef PORT_ME
-void TransferView::runUserCommand(UserCommand& uc) {
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
+void TransferView::runUserCommand(const UserCommand& uc) {
+	if(!WinUtil::getUCParams(this, uc, ucLineParams))
 		return;
 
 	StringMap ucParams = ucLineParams;
 
 	int i = -1;
-	while((i = transfers->GetNextItem(i, LVNI_SELECTED)) != -1) {
+	while((i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo* itemI = transfers->getItemData(i);
 		if(!itemI->user->isOnline())
 			continue;
@@ -153,7 +158,6 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		ClientManager::getInstance()->userCommand(itemI->user, uc, tmp, true);
 	}
 }
-#endif
 
 void TransferView::handleForce(WidgetMenuPtr, unsigned id) {
 	int i = -1;
@@ -172,9 +176,7 @@ void TransferView::handleCopyNick(WidgetMenuPtr, unsigned id) {
 
 	/// @todo Fix when more items are selected
 	while( (i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
-#ifdef PORT_ME
 		WinUtil::setClipboard(WinUtil::getNicks(transfers->getItemData(i)->user));
-#endif
 	}
 }
 
@@ -313,23 +315,20 @@ int TransferView::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
 		}
 	}
 	switch(col) {
-				case COLUMN_STATUS: return 0;
-				case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
-				case COLUMN_SPEED: return compare(a->speed, b->speed);
-				case COLUMN_SIZE: return compare(a->size, b->size);
-				case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
-				default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+	case COLUMN_STATUS: return 0;
+	case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
+	case COLUMN_SPEED: return compare(a->speed, b->speed);
+	case COLUMN_SIZE: return compare(a->size, b->size);
+	case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
+	default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 	}
 }
 
-HRESULT TransferView::handleSpeaker(LPARAM lParam, WPARAM wParam) {
+HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	TaskQueue::List t;
 	tasks.get(t);
-#ifdef PORT_ME
-	if(t.size() > 2) {
-		transfers->SetRedraw(FALSE);
-	}
-#endif
+	
+	HoldRedraw hold(transfers, t.size() > 1);
 	
 	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
 		if(i->first == ADD_ITEM) {
@@ -364,11 +363,6 @@ HRESULT TransferView::handleSpeaker(LPARAM lParam, WPARAM wParam) {
 
 	if(!t.empty()) {
 		transfers->resort();
-#ifdef PORT_ME
-		if(t.size() > 2) {
-			transfers->SetRedraw(TRUE);
-		}
-#endif
 	}
 
 	return 0;

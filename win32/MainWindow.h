@@ -166,8 +166,8 @@ private:
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
 	
-	HRESULT spoken(LPARAM lp, WPARAM wp);
-	HRESULT trayMessage(LPARAM lp, WPARAM wp);
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	HRESULT trayMessage(WPARAM wParam, LPARAM lParam);
 	
 	void layout();
 	bool eachSecond();
@@ -224,7 +224,6 @@ private:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTM_SELECTED, onSelected)
 		MESSAGE_HANDLER(FTM_ROWS_CHANGED, onRowsChanged)
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)

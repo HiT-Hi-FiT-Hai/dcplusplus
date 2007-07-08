@@ -205,7 +205,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
 
-		hubs->onRaw(&SearchFrame::handleHubItemChanged, SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 	}
 
 	{
@@ -232,9 +232,9 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 		results->setColor(WinUtil::textColor, WinUtil::bgColor);
 		results->setSmallImageList(WinUtil::fileImages);
 
-		results->onRaw(&SearchFrame::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-		results->onRaw(&SearchFrame::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
-		results->onRaw(&SearchFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+		results->onRaw(std::tr1::bind(&SearchFrame::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+		results->onRaw(std::tr1::bind(&SearchFrame::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+		results->onRaw(std::tr1::bind(&SearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	}
 
 	{
@@ -253,7 +253,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	layout();
 
-	onSpeaker(&SearchFrame::spoken);
+	onSpeaker(std::tr1::bind(&SearchFrame::handleSpeaker, this, _1, _2));
 
 	hubs->insertItem(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
 	hubs->setRowChecked(0, false);
@@ -563,11 +563,11 @@ void SearchFrame::SearchInfo::update() {
 
 }
 
-HRESULT SearchFrame::spoken(LPARAM lParam, WPARAM wParam) {
- 	switch(lParam) {
+HRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+ 	switch(wParam) {
 	case SPEAK_ADD_RESULT:
 		{
-			SearchInfo* si = reinterpret_cast<SearchInfo*>(wParam);
+			SearchInfo* si = reinterpret_cast<SearchInfo*>(lParam);
 			SearchResult* sr = si->sr;
 			// Check previous search results for dupes
 			for(int i = 0, j = results->getRowCount(); i < j; ++i) {
@@ -591,13 +591,13 @@ HRESULT SearchFrame::spoken(LPARAM lParam, WPARAM wParam) {
 		setStatus(STATUS_FILTERED, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)));
 		break;
 	case SPEAK_HUB_ADDED:
-		onHubAdded(reinterpret_cast<HubInfo*>(wParam));
+		onHubAdded(reinterpret_cast<HubInfo*>(lParam));
 		break;
 	case SPEAK_HUB_CHANGED:
-		onHubChanged(reinterpret_cast<HubInfo*>(wParam));
+		onHubChanged(reinterpret_cast<HubInfo*>(lParam));
 		break;
 	case SPEAK_HUB_REMOVED:
- 		onHubRemoved(reinterpret_cast<HubInfo*>(wParam));
+ 		onHubRemoved(reinterpret_cast<HubInfo*>(lParam));
 		break;
  	}
 	return 0;
@@ -617,7 +617,7 @@ void SearchFrame::handleShowUIClicked(WidgetCheckBoxPtr) {
 	layout();
 }
 
-HRESULT SearchFrame::handleHubItemChanged(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT SearchFrame::handleHubItemChanged(WPARAM wParam, LPARAM lParam) {
 	LPNMLISTVIEW lv = (LPNMLISTVIEW)lParam;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
 		if (((lv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1) {
@@ -631,19 +631,19 @@ HRESULT SearchFrame::handleHubItemChanged(DataGridMessageType, LPARAM lParam, WP
 	return 0;
 }
 
-HRESULT SearchFrame::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT SearchFrame::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
 	if(((LPNMITEMACTIVATE)lParam)->iItem != -1)
 		results->forEachSelectedT(SearchInfo::Download(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
 	return 0;
 }
 
-HRESULT SearchFrame::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT SearchFrame::handleKeyDown(WPARAM wParam, LPARAM lParam) {
 	if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
 		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
 	return 0;
 }
 
-HRESULT SearchFrame::handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT SearchFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if(results->getSelectedCount() > 0) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 

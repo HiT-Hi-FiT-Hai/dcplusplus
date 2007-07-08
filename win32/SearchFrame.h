@@ -48,18 +48,12 @@ public:
 	static void openWindow(SmartWin::Widget* mdiParent, const tstring& str = Util::emptyStringT, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
 	static void closeAll();
 
-protected:
+private:
 	typedef MDIChildFrame<SearchFrame> BaseType;
 	friend class MDIChildFrame<SearchFrame>;
 	friend class AspectUserInfo<SearchFrame>;
 	friend class AspectUserCommand<SearchFrame>;
 	
-	void layout();
-	bool preClosing();
-	void postClosing();
-	void initSecond();
-	bool eachSecond();
-private:
 	enum Speakers {
 		SPEAK_ADD_RESULT,
 		SPEAK_FILTER_RESULT,
@@ -211,19 +205,17 @@ private:
 	SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
 	virtual ~SearchFrame();
 
-	HRESULT spoken(LPARAM lParam, WPARAM wParam);
-
 	void handlePurgeClicked(WidgetButtonPtr);
 	void handleSlotsClicked(WidgetCheckBoxPtr);
 	void handleShowUIClicked(WidgetCheckBoxPtr);
 
 	typedef SmartWin::WidgetDataGrid<SearchFrame>* DataGridMessageType;
 
-	HRESULT handleHubItemChanged(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
 
-	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
-	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
-	HRESULT handleContextMenu(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam);
+	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
 	void handleDownload(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 	void handleDownloadFavoriteDirs(WidgetMenuPtr /*menu*/, unsigned id);
@@ -238,6 +230,13 @@ private:
 	void handleBitziLookup(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 	void handleCopyMagnet(WidgetMenuPtr /*menu*/, unsigned /*id*/);
 	void handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/);
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+
+	void layout();
+	bool preClosing();
+	void postClosing();
+	void initSecond();
+	bool eachSecond();
 
 	void runUserCommand(const UserCommand& uc);
 
@@ -276,9 +275,6 @@ public:
 	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
 
 	BEGIN_MSG_MAP(SearchFrame)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, onCtlColor)
 		MESSAGE_HANDLER(WM_TIMER, onTimer)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
@@ -294,7 +290,6 @@ public:
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
 
 private:
 	void onTab(bool shift);

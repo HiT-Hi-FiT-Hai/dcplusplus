@@ -44,6 +44,8 @@ SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) :
 	// Technically, we might miss a message or two here, but who cares...
 	LogManager::getInstance()->addListener(this);
 
+	onSpeaker(std::tr1::bind(&SystemFrame::handleSpeaker, this, _1, _2));
+	
 	for(deque<pair<time_t, string> >::iterator i = oldMessages.begin(); i != oldMessages.end(); ++i) {
 		addLine(i->first, Text::toT(i->second));
 	}
@@ -80,9 +82,10 @@ void SystemFrame::layout() {
 	log->setBounds(r);
 }
 
-void SystemFrame::spoken(WPARAM wp, LPARAM lp) {
-	std::auto_ptr<std::pair<time_t, tstring> > msg(reinterpret_cast<std::pair<time_t, tstring>*>(wp));
+HRESULT SystemFrame::handleSpeaker(WPARAM wp, LPARAM lp) {
+	boost::scoped_ptr<std::pair<time_t, tstring> > msg(reinterpret_cast<std::pair<time_t, tstring>*>(wp));
 	addLine(msg->first, msg->second);
+	return 0;
 }
 
 bool SystemFrame::preClosing() {

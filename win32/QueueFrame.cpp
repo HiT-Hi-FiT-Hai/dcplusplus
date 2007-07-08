@@ -106,7 +106,8 @@ QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
 
-	onRaw(&QueueFrame::handleContextMenu, SmartWin::Message(WM_CONTEXTMENU));
+	onSpeaker(std::tr1::bind(&QueueFrame::handleSpeaker, this, _1, _2));
+	onRaw(std::tr1::bind(&QueueFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	
 	updateStatus();	
 	layout();
@@ -116,20 +117,20 @@ QueueFrame::~QueueFrame() {
 	
 }
 
-HRESULT QueueFrame::spoken(LPARAM, WPARAM) {
+HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
 	TaskQueue::List t;
 
 	tasks.get(t);
 
 	for(TaskQueue::Iter ti = t.begin(); ti != t.end(); ++ti) {
 		if(ti->first == ADD_ITEM) {
-			auto_ptr<QueueItemInfoTask> iit(static_cast<QueueItemInfoTask*>(ti->second));
+			boost::scoped_ptr<QueueItemInfoTask> iit(static_cast<QueueItemInfoTask*>(ti->second));
 			
 			dcassert(files->findItem(iit->ii) == -1);
 			addQueueItem(iit->ii, false);
 			updateStatus();
 		} else if(ti->first == REMOVE_ITEM) {
-			auto_ptr<StringTask> target(static_cast<StringTask*>(ti->second));
+			boost::scoped_ptr<StringTask> target(static_cast<StringTask*>(ti->second));
 			QueueItemInfo* ii = getItemInfo(target->str);
 			if(!ii) {
 				dcassert(ii);
@@ -171,7 +172,7 @@ HRESULT QueueFrame::spoken(LPARAM, WPARAM) {
 			}
 			dirty = true;
 		} else if(ti->first == UPDATE_ITEM) {
-			auto_ptr<UpdateTask> ui(reinterpret_cast<UpdateTask*>(ti->second));
+			boost::scoped_ptr<UpdateTask> ui(reinterpret_cast<UpdateTask*>(ti->second));
             QueueItemInfo* ii = getItemInfo(ui->target);
 
 			ii->setPriority(ui->priority);
@@ -1144,7 +1145,7 @@ unsigned int QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startI
 	return id - startId;
 }
 
-HRESULT QueueFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	if (reinterpret_cast<HWND>(wParam) == files->handle() && files->getSelectedCount() > 0) {
 		if(pt.x == -1 || pt.y == -1) {

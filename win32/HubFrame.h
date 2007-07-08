@@ -196,7 +196,6 @@ private:
 	virtual ~HubFrame();
 	
 	void layout();
-	HRESULT spoken(LPARAM lp, WPARAM wp);
 	bool preClosing();
 	void postClosing();
 	
@@ -236,7 +235,8 @@ private:
 	using BaseType::handleKeyDown;
 	bool handleKeyDown(WidgetTextBoxPtr w, int c);
 	bool handleKeyDown(WidgetUsersPtr w, int c);
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleShowUsersClicked(WidgetCheckBoxPtr);
 	void handleCopyNick();
 	void handleDoubleClickUsers();
@@ -304,10 +304,6 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, onFileReconnect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
@@ -334,11 +330,9 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);

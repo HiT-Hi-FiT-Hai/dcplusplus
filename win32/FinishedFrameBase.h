@@ -23,6 +23,7 @@
 #include "TypedListViewCtrl.h"
 #include "TextFrame.h"
 #include "ShellContextMenu.h"
+#include "HoldRedraw.h"
 
 #include <dcpp/File.h>
 #include <dcpp/FinishedManager.h>
@@ -72,9 +73,12 @@ protected:
 			items->setColumnOrder(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER), columnIndexes));
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
 			items->setSortColumn(COLUMN_DONE);
-
+			
 			items->setColor(WinUtil::textColor, WinUtil::bgColor);
 			items->setSmallImageList(WinUtil::fileImages);
+
+			items->onRaw(std::tr1::bind(&ThisType::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+			items->onRaw(std::tr1::bind(&ThisType::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 		}
 
 		this->initStatus();
@@ -83,26 +87,12 @@ protected:
 
 		layout();
 
-		onSpeaker(std::tr1::bind(&ThisType::spoken, this, _1, _2));
+		onSpeaker(std::tr1::bind(&ThisType::handleSpeaker, this, _1, _2));
+		onRaw(std::tr1::bind(&ThisType::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 		FinishedManager::getInstance()->addListener(this);
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
 		FinishedManager::getInstance()->unlockList();
-
-		items->onRaw(std::tr1::bind(&ThisType::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-		items->onRaw(std::tr1::bind(&ThisType::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
-
-		contextMenu = this->createMenu(true);
-		contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this, _1));
-		contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this, _1));
-		contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this, _1));
-		contextMenu->appendSeparatorItem();
-		contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this, _1));
-		contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this, _1));
-#ifdef PORT_ME
-		contextMenu->setMenuDefaultItem(IDC_OPEN_FILE);
-#endif
-		onRaw(std::tr1::bind(&ThisType::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 #if 1
 		// for testing purposes; adds 2 dummy lines into the list
@@ -206,11 +196,9 @@ private:
 	typedef WidgetItems* WidgetItemsPtr;
 	WidgetItemsPtr items;
 
-	typename MDIChildType::WidgetMenuPtr contextMenu;
-
 	int64_t totalBytes, totalTime;
 
-	HRESULT spoken(LPARAM lParam, WPARAM wParam) {
+	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		if(wParam == SPEAK_ADD_LINE) {
 			FinishedItemPtr entry = (FinishedItemPtr)lParam;
 			addEntry(entry);
@@ -228,20 +216,20 @@ private:
 		return 0;
 	}
 
-	HRESULT handleDoubleClick(LPARAM lParam, WPARAM /*wParam*/) {
+	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam) {
 		LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
 		if(item->iItem != -1)
 			items->getItemData(item->iItem)->openFile();
 		return 0;
 	}
 
-	HRESULT handleKeyDown(LPARAM lParam, WPARAM /*wParam*/) {
+	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam) {
 		if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
 			StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
 		return 0;
 	}
 
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam) {
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		if(reinterpret_cast<HWND>(wParam) == items->handle() && items->hasSelection()) {
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
@@ -271,6 +259,14 @@ private:
 				}
 			}
 
+			typename T::WidgetMenuPtr contextMenu = this->createMenu(true);
+			contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this, _1));
+			contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this, _1));
+			contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this, _1));
+			contextMenu->appendSeparatorItem();
+			contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this, _1));
+			contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this, _1));
+			contextMenu->setDefaultItem(IDC_OPEN_FILE);
 			contextMenu->trackPopupMenu(static_cast<T*>(this), pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 			return TRUE;
 		}
@@ -280,7 +276,7 @@ private:
 	void handleViewAsText(unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			new TextFrame(MDIChildType::getParent(), Text::toT(items->getItemData(i)->entry->getTarget()));
+			new TextFrame(this->getParent(), Text::toT(items->getItemData(i)->entry->getTarget()));
 	}
 
 	void handleOpenFile(unsigned /*id*/) {
@@ -311,15 +307,10 @@ private:
 	}
 
 	void updateList(const FinishedItemList& fl) {
-#ifdef PORT_ME
-		items->SetRedraw(FALSE);
-#endif
-		for(FinishedItemList::const_iterator i = fl.begin(); i != fl.end(); ++i)
+		HoldRedraw hold(items);
+		for(FinishedItemList::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 			addEntry(*i);
-#ifdef PORT_ME
-		items->SetRedraw(TRUE);
-		items->Invalidate();
-#endif
+		}
 		updateStatus();
 	}
 
@@ -328,9 +319,7 @@ private:
 		totalTime += entry->getMilliSeconds();
 
 		int loc = items->insertItem(new ItemInfo(entry));
-#ifdef PORT_ME
-		items->EnsureVisible(loc, FALSE);
-#endif
+		items->ensureVisible(loc);
 	}
 
 	void clearList() {
