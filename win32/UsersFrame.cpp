@@ -74,7 +74,10 @@ UsersFrame::UsersFrame(SmartWin::Widget* mdiParent) :
 		addUser(i->second);
 	}
 	FavoriteManager::getInstance()->addListener(this);
-
+	
+	initStatus();
+	layout();
+	
 	startup = false;
 	onSpeaker(std::tr1::bind(&UsersFrame::handleSpeaker, this, _1, _2));
 
@@ -133,7 +136,7 @@ void UsersFrame::postClosing() {
 
 HRESULT UsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if(wParam == USER_UPDATED) {
-		boost::scoped_ptrUserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lParam));
+		boost::scoped_ptr<UserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lParam));
 		updateUser(uib->user);
 	}
 	return 0;
