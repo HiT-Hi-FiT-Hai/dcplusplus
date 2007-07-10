@@ -81,10 +81,13 @@ void TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 	transfers->setBounds(SmartWin::Point(0,0), getClientAreaSize());
 }
 
-HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
+void TransferView::prepareClose() {
 	ConnectionManager::getInstance()->removeListener(this);
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
+}
+
+HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
 
 	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, WinUtil::toString(transfers->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, WinUtil::toString(transfers->getColumnWidths()));

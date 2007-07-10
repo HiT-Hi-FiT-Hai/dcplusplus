@@ -117,7 +117,8 @@ private:
 	WidgetHPanedPtr paned;
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
-
+	WidgetTabSheetPtr tabs;
+	
 	/** Is the tray icon visible? */
 	bool trayIcon;
 	/** Was the window maximized when minimizing it? */
@@ -140,6 +141,7 @@ private:
 	void initWindow();
 	void initMenu();
 	void initStatusBar();
+	void initTabs();
 	void initMDI();
 	void initTransfers();
 	void initSecond();
@@ -162,6 +164,7 @@ private:
 	void handleCloseWindows(WidgetMenuPtr menu, unsigned id);
 	void handleMinimizeAll(WidgetMenuPtr menu, unsigned id);
 	void handleRestoreAll(WidgetMenuPtr menu, unsigned id);
+	HRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
 	
 	// Other events
 	void sized(const SmartWin::WidgetSizedEventResult& sz);
@@ -177,6 +180,7 @@ private:
 	void startSocket();
 	void startUPnP();
 	void stopUPnP();
+	void saveWindowSettings();
 
 	bool closing();
 	
@@ -227,9 +231,7 @@ private:
 		MESSAGE_HANDLER(FTM_SELECTED, onSelected)
 		MESSAGE_HANDLER(FTM_ROWS_CHANGED, onRowsChanged)
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
-		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
-		MESSAGE_HANDLER(WM_ENDSESSION, onEndSession)
 		MESSAGE_HANDLER(trayMessage, onTray)
 		MESSAGE_HANDLER(WM_COPYDATA, onCopyData)
 		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
@@ -241,10 +243,6 @@ private:
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TRANSFER_VIEW, OnViewTransferView)
-		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
-		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
-		COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVert)
-		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onMenuHelp)
 		COMMAND_ID_HANDLER(IDC_TRAY_QUIT, onTrayQuit)
 		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)

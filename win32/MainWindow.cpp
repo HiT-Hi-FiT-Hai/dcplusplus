@@ -61,6 +61,7 @@ MainWindow::MainWindow() :
 	SmartWin::Widget(0),
 	paned(0),
 	transfers(0),
+	tabs(0),
 	trayIcon(false),
 	maximized(false),
 	lastMove(0),
@@ -83,6 +84,7 @@ MainWindow::MainWindow() :
 	initWindow();
 	initMenu();
 	initStatusBar();
+	initTabs();
 	initMDI();
 	initTransfers();
 	initSecond();
@@ -102,7 +104,8 @@ MainWindow::MainWindow() :
 	onClosing(&MainWindow::closing);
 	
 	onRaw(std::tr1::bind(&MainWindow::trayMessage, this, _1, _2), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
-
+	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
+	
 	TimerManager::getInstance()->start();
 
 	c = new HttpConnection;
@@ -340,6 +343,12 @@ void MainWindow::initStatusBar() {
 	statusSizes[STATUS_DUMMY] = 32;
 }
 
+void MainWindow::initTabs() {
+	WidgetTabSheet::Seed cs;
+	cs.font = WinUtil::font;
+	tabs = createTabSheet(cs);
+}
+
 void MainWindow::initMDI() {
 	dcdebug("initMDI\n");
 	paned->setFirst(getMDIClient());
@@ -431,7 +440,55 @@ void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
 	}
 }
 
+void MainWindow::saveWindowSettings() {
+	WINDOWPLACEMENT wp = { sizeof(wp) };
+	
+	::GetWindowPlacement(this->handle(), &wp);
+
+	if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, static_cast<int>(wp.rcNormalPosition.left));
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, static_cast<int>(wp.rcNormalPosition.top));
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, static_cast<int>(wp.rcNormalPosition.right - wp.rcNormalPosition.left));
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, static_cast<int>(wp.rcNormalPosition.bottom - wp.rcNormalPosition.top));
+	}
+	if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
+}
+
 bool MainWindow::closing() {
+	if(stopperThread == NULL) {
+		if( !BOOLSETTING(CONFIRM_EXIT) || (createMessageBox().show(TSTRING(REALLY_EXIT), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES) ) {
+			if(c != NULL) {
+				c->removeListener(this);
+				delete c;
+				c = NULL;
+			}
+			saveWindowSettings();
+
+			::ShowWindow(this->handle(), SW_HIDE);
+			transfers->prepareClose();
+
+			LogManager::getInstance()->removeListener(this);
+			QueueManager::getInstance()->removeListener(this);
+
+			if(trayIcon) {
+				updateTray(false);
+			}
+			SearchManager::getInstance()->disconnect();
+			ConnectionManager::getInstance()->disconnect();
+
+			stopUPnP();
+
+			DWORD id;
+			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+		}
+		return false;
+	} else {
+		// This should end immediately, as it only should be the stopper that sends another WM_CLOSE
+		WaitForSingleObject(stopperThread, 60*1000);
+		CloseHandle(stopperThread);
+		stopperThread = NULL;
+	}
 	return true;
 }
 
@@ -466,13 +523,10 @@ void MainWindow::layout() {
 	
 	r.size.y -= rs.size.y + border;
 
-#ifdef PORT_ME
-	CRect rc = rect;
-	rc.top = rc.bottom - ctrlTab.getHeight();
-	if(ctrlTab.IsWindow())
-		ctrlTab.MoveWindow(rc);
-
-#endif
+	tabs->setBounds(r);
+	
+	r = tabs->getUsableArea();
+	
 	paned->setRect(r);
 }
 
@@ -512,8 +566,6 @@ MainWindow::~MainWindow() {
 	images.Destroy();
 	largeImages.Destroy();
 	largeImagesHot.Destroy();
-
-	WinUtil::uninit();
 #endif
 }
 
@@ -1121,88 +1173,21 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 	bHandled = FALSE;
 	return 0;
 }
+#endif
 
-LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+HRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
 	if(c != NULL) {
 		c->removeListener(this);
 		delete c;
 		c = NULL;
 	}
 
-	WINDOWPLACEMENT wp;
-	wp.length = sizeof(wp);
-	GetWindowPlacement(&wp);
-
-	CRect rc;
-	GetWindowRect(rc);
-
-	if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, rc.left);
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, rc.top);
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, rc.Width());
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, rc.Height());
-	}
-	if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
-
+	saveWindowSettings();
 	QueueManager::getInstance()->saveQueue();
 	SettingsManager::getInstance()->save();
 
 	return 0;
 }
-
-LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(c != NULL) {
-		c->removeListener(this);
-		delete c;
-		c = NULL;
-	}
-
-	if(!closing) {
-		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CTSTRING(REALLY_EXIT), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) ) {
-			string tmp1;
-			string tmp2;
-
-			WINDOWPLACEMENT wp;
-			wp.length = sizeof(wp);
-			GetWindowPlacement(&wp);
-
-			CRect rc;
-			GetWindowRect(rc);
-			if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
-				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, rc.left);
-				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, rc.top);
-				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, rc.Width());
-				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, rc.Height());
-			}
-			if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
-				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
-
-			ShowWindow(SW_HIDE);
-			transferView.prepareClose();
-
-			SearchManager::getInstance()->disconnect();
-			ConnectionManager::getInstance()->disconnect();
-
-			stopUPnP();
-
-			DWORD id;
-			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
-			closing = true;
-		}
-		bHandled = TRUE;
-	} else {
-		// This should end immediately, as it only should be the stopper that sends another WM_CLOSE
-		WaitForSingleObject(stopperThread, 60*1000);
-		CloseHandle(stopperThread);
-		stopperThread = NULL;
-		bHandled = FALSE;
-	}
-
-	return 0;
-}
-
-#endif
 
 void MainWindow::handleLink(WidgetMenuPtr, unsigned id) {
 
@@ -1335,18 +1320,3 @@ void MainWindow::on(QueueManagerListener::Finished, QueueItem* qi, const string&
 		}
 	}
 }
-
-#ifdef PORT_ME
-LRESULT MainFrame::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	LogManager::getInstance()->removeListener(this);
-	QueueManager::getInstance()->removeListener(this);
-	TimerManager::getInstance()->removeListener(this);
-
-	if(trayIcon) {
-		updateTray(false);
-	}
-	bHandled = FALSE;
-	return 0;
-}
-#endif
-

@@ -38,7 +38,12 @@ public:
 	
 	MDIChildFrame(SmartWin::Widget* mdiClient) : SmartWin::Widget(mdiClient), reallyClose(false) {
 		typename ThisType::Seed cs;
-		cs.style |= BOOLSETTING(MDI_MAXIMIZED) ? WS_MAXIMIZE : 0;
+		BOOL max = FALSE;
+		if(!mdiClient->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
+			max = BOOLSETTING(MDI_MAXIMIZED);
+		}
+		if(max)
+			cs.style |= WS_MAXIMIZE;
 		
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		this->createMDIChild(cs);
@@ -118,7 +123,10 @@ private:
 
 	void sized(const SmartWin::WidgetSizedEventResult& sz) { 
 		static_cast<T*>(this)->layout();
-		SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, ::IsZoomed(this->handle()) > 0);
+		BOOL max = FALSE;
+		if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
+			SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, max > 0);
+		}
 	}
 	
 	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {

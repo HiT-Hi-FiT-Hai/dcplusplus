@@ -21,6 +21,7 @@
 
 #include "UsersFrame.h"
 #include "LineDlg.h"
+#include "HoldRedraw.h"
 
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/ResourceManager.h>
@@ -68,15 +69,10 @@ UsersFrame::UsersFrame(SmartWin::Widget* mdiParent) :
 	}
 	
 	FavoriteManager::FavoriteMap ul = FavoriteManager::getInstance()->getFavoriteUsers();
-#ifdef PORT_ME
-	ctrlUsers.SetRedraw(FALSE);
-#endif
+	HoldRedraw hold(users);
 	for(FavoriteManager::FavoriteMap::iterator i = ul.begin(); i != ul.end(); ++i) {
 		addUser(i->second);
 	}
-#ifdef PORT_ME
-	ctrlUsers.SetRedraw(TRUE);
-#endif
 	FavoriteManager::getInstance()->addListener(this);
 
 	startup = false;
@@ -91,14 +87,13 @@ void UsersFrame::layout() {
 
 	SmartWin::Rectangle rs = layoutStatus();
 	r.size.y -= rs.size.y + border;
+	users->setBounds(r);
 }
 
 void UsersFrame::addUser(const FavoriteUser& aUser) {
 	int i = users->insertItem(new UserInfo(aUser));
 	bool b = aUser.isSet(FavoriteUser::FLAG_GRANTSLOT);
-#ifdef PORT_ME
-	ctrlUsers.SetCheckState(i, b);
-#endif
+	users->setRowChecked(i, b);
 }
 
 void UsersFrame::updateUser(const User::Ptr& aUser) {
@@ -138,7 +133,7 @@ void UsersFrame::postClosing() {
 
 HRESULT UsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if(wParam == USER_UPDATED) {
-		std::auto_ptr<UserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lParam));
+		boost::scoped_ptrUserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lParam));
 		updateUser(uib->user);
 	}
 	return 0;

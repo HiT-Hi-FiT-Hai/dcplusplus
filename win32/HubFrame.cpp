@@ -184,7 +184,8 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	
 	showUsers->onClicked(&HubFrame::handleShowUsersClicked);
 
-	if(!BOOLSETTING(MDI_MAXIMIZED)) {
+	BOOL max = FALSE;
+	if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max)) && !max) {
 		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(url));
 		if(fhe != NULL){
 			//retrieve window position

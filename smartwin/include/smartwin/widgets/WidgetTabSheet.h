@@ -152,6 +152,8 @@ public:
 	/** Use this function to retrieve the header text of the currently selected tab.
 	  */
 	SmartUtil::tstring getSelectedHeader() const;
+	
+	void setHeader(unsigned idx, const SmartUtil::tstring& text);
 
 	/// Setting the event handler for the "selection changing" event
 	/** The event handler must have the signature "bool foo( WidgetTabSheet * Widget,
@@ -183,7 +185,9 @@ public:
 	  * where you wish to put the new page
 	  */
 	// the negative values are already covered by throwing an exception
-	unsigned int addPage( const SmartUtil::tstring & header, unsigned index );
+	unsigned int addPage( const SmartUtil::tstring & header, unsigned index, LPARAM lParam = 0 );
+	
+	LPARAM getData(unsigned idx);
 
 	/// Actually creates the Tab Sheet Control
 	/** You should call WidgetFactory::createTabSheet if you instantiate class
@@ -318,17 +322,29 @@ SmartUtil::tstring WidgetTabSheet< EventHandlerClass >::getSelectedHeader() cons
 }
 
 template< class EventHandlerClass >
+LPARAM WidgetTabSheet< EventHandlerClass >::getData(unsigned idx)
+{
+	TCITEM item = { TCIF_PARAM };
+	if ( !TabCtrl_GetItem( this->Widget::itsHandle, idx, & item ) )
+	{
+		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
+	}
+	return item.lParam;
+}
+
+template< class EventHandlerClass >
 void WidgetTabSheet< EventHandlerClass >::setSelectedIndex( int idx )
 {
 	TabCtrl_SetCurSel( this->Widget::itsHandle, idx );
 }
 
 template< class EventHandlerClass >
-unsigned int WidgetTabSheet< EventHandlerClass >::addPage( const SmartUtil::tstring & header, unsigned index )
+unsigned int WidgetTabSheet< EventHandlerClass >::addPage( const SmartUtil::tstring & header, unsigned index, LPARAM data )
 {
 	TCITEM item;
-	item.mask = TCIF_TEXT;
+	item.mask = TCIF_TEXT | TCIF_PARAM;
 	item.pszText = const_cast < TCHAR * >( header.c_str() );
+	item.lParam = data;
 	int newIdx = TabCtrl_InsertItem( this->Widget::itsHandle, index, & item );
 	if ( newIdx == - 1 )
 	{
@@ -337,6 +353,15 @@ unsigned int WidgetTabSheet< EventHandlerClass >::addPage( const SmartUtil::tstr
 	}
 	return ( unsigned int ) newIdx;
 }
+
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setHeader( unsigned index, const SmartUtil::tstring& header )
+{
+	TCITEM item = { TCIF_TEXT };
+	item.pszText = const_cast < TCHAR * >( header.c_str() );
+	TabCtrl_SetItem(this->handle(), index, &item);
+}
+
 
 template< class EventHandlerClass >
 WidgetTabSheet< EventHandlerClass >::WidgetTabSheet( SmartWin::Widget * parent )
