@@ -103,7 +103,7 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 {
 	{
 		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		chat = createTextBox(cs);
 		chat->setTextLimit(0);
@@ -120,11 +120,14 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 	
 	{
 		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		message = createTextBox(cs);
 		message->setFont(WinUtil::font);
 		addWidget(message);
+		message->onKeyDown(std::tr1::bind(&PrivateFrame::handleKeyDown, this, _1));
+		message->onChar(std::tr1::bind(&PrivateFrame::handleChar, this, _1));
+
 		layoutTable.add(message, SmartWin::Point(20, 20), 0, 1, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
 	}
 	
@@ -276,13 +279,13 @@ void PrivateFrame::updateTitle() {
 	setText((WinUtil::getNicks(replyTo) + _T(" - ") + hubs.first));
 }
 
-bool PrivateFrame::handleChar(WidgetTextBoxPtr w, int c) {
+bool PrivateFrame::handleChar(int c) {
 	if(c == VK_RETURN) {
 		if(!(isShiftPressed() || isControlPressed() || isAltPressed())) {
 			return true;
 		}
 	}
-	return BaseType::handleChar(w, c);
+	return false;
 }
 
 bool PrivateFrame::enter() {
@@ -369,12 +372,12 @@ HRESULT PrivateFrame::handleSpeaker(WPARAM, LPARAM) {
 	return 0;
 }
 
-bool PrivateFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {	
+bool PrivateFrame::handleKeyDown(int c) {	
 	if(c == VK_RETURN && enter()) {
 		return true;
 	}
 	
-	return BaseType::handleKeyDown(ptr, c);
+	return false;
 }
 
 void PrivateFrame::on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw() {

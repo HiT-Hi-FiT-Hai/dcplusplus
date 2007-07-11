@@ -506,11 +506,11 @@ int Application::run()
 				{
 					// here goes the usual stuff
 #ifndef WINCE
-					if ( ::IsDialogMessage( GetParent( msg.hwnd ), & msg ) ||
-							TranslateMDISysAccel( msg.hwnd, & msg ) )
-#else
-					if ( ::IsDialogMessage( GetParent( msg.hwnd ), & msg ) )
+					if(mdiClient && TranslateMDISysAccel(mdiClient, &msg)) {
+						continue;
+					}
 #endif
+					if ( ::IsDialogMessage( GetParent( msg.hwnd ), & msg ) )
 					{
 						continue; // Allow Tab order
 					}

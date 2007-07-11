@@ -43,7 +43,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 {
 	{
 		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = createDataGrid(cs);
 		hubs->setListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
@@ -60,7 +60,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 	
 	{
 		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
 
 		cs.caption = TSTRING(CONNECT);
 		connect = createButton(cs);

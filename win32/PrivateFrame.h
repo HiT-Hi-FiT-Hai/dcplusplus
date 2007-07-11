@@ -68,10 +68,8 @@ private:
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool preClosing();
 	
-	using BaseType::handleChar;
-	using BaseType::handleKeyDown;
-	bool handleChar(WidgetTextBoxPtr w, int c);
-	bool handleKeyDown(WidgetTextBoxPtr w, int c);
+	bool handleChar(int c);
+	bool handleKeyDown(int c);
 	bool enter();
 
 	void readLog();

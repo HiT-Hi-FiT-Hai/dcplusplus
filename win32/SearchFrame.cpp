@@ -106,7 +106,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		searchBox = createComboBox(cs);
 		searchBox->setFont(WinUtil::font);
@@ -119,7 +119,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
 		cs.caption = TSTRING(PURGE);
 		purge = createButton(cs);
 
@@ -128,7 +128,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		mode = createComboBox(cs);
 		mode->setFont(WinUtil::font);
@@ -141,7 +141,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_NUMBER;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL | ES_NUMBER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		size = createTextBox(cs);
 		size->setFont(WinUtil::font);
@@ -150,7 +150,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		sizeMode = createComboBox(cs);
 		sizeMode->setFont(WinUtil::font);
@@ -165,7 +165,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		fileType = createComboBox(cs);
 		fileType->setFont(WinUtil::font);
@@ -184,6 +184,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetCheckBox::Seed cs;
+		cs.style |= WS_TABSTOP;
 		cs.caption = TSTRING(ONLY_FREE_SLOTS);
 		slots = createCheckBox(cs);
 		slots->setChecked(onlyFree);
@@ -193,7 +194,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_NOCOLUMNHEADER;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_NOCOLUMNHEADER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
 		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
@@ -210,7 +211,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
 		cs.caption = TSTRING(SEARCH);
 		doSearch = createButton(cs);
 
@@ -219,7 +220,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		results = SmartWin::WidgetCreator<WidgetResults>::create(this, cs);
 		results->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
@@ -239,6 +240,7 @@ SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialStri
 
 	{
 		WidgetCheckBox::Seed cs;
+		cs.style |= WS_TABSTOP;
 		cs.caption = _T("+/-");
 		showUI = createCheckBox(cs);
 		showUI->setChecked(bShowUI);

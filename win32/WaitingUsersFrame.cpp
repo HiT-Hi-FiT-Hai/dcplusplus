@@ -43,7 +43,6 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_SHOWSELALWAYS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		queued = createTreeView(cs);
-		// @todo subclass WidgetTreeView to have onChar so MDIChildFrame can tab around it
 		addWidget(queued);
 #ifdef PORT_ME
 		queued->setColor(WinUtil::textColor, WinUtil::bgColor);

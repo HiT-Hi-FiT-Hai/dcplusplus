@@ -887,21 +887,22 @@ private:
 	ImageListPtr itsSmallImageList;
 	ImageListPtr itsStateImageList;
 
-	typename MessageMapType::itsIntLparamLparam itsMemberSortFunction;
 	typename MessageMapType::intCallbackCompareFunc itsGlobalSortFunction;
+	typename MessageMapType::itsIntLparamLparam itsMemberSortFunction;
 
-		typename MessageMapType::itsVoidGetIconFunc itsMemberGetIconFunction;
-		typename MessageMapType::voidGetIconFunc itsGlobalGetIconFunction;
+	typename MessageMapType::voidGetIconFunc itsGlobalGetIconFunction;
+	typename MessageMapType::itsVoidGetIconFunc itsMemberGetIconFunction;
 	static int CALLBACK CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
 
 	// If true the grid is in "read only mode" meaning that cell values cannot be edited.
 	// A simpler version of defining a beenValidate always returning false
 	bool isReadOnly;
 
+	bool itsEditingCurrently; // Inbetween BEGIN and END EDIT
+
 	// Number of columns in grid
 	unsigned int itsNoColumns;
 
-	bool itsEditingCurrently; // Inbetween BEGIN and END EDIT
 
 	// Private validate function, this ones returns the "read only" property of the list
 	static bool defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue );
@@ -1667,8 +1668,8 @@ WidgetDataGrid< EventHandlerClass >::WidgetDataGrid( SmartWin::Widget * parent )
 	: Widget( parent, 0 ),
 	itsGlobalSortFunction( 0 ),
 	itsMemberSortFunction( 0 ),
-		itsGlobalGetIconFunction( 0 ),
-		itsMemberGetIconFunction( 0 ),
+	itsGlobalGetIconFunction( 0 ),
+	itsMemberGetIconFunction( 0 ),
 	isReadOnly( false ),
 	itsEditingCurrently( false ),
 	itsNoColumns( 0 )

@@ -107,7 +107,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
 {
 	{
 		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
 		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);		
@@ -123,7 +123,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
 	
 	{
 		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_PUSHBUTTON;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON | BS_PUSHBUTTON;
 		
 		cs.caption = TSTRING(CONFIGURE);
 		configure = createButton(cs);
@@ -151,7 +151,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
 
 	{
 		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
 		cs.caption.clear();
 		pubLists = createComboBox(cs);
 		pubLists->setFont(WinUtil::font);
@@ -168,7 +168,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
 	}
 	{
 		WidgetTextBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
 		filter->setFont(WinUtil::font);
 #ifdef PORT_ME

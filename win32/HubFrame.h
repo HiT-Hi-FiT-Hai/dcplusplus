@@ -229,18 +229,16 @@ private:
 	
 	void runUserCommand(const ::UserCommand& uc);
 
-	using BaseType::handleChar;
-	bool handleChar(WidgetTextBoxPtr w, int c);
-	using BaseType::handleKeyDown;
-	bool handleKeyDown(WidgetTextBoxPtr w, int c);
-	bool handleKeyDown(WidgetUsersPtr w, int c);
+	bool handleMessageChar(int c);
+	bool handleMessageKeyDown(int c);
+	bool handleUsersKeyDown(int c);
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleShowUsersClicked(WidgetCheckBoxPtr);
 	void handleCopyNick();
 	void handleDoubleClickUsers();
 
-	void updateFilter();
+	void updateFilter(const tstring& newText);
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);
 

@@ -108,6 +108,8 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		message = createTextBox(cs);
 		message->setFont(WinUtil::font);
 		addWidget(message);
+		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
+		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));
 	}
 	
 	{
@@ -117,6 +119,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		filter = createTextBox(cs);
 		filter->setFont(WinUtil::font);
 		addWidget(filter);
+		filter->onTextChanging(std::tr1::bind(&HubFrame::updateFilter, this, _1));
 	}
 	{
 		WidgetComboBox::Seed cs;
@@ -155,6 +158,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 		
 		users->onSelectionChanged(std::tr1::bind(&HubFrame::updateStatus, this));
 		users->onDblClicked(std::tr1::bind(&HubFrame::handleDoubleClickUsers, this));
+		users->onKeyDown(std::tr1::bind(&HubFrame::handleUsersKeyDown, this, _1));
 	}
 	
 	{
@@ -712,7 +716,7 @@ bool HubFrame::historyActive() {
 	return isAltPressed() || (isControlPressed() && BOOLSETTING(USE_CTRL_FOR_LINE_HISTORY));
 }
 
-bool HubFrame::handleKeyDown(WidgetUsersPtr ptr, int c) {
+bool HubFrame::handleUsersKeyDown(int c) {
 	if(c == VK_RETURN) {
 		int item = users->getNextItem(-1, LVNI_FOCUSED);
 		if(item != -1) {
@@ -720,10 +724,10 @@ bool HubFrame::handleKeyDown(WidgetUsersPtr ptr, int c) {
 		}
 		return true;
 	}
-	return BaseType::handleKeyDown(ptr, c);
+	return false;
 }
 
-bool HubFrame::handleChar(WidgetTextBoxPtr ptr, int c) {
+bool HubFrame::handleMessageChar(int c) {
 	switch(c) {
 	case VK_RETURN: {
 		if(!(isShiftPressed() || isControlPressed() || isAltPressed())) {
@@ -741,18 +745,13 @@ bool HubFrame::handleChar(WidgetTextBoxPtr ptr, int c) {
 	} break;
 	case VK_PRIOR:
 	case VK_NEXT: {
-		if(ptr == message) {
-			return true;
-		}
+		return true;
 	}
 	}
-	if(ptr == filter) {
-		updateFilter();
-	}
-	
-	return BaseType::handleChar(ptr, c);
+	return false;
 }
-bool HubFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {
+
+bool HubFrame::handleMessageKeyDown(int c) {
 	if(!complete.empty() && c != VK_TAB)
 		complete.clear(), inTabComplete = false;
 
@@ -803,12 +802,12 @@ bool HubFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {
 		} 
 		break;
 	case VK_PRIOR: // page up
-		if(ptr == message) {
+		{
 			chat->sendMessage(WM_VSCROLL, SB_PAGEUP);
 			return true;
 		} break;
 	case VK_NEXT: // page down
-		if(ptr == message) {
+		{
 			chat->sendMessage(WM_VSCROLL, SB_PAGEDOWN);
 			return true;
 		} break;
@@ -830,7 +829,7 @@ bool HubFrame::handleKeyDown(WidgetTextBoxPtr ptr, int c) {
 		} 
 		break;
 	}
-	return BaseType::handleKeyDown(ptr, c);
+	return false;
 }
 
 int HubFrame::UserInfo::getImage() const {
@@ -1562,10 +1561,10 @@ void HubFrame::resortUsers() {
 		(*i)->resortForFavsFirst(true);
 }
 
-void HubFrame::updateFilter() {
-	tstring newFilter = filter->getText();
-	if(newFilter != filterString) {
-		filterString = newFilter;
+void HubFrame::updateFilter(const tstring& newText) {
+
+	if(newText != filterString) {
+		filterString = newText;
 		updateUserList();
 	}
 }

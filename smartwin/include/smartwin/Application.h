@@ -261,6 +261,8 @@ public:
 	bool handleCommand(const Message& msg, HANDLE handler);
 	void clearCommands(HANDLE owner);
 	
+	/** Sets the MDI client for mdi acceletor processing */
+	void setMDIClient(HWND hWnd) { mdiClient = hWnd; }
 private:
 	// Unregister this classes when the application finishes
 	static std::list< SmartUtil::tstring > itsClassesToUnregister;
@@ -294,6 +296,8 @@ private:
 
 	// The according signals we must raise, go in this vector.
 	std::vector< SignalPtr > itsVSignals;
+	
+	HWND mdiClient;
 
 	// Private Constructor to ensure Singleton Implementation
 	Application( HINSTANCE hInst, int nCmdShow, const char * cmdLine );

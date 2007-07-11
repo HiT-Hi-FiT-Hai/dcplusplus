@@ -36,7 +36,9 @@ class MDIChildFrame :
 public:
 	typedef MDIChildFrame<T> ThisType;
 	
-	MDIChildFrame(SmartWin::Widget* mdiClient) : SmartWin::Widget(mdiClient), reallyClose(false) {
+protected:
+
+	MDIChildFrame(SmartWin::Widget* mdiClient) : SmartWin::Widget(mdiClient), lastFocus(NULL), reallyClose(false) {
 		typename ThisType::Seed cs;
 		BOOL max = FALSE;
 		if(!mdiClient->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
@@ -51,15 +53,15 @@ public:
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
 		onSized(std::tr1::bind(&ThisType::sized, this, _1));
+		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
 	}
-	
-protected:
 	
 	void handleFocus() {
-		if(!controls.empty()) {
-			::SetFocus(controls[0]->handle());
+		if(lastFocus != NULL) {
+			::SetFocus(lastFocus);
 		}
 	}
+	
 	/**
 	 * The first of two close phases, used to disconnect from other threads that might affect this window.
 	 * This is where all stuff that might be affected by other threads goes - it should make sure
@@ -72,60 +74,37 @@ protected:
 	
 	template<typename W>
 	void addWidget(W* widget) {
-		widget->onKeyDown(std::tr1::bind((bool (T::*)(W*, int))&T::handleKeyDown, static_cast<T*>(this), widget, _1));
-		widget->onChar(std::tr1::bind((bool (T::*)(W*, int))&T::handleChar, static_cast<T*>(this), widget, _1));
 		addColor(widget);
-		//TODO Fix widgets that don't support this... widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
-		controls.push_back(widget); 
+		if(lastFocus == NULL) {
+			lastFocus = widget->handle();
+		}
 	}
 	
+private:
+	HWND lastFocus;
+	bool reallyClose;
+
 	template<typename A, typename B, typename C>
 	void addColor(SmartWin::AspectBackgroundColor<A, B, C>* widget) {
 		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
-		
 	}
 	
 	// Catch-rest for the above
 	void addColor(void* w) {
 		
 	}
-	
-	template<typename W>
-	bool handleKeyDown(W* widget, int key) { 
-		if(key == VK_TAB && !widget->isControlPressed() && !widget->isAltPressed()) {
-			for(WidgetList::size_type i = 0; i < controls.size(); ++i) {
-				if(controls[i] == widget) {
-					size_t pos = (widget->isShiftPressed() ? i + controls.size() - 1 : i + 1) % controls.size();
-					::SetFocus(controls[pos]->handle());
-					return true;
-				}
-			}
-		}
-		return false; 
-	}
-	
-	template<typename W>
-	bool handleChar(W* widget, int key) {
-		if(key == VK_TAB && !widget->isControlPressed() && !widget->isAltPressed()) {
-			if(std::find(controls.begin(), controls.end(), static_cast<SmartWin::Widget*>(widget)) != controls.end()) {
-				// Eat tab chars so they're not passed to the control...
-				return true;
-			}
-		}
-		return false;
-	}
-	
-private:
-	/** This sets tab order and control coloring */
-	typedef std::vector<SmartWin::Widget*> WidgetList;
-	WidgetList controls;
-	bool reallyClose;
 
 	void sized(const SmartWin::WidgetSizedEventResult& sz) { 
 		static_cast<T*>(this)->layout();
 		BOOL max = FALSE;
 		if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
 			SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, max > 0);
+		}
+	}
+	
+	void handleActivate(bool active) {
+		if(!active) {
+			lastFocus = ::GetFocus();
 		}
 	}
 	

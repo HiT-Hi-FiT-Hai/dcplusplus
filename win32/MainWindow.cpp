@@ -114,6 +114,8 @@ MainWindow::MainWindow() :
 
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	startSocket();
+	
+	SmartWin::Application::instance().setMDIClient(getMDIClient()->handle());
 
 #ifdef PORT_ME
 	// Load images
