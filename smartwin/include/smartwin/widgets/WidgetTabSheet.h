@@ -469,7 +469,7 @@ void WidgetTabSheet< EventHandlerClass >::setRightTabs( bool value )
 template< class EventHandlerClass >
 void WidgetTabSheet< EventHandlerClass >::setFlatSeparators( bool value )
 {
-	setFlatButtonStyle(value);
+	setFlatButtonStyle();
 	this->sendMessage( TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, value );
 }
 
