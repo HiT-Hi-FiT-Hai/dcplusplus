@@ -26,6 +26,7 @@
 #include "AspectSpeaker.h"
 #include "AspectStatus.h"
 #include <dcpp/SettingsManager.h>
+#include "MDITab.h"
 
 template<typename T>
 class MDIChildFrame : 
@@ -54,6 +55,12 @@ protected:
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
 		onSized(std::tr1::bind(&ThisType::sized, this, _1));
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
+		
+		MDITab::getInstance()->addTab(this);
+	}
+	
+	virtual ~MDIChildFrame() {
+		MDITab::getInstance()->removeTab(this);
 	}
 	
 	void handleFocus() {

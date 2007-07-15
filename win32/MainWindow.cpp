@@ -57,6 +57,8 @@
 #include <dcpp/ShareManager.h>
 #include <dcpp/QueueManager.h>
 
+MainWindow* MainWindow::instance = 0;
+
 MainWindow::MainWindow() :
 	SmartWin::Widget(0),
 	paned(0),
@@ -71,6 +73,8 @@ MainWindow::MainWindow() :
 	lastDown(0),
 	lastTick(GET_TICK())
 {
+	instance = this;
+	
 	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
@@ -346,9 +350,11 @@ void MainWindow::initStatusBar() {
 }
 
 void MainWindow::initTabs() {
-	WidgetTabSheet::Seed cs;
+	MDITab::Seed cs;
+	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE;
 	cs.font = WinUtil::font;
-	tabs = createTabSheet(cs);
+	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
+	tabs->onResized(std::tr1::bind(&MainWindow::layout, this));
 }
 
 void MainWindow::initMDI() {
@@ -562,6 +568,8 @@ void MainWindow::updateStatus() {
 }
 
 MainWindow::~MainWindow() {
+	instance = 0;
+	
 #ifdef PORT_ME
 	m_CmdBar.m_hImageList = NULL;
 

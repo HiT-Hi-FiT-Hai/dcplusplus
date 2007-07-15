@@ -29,21 +29,7 @@
 #include "WidgetFactory.h"
 #include "AspectStatus.h"
 #include "AspectSpeaker.h"
-
-#ifdef PORT_ME
-
-#include "../client/TimerManager.h"
-#include "../client/HttpConnection.h"
-#include "../client/FavoriteManager.h"
-#include "../client/QueueManagerListener.h"
-#include "../client/Util.h"
-#include "../client/LogManager.h"
-#include "../client/version.h"
-
-#include "FlatTabCtrl.h"
-#include "SingleInstance.h"
-#include "UPnP.h"
-#endif
+#include "MDITab.h"
 
 class MainWindow : 
 	public WidgetFactory<SmartWin::WidgetMDIFrame, MainWindow>, 
@@ -52,11 +38,6 @@ class MainWindow :
 	private QueueManagerListener, 
 	private LogManagerListener,
 	public AspectStatus<MainWindow>
-
-#ifdef PORT_ME
-class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,  
-#endif
 {
 public:
 	enum Status {
@@ -74,7 +55,6 @@ public:
 
 	MainWindow();
 	virtual ~MainWindow();
-
 private:
 	
 	class DirectoryListInfo {
@@ -117,7 +97,7 @@ private:
 	WidgetHPanedPtr paned;
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
-	WidgetTabSheetPtr tabs;
+	MDITab* tabs;
 	
 	/** Is the tray icon visible? */
 	bool trayIcon;
@@ -134,6 +114,8 @@ private:
 	int64_t lastDown;
 	uint64_t lastTick;
 
+	static MainWindow* instance;
+	
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;
 	tstring lastLines;

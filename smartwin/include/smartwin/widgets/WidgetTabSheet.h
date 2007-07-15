@@ -171,9 +171,7 @@ public:
 	void onSelectionChanging(const typename Dispatcher::F& f) {
 		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
-			typename MessageMapType::SignalTupleType(
-				Message( WM_NOTIFY, TCN_SELCHANGING ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
-			)
+			Message( WM_NOTIFY, TCN_SELCHANGING ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
 		);
 	}
 
@@ -250,6 +248,14 @@ public:
 	{ return true;
 	}
 
+	size_t size() {
+		return static_cast<size_t>(TabCtrl_GetItemCount(this->handle()));
+	}
+	
+	void erase(size_t i) {
+		TabCtrl_DeleteItem(this->handle(), i);
+	}
+	
 /// Get the area not used by the tabs
 /** This function should be used after adding the pages, so that the area not used by
   * the tabs can be calculated accurately. It returns coordinates respect to the
@@ -439,7 +445,7 @@ template< class EventHandlerClass >
 SmartWin::Rectangle WidgetTabSheet< EventHandlerClass >::getUsableArea() const
 {
 	::RECT d_Answer;
-	Point d_Size = this->getClientAreaSize();
+	Point d_Size = this->getSize();
 
 	d_Answer.left = d_Answer.top = 0;
 	d_Answer.right = d_Size.x;
