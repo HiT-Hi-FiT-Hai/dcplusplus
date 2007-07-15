@@ -25,8 +25,7 @@ MDITab* MDITab::instance;
 
 MDITab::MDITab(SmartWin::Widget* parent) : 
 	SmartWin::Widget(parent),
-	BaseType(parent),
-	activating(false)
+	BaseType(parent)
 {
 	instance = this;
 }
@@ -38,7 +37,7 @@ MDITab::~MDITab() {
 void MDITab::removeTab(SmartWin::Widget* w) {
 	int i = findTab(w);
 	if(i != -1) {
-		this->erase(i);
+		erase(i);
 		if(resized)
 			resized();
 	}
@@ -46,7 +45,7 @@ void MDITab::removeTab(SmartWin::Widget* w) {
 
 int MDITab::findTab(SmartWin::Widget* w) {
 	for(size_t i = 0; i < this->size(); ++i) {
-		if(this->getData(i) == reinterpret_cast<LPARAM>(w)) {
+		if(getData(i) == reinterpret_cast<LPARAM>(w)) {
 			return static_cast<int>(i);
 		}
 	}
@@ -56,7 +55,7 @@ int MDITab::findTab(SmartWin::Widget* w) {
 void MDITab::create( const Seed & cs ) {
 	BaseType::create(cs);
 	
-	this->onSelectionChanging(std::tr1::bind(&MDITab::handleSelectionChanging, this, _1));
+	onSelectionChanged(std::tr1::bind(&MDITab::handleSelectionChanged, this, _1));
 }
 
 bool MDITab::handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& newText) {
@@ -67,21 +66,19 @@ bool MDITab::handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& n
 	return true;
 }
 
-bool MDITab::handleSelectionChanging(size_t i) {
+void MDITab::handleSelectionChanged(size_t i) {
 	SmartWin::Widget* w = reinterpret_cast<SmartWin::Widget*>(this->getData(i));
-	if(!(activating || w->getParent()->sendMessage(WM_MDIGETACTIVE) == reinterpret_cast<HRESULT>(w->handle()))) {
+	if(w->getParent()->sendMessage(WM_MDIGETACTIVE) != reinterpret_cast<HRESULT>(w->handle())) {
 		w->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(w->handle()));
 	}
-	activating = false;
-	return true;
 }
 
 HRESULT MDITab::handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lParam) {
 	if(reinterpret_cast<LPARAM>(w->handle()) == lParam) {
 		int i = findTab(w);
 		if(i != -1) {
-			activating = true;
 			setSelectedIndex(i);
 		}
 	}
+	return 0;
 }

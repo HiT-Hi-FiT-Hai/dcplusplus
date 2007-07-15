@@ -32,7 +32,6 @@
 #include "SmartUtil.h"
 #include "../Widget.h"
 #include "../xCeption.h"
-#include "../TrueWindow.h"
 #include "../MessageMapControl.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectVisible.h"
@@ -112,8 +111,7 @@ struct TreeViewNode
 template< class EventHandlerClass >
 class WidgetTreeView :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
-
+	
 	// Aspects
 	public AspectBorder< WidgetTreeView< EventHandlerClass > >,
 	public AspectSizable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,

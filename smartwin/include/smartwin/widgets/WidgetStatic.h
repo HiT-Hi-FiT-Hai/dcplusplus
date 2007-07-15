@@ -45,7 +45,6 @@
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectBorder.h"
-#include "../TrueWindow.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -71,7 +70,6 @@ class WidgetCreator;
 template< class EventHandlerClass >
 class WidgetStatic :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
 
 	// Aspects
 	public AspectBackgroundColor< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,

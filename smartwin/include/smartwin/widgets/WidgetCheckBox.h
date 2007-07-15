@@ -31,7 +31,6 @@
 
 #include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../TrueWindow.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectText.h"
@@ -66,8 +65,7 @@ class WidgetCreator;
 template< class EventHandlerClass >
 class WidgetCheckBox :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
-
+	
 	// Aspect classes
 	public AspectBackgroundColor< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
 	public AspectBorder< WidgetCheckBox< EventHandlerClass > >,

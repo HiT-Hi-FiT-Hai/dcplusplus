@@ -70,7 +70,6 @@ public:
   */
 template< class EventHandlerClass, class TextBoxType /*only her to get the number of template parameters right in the base class*/ >
 class WidgetRichTextBox :
-	private virtual TrueWindow,
 	public WidgetTextBox< EventHandlerClass, /*This is to DISABLE the OnlyEditControl thingies, Magic Enum Construct!*/RichTextBox< EventHandlerClass > >
 {
 	typedef MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > MessageMapType;

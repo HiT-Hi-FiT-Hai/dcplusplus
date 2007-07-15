@@ -31,7 +31,6 @@
 
 #include <commctrl.h>
 #include "../MessageMapControl.h"
-#include "../TrueWindow.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectFont.h"
@@ -56,11 +55,11 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-struct WidgetTabSheetDispatcher
+struct WidgetTabSheetChangingDispatcher
 {
 	typedef std::tr1::function<bool (unsigned)> F;
 
-	WidgetTabSheetDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
+	WidgetTabSheetChangingDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 
 	HRESULT operator()(private_::SignalContent& params) {
 		unsigned param = TabCtrl_GetCurSel( widget->handle() );
@@ -70,6 +69,23 @@ struct WidgetTabSheetDispatcher
 	F f;
 	Widget* widget;
 };
+
+struct WidgetTabSheetChangedDispatcher
+{
+	typedef std::tr1::function<void (unsigned)> F;
+
+	WidgetTabSheetChangedDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
+
+	HRESULT operator()(private_::SignalContent& params) {
+		unsigned param = TabCtrl_GetCurSel( widget->handle() );
+		f(param);
+		return 0;
+	}
+
+	F f;
+	Widget* widget;
+};
+
 /// Tab Sheet Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -87,8 +103,7 @@ struct WidgetTabSheetDispatcher
 template< class EventHandlerClass >
 class WidgetTabSheet :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
-
+	
 	// Aspects
 	public AspectBorder< WidgetTabSheet< EventHandlerClass > >,
 	public AspectEnabled< EventHandlerClass, WidgetTabSheet< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTabSheet< EventHandlerClass > > >,
@@ -105,8 +120,9 @@ class WidgetTabSheet :
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef MessageMapControl< EventHandlerClass, WidgetTabSheet > MessageMapType;
-	typedef WidgetTabSheetDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	typedef WidgetTabSheetChangingDispatcher ChangingDispatcher;
+	typedef AspectAdapter<ChangingDispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	typedef WidgetTabSheetChangedDispatcher ChangedDispatcher;
 
 	friend class WidgetCreator< WidgetTabSheet >;
 
@@ -168,10 +184,17 @@ public:
 	void onSelectionChanging( typename MessageMapType::boolFunctionTakingUnsigned eventHandler ) {
 		onSelectionChanging(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
 	}
-	void onSelectionChanging(const typename Dispatcher::F& f) {
+	void onSelectionChanging(const typename ChangingDispatcher::F& f) {
 		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 		ptrThis->setCallback(
-			Message( WM_NOTIFY, TCN_SELCHANGING ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+			Message( WM_NOTIFY, TCN_SELCHANGING ), ChangingDispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+		);
+	}
+
+	void onSelectionChanged(const typename ChangedDispatcher::F& f) {
+		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
+		ptrThis->setCallback(
+			Message( WM_NOTIFY, TCN_SELCHANGE ), ChangedDispatcher(f, boost::polymorphic_cast<Widget*>(this) )
 		);
 	}
 
@@ -186,6 +209,8 @@ public:
 	unsigned int addPage( const SmartUtil::tstring & header, unsigned index, LPARAM lParam = 0 );
 	
 	LPARAM getData(unsigned idx);
+	
+	void setData(unsigned idx, LPARAM data);
 
 	/// Actually creates the Tab Sheet Control
 	/** You should call WidgetFactory::createTabSheet if you instantiate class
@@ -368,6 +393,13 @@ void WidgetTabSheet< EventHandlerClass >::setHeader( unsigned index, const Smart
 	TabCtrl_SetItem(this->handle(), index, &item);
 }
 
+template< class EventHandlerClass >
+void WidgetTabSheet< EventHandlerClass >::setData( unsigned index, LPARAM lParam )
+{
+	TCITEM item = { TCIF_PARAM };
+	item.lParam = lParam;
+	TabCtrl_SetItem(this->handle(), index, &item);
+}
 
 template< class EventHandlerClass >
 WidgetTabSheet< EventHandlerClass >::WidgetTabSheet( SmartWin::Widget * parent )
@@ -437,8 +469,8 @@ void WidgetTabSheet< EventHandlerClass >::setRightTabs( bool value )
 template< class EventHandlerClass >
 void WidgetTabSheet< EventHandlerClass >::setFlatSeparators( bool value )
 {
-	setFlatButtonStyle();
-	this->sendMessage( TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, TCS_EX_FLATSEPARATORS );
+	setFlatButtonStyle(value);
+	this->sendMessage( TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, value );
 }
 
 template< class EventHandlerClass >

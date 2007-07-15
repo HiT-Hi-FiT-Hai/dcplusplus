@@ -20,7 +20,6 @@
 #define DCPLUSPLUS_WIN32_PRIVATE_FRAME_H
 
 #include "MDIChildFrame.h"
-#include "TableLayout.h"
 
 #include <dcpp/ClientManagerListener.h>
 #include <dcpp/User.h>
@@ -53,7 +52,6 @@ private:
 
 	WidgetTextBoxPtr chat;
 	WidgetTextBoxPtr message;
-	TableLayout layoutTable;
 	
 	typedef HASH_MAP<UserPtr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;

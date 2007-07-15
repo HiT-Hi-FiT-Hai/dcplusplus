@@ -32,7 +32,6 @@
 #include "SmartUtil.h"
 #include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../TrueWindow.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectVisible.h"
@@ -83,8 +82,7 @@ struct AspectDateTimePickerDispatcher
 template< class EventHandlerClass >
 class WidgetDateTimePicker :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
-
+	
 	// Aspects
 	public AspectClickable< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass> > >,
 	public AspectEnabled< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,

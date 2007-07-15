@@ -37,7 +37,6 @@
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectKeyboard.h"
-#include "../TrueWindow.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectUpdate.h"
 #include "../aspects/AspectGetParent.h"
@@ -94,7 +93,6 @@ public:
 template< class EventHandlerClass, class TextBoxType = NormalTextBox< EventHandlerClass > >
 class WidgetTextBox :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
 
 	// Aspect classes
 	public AspectBorder< typename TextBoxType::TextBoxType >,

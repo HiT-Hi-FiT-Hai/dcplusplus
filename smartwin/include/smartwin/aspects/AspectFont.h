@@ -30,7 +30,6 @@
 #define AspectFont_h
 
 #include "../Widget.h"
-#include "../TrueWindow.h"
 #include "../Font.h"
 
 namespace SmartWin
@@ -50,19 +49,18 @@ namespace SmartWin
   */
 template< class WidgetType >
 class AspectFont
-	: private virtual TrueWindow
 {
 public:
 	/// Sets the font used by the Widget
 	/** Changes the font of the Widget to the given font. Use the class Font to
 	  * construct a font in which to set by this function.
 	  */
-	void setFont( FontPtr font, bool forceUpdate = true );
+	void setFont( const FontPtr& font, bool forceUpdate = true );
 
 	/// Returns the font used by the Widget
 	/** Returns the Font object currently being used by the Widget
 	  */
-	FontPtr getFont();
+	const FontPtr& getFont();
 
 	// TODO: Remove credits and put on website!
 	/// Function taking a PredefinedFontTypes type
@@ -70,29 +68,35 @@ public:
 	  * -- credit to mm.
 	  */
 	void setFont( PredefinedFontTypes stockObjectFont, bool forceUpdate = true );
+private:
+	// Keep a reference around so it doesn't get deleted
+	FontPtr font;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template< class WidgetType >
-void AspectFont< WidgetType >::setFont( FontPtr font, bool forceUpdate )
+void AspectFont< WidgetType >::setFont( const FontPtr& font_, bool forceUpdate )
 {
+	font = font_;
 	::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_SETFONT, reinterpret_cast< WPARAM >( font->getHandle() ), static_cast< LPARAM >( forceUpdate ) );
-	addObject( font );
 }
 
 template< class WidgetType >
-FontPtr AspectFont< WidgetType >::getFont()
+const FontPtr& AspectFont< WidgetType >::getFont()
 {
-	HFONT font = ( HFONT )::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_GETFONT, 0, 0 );
-	std::tr1::shared_ptr< Font > retVal( new Font( font, false ) );
-	return retVal;
+	if(!font) {
+		HFONT f = ( HFONT )::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_GETFONT, 0, 0 );
+		font = FontPtr( new Font( f, false ) );
+	}
+	return font;
 }
 
 template< class WidgetType >
 void AspectFont< WidgetType >::setFont( PredefinedFontTypes stockObjectFont, bool forceUpdate )
 {
+	font = FontPtr();
 	HANDLE hFont = static_cast< HFONT >( ::GetStockObject( stockObjectFont ) );
 	::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_SETFONT, reinterpret_cast< WPARAM >( hFont ), static_cast< LPARAM >( forceUpdate ) );
 }

@@ -33,7 +33,6 @@
 #include "../MessageMap.h"
 #include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../TrueWindow.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectSelection.h"
@@ -359,7 +358,6 @@ public:
 template< class EventHandlerClass >
 class WidgetDataGrid :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
 
 	// Aspect classes
 	public AspectBorder< WidgetDataGrid< EventHandlerClass > >,

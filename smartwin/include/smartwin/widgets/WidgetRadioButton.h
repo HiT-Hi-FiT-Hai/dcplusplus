@@ -42,7 +42,6 @@
 #include "../aspects/AspectBorder.h"
 #include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../TrueWindow.h"
 #include "../aspects/AspectFont.h"
 #include "../xCeption.h"
 
@@ -70,7 +69,6 @@ class WidgetCreator;
 template< class EventHandlerClass >
 class WidgetRadioButton :
 	public MessageMapPolicy< Policies::Subclassed >,
-	public virtual TrueWindow,
 
 	// Aspects
 	public AspectBackgroundColor< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,

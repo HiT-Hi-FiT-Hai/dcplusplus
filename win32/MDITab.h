@@ -15,13 +15,21 @@ public:
 	
 	template<typename T>
 	void addTab(T* w) {
-		this->addPage(w->getText(), this->size(), reinterpret_cast<LPARAM>(static_cast<SmartWin::Widget*>(w)));
+		SmartWin::Widget* widget = static_cast<SmartWin::Widget*>(w);
+		size_t tabs = this->size();
+		this->addPage(w->getText(), tabs, reinterpret_cast<LPARAM>(static_cast<SmartWin::Widget*>(w)));
+
+		if(w->getParent()->sendMessage(WM_MDIGETACTIVE) == reinterpret_cast<LPARAM>(widget->handle())) {
+			activating = true;
+			this->setSelectedIndex(tabs);
+		}
 		w->onTextChanging(std::tr1::bind(&MDITab::handleTextChanging, this, static_cast<SmartWin::Widget*>(w), _1));
 		w->onRaw(std::tr1::bind(&MDITab::handleMdiActivate, this, static_cast<SmartWin::Widget*>(w), _1, _2), SmartWin::Message(WM_MDIACTIVATE));
-		
+
 		if(resized)
 			resized();
 	}
+
 	void removeTab(SmartWin::Widget* w);
 	
 	virtual void create( const Seed & cs = getDefaultSeed() );
@@ -37,7 +45,7 @@ private:
 	~MDITab();
 	
 	bool handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& newText);
-	bool handleSelectionChanging(size_t i);
+	void handleSelectionChanged(size_t i);
 	HRESULT handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lParam);
 	
 	std::tr1::function<void ()> resized;

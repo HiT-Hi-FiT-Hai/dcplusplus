@@ -89,7 +89,6 @@ MainWindow::MainWindow() :
 	initMenu();
 	initStatusBar();
 	initTabs();
-	initMDI();
 	initTransfers();
 	initSecond();
 
@@ -351,15 +350,12 @@ void MainWindow::initStatusBar() {
 
 void MainWindow::initTabs() {
 	MDITab::Seed cs;
-	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE;
+	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE | TCS_BUTTONS | TCS_FLATBUTTONS | TCS_HOTTRACK;
 	cs.font = WinUtil::font;
 	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
+	tabs->setFlatSeparators(false);
 	tabs->onResized(std::tr1::bind(&MainWindow::speak, this, LAYOUT, 0));
-}
-
-void MainWindow::initMDI() {
-	dcdebug("initMDI\n");
-	paned->setFirst(getMDIClient());
+	paned->setFirst(tabs);
 }
 
 void MainWindow::initTransfers() {
@@ -499,6 +495,7 @@ bool MainWindow::closing() {
 		WaitForSingleObject(stopperThread, 60*1000);
 		CloseHandle(stopperThread);
 		stopperThread = NULL;
+		::PostQuitMessage(0);
 	}
 	return true;
 }
@@ -534,11 +531,9 @@ void MainWindow::layout() {
 	
 	r.size.y -= rs.size.y + border;
 
-	tabs->setBounds(r);
-	
-	r = tabs->getUsableArea();
-	
 	paned->setRect(r);
+	
+	getMDIClient()->setBounds(tabs->getUsableArea());
 }
 
 void MainWindow::updateStatus() {

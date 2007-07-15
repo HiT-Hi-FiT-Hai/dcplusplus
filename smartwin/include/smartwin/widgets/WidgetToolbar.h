@@ -34,7 +34,6 @@
 #include "SmartUtil.h"
 #include "../Widget.h"
 #include "../MessageMapControl.h"
-#include "../TrueWindow.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectVisible.h"
 #include "../aspects/AspectEnabled.h"
@@ -80,7 +79,6 @@ struct ToolbarDispatcher
 template< class EventHandlerClass >
 class WidgetToolbar :
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
 
 	// Aspects
 	public AspectEnabled< EventHandlerClass, WidgetToolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetToolbar< EventHandlerClass > > >,

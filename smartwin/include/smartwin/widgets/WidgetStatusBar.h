@@ -45,7 +45,6 @@
 #include "../aspects/AspectThreads.h"
 #include "../aspects/AspectBorder.h"
 #include "../MessageMapControl.h"
-#include "../TrueWindow.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -119,8 +118,7 @@ template< class EventHandlerClass, class TypeOfStatusBar = NoSection< EventHandl
 class WidgetStatusBar :
 	public TypeOfStatusBar,
 	public MessageMapPolicy< Policies::Subclassed >,
-	private virtual TrueWindow,
-
+	
 	// Aspects
 	public AspectBorder< WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > >,
 	public AspectClickable< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar >, MessageMapControl< EventHandlerClass, WidgetStatusBar< EventHandlerClass, TypeOfStatusBar > > >,

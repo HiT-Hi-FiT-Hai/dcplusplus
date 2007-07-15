@@ -125,7 +125,6 @@ private:
 	void initMenu();
 	void initStatusBar();
 	void initTabs();
-	void initMDI();
 	void initTransfers();
 	void initSecond();
 	

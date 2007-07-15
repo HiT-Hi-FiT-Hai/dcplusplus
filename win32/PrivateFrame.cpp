@@ -39,12 +39,7 @@ void PrivateFrame::openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyT
 		pf = new PrivateFrame(mdiParent, replyTo_);
 	} else {
 		pf = i->second;
-		if(StupidWin::isIconic(pf))
-			pf->restore();
-	
-#ifdef PORT_ME
-		i->second->MDIActivate(i->second->m_hWnd);
-#endif
+		pf->activate();
 	}
 	if(!msg.empty())
 		pf->sendMessage(msg);
@@ -98,7 +93,6 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 	BaseType(mdiParent),
 	chat(0),
 	message(0),
-	layoutTable(1, 2),
 	replyTo(replyTo)
 {
 	{
@@ -109,7 +103,6 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 		chat->setTextLimit(0);
 		chat->setFont(WinUtil::font);
 		addWidget(chat);
-		layoutTable.add(chat, SmartWin::Point(20, 20), 0, 0, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
 		
 #ifdef PORT_ME
 		/// @todo do we need this?§
@@ -127,8 +120,6 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 		addWidget(message);
 		message->onKeyDown(std::tr1::bind(&PrivateFrame::handleKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&PrivateFrame::handleChar, this, _1));
-
-		layoutTable.add(message, SmartWin::Point(20, 20), 0, 1, 1, 1, TableLayout::FILL, TableLayout::EXPAND);
 	}
 	
 	initStatus();
@@ -252,19 +243,16 @@ void PrivateFrame::layout() {
 	const int border = 2;
 	
 	SmartWin::Rectangle r(getClientAreaSize()); 
-	
-	SmartWin::Rectangle rs = layoutStatus();
 
-	{
-#ifdef PORT_ME
-		ctrlLastLines.SetMaxTipWidth(w[0]);
-#endif
-	}
+	SmartWin::Rectangle rs = layoutStatus();
+	
 	r.size.y -= rs.size.y + border;
-	layoutTable.resize(r);
 	int ymessage = message->getTextSize("A").y + 10;
-	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x, ymessage);
+	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x , ymessage);
 	message->setBounds(rm);
+	
+	r.size.y -= rm.size.y + border;
+	chat->setBounds(r);
 }
 
 void PrivateFrame::updateTitle() {
