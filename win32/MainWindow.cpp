@@ -354,7 +354,7 @@ void MainWindow::initTabs() {
 	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE;
 	cs.font = WinUtil::font;
 	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
-	tabs->onResized(std::tr1::bind(&MainWindow::layout, this));
+	tabs->onResized(std::tr1::bind(&MainWindow::speak, this, LAYOUT, 0));
 }
 
 void MainWindow::initMDI() {
@@ -432,6 +432,9 @@ HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		} else {
 			lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
 		}
+	} break;
+	case LAYOUT: {
+		layout();
 	} break;
 	}	
 	return 0;

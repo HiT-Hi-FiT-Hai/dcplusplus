@@ -25,7 +25,8 @@ MDITab* MDITab::instance;
 
 MDITab::MDITab(SmartWin::Widget* parent) : 
 	SmartWin::Widget(parent),
-	BaseType(parent)
+	BaseType(parent),
+	activating(false)
 {
 	instance = this;
 }
@@ -68,6 +69,19 @@ bool MDITab::handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& n
 
 bool MDITab::handleSelectionChanging(size_t i) {
 	SmartWin::Widget* w = reinterpret_cast<SmartWin::Widget*>(this->getData(i));
-	w->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(w->handle()));
+	if(!(activating || w->getParent()->sendMessage(WM_MDIGETACTIVE) == reinterpret_cast<HRESULT>(w->handle()))) {
+		w->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(w->handle()));
+	}
+	activating = false;
 	return true;
+}
+
+HRESULT MDITab::handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lParam) {
+	if(reinterpret_cast<LPARAM>(w->handle()) == lParam) {
+		int i = findTab(w);
+		if(i != -1) {
+			activating = true;
+			setSelectedIndex(i);
+		}
+	}
 }

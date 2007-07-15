@@ -17,6 +17,8 @@ public:
 	void addTab(T* w) {
 		this->addPage(w->getText(), this->size(), reinterpret_cast<LPARAM>(static_cast<SmartWin::Widget*>(w)));
 		w->onTextChanging(std::tr1::bind(&MDITab::handleTextChanging, this, static_cast<SmartWin::Widget*>(w), _1));
+		w->onRaw(std::tr1::bind(&MDITab::handleMdiActivate, this, static_cast<SmartWin::Widget*>(w), _1, _2), SmartWin::Message(WM_MDIACTIVATE));
+		
 		if(resized)
 			resized();
 	}
@@ -36,8 +38,10 @@ private:
 	
 	bool handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& newText);
 	bool handleSelectionChanging(size_t i);
-
+	HRESULT handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lParam);
+	
 	std::tr1::function<void ()> resized;
+	bool activating;
 	
 	static MDITab* instance;
 };
