@@ -117,7 +117,6 @@ private:
 	}
 	
 	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
-		canvas.setBkMode(true);
 		canvas.setBkColor(WinUtil::bgColor);
 		canvas.setTextColor(WinUtil::textColor);
 		return WinUtil::bgBrush;
