@@ -57,6 +57,12 @@ public:
 		MessageMapBase* map = reinterpret_cast<MessageMapBase*>(::GetProp( handler, MessageMapBase::propAtom ));
 		
 		if(!map) {
+			if(handler != hwnd) {
+				map = reinterpret_cast<Policy*>(::GetProp( hwnd, MessageMapBase::propAtom ));
+				if(map) {
+					return static_cast<Policy*>(map)->returnUnhandled(hwnd, uMsg, wParam, lParam);
+				}
+			} 
 			return Policy::returnUnknown(hwnd, uMsg, wParam, lParam);
 		}
 #ifdef WINCE
@@ -305,7 +311,7 @@ public:
 	}
 	
 	virtual void subclass( unsigned id ) {
-		Widget::subclass(id);
+		Normal::subclass(id);
 		createMessageMap();
 	}
 

@@ -892,15 +892,12 @@ void QueueManager::remove(const string& aTarget) throw() {
 
 		if(q->getStatus() == QueueItem::STATUS_RUNNING) {
 			x = q->getCurrent();
+			dirMap.erase(x->getCID().toBase32());
 		} else if(!q->getTempTarget().empty() && q->getTempTarget() != q->getTarget()) {
 			File::deleteFile(q->getTempTarget() + Download::ANTI_FRAG_EXT);
 			File::deleteFile(q->getTempTarget());
 		}
 
-		StringMapIter i = dirMap.find(q->getCurrent()->getCID().toBase32());
-		if (i != dirMap.end()) {
-			dirMap.erase(i);
-		}
 
 		fire(QueueManagerListener::Removed(), q);
 

@@ -237,6 +237,7 @@ void MainWindow::initWindow() {
 		cs.location = SmartWin::Rectangle(pos_x, pos_y, size_x, size_y);
 	}
 	
+	cs.style |= WS_CLIPCHILDREN;
 	cs.exStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
 	if(ResourceManager::getInstance()->isRTL())
 		cs.exStyle |= WS_EX_RTLREADING; 

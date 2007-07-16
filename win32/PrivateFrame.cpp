@@ -93,7 +93,7 @@ PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_)
 	BaseType(mdiParent),
 	chat(0),
 	message(0),
-	replyTo(replyTo)
+	replyTo(replyTo_)
 {
 	{
 		WidgetTextBox::Seed cs;

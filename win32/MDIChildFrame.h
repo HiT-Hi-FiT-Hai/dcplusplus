@@ -47,6 +47,7 @@ protected:
 		}
 		if(max)
 			cs.style |= WS_MAXIMIZE;
+		cs.style |= WS_CLIPCHILDREN;
 		
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		this->createMDIChild(cs);
