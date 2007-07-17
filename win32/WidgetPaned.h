@@ -22,7 +22,8 @@
 template< typename EventHandlerClass, bool horizontal >
 class WidgetPaned :
 	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,
-
+	public SmartWin::AspectMouseClicks<EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal>,
+		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal> > >,
 	public SmartWin::AspectSizable< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal >,
 		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >,
 	public SmartWin::AspectVisible< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal >,
@@ -36,6 +37,8 @@ public:
 	/// Class type
 	typedef WidgetPaned< EventHandlerClass, horizontal > ThisType;
 
+	typedef SmartWin::MessageMapPolicy< SmartWin::Policies::Normal > PolicyType;
+	
 	/// Object type
 	typedef ThisType * ObjectType;
 
@@ -103,6 +106,28 @@ private:
 	
 	SmartWin::Rectangle getSplitterRect();
 	void resizeChildren();
+	
+	void handleLButtonDown(const SmartWin::MouseEventResult&) {
+		::SetCapture( this->handle() );
+		moving = true;
+	}
+	void handleMouseMove(const SmartWin::MouseEventResult& event) {
+		if ( event.ButtonPressed == SmartWin::MouseEventResult::LEFT && moving )
+		{
+			POINT pt = { event.pos.x, event.pos.y };
+			this->clientToScreen(pt);
+			this->getParent()->screenToClient(pt);
+			
+			int x = horizontal ? pt.y : pt.x;
+			int w = horizontal ? rect.size.y : rect.size.x;
+			pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));
+			resizeChildren();
+		}
+	}
+	void handleLButtonUp(const SmartWin::MouseEventResult&) {
+		::ReleaseCapture();
+		moving = false;
+	}
 };
 
 template< typename EventHandlerClass, bool horizontal >
@@ -129,6 +154,7 @@ const typename WidgetPaned< EventHandlerClass, horizontal >::Seed & WidgetPaned<
 			throw x;
 		}
 		SmartWin::Application::instance().addLocalWindowClassToUnregister( d_DefaultValues );
+		d_DefaultValues.style = WS_VISIBLE | WS_CHILD;
 		d_NeedsInit = false;
 	}
 	return d_DefaultValues;
@@ -152,16 +178,11 @@ WidgetPaned< EventHandlerClass, horizontal >::WidgetPaned( SmartWin::Widget * pa
 template< typename EventHandlerClass, bool horizontal >
 void WidgetPaned< EventHandlerClass, horizontal >::create( const Seed & cs )
 {
-	// TODO: use CreationalInfo parameters
-	if ( cs.style & WS_CHILD )
-		SmartWin::Widget::create( cs );
-	else
-	{
-		typename WidgetPaned::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		SmartWin::Widget::create( d_YouMakeMeDoNastyStuff );
-	}
+	PolicyType::create(cs);
+	
+	onLeftMouseDown(std::tr1::bind(&ThisType::handleLButtonDown, this, _1));
+	onMouseMove(std::tr1::bind(&ThisType::handleMouseMove, this, _1));
+	onLeftMouseUp(std::tr1::bind(&ThisType::handleLButtonUp, this, _1));
 }
 
 template< typename EventHandlerClass, bool horizontal >
@@ -233,48 +254,5 @@ void WidgetPaned< EventHandlerClass, horizontal >::resizeChildren( )
 
 	this->setBounds(rcSplit);
 }
-#ifdef PORT_ME
-template< typename EventHandlerClass, bool horizontal >
-LRESULT WidgetPaned< EventHandlerClass, horizontal >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	switch ( msg )
-	{
-		case WM_LBUTTONDOWN :
-		{
-			::SetCapture( this->SmartWin::Widget::handle() );
-			moving = true;
 
-			return 0;
-		}
-		case WM_MOUSEMOVE :
-		{
-			if ( wPar & MK_LBUTTON && moving )
-			{
-				POINT pt = { GET_X_LPARAM(lPar), GET_Y_LPARAM(lPar) };
-				this->clientToScreen(pt);
-				this->getParent()->screenToClient(pt);
-				
-				int x = horizontal ? pt.y : pt.x;
-				int w = horizontal ? rect.size.y : rect.size.x;
-				pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));
-				resizeChildren();
-			}
-			return 0;
-		}
-		case WM_LBUTTONUP :
-		{
-			::ReleaseCapture();
-			moving = false;
-
-			return 0;
-		}
-		default:
-			return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
-	}
-
-	// Removing compiler hickup...
-	return 0;
-}
 #endif
-#endif
-

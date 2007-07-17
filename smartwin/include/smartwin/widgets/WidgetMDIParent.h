@@ -172,7 +172,7 @@ const typename WidgetMDIParent< EventHandlerClass >::Seed & WidgetMDIParent< Eve
 	if ( d_NeedsInit )
 	{
 		Application::instance().setSystemClassName( d_DefaultValues, _T( "MDICLIENT" ) );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL;
+		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_VSCROLL | WS_HSCROLL;
 		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
 		d_DefaultValues.idFirstChild = 0;
 		d_DefaultValues.windowMenu = NULL;
