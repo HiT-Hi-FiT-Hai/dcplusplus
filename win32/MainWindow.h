@@ -32,7 +32,7 @@
 #include "MDITab.h"
 
 class MainWindow : 
-	public WidgetFactory<SmartWin::WidgetMDIFrame, MainWindow>, 
+	public WidgetFactory<SmartWin::WidgetMDIFrame>, 
 	public AspectSpeaker<MainWindow>,
 	private HttpConnectionListener, 
 	private QueueManagerListener, 
@@ -129,23 +129,23 @@ private:
 	void initSecond();
 	
 	// User actions
-	void handleExit(WidgetMenuPtr menu, unsigned id);
-	void handleOpenWindow(WidgetMenuPtr menu, unsigned id);
-	void handleQuickConnect(WidgetMenuPtr menu, unsigned id);
-	void handleSettings(WidgetMenuPtr menu, unsigned id);
-	void handleOpenFileList(WidgetMenuPtr menu, unsigned id);
-	void handleOpenOwnList(WidgetMenuPtr menu, unsigned id);
-	void handleRefreshFileList(WidgetMenuPtr menu, unsigned id);
-	void handleMatchAll(WidgetMenuPtr menu, unsigned id);
-	void handleOpenDownloadsDir(WidgetMenuPtr menu, unsigned id);
-	void handleLink(WidgetMenuPtr menu, unsigned id);
-	void handleAbout(WidgetMenuPtr menu, unsigned id);
-	void handleMDIReorder(WidgetMenuPtr menu, unsigned id);
-	void handleHelp(WidgetMenuPtr menu, unsigned id);
-	void handleHashProgress(WidgetMenuPtr menu, unsigned id);
-	void handleCloseWindows(WidgetMenuPtr menu, unsigned id);
-	void handleMinimizeAll(WidgetMenuPtr menu, unsigned id);
-	void handleRestoreAll(WidgetMenuPtr menu, unsigned id);
+	void handleExit();
+	void handleOpenWindow(unsigned id);
+	void handleQuickConnect();
+	void handleSettings();
+	void handleOpenFileList();
+	void handleOpenOwnList();
+	void handleRefreshFileList();
+	void handleMatchAll();
+	void handleOpenDownloadsDir();
+	void handleLink(unsigned id);
+	void handleAbout();
+	void handleMDIReorder(unsigned id);
+	void handleHelp(unsigned id);
+	void handleHashProgress();
+	void handleCloseWindows(unsigned id);
+	void handleMinimizeAll();
+	void handleRestoreAll();
 	HRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
 	
 	// Other events

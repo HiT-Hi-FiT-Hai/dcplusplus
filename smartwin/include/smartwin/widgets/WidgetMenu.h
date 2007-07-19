@@ -29,16 +29,10 @@
 #ifndef WidgetMenu_h
 #define WidgetMenu_h
 
-#include "../MessageMapControl.h"
-#include "../WindowsHeaders.h"
-#include "../aspects/AspectGetParent.h"
-#include "SmartUtil.h"
-#include "../aspects/AspectAdapter.h"
+#include "../Application.h"
 #include "../BasicTypes.h"
-
-#include <vector>
-#include <functional>
-#include <boost/cast.hpp>
+#include "../aspects/AspectGetParent.h"
+#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -48,55 +42,21 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-struct WidgetMenuSimpleDispatcher
-{
-	typedef std::tr1::function<void ()> F;
-
-	WidgetMenuSimpleDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f();
-		return 1;
-	}
-
-	F f;
-};
-
-struct WidgetMenuIdDispatcher
-{
-	typedef std::tr1::function<void (unsigned)> F;
-
-	WidgetMenuIdDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(LOWORD(params.Msg.WParam ));
-		return 1;
-	}
-
-	F f;
-};
-
-template< class EventHandlerClass >
-class WidgetMenu;
-
-template< class EventHandlerClass, Platform >
+template< typename WidgetMenuType, enum Platform >
 class WidgetMenuPlatformImplementation;
 
 /// Specialized functions in menu for Windows CE Windows API version
-template< class EventHandlerClass >
-class WidgetMenuPlatformImplementation< EventHandlerClass, SmartWinCE > :
+template<typename WidgetMenuType>
+class WidgetMenuPlatformImplementation< WidgetMenuType, SmartWinCE > :
 	public virtual Widget
 {
-protected:
-	typedef WidgetMenu<EventHandlerClass> WidgetMenuType;
-	typedef MessageMapControl< EventHandlerClass, WidgetMenuType > MessageMapType;
 
 public:
 	struct Seed {
 		Seed() { }
 	};
 
-	typedef std::tr1::shared_ptr< WidgetMenu< EventHandlerClass > > WidgetMenuPtr;
+	typedef std::tr1::shared_ptr< WidgetMenuType > WidgetMenuPtr;
 
 	HMENU handle() { return reinterpret_cast<HMENU>(this->handle()); }
 	
@@ -154,7 +114,7 @@ public:
 	WidgetMenuPtr appendPopup( const SmartUtil::tstring & name )
 	{
 		HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
-		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenu< EventHandlerClass >( this->Widget::itsParent ) );
+		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenuType( this->Widget::itsParent ) );
 		HMENU popup = CreatePopupMenu();
 		retVal->itsHandle = reinterpret_cast< HWND >( popup );
 		::AppendMenu( handle, MF_POPUP, reinterpret_cast< unsigned int >( retVal->handle() ), name.c_str() );
@@ -182,13 +142,11 @@ private:
 };
 
 /// Specialized functions in menu for desktop Windows API version
-template< class EventHandlerClass >
-class WidgetMenuPlatformImplementation< EventHandlerClass, SmartWinDesktop > :
+template< typename WidgetMenuType >
+class WidgetMenuPlatformImplementation< WidgetMenuType, SmartWinDesktop > :
 	public virtual Widget
 {
 protected:
-	typedef WidgetMenu<EventHandlerClass> WidgetMenuType;
-	typedef MessageMapControl< EventHandlerClass, WidgetMenuType > MessageMapType;
 	WidgetMenuPlatformImplementation() : Widget(0) { }
 public:
 	struct Seed {
@@ -206,7 +164,7 @@ public:
 	  * This can be done by attaching another menu object. <br>
 	  * For an example of this see the WidgetMenu project.       
 	  */
-	void attach( EventHandlerClass * mainWindow )
+	void attach( Widget * mainWindow )
 	{
 		::SetMenu( mainWindow->handle(), handle() );
 	}
@@ -258,9 +216,9 @@ public:
 	WidgetMenuPtr appendPopup( const SmartUtil::tstring & name )
 	{
 
-//		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenu< EventHandlerClass >( this->Widget::itsParent ) );
+//		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenu( this->Widget::itsParent ) );
 // Should it be the below instead ?
-		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenu< EventHandlerClass >( this ) );
+		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenuType( this ) );
 
 		retVal->create(Seed(true));
 		::AppendMenu( handle(), MF_POPUP, reinterpret_cast< unsigned int >( retVal->handle() ), name.c_str() );
@@ -280,10 +238,11 @@ public:
 	  * of the "this" object. <br>
 	  * See the WidgetMenu sample project for a demonstration.       
 	  */
+#ifdef PORT_ME
 	WidgetMenuPtr getSystemMenu()
 	{
 		HMENU h = ::GetSystemMenu( internal_::getTypedParentOrThrow < EventHandlerClass * >( this )->handle(), FALSE );
-		WidgetMenuPtr sysMenu( new WidgetMenu< EventHandlerClass >( this->Widget::itsParent ) );
+		WidgetMenuPtr sysMenu( new WidgetMenu( this->Widget::itsParent ) );
 		sysMenu->Widget::itsHandle = reinterpret_cast< HWND >( h );
 		sysMenu->Widget::registerWidget();
 		sysMenu->isSysMenu = true;
@@ -294,7 +253,7 @@ public:
 		itsChildren.push_back( sysMenu );
 		return sysMenu;
 	}
-
+#endif
 protected:
 	// Children, only "popup" menus are supposed to have children
 	std::vector< WidgetMenuPtr > itsChildren;
@@ -312,37 +271,54 @@ protected:
   * Related class : <br>
   * WidgetMenuExtended   
   */
-template< class EventHandlerClass >
 class WidgetMenu :
-	public WidgetMenuPlatformImplementation< EventHandlerClass, CurrentPlatform >,
-	public boost::enable_shared_from_this<WidgetMenu<EventHandlerClass> >
+	public WidgetMenuPlatformImplementation< WidgetMenu, CurrentPlatform >,
+	public boost::enable_shared_from_this<WidgetMenu >
 {
 protected:
-	typedef WidgetMenuPlatformImplementation< EventHandlerClass, CurrentPlatform > PlatformImplementation;
-	typedef typename PlatformImplementation::MessageMapType MessageMapType;
-	typedef WidgetMenuSimpleDispatcher SimpleDispatcher;
-	typedef WidgetMenuIdDispatcher IdDispatcher;
-	typedef AspectAdapter<IdDispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	typedef WidgetMenuPlatformImplementation< WidgetMenu, CurrentPlatform > PlatformImplementation;
 
 	// friends
-	friend class WidgetMenuPlatformImplementation< EventHandlerClass, CurrentPlatform >;
+	friend class WidgetMenuPlatformImplementation< WidgetMenu, CurrentPlatform >;
 	friend class WidgetCreator< WidgetMenu >;
 public:
+	struct SimpleDispatcher
+	{
+		typedef std::tr1::function<void ()> F;
+
+		SimpleDispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f();
+			return 1;
+		}
+
+		F f;
+	};
+
+	struct IdDispatcher
+	{
+		typedef std::tr1::function<void (unsigned)> F;
+
+		IdDispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(LOWORD(params.Msg.WParam ));
+			return 1;
+		}
+
+		F f;
+	};
+
 	/// Class type
-	typedef WidgetMenu< EventHandlerClass > ThisType;
+	typedef WidgetMenu ThisType;
 
 	/// Object type
-	typedef typename PlatformImplementation::WidgetMenuPtr ObjectType;
+	typedef PlatformImplementation::WidgetMenuPtr ObjectType;
 
 	/// Creational info
-	typedef typename PlatformImplementation::Seed Seed;
+	typedef PlatformImplementation::Seed Seed;
 		/// \ingroup eventsSignatures
-	/// \typedef Typedef of a member function to the original class taking pointer to the this Widget and an unsigned int returning void
-	typedef void ( EventHandlerClass::* itsVoidMenuFunctionTakingUInt )( ObjectType, unsigned );
-
-	/// \ingroup eventsSignatures
-	/// Typedef of a static/global function taking a pointer to the original class, a pointer to the this Widget class and an unsigned int returning void
-	typedef void ( * menuVoidFunctionTakingUInt )( EventHandlerClass *, ObjectType, unsigned );
 
 	/// \ingroup EventHandlersWidgetMenu
 	/// Appends a "normal" menu item
@@ -358,42 +334,13 @@ public:
 	  * even in fact across menu objects, therefore this number should be unique 
 	  * across the application. 
 	  */
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, itsVoidMenuFunctionTakingUInt eventHandler ) {
-		appendItem(id, name, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
-	}
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, menuVoidFunctionTakingUInt eventHandler ) {
-		appendItem(id, name, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
-	}
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, const IdDispatcher::F& f ) {
-		appendItem(id, name, NULL, f);
-	}
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, itsVoidMenuFunctionTakingUInt eventHandler ) {
-		appendItem(id, name, data, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
-	}
-	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, menuVoidFunctionTakingUInt eventHandler ) {
-		appendItem(id, name, data, Adapter::adapt1(ThisType::shared_from_this(), eventHandler));
+		appendItem(id, name, (ULONG_PTR)0, f);
 	}
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const IdDispatcher::F& f );
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const SimpleDispatcher::F& f );
 
 	ULONG_PTR getData(unsigned int id, bool byPosition = false);
-
-	/// \ingroup EventHandlersWidgetMenu
-	/// Appends a checked menu item
-	/** eventHandler is the function that will receive the "click" event from the
-	  * menu item. <br>
-	  * Event handler's signature must be "void foo( WidgetMenuPtr, unsigned int )" 
-	  * and it must be contained as a member <br>
-	  * of the class that is defined as the EventHandlerClass, normally either the 
-	  * WidgetWindow derived class or the class derived from WidgetMenu. <br>
-	  * See e.g. WidgetFun for an example. <br>
-	  * The reason to why we have this "id" is because the same event handler can be 
-	  * defined for several menu items <br>
-	  * even in fact across menu objects, therefore this number should be unique 
-	  * across the application. 
-	  */
-	void appendCheckedItem( unsigned id, const SmartUtil::tstring & name, itsVoidMenuFunctionTakingUInt eventHandler );
-	void appendCheckedItem( unsigned id, const SmartUtil::tstring & name, menuVoidFunctionTakingUInt eventHandler );
 
 	/// Appends a separator item to the menu
 	/** A menu separator is basically just "air" between menu items. <br>
@@ -490,7 +437,7 @@ public:
 	  * < li >TPM_VERPOSANIMATION : Animates the menu from top to bottom< /li >
 	  * < /ul >
 	  */
-	unsigned trackPopupMenu( EventHandlerClass * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
+	unsigned trackPopupMenu( Widget * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
 
 	bool isSystemMenu()
 	{
@@ -520,127 +467,30 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::appendItem
-	( unsigned int id, const SmartUtil::tstring & name
-	, ULONG_PTR data, const IdDispatcher::F& f
-	)
-{
-	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
-	
-	mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-	mii.fType = MFT_STRING;
-	mii.dwTypeData = const_cast<LPTSTR>(name.c_str());
-	mii.dwItemData = data;
-	mii.wID = id;
-	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
 
-	Application::instance().registerCommand(Message(WM_COMMAND, id), IdDispatcher(f), this->handle());
-}
-
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::appendItem
-	( unsigned int id, const SmartUtil::tstring & name
-	, ULONG_PTR data, const SimpleDispatcher::F& f
-	)
-{
-	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
-	
-	mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-	mii.fType = MFT_STRING;
-	mii.dwTypeData = const_cast<LPTSTR>(name.c_str());
-	mii.dwItemData = data;
-	mii.wID = id;
-	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
-
-	Application::instance().registerCommand(Message(WM_COMMAND, id), SimpleDispatcher(f), this->handle());
-}
-
-template< class EventHandlerClass >
-ULONG_PTR WidgetMenu< EventHandlerClass >::getData(unsigned int id, bool byPosition) {
+inline ULONG_PTR WidgetMenu::getData(unsigned int id, bool byPosition) {
 	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
 	mii.fMask = MIIM_DATA;
 	::GetMenuItemInfo(this->handle(), id, byPosition, &mii);
 	return mii.dwItemData;
 }
 
-
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::appendCheckedItem
-	( unsigned id, const SmartUtil::tstring & name
-	, itsVoidMenuFunctionTakingUInt eventHandler
-	)
-{
-	/// @todo This is not quite the same as appending a real checked item...
-	appendItem(id, name, eventHandler);
-	checkItem(id, true);
-}
-
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::appendCheckedItem
-	( unsigned id, const SmartUtil::tstring & name
-	, menuVoidFunctionTakingUInt eventHandler
-	)
-{
-	appendItem(id, name, eventHandler);
-	checkItem(id, true);
-}
-
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::appendSeparatorItem()
+inline void WidgetMenu::appendSeparatorItem()
 {
 	::AppendMenu( this->handle(), MF_SEPARATOR, 0, 0 );
 }
 
-template< class EventHandlerClass >
-UINT WidgetMenu< EventHandlerClass >::getId(UINT position)
+inline UINT WidgetMenu::getId(UINT position)
 {
 	return ::GetMenuItemID( this->handle(), position );
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetMenu< EventHandlerClass >::getText( unsigned id, bool byPosition )
-{
-	MENUITEMINFO mi;
-	memset( & mi, 0, sizeof( MENUITEMINFO ) );
-
-	mi.cbSize = sizeof( MENUITEMINFO );
-	mi.fMask = MIIM_TYPE;
-	if ( ::GetMenuItemInfo( this->handle(), id, byPosition, & mi ) == 0 )
-	{
-		xAssert( false, _T( "Error while trying to get MenuItemInfo in WidgetMenu::getText..." ) );
-	}
-	boost::scoped_array< TCHAR > buffer( new TCHAR[++mi.cch] );
-	mi.dwTypeData = buffer.get();
-	if ( ::GetMenuItemInfo( this->handle(), id, FALSE, & mi ) == 0 )
-	{
-		xAssert( false, _T( "Error while trying to get MenuItemInfo in WidgetMenu::getText..." ) );
-	}
-	SmartUtil::tstring retVal = mi.dwTypeData;
-	return retVal;
-}
-
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::setText( unsigned id, const SmartUtil::tstring& text )
-{
-	MENUITEMINFO info = { sizeof( MENUITEMINFO ) };
-
-	// set flag
-	info.fMask = MIIM_STRING;
-	info.dwTypeData = (TCHAR*) text.c_str();
-
-	if ( ::SetMenuItemInfo( this->handle(), id, FALSE, & info ) == FALSE )
-		throw xCeption( _T( "Couldn't set item info in setItemText()" ) );
-}
-
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::checkItem( unsigned id, bool value )
+inline void WidgetMenu::checkItem( unsigned id, bool value )
 {
 	::CheckMenuItem( this->handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
 }
 
-template< class EventHandlerClass >
-typename WidgetMenu< EventHandlerClass >::ObjectType WidgetMenu< EventHandlerClass >::getChild( unsigned position ) {
+inline WidgetMenu::ObjectType WidgetMenu::getChild( unsigned position ) {
 	HMENU h = reinterpret_cast<HMENU>(getId(position));
 	for(size_t i = 0; i < this->itsChildren.size(); ++i) {
 		ObjectType& menu = this->itsChildren[i];
@@ -651,14 +501,12 @@ typename WidgetMenu< EventHandlerClass >::ObjectType WidgetMenu< EventHandlerCla
 	return ObjectType();
 }
 
-template< class EventHandlerClass >
-bool WidgetMenu< EventHandlerClass >::getCheckedState( unsigned id )
+inline bool WidgetMenu::getCheckedState( unsigned id )
 {
-	return isChecked();
+	return isChecked(id);
 }
 
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::setItemEnabled( unsigned id, bool value )
+inline void WidgetMenu::setItemEnabled( unsigned id, bool value )
 {
 	if ( ::EnableMenuItem( this->handle(), id, value ? MF_ENABLED : MF_GRAYED ) == - 1 )
 	{
@@ -667,14 +515,12 @@ void WidgetMenu< EventHandlerClass >::setItemEnabled( unsigned id, bool value )
 	}
 }
 
-template< class EventHandlerClass >
-bool WidgetMenu< EventHandlerClass >::getItemEnabled( unsigned id )
+inline bool WidgetMenu::getItemEnabled( unsigned id )
 {
 	return isEnabled(id);
 }
 
-template< class EventHandlerClass >
-int WidgetMenu< EventHandlerClass >::getCount()
+inline int WidgetMenu::getCount()
 {
 	int count = ::GetMenuItemCount( this->handle() );
 	if( count == -1 )
@@ -682,42 +528,37 @@ int WidgetMenu< EventHandlerClass >::getCount()
 	return count;
 }
 
-template< class EventHandlerClass >
-UINT WidgetMenu< EventHandlerClass >::getMenuState( UINT id, bool byPosition )
+inline UINT WidgetMenu::getMenuState( UINT id, bool byPosition )
 {
 	return ::GetMenuState(this->handle(), id, byPosition ? MF_BYPOSITION : MF_BYCOMMAND); 
 }
 
-template< class EventHandlerClass >
-void WidgetMenu< EventHandlerClass >::setDefaultItem( UINT id, bool byPosition )
+inline void WidgetMenu::setDefaultItem( UINT id, bool byPosition )
 {
 	::SetMenuDefaultItem(this->handle(), id, byPosition); 
 }
 
-template< class EventHandlerClass >
-bool WidgetMenu< EventHandlerClass >::isChecked( UINT id, bool byPosition )
+inline bool WidgetMenu::isChecked( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_CHECKED) == MF_CHECKED; 
 }
-template< class EventHandlerClass >
-bool WidgetMenu< EventHandlerClass >::isEnabled( UINT id, bool byPosition )
+
+inline bool WidgetMenu::isEnabled( UINT id, bool byPosition )
 {
 	return !(getMenuState(id, byPosition) & (MF_DISABLED | MF_GRAYED)); 
 }
-template< class EventHandlerClass >
-bool WidgetMenu< EventHandlerClass >::isPopup( UINT id, bool byPosition )
+
+inline bool WidgetMenu::isPopup( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_POPUP) == MF_POPUP; 
 }
-template< class EventHandlerClass >
-bool WidgetMenu< EventHandlerClass >::isSeparator( UINT id, bool byPosition )
+
+inline bool WidgetMenu::isSeparator( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_SEPARATOR) == MF_SEPARATOR; 
 }
 
-template< class EventHandlerClass >
-unsigned WidgetMenu< EventHandlerClass >::
-trackPopupMenu( EventHandlerClass * mainWindow, int x, int y, unsigned flags )
+inline unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, int x, int y, unsigned flags )
 {
 	xAssert( mainWindow != 0, _T( "EventHandlerClass can't be null while trying to display Popup Menu" ) );
 	if ( x == - 1 && y == - 1 )
@@ -734,8 +575,7 @@ trackPopupMenu( EventHandlerClass * mainWindow, int x, int y, unsigned flags )
 	return retVal;
 }
 
-template< class EventHandlerClass >
-WidgetMenu< EventHandlerClass >::WidgetMenu( SmartWin::Widget * parent )
+inline WidgetMenu::WidgetMenu( SmartWin::Widget * parent )
 	: Widget( 0 )
 	, isSysMenu( false )
 {

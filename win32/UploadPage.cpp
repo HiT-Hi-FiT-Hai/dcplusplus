@@ -79,24 +79,24 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), Pro
 		directories->insertRow(row);
 	}
 
-	directories->onRaw(&UploadPage::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-	directories->onRaw(&UploadPage::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
-	directories->onRaw(&UploadPage::handleItemChanged, SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	directories->onRaw(std::tr1::bind(&UploadPage::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+	directories->onRaw(std::tr1::bind(&UploadPage::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+	directories->onRaw(std::tr1::bind(&UploadPage::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 	WidgetCheckBoxPtr shareHidden = subclassCheckBox(IDC_SHAREHIDDEN);
-	shareHidden->onClicked(&UploadPage::handleShareHiddenClicked);
+	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
 
 	total = subclassStatic(IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
 	WidgetButtonPtr button = subclassButton(IDC_RENAME);
-	button->onClicked(&UploadPage::handleRenameClicked);
+	button->onClicked(std::tr1::bind(&UploadPage::handleRenameClicked, this));
 
 	button = subclassButton(IDC_REMOVE);
-	button->onClicked(&UploadPage::handleRemoveClicked);
+	button->onClicked(std::tr1::bind(&UploadPage::handleRemoveClicked, this));
 
 	button = subclassButton(IDC_ADD);
-	button->onClicked(&UploadPage::handleAddClicked);
+	button->onClicked(std::tr1::bind(&UploadPage::handleAddClicked, this));
 
 	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SLOTSPIN);
 	spinner->setRange(1, UD_MAXVAL);
@@ -118,7 +118,7 @@ void UploadPage::write()
 	ShareManager::getInstance()->refresh();
 }
 
-HRESULT UploadPage::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT UploadPage::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
 #ifdef PORT_ME // posting messages doesn't seem to do anything
 	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
 	if(item->iItem >= 0) {
@@ -130,7 +130,7 @@ HRESULT UploadPage::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM
 	return 0;
 }
 
-HRESULT UploadPage::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
+HRESULT UploadPage::handleKeyDown(WPARAM wParam, LPARAM lParam) {
 #ifdef PORT_ME // posting messages doesn't seem to do anything
 	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
 	case VK_INSERT:
@@ -144,7 +144,7 @@ HRESULT UploadPage::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*w
 	return 0;
 }
 
-HRESULT UploadPage::handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+HRESULT UploadPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
 	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
 	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
 	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
@@ -177,7 +177,7 @@ void UploadPage::handleShareHiddenClicked(WidgetCheckBoxPtr checkBox) {
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 }
 
-void UploadPage::handleRenameClicked(WidgetButtonPtr) {
+void UploadPage::handleRenameClicked() {
 	bool setDirty = false;
 
 	int i = -1;
@@ -206,7 +206,7 @@ void UploadPage::handleRenameClicked(WidgetButtonPtr) {
 		ShareManager::getInstance()->setDirty();
 }
 
-void UploadPage::handleRemoveClicked(WidgetButtonPtr) {
+void UploadPage::handleRemoveClicked() {
 	int i = -1;
 	while((i = directories->getNextItem(-1, LVNI_SELECTED)) != -1) {
 		ShareManager::getInstance()->removeDirectory(Text::fromT(directories->getCellText(1, i)));
@@ -215,7 +215,7 @@ void UploadPage::handleRemoveClicked(WidgetButtonPtr) {
 	}
 }
 
-void UploadPage::handleAddClicked(WidgetButtonPtr) {
+void UploadPage::handleAddClicked() {
 	tstring target;
 	if(WinUtil::browseDirectory(target, handle())) {
 		addDirectory(target);

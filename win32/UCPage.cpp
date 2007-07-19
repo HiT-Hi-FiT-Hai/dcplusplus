@@ -66,23 +66,18 @@ UCPage::UCPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() 
 			addEntry(uc);
 	}
 
-	commands->onRaw(&UCPage::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-	commands->onRaw(&UCPage::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+	commands->onRaw(std::tr1::bind(&UCPage::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+	commands->onRaw(std::tr1::bind(&UCPage::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 
-	WidgetButtonPtr button = subclassButton(IDC_ADD_MENU);
-	button->onClicked(&UCPage::handleAddClicked);
+	subclassButton(IDC_ADD_MENU)->onClicked(std::tr1::bind(&UCPage::handleAddClicked, this));
 
-	button = subclassButton(IDC_CHANGE_MENU);
-	button->onClicked(&UCPage::handleChangeClicked);
+	subclassButton(IDC_CHANGE_MENU)->onClicked(std::tr1::bind(&UCPage::handleChangeClicked, this));
 
-	button = subclassButton(IDC_MOVE_UP);
-	button->onClicked(&UCPage::handleMoveUpClicked);
+	subclassButton(IDC_MOVE_UP)->onClicked(std::tr1::bind(&UCPage::handleMoveUpClicked, this));
 
-	button = subclassButton(IDC_MOVE_DOWN);
-	button->onClicked(&UCPage::handleMoveDownClicked);
+	subclassButton(IDC_MOVE_DOWN)->onClicked(std::tr1::bind(&UCPage::handleMoveDownClicked, this));
 
-	button = subclassButton(IDC_REMOVE_MENU);
-	button->onClicked(&UCPage::handleRemoveClicked);
+	subclassButton(IDC_REMOVE_MENU)->onClicked(std::tr1::bind(&UCPage::handleRemoveClicked, this));
 }
 
 UCPage::~UCPage() {
@@ -92,39 +87,35 @@ void UCPage::write() {
 	PropPage::write(handle(), items);
 }
 
-HRESULT UCPage::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
-#ifdef PORT_ME // posting messages doesn't seem to do anything
+HRESULT UCPage::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
 	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
 	if(item->iItem >= 0) {
-		StupidWin::postMessage(this, WM_COMMAND, IDC_CHANGE_MENU);
+		handleChangeClicked();
 	} else if(item->iItem == -1) {
-		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD_MENU);
+		handleAddClicked();
 	}
-#endif
 	return 0;
 }
 
-HRESULT UCPage::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
-#ifdef PORT_ME // posting messages doesn't seem to do anything
+HRESULT UCPage::handleKeyDown(WPARAM wParam, LPARAM lParam) {
 	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
 	case VK_INSERT:
-		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD_MENU);
+		handleAddClicked();
 		break;
 	case VK_DELETE:
-		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE_MENU);
+		handleRemoveClicked();
 		break;
 	}
-#endif
 	return 0;
 }
 
-void UCPage::handleAddClicked(WidgetButtonPtr) {
+void UCPage::handleAddClicked() {
 	CommandDlg dlg(this);
 	if(dlg.run() == IDOK)
 		addEntry(FavoriteManager::getInstance()->addUserCommand(dlg.getType(), dlg.getCtx(), 0, Text::fromT(dlg.getName()), Text::fromT(dlg.getCommand()), Text::fromT(dlg.getHub())));
 }
 
-void UCPage::handleChangeClicked(WidgetButtonPtr) {
+void UCPage::handleChangeClicked() {
 	if(commands->getSelectedCount() == 1) {
 		int i = commands->getSelectedIndex();
 		UserCommand uc;
@@ -146,7 +137,7 @@ void UCPage::handleChangeClicked(WidgetButtonPtr) {
 	}
 }
 
-void UCPage::handleMoveUpClicked(WidgetButtonPtr) {
+void UCPage::handleMoveUpClicked() {
 	if(commands->getSelectedCount() == 1) {
 		int i = commands->getSelectedIndex();
 		if(i == 0)
@@ -168,7 +159,7 @@ void UCPage::handleMoveUpClicked(WidgetButtonPtr) {
 	}
 }
 
-void UCPage::handleMoveDownClicked(WidgetButtonPtr) {
+void UCPage::handleMoveDownClicked() {
 	if(commands->getSelectedCount() == 1) {
 		int i = commands->getSelectedIndex();
 		if(i == commands->getRowCount() - 1)
@@ -190,7 +181,7 @@ void UCPage::handleMoveDownClicked(WidgetButtonPtr) {
 	}
 }
 
-void UCPage::handleRemoveClicked(WidgetButtonPtr) {
+void UCPage::handleRemoveClicked() {
 	if(commands->getSelectedCount() == 1) {
 		int i = commands->getSelectedIndex();
 		FavoriteManager::getInstance()->removeUserCommand(commands->getItemData(i));

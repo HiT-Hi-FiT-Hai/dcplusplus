@@ -24,7 +24,7 @@
 
 class UserCommand;
 
-class UCPage : public WidgetFactory<SmartWin::WidgetDialog, UCPage>, public PropPage
+class UCPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	UCPage(SmartWin::Widget* parent);
@@ -48,15 +48,14 @@ private:
 
 	WidgetDataGridPtr commands;
 
-	typedef SmartWin::WidgetDataGrid<UCPage>* DataGridMessageType;
-	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
-	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
+	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam);
+	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam);
 
-	void handleAddClicked(WidgetButtonPtr);
-	void handleChangeClicked(WidgetButtonPtr);
-	void handleMoveUpClicked(WidgetButtonPtr);
-	void handleMoveDownClicked(WidgetButtonPtr);
-	void handleRemoveClicked(WidgetButtonPtr);
+	void handleAddClicked();
+	void handleChangeClicked();
+	void handleMoveUpClicked();
+	void handleMoveDownClicked();
+	void handleRemoveClicked();
 
 	void addEntry(const UserCommand& uc, int index = -1);
 };

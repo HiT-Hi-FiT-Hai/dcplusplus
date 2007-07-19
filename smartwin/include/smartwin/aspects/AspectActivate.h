@@ -29,28 +29,11 @@
 #ifndef AspectActivate_h
 #define AspectActivate_h
 
-#include <boost/cast.hpp>
-
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-struct AspectActivateDispatcher
-{
-	typedef std::tr1::function<void (bool)> F;
-
-	AspectActivateDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(LOWORD( params.Msg.WParam ) == WA_ACTIVE || LOWORD( params.Msg.WParam ) == WA_CLICKACTIVE);
-		return 0;
-	}
-
-	F f;
-};
 
 /// Aspect class used by Widgets that can be activated.
 /** \ingroup AspectClasses
@@ -58,11 +41,22 @@ struct AspectActivateDispatcher
   * meaning that it receives keyboard input and normally if it is a text Widget gets
   * to own the caret. This Aspect is closely related to the AspectFocus Aspect.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectActivate
 {
-	typedef AspectActivateDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher {
+		typedef std::tr1::function<void (bool)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(LOWORD( params.Msg.WParam ) == WA_ACTIVE || LOWORD( params.Msg.WParam ) == WA_CLICKACTIVE);
+			return 0;
+		}
+
+		F f;
+	};
+
 public:
 	/// Activates the Widget
 	/** Changes the activated property of the Widget. <br>
@@ -84,16 +78,8 @@ public:
 	  * called with either true or false indicating the active state of the Widget.
 	  * Parameter passed is bool
 	  */
-	void onActivate( typename MessageMapType::itsVoidFunctionTakingBool eventHandler ) {
-		onActivate(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onActivate( typename MessageMapType::voidFunctionTakingBool eventHandler ) {
-		onActivate(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-
-	void onActivate(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onActivate(const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message(WM_ACTIVATE), Dispatcher(f)
 		);
 	}
@@ -106,14 +92,14 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectActivate< EventHandlerClass, WidgetType, MessageMapType >::setActive()
+template< class WidgetType >
+void AspectActivate< WidgetType >::setActive()
 {
 	::SetActiveWindow( static_cast< WidgetType * >( this )->handle() );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-bool AspectActivate< EventHandlerClass, WidgetType, MessageMapType >::getActive() const
+template< class WidgetType >
+bool AspectActivate< WidgetType >::getActive() const
 {
 	return ::GetActiveWindow() == static_cast< const WidgetType * >( this )->handle();
 }

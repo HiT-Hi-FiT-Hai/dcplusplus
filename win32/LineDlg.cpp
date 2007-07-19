@@ -28,19 +28,15 @@ LineDlg::LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring&
 	initial(initial_), 
 	password(password_) 
 {
-	onInitDialog(&LineDlg::initDialog);
-	onFocus(&LineDlg::focus);	
+	onInitDialog(std::tr1::bind(&LineDlg::initDialog, this));
+	onFocus(std::tr1::bind(&LineDlg::focus, this));	
 }
 
 bool LineDlg::initDialog() {
-	ok = subclassButton(IDOK);
-	ok->onClicked(&LineDlg::okClicked);
+	subclassButton(IDOK)->onClicked(std::tr1::bind(&LineDlg::okClicked, this));
+	subclassButton(IDCANCEL)->onClicked(std::tr1::bind(&LineDlg::cancelClicked, this));
+	subclassStatic(IDC_DESCRIPTION)->setText(desc);
 
-	cancel = subclassButton(IDCANCEL);
-	cancel->onClicked(&LineDlg::cancelClicked);
-	
-	description = subclassStatic(IDC_DESCRIPTION);
-	description->setText(desc);
 	line = subclassTextBox(IDC_LINE);
 	line->setFocus();
 	line->setText(initial);
@@ -66,10 +62,10 @@ bool LineDlg::closing() {
 	return false;		
 }
 
-void LineDlg::okClicked(WidgetButtonPtr) {
+void LineDlg::okClicked() {
 	initial = line->getText();
 	endDialog(IDOK);
 }
-void LineDlg::cancelClicked(WidgetButtonPtr) {
+void LineDlg::cancelClicked() {
 	endDialog(IDCANCEL);
 }

@@ -30,21 +30,20 @@
 #define WidgetStatic_h
 
 #include "../Widget.h"
-#include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectBackgroundColor.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectVisible.h"
-#include "../aspects/AspectBackgroundColor.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectPainting.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectFont.h"
+#include "../aspects/AspectMouseClicks.h"
+#include "../aspects/AspectPainting.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectText.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -67,31 +66,29 @@ class WidgetCreator;
   * It can be clicked and double clicked which a TextBox cannot! <br>
   * It can load a bitmap.
   */
-template< class EventHandlerClass >
 class WidgetStatic :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectBorder< WidgetStatic< EventHandlerClass > >,
-	public AspectClickable< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectDblClickable< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectFont< WidgetStatic< EventHandlerClass > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectPainting< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectText< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetStatic< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetStatic< EventHandlerClass > > >
+	public AspectBackgroundColor< WidgetStatic >,
+	public AspectBorder< WidgetStatic >,
+	public AspectClickable< WidgetStatic >,
+	public AspectDblClickable< WidgetStatic >,
+	public AspectEnabled< WidgetStatic >,
+	public AspectFocus< WidgetStatic >,
+	public AspectFont< WidgetStatic >,
+	public AspectMouseClicks< WidgetStatic >,
+	public AspectPainting< WidgetStatic >,
+	public AspectRaw< WidgetStatic >,
+	public AspectSizable< WidgetStatic >,
+	public AspectText< WidgetStatic >,
+	public AspectVisible< WidgetStatic >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetStatic > MessageMapType;
 	friend class WidgetCreator< WidgetStatic >;
 public:
 	/// Class type
-	typedef WidgetStatic< EventHandlerClass > ThisType;
+	typedef WidgetStatic ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -105,7 +102,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetStatic::ThisType WidgetType;
+		typedef WidgetStatic::ThisType WidgetType;
 
 		FontPtr font;
 
@@ -162,74 +159,43 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetStatic< EventHandlerClass >::Seed & WidgetStatic< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T("Static") );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | SS_NOTIFY;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetStatic< EventHandlerClass >::Seed::Seed()
+inline WidgetStatic::Seed::Seed()
 {
 	* this = WidgetStatic::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-Message & WidgetStatic< EventHandlerClass >::getClickMessage()
+inline Message & WidgetStatic::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, STN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetStatic< EventHandlerClass >::getBackgroundColorMessage()
+inline Message & WidgetStatic::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORSTATIC );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetStatic< EventHandlerClass >::getDblClickMessage()
+inline Message & WidgetStatic::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, STN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-WidgetStatic< EventHandlerClass >::WidgetStatic( SmartWin::Widget * parent )
+inline WidgetStatic::WidgetStatic( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass >
-void WidgetStatic< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	setFont( cs.font );
-}
-
-template< class EventHandlerClass >
-void WidgetStatic< EventHandlerClass >::setBitmap( HBITMAP bitmap )
+inline void WidgetStatic::setBitmap( HBITMAP bitmap )
 {            // "this" only for for ming compiler.
 	this->addRemoveStyle( SS_BITMAP, true );
 	::SendMessage( this->handle(), STM_SETIMAGE, ( WPARAM ) IMAGE_BITMAP, ( LPARAM ) bitmap );
 }
 
-template< class EventHandlerClass >
-	void WidgetStatic< EventHandlerClass >::setBitmap( BitmapPtr bitmap )
+inline void WidgetStatic::setBitmap( BitmapPtr bitmap )
 {
 	this->setBitmap( bitmap->getBitmap() );
 	itsBitmap = bitmap;

@@ -31,7 +31,7 @@
 
 #include "WindowsHeaders.h"
 #include <string>
-#include "../SmartUtil/tstring.h"
+#include "../../SmartUtil/tstring.h"
 
 namespace SmartWin
 {

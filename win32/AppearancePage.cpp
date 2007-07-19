@@ -64,8 +64,7 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : SmartWin::Widget(pare
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 
-	WidgetButtonPtr browse = subclassButton(IDC_BROWSE);
-	browse->onClicked(&AppearancePage::handleBrowse);
+	subclassButton(IDC_BROWSE)->onClicked(std::tr1::bind(&AppearancePage::handleBrowse, this));
 }
 
 AppearancePage::~AppearancePage() {
@@ -76,7 +75,7 @@ void AppearancePage::write()
 	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 }
 
-void AppearancePage::handleBrowse(WidgetButtonPtr) {
+void AppearancePage::handleBrowse() {
 	TCHAR buf[MAX_PATH];
 	static const TCHAR types[] = _T("Language Files\0*.xml\0All Files\0*.*\0");
 

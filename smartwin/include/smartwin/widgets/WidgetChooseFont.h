@@ -30,10 +30,10 @@
 #ifndef WidgetChooseFont_h
 #define WidgetChooseFont_h
 
-#include "../FreeCommonDialog.h"
 #include "../Font.h"
-#include <memory>
+#include "../FreeCommonDialog.h"
 #include "../WindowsHeaders.h"
+#include <memory>
 
 namespace SmartWin
 {

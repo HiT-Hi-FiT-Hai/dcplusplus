@@ -29,24 +29,19 @@
 #ifndef WidgetDateTimePicker_h
 #define WidgetDateTimePicker_h
 
-#include "SmartUtil.h"
-#include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectVisible.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
+#include "../aspects/AspectFont.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectThreads.h"
-#include "../aspects/AspectAdapter.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
-#include "../Message.h"
 
 namespace SmartWin
 {
@@ -57,19 +52,6 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-struct AspectDateTimePickerDispatcher
-{
-	typedef std::tr1::function<void (const SYSTEMTIME &)> F;
-
-	AspectDateTimePickerDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(reinterpret_cast< NMDATETIMECHANGE * >( params.Msg.LParam )->st);
-		return 0;
-	}
-
-	F f;
-};
 /// DateTimePicker Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -79,35 +61,44 @@ struct AspectDateTimePickerDispatcher
   * day. It resembles a calender and is quite neat to use if you need to specifically 
   * declare a point in time within 1800 - 2100   
   */
-template< class EventHandlerClass >
 class WidgetDateTimePicker :
 	public MessageMapPolicy< Policies::Subclassed >,
 	
 	// Aspects
-	public AspectClickable< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass> > >,
-	public AspectEnabled< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectFont< WidgetDateTimePicker< EventHandlerClass > >,
-	public AspectKeyboard< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectPainting< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectThreads< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDateTimePicker< EventHandlerClass > > >
+	public AspectClickable< WidgetDateTimePicker >,
+	public AspectEnabled< WidgetDateTimePicker >,
+	public AspectFocus< WidgetDateTimePicker >,
+	public AspectFont< WidgetDateTimePicker >,
+	public AspectKeyboard< WidgetDateTimePicker >,
+	public AspectMouseClicks< WidgetDateTimePicker >,
+	public AspectPainting< WidgetDateTimePicker >,
+	public AspectRaw< WidgetDateTimePicker >,
+	public AspectSizable< WidgetDateTimePicker >,
+	public AspectThreads< WidgetDateTimePicker >,
+	public AspectVisible< WidgetDateTimePicker >
 {
+	struct Dispatcher
+	{
+		typedef std::tr1::function<void (const SYSTEMTIME &)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(reinterpret_cast< NMDATETIMECHANGE * >( params.Msg.LParam )->st);
+			return 0;
+		}
+
+		F f;
+	};
+
 public:
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	/// Class type
-	typedef WidgetDateTimePicker< EventHandlerClass > ThisType;
+	typedef WidgetDateTimePicker ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
 
-	/// Message map type
-	typedef MessageMapControl< EventHandlerClass, ThisType > MessageMapType;
-	typedef AspectEnableDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 	friend class WidgetCreator< WidgetDateTimePicker >;
 
 	/// Seed class
@@ -119,7 +110,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetDateTimePicker::ThisType WidgetType;
+		typedef WidgetDateTimePicker::ThisType WidgetType;
 
 		FontPtr font;
 		SmartUtil::tstring format;
@@ -154,18 +145,9 @@ public:
 	  * If you supply an event handler for this event your handler will be called 
 	  * when the WidgetDateTimePicker date value is changed. 
 	  */
-	void onDateTimeChanged( typename MessageMapType::itsVoidFunctionTakingSystemTime eventHandler ) {
-		onDateTimeChanged(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
-	}
-	void onDateTimeChanged( typename MessageMapType::voidFunctionTakingSystemTime eventHandler ) {
-		onDateTimeChanged(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));
-	}
 	void onDateTimeChanged(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			typename MessageMapType::SignalTupleType(
-				Message( WM_NOTIFY, DTN_DATETIMECHANGE ), Dispatcher(f)
-			)
+		setCallback(
+			Message( WM_NOTIFY, DTN_DATETIMECHANGE ), Dispatcher(f)
 		);
 	}
 
@@ -260,122 +242,67 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetDateTimePicker< EventHandlerClass >::Seed & WidgetDateTimePicker< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, DATETIMEPICK_CLASS );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | DTS_SHORTDATEFORMAT;
-		d_DefaultValues.backgroundColor = 0x000080;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_DefaultValues.format = _T( "yyyy.MM.dd" ); //TODO: should be filled out with locale from OS
-		GetSystemTime( & d_DefaultValues.initialDateTime );
-		d_DefaultValues.monthBackgroundColor = 0x808080;
-		d_DefaultValues.monthTextColor = 0xFFFFFF;
-		d_DefaultValues.titleBackgroundColor = 0x202020;
-		d_DefaultValues.titleTextColor = 0x008080;
-		d_DefaultValues.trailingTextColor = 0x000000;
-		//TODO: initialize the values here
-
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetDateTimePicker< EventHandlerClass >::Seed::Seed()
+inline WidgetDateTimePicker::Seed::Seed()
 {
 	* this = WidgetDateTimePicker::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-Message & WidgetDateTimePicker< EventHandlerClass >::getClickMessage()
+inline Message & WidgetDateTimePicker::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, DTN_DROPDOWN );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-SYSTEMTIME WidgetDateTimePicker< EventHandlerClass >::getDateTime()
+inline SYSTEMTIME WidgetDateTimePicker::getDateTime()
 {
 	SYSTEMTIME st;
 	DateTime_GetSystemtime( this->Widget::itsHandle, & st );
 	return st;
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setDateTime( const SYSTEMTIME & st )
+inline void WidgetDateTimePicker::setDateTime( const SYSTEMTIME & st )
 {
 	DateTime_SetSystemtime( this->Widget::itsHandle, GDT_VALID, & st );
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setFormat( const SmartUtil::tstring & format )
+inline void WidgetDateTimePicker::setFormat( const SmartUtil::tstring & format )
 {
 	DateTime_SetFormat( this->Widget::itsHandle, format.c_str() );
 }
 
-template< class EventHandlerClass >
-WidgetDateTimePicker< EventHandlerClass >::WidgetDateTimePicker( SmartWin::Widget * parent )
+inline WidgetDateTimePicker::WidgetDateTimePicker( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	//TODO: use CreationalInfo parameters
-	setFont( cs.font );
-	setFormat( cs.format );
-	setDateTime( cs.initialDateTime );
-	setBackgroundColor( cs.backgroundColor );
-	setMonthBackgroundColor( cs.monthBackgroundColor );
-	setMonthTextColor( cs.monthTextColor );
-	setTitleBackgroundColor( cs.titleBackgroundColor );
-	setTrailingTextColor( cs.trailingTextColor );
-	setTitleTextColor( cs.titleTextColor );
-}
-
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setBackgroundColor( COLORREF color )
+inline void WidgetDateTimePicker::setBackgroundColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_BACKGROUND, color );
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setMonthBackgroundColor( COLORREF color )
+inline void WidgetDateTimePicker::setMonthBackgroundColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_MONTHBK, color );
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setMonthTextColor( COLORREF color )
+inline void WidgetDateTimePicker::setMonthTextColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TEXT, color );
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setTitleBackgroundColor( COLORREF color )
+inline void WidgetDateTimePicker::setTitleBackgroundColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TITLEBK, color );
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setTitleTextColor( COLORREF color )
+inline void WidgetDateTimePicker::setTitleTextColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TITLETEXT, color );
 }
 
-template< class EventHandlerClass >
-void WidgetDateTimePicker< EventHandlerClass >::setTrailingTextColor( COLORREF color )
+inline void WidgetDateTimePicker::setTrailingTextColor( COLORREF color )
 {
 	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TRAILINGTEXT, color );
 }

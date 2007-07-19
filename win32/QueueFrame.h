@@ -273,26 +273,26 @@ private:
 	void addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
 	void addPriorityMenu(const WidgetMenuPtr& parent);
 	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, WidgetMenu::itsVoidMenuFunctionTakingUInt handler, QueueItemInfo* qii, bool offline);
+	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), QueueItemInfo* qii, bool offline);
 
 	void layout();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool preClosing();
 	void postClosing();
 	
-	void handleShowTreeClicked(WidgetCheckBoxPtr);
+	void handleShowTreeClicked();
 
-	void handleSearchAlternates(WidgetMenuPtr menu, unsigned id);
-	void handleBitziLookup(WidgetMenuPtr menu, unsigned id);
-	void handleCopyMagnet(WidgetMenuPtr menu, unsigned id);
-	void handleMove(WidgetMenuPtr menu, unsigned id);
-	void handleRemove(WidgetMenuPtr menu, unsigned id);
-	void handlePriority(WidgetMenuPtr menu, unsigned id);
-	void handlePM(WidgetMenuPtr menu, unsigned id);
-	void handleRemoveSource(WidgetMenuPtr menu, unsigned id);
-	void handleRemoveSources(WidgetMenuPtr menu, unsigned id);
-	void handleBrowseList(WidgetMenuPtr menu, unsigned id);
-	void handleReadd(WidgetMenuPtr menu, unsigned id);
+	void handleSearchAlternates();
+	void handleBitziLookup();
+	void handleCopyMagnet();
+	void handleMove();
+	void handleRemove();
+	void handlePriority(unsigned id);
+	void handlePM(const UserPtr& user);
+	void handleRemoveSource(const UserPtr& user);
+	void handleRemoveSources(const UserPtr& user);
+	void handleBrowseList(const UserPtr& user);
+	void handleReadd(const UserPtr& user);
 	
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	

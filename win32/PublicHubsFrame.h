@@ -120,11 +120,11 @@ private:
 	bool preClosing();
 	void postClosing();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	void handleConfigure(WidgetButtonPtr);
-	void handleRefresh(WidgetButtonPtr);
-	void handleConnect(WidgetMenuPtr, unsigned);
-	void handleAdd(WidgetMenuPtr, unsigned);
-	void handleCopyHub(WidgetMenuPtr, unsigned);
+	void handleConfigure();
+	void handleRefresh();
+	void handleConnect();
+	void handleAdd();
+	void handleCopyHub();
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
 	bool checkNick();

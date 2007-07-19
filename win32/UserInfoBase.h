@@ -50,52 +50,45 @@ public:
 template<class T>
 class AspectUserInfo {
 public:
-
-	template<typename MenuType>
-	void handleMatchQueue(MenuType, unsigned) {
+	typedef AspectUserInfo<T> ThisType;
+	
+	void handleMatchQueue() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::matchQueue);
 	}
-	
-	template<typename MenuType>
-	void handleGetList(MenuType, unsigned) {
+	void handleGetList() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::getList);
 	}
-	template<typename MenuType>
-	void handleBrowseList(MenuType, unsigned) {
+	void handleBrowseList() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::browseList);
 	}
-	template<typename MenuType>
-	void handleAddFavorite(MenuType, unsigned) {
+	void handleAddFavorite() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::addFav);
 	}
-	template<typename MenuType>
-	void handlePrivateMessage(MenuType, unsigned) {
+	void handlePrivateMessage() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::pm);
 	}
-	template<typename MenuType>
-	void handleGrantSlot(MenuType, unsigned) {
+	void handleGrantSlot() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::grant);
 	}
-	template<typename MenuType>
-	void handleRemoveAll(MenuType, unsigned) {
+	void handleRemoveAll() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::removeAll);
 	}
 
 	template<typename MenuType>
 	void appendUserItems(MenuType menu) {
 		bool adc = static_cast<T*>(this)->getUserList()->forEachSelectedT(UserInfoBase::ADCOnly()).adcOnly;
-		menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), &T::handleGetList);
+		menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&ThisType::handleGetList, this));
 		if(adc)
-			menu->appendItem(IDC_BROWSELIST, TSTRING(BROWSE_FILE_LIST), &T::handleBrowseList);
-		menu->appendItem(IDC_MATCH_QUEUE, TSTRING(MATCH_QUEUE), &T::handleMatchQueue);
-		menu->appendItem(IDC_PRIVATEMESSAGE, TSTRING(SEND_PRIVATE_MESSAGE), &T::handlePrivateMessage);
-		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), &T::handleAddFavorite);
-		menu->appendItem(IDC_GRANTSLOT, TSTRING(GRANT_EXTRA_SLOT), &T::handleGrantSlot);
+			menu->appendItem(IDC_BROWSELIST, TSTRING(BROWSE_FILE_LIST), std::tr1::bind(&ThisType::handleBrowseList, this));
+		menu->appendItem(IDC_MATCH_QUEUE, TSTRING(MATCH_QUEUE), std::tr1::bind(&ThisType::handleMatchQueue, this));
+		menu->appendItem(IDC_PRIVATEMESSAGE, TSTRING(SEND_PRIVATE_MESSAGE), std::tr1::bind(&ThisType::handlePrivateMessage, this));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&ThisType::handleAddFavorite, this));
+		menu->appendItem(IDC_GRANTSLOT, TSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&ThisType::handleGrantSlot, this));
 #ifdef PORT_ME
 		menu->appendItem(IDC_CONNECT, TSTRING(CONNECT_FAVUSER_HUB), &T::handle);
 #endif
 		menu->appendSeparatorItem();
-		menu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_FROM_ALL), &T::handleRemoveAll);
+		menu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_FROM_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this));
 	}
 };
 

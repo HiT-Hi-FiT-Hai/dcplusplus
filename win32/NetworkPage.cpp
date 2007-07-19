@@ -92,10 +92,7 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), P
 
 	fixControls();
 
-	WidgetRadioButtonPtr radioButton;
-#define RADIO_ATTACH(id) \
-	radioButton = subclassRadioButton(id); \
-	radioButton->onClicked(&NetworkPage::fixControls)
+#define RADIO_ATTACH(id) subclassRadioButton(id)->onClicked((std::tr1::bind(&NetworkPage::fixControls, this)))
 	RADIO_ATTACH(IDC_DIRECT);
 	RADIO_ATTACH(IDC_FIREWALL_UPNP);
 	RADIO_ATTACH(IDC_FIREWALL_NAT);
@@ -104,10 +101,8 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), P
 	RADIO_ATTACH(IDC_SOCKS5);
 #undef RADIO_ATTACH
 
-	WidgetTextBoxPtr textBox;
 #define TEXTBOX_ATTACH(id) \
-	textBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(id)); \
-	textBox->setTextLimit(250)
+	static_cast<WidgetTextBoxPtr>(subclassTextBox(id))->setTextLimit(250)
 	TEXTBOX_ATTACH(IDC_SOCKS_SERVER);
 	TEXTBOX_ATTACH(IDC_SOCKS_PORT);
 	TEXTBOX_ATTACH(IDC_SOCKS_USER);

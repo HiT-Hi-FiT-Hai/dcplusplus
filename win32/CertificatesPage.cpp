@@ -51,17 +51,13 @@ CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : SmartWin::Widget(
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 
-	WidgetButtonPtr button = subclassButton(IDC_BROWSE_PRIVATE_KEY);
-	button->onClicked(&CertificatesPage::handleBrowsePrivateKeyClicked);
+	subclassButton(IDC_BROWSE_PRIVATE_KEY)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowsePrivateKeyClicked, this));
 
-	button = subclassButton(IDC_BROWSE_CERTIFICATE);
-	button->onClicked(&CertificatesPage::handleBrowseCertificateClicked);
+	subclassButton(IDC_BROWSE_CERTIFICATE)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseCertificateClicked, this));
 
-	button = subclassButton(IDC_BROWSE_TRUSTED_PATH);
-	button->onClicked(&CertificatesPage::handleBrowseTrustedPathClicked);
+	subclassButton(IDC_BROWSE_TRUSTED_PATH)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseTrustedPathClicked, this));
 
-	button = subclassButton(IDC_GENERATE_CERTS);
-	button->onClicked(&CertificatesPage::handleGenerateCertsClicked);
+	subclassButton(IDC_GENERATE_CERTS)->onClicked(std::tr1::bind(&CertificatesPage::handleGenerateCertsClicked, this));
 }
 
 CertificatesPage::~CertificatesPage() {
@@ -71,25 +67,25 @@ void CertificatesPage::write() {
 	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 }
 
-void CertificatesPage::handleBrowsePrivateKeyClicked(WidgetButtonPtr) {
+void CertificatesPage::handleBrowsePrivateKeyClicked() {
 	tstring target = Text::toT(SETTING(TLS_PRIVATE_KEY_FILE));
 	if(WinUtil::browseFile(target, handle(), false, target))
 		::SetDlgItemText(handle(), IDC_TLS_PRIVATE_KEY_FILE, &target[0]);
 }
 
-void CertificatesPage::handleBrowseCertificateClicked(WidgetButtonPtr) {
+void CertificatesPage::handleBrowseCertificateClicked() {
 	tstring target = Text::toT(SETTING(TLS_CERTIFICATE_FILE));
 	if(WinUtil::browseFile(target, handle(), false, target))
 		::SetDlgItemText(handle(), IDC_TLS_CERTIFICATE_FILE, &target[0]);
 }
 
-void CertificatesPage::handleBrowseTrustedPathClicked(WidgetButtonPtr) {
+void CertificatesPage::handleBrowseTrustedPathClicked() {
 	tstring target = Text::toT(SETTING(TLS_TRUSTED_CERTIFICATES_PATH));
 	if(WinUtil::browseDirectory(target, handle()))
 		::SetDlgItemText(handle(), IDC_TLS_TRUSTED_CERTIFICATES_PATH, &target[0]);
 }
 
-void CertificatesPage::handleGenerateCertsClicked(WidgetButtonPtr) {
+void CertificatesPage::handleGenerateCertsClicked() {
 	try {
 		CryptoManager::getInstance()->generateCertificate();
 	} catch(const CryptoException& e) {

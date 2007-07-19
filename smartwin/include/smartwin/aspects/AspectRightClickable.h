@@ -31,7 +31,6 @@
 
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -42,32 +41,23 @@ namespace SmartWin
 /** E.g. the WidgetStatic have a "Right Clicked" Aspect therefore it realizes the
   * AspectRightClickable through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectRightClickable
 {
 	typedef AspectVoidVoidDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectRightClickable
 	/// Setting the event handler for the "Right Clicked" event
 	/** All Widgets that realize this Aspect will raise this event when Widget is
 	  * being Right Clicked. No parameters are passed.
 	  */
-	void onRightClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onRightClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onRightClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onRightClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-
-	void onRightClicked(const Dispatcher::F& f) {
+	void onRightClicked(const typename Dispatcher::F& f) {
 #ifdef WINCE
 	static Message msg = Message( WM_NOTIFY, GN_CONTEXTMENU );
 #else
 	static Message msg = Message( WM_NOTIFY, NM_RCLICK );
 #endif
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		static_cast<WidgetType*>(this)->setCallback(
 			msg, Dispatcher(f)
 		);
 	}

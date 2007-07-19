@@ -49,7 +49,7 @@
 #endif
 
 #include "WindowsHeaders.h"
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include "Application.h"
 #include "WidgetFactory.h"
 #include "widgets/WidgetWindowBase.h"

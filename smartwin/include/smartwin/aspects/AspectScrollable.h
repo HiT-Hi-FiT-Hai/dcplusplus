@@ -31,7 +31,6 @@
 
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -42,11 +41,10 @@ namespace SmartWin
   * E.g. the WidgetSlider have a scroll Aspect to it therefore WidgetSlider realize
   * the AspectScrollable through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectScrollable
 {
 	typedef AspectVoidVoidDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectScrollable
 	/// Setting the event handler for the "scrolling horizontally" event
@@ -55,15 +53,8 @@ public:
 	  * <br>
 	  * No parameters are passed.
 	  */
-	void onScrollHorz( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onScrollHorz(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onScrollHorz( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onScrollHorz(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
 	void onScrollHorz(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_HSCROLL ), Dispatcher(f)
 		);
 	}
@@ -75,15 +66,8 @@ public:
 	  * <br>
 	  * No parameters are passed.
 	  */
-	void onScrollVert( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onScrollVert(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onScrollVert( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onScrollVert(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
 	void onScrollVert(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_VSCROLL ), Dispatcher(f)
 		);
 	}

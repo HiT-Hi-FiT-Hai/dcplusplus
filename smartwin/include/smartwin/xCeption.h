@@ -29,11 +29,10 @@
 #ifndef xCeption_h
 #define xCeption_h
 
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include "WindowsHeaders.h"
 #include <stdexcept>
 #include "BasicTypes.h"
-#include "SmartUtil.h"
 
 namespace SmartWin
 {

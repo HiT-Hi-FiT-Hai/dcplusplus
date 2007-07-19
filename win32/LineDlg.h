@@ -23,7 +23,7 @@
 
 #include <dcpp/Util.h>
 
-class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, LineDlg>
+class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_ = Util::emptyStringT, bool password_ = false);
@@ -32,10 +32,7 @@ public:
 	
 	tstring getLine() { return initial; }
 private:
-	WidgetStaticPtr description;
 	WidgetTextBoxPtr line;
-	WidgetButtonPtr ok;
-	WidgetButtonPtr cancel;
 
 	tstring title;
 	tstring desc;
@@ -45,8 +42,8 @@ private:
 	void focus();
 	bool initDialog();
 	bool closing();
-	void okClicked(WidgetButtonPtr);
-	void cancelClicked(WidgetButtonPtr);
+	void okClicked();
+	void cancelClicked();
 };
 
 #endif // !defined(LINE_DLG_H)

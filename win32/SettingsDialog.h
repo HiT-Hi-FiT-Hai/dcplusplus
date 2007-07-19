@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class SettingsDialog : public WidgetFactory<SmartWin::WidgetModalDialog, SettingsDialog>
+class SettingsDialog : public WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	SettingsDialog(SmartWin::Widget* parent);
@@ -42,9 +42,8 @@ private:
 	void write();
 	
 	bool initDialog();
-	void handleOKClicked(WidgetButtonPtr);
-	void handleCancelClicked(WidgetButtonPtr);
-	void selectionChanged(WidgetTreeViewPtr);
+	void handleOKClicked();
+	void selectionChanged();
 	void showPage(PropPage* page);
 	
 	HTREEITEM createTree(const tstring& str, HTREEITEM parent, PropPage* page);	

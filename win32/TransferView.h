@@ -40,7 +40,7 @@
 #endif
 
 class TransferView : 
-	public WidgetFactory<SmartWin::WidgetChildWindow, TransferView>, 
+	public WidgetFactory<SmartWin::WidgetChildWindow>, 
 	private DownloadManagerListener, 
 	private UploadManagerListener, 
 	private ConnectionManagerListener,
@@ -186,10 +186,10 @@ private:
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
-	void handleForce(WidgetMenuPtr, unsigned);
-	void handleSearchAlternates(WidgetMenuPtr, unsigned);
-	void handleCopyNick(WidgetMenuPtr, unsigned);
-	void handleRemove(WidgetMenuPtr, unsigned);
+	void handleForce();
+	void handleSearchAlternates();
+	void handleCopyNick();
+	void handleRemove();
 	void runUserCommand(const UserCommand& uc);
 
 	WidgetMenuPtr makeContextMenu(ItemInfo* ii);

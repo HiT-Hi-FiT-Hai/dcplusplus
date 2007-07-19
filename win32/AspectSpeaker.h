@@ -21,7 +21,7 @@
 
 #include "StupidWin.h"
 
-template<typename T>
+template<typename WidgetType>
 class AspectSpeaker {
 public:
 	AspectSpeaker() {
@@ -29,10 +29,10 @@ public:
 	
 	template<typename F>
 	void onSpeaker(const F& f) {
-		static_cast<T*>(this)->onRaw(f, WM_SPEAKER);
+		static_cast<WidgetType*>(this)->onRaw(f, WM_SPEAKER);
 	}
 	
-	BOOL speak(WPARAM w = 0, LPARAM l = 0) { return static_cast<T*>(this)->postMessage(WM_SPEAKER, w, l); }
+	BOOL speak(WPARAM w = 0, LPARAM l = 0) { return static_cast<WidgetType*>(this)->postMessage(WM_SPEAKER, w, l); }
 	
 private:
 };

@@ -70,37 +70,37 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::Widget* mdiParent) :
 		
 		cs.caption = TSTRING(NEW);
 		add = createButton(cs);
-		add->onClicked(&ADLSearchFrame::handleAdd);
+		add->onClicked(std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 		addWidget(add);
 		add->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(REMOVE);
 		remove = createButton(cs);
-		remove->onClicked(&ADLSearchFrame::handleRemove);
+		remove->onClicked(std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 		addWidget(remove);
 		remove->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(PROPERTIES);
 		properties = createButton(cs);
-		properties->onClicked(&ADLSearchFrame::handleProperties);
+		properties->onClicked(std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 		addWidget(properties);
 		properties->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(MOVE_UP);
 		up = createButton(cs);
-		up->onClicked(&ADLSearchFrame::handleUp);
+		up->onClicked(std::tr1::bind(&ADLSearchFrame::handleUp, this));
 		addWidget(up);
 		up->setFont(WinUtil::font);
 		
 		cs.caption = TSTRING(MOVE_DOWN);
 		down = createButton(cs);
-		down->onClicked(&ADLSearchFrame::handleDown);
+		down->onClicked(std::tr1::bind(&ADLSearchFrame::handleDown, this));
 		addWidget(down);
 		down->setFont(WinUtil::font);
 
 		cs.caption = TSTRING(MENU_HELP);
 		help = createButton(cs);
-		help->onClicked(&ADLSearchFrame::handleHelp);
+		help->onClicked(std::tr1::bind(&ADLSearchFrame::handleHelp, this));
 		addWidget(help);
 		help->setFont(WinUtil::font);
 	}
@@ -194,7 +194,7 @@ bool ADLSearchFrame::preClosing() {
 	return true;
 }
 
-void ADLSearchFrame::handleAdd(WidgetButtonPtr) {
+void ADLSearchFrame::handleAdd() {
 	ADLSearch search;
 #ifdef PORT_ME
 	ADLSProperties dlg(&search);
@@ -226,7 +226,7 @@ void ADLSearchFrame::handleAdd(WidgetButtonPtr) {
 #endif
 }
 
-void ADLSearchFrame::handleRemove(WidgetButtonPtr) {
+void ADLSearchFrame::handleRemove() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	int i;
 	while((i = items->getSelectedIndex()) >= 0)
@@ -236,7 +236,7 @@ void ADLSearchFrame::handleRemove(WidgetButtonPtr) {
 	}
 }
 
-void ADLSearchFrame::handleProperties(WidgetButtonPtr) {
+void ADLSearchFrame::handleProperties() {
 	// Get selection info
 	int i = items->getSelectedIndex();
 	if(i < 0)
@@ -263,7 +263,7 @@ void ADLSearchFrame::handleProperties(WidgetButtonPtr) {
 #endif
 }
 
-void ADLSearchFrame::handleUp(WidgetButtonPtr) {
+void ADLSearchFrame::handleUp() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
 	// Get selection
@@ -313,7 +313,7 @@ void ADLSearchFrame::handleUp(WidgetButtonPtr) {
 
 }
 
-void ADLSearchFrame::handleDown(WidgetButtonPtr) {
+void ADLSearchFrame::handleDown() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
 	// Get selection
@@ -366,7 +366,7 @@ void ADLSearchFrame::handleDown(WidgetButtonPtr) {
 	}
 }
 
-void ADLSearchFrame::handleHelp(WidgetButtonPtr) {
+void ADLSearchFrame::handleHelp() {
 #ifdef PORT_ME
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
 #endif
@@ -442,7 +442,7 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete = false)
 	items->setRowChecked(index, search.isActive);
 }
 
-void ADLSearchFrame::popupNew(WidgetMenuPtr, unsigned) {
+void ADLSearchFrame::popupNew() {
 	ADLSearch search;
 #ifdef PORT_ME
 	ADLSProperties dlg(&search);

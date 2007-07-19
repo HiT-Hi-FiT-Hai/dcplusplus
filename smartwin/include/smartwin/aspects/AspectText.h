@@ -29,30 +29,12 @@
 #ifndef AspectText_h
 #define AspectText_h
 
-#include <functional>
-#include <boost/cast.hpp>
-
-#include "SmartUtil.h"
+#include "../../SmartUtil.h"
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-struct AspectTextDispatcher
-{
-	typedef std::tr1::function<void (const SmartUtil::tstring &)> F;
-
-	AspectTextDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) ));
-		params.RunDefaultHandling = true;
-		return 0;
-	}
-
-	F f;
-};
 
 /// Aspect class used by Widgets that have the possibility of setting the "text"
 /// property of their objects.
@@ -60,11 +42,23 @@ struct AspectTextDispatcher
   * E.g. the AspectTextBox have a "text" Aspect therefore they realize the AspectText
   * through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectText
 {
-	typedef AspectTextDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<void (const SmartUtil::tstring &)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) ));
+			params.RunDefaultHandling = true;
+			return 0;
+		}
+
+		F f;
+	};
 public:
 	/// Sets the text of the AspectText realizing class
 	/** The txt parameter is the new text to put into the realizing object.
@@ -96,15 +90,8 @@ public:
 	  * The parameter passed is SmartUtil::tstring & which is the new text of the
 	  * Widget.
 	  */
-	void onTextChanging( typename MessageMapType::itsVoidFunctionTakingConstString eventHandler ) {
-		onTextChanging(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onTextChanging( typename MessageMapType::voidFunctionTakingConstString eventHandler ) {
-		onTextChanging(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
 	void onTextChanging(const typename Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_SETTEXT ), Dispatcher(f)
 		);
 	}
@@ -117,15 +104,15 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectText< EventHandlerClass, WidgetType, MessageMapType >::setText( const SmartUtil::tstring & txt )
+template< class WidgetType >
+void AspectText< WidgetType >::setText( const SmartUtil::tstring & txt )
 {
 	::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_SETTEXT, ( WPARAM ) 0, ( LPARAM ) txt.c_str() );
 }
 
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-SmartUtil::tstring AspectText< EventHandlerClass, WidgetType, MessageMapType >::replaceEndlWithLfCr( const SmartUtil::tstring & txt )
+template< class WidgetType >
+SmartUtil::tstring AspectText< WidgetType >::replaceEndlWithLfCr( const SmartUtil::tstring & txt )
 {
 	// Replaces \n with \r\n so that Windows textbox understands "endl"
 	SmartUtil::tstring	txtEndl= txt;
@@ -139,20 +126,20 @@ SmartUtil::tstring AspectText< EventHandlerClass, WidgetType, MessageMapType >::
 	return txtEndl;
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectText< EventHandlerClass, WidgetType, MessageMapType >::setTextLines( const SmartUtil::tstring & inTxt )
+template< class WidgetType >
+void AspectText< WidgetType >::setTextLines( const SmartUtil::tstring & inTxt )
 {
 	setText( replaceEndlWithLfCr( inTxt ) );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-size_t AspectText< EventHandlerClass, WidgetType, MessageMapType >::length( ) {
+template< class WidgetType >
+size_t AspectText< WidgetType >::length( ) {
 	return static_cast<size_t>(static_cast<const WidgetType*>(this)->sendMessage(WM_GETTEXTLENGTH));
 }
 
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-SmartUtil::tstring AspectText< EventHandlerClass, WidgetType, MessageMapType >::getText()
+template< class WidgetType >
+SmartUtil::tstring AspectText< WidgetType >::getText()
 {
 	size_t textLength = length();
 	if ( textLength == 0 )

@@ -29,20 +29,20 @@
 #ifndef WidgetRadioButton_h
 #define WidgetRadioButton_h
 
-#include "../Widget.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectBackgroundColor.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
+#include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectBorder.h"
-#include "../MessageMapControl.h"
-#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectFont.h"
+#include "../aspects/AspectPainting.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectText.h"
+#include "../aspects/AspectThreads.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -66,31 +66,29 @@ class WidgetCreator;
    * By selecting one of the Radio Buttons grouped together you will also deselect the
    * previously selected one.
    */
-template< class EventHandlerClass >
 class WidgetRadioButton :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectBorder< WidgetRadioButton< EventHandlerClass > >,
-	public AspectClickable< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectDblClickable< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectFont< WidgetRadioButton< EventHandlerClass > >,
-	public AspectPainting< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectText< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectThreads< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetRadioButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetRadioButton< EventHandlerClass > > >
+	public AspectBackgroundColor< WidgetRadioButton >,
+	public AspectBorder< WidgetRadioButton >,
+	public AspectClickable< WidgetRadioButton >,
+	public AspectDblClickable< WidgetRadioButton >,
+	public AspectEnabled< WidgetRadioButton >,
+	public AspectFocus< WidgetRadioButton >,
+	public AspectFont< WidgetRadioButton >,
+	public AspectPainting< WidgetRadioButton >,
+	public AspectRaw< WidgetRadioButton >,
+	public AspectSizable< WidgetRadioButton >,
+	public AspectText< WidgetRadioButton >,
+	public AspectThreads< WidgetRadioButton >,
+	public AspectVisible< WidgetRadioButton >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetRadioButton > MessageMapType;
 	friend class WidgetCreator< WidgetRadioButton >;
 public:
 	/// Class type
-	typedef WidgetRadioButton< EventHandlerClass > ThisType;
+	typedef WidgetRadioButton ThisType;
 
 	/// Object type
 	typedef ThisType* ObjectType;
@@ -104,7 +102,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetRadioButton::ThisType WidgetType;
+		typedef WidgetRadioButton::ThisType WidgetType;
 
 		FontPtr font;
 
@@ -146,7 +144,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( EventHandlerClass * parent, const Seed & cs = getDefaultSeed() );
+	virtual void create( Widget * parent, const Seed & cs = getDefaultSeed() );
 
 protected:
 	// Constructor Taking pointer to parent
@@ -162,78 +160,44 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetRadioButton< EventHandlerClass >::Seed & WidgetRadioButton< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T( "BUTTON" ) );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetRadioButton< EventHandlerClass >::Seed::Seed()
+inline WidgetRadioButton::Seed::Seed()
 {
 	* this = WidgetRadioButton::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-Message & WidgetRadioButton< EventHandlerClass >::getClickMessage()
+inline Message & WidgetRadioButton::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetRadioButton< EventHandlerClass >::getDblClickMessage()
+inline Message & WidgetRadioButton::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetRadioButton< EventHandlerClass >::getBackgroundColorMessage()
+inline Message & WidgetRadioButton::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORBTN );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-WidgetRadioButton< EventHandlerClass >::WidgetRadioButton( SmartWin::Widget * parent )
+inline WidgetRadioButton::WidgetRadioButton( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-template< class EventHandlerClass >
-bool WidgetRadioButton< EventHandlerClass >::getChecked()
+inline bool WidgetRadioButton::getChecked()
 {
 	return ::SendMessage( this->Widget::itsHandle, BM_GETCHECK, 0, 0 ) == BST_CHECKED;
 }
 
-template< class EventHandlerClass >
-void WidgetRadioButton< EventHandlerClass >::setChecked( bool value )
+inline void WidgetRadioButton::setChecked( bool value )
 {
 	::SendMessage( this->Widget::itsHandle, BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED, 0 );
-}
-
-template< class EventHandlerClass >
-void WidgetRadioButton< EventHandlerClass >::create( EventHandlerClass * parent, const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	setFont( cs.font );
-	// TODO: this was registered with the application when Widget::create was
-	// called. Will they collide?
-	this->registerWidget();
 }
 
 // end namespace SmartWin

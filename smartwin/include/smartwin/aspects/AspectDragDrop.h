@@ -38,47 +38,45 @@
 namespace SmartWin
 {
 // begin namespace SmartWin
-struct AspectDragDropDispatcher {
-	typedef std::tr1::function<void (std::vector< SmartUtil::tstring>, Point )> F;
-
-	AspectDragDropDispatcher(const F& f_) : f(f_) { }
-	
-	HRESULT operator()(private_::SignalContent& params) {
-		std::vector<SmartUtil::tstring> files;
-		Point pt;
-		HDROP handle = (HDROP)params.Msg.WParam;
-		if (handle) { 
-			int iFiles = DragQueryFile(handle, (UINT)-1, NULL, 0);
-			TCHAR pFilename[MAX_PATH];
-			for(int i=0;i<iFiles;i++) {
-				memset(pFilename,0,MAX_PATH * sizeof(TCHAR));
-				DragQueryFile(handle, i, pFilename, MAX_PATH);
-				files.push_back(pFilename);
-			}
-			POINT p;
-			DragQueryPoint(handle,&p);
-			pt = Point(p.x,p.y);
-			DragFinish(handle); 
-		}
-		handle = 0;
-		f(files, pt);
-
-		params.RunDefaultHandling = true;
-		return 0;
-	}
-	
-	F f;
-};
-
 /// Aspect class used by dialog Widgets that have the possibility of trapping "drop files events".
 /** \ingroup AspectClasses
   * E.g. the WidgetModalDialog can trap "drop files events" therefore they realize the AspectDragDrop through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectDragDrop
 {
-	typedef AspectDragDropDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher {
+		typedef std::tr1::function<void (std::vector< SmartUtil::tstring>, Point )> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+		
+		HRESULT operator()(private_::SignalContent& params) {
+			std::vector<SmartUtil::tstring> files;
+			Point pt;
+			HDROP handle = (HDROP)params.Msg.WParam;
+			if (handle) { 
+				int iFiles = DragQueryFile(handle, (UINT)-1, NULL, 0);
+				TCHAR pFilename[MAX_PATH];
+				for(int i=0;i<iFiles;i++) {
+					memset(pFilename,0,MAX_PATH * sizeof(TCHAR));
+					DragQueryFile(handle, i, pFilename, MAX_PATH);
+					files.push_back(pFilename);
+				}
+				POINT p;
+				DragQueryPoint(handle,&p);
+				pt = Point(p.x,p.y);
+				DragFinish(handle); 
+			}
+			handle = 0;
+			f(files, pt);
+
+			params.RunDefaultHandling = true;
+			return 0;
+		}
+		
+		F f;
+	};
+
 public:
 	/// \ingroup EventHandlersAspectAspectDragDrop
 	/// Setting the event handler for the "drop files" event
@@ -94,15 +92,8 @@ public:
 	  * 	int y = droppoint.y;
 	  * }
 	  */
-	void onDragDrop( typename MessageMapType::itsVoidFunctionTakingVectorPoint eventHandler ) {
-		onDragDrop( Adapter::adapt2(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onDragDrop( typename MessageMapType::voidFunctionTakingVectorPoint eventHandler ) {
-		onDragDrop( Adapter::adapt2(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onDragDrop(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onDragDrop(const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_DROPFILES ), Dispatcher(f)
 		);
 	}
@@ -117,8 +108,8 @@ protected:
 };
 
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectDragDrop< EventHandlerClass, WidgetType, MessageMapType >::setDragAcceptFiles(bool accept)
+template< class WidgetType >
+void AspectDragDrop< WidgetType >::setDragAcceptFiles(bool accept)
 {
 	DragAcceptFiles(static_cast< WidgetType * >( this )->handle(),accept); 
 }

@@ -73,7 +73,7 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 		ignoreTTH->setFont(WinUtil::systemFont);
 #endif
 
-		ignoreTTH->onClicked(&SpyFrame::handleIgnoreTTHClicked);
+		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
 	}
 
 	initStatus();
@@ -91,7 +91,7 @@ SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
 	searches->onRaw(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
 
 	contextMenu = createMenu(true);
-	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), &SpyFrame::handleSearch);
+	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), std::tr1::bind(&SpyFrame::handleSearch, this));
 	searches->onRaw(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 	initSecond();
@@ -222,14 +222,14 @@ HRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
-void SpyFrame::handleSearch(WidgetMenuPtr /*menu*/, unsigned /*id*/) {
+void SpyFrame::handleSearch() {
 	if(Util::strnicmp(searchString.c_str(), _T("TTH:"), 4) == 0)
 		SearchFrame::openWindow(getParent(), searchString.substr(4), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 	else
 		SearchFrame::openWindow(getParent(), searchString);
 }
 
-void SpyFrame::handleIgnoreTTHClicked(WidgetCheckBoxPtr) {
+void SpyFrame::handleIgnoreTTHClicked() {
 	bIgnoreTTH = ignoreTTH->getChecked();
 }
 

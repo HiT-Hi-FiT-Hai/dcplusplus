@@ -30,7 +30,7 @@
 #define ImageList_h
 
 #include "WindowsHeaders.h"
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include "Bitmap.h"
 #include "Icon.h"
 

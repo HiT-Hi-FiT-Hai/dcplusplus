@@ -64,32 +64,32 @@ FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) :
 
 		cs.caption = TSTRING(CONNECT);
 		connect = createButton(cs);
-		connect->onClicked(&FavHubsFrame::handleConnect);
+		connect->onClicked(std::tr1::bind(&FavHubsFrame::handleConnect, this));
 		addWidget(connect);
 		
 		cs.caption = TSTRING(NEW);
 		add = createButton(cs);
-		add->onClicked(&FavHubsFrame::handleAdd);
+		add->onClicked(std::tr1::bind(&FavHubsFrame::handleAdd, this));
 		addWidget(add);
 		
 		cs.caption = TSTRING(REMOVE);
 		remove = createButton(cs);
-		remove->onClicked(&FavHubsFrame::handleRemove);
+		remove->onClicked(std::tr1::bind(&FavHubsFrame::handleRemove, this));
 		addWidget(remove);
 		
 		cs.caption = TSTRING(PROPERTIES);
 		properties = createButton(cs);
-		properties->onClicked(&FavHubsFrame::handleProperties);
+		properties->onClicked(std::tr1::bind(&FavHubsFrame::handleProperties, this));
 		addWidget(properties);
 		
 		cs.caption = TSTRING(MOVE_UP);
 		up = createButton(cs);
-		up->onClicked(&FavHubsFrame::handleUp);
+		up->onClicked(std::tr1::bind(&FavHubsFrame::handleUp, this));
 		addWidget(up);
 		
 		cs.caption = TSTRING(MOVE_DOWN);
 		down = createButton(cs);
-		down->onClicked(&FavHubsFrame::handleDown);
+		down->onClicked(std::tr1::bind(&FavHubsFrame::handleDown, this));
 		addWidget(down);
 	}
 
@@ -171,27 +171,27 @@ void FavHubsFrame::openSelected() {
 	}
 }
 
-void FavHubsFrame::handleConnect(WidgetButtonPtr) {
+void FavHubsFrame::handleConnect() {
 	openSelected();
 }
 
-void FavHubsFrame::handleAdd(WidgetButtonPtr) {
+void FavHubsFrame::handleAdd() {
 	
 }
 
-void FavHubsFrame::handleRemove(WidgetButtonPtr) {
+void FavHubsFrame::handleRemove() {
 	
 }
 
-void FavHubsFrame::handleProperties(WidgetButtonPtr) {
+void FavHubsFrame::handleProperties() {
 	
 }
 
-void FavHubsFrame::handleUp(WidgetButtonPtr) {
+void FavHubsFrame::handleUp() {
 	
 }
 
-void FavHubsFrame::handleDown(WidgetButtonPtr) {
+void FavHubsFrame::handleDown() {
 	
 }
 

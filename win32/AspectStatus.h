@@ -19,19 +19,19 @@
 #ifndef DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 #define DCPLUSPLUS_WIN32_ASPECTSTATUS_H_
 
-template<class T>
+template<class WidgetType>
 class AspectStatus {
 protected:
 	AspectStatus() : status(0) {
-		statusSizes.resize(T::STATUS_LAST);
+		statusSizes.resize(WidgetType::STATUS_LAST);
 	}
 
 	void initStatus() {
-		status = static_cast<T*>(this)->createStatusBarSections();
+		status = static_cast<WidgetType*>(this)->createStatusBarSections();
 	}
 	
 	void setStatus(int s, const tstring& text) {
-		if(s != T::STATUS_STATUS) {
+		if(s != WidgetType::STATUS_STATUS) {
 			int w = status->getTextSize(text).x + 12;
 			if(w > static_cast<int>(statusSizes[s])) {
 				dcdebug("Setting status size %d to %d\n", s, w);
@@ -48,8 +48,8 @@ protected:
 		SmartWin::Rectangle rs(status->getClientAreaSize());
 
 		{
-			statusSizes[T::STATUS_STATUS] = 0;
-			statusSizes[T::STATUS_STATUS] = rs.size.x - std::accumulate(statusSizes.begin(), statusSizes.end(), 0); 
+			statusSizes[WidgetType::STATUS_STATUS] = 0;
+			statusSizes[WidgetType::STATUS_STATUS] = rs.size.x - std::accumulate(statusSizes.begin(), statusSizes.end(), 0); 
 
 			status->setSections(statusSizes);
 		}
@@ -59,11 +59,11 @@ protected:
 	void mapWidget(int s, SmartWin::Widget* widget) {
 		RECT sr;
 		::SendMessage(status->handle(), SB_GETRECT, s, reinterpret_cast<LPARAM>(&sr));
-		::MapWindowPoints(status->handle(), static_cast<T*>(this)->handle(), (POINT*)&sr, 2);
+		::MapWindowPoints(status->handle(), static_cast<WidgetType*>(this)->handle(), (POINT*)&sr, 2);
 		::MoveWindow(widget->handle(), sr.left, sr.top, sr.right - sr.left, sr.bottom - sr.top, TRUE);
 	}
 	
-	SmartWin::WidgetStatusBar<T, SmartWin::Section<T> >* status;
+	typename SmartWin::WidgetStatusBar< SmartWin::Section >::ObjectType status;
 
 	std::vector<unsigned> statusSizes;
 

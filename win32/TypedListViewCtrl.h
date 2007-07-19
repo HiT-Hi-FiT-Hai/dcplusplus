@@ -36,9 +36,7 @@ public:
 	virtual void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
 		BaseType::create(cs);
 		
-		typedef typename BaseType::MessageMapType MessageMapType;
-		SmartWin::MessageMapBase * ptrThis = boost::polymorphic_cast< SmartWin::MessageMapBase * >( this );
-		ptrThis->setCallback(
+		this->setCallback(
 			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &TypedListViewDispatcher
 		);
 	}

@@ -29,20 +29,20 @@
 #ifndef WidgetCheckBox_h
 #define WidgetCheckBox_h
 
-#include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectBackgroundColor.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectVisible.h"
+#include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectGetParent.h"
+#include "../aspects/AspectFont.h"
+#include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
-#include "../aspects/AspectBackgroundColor.h"
-#include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectText.h"
+#include "../aspects/AspectThreads.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -62,31 +62,29 @@ class WidgetCreator;
   * out". <br>
   * It can contain descriptive text etc. 
   */
-template< class EventHandlerClass >
 class WidgetCheckBox :
 	public MessageMapPolicy< Policies::Subclassed >,
 	
 	// Aspect classes
-	public AspectBackgroundColor< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectBorder< WidgetCheckBox< EventHandlerClass > >,
-	public AspectClickable< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectDblClickable< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectFont< WidgetCheckBox< EventHandlerClass > >,
-	public AspectPainting< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectText< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectThreads< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetCheckBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCheckBox< EventHandlerClass > > >
+	public AspectBackgroundColor< WidgetCheckBox >,
+	public AspectBorder< WidgetCheckBox >,
+	public AspectClickable< WidgetCheckBox >,
+	public AspectDblClickable< WidgetCheckBox >,
+	public AspectEnabled< WidgetCheckBox >,
+	public AspectFocus< WidgetCheckBox >,
+	public AspectFont< WidgetCheckBox >,
+	public AspectPainting< WidgetCheckBox >,
+	public AspectRaw< WidgetCheckBox >,
+	public AspectSizable< WidgetCheckBox >,
+	public AspectText< WidgetCheckBox >,
+	public AspectThreads< WidgetCheckBox >,
+	public AspectVisible< WidgetCheckBox >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetCheckBox > MessageMapType;
 	friend class WidgetCreator< WidgetCheckBox >;
 public:
 	/// Class type
-	typedef WidgetCheckBox< EventHandlerClass > ThisType;
+	typedef WidgetCheckBox ThisType;
 
 	/// Class type
 	typedef ThisType * ObjectType;
@@ -100,7 +98,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetCheckBox::ThisType WidgetType;
+		typedef WidgetCheckBox::ThisType WidgetType;
 
 		FontPtr font;
 
@@ -156,77 +154,52 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetCheckBox< EventHandlerClass >::Seed & WidgetCheckBox< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T("Button") );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_CHECKBOX;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetCheckBox< EventHandlerClass >::Seed::Seed()
+inline WidgetCheckBox::Seed::Seed()
 {
 	* this = WidgetCheckBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-void WidgetCheckBox< EventHandlerClass >::setChecked( bool value )
+
+inline void WidgetCheckBox::setChecked( bool value )
 {
 	::SendMessage( this->Widget::itsHandle, BM_SETCHECK, static_cast< WPARAM >( value ? BST_CHECKED : BST_UNCHECKED ), 0 );
 }
 
-template< class EventHandlerClass >
-Message & WidgetCheckBox< EventHandlerClass >::getClickMessage()
+
+inline Message & WidgetCheckBox::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetCheckBox< EventHandlerClass >::getDblClickMessage()
+
+inline Message & WidgetCheckBox::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetCheckBox< EventHandlerClass >::getBackgroundColorMessage()
+
+inline Message & WidgetCheckBox::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORBTN );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-bool WidgetCheckBox< EventHandlerClass >::getChecked()
+
+inline bool WidgetCheckBox::getChecked()
 {
 	return ::SendMessage( this->Widget::itsHandle, BM_GETCHECK, 0, 0 ) == BST_CHECKED;
 }
 
 // Protected to avoid direct instantiation, you can inherit and use WidgetFactory
 // class which is friend
-template< class EventHandlerClass >
-WidgetCheckBox< EventHandlerClass >::WidgetCheckBox( SmartWin::Widget * parent )
+
+inline WidgetCheckBox::WidgetCheckBox( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetCheckBox< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	setFont( cs.font );
 }
 
 // end namespace SmartWin

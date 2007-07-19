@@ -61,7 +61,7 @@ void MDITab::create( const Seed & cs ) {
 bool MDITab::handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
-		this->setHeader(i, newText);
+		this->setHeader(i, cutTitle(newText));
 	}
 	return true;
 }
@@ -81,4 +81,11 @@ HRESULT MDITab::handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lPa
 		}
 	}
 	return 0;
+}
+
+tstring MDITab::cutTitle(const tstring& title) {
+	if(title.length() > MAX_TITLE_LENGTH) {
+		return title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
+	}
+	return title;
 }

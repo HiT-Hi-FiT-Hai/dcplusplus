@@ -26,34 +26,38 @@
 /**
  * This is where stuff that eventually should be moved to smartwin goes
  */
-template< template< class> class ContainerWidgetType, class EventHandlerClass>
-class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass> {
+template<typename ContainerWidgetType>
+class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType> {
 public:
-	WidgetFactory() : SmartWin::Widget(0), SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass>() { }
-	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType, EventHandlerClass>(parent) { }
+	WidgetFactory() : SmartWin::Widget(0), SmartWin::WidgetFactory<ContainerWidgetType>() { }
+	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType>(parent) { }
 
 	/// DataGrid class type.
-	typedef ::WidgetDataGrid< EventHandlerClass > WidgetDataGrid;
+	typedef ::WidgetDataGrid WidgetDataGrid;
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
 
-	WidgetDataGridPtr createDataGrid( const typename WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() ) {
+	WidgetDataGridPtr createDataGrid( const WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() ) {
 		return SmartWin::WidgetCreator< WidgetDataGrid >::create( this, cs );
 	}
 
+	WidgetDataGridPtr subclassList( unsigned id ) {
+		return SmartWin::WidgetCreator< WidgetDataGrid >::subclass( this, id );
+	}
+
 	/// TextBox class type.
-	typedef ::WidgetTextBox< EventHandlerClass > WidgetTextBox;
+	typedef ::WidgetTextBox WidgetTextBox;
 
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
-	WidgetTextBoxPtr createTextBox( const typename WidgetTextBox::Seed & cs = WidgetTextBox::getDefaultSeed() ) {
+	WidgetTextBoxPtr createTextBox( const WidgetTextBox::Seed & cs = WidgetTextBox::getDefaultSeed() ) {
 		return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
 	}
 
 	/// VPaned class type.
-	typedef WidgetPaned< EventHandlerClass, false > WidgetVPaned;
+	typedef WidgetPaned< false > WidgetVPaned;
 
 	/// VPaned object type.
 	typedef typename WidgetVPaned::ObjectType WidgetVPanedPtr;
@@ -63,7 +67,7 @@ public:
 	}
 
 	/// HPaned class type.
-	typedef WidgetPaned< EventHandlerClass, true > WidgetHPaned;
+	typedef WidgetPaned< true > WidgetHPaned;
 
 	/// HPaned object type.
 	typedef typename WidgetHPaned::ObjectType WidgetHPanedPtr;

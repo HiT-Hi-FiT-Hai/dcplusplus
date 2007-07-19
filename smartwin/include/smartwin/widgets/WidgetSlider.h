@@ -29,20 +29,17 @@
 #ifndef WidgetSlider_h
 #define WidgetSlider_h
 
-#include "../Widget.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectScrollable.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectBorder.h"
-#include "../MessageMapControl.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectScrollable.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -66,28 +63,26 @@ class WidgetCreator;
   * you can move the thumbtrack up and down, it is quite similar in functionality to
   * the WidgetSpinner control, but have another visual appearance.
   */
-template< class EventHandlerClass >
 class WidgetSlider :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBorder< WidgetSlider< EventHandlerClass > >,
-	public AspectEnabled< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectKeyboard< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectPainting< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectScrollable< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetSlider< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSlider< EventHandlerClass > > >
+	public AspectBorder< WidgetSlider >,
+	public AspectEnabled< WidgetSlider >,
+	public AspectFocus< WidgetSlider >,
+	public AspectKeyboard< WidgetSlider >,
+	public AspectMouseClicks< WidgetSlider >,
+	public AspectPainting< WidgetSlider >,
+	public AspectRaw< WidgetSlider >,
+	public AspectScrollable< WidgetSlider >,
+	public AspectSizable< WidgetSlider >,
+	public AspectVisible< WidgetSlider >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetSlider > MessageMapType;
 	friend class WidgetCreator< WidgetSlider >;
 public:
 	/// Class type
-	typedef WidgetSlider< EventHandlerClass > ThisType;
+	typedef WidgetSlider ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -101,7 +96,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetSlider::ThisType WidgetType;
+		typedef WidgetSlider::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
 
@@ -235,126 +230,88 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetSlider< EventHandlerClass >::Seed & WidgetSlider< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, TRACKBAR_CLASS );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
-		//TODO: initialize the values here
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetSlider< EventHandlerClass >::Seed::Seed()
+inline WidgetSlider::Seed::Seed()
 {
 	* this = WidgetSlider::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setAutoTicks( bool value )
+inline void WidgetSlider::setAutoTicks( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_AUTOTICKS, value );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setHorizontal( bool value )
+inline void WidgetSlider::setHorizontal( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_HORZ, value );
 	this->Widget::addRemoveStyle( TBS_VERT, !value );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setShowTicksLeft( bool value )
+inline void WidgetSlider::setShowTicksLeft( bool value )
 {
 	// TODO: Add assertion that the TBS_VERT is set!
 	this->Widget::addRemoveStyle( TBS_LEFT, value );
 	this->Widget::addRemoveStyle( TBS_RIGHT, !value );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setShowTicksTop( bool value )
+inline void WidgetSlider::setShowTicksTop( bool value )
 {
 	// TODO: Add assertion that the TBS_HORZ is set!
 	this->Widget::addRemoveStyle( TBS_TOP, value );
 	this->Widget::addRemoveStyle( TBS_BOTTOM, !value );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setShowTicksBoth( bool value )
+inline void WidgetSlider::setShowTicksBoth( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_BOTH, value );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setShowTicks( bool value )
+inline void WidgetSlider::setShowTicks( bool value )
 {
 	this->Widget::addRemoveStyle( TBS_NOTICKS, !value );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setRange( short minimum, short maximum )
+inline void WidgetSlider::setRange( short minimum, short maximum )
 {
 	::SendMessage( this->Widget::itsHandle, TBM_SETRANGE, static_cast< WPARAM >( TRUE ), MAKELONG( minimum, maximum ) );
 }
 
-template< class EventHandlerClass >
-int WidgetSlider< EventHandlerClass >::getMaxValue()
+inline int WidgetSlider::getMaxValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, TBM_GETRANGEMAX, 0, 0 );
 }
 
-template< class EventHandlerClass >
-int WidgetSlider< EventHandlerClass >::getMinValue()
+inline int WidgetSlider::getMinValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, TBM_GETRANGEMIN, 0, 0 );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setPosition( int newPosition )
+inline void WidgetSlider::setPosition( int newPosition )
 {
 	::SendMessage( this->Widget::itsHandle, TBM_SETPOS, static_cast< WPARAM >( TRUE ), static_cast< LPARAM >( newPosition ) );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::setTickFrequency( unsigned frequency )
+inline void WidgetSlider::setTickFrequency( unsigned frequency )
 {
 	::SendMessage( this->Widget::itsHandle, TBM_SETTICFREQ, static_cast< LPARAM >( frequency ), 0 );
 }
 
-template< class EventHandlerClass >
-int WidgetSlider< EventHandlerClass >::getPosition()
+inline int WidgetSlider::getPosition()
 {
 	return ::SendMessage( this->Widget::itsHandle, TBM_GETPOS, 0, 0 );
 }
 
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::assignBuddy( bool beginning, Widget * buddy )
+inline void WidgetSlider::assignBuddy( bool beginning, Widget * buddy )
 {
 	assert( buddy && buddy->handle() );
 	::SendMessage( this->Widget::itsHandle, TBM_SETBUDDY, static_cast< WPARAM >( beginning ? TRUE : FALSE ),
 		reinterpret_cast< LPARAM >( buddy->handle() ) );
 }
 
-template< class EventHandlerClass >
-WidgetSlider< EventHandlerClass >::WidgetSlider( SmartWin::Widget * parent )
+inline WidgetSlider::WidgetSlider( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Slider without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetSlider< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
 }
 
 // end namespace SmartWin

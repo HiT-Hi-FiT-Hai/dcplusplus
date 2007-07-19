@@ -10,5 +10,7 @@ ret = []
 
 ret += env.StaticLibrary(target, sources)
 
+ret += dev.build('widgets/')
+
 Return('ret')
 

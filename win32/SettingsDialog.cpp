@@ -42,18 +42,16 @@ static const TCHAR SEPARATOR = _T('\\');
 static const size_t MAX_NAME_LENGTH = 256;
 
 SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : SmartWin::Widget(parent), currentPage(0) {
-	onInitDialog(&SettingsDialog::initDialog);
+	onInitDialog(std::tr1::bind(&SettingsDialog::initDialog, this));
 }
 
 bool SettingsDialog::initDialog() {
-	WidgetButtonPtr button = subclassButton(IDOK);
-	button->onClicked(&SettingsDialog::handleOKClicked);
+	subclassButton(IDOK)->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
 
-	button = subclassButton(IDCANCEL);
-	button->onClicked(&SettingsDialog::handleCancelClicked);
+	subclassButton(IDCANCEL)->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
 
 	pageTree = subclassTreeView(IDC_SETTINGS_PAGES);
-	pageTree->onSelectionChanged(&SettingsDialog::selectionChanged);
+	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 	
 	setText(TSTRING(SETTINGS));
 	
@@ -88,16 +86,12 @@ void SettingsDialog::addPage(const tstring& title, PropPage* page) {
 	createTree(title, TVI_ROOT, page);
 }
 
-void SettingsDialog::handleOKClicked(WidgetButtonPtr) {
+void SettingsDialog::handleOKClicked() {
 	write();
 	endDialog(IDOK);
 }
 
-void SettingsDialog::handleCancelClicked(WidgetButtonPtr) {
-	endDialog(IDCANCEL);
-}
-
-void SettingsDialog::selectionChanged(WidgetTreeViewPtr) {
+void SettingsDialog::selectionChanged() {
 	HTREEITEM item = TreeView_GetSelection(pageTree->handle());
 	if(item == NULL) {
 		showPage(0);
@@ -171,8 +165,6 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 }
 
 HTREEITEM SettingsDialog::findItem(const tstring& str, HTREEITEM start) {
-	TCHAR buf[MAX_NAME_LENGTH];
-
 	while(start != NULL) {
 		if(pageTree->getText(start) == str) {
 			return start;

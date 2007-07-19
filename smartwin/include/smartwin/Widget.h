@@ -30,7 +30,7 @@
 #define Widget_h
 
 #include "WindowsHeaders.h"
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include "CallbackFuncPrototypes.h"
 #include "Message.h"
 #include "Threads.h"

@@ -63,22 +63,22 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : SmartWin::Widget(pa
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
 
 	example = subclassStatic(IDC_COLOREXAMPLE);
-	example->onRaw(&Appearance2Page::handleExampleColor, WM_CTLCOLORSTATIC);
+	example->onRaw(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1, _2), WM_CTLCOLORSTATIC);
 
 	WidgetButtonPtr button = subclassButton(IDC_SELWINCOLOR);
-	button->onClicked(&Appearance2Page::handleBackgroundClicked);
+	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
 
 	button = subclassButton(IDC_SELTEXT);
-	button->onClicked(&Appearance2Page::handleTextClicked);
+	button->onClicked(std::tr1::bind(&Appearance2Page::handleTextClicked, this));
 
 	button = subclassButton(IDC_SETTINGS_UPLOAD_BAR_COLOR);
-	button->onClicked(&Appearance2Page::handleULClicked);
+	button->onClicked(std::tr1::bind(&Appearance2Page::handleULClicked, this));
 
 	button = subclassButton(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
-	button->onClicked(&Appearance2Page::handleDLClicked);
+	button->onClicked(std::tr1::bind(&Appearance2Page::handleDLClicked, this));
 
 	button = subclassButton(IDC_BROWSE);
-	button->onClicked(&Appearance2Page::handleBrowseClicked);
+	button->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
 }
 
 Appearance2Page::~Appearance2Page()
@@ -102,7 +102,7 @@ void Appearance2Page::write()
 	settings->set(SettingsManager::TEXT_FONT, Text::fromT(f));
 }
 
-HRESULT Appearance2Page::handleExampleColor(WidgetStaticPtr, LPARAM /*lParam*/, WPARAM wParam) {
+HRESULT Appearance2Page::handleExampleColor(WPARAM wParam, LPARAM lParam) {
 	HDC hDC((HDC)wParam);
 	::SetBkMode(hDC, TRANSPARENT);
 	::SetTextColor(hDC, fg);
@@ -110,7 +110,7 @@ HRESULT Appearance2Page::handleExampleColor(WidgetStaticPtr, LPARAM /*lParam*/, 
 	return (LRESULT)bgbrush;
 }
 
-void Appearance2Page::handleBackgroundClicked(WidgetButtonPtr) {
+void Appearance2Page::handleBackgroundClicked() {
 	WidgetChooseColor::ColorParams initialColorParams(bg),
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk()) {
@@ -121,7 +121,7 @@ void Appearance2Page::handleBackgroundClicked(WidgetButtonPtr) {
 	}
 }
 
-void Appearance2Page::handleTextClicked(WidgetButtonPtr) {
+void Appearance2Page::handleTextClicked() {
 	LOGFONT font_ = font;
 	DWORD fg_ = fg;
 	if(createChooseFont().showDialog(CF_EFFECTS | CF_SCREENFONTS, &font_, fg_)) {
@@ -133,21 +133,21 @@ void Appearance2Page::handleTextClicked(WidgetButtonPtr) {
 	}
 }
 
-void Appearance2Page::handleULClicked(WidgetButtonPtr) {
+void Appearance2Page::handleULClicked() {
 	WidgetChooseColor::ColorParams initialColorParams(upBar),
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk())
 		upBar = colorParams.getColor();
 }
 
-void Appearance2Page::handleDLClicked(WidgetButtonPtr) {
+void Appearance2Page::handleDLClicked() {
 	WidgetChooseColor::ColorParams initialColorParams(downBar),
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk())
 		downBar = colorParams.getColor();
 }
 
-void Appearance2Page::handleBrowseClicked(WidgetButtonPtr) {
+void Appearance2Page::handleBrowseClicked() {
 	TCHAR buf[MAX_PATH];
 
 	::GetDlgItemText(handle(), IDC_BEEPFILE, buf, MAX_PATH);

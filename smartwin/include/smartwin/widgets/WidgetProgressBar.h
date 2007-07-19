@@ -29,20 +29,15 @@
 #ifndef WidgetProgressBar_h
 #define WidgetProgressBar_h
 
-#include "../Widget.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectScrollable.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectScrollable.h"
+#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectThreads.h"
-#include "../aspects/AspectBorder.h"
-#include "../MessageMapControl.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -63,25 +58,23 @@ class WidgetCreator;
   * A ProgressBar is a Widget which can be used to show e.g. percentage of lengthy 
   * jobs, often used when downloading from internet or installing applications etc.   
   */
-template< class EventHandlerClass >
 class WidgetProgressBar :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBorder< WidgetProgressBar< EventHandlerClass > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
-	public AspectPainting< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
-	public AspectThreads< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetProgressBar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetProgressBar< EventHandlerClass > > >
+	public AspectBorder< WidgetProgressBar >,
+	public AspectMouseClicks< WidgetProgressBar >,
+	public AspectPainting< WidgetProgressBar >,
+	public AspectRaw< WidgetProgressBar >,
+	public AspectSizable< WidgetProgressBar >,
+	public AspectThreads< WidgetProgressBar >,
+	public AspectVisible< WidgetProgressBar >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetProgressBar > MessageMapType;
 	friend class WidgetCreator< WidgetProgressBar >;
 public:
 	/// Class type
-	typedef WidgetProgressBar< EventHandlerClass > ThisType;
+	typedef WidgetProgressBar ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -95,7 +88,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetProgressBar::ThisType WidgetType;
+		typedef WidgetProgressBar::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
 
@@ -192,105 +185,71 @@ protected:
 // Implementation of class
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetProgressBar< EventHandlerClass >::Seed & WidgetProgressBar< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, PROGRESS_CLASS );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
-		//TODO: initialize the values here
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetProgressBar< EventHandlerClass >::Seed::Seed()
+inline WidgetProgressBar::Seed::Seed()
 {
 	* this = WidgetProgressBar::getDefaultSeed();
 }
 
 #ifdef COMCTRL_V6
-template< class EventHandlerClass >
-void WidgetProgressBar< EventHandlerClass >::setHorizontal( bool value )
+
+inline void WidgetProgressBar::setHorizontal( bool value )
 {
 	this->Widget::addRemoveStyle( PBS_VERTICAL, !value );
 }
 #endif
 
-template< class EventHandlerClass >
-void WidgetProgressBar< EventHandlerClass >::addToPosition( int positiondelta )
+inline void WidgetProgressBar::addToPosition( int positiondelta )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_DELTAPOS, static_cast< WPARAM >( positiondelta ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass >
-void WidgetProgressBar< EventHandlerClass >::addStep( void )
+inline void WidgetProgressBar::addStep( void )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_STEPIT, static_cast< WPARAM >( 0 ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass >
-void WidgetProgressBar< EventHandlerClass >::setRange( int minimum, int maximum )
+inline void WidgetProgressBar::setRange( int minimum, int maximum )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
 }
 
-template< class EventHandlerClass >
-int WidgetProgressBar< EventHandlerClass >::getMaxValue()
+inline int WidgetProgressBar::getMaxValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, PBM_GETRANGE, static_cast< WPARAM >( FALSE ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass >
-int WidgetProgressBar< EventHandlerClass >::getMinValue()
+inline int WidgetProgressBar::getMinValue()
 {
 	return ( int )::SendMessage( this->Widget::itsHandle, PBM_GETRANGE, static_cast< WPARAM >( TRUE ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass >
-void WidgetProgressBar< EventHandlerClass >::setPosition( int newPosition )
+inline void WidgetProgressBar::setPosition( int newPosition )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_SETPOS, static_cast< WPARAM >( newPosition ), static_cast< LPARAM >( 0 ) );
 }
 
-template< class EventHandlerClass >
-void WidgetProgressBar< EventHandlerClass >::setStep( unsigned stepsize )
+inline void WidgetProgressBar::setStep( unsigned stepsize )
 {
 	::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( stepsize ), 0 );
 }
 
-template< class EventHandlerClass >
-unsigned int WidgetProgressBar< EventHandlerClass >::getStep( void )
+inline unsigned int WidgetProgressBar::getStep( void )
 {
 	unsigned int stepsize = ::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( 1 ), 0 );
 	::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( stepsize ), 0 );
 	return stepsize;
 }
 
-template< class EventHandlerClass >
-int WidgetProgressBar< EventHandlerClass >::getPosition()
+inline int WidgetProgressBar::getPosition()
 {
 	return ::SendMessage( this->Widget::itsHandle, PBM_GETPOS, 0, 0 );
 }
 
-template< class EventHandlerClass >
-WidgetProgressBar< EventHandlerClass >::WidgetProgressBar( SmartWin::Widget * parent )
+inline WidgetProgressBar::WidgetProgressBar( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Progressbar without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetProgressBar< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
 }
 
 // end namespace SmartWin

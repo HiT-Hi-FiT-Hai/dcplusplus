@@ -29,10 +29,9 @@
 #ifndef WidgetMDIFrame_h
 #define WidgetMDIFrame_h
 
-#include "WidgetWindowBase.h"
-#include "../aspects/AspectThreads.h"
-#include "../SignalParams.h"
 #include "../BasicTypes.h"
+#include "WidgetMDIParent.h"
+#include "WidgetWindowBase.h"
 
 namespace SmartWin
 {
@@ -50,19 +49,16 @@ namespace SmartWin
   * Class is a public superclass of WidgetMDIFrameBase and therefore can use all 
   * features of WidgetMDIFrameBase.   
   */
-template< class EventHandlerClass >
 class WidgetMDIFrame
-	: public WidgetWindowBase< EventHandlerClass, Policies::MDIFrame<WidgetMDIFrame<EventHandlerClass> > >
+	: public WidgetWindowBase< Policies::MDIFrame<WidgetMDIFrame > >
 {
-	typedef WidgetWindowBase< EventHandlerClass, Policies::MDIFrame<WidgetMDIFrame<EventHandlerClass> > > BaseType;
-	typedef typename BaseType::MessageMapType MessageMapType;
+	typedef WidgetWindowBase< Policies::MDIFrame<WidgetMDIFrame > > BaseType;
 
 public:
-	typedef SmartWin::WidgetMDIParent<EventHandlerClass> WidgetMDIParent;
-	typedef typename WidgetMDIParent::ObjectType WidgetMDIParentPtr;
+	typedef WidgetMDIParent::ObjectType WidgetMDIParentPtr;
 	
 	/// Class type
-	typedef WidgetMDIFrame< EventHandlerClass > ThisType;
+	typedef WidgetMDIFrame ThisType;
 
 	/// Object type
 	typedef ThisType* ObjectType;
@@ -76,7 +72,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetMDIFrame::ThisType WidgetType;
+		typedef WidgetMDIFrame::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
 		HICON icon;
@@ -141,98 +137,19 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass >
-const typename WidgetMDIFrame< EventHandlerClass >::Seed & WidgetMDIFrame< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
 
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
-		d_DefaultValues.background = ( HBRUSH )( COLOR_APPWORKSPACE + 1 );
-		d_DefaultValues.caption = _T( "" );
-#ifndef WINCE
-		d_DefaultValues.cursor = NULL;
-		d_DefaultValues.icon = NULL;
-#else
-		d_DefaultValues.cursor = 0;
-		d_DefaultValues.icon = 0;
-#endif
-		d_DefaultValues.menuName = _T( "" ); //TODO: does menu &"" work as good as menu NULL ?
-
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetMDIFrame< EventHandlerClass >::Seed::Seed()
+inline WidgetMDIFrame::Seed::Seed()
 {
 	* this = WidgetMDIFrame::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-WidgetMDIFrame< EventHandlerClass >::WidgetMDIFrame( Widget * parent )
+inline WidgetMDIFrame::WidgetMDIFrame( Widget * parent )
 	: Widget(parent), BaseType( parent ), mdi(0)
 {}
 
-template< class EventHandlerClass >
-WidgetMDIFrame< EventHandlerClass >::~WidgetMDIFrame()
+inline WidgetMDIFrame::~WidgetMDIFrame()
 {
 	::UnregisterClass( itsRegisteredClassName.c_str(), Application::instance().getAppHandle() );
-}
-
-
-template< class EventHandlerClass >
-void WidgetMDIFrame< EventHandlerClass >::createInvisibleWindow( Seed cs )
-{
-	cs.style=  cs.style & ( ~ WS_VISIBLE );
-	WidgetMDIFrame< EventHandlerClass >::createWindow( cs );
-}
-
-
-template< class EventHandlerClass >
-void WidgetMDIFrame< EventHandlerClass >::createWindow( Seed cs )
-{
-	Application::instance().generateLocalClassName( cs );
-	itsRegisteredClassName = cs.getClassName();
-
-	SMARTWIN_WNDCLASSEX ws;
-
-#ifndef WINCE
-	ws.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
-#endif //! WINCE
-	// This are window class styles, not window styles ...
-	ws.style = CS_DBLCLKS;	// Allow double click messages
-	ws.lpfnWndProc = &ThisType::wndProc;
-	ws.cbClsExtra = 0;
-	ws.cbWndExtra = 0;
-	ws.hInstance = Application::instance().getAppHandle();
-#ifdef WINCE
-	ws.hIcon = 0;
-#else
-	ws.hIcon = cs.icon;
-#endif //! WINCE
-	ws.hCursor = cs.cursor;
-	ws.hbrBackground = cs.background;
-	ws.lpszMenuName = cs.menuName.empty() ? 0 : cs.menuName.c_str();
-	ws.lpszClassName = itsRegisteredClassName.c_str();
-#ifndef WINCE
-	//TODO: fix this
-	ws.hIconSm = cs.icon;
-#endif //! WINCE
-
-	ATOM registeredClass = SmartWinRegisterClass( & ws );
-	if ( 0 == registeredClass )
-	{
-		xCeption x( _T( "WidgetMDIFrameBase.createWindow() SmartWinRegisterClass fizzled..." ) );
-		throw x;
-	}
-	Application::instance().addLocalWindowClassToUnregister( cs );
-	Widget::create( cs );
-	
-	mdi = WidgetCreator<WidgetMDIParent>::create(this);
 }
 
 // end namespace SmartWin

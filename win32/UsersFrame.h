@@ -103,9 +103,9 @@ private:
 	void updateUser(const UserPtr& aUser);
 	void removeUser(const FavoriteUser& aUser);
 
-	HRESULT handleContextMenu(LPARAM lParam, WPARAM wParam);
-	void handleRemove(WidgetMenuPtr menu, unsigned id);
-	void handleProperties(WidgetMenuPtr menu, unsigned id); 
+	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	void handleRemove();
+	void handleProperties(); 
 	
 	WidgetUsersPtr getUserList() { return users; }
 

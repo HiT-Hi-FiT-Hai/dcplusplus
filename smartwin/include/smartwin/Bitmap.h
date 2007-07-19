@@ -30,7 +30,7 @@
 #define Bitmap_h
 
 #include "WindowsHeaders.h"
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include <memory>
 
 namespace SmartWin

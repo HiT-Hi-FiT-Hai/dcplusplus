@@ -61,18 +61,15 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : SmartWin::Widget(
 		directories->insertRow(row);
 	}
 
-	directories->onRaw(&FavoriteDirsPage::handleDoubleClick, SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-	directories->onRaw(&FavoriteDirsPage::handleKeyDown, SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
-	directories->onRaw(&FavoriteDirsPage::handleItemChanged, SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
+	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
-	WidgetButtonPtr button = subclassButton(IDC_RENAME);
-	button->onClicked(&FavoriteDirsPage::handleRenameClicked);
+	subclassButton(IDC_RENAME)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRenameClicked, this));
 
-	button = subclassButton(IDC_REMOVE);
-	button->onClicked(&FavoriteDirsPage::handleRemoveClicked);
+	subclassButton(IDC_REMOVE)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRemoveClicked, this));
 
-	button = subclassButton(IDC_ADD);
-	button->onClicked(&FavoriteDirsPage::handleAddClicked);
+	subclassButton(IDC_ADD)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleAddClicked, this));
 }
 
 FavoriteDirsPage::~FavoriteDirsPage() {
@@ -83,40 +80,36 @@ void FavoriteDirsPage::write()
 //	PropPage::write(handle(), items);
 }
 
-HRESULT FavoriteDirsPage::handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
-#ifdef PORT_ME // posting messages doesn't seem to do anything
+HRESULT FavoriteDirsPage::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
 	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
 	if(item->iItem >= 0) {
-		StupidWin::postMessage(this, WM_COMMAND, IDC_RENAME);
+		handleRenameClicked();
 	} else if(item->iItem == -1) {
-		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
+		handleAddClicked();
 	}
-#endif
 	return 0;
 }
 
-HRESULT FavoriteDirsPage::handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/) {
-#ifdef PORT_ME // posting messages doesn't seem to do anything
+HRESULT FavoriteDirsPage::handleKeyDown(WPARAM wParam, LPARAM lParam) {
 	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
 	case VK_INSERT:
-		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
+		handleAddClicked();
 		break;
 	case VK_DELETE:
-		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
+		handleRemoveClicked();
 		break;
 	}
-#endif
 	return 0;
 }
 
-HRESULT FavoriteDirsPage::handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+HRESULT FavoriteDirsPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
 	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
 	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
 	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
 	return 0;
 }
 
-void FavoriteDirsPage::handleRenameClicked(WidgetButtonPtr) {
+void FavoriteDirsPage::handleRenameClicked() {
 	int i = -1;
 	while((i = directories->getNextItem(i, LVNI_SELECTED)) != -1) {
 		tstring old = directories->getCellText(0, i);
@@ -132,14 +125,14 @@ void FavoriteDirsPage::handleRenameClicked(WidgetButtonPtr) {
 	}
 }
 
-void FavoriteDirsPage::handleRemoveClicked(WidgetButtonPtr) {
+void FavoriteDirsPage::handleRemoveClicked() {
 	int i = -1;
 	while((i = directories->getNextItem(-1, LVNI_SELECTED)) != -1)
 		if(FavoriteManager::getInstance()->removeFavoriteDir(Text::fromT(directories->getCellText(1, i))))
 			directories->removeRow(i);
 }
 
-void FavoriteDirsPage::handleAddClicked(WidgetButtonPtr) {
+void FavoriteDirsPage::handleAddClicked() {
 	tstring target;
 	if(WinUtil::browseDirectory(target, handle()))
 		addDirectory(target);

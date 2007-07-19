@@ -469,7 +469,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::readd(const string& target, User::Ptr& aUser) throw(QueueException) {
+void QueueManager::readd(const string& target, const User::Ptr& aUser) throw(QueueException) {
 	bool wantConnection = false;
 	{
 		Lock l(cs);
@@ -912,7 +912,7 @@ void QueueManager::remove(const string& aTarget) throw() {
 	}
 }
 
-void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn /* = true */) throw() {
+void QueueManager::removeSource(const string& aTarget, const User::Ptr& aUser, int reason, bool removeConn /* = true */) throw() {
 	bool isRunning = false;
 	bool removeCompletely = false;
 	{
@@ -966,7 +966,7 @@ endCheck:
 	}
 }
 
-void QueueManager::removeSource(User::Ptr& aUser, int reason) throw() {
+void QueueManager::removeSource(const User::Ptr& aUser, int reason) throw() {
 	bool isRunning = false;
 	string removeRunning;
 	{

@@ -29,7 +29,6 @@
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/UploadManager.h>
 
-
 // Constructor
 WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) :
 	SmartWin::Widget(mdiParent),
@@ -100,12 +99,12 @@ HRESULT WaitingUsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 			//pt = queued->getContextMenuPos();
 		}
 		WidgetMenuPtr menu = createMenu(true);
-		menu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), &WaitingUsersFrame::onGetList);
-		menu->appendItem(IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME), &WaitingUsersFrame::onCopyFilename);
-		menu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), &WaitingUsersFrame::onRemove);
-		menu->appendItem(IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT), &WaitingUsersFrame::onGrantSlot);
-		menu->appendItem(IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES), &WaitingUsersFrame::onAddToFavorites);
-		menu->appendItem(IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE), &WaitingUsersFrame::onPrivateMessage);
+		menu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), std::tr1::bind(&WaitingUsersFrame::onGetList, this));
+		menu->appendItem(IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME), std::tr1::bind(&WaitingUsersFrame::onCopyFilename, this));
+		menu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), std::tr1::bind(&WaitingUsersFrame::onRemove, this));
+		menu->appendItem(IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&WaitingUsersFrame::onGrantSlot, this));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES), std::tr1::bind(&WaitingUsersFrame::onAddToFavorites, this));
+		menu->appendItem(IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE), std::tr1::bind(&WaitingUsersFrame::onPrivateMessage, this));
 		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
 	}
@@ -151,21 +150,21 @@ void WaitingUsersFrame::loadAll()
 #endif
 }
 
-void WaitingUsersFrame::onPrivateMessage(WidgetMenuPtr, unsigned int) {
+void WaitingUsersFrame::onPrivateMessage() {
 	UserPtr user = getSelectedUser();
 	if (user) {
 		PrivateFrame::openWindow(getParent(), user);
 	}
 }
 
-void WaitingUsersFrame::onGrantSlot(WidgetMenuPtr, unsigned int) {
+void WaitingUsersFrame::onGrantSlot() {
 	UserPtr user = getSelectedUser();
 	if (user) {
 		UploadManager::getInstance()->reserveSlot(user);
 	}
 }
 
-void WaitingUsersFrame::onAddToFavorites(WidgetMenuPtr, unsigned int) {
+void WaitingUsersFrame::onAddToFavorites() {
 	UserPtr user = getSelectedUser();
 	if (user) {
 		FavoriteManager::getInstance()->addFavoriteUser(user);
@@ -182,7 +181,7 @@ SmartWin::TreeViewNode WaitingUsersFrame::GetParentItem() {
 	return parent.handle?parent:item;
 }
 
-void WaitingUsersFrame::onGetList(WidgetMenuPtr, unsigned int)
+void WaitingUsersFrame::onGetList()
 {
 	UserPtr user = getSelectedUser();
 	if (user) {
@@ -190,7 +189,7 @@ void WaitingUsersFrame::onGetList(WidgetMenuPtr, unsigned int)
 	}
 }
 
-void WaitingUsersFrame::onCopyFilename(WidgetMenuPtr, unsigned int) {
+void WaitingUsersFrame::onCopyFilename() {
 #ifdef PORT_ME
 	// @todo see previous comment. More StupidWin fodder.
 	SmartWin::TreeViewNode selectedItem = getSelectedItem(), parentItem = queued->GetParentItem(selectedItem);
@@ -210,7 +209,7 @@ void WaitingUsersFrame::onCopyFilename(WidgetMenuPtr, unsigned int) {
 }
 
 // Remove queued item
-void WaitingUsersFrame::onRemove(WidgetMenuPtr, unsigned int)
+void WaitingUsersFrame::onRemove()
 {
 	UserPtr user = getSelectedUser();
 	if (user) {

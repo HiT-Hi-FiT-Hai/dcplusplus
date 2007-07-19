@@ -29,24 +29,23 @@
 #ifndef WidgetTreeView_h
 #define WidgetTreeView_h
 
-#include "SmartUtil.h"
-#include "../Widget.h"
-#include "../xCeption.h"
-#include "../MessageMapControl.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectVisible.h"
+#include "../BasicTypes.h"
+#include "../ImageList.h"
+#include "../MessageMapPolicyClasses.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectRightClickable.h"
 #include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectSelection.h"
 #include "../aspects/AspectFocus.h"
+#include "../aspects/AspectFont.h"
 #include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectBorder.h"
-#include "../aspects/AspectAdapter.h"
 #include "../aspects/AspectKeyboard.h"
-#include "../BasicTypes.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectRightClickable.h"
+#include "../aspects/AspectSelection.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectVisible.h"
+#include "../xCeption.h"
 
 #include <commctrl.h>
 
@@ -57,26 +56,6 @@ namespace SmartWin
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
-
-struct TreeViewDispatcher
-{
-	typedef std::tr1::function<bool (const SmartUtil::tstring&)> F;
-
-	TreeViewDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		bool update = false;
-		NMTVDISPINFO * nmDisp = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
-		if ( nmDisp->item.pszText != 0 )
-		{
-			SmartUtil::tstring newText = nmDisp->item.pszText;
-			update = f(newText);
-		}
-		return update ? TRUE : FALSE;
-	}
-
-	F f;
-};
 
 /// One "node" in the TreeView.
  /** Used e.g. when inserting nodes into the TreeView. <br>
@@ -108,34 +87,50 @@ struct TreeViewNode
    * Another good example of a tree view is the Explorer of Windows, it has a tree
    * view to the left where you can see the different directories.
    */
-template< class EventHandlerClass >
+
 class WidgetTreeView :
 	public MessageMapPolicy< Policies::Subclassed >,
 	
 	// Aspects
-	public AspectBorder< WidgetTreeView< EventHandlerClass > >,
-	public AspectSizable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectSelection< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectDblClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectRightClickable< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectFont< WidgetTreeView< EventHandlerClass > >,
-	public AspectVisible< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectKeyboard<EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetTreeView< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetTreeView< EventHandlerClass > > >
+	public AspectBorder< WidgetTreeView >,
+	public AspectClickable< WidgetTreeView >,
+	public AspectDblClickable< WidgetTreeView >,
+	public AspectEnabled< WidgetTreeView >,
+	public AspectFocus< WidgetTreeView >,
+	public AspectFont< WidgetTreeView >,
+	public AspectKeyboard< WidgetTreeView >,
+	public AspectRaw< WidgetTreeView >,
+	public AspectRightClickable< WidgetTreeView >,
+	public AspectSelection< WidgetTreeView >,
+	public AspectSizable< WidgetTreeView >,
+	public AspectVisible< WidgetTreeView >
 {
 protected:
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetTreeView > MessageMapType;
-	typedef TreeViewDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<bool (const SmartUtil::tstring&)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			bool update = false;
+			NMTVDISPINFO * nmDisp = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
+			if ( nmDisp->item.pszText != 0 )
+			{
+				SmartUtil::tstring newText = nmDisp->item.pszText;
+				update = f(newText);
+			}
+			return update ? TRUE : FALSE;
+		}
+
+		F f;
+	};
 
 	friend class WidgetCreator< WidgetTreeView >;
 public:
 	/// Class type
-	typedef WidgetTreeView< EventHandlerClass > ThisType;
+	typedef WidgetTreeView ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -149,7 +144,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetTreeView::ThisType WidgetType;
+		typedef WidgetTreeView::ThisType WidgetType;
 
 		FontPtr font;
 
@@ -260,17 +255,17 @@ public:
 	  */
 	void setEditLabels( bool value = true );
 
-		/// Set the normal image list for the Tree View.
-		/** normalImageList is the image list that contains the images
-		  * for the selected and nonselected item icons.
-		  */
-		void setNormalImageList( ImageListPtr normalImageList );
+	/// Set the normal image list for the Tree View.
+	/** normalImageList is the image list that contains the images
+	  * for the selected and nonselected item icons.
+	  */
+	void setNormalImageList( ImageListPtr normalImageList );
 
-		/// Set the state image list for the Tree View.
-		/** stateImageList is the image list that contains the images
-		  * for the item states.
-		  */
-		void setStateImageList( ImageListPtr stateImageList );
+	/// Set the state image list for the Tree View.
+	/** stateImageList is the image list that contains the images
+	  * for the item states.
+	  */
+	void setStateImageList( ImageListPtr stateImageList );
 	/// Returns the text of the current selected node
 	/** Returns the text of the current selected node in the tree view.
 	  */
@@ -308,22 +303,11 @@ public:
 	  * Return true from your event handler if you wish the label to actually become
 	  * updated or false if you want to disallow the item to actually become updated!
 	  */
-	void onValidateEditLabels( typename MessageMapType::itsBoolFunctionTakingTstring eventHandler ) {
-		onValidateEditLabels(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
-	}
-	void onValidateEditLabels( typename MessageMapType::boolFunctionTakingTstring eventHandler ) {
-		onValidateEditLabels(Adapter::adapt1(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
-	}
 	void onValidateEditLabels(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			typename MessageMapType::SignalTupleType( Message( WM_NOTIFY, TVN_ENDLABELEDIT ), Dispatcher(f))
+		setCallback(
+			Message( WM_NOTIFY, TVN_ENDLABELEDIT ), Dispatcher(f)
 		);		
 	}
-
-	// work around for Microsoft Express 2005
-	typedef typename MessageMapType::itsBoolFunctionTakingTstring onValidateEditLabelsParm1;
-	typedef typename MessageMapType::boolFunctionTakingTstring onValidateEditLabelsParm2;
 
 	// Contract needed by AspectClickable Aspect class
 	static Message & getSelectionChangedMessage();
@@ -363,161 +347,80 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetTreeView< EventHandlerClass >::Seed & WidgetTreeView< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, WC_TREEVIEW );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetTreeView< EventHandlerClass >::Seed::Seed()
+inline WidgetTreeView::Seed::Seed()
 {
 	 * this = WidgetTreeView::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-TreeViewNode WidgetTreeView< EventHandlerClass >::insertNode( const SmartUtil::tstring & text, const TreeViewNode & parent, unsigned param, int iconIndex, int selectedIconIndex )
-{
-	TVINSERTSTRUCT tv;
-	ZeroMemory( & tv, sizeof( TVINSERTSTRUCT ) );
-	tv.hParent = parent.handle;
-	tv.hInsertAfter = TVI_LAST;
-
-	TVITEMEX t;
-	ZeroMemory( & t, sizeof( TVITEM ) );
-	t.mask = TVIF_TEXT;
-	if ( param != 0 )
-	{
-		t.mask |= TVIF_PARAM;
-		t.lParam = static_cast< LPARAM >( param );
-	}
-	if ( itsNormalImageList )
-	{
-		t.mask |= TVIF_IMAGE | TVIF_SELECTEDIMAGE;
-		t.iImage = ( iconIndex == - 1 ? I_IMAGECALLBACK : iconIndex );
-		t.iSelectedImage = ( selectedIconIndex == - 1 ? t.iImage : selectedIconIndex );
-	}
-	t.pszText = const_cast < TCHAR * >( text.c_str() );
-#ifdef WINCE
-	tv.item = t;
-#else
-	tv.itemex = t;
-#endif
-	TreeViewNode retVal;
-	retVal.handle = reinterpret_cast< HTREEITEM >( ::SendMessage( this->Widget::itsHandle, TVM_INSERTITEM, 0, reinterpret_cast< LPARAM >( & tv ) ) );
-	return retVal;
-}
-
-template< class EventHandlerClass >
-bool WidgetTreeView< EventHandlerClass >::
-getNode( const TreeViewNode & node, unsigned flag, TreeViewNode & resultNode )
+inline bool WidgetTreeView::getNode( const TreeViewNode & node, unsigned flag, TreeViewNode & resultNode )
 {
 	resultNode.handle = TreeView_GetNextItem( this->Widget::itsHandle, node.handle, flag );
 	return ( NULL != resultNode.handle );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::DeleteAllItems()
+inline void WidgetTreeView::DeleteAllItems()
 {
 	TreeView_DeleteAllItems( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::deleteNode( const TreeViewNode & node )
+inline void WidgetTreeView::deleteNode( const TreeViewNode & node )
 {
 	TreeView_DeleteItem( this->Widget::itsHandle, node.handle );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::deleteChildrenOfNode( const TreeViewNode & node )
-{
-	TreeViewNode next_node, current_node;
-
-	if ( ! getNode( node, TVGN_CHILD, current_node ) ) return;
-
-	while ( getNode( current_node, TVGN_NEXT, next_node ) )
-	{
-		deleteNode( current_node );
-		current_node = next_node;
-	}
-
-	deleteNode( current_node );
-}
-
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::editLabel( const TreeViewNode & node )
+inline void WidgetTreeView::editLabel( const TreeViewNode & node )
 {
 	TreeView_EditLabel( this->Widget::itsHandle, node.handle );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::ensureVisible( const TreeViewNode & node )
+inline void WidgetTreeView::ensureVisible( const TreeViewNode & node )
 {
 	TreeView_EnsureVisible( this->Widget::itsHandle, node.handle );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setHasButtons( bool value )
+inline void WidgetTreeView::setHasButtons( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_HASBUTTONS, value );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setLinesAtRoot( bool value )
+inline void WidgetTreeView::setLinesAtRoot( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_LINESATROOT, value );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setHasLines( bool value )
+inline void WidgetTreeView::setHasLines( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_HASLINES, value );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setTrackSelect( bool value )
+inline void WidgetTreeView::setTrackSelect( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_TRACKSELECT, value );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setFullRowSelect( bool value )
+inline void WidgetTreeView::setFullRowSelect( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_FULLROWSELECT, value );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setEditLabels( bool value )
+inline void WidgetTreeView::setEditLabels( bool value )
 {
 	this->Widget::addRemoveStyle( TVS_EDITLABELS, value );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setNormalImageList( ImageListPtr imageList )
+inline void WidgetTreeView::setNormalImageList( ImageListPtr imageList )
 {
 	  itsNormalImageList = imageList;
 	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_NORMAL );
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setStateImageList( ImageListPtr imageList )
+inline void WidgetTreeView::setStateImageList( ImageListPtr imageList )
 {
 	  itsStateImageList = imageList;
 	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_STATE );
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetTreeView< EventHandlerClass >::getSelectedItemText()
+inline SmartUtil::tstring WidgetTreeView::getSelectedItemText()
 {
 	TreeViewNode selNode;
 	HTREEITEM hSelItem = TreeView_GetSelection( this->Widget::itsHandle );
@@ -526,8 +429,7 @@ SmartUtil::tstring WidgetTreeView< EventHandlerClass >::getSelectedItemText()
 	return retVal;
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetTreeView< EventHandlerClass >::getText( const TreeViewNode & node )
+inline SmartUtil::tstring WidgetTreeView::getText( const TreeViewNode & node )
 {
 	TVITEMEX item;
 	item.mask = TVIF_HANDLE | TVIF_TEXT;
@@ -544,8 +446,7 @@ SmartUtil::tstring WidgetTreeView< EventHandlerClass >::getText( const TreeViewN
 	return _T( "" );
 }
 
-template< class EventHandlerClass >
-int WidgetTreeView< EventHandlerClass >::getSelectedIndex() const
+inline int WidgetTreeView::getSelectedIndex() const
 {
 	HTREEITEM hSelItem = TreeView_GetSelection( this->Widget::itsHandle );
 	TVITEM item;
@@ -557,8 +458,7 @@ int WidgetTreeView< EventHandlerClass >::getSelectedIndex() const
 	return 0;
 }
 
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::setSelectedIndex( int idx )
+inline void WidgetTreeView::setSelectedIndex( int idx )
 {
 	TVITEM item;
 	item.mask = TVIF_PARAM;
@@ -570,42 +470,29 @@ void WidgetTreeView< EventHandlerClass >::setSelectedIndex( int idx )
 	TreeView_Select( this->Widget::itsHandle, item.hItem, TVGN_FIRSTVISIBLE );
 }
 
-template< class EventHandlerClass >
-Message & WidgetTreeView< EventHandlerClass >::getSelectionChangedMessage()
+inline Message & WidgetTreeView::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, TVN_SELCHANGED );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetTreeView< EventHandlerClass >::getClickMessage()
+inline Message & WidgetTreeView::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetTreeView< EventHandlerClass >::getDblClickMessage()
+inline Message & WidgetTreeView::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-WidgetTreeView< EventHandlerClass >::WidgetTreeView( Widget * parent )
+inline WidgetTreeView::WidgetTreeView( Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a list view without a parent...
 	xAssert( parent, _T( "Cant have a WidgetTreeView without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetTreeView< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-
-	setFont( cs.font );
 }
 
 // end namespace SmartWin

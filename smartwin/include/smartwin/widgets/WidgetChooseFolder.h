@@ -29,7 +29,7 @@
 #ifndef WidgetChooseFolder_h
 #define WidgetChooseFolder_h
 
-#include "SmartUtil.h"
+#include "../../SmartUtil.h"
 #include "../FreeCommonDialog.h"
 #include "../WindowsHeaders.h"
 #include <commdlg.h>

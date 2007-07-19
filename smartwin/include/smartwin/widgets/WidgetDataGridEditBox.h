@@ -42,13 +42,12 @@ namespace private_
 
 // Class is only to make subclassing of Edit Control in List View possible
 // TODO: Make window NOT hide the leftmost cell of row when entering "edit modus"..
-template< class EventHandlerClass >
 class ListViewEditBox :
-	public WidgetTextBox< EventHandlerClass >
+	public WidgetTextBox<>
 {
 public:
 	// Class type
-	typedef ListViewEditBox< EventHandlerClass > ThisType;
+	typedef ListViewEditBox ThisType;
 
 	// Object type
 	typedef ThisType * ObjectType;
@@ -67,16 +66,14 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass >
-ListViewEditBox< EventHandlerClass >::ListViewEditBox( SmartWin::Widget * parent )
-	: Widget( parent ), WidgetTextBox< EventHandlerClass >( parent )
+inline ListViewEditBox::ListViewEditBox( SmartWin::Widget * parent )
+	: Widget( parent ), WidgetTextBox<>( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass >
-void ListViewEditBox< EventHandlerClass >::createSubclass( HWND hWnd )
+inline void ListViewEditBox::createSubclass( HWND hWnd )
 {
 	this->Widget::itsHandle = hWnd;
 	this->createMessageMap();

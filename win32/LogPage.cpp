@@ -24,6 +24,7 @@
 #include "LogPage.h"
 
 #include <dcpp/SettingsManager.h>
+
 #include <dcpp/LogManager.h>
 #include "WinUtil.h"
 
@@ -70,11 +71,10 @@ LogPage::LogPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage(
 
 	oldSelection = -1;
 
-	WidgetButtonPtr browse = subclassButton(IDC_BROWSE_LOG);
-	browse->onClicked(&LogPage::handleBrowseClicked);
+	subclassButton(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
-	WidgetDataGridPtr dataGrid = static_cast<WidgetDataGridPtr>(subclassList(IDC_LOG_OPTIONS));
-	dataGrid->onRaw(&LogPage::handleItemChanged, SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	WidgetDataGridPtr dataGrid = subclassList(IDC_LOG_OPTIONS);
+	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this, dataGrid, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 }
 
 LogPage::~LogPage() {
@@ -104,7 +104,7 @@ void LogPage::write()
 	}
 }
 
-void LogPage::handleBrowseClicked(WidgetButtonPtr) {
+void LogPage::handleBrowseClicked() {
 	tstring dir = Text::toT(SETTING(LOG_DIRECTORY));
 	if(WinUtil::browseDirectory(dir, handle()))
 	{
@@ -116,7 +116,7 @@ void LogPage::handleBrowseClicked(WidgetButtonPtr) {
 	}
 }
 
-HRESULT LogPage::handleItemChanged(DataGridMessageType dataGrid, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+HRESULT LogPage::handleItemChanged(WidgetDataGridPtr dataGrid, WPARAM wParam, LPARAM lParam) {
 	getValues();
 
 	int sel = dataGrid->getSelectedIndex();

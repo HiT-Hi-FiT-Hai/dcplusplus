@@ -29,7 +29,7 @@
 #ifndef Command_h
 #define Command_h
 
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include <memory>
 #include <typeinfo>
 

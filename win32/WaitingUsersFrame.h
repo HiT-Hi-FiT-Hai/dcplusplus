@@ -50,15 +50,15 @@ protected:
 	void layout();
 
 	// Message handlers
-	void onGetList(WidgetMenuPtr, unsigned int);
-	void onCopyFilename(WidgetMenuPtr, unsigned int);
-	void onRemove(WidgetMenuPtr, unsigned int);
+	void onGetList();
+	void onCopyFilename();
+	void onRemove();
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	//LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	void onPrivateMessage(WidgetMenuPtr, unsigned int);
-	void onGrantSlot(WidgetMenuPtr, unsigned int);
-	void onAddToFavorites(WidgetMenuPtr, unsigned int);
+	void onPrivateMessage();
+	void onGrantSlot();
+	void onAddToFavorites();
 
 	void onRemoveUser(const UserPtr&);
 	void onAddFile(const UserPtr&, const string&);

@@ -29,7 +29,7 @@
 #ifndef WidgetFactory_h
 #define WidgetFactory_h
 
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include "widgets/WidgetButton.h"
 #include "widgets/WidgetCheckBox.h"
 #include "widgets/WidgetComboBox.h"
@@ -92,82 +92,82 @@ namespace SmartWin
   * should just get to "live their own life" and should not be tampered with in any
   * "memory ways".
   */
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
+template<typename ContainerWidgetType>
 class WidgetFactory
-	: public WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, CurrentPlatform >
+	: public WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >
 {
 public:
 	/// MessageBox class and object type.
 	typedef SmartWin::WidgetMessageBox< SmartWin::Widget > WidgetMessageBox;
 
 	/// DataGrid class type.
-	typedef SmartWin::WidgetDataGrid< EventHandlerClass > WidgetDataGrid;
+	typedef SmartWin::WidgetDataGrid WidgetDataGrid;
 
 	/// DataGrid object type.
 	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
 
 	/// TreeView class type.
-	typedef SmartWin::WidgetTreeView< EventHandlerClass > WidgetTreeView;
+	typedef SmartWin::WidgetTreeView WidgetTreeView;
 
 	/// TreeView object type.
 	typedef typename WidgetTreeView::ObjectType WidgetTreeViewPtr;
 
 	/// TextBox class type.
-	typedef SmartWin::WidgetTextBox< EventHandlerClass > WidgetTextBox;
+	typedef SmartWin::WidgetTextBox< > WidgetTextBox;
 
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
 	/// StatusBar class type.
-	typedef SmartWin::WidgetStatusBar< EventHandlerClass > WidgetStatusBar;
+	typedef SmartWin::WidgetStatusBar< > WidgetStatusBar;
 
 	/// StatusBar object type.
 	typedef typename WidgetStatusBar::ObjectType WidgetStatusBarPtr;
 
 	/// StatusBarSections class type.
-	typedef SmartWin::WidgetStatusBar< EventHandlerClass, Section< EventHandlerClass > > WidgetStatusBarSections;
+	typedef SmartWin::WidgetStatusBar< Section > WidgetStatusBarSections;
 
 	/// StatusBarSections object type.
 	typedef typename WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
 
 	/// Button class type.
-	typedef SmartWin::WidgetButton< EventHandlerClass > WidgetButton;
+	typedef SmartWin::WidgetButton WidgetButton;
 
 	/// Button object type.
 	typedef typename WidgetButton::ObjectType WidgetButtonPtr;
 
 	/// MDIWindow class type.
-	typedef SmartWin::WidgetMDIParent< EventHandlerClass > WidgetMDIParent;
+	typedef SmartWin::WidgetMDIParent WidgetMDIParent;
 
 	/// MDIWindow object type.
 	typedef typename WidgetMDIParent::ObjectType WidgetMDIParentPtr;
 
 	/// TabSheet class type.
-	typedef SmartWin::WidgetTabSheet< EventHandlerClass > WidgetTabSheet;
+	typedef SmartWin::WidgetTabSheet WidgetTabSheet;
 
 	/// TabSheet object type.
 	typedef typename WidgetTabSheet::ObjectType WidgetTabSheetPtr;
 
 	/// Slider class type.
-	typedef SmartWin::WidgetSlider< EventHandlerClass > WidgetSlider;
+	typedef SmartWin::WidgetSlider WidgetSlider;
 
 	/// Slider object type.
 	typedef typename WidgetSlider::ObjectType WidgetSliderPtr;
 
 	/// Spinner class type.
-	typedef SmartWin::WidgetSpinner< EventHandlerClass > WidgetSpinner;
+	typedef SmartWin::WidgetSpinner WidgetSpinner;
 
 	/// Spinner object type.
 	typedef typename WidgetSpinner::ObjectType WidgetSpinnerPtr;
 
 	/// GroupBox class type.
-	typedef SmartWin::WidgetGroupBox< EventHandlerClass > WidgetGroupBox;
+	typedef SmartWin::WidgetGroupBox WidgetGroupBox;
 
 	/// GroupBox object type.
 	typedef typename WidgetGroupBox::ObjectType WidgetGroupBoxPtr;
 
 	/// RadioButton class type.
-	typedef SmartWin::WidgetRadioButton< EventHandlerClass > WidgetRadioButton;
+	typedef SmartWin::WidgetRadioButton WidgetRadioButton;
 
 	/// RadioButton object type.
 	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
@@ -185,55 +185,55 @@ public:
 	typedef SmartWin::WidgetChooseColor< SmartWin::Widget > WidgetChooseColor;
 
 	/// ComboBox class type.
-	typedef SmartWin::WidgetComboBox< EventHandlerClass > WidgetComboBox;
+	typedef SmartWin::WidgetComboBox WidgetComboBox;
 
 	/// ComboBox object type.
 	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
 
 	/// Static class type.
-	typedef SmartWin::WidgetStatic< EventHandlerClass > WidgetStatic;
+	typedef SmartWin::WidgetStatic WidgetStatic;
 
 	/// Static object type.
 	typedef typename WidgetStatic::ObjectType WidgetStaticPtr;
 
 	/// Menu class type.
-	typedef SmartWin::WidgetMenu< EventHandlerClass > WidgetMenu;
+	typedef SmartWin::WidgetMenu WidgetMenu;
 
 	/// Menu object type.
 	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// CheckBox class type.
-	typedef SmartWin::WidgetCheckBox< EventHandlerClass > WidgetCheckBox;
+	typedef SmartWin::WidgetCheckBox WidgetCheckBox;
 
 	/// CheckBox object type.
 	typedef typename WidgetCheckBox::ObjectType WidgetCheckBoxPtr;
 
 	/// DateTimePicker class type.
-	typedef SmartWin::WidgetDateTimePicker< EventHandlerClass > WidgetDateTimePicker;
+	typedef SmartWin::WidgetDateTimePicker WidgetDateTimePicker;
 
 	/// DateTimePicker object type.
 	typedef typename WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
 
 	/// WidgetChildWindow class type.
-	typedef SmartWin::WidgetChildWindow<EventHandlerClass > WidgetChildWindow;
+	typedef SmartWin::WidgetChildWindow WidgetChildWindow;
 
 	/// WidgetChildWindow object type.
 	typedef typename WidgetChildWindow::ObjectType WidgetChildWindowPtr;
 
 	/// WidgetWindow class type.
-	typedef SmartWin::WidgetWindow< EventHandlerClass > WidgetWindow;
+	typedef SmartWin::WidgetWindow WidgetWindow;
 
 	/// WidgetWindow object type.
 	typedef typename WidgetWindow::ObjectType WidgetWindowPtr;
 
 	/// WidgetMDIFrame class type.
-	typedef SmartWin::WidgetMDIFrame< EventHandlerClass > WidgetMDIFrame;
+	typedef SmartWin::WidgetMDIFrame WidgetMDIFrame;
 
 	/// WidgetWindow object type.
 	typedef typename WidgetMDIFrame::ObjectType WidgetMDIFramePtr;
 
 	/// ProgressBar class type.
-	typedef SmartWin::WidgetProgressBar< EventHandlerClass > WidgetProgressBar;
+	typedef SmartWin::WidgetProgressBar WidgetProgressBar;
 
 	/// ProgressBar object type.
 	typedef typename WidgetProgressBar::ObjectType WidgetProgressBarPtr;
@@ -476,286 +476,285 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetFactory()
+template<typename ContainerWidgetType>
+WidgetFactory< ContainerWidgetType >::WidgetFactory()
 		: Widget( 0 )
-		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, CurrentPlatform >()
+		, WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >()
 {}
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetFactory( SmartWin::Widget * parent )
+template<typename ContainerWidgetType>
+WidgetFactory< ContainerWidgetType >::WidgetFactory( SmartWin::Widget * parent )
 		: Widget( parent )
-		, WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, CurrentPlatform >( parent )
+		, WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >( parent )
 {}
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetChooseFolder
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createChooseFolder()
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetChooseFolder
+WidgetFactory< ContainerWidgetType >::createChooseFolder()
 {
 	WidgetChooseFolder retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetLoadFile
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createLoadFile()
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetLoadFile
+WidgetFactory< ContainerWidgetType >::createLoadFile()
 {
 	WidgetLoadFile retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSaveFile
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createSaveFile()
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetSaveFile
+WidgetFactory< ContainerWidgetType >::createSaveFile()
 {
 	WidgetSaveFile retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetChooseColor
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createChooseColor()
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetChooseColor
+WidgetFactory< ContainerWidgetType >::createChooseColor()
 {
 	WidgetChooseColor retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetMessageBox
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createMessageBox()
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetMessageBox
+WidgetFactory< ContainerWidgetType >::createMessageBox()
 {
 	WidgetMessageBox retVal( this );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDataGridPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetDataGridPtr
+WidgetFactory< ContainerWidgetType >::createDataGrid( const typename WidgetDataGrid::Seed & cs )
 {
 	return WidgetCreator< WidgetDataGrid >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDataGridPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassList( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetDataGridPtr
+WidgetFactory< ContainerWidgetType >::subclassList( unsigned id )
 {
 	return WidgetCreator< WidgetDataGrid >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetCheckBoxPtr
-	WidgetFactory< ContainerWidgetType, EventHandlerClass >::createCheckBox( const typename WidgetCheckBox::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetCheckBoxPtr
+	WidgetFactory< ContainerWidgetType >::createCheckBox( const typename WidgetCheckBox::Seed & cs )
 {
 	return WidgetCreator< WidgetCheckBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetCheckBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassCheckBox( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetCheckBoxPtr
+WidgetFactory< ContainerWidgetType >::subclassCheckBox( unsigned id )
 {
 	return WidgetCreator< WidgetCheckBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetChildWindowPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetChildWindowPtr
+WidgetFactory< ContainerWidgetType >::createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs )
 {
 	WidgetChildWindowPtr retVal = new WidgetChildWindow( this );
 	retVal->createWindow( cs );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTreeViewPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createTreeView( const typename WidgetTreeView::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetTreeViewPtr
+WidgetFactory< ContainerWidgetType >::createTreeView( const typename WidgetTreeView::Seed & cs )
 {
 	return WidgetCreator< WidgetTreeView >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTreeViewPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassTreeView( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetTreeViewPtr
+WidgetFactory< ContainerWidgetType >::subclassTreeView( unsigned id )
 {
 	return WidgetCreator< WidgetTreeView >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetMenuPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createMenu(const typename WidgetMenu::Seed & cs)
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetMenuPtr
+WidgetFactory< ContainerWidgetType >::createMenu(const typename WidgetMenu::Seed & cs)
 {
 	return WidgetCreator< WidgetMenu >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTextBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createTextBox( const typename WidgetTextBox::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetTextBoxPtr
+WidgetFactory< ContainerWidgetType >::createTextBox( const typename WidgetTextBox::Seed & cs )
 {
 	return WidgetCreator< WidgetTextBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTextBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassTextBox( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetTextBoxPtr
+WidgetFactory< ContainerWidgetType >::subclassTextBox( unsigned id )
 {
 	return WidgetCreator< WidgetTextBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStatusBarPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createStatusBar( const typename WidgetStatusBar::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetStatusBarPtr
+WidgetFactory< ContainerWidgetType >::createStatusBar( const typename WidgetStatusBar::Seed & cs )
 {
 	return WidgetCreator< WidgetStatusBar >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStatusBarSectionsPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetStatusBarSectionsPtr
+WidgetFactory< ContainerWidgetType >::createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs )
 {
 	return WidgetCreator< WidgetStatusBarSections >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetButtonPtr
-	WidgetFactory< ContainerWidgetType, EventHandlerClass >::createButton( const typename WidgetButton::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetButtonPtr
+	WidgetFactory< ContainerWidgetType >::createButton( const typename WidgetButton::Seed & cs )
 {
 	return WidgetCreator< WidgetButton >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetMDIParentPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createMDIParent( const typename WidgetMDIParent::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetMDIParentPtr
+WidgetFactory< ContainerWidgetType >::createMDIParent( const typename WidgetMDIParent::Seed & cs )
 {
 	return WidgetCreator< WidgetMDIParent >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetTabSheetPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createTabSheet( const typename WidgetTabSheet::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetTabSheetPtr
+WidgetFactory< ContainerWidgetType >::createTabSheet( const typename WidgetTabSheet::Seed & cs )
 {
 	return WidgetCreator< WidgetTabSheet >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSliderPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createSlider( const typename WidgetSlider::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetSliderPtr
+WidgetFactory< ContainerWidgetType >::createSlider( const typename WidgetSlider::Seed & cs )
 {
 	return WidgetCreator< WidgetSlider >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSpinnerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createSpinner( const typename WidgetSpinner::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetSpinnerPtr
+WidgetFactory< ContainerWidgetType >::createSpinner( const typename WidgetSpinner::Seed & cs )
 {
 	return WidgetCreator< WidgetSpinner >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetProgressBarPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createProgressBar( const typename WidgetProgressBar::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetProgressBarPtr
+WidgetFactory< ContainerWidgetType >::createProgressBar( const typename WidgetProgressBar::Seed & cs )
 {
 	return WidgetCreator< WidgetProgressBar >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetButtonPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassButton( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetButtonPtr
+WidgetFactory< ContainerWidgetType >::subclassButton( unsigned id )
 {
 	return WidgetCreator< WidgetButton >::subclass( this, id );
 }
 
-
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetProgressBarPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassProgressBar( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetProgressBarPtr
+WidgetFactory< ContainerWidgetType >::subclassProgressBar( unsigned id )
 {
 	return WidgetCreator< WidgetProgressBar >::subclass( this, id );
 }
 
-
-
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSliderPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassSlider( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetSliderPtr
+WidgetFactory< ContainerWidgetType >::subclassSlider( unsigned id )
 {
 	return WidgetCreator< WidgetSlider >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetSpinnerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassSpinner( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetSpinnerPtr
+WidgetFactory< ContainerWidgetType >::subclassSpinner( unsigned id )
 {
 	return WidgetCreator< WidgetSpinner >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetGroupBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createGroupBox( const typename WidgetGroupBox::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetGroupBoxPtr
+WidgetFactory< ContainerWidgetType >::createGroupBox( const typename WidgetGroupBox::Seed & cs )
 {
 	return WidgetCreator< WidgetGroupBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetGroupBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassGroupBox( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetGroupBoxPtr
+WidgetFactory< ContainerWidgetType >::subclassGroupBox( unsigned id )
 {
 	return WidgetCreator< WidgetGroupBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDateTimePickerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetDateTimePickerPtr
+WidgetFactory< ContainerWidgetType >::createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs )
 {
 	return WidgetCreator< WidgetDateTimePicker >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetDateTimePickerPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassDateTimePicker( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetDateTimePickerPtr
+WidgetFactory< ContainerWidgetType >::subclassDateTimePicker( unsigned id )
 {
 	return WidgetCreator< WidgetDateTimePicker >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetRadioButtonPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetRadioButtonPtr
+WidgetFactory< ContainerWidgetType >::createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs )
 {
+#ifdef PORT_ME	
 	WidgetRadioButtonPtr retVal = WidgetCreator< WidgetRadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs );
 	parent->addChild( retVal );
 	return retVal;
+#endif
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetRadioButtonPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassRadioButton( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetRadioButtonPtr
+WidgetFactory< ContainerWidgetType >::subclassRadioButton( unsigned id )
 {
 	WidgetRadioButtonPtr retVal = WidgetCreator< WidgetRadioButton >::subclass( this, id );
 	return retVal;
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetComboBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createComboBox( const typename WidgetComboBox::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetComboBoxPtr
+WidgetFactory< ContainerWidgetType >::createComboBox( const typename WidgetComboBox::Seed & cs )
 {
 	return WidgetCreator< WidgetComboBox >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetComboBoxPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassComboBox( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetComboBoxPtr
+WidgetFactory< ContainerWidgetType >::subclassComboBox( unsigned id )
 {
 	return WidgetCreator< WidgetComboBox >::subclass( this, id );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStaticPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::createStatic( const typename WidgetStatic::Seed & cs )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetStaticPtr
+WidgetFactory< ContainerWidgetType >::createStatic( const typename WidgetStatic::Seed & cs )
 {
 	return WidgetCreator< WidgetStatic >::create( this, cs );
 }
 
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-typename WidgetFactory< ContainerWidgetType, EventHandlerClass >::WidgetStaticPtr
-WidgetFactory< ContainerWidgetType, EventHandlerClass >::subclassStatic( unsigned id )
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetStaticPtr
+WidgetFactory< ContainerWidgetType >::subclassStatic( unsigned id )
 {
 	return WidgetCreator< WidgetStatic >::subclass( this, id );
 }

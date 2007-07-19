@@ -29,30 +29,25 @@
 #ifndef WidgetDataGrid_h
 #define WidgetDataGrid_h
 
-#include "../WindowsHeaders.h"
-#include "../MessageMap.h"
-#include "../MessageMapControl.h"
+#include "../BasicTypes.h"
+#include "../ImageList.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectSelection.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectRightClickable.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectVisible.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectFont.h"
+#include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectRightClickable.h"
 #include "../aspects/AspectScrollable.h"
-#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectSelection.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
-#include "SmartUtil.h"
 #include "WidgetDataGridEditBox.h"
-#include "../ImageList.h"
-#include "../BasicTypes.h"
 
 namespace SmartWin
 {
@@ -355,37 +350,35 @@ public:
   * source of error when you get unwanted behaviour. This means you often will have
   * to "map" an LPARAM value to a physical rownumber and vice versa.
   */
-template< class EventHandlerClass >
 class WidgetDataGrid :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspect classes
-	public AspectBorder< WidgetDataGrid< EventHandlerClass > >,
-	public AspectClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectDblClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectFont< WidgetDataGrid< EventHandlerClass > >,
-	public AspectKeyboard< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectRightClickable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectScrollable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectSelection< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectThreads< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetDataGrid< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetDataGrid< EventHandlerClass > > >
+	public AspectBorder< WidgetDataGrid >,
+	public AspectClickable< WidgetDataGrid >,
+	public AspectDblClickable< WidgetDataGrid >,
+	public AspectEnabled< WidgetDataGrid >,
+	public AspectFocus< WidgetDataGrid >,
+	public AspectFont< WidgetDataGrid >,
+	public AspectKeyboard< WidgetDataGrid >,
+	public AspectMouseClicks< WidgetDataGrid >,
+	public AspectRaw< WidgetDataGrid >,
+	public AspectRightClickable< WidgetDataGrid >,
+	public AspectScrollable< WidgetDataGrid >,
+	public AspectSelection< WidgetDataGrid >,
+	public AspectSizable< WidgetDataGrid >,
+	public AspectThreads< WidgetDataGrid >,
+	public AspectVisible< WidgetDataGrid >
 {
 protected:
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetDataGrid > MessageMapType;
 
 	// Need to be friend to access private data...
 	friend class WidgetCreator< WidgetDataGrid >;
 
 public:
 	/// Class type
-	typedef WidgetDataGrid< EventHandlerClass > ThisType;
+	typedef WidgetDataGrid ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -399,7 +392,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetDataGrid::ThisType WidgetType;
+		typedef WidgetDataGrid::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
 
@@ -492,9 +485,10 @@ public:
 	  * This function will be called MANY times when you sort a grid so you probably
 	  * will NOT want to run a costly operation within this event handler.
 	  */
+#ifdef PORT_ME
 	void onSortItems( typename MessageMapType::itsIntLparamLparam );
 	void onSortItems( typename MessageMapType::intCallbackCompareFunc );
-
+#endif
 #ifdef PORT_ME
 	/// \ingroup EventHandlersWidgetDataGrid
 	/// Event Handler for the Column Header Click event
@@ -884,12 +878,13 @@ private:
 		ImageListPtr itsNormalImageList;
 	ImageListPtr itsSmallImageList;
 	ImageListPtr itsStateImageList;
-
+#ifdef PORT_ME
 	typename MessageMapType::intCallbackCompareFunc itsGlobalSortFunction;
 	typename MessageMapType::itsIntLparamLparam itsMemberSortFunction;
 
 	typename MessageMapType::voidGetIconFunc itsGlobalGetIconFunction;
 	typename MessageMapType::itsVoidGetIconFunc itsMemberGetIconFunction;
+#endif
 	static int CALLBACK CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
 
 	// If true the grid is in "read only mode" meaning that cell values cannot be edited.
@@ -901,10 +896,10 @@ private:
 	// Number of columns in grid
 	unsigned int itsNoColumns;
 
-
+#ifdef PORT_ME
 	// Private validate function, this ones returns the "read only" property of the list
 	static bool defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue );
-
+#endif
 	// Calculates the adjustment from the columns of an item.
 	int xoffFromColumn( int column, int & logicalColumn );
 
@@ -917,38 +912,20 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetDataGrid< EventHandlerClass >::Seed & WidgetDataGrid< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, WC_LISTVIEW );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_EDITLABELS;
-		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
-		//TODO: fill the values
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetDataGrid< EventHandlerClass >::Seed::Seed()
+inline WidgetDataGrid::Seed::Seed()
 {
 	* this = WidgetDataGrid::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-Message & WidgetDataGrid< EventHandlerClass >::getSelectionChangedMessage()
+
+inline Message & WidgetDataGrid::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
 	return retVal;
 }
 
-template< class EventHandlerClass >
-bool WidgetDataGrid< EventHandlerClass >::isValidSelectionChanged( LPARAM lPar )
+
+inline bool WidgetDataGrid::isValidSelectionChanged( LPARAM lPar )
 {
 	//TODO: Make support for CHOOSING how onSelectedChanged is supposed to behave,
 	//TODO: make non static function and pure abstract in base class and override
@@ -963,22 +940,22 @@ bool WidgetDataGrid< EventHandlerClass >::isValidSelectionChanged( LPARAM lPar )
 	return false;
 }
 
-template< class EventHandlerClass >
-Message & WidgetDataGrid< EventHandlerClass >::getClickMessage()
+
+inline Message & WidgetDataGrid::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetDataGrid< EventHandlerClass >::getDblClickMessage()
+
+inline Message & WidgetDataGrid::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 #ifdef PORT_ME
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsBoolValidationFunc eventHandler )
+
+void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsBoolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
@@ -997,8 +974,8 @@ void WidgetDataGrid< EventHandlerClass >::onValidate( typename MessageMapControl
 	);
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::boolValidationFunc eventHandler )
+
+void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::boolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
@@ -1017,8 +994,8 @@ void WidgetDataGrid< EventHandlerClass >::onValidate( typename MessageMapControl
 	);
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetItemFunc eventHandler )
+
+void WidgetDataGrid::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1035,8 +1012,8 @@ void WidgetDataGrid< EventHandlerClass >::onGetItem( typename MessageMapControl<
 	);
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetItemFunc eventHandler )
+
+void WidgetDataGrid::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1053,22 +1030,22 @@ void WidgetDataGrid< EventHandlerClass >::onGetItem( typename MessageMapControl<
 	);
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetIconFunc eventHandler )
+
+void WidgetDataGrid::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetIconFunc eventHandler )
 {
 	itsGlobalGetIconFunction = 0;
 	itsMemberGetIconFunction = eventHandler;
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetIconFunc eventHandler )
+
+void WidgetDataGrid::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetIconFunc eventHandler )
 {
 	itsGlobalGetIconFunction = eventHandler;
 	itsMemberGetIconFunction = 0;
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
+
+void WidgetDataGrid::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1085,8 +1062,8 @@ void WidgetDataGrid< EventHandlerClass >::onCustomPainting( typename MessageMapC
 	);
 }
 
-template< class EventHandlerClass >
-	void WidgetDataGrid< EventHandlerClass >::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
+
+	void WidgetDataGrid::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1103,22 +1080,23 @@ template< class EventHandlerClass >
 	);
 }
 #endif
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsIntLparamLparam eventHandler )
+#ifdef PORT_ME
+void WidgetDataGrid::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsIntLparamLparam eventHandler )
 {
 	itsGlobalSortFunction = 0;
 	itsMemberSortFunction = eventHandler;
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::intCallbackCompareFunc eventHandler )
+
+void WidgetDataGrid::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::intCallbackCompareFunc eventHandler )
 {
 	itsMemberSortFunction = 0;
 	itsGlobalSortFunction = eventHandler;
 }
+#endif
 #ifdef PORT_ME
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidFunctionTakingInt eventHandler )
+
+void WidgetDataGrid::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidFunctionTakingInt eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1135,8 +1113,8 @@ void WidgetDataGrid< EventHandlerClass >::onColumnHeaderClick( typename MessageM
 	);
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidFunctionTakingInt eventHandler )
+
+void WidgetDataGrid::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidFunctionTakingInt eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1154,17 +1132,19 @@ void WidgetDataGrid< EventHandlerClass >::onColumnHeaderClick( typename MessageM
 }
 #endif
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::sortList()
+
+inline void WidgetDataGrid::sortList()
 {
+#ifdef PORT_ME
 	xAssert( itsGlobalSortFunction || itsMemberSortFunction, _T( "No sort event handlers defined" ) );
 
 	xAssert( ListView_SortItems( this->Widget::itsHandle, CompareFunc, reinterpret_cast< LPARAM >( this ) ) == TRUE,
 		_T( "ListView_SortItems fizzled" ) );
+#endif
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getCellText( unsigned int column, unsigned int row )
+
+inline SmartUtil::tstring WidgetDataGrid::getCellText( unsigned int column, unsigned int row )
 {
 	// TODO: Fix
 	const int BUFFER_MAX = 2048;
@@ -1174,8 +1154,8 @@ SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getCellText( unsigned in
 	return buffer;
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getCellTextByLParam( unsigned int column, LPARAM lParam )
+
+inline SmartUtil::tstring WidgetDataGrid::getCellTextByLParam( unsigned int column, LPARAM lParam )
 {
 	LVFINDINFO lvfi;
 	lvfi.flags = LVFI_PARAM;
@@ -1186,14 +1166,14 @@ SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getCellTextByLParam( uns
 	return this->getCellText( column, row );
 }
 
-template< class EventHandlerClass >
-bool WidgetDataGrid< EventHandlerClass >::hasSelection()
+
+inline bool WidgetDataGrid::hasSelection()
 {
 	return ListView_GetSelectedCount( this->Widget::itsHandle ) > 0;
 }
 
-template< class EventHandlerClass >
-std::vector< unsigned > WidgetDataGrid< EventHandlerClass >::getSelectedRows()
+
+inline std::vector< unsigned > WidgetDataGrid::getSelectedRows()
 {
 	std::vector< unsigned > retVal;
 	int tmpIdx = - 1;
@@ -1207,67 +1187,22 @@ std::vector< unsigned > WidgetDataGrid< EventHandlerClass >::getSelectedRows()
 	return retVal;
 }
 
-template< class EventHandlerClass >
-int WidgetDataGrid< EventHandlerClass >::getSelectedIndex() const
+
+inline int WidgetDataGrid::getSelectedIndex() const
 {
 	int tmpIdx = - 1;
 	tmpIdx = ListView_GetNextItem( this->Widget::itsHandle, tmpIdx, LVNI_SELECTED );
 	return tmpIdx;
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setSelectedIndex( int idx )
-{
-	// TODO: Check if this is working right...
-	LVITEM it;
-	ZeroMemory( & it, sizeof( LVITEM ) );
-	it.iItem = idx;
-	it.mask = LVIF_STATE;
-	it.state = LVIS_SELECTED | LVIS_FOCUSED;
-	it.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-	if ( ListView_SetItem( this->Widget::itsHandle, & it ) != TRUE )
-	{
-		xCeption err( _T( "Something went wrong while trying to set the selected property of the ListView" ) );
-		throw err;
-	}
-	if ( ListView_EnsureVisible( this->Widget::itsHandle, idx, FALSE ) != TRUE )
-	{
-		xCeption err( _T( "Something went wrong while trying to scroll selected item into view in setSelectedIndex" ) );
-		throw err;
-	}
-}
-
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::clearSelection()
-{
-	LVITEM it;
-	ZeroMemory( & it, sizeof( LVITEM ) );
-	it.mask = LVIF_STATE;
-	it.stateMask = LVIS_SELECTED;
-	it.state = 0;
-	std::vector< unsigned > selectedItems = getSelectedRows();
-
-	std::vector< unsigned >::iterator iter;
-	for ( iter = selectedItems.begin(); iter != selectedItems.end(); ++iter )
-	{
-		it.iItem = * iter;
-		if ( ListView_SetItem( this->Widget::itsHandle, & it ) != TRUE )
-		{
-			xCeption err( _T( "Something went wrong while trying to unset the selected property of the ListView" ) );
-			throw err;
-		}
-	}
-}
-
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setCellText( unsigned column, unsigned row, const SmartUtil::tstring & newVal )
+inline void WidgetDataGrid::setCellText( unsigned column, unsigned row, const SmartUtil::tstring & newVal )
 {
 	// const bug inn Windows API
 	ListView_SetItemText( this->Widget::itsHandle, row, column, const_cast < TCHAR * >( newVal.c_str() ) );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setItemIcon( unsigned row, int newIconIndex )
+/// TODO review, why does it first get the lvitem???
+inline void WidgetDataGrid::setItemIcon( unsigned row, int newIconIndex )
 {
 	LVITEM it;
 	ZeroMemory( & it, sizeof( LVITEM ) );
@@ -1289,33 +1224,33 @@ void WidgetDataGrid< EventHandlerClass >::setItemIcon( unsigned row, int newIcon
 	}
 }
 
-template< class EventHandlerClass >
-bool WidgetDataGrid< EventHandlerClass >::getReadOnly()
+
+inline bool WidgetDataGrid::getReadOnly()
 {
 	return isReadOnly;
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setReadOnly( bool value )
+
+inline void WidgetDataGrid::setReadOnly( bool value )
 {
 	isReadOnly = value;
 	this->Widget::addRemoveStyle( LVS_EDITLABELS, !value );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setBackgroundColor( COLORREF bgColor )
+
+inline void WidgetDataGrid::setBackgroundColor( COLORREF bgColor )
 {
 	ListView_SetBkColor( this->Widget::handle(), bgColor );
 }
 
-template< class EventHandlerClass >
-unsigned WidgetDataGrid< EventHandlerClass >::getColumnCount()
+
+inline unsigned WidgetDataGrid::getColumnCount()
 {
 	return itsNoColumns;
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getColumnName( unsigned col )
+
+inline SmartUtil::tstring WidgetDataGrid::getColumnName( unsigned col )
 {
 	// TODO: Fix
 	const int BUFFER_MAX = 2048;
@@ -1328,32 +1263,32 @@ SmartUtil::tstring WidgetDataGrid< EventHandlerClass >::getColumnName( unsigned 
 	return colInfo.pszText;
 }
 
-template< class EventHandlerClass >
-bool WidgetDataGrid< EventHandlerClass >::getIsRowChecked( unsigned row )
+
+inline bool WidgetDataGrid::getIsRowChecked( unsigned row )
 {
 	return ListView_GetCheckState( this->Widget::itsHandle, row ) == TRUE;
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setRowChecked( unsigned row, bool value )
+
+inline void WidgetDataGrid::setRowChecked( unsigned row, bool value )
 {
 	ListView_SetCheckState( this->Widget::itsHandle, row, value );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setFullRowSelect( bool value )
+
+inline void WidgetDataGrid::setFullRowSelect( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_FULLROWSELECT, value );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setItemCount( unsigned size )
+
+inline void WidgetDataGrid::setItemCount( unsigned size )
 {
 	ListView_SetItemCount( this->Widget::itsHandle, size );
 }
 
-template< class EventHandlerClass >
-unsigned WidgetDataGrid< EventHandlerClass >::getRowNumberFromLParam( unsigned lParam )
+
+inline unsigned WidgetDataGrid::getRowNumberFromLParam( unsigned lParam )
 {
 	LVFINDINFO lv;
 	lv.flags = LVFI_PARAM;
@@ -1361,29 +1296,29 @@ unsigned WidgetDataGrid< EventHandlerClass >::getRowNumberFromLParam( unsigned l
 	return ( unsigned ) ListView_FindItem( this->Widget::itsHandle, - 1, & lv );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setNormalImageList( ImageListPtr imageList )
+
+inline void WidgetDataGrid::setNormalImageList( ImageListPtr imageList )
 {
 	  itsNormalImageList = imageList;
 	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_NORMAL );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setSmallImageList( ImageListPtr imageList )
+
+inline void WidgetDataGrid::setSmallImageList( ImageListPtr imageList )
 {
 	  itsSmallImageList = imageList;
 	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_SMALL );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setStateImageList( ImageListPtr imageList )
+
+inline void WidgetDataGrid::setStateImageList( ImageListPtr imageList )
 {
 	  itsStateImageList = imageList;
 	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_STATE );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setView( int view )
+
+inline void WidgetDataGrid::setView( int view )
 {
 	if ( ( view & LVS_TYPEMASK ) != view )
 	{
@@ -1398,8 +1333,8 @@ void WidgetDataGrid< EventHandlerClass >::setView( int view )
 	}
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::redrawItems( int firstRow, int lastRow )
+
+inline void WidgetDataGrid::redrawItems( int firstRow, int lastRow )
 {
 	if( ListView_RedrawItems( this->Widget::handle(), firstRow, lastRow ) == FALSE )
 	{
@@ -1407,90 +1342,59 @@ void WidgetDataGrid< EventHandlerClass >::redrawItems( int firstRow, int lastRow
 	}
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::redrawItems()
+
+inline void WidgetDataGrid::redrawItems()
 {
 	this->redrawItems( 0, this->getRowCount() );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setCheckBoxes( bool value )
+
+inline void WidgetDataGrid::setCheckBoxes( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_CHECKBOXES, value );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setSingleRowSelection( bool value )
+
+inline void WidgetDataGrid::setSingleRowSelection( bool value )
 {
 	this->Widget::addRemoveStyle( LVS_SINGLESEL, value );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setGridLines( bool value )
+
+inline void WidgetDataGrid::setGridLines( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_GRIDLINES, value );
 }
 
 #ifndef WINCE
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setHoover( bool value )
+
+inline void WidgetDataGrid::setHoover( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_TWOCLICKACTIVATE, value );
 }
 #endif
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setHeaderDragDrop( bool value )
+
+inline void WidgetDataGrid::setHeaderDragDrop( bool value )
 {
 	addRemoveListViewExtendedStyle( LVS_EX_HEADERDRAGDROP, value );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setAlwaysShowSelection( bool value )
+
+inline void WidgetDataGrid::setAlwaysShowSelection( bool value )
 {
 	this->Widget::addRemoveStyle( LVS_SHOWSELALWAYS, value );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::createColumns( const std::vector< SmartUtil::tstring > & colNames )
-{
-	// Deleting all data
-	if ( itsNoColumns != 0 )
-	{
-		removeAllRows();
-		while ( ListView_DeleteColumn( this->Widget::itsHandle, 0 ) == TRUE );
-	}
-
-	LV_COLUMN lvColumn =
-	{0
-	};
-	lvColumn.mask = LVCF_WIDTH | LVCF_TEXT;
-	lvColumn.cx = 100;
-	int x = 0;
-	for ( std::vector< SmartUtil::tstring >::const_iterator idx = colNames.begin();
-		idx != colNames.end();
-		++idx, ++x )
-	{
-		lvColumn.pszText = const_cast < TCHAR * >( idx->c_str() );
-		if ( ListView_InsertColumn( this->Widget::itsHandle, x, & lvColumn ) == - 1 )
-		{
-			xCeption x( _T( "Error while trying to create Columns in list view" ) );
-			throw x;
-		}
-	}
-	itsNoColumns = static_cast< unsigned >( colNames.size() );
-}
-
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::deleteColumn( unsigned columnNo )
+inline void WidgetDataGrid::deleteColumn( unsigned columnNo )
 {
 	xAssert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
 	ListView_DeleteColumn( this->Widget::itsHandle, columnNo );
 	--itsNoColumns;
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::setColumnWidth( unsigned columnNo, int width )
+
+inline void WidgetDataGrid::setColumnWidth( unsigned columnNo, int width )
 {
 	if ( ListView_SetColumnWidth( this->Widget::itsHandle, columnNo, width ) == FALSE )
 	{
@@ -1499,154 +1403,24 @@ void WidgetDataGrid< EventHandlerClass >::setColumnWidth( unsigned columnNo, int
 	}
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::removeAllRows()
+inline void WidgetDataGrid::removeAllRows()
 {
 	ListView_DeleteAllItems( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::removeRow( unsigned row )
+
+inline void WidgetDataGrid::removeRow( unsigned row )
 {
 	ListView_DeleteItem( this->Widget::itsHandle, row );
 }
 
-template< class EventHandlerClass >
-unsigned WidgetDataGrid< EventHandlerClass >::getRowCount()
+
+inline unsigned WidgetDataGrid::getRowCount()
 {
 	return ListView_GetItemCount( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass >
-LPARAM WidgetDataGrid< EventHandlerClass >::insertRow( const std::vector< SmartUtil::tstring > & row, LPARAM lPar, int index, int iconIndex )
-{
-		xAssert( itsNoColumns == row.size() && itsNoColumns != 0, _T( "Tried to add a row into a WidgetDataGridView with wrong number of columns" ) );
-		if ( index == - 1 )
-		{
-			// Appending at bottom
-			index = ListView_GetItemCount( this->Widget::itsHandle );
-		}
-		int itemCount = ListView_GetItemCount( this->Widget::itsHandle );
-		LV_ITEM lvi =
-		{0
-		};
-		lvi.mask = LVIF_TEXT | LVIF_PARAM;
-		if ( itsNormalImageList || itsSmallImageList )
-		{
-			lvi.mask |= LVIF_IMAGE;
-			lvi.iImage = ( iconIndex == - 1 ? I_IMAGECALLBACK : iconIndex );
-		}
-		lvi.pszText = const_cast < TCHAR * >( row[0].c_str() );
-		lvi.lParam = lPar == 0 ? itemCount++ : lPar;
-		lvi.cchTextMax = static_cast< int >( row[0].size() );
-		lvi.iItem = index;
-		if ( ListView_InsertItem( this->Widget::itsHandle, & lvi ) == - 1 )
-		{
-			xCeption x( _T( "Error while trying to insert row in ListView" ) );
-			throw x;
-		}
-		int noCol = 1;
-		lvi.mask = LVIF_TEXT;
-		for ( std::vector< SmartUtil::tstring >::const_iterator idx = row.begin() + 1;
-			idx != row.end();
-			++idx )
-		{
-			lvi.iSubItem = noCol++;
-			lvi.pszText = const_cast < TCHAR * >( idx->c_str() );
-			lvi.cchTextMax = static_cast< int >( idx->size() );
-			if ( !ListView_SetItem( this->Widget::itsHandle, & lvi ) )
-			{
-				xCeption x( _T( "Error while trying to insert row in ListView" ) );
-				throw x;
-			}
-		}
-		return lvi.lParam;
-}
-
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::insertRow( int index, int iconIndex )
-{
-		if ( index == - 1 )
-		{
-			index = ListView_GetItemCount( this->Widget::itsHandle );
-		}
-		int itemCount = ListView_GetItemCount( this->Widget::itsHandle );
-		LV_ITEM lvi =
-		{0
-		};
-		lvi.mask = LVIF_TEXT | LVIF_PARAM;
-		if ( itsNormalImageList || itsSmallImageList )
-		{
-			lvi.mask |= LVIF_IMAGE;
-			lvi.iImage = ( iconIndex == - 1 ? I_IMAGECALLBACK : iconIndex );
-		}
-		lvi.pszText = _T( "" );
-		lvi.lParam = itemCount++;
-		lvi.cchTextMax = 0;
-		lvi.iItem = index;
-		if ( ListView_InsertItem( this->Widget::itsHandle, & lvi ) == - 1 )
-		{
-			xCeption x( _T( "Error while trying to insert row in ListView" ) );
-			throw x;
-		}
-		int noCol = 1;
-		lvi.mask = LVIF_TEXT;
-		for ( int idx = 1;
-			idx != itsNoColumns;
-			++idx )
-		{
-			lvi.iSubItem = noCol++;
-			if ( !ListView_SetItem( this->Widget::itsHandle, & lvi ) )
-			{
-				xCeption x( _T( "Error while trying to insert row in ListView" ) );
-				throw x;
-			}
-		}
-}
-
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::insertCallbackRow( const LPARAM lParam )
-{
-		//assert( (itsMessageMap.find( Message( WM_NOTIFY, LVN_GETDISPINFO ) ) != itsMessageMap.end() ||
-		// itsMessageMapThis.find( Message( WM_NOTIFY, LVN_GETDISPINFO ) ) != itsMessageMapThis.end() )
-		// && _T("Can't insert a callback item without handling the GetItem event!") );
-
-		// Appending at bottom
-		int index = ListView_GetItemCount( this->Widget::itsHandle );
-
-		LV_ITEM lvi =
-		{0
-		};
-		lvi.mask = LVIF_TEXT | LVIF_PARAM;
-		lvi.pszText = LPSTR_TEXTCALLBACK;
-		lvi.lParam = lParam;
-		lvi.iItem = index;
-		if ( itsNormalImageList || itsSmallImageList )
-		{
-			lvi.mask |= LVIF_IMAGE;
-			lvi.iImage = I_IMAGECALLBACK;
-		}
-		if ( ListView_InsertItem( this->Widget::itsHandle, & lvi ) == - 1 )
-		{
-			xCeption x( _T( "Error while trying to insert row in ListView" ) );
-			throw x;
-		}
-
-		lvi.mask = LVIF_TEXT;
-		lvi.lParam = 0;
-		for ( unsigned idx = 1; idx < itsNoColumns; ++idx )
-		{
-			lvi.iSubItem = idx;
-			if ( !ListView_SetItem( this->Widget::itsHandle, & lvi ) )
-			{
-				xCeption x( _T( "Error while trying to insert row in ListView" ) );
-				throw x;
-			}
-		}
-}
-
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::addRemoveListViewExtendedStyle( DWORD addStyle, bool add )
+inline void WidgetDataGrid::addRemoveListViewExtendedStyle( DWORD addStyle, bool add )
 {
 	DWORD newStyle = ListView_GetExtendedListViewStyle( this->Widget::itsHandle );
 	if ( add && ( newStyle & addStyle ) != addStyle )
@@ -1661,13 +1435,15 @@ void WidgetDataGrid< EventHandlerClass >::addRemoveListViewExtendedStyle( DWORD 
 }
 
 // Constructor
-template< class EventHandlerClass >
-WidgetDataGrid< EventHandlerClass >::WidgetDataGrid( SmartWin::Widget * parent )
+
+inline WidgetDataGrid::WidgetDataGrid( SmartWin::Widget * parent )
 	: Widget( parent, 0 ),
+#ifdef PORT_ME
 	itsGlobalSortFunction( 0 ),
 	itsMemberSortFunction( 0 ),
 	itsGlobalGetIconFunction( 0 ),
 	itsMemberGetIconFunction( 0 ),
+#endif
 	isReadOnly( false ),
 	itsEditingCurrently( false ),
 	itsNoColumns( 0 )
@@ -1679,96 +1455,24 @@ WidgetDataGrid< EventHandlerClass >::WidgetDataGrid( SmartWin::Widget * parent )
 	xAssert( parent, _T( "Cant have a WidgetDataGrid without a parent..." ) );
 }
 
-template< class EventHandlerClass >
-int CALLBACK WidgetDataGrid< EventHandlerClass >::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort )
-{
-	WidgetDataGrid * This = reinterpret_cast< WidgetDataGrid * > ( lParamSort );
-	if ( This->itsGlobalSortFunction )
-	{
-		return This->itsGlobalSortFunction(
-			internal_::getTypedParentOrThrow < EventHandlerClass * >( This ), This, lParam1, lParam2 );
-	}
-	else
-	{
-		return ( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( This ) ).*( This->itsMemberSortFunction ) )
-			( This, lParam1, lParam2 );
-	}
-}
-
-template< class EventHandlerClass >
-void WidgetDataGrid< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	//TODO: use CreationalInfo parameters
-
-#ifdef WINCE
-	// WinCE fix for gridlines...
-	ListView_SetImageList( itsHandle, itsHImageList, LVSIL_SMALL );
-#endif
-
-	// Setting default event handler for beenValidate to a function returning "read
-	// only" property of control Note! If you supply a beenValidate event handler
-	// this will have no effect
 #ifdef PORT_ME
-	onValidate( WidgetDataGrid::defaultValidate );
-#endif
-}
-
-template< class EventHandlerClass >
-bool WidgetDataGrid< EventHandlerClass >::defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
+bool WidgetDataGrid::defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
 {
 	list->updateWidget();
 	return !list->getReadOnly();
 }
-
+#endif
 // Calculates the adjustment from the columns of an item.
-template< class EventHandlerClass >
-int WidgetDataGrid< EventHandlerClass >::xoffFromColumn( int column, int & logicalColumn )
-{
-	HWND hWnd = this->Widget::itsHandle;
 
-	// Now we must map a absolute column to a logical column
-	// Columnns can be moved but they keep their Column Number
-	logicalColumn = - 1;
-	HWND hHeader = reinterpret_cast< HWND >( ::SendMessage( hWnd, LVM_GETHEADER, 0, 0 ) );
-	int noItems = ::SendMessage( hHeader, HDM_GETITEMCOUNT, 0, 0 );
-	int * myArrayOfCols = new int[noItems]; // TODO: Use boost::scoped_array or something...
-	int xOffset = 0;
-	try
-	{
-		::SendMessage( hHeader, HDM_GETORDERARRAY, static_cast< WPARAM >( noItems ), reinterpret_cast< LPARAM >( myArrayOfCols ) );
-		for ( int idx = 0; idx < noItems; ++idx )
-		{
-			if ( myArrayOfCols[idx] == column )
-			{
-				logicalColumn = idx;
-				break;
-			}
-			else
-				xOffset += ListView_GetColumnWidth( hWnd, myArrayOfCols[idx] );
-		}
-		delete [] myArrayOfCols;
-	}
-	catch ( ... )
-	{
-		delete [] myArrayOfCols;
-		throw;
-	}
-
-	return xOffset;
-}
-
-template< class EventHandlerClass >
-RECT WidgetDataGrid< EventHandlerClass >::getItemRect( int item, int code )
+inline RECT WidgetDataGrid::getItemRect( int item, int code )
 {
 	RECT r;
 	ListView_GetItemRect( this->Widget::itsHandle, item, & r, code );
 	return r;
 }
 
-template< class EventHandlerClass >
-RECT WidgetDataGrid< EventHandlerClass >::getSubItemRect( int item, int subitem, int code )
+
+inline RECT WidgetDataGrid::getSubItemRect( int item, int subitem, int code )
 {
 	RECT r;
 	ListView_GetSubItemRect( this->Widget::itsHandle, item, subitem, code, & r );
@@ -1777,8 +1481,8 @@ RECT WidgetDataGrid< EventHandlerClass >::getSubItemRect( int item, int subitem,
 
 #ifdef PORT_ME
 // TODO: Should these
-template< class EventHandlerClass >
-LRESULT WidgetDataGrid< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+
+LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	switch ( msg )
 	{

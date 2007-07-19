@@ -58,14 +58,11 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : SmartWin::Widget(parent),
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	WidgetButtonPtr button = subclassButton(IDC_BROWSEDIR);
-	button->onClicked(&DownloadPage::handleBrowseDir);
+	subclassButton(IDC_BROWSEDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseDir, this));
 
-	button = subclassButton(IDC_BROWSETEMPDIR);
-	button->onClicked(&DownloadPage::handleBrowseTempDir);
+	subclassButton(IDC_BROWSETEMPDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseTempDir, this));
 
-	button = subclassButton(IDC_SETTINGS_LIST_CONFIG);
-	button->onClicked(&DownloadPage::handleConfigHubLists);
+	subclassButton(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
 
 	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SLOTSSPIN);
 	spinner->setRange(0, 100);
@@ -93,7 +90,7 @@ void DownloadPage::write()
 
 }
 
-void DownloadPage::handleBrowseDir(WidgetButtonPtr) {
+void DownloadPage::handleBrowseDir() {
 	tstring dir = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
 	if(WinUtil::browseDirectory(dir, handle()))
 	{
@@ -105,7 +102,7 @@ void DownloadPage::handleBrowseDir(WidgetButtonPtr) {
 	}
 }
 
-void DownloadPage::handleBrowseTempDir(WidgetButtonPtr) {
+void DownloadPage::handleBrowseTempDir() {
 	tstring dir = Text::toT(SETTING(TEMP_DOWNLOAD_DIRECTORY));
 	if(WinUtil::browseDirectory(dir, handle()))
 	{
@@ -117,7 +114,7 @@ void DownloadPage::handleBrowseTempDir(WidgetButtonPtr) {
 	}
 }
 
-void DownloadPage::handleConfigHubLists(WidgetButtonPtr) {
+void DownloadPage::handleConfigHubLists() {
 #ifdef PORT_ME
 	PublicHubListDlg dlg;
 	dlg.DoModal(m_hWnd);

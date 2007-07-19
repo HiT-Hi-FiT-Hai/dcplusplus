@@ -1,6 +1,8 @@
 #ifndef ASPECTDIALOG_H_
 #define ASPECTDIALOG_H_
 
+#include "../../SmartUtil.h"
+
 namespace SmartWin {
 
 template<typename T>

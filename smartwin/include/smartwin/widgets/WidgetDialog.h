@@ -44,14 +44,13 @@ namespace SmartWin
   * Class is a public superclass of WidgetWindowBase and therefor can use all features 
   * of WidgetWindowBase. 
   */
-template< class EventHandlerClass > 
 class WidgetDialog
-	: public WidgetWindowBase< EventHandlerClass, Policies::Dialog >
+	: public WidgetWindowBase< Policies::Dialog >
 {
 public:
-	typedef WidgetWindowBase< EventHandlerClass, Policies::Dialog > BaseType;
+	typedef WidgetWindowBase< Policies::Dialog > BaseType;
 	/// Class type
-	typedef WidgetDialog< EventHandlerClass > ThisType;
+	typedef WidgetDialog ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -72,27 +71,9 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass >
-WidgetDialog< EventHandlerClass >::WidgetDialog( Widget * parent )
+inline WidgetDialog::WidgetDialog( Widget * parent )
 	: Widget(parent), BaseType( parent )
 {}
-
-template< class EventHandlerClass >
-void WidgetDialog< EventHandlerClass >::createDialog( unsigned resourceId )
-{
-	this->Widget::itsHandle = ::CreateDialogParam( Application::instance().getAppHandle(),
-		MAKEINTRESOURCE( resourceId ),
-		( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 ),
-		( (DLGPROC)&ThisType::wndProc ),
-		reinterpret_cast< LPARAM >( boost::polymorphic_cast< Widget * >( this ) ) );
-
-	if ( !this->Widget::itsHandle ) {
-		xCeption x( _T( "CreateDialogParam failed." ) );
-		throw x;
-	}
-
-	Widget::registerWidget();
-}
 
 // end namespace SmartWin
 }

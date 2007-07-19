@@ -29,7 +29,7 @@
 #ifndef WidgetMessageBox_h
 #define WidgetMessageBox_h
 
-#include "SmartUtil.h"
+#include "../../SmartUtil.h"
 #include "../FreeCommonDialog.h"
 #include "../WindowsHeaders.h"
 

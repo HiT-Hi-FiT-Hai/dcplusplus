@@ -127,13 +127,13 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
 		
 		cs.caption = TSTRING(CONFIGURE);
 		configure = createButton(cs);
-		configure->onClicked(&PublicHubsFrame::handleConfigure);
+		configure->onClicked(std::tr1::bind(&PublicHubsFrame::handleConfigure, this));
 		configure->setFont(WinUtil::font);
 		addWidget(configure);
 		
 		cs.caption = TSTRING(REFRESH);
 		refresh = createButton(cs);
-		refresh->onClicked(&PublicHubsFrame::handleRefresh);
+		refresh->onClicked(std::tr1::bind(&PublicHubsFrame::handleRefresh, this));
 		refresh->setFont(WinUtil::font);
 		addWidget(refresh);
 
@@ -463,9 +463,9 @@ HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		}
 
 		WidgetMenuPtr menu = createMenu(true);
-		menu->appendItem(IDC_CONNECT, TSTRING(CONNECT), &PublicHubsFrame::handleConnect);
-		menu->appendItem(IDC_ADD, TSTRING(ADD_TO_FAVORITES), &PublicHubsFrame::handleAdd);
-		menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), &PublicHubsFrame::handleCopyHub);
+		menu->appendItem(IDC_CONNECT, TSTRING(CONNECT), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
+		menu->appendItem(IDC_ADD, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
+		menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
 #ifdef PORT_ME
 		menu->SetMenuDefaultItem(IDC_CONNECT);
 #endif
@@ -475,13 +475,13 @@ HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
-void PublicHubsFrame::handleRefresh(WidgetButtonPtr) {
+void PublicHubsFrame::handleRefresh() {
 	setStatus(STATUS_STATUS, CTSTRING(DOWNLOADING_HUB_LIST));
 	FavoriteManager::getInstance()->refresh(true);
 	updateDropDown();
 }
 
-void PublicHubsFrame::handleConfigure(WidgetButtonPtr) {
+void PublicHubsFrame::handleConfigure() {
 #ifdef PORT_ME
 	PublicHubListDlg dlg;
 	if(dlg.DoModal(m_hWnd) == IDOK) {
@@ -490,7 +490,7 @@ void PublicHubsFrame::handleConfigure(WidgetButtonPtr) {
 #endif
 }
 
-void PublicHubsFrame::handleConnect(WidgetMenuPtr, unsigned) {
+void PublicHubsFrame::handleConnect() {
 	if(!checkNick())
 		return;
 
@@ -499,7 +499,7 @@ void PublicHubsFrame::handleConnect(WidgetMenuPtr, unsigned) {
 	}
 }
 
-void PublicHubsFrame::handleAdd(WidgetMenuPtr, unsigned) {
+void PublicHubsFrame::handleAdd() {
 	if(!checkNick())
 		return;
 
@@ -508,7 +508,7 @@ void PublicHubsFrame::handleAdd(WidgetMenuPtr, unsigned) {
 	}	
 }
 
-void PublicHubsFrame::handleCopyHub(WidgetMenuPtr, unsigned) {
+void PublicHubsFrame::handleCopyHub() {
 	if(hubs->hasSelection()) {
 		WinUtil::setClipboard(Text::toT(hubs->getSelectedItem()->entry->getServer()));
 	}

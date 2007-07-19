@@ -31,22 +31,23 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include "SmartUtil.h"
-#include "../MessageMapPolicyClasses.h"
-#include "../Widget.h"
-#include "../MessageMapControl.h"
-#include "../xCeption.h"
 #include "../BasicTypes.h"
-#include "../aspects/AspectSizable.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
-
-
+#include "../xCeption.h"
+#include "WidgetButton.h"
+#include "WidgetCheckBox.h"
 #include "WidgetComboBox.h"
-#include "WidgetTextBox.h"
+#include "WidgetDateTimePicker.h"
 #include "WidgetGroupBox.h"
+#include "WidgetMenu.h"
+#include "WidgetSpinner.h"
+#include "WidgetTextBox.h"
+#include "WidgetTreeView.h"
 
 //TODO: complete migration to CreationalInfo.
 //The position part of WidgetXxx::Seed::rect is disregarded
@@ -70,21 +71,19 @@ class WidgetCreator;
   * dockable toolbar ( see WidgetToolbar ) a Coolbar  Widget can also contain more 
   * complex Widgets lke for instance a WidgetComboBox, a WidgetTextBox and so on...          
   */
-template< class EventHandlerClass >
 class WidgetCoolbar :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectEnabled< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >,
-	public AspectFont< WidgetCoolbar< EventHandlerClass > >,
-	public AspectRaw< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >,
-	private AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetCoolbar< EventHandlerClass > > >
+	public AspectEnabled< WidgetCoolbar >,
+	public AspectFocus< WidgetCoolbar >,
+	public AspectFont< WidgetCoolbar >,
+	public AspectRaw< WidgetCoolbar >,
+	private AspectSizable< WidgetCoolbar >,
+	public AspectVisible< WidgetCoolbar >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetCoolbar<EventHandlerClass> > MessageMapType;
-	typedef SmartWin::AspectSizable< EventHandlerClass, WidgetCoolbar< EventHandlerClass >, MessageMapType > AspectSizable;
+	typedef SmartWin::AspectSizable< WidgetCoolbar > AspectSizable;
 	friend class WidgetCreator< WidgetCoolbar >;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible
@@ -101,7 +100,7 @@ public:
 	using AspectSizable::onMoved;
 
 	/// Class type
-	typedef WidgetCoolbar< EventHandlerClass > ThisType;
+	typedef WidgetCoolbar ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -115,7 +114,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetCoolbar::ThisType TheWidgetType;
+		typedef WidgetCoolbar::ThisType TheWidgetType;
 
 		//TODO: put variables to be filled here
 
@@ -131,65 +130,35 @@ public:
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
 
-	/// ComboBox class type.
-	typedef SmartWin::WidgetComboBox< EventHandlerClass > WidgetComboBox;
-
 	/// ComboBox object type.
-	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
-
-	/// TextBox class type.
-	typedef SmartWin::WidgetTextBox< EventHandlerClass > WidgetTextBox;
+	typedef WidgetComboBox::ObjectType WidgetComboBoxPtr;
 
 	/// TextBox object type.
-	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
-
-	/// Button class type.
-	typedef SmartWin::WidgetButton< EventHandlerClass > WidgetButton;
+	typedef WidgetTextBox<>::ObjectType WidgetTextBoxPtr;
 
 	/// Button object type.
-	typedef typename WidgetButton::ObjectType WidgetButtonPtr;
-
-	/// Button class type.
-	typedef SmartWin::WidgetTreeView< EventHandlerClass > WidgetTreeView;
+	typedef WidgetButton::ObjectType WidgetButtonPtr;
 
 	/// Button object type.
-	typedef typename WidgetTreeView::ObjectType WidgetTreeViewPtr;
-
-	/// CheckBox class type.
-	typedef SmartWin::WidgetCheckBox< EventHandlerClass > WidgetCheckBox;
+	typedef WidgetTreeView::ObjectType WidgetTreeViewPtr;
 
 	/// CheckBox object type.
-	typedef typename WidgetCheckBox::ObjectType WidgetCheckBoxPtr;
-
-	/// Spinner class type.
-	typedef SmartWin::WidgetSpinner< EventHandlerClass > WidgetSpinner;
+	typedef WidgetCheckBox::ObjectType WidgetCheckBoxPtr;
 
 	/// Spinner object type.
-	typedef typename WidgetSpinner::ObjectType WidgetSpinnerPtr;
-
-	/// GroupBox class type.
-	typedef SmartWin::WidgetGroupBox< EventHandlerClass > WidgetGroupBox;
+	typedef WidgetSpinner::ObjectType WidgetSpinnerPtr;
 
 	/// GroupBox object type.
-	typedef typename WidgetGroupBox::ObjectType WidgetGroupBoxPtr;
-
-	/// RadioButton class type.
-	typedef SmartWin::WidgetRadioButton< EventHandlerClass > WidgetRadioButton;
+	typedef WidgetGroupBox::ObjectType WidgetGroupBoxPtr;
 
 	/// RadioButton object type.
-	typedef typename WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
-
-	/// DateTimePicker class type.
-	typedef SmartWin::WidgetDateTimePicker< EventHandlerClass > WidgetDateTimePicker;
+	typedef WidgetRadioButton::ObjectType WidgetRadioButtonPtr;
 
 	/// DateTimePicker object type.
-	typedef typename WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
+	typedef WidgetDateTimePicker::ObjectType WidgetDateTimePickerPtr;
 
-	/// DateTimePicker class type.
-	typedef SmartWin::WidgetMenu< EventHandlerClass > WidgetMenu;
-
-	/// DateTimePicker object type.
-	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
+	/// Menu object type.
+	typedef WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// Actually creates the Coolbar
 	/** You should call WidgetFactory::createCoolbar if you instantiate class
@@ -198,12 +167,14 @@ public:
 	  */
 	virtual void create( const Seed & cs = getDefaultSeed() );
 
-	WidgetRadioButtonPtr sow( WidgetGroupBoxPtr & parent, const typename WidgetRadioButton::Seed & cs )
+	WidgetRadioButtonPtr sow( WidgetGroupBoxPtr & parent, const WidgetRadioButton::Seed & cs )
 	{
-		WidgetRadioButtonPtr retVal ( WidgetCreator< typename WidgetRadioButton::Seed::WidgetType >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs ) );
+#ifdef PORT_ME
+		WidgetRadioButtonPtr retVal ( WidgetCreator< WidgetRadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs ) );
 		retVal->setBounds( 0, 0, cs.location.size.x, cs.location.size.y );
 		parent->addChild( retVal );
 		return retVal;
+#endif
 	}
 
 	/// Creates a Widget using its CreationalInfo
@@ -268,60 +239,19 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetCoolbar< EventHandlerClass >::Seed & WidgetCoolbar< EventHandlerClass >::getDefaultSeed()
+inline WidgetCoolbar::Seed::Seed()
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, REBARCLASSNAME );
-		d_DefaultValues.exStyle = WS_EX_TOOLWINDOW;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | RBS_VARHEIGHT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_NODIVIDER;
-		//TODO: fill the values
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
+	* this = WidgetCoolbar::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-WidgetCoolbar< EventHandlerClass >::Seed::Seed()
-{
-	* this = WidgetCoolbar::getDefaultCInfo();
-}
-
-template< class EventHandlerClass >
-WidgetCoolbar< EventHandlerClass >::WidgetCoolbar( SmartWin::Widget * parent )
+inline WidgetCoolbar::WidgetCoolbar( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
-template< class EventHandlerClass >
-void WidgetCoolbar< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	//TODO: use CreationalInfo parameters
-}
-
-//template< class EventHandlerClass >
-//typename WidgetCoolbar< EventHandlerClass >::WidgetMenuPtr
-//WidgetCoolbar< EventHandlerClass >::createMenu
-// ( unsigned width
-// , unsigned height
-// , const SmartUtil::tstring & txt
-// )
-//{
-// WidgetMenu::ObjectType retVal = WidgetCreator< WidgetMenu >::create( this );
-// this->addChild( retVal.get(), width, height, txt );
-// return retVal;
-//}
-
-template< class EventHandlerClass >
-void WidgetCoolbar< EventHandlerClass >::refresh()
+inline void WidgetCoolbar::refresh()
 {
 	// This might look a bit stupid, but Windows API have some minor flaws. One of
 	// those flaws is that a Coolbar (and a Toolbar) control must be "resized" with
@@ -336,30 +266,6 @@ void WidgetCoolbar< EventHandlerClass >::refresh()
 	{
 		xCeption err( _T( "Couldn't reposition windows" ) );
 		throw err;
-	}
-}
-
-template< class EventHandlerClass >
-void WidgetCoolbar< EventHandlerClass >::addChild( Widget * child,
-	unsigned width, unsigned height, const SmartUtil::tstring & txt
-	)
-{
-	REBARBANDINFO rbBand;
-	rbBand.cbSize = sizeof( REBARBANDINFO );
-	rbBand.fMask = RBBIM_SIZE | RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_STYLE;
-	if ( txt != _T( "" ) )
-	{
-		rbBand.fMask |= RBBIM_TEXT;
-		rbBand.lpText = const_cast < TCHAR * >( txt.c_str() );
-	}
-	rbBand.hwndChild = child->handle();
-	rbBand.cxMinChild = width;
-	rbBand.cyMinChild = height;
-	rbBand.cx = width;
-	rbBand.fStyle = 0; //RBBS_GRIPPERALWAYS;
-	if ( SendMessage( this->handle(), RB_INSERTBAND, ( WPARAM ) - 1, ( LPARAM ) & rbBand ) == 0 )
-	{
-		throw xCeption( _T( "There was a problem when trying to insert a band into your Coolbar object!" ) );
 	}
 }
 

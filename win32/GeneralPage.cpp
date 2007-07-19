@@ -65,7 +65,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), P
 #define TEXTBOX_ATTACH(id) \
 	textBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(id)); \
 	textBox->setTextLimit(35); \
-	textBox->onRaw(&GeneralPage::handleTextChanged, SmartWin::Message(WM_COMMAND, EN_CHANGE))
+	textBox->onRaw(std::tr1::bind(&GeneralPage::handleTextChanged, this, textBox, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE))
 	TEXTBOX_ATTACH(IDC_NICK);
 	TEXTBOX_ATTACH(IDC_DESCRIPTION);
 #undef TEXTBOX_ATTACH
@@ -78,7 +78,7 @@ void GeneralPage::write() {
 	PropPage::write(handle(), items);
 }
 
-HRESULT GeneralPage::handleTextChanged(TextBoxMessageType textBox, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+HRESULT GeneralPage::handleTextChanged(WidgetTextBoxPtr textBox, WPARAM wParam, LPARAM lParam) {
 	tstring text = textBox->getText();
 	bool update = false;
 

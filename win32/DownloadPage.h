@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class DownloadPage : public WidgetFactory<SmartWin::WidgetDialog, DownloadPage>, public PropPage
+class DownloadPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	DownloadPage(SmartWin::Widget* parent);
@@ -44,9 +44,9 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	void handleBrowseDir(WidgetButtonPtr);
-	void handleBrowseTempDir(WidgetButtonPtr);
-	void handleConfigHubLists(WidgetButtonPtr);
+	void handleBrowseDir();
+	void handleBrowseTempDir();
+	void handleConfigHubLists();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_DOWNLOAD_PAGE_H)

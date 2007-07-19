@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class WindowsPage : public WidgetFactory<SmartWin::WidgetDialog, WindowsPage>, public PropPage
+class WindowsPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	WindowsPage(SmartWin::Widget* parent);

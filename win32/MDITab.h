@@ -4,10 +4,11 @@
 class MainWindow;
 
 class MDITab : 
-	public SmartWin::WidgetTabSheet<MDITab>
+	public SmartWin::WidgetTabSheet
 {
 public:
-	typedef SmartWin::WidgetTabSheet<MDITab> BaseType;
+	enum { MAX_TITLE_LENGTH = 20 };
+	typedef SmartWin::WidgetTabSheet BaseType;
 	typedef MDITab ThisType;
 	typedef ThisType* ObjectType;
 
@@ -17,7 +18,7 @@ public:
 	void addTab(T* w) {
 		SmartWin::Widget* widget = static_cast<SmartWin::Widget*>(w);
 		size_t tabs = this->size();
-		this->addPage(w->getText(), tabs, reinterpret_cast<LPARAM>(static_cast<SmartWin::Widget*>(w)));
+		this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(static_cast<SmartWin::Widget*>(w)));
 
 		if(w->getParent()->sendMessage(WM_MDIGETACTIVE) == reinterpret_cast<LPARAM>(widget->handle())) {
 			activating = true;
@@ -51,6 +52,7 @@ private:
 	std::tr1::function<void ()> resized;
 	bool activating;
 	
+	tstring cutTitle(const tstring& title);
 	static MDITab* instance;
 };
 

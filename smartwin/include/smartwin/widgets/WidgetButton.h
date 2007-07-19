@@ -29,23 +29,21 @@
 #ifndef WidgetButton_h
 #define WidgetButton_h
 
-#include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectBackgroundColor.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectVisible.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectGetParent.h"
+#include "../aspects/AspectFont.h"
 #include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectText.h"
 #include "../aspects/AspectThreads.h"
-#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -65,32 +63,30 @@ class WidgetCreator;
   * Class for creating a button control Widget. <br>
   * A button is a Widget which can be pressed, it can contain descriptive text etc.
   */
-template< class EventHandlerClass >
 class WidgetButton :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectBorder< WidgetButton< EventHandlerClass > >,
-	public AspectClickable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectDblClickable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectFont< WidgetButton< EventHandlerClass > >,
-	public AspectKeyboard< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectPainting< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectText< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectThreads< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetButton< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetButton< EventHandlerClass > > >
+	public AspectBackgroundColor< WidgetButton >,
+	public AspectBorder< WidgetButton >,
+	public AspectClickable< WidgetButton >,
+	public AspectDblClickable< WidgetButton >,
+	public AspectEnabled< WidgetButton >,
+	public AspectFocus< WidgetButton >,
+	public AspectFont< WidgetButton >,
+	public AspectKeyboard< WidgetButton >,
+	public AspectPainting< WidgetButton >,
+	public AspectRaw< WidgetButton >,
+	public AspectSizable< WidgetButton >,
+	public AspectText< WidgetButton >,
+	public AspectThreads< WidgetButton >,
+	public AspectVisible< WidgetButton >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetButton<EventHandlerClass> > MessageMapType;
 	friend class WidgetCreator< WidgetButton >;
 public:
 	/// Class type
-	typedef WidgetButton< EventHandlerClass > ThisType;
+	typedef WidgetButton ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -104,7 +100,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetButton::ThisType WidgetType;
+		typedef WidgetButton::ThisType WidgetType;
 
 		FontPtr font;
 
@@ -150,63 +146,34 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetButton< EventHandlerClass >::Seed & WidgetButton< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T("Button") );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetButton< EventHandlerClass >::Seed::Seed()
+inline WidgetButton::Seed::Seed()
 {
 	* this = WidgetButton::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-Message & WidgetButton< EventHandlerClass >::getClickMessage()
+inline Message & WidgetButton::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetButton< EventHandlerClass >::getDblClickMessage()
+inline Message & WidgetButton::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetButton< EventHandlerClass >::getBackgroundColorMessage()
+inline Message & WidgetButton::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORBTN );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-WidgetButton< EventHandlerClass >::WidgetButton( SmartWin::Widget * parent )
+inline WidgetButton::WidgetButton( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetButton< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	setFont( cs.font );
 }
 
 // end namespace SmartWin

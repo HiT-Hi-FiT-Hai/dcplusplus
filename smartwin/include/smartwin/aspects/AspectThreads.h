@@ -41,9 +41,10 @@ namespace SmartWin
   * the AspectThreads through inheritance. Most Widgets realize this Aspect since
   * they can fork the current thread of execution into two threads.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectThreads
 {
+#ifdef PORT_ME
 	template< class Param >
 	class ThreadParam
 	{
@@ -228,9 +229,11 @@ public:
 			NULL ) );
 	}
 
+#endif
 protected:
 	virtual ~AspectThreads()
 	{}
+
 };
 
 // end namespace SmartWin

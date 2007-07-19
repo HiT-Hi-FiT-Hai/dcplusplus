@@ -31,29 +31,10 @@
 
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
-#include <boost/cast.hpp>
-#include <functional>
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-class AspectFocusDispatcher
-{
-public:
-	typedef std::tr1::function<void ()> F;
-	
-	AspectFocusDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f();
-		params.RunDefaultHandling = true; // WM_SETFOCUS Must dispatch to Windows Message Procedure in order to display caret
-		return 0;
-	}
-
-	F f;
-};
 
 /// Aspect class used by Widgets that have the possibility of retrieving the focus
 /** \ingroup AspectClasses
@@ -63,14 +44,25 @@ public:
   * "active" Widget meaning that it receives keyboard input for one and normally if
   * it is a text Widget gets to own the carret.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectFocus
 {
-	typedef AspectFocusDispatcher FocusDispatcher;
-	typedef AspectAdapter<FocusDispatcher::F, EventHandlerClass, MessageMapType::IsControl> FocusAdapter;
+	struct FocusDispatcher
+	{
+		typedef std::tr1::function<void ()> F;
+		
+		FocusDispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f();
+			params.RunDefaultHandling = true; // WM_SETFOCUS Must dispatch to Windows Message Procedure in order to display caret
+			return 0;
+		}
+
+		F f;
+	};
 
 	typedef AspectVoidVoidDispatcher KillFocusDispatcher;
-	typedef AspectAdapter<KillFocusDispatcher::F, EventHandlerClass, MessageMapType::IsControl> KillFocusAdapter;
 
 public:
 	/// Gives the Widget the keyboard focus
@@ -90,40 +82,22 @@ public:
 	  * before the other Widget which is supposed to get focus retrieves it. No
 	  * parameters are passed.
 	  */
-	void onKillFocus( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onKillFocus(KillFocusAdapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onKillFocus( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onKillFocus(KillFocusAdapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	
-	void onKillFocus(const KillFocusDispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			typename MessageMapType::SignalTupleType(Message( WM_KILLFOCUS ), KillFocusDispatcher(f))
+	void onKillFocus(const typename KillFocusDispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
+			Message( WM_KILLFOCUS ), KillFocusDispatcher(f)
 		);
 	}
-
 
 	/// \ingroup EventHandlersAspectAspectFocus
 	/// Sets the event handler for what function to be called when control loses focus.
 	/** This function will be called just after the Widget has gained focus. No
 	  * parameters are passed.
-	  */
-	void onFocus( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onFocus(FocusAdapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onFocus( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onFocus(FocusAdapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	
-	void onFocus(const FocusDispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	  */	
+	void onFocus(const typename FocusDispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_SETFOCUS ), FocusDispatcher(f)
 		);
 	}
-
 
 protected:
 	virtual ~AspectFocus()
@@ -133,14 +107,14 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectFocus< EventHandlerClass, WidgetType, MessageMapType >::setFocus()
+template< class WidgetType >
+void AspectFocus< WidgetType >::setFocus()
 {
 	::SetFocus( static_cast< WidgetType * >( this )->handle() );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-bool AspectFocus< EventHandlerClass, WidgetType, MessageMapType >::getFocus() const
+template< class WidgetType >
+bool AspectFocus< WidgetType >::getFocus() const
 {
 	return ::GetFocus() == static_cast< const WidgetType * >( this )->handle();
 }

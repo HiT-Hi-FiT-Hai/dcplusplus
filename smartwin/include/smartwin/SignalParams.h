@@ -40,32 +40,14 @@ namespace private_
 {
 // begin namespace private_
 
-// POD Helper for passing params to dispatcher function...
-class SignalParams
-{
-public:
-	SignalParams( Message & msg, Widget * ptr )
-		: Msg( msg ), This( ptr )
-	{}
-
-	Message Msg;
-	Widget * This;
-};
-
-// POD Helper for passing the function pointer to the dispatcher
 class SignalContent
 {
 public:
-	SignalContent( const Message & msg, bool isControl )
-		: Msg( msg ), IsControl( isControl ), RunDefaultHandling( false )
-	{}
-
 	SignalContent( const Message & msg )
-		: Msg( msg ), IsControl( false ), RunDefaultHandling( false )
+		: Msg( msg ), RunDefaultHandling( false )
 	{}
 
 	Message Msg;
-	bool IsControl;
 	bool RunDefaultHandling;
 };
 

@@ -30,7 +30,7 @@
 
 template<typename T>
 class MDIChildFrame : 
-	public WidgetFactory< SmartWin::WidgetMDIChild, T >,
+	public WidgetFactory< SmartWin::WidgetMDIChild >,
 	public AspectSpeaker<T>, 
 	public AspectStatus<T>
 {
@@ -92,8 +92,8 @@ private:
 	HWND lastFocus;
 	bool reallyClose;
 
-	template<typename A, typename B, typename C>
-	void addColor(SmartWin::AspectBackgroundColor<A, B, C>* widget) {
+	template<typename A>
+	void addColor(SmartWin::AspectBackgroundColor<A>* widget) {
 		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
 	}
 	

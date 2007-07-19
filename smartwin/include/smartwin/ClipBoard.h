@@ -29,7 +29,7 @@
 #ifndef ClipBoard_h
 #define ClipBoard_h
 
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 
 namespace SmartWin
 {

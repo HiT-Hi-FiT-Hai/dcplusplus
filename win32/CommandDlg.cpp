@@ -36,8 +36,8 @@ CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstr
 	command(command_),
 	hub(hub_)
 {
-	onInitDialog(&CommandDlg::handleInitDialog);
-	onFocus(&CommandDlg::handleFocus);
+	onInitDialog(std::tr1::bind(&CommandDlg::handleInitDialog, this));
+	onFocus(std::tr1::bind(&CommandDlg::handleFocus, this));
 }
 
 CommandDlg::~CommandDlg() {
@@ -57,19 +57,19 @@ bool CommandDlg::handleInitDialog() {
 
 	separator = subclassRadioButton(IDC_SETTINGS_SEPARATOR);
 	separator->setText(TSTRING(SEPARATOR));
-	separator->onClicked(&CommandDlg::handleTypeChanged);
+	separator->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	raw = subclassRadioButton(IDC_SETTINGS_RAW);
 	raw->setText(TSTRING(USER_CMD_RAW));
-	raw->onClicked(&CommandDlg::handleTypeChanged);
+	raw->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	chat = subclassRadioButton(IDC_SETTINGS_CHAT);
 	chat->setText(TSTRING(USER_CMD_CHAT));
-	chat->onClicked(&CommandDlg::handleTypeChanged);
+	chat->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	PM = subclassRadioButton(IDC_SETTINGS_PM);
 	PM->setText(TSTRING(USER_CMD_PM));
-	PM->onClicked(&CommandDlg::handleTypeChanged);
+	PM->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
 	hubMenu = subclassCheckBox(IDC_SETTINGS_HUB_MENU);
 	hubMenu->setText(TSTRING(USER_CMD_HUB_MENU));
@@ -86,12 +86,12 @@ bool CommandDlg::handleInitDialog() {
 	nameBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_NAME));
 
 	commandBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_COMMAND));
-	commandBox->onRaw(&CommandDlg::handleTextChanged, SmartWin::Message(WM_COMMAND, EN_CHANGE));
+	commandBox->onRaw(std::tr1::bind(&CommandDlg::handleTextChanged, this, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE));
 
 	hubBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_HUB));
 
 	nick = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_NICK));
-	nick->onRaw(&CommandDlg::handleTextChanged, SmartWin::Message(WM_COMMAND, EN_CHANGE));
+	nick->onRaw(std::tr1::bind(&CommandDlg::handleTextChanged, this, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE));
 
 	once = subclassCheckBox(IDC_SETTINGS_ONCE);
 	once->setText(TSTRING(USER_CMD_ONCE));
@@ -103,14 +103,11 @@ bool CommandDlg::handleInitDialog() {
 	bool bOpenHelp = BOOLSETTING(OPEN_USER_CMD_HELP);
 	openHelp->setChecked(bOpenHelp);
 
-	WidgetButtonPtr button = subclassButton(IDOK);
-	button->onClicked(&CommandDlg::handleOKClicked);
+	subclassButton(IDOK)->onClicked(std::tr1::bind(&CommandDlg::handleOKClicked, this));
 
-	button = subclassButton(IDCANCEL);
-	button->onClicked(&CommandDlg::handleCancelClicked);
+	subclassButton(IDCANCEL)->onClicked(std::tr1::bind(&CommandDlg::endDialog, this, IDCANCEL));
 
-	button = subclassButton(IDHELP);
-	button->onClicked(&CommandDlg::handleHelpClicked);
+	subclassButton(IDHELP)->onClicked(std::tr1::bind(&CommandDlg::handleHelpClicked, this));
 
 	if(bOpenHelp) {
 #ifdef PORT_ME
@@ -183,18 +180,18 @@ void CommandDlg::handleFocus() {
 	nameBox->setFocus();
 }
 
-void CommandDlg::handleTypeChanged(WidgetRadioButtonPtr) {
+void CommandDlg::handleTypeChanged() {
 	updateType();
 	updateCommand();
 	updateControls();
 }
 
-HRESULT CommandDlg::handleTextChanged(TextBoxMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/) {
+HRESULT CommandDlg::handleTextChanged(WPARAM wParam, LPARAM lParam) {
 	updateCommand();
 	return 0;
 }
 
-void CommandDlg::handleOKClicked(WidgetButtonPtr) {
+void CommandDlg::handleOKClicked() {
 	name = nameBox->getText();
 	if((type != 0) && (name.empty() || commandBox->getText().empty())) {
 		createMessageBox().show(_T("Name and command must not be empty"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
@@ -221,11 +218,7 @@ void CommandDlg::handleOKClicked(WidgetButtonPtr) {
 	endDialog(IDOK);
 }
 
-void CommandDlg::handleCancelClicked(WidgetButtonPtr) {
-	endDialog(IDCANCEL);
-}
-
-void CommandDlg::handleHelpClicked(WidgetButtonPtr) {
+void CommandDlg::handleHelpClicked() {
 #ifdef PORT_ME
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 #endif

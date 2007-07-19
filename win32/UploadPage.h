@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class UploadPage : public WidgetFactory<SmartWin::WidgetDialog, UploadPage>, public PropPage
+class UploadPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	UploadPage(SmartWin::Widget* parent);
@@ -49,15 +49,14 @@ private:
 	WidgetDataGridPtr directories;
 	WidgetStaticPtr total;
 
-	typedef SmartWin::WidgetDataGrid<UploadPage>* DataGridMessageType;
-	HRESULT handleDoubleClick(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
-	HRESULT handleKeyDown(DataGridMessageType, LPARAM lParam, WPARAM /*wParam*/);
-	HRESULT handleItemChanged(DataGridMessageType, LPARAM /*lParam*/, WPARAM /*wParam*/);
+	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam);
+	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam);
+	HRESULT handleItemChanged(WPARAM wParam, LPARAM lParam);
 
 	void handleShareHiddenClicked(WidgetCheckBoxPtr checkBox);
-	void handleRenameClicked(WidgetButtonPtr);
-	void handleRemoveClicked(WidgetButtonPtr);
-	void handleAddClicked(WidgetButtonPtr);
+	void handleRenameClicked();
+	void handleRemoveClicked();
+	void handleAddClicked();
 
 	void addDirectory(const tstring& aPath);
 };

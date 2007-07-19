@@ -104,7 +104,7 @@ MainWindow::MainWindow() :
 	QueueManager::getInstance()->addListener(this);
 	LogManager::getInstance()->addListener(this);
 
-	onClosing(&MainWindow::closing);
+	onClosing(std::tr1::bind(&MainWindow::closing, this));
 	
 	onRaw(std::tr1::bind(&MainWindow::trayMessage, this, _1, _2), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
 	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
@@ -260,43 +260,43 @@ void MainWindow::initMenu() {
 	
 	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
 	
-	file->appendItem(IDC_QUICK_CONNECT, TSTRING(MENU_QUICK_CONNECT), &MainWindow::handleQuickConnect);
+	file->appendItem(IDC_QUICK_CONNECT, TSTRING(MENU_QUICK_CONNECT), std::tr1::bind(&MainWindow::handleQuickConnect, this));
 #ifdef PORT_ME
 	file->appendItem(IDC_FOLLOW, TSTRING(MENU_FOLLOW_REDIRECT));
 	file->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT));
 #endif
 	file->appendSeparatorItem();
 	
-	file->appendItem(IDC_OPEN_FILE_LIST, TSTRING(MENU_OPEN_FILE_LIST), &MainWindow::handleOpenFileList);
-	file->appendItem(IDC_OPEN_OWN_LIST, TSTRING(MENU_OPEN_OWN_LIST), &MainWindow::handleOpenOwnList);
-	file->appendItem(IDC_MATCH_ALL, TSTRING(MENU_OPEN_MATCH_ALL), &MainWindow::handleMatchAll);
-	file->appendItem(IDC_REFRESH_FILE_LIST, TSTRING(MENU_REFRESH_FILE_LIST), &MainWindow::handleRefreshFileList);
-	file->appendItem(IDC_OPEN_DOWNLOADS, TSTRING(MENU_OPEN_DOWNLOADS_DIR), &MainWindow::handleOpenDownloadsDir);
+	file->appendItem(IDC_OPEN_FILE_LIST, TSTRING(MENU_OPEN_FILE_LIST), std::tr1::bind(&MainWindow::handleOpenFileList, this));
+	file->appendItem(IDC_OPEN_OWN_LIST, TSTRING(MENU_OPEN_OWN_LIST), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
+	file->appendItem(IDC_MATCH_ALL, TSTRING(MENU_OPEN_MATCH_ALL), std::tr1::bind(&MainWindow::handleMatchAll, this));
+	file->appendItem(IDC_REFRESH_FILE_LIST, TSTRING(MENU_REFRESH_FILE_LIST), std::tr1::bind(&MainWindow::handleRefreshFileList, this));
+	file->appendItem(IDC_OPEN_DOWNLOADS, TSTRING(MENU_OPEN_DOWNLOADS_DIR), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this));
 	file->appendSeparatorItem();
 
-	file->appendItem(IDC_SETTINGS, TSTRING(MENU_SETTINGS), &MainWindow::handleSettings);
+	file->appendItem(IDC_SETTINGS, TSTRING(MENU_SETTINGS), std::tr1::bind(&MainWindow::handleSettings, this));
 	file->appendSeparatorItem();
-	file->appendItem(IDC_EXIT, TSTRING(MENU_EXIT), &MainWindow::handleExit);
+	file->appendItem(IDC_EXIT, TSTRING(MENU_EXIT), std::tr1::bind(&MainWindow::handleExit, this));
 
 	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
 
-	view->appendItem(IDC_PUBLIC_HUBS, TSTRING(MENU_PUBLIC_HUBS), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_FAVORITE_HUBS, TSTRING(MENU_FAVORITE_HUBS), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_FAVUSERS, TSTRING(MENU_FAVORITE_USERS), &MainWindow::handleOpenWindow);
+	view->appendItem(IDC_PUBLIC_HUBS, TSTRING(MENU_PUBLIC_HUBS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FAVORITE_HUBS, TSTRING(MENU_FAVORITE_HUBS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FAVUSERS, TSTRING(MENU_FAVORITE_USERS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendSeparatorItem();
-	view->appendItem(IDC_QUEUE, TSTRING(MENU_DOWNLOAD_QUEUE), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_FINISHED_DL, TSTRING(FINISHED_DOWNLOADS), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_WAITING_USERS, TSTRING(WAITING_USERS), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_FINISHED_UL, TSTRING(FINISHED_UPLOADS), &MainWindow::handleOpenWindow);
+	view->appendItem(IDC_QUEUE, TSTRING(MENU_DOWNLOAD_QUEUE), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FINISHED_DL, TSTRING(FINISHED_DOWNLOADS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_WAITING_USERS, TSTRING(WAITING_USERS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FINISHED_UL, TSTRING(FINISHED_UPLOADS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendSeparatorItem();
-	view->appendItem(IDC_SEARCH, TSTRING(MENU_SEARCH), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_ADL_SEARCH, TSTRING(MENU_ADL_SEARCH), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_SEARCH_SPY, TSTRING(MENU_SEARCH_SPY), &MainWindow::handleOpenWindow);
+	view->appendItem(IDC_SEARCH, TSTRING(MENU_SEARCH), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_ADL_SEARCH, TSTRING(MENU_ADL_SEARCH), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_SEARCH_SPY, TSTRING(MENU_SEARCH_SPY), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendSeparatorItem();
-	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_NET_STATS, TSTRING(MENU_NETWORK_STATISTICS), &MainWindow::handleOpenWindow);
-	view->appendItem(IDC_HASH_PROGRESS, TSTRING(MENU_HASH_PROGRESS), &MainWindow::handleHashProgress);
+	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_NET_STATS, TSTRING(MENU_NETWORK_STATISTICS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_HASH_PROGRESS, TSTRING(MENU_HASH_PROGRESS), std::tr1::bind(&MainWindow::handleHashProgress, this));
 #ifdef PORT_ME
 	view.AppendMenu(MF_SEPARATOR);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
@@ -307,36 +307,36 @@ void MainWindow::initMenu() {
 
 	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
 	
-	window->appendItem(IDC_MDI_CASCADE, TSTRING(MENU_CASCADE), &MainWindow::handleMDIReorder);
-	window->appendItem(IDC_MDI_TILE_HORZ, TSTRING(MENU_HORIZONTAL_TILE), &MainWindow::handleMDIReorder);
-	window->appendItem(IDC_MDI_TILE_VERT, TSTRING(MENU_VERTICAL_TILE), &MainWindow::handleMDIReorder);
-	window->appendItem(IDC_MDI_ARRANGE, TSTRING(MENU_ARRANGE), &MainWindow::handleMDIReorder);
-	window->appendItem(IDC_MDI_MINIMIZE_ALL, TSTRING(MENU_MINIMIZE_ALL), &MainWindow::handleMinimizeAll);
-	window->appendItem(IDC_MDI_RESTORE_ALL, TSTRING(MENU_RESTORE_ALL), &MainWindow::handleRestoreAll);
+	window->appendItem(IDC_MDI_CASCADE, TSTRING(MENU_CASCADE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
+	window->appendItem(IDC_MDI_TILE_HORZ, TSTRING(MENU_HORIZONTAL_TILE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
+	window->appendItem(IDC_MDI_TILE_VERT, TSTRING(MENU_VERTICAL_TILE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
+	window->appendItem(IDC_MDI_ARRANGE, TSTRING(MENU_ARRANGE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
+	window->appendItem(IDC_MDI_MINIMIZE_ALL, TSTRING(MENU_MINIMIZE_ALL), std::tr1::bind(&MainWindow::handleMinimizeAll, this));
+	window->appendItem(IDC_MDI_RESTORE_ALL, TSTRING(MENU_RESTORE_ALL), std::tr1::bind(&MainWindow::handleRestoreAll, this));
 	window->appendSeparatorItem();
-	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, TSTRING(MENU_CLOSE_DISCONNECTED), &MainWindow::handleCloseWindows);
-	window->appendItem(IDC_CLOSE_ALL_PM, TSTRING(MENU_CLOSE_ALL_PM), &MainWindow::handleCloseWindows);
-	window->appendItem(IDC_CLOSE_ALL_OFFLINE_PM, TSTRING(MENU_CLOSE_ALL_OFFLINE_PM), &MainWindow::handleCloseWindows);
-	window->appendItem(IDC_CLOSE_ALL_DIR_LIST, TSTRING(MENU_CLOSE_ALL_DIR_LIST), &MainWindow::handleCloseWindows);
-	window->appendItem(IDC_CLOSE_ALL_SEARCH_FRAME, TSTRING(MENU_CLOSE_ALL_SEARCHFRAME), &MainWindow::handleCloseWindows);
+	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, TSTRING(MENU_CLOSE_DISCONNECTED), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_PM, TSTRING(MENU_CLOSE_ALL_PM), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_OFFLINE_PM, TSTRING(MENU_CLOSE_ALL_OFFLINE_PM), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_DIR_LIST, TSTRING(MENU_CLOSE_ALL_DIR_LIST), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_SEARCH_FRAME, TSTRING(MENU_CLOSE_ALL_SEARCHFRAME), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 
 	WidgetMenuPtr help = mainMenu->appendPopup(TSTRING(MENU_HELP));
 
-	help->appendItem(IDC_HELP_CONTENTS, TSTRING(MENU_CONTENTS), &MainWindow::handleHelp);
+	help->appendItem(IDC_HELP_CONTENTS, TSTRING(MENU_CONTENTS), std::tr1::bind(&MainWindow::handleHelp, this, _1));
 	help->appendSeparatorItem();
-	help->appendItem(IDC_HELP_CHANGELOG, TSTRING(MENU_CHANGELOG), &MainWindow::handleHelp);
-	help->appendItem(IDC_ABOUT, TSTRING(MENU_ABOUT), &MainWindow::handleAbout);
+	help->appendItem(IDC_HELP_CHANGELOG, TSTRING(MENU_CHANGELOG), std::tr1::bind(&MainWindow::handleHelp, this, _1));
+	help->appendItem(IDC_ABOUT, TSTRING(MENU_ABOUT), std::tr1::bind(&MainWindow::handleAbout, this));
 	help->appendSeparatorItem();
-	help->appendItem(IDC_HELP_HOMEPAGE, TSTRING(MENU_HOMEPAGE), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_DOWNLOADS, TSTRING(MENU_HELP_DOWNLOADS), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_GEOIPFILE, TSTRING(MENU_HELP_GEOIPFILE), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_TRANSLATIONS, TSTRING(MENU_HELP_TRANSLATIONS), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_FAQ, TSTRING(MENU_FAQ), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_FORUM, TSTRING(MENU_HELP_FORUM), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_DISCUSS, TSTRING(MENU_DISCUSS), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_REQUEST_FEATURE, TSTRING(MENU_REQUEST_FEATURE), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_REPORT_BUG, TSTRING(MENU_REPORT_BUG), &MainWindow::handleLink);
-	help->appendItem(IDC_HELP_DONATE, TSTRING(MENU_DONATE), &MainWindow::handleLink);
+	help->appendItem(IDC_HELP_HOMEPAGE, TSTRING(MENU_HOMEPAGE), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_DOWNLOADS, TSTRING(MENU_HELP_DOWNLOADS), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_GEOIPFILE, TSTRING(MENU_HELP_GEOIPFILE), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_TRANSLATIONS, TSTRING(MENU_HELP_TRANSLATIONS), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_FAQ, TSTRING(MENU_FAQ), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_FORUM, TSTRING(MENU_HELP_FORUM), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_DISCUSS, TSTRING(MENU_DISCUSS), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_REQUEST_FEATURE, TSTRING(MENU_REQUEST_FEATURE), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_REPORT_BUG, TSTRING(MENU_REPORT_BUG), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_DONATE, TSTRING(MENU_DONATE), std::tr1::bind(&MainWindow::handleLink, this, _1));
 
 	mainMenu->attach(this);	
 }
@@ -365,11 +365,11 @@ void MainWindow::initTransfers() {
 	paned->setSecond(transfers);
 }
 
-void MainWindow::handleExit(WidgetMenuPtr /* menu */, unsigned /* id*/) {
+void MainWindow::handleExit() {
 	close(true);
 }
 
-void MainWindow::handleQuickConnect(WidgetMenuPtr, unsigned) {
+void MainWindow::handleQuickConnect() {
 	///@todo send user to settings
 	if(SETTING(NICK).empty())
 		return;
@@ -506,7 +506,7 @@ HRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-void MainWindow::handleMDIReorder(WidgetMenuPtr, unsigned id) {
+void MainWindow::handleMDIReorder(unsigned id) {
 	switch(id) {
 	case IDC_MDI_CASCADE: getMDIClient()->cascade(); break;
 	case IDC_MDI_TILE_VERT: getMDIClient()->tile(false); break;
@@ -578,7 +578,7 @@ MainWindow::~MainWindow() {
 #endif
 }
 
-void MainWindow::handleSettings(WidgetMenuPtr, unsigned) {
+void MainWindow::handleSettings() {
 	
 	SettingsDialog dlg(this);
 
@@ -711,7 +711,7 @@ void MainWindow::stopUPnP() {
 
 static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
 
-void MainWindow::handleOpenFileList(WidgetMenuPtr ptr, unsigned id) {
+void MainWindow::handleOpenFileList() {
 	tstring file;
 	if(WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
 		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
@@ -725,7 +725,7 @@ void MainWindow::handleOpenFileList(WidgetMenuPtr ptr, unsigned id) {
 	}
 }
 
-void MainWindow::handleOpenOwnList(WidgetMenuPtr, unsigned) {
+void MainWindow::handleOpenOwnList() {
 	if(!ShareManager::getInstance()->getOwnListFile().empty()){
 		DirectoryListingFrame::openWindow(getMDIClient(), Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
 	}
@@ -801,7 +801,7 @@ public:
 	StringList files;
 };
 
-void MainWindow::handleMatchAll(WidgetMenuPtr, unsigned) {
+void MainWindow::handleMatchAll() {
 	ListMatcher* matcher = new ListMatcher(File::findFiles(Util::getListPath(), "*.xml*"));
 	try {
 		matcher->start();
@@ -968,19 +968,19 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 }
 #endif
 
-void MainWindow::handleHashProgress(WidgetMenuPtr, unsigned) {
+void MainWindow::handleHashProgress() {
 	HashProgressDlg(this, false).run();
 }
 
-void MainWindow::handleAbout(WidgetMenuPtr, unsigned) {
+void MainWindow::handleAbout() {
 	AboutDlg(this).run();
 }
 
-void MainWindow::handleOpenDownloadsDir(WidgetMenuPtr, unsigned) {
+void MainWindow::handleOpenDownloadsDir() {
 	WinUtil::openFile(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
 }
 
-void MainWindow::handleMinimizeAll(WidgetMenuPtr, unsigned) {
+void MainWindow::handleMinimizeAll() {
 	HWND tmpWnd = ::GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
 		::CloseWindow(tmpWnd);
@@ -988,7 +988,7 @@ void MainWindow::handleMinimizeAll(WidgetMenuPtr, unsigned) {
 	}
 }
 
-void MainWindow::handleRestoreAll(WidgetMenuPtr, unsigned) {
+void MainWindow::handleRestoreAll() {
 	HWND tmpWnd = ::GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
 		::SendMessage(getMDIClient()->handle(), WM_MDIRESTORE, (WPARAM)tmpWnd, 0);
@@ -996,7 +996,7 @@ void MainWindow::handleRestoreAll(WidgetMenuPtr, unsigned) {
 	}
 }
 
-void MainWindow::handleOpenWindow(WidgetMenuPtr, unsigned id) {
+void MainWindow::handleOpenWindow(unsigned id) {
 	switch(id) {
 	case IDC_PUBLIC_HUBS: PublicHubsFrame::openWindow(getMDIClient()); break;
 	case IDC_FAVORITE_HUBS: FavHubsFrame::openWindow(getMDIClient()); break;
@@ -1106,7 +1106,7 @@ LRESULT MainFrame::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 }
 #endif
 
-void MainWindow::handleHelp(WidgetMenuPtr, unsigned id) {
+void MainWindow::handleHelp(unsigned id) {
 #ifdef PORT_ME
 	UINT action = (id == IDC_HELP_CONTENTS) ? HH_DISPLAY_TOC : HH_HELP_CONTEXT;
 	::HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), action, id);
@@ -1198,7 +1198,7 @@ HRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-void MainWindow::handleLink(WidgetMenuPtr, unsigned id) {
+void MainWindow::handleLink(unsigned id) {
 
 	tstring site;
 	switch(id) {
@@ -1218,7 +1218,7 @@ void MainWindow::handleLink(WidgetMenuPtr, unsigned id) {
 	WinUtil::openLink(site);
 }
 
-void MainWindow::handleRefreshFileList(WidgetMenuPtr, unsigned id) {
+void MainWindow::handleRefreshFileList() {
 	ShareManager::getInstance()->setDirty();
 	ShareManager::getInstance()->refresh(true);
 }
@@ -1299,7 +1299,7 @@ LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 }
 #endif
 
-void MainWindow::handleCloseWindows(WidgetMenuPtr menu, unsigned id) {
+void MainWindow::handleCloseWindows(unsigned id) {
 	switch(id) {
 	case IDC_CLOSE_ALL_DISCONNECTED:	HubFrame::closeDisconnected();		break;
 	case IDC_CLOSE_ALL_PM:				PrivateFrame::closeAll();			break;

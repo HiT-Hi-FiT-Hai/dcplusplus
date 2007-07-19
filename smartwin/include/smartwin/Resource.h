@@ -29,7 +29,7 @@
 #define Resources_h
 
 #include "WindowsHeaders.h"
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 
 namespace SmartWin
 {

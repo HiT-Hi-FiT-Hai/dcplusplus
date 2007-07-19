@@ -31,30 +31,9 @@
 
 #include "../SignalParams.h"
 
-#include "AspectAdapter.h"
-#include <functional>
-#include <boost/cast.hpp>
-
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-struct AspectKeyboardDispatcher
-{
-	typedef std::tr1::function<bool (int)> F;
-
-	AspectKeyboardDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		bool handled = f(static_cast< int >( params.Msg.WParam ));
-
-		if ( !handled )
-			params.RunDefaultHandling = true;
-		return 0;
-	}
-
-	F f;
-};
 
 /** 
  * Base functionality that doesn't depend on template parameters
@@ -131,11 +110,25 @@ public:
 /** \ingroup AspectClasses
   * E.g. the WidgetDataGrid can trap "key pressed events" therefore they realize the AspectKeyboard through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectKeyboard : public AspectKeyboardBase
 {
-	typedef AspectKeyboardDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<bool (int)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			bool handled = f(static_cast< int >( params.Msg.WParam ));
+
+			if ( !handled )
+				params.RunDefaultHandling = true;
+			return 0;
+		}
+
+		F f;
+	};
 
 public:
 	/// \ingroup EventHandlersAspectKeyboard
@@ -154,28 +147,15 @@ public:
 	  * Use virtualKeyToChar to transform virtual key code to a char, though this
 	  * will obviously not work for e.g. arrow keys etc...
 	  */
-	void onKeyPressed( typename MessageMapType::itsBoolFunctionTakingInt eventHandler ) {
-		onKeyDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onKeyPressed( typename MessageMapType::boolFunctionTakingInt eventHandler ) {
-		onKeyDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onKeyDown(const Dispatcher::F& f) {
+	void onKeyDown(const typename Dispatcher::F& f) {
 		onKey(WM_KEYDOWN, f);
-	}
-
-	void onChar( typename MessageMapType::itsBoolFunctionTakingInt eventHandler ) {
-		onChar(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onChar( typename MessageMapType::boolFunctionTakingInt eventHandler ) {
-		onChar(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
 	}
 
 	void onChar(const typename Dispatcher::F& f) {
 		onKey(WM_CHAR, f);
 	}
 	
-	void onKeyUp(const Dispatcher::F& f) {
+	void onKeyUp(const typename Dispatcher::F& f) {
 		onKey(WM_KEYUP, f);
 	}
 
@@ -183,9 +163,8 @@ protected:
 	virtual ~AspectKeyboard()
 	{}
 	
-	void onKey(UINT msg, const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onKey(UINT msg, const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( msg ), Dispatcher(f)
 		);
 	}

@@ -84,13 +84,12 @@ private:
 
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
-	typedef SmartWin::WidgetDataGrid<SpyFrame>* DataGridMessageType;
 	HRESULT handleColumnClick(WPARAM wParam, LPARAM lParam);
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
-	void handleSearch(WidgetMenuPtr /*menu*/, unsigned /*id*/);
+	void handleSearch();
 
-	void handleIgnoreTTHClicked(WidgetCheckBoxPtr);
+	void handleIgnoreTTHClicked();
 
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::IncomingSearch, const string& s) throw();

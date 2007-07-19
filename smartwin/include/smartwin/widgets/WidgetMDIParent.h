@@ -29,15 +29,14 @@
 #ifndef WidgetMDIParent_h
 #define WidgetMDIParent_h
 
-#include "../MessageMapControl.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
+#include "../BasicTypes.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
-#include "../BasicTypes.h"
 
 namespace SmartWin
 {
@@ -63,23 +62,21 @@ class WidgetCreator;
   * Related class : <br>
   * WidgetMDIChild 
   */
-template< class EventHandlerClass >
 class WidgetMDIParent :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectSizable< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetMDIParent< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetMDIParent< EventHandlerClass > > >
+	public AspectSizable< WidgetMDIParent >,
+	public AspectVisible< WidgetMDIParent >,
+	public AspectEnabled< WidgetMDIParent >,
+	public AspectFocus< WidgetMDIParent >,
+	public AspectRaw< WidgetMDIParent >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetMDIParent > MessageMapType;
 	friend class WidgetCreator< WidgetMDIParent >;
 public:
 	/// Class type
-	typedef WidgetMDIParent< EventHandlerClass > ThisType;
+	typedef WidgetMDIParent ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -93,7 +90,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetMDIParent::ThisType WidgetType;
+		typedef WidgetMDIParent::ThisType WidgetType;
 
 		// TODO: put variables to be filled here
 
@@ -163,65 +160,16 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetMDIParent< EventHandlerClass >::Seed & WidgetMDIParent< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T( "MDICLIENT" ) );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_VSCROLL | WS_HSCROLL;
-		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
-		d_DefaultValues.idFirstChild = 0;
-		d_DefaultValues.windowMenu = NULL;
-		//TODO: initialize the values here
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetMDIParent< EventHandlerClass >::Seed::Seed()
+inline WidgetMDIParent::Seed::Seed()
 {
 	* this = WidgetMDIParent::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-WidgetMDIParent< EventHandlerClass >::WidgetMDIParent( SmartWin::Widget * parent )
+inline WidgetMDIParent::WidgetMDIParent( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetMDIParent< EventHandlerClass >::create( const Seed & cs )
-{
-	CLIENTCREATESTRUCT ccs;
-	ccs.hWindowMenu = cs.windowMenu;
-	ccs.idFirstChild = cs.idFirstChild;
-	
-	this->Widget::itsHandle = ::CreateWindowEx( cs.exStyle,
-		cs.getClassName().c_str(),
-		cs.caption.c_str(),
-		cs.style,
-		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
-		this->Widget::itsParent ? this->Widget::itsParent->handle() : 0,
-		NULL,
-		Application::instance().getAppHandle(),
-		reinterpret_cast< LPVOID >( &ccs ) );
-	if ( !this->Widget::itsHandle )
-	{
-		// The most common error is to forget WS_CHILD in the styles
-		xCeption x( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
-		throw x;
-	}
-	this->Widget::isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
-	Application::instance().registerWidget( this );
-
-	ThisType::createMessageMap();
 }
 
 // end namespace SmartWin

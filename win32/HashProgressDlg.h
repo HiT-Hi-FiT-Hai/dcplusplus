@@ -19,7 +19,7 @@
 #ifndef DCPLUSPLUS_WIN32_HASH_PROGESS_DLG_H
 #define DCPLUSPLUS_WIN32_HASH_PROGESS_DLG_H
 
-class HashProgressDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog, HashProgressDlg>
+class HashProgressDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose);
@@ -36,7 +36,7 @@ private:
 	uint32_t startTime;
 
 	bool handleInitDialog();
-	void handleOKClicked(WidgetButtonPtr);
+	void handleOKClicked();
 
 	bool updateStats();
 };

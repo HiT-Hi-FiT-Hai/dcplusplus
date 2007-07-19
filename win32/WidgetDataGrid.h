@@ -19,12 +19,11 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETDATAGRID_H_
 #define DCPLUSPLUS_WIN32_WIDGETDATAGRID_H_
 
-template< class EventHandlerClass>
-class WidgetDataGrid : public SmartWin::WidgetDataGrid<EventHandlerClass> {
+class WidgetDataGrid : public SmartWin::WidgetDataGrid {
 private:
-	typedef SmartWin::WidgetDataGrid<EventHandlerClass> BaseType;
+	typedef SmartWin::WidgetDataGrid BaseType;
 public:
-	typedef WidgetDataGrid<EventHandlerClass> ThisType;
+	typedef WidgetDataGrid ThisType;
 	
 	typedef ThisType* ObjectType;
 	

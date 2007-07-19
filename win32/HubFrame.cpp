@@ -186,7 +186,7 @@ HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) :
 	
 	frames.push_back(this);
 	
-	showUsers->onClicked(&HubFrame::handleShowUsersClicked);
+	showUsers->onClicked(std::tr1::bind(&HubFrame::handleShowUsersClicked, this));
 
 	BOOL max = FALSE;
 	if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max)) && !max) {
@@ -1230,7 +1230,7 @@ HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
-void HubFrame::handleShowUsersClicked(WidgetCheckBoxPtr) {
+void HubFrame::handleShowUsersClicked() {
 	bool checked = showUsers->getChecked();
 	
 	users->setVisible(checked);

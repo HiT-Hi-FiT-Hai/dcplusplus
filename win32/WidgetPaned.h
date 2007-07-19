@@ -19,23 +19,18 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETPANED_H_
 #define DCPLUSPLUS_WIN32_WIDGETPANED_H_
 
-template< typename EventHandlerClass, bool horizontal >
+template< bool horizontal >
 class WidgetPaned :
 	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,
-	public SmartWin::AspectMouseClicks<EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal>,
-		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal> > >,
-	public SmartWin::AspectSizable< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal >,
-		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >,
-	public SmartWin::AspectVisible< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal >,
-		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >,
-	public SmartWin::AspectRaw< EventHandlerClass, WidgetPaned< EventHandlerClass, horizontal >,
-		SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > >
+	public SmartWin::AspectMouseClicks< WidgetPaned< horizontal > >,
+	public SmartWin::AspectSizable< WidgetPaned< horizontal > >,
+	public SmartWin::AspectVisible< WidgetPaned< horizontal > >,
+	public SmartWin::AspectRaw< WidgetPaned< horizontal > >
 {
-	typedef SmartWin::MessageMapControl< EventHandlerClass, WidgetPaned<EventHandlerClass, horizontal > > MessageMapType;
 	friend class SmartWin::WidgetCreator< WidgetPaned >;
 public:
 	/// Class type
-	typedef WidgetPaned< EventHandlerClass, horizontal > ThisType;
+	typedef WidgetPaned< horizontal > ThisType;
 
 	typedef SmartWin::MessageMapPolicy< SmartWin::Policies::Normal > PolicyType;
 	
@@ -130,8 +125,8 @@ private:
 	}
 };
 
-template< typename EventHandlerClass, bool horizontal >
-const typename WidgetPaned< EventHandlerClass, horizontal >::Seed & WidgetPaned< EventHandlerClass, horizontal >::getDefaultSeed()
+template< bool horizontal >
+const typename WidgetPaned< horizontal >::Seed & WidgetPaned< horizontal >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( SmartWin::DontInitializeMe );
@@ -160,14 +155,14 @@ const typename WidgetPaned< EventHandlerClass, horizontal >::Seed & WidgetPaned<
 	return d_DefaultValues;
 }
 
-template< typename EventHandlerClass, bool horizontal >
-WidgetPaned< EventHandlerClass, horizontal >::Seed::Seed()
+template< bool horizontal >
+WidgetPaned< horizontal >::Seed::Seed()
 {
 	* this = WidgetPaned::getDefaultSeed();
 }
 
-template< typename EventHandlerClass, bool horizontal >
-WidgetPaned< EventHandlerClass, horizontal >::WidgetPaned( SmartWin::Widget * parent )
+template< bool horizontal >
+WidgetPaned< horizontal >::WidgetPaned( SmartWin::Widget * parent )
 	: SmartWin::Widget( parent, 0 )
 	, pos(0.5)
 	, moving(false)
@@ -175,8 +170,8 @@ WidgetPaned< EventHandlerClass, horizontal >::WidgetPaned( SmartWin::Widget * pa
 	children.first = children.second = 0;
 }
 
-template< typename EventHandlerClass, bool horizontal >
-void WidgetPaned< EventHandlerClass, horizontal >::create( const Seed & cs )
+template< bool horizontal >
+void WidgetPaned< horizontal >::create( const Seed & cs )
 {
 	PolicyType::create(cs);
 	
@@ -185,8 +180,8 @@ void WidgetPaned< EventHandlerClass, horizontal >::create( const Seed & cs )
 	onLeftMouseUp(std::tr1::bind(&ThisType::handleLButtonUp, this, _1));
 }
 
-template< typename EventHandlerClass, bool horizontal >
-SmartWin::Rectangle WidgetPaned< EventHandlerClass, horizontal >::getSplitterRect()
+template< bool horizontal >
+SmartWin::Rectangle WidgetPaned< horizontal >::getSplitterRect()
 {
 	// Sanity check
 	if(pos < 0.) {
@@ -222,8 +217,8 @@ SmartWin::Rectangle WidgetPaned< EventHandlerClass, horizontal >::getSplitterRec
 	return rc;
 }
 
-template< typename EventHandlerClass, bool horizontal >
-void WidgetPaned< EventHandlerClass, horizontal >::resizeChildren( )
+template< bool horizontal >
+void WidgetPaned< horizontal >::resizeChildren( )
 {
 	if(!children.first) {
 		if(children.second) {

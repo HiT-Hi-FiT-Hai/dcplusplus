@@ -71,12 +71,12 @@ private:
 	WidgetButtonPtr up;
 	WidgetButtonPtr down;
 	
-	void handleConnect(WidgetButtonPtr);
-	void handleAdd(WidgetButtonPtr);
-	void handleRemove(WidgetButtonPtr);
-	void handleProperties(WidgetButtonPtr);
-	void handleUp(WidgetButtonPtr);
-	void handleDown(WidgetButtonPtr);
+	void handleConnect();
+	void handleAdd();
+	void handleRemove();
+	void handleProperties();
+	void handleUp();
+	void handleDown();
 	void handleDoubleClick();
 
 	void openSelected();

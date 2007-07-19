@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class GeneralPage : public WidgetFactory<SmartWin::WidgetDialog, GeneralPage>, public PropPage
+class GeneralPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	GeneralPage(SmartWin::Widget* parent);
@@ -44,8 +44,7 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	typedef SmartWin::WidgetTextBox<GeneralPage>* TextBoxMessageType;
-	HRESULT handleTextChanged(TextBoxMessageType textBox, LPARAM /*lParam*/, WPARAM /*wParam*/);
+	HRESULT handleTextChanged(WidgetTextBoxPtr textBox, WPARAM wParam, LPARAM lParam);
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_GENERAL_PAGE_H)

@@ -30,26 +30,11 @@
 #define AspectEraseBackground_h
 
 #include "../SignalParams.h"
+#include "../CanvasClasses.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-struct AspectEraseBackgroundDispatcher {
-	typedef std::tr1::function<void (Canvas&)> F;
-	
-	AspectEraseBackgroundDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
-
-		f(canvas);
-		return 1;
-	}
-
-	F f;
-	Widget* widget;
-};
 
 /// Aspect class used by Widgets that have the possibility of handling the erase
 /// background property
@@ -60,11 +45,24 @@ struct AspectEraseBackgroundDispatcher {
   * object which can be used for  manipulating the colors etc the system uses to
   * erase the background of the Widget with.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectEraseBackground
 {
-	typedef AspectEraseBackgroundDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher {
+		typedef std::tr1::function<void (Canvas&)> F;
+		
+		Dispatcher(const F& f_, WidgetType* widget_) : f(f_), widget(widget_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
+
+			f(canvas);
+			return 1;
+		}
+
+		F f;
+		WidgetType* widget;
+	};
 public:
 	/// \ingroup EventHandlersAspectEraseBackground
 	/// Setting the event handler for the "erase background" event
@@ -72,16 +70,8 @@ public:
 	  * background, the canvas passed can be used to draw upon etc to manipulate the
 	  * background property of the Widget.
 	  */
-	void onEraseBackground( typename MessageMapType::itsVoidFunctionTakingCanvas eventHandler ) {
-		onEraseBackground(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onEraseBackground( typename MessageMapType::voidFunctionTakingCanvas eventHandler ) {
-		onEraseBackground(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-
-	void onEraseBackground(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onEraseBackground(const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_ERASEBKGND ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
 		);
 	}

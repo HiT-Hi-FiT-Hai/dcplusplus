@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class NetworkPage : public WidgetFactory<SmartWin::WidgetDialog, NetworkPage>, public PropPage
+class NetworkPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	NetworkPage(SmartWin::Widget* parent);
@@ -45,7 +45,6 @@ private:
 	static TextItem texts[];
 
 	void fixControls();
-	void fixControls(WidgetRadioButtonPtr) { fixControls(); }
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_NETWORK_PAGE_H)

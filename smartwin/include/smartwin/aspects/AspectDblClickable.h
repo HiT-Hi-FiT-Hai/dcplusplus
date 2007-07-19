@@ -31,8 +31,6 @@
 
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
-#include <boost/cast.hpp>
 
 namespace SmartWin
 {
@@ -44,27 +42,19 @@ namespace SmartWin
 /** E.g. the WidgetStatic have a "Double Clicked" Aspect therefore it realizes the
   * AspectDblClickable through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectDblClickable
 {
 	typedef AspectVoidVoidDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectDblClickable
 	/// Setting the event handler for the "Double Clicked" event
 	/** All Widgets that realize this Aspect will raise this event when Widget is
 	  * being Double Clicked. No parameters are passed.
 	  */
-	void onDblClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onDblClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-		}
-	void onDblClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onDblClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
 
 	void onDblClicked(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		static_cast<WidgetType*>(this)->setCallback(
 			WidgetType::getDblClickMessage(), Dispatcher(f)
 		);
 	}

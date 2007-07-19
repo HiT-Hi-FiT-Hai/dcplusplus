@@ -30,7 +30,7 @@ HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
 	SmartWin::Widget(parent),
 	autoClose(aAutoClose)
 {
-	onInitDialog(&HashProgressDlg::handleInitDialog);
+	onInitDialog(std::tr1::bind(&HashProgressDlg::handleInitDialog, this));
 }
 
 HashProgressDlg::~HashProgressDlg() {
@@ -47,7 +47,7 @@ bool HashProgressDlg::handleInitDialog() {
 
 	WidgetButtonPtr ok = subclassButton(IDOK);
 	ok->setText(TSTRING(HASH_PROGRESS_BACKGROUND));
-	ok->onClicked(&HashProgressDlg::handleOKClicked);
+	ok->onClicked(std::tr1::bind(&HashProgressDlg::handleOKClicked, this));
 
 	string tmp;
 	startTime = GET_TICK();
@@ -62,7 +62,7 @@ bool HashProgressDlg::handleInitDialog() {
 	return false;
 }
 
-void HashProgressDlg::handleOKClicked(WidgetButtonPtr) {
+void HashProgressDlg::handleOKClicked() {
 	endDialog(IDOK);
 }
 

@@ -234,7 +234,7 @@ private:
 	bool handleUsersKeyDown(int c);
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	void handleShowUsersClicked(WidgetCheckBoxPtr);
+	void handleShowUsersClicked();
 	void handleCopyNick();
 	void handleDoubleClickUsers();
 

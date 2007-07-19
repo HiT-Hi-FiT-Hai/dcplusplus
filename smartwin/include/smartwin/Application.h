@@ -30,7 +30,7 @@
 #define Application_h
 
 #include "WindowsHeaders.h"
-#include "SmartUtil.h"
+#include "../SmartUtil.h"
 #include "CommandLine.h"
 #include "BasicTypes.h"
 #include "ApplicationPlatform.h"

@@ -31,15 +31,16 @@
 
 #include "../Widget.h"
 #include "../MessageMapPolicyClasses.h"
+#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectKeyboard.h"
+#include "../aspects/AspectMouseClicks.h"
+#include "../aspects/AspectPainting.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectScrollable.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectBorder.h"
-#include "../MessageMapControl.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -61,28 +62,26 @@ class WidgetCreator;
   * volume control of a music  player which has two buttons, one for louder and the
   * other for softer.
   */
-template< class EventHandlerClass >
 class WidgetSpinner :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBorder< WidgetSpinner< EventHandlerClass > >,
-	public AspectEnabled< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectKeyboard< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectPainting< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectScrollable< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetSpinner< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetSpinner< EventHandlerClass > > >
+	public AspectBorder< WidgetSpinner >,
+	public AspectEnabled< WidgetSpinner >,
+	public AspectFocus< WidgetSpinner >,
+	public AspectKeyboard< WidgetSpinner >,
+	public AspectMouseClicks< WidgetSpinner >,
+	public AspectPainting< WidgetSpinner >,
+	public AspectRaw< WidgetSpinner >,
+	public AspectScrollable< WidgetSpinner >,
+	public AspectSizable< WidgetSpinner >,
+	public AspectVisible< WidgetSpinner >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetSpinner > MessageMapType;
 	friend class WidgetCreator< WidgetSpinner >;
 public:
 	/// Class type
-	typedef WidgetSpinner< EventHandlerClass > ThisType;
+	typedef WidgetSpinner ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -98,7 +97,7 @@ public:
 		// A spinner has no caption. Hide it.
 		using SmartWin::Seed::caption;
 	public:
-		typedef typename WidgetSpinner::ThisType WidgetType;
+		typedef WidgetSpinner::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
 		int minValue, maxValue;
@@ -165,46 +164,23 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetSpinner< EventHandlerClass >::Seed & WidgetSpinner< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, UPDOWN_CLASS );
-		d_DefaultValues.minValue = 0;
-		d_DefaultValues.maxValue = 100;
-
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
-		//TODO: initialize the values here
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetSpinner< EventHandlerClass >::Seed::Seed()
+inline WidgetSpinner::Seed::Seed()
 {
 	* this = WidgetSpinner::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-void WidgetSpinner< EventHandlerClass >::setRange( int minimum, int maximum )
+inline void WidgetSpinner::setRange( int minimum, int maximum )
 {
 	::SendMessage( this->Widget::itsHandle, UDM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
 }
 
-template< class EventHandlerClass >
-void WidgetSpinner< EventHandlerClass >::assignBuddy( Widget * buddy )
+inline void WidgetSpinner::assignBuddy( Widget * buddy )
 {
 	assert( buddy && buddy->handle() );
 	::SendMessage( this->Widget::itsHandle, UDM_SETBUDDY, reinterpret_cast< WPARAM >( buddy->handle() ), 0 );
 }
 
-template< class EventHandlerClass >
-int WidgetSpinner< EventHandlerClass >::getValue()
+inline int WidgetSpinner::getValue()
 {
 #ifdef WINCE
 	LRESULT retVal = ::SendMessage( this->Widget::itsHandle, UDM_GETPOS, 0, 0 );
@@ -219,8 +195,7 @@ int WidgetSpinner< EventHandlerClass >::getValue()
 #endif //! WINCE
 }
 
-template< class EventHandlerClass >
-int WidgetSpinner< EventHandlerClass >::setValue( int v )
+inline int WidgetSpinner::setValue( int v )
 {
 #ifdef WINCE
 	return ::SendMessage( this->Widget::itsHandle, UDM_SETPOS, 0, v );
@@ -229,21 +204,11 @@ int WidgetSpinner< EventHandlerClass >::setValue( int v )
 #endif
 }
 
-template< class EventHandlerClass >
-WidgetSpinner< EventHandlerClass >::WidgetSpinner( SmartWin::Widget * parent )
+inline WidgetSpinner::WidgetSpinner( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Spinner without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetSpinner< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	setRange( cs.minValue, cs.maxValue );
-	//TODO: use CreationalInfo parameters
 }
 
 // end namespace SmartWin

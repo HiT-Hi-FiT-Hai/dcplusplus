@@ -29,12 +29,11 @@
 #ifndef WidgetWindow_h
 #define WidgetWindow_h
 
-#include "WidgetWindowBase.h"
-#include "../aspects/AspectThreads.h"
-#include <sstream>
-#include "../SignalParams.h"
-#include "../aspects/AspectAdapter.h"
 #include "../BasicTypes.h"
+#include "../SignalParams.h"
+#include "../aspects/AspectThreads.h"
+#include "WidgetWindowBase.h"
+#include <sstream>
 
 namespace SmartWin
 {
@@ -70,18 +69,15 @@ struct WidgetWindowCreateDispatcher
   * Class is a public superclass of WidgetWindowBase and therefore can use all 
   * features of WidgetWindowBase.   
   */
-template< class EventHandlerClass >
 class WidgetWindow
-	: public WidgetWindowBase< EventHandlerClass, Policies::Normal >
+	: public WidgetWindowBase< Policies::Normal >
 {
-	typedef WidgetWindowBase< EventHandlerClass, Policies::Normal > BaseType;
-	typedef typename BaseType::MessageMapType MessageMapType;
+	typedef WidgetWindowBase< Policies::Normal > BaseType;
 	typedef WidgetWindowCreateDispatcher CreateDispatcher;
-	typedef AspectAdapter<CreateDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CreateAdapter;
 
 public:
 	/// Class type
-	typedef WidgetWindow< EventHandlerClass > ThisType;
+	typedef WidgetWindow ThisType;
 
 	/// Object type
 	typedef ThisType* ObjectType;
@@ -95,7 +91,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetWindow::ThisType WidgetType;
+		typedef WidgetWindow::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
 		HICON icon;
@@ -155,16 +151,9 @@ public:
 	  * The argument CREATESTRUCT sent into your handler is modifiable so that you 
 	  * can add/remove styles and add remove EX styles etc.       
 	  */
-	void onCreate( typename MessageMapType::itsVoidFunctionTakingSeedPointer eventHandler ) {
-		onCreate(CreateAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
-	}
-	void onCreate( typename MessageMapType::voidFunctionTakingSeedPointer eventHandler ) {
-		onCreate(CreateAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
-	}
 	void onCreate(const CreateDispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			typename MessageMapType::SignalTupleType(Message( WM_CREATE ), CreateDispatcher(f))
+		setCallback(
+			Message( WM_CREATE ), CreateDispatcher(f)
 		);
 	}
 
@@ -186,12 +175,11 @@ private:
 	SmartUtil::tstring itsRegisteredClassName;
 };
 
-template< class EventHandlerClass >
 class WidgetChildWindow
-	: public WidgetWindow< EventHandlerClass >
+	: public WidgetWindow
 {
 public:
-	typedef WidgetChildWindow<EventHandlerClass> ThisType;
+	typedef WidgetChildWindow ThisType;
 	typedef ThisType* ObjectType;
 	
 	/// Seed class
@@ -200,7 +188,7 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public WidgetWindow< EventHandlerClass >::Seed
+		: public WidgetWindow::Seed
 	{
 	public:
 		/// Fills with default parameters
@@ -224,113 +212,42 @@ public:
 	  */
 	virtual void createWindow( Seed cs = getDefaultSeed() )
 	{
-		WidgetWindow< EventHandlerClass >::createWindow( cs );
+		WidgetWindow::createWindow( cs );
 	}
 
 protected:
 	// Unlike WidgetWindow, WidgetChildWindow must have a parent!!!
-	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow< EventHandlerClass >( parent ) //Long name to satisfy devcpp
+	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow( parent ) 
 	{};
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass >
-const typename WidgetWindow< EventHandlerClass >::Seed & WidgetWindow< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
 
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
-		d_DefaultValues.background = ( HBRUSH )( COLOR_APPWORKSPACE + 1 );
-		d_DefaultValues.caption = _T( "" );
-#ifndef WINCE
-		d_DefaultValues.cursor = NULL;
-		d_DefaultValues.icon = NULL;
-#else
-		d_DefaultValues.cursor = 0;
-		d_DefaultValues.icon = 0;
-#endif
-		d_DefaultValues.menuName = _T( "" ); //TODO: does menu &"" work as good as menu NULL ?
-
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetWindow< EventHandlerClass >::Seed::Seed()
+inline WidgetWindow::Seed::Seed()
 {
 	* this = WidgetWindow::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-WidgetWindow< EventHandlerClass >::WidgetWindow( Widget * parent )
+inline WidgetWindow::WidgetWindow( Widget * parent )
 	: Widget(parent), BaseType( parent )
 {}
 
-template< class EventHandlerClass >
-WidgetWindow< EventHandlerClass >::~WidgetWindow()
+inline WidgetWindow::~WidgetWindow()
 {
 	::UnregisterClass( itsRegisteredClassName.c_str(), Application::instance().getAppHandle() );
 }
 
-
-template< class EventHandlerClass >
-void WidgetWindow< EventHandlerClass >::createInvisibleWindow( Seed cs )
+inline void WidgetWindow::createInvisibleWindow( Seed cs )
 {
 	cs.style=  cs.style & ( ~ WS_VISIBLE );
-	WidgetWindow< EventHandlerClass >::createWindow( cs );
+	WidgetWindow::createWindow( cs );
 }
 
-
-template< class EventHandlerClass >
-void WidgetWindow< EventHandlerClass >::createWindow( Seed cs )
+inline void WidgetWindow::activatePreviousInstance()
 {
-	Application::instance().generateLocalClassName( cs );
-	itsRegisteredClassName = cs.getClassName();
-
-	SMARTWIN_WNDCLASSEX ws;
-
-#ifndef WINCE
-	ws.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
-#endif //! WINCE
-	// This are window class styles, not window styles ...
-	ws.style = CS_DBLCLKS;	// Allow double click messages
-	ws.lpfnWndProc = &ThisType::wndProc;
-	ws.cbClsExtra = 0;
-	ws.cbWndExtra = 0;
-	ws.hInstance = Application::instance().getAppHandle();
-#ifdef WINCE
-	ws.hIcon = 0;
-#else
-	ws.hIcon = cs.icon;
-#endif //! WINCE
-	ws.hCursor = cs.cursor;
-	ws.hbrBackground = cs.background;
-	ws.lpszMenuName = cs.menuName.empty() ? 0 : cs.menuName.c_str();
-	ws.lpszClassName = itsRegisteredClassName.c_str();
-#ifndef WINCE
-	//TODO: fix this
-	ws.hIconSm = cs.icon;
-#endif //! WINCE
-
-	ATOM registeredClass = SmartWinRegisterClass( & ws );
-	if ( 0 == registeredClass )
-	{
-		xCeption x( _T( "WidgetWindowBase.createWindow() SmartWinRegisterClass fizzled..." ) );
-		throw x;
-	}
-	Application::instance().addLocalWindowClassToUnregister( cs );
-	Widget::create( cs );
-}
-
-template< class Parent >
-void WidgetWindow< Parent >::activatePreviousInstance()
-{
+#ifdef PORT_ME
 	int iTries = 5;
 	while ( iTries-- > 0 )
 	{
@@ -347,10 +264,10 @@ void WidgetWindow< Parent >::activatePreviousInstance()
 			::Sleep( 200 );
 		}
 	}
+#endif
 }
 
-template< class EventHandlerClass >
-const typename WidgetChildWindow< EventHandlerClass >::Seed & WidgetChildWindow< EventHandlerClass >::getDefaultSeed()
+inline const WidgetChildWindow::Seed & WidgetChildWindow::getDefaultSeed()
 {
 	static Seed d_DefaultValues;
 
@@ -359,8 +276,7 @@ const typename WidgetChildWindow< EventHandlerClass >::Seed & WidgetChildWindow<
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass >
-WidgetChildWindow< EventHandlerClass >::Seed::Seed()
+inline WidgetChildWindow::Seed::Seed()
 {
 	this->style = WS_VISIBLE | WS_CHILD;
 }

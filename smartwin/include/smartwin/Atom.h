@@ -6,7 +6,7 @@ class AtomBase {
 public:
 	AtomBase(ATOM atom_) : atom(atom_) { }
 
-	operator LPCTSTR() { return (LPCTSTR)atom; }
+	operator LPCTSTR() { return reinterpret_cast<LPCTSTR>(static_cast<size_t>(atom)); }
 	operator ATOM() { return atom; }
 	
 protected:

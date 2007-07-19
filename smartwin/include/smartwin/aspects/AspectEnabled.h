@@ -31,26 +31,9 @@
 
 #include "../SignalParams.h"
 
-#include "AspectAdapter.h"
-#include <boost/cast.hpp>
-
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-struct AspectEnableDispatcher
-{
-	typedef std::tr1::function<void (bool)> F;
-
-	AspectEnableDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(params.Msg.WParam > 0);
-		return 0;
-	}
-
-	F f;
-};
 
 /// Aspect class used by Widgets that have the possibility of changing the enabled
 /// property
@@ -62,11 +45,23 @@ struct AspectEnableDispatcher
   * enabled it cannot change its "value" or be interacted with but is normally still
   * visible.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectEnabled
 {
-	typedef AspectEnableDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<void (bool)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(params.Msg.WParam > 0);
+			return 0;
+		}
+
+		F f;
+	};
+
 
 public:
 	/// Sets the enabled property of the Widget
@@ -89,16 +84,8 @@ public:
 	  * been enabled or if it has been disabled! <br>
 	  * No parameters are passed.
 	  */
-	void onEnabled( typename MessageMapType::itsVoidFunctionTakingBool eventHandler ) {
-		onEnabled(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onEnabled( typename MessageMapType::voidFunctionTakingBool eventHandler ) {
-		onEnabled(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-
-	void onEnabled(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onEnabled(const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_ENABLE ), Dispatcher(f)
 		);
 	}
@@ -111,14 +98,14 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectEnabled< EventHandlerClass, WidgetType, MessageMapType >::setEnabled( bool enabled )
+template< class WidgetType >
+void AspectEnabled< WidgetType >::setEnabled( bool enabled )
 {
 	::EnableWindow( static_cast< WidgetType * >( this )->handle(), enabled ? TRUE : FALSE );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-bool AspectEnabled< EventHandlerClass, WidgetType, MessageMapType >::getEnabled() const
+template< class WidgetType >
+bool AspectEnabled< WidgetType >::getEnabled() const
 {
 	return ::IsWindowEnabled( static_cast< const WidgetType * >( this )->handle() ) != 0;
 }

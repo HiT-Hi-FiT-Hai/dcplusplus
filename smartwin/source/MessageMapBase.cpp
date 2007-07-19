@@ -47,7 +47,7 @@ bool MessageMapBase::tryFire( const Message & msg, HRESULT & retVal ) {
 	Message msgComparer( msg.Handle, msg.Msg, msg.WParam, msg.LParam, false );
 	CallbackCollectionType::iterator i = itsCallbacks.find(msgComparer);
 	if(i != itsCallbacks.end()) {
-		private_::SignalContent params( msg, true );
+		private_::SignalContent params( msg );
 		retVal = i->second( params );
 		if ( params.RunDefaultHandling )
 			return false;

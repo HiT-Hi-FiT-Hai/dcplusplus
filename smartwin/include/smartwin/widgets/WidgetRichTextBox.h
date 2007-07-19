@@ -44,16 +44,15 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-template< class EventHandlerClass, class TextBoxType >
+template< class TextBoxType >
 class WidgetRichTextBox;
 
-template< class EventHandlerClass >
 class RichTextBox
 {
 public:
 	enum canSetReadOnly
 	{};
-	typedef WidgetRichTextBox< EventHandlerClass, RichTextBox< EventHandlerClass > > TextBoxType;
+	typedef WidgetRichTextBox< RichTextBox > TextBoxType;
 };
 
 /// RichEdit Control class
@@ -68,15 +67,14 @@ public:
   * A good example of the difference between those Widgets is the difference between 
   * notepad ( WidgetTextBox ) and wordpad ( WidgetRichTextBox )   
   */
-template< class EventHandlerClass, class TextBoxType /*only her to get the number of template parameters right in the base class*/ >
+template< class TextBoxType = RichTextBox/*only her to get the number of template parameters right in the base class*/ >
 class WidgetRichTextBox :
-	public WidgetTextBox< EventHandlerClass, /*This is to DISABLE the OnlyEditControl thingies, Magic Enum Construct!*/RichTextBox< EventHandlerClass > >
+	public WidgetTextBox< /*This is to DISABLE the OnlyEditControl thingies, Magic Enum Construct!*/RichTextBox >
 {
-	typedef MessageMapControl< EventHandlerClass, typename TextBoxType::TextBoxType > MessageMapType;
 	friend class WidgetCreator< WidgetRichTextBox >;
 public:
 	/// Class type
-	typedef WidgetRichTextBox< EventHandlerClass, TextBoxType > ThisType;
+	typedef WidgetRichTextBox< TextBoxType > ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -137,8 +135,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class TextBoxType >
-const typename WidgetRichTextBox< EventHandlerClass, TextBoxType >::Seed & WidgetRichTextBox< EventHandlerClass, TextBoxType >::getDefaultSeed()
+template< class TextBoxType >
+const typename WidgetRichTextBox< TextBoxType >::Seed & WidgetRichTextBox< TextBoxType >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -156,14 +154,14 @@ const typename WidgetRichTextBox< EventHandlerClass, TextBoxType >::Seed & Widge
 	return d_DefaultValues;
 }
 
-template< class EventHandlerClass, class TextBoxType >
-WidgetRichTextBox< EventHandlerClass, TextBoxType >::Seed::Seed()
+template< class TextBoxType >
+WidgetRichTextBox< TextBoxType >::Seed::Seed()
 {
 	* this = WidgetRichTextBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass, class TextBoxType >
-void WidgetRichTextBox< EventHandlerClass, TextBoxType >::create( const Seed & cs )
+template< class TextBoxType >
+void WidgetRichTextBox< TextBoxType >::create( const Seed & cs )
 {
 	// Need to load up RichEdit library!
 	static LibraryLoader richEditLibrary( _T( "riched20.dll" ) );
@@ -184,17 +182,17 @@ void WidgetRichTextBox< EventHandlerClass, TextBoxType >::create( const Seed & c
 	setScrollBarVertically( cs.scrollBarVerticallyFlag );
 }
 
-template< class EventHandlerClass, class TextBoxType >
-WidgetRichTextBox< EventHandlerClass, TextBoxType >::WidgetRichTextBox( SmartWin::Widget * parent )
-	: WidgetTextBox< EventHandlerClass, TextBoxType >( parent )
+template< class TextBoxType >
+WidgetRichTextBox< TextBoxType >::WidgetRichTextBox( SmartWin::Widget * parent )
+	: WidgetTextBox< TextBoxType >( parent )
 	, Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class EventHandlerClass, class TextBoxType >
-void WidgetRichTextBox< EventHandlerClass, TextBoxType >::setBackgroundColor( COLORREF color )
+template< class TextBoxType >
+void WidgetRichTextBox< TextBoxType >::setBackgroundColor( COLORREF color )
 {
 	::SendMessage( this->Widget::itsHandle, EM_SETBKGNDCOLOR, 0, static_cast< LPARAM >( color ) );
 }

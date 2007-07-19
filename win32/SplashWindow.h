@@ -1,7 +1,7 @@
 #ifndef SPLASHWINDOW_H_
 #define SPLASHWINDOW_H_
 
-class SplashWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, SplashWindow>  {
+class SplashWindow : public SmartWin::WidgetFactory<SmartWin::WidgetWindow>  {
 public:
 	SplashWindow();
 	

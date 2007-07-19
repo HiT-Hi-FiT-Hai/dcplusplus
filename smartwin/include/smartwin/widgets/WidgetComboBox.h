@@ -29,27 +29,24 @@
 #ifndef WidgetComboBox_h
 #define WidgetComboBox_h
 
-#include <commctrl.h>
-#include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectSelection.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectVisible.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectBackgroundColor.h"
+#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectDblClickable.h"
+#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectFont.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectThreads.h"
-#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSelection.h"
+#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
+#include "../aspects/AspectThreads.h"
+#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
-#include "SmartUtil.h"
 
 namespace SmartWin
 {
@@ -67,34 +64,32 @@ class WidgetCreator;
   * A ComboBox is a drop down "curtain" making it possible for the user to choose one
   * value at a time from a list of values.
   */
-template< class EventHandlerClass >
 class WidgetComboBox :
 	public MessageMapPolicy< Policies::Subclassed >,
 	
 	// Aspects
-	public AspectBackgroundColor< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectBorder< WidgetComboBox< EventHandlerClass > >,
-	public AspectClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectDblClickable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectEnabled< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectFocus< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectFont< WidgetComboBox< EventHandlerClass > >,
-	public AspectKeyboard< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectPainting< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectRaw< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectSelection< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectSizable< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectText< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectThreads< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >,
-	public AspectVisible< EventHandlerClass, WidgetComboBox< EventHandlerClass >, MessageMapControl< EventHandlerClass, WidgetComboBox< EventHandlerClass > > >
+	public AspectBackgroundColor< WidgetComboBox >,
+	public AspectBorder< WidgetComboBox >,
+	public AspectClickable< WidgetComboBox >,
+	public AspectDblClickable< WidgetComboBox >,
+	public AspectEnabled< WidgetComboBox >,
+	public AspectFocus< WidgetComboBox >,
+	public AspectFont< WidgetComboBox >,
+	public AspectKeyboard< WidgetComboBox >,
+	public AspectMouseClicks< WidgetComboBox >,
+	public AspectPainting< WidgetComboBox >,
+	public AspectRaw< WidgetComboBox >,
+	public AspectSelection< WidgetComboBox >,
+	public AspectSizable< WidgetComboBox >,
+	public AspectText< WidgetComboBox >,
+	public AspectThreads< WidgetComboBox >,
+	public AspectVisible< WidgetComboBox >
 {
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	typedef MessageMapControl< EventHandlerClass, WidgetComboBox > MessageMapType;
 	friend class WidgetCreator< WidgetComboBox >;
 public:
 	/// Class type
-	typedef WidgetComboBox< EventHandlerClass > ThisType;
+	typedef WidgetComboBox ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -108,7 +103,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetComboBox::ThisType WidgetType;
+		typedef WidgetComboBox::ThisType WidgetType;
 
 		FontPtr font;
 
@@ -204,72 +199,47 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass >
-const typename WidgetComboBox< EventHandlerClass >::Seed & WidgetComboBox< EventHandlerClass >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		Application::instance().setSystemClassName( d_DefaultValues, WC_COMBOBOX );
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_VSCROLL;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_DefaultValues.extended = true;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class EventHandlerClass >
-WidgetComboBox< EventHandlerClass >::Seed::Seed()
+inline WidgetComboBox::Seed::Seed()
 {
 	* this = WidgetComboBox::getDefaultSeed();
 }
 
-template< class EventHandlerClass >
-Message & WidgetComboBox< EventHandlerClass >::getSelectionChangedMessage()
+inline Message & WidgetComboBox::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_COMMAND, CBN_SELENDOK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetComboBox< EventHandlerClass >::getClickMessage()
+inline Message & WidgetComboBox::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, CBN_DROPDOWN );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetComboBox< EventHandlerClass >::getDblClickMessage()
+inline Message & WidgetComboBox::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, CBN_DBLCLK );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-Message & WidgetComboBox< EventHandlerClass >::getBackgroundColorMessage()
+inline Message & WidgetComboBox::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORLISTBOX );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-int WidgetComboBox< EventHandlerClass >::getSelectedIndex() const
+inline int WidgetComboBox::getSelectedIndex() const
 {
 	int retVal = ComboBox_GetCurSel( this->Widget::itsHandle );
 	return retVal;
 }
 
-template< class EventHandlerClass >
-void WidgetComboBox< EventHandlerClass >::setSelectedIndex( int idx )
+inline void WidgetComboBox::setSelectedIndex( int idx )
 {
 	ComboBox_SetCurSel( this->Widget::itsHandle, idx );
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetComboBox< EventHandlerClass >::getSelectedValue()
+inline SmartUtil::tstring WidgetComboBox::getSelectedValue()
 {
 	int txtLength = ::GetWindowTextLength( this->Widget::itsHandle );
 	boost::scoped_array< TCHAR >
@@ -279,20 +249,17 @@ SmartUtil::tstring WidgetComboBox< EventHandlerClass >::getSelectedValue()
 	return retVal;
 }
 
-template< class EventHandlerClass >
-void WidgetComboBox< EventHandlerClass >::removeAllItems()
+inline void WidgetComboBox::removeAllItems()
 {
 	ComboBox_ResetContent( this->Widget::itsHandle );
 }
 
-template< class EventHandlerClass >
-void WidgetComboBox< EventHandlerClass >::removeItem( int index )
+inline void WidgetComboBox::removeItem( int index )
 {
 	ComboBox_DeleteString( this->Widget::itsHandle, index );
 }
 
-template< class EventHandlerClass >
-int WidgetComboBox< EventHandlerClass >::addValue( const SmartUtil::tstring & val )
+inline int WidgetComboBox::addValue( const SmartUtil::tstring & val )
 {
 	int newIdx = ComboBox_AddString( this->Widget::itsHandle, ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
@@ -303,8 +270,7 @@ int WidgetComboBox< EventHandlerClass >::addValue( const SmartUtil::tstring & va
 	return newIdx;
 }
 
-template< class EventHandlerClass >
-int WidgetComboBox< EventHandlerClass >::insertValue( int pos, const SmartUtil::tstring & val )
+inline int WidgetComboBox::insertValue( int pos, const SmartUtil::tstring & val )
 {
 	int newIdx = ComboBox_InsertString( this->Widget::itsHandle, pos, ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
@@ -316,14 +282,12 @@ int WidgetComboBox< EventHandlerClass >::insertValue( int pos, const SmartUtil::
 }
 
 
-template< class EventHandlerClass >
-int WidgetComboBox< EventHandlerClass >::getCount()
+inline int WidgetComboBox::getCount()
 {
 	return ComboBox_GetCount( this->Widget::itsHandle ); // Number of items present.
 }
 
-template< class EventHandlerClass >
-SmartUtil::tstring WidgetComboBox< EventHandlerClass >::getValue( int index )
+inline SmartUtil::tstring WidgetComboBox::getValue( int index )
 {
 	// Uses CB_GETLBTEXTLEN and CB_GETLBTEXT
 	int txtLength = ComboBox_GetLBTextLen( this->Widget::itsHandle, index );
@@ -334,23 +298,11 @@ SmartUtil::tstring WidgetComboBox< EventHandlerClass >::getValue( int index )
 	return retVal;
 }
 
-template< class EventHandlerClass >
-WidgetComboBox< EventHandlerClass >::WidgetComboBox( SmartWin::Widget * parent )
+inline WidgetComboBox::WidgetComboBox( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 {
 	// Can't have a ComboBox without a parent...
 	xAssert( parent, _T( "Cant have a WidgetComboBox without a parent..." ) );
-}
-
-template< class EventHandlerClass >
-void WidgetComboBox< EventHandlerClass >::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
-	PolicyType::create(cs);
-	setFont( cs.font );
-	if(cs.extended) {
-		::SendMessage(this->handle(), CB_SETEXTENDEDUI, TRUE, 0);
-	}
 }
 
 // end namespace SmartWin

@@ -32,12 +32,10 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "../WindowsHeaders.h"
-#include "../MessageMapControl.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectVisible.h"
-#include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectRaw.h"
 #include "../xCeption.h"
 #include "../CanvasClasses.h"
@@ -141,24 +139,20 @@ protected:
   * void paintSplitter( unsigned width, unsigned ySize, HWND handle ); <br>
   * Look at the WidgetSplitter solution for a quick example.
   */
-template< typename EventHandlerClass, typename Painter >
+template< typename Painter = SplitterThinPaint >
 class WidgetSplitter :
 	public MessageMapPolicy<Policies::Normal>,
 	public Painter,
 
 	// Aspects
-	public AspectSizable< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter  > > >,
-	public AspectVisible< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter  > > >,
-	public AspectRaw< EventHandlerClass, WidgetSplitter< EventHandlerClass, Painter >,
-		MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter  > > >
+	public AspectSizable< WidgetSplitter< Painter > >,
+	public AspectVisible< WidgetSplitter< Painter > >,
+	public AspectRaw< WidgetSplitter< Painter > >
 {
-	typedef MessageMapControl< EventHandlerClass, WidgetSplitter<EventHandlerClass, Painter > > MessageMapType;
 	friend class WidgetCreator< WidgetSplitter >;
 public:
 	/// Class type
-	typedef WidgetSplitter< EventHandlerClass, Painter > ThisType;
+	typedef WidgetSplitter< Painter > ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -239,8 +233,8 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< typename EventHandlerClass, typename Painter >
-const typename WidgetSplitter< EventHandlerClass, Painter >::Seed & WidgetSplitter< EventHandlerClass, Painter >::getDefaultSeed()
+template< typename Painter >
+const typename WidgetSplitter< Painter >::Seed & WidgetSplitter< Painter >::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -279,34 +273,34 @@ const typename WidgetSplitter< EventHandlerClass, Painter >::Seed & WidgetSplitt
 	return d_DefaultValues;
 }
 
-template< typename EventHandlerClass, typename Painter >
-WidgetSplitter< EventHandlerClass, Painter >::Seed::Seed()
+template< typename Painter >
+WidgetSplitter< Painter >::Seed::Seed()
 {
 	* this = WidgetSplitter::getDefaultSeed();
 }
 
-template< typename EventHandlerClass, typename Painter >
-unsigned WidgetSplitter< EventHandlerClass, Painter >::getWidth()
+template< typename Painter >
+unsigned WidgetSplitter< Painter >::getWidth()
 {
 	return itsWidth;
 }
 
-template< typename EventHandlerClass, typename Painter >
-void WidgetSplitter< EventHandlerClass, Painter >::setWidth( unsigned newWidth )
+template< typename Painter >
+void WidgetSplitter< Painter >::setWidth( unsigned newWidth )
 {
 	itsWidth = newWidth;
 	//::InvalidateRect( itsHandle, NULL, TRUE );
 	//::UpdateWindow( itsHandle );
 }
 
-template< typename EventHandlerClass, typename Painter >
-unsigned WidgetSplitter< EventHandlerClass, Painter >::getXPos()
+template< typename Painter >
+unsigned WidgetSplitter< Painter >::getXPos()
 {
 	return itsXPos;
 }
 
-template< typename EventHandlerClass, typename Painter >
-WidgetSplitter< EventHandlerClass, Painter >::WidgetSplitter( SmartWin::Widget * parent )
+template< typename Painter >
+WidgetSplitter< Painter >::WidgetSplitter( SmartWin::Widget * parent )
 	: Widget( parent, 0 )
 	, itsWidth( 8 )
 {
@@ -314,8 +308,8 @@ WidgetSplitter< EventHandlerClass, Painter >::WidgetSplitter( SmartWin::Widget *
 	xAssert( parent, _T( "Can't have a Splitter without a parent..." ) );
 }
 
-template< typename EventHandlerClass, typename Painter >
-void WidgetSplitter< EventHandlerClass, Painter >::create( const Seed & cs )
+template< typename Painter >
+void WidgetSplitter< Painter >::create( const Seed & cs )
 {
 	// TODO: use CreationalInfo parameters
 	if ( cs.style & WS_CHILD )
@@ -337,8 +331,8 @@ void WidgetSplitter< EventHandlerClass, Painter >::create( const Seed & cs )
 	}
 }
 #ifdef PORT_ME
-template< typename EventHandlerClass, typename Painter >
-LRESULT WidgetSplitter< EventHandlerClass, Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+template< typename Painter >
+LRESULT WidgetSplitter< Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	switch ( msg )
 	{

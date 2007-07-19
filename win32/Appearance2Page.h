@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class Appearance2Page : public WidgetFactory<SmartWin::WidgetDialog, Appearance2Page>, public PropPage
+class Appearance2Page : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	Appearance2Page(SmartWin::Widget* parent);
@@ -51,12 +51,12 @@ private:
 	HFONT fontObj;
 	LOGFONT font;
 
-	HRESULT handleExampleColor(WidgetStaticPtr, LPARAM /*lParam*/, WPARAM wParam);
-	void handleBackgroundClicked(WidgetButtonPtr);
-	void handleTextClicked(WidgetButtonPtr);
-	void handleULClicked(WidgetButtonPtr);
-	void handleDLClicked(WidgetButtonPtr);
-	void handleBrowseClicked(WidgetButtonPtr);
+	HRESULT handleExampleColor(WPARAM wParam, LPARAM lParam);
+	void handleBackgroundClicked();
+	void handleTextClicked();
+	void handleULClicked();
+	void handleDLClicked();
+	void handleBrowseClicked();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_APPEARANCE_2_PAGE_H)

@@ -46,7 +46,7 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "Keep it coming!";
 
 AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::Widget(parent) {
-	onInitDialog(&AboutDlg::handleInitDialog);
+	onInitDialog(std::tr1::bind(&AboutDlg::handleInitDialog, this));
 	onSpeaker(std::tr1::bind(&AboutDlg::handleSpeaker, this, _1, _2));
 }
 
@@ -65,7 +65,7 @@ bool AboutDlg::handleInitDialog() {
 	}
 	setItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
 
-	subclassButton(IDOK)->onClicked(boost::bind(&AboutDlg::endDialog, this, IDOK));
+	subclassButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
 
 #ifdef PORT_ME
 	CenterWindow(GetParent());

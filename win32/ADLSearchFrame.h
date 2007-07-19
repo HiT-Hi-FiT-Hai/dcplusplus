@@ -65,15 +65,15 @@ private:
 	WidgetButtonPtr help;
 	WidgetMenuPtr contextMenu;
 	
-	void handleAdd(WidgetButtonPtr);
-	void handleRemove(WidgetButtonPtr);
-	void handleProperties(WidgetButtonPtr);
-	void handleUp(WidgetButtonPtr);
-	void handleDown(WidgetButtonPtr);
-	void handleHelp(WidgetButtonPtr);
+	void handleAdd();
+	void handleRemove();
+	void handleProperties();
+	void handleUp();
+	void handleDown();
+	void handleHelp();
 //	void handleCheckBox(WidgetButtonPtr);
 
-	void popupNew(WidgetMenuPtr, unsigned);
+	void popupNew();
 
 	void LoadAll();
 	void UpdateSearch(int index, BOOL doDelete);

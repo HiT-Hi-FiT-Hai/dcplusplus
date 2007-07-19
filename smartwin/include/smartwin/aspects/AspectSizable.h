@@ -32,39 +32,11 @@
 #include "../SignalParams.h"
 #include "../Place.h"
 #include "AspectGetParent.h"
-#include "AspectAdapter.h"
 #include <functional>
-#include <boost/cast.hpp>
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-struct AspectSizeDispatcher {
-	typedef std::tr1::function<void (const WidgetSizedEventResult & )> F;
-
-	AspectSizeDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
-		return 0;
-	}
-
-	F f;
-};
-
-struct AspectMoveDispatcher {
-	typedef std::tr1::function<void (const Point & )> F;
-
-	AspectMoveDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) ));
-		return 0;
-	}
-
-	F f;
-};
-
 
 /// \ingroup AspectClasses
 /// \ingroup WidgetLayout
@@ -84,13 +56,34 @@ struct AspectMoveDispatcher {
   * In addition all bounding Rectangles dealt with through this class are giving
   * their down right coordinates in SIZES and not in POSITIONS!
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectSizable
 {
-	typedef AspectSizeDispatcher SizeDispatcher;
-	typedef AspectAdapter<SizeDispatcher::F, EventHandlerClass, MessageMapType::IsControl> SizeAdapter;
-	typedef AspectMoveDispatcher MoveDispatcher;
-	typedef AspectAdapter<MoveDispatcher::F, EventHandlerClass, MessageMapType::IsControl> MoveAdapter;
+	struct SizeDispatcher {
+		typedef std::tr1::function<void (const WidgetSizedEventResult & )> F;
+
+		SizeDispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
+			return 0;
+		}
+
+		F f;
+	};
+
+	struct MoveDispatcher {
+		typedef std::tr1::function<void (const Point & )> F;
+
+		MoveDispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) ));
+			return 0;
+		}
+
+		F f;
+	};
 public:
 	/// Sets the new size and position of the window
 	/** The input parameter Rectangle defines the new size (and position) of the
@@ -268,15 +261,8 @@ public:
 	  * parameter passed is WidgetSizedEventResult which contains the new size
 	  * information.
 	  */
-	void onSized( typename MessageMapType::itsVoidFunctionTakingWindowSizedEventResult eventHandler ) {
-		onSized(SizeAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onSized( typename MessageMapType::voidFunctionTakingWindowSizedEventResult eventHandler ) {
-		onSized(SizeAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onSized(const SizeDispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onSized(const typename SizeDispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( WM_SIZE ), SizeDispatcher(f)
 		);
 	}
@@ -286,18 +272,9 @@ public:
 	/** This event will be raised when the Widget is being moved. The parameter
 	  * passed is Point which is the new position of the Widget
 	  */
-	void onMoved( typename MessageMapType::itsVoidFunctionTakingPoint eventHandler ) {
-		onMoved(MoveAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMoved( typename MessageMapType::voidFunctionTakingPoint eventHandler ) {
-		onMoved(MoveAdapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMoved(const SizeDispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			typename MessageMapType::SignalTupleType(
-				Message( WM_MOVE ), MoveDispatcher(f)
-			)
+	void onMoved(const typename MoveDispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
+			Message( WM_MOVE ), MoveDispatcher(f)
 		);
 	}
 
@@ -309,8 +286,8 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setBounds( const Rectangle & rect, bool updateWindow )
+template< class WidgetType >
+void AspectSizable< WidgetType >::setBounds( const Rectangle & rect, bool updateWindow )
 {
 	if ( ::MoveWindow( static_cast< WidgetType * >( this )->handle(),
 		rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, updateWindow ? TRUE : FALSE ) == 0 )
@@ -320,8 +297,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setBounds( 
 	}
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setBounds( const Point & newPos, const Point & newSize, bool updateWindow )
+template< class WidgetType >
+void AspectSizable< WidgetType >::setBounds( const Point & newPos, const Point & newSize, bool updateWindow )
 {
 	if ( ::MoveWindow( static_cast< WidgetType * >( this )->handle(), newPos.x, newPos.y, newSize.x, newSize.y, updateWindow ? TRUE : FALSE ) == 0 )
 	{
@@ -330,8 +307,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setBounds( 
 	}
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setBounds( int x, int y, int width, int height, bool updateWindow )
+template< class WidgetType >
+void AspectSizable< WidgetType >::setBounds( int x, int y, int width, int height, bool updateWindow )
 {
 	if ( ::MoveWindow( static_cast< WidgetType * >( this )->handle(), x, y, width, height, updateWindow ? TRUE : FALSE ) == 0 )
 	{
@@ -340,8 +317,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setBounds( 
 	}
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setSizeAsCol( const Rectangle & rect, int rows, int rownum,
+template< class WidgetType >
+void AspectSizable< WidgetType >::setSizeAsCol( const Rectangle & rect, int rows, int rownum,
 	int border, bool updateWindow )
 {
 	int totBorder = border * ( rows + 1 ); // All borders together determine
@@ -354,8 +331,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setSizeAsCo
 					rect.size.x, ySize, updateWindow ? TRUE : FALSE );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setSizeAsRow( const Rectangle & rect, int cols, int colnum,
+template< class WidgetType >
+void AspectSizable< WidgetType >::setSizeAsRow( const Rectangle & rect, int cols, int colnum,
 	int border, bool updateWindow )
 {
 	int totBorder = border * ( cols + 1 );
@@ -366,8 +343,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setSizeAsRo
 	::MoveWindow( static_cast< WidgetType * >( this )->handle(), xPos, rect.pos.y, xSize, rect.size.y, updateWindow ? TRUE : FALSE );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setSizeAsGridPerPlace( SmartWin::Place & bound, int rows, int cols )
+template< class WidgetType >
+void AspectSizable< WidgetType >::setSizeAsGridPerPlace( SmartWin::Place & bound, int rows, int cols )
 {
 	SmartWin::Rectangle posSize;
 	bound.sizeOfCell( rows, cols, posSize.size ); // Calculate the desired size.
@@ -376,8 +353,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setSizeAsGr
 	setBounds( posSize ); // Reposition with a new size.
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setPositionPerPlace( SmartWin::Place & bound )
+template< class WidgetType >
+void AspectSizable< WidgetType >::setPositionPerPlace( SmartWin::Place & bound )
 {
 	SmartWin::Rectangle posSize( getSize() ); // Get the current size
 	bound.positionToRight( posSize ); // pos_size.pos= Current place position,
@@ -385,8 +362,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::setPosition
 	setBounds( posSize ); // Reposition with the same size.
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >
+template< class WidgetType >
+void AspectSizable< WidgetType >
 ::setSizePerTextPerPlace( SmartWin::Place & bound, const SmartUtil::tstring & text,
 						  int extraX, int extraY )
 {
@@ -401,16 +378,16 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >
 	setBounds( posSize ); // Reposition with the calculated size.
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getDesktopSize()
+template< class WidgetType >
+Point AspectSizable< WidgetType >::getDesktopSize()
 {
 	RECT rc;
 	::GetWindowRect( ::GetDesktopWindow(), & rc );
 	return Point( rc.right - rc.left, rc.bottom - rc.top );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-Rectangle AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getBounds( bool adjustForParent ) const
+template< class WidgetType >
+Rectangle AspectSizable< WidgetType >::getBounds( bool adjustForParent ) const
 {
 	int width, height;
 	RECT rc;
@@ -433,23 +410,23 @@ Rectangle AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getBou
 	return Rectangle( pt.x, pt.y, width, height );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getSize() const
+template< class WidgetType >
+Point AspectSizable< WidgetType >::getSize() const
 {
   Rectangle rc = this->getBounds();
 	return Point( rc.size.x, rc.size.y );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getPosition() const
+template< class WidgetType >
+Point AspectSizable< WidgetType >::getPosition() const
 {
 	Rectangle rc = this->getBounds();
 	return Point( rc.pos.x, rc.pos.y );
 }
 
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getScreenPosition() const
+template< class WidgetType >
+Point AspectSizable< WidgetType >::getScreenPosition() const
 {
 	RECT rc;
 	::GetWindowRect( const_cast < WidgetType * >( static_cast< const WidgetType * >( this ) )->handle(), & rc );
@@ -458,16 +435,16 @@ Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getScreenP
 
 
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::getClientAreaSize() const
+template< class WidgetType >
+Point AspectSizable< WidgetType >::getClientAreaSize() const
 {
 	RECT rc;
 	::GetClientRect( const_cast < WidgetType * >( static_cast< const WidgetType * >( this ) )->handle(), & rc );
 	return Point( rc.right, rc.bottom );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >
+template< class WidgetType >
+Point AspectSizable< WidgetType >
 ::getTextSize( const SmartUtil::tstring & text )
 {
 	// Some win32 api code to determine the actual size of the string
@@ -488,8 +465,8 @@ Point AspectSizable< EventHandlerClass, WidgetType, MessageMapType >
 	return( Point( wRect.right, wRect.bottom ) );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::maximize()
+template< class WidgetType >
+void AspectSizable< WidgetType >::maximize()
 {
 	// Magic Enum construct!!
 	// If you get a compile time error in the next line you are trying to maximize
@@ -502,8 +479,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::maximize()
 	::ShowWindow( static_cast< WidgetType * >( this )->handle(), SW_SHOWMAXIMIZED );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::minimize()
+template< class WidgetType >
+void AspectSizable< WidgetType >::minimize()
 {
 	// Magic Enum construct!!
 	// If you get a compile time error in the next line you are trying to minimize
@@ -516,8 +493,8 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::minimize()
 	::ShowWindow( static_cast< WidgetType * >( this )->handle(), SW_MINIMIZE );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::restore()
+template< class WidgetType >
+void AspectSizable< WidgetType >::restore()
 {
 	// Magic Enum construct!!
 	// If you get a compile time error in the next line you are trying to restore
@@ -530,14 +507,14 @@ void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::restore()
 	::ShowWindow( static_cast< WidgetType * >( this )->handle(), SW_RESTORE );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::bringToFront()
+template< class WidgetType >
+void AspectSizable< WidgetType >::bringToFront()
 {
 	::SetWindowPos( static_cast< WidgetType * >( this )->handle(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectSizable< EventHandlerClass, WidgetType, MessageMapType >::bringToBottom()
+template< class WidgetType >
+void AspectSizable< WidgetType >::bringToBottom()
 {
 	::SetWindowPos( static_cast< WidgetType * >( this )->handle(), HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }

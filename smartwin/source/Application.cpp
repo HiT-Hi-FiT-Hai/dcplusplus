@@ -329,7 +329,7 @@ bool Application::handleCommand(const Message& msg, HANDLE handler) {
 	Message msgComparer( msg.Handle, msg.Msg, msg.WParam, msg.LParam, false );
 	CommandMap::iterator i = commands.find(msgComparer);
 	if(i != commands.end()) {
-		private_::SignalContent params( msg, true );
+		private_::SignalContent params( msg );
 		i->second.first( params );
 		if ( params.RunDefaultHandling )
 			return false;

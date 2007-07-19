@@ -63,7 +63,7 @@ TransferView::TransferView(SmartWin::Widget* parent) :
 		transfers->setSortColumn(COLUMN_USER);
 	}
 	
-	onSized(&TransferView::handleSized);
+	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
 	onRaw(std::tr1::bind(&TransferView::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
@@ -103,13 +103,13 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	appendUserItems(menu);
 	menu->appendSeparatorItem();
 	
-	menu->appendItem(IDC_FORCE, TSTRING(FORCE_ATTEMPT), &TransferView::handleForce);
+	menu->appendItem(IDC_FORCE, TSTRING(FORCE_ATTEMPT), std::tr1::bind(&TransferView::handleForce, this));
 	if(ii->download) {
-		menu->appendItem(IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES), &TransferView::handleSearchAlternates);
+		menu->appendItem(IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES), std::tr1::bind(&TransferView::handleSearchAlternates, this));
 	}
-	menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), &TransferView::handleCopyNick);
+	menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), std::tr1::bind(&TransferView::handleCopyNick, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_REMOVE, TSTRING(CLOSE_CONNECTION), &TransferView::handleRemove);
+	menu->appendItem(IDC_REMOVE, TSTRING(CLOSE_CONNECTION), std::tr1::bind(&TransferView::handleRemove, this));
 	menu->setDefaultItem(IDC_PRIVATEMESSAGE);
 	return menu;
 }
@@ -136,7 +136,7 @@ HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
-void TransferView::handleRemove(WidgetMenuPtr, unsigned) {
+void TransferView::handleRemove() {
 	transfers->forEachSelected(&ItemInfo::disconnect);
 }
 
@@ -162,7 +162,7 @@ void TransferView::runUserCommand(const UserCommand& uc) {
 	}
 }
 
-void TransferView::handleForce(WidgetMenuPtr, unsigned id) {
+void TransferView::handleForce() {
 	int i = -1;
 	while( (i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
 		transfers->setCellText(i, COLUMN_STATUS, TSTRING(CONNECTING_FORCED));
@@ -174,7 +174,7 @@ void TransferView::ItemInfo::removeAll() {
 	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 }
 
-void TransferView::handleCopyNick(WidgetMenuPtr, unsigned id) {
+void TransferView::handleCopyNick() {
 	int i = -1;
 
 	/// @todo Fix when more items are selected
@@ -371,7 +371,7 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-void TransferView::handleSearchAlternates(WidgetMenuPtr, unsigned) {
+void TransferView::handleSearchAlternates() {
 	int i = transfers->getNextItem(-1, LVNI_SELECTED);
 
 	if(i != -1) {

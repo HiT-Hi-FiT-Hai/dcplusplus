@@ -31,8 +31,6 @@
 
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
-#include <boost/cast.hpp>
 
 namespace SmartWin
 {
@@ -44,11 +42,10 @@ namespace SmartWin
   * AspectClickable through inheritance. When you click a Widget which realizes this
   * Aspect the onClicked event will be raised.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectClickable
 {
 	typedef AspectVoidVoidDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 
 public:
 	/// \ingroup EventHandlersAspectClickable
@@ -58,16 +55,8 @@ public:
 	  * pressing the button and releasing it, for another Widget it might be
 	  * something else. No parameters are passed.
 	  */
-	void onClicked( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onClicked( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onClicked(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-
-	void onClicked(const Dispatcher::F& f) {
-		MessageMapBase* ptrThis = boost::polymorphic_cast< MessageMapBase* >( this );
-		ptrThis->setCallback(
+	void onClicked(const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			WidgetType::getClickMessage(), Dispatcher(f)
 		);
 	}
@@ -76,7 +65,6 @@ protected:
 	virtual ~AspectClickable()
 	{}
 };
-
 
 // end namespace SmartWin
 }

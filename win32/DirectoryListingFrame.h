@@ -184,24 +184,24 @@ private:
 	void addTargets(const WidgetMenuPtr& menu, ItemInfo* ii = 0);
 	void addUserCommands(const WidgetMenuPtr& menu);
 	
-	void handleFind(WidgetButtonPtr);
-	void handleFindNext(WidgetButtonPtr);
-	void handleListDiff(WidgetButtonPtr);
-	void handleMatchQueue(WidgetButtonPtr);
+	void handleFind();
+	void handleFindNext();
+	void handleListDiff();
+	void handleMatchQueue();
 	
-	void handleDownload(WidgetMenuPtr, unsigned id);
-	void handleViewAsText(WidgetMenuPtr, unsigned id);
-	void handleSearchAlternates(WidgetMenuPtr, unsigned id);
-	void handleLookupBitzi(WidgetMenuPtr, unsigned id);
-	void handleCopyMagnet(WidgetMenuPtr, unsigned id);
-	void handleGoToDirectory(WidgetMenuPtr, unsigned id);
-	void handleDownloadLastDir(WidgetMenuPtr, unsigned id);
-	void handleDownloadTarget(WidgetMenuPtr, unsigned id);
-	void handleDownloadFavorite(WidgetMenuPtr, unsigned id);
-	void handleDownloadBrowse(WidgetMenuPtr, unsigned id);
+	void handleDownload();
+	void handleViewAsText();
+	void handleSearchAlternates();
+	void handleLookupBitzi();
+	void handleCopyMagnet();
+	void handleGoToDirectory();
+	void handleDownloadLastDir(unsigned id);
+	void handleDownloadTarget(unsigned id);
+	void handleDownloadFavorite(unsigned id);
+	void handleDownloadBrowse();
 	
 	void handleDoubleClickFiles();
-	void handleSelectionChanged(WidgetTreeViewPtr);
+	void handleSelectionChanged();
 	
 	void download(const string& aDir);
 	void download(ItemInfo* ii, const string& aDir, bool view = false);

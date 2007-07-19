@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class AppearancePage : public WidgetFactory<SmartWin::WidgetDialog, AppearancePage>, public PropPage
+class AppearancePage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	AppearancePage(SmartWin::Widget* parent);
@@ -45,7 +45,7 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-	void handleBrowse(WidgetButtonPtr);
+	void handleBrowse();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_APPEARANCE_PAGE_H)

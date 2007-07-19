@@ -142,7 +142,7 @@ HRESULT UsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-HRESULT UsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
+HRESULT UsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if (reinterpret_cast<HWND>(wParam) == users->handle() && users->hasSelection()) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
@@ -153,8 +153,8 @@ HRESULT UsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 		WidgetMenuPtr menu = createMenu(true);
 		appendUserItems(menu);
 		menu->appendSeparatorItem();
-		menu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), &UsersFrame::handleProperties);
-		menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), &UsersFrame::handleRemove);
+		menu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&UsersFrame::handleProperties, this));
+		menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&UsersFrame::handleRemove, this));
 		
 		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
@@ -163,11 +163,11 @@ HRESULT UsersFrame::handleContextMenu(LPARAM lParam, WPARAM wParam) {
 	return FALSE;
 }
 
-void UsersFrame::handleRemove(WidgetMenuPtr, unsigned) {
+void UsersFrame::handleRemove() {
 	users->forEachSelected(&UsersFrame::UserInfo::remove);
 }
 
-void UsersFrame::handleProperties(WidgetMenuPtr, unsigned) {
+void UsersFrame::handleProperties() {
 	if(users->getSelectedCount() == 1) {
 		int i = users->getSelectedIndex();
 		UserInfo* ui = users->getItemData(i);

@@ -37,6 +37,7 @@
 #include "widgets/WidgetSplitter.h"
 #include "widgets/WidgetToolbar.h"
 #include "widgets/WidgetCoolbar.h"
+#include "WidgetCreator.h"
 
 namespace SmartWin
 {
@@ -46,46 +47,48 @@ namespace SmartWin
 /** Desktop version dependant functions which does not exist in Windows CE version of
   * Windows API will be here
   */
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-class WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, SmartWinDesktop >
-	: public ContainerWidgetType< EventHandlerClass >
+template< typename ContainerWidgetType >
+class WidgetFactoryPlatformImplementation< ContainerWidgetType,  SmartWinDesktop >
+	: public ContainerWidgetType
 {
 public:
 	/// RichEditBox class type.
-	typedef SmartWin::WidgetRichTextBox< EventHandlerClass, RichTextBox< EventHandlerClass > > WidgetRichTextBox;
+	typedef SmartWin::WidgetRichTextBox<> WidgetRichTextBox;
 
 	/// RichEditBox object type.
 	typedef typename WidgetRichTextBox::ObjectType WidgetRichTextBoxPtr;
 
+#ifdef PORT_ME
 	/// ExtendedMenu class type.
 	typedef SmartWin::WidgetMenuExtended< EventHandlerClass > WidgetMenuExtended;
 
 	/// ExtendedMenu object type.
 	typedef typename WidgetMenuExtended::ObjectType WidgetMenuExtendedPtr;
-
+#endif
+	
 	/// ChooseFont class and object type.
 	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
 
 	/// Splitter class type.
-	typedef WidgetSplitter< EventHandlerClass, SplitterThinPaint > WidgetSplitterThin;
+	typedef WidgetSplitter< SplitterThinPaint > WidgetSplitterThin;
 
 	/// Splitter object type.
 	typedef typename WidgetSplitterThin::ObjectType WidgetSplitterThinPtr;
 
 	/// CoolSplitter class type.
-	typedef WidgetSplitter< EventHandlerClass, SplitterCoolPaint > WidgetSplitterCool;
+	typedef WidgetSplitter< SplitterCoolPaint > WidgetSplitterCool;
 
 	/// CoolSplitter object type.
 	typedef typename WidgetSplitterCool::ObjectType WidgetSplitterCoolPtr;
 
 	/// Toolbar class type.
-	typedef SmartWin::WidgetToolbar< EventHandlerClass > WidgetToolbar;
+	typedef SmartWin::WidgetToolbar WidgetToolbar;
 
 	/// Toolbar object type.
 	typedef typename WidgetToolbar::ObjectType WidgetToolbarPtr;
 
 	/// Coolbar class type.
-	typedef SmartWin::WidgetCoolbar< EventHandlerClass > WidgetCoolbar;
+	typedef SmartWin::WidgetCoolbar WidgetCoolbar;
 
 	/// Coolbar object type.
 	typedef typename WidgetCoolbar::ObjectType WidgetCoolbarPtr;
@@ -102,7 +105,7 @@ public:
 	  * since it explicitly sets the parent of the Widget.
 	  */
 	WidgetFactoryPlatformImplementation( Widget * parent )
-		: ContainerWidgetType< EventHandlerClass >( parent )
+		: ContainerWidgetType( parent )
 	{}
 
 	/// Creates a WidgetChooseFont and returns it.
@@ -133,6 +136,7 @@ public:
 		return WidgetCreator< WidgetRichTextBox >::subclass( this, id );
 	}
 
+#ifdef PORT_ME
 	/// Creates an Extended Menu
 	/** The returned object is of type std::tr1::shared_ptr< WidgetMenuExtended >, but
 	  * you should use the typedef WidgetMenuExtendedPtr and not <br>
@@ -142,7 +146,7 @@ public:
 	{
 		return WidgetCreator< WidgetMenuExtended >::create( this );
 	}
-
+#endif
 	/// Creates a Splitter and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
@@ -166,12 +170,12 @@ public:
 	  * See WidgetSplitter Solution for an Example.
 	  */
 	template< class SplitterType >
-	typename WidgetSplitter<EventHandlerClass, SplitterType >::ObjectType createSplitter(
-			 const typename WidgetSplitter< EventHandlerClass, SplitterType >::Seed & cs )// =
+	typename WidgetSplitter<SplitterType >::ObjectType createSplitter(
+			 const typename WidgetSplitter< SplitterType >::Seed & cs )// =
 				   // Commented out since GCC chokes on default parameters to template functions inside template template classes...!!
 				   //WidgetSplitter< ContainerWidgetType, EventHandlerClass, SplitterType >::getDefaultSeed() )
 	{
-		return WidgetCreator< WidgetSplitter< EventHandlerClass, SplitterType > >::create( this, cs );
+		return WidgetCreator< WidgetSplitter< SplitterType > >::create( this, cs );
 	}
 
 	/// Creates a Tool Bar and returns a pointer to it.
@@ -194,9 +198,9 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< template< class > class ContainerWidgetType, class EventHandlerClass >
-WidgetFactoryPlatformImplementation< ContainerWidgetType, EventHandlerClass, SmartWinDesktop >::WidgetFactoryPlatformImplementation()
-	: Widget(0), ContainerWidgetType< EventHandlerClass >( 0 )
+template< typename ContainerWidgetType >
+WidgetFactoryPlatformImplementation< ContainerWidgetType, SmartWinDesktop >::WidgetFactoryPlatformImplementation()
+	: Widget(0), ContainerWidgetType( 0 )
 {}
 
 // end namespace SmartWin

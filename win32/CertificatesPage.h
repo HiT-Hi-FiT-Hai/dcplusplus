@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class CertificatesPage : public WidgetFactory<SmartWin::WidgetDialog, CertificatesPage>, public PropPage
+class CertificatesPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	CertificatesPage(SmartWin::Widget* parent);
@@ -45,10 +45,10 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
-	void handleBrowsePrivateKeyClicked(WidgetButtonPtr);
-	void handleBrowseCertificateClicked(WidgetButtonPtr);
-	void handleBrowseTrustedPathClicked(WidgetButtonPtr);
-	void handleGenerateCertsClicked(WidgetButtonPtr);
+	void handleBrowsePrivateKeyClicked();
+	void handleBrowseCertificateClicked();
+	void handleBrowseTrustedPathClicked();
+	void handleGenerateCertsClicked();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_CERTIFICATES_PAGE_H)

@@ -29,24 +29,12 @@
 #ifndef WidgetModalDialog_h
 #define WidgetModalDialog_h
 
-#include "WidgetWindowBase.h"
 #include "../aspects/AspectDialog.h"
+#include "WidgetWindowBase.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-struct WidgetModalDialogDispatcher
-{
-	typedef std::tr1::function<bool ()> F;
-	
-	WidgetModalDialogDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		return f() ? TRUE : FALSE;
-	}
-
-	F f;
-};
 
 /// Modal Dialog class
 /** \ingroup WidgetControls
@@ -66,20 +54,29 @@ struct WidgetModalDialogDispatcher
   * "createDialog()", either in the contructor, or in some intialization routine 
   * called before createDialog();   
   */
-template< class EventHandlerClass >
+
 class WidgetModalDialog : 
-	public WidgetWindowBase< EventHandlerClass, Policies::ModalDialog >,
-	public AspectDialog<WidgetModalDialog<EventHandlerClass> >
+	public WidgetWindowBase< Policies::ModalDialog >,
+	public AspectDialog<WidgetModalDialog >
 {
-	typedef MessageMap< EventHandlerClass > MessageMapType;
-	typedef WidgetModalDialogDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<bool ()> F;
+		
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			return f() ? TRUE : FALSE;
+		}
+
+		F f;
+	};
 
 public:
-	typedef WidgetWindowBase< EventHandlerClass, Policies::ModalDialog > BaseType;
+	typedef WidgetWindowBase< Policies::ModalDialog > BaseType;
 	
 	/// Class type
-	typedef WidgetModalDialog< EventHandlerClass > ThisType;
+	typedef WidgetModalDialog ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -136,15 +133,8 @@ public:
 	  * which control to initially have focus according to the tab order of the 
 	  * controls!       
 	  */
-	void onInitDialog( typename MessageMapType::boolFunctionTakingVoid eventHandler ) {
-		onInitDialog(Adapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));
-	}
-	void onInitDialog( typename MessageMapType::itsBoolFunctionTakingVoid eventHandler ) {
-		onInitDialog(Adapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));
-	}
 	void onInitDialog(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		setCallback(
 			Message( WM_INITDIALOG ), Dispatcher(f)
 		);
 	}
@@ -177,9 +167,8 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass >
-WidgetModalDialog< EventHandlerClass >::
-WidgetModalDialog( Widget * parent )
+
+inline WidgetModalDialog::WidgetModalDialog( Widget * parent )
 	: Widget(parent), BaseType( parent )
 {
 	// Default parameters for pure modal dialogs
@@ -198,35 +187,12 @@ WidgetModalDialog( Widget * parent )
 	onClosing(std::tr1::bind(&ThisType::defaultClosing, this));
 }
 
-template< class EventHandlerClass >
-int WidgetModalDialog< EventHandlerClass >::createDialog( unsigned resourceId )
-{
-	// Must register the widget in order not to close app when this closes...!
-	Application::instance().registerWidget( this );
-
-	// this will not return until the dialog is closed by calling endDialog() with
-	// a retv
-	//
-	INT_PTR retv = ::DialogBoxParam
-		( ( Application::instance().getAppHandle() )
-		, ( MAKEINTRESOURCE( resourceId ) )
-		, ( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 )
-		, ( (DLGPROC)&ThisType::wndProc )
-		, ( reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) ) )
-		);
-	if ( retv == - 1 )
-	{
-		throw xCeption( _T( "Couldn't create modal dialog" ) );
-	}
-	return static_cast< int >( retv );
-}
-
 // The derived pure dialog class can control the DLGTEMPLATE parameters used in
 // createDialog() with this protected call. The calling layer is prevented from
 // doing so.
 //
-template< class EventHandlerClass >
-void WidgetModalDialog< EventHandlerClass >::setDlgTemplate( DLGTEMPLATE inTemplate )
+
+inline void WidgetModalDialog::setDlgTemplate( DLGTEMPLATE inTemplate )
 {
 	itsDefaultDlgTemplate = inTemplate;
 }
@@ -235,33 +201,8 @@ void WidgetModalDialog< EventHandlerClass >::setDlgTemplate( DLGTEMPLATE inTempl
 // derived dialog class can control the DLGTEMPLATE parameters. instead of the
 // calling layer.
 //
-template< class EventHandlerClass >
-int WidgetModalDialog< EventHandlerClass >::createDialog()
-{
-	// Must register the widget in order not to close app when this closes...!
-	Application::instance().registerWidget( this );
 
-	// Arrange so the DLGTEMPLATE is followed by 0000 for menu, winclass and title.
-	unsigned char dlg_menu_winclass_title[ sizeof( DLGTEMPLATE ) + 30 ];
-	memset( dlg_menu_winclass_title, 0, sizeof( dlg_menu_winclass_title ) );
-	memcpy( dlg_menu_winclass_title, & itsDefaultDlgTemplate, sizeof( DLGTEMPLATE ) );
-
-	// this will not return until the dialog is closed by calling endDialog() with
-	// a retv
-	//
-	INT_PTR retv = ::DialogBoxIndirectParam
-		( Application::instance().getAppHandle() // HINSTANCE hInstance
-		, ( DLGTEMPLATE * ) dlg_menu_winclass_title // LPCDLGTEMPLATE hDialogTemplate
-		, this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 // HWND hWndParent
-		, (DLGPROC)&ThisType::wndProc // DLGPROC lpDialogFunc
-		, reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) )
-		); // LPARAM dwInitParam
-
-	return static_cast< int >( retv );
-}
-
-template< class EventHandlerClass >
-void WidgetModalDialog< EventHandlerClass >::endDialog( int retv )
+inline void WidgetModalDialog::endDialog( int retv )
 {
 	// Causes createDialog() to return with retv.
 	//

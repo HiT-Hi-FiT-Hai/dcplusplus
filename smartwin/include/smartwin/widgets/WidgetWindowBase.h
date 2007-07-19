@@ -29,7 +29,7 @@
 #ifndef WidgetWindowBase_h
 #define WidgetWindowBase_h
 
-#include "SmartUtil.h"
+#include "../../SmartUtil.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../WindowsHeaders.h"
 #include "../CallbackFuncPrototypes.h"
@@ -51,8 +51,6 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectDragDrop.h"
-#include "../aspects/AspectAdapter.h"
-#include "../MessageMap.h"
 #include "../BasicTypes.h"
 #include <sstream>
 #include <map>
@@ -136,40 +134,38 @@ struct WidgetWindowBaseTimerDispatcher
   * the library residing in the SmartWinUnitTests directory for an example of how to 
   * use  this class with the factory class WidgetFactory.   
   */
-template< class EventHandlerClass, class Policy >
+template< class Policy >
 class WidgetWindowBase :
 	public MessageMapPolicy< Policy >,
 
 	// Aspects
-	public AspectBorder< EventHandlerClass >,
-	public AspectSizable< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectFont< EventHandlerClass >,
-	public AspectText< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectMouseClicks< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectVisible< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectKeyboard< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectFocus< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectActivate< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectEraseBackground< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectPainting< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectEnabled< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectRaw< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectThreads< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
-	public AspectDragDrop< EventHandlerClass, WidgetWindowBase< EventHandlerClass, Policy >, MessageMap< EventHandlerClass > >,
+	public AspectBorder< WidgetWindowBase< Policy > >,
+	public AspectSizable< WidgetWindowBase< Policy > >,
+	public AspectFont< WidgetWindowBase< Policy > >,
+	public AspectText< WidgetWindowBase< Policy > >,
+	public AspectMouseClicks< WidgetWindowBase< Policy > >,
+	public AspectVisible< WidgetWindowBase< Policy > >,
+	public AspectKeyboard< WidgetWindowBase< Policy > >,
+	public AspectFocus< WidgetWindowBase< Policy > >,
+	public AspectActivate< WidgetWindowBase< Policy > >,
+	public AspectEraseBackground< WidgetWindowBase< Policy > >,
+	public AspectPainting< WidgetWindowBase< Policy > >,
+	public AspectEnabled< WidgetWindowBase< Policy > >,
+	public AspectRaw< WidgetWindowBase< Policy > >,
+	public AspectThreads< WidgetWindowBase< Policy > >,
+	public AspectDragDrop< WidgetWindowBase< Policy > >,
 
 	public OuterMostWidget
 {
 public:
 	/// Class type
-	typedef WidgetWindowBase< EventHandlerClass, Policy > ThisType;
+	typedef WidgetWindowBase< Policy > ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
 
-	typedef MessageMap< EventHandlerClass > MessageMapType;
 private:
 	typedef WidgetWindowBaseCloseDispatcher CloseDispatcher;
-	typedef AspectAdapter<CloseDispatcher::F, EventHandlerClass, MessageMapType::IsControl> CloseAdapter;
 	typedef WidgetWindowBaseTimerDispatcher TimerDispatcher;
 public:
 
@@ -188,16 +184,9 @@ public:
 	  * If you return true from your event handler the window is closed, otherwise 
 	  * the window is NOT allowed to actually close!!       
 	  */
-	void onClosing( typename MessageMapType::itsBoolFunctionTakingVoid eventHandler ) {
-		onClosing(CloseAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
-	}
-	void onClosing( typename MessageMapType::boolFunctionTakingVoid eventHandler ) {
-		onClosing(CloseAdapter::adapt0(boost::polymorphic_cast<ThisType*>(this), eventHandler));		
-	}
 	void onClosing(const CloseDispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			Message( WM_CLOSE ), CloseDispatcher(f, boost::polymorphic_cast<Widget*>(this))
+		this->setCallback(
+			Message( WM_CLOSE ), CloseDispatcher(f, this)
 		);
 	}
             
@@ -292,8 +281,8 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::createTimer( const TimerDispatcher::F& f,
+template< class Policy >
+void WidgetWindowBase< Policy >::createTimer( const TimerDispatcher::F& f,
 	unsigned int milliSecond)
 {
 
@@ -306,8 +295,8 @@ void WidgetWindowBase< EventHandlerClass, Policy >::createTimer( const TimerDisp
 
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::close( bool asyncron )
+template< class Policy >
+void WidgetWindowBase< Policy >::close( bool asyncron )
 {
 	if ( asyncron )
 		::PostMessage( this->Widget::itsHandle, WM_CLOSE, 0, 0 ); // Return now
@@ -316,8 +305,8 @@ void WidgetWindowBase< EventHandlerClass, Policy >::close( bool asyncron )
 }
 
 #ifndef WINCE
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::animateSlide( bool show, bool left, unsigned int time )
+template< class Policy >
+void WidgetWindowBase< Policy >::animateSlide( bool show, bool left, unsigned int time )
 {
 	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( time ),
 		show ?
@@ -330,75 +319,75 @@ void WidgetWindowBase< EventHandlerClass, Policy >::animateSlide( bool show, boo
 }
 
 //HC: This function gives problems with some non-Microsoft visual styles
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::animateBlend( bool show, int msTime )
+template< class Policy >
+void WidgetWindowBase< Policy >::animateBlend( bool show, int msTime )
 {
 	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( msTime ), show ? AW_BLEND : AW_HIDE | AW_BLEND );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::animateCollapse( bool show, int msTime )
+template< class Policy >
+void WidgetWindowBase< Policy >::animateCollapse( bool show, int msTime )
 {
 	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( msTime ), show ? AW_CENTER : AW_HIDE | AW_CENTER );
 }
 #endif
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setMinimizeBox( bool value )
+template< class Policy >
+void WidgetWindowBase< Policy >::setMinimizeBox( bool value )
 {
 	Widget::addRemoveStyle( WS_MINIMIZEBOX, value );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setMaximizeBox( bool value )
+template< class Policy >
+void WidgetWindowBase< Policy >::setMaximizeBox( bool value )
 {
 	Widget::addRemoveStyle( WS_MAXIMIZEBOX, value );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setIconSmall( int resourceId )
+template< class Policy >
+void WidgetWindowBase< Policy >::setIconSmall( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setIconLarge( int resourceId )
+template< class Policy >
+void WidgetWindowBase< Policy >::setIconLarge( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setIconSmall( const SmartUtil::tstring & filePathName )
+template< class Policy >
+void WidgetWindowBase< Policy >::setIconSmall( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR | LR_LOADFROMFILE );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setIconLarge( const SmartUtil::tstring & filePathName )
+template< class Policy >
+void WidgetWindowBase< Policy >::setIconLarge( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
 	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setCursor( int resourceId )
+template< class Policy >
+void WidgetWindowBase< Policy >::setCursor( int resourceId )
 {
 	HCURSOR hCur = ::LoadCursor( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) );
 	::SetClassLongPtr( this->Widget::itsHandle, GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
-template< class EventHandlerClass, class Policy >
-void WidgetWindowBase< EventHandlerClass, Policy >::setCursor( const SmartUtil::tstring & filePathName )
+template< class Policy >
+void WidgetWindowBase< Policy >::setCursor( const SmartUtil::tstring & filePathName )
 {
 	HICON hCur = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
 	::SetClassLongPtr( this->Widget::itsHandle, GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
-template< class EventHandlerClass, class Policy >
-WidgetWindowBase< EventHandlerClass, Policy >::WidgetWindowBase( Widget * parent )
+template< class Policy >
+WidgetWindowBase< Policy >::WidgetWindowBase( Widget * parent )
 	: Widget( parent, 0, true )
 {
 	this->Widget::itsCtrlId = 0;

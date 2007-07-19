@@ -30,25 +30,10 @@
 #define AspectMouseClicks_h
 
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-struct AspectMouseDispatcher
-{
-	typedef std::tr1::function<void (const MouseEventResult &)> F;
-
-	AspectMouseDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
-		return 0;
-	}
-
-	F f;
-};
 
 /// Aspect class used by Widgets that have the possibility of trapping "mouse
 /// clicked" events.
@@ -56,11 +41,22 @@ struct AspectMouseDispatcher
   * E.g. the WidgetWindow can trap "mouse clicked events" therefore it realize the
   * AspectMouseClicks through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectMouseClicks
 {
-	typedef AspectMouseDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<void (const MouseEventResult &)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
+			return 0;
+		}
+
+		F f;
+	};
 
 public:
 	/// \ingroup EventHandlersAspectMouseClicks
@@ -70,13 +66,7 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onLeftMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onLeftMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onLeftMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onLeftMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onLeftMouseUp(const Dispatcher::F& f) {
+	void onLeftMouseUp(const typename Dispatcher::F& f) {
 		onMouse(WM_LBUTTONUP, f);
 	}
 	
@@ -87,13 +77,7 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onRightMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onRightMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onRightMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onRightMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onRightMouseUp(const Dispatcher::F& f) {
+	void onRightMouseUp(const typename Dispatcher::F& f) {
 		onRightMouseUp(WM_RBUTTONUP, f);
 	}
 
@@ -104,13 +88,7 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onMiddleMouseUp( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onMiddleMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMiddleMouseUp( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onMiddleMouseUp(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMiddleMouseUp(const Dispatcher::F& f) {
+	void onMiddleMouseUp(const typename Dispatcher::F& f) {
 		onMiddleMouseUp(WM_MBUTTONUP, f);
 	}
 
@@ -121,13 +99,7 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onLeftMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onLeftMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onLeftMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onLeftMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onLeftMouseDown(const Dispatcher::F& f) {
+	void onLeftMouseDown(const typename Dispatcher::F& f) {
 		onMouse(WM_LBUTTONDOWN, f);
 	}
 
@@ -138,13 +110,7 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onRightMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onRightMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onRightMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onRightMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onRightMouseDown(const Dispatcher::F& f) {
+	void onRightMouseDown(const typename Dispatcher::F& f) {
 		onMouse(WM_RBUTTONDOWN, f);
 	}
 
@@ -154,17 +120,9 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onMiddleMouseDown( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onMiddleMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMiddleMouseDown( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onMiddleMouseDown(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMiddleMouseDown(const Dispatcher::F& f) {
+	void onMiddleMouseDown(const typename Dispatcher::F& f) {
 		onMouse(WM_MBUTTONDOWN, f);
 	}
-
-
 
 	/// Left mouse button double-clicked event handler setter
 	/** If supplied, function will be called when user double clicks the Left mouse button
@@ -172,13 +130,7 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onLeftMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onLeftMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onLeftMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onLeftMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onLeftMouseDblClick(const Dispatcher::F& f) {
+	void onLeftMouseDblClick(const typename Dispatcher::F& f) {
 		onMouse(WM_LBUTTONDBLCLK, f);
 	}
 
@@ -188,17 +140,9 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onRightMouseDblClick( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onRightMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onRightMouseDblClick( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onRightMouseDblClick(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onRightMouseDblClick(const Dispatcher::F& f) {
+	void onRightMouseDblClick(const typename Dispatcher::F& f) {
 		onMouse(WM_RBUTTONDBLCLK, f);
 	}
-
-
 
 	/// \ingroup EventHandlersAspectMouseClicks
 	/// Mouse moved event handler setter
@@ -206,21 +150,14 @@ public:
 	  * The parameter passed is const MouseEventResult & which contains the state of
 	  * the mouse.
 	  */
-	void onMouseMove( typename MessageMapType::itsVoidFunctionTakingMouseEventResult eventHandler ) {
-		onMouseMove(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMouseMove( typename MessageMapType::voidFunctionTakingMouseEventResult eventHandler ) {
-		onMouseMove(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onMouseMove(const Dispatcher::F& f) {
+	void onMouseMove(const typename Dispatcher::F& f) {
 		onMouse(WM_MOUSEMOVE, f);
 	}
 
 protected:
 	
-	void onMouse(UINT msg, const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onMouse(UINT msg, const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
 			Message( msg ), Dispatcher(f)
 		);
 	}

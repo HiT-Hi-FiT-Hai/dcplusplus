@@ -36,32 +36,29 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-struct AspectPaintingDispatcher {
-	typedef std::tr1::function<void (Canvas&)> F;
-	
-	AspectPaintingDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		PaintCanvas canvas( widget->handle() );
-
-		f(canvas);
-		return 0;
-	}
-
-	F f;
-	Widget* widget;
-};
-
 
 /// Aspect class used by Widgets that can be custom painted.
 /** \ingroup AspectClasses
   * When a Painting Event is raised the Widget needs to be repainted.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectPainting
 {
-	typedef AspectPaintingDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher {
+		typedef std::tr1::function<void (Canvas&)> F;
+		
+		Dispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			PaintCanvas canvas( widget->handle() );
+
+			f(canvas);
+			return 0;
+		}
+
+		F f;
+		Widget* widget;
+	};
 public:
 	/// \ingroup EventHandlersAspectPainting
 	/// Painting event handler setter
@@ -69,17 +66,9 @@ public:
 	  * paint stuff onto the window with. <br>
 	  * Parameters passed is Canvas &
 	  */
-	void onPainting( typename MessageMapType::itsVoidFunctionTakingCanvas eventHandler ) {
-		onPainting(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onPainting( typename MessageMapType::voidFunctionTakingCanvas eventHandler ) {
-		onPainting(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-
-	void onPainting(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			Message( WM_PAINT ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+	void onPainting(const typename Dispatcher::F& f) {
+		static_cast<WidgetType*>(this)->setCallback(
+			Message( WM_PAINT ), Dispatcher(f, static_cast<WidgetType*>(this) )
 		);
 	}
 

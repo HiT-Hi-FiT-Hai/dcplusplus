@@ -30,15 +30,11 @@
 #ifndef WidgetMenuExtended_h
 #define WidgetMenuExtended_h
 
-#include "../MessageMapControl.h"
-#include "../WindowsHeaders.h"
-#include "../aspects/AspectGetParent.h"
-#include "SmartUtil.h"
-#include "../CanvasClasses.h"
-#include <vector>
-#include <boost/cast.hpp>
 #include "../BasicTypes.h"
-
+#include "../CanvasClasses.h"
+#include "../aspects/AspectGetParent.h"
+#include <boost/cast.hpp>
+#ifdef PORT_ME
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -172,7 +168,7 @@ struct MenuColorInfo
 // if you want your menus to be different!
 // Basic process is to add Event Handlers for onDrawItem and onMeasureItem
 // ///////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class MenuType >
+template< class MenuType >
 class DefaultMenuRenderer
 {
 public:
@@ -846,15 +842,11 @@ public:
 };
 
 // Menu Renderer static data members initialization
-template< class EventHandlerClass, class MenuType >
-Point DefaultMenuRenderer< EventHandlerClass, MenuType >::defaultImageSize = Point( 16, 16 );
-
-// Forward declaration
-template< class EventHandlerClass >
-class WidgetMenuExtended;
+template< class MenuType >
+Point DefaultMenuRenderer< MenuType >::defaultImageSize = Point( 16, 16 );
 
 // Platform specific implementation
-template< class EventHandlerClass, Platform >
+template< class MenuType, Platform >
 class WidgetMenuExtendedPlatformImplementation;
 
 /// Specialized functions in menu for desktop Windows API version
@@ -864,17 +856,15 @@ class WidgetMenuExtendedPlatformImplementation;
   * it work in future versions, therefore we have created the CurrentPlatform
   * specialization classes for it here...!!
   */
-template< class EventHandlerClass >
-class WidgetMenuExtendedPlatformImplementation< EventHandlerClass, SmartWinDesktop > :
-	public MessageMapControl< EventHandlerClass, WidgetMenuExtended< EventHandlerClass > >
+template< class MenuType >
+class WidgetMenuExtendedPlatformImplementation< MenuType, SmartWinDesktop > 
 {
 	// friends
-	friend class DefaultMenuRenderer< EventHandlerClass, WidgetMenuExtended< EventHandlerClass > >;
+	friend class DefaultMenuRenderer< MenuType >;
 public:
 
-	typedef std::tr1::shared_ptr< WidgetMenuExtended< EventHandlerClass > > WidgetMenuExtendedPtr;
-	typedef MessageMapControl< EventHandlerClass, WidgetMenuExtended< EventHandlerClass > > MessageMapType;
-	typedef WidgetMenuExtendedDispatcher< EventHandlerClass, WidgetMenuExtended< EventHandlerClass >, MessageMapType > Dispatcher;
+	typedef std::tr1::shared_ptr< MenuType > WidgetMenuExtendedPtr;
+	typedef WidgetMenuExtendedDispatcher< MenuType > Dispatcher;
 
 	/// Attaches the menu to a parent window
 	void attach( EventHandlerClass * mainWindow );
@@ -949,25 +939,23 @@ protected:
   * If you need those truly awesome visual menu effects use this menu control instead
   * of the WidgetMenu.
   */
-template< class EventHandlerClass >
 class WidgetMenuExtended :
-	public WidgetMenuExtendedPlatformImplementation< EventHandlerClass, CurrentPlatform >
+	public WidgetMenuExtendedPlatformImplementation< CurrentPlatform >
 {
 	// friends
-	friend class DefaultMenuRenderer< EventHandlerClass, WidgetMenuExtended< EventHandlerClass > >;
-	friend class WidgetMenuExtendedPlatformImplementation< EventHandlerClass, CurrentPlatform >;
+	friend class DefaultMenuRenderer< WidgetMenuExtended >;
+	friend class WidgetMenuExtendedPlatformImplementation< CurrentPlatform >;
 	friend class WidgetCreator< WidgetMenuExtended >;
 
-	typedef WidgetMenuExtendedPlatformImplementation< EventHandlerClass, CurrentPlatform > Implementation;
-	typedef SmartWin::DefaultMenuRenderer< EventHandlerClass, WidgetMenuExtended< EventHandlerClass > > DefaultMenuRenderer;
-	typedef typename WidgetMenuExtendedPlatformImplementation< EventHandlerClass, CurrentPlatform >::Dispatcher Dispatcher;
-	typedef typename WidgetMenuExtendedPlatformImplementation< EventHandlerClass, CurrentPlatform >::MessageMapType MessageMapType;
+	typedef WidgetMenuExtendedPlatformImplementation< CurrentPlatform > Implementation;
+	typedef SmartWin::DefaultMenuRenderer< WidgetMenuExtended > DefaultMenuRenderer;
+	typedef typename WidgetMenuExtendedPlatformImplementation< CurrentPlatform >::Dispatcher Dispatcher;
 public:
 	/// Type of object
-	typedef WidgetMenuExtended< EventHandlerClass > ThisType;
+	typedef WidgetMenuExtended ThisType;
 
 	/// Object type
-	typedef typename WidgetMenuExtendedPlatformImplementation< EventHandlerClass, CurrentPlatform >::WidgetMenuExtendedPtr ObjectType;
+	typedef typename WidgetMenuExtendedPlatformImplementation< CurrentPlatform >::WidgetMenuExtendedPtr ObjectType;
 
 	/// Creational info
 	//TODO: empty because it is not used anywhere ...
@@ -2005,5 +1993,6 @@ WidgetMenuExtended< EventHandlerClass >::WidgetMenuExtended( SmartWin::Widget * 
 // end namespace SmartWin
 }
 
+#endif
 #endif
 #endif

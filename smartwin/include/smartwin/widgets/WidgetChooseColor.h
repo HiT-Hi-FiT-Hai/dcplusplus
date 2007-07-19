@@ -30,8 +30,8 @@
 #define WidgetChooseColor_h
 
 #include "../FreeCommonDialog.h"
-#include <memory>
 #include "../WindowsHeaders.h"
+#include <memory>
 
 namespace SmartWin
 {

@@ -34,22 +34,6 @@
 namespace SmartWin
 {
 // begin namespace SmartWin
-template<typename WidgetType>
-struct AspectSelectionDispatcher
-{
-	typedef std::tr1::function<void ()> F;
-	
-	AspectSelectionDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		if ( !WidgetType::isValidSelectionChanged( params.Msg.LParam ) )
-			return 0;
-		f();
-		return 0;
-	}
-
-	F f;
-};
 
 /// Aspect class used by Widgets that have the possibility of being "selecting"
 /// item(s).
@@ -57,11 +41,24 @@ struct AspectSelectionDispatcher
   * E.g. the WidgetComboBox have a "selected" Aspect therefore it realizes the
   * AspectSelection through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectSelection
 {
-	typedef AspectSelectionDispatcher<WidgetType> Dispatcher;
-	typedef AspectAdapter<typename Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<void ()> F;
+		
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			if ( !WidgetType::isValidSelectionChanged( params.Msg.LParam ) )
+				return 0;
+			f();
+			return 0;
+		}
+
+		F f;
+	};
 public:
 	/// \ingroup EventHandlersAspectSelection
 	/// Setting the event handler for the "selection changed" event
@@ -69,15 +66,8 @@ public:
 	  * changed either due to user interaction or due to some other reason. <br>
 	  * No parameters are passed.
 	  */
-	void onSelectionChanged( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onSelectionChanged(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));		
-	}
-	void onSelectionChanged( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onSelectionChanged(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));		
-	}
 	void onSelectionChanged(const typename Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		static_cast<WidgetType*>(this)->setCallback(
 			WidgetType::getSelectionChangedMessage(), Dispatcher(f)
 		);
 	}

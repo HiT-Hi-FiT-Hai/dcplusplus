@@ -205,11 +205,9 @@ private:
 	SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
 	virtual ~SearchFrame();
 
-	void handlePurgeClicked(WidgetButtonPtr);
-	void handleSlotsClicked(WidgetCheckBoxPtr);
-	void handleShowUIClicked(WidgetCheckBoxPtr);
-
-	typedef SmartWin::WidgetDataGrid<SearchFrame>* DataGridMessageType;
+	void handlePurgeClicked();
+	void handleSlotsClicked();
+	void handleShowUIClicked();
 
 	HRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
 
@@ -217,19 +215,19 @@ private:
 	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam);
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
-	void handleDownload(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleDownloadFavoriteDirs(WidgetMenuPtr /*menu*/, unsigned id);
-	void handleDownloadTo(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleDownloadTarget(WidgetMenuPtr /*menu*/, unsigned id);
-	void handleDownloadDir(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleDownloadWholeFavoriteDirs(WidgetMenuPtr /*menu*/, unsigned id);
-	void handleDownloadWholeTarget(WidgetMenuPtr /*menu*/, unsigned id);
-	void handleDownloadDirTo(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleViewAsText(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleSearchAlternates(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleBitziLookup(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleCopyMagnet(WidgetMenuPtr /*menu*/, unsigned /*id*/);
-	void handleRemove(WidgetMenuPtr /*menu*/, unsigned /*id*/);
+	void handleDownload();
+	void handleDownloadFavoriteDirs(unsigned id);
+	void handleDownloadTo();
+	void handleDownloadTarget(unsigned id);
+	void handleDownloadDir();
+	void handleDownloadWholeFavoriteDirs(unsigned id);
+	void handleDownloadWholeTarget(unsigned id);
+	void handleDownloadDirTo();
+	void handleViewAsText();
+	void handleSearchAlternates();
+	void handleBitziLookup();
+	void handleCopyMagnet();
+	void handleRemove();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	void layout();

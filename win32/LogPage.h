@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class LogPage : public WidgetFactory<SmartWin::WidgetDialog, LogPage>, public PropPage
+class LogPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
 {
 public:
 	LogPage(SmartWin::Widget* parent);
@@ -52,10 +52,9 @@ private:
 	//.first is filename and .second is format
 	TStringPairList options;
 
-	void handleBrowseClicked(WidgetButtonPtr);
+	void handleBrowseClicked();
 
-	typedef SmartWin::WidgetDataGrid<LogPage>* DataGridMessageType;
-	HRESULT handleItemChanged(DataGridMessageType dataGrid, LPARAM /*lParam*/, WPARAM /*wParam*/);
+	HRESULT handleItemChanged(WidgetDataGridPtr dataGrid, WPARAM wParam, LPARAM lParam);
 
 	void getValues();
 };

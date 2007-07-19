@@ -31,7 +31,6 @@
 
 #include "AspectVoidVoidDispatcher.h"
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
 
 namespace SmartWin
 {
@@ -45,25 +44,17 @@ namespace SmartWin
   * for instance when a TextBox changes the text value the update event fill be
   * raised.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectUpdate
 {
 	typedef AspectVoidVoidDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
 public:
 	/// \ingroup EventHandlersAspectUpdate
 	/// Sets the event handler for the Updated event.
 	/** When the Widget value/text is being updated this event will be raised.
 	  */
-	void onUpdate( typename MessageMapType::itsVoidFunctionTakingVoid eventHandler ) {
-		onUpdate(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onUpdate( typename MessageMapType::voidFunctionTakingVoid eventHandler ) {
-		onUpdate(Adapter::adapt0(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
 	void onUpdate(const Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+		static_cast<WidgetType*>(this)->setCallback(
 			WidgetType::getUpdateMessage(), Dispatcher(f)
 		);
 	}

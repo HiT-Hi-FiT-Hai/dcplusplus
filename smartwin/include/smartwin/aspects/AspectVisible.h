@@ -35,20 +35,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-struct AspectVisibleDispatcher
-{
-	typedef std::tr1::function<void (bool)> F;
-
-	AspectVisibleDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		f(params.Msg.WParam > 0);
-		return 0;
-	}
-
-	F f;
-};
-
 /// \ingroup AspectClasses
 /// Aspect class used by Widgets that have the possibility of manipulating the
 /// visibility property
@@ -60,11 +46,22 @@ struct AspectVisibleDispatcher
   * Use the onVisibilityChanged function to set an event handler for trapping this
   * event.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectVisible
 {
-	typedef AspectVisibleDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher
+	{
+		typedef std::tr1::function<void (bool)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			f(params.Msg.WParam > 0);
+			return 0;
+		}
+
+		F f;
+	};
 public:
 	/// Sets the visibility property of the Widget
 	/** Changes the visibility property of the Widget. <br>
@@ -86,16 +83,9 @@ public:
 	  * If the boolean value is true, the Widget is visible, otherwise it is
 	  * invisible.
 	  */
-	void onVisibilityChanged( typename MessageMapType::itsVoidFunctionTakingBool eventHandler ) {
-		onVisibilityChanged(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	void onVisibilityChanged( typename MessageMapType::voidFunctionTakingBool eventHandler ) {
-		onVisibilityChanged(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
 	void onVisibilityChanged(const typename Dispatcher::F& f) {
-		MessageMapBase *ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
-			Message( WM_SHOWWINDOW ), Dispatcher(f, internal_::getTypedParentOrThrow<EventHandlerClass*>(this) )
+		static_cast<WidgetType*>(this)->setCallback(
+			Message( WM_SHOWWINDOW ), Dispatcher(f)
 		);
 	}
 
@@ -107,14 +97,14 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-void AspectVisible< EventHandlerClass, WidgetType, MessageMapType >::setVisible( bool visible )
+template< class WidgetType >
+void AspectVisible< WidgetType >::setVisible( bool visible )
 {
 	::ShowWindow( static_cast< WidgetType * >( this )->handle(), visible ? SW_SHOW : SW_HIDE );
 }
 
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-bool AspectVisible< EventHandlerClass, WidgetType, MessageMapType >::getVisible() const
+template< class WidgetType >
+bool AspectVisible< WidgetType >::getVisible() const
 {
 	return ::IsWindowVisible( static_cast< const WidgetType * >( this )->handle() ) != 0;
 }

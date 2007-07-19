@@ -30,23 +30,10 @@
 #define AspectRaw_h
 
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-struct AspectRawDispatcher {
-	typedef std::tr1::function<HRESULT (WPARAM, LPARAM)> F;
-
-	AspectRawDispatcher(const F& f_) : f(f_) { }
-	
-	HRESULT operator()(private_::SignalContent& params) {
-		return f(params.Msg.WParam, params.Msg.LParam);
-	}
-	
-	F f;
-};
 
 /// Aspect class used by Widgets that can handle "raw" events.
 /** \ingroup AspectClasses
@@ -58,11 +45,20 @@ struct AspectRawDispatcher {
   * handling then USE THOSE instead of this one!!! <br>
   * This is a "last resort" event type.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectRaw
 {
-	typedef AspectRawDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher {
+		typedef std::tr1::function<HRESULT (WPARAM, LPARAM)> F;
+
+		Dispatcher(const F& f_) : f(f_) { }
+		
+		HRESULT operator()(private_::SignalContent& params) {
+			return f(params.Msg.WParam, params.Msg.LParam);
+		}
+		
+		F f;
+	};
 public:
 	/// \ingroup EventHandlersAspectRaw
 	/// Setting the member event handler for a "raw" event
@@ -81,18 +77,10 @@ public:
 	  * Two parameters are passed: LPARAM and WPARAM <br>
 	  * Return value is HRESULT which will be passed on to the System
 	  */
-	void onRaw( typename MessageMapType::itsHresultFunctionTakingLparamWparam eventHandler, const Message & msg ) {
-		onRaw( Adapter::adapt2i(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
-	}
-	void onRaw( typename MessageMapType::hresultFunctionTakingLparamWparam eventHandler, const Message & msg ) {
-		onRaw( Adapter::adapt2i(boost::polymorphic_cast<WidgetType*>(this), eventHandler), msg);
-	}
-
 	/// WARNING, this function uses the natural wparam/lparam order, not the inverted that previous
 	/// smartwin versions did. The two functions above emulate the old behaviour though...
-	void onRaw(const Dispatcher::F& f, const Message & msg) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		ptrThis->setCallback(
+	void onRaw(const typename Dispatcher::F& f, const Message & msg) {
+		static_cast<WidgetType*>(this)->setCallback(
 			msg, Dispatcher(f)
 		);
 	}

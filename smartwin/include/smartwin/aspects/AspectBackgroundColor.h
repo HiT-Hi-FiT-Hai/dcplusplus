@@ -30,28 +30,11 @@
 #define AspectBackgroundColor_h
 
 #include "../SignalParams.h"
-#include "AspectAdapter.h"
-#include <boost/cast.hpp>
+#include "../CanvasClasses.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-struct AspectBackgroundColorDispatcher {
-	typedef std::tr1::function<BrushPtr (Canvas&)> F;
-	
-	AspectBackgroundColorDispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
-
-		BrushPtr retBrush = f(canvas);
-		return retBrush ? reinterpret_cast< HRESULT >( retBrush->getBrushHandle() ) : 0;
-	}
-
-	F f;
-	Widget* widget;
-};
 
 /// Aspect class used by Widgets that have the possibility of handling the
 /// erase background property
@@ -59,11 +42,25 @@ struct AspectBackgroundColorDispatcher {
   * E.g. the WidgetWindow has a background Aspect to it, therefore WidgetDataGrid
   * realizes the AspectEnabled through inheritance.
   */
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
+template< class WidgetType >
 class AspectBackgroundColor
 {
-	typedef AspectBackgroundColorDispatcher Dispatcher;
-	typedef AspectAdapter<Dispatcher::F, EventHandlerClass, MessageMapType::IsControl> Adapter;
+	struct Dispatcher {
+		typedef std::tr1::function<BrushPtr (Canvas&)> F;
+		
+		Dispatcher(const F& f_, WidgetType* widget_) : f(f_), widget(widget_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
+
+			BrushPtr retBrush = f(canvas);
+			return retBrush ? reinterpret_cast< HRESULT >( retBrush->getBrushHandle() ) : 0;
+		}
+
+		F f;
+		WidgetType* widget;
+	};
+
 public:
 	/// \ingroup EventHandlersAspectBackgroundColor
 	/// Setting the event handler for the "erase background" event
@@ -79,19 +76,10 @@ public:
 	  * e.g. as member of class since otherwise the brush will be released before it
 	  * is returned to the system and cannot be used!
 	  */
-	void onBackgroundColor( typename MessageMapType::itsBrushFunctionTakingCanvas eventHandler ) {
-		onBackgroundColor(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-	
-	void onBackgroundColor( typename MessageMapType::brushFunctionTakingCanvas eventHandler ) {
-		onBackgroundColor(Adapter::adapt1(boost::polymorphic_cast<WidgetType*>(this), eventHandler));
-	}
-
 	void onBackgroundColor(const typename Dispatcher::F& f) {
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-		WidgetType* widget = boost::polymorphic_cast< WidgetType * >( this );
-		ptrThis->setCallback(
-			widget->getBackgroundColorMessage(), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+		WidgetType* This = static_cast<WidgetType*>(this);
+		This->setCallback(
+			This->getBackgroundColorMessage(), Dispatcher(f, This )
 		);
 	}
 
