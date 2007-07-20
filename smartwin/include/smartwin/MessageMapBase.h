@@ -44,6 +44,10 @@ namespace SmartWin
 class MessageMapBase : public virtual Widget
 {
 public:
+	static MessageMapBase* fromProp(HWND hWnd) { return reinterpret_cast<MessageMapBase*>(::GetProp(hWnd, propAtom)); }
+	
+	void setProp() { ::SetProp(handle(), propAtom, reinterpret_cast<HANDLE>(this) ); }
+	
 	typedef std::tr1::function<LRESULT(private_::SignalContent&)> CallbackType;
 	
 	// We only support one Callback per message, so a map is appropriate
@@ -65,11 +69,12 @@ public:
 	/** This will be called when it's time to delete the widget */
 	virtual void kill() = 0;
 	
-	/// The ATOM with which the pointer to the MessageMapBase is registered on the HWND
-	static GlobalAtom propAtom;
 private:
 	// Contains the list of signals we're (this window) processing
 	CallbackCollectionType itsCallbacks;
+
+	/// The ATOM with which the pointer to the MessageMapBase is registered on the HWND
+	static GlobalAtom propAtom;
 };
 
 // end namespace SmartWin

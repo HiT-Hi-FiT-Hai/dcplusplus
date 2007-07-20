@@ -56,6 +56,7 @@ public:
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::matchQueue);
 	}
 	void handleGetList() {
+		dcdebug("handleGetList\n");
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::getList);
 	}
 	void handleBrowseList() {
