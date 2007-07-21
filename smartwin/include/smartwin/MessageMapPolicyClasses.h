@@ -195,8 +195,8 @@ public:
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			MessageMapBase* This = boost::polymorphic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( lParam ));
-			This->setProp();
 			private_::setHandle( This, hwnd );
+			This->setProp();
 		}
 	}
 };
@@ -293,8 +293,8 @@ public:
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
 			MessageMapBase* This = boost::polymorphic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
-			This->setProp();
 			private_::setHandle( This, hWnd );
+			This->setProp();
 		}
 	}
 };
@@ -385,9 +385,9 @@ public:
 			MDICREATESTRUCT * mcs = reinterpret_cast< MDICREATESTRUCT*>(cs->lpCreateParams);
 			
 			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( mcs->lParam ));
+			private_::setHandle( This, hWnd );
 
 			This->setProp();
-			private_::setHandle( This, hWnd );
 		}
 	}
 };
