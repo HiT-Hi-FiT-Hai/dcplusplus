@@ -246,9 +246,6 @@ private:
 	// Unregister this classes when the application finishes
 	static std::list< SmartUtil::tstring > itsClassesToUnregister;
 
-	typedef std::multimap<Message, std::pair<MessageMapBase::CallbackType, HANDLE> > CommandMap;
-	static CommandMap commands;
-	
 	// To determine if a copy of an application is already running
 	static HANDLE itsMutex;
 

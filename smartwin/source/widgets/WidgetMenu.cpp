@@ -16,7 +16,7 @@ void WidgetMenu::appendItem
 	mii.wID = id;
 	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
 
-	Application::instance().registerCommand(Message(WM_COMMAND, id), IdDispatcher(f), this->handle());
+	callbacks.insert(std::make_pair(id, IdDispatcher(f)));
 }
 
 
@@ -34,7 +34,7 @@ void WidgetMenu::appendItem
 	mii.wID = id;
 	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
 
-	Application::instance().registerCommand(Message(WM_COMMAND, id), SimpleDispatcher(f), this->handle());
+	callbacks.insert(std::make_pair(id, SimpleDispatcher(f)));
 }
 
 SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
@@ -68,6 +68,16 @@ void WidgetMenu::setText( unsigned id, const SmartUtil::tstring& text )
 
 	if ( ::SetMenuItemInfo( this->handle(), id, FALSE, & info ) == FALSE )
 		throw xCeption( _T( "Couldn't set item info in setItemText()" ) );
+}
+
+void WidgetMenuBase::addCommands(MessageMapBase* widget) {
+	printf("Adding %d\n", callbacks.size());
+	for(CallbackMap::iterator i = callbacks.begin(); i != callbacks.end(); ++i) {
+		widget->setCallback(Message(WM_COMMAND, i->first), i->second);
+	}
+	for(std::vector< std::tr1::shared_ptr<WidgetMenu> >::iterator i = itsChildren.begin(); i != itsChildren.end(); ++i) {
+		(*i)->addCommands(widget);
+	}
 }
 
 }

@@ -4,9 +4,6 @@ namespace SmartWin {
 
 int WidgetModalDialog::createDialog( unsigned resourceId )
 {
-	// Must register the widget in order not to close app when this closes...!
-	Application::instance().registerWidget( this );
-
 	// this will not return until the dialog is closed by calling endDialog() with
 	// a retv
 	//
@@ -26,9 +23,6 @@ int WidgetModalDialog::createDialog( unsigned resourceId )
 
 int WidgetModalDialog::createDialog()
 {
-	// Must register the widget in order not to close app when this closes...!
-	Application::instance().registerWidget( this );
-
 	// Arrange so the DLGTEMPLATE is followed by 0000 for menu, winclass and title.
 	unsigned char dlg_menu_winclass_title[ sizeof( DLGTEMPLATE ) + 30 ];
 	memset( dlg_menu_winclass_title, 0, sizeof( dlg_menu_winclass_title ) );

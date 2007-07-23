@@ -30,7 +30,6 @@
 #define WidgetWindowBase_h
 
 #include "../BasicTypes.h"
-#include "../Command.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectBorder.h"
@@ -47,6 +46,7 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
+#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 

@@ -32,6 +32,7 @@
 #include "../Application.h"
 #include "../BasicTypes.h"
 #include "../aspects/AspectGetParent.h"
+#include "../aspects/AspectVoidVoidDispatcher.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -41,6 +42,8 @@ namespace SmartWin
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
+
+class WidgetMenu;
 
 class WidgetMenuBase : boost::noncopyable {
 public:
@@ -55,7 +58,17 @@ protected:
 			::DestroyMenu(itsHandle);
 		}
 	}
+
+	// Children, only "popup" menus are supposed to have children
+	std::vector< std::tr1::shared_ptr<WidgetMenu> > itsChildren;
+
 	HMENU itsHandle;
+	
+	typedef std::map<unsigned, MessageMapBase::CallbackType> CallbackMap;
+	CallbackMap callbacks;
+	
+	void addCommands(MessageMapBase* widget);
+
 };
 
 template< typename WidgetMenuType, enum Platform >
@@ -143,9 +156,6 @@ public:
 	}
 private:
 	HWND itsCmdBar;
-
-	// Children, only "popup" menus are supposed to have children
-	std::vector< WidgetMenuPtr > itsChildren;
 };
 
 /// Specialized functions in menu for desktop Windows API version
@@ -170,8 +180,9 @@ public:
 	  * This can be done by attaching another menu object. <br>
 	  * For an example of this see the WidgetMenu project.       
 	  */
-	void attach( Widget * mainWindow )
+	void attach( MessageMapBase * mainWindow )
 	{
+		addCommands(mainWindow);
 		::SetMenu( mainWindow->handle(), handle() );
 	}
 
@@ -281,20 +292,6 @@ public:
 	
 	WidgetMenu();
 	
-	struct SimpleDispatcher
-	{
-		typedef std::tr1::function<void ()> F;
-
-		SimpleDispatcher(const F& f_) : f(f_) { }
-
-		HRESULT operator()(private_::SignalContent& params) {
-			f();
-			return 1;
-		}
-
-		F f;
-	};
-
 	struct IdDispatcher
 	{
 		typedef std::tr1::function<void (unsigned)> F;
@@ -303,11 +300,13 @@ public:
 
 		HRESULT operator()(private_::SignalContent& params) {
 			f(LOWORD(params.Msg.WParam ));
-			return 1;
+			return 0;
 		}
 
 		F f;
 	};
+	
+	typedef AspectVoidVoidDispatcher SimpleDispatcher;
 
 	/// Class type
 	typedef WidgetMenu ThisType;
@@ -436,7 +435,7 @@ public:
 	  * < li >TPM_VERPOSANIMATION : Animates the menu from top to bottom< /li >
 	  * < /ul >
 	  */
-	unsigned trackPopupMenu( Widget * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
+	unsigned trackPopupMenu( MessageMapBase * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
 
 	bool isSystemMenu()
 	{
@@ -542,15 +541,19 @@ inline bool WidgetMenu::isSeparator( UINT id, bool byPosition )
 	return (getMenuState(id, byPosition) & MF_SEPARATOR) == MF_SEPARATOR; 
 }
 
-inline unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, int x, int y, unsigned flags )
+inline unsigned WidgetMenu::trackPopupMenu( MessageMapBase * mainWindow, int x, int y, unsigned flags )
 {
+	
 	xAssert( mainWindow != 0, _T( "EventHandlerClass can't be null while trying to display Popup Menu" ) );
+	addCommands(mainWindow);
+
 	if ( x == - 1 && y == - 1 )
 	{
 		DWORD pos = ::GetMessagePos();
 		x = LOWORD( pos );
 		y = HIWORD( pos );
 	}
+	
 	int retVal = ::TrackPopupMenu
 		( this->handle()
 		, flags, x, y, 0

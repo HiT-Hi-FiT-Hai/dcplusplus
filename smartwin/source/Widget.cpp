@@ -64,7 +64,6 @@ void Widget::subclass( unsigned id )
 	if ( !itsHandle )
 		throw xCeption( _T( "GetDlgItem failed." ) );
 
-	Widget::registerWidget();
 }
 
 void Widget::updateWidget()
@@ -105,12 +104,10 @@ void Widget::create( const SmartWin::Seed & cs )
 		xCeption x( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
 		throw x;
 	}
-	isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
 }
 
 Widget::Widget( Widget * parent, HWND hWnd, bool doReg )
 	: 
-	isChild( false ),
 	itsHandle( hWnd ),
 	itsParent( parent ),
 	itsCriticalSection( 0 )
@@ -152,7 +149,7 @@ void Widget::eraseMeFromParentsChildren()
 {
 	if ( ! itsParent ) return;
 
-	itsParent->itsChildren.erase(std::remove(itsParent->itsChildren.begin(), itsParent->itsChildren.end(), this), itsParent->itsChildren().end());
+	itsParent->itsChildren.erase(std::remove(itsParent->itsChildren.begin(), itsParent->itsChildren.end(), this), itsParent->itsChildren.end());
 }
 
 void Widget::addRemoveStyle( DWORD addStyle, bool add )

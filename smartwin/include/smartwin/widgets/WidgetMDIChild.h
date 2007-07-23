@@ -33,6 +33,7 @@
 
 #include "../../SmartUtil.h"
 #include "../BasicTypes.h"
+#include "../MessageMapPolicyClasses.h"
 #include "WidgetMDIParent.h"
 #include "WidgetWindowBase.h"
 #include <sstream>

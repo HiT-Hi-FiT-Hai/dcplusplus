@@ -41,8 +41,6 @@ void WidgetMDIParent::create( const Seed & cs )
 		xCeption x( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
 		throw x;
 	}
-	this->Widget::isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
-	Application::instance().registerWidget( this );
 
 	ThisType::createMessageMap();
 }

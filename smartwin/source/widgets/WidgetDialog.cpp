@@ -14,8 +14,6 @@ void WidgetDialog::createDialog( unsigned resourceId )
 		xCeption x( _T( "CreateDialogParam failed." ) );
 		throw x;
 	}
-
-	Widget::registerWidget();
 }
 
 }

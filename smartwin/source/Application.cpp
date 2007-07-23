@@ -310,26 +310,6 @@ Application & Application::instance()
 	return * itsInstance;
 }
 
-Application::CommandMap Application::commands;
-
-void Application::registerCommand(const Message& msg, const MessageMapBase::CallbackType &callback, HANDLE owner) {
-	commands.insert(std::make_pair(msg, std::make_pair(callback, owner)));
-}
-
-bool Application::handleCommand(const Message& msg, HANDLE handler) {
-	// TODO Prefer command with correct owner...
-	Message msgComparer( msg.Handle, msg.Msg, msg.WParam, msg.LParam, false );
-	CommandMap::iterator i = commands.find(msgComparer);
-	if(i != commands.end()) {
-		private_::SignalContent params( msg );
-		i->second.first( params );
-		if ( params.RunDefaultHandling )
-			return false;
-		return true;
-	}
-	return false;
-}
-
 SmartUtil::tstring Application::getModulePath() const
 {
 	TCHAR retVal[2049];

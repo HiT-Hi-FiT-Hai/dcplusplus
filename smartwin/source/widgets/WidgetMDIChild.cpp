@@ -60,9 +60,6 @@ void WidgetMDIChild::createMDIChild( Seed cs )
 		throw x;
 	}
 	Application::instance().addLocalWindowClassToUnregister( cs );
-	//::ShowWindow( this->Widget::itsHandle, SW_SHOW );
-	//this->Widget::isChild = true;
-	this->registerWidget();
 }
 
 }
