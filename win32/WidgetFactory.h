@@ -29,7 +29,6 @@
 template<typename ContainerWidgetType>
 class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType> {
 public:
-	WidgetFactory() : SmartWin::Widget(0), SmartWin::WidgetFactory<ContainerWidgetType>() { }
 	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType>(parent) { }
 
 	/// DataGrid class type.

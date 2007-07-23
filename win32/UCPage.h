@@ -24,7 +24,7 @@
 
 class UserCommand;
 
-class UCPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class UCPage : public PropPage
 {
 public:
 	UCPage(SmartWin::Widget* parent);

@@ -30,6 +30,7 @@
 #define Widget_h
 
 #include "../SmartUtil.h"
+#include "BasicTypes.h"
 #include "Threads.h"
 #include <boost/noncopyable.hpp>
 #include <memory>
