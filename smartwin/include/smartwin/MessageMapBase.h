@@ -41,7 +41,7 @@ namespace SmartWin
 // begin namespace SmartWin
 
 /// Base class for widgets that respond to messages
-class MessageMapBase : public virtual Widget
+class MessageMapBase : public Widget
 {
 public:
 	static MessageMapBase* fromProp(HWND hWnd) { return reinterpret_cast<MessageMapBase*>(::GetProp(hWnd, propAtom)); }
@@ -56,7 +56,7 @@ public:
 	/// Adds a new Callback into the Callback collection or replaces the existing one
 	void setCallback(const Message& msg, const CallbackType& callback );
 
-	MessageMapBase() : Widget(0) { }
+	MessageMapBase(Widget* parent) : Widget(parent) { }
 	virtual ~MessageMapBase() { }
 
 	CallbackCollectionType & getCallbacks() { 
@@ -64,7 +64,7 @@ public:
 	}
 
 	// Returns true if fired, else false
-	bool tryFire( const Message & msg, LRESULT & retVal );
+	virtual bool tryFire( const Message & msg, LRESULT & retVal );
 		
 	/** This will be called when it's time to delete the widget */
 	virtual void kill() = 0;

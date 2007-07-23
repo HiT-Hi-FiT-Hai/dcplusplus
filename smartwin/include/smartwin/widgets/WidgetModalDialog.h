@@ -169,7 +169,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline WidgetModalDialog::WidgetModalDialog( Widget * parent )
-	: Widget(parent), BaseType( parent )
+	: BaseType( parent )
 {
 	// Default parameters for pure modal dialogs
 #ifdef WINCE

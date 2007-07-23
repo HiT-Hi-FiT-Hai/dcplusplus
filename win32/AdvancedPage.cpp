@@ -50,7 +50,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-AdvancedPage::AdvancedPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+AdvancedPage::AdvancedPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCEDPAGE);
 
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_ADVANCED_BOOLEANS));

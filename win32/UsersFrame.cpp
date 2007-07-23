@@ -46,8 +46,7 @@ void UsersFrame::UserInfo::remove() {
 	FavoriteManager::getInstance()->removeFavoriteUser(user); 
 }
 
-UsersFrame::UsersFrame(SmartWin::Widget* mdiParent) : 
-	SmartWin::Widget(mdiParent),
+UsersFrame::UsersFrame(SmartWin::WidgetMDIParent* mdiParent) : 
 	BaseType(mdiParent),
 	users(0),
 	startup(true)

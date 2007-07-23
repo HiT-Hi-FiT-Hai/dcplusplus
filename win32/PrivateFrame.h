@@ -35,8 +35,8 @@ public:
 		STATUS_LAST
 	};
 	
-	static void gotMessage(SmartWin::Widget* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
-	static void openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
+	static void gotMessage(SmartWin::WidgetMDIParent* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage);
+	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); }
 	static void closeAll();
 	static void closeAllOffline();
@@ -59,7 +59,7 @@ private:
 
 	UserPtr replyTo;
 
-	PrivateFrame(Widget* mdiParent, const UserPtr& replyTo_);
+	PrivateFrame(WidgetMDIParent* mdiParent, const UserPtr& replyTo_);
 	virtual ~PrivateFrame();
 	
 	void layout();

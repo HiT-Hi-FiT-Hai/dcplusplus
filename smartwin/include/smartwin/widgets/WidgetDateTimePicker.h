@@ -92,12 +92,13 @@ class WidgetDateTimePicker :
 	};
 
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	/// Class type
 	typedef WidgetDateTimePicker ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	friend class WidgetCreator< WidgetDateTimePicker >;
 
@@ -271,7 +272,7 @@ inline void WidgetDateTimePicker::setFormat( const SmartUtil::tstring & format )
 }
 
 inline WidgetDateTimePicker::WidgetDateTimePicker( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );

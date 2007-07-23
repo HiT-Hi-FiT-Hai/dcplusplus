@@ -20,9 +20,8 @@
 #define DCPLUSPLUS_WIN32_ADVANCED_PAGE_H
 
 #include "PropPage.h"
-#include "WidgetFactory.h"
 
-class AdvancedPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class AdvancedPage : public PropPage
 {
 public:
 	AdvancedPage(SmartWin::Widget* parent);

@@ -23,8 +23,7 @@
 #include "HoldRedraw.h"
 #include "WinUtil.h"
 
-SystemFrame::SystemFrame(SmartWin::Widget* mdiParent) : 
-	SmartWin::Widget(mdiParent), 
+SystemFrame::SystemFrame(SmartWin::WidgetMDIParent* mdiParent) : 
 	BaseType(mdiParent),
 	log(0) 
 {

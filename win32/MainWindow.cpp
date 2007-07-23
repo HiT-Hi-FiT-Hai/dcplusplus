@@ -60,7 +60,7 @@
 MainWindow* MainWindow::instance = 0;
 
 MainWindow::MainWindow() :
-	SmartWin::Widget(0),
+	WidgetFactory<SmartWin::WidgetMDIFrame>(0),
 	paned(0),
 	transfers(0),
 	tabs(0),
@@ -414,7 +414,7 @@ HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	} break;
 	case VIEW_FILE_AND_DELETE: {
 		boost::scoped_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
-		new TextFrame(this, *file);
+		new TextFrame(this->getMDIClient(), *file);
 		File::deleteFile(Text::fromT(*file));
 	} break;
 	case STATUS_MESSAGE: {

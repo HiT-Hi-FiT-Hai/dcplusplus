@@ -31,8 +31,7 @@ int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
 static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING, ResourceManager::COUNT, ResourceManager::TIME };
 
-SpyFrame::SpyFrame(SmartWin::Widget* mdiParent) :
-	SmartWin::Widget(mdiParent),
+SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	BaseType(mdiParent),
 	bIgnoreTTH(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES)),
 	total(0),

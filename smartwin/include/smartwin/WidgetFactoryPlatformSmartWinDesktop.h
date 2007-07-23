@@ -93,13 +93,6 @@ public:
 	/// Coolbar object type.
 	typedef typename WidgetCoolbar::ObjectType WidgetCoolbarPtr;
 
-	/// Default Constructor setting parent to nothing!
-	/** Use this Constructor for a Desktop application window which does not need a
-	  * parent. If you need a parent for your window e.g. your window is a
-	  * WidgetChildWindow then use the Constructor taking the Widget argument
-	  */
-	WidgetFactoryPlatformImplementation();
-
 	/// Constructor taking a pointer to it's parent.
 	/** If you for instance create a WidgetChildWindow then use this Constructor
 	  * since it explicitly sets the parent of the Widget.
@@ -198,10 +191,6 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< typename ContainerWidgetType >
-WidgetFactoryPlatformImplementation< ContainerWidgetType, SmartWinDesktop >::WidgetFactoryPlatformImplementation()
-	: Widget(0), ContainerWidgetType( 0 )
-{}
 
 // end namespace SmartWin
 }

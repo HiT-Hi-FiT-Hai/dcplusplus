@@ -38,7 +38,7 @@ PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_FAVORITE_DIRSPAGE);
 
 	PropPage::translate(handle(), texts);

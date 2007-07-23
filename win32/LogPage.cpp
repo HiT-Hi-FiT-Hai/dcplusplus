@@ -53,7 +53,7 @@ PropPage::ListItem LogPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-LogPage::LogPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_LOGPAGE);
 
 	PropPage::translate(handle(), texts);

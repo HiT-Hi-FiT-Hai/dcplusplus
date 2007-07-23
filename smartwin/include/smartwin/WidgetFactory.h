@@ -243,8 +243,6 @@ public:
 	  * to explicitly state a parent like for instance you often would want in a
 	  * WidgetChildWindow you should use the one taking a Widget * instead
 	  */
-	WidgetFactory();
-
 	explicit WidgetFactory( Widget * parent );
 
 	/// Creates a ChooseFolderDialog and returns a pointer to it.
@@ -477,15 +475,8 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename ContainerWidgetType>
-WidgetFactory< ContainerWidgetType >::WidgetFactory()
-		: Widget( 0 )
-		, WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >()
-{}
-
-template<typename ContainerWidgetType>
 WidgetFactory< ContainerWidgetType >::WidgetFactory( SmartWin::Widget * parent )
-		: Widget( parent )
-		, WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >( parent )
+		: WidgetFactoryPlatformImplementation< ContainerWidgetType, CurrentPlatform >( parent )
 {}
 
 template<typename ContainerWidgetType>
@@ -583,7 +574,7 @@ template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetMenuPtr
 WidgetFactory< ContainerWidgetType >::createMenu(const typename WidgetMenu::Seed & cs)
 {
-	return WidgetCreator< WidgetMenu >::create( this, cs );
+	return WidgetCreator< WidgetMenu >::create( cs );
 }
 
 template<typename ContainerWidgetType>

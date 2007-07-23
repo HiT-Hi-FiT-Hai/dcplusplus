@@ -48,7 +48,7 @@ PropPage::ListItem TabsPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-TabsPage::TabsPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+TabsPage::TabsPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_TABSPAGE);
 
 	PropPage::translate(handle(), texts);

@@ -29,8 +29,9 @@
 #include "../include/smartwin/Application.h"
 #include "../SmartUtil/tstring.h"
 #include "../include/smartwin/BasicTypes.h"
-#include "../include/smartwin/widgets/WidgetWindow.h"
-#include "assert.h"
+#include "../include/smartwin/aspects/AspectMouseClicks.h"
+#include "../include/smartwin/aspects/AspectSizable.h"
+
 #include <boost/lexical_cast.hpp>
 
 using namespace SmartWin;
@@ -45,11 +46,6 @@ using namespace SmartWin;
 #endif //! _MSC_VER
 
 // Friend functions to Application 
-
-std::list < Widget * > & private_::getApplicationWidgets()
-{
-	return Application::itsInstance->itsWidgets;
-}
 
 Application * Application::itsInstance = 0;
 HANDLE Application::itsMutex = 0;
@@ -173,10 +169,6 @@ int PASCAL WinMain
 		return retVal;
 	}
 
-void Application::registerWidget( Widget * widget )
-{
-	itsWidgets.push_back( widget );
-}
 
 HINSTANCE Application::getAppHandle()
 {
@@ -336,36 +328,6 @@ bool Application::handleCommand(const Message& msg, HANDLE handler) {
 		return true;
 	}
 	return false;
-}
-
-void Application::clearCommands(HANDLE owner) {
-	for(CommandMap::iterator i = commands.begin(); i != commands.end(); ) {
-		if(i->second.second == owner) {
-			commands.erase(i++);
-		} else {
-			++i;
-		}
-	}
-}
-
-bool Application::lastWidget( const Widget * This ) const
-{
-	int x = 0;
-	for ( std::list < Widget * >::const_iterator idx = itsWidgets.begin();
-		idx != itsWidgets.end();
-		++idx )
-	{
-		// TODO: Fix, rotten logic
-		// First we check to see if Widget is OuterMostDervied (only Widgets of that type CAN be most outer Widgets)
-		// Then we throw away if it's the "this" Widget (we don't want to count the this one)
-		// Then we verify that Widget is NOT child Widget!
-		// If it is we found one Widget and the currently closing one is NOT the lastWidget therefore returning FALSE
-		if ( dynamic_cast< const OuterMostWidget * >( * idx ) != 0 )
-			if( *idx != This )
-				if( !( * idx )->isChild )
-					++x;
-	}
-	return x == 0;
 }
 
 SmartUtil::tstring Application::getModulePath() const

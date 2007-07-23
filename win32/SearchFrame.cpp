@@ -61,7 +61,7 @@ int SearchFrame::SearchInfo::compareItems(SearchInfo* a, SearchInfo* b, int col)
 }
 
 
-void SearchFrame::openWindow(SmartWin::Widget* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
+void SearchFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
 	SearchFrame* pChild = new SearchFrame(mdiParent, str, size, mode, type);
 	frames.insert(pChild);
 }
@@ -71,8 +71,7 @@ void SearchFrame::closeAll() {
 		StupidWin::postMessage(*i, WM_CLOSE);
 }
 
-SearchFrame::SearchFrame(SmartWin::Widget* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	SmartWin::Widget(mdiParent),
+SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	BaseType(mdiParent),
 	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
 	bShowUI(true),

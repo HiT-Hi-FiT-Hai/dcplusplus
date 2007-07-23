@@ -144,7 +144,7 @@ inline WidgetMDIFrame::Seed::Seed()
 }
 
 inline WidgetMDIFrame::WidgetMDIFrame( Widget * parent )
-	: Widget(parent), BaseType( parent ), mdi(0)
+	: BaseType( parent ), mdi(0)
 {}
 
 inline WidgetMDIFrame::~WidgetMDIFrame()

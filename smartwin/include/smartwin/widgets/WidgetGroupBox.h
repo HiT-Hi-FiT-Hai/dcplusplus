@@ -82,7 +82,6 @@ class WidgetGroupBox :
 	public AspectThreads< WidgetGroupBox >,
 	public AspectVisible< WidgetGroupBox >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	friend class WidgetCreator< WidgetGroupBox >;
 public:
 	/// Class type
@@ -90,6 +89,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -176,7 +177,7 @@ inline Message & WidgetGroupBox::getDblClickMessage()
 }
 
 inline WidgetGroupBox::WidgetGroupBox( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );

@@ -91,7 +91,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	UsersFrame(SmartWin::Widget* mdiParent);
+	UsersFrame(SmartWin::WidgetMDIParent* mdiParent);
 	virtual ~UsersFrame() { }
 
 	void layout();

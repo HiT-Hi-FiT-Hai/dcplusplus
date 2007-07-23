@@ -31,8 +31,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT,
 	ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
 };
 
-FavHubsFrame::FavHubsFrame(SmartWin::Widget* mdiParent) : 
-	SmartWin::Widget(mdiParent),
+FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) : 
 	BaseType(mdiParent),
 	connect(0),
 	add(0),
@@ -167,7 +166,7 @@ void FavHubsFrame::openSelected() {
 	std::vector<unsigned> items = hubs->getSelectedRows();
 	for(std::vector<unsigned>::iterator i = items.begin(); i != items.end(); ++i) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)hubs->getItemData(*i);
-		HubFrame::openWindow(getParent(), Text::toT(entry->getServer()));
+		HubFrame::openWindow(static_cast<SmartWin::WidgetMDIParent*>(getParent()), Text::toT(entry->getServer()));
 	}
 }
 

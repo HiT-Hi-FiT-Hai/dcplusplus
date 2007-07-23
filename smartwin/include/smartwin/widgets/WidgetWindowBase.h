@@ -29,32 +29,26 @@
 #ifndef WidgetWindowBase_h
 #define WidgetWindowBase_h
 
-#include "../../SmartUtil.h"
-#include "../MessageMapPolicyClasses.h"
-#include "../WindowsHeaders.h"
-#include "../CallbackFuncPrototypes.h"
-#include "../xCeption.h"
+#include "../BasicTypes.h"
 #include "../Command.h"
-#include "WidgetStatusBar.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectMouseClicks.h"
-#include "../aspects/AspectVisible.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectKeyboard.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectActivate.h"
+#include "../aspects/AspectBorder.h"
+#include "../aspects/AspectCommand.h"
+#include "../aspects/AspectDragDrop.h"
 #include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectEraseBackground.h"
+#include "../aspects/AspectFocus.h"
+#include "../aspects/AspectFont.h"
+#include "../aspects/AspectGetParent.h"
+#include "../aspects/AspectKeyboard.h"
+#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectBorder.h"
-#include "../aspects/AspectDragDrop.h"
-#include "../BasicTypes.h"
-#include <sstream>
-#include <map>
-#include <memory>
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectText.h"
+#include "../aspects/AspectVisible.h"
+#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -66,46 +60,6 @@ namespace SmartWin
 // NO MORE "application widgets" the application is terminated
 class OuterMostWidget
 {
-};
-
-struct WidgetWindowBaseCloseDispatcher
-{
-	typedef std::tr1::function<bool ()> F;
-	
-	WidgetWindowBaseCloseDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		bool destroy = f();
-
-		if ( destroy ) {
-			params.RunDefaultHandling = true;
-			return TRUE;
-		}
-
-		return FALSE;
-	}
-
-	F f;
-	Widget* widget;
-};
-
-struct WidgetWindowBaseTimerDispatcher
-{
-	typedef std::tr1::function<bool ()> F;
-	
-	WidgetWindowBaseTimerDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-		bool keep = f();
-		
-		if(!keep) {
-			::KillTimer(reinterpret_cast<HWND>(params.Msg.Handle), params.Msg.WParam);
-			// TODO remove from message map as well...
-		}
-		return FALSE;
-	}
-
-	F f;
 };
 
 /// Main Window class
@@ -139,24 +93,66 @@ class WidgetWindowBase :
 	public MessageMapPolicy< Policy >,
 
 	// Aspects
-	public AspectBorder< WidgetWindowBase< Policy > >,
-	public AspectSizable< WidgetWindowBase< Policy > >,
-	public AspectFont< WidgetWindowBase< Policy > >,
-	public AspectText< WidgetWindowBase< Policy > >,
-	public AspectMouseClicks< WidgetWindowBase< Policy > >,
-	public AspectVisible< WidgetWindowBase< Policy > >,
-	public AspectKeyboard< WidgetWindowBase< Policy > >,
-	public AspectFocus< WidgetWindowBase< Policy > >,
 	public AspectActivate< WidgetWindowBase< Policy > >,
-	public AspectEraseBackground< WidgetWindowBase< Policy > >,
-	public AspectPainting< WidgetWindowBase< Policy > >,
-	public AspectEnabled< WidgetWindowBase< Policy > >,
-	public AspectRaw< WidgetWindowBase< Policy > >,
-	public AspectThreads< WidgetWindowBase< Policy > >,
+	public AspectBorder< WidgetWindowBase< Policy > >,
+	public AspectCommand< WidgetWindowBase< Policy > >,
 	public AspectDragDrop< WidgetWindowBase< Policy > >,
+	public AspectEnabled< WidgetWindowBase< Policy > >,
+	public AspectEraseBackground< WidgetWindowBase< Policy > >,
+	public AspectFocus< WidgetWindowBase< Policy > >,
+	public AspectFont< WidgetWindowBase< Policy > >,
+	public AspectKeyboard< WidgetWindowBase< Policy > >,
+	public AspectMouseClicks< WidgetWindowBase< Policy > >,
+	public AspectPainting< WidgetWindowBase< Policy > >,
+	public AspectRaw< WidgetWindowBase< Policy > >,
+	public AspectSizable< WidgetWindowBase< Policy > >,
+	public AspectText< WidgetWindowBase< Policy > >,
+	public AspectThreads< WidgetWindowBase< Policy > >,
+	public AspectVisible< WidgetWindowBase< Policy > >,
 
 	public OuterMostWidget
 {
+
+	struct CloseDispatcher
+	{
+		typedef std::tr1::function<bool ()> F;
+		
+		CloseDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			bool destroy = f();
+
+			if ( destroy ) {
+				params.RunDefaultHandling = true;
+				return TRUE;
+			}
+
+			return FALSE;
+		}
+
+		F f;
+		Widget* widget;
+	};
+
+	struct TimerDispatcher
+	{
+		typedef std::tr1::function<bool ()> F;
+		
+		TimerDispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+			bool keep = f();
+			
+			if(!keep) {
+				::KillTimer(reinterpret_cast<HWND>(params.Msg.Handle), params.Msg.WParam);
+				// TODO remove from message map as well...
+			}
+			return FALSE;
+		}
+
+		F f;
+	};
+
 public:
 	/// Class type
 	typedef WidgetWindowBase< Policy > ThisType;
@@ -164,11 +160,8 @@ public:
 	/// Object type
 	typedef ThisType * ObjectType;
 
-private:
-	typedef WidgetWindowBaseCloseDispatcher CloseDispatcher;
-	typedef WidgetWindowBaseTimerDispatcher TimerDispatcher;
-public:
-
+	typedef MessageMapPolicy< Policy > PolicyType;
+	
 	// The next line must be included in Widgets that are supposed to support being
 	// Maximized, Minimized or Restored. It's a Magic Enum construct and can be
 	// read about at
@@ -184,7 +177,7 @@ public:
 	  * If you return true from your event handler the window is closed, otherwise 
 	  * the window is NOT allowed to actually close!!       
 	  */
-	void onClosing(const CloseDispatcher::F& f) {
+	void onClosing(const typename CloseDispatcher::F& f) {
 		this->setCallback(
 			Message( WM_CLOSE ), CloseDispatcher(f, this)
 		);
@@ -197,7 +190,7 @@ public:
 	  * If your event handler returns true, it will keep getting called periodically, otherwise 
 	  * it will be removed.
 	  */
-	void createTimer(const TimerDispatcher::F& f, unsigned int milliSeconds);
+	void createTimer(const typename TimerDispatcher::F& f, unsigned int milliSeconds);
 
 	/// Closes the window
 	/** Call this function to raise the "Closing" event. <br>
@@ -282,11 +275,11 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template< class Policy >
-void WidgetWindowBase< Policy >::createTimer( const TimerDispatcher::F& f,
+void WidgetWindowBase< Policy >::createTimer( const typename TimerDispatcher::F& f,
 	unsigned int milliSecond)
 {
 
-	UINT_PTR id = ::SetTimer( this->Widget::itsHandle, 0, static_cast< UINT >( milliSecond ), NULL);
+	UINT_PTR id = ::SetTimer( this->handle(), 0, static_cast< UINT >( milliSecond ), NULL);
 	
 	MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
 	ptrThis->setCallback(
@@ -388,7 +381,7 @@ void WidgetWindowBase< Policy >::setCursor( const SmartUtil::tstring & filePathN
 
 template< class Policy >
 WidgetWindowBase< Policy >::WidgetWindowBase( Widget * parent )
-	: Widget( parent, 0, true )
+	: PolicyType( parent )
 {
 	this->Widget::itsCtrlId = 0;
 }

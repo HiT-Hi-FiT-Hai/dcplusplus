@@ -44,8 +44,7 @@ void QueueFrame::QueueItemInfo::remove() {
 	QueueManager::getInstance()->remove(getTarget()); 
 }
 
-QueueFrame::QueueFrame(SmartWin::Widget* mdiParent) :
-	SmartWin::Widget(mdiParent),
+QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	BaseType(mdiParent),
 	dirs(0),
 	files(0),

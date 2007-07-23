@@ -63,7 +63,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCED3PAGE);
 
 	PropPage::translate(handle(), texts);

@@ -45,6 +45,13 @@ template< class WidgetType >
 class WidgetCreator
 {
 public:
+	static typename WidgetType::ObjectType create( const typename WidgetType::Seed & cs )
+	{
+		typename WidgetType::ObjectType retVal(new WidgetType);
+		retVal->create( cs );
+		return retVal;
+	}
+
 	static typename WidgetType::ObjectType create( Widget * parent, const typename WidgetType::Seed & cs )
 	{
 		typename WidgetType::ObjectType retVal(new WidgetType( parent ));

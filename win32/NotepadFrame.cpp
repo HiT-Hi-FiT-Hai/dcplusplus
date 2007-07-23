@@ -24,8 +24,7 @@
 #include <dcpp/File.h>
 #include <dcpp/Text.h>
 
-NotepadFrame::NotepadFrame(SmartWin::Widget* mdiParent) : 
-	SmartWin::Widget(mdiParent), 
+NotepadFrame::NotepadFrame(SmartWin::WidgetMDIParent* mdiParent) : 
 	BaseType(mdiParent),
 	pad(0) 
 {

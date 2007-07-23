@@ -27,7 +27,7 @@
 
 #include "WinUtil.h"
 
-SplashWindow::SplashWindow() : SmartWin::Widget(0) {
+SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0) {
 	{
 		Seed cs;
 		cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;

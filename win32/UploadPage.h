@@ -22,7 +22,7 @@
 #include "PropPage.h"
 #include "WidgetFactory.h"
 
-class UploadPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class UploadPage : public PropPage
 {
 public:
 	UploadPage(SmartWin::Widget* parent);

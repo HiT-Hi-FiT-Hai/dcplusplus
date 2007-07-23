@@ -42,13 +42,29 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
+class WidgetMenuBase : boost::noncopyable {
+public:
+	
+	HMENU handle() {
+		return itsHandle;
+	}
+protected:
+	WidgetMenuBase() : itsHandle(NULL) { }
+	virtual ~WidgetMenuBase() { 
+		if(itsHandle) {
+			::DestroyMenu(itsHandle);
+		}
+	}
+	HMENU itsHandle;
+};
+
 template< typename WidgetMenuType, enum Platform >
 class WidgetMenuPlatformImplementation;
 
 /// Specialized functions in menu for Windows CE Windows API version
 template<typename WidgetMenuType>
 class WidgetMenuPlatformImplementation< WidgetMenuType, SmartWinCE > :
-	public virtual Widget
+	public WidgetMenuBase
 {
 
 public:
@@ -58,14 +74,12 @@ public:
 
 	typedef std::tr1::shared_ptr< WidgetMenuType > WidgetMenuPtr;
 
-	HMENU handle() { return reinterpret_cast<HMENU>(this->handle()); }
-	
 	/// Actually creates the Menu
 	/** You should call WidgetFactory::createMenu if you instantiate class directly.
 	  * <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create(const typename WidgetMenuType::Seed cs)
+	void create(const typename WidgetMenuType::Seed cs)
 	{
 		itsCmdBar = CommandBar_Create( Application::instance().getAppHandle(), this->Widget::itsParent->handle(), 1 );
 		if ( !itsCmdBar )
@@ -73,25 +87,18 @@ public:
 			xCeption x( _T( "CommandBar_Create in WidgetMenu::create fizzled..." ) );
 			throw x;
 		}
-		HMENU menu = ::CreateMenu();
-		if ( !menu )
+		itsHandle = ::CreateMenu();
+		if ( !itsHandle )
 		{
 			xCeption x( _T( "CreateMenu in WidgetMenu::create fizzled..." ) );
 			throw x;
 		}
 		// Why on EARTH this works I have no idea whatsoever, but apparently it does... (casting to string!)
-		LPTSTR menuName = reinterpret_cast< LPTSTR >( menu );
+		LPTSTR menuName = reinterpret_cast< LPTSTR >( itsHandle );
 		CommandBar_InsertMenubarEx( itsCmdBar, reinterpret_cast< HINSTANCE >( 0 ), menuName, 0 );
 
 		// Since we're defaulting the window creation to no capture and no title we must add the X in the command bar...
 		CommandBar_AddAdornments( itsCmdBar, 0, 0 );
-
-		// TODO: Is this safe ? ! ?
-		// At least we should verify it...
-		BOOST_STATIC_ASSERT( sizeof( HWND ) == sizeof( HMENU ) );
-		this->Widget::itsHandle = reinterpret_cast< HWND >( menu );
-
-		this->Widget::registerWidget();
 	}
 
 	/// Appends a popup to the menu
@@ -114,7 +121,7 @@ public:
 	WidgetMenuPtr appendPopup( const SmartUtil::tstring & name )
 	{
 		HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
-		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenuType( this->Widget::itsParent ) );
+		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenuType( ) );
 		HMENU popup = CreatePopupMenu();
 		retVal->itsHandle = reinterpret_cast< HWND >( popup );
 		::AppendMenu( handle, MF_POPUP, reinterpret_cast< unsigned int >( retVal->handle() ), name.c_str() );
@@ -144,10 +151,10 @@ private:
 /// Specialized functions in menu for desktop Windows API version
 template< typename WidgetMenuType >
 class WidgetMenuPlatformImplementation< WidgetMenuType, SmartWinDesktop > :
-	public virtual Widget
+	public WidgetMenuBase
 {
 protected:
-	WidgetMenuPlatformImplementation() : Widget(0) { }
+	WidgetMenuPlatformImplementation() { }
 public:
 	struct Seed {
 		Seed(bool popup_) : popup(popup_) { }
@@ -156,7 +163,6 @@ public:
 	};
 
 	typedef std::tr1::shared_ptr< WidgetMenuType > WidgetMenuPtr;
-	HMENU handle() { return reinterpret_cast<HMENU>(this->Widget::handle()); }
 
 	/// Attaches the menu to a parent window
 	/** Note! Menus can be switched between at runtime, you can have several menus
@@ -176,24 +182,16 @@ public:
 	  */
 	void create(const Seed& cs)
 	{
-		HMENU handle;
 		if(cs.popup) {
-			handle = ::CreatePopupMenu();
+			itsHandle = ::CreatePopupMenu();
 		} else {
-			handle = ::CreateMenu();
+			itsHandle = ::CreateMenu();
 		}
-		if ( !handle )
+		if ( !itsHandle )
 		{
 			xCeption x( _T( "CreateMenu in WidgetManu::create fizzled..." ) );
 			throw x;
 		}
-
-		// TODO: Is this safe ? ! ?
-		// At least we should verify it...
-		BOOST_STATIC_ASSERT( sizeof( HWND ) == sizeof( HMENU ) );
-		this->Widget::itsHandle = reinterpret_cast< HWND >( handle );
-
-		this->Widget::registerWidget();
 	}
 
 	/// Appends a popup to the menu
@@ -216,9 +214,7 @@ public:
 	WidgetMenuPtr appendPopup( const SmartUtil::tstring & name )
 	{
 
-//		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenu( this->Widget::itsParent ) );
-// Should it be the below instead ?
-		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenuType( this ) );
+		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenuType( ) );
 
 		retVal->create(Seed(true));
 		::AppendMenu( handle(), MF_POPUP, reinterpret_cast< unsigned int >( retVal->handle() ), name.c_str() );
@@ -282,6 +278,9 @@ protected:
 	friend class WidgetMenuPlatformImplementation< WidgetMenu, CurrentPlatform >;
 	friend class WidgetCreator< WidgetMenu >;
 public:
+	
+	WidgetMenu();
+	
 	struct SimpleDispatcher
 	{
 		typedef std::tr1::function<void ()> F;
@@ -444,24 +443,9 @@ public:
 		return isSysMenu;
 	}
 
-	// We CAN'T have this one protected since boost needs to be able to destroy
-	// objects of this type
-	// TODO: Fix...!!
-	virtual ~WidgetMenu()
-	{
-		Application::instance().clearCommands(this->handle());
-		::DestroyMenu( this->handle() );
-	}
-
-protected:
-	/// Constructor Taking pointer to parent
-	explicit WidgetMenu( SmartWin::Widget * parent );
-
 private:
 	// True is menu is "system menu" (icon in top left of window)
 	bool isSysMenu;
-
-	WidgetMenu( const WidgetMenu & ); // Never implemented intentionally
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -575,14 +559,9 @@ inline unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, int x, int y, u
 	return retVal;
 }
 
-inline WidgetMenu::WidgetMenu( SmartWin::Widget * parent )
-	: Widget( 0 )
-	, isSysMenu( false )
+inline WidgetMenu::WidgetMenu( )
+	: isSysMenu( false )
 {
-	// We construct Widget(0) so that the WidgetMenu is not placed in parent->itsChildren
-	// (If a WidgetMenu is in parent->Children then WidgetModalDialog crashs during cleanup.
-	xAssert( parent, _T( "Can't have a Menu without a parent..." ) );
-    this->Widget::itsParent= parent;	// But eventually we do want to know its parent.
 }
 // end namespace SmartWin
 }

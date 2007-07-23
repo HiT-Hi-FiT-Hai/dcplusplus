@@ -28,7 +28,7 @@ public:
 	typedef ThisType* ObjectType;
 	
 	// Constructor Taking pointer to parent
-	explicit WidgetDataGrid( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent) { }
+	explicit WidgetDataGrid( SmartWin::Widget * parent ) : BaseType(parent) { }
 
 	using BaseType::addRemoveListViewExtendedStyle;
 	

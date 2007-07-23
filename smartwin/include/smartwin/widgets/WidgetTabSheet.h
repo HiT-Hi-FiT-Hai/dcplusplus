@@ -84,7 +84,6 @@ class WidgetTabSheet :
 	public AspectThreads< WidgetTabSheet >,
 	public AspectVisible< WidgetTabSheet >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	struct ChangingDispatcher
 	{
 		typedef std::tr1::function<bool (unsigned)> F;
@@ -124,6 +123,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -362,7 +363,7 @@ inline void WidgetTabSheet::setData( unsigned index, LPARAM lParam )
 }
 
 inline WidgetTabSheet::WidgetTabSheet( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a ComboBox without a parent...
 	xAssert( parent, _T( "Cant have a WidgetTabSheet without a parent..." ) );

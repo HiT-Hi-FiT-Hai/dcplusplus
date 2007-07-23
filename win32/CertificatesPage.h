@@ -20,9 +20,8 @@
 #define DCPLUSPLUS_WIN32_CERTIFICATES_PAGE_H
 
 #include "PropPage.h"
-#include "WidgetFactory.h"
 
-class CertificatesPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class CertificatesPage : public PropPage
 {
 public:
 	CertificatesPage(SmartWin::Widget* parent);

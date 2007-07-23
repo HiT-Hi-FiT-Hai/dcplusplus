@@ -45,7 +45,7 @@ PropPage::ListItem CertificatesPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_ALLOW_UNTRUSTED_CLIENTS, },
 };
 
-CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_CERTIFICATESPAGE);
 
 	PropPage::translate(handle(), texts);

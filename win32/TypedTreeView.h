@@ -30,7 +30,7 @@ private:
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedTreeView( SmartWin::Widget* parent ) : SmartWin::Widget(parent), BaseType(parent) { }
+	explicit TypedTreeView( SmartWin::Widget* parent ) : BaseType(parent) { }
 	
 	virtual void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
 		BaseType::create(cs);

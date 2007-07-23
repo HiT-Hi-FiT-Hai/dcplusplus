@@ -39,24 +39,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-struct WidgetWindowCreateDispatcher
-{
-	typedef std::tr1::function<void (const CREATESTRUCT&)> F;
-
-	WidgetWindowCreateDispatcher(const F& f_) : f(f_) { }
-
-	HRESULT operator()(private_::SignalContent& params) {
-
-		CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( params.Msg.LParam );
-
-		f(*cs);
-		
-		return 0;
-	}
-
-	F f;
-};
-
 /// "Window" class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -73,7 +55,23 @@ class WidgetWindow
 	: public WidgetWindowBase< Policies::Normal >
 {
 	typedef WidgetWindowBase< Policies::Normal > BaseType;
-	typedef WidgetWindowCreateDispatcher CreateDispatcher;
+	struct CreateDispatcher
+	{
+		typedef std::tr1::function<void (const CREATESTRUCT&)> F;
+
+		CreateDispatcher(const F& f_) : f(f_) { }
+
+		HRESULT operator()(private_::SignalContent& params) {
+
+			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( params.Msg.LParam );
+
+			f(*cs);
+			
+			return 0;
+		}
+
+		F f;
+	};
 
 public:
 	/// Class type
@@ -217,7 +215,7 @@ public:
 
 protected:
 	// Unlike WidgetWindow, WidgetChildWindow must have a parent!!!
-	explicit WidgetChildWindow( Widget * parent ) : Widget(parent), WidgetWindow( parent ) 
+	explicit WidgetChildWindow( Widget * parent ) : WidgetWindow( parent ) 
 	{};
 };
 
@@ -231,7 +229,7 @@ inline WidgetWindow::Seed::Seed()
 }
 
 inline WidgetWindow::WidgetWindow( Widget * parent )
-	: Widget(parent), BaseType( parent )
+	: BaseType( parent )
 {}
 
 inline WidgetWindow::~WidgetWindow()

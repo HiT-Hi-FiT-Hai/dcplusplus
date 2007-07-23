@@ -24,7 +24,6 @@
 MDITab* MDITab::instance;
 
 MDITab::MDITab(SmartWin::Widget* parent) : 
-	SmartWin::Widget(parent),
 	BaseType(parent)
 {
 	instance = this;

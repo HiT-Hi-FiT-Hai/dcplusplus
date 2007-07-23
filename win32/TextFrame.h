@@ -24,7 +24,7 @@
 class TextFrame : public MDIChildFrame<TextFrame>
 {
 public:
-	TextFrame(SmartWin::Widget* mdiParent, const string& fileName);
+	TextFrame(SmartWin::WidgetMDIParent* mdiParent, const string& fileName);
 	enum Status {
 		STATUS_STATUS,
 		STATUS_LAST

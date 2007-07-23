@@ -82,7 +82,6 @@ class WidgetButton :
 	public AspectThreads< WidgetButton >,
 	public AspectVisible< WidgetButton >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	friend class WidgetCreator< WidgetButton >;
 public:
 	/// Class type
@@ -91,6 +90,9 @@ public:
 	/// Object type
 	typedef ThisType * ObjectType;
 
+	/// Policy type
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
+	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
@@ -170,7 +172,7 @@ inline Message & WidgetButton::getBackgroundColorMessage()
 }
 
 inline WidgetButton::WidgetButton( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );

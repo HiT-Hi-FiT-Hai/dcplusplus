@@ -40,7 +40,7 @@ private:
 	
 	WidgetTextBoxPtr log;
 	
-	SystemFrame(SmartWin::Widget* parent);
+	SystemFrame(SmartWin::WidgetMDIParent* parent);
 	virtual ~SystemFrame();
 
 	void layout();

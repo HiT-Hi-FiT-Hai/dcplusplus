@@ -31,12 +31,17 @@
 
 #include "../SignalParams.h"
 #include "../Place.h"
-#include "AspectGetParent.h"
-#include <functional>
 
 namespace SmartWin
 {
 // begin namespace SmartWin
+
+namespace private_ {
+// Internal function for creating a WidgetSizedEventResult out of the LPARAM
+// and WPARAM from a Message
+WidgetSizedEventResult createWindowSizedEventResultFromMessageParams( LPARAM lP, WPARAM wP );
+
+}
 
 /// \ingroup AspectClasses
 /// \ingroup WidgetLayout

@@ -20,9 +20,8 @@
 #define DCPLUSPLUS_WIN32_APPEARANCE_2_PAGE_H
 
 #include "PropPage.h"
-#include "WidgetFactory.h"
 
-class Appearance2Page : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class Appearance2Page : public PropPage
 {
 public:
 	Appearance2Page(SmartWin::Widget* parent);

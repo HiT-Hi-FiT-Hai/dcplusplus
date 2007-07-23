@@ -29,20 +29,18 @@
 #ifndef Widget_h
 #define Widget_h
 
-#include "WindowsHeaders.h"
 #include "../SmartUtil.h"
-#include "CallbackFuncPrototypes.h"
-#include "Message.h"
 #include "Threads.h"
-#include <vector>
-#include <memory>
 #include <boost/noncopyable.hpp>
+#include <memory>
+#include <vector>
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
 class Application;
+class Widget;
 
 namespace private_
 {
@@ -115,9 +113,7 @@ public:
 	  * Widgets parent, if the Widget doesn't have a parent it will return a null
 	  * pointer.
 	  */
-	Widget * getParent() const
-	{ return itsParent;
-	}
+	Widget * getParent() const { return itsParent; }
 
 	/// Repaints the whole window
 	/** Invalidate the window and repaints it.
@@ -154,9 +150,6 @@ public:
 	bool clientToScreen(POINT& pt) { return ::ClientToScreen(handle(), &pt); }
 	bool screenToClient(POINT& pt) { return ::ScreenToClient(handle(), &pt); }
 protected:
-	// TODO: Can we remove these two?!?!?
-	bool isChild;
-
 	// TODO: Can these become PRIVATE?!?!?
 	static int itsInstanceNo;
 	HWND itsHandle;
@@ -167,18 +160,11 @@ protected:
 	// Widget will almost ALLWAYS be deleted from a pointer to a Widget
 	virtual ~Widget();
 
-	// While the two last parameters here hanve defaults,
-	// the first one does not to ensure that anyone constructing 
-	// Widgets doesn't forget to initialize this virtually inherited
-	// class correctly...
-	// See: http://geneura.ugr.es/~jmerelo/c++-faq/multiple-inheritance.html#faq-25.12
 	Widget( Widget * parent, HWND hWnd = NULL, bool doReg = true );
 
 	// Creates the Widget, should NOT be called directly but overridden in the
 	// derived class (with no parameters)
 	virtual void create( const SmartWin::Seed & );
-
-	virtual void registerWidget();
 
 	// Kills the "this" Widget
 	void killMe();

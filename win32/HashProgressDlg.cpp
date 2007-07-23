@@ -27,7 +27,7 @@
 #include <dcpp/ResourceManager.h>
 
 HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
-	SmartWin::Widget(parent),
+	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
 	autoClose(aAutoClose)
 {
 	onInitDialog(std::tr1::bind(&HashProgressDlg::handleInitDialog, this));

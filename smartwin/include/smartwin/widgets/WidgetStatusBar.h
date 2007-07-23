@@ -128,7 +128,6 @@ class WidgetStatusBar :
 	public AspectThreads< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectVisible< WidgetStatusBar< TypeOfStatusBar > >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef SmartWin::AspectSizable< WidgetStatusBar< TypeOfStatusBar > > AspectSizable;
 	friend class WidgetCreator< WidgetStatusBar >;
 public:
@@ -150,6 +149,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -294,7 +295,7 @@ Message & WidgetStatusBar< TypeOfStatusBar >::getDblClickMessage()
 
 template< class TypeOfStatusBar >
 WidgetStatusBar< TypeOfStatusBar >::WidgetStatusBar( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a ComboBox without a parent...
 	xAssert( parent, _T( "Cant have a WidgetStatusBar without a parent..." ) );

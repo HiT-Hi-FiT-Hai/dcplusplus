@@ -60,7 +60,6 @@
 #include "BasicTypes.h"
 #include "Anchors.h"
 #include "Place.h"
-#include "CallbackFuncPrototypes.h"
 #include "Command.h"
 #include "widgets/WidgetMessageBox.h"
 #include "widgets/WidgetMDIParent.h"

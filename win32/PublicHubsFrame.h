@@ -44,7 +44,7 @@ private:
 	friend class StaticFrame<PublicHubsFrame>;
 	friend class MDIChildFrame<PublicHubsFrame>;
 
-	PublicHubsFrame(SmartWin::Widget* mdiParent);
+	PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent);
 	virtual ~PublicHubsFrame();
 
 	enum {

@@ -72,7 +72,6 @@ class WidgetMDIParent :
 	public AspectFocus< WidgetMDIParent >,
 	public AspectRaw< WidgetMDIParent >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	friend class WidgetCreator< WidgetMDIParent >;
 public:
 	/// Class type
@@ -81,6 +80,7 @@ public:
 	/// Object type
 	typedef ThisType * ObjectType;
 
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
@@ -166,7 +166,7 @@ inline WidgetMDIParent::Seed::Seed()
 }
 
 inline WidgetMDIParent::WidgetMDIParent( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );

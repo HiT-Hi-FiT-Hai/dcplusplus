@@ -35,6 +35,13 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
+namespace private_
+{
+	// Internal function for creating a MouseEventResult out of the LPARAM and
+	// WPARAM from a Message
+	MouseEventResult createMouseEventResultFromMessageParams( LPARAM lP, WPARAM wP );
+}
+
 /// Aspect class used by Widgets that have the possibility of trapping "mouse
 /// clicked" events.
 /** \ingroup AspectClasses

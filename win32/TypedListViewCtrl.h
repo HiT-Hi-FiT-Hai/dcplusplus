@@ -29,7 +29,7 @@ private:
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedListViewCtrl( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent), sortColumn(-1), sortAscending(true) { 
+	explicit TypedListViewCtrl( SmartWin::Widget * parent ) : BaseType(parent), sortColumn(-1), sortAscending(true) { 
 		
 	}
 	

@@ -20,9 +20,8 @@
 #define DCPLUSPLUS_WIN32_DOWNLOAD_PAGE_H
 
 #include "PropPage.h"
-#include "WidgetFactory.h"
 
-class DownloadPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class DownloadPage : public PropPage
 {
 public:
 	DownloadPage(SmartWin::Widget* parent);

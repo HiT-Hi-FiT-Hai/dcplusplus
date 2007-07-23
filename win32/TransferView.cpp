@@ -40,7 +40,7 @@ ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, R
 ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
 
 TransferView::TransferView(SmartWin::Widget* parent) : 
-	SmartWin::Widget(parent),
+	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
 	transfers(0)
 {
 	createWindow();

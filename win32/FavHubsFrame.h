@@ -41,7 +41,7 @@ protected:
 	friend class StaticFrame<FavHubsFrame>;
 	friend class MDIChildFrame<FavHubsFrame>;
 	
-	FavHubsFrame(SmartWin::Widget* mdiParent);
+	FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent);
 	virtual ~FavHubsFrame();
 
 	void layout();

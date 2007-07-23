@@ -29,7 +29,6 @@
 #ifndef WidgetStatic_h
 #define WidgetStatic_h
 
-#include "../Widget.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
@@ -84,7 +83,6 @@ class WidgetStatic :
 	public AspectText< WidgetStatic >,
 	public AspectVisible< WidgetStatic >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	friend class WidgetCreator< WidgetStatic >;
 public:
 	/// Class type
@@ -92,6 +90,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -183,7 +183,7 @@ inline Message & WidgetStatic::getDblClickMessage()
 }
 
 inline WidgetStatic::WidgetStatic( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );

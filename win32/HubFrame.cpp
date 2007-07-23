@@ -49,7 +49,7 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
+void HubFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const string& url) {
 	for(FrameIter i = frames.begin(); i!= frames.end(); ++i) {
 		HubFrame* frame = *i;
 		if(frame->url == url) {
@@ -61,8 +61,7 @@ void HubFrame::openWindow(SmartWin::Widget* mdiParent, const string& url) {
 	new HubFrame(mdiParent, url);
 }
 
-HubFrame::HubFrame(SmartWin::Widget* mdiParent, const string& url_) : 
-	SmartWin::Widget(mdiParent), 
+HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) : 
 	BaseType(mdiParent),
 	chat(0),
 	message(0),

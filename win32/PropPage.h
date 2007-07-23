@@ -22,11 +22,12 @@
 #define SETTINGS_BUF_LEN 1024
 
 #include <dcpp/ResourceManager.h>
+#include "WidgetFactory.h"
 
-class PropPage
+class PropPage : public WidgetFactory<SmartWin::WidgetDialog>
 {
 public:
-	PropPage() { }
+	PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) { }
 	virtual ~PropPage() { }
 
 	SmartWin::Widget* getWidget() { return boost::polymorphic_cast<SmartWin::Widget*>(this); }

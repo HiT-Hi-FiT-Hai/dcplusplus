@@ -28,7 +28,7 @@
 template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
-	StaticFrame(SmartWin::Widget* mdiClient) : SmartWin::Widget(mdiClient), MDIChildFrame<T>(mdiClient) { 
+	StaticFrame(SmartWin::WidgetMDIParent* mdiClient) : MDIChildFrame<T>(mdiClient) { 
 		setText(Text::toT(ResourceManager::getInstance()->getString(T::TITLE_RESOURCE)));
 	}
 	
@@ -36,8 +36,7 @@ public:
 		frame = 0; 
 	}
 
-	template<typename WidgetMDIParent>
-	static void openWindow(WidgetMDIParent* mdiClient) {
+	static void openWindow(SmartWin::WidgetMDIParent* mdiClient) {
 		if(frame) {
 			HWND active = mdiClient->getActive();
 			if(active != frame->handle()) {

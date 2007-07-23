@@ -33,6 +33,7 @@
 
 #include "../../SmartUtil.h"
 #include "../BasicTypes.h"
+#include "WidgetMDIParent.h"
 #include "WidgetWindowBase.h"
 #include <sstream>
 
@@ -107,6 +108,7 @@ public:
 		this->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(this->handle()));
 	}
 
+	SmartWin::WidgetMDIParent* getParent() { return static_cast<WidgetMDIParent*>(this->Widget::getParent()); }
 protected:
 	// Protected since this Widget we HAVE to inherit from
 	explicit WidgetMDIChild( Widget * parent = 0 );
@@ -134,7 +136,7 @@ inline WidgetMDIChild::~WidgetMDIChild()
 }
 
 inline WidgetMDIChild::WidgetMDIChild( Widget * parent )
-	: Widget(parent), BaseType( parent )
+	: BaseType( parent )
 {}
 
 inline SmartUtil::tstring WidgetMDIChild::getNewClassName()

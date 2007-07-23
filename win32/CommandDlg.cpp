@@ -29,7 +29,7 @@
 #include <dcpp/version.h>
 
 CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
-	SmartWin::Widget(parent),
+	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
 	type(type_),
 	ctx(ctx_),
 	name(name_),

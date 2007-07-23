@@ -20,9 +20,8 @@
 #define DCPLUSPLUS_WIN32_FAVORITE_DIRS_PAGE_H
 
 #include "PropPage.h"
-#include "WidgetFactory.h"
 
-class FavoriteDirsPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class FavoriteDirsPage : public PropPage
 {
 public:
 	FavoriteDirsPage(SmartWin::Widget* parent);

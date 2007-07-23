@@ -30,8 +30,7 @@
 #include <dcpp/UploadManager.h>
 
 // Constructor
-WaitingUsersFrame::WaitingUsersFrame(SmartWin::Widget* mdiParent) :
-	SmartWin::Widget(mdiParent),
+WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	BaseType(mdiParent)
 {
 	UploadManager::getInstance()->addListener(this);

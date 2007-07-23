@@ -106,7 +106,6 @@ class WidgetTreeView :
 	public AspectVisible< WidgetTreeView >
 {
 protected:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	struct Dispatcher
 	{
 		typedef std::tr1::function<bool (const SmartUtil::tstring&)> F;
@@ -134,6 +133,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	 /** This class contains all of the values needed to create the widget. It also
@@ -489,7 +490,7 @@ inline Message & WidgetTreeView::getDblClickMessage()
 }
 
 inline WidgetTreeView::WidgetTreeView( Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a list view without a parent...
 	xAssert( parent, _T( "Cant have a WidgetTreeView without a parent..." ) );

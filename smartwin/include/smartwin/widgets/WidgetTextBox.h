@@ -105,7 +105,6 @@ class WidgetTextBox :
 	public AspectUpdate< WidgetTextBox< TextBoxType > >,
 	public AspectVisible< WidgetTextBox< TextBoxType > >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	friend class WidgetCreator< WidgetTextBox >;
 public:
 	/// Class type
@@ -113,6 +112,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Info for creation
 	/** This class contains all of the values needed to create the widget. It also
@@ -497,7 +498,7 @@ DWORD WidgetTextBox< TextBoxType >::getTextLimit() const
 
 template< class TextBoxType >
 WidgetTextBox< TextBoxType >::WidgetTextBox( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );

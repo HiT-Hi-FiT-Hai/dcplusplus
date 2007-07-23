@@ -79,7 +79,7 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-QueuePage::QueuePage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_QUEUEPAGE);
 
 	PropPage::translate(handle(), texts);

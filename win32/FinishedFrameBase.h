@@ -49,8 +49,7 @@ protected:
 	friend class MDIChildFrame<T>;
 	typedef FinishedFrameBase<T, in_UL> ThisType;
 	
-	FinishedFrameBase(SmartWin::Widget* mdiParent) :
-		SmartWin::Widget(mdiParent),
+	FinishedFrameBase(SmartWin::WidgetMDIParent* mdiParent) :
 		BaseType(mdiParent),
 		totalBytes(0),
 		totalTime(0)
@@ -276,7 +275,7 @@ private:
 	void handleViewAsText(unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			new TextFrame(this->getParent(), Text::toT(items->getItemData(i)->entry->getTarget()));
+			new TextFrame(static_cast<SmartWin::WidgetMDIParent*>(this->getParent()), Text::toT(items->getItemData(i)->entry->getTarget()));
 	}
 
 	void handleOpenFile(unsigned /*id*/) {

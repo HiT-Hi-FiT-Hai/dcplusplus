@@ -70,7 +70,7 @@ WindowsPage::ListItem WindowsPage::confirmItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-WindowsPage::WindowsPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+WindowsPage::WindowsPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_WINDOWSPAGE);
 
 	PropPage::translate(handle(), textItem);

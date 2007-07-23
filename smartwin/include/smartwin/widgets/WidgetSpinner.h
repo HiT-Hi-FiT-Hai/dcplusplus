@@ -77,7 +77,6 @@ class WidgetSpinner :
 	public AspectSizable< WidgetSpinner >,
 	public AspectVisible< WidgetSpinner >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	friend class WidgetCreator< WidgetSpinner >;
 public:
 	/// Class type
@@ -85,6 +84,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -205,7 +206,7 @@ inline int WidgetSpinner::setValue( int v )
 }
 
 inline WidgetSpinner::WidgetSpinner( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Spinner without a parent..." ) );

@@ -39,7 +39,7 @@ public:
 	
 protected:
 
-	MDIChildFrame(SmartWin::Widget* mdiClient) : SmartWin::Widget(mdiClient), lastFocus(NULL), reallyClose(false) {
+	MDIChildFrame(SmartWin::WidgetMDIParent* mdiClient) : WidgetFactory< SmartWin::WidgetMDIChild >(mdiClient), lastFocus(NULL), reallyClose(false) {
 		typename ThisType::Seed cs;
 		BOOL max = FALSE;
 		if(!mdiClient->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {

@@ -52,7 +52,7 @@ PropPage::Item UploadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-UploadPage::UploadPage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UPLOADPAGE);
 
 	PropPage::translate(handle(), texts);

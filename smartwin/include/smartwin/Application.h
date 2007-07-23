@@ -38,7 +38,6 @@
 #include "Font.h"
 #include "xCeption.h"
 #include <vector>
-#include <list>
 #include <memory>
 #include <boost/utility.hpp>
 #include <boost/signal.hpp>
@@ -67,10 +66,6 @@ class Widget;
 
 namespace Policies {
 class ModalDialog;
-}
-namespace private_
-{
-	std::list < Widget * > & getApplicationWidgets();
 }
 
 /// HeartBeat class
@@ -127,19 +122,7 @@ class Application
 
 	friend class Widget;
 	friend class Policies::ModalDialog;
-	friend std::list < Widget * > & private_::getApplicationWidgets();
 public:
-	// Registers a Widget meaning that the Widget is added to the applications list
-	// of Widget objects
-	void registerWidget( Widget * widget );
-
-	/// Returns true if we have only one registered Widget left in the application.
-	/** Used e.g. in the handling of WM_DESTROY to verify if we're supposed to return
-	  * from the process or not. <br>
-	  * Probably not of very much interest for the final user of the library.
-	  */
-		bool lastWidget( const Widget * This ) const;
-
 	/// Returns the Application object
 	/** Use this static function to access the Application object.
 	  */
@@ -257,10 +240,6 @@ public:
 	  */
 	void addLocalWindowClassToUnregister( const Seed & );
 	
-	void registerCommand(const Message& msg, const MessageMapBase::CallbackType &callback, HANDLE owner);
-	bool handleCommand(const Message& msg, HANDLE handler);
-	void clearCommands(HANDLE owner);
-	
 	/** Sets the MDI client for mdi acceletor processing */
 	void setMDIClient(HWND hWnd) { mdiClient = hWnd; }
 private:
@@ -272,9 +251,6 @@ private:
 	
 	// To determine if a copy of an application is already running
 	static HANDLE itsMutex;
-
-	// Contains the registered Widgets of the application object
-	std::list < Widget * > itsWidgets;
 
 	// The "one and only" object of type Application...
 	static Application * itsInstance;

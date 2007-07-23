@@ -84,7 +84,6 @@ class WidgetToolbar :
 
 		F f;
 	};
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef SmartWin::AspectSizable< WidgetToolbar > AspectSizable;
 	friend class WidgetCreator< WidgetToolbar >;
 public:
@@ -106,6 +105,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -247,25 +248,25 @@ public:
 		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
 		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename MessageMapType::voidFunctionTakingUInt eventHandler );
 #endif
-		/// Set the image list with the normal button images.
-		/** normalImageList is the image list that contains the images
-		  * for the toolbar buttons in "normal" state.
-		  */
-		void setNormalImageList( ImageListPtr normalImageList );
+	/// Set the image list with the normal button images.
+	/** normalImageList is the image list that contains the images
+	  * for the toolbar buttons in "normal" state.
+	  */
+	void setNormalImageList( ImageListPtr normalImageList );
 
-		/// Set the image list with the hot button images.
-		/** hotImageList is the image list that contains the images for the toolbar
-		  * buttons in "hot" state (being hovered / pressed). <br>
-		  * Note, hot button images requires the TBSTYLE_FLAT, TBSTYLE_LIST or
-		  * TBSTYLE_TRANSPARENT style upon Toolbar creation.
-		  */
-		void setHotImageList( ImageListPtr hotImageList );
+	/// Set the image list with the hot button images.
+	/** hotImageList is the image list that contains the images for the toolbar
+	  * buttons in "hot" state (being hovered / pressed). <br>
+	  * Note, hot button images requires the TBSTYLE_FLAT, TBSTYLE_LIST or
+	  * TBSTYLE_TRANSPARENT style upon Toolbar creation.
+	  */
+	void setHotImageList( ImageListPtr hotImageList );
 
-		/// Set the image list with the normal button images.
-		/** disabledImageList is the image list that contains the images for the
-		  * toolbar buttons in "disabled" state.
-		  */
-		void setDisabledImageList( ImageListPtr disabledImageList );
+	/// Set the image list with the normal button images.
+	/** disabledImageList is the image list that contains the images for the
+	  * toolbar buttons in "disabled" state.
+	  */
+	void setDisabledImageList( ImageListPtr disabledImageList );
 	/// Shows (or hides) the button in the toolbar with the given id
 	/** id is the identification of which button you want to show.
 	  */
@@ -643,7 +644,7 @@ inline bool WidgetToolbar::getButtonChecked( unsigned int id )
 }
 
 inline WidgetToolbar::WidgetToolbar( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );

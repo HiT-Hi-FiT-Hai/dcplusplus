@@ -58,7 +58,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-AppearancePage::AppearancePage(SmartWin::Widget* parent) : SmartWin::Widget(parent), PropPage() {
+AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_APPEARANCEPAGE);
 
 	PropPage::translate(handle(), texts);

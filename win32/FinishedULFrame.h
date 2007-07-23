@@ -24,7 +24,7 @@
 class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, true>
 {
 public:
-	FinishedULFrame(SmartWin::Widget* mdiParent);
+	FinishedULFrame(SmartWin::WidgetMDIParent* mdiParent);
 	virtual ~FinishedULFrame() { }
 
 	typedef FinishedFrameBase<FinishedULFrame, true> BaseType;

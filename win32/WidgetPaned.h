@@ -163,7 +163,7 @@ WidgetPaned< horizontal >::Seed::Seed()
 
 template< bool horizontal >
 WidgetPaned< horizontal >::WidgetPaned( SmartWin::Widget * parent )
-	: SmartWin::Widget( parent, 0 )
+	: PolicyType( parent )
 	, pos(0.5)
 	, moving(false)
 {

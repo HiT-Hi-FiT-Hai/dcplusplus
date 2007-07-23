@@ -53,17 +53,6 @@ int Widget::itsInstanceNo = 0;
 
 Widget::~Widget()
 {
-	// We have to unregister our Widget here...
-	for ( std::list < Widget * >::iterator idx = Application::instance().itsWidgets.begin();
-		idx != Application::instance().itsWidgets.end();
-		++idx )
-	{
-		if ( * idx == this )
-		{
-			Application::instance().itsWidgets.erase( idx );
-			break;
-		}
-	}
 }
 
 // Subclasses a dialog item inside a dialog, usually used in combination with Dialog resources.
@@ -97,11 +86,6 @@ void Widget::kill()
 		delete this;
 }
 
-void Widget::registerWidget()
-{
-	Application::instance().registerWidget( this );
-}
-
 void Widget::create( const SmartWin::Seed & cs )
 {
 	itsHandle = ::CreateWindowEx( cs.exStyle,
@@ -122,8 +106,6 @@ void Widget::create( const SmartWin::Seed & cs )
 		throw x;
 	}
 	isChild = ( ( cs.style & WS_CHILD ) == WS_CHILD );
-	Application::instance().registerWidget( this );
-
 }
 
 Widget::Widget( Widget * parent, HWND hWnd, bool doReg )
@@ -170,16 +152,7 @@ void Widget::eraseMeFromParentsChildren()
 {
 	if ( ! itsParent ) return;
 
-	for ( std::vector < Widget * >::iterator idx = itsParent->itsChildren.begin();
-		idx != itsParent->itsChildren.end();
-		++idx )
-	{
-		if ( * idx == this )
-		{
-			itsParent->itsChildren.erase( idx );
-			break;
-		}
-	}
+	itsParent->itsChildren.erase(std::remove(itsParent->itsChildren.begin(), itsParent->itsChildren.end(), this), itsParent->itsChildren().end());
 }
 
 void Widget::addRemoveStyle( DWORD addStyle, bool add )

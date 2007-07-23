@@ -91,8 +91,7 @@ int PublicHubsFrame::HubInfo::compareItems(const HubInfo* a, const HubInfo* b, i
 	}
 }
 
-PublicHubsFrame::PublicHubsFrame(SmartWin::Widget* mdiParent) :
-	SmartWin::Widget(mdiParent),
+PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	BaseType(mdiParent),
 	hubs(0),
 	configure(0),

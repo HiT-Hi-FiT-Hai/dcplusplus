@@ -26,8 +26,7 @@
 
 static const size_t MAX_TEXT_LEN = 64*1024;
 
-TextFrame::TextFrame(SmartWin::Widget* mdiParent, const string& fileName) : 
-	SmartWin::Widget(mdiParent), 
+TextFrame::TextFrame(SmartWin::WidgetMDIParent* mdiParent, const string& fileName) : 
 	BaseType(mdiParent),
 	pad(0) 
 {

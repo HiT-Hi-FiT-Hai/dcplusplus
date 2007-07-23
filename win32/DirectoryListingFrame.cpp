@@ -69,7 +69,7 @@ int DirectoryListingFrame::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int 
 	}
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::Widget* mdiParent, const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -95,7 +95,7 @@ void DirectoryListingFrame::closeAll(){
 		::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::Widget* mdiParent, const User::Ptr& aUser, const string& txt, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const User::Ptr& aUser, const string& txt, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -113,8 +113,7 @@ void DirectoryListingFrame::openWindow(SmartWin::Widget* mdiParent, const User::
 	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(SmartWin::Widget* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	SmartWin::Widget(mdiParent),
+DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
 	BaseType(mdiParent),
 	dirs(0),
 	files(0),

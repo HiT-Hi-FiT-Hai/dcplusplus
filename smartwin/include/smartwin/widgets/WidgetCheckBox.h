@@ -80,14 +80,16 @@ class WidgetCheckBox :
 	public AspectThreads< WidgetCheckBox >,
 	public AspectVisible< WidgetCheckBox >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	friend class WidgetCreator< WidgetCheckBox >;
 public:
 	/// Class type
 	typedef WidgetCheckBox ThisType;
 
-	/// Class type
+	/// Object type
 	typedef ThisType * ObjectType;
+
+	/// Policy type
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -196,7 +198,7 @@ inline bool WidgetCheckBox::getChecked()
 // class which is friend
 
 inline WidgetCheckBox::WidgetCheckBox( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );

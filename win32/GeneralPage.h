@@ -20,9 +20,8 @@
 #define DCPLUSPLUS_WIN32_GENERAL_PAGE_H
 
 #include "PropPage.h"
-#include "WidgetFactory.h"
 
-class GeneralPage : public WidgetFactory<SmartWin::WidgetDialog>, public PropPage
+class GeneralPage : public PropPage
 {
 public:
 	GeneralPage(SmartWin::Widget* parent);

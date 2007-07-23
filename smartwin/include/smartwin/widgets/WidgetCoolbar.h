@@ -82,7 +82,6 @@ class WidgetCoolbar :
 	private AspectSizable< WidgetCoolbar >,
 	public AspectVisible< WidgetCoolbar >
 {
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	typedef SmartWin::AspectSizable< WidgetCoolbar > AspectSizable;
 	friend class WidgetCreator< WidgetCoolbar >;
 public:
@@ -104,6 +103,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+
+	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -245,7 +246,7 @@ inline WidgetCoolbar::Seed::Seed()
 }
 
 inline WidgetCoolbar::WidgetCoolbar( SmartWin::Widget * parent )
-	: Widget( parent, 0 )
+	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );

@@ -32,7 +32,7 @@
 
 PrivateFrame::FrameMap PrivateFrame::frames;
 
-void PrivateFrame::openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
+void PrivateFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo_, const tstring& msg) {
 	PrivateFrame* pf = 0;
 	FrameIter i = frames.find(replyTo_);
 	if(i == frames.end()) {
@@ -46,7 +46,7 @@ void PrivateFrame::openWindow(SmartWin::Widget* mdiParent, const UserPtr& replyT
 	
 }
 
-void PrivateFrame::gotMessage(SmartWin::Widget* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
+void PrivateFrame::gotMessage(SmartWin::WidgetMDIParent* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = 0;
 	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 
@@ -88,8 +88,7 @@ void PrivateFrame::closeAllOffline() {
 	}
 }
 
-PrivateFrame::PrivateFrame(SmartWin::Widget* mdiParent, const UserPtr& replyTo_) : 
-	SmartWin::Widget(mdiParent), 
+PrivateFrame::PrivateFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo_) : 
 	BaseType(mdiParent),
 	chat(0),
 	message(0),

@@ -43,7 +43,7 @@ protected:
 	friend class StaticFrame<SpyFrame>;
 	friend class MDIChildFrame<SpyFrame>;
 
-	SpyFrame(SmartWin::Widget* mdiParent);
+	SpyFrame(SmartWin::WidgetMDIParent* mdiParent);
 	virtual ~SpyFrame();
 
 	void layout();

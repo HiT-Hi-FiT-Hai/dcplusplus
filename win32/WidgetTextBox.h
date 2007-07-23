@@ -27,7 +27,7 @@ public:
 	
 	typedef ThisType* ObjectType;
 
-	explicit WidgetTextBox( SmartWin::Widget * parent ) : SmartWin::Widget(parent), BaseType(parent) { }
+	explicit WidgetTextBox( SmartWin::Widget * parent ) : BaseType(parent) { }
 
 	POINT getContextMenuPos() {
 		RECT rc;

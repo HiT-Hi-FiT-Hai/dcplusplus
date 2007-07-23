@@ -67,7 +67,7 @@ public:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 inline ListViewEditBox::ListViewEditBox( SmartWin::Widget * parent )
-	: Widget( parent ), WidgetTextBox<>( parent )
+	: WidgetTextBox<>( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
@@ -77,7 +77,6 @@ inline void ListViewEditBox::createSubclass( HWND hWnd )
 {
 	this->Widget::itsHandle = hWnd;
 	this->createMessageMap();
-	Widget::registerWidget();
 }
 #ifdef PORT_ME
 template< class EventHandlerClass >

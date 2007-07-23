@@ -40,7 +40,7 @@ namespace SmartWin
 template<typename Policy>
 class MessageMapPolicy : public Policy {
 public:
-	MessageMapPolicy() : Widget(0) { }
+	MessageMapPolicy(Widget* parent) : Policy(parent) { }
 
 	static LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		// Check if this is an init type message - a message that will set the window pointer correctly
@@ -76,9 +76,11 @@ public:
 		}
 
 		if((uMsg == WM_COMMAND || uMsg == WM_SYSCOMMAND) && lParam == 0) {
+#ifdef PORT_ME
 			if(Application::instance().handleCommand(msgObj, handler)) {
 				return Policy::returnHandled(0, hwnd, uMsg, wParam, lParam);
 			}
+#endif
 		}
 
 		HRESULT hres = 0;
@@ -152,7 +154,7 @@ class Dialog
 {
 public:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	Dialog() : Widget(0) { }
+	Dialog(Widget* parent) : MessageMapBase(parent) { }
 	
 	virtual void kill()
 	{
@@ -210,42 +212,12 @@ class ModalDialog
 {
 public:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	ModalDialog() : Widget(0) { }
+	ModalDialog(Widget* parent) : Dialog(parent) { }
 
 	virtual void kill()
 	{
-		// Handle either the Modal dialog widget or something created inside it.
-		// We can differentiate because "modal dialog boxes cannot have the WS_CHILD style".
-		if ( this->isChild ) { 
-			// snapUserData( "kill called on isChild ", this->handle() );
-			// For a widget in the ModalDialog,
-			killMe();	// do as MessageMapPolicyNormalWidget does.
-		} else {
-			// snapChildren();
-
-			// For the ModalDialog widget itself, just erase me from two lists.
-			// ( Since the modal dialog widget is stack based, 
-			//   isn't "collected automatically", and thus should not be deleted. )
-			killChildren();	// needed for resource based WidgetModalDialogs.
-			eraseMeFromParentsChildren();
-			eraseFromApplicationWidgets( this );
-		}
-	}
-
-	// Remove from the Application based list of widgets.
-	void eraseFromApplicationWidgets( Widget * inWidget )
-	{
-		// Explicitly erase it here
-		for ( std::list < Widget * >::iterator idx = Application::instance().itsWidgets.begin();
-			idx != Application::instance().itsWidgets.end();
-			++idx )
-		{
-			if ( * idx == inWidget )
-			{
-				Application::instance().itsWidgets.erase( idx );
-				break;
-			}
-		}
+		killChildren();	// needed for resource based WidgetModalDialogs.
+		eraseMeFromParentsChildren();
 	}
 
 };
@@ -265,7 +237,7 @@ public:
 	}
 
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	Normal() : Widget(0) { }
+	Normal(Widget* parent) : MessageMapBase(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
 		return ::DefWindowProc( hWnd, msg, wPar, lPar );
@@ -301,7 +273,7 @@ public:
 
 class Subclassed : public Normal {
 public:
-	Subclassed() : Widget(0), oldProc(0) { }
+	Subclassed(Widget* parent) : Normal(parent), oldProc(0) { }
 	
 	LRESULT returnUnhandled(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
 		if(oldProc) {
@@ -346,7 +318,7 @@ public:
 	}
 	
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	MDIChild() : Widget(0) { }
+	MDIChild(Widget* parent) : MessageMapBase(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
 		return ::DefMDIChildProc( hWnd, msg, wPar, lPar );
@@ -395,7 +367,7 @@ public:
 template<typename WidgetType>
 class MDIFrame : public Normal {
 public:
-	MDIFrame() : Widget(0) { }
+	MDIFrame(Widget* parent) : Normal(parent) { }
 	
 	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
