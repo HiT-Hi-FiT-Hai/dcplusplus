@@ -281,8 +281,7 @@ void WidgetWindowBase< Policy >::createTimer( const typename TimerDispatcher::F&
 
 	UINT_PTR id = ::SetTimer( this->handle(), 0, static_cast< UINT >( milliSecond ), NULL);
 	
-	MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-	ptrThis->setCallback(
+	setCallback(
 		Message( WM_TIMER, id ), TimerDispatcher(f)
 	);
 

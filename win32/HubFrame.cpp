@@ -728,6 +728,7 @@ bool HubFrame::handleUsersKeyDown(int c) {
 
 bool HubFrame::handleMessageChar(int c) {
 	switch(c) {
+	case VK_TAB:
 	case VK_RETURN: {
 		if(!(isShiftPressed() || isControlPressed() || isAltPressed())) {
 			return true;
@@ -1493,7 +1494,7 @@ bool HubFrame::tab() {
 			message->setSelection(textStart, -1);
 			
 			// no shift, use partial nick when appropriate
-			if(isShiftPressed) {
+			if(isShiftPressed()) {
 				message->replaceSelection(nick);
 			} else {
 				message->replaceSelection(Text::toT(stripNick(Text::fromT(nick))));
