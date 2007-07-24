@@ -261,9 +261,6 @@ public:
 		return sysMenu;
 	}
 #endif
-protected:
-	// Children, only "popup" menus are supposed to have children
-	std::vector< WidgetMenuPtr > itsChildren;
 };
 
 /// Menu class
