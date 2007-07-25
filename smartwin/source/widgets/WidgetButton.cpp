@@ -9,7 +9,7 @@ const WidgetButton::Seed & WidgetButton::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T("Button") );
+		d_DefaultValues.className = _T("Button");
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;

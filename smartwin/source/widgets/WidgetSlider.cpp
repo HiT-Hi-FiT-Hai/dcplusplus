@@ -9,7 +9,7 @@ const WidgetSlider::Seed & WidgetSlider::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, TRACKBAR_CLASS );
+		d_DefaultValues.className = TRACKBAR_CLASS;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
 		//TODO: initialize the values here
 		d_NeedsInit = false;

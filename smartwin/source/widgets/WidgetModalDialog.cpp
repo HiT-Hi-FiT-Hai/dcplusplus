@@ -10,7 +10,7 @@ int WidgetModalDialog::createDialog( unsigned resourceId )
 	INT_PTR retv = ::DialogBoxParam
 		( ( Application::instance().getAppHandle() )
 		, ( MAKEINTRESOURCE( resourceId ) )
-		, ( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 )
+		, ( this->getParent() ? this->getParent()->handle() : 0 )
 		, ( (DLGPROC)&ThisType::wndProc )
 		, ( reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) ) )
 		);
@@ -34,7 +34,7 @@ int WidgetModalDialog::createDialog()
 	INT_PTR retv = ::DialogBoxIndirectParam
 		( Application::instance().getAppHandle() // HINSTANCE hInstance
 		, ( DLGTEMPLATE * ) dlg_menu_winclass_title // LPCDLGTEMPLATE hDialogTemplate
-		, this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 // HWND hWndParent
+		, this->getParent() ? this->getParent()->handle() : 0 // HWND hWndParent
 		, (DLGPROC)&ThisType::wndProc // DLGPROC lpDialogFunc
 		, reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) )
 		); // LPARAM dwInitParam

@@ -172,19 +172,19 @@ inline WidgetSpinner::Seed::Seed()
 
 inline void WidgetSpinner::setRange( int minimum, int maximum )
 {
-	::SendMessage( this->Widget::itsHandle, UDM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
+	::SendMessage( this->handle(), UDM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
 }
 
 inline void WidgetSpinner::assignBuddy( Widget * buddy )
 {
 	assert( buddy && buddy->handle() );
-	::SendMessage( this->Widget::itsHandle, UDM_SETBUDDY, reinterpret_cast< WPARAM >( buddy->handle() ), 0 );
+	::SendMessage( this->handle(), UDM_SETBUDDY, reinterpret_cast< WPARAM >( buddy->handle() ), 0 );
 }
 
 inline int WidgetSpinner::getValue()
 {
 #ifdef WINCE
-	LRESULT retVal = ::SendMessage( this->Widget::itsHandle, UDM_GETPOS, 0, 0 );
+	LRESULT retVal = ::SendMessage( this->handle(), UDM_GETPOS, 0, 0 );
 	if ( HIWORD( retVal ) != 0 )
 	{
 		xCeption err( _T( " Something went wrong while trying to retrieve value if WidgetSpinner" ) );
@@ -192,16 +192,16 @@ inline int WidgetSpinner::getValue()
 	}
 	return LOWORD( retVal );
 #else
-	return ::SendMessage( this->Widget::itsHandle, UDM_GETPOS32, 0, 0 );
+	return ::SendMessage( this->handle(), UDM_GETPOS32, 0, 0 );
 #endif //! WINCE
 }
 
 inline int WidgetSpinner::setValue( int v )
 {
 #ifdef WINCE
-	return ::SendMessage( this->Widget::itsHandle, UDM_SETPOS, 0, v );
+	return ::SendMessage( this->handle(), UDM_SETPOS, 0, v );
 #else
-	return ::SendMessage( this->Widget::itsHandle, UDM_SETPOS32, 0, v );
+	return ::SendMessage( this->handle(), UDM_SETPOS32, 0, v );
 #endif
 }
 

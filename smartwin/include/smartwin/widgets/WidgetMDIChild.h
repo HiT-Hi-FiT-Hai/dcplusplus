@@ -34,6 +34,7 @@
 #include "../../SmartUtil.h"
 #include "../BasicTypes.h"
 #include "../MessageMapPolicyClasses.h"
+#include "../WindowClass.h"
 #include "WidgetMDIParent.h"
 #include "WidgetWindowBase.h"
 #include <sstream>
@@ -109,17 +110,15 @@ public:
 		this->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(this->handle()));
 	}
 
-	SmartWin::WidgetMDIParent* getParent() { return static_cast<WidgetMDIParent*>(this->Widget::getParent()); }
+	WidgetMDIParent* getParent() { return static_cast<WidgetMDIParent*>(this->Widget::getParent()); }
 protected:
 	// Protected since this Widget we HAVE to inherit from
-	explicit WidgetMDIChild( Widget * parent = 0 );
+	explicit WidgetMDIChild( Widget * parent );
 
 	virtual ~WidgetMDIChild();
 
-	SmartUtil::tstring getNewClassName();
-
 private:
-	SmartUtil::tstring itsRegisteredClassName;
+	boost::scoped_ptr<WindowClass> windowClass;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,19 +132,11 @@ inline WidgetMDIChild::Seed::Seed()
 
 inline WidgetMDIChild::~WidgetMDIChild()
 {
-	::UnregisterClass( itsRegisteredClassName.c_str(), Application::instance().getAppHandle() );
 }
 
 inline WidgetMDIChild::WidgetMDIChild( Widget * parent )
 	: BaseType( parent )
 {}
-
-inline SmartUtil::tstring WidgetMDIChild::getNewClassName()
-{
-	std::basic_stringstream< TCHAR > className;
-	className << _T( "WidgetFactory" ) << ++this->Widget::itsInstanceNo;
-	return className.str();
-}
 
 // end namespace SmartWin
 }

@@ -30,6 +30,7 @@
 #define WidgetMDIFrame_h
 
 #include "../BasicTypes.h"
+#include "../WindowClass.h"
 #include "WidgetMDIParent.h"
 #include "WidgetWindowBase.h"
 
@@ -76,8 +77,9 @@ public:
 
 		//TODO: put variables to be filled here
 		HICON icon;
+		HICON iconSmall;
 		HBRUSH background;
-		SmartUtil::tstring menuName;
+		LPCTSTR menuName;
 		HCURSOR cursor;
 
 		/// Fills with default parameters
@@ -130,7 +132,7 @@ protected:
 
 	virtual ~WidgetMDIFrame();
 private:
-	SmartUtil::tstring itsRegisteredClassName;
+	boost::scoped_ptr<WindowClass> windowClass;
 	WidgetMDIParentPtr mdi;
 };
 
@@ -149,7 +151,6 @@ inline WidgetMDIFrame::WidgetMDIFrame( Widget * parent )
 
 inline WidgetMDIFrame::~WidgetMDIFrame()
 {
-	::UnregisterClass( itsRegisteredClassName.c_str(), Application::instance().getAppHandle() );
 }
 
 // end namespace SmartWin

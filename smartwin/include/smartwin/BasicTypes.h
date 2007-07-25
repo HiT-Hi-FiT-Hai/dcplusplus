@@ -467,7 +467,7 @@ public:
 	/// Constructor initializing all member variables to default values
 	// The constructor with parameters lead to conversion problems
 	Seed()
-		: style( WS_VISIBLE ), exStyle( 0 ), location( letTheSystemDecide ), menuHandle( - 1 )
+		: style( WS_VISIBLE ), exStyle( 0 ), location( letTheSystemDecide ), className(NULL), menuHandle( - 1 )
 	{}
 
 	/// Clones into e.g. a Seed object
@@ -478,16 +478,10 @@ public:
 		to.location = location;
 	}
 
-	/// Return the class name
-	const SmartUtil::tstring & getClassName() const
-	{
-		return className;
-	}
-
-protected:
+	LPCTSTR getClassName() const { return className; }
 	friend class Application;
 	friend class Widget;
-	SmartUtil::tstring className;
+	LPCTSTR className;
 	int menuHandle;
 };
 

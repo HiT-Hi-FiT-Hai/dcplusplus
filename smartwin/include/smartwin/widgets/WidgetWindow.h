@@ -32,8 +32,8 @@
 #include "../BasicTypes.h"
 #include "../SignalParams.h"
 #include "../aspects/AspectThreads.h"
+#include "../WindowClass.h"
 #include "WidgetWindowBase.h"
-#include <sstream>
 
 namespace SmartWin
 {
@@ -91,10 +91,10 @@ public:
 	public:
 		typedef WidgetWindow::ThisType WidgetType;
 
-		//TODO: put variables to be filled here
 		HICON icon;
+		HICON smallIcon;
 		HBRUSH background;
-		SmartUtil::tstring menuName;
+		LPCTSTR menuName;
 		HCURSOR cursor;
 
 		/// Fills with default parameters
@@ -170,7 +170,7 @@ protected:
 
 	virtual ~WidgetWindow();
 private:
-	SmartUtil::tstring itsRegisteredClassName;
+	boost::scoped_ptr<WindowClass> windowClass;
 };
 
 class WidgetChildWindow
@@ -234,7 +234,6 @@ inline WidgetWindow::WidgetWindow( Widget * parent )
 
 inline WidgetWindow::~WidgetWindow()
 {
-	::UnregisterClass( itsRegisteredClassName.c_str(), Application::instance().getAppHandle() );
 }
 
 inline void WidgetWindow::createInvisibleWindow( Seed cs )

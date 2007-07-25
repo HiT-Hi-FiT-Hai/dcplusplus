@@ -164,7 +164,7 @@ inline WidgetCheckBox::Seed::Seed()
 
 inline void WidgetCheckBox::setChecked( bool value )
 {
-	::SendMessage( this->Widget::itsHandle, BM_SETCHECK, static_cast< WPARAM >( value ? BST_CHECKED : BST_UNCHECKED ), 0 );
+	this->sendMessage(BM_SETCHECK, static_cast< WPARAM >( value ? BST_CHECKED : BST_UNCHECKED ) );
 }
 
 
@@ -191,7 +191,7 @@ inline Message & WidgetCheckBox::getBackgroundColorMessage()
 
 inline bool WidgetCheckBox::getChecked()
 {
-	return ::SendMessage( this->Widget::itsHandle, BM_GETCHECK, 0, 0 ) == BST_CHECKED;
+	return this->sendMessage(BM_GETCHECK) == BST_CHECKED;
 }
 
 // Protected to avoid direct instantiation, you can inherit and use WidgetFactory

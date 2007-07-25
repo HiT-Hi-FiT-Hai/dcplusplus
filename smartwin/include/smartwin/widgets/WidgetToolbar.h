@@ -365,8 +365,8 @@ inline void WidgetToolbar::refresh()
 
 inline void WidgetToolbar::setButtonSize( unsigned int width, unsigned int height )
 {
-	if ( ::SendMessage( this->Widget::itsHandle, TB_SETBUTTONSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE ||
-		::SendMessage( this->Widget::itsHandle, TB_SETBITMAPSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE )
+	if ( this->sendMessage(TB_SETBUTTONSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE ||
+		this->sendMessage(TB_SETBITMAPSIZE, 0, static_cast< LPARAM >( MAKELONG( width, height ) ) ) != TRUE )
 	{
 		xCeption x( _T( "Error while trying to set toolbar button size..." ) );
 		throw x;
@@ -380,7 +380,7 @@ void WidgetToolbar::addBitmap( HBITMAP hBit, unsigned int noButtonsInBitmap )
 	TBADDBITMAP tb;
 	tb.hInst = NULL;
 	tb.nID = ( UINT_PTR )hBit;
-	if( ::SendMessage( this->Widget::itsHandle, TB_ADDBITMAP, static_cast< WPARAM >( noButtonsInBitmap ), reinterpret_cast< LPARAM >(&tb ) ) == - 1 )
+	if(this->sendMessage(TB_ADDBITMAP, static_cast< WPARAM >( noButtonsInBitmap ), reinterpret_cast< LPARAM >(&tb ) ) == - 1 )
 	{
 		xCeption x( _T("Error while trying to add a bitmap to toolbar...") );
 		throw x;
@@ -403,7 +403,7 @@ inline void WidgetToolbar::addSeparator()
 	tb[0].fsState = TBSTATE_ENABLED;
 	tb[0].fsStyle = BTNS_SEP;
 	tb[0].iString = 0;
-	if ( ::SendMessage( this->Widget::itsHandle, TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( tb ) ) == FALSE )
+	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( tb ) ) == FALSE )
 	{
 		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
 		throw x;
@@ -510,7 +510,7 @@ void WidgetToolbar::addButton
 	if ( checkButton )
 		tb[0].fsStyle |= BTNS_CHECK;
 	tb[0].iString = text == _T( "" ) ? 0 : reinterpret_cast< INT_PTR >( text.c_str() );
-	if ( ::SendMessage( this->Widget::itsHandle, TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( tb ) ) == FALSE )
+	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( tb ) ) == FALSE )
 	{
 		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
 		throw x;
@@ -557,7 +557,7 @@ void WidgetToolbar::addButton
 	if ( checkButton )
 		tb[0].fsStyle |= BTNS_CHECK;
 	tb[0].iString = text == _T( "" ) ? 0 : reinterpret_cast< INT_PTR >( text.c_str() );
-	if ( ::SendMessage( this->Widget::itsHandle, TB_ADDBUTTONS, 1, ( LPARAM ) tb ) == FALSE )
+	if ( this->sendMessage(TB_ADDBUTTONS, 1, ( LPARAM ) tb ) == FALSE )
 	{
 		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
 		throw x;
@@ -582,24 +582,24 @@ void WidgetToolbar::addButton
 inline void WidgetToolbar::setNormalImageList( ImageListPtr normalImageList )
 {
 	itsNormalImageList = normalImageList;
-	::SendMessage( this->Widget::itsHandle, TB_SETIMAGELIST, 0, reinterpret_cast< LPARAM >( itsNormalImageList->getImageList() ) );
+	this->sendMessage(TB_SETIMAGELIST, 0, reinterpret_cast< LPARAM >( itsNormalImageList->getImageList() ) );
 }
 
 inline void WidgetToolbar::setHotImageList( ImageListPtr hotImageList )
 {
 	itsHotImageList = hotImageList;
-	::SendMessage( this->Widget::itsHandle, TB_SETHOTIMAGELIST, 0, reinterpret_cast< LPARAM >( itsHotImageList->getImageList() ) );
+	this->sendMessage(TB_SETHOTIMAGELIST, 0, reinterpret_cast< LPARAM >( itsHotImageList->getImageList() ) );
 }
 
 inline void WidgetToolbar::setDisabledImageList( ImageListPtr disabledImageList )
 {
 	itsDisabledImageList = disabledImageList;
-	::SendMessage( this->Widget::itsHandle, TB_SETDISABLEDIMAGELIST, 0, reinterpret_cast< LPARAM >( itsDisabledImageList->getImageList() ) );
+	this->sendMessage(TB_SETDISABLEDIMAGELIST, 0, reinterpret_cast< LPARAM >( itsDisabledImageList->getImageList() ) );
 }
 
 inline void WidgetToolbar::setButtonVisible( unsigned int id, bool show )
 {
-	::SendMessage( this->Widget::itsHandle, TB_HIDEBUTTON, static_cast< LPARAM >( id ), MAKELONG( ( show ? FALSE : TRUE ), 0 ) );
+	this->sendMessage(TB_HIDEBUTTON, static_cast< LPARAM >( id ), MAKELONG( ( show ? FALSE : TRUE ), 0 ) );
 }
 
 inline bool WidgetToolbar::getButtonVisible( unsigned int id )
@@ -610,13 +610,13 @@ inline bool WidgetToolbar::getButtonVisible( unsigned int id )
 	tb.cbSize = sizeof( TBBUTTONINFO );
 	tb.dwMask = TBIF_STATE;
 	tb.idCommand = id;
-	::SendMessage( this->Widget::itsHandle, TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
+	this->sendMessage(TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
 	return ( tb.fsState & TBSTATE_HIDDEN ) == 0;
 }
 
 inline void WidgetToolbar::setButtonEnabled( unsigned id, bool enable )
 {
-	::SendMessage( this->Widget::itsHandle, TB_ENABLEBUTTON, static_cast< LPARAM >( id ), MAKELONG( ( enable ? TRUE : FALSE ), 0 ) );
+	this->sendMessage(TB_ENABLEBUTTON, static_cast< LPARAM >( id ), MAKELONG( ( enable ? TRUE : FALSE ), 0 ) );
 }
 
 inline bool WidgetToolbar::getButtonEnabled( unsigned int id )
@@ -627,7 +627,7 @@ inline bool WidgetToolbar::getButtonEnabled( unsigned int id )
 	tb.cbSize = sizeof( TBBUTTONINFO );
 	tb.dwMask = TBIF_STATE;
 	tb.idCommand = id;
-	::SendMessage( this->Widget::itsHandle, TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
+	this->sendMessage(TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
 	return ( tb.fsState & TBSTATE_ENABLED ) == TBSTATE_ENABLED;
 }
 
@@ -639,7 +639,7 @@ inline bool WidgetToolbar::getButtonChecked( unsigned int id )
 	tb.cbSize = sizeof( TBBUTTONINFO );
 	tb.dwMask = TBIF_STATE;
 	tb.idCommand = id;
-	::SendMessage( this->Widget::itsHandle, TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
+	this->sendMessage(TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );
 	return ( tb.fsState & TBSTATE_CHECKED ) == TBSTATE_CHECKED;
 }
 

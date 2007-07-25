@@ -54,14 +54,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-// TODO: Fix!
-// Just to get destruction logic right, crappy solution, fix! An outer most widget
-// is a container widget which is one of the "application windows". When there are
-// NO MORE "application widgets" the application is terminated
-class OuterMostWidget
-{
-};
-
 /// Main Window class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -108,11 +100,8 @@ class WidgetWindowBase :
 	public AspectSizable< WidgetWindowBase< Policy > >,
 	public AspectText< WidgetWindowBase< Policy > >,
 	public AspectThreads< WidgetWindowBase< Policy > >,
-	public AspectVisible< WidgetWindowBase< Policy > >,
-
-	public OuterMostWidget
+	public AspectVisible< WidgetWindowBase< Policy > >
 {
-
 	struct CloseDispatcher
 	{
 		typedef std::tr1::function<bool ()> F;
@@ -190,7 +179,7 @@ public:
 	  * If your event handler returns true, it will keep getting called periodically, otherwise 
 	  * it will be removed.
 	  */
-	void createTimer(const typename TimerDispatcher::F& f, unsigned int milliSeconds);
+	void createTimer(const typename TimerDispatcher::F& f, unsigned int milliSeconds, unsigned int id = 0);
 
 	/// Closes the window
 	/** Call this function to raise the "Closing" event. <br>
@@ -276,31 +265,29 @@ protected:
 
 template< class Policy >
 void WidgetWindowBase< Policy >::createTimer( const typename TimerDispatcher::F& f,
-	unsigned int milliSecond)
+	unsigned int milliSecond, unsigned int id)
 {
 
-	UINT_PTR id = ::SetTimer( this->handle(), 0, static_cast< UINT >( milliSecond ), NULL);
-	
+	::SetTimer( this->handle(), id, static_cast< UINT >( milliSecond ), NULL);
 	setCallback(
 		Message( WM_TIMER, id ), TimerDispatcher(f)
 	);
-
 }
 
 template< class Policy >
 void WidgetWindowBase< Policy >::close( bool asyncron )
 {
 	if ( asyncron )
-		::PostMessage( this->Widget::itsHandle, WM_CLOSE, 0, 0 ); // Return now
+		this->postMessage(WM_CLOSE); // Return now
 	else
-		::SendMessage( this->Widget::itsHandle, WM_CLOSE, 0, 0 ); // Return after close is done.
+		this->sendMessage(WM_CLOSE); // Return after close is done.
 }
 
 #ifndef WINCE
 template< class Policy >
 void WidgetWindowBase< Policy >::animateSlide( bool show, bool left, unsigned int time )
 {
-	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( time ),
+	::AnimateWindow( this->handle(), static_cast< DWORD >( time ),
 		show ?
 			left ? AW_SLIDE | AW_HOR_NEGATIVE :
 				AW_SLIDE | AW_HOR_POSITIVE
@@ -314,13 +301,13 @@ void WidgetWindowBase< Policy >::animateSlide( bool show, bool left, unsigned in
 template< class Policy >
 void WidgetWindowBase< Policy >::animateBlend( bool show, int msTime )
 {
-	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( msTime ), show ? AW_BLEND : AW_HIDE | AW_BLEND );
+	::AnimateWindow( this->handle(), static_cast< DWORD >( msTime ), show ? AW_BLEND : AW_HIDE | AW_BLEND );
 }
 
 template< class Policy >
 void WidgetWindowBase< Policy >::animateCollapse( bool show, int msTime )
 {
-	::AnimateWindow( this->Widget::itsHandle, static_cast< DWORD >( msTime ), show ? AW_CENTER : AW_HIDE | AW_CENTER );
+	::AnimateWindow( this->handle(), static_cast< DWORD >( msTime ), show ? AW_CENTER : AW_HIDE | AW_CENTER );
 }
 #endif
 
@@ -340,49 +327,48 @@ template< class Policy >
 void WidgetWindowBase< Policy >::setIconSmall( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR );
-	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
+	::SendMessage( this->handle(), WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
 void WidgetWindowBase< Policy >::setIconLarge( int resourceId )
 {
 	HICON hIcon = ( HICON )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE );
-	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
+	::SendMessage( this->handle(), WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
 void WidgetWindowBase< Policy >::setIconSmall( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR | LR_LOADFROMFILE );
-	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
+	::SendMessage( this->handle(), WM_SETICON, ICON_SMALL, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
 void WidgetWindowBase< Policy >::setIconLarge( const SmartUtil::tstring & filePathName )
 {
 	HICON hIcon = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
-	::SendMessage( this->Widget::itsHandle, WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
+	::SendMessage( this->handle(), WM_SETICON, ICON_BIG, reinterpret_cast< LPARAM >( hIcon ) );
 }
 
 template< class Policy >
 void WidgetWindowBase< Policy >::setCursor( int resourceId )
 {
 	HCURSOR hCur = ::LoadCursor( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) );
-	::SetClassLongPtr( this->Widget::itsHandle, GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
+	::SetClassLongPtr( this->handle(), GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
 template< class Policy >
 void WidgetWindowBase< Policy >::setCursor( const SmartUtil::tstring & filePathName )
 {
 	HICON hCur = ( HICON )::LoadImage( 0, filePathName.c_str(), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE );
-	::SetClassLongPtr( this->Widget::itsHandle, GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
+	::SetClassLongPtr( this->handle(), GCLP_HCURSOR, reinterpret_cast< LONG >( hCur ) );
 }
 
 template< class Policy >
 WidgetWindowBase< Policy >::WidgetWindowBase( Widget * parent )
 	: PolicyType( parent )
 {
-	this->Widget::itsCtrlId = 0;
 }
 
 // end namespace SmartWin

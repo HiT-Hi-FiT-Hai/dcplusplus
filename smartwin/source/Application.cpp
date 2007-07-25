@@ -251,39 +251,6 @@ void Application::removeWaitEvent( HANDLE hWaitEvent )
 	}
 }
 
-// Purpose is to generate a unique class name.
-// If you have application with DLLs, there will be multiple instances, and
-// multiple Application instances.  
-// except for WinCE, which used only one hInst for all.
-// So we need an approach for WinCE that put the application handle in.
-//
-void Application::generateLocalClassName( Seed & x_Seed )
-{
-	static unsigned int d_CurrentNo = 0;
-	SmartUtil::tstringstream d_ClassName;
-	static Utilities::CriticalSection cs;
-	Utilities::ThreadLock tmpLock( cs );
-
-#ifdef WINCE
-	d_ClassName << _T( "SW_" ) << Application::instance().getAppHandle() << d_CurrentNo++; 
-#else
-	d_ClassName << _T( "SW_" ) << d_CurrentNo++; 
-#endif
-	x_Seed.className = d_ClassName.str();
-}
-
-void Application::setSystemClassName( Seed & x_Seed, const SmartUtil::tstring & a_ClassName )
-{
-	x_Seed.className = a_ClassName;
-}
-
-void Application::addLocalWindowClassToUnregister( const Seed & a_Seed )
-{
-	itsClassesToUnregister.push_back( a_Seed.getClassName() );
-}
-
-std::list< SmartUtil::tstring > Application::itsClassesToUnregister;
-
 void Application::UnInstantiate()
 {
 	// TODO: is this really needed, or does the OS take care of local classes?
@@ -350,7 +317,7 @@ int Application::run()
 //
 // This routine works excellent in single threaded environments, but I suspect it will fail if client wants
 // to create more than one thread(e.g. WaitMessage waits WITHIN thread), probably need to refactor to get multiple threads to work
-int Application::run()
+int Application::run(const FilterFunction& filter)
 {
 	// First checking to see if we're in "Game Mode"
 	if ( itsHeartBeatObject != 0 )
@@ -446,15 +413,8 @@ int Application::run()
 			{
 				while ( PeekMessage( & msg, NULL, 0, 0, PM_REMOVE ) )
 				{
-					// here goes the usual stuff
-#ifndef WINCE
-					if(mdiClient && TranslateMDISysAccel(mdiClient, &msg)) {
-						continue;
-					}
-#endif
-					if ( ::IsDialogMessage( GetParent( msg.hwnd ), & msg ) )
-					{
-						continue; // Allow Tab order
+					if(filter && filter(msg)) {
+							continue;
 					}
 
 					if ( msg.message == WM_QUIT )

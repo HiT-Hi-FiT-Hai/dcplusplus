@@ -300,7 +300,7 @@ inline Message & WidgetTabSheet::getSelectionChangedMessage()
 
 inline int WidgetTabSheet::getSelectedIndex() const
 {
-	int retVal = TabCtrl_GetCurSel( this->Widget::itsHandle );
+	int retVal = TabCtrl_GetCurSel( this->handle() );
 	return retVal;
 }
 
@@ -311,7 +311,7 @@ inline SmartUtil::tstring WidgetTabSheet::getSelectedHeader() const
 	TCHAR buffer[200];
 	item.cchTextMax = 198;
 	item.pszText = buffer;
-	if ( !TabCtrl_GetItem( this->Widget::itsHandle, getSelectedIndex(), & item ) )
+	if ( !TabCtrl_GetItem( this->handle(), getSelectedIndex(), & item ) )
 	{
 		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
 	}
@@ -321,7 +321,7 @@ inline SmartUtil::tstring WidgetTabSheet::getSelectedHeader() const
 inline LPARAM WidgetTabSheet::getData(unsigned idx)
 {
 	TCITEM item = { TCIF_PARAM };
-	if ( !TabCtrl_GetItem( this->Widget::itsHandle, idx, & item ) )
+	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
 	{
 		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
 	}
@@ -330,7 +330,7 @@ inline LPARAM WidgetTabSheet::getData(unsigned idx)
 
 inline void WidgetTabSheet::setSelectedIndex( int idx )
 {
-	TabCtrl_SetCurSel( this->Widget::itsHandle, idx );
+	TabCtrl_SetCurSel( this->handle(), idx );
 }
 
 inline unsigned int WidgetTabSheet::addPage( const SmartUtil::tstring & header, unsigned index, LPARAM data )
@@ -339,7 +339,7 @@ inline unsigned int WidgetTabSheet::addPage( const SmartUtil::tstring & header, 
 	item.mask = TCIF_TEXT | TCIF_PARAM;
 	item.pszText = const_cast < TCHAR * >( header.c_str() );
 	item.lParam = data;
-	int newIdx = TabCtrl_InsertItem( this->Widget::itsHandle, index, & item );
+	int newIdx = TabCtrl_InsertItem( this->handle(), index, & item );
 	if ( newIdx == - 1 )
 	{
 		xCeption x( _T( "Error while trying to add page into Tab Sheet" ) );

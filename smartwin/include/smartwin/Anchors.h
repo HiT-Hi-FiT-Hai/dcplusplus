@@ -7,9 +7,7 @@
 #ifndef ANCHORS_H
 #define ANCHORS_H
 
-#include <vector>
-#include "SmartWin.h"
-#include <windows.h>
+#include "Widget.h"
 
 using std::vector;
 

@@ -257,18 +257,18 @@ inline Message & WidgetDateTimePicker::getClickMessage()
 inline SYSTEMTIME WidgetDateTimePicker::getDateTime()
 {
 	SYSTEMTIME st;
-	DateTime_GetSystemtime( this->Widget::itsHandle, & st );
+	DateTime_GetSystemtime( this->handle(), & st );
 	return st;
 }
 
 inline void WidgetDateTimePicker::setDateTime( const SYSTEMTIME & st )
 {
-	DateTime_SetSystemtime( this->Widget::itsHandle, GDT_VALID, & st );
+	DateTime_SetSystemtime( this->handle(), GDT_VALID, & st );
 }
 
 inline void WidgetDateTimePicker::setFormat( const SmartUtil::tstring & format )
 {
-	DateTime_SetFormat( this->Widget::itsHandle, format.c_str() );
+	DateTime_SetFormat( this->handle(), format.c_str() );
 }
 
 inline WidgetDateTimePicker::WidgetDateTimePicker( SmartWin::Widget * parent )
@@ -280,32 +280,32 @@ inline WidgetDateTimePicker::WidgetDateTimePicker( SmartWin::Widget * parent )
 
 inline void WidgetDateTimePicker::setBackgroundColor( COLORREF color )
 {
-	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_BACKGROUND, color );
+	DateTime_SetMonthCalColor( this->handle(), MCSC_BACKGROUND, color );
 }
 
 inline void WidgetDateTimePicker::setMonthBackgroundColor( COLORREF color )
 {
-	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_MONTHBK, color );
+	DateTime_SetMonthCalColor( this->handle(), MCSC_MONTHBK, color );
 }
 
 inline void WidgetDateTimePicker::setMonthTextColor( COLORREF color )
 {
-	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TEXT, color );
+	DateTime_SetMonthCalColor( this->handle(), MCSC_TEXT, color );
 }
 
 inline void WidgetDateTimePicker::setTitleBackgroundColor( COLORREF color )
 {
-	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TITLEBK, color );
+	DateTime_SetMonthCalColor( this->handle(), MCSC_TITLEBK, color );
 }
 
 inline void WidgetDateTimePicker::setTitleTextColor( COLORREF color )
 {
-	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TITLETEXT, color );
+	DateTime_SetMonthCalColor( this->handle(), MCSC_TITLETEXT, color );
 }
 
 inline void WidgetDateTimePicker::setTrailingTextColor( COLORREF color )
 {
-	DateTime_SetMonthCalColor( this->Widget::itsHandle, MCSC_TRAILINGTEXT, color );
+	DateTime_SetMonthCalColor( this->handle(), MCSC_TRAILINGTEXT, color );
 }
 
 // end namespace SmartWin

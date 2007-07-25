@@ -9,7 +9,7 @@ const WidgetRadioButton::Seed & WidgetRadioButton::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T( "BUTTON" ) );
+		d_DefaultValues.className = _T( "BUTTON" );
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;

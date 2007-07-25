@@ -193,12 +193,12 @@ inline WidgetRadioButton::WidgetRadioButton( SmartWin::Widget * parent )
 
 inline bool WidgetRadioButton::getChecked()
 {
-	return ::SendMessage( this->Widget::itsHandle, BM_GETCHECK, 0, 0 ) == BST_CHECKED;
+	return this->sendMessage(BM_GETCHECK) == BST_CHECKED;
 }
 
 inline void WidgetRadioButton::setChecked( bool value )
 {
-	::SendMessage( this->Widget::itsHandle, BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED, 0 );
+	this->sendMessage(BM_SETCHECK, value ? BST_CHECKED : BST_UNCHECKED);
 }
 
 // end namespace SmartWin

@@ -8,7 +8,7 @@ const WidgetCheckBox::Seed & WidgetCheckBox::getDefaultSeed() {
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T("Button") );
+		d_DefaultValues.className = _T("Button");
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_CHECKBOX;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;

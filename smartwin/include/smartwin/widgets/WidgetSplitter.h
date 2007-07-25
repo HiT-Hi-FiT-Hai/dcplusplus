@@ -31,14 +31,14 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include "../WindowsHeaders.h"
-#include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectClickable.h"
-#include "../aspects/AspectVisible.h"
-#include "../aspects/AspectRaw.h"
-#include "../xCeption.h"
 #include "../CanvasClasses.h"
+#include "../MessageMapPolicyClasses.h"
+#include "../WindowClass.h"
+#include "../aspects/AspectClickable.h"
+#include "../aspects/AspectRaw.h"
+#include "../aspects/AspectSizable.h"
+#include "../aspects/AspectVisible.h"
+#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -156,6 +156,8 @@ public:
 
 	/// Object type
 	typedef ThisType * ObjectType;
+	
+	typedef MessageMapPolicy<Policies::Normal> PolicyType;
 
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
@@ -238,36 +240,11 @@ const typename WidgetSplitter< Painter >::Seed & WidgetSplitter< Painter >::getD
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
-
+	static boost::scoped_ptr<WindowClass> windowClass;
 	if ( d_NeedsInit )
 	{
-		SMARTWIN_WNDCLASSEX wc;
-
-		Application::instance().generateLocalClassName( d_DefaultValues );
-		wc.cbWndExtra = 0;
-		wc.style = 0;
-		wc.cbClsExtra = 0;
-		wc.hInstance = SmartWin::Application::instance().getAppHandle();
-		wc.hIcon = 0;
-		wc.lpszMenuName = 0;
-		wc.lpszClassName = d_DefaultValues.getClassName().c_str();
-		wc.hbrBackground = ( HBRUSH )( COLOR_GRAYTEXT + 1 );
-		wc.hCursor = LoadCursor( 0, IDC_SIZEWE );
-		wc.lpfnWndProc = &ThisType::wndProc;
-#ifndef WINCE
-		wc.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
-		wc.hIcon = LoadIcon( 0, IDI_APPLICATION );
-		wc.hIconSm = LoadIcon( 0, IDI_APPLICATION );
-#endif
-		ATOM registeredClass = SmartWinRegisterClass( & wc );
-		if ( 0 == registeredClass )
-		{
-			assert( false && "WidgetSplitter::create() SmartWinRegisterClass fizzled..." );
-			SmartWin::xCeption x( _T( "WidgetSplitter::create() SmartWinRegisterClass fizzled..." ) );
-			throw x;
-		}
-		Application::instance().addLocalWindowClassToUnregister( d_DefaultValues );
-		//TODO: fill the values
+		windowClass.reset(new WindowClass(_T("WidgetSplitter"), &ThisType::wndProc, NULL, ( HBRUSH )( COLOR_GRAYTEXT + 1 ), NULL, NULL, ::LoadCursor( 0, IDC_SIZEWE )));
+		d_DefaultValues.className = windowClass->getClassName();
 		d_NeedsInit = false;
 	}
 	return d_DefaultValues;
@@ -311,20 +288,10 @@ WidgetSplitter< Painter >::WidgetSplitter( SmartWin::Widget * parent )
 template< typename Painter >
 void WidgetSplitter< Painter >::create( const Seed & cs )
 {
-	// TODO: use CreationalInfo parameters
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetSplitter::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	//ThisType::createMessageMap();
+	PolicyType::create( cs );
 	RECT rc;
-	::GetWindowRect( this->Widget::itsParent->handle(), & rc );
-	if ( !::MoveWindow( this->Widget::itsHandle, rc.right / 2, 0, getWidth(), rc.bottom, TRUE ) )
+	::GetWindowRect( this->getParent()->handle(), & rc );
+	if ( !::MoveWindow( this->handle(), rc.right / 2, 0, getWidth(), rc.bottom, TRUE ) )
 	{
 	  xCeption x( _T( "Error while trying to initially move WidgetSplitter" ) );
 	  throw x;
@@ -339,19 +306,19 @@ LRESULT WidgetSplitter< Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARA
 		case WM_LBUTTONDOWN :
 		{
 			// "Locking" cursor in Widget
-			::SetCapture( this->Widget::itsHandle );
+			::SetCapture( this->handle() );
 
 			// Creating an "update" canvas on the parent Widget
-			UpdateCanvas can( this->Widget::itsParent->handle() );
+			UpdateCanvas can( this->getParent()->handle() );
 
 			// We need the client size of the parent Widget since we need to tell our policy class how much "space" it can draw onto
 			RECT splWndPos;
-			::GetClientRect( this->Widget::itsParent->handle(), & splWndPos );
+			::GetClientRect( this->getParent()->handle(), & splWndPos );
 			SmartWin::Rectangle rect( splWndPos.left, splWndPos.top, splWndPos.right, splWndPos.bottom );
 
 			// We also need the position of our parent Widget since we need to calculate the cursor position in "client" coordinates
 			RECT splParentWndPos;
-			::GetWindowRect( this->Widget::itsParent->handle(), & splParentWndPos );
+			::GetWindowRect( this->getParent()->handle(), & splParentWndPos );
 			SmartWin::Rectangle rectParentSize( splParentWndPos.left, splParentWndPos.top, splParentWndPos.right, splParentWndPos.bottom );
 
 			// Setting mode to "XOR" kind of mode
@@ -377,16 +344,16 @@ LRESULT WidgetSplitter< Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARA
 			if ( wPar & MK_LBUTTON )
 			{
 				// Creating an "update" canvas on the parent Widget
-				UpdateCanvas can( this->Widget::itsParent->handle() );
+				UpdateCanvas can( this->getParent()->handle() );
 
 				// We need the client size of the parent Widget since we need to tell our policy class how much "space" it can draw onto
 				RECT splWndPos;
-				::GetClientRect( this->Widget::itsParent->handle(), & splWndPos );
+				::GetClientRect( this->getParent()->handle(), & splWndPos );
 				SmartWin::Rectangle rect( splWndPos.left, splWndPos.top, splWndPos.right, splWndPos.bottom );
 
 				// We also need the position of our parent Widget since we need to calculate the cursor position in "client" coordinates
 				RECT splParentWndPos;
-				::GetWindowRect( this->Widget::itsParent->handle(), & splParentWndPos );
+				::GetWindowRect( this->getParent()->handle(), & splParentWndPos );
 				SmartWin::Rectangle rectParentSize( splParentWndPos.left, splParentWndPos.top, splParentWndPos.right, splParentWndPos.bottom );
 
 				// Setting mode to "XOR" kind of mode
@@ -416,11 +383,11 @@ LRESULT WidgetSplitter< Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARA
 			::ReleaseCapture();
 
 			// Creating an "update" canvas on the parent Widget
-			UpdateCanvas can( this->Widget::itsParent->handle() );
+			UpdateCanvas can( this->getParent()->handle() );
 
 			// Can't call "size" since parent is a Widget * and size member is in the AspectSizable Aspect
 			RECT splWndPos;
-			::GetWindowRect( this->Widget::itsParent->handle(), & splWndPos );
+			::GetWindowRect( this->getParent()->handle(), & splWndPos );
 			SmartWin::Rectangle rect( splWndPos.left, splWndPos.top, splWndPos.right, splWndPos.bottom );
 
 			// Setting mode to "XOR" kind of mode
@@ -431,7 +398,7 @@ LRESULT WidgetSplitter< Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARA
 
 			SmartWin::Rectangle oldWndPos( this->ThisType::getSize() );
 			int newXPos = itsOldX - ( itsWidth / 2 );
-			::GetClientRect( this->Widget::itsParent->handle(), & splWndPos );
+			::GetClientRect( this->getParent()->handle(), & splWndPos );
 
 			// Bounds checking
 			if ( newXPos < 0 )
@@ -456,7 +423,7 @@ LRESULT WidgetSplitter< Painter >::sendWidgetMessage( HWND hWnd, UINT msg, WPARA
 		} break;
 		case WM_PAINT :
 		{
-			paintSplitter( itsWidth, itsYSize, this->Widget::itsHandle );
+			paintSplitter( itsWidth, itsYSize, this->handle() );
 			return 0; // TODO: Not sure what we should do here, should probably let fallthrough to event handlers or something... ?
 		} break;
 		default:

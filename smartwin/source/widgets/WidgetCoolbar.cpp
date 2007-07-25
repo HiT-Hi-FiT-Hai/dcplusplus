@@ -9,7 +9,7 @@ const WidgetCoolbar::Seed & WidgetCoolbar::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, REBARCLASSNAME );
+		d_DefaultValues.className = REBARCLASSNAME;
 		d_DefaultValues.exStyle = WS_EX_TOOLWINDOW;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | RBS_VARHEIGHT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_NODIVIDER;
 		//TODO: fill the values

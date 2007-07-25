@@ -143,7 +143,7 @@ const typename WidgetRichTextBox< TextBoxType >::Seed & WidgetRichTextBox< TextB
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, RICHEDIT_CLASS );
+		d_DefaultValues.className = RICHEDIT_CLASS;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_LEFT | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_MULTILINE | WS_BORDER | ES_WANTRETURN;
 		d_DefaultValues.backgroundColor = RGB( 255, 255, 255 );
 		d_DefaultValues.font = createFont( DefaultGuiFont );
@@ -185,7 +185,6 @@ void WidgetRichTextBox< TextBoxType >::create( const Seed & cs )
 template< class TextBoxType >
 WidgetRichTextBox< TextBoxType >::WidgetRichTextBox( SmartWin::Widget * parent )
 	: WidgetTextBox< TextBoxType >( parent )
-	, Widget( parent, 0 )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
@@ -194,7 +193,7 @@ WidgetRichTextBox< TextBoxType >::WidgetRichTextBox( SmartWin::Widget * parent )
 template< class TextBoxType >
 void WidgetRichTextBox< TextBoxType >::setBackgroundColor( COLORREF color )
 {
-	::SendMessage( this->Widget::itsHandle, EM_SETBKGNDCOLOR, 0, static_cast< LPARAM >( color ) );
+	this->sendMessage(EM_SETBKGNDCOLOR, 0, static_cast< LPARAM >( color ) );
 }
 
 // end namespace SmartWin

@@ -9,7 +9,7 @@ const WidgetStatic::Seed & WidgetStatic::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T("Static") );
+		d_DefaultValues.className = _T("Static");
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | SS_NOTIFY;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;

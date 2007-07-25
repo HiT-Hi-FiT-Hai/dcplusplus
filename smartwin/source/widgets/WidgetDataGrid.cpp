@@ -9,7 +9,7 @@ const WidgetDataGrid::Seed & WidgetDataGrid::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, WC_LISTVIEW );
+		d_DefaultValues.className = WC_LISTVIEW;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_EDITLABELS;
 		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
 		//TODO: fill the values
@@ -27,12 +27,12 @@ void WidgetDataGrid::setSelectedIndex( int idx )
 	it.mask = LVIF_STATE;
 	it.state = LVIS_SELECTED | LVIS_FOCUSED;
 	it.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-	if ( ListView_SetItem( this->Widget::itsHandle, & it ) != TRUE )
+	if ( ListView_SetItem( this->handle(), & it ) != TRUE )
 	{
 		xCeption err( _T( "Something went wrong while trying to set the selected property of the ListView" ) );
 		throw err;
 	}
-	if ( ListView_EnsureVisible( this->Widget::itsHandle, idx, FALSE ) != TRUE )
+	if ( ListView_EnsureVisible( this->handle(), idx, FALSE ) != TRUE )
 	{
 		xCeption err( _T( "Something went wrong while trying to scroll selected item into view in setSelectedIndex" ) );
 		throw err;
@@ -52,7 +52,7 @@ void WidgetDataGrid::clearSelection()
 	for ( iter = selectedItems.begin(); iter != selectedItems.end(); ++iter )
 	{
 		it.iItem = * iter;
-		if ( ListView_SetItem( this->Widget::itsHandle, & it ) != TRUE )
+		if ( ListView_SetItem( this->handle(), & it ) != TRUE )
 		{
 			xCeption err( _T( "Something went wrong while trying to unset the selected property of the ListView" ) );
 			throw err;
@@ -66,7 +66,7 @@ void WidgetDataGrid::createColumns( const std::vector< SmartUtil::tstring > & co
 	if ( itsNoColumns != 0 )
 	{
 		removeAllRows();
-		while ( ListView_DeleteColumn( this->Widget::itsHandle, 0 ) == TRUE );
+		while ( ListView_DeleteColumn( this->handle(), 0 ) == TRUE );
 	}
 
 	LV_COLUMN lvColumn =
@@ -80,7 +80,7 @@ void WidgetDataGrid::createColumns( const std::vector< SmartUtil::tstring > & co
 		++idx, ++x )
 	{
 		lvColumn.pszText = const_cast < TCHAR * >( idx->c_str() );
-		if ( ListView_InsertColumn( this->Widget::itsHandle, x, & lvColumn ) == - 1 )
+		if ( ListView_InsertColumn( this->handle(), x, & lvColumn ) == - 1 )
 		{
 			xCeption x( _T( "Error while trying to create Columns in list view" ) );
 			throw x;
@@ -93,9 +93,9 @@ LPARAM WidgetDataGrid::insertRow(const std::vector< SmartUtil::tstring > & row, 
 	xAssert( itsNoColumns == row.size() && itsNoColumns != 0, _T( "Tried to add a row into a WidgetDataGridView with wrong number of columns" ) );
 	if (index == - 1) {
 		// Appending at bottom
-		index = ListView_GetItemCount( this->Widget::itsHandle );
+		index = ListView_GetItemCount( this->handle() );
 	}
-	int itemCount= ListView_GetItemCount( this->Widget::itsHandle );
+	int itemCount= ListView_GetItemCount( this->handle() );
 	LV_ITEM lvi =
 	{	0
 	};
@@ -108,7 +108,7 @@ LPARAM WidgetDataGrid::insertRow(const std::vector< SmartUtil::tstring > & row, 
 	lvi.lParam = lPar == 0 ? itemCount++ : lPar;
 	lvi.cchTextMax = static_cast< int >(row[0].size() );
 	lvi.iItem = index;
-	if ( ListView_InsertItem( this->Widget::itsHandle, & lvi ) == - 1) {
+	if ( ListView_InsertItem( this->handle(), & lvi ) == - 1) {
 		xCeption x( _T( "Error while trying to insert row in ListView" ));
 		throw x;
 	}
@@ -118,7 +118,7 @@ LPARAM WidgetDataGrid::insertRow(const std::vector< SmartUtil::tstring > & row, 
 		lvi.iSubItem = noCol++;
 		lvi.pszText = const_cast < TCHAR * >(idx->c_str() );
 		lvi.cchTextMax = static_cast< int >(idx->size() );
-		if ( !ListView_SetItem( this->Widget::itsHandle, & lvi )) {
+		if ( !ListView_SetItem( this->handle(), & lvi )) {
 			xCeption x( _T( "Error while trying to insert row in ListView" ));
 			throw x;
 		}
@@ -128,9 +128,9 @@ LPARAM WidgetDataGrid::insertRow(const std::vector< SmartUtil::tstring > & row, 
 
 void WidgetDataGrid::insertRow(int index, int iconIndex) {
 	if (index == - 1) {
-		index = ListView_GetItemCount( this->Widget::itsHandle );
+		index = ListView_GetItemCount( this->handle() );
 	}
-	int itemCount= ListView_GetItemCount( this->Widget::itsHandle );
+	int itemCount= ListView_GetItemCount( this->handle() );
 	LV_ITEM lvi =
 	{	0
 	};
@@ -143,7 +143,7 @@ void WidgetDataGrid::insertRow(int index, int iconIndex) {
 	lvi.lParam = itemCount++;
 	lvi.cchTextMax = 0;
 	lvi.iItem = index;
-	if ( ListView_InsertItem( this->Widget::itsHandle, & lvi ) == - 1) {
+	if ( ListView_InsertItem( this->handle(), & lvi ) == - 1) {
 		xCeption x( _T( "Error while trying to insert row in ListView" ));
 		throw x;
 	}
@@ -151,7 +151,7 @@ void WidgetDataGrid::insertRow(int index, int iconIndex) {
 	lvi.mask = LVIF_TEXT;
 	for (int idx = 1; idx != itsNoColumns; ++idx ) {
 		lvi.iSubItem = noCol++;
-		if ( !ListView_SetItem( this->Widget::itsHandle, & lvi )) {
+		if ( !ListView_SetItem( this->handle(), & lvi )) {
 			xCeption x( _T( "Error while trying to insert row in ListView" ));
 			throw x;
 		}
@@ -164,7 +164,7 @@ void WidgetDataGrid::insertCallbackRow(const LPARAM lParam) {
 	// && _T("Can't insert a callback item without handling the GetItem event!") );
 
 	// Appending at bottom
-	int index= ListView_GetItemCount( this->Widget::itsHandle );
+	int index= ListView_GetItemCount( this->handle() );
 
 	LV_ITEM lvi =
 	{	0
@@ -177,7 +177,7 @@ void WidgetDataGrid::insertCallbackRow(const LPARAM lParam) {
 		lvi.mask |= LVIF_IMAGE;
 		lvi.iImage = I_IMAGECALLBACK;
 	}
-	if ( ListView_InsertItem( this->Widget::itsHandle, & lvi ) == - 1) {
+	if ( ListView_InsertItem( this->handle(), & lvi ) == - 1) {
 		xCeption x( _T( "Error while trying to insert row in ListView" ));
 		throw x;
 	}
@@ -186,7 +186,7 @@ void WidgetDataGrid::insertCallbackRow(const LPARAM lParam) {
 	lvi.lParam = 0;
 	for (unsigned idx = 1; idx < itsNoColumns; ++idx ) {
 		lvi.iSubItem = idx;
-		if ( !ListView_SetItem( this->Widget::itsHandle, & lvi )) {
+		if ( !ListView_SetItem( this->handle(), & lvi )) {
 			xCeption x( _T( "Error while trying to insert row in ListView" ));
 			throw x;
 		}
@@ -231,7 +231,7 @@ void WidgetDataGrid::create( const Seed & cs )
 
 int WidgetDataGrid::xoffFromColumn( int column, int & logicalColumn )
 {
-	HWND hWnd = this->Widget::itsHandle;
+	HWND hWnd = this->handle();
 
 	// Now we must map a absolute column to a logical column
 	// Columnns can be moved but they keep their Column Number

@@ -9,7 +9,7 @@ const WidgetGroupBox::Seed & WidgetGroupBox::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T( "BUTTON" ) );
+		d_DefaultValues.className = _T( "BUTTON" );
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | BS_GROUPBOX;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;

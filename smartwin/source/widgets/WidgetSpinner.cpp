@@ -9,7 +9,7 @@ const WidgetSpinner::Seed & WidgetSpinner::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, UPDOWN_CLASS );
+		d_DefaultValues.className = UPDOWN_CLASS;
 		d_DefaultValues.minValue = 0;
 		d_DefaultValues.maxValue = 100;
 

@@ -9,7 +9,7 @@ const WidgetProgressBar::Seed & WidgetProgressBar::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, PROGRESS_CLASS );
+		d_DefaultValues.className = PROGRESS_CLASS;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
 		//TODO: initialize the values here
 		d_NeedsInit = false;

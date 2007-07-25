@@ -9,7 +9,7 @@ const WidgetTreeView::Seed & WidgetTreeView::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, WC_TREEVIEW );
+		d_DefaultValues.className = WC_TREEVIEW;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;
@@ -45,7 +45,7 @@ TreeViewNode WidgetTreeView::insertNode( const SmartUtil::tstring & text, const 
 	tv.itemex = t;
 #endif
 	TreeViewNode retVal;
-	retVal.handle = reinterpret_cast< HTREEITEM >( ::SendMessage( this->Widget::itsHandle, TVM_INSERTITEM, 0, reinterpret_cast< LPARAM >( & tv ) ) );
+	retVal.handle = reinterpret_cast< HTREEITEM >( this->sendMessage(TVM_INSERTITEM, 0, reinterpret_cast< LPARAM >( & tv ) ) );
 	return retVal;
 }
 

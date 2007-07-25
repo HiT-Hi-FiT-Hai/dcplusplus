@@ -273,38 +273,38 @@ inline void WidgetSlider::setShowTicks( bool value )
 
 inline void WidgetSlider::setRange( short minimum, short maximum )
 {
-	::SendMessage( this->Widget::itsHandle, TBM_SETRANGE, static_cast< WPARAM >( TRUE ), MAKELONG( minimum, maximum ) );
+	this->sendMessage( TBM_SETRANGE, static_cast< WPARAM >( TRUE ), MAKELONG( minimum, maximum ) );
 }
 
 inline int WidgetSlider::getMaxValue()
 {
-	return ( int )::SendMessage( this->Widget::itsHandle, TBM_GETRANGEMAX, 0, 0 );
+	return ( int )this->sendMessage(TBM_GETRANGEMAX);
 }
 
 inline int WidgetSlider::getMinValue()
 {
-	return ( int )::SendMessage( this->Widget::itsHandle, TBM_GETRANGEMIN, 0, 0 );
+	return ( int )this->sendMessage(TBM_GETRANGEMIN);
 }
 
 inline void WidgetSlider::setPosition( int newPosition )
 {
-	::SendMessage( this->Widget::itsHandle, TBM_SETPOS, static_cast< WPARAM >( TRUE ), static_cast< LPARAM >( newPosition ) );
+	this->sendMessage( TBM_SETPOS, static_cast< WPARAM >( TRUE ), static_cast< LPARAM >( newPosition ) );
 }
 
 inline void WidgetSlider::setTickFrequency( unsigned frequency )
 {
-	::SendMessage( this->Widget::itsHandle, TBM_SETTICFREQ, static_cast< LPARAM >( frequency ), 0 );
+	this->sendMessage( TBM_SETTICFREQ, static_cast< WPARAM >( frequency ));
 }
 
 inline int WidgetSlider::getPosition()
 {
-	return ::SendMessage( this->Widget::itsHandle, TBM_GETPOS, 0, 0 );
+	return this->sendMessage( TBM_GETPOS );
 }
 
 inline void WidgetSlider::assignBuddy( bool beginning, Widget * buddy )
 {
 	assert( buddy && buddy->handle() );
-	::SendMessage( this->Widget::itsHandle, TBM_SETBUDDY, static_cast< WPARAM >( beginning ? TRUE : FALSE ),
+	this->sendMessage( TBM_SETBUDDY, static_cast< WPARAM >( beginning ? TRUE : FALSE ),
 		reinterpret_cast< LPARAM >( buddy->handle() ) );
 }
 

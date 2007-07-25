@@ -49,8 +49,6 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-int Widget::itsInstanceNo = 0;
-
 Widget::~Widget()
 {
 }
@@ -88,7 +86,7 @@ void Widget::kill()
 void Widget::create( const SmartWin::Seed & cs )
 {
 	itsHandle = ::CreateWindowEx( cs.exStyle,
-		cs.getClassName().c_str(),
+		cs.className,
 		cs.caption.c_str(),
 		cs.style,
 		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
@@ -108,6 +106,7 @@ void Widget::create( const SmartWin::Seed & cs )
 
 Widget::Widget( Widget * parent, HWND hWnd, bool doReg )
 	: 
+	itsCtrlId(NULL),
 	itsHandle( hWnd ),
 	itsParent( parent ),
 	itsCriticalSection( 0 )
@@ -199,6 +198,7 @@ void Widget::addRemoveExStyle( DWORD addStyle, bool add )
 			SWP_NOZORDER | SWP_FRAMECHANGED );
 	}
 }
+
 
 void private_::setHandle( SmartWin::Widget * widget, HWND handle )
 {

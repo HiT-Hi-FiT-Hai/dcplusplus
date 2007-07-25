@@ -150,13 +150,14 @@ public:
 	  */
 	SmartUtil::tstring getModuleFileName() const;
 
+	typedef std::tr1::function<bool (MSG&)> FilterFunction;
 	/// Starts the application
 	/** Normally this function will be called from your
 	  * "SmartWinMain(SmartWin::Application & app )" function as the last function.
 	  * <br>
 	  * E.g. return myApp.run();
 	  */
-	int run();
+	int run(const FilterFunction& filter = FilterFunction());
 
 	/// The initialization that must be done first.
 	/** Used internally by the WinMain function, and externally for DLL initialization.
@@ -215,37 +216,7 @@ public:
 	  */
 	void removeWaitEvent( HANDLE hEvent );
 
-	/// Generates a new class name
-	/** Use this function to generate a class name guaranteed to be unique within the
-	  * application. The result is written back in the Seed passed. This should be
-	  * the preferred method to generate class names for local classes. Global
-	  * classes, on the other hand, require unique names across the operative system.
-	  */
-	void generateLocalClassName( Seed & );
-
-	/// Set the class name
-	/** It sets the class name to the string passed. It is useful for systemwide
-	  * window classes (as opposed to local window classes). A unique name is part of
-	  * the requirements to write systemwide window classes (e.g. a library of
-	  * widgets to be used in other languages). The registration of a systemwide
-	  * class in the operative system must be done with the appropriate style.
-	  * SmartWin uses this function for those classes that do not need registration
-	  * (e.g. STATIC).
-	  */
-	void setSystemClassName( Seed &, const SmartUtil::tstring & );
-
-	/// Adds a class name to be unregistered
-	/** Use this function to add a window class that will be unregistered when the
-	  * application finishes. The class name is taken from the Seed passed.
-	  */
-	void addLocalWindowClassToUnregister( const Seed & );
-	
-	/** Sets the MDI client for mdi acceletor processing */
-	void setMDIClient(HWND hWnd) { mdiClient = hWnd; }
 private:
-	// Unregister this classes when the application finishes
-	static std::list< SmartUtil::tstring > itsClassesToUnregister;
-
 	// To determine if a copy of an application is already running
 	static HANDLE itsMutex;
 
@@ -270,8 +241,6 @@ private:
 	// The according signals we must raise, go in this vector.
 	std::vector< SignalPtr > itsVSignals;
 	
-	HWND mdiClient;
-
 	// Private Constructor to ensure Singleton Implementation
 	Application( HINSTANCE hInst, int nCmdShow, const char * cmdLine );
 

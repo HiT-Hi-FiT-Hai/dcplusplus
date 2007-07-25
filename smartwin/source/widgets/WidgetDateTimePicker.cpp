@@ -9,7 +9,7 @@ const WidgetDateTimePicker::Seed & WidgetDateTimePicker::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, DATETIMEPICK_CLASS );
+		d_DefaultValues.className = DATETIMEPICK_CLASS;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | DTS_SHORTDATEFORMAT;
 		d_DefaultValues.backgroundColor = 0x000080;
 		d_DefaultValues.font = createFont( DefaultGuiFont );

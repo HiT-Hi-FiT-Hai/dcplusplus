@@ -4,16 +4,17 @@ namespace SmartWin {
 
 void WidgetDialog::createDialog( unsigned resourceId )
 {
-	this->Widget::itsHandle = ::CreateDialogParam( Application::instance().getAppHandle(),
+	HWND wnd = ::CreateDialogParam( Application::instance().getAppHandle(),
 		MAKEINTRESOURCE( resourceId ),
-		( this->Widget::itsParent ? this->Widget::itsParent->handle() : 0 ),
+		( this->getParent() ? this->getParent()->handle() : 0 ),
 		( (DLGPROC)&ThisType::wndProc ),
-		reinterpret_cast< LPARAM >( boost::polymorphic_cast< Widget * >( this ) ) );
+		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
 
-	if ( !this->Widget::itsHandle ) {
+	if ( !wnd ) {
 		xCeption x( _T( "CreateDialogParam failed." ) );
 		throw x;
 	}
+	setHandle(wnd);
 }
 
 }

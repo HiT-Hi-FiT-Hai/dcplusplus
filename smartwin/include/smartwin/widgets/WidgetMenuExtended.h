@@ -1285,7 +1285,7 @@ void WidgetMenuExtendedPlatformImplementation< EventHandlerClass, SmartWinDeskto
 		if ( info.hSubMenu != NULL )
 		{
 			// create popup menu
-			WidgetMenuExtendedPtr popup ( new WidgetMenuExtended< EventHandlerClass >( this->Widget::itsParent ) );
+			WidgetMenuExtendedPtr popup ( new WidgetMenuExtended< EventHandlerClass >( this->getParent() ) );
 			popup->create( info.hSubMenu, true /* copy */ );
 
 			// get new handle
@@ -1311,7 +1311,7 @@ typename WidgetMenuExtendedPlatformImplementation< EventHandlerClass, SmartWinDe
 WidgetMenuExtendedPlatformImplementation< EventHandlerClass, SmartWinDesktop >::appendPopup( const SmartUtil::tstring & text, MenuItemDataPtr itemData )
 {
 	// create popup menu pointer
-	WidgetMenuExtendedPtr retVal ( new WidgetMenuExtended< EventHandlerClass >( this->Widget::itsParent ) );
+	WidgetMenuExtendedPtr retVal ( new WidgetMenuExtended< EventHandlerClass >( this->getParent() ) );
 	retVal->create( true );
 
 	// init structure for new item
@@ -1357,7 +1357,7 @@ WidgetMenuExtendedPlatformImplementation< EventHandlerClass, SmartWinDesktop >::
 	HMENU handle = ::GetSystemMenu( internal_::getTypedParentOrThrow < EventHandlerClass * >( this )->handle(), FALSE );
 
 	// create pointer to system menu
-	WidgetMenuExtendedPtr sysMenu( new WidgetMenuExtended< EventHandlerClass >( this->Widget::itsParent ) );
+	WidgetMenuExtendedPtr sysMenu( new WidgetMenuExtended< EventHandlerClass >( this->getParent() ) );
 
 	// create(take) system menu
 	sysMenu->isSysMenu = true;

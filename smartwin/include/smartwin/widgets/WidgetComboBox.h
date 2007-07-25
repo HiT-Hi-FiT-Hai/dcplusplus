@@ -231,38 +231,38 @@ inline Message & WidgetComboBox::getBackgroundColorMessage()
 
 inline int WidgetComboBox::getSelectedIndex() const
 {
-	int retVal = ComboBox_GetCurSel( this->Widget::itsHandle );
+	int retVal = ComboBox_GetCurSel( handle() );
 	return retVal;
 }
 
 inline void WidgetComboBox::setSelectedIndex( int idx )
 {
-	ComboBox_SetCurSel( this->Widget::itsHandle, idx );
+	ComboBox_SetCurSel( handle(), idx );
 }
 
 inline SmartUtil::tstring WidgetComboBox::getSelectedValue()
 {
-	int txtLength = ::GetWindowTextLength( this->Widget::itsHandle );
+	int txtLength = ::GetWindowTextLength( handle() );
 	boost::scoped_array< TCHAR >
 		txt( new TCHAR[++txtLength] );
-	::GetWindowText( this->Widget::itsHandle, txt.get(), txtLength );
+	::GetWindowText( handle(), txt.get(), txtLength );
 	SmartUtil::tstring retVal = txt.get();
 	return retVal;
 }
 
 inline void WidgetComboBox::removeAllItems()
 {
-	ComboBox_ResetContent( this->Widget::itsHandle );
+	ComboBox_ResetContent( handle() );
 }
 
 inline void WidgetComboBox::removeItem( int index )
 {
-	ComboBox_DeleteString( this->Widget::itsHandle, index );
+	ComboBox_DeleteString( handle(), index );
 }
 
 inline int WidgetComboBox::addValue( const SmartUtil::tstring & val )
 {
-	int newIdx = ComboBox_AddString( this->Widget::itsHandle, ( TCHAR * ) val.c_str() );
+	int newIdx = ComboBox_AddString( handle(), ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
 	{
 		xCeption x( _T( "Error while trying to add string into ComboBox" ) );
@@ -273,7 +273,7 @@ inline int WidgetComboBox::addValue( const SmartUtil::tstring & val )
 
 inline int WidgetComboBox::insertValue( int pos, const SmartUtil::tstring & val )
 {
-	int newIdx = ComboBox_InsertString( this->Widget::itsHandle, pos, ( TCHAR * ) val.c_str() );
+	int newIdx = ComboBox_InsertString( handle(), pos, ( TCHAR * ) val.c_str() );
 	if ( newIdx == CB_ERR )
 	{
 		xCeption x( _T( "Error while trying to insert string into ComboBox" ) );
@@ -285,16 +285,16 @@ inline int WidgetComboBox::insertValue( int pos, const SmartUtil::tstring & val 
 
 inline int WidgetComboBox::getCount()
 {
-	return ComboBox_GetCount( this->Widget::itsHandle ); // Number of items present.
+	return ComboBox_GetCount( handle() ); // Number of items present.
 }
 
 inline SmartUtil::tstring WidgetComboBox::getValue( int index )
 {
 	// Uses CB_GETLBTEXTLEN and CB_GETLBTEXT
-	int txtLength = ComboBox_GetLBTextLen( this->Widget::itsHandle, index );
+	int txtLength = ComboBox_GetLBTextLen( handle(), index );
 	boost::scoped_array< TCHAR >
 		txt( new TCHAR[++txtLength] );
-	ComboBox_GetLBText( this->Widget::itsHandle, index, txt.get() );
+	ComboBox_GetLBText( handle(), index, txt.get() );
 	SmartUtil::tstring retVal = txt.get();
 	return retVal;
 }

@@ -75,7 +75,7 @@ inline ListViewEditBox::ListViewEditBox( SmartWin::Widget * parent )
 
 inline void ListViewEditBox::createSubclass( HWND hWnd )
 {
-	this->Widget::itsHandle = hWnd;
+	setHandle(hWnd);
 	this->createMessageMap();
 }
 #ifdef PORT_ME

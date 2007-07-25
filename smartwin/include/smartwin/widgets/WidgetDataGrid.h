@@ -1139,7 +1139,7 @@ inline void WidgetDataGrid::sortList()
 #ifdef PORT_ME
 	xAssert( itsGlobalSortFunction || itsMemberSortFunction, _T( "No sort event handlers defined" ) );
 
-	xAssert( ListView_SortItems( this->Widget::itsHandle, CompareFunc, reinterpret_cast< LPARAM >( this ) ) == TRUE,
+	xAssert( ListView_SortItems( this->handle(), CompareFunc, reinterpret_cast< LPARAM >( this ) ) == TRUE,
 		_T( "ListView_SortItems fizzled" ) );
 #endif
 }
@@ -1151,7 +1151,7 @@ inline SmartUtil::tstring WidgetDataGrid::getCellText( unsigned int column, unsi
 	const int BUFFER_MAX = 2048;
 	TCHAR buffer[BUFFER_MAX + 1];
 	buffer[0] = '\0';
-	ListView_GetItemText( this->Widget::itsHandle, row, column, buffer, BUFFER_MAX );
+	ListView_GetItemText( this->handle(), row, column, buffer, BUFFER_MAX );
 	return buffer;
 }
 
@@ -1161,7 +1161,7 @@ inline SmartUtil::tstring WidgetDataGrid::getCellTextByLParam( unsigned int colu
 	LVFINDINFO lvfi;
 	lvfi.flags = LVFI_PARAM;
 	lvfi.lParam = lParam;
-	int row = ListView_FindItem( this->Widget::itsHandle, - 1, & lvfi );
+	int row = ListView_FindItem( this->handle(), - 1, & lvfi );
 	if ( row == - 1 )
 		throw xCeption( _T( "Couldn't find WidgetDataGrid item with given LPARAM" ) );
 	return this->getCellText( column, row );
@@ -1170,7 +1170,7 @@ inline SmartUtil::tstring WidgetDataGrid::getCellTextByLParam( unsigned int colu
 
 inline bool WidgetDataGrid::hasSelection()
 {
-	return ListView_GetSelectedCount( this->Widget::itsHandle ) > 0;
+	return ListView_GetSelectedCount( this->handle() ) > 0;
 }
 
 
@@ -1180,7 +1180,7 @@ inline std::vector< unsigned > WidgetDataGrid::getSelectedRows()
 	int tmpIdx = - 1;
 	while ( true )
 	{
-		tmpIdx = ListView_GetNextItem( this->Widget::itsHandle, tmpIdx, LVNI_SELECTED );
+		tmpIdx = ListView_GetNextItem( this->handle(), tmpIdx, LVNI_SELECTED );
 		if ( tmpIdx == - 1 )
 			break;
 		retVal.push_back( static_cast< unsigned >( tmpIdx ) );
@@ -1192,14 +1192,14 @@ inline std::vector< unsigned > WidgetDataGrid::getSelectedRows()
 inline int WidgetDataGrid::getSelectedIndex() const
 {
 	int tmpIdx = - 1;
-	tmpIdx = ListView_GetNextItem( this->Widget::itsHandle, tmpIdx, LVNI_SELECTED );
+	tmpIdx = ListView_GetNextItem( this->handle(), tmpIdx, LVNI_SELECTED );
 	return tmpIdx;
 }
 
 inline void WidgetDataGrid::setCellText( unsigned column, unsigned row, const SmartUtil::tstring & newVal )
 {
 	// const bug inn Windows API
-	ListView_SetItemText( this->Widget::itsHandle, row, column, const_cast < TCHAR * >( newVal.c_str() ) );
+	ListView_SetItemText( this->handle(), row, column, const_cast < TCHAR * >( newVal.c_str() ) );
 }
 
 /// TODO review, why does it first get the lvitem???
@@ -1210,7 +1210,7 @@ inline void WidgetDataGrid::setItemIcon( unsigned row, int newIconIndex )
 	it.iItem = row;
 	it.mask = LVIF_IMAGE;
 	//Get item
-	if(ListView_GetItem( this->Widget::itsHandle, &it) != TRUE)
+	if(ListView_GetItem( this->handle(), &it) != TRUE)
 	{
 		xCeption err( _T( "Something went wrong while trying to receive the selected item of the ListView" ) );
 		throw err;
@@ -1218,7 +1218,7 @@ inline void WidgetDataGrid::setItemIcon( unsigned row, int newIconIndex )
 	//Modify item
 	it.iImage = newIconIndex;
 	//Set item
-	if(ListView_SetItem( this->Widget::itsHandle, &it) != TRUE)
+	if(ListView_SetItem( this->handle(), &it) != TRUE)
 	{
 		xCeption err( _T( "Something went wrong while trying to change the selected item of the ListView" ) );
 		throw err;
@@ -1260,20 +1260,20 @@ inline SmartUtil::tstring WidgetDataGrid::getColumnName( unsigned col )
 	colInfo.mask = LVCF_TEXT;
 	colInfo.cchTextMax = BUFFER_MAX;
 	colInfo.pszText = buffer;
-	ListView_GetColumn( this->Widget::itsHandle, col, & colInfo );
+	ListView_GetColumn( this->handle(), col, & colInfo );
 	return colInfo.pszText;
 }
 
 
 inline bool WidgetDataGrid::getIsRowChecked( unsigned row )
 {
-	return ListView_GetCheckState( this->Widget::itsHandle, row ) == TRUE;
+	return ListView_GetCheckState( this->handle(), row ) == TRUE;
 }
 
 
 inline void WidgetDataGrid::setRowChecked( unsigned row, bool value )
 {
-	ListView_SetCheckState( this->Widget::itsHandle, row, value );
+	ListView_SetCheckState( this->handle(), row, value );
 }
 
 
@@ -1285,7 +1285,7 @@ inline void WidgetDataGrid::setFullRowSelect( bool value )
 
 inline void WidgetDataGrid::setItemCount( unsigned size )
 {
-	ListView_SetItemCount( this->Widget::itsHandle, size );
+	ListView_SetItemCount( this->handle(), size );
 }
 
 
@@ -1294,7 +1294,7 @@ inline unsigned WidgetDataGrid::getRowNumberFromLParam( unsigned lParam )
 	LVFINDINFO lv;
 	lv.flags = LVFI_PARAM;
 	lv.lParam = lParam;
-	return ( unsigned ) ListView_FindItem( this->Widget::itsHandle, - 1, & lv );
+	return ( unsigned ) ListView_FindItem( this->handle(), - 1, & lv );
 }
 
 
@@ -1390,14 +1390,14 @@ inline void WidgetDataGrid::setAlwaysShowSelection( bool value )
 inline void WidgetDataGrid::deleteColumn( unsigned columnNo )
 {
 	xAssert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
-	ListView_DeleteColumn( this->Widget::itsHandle, columnNo );
+	ListView_DeleteColumn( this->handle(), columnNo );
 	--itsNoColumns;
 }
 
 
 inline void WidgetDataGrid::setColumnWidth( unsigned columnNo, int width )
 {
-	if ( ListView_SetColumnWidth( this->Widget::itsHandle, columnNo, width ) == FALSE )
+	if ( ListView_SetColumnWidth( this->handle(), columnNo, width ) == FALSE )
 	{
 		xCeption x( _T( "Couldn't resize columns of WidgetDataGrid" ) );
 		throw x;
@@ -1406,24 +1406,24 @@ inline void WidgetDataGrid::setColumnWidth( unsigned columnNo, int width )
 
 inline void WidgetDataGrid::removeAllRows()
 {
-	ListView_DeleteAllItems( this->Widget::itsHandle );
+	ListView_DeleteAllItems( this->handle() );
 }
 
 
 inline void WidgetDataGrid::removeRow( unsigned row )
 {
-	ListView_DeleteItem( this->Widget::itsHandle, row );
+	ListView_DeleteItem( this->handle(), row );
 }
 
 
 inline unsigned WidgetDataGrid::getRowCount()
 {
-	return ListView_GetItemCount( this->Widget::itsHandle );
+	return ListView_GetItemCount( this->handle() );
 }
 
 inline void WidgetDataGrid::addRemoveListViewExtendedStyle( DWORD addStyle, bool add )
 {
-	DWORD newStyle = ListView_GetExtendedListViewStyle( this->Widget::itsHandle );
+	DWORD newStyle = ListView_GetExtendedListViewStyle( this->handle() );
 	if ( add && ( newStyle & addStyle ) != addStyle )
 	{
 		newStyle |= addStyle;
@@ -1432,7 +1432,7 @@ inline void WidgetDataGrid::addRemoveListViewExtendedStyle( DWORD addStyle, bool
 	{
 		newStyle ^= addStyle;
 	}
-	ListView_SetExtendedListViewStyle( this->Widget::itsHandle, newStyle );
+	ListView_SetExtendedListViewStyle( this->handle(), newStyle );
 }
 
 // Constructor
@@ -1468,7 +1468,7 @@ bool WidgetDataGrid::defaultValidate( EventHandlerClass * parent, WidgetDataGrid
 inline RECT WidgetDataGrid::getItemRect( int item, int code )
 {
 	RECT r;
-	ListView_GetItemRect( this->Widget::itsHandle, item, & r, code );
+	ListView_GetItemRect( this->handle(), item, & r, code );
 	return r;
 }
 
@@ -1476,7 +1476,7 @@ inline RECT WidgetDataGrid::getItemRect( int item, int code )
 inline RECT WidgetDataGrid::getSubItemRect( int item, int subitem, int code )
 {
 	RECT r;
-	ListView_GetSubItemRect( this->Widget::itsHandle, item, subitem, code, & r );
+	ListView_GetSubItemRect( this->handle(), item, subitem, code, & r );
 	return r;
 }
 
@@ -1509,9 +1509,9 @@ LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, L
 			if ( editRect.left > rowRect.left )
 			{
 				validRect = rowRect; validRect.right = editRect.left;
-				ValidateRect( this->Widget::itsHandle, & validRect );
+				ValidateRect( this->handle(), & validRect );
 			}
-			ValidateRect( this->Widget::itsHandle, & rowRect );
+			ValidateRect( this->handle(), & rowRect );
 		}
 		break;
 
@@ -1534,11 +1534,11 @@ LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, L
 #ifndef WINCE // WinCE doesn't support repositioning the edit control anyway...
 					// Checking to see if we need to scroll
 					RECT cr;
-					::GetClientRect( this->Widget::itsHandle, & cr );
+					::GetClientRect( this->handle(), & cr );
 					if ( xOffset + r.left < 0 || xOffset + r.left > cr.right )
 					{
 						int x = xOffset - r.left;
-						ListView_Scroll( this->Widget::itsHandle, x, 0 );
+						ListView_Scroll( this->handle(), x, 0 );
 						r.left -= x;
 					}
 					// Get column alignment
@@ -1546,7 +1546,7 @@ LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, L
 					{0
 					};
 					lv.mask = LVCF_FMT;
-					ListView_GetColumn( this->Widget::itsHandle, logicalColumn, & lv );
+					ListView_GetColumn( this->handle(), logicalColumn, & lv );
 					DWORD dwStyle;
 					if ( ( lv.fmt & LVCFMT_JUSTIFYMASK ) == LVCFMT_LEFT )
 						dwStyle = ES_LEFT;
@@ -1555,14 +1555,14 @@ LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, L
 					else
 						dwStyle = ES_CENTER;
 					r.left += xOffset + 4;
-					r.right = r.left + ( ListView_GetColumnWidth( this->Widget::itsHandle, itsEditColumn ) - 3 );
+					r.right = r.left + ( ListView_GetColumnWidth( this->handle(), itsEditColumn ) - 3 );
 					if ( r.right > cr.right )
 						r.right = cr.right;
 					dwStyle |= WS_BORDER | WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
 #endif
 
 					// Creating text Widget and placing it above cell
-					HWND editControl = ListView_GetEditControl( this->Widget::itsHandle );
+					HWND editControl = ListView_GetEditControl( this->handle() );
 					if ( editControl == 0 )
 					{
 						xCeption err( _T( "Couldn't attach to List View editcontrol" ) );
@@ -1583,7 +1583,7 @@ LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, L
 					// Getting text of cell and inserting into text Widget
 					const int BUFFER_MAX = 260; // List view cells have a maximum of 260 characters
 					TCHAR buffer[BUFFER_MAX];
-					ListView_GetItemText( this->Widget::itsHandle, itsEditRow, itsEditColumn, buffer, BUFFER_MAX );
+					ListView_GetItemText( this->handle(), itsEditRow, itsEditColumn, buffer, BUFFER_MAX );
 					text->setText( buffer );
 
 					// Select all end give focus
@@ -1615,26 +1615,26 @@ LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, L
 					LVHITTESTINFO info;
 					info.pt.x = itsXMousePosition;
 					info.pt.y = itsYMousePosition;
-					ListView_SubItemHitTest( this->Widget::itsHandle, & info );
+					ListView_SubItemHitTest( this->handle(), & info );
 					// User has clicked the ListView
 					if ( info.iItem != - 1 )
 					{
 						// User has clicked an ITEM in ListView
 						if ( info.iSubItem >= 0 )
 						{
-							UINT state = ListView_GetItemState( this->Widget::itsHandle, info.iItem, LVIS_FOCUSED );
+							UINT state = ListView_GetItemState( this->handle(), info.iItem, LVIS_FOCUSED );
 							if ( ! ( state & LVIS_FOCUSED ) )
 							{
 								//SetFocus( itsHandle );   // TODO: This was catched by devcpp ... what was intended?
-								SetFocus( this->Widget::itsHandle ); // ASW add
+								SetFocus( this->handle() ); // ASW add
 							}
 
 							// Check to verify items are editable
-							if ( ::GetWindowLong( this->Widget::itsHandle, GWL_STYLE ) & LVS_EDITLABELS )
+							if ( ::GetWindowLong( this->handle(), GWL_STYLE ) & LVS_EDITLABELS )
 							{
 								itsEditRow = info.iItem;
 								itsEditColumn = info.iSubItem;
-								ListView_EditLabel( this->Widget::itsHandle, info.iItem );
+								ListView_EditLabel( this->handle(), info.iItem );
 								return 0; // Processed
 							}
 						}

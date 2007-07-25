@@ -22,44 +22,21 @@ const WidgetMDIChild::Seed & WidgetMDIChild::getDefaultSeed()
 
 void WidgetMDIChild::createMDIChild( Seed cs )
 {
-	Application::instance().generateLocalClassName( cs );
-	itsRegisteredClassName = cs.getClassName();
-
-	//TODO: use CreationalInfo parameters
-	SMARTWIN_WNDCLASSEX wc;
-	wc.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
-	wc.style = 0;
-	wc.lpfnWndProc = &ThisType::wndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = Application::instance().getAppHandle();
-	wc.hIcon = cs.icon;
-	wc.hCursor = NULL;
-	wc.hbrBackground = cs.background;
-	wc.lpszMenuName = 0;
-	wc.lpszClassName = itsRegisteredClassName.c_str();
-	wc.hIconSm = cs.smallIcon;
-
-	ATOM registeredClass = SmartWinRegisterClass( & wc );
-	if ( 0 == registeredClass )
-	{
-		xCeption x( _T( "WidgetMDIChild::createMDIChild() SmartWinRegisterClass fizzled..." ) );
-		throw x;
-	}
-
-	this->Widget::itsHandle = ::CreateMDIWindow( itsRegisteredClassName.c_str(),
+	windowClass.reset(new WindowClass(WindowClass::getNewClassName(this), &ThisType::wndProc, NULL, cs.background, cs.icon, cs.smallIcon));
+	
+	HWND wnd = ::CreateMDIWindow( windowClass->getClassName(),
 		cs.caption.c_str(),
 		cs.style,
 		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
-		this->Widget::itsParent->handle(),
+		getParent()->handle(),
 		Application::instance().getAppHandle(),
-		reinterpret_cast< LPARAM >( dynamic_cast< Widget * >( this ) ) );
-	if ( !this->Widget::itsHandle )
+		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
+	if ( !wnd )
 	{
 		xCeption x( _T( "CreateWindowEx in WidgetMDIChild::createMDIChild fizzled..." ) );
 		throw x;
 	}
-	Application::instance().addLocalWindowClassToUnregister( cs );
+	setHandle(wnd);
 }
 
 }

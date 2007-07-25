@@ -9,7 +9,7 @@ const WidgetTabSheet::Seed & WidgetTabSheet::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, WC_TABCONTROL );
+		d_DefaultValues.className = WC_TABCONTROL;
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;

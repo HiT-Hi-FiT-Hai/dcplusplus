@@ -201,49 +201,49 @@ inline void WidgetProgressBar::setHorizontal( bool value )
 
 inline void WidgetProgressBar::addToPosition( int positiondelta )
 {
-	::SendMessage( this->Widget::itsHandle, PBM_DELTAPOS, static_cast< WPARAM >( positiondelta ), static_cast< LPARAM >( 0 ) );
+	this->sendMessage(PBM_DELTAPOS, static_cast< WPARAM >( positiondelta ) );
 }
 
 inline void WidgetProgressBar::addStep( void )
 {
-	::SendMessage( this->Widget::itsHandle, PBM_STEPIT, static_cast< WPARAM >( 0 ), static_cast< LPARAM >( 0 ) );
+	this->sendMessage(PBM_STEPIT);
 }
 
 inline void WidgetProgressBar::setRange( int minimum, int maximum )
 {
-	::SendMessage( this->Widget::itsHandle, PBM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
+	this->sendMessage(PBM_SETRANGE32, static_cast< WPARAM >( minimum ), static_cast< LPARAM >( maximum ) );
 }
 
 inline int WidgetProgressBar::getMaxValue()
 {
-	return ( int )::SendMessage( this->Widget::itsHandle, PBM_GETRANGE, static_cast< WPARAM >( FALSE ), static_cast< LPARAM >( 0 ) );
+	return ( int )this->sendMessage(PBM_GETRANGE, static_cast< WPARAM >( FALSE ) );
 }
 
 inline int WidgetProgressBar::getMinValue()
 {
-	return ( int )::SendMessage( this->Widget::itsHandle, PBM_GETRANGE, static_cast< WPARAM >( TRUE ), static_cast< LPARAM >( 0 ) );
+	return ( int )this->sendMessage(PBM_GETRANGE, static_cast< WPARAM >( TRUE ) );
 }
 
 inline void WidgetProgressBar::setPosition( int newPosition )
 {
-	::SendMessage( this->Widget::itsHandle, PBM_SETPOS, static_cast< WPARAM >( newPosition ), static_cast< LPARAM >( 0 ) );
+	this->sendMessage(PBM_SETPOS, static_cast< WPARAM >( newPosition ) );
 }
 
 inline void WidgetProgressBar::setStep( unsigned stepsize )
 {
-	::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( stepsize ), 0 );
+	this->sendMessage(PBM_SETSTEP, static_cast< WPARAM >( stepsize ) );
 }
 
 inline unsigned int WidgetProgressBar::getStep( void )
 {
-	unsigned int stepsize = ::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( 1 ), 0 );
-	::SendMessage( this->Widget::itsHandle, PBM_SETSTEP, static_cast< WPARAM >( stepsize ), 0 );
+	unsigned int stepsize = this->sendMessage(PBM_SETSTEP, static_cast< WPARAM >( 1 ) );
+	this->sendMessage(PBM_SETSTEP, static_cast< WPARAM >( stepsize ) );
 	return stepsize;
 }
 
 inline int WidgetProgressBar::getPosition()
 {
-	return ::SendMessage( this->Widget::itsHandle, PBM_GETPOS, 0, 0 );
+	return this->sendMessage(PBM_GETPOS );
 }
 
 inline WidgetProgressBar::WidgetProgressBar( SmartWin::Widget * parent )

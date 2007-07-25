@@ -60,21 +60,10 @@
 MainWindow* MainWindow::instance = 0;
 
 MainWindow::MainWindow() :
-	WidgetFactory<SmartWin::WidgetMDIFrame>(0),
-	paned(0),
-	transfers(0),
-	tabs(0),
-	trayIcon(false),
-	maximized(false),
-	lastMove(0),
-	c(0),
-	stopperThread(NULL),
-	lastUp(0),
-	lastDown(0),
-	lastTick(GET_TICK())
-{
+	WidgetFactory<SmartWin::WidgetMDIFrame>(0), paned(0), transfers(0), tabs(0), trayIcon(false), maximized(false),
+	    lastMove(0), c(0), stopperThread(NULL), lastUp(0), lastDown(0), lastTick(GET_TICK()) {
 	instance = this;
-	
+
 	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
@@ -94,21 +83,21 @@ MainWindow::MainWindow() :
 
 	updateStatus();
 	layout();
-	
+
 	onSized(std::tr1::bind(&MainWindow::sized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
-	
-	if(!WinUtil::isShift())
+
+	if (!WinUtil::isShift())
 		speak(AUTO_CONNECT);
-	
+
 	QueueManager::getInstance()->addListener(this);
 	LogManager::getInstance()->addListener(this);
 
 	onClosing(std::tr1::bind(&MainWindow::closing, this));
-	
+
 	onRaw(std::tr1::bind(&MainWindow::trayMessage, this, _1, _2), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
 	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
-	
+
 	TimerManager::getInstance()->start();
 
 	c = new HttpConnection;
@@ -117,8 +106,6 @@ MainWindow::MainWindow() :
 
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	startSocket();
-	
-	SmartWin::Application::instance().setMDIClient(getMDIClient()->handle());
 
 #ifdef PORT_ME
 	// Load images
@@ -189,7 +176,6 @@ MainWindow::MainWindow() :
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-
 	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
 	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_VIEW_CONNECT);
 	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) PostMessage(WM_COMMAND, IDC_FAVORITES);
@@ -221,26 +207,21 @@ void MainWindow::initWindow() {
 	dcdebug("initWindow\n");
 	Seed cs;
 
-	int pos_x = SETTING(MAIN_WINDOW_POS_X);
-	int pos_y = SETTING(MAIN_WINDOW_POS_Y);
-	int size_x = SETTING(MAIN_WINDOW_SIZE_X);
-	int size_y = SETTING(MAIN_WINDOW_SIZE_Y);
-	
-	if( (pos_x != static_cast<int>(CW_USEDEFAULT)) &&
-		(pos_y != static_cast<int>(CW_USEDEFAULT)) &&
-		(size_x != static_cast<int>(CW_USEDEFAULT)) &&
-		(size_y != static_cast<int>(CW_USEDEFAULT)) &&
-		(pos_x > 0 && pos_y > 0) &&
-		(size_x > 10 && size_y > 10)
-		)
-	{
+	int pos_x= SETTING(MAIN_WINDOW_POS_X);
+	int pos_y= SETTING(MAIN_WINDOW_POS_Y);
+	int size_x= SETTING(MAIN_WINDOW_SIZE_X);
+	int size_y= SETTING(MAIN_WINDOW_SIZE_Y);
+
+	if ( (pos_x != static_cast<int>(CW_USEDEFAULT)) &&(pos_y != static_cast<int>(CW_USEDEFAULT))&&(size_x
+	    != static_cast<int>(CW_USEDEFAULT))&&(size_y != static_cast<int>(CW_USEDEFAULT))&&(pos_x > 0&& pos_y > 0)
+	    &&(size_x > 10&& size_y > 10)) {
 		cs.location = SmartWin::Rectangle(pos_x, pos_y, size_x, size_y);
 	}
-	
+
 	cs.style |= WS_CLIPCHILDREN;
 	cs.exStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-	if(ResourceManager::getInstance()->isRTL())
-		cs.exStyle |= WS_EX_RTLREADING; 
+	if (ResourceManager::getInstance()->isRTL())
+		cs.exStyle |= WS_EX_RTLREADING;
 
 #ifdef PORT_ME
 	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
@@ -249,7 +230,7 @@ void MainWindow::initWindow() {
 	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 
 	createWindow(cs);
-	
+
 	paned = createHPaned();
 	paned->setRelativePos(0.7);
 }
@@ -257,16 +238,16 @@ void MainWindow::initWindow() {
 void MainWindow::initMenu() {
 	dcdebug("initMenu\n");
 	mainMenu = createMenu(false);
-	
+
 	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
-	
+
 	file->appendItem(IDC_QUICK_CONNECT, TSTRING(MENU_QUICK_CONNECT), std::tr1::bind(&MainWindow::handleQuickConnect, this));
 #ifdef PORT_ME
 	file->appendItem(IDC_FOLLOW, TSTRING(MENU_FOLLOW_REDIRECT));
 	file->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT));
 #endif
 	file->appendSeparatorItem();
-	
+
 	file->appendItem(IDC_OPEN_FILE_LIST, TSTRING(MENU_OPEN_FILE_LIST), std::tr1::bind(&MainWindow::handleOpenFileList, this));
 	file->appendItem(IDC_OPEN_OWN_LIST, TSTRING(MENU_OPEN_OWN_LIST), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
 	file->appendItem(IDC_MATCH_ALL, TSTRING(MENU_OPEN_MATCH_ALL), std::tr1::bind(&MainWindow::handleMatchAll, this));
@@ -306,7 +287,7 @@ void MainWindow::initMenu() {
 #endif
 
 	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
-	
+
 	window->appendItem(IDC_MDI_CASCADE, TSTRING(MENU_CASCADE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
 	window->appendItem(IDC_MDI_TILE_HORZ, TSTRING(MENU_HORIZONTAL_TILE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
 	window->appendItem(IDC_MDI_TILE_VERT, TSTRING(MENU_VERTICAL_TILE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
@@ -338,7 +319,7 @@ void MainWindow::initMenu() {
 	help->appendItem(IDC_HELP_REPORT_BUG, TSTRING(MENU_REPORT_BUG), std::tr1::bind(&MainWindow::handleLink, this, _1));
 	help->appendItem(IDC_HELP_DONATE, TSTRING(MENU_DONATE), std::tr1::bind(&MainWindow::handleLink, this, _1));
 
-	mainMenu->attach(this);	
+	mainMenu->attach(this);
 }
 
 void MainWindow::initStatusBar() {
@@ -351,7 +332,8 @@ void MainWindow::initStatusBar() {
 
 void MainWindow::initTabs() {
 	MDITab::Seed cs;
-	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE | TCS_BUTTONS | TCS_FLATBUTTONS | TCS_HOTTRACK;
+	cs.style
+	    = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE | TCS_BUTTONS | TCS_FLATBUTTONS | TCS_HOTTRACK;
 	cs.font = WinUtil::font;
 	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
 	tabs->setFlatSeparators(false);
@@ -365,29 +347,43 @@ void MainWindow::initTransfers() {
 	paned->setSecond(transfers);
 }
 
+bool MainWindow::filter(MSG& msg) {
+	if (::TranslateMDISysAccel(getMDIClient()->handle(), &msg)) {
+		return true;
+	}
+
+	HWND active = getMDIClient()->getActive();
+	if(active != NULL) {
+		if(::IsDialogMessage( active, & msg )) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void MainWindow::handleExit() {
 	close(true);
 }
 
 void MainWindow::handleQuickConnect() {
 	///@todo send user to settings
-	if(SETTING(NICK).empty())
+	if (SETTING(NICK).empty())
 		return;
 
 	LineDlg dlg(this, TSTRING(QUICK_CONNECT), TSTRING(HUB_ADDRESS));
-	
-	if(dlg.run() == IDOK) {
+
+	if (dlg.run() == IDOK) {
 
 		tstring tmp = dlg.getLine();
 		// Strip out all the spaces
 		string::size_type i;
-		while((i = tmp.find(' ')) != string::npos)
+		while ((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 
 		HubFrame::openWindow(getMDIClient(), tmp);
 	}
 }
- 
+
 void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
 	layout();
 }
@@ -395,53 +391,60 @@ void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
 HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	Speaker s = static_cast<Speaker>(wParam);
 
-	switch(s) {
+	switch (s) {
 	case DOWNLOAD_LISTING: {
 		boost::scoped_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
 		DirectoryListingFrame::openWindow(getMDIClient(), i->file, i->dir, i->user, i->speed);
-	} break;
+	}
+		break;
 	case BROWSE_LISTING: {
 		boost::scoped_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
 		DirectoryListingFrame::openWindow(getMDIClient(), i->user, i->text, 0);
-	} break;
+	}
+		break;
 	case AUTO_CONNECT: {
-		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());			
-	} break;
+		autoConnect(FavoriteManager::getInstance()->getFavoriteHubs());
+	}
+		break;
 	case PARSE_COMMAND_LINE: {
 #ifdef PORT_ME
 		parseCommandLine(GetCommandLine());
 #endif
-	} break;
+	}
+		break;
 	case VIEW_FILE_AND_DELETE: {
 		boost::scoped_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
 		new TextFrame(this->getMDIClient(), *file);
 		File::deleteFile(Text::fromT(*file));
-	} break;
+	}
+		break;
 	case STATUS_MESSAGE: {
 		boost::scoped_ptr<pair<time_t, tstring> > msg(reinterpret_cast<std::pair<time_t, tstring>*>(lParam));
 		tstring line = Text::toT("[" + Util::getShortTimeString(msg->first) + "] ") + msg->second;
 
 		setStatus(STATUS_STATUS, line);
-		while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
+		while (lastLinesList.size() + 1> MAX_CLIENT_LINES)
 			lastLinesList.erase(lastLinesList.begin());
 		if (line.find(_T('\r')) == tstring::npos) {
 			lastLinesList.push_back(line);
 		} else {
 			lastLinesList.push_back(line.substr(0, line.find(_T('\r'))));
 		}
-	} break;
+	}
+		break;
 	case LAYOUT: {
 		layout();
-	} break;
-	}	
+	}
+		break;
+	}
 	return 0;
 }
 
 void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
-	for(FavoriteHubEntryList::const_iterator i = fl.begin(); i != fl.end(); ++i) {
+	for (FavoriteHubEntryList::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 		FavoriteHubEntry* entry = *i;
-		if(entry->getConnect()) {
-			if(!entry->getNick().empty() || !SETTING(NICK).empty()) {
+		if (entry->getConnect()) {
+			if (!entry->getNick().empty() || !SETTING(NICK).empty()) {
 				HubFrame::openWindow(getMDIClient(), entry->getServer());
 			}
 		}
@@ -449,31 +452,31 @@ void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
 }
 
 void MainWindow::saveWindowSettings() {
-	WINDOWPLACEMENT wp = { sizeof(wp) };
-	
-	::GetWindowPlacement(this->handle(), &wp);
+	WINDOWPLACEMENT wp = { sizeof(wp)};
 
-	if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, static_cast<int>(wp.rcNormalPosition.left));
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, static_cast<int>(wp.rcNormalPosition.top));
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, static_cast<int>(wp.rcNormalPosition.right - wp.rcNormalPosition.left));
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, static_cast<int>(wp.rcNormalPosition.bottom - wp.rcNormalPosition.top));
-	}
-	if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
-		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
+::GetWindowPlacement(this->handle(), &wp);
+
+if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
+	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, static_cast<int>(wp.rcNormalPosition.left));
+	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, static_cast<int>(wp.rcNormalPosition.top));
+	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, static_cast<int>(wp.rcNormalPosition.right - wp.rcNormalPosition.left));
+	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, static_cast<int>(wp.rcNormalPosition.bottom - wp.rcNormalPosition.top));
+}
+if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
+SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
 }
 
 bool MainWindow::closing() {
-	if(stopperThread == NULL) {
-		if( !BOOLSETTING(CONFIRM_EXIT) || (createMessageBox().show(TSTRING(REALLY_EXIT), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES) ) {
-			if(c != NULL) {
+	if (stopperThread == NULL) {
+		if ( !BOOLSETTING(CONFIRM_EXIT) || (createMessageBox().show(TSTRING(REALLY_EXIT), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)) {
+			if (c != NULL) {
 				c->removeListener(this);
 				delete c;
 				c = NULL;
 			}
 			saveWindowSettings();
 
-			::ShowWindow(this->handle(), SW_HIDE);
+::			ShowWindow(this->handle(), SW_HIDE);
 			transfers->prepareClose();
 
 			LogManager::getInstance()->removeListener(this);
@@ -507,11 +510,19 @@ HRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
 }
 
 void MainWindow::handleMDIReorder(unsigned id) {
-	switch(id) {
-	case IDC_MDI_CASCADE: getMDIClient()->cascade(); break;
-	case IDC_MDI_TILE_VERT: getMDIClient()->tile(false); break;
-	case IDC_MDI_TILE_HORZ: getMDIClient()->tile(true); break;
-	case IDC_MDI_ARRANGE: getMDIClient()->arrange(); break;
+	switch (id) {
+	case IDC_MDI_CASCADE:
+		getMDIClient()->cascade();
+		break;
+	case IDC_MDI_TILE_VERT:
+		getMDIClient()->tile(false);
+		break;
+	case IDC_MDI_TILE_HORZ:
+		getMDIClient()->tile(true);
+		break;
+	case IDC_MDI_ARRANGE:
+		getMDIClient()->arrange();
+		break;
 	}
 }
 
@@ -526,29 +537,29 @@ bool MainWindow::eachSecond() {
 
 void MainWindow::layout() {
 	const int border = 2;
-	SmartWin::Rectangle r(getClientAreaSize()); 
+	SmartWin::Rectangle r(getClientAreaSize());
 
 	SmartWin::Rectangle rs = layoutStatus();
-	
+
 	r.size.y -= rs.size.y + border;
 
 	paned->setRect(r);
-	
+
 	getMDIClient()->setBounds(tabs->getUsableArea());
 }
 
 void MainWindow::updateStatus() {
-	uint64_t now = GET_TICK();
+	uint64_t now= GET_TICK();
 	uint64_t tdiff = lastTick - now;
-	if(tdiff < 100) {
+	if (tdiff < 100) {
 		tdiff = 1;
 	}
-	
+
 	uint64_t up = Socket::getTotalUp();
 	uint64_t down = Socket::getTotalDown();
 	uint64_t updiff = up - lastUp;
 	uint64_t downdiff = down - lastDown;
-	
+
 	lastTick = now;
 	lastUp = up;
 	lastDown = down;
@@ -562,13 +573,15 @@ void MainWindow::updateStatus() {
 	setStatus(STATUS_SLOTS, Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
 	setStatus(STATUS_DOWN_TOTAL, Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
 	setStatus(STATUS_UP_TOTAL, Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
-	setStatus(STATUS_DOWN_DIFF, Text::toT("D: " + Util::formatBytes(downdiff*1000/tdiff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
-	setStatus(STATUS_UP_DIFF, Text::toT("U: " + Util::formatBytes(updiff*1000/tdiff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploadCount()) + ")"));
+	setStatus(STATUS_DOWN_DIFF, Text::toT("D: " + Util::formatBytes(downdiff*1000/tdiff) + "/s ("
+	    + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
+	setStatus(STATUS_UP_DIFF, Text::toT("U: " + Util::formatBytes(updiff*1000/tdiff) + "/s ("
+	    + Util::toString(UploadManager::getInstance()->getUploadCount()) + ")"));
 }
 
 MainWindow::~MainWindow() {
 	instance = 0;
-	
+
 #ifdef PORT_ME
 	m_CmdBar.m_hImageList = NULL;
 
@@ -579,32 +592,32 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::handleSettings() {
-	
+
 	SettingsDialog dlg(this);
 
 	unsigned short lastTCP = static_cast<unsigned short>(SETTING(TCP_PORT));
 	unsigned short lastUDP = static_cast<unsigned short>(SETTING(UDP_PORT));
 	unsigned short lastTLS = static_cast<unsigned short>(SETTING(TLS_PORT));
 
-	int lastConn = SETTING(INCOMING_CONNECTIONS);
+	int lastConn= SETTING(INCOMING_CONNECTIONS);
 
-	bool lastSortFavUsersFirst = BOOLSETTING(SORT_FAVUSERS_FIRST);
+	bool lastSortFavUsersFirst= BOOLSETTING(SORT_FAVUSERS_FIRST);
 
-	if(dlg.run() == IDOK) {
+	if (dlg.run() == IDOK) {
 		SettingsManager::getInstance()->save();
 #ifdef PORT_ME
 		if(missedAutoConnect && !SETTING(NICK).empty()) {
 			PostMessage(WM_SPEAKER, AUTO_CONNECT);
 		}
 #endif
-		if(SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastTCP || SETTING(UDP_PORT) != lastUDP || SETTING(TLS_PORT) != lastTLS) {
+		if (SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastTCP || SETTING(UDP_PORT) != lastUDP || SETTING(TLS_PORT) != lastTLS) {
 			startSocket();
 		}
 		ClientManager::getInstance()->infoUpdated();
 
 #ifdef PORT_ME
 		if(BOOLSETTING(SORT_FAVUSERS_FIRST) != lastSortFavUsersFirst)
-			HubFrame::resortUsers();
+		HubFrame::resortUsers();
 
 		if(BOOLSETTING(URL_HANDLER)) {
 			WinUtil::registerDchubHandler();
@@ -630,7 +643,7 @@ void MainWindow::startSocket() {
 	SearchManager::getInstance()->disconnect();
 	ConnectionManager::getInstance()->disconnect();
 
-	if(ClientManager::getInstance()->isActive()) {
+	if (ClientManager::getInstance()->isActive()) {
 		try {
 			ConnectionManager::getInstance()->listen();
 		} catch(const Exception&) {
@@ -709,13 +722,13 @@ void MainWindow::stopUPnP() {
 #endif
 }
 
-static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
+static const TCHAR types[]= _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");
 
 void MainWindow::handleOpenFileList() {
 	tstring file;
-	if(WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
+	if (WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
 		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
-		if(u) {
+		if (u) {
 			DirectoryListingFrame::openWindow(getMDIClient(), file, Text::toT(Util::emptyString), u, 0);
 		} else {
 #ifdef PORT_ME
@@ -726,13 +739,13 @@ void MainWindow::handleOpenFileList() {
 }
 
 void MainWindow::handleOpenOwnList() {
-	if(!ShareManager::getInstance()->getOwnListFile().empty()){
+	if (!ShareManager::getInstance()->getOwnListFile().empty()) {
 		DirectoryListingFrame::openWindow(getMDIClient(), Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
 	}
 }
 
 void MainWindow::updateTray(bool add /* = true */) {
-	if(add) {
+	if (add) {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
 		nid.hWnd = handle();
@@ -763,7 +776,7 @@ DWORD WINAPI MainWindow::stopper(void* p) {
 
 	while( (wnd=::GetWindow(mf->getMDIClient()->handle(), GW_CHILD)) != NULL) {
 		if(wnd == wnd2)
-			Sleep(100);
+		Sleep(100);
 		else {
 			::PostMessage(wnd, WM_CLOSE, 0, 0);
 			wnd2 = wnd;
@@ -776,13 +789,14 @@ DWORD WINAPI MainWindow::stopper(void* p) {
 
 class ListMatcher : public Thread {
 public:
-	ListMatcher(StringList files_) : files(files_) {
+	ListMatcher(StringList files_) :
+		files(files_) {
 
 	}
 	virtual int run() {
-		for(StringIter i = files.begin(); i != files.end(); ++i) {
+		for (StringIter i = files.begin(); i != files.end(); ++i) {
 			User::Ptr u = DirectoryListing::getUserFromFilename(*i);
-			if(!u)
+			if (!u)
 				continue;
 			DirectoryListing dl(u);
 			try {
@@ -822,7 +836,6 @@ HWND MainFrame::createToolbar() {
 	ctrlToolbar.SetHotImageList(largeImagesHot);
 
 	const int numButtons = 22;
-
 
 	TBBUTTON tb[numButtons];
 	memset(tb, 0, sizeof(tb));
@@ -981,7 +994,7 @@ void MainWindow::handleOpenDownloadsDir() {
 }
 
 void MainWindow::handleMinimizeAll() {
-	HWND tmpWnd = ::GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
+	HWND tmpWnd =:: GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
 		::CloseWindow(tmpWnd);
 		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
@@ -989,7 +1002,7 @@ void MainWindow::handleMinimizeAll() {
 }
 
 void MainWindow::handleRestoreAll() {
-	HWND tmpWnd = ::GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
+	HWND tmpWnd =:: GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
 		::SendMessage(getMDIClient()->handle(), WM_MDIRESTORE, (WPARAM)tmpWnd, 0);
 		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
@@ -997,21 +1010,49 @@ void MainWindow::handleRestoreAll() {
 }
 
 void MainWindow::handleOpenWindow(unsigned id) {
-	switch(id) {
-	case IDC_PUBLIC_HUBS: PublicHubsFrame::openWindow(getMDIClient()); break;
-	case IDC_FAVORITE_HUBS: FavHubsFrame::openWindow(getMDIClient()); break;
-	case IDC_FAVUSERS: UsersFrame::openWindow(getMDIClient()); break;
-	case IDC_QUEUE: QueueFrame::openWindow(getMDIClient()); break;
-	case IDC_FINISHED_DL: FinishedDLFrame::openWindow(getMDIClient()); break;
-	case IDC_WAITING_USERS: WaitingUsersFrame::openWindow(getMDIClient()); break;
-	case IDC_FINISHED_UL: FinishedULFrame::openWindow(getMDIClient()); break;
-	case IDC_SEARCH: SearchFrame::openWindow(getMDIClient()); break;
-	case IDC_ADL_SEARCH: ADLSearchFrame::openWindow(getMDIClient()); break;
-	case IDC_SEARCH_SPY: SpyFrame::openWindow(getMDIClient()); break;
-	case IDC_NOTEPAD: NotepadFrame::openWindow(getMDIClient()); break;
-	case IDC_SYSTEM_LOG: SystemFrame::openWindow(getMDIClient()); break;
-	case IDC_NET_STATS: StatsFrame::openWindow(getMDIClient()); break;
-	default: dcassert(0); break;
+	switch (id) {
+	case IDC_PUBLIC_HUBS:
+		PublicHubsFrame::openWindow(getMDIClient());
+		break;
+	case IDC_FAVORITE_HUBS:
+		FavHubsFrame::openWindow(getMDIClient());
+		break;
+	case IDC_FAVUSERS:
+		UsersFrame::openWindow(getMDIClient());
+		break;
+	case IDC_QUEUE:
+		QueueFrame::openWindow(getMDIClient());
+		break;
+	case IDC_FINISHED_DL:
+		FinishedDLFrame::openWindow(getMDIClient());
+		break;
+	case IDC_WAITING_USERS:
+		WaitingUsersFrame::openWindow(getMDIClient());
+		break;
+	case IDC_FINISHED_UL:
+		FinishedULFrame::openWindow(getMDIClient());
+		break;
+	case IDC_SEARCH:
+		SearchFrame::openWindow(getMDIClient());
+		break;
+	case IDC_ADL_SEARCH:
+		ADLSearchFrame::openWindow(getMDIClient());
+		break;
+	case IDC_SEARCH_SPY:
+		SpyFrame::openWindow(getMDIClient());
+		break;
+	case IDC_NOTEPAD:
+		NotepadFrame::openWindow(getMDIClient());
+		break;
+	case IDC_SYSTEM_LOG:
+		SystemFrame::openWindow(getMDIClient());
+		break;
+	case IDC_NET_STATS:
+		StatsFrame::openWindow(getMDIClient());
+		break;
+	default:
+		dcassert(0);
+		break;
 	}
 }
 
@@ -1157,7 +1198,6 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	return 0;
 }
 
-
 LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if(wParam == SIZE_MINIMIZED) {
@@ -1185,7 +1225,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 #endif
 
 HRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
-	if(c != NULL) {
+	if (c != NULL) {
 		c->removeListener(this);
 		delete c;
 		c = NULL;
@@ -1201,18 +1241,40 @@ HRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
 void MainWindow::handleLink(unsigned id) {
 
 	tstring site;
-	switch(id) {
-	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
-	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
-	case IDC_HELP_GEOIPFILE: site = links.geoipfile; break;
-	case IDC_HELP_TRANSLATIONS: site = links.translations; break;
-	case IDC_HELP_FAQ: site = links.faq; break;
-	case IDC_HELP_FORUM: site = links.help; break;
-	case IDC_HELP_DISCUSS: site = links.discuss; break;
-	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
-	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
-	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8"); break;
-	default: dcassert(0);
+	switch (id) {
+	case IDC_HELP_HOMEPAGE:
+		site = links.homepage;
+		break;
+	case IDC_HELP_DOWNLOADS:
+		site = links.downloads;
+		break;
+	case IDC_HELP_GEOIPFILE:
+		site = links.geoipfile;
+		break;
+	case IDC_HELP_TRANSLATIONS:
+		site = links.translations;
+		break;
+	case IDC_HELP_FAQ:
+		site = links.faq;
+		break;
+	case IDC_HELP_FORUM:
+		site = links.help;
+		break;
+	case IDC_HELP_DISCUSS:
+		site = links.discuss;
+		break;
+	case IDC_HELP_REQUEST_FEATURE:
+		site = links.features;
+		break;
+	case IDC_HELP_REPORT_BUG:
+		site = links.bugs;
+		break;
+	case IDC_HELP_DONATE:
+		site
+		    = Text::toT("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8");
+		break;
+	default:
+		dcassert(0);
 	}
 
 	WinUtil::openLink(site);
@@ -1229,7 +1291,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	if (lParam == WM_LBUTTONUP) {
 		ShowWindow(SW_SHOW);
 		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
-	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU){ 
+	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
 		CPoint pt;
 		CMenu mnuTrayMenu;
 		mnuTrayMenu.CreatePopupMenu();
@@ -1249,9 +1311,9 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		nid.uID = 0;
 		nid.uFlags = NIF_TIP;
 		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getRunningAverage()) + "/s (" +
-			Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")\r\nU: " +
-			Util::formatBytes(UploadManager::getInstance()->getRunningAverage()) + "/s (" +
-			Util::toString(UploadManager::getInstance()->getUploadCount()) + ")").c_str(), 64);
+				Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")\r\nU: " +
+				Util::formatBytes(UploadManager::getInstance()->getRunningAverage()) + "/s (" +
+				Util::toString(UploadManager::getInstance()->getUploadCount()) + ")").c_str(), 64);
 
 		::Shell_NotifyIcon(NIM_MODIFY, &nid);
 		lastMove = GET_TICK();
@@ -1261,10 +1323,10 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	static BOOL bVisible = TRUE;	// initially visible
+	static BOOL bVisible = TRUE; // initially visible
 	bVisible = !bVisible;
 	CReBarCtrl rebar = m_hWndToolBar;
-	int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);	// toolbar is 2nd added band
+	int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1); // toolbar is 2nd added band
 	rebar.ShowBand(nBandIndex, bVisible);
 	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
 	UpdateLayout();
@@ -1287,10 +1349,10 @@ LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	BOOL bVisible = !transferView.IsWindowVisible();
 	if(!bVisible) {
 		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_TOP);
+		SetSinglePaneMode(SPLIT_PANE_TOP);
 	} else {
 		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_NONE);
+		SetSinglePaneMode(SPLIT_PANE_NONE);
 	}
 	UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
 	UpdateLayout();
@@ -1300,12 +1362,22 @@ LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 #endif
 
 void MainWindow::handleCloseWindows(unsigned id) {
-	switch(id) {
-	case IDC_CLOSE_ALL_DISCONNECTED:	HubFrame::closeDisconnected();		break;
-	case IDC_CLOSE_ALL_PM:				PrivateFrame::closeAll();			break;
-	case IDC_CLOSE_ALL_OFFLINE_PM:		PrivateFrame::closeAllOffline();	break;
-	case IDC_CLOSE_ALL_DIR_LIST:		DirectoryListingFrame::closeAll();	break;
-	case IDC_CLOSE_ALL_SEARCH_FRAME:	SearchFrame::closeAll();			break;
+	switch (id) {
+	case IDC_CLOSE_ALL_DISCONNECTED:
+		HubFrame::closeDisconnected();
+		break;
+	case IDC_CLOSE_ALL_PM:
+		PrivateFrame::closeAll();
+		break;
+	case IDC_CLOSE_ALL_OFFLINE_PM:
+		PrivateFrame::closeAllOffline();
+		break;
+	case IDC_CLOSE_ALL_DIR_LIST:
+		DirectoryListingFrame::closeAll();
+		break;
+	case IDC_CLOSE_ALL_SEARCH_FRAME:
+		SearchFrame::closeAll();
+		break;
 	}
 }
 
@@ -1318,13 +1390,13 @@ void MainWindow::on(PartialList, const User::Ptr& aUser, const string& text) thr
 }
 
 void MainWindow::on(QueueManagerListener::Finished, QueueItem* qi, const string& dir, int64_t speed) throw() {
-	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
-		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
+	if (qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
+		if (qi->isSet(QueueItem::FLAG_USER_LIST)) {
 			// This is a file listing, show it...
 			DirectoryListInfo* i = new DirectoryListInfo(qi->getCurrent(), Text::toT(qi->getListName()), Text::toT(dir), speed);
 
 			speak(DOWNLOAD_LISTING, (LPARAM)i);
-		} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
+		} else if (qi->isSet(QueueItem::FLAG_TEXT)) {
 			speak(VIEW_FILE_AND_DELETE, (LPARAM) new tstring(Text::toT(qi->getTarget())));
 		}
 	}

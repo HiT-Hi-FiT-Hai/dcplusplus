@@ -100,11 +100,11 @@ public:
 	  * as it will unroll into <br>
 	  * a ::SendMessage from the Windows API
 	  */
-	LRESULT sendMessage( UINT msg, WPARAM wParam = 0, LPARAM lParam = 0 ) {
+	LRESULT sendMessage( UINT msg, WPARAM wParam = 0, LPARAM lParam = 0 ) const {
 		return ::SendMessage(handle(), msg, wParam, lParam);
 	}
 	
-	bool postMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) {
+	bool postMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const {
 		return ::PostMessage(handle(), msg, wParam, lParam);
 	}
 
@@ -150,11 +150,9 @@ public:
 
 	bool clientToScreen(POINT& pt) { return ::ClientToScreen(handle(), &pt); }
 	bool screenToClient(POINT& pt) { return ::ScreenToClient(handle(), &pt); }
+	
 protected:
 	// TODO: Can these become PRIVATE?!?!?
-	static int itsInstanceNo;
-	HWND itsHandle;
-	Widget * itsParent;
 	HMENU itsCtrlId;
 	std::vector < Widget * > itsChildren; // Derived widgets might need access to the children
 
@@ -176,8 +174,12 @@ protected:
 	// Erases the "this" widget from its parent's list of children.
 	void eraseMeFromParentsChildren();
 
+	void setHandle(HWND hWnd) { itsHandle = hWnd; }
+
 private:
 	friend class Application;
+	HWND itsHandle;
+	Widget * itsParent;
 
 	std::auto_ptr< Utilities::CriticalSection > itsCriticalSection;
 

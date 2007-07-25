@@ -90,7 +90,6 @@ protected:
 	{}
 
 private:
-	
 	std::pair<SmartWin::Widget*, SmartWin::Widget*> children;
 	
 	double pos;
@@ -130,25 +129,12 @@ const typename WidgetPaned< horizontal >::Seed & WidgetPaned< horizontal >::getD
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( SmartWin::DontInitializeMe );
+	static boost::scoped_ptr<SmartWin::WindowClass> windowClass;
 
 	if ( d_NeedsInit )
 	{
-		SMARTWIN_WNDCLASSEX wc = { sizeof(SMARTWIN_WNDCLASSEX) };
-
-		SmartWin::Application::instance().generateLocalClassName( d_DefaultValues );
-		wc.hInstance = SmartWin::Application::instance().getAppHandle();
-		wc.lpszClassName = d_DefaultValues.getClassName().c_str();
-		wc.hbrBackground = ( HBRUSH )( COLOR_3DFACE + 1 );
-		wc.hCursor = LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE );
-		wc.lpfnWndProc = ThisType::wndProc;
-		ATOM registeredClass = SmartWinRegisterClass( & wc );
-		if ( 0 == registeredClass )
-		{
-			assert( false && "WidgetPaned::create() SmartWinRegisterClass fizzled..." );
-			SmartWin::xCeption x( _T( "WidgetPaned::create() SmartWinRegisterClass fizzled..." ) );
-			throw x;
-		}
-		SmartWin::Application::instance().addLocalWindowClassToUnregister( d_DefaultValues );
+		windowClass.reset(new SmartWin::WindowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), &ThisType::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), NULL, NULL, LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE )));
+		d_DefaultValues.className = windowClass->getClassName();
 		d_DefaultValues.style = WS_VISIBLE | WS_CHILD;
 		d_NeedsInit = false;
 	}

@@ -355,28 +355,28 @@ inline WidgetTreeView::Seed::Seed()
 
 inline bool WidgetTreeView::getNode( const TreeViewNode & node, unsigned flag, TreeViewNode & resultNode )
 {
-	resultNode.handle = TreeView_GetNextItem( this->Widget::itsHandle, node.handle, flag );
+	resultNode.handle = TreeView_GetNextItem( this->handle(), node.handle, flag );
 	return ( NULL != resultNode.handle );
 }
 
 inline void WidgetTreeView::DeleteAllItems()
 {
-	TreeView_DeleteAllItems( this->Widget::itsHandle );
+	TreeView_DeleteAllItems( this->handle() );
 }
 
 inline void WidgetTreeView::deleteNode( const TreeViewNode & node )
 {
-	TreeView_DeleteItem( this->Widget::itsHandle, node.handle );
+	TreeView_DeleteItem( this->handle(), node.handle );
 }
 
 inline void WidgetTreeView::editLabel( const TreeViewNode & node )
 {
-	TreeView_EditLabel( this->Widget::itsHandle, node.handle );
+	TreeView_EditLabel( this->handle(), node.handle );
 }
 
 inline void WidgetTreeView::ensureVisible( const TreeViewNode & node )
 {
-	TreeView_EnsureVisible( this->Widget::itsHandle, node.handle );
+	TreeView_EnsureVisible( this->handle(), node.handle );
 }
 
 inline void WidgetTreeView::setHasButtons( bool value )
@@ -424,7 +424,7 @@ inline void WidgetTreeView::setStateImageList( ImageListPtr imageList )
 inline SmartUtil::tstring WidgetTreeView::getSelectedItemText()
 {
 	TreeViewNode selNode;
-	HTREEITEM hSelItem = TreeView_GetSelection( this->Widget::itsHandle );
+	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
 	selNode.handle = hSelItem;
 	SmartUtil::tstring retVal = getText( selNode );
 	return retVal;
@@ -439,7 +439,7 @@ inline SmartUtil::tstring WidgetTreeView::getText( const TreeViewNode & node )
 	buffer[0] = '\0';
 	item.cchTextMax = 1022;
 	item.pszText = buffer;
-	if ( TreeView_GetItem( this->Widget::itsHandle, & item ) )
+	if ( TreeView_GetItem( this->handle(), & item ) )
 	{
 		SmartUtil::tstring retVal( buffer );
 		return retVal;
@@ -449,12 +449,12 @@ inline SmartUtil::tstring WidgetTreeView::getText( const TreeViewNode & node )
 
 inline int WidgetTreeView::getSelectedIndex() const
 {
-	HTREEITEM hSelItem = TreeView_GetSelection( this->Widget::itsHandle );
+	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
 	TVITEM item;
 	ZeroMemory( & item, sizeof( TVITEM ) );
 	item.mask = TVIF_HANDLE | TVIF_PARAM;
 	item.hItem = hSelItem;
-	if ( TreeView_GetItem( this->Widget::itsHandle, & item ) )
+	if ( TreeView_GetItem( this->handle(), & item ) )
 		return static_cast< unsigned >( item.lParam );
 	return 0;
 }
@@ -464,11 +464,11 @@ inline void WidgetTreeView::setSelectedIndex( int idx )
 	TVITEM item;
 	item.mask = TVIF_PARAM;
 	item.lParam = idx;
-	if ( TreeView_GetItem( this->Widget::itsHandle, & item ) == FALSE )
+	if ( TreeView_GetItem( this->handle(), & item ) == FALSE )
 	{
 		throw xCeption( _T( "Couldn't find given item" ) );
 	}
-	TreeView_Select( this->Widget::itsHandle, item.hItem, TVGN_FIRSTVISIBLE );
+	TreeView_Select( this->handle(), item.hItem, TVGN_FIRSTVISIBLE );
 }
 
 inline Message & WidgetTreeView::getSelectionChangedMessage()

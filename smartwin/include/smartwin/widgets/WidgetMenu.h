@@ -94,7 +94,7 @@ public:
 	  */
 	void create(const typename WidgetMenuType::Seed cs)
 	{
-		itsCmdBar = CommandBar_Create( Application::instance().getAppHandle(), this->Widget::itsParent->handle(), 1 );
+		itsCmdBar = CommandBar_Create( Application::instance().getAppHandle(), this->getParent()->handle(), 1 );
 		if ( !itsCmdBar )
 		{
 			xCeption x( _T( "CommandBar_Create in WidgetMenu::create fizzled..." ) );
@@ -133,11 +133,10 @@ public:
 	  */
 	WidgetMenuPtr appendPopup( const SmartUtil::tstring & name )
 	{
-		HMENU handle = reinterpret_cast< HMENU >( this->Widget::itsHandle );
 		WidgetMenuPtr retVal = WidgetMenuPtr( new WidgetMenuType( ) );
 		HMENU popup = CreatePopupMenu();
 		retVal->itsHandle = reinterpret_cast< HWND >( popup );
-		::AppendMenu( handle, MF_POPUP, reinterpret_cast< unsigned int >( retVal->handle() ), name.c_str() );
+		::AppendMenu( handle(), MF_POPUP, reinterpret_cast< unsigned int >( retVal->handle() ), name.c_str() );
 		itsChildren.push_back( retVal );
 		retVal->Widget::registerWidget();
 		return retVal;
@@ -249,7 +248,7 @@ public:
 	WidgetMenuPtr getSystemMenu()
 	{
 		HMENU h = ::GetSystemMenu( internal_::getTypedParentOrThrow < EventHandlerClass * >( this )->handle(), FALSE );
-		WidgetMenuPtr sysMenu( new WidgetMenu( this->Widget::itsParent ) );
+		WidgetMenuPtr sysMenu( new WidgetMenu( this->getParent() ) );
 		sysMenu->Widget::itsHandle = reinterpret_cast< HWND >( h );
 		sysMenu->Widget::registerWidget();
 		sysMenu->isSysMenu = true;

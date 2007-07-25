@@ -297,7 +297,7 @@ const typename WidgetTextBox< TextBoxType >::Seed & WidgetTextBox< TextBoxType >
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, _T("Edit") );
+		d_DefaultValues.className = _T("Edit");
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_WANTRETURN;
 		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
@@ -334,14 +334,14 @@ Message & WidgetTextBox< TextBoxType >::getBackgroundColorMessage()
 template< class TextBoxType >
 void WidgetTextBox< TextBoxType >::setSelection( long start, long end )
 {
-	::SendMessage( this->Widget::itsHandle, EM_SETSEL, start, end );
+	this->sendMessage(EM_SETSEL, start, end );
 }
 
 template< class TextBoxType >
 SmartUtil::tstring WidgetTextBox< TextBoxType >::getSelection() const
 {
 	DWORD start, end;
-	::SendMessage( this->Widget::itsHandle, EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
+	this->sendMessage( EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
 	SmartUtil::tstring retVal = this->getText().substr( start, end - start );
 	return retVal;
 }
@@ -349,7 +349,7 @@ SmartUtil::tstring WidgetTextBox< TextBoxType >::getSelection() const
 template< class TextBoxType >
 void WidgetTextBox< TextBoxType >::replaceSelection( const SmartUtil::tstring & txt, bool canUndo )
 {
-	::SendMessage( this->Widget::itsHandle, EM_REPLACESEL, static_cast< WPARAM >( canUndo ? TRUE : FALSE ), reinterpret_cast< LPARAM >( txt.c_str() ) );
+	this->sendMessage(EM_REPLACESEL, static_cast< WPARAM >( canUndo ? TRUE : FALSE ), reinterpret_cast< LPARAM >( txt.c_str() ) );
 }
 
 template< class TextBoxType >
@@ -383,14 +383,14 @@ template< class TextBoxType >
 long WidgetTextBox< TextBoxType >::getCaretPos()
 {
 	DWORD start, end;
-	::SendMessage( this->Widget::itsHandle, EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
+	this->sendMessage(EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
 	return static_cast< long >( end );
 }
 
 template< class TextBoxType >
 void WidgetTextBox< TextBoxType >::showCaret()
 {
-	::SendMessage( this->Widget::itsHandle, EM_SCROLLCARET, 0, 0 );
+	this->sendMessage(EM_SCROLLCARET);
 }
 
 template< class TextBoxType >
@@ -434,11 +434,11 @@ void WidgetTextBox< TextBoxType >::setReadOnly( bool value )
 	typename TextBoxType::canSetReadOnly dummy;
 	if ( value )
 	{
-		::SendMessage( this->Widget::itsHandle, EM_SETREADONLY, static_cast< WPARAM >( TRUE ), 0 );
+		this->sendMessage(EM_SETREADONLY, static_cast< WPARAM >( TRUE ) );
 	}
 	else
 	{
-		::SendMessage( this->Widget::itsHandle, EM_SETREADONLY, static_cast< WPARAM >( FALSE ), 0 );
+		this->sendMessage(EM_SETREADONLY, static_cast< WPARAM >( FALSE ) );
 	}
 }
 
@@ -469,11 +469,11 @@ void WidgetTextBox< TextBoxType >::setPassword( bool value, TCHAR pwdChar )
 	typename TextBoxType::canSetOnlyPassword dummy;
 	if ( value )
 	{
-		::SendMessage( this->Widget::itsHandle, EM_SETPASSWORDCHAR, static_cast< WPARAM >( pwdChar ), 0 );
+		this->sendMessage(EM_SETPASSWORDCHAR, static_cast< WPARAM >( pwdChar ));
 	}
 	else
 	{
-		::SendMessage( this->Widget::itsHandle, EM_SETPASSWORDCHAR, static_cast< WPARAM >( pwdChar ), 0 );
+		this->sendMessage(EM_SETPASSWORDCHAR, static_cast< WPARAM >( pwdChar ));
 	}
 }
 
@@ -486,13 +486,13 @@ void WidgetTextBox< TextBoxType >::setBorder( bool value )
 template< class TextBoxType > 
 void WidgetTextBox< TextBoxType >::setTextLimit( DWORD maxChars ) 
 { 
-	::SendMessage( this->Widget::itsHandle, EM_LIMITTEXT, static_cast< WPARAM >(maxChars), 0 ); 
+	this->sendMessage(EM_LIMITTEXT, static_cast< WPARAM >(maxChars) ); 
 } 
  
 template< class TextBoxType > 
 DWORD WidgetTextBox< TextBoxType >::getTextLimit() const 
 { 
-	return static_cast< DWORD >( ::SendMessage( this->Widget::itsHandle, EM_GETLIMITTEXT , 0, 0 ) );
+	return static_cast< DWORD >( this->sendMessage(EM_GETLIMITTEXT) );
 }
 
 

@@ -9,7 +9,7 @@ const WidgetToolbar::Seed & WidgetToolbar::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		Application::instance().setSystemClassName( d_DefaultValues, TOOLBARCLASSNAME );
+		d_DefaultValues.className = TOOLBARCLASSNAME;
 #ifndef WINCE
 		d_DefaultValues.exStyle = TBSTYLE_EX_MIXEDBUTTONS;
 #else
@@ -27,8 +27,8 @@ void WidgetToolbar::create( const Seed & cs )
 	PolicyType::create(cs);
 
 	//// Telling the toolbar what the size of TBBUTTON struct is
-	::SendMessage( this->Widget::itsHandle, TB_BUTTONSTRUCTSIZE, ( WPARAM ) sizeof( TBBUTTON ), 0 );
-	::SendMessage( this->Widget::itsHandle, TB_SETIMAGELIST, 0, 0 );
+	this->sendMessage(TB_BUTTONSTRUCTSIZE, ( WPARAM ) sizeof( TBBUTTON ));
+	this->sendMessage(TB_SETIMAGELIST);
 	////TODO: use CreationalInfo parameters
 }
 

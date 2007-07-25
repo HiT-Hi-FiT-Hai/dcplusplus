@@ -28,93 +28,14 @@
 */
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include "../include/smartwin/widgets/WidgetSplitter.h"
-#include "../include/smartwin/CanvasClasses.h"
-#include "../include/smartwin/WindowsHeaders.h"
-#include "../include/smartwin/Application.h"
+#include "../../include/smartwin/widgets/WidgetSplitter.h"
+#include "../../include/smartwin/CanvasClasses.h"
+#include "../../include/smartwin/WindowsHeaders.h"
+#include "../../include/smartwin/Application.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-	// Private declared function since we're not supposed to expose this one out!
-	template< Platform >
-	SMARTWIN_WNDCLASSEX createSplitterClass( WNDPROC wndProc );
-
-#ifdef WINCE
-	template< >
-	SMARTWIN_WNDCLASSEX createSplitterClass< SmartWinCE >( WNDPROC wndProc )
-	{
-		const TCHAR * tmpClassName = _T( "SmartWinSplitter" );
-		SMARTWIN_WNDCLASSEX wc;
-		wc.style = 0;
-		wc.lpfnWndProc = wndProc;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = SmartWin::Application::instance().getAppHandle();
-		wc.hIcon = 0;
-		wc.hCursor = LoadCursor( 0, IDC_SIZEWE );
-		wc.hbrBackground = ( HBRUSH )( COLOR_GRAYTEXT + 1 );
-		wc.lpszMenuName = 0;
-		wc.lpszClassName = tmpClassName;
-
-		// Note!
-		// This class we CAN'T unregister since it's statically used across all splitters...
-		ATOM registeredClass = SmartWinRegisterClass( & wc );
-		if ( 0 == registeredClass )
-		{
-			assert( false && "WidgetSplitter::create() SmartWinRegisterClass fizzled..." );
-			SmartWin::xCeption x( _T( "WidgetSplitter::create() SmartWinRegisterClass fizzled..." ) );
-			throw x;
-		}
-		return wc;
-	}
-#else
-	template< >
-	SMARTWIN_WNDCLASSEX createSplitterClass< SmartWinDesktop >( WNDPROC wndProc )
-	{
-		const TCHAR * tmpClassName = _T( "SmartWinSplitter" );
-		SMARTWIN_WNDCLASSEX wc;
-		wc.cbSize = sizeof( SMARTWIN_WNDCLASSEX );
-		wc.style = 0;
-		wc.lpfnWndProc = wndProc;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = SmartWin::Application::instance().getAppHandle();
-		wc.hIcon = 0;
-		wc.hIcon = LoadIcon( 0, IDI_APPLICATION );
-		wc.hCursor = LoadCursor( 0, IDC_SIZEWE );
-		wc.hbrBackground = ( HBRUSH )( COLOR_GRAYTEXT + 1 );
-		wc.lpszMenuName = 0;
-		wc.lpszClassName = tmpClassName;
-		wc.hIconSm = LoadIcon( 0, IDI_APPLICATION );
-
-		// Note!
-		// This class we CAN'T unregister since it's statically used across all splitters...
-		ATOM registeredClass = SmartWinRegisterClass( & wc );
-		if ( 0 == registeredClass )
-		{
-			assert( false && "WidgetSplitter::create() SmartWinRegisterClass fizzled..." );
-			SmartWin::xCeption x( _T( "WidgetSplitter::create() SmartWinRegisterClass fizzled..." ) );
-			throw x;
-		}
-		return wc;
-	}
-#endif
-
-	//SMARTWIN_WNDCLASSEX & WidgetSplitterBase::getSplitterWndClass( WNDPROC wndProc )
-	//{
-	//  static SMARTWIN_WNDCLASSEX wc = createSplitterClass<CurrentPlatform>( wndProc );
-	//  return wc;
-	//}
-
-	//SMARTWIN_WNDCLASSEX & WidgetSplitterBase::getSplitterWndClass( INT_PTR (CALLBACK *wndProc) ( HWND, UINT, WPARAM, LPARAM) )
-	//{
-	//  // TODO: Does this work?!?
-	//  static SMARTWIN_WNDCLASSEX wc = createSplitterClass<CurrentPlatform>( reinterpret_cast<WNDPROC>(wndProc) );
-	//  return wc;
-	//}
-
 	void SplitterThinPaint::paintSplitter( unsigned width, unsigned ySize, HWND handle )
 	{
 		PaintCanvas canvas( handle );

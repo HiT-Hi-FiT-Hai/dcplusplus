@@ -54,6 +54,9 @@ public:
 	};
 
 	MainWindow();
+	
+	bool filter(MSG& msg);
+	
 	virtual ~MainWindow();
 private:
 	
