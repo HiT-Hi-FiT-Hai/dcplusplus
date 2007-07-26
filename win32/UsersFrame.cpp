@@ -150,7 +150,7 @@ HRESULT UsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		}
 
 		WidgetMenuPtr menu = createMenu(true);
-		appendUserItems(menu);
+		appendUserItems(getParent(), menu);
 		menu->appendSeparatorItem();
 		menu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&UsersFrame::handleProperties, this));
 		menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&UsersFrame::handleRemove, this));

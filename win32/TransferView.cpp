@@ -39,9 +39,10 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::USER, Resourc
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
 ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
 
-TransferView::TransferView(SmartWin::Widget* parent) : 
+TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetMDIParent* mdi_) : 
 	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
-	transfers(0)
+	transfers(0),
+	mdi(mdi_)
 {
 	createWindow();
 	
@@ -100,7 +101,7 @@ HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
 TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	appendUserItems(menu);
+	appendUserItems(mdi, menu);
 	menu->appendSeparatorItem();
 	
 	menu->appendItem(IDC_FORCE, TSTRING(FORCE_ATTEMPT), std::tr1::bind(&TransferView::handleForce, this));

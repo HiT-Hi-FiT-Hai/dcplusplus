@@ -57,10 +57,8 @@ void UserInfoBase::addFav() {
 	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 
-void UserInfoBase::pm() {
-#ifdef PORT_ME
-	PrivateFrame::openWindow(user);
-#endif
+void UserInfoBase::pm(SmartWin::WidgetMDIParent* parent) {
+	PrivateFrame::openWindow(parent, user);
 }
 
 void UserInfoBase::grant() {

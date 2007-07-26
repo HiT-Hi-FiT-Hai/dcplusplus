@@ -104,11 +104,6 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 		chat->setFont(WinUtil::font);
 		addWidget(chat);
 		paned->setFirst(chat);
-#ifdef PORT_ME
-		/// @todo do we need this?§
-		ctrlClient.FmtLines(TRUE);
-		
-#endif
 	}
 	
 	{
@@ -1215,7 +1210,7 @@ HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		}
 
 		WidgetMenuPtr menu = createMenu(true);
-		appendUserItems(menu);
+		appendUserItems(getParent(), menu);
 		
 		menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), std::tr1::bind(&HubFrame::handleCopyNick, this));
 		menu->setDefaultItem(IDC_GETLIST);

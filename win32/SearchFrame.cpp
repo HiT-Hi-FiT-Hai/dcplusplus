@@ -798,7 +798,7 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	menu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), std::tr1::bind(&SearchFrame::handleBitziLookup, this));
 	menu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), std::tr1::bind(&SearchFrame::handleCopyMagnet, this));
 	menu->appendSeparatorItem();
-	appendUserItems(menu);
+	appendUserItems(getParent(), menu);
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&SearchFrame::handleRemove, this));
 	prepareMenu(menu, UserCommand::CONTEXT_SEARCH, checkTTH.hubs);

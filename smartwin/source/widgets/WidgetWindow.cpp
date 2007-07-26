@@ -9,7 +9,7 @@ const WidgetWindow::Seed & WidgetWindow::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		d_DefaultValues.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+		d_DefaultValues.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
 		d_DefaultValues.background = ( HBRUSH )( COLOR_APPWORKSPACE + 1 );
 		d_DefaultValues.caption = _T( "" );
 #ifndef WINCE

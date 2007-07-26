@@ -49,7 +49,7 @@ class TransferView :
 	public AspectUserCommand<TransferView>
 {
 public:
-	TransferView(SmartWin::Widget*);
+	TransferView(SmartWin::Widget*, SmartWin::WidgetMDIParent* parent);
 
 	void prepareClose();
 
@@ -177,6 +177,7 @@ private:
 	typedef TypedListViewCtrl<TransferView, ItemInfo> WidgetTransfers;
 	typedef WidgetTransfers* WidgetTransfersPtr;
 	WidgetTransfersPtr transfers;
+	SmartWin::WidgetMDIParent* mdi;
 	SmartWin::ImageListPtr arrows;
 
 	TaskQueue tasks;

@@ -343,7 +343,7 @@ void MainWindow::initTabs() {
 
 void MainWindow::initTransfers() {
 	dcdebug("initTransfers\n");
-	transfers = new TransferView(this);
+	transfers = new TransferView(this, getMDIClient());
 	paned->setSecond(transfers);
 }
 

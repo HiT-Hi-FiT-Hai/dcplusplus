@@ -30,7 +30,7 @@ public:
 	void getList();
 	void browseList();
 	void matchQueue();
-	void pm();
+	void pm(SmartWin::WidgetMDIParent*);
 	void grant();
 	void addFav();
 	void removeAll();
@@ -65,8 +65,8 @@ public:
 	void handleAddFavorite() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::addFav);
 	}
-	void handlePrivateMessage() {
-		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::pm);
+	void handlePrivateMessage(SmartWin::WidgetMDIParent* parent) {
+		static_cast<T*>(this)->getUserList()->forEachSelectedT(std::tr1::bind(&UserInfoBase::pm, _1, parent));
 	}
 	void handleGrantSlot() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::grant);
@@ -76,13 +76,13 @@ public:
 	}
 
 	template<typename MenuType>
-	void appendUserItems(MenuType menu) {
+	void appendUserItems(SmartWin::WidgetMDIParent* parent, MenuType menu) {
 		bool adc = static_cast<T*>(this)->getUserList()->forEachSelectedT(UserInfoBase::ADCOnly()).adcOnly;
 		menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&ThisType::handleGetList, this));
 		if(adc)
 			menu->appendItem(IDC_BROWSELIST, TSTRING(BROWSE_FILE_LIST), std::tr1::bind(&ThisType::handleBrowseList, this));
 		menu->appendItem(IDC_MATCH_QUEUE, TSTRING(MATCH_QUEUE), std::tr1::bind(&ThisType::handleMatchQueue, this));
-		menu->appendItem(IDC_PRIVATEMESSAGE, TSTRING(SEND_PRIVATE_MESSAGE), std::tr1::bind(&ThisType::handlePrivateMessage, this));
+		menu->appendItem(IDC_PRIVATEMESSAGE, TSTRING(SEND_PRIVATE_MESSAGE), std::tr1::bind(&ThisType::handlePrivateMessage, this, parent));
 		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&ThisType::handleAddFavorite, this));
 		menu->appendItem(IDC_GRANTSLOT, TSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&ThisType::handleGrantSlot, this));
 #ifdef PORT_ME
