@@ -39,6 +39,7 @@
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
+#include <boost/scoped_ptr.hpp>
 
 namespace SmartWin
 {

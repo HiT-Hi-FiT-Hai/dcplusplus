@@ -19,6 +19,8 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETPANED_H_
 #define DCPLUSPLUS_WIN32_WIDGETPANED_H_
 
+#include <boost/scoped_ptr.hpp>
+
 template< bool horizontal >
 class WidgetPaned :
 	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,

@@ -81,11 +81,12 @@ MainWindow::MainWindow() :
 	initTransfers();
 	initSecond();
 
+	tabs->onSized(std::tr1::bind(&MainWindow::handleTabResize, this, _1));
+	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
+	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
+
 	updateStatus();
 	layout();
-
-	onSized(std::tr1::bind(&MainWindow::sized, this, _1));
-	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
 
 	if (!WinUtil::isShift())
 		speak(AUTO_CONNECT);
@@ -333,7 +334,7 @@ void MainWindow::initStatusBar() {
 void MainWindow::initTabs() {
 	MDITab::Seed cs;
 	cs.style
-	    = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE | TCS_BUTTONS | TCS_FLATBUTTONS | TCS_HOTTRACK;
+	    = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE | TCS_HOTTRACK;
 	cs.font = WinUtil::font;
 	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
 	tabs->setFlatSeparators(false);
@@ -384,8 +385,9 @@ void MainWindow::handleQuickConnect() {
 	}
 }
 
-void MainWindow::sized(const SmartWin::WidgetSizedEventResult& sz) {
+bool MainWindow::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 	layout();
+	return true;
 }
 
 HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
@@ -544,8 +546,11 @@ void MainWindow::layout() {
 	r.size.y -= rs.size.y + border;
 
 	paned->setRect(r);
+}
 
+bool MainWindow::handleTabResize(const SmartWin::WidgetSizedEventResult& sz) {
 	getMDIClient()->setBounds(tabs->getUsableArea());
+	return false;
 }
 
 void MainWindow::updateStatus() {

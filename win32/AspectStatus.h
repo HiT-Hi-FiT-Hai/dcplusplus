@@ -21,6 +21,7 @@
 
 template<class WidgetType>
 class AspectStatus {
+	typedef AspectStatus<WidgetType> ThisType;
 protected:
 	AspectStatus() : status(0) {
 		statusSizes.resize(WidgetType::STATUS_LAST);
@@ -28,6 +29,8 @@ protected:
 
 	void initStatus() {
 		status = static_cast<WidgetType*>(this)->createStatusBarSections();
+		statusTip = static_cast<WidgetType*>(this)->createToolTip();
+		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
 	}
 	
 	void setStatus(int s, const tstring& text) {
@@ -37,6 +40,11 @@ protected:
 				dcdebug("Setting status size %d to %d\n", s, w);
 				statusSizes[s] = w;
 				layoutStatus();
+			}
+		} else {
+			lastLines.push_back(text);
+			while(lastLines.size() > MAX_LINES) {
+				lastLines.erase(lastLines.begin());
 			}
 		}
 		status->setText(text, s);
@@ -67,6 +75,23 @@ protected:
 
 	std::vector<unsigned> statusSizes;
 
+private:
+	typename SmartWin::WidgetToolTip::ObjectType statusTip;
+	TStringList lastLines;
+	tstring tip;
+	
+	enum { MAX_LINES = 10 };
+	
+	const tstring& handleToolTip() {
+		tip.clear();
+		for(size_t i = 0; i < lastLines.size(); ++i) {
+			if(i > 0) {
+				tip += _T("\r\n");
+			}
+			tip += lastLines[i];
+		}
+		return tip;
+	}
 };
 
 #endif /*ASPECTSTATUS_H_*/

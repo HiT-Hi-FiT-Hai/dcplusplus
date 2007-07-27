@@ -72,7 +72,7 @@ public:
 	  */
 	void onEraseBackground(const typename Dispatcher::F& f) {
 		static_cast<WidgetType*>(this)->setCallback(
-			Message( WM_ERASEBKGND ), Dispatcher(f, boost::polymorphic_cast<Widget*>(this) )
+			Message( WM_ERASEBKGND ), Dispatcher(f, static_cast<WidgetType*>(this) )
 		);
 	}
 

@@ -32,7 +32,6 @@
 #include "../../SmartUtil.h"
 #include "../FreeCommonDialog.h"
 #include "../WindowsHeaders.h"
-#include <commdlg.h>
 #include <shlobj.h>
 
 namespace SmartWin

@@ -58,6 +58,7 @@
 	#include <windowsx.h>
 	#include <shellapi.h>
 	#include <commctrl.h>
+	#include <commdlg.h>
 	#include <assert.h>
 
 	// Need to forward declare these since GCC does syntax checking of

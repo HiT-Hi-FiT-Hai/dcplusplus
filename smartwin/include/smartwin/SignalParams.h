@@ -30,7 +30,6 @@
 #define SignalParams_H
 
 #include "Message.h"
-#include "Widget.h"
 
 namespace SmartWin
 {

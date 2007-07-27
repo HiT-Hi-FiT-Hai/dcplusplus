@@ -29,9 +29,9 @@
 #ifndef MessageMapBase_h
 #define MessageMapBase_h
 
+#include "Atom.h"
 #include "SignalParams.h"
 #include "Widget.h"
-#include "Atom.h"
 
 #include <functional>
 #include <map>

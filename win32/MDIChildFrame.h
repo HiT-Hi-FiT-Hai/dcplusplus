@@ -54,7 +54,7 @@ protected:
 
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
-		onSized(std::tr1::bind(&ThisType::sized, this, _1));
+		onSized(std::tr1::bind(&ThisType::handleSized, this, _1));
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
 		
 		MDITab::getInstance()->addTab(this);
@@ -102,12 +102,13 @@ private:
 		
 	}
 
-	void sized(const SmartWin::WidgetSizedEventResult& sz) { 
+	bool handleSized(const SmartWin::WidgetSizedEventResult& sz) { 
 		static_cast<T*>(this)->layout();
 		BOOL max = FALSE;
 		if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
 			SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, max > 0);
 		}
+		return false;
 	}
 	
 	void handleActivate(bool active) {

@@ -31,17 +31,42 @@
 
 #include "../SignalParams.h"
 #include "../Place.h"
+#include "../xCeption.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-namespace private_ {
-// Internal function for creating a WidgetSizedEventResult out of the LPARAM
-// and WPARAM from a Message
-WidgetSizedEventResult createWindowSizedEventResultFromMessageParams( LPARAM lP, WPARAM wP );
+/// Widget sized POD structure
+/** Several event handlers supply an object of this type as one or more parameters to
+  * the event handler callback function. <br>
+  * E.g. the "onSized" event handler
+  */
+struct WidgetSizedEventResult
+{
+	WidgetSizedEventResult(WPARAM wParam, LPARAM lParam);
+	
+	/// Sise
+	/** New size of the window
+	  */
+	Point newSize;
 
-}
+	/// is window maximized
+	/** true if window was being maximized, otherwise false
+	  */
+	bool isMaximized;
+
+	/// is window minimized
+	/** true if window was being minimized, otherwise false
+	  */
+	bool isMinimized;
+
+	/// is window restored
+	/** true if window was being restored, otherwise false
+	  */
+	bool isRestored;
+};
+
 
 /// \ingroup AspectClasses
 /// \ingroup WidgetLayout
@@ -65,12 +90,12 @@ template< class WidgetType >
 class AspectSizable
 {
 	struct SizeDispatcher {
-		typedef std::tr1::function<void (const WidgetSizedEventResult & )> F;
+		typedef std::tr1::function<bool (const WidgetSizedEventResult & )> F;
 
 		SizeDispatcher(const F& f_) : f(f_) { }
 
 		HRESULT operator()(private_::SignalContent& params) {
-			f(private_::createWindowSizedEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
+			params.RunDefaultHandling = !f(WidgetSizedEventResult( params.Msg.WParam, params.Msg.LParam ));
 			return 0;
 		}
 

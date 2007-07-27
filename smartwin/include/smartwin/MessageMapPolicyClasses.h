@@ -30,8 +30,6 @@
 #define MessageMapPolicyClasses_h
 
 #include "MessageMapBase.h"
-#include "Application.h"
-#include <boost/cast.hpp>
 
 namespace SmartWin
 {
@@ -73,14 +71,6 @@ public:
 			
 			map->kill();
 			return Policy::returnDestroyed(hwnd, uMsg, wParam, lParam);
-		}
-
-		if((uMsg == WM_COMMAND || uMsg == WM_SYSCOMMAND) && lParam == 0) {
-#ifdef PORT_ME
-			if(Application::instance().handleCommand(msgObj, handler)) {
-				return Policy::returnHandled(0, hwnd, uMsg, wParam, lParam);
-			}
-#endif
 		}
 
 		HRESULT hres = 0;
@@ -196,7 +186,7 @@ public:
 		if ( uMsg == WM_INITDIALOG )
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
-			MessageMapBase* This = boost::polymorphic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( lParam ));
+			MessageMapBase* This = static_cast<MessageMapBase*>(reinterpret_cast< Widget * >( lParam ));
 			private_::setHandle( This, hwnd );
 			This->setProp();
 		}
@@ -264,7 +254,7 @@ public:
 		if ( uMsg == WM_NCCREATE ) {
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-			MessageMapBase* This = boost::polymorphic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
+			MessageMapBase* This = static_cast<MessageMapBase*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
 			private_::setHandle( This, hWnd );
 			This->setProp();
 		}
@@ -356,7 +346,7 @@ public:
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
 			MDICREATESTRUCT * mcs = reinterpret_cast< MDICREATESTRUCT*>(cs->lpCreateParams);
 			
-			MessageMapBase* This = dynamic_cast<MessageMapBase*>(reinterpret_cast< Widget * >( mcs->lParam ));
+			MessageMapBase* This = static_cast<MessageMapBase*>(reinterpret_cast< Widget * >( mcs->lParam ));
 			private_::setHandle( This, hWnd );
 
 			This->setProp();

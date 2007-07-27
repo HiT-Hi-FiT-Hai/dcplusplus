@@ -38,6 +38,7 @@
 #include "WidgetMDIParent.h"
 #include "WidgetWindowBase.h"
 #include <sstream>
+#include <boost/scoped_ptr.hpp>
 
 namespace SmartWin
 {

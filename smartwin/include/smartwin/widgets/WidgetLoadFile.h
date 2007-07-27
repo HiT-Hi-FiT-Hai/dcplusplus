@@ -33,7 +33,6 @@
 #include "../FreeCommonDialog.h"
 #include "../WindowsHeaders.h"
 #include "../aspects/AspectFileFilter.h"
-#include <commdlg.h>
 #include <vector>
 
 namespace SmartWin

@@ -2,6 +2,7 @@
 #define WIDGETTOOLTIP_H_
 
 #include "../MessageMapPolicyClasses.h"
+#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectVisible.h"
@@ -9,23 +10,29 @@
 
 namespace SmartWin {
 
+template< class WidgetType >
+class WidgetCreator;
+
 class WidgetToolTip :
 	public MessageMapPolicy< Policies::Subclassed >,
 	
 	// Aspects
-	public AspectEnabled< WidgetToolbar >,
-	public AspectFont< WidgetToolbar >,
-	public AspectRaw< WidgetToolbar >,
-	public AspectVisible< WidgetToolbar >
+	public AspectEnabled< WidgetToolTip >,
+	public AspectFont< WidgetToolTip >,
+	public AspectRaw< WidgetToolTip >,
+	public AspectVisible< WidgetToolTip >
 {
+	friend class WidgetCreator< WidgetToolTip >;
+
 	struct Dispatcher
 	{
-		typedef std::tr1::function<void (LPNMTTDISPINFO)> F;
+		typedef std::tr1::function<const SmartUtil::tstring& ()> F;
 
 		Dispatcher(const F& f_) : f(f_) { }
 
 		HRESULT operator()(private_::SignalContent& params) {
-			f(reinterpret_cast< LPNMTTDISPINFO >( params.Msg.LParam ));
+			LPNMTTDISPINFO ttdi = reinterpret_cast< LPNMTTDISPINFO >( params.Msg.LParam );
+			ttdi->lpszText = const_cast<LPTSTR>(f().c_str());
 			return 0;
 		}
 
@@ -34,7 +41,7 @@ class WidgetToolTip :
 	
 public:
 	/// Class type
-	typedef WidgettoolTip ThisType;
+	typedef WidgetToolTip ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -60,6 +67,10 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
+	
+	void setTool(Widget* widget, const Dispatcher::F& callback);
+	
+	void setMaxTipWidth(int width);
 
 	/// Actually creates the Toolbar
 	/** You should call WidgetFactory::createToolbar if you instantiate class
@@ -76,19 +87,22 @@ protected:
 	// is supposed to do so when parent is killed...
 	virtual ~WidgetToolTip()
 	{}
-
-}
+};
 
 inline WidgetToolTip::Seed::Seed()
 {
 	* this = WidgetToolTip::getDefaultSeed();
 }
 
-inline WidgetToolTip::WidgetToolTip( SmartWin::Widget * parent )
+inline WidgetToolTip::WidgetToolTip( Widget * parent )
 	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a ToolTip without a parent..." ) );
+}
+
+inline void WidgetToolTip::setMaxTipWidth(int width) {
+	sendMessage(TTM_SETMAXTIPWIDTH, 0, static_cast<LPARAM>(width));
 }
 
 }

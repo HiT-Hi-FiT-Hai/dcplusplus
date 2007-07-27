@@ -78,8 +78,9 @@ TransferView::~TransferView() {
 
 }
 
-void TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
+bool TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 	transfers->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+	return true;
 }
 
 void TransferView::prepareClose() {

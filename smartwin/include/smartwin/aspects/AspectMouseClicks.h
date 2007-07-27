@@ -35,12 +35,48 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-namespace private_
+/// Mouse Event structure
+/** Several event handlers supply an object of this type as one or more parameters to
+  * their Event Handler. <br>
+  * E.g. the "onLeftMouseUp" Event Handler takes an object of this type to give
+  * extensive information regarding the Event.
+  */
+struct MouseEventResult
 {
-	// Internal function for creating a MouseEventResult out of the LPARAM and
-	// WPARAM from a Message
-	MouseEventResult createMouseEventResultFromMessageParams( LPARAM lP, WPARAM wP );
-}
+	MouseEventResult(WPARAM wParam, LPARAM lParam);
+	
+	/// Types of buttons
+	enum Button
+	{
+		OTHER, LEFT, RIGHT, MIDDLE
+	};
+
+	/// Position of mouse
+	/** Position of mouse when event was raised
+	  */
+	Point pos;
+
+	/// is the CTRL key pressed
+	/** true if CTRL key is pressed, otherwise false
+	  */
+	bool isControlPressed;
+
+	/// is the SHIFT key pressed
+	/** true if SHIFT key is pressed, otherwise false
+	  */
+	bool isShiftPressed;
+
+	/// is the ALT key pressed
+	/** true if ALT key is pressed, otherwise false
+	  */
+	bool isAltPressed;
+
+	/// Indicates which mouse button was actually pressed
+	/** possible values are LEFT, RIGHT or MIDDLE
+	  */
+	Button ButtonPressed;
+};
+
 
 /// Aspect class used by Widgets that have the possibility of trapping "mouse
 /// clicked" events.
@@ -58,7 +94,7 @@ class AspectMouseClicks
 		Dispatcher(const F& f_) : f(f_) { }
 
 		HRESULT operator()(private_::SignalContent& params) {
-			f(private_::createMouseEventResultFromMessageParams( params.Msg.LParam, params.Msg.WParam ));
+			f(MouseEventResult( params.Msg.WParam, params.Msg.LParam ));
 			return 0;
 		}
 

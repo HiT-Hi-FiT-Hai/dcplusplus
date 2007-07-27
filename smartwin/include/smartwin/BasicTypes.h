@@ -30,7 +30,6 @@
 #define BasicTypes_h
 
 #include "WindowsHeaders.h"
-#include <string>
 #include "../../SmartUtil/tstring.h"
 
 namespace SmartWin
@@ -483,74 +482,6 @@ public:
 	friend class Widget;
 	LPCTSTR className;
 	int menuHandle;
-};
-
-/// Mouse Event structure
-/** Several event handlers supply an object of this type as one or more parameters to
-  * their Event Handler. <br>
-  * E.g. the "onLeftMouseUp" Event Handler takes an object of this type to give
-  * extensive information regarding the Event.
-  */
-struct MouseEventResult
-{
-	/// Types of buttons
-	enum Button
-	{
-		OTHER, LEFT, RIGHT, MIDDLE
-	};
-
-	/// Position of mouse
-	/** Position of mouse when event was raised
-	  */
-	Point pos;
-
-	/// is the CTRL key pressed
-	/** true if CTRL key is pressed, otherwise false
-	  */
-	bool isControlPressed;
-
-	/// is the SHIFT key pressed
-	/** true if SHIFT key is pressed, otherwise false
-	  */
-	bool isShiftPressed;
-
-	/// is the ALT key pressed
-	/** true if ALT key is pressed, otherwise false
-	  */
-	bool isAltPressed;
-
-	/// Indicates which mouse button was actually pressed
-	/** possible values are LEFT, RIGHT or MIDDLE
-	  */
-	Button ButtonPressed;
-};
-
-/// Widget sized POD structure
-/** Several event handlers supply an object of this type as one or more parameters to
-  * the event handler callback function. <br>
-  * E.g. the "onSized" event handler
-  */
-struct WidgetSizedEventResult
-{
-	/// Sise
-	/** New size of the window
-	  */
-	Point newSize;
-
-	/// is window maximized
-	/** true if window was being maximized, otherwise false
-	  */
-	bool isMaximized;
-
-	/// is window minimized
-	/** true if window was being minimized, otherwise false
-	  */
-	bool isMinimized;
-
-	/// is window restored
-	/** true if window was being restored, otherwise false
-	  */
-	bool isRestored;
 };
 
 // end namespace SmartWin

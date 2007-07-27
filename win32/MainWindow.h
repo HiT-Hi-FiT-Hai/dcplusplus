@@ -150,9 +150,10 @@ private:
 	void handleMinimizeAll();
 	void handleRestoreAll();
 	HRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
+	bool handleTabResize(const SmartWin::WidgetSizedEventResult& sz);
 	
 	// Other events
-	void sized(const SmartWin::WidgetSizedEventResult& sz);
+	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
 	
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT trayMessage(WPARAM wParam, LPARAM lParam);

@@ -29,6 +29,7 @@
 #ifndef WidgetWindowBase_h
 #define WidgetWindowBase_h
 
+#include "../Application.h"
 #include "../BasicTypes.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectActivate.h"

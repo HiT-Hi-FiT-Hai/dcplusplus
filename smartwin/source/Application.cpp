@@ -448,33 +448,29 @@ int Application::run(const FilterFunction& filter)
 
 #endif // not __WINE__
 
-WidgetSizedEventResult private_::createWindowSizedEventResultFromMessageParams( LPARAM lP, WPARAM wP )
+WidgetSizedEventResult::WidgetSizedEventResult( WPARAM wP, LPARAM lP )
 {
-	WidgetSizedEventResult retVal;
-	retVal.newSize = Point( GET_X_LPARAM( lP ), GET_Y_LPARAM( lP ) );
-	retVal.isMaximized = ( wP == SIZE_MAXIMIZED );
-	retVal.isMinimized = ( wP == SIZE_MINIMIZED );
-	retVal.isRestored = ( wP == SIZE_RESTORED );
-	return retVal;
+	newSize = Point( GET_X_LPARAM( lP ), GET_Y_LPARAM( lP ) );
+	isMaximized = ( wP == SIZE_MAXIMIZED );
+	isMinimized = ( wP == SIZE_MINIMIZED );
+	isRestored = ( wP == SIZE_RESTORED );
 }
 
-MouseEventResult private_::createMouseEventResultFromMessageParams( LPARAM lP, WPARAM wP )
+MouseEventResult::MouseEventResult( WPARAM wP, LPARAM lP )
 {
-	MouseEventResult mouse;
-	mouse.isAltPressed = ::GetKeyState( VK_MENU ) < 0;
-	mouse.pos.x = GET_X_LPARAM( lP );
-	mouse.pos.y = GET_Y_LPARAM( lP );
-	mouse.isControlPressed = ( ( wP & MK_CONTROL ) == MK_CONTROL );
-	mouse.isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
+	isAltPressed = ::GetKeyState( VK_MENU ) < 0;
+	pos.x = GET_X_LPARAM( lP );
+	pos.y = GET_Y_LPARAM( lP );
+	isControlPressed = ( ( wP & MK_CONTROL ) == MK_CONTROL );
+	isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
 
 	// These might be an issue when porting to Windows CE since CE does only support LEFT (or something...)
 	// TODO: Also should we provide support for MK_XBUTTON1/2 ? ?
-	mouse.ButtonPressed = (
+	ButtonPressed = (
 		MK_LBUTTON & wP ? MouseEventResult::LEFT : (
 			MK_RBUTTON & wP ? MouseEventResult::RIGHT : (
 				MK_MBUTTON & wP ? MouseEventResult::MIDDLE : MouseEventResult::OTHER
 			)
 		)
 	);
-	return mouse;
 }

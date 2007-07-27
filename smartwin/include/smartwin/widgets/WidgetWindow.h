@@ -35,6 +35,8 @@
 #include "../WindowClass.h"
 #include "WidgetWindowBase.h"
 
+#include <boost/scoped_ptr.hpp>
+
 namespace SmartWin
 {
 // begin namespace SmartWin

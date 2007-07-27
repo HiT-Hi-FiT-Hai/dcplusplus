@@ -29,9 +29,8 @@
 #ifndef Widget_h
 #define Widget_h
 
-#include "../SmartUtil.h"
 #include "BasicTypes.h"
-#include "Threads.h"
+
 #include <boost/noncopyable.hpp>
 #include <memory>
 #include <vector>
@@ -42,6 +41,9 @@ namespace SmartWin
 
 class Application;
 class Widget;
+namespace Utilities {
+class CriticalSection;
+}
 
 namespace private_
 {

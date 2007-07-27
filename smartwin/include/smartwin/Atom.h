@@ -1,6 +1,8 @@
 #ifndef ATOM_H_
 #define ATOM_H_
 
+#include "WindowsHeaders.h"
+
 namespace SmartWin {
 class AtomBase {
 public:

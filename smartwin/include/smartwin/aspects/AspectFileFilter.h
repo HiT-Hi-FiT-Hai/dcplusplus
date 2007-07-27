@@ -34,7 +34,6 @@
 #include "SmartUtil.h"
 #include "../xCeption.h"
 #include "../WindowsHeaders.h"
-#include "commdlg.h"
 
 namespace SmartWin
 {

@@ -1,4 +1,5 @@
 #include "../../include/smartwin/widgets/WidgetMDIParent.h"
+#include "../../include/smartwin/Application.h"
 
 namespace SmartWin {
 

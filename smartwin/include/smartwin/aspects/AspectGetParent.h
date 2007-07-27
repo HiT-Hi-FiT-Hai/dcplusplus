@@ -59,26 +59,6 @@ inline Target getTypedParentOrThrow( Source * source )
 	throw std::bad_cast();
 }
 
-template< class Target, class Source >
-inline Target getTypedParentOrThrow( const std::tr1::shared_ptr<Source>& source )
-{
-	// The easy shortcut
-	Target tmp = boost::dynamic_pointer_cast< typename boost::remove_pointer<Target>::type >( source ).get();
-	if ( tmp )
-		return tmp;
-
-	Widget * widget = boost::dynamic_pointer_cast< Widget >( source ).get();
-	widget = widget->getParent();
-	while ( widget )
-	{
-		Target tmp = dynamic_cast< Target >( widget );
-		if ( tmp )
-			return tmp;
-		widget = widget->getParent();
-	}
-	throw std::bad_cast();
-}
-
 // end namespace internal_
 }
 

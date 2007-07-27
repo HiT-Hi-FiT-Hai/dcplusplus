@@ -32,31 +32,32 @@
 #include "../SmartUtil.h"
 #include "widgets/WidgetButton.h"
 #include "widgets/WidgetCheckBox.h"
-#include "widgets/WidgetComboBox.h"
-#include "widgets/WidgetDateTimePicker.h"
-#include "widgets/WidgetGroupBox.h"
-#include "widgets/WidgetDataGrid.h"
+#include "widgets/WidgetChooseColor.h"
 #include "widgets/WidgetChooseFolder.h"
+#include "widgets/WidgetComboBox.h"
+#include "widgets/WidgetDataGrid.h"
+#include "widgets/WidgetDateTimePicker.h"
+#include "widgets/WidgetDialog.h"
+#include "widgets/WidgetGroupBox.h"
 #include "widgets/WidgetLoadFile.h"
 #include "widgets/WidgetMDIChild.h"
+#include "widgets/WidgetMDIFrame.h"
 #include "widgets/WidgetMDIParent.h"
-#include "widgets/WidgetTabSheet.h"
 #include "widgets/WidgetMenu.h"
 #include "widgets/WidgetMessageBox.h"
+#include "widgets/WidgetProgressBar.h"
 #include "widgets/WidgetRadioButton.h"
 #include "widgets/WidgetSaveFile.h"
-#include "widgets/WidgetChooseColor.h"
 #include "widgets/WidgetSlider.h"
 #include "widgets/WidgetSpinner.h"
 #include "widgets/WidgetStatic.h"
 #include "widgets/WidgetStatusBar.h"
+#include "widgets/WidgetTabSheet.h"
 #include "widgets/WidgetTextBox.h"
 #include "widgets/WidgetTreeView.h"
-#include "widgets/WidgetWindowBase.h"
+#include "widgets/WidgetToolTip.h"
 #include "widgets/WidgetWindow.h"
-#include "widgets/WidgetMDIFrame.h"
-#include "widgets/WidgetDialog.h"
-#include "widgets/WidgetProgressBar.h"
+#include "widgets/WidgetWindowBase.h"
 #include "WidgetFactoryPlatformImplementation.h"
 #include "aspects/AspectGetParent.h"
 #include "WidgetCreator.h"
@@ -238,6 +239,10 @@ public:
 	/// ProgressBar object type.
 	typedef typename WidgetProgressBar::ObjectType WidgetProgressBarPtr;
 
+	typedef SmartWin::WidgetToolTip WidgetToolTip;
+	
+	typedef typename WidgetToolTip::ObjectType WidgetToolTipPtr;
+	
 	/// Default Constructor creating a factory Widget
 	/** Default Constructor creating a factory Widget without a parent, if you need
 	  * to explicitly state a parent like for instance you often would want in a
@@ -464,6 +469,7 @@ public:
 	  */
 	WidgetStaticPtr subclassStatic( unsigned id );
 
+	WidgetToolTipPtr createToolTip( const typename WidgetToolTip::Seed & cs = WidgetToolTip::getDefaultSeed() );
 protected:
 	// Protected to try to avoid stack creation...
 	virtual ~WidgetFactory()
@@ -748,6 +754,13 @@ typename WidgetFactory< ContainerWidgetType >::WidgetStaticPtr
 WidgetFactory< ContainerWidgetType >::subclassStatic( unsigned id )
 {
 	return WidgetCreator< WidgetStatic >::subclass( this, id );
+}
+
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetToolTipPtr
+WidgetFactory< ContainerWidgetType >::createToolTip( const typename WidgetToolTip::Seed & cs )
+{
+	return WidgetCreator< WidgetToolTip >::create( this, cs );
 }
 
 // end namespace SmartWin

@@ -183,7 +183,7 @@ private:
 	TaskQueue tasks;
 	StringMap ucLineParams;
 
-	void handleSized(const SmartWin::WidgetSizedEventResult& sz);
+	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
