@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@ void __stl_debug_terminate() {
 	*x = 0;
 }
 #endif
+
+namespace dcpp {
 
 void startup(void (*f)(void*, const string&), void* p) {
 	// "Dedicated to the near-memory of Nev. Let's start remembering people while they're still alive."
@@ -124,3 +126,5 @@ void shutdown() {
 	::WSACleanup();
 #endif
 }
+
+} // namespace dcpp

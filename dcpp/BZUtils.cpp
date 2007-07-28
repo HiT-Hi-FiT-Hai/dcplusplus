@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include "BZUtils.h"
 #include "Exception.h"
 #include "ResourceManager.h"
+
+namespace dcpp {
 
 BZFilter::BZFilter() {
 	memset(&zs, 0, sizeof(zs));
@@ -99,3 +101,5 @@ bool UnBZFilter::operator()(const void* in, size_t& insize, void* out, size_t& o
 	insize = insize - zs.avail_in;
 	return err == BZ_OK;
 }
+
+} // namespace dcpp

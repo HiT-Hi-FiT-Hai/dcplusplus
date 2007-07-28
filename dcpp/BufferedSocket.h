@@ -27,6 +27,8 @@
 #include "Util.h"
 #include "Socket.h"
 
+namespace dcpp {
+
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Thread
 {
 public:
@@ -151,5 +153,7 @@ private:
 	void shutdown();
 	void addTask(Tasks task, TaskData* data) { tasks.push_back(make_pair(task, data)); taskSem.signal(); }
 };
+
+} // namespace dcpp
 
 #endif // !defined(BUFFERED_SOCKET_H)

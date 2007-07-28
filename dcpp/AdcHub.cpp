@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 #include "CryptoManager.h"
 #include "ResourceManager.h"
 #include "LogManager.h"
+
+namespace dcpp {
 
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
 const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
@@ -650,3 +652,5 @@ void AdcHub::on(Second, uint32_t aTick) throw() {
 		send("\n", 1);
 	}
 }
+
+} // namespace dcpp

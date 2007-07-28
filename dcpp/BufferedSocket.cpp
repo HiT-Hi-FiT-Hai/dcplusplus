@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "SSLSocket.h"
 #include "CryptoManager.h"
 #include "ZUtils.h"
+
+namespace dcpp {
 
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
@@ -487,3 +489,5 @@ void BufferedSocket::shutdown() {
 		delete this;
 	}
 }
+
+} // namespace dcpp

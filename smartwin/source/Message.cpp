@@ -32,109 +32,69 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-Message::Message( UINT msg )
-	: Handle( 0 ),
-	Msg( msg ),
-	WParam( 0 ),
-	LParam( 0 )
+Message::Message( UINT msg_ )
+	: msg( msg_ ),
+	param( 0 )
 {
+	
 }
-Message::Message( UINT msg, LPARAM extraCode )
-	: Handle( 0 ),
-	Msg( msg ),
-	WParam( 0 ),
-	LParam( 0 )
+
+Message::Message( UINT msg_, LPARAM extraCode )
+	: msg(msg_),
+	param( 0 )
 {
 	switch ( msg )
 	{
-	case WM_NOTIFY :
-		LParam = extraCode;
-		break;
 	case WM_SYSCOMMAND :
 	case WM_COMMAND :
 	case WM_TIMER:
-		WParam = extraCode;
+	case WM_NOTIFY :
+		param = extraCode;
 		break;
 	}
 }
 
-Message::Message( HANDLE handle, UINT msg, WPARAM wPar, LPARAM lPar, bool forceValues )
-	: Handle( handle ),
-	Msg( msg ),
-	WParam( wPar ),
-	LParam( lPar )
+Message::Message(const MSG& msg_ )
+	: msg(msg_.message),
+	param( 0 )
 {
-	if ( forceValues )
-		return; // We don't manipulate to get the code or anything here...
 	switch ( msg )
 	{
 	case WM_NOTIFY :
 		{
-			NMHDR * ptrOriginal = reinterpret_cast< NMHDR * >( lPar );
-			LParam = ptrOriginal->code;
+			NMHDR * ptrOriginal = reinterpret_cast< NMHDR * >( msg_.lParam );
+			param = ptrOriginal->code;
 		} break;
 	case WM_SYSCOMMAND :
+	case WM_TIMER:
 		{
 			// Checking to see if this is from a menu
-			WParam = wPar;
+			param = msg_.wParam;
 		} break;
 	case WM_COMMAND :
 		{
 			// Checking to see if this is from a menu
-			if ( lPar == 0 )
-				WParam = static_cast< WPARAM >( LOWORD( wPar ) );
+			if ( msg_.lParam == 0 )
+				param = static_cast< WPARAM >( LOWORD( msg_.wParam ) );
 			else
-				WParam = static_cast< WPARAM >( HIWORD( wPar ) );
+				param = static_cast< WPARAM >( HIWORD( msg_.wParam ) );
 		} break;
 	}
 }
 
 bool operator <( const Message & left, const Message & right )
 {
-	if ( left.Msg > right.Msg )
-		return false;
-	else if ( left.Msg < right.Msg )
+	if ( left.msg < right.msg )
 		return true;
 
-	// MESSAGES are EQUAL!
-
-	switch ( left.Msg )
-	{
-	case WM_SYSCOMMAND :
-	case WM_COMMAND :
-	case WM_TIMER:
-		if ( left.WParam < right.WParam )
-			return true;
-		break;
-	case WM_NOTIFY :
-		if ( left.LParam < right.LParam )
-			return true;
-		break;
+	if(left.msg == right.msg && left.param < right.param) {
+		return true;
 	}
 	return false;
 }
 
-bool operator == ( const Message & left, const Message & right )
-{
-	if ( left.Msg == right.Msg )
-	{
-		switch ( left.Msg )
-		{
-		case WM_SYSCOMMAND :
-		case WM_COMMAND :
-		case WM_TIMER:
-			if ( left.WParam == right.WParam )
-				return true;
-			break;
-		case WM_NOTIFY :
-			if ( left.LParam == right.LParam )
-				return true;
-			break;
-		default:
-			return true;
-		}
-	}
-	return false;
+bool operator == ( const Message & left, const Message & right ) {
+	return left.msg == right.msg && left.param == right.param;
 }
 
 // end namespace SmartWin

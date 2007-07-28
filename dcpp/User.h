@@ -26,6 +26,8 @@
 #include "CriticalSection.h"
 #include "Flags.h"
 
+namespace dcpp {
+
 /** A user connected to one or more hubs. */
 class User : public FastAlloc<User>, public PointerBase, public Flags
 {
@@ -170,5 +172,7 @@ private:
 
 	Client& client;
 };
+
+} // namespace dcpp
 
 #endif // !defined(USER_H)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "StringTokenizer.h"
 #include "SimpleXML.h"
 #include "UserCommand.h"
+
+namespace dcpp {
 
 FavoriteManager::FavoriteManager() : lastId(0), useHttp(false), running(false), c(NULL), lastServer(0), listType(TYPE_NORMAL), dontSave(false) {
 	SettingsManager::getInstance()->addListener(this);
@@ -744,3 +746,5 @@ void FavoriteManager::on(UserConnected, const User::Ptr& user) throw() {
 	if(isFav)
 		fire(FavoriteManagerListener::StatusChanged(), user);
 }
+
+} // namespace dcpp

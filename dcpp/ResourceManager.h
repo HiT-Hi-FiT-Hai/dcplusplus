@@ -21,6 +21,8 @@
 
 #include "Singleton.h"
 
+namespace dcpp {
+
 #define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
 #define CSTRING(x) ResourceManager::getInstance()->getString(ResourceManager::x).c_str()
 #define WSTRING(x) ResourceManager::getInstance()->getStringW(ResourceManager::x)
@@ -86,5 +88,7 @@ private:
 
 	void createWide();
 };
+
+} // namespace dcpp
 
 #endif // !defined(RESOURCE_MANAGER_H)

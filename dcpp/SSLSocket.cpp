@@ -25,6 +25,8 @@
 
 #include <openssl/err.h>
 
+namespace dcpp {
+
 SSLSocket::SSLSocket(SSL_CTX* context) throw(SocketException) : ctx(context), ssl(0) {
 
 }
@@ -150,3 +152,5 @@ void SSLSocket::close() throw() {
 	Socket::shutdown();
 	Socket::close();
 }
+
+} // namespace dcpp

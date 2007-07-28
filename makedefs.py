@@ -27,6 +27,7 @@ def convert():
 	names = "";
 	
 	prolog = "";
+	epilog = "";
 	
 	example = '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n';
 	example += '<Language Name="Example Language" Native="English" Code="en" Author="arnetheduck" Version=' + version + ' Revision="1" RightToLeft="0">\n'
@@ -46,6 +47,8 @@ def convert():
 	        varname = x[11:].strip();
 	    elif x.startswith("// @Prolog: "):
 	        prolog += x[12:];
+	    elif x.startswith("// @Epilog: "):
+	        epilog += x[12:];
 	    elif len(x) >= 5:
 	        match = lre.match(x);
 	        if match is not None:
@@ -58,7 +61,7 @@ def convert():
 	example += '\t</Strings>\n';
 	example += '</Language>\n';
 	
-	file('dcpp/StringDefs.cpp', 'w').write(prolog + varstr + " = {\n" + strings + "};\n" + varname + " = {\n" + names + "};\n");
+	file('dcpp/StringDefs.cpp', 'w').write(prolog + varstr + " = {\n" + strings + "};\n" + varname + " = {\n" + names + "};\n" + epilog);
 	file('Example.xml', 'w').write(example);
 
 if __name__ == "__main__":

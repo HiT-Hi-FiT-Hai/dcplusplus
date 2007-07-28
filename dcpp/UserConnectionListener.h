@@ -23,6 +23,8 @@
 
 #include "AdcCommand.h"
 
+namespace dcpp {
+
 class UserConnectionListener {
 public:
 	virtual ~UserConnectionListener() { }
@@ -79,5 +81,7 @@ public:
 	virtual void on(AdcCommand::RES, UserConnection*, const AdcCommand&) throw() { }
 	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw() { }
 };
+
+} // namespace dcpp
 
 #endif /*USERCONNECTIONLISTENER_H_*/

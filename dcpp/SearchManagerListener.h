@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
 #if !defined(SEARCH_MANAGER_LISTENER_H)
 #define SEARCH_MANAGER_LISTENER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+namespace dcpp {
 
 class SearchResult;
 
@@ -33,5 +31,7 @@ public:
 	typedef X<0> SR;
 	virtual void on(SR, SearchResult*) throw() = 0;
 };
+
+} // namespace dcpp
 
 #endif // !defined(SEARCH_MANAGER_LISTENER_H)

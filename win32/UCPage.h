@@ -21,8 +21,7 @@
 
 #include "PropPage.h"
 #include "WidgetFactory.h"
-
-class UserCommand;
+#include <dcpp/UserCommand.h>
 
 class UCPage : public PropPage
 {

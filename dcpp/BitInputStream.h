@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,10 @@
 #if !defined(BIT_INPUT_STREAM_H)
 #define BIT_INPUT_STREAM_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "Exception.h"
 #include "ResourceManager.h"
+
+namespace dcpp {
 
 STANDARD_EXCEPTION(BitStreamException);
 
@@ -64,5 +62,7 @@ private:
 	size_t endPos;
 	const uint8_t* is;
 };
+
+} // namespace dcpp
 
 #endif // !defined(BIT_INPUT_STREAM_H)

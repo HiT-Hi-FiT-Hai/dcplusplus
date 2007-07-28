@@ -22,6 +22,8 @@
 #include "Util.h"
 #include "Flags.h"
 
+namespace dcpp {
+
 class UserCommand : public Flags {
 public:
 	typedef vector<UserCommand> List;
@@ -69,5 +71,7 @@ public:
 	GETSET(string, command, Command);
 	GETSET(string, hub, Hub);
 };
+
+} // namespace dcpp
 
 #endif // !defined(DCPLUSPLUS_CLIENT_USER_COMMAND_H)

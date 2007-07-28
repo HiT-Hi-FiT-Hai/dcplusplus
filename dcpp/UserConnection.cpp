@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
 #include "Transfer.h"
+
+namespace dcpp {
 
 const string UserConnection::FEATURE_GET_ZBLOCK = "GetZBlock";
 const string UserConnection::FEATURE_MINISLOTS = "MiniSlots";
@@ -187,3 +189,5 @@ void UserConnection::on(Failed, const string& aLine) throw() {
 
 	delete this;
 }
+
+} // namespace dcpp

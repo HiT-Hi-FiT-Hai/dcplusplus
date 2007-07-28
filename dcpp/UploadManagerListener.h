@@ -3,6 +3,8 @@
 
 #include "forward.h"
 
+namespace dcpp {
+
 class UploadManagerListener {
 public:
 	virtual ~UploadManagerListener() { }
@@ -23,5 +25,7 @@ public:
 	virtual void on(WaitingRemoveUser, const UserPtr) throw() { }
 
 };
+
+} // namespace dcpp
 
 #endif /*UPLOADMANAGERLISTENER_H_*/

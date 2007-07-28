@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,15 @@
 #if !defined(QUEUE_ITEM_H)
 #define QUEUE_ITEM_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-class QueueManager;
-class Download;
-
 #include "User.h"
 #include "FastAlloc.h"
 #include "MerkleTree.h"
 #include "Flags.h"
+
+namespace dcpp {
+
+class QueueManager;
+class Download;
 
 class QueueItem : public Flags, public FastAlloc<QueueItem> {
 public:
@@ -204,5 +202,7 @@ private:
 	void addSource(const User::Ptr& aUser);
 	void removeSource(const User::Ptr& aUser, int reason);
 };
+
+} // namespace dcpp
 
 #endif // !defined(QUEUE_ITEM_H)

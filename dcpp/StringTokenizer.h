@@ -19,9 +19,7 @@
 #ifndef DCPLUSPLUS_CLIENT_STRING_TOKENIZER_H
 #define DCPLUSPLUS_CLIENT_STRING_TOKENIZER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+namespace dcpp {
 
 template<class T>
 class StringTokenizer
@@ -56,5 +54,7 @@ public:
 
 	~StringTokenizer() { }
 };
+
+} // namespace dcpp
 
 #endif // !defined(STRING_TOKENIZER_H)

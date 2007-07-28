@@ -21,6 +21,8 @@
 
 #include "forward.h"
 
+namespace dcpp {
+
 /**
  * Use this listener interface to get progress information for downloads.
  *
@@ -70,5 +72,7 @@ public:
 	 */
 	virtual void on(Failed, Download*, const string&) throw() { }
 };
+
+} // namespace dcpp
 
 #endif /*DOWNLOADMANAGERLISTENER_H_*/

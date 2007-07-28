@@ -3,6 +3,8 @@
 
 #include "forward.h"
 
+namespace dcpp {
+
 class ClientListener
 {
 public:
@@ -21,7 +23,7 @@ public:
 	typedef X<11> Message;
 	typedef X<12> StatusMessage;
 	typedef X<13> PrivateMessage;
-	typedef X<14> UserCommand;
+	typedef X<14> HubUserCommand;
 	typedef X<15> HubFull;
 	typedef X<16> NickTaken;
 	typedef X<17> SearchFlood;
@@ -40,7 +42,7 @@ public:
 	virtual void on(Message, Client*, const OnlineUser&, const string&) throw() { }
 	virtual void on(StatusMessage, Client*, const string&) throw() { }
 	virtual void on(PrivateMessage, Client*, const OnlineUser&, const OnlineUser&, const OnlineUser&, const string&) throw() { }
-	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw() { }
+	virtual void on(HubUserCommand, Client*, int, int, const string&, const string&) throw() { }
 	virtual void on(HubFull, Client*) throw() { }
 	virtual void on(NickTaken, Client*) throw() { }
 	virtual void on(SearchFlood, Client*, const string&) throw() { }
@@ -48,5 +50,6 @@ public:
 	virtual void on(AdcSearch, Client*, const AdcCommand&, const CID&) throw() { }
 };
 
+} // namespace dcpp
 
 #endif /*CLIENTLISTENER_H_*/

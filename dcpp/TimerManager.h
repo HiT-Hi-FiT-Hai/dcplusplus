@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@
 #if !defined(TIMER_MANAGER_H)
 #define TIMER_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "Thread.h"
 #include "Semaphore.h"
 #include "Speaker.h"
@@ -31,6 +27,8 @@
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
+
+namespace dcpp {
 
 class TimerManagerListener {
 public:
@@ -83,5 +81,7 @@ private:
 
 #define GET_TICK() TimerManager::getTick()
 #define GET_TIME() TimerManager::getTime()
+
+} // namespace dcpp
 
 #endif // !defined(TIMER_MANAGER_H)

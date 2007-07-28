@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,8 @@
 #include <fnmatch.h>
 #endif
 
+namespace dcpp {
+
 namespace {
 	const string TEMP_EXTENSION = ".dctmp";
 
@@ -63,7 +65,7 @@ const string& QueueItem::getTempTarget() {
 	if(!isSet(QueueItem::FLAG_USER_LIST) && tempTarget.empty()) {
 		if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(getTarget()) == -1)) {
 #ifdef _WIN32
-			::StringMap sm;
+			dcpp::StringMap sm;
 			if(target.length() >= 3 && target[1] == ':' && target[2] == '\\')
 				sm["targetdrive"] = target.substr(0, 3);
 			else
@@ -1314,3 +1316,5 @@ void QueueItem::removeSource(const User::Ptr& aUser, int reason) {
 	badSources.push_back(*i);
 	sources.erase(i);
 }
+
+} // namespace dcpp

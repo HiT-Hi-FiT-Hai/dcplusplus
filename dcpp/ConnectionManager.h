@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@
 #if !defined(CONNECTION_MANAGER_H)
 #define CONNECTION_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "TimerManager.h"
 
 #include "UserConnection.h"
@@ -32,6 +28,8 @@
 #include "Util.h"
 
 #include "ConnectionManagerListener.h"
+
+namespace dcpp {
 
 class SocketException;
 
@@ -195,5 +193,7 @@ private:
 	virtual void on(TimerManagerListener::Minute, uint32_t aTick) throw();
 
 };
+
+} // namespace dcpp
 
 #endif // !defined(CONNECTION_MANAGER_H)

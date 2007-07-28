@@ -17,7 +17,6 @@
  */
 
 #include "stdafx.h"
-#include <dcpp/DCPlusPlus.h>
 #include "resource.h"
 
 #include "FinishedULFrame.h"

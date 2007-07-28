@@ -26,6 +26,8 @@
 #include "Download.h"
 #include "Upload.h"
 
+namespace dcpp {
+
 FinishedManager::~FinishedManager() throw() {
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
@@ -91,3 +93,5 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 		fire(FinishedManagerListener::Added(), true, item);
 	}
 }
+
+} // namespace dcpp

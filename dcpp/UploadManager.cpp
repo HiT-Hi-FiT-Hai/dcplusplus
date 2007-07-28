@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@
 #include "UserConnection.h"
 
 #include <functional>
+
+namespace dcpp {
 
 static const string UPLOAD_AREA = "Uploads";
 
@@ -500,3 +502,5 @@ void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr&
 		clearUserFiles(aUser);
 	}
 }
+
+} // namespace dcpp

@@ -21,6 +21,8 @@
 
 #include "forward.h"
 
+namespace dcpp {
+
 class QueueManagerListener {
 public:
 	virtual ~QueueManagerListener() { }
@@ -44,5 +46,7 @@ public:
 	virtual void on(SearchStringUpdated, QueueItem*) throw() { }
 	virtual void on(PartialList, const UserPtr&, const string&) throw() { }
 };
+
+} // namespace dcpp
 
 #endif // !defined(QUEUE_MANAGER_LISTENER_H)

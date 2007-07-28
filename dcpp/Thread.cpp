@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 
 #include "ResourceManager.h"
 
+namespace dcpp {
+
 #ifndef _WIN32
 pthread_mutex_t Thread::mtx = PTHREAD_MUTEX_INITIALIZER;
 #endif
@@ -43,3 +45,5 @@ void Thread::start() throw(ThreadException) {
 	}
 }
 #endif
+
+} // namespace dcpp

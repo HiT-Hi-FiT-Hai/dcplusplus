@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,10 @@
 #if !defined(FILTERED_FILE_H)
 #define FILTERED_FILE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "Streams.h"
 #include "Util.h"
+
+namespace dcpp {
 
 template<bool managed>
 class CountOutputStream : public OutputStream {
@@ -207,5 +205,7 @@ private:
 	size_t valid;
 	bool more;
 };
+
+} // namespace dcpp
 
 #endif // !defined(FILTERED_FILE_H)

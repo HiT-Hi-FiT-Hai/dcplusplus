@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,13 @@
 #if !defined(CLIENT_H)
 #define CLIENT_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #include "User.h"
 #include "BufferedSocket.h"
 #include "SettingsManager.h"
 #include "TimerManager.h"
 #include "ClientListener.h"
+
+namespace dcpp {
 
 /** Yes, this should probably be called a Hub */
 class Client : public Speaker<ClientListener>, public BufferedSocketListener, protected TimerManagerListener {
@@ -172,5 +170,7 @@ private:
 	bool secure;
 	CountType countType;
 };
+
+} // namespace dcpp
 
 #endif // !defined(CLIENT_H)

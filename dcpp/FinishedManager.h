@@ -26,6 +26,8 @@
 #include "Singleton.h"
 #include "FinishedManagerListener.h"
 
+namespace dcpp {
+
 class FinishedItem
 {
 public:
@@ -76,5 +78,7 @@ private:
 	CriticalSection cs;
 	FinishedItemList downloads, uploads;
 };
+
+} // namespace dcpp
 
 #endif // !defined(DCPLUSPLUS_CLIENT_FINISHED_MANAGER_H)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #define DCPLUSPLUS_CLIENT_FAVORITEMANAGERLISTENER_H_
 
 #include "forward.h"
+
+namespace dcpp {
 
 class FavoriteManagerListener {
 public:
@@ -46,5 +48,7 @@ public:
 	virtual void on(StatusChanged, const UserPtr&) throw() { }
 	virtual void on(LoadedFromCache, const string&) throw() { }
 };
+
+} // namespace dcpp
 
 #endif 

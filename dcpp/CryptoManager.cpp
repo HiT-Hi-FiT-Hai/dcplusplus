@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 #else
 #include <bzlib.h>
 #endif
+
+namespace dcpp {
 
 CryptoManager::CryptoManager()
 :
@@ -328,3 +330,4 @@ string CryptoManager::makeKey(const string& aLock) {
 	return keySubst(temp, aLock.length(), extra);
 }
 
+} // namespace dcpp

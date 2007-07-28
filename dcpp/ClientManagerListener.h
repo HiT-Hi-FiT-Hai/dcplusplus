@@ -21,6 +21,8 @@
 
 #include "forward.h"
 
+namespace dcpp {
+
 class ClientManagerListener {
 public:
 	virtual ~ClientManagerListener() { }
@@ -44,5 +46,7 @@ public:
 	virtual void on(ClientUpdated, Client*) throw() { }
 	virtual void on(ClientDisconnected, Client*) throw() { }
 };
+
+} // namespace dcpp
 
 #endif // !defined(CLIENT_MANAGER_LISTENER_H)

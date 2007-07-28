@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@
 #if !defined(NMDC_HUB_H)
 #define NMDC_HUB_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "TimerManager.h"
 #include "SettingsManager.h"
 
@@ -30,6 +26,8 @@
 #include "CriticalSection.h"
 #include "Text.h"
 #include "Client.h"
+
+namespace dcpp {
 
 class ClientManager;
 
@@ -120,5 +118,7 @@ private:
 	virtual void on(Failed, const string&) throw();
 
 };
+
+} // namespace dcpp
 
 #endif // !defined(NMDC_HUB_H)

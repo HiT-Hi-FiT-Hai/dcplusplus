@@ -18,7 +18,6 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include <dcpp/DCPlusPlus.h>
 #include <dcpp/Client.h>
 #include "ADLSearchFrame.h"
 #include "ADLSProperties.h"

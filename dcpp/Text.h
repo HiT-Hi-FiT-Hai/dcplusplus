@@ -19,6 +19,8 @@
 #ifndef DCPLUSPLUS_CLIENT_TEXT_H
 #define DCPLUSPLUS_CLIENT_TEXT_H
 
+namespace dcpp {
+
 /**
  * Text handling routines for DC++. DC++ internally uses UTF-8 for
  * (almost) all string:s, hence all foreign text must be converted
@@ -131,5 +133,7 @@ namespace Text {
 	
 	string toDOS(string tmp);
 }
+
+} // namespace dcpp
 
 #endif

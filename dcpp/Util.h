@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@
 #if !defined(UTIL_H)
 #define UTIL_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #ifndef _WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -31,6 +27,8 @@
 #endif
 
 #include "Text.h"
+
+namespace dcpp {
 
 template<typename T, bool flag> struct ReferenceSelector {
 	typedef T ResultType;
@@ -523,5 +521,7 @@ struct noCaseStringLess {
 		return Util::stricmp(a, b) < 0;
 	}
 };
+
+} // namespace dcpp
 
 #endif // !defined(UTIL_H)

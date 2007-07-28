@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,11 @@
 #if !defined(MERKLE_TREE_H)
 #define MERKLE_TREE_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "TigerHash.h"
 #include "Encoder.h"
 #include "HashValue.h"
+
+namespace dcpp {
 
 /**
  * A class that represents a Merkle Tree hash. Storing
@@ -225,5 +223,7 @@ struct TTFilter {
 private:
 	TigerTree tt;
 };
+
+} // namespace dcpp
 
 #endif // !defined(MERKLE_TREE_H)

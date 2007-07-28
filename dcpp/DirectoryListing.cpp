@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@
 #ifdef ff
 #undef ff
 #endif
+
+namespace dcpp {
 
 User::Ptr DirectoryListing::getUserFromFilename(const string& fileName) {
 	// General file list name format: [username].[CID].[xml|xml.bz2|DcLst]
@@ -82,7 +84,7 @@ void DirectoryListing::loadFile(const string& name) throw(Exception) {
 	string ext = Util::getFileExt(name);
 
 	if(Util::stricmp(ext, ".bz2") == 0) {
-		::File ff(name, ::File::READ, ::File::OPEN);
+		dcpp::File ff(name, dcpp::File::READ, dcpp::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
 		AutoArray<char> buf(BUF_SIZE);
@@ -99,12 +101,12 @@ void DirectoryListing::loadFile(const string& name) throw(Exception) {
 				break;
 		}
 	} else if(Util::stricmp(ext, ".xml") == 0) {
-		int64_t sz = ::File::getSize(name);
+		int64_t sz = dcpp::File::getSize(name);
 		if(sz == -1 || sz >= static_cast<int64_t>(txt.max_size()))
 			throw(FileException(CSTRING(FILE_NOT_AVAILABLE)));
 		txt.resize((size_t) sz);
 		size_t n = txt.length();
-		::File(name, ::File::READ, ::File::OPEN).read(&txt[0], n);
+		dcpp::File(name, dcpp::File::READ, dcpp::File::OPEN).read(&txt[0], n);
 	}
 
 	loadXML(txt, false);
@@ -356,3 +358,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 	}
 	return x;
 }
+
+} // namespace dcpp

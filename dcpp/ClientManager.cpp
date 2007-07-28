@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 
 #include "AdcHub.h"
 #include "NmdcHub.h"
+
+namespace dcpp {
 
 Client* ClientManager::getClient(const string& aHubURL) {
 	Client* c;
@@ -394,7 +396,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	}
 }
 
-void ClientManager::userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility) {
+void ClientManager::userCommand(const User::Ptr& p, const UserCommand& uc, StringMap& params, bool compatibility) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(p->getCID());
 	if(i == onlineUsers.end())
@@ -489,12 +491,12 @@ void ClientManager::on(Failed, Client* client, const string&) throw() {
 	fire(ClientManagerListener::ClientDisconnected(), client);
 }
 
-void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
+void ClientManager::on(HubUserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
- 		if(aType == ::UserCommand::TYPE_CLEAR) {
+ 		if(aType == UserCommand::TYPE_CLEAR) {
  			FavoriteManager::getInstance()->removeHubUserCommands(ctx, client->getHubUrl());
  		} else {
- 			FavoriteManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getHubUrl());
+ 			FavoriteManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getHubUrl());
  		}
 	}
 }
@@ -519,3 +521,5 @@ void ClientManager::updateCachedIp() {
 	if(clients.size() > 0)
 		cachedIp = (*clients.begin())->getLocalIp();
 }
+
+} // namespace dcpp

@@ -17,7 +17,6 @@
  */
 
 #include "stdafx.h"
-#include <dcpp/DCPlusPlus.h>
 
 #include "MainWindow.h"
 #include "resource.h"

@@ -30,6 +30,8 @@
 #include "AdcCommand.h"
 #include "MerkleTree.h"
 
+namespace dcpp {
+
 class UserConnection : public Speaker<UserConnectionListener>,
 	private BufferedSocketListener, public Flags, private CommandHandler<UserConnection>
 {
@@ -216,5 +218,7 @@ private:
 	virtual void on(TransmitDone) throw();
 	virtual void on(Failed, const string&) throw();
 };
+
+} // namespace dcpp
 
 #endif // !defined(USER_CONNECTION_H)

@@ -19,6 +19,8 @@
 #ifndef DCPLUSPLUS_CLIENT_BUFFEREDSOCKETLISTENER_H_
 #define DCPLUSPLUS_CLIENT_BUFFEREDSOCKETLISTENER_H_
 
+namespace dcpp {
+
 class BufferedSocketListener {
 public:
 	virtual ~BufferedSocketListener() { }
@@ -42,5 +44,7 @@ public:
 	virtual void on(TransmitDone) throw() { }
 	virtual void on(Failed, const string&) throw() { }
 };
+
+} // namespace dcpp
 
 #endif /*BUFFEREDSOCKETLISTENER_H_*/

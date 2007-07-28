@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_STDAFX_H
 
 #include <dcpp/stdinc.h>
+#include <dcpp/DCPlusPlus.h>
 
 #include <SmartWin.h>
 #include <shlwapi.h>
@@ -37,4 +38,7 @@ enum {
 #include <HtmlHelp.h>
 
 #endif
+
+using namespace dcpp;
+
 #endif

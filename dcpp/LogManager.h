@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,12 @@
 #if !defined(LOG_MANAGER_H)
 #define LOG_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "File.h"
 #include "CriticalSection.h"
 #include "Singleton.h"
 #include "TimerManager.h"
+
+namespace dcpp {
 
 class LogManagerListener {
 public:
@@ -119,5 +117,7 @@ private:
 };
 
 #define LOG(area, msg) LogManager::getInstance()->log(area, msg)
+
+} // namespace dcpp
 
 #endif // !defined(LOG_MANAGER_H)

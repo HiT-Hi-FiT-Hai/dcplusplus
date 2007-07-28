@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #include "FavoriteManager.h"
 #include "TimerManager.h"
 #include "ResourceManager.h"
+
+namespace dcpp {
 
 Client::Counts Client::counts;
 
@@ -187,3 +189,5 @@ void Client::on(Second, uint32_t aTick) throw() {
 		connect();
 	}
 }
+
+} // namespace dcpp

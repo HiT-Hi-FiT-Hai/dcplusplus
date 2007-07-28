@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "SettingsManager.h"
 #include "ResourceManager.h"
 #include "TimerManager.h"
+
+namespace dcpp {
 
 string Socket::udpServer;
 uint16_t Socket::udpPort;
@@ -626,3 +628,5 @@ void Socket::disconnect() throw() {
 	shutdown();
 	close();
 }
+
+} // namespace dcpp

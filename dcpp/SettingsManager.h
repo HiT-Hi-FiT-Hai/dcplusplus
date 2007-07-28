@@ -23,6 +23,8 @@
 #include "Speaker.h"
 #include "Singleton.h"
 
+namespace dcpp {
+
 class SimpleXML;
 
 class SettingsManagerListener {
@@ -200,5 +202,7 @@ private:
 // Shorthand accessor macros
 #define SETTING(k) (SettingsManager::getInstance()->get(SettingsManager::k, true))
 #define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
+
+} // namespace dcpp
 
 #endif // !defined(SETTINGS_MANAGER_H)

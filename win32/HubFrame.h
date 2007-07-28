@@ -227,7 +227,7 @@ private:
 	void removeFavoriteHub();
 	bool historyActive();
 	
-	void runUserCommand(const ::UserCommand& uc);
+	void runUserCommand(const UserCommand& uc);
 
 	bool handleMessageChar(int c);
 	bool handleMessageKeyDown(int c);

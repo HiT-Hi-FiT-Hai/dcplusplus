@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,9 @@
 #if !defined(BLOOM_FILTER_H)
 #define BLOOM_FILTER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "ZUtils.h"
+
+namespace dcpp {
 
 struct CRC32Hash {
 	size_t operator()(const void* buf, size_t len) { f(buf, len); return f.getValue(); }
@@ -89,5 +87,7 @@ private:
 
 	vector<bool> table;
 };
+
+} // namespace dcpp
 
 #endif // !defined(BLOOM_FILTER_H)

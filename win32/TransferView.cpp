@@ -18,7 +18,6 @@
 
  
 #include "stdafx.h"
-#include <dcpp/DCPlusPlus.h>
 
 #include "TransferView.h"
 #include "resource.h"

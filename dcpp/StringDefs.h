@@ -1,8 +1,10 @@
 // @Prolog: #include "stdinc.h"
 // @Prolog: #include "DCPlusPlus.h"
 // @Prolog: #include "ResourceManager.h"
+// @Prolog: namespace dcpp {
 // @Strings: string ResourceManager::strings[]
 // @Names: string ResourceManager::names[]
+// @Epilog: } // namespace dcpp
 
 enum Strings { // @DontAdd
 	ACTIVE, // "Active"

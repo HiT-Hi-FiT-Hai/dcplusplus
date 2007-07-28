@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "DCPlusPlus.h"
 
 #include "File.h"
+
+namespace dcpp {
 
 #ifdef _WIN32
 File::File(const string& aFileName, int access, int mode) throw(FileException) {
@@ -435,3 +437,5 @@ StringList File::findFiles(const string& path, const string& pattern) {
 
 	return ret;
 }
+
+} // namespace dcpp

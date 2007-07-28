@@ -24,6 +24,8 @@
 #include "UserConnection.h"
 #include "QueueItem.h"
 
+namespace dcpp {
+
 Download::Download(UserConnection& conn) throw() : Transfer(conn), file(0),
 crcCalc(NULL), treeValid(false) {
 	conn.setDownload(this);
@@ -76,3 +78,4 @@ void Download::getParams(const UserConnection& aSource, StringMap& params) {
 	params["sfv"] = Util::toString(isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
 }
 
+} // namespace dcpp

@@ -25,6 +25,8 @@
 
 #include "Pointer.h"
 
+namespace dcpp {
+
 class AdcCommand;
 
 class BufferedSocket;
@@ -91,5 +93,7 @@ class UserCommand;
 class UserConnection;
 typedef UserConnection* UserConnectionPtr;
 typedef std::vector<UserConnectionPtr> UserConnectionList;
+
+} // namespace dcpp
 
 #endif /*DCPLUSPLUS_CLIENT_FORWARD_H_*/

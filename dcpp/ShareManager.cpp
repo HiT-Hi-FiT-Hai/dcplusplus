@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@
 #endif
 
 #include <limits>
+
+namespace dcpp {
 
 ShareManager::ShareManager() : hits(0), xmlListLen(0), bzXmlListLen(0), 
 	xmlDirty(true), refreshDirs(false), update(false), initial(true), listN(0), refreshing(0), 
@@ -357,7 +359,7 @@ bool ShareManager::loadCache() throw() {
 	try {
 		ShareLoader loader(directories);
 		string txt;
-		::File ff(Util::getConfigPath() + "files.xml.bz2", ::File::READ, ::File::OPEN);
+		dcpp::File ff(Util::getConfigPath() + "files.xml.bz2", dcpp::File::READ, dcpp::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
 		AutoArray<char> buf(BUF_SIZE);
@@ -1386,3 +1388,5 @@ void ShareManager::on(TimerManagerListener::Minute, uint32_t tick) throw() {
 		}
 	}
 }
+
+} // namespace dcpp

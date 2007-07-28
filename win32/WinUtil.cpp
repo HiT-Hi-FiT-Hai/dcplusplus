@@ -18,7 +18,6 @@
 
 
 #include "stdafx.h"
-#include <dcpp/DCPlusPlus.h>
 
 #include "WinUtil.h"
 #include "resource.h"

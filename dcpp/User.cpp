@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 #include "Client.h"
 #include "StringTokenizer.h"
 #include "FavoriteUser.h"
+
+namespace dcpp {
 
 OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, uint32_t sid_) : identity(ptr, sid_), client(client_) {
 
@@ -95,3 +97,5 @@ void FavoriteUser::update(const OnlineUser& info) {
 	setNick(info.getIdentity().getNick());
 	setUrl(info.getClient().getHubUrl());
 }
+
+} // namespace dcpp

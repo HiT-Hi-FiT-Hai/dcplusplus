@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@
 #if !defined(CLIENT_MANAGER_H)
 #define CLIENT_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "TimerManager.h"
 
 #include "Client.h"
@@ -31,6 +27,8 @@
 #include "User.h"
 
 #include "ClientManagerListener.h"
+
+namespace dcpp {
 
 class UserCommand;
 
@@ -84,7 +82,7 @@ public:
 	void send(AdcCommand& c, const CID& to);
 	void privateMessage(const User::Ptr& p, const string& msg);
 
-	void userCommand(const User::Ptr& p, const ::UserCommand& uc, StringMap& params, bool compatibility);
+	void userCommand(const User::Ptr& p, const UserCommand& uc, StringMap& params, bool compatibility);
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 
@@ -147,12 +145,14 @@ private:
 	virtual void on(UsersUpdated, Client* c, const User::List&) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
-	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
+	virtual void on(HubUserCommand, Client*, int, int, const string&, const string&) throw();
 	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize,
 		int aFileType, const string& aString) throw();
 	virtual void on(AdcSearch, Client* c, const AdcCommand& adc, const CID& from) throw();
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, uint32_t aTick) throw();
 };
+
+} // namespace dcpp
 
 #endif // !defined(CLIENT_MANAGER_H)

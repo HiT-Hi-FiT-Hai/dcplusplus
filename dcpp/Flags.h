@@ -1,6 +1,8 @@
 #ifndef DCPLUSPLUS_CLIENT_FLAGS_H_
 #define DCPLUSPLUS_CLIENT_FLAGS_H_
 
+namespace dcpp {
+
 class Flags {
 	public:
 		typedef int MaskType;
@@ -17,5 +19,6 @@ class Flags {
 		MaskType flags;
 };
 
+} // namespace dcpp
 
 #endif /*FLAGS_H_*/

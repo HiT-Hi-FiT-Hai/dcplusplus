@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 #ifndef _WIN32
 #include <sys/mman.h> // mmap, munmap, madvise
 #endif
+
+namespace dcpp {
 
 #define HASH_FILE_VERSION_STRING "2"
 static const uint32_t HASH_FILE_VERSION=2;
@@ -780,3 +782,5 @@ int HashManager::Hasher::run() {
 	}
 	return 0;
 }
+
+} // namespace dcpp

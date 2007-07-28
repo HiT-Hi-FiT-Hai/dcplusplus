@@ -8,6 +8,8 @@
 #include "FilteredFile.h"
 #include "Flags.h"
 
+namespace dcpp {
+
 /**
  * Comes as an argument in the DownloadManagerListener functions.
  * Use it to retrieve information about the ongoing transfer.
@@ -69,5 +71,6 @@ private:
 	string pfs;
 };
 
+} // namespace dcpp
 
 #endif /*DOWNLOAD_H_*/

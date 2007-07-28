@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@
 #if !defined(CRYPTO_MANAGER_H)
 #define CRYPTO_MANAGER_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "SettingsManager.h"
 
 #include "Exception.h"
@@ -30,6 +26,8 @@
 #include "FastAlloc.h"
 #include "version.h"
 #include "SSLSocket.h"
+
+namespace dcpp {
 
 STANDARD_EXCEPTION(CryptoException);
 
@@ -76,5 +74,7 @@ private:
 		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);
 	}
 };
+
+} // namespace dcpp
 
 #endif // !defined(CRYPTO_MANAGER_H)

@@ -30,6 +30,8 @@
 #include "TimerManager.h"
 #include "Speaker.h"
 
+namespace dcpp {
+
 class UploadManager : private ClientManagerListener, private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
 public:
@@ -114,5 +116,7 @@ private:
 
 	bool prepareFile(UserConnection& aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
 };
+
+} // namespace dcpp
 
 #endif // !defined(UPLOAD_MANAGER_H)

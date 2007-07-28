@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #include "Socket.h"
 #include "UserCommand.h"
 #include "StringTokenizer.h"
+
+namespace dcpp {
 
 NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|', false), supportFlags(0),
 	lastUpdate(0)
@@ -488,7 +490,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		i = j+1;
  		if(type == UserCommand::TYPE_SEPARATOR || type == UserCommand::TYPE_CLEAR) {
 			int ctx = Util::toInt(param.substr(i));
-			fire(ClientListener::UserCommand(), this, type, ctx, Util::emptyString, Util::emptyString);
+			fire(ClientListener::HubUserCommand(), this, type, ctx, Util::emptyString, Util::emptyString);
 		} else if(type == UserCommand::TYPE_RAW || type == UserCommand::TYPE_RAW_ONCE) {
 			j = param.find(' ', i);
 			if(j == string::npos)
@@ -501,7 +503,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			string name = unescape(param.substr(i, j-i));
 			i = j+1;
 			string command = unescape(param.substr(i, param.length() - i));
-			fire(ClientListener::UserCommand(), this, type, ctx, name, command);
+			fire(ClientListener::HubUserCommand(), this, type, ctx, name, command);
 		}
 	} else if(cmd == "$Lock") {
 		if(state != STATE_PROTOCOL) {
@@ -916,3 +918,5 @@ void NmdcHub::on(Second, uint32_t aTick) throw() {
 		send("|", 1);
 	}
 }
+
+} // namespace dcpp

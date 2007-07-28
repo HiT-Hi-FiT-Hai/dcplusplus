@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,9 @@
 #if !defined(CRITICAL_SECTION_H)
 #define CRITICAL_SECTION_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "Thread.h"
+
+namespace dcpp {
 
 class CriticalSection
 {
@@ -119,5 +117,7 @@ private:
 };
 typedef LockBase<CriticalSection> Lock;
 typedef LockBase<FastCriticalSection> FastLock;
+
+} // namespace dcpp
 
 #endif // !defined(CRITICAL_SECTION_H)

@@ -25,6 +25,8 @@
 #include "ResourceManager.h"
 #include "ClientManager.h"
 
+namespace dcpp {
+
 const string Transfer::TYPE_FILE = "file";
 const string Transfer::TYPE_LIST = "list";
 const string Transfer::TYPE_TTHL = "tthl";
@@ -84,3 +86,4 @@ User::Ptr Transfer::getUser() {
 	return getUserConnection().getUser();
 }
 
+} // namespace dcpp

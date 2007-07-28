@@ -6,6 +6,8 @@
 #include "TimerManager.h"
 #include "Util.h"
 
+namespace dcpp {
+
 class Transfer {
 public:
 	static const string TYPE_FILE;		///< File transfer
@@ -79,5 +81,7 @@ private:
 
 	UserConnection& userConnection;
 };
+
+} // namespace dcpp
 
 #endif /*TRANSFER_H_*/

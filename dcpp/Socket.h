@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,6 @@
 
 #if !defined(SOCKET_H)
 #define SOCKET_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include "Util.h"
 #include "Exception.h"
@@ -47,6 +43,8 @@ typedef int socket_t;
 const int INVALID_SOCKET = -1;
 #define SOCKET_ERROR -1
 #endif
+
+namespace dcpp {
 
 class SocketException : public Exception {
 public:
@@ -247,5 +245,7 @@ private:
 #endif
 
 };
+
+} // namespace dcpp
 
 #endif // !defined(SOCKET_H)

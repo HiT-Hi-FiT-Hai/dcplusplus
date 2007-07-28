@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 
 #include "SettingsManager.h"
 #include "version.h"
+
+namespace dcpp {
 
 /**
  * Downloads a file and returns it as a string
@@ -158,3 +160,5 @@ void HttpConnection::on(BufferedSocketListener::ModeChange) throw() {
 void HttpConnection::on(BufferedSocketListener::Data, uint8_t* aBuf, size_t aLen) throw() {
 	fire(HttpConnectionListener::Data(), this, aBuf, aLen);
 }
+
+} // namespace dcpp

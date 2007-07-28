@@ -31,6 +31,8 @@
 #include "ClientManager.h"
 #include "FavoriteManagerListener.h"
 
+namespace dcpp {
+
 class HubEntry {
 public:
 	typedef vector<HubEntry> List;
@@ -236,5 +238,7 @@ private:
 
 	string getConfigFile() { return Util::getConfigPath() + "Favorites.xml"; }
 };
+
+} // namespace dcpp
 
 #endif // !defined(FAVORITE_MANAGER_H)

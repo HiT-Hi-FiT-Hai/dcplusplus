@@ -17,7 +17,6 @@
  */
 
 #include "stdafx.h"
-#include <dcpp/DCPlusPlus.h>
 
 #include "DirectoryListingFrame.h"
 #include "LineDlg.h"
@@ -27,9 +26,9 @@
 
 #include <dcpp/ResourceManager.h>
 #include <dcpp/ADLSearch.h>
-#include <dcpp/QueueManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/File.h>
+#include <dcpp/QueueManager.h>
 #include <dcpp/StringSearch.h>
 
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };

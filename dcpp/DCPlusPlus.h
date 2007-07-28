@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,6 @@
 
 #if !defined(DC_PLUS_PLUS_H)
 #define DC_PLUS_PLUS_H
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -76,6 +72,8 @@ _CrtDbgBreak(); } } while(false)
 #ifdef max
 #undef max
 #endif
+
+namespace dcpp {
 
 typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
@@ -160,5 +158,7 @@ typedef StringMapIter TStringMapIter;
 
 extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
+
+} // namespace dcpp
 
 #endif // !defined(DC_PLUS_PLUS_H)

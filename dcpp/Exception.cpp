@@ -21,6 +21,10 @@
 
 #include "Exception.h"
 
+namespace dcpp {
+
+} // namespace dcpp
+
 /**
  * @file
  * $Id: Exception.cpp,v 1.9 2005/04/24 08:13:11 arnetheduck Exp $

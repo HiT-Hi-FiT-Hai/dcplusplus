@@ -30,6 +30,8 @@
 #include "Speaker.h"
 #include "File.h"
 
+namespace dcpp {
+
 /**
  * Singleton. Use its listener interface to update the download list
  * in the user interface.
@@ -115,5 +117,7 @@ private:
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
 };
+
+} // namespace dcpp
 
 #endif // !defined(DOWNLOAD_MANAGER_H)

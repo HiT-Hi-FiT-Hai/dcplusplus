@@ -21,6 +21,8 @@
 
 #include "forward.h"
 
+namespace dcpp {
+
 class FinishedManagerListener {
 public:
 	virtual ~FinishedManagerListener() { }
@@ -34,5 +36,7 @@ public:
 	virtual void on(Removed, bool, FinishedItemPtr) throw() { }
 	virtual void on(RemovedAll, bool) throw() { }
 };
+
+} // namespace dcpp
 
 #endif // !defined(DCPLUSPLUS_CLIENT_FINISHED_MANAGER_LISTENER_H)

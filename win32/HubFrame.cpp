@@ -17,7 +17,6 @@
  */
 
 #include "stdafx.h"
-#include <dcpp/DCPlusPlus.h>
 
 #include "HubFrame.h"
 #include "PrivateFrame.h"
@@ -1217,7 +1216,7 @@ HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 #ifdef PORT_ME
 		tabMenuShown = false;
 #endif
-		prepareMenu(menu, ::UserCommand::CONTEXT_CHAT, client->getHubUrl());
+		prepareMenu(menu, UserCommand::CONTEXT_CHAT, client->getHubUrl());
 		
 		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
@@ -1355,7 +1354,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };		// location of mouse click
 	tabMenuShown = true;
-	prepareMenu(tabMenu, ::UserCommand::CONTEXT_HUB, client->getHubUrl());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_HUB, client->getHubUrl());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -1366,7 +1365,7 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 }
 #endif
 
-void HubFrame::runUserCommand(const ::UserCommand& uc) {
+void HubFrame::runUserCommand(const UserCommand& uc) {
 	if(!WinUtil::getUCParams(this, uc, ucLineParams))
 		return;
 

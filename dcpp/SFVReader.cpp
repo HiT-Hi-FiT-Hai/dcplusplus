@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include <dirent.h>
 #include <fnmatch.h>
 #endif
+
+namespace dcpp {
 
 bool SFVReader::tryFile(const string& sfvFile, const string& fileName) throw(FileException) {
 
@@ -65,3 +67,5 @@ void SFVReader::load(const string& fileName) throw() {
 		}
 	}
 }
+
+} // namespace dcpp

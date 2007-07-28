@@ -40,6 +40,8 @@
 #undef ff
 #endif
 
+namespace dcpp {
+
 static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
@@ -825,3 +827,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);
 }
+
+} // namespace dcpp
