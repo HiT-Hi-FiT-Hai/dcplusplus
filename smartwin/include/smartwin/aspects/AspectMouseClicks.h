@@ -29,8 +29,6 @@
 #ifndef AspectMouseClicks_h
 #define AspectMouseClicks_h
 
-#include "../SignalParams.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -93,9 +91,9 @@ class AspectMouseClicks
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(MouseEventResult( params.Msg.WParam, params.Msg.LParam ));
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(MouseEventResult( msg.wParam, msg.lParam ));
+			return true;
 		}
 
 		F f;

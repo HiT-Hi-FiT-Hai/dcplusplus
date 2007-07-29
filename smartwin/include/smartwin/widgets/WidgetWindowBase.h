@@ -109,15 +109,14 @@ class WidgetWindowBase :
 		
 		CloseDispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 			bool destroy = f();
 
 			if ( destroy ) {
-				params.RunDefaultHandling = true;
-				return TRUE;
+				return false;
 			}
 
-			return FALSE;
+			return true;
 		}
 
 		F f;
@@ -130,11 +129,11 @@ class WidgetWindowBase :
 		
 		TimerDispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 			bool keep = f();
 			
 			if(!keep) {
-				::KillTimer(reinterpret_cast<HWND>(params.Msg.Handle), params.Msg.WParam);
+				::KillTimer(msg.hwnd, msg.wParam);
 				// TODO remove from message map as well...
 			}
 			return FALSE;

@@ -1241,7 +1241,7 @@ inline void WidgetDataGrid::setReadOnly( bool value )
 
 inline void WidgetDataGrid::setBackgroundColor( COLORREF bgColor )
 {
-	ListView_SetBkColor( this->Widget::handle(), bgColor );
+	ListView_SetBkColor( this->handle(), bgColor );
 }
 
 
@@ -1301,21 +1301,21 @@ inline unsigned WidgetDataGrid::getRowNumberFromLParam( unsigned lParam )
 inline void WidgetDataGrid::setNormalImageList( ImageListPtr imageList )
 {
 	  itsNormalImageList = imageList;
-	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_NORMAL );
+	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_NORMAL );
 }
 
 
 inline void WidgetDataGrid::setSmallImageList( ImageListPtr imageList )
 {
 	  itsSmallImageList = imageList;
-	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_SMALL );
+	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_SMALL );
 }
 
 
 inline void WidgetDataGrid::setStateImageList( ImageListPtr imageList )
 {
 	  itsStateImageList = imageList;
-	  ListView_SetImageList( this->Widget::handle(), imageList->getImageList(), LVSIL_STATE );
+	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_STATE );
 }
 
 
@@ -1327,17 +1327,17 @@ inline void WidgetDataGrid::setView( int view )
 		throw x;
 	}
 	//little hack because there is no way to do this with Widget::addRemoveStyle
-	int newStyle = GetWindowLong( this->Widget::handle(), GWL_STYLE );
+	int newStyle = GetWindowLong( this->handle(), GWL_STYLE );
 	if ( ( newStyle & LVS_TYPEMASK ) != view )
 	{
-		SetWindowLong( this->Widget::handle(), GWL_STYLE, ( newStyle & ~LVS_TYPEMASK ) | view );
+		SetWindowLong( this->handle(), GWL_STYLE, ( newStyle & ~LVS_TYPEMASK ) | view );
 	}
 }
 
 
 inline void WidgetDataGrid::redrawItems( int firstRow, int lastRow )
 {
-	if( ListView_RedrawItems( this->Widget::handle(), firstRow, lastRow ) == FALSE )
+	if( ListView_RedrawItems( this->handle(), firstRow, lastRow ) == FALSE )
 	{
 		throw xCeption( _T( "Error while redrawing items in ListView" ) );
 	}

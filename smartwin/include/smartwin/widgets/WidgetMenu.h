@@ -32,7 +32,7 @@
 #include "../Application.h"
 #include "../BasicTypes.h"
 #include "../aspects/AspectGetParent.h"
-#include "../aspects/AspectVoidVoidDispatcher.h"
+#include "../Dispatchers.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -294,15 +294,15 @@ public:
 
 		IdDispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(LOWORD(params.Msg.WParam ));
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(LOWORD(msg.wParam));
+			return true;
 		}
 
 		F f;
 	};
 	
-	typedef AspectVoidVoidDispatcher SimpleDispatcher;
+	typedef Dispatchers::VoidVoid<> SimpleDispatcher;
 
 	/// Class type
 	typedef WidgetMenu ThisType;

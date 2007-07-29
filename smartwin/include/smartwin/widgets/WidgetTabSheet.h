@@ -90,9 +90,10 @@ class WidgetTabSheet :
 
 		ChangingDispatcher(const F& f_, WidgetTabSheet* widget_) : f(f_), widget(widget_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 			unsigned param = TabCtrl_GetCurSel( widget->handle() );
-			return f(param) ? FALSE : TRUE; /// @todo should this really be the inverse?
+			ret = f(param) ? FALSE : TRUE;
+			return true;
 		}
 
 		F f;
@@ -105,10 +106,10 @@ class WidgetTabSheet :
 
 		ChangedDispatcher(const F& f_, WidgetTabSheet* widget_) : f(f_), widget(widget_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 			unsigned param = TabCtrl_GetCurSel( widget->handle() );
 			f(param);
-			return 0;
+			return true;
 		}
 
 		F f;

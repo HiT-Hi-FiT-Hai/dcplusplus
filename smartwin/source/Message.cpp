@@ -82,19 +82,19 @@ Message::Message(const MSG& msg_ )
 	}
 }
 
-bool operator <( const Message & left, const Message & right )
+bool Message::operator <( const Message & right ) const
 {
-	if ( left.msg < right.msg )
+	if ( msg < right.msg )
 		return true;
 
-	if(left.msg == right.msg && left.param < right.param) {
+	if(msg == right.msg && param < right.param) {
 		return true;
 	}
 	return false;
 }
 
-bool operator == ( const Message & left, const Message & right ) {
-	return left.msg == right.msg && left.param == right.param;
+bool Message::operator == ( const Message & right ) const {
+	return msg == right.msg && param == right.param;
 }
 
 // end namespace SmartWin

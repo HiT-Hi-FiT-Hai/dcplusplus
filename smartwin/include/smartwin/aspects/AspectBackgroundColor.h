@@ -29,7 +29,6 @@
 #ifndef AspectBackgroundColor_h
 #define AspectBackgroundColor_h
 
-#include "../SignalParams.h"
 #include "../CanvasClasses.h"
 
 namespace SmartWin
@@ -50,11 +49,12 @@ class AspectBackgroundColor
 		
 		Dispatcher(const F& f_, WidgetType* widget_) : f(f_), widget(widget_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( msg.wParam ) );
 
 			BrushPtr retBrush = f(canvas);
-			return retBrush ? reinterpret_cast< HRESULT >( retBrush->getBrushHandle() ) : 0;
+			ret = retBrush ? reinterpret_cast< HRESULT >( retBrush->getBrushHandle() ) : 0;
+			return true;
 		}
 
 		F f;

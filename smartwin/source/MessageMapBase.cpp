@@ -28,6 +28,7 @@
 */
 
 #include "../include/smartwin/MessageMapBase.h"
+
 namespace SmartWin {
 
 GlobalAtom MessageMapBase::propAtom(_T("SmartWin::MessageMapBase*"));
@@ -42,16 +43,12 @@ void MessageMapBase::setCallback( const Message& msg, const CallbackType& callba
 	}
 }
 
-bool MessageMapBase::tryFire( const Message & msg, HRESULT & retVal ) {
+bool MessageMapBase::tryFire( const MSG & msg, LRESULT & retVal ) {
 	// First we must create a "comparable" message...
-	Message msgComparer( msg.Handle, msg.Msg, msg.WParam, msg.LParam, false );
+	Message msgComparer( msg );
 	CallbackCollectionType::iterator i = itsCallbacks.find(msgComparer);
 	if(i != itsCallbacks.end()) {
-		private_::SignalContent params( msg );
-		retVal = i->second( params );
-		if ( params.RunDefaultHandling )
-			return false;
-		return true;
+		return i->second( msg, retVal );
 	}
 	return false;
 }

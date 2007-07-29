@@ -29,8 +29,6 @@
 #ifndef AspectEnabled_h
 #define AspectEnabled_h
 
-#include "../SignalParams.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -54,9 +52,9 @@ class AspectEnabled
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(params.Msg.WParam > 0);
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(msg.wParam > 0);
+			return true;
 		}
 
 		F f;

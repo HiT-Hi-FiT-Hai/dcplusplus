@@ -30,8 +30,8 @@ class WidgetToolTip :
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			LPNMTTDISPINFO ttdi = reinterpret_cast< LPNMTTDISPINFO >( params.Msg.LParam );
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			LPNMTTDISPINFO ttdi = reinterpret_cast< LPNMTTDISPINFO >( msg.lParam );
 			ttdi->lpszText = const_cast<LPTSTR>(f().c_str());
 			return 0;
 		}

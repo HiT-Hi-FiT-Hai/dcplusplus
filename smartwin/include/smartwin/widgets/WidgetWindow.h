@@ -30,7 +30,6 @@
 #define WidgetWindow_h
 
 #include "../BasicTypes.h"
-#include "../SignalParams.h"
 #include "../aspects/AspectThreads.h"
 #include "../WindowClass.h"
 #include "WidgetWindowBase.h"
@@ -63,13 +62,13 @@ class WidgetWindow
 
 		CreateDispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 
-			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( params.Msg.LParam );
+			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( msg.lParam );
 
 			f(*cs);
 			
-			return 0;
+			return false;
 		}
 
 		F f;

@@ -29,7 +29,6 @@
 #ifndef AspectSizable_h
 #define AspectSizable_h
 
-#include "../SignalParams.h"
 #include "../Place.h"
 #include "../xCeption.h"
 
@@ -94,9 +93,8 @@ class AspectSizable
 
 		SizeDispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			params.RunDefaultHandling = !f(WidgetSizedEventResult( params.Msg.WParam, params.Msg.LParam ));
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			return f(WidgetSizedEventResult( msg.wParam, msg.lParam ));
 		}
 
 		F f;
@@ -107,9 +105,9 @@ class AspectSizable
 
 		MoveDispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(Point( GET_X_LPARAM( params.Msg.LParam ), GET_Y_LPARAM( params.Msg.LParam ) ));
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(Point( GET_X_LPARAM( msg.lParam ), GET_Y_LPARAM( msg.lParam ) ));
+			return true;
 		}
 
 		F f;
@@ -173,7 +171,7 @@ public:
 	  * The Widgets are sized and placed according to the current cell, from left to
 	  * right until a row is full, and then continues with the next row.
 	  */
-	void setSizeAsGridPerPlace( SmartWin::Place & bound, int rows, int cols );
+	void setSizeAsGridPerPlace( Place & bound, int rows, int cols );
 
 	/// Given a bounding Place class, place this Widget and adjust to the next position.
 	/** This function places the Widget into the bounding rectangle specified by bound. <br>
@@ -182,7 +180,7 @@ public:
 	  * a row is full, and then continues with the next row. <br>
 	  * The internal position of bound is updated. <br>
 	  */
-	void setPositionPerPlace( SmartWin::Place & bound );
+	void setPositionPerPlace( Place & bound );
 
 	/// Place after sizing for the Widget's text, and adjust to the next position.
 	/** This function places the Widget into the bounding rectangle specified by
@@ -195,7 +193,7 @@ public:
 	  * then continues with the next row. <br>
 	  * The internal position of bound is updated.
 	  */
-	void setSizePerTextPerPlace( SmartWin::Place & bound, const SmartUtil::tstring & text,
+	void setSizePerTextPerPlace( Place & bound, const SmartUtil::tstring & text,
 								 int extraX = 0, int extraY = 0 );
 
 	/// Returns the screen size.
@@ -374,9 +372,9 @@ void AspectSizable< WidgetType >::setSizeAsRow( const Rectangle & rect, int cols
 }
 
 template< class WidgetType >
-void AspectSizable< WidgetType >::setSizeAsGridPerPlace( SmartWin::Place & bound, int rows, int cols )
+void AspectSizable< WidgetType >::setSizeAsGridPerPlace( Place & bound, int rows, int cols )
 {
-	SmartWin::Rectangle posSize;
+	Rectangle posSize;
 	bound.sizeOfCell( rows, cols, posSize.size ); // Calculate the desired size.
 	bound.positionToRight( posSize ); // pos_size.pos= Current place position,
 													// and update Place's position
@@ -384,9 +382,9 @@ void AspectSizable< WidgetType >::setSizeAsGridPerPlace( SmartWin::Place & bound
 }
 
 template< class WidgetType >
-void AspectSizable< WidgetType >::setPositionPerPlace( SmartWin::Place & bound )
+void AspectSizable< WidgetType >::setPositionPerPlace( Place & bound )
 {
-	SmartWin::Rectangle posSize( getSize() ); // Get the current size
+	Rectangle posSize( getSize() ); // Get the current size
 	bound.positionToRight( posSize ); // pos_size.pos= Current place position,
 											// and update Place's position
 	setBounds( posSize ); // Reposition with the same size.
@@ -394,7 +392,7 @@ void AspectSizable< WidgetType >::setPositionPerPlace( SmartWin::Place & bound )
 
 template< class WidgetType >
 void AspectSizable< WidgetType >
-::setSizePerTextPerPlace( SmartWin::Place & bound, const SmartUtil::tstring & text,
+::setSizePerTextPerPlace( Place & bound, const SmartUtil::tstring & text,
 						  int extraX, int extraY )
 {
 	Point textSize = getTextSize( text );
@@ -402,7 +400,7 @@ void AspectSizable< WidgetType >
 	textSize.y += extraY;
 
 	// Now Place the Widget according to the calculated size
-	SmartWin::Rectangle posSize( textSize ); // Use the  for text.
+	Rectangle posSize( textSize ); // Use the  for text.
 	bound.positionToRight( posSize ); // pos_size.pos = Current place position,
 											// and update Place's position
 	setBounds( posSize ); // Reposition with the calculated size.

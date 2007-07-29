@@ -29,8 +29,7 @@
 #ifndef AspectScrollable_h
 #define AspectScrollable_h
 
-#include "AspectVoidVoidDispatcher.h"
-#include "../SignalParams.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
@@ -44,7 +43,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectScrollable
 {
-	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	/// \ingroup EventHandlersAspectScrollable
 	/// Setting the event handler for the "scrolling horizontally" event

@@ -30,7 +30,6 @@
 #define AspectFileFilter_h
 
 #include <vector>
-#include "../SignalParams.h"
 #include "SmartUtil.h"
 #include "../xCeption.h"
 #include "../WindowsHeaders.h"

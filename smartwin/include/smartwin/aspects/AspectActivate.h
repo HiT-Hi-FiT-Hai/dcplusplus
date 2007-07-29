@@ -29,8 +29,6 @@
 #ifndef AspectActivate_h
 #define AspectActivate_h
 
-#include "../SignalParams.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -49,9 +47,9 @@ class AspectActivate
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(LOWORD( params.Msg.WParam ) == WA_ACTIVE || LOWORD( params.Msg.WParam ) == WA_CLICKACTIVE);
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(LOWORD( msg.wParam ) == WA_ACTIVE || LOWORD( msg.wParam ) == WA_CLICKACTIVE);
+			return true;
 		}
 
 		F f;

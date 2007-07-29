@@ -48,10 +48,9 @@ public:
 		// potential callbacks will die along with the child when the time comes
 		HWND handler = getHandler(hwnd, uMsg, wParam, lParam);
 		
-		Message msgObj( hwnd, uMsg, wParam, lParam, true );
+		MSG msg = { hwnd, uMsg, wParam, lParam };
 		
 		// Try to get the this pointer
-		/// @todo Maybe cast this to the actual widget type?
 		MessageMapBase* map = MessageMapBase::fromProp(handler);
 		
 		if(!map) {
@@ -73,9 +72,9 @@ public:
 			return Policy::returnDestroyed(hwnd, uMsg, wParam, lParam);
 		}
 
-		HRESULT hres = 0;
-		if(map->tryFire(msgObj, hres)) {
-			return Policy::returnHandled(hres, hwnd, uMsg, wParam, lParam);
+		LRESULT res = 0;
+		if(map->tryFire(msg, res)) {
+			return Policy::returnHandled(res, hwnd, uMsg, wParam, lParam);
 		}
 		
 		if(handler != hwnd) {

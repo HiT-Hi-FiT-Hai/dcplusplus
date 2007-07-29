@@ -78,7 +78,7 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, con
 	} else {
 		DirectoryListingFrame* frame = new DirectoryListingFrame(mdiParent, aUser, aSpeed);
 #ifdef PORT_ME
-		if(BOOLSETTING(POPUNDER_FILELIST)) {
+		if() {
 			WinUtil::hiddenCreateEx(frame);
 		} else {
 			frame->CreateEx(WinUtil::mdiClient);
@@ -101,19 +101,12 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, con
 		i->second->loadXML(txt);
 	} else {
 		DirectoryListingFrame* frame = new DirectoryListingFrame(mdiParent, aUser, aSpeed);
-#ifdef PORT_ME
-		if(BOOLSETTING(POPUNDER_FILELIST)) {
-			WinUtil::hiddenCreateEx(frame);
-		} else {
-			frame->CreateEx(WinUtil::mdiClient);
-		}
-#endif
 		frame->loadXML(txt);
 	}
 }
 
 DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	BaseType(mdiParent),
+	BaseType(mdiParent, !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
 	paned(0),

@@ -1,13 +1,13 @@
 #ifndef ASPECTCOMMAND_
 #define ASPECTCOMMAND_
 
-#include "AspectVoidVoidDispatcher.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin {
 
 template<typename WidgetType>
 class AspectCommand {
-	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	void onCommand(const Dispatcher::F& f, unsigned id) {
 		static_cast<WidgetType*>(this)->setCallback(

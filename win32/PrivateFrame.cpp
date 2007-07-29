@@ -88,7 +88,7 @@ void PrivateFrame::closeAllOffline() {
 }
 
 PrivateFrame::PrivateFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo_) : 
-	BaseType(mdiParent),
+	BaseType(mdiParent, !BOOLSETTING(POPUNDER_PM)),
 	chat(0),
 	message(0),
 	replyTo(replyTo_)
@@ -157,14 +157,6 @@ void PrivateFrame::addChat(const tstring& aLine) {
 		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
 		chat->replaceSelection(_T(""));
 	}
-#ifdef PORT_ME
-	if(!created) {
-		if(BOOLSETTING(POPUNDER_PM))
-			WinUtil::hiddenCreateEx(this);
-		else
-			CreateEx(WinUtil::mdiClient);
-	}
-#endif
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);

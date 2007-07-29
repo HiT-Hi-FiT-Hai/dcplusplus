@@ -29,8 +29,6 @@
 #ifndef AspectSelection_h
 #define AspectSelection_h
 
-#include "../SignalParams.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -50,11 +48,11 @@ class AspectSelection
 		
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			if ( !WidgetType::isValidSelectionChanged( params.Msg.LParam ) )
-				return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			if ( !WidgetType::isValidSelectionChanged( msg.lParam ) )
+				return false;
 			f();
-			return 0;
+			return true;
 		}
 
 		F f;

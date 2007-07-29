@@ -29,8 +29,7 @@
 #ifndef AspectClickable_h
 #define AspectClickable_h
 
-#include "AspectVoidVoidDispatcher.h"
-#include "../SignalParams.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
@@ -45,7 +44,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectClickable
 {
-	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef Dispatchers::VoidVoid<> Dispatcher;
 
 public:
 	/// \ingroup EventHandlersAspectClickable

@@ -29,7 +29,7 @@
 #ifndef AspectPainting_h
 #define AspectPainting_h
 
-#include "../SignalParams.h"
+#include "../Widget.h"
 #include "../CanvasClasses.h"
 
 namespace SmartWin
@@ -47,13 +47,13 @@ class AspectPainting
 	struct Dispatcher {
 		typedef std::tr1::function<void (Canvas&)> F;
 		
-		Dispatcher(const F& f_, SmartWin::Widget* widget_) : f(f_), widget(widget_) { }
+		Dispatcher(const F& f_, Widget* widget_) : f(f_), widget(widget_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 			PaintCanvas canvas( widget->handle() );
 
 			f(canvas);
-			return 0;
+			return true;
 		}
 
 		F f;

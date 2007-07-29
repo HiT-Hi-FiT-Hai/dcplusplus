@@ -29,8 +29,7 @@
 #ifndef AspectRightClickable_h
 #define AspectRightClickable_h
 
-#include "AspectVoidVoidDispatcher.h"
-#include "../SignalParams.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
@@ -44,7 +43,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectRightClickable
 {
-	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	/// \ingroup EventHandlersAspectRightClickable
 	/// Setting the event handler for the "Right Clicked" event

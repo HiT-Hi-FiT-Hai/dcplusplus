@@ -30,7 +30,7 @@
 #define MessageMapBase_h
 
 #include "Atom.h"
-#include "SignalParams.h"
+#include "Message.h"
 #include "Widget.h"
 
 #include <functional>
@@ -48,7 +48,7 @@ public:
 	
 	void setProp() { ::SetProp(handle(), propAtom, reinterpret_cast<HANDLE>(this) ); }
 	
-	typedef std::tr1::function<LRESULT(private_::SignalContent&)> CallbackType;
+	typedef std::tr1::function<bool(const MSG& msg, LRESULT& ret)> CallbackType;
 	
 	// We only support one Callback per message, so a map is appropriate
 	typedef std::map<Message, CallbackType> CallbackCollectionType;
@@ -64,7 +64,7 @@ public:
 	}
 
 	// Returns true if fired, else false
-	virtual bool tryFire( const Message & msg, LRESULT & retVal );
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 		
 	/** This will be called when it's time to delete the widget */
 	virtual void kill() = 0;

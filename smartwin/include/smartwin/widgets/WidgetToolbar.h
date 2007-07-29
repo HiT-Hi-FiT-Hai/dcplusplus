@@ -77,8 +77,8 @@ class WidgetToolbar :
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(static_cast< unsigned >( params.Msg.WParam ));
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(static_cast< unsigned >( msg.wParam ));
 			return 0;
 		}
 

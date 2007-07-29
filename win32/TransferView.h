@@ -35,10 +35,6 @@
 
 #include "UserInfoBase.h"
 
-#ifdef PORT_ME
-#include "UCHandler.h"
-#endif
-
 class TransferView : 
 	public WidgetFactory<SmartWin::WidgetChildWindow>, 
 	private DownloadManagerListener, 
@@ -109,7 +105,6 @@ private:
 		void update(const UpdateInfo& ui);
 
 		void disconnect();
-		void removeAll();
 		void deleteSelf() { delete this; }
 
 		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
@@ -192,6 +187,8 @@ private:
 	void handleCopyNick();
 	void handleRemove();
 	void runUserCommand(const UserCommand& uc);
+	bool handleKeyDown(int c);
+	void handleDblClicked();
 
 	WidgetMenuPtr makeContextMenu(ItemInfo* ii);
 
@@ -218,64 +215,7 @@ private:
 	void onTransferComplete(Transfer* aTransfer, bool isUpload);
 
 #ifdef PORT_ME
-	typedef UserInfoBaseHandler<TransferView> uibBase;
-	typedef UCHandler<TransferView> ucBase;
-
-	BEGIN_MSG_MAP(TransferView)
-		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_GETDISPINFO, ctrlTransfers.onGetDispInfo)
-		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, ctrlTransfers.onColumnClick)
-		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
-		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
-		NOTIFY_HANDLER(IDC_TRANSFERS, NM_DBLCLK, onDoubleClickTransfers)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SIZE, onSize)
-		MESSAGE_HANDLER(WM_NOTIFYFORMAT, onNotifyFormat)
-		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
-		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
-		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
-		CHAIN_COMMANDS(ucBase)
-		CHAIN_COMMANDS(uibBase)
-	END_MSG_MAP()
-
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
-	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	LRESULT onKeyDownTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		if(kd->wVKey == VK_DELETE) {
-			ctrlTransfers.forEachSelected(&ItemInfo::disconnect);
-		}
-		return 0;
-	}
-
-	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlTransfers.forEachSelected(&ItemInfo::removeAll);
-		return 0;
-	}
-
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-
-	LRESULT onNotifyFormat(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-#ifdef _UNICODE
-		return NFR_UNICODE;
-#else
-		return NFR_ANSI;
-#endif
-	}
-
-	CMenu transferMenu;
-
-
 #endif
 };
 

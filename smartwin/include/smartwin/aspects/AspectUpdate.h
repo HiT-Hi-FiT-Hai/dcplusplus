@@ -29,8 +29,7 @@
 #ifndef AspectUpdate_h
 #define AspectUpdate_h
 
-#include "AspectVoidVoidDispatcher.h"
-#include "../SignalParams.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
@@ -47,7 +46,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectUpdate
 {
-	typedef AspectVoidVoidDispatcher Dispatcher;
+	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	/// \ingroup EventHandlersAspectUpdate
 	/// Sets the event handler for the Updated event.

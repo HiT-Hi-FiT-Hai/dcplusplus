@@ -29,8 +29,7 @@
 #ifndef AspectFocus_h
 #define AspectFocus_h
 
-#include "AspectVoidVoidDispatcher.h"
-#include "../SignalParams.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
@@ -47,22 +46,9 @@ namespace SmartWin
 template< class WidgetType >
 class AspectFocus
 {
-	struct FocusDispatcher
-	{
-		typedef std::tr1::function<void ()> F;
-		
-		FocusDispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f();
-			params.RunDefaultHandling = true; // WM_SETFOCUS Must dispatch to Windows Message Procedure in order to display caret
-			return 0;
-		}
-
-		F f;
-	};
-
-	typedef AspectVoidVoidDispatcher KillFocusDispatcher;
+	typedef Dispatchers::VoidVoid<0, false> FocusDispatcher;
+	typedef Dispatchers::VoidVoid<0, true> KillFocusDispatcher;
 
 public:
 	/// Gives the Widget the keyboard focus

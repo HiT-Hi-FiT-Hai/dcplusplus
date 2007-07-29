@@ -10,10 +10,11 @@ const WidgetMDIChild::Seed & WidgetMDIChild::getDefaultSeed()
 	if ( d_NeedsInit )
 	{
 		d_DefaultValues.exStyle = WS_EX_MDICHILD;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
+		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
 		d_DefaultValues.background = ( HBRUSH )( COLOR_WINDOW + 1 );
 		d_DefaultValues.icon = NULL;
 		d_DefaultValues.smallIcon = NULL;
+		d_DefaultValues.activate = true;
 		//TODO: initialize the values here
 		d_NeedsInit = false;
 	}
@@ -24,6 +25,8 @@ void WidgetMDIChild::createMDIChild( Seed cs )
 {
 	windowClass.reset(new WindowClass(WindowClass::getNewClassName(this), &ThisType::wndProc, NULL, cs.background, cs.icon, cs.smallIcon));
 	
+	getParent()->sendMessage(WM_SETREDRAW, FALSE);
+	HWND active = (HWND)(cs.activate ? NULL : getParent()->sendMessage(WM_MDIGETACTIVE));
 	HWND wnd = ::CreateMDIWindow( windowClass->getClassName(),
 		cs.caption.c_str(),
 		cs.style,
@@ -31,12 +34,42 @@ void WidgetMDIChild::createMDIChild( Seed cs )
 		getParent()->handle(),
 		Application::instance().getAppHandle(),
 		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
+	
+	if(active) {
+		getParent()->sendMessage(WM_MDIACTIVATE, (WPARAM)active);
+	}
+	
+	getParent()->sendMessage(WM_SETREDRAW, TRUE);
+	
 	if ( !wnd )
 	{
 		xCeption x( _T( "CreateWindowEx in WidgetMDIChild::createMDIChild fizzled..." ) );
 		throw x;
 	}
 	setHandle(wnd);
+}
+
+bool WidgetMDIChild::tryFire(const MSG& msg, LRESULT& retVal) {
+	// Prevent some flicker...
+    if(msg.message == WM_NCPAINT || msg.message == WM_SIZE)
+    {
+	    if(getParent()->isActiveMaximized()) {
+		    if(msg.message == WM_NCPAINT) // non client area
+		    return true;
+
+		    if(msg.message == WM_SIZE) // client area
+		    {
+			    if((msg.wParam == SIZE_MAXIMIZED || msg.wParam == SIZE_RESTORED) && getParent()->getActive() == handle()) // active and maximized
+			    	return BaseType::tryFire(msg, retVal);
+
+			    sendMessage(WM_SETREDRAW, FALSE);
+			    bool ret = BaseType::tryFire(msg, retVal);
+			    sendMessage(WM_SETREDRAW, TRUE);
+			    return ret;
+		    }
+	    }
+    }
+    return BaseType::tryFire(msg, retVal);
 }
 
 }

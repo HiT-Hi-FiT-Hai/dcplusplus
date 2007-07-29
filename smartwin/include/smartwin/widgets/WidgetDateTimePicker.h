@@ -83,9 +83,9 @@ class WidgetDateTimePicker :
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(reinterpret_cast< NMDATETIMECHANGE * >( params.Msg.LParam )->st);
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(reinterpret_cast< NMDATETIMECHANGE * >( msg.lParam )->st);
+			return true;
 		}
 
 		F f;

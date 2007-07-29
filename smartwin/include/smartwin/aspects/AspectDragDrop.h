@@ -31,7 +31,6 @@
 
 #ifndef WINCE // Not supported on WINCE platform
 
-#include "../SignalParams.h"
 #include <vector>
 #include <shellapi.h>
 
@@ -50,10 +49,10 @@ class AspectDragDrop
 
 		Dispatcher(const F& f_) : f(f_) { }
 		
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 			std::vector<SmartUtil::tstring> files;
 			Point pt;
-			HDROP handle = (HDROP)params.Msg.WParam;
+			HDROP handle = (HDROP)msg.wParam;
 			if (handle) { 
 				int iFiles = DragQueryFile(handle, (UINT)-1, NULL, 0);
 				TCHAR pFilename[MAX_PATH];
@@ -70,8 +69,7 @@ class AspectDragDrop
 			handle = 0;
 			f(files, pt);
 
-			params.RunDefaultHandling = true;
-			return 0;
+			return false;
 		}
 		
 		F f;

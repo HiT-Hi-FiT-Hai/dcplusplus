@@ -139,6 +139,12 @@ public:
 		return reinterpret_cast<HWND>(this->sendMessage(WM_MDIGETACTIVE));
 	}
 	
+	bool isActiveMaximized() {
+		BOOL max = FALSE;
+		this->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max));
+		return (max > 0);
+	}
+	
 	void setActive(SmartWin::Widget* widget) {
 		// TODO check that this is an instance of mdichild
 		this->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(widget->handle()));

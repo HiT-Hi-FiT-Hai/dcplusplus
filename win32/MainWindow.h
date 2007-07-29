@@ -167,7 +167,8 @@ private:
 	void startUPnP();
 	void stopUPnP();
 	void saveWindowSettings();
-
+	void resizeMDIClient();
+	
 	bool closing();
 	
 	static DWORD WINAPI stopper(void* p);

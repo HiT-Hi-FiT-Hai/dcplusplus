@@ -68,6 +68,9 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetMDIParent* 
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
 	
+	transfers->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
+	transfers->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
+	
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
@@ -126,9 +129,6 @@ HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		/// @todo Fix multiple selection menu...
 		int i = -1;
 		ItemInfo* ii = transfers->getSelectedItem();
-#ifdef PORT_ME
-		checkAdcItems(transferMenu);
-#endif
 		WidgetMenuPtr contextMenu = makeContextMenu(ii);
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
@@ -163,16 +163,19 @@ void TransferView::runUserCommand(const UserCommand& uc) {
 	}
 }
 
+bool TransferView::handleKeyDown(int c) {
+	if(c == VK_DELETE) {
+		transfers->forEachSelected(&ItemInfo::disconnect);
+	}
+	return true;
+}
+
 void TransferView::handleForce() {
 	int i = -1;
 	while( (i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
 		transfers->setCellText(i, COLUMN_STATUS, TSTRING(CONNECTING_FORCED));
 		ConnectionManager::getInstance()->force(transfers->getItemData(i)->user);
 	}
-}
-
-void TransferView::ItemInfo::removeAll() {
-	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 void TransferView::handleCopyNick() {
@@ -290,15 +293,14 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 		return CDRF_DODEFAULT;
 	}
 }
-
-LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-	if (item->iItem != -1 ) {
-		transfers->getItemData(item->iItem)->pm();
-	}
-	return 0;
-}
 #endif
+
+void TransferView::handleDblClicked() {
+	ItemInfo* ii = transfers->getSelectedItem();
+	if(ii) {
+		ii->pm(mdi);
+	}
+}
 
 int TransferView::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
 	if(BOOLSETTING(ALT_SORT_ORDER)) {

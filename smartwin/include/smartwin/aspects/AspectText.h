@@ -30,7 +30,6 @@
 #define AspectText_h
 
 #include "../../SmartUtil.h"
-#include "../SignalParams.h"
 
 namespace SmartWin
 {
@@ -51,10 +50,9 @@ class AspectText
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			f(SmartUtil::tstring( reinterpret_cast< TCHAR * >( params.Msg.LParam ) ));
-			params.RunDefaultHandling = true;
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			f(SmartUtil::tstring( reinterpret_cast< TCHAR * >( msg.lParam ) ));
+			return false;
 		}
 
 		F f;

@@ -82,6 +82,8 @@ public:
 	~Message()
 	{}
 
+	bool operator<(const Message& rhs) const;
+	bool operator==(const Message& rhs) const;
 private:
 	/// Contains the actual Message
 	UINT msg;
@@ -89,9 +91,6 @@ private:
 	/// Contains the param argument from the Message
 	LPARAM param;
 };
-
-bool operator <( const Message & left, const Message & right );
-bool operator == ( const Message & left, const Message & right );
 
 // end namespace SmartWin
 }

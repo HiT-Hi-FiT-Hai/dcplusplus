@@ -29,7 +29,6 @@
 #ifndef AspectFont_h
 #define AspectFont_h
 
-#include "../Widget.h"
 #include "../Font.h"
 
 namespace SmartWin
@@ -80,14 +79,14 @@ template< class WidgetType >
 void AspectFont< WidgetType >::setFont( const FontPtr& font_, bool forceUpdate )
 {
 	font = font_;
-	::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_SETFONT, reinterpret_cast< WPARAM >( font->getHandle() ), static_cast< LPARAM >( forceUpdate ) );
+	static_cast< WidgetType * >( this )->sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( font->getHandle() ), static_cast< LPARAM >( forceUpdate ) );
 }
 
 template< class WidgetType >
 const FontPtr& AspectFont< WidgetType >::getFont()
 {
 	if(!font) {
-		HFONT f = ( HFONT )::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_GETFONT, 0, 0 );
+		HFONT f = ( HFONT )static_cast< WidgetType * >( this )->sendMessage(WM_GETFONT);
 		font = FontPtr( new Font( f, false ) );
 	}
 	return font;
@@ -98,7 +97,7 @@ void AspectFont< WidgetType >::setFont( PredefinedFontTypes stockObjectFont, boo
 {
 	font = FontPtr();
 	HANDLE hFont = static_cast< HFONT >( ::GetStockObject( stockObjectFont ) );
-	::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_SETFONT, reinterpret_cast< WPARAM >( hFont ), static_cast< LPARAM >( forceUpdate ) );
+	static_cast< WidgetType * >( this )->sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( hFont ), static_cast< LPARAM >( forceUpdate ) );
 }
 
 // end namespace SmartWin

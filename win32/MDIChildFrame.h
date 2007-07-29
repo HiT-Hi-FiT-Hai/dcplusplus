@@ -39,7 +39,7 @@ public:
 	
 protected:
 
-	MDIChildFrame(SmartWin::WidgetMDIParent* mdiClient) : WidgetFactory< SmartWin::WidgetMDIChild >(mdiClient), lastFocus(NULL), reallyClose(false) {
+	MDIChildFrame(SmartWin::WidgetMDIParent* mdiClient, bool activate = true) : WidgetFactory< SmartWin::WidgetMDIChild >(mdiClient), lastFocus(NULL), reallyClose(false) {
 		typename ThisType::Seed cs;
 		BOOL max = FALSE;
 		if(!mdiClient->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
@@ -50,14 +50,15 @@ protected:
 		cs.style |= WS_CLIPCHILDREN;
 		
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
+		cs.activate = activate;
 		this->createMDIChild(cs);
+
+		MDITab::getInstance()->addTab(this);
 
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
 		onSized(std::tr1::bind(&ThisType::handleSized, this, _1));
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
-		
-		MDITab::getInstance()->addTab(this);
 	}
 	
 	virtual ~MDIChildFrame() {

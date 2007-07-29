@@ -29,8 +29,6 @@
 #ifndef AspectRaw_h
 #define AspectRaw_h
 
-#include "../SignalParams.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -49,12 +47,13 @@ template< class WidgetType >
 class AspectRaw
 {
 	struct Dispatcher {
-		typedef std::tr1::function<HRESULT (WPARAM, LPARAM)> F;
+		typedef std::tr1::function<LRESULT (WPARAM, LPARAM)> F;
 
 		Dispatcher(const F& f_) : f(f_) { }
 		
-		HRESULT operator()(private_::SignalContent& params) {
-			return f(params.Msg.WParam, params.Msg.LParam);
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			ret = f(msg.wParam, msg.lParam);
+			return true;
 		}
 		
 		F f;

@@ -29,7 +29,6 @@
 #ifndef AspectEraseBackground_h
 #define AspectEraseBackground_h
 
-#include "../SignalParams.h"
 #include "../CanvasClasses.h"
 
 namespace SmartWin
@@ -53,11 +52,12 @@ class AspectEraseBackground
 		
 		Dispatcher(const F& f_, WidgetType* widget_) : f(f_), widget(widget_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( params.Msg.WParam ) );
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( msg.wParam ) );
 
 			f(canvas);
-			return 1;
+			ret = 1;
+			return true;
 		}
 
 		F f;

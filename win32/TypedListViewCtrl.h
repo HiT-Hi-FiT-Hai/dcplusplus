@@ -177,8 +177,8 @@ private:
 		return (t->sortAscending ? result : -result);
 	}
 	
-	static HRESULT TypedListViewDispatcher(SmartWin::private_::SignalContent& params) {
-		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
+	static bool TypedListViewDispatcher(const MSG& msg, HRESULT& res) {
+		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( msg.lParam );
 		if(nm->item.mask & LVIF_TEXT) {
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
 			const string& text = content->getText(nm->item.iSubItem);
@@ -191,7 +191,7 @@ private:
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
 			nm->item.iImage = content->getImage();
 		}
-		return 0;
+		return true;
 	}
 	
 };

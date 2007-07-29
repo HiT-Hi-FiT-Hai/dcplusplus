@@ -65,8 +65,9 @@ class WidgetModalDialog :
 		
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			return f() ? TRUE : FALSE;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			ret = f() ? TRUE : FALSE;
+			return true;
 		}
 
 		F f;

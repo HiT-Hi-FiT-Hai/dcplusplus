@@ -112,9 +112,9 @@ protected:
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
+		bool operator()(const MSG& msg, LRESULT& ret) {
 			bool update = false;
-			NMTVDISPINFO * nmDisp = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
+			NMTVDISPINFO * nmDisp = reinterpret_cast< NMTVDISPINFO * >( msg.lParam );
 			if ( nmDisp->item.pszText != 0 )
 			{
 				SmartUtil::tstring newText = nmDisp->item.pszText;

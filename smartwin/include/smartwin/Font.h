@@ -31,7 +31,6 @@
 
 #include "WindowsHeaders.h"
 #include "../SmartUtil.h"
-#include "WindowObject.h"
 #include "xCeption.h"
 #include <memory>
 
@@ -74,7 +73,7 @@ typedef enum PredefinedFontTypes
   * One instance of this class can be shared among different Widgets ( even different
   * types of Widgets )
   */
-class Font : public WindowObject
+class Font 
 {
 public:
 
@@ -137,7 +136,7 @@ public:
 	  * to create the instance as a SmartPtr if you wish to have access to it after
 	  * the object goes out of scope.
 	  */
-	virtual ~Font()
+	~Font()
 	{
 		if ( isOwner )
 		{

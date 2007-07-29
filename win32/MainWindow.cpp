@@ -336,8 +336,7 @@ void MainWindow::initTabs() {
 	    = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE | TCS_HOTTRACK;
 	cs.font = WinUtil::font;
 	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
-	tabs->setFlatSeparators(false);
-	tabs->onResized(std::tr1::bind(&MainWindow::speak, this, LAYOUT, 0));
+	tabs->onResized(std::tr1::bind(&MainWindow::resizeMDIClient, this));
 	paned->setFirst(tabs);
 }
 
@@ -548,8 +547,12 @@ void MainWindow::layout() {
 }
 
 bool MainWindow::handleTabResize(const SmartWin::WidgetSizedEventResult& sz) {
-	getMDIClient()->setBounds(tabs->getUsableArea());
+	resizeMDIClient();
 	return false;
+}
+
+void MainWindow::resizeMDIClient() {
+	getMDIClient()->setBounds(tabs->getUsableArea());	
 }
 
 void MainWindow::updateStatus() {

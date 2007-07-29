@@ -29,8 +29,6 @@
 #ifndef AspectKeyboard_h
 #define AspectKeyboard_h
 
-#include "../SignalParams.h"
-
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -119,12 +117,8 @@ class AspectKeyboard : public AspectKeyboardBase
 
 		Dispatcher(const F& f_) : f(f_) { }
 
-		HRESULT operator()(private_::SignalContent& params) {
-			bool handled = f(static_cast< int >( params.Msg.WParam ));
-
-			if ( !handled )
-				params.RunDefaultHandling = true;
-			return 0;
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			return f(static_cast< int >( msg.wParam ));
 		}
 
 		F f;

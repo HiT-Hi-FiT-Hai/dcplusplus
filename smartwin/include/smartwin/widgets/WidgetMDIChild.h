@@ -85,8 +85,8 @@ public:
 		HICON smallIcon;
 		HICON icon;
 		HBRUSH background;
+		bool activate;
 		
-
 		/// Fills with default parameters
 		Seed();
 
@@ -103,6 +103,8 @@ public:
 	  * container window.
 	  */
 	virtual void createMDIChild( Seed cs = getDefaultSeed() );
+	
+	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
 	
 	void activate() {
 		if(::IsIconic(this->handle())) {

@@ -145,8 +145,8 @@ public:
 	}
 private:
 
-	static HRESULT TypedTreeViewDispatcher(SmartWin::private_::SignalContent& params) {
-		NMTVDISPINFO * nm = reinterpret_cast< NMTVDISPINFO * >( params.Msg.LParam );
+	static bool TypedTreeViewDispatcher(const MSG& msg, HRESULT& res) {
+		NMTVDISPINFO * nm = reinterpret_cast< NMTVDISPINFO * >( msg.lParam );
 		if(nm->item.mask & TVIF_TEXT) {
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
 			const string& text = content->getText();
