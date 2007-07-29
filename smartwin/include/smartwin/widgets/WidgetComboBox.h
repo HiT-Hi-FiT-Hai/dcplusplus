@@ -47,6 +47,7 @@
 #include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
+#include "WidgetTextBox.h"
 
 namespace SmartWin
 {
@@ -186,6 +187,9 @@ public:
 	{ return true;
 	}
 
+	typedef WidgetTextBox<>::ObjectType WidgetTextBoxPtr;
+	WidgetTextBoxPtr getTextBox();
+	
 protected:
 	/// Constructor Taking pointer to parent
 	explicit WidgetComboBox( SmartWin::Widget * parent );
@@ -194,6 +198,9 @@ protected:
 	// WidgetFactory class which is friend
 	virtual ~WidgetComboBox()
 	{}
+	
+private:
+	WidgetTextBoxPtr textBox;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,7 +307,7 @@ inline SmartUtil::tstring WidgetComboBox::getValue( int index )
 }
 
 inline WidgetComboBox::WidgetComboBox( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: PolicyType( parent ), textBox(0)
 {
 	// Can't have a ComboBox without a parent...
 	xAssert( parent, _T( "Cant have a WidgetComboBox without a parent..." ) );

@@ -66,6 +66,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
 		dirs->onSelectionChanged(std::tr1::bind(&QueueFrame::updateFiles, this));
+		dirs->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownDirs, this, _1));
 		paned->setFirst(dirs);
 	}
 	
@@ -84,6 +85,9 @@ QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
 		files->setSortColumn(COLUMN_TARGET);
+		
+		files->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownFiles, this, _1));
+		files->onSelectionChanged(std::tr1::bind(&QueueFrame::updateStatus, this));
 
 		paned->setSecond(files);
 	}
@@ -200,11 +204,6 @@ void QueueFrame::layout() {
 	SmartWin::Rectangle rs = layoutStatus();
 
 	mapWidget(STATUS_SHOW_TREE, showTree);
-	{
-#ifdef PORT_ME
-		ctrlLastLines.SetMaxTipWidth(w[0]);
-#endif
-	}
 	
 	r.size.y -= rs.size.y;
 	
@@ -216,6 +215,26 @@ void QueueFrame::layout() {
 	}
 	paned->setRect(r);
 	
+}
+
+bool QueueFrame::handleKeyDownDirs(int c) {
+	if(c == VK_DELETE) {
+		removeSelectedDir();
+	}
+	return false;
+}
+
+bool QueueFrame::handleKeyDownFiles(int c) {
+	if(c == VK_DELETE) {
+		removeSelected();
+	} else if(c == VK_ADD){
+		// Increase Item priority
+		changePriority(true);
+	} else if(c == VK_SUBTRACT){
+		// Decrease item priority
+		changePriority(false);
+	}
+	return false;
 }
 
 void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
@@ -249,7 +268,7 @@ bool QueueFrame::isCurDir(const std::string& aDir) const {
 void QueueFrame::updateStatus() {
 	int64_t total = 0;
 	int cnt = files->getSelectedCount();
-	if(cnt == 0) {
+	if(cnt < 2) {
 		cnt = files->getRowCount();
 		if(showTree->getChecked()) {
 			for(int i = 0; i < cnt; ++i) {
@@ -1116,24 +1135,3 @@ HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 
 	return FALSE;
 }
-
-#ifdef PORT_ME
-
-LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	if(kd->wVKey == VK_DELETE) {
-		removeSelected();
-	} else if(kd->wVKey == VK_ADD){
-		// Increase Item priority
-		changePriority(true);
-	} else if(kd->wVKey == VK_SUBTRACT){
-		// Decrease item priority
-		changePriority(false);
-	} else if(kd->wVKey == VK_TAB) {
-		onTab();
-	}
-	return 0;
-}
-
-#endif
-

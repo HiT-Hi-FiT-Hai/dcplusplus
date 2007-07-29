@@ -1,4 +1,5 @@
 #include "../../include/smartwin/widgets/WidgetComboBox.h"
+#include "../../include/smartwin/WidgetCreator.h"
 
 namespace SmartWin {
 
@@ -26,6 +27,18 @@ void WidgetComboBox::create( const Seed & cs )
 	if(cs.extended) {
 		::SendMessage(this->handle(), CB_SETEXTENDEDUI, TRUE, 0);
 	}
+}
+
+WidgetComboBox::WidgetTextBoxPtr WidgetComboBox::getTextBox() {
+	if(!textBox) {
+		LONG_PTR style = ::GetWindowLongPtr(handle(), GWL_STYLE);
+		if((style & CBS_SIMPLE)  == CBS_SIMPLE || (style & CBS_DROPDOWN) == CBS_DROPDOWN) {
+			HWND wnd = ::FindWindowEx(handle(), NULL, "EDIT", NULL);
+			if(wnd && wnd != handle())
+				textBox = WidgetCreator<WidgetTextBox<> >::attach(this, wnd);
+		}
+	}
+	return textBox;
 }
 
 }

@@ -280,12 +280,19 @@ public:
 		Normal::create(cs);
 		createMessageMap();
 	}
+	
+	virtual void attach(HWND hwnd) {
+		Normal::attach(hwnd);
+		createMessageMap();
+	}
 
 	/// Call this function from your overridden create() if you add a new Widget to
 	/// make the Windows Message Procedure dispatching map right.
 	void createMessageMap() {
-		setProp();
-		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
+		if(!oldProc) {
+			setProp();
+			oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
+		}
 	}
 	
 private:

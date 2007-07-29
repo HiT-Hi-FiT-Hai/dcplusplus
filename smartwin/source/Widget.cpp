@@ -104,6 +104,10 @@ void Widget::create( const SmartWin::Seed & cs )
 	}
 }
 
+void Widget::attach(HWND hwnd) {
+	itsHandle = hwnd;
+}
+
 Widget::Widget( Widget * parent, HWND hWnd, bool doReg )
 	: 
 	itsCtrlId(NULL),

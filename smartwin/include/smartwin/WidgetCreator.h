@@ -80,6 +80,14 @@ public:
 		retVal->subclass( id );
 		return retVal;
 	}
+
+	static typename WidgetType::ObjectType attach( Widget * parent, HWND hwnd )
+	{
+		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
+		retVal->attach( hwnd );
+		return retVal;
+	}
+
 };
 
 // end namespace SmartWin

@@ -77,14 +77,6 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, con
 		}
 	} else {
 		DirectoryListingFrame* frame = new DirectoryListingFrame(mdiParent, aUser, aSpeed);
-#ifdef PORT_ME
-		if() {
-			WinUtil::hiddenCreateEx(frame);
-		} else {
-			frame->CreateEx(WinUtil::mdiClient);
-		}
-#endif
-		
 		frame->loadFile(aFile, aDir);
 	}
 }
@@ -158,6 +150,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParen
 		
 		files->onSelectionChanged(std::tr1::bind(&DirectoryListingFrame::updateStatus, this));
 		files->onDblClicked(std::tr1::bind(&DirectoryListingFrame::handleDoubleClickFiles, this));
+		files->onKeyDown(std::tr1::bind(&DirectoryListingFrame::handleKeyDownFiles, this, _1));
 	}
 	
 	{
@@ -248,12 +241,6 @@ void DirectoryListingFrame::layout() {
 	mapWidget(STATUS_MATCH_QUEUE, matchQueue);
 	mapWidget(STATUS_FIND, find);
 	mapWidget(STATUS_NEXT, findNext);
-	{
-		
-#ifdef PORT_ME
-		ctrlLastLines.SetMaxTipWidth(w[0]);
-#endif
-	}
 	
 	r.size.y -= rs.size.y;
 	
@@ -907,9 +894,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 		}
 	} else {
 		dirs->select(oldDir);
-#ifdef PORT_ME
-		MessageBox(CTSTRING(NO_MATCHES), CTSTRING(SEARCH_FOR_FILE));
-#endif
+		createMessageBox().show(TSTRING(NO_MATCHES), TSTRING(SEARCH_FOR_FILE));
 	}
 }
 
@@ -994,37 +979,31 @@ HRESULT DirectoryListingFrame::handleXButtonUp(WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
-#ifdef PORT_ME
-LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	if(kd->wVKey == VK_BACK) {
+bool DirectoryListingFrame::handleKeyDownFiles(int c) {
+	if(c == VK_BACK) {
 		up();
-	} else if(kd->wVKey == VK_TAB) {
-		onTab();
-	} else if(kd->wVKey == VK_LEFT && WinUtil::isAlt()) {
+	} else if(c == VK_LEFT && WinUtil::isAlt()) {
 		back();
-	} else if(kd->wVKey == VK_RIGHT && WinUtil::isAlt()) {
+	} else if(c == VK_RIGHT && WinUtil::isAlt()) {
 		forward();
-	} else if(kd->wVKey == VK_RETURN) {
-		if(ctrlList.GetSelectedCount() == 1) {
-			ItemInfo* ii = ctrlList.getItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+	} else if(c == VK_RETURN) {
+		if(files->getSelectedCount() == 1) {
+			ItemInfo* ii = files->getSelectedItem();
 			if(ii->type == ItemInfo::DIRECTORY) {
-				HTREEITEM ht = ctrlTree.GetChildItem(ctrlTree.GetSelectedItem());
+				HTREEITEM ht = dirs->getChild(dirs->getSelected());
 				while(ht != NULL) {
-					if((DirectoryListing::Directory*)ctrlTree.GetItemData(ht) == ii->dir) {
-						ctrlTree.SelectItem(ht);
+					if(dirs->getData(ht)->dir == ii->dir) {
+						dirs->select(ht);
 						break;
 					}
-					ht = ctrlTree.GetNextSiblingItem(ht);
+					ht = dirs->getNextSibling(ht);
 				}
 			} else {
-				downloadList(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
+				downloadFiles(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
 			}
 		} else {
-			downloadList(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
+			downloadFiles(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
 		}
 	}
-	return 0;
+	return true;
 }
-
-#endif

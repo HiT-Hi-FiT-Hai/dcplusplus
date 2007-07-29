@@ -199,6 +199,7 @@ private:
 	void handleDownloadTarget(unsigned id);
 	void handleDownloadFavorite(unsigned id);
 	void handleDownloadBrowse();
+	bool handleKeyDownFiles(int c);
 	
 	void handleDoubleClickFiles();
 	void handleSelectionChanged();

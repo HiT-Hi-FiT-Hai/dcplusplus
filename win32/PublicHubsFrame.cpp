@@ -21,8 +21,11 @@
 #include "PublicHubsFrame.h"
 
 #include "resource.h"
-
 #include "HubFrame.h"
+#include "HoldRedraw.h"
+
+#include <dcpp/ResourceManager.h>
+#include <dcpp/version.h>
 
 #ifdef PORT_ME
 #include "PublicHubsListDlg.h"
@@ -117,6 +120,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		hubs->setSortColumn(COLUMN_USERS);
+		
+		hubs->onDblClicked(std::tr1::bind(&PublicHubsFrame::openSelected, this));
+		hubs->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleKeyDown, this, _1));
 	}
 	
 	{
@@ -153,6 +159,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		cs.caption.clear();
 		pubLists = createComboBox(cs);
 		pubLists->setFont(WinUtil::font);
+		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
 		
 		filterSel = createComboBox(cs);
 		filterSel->setFont(WinUtil::font);
@@ -169,9 +176,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
 		filter->setFont(WinUtil::font);
-#ifdef PORT_ME
-		filterContainer.SubclassWindow(ctrlFilter.m_hWnd);
-#endif
+		filter->onChar(std::tr1::bind(&PublicHubsFrame::handleFilterChar, this, _1));
 	}
 	
 	initStatus();
@@ -209,7 +214,6 @@ bool PublicHubsFrame::preClosing() {
 void PublicHubsFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::PUBLICHUBSFRAME_ORDER, WinUtil::toString(hubs->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::PUBLICHUBSFRAME_WIDTHS, WinUtil::toString(hubs->getColumnWidths()));
-
 }
 
 void PublicHubsFrame::layout() {
@@ -296,9 +300,7 @@ void PublicHubsFrame::updateList() {
 	users = 0;
 	visibleHubs = 0;
 
-#ifdef PORT_ME
-	ctrlHubs.SetRedraw(FALSE);
-#endif
+	HoldRedraw hold(hubs);
 	
 	double size = -1;
 	FilterModes mode = NONE;
@@ -315,9 +317,6 @@ void PublicHubsFrame::updateList() {
 		}
 	}
 
-#ifdef PORT_ME
-	ctrlHubs.SetRedraw(TRUE);
-#endif
 	hubs->resort();
 
 	updateStatus();
@@ -464,9 +463,7 @@ HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		menu->appendItem(IDC_CONNECT, TSTRING(CONNECT), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
 		menu->appendItem(IDC_ADD, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
 		menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
-#ifdef PORT_ME
-		menu->SetMenuDefaultItem(IDC_CONNECT);
-#endif
+		menu->setDefaultItem(IDC_CONNECT);
 		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
 	}
@@ -513,84 +510,42 @@ void PublicHubsFrame::handleCopyHub() {
 }
 
 bool PublicHubsFrame::checkNick() {
-#ifdef PORT_ME
 	if(SETTING(NICK).empty()) {
-		MessageBox(CTSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
+		createMessageBox().show(TSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		return false;
 	}
-#endif
 	return true;
 }
 
 
-#ifdef PORT_ME
-
-#include "Resource.h"
-
-#include "HubFrame.h"
-#include "WinUtil.h"
-
-#include "../client/Client.h"
-#include "../client/StringTokenizer.h"
-#include "../client/version.h"
-
-
-LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+void PublicHubsFrame::openSelected() {
 	if(!checkNick())
-		return 0;
-
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
-
-	if(item->iItem != -1) {
-		TCHAR buf[256];
-
-		ctrlHubs.GetItemText(item->iItem, COLUMN_SERVER, buf, 256);
-		HubFrame::openWindow(buf);
+		return;
+	
+	if(hubs->getSelectedCount() == 1) {
+		HubFrame::openWindow(getParent(), hubs->getSelectedItem()->entry->getServer());
 	}
-
-	return 0;
 }
 
-LRESULT PublicHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
-	if(!checkNick())
-		return 0;
-
-	int item = ctrlHubs.GetNextItem(-1, LVNI_FOCUSED);
-	if(item != -1) {
-		TCHAR buf[256];
-
-		ctrlHubs.GetItemText(item, COLUMN_SERVER, buf, 256);
-		HubFrame::openWindow(buf);
+bool PublicHubsFrame::handleKeyDown(int c) {
+	if(c == VK_RETURN) {
+		openSelected();
 	}
-
-	return 0;
+	
+	return false;
 }
 
-LRESULT PublicHubsFrame::onFilterFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
-	bHandled = true;
-	ctrlFilter.SetFocus();
-	return 0;
-}
-
-LRESULT PublicHubsFrame::onListSelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
-	FavoriteManager::getInstance()->setHubList(ctrlPubLists.GetCurSel());
-	hubs = FavoriteManager::getInstance()->getPublicHubs();
+void PublicHubsFrame::handleListSelChanged() {
+	FavoriteManager::getInstance()->setHubList(pubLists->getSelectedIndex());
+	entries = FavoriteManager::getInstance()->getPublicHubs();
 	updateList();
-	bHandled = FALSE;
-	return 0;
 }
 
-LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(wParam == VK_RETURN) {
-		AutoArray<TCHAR> str(ctrlFilter.GetWindowTextLength()+1);
-		ctrlFilter.GetWindowText(str, ctrlFilter.GetWindowTextLength()+1);
-		filterString = Text::fromT(tstring(str, ctrlFilter.GetWindowTextLength()));
+bool PublicHubsFrame::handleFilterChar(int c) {
+	if(c == VK_RETURN) {
+		filterString = filter->getText();
 		updateList();
-	} else {
-		bHandled = FALSE;
-	}
-	return 0;
+		return true;
+	} 
+	return false;
 }
-
-
-#endif

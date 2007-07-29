@@ -117,11 +117,11 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 
 	{
 		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
-		cs.caption = TSTRING(PURGE);
-		purge = createButton(cs);
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON;
+		cs.caption = TSTRING(SEARCH);
+		doSearch = createButton(cs);
 
-		purge->onClicked(std::tr1::bind(&SearchFrame::handlePurgeClicked, this));
+		doSearch->onClicked(std::tr1::bind(&SearchFrame::runSearch, this));
 	}
 
 	{
@@ -208,15 +208,6 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
-		cs.caption = TSTRING(SEARCH);
-		doSearch = createButton(cs);
-
-		doSearch->onClicked(std::tr1::bind(&SearchFrame::runSearch, this));
-	}
-
-	{
 		WidgetDataGrid::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
@@ -235,6 +226,16 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 		results->onRaw(std::tr1::bind(&SearchFrame::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
 		results->onRaw(std::tr1::bind(&SearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	}
+
+	{
+		WidgetButton::Seed cs;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		cs.caption = TSTRING(PURGE);
+		purge = createButton(cs);
+
+		purge->onClicked(std::tr1::bind(&SearchFrame::handlePurgeClicked, this));
+	}
+
 
 	{
 		WidgetCheckBox::Seed cs;
@@ -288,6 +289,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 		mode->setSelectedIndex(1);
 		fileType->setSelectedIndex(SETTING(LAST_SEARCH_TYPE));
 	}
+	searchBox->setFocus();
 }
 
 SearchFrame::~SearchFrame() {

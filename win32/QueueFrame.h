@@ -293,6 +293,8 @@ private:
 	void handleRemoveSources(const UserPtr& user);
 	void handleBrowseList(const UserPtr& user);
 	void handleReadd(const UserPtr& user);
+	bool handleKeyDownFiles(int c);
+	bool handleKeyDownDirs(int c);
 	
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	
@@ -307,107 +309,4 @@ private:
 	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
 };
 
-#ifdef PORT_ME
-#include "FlatTabCtrl.h"
-
-#include "../client/QueueManager.h"
-#include "../client/TaskQueue.h"
-
-#define SHOWTREE_MESSAGE_MAP 12
-
-class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<QueueFrame, ResourceManager::DOWNLOAD_QUEUE>,
-	private QueueManagerListener, public CSplitterImpl<QueueFrame>
-{
-public:
-	DECLARE_FRAME_WND_CLASS_EX(_T("QueueFrame"), IDR_QUEUE, 0, COLOR_3DFACE);
-
-	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false),
-		usingDirMenu(false), readdItems(0), fileLists(NULL), showTree(true), closed(false),
-		showTreeContainer(WC_BUTTON, this, SHOWTREE_MESSAGE_MAP)
-	{
-	}
-
-	typedef MDITabChildWindowImpl<QueueFrame> baseClass;
-	typedef CSplitterImpl<QueueFrame> splitBase;
-
-	BEGIN_MSG_MAP(QueueFrame)
-		NOTIFY_HANDLER(IDC_QUEUE, LVN_GETDISPINFO, ctrlQueue.onGetDispInfo)
-		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, ctrlQueue.onColumnClick)
-		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_QUEUE, LVN_ITEMCHANGED, onItemChangedQueue)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onItemChanged)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
-		COMMAND_ID_HANDLER(IDC_BITZI_LOOKUP, onBitziLookup)
-		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_MOVE, onMove)
-		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGHEST, onPriority)
-		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
-		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
-		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCES, IDC_REMOVE_SOURCES + 1 + menuItems, onRemoveSources)
-		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
-		COMMAND_RANGE_HANDLER(IDC_READD, IDC_READD + 1 + readdItems, onReadd)
-		CHAIN_MSG_MAP(splitBase)
-		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(SHOWTREE_MESSAGE_MAP)
-		MESSAGE_HANDLER(BM_SETCHECK, onShowTree)
-	END_MSG_MAP()
-
-	LRESULT onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemoveSources(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onPM(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onReadd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
-	LRESULT onItemChangedQueue(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
-		if((lv->uNewState & LVIS_SELECTED) != (lv->uOldState & LVIS_SELECTED))
-			updateStatus();
-		return 0;
-	}
-
-	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
-		if(kd->wVKey == VK_DELETE) {
-			removeSelectedDir();
-		} else if(kd->wVKey == VK_TAB) {
-			onTab();
-		}
-		return 0;
-	}
-
-	void onTab();
-
-	LRESULT onShowTree(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-		bHandled = FALSE;
-		showTree = (wParam == BST_CHECKED);
-		UpdateLayout(FALSE);
-		return 0;
-	}
-
-private:
-	bool spoken;
-	int menuItems;
-	int readdItems;
-
-};
-#endif
 #endif // !defined(QUEUE_FRAME_H)

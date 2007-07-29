@@ -40,7 +40,7 @@ void WidgetMDIChild::createMDIChild( Seed cs )
 	}
 	
 	getParent()->sendMessage(WM_SETREDRAW, TRUE);
-	
+	invalidateWidget();
 	if ( !wnd )
 	{
 		xCeption x( _T( "CreateWindowEx in WidgetMDIChild::createMDIChild fizzled..." ) );

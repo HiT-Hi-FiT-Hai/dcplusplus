@@ -262,37 +262,4 @@ private:
 	void speak(Speakers s, Client* aClient);
 };
 
-#ifdef PORT_ME
-
-class SearchFrame :
-	public UCHandler<SearchFrame>, public UserInfoBaseHandler<SearchFrame>
-{
-public:
-	DECLARE_FRAME_WND_CLASS_EX(_T("SearchFrame"), IDR_SEARCH, 0, COLOR_3DFACE)
-
-	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
-
-	BEGIN_MSG_MAP(SearchFrame)
-		MESSAGE_HANDLER(WM_TIMER, onTimer)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
-		CHAIN_COMMANDS(ucBase)
-		CHAIN_COMMANDS(uicBase)
-		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, onChar)
-		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
-		MESSAGE_HANDLER(WM_KEYUP, onChar)
-	END_MSG_MAP()
-
-	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-private:
-	void onTab(bool shift);
-};
-
-#endif
-
 #endif // !defined(DCPLUSPLUS_WIN32_SEARCH_FRAME_H)

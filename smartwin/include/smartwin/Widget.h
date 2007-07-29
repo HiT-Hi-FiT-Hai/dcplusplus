@@ -167,6 +167,8 @@ protected:
 	// derived class (with no parameters)
 	virtual void create( const SmartWin::Seed & );
 
+	virtual void attach(HWND wnd);
+	
 	// Kills the "this" Widget
 	void killMe();
 

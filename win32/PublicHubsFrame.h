@@ -126,11 +126,15 @@ private:
 	void handleAdd();
 	void handleCopyHub();
 	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
-
+	bool handleKeyDown(int c);
+	void handleListSelChanged();
+	bool handleFilterChar(int c);
+	
 	bool checkNick();
 	void updateStatus();
 	void updateList();
 	void updateDropDown();
+	void openSelected();
 
 	bool parseFilter(FilterModes& mode, double& size);
 	bool matchFilter(const HubEntry& entry, const int& sel, bool doSizeCompare, const FilterModes& mode, const double& size);
@@ -144,66 +148,6 @@ private:
 		speak(static_cast<WPARAM>(x), reinterpret_cast<LPARAM>(new tstring(Text::toT(l))));
 	}
 
-
 };
-
-#ifdef PORT_ME
-
-#include "ExListViewCtrl.h"
-
-#include "../client/FavoriteManager.h"
-#include "../client/StringSearch.h"
-
-#include "WinUtil.h"
-
-#define FILTER_MESSAGE_MAP 8
-class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, >,
-	private FavoriteManagerListener
-{
-public:
-	PublicHubsFrame() : users(0), hubs(0), closed(false),
-		filterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP) {
-	}
-
-	virtual ~PublicHubsFrame() { }
-
-	DECLARE_FRAME_WND_CLASS_EX(_T("PublicHubsFrame"), IDR_PUBLICHUBS, 0, COLOR_3DFACE);
-
-	typedef MDITabChildWindowImpl<PublicHubsFrame> baseClass;
-	BEGIN_MSG_MAP(PublicHubsFrame)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		COMMAND_ID_HANDLER(IDC_FILTER_FOCUS, onFilterFocus)
-		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
-		COMMAND_ID_HANDLER(IDC_REFRESH, onClickedRefresh)
-		COMMAND_ID_HANDLER(IDC_PUB_LIST_CONFIG, onClickedConfigure)
-		COMMAND_ID_HANDLER(IDC_CONNECT, onClickedConnect)
-		COMMAND_ID_HANDLER(IDC_COPY_HUB, onCopyHub);
-		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
-		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
-		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
-		COMMAND_HANDLER(IDC_PUB_LIST_DROPDOWN, CBN_SELCHANGE, onListSelChanged)
-		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
-	END_MSG_MAP()
-
-	LRESULT onFilterChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onEnter(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onFilterFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedConfigure(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onListSelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-private:
-	CContainedWindow filterContainer;
-
-};
-
-#endif /* PORT_ME */
 
 #endif // !defined(PUBLIC_HUBS_FRM_H)
