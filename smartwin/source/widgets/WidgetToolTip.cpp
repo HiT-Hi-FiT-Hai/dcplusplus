@@ -10,7 +10,7 @@ const WidgetToolTip::Seed & WidgetToolTip::getDefaultSeed()
 	if ( d_NeedsInit )
 	{
 		d_DefaultValues.className = TOOLTIPS_CLASS;
-		d_DefaultValues.exStyle = WS_EX_TOPMOST;
+		d_DefaultValues.exStyle = WS_EX_TRANSPARENT;
 		d_DefaultValues.style = WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX;
 		d_NeedsInit = false;
 	}
@@ -21,8 +21,6 @@ void WidgetToolTip::create( const Seed & cs )
 {
 	xAssert((cs.style & WS_POPUP) == WS_POPUP, "Widget must have WS_POPUP style");
 	PolicyType::create(cs);
-	::SetWindowPos(handle(), HWND_TOPMOST,0, 0, 0, 0,
-	             SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 void WidgetToolTip::setTool(Widget* widget, const Dispatcher::F& f) {

@@ -21,37 +21,42 @@
 #include "MDITab.h"
 
 MDITab* MDITab::instance;
+HHOOK MDITab::hook;
 
 MDITab::MDITab(SmartWin::Widget* parent) : 
 	BaseType(parent),
-	activating(false),
+	inTab(false),
 	mdi(0)
 {
 	instance = this;
+	hook = ::SetWindowsHookEx(WH_KEYBOARD, &MDITab::keyboardProc, NULL, ::GetCurrentThreadId());
 }
 
 MDITab::~MDITab() {
+	if(hook) {
+		::UnhookWindowsHookEx(hook);
+	}
 	instance = 0;
 }
 
 void MDITab::addTab(SmartWin::WidgetMDIChild::ObjectType w) {
 	if(!mdi) {
 		mdi = w->getParent();
-		//mdi->onRaw(std::tr1::bind(&MDITab::handleMdiNext, this, _1, _2), SmartWin::Message(WM_MDINEXT));
 	}
 
-	viewOrder.push_back(w);
-	nextTab = --viewOrder.end();
+	viewOrder.push_back(w->handle());
 
 	size_t tabs = this->size();
 	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(static_cast<SmartWin::Widget*>(w)));
 
 	if(w->getParent()->getActive() == w->handle()) {
-		activating = true;
 		this->setSelectedIndex(tabs);
 	}
 	w->onTextChanging(std::tr1::bind(&MDITab::handleTextChanging, this, w, _1));
 	w->onRaw(std::tr1::bind(&MDITab::handleMdiActivate, this, w, _1, _2), SmartWin::Message(WM_MDIACTIVATE));
+	w->onSysCommand(std::tr1::bind(&MDITab::handleNext, this, false), SC_NEXTWINDOW);
+	w->onSysCommand(std::tr1::bind(&MDITab::handleNext, this, true), SC_PREVWINDOW);
+
 
 	if(resized)
 		resized();
@@ -59,10 +64,7 @@ void MDITab::addTab(SmartWin::WidgetMDIChild::ObjectType w) {
 
 void MDITab::removeTab(SmartWin::Widget* w) {
 	
-	viewOrder.remove(w);
-	nextTab = viewOrder.end();
-	if(!viewOrder.empty())
-		--nextTab;
+	viewOrder.remove(w->handle());
 
 	int i = findTab(w);
 	if(i != -1) {
@@ -109,11 +111,60 @@ LRESULT MDITab::handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lPa
 			setSelectedIndex(i);
 		}
 	}
+	
+	if(!inTab) {
+		setTop(w->handle());
+	}
 	return 0;
 }
 
-LRESULT MDITab::handleMdiNext(WPARAM wParam, LPARAM lParam) {
+void MDITab::handleNext(bool reverse) {
+	if(viewOrder.size() < 2) {
+		dcdebug("No view order windows, skipping switch");
+		return;
+	}
+	HWND wnd = mdi->getActive();
+	if(!wnd) {
+		dcdebug("No active window, skipping switch\n");
+		return;
+	}
 	
+	WindowIter i;
+	if(inTab) {
+		i = std::find(viewOrder.begin(), viewOrder.end(), wnd);
+		if(i == viewOrder.end()) {
+			dcdebug("Could not find mdi child window, skipping switch\n");
+			return;
+		}
+		
+		if(!reverse) {
+			if(i == viewOrder.begin()) {
+				i = viewOrder.end();
+			}
+			--i;
+		} else {
+			if(++i == viewOrder.end()) {
+				i = viewOrder.begin();
+			}
+		}
+	} else {
+		if(!reverse) {
+			i = --(--viewOrder.end());
+		} else {
+			i = ++viewOrder.begin();
+		}
+	}
+	
+	mdi->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(*i));
+	return;
+}
+
+void MDITab::setTop(HWND wnd) {
+	WindowIter i = std::find(viewOrder.begin(), viewOrder.end(), wnd);
+	if(i != viewOrder.end()) {
+		viewOrder.erase(i);
+		viewOrder.push_back(wnd);
+	}
 }
 
 tstring MDITab::cutTitle(const tstring& title) {
@@ -121,4 +172,18 @@ tstring MDITab::cutTitle(const tstring& title) {
 		return title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
 	}
 	return title;
+}
+
+LRESULT CALLBACK MDITab::keyboardProc(int code, WPARAM wParam, LPARAM lParam) {
+	if(instance && instance->mdi && code == HC_ACTION) {
+		if(wParam == VK_CONTROL && LOWORD(lParam) == 1) {
+			if(lParam & 0x80000000) {
+				instance->inTab = false;
+				instance->setTop(instance->mdi->getActive());
+			} else {
+				instance->inTab = true;
+			}
+		}
+	}
+	return CallNextHookEx(hook, code, wParam, lParam);
 }

@@ -65,7 +65,10 @@ Message::Message(const MSG& msg_ )
 			NMHDR * ptrOriginal = reinterpret_cast< NMHDR * >( msg_.lParam );
 			param = ptrOriginal->code;
 		} break;
-	case WM_SYSCOMMAND :
+	case WM_SYSCOMMAND : {
+		param = msg_.wParam & 0xfff0;
+		break;
+	}
 	case WM_TIMER:
 		{
 			// Checking to see if this is from a menu

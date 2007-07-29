@@ -29,7 +29,7 @@ protected:
 
 	void initStatus() {
 		status = static_cast<WidgetType*>(this)->createStatusBarSections();
-		statusTip = static_cast<WidgetType*>(this)->createToolTip();
+		statusTip = SmartWin::WidgetCreator<SmartWin::WidgetToolTip>::create(status);
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
 	}
 	
@@ -60,6 +60,7 @@ protected:
 			statusSizes[WidgetType::STATUS_STATUS] = rs.size.x - std::accumulate(statusSizes.begin(), statusSizes.end(), 0); 
 
 			status->setSections(statusSizes);
+			statusTip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
 		}
 		return rs;
 	}

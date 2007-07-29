@@ -1,5 +1,6 @@
 #include "../../include/smartwin/widgets/WidgetMDIFrame.h"
 #include "../../include/smartwin/WidgetCreator.h"
+#include "../../include/smartwin/widgets/WidgetMDIParent.h"
 
 namespace SmartWin {
 

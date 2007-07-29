@@ -115,7 +115,6 @@ void WinUtil::init() {
 		urlMagnetRegistered = true;
 	}
 
-	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
 	::HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
 #endif
 
@@ -131,8 +130,6 @@ void WinUtil::uninit() {
 	::DeleteObject(monoFont);
 
 	mainMenu.DestroyMenu();
-
-	UnhookWindowsHookEx(hook);
 
 	::HtmlHelp(NULL, NULL, HH_UNINITIALIZE, helpCookie);
 #endif
@@ -601,7 +598,6 @@ int WinUtil::dirMaskedIndex = 0;
 HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
-HHOOK WinUtil::hook = NULL;
 DWORD WinUtil::helpCookie = 0;
 bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;
@@ -692,19 +688,6 @@ bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
 		}
 	}
 	return true;
-}
-
-static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
-	if(code == HC_ACTION) {
-		if(wParam == VK_CONTROL && LOWORD(lParam) == 1) {
-			if(lParam & 0x80000000) {
-				WinUtil::tabCtrl->endSwitch();
-			} else {
-				WinUtil::tabCtrl->startSwitch();
-			}
-		}
-	}
-	return CallNextHookEx(WinUtil::hook, code, wParam, lParam);
 }
 
 void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {

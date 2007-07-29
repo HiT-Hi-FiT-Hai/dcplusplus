@@ -10,7 +10,7 @@ const WidgetMDIChild::Seed & WidgetMDIChild::getDefaultSeed()
 	if ( d_NeedsInit )
 	{
 		d_DefaultValues.exStyle = WS_EX_MDICHILD;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
 		d_DefaultValues.background = ( HBRUSH )( COLOR_WINDOW + 1 );
 		d_DefaultValues.icon = NULL;
 		d_DefaultValues.smallIcon = NULL;

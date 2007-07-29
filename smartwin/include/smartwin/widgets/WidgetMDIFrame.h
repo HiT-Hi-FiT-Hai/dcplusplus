@@ -31,13 +31,14 @@
 
 #include "../BasicTypes.h"
 #include "../WindowClass.h"
-#include "WidgetMDIParent.h"
 #include "WidgetWindowBase.h"
 #include <boost/scoped_ptr.hpp>
 
 namespace SmartWin
 {
 // begin namespace SmartWin
+
+class WidgetMDIParent;
 
 /// "MDI Frame" class
 /** \ingroup WidgetControls
@@ -57,8 +58,6 @@ class WidgetMDIFrame
 	typedef WidgetWindowBase< Policies::MDIFrame<WidgetMDIFrame > > BaseType;
 
 public:
-	typedef WidgetMDIParent::ObjectType WidgetMDIParentPtr;
-	
 	/// Class type
 	typedef WidgetMDIFrame ThisType;
 
@@ -126,7 +125,7 @@ public:
 	  */
 	virtual void createInvisibleWindow( Seed = getDefaultSeed() );
 
-	WidgetMDIParentPtr getMDIClient() { return mdi; }
+	WidgetMDIParent* getMDIClient() { return mdi; }
 protected:
 	// Protected since this Widget we HAVE to inherit from
 	explicit WidgetMDIFrame( Widget * parent = 0 );
@@ -134,7 +133,7 @@ protected:
 	virtual ~WidgetMDIFrame();
 private:
 	boost::scoped_ptr<WindowClass> windowClass;
-	WidgetMDIParentPtr mdi;
+	WidgetMDIParent* mdi;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

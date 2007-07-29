@@ -24,13 +24,12 @@ private:
 	friend class MainWindow;
 	friend class SmartWin::WidgetCreator<MDITab>;
 	
-	typedef std::list<SmartWin::Widget*> WidgetList;
-	typedef WidgetList::iterator WidgetIter;
-	WidgetList viewOrder;
-	WidgetIter nextTab;
+	typedef std::list<HWND> WindowList;
+	typedef WindowList::iterator WindowIter;
+	WindowList viewOrder;
 
 	std::tr1::function<void ()> resized;
-	bool activating;
+	bool inTab;
 	SmartWin::WidgetMDIParent::ObjectType mdi;
 	
 	int findTab(SmartWin::Widget* w);
@@ -41,9 +40,13 @@ private:
 	bool handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& newText);
 	void handleSelectionChanged(size_t i);
 	LRESULT handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lParam);
-	LRESULT handleMdiNext(WPARAM wParam, LPARAM lParam);
+	void handleNext(bool reverse);
 	
+	void setTop(HWND wnd);
 	
+	static LRESULT CALLBACK keyboardProc(int code, WPARAM wParam, LPARAM lParam);
+	static HHOOK hook;
+
 	tstring cutTitle(const tstring& title);
 	static MDITab* instance;
 };

@@ -145,7 +145,6 @@ public:
 	static HWND mainWnd;
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
-	static HHOOK hook;
 	static DWORD helpCookie;
 
 	static string getAppName() {

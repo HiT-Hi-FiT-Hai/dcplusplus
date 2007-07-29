@@ -113,7 +113,7 @@ public:
 		this->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(this->handle()));
 	}
 
-	WidgetMDIParent* getParent() { return static_cast<WidgetMDIParent*>(this->Widget::getParent()); }
+	WidgetMDIParent* getParent() { return static_cast<WidgetMDIParent*>(PolicyType::getParent()); }
 protected:
 	// Protected since this Widget we HAVE to inherit from
 	explicit WidgetMDIChild( Widget * parent );

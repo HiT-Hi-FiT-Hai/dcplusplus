@@ -14,6 +14,12 @@ public:
 			Message(WM_COMMAND, id), Dispatcher(f)
 		);
 	}
+	
+	void onSysCommand(const Dispatcher::F& f, unsigned id) {
+		static_cast<WidgetType*>(this)->setCallback(
+			Message(WM_SYSCOMMAND, id), Dispatcher(f)
+		);
+	}
 
 };
 

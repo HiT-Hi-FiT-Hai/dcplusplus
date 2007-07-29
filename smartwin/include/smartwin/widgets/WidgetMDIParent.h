@@ -37,6 +37,7 @@
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
+#include "WidgetMDIFrame.h"
 
 namespace SmartWin
 {
@@ -151,8 +152,10 @@ public:
 	}
 	
 	void next() {
-		this->sendMessage(WM_MDINEXT);
+		getParent()->sendMessage(WM_SYSCOMMAND, SC_NEXTWINDOW, MAKELPARAM(0, -1));
 	}
+	
+	WidgetMDIFrame* getParent() { return static_cast<WidgetMDIFrame*>(PolicyType::getParent()); }
 protected:
 	/// Constructor Taking pointer to parent
 	explicit WidgetMDIParent( SmartWin::Widget * parent );
