@@ -273,15 +273,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		}
 
-		if(d->getTreeValid() && start > 0 &&
-		   (d->getTigerTree().getLeaves().size() > 32 || // 32 leaves is 5 levels
-		    d->getTigerTree().getBlockSize() * 10 < d->getSize()))
-		{
-			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), start));
-		} else {
-			d->setStartPos(start);
-		}
-
+		d->setStartPos(start);
 	} else {
 		d->setStartPos(0);
 	}
@@ -300,58 +292,6 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	}
 
 	aConn->send(d->getCommand(aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET)));
-}
-
-class DummyOutputStream : public OutputStream {
-public:
-	virtual size_t write(const void*, size_t n) throw(Exception) { return n; }
-	virtual size_t flush() throw(Exception) { return 0; }
-};
-
-int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, int64_t startPos) {
-	// Always discard data until the last block
-	int64_t initPos = startPos, blockSize = tt.getBlockSize();
-	if(startPos < blockSize)
-		return startPos;
-
-	startPos -= (startPos % blockSize);
-
-	DummyOutputStream dummy;
-
-	vector<uint8_t> buf((size_t)min((int64_t)1024*1024, blockSize));
-
-	do {
-		int64_t blockPos = startPos - blockSize;
-
-		try {
-			MerkleCheckOutputStream<TigerTree, false> check(tt, &dummy, blockPos);
-
-			File inFile(file, File::READ, File::OPEN);
-			inFile.setPos(blockPos);
-			int64_t bytesLeft = tt.getBlockSize();
-			while(bytesLeft > 0) {
-				size_t n = (size_t)min((int64_t)buf.size(), bytesLeft);
-				size_t nr = inFile.read(&buf[0], n);
-				check.write(&buf[0], nr);
-				bytesLeft -= nr;
-				if(bytesLeft > 0 && nr == 0) {
-					// Huh??
-					throw Exception();
-				}
-			}
-			check.flush();
-			break;
-		} catch(const Exception&) {
-			dcdebug("Removed bad block at " I64_FMT "\n", blockPos);
-		}
-		startPos = blockPos;
-	} while(startPos > 0);
-
-	if (initPos/blockSize == startPos/blockSize) {
-		startPos = initPos;
-	}
-
-	return startPos;
 }
 
 void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSource, int64_t aBytes) throw() {
@@ -435,7 +375,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 		File* file = NULL;
 
 		try {
-			// Let's check if we can find this file in a any .SFV...
 			int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
 			file = new File(target, File::RW, File::OPEN | File::CREATE | trunc);
 			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
@@ -474,25 +413,42 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			else
 				tt.getLeaves().push_back(d->getTTH());
 			
-			int64_t blockLeft = d->getPos() % d->getTigerTree().getBlockSize();
-			int64_t blockPos = d->getPos() - blockLeft;
-			
-			MerkleStream* stream = new MerkleStream(tt, d->getFile(), blockPos);
-// @todo catch exceptions
-			if(blockLeft > 0) {
-				std::vector<uint8_t> buf(std::min(blockLeft, static_cast<int64_t>(64*1024)));
-			
-				file->setPos(blockPos);
-				
-				while(blockLeft > 0) {
-					size_t x = static_cast<size_t>(std::min(blockLeft, static_cast<int64_t>(buf.size())));
-					size_t n = file->read(&buf[0], x);
-					blockLeft -= n;
-					stream->commitBytes(&buf[0], n);
+			int64_t start = 0;
+			int64_t blockLeft = 0;
+			if(d->getPos() > 0) {
+				// We read one full block + any partially downloaded blocks
+				blockLeft = d->getPos() % tt.getBlockSize();
+				blockLeft += tt.getBlockSize();
+				if(blockLeft < d->getPos()) {
+					start = d->getPos() - blockLeft;
+				} else {
+					blockLeft = d->getPos();
 				}
-			}			
+			}
+						
+			MerkleStream* stream = new MerkleStream(tt, d->getFile(), start);
 			d->setFile(stream);
 			d->setFlag(Download::FLAG_TTH_CHECK);
+			
+			if(blockLeft > 0) {
+				dcdebug("Starting at %d, got %d bytes to read, block size %d\n", (int)d->getPos(), (int)blockLeft, (int)tt.getBlockSize());
+				try {
+					int64_t bufferSize = (SETTING(BUFFER_SIZE) > 0) ? SETTING(BUFFER_SIZE) * 1024 : 64*1024;
+					std::vector<uint8_t> buf(std::min(d->getPos(), bufferSize));
+					d->setPos(start);
+					file->setPos(start);
+					while(blockLeft > 0) {
+						size_t x = static_cast<size_t>(std::min(blockLeft, static_cast<int64_t>(buf.size())));
+						size_t n = file->read(&buf[0], x);
+						stream->commitBytes(&buf[0], n);
+						blockLeft -= n;
+						d->setPos(d->getPos() + n);
+					}
+				} catch(const FileException& e) {
+					failDownload(aSource, e.getError());
+					return false;
+				}
+			}			
 		}
 		
 		file->setPos(d->getPos());

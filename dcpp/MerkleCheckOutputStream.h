@@ -98,7 +98,7 @@ public:
 	}
 private:
 	OutputStream* s;
-	const TreeType& real;
+	TreeType real;
 	TreeType cur;
 	size_t verified;
 

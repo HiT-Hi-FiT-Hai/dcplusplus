@@ -8,6 +8,7 @@
 #define ANCHORS_H
 
 #include "Widget.h"
+#include <stdexcept>
 
 using std::vector;
 

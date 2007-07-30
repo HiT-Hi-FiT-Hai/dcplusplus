@@ -40,5 +40,7 @@ enum {
 #endif
 
 using namespace dcpp;
+using std::tr1::placeholders::_1;
+using std::tr1::placeholders::_2;
 
 #endif

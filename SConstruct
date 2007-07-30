@@ -99,6 +99,8 @@ if not env['nativestl']:
 		env.Append(LIBS = ['stlportg.5.1'])
 	else:
 		env.Append(LIBS = ['stlport.5.1'])	
+else:
+	env.Append(CPPDEFINES = ['BOOST_HAS_GCC_TR1'])
 	
 if env['savetemps'] and 'gcc' in env['TOOLS']:
 	env.Append(CCFLAGS = ['-save-temps', '-fverbose-asm'])
