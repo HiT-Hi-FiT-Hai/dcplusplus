@@ -106,12 +106,7 @@ public:
 	
 	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
 	
-	void activate() {
-		if(::IsIconic(this->handle())) {
-			this->getParent()->sendMessage(WM_MDIRESTORE, reinterpret_cast<WPARAM>(this->handle()));
-		}
-		this->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(this->handle()));
-	}
+	void activate();
 
 	WidgetMDIParent* getParent() { return static_cast<WidgetMDIParent*>(PolicyType::getParent()); }
 protected:

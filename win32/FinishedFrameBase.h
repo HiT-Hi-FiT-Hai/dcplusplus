@@ -275,7 +275,7 @@ private:
 	void handleViewAsText(unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			new TextFrame(static_cast<SmartWin::WidgetMDIParent*>(this->getParent()), Text::toT(items->getItemData(i)->entry->getTarget()));
+			new TextFrame(this->getParent(), Text::toT(items->getItemData(i)->entry->getTarget()));
 	}
 
 	void handleOpenFile(unsigned /*id*/) {

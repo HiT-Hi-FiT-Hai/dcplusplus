@@ -14,8 +14,8 @@ public:
 
 	static MDITab* getInstance() { return instance; }
 	
-	void addTab(SmartWin::WidgetMDIChild::ObjectType w);
-	void removeTab(SmartWin::Widget* w);
+	void addTab(SmartWin::WidgetMDIChild* w);
+	void removeTab(SmartWin::WidgetMDIChild* w);
 	
 	virtual void create( const Seed & cs = getDefaultSeed() );
 	
@@ -32,14 +32,14 @@ private:
 	bool inTab;
 	SmartWin::WidgetMDIParent::ObjectType mdi;
 	
-	int findTab(SmartWin::Widget* w);
+	int findTab(SmartWin::WidgetMDIChild* w);
 	
 	MDITab(SmartWin::Widget* parent);
 	~MDITab();
 	
-	bool handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& newText);
+	bool handleTextChanging(SmartWin::WidgetMDIChild* w, const SmartUtil::tstring& newText);
 	void handleSelectionChanged(size_t i);
-	LRESULT handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lParam);
+	LRESULT handleMdiActivate(SmartWin::WidgetMDIChild* w, WPARAM wParam, LPARAM lParam);
 	void handleNext(bool reverse);
 	
 	void setTop(HWND wnd);

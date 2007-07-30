@@ -23,13 +23,18 @@ template<class WidgetType>
 class AspectStatus {
 	typedef AspectStatus<WidgetType> ThisType;
 protected:
+	typedef SmartWin::WidgetStatusBar<SmartWin::Section>::ThisType WidgetStatusBarSections;
+	typedef WidgetStatusBarSections::ObjectType WidgetStatusBarSectionsPtr;
+
 	AspectStatus() : status(0) {
 		statusSizes.resize(WidgetType::STATUS_LAST);
 	}
 
 	void initStatus() {
+		WidgetStatusBarSections::Seed cs;
+		cs.exStyle = WS_EX_TRANSPARENT; 
 		status = static_cast<WidgetType*>(this)->createStatusBarSections();
-		statusTip = SmartWin::WidgetCreator<SmartWin::WidgetToolTip>::create(status);
+		statusTip = static_cast<WidgetType*>(this)->createToolTip();
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
 	}
 	
@@ -72,7 +77,7 @@ protected:
 		::MoveWindow(widget->handle(), sr.left, sr.top, sr.right - sr.left, sr.bottom - sr.top, TRUE);
 	}
 	
-	typename SmartWin::WidgetStatusBar< SmartWin::Section >::ObjectType status;
+	WidgetStatusBarSectionsPtr status;
 
 	std::vector<unsigned> statusSizes;
 

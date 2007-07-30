@@ -72,4 +72,15 @@ bool WidgetMDIChild::tryFire(const MSG& msg, LRESULT& retVal) {
     return BaseType::tryFire(msg, retVal);
 }
 
+void WidgetMDIChild::activate() {
+	HWND prev = getParent()->getActive();
+	if(prev == handle())
+		return;
+	
+	if(::IsIconic(handle())) {
+		getParent()->sendMessage(WM_MDIRESTORE, reinterpret_cast<WPARAM>(this->handle()));
+	}
+	getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(this->handle()));
+}
+
 }

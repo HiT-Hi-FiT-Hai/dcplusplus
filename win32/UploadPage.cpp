@@ -57,7 +57,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	directories = static_cast<WidgetDataGridPtr>(subclassList(IDC_DIRECTORIES));
+	directories = subclassList(IDC_DIRECTORIES);
 	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;

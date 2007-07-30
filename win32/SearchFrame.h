@@ -229,7 +229,11 @@ private:
 	void handleCopyMagnet();
 	void handleRemove();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-
+	bool handleChar(int c);
+	
+	void handleGetList();
+	void handleBrowseList();
+	
 	void layout();
 	bool preClosing();
 	void postClosing();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,10 @@
 #include "resource.h"
 #include "HubFrame.h"
 #include "HoldRedraw.h"
+#include "HubListsDlg.h"
 
 #include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
-
-#ifdef PORT_ME
-#include "PublicHubsListDlg.h"
-#endif
 
 int PublicHubsFrame::columnIndexes[] = {
 	COLUMN_NAME,
@@ -477,12 +474,10 @@ void PublicHubsFrame::handleRefresh() {
 }
 
 void PublicHubsFrame::handleConfigure() {
-#ifdef PORT_ME
-	PublicHubListDlg dlg;
-	if(dlg.DoModal(m_hWnd) == IDOK) {
+	HubListsDlg dlg(this);
+	if(dlg.run() == IDOK) {
 		updateDropDown();
 	}
-#endif
 }
 
 void PublicHubsFrame::handleConnect() {

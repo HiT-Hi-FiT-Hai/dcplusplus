@@ -100,8 +100,7 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 	RADIO_ATTACH(IDC_SOCKS5);
 #undef RADIO_ATTACH
 
-#define TEXTBOX_ATTACH(id) \
-	static_cast<WidgetTextBoxPtr>(subclassTextBox(id))->setTextLimit(250)
+#define TEXTBOX_ATTACH(id) subclassTextBox(id)->setTextLimit(250)
 	TEXTBOX_ATTACH(IDC_SOCKS_SERVER);
 	TEXTBOX_ATTACH(IDC_SOCKS_PORT);
 	TEXTBOX_ATTACH(IDC_SOCKS_USER);

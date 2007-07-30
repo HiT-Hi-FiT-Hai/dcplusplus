@@ -55,6 +55,10 @@ public:
 		return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
 	}
 
+	WidgetTextBoxPtr subclassTextBox( unsigned id ) {
+		return SmartWin::WidgetCreator< WidgetTextBox >::subclass( this, id );
+	}
+
 	/// VPaned class type.
 	typedef WidgetPaned< false > WidgetVPaned;
 

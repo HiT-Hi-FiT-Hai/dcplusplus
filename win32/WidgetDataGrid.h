@@ -105,7 +105,11 @@ public:
 		this->clientToScreen(pt);
 		return pt;
 	}
-	
+
+	void selectRow(int i) {
+		ListView_SetItemState(this->handle(), i, LVIS_SELECTED, LVIS_SELECTED);
+	}
+
 	void ensureVisible(int i, bool partial = false) {
 		ListView_EnsureVisible(this->handle(), i, false);
 	}

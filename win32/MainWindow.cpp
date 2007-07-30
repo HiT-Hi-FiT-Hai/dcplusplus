@@ -55,6 +55,7 @@
 #include <dcpp/ConnectionManager.h>
 #include <dcpp/ShareManager.h>
 #include <dcpp/QueueManager.h>
+#include <dcpp/ClientManager.h>
 
 MainWindow* MainWindow::instance = 0;
 
@@ -106,6 +107,18 @@ MainWindow::MainWindow() :
 
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	startSocket();
+
+	if(BOOLSETTING(OPEN_SYSTEM_LOG)) postMessage(WM_COMMAND, IDC_SYSTEM_LOG);
+	if(BOOLSETTING(OPEN_PUBLIC)) postMessage(WM_COMMAND, IDC_PUBLIC_HUBS);
+	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) postMessage(WM_COMMAND, IDC_FAVORITES);
+	if(BOOLSETTING(OPEN_FAVORITE_USERS)) postMessage(WM_COMMAND, IDC_FAVUSERS);
+	if(BOOLSETTING(OPEN_QUEUE)) postMessage(WM_COMMAND, IDC_QUEUE);
+	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) postMessage(WM_COMMAND, IDC_FINISHED_DL);
+	if(BOOLSETTING(OPEN_WAITING_USERS)) postMessage(WM_COMMAND, IDC_WAITING_USERS);
+	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) postMessage(WM_COMMAND, IDC_FINISHED_UL);
+	if(BOOLSETTING(OPEN_SEARCH_SPY)) postMessage(WM_COMMAND, IDC_SEARCH_SPY);
+	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) postMessage(WM_COMMAND, IDC_NET_STATS);
+	if(BOOLSETTING(OPEN_NOTEPAD)) postMessage(WM_COMMAND, IDC_NOTEPAD);
 
 #ifdef PORT_ME
 	// Load images
@@ -160,11 +173,6 @@ MainWindow::MainWindow() :
 
 	WinUtil::mdiClient = m_hWndMDIClient;
 
-	ctrlTab.Create(m_hWnd, rcDefault);
-	WinUtil::tabCtrl = &ctrlTab;
-
-	transferView.Create(m_hWnd);
-
 	UIAddToolBar(hWndToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
@@ -176,17 +184,6 @@ MainWindow::MainWindow() :
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-	if(BOOLSETTING(OPEN_SYSTEM_LOG)) PostMessage(WM_COMMAND, IDC_SYSTEM_LOG);
-	if(BOOLSETTING(OPEN_PUBLIC)) PostMessage(WM_COMMAND, ID_VIEW_CONNECT);
-	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) PostMessage(WM_COMMAND, IDC_FAVORITES);
-	if(BOOLSETTING(OPEN_FAVORITE_USERS)) PostMessage(WM_COMMAND, IDC_FAVUSERS);
-	if(BOOLSETTING(OPEN_QUEUE)) PostMessage(WM_COMMAND, IDC_QUEUE);
-	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_DL);
-	if(BOOLSETTING(OPEN_WAITING_USERS)) PostMessage(WM_COMMAND, IDC_VIEW_WAITING_USERS);
-	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_UL);
-	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
-	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
-	if(BOOLSETTING(OPEN_NOTEPAD)) PostMessage(WM_COMMAND, IDC_NOTEPAD);
 
 	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
 	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
@@ -552,7 +549,14 @@ bool MainWindow::handleTabResize(const SmartWin::WidgetSizedEventResult& sz) {
 }
 
 void MainWindow::resizeMDIClient() {
-	getMDIClient()->setBounds(tabs->getUsableArea());	
+	SmartWin::Rectangle rc = tabs->getUsableArea();
+	SmartWin::Rectangle rctabs(SmartWin::Point(0, 0), tabs->getClientAreaSize());
+	// Get rid of ugly border...assume y border is the same as x border
+	long border = (rctabs.size.x - rc.size.x) / 2;
+	rc.pos.x = rctabs.pos.x;
+	rc.size.x = rctabs.size.x;
+	rc.size.y += border;
+	getMDIClient()->setBounds(rc);	
 }
 
 void MainWindow::updateStatus() {
@@ -588,14 +592,6 @@ void MainWindow::updateStatus() {
 
 MainWindow::~MainWindow() {
 	instance = 0;
-
-#ifdef PORT_ME
-	m_CmdBar.m_hImageList = NULL;
-
-	images.Destroy();
-	largeImages.Destroy();
-	largeImagesHot.Destroy();
-#endif
 }
 
 void MainWindow::handleSettings() {
@@ -622,10 +618,10 @@ void MainWindow::handleSettings() {
 		}
 		ClientManager::getInstance()->infoUpdated();
 
-#ifdef PORT_ME
 		if(BOOLSETTING(SORT_FAVUSERS_FIRST) != lastSortFavUsersFirst)
-		HubFrame::resortUsers();
+			HubFrame::resortUsers();
 
+#ifdef PORT_ME
 		if(BOOLSETTING(URL_HANDLER)) {
 			WinUtil::registerDchubHandler();
 			WinUtil::registerADChubHandler();
@@ -738,9 +734,7 @@ void MainWindow::handleOpenFileList() {
 		if (u) {
 			DirectoryListingFrame::openWindow(getMDIClient(), file, Text::toT(Util::emptyString), u, 0);
 		} else {
-#ifdef PORT_ME
-			MessageBox(CTSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
-#endif
+			createMessageBox().show(TSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		}
 	}
 }
@@ -1084,17 +1078,15 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 					const string& title = xml.getChildData();
 					xml.resetCurrentChild();
 					if(xml.findChild("Message")) {
-#ifdef PORT_ME
 						if(url.empty()) {
 							const string& msg = xml.getChildData();
-							MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
+							createMessageBox().show(Text::toT(msg), Text::toT(title));
 						} else {
 							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
-							if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO) == IDYES) {
+							if(createMessageBox().show(Text::toT(msg), Text::toT(title), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES) {
 								WinUtil::openLink(Text::toT(url));
 							}
 						}
-#endif
 					}
 				}
 			}

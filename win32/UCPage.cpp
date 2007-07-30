@@ -46,7 +46,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	commands = static_cast<WidgetDataGridPtr>(subclassList(IDC_MENU_ITEMS));
+	commands = subclassList(IDC_MENU_ITEMS);
 	commands->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;

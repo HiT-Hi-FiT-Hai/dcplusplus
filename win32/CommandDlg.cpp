@@ -82,20 +82,20 @@ bool CommandDlg::handleInitDialog() {
 	fileListMenu = subclassCheckBox(IDC_SETTINGS_FILELIST_MENU);
 	fileListMenu->setText(TSTRING(USER_CMD_FILELIST_MENU));
 
-	nameBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_NAME));
+	nameBox = subclassTextBox(IDC_NAME);
 
-	commandBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_COMMAND));
+	commandBox = subclassTextBox(IDC_COMMAND);
 	commandBox->onRaw(std::tr1::bind(&CommandDlg::handleTextChanged, this, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE));
 
-	hubBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_HUB));
+	hubBox = subclassTextBox(IDC_HUB);
 
-	nick = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_NICK));
+	nick = subclassTextBox(IDC_NICK);
 	nick->onRaw(std::tr1::bind(&CommandDlg::handleTextChanged, this, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE));
 
 	once = subclassCheckBox(IDC_SETTINGS_ONCE);
 	once->setText(TSTRING(USER_CMD_ONCE));
 
-	result = static_cast<WidgetTextBoxPtr>(subclassTextBox(IDC_RESULT));
+	result = subclassTextBox(IDC_RESULT);
 
 	openHelp = subclassCheckBox(IDC_USER_CMD_OPEN_HELP);
 	openHelp->setText(TSTRING(SETTINGS_OPEN_USER_CMD_HELP));

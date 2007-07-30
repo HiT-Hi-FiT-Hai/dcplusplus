@@ -26,6 +26,7 @@
 #include "FavoriteManager.h"
 #include "TimerManager.h"
 #include "ResourceManager.h"
+#include "ClientManager.h"
 
 namespace dcpp {
 

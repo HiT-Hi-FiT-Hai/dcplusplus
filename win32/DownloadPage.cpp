@@ -24,6 +24,7 @@
 
 #include <dcpp/SettingsManager.h>
 #include "WinUtil.h"
+#include "HubListsDlg.h"
 
 PropPage::TextItem DownloadPage::texts[] = {
 	{ IDC_SETTINGS_DIRECTORIES, ResourceManager::SETTINGS_DIRECTORIES },
@@ -114,10 +115,7 @@ void DownloadPage::handleBrowseTempDir() {
 }
 
 void DownloadPage::handleConfigHubLists() {
-#ifdef PORT_ME
-	PublicHubListDlg dlg;
-	dlg.DoModal(m_hWnd);
-#endif
+	HubListsDlg(this).run();
 }
 
 #ifdef PORT_ME

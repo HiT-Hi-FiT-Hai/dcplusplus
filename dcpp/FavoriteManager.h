@@ -28,7 +28,6 @@
 #include "FavoriteUser.h"
 #include "Singleton.h"
 #include "ClientManagerListener.h"
-#include "ClientManager.h"
 #include "FavoriteManagerListener.h"
 
 namespace dcpp {
@@ -136,15 +135,17 @@ public:
 	typedef HASH_MAP_X(CID, FavoriteUser, CID::Hash, equal_to<CID>, less<CID>) FavoriteMap;
 	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; }
 
-	void addFavoriteUser(User::Ptr& aUser);
-	bool isFavoriteUser(const User::Ptr& aUser) const { Lock l(cs); return users.find(aUser->getCID()) != users.end(); }
-	void removeFavoriteUser(User::Ptr& aUser);
+	void addFavoriteUser(UserPtr& aUser);
+	bool isFavoriteUser(const UserPtr& aUser) const { Lock l(cs); return users.find(aUser->getCID()) != users.end(); }
+	void removeFavoriteUser(UserPtr& aUser);
 
-	bool hasSlot(const User::Ptr& aUser) const;
-	void setUserDescription(const User::Ptr& aUser, const string& description);
-	void setAutoGrant(const User::Ptr& aUser, bool grant);
+	bool hasSlot(const UserPtr& aUser) const;
+	void setUserDescription(const UserPtr& aUser, const string& description);
+	void setAutoGrant(const UserPtr& aUser, bool grant);
 	void userUpdated(const OnlineUser& info);
-	time_t getLastSeen(const User::Ptr& aUser) const;
+	time_t getLastSeen(const UserPtr& aUser) const;
+	std::string getUserURL(const UserPtr& aUser) const;
+	
 // Favorite Hubs
 	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; }
 
@@ -216,8 +217,8 @@ private:
 
 	// ClientManagerListener
 	virtual void on(UserUpdated, const OnlineUser& user) throw();
-	virtual void on(UserConnected, const User::Ptr& user) throw();
-	virtual void on(UserDisconnected, const User::Ptr& user) throw();
+	virtual void on(UserConnected, const UserPtr& user) throw();
+	virtual void on(UserDisconnected, const UserPtr& user) throw();
 
 	// HttpConnectionListener
 	virtual void on(Data, HttpConnection*, const uint8_t*, size_t) throw();

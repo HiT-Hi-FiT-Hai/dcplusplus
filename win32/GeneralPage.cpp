@@ -62,7 +62,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	WidgetTextBoxPtr textBox;
 #define TEXTBOX_ATTACH(id) \
-	textBox = static_cast<WidgetTextBoxPtr>(subclassTextBox(id)); \
+	textBox = subclassTextBox(id); \
 	textBox->setTextLimit(35); \
 	textBox->onRaw(std::tr1::bind(&GeneralPage::handleTextChanged, this, textBox, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE))
 	TEXTBOX_ATTACH(IDC_NICK);

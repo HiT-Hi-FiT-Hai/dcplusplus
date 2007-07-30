@@ -27,6 +27,7 @@
 #include <dcpp/User.h>
 
 #include "PrivateFrame.h"
+#include "HubFrame.h"
 
 void UserInfoBase::matchQueue() {
 	try {
@@ -68,7 +69,19 @@ void UserInfoBase::removeAll() {
 	QueueManager::getInstance()->removeSource(user, QueueItem::Source::FLAG_REMOVED);
 }
 
-void UserInfoBase::ADCOnly::operator()(UserInfoBase* ui) { 
+void UserInfoBase::UserTraits::operator()(UserInfoBase* ui) { 
 	if(ui->getUser()->isSet(User::NMDC)) 
 		adcOnly = false;
+	bool fav = FavoriteManager::getInstance()->isFavoriteUser(ui->getUser());
+	if(fav)
+		nonFavOnly = false;
+	if(!fav)
+		favOnly = false;
+}
+
+void UserInfoBase::connectFav(SmartWin::WidgetMDIParent* parent) {
+	std::string url = FavoriteManager::getInstance()->getUserURL(user);
+	if(!url.empty()) {
+		HubFrame::openWindow(parent, url);
+	}
 }

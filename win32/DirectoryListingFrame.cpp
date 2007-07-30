@@ -30,6 +30,7 @@
 #include <dcpp/File.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/StringSearch.h>
+#include <dcpp/ClientManager.h>
 
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
 int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };

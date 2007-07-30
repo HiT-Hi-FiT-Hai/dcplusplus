@@ -42,7 +42,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 
 	PropPage::translate(handle(), texts);
 
-	directories = static_cast<WidgetDataGridPtr>(subclassList(IDC_FAVORITE_DIRECTORIES));
+	directories = subclassList(IDC_FAVORITE_DIRECTORIES);
 	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;

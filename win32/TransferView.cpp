@@ -30,6 +30,7 @@
 #include <dcpp/DownloadManager.h>
 #include <dcpp/UploadManager.h>
 #include <dcpp/QueueManager.h>
+#include <dcpp/ClientManager.h>
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125 };

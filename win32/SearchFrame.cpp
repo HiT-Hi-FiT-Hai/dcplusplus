@@ -24,6 +24,7 @@
 #include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/QueueManager.h>
+#include <dcpp/ClientManager.h>
 
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH, COLUMN_CID };
@@ -113,6 +114,8 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 		for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
 			searchBox->insertValue(0, *i);
 		}
+		
+		searchBox->getTextBox()->onChar(std::tr1::bind(&SearchFrame::handleChar, this, _1));
 	}
 
 	{
@@ -1115,38 +1118,18 @@ void SearchFrame::runUserCommand(const UserCommand& uc) {
 	}
 }
 
-#ifdef PORT_ME
-
-LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	switch(wParam) {
-	case VK_TAB:
-		if(uMsg == WM_KEYDOWN) {
-			onTab(WinUtil::isShift());
-		}
-		break;
-	case VK_RETURN:
-		if( WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt() ) {
-			bHandled = FALSE;
-		} else {
-			if(uMsg == WM_KEYDOWN) {
-				onEnter();
-			}
-		}
-		break;
-	default:
-		bHandled = FALSE;
+bool SearchFrame::handleChar(int c) {
+	if(c == VK_RETURN && !(WinUtil::isShift() || WinUtil::isCtrl() || WinUtil::isAlt())) {
+		runSearch();
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void SearchFrame::handleGetList() {
 	results->forEachSelected(&SearchInfo::getList);
-	return 0;
 }
 
-LRESULT SearchFrame::onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void SearchFrame::handleBrowseList() {
 	results->forEachSelected(&SearchInfo::browseList);
-	return 0;
 }
-
-#endif

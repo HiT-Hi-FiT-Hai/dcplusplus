@@ -165,7 +165,7 @@ void FavHubsFrame::openSelected() {
 	std::vector<unsigned> items = hubs->getSelectedRows();
 	for(std::vector<unsigned>::iterator i = items.begin(); i != items.end(); ++i) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)hubs->getItemData(*i);
-		HubFrame::openWindow(static_cast<SmartWin::WidgetMDIParent*>(getParent()), Text::toT(entry->getServer()));
+		HubFrame::openWindow(getParent(), Text::toT(entry->getServer()));
 	}
 }
 

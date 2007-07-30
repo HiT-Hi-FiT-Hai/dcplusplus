@@ -39,7 +39,7 @@ MDITab::~MDITab() {
 	instance = 0;
 }
 
-void MDITab::addTab(SmartWin::WidgetMDIChild::ObjectType w) {
+void MDITab::addTab(SmartWin::WidgetMDIChild* w) {
 	if(!mdi) {
 		mdi = w->getParent();
 	}
@@ -47,7 +47,7 @@ void MDITab::addTab(SmartWin::WidgetMDIChild::ObjectType w) {
 	viewOrder.push_back(w->handle());
 
 	size_t tabs = this->size();
-	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(static_cast<SmartWin::Widget*>(w)));
+	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(w));
 
 	if(w->getParent()->getActive() == w->handle()) {
 		this->setSelectedIndex(tabs);
@@ -62,7 +62,7 @@ void MDITab::addTab(SmartWin::WidgetMDIChild::ObjectType w) {
 		resized();
 }
 
-void MDITab::removeTab(SmartWin::Widget* w) {
+void MDITab::removeTab(SmartWin::WidgetMDIChild* w) {
 	
 	viewOrder.remove(w->handle());
 
@@ -74,7 +74,7 @@ void MDITab::removeTab(SmartWin::Widget* w) {
 	}
 }
 
-int MDITab::findTab(SmartWin::Widget* w) {
+int MDITab::findTab(SmartWin::WidgetMDIChild* w) {
 	for(size_t i = 0; i < this->size(); ++i) {
 		if(getData(i) == reinterpret_cast<LPARAM>(w)) {
 			return static_cast<int>(i);
@@ -89,7 +89,7 @@ void MDITab::create( const Seed & cs ) {
 	onSelectionChanged(std::tr1::bind(&MDITab::handleSelectionChanged, this, _1));
 }
 
-bool MDITab::handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& newText) {
+bool MDITab::handleTextChanging(SmartWin::WidgetMDIChild* w, const SmartUtil::tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
 		this->setHeader(i, cutTitle(newText));
@@ -98,13 +98,13 @@ bool MDITab::handleTextChanging(SmartWin::Widget* w, const SmartUtil::tstring& n
 }
 
 void MDITab::handleSelectionChanged(size_t i) {
-	SmartWin::Widget* w = reinterpret_cast<SmartWin::Widget*>(this->getData(i));
-	if(w->getParent()->sendMessage(WM_MDIGETACTIVE) != reinterpret_cast<HRESULT>(w->handle())) {
-		w->getParent()->sendMessage(WM_MDIACTIVATE, reinterpret_cast<WPARAM>(w->handle()));
+	SmartWin::WidgetMDIChild* w = reinterpret_cast<SmartWin::WidgetMDIChild*>(this->getData(i));
+	if(w->getParent()->getActive() != w->handle()) {
+		w->activate();
 	}
 }
 
-LRESULT MDITab::handleMdiActivate(SmartWin::Widget* w, WPARAM wParam, LPARAM lParam) {
+LRESULT MDITab::handleMdiActivate(SmartWin::WidgetMDIChild* w, WPARAM wParam, LPARAM lParam) {
 	if(reinterpret_cast<LPARAM>(w->handle()) == lParam) {
 		int i = findTab(w);
 		if(i != -1) {
