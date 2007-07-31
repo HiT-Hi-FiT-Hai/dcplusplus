@@ -212,7 +212,7 @@ int CALLBACK WidgetDataGrid::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM
 
 void WidgetDataGrid::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
 	//TODO: use CreationalInfo parameters
 

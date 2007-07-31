@@ -284,13 +284,13 @@ int SmartWinMain(SmartWin::Application& app) {
 	checkCommonControls();
 
 	// For debugging
-	::LoadLibrary("exchndl.dll");
+	::LoadLibrary(_T("exchndl.dll"));
 	
 	// For SHBrowseForFolder, UPnP
 	/// @todo check return
 	::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 	try {
-		std::string module = File(app.getModuleFileName(), File::READ, File::OPEN).read();
+		std::string module = File(Text::fromT(app.getModuleFileName()), File::READ, File::OPEN).read();
 		TigerTree tth(TigerTree::calcBlockSize(module.size(), 1));
 		tth.update(module.data(), module.size());
 		tth.finalize();

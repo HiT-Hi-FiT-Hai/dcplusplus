@@ -22,7 +22,7 @@ const WidgetSpinner::Seed & WidgetSpinner::getDefaultSeed()
 
 void WidgetSpinner::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
 	setRange( cs.minValue, cs.maxValue );
 	//TODO: use CreationalInfo parameters

@@ -23,7 +23,7 @@ const WidgetToolbar::Seed & WidgetToolbar::getDefaultSeed()
 
 void WidgetToolbar::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
 
 	//// Telling the toolbar what the size of TBBUTTON struct is

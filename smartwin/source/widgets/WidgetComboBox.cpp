@@ -21,7 +21,7 @@ const WidgetComboBox::Seed & WidgetComboBox::getDefaultSeed()
 
 void WidgetComboBox::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
 	setFont( cs.font );
 	if(cs.extended) {
@@ -33,7 +33,7 @@ WidgetComboBox::WidgetTextBoxPtr WidgetComboBox::getTextBox() {
 	if(!textBox) {
 		LONG_PTR style = ::GetWindowLongPtr(handle(), GWL_STYLE);
 		if((style & CBS_SIMPLE)  == CBS_SIMPLE || (style & CBS_DROPDOWN) == CBS_DROPDOWN) {
-			HWND wnd = ::FindWindowEx(handle(), NULL, "EDIT", NULL);
+			HWND wnd = ::FindWindowEx(handle(), NULL, _T("EDIT"), NULL);
 			if(wnd && wnd != handle())
 				textBox = WidgetCreator<WidgetTextBox<> >::attach(this, wnd);
 		}

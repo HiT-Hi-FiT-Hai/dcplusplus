@@ -19,7 +19,7 @@ const WidgetTabSheet::Seed & WidgetTabSheet::getDefaultSeed()
 
 void WidgetTabSheet::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
 	setFont( cs.font );
 }

@@ -149,8 +149,8 @@ private:
 		NMTVDISPINFO * nm = reinterpret_cast< NMTVDISPINFO * >( msg.lParam );
 		if(nm->item.mask & TVIF_TEXT) {
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
-			const string& text = content->getText();
-			strncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
+			const tstring& text = content->getText();
+			_tcsncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
 			if(text.size() < nm->item.cchTextMax) {
 				nm->item.pszText[text.size()] = 0;
 			}

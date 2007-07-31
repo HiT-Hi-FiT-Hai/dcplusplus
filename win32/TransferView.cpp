@@ -502,8 +502,6 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) th
 }
 
 void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
-	AutoArray<TCHAR> buf(TSTRING(DOWNLOADED_BYTES).size() + 64);
-
 	for(DownloadList::const_iterator j = dl.begin(); j != dl.end(); ++j) {
 		Download* d = *j;
 
@@ -513,8 +511,9 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 		ui->setTimeLeft(d->getSecondsLeft());
 		ui->setSpeed(d->getRunningAverage());
 
-		_stprintf(buf, CTSTRING(DOWNLOADED_BYTES), Text::toT(Util::formatBytes(d->getPos())).c_str(),
-			(double)d->getPos()*100.0/(double)d->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - d->getStart())/1000)).c_str());
+		tstring pos = Text::toT(Util::formatBytes(d->getPos()));
+		double percent = (double)d->getPos()*100.0/(double)d->getSize();
+		tstring elapsed = Text::toT(Util::formatSeconds((GET_TICK() - d->getStart())/1000)); 
 
 		tstring statusString;
 
@@ -534,7 +533,7 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 		if(!statusString.empty()) {
 			statusString += _T(" ");
 		}
-		statusString += buf;
+		statusString += Text::tformat(TSTRING(DOWNLOADED_BYTES), pos.c_str(), percent, elapsed.c_str());
 		ui->setStatusString(statusString);
 
 		tasks.add(UPDATE_ITEM, ui);
@@ -593,8 +592,9 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 		ui->setTimeLeft(u->getSecondsLeft());
 		ui->setSpeed(u->getRunningAverage());
 
-		_stprintf(buf, CTSTRING(UPLOADED_BYTES), Text::toT(Util::formatBytes(u->getPos())).c_str(),
-			(double)u->getPos()*100.0/(double)u->getSize(), Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)).c_str());
+		tstring pos = Text::toT(Util::formatBytes(u->getPos()));
+		double percent = (double)u->getPos()*100.0/(double)u->getSize();
+		tstring elapsed = Text::toT(Util::formatSeconds((GET_TICK() - u->getStart())/1000)); 
 
 		tstring statusString;
 
@@ -611,7 +611,7 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 		if(!statusString.empty()) {
 			statusString += _T(" ");
 		}
-		statusString += buf;
+		statusString += Text::tformat(TSTRING(UPLOADED_BYTES), pos.c_str(), percent, elapsed.c_str());
 
 		ui->setStatusString(statusString);
 

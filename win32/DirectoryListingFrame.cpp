@@ -189,7 +189,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParen
 	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	string nick = ClientManager::getInstance()->getNicks(dl->getUser()->getCID())[0];
-	treeRoot = dirs->insert(NULL, new ItemInfo(nick, dl->getRoot()));
+	treeRoot = dirs->insert(NULL, new ItemInfo(Text::toT(nick), dl->getRoot()));
 
 	setWindowTitle();
 
@@ -270,10 +270,8 @@ void DirectoryListingFrame::handleFindNext() {
 }
 
 void DirectoryListingFrame::handleMatchQueue() {
-	int x = QueueManager::getInstance()->matchListing(*dl);
-	AutoArray<TCHAR> buf(STRING(MATCHED_FILES).length() + 32);
-	_stprintf(buf, CTSTRING(MATCHED_FILES), x);
-	setStatus(STATUS_STATUS, (TCHAR*)buf);
+	int matched = QueueManager::getInstance()->matchListing(*dl);
+	setStatus(STATUS_STATUS, Text::tformat(TSTRING(MATCHED_FILES), matched));
 }
 
 void DirectoryListingFrame::handleListDiff() {
@@ -317,9 +315,9 @@ void DirectoryListingFrame::refreshTree(const tstring& root) {
 
 void DirectoryListingFrame::setWindowTitle() {
 	if(error.empty())
-		setText((WinUtil::getNicks(dl->getUser()) + _T(" - ") + WinUtil::getHubNames(dl->getUser()).first).c_str());
+		setText(WinUtil::getNicks(dl->getUser()) + _T(" - ") + WinUtil::getHubNames(dl->getUser()).first);
 	else
-		setText(error.c_str());
+		setText(error);
 }
 
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
@@ -466,7 +464,7 @@ HRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
-void DirectoryListingFrame::downloadFiles(const tstring& aTarget, bool view /* = false */) {
+void DirectoryListingFrame::downloadFiles(const string& aTarget, bool view /* = false */) {
 	int i=-1;
 	
 	while( (i = files->getNextItem(i, LVNI_SELECTED)) != -1) {
@@ -526,7 +524,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 	if(usingDirMenu) {
 		ItemInfo* ii = dirs->getSelectedData();
 		if(ii) {
-			tstring target = SETTING(DOWNLOAD_DIRECTORY);
+			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
 			if(WinUtil::browseDirectory(target, handle())) {
 				WinUtil::addLastDir(target);
 				download(ii, Text::fromT(target));
@@ -553,7 +551,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 				setStatus(STATUS_STATUS, Text::toT(e.getError()).c_str());
 			}
 		} else {
-			tstring target = SETTING(DOWNLOAD_DIRECTORY);
+			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
 			if(WinUtil::browseDirectory(target, handle())) {
 				WinUtil::addLastDir(target);
 				downloadFiles(Text::fromT(target));
@@ -567,7 +565,7 @@ void DirectoryListingFrame::handleDownloadLastDir(unsigned id) {
 	if(n >= WinUtil::lastDirs.size()) {
 		return;
 	}
-	download(WinUtil::lastDirs[n]);
+	download(Text::fromT(WinUtil::lastDirs[n]));
 }
 
 void DirectoryListingFrame::handleDownloadFavorite(unsigned id) {
@@ -641,7 +639,7 @@ void DirectoryListingFrame::download(const string& target) {
 }
 
 void DirectoryListingFrame::handleViewAsText() {
-	downloadFiles(Text::toT(Util::getTempPath()), true);
+	downloadFiles(Util::getTempPath(), true);
 }
 
 HTREEITEM DirectoryListingFrame::findItem(HTREEITEM ht, const tstring& name) {
@@ -1000,10 +998,10 @@ bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 					ht = dirs->getNextSibling(ht);
 				}
 			} else {
-				downloadFiles(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
+				downloadFiles(SETTING(DOWNLOAD_DIRECTORY));
 			}
 		} else {
-			downloadFiles(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
+			downloadFiles(SETTING(DOWNLOAD_DIRECTORY));
 		}
 	}
 	return true;

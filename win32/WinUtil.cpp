@@ -45,7 +45,7 @@ SmartWin::ImageListPtr WinUtil::userImages;
 int WinUtil::fileImageCount;
 int WinUtil::dirIconIndex;
 int WinUtil::dirMaskedIndex;
-StringList WinUtil::lastDirs;
+TStringList WinUtil::lastDirs;
 
 void WinUtil::init() {
 
@@ -374,8 +374,8 @@ tstring WinUtil::escapeMenu(tstring str) {
 	return str;
 }
 
-void WinUtil::addLastDir(const string& dir) {
-	StringIter i = find(lastDirs.begin(), lastDirs.end(), dir); 
+void WinUtil::addLastDir(const tstring& dir) {
+	TStringIter i = find(lastDirs.begin(), lastDirs.end(), dir); 
 	if(i != lastDirs.end()) {
 		lastDirs.erase(i);
 	}

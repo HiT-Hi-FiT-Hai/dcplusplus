@@ -163,7 +163,7 @@ private:
 
 		FinishedItemPtr entry;
 
-		const string& getText(int col) const {
+		const tstring& getText(int col) const {
 			return columns[col];
 		}
 		int getImage() const {
@@ -275,7 +275,7 @@ private:
 	void handleViewAsText(unsigned /*id*/) {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			new TextFrame(this->getParent(), Text::toT(items->getItemData(i)->entry->getTarget()));
+			new TextFrame(this->getParent(), items->getItemData(i)->entry->getTarget());
 	}
 
 	void handleOpenFile(unsigned /*id*/) {

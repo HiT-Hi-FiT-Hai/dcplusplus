@@ -350,10 +350,10 @@ string Util::formatBytes(int64_t aBytes) {
 
 string Util::formatExactSize(int64_t aBytes) {
 #ifdef _WIN32
-		TCHAR buf[64];
+		TCHAR buf[128];
 		TCHAR number[64];
 		NUMBERFMT nf;
-		_stprintf(number, _T("%I64d"), aBytes);
+		_sntprintf(number, 64, _T("%I64d"), aBytes);
 		TCHAR Dummy[16];
 		TCHAR sep[2] = _T(",");
 
@@ -365,13 +365,13 @@ string Util::formatExactSize(int64_t aBytes) {
 		nf.lpDecimalSep = sep;
 
 		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, Dummy, 16 );
-		nf.Grouping = Util::toInt(Dummy);
+		nf.Grouping = Util::toInt(Text::fromT(Dummy));
 		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Dummy, 16 );
 		nf.lpThousandSep = Dummy;
 
 		GetNumberFormat(LOCALE_USER_DEFAULT, 0, number, &nf, buf, sizeof(buf)/sizeof(buf[0]));
 
-		_stprintf(buf, _T("%s %s"), buf, CTSTRING(B));
+		_sntprintf(buf, 128, _T("%s %s"), buf, CTSTRING(B));
 		return Text::fromT(buf);
 #else
 		char buf[64];

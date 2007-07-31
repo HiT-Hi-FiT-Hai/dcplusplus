@@ -147,7 +147,7 @@ private:
 
 	std::auto_ptr<DirectoryListing> dl;
 	
-	std::string error;
+	tstring error;
 	bool usingDirMenu;
 	StringList targets;
 	deque<string> history;

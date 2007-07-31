@@ -32,7 +32,7 @@ SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0
 		Seed cs;
 		cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		cs.exStyle = WS_EX_STATICEDGE;
-		cs.caption = APPNAME;
+		cs.caption = _T(APPNAME);
 		createWindow(cs);
 	}
 	tstring caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);

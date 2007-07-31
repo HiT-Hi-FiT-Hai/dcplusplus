@@ -376,7 +376,7 @@ void MainWindow::handleQuickConnect() {
 		while ((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 
-		HubFrame::openWindow(getMDIClient(), tmp);
+		HubFrame::openWindow(getMDIClient(), Text::fromT(tmp));
 	}
 }
 
@@ -410,9 +410,9 @@ HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	}
 		break;
 	case VIEW_FILE_AND_DELETE: {
-		boost::scoped_ptr<tstring> file(reinterpret_cast<tstring*>(lParam));
+		boost::scoped_ptr<std::string> file(reinterpret_cast<std::string*>(lParam));
 		new TextFrame(this->getMDIClient(), *file);
-		File::deleteFile(Text::fromT(*file));
+		File::deleteFile(*file);
 	}
 		break;
 	case STATUS_MESSAGE: {
@@ -580,7 +580,7 @@ void MainWindow::updateStatus() {
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + static_cast<int64_t>(downdiff));
 
 	setStatus(STATUS_AWAY, Util::getAway() ? TSTRING(AWAY) : _T(""));
-	setStatus(STATUS_COUNTS, Client::getCounts());
+	setStatus(STATUS_COUNTS, Text::toT(Client::getCounts()));
 	setStatus(STATUS_SLOTS, Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
 	setStatus(STATUS_DOWN_TOTAL, Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
 	setStatus(STATUS_UP_TOTAL, Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
@@ -1396,7 +1396,7 @@ void MainWindow::on(QueueManagerListener::Finished, QueueItem* qi, const string&
 
 			speak(DOWNLOAD_LISTING, (LPARAM)i);
 		} else if (qi->isSet(QueueItem::FLAG_TEXT)) {
-			speak(VIEW_FILE_AND_DELETE, (LPARAM) new tstring(Text::toT(qi->getTarget())));
+			speak(VIEW_FILE_AND_DELETE, reinterpret_cast<LPARAM>(new std::string(qi->getTarget())));
 		}
 	}
 }

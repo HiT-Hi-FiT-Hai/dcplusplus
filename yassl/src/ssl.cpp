@@ -705,14 +705,14 @@ int SSL_CTX_load_verify_locations(SSL_CTX* ctx, const char* file,
         // call read_file for each reqular file in path
 #ifdef _WIN32
 
-        WIN32_FIND_DATA FindFileData;
+        WIN32_FIND_DATAA FindFileData;
         HANDLE hFind;
 
         char name[MAX_PATH + 1];  // directory specification
         strncpy(name, path, MAX_PATH - 3);
         strncat(name, "\\*", 3);
 
-        hFind = FindFirstFile(name, &FindFileData);
+        hFind = FindFirstFileA(name, &FindFileData);
         if (hFind == INVALID_HANDLE_VALUE) return SSL_BAD_PATH;
 
         do {
@@ -722,7 +722,7 @@ int SSL_CTX_load_verify_locations(SSL_CTX* ctx, const char* file,
                 strncat(name, FindFileData.cFileName, HALF_PATH);
                 ret = read_file(ctx, name, SSL_FILETYPE_PEM, CA);
             }
-        } while (ret == SSL_SUCCESS && FindNextFile(hFind, &FindFileData));
+        } while (ret == SSL_SUCCESS && FindNextFileA(hFind, &FindFileData));
 
         FindClose(hFind);
 

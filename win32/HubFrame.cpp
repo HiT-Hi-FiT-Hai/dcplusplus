@@ -183,7 +183,7 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 
 	BOOL max = FALSE;
 	if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max)) && !max) {
-		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(url));
+		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(url);
 		if(fhe != NULL){
 			//retrieve window position
 			SmartWin::Rectangle rc(fhe->getLeft(), fhe->getTop(), fhe->getRight() - fhe->getLeft(), fhe->getBottom() - fhe->getTop());
@@ -219,7 +219,7 @@ void HubFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
 	
-	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(Text::fromT(url));
+	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(url);
 	if(fhe != NULL && !StupidWin::isIconic(this)){
 		//Get position of window
 
@@ -246,7 +246,7 @@ void HubFrame::layout() {
 	mapWidget(STATUS_SHOW_USERS, showUsers);
 	
 	r.size.y -= rs.size.y + border;
-	int ymessage = message->getTextSize("A").y + 10;
+	int ymessage = message->getTextSize(_T("A")).y + 10;
 	int xfilter = showUsers->getChecked() ? std::min(r.size.x / 4, 200l) : 0;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
 	message->setBounds(rm);
@@ -321,9 +321,9 @@ bool HubFrame::enter() {
 			}
 		} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
 			if(!param.empty()) {
-				redirect = param;
+				redirect = Text::fromT(param);
 				if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
-					HubFrame::openWindow(getParent(), param);
+					HubFrame::openWindow(getParent(), Text::fromT(param));
 				} else {
 					BOOL whatever = FALSE;
 #ifdef PORT_ME
@@ -898,8 +898,8 @@ void HubFrame::on(Redirect, Client*, const string& line) throw() {
 		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
 		return;
 	}
+	redirect = line;
 #ifdef PORT_ME
-	redirect = Text::toT(line);
 	if(BOOLSETTING(AUTO_FOLLOW)) {
 		PostMessage(WM_COMMAND, IDC_FOLLOW, 0);
 	} else {
@@ -982,10 +982,10 @@ tstring HubFrame::getStatusUsers() const {
 
 	tstring textForUsers;
 	if (users->getSelectedCount() > 1)
-		textForUsers += Util::toString(users->getSelectedCount()) + "/";
+		textForUsers += Text::toT(Util::toString(users->getSelectedCount()) + "/");
 	if (showUsers->getChecked() && users->getRowCount() < userCount)
-		textForUsers += Util::toString(users->getRowCount()) + "/";
-	return textForUsers + Util::toString(userCount) + " " + STRING(HUB_USERS);
+		textForUsers += Text::toT(Util::toString(users->getRowCount()) + "/");
+	return textForUsers + Text::toT(Util::toString(userCount) + " " + STRING(HUB_USERS));
 }
 
 
@@ -1007,7 +1007,7 @@ void HubFrame::addAsFavorite() {
 	FavoriteHubEntry* existingHub = FavoriteManager::getInstance()->getFavoriteHubEntry(client->getHubUrl());
 	if(!existingHub) {
 		FavoriteHubEntry aEntry;
-		aEntry.setServer(Text::fromT(url));
+		aEntry.setServer(url);
 		aEntry.setName(Text::fromT(getText()));
 		aEntry.setDescription(Text::fromT(getText()));
 		aEntry.setConnect(false);
@@ -1511,7 +1511,7 @@ LRESULT HubFrame::onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!redirect.empty()) {
-		if(ClientManager::getInstance()->isConnected(Text::fromT(redirect))) {
+		if(ClientManager::getInstance()->isConnected(redirect)) {
 			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
 			return 0;
 		}

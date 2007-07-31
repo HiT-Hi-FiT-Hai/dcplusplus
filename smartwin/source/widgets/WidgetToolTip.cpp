@@ -19,7 +19,8 @@ const WidgetToolTip::Seed & WidgetToolTip::getDefaultSeed()
 
 void WidgetToolTip::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_POPUP) == WS_POPUP, "Widget must have WS_POPUP style");
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
+
 	PolicyType::create(cs);
 }
 

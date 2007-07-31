@@ -429,7 +429,7 @@ void QueueFrame::QueueItemInfo::update() {
 					if(getSources().size() == 1) {
 						display->columns[COLUMN_STATUS] = TSTRING(WAITING_USER_ONLINE);
 					} else {
-						_stprintf(buf, CTSTRING(WAITING_USERS_ONLINE), online, getSources().size());
+						_sntprintf(buf, 64, CTSTRING(WAITING_USERS_ONLINE), online, getSources().size());
 						display->columns[COLUMN_STATUS] = buf;
 					}
 				} else {
@@ -444,7 +444,7 @@ void QueueFrame::QueueItemInfo::update() {
 					} else if(getSources().size() == 4) {
 						display->columns[COLUMN_STATUS] = TSTRING(ALL_4_USERS_OFFLINE);
 					} else {
-						_stprintf(buf, CTSTRING(ALL_USERS_OFFLINE), getSources().size());
+						_sntprintf(buf, 64, CTSTRING(ALL_USERS_OFFLINE), getSources().size());
 						display->columns[COLUMN_STATUS] = buf;
 					}
 				}

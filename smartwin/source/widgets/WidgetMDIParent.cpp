@@ -10,7 +10,7 @@ const WidgetMDIParent::Seed & WidgetMDIParent::getDefaultSeed()
 
 	if ( d_NeedsInit )
 	{
-		d_DefaultValues.className = "MDICLIENT";
+		d_DefaultValues.className = _T("MDICLIENT");
 		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_VSCROLL | WS_HSCROLL;
 		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
 		d_DefaultValues.idFirstChild = 0;

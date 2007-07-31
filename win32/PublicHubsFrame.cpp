@@ -225,7 +225,7 @@ void PublicHubsFrame::layout() {
 	int const comboH = 140;
 
 	// listview
-	int ymessage = filter->getTextSize("A").y + 10;
+	int ymessage = filter->getTextSize(_T("A")).y + 10;
 
 	r.size.y -= ymessage*2 + 8 + border * 2;
 	hubs->setBounds(r);
@@ -538,7 +538,7 @@ void PublicHubsFrame::handleListSelChanged() {
 
 bool PublicHubsFrame::handleFilterChar(int c) {
 	if(c == VK_RETURN) {
-		filterString = filter->getText();
+		filterString = Text::fromT(filter->getText());
 		updateList();
 		return true;
 	} 

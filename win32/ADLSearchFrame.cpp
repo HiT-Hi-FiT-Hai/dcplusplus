@@ -154,7 +154,7 @@ void ADLSearchFrame::layout() {
 	r.size.y -= rs.size.y;
 	
 	/// @todo dynamic width
-	const int ybutton = add->getTextSize("A").y + 10;
+	const int ybutton = add->getTextSize(_T("A")).y + 10;
 	const int xbutton = 90;
 	const int xborder = 10;
 	

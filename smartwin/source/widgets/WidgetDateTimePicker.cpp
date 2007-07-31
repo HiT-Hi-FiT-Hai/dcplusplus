@@ -29,7 +29,7 @@ const WidgetDateTimePicker::Seed & WidgetDateTimePicker::getDefaultSeed()
 
 void WidgetDateTimePicker::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, "Widget must have WS_CHILD style");
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
 	//TODO: use CreationalInfo parameters
 	setFont( cs.font );

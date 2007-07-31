@@ -157,8 +157,8 @@ private:
 	UserMap userMap;
 	
 	Client* client;
-	tstring url;
-	tstring redirect;
+	string url;
+	string redirect;
 	bool timeStamps;
 	bool updateUsers;
 	bool waitingForPW;

@@ -117,7 +117,7 @@ void FavHubsFrame::layout() {
 	r.size.y -= rs.size.y + border;
 	
 	/// @todo dynamic width
-	const int ybutton = add->getTextSize("A").y + 10;
+	const int ybutton = add->getTextSize(_T("A")).y + 10;
 	const int xbutton = 90;
 	const int xborder = 10;
 	
@@ -165,7 +165,7 @@ void FavHubsFrame::openSelected() {
 	std::vector<unsigned> items = hubs->getSelectedRows();
 	for(std::vector<unsigned>::iterator i = items.begin(); i != items.end(); ++i) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)hubs->getItemData(*i);
-		HubFrame::openWindow(getParent(), Text::toT(entry->getServer()));
+		HubFrame::openWindow(getParent(), entry->getServer());
 	}
 }
 

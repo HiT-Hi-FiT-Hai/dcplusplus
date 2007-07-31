@@ -74,7 +74,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 		TStringList row;
 		row.push_back(Text::toT(j->first));
 		row.push_back(Text::toT(j->second));
-		row.push_back(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second)));
+		row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))));
 		directories->insertRow(row);
 	}
 
@@ -168,7 +168,7 @@ void UploadPage::handleShareHiddenClicked(WidgetCheckBoxPtr checkBox) {
 		TStringList row;
 		row.push_back(Text::toT(j->first));
 		row.push_back(Text::toT(j->second));
-		row.push_back(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second)));
+		row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))));
 		directories->insertRow(row);
 	}
 

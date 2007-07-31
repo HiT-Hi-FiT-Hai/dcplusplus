@@ -79,11 +79,11 @@ namespace Text {
 	void wcToUtf8(wchar_t c, string& str);
 
 #ifdef UNICODE
-	const tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
-	tstring toT(const string& str) throw() { return utf8ToWide(str); }
+	inline const tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
+	inline tstring toT(const string& str) throw() { return utf8ToWide(str); }
 
-	const string& fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
-	string fromT(const tstring& str) throw() { return wideToUtf8(str); }
+	inline const string& fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
+	inline string fromT(const tstring& str) throw() { return wideToUtf8(str); }
 #else
 	inline const tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToAcp(str, tmp); }
 	inline tstring toT(const string& str) throw() { return utf8ToAcp(str); }
@@ -132,6 +132,25 @@ namespace Text {
 	}
 	
 	string toDOS(string tmp);
+	
+	template<typename T>
+	tstring tformat(const tstring& src, T t) {
+		tstring ret(src.size() + 64, _T('\0'));
+		int n = _sntprintf(&ret[0], ret.size(), src.c_str(), t);
+		if(n != -1 && n < ret.size()) {
+			ret.resize(n);
+		}
+		return ret;
+	}
+	template<typename T, typename T2, typename T3>
+	tstring tformat(const tstring& src, T t, T2 t2, T3 t3) {
+		tstring ret(0, src.size() + 128, _T('\0'));
+		int n = _sntprintf(&ret[0], ret.size(), src.c_str(), t, t2, t3);
+		if(n != -1 && n < ret.size()) {
+			ret.resize(n);
+		}
+		return ret;
+	}
 }
 
 } // namespace dcpp

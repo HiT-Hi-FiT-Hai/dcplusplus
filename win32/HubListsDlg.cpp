@@ -138,14 +138,14 @@ void HubListsDlg::handleRemoveClicked() {
 }
 
 void HubListsDlg::handleOKClicked() {
-	string tmp;
+	tstring tmp;
 	int j = hubLists->getRowCount();
 	for(int i = 0; i < j; ++i) {
 		if(i != 0)
 			tmp += ';';
 		tmp += hubLists->getCellText(0, i);
 	}
-	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
+	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, Text::fromT(tmp));
 	endDialog(IDOK);
 }
 

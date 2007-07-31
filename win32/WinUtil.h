@@ -63,7 +63,7 @@ public:
 	static int fileImageCount;
 	static int dirIconIndex;
 	static int dirMaskedIndex;
-	static StringList lastDirs;
+	static TStringList lastDirs;
 
 	static void init();
 	static void uninit();
@@ -119,7 +119,7 @@ public:
 
 	static tstring escapeMenu(tstring str);
 
-	static void addLastDir(const string& dir);
+	static void addLastDir(const tstring& dir);
 
 	static void openLink(const tstring& url);
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringT, const TCHAR* types = NULL, const TCHAR* defExt = NULL);

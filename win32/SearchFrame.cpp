@@ -1045,14 +1045,13 @@ void SearchFrame::runSearch() {
 			searchBox->setText(Util::emptyStringT);
 	} else {
 		int32_t waitFor = SearchManager::getInstance()->timeToSearch();
-		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
-		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
+		tstring msg = Text::tformat(TSTRING(SEARCHING_WAIT), waitFor);
 
-		setStatus(STATUS_STATUS, tstring(buf));
+		setStatus(STATUS_STATUS, msg);
 		setStatus(STATUS_COUNT, Util::emptyStringT);
 		setStatus(STATUS_FILTERED, Util::emptyStringT);
 
-		setText(TSTRING(SEARCH) + _T(" - ") + tstring(buf));
+		setText(TSTRING(SEARCH) + _T(" - ") + msg);
 		// Start the countdown timer
 		initSecond();
 	}
@@ -1065,11 +1064,9 @@ void SearchFrame::initSecond() {
 bool SearchFrame::eachSecond() {
 	int32_t waitFor = SearchManager::getInstance()->timeToSearch();
 	if(waitFor > 0) {
-		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
-		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
-
-		setStatus(STATUS_STATUS, tstring(buf));
-		setText(TSTRING(SEARCH) + _T(" - ") + tstring(buf));
+		tstring msg = Text::tformat(TSTRING(SEARCHING_WAIT), waitFor);
+		setStatus(STATUS_STATUS, msg);
+		setText(TSTRING(SEARCH) + _T(" - ") + msg);
 		return true;
 	} 
 	

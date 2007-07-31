@@ -42,7 +42,7 @@ TextFrame::TextFrame(SmartWin::WidgetMDIParent* mdiParent, const string& fileNam
 	try {
 		pad->setText(Text::toT(Text::toDOS(File(fileName, File::READ, File::OPEN).read(MAX_TEXT_LEN))));
 	} catch(const FileException& e) {
-		pad->setText(e.getError());
+		pad->setText(Text::toT(e.getError()));
 	}
 	setText(Text::toT(Util::getFileName(fileName)));
 	initStatus();
