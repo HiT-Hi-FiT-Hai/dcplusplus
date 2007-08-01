@@ -10,7 +10,8 @@ opts.AddOptions(
 	BoolOption('nativestl', 'Try to use native STL instead of STLPort', 'no'),
 	BoolOption('gch', 'Use GCH when compiling GUI (disable if you have linking problems with mingw)', 'yes'),
 	BoolOption('verbose', 'Show verbose command lines', 'no'),
-	BoolOption('savetemps', 'Save intermediate compilation files (assembly output)', 'no')
+	BoolOption('savetemps', 'Save intermediate compilation files (assembly output)', 'no'),
+	BoolOption('unicode', 'Build a Unicode version which fully supports international characters', 'yes')
 )
 
 gcc_flags = {
@@ -52,13 +53,13 @@ msvc_link_flags = {
 }
 
 msvc_defs = {
-	'common' : ['_REENTRANT', 'USE_SYS_STL=1', 'UNICODE', '_UNICODE'],
+	'common' : ['_REENTRANT', 'USE_SYS_STL=1'],
 	'debug' : [''],
 	'release' : ['NDEBUG']
 }
 
 gcc_defs = {
-	'common' : ['_REENTRANT', 'USE_SYS_STL=1', 'UNICODE', '_UNICODE'],
+	'common' : ['_REENTRANT', 'USE_SYS_STL=1'],
 	'debug' : ['_DEBUG'],
 	'release' : ['NDEBUG']
 }
@@ -104,6 +105,9 @@ else:
 	
 if env['savetemps'] and 'gcc' in env['TOOLS']:
 	env.Append(CCFLAGS = ['-save-temps', '-fverbose-asm'])
+
+if env['unicode']:
+	env.Append(CPPDEFINES = ['UNICODE', '_UNICODE'])
 	
 if env['CC'] == 'cl':
 	flags = msvc_flags
