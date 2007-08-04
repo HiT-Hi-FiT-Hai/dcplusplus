@@ -58,7 +58,7 @@ public:
 	  * Class takes "control" of HICON meaning it will automatically free the
 	  * contained HICON upon destruction
 	  */
-	explicit Icon( HICON icon );
+	explicit Icon( HICON icon, bool own = true );
 
 	/// RAII Constructor loading a icon from a resource ID
 	/** Note! <br>
@@ -85,8 +85,12 @@ public:
 	  */
 	HICON getIcon() const;
 
+	HICON handle() const;
 private:
 	HICON itsIcon;
+	// Specifies that the underlying image list is owned, i.e., will be destroyed on the destructor
+	bool itsOwnershipFlag;
+
 };
 
 // end namespace SmartWin

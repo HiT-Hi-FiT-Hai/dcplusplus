@@ -30,7 +30,6 @@
 #define WidgetDataGridViewEditBox_h
 
 #include "WidgetTextBox.h"
-#include "WidgetWindowBase.h"
 
 namespace SmartWin
 {
@@ -42,8 +41,7 @@ namespace private_
 
 // Class is only to make subclassing of Edit Control in List View possible
 // TODO: Make window NOT hide the leftmost cell of row when entering "edit modus"..
-class ListViewEditBox :
-	public WidgetTextBox<>
+class ListViewEditBox : WidgetTextBox
 {
 public:
 	// Class type
@@ -60,14 +58,13 @@ public:
 	{}
 
 	Rectangle itsRect;
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 inline ListViewEditBox::ListViewEditBox( SmartWin::Widget * parent )
-	: WidgetTextBox<>( parent )
+	: WidgetTextBox( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );

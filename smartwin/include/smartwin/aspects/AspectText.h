@@ -77,10 +77,10 @@ public:
 	/// Gets the text of the AspectText realizing class
 	/** The Return value is the text of the realizing class.
 	  */
-	SmartUtil::tstring getText();
+	SmartUtil::tstring getText() const;
 	
-	/// Length in characters of the text
-	size_t length();
+	/// Length of text in characters
+	size_t length() const;
 
 	/// \ingroup EventHandlersAspectText
 	/// Setting the event handler for the "setText" event
@@ -131,19 +131,18 @@ void AspectText< WidgetType >::setTextLines( const SmartUtil::tstring & inTxt )
 }
 
 template< class WidgetType >
-size_t AspectText< WidgetType >::length( ) {
+size_t AspectText< WidgetType >::length( ) const {
 	return static_cast<size_t>(static_cast<const WidgetType*>(this)->sendMessage(WM_GETTEXTLENGTH));
 }
 
-
 template< class WidgetType >
-SmartUtil::tstring AspectText< WidgetType >::getText()
+SmartUtil::tstring AspectText< WidgetType >::getText() const
 {
 	size_t textLength = length();
 	if ( textLength == 0 )
 		return _T( "" );
 	SmartUtil::tstring retVal(textLength + 1, 0);
-	retVal.resize(static_cast<WidgetType*>(this)->sendMessage(WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
+	retVal.resize(static_cast<const WidgetType*>(this)->sendMessage(WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
 	return retVal;
 }
 

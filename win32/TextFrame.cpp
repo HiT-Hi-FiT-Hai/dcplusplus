@@ -26,7 +26,7 @@
 static const size_t MAX_TEXT_LEN = 64*1024;
 
 TextFrame::TextFrame(SmartWin::WidgetMDIParent* mdiParent, const string& fileName) : 
-	BaseType(mdiParent),
+	BaseType(mdiParent, Text::toT(Util::getFileName(fileName))),
 	pad(0) 
 {
 	WidgetTextBox::Seed cs;
@@ -44,7 +44,6 @@ TextFrame::TextFrame(SmartWin::WidgetMDIParent* mdiParent, const string& fileNam
 	} catch(const FileException& e) {
 		pad->setText(Text::toT(e.getError()));
 	}
-	setText(Text::toT(Util::getFileName(fileName)));
 	initStatus();
 	layout();
 }

@@ -33,6 +33,7 @@
 
 #include "../../SmartUtil.h"
 #include "../BasicTypes.h"
+#include "../Icon.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../WindowClass.h"
 #include "WidgetMDIParent.h"
@@ -82,8 +83,8 @@ public:
 	public:
 		typedef WidgetMDIChild::ThisType WidgetType;
 
-		HICON smallIcon;
-		HICON icon;
+		SmartWin::IconPtr smallIcon;
+		SmartWin::IconPtr icon;
 		HBRUSH background;
 		bool activate;
 		

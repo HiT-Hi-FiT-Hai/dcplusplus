@@ -31,10 +31,9 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
-#include <richedit.h>
-#include <commctrl.h>
 #include "WidgetTextBox.h"
 #include "../LibraryLoader.h"
+#include <richedit.h>
 
 namespace SmartWin
 {
@@ -43,17 +42,6 @@ namespace SmartWin
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
-
-template< class TextBoxType >
-class WidgetRichTextBox;
-
-class RichTextBox
-{
-public:
-	enum canSetReadOnly
-	{};
-	typedef WidgetRichTextBox< RichTextBox > TextBoxType;
-};
 
 /// RichEdit Control class
 /** \ingroup WidgetControls
@@ -67,14 +55,13 @@ public:
   * A good example of the difference between those Widgets is the difference between 
   * notepad ( WidgetTextBox ) and wordpad ( WidgetRichTextBox )   
   */
-template< class TextBoxType = RichTextBox/*only her to get the number of template parameters right in the base class*/ >
 class WidgetRichTextBox :
-	public WidgetTextBox< /*This is to DISABLE the OnlyEditControl thingies, Magic Enum Construct!*/RichTextBox >
+	public WidgetTextBoxBase
 {
 	friend class WidgetCreator< WidgetRichTextBox >;
 public:
 	/// Class type
-	typedef WidgetRichTextBox< TextBoxType > ThisType;
+	typedef WidgetRichTextBox ThisType;
 
 	/// Object type
 	typedef ThisType * ObjectType;
@@ -88,7 +75,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef typename WidgetRichTextBox::ThisType WidgetType;
+		typedef WidgetRichTextBox::ThisType WidgetType;
 
 		FontPtr font;
 		COLORREF backgroundColor;
@@ -135,63 +122,19 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class TextBoxType >
-const typename WidgetRichTextBox< TextBoxType >::Seed & WidgetRichTextBox< TextBoxType >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = RICHEDIT_CLASS;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_LEFT | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_MULTILINE | WS_BORDER | ES_WANTRETURN;
-		d_DefaultValues.backgroundColor = RGB( 255, 255, 255 );
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_DefaultValues.scrollBarHorizontallyFlag = false;
-		d_DefaultValues.scrollBarVerticallyFlag = false;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class TextBoxType >
-WidgetRichTextBox< TextBoxType >::Seed::Seed()
+inline WidgetRichTextBox::Seed::Seed()
 {
 	* this = WidgetRichTextBox::getDefaultSeed();
 }
 
-template< class TextBoxType >
-void WidgetRichTextBox< TextBoxType >::create( const Seed & cs )
-{
-	// Need to load up RichEdit library!
-	static LibraryLoader richEditLibrary( _T( "riched20.dll" ) );
-
-	if ( cs.style & WS_CHILD )
-		Widget::create( cs );
-	else
-	{
-		typename WidgetRichTextBox::Seed d_YouMakeMeDoNastyStuff = cs;
-
-		d_YouMakeMeDoNastyStuff.style |= WS_CHILD;
-		Widget::create( d_YouMakeMeDoNastyStuff );
-	}
-	ThisType::createMessageMap();
-	setFont( cs.font );
-	setBackgroundColor( cs.backgroundColor );
-	setScrollBarHorizontally( cs.scrollBarHorizontallyFlag );
-	setScrollBarVertically( cs.scrollBarVerticallyFlag );
-}
-
-template< class TextBoxType >
-WidgetRichTextBox< TextBoxType >::WidgetRichTextBox( SmartWin::Widget * parent )
-	: WidgetTextBox< TextBoxType >( parent )
+inline WidgetRichTextBox::WidgetRichTextBox( SmartWin::Widget * parent )
+	: WidgetTextBoxBase( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class TextBoxType >
-void WidgetRichTextBox< TextBoxType >::setBackgroundColor( COLORREF color )
+inline void WidgetRichTextBox::setBackgroundColor( COLORREF color )
 {
 	this->sendMessage(EM_SETBKGNDCOLOR, 0, static_cast< LPARAM >( color ) );
 }

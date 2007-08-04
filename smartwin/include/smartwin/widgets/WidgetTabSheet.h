@@ -29,6 +29,7 @@
 #ifndef WidgetTabSheet_h
 #define WidgetTabSheet_h
 
+#include "../ImageList.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectEnabled.h"
@@ -192,7 +193,7 @@ public:
 	  * where you wish to put the new page
 	  */
 	// the negative values are already covered by throwing an exception
-	unsigned int addPage( const SmartUtil::tstring & header, unsigned index, LPARAM lParam = 0 );
+	unsigned int addPage( const SmartUtil::tstring & header, unsigned index, LPARAM lParam = 0, int image = -1 );
 	
 	LPARAM getData(unsigned idx);
 	
@@ -258,7 +259,11 @@ public:
 	static bool isValidSelectionChanged( LPARAM lPar )
 	{ return true;
 	}
+	
+	void setImageList(const ImageListPtr& imageList);
 
+	const ImageListPtr& getImageList() const;
+	
 	size_t size() {
 		return static_cast<size_t>(TabCtrl_GetItemCount(this->handle()));
 	}
@@ -281,6 +286,10 @@ protected:
 	// WidgetFactory class which is friend
 	virtual ~WidgetTabSheet()
 	{}
+	
+private:
+	// Keep a copy so it won't get deallocated...
+	ImageListPtr imageList;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -332,21 +341,6 @@ inline LPARAM WidgetTabSheet::getData(unsigned idx)
 inline void WidgetTabSheet::setSelectedIndex( int idx )
 {
 	TabCtrl_SetCurSel( this->handle(), idx );
-}
-
-inline unsigned int WidgetTabSheet::addPage( const SmartUtil::tstring & header, unsigned index, LPARAM data )
-{
-	TCITEM item;
-	item.mask = TCIF_TEXT | TCIF_PARAM;
-	item.pszText = const_cast < TCHAR * >( header.c_str() );
-	item.lParam = data;
-	int newIdx = TabCtrl_InsertItem( this->handle(), index, & item );
-	if ( newIdx == - 1 )
-	{
-		xCeption x( _T( "Error while trying to add page into Tab Sheet" ) );
-		throw x;
-	}
-	return ( unsigned int ) newIdx;
 }
 
 inline void WidgetTabSheet::setHeader( unsigned index, const SmartUtil::tstring& header )
@@ -417,16 +411,15 @@ inline void WidgetTabSheet::setFlatSeparators( bool value )
 	this->sendMessage( TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, value );
 }
 
-inline SmartWin::Rectangle WidgetTabSheet::getUsableArea() const
+inline void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)
 {
-	::RECT d_Answer;
-	Point d_Size = this->getSize();
+	imageList = imageList_;
+	TabCtrl_SetImageList(handle(), imageList->handle());
+}
 
-	d_Answer.left = d_Answer.top = 0;
-	d_Answer.right = d_Size.x;
-	d_Answer.bottom = d_Size.y;
-	TabCtrl_AdjustRect( this->handle(), false, & d_Answer );
-	return Rectangle::FromRECT( d_Answer );
+inline const ImageListPtr& WidgetTabSheet::getImageList() const
+{
+	return imageList;
 }
 
 // end namespace SmartWin

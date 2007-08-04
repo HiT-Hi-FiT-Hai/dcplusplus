@@ -2,12 +2,13 @@
 #define WINDOWCLASS_H_
 
 #include "Widget.h"
+#include "Icon.h"
 
 namespace SmartWin {
 
 class WindowClass : boost::noncopyable {
 public:
-	WindowClass(const SmartUtil::tstring& className, WNDPROC wndProc, LPCTSTR menu = NULL, HBRUSH background = NULL, HICON icon = NULL, HICON iconsm = NULL, HCURSOR cursor = NULL);
+	WindowClass(const SmartUtil::tstring& className, WNDPROC wndProc, LPCTSTR menu = NULL, HBRUSH background = NULL, IconPtr icon = IconPtr(), IconPtr iconsm = IconPtr(), HCURSOR cursor = NULL);
 	~WindowClass();
 	
 	LPCTSTR getClassName() { return reinterpret_cast<LPCTSTR>(static_cast<size_t>(atom)); }
@@ -19,7 +20,10 @@ private:
 	static int itsInstanceNo;
 	
 	ATOM atom;
-
+	
+	// Keep references
+	IconPtr icon;
+	IconPtr smallIcon;
 };
 
 }

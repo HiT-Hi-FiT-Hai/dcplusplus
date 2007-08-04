@@ -82,6 +82,8 @@ public:
 	/** Use when you need to access the underlying HIMAGELIST
 	  */
 	HIMAGELIST getImageList() const;
+	
+	HIMAGELIST handle() const;
 
 	/// Add a bitmap to the list
 	void add( const Bitmap & bitmap );
@@ -164,6 +166,15 @@ private:
 	bool itsOwnershipFlag;
 };
 
+inline HIMAGELIST ImageList::getImageList() const
+{
+	return handle();
+}
+
+inline HIMAGELIST ImageList::handle() const
+{
+	return itsImageList;
+}
 // end namespace SmartWin
 }
 

@@ -76,8 +76,8 @@ public:
 		typedef WidgetMDIFrame::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
-		HICON icon;
-		HICON iconSmall;
+		IconPtr icon;
+		IconPtr iconSmall;
 		HBRUSH background;
 		LPCTSTR menuName;
 		HCURSOR cursor;

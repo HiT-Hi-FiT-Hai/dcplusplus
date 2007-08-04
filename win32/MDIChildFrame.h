@@ -39,7 +39,7 @@ public:
 	
 protected:
 
-	MDIChildFrame(SmartWin::WidgetMDIParent* mdiClient, bool activate = true) : WidgetFactory< SmartWin::WidgetMDIChild >(mdiClient), lastFocus(NULL), reallyClose(false) {
+	MDIChildFrame(SmartWin::WidgetMDIParent* mdiClient, const tstring& title, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) : WidgetFactory< SmartWin::WidgetMDIChild >(mdiClient), lastFocus(NULL), reallyClose(false) {
 		typename ThisType::Seed cs;
 		BOOL max = FALSE;
 		if(!mdiClient->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
@@ -48,12 +48,13 @@ protected:
 		if(max)
 			cs.style |= WS_MAXIMIZE;
 		cs.style |= WS_CLIPCHILDREN;
-		
+		cs.caption = title;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.activate = activate;
+		cs.icon = icon;
 		this->createMDIChild(cs);
 
-		MDITab::getInstance()->addTab(this);
+		MDITab::getInstance()->addTab(this, icon);
 
 		onClosing(std::tr1::bind(&ThisType::handleClosing, this));
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
@@ -89,6 +90,9 @@ protected:
 		}
 	}
 	
+	void setDirty() {
+		
+	}
 private:
 	HWND lastFocus;
 	bool reallyClose;
@@ -113,7 +117,9 @@ private:
 	}
 	
 	void handleActivate(bool active) {
-		if(!active) {
+		if(active) {
+			// clear dirty...
+		} else {
 			lastFocus = ::GetFocus();
 		}
 	}

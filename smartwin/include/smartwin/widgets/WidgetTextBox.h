@@ -30,6 +30,7 @@
 #define WidgetTextBox_h
 
 #include "../../SmartUtil.h"
+#include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectEnabled.h"
@@ -51,25 +52,6 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-template< class TextBoxType >
-class WidgetTextBox;
-
-class NormalTextBox
-{
-public:
-	enum canSetOnlyUpperCase
-	{};
-	enum canSetOnlyLowerCase
-	{};
-	enum canSetOnlyPassword
-	{};
-	enum canSetOnlyNumbers
-	{};
-	enum canSetReadOnly
-	{};
-	typedef WidgetTextBox< NormalTextBox > TextBoxType;
-};
-
 #ifdef _MSC_VER
 #pragma warning( disable : 4101 )
 #endif
@@ -88,57 +70,25 @@ public:
   * Related classes <br>
   * < ul > < li >WidgetRichTextBox< /li > < /ul >
   */
-template< class TextBoxType = NormalTextBox >
-class WidgetTextBox :
+class WidgetTextBoxBase :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspect classes
-	public AspectBackgroundColor< WidgetTextBox< TextBoxType > >,
-	public AspectBorder< WidgetTextBox< TextBoxType > >,
-	public AspectEnabled< WidgetTextBox< TextBoxType > >,
-	public AspectFocus< WidgetTextBox< TextBoxType > >,
-	public AspectFont< WidgetTextBox< TextBoxType > >,
-	public AspectKeyboard< WidgetTextBox< TextBoxType > >,
-	public AspectRaw< WidgetTextBox< TextBoxType > >,
-	public AspectSizable< WidgetTextBox< TextBoxType > >,
-	public AspectText< WidgetTextBox< TextBoxType > >,
-	public AspectUpdate< WidgetTextBox< TextBoxType > >,
-	public AspectVisible< WidgetTextBox< TextBoxType > >
+	public AspectBackgroundColor< WidgetTextBoxBase >,
+	public AspectBorder< WidgetTextBoxBase >,
+	public AspectEnabled< WidgetTextBoxBase >,
+	public AspectFocus< WidgetTextBoxBase >,
+	public AspectFont< WidgetTextBoxBase >,
+	public AspectKeyboard< WidgetTextBoxBase >,
+	public AspectRaw< WidgetTextBoxBase >,
+	public AspectSizable< WidgetTextBoxBase >,
+	public AspectText< WidgetTextBoxBase >,
+	public AspectUpdate< WidgetTextBoxBase >,
+	public AspectVisible< WidgetTextBoxBase >
 {
-	friend class WidgetCreator< WidgetTextBox >;
+	friend class WidgetCreator< WidgetTextBoxBase >;
 public:
-	/// Class type
-	typedef WidgetTextBox< TextBoxType > ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
-	/// Info for creation
-	/** This class contains all of the values needed to create the widget. It also
-	  * knows the type of the class whose seed values it contains. Every widget
-	  * should define one of these.
-	  */
-	class Seed
-		: public SmartWin::Seed
-	{
-	public:
-		typedef typename WidgetTextBox< TextBoxType >::ThisType WidgetType;
-
-		FontPtr font;
-
-		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
-	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	// Contract needed by AspectUpdate Aspect class
 	static inline Message & getUpdateMessage();
@@ -159,7 +109,6 @@ public:
 	  */
 	SmartUtil::tstring getSelection() const;
 
-
 	/// Appends text to the text box
 	/** The txt parameter is the new text to append to the text box.
 	  */
@@ -170,8 +119,6 @@ public:
 	  * Replaces \n with \r\n so that Windows textbox understands "endl"
 	  */
 	void addTextLines( const SmartUtil::tstring & txt );
-
-
 
 	/// Replaces the currently selected text in the text box with the given text parameter
 	/** If canUndo is true this operation is stacked into the undo que ( can be
@@ -210,20 +157,6 @@ public:
 	  */
 	void setScrollBarVertically( bool value = true );
 
-	/// Adds (or removes) upper case forcing
-	/** If you pass false you remove this ability <br>
-	  * If you pass true or call function without arguments you force the control to
-	  * display all characters in UPPER CASE.
-	  */
-	void setUpperCase( bool value = true );
-
-	/// Adds (or removes) lower case forcing
-	/** If you pass false you remove this ability <br>
-	  * If you pass true or call function without arguments you force the control to
-	  * display all characters in lower case.
-	  */
-	void setLowerCase( bool value = true );
-
 	/// Adds (or removes) the readonly property
 	/** If you pass false you remove this ability <br>
 	  * If you pass true or call function without arguments you force the control to
@@ -233,6 +166,66 @@ public:
 
 	bool isReadOnly();
 	
+	/// Adds (or removes) a border surrounding the control
+	/** If you pass false you REMOVE the border of the control ( if there is on )
+	  * <br>
+	  * If you pass true to the function, you ADD a border.
+	  */
+	void setBorder( bool value = true );
+
+	/// Set the maximum number of characters that can be entered.
+	/** Although this prevents user from entering more maxChars, Paste can overrun the limit.
+	  */
+	void setTextLimit( DWORD maxChars );
+	 
+	/// Returns the maximum number of characters that can be entered.
+	/** Note that the maxChars returned will vary by OS if left unset.
+	  */
+	DWORD getTextLimit() const ;
+
+protected:
+	// Constructor Taking pointer to parent
+	explicit WidgetTextBoxBase( SmartWin::Widget * parent );
+
+	// To assure nobody accidentally deletes any heaped object of this type, parent
+	// is supposed to do so when parent is killed...
+	virtual ~WidgetTextBoxBase()
+	{}
+};
+
+class WidgetTextBox : 
+	public WidgetTextBoxBase 
+{
+public:
+	typedef WidgetTextBox ThisType;
+	
+	typedef ThisType* ObjectType;
+	
+	/// Info for creation
+	/** This class contains all of the values needed to create the widget. It also
+	  * knows the type of the class whose seed values it contains. Every widget
+	  * should define one of these.
+	  */
+	class Seed
+		: public SmartWin::Seed
+	{
+	public:
+		typedef WidgetTextBox::ThisType WidgetType;
+
+		FontPtr font;
+
+		/// Fills with default parameters
+		// explicit to avoid conversion through SmartWin::CreationalStruct
+		explicit Seed();
+
+		/// Doesn't fill any values
+		Seed( DontInitialize )
+		{}
+	};
+
+	/// Default values for creation
+	static const Seed & getDefaultSeed();
+
 	/// Adds (or removes) the numbers property
 	/** If you pass false you remove this ability <br>
 	  * If you pass true or call function without arguments you force the control to
@@ -249,23 +242,19 @@ public:
 	  */
 	void setPassword( bool value = true, TCHAR pwdChar = '*' );
 
-	/// Adds (or removes) a border surrounding the control
-	/** If you pass false you REMOVE the border of the control ( if there is on )
-	  * <br>
-	  * If you pass true to the function, you ADD a border.
+	/// Adds (or removes) upper case forcing
+	/** If you pass false you remove this ability <br>
+	  * If you pass true or call function without arguments you force the control to
+	  * display all characters in UPPER CASE.
 	  */
-	void setBorder( bool value = true );
+	void setUpperCase( bool value = true );
 
-
-	/// Set the maximum number of characters that can be entered.
-	/** Although this prevents user from entering more maxChars, Paste can overrun the limit.
+	/// Adds (or removes) lower case forcing
+	/** If you pass false you remove this ability <br>
+	  * If you pass true or call function without arguments you force the control to
+	  * display all characters in lower case.
 	  */
-	void setTextLimit( DWORD maxChars );
-	 
-	/// Returns the maximum number of characters that can be entered.
-	/** Note that the maxChars returned will vary by OS if left unset.
-	  */
-	DWORD getTextLimit() const ;
+	void setLowerCase( bool value = true );
 
 
 	/// Actually creates the TextBox
@@ -276,6 +265,8 @@ public:
 	virtual void create( const Seed & cs = getDefaultSeed() );
 
 protected:
+	friend class WidgetCreator< WidgetTextBox >;
+
 	// Constructor Taking pointer to parent
 	explicit WidgetTextBox( SmartWin::Widget * parent );
 
@@ -283,44 +274,20 @@ protected:
 	// is supposed to do so when parent is killed...
 	virtual ~WidgetTextBox()
 	{}
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template< class TextBoxType >
-const typename WidgetTextBox< TextBoxType >::Seed & WidgetTextBox< TextBoxType >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = _T("Edit");
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_WANTRETURN;
-		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
-
-template< class TextBoxType >
-WidgetTextBox< TextBoxType >::Seed::Seed()
-{
-	* this = WidgetTextBox::getDefaultSeed();
-}
-
-template< class TextBoxType >
-Message & WidgetTextBox< TextBoxType >::getUpdateMessage()
+inline Message & WidgetTextBoxBase::getUpdateMessage()
 {
 	static Message retVal = Message( WM_COMMAND, EN_UPDATE );
 	return retVal;
 }
 
-template< class TextBoxType >
-Message & WidgetTextBox< TextBoxType >::getBackgroundColorMessage()
+inline Message & WidgetTextBoxBase::getBackgroundColorMessage()
 {
 	// TODO What if readonly status changes?
 	static Message rw = Message( WM_CTLCOLOREDIT );
@@ -329,16 +296,12 @@ Message & WidgetTextBox< TextBoxType >::getBackgroundColorMessage()
 	return this->isReadOnly() ? ro : rw;
 }
 
-
-
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setSelection( long start, long end )
+inline void WidgetTextBoxBase::setSelection( long start, long end )
 {
 	this->sendMessage(EM_SETSEL, start, end );
 }
 
-template< class TextBoxType >
-SmartUtil::tstring WidgetTextBox< TextBoxType >::getSelection() const
+inline SmartUtil::tstring WidgetTextBoxBase::getSelection() const
 {
 	DWORD start, end;
 	this->sendMessage( EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
@@ -346,171 +309,116 @@ SmartUtil::tstring WidgetTextBox< TextBoxType >::getSelection() const
 	return retVal;
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::replaceSelection( const SmartUtil::tstring & txt, bool canUndo )
+inline void WidgetTextBoxBase::replaceSelection( const SmartUtil::tstring & txt, bool canUndo )
 {
 	this->sendMessage(EM_REPLACESEL, static_cast< WPARAM >( canUndo ? TRUE : FALSE ), reinterpret_cast< LPARAM >( txt.c_str() ) );
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::addText( const SmartUtil::tstring & addtxt )
+inline void WidgetTextBoxBase::addText( const SmartUtil::tstring & addtxt )
 {
 	setSelection( ( long ) this->getText().size() );
 	replaceSelection( addtxt ); 
 }
 
-
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::addTextLines( const SmartUtil::tstring & addtxt )
+inline void WidgetTextBoxBase::addTextLines( const SmartUtil::tstring & addtxt )
 {
 	setSelection( ( long ) this->getText().size() );
 	replaceSelection( this->replaceEndlWithLfCr( addtxt ) ); 
 }
 
-
-
-template< class TextBoxType >
-long WidgetTextBox< TextBoxType >::findText( const SmartUtil::tstring & txt, unsigned offset ) const
+inline long WidgetTextBoxBase::findText( const SmartUtil::tstring & txt, unsigned offset ) const
 {
-	const SmartUtil::tstring & txtOfBox = this->getText();
+	SmartUtil::tstring txtOfBox = this->getText();
 	size_t position = txtOfBox.find( txt, offset );
 	if ( position == std::string::npos )
 		return - 1;
 	return static_cast< long >( position );
 }
 
-template< class TextBoxType >
-long WidgetTextBox< TextBoxType >::getCaretPos()
+inline long WidgetTextBoxBase::getCaretPos()
 {
 	DWORD start, end;
 	this->sendMessage(EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
 	return static_cast< long >( end );
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::showCaret()
+inline void WidgetTextBoxBase::showCaret()
 {
 	this->sendMessage(EM_SCROLLCARET);
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setScrollBarHorizontally( bool value )
+inline void WidgetTextBoxBase::setScrollBarHorizontally( bool value )
 {
 	Widget::addRemoveStyle( WS_HSCROLL, value );
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setScrollBarVertically( bool value )
+inline void WidgetTextBoxBase::setScrollBarVertically( bool value )
 {
 	Widget::addRemoveStyle( WS_VSCROLL, value );
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setUpperCase( bool value )
+inline void WidgetTextBoxBase::setReadOnly( bool value )
 {
-	// If you get a compile time error her, you are trying to call this function
-	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
-	// support this style...
-	typename TextBoxType::canSetOnlyUpperCase dummy;
-	this->Widget::addRemoveStyle( ES_UPPERCASE, value );
+	this->sendMessage(EM_SETREADONLY, static_cast< WPARAM >( value ) );
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setLowerCase( bool value )
-{
-	// If you get a compile time error her, you are trying to call this function
-	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
-	// support this style...
-	typename TextBoxType::canSetOnlyLowerCase dummy;
-	this->Widget::addRemoveStyle( ES_LOWERCASE, value );
-}
-
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setReadOnly( bool value )
-{
-	// If you get a compile time error here, you are trying to call this function
-	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
-	// support this style...
-	typename TextBoxType::canSetReadOnly dummy;
-	if ( value )
-	{
-		this->sendMessage(EM_SETREADONLY, static_cast< WPARAM >( TRUE ) );
-	}
-	else
-	{
-		this->sendMessage(EM_SETREADONLY, static_cast< WPARAM >( FALSE ) );
-	}
-}
-
-
-template< class TextBoxType >
-bool WidgetTextBox< TextBoxType >::isReadOnly( )
+inline bool WidgetTextBoxBase::isReadOnly( )
 {	
-	return (::GetWindowLong(this->handle(), GWL_STYLE) & ES_READONLY) == ES_READONLY;
+	return hasStyle(ES_READONLY);
 }
 
-
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setNumbersOnly( bool value )
-{
-	// If you get a compile time error her, you are trying to call this function
-	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
-	// support this style...
-	typename TextBoxType::canSetOnlyNumbers dummy;
-	this->Widget::addRemoveStyle( ES_NUMBER, value );
-}
-
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setPassword( bool value, TCHAR pwdChar )
-{
-	// If you get a compile time error her, you are trying to call this function
-	// with an unsupported TextBox type, probably with a RichTextBox which doesn't
-	// support this style...
-	typename TextBoxType::canSetOnlyPassword dummy;
-	if ( value )
-	{
-		this->sendMessage(EM_SETPASSWORDCHAR, static_cast< WPARAM >( pwdChar ));
-	}
-	else
-	{
-		this->sendMessage(EM_SETPASSWORDCHAR, static_cast< WPARAM >( pwdChar ));
-	}
-}
-
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::setBorder( bool value )
+inline void WidgetTextBoxBase::setBorder( bool value )
 {
 	this->Widget::addRemoveStyle( WS_BORDER, value );
 }
 
-template< class TextBoxType > 
-void WidgetTextBox< TextBoxType >::setTextLimit( DWORD maxChars ) 
+inline void WidgetTextBoxBase::setTextLimit( DWORD maxChars ) 
 { 
 	this->sendMessage(EM_LIMITTEXT, static_cast< WPARAM >(maxChars) ); 
 } 
  
-template< class TextBoxType > 
-DWORD WidgetTextBox< TextBoxType >::getTextLimit() const 
+inline DWORD WidgetTextBoxBase::getTextLimit() const 
 { 
 	return static_cast< DWORD >( this->sendMessage(EM_GETLIMITTEXT) );
 }
 
+inline WidgetTextBox::Seed::Seed()
+{
+	* this = WidgetTextBox::getDefaultSeed();
+}
 
-template< class TextBoxType >
-WidgetTextBox< TextBoxType >::WidgetTextBox( SmartWin::Widget * parent )
+inline WidgetTextBoxBase::WidgetTextBoxBase( SmartWin::Widget * parent )
 	: PolicyType( parent )
+{
+}
+
+inline WidgetTextBox::WidgetTextBox( SmartWin::Widget * parent )
+	: WidgetTextBoxBase( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-template< class TextBoxType >
-void WidgetTextBox< TextBoxType >::create( const typename WidgetTextBox::Seed & cs )
+inline void WidgetTextBox::setPassword( bool value, TCHAR pwdChar )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-	setFont( cs.font );
+	this->sendMessage(EM_SETPASSWORDCHAR, static_cast< WPARAM >( value ? pwdChar : 0 ));
 }
+
+inline void WidgetTextBox::setNumbersOnly( bool value )
+{
+	this->Widget::addRemoveStyle( ES_NUMBER, value );
+}
+
+inline void WidgetTextBox::setLowerCase( bool value )
+{
+	this->Widget::addRemoveStyle( ES_LOWERCASE, value );
+}
+
+inline void WidgetTextBox::setUpperCase( bool value )
+{
+	this->Widget::addRemoveStyle( ES_UPPERCASE, value );
+}
+
 
 // end namespace SmartWin
 }

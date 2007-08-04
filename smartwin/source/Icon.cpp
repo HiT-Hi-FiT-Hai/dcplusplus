@@ -33,28 +33,34 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-Icon::Icon( HICON icon )
-	: itsIcon( icon )
+Icon::Icon( HICON icon, bool own )
+	: itsIcon( icon ), itsOwnershipFlag(own)
 {}
 
 Icon::Icon( unsigned resourceId )
-	: itsIcon( ::LoadIcon( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) )
+	: itsIcon( ::LoadIcon( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) ), itsOwnershipFlag(true)
 {}
 
 Icon::Icon( const SmartUtil::tstring & filePath )
 #ifdef WINCE
 	: itsIcon( ::LoadIcon( Application::instance().getAppHandle(), filePath.c_str() ) )
 #else
-	: itsIcon( ( HICON )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE ) )
+	: itsIcon( ( HICON )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE ) ), itsOwnershipFlag(true)
 #endif
 {}
 
 Icon::~Icon()
 {
-	::DestroyIcon( itsIcon );
+	if(itsOwnershipFlag)
+		::DestroyIcon( itsIcon );
 }
 
 HICON Icon::getIcon() const
+{
+	return handle();
+}
+
+HICON Icon::handle() const
 {
 	return itsIcon;
 }

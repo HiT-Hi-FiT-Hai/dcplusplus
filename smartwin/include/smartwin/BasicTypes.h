@@ -399,6 +399,8 @@ struct Rectangle
 	Rectangle cropRight( const int a_ToRemove ) const;
 };
 
+bool operator==(const Rectangle& lhs, const Rectangle& rhs);
+
 /// \ingroup GlobalStuff
 /// "Default" Rectangle for window creation
 /**  The system selects the default position/size for the window.

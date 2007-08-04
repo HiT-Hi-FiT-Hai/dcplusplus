@@ -30,6 +30,7 @@ MDITab::MDITab(SmartWin::Widget* parent) :
 {
 	instance = this;
 	hook = ::SetWindowsHookEx(WH_KEYBOARD, &MDITab::keyboardProc, NULL, ::GetCurrentThreadId());
+	setImageList(SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32)));
 }
 
 MDITab::~MDITab() {
@@ -39,15 +40,30 @@ MDITab::~MDITab() {
 	instance = 0;
 }
 
-void MDITab::addTab(SmartWin::WidgetMDIChild* w) {
+void MDITab::addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon) {
 	if(!mdi) {
 		mdi = w->getParent();
 	}
 
 	viewOrder.push_back(w->handle());
-
+	
+	int image = -1;
+	if(icon) {
+		for(int i = 0; i < icons.size(); ++i) {
+			if(icon == icons[i]) {
+				image = i;
+				break;
+			}
+		}
+		if(image == -1) {
+			image = icons.size();
+			icons.push_back(icon);
+			getImageList()->add(*icon);
+		}
+	}
+	
 	size_t tabs = this->size();
-	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(w));
+	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(w), image);
 
 	if(w->getParent()->getActive() == w->handle()) {
 		this->setSelectedIndex(tabs);
@@ -57,9 +73,7 @@ void MDITab::addTab(SmartWin::WidgetMDIChild* w) {
 	w->onSysCommand(std::tr1::bind(&MDITab::handleNext, this, false), SC_NEXTWINDOW);
 	w->onSysCommand(std::tr1::bind(&MDITab::handleNext, this, true), SC_PREVWINDOW);
 
-
-	if(resized)
-		resized();
+	layout();
 }
 
 void MDITab::removeTab(SmartWin::WidgetMDIChild* w) {
@@ -69,8 +83,7 @@ void MDITab::removeTab(SmartWin::WidgetMDIChild* w) {
 	int i = findTab(w);
 	if(i != -1) {
 		erase(i);
-		if(resized)
-			resized();
+		layout();
 	}
 }
 
@@ -93,6 +106,7 @@ bool MDITab::handleTextChanging(SmartWin::WidgetMDIChild* w, const SmartUtil::ts
 	int i = findTab(w);
 	if(i != -1) {
 		this->setHeader(i, cutTitle(newText));
+		layout();
 	}
 	return true;
 }
@@ -186,4 +200,15 @@ LRESULT CALLBACK MDITab::keyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 		}
 	}
 	return CallNextHookEx(hook, code, wParam, lParam);
+}
+
+void MDITab::layout() {
+	if(!resized)
+		return;
+	
+	SmartWin::Rectangle tmp = this->getUsableArea();
+	if(!(tmp == clientSize)) {
+		clientSize = tmp;
+		resized(clientSize);
+	}
 }

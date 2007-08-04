@@ -299,6 +299,10 @@ Rectangle Rectangle::cropRight( const int a_ToRemove ) const
 	return Rectangle( pos.x, pos.y, d_NewSize > 0 ? d_NewSize : 0, size.y );
 }
 
+bool operator==(const Rectangle& lhs, const Rectangle& rhs) {
+	return lhs.pos == rhs.pos && lhs.size == rhs.size;
+}
+
 const SmartWin::Rectangle letTheSystemDecide( CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT );
 
 const DontInitialize DontInitializeMe;

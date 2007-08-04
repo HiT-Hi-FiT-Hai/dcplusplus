@@ -59,7 +59,7 @@ private:
 
 	UserPtr replyTo;
 
-	PrivateFrame(WidgetMDIParent* mdiParent, const UserPtr& replyTo_);
+	PrivateFrame(WidgetMDIParent* mdiParent, const UserPtr& replyTo_, bool activte);
 	virtual ~PrivateFrame();
 	
 	void layout();

@@ -88,9 +88,6 @@ MainWindow::MainWindow() :
 	updateStatus();
 	layout();
 
-	if (!WinUtil::isShift())
-		speak(AUTO_CONNECT);
-
 	QueueManager::getInstance()->addListener(this);
 	LogManager::getInstance()->addListener(this);
 
@@ -119,6 +116,9 @@ MainWindow::MainWindow() :
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) postMessage(WM_COMMAND, IDC_SEARCH_SPY);
 	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) postMessage(WM_COMMAND, IDC_NET_STATS);
 	if(BOOLSETTING(OPEN_NOTEPAD)) postMessage(WM_COMMAND, IDC_NOTEPAD);
+
+	if (!WinUtil::isShift())
+		speak(AUTO_CONNECT);
 
 #ifdef PORT_ME
 	// Load images
@@ -225,7 +225,7 @@ void MainWindow::initWindow() {
 #endif
 	// Set window name
 	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
-
+	cs.icon = SmartWin::IconPtr(new SmartWin::Icon(IDR_MAINFRAME));
 	createWindow(cs);
 
 	paned = createHPaned();

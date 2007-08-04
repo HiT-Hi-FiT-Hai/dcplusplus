@@ -114,7 +114,7 @@ public:
 	typedef typename WidgetTreeView::ObjectType WidgetTreeViewPtr;
 
 	/// TextBox class type.
-	typedef SmartWin::WidgetTextBox< > WidgetTextBox;
+	typedef SmartWin::WidgetTextBox WidgetTextBox;
 
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;

@@ -14,11 +14,8 @@ const WidgetWindow::Seed & WidgetWindow::getDefaultSeed()
 		d_DefaultValues.caption = _T( "" );
 #ifndef WINCE
 		d_DefaultValues.cursor = NULL;
-		d_DefaultValues.icon = NULL;
-		d_DefaultValues.smallIcon = NULL;
 #else
 		d_DefaultValues.cursor = 0;
-		d_DefaultValues.icon = 0;
 #endif
 		d_DefaultValues.menuName = NULL;
 

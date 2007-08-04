@@ -14,12 +14,12 @@ public:
 
 	static MDITab* getInstance() { return instance; }
 	
-	void addTab(SmartWin::WidgetMDIChild* w);
+	void addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon = SmartWin::IconPtr());
 	void removeTab(SmartWin::WidgetMDIChild* w);
 	
 	virtual void create( const Seed & cs = getDefaultSeed() );
 	
-	void onResized(const std::tr1::function<void ()>& f_ ) { resized = f_; }
+	void onResized(const std::tr1::function<void (const SmartWin::Rectangle&)>& f_ ) { resized = f_; }
 private:
 	friend class MainWindow;
 	friend class SmartWin::WidgetCreator<MDITab>;
@@ -27,12 +27,16 @@ private:
 	typedef std::list<HWND> WindowList;
 	typedef WindowList::iterator WindowIter;
 	WindowList viewOrder;
+	SmartWin::Rectangle clientSize;
+	
+	std::vector<SmartWin::IconPtr> icons;
 
-	std::tr1::function<void ()> resized;
+	std::tr1::function<void (const SmartWin::Rectangle&)> resized;
 	bool inTab;
 	SmartWin::WidgetMDIParent::ObjectType mdi;
 	
 	int findTab(SmartWin::WidgetMDIChild* w);
+	void layout();
 	
 	MDITab(SmartWin::Widget* parent);
 	~MDITab();

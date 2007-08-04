@@ -53,7 +53,7 @@ class WidgetFactoryPlatformImplementation< ContainerWidgetType,  SmartWinDesktop
 {
 public:
 	/// RichEditBox class type.
-	typedef SmartWin::WidgetRichTextBox<> WidgetRichTextBox;
+	typedef SmartWin::WidgetRichTextBox WidgetRichTextBox;
 
 	/// RichEditBox object type.
 	typedef typename WidgetRichTextBox::ObjectType WidgetRichTextBoxPtr;

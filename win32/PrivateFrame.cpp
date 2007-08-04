@@ -20,6 +20,7 @@
 
 #include "PrivateFrame.h"
 #include "HoldRedraw.h"
+#include "resource.h"
 
 #include <dcpp/ClientManager.h>
 #include <dcpp/Client.h>
@@ -35,7 +36,7 @@ void PrivateFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPt
 	PrivateFrame* pf = 0;
 	FrameIter i = frames.find(replyTo_);
 	if(i == frames.end()) {
-		pf = new PrivateFrame(mdiParent, replyTo_);
+		pf = new PrivateFrame(mdiParent, replyTo_, true);
 	} else {
 		pf = i->second;
 		pf->activate();
@@ -51,7 +52,7 @@ void PrivateFrame::gotMessage(SmartWin::WidgetMDIParent* mdiParent, const User::
 
 	FrameIter i = frames.find(user);
 	if(i == frames.end()) {
-		p = new PrivateFrame(mdiParent, user);
+		p = new PrivateFrame(mdiParent, user, !BOOLSETTING(POPUNDER_PM));
 		p->addChat(aMessage);
 		if(Util::getAway()) {
 			if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && user->isSet(User::BOT)))
@@ -87,8 +88,8 @@ void PrivateFrame::closeAllOffline() {
 	}
 }
 
-PrivateFrame::PrivateFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo_) : 
-	BaseType(mdiParent, !BOOLSETTING(POPUNDER_PM)),
+PrivateFrame::PrivateFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo_, bool activate) : 
+	BaseType(mdiParent, _T(""), SmartWin::IconPtr(new SmartWin::Icon(IDR_PRIVATE)), activate),
 	chat(0),
 	message(0),
 	replyTo(replyTo_)

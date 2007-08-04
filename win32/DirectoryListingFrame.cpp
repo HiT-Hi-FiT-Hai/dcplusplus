@@ -99,7 +99,7 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, con
 }
 
 DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	BaseType(mdiParent, !BOOLSETTING(POPUNDER_FILELIST)),
+	BaseType(mdiParent, _T(""), SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
 	paned(0),

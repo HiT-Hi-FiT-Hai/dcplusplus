@@ -187,7 +187,7 @@ public:
 	{ return true;
 	}
 
-	typedef WidgetTextBox<>::ObjectType WidgetTextBoxPtr;
+	typedef WidgetTextBox::ObjectType WidgetTextBoxPtr;
 	WidgetTextBoxPtr getTextBox();
 	
 protected:

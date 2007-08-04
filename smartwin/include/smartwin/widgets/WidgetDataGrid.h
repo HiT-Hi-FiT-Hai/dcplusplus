@@ -45,6 +45,7 @@
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectSizable.h"
+#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 #include "WidgetDataGridEditBox.h"

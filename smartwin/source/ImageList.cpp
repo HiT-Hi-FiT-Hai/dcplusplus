@@ -62,11 +62,6 @@ ImageList::~ImageList()
 		::ImageList_Destroy( itsImageList );
 }
 
-HIMAGELIST ImageList::getImageList() const
-{
-	return itsImageList;
-}
-
 void ImageList::add( const Bitmap & bitmap )
 {
 	resize( getImageCount() + 1 );

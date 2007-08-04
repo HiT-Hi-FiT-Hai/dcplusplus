@@ -8,13 +8,13 @@ namespace SmartWin {
 
 int WindowClass::itsInstanceNo;
 
-WindowClass::WindowClass(const SmartUtil::tstring& className, WNDPROC wndProc, LPCTSTR menu, HBRUSH background, HICON icon, HICON iconsm, HCURSOR cursor) : atom(0) {
+WindowClass::WindowClass(const SmartUtil::tstring& className, WNDPROC wndProc, LPCTSTR menu, HBRUSH background, IconPtr icon_, IconPtr smallIcon_, HCURSOR cursor) : atom(0), icon(icon_), smallIcon(smallIcon_) {
 	WNDCLASSEX wc = { sizeof(WNDCLASSEX) };
 	wc.lpfnWndProc = wndProc;
 	wc.lpszMenuName = menu;
 	wc.hbrBackground = background;
-	wc.hIcon = icon;
-	wc.hIconSm = iconsm;
+	wc.hIcon = icon ? icon->handle() : NULL;
+	wc.hIconSm = smallIcon ? icon->handle() : NULL;
 	wc.hCursor = cursor;
 	wc.hInstance = Application::instance().getAppHandle();
 	wc.lpszClassName = className.c_str();

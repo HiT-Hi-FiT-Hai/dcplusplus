@@ -19,11 +19,11 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 #define DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 
-class WidgetTextBox : public SmartWin::WidgetTextBox<> {
+class WidgetTextBox : public SmartWin::WidgetTextBox {
 private:
-	typedef SmartWin::WidgetTextBox<> BaseType;
-	typedef WidgetTextBox ThisType;
+	typedef SmartWin::WidgetTextBox BaseType;
 public:
+	typedef WidgetTextBox ThisType;
 	
 	typedef ThisType* ObjectType;
 

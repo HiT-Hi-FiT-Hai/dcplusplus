@@ -135,7 +135,7 @@ public:
 	typedef WidgetComboBox::ObjectType WidgetComboBoxPtr;
 
 	/// TextBox object type.
-	typedef WidgetTextBox<>::ObjectType WidgetTextBoxPtr;
+	typedef WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
 	/// Button object type.
 	typedef WidgetButton::ObjectType WidgetButtonPtr;

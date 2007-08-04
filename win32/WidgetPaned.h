@@ -135,7 +135,7 @@ const typename WidgetPaned< horizontal >::Seed & WidgetPaned< horizontal >::getD
 
 	if ( d_NeedsInit )
 	{
-		windowClass.reset(new SmartWin::WindowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), &ThisType::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), NULL, NULL, LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE )));
+		windowClass.reset(new SmartWin::WindowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), &ThisType::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE )));
 		d_DefaultValues.className = windowClass->getClassName();
 		d_DefaultValues.style = WS_VISIBLE | WS_CHILD;
 		d_NeedsInit = false;

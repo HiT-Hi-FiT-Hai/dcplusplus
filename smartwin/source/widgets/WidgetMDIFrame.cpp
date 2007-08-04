@@ -13,14 +13,10 @@ const WidgetMDIFrame::Seed & WidgetMDIFrame::getDefaultSeed()
 	{
 		d_DefaultValues.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
 		d_DefaultValues.background = ( HBRUSH )( COLOR_APPWORKSPACE + 1 );
-		d_DefaultValues.caption = _T( "" );
 #ifndef WINCE
 		d_DefaultValues.cursor = NULL;
-		d_DefaultValues.icon = NULL;
-		d_DefaultValues.iconSmall = NULL;
 #else
 		d_DefaultValues.cursor = 0;
-		d_DefaultValues.icon = 0;
 #endif
 		d_DefaultValues.menuName = NULL;
 

@@ -142,6 +142,8 @@ public:
 	  * style (if true add style, else remove)
 	  */
 	void addRemoveStyle( DWORD addStyle, bool add );
+	
+	bool hasStyle(DWORD style);
 
 	/// Use this function to add or remove windows exStyles.
 	/** The first parameter is the type of style you wish to add/remove. <br>
@@ -190,6 +192,10 @@ private:
 	// Kills the Widget, wrapper around "delete this" plus some other logic
 	void kill();
 };
+
+inline bool Widget::hasStyle(DWORD style) {
+	return (::GetWindowLong(this->handle(), GWL_STYLE) & style) == style;	
+}
 
 // end namespace SmartWin
 }

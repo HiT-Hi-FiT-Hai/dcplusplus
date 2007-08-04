@@ -35,7 +35,7 @@ WidgetComboBox::WidgetTextBoxPtr WidgetComboBox::getTextBox() {
 		if((style & CBS_SIMPLE)  == CBS_SIMPLE || (style & CBS_DROPDOWN) == CBS_DROPDOWN) {
 			HWND wnd = ::FindWindowEx(handle(), NULL, _T("EDIT"), NULL);
 			if(wnd && wnd != handle())
-				textBox = WidgetCreator<WidgetTextBox<> >::attach(this, wnd);
+				textBox = WidgetCreator< WidgetTextBox >::attach(this, wnd);
 		}
 	}
 	return textBox;

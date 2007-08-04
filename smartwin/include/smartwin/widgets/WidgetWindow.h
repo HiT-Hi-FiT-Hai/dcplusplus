@@ -92,8 +92,8 @@ public:
 	public:
 		typedef WidgetWindow::ThisType WidgetType;
 
-		HICON icon;
-		HICON smallIcon;
+		IconPtr icon;
+		IconPtr smallIcon;
 		HBRUSH background;
 		LPCTSTR menuName;
 		HCURSOR cursor;

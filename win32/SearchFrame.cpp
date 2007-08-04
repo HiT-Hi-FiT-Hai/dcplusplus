@@ -72,7 +72,7 @@ void SearchFrame::closeAll() {
 }
 
 SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	BaseType(mdiParent),
+	BaseType(mdiParent, TSTRING(SEARCH)),
 	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
 	bShowUI(true),
 	isHash(false),
@@ -288,7 +288,6 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 		fileType->setSelectedIndex(initialType);
 		runSearch();
 	} else {
-		setText(TSTRING(SEARCH));
 		mode->setSelectedIndex(1);
 		fileType->setSelectedIndex(SETTING(LAST_SEARCH_TYPE));
 	}

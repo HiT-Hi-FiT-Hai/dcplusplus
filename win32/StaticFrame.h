@@ -28,8 +28,9 @@
 template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
-	StaticFrame(SmartWin::WidgetMDIParent* mdiClient) : MDIChildFrame<T>(mdiClient) { 
-		setText(Text::toT(ResourceManager::getInstance()->getString(T::TITLE_RESOURCE)));
+	StaticFrame(SmartWin::WidgetMDIParent* mdiClient) : 
+		MDIChildFrame<T>(mdiClient, Text::toT(ResourceManager::getInstance()->getString(T::TITLE_RESOURCE))) 
+	{ 
 	}
 	
 	virtual ~StaticFrame() { 
