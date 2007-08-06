@@ -33,6 +33,7 @@ unsigned int WidgetTabSheet::addPage( const SmartUtil::tstring & header, unsigne
 	if(image != -1) {
 		item.mask |= TCIF_IMAGE;
 		item.iImage = image;
+		printf("Adding tab with image %d\n", image);
 	}
 	
 	int newIdx = TabCtrl_InsertItem( this->handle(), index, & item );

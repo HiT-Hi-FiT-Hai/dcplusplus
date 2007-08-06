@@ -29,7 +29,7 @@
 #ifndef WidgetTabSheet_h
 #define WidgetTabSheet_h
 
-#include "../ImageList.h"
+#include "../resources/ImageList.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectEnabled.h"

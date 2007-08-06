@@ -30,7 +30,7 @@
 #define WidgetTreeView_h
 
 #include "../BasicTypes.h"
-#include "../ImageList.h"
+#include "../resources/ImageList.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"

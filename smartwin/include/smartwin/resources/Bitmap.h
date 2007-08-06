@@ -29,9 +29,10 @@
 #ifndef Bitmap_h
 #define Bitmap_h
 
-#include "WindowsHeaders.h"
-#include "../SmartUtil.h"
-#include <memory>
+#include "../WindowsHeaders.h"
+#include "../../SmartUtil.h"
+#include "Handle.h"
+#include <boost/intrusive_ptr.hpp>
 
 namespace SmartWin
 {
@@ -46,13 +47,13 @@ class Bitmap;
 /// Bitmap pointer
 /** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
   */
-typedef std::tr1::shared_ptr< Bitmap > BitmapPtr;
+typedef boost::intrusive_ptr< Bitmap > BitmapPtr;
 
 /// Class encapsulating an HBITMAP and ensuring that the contained HBITMAP is freed
 /// upon destruction of this object
 /** Use this class if you need RAII semantics encapsulating an HBITMAP
   */
-class Bitmap
+class Bitmap : public Handle<GdiPolicy<HBITMAP> >
 {
 public:
 	/// RAII Constructor taking a HBITMAP
@@ -60,7 +61,7 @@ public:
 	  * Class takes "control" of HBITMAP meaning it will automatically free the
 	  * contained HBITMAP upon destruction
 	  */
-	explicit Bitmap( HBITMAP bitmap );
+	explicit Bitmap( HBITMAP bitmap, bool own = true);
 
 	/// RAII Constructor loading a bitmap from a resource ID
 	/** Note! <br>
@@ -86,15 +87,7 @@ public:
 	  */
 	explicit Bitmap( const SmartUtil::tstring & filePath );
 
-	/// Frees the contained HBITMAP
-	/** Frees the contained HBITMAP meaning it will no longer be accessible or it
-	  * will be destroyed
-	  */
-	~Bitmap();
-
-	/// Getter for the underlaying HBITMAP
-	/** Use when you need to access the underlaying HBITMAP
-	  */
+	/// @deprecated, use handle
 	HBITMAP getBitmap() const;
 
 	/// Returns the Bitmaps size
@@ -114,7 +107,8 @@ public:
 	BitmapPtr resize( const Point & newSize ) const;
 
 private:
-	HBITMAP itsBitmap;
+	friend class Handle<GdiPolicy<HBITMAP> >;
+	typedef Handle<GdiPolicy<HBITMAP> > ResourceType;
 };
 
 // end namespace SmartWin

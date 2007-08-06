@@ -32,7 +32,7 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "../BasicTypes.h"
-#include "../ImageList.h"
+#include "../resources/ImageList.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"

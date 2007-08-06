@@ -43,6 +43,7 @@
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
 #include "../aspects/AspectVisible.h"
+#include "../resources/Bitmap.h"
 #include "../xCeption.h"
 
 namespace SmartWin

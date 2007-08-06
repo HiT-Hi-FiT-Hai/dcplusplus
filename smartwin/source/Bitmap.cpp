@@ -26,58 +26,44 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-//TODO: why is this included twice?
-#include "../include/smartwin/Bitmap.h"
+
+#include "../include/smartwin/resources/Bitmap.h"
 #include "../include/smartwin/Application.h"
-#include "../include/smartwin/Bitmap.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-Bitmap::Bitmap( HBITMAP bitmap )
-	: itsBitmap( bitmap )
+Bitmap::Bitmap( HBITMAP bitmap, bool own )
+	: ResourceType(bitmap, own)
 {}
 
 Bitmap::Bitmap( unsigned resourceId )
-	: itsBitmap( ::LoadBitmap( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) )
+	: ResourceType( ::LoadBitmap( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) )
 {}
 
 Bitmap::Bitmap( const SmartUtil::tstring & filePath )
 #ifdef WINCE
 	: itsBitmap( ::SHLoadImageFile( filePath.c_str() ) )
 #else
-	: itsBitmap( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE ) )
+	: ResourceType( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE ) )
 #endif
 {}
 
-Bitmap::~Bitmap()
-{
-	::DeleteObject( itsBitmap );
-}
-
 HBITMAP Bitmap::getBitmap() const
 {
-	return itsBitmap;
+	return handle();
 }
 
 Point Bitmap::getBitmapSize() const
 {
-	// init struct for bitmap info
-	BITMAP bm;
-	memset( & bm, 0, sizeof( BITMAP ) );
-
-	// get bitmap info
-	::GetObject( itsBitmap, sizeof( BITMAP ), & bm );
-
-	return Point( bm.bmWidth, bm.bmHeight );
+	return getBitmapSize(handle());
 }
 
 Point Bitmap::getBitmapSize( HBITMAP bitmap )
 {
 	// init struct for bitmap info
-	BITMAP bm;
-	memset( & bm, 0, sizeof( BITMAP ) );
+	BITMAP bm = { 0 };
 
 	// get bitmap info
 	::GetObject( bitmap, sizeof( BITMAP ), & bm );
@@ -88,7 +74,7 @@ Point Bitmap::getBitmapSize( HBITMAP bitmap )
 BitmapPtr Bitmap::resize( const Point & newSize ) const
 {
 	HDC hdc1 = ::CreateCompatibleDC( 0 );
-	HBITMAP hBitmapOld1 = ( HBITMAP )::SelectObject( hdc1, itsBitmap );
+	HBITMAP hBitmapOld1 = ( HBITMAP )::SelectObject( hdc1, handle() );
 
 	HDC hdc2 = ::CreateCompatibleDC( 0 );
 	HBITMAP hBitmapNew = ::CreateCompatibleBitmap( hdc1, newSize.x, newSize.y );

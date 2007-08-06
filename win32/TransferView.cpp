@@ -46,8 +46,11 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetMDIParent* 
 {
 	createWindow();
 	
-	arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-	arrows->addMultiple(SmartWin::Bitmap(IDB_ARROWS), RGB(255, 0, 255));
+	{
+		arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+		SmartWin::Bitmap tmp(IDB_ARROWS);
+		arrows->add(tmp, RGB(255, 0, 255));
+	}
 	{
 		WidgetTransfers::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;

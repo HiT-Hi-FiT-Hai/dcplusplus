@@ -2,7 +2,7 @@
 #define WINDOWCLASS_H_
 
 #include "Widget.h"
-#include "Icon.h"
+#include "resources/Icon.h"
 
 namespace SmartWin {
 

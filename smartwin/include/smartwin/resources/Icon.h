@@ -29,9 +29,9 @@
 #ifndef Icon_h
 #define Icon_h
 
-#include "WindowsHeaders.h"
-#include "../SmartUtil.h"
-#include <memory>
+#include "../WindowsHeaders.h"
+#include "../../SmartUtil.h"
+#include "Handle.h"
 
 namespace SmartWin
 {
@@ -44,13 +44,17 @@ class Icon;
 /// Icon pointer
 /** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
   */
-typedef std::tr1::shared_ptr< Icon > IconPtr;
+typedef boost::intrusive_ptr< Icon > IconPtr;
+
+struct IconPolicy : public NullPolicy<HICON> {
+	void release(HICON h) { ::DestroyIcon(h); }
+};
 
 /// Class encapsulating an HICON and ensuring that the contained HICON is freed
 /// upon destruction of this object
 /** Use this class if you need RAII semantics encapsulating an HICON
   */
-class Icon
+class Icon : public Handle<IconPolicy>
 {
 public:
 	/// RAII Constructor taking a HICON
@@ -74,22 +78,11 @@ public:
 	  */
 	explicit Icon( const SmartUtil::tstring & filePath );
 
-	/// Frees the contained HICON
-	/** Frees the contained HICON meaning it will no longer be accessible or it will
-	  * be destroyed
-	  */
-	~Icon();
-
-	/// Getter for the underlying HICON
-	/** Use when you need to access the underlying HICON
-	  */
+	/// Deprecated, use handle()
 	HICON getIcon() const;
-
-	HICON handle() const;
 private:
-	HICON itsIcon;
-	// Specifies that the underlying image list is owned, i.e., will be destroyed on the destructor
-	bool itsOwnershipFlag;
+	friend class Handle<IconPolicy>;
+	typedef Handle<IconPolicy> ResourceType;
 
 };
 

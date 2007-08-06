@@ -72,7 +72,7 @@ public:
 	/// Returns a string in which \n is replaced with with \r\n
 	/** The purpose is to enable Windows textboxs to understand "endl"
 	  */
-	SmartUtil::tstring replaceEndlWithLfCr( const SmartUtil::tstring & txt );
+	static SmartUtil::tstring replaceEndlWithLfCr( const SmartUtil::tstring & txt );
 
 	/// Gets the text of the AspectText realizing class
 	/** The Return value is the text of the realizing class.
@@ -105,7 +105,7 @@ protected:
 template< class WidgetType >
 void AspectText< WidgetType >::setText( const SmartUtil::tstring & txt )
 {
-	::SendMessage( static_cast< WidgetType * >( this )->handle(), WM_SETTEXT, ( WPARAM ) 0, ( LPARAM ) txt.c_str() );
+	static_cast< WidgetType * >( this )->sendMessage(WM_SETTEXT, 0, reinterpret_cast< LPARAM >(txt.c_str()) );
 }
 
 
@@ -115,11 +115,15 @@ SmartUtil::tstring AspectText< WidgetType >::replaceEndlWithLfCr( const SmartUti
 	// Replaces \n with \r\n so that Windows textbox understands "endl"
 	SmartUtil::tstring	txtEndl= txt;
 
-	std::string::size_type	pos= txtEndl.find( '\n', 0 );
-	while ( std::string::npos != pos ) { 
-		txtEndl.replace( pos, 1, _T("\r\n") );
-		pos += 2;	// Don't find the replacement \n.
-		pos= txtEndl.find( '\n', pos );
+	SmartUtil::tstring::size_type pos= txtEndl.find( _T('\n'), 0 );
+	while ( SmartUtil::tstring::npos != pos ) {
+		if(pos > 0 && txtEndl[pos-1] != _T('\r')) {
+			txtEndl.replace( pos, 1, _T("\r\n") );
+			pos += 2;	// Don't find the replacement \n.
+		} else {
+			pos++;
+		}
+		pos = txtEndl.find( _T('\n'), pos );
 	}  
 	return txtEndl;
 }

@@ -33,7 +33,7 @@
 
 #include "../../SmartUtil.h"
 #include "../BasicTypes.h"
-#include "../Icon.h"
+#include "../resources/Icon.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../WindowClass.h"
 #include "WidgetMDIParent.h"

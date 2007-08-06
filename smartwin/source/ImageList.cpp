@@ -26,7 +26,7 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "../include/smartwin/ImageList.h"
+#include "../include/smartwin/resources/ImageList.h"
 #include "../include/smartwin/Application.h"
 #include "../include/smartwin/xCeption.h"
 
@@ -35,102 +35,70 @@ namespace SmartWin
 // begin namespace SmartWin
 
 ImageList::ImageList( HIMAGELIST imageList, bool own )
-	: itsImageList( imageList ),
-#ifdef WINCE
-		itsFlags( ILC_COLOR | ILC_MASK ),
-#else
-		itsFlags( ILC_COLOR24 | ILC_MASK ),
-#endif
-		itsOwnershipFlag( own )
+	: ResourceType( imageList, own )
 {}
 
 ImageList::ImageList( int width, int height, unsigned flags )
-	: itsFlags( flags ),
-		itsOwnershipFlag( true )
+	: ResourceType(ImageList_Create(width, height, flags, 0, 1))
 {
-	itsImageList = ::ImageList_Create( width, height, flags, 0, 0 );
-	if( itsImageList == NULL )
+	if( handle() == NULL )
 	{
 		xCeption x( _T( "Couldn't create ImageList" ) );
 		throw x;
 	}
 }
 
-ImageList::~ImageList()
-{
-	if( itsOwnershipFlag )
-		::ImageList_Destroy( itsImageList );
-}
-
 void ImageList::add( const Bitmap & bitmap )
 {
-	resize( getImageCount() + 1 );
-	ImageList_Replace( itsImageList, getImageCount() - 1, bitmap.getBitmap(), NULL );
+	if(ImageList_Add( handle(), bitmap.handle(), NULL ) == -1) {
+		throw xCeption(_T("Add failed"));
+	}
 }
 
 void ImageList::add( const Bitmap & bitmap, const Bitmap & mask )
 {
-	resize( getImageCount() + 1 );
-	ImageList_Replace( itsImageList, getImageCount() - 1, bitmap.getBitmap(), mask.getBitmap() );
+	if(ImageList_Add( handle(), bitmap.handle(), mask.handle() ) == -1) {
+		throw xCeption(_T("Add masked failed"));
+	}
 }
 
-unsigned int ImageList::addMultiple( const Bitmap & bitmap )
-{
-	int count = bitmap.getBitmapSize().x / getImageSize().x + 1;
-	return addMultiple( count, bitmap.getBitmap(), (HBITMAP)NULL );
+void ImageList::add( const Bitmap& bitmap, COLORREF mask) {
+	if(ImageList_AddMasked(handle(), bitmap.handle(), mask) == -1) {
+		throw xCeption(_T("Add colormasked failed"));
+	}
 }
 
-unsigned int ImageList::addMultiple( const Bitmap & bitmap, const Bitmap & mask )
-{
-	int count = bitmap.getBitmapSize().x / getImageSize().x + 1;
-	return addMultiple( count, bitmap.getBitmap(), mask.getBitmap() );
+void ImageList::add( const Icon & icon ) {
+	printf("Adding icon\n");
+	if(ImageList_ReplaceIcon( handle(), -1, icon.handle() ) == -1) {
+		throw xCeption(_T("Add icon failed"));
+	}
+	printf("Added icon, there are now %d images\n", size());
 }
 
-
-unsigned int ImageList::addMultiple( const Bitmap & bitmap, COLORREF mask )
-{
-	int count = bitmap.getBitmapSize().x / getImageSize().x + 1;
-	return addMultiple( count, bitmap.getBitmap(), mask );
+void ImageList::add(const ImageList& imageList, int image) {
+	Icon icon(ImageList_GetIcon(imageList.handle(), image, ILD_TRANSPARENT));
+	add(icon);
 }
 
-void ImageList::add( const Icon & icon )
+void ImageList::add( const ImageList& imageList )
 {
-	resize( getImageCount() + 1 );
-	ImageList_ReplaceIcon( itsImageList, getImageCount() - 1, icon.getIcon() );
-}
-
-void ImageList::add( const ImageListPtr imageList )
-{
-	int count = imageList->getImageCount();
-	int oldSize = getImageCount();
-
-	resize( oldSize + count );
-
-	for ( int i = 0; i < count; i++ )
-	{
-		HICON icon = ImageList_ExtractIcon( 0, imageList->getImageList(), i );
-		if ( !icon )
-		{
-			//we need to crop the allocated images that won't be added
-			resize( oldSize + i );
-			xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
-			throw x;
+	int initialSize = size();
+	try {
+		int images = imageList.size();
+		for(int i = 0; i < images; ++i) {
+			add(imageList, i);
 		}
-		int success = ImageList_ReplaceIcon( itsImageList, oldSize + i, icon );
-		DestroyIcon( icon );
-		if ( success == - 1 )
-		{
-			resize( oldSize + i );
-			xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
-			throw x;
-		}
+	} catch(...) {
+		ImageList_SetImageCount(handle(), initialSize);
+		throw;
 	}
 }
 
 Point ImageList::getImageSize() const
 {
 	int x, y;
-	BOOL success = ImageList_GetIconSize( itsImageList, & x, & y );
+	BOOL success = ImageList_GetIconSize( handle(), & x, & y );
 	if ( !success )
 	{
 		xCeption x( _T( "Couldn't get the ImageList image size" ) );
@@ -139,57 +107,23 @@ Point ImageList::getImageSize() const
 	return Point( x, y );
 }
 
-int ImageList::getImageCount() const
+int ImageList::size() const
 {
-	return ImageList_GetImageCount( itsImageList );
+	return ImageList_GetImageCount( handle() );
+}
+
+int ImageList::getImageCount() const {
+	return size();
 }
 
 void ImageList::resize( unsigned newSize )
 {
-	BOOL success = ::ImageList_SetImageCount( itsImageList, newSize );
+	BOOL success = ::ImageList_SetImageCount( handle(), newSize );
 	if ( !success )
 	{
 		xCeption x( _T( "Couldn't resize ImageList" ) );
 		throw x;
 	}
-}
-
-unsigned int ImageList::addMultiple( int count, HBITMAP bitmap, HBITMAP mask )
-{
-	HIMAGELIST list = ::ImageList_Create( getImageSize().x, getImageSize().y, itsFlags, count, 0 );
-	if ( !list )
-	{
-		xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
-		throw x;
-	}
-	ImageListPtr imageList( new ImageList( list ) );
-	int success = ImageList_Add( list, bitmap, mask );
-	if ( success == - 1 )
-	{
-		xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
-		throw x;
-	}
-	add( imageList );
-	return imageList->getImageCount();
-}
-
-unsigned int ImageList::addMultiple( int count, HBITMAP bitmap, COLORREF mask )
-{
-	HIMAGELIST list = ::ImageList_Create( getImageSize().x, getImageSize().y, itsFlags, count, 0 );
-	if ( !list )
-	{
-		xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
-		throw x;
-	}
-	ImageListPtr imageList( new ImageList( list ) );
-	int success = ImageList_AddMasked( list, bitmap, mask );
-	if ( success == - 1 )
-	{
-		xCeption x( _T( "Couldn't add bitmap to ImageList" ) );
-		throw x;
-	}
-	add( imageList );
-	return imageList->getImageCount();
 }
 
 // end namespace SmartWin

@@ -64,16 +64,22 @@ void WinUtil::init() {
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
 	monoFont = SmartWin::FontPtr(new SmartWin::Font((BOOLSETTING(USE_OEM_MONOFONT) ? SmartWin::OemFixedFont : SmartWin::AnsiFixedFont)));
 
-	fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-	fileImages->addMultiple(SmartWin::Bitmap(IDB_FOLDERS), RGB(255, 0, 255));
+	{
+		fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+		SmartWin::Bitmap tmp(IDB_FOLDERS);
+		fileImages->add(tmp, RGB(255, 0, 255));
+	}
 
 	dirIconIndex = fileImageCount++;
 	dirMaskedIndex = fileImageCount++;
 	// Unknown file
 	fileImageCount++;
 
-	userImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-	userImages->addMultiple(SmartWin::Bitmap(IDB_USERS), RGB(255, 0, 255));
+	{
+		userImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
+		SmartWin::Bitmap tmp(IDB_USERS);
+		userImages->add(tmp, RGB(255, 0, 255));
+	}
 	
 #ifdef PORT_ME
 /** @todo fix this so that the system icon is used for dirs as well (we need

@@ -29,10 +29,11 @@
 #ifndef ImageList_h
 #define ImageList_h
 
-#include "WindowsHeaders.h"
-#include "../SmartUtil.h"
+#include "../WindowsHeaders.h"
+#include "../../SmartUtil.h"
 #include "Bitmap.h"
 #include "Icon.h"
+#include "Handle.h"
 
 namespace SmartWin
 {
@@ -45,14 +46,18 @@ class ImageList;
 /// ImageList pointer
 /** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
   */
-typedef std::tr1::shared_ptr< ImageList > ImageListPtr;
+typedef boost::intrusive_ptr< ImageList > ImageListPtr;
 
 /// Class encapsulating an HIMAGELIST and ensuring that the contained HIMAGELIST is
 /// freed upon destruction of this object
 /** Use this class if you need RAII semantics encapsulating an HIMAGELIST. <br>
   * You can use an ImageList on e.g. a Data Grid.
   */
-class ImageList
+struct ImageListPolicy : public NullPolicy<HIMAGELIST> {
+	void release(HIMAGELIST h) { ImageList_Destroy(h); }
+};
+
+class ImageList : public Handle<ImageListPolicy>
 {
 public:
 	/// RAII Constructor taking a HIMAGELIST
@@ -72,23 +77,13 @@ public:
 	  */
 	ImageList( int width, int height, unsigned flags );
 
-	/// Frees the contained HIMAGELIST
-	/** Frees the contained HIMAGELIST meaning it will no longer be accessible or it
-	  * will be destroyed
-	  */
-	~ImageList();
-
-	/// Getter for the underlying HIMAGELIST
-	/** Use when you need to access the underlying HIMAGELIST
-	  */
+	/// Deprecated, use handle()
 	HIMAGELIST getImageList() const;
 	
-	HIMAGELIST handle() const;
-
-	/// Add a bitmap to the list
+	/// Add one or more images to the list
 	void add( const Bitmap & bitmap );
 
-	/// Add a masked bitmap to the list
+	/// Add one or more masked images to the list
 	/** Note, you need to set the flag ILC_MASK on the constructor for this to work.
 	  * <br>
 	  * The mask is a black and white image; where it's black, the shown image will
@@ -96,28 +91,7 @@ public:
 	  */
 	void add( const Bitmap & bitmap, const Bitmap & mask );
 
-	/// Add multiple images to the list
-	/** The bitmap parameter specifies a bitmap with several images.<br>
-	  * The number of images is calculated by the bitmap width, e.g. if the
-	  * image list is 32x32 and you add a 128x32 bitmap, it will add
-	  * four 32x32 bitmaps (note, the height must be the same of the image list)<br>
-	  * Returns the number of images added.
-	  */
-	unsigned int addMultiple( const Bitmap & bitmap );
-
-	/// Add a multiple masked images to the list
-	/** Note, you need to set the flag ILC_MASK on the constructor for this to work.
-	  * <br>
-	  * The mask is a black and white image; where it's black, the shown image will
-	  * be transparent. <br>
-	  * The bitmap and mask parameters specify bitmaps with several images. The
-	  * number of images is calculated by the bitmap width, e.g. if the image list is
-	  * 32x32 and you add a 128x32 bitmap, it will add four 32x32 bitmaps (note, the
-	  * height must be the same of the image list) Returns the number of images
-	  * added.
-	  */
-	unsigned int addMultiple( const Bitmap & bitmap, const Bitmap & mask );
-
+	/// Add one or more masked images to the list, calculating the mask from a specific color
 	/** Note, you need to set the flag ILC_MASK on the constructor for this to work.
 	  * <br>
 	  * The mask is color; where the bitmap has that color, the shown image will
@@ -128,7 +102,8 @@ public:
 	  * height must be the same of the image list) Returns the number of images
 	  * added.
 	  */
-	unsigned int addMultiple(const Bitmap& bitmap, COLORREF mask);
+	void add(const Bitmap& bitmap, COLORREF mask);
+
 	/// Add an icon to the list
 	/** Note, you need to set the flag ILC_MASK on the constructor to support
 	  * transparency. <br>
@@ -137,8 +112,11 @@ public:
 	  */
 	void add( const Icon & icon );
 
-	/// Add all the images in "imageList" to this image list
-	void add( const ImageListPtr imageList );
+	/// Add a single image form another imagelist
+	void add(const ImageList& imageList, int image);
+	
+	/// Add all images from another imagelist
+	void add( const ImageList& imageList );
 
 	/// Returns the image size.
 	/** Returns the size of the images in the Image List (all images in the Image
@@ -146,11 +124,15 @@ public:
 	  */
 	Point getImageSize() const;
 
-	/// Returns the number of images in list.
+	int size() const;
+
+	/// Deprecated, use size
 	int getImageCount() const;
-
+	
 private:
-
+	friend class Handle<ImageListPolicy>;
+	typedef Handle<ImageListPolicy> ResourceType;
+	
 	// Resize underlying image list, helper method just to reuse code
 	void resize( unsigned newSize );
 
@@ -158,12 +140,6 @@ private:
 	unsigned int addMultiple( int count, HBITMAP bitmap, HBITMAP mask );
 
 	unsigned int addMultiple( int count, HBITMAP bitmap, COLORREF mask );
-
-	HIMAGELIST itsImageList;
-	unsigned itsFlags;
-
-	// Specifies that the underlying image list is owned, i.e., will be destroyed on the destructor
-	bool itsOwnershipFlag;
 };
 
 inline HIMAGELIST ImageList::getImageList() const
@@ -171,10 +147,6 @@ inline HIMAGELIST ImageList::getImageList() const
 	return handle();
 }
 
-inline HIMAGELIST ImageList::handle() const
-{
-	return itsImageList;
-}
 // end namespace SmartWin
 }
 

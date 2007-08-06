@@ -26,7 +26,7 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "../include/smartwin/Icon.h"
+#include "../include/smartwin/resources/Icon.h"
 #include "../include/smartwin/Application.h"
 
 namespace SmartWin
@@ -34,35 +34,23 @@ namespace SmartWin
 // begin namespace SmartWin
 
 Icon::Icon( HICON icon, bool own )
-	: itsIcon( icon ), itsOwnershipFlag(own)
+	: ResourceType(icon, own)
 {}
 
 Icon::Icon( unsigned resourceId )
-	: itsIcon( ::LoadIcon( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) ), itsOwnershipFlag(true)
+	: ResourceType(::LoadIcon( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) )
 {}
 
 Icon::Icon( const SmartUtil::tstring & filePath )
 #ifdef WINCE
 	: itsIcon( ::LoadIcon( Application::instance().getAppHandle(), filePath.c_str() ) )
 #else
-	: itsIcon( ( HICON )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE ) ), itsOwnershipFlag(true)
+	: ResourceType( (HICON)::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE ) )
 #endif
 {}
 
-Icon::~Icon()
-{
-	if(itsOwnershipFlag)
-		::DestroyIcon( itsIcon );
-}
-
-HICON Icon::getIcon() const
-{
+HICON Icon::getIcon() const {
 	return handle();
-}
-
-HICON Icon::handle() const
-{
-	return itsIcon;
 }
 
 // end namespace SmartWin
