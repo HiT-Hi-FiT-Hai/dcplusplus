@@ -484,10 +484,8 @@ void HubFrame::addChat(const tstring& aLine) {
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
 	}
-	if (BOOLSETTING(BOLD_HUB)) {
-		setDirty();
-	}
 #endif
+	setDirty(SettingsManager::BOLD_HUB);
 }
 
 void HubFrame::addStatus(const tstring& aLine, bool inChat /* = true */) {

@@ -85,12 +85,12 @@ bool CommandDlg::handleInitDialog() {
 	nameBox = subclassTextBox(IDC_NAME);
 
 	commandBox = subclassTextBox(IDC_COMMAND);
-	commandBox->onRaw(std::tr1::bind(&CommandDlg::handleTextChanged, this, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE));
+	commandBox->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
 	hubBox = subclassTextBox(IDC_HUB);
 
 	nick = subclassTextBox(IDC_NICK);
-	nick->onRaw(std::tr1::bind(&CommandDlg::handleTextChanged, this, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE));
+	nick->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
 	once = subclassCheckBox(IDC_SETTINGS_ONCE);
 	once->setText(TSTRING(USER_CMD_ONCE));
@@ -183,11 +183,6 @@ void CommandDlg::handleTypeChanged() {
 	updateType();
 	updateCommand();
 	updateControls();
-}
-
-HRESULT CommandDlg::handleTextChanged(WPARAM wParam, LPARAM lParam) {
-	updateCommand();
-	return 0;
 }
 
 void CommandDlg::handleOKClicked() {

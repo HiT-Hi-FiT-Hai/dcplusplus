@@ -43,7 +43,7 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	HRESULT handleTextChanged(WidgetTextBoxPtr textBox, WPARAM wParam, LPARAM lParam);
+	void handleTextChanged(WidgetTextBoxPtr textBox);
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_GENERAL_PAGE_H)

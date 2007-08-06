@@ -64,7 +64,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent) {
 #define TEXTBOX_ATTACH(id) \
 	textBox = subclassTextBox(id); \
 	textBox->setTextLimit(35); \
-	textBox->onRaw(std::tr1::bind(&GeneralPage::handleTextChanged, this, textBox, _1, _2), SmartWin::Message(WM_COMMAND, EN_CHANGE))
+	textBox->onTextChanged(std::tr1::bind(&GeneralPage::handleTextChanged, this, textBox))
 	TEXTBOX_ATTACH(IDC_NICK);
 	TEXTBOX_ATTACH(IDC_DESCRIPTION);
 #undef TEXTBOX_ATTACH
@@ -77,7 +77,7 @@ void GeneralPage::write() {
 	PropPage::write(handle(), items);
 }
 
-HRESULT GeneralPage::handleTextChanged(WidgetTextBoxPtr textBox, WPARAM wParam, LPARAM lParam) {
+void GeneralPage::handleTextChanged(WidgetTextBoxPtr textBox) {
 	tstring text = textBox->getText();
 	bool update = false;
 
@@ -94,8 +94,6 @@ HRESULT GeneralPage::handleTextChanged(WidgetTextBoxPtr textBox, WPARAM wParam, 
 		textBox->setText(text);
 		textBox->setSelection(caretPos, caretPos);
 	}
-
-	return 0;
 }
 
 #ifdef PORT_ME

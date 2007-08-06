@@ -72,7 +72,7 @@ void SearchFrame::closeAll() {
 }
 
 SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	BaseType(mdiParent, TSTRING(SEARCH)),
+	BaseType(mdiParent, TSTRING(SEARCH), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
 	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
 	bShowUI(true),
 	isHash(false),

@@ -87,6 +87,9 @@ class WidgetTextBoxBase :
 	public AspectVisible< WidgetTextBoxBase >
 {
 	friend class WidgetCreator< WidgetTextBoxBase >;
+
+	typedef Dispatchers::VoidVoid<> Dispatcher;
+
 public:
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
@@ -182,6 +185,8 @@ public:
 	/** Note that the maxChars returned will vary by OS if left unset.
 	  */
 	DWORD getTextLimit() const ;
+
+	void onTextChanged( const Dispatcher::F& f );
 
 protected:
 	// Constructor Taking pointer to parent
@@ -380,6 +385,12 @@ inline void WidgetTextBoxBase::setTextLimit( DWORD maxChars )
 inline DWORD WidgetTextBoxBase::getTextLimit() const 
 { 
 	return static_cast< DWORD >( this->sendMessage(EM_GETLIMITTEXT) );
+}
+
+inline void WidgetTextBoxBase::onTextChanged( const Dispatcher::F& f ) {
+	this->setCallback(
+		Message( WM_COMMAND, EN_CHANGE ), Dispatcher(f)
+	);
 }
 
 inline WidgetTextBox::Seed::Seed()

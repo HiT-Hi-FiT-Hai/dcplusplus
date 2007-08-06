@@ -61,8 +61,6 @@ private:
 	void handleFocus();
 	void handleTypeChanged();
 
-	HRESULT handleTextChanged(WPARAM wParam, LPARAM lParam);
-
 	void handleOKClicked();
 	void handleHelpClicked();
 
