@@ -33,7 +33,6 @@ unsigned int WidgetTabSheet::addPage( const SmartUtil::tstring & header, unsigne
 	if(image != -1) {
 		item.mask |= TCIF_IMAGE;
 		item.iImage = image;
-		printf("Adding tab with image %d\n", image);
 	}
 	
 	int newIdx = TabCtrl_InsertItem( this->handle(), index, & item );
@@ -55,6 +54,12 @@ SmartWin::Rectangle WidgetTabSheet::getUsableArea() const
 	d_Answer.bottom = d_Size.y;
 	TabCtrl_AdjustRect( this->handle(), false, & d_Answer );
 	return Rectangle::FromRECT( d_Answer );
+}
+
+void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)
+{
+	imageList = imageList_;
+	TabCtrl_SetImageList(handle(), imageList->handle());
 }
 
 }

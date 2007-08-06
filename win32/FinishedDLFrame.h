@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_FINISHED_DL_FRAME_H
 
 #include "FinishedFrameBase.h"
+#include "resource.h"
 
 class FinishedDLFrame : public FinishedFrameBase<FinishedDLFrame, false>
 {
@@ -28,9 +29,9 @@ public:
 	virtual ~FinishedDLFrame() { }
 
 	typedef FinishedFrameBase<FinishedDLFrame, false> BaseType;
-#ifdef PORT_ME
-	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedDLFrame"), IDR_FINISHED_DL, 0, COLOR_3DFACE);
-#endif
+	
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FINISHED_DOWNLOADS;
+	static const unsigned ICON_RESOURCE = IDR_FINISHED_DL;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_FINISHED_DL_FRAME_H)

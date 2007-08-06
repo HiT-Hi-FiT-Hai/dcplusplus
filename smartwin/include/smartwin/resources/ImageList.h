@@ -123,6 +123,10 @@ public:
 	  * List have the same size)
 	  */
 	Point getImageSize() const;
+	
+	void setBkColor(COLORREF color);
+	
+	COLORREF getBkColor() const;
 
 	int size() const;
 

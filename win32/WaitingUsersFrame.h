@@ -24,6 +24,7 @@
 
 #include <dcpp/forward.h>
 #include <dcpp/UploadManagerListener.h>
+#include "resource.h"
 
 class WaitingUsersFrame : 
 	public StaticFrame<WaitingUsersFrame>, 
@@ -35,6 +36,8 @@ public:
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::WAITING_USERS;
+	static const unsigned ICON_RESOURCE = IDR_WAITING_USERS;
+	
 protected:
 	typedef StaticFrame<WaitingUsersFrame> BaseType;
 	friend class StaticFrame<WaitingUsersFrame>;
@@ -94,27 +97,9 @@ private:
 };
 
 #ifdef PORT_ME
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
-
-	// Update colors
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-	{
-		HWND hWnd = (HWND)lParam;
-		HDC hDC   = (HDC)wParam;
-		if(hWnd == ctrlQueued.m_hWnd)
-		{
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
-		}
-		bHandled = FALSE;
-		return FALSE;
-	}
-
 
 #endif	/* PORT_ME */
 #endif	/* WAITING_QUEUE_FRAME_H */

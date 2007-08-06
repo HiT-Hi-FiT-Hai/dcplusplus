@@ -29,7 +29,7 @@ template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
 	StaticFrame(SmartWin::WidgetMDIParent* mdiClient) : 
-		MDIChildFrame<T>(mdiClient, Text::toT(ResourceManager::getInstance()->getString(T::TITLE_RESOURCE))) 
+		MDIChildFrame<T>(mdiClient, TSTRING_I(T::TITLE_RESOURCE), SmartWin::IconPtr(new SmartWin::Icon(T::ICON_RESOURCE))) 
 	{ 
 	}
 	

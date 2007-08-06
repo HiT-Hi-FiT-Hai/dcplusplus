@@ -27,6 +27,8 @@
 #include <dcpp/LogManager.h>
 #include <dcpp/User.h>
 #include <dcpp/ResourceManager.h>
+#include <dcpp/FavoriteManager.h>
+#include <dcpp/UploadManager.h>
 
 #include <mmsystem.h>
 
@@ -170,12 +172,7 @@ void PrivateFrame::addChat(const tstring& aLine) {
 	}
 
 	chat->addText(line);
-
-#ifdef PORT_ME
-	if (BOOLSETTING(BOLD_PM)) {
-		setDirty();
-	}
-#endif
+	setDirty(SettingsManager::BOLD_PM);
 }
 
 void PrivateFrame::addStatus(const tstring& aLine, bool inChat /* = true */) {
@@ -279,33 +276,31 @@ bool PrivateFrame::enter() {
 	}
 
 	bool resetText = true;
-
+	bool send = false;
 	// Process special commands
 	if(s[0] == '/') {
 		tstring param;
 		tstring message;
 		tstring status;
-#ifdef PORT_ME
 		if(WinUtil::checkCommand(s, param, message, status)) {
 			if(!message.empty()) {
 				sendMessage(message);
 			}
 			if(!status.empty()) {
-				addClientLine(status);
+				addStatus(status);
 			}
 		} else if(Util::stricmp(s.c_str(), _T("clear")) == 0) {
-			ctrlClient.SetWindowText(_T(""));
+			chat->setText(Util::emptyStringT);
 		} else if(Util::stricmp(s.c_str(), _T("grant")) == 0) {
-			UploadManager::getInstance()->reserveSlot(getUser());
-			addClientLine(TSTRING(SLOT_GRANTED));
+			UploadManager::getInstance()->reserveSlot(replyTo);
+			addStatus(TSTRING(SLOT_GRANTED));
 		} else if(Util::stricmp(s.c_str(), _T("close")) == 0) {
-			PostMessage(WM_CLOSE);
+			postMessage(WM_CLOSE);
 		} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
-			FavoriteManager::getInstance()->addFavoriteUser(getUser());
+			FavoriteManager::getInstance()->addFavoriteUser(replyTo);
 			addStatus(TSTRING(FAVORITE_USER_ADDED));
 		} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
-			BOOL bTmp;
-			onGetList(0,0,0,bTmp);
+			// TODO handleGetList();
 		} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
 			StringMap params;
 
@@ -318,25 +313,22 @@ bool PrivateFrame::enter() {
 		} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 			addStatus(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log <system, downloads, uploads>"));
 		} else {
-			if(replyTo->isOnline()) {
-				sendMessage(tstring(msg));
-			} else {
-				ctrlStatus.SetText(0, CTSTRING(USER_WENT_OFFLINE));
-				resetText = false;
-			}
+			send = true;
 		}
-#endif
 	} else {
+		send = true;
+	}
+	
+	if(send) {
 		if(replyTo->isOnline()) {
 			sendMessage(s);
 		} else {
-			setStatus(STATUS_STATUS, CTSTRING(USER_WENT_OFFLINE));
+			addStatus(TSTRING(USER_WENT_OFFLINE));
 			resetText = false;
 		}
 	}
-	
 	if(resetText) {
-		message->setText(_T(""));
+		message->setText(Util::emptyStringT);
 	}
 	return true;
 	
@@ -373,24 +365,6 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const User::Ptr& 
 }
 
 #ifdef PORT_ME
-
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
-
-#include "PrivateFrame.h"
-#include "SearchFrm.h"
-#include "WinUtil.h"
-
-#include "../client/Client.h"
-#include "../client/ClientManager.h"
-#include "../client/Util.h"
-#include "../client/LogManager.h"
-#include "../client/UploadManager.h"
-#include "../client/ShareManager.h"
-#include "../client/FavoriteManager.h"
-#include "../client/QueueManager.h"
-#include "../client/StringTokenizer.h"
 
 LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {

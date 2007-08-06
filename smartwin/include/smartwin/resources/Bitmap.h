@@ -68,7 +68,7 @@ public:
 	  * Class takes "control" of HBITMAP meaning it will automatically free the
 	  * contained HBITMAP upon destruction
 	  */
-	explicit Bitmap( unsigned resourceId );
+	explicit Bitmap( unsigned resourceId, unsigned flags = LR_CREATEDIBSECTION );
 
 	/// RAII Constructor loading a bitmap from a file on disc
 	/** Note! <br>
@@ -85,7 +85,7 @@ public:
 	  * <li>Icons (ICO)</li>
 	  * </ul>
 	  */
-	explicit Bitmap( const SmartUtil::tstring & filePath );
+	explicit Bitmap( const SmartUtil::tstring & filePath, unsigned flags = LR_CREATEDIBSECTION );
 
 	/// @deprecated, use handle
 	HBITMAP getBitmap() const;

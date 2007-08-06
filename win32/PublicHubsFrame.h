@@ -24,6 +24,7 @@
 #include "TypedListViewCtrl.h"
 
 #include <dcpp/FavoriteManager.h>
+#include "resource.h"
 
 class PublicHubsFrame : 
 	public StaticFrame<PublicHubsFrame>,
@@ -38,7 +39,8 @@ public:
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
-
+	static const unsigned ICON_RESOURCE = IDR_PUBLICHUBS;
+	
 private:
 	typedef StaticFrame<PublicHubsFrame> BaseType;
 	friend class StaticFrame<PublicHubsFrame>;

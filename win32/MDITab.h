@@ -15,6 +15,8 @@ public:
 	static MDITab* getInstance() { return instance; }
 	
 	void addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon = SmartWin::IconPtr());
+	/** Mark tab until it's selected */
+	void markTab(SmartWin::WidgetMDIChild* w);
 	void removeTab(SmartWin::WidgetMDIChild* w);
 	
 	virtual void create( const Seed & cs = getDefaultSeed() );

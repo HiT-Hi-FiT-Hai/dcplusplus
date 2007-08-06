@@ -181,13 +181,6 @@ void UsersFrame::handleProperties() {
 
 #ifdef PORT_ME
 
-#include "../client/StringTokenizer.h"
-#include "../client/ClientManager.h"
-
-#include "LineDlg.h"
-
-#include "HubFrame.h"
-
 LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {

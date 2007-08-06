@@ -21,6 +21,7 @@
 
 #include "StaticFrame.h"
 #include <dcpp/ADLSearch.h>
+#include "resource.h"
 
 class ADLSearchFrame : public StaticFrame<ADLSearchFrame> {
 public:
@@ -30,6 +31,7 @@ public:
 	};
 
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::ADL_SEARCH;
+	static const unsigned ICON_RESOURCE = IDR_ADLSEARCH;
 
 protected:
 	typedef StaticFrame<ADLSearchFrame> BaseType;
@@ -40,7 +42,6 @@ protected:
 	virtual ~ADLSearchFrame();
 
 	void layout();
-	void UpdateLayout(BOOL bResizeBars = TRUE);
 
 private:
 	enum {
@@ -79,8 +80,6 @@ private:
 	void UpdateSearch(int index, BOOL doDelete);
 	
 	bool preClosing();
-//	virtual void on(FavoriteAdded, const FavoriteHubEntryPtr e) throw();
-//	virtual void on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw();
 };
 
 #ifdef PORT_ME
@@ -95,17 +94,6 @@ private:
 class ADLSearchFrame : public MDITabChildWindowImpl<ADLSearchFrame>, public StaticFrame<ADLSearchFrame, ResourceManager::ADL_SEARCH>
 {
 public:
-
-	// Base class typedef
-	typedef MDITabChildWindowImpl<ADLSearchFrame> baseClass;
-
-	// Constructor/destructor
-	ADLSearchFrame() {}
-	virtual ~ADLSearchFrame() { }
-
-	// Frame window declaration
-	DECLARE_FRAME_WND_CLASS_EX(_T("ADLSearchFrame"), IDR_ADLSEARCH, 0, COLOR_3DFACE);
-
 	// Inline message map
 	BEGIN_MSG_MAP(ADLSearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -142,24 +130,6 @@ public:
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 
-	// Update colors
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-	{
-		HWND hWnd = (HWND)lParam;
-		HDC hDC   = (HDC)wParam;
-		if(hWnd == ctrlList.m_hWnd)
-		{
-			::SetBkColor(hDC, WinUtil::bgColor);
-			::SetTextColor(hDC, WinUtil::textColor);
-			return (LRESULT)WinUtil::bgBrush;
-		}
-		bHandled = FALSE;
-		return FALSE;
-	}
-
-	// Update control layouts
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
 private:
 
 	// Communication with manager
@@ -177,21 +147,6 @@ private:
 	CButton ctrlHelp;
 	CMenu contextMenu;
 
-	// Column order
-	enum
-	{
-		COLUMN_FIRST = 0,
-		COLUMN_ACTIVE_SEARCH_STRING = COLUMN_FIRST,
-		COLUMN_SOURCE_TYPE,
-		COLUMN_DEST_DIR,
-		COLUMN_MIN_FILE_SIZE,
-		COLUMN_MAX_FILE_SIZE,
-		COLUMN_LAST
-	};
-
-	// Column parameters
-	static int columnIndexes[];
-	static int columnSizes[];
 };
 
 #endif 

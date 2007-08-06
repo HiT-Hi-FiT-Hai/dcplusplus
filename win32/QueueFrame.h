@@ -28,8 +28,12 @@
 #include <dcpp/QueueManagerListener.h>
 #include <dcpp/QueueItem.h>
 #include <dcpp/ClientListener.h>
+#include "resource.h"
 
-class QueueFrame : public StaticFrame<QueueFrame>, private ClientListener, private QueueManagerListener
+class QueueFrame : 
+	public StaticFrame<QueueFrame>, 
+	private ClientListener, 
+	private QueueManagerListener
 {
 public:
 	enum Status {
@@ -44,7 +48,8 @@ public:
 	};
 
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::DOWNLOAD_QUEUE;
-
+	static const unsigned ICON_RESOURCE = IDR_QUEUE;
+	
 private:
 	typedef StaticFrame<QueueFrame> BaseType;
 	friend class StaticFrame<QueueFrame>;

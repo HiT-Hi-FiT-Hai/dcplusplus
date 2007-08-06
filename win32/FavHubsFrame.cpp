@@ -23,6 +23,7 @@
 
 #include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
+#include <dcpp/version.h>
 
 int FavHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
 int FavHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };
@@ -158,10 +159,8 @@ void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int pos) {
 }
 
 void FavHubsFrame::openSelected() {
-#ifdef PORT_ME
 	if(!checkNick())
 		return;
-#endif
 	std::vector<unsigned> items = hubs->getSelectedRows();
 	for(std::vector<unsigned>::iterator i = items.begin(); i != items.end(); ++i) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)hubs->getItemData(*i);
@@ -193,6 +192,14 @@ void FavHubsFrame::handleDown() {
 	
 }
 
+bool FavHubsFrame::checkNick() {
+	if(SETTING(NICK).empty()) {
+		createMessageBox().show(TSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
+		return false;
+	}
+	return true;
+}
+
 void FavHubsFrame::on(FavoriteAdded, const FavoriteHubEntryPtr e) throw() {
 	
 }
@@ -200,6 +207,7 @@ void FavHubsFrame::on(FavoriteAdded, const FavoriteHubEntryPtr e) throw() {
 void FavHubsFrame::on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw() {
 	
 }
+
 #ifdef PORT_ME
 
 #include "Resource.h"
@@ -259,9 +267,7 @@ void FavHubsFrame::handleDoubleClick() {
 	if(hubs->hasSelection()) {
 		openSelected();
 	} else {
-#ifdef PORT_ME
-		PostMessage(WM_COMMAND, IDC_NEW, 0);
-#endif
+		handleAdd();
 	}
 }
 
@@ -333,14 +339,6 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		}
 	}
 	return 0;
-}
-
-bool FavoriteHubsFrame::checkNick() {
-	if(SETTING(NICK).empty()) {
-		MessageBox(CTSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
-		return false;
-	}
-	return true;
 }
 
 LRESULT FavoriteHubsFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

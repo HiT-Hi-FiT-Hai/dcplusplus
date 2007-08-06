@@ -90,9 +90,12 @@ protected:
 		}
 	}
 	
-	void setDirty() {
-		
+	void setDirty(SettingsManager::IntSetting setting) {
+		if(SettingsManager::getInstance()->getBool(setting)) {
+			MDITab::getInstance()->markTab(this);
+		}
 	}
+	
 private:
 	HWND lastFocus;
 	bool reallyClose;

@@ -499,11 +499,8 @@ void HubFrame::addStatus(const tstring& aLine, bool inChat /* = true */) {
 		lastLinesList.erase(lastLinesList.begin());
 	lastLinesList.push_back(line);
 
-#ifdef PORT_ME
-	if (BOOLSETTING(BOLD_HUB)) {
-		setDirty();
-	}
-#endif
+	setDirty(SettingsManager::BOLD_HUB);
+
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 		addChat(_T("*** ") + aLine);
 	}
@@ -1243,12 +1240,6 @@ void HubFrame::handleShowUsersClicked() {
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
-
-	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
-	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-	ctrlLastLines.AddTool(&ti);
-
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));

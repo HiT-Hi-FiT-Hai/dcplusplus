@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_STATS_FRAME_H
 
 #include "StaticFrame.h"
+#include "resource.h"
 
 class StatsFrame : public StaticFrame<StatsFrame>
 {
@@ -29,7 +30,8 @@ public:
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NETWORK_STATISTICS;
-
+	static const unsigned ICON_RESOURCE = IDR_NET_STATS;
+	
 protected:
 	void layout() {
 		

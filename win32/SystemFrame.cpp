@@ -62,10 +62,7 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 	}
 	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
 
-#ifdef PORT_ME
-	if(BOOLSETTING(BOLD_SYSTEM_LOG))
-		setDirty();
-#endif
+	setDirty(SettingsManager::BOLD_SYSTEM_LOG);
 }
 
 void SystemFrame::layout() {

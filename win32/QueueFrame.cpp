@@ -169,11 +169,7 @@ HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
 
 			delete ii;
 			updateStatus();
-			if (BOOLSETTING(BOLD_QUEUE)) {
-#ifdef PORT_ME
-				setDirty();
-#endif
-			}
+			setDirty(SettingsManager::BOLD_QUEUE);
 			dirty = true;
 		} else if(ti->first == UPDATE_ITEM) {
 			boost::scoped_ptr<UpdateTask> ui(reinterpret_cast<UpdateTask*>(ti->second));

@@ -43,10 +43,6 @@ PropPage::TextItem Advanced3Page::texts[] = {
 };
 
 PropPage::Item Advanced3Page::items[] = {
-#ifdef PORT_ME
-	// no SettingsManager::ROLLBACK
-	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT },
-#endif
 	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
 	{ IDC_MAX_HASH_SPEED, SettingsManager::MAX_HASH_SPEED, PropPage::T_INT },
 	{ IDC_SHOW_LAST_LINES_LOG, SettingsManager::SHOW_LAST_LINES_LOG, PropPage::T_INT },

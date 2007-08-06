@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_NOTEPAD_FRAME_H
 
 #include "StaticFrame.h"
+#include "resource.h"
 
 class NotepadFrame : public StaticFrame<NotepadFrame> {
 public:
@@ -29,7 +30,7 @@ public:
 	};
 	
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NOTEPAD;
-
+	static const unsigned ICON_RESOURCE = IDR_NOTEPAD;
 protected:
 	typedef StaticFrame<NotepadFrame> BaseType;
 	friend class StaticFrame<NotepadFrame>;

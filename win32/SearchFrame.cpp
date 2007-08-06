@@ -585,10 +585,7 @@ HRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 
 			results->insertItem(si);
 			setStatus(STATUS_COUNT, Text::toT(Util::toString(results->getRowCount()) + ' ' + STRING(ITEMS)));
-#ifdef PORT_ME
-			if(BOOLSETTING(BOLD_SEARCH))
-				setDirty();
-#endif
+			setDirty(SettingsManager::BOLD_SEARCH);
 		}
 		break;
 	case SPEAK_FILTER_RESULT:

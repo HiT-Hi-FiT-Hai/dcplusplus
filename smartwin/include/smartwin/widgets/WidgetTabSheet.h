@@ -251,6 +251,8 @@ public:
 	  */
 	void setRightTabs( bool value = true );
 
+	void setHighlight(int item, bool highlight = true);
+	
 	/// Set tabs to appear with a flat separator between different tabs
 	/** If true passed flat separator style will be turned ON else OFF
 	  */
@@ -407,19 +409,16 @@ inline void WidgetTabSheet::setRightTabs( bool value )
 
 inline void WidgetTabSheet::setFlatSeparators( bool value )
 {
-	setFlatButtonStyle();
 	this->sendMessage( TCM_SETEXTENDEDSTYLE, TCS_EX_FLATSEPARATORS, value );
-}
-
-inline void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)
-{
-	imageList = imageList_;
-	TabCtrl_SetImageList(handle(), imageList->handle());
 }
 
 inline const ImageListPtr& WidgetTabSheet::getImageList() const
 {
 	return imageList;
+}
+
+inline void WidgetTabSheet::setHighlight(int item, bool highlight) {
+	TabCtrl_HighlightItem(handle(), item, highlight);
 }
 
 // end namespace SmartWin

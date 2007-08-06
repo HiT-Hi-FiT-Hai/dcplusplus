@@ -40,8 +40,6 @@ public:
 		STATUS_LAST
 	};
 
-	static const ResourceManager::Strings TITLE_RESOURCE = in_UL ? ResourceManager::FINISHED_UPLOADS : ResourceManager::FINISHED_DOWNLOADS;
-
 protected:
 	typedef StaticFrame<T> BaseType;
 	typedef MDIChildFrame<T> MDIChildType;
@@ -62,12 +60,6 @@ protected:
 			items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 			addWidget(items);
 
-#ifdef PORT_ME
-			for(int j=0; j<COLUMN_LAST; j++) {
-				int fmt = (j == COLUMN_SIZE || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-				items->InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
-			}
-#endif
 			items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 			items->setColumnOrder(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER), columnIndexes));
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
@@ -201,10 +193,7 @@ private:
 		if(wParam == SPEAK_ADD_LINE) {
 			FinishedItemPtr entry = (FinishedItemPtr)lParam;
 			addEntry(entry);
-#ifdef PORT_ME
-			if(SettingsManager::getInstance()->get(in_UL ? SettingsManager::BOLD_FINISHED_UPLOADS : SettingsManager::BOLD_FINISHED_DOWNLOADS))
-				setDirty();
-#endif
+			this->setDirty(in_UL ? SettingsManager::BOLD_FINISHED_UPLOADS : SettingsManager::BOLD_FINISHED_DOWNLOADS);
 			updateStatus();
 		} else if(wParam == SPEAK_REMOVE) {
 			updateStatus();

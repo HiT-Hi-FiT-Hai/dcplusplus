@@ -113,17 +113,11 @@ HRESULT WaitingUsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if(wParam == SPEAK_ADD_FILE) {
 		boost::scoped_ptr<pair<UserPtr, string> > p((pair<UserPtr, string> *)lParam);
 		onAddFile(p->first, p->second);
-#ifdef PORT_ME
-		if(BOOLSETTING(BOLD_WAITING_USERS))
-			setDirty();
-#endif
+		setDirty(SettingsManager::BOLD_WAITING_USERS);
 	} else if(wParam == SPEAK_REMOVE_USER) {
 		boost::scoped_ptr<UserItem> p(reinterpret_cast<UserItem *>(lParam));
 		onRemoveUser(p->u);
-#ifdef PORT_ME
-		if(BOOLSETTING(BOLD_WAITING_USERS))
-			setDirty();
-#endif
+		setDirty(SettingsManager::BOLD_WAITING_USERS);
 	}
 	return 0;
 }

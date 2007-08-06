@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_FINISHED_UL_FRAME_H
 
 #include "FinishedFrameBase.h"
+#include "resource.h"
 
 class FinishedULFrame : public FinishedFrameBase<FinishedULFrame, true>
 {
@@ -28,9 +29,8 @@ public:
 	virtual ~FinishedULFrame() { }
 
 	typedef FinishedFrameBase<FinishedULFrame, true> BaseType;
-#ifdef PORT_ME
-	DECLARE_FRAME_WND_CLASS_EX(_T("FinishedULFrame"), IDR_FINISHED_UL, 0, COLOR_3DFACE);
-#endif
+	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FINISHED_UPLOADS;
+	static const unsigned ICON_RESOURCE = IDR_FINISHED_UL;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_FINISHED_UL_FRAME_H)

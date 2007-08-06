@@ -26,6 +26,7 @@
 #include "TypedListViewCtrl.h"
 
 #include "UserInfoBase.h"
+#include "resource.h"
 
 class UsersFrame : 
 	public StaticFrame<UsersFrame>, 
@@ -38,6 +39,7 @@ public:
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_USERS;
+	static const unsigned ICON_RESOURCE = IDR_USERS;
 
 private:
 	typedef StaticFrame<UsersFrame> BaseType;

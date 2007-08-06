@@ -22,6 +22,7 @@
 #include "StaticFrame.h"
 
 #include <dcpp/FavoriteManagerListener.h>
+#include "resource.h"
 
 class FavHubsFrame : 
 	public StaticFrame<FavHubsFrame>, 
@@ -35,6 +36,7 @@ public:
 	};
 	
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_HUBS;
+	static const unsigned ICON_RESOURCE = IDR_FAVORITES;
 
 protected:
 	typedef StaticFrame<FavHubsFrame> BaseType;
@@ -81,7 +83,8 @@ private:
 
 	void openSelected();
 	void addEntry(const FavoriteHubEntryPtr entry, int pos);
-	
+	bool checkNick();
+
 	virtual void on(FavoriteAdded, const FavoriteHubEntryPtr e) throw();
 	virtual void on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw();
 };
@@ -92,7 +95,6 @@ class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, publi
 	private FavoriteManagerListener
 {
 public:
-	DECLARE_FRAME_WND_CLASS_EX(_T("FavoriteHubsFrame"), IDR_FAVORITES, 0, COLOR_3DFACE);
 
 	BEGIN_MSG_MAP(FavoriteHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -123,8 +125,6 @@ public:
 	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-
-	bool checkNick();
 
 	LRESULT onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
 		openSelected();

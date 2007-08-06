@@ -45,20 +45,12 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		searches = createDataGrid(cs);
 		addWidget(searches);
 		searches->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-
-#ifdef PORT_ME
-		for(int j=0; j<COLUMN_LAST; j++) {
-			int fmt = (j == COLUMN_COUNT) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-			searches->InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
-		}
-#endif
 		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
 #ifdef PORT_ME
 		searches->setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
 #endif
-
 		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 
@@ -93,7 +85,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	searches->onRaw(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 	initSecond();
-#if 1
+#if 0
 	// for testing purposes; adds 2 dummy lines into the list
 	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 1")));
 	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 2")));

@@ -69,11 +69,9 @@ void ImageList::add( const Bitmap& bitmap, COLORREF mask) {
 }
 
 void ImageList::add( const Icon & icon ) {
-	printf("Adding icon\n");
-	if(ImageList_ReplaceIcon( handle(), -1, icon.handle() ) == -1) {
+	if(ImageList_AddIcon( handle(), icon.handle() ) == -1) {
 		throw xCeption(_T("Add icon failed"));
 	}
-	printf("Added icon, there are now %d images\n", size());
 }
 
 void ImageList::add(const ImageList& imageList, int image) {
@@ -114,6 +112,14 @@ int ImageList::size() const
 
 int ImageList::getImageCount() const {
 	return size();
+}
+
+void ImageList::setBkColor(COLORREF color) {
+	ImageList_SetBkColor(handle(), color);
+}
+
+COLORREF ImageList::getBkColor() const {
+	return ImageList_GetBkColor(handle());
 }
 
 void ImageList::resize( unsigned newSize )

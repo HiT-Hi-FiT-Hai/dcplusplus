@@ -82,22 +82,10 @@ private:
 };
 
 #ifdef PORT_ME
-#include "../client/User.h"
-#include "../client/ClientManagerListener.h"
-#include "../client/ResourceManager.h"
-
-#include "FlatTabCtrl.h"
-#include "WinUtil.h"
-#include "UCHandler.h"
-
-#define PM_MESSAGE_MAP 8		// This could be any number, really...
-
 class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>,
 	private ClientManagerListener, public UCHandler<PrivateFrame>
 {
 public:
-
-	DECLARE_FRAME_WND_CLASS_EX(_T("PrivateFrame"), IDR_PRIVATE, 0, COLOR_3DFACE);
 
 	typedef MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)> baseClass;
 	typedef UCHandler<PrivateFrame> ucBase;

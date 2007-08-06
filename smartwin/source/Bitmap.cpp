@@ -38,15 +38,15 @@ Bitmap::Bitmap( HBITMAP bitmap, bool own )
 	: ResourceType(bitmap, own)
 {}
 
-Bitmap::Bitmap( unsigned resourceId )
-	: ResourceType( ::LoadBitmap( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ) ) )
+Bitmap::Bitmap( unsigned resourceId, unsigned flags )
+	: ResourceType( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), MAKEINTRESOURCE( resourceId ), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION ) )
 {}
 
-Bitmap::Bitmap( const SmartUtil::tstring & filePath )
+Bitmap::Bitmap( const SmartUtil::tstring & filePath, unsigned flags )
 #ifdef WINCE
 	: itsBitmap( ::SHLoadImageFile( filePath.c_str() ) )
 #else
-	: ResourceType( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE ) )
+	: ResourceType( ( HBITMAP )::LoadImage( Application::instance().getAppHandle(), filePath.c_str(), IMAGE_BITMAP, 0, 0, flags | LR_LOADFROMFILE ) )
 #endif
 {}
 

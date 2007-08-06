@@ -30,12 +30,12 @@ MDITab::MDITab(SmartWin::Widget* parent) :
 {
 	instance = this;
 	hook = ::SetWindowsHookEx(WH_KEYBOARD, &MDITab::keyboardProc, NULL, ::GetCurrentThreadId());
-	setImageList(SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32)));
 }
 
 MDITab::~MDITab() {
 	if(hook) {
 		::UnhookWindowsHookEx(hook);
+		hook = NULL;
 	}
 	instance = 0;
 }
@@ -49,7 +49,7 @@ void MDITab::addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon) 
 	
 	int image = -1;
 	if(icon) {
-		for(int i = 0; i < icons.size(); ++i) {
+		for(size_t i = 0; i < icons.size(); ++i) {
 			if(icon == icons[i]) {
 				image = i;
 				break;
@@ -64,7 +64,6 @@ void MDITab::addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon) 
 	
 	size_t tabs = this->size();
 	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(w), image);
-
 	if(w->getParent()->getActive() == w->handle()) {
 		this->setSelectedIndex(tabs);
 	}
@@ -87,6 +86,13 @@ void MDITab::removeTab(SmartWin::WidgetMDIChild* w) {
 	}
 }
 
+void MDITab::markTab(SmartWin::WidgetMDIChild* w) {
+	int i = findTab(w);
+	if(i != -1) {
+		setHighlight(i, true);
+	}
+}
+
 int MDITab::findTab(SmartWin::WidgetMDIChild* w) {
 	for(size_t i = 0; i < this->size(); ++i) {
 		if(getData(i) == reinterpret_cast<LPARAM>(w)) {
@@ -99,6 +105,8 @@ int MDITab::findTab(SmartWin::WidgetMDIChild* w) {
 void MDITab::create( const Seed & cs ) {
 	BaseType::create(cs);
 	
+	setImageList(SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK)));
+//	getImageList()->setBkColor(::GetSysColor(COLOR_3DFACE));
 	onSelectionChanged(std::tr1::bind(&MDITab::handleSelectionChanged, this, _1));
 }
 
@@ -116,6 +124,7 @@ void MDITab::handleSelectionChanged(size_t i) {
 	if(w->getParent()->getActive() != w->handle()) {
 		w->activate();
 	}
+	setHighlight(i, false);
 }
 
 LRESULT MDITab::handleMdiActivate(SmartWin::WidgetMDIChild* w, WPARAM wParam, LPARAM lParam) {

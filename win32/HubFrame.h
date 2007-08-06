@@ -285,11 +285,6 @@ class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 	public UCHandler<HubFrame>, public UserInfoBaseHandler<HubFrame>
 {
 public:
-	DECLARE_FRAME_WND_CLASS_EX(_T("HubFrame"), IDR_HUB, 0, COLOR_3DFACE);
-
-	typedef CSplitterImpl<HubFrame> splitBase;
-	typedef MDITabChildWindowImpl<HubFrame> baseClass;
-	typedef UserInfoBaseHandler<HubFrame> uibBase;
 
 	BEGIN_MSG_MAP(HubFrame)
 		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)

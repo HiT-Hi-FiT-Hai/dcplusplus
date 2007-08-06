@@ -22,6 +22,7 @@
 #include "StaticFrame.h"
 
 #include <dcpp/ClientManagerListener.h>
+#include "resource.h"
 
 class SpyFrame : public StaticFrame<SpyFrame>, private ClientManagerListener {
 public:
@@ -37,6 +38,7 @@ public:
 	};
 
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SEARCH_SPY;
+	static const unsigned ICON_RESOURCE = IDR_SPY;
 
 protected:
 	typedef StaticFrame<SpyFrame> BaseType;
