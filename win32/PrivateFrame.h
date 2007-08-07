@@ -20,13 +20,15 @@
 #define DCPLUSPLUS_WIN32_PRIVATE_FRAME_H
 
 #include "MDIChildFrame.h"
+#include "AspectUserCommand.h"
 
 #include <dcpp/ClientManagerListener.h>
 #include <dcpp/User.h>
 
 class PrivateFrame : 
 	public MDIChildFrame<PrivateFrame>, 
-	private ClientManagerListener
+	private ClientManagerListener,
+	public AspectUserCommand<PrivateFrame>
 {
 public:
 	enum Status {
@@ -46,18 +48,20 @@ public:
 private:
 	typedef MDIChildFrame<PrivateFrame> BaseType;
 	friend class MDIChildFrame<PrivateFrame>;
+	friend class AspectUserCommand<PrivateFrame>;
 	
 	enum Tasks { USER_UPDATED
 	};
 
 	WidgetTextBoxPtr chat;
 	WidgetTextBoxPtr message;
-	
+
+	StringMap ucLineParams;
+	UserPtr replyTo;
+
 	typedef HASH_MAP<UserPtr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
-
-	UserPtr replyTo;
 
 	PrivateFrame(WidgetMDIParent* mdiParent, const UserPtr& replyTo_, bool activte);
 	virtual ~PrivateFrame();
@@ -65,6 +69,9 @@ private:
 	void layout();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool preClosing();
+	bool handleTabContextMenu(const SmartWin::Point& pt);
+	void handleGetList();
+	void handleMatchQueue();
 	
 	bool handleChar(int c);
 	bool handleKeyDown(int c);
@@ -75,64 +82,12 @@ private:
 	void addStatus(const tstring& aLine, bool inChat = true);
 	void updateTitle();
 	
+	void runUserCommand(const UserCommand& uc);
+
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::UserUpdated, const OnlineUser& aUser) throw();
 	virtual void on(ClientManagerListener::UserConnected, const UserPtr& aUser) throw();
 	virtual void on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) throw();
 };
-
-#ifdef PORT_ME
-class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>,
-	private ClientManagerListener, public UCHandler<PrivateFrame>
-{
-public:
-
-	typedef MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)> baseClass;
-	typedef UCHandler<PrivateFrame> ucBase;
-
-	BEGIN_MSG_MAP(PrivateFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
-		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
-		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
-		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
-		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
-		CHAIN_COMMANDS(ucBase)
-		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(PM_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
-	END_MSG_MAP()
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
-	void runUserCommand(UserCommand& uc);
-
-	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		PostMessage(WM_CLOSE);
-		return 0;
-	}
-
-	User::Ptr& getUser() { return replyTo; }
-private:
-	CMenu tabMenu;
-
-	CContainedWindow ctrlMessageContainer;
-	CContainedWindow ctrlClientContainer;
-
-	StringMap ucLineParams;
-
-	void updateTitle();
-
-};
-
-#endif
 
 #endif // !defined(PRIVATE_FRAME_H)

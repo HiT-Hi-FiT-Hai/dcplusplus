@@ -21,6 +21,7 @@
 #include "DirectoryListingFrame.h"
 #include "LineDlg.h"
 #include "HoldRedraw.h"
+#include "ShellContextMenu.h"
 
 #include "resource.h"
 
@@ -31,6 +32,7 @@
 #include <dcpp/QueueManager.h>
 #include <dcpp/StringSearch.h>
 #include <dcpp/ClientManager.h>
+#include <dcpp/ShareManager.h>
 
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
 int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
@@ -407,7 +409,7 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 	}
 }
 
-HRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	
 	WidgetMenuPtr contextMenu;
@@ -417,22 +419,22 @@ HRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		}
 		
 		if(files->getSelectedCount() == 1) {
-#ifdef PORT_ME
 			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe())) {
 				string path;
+				ItemInfo* ii = files->getSelectedItem();
 				try {
 					path = ShareManager::getInstance()->toReal(Util::toAdcFile(dl->getPath(ii->file) + ii->file->getName()));
 				} catch(const ShareException&) {
 					// Ignore
 				}
 				if(!path.empty() && (File::getSize(path) != -1)) {
+					WidgetMenuPtr menu = this->createMenu(true);
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::toT(path));
-					shellMenu.ShowContextMenu(m_hWnd, pt);
+					shellMenu.ShowContextMenu(menu, this, pt);
 					return TRUE;
 				}
 			}
-#endif
 			ItemInfo* ii = files->getSelectedItem();
 			
 			contextMenu = makeSingleMenu(ii);
@@ -966,7 +968,7 @@ void DirectoryListingFrame::handleDoubleClickFiles() {
 	}
 }
 
-HRESULT DirectoryListingFrame::handleXButtonUp(WPARAM wParam, LPARAM lParam) {
+LRESULT DirectoryListingFrame::handleXButtonUp(WPARAM wParam, LPARAM lParam) {
 	if(HIWORD(wParam) & XBUTTON1) {
 		back();
 		return TRUE;

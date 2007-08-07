@@ -30,7 +30,7 @@
 #define WidgetMessageBox_h
 
 #include "../../SmartUtil.h"
-#include "../FreeCommonDialog.h"
+#include "../Widget.h"
 #include "../WindowsHeaders.h"
 
 namespace SmartWin
@@ -49,12 +49,11 @@ namespace SmartWin
   * and HWND in the Parent template parameter. <br>
   * The complete signature of the function will then be "HWND parent()"   
   */
-template< class Parent >
 class WidgetMessageBox
 {
 public:
 	/// Class type
-	typedef WidgetMessageBox< Parent > ThisType;
+	typedef WidgetMessageBox ThisType;
 
 	/// Object type
 	/** Note, not a pointer!!!!
@@ -64,7 +63,7 @@ public:
 	~WidgetMessageBox()
 	{}
 
-	explicit WidgetMessageBox( Parent * parent = 0 );
+	explicit WidgetMessageBox( SmartWin::Widget * parent = 0 );
 
 	// Next three enums are here INTENTIONALLY to abstract away Win32API
 	/// Enums for which buttons you want the MessageBox to have.
@@ -74,7 +73,7 @@ public:
 		BOX_OKCANCEL = MB_OKCANCEL,
 		BOX_ABORTRETRYIGNORE = MB_ABORTRETRYIGNORE,
 		BOX_YESNOCANCEL = MB_YESNOCANCEL,
-		BOX_YESNO = MB_YESNO,
+		BOX_YESNO = MB_YESNO | MB_DEFBUTTON2,	// Default to no
 #ifdef MB_CANCELTRYCONTINUE
 		BOX_CANCELTRYCONTINUE = MB_CANCELTRYCONTINUE,
 #endif
@@ -125,29 +124,19 @@ public:
 		Icon icon = BOX_ICONINFORMATION );
 
 private:
-	Parent * itsParent;
+	SmartWin::Widget * itsParent;
 };
-
-/// \ingroup GlobalStuff
-/// A Free WidgetMessageBox dialog is a dialog which isn't "owned" by another Widget
-typedef WidgetMessageBox< FreeCommonDialog > WidgetMessageBoxFree;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class Parent >
-WidgetMessageBox< Parent >::WidgetMessageBox( Parent * parent )
+
+inline WidgetMessageBox::WidgetMessageBox( SmartWin::Widget * parent )
 	: itsParent( parent )
 {}
 
-template< class Parent >
-typename WidgetMessageBox< Parent >::RetVal WidgetMessageBox< Parent >::show( const SmartUtil::tstring & body, const SmartUtil::tstring & header, Buttons buttons, Icon icon )
+WidgetMessageBox::RetVal WidgetMessageBox::show( const SmartUtil::tstring & body, const SmartUtil::tstring & header, Buttons buttons, Icon icon )
 {
-	// Note!
-	// If this one fizzles you have NOT supplied a parent with a "handle()"
-	// function... You MUST suuply a parent with a function "handle()" which
-	// returns a HWND! All the Widgetxxx classes (except LoadFile, SaveFile and
-	// MessageBox) have the "handle()" function...
 	return static_cast< RetVal >( ::MessageBox( itsParent ? itsParent->handle() : 0, body.c_str(), header.c_str(), buttons | icon ) );
 }
 

@@ -228,7 +228,7 @@ private:
 			if(BOOLSETTING(SHOW_SHELL_MENU) && items->getSelectedCount() == 1) {
 				string path = items->getSelectedItem()->entry->getTarget();
 				if(File::getSize(path) != -1) {
-					CShellContextMenu<T> shellMenu;
+					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
 					typename T::WidgetMenuPtr pShellMenu = this->createMenu(true);

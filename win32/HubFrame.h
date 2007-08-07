@@ -179,6 +179,7 @@ private:
 	tstring filterString;
 
 	StringMap ucLineParams;
+	bool inTabMenu;
 
 	tstring complete;
 	StringList tabCompleteNicks;
@@ -237,6 +238,10 @@ private:
 	void handleShowUsersClicked();
 	void handleCopyNick();
 	void handleDoubleClickUsers();
+	bool handleTabContextMenu(const SmartWin::Point& pt);
+	void handleCopyHub();
+	void handleAddAsFavorite();
+	void handleReconnect();
 
 	void updateFilter(const tstring& newText);
 	bool parseFilter(FilterModes& mode, int64_t& size);
@@ -352,11 +357,6 @@ public:
 		PostMessage(WM_CLOSE);
 		return 0;
 	}
-
-	CMenu tabMenu;
-
-	TStringMap tabParams;
-	bool tabMenuShown;
 
 	CToolTipCtrl ctrlLastLines;
 };

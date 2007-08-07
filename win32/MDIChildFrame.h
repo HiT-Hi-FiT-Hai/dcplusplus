@@ -95,6 +95,10 @@ protected:
 		}
 	}
 	
+	void onTabContextMenu(const std::tr1::function<bool (const SmartWin::Point&)>& f) {
+		MDITab::getInstance()->onTabContextMenu(this, f);
+	}
+	
 private:
 	HWND lastFocus;
 	bool reallyClose;

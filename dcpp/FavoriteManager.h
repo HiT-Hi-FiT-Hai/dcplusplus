@@ -151,8 +151,8 @@ public:
 
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
-	bool checkFavHubExists(const FavoriteHubEntry& aEntry);
-	FavoriteHubEntry* getFavoriteHubEntry(const string& aServer);
+	bool isFavoriteHub(const std::string& aUrl);
+	FavoriteHubEntry* getFavoriteHubEntry(const string& aUrl);
 
 // Favorite Directories
 	bool addFavoriteDir(const string& aDirectory, const string& aName);

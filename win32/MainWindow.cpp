@@ -329,8 +329,8 @@ void MainWindow::initStatusBar() {
 
 void MainWindow::initTabs() {
 	MDITab::Seed cs;
-	cs.style
-	    = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_MULTILINE | TCS_HOTTRACK;
+	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | 
+		TCS_MULTILINE | TCS_HOTTRACK | TCS_RAGGEDRIGHT;
 	cs.font = WinUtil::font;
 	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
 	tabs->onResized(std::tr1::bind(&MainWindow::resizeMDIClient, this));

@@ -99,7 +99,7 @@ class WidgetFactory
 {
 public:
 	/// MessageBox class and object type.
-	typedef SmartWin::WidgetMessageBox< SmartWin::Widget > WidgetMessageBox;
+	typedef SmartWin::WidgetMessageBox WidgetMessageBox;
 
 	/// DataGrid class type.
 	typedef SmartWin::WidgetDataGrid WidgetDataGrid;

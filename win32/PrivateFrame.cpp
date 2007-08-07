@@ -29,6 +29,8 @@
 #include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/UploadManager.h>
+#include <dcpp/QueueItem.h>
+#include <dcpp/QueueManager.h>
 
 #include <mmsystem.h>
 
@@ -115,12 +117,6 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& 
 		chat->setTextLimit(0);
 		chat->setFont(WinUtil::font);
 		addWidget(chat);
-		
-#ifdef PORT_ME
-		/// @todo do we need this?§
-		ctrlClient.FmtLines(TRUE);
-		
-#endif
 	}
 	
 	initStatus();
@@ -133,6 +129,7 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& 
 	readLog();
 	
 	onSpeaker(std::tr1::bind(&PrivateFrame::handleSpeaker, this, _1, _2));
+	onTabContextMenu(std::tr1::bind(&PrivateFrame::handleTabContextMenu, this, _1));
 
 	ClientManager::getInstance()->addListener(this);
 	
@@ -364,37 +361,25 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const User::Ptr& 
 		speak(USER_UPDATED);
 }
 
-#ifdef PORT_ME
+bool PrivateFrame::handleTabContextMenu(const SmartWin::Point& pt) {
+	WidgetMenuPtr menu = createMenu(true);
+	
+	menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&PrivateFrame::handleGetList, this));
+	menu->appendItem(IDC_MATCH_QUEUE, TSTRING(MATCH_QUEUE), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));
+	menu->appendItem(IDC_GRANTSLOT, TSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), replyTo));
+	if(!FavoriteManager::getInstance()->isFavoriteUser(replyTo))
+		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo));
 
-LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	tabMenu.CreatePopupMenu();
-	tabMenu.AppendMenu(MF_STRING, IDC_GETLIST, CTSTRING(GET_FILE_LIST));
-	tabMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CTSTRING(MATCH_QUEUE));
-	tabMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT));
-	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES));
+	prepareMenu(menu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
+	menu->appendSeparatorItem();
+	menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&PrivateFrame::close, this, true));
 
-	created = true;
-
-	bHandled = FALSE;
-	return 1;
-}
-
-LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };		// location of mouse click
-	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
-	tabMenu.AppendMenu(MF_SEPARATOR);
-	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
-	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-	cleanMenu(tabMenu);
+	menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return TRUE;
 }
 
-void PrivateFrame::runUserCommand(UserCommand& uc) {
-
-	if(!WinUtil::getUCParams(m_hWnd, uc, ucLineParams))
+void PrivateFrame::runUserCommand(const UserCommand& uc) {
+	if(!WinUtil::getUCParams(this, uc, ucLineParams))
 		return;
 
 	StringMap ucParams = ucLineParams;
@@ -402,34 +387,23 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 	ClientManager::getInstance()->userCommand(replyTo, uc, ucParams, true);
 }
 
-LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void PrivateFrame::handleGetList() {
 	try {
 		QueueManager::getInstance()->addList(replyTo, QueueItem::FLAG_CLIENT_VIEW);
 	} catch(const Exception& e) {
-		addClientLine(Text::toT(e.getError()));
+		addStatus(Text::toT(e.getError()));
 	}
-	return 0;
 }
 
-LRESULT PrivateFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void PrivateFrame::handleMatchQueue() {
 	try {
 		QueueManager::getInstance()->addList(replyTo, QueueItem::FLAG_MATCH_QUEUE);
 	} catch(const Exception& e) {
-		addClientLine(Text::toT(e.getError()));
+		addStatus(Text::toT(e.getError()));
 	}
-	return 0;
 }
 
-LRESULT PrivateFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	UploadManager::getInstance()->reserveSlot(replyTo);
-	return 0;
-}
-
-LRESULT PrivateFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	FavoriteManager::getInstance()->addFavoriteUser(replyTo);
-	return 0;
-}
-
+#ifdef PORT_ME
 LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;

@@ -72,7 +72,9 @@ private:
 	WidgetButtonPtr properties;
 	WidgetButtonPtr up;
 	WidgetButtonPtr down;
-	
+
+	bool nosave;
+
 	void handleConnect();
 	void handleAdd();
 	void handleRemove();
@@ -80,11 +82,13 @@ private:
 	void handleUp();
 	void handleDown();
 	void handleDoubleClick();
+	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
 	void openSelected();
 	void addEntry(const FavoriteHubEntryPtr entry, int pos);
 	bool checkNick();
 
+	
 	virtual void on(FavoriteAdded, const FavoriteHubEntryPtr e) throw();
 	virtual void on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw();
 };
@@ -126,21 +130,10 @@ public:
 	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
-	LRESULT onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
-		openSelected();
-		return 0;
-	}
-
-	LRESULT onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		openSelected();
-		return 0;
-	}
-
 private:
 
 	CMenu hubsMenu;
 
-	bool nosave;
 };
 
 #endif // !defined(FAVORITE_HUBS_FRM_H)

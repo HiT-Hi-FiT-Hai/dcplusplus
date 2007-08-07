@@ -417,19 +417,13 @@ bool SearchFrame::preClosing() {
 }
 
 void SearchFrame::postClosing() {
-#ifdef PORT_ME
-	for(int i = 0; i < results->GetItemCount(); i++) {
-		delete results->getItemData(i);
-	}
-	results->DeleteAllItems();
-	for(int i = 0; i < hubs->GetItemCount(); i++) {
-		delete hubs->getItemData(i);
-	}
-	hubs->DeleteAllItems();
+	results->forEachT(DeleteFunction());
+	results->removeAllRows();
+	hubs->forEachT(DeleteFunction());
+	hubs->removeAllRows();
 
-	WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
-		SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-#endif
+	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_ORDER, WinUtil::toString(results->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_WIDTHS, WinUtil::toString(results->getColumnWidths()));
 }
 
 void SearchFrame::SearchInfo::view() {

@@ -206,8 +206,8 @@ void FavoriteManager::removeFavorite(FavoriteHubEntry* entry) {
 	save();
 }
 
-bool FavoriteManager::checkFavHubExists(const FavoriteHubEntry& aEntry){
-	FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
+bool FavoriteManager::isFavoriteHub(const std::string& url) {
+	FavoriteHubEntry::Iter i = getFavoriteHub(url);
 	if(i != favoriteHubs.end()) {
 		return true;
 	}

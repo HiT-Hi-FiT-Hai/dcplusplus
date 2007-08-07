@@ -78,6 +78,7 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 	showJoins(BOOLSETTING(SHOW_JOINS)),
 	favShowJoins(BOOLSETTING(FAV_SHOW_JOINS)),
 	curCommandPosition(0),
+	inTabMenu(false),
 	inTabComplete(false)
 {
 	paned = createVPaned();
@@ -172,6 +173,7 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 	
 	onSpeaker(std::tr1::bind(&HubFrame::handleSpeaker, this, _1, _2));
 	onRaw(std::tr1::bind(&HubFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+	onTabContextMenu(std::tr1::bind(&HubFrame::handleTabContextMenu, this, _1));
 	
 	client = ClientManager::getInstance()->getClient(url);
 	client->addListener(this);
@@ -1208,15 +1210,34 @@ HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		
 		menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), std::tr1::bind(&HubFrame::handleCopyNick, this));
 		menu->setDefaultItem(IDC_GETLIST);
-#ifdef PORT_ME
-		tabMenuShown = false;
-#endif
 		prepareMenu(menu, UserCommand::CONTEXT_CHAT, client->getHubUrl());
+		
+		inTabMenu = true;
 		
 		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
 	}
 	return FALSE;
+}
+
+bool HubFrame::handleTabContextMenu(const SmartWin::Point& pt) {
+	WidgetMenuPtr menu = createMenu(true);
+
+	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
+		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&HubFrame::handleAddAsFavorite, this));
+	}
+	
+	menu->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT), std::tr1::bind(&HubFrame::handleReconnect, this));
+	menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), std::tr1::bind(&HubFrame::handleCopyHub, this));
+
+	prepareMenu(menu, UserCommand::CONTEXT_HUB, url);
+	menu->appendSeparatorItem();
+	menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&HubFrame::close, this, true));
+
+	inTabMenu = true;
+	
+	menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	return true;
 }
 
 void HubFrame::handleShowUsersClicked() {
@@ -1235,17 +1256,6 @@ void HubFrame::handleShowUsersClicked() {
 }
 
 #ifdef PORT_ME
-
-LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	tabMenu = CreatePopupMenu();
-	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CTSTRING(ADD_TO_FAVORITES));
-	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CTSTRING(MENU_RECONNECT));
-	tabMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CTSTRING(COPY_HUB));
-
-	bHandled = FALSE;
-	return 1;
-}
 
 LRESULT HubFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	LPMSG pMsg = (LPMSG)lParam;
@@ -1271,12 +1281,9 @@ void HubFrame::handleCopyNick() {
 	}
 }
 
-#ifdef PORT_ME
-LRESULT HubFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	WinUtil::setClipboard(Text::toT(client->getHubUrl()));
-	return 0;
+void HubFrame::handleCopyHub() {
+	WinUtil::setClipboard(Text::toT(url));
 }
-#endif
 
 void HubFrame::handleDoubleClickUsers() {
 	if(users->hasSelection()) {
@@ -1340,18 +1347,6 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 	return 0;
 }
 
-LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };		// location of mouse click
-	tabMenuShown = true;
-	prepareMenu(tabMenu, UserCommand::CONTEXT_HUB, client->getHubUrl());
-	tabMenu.AppendMenu(MF_SEPARATOR);
-	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
-	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-	cleanMenu(tabMenu);
-	return TRUE;
-}
 #endif
 
 void HubFrame::runUserCommand(const UserCommand& uc) {
@@ -1363,12 +1358,10 @@ void HubFrame::runUserCommand(const UserCommand& uc) {
 	client->getMyIdentity().getParams(ucParams, "my", true);
 	client->getHubIdentity().getParams(ucParams, "hub", false);
 
-#ifdef PORT_ME
-	if(tabMenuShown) {
+	if(inTabMenu) {
 		client->escapeParams(ucParams);
 		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams, false));
 	} else {
-#endif
 		int sel = -1;
 		while((sel = users->getNextItem(sel, LVNI_SELECTED)) != -1) {
 			UserInfo* u = users->getItemData(sel);
@@ -1378,9 +1371,7 @@ void HubFrame::runUserCommand(const UserCommand& uc) {
 			client->escapeParams(tmp);
 			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp, false));
 		}
-#ifdef PORT_ME
 	}
-#endif
 }
 
 string HubFrame::stripNick(const string& nick) const {
@@ -1490,14 +1481,11 @@ bool HubFrame::tab() {
 	return false;
 }
 
-#ifdef PORT_ME
-
-LRESULT HubFrame::onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void HubFrame::handleReconnect() {
 	client->reconnect();
-	return 0;
 }
 
-
+#ifdef PORT_ME
 LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!redirect.empty()) {
 		if(ClientManager::getInstance()->isConnected(redirect)) {
