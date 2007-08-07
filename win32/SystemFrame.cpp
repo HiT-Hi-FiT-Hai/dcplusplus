@@ -55,9 +55,9 @@ SystemFrame::~SystemFrame() {
 
 void SystemFrame::addLine(time_t t, const tstring& msg) {
 	int limit = log->getTextLimit();
-	if(StupidWin::getWindowTextLength(log) + static_cast<int>(msg.size()) > limit) {
+	if(log->length() + static_cast<int>(msg.size()) > limit) {
 		HoldRedraw hold(log);
-		log->setSelection(0, StupidWin::lineIndex(log, StupidWin::lineFromChar(log, limit / 10)));
+		log->setSelection(0, log->lineIndex(log->lineFromChar(limit / 10)));
 		log->replaceSelection(_T(""));
 	}
 	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);

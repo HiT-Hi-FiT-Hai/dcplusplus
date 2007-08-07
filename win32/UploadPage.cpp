@@ -26,7 +26,6 @@
 #include <dcpp/ShareManager.h>
 #include <dcpp/version.h>
 #include "WinUtil.h"
-#include "StupidWin.h"
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 

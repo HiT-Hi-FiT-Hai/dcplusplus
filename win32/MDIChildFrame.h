@@ -19,7 +19,6 @@
 #ifndef DCPLUSPLUS_WIN32_MDI_CHILD_FRAME_H_
 #define DCPLUSPLUS_WIN32_MDI_CHILD_FRAME_H_
 
-#include "StupidWin.h"
 #include "WinUtil.h"
 
 #include "WidgetFactory.h"

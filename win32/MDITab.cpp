@@ -19,9 +19,18 @@
 #include "stdafx.h"
 
 #include "MDITab.h"
+#include <dcpp/ResourceManager.h>
+
+#include "resource.h"
 
 MDITab* MDITab::instance;
 HHOOK MDITab::hook;
+
+struct TabInfo {
+	TabInfo(SmartWin::WidgetMDIChild* w_) : w(w_) { }
+	SmartWin::WidgetMDIChild* w;
+	std::tr1::function<bool (const SmartWin::Point& pt)> handleContextMenu;
+};
 
 MDITab::MDITab(SmartWin::Widget* parent) : 
 	BaseType(parent),
@@ -63,7 +72,8 @@ void MDITab::addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon) 
 	}
 	
 	size_t tabs = this->size();
-	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(w), image);
+	TabInfo* ti = new TabInfo(w);
+	this->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(ti), image);
 	if(w->getParent()->getActive() == w->handle()) {
 		this->setSelectedIndex(tabs);
 	}
@@ -81,6 +91,7 @@ void MDITab::removeTab(SmartWin::WidgetMDIChild* w) {
 
 	int i = findTab(w);
 	if(i != -1) {
+		delete reinterpret_cast<TabInfo*>(getData(i));
 		erase(i);
 		layout();
 	}
@@ -88,14 +99,14 @@ void MDITab::removeTab(SmartWin::WidgetMDIChild* w) {
 
 void MDITab::markTab(SmartWin::WidgetMDIChild* w) {
 	int i = findTab(w);
-	if(i != -1) {
+	if(i != -1 && i != getSelectedIndex()) {
 		setHighlight(i, true);
 	}
 }
 
 int MDITab::findTab(SmartWin::WidgetMDIChild* w) {
 	for(size_t i = 0; i < this->size(); ++i) {
-		if(getData(i) == reinterpret_cast<LPARAM>(w)) {
+		if(reinterpret_cast<TabInfo*>(getData(i))->w == w) {
 			return static_cast<int>(i);
 		}
 	}
@@ -106,21 +117,21 @@ void MDITab::create( const Seed & cs ) {
 	BaseType::create(cs);
 	
 	setImageList(SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK)));
-//	getImageList()->setBkColor(::GetSysColor(COLOR_3DFACE));
 	onSelectionChanged(std::tr1::bind(&MDITab::handleSelectionChanged, this, _1));
+	onRaw(std::tr1::bind(&MDITab::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 }
 
 bool MDITab::handleTextChanging(SmartWin::WidgetMDIChild* w, const SmartUtil::tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
-		this->setHeader(i, cutTitle(newText));
+		setHeader(i, cutTitle(newText));
 		layout();
 	}
 	return true;
 }
 
 void MDITab::handleSelectionChanged(size_t i) {
-	SmartWin::WidgetMDIChild* w = reinterpret_cast<SmartWin::WidgetMDIChild*>(this->getData(i));
+	SmartWin::WidgetMDIChild* w = reinterpret_cast<TabInfo*>(this->getData(i))->w;
 	if(w->getParent()->getActive() != w->handle()) {
 		w->activate();
 	}
@@ -220,4 +231,46 @@ void MDITab::layout() {
 		clientSize = tmp;
 		resized(clientSize);
 	}
+}
+
+void MDITab::onTabContextMenu(SmartWin::WidgetMDIChild* w, const std::tr1::function<bool (const SmartWin::Point& pt)>& f) {
+	int i = findTab(w);
+	if(i != -1) {
+		reinterpret_cast<TabInfo*>(getData(i))->handleContextMenu = f;
+	}
+}
+
+LRESULT MDITab::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+	SmartWin::Point pt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+	TabInfo* ti = 0;
+	if(pt.x == -1 && pt.y == -1) {
+		int i = getSelectedIndex();
+		
+		RECT rc;
+		if(i == -1 || !TabCtrl_GetItemRect(handle(), i, &rc)) {
+			return FALSE;
+		}
+		pt.x = rc.left;
+		pt.y = rc.top;
+		
+		ti = reinterpret_cast<TabInfo*>(getData(i));
+		
+	} else {
+		int i = hitTest(pt);
+		if(i == -1) {
+			return FALSE;
+		}
+		ti = reinterpret_cast<TabInfo*>(getData(i));
+	}
+	
+	if(ti->handleContextMenu && ti->handleContextMenu(pt)) {
+		return TRUE;
+	}
+	
+	SmartWin::WidgetMenu::ObjectType menu = SmartWin::WidgetCreator<SmartWin::WidgetMenu>::create(SmartWin::WidgetMenu::Seed(true));
+	menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&SmartWin::WidgetMDIChild::close, ti->w, true));
+	
+	menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+	return TRUE;
 }

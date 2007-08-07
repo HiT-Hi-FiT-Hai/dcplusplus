@@ -330,6 +330,8 @@ public:
 	{ return true;
 	}
 
+	LPARAM getData(HTREEITEM item);
+	
 protected:
 	// Constructor Taking pointer to parent
 	explicit WidgetTreeView( SmartWin::Widget * parent );
@@ -487,6 +489,15 @@ inline Message & WidgetTreeView::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
+}
+
+inline LPARAM WidgetTreeView::getData(HTREEITEM item) {
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
+	tvitem.hItem = item;
+	if(!TreeView_GetItem(this->handle(), &tvitem)) {
+		return 0;
+	}
+	return tvitem.lParam;
 }
 
 inline WidgetTreeView::WidgetTreeView( Widget * parent )

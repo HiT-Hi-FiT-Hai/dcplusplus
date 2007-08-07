@@ -19,8 +19,6 @@
 #ifndef DCPLUSPLUS_WIN32_ASPECTSPEAKER_H_
 #define DCPLUSPLUS_WIN32_ASPECTSPEAKER_H_
 
-#include "StupidWin.h"
-
 template<typename WidgetType>
 class AspectSpeaker {
 public:

@@ -14,10 +14,11 @@ public:
 
 	static MDITab* getInstance() { return instance; }
 	
-	void addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon = SmartWin::IconPtr());
+	void addTab(SmartWin::WidgetMDIChild* w, const SmartWin::IconPtr& icon);
 	/** Mark tab until it's selected */
 	void markTab(SmartWin::WidgetMDIChild* w);
 	void removeTab(SmartWin::WidgetMDIChild* w);
+	void onTabContextMenu(SmartWin::WidgetMDIChild* w, const std::tr1::function<bool (const SmartWin::Point& pt)>& f);
 	
 	virtual void create( const Seed & cs = getDefaultSeed() );
 	
@@ -47,6 +48,7 @@ private:
 	void handleSelectionChanged(size_t i);
 	LRESULT handleMdiActivate(SmartWin::WidgetMDIChild* w, WPARAM wParam, LPARAM lParam);
 	void handleNext(bool reverse);
+	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	
 	void setTop(HWND wnd);
 	

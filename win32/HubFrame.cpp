@@ -220,7 +220,7 @@ void HubFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
 	
 	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(url);
-	if(fhe != NULL && !StupidWin::isIconic(this)){
+	if(fhe != NULL && !this->isIconic()){
 		//Get position of window
 
 		//convert the position so it's relative to main window
@@ -347,21 +347,21 @@ bool HubFrame::enter() {
 			client->password(Text::fromT(param));
 			waitingForPW = false;
 		} else if( Util::stricmp(cmd.c_str(), _T("showjoins")) == 0 ) {
-				showJoins = !showJoins;
-				if(showJoins) {
-					addStatus(TSTRING(JOIN_SHOWING_ON));
-				} else {
-					addStatus(TSTRING(JOIN_SHOWING_OFF));
-				}
-			} else if( Util::stricmp(cmd.c_str(), _T("favshowjoins")) == 0 ) {
-				favShowJoins = !favShowJoins;
-				if(favShowJoins) {
-					addStatus(TSTRING(FAV_JOIN_SHOWING_ON));
-				} else {
-					addStatus(TSTRING(FAV_JOIN_SHOWING_OFF));
-				}
-			} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
-			StupidWin::postMessage(this, WM_CLOSE);
+			showJoins = !showJoins;
+			if(showJoins) {
+				addStatus(TSTRING(JOIN_SHOWING_ON));
+			} else {
+				addStatus(TSTRING(JOIN_SHOWING_OFF));
+			}
+		} else if( Util::stricmp(cmd.c_str(), _T("favshowjoins")) == 0 ) {
+			favShowJoins = !favShowJoins;
+			if(favShowJoins) {
+				addStatus(TSTRING(FAV_JOIN_SHOWING_ON));
+			} else {
+				addStatus(TSTRING(FAV_JOIN_SHOWING_OFF));
+			}
+		} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
+			this->close(true);
 		} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 			showUsers->setChecked(!showUsers->getChecked());
 		} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
@@ -454,9 +454,9 @@ void HubFrame::addChat(const tstring& aLine) {
 	line += aLine;
 
 	int limit = chat->getTextLimit();
-	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(line.size()) > limit) {
+	if(chat->length() + static_cast<int>(line.size()) > limit) {
 		HoldRedraw hold(chat);
-		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
+		chat->setSelection(0, chat->lineIndex(chat->lineFromChar(limit / 10)));
 		chat->replaceSelection(_T(""));
 	}
 #ifdef PORT_ME	

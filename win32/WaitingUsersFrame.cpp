@@ -84,7 +84,7 @@ void WaitingUsersFrame::postClosing() {
 	// SmartWin doesn't appear to have any way to access the item data,
 	// rather than text. TVM_GETITEM, at least, appears nowhere in it.
 	while (userNode.handle) {
-		delete reinterpret_cast<UserItem *>(StupidWin::getTreeItemData(queued, userNode));
+		delete reinterpret_cast<UserItem *>(queued->getData(userNode.handle));
 		queued->getNode(userNode, TVGN_NEXT, userNode);
 	}
 }
@@ -183,7 +183,7 @@ void WaitingUsersFrame::onGetList()
 
 void WaitingUsersFrame::onCopyFilename() {
 #ifdef PORT_ME
-	// @todo see previous comment. More StupidWin fodder.
+	// @todo see previous comment. 
 	SmartWin::TreeViewNode selectedItem = getSelectedItem(), parentItem = queued->GetParentItem(selectedItem);
 
 	if (!selectedItem || !parentItem || selectedItem == parentItem)

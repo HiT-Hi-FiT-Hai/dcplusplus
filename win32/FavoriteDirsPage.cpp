@@ -26,7 +26,6 @@
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/version.h>
 #include "WinUtil.h"
-#include "StupidWin.h"
 #include "LineDlg.h"
 
 PropPage::TextItem FavoriteDirsPage::texts[] = {

@@ -283,6 +283,8 @@ public:
 	  */
 	void bringToBottom();
 
+	bool isIconic();
+	
 	/// \ingroup EventHandlersAspectSizable
 	// Setting the event handler for the "sized" event
 	/** The size submitted to the event handler is the new client area size. The
@@ -547,6 +549,11 @@ void AspectSizable< WidgetType >::bringToBottom()
 	::SetWindowPos( static_cast< WidgetType * >( this )->handle(), HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
+template< class WidgetType >
+bool AspectSizable< WidgetType >::isIconic()
+{
+	return ::IsIconic( static_cast< WidgetType * >( this )->handle()) > 0;
+}
 
 // end namespace SmartWin
 }

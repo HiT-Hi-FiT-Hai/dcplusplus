@@ -25,7 +25,6 @@
 
 #include "ListViewArrows.h"
 #include "WinUtil.h"
-#include "StupidWin.h"
 
 class ExListViewCtrl : public ListViewArrows<ExListViewCtrl>
 {

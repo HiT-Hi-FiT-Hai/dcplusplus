@@ -187,6 +187,14 @@ public:
 	DWORD getTextLimit() const ;
 
 	void onTextChanged( const Dispatcher::F& f );
+	
+	int lineIndex(int l = -1);
+	
+	int lineFromChar(int c = -1);
+	
+	void setModify(bool modify = false);
+	
+	bool getModify();
 
 protected:
 	// Constructor Taking pointer to parent
@@ -393,6 +401,26 @@ inline void WidgetTextBoxBase::onTextChanged( const Dispatcher::F& f ) {
 	);
 }
 
+inline int WidgetTextBoxBase::lineFromChar( int c )
+{
+	return this->sendMessage( EM_LINEFROMCHAR, c );
+}
+
+inline int WidgetTextBoxBase::lineIndex( int l )
+{
+	return this->sendMessage( EM_LINEINDEX, l );
+}
+
+inline void WidgetTextBoxBase::setModify( bool modify )
+{
+	this->sendMessage( EM_SETMODIFY, modify );
+}
+
+inline bool WidgetTextBoxBase::getModify( )
+{
+	return this->sendMessage( EM_GETMODIFY ) > 0;
+}
+
 inline WidgetTextBox::Seed::Seed()
 {
 	* this = WidgetTextBox::getDefaultSeed();
@@ -429,7 +457,6 @@ inline void WidgetTextBox::setUpperCase( bool value )
 {
 	this->Widget::addRemoveStyle( ES_UPPERCASE, value );
 }
-
 
 // end namespace SmartWin
 }

@@ -45,7 +45,7 @@ NotepadFrame::NotepadFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		// Ignore		
 	}
 	
-	StupidWin::setModify(pad, false);
+	pad->setModify(false);
 
 	layout();
 }
@@ -55,7 +55,7 @@ NotepadFrame::~NotepadFrame() {
 }
 
 bool NotepadFrame::preClosing() {
-	if(StupidWin::getModify(pad)) {
+	if(pad->getModify()) {
 		try {
 			dcdebug("Writing notepad contents\n");
 			File(Util::getNotepadFile(), File::WRITE, File::CREATE | File::TRUNCATE).write(Text::fromT(pad->getText()));

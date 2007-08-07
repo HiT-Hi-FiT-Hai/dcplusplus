@@ -24,7 +24,6 @@
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/FavoriteManager.h>
-#include "StupidWin.h"
 #include "CommandDlg.h"
 
 PropPage::TextItem UCPage::texts[] = {

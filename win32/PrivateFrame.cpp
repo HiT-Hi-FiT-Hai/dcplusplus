@@ -155,9 +155,9 @@ void PrivateFrame::addChat(const tstring& aLine) {
 	line += aLine;
 
 	int limit = chat->getTextLimit();
-	if(StupidWin::getWindowTextLength(chat) + static_cast<int>(line.size()) > limit) {
+	if(chat->length() + static_cast<int>(line.size()) > limit) {
 		HoldRedraw hold(chat);
-		chat->setSelection(0, StupidWin::lineIndex(chat, StupidWin::lineFromChar(chat, limit / 10)));
+		chat->setSelection(0, chat->lineIndex(chat->lineFromChar(limit / 10)));
 		chat->replaceSelection(_T(""));
 	}
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {

@@ -84,7 +84,7 @@ private:
 
 	UserPtr getSelectedUser() {
 		SmartWin::TreeViewNode selectedItem = GetParentItem();
-		return selectedItem.handle?reinterpret_cast<UserItem *>(StupidWin::getTreeItemData(queued, selectedItem))->u:UserPtr(0);
+		return selectedItem.handle?reinterpret_cast<UserItem *>(queued->getData(selectedItem.handle))->u : UserPtr(0);
 	}
 
 	// Communication with manager

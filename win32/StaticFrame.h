@@ -19,7 +19,6 @@
 #ifndef DCPLUSPLUS_WIN32_STATIC_FRAME_H_
 #define DCPLUSPLUS_WIN32_STATIC_FRAME_H_
 
-#include "StupidWin.h"
 #include "MDIChildFrame.h"
 
 #include <dcpp/ResourceManager.h>

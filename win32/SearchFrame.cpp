@@ -68,7 +68,7 @@ void SearchFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring
 
 void SearchFrame::closeAll() {
 	for(FrameIter i = frames.begin(); i != frames.end(); ++i)
-		StupidWin::postMessage(*i, WM_CLOSE);
+		(*i)->close(true);
 }
 
 SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
@@ -640,7 +640,7 @@ HRESULT SearchFrame::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
 
 HRESULT SearchFrame::handleKeyDown(WPARAM wParam, LPARAM lParam) {
 	if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
-		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
+		postMessage(WM_COMMAND, IDC_REMOVE);
 	return 0;
 }
 

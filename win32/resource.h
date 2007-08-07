@@ -123,6 +123,7 @@
 #define IDC_HELP_DONATE				1069
 #define IDC_MATCH_QUEUE				1070
 #define IDC_COPY_HUB				1071
+#define IDC_CLOSE_WINDOW			1072
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000

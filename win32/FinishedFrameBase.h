@@ -213,7 +213,7 @@ private:
 
 	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam) {
 		if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
-			StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
+			this->postMessage(WM_COMMAND, IDC_REMOVE);
 		return 0;
 	}
 
@@ -242,7 +242,7 @@ private:
 
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
 					if(idCommand != 0)
-						StupidWin::postMessage(this, WM_COMMAND, idCommand);
+						this->postMessage(WM_COMMAND, idCommand);
 					return TRUE;
 				}
 			}
@@ -320,22 +320,22 @@ private:
 
 	virtual void on(Added, bool upload, FinishedItemPtr entry) throw() {
 		if(upload == in_UL)
-			StupidWin::postMessage(this, WM_SPEAKER, SPEAK_ADD_LINE, (LPARAM)entry);
+			this->speak(SPEAK_ADD_LINE, (LPARAM)entry);
 	}
 
 	virtual void on(Removed, bool upload, FinishedItemPtr entry) throw() {
 		if(upload == in_UL) {
 			totalBytes -= entry->getChunkSize();
 			totalTime -= entry->getMilliSeconds();
-			StupidWin::postMessage(this, WM_SPEAKER, SPEAK_REMOVE);
+			this->speak(SPEAK_REMOVE);
 		}
 	}
 
 	virtual void on(RemovedAll, bool upload) throw() {
 		if(upload == in_UL) {
-			StupidWin::postMessage(this, WM_SPEAKER, SPEAK_REMOVE_ALL);
 			totalBytes = 0;
 			totalTime = 0;
+			this->speak(SPEAK_REMOVE_ALL);
 		}
 	}
 };

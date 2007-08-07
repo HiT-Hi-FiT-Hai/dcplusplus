@@ -30,6 +30,7 @@
 #define WidgetTabSheet_h
 
 #include "../resources/ImageList.h"
+#include "../BasicTypes.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectEnabled.h"
@@ -274,6 +275,8 @@ public:
 		TabCtrl_DeleteItem(this->handle(), i);
 	}
 	
+	int hitTest(const SmartWin::Point& pt);
+	
 /// Get the area not used by the tabs
 /** This function should be used after adding the pages, so that the area not used by
   * the tabs can be calculated accurately. It returns coordinates respect to the
@@ -420,6 +423,14 @@ inline const ImageListPtr& WidgetTabSheet::getImageList() const
 inline void WidgetTabSheet::setHighlight(int item, bool highlight) {
 	TabCtrl_HighlightItem(handle(), item, highlight);
 }
+
+inline int WidgetTabSheet::hitTest(const Point& pt) {
+	TCHITTESTINFO tci = { {pt.x, pt.y} };
+	screenToClient(tci.pt);
+	
+	return TabCtrl_HitTest(handle(), &tci);
+}
+
 
 // end namespace SmartWin
 }

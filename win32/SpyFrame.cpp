@@ -87,8 +87,8 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	initSecond();
 #if 0
 	// for testing purposes; adds 2 dummy lines into the list
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 1")));
-	StupidWin::postMessage(this, WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 2")));
+	postMessage(WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 1")));
+	postMessage(WM_SPEAKER, SPEAK_SEARCH, (LPARAM)new tstring(_T("search 2")));
 #endif
 }
 
