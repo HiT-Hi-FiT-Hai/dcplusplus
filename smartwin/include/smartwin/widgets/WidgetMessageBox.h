@@ -135,7 +135,7 @@ inline WidgetMessageBox::WidgetMessageBox( SmartWin::Widget * parent )
 	: itsParent( parent )
 {}
 
-WidgetMessageBox::RetVal WidgetMessageBox::show( const SmartUtil::tstring & body, const SmartUtil::tstring & header, Buttons buttons, Icon icon )
+inline WidgetMessageBox::RetVal WidgetMessageBox::show( const SmartUtil::tstring & body, const SmartUtil::tstring & header, Buttons buttons, Icon icon )
 {
 	return static_cast< RetVal >( ::MessageBox( itsParent ? itsParent->handle() : 0, body.c_str(), header.c_str(), buttons | icon ) );
 }

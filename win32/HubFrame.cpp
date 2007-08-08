@@ -1224,7 +1224,7 @@ bool HubFrame::handleTabContextMenu(const SmartWin::Point& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
-		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&HubFrame::handleAddAsFavorite, this));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&HubFrame::addAsFavorite, this));
 	}
 	
 	menu->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT), std::tr1::bind(&HubFrame::handleReconnect, this));

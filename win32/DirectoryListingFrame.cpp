@@ -430,7 +430,7 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 				if(!path.empty() && (File::getSize(path) != -1)) {
 					WidgetMenuPtr menu = this->createMenu(true);
 					CShellContextMenu shellMenu;
-					shellMenu.SetPath(Text::toT(path));
+					shellMenu.SetPath(Text::utf8ToWide(path));
 					shellMenu.ShowContextMenu(menu, this, pt);
 					return TRUE;
 				}
