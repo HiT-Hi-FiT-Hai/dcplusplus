@@ -68,8 +68,8 @@ protected:
 			items->setColor(WinUtil::textColor, WinUtil::bgColor);
 			items->setSmallImageList(WinUtil::fileImages);
 
-			items->onRaw(std::tr1::bind(&ThisType::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-			items->onRaw(std::tr1::bind(&ThisType::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+			items->onDblClicked(std::tr1::bind(&ThisType::handleDoubleClick, this));
+			items->onKeyDown(std::tr1::bind(&ThisType::handleKeyDown, this, _1));
 		}
 
 		this->initStatus();
@@ -204,20 +204,20 @@ private:
 		return 0;
 	}
 
-	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam) {
-		LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
-		if(item->iItem != -1)
-			items->getItemData(item->iItem)->openFile();
-		return 0;
+	void handleDoubleClick() {
+		if(items->hasSelection())
+			items->getSelectedItem()->openFile();
 	}
 
-	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam) {
-		if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
+	bool handleKeyDown(int c) {
+		if(c == VK_DELETE) {
 			this->postMessage(WM_COMMAND, IDC_REMOVE);
-		return 0;
+			return true;
+		}
+		return false;
 	}
 
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam) {
+	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		if(reinterpret_cast<HWND>(wParam) == items->handle() && items->hasSelection()) {
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
@@ -232,12 +232,12 @@ private:
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
 					typename T::WidgetMenuPtr pShellMenu = this->createMenu(true);
-					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this, _1));
-					pShellMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this, _1));
-					pShellMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this, _1));
+					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this));
+					pShellMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this));
+					pShellMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this));
 					pShellMenu->appendSeparatorItem();
-					pShellMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this, _1));
-					pShellMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this, _1));
+					pShellMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
+					pShellMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this));
 					pShellMenu->appendSeparatorItem();
 
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
@@ -248,12 +248,12 @@ private:
 			}
 
 			typename T::WidgetMenuPtr contextMenu = this->createMenu(true);
-			contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this, _1));
-			contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this, _1));
-			contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this, _1));
+			contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this));
+			contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this));
+			contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this));
 			contextMenu->appendSeparatorItem();
-			contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this, _1));
-			contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this, _1));
+			contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
+			contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this));
 			contextMenu->setDefaultItem(IDC_OPEN_FILE);
 			contextMenu->trackPopupMenu(static_cast<T*>(this), pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 			return TRUE;
@@ -261,21 +261,21 @@ private:
 		return FALSE;
 	}
 
-	void handleViewAsText(unsigned /*id*/) {
+	void handleViewAsText() {
 		int i = -1;
 		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
 			new TextFrame(this->getParent(), items->getItemData(i)->entry->getTarget());
 	}
 
-	void handleOpenFile(unsigned /*id*/) {
+	void handleOpenFile() {
 		items->forEachSelected(&ItemInfo::openFile);
 	}
 
-	void handleOpenFolder(unsigned /*id*/) {
+	void handleOpenFolder() {
 		items->forEachSelected(&ItemInfo::openFolder);
 	}
 
-	void handleRemove(unsigned /*id*/) {
+	void handleRemove() {
 		int i;
 		while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
 			FinishedManager::getInstance()->remove(items->getItemData(i)->entry, in_UL);
@@ -284,7 +284,7 @@ private:
 		}
 	}
 
-	void handleRemoveAll(unsigned /*id*/) {
+	void handleRemoveAll() {
 		FinishedManager::getInstance()->removeAll(in_UL);
 	}
 

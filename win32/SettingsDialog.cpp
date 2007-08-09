@@ -133,9 +133,7 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 			tvi.item.pszText = const_cast<LPTSTR>(str.c_str());
 			tvi.item.lParam = reinterpret_cast<LPARAM>(page);
 			item = TreeView_InsertItem(pageTree->handle(), &tvi);
-#ifdef PORT_ME
-			ctrlTree.Expand(parent);
-#endif
+			TreeView_Expand(pageTree->handle(), parent, TVE_EXPAND);
 			return item;
 		} else {
 #ifdef PORT_ME
@@ -155,9 +153,7 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 			tvi.item.pszText = const_cast<LPTSTR>(name.c_str());
 			item = TreeView_InsertItem(pageTree->handle(), &tvi);
 		}
-#ifdef PORT_ME
-		ctrlTree.Expand(parent);
-#endif
+		TreeView_Expand(pageTree->handle(), parent, TVE_EXPAND);
 		// Recurse...
 		return createTree(str.substr(i+1), item, page);
 	}

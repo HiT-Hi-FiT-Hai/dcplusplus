@@ -84,10 +84,10 @@ private:
 	void initSecond();
 	bool eachSecond();
 
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
-	HRESULT handleColumnClick(WPARAM wParam, LPARAM lParam);
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	LRESULT handleColumnClick(WPARAM wParam, LPARAM lParam);
+	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
 	void handleSearch();
 

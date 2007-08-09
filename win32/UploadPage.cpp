@@ -77,9 +77,11 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 		directories->insertRow(row);
 	}
 
-	directories->onRaw(std::tr1::bind(&UploadPage::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-	directories->onRaw(std::tr1::bind(&UploadPage::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
-	directories->onRaw(std::tr1::bind(&UploadPage::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	directories->onDblClicked(std::tr1::bind(&UploadPage::handleDoubleClick, this));
+	directories->onKeyDown(std::tr1::bind(&UploadPage::handleKeyDown, this, _1));
+	directories->onRaw(std::tr1::bind(&UploadPage::handleItemChanged, this), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+
+	onDragDrop(std::tr1::bind(&UploadPage::handleDragDrop, this, _1));
 
 	WidgetCheckBoxPtr shareHidden = subclassCheckBox(IDC_SHAREHIDDEN);
 	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
@@ -116,37 +118,37 @@ void UploadPage::write()
 	ShareManager::getInstance()->refresh();
 }
 
-HRESULT UploadPage::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
-#ifdef PORT_ME // posting messages doesn't seem to do anything
-	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
-	if(item->iItem >= 0) {
-		StupidWin::postMessage(this, WM_COMMAND, IDC_RENAME);
-	} else if(item->iItem == -1) {
-		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
+void UploadPage::handleDoubleClick() {
+	if(directories->hasSelection()) {
+		handleRenameClicked();
+	} else {
+		handleAddClicked();
 	}
-#endif
-	return 0;
 }
 
-HRESULT UploadPage::handleKeyDown(WPARAM wParam, LPARAM lParam) {
-#ifdef PORT_ME // posting messages doesn't seem to do anything
-	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
+bool UploadPage::handleKeyDown(int c) {
+	switch(c) {
 	case VK_INSERT:
-		StupidWin::postMessage(this, WM_COMMAND, IDC_ADD);
-		break;
+		handleAddClicked();
+		return true;
 	case VK_DELETE:
-		StupidWin::postMessage(this, WM_COMMAND, IDC_REMOVE);
-		break;
+		handleRemoveClicked();
+		return true;
 	}
-#endif
-	return 0;
+	return false;
 }
 
-HRESULT UploadPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
+LRESULT UploadPage::handleItemChanged() {
 	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
 	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
 	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
 	return 0;
+}
+
+void UploadPage::handleDragDrop(TStringList& files) {
+	for(TStringIterC i = files.begin(); i != files.end(); ++i)
+		if(PathIsDirectory(i->c_str()))
+			addDirectory(*i);
 }
 
 void UploadPage::handleShareHiddenClicked(WidgetCheckBoxPtr checkBox) {
@@ -244,25 +246,6 @@ void UploadPage::addDirectory(const tstring& aPath) {
 }
 
 #ifdef PORT_ME
-
-LRESULT UploadPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/){
-	HDROP drop = (HDROP)wParam;
-	TCHAR buf[MAX_PATH];
-	UINT nrFiles;
-
-	nrFiles = DragQueryFile(drop, (UINT)-1, NULL, 0);
-
-	for(UINT i = 0; i < nrFiles; ++i){
-		if(DragQueryFile(drop, i, buf, MAX_PATH)){
-			if(PathIsDirectory(buf))
-				addDirectory(buf);
-		}
-	}
-
-	DragFinish(drop);
-
-	return 0;
-}
 
 LRESULT UploadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UPLOADPAGE);

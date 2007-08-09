@@ -76,7 +76,7 @@ bool AboutDlg::handleInitDialog() {
 	return false;
 }
 
-HRESULT AboutDlg::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+LRESULT AboutDlg::handleSpeaker(WPARAM wParam, LPARAM lParam) {
  	switch(wParam) {
  	case SPEAK_VERSIONDATA: {
   		boost::scoped_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));

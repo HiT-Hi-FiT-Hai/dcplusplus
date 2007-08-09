@@ -47,8 +47,8 @@ private:
 
 	WidgetDataGridPtr commands;
 
-	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam);
-	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam);
+	void handleDoubleClick();
+	bool handleKeyDown(int c);
 
 	void handleAddClicked();
 	void handleChangeClicked();

@@ -138,7 +138,7 @@ void SpyFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::SPY_FRAME_IGNORE_TTH_SEARCHES, bIgnoreTTH);
 }
 
-HRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+LRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if(wParam == SPEAK_SEARCH) {
 		tstring* x = (tstring*)lParam;
 
@@ -177,7 +177,7 @@ HRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-HRESULT SpyFrame::handleColumnClick(WPARAM wParam, LPARAM lParam) {
+LRESULT SpyFrame::handleColumnClick(WPARAM wParam, LPARAM lParam) {
 	LPNMLISTVIEW l = (LPNMLISTVIEW)lParam;
 #ifdef PORT_ME
 	if(l->iSubItem == searches->getSortColumn()) {
@@ -196,7 +196,7 @@ HRESULT SpyFrame::handleColumnClick(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-HRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if(searches->getSelectedCount() == 1) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 

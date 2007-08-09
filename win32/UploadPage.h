@@ -30,12 +30,10 @@ public:
 
 #ifdef PORT_ME
 	BEGIN_MSG_MAP(UploadPage)
-		MESSAGE_HANDLER(WM_DROPFILES, onDropFiles)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
-	LRESULT onDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR);
 #endif
@@ -49,10 +47,10 @@ private:
 	WidgetDataGridPtr directories;
 	WidgetStaticPtr total;
 
-	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam);
-	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam);
-	HRESULT handleItemChanged(WPARAM wParam, LPARAM lParam);
-
+	void handleDoubleClick();
+	bool handleKeyDown(int c);
+	LRESULT handleItemChanged();
+	void handleDragDrop(TStringList& files);
 	void handleShareHiddenClicked(WidgetCheckBoxPtr checkBox);
 	void handleRenameClicked();
 	void handleRemoveClicked();

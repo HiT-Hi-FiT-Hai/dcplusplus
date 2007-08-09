@@ -44,7 +44,7 @@ private:
 	string downBuf;
 
 	bool handleInitDialog();
-	HRESULT handleSpeaker(WPARAM lParam, LPARAM wParam);
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const uint8_t* buf, size_t len) throw();
 	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, const string&) throw();

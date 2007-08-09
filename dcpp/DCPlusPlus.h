@@ -136,6 +136,7 @@ typedef WStringMap::iterator WStringMapIter;
 typedef wstring tstring;
 typedef WStringList TStringList;
 typedef WStringIter TStringIter;
+typedef WStringIterC TStringIterC;
 
 typedef WStringPair TStringPair;
 typedef WStringPairIter TStringPairIter;
@@ -143,10 +144,13 @@ typedef WStringPairList TStringPairList;
 
 typedef WStringMap TStringMap;
 typedef WStringMapIter TStringMapIter;
+
 #else
+
 typedef string tstring;
 typedef StringList TStringList;
 typedef StringIter TStringIter;
+typedef StringIterC TStringIterC;
 
 typedef StringPair TStringPair;
 typedef StringPairIter TStringPairIter;
@@ -154,6 +158,7 @@ typedef StringPairList TStringPairList;
 
 typedef StringMap TStringMap;
 typedef StringMapIter TStringMapIter;
+
 #endif
 
 extern void startup(void (*f)(void*, const string&), void* p);

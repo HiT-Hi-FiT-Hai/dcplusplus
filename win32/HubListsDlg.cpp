@@ -55,6 +55,9 @@ bool HubListsDlg::handleInitDialog() {
 	for(StringIterC idx = lists.begin(); idx != lists.end(); ++idx)
 		addHubList(Text::toT(*idx));
 
+	hubLists->onDblClicked(std::tr1::bind(&HubListsDlg::handleDoubleClick, this));
+	hubLists->onKeyDown(std::tr1::bind(&HubListsDlg::handleKeyDown, this, _1));
+
 	WidgetButtonPtr button = subclassButton(IDC_LIST_ADD);
 	button->setText(TSTRING(ADD));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleAddClicked, this));
@@ -87,6 +90,24 @@ bool HubListsDlg::handleInitDialog() {
 
 void HubListsDlg::handleFocus() {
 	editBox->setFocus();
+}
+
+void HubListsDlg::handleDoubleClick() {
+	if(hubLists->hasSelection()) {
+		handleEditClicked();
+	}
+}
+
+bool HubListsDlg::handleKeyDown(int c) {
+	switch(c) {
+	case VK_INSERT:
+		handleAddClicked();
+		return true;
+	case VK_DELETE:
+		handleRemoveClicked();
+		return true;
+	}
+	return false;
 }
 
 void HubListsDlg::handleAddClicked() {

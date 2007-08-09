@@ -64,8 +64,8 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 			addEntry(uc);
 	}
 
-	commands->onRaw(std::tr1::bind(&UCPage::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-	commands->onRaw(std::tr1::bind(&UCPage::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+	commands->onDblClicked(std::tr1::bind(&UCPage::handleDoubleClick, this));
+	commands->onKeyDown(std::tr1::bind(&UCPage::handleKeyDown, this, _1));
 
 	subclassButton(IDC_ADD_MENU)->onClicked(std::tr1::bind(&UCPage::handleAddClicked, this));
 
@@ -85,26 +85,24 @@ void UCPage::write() {
 	PropPage::write(handle(), items);
 }
 
-HRESULT UCPage::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
-	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
-	if(item->iItem >= 0) {
+void UCPage::handleDoubleClick() {
+	if(commands->hasSelection()) {
 		handleChangeClicked();
-	} else if(item->iItem == -1) {
+	} else {
 		handleAddClicked();
 	}
-	return 0;
 }
 
-HRESULT UCPage::handleKeyDown(WPARAM wParam, LPARAM lParam) {
-	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
+bool UCPage::handleKeyDown(int c) {
+	switch(c) {
 	case VK_INSERT:
 		handleAddClicked();
-		break;
+		return true;
 	case VK_DELETE:
 		handleRemoveClicked();
-		break;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 void UCPage::handleAddClicked() {

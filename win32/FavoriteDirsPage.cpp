@@ -59,9 +59,11 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 		directories->insertRow(row);
 	}
 
-	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+	directories->onDblClicked(std::tr1::bind(&FavoriteDirsPage::handleDoubleClick, this));
+	directories->onKeyDown(std::tr1::bind(&FavoriteDirsPage::handleKeyDown, this, _1));
 	directories->onRaw(std::tr1::bind(&FavoriteDirsPage::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+
+	onDragDrop(std::tr1::bind(&FavoriteDirsPage::handleDragDrop, this, _1));
 
 	subclassButton(IDC_RENAME)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRenameClicked, this));
 
@@ -78,33 +80,37 @@ void FavoriteDirsPage::write()
 //	PropPage::write(handle(), items);
 }
 
-HRESULT FavoriteDirsPage::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
-	LPNMITEMACTIVATE item = (LPNMITEMACTIVATE)lParam;
-	if(item->iItem >= 0) {
+void FavoriteDirsPage::handleDoubleClick() {
+	if(directories->hasSelection()) {
 		handleRenameClicked();
-	} else if(item->iItem == -1) {
+	} else {
 		handleAddClicked();
 	}
-	return 0;
 }
 
-HRESULT FavoriteDirsPage::handleKeyDown(WPARAM wParam, LPARAM lParam) {
-	switch(((LPNMLVKEYDOWN)lParam)->wVKey) {
+bool FavoriteDirsPage::handleKeyDown(int c) {
+	switch(c) {
 	case VK_INSERT:
 		handleAddClicked();
-		break;
+		return true;
 	case VK_DELETE:
 		handleRemoveClicked();
-		break;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-HRESULT FavoriteDirsPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
+LRESULT FavoriteDirsPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
 	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
 	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
 	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
 	return 0;
+}
+
+void FavoriteDirsPage::handleDragDrop(TStringList& files) {
+	for(TStringIterC i = files.begin(); i != files.end(); ++i)
+		if(PathIsDirectory(i->c_str()))
+			addDirectory(*i);
 }
 
 void FavoriteDirsPage::handleRenameClicked() {
@@ -156,25 +162,6 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath) {
 }
 
 #ifdef PORT_ME
-
-LRESULT FavoriteDirsPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/){
-	HDROP drop = (HDROP)wParam;
-	AutoArray<TCHAR> buf(MAX_PATH);
-	UINT nrFiles;
-
-	nrFiles = DragQueryFile(drop, (UINT)-1, NULL, 0);
-
-	for(UINT i = 0; i < nrFiles; ++i){
-		if(DragQueryFile(drop, i, buf, MAX_PATH)){
-			if(PathIsDirectory(buf))
-				addDirectory(tstring(buf));
-		}
-	}
-
-	DragFinish(drop);
-
-	return 0;
-}
 
 LRESULT FavoriteDirsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FAVORITE_DIRSPAGE);

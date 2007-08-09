@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,38 +16,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(FAV_HUB_PROPERTIES_H)
-#define FAV_HUB_PROPERTIES_H
+#ifndef DCPLUSPLUS_WIN32_FAV_HUB_PROPERTIES_H
+#define DCPLUSPLUS_WIN32_FAV_HUB_PROPERTIES_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include <dcpp/forward.h>
+#include "WidgetFactory.h"
 
-class FavoriteHubEntry;
-
-class FavHubProperties : public CDialogImpl<FavHubProperties>
+class FavHubProperties : public WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
-	FavHubProperties::FavHubProperties(FavoriteHubEntry *_entry) : entry(_entry) { }
-	virtual ~FavHubProperties() { }
+	FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry);
+	virtual ~FavHubProperties();
 
-	enum { IDD = IDD_FAVORITEHUB };
+	int run() { return createDialog(IDD_FAVORITEHUB); }
 
-	BEGIN_MSG_MAP(FavHubProperties)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		COMMAND_HANDLER(IDC_HUBNICK, EN_CHANGE, OnTextChanged)
-		COMMAND_HANDLER(IDC_HUBPASS, EN_CHANGE, OnTextChanged)
-		COMMAND_HANDLER(IDC_HUBUSERDESCR, EN_CHANGE, OnTextChanged)
-		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
-		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-	END_MSG_MAP()
+private:
+	WidgetTextBoxPtr name, address, description, nick, password, userDescription;
 
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/);
-
-protected:
 	FavoriteHubEntry *entry;
+
+	bool handleInitDialog();
+	void handleFocus();
+
+	void handleTextChanged(WidgetTextBoxPtr textBox);
+
+	void handleOKClicked();
+	void handleCancelClicked();
 };
 
-#endif // !defined(FAV_HUB_PROPERTIES_H)
+#endif // !defined(DCPLUSPLUS_WIN32_FAV_HUB_PROPERTIES_H)
