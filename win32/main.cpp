@@ -267,6 +267,15 @@ void callBack(void* ptr, const string& a) {
 	splash(a);
 }
 
+#ifdef _DEBUG
+void (*old_handler)();
+
+// Dummy function to have something to break at
+void term_handler() {
+	old_handler();
+}
+#endif
+
 int SmartWinMain(SmartWin::Application& app) {
 	dcdebug("StartWinMain\n");
 #ifdef PORT_ME
@@ -281,6 +290,9 @@ int SmartWinMain(SmartWin::Application& app) {
 		return 1;
 	}
 
+#ifdef _DEBUG
+	old_handler = set_terminate(&term_handler);
+#endif
 	checkCommonControls();
 
 	// For debugging

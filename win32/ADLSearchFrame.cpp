@@ -313,7 +313,7 @@ LRESULT ADLSearchFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
 void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
 	TStringList l;
 	l.push_back(Text::toT(search.searchString));
-	l.push_back(Text::toT(search.SourceTypeToDisplayString(search.sourceType)));
+	l.push_back(search.SourceTypeToDisplayString(search.sourceType));
 	l.push_back(Text::toT(search.destDir));
 	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
 	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);

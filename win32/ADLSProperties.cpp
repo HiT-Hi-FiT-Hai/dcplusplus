@@ -105,7 +105,7 @@ void ADLSProperties::handleFocus() {
 }
 
 void ADLSProperties::handleOKClicked() {
-	search->searchString = searchString->getText();
+	search->searchString = Text::fromT(searchString->getText());
 
 	search->sourceType = (ADLSearch::SourceType)searchType->getSelectedIndex();
 
@@ -117,7 +117,7 @@ void ADLSProperties::handleOKClicked() {
 	search->maxFileSize = maxFileSize.empty() ? -1 : Util::toInt64(Text::fromT(maxFileSize));
 	search->typeFileSize = (ADLSearch::SizeType)sizeType->getSelectedIndex();
 
-	search->destDir = destDir->getText();
+	search->destDir = Text::fromT(destDir->getText());
 
 	search->isActive = active->getChecked();
 

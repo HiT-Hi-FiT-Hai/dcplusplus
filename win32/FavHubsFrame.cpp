@@ -117,9 +117,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	hubsMenu->appendItem(IDC_MOVE_DOWN, TSTRING(MOVE_DOWN), std::tr1::bind(&FavHubsFrame::handleDown, this));
 	hubsMenu->appendSeparatorItem();
 	hubsMenu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), std::tr1::bind(&FavHubsFrame::handleRemove, this));
-#ifdef PORT_ME
-	hubsMenu->SetMenuDefaultItem(IDC_CONNECT);
-#endif
+	hubsMenu->setDefaultItem(IDC_CONNECT);
 	hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 }
 

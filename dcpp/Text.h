@@ -144,7 +144,7 @@ namespace Text {
 	}
 	template<typename T, typename T2, typename T3>
 	tstring tformat(const tstring& src, T t, T2 t2, T3 t3) {
-		tstring ret(0, src.size() + 128, _T('\0'));
+		tstring ret(src.size() + 128, _T('\0'));
 		int n = _sntprintf(&ret[0], ret.size(), src.c_str(), t, t2, t3);
 		if(n != -1 && n < ret.size()) {
 			ret.resize(n);
