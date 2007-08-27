@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,90 +16,112 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
+
+#include "resource.h"
 
 #include "ADLSProperties.h"
-#include "../client/ADLSearch.h"
-#include "../client/FavoriteManager.h"
-#include "WinUtil.h"
 
-// Initialize dialog
-LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
-	// Translate the texts
-	SetWindowText(CTSTRING(ADLS_PROPERTIES));
-	SetDlgItemText(IDC_ADLSP_SEARCH, CTSTRING(ADLS_SEARCH_STRING));
-	SetDlgItemText(IDC_ADLSP_TYPE, CTSTRING(ADLS_TYPE));
-	SetDlgItemText(IDC_ADLSP_SIZE_MIN, CTSTRING(ADLS_SIZE_MIN));
-	SetDlgItemText(IDC_ADLSP_SIZE_MAX, CTSTRING(ADLS_SIZE_MAX));
-	SetDlgItemText(IDC_ADLSP_UNITS, CTSTRING(ADLS_UNITS));
-	SetDlgItemText(IDC_ADLSP_DESTINATION, CTSTRING(ADLS_DESTINATION));
-	SetDlgItemText(IDC_IS_ACTIVE, CTSTRING(ADLS_ENABLED));
-	SetDlgItemText(IDC_AUTOQUEUE, CTSTRING(ADLS_DOWNLOAD));
+#include <dcpp/ADLSearch.h>
+#include <dcpp/FavoriteManager.h>
 
-	// Initialize dialog items
-	ctrlSearch.Attach(GetDlgItem(IDC_SEARCH_STRING));
-	ctrlDestDir.Attach(GetDlgItem(IDC_DEST_DIR));
-	ctrlMinSize.Attach(GetDlgItem(IDC_MIN_FILE_SIZE));
-	ctrlMaxSize.Attach(GetDlgItem(IDC_MAX_FILE_SIZE));
-	ctrlActive.Attach(GetDlgItem(IDC_IS_ACTIVE));
-	ctrlAutoQueue.Attach(GetDlgItem(IDC_AUTOQUEUE));
-
-	ctrlSearchType.Attach(GetDlgItem(IDC_SOURCE_TYPE));
-	ctrlSearchType.AddString(CTSTRING(FILENAME));
-	ctrlSearchType.AddString(CTSTRING(DIRECTORY));
-	ctrlSearchType.AddString(CTSTRING(ADLS_FULL_PATH));
-
-	ctrlSizeType.Attach(GetDlgItem(IDC_SIZE_TYPE));
-	ctrlSizeType.AddString(CTSTRING(B));
-	ctrlSizeType.AddString(CTSTRING(KiB));
-	ctrlSizeType.AddString(CTSTRING(MiB));
-	ctrlSizeType.AddString(CTSTRING(GiB));
-
-	// Load search data
-	ctrlSearch.SetWindowText(Text::toT(search->searchString).c_str());
-	ctrlDestDir.SetWindowText(Text::toT(search->destDir).c_str());
-	ctrlMinSize.SetWindowText(Text::toT(search->minFileSize > 0 ? Util::toString(search->minFileSize) : "").c_str());
-	ctrlMaxSize.SetWindowText(Text::toT(search->maxFileSize > 0 ? Util::toString(search->maxFileSize) : "").c_str());
-	ctrlActive.SetCheck(search->isActive ? 1 : 0);
-	ctrlAutoQueue.SetCheck(search->isAutoQueue ? 1 : 0);
-	ctrlSearchType.SetCurSel(search->sourceType);
-	ctrlSizeType.SetCurSel(search->typeFileSize);
-
-	// Center dialog
-	CenterWindow(GetParent());
-
-	return FALSE;
-}
-
-// Exit dialog
-LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+ADLSProperties::ADLSProperties(SmartWin::Widget* parent, ADLSearch *_search) :
+	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	searchString(0),
+	searchType(0),
+	minSize(0),
+	maxSize(0),
+	sizeType(0),
+	destDir(0),
+	active(0),
+	autoQueue(0),
+	search(_search)
 {
-	if(wID == IDOK) {
-		// Update search
-		TCHAR buf[256];
-
-		ctrlSearch.GetWindowText(buf, 256);
-		search->searchString = Text::fromT(buf);
-		ctrlDestDir.GetWindowText(buf, 256);
-		search->destDir = Text::fromT(buf);
-
-		ctrlMinSize.GetWindowText(buf, 256);
-		search->minFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(Text::fromT(buf)));
-		ctrlMaxSize.GetWindowText(buf, 256);
-		search->maxFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(Text::fromT(buf)));
-
-		search->isActive = (ctrlActive.GetCheck() == 1);
-		search->isAutoQueue = (ctrlAutoQueue.GetCheck() == 1);
-
-		search->sourceType = (ADLSearch::SourceType)ctrlSearchType.GetCurSel();
-		search->typeFileSize = (ADLSearch::SizeType)ctrlSizeType.GetCurSel();
-	}
-
-	EndDialog(wID);
-	return 0;
+	onInitDialog(std::tr1::bind(&ADLSProperties::handleInitDialog, this));
+	onFocus(std::tr1::bind(&ADLSProperties::handleFocus, this));
 }
+
+ADLSProperties::~ADLSProperties() {
+}
+
+bool ADLSProperties::handleInitDialog() {
+	// Translate dialog
+	setText(TSTRING(ADLS_PROPERTIES));
+	::SetDlgItemText(handle(), IDC_ADLSP_SEARCH, CTSTRING(ADLS_SEARCH_STRING));
+	::SetDlgItemText(handle(), IDC_ADLSP_TYPE, CTSTRING(ADLS_TYPE));
+	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MIN, CTSTRING(ADLS_SIZE_MIN));
+	::SetDlgItemText(handle(), IDC_ADLSP_SIZE_MAX, CTSTRING(ADLS_SIZE_MAX));
+	::SetDlgItemText(handle(), IDC_ADLSP_UNITS, CTSTRING(ADLS_UNITS));
+	::SetDlgItemText(handle(), IDC_ADLSP_DESTINATION, CTSTRING(ADLS_DESTINATION));
+
+	searchString = subclassTextBox(IDC_SEARCH_STRING);
+	searchString->setText(Text::toT(search->searchString));
+	searchString->setFocus();
+
+	searchType = subclassComboBox(IDC_SOURCE_TYPE);
+	searchType->addValue(TSTRING(FILENAME));
+	searchType->addValue(TSTRING(DIRECTORY));
+	searchType->addValue(TSTRING(ADLS_FULL_PATH));
+	searchType->setSelectedIndex(search->sourceType);
+
+	minSize = subclassTextBox(IDC_MIN_FILE_SIZE);
+	minSize->setText((search->minFileSize > 0) ? Text::toT(Util::toString(search->minFileSize)) : Util::emptyStringT);
+
+	maxSize = subclassTextBox(IDC_MAX_FILE_SIZE);
+	maxSize->setText((search->maxFileSize > 0) ? Text::toT(Util::toString(search->maxFileSize)) : Util::emptyStringT);
+
+	sizeType = subclassComboBox(IDC_SIZE_TYPE);
+	sizeType->addValue(TSTRING(B));
+	sizeType->addValue(TSTRING(KiB));
+	sizeType->addValue(TSTRING(MiB));
+	sizeType->addValue(TSTRING(GiB));
+	sizeType->setSelectedIndex(search->typeFileSize);
+
+	destDir = subclassTextBox(IDC_DEST_DIR);
+	destDir->setText(Text::toT(search->destDir));
+
+	active = subclassCheckBox(IDC_IS_ACTIVE);
+	active->setText(TSTRING(ADLS_ENABLED));
+	active->setChecked(search->isActive);
+
+	autoQueue = subclassCheckBox(IDC_AUTOQUEUE);
+	autoQueue->setText(TSTRING(ADLS_DOWNLOAD));
+	autoQueue->setChecked(search->isAutoQueue);
+
+	WidgetButtonPtr button = subclassButton(IDOK);
+	button->onClicked(std::tr1::bind(&ADLSProperties::handleOKClicked, this));
+
+	button = subclassButton(IDCANCEL);
+	button->onClicked(std::tr1::bind(&ADLSProperties::endDialog, this, IDCANCEL));
+
+#ifdef PORT_ME
+	CenterWindow(GetParent());
 #endif
+	return false;
+}
+
+void ADLSProperties::handleFocus() {
+	searchString->setFocus();
+}
+
+void ADLSProperties::handleOKClicked() {
+	search->searchString = searchString->getText();
+
+	search->sourceType = (ADLSearch::SourceType)searchType->getSelectedIndex();
+
+	tstring minFileSize = minSize->getText();
+
+	search->minFileSize = minFileSize.empty() ? -1 : Util::toInt64(Text::fromT(minFileSize));
+	tstring maxFileSize = maxSize->getText();
+
+	search->maxFileSize = maxFileSize.empty() ? -1 : Util::toInt64(Text::fromT(maxFileSize));
+	search->typeFileSize = (ADLSearch::SizeType)sizeType->getSelectedIndex();
+
+	search->destDir = destDir->getText();
+
+	search->isActive = active->getChecked();
+
+	search->isAutoQueue = autoQueue->getChecked();
+
+	endDialog(IDOK);
+}

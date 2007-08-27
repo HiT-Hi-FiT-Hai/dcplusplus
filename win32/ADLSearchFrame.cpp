@@ -17,11 +17,15 @@
  */
 
 #include "stdafx.h"
+
 #include "resource.h"
-#include <dcpp/Client.h>
+
 #include "ADLSearchFrame.h"
-#include "ADLSProperties.h"
+
 #include <dcpp/ResourceManager.h>
+#include <dcpp/Client.h>
+#include "HoldRedraw.h"
+#include "ADLSProperties.h"
 
 int ADLSearchFrame::columnIndexes[] = { COLUMN_ACTIVE_SEARCH_STRING, COLUMN_SOURCE_TYPE, COLUMN_DEST_DIR, COLUMN_MIN_FILE_SIZE, COLUMN_MAX_FILE_SIZE };
 int ADLSearchFrame::columnSizes[] = { 120, 90, 90, 90, 90 };
@@ -29,338 +33,214 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::ACTIVE_SEARCH
 	ResourceManager::SOURCE_TYPE, ResourceManager::DESTINATION, ResourceManager::MIN_SIZE, ResourceManager::MAX_SIZE,
 };
 
-ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent) : 
+ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	BaseType(mdiParent),
 	add(0),
-	remove(0),
 	properties(0),
 	up(0),
 	down(0),
+	remove(0),
 	help(0)
 {
 	{
 		WidgetDataGrid::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		items = createDataGrid(cs);
-	//	items->onClicked(&ADLSearchFrame::handleCheckBox);
+		items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+		items->setFont(WinUtil::font);
 		addWidget(items);
 
-		items->setFullRowSelect(true); // should be in the style?
-
-		items->setCheckBoxes(true); // We need a onClicked, too
-		
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		items->setColumnOrder(WinUtil::splitTokens(SETTING(ADLSEARCHFRAME_ORDER), columnIndexes));
 		items->setColumnWidths(WinUtil::splitTokens(SETTING(ADLSEARCHFRAME_WIDTHS), columnSizes));
+		items->setColor(WinUtil::textColor, WinUtil::bgColor);
 
-		items->setBackgroundColor(WinUtil::bgColor);
-		items->setFont(WinUtil::font);
-#ifdef PORT_ME
-		ctrlList.SetTextBkColor(WinUtil::bgColor);
-#endif
-
+		items->onDblClicked(std::tr1::bind(&ADLSearchFrame::handleDoubleClick, this));
+		items->onKeyDown(std::tr1::bind(&ADLSearchFrame::handleKeyDown, this, _1));
+		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 	}
-	
+
 	{
 		WidgetButton::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
-		
+
 		cs.caption = TSTRING(NEW);
 		add = createButton(cs);
 		add->onClicked(std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 		addWidget(add);
-		add->setFont(WinUtil::font);
-		
-		cs.caption = TSTRING(REMOVE);
-		remove = createButton(cs);
-		remove->onClicked(std::tr1::bind(&ADLSearchFrame::handleRemove, this));
-		addWidget(remove);
-		remove->setFont(WinUtil::font);
-		
+
 		cs.caption = TSTRING(PROPERTIES);
 		properties = createButton(cs);
 		properties->onClicked(std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 		addWidget(properties);
-		properties->setFont(WinUtil::font);
-		
+
 		cs.caption = TSTRING(MOVE_UP);
 		up = createButton(cs);
 		up->onClicked(std::tr1::bind(&ADLSearchFrame::handleUp, this));
 		addWidget(up);
-		up->setFont(WinUtil::font);
-		
+
 		cs.caption = TSTRING(MOVE_DOWN);
 		down = createButton(cs);
 		down->onClicked(std::tr1::bind(&ADLSearchFrame::handleDown, this));
 		addWidget(down);
-		down->setFont(WinUtil::font);
+
+		cs.caption = TSTRING(REMOVE);
+		remove = createButton(cs);
+		remove->onClicked(std::tr1::bind(&ADLSearchFrame::handleRemove, this));
+		addWidget(remove);
 
 		cs.caption = TSTRING(MENU_HELP);
 		help = createButton(cs);
 		help->onClicked(std::tr1::bind(&ADLSearchFrame::handleHelp, this));
 		addWidget(help);
-		help->setFont(WinUtil::font);
 	}
+
 	initStatus();
-	{
-/*
-		contextMenu = createMenu();
-		
-		WidgetMenuPtr file = contextMenu->appendPopup(CSTRING(NEW));
-
-		
-		file->appendItem(IDC_ADD, TSTRING(NEW), &ADLSearchFrame::popupNew);
-		contextMenu->attach(this);*
-	//	addWidget(file);
-	//	addWidget(contextMenu);
-		//contextMenu->setFont(WinUtil::font);
-	//	contextMenu->appendItem(1, TSTRING(NEW), &ADLSearchFrame::popupNew);
-
-
-		//cs.style = WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON;
-/*
-		//cs.caption = TSTRING(NEW);
-		add = createButton(cs);
-		add->onClicked(&ADLSearchFrame::handleAdd);
-		addWidget(add);
-		add->setFont(WinUtil::font);
-		*/
-#ifdef PORT_ME
-		
-		contextMenu.CreatePopupMenu();
-		contextMenu.AppendMenu(MF_STRING, IDC_ADD,    CTSTRING(NEW));
-		contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
-		contextMenu.AppendMenu(MF_STRING, IDC_EDIT,   CTSTRING(PROPERTIES));
-#endif
-	}
 
 	layout();
 
-	LoadAll();
+	// Load all searches
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+	for(ADLSearchManager::SearchCollection::iterator i = collection.begin(); i != collection.end(); ++i)
+		addEntry(*i);
+
+	contextMenu = createMenu(true);
+	contextMenu->appendItem(IDC_ADD, TSTRING(NEW), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
+	contextMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
+	contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
+	items->onRaw(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 }
 
 ADLSearchFrame::~ADLSearchFrame() {
-	
 }
 
-
-
 void ADLSearchFrame::layout() {
+	const int border = 2;
+
 	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
-	
+
 	SmartWin::Rectangle rs = layoutStatus();
-	
-	r.size.y -= rs.size.y;
-	
+	r.size.y -= rs.size.y + border;
+
 	/// @todo dynamic width
 	const int ybutton = add->getTextSize(_T("A")).y + 10;
 	const int xbutton = 90;
 	const int xborder = 10;
-	
+
 	SmartWin::Rectangle rb(r.getBottom(ybutton));
 	r.size.y -= ybutton;
 	items->setBounds(r);
 
 	rb.size.x = xbutton;
 	add->setBounds(rb);
-	
-	rb.pos.x += xbutton + xborder;
-	remove->setBounds(rb);
 
 	rb.pos.x += xbutton + xborder;
 	properties->setBounds(rb);
-	
+
 	rb.pos.x += xbutton + xborder;
 	up->setBounds(rb);
-	
+
 	rb.pos.x += xbutton + xborder;
 	down->setBounds(rb);
-	
+
+	rb.pos.x += xbutton + xborder;
+	remove->setBounds(rb);
+
 	rb.pos.x += xbutton + xborder;
 	help->setBounds(rb);
 }
 
 bool ADLSearchFrame::preClosing() {
-	
-
 	ADLSearchManager::getInstance()->Save();
-#ifdef PORT_ME
-		WinUtil::saveHeaderOrder(items, SettingsManager::ADLSEARCHFRAME_ORDER,
-			SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-#endif
 	return true;
+}
+
+void ADLSearchFrame::postClosing() {
+	SettingsManager::getInstance()->set(SettingsManager::ADLSEARCHFRAME_ORDER, WinUtil::toString(items->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::ADLSEARCHFRAME_WIDTHS, WinUtil::toString(items->getColumnWidths()));
 }
 
 void ADLSearchFrame::handleAdd() {
 	ADLSearch search;
-#ifdef PORT_ME
-	ADLSProperties dlg(&search);
-	if(dlg.run == IDOK)
-	{
-		// Add new search to the end or if selected, just before
+	ADLSProperties dlg(this, &search);
+	if(dlg.run() == IDOK) {
 		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
-		int i = items->getSelectedRow();
-		if(i < 0)
-		{
-			// Add to end
+		int index;
+
+		// Add new search to the end or if selected, just before
+		if(items->getSelectedCount() == 1) {
+			index = items->getSelectedIndex();
+			collection.insert(collection.begin() + index, search);
+		} else {
+			index = -1;
 			collection.push_back(search);
-			i = collection.size() - 1;
-		}
-		else
-		{
-			// Add before selection
-			collection.insert(collection.begin() + i, search);
 		}
 
-		// Update list control
-		int j = i;
-		while(j < (int)collection.size())
-		{
-			UpdateSearch(j++);
-		}
-	}
-#endif
-}
-
-void ADLSearchFrame::handleRemove() {
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-	int i;
-	while((i = items->getSelectedIndex()) >= 0)
-	{
-		collection.erase(collection.begin() + i);
-		items->removeRow(i);
+		addEntry(search, index);
 	}
 }
 
 void ADLSearchFrame::handleProperties() {
 	// Get selection info
-	int i = items->getSelectedIndex();
-	if(i < 0)
-	{
-		// Nothing selected
-		return;
+	std::vector<unsigned> selected = items->getSelectedRows();
+	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
+		// Edit existing
+		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+		ADLSearch search = collection[*i];
+
+		// Invoke dialog with selected search
+		ADLSProperties dlg(this, &search);
+		if(dlg.run() == IDOK) {
+			// Update search collection
+			collection[*i] = search;
+
+			// Update list control
+			HoldRedraw hold(items);
+			items->removeRow(*i);
+			addEntry(search, *i);
+			items->selectRow(*i);
+		}
 	}
-
-	// Edit existing
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-	ADLSearch search = collection[i];
-
-	// Invoke dialog with selected search
-#ifdef PORT_ME
-	ADLSProperties dlg(&search);
-	if(dlg.run() == IDOK)
-	{
-		// Update search collection
-		collection[i] = search;
-
-		// Update list control
-		UpdateSearch(i);
-	}
-#endif
 }
 
 void ADLSearchFrame::handleUp() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Get selection
-	vector<unsigned int> sel = items->getSelectedRows();
-	
-	if(sel.size() < 1)
-	{
-		return;
+	HoldRedraw hold(items);
+	std::vector<unsigned> selected = items->getSelectedRows();
+	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
+		if(*i > 0) {
+			ADLSearch search = collection[*i];
+			swap(collection[*i], collection[*i - 1]);
+			items->removeRow(*i);
+			addEntry(search, *i - 1);
+			items->selectRow(*i - 1);
+		}
 	}
-
-	// Find out where to insert
-	int i0 = sel[0];
-	if(i0 > 0)
-	{
-		i0 = i0 - 1;
-	}
-
-	// Backup selected searches
-	ADLSearchManager::SearchCollection backup;
-	int i;
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		backup.push_back(collection[sel[i]]);
-	}
-
-	// Erase selected searches
-	for(i = sel.size() - 1; i >= 0; --i)
-	{
-		collection.erase(collection.begin() + sel[i]);
-	}
-
-	// Insert (grouped together)
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		collection.insert(collection.begin() + i0 + i, backup[i]);
-	}
-
-	// Update UI
-	LoadAll();
-
-	// Restore selection
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		items->setSelectedIndex(i0+i);
-	}
-
-
 }
 
 void ADLSearchFrame::handleDown() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Get selection
-	vector<unsigned int> sel = items->getSelectedRows();
-	
-	if(sel.size() < 1)
-	{
-		return;
-	}
-
-	// Find out where to insert
-	int i0 = sel[sel.size() - 1] + 2;
-	if(i0 > (int)collection.size())
-	{
-		i0 = collection.size();
-	}
-
-	// Backup selected searches
-	ADLSearchManager::SearchCollection backup;
-	int i;
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		backup.push_back(collection[sel[i]]);
-	}
-
-	// Erase selected searches
-	
-	for(i = sel.size() - 1; i >= 0; --i)
-	{
-		collection.erase(collection.begin() + sel[i]);
-		if(i < i0)
-		{
-			i0--;
+	HoldRedraw hold(items);
+	std::vector<unsigned> selected = items->getSelectedRows();
+	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
+		if(*i < items->getRowCount() - 1) {
+			ADLSearch search = collection[*i];
+			swap(collection[*i], collection[*i + 1]);
+			items->removeRow(*i);
+			addEntry(search, *i + 1);
+			items->selectRow(*i + 1);
 		}
 	}
+}
 
-	// Insert (grouped together)
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		collection.insert(collection.begin() + i0 + i, backup[i]);
-	}
-
-	// Update UI
-	LoadAll();
-
-	// Restore selection
-	for(i = 0; i < (int)sel.size(); ++i)
-	{
-		items->setSelectedIndex(i0+i);
+void ADLSearchFrame::handleRemove() {
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+	int i;
+	while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
+		collection.erase(collection.begin() + i);
+		items->removeRow(i);
 	}
 }
 
@@ -369,166 +249,34 @@ void ADLSearchFrame::handleHelp() {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
 #endif
 }
-/*
-void ADLSearchFrame::handleCheckBox(WidgetButtonPtr) {
-	//int row = items->getSelectedIndex();
-	//items->setRowChecked(row, !items->getIsRowChecked(row));
 
-
-}
-*/
-void ADLSearchFrame::LoadAll()
-{
-	// Clear current contents
-	items->removeAllRows();
-
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Load all searches
-	for(unsigned long l = 0; l < collection.size(); l++)
-	{
-		UpdateSearch(l, FALSE);
+void ADLSearchFrame::handleDoubleClick() {
+	if(items->hasSelection()) {
+		handleProperties();
+	} else {
+		handleAdd();
 	}
-
-	
 }
 
-void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete = false)
-{
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-	// Check args
-	if(index >= (int)collection.size())
-	{
-		return;
-	}
-	ADLSearch& search = collection[index];
-
-	// Delete
-	if(doDelete)
-	{
-		items->deleteColumn(index);
-	}
-
-	// Generate values
-	TStringList line;
-	tstring fs;
-	line.push_back(Text::toT(search.searchString));
-	line.push_back(search.SourceTypeToDisplayString(search.sourceType));
-	line.push_back(Text::toT(search.destDir));
-
-	fs = _T("");
-	if(search.minFileSize >= 0)
-	{
-		fs = Text::toT(Util::toString(search.minFileSize));
-		fs += _T(" ");
-		fs += search.SizeTypeToDisplayString(search.typeFileSize);
-	}
-	line.push_back(fs);
-
-	fs = _T("");
-	if(search.maxFileSize >= 0)
-	{
-		fs = Text::toT(Util::toString(search.maxFileSize));
-		fs += _T(" ");
-		fs += search.SizeTypeToDisplayString(search.typeFileSize);
-	}
-	line.push_back(fs);
-
-	// Insert
-	items->insertRow(line);
-	items->setRowChecked(index, search.isActive);
-}
-
-void ADLSearchFrame::popupNew() {
-	ADLSearch search;
-#ifdef PORT_ME
-	ADLSProperties dlg(&search);
-	if(dlg.run == IDOK)
-	{
-		// Add new search to the end or if selected, just before
-		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-
-		int i = items->getSelectedRow();
-		if(i < 0)
-		{
-			// Add to end
-			collection.push_back(search);
-			i = collection.size() - 1;
-		}
-		else
-		{
-			// Add before selection
-			collection.insert(collection.begin() + i, search);
-		}
-
-		// Update list control
-		int j = i;
-		while(j < (int)collection.size())
-		{
-			UpdateSearch(j++);
-		}
-	}
-#endif
-}
-
-#ifdef PORT_ME
-
-// Keyboard shortcuts
-LRESULT ADLSearchFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
-{
-	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	switch(kd->wVKey)
-	{
+bool ADLSearchFrame::handleKeyDown(int c) {
+	switch(c) {
 	case VK_INSERT:
-		PostMessage(WM_COMMAND, IDC_ADD, 0);
-		break;
+		handleAdd();
+		return true;
 	case VK_DELETE:
-		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
-		break;
+		handleRemove();
+		return true;
+#ifdef PORT_ME // pressing enter doesn't do anything
 	case VK_RETURN:
-		PostMessage(WM_COMMAND, IDC_EDIT, 0);
-		break;
-	default:
-		bHandled = FALSE;
+		handleProperties();
+		return true;
+#endif
 	}
-	return 0;
+	return false;
 }
 
-LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if(reinterpret_cast<HWND>(wParam) == ctrlList) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
-			WinUtil::getContextMenuPos(ctrlList, pt);
-		}
-
-		int status = ctrlList.GetSelectedCount() > 0 ? MFS_ENABLED : MFS_GRAYED;
-		contextMenu.EnableMenuItem(IDC_EDIT, status);
-		contextMenu.EnableMenuItem(IDC_REMOVE, status);
-		contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		return TRUE;
-	}
-	bHandled = FALSE;
-	return FALSE;
-}
-
-// Help
-LRESULT ADLSearchFrame::onHelpButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
-	return 0;
-}
-
-LRESULT ADLSearchFrame::onHelpKey(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
-	return 0;
-}
-
-// Clicked 'Active' check box
-LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+LRESULT ADLSearchFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
+	LPNMITEMACTIVATE item = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
 
 	if((item->uChanged & LVIF_STATE) == 0)
 		return 0;
@@ -542,23 +290,33 @@ LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 		// Set new active status check box
 		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 		ADLSearch& search = collection[item->iItem];
-		search.isActive = (ctrlList.GetCheckState(item->iItem) != 0);
+		search.isActive = items->getIsRowChecked(item->iItem);
 	}
 	return 0;
 }
 
-// Double-click on list control
-LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+LRESULT ADLSearchFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
-	if(item->iItem >= 0) {
-		// Treat as onEdit command
-		PostMessage(WM_COMMAND, IDC_EDIT, 0);
-	} else if(item->iItem == -1) {
-		PostMessage(WM_COMMAND, IDC_ADD, 0);
+	if(pt.x == -1 && pt.y == -1) {
+		pt = items->getContextMenuPos();
 	}
 
-	return 0;
+	bool status = items->hasSelection();
+	contextMenu->setItemEnabled(IDC_EDIT, status);
+	contextMenu->setItemEnabled(IDC_REMOVE, status);
+
+	contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	return TRUE;
 }
-#endif
+
+void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
+	TStringList l;
+	l.push_back(Text::toT(search.searchString));
+	l.push_back(Text::toT(search.SourceTypeToDisplayString(search.sourceType)));
+	l.push_back(Text::toT(search.destDir));
+	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
+	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
+	int itemCount = items->insertRow(l, 0, index);
+	items->setRowChecked((index == -1) ? itemCount : index, search.isActive);
+}

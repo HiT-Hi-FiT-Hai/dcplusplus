@@ -29,7 +29,9 @@
 #include "LineDlg.h"
 
 HubListsDlg::HubListsDlg(SmartWin::Widget* parent) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent)
+	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	editBox(0),
+	hubLists(0)
 {
 	onInitDialog(std::tr1::bind(&HubListsDlg::handleInitDialog, this));
 	onFocus(std::tr1::bind(&HubListsDlg::handleFocus, this));

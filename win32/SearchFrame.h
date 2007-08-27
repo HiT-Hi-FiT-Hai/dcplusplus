@@ -208,13 +208,10 @@ private:
 	void handlePurgeClicked();
 	void handleSlotsClicked();
 	void handleShowUIClicked();
-
-	HRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
-
-	HRESULT handleDoubleClick(WPARAM wParam, LPARAM lParam);
-	HRESULT handleKeyDown(WPARAM wParam, LPARAM lParam);
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
-
+	LRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
+	void handleDoubleClick();
+	bool handleKeyDown(int c);
+	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 	void handleDownload();
 	void handleDownloadFavoriteDirs(unsigned id);
 	void handleDownloadTo();
@@ -228,7 +225,7 @@ private:
 	void handleBitziLookup();
 	void handleCopyMagnet();
 	void handleRemove();
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool handleChar(int c);
 	
 	void handleGetList();

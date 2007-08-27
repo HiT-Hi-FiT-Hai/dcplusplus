@@ -44,9 +44,18 @@ public:
 	tstring getHub() { return hub; }
 
 private:
-	WidgetRadioButtonPtr separator, raw, chat, PM;
-	WidgetCheckBoxPtr hubMenu, userMenu, searchMenu, fileListMenu;
-	WidgetTextBoxPtr nameBox, commandBox, hubBox, nick;
+	WidgetRadioButtonPtr separator;
+	WidgetRadioButtonPtr raw;
+	WidgetRadioButtonPtr chat;
+	WidgetRadioButtonPtr PM;
+	WidgetCheckBoxPtr hubMenu;
+	WidgetCheckBoxPtr userMenu;
+	WidgetCheckBoxPtr searchMenu;
+	WidgetCheckBoxPtr fileListMenu;
+	WidgetTextBoxPtr nameBox;
+	WidgetTextBoxPtr commandBox;
+	WidgetTextBoxPtr hubBox;
+	WidgetTextBoxPtr nick;
 	WidgetCheckBoxPtr once;
 	WidgetTextBoxPtr result;
 	WidgetCheckBoxPtr openHelp;

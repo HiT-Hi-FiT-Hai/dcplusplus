@@ -47,8 +47,9 @@ protected:
 	virtual ~FavHubsFrame();
 
 	void layout();
-	
+
 	bool preClosing();
+	void postClosing();
 
 private:
 	enum {
@@ -68,73 +69,29 @@ private:
 	WidgetDataGridPtr hubs;
 	WidgetButtonPtr connect;
 	WidgetButtonPtr add;
-	WidgetButtonPtr remove;
 	WidgetButtonPtr properties;
 	WidgetButtonPtr up;
 	WidgetButtonPtr down;
+	WidgetButtonPtr remove;
+	WidgetMenuPtr hubsMenu;
 
 	bool nosave;
 
-	void handleConnect();
 	void handleAdd();
-	void handleRemove();
 	void handleProperties();
 	void handleUp();
 	void handleDown();
+	void handleRemove();
 	void handleDoubleClick();
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleKeyDown(int c);
+	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleContextMenu(WPARAM /*wParam*/, LPARAM lParam);
 
+	void addEntry(const FavoriteHubEntryPtr entry, int index = -1);
 	void openSelected();
-	void addEntry(const FavoriteHubEntryPtr entry, int pos);
-	bool checkNick();
 
-	
 	virtual void on(FavoriteAdded, const FavoriteHubEntryPtr e) throw();
 	virtual void on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw();
 };
 
-#ifdef PORT_ME
-
-class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, public StaticFrame<FavoriteHubsFrame, ResourceManager::FAVORITE_HUBS>,
-	private FavoriteManagerListener
-{
-public:
-
-	BEGIN_MSG_MAP(FavoriteHubsFrame)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		COMMAND_ID_HANDLER(IDC_CONNECT, onClickedConnect)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
-		COMMAND_ID_HANDLER(IDC_NEWFAV, onNew)
-		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp);
-		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown);
-//		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
-		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
-		NOTIFY_HANDLER(IDC_HUBLIST, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, onItemChanged)
-		CHAIN_MSG_MAP(MDITabChildWindowImpl<FavoriteHubsFrame>)
-	END_MSG_MAP()
-
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-
-private:
-
-	CMenu hubsMenu;
-
-};
-
-#endif // !defined(FAVORITE_HUBS_FRM_H)
-#endif
+#endif // !defined(DCPLUSPLUS_WIN32_FAV_HUBS_FRAME_H)

@@ -31,7 +31,12 @@ public:
 	int run() { return createDialog(IDD_FAVORITEHUB); }
 
 private:
-	WidgetTextBoxPtr name, address, description, nick, password, userDescription;
+	WidgetTextBoxPtr name;
+	WidgetTextBoxPtr address;
+	WidgetTextBoxPtr description;
+	WidgetTextBoxPtr nick;
+	WidgetTextBoxPtr password;
+	WidgetTextBoxPtr userDescription;
 
 	FavoriteHubEntry *entry;
 

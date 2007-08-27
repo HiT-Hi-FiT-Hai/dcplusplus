@@ -28,6 +28,12 @@
 
 FavHubProperties::FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry) :
 	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	name(0),
+	address(0),
+	description(0),
+	nick(0),
+	password(0),
+	userDescription(0),
 	entry(_entry)
 {
 	onInitDialog(std::tr1::bind(&FavHubProperties::handleInitDialog, this));

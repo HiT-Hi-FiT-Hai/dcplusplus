@@ -73,7 +73,23 @@ void SearchFrame::closeAll() {
 
 SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	BaseType(mdiParent, TSTRING(SEARCH), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
+	searchLabel(0),
+	searchBox(0),
+	purge(0),
+	sizeLabel(0),
+	mode(0),
+	size(0),
+	sizeMode(0),
+	typeLabel(0),
+	fileType(0),
+	optionLabel(0),
+	slots(0),
 	onlyFree(BOOLSETTING(SEARCH_ONLY_FREE_SLOTS)),
+	hubsLabel(0),
+	hubs(0),
+	doSearch(0),
+	results(0),
+	showUI(0),
 	bShowUI(true),
 	isHash(false),
 	initialString(initialString_),
@@ -225,8 +241,8 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 		results->setColor(WinUtil::textColor, WinUtil::bgColor);
 		results->setSmallImageList(WinUtil::fileImages);
 
-		results->onRaw(std::tr1::bind(&SearchFrame::handleDoubleClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, NM_DBLCLK));
-		results->onRaw(std::tr1::bind(&SearchFrame::handleKeyDown, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_KEYDOWN));
+		results->onDblClicked(std::tr1::bind(&SearchFrame::handleDoubleClick, this));
+		results->onKeyDown(std::tr1::bind(&SearchFrame::handleKeyDown, this, _1));
 		results->onRaw(std::tr1::bind(&SearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	}
 
@@ -561,7 +577,7 @@ void SearchFrame::SearchInfo::update() {
 
 }
 
-HRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+LRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
  	switch(wParam) {
 	case SPEAK_ADD_RESULT:
 		{
@@ -612,7 +628,7 @@ void SearchFrame::handleShowUIClicked() {
 	layout();
 }
 
-HRESULT SearchFrame::handleHubItemChanged(WPARAM wParam, LPARAM lParam) {
+LRESULT SearchFrame::handleHubItemChanged(WPARAM wParam, LPARAM lParam) {
 	LPNMLISTVIEW lv = (LPNMLISTVIEW)lParam;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
 		if (((lv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1) {
@@ -626,19 +642,19 @@ HRESULT SearchFrame::handleHubItemChanged(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-HRESULT SearchFrame::handleDoubleClick(WPARAM wParam, LPARAM lParam) {
-	if(((LPNMITEMACTIVATE)lParam)->iItem != -1)
-		results->forEachSelectedT(SearchInfo::Download(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
-	return 0;
+void SearchFrame::handleDoubleClick() {
+	results->forEachSelectedT(SearchInfo::Download(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
 }
 
-HRESULT SearchFrame::handleKeyDown(WPARAM wParam, LPARAM lParam) {
-	if(((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
+bool SearchFrame::handleKeyDown(int c) {
+	if(c == VK_DELETE) {
 		postMessage(WM_COMMAND, IDC_REMOVE);
-	return 0;
+		return true;
+	}
+	return false;
 }
 
-HRESULT SearchFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+LRESULT SearchFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if(results->getSelectedCount() > 0) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 

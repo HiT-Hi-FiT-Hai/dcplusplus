@@ -49,6 +49,7 @@ protected:
 	
 	FinishedFrameBase(SmartWin::WidgetMDIParent* mdiParent) :
 		BaseType(mdiParent),
+		items(0),
 		totalBytes(0),
 		totalTime(0)
 	{
@@ -189,7 +190,7 @@ private:
 
 	int64_t totalBytes, totalTime;
 
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam) {
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		if(wParam == SPEAK_ADD_LINE) {
 			FinishedItemPtr entry = (FinishedItemPtr)lParam;
 			addEntry(entry);

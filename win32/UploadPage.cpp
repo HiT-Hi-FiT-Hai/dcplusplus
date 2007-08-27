@@ -145,7 +145,7 @@ LRESULT UploadPage::handleItemChanged() {
 	return 0;
 }
 
-void UploadPage::handleDragDrop(TStringList& files) {
+void UploadPage::handleDragDrop(const TStringList& files) {
 	for(TStringIterC i = files.begin(); i != files.end(); ++i)
 		if(PathIsDirectory(i->c_str()))
 			addDirectory(*i);

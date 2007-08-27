@@ -27,6 +27,7 @@
 
 HashProgressDlg::HashProgressDlg(SmartWin::Widget* parent, bool aAutoClose) :
 	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	progress(0),
 	autoClose(aAutoClose)
 {
 	onInitDialog(std::tr1::bind(&HashProgressDlg::handleInitDialog, this));
@@ -46,7 +47,7 @@ bool HashProgressDlg::handleInitDialog() {
 
 	WidgetButtonPtr ok = subclassButton(IDOK);
 	ok->setText(TSTRING(HASH_PROGRESS_BACKGROUND));
-	ok->onClicked(std::tr1::bind(&HashProgressDlg::handleOKClicked, this));
+	ok->onClicked(std::tr1::bind(&HashProgressDlg::endDialog, this, IDOK));
 
 	string tmp;
 	startTime = GET_TICK();
@@ -59,10 +60,6 @@ bool HashProgressDlg::handleInitDialog() {
 	createTimer(std::tr1::bind(&HashProgressDlg::updateStats, this), 1000);
 
 	return false;
-}
-
-void HashProgressDlg::handleOKClicked() {
-	endDialog(IDOK);
 }
 
 bool HashProgressDlg::updateStats() {

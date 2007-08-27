@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2006 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,57 +15,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifdef PORT_ME
-#if !defined(ADLS_PROPERTIES_H)
-#define ADLS_PROPERTIES_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef DCPLUSPLUS_WIN32_A_D_L_S_PROPERTIES_H
+#define DCPLUSPLUS_WIN32_A_D_L_S_PROPERTIES_H
 
-class ADLSearch;
+#include <dcpp/ADLSearch.h>
+#include "WidgetFactory.h"
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//	Dialog for new/edit ADL searches
-//
-///////////////////////////////////////////////////////////////////////////////
-class ADLSProperties : public CDialogImpl<ADLSProperties>
+class ADLSProperties : public WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
+	ADLSProperties(SmartWin::Widget* parent, ADLSearch *_search);
+	virtual ~ADLSProperties();
 
-	// Constructor/destructor
-	ADLSProperties::ADLSProperties(ADLSearch *_search) : search(_search) { }
-	virtual ~ADLSProperties() { }
-
-	// Dilaog unique id
-	enum { IDD = IDD_ADLS_PROPERTIES };
-
-	// Inline message map
-	BEGIN_MSG_MAP(ADLSProperties)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
-		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-	END_MSG_MAP()
-
-	// Message handlers
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	int run() { return createDialog(IDD_ADLS_PROPERTIES); }
 
 private:
+	WidgetTextBoxPtr searchString;
+	WidgetComboBoxPtr searchType;
+	WidgetTextBoxPtr minSize;
+	WidgetTextBoxPtr maxSize;
+	WidgetComboBoxPtr sizeType;
+	WidgetTextBoxPtr destDir;
+	WidgetCheckBoxPtr active;
+	WidgetCheckBoxPtr autoQueue;
 
-	// Current search
 	ADLSearch* search;
 
-	CEdit ctrlSearch;
-	CEdit ctrlDestDir;
-	CEdit ctrlMinSize;
-	CEdit ctrlMaxSize;
-	CButton ctrlActive;
-	CButton ctrlAutoQueue;
-	CComboBox ctrlSearchType;
-	CComboBox ctrlSizeType;
+	bool handleInitDialog();
+	void handleFocus();
+
+	void handleOKClicked();
 };
 
-#endif // !defined(ADLS_PROPERTIES_H)
-#endif
+#endif // !defined(DCPLUSPLUS_WIN32_A_D_L_S_PROPERTIES_H)

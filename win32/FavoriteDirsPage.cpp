@@ -107,7 +107,7 @@ LRESULT FavoriteDirsPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-void FavoriteDirsPage::handleDragDrop(TStringList& files) {
+void FavoriteDirsPage::handleDragDrop(const TStringList& files) {
 	for(TStringIterC i = files.begin(); i != files.end(); ++i)
 		if(PathIsDirectory(i->c_str()))
 			addDirectory(*i);

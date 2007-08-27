@@ -50,7 +50,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged();
-	void handleDragDrop(TStringList& files);
+	void handleDragDrop(const TStringList& files);
 	void handleShareHiddenClicked(WidgetCheckBoxPtr checkBox);
 	void handleRenameClicked();
 	void handleRemoveClicked();

@@ -36,7 +36,6 @@ private:
 	uint32_t startTime;
 
 	bool handleInitDialog();
-	void handleOKClicked();
 
 	bool updateStats();
 };

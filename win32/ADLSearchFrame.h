@@ -21,7 +21,6 @@
 
 #include "StaticFrame.h"
 #include <dcpp/ADLSearch.h>
-#include "resource.h"
 
 class ADLSearchFrame : public StaticFrame<ADLSearchFrame> {
 public:
@@ -37,11 +36,14 @@ protected:
 	typedef StaticFrame<ADLSearchFrame> BaseType;
 	friend class StaticFrame<ADLSearchFrame>;
 	friend class MDIChildFrame<ADLSearchFrame>;
-	
+
 	ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent);
 	virtual ~ADLSearchFrame();
 
 	void layout();
+
+	bool preClosing();
+	void postClosing();
 
 private:
 	enum {
@@ -59,95 +61,25 @@ private:
 
 	WidgetDataGridPtr items;
 	WidgetButtonPtr add;
-	WidgetButtonPtr remove;
 	WidgetButtonPtr properties;
 	WidgetButtonPtr up;
 	WidgetButtonPtr down;
+	WidgetButtonPtr remove;
 	WidgetButtonPtr help;
 	WidgetMenuPtr contextMenu;
-	
+
 	void handleAdd();
-	void handleRemove();
 	void handleProperties();
 	void handleUp();
 	void handleDown();
+	void handleRemove();
 	void handleHelp();
-//	void handleCheckBox(WidgetButtonPtr);
+	void handleDoubleClick();
+	bool handleKeyDown(int c);
+	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleContextMenu(WPARAM /*wParam*/, LPARAM lParam);
 
-	void popupNew();
-
-	void LoadAll();
-	void UpdateSearch(int index, BOOL doDelete);
-	
-	bool preClosing();
+	void addEntry(ADLSearch& search, int index = -1);
 };
 
-#ifdef PORT_ME
-
-#include "../client/ADLSearch.h"
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//	Class that represent an ADL search manager interface
-//
-///////////////////////////////////////////////////////////////////////////////
-class ADLSearchFrame : public MDITabChildWindowImpl<ADLSearchFrame>, public StaticFrame<ADLSearchFrame, ResourceManager::ADL_SEARCH>
-{
-public:
-	// Inline message map
-	BEGIN_MSG_MAP(ADLSearchFrame)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_HELP, onHelpKey)
-		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
-		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onHelpButton)
-		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp)
-		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown)
-		NOTIFY_HANDLER(IDC_ADLLIST, NM_DBLCLK, onDoubleClickList)
-		NOTIFY_HANDLER(IDC_ADLLIST, LVN_ITEMCHANGED, onItemChanged)
-		NOTIFY_HANDLER(IDC_ADLLIST, LVN_KEYDOWN, onKeyDown)
-		CHAIN_MSG_MAP(baseClass)
-	END_MSG_MAP()
-
-	// Message handlers
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onHelpButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onHelpKey(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onDoubleClickList(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-
-private:
-
-	// Communication with manager
-	void LoadAll();
-	void UpdateSearch(int index, BOOL doDelete = TRUE);
-
-	// Contained controls
-	CStatusBarCtrl ctrlStatus;
-	ExListViewCtrl ctrlList;
-	CButton ctrlAdd;
-	CButton ctrlEdit;
-	CButton ctrlRemove;
-	CButton ctrlMoveUp;
-	CButton ctrlMoveDown;
-	CButton ctrlHelp;
-	CMenu contextMenu;
-
-};
-
-#endif 
-#endif // !defined(ADL_SEARCH_FRAME_H)
+#endif // !defined(DCPLUSPLUS_WIN32_ADL_SEARCH_FRAME_H)

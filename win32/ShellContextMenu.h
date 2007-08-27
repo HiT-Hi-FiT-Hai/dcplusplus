@@ -30,9 +30,7 @@ class CShellContextMenu
 	static IContextMenu3* g_IContext3;
 
 public:
-	CShellContextMenu() : bDelete(false), m_psfFolder(NULL), m_pidlArray(NULL) {
-	}
-
+	CShellContextMenu();
 	~CShellContextMenu();
 
 	void SetPath(const wstring& strPath);

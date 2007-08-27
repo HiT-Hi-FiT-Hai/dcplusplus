@@ -47,7 +47,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM wParam, LPARAM lParam);
-	void handleDragDrop(TStringList& files);
+	void handleDragDrop(const TStringList& files);
 	void handleRenameClicked();
 	void handleRemoveClicked();
 	void handleAddClicked();
