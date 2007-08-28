@@ -28,7 +28,8 @@
 #include <dcpp/ClientManager.h>
 #include <dcpp/HashManager.h>
 #include <dcpp/ResourceManager.h>
-
+#include <dcpp/LogManager.h>
+#include <dcpp/QueueManager.h>
 #include <dcpp/StringTokenizer.h>
 #include <dcpp/version.h>
 #include <dcpp/File.h>
@@ -946,13 +947,39 @@ void WinUtil::openLink(const tstring& url) {
 	::ShellExecute(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
-#ifdef PORT_ME
+bool WinUtil::parseDBLClick(const tstring& aString) {
+	if( (Util::strnicmp(aString.c_str(), _T("http://"), 7) == 0) ||
+		(Util::strnicmp(aString.c_str(), _T("www."), 4) == 0) ||
+		(Util::strnicmp(aString.c_str(), _T("ftp://"), 6) == 0) ||
+		(Util::strnicmp(aString.c_str(), _T("irc://"), 6) == 0) ||
+		(Util::strnicmp(aString.c_str(), _T("https://"), 8) == 0) ||
+		(Util::strnicmp(aString.c_str(), _T("mailto:"), 7) == 0) )
+	{
+
+		openLink(aString);
+		return true;
+	} else if(Util::strnicmp(aString.c_str(), _T("dchub://"), 8) == 0) {
+		parseDchubUrl(aString);
+		return true;
+	} else if(Util::strnicmp(aString.c_str(), _T("magnet:?"), 8) == 0) {
+		parseMagnetUri(aString);
+		return true;
+	} else if(Util::strnicmp(aString.c_str(), _T("adc://"), 6) == 0) {
+		parseADChubUrl(aString);
+		return true;
+	}
+	return false;
+}
+
+
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
 	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
+#ifdef PORT_ME
 		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
+#endif
 	}
 	if(!file.empty()) {
 		if(file[0] == '/') // Remove any '/' in from of the file
@@ -973,7 +1000,9 @@ void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
+#ifdef PORT_ME
 		HubFrame::openWindow(Text::toT("adc://" + server + ":" + Util::toString(port)));
+#endif
 	}
 }
 
@@ -1034,84 +1063,19 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 			//	};
 			//} else {
 			// use aOverride to force the display of the dialog.  used for auto-updating
-				MagnetDlg dlg(fhash, fname);
+#ifdef PORT_ME
+			MagnetDlg dlg(fhash, fname);
 				dlg.DoModal(mainWnd);
+#endif
 			//}
 		} else {
+#ifdef PORT_ME
 			MessageBox(mainWnd, CTSTRING(MAGNET_DLG_TEXT_BAD), CTSTRING(MAGNET_DLG_TITLE), MB_OK | MB_ICONEXCLAMATION);
+#endif
 		}
 	}
 }
-
-int WinUtil::textUnderCursor(POINT p, CEdit& ctrl, tstring& x) {
-
-	int i = ctrl.CharFromPos(p);
-	int line = ctrl.LineFromChar(i);
-	int c = LOWORD(i) - ctrl.LineIndex(line);
-	int len = ctrl.LineLength(i) + 1;
-	if(len < 3) {
-		return 0;
-	}
-
-	AutoArray<TCHAR> buf(len);
-	ctrl.GetLine(line, buf, len);
-	x = tstring(buf, len-1);
-
-	string::size_type start = x.find_last_of(_T(" <\t\r\n"), c);
-	if(start == string::npos)
-		start = 0;
-	else
-		start++;
-
-	return start;
-}
-
-bool WinUtil::parseDBLClick(const tstring& aString, string::size_type start, string::size_type end) {
-	if( (Util::strnicmp(aString.c_str() + start, _T("http://"), 7) == 0) ||
-		(Util::strnicmp(aString.c_str() + start, _T("www."), 4) == 0) ||
-		(Util::strnicmp(aString.c_str() + start, _T("ftp://"), 6) == 0) ||
-		(Util::strnicmp(aString.c_str() + start, _T("irc://"), 6) == 0) ||
-		(Util::strnicmp(aString.c_str() + start, _T("https://"), 8) == 0) ||
-		(Util::strnicmp(aString.c_str() + start, _T("mailto:"), 7) == 0) )
-	{
-
-		openLink(aString.substr(start, end-start));
-		return true;
-	} else if(Util::strnicmp(aString.c_str() + start, _T("dchub://"), 8) == 0) {
-		parseDchubUrl(aString.substr(start, end-start));
-		return true;
-	} else if(Util::strnicmp(aString.c_str() + start, _T("magnet:?"), 8) == 0) {
-		parseMagnetUri(aString.substr(start, end-start));
-		return true;
-	} else if(Util::strnicmp(aString.c_str() + start, _T("adc://"), 6) == 0) {
-		parseADChubUrl(aString.substr(start, end-start));
-		return true;
-	}
-	return false;
-}
-
-void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
-							  SettingsManager::StrSetting widths, int n,
-							  int* indexes, int* sizes) throw() {
-	string tmp;
-
-	ctrl.GetColumnOrderArray(n, indexes);
-	int i;
-	for(i = 0; i < n; ++i) {
-		tmp += Util::toString(indexes[i]);
-		tmp += ',';
-	}
-	tmp.erase(tmp.size()-1, 1);
-	SettingsManager::getInstance()->set(order, tmp);
-	tmp.clear();
-	for(i = 0; i < n; ++i) {
-		sizes[i] = ctrl.GetColumnWidth(i);
-		tmp += Util::toString(sizes[i]);
-		tmp += ',';
-	}
-	tmp.erase(tmp.size()-1, 1);
-	SettingsManager::getInstance()->set(widths, tmp);
-}
+#ifdef PORT_ME
 
 double WinUtil::toBytes(TCHAR* aSize) {
 	double bytes = _tstof(aSize);

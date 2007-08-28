@@ -66,9 +66,7 @@ bool AboutDlg::handleInitDialog() {
 
 	subclassButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
 
-#ifdef PORT_ME
-	CenterWindow(GetParent());
-#endif
+	centerWindow();
 
 	c.addListener(this);
 	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");

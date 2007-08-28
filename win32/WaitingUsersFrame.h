@@ -96,10 +96,4 @@ private:
 	virtual void on(UploadManagerListener::WaitingAddFile, const UserPtr, const string&) throw();
 };
 
-#ifdef PORT_ME
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
-
-#endif	/* PORT_ME */
 #endif	/* WAITING_QUEUE_FRAME_H */

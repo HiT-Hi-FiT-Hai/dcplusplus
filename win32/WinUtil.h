@@ -131,6 +131,11 @@ public:
 	static void setClipboard(const tstring& str);
 
 	static bool getUCParams(SmartWin::Widget* parent, const UserCommand& cmd, StringMap& sm) throw();
+	
+	static bool parseDBLClick(const tstring& aString);
+	static void parseDchubUrl(const tstring& /*aUrl*/);
+	static void parseADChubUrl(const tstring& /*aUrl*/);
+	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
 
 #ifdef PORT_ME
 	static CImageList userImages;
@@ -167,7 +172,6 @@ public:
 		return sz.cx;
 	}
 
-
 	static tstring getHelpFile() {
 		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	}
@@ -180,10 +184,6 @@ public:
 	static void unRegisterDchubHandler();
 	static void unRegisterADChubHandler();
 	static void unRegisterMagnetHandler();
-	static void parseDchubUrl(const tstring& /*aUrl*/);
-	static void parseADChubUrl(const tstring& /*aUrl*/);
-	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
-	static bool parseDBLClick(const tstring& /*aString*/, string::size_type start, string::size_type end);
 	static bool urlDcADCRegistered;
 	static bool urlMagnetRegistered;
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
@@ -193,12 +193,7 @@ public:
 	//returns the position where the context menu should be
 	//opened if it was invoked from the keyboard.
 	//aPt is relative to the screen not the control.
-	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
 	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
-	static void getContextMenuPos(CEdit& aEdit,			POINT& aPt);
-
-	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order,
-		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 
 	template<class T> static HWND hiddenCreateEx(T& p) throw() {
 		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);

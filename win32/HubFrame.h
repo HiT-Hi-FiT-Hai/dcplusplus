@@ -87,7 +87,7 @@ private:
 
 	enum Tasks { UPDATE_USER_JOIN, UPDATE_USER, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD,
-		PRIVATE_MESSAGE, CONNECTED, DISCONNECTED
+		PRIVATE_MESSAGE, CONNECTED, DISCONNECTED, FOLLOW
 	};
 
 	struct UserTask : public Task {
@@ -242,6 +242,7 @@ private:
 	void handleCopyHub();
 	void handleAddAsFavorite();
 	void handleReconnect();
+	void handleFollow();
 
 	void updateFilter(const tstring& newText);
 	bool parseFilter(FilterModes& mode, int64_t& size);
@@ -277,90 +278,5 @@ private:
 	virtual void on(NickTaken, Client*) throw();
 	virtual void on(SearchFlood, Client*, const string&) throw();
 };
-
-#ifdef PORT_ME
-#include "FlatTabCtrl.h"
-
-#define EDIT_MESSAGE_MAP 10		// This could be any number, really...
-#define FILTER_MESSAGE_MAP 8
-struct CompareItems;
-
-class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
-	public CSplitterImpl<HubFrame>, private FavoriteManagerListener, private TimerManagerListener,
-	public UCHandler<HubFrame>, public UserInfoBaseHandler<HubFrame>
-{
-public:
-
-	BEGIN_MSG_MAP(HubFrame)
-		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
-		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
-		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)
-		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
-		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
-		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
-		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
-		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, onFileReconnect)
-		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
-		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
-		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
-		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
-		COMMAND_ID_HANDLER(IDC_COPY_HUB, onCopyHub)
-		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
-		CHAIN_COMMANDS(ucBase)
-		CHAIN_COMMANDS(uibBase)
-		CHAIN_MSG_MAP(baseClass)
-		CHAIN_MSG_MAP(splitBase)
-	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, onChar)
-		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
-		MESSAGE_HANDLER(WM_KEYUP, onChar)
-		MESSAGE_HANDLER(BM_SETCHECK, onShowUsers)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
-		MESSAGE_HANDLER(WM_KEYUP, onFilterChar)
-		COMMAND_CODE_HANDLER(CBN_SELCHANGE, onSelChange)
-	END_MSG_MAP()
-
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onEnterUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onFilterChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		onEnter();
-		return 0;
-	}
-
-	LRESULT onAddAsFavorite(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		addAsFavorite();
-		return 0;
-	}
-
-	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		PostMessage(WM_CLOSE);
-		return 0;
-	}
-
-	CToolTipCtrl ctrlLastLines;
-};
-
-#endif
 
 #endif // !defined(HUB_FRAME_H)

@@ -273,6 +273,8 @@ public:
 	  */
 	void bringToFront();
 
+	void centerWindow(Widget* target = 0);
+	
 	/// Brings the widget to the bottom
 	/** Makes the widget become the bottom most widget meaning it will be obscured by
 	  * all other widgets which are contained in the same container widget. <br>
@@ -345,6 +347,17 @@ void AspectSizable< WidgetType >::setBounds( int x, int y, int width, int height
 		xCeption err( _T( "Couldn't reposition windows" ) );
 		throw err;
 	}
+}
+
+template< class WidgetType >
+void AspectSizable< WidgetType >::centerWindow( Widget* target ) {
+	Point size = this->getSize();
+	RECT rc;
+	if(!target) {
+		target = static_cast<WidgetType*>(this)->getParent();
+	}
+	::GetWindowRect(target->handle(), &rc);
+	this->setBounds(rc.left + (rc.right - rc.left)/2 - size.x/2, rc.top + (rc.bottom - rc.top)/2 - size.y/2, size.x, size.y);
 }
 
 template< class WidgetType >
@@ -443,15 +456,13 @@ Rectangle AspectSizable< WidgetType >::getBounds( bool adjustForParent ) const
 template< class WidgetType >
 Point AspectSizable< WidgetType >::getSize() const
 {
-  Rectangle rc = this->getBounds();
-	return Point( rc.size.x, rc.size.y );
+	return this->getBounds().size;
 }
 
 template< class WidgetType >
 Point AspectSizable< WidgetType >::getPosition() const
 {
-	Rectangle rc = this->getBounds();
-	return Point( rc.pos.x, rc.pos.y );
+	return this->getBounds().pos;
 }
 
 

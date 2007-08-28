@@ -91,24 +91,3 @@ bool SystemFrame::preClosing() {
 void SystemFrame::on(Message, time_t t, const string& message) throw() { 
 	speak(reinterpret_cast<WPARAM>(new pair<time_t, tstring>(t, Text::toT(message)))); 
 }
-
-#ifdef PORT_ME
-
-LRESULT SystemFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	HWND focus = GetFocus();
-	bHandled = false;
-	if(focus == ctrlPad.m_hWnd) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		tstring x;
-		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlPad, x);
-		tstring::size_type end = x.find(_T(" "), start);
-
-		if(end == tstring::npos)
-			end = x.length();
-
-		bHandled = WinUtil::parseDBLClick(x, start, end);
-	}
-	return 0;
-}
-
-#endif

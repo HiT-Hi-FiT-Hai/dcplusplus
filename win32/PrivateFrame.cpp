@@ -402,22 +402,3 @@ void PrivateFrame::handleMatchQueue() {
 		addStatus(Text::toT(e.getError()));
 	}
 }
-
-#ifdef PORT_ME
-LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	HWND focus = GetFocus();
-	bHandled = false;
-	if(focus == ctrlClient.m_hWnd) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		tstring x;
-		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
-		tstring::size_type end = x.find(_T(" "), start);
-
-		if(end == string::npos)
-			end = x.length();
-
-		bHandled = WinUtil::parseDBLClick(x, start, end);
-	}
-	return 0;
-}
-#endif

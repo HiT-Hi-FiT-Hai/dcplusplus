@@ -327,10 +327,7 @@ bool HubFrame::enter() {
 				if(BOOLSETTING(JOIN_OPEN_NEW_WINDOW)) {
 					HubFrame::openWindow(getParent(), Text::fromT(param));
 				} else {
-					BOOL whatever = FALSE;
-#ifdef PORT_ME
-					onFollow(0, 0, 0, whatever);
-#endif
+					handleFollow();
 				}
 			} else {
 				addStatus(TSTRING(SPECIFY_SERVER));
@@ -601,6 +598,8 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
 				}
 			}
+		} else if(i->first == FOLLOW) {
+			handleFollow();
 		}
 		delete i->second;
 	}
@@ -896,13 +895,11 @@ void HubFrame::on(Redirect, Client*, const string& line) throw() {
 		return;
 	}
 	redirect = line;
-#ifdef PORT_ME
 	if(BOOLSETTING(AUTO_FOLLOW)) {
-		PostMessage(WM_COMMAND, IDC_FOLLOW, 0);
+		speak(FOLLOW);
 	} else {
 		speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
 	}
-#endif
 }
 
 void HubFrame::on(Failed, Client*, const string& line) throw() {
@@ -1185,7 +1182,8 @@ HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		}
 		
 		chat->screenToClient(pt);
-		tstring txt = chat->textUnderCursor(pt);
+		
+		tstring txt = chat->textUnderCursor(SmartWin::Point(pt.x, pt.y));
 		chat->clientToScreen(pt);
 		
 		if(!txt.empty()) {
@@ -1485,32 +1483,27 @@ void HubFrame::handleReconnect() {
 	client->reconnect();
 }
 
-#ifdef PORT_ME
-LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+void HubFrame::handleFollow() {
 	if(!redirect.empty()) {
 		if(ClientManager::getInstance()->isConnected(redirect)) {
-			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
-			return 0;
+			addStatus(TSTRING(REDIRECT_ALREADY_CONNECTED));
+			return;
 		}
 
-		dcassert(frames.find(server) != frames.end());
-		dcassert(frames[server] == this);
-		frames.erase(server);
-		server = redirect;
-		frames[server] = this;
+		url = redirect;
 
 		// the client is dead, long live the client!
 		client->removeListener(this);
 		ClientManager::getInstance()->putClient(client);
 		clearUserList();
 		clearTaskList();
-		client = ClientManager::getInstance()->getClient(Text::fromT(server));
+		client = ClientManager::getInstance()->getClient(url);
 		client->addListener(this);
 		client->connect();
 	}
-	return 0;
 }
 
+#ifdef PORT_ME
 LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMTTDISPINFO* nm = (NMTTDISPINFO*)pnmh;
 	lastLines.clear();

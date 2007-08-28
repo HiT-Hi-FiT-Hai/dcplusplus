@@ -19,6 +19,8 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 #define DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
 
+#include "WinUtil.h"
+
 class WidgetTextBox : public SmartWin::WidgetTextBox {
 private:
 	typedef SmartWin::WidgetTextBox BaseType;
@@ -27,7 +29,9 @@ public:
 	
 	typedef ThisType* ObjectType;
 
-	explicit WidgetTextBox( SmartWin::Widget * parent ) : BaseType(parent) { }
+	explicit WidgetTextBox( SmartWin::Widget * parent ) : BaseType(parent) {
+		this->onLeftMouseDblClick(std::tr1::bind(&WidgetTextBox::handleLeftDblClick, this, _1));
+	}
 
 	POINT getContextMenuPos() {
 		RECT rc;
@@ -37,12 +41,12 @@ public:
 		return pt;
 	}
 	
-	int charFromPos(POINT pt) {		
+	int charFromPos(const SmartWin::Point& pt) {		
 		LPARAM lp = MAKELPARAM(pt.x, pt.y);
 		return LOWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
 	}
 	
-	int lineFromPos(POINT pt) {
+	int lineFromPos(const SmartWin::Point& pt) {
 		LPARAM lp = MAKELPARAM(pt.x, pt.y);
 		return HIWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
 	}
@@ -64,7 +68,7 @@ public:
 		return tmp;
 	}
 
-	tstring textUnderCursor(POINT& p) {
+	tstring textUnderCursor(const SmartWin::Point& p) {
 		int i = charFromPos(p);
 		int line = lineFromPos(p);
 		int c = i - lineIndex(line);
@@ -82,6 +86,12 @@ public:
 			end = tmp.size();
 		
 		return tmp.substr(start, end-start);
+	}
+	
+private:
+	
+	void handleLeftDblClick(const SmartWin::MouseEventResult& ev) {
+		WinUtil::parseDBLClick(textUnderCursor(ev.pos));
 	}
 	
 };

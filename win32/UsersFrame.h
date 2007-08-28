@@ -115,25 +115,6 @@ private:
 	virtual void on(UserAdded, const FavoriteUser& aUser) throw() { addUser(aUser); }
 	virtual void on(UserRemoved, const FavoriteUser& aUser) throw() { removeUser(aUser); }
 	virtual void on(StatusChanged, const UserPtr& aUser) throw() { speak(USER_UPDATED, reinterpret_cast<LPARAM>(new UserInfoBase(aUser))); }
-
-#ifdef PORT_ME
-	BEGIN_MSG_MAP(UsersFrame)
-		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
-		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
-		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
-		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClick)
-		COMMAND_ID_HANDLER(IDC_CONNECT, onConnect)
-		CHAIN_MSG_MAP(uibBase)
-		CHAIN_MSG_MAP(baseClass)
-	END_MSG_MAP()
-
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
-
-#endif
 };
 
 #endif // !defined(USERS_FRAME_H)

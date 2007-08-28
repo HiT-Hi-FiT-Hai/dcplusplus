@@ -37,6 +37,7 @@
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectKeyboard.h"
+#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
@@ -80,6 +81,7 @@ class WidgetTextBoxBase :
 	public AspectFocus< WidgetTextBoxBase >,
 	public AspectFont< WidgetTextBoxBase >,
 	public AspectKeyboard< WidgetTextBoxBase >,
+	public AspectMouseClicks< WidgetTextBoxBase >,
 	public AspectRaw< WidgetTextBoxBase >,
 	public AspectSizable< WidgetTextBoxBase >,
 	public AspectText< WidgetTextBoxBase >,
