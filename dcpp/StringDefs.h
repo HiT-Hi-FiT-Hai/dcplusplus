@@ -409,7 +409,7 @@ enum Strings { // @DontAdd
 	SETTINGS_AUTO_OPEN, // "Auto-open at startup"
 	SETTINGS_AUTO_REFRESH_TIME, // "Auto refresh time"
 	SETTINGS_BIND_ADDRESS, // "Bind address"
-	SETTINGS_BOLD_OPTIONS, // "Tab bolding on content change"
+	SETTINGS_BOLD_OPTIONS, // "Tab highlight on content change"
 	SETTINGS_CERTIFICATES, // "Advanced\\Security Certificates"
 	SETTINGS_CHANGE, // "&Change"
 	SETTINGS_CLEAR_SEARCH, // "Clear search box after each search"

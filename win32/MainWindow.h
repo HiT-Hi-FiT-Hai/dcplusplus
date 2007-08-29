@@ -31,6 +31,8 @@
 #include "AspectSpeaker.h"
 #include "MDITab.h"
 
+class UPnP;
+
 class MainWindow : 
 	public WidgetFactory<SmartWin::WidgetMDIFrame>, 
 	public AspectSpeaker<MainWindow>,
@@ -123,6 +125,10 @@ private:
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;
 	tstring lastLines;
+
+	// UPnP connectors
+	UPnP* UPnP_TCPConnection;
+	UPnP* UPnP_UDPConnection;
 
 	void initWindow();
 	void initMenu();
@@ -329,9 +335,6 @@ private:
 
 	HWND createToolbar();
 
-	// UPnP connectors
-	UPnP* UPnP_TCPConnection;
-	UPnP* UPnP_UDPConnection;
 #endif
 
 };

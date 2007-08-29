@@ -12,11 +12,13 @@ How to compile in n easy steps:
     Note; Make sure gcc/g++ is in your path and before any cygwin installation.
 
 1b) or install Microsoft Visual C++ 8.0 (I don't use it so there might be some compile problems)
-   - If you get errors about a missing file "natupnp.h", you need a more recent platform SDK - google.
    - Make sure cl.exe is in your path (open a VS command prompt when building).
    - You will probably need STLPort as MSVC doesn't have tr1 unordered containers (this might change
      those are included in boost at some point in the future). Make sure to turn off nativestl (see 
      "scons -h") and compile/install STLPort in the stlport directory.
+
+Note; If you get errors about a missing file "natupnp.h", you need to download the Platform SDK from MS
+and copy the file to the include directory of your compiler (or add it to the include path...).
 
 2) Install recent stable release of SCons (www.scons.org) and make sure you have it in your PATH.
 

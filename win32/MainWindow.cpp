@@ -42,6 +42,7 @@
 #include "UsersFrame.h"
 #include "WaitingUsersFrame.h"
 #include "AboutDlg.h"
+#include "UPnP.h"
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ResourceManager.h>
@@ -60,8 +61,21 @@
 MainWindow* MainWindow::instance = 0;
 
 MainWindow::MainWindow() :
-	WidgetFactory<SmartWin::WidgetMDIFrame>(0), paned(0), transfers(0), tabs(0), trayIcon(false), maximized(false),
-	    lastMove(0), c(0), stopperThread(NULL), lastUp(0), lastDown(0), lastTick(GET_TICK()) {
+	WidgetFactory<SmartWin::WidgetMDIFrame>(0), 
+	paned(0), 
+	transfers(0), 
+	tabs(0), 
+	trayIcon(false), 
+	maximized(false),
+	lastMove(0), 
+	c(0), 
+	stopperThread(NULL), 
+	lastUp(0), 
+	lastDown(0), 
+	lastTick(GET_TICK()),
+	UPnP_TCPConnection(0),
+	UPnP_UDPConnection(0)
+{
 	instance = this;
 
 	links.homepage = _T("http://dcpp.net/");
@@ -621,7 +635,6 @@ void MainWindow::handleSettings() {
 		if(BOOLSETTING(SORT_FAVUSERS_FIRST) != lastSortFavUsersFirst)
 			HubFrame::resortUsers();
 
-#ifdef PORT_ME
 		if(BOOLSETTING(URL_HANDLER)) {
 			WinUtil::registerDchubHandler();
 			WinUtil::registerADChubHandler();
@@ -638,7 +651,6 @@ void MainWindow::handleSettings() {
 			WinUtil::unRegisterMagnetHandler();
 			WinUtil::urlMagnetRegistered = false;
 		}
-#endif
 	}
 }
 
@@ -663,7 +675,6 @@ void MainWindow::startSocket() {
 }
 
 void MainWindow::startUPnP() {
-#ifdef PORT_ME
 	stopUPnP();
 
 	if( SETTING(INCOMING_CONNECTIONS) == SettingsManager::INCOMING_FIREWALL_UPNP ) {
@@ -673,7 +684,7 @@ void MainWindow::startUPnP() {
 		if ( FAILED(UPnP_UDPConnection->OpenPorts()) || FAILED(UPnP_TCPConnection->OpenPorts()) )
 		{
 			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
-			MessageBox(CTSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+			createMessageBox().show(TSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 
 			// We failed! thus reset the objects
 			delete UPnP_TCPConnection;
@@ -692,16 +703,14 @@ void MainWindow::startUPnP() {
 					//:-( Looks like we have to rely on the user setting the external IP manually
 					// no need to do cleanup here because the mappings work
 					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
-					MessageBox(CTSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_OK | MB_ICONWARNING);
+					createMessageBox().show(TSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 				}
 			}
 		}
 	}
-#endif
 }
 
 void MainWindow::stopUPnP() {
-#ifdef PORT_ME
 	// Just check if the port mapping objects are initialized (NOT NULL)
 	if ( UPnP_TCPConnection != NULL )
 	{
@@ -722,7 +731,6 @@ void MainWindow::stopUPnP() {
 	// Not sure this is required (i.e. Objects are checked later in execution)
 	// But its better being on the save side :P
 	UPnP_TCPConnection = UPnP_UDPConnection = NULL;
-#endif
 }
 
 static const TCHAR types[]= _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0");

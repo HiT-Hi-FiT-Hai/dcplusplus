@@ -265,11 +265,9 @@ bool FavHubsFrame::handleKeyDown(int c) {
 	case VK_DELETE:
 		handleRemove();
 		return true;
-#ifdef PORT_ME // pressing enter doesn't do anything
 	case VK_RETURN:
 		openSelected();
 		return true;
-#endif
 	}
 	return false;
 }
