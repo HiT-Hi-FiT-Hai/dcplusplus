@@ -82,16 +82,3 @@ void Advanced3Page::write() {
 	else if(SETTING(AUTO_SEARCH_LIMIT) < 1)
 		settings->set(SettingsManager::AUTO_SEARCH_LIMIT, 1);
 }
-
-#ifdef PORT_ME
-
-LRESULT Advanced3Page::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED3PAGE);
-	return 0;
-}
-
-LRESULT Advanced3Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED3PAGE);
-	return 0;
-}
-#endif

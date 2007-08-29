@@ -27,17 +27,8 @@ public:
 	CertificatesPage(SmartWin::Widget* parent);
 	virtual ~CertificatesPage();
 
-#ifdef PORT_ME
-	BEGIN_MSG_MAP(CertificatesPage)
-		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-	END_MSG_MAP()
-
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-#endif
-
 	virtual void write();
+	virtual int getHelpId() { return IDD_CERTIFICATESPAGE; }
 
 private:
 	static Item items[];

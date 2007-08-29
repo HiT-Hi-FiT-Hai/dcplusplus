@@ -99,16 +99,3 @@ void QueuePage::write() {
 	if(SETTING(AUTODROP_ELAPSED) < 1)
 		settings->set(SettingsManager::AUTODROP_ELAPSED, 1);
 }
-
-#ifdef PORT_ME
-
-LRESULT QueuePage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_QUEUEPAGE);
-	return 0;
-}
-
-LRESULT QueuePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_QUEUEPAGE);
-	return 0;
-}
-#endif

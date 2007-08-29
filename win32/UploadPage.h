@@ -28,17 +28,8 @@ public:
 	UploadPage(SmartWin::Widget* parent);
 	virtual ~UploadPage();
 
-#ifdef PORT_ME
-	BEGIN_MSG_MAP(UploadPage)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
-	END_MSG_MAP()
-
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelpInfo(LPNMHDR);
-#endif
-
 	virtual void write();
+	virtual int getHelpId() { return IDD_UPLOADPAGE; }
 
 private:
 	static Item items[];

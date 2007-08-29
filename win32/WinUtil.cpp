@@ -985,7 +985,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 		if(file[0] == '/') // Remove any '/' in from of the file
 			file = file.substr(1);
 		try {
-			User::Ptr user = ClientManager::getInstance()->findLegacyUser(file);
+			UserPtr user = ClientManager::getInstance()->findLegacyUser(file);
 			if(user)
 				QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
 			// @todo else report error

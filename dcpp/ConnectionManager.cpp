@@ -68,7 +68,7 @@ void ConnectionManager::listen() throw(SocketException){
  * for downloading.
  * @param aUser The user to connect to.
  */
-void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
+void ConnectionManager::getDownloadConnection(const UserPtr& aUser) {
 	dcassert((bool)aUser);
 	{
 		Lock l(cs);
@@ -82,7 +82,7 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	}
 }
 
-ConnectionQueueItem* ConnectionManager::getCQI(const User::Ptr& aUser, bool download) {
+ConnectionQueueItem* ConnectionManager::getCQI(const UserPtr& aUser, bool download) {
 	ConnectionQueueItem* cqi = new ConnectionQueueItem(aUser, download);
 	if(download) {
 		dcassert(find(downloads.begin(), downloads.end(), aUser) == downloads.end());
@@ -129,9 +129,9 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 }
 
 void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw() {
-	User::List passiveUsers;
+	UserList passiveUsers;
 	ConnectionQueueItem::List removed;
-	User::List idlers;
+	UserList idlers;
 
 	{
 		Lock l(cs);
@@ -195,11 +195,11 @@ void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw()
 
 	}
 
-	for(User::Iter i = idlers.begin(); i != idlers.end(); ++i) {
+	for(UserList::iterator i = idlers.begin(); i != idlers.end(); ++i) {
 		DownloadManager::getInstance()->checkIdle(*i);
 	}
 
-	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
+	for(UserList::iterator ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSource(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
 }
@@ -641,7 +641,7 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 	}
 }
 
-void ConnectionManager::force(const User::Ptr& aUser) {
+void ConnectionManager::force(const UserPtr& aUser) {
 	Lock l(cs);
 
 	ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aUser);
@@ -673,7 +673,7 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 	putConnection(aSource);
 }
 
-void ConnectionManager::disconnect(const User::Ptr& aUser, int isDownload) {
+void ConnectionManager::disconnect(const UserPtr& aUser, int isDownload) {
 	Lock l(cs);
 	for(UserConnectionList::iterator i = userConnections.begin(); i != userConnections.end(); ++i) {
 		UserConnection* uc = *i;

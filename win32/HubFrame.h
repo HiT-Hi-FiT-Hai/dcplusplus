@@ -129,7 +129,7 @@ private:
 		GETSET(Identity, identity, Identity);
 	};
 
-	typedef HASH_MAP<UserPtr, UserInfo*, User::HashFunction> UserMap;
+	typedef unordered_map<UserPtr, UserInfo*, User::Hash> UserMap;
 	typedef UserMap::iterator UserMapIter;
 
 	struct CountAvailable {
@@ -217,7 +217,7 @@ private:
 	UserInfo* findUser(const tstring& nick);
 	bool updateUser(const UserTask& u);
 	void removeUser(const UserPtr& aUser);
-	const tstring& getNick(const User::Ptr& u);
+	const tstring& getNick(const UserPtr& u);
 
 	void updateUserList(UserInfo* ui = NULL);
 
@@ -266,7 +266,7 @@ private:
 	virtual void on(Connecting, Client*) throw();
 	virtual void on(Connected, Client*) throw();
 	virtual void on(UserUpdated, Client*, const OnlineUser&) throw();
-	virtual void on(UsersUpdated, Client*, const OnlineUser::List&) throw();
+	virtual void on(UsersUpdated, Client*, const OnlineUserList&) throw();
 	virtual void on(ClientListener::UserRemoved, Client*, const OnlineUser&) throw();
 	virtual void on(Redirect, Client*, const string&) throw();
 	virtual void on(Failed, Client*, const string&) throw();

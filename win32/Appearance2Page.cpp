@@ -156,16 +156,3 @@ void Appearance2Page::handleBrowseClicked() {
 		::SetDlgItemText(handle(), IDC_BEEPFILE, x.c_str());
 	}
 }
-
-#ifdef PORT_ME
-
-LRESULT Appearance2Page::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCE2PAGE);
-	return 0;
-}
-
-LRESULT Appearance2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCE2PAGE);
-	return 0;
-}
-#endif

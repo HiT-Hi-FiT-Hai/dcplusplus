@@ -242,11 +242,7 @@ void FavHubsFrame::handleDown() {
 }
 
 void FavHubsFrame::handleRemove() {
-#ifdef PORT_ME // no MB_DEFBUTTON2 in SmartWin::WidgetMessageBox
-	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO | MB_DEFBUTTON2, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
-#else
 	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
-#endif
 		int i;
 		while((i = hubs->getNextItem(-1, LVNI_SELECTED)) != -1)
 			FavoriteManager::getInstance()->removeFavorite(reinterpret_cast<FavoriteHubEntryPtr>(hubs->getItemData(i)));

@@ -38,9 +38,9 @@ public:
 	typedef map<string*, Ptr, noCaseStringLess> StringMap;
 	//	typedef HASH_MAP<string, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
 	typedef StringMap::iterator StringIter;
-	typedef HASH_MAP_X(User::Ptr, Ptr, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
+	typedef unordered_map<UserPtr, Ptr, User::Hash> UserMap;
 	typedef UserMap::iterator UserIter;
-	typedef HASH_MAP_X(User::Ptr, List, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserListMap;
+	typedef unordered_map<UserPtr, List, User::Hash> UserListMap;
 	typedef UserListMap::iterator UserListIter;
 
 	enum Status {
@@ -100,12 +100,12 @@ public:
 				| FLAG_BAD_TREE | FLAG_NO_TREE | FLAG_SLOW_SOURCE
 		};
 
-		Source(const User::Ptr& aUser) : user(aUser) { }
+		Source(const UserPtr& aUser) : user(aUser) { }
 		Source(const Source& aSource) : Flags(aSource), user(aSource.user) { }
 
-		bool operator==(const User::Ptr& aUser) const { return user == aUser; }
-		User::Ptr& getUser() { return user; }
-		GETSET(User::Ptr, user, User);
+		bool operator==(const UserPtr& aUser) const { return user == aUser; }
+		UserPtr& getUser() { return user; }
+		GETSET(UserPtr, user, User);
 	};
 	
 	typedef vector<Source> SourceList;
@@ -147,7 +147,7 @@ public:
 	SourceList& getBadSources() { return badSources; }
 	const SourceList& getBadSources() const { return badSources; }
 
-	void getOnlineUsers(User::List& l) const {
+	void getOnlineUsers(UserList& l) const {
 		for(SourceConstIter i = sources.begin(); i != sources.end(); ++i)
 			if(i->getUser()->isOnline())
 				l.push_back(i->getUser());
@@ -155,14 +155,14 @@ public:
 
 	string getTargetFileName() const { return Util::getFileName(getTarget()); }
 
-	SourceIter getSource(const User::Ptr& aUser) { return find(sources.begin(), sources.end(), aUser); }
-	SourceIter getBadSource(const User::Ptr& aUser) { return find(badSources.begin(), badSources.end(), aUser); }
-	SourceConstIter getSource(const User::Ptr& aUser) const { return find(sources.begin(), sources.end(), aUser); }
-	SourceConstIter getBadSource(const User::Ptr& aUser) const { return find(badSources.begin(), badSources.end(), aUser); }
+	SourceIter getSource(const UserPtr& aUser) { return find(sources.begin(), sources.end(), aUser); }
+	SourceIter getBadSource(const UserPtr& aUser) { return find(badSources.begin(), badSources.end(), aUser); }
+	SourceConstIter getSource(const UserPtr& aUser) const { return find(sources.begin(), sources.end(), aUser); }
+	SourceConstIter getBadSource(const UserPtr& aUser) const { return find(badSources.begin(), badSources.end(), aUser); }
 
-	bool isSource(const User::Ptr& aUser) const { return getSource(aUser) != sources.end(); }
-	bool isBadSource(const User::Ptr& aUser) const { return getBadSource(aUser) != badSources.end(); }
-	bool isBadSourceExcept(const User::Ptr& aUser, Flags::MaskType exceptions) const {
+	bool isSource(const UserPtr& aUser) const { return getSource(aUser) != sources.end(); }
+	bool isBadSource(const UserPtr& aUser) const { return getBadSource(aUser) != badSources.end(); }
+	bool isBadSourceExcept(const UserPtr& aUser, Flags::MaskType exceptions) const {
 		SourceConstIter i = getBadSource(aUser);
 		if(i != badSources.end())
 			return i->isAnySet(exceptions^Source::FLAG_MASK);
@@ -188,7 +188,7 @@ public:
 	GETSET(int64_t, downloadedBytes, DownloadedBytes);
 	GETSET(Status, status, Status);
 	GETSET(Priority, priority, Priority);
-	GETSET(User::Ptr, current, Current);
+	GETSET(UserPtr, current, Current);
 	GETSET(Download*, currentDownload, CurrentDownload);
 	GETSET(time_t, added, Added);
 	GETSET(TTHValue, tthRoot, TTH);
@@ -199,8 +199,8 @@ private:
 	SourceList sources;
 	SourceList badSources;
 
-	void addSource(const User::Ptr& aUser);
-	void removeSource(const User::Ptr& aUser, int reason);
+	void addSource(const UserPtr& aUser);
+	void removeSource(const UserPtr& aUser, int reason);
 };
 
 } // namespace dcpp

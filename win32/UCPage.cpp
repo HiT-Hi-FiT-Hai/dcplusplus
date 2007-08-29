@@ -25,6 +25,7 @@
 #include <dcpp/SettingsManager.h>
 #include <dcpp/FavoriteManager.h>
 #include "CommandDlg.h"
+#include "HoldRedraw.h"
 
 PropPage::TextItem UCPage::texts[] = {
 	{ IDC_MOVE_UP, ResourceManager::MOVE_UP },
@@ -140,18 +141,13 @@ void UCPage::handleMoveUpClicked() {
 			return;
 		int n = commands->getItemData(i);
 		FavoriteManager::getInstance()->moveUserCommand(n, -1);
-#ifdef PORT_ME
-		commands->SetRedraw(FALSE);
-#endif
+		HoldRedraw hold(commands);
 		commands->removeRow(i);
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, --i);
 		commands->setSelectedIndex(i);
-#ifdef PORT_ME
-		commands->EnsureVisible(i, FALSE);
-		commands->SetRedraw(TRUE);
-#endif
+		commands->ensureVisible(i);
 	}
 }
 
@@ -162,18 +158,13 @@ void UCPage::handleMoveDownClicked() {
 			return;
 		int n = commands->getItemData(i);
 		FavoriteManager::getInstance()->moveUserCommand(n, 1);
-#ifdef PORT_ME
-		commands->SetRedraw(FALSE);
-#endif
+		HoldRedraw hold(commands);
 		commands->removeRow(i);
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, ++i);
 		commands->setSelectedIndex(i);
-#ifdef PORT_ME
-		commands->EnsureVisible(i, FALSE);
-		commands->SetRedraw(TRUE);
-#endif
+		commands->ensureVisible(i);
 	}
 }
 
@@ -192,16 +183,3 @@ void UCPage::addEntry(const UserCommand& uc, int index) {
 	row.push_back(Text::toT(uc.getHub()));
 	commands->insertRow(row, (LPARAM)uc.getId(), index);
 }
-
-#ifdef PORT_ME
-
-LRESULT UCPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
-	return 0;
-}
-
-LRESULT UCPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
-	return 0;
-}
-#endif

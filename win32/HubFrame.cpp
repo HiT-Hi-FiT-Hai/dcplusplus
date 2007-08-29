@@ -619,7 +619,7 @@ HubFrame::UserInfo* HubFrame::findUser(const tstring& nick) {
 	return 0;
 }
 
-const tstring& HubFrame::getNick(const User::Ptr& aUser) {
+const tstring& HubFrame::getNick(const UserPtr& aUser) {
 	UserMapIter i = userMap.find(aUser);
 	if(i == userMap.end())
 		return Util::emptyStringT;
@@ -685,7 +685,7 @@ bool HubFrame::UserInfo::update(const Identity& identity, int sortCol) {
 	return needsSort;
 }
 
-void HubFrame::removeUser(const User::Ptr& aUser) {
+void HubFrame::removeUser(const UserPtr& aUser) {
 	UserMapIter i = userMap.find(aUser);
 	if(i == userMap.end()) {
 		// Should never happen?
@@ -878,8 +878,8 @@ void HubFrame::on(Connected, Client*) throw() {
 void HubFrame::on(UserUpdated, Client*, const OnlineUser& user) throw() {
 	speak(UPDATE_USER_JOIN, user);
 }
-void HubFrame::on(UsersUpdated, Client*, const OnlineUser::List& aList) throw() {
-	for(OnlineUser::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+void HubFrame::on(UsersUpdated, Client*, const OnlineUserList& aList) throw() {
+	for(OnlineUserList::const_iterator i = aList.begin(); i != aList.end(); ++i) {
 		tasks.add(UPDATE_USER, new UserTask(*(*i)));
 	}
 	updateUsers = true;

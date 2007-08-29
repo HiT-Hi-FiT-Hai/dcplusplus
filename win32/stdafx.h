@@ -26,6 +26,8 @@
 #include <shlwapi.h>
 #include <shlobj.h>
 #include <malloc.h>
+#include <htmlhelp.h>
+
 enum {
 	WM_SPEAKER  = WM_APP + 500
 };
@@ -35,7 +37,6 @@ enum {
 // Fix nt4 startup
 #include <multimon.h>
 
-#include <HtmlHelp.h>
 
 #endif
 

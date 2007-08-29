@@ -91,16 +91,3 @@ void CertificatesPage::handleGenerateCertsClicked() {
 		createMessageBox().show(Text::toT(e.getError()), _T("Error generating certificate"), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 	}
 }
-
-#ifdef PORT_ME
-
-LRESULT CertificatesPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_CERTIFICATESPAGE);
-	return 0;
-}
-
-LRESULT CertificatesPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_CERTIFICATESPAGE);
-	return 0;
-}
-#endif

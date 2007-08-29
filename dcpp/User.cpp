@@ -26,7 +26,7 @@
 
 namespace dcpp {
 
-OnlineUser::OnlineUser(const User::Ptr& ptr, Client& client_, uint32_t sid_) : identity(ptr, sid_), client(client_) {
+OnlineUser::OnlineUser(const UserPtr& ptr, Client& client_, uint32_t sid_) : identity(ptr, sid_), client(client_) {
 
 }
 

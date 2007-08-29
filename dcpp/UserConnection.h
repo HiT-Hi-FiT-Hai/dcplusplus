@@ -147,8 +147,8 @@ public:
 		return isSet(FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
 	}
 
-	const User::Ptr& getUser() const { return user; }
-	User::Ptr& getUser() { return user; }
+	const UserPtr& getUser() const { return user; }
+	UserPtr& getUser() { return user; }
 	bool isSecure() const { return socket && socket->isSecure(); }
 	bool isTrusted() const { return socket && socket->isTrusted(); }
 
@@ -177,7 +177,7 @@ public:
 private:
 	BufferedSocket* socket;
 	bool secure;
-	User::Ptr user;
+	UserPtr user;
 
 	static const string UPLOAD, DOWNLOAD;
 
@@ -199,7 +199,7 @@ private:
 	UserConnection(const UserConnection&);
 	UserConnection& operator=(const UserConnection&);
 
-	void setUser(const User::Ptr& aUser) {
+	void setUser(const UserPtr& aUser) {
 		user = aUser;
 	}
 

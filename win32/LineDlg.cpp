@@ -46,9 +46,8 @@ bool LineDlg::initDialog() {
 	
 	setText(title);
 
-#ifdef PORT_ME
-	CenterWindow(GetParent());
-#endif
+	centerWindow();
+	
 	return false;
 }
 

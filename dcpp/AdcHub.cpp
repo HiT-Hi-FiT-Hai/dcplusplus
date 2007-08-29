@@ -57,7 +57,7 @@ OnlineUser& AdcHub::getUser(const uint32_t aSID, const CID& aCID) {
 		return *ou;
 	}
 
-	User::Ptr p = ClientManager::getInstance()->getUser(aCID);
+	UserPtr p = ClientManager::getInstance()->getUser(aCID);
 
 	{
 		Lock l(cs);

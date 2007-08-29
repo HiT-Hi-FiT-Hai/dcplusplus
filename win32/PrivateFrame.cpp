@@ -50,9 +50,9 @@ void PrivateFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPt
 	
 }
 
-void PrivateFrame::gotMessage(SmartWin::WidgetMDIParent* mdiParent, const User::Ptr& from, const User::Ptr& to, const User::Ptr& replyTo, const tstring& aMessage) {
+void PrivateFrame::gotMessage(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage) {
 	PrivateFrame* p = 0;
-	const User::Ptr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
+	const UserPtr& user = (replyTo == ClientManager::getInstance()->getMe()) ? to : replyTo;
 
 	FrameIter i = frames.find(user);
 	if(i == frames.end()) {
@@ -352,11 +352,11 @@ void PrivateFrame::on(ClientManagerListener::UserUpdated, const OnlineUser& aUse
 	if(aUser.getUser() == replyTo)
 		speak(USER_UPDATED);
 }
-void PrivateFrame::on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
+void PrivateFrame::on(ClientManagerListener::UserConnected, const UserPtr& aUser) throw() {
 	if(aUser == replyTo)
 		speak(USER_UPDATED);
 }
-void PrivateFrame::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) throw() {
 	if(aUser == replyTo)
 		speak(USER_UPDATED);
 }

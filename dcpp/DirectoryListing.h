@@ -79,6 +79,8 @@ public:
 		};
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
+		
+		typedef unordered_set<TTHValue, TTHValue::Hash> TTHSet;
 
 		List directories;
 		File::List files;
@@ -94,8 +96,8 @@ public:
 		size_t getTotalFileCount(bool adls = false);
 		int64_t getTotalSize(bool adls = false);
 		void filterList(DirectoryListing& dirList);
-		void filterList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l);
-		void getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l);
+		void filterList(TTHSet& l);
+		void getHashList(TTHSet& l);
 
 		size_t getFileCount() { return files.size(); }
 
@@ -124,7 +126,7 @@ public:
 		GETSET(string, fullPath, FullPath);
 	};
 
-	DirectoryListing(const User::Ptr& aUser) : user(aUser), root(new Directory(NULL, Util::emptyString, false, false)) {
+	DirectoryListing(const UserPtr& aUser) : user(aUser), root(new Directory(NULL, Util::emptyString, false, false)) {
 	}
 
 	~DirectoryListing() {
@@ -148,9 +150,9 @@ public:
 	const Directory* getRoot() const { return root; }
 	Directory* getRoot() { return root; }
 
-	static User::Ptr getUserFromFilename(const string& fileName);
+	static UserPtr getUserFromFilename(const string& fileName);
 
-	GETSET(User::Ptr, user, User);
+	GETSET(UserPtr, user, User);
 
 private:
 	friend class ListLoader;

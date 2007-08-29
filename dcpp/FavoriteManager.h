@@ -132,7 +132,7 @@ public:
 	bool isDownloading() { return (useHttp && running); }
 
 // Favorite Users
-	typedef HASH_MAP_X(CID, FavoriteUser, CID::Hash, equal_to<CID>, less<CID>) FavoriteMap;
+	typedef unordered_map<CID, FavoriteUser, CID::Hash> FavoriteMap;
 	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; }
 
 	void addFavoriteUser(UserPtr& aUser);

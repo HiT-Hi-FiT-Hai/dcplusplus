@@ -35,7 +35,6 @@ namespace dcpp {
 class UploadManager : private ClientManagerListener, private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
 public:
-
 	/** @return Number of uploads. */
 	size_t getUploadCount() { Lock l(cs); return uploads.size(); }
 
@@ -54,13 +53,13 @@ public:
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); }
 
 	/** @param aUser Reserve an upload slot for this user and connect. */
-	void reserveSlot(const User::Ptr& aUser);
+	void reserveSlot(const UserPtr& aUser);
 
 	typedef set<string> FileSet;
-	typedef HASH_MAP_X(User::Ptr, FileSet, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) FilesMap;
-	void clearUserFiles(const User::Ptr&);
-	User::List getWaitingUsers();
-	const FileSet& getWaitingUserFiles(const User::Ptr &);
+	typedef unordered_map<UserPtr, FileSet, User::Hash> FilesMap;
+	void clearUserFiles(const UserPtr&);
+	UserList getWaitingUsers();
+	const FileSet& getWaitingUserFiles(const UserPtr &);
 
 	/** @internal */
 	void addConnection(UserConnectionPtr conn);
@@ -72,19 +71,19 @@ private:
 	UploadList uploads;
 	CriticalSection cs;
 
-	typedef HASH_SET<UserPtr, User::HashFunction> SlotSet;
+	typedef unordered_set<UserPtr, User::Hash> SlotSet;
 	typedef SlotSet::iterator SlotIter;
 	SlotSet reservedSlots;
 
-	typedef pair<User::Ptr, uint64_t> WaitingUser;
-	typedef list<WaitingUser> UserList;
+	typedef pair<UserPtr, uint64_t> WaitingUser;
+	typedef list<WaitingUser> WaitingUserList;
 
 	struct WaitingUserFresh {
 		bool operator()(const WaitingUser& wu) { return wu.second > GET_TICK() - 5*60*1000; }
 	};
 
 	//functions for manipulating waitingFiles and waitingUsers
-	UserList waitingUsers;		//this one merely lists the users waiting for slots
+	WaitingUserList waitingUsers;		//this one merely lists the users waiting for slots
 	FilesMap waitingFiles;		//set of files which this user has asked for
 	void addFailedUpload(const UserConnection& source, string filename);
 
@@ -97,7 +96,7 @@ private:
 	void removeUpload(Upload* aUpload);
 
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) throw();
 
 	// TimerManagerListener
 	virtual void on(Second, uint32_t aTick) throw();

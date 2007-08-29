@@ -43,7 +43,7 @@ class UserConnection;
 class DirectoryItem {
 public:
 	typedef DirectoryItem* Ptr;
-	typedef HASH_MULTIMAP<User::Ptr, Ptr, User::HashFunction> DirectoryMap;
+	typedef unordered_multimap<UserPtr, Ptr, User::Hash> DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 
@@ -51,18 +51,18 @@ public:
 	typedef List::iterator Iter;
 
 	DirectoryItem() : priority(QueueItem::DEFAULT) { }
-	DirectoryItem(const User::Ptr& aUser, const string& aName, const string& aTarget,
+	DirectoryItem(const UserPtr& aUser, const string& aName, const string& aTarget,
 		QueueItem::Priority p) : name(aName), target(aTarget), priority(p), user(aUser) { }
 	~DirectoryItem() { }
 
-	User::Ptr& getUser() { return user; }
-	void setUser(const User::Ptr& aUser) { user = aUser; }
+	UserPtr& getUser() { return user; }
+	void setUser(const UserPtr& aUser) { user = aUser; }
 
 	GETSET(string, name, Name);
 	GETSET(string, target, Target);
 	GETSET(QueueItem::Priority, priority, Priority);
 private:
-	User::Ptr user;
+	UserPtr user;
 };
 
 class ConnectionQueueItem;
@@ -73,16 +73,16 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 {
 public:
 	/** Add a file to the queue. */
-	void add(const string& aTarget, int64_t aSize, const TTHValue& root, User::Ptr aUser, 
+	void add(const string& aTarget, int64_t aSize, const TTHValue& root, UserPtr aUser, 
 		int aFlags = QueueItem::FLAG_RESUME, bool addBad = true) throw(QueueException, FileException);
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, int aFlags, const string& aInitialDir = Util::emptyString) throw(QueueException, FileException);
+	void addList(const UserPtr& aUser, int aFlags, const string& aInitialDir = Util::emptyString) throw(QueueException, FileException);
 	/** Queue a partial file list download */
-	void addPfs(const User::Ptr& aUser, const string& aDir) throw(QueueException);
+	void addPfs(const UserPtr& aUser, const string& aDir) throw(QueueException);
 	/** Readd a source that was removed */
-	void readd(const string& target, const User::Ptr& aUser) throw(QueueException);
+	void readd(const string& target, const UserPtr& aUser) throw(QueueException);
 	/** Add a directory to the queue (downloads filelist and matches the directory). */
-	void addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
+	void addDirectory(const string& aDir, const UserPtr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
 
 	int matchListing(const DirectoryListing& dl) throw();
 
@@ -92,8 +92,8 @@ public:
 	void move(const string& aSource, const string& aTarget) throw();
 
 	void remove(const string& aTarget) throw();
-	void removeSource(const string& aTarget, const User::Ptr& aUser, int reason, bool removeConn = true) throw();
-	void removeSource(const User::Ptr& aUser, int reason) throw();
+	void removeSource(const string& aTarget, const UserPtr& aUser, int reason, bool removeConn = true) throw();
+	void removeSource(const UserPtr& aUser, int reason) throw();
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 
@@ -105,7 +105,7 @@ public:
 	void putDownload(Download* aDownload, bool finished) throw();
 
 	/** @return The highest priority download the user has, PAUSED may also mean no downloads */
-	QueueItem::Priority hasDownload(const User::Ptr& aUser) throw();
+	QueueItem::Priority hasDownload(const UserPtr& aUser) throw();
 
 	int countOnlineSources(const string& aTarget);
 
@@ -116,7 +116,7 @@ public:
 	GETSET(string, queueFile, QueueFile);
 private:
 
-	typedef HASH_MAP_X(CID, string, CID::Hash, equal_to<CID>, less<CID>) PfsQueue;
+	typedef unordered_map<CID, string, CID::Hash> PfsQueue;
 	typedef PfsQueue::iterator PfsIter;
 
 	/** All queue items by target */
@@ -157,17 +157,17 @@ private:
 	class UserQueue {
 	public:
 		void add(QueueItem* qi);
-		void add(QueueItem* qi, const User::Ptr& aUser);
-		QueueItem* getNext(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
-		QueueItem* getRunning(const User::Ptr& aUser);
-		void setRunning(QueueItem* qi, const User::Ptr& aUser);
+		void add(QueueItem* qi, const UserPtr& aUser);
+		QueueItem* getNext(const UserPtr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
+		QueueItem* getRunning(const UserPtr& aUser);
+		void setRunning(QueueItem* qi, const UserPtr& aUser);
 		void setWaiting(QueueItem* qi);
 		QueueItem::UserListMap& getList(int p) { return userQueue[p]; }
 		void remove(QueueItem* qi);
-		void remove(QueueItem* qi, const User::Ptr& aUser);
+		void remove(QueueItem* qi, const UserPtr& aUser);
 
 		QueueItem::UserMap& getRunning() { return running; }
-		bool isRunning(const User::Ptr& aUser) const {
+		bool isRunning(const UserPtr& aUser) const {
 			return (running.find(aUser) != running.end());
 		}
 	private:
@@ -204,9 +204,9 @@ private:
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */
-	bool addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType addBad) throw(QueueException, FileException);
+	bool addSource(QueueItem* qi, UserPtr aUser, Flags::MaskType addBad) throw(QueueException, FileException);
 
-	void processList(const string& name, User::Ptr& user, int flags);
+	void processList(const string& name, UserPtr& user, int flags);
 
 	void load(const SimpleXML& aXml);
 
@@ -225,8 +225,8 @@ private:
 	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw();
-	virtual void on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserConnected, const UserPtr& aUser) throw();
+	virtual void on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) throw();
 };
 
 } // namespace dcpp

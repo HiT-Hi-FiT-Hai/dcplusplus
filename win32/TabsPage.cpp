@@ -60,16 +60,3 @@ TabsPage::~TabsPage() {
 void TabsPage::write() {
 	PropPage::write(handle(), items, listItems,::GetDlgItem(handle(), IDC_BOLD_BOOLEANS));
 }
-
-#ifdef PORT_ME
-
-LRESULT TabsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_TABSPAGE);
-	return 0;
-}
-
-LRESULT TabsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_TABSPAGE);
-	return 0;
-}
-#endif

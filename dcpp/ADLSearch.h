@@ -264,7 +264,7 @@ public:
 
 	// Settings
 	GETSET(bool, breakOnFirst, BreakOnFirst)
-	GETSET(User::Ptr, user, User)
+	GETSET(UserPtr, user, User)
 
 	// @remarks Used to add ADLSearch directories to an existing DirectoryListing
 	void matchListing(DirectoryListing& /*aDirList*/) throw();

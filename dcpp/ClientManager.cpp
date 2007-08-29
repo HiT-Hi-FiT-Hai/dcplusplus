@@ -182,7 +182,7 @@ string ClientManager::findHubEncoding(const string& aUrl) const {
 	return Text::systemCharset;
 }
 
-User::Ptr ClientManager::findLegacyUser(const string& aNick) const throw() {
+UserPtr ClientManager::findLegacyUser(const string& aNick) const throw() {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
 
@@ -191,10 +191,10 @@ User::Ptr ClientManager::findLegacyUser(const string& aNick) const throw() {
 		if(ou->getUser()->isSet(User::NMDC) && Util::stricmp(ou->getIdentity().getNick(), aNick) == 0)
 			return ou->getUser();
 	}
-	return User::Ptr();
+	return UserPtr();
 }
 
-User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
+UserPtr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw() {
 	CID cid = makeCid(aNick, aHubUrl);
 	Lock l(cs);
 
@@ -206,7 +206,7 @@ User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) thr
 		return ui->second;
 	}
 
-	User::Ptr p(new User(cid));
+	UserPtr p(new User(cid));
 	p->setFirstNick(aNick);
 	p->setFlag(User::NMDC);
 	users.insert(make_pair(cid, p));
@@ -214,19 +214,19 @@ User::Ptr ClientManager::getUser(const string& aNick, const string& aHubUrl) thr
 	return p;
 }
 
-User::Ptr ClientManager::getUser(const CID& cid) throw() {
+UserPtr ClientManager::getUser(const CID& cid) throw() {
 	Lock l(cs);
 	UserIter ui = users.find(cid);
 	if(ui != users.end()) {
 		return ui->second;
 	}
 
-	User::Ptr p(new User(cid));
+	UserPtr p(new User(cid));
 	users.insert(make_pair(cid, p));
 	return p;
 }
 
-User::Ptr ClientManager::findUser(const CID& cid) const throw() {
+UserPtr ClientManager::findUser(const CID& cid) const throw() {
 	Lock l(cs);
 	UserMap::const_iterator ui = users.find(cid);
 	if(ui != users.end()) {
@@ -235,7 +235,7 @@ User::Ptr ClientManager::findUser(const CID& cid) const throw() {
 	return 0;
 }
 
-bool ClientManager::isOp(const User::Ptr& user, const string& aHubUrl) const {
+bool ClientManager::isOp(const UserPtr& user, const string& aHubUrl) const {
 	Lock l(cs);
 	OnlinePairC p = onlineUsers.equal_range(user->getCID());
 	for(OnlineIterC i = p.first; i != p.second; ++i) {
@@ -290,7 +290,7 @@ void ClientManager::putOffline(OnlineUser* ou) throw() {
 	}
 }
 
-void ClientManager::connect(const User::Ptr& p, const string& token) {
+void ClientManager::connect(const UserPtr& p, const string& token) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(p->getCID());
 	if(i != onlineUsers.end()) {
@@ -299,7 +299,7 @@ void ClientManager::connect(const User::Ptr& p, const string& token) {
 	}
 }
 
-void ClientManager::privateMessage(const User::Ptr& p, const string& msg) {
+void ClientManager::privateMessage(const UserPtr& p, const string& msg) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(p->getCID());
 	if(i != onlineUsers.end()) {
@@ -396,7 +396,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 	}
 }
 
-void ClientManager::userCommand(const User::Ptr& p, const UserCommand& uc, StringMap& params, bool compatibility) {
+void ClientManager::userCommand(const UserPtr& p, const UserCommand& uc, StringMap& params, bool compatibility) {
 	Lock l(cs);
 	OnlineIter i = onlineUsers.find(p->getCID());
 	if(i == onlineUsers.end())
@@ -464,7 +464,7 @@ void ClientManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw
 	}
 }
 
-User::Ptr& ClientManager::getMe() {
+UserPtr& ClientManager::getMe() {
 	if(!me) {
 		Lock l(cs);
 		if(!me) {

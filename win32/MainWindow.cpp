@@ -730,7 +730,7 @@ static const TCHAR types[]= _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0"
 void MainWindow::handleOpenFileList() {
 	tstring file;
 	if (WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
-		User::Ptr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
+		UserPtr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if (u) {
 			DirectoryListingFrame::openWindow(getMDIClient(), file, Text::toT(Util::emptyString), u, 0);
 		} else {
@@ -796,7 +796,7 @@ public:
 	}
 	virtual int run() {
 		for (StringIter i = files.begin(); i != files.end(); ++i) {
-			User::Ptr u = DirectoryListing::getUserFromFilename(*i);
+			UserPtr u = DirectoryListing::getUserFromFilename(*i);
 			if (!u)
 				continue;
 			DirectoryListing dl(u);
@@ -1384,7 +1384,7 @@ void MainWindow::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, cons
 	versionInfo += string((const char*)buf, len);
 }
 
-void MainWindow::on(PartialList, const User::Ptr& aUser, const string& text) throw() {
+void MainWindow::on(PartialList, const UserPtr& aUser, const string& text) throw() {
 	speak(BROWSE_LISTING, (LPARAM)new DirectoryBrowseInfo(aUser, text));
 }
 

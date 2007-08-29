@@ -26,6 +26,7 @@
 #include <dcpp/UserCommand.h>
 #include <dcpp/NmdcHub.h>
 #include <dcpp/version.h>
+#include "WinUtil.h"
 
 CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
 	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
@@ -52,6 +53,7 @@ CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstr
 {
 	onInitDialog(std::tr1::bind(&CommandDlg::handleInitDialog, this));
 	onFocus(std::tr1::bind(&CommandDlg::handleFocus, this));
+	onRaw(std::tr1::bind(&CommandDlg::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
 }
 
 CommandDlg::~CommandDlg() {
@@ -124,10 +126,8 @@ bool CommandDlg::handleInitDialog() {
 	subclassButton(IDHELP)->onClicked(std::tr1::bind(&CommandDlg::handleHelpClicked, this));
 
 	if(bOpenHelp) {
-#ifdef PORT_ME
 		// launch the help file, instead of having the help in the dialog
-		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
-#endif
+		HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 	}
 
 	if(type == UserCommand::TYPE_SEPARATOR) {
@@ -184,9 +184,7 @@ bool CommandDlg::handleInitDialog() {
 
 	separator->setFocus();
 
-#ifdef PORT_ME
-	CenterWindow(GetParent());
-#endif
+	centerWindow();
 	return false;
 }
 
@@ -228,9 +226,7 @@ void CommandDlg::handleOKClicked() {
 }
 
 void CommandDlg::handleHelpClicked() {
-#ifdef PORT_ME
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
-#endif
+	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 }
 
 void CommandDlg::updateType() {
@@ -279,9 +275,7 @@ void CommandDlg::updateControls() {
 	}
 }
 
-#ifdef PORT_ME
-LRESULT CommandDlg::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+LRESULT CommandDlg::handleHelp(WPARAM wParam, LPARAM lParam) {
+	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 	return 0;
 }
-#endif

@@ -62,7 +62,7 @@ DownloadManager::~DownloadManager() throw() {
 }
 
 void DownloadManager::on(TimerManagerListener::Second, uint32_t aTick) throw() {
-	typedef vector<pair<string, User::Ptr> > TargetList;
+	typedef vector<pair<string, UserPtr> > TargetList;
 	TargetList dropTargets;
 
 	{
@@ -191,7 +191,7 @@ private:
 	size_t bufPos;
 };
 
-void DownloadManager::checkIdle(const User::Ptr& user) {
+void DownloadManager::checkIdle(const UserPtr& user) {
 	Lock l(cs);
 	for(UserConnectionList::iterator i = idlers.begin(); i != idlers.end(); ++i) {
 		UserConnection* uc = *i;

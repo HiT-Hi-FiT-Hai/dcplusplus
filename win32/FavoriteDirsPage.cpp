@@ -160,16 +160,3 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath) {
 		}
 	}
 }
-
-#ifdef PORT_ME
-
-LRESULT FavoriteDirsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FAVORITE_DIRSPAGE);
-	return 0;
-}
-
-LRESULT FavoriteDirsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_FAVORITE_DIRSPAGE);
-	return 0;
-}
-#endif

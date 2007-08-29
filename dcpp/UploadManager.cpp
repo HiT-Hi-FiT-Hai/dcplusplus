@@ -255,7 +255,7 @@ void UploadManager::removeUpload(Upload* aUpload) {
 	delete aUpload;
 }
 
-void UploadManager::reserveSlot(const User::Ptr& aUser) {
+void UploadManager::reserveSlot(const UserPtr& aUser) {
 	{
 		Lock l(cs);
 		reservedSlots.insert(aUser);
@@ -361,7 +361,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 void UploadManager::addFailedUpload(const UserConnection& source, string filename) {
 	{
 		Lock l(cs);
-		UserList::iterator it = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, uint32_t>(source.getUser()));
+		WaitingUserList::iterator it = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<UserPtr, uint32_t>(source.getUser()));
 		if (it==waitingUsers.end()) {
 			waitingUsers.push_back(WaitingUser(source.getUser(), GET_TICK()));
 		} else {
@@ -373,10 +373,10 @@ void UploadManager::addFailedUpload(const UserConnection& source, string filenam
 	fire(UploadManagerListener::WaitingAddFile(), source.getUser(), filename);
 }
 
-void UploadManager::clearUserFiles(const User::Ptr& source) {
+void UploadManager::clearUserFiles(const UserPtr& source) {
 	Lock l(cs);
 	//run this when a user's got a slot or goes offline.
-	UserList::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<User::Ptr, uint32_t>(source));
+	WaitingUserList::iterator sit = find_if(waitingUsers.begin(), waitingUsers.end(), CompareFirst<UserPtr, uint32_t>(source));
 	if (sit == waitingUsers.end()) return;
 
 	FilesMap::iterator fit = waitingFiles.find(sit->first);
@@ -386,16 +386,16 @@ void UploadManager::clearUserFiles(const User::Ptr& source) {
 	waitingUsers.erase(sit);
 }
 
-User::List UploadManager::getWaitingUsers() {
+UserList UploadManager::getWaitingUsers() {
 	Lock l(cs);
-	User::List u;
-	for(UserList::const_iterator i = waitingUsers.begin(); i != waitingUsers.end(); ++i) {
+	UserList u;
+	for(WaitingUserList::const_iterator i = waitingUsers.begin(); i != waitingUsers.end(); ++i) {
 		u.push_back(i->first);
 	}
 	return u;
 }
 
-const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const User::Ptr &u) {
+const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const UserPtr &u) {
 	Lock l(cs);
 	return waitingFiles.find(u)->second;
 }
@@ -419,12 +419,12 @@ void UploadManager::removeConnection(UserConnection* aSource) {
 }
 
 void UploadManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw() {
-	User::List disconnects;
+	UserList disconnects;
 	{
 		Lock l(cs);
 
-		UserList::iterator i = stable_partition(waitingUsers.begin(), waitingUsers.end(), WaitingUserFresh());
-		for (UserList::iterator j = i; j != waitingUsers.end(); ++j) {
+		WaitingUserList::iterator i = stable_partition(waitingUsers.begin(), waitingUsers.end(), WaitingUserFresh());
+		for (WaitingUserList::iterator j = i; j != waitingUsers.end(); ++j) {
 			FilesMap::iterator fit = waitingFiles.find(j->first);
 			if (fit != waitingFiles.end()) waitingFiles.erase(fit);
 			fire(UploadManagerListener::WaitingRemoveUser(), j->first);
@@ -454,7 +454,7 @@ void UploadManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw
 		}
 	}
 
-	for(User::Iter i = disconnects.begin(); i != disconnects.end(); ++i) {
+	for(UserList::iterator i = disconnects.begin(); i != disconnects.end(); ++i) {
 		LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + Util::toString(ClientManager::getInstance()->getNicks((*i)->getCID())));
 		ConnectionManager::getInstance()->disconnect(*i, false);
 	}
@@ -497,7 +497,7 @@ void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 		fire(UploadManagerListener::Tick(), ticks);
 }
 
-void UploadManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+void UploadManager::on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) throw() {
 	if(!aUser->isOnline()) {
 		clearUserFiles(aUser);
 	}

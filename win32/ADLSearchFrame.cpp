@@ -245,9 +245,7 @@ void ADLSearchFrame::handleRemove() {
 }
 
 void ADLSearchFrame::handleHelp() {
-#ifdef PORT_ME
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
-#endif
+	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
 }
 
 void ADLSearchFrame::handleDoubleClick() {

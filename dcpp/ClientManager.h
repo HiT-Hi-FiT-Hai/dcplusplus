@@ -53,22 +53,22 @@ public:
 	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken);
 	void infoUpdated();
 
-	User::Ptr getUser(const string& aNick, const string& aHubUrl) throw();
-	User::Ptr getUser(const CID& cid) throw();
+	UserPtr getUser(const string& aNick, const string& aHubUrl) throw();
+	UserPtr getUser(const CID& cid) throw();
 
 	string findHub(const string& ipPort) const;
 	string findHubEncoding(const string& aUrl) const;
 
-	User::Ptr findUser(const string& aNick, const string& aHubUrl) const throw() { return findUser(makeCid(aNick, aHubUrl)); }
-	User::Ptr findUser(const CID& cid) const throw();
-	User::Ptr findLegacyUser(const string& aNick) const throw();
+	UserPtr findUser(const string& aNick, const string& aHubUrl) const throw() { return findUser(makeCid(aNick, aHubUrl)); }
+	UserPtr findUser(const CID& cid) const throw();
+	UserPtr findLegacyUser(const string& aNick) const throw();
 
-	bool isOnline(const User::Ptr& aUser) const {
+	bool isOnline(const UserPtr& aUser) const {
 		Lock l(cs);
 		return onlineUsers.find(aUser->getCID()) != onlineUsers.end();
 	}
 
-	bool isOp(const User::Ptr& aUser, const string& aHubUrl) const;
+	bool isOp(const UserPtr& aUser, const string& aHubUrl) const;
 
 	/** Constructs a synthetic, hopefully unique CID */
 	CID makeCid(const string& nick, const string& hubUrl) const throw();
@@ -76,13 +76,13 @@ public:
 	void putOnline(OnlineUser* ou) throw();
 	void putOffline(OnlineUser* ou) throw();
 
-	User::Ptr& getMe();
+	UserPtr& getMe();
 
-	void connect(const User::Ptr& p, const string& token);
+	void connect(const UserPtr& p, const string& token);
 	void send(AdcCommand& c, const CID& to);
-	void privateMessage(const User::Ptr& p, const string& msg);
+	void privateMessage(const UserPtr& p, const string& msg);
 
-	void userCommand(const User::Ptr& p, const UserCommand& uc, StringMap& params, bool compatibility);
+	void userCommand(const UserPtr& p, const UserCommand& uc, StringMap& params, bool compatibility);
 
 	bool isActive() { return SETTING(INCOMING_CONNECTIONS) != SettingsManager::INCOMING_FIREWALL_PASSIVE; }
 
@@ -97,13 +97,13 @@ public:
 	const CID& getMyPID();
 
 private:
-	typedef HASH_MAP<string, User::Ptr> LegacyMap;
+	typedef unordered_map<string, UserPtr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
 
-	typedef HASH_MAP_X(CID, User::Ptr, CID::Hash, equal_to<CID>, less<CID>) UserMap;
+	typedef unordered_map<CID, UserPtr, CID::Hash> UserMap;
 	typedef UserMap::iterator UserIter;
 
-	typedef HASH_MULTIMAP_X(CID, OnlineUser*, CID::Hash, equal_to<CID>, less<CID>) OnlineMap;
+	typedef unordered_multimap<CID, OnlineUser*, CID::Hash> OnlineMap;
 	typedef OnlineMap::iterator OnlineIter;
 	typedef OnlineMap::const_iterator OnlineIterC;
 	typedef pair<OnlineIter, OnlineIter> OnlinePair;
@@ -115,7 +115,7 @@ private:
 	UserMap users;
 	OnlineMap onlineUsers;
 
-	User::Ptr me;
+	UserPtr me;
 
 	Socket udp;
 
@@ -142,7 +142,7 @@ private:
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
 	virtual void on(UserUpdated, Client*, const OnlineUser& user) throw() { fire(ClientManagerListener::UserUpdated(), user); }
-	virtual void on(UsersUpdated, Client* c, const User::List&) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
+	virtual void on(UsersUpdated, Client* c, const UserList&) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(HubUserCommand, Client*, int, int, const string&, const string&) throw();

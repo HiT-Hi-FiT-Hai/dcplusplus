@@ -94,9 +94,8 @@ bool ADLSProperties::handleInitDialog() {
 	button = subclassButton(IDCANCEL);
 	button->onClicked(std::tr1::bind(&ADLSProperties::endDialog, this, IDCANCEL));
 
-#ifdef PORT_ME
-	CenterWindow(GetParent());
-#endif
+	centerWindow();
+	
 	return false;
 }
 

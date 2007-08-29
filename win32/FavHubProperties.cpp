@@ -58,7 +58,8 @@ bool FavHubProperties::handleInitDialog() {
 	name = subclassTextBox(IDC_HUBNAME);
 	name->setText(Text::toT(entry->getName()));
 	name->setFocus();
-
+	name->setSelection();
+	
 	address = subclassTextBox(IDC_HUBADDR);
 	address->setText(Text::toT(entry->getServer()));
 
@@ -85,11 +86,8 @@ bool FavHubProperties::handleInitDialog() {
 	button = subclassButton(IDCANCEL);
 	button->onClicked(std::tr1::bind(&FavHubProperties::handleCancelClicked, this));
 
-#ifdef PORT_ME
-	tmp.Attach(GetDlgItem(IDC_HUBNAME));
-	tmp.SetSel(0,-1);
-	CenterWindow(GetParent());
-#endif
+	centerWindow();
+	
 	return false;
 }
 

@@ -137,6 +137,10 @@ public:
 	static void parseADChubUrl(const tstring& /*aUrl*/);
 	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
 
+	static tstring getHelpFile() {
+		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
+	}
+
 #ifdef PORT_ME
 	static CImageList userImages;
 
@@ -170,10 +174,6 @@ public:
 		SIZE sz = { 0, 0 };
 		::GetTextExtentPoint32(dc, str.c_str(), str.length(), &sz);
 		return sz.cx;
-	}
-
-	static tstring getHelpFile() {
-		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	}
 
 

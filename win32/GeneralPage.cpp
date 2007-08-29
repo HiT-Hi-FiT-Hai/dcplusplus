@@ -95,16 +95,3 @@ void GeneralPage::handleTextChanged(WidgetTextBoxPtr textBox) {
 		textBox->setSelection(caretPos, caretPos);
 	}
 }
-
-#ifdef PORT_ME
-
-LRESULT GeneralPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
-	return 0;
-}
-
-LRESULT GeneralPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
-	return 0;
-}
-#endif

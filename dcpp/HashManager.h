@@ -181,10 +181,10 @@ private:
 		typedef vector<FileInfo> FileInfoList;
 		typedef FileInfoList::iterator FileInfoIter;
 
-		typedef HASH_MAP<string, FileInfoList> DirMap;
+		typedef unordered_map<string, FileInfoList> DirMap;
 		typedef DirMap::iterator DirIter;
 
-		typedef HASH_MAP_X(TTHValue, TreeInfo, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) TreeMap;
+		typedef unordered_map<TTHValue, TreeInfo, TTHValue::Hash> TreeMap;
 		typedef TreeMap::iterator TreeIter;
 
 		friend class HashLoader;

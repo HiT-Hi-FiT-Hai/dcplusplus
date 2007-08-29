@@ -25,6 +25,7 @@
 #include "FastAlloc.h"
 #include "CriticalSection.h"
 #include "Flags.h"
+#include "forward.h"
 
 namespace dcpp {
 
@@ -55,17 +56,8 @@ public:
 		OLD_CLIENT = 1<<OLD_CLIENT_BIT  //< Can't download - old client
 	};
 
-	typedef Pointer<User> Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-
-	struct HashFunction {
-#ifdef _MSC_VER
-		static const size_t bucket_size = 4;
-		static const size_t min_buckets = 8;
-#endif
-		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))/sizeof(User); }
-		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); }
+	struct Hash {
+		size_t operator()(const UserPtr& x) const { return ((size_t)(&(*x)))/sizeof(User); }
 	};
 
 	User(const CID& aCID) : cid(aCID) { }
@@ -99,7 +91,7 @@ public:
 	};
 
 	Identity() : sid(0) { }
-	Identity(const User::Ptr& ptr, uint32_t aSID) : user(ptr), sid(aSID) { }
+	Identity(const UserPtr& ptr, uint32_t aSID) : user(ptr), sid(aSID) { }
 	Identity(const Identity& rhs) : Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
 	Identity& operator=(const Identity& rhs) { Lock l(cs); *static_cast<Flags*>(this) = rhs; user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
 
@@ -133,8 +125,8 @@ public:
 	string getSIDString() const { return string((const char*)&sid, 4); }
 
 	void getParams(StringMap& map, const string& prefix, bool compatibility) const;
-	User::Ptr& getUser() { return user; }
-	GETSET(User::Ptr, user, User);
+	UserPtr& getUser() { return user; }
+	GETSET(UserPtr, user, User);
 	GETSET(uint32_t, sid, SID);
 private:
 	typedef map<short, string> InfMap;
@@ -152,13 +144,13 @@ public:
 	typedef vector<OnlineUser*> List;
 	typedef List::iterator Iter;
 
-	OnlineUser(const User::Ptr& ptr, Client& client_, uint32_t sid_);
+	OnlineUser(const UserPtr& ptr, Client& client_, uint32_t sid_);
 
-	operator User::Ptr&() { return getUser(); }
-	operator const User::Ptr&() const { return getUser(); }
+	operator UserPtr&() { return getUser(); }
+	operator const UserPtr&() const { return getUser(); }
 
-	User::Ptr& getUser() { return getIdentity().getUser(); }
-	const User::Ptr& getUser() const { return getIdentity().getUser(); }
+	UserPtr& getUser() { return getIdentity().getUser(); }
+	const UserPtr& getUser() const { return getIdentity().getUser(); }
 	Identity& getIdentity() { return identity; }
 	Client& getClient() { return client; }
 	const Client& getClient() const { return client; }

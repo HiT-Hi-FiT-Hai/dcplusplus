@@ -86,16 +86,3 @@ void WindowsPage::write() {
 	PropPage::write(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_WINDOWS_OPTIONS));
 	PropPage::write(handle(), items, confirmItems, ::GetDlgItem(handle(), IDC_CONFIRM_OPTIONS));
 }
-
-#ifdef PORT_ME
-
-LRESULT WindowsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_WINDOWSPAGE);
-	return 0;
-}
-
-LRESULT WindowsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_WINDOWSPAGE);
-	return 0;
-}
-#endif

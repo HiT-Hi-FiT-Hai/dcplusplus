@@ -38,7 +38,7 @@
 
 namespace dcpp {
 
-User::Ptr DirectoryListing::getUserFromFilename(const string& fileName) {
+UserPtr DirectoryListing::getUserFromFilename(const string& fileName) {
 	// General file list name format: [username].[CID].[xml|xml.bz2|DcLst]
 
 	string name = Util::getFileName(fileName);
@@ -71,7 +71,7 @@ User::Ptr DirectoryListing::getUserFromFilename(const string& fileName) {
 	if(cid.isZero())
 		return NULL;
 
-	User::Ptr p = ClientManager::getInstance()->getUser(cid);
+	UserPtr p = ClientManager::getInstance()->getUser(cid);
 	if(p->getFirstNick().empty())
 		p->setFirstNick(name.substr(0, i));
 	return p;
@@ -294,7 +294,7 @@ DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directo
 	dcassert(end != string::npos);
 	string name = aName.substr(0, end);
 
-	Directory::Iter i = ::find(current->directories.begin(), current->directories.end(), name);
+	Directory::Iter i = std::find(current->directories.begin(), current->directories.end(), name);
 	if(i != current->directories.end()) {
 		if(end == (aName.size() - 1))
 			return *i;
@@ -305,8 +305,8 @@ DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directo
 }
 
 struct HashContained {
-	HashContained(const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) : tl(l) { }
-	const HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& tl;
+	HashContained(const DirectoryListing::Directory::TTHSet& l) : tl(l) { }
+	const DirectoryListing::Directory::TTHSet& tl;
 	bool operator()(const DirectoryListing::File::Ptr i) const {
 		return tl.count((i->getTTH())) && (DeleteFunction()(i), true);
 	}
@@ -325,18 +325,18 @@ struct DirectoryEmpty {
 void DirectoryListing::Directory::filterList(DirectoryListing& dirList) {
 		DirectoryListing::Directory* d = dirList.getRoot();
 
-		HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) l;
+		TTHSet l;
 		d->getHashList(l);
 		filterList(l);
 }
 
-void DirectoryListing::Directory::filterList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
+void DirectoryListing::Directory::filterList(DirectoryListing::Directory::TTHSet& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->filterList(l);
 	directories.erase(std::remove_if(directories.begin(),directories.end(),DirectoryEmpty()),directories.end());
 	files.erase(std::remove_if(files.begin(),files.end(),HashContained(l)),files.end());
 }
 
-void DirectoryListing::Directory::getHashList(HASH_SET_X(TTHValue, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>)& l) {
+void DirectoryListing::Directory::getHashList(DirectoryListing::Directory::TTHSet& l) {
 	for(Iter i = directories.begin(); i != directories.end(); ++i) (*i)->getHashList(l);
 	for(DirectoryListing::File::Iter i = files.begin(); i != files.end(); ++i) l.insert((*i)->getTTH());
 }

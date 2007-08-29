@@ -128,3 +128,8 @@ void PropPage::translate(HWND page, TextItem* textItems)
 		}
 	}
 }
+
+LRESULT PropPage::handleHelp(WPARAM, LPARAM) {
+	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, getHelpId());
+	return 0;
+}

@@ -23,15 +23,19 @@
 
 #include <dcpp/ResourceManager.h>
 #include "WidgetFactory.h"
+#include "resource.h"
 
 class PropPage : public WidgetFactory<SmartWin::WidgetDialog>
 {
 public:
-	PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) { }
+	PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) { 
+		onRaw(std::tr1::bind(&PropPage::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
+	}
 	virtual ~PropPage() { }
 
 	SmartWin::Widget* getWidget() { return boost::polymorphic_cast<SmartWin::Widget*>(this); }
 	virtual void write() = 0;
+	virtual int getHelpId() = 0;
 
 	enum Type { T_STR, T_INT, T_BOOL, T_CUSTOM, T_END };
 
@@ -55,6 +59,8 @@ protected:
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void translate(HWND page, TextItem* textItems);
+	
+	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
 };
 
 #endif // !defined(PROP_PAGE_H)

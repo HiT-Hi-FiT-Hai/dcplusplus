@@ -84,9 +84,8 @@ bool HubListsDlg::handleInitDialog() {
 
 	subclassButton(IDCANCEL)->onClicked(std::tr1::bind(&HubListsDlg::endDialog, this, IDCANCEL));
 
-#ifdef PORT_ME
-	CenterWindow(GetParent());
-#endif
+	centerWindow();
+	
 	return false;
 }
 

@@ -75,7 +75,7 @@ OnlineUser& NmdcHub::getUser(const string& aNick) {
 			return *i->second;
 	}
 
-	User::Ptr p;
+	UserPtr p;
 	if(aNick == getCurrentNick()) {
 		p = ClientManager::getInstance()->getMe();
 	} else {
@@ -580,7 +580,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		fire(ClientListener::NickTaken(), this);
 	} else if(cmd == "$UserIP") {
 		if(!param.empty()) {
-			OnlineUser::List v;
+			OnlineUserList v;
 			StringTokenizer<string> t(param, "$$");
 			StringList& l = t.getTokens();
 			for(StringIter it = l.begin(); it != l.end(); ++it) {
@@ -606,7 +606,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		}
 	} else if(cmd == "$NickList") {
 		if(!param.empty()) {
-			OnlineUser::List v;
+			OnlineUserList v;
 			StringTokenizer<string> t(param, "$$");
 			StringList& sl = t.getTokens();
 
@@ -622,7 +622,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				// Let's assume 10 characters per nick...
 				tmp.reserve(v.size() * (11 + 10 + getMyNick().length()));
 				string n = ' ' + fromUtf8(getMyNick()) + '|';
-				for(OnlineUser::List::const_iterator i = v.begin(); i != v.end(); ++i) {
+				for(OnlineUserList::const_iterator i = v.begin(); i != v.end(); ++i) {
 					tmp += "$GetINFO ";
 					tmp += fromUtf8((*i)->getIdentity().getNick());
 					tmp += n;
@@ -636,7 +636,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		}
 	} else if(cmd == "$OpList") {
 		if(!param.empty()) {
-			OnlineUser::List v;
+			OnlineUserList v;
 			StringTokenizer<string> t(param, "$$");
 			StringList& sl = t.getTokens();
 			for(StringIter it = sl.begin(); it != sl.end(); ++it) {

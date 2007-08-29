@@ -27,18 +27,8 @@ public:
 	Advanced3Page(SmartWin::Widget* parent);
 	virtual ~Advanced3Page();
 
-#ifdef PORT_ME
-	BEGIN_MSG_MAP(Advanced3Page)
-		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-	END_MSG_MAP()
-
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-#endif
-
 	virtual void write();
-
+	virtual int getHelpId() { return IDD_ADVANCED3PAGE; }
 private:
 	static Item items[];
 	static TextItem texts[];

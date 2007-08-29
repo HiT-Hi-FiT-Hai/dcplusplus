@@ -52,7 +52,7 @@ public:
 
 	SearchResult(Types aType, int64_t aSize, const string& name, const TTHValue& aTTH);
 
-	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots,
+	SearchResult(const UserPtr& aUser, Types aType, int aSlots, int aFreeSlots,
 		int64_t aSize, const string& aFile, const string& aHubName,
 		const string& aHubURL, const string& ip, TTHValue aTTH, const string& aToken) :
 	file(aFile), hubName(aHubName), hubURL(aHubURL), user(aUser),
@@ -63,7 +63,7 @@ public:
 	string toSR(const Client& client) const;
 	AdcCommand toRES(char type) const;
 
-	User::Ptr& getUser() { return user; }
+	UserPtr& getUser() { return user; }
 	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
 
 	const string& getFile() const { return file; }
@@ -94,7 +94,7 @@ private:
 	string file;
 	string hubName;
 	string hubURL;
-	User::Ptr user;
+	UserPtr user;
 	int64_t size;
 	Types type;
 	int slots;
@@ -151,7 +151,7 @@ public:
 		onData((const uint8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
 
-	void onRES(const AdcCommand& cmd, const User::Ptr& from, const string& removeIp = Util::emptyString);
+	void onRES(const AdcCommand& cmd, const UserPtr& from, const string& removeIp = Util::emptyString);
 
 	int32_t timeToSearch() {
 		return 5 - (static_cast<int32_t>(GET_TICK() - lastSearch) / 1000);

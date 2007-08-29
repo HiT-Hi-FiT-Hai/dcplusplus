@@ -136,11 +136,9 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 			TreeView_Expand(pageTree->handle(), parent, TVE_EXPAND);
 			return item;
 		} else {
-#ifdef PORT_ME
 			// Update page
-			if(ctrlTree.GetItemData(item) == -1)
-				ctrlTree.SetItemData(item, page);
-#endif
+			if(pageTree->getData(item) == 0)
+				pageTree->setData(item, reinterpret_cast<LPARAM>(page));
 			return item;
 		}
 	} else {
@@ -149,7 +147,7 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 		if(item == NULL) {
 			// Doesn't exist, add...
 			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
-			tvi.item.lParam = -1;
+			tvi.item.lParam = 0;
 			tvi.item.pszText = const_cast<LPTSTR>(name.c_str());
 			item = TreeView_InsertItem(pageTree->handle(), &tvi);
 		}
@@ -174,14 +172,3 @@ void SettingsDialog::write() {
 		(*i)->write();
 	}
 }
-
-#ifdef PORT_ME
-
-PropertiesDlg::PropertiesDlg(HWND parent, SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS), 0, parent)
-{
-	// Hide "Apply" button
-	m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_NOCONTEXTHELP;
-	m_psh.dwFlags &= ~PSH_HASHELP;
-}
-
-#endif

@@ -27,17 +27,17 @@ namespace dcpp {
 
 class FavoriteUser : public Flags {
 public:
-	FavoriteUser(const User::Ptr& user_, const string& nick_, const string& hubUrl_) : user(user_), nick(nick_), url(hubUrl_), lastSeen(0) { }
+	FavoriteUser(const UserPtr& user_, const string& nick_, const string& hubUrl_) : user(user_), nick(nick_), url(hubUrl_), lastSeen(0) { }
 
 	enum Flags {
 		FLAG_GRANTSLOT = 1 << 0
 	};
 
-	User::Ptr& getUser() { return user; }
+	UserPtr& getUser() { return user; }
 
 	void update(const OnlineUser& info);
 
-	GETSET(User::Ptr, user, User);
+	GETSET(UserPtr, user, User);
 	GETSET(string, nick, Nick);
 	GETSET(string, url, Url);
 	GETSET(time_t, lastSeen, LastSeen);

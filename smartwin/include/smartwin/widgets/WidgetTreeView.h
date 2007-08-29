@@ -331,6 +331,7 @@ public:
 	}
 
 	LPARAM getData(HTREEITEM item);
+	void setData(HTREEITEM item, LPARAM data);
 	
 protected:
 	// Constructor Taking pointer to parent
@@ -498,6 +499,13 @@ inline LPARAM WidgetTreeView::getData(HTREEITEM item) {
 		return 0;
 	}
 	return tvitem.lParam;
+}
+
+inline void WidgetTreeView::setData(HTREEITEM item, LPARAM lParam) {
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
+	tvitem.hItem = item;
+	tvitem.lParam = lParam;
+	TreeView_SetItem(this->handle(), &tvitem);
 }
 
 inline WidgetTreeView::WidgetTreeView( Widget * parent )

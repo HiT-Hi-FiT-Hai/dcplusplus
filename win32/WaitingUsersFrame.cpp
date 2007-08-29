@@ -125,21 +125,17 @@ HRESULT WaitingUsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 // Load all searches from manager
 void WaitingUsersFrame::loadAll()
 {
-#ifdef PORT_ME
-	// @todo Relies on apparently unimplemented WinUtil
 	// Load queue
-	User::List users = UploadManager::getInstance()->getWaitingUsers();
-	for (User::Iter uit = users.begin(); uit != users.end(); ++uit) {
-		HTREEITEM lastInserted = queued->insertNode(
-			(WinUtil::getNicks(*uit) + _T(" - ") + WinUtil::getHubNames(*uit).first).c_str()
-			,
-			0, 0, 0, 0, (LPARAM)(new UserPtr(*uit)), TVI_ROOT, TVI_LAST);
+	UserList users = UploadManager::getInstance()->getWaitingUsers();
+	for (UserList::iterator uit = users.begin(); uit != users.end(); ++uit) {
+		SmartWin::TreeViewNode lastInserted = queued->insertNode(
+			(WinUtil::getNicks(*uit) + _T(" - ") + WinUtil::getHubNames(*uit).first),
+			SmartWin::TreeViewNode(TVI_ROOT), (LPARAM)(new UserPtr(*uit)));
 		UploadManager::FileSet files = UploadManager::getInstance()->getWaitingUserFiles(*uit);
 		for (UploadManager::FileSet::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
-			queued->InsertItem(Text::toT(*fit).c_str(), lastInserted, TVI_LAST);
+			queued->insertNode(Text::toT(*fit), lastInserted);
 		}
 	}
-#endif
 }
 
 void WaitingUsersFrame::onPrivateMessage() {

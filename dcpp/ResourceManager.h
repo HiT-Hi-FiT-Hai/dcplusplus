@@ -71,7 +71,7 @@ public:
 private:
 	friend class Singleton<ResourceManager>;
 
-	typedef HASH_MAP<string, Strings> NameMap;
+	typedef unordered_map<string, Strings> NameMap;
 	typedef NameMap::iterator NameIter;
 
 	ResourceManager() : rtl(false) {

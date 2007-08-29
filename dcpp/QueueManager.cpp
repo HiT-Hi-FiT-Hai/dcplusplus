@@ -210,7 +210,7 @@ void QueueManager::UserQueue::add(QueueItem* qi) {
 	}
 }
 
-void QueueManager::UserQueue::add(QueueItem* qi, const User::Ptr& aUser) {
+void QueueManager::UserQueue::add(QueueItem* qi, const UserPtr& aUser) {
 	if(qi->getStatus() == QueueItem::STATUS_RUNNING) {
 		return;
 	}
@@ -223,7 +223,7 @@ void QueueManager::UserQueue::add(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueItem* QueueManager::UserQueue::getNext(const User::Ptr& aUser, QueueItem::Priority minPrio) {
+QueueItem* QueueManager::UserQueue::getNext(const UserPtr& aUser, QueueItem::Priority minPrio) {
 	int p = QueueItem::LAST - 1;
 
 	do {
@@ -238,7 +238,7 @@ QueueItem* QueueManager::UserQueue::getNext(const User::Ptr& aUser, QueueItem::P
 	return NULL;
 }
 
-void QueueManager::UserQueue::setRunning(QueueItem* qi, const User::Ptr& aUser) {
+void QueueManager::UserQueue::setRunning(QueueItem* qi, const UserPtr& aUser) {
 	dcassert(qi->getCurrentDownload() == 0);
 	dcassert(qi->getStatus() == QueueItem::STATUS_WAITING);
 
@@ -264,14 +264,14 @@ void QueueManager::UserQueue::setWaiting(QueueItem* qi) {
 
 	// Set flag to waiting
 	qi->setStatus(QueueItem::STATUS_WAITING);
-	qi->setCurrent(User::Ptr());
+	qi->setCurrent(UserPtr());
 	qi->setCurrentDownload(0);
 
 	// Add to the userQueue
 	add(qi);
 }
 
-QueueItem* QueueManager::UserQueue::getRunning(const User::Ptr& aUser) {
+QueueItem* QueueManager::UserQueue::getRunning(const UserPtr& aUser) {
 	QueueItem::UserIter i = running.find(aUser);
 	return (i == running.end()) ? 0 : i->second;
 }
@@ -282,7 +282,7 @@ void QueueManager::UserQueue::remove(QueueItem* qi) {
 	}
 }
 
-void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
+void QueueManager::UserQueue::remove(QueueItem* qi, const UserPtr& aUser) {
 	if(qi->getStatus() == QueueItem::STATUS_RUNNING) {
 		if(qi->getCurrent() == aUser) {
 			// Remove from running...
@@ -379,7 +379,7 @@ void QueueManager::on(TimerManagerListener::Minute, uint32_t aTick) throw() {
 	}
 }
 
-void QueueManager::addList(const User::Ptr& aUser, int aFlags, const string& aInitialDir /* = Util::emptyString */) throw(QueueException, FileException) {
+void QueueManager::addList(const UserPtr& aUser, int aFlags, const string& aInitialDir /* = Util::emptyString */) throw(QueueException, FileException) {
 	// complete target is checked later, just remove path separators from the nick here
 	string target = Util::getListPath() + Util::cleanPathChars(aUser->getFirstNick()) + "." + aUser->getCID().toBase32();
 
@@ -390,7 +390,7 @@ void QueueManager::addList(const User::Ptr& aUser, int aFlags, const string& aIn
 	add(target, -1, TTHValue(), aUser, QueueItem::FLAG_USER_LIST | aFlags);
 }
 
-void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw(QueueException) {
+void QueueManager::addPfs(const UserPtr& aUser, const string& aDir) throw(QueueException) {
 	if(aUser == ClientManager::getInstance()->getMe()) {
 		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
 	}
@@ -409,7 +409,7 @@ void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw(Queu
 	ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& root, User::Ptr aUser, 
+void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& root, UserPtr aUser, 
 					   int aFlags /* = QueueItem::FLAG_RESUME */, bool addBad /* = true */) throw(QueueException, FileException)
 {
 	bool wantConnection = true;
@@ -471,7 +471,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::readd(const string& target, const User::Ptr& aUser) throw(QueueException) {
+void QueueManager::readd(const string& target, const UserPtr& aUser) throw(QueueException) {
 	bool wantConnection = false;
 	{
 		Lock l(cs);
@@ -518,7 +518,7 @@ string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flag
 }
 
 /** Add a source to an existing queue item */
-bool QueueManager::addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType addBad) throw(QueueException, FileException) {
+bool QueueManager::addSource(QueueItem* qi, UserPtr aUser, Flags::MaskType addBad) throw(QueueException, FileException) {
 	bool wantConnection = (qi->getPriority() != QueueItem::PAUSED) && (qi->getStatus() != QueueItem::STATUS_RUNNING);
 
 	if(qi->isSource(aUser)) {
@@ -544,7 +544,7 @@ bool QueueManager::addSource(QueueItem* qi, User::Ptr aUser, Flags::MaskType add
 	return wantConnection;
 }
 
-void QueueManager::addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw() {
+void QueueManager::addDirectory(const string& aDir, const UserPtr& aUser, const string& aTarget, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw() {
 	bool needList;
 	{
 		Lock l(cs);
@@ -571,7 +571,7 @@ void QueueManager::addDirectory(const string& aDir, const User::Ptr& aUser, cons
 	}
 }
 
-QueueItem::Priority QueueManager::hasDownload(const User::Ptr& aUser) throw() {
+QueueItem::Priority QueueManager::hasDownload(const UserPtr& aUser) throw() {
 	Lock l(cs);
 	if(pfsQueue.find(aUser->getCID()) != pfsQueue.end()) {
 		return QueueItem::HIGHEST;
@@ -583,7 +583,7 @@ QueueItem::Priority QueueManager::hasDownload(const User::Ptr& aUser) throw() {
 	return qi->getPriority();
 }
 namespace {
-typedef HASH_MAP_X(TTHValue, const DirectoryListing::File*, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) TTHMap;
+typedef unordered_map<TTHValue, const DirectoryListing::File*, TTHValue::Hash> TTHMap;
 
 // *** WARNING ***
 // Lock(cs) makes sure that there's only one thread accessing this
@@ -685,7 +685,7 @@ void QueueManager::getTargets(const TTHValue& tth, StringList& sl) {
 Download* QueueManager::getDownload(UserConnection& aSource, bool supportsTrees) throw() {
 	Lock l(cs);
 
-	User::Ptr& aUser = aSource.getUser();
+	UserPtr& aUser = aSource.getUser();
 	// First check PFS's...
 	PfsIter pi = pfsQueue.find(aUser->getCID());
 	if(pi != pfsQueue.end()) {
@@ -733,9 +733,9 @@ Download* QueueManager::getDownload(UserConnection& aSource, bool supportsTrees)
 
 
 void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
-	User::List getConn;
+	UserList getConn;
  	string fname;
-	User::Ptr up;
+	UserPtr up;
 	int flag = 0;
 
 	{
@@ -830,7 +830,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 		delete aDownload;
 	}
 
-	for(User::Iter i = getConn.begin(); i != getConn.end(); ++i) {
+	for(UserList::iterator i = getConn.begin(); i != getConn.end(); ++i) {
 		ConnectionManager::getInstance()->getDownloadConnection(*i);
 	}
 
@@ -839,7 +839,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 	}
 }
 
-void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
+void QueueManager::processList(const string& name, UserPtr& user, int flags) {
 	DirectoryListing dirList(user);
 	try {
 		dirList.loadFile(name);
@@ -874,7 +874,7 @@ void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
 }
 
 void QueueManager::remove(const string& aTarget) throw() {
-	User::Ptr x;
+	UserPtr x;
 
 	{
 		Lock l(cs);
@@ -914,7 +914,7 @@ void QueueManager::remove(const string& aTarget) throw() {
 	}
 }
 
-void QueueManager::removeSource(const string& aTarget, const User::Ptr& aUser, int reason, bool removeConn /* = true */) throw() {
+void QueueManager::removeSource(const string& aTarget, const UserPtr& aUser, int reason, bool removeConn /* = true */) throw() {
 	bool isRunning = false;
 	bool removeCompletely = false;
 	{
@@ -968,7 +968,7 @@ endCheck:
 	}
 }
 
-void QueueManager::removeSource(const User::Ptr& aUser, int reason) throw() {
+void QueueManager::removeSource(const UserPtr& aUser, int reason) throw() {
 	bool isRunning = false;
 	string removeRunning;
 	{
@@ -1010,7 +1010,7 @@ void QueueManager::removeSource(const User::Ptr& aUser, int reason) throw() {
 }
 
 void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) throw() {
-	User::List ul;
+	UserList ul;
 
 	{
 		Lock l(cs);
@@ -1034,7 +1034,7 @@ void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) thr
 		}
 	}
 
-	for(User::Iter i = ul.begin(); i != ul.end(); ++i) {
+	for(UserList::iterator i = ul.begin(); i != ul.end(); ++i) {
 		ConnectionManager::getInstance()->getDownloadConnection(*i);
 	}
 }
@@ -1196,7 +1196,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				// Skip loading this source - sorry old users
 				return;
 			}
-			User::Ptr user = ClientManager::getInstance()->getUser(CID(cid));
+			UserPtr user = ClientManager::getInstance()->getUser(CID(cid));
 
 			try {
 				if(qm->addSource(cur, user, 0) && user->isOnline())
@@ -1258,7 +1258,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 }
 
 // ClientManagerListener
-void QueueManager::on(ClientManagerListener::UserConnected, const User::Ptr& aUser) throw() {
+void QueueManager::on(ClientManagerListener::UserConnected, const UserPtr& aUser) throw() {
 	bool hasDown = false;
 	{
 		Lock l(cs);
@@ -1281,7 +1281,7 @@ void QueueManager::on(ClientManagerListener::UserConnected, const User::Ptr& aUs
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::on(ClientManagerListener::UserDisconnected, const User::Ptr& aUser) throw() {
+void QueueManager::on(ClientManagerListener::UserDisconnected, const UserPtr& aUser) throw() {
 	Lock l(cs);
 	for(int i = 0; i < QueueItem::LAST; ++i) {
 		QueueItem::UserListIter j = userQueue.getList(i).find(aUser);
@@ -1298,7 +1298,7 @@ void QueueManager::on(TimerManagerListener::Second, uint32_t aTick) throw() {
 	}
 }
 
-void QueueItem::addSource(const User::Ptr& aUser) {
+void QueueItem::addSource(const UserPtr& aUser) {
 	dcassert(!isSource(aUser));
 	SourceIter i = getBadSource(aUser);
 	if(i != badSources.end()) {
@@ -1309,7 +1309,7 @@ void QueueItem::addSource(const User::Ptr& aUser) {
 	}
 }
 
-void QueueItem::removeSource(const User::Ptr& aUser, int reason) {
+void QueueItem::removeSource(const UserPtr& aUser, int reason) {
 	SourceIter i = getSource(aUser);
 	dcassert(i != sources.end());
 	i->setFlag(reason);

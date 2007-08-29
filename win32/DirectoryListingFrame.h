@@ -49,8 +49,8 @@ public:
 		STATUS_LAST
 	};
 
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& aFile, const tstring& aDir, const User::Ptr& aUser, int64_t aSpeed);
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const User::Ptr& aUser, const string& txt, int64_t aSpeed);
+	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed);
+	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed);
 	static void closeAll();
 
 protected:
@@ -167,12 +167,12 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	typedef HASH_MAP_X(UserPtr, DirectoryListingFrame*, User::HashFunction, equal_to<UserPtr>, less<UserPtr>) UserMap;
+	typedef unordered_map<UserPtr, DirectoryListingFrame*, User::Hash> UserMap;
 	typedef UserMap::iterator UserIter;
 
 	static UserMap lists;
 	
-	DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const User::Ptr& aUser, int64_t aSpeed);
+	DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame();
 
 	WidgetMenuPtr makeSingleMenu(ItemInfo* ii);

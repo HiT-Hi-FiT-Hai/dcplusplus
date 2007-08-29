@@ -28,17 +28,8 @@ public:
 	QueuePage(SmartWin::Widget* parent);
 	virtual ~QueuePage();
 
-#ifdef PORT_ME
-	BEGIN_MSG_MAP(QueuePage)
-		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-	END_MSG_MAP()
-
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
-#endif
-
 	virtual void write();
+	virtual int getHelpId() { return IDD_QUEUEPAGE; }
 
 private:
 	static Item items[];

@@ -156,10 +156,10 @@ private:
 			return display;
 		}
 
-		bool isSource(const User::Ptr& u) {
+		bool isSource(const UserPtr& u) {
 			return find(sources.begin(), sources.end(), u) != sources.end();
 		}
-		bool isBadSource(const User::Ptr& u) {
+		bool isBadSource(const UserPtr& u) {
 			return find(badSources.begin(), badSources.end(), u) != badSources.end();
 		}
 
@@ -215,7 +215,7 @@ private:
 	WidgetVPanedPtr paned;
 	WidgetCheckBoxPtr showTree;
 
-	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
+	typedef unordered_multimap<string, QueueItemInfo*, noCaseStringHash, noCaseStringEq> DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;

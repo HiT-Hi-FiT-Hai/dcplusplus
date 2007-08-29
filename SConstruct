@@ -7,7 +7,7 @@ opts = Options('custom.py', ARGUMENTS)
 opts.AddOptions(
 	EnumOption('tools', 'Toolset to compile with, default = platform default (msvc under windows)', 'mingw', ['mingw', 'default']),
 	EnumOption('mode', 'Compile mode', 'debug', ['debug', 'release']),
-	BoolOption('nativestl', 'Try to use native STL instead of STLPort', 'no'),
+	BoolOption('nativestl', 'Use native STL instead of STLPort', 'yes'),
 	BoolOption('gch', 'Use GCH when compiling GUI (disable if you have linking problems with mingw)', 'yes'),
 	BoolOption('verbose', 'Show verbose command lines', 'no'),
 	BoolOption('savetemps', 'Save intermediate compilation files (assembly output)', 'no'),
@@ -15,7 +15,7 @@ opts.AddOptions(
 )
 
 gcc_flags = {
-	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-fexceptions', '-mthreads'],
+	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
 	'debug': [], 
 	'release' : ['-O2']
 }
@@ -90,7 +90,8 @@ dev.prepare()
 env.SConsignFile()
 env.Tool("gch", toolpath=".")
 
-env.Append(CPPPATH = ["#/boost/boost/tr1/tr1/", "#/boost/"])
+env.Append(CPPPATH = ["#/boost/boost/tr1/tr1/", "#/boost/", "#/htmlhelp/include/"])
+env.Append(LIBPATH = ["#/htmlhelp/lib/"])
 
 if not env['nativestl']:
 	env.Append(CPPPATH = ['#/stlport/stlport/'])
@@ -100,7 +101,7 @@ if not env['nativestl']:
 		env.Append(LIBS = ['stlportg.5.1'])
 	else:
 		env.Append(LIBS = ['stlport.5.1'])	
-else:
+elif 'gcc' in env['TOOLS']:
 	env.Append(CPPDEFINES = ['BOOST_HAS_GCC_TR1'])
 	
 if env['savetemps'] and 'gcc' in env['TOOLS']:

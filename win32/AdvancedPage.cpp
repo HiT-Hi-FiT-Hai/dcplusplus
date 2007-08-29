@@ -61,16 +61,3 @@ AdvancedPage::~AdvancedPage() {
 void AdvancedPage::write() {
 	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_ADVANCED_BOOLEANS));
 }
-
-#ifdef PORT_ME
-
-LRESULT AdvancedPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCEDPAGE);
-	return 0;
-}
-
-LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCEDPAGE);
-	return 0;
-}
-#endif

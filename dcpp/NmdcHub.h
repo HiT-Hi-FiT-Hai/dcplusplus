@@ -65,7 +65,7 @@ private:
 
 	mutable CriticalSection cs;
 
-	typedef HASH_MAP_X(string, OnlineUser*, noCaseStringHash, noCaseStringEq, noCaseStringLess) NickMap;
+	typedef unordered_map<string, OnlineUser*, noCaseStringHash, noCaseStringEq> NickMap;
 	typedef NickMap::iterator NickIter;
 
 	NickMap users;

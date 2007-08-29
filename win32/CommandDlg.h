@@ -29,20 +29,14 @@ public:
 
 	int run() { return createDialog(IDD_USER_COMMAND); }
 
-#ifdef PORT_ME
-	BEGIN_MSG_MAP(CommandDlg)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-	END_MSG_MAP()
-
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-#endif
-
 	int getType() { return type; }
 	int getCtx() { return ctx; }
 	tstring getName() { return name; }
 	tstring getCommand() { return command; }
 	tstring getHub() { return hub; }
 
+	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
+	
 private:
 	WidgetRadioButtonPtr separator;
 	WidgetRadioButtonPtr raw;

@@ -146,7 +146,7 @@ private:
 		};
 
 		typedef Directory* Ptr;
-		typedef HASH_MAP_X(string, Ptr, noCaseStringHash, noCaseStringEq, noCaseStringLess) Map;
+		typedef unordered_map<string, Ptr, noCaseStringHash, noCaseStringEq> Map;
 		typedef Map::iterator MapIter;
 
 		int64_t size;
@@ -256,7 +256,7 @@ private:
 	// Map real name to directory structure
 	Directory::Map directories;
 
-	typedef HASH_MAP_X(TTHValue, Directory::File::Set::const_iterator, TTHValue::Hash, equal_to<TTHValue>, less<TTHValue>) HashFileMap;
+	typedef unordered_map<TTHValue, Directory::File::Set::const_iterator, TTHValue::Hash> HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;

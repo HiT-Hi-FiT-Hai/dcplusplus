@@ -178,16 +178,3 @@ void NetworkPage::fixControls() {
 	::EnableWindow(::GetDlgItem(handle(), IDC_SOCKS_RESOLVE), socks);
 
 }
-
-#ifdef PORT_ME
-
-LRESULT NetworkPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_NETWORKPAGE);
-	return 0;
-}
-
-LRESULT NetworkPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_NETWORKPAGE);
-	return 0;
-}
-#endif

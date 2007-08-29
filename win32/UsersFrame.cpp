@@ -97,7 +97,7 @@ void UsersFrame::addUser(const FavoriteUser& aUser) {
 	users->setRowChecked(i, b);
 }
 
-void UsersFrame::updateUser(const User::Ptr& aUser) {
+void UsersFrame::updateUser(const UserPtr& aUser) {
 	for(int i = 0; i < users->getRowCount(); ++i) {
 		UserInfo *ui = users->getItemData(i);
 		if(ui->user == aUser) {

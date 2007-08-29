@@ -151,16 +151,3 @@ void LogPage::getValues() {
 			options[oldSelection].second = buf;
 	}
 }
-
-#ifdef PORT_ME
-
-LRESULT LogPage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_LOGPAGE);
-	return 0;
-}
-
-LRESULT LogPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_LOGPAGE);
-	return 0;
-}
-#endif

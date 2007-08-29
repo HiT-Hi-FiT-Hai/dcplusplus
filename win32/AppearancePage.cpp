@@ -85,16 +85,3 @@ void AppearancePage::handleBrowse() {
 		::SetDlgItemText(handle(), IDC_LANGUAGE, x.c_str());
 	}
 }
-
-#ifdef PORT_ME
-
-LRESULT AppearancePage::onHelpInfo(LPNMHDR /*pnmh*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCEPAGE);
-	return 0;
-}
-
-LRESULT AppearancePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_APPEARANCEPAGE);
-	return 0;
-}
-#endif
