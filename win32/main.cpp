@@ -317,7 +317,9 @@ int SmartWinMain(SmartWin::Application& app) {
 		startup(&callBack, splash);
 	
 		WinUtil::init();
-		MainWindow* wnd(new MainWindow);
+		MainWindow* wnd = new MainWindow;
+		WinUtil::mainWindow = wnd;
+		WinUtil::mdiParent = wnd->getMDIParent();
 		// Close splash here, closing it before mainwindow makes smartwin think that we're exiting
 		splash->close();
 		ret = app.run(std::tr1::bind(&MainWindow::filter, wnd, _1));

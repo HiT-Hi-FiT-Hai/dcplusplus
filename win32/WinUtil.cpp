@@ -35,6 +35,9 @@
 #include <dcpp/File.h>
 #include <dcpp/UserCommand.h>
 
+#include "HubFrame.h"
+#include "SearchFrame.h"
+
 tstring WinUtil::tth;
 SmartWin::BrushPtr WinUtil::bgBrush;
 COLORREF WinUtil::textColor = 0;
@@ -47,6 +50,12 @@ int WinUtil::fileImageCount;
 int WinUtil::dirIconIndex;
 int WinUtil::dirMaskedIndex;
 TStringList WinUtil::lastDirs;
+SmartWin::Widget* WinUtil::mainWindow = 0;
+SmartWin::WidgetMDIParent* WinUtil::mdiParent = 0;
+bool WinUtil::urlDcADCRegistered = false;
+bool WinUtil::urlMagnetRegistered = false;
+WinUtil::ImageMap WinUtil::fileIndexes;
+DWORD WinUtil::helpCookie = 0;
 
 void WinUtil::init() {
 
@@ -65,16 +74,25 @@ void WinUtil::init() {
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
 	monoFont = SmartWin::FontPtr(new SmartWin::Font((BOOLSETTING(USE_OEM_MONOFONT) ? SmartWin::OemFixedFont : SmartWin::AnsiFixedFont)));
 
-	{
-		fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
-		SmartWin::Bitmap tmp(IDB_FOLDERS);
-		fileImages->add(tmp, RGB(255, 0, 255));
-	}
+	fileImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
 
 	dirIconIndex = fileImageCount++;
 	dirMaskedIndex = fileImageCount++;
-	// Unknown file
-	fileImageCount++;
+	
+	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+		SHFILEINFO fi;
+		::SHGetFileInfo(_T("."), FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+		SmartWin::Icon tmp(fi.hIcon);
+		fileImages->add(tmp);
+		// @todo This one should be masked further for the incomplete folder thing
+		fileImages->add(tmp);
+	} else {
+		SmartWin::Bitmap tmp(IDB_FOLDERS);
+		fileImages->add(tmp, RGB(255, 0, 255));
+
+		// Unknown file
+		fileImageCount++;
+	}
 
 	{
 		userImages = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
@@ -82,36 +100,6 @@ void WinUtil::init() {
 		userImages->add(tmp, RGB(255, 0, 255));
 	}
 	
-#ifdef PORT_ME
-/** @todo fix this so that the system icon is used for dirs as well (we need
-			  to mask it so that incomplete folders appear correct */
-	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
-		SHFILEINFO fi;
-		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
-		::SHGetFileInfo(_T("."), FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		fileImages.AddIcon(fi.hIcon);
-		fileImages.AddIcon(ic);
-		::DestroyIcon(fi.hIcon);
-	} else {
-		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	}
-
-	LOGFONT lf, lf2;
-	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
-	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
-	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
-
-	lf2.lfHeight = lf.lfHeight;
-	lf2.lfWeight = lf.lfWeight;
-	lf2.lfItalic = lf.lfItalic;
-
-	fontHeight = WinUtil::getTextHeight(mainWnd, font);
-	lf.lfWeight = FW_BOLD;
-	boldFont = ::CreateFontIndirect(&lf);
-	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
-	monoFont = (HFONT)::GetStockObject(BOOLSETTING(USE_OEM_MONOFONT)?OEM_FIXED_FONT:ANSI_FIXED_FONT);
-
 	if(BOOLSETTING(URL_HANDLER)) {
 		registerDchubHandler();
 		registerADChubHandler();
@@ -123,23 +111,10 @@ void WinUtil::init() {
 	}
 
 	::HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
-#endif
-
 }
 
 void WinUtil::uninit() {
-
-#ifdef PORT_ME
-	fileImages.Destroy();
-	userImages.Destroy();
-	::DeleteObject(font);
-	::DeleteObject(boldFont);
-	::DeleteObject(monoFont);
-
-	mainMenu.DestroyMenu();
-
 	::HtmlHelp(NULL, NULL, HH_UNINITIALIZE, helpCookie);
-#endif
 }
 
 tstring WinUtil::encodeFont(LOGFONT const& font)
@@ -163,7 +138,6 @@ std::string WinUtil::toString(const std::vector<int>& tokens) {
 		ret.erase(ret.size()-1);
 	return ret;
 }
-
 
 void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	StringTokenizer<tstring> st(setting, _T(','));
@@ -245,9 +219,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
-#ifdef PORT_ME
-			SearchFrame::openWindow(param);
-#endif
+			SearchFrame::openWindow(mdiParent, param);
 		} else {
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		}
@@ -326,7 +298,6 @@ pair<tstring, bool> WinUtil::getHubNames(const UserPtr& u) {
 }
 
 int WinUtil::getIconIndex(const tstring& aFileName) {
-#ifdef PORT_ME
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
 		string x = Text::toLower(Util::getFileExt(Text::fromT(aFileName)));
@@ -337,17 +308,14 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 		}
 		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
 		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		fileImages.AddIcon(fi.hIcon);
-		::DestroyIcon(fi.hIcon);
+		SmartWin::Icon tmp(fi.hIcon);
+		fileImages->add(tmp);
 
 		fileIndexes[x] = fileImageCount++;
 		return fileImageCount - 1;
 	} else {
-#endif
 		return 2;
-#ifdef PORT_ME
 	}
-#endif
 }
 
 void WinUtil::bitziLink(const TTHValue& aHash) {
@@ -360,16 +328,12 @@ void WinUtil::bitziLink(const TTHValue& aHash) {
 
 void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
 	if(!aFile.empty()) {
-#ifdef PORT_ME
 		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash.toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
-#endif
 	}
 }
 
 void WinUtil::searchHash(const TTHValue& aHash) {
-#ifdef PORT_ME
-	SearchFrame::openWindow(Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
-#endif
+	SearchFrame::openWindow(mdiParent, Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 }
 
 tstring WinUtil::escapeMenu(tstring str) {
@@ -483,8 +447,10 @@ int WinUtil::getOsMinor() {
 }
 
 void WinUtil::setClipboard(const tstring& str) {
-#ifdef PORT_ME
-	if(!::OpenClipboard(mainWnd)) {
+	if(!mainWindow)
+		return;
+	
+	if(!::OpenClipboard(mainWindow->handle())) {
 		return;
 	}
 
@@ -536,7 +502,6 @@ void WinUtil::setClipboard(const tstring& str) {
 #endif
 
 	CloseClipboard();
-#endif
 }
 
 bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, StringMap& sm) throw() {
@@ -563,51 +528,23 @@ bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, Strin
 	return true;
 }
 
+bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
+			return false;
+		}
+	}
+	return true;
+}
 
 #ifdef PORT_ME
-#include "Resource.h"
 
 #define COMPILE_MULTIMON_STUBS 1
 #include <MultiMon.h>
-
-#include "PrivateFrame.h"
-#include "SearchFrm.h"
-#include "LineDlg.h"
-
-#include "../client/Util.h"
-#include "../client/StringTokenizer.h"
-#include "../client/ShareManager.h"
-#include "../client/ClientManager.h"
-#include "../client/TimerManager.h"
-#include "../client/FavoriteManager.h"
-#include "../client/ResourceManager.h"
-#include "../client/QueueManager.h"
-#include "../client/UploadManager.h"
-#include "../client/HashManager.h"
-#include "../client/LogManager.h"
-#include "../client/version.h"
-
-#include "HubFrame.h"
-#include "MagnetDlg.h"
-
-WinUtil::ImageMap WinUtil::fileIndexes;
-int WinUtil::fileImageCount;
-HFONT WinUtil::font = NULL;
-int WinUtil::fontHeight = 0;
-HFONT WinUtil::boldFont = NULL;
-HFONT WinUtil::systemFont = NULL;
-HFONT WinUtil::monoFont = NULL;
-CMenu WinUtil::mainMenu;
-CImageList WinUtil::fileImages;
-CImageList WinUtil::userImages;
-int WinUtil::dirIconIndex = 0;
-int WinUtil::dirMaskedIndex = 0;
-HWND WinUtil::mainWnd = NULL;
-HWND WinUtil::mdiClient = NULL;
-FlatTabCtrl* WinUtil::tabCtrl = NULL;
-DWORD WinUtil::helpCookie = 0;
-bool WinUtil::urlDcADCRegistered = false;
-bool WinUtil::urlMagnetRegistered = false;
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
@@ -684,19 +621,6 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S) {
 	return HLS2RGB (HLS(h, l, s));
 }
 
-bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
-	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
-	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-	if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
-		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
-			return false;
-		}
-	}
-	return true;
-}
-
 void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
 	StringTokenizer<string> t(tokens, _T(','));
 	StringList& l = t.getTokens();
@@ -708,6 +632,7 @@ void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1
 		array[k] = Util::toInt(*i);
 	}
 }
+#endif
 
 void WinUtil::registerDchubHandler() {
 	HKEY hk;
@@ -882,7 +807,6 @@ void WinUtil::unRegisterMagnetHandler() {
 	SHDeleteKey(HKEY_CLASSES_ROOT, _T("magnet"));
 	SHDeleteKey(HKEY_LOCAL_MACHINE, _T("magnet"));
 }
-#endif
 
 void WinUtil::openLink(const tstring& url) {
 #ifdef PORT_ME
@@ -977,9 +901,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
-#ifdef PORT_ME
-		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
-#endif
+		HubFrame::openWindow(mdiParent, server + ":" + Util::toString(port));
 	}
 	if(!file.empty()) {
 		if(file[0] == '/') // Remove any '/' in from of the file
@@ -1000,9 +922,7 @@ void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
-#ifdef PORT_ME
-		HubFrame::openWindow(Text::toT("adc://" + server + ":" + Util::toString(port)));
-#endif
+		HubFrame::openWindow(mdiParent, "adc://" + server + ":" + Util::toString(port));
 	}
 }
 

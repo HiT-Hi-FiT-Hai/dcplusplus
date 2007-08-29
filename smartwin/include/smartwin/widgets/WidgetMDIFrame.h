@@ -125,7 +125,7 @@ public:
 	  */
 	virtual void createInvisibleWindow( Seed = getDefaultSeed() );
 
-	WidgetMDIParent* getMDIClient() { return mdi; }
+	WidgetMDIParent* getMDIParent() { return mdi; }
 protected:
 	// Protected since this Widget we HAVE to inherit from
 	explicit WidgetMDIFrame( Widget * parent = 0 );

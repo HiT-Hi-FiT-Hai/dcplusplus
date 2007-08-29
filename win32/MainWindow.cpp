@@ -339,16 +339,16 @@ void MainWindow::initTabs() {
 
 void MainWindow::initTransfers() {
 	dcdebug("initTransfers\n");
-	transfers = new TransferView(this, getMDIClient());
+	transfers = new TransferView(this, getMDIParent());
 	paned->setSecond(transfers);
 }
 
 bool MainWindow::filter(MSG& msg) {
-	if (::TranslateMDISysAccel(getMDIClient()->handle(), &msg)) {
+	if (::TranslateMDISysAccel(getMDIParent()->handle(), &msg)) {
 		return true;
 	}
 
-	HWND active = getMDIClient()->getActive();
+	HWND active = getMDIParent()->getActive();
 	if(active != NULL) {
 		if(::IsDialogMessage( active, & msg )) {
 			return true;
@@ -376,7 +376,7 @@ void MainWindow::handleQuickConnect() {
 		while ((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 
-		HubFrame::openWindow(getMDIClient(), Text::fromT(tmp));
+		HubFrame::openWindow(getMDIParent(), Text::fromT(tmp));
 	}
 }
 
@@ -391,12 +391,12 @@ HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	switch (s) {
 	case DOWNLOAD_LISTING: {
 		boost::scoped_ptr<DirectoryListInfo> i(reinterpret_cast<DirectoryListInfo*>(lParam));
-		DirectoryListingFrame::openWindow(getMDIClient(), i->file, i->dir, i->user, i->speed);
+		DirectoryListingFrame::openWindow(getMDIParent(), i->file, i->dir, i->user, i->speed);
 	}
 		break;
 	case BROWSE_LISTING: {
 		boost::scoped_ptr<DirectoryBrowseInfo> i(reinterpret_cast<DirectoryBrowseInfo*>(lParam));
-		DirectoryListingFrame::openWindow(getMDIClient(), i->user, i->text, 0);
+		DirectoryListingFrame::openWindow(getMDIParent(), i->user, i->text, 0);
 	}
 		break;
 	case AUTO_CONNECT: {
@@ -411,7 +411,7 @@ HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		break;
 	case VIEW_FILE_AND_DELETE: {
 		boost::scoped_ptr<std::string> file(reinterpret_cast<std::string*>(lParam));
-		new TextFrame(this->getMDIClient(), *file);
+		new TextFrame(this->getMDIParent(), *file);
 		File::deleteFile(*file);
 	}
 		break;
@@ -442,7 +442,7 @@ void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
 		FavoriteHubEntry* entry = *i;
 		if (entry->getConnect()) {
 			if (!entry->getNick().empty() || !SETTING(NICK).empty()) {
-				HubFrame::openWindow(getMDIClient(), entry->getServer());
+				HubFrame::openWindow(getMDIParent(), entry->getServer());
 			}
 		}
 	}
@@ -509,16 +509,16 @@ HRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
 void MainWindow::handleMDIReorder(unsigned id) {
 	switch (id) {
 	case IDC_MDI_CASCADE:
-		getMDIClient()->cascade();
+		getMDIParent()->cascade();
 		break;
 	case IDC_MDI_TILE_VERT:
-		getMDIClient()->tile(false);
+		getMDIParent()->tile(false);
 		break;
 	case IDC_MDI_TILE_HORZ:
-		getMDIClient()->tile(true);
+		getMDIParent()->tile(true);
 		break;
 	case IDC_MDI_ARRANGE:
-		getMDIClient()->arrange();
+		getMDIParent()->arrange();
 		break;
 	}
 }
@@ -556,7 +556,7 @@ void MainWindow::resizeMDIClient() {
 	rc.pos.x = rctabs.pos.x;
 	rc.size.x = rctabs.size.x;
 	rc.size.y += border;
-	getMDIClient()->setBounds(rc);	
+	getMDIParent()->setBounds(rc);	
 }
 
 void MainWindow::updateStatus() {
@@ -732,7 +732,7 @@ void MainWindow::handleOpenFileList() {
 	if (WinUtil::browseFile(file, handle(), false, Text::toT(Util::getListPath()), types)) {
 		UserPtr u = DirectoryListing::getUserFromFilename(Text::fromT(file));
 		if (u) {
-			DirectoryListingFrame::openWindow(getMDIClient(), file, Text::toT(Util::emptyString), u, 0);
+			DirectoryListingFrame::openWindow(getMDIParent(), file, Text::toT(Util::emptyString), u, 0);
 		} else {
 			createMessageBox().show(TSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		}
@@ -741,7 +741,7 @@ void MainWindow::handleOpenFileList() {
 
 void MainWindow::handleOpenOwnList() {
 	if (!ShareManager::getInstance()->getOwnListFile().empty()) {
-		DirectoryListingFrame::openWindow(getMDIClient(), Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
+		DirectoryListingFrame::openWindow(getMDIParent(), Text::toT(ShareManager::getInstance()->getOwnListFile()), Text::toT(Util::emptyString), ClientManager::getInstance()->getMe(), 0);
 	}
 }
 
@@ -775,7 +775,7 @@ DWORD WINAPI MainWindow::stopper(void* p) {
 	MainWindow* mf = reinterpret_cast<MainWindow*>(p);
 	HWND wnd, wnd2 = NULL;
 
-	while( (wnd=::GetWindow(mf->getMDIClient()->handle(), GW_CHILD)) != NULL) {
+	while( (wnd=::GetWindow(mf->getMDIParent()->handle(), GW_CHILD)) != NULL) {
 		if(wnd == wnd2)
 		Sleep(100);
 		else {
@@ -995,7 +995,7 @@ void MainWindow::handleOpenDownloadsDir() {
 }
 
 void MainWindow::handleMinimizeAll() {
-	HWND tmpWnd =:: GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
+	HWND tmpWnd =:: GetWindow(getMDIParent()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
 		::CloseWindow(tmpWnd);
 		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
@@ -1003,9 +1003,9 @@ void MainWindow::handleMinimizeAll() {
 }
 
 void MainWindow::handleRestoreAll() {
-	HWND tmpWnd =:: GetWindow(getMDIClient()->handle(), GW_CHILD); //getting first child window
+	HWND tmpWnd =:: GetWindow(getMDIParent()->handle(), GW_CHILD); //getting first child window
 	while (tmpWnd!=NULL) {
-		::SendMessage(getMDIClient()->handle(), WM_MDIRESTORE, (WPARAM)tmpWnd, 0);
+		::SendMessage(getMDIParent()->handle(), WM_MDIRESTORE, (WPARAM)tmpWnd, 0);
 		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
 	}
 }
@@ -1013,43 +1013,43 @@ void MainWindow::handleRestoreAll() {
 void MainWindow::handleOpenWindow(unsigned id) {
 	switch (id) {
 	case IDC_PUBLIC_HUBS:
-		PublicHubsFrame::openWindow(getMDIClient());
+		PublicHubsFrame::openWindow(getMDIParent());
 		break;
 	case IDC_FAVORITE_HUBS:
-		FavHubsFrame::openWindow(getMDIClient());
+		FavHubsFrame::openWindow(getMDIParent());
 		break;
 	case IDC_FAVUSERS:
-		UsersFrame::openWindow(getMDIClient());
+		UsersFrame::openWindow(getMDIParent());
 		break;
 	case IDC_QUEUE:
-		QueueFrame::openWindow(getMDIClient());
+		QueueFrame::openWindow(getMDIParent());
 		break;
 	case IDC_FINISHED_DL:
-		FinishedDLFrame::openWindow(getMDIClient());
+		FinishedDLFrame::openWindow(getMDIParent());
 		break;
 	case IDC_WAITING_USERS:
-		WaitingUsersFrame::openWindow(getMDIClient());
+		WaitingUsersFrame::openWindow(getMDIParent());
 		break;
 	case IDC_FINISHED_UL:
-		FinishedULFrame::openWindow(getMDIClient());
+		FinishedULFrame::openWindow(getMDIParent());
 		break;
 	case IDC_SEARCH:
-		SearchFrame::openWindow(getMDIClient());
+		SearchFrame::openWindow(getMDIParent());
 		break;
 	case IDC_ADL_SEARCH:
-		ADLSearchFrame::openWindow(getMDIClient());
+		ADLSearchFrame::openWindow(getMDIParent());
 		break;
 	case IDC_SEARCH_SPY:
-		SpyFrame::openWindow(getMDIClient());
+		SpyFrame::openWindow(getMDIParent());
 		break;
 	case IDC_NOTEPAD:
-		NotepadFrame::openWindow(getMDIClient());
+		NotepadFrame::openWindow(getMDIParent());
 		break;
 	case IDC_SYSTEM_LOG:
-		SystemFrame::openWindow(getMDIClient());
+		SystemFrame::openWindow(getMDIParent());
 		break;
 	case IDC_NET_STATS:
-		StatsFrame::openWindow(getMDIClient());
+		StatsFrame::openWindow(getMDIParent());
 		break;
 	default:
 		dcassert(0);

@@ -64,7 +64,14 @@ public:
 	static int dirIconIndex;
 	static int dirMaskedIndex;
 	static TStringList lastDirs;
-
+	static SmartWin::Widget* mainWindow;
+	static SmartWin::WidgetMDIParent* mdiParent;
+	static DWORD helpCookie;
+	
+	typedef unordered_map<string, int> ImageMap;
+	typedef ImageMap::iterator ImageIter;
+	static ImageMap fileIndexes;
+	
 	static void init();
 	static void uninit();
 
@@ -141,20 +148,17 @@ public:
 		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	}
 
-#ifdef PORT_ME
-	static CImageList userImages;
+	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 
-	typedef HASH_MAP<string, int> ImageMap;
-	typedef ImageMap::iterator ImageIter;
-	static ImageMap fileIndexes;
-	static int fontHeight;
-	static HFONT boldFont;
-	static HFONT systemFont;
-	static HFONT monoFont;
-	static HWND mainWnd;
-	static HWND mdiClient;
-	static FlatTabCtrl* tabCtrl;
-	static DWORD helpCookie;
+	// URL related
+	static void registerDchubHandler();
+	static void registerADChubHandler();
+	static void registerMagnetHandler();
+	static void unRegisterDchubHandler();
+	static void unRegisterADChubHandler();
+	static void unRegisterMagnetHandler();
+	static bool urlDcADCRegistered;
+	static bool urlMagnetRegistered;
 
 	static string getAppName() {
 		TCHAR buf[MAX_PATH+1];
@@ -162,7 +166,17 @@ public:
 		return Text::fromT(tstring(buf, x));
 	}
 
-	static bool getVersionInfo(OSVERSIONINFOEX& ver);
+#ifdef PORT_ME
+	static CImageList userImages;
+
+	static int fontHeight;
+	static HFONT boldFont;
+	static HFONT systemFont;
+	static HFONT monoFont;
+	static HWND mainWnd;
+	static HWND mdiClient;
+	static FlatTabCtrl* tabCtrl;
+
 
 	static int getTextWidth(const tstring& str, HWND hWnd) {
 		HDC dc = ::GetDC(hWnd);
@@ -177,15 +191,6 @@ public:
 	}
 
 
-	// URL related
-	static void registerDchubHandler();
-	static void registerADChubHandler();
-	static void registerMagnetHandler();
-	static void unRegisterDchubHandler();
-	static void unRegisterADChubHandler();
-	static void unRegisterMagnetHandler();
-	static bool urlDcADCRegistered;
-	static bool urlMagnetRegistered;
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 
 	static double toBytes(TCHAR* aSize);

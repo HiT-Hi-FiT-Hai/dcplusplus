@@ -368,8 +368,8 @@ public:
 	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
 	{
 		WidgetType* This = static_cast<WidgetType*>(this);
-		if(This->getMDIClient()) {
-			return ::DefFrameProc( hWnd, This->getMDIClient()->handle(), msg, wPar, lPar );
+		if(This->getMDIParent()) {
+			return ::DefFrameProc( hWnd, This->getMDIParent()->handle(), msg, wPar, lPar );
 		}
 		return Normal::returnUnhandled(hWnd, msg, wPar, lPar);
 	}
