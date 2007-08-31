@@ -102,10 +102,9 @@ void SpyFrame::layout() {
 
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
-	SmartWin::Rectangle rs = layoutStatus();
+	layoutStatus(r);
 	mapWidget(STATUS_IGNORE_TTH, ignoreTTH);
 
-	r.size.y -= rs.size.y + border;
 	searches->setBounds(r);
 }
 

@@ -244,10 +244,9 @@ void HubFrame::layout() {
 	
 	SmartWin::Rectangle r(getClientAreaSize()); 
 
-	SmartWin::Rectangle rs = layoutStatus();
+	layoutStatus(r);
 	mapWidget(STATUS_SHOW_USERS, showUsers);
 	
-	r.size.y -= rs.size.y + border;
 	int ymessage = message->getTextSize(_T("A")).y + 10;
 	int xfilter = showUsers->getChecked() ? std::min(r.size.x / 4, 200l) : 0;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);

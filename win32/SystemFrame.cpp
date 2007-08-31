@@ -70,9 +70,7 @@ void SystemFrame::layout() {
 
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
-	SmartWin::Rectangle rs = layoutStatus();
-
-	r.size.y -= rs.size.y + border;
+	layoutStatus(r);
 
 	log->setBounds(r);
 }

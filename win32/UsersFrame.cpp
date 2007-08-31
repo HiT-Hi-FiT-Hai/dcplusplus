@@ -86,8 +86,8 @@ void UsersFrame::layout() {
 	
 	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
 
-	SmartWin::Rectangle rs = layoutStatus();
-	r.size.y -= rs.size.y + border;
+	layoutStatus(r);
+
 	users->setBounds(r);
 }
 

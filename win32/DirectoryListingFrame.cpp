@@ -236,16 +236,13 @@ void DirectoryListingFrame::initStatusText() {
 
 void DirectoryListingFrame::layout() {
 	SmartWin::Rectangle r(getClientAreaSize()); 
-	status->refresh();
 
-	SmartWin::Rectangle rs = layoutStatus();
+	layoutStatus(r);
 
 	mapWidget(STATUS_FILE_LIST_DIFF, listDiff);
 	mapWidget(STATUS_MATCH_QUEUE, matchQueue);
 	mapWidget(STATUS_FIND, find);
 	mapWidget(STATUS_NEXT, findNext);
-	
-	r.size.y -= rs.size.y;
 	
 	paned->setRect(r);
 }

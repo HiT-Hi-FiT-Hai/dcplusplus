@@ -318,10 +318,9 @@ void SearchFrame::layout() {
 
 	SmartWin::Rectangle r(getClientAreaSize()); 
 	
-	SmartWin::Rectangle rs = layoutStatus();
+	layoutStatus(r);
 	mapWidget(STATUS_SHOW_UI, showUI);
 
-	r.size.y -= rs.size.y + border;
 	RECT rect = r, initialRect = rect;
 	if(showUI->getChecked()) {
 		const int width = 220, spacing = 50, labelH = 16, comboH = 140, lMargin = 2, rMargin = 4;

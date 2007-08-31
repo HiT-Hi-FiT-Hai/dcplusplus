@@ -32,7 +32,7 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "../BasicTypes.h"
-#include "../resources/ImageList.h"
+#include "../Dispatchers.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
@@ -40,6 +40,7 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectVisible.h"
+#include "../resources/ImageList.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -71,21 +72,10 @@ class WidgetToolbar :
 	private AspectSizable< WidgetToolbar >,
 	public AspectVisible< WidgetToolbar >
 {
-	struct Dispatcher
-	{
-		typedef std::tr1::function<void (unsigned)> F;
-
-		Dispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(static_cast< unsigned >( msg.wParam ));
-			return 0;
-		}
-
-		F f;
-	};
+	typedef Dispatchers::VoidVoid<> Dispatcher;
 	typedef SmartWin::AspectSizable< WidgetToolbar > AspectSizable;
 	friend class WidgetCreator< WidgetToolbar >;
+	friend class SmartWin::AspectSizable<WidgetToolbar>;
 public:
 	// Including the stuff we need from AspectSizable to make it accessible.
 	// Note here that since we DON'T want the setBounds functions we must inherit
@@ -154,100 +144,10 @@ public:
 	/// Adds a separator to the toolbar
 	/** A separator is an "empty space" that adds air between buttons
 	  */
-	void addSeparator();
+	void appendSeparator();
 
-#ifdef PORT_ME
-	/// \ingroup EventHandlersWidgetToolbar
-	/// Adds a button to the Toolbar
-	/** eventHandler is the event handler function that will be called when the
-	  * button is clicked id is an identification number that will be passed into the
-	  * event handler when somebody clicks your button. <br>
-	  * The reason to why we have this "id" is because the same event handler can be 
-	  * defined for several buttons even in fact across toolbar objects, therefore 
-	  * this number should be unique across the application. <br>
-	  * text is the text that will appear on your button. <br>
-	  * toolTip is the tooltip that will be associated with your button ( when 
-	  * someone hoovers the mouse over your button ) <br>
-	  * Parameters passed expected by event handler is unsigned int which is the id 
-	  * of the toolbar button.       
-	  */
-
-	void addButton( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
-	void addButton( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, typename MessageMapType::voidFunctionTakingUInt eventHandler );
-
-	/// \ingroup EventHandlersWidgetToolbar
-	/// Adds a button to the toolbar
-	/** eventHandler is the event handler function that will be called when the
-	  * button is clicked id is an identification number that will be passed into the
-	  * event handler when somebody clicks your button. <br>
-	  * The reason to why we have this "id" is because the same event handler can be 
-	  * defined for several buttons even in fact across toolbar objects, therefore 
-	  * this number should be unique across the application. <br>
-	  * text is the text that will appear on your button. <br>
-	  * Parameters passed expected by event handler is unsigned int which is the id 
-	  * of the toolbar button.       
-	  */
-	void addButton( unsigned int id, const SmartUtil::tstring & text, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
-	void addButton( unsigned int id, const SmartUtil::tstring & text, typename MessageMapType::voidFunctionTakingUInt eventHandler );
-
-	/// \ingroup EventHandlersWidgetToolbar
-	/// Adds a button to the toolbar
-	/** eventHandler is the event handler function that will be called when the
-	  * button is clicked id is an identification number that will be passed into the
-	  * event handler when somebody clicks your button. <br>
-	  * The reason to why we have this "id" is because the same event handler can be 
-	  * defined for several buttons even in fact across toolbar objects, therefore 
-	  * this number should be unique across the application. <br>
-	  * toolTip is the tooltip that will be associated with your button ( when 
-	  * someone hoovers the mouse over your button ) <br>
-	  * iconIndex is the ( zero indexed ) index of icon on the previously associated
-	  * image list. <br>
-	  * Parameters passed expected by event handler is unsigned int which is the id 
-	  * of the toolbar button. <br>
-	  * You must call setNormalImageList BEFORE setting event handlers with iconIndex's
-	  */
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & toolTip, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & toolTip, typename MessageMapType::voidFunctionTakingUInt eventHandler );
-
-	/// \ingroup EventHandlersWidgetToolbar
-	/// Adds a button to the toolbar
-	/** eventHandler is the event handler function that will be called when the
-	  * button is clicked id is an identification number that will be passed into the
-	  * event handler when somebody clicks your button. <br>
-	  * The reason to why we have this "id" is because the same event handler can be
-	  * defined for several buttons even in fact across toolbar objects, therefore
-	  * this number should be unique across the application. <br>
-	  * iconIndex is the ( zero indexed ) index of icon on the previously associated
-	  * image list. <br>
-	  * Parameters passed expected by event handler is unsigned int which is the id
-	  * of the toolbar button. <br>
-	  * You must call setNormalImageList BEFORE setting event handlers with
-	  * iconIndex's
-	  */
-		void addButton( unsigned int id, int iconIndex, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
-		void addButton( unsigned int id, int iconIndex, typename MessageMapType::voidFunctionTakingUInt eventHandler );
-
-	/// \ingroup EventHandlersWidgetToolbar
-	/// Adds a button to the toolbar
-	/** eventHandler is the event handler function that will be called when the
-	  * button is clicked id is an identification number that will be passed into the
-	  * event handler when somebody clicks your button. <br>
-	  * The reason to why we have this "id" is because the same event handler can be
-	  * defined for several buttons even in fact across toolbar objects, therefore
-	  * this number should be unique across the application. <br>
-	  * iconIndex is the ( zero indexed ) index of icon on the previously associated
-	  * image list. <br>
-	  * text is the text that will appear on your button. <br>
-	  * toolTip is the tooltip that will be associated with your button ( when
-	  * someone hoovers the mouse over your button ) <br>
-	  * Parameters passed expected by event handler is unsigned int which is the id
-	  * of the toolbar button. <br>
-	  * You must call setNormalImageList BEFORE setting event handlers with
-	  * iconIndex's
-	  */
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler );
-		void addButton( unsigned int id, int iconIndex, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip, bool checkButton, typename MessageMapType::voidFunctionTakingUInt eventHandler );
-#endif
+	void appendItem(unsigned int id, const SmartUtil::tstring& toolTip = SmartUtil::tstring());
+	
 	/// Set the image list with the normal button images.
 	/** normalImageList is the image list that contains the images
 	  * for the toolbar buttons in "normal" state.
@@ -292,6 +192,8 @@ public:
 	  */
 	bool getButtonChecked( unsigned int id );
 
+	int size();
+	
 	/// Actually creates the Toolbar
 	/** You should call WidgetFactory::createToolbar if you instantiate class
 	  * directly. <br>
@@ -308,37 +210,13 @@ protected:
 	virtual ~WidgetToolbar()
 	{}
 
-#ifdef PORT_ME
-	// We MUST override this one, however little I want to since it's NOT a MENU
-	// item and neither holds any notification and therefore have got the "menu
-	// item code" in the LOWORD of the WParam (xxx Microsoft and their counter
-	// intuitive interfaces...)
-	virtual bool tryFire( const Message & msg, HRESULT & retVal )
-	{
-		MessageMapBase * ptrThis = boost::polymorphic_cast< MessageMapBase * >( this );
-
-		// First we must create a "comparable" message...
-		for ( typename MessageMapType::SignalCollection::iterator idx = this->getSignals().begin();
-			idx != this->getSignals().end();
-			++idx )
-		{
-			if ( idx->template get< 0 >().Msg.Msg == msg.Msg && idx->template get< 0 >().Msg.WParam == msg.WParam )
-			{
-				private_::SignalContent params( msg, idx->template get< 0 >().Function, idx->template get< 0 >().FunctionThis, idx->template get< 0 >().This, true );
-				retVal = idx->template get< 1 >().fire( params );
-				return true;
-			}
-		}
-		return false;
-	}
-#endif
 private:
 	std::map< unsigned int, SmartUtil::tstring > itsToolTips;
-	std::vector< BitmapPtr > itsBitmaps;
 
-		ImageListPtr itsNormalImageList;
-		ImageListPtr itsHotImageList;
-		ImageListPtr itsDisabledImageList;
+	// Keep references
+	ImageListPtr itsNormalImageList;
+	ImageListPtr itsHotImageList;
+	ImageListPtr itsDisabledImageList;
 
 		//void addBitmap( HBITMAP hBit, unsigned int noButtonsInBitmap );
 };
@@ -354,13 +232,7 @@ inline WidgetToolbar::Seed::Seed()
 
 inline void WidgetToolbar::refresh()
 {
-	 SmartWin::Rectangle rect;
-	if ( ::MoveWindow( this->handle(),
-		rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, TRUE ) == 0 )
-	{
-		xCeption err( _T( "Couldn't reposition windows" ) );
-		throw err;
-	}
+	this->sendMessage(TB_AUTOSIZE);
 }
 
 inline void WidgetToolbar::setButtonSize( unsigned int width, unsigned int height )
@@ -395,190 +267,6 @@ void WidgetToolbar::addBitmap( HBITMAP hBit, unsigned int noButtonsInBitmap )
 }
 */
 
-inline void WidgetToolbar::addSeparator()
-{
-	TBBUTTON tb[1];
-	tb[0].iBitmap = - 2;
-	tb[0].idCommand = 0;
-	tb[0].fsState = TBSTATE_ENABLED;
-	tb[0].fsStyle = BTNS_SEP;
-	tb[0].iString = 0;
-	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( tb ) ) == FALSE )
-	{
-		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
-		throw x;
-	}
-}
-
-#ifdef PORT_ME
-void WidgetToolbar::addButton
-	( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, - 2, text, toolTip, false, eventHandler );
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned int id, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, typename MessageMapType::voidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, - 2, text, toolTip, false, eventHandler );
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned int id, const SmartUtil::tstring & text
-	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, - 2, text, _T( "" ), false, eventHandler );
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned int id, const SmartUtil::tstring & text
-	, typename MessageMapType::voidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, - 2, text, _T( "" ), false, eventHandler );
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned int id, int bitmapIdx, const SmartUtil::tstring & toolTip
-	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, bitmapIdx, _T( "" ), toolTip, false, eventHandler );
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned int id, int bitmapIdx, const SmartUtil::tstring & toolTip
-	, typename MessageMapType::voidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, bitmapIdx, _T( "" ), toolTip, false, eventHandler );
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned int id, int bitmapIdx
-	, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, bitmapIdx, _T( "" ), _T( "" ), false, eventHandler );
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned int id, int bitmapIdx
-	, typename MessageMapType::voidFunctionTakingUInt eventHandler
-	)
-{
-	addButton( id, bitmapIdx, _T( "" ), _T( "" ), false, eventHandler );
-}
-#endif
-
-#ifdef PORT_ME
-
-void WidgetToolbar::addButton
-	( unsigned int id, int bitmapIdx, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, bool checkButton, typename MessageMapType::itsVoidFunctionTakingUInt eventHandler
-	)
-{
-	// Checking if tooltip id exists from before
-	if ( itsToolTips.find( id ) != itsToolTips.end() )
-	{
-		xCeption x( _T( "Tried to add a button with an ID that already exists..." ) );
-		throw x;
-	}
-
-	// Adding tooltip UNLESS tooltip is empty
-	if ( toolTip != _T( "" ) )
-		itsToolTips[id] = toolTip;
-
-	// Adding bitmap
-	TBBUTTON tb[1];
-	tb[0].iBitmap = bitmapIdx;
-	tb[0].idCommand = id;
-	tb[0].fsState = TBSTATE_ENABLED;
-	tb[0].fsStyle = BTNS_AUTOSIZE;
-	if ( checkButton )
-		tb[0].fsStyle |= BTNS_CHECK;
-	tb[0].iString = text == _T( "" ) ? 0 : reinterpret_cast< INT_PTR >( text.c_str() );
-	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( tb ) ) == FALSE )
-	{
-		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
-		throw x;
-	}
-
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_COMMAND, id )
-				, reinterpret_cast< itsVoidFunction >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherToolbar::dispatchThis )
-				)
-			)
-		);
-}
-
-
-void WidgetToolbar::addButton
-	( unsigned id, int bitmapIdx, const SmartUtil::tstring & text, const SmartUtil::tstring & toolTip
-	, bool checkButton, typename MessageMapType::voidFunctionTakingUInt eventHandler
-	)
-{
-	// Checking if tooltip id exists from before
-	if ( itsToolTips.find( id ) != itsToolTips.end() )
-	{
-		xCeption x( _T( "Tried to add a button with an ID that already exists..." ) );
-		throw x;
-	}
-
-	// Adding tooltip UNLESS tooltip is empty
-	if ( toolTip != _T( "" ) )
-		itsToolTips[id] = toolTip;
-
-	// Adding bitmap
-	TBBUTTON tb[1];
-	tb[0].iBitmap = bitmapIdx;
-	tb[0].idCommand = id;
-	tb[0].fsState = TBSTATE_ENABLED;
-	tb[0].fsStyle = BTNS_AUTOSIZE;
-	if ( checkButton )
-		tb[0].fsStyle |= BTNS_CHECK;
-	tb[0].iString = text == _T( "" ) ? 0 : reinterpret_cast< INT_PTR >( text.c_str() );
-	if ( this->sendMessage(TB_ADDBUTTONS, 1, ( LPARAM ) tb ) == FALSE )
-	{
-		xCeption x( _T( "Error while trying to add a button to toolbar..." ) );
-		throw x;
-	}
-
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback
-		( typename MessageMapType::SignalTupleType
-			( private_::SignalContent
-				( Message( WM_COMMAND, id )
-				, reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler )
-				, ptrThis
-				)
-			, typename MessageMapType::SignalType
-				( typename MessageMapType::SignalType::SlotType( & DispatcherToolbar::dispatch )
-				)
-			)
-		);
-}
-#endif
-
 inline void WidgetToolbar::setNormalImageList( ImageListPtr normalImageList )
 {
 	itsNormalImageList = normalImageList;
@@ -602,12 +290,14 @@ inline void WidgetToolbar::setButtonVisible( unsigned int id, bool show )
 	this->sendMessage(TB_HIDEBUTTON, static_cast< LPARAM >( id ), MAKELONG( ( show ? FALSE : TRUE ), 0 ) );
 }
 
+inline int WidgetToolbar::size( )
+{
+	return this->sendMessage(TB_BUTTONCOUNT);
+}
+
 inline bool WidgetToolbar::getButtonVisible( unsigned int id )
 {
-	TBBUTTONINFO tb =
-	{0
-	};
-	tb.cbSize = sizeof( TBBUTTONINFO );
+	TBBUTTONINFO tb = { sizeof( TBBUTTONINFO ) };
 	tb.dwMask = TBIF_STATE;
 	tb.idCommand = id;
 	this->sendMessage(TB_GETBUTTONINFO, id, reinterpret_cast< LPARAM >( & tb ) );

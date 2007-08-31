@@ -197,11 +197,9 @@ HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
 void QueueFrame::layout() {
 	SmartWin::Rectangle r(getClientAreaSize()); 
 
-	SmartWin::Rectangle rs = layoutStatus();
+	layoutStatus(r);
 
 	mapWidget(STATUS_SHOW_TREE, showTree);
-	
-	r.size.y -= rs.size.y;
 	
 	bool checked = showTree->getChecked();
 	if(checked && !paned->getFirst()) {

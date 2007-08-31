@@ -64,6 +64,7 @@ MainWindow::MainWindow() :
 	WidgetFactory<SmartWin::WidgetMDIFrame>(0), 
 	paned(0), 
 	transfers(0), 
+	toolbar(0),
 	tabs(0), 
 	trayIcon(false), 
 	maximized(false),
@@ -90,6 +91,7 @@ MainWindow::MainWindow() :
 
 	initWindow();
 	initMenu();
+	initToolbar();
 	initStatusBar();
 	initTabs();
 	initTransfers();
@@ -133,84 +135,13 @@ MainWindow::MainWindow() :
 
 	if (!WinUtil::isShift())
 		speak(AUTO_CONNECT);
-
-#ifdef PORT_ME
-	// Load images
-	// create command bar window
-	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
-
-	m_hMenu = WinUtil::mainMenu;
-
-	// attach menu
-	m_CmdBar.AttachMenu(m_hMenu);
-	// load command bar images
-	images.CreateFromImage(IDB_TOOLBAR, 16, 16, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	m_CmdBar.m_hImageList = images;
-
-	m_CmdBar.m_arrCommand.Add(ID_VIEW_CONNECT);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
-	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
-	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
-	m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
-	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-	m_CmdBar.m_arrCommand.Add(IDC_FINISHED_DL);
-	m_CmdBar.m_arrCommand.Add(IDC_VIEW_WAITING_USERS);
-	m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
-	m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
-	m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
-	m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
-	m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
-	m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
-
-	// remove old menu
-	SetMenu(NULL);
-
-	HWND hWndToolBar = createToolbar();
-
-	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-	AddSimpleReBarBand(hWndCmdBar);
-	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-	CreateSimpleStatusBar();
-
-	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
-
-	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
-	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-	ctrlLastLines.AddTool(&ti);
-
-	WinUtil::mdiClient = m_hWndMDIClient;
-
-	UIAddToolBar(hWndToolBar);
-	UISetCheck(ID_VIEW_TOOLBAR, 1);
-	UISetCheck(ID_VIEW_STATUS_BAR, 1);
-	UISetCheck(ID_VIEW_TRANSFER_VIEW, 1);
-
-	// register object for message filtering and idle updates
-	CMessageLoop* pLoop = _Module.GetMessageLoop();
-	ATLASSERT(pLoop != NULL);
-	pLoop->AddMessageFilter(this);
-	pLoop->AddIdleHandler(this);
-
-
-	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
-	if(!BOOLSETTING(SHOW_TOOLBAR)) PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
-	if(!BOOLSETTING(SHOW_TRANSFERVIEW)) PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
-
-	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
+	
+	speak(PARSE_COMMAND_LINE);
 
 	if(SETTING(NICK).empty()) {
-		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
-		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
+		::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
+		postMessage(WM_COMMAND, IDC_SETTINGS);
 	}
-
-#endif
 }
 
 void MainWindow::initWindow() {
@@ -253,10 +184,8 @@ void MainWindow::initMenu() {
 	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
 
 	file->appendItem(IDC_QUICK_CONNECT, TSTRING(MENU_QUICK_CONNECT), std::tr1::bind(&MainWindow::handleQuickConnect, this));
-#ifdef PORT_ME
 	file->appendItem(IDC_FOLLOW, TSTRING(MENU_FOLLOW_REDIRECT));
 	file->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT));
-#endif
 	file->appendSeparatorItem();
 
 	file->appendItem(IDC_OPEN_FILE_LIST, TSTRING(MENU_OPEN_FILE_LIST), std::tr1::bind(&MainWindow::handleOpenFileList, this));
@@ -289,13 +218,6 @@ void MainWindow::initMenu() {
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_NET_STATS, TSTRING(MENU_NETWORK_STATISTICS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_HASH_PROGRESS, TSTRING(MENU_HASH_PROGRESS), std::tr1::bind(&MainWindow::handleHashProgress, this));
-#ifdef PORT_ME
-	view.AppendMenu(MF_SEPARATOR);
-	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CTSTRING(MENU_TOOLBAR));
-	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
-	view.AppendMenu(MF_STRING, ID_VIEW_TRANSFER_VIEW, CTSTRING(MENU_TRANSFER_VIEW));
-
-#endif
 
 	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
 
@@ -331,6 +253,54 @@ void MainWindow::initMenu() {
 	help->appendItem(IDC_HELP_DONATE, TSTRING(MENU_DONATE), std::tr1::bind(&MainWindow::handleLink, this, _1));
 
 	mainMenu->attach(this);
+}
+
+void MainWindow::initToolbar() {
+	WidgetToolbar::Seed cs;
+	cs.style |= TBSTYLE_FLAT;
+	toolbar = createToolbar(cs);
+	{
+		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
+		SmartWin::Bitmap bmp(IDB_TOOLBAR20);
+		list->add(bmp, RGB(255, 0, 255));
+		
+		toolbar->setNormalImageList(list);
+	}
+	{
+		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
+		SmartWin::Bitmap bmp(IDB_TOOLBAR20_HOT);
+		list->add(bmp, RGB(255, 0, 255));
+		
+		toolbar->setHotImageList(list);
+	}
+	toolbar->setButtonSize(20, 20);
+	
+	toolbar->appendItem(IDC_PUBLIC_HUBS);
+	toolbar->appendItem(IDC_RECONNECT);
+	toolbar->appendItem(IDC_FOLLOW);
+	//toolbar->appendSeparator();
+	toolbar->appendItem(IDC_FAVORITES);
+	toolbar->appendItem(IDC_FAVUSERS);
+	//toolbar->appendSeparator();
+	toolbar->appendItem(IDC_QUEUE);
+	toolbar->appendItem(IDC_FINISHED_DL);
+	toolbar->appendItem(IDC_WAITING_USERS);
+	toolbar->appendItem(IDC_FINISHED_UL);
+	//toolbar->appendSeparator();
+	toolbar->appendItem(IDC_SEARCH);
+	toolbar->appendItem(IDC_ADL_SEARCH);
+	toolbar->appendItem(IDC_SEARCH_SPY);
+	//toolbar->appendSeparator();
+	toolbar->appendItem(IDC_OPEN_FILE_LIST);
+	toolbar->appendItem(IDC_SETTINGS);
+	toolbar->appendItem(IDC_NOTEPAD);
+	//toolbar->appendSeparator();
+/*	toolbar->appendItem(IDC_NET_STATS);
+	toolbar->appendItem(IDC_MDI_CASCADE);
+	toolbar->appendItem(IDC_MDI_TILE_HORZ);
+	toolbar->appendItem(IDC_MDI_TILE_VERT);
+	toolbar->appendItem(IDC_MDI_MINIMIZE_ALL);
+	toolbar->appendItem(IDC_MDI_RESTORE_ALL);*/
 }
 
 void MainWindow::initStatusBar() {
@@ -399,7 +369,7 @@ bool MainWindow::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 	return true;
 }
 
-HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+LRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	Speaker s = static_cast<Speaker>(wParam);
 
 	switch (s) {
@@ -418,9 +388,7 @@ HRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	}
 		break;
 	case PARSE_COMMAND_LINE: {
-#ifdef PORT_ME
 		parseCommandLine(GetCommandLine());
-#endif
 	}
 		break;
 	case VIEW_FILE_AND_DELETE: {
@@ -515,7 +483,7 @@ bool MainWindow::closing() {
 	return true;
 }
 
-HRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
+LRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
 	updateTray(true);
 	return 0;
 }
@@ -549,10 +517,13 @@ bool MainWindow::eachSecond() {
 void MainWindow::layout() {
 	const int border = 2;
 	SmartWin::Rectangle r(getClientAreaSize());
-
-	SmartWin::Rectangle rs = layoutStatus();
-
-	r.size.y -= rs.size.y + border;
+	
+	toolbar->refresh();
+	SmartWin::Point pt = toolbar->getSize();
+	r.pos.y += pt.y;
+	r.size.y -= pt.y;
+	
+	layoutStatus(r);
 
 	paned->setRect(r);
 }
@@ -966,8 +937,9 @@ HWND MainFrame::createToolbar() {
 
 	return ctrlToolbar.m_hWnd;
 }
+#endif
 
-void MainFrame::parseCommandLine(const tstring& cmdLine)
+void MainWindow::parseCommandLine(const tstring& cmdLine)
 {
 	string::size_type i = 0;
 	string::size_type j;
@@ -983,12 +955,11 @@ void MainFrame::parseCommandLine(const tstring& cmdLine)
 	}
 }
 
-LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT MainWindow::handleCopyData(WPARAM /*wParam*/, LPARAM lParam) {
 	tstring cmdLine = (LPCTSTR) (((COPYDATASTRUCT *)lParam)->lpData);
 	parseCommandLine(Text::toT(WinUtil::getAppName() + " ") + cmdLine);
 	return true;
 }
-#endif
 
 void MainWindow::handleHashProgress() {
 	HashProgressDlg(this, false).run();
@@ -1231,7 +1202,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 }
 #endif
 
-HRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
+LRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
 	if (c != NULL) {
 		c->removeListener(this);
 		delete c;

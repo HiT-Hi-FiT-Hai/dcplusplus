@@ -218,9 +218,7 @@ void PublicHubsFrame::layout() {
 
 	SmartWin::Rectangle r(getClientAreaSize()); 
 	
-	SmartWin::Rectangle rs = layoutStatus();
-
-	r.size.y -= rs.size.y + border;
+	layoutStatus(r);
 
 	int const comboH = 140;
 

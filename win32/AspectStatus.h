@@ -44,7 +44,7 @@ protected:
 			if(w > static_cast<int>(statusSizes[s])) {
 				dcdebug("Setting status size %d to %d\n", s, w);
 				statusSizes[s] = w;
-				layoutStatus();
+				layoutSections(status->getSize());
 			}
 		} else {
 			lastLines.push_back(text);
@@ -55,19 +55,20 @@ protected:
 		status->setText(text, s);
 	}
 	
-	SmartWin::Rectangle layoutStatus() {
+	void layoutStatus(SmartWin::Rectangle& r) {
 		status->refresh();
 
-		SmartWin::Rectangle rs(status->getClientAreaSize());
+		SmartWin::Point sz(status->getSize());
+		r.size.y -= sz.y;
+		layoutSections(sz);
+	}
+	
+	void layoutSections(const SmartWin::Point& sz) {
+		statusSizes[WidgetType::STATUS_STATUS] = 0;
+		statusSizes[WidgetType::STATUS_STATUS] = sz.x - std::accumulate(statusSizes.begin(), statusSizes.end(), 0); 
 
-		{
-			statusSizes[WidgetType::STATUS_STATUS] = 0;
-			statusSizes[WidgetType::STATUS_STATUS] = rs.size.x - std::accumulate(statusSizes.begin(), statusSizes.end(), 0); 
-
-			status->setSections(statusSizes);
-			statusTip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
-		}
-		return rs;
+		status->setSections(statusSizes);
+		statusTip->setMaxTipWidth(statusSizes[WidgetType::STATUS_STATUS]);
 	}
 	
 	void mapWidget(int s, SmartWin::Widget* widget) {

@@ -53,8 +53,7 @@ void TextFrame::layout() {
 
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
-	SmartWin::Rectangle rs = layoutStatus();
+	layoutStatus(r);
 
-	r.size.y -= rs.size.y + border;
 	pad->setBounds(r);
 }

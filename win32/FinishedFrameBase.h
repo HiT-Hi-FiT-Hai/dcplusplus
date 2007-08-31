@@ -96,12 +96,9 @@ protected:
 	virtual ~FinishedFrameBase() { }
 
 	void layout() {
-		const int border = 2;
-
 		SmartWin::Rectangle r(this->getClientAreaSize());
 
-		SmartWin::Rectangle rs = this->layoutStatus();
-		r.size.y -= rs.size.y + border;
+		this->layoutStatus(r);
 		items->setBounds(r);
 	}
 

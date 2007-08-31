@@ -46,14 +46,11 @@ unsigned int WidgetTabSheet::addPage( const SmartUtil::tstring & header, unsigne
 
 SmartWin::Rectangle WidgetTabSheet::getUsableArea() const
 {
-	::RECT d_Answer;
-	Point d_Size = this->getSize();
-
-	d_Answer.left = d_Answer.top = 0;
-	d_Answer.right = d_Size.x;
-	d_Answer.bottom = d_Size.y;
-	TabCtrl_AdjustRect( this->handle(), false, & d_Answer );
-	return Rectangle::FromRECT( d_Answer );
+	RECT rc;
+	::GetWindowRect(handle(), &rc);
+	::MapWindowPoints(NULL, getParent()->handle(), (LPPOINT)&rc, 2);
+	TabCtrl_AdjustRect( this->handle(), false, &rc );
+	return Rectangle::FromRECT( rc );
 }
 
 void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)

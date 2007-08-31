@@ -1,6 +1,8 @@
 #ifndef DISPATCHERS_H_
 #define DISPATCHERS_H_
 
+#include <functional>
+
 namespace SmartWin
 {
 // begin namespace SmartWin

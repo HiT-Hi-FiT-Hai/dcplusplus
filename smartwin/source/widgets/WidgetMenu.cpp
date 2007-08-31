@@ -7,15 +7,7 @@ void WidgetMenu::appendItem
 	, ULONG_PTR data, const IdDispatcher::F& f
 	)
 {
-	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
-	
-	mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-	mii.fType = MFT_STRING;
-	mii.dwTypeData = const_cast<LPTSTR>(name.c_str());
-	mii.dwItemData = data;
-	mii.wID = id;
-	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
-
+	appendItem(id, name, data);
 	callbacks.insert(std::make_pair(id, IdDispatcher(f)));
 }
 
@@ -25,16 +17,20 @@ void WidgetMenu::appendItem
 	, ULONG_PTR data, const SimpleDispatcher::F& f
 	)
 {
+	appendItem(id, name, data);
+	callbacks.insert(std::make_pair(id, SimpleDispatcher(f)));
+}
+
+void WidgetMenu::appendItem( unsigned int id, const SmartUtil::tstring & name
+	, ULONG_PTR data) {
 	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
-	
+
 	mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 	mii.fType = MFT_STRING;
 	mii.dwTypeData = const_cast<LPTSTR>(name.c_str());
 	mii.dwItemData = data;
 	mii.wID = id;
 	::InsertMenuItem(this->handle(), this->getCount(), TRUE, &mii);
-
-	callbacks.insert(std::make_pair(id, SimpleDispatcher(f)));
 }
 
 SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )

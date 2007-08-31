@@ -103,6 +103,7 @@ private:
 	WidgetHPanedPtr paned;
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
+	WidgetToolbarPtr toolbar;
 	MDITab* tabs;
 	
 	/** Is the tray icon visible? */
@@ -132,6 +133,7 @@ private:
 
 	void initWindow();
 	void initMenu();
+	void initToolbar();
 	void initStatusBar();
 	void initTabs();
 	void initTransfers();
@@ -155,14 +157,15 @@ private:
 	void handleCloseWindows(unsigned id);
 	void handleMinimizeAll();
 	void handleRestoreAll();
-	HRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
+	LRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
 	bool handleTabResize(const SmartWin::WidgetSizedEventResult& sz);
 	
 	// Other events
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
 	
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	HRESULT trayMessage(WPARAM wParam, LPARAM lParam);
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	LRESULT trayMessage(WPARAM wParam, LPARAM lParam);
+	LRESULT handleCopyData(WPARAM wParam, LPARAM lParam);
 	
 	void layout();
 	bool eachSecond();
@@ -174,6 +177,7 @@ private:
 	void stopUPnP();
 	void saveWindowSettings();
 	void resizeMDIClient();
+	void parseCommandLine(const tstring& cmdLine);
 	
 	bool closing();
 	
@@ -194,8 +198,6 @@ private:
 #ifdef PORT_ME
 	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
-	CMDICommandBarCtrl m_CmdBar;
-
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
@@ -211,11 +213,6 @@ private:
 		return FALSE;
 	}
 
-	virtual BOOL OnIdle()
-	{
-		UIUpdateToolBar();
-		return FALSE;
-	}
 	typedef CSplitterImpl<MainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -271,9 +268,6 @@ private:
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-	void parseCommandLine(const tstring& cmdLine);
-
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return WMU_WHERE_ARE_YOU;
 	}
@@ -293,47 +287,6 @@ private:
 		updateTray(true);
 		return 0;
 	}
-
-	LRESULT onRowsChanged(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		UpdateLayout();
-		Invalidate();
-		return 0;
-	}
-
-	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		HWND hWnd = (HWND)wParam;
-		if(MDIGetActive() != hWnd) {
-			MDIActivate(hWnd);
-		} else if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
-			::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
-			MDINext(hWnd);
-			hWnd = MDIGetActive();
-		}
-		if(::IsIconic(hWnd))
-			::ShowWindow(hWnd, SW_RESTORE);
-		return 0;
-	}
-
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-
-	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		PostMessage(WM_CLOSE);
-		return 0;
-	}
-
-private:
-
-	CToolTipCtrl ctrlLastLines;
-
-	FlatTabCtrl ctrlTab;
-	CImageList images;
-	CImageList largeImages, largeImagesHot;
-
-	HWND createToolbar();
 
 #endif
 

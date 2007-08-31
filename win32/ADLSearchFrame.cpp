@@ -120,8 +120,7 @@ void ADLSearchFrame::layout() {
 
 	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
 
-	SmartWin::Rectangle rs = layoutStatus();
-	r.size.y -= rs.size.y + border;
+	layoutStatus(r);
 
 	/// @todo dynamic width
 	const int ybutton = add->getTextSize(_T("A")).y + 10;
@@ -264,11 +263,9 @@ bool ADLSearchFrame::handleKeyDown(int c) {
 	case VK_DELETE:
 		handleRemove();
 		return true;
-#ifdef PORT_ME // pressing enter doesn't do anything
 	case VK_RETURN:
 		handleProperties();
 		return true;
-#endif
 	}
 	return false;
 }

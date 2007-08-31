@@ -62,9 +62,7 @@ void WaitingUsersFrame::layout()
 
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
-	SmartWin::Rectangle rs = layoutStatus();
-
-	r.size.y -= rs.size.y + border;
+	layoutStatus(r);
 
 	queued->setBounds(r);
 }

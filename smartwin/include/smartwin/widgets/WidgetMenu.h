@@ -333,7 +333,8 @@ public:
 	}
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const IdDispatcher::F& f );
 	void appendItem( unsigned int id, const SmartUtil::tstring & name, ULONG_PTR data, const SimpleDispatcher::F& f );
-
+	void appendItem( unsigned int id, const SmartUtil::tstring& name, ULONG_PTR data = NULL);
+	
 	ULONG_PTR getData(unsigned int id, bool byPosition = false);
 
 	/// Appends a separator item to the menu
