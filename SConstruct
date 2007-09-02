@@ -11,7 +11,8 @@ opts.AddOptions(
 	BoolOption('gch', 'Use GCH when compiling GUI (disable if you have linking problems with mingw)', 'yes'),
 	BoolOption('verbose', 'Show verbose command lines', 'no'),
 	BoolOption('savetemps', 'Save intermediate compilation files (assembly output)', 'no'),
-	BoolOption('unicode', 'Build a Unicode version which fully supports international characters', 'yes')
+	BoolOption('unicode', 'Build a Unicode version which fully supports international characters', 'yes'),
+	('prefix', 'Prefix to use when cross compiling', 'i386-mingw32-')
 )
 
 gcc_flags = {

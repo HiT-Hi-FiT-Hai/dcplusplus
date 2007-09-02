@@ -27,16 +27,16 @@ class Dev:
 			self.env.Append(LINKFLAGS=["-Wl,--enable-runtime-pseudo-reloc"])
 			
 			if sys.platform != 'win32':
-				if self.env.get('MINGW_PREFIX') is not None:
-					prefix = self.env['MINGW_PREFIX']
+				if self.env.get('prefix') is not None:
+					prefix = self.env['prefix']
 				else:
 					prefix = 'i386-mingw32'
-				self.env['CC'] = prefix + '-gcc'
-				self.env['CXX'] = prefix + '-g++'
-				self.env['LINK'] = prefix + '-g++'
-				self.env['AR'] = prefix + '-ar'
-				self.env['RANLIB'] = prefix + '-ranlib'
-				self.env['RC'] = prefix + '-windres'
+				self.env['CC'] = prefix + 'gcc'
+				self.env['CXX'] = prefix + 'g++'
+				self.env['LINK'] = prefix + 'g++'
+				self.env['AR'] = prefix + 'ar'
+				self.env['RANLIB'] = prefix + 'ranlib'
+				self.env['RC'] = prefix + 'windres'
 				self.env['PROGSUFFIX'] = '.exe'
 				self.env['LIBPREFIX'] = 'lib'
 				self.env['LIBSUFFIX'] = '.a'
