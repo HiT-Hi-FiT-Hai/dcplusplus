@@ -286,6 +286,7 @@ public:
 	void bringToBottom();
 
 	bool isIconic();
+	bool isZoomed();
 	
 	/// \ingroup EventHandlersAspectSizable
 	// Setting the event handler for the "sized" event
@@ -564,6 +565,12 @@ template< class WidgetType >
 bool AspectSizable< WidgetType >::isIconic()
 {
 	return ::IsIconic( static_cast< WidgetType * >( this )->handle()) > 0;
+}
+
+template< class WidgetType >
+bool AspectSizable< WidgetType >::isZoomed()
+{
+	return ::IsZoomed( static_cast< WidgetType * >( this )->handle()) > 0;
 }
 
 // end namespace SmartWin

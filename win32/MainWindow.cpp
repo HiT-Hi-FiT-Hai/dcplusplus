@@ -100,7 +100,9 @@ MainWindow::MainWindow() :
 	tabs->onSized(std::tr1::bind(&MainWindow::handleTabResize, this, _1));
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
-
+	onRaw(std::tr1::bind(&MainWindow::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
+	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _1, _2), SmartWin::Message(WM_APP + 242));
+	
 	updateStatus();
 	layout();
 
@@ -236,9 +238,9 @@ void MainWindow::initMenu() {
 
 	WidgetMenuPtr help = mainMenu->appendPopup(TSTRING(MENU_HELP));
 
-	help->appendItem(IDC_HELP_CONTENTS, TSTRING(MENU_CONTENTS), std::tr1::bind(&MainWindow::handleHelp, this, _1));
+	help->appendItem(IDC_HELP_CONTENTS, TSTRING(MENU_CONTENTS), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
 	help->appendSeparatorItem();
-	help->appendItem(IDC_HELP_CHANGELOG, TSTRING(MENU_CHANGELOG), std::tr1::bind(&MainWindow::handleHelp, this, _1));
+	help->appendItem(IDC_HELP_CHANGELOG, TSTRING(MENU_CHANGELOG), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
 	help->appendItem(IDC_ABOUT, TSTRING(MENU_ABOUT), std::tr1::bind(&MainWindow::handleAbout, this));
 	help->appendSeparatorItem();
 	help->appendItem(IDC_HELP_HOMEPAGE, TSTRING(MENU_HOMEPAGE), std::tr1::bind(&MainWindow::handleLink, this, _1));
@@ -260,47 +262,41 @@ void MainWindow::initToolbar() {
 	cs.style |= TBSTYLE_FLAT;
 	toolbar = createToolbar(cs);
 	{
-		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
+		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 15, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap bmp(IDB_TOOLBAR20);
 		list->add(bmp, RGB(255, 0, 255));
 		
 		toolbar->setNormalImageList(list);
 	}
 	{
-		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
+		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 15, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap bmp(IDB_TOOLBAR20_HOT);
 		list->add(bmp, RGB(255, 0, 255));
 		
 		toolbar->setHotImageList(list);
 	}
-	toolbar->setButtonSize(20, 20);
+	toolbar->setButtonSize(20, 15);
 	
-	toolbar->appendItem(IDC_PUBLIC_HUBS);
-	toolbar->appendItem(IDC_RECONNECT);
-	toolbar->appendItem(IDC_FOLLOW);
-	//toolbar->appendSeparator();
-	toolbar->appendItem(IDC_FAVORITES);
-	toolbar->appendItem(IDC_FAVUSERS);
-	//toolbar->appendSeparator();
-	toolbar->appendItem(IDC_QUEUE);
-	toolbar->appendItem(IDC_FINISHED_DL);
-	toolbar->appendItem(IDC_WAITING_USERS);
-	toolbar->appendItem(IDC_FINISHED_UL);
-	//toolbar->appendSeparator();
-	toolbar->appendItem(IDC_SEARCH);
-	toolbar->appendItem(IDC_ADL_SEARCH);
-	toolbar->appendItem(IDC_SEARCH_SPY);
-	//toolbar->appendSeparator();
-	toolbar->appendItem(IDC_OPEN_FILE_LIST);
-	toolbar->appendItem(IDC_SETTINGS);
-	toolbar->appendItem(IDC_NOTEPAD);
-	//toolbar->appendSeparator();
-/*	toolbar->appendItem(IDC_NET_STATS);
-	toolbar->appendItem(IDC_MDI_CASCADE);
-	toolbar->appendItem(IDC_MDI_TILE_HORZ);
-	toolbar->appendItem(IDC_MDI_TILE_VERT);
-	toolbar->appendItem(IDC_MDI_MINIMIZE_ALL);
-	toolbar->appendItem(IDC_MDI_RESTORE_ALL);*/
+	int image;
+	toolbar->appendItem(IDC_PUBLIC_HUBS, image++, TSTRING(PUBLIC_HUBS));
+	toolbar->appendItem(IDC_RECONNECT, image++, TSTRING(MENU_RECONNECT));
+	toolbar->appendItem(IDC_FOLLOW, image++, TSTRING(MENU_FOLLOW_REDIRECT));
+	toolbar->appendSeparator();
+	toolbar->appendItem(IDC_FAVORITES, image++, TSTRING(FAVORITE_HUBS));
+	toolbar->appendItem(IDC_FAVUSERS, image++, TSTRING(FAVORITE_USERS));
+	toolbar->appendSeparator();
+	toolbar->appendItem(IDC_QUEUE, image++, TSTRING(DOWNLOAD_QUEUE));
+	toolbar->appendItem(IDC_FINISHED_DL, image++, TSTRING(FINISHED_DOWNLOADS));
+	toolbar->appendItem(IDC_WAITING_USERS, image++, TSTRING(WAITING_USERS));
+	toolbar->appendItem(IDC_FINISHED_UL, image++, TSTRING(FINISHED_UPLOADS));
+	toolbar->appendSeparator();
+	toolbar->appendItem(IDC_SEARCH, image++, TSTRING(SEARCH));
+	toolbar->appendItem(IDC_ADL_SEARCH, image++, TSTRING(ADL_SEARCH));
+	toolbar->appendItem(IDC_SEARCH_SPY, image++, TSTRING(SEARCH_SPY));
+	toolbar->appendSeparator();
+	toolbar->appendItem(IDC_OPEN_FILE_LIST, image++, TSTRING(MENU_OPEN_FILE_LIST));
+	toolbar->appendItem(IDC_SETTINGS, image++, TSTRING(SETTINGS));
+	toolbar->appendItem(IDC_NOTEPAD, image++, TSTRING(NOTEPAD));
 }
 
 void MainWindow::initStatusBar() {
@@ -365,7 +361,25 @@ void MainWindow::handleQuickConnect() {
 }
 
 bool MainWindow::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
-	layout();
+	if(sz.isMinimized) {
+		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
+			Util::setAway(true);
+		}
+		if(BOOLSETTING(MINIMIZE_TRAY) != WinUtil::isShift()) {
+			updateTray(true);
+			setVisible(false);
+		}
+		maximized = isZoomed();
+	} else if( sz.isMaximized || sz.isRestored ) {
+		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
+			Util::setAway(false);
+		}
+		if(trayIcon) {
+			updateTray(false);
+		}
+		layout();
+	}
+
 	return true;
 }
 
@@ -433,16 +447,16 @@ void MainWindow::autoConnect(const FavoriteHubEntryList& fl) {
 void MainWindow::saveWindowSettings() {
 	WINDOWPLACEMENT wp = { sizeof(wp)};
 
-::GetWindowPlacement(this->handle(), &wp);
-
-if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
-	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, static_cast<int>(wp.rcNormalPosition.left));
-	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, static_cast<int>(wp.rcNormalPosition.top));
-	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, static_cast<int>(wp.rcNormalPosition.right - wp.rcNormalPosition.left));
-	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, static_cast<int>(wp.rcNormalPosition.bottom - wp.rcNormalPosition.top));
-}
-if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
-SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
+	::GetWindowPlacement(this->handle(), &wp);
+	
+	if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, static_cast<int>(wp.rcNormalPosition.left));
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, static_cast<int>(wp.rcNormalPosition.top));
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, static_cast<int>(wp.rcNormalPosition.right - wp.rcNormalPosition.left));
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, static_cast<int>(wp.rcNormalPosition.bottom - wp.rcNormalPosition.top));
+	}
+	if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
+	SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
 }
 
 bool MainWindow::closing() {
@@ -455,7 +469,7 @@ bool MainWindow::closing() {
 			}
 			saveWindowSettings();
 
-::			ShowWindow(this->handle(), SW_HIDE);
+			setVisible(false);
 			transfers->prepareClose();
 
 			LogManager::getInstance()->removeListener(this);
@@ -515,7 +529,6 @@ bool MainWindow::eachSecond() {
 }
 
 void MainWindow::layout() {
-	const int border = 2;
 	SmartWin::Rectangle r(getClientAreaSize());
 	
 	toolbar->refresh();
@@ -805,140 +818,6 @@ void MainWindow::handleMatchAll() {
 	}
 }
 
-#ifdef PORT_ME
-HWND MainFrame::createToolbar() {
-	CToolBarCtrl ctrlToolbar;
-	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	largeImagesHot.CreateFromImage(IDB_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-
-	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrlToolbar.SetImageList(largeImages);
-	ctrlToolbar.SetHotImageList(largeImagesHot);
-
-	const int numButtons = 22;
-
-	TBBUTTON tb[numButtons];
-	memset(tb, 0, sizeof(tb));
-	int n = 0, bitmap = 0;
-
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_VIEW_CONNECT;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FILE_RECONNECT;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FOLLOW;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FAVORITES;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FAVUSERS;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_QUEUE;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FINISHED_DL;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_VIEW_WAITING_USERS;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FINISHED_UL;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FILE_SEARCH;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_FILE_ADL_SEARCH;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_SEARCH_SPY;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_OPEN_FILE_LIST;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = ID_FILE_SETTINGS;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].fsStyle = TBSTYLE_SEP;
-
-	n++;
-	tb[n].iBitmap = bitmap++;
-	tb[n].idCommand = IDC_NOTEPAD;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	ctrlToolbar.SetButtonStructSize();
-	ctrlToolbar.AddButtons(numButtons, tb);
-	ctrlToolbar.AutoSize();
-
-	return ctrlToolbar.m_hWnd;
-}
-#endif
-
 void MainWindow::parseCommandLine(const tstring& cmdLine)
 {
 	string::size_type i = 0;
@@ -1116,91 +995,16 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 		// ...
 	}
 }
-#ifdef PORT_ME
 
-LRESULT MainFrame::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_DISPLAY_TOC, NULL);
-	bHandled = TRUE;
+LRESULT MainWindow::handleHelp(WPARAM wParam, LPARAM lParam) {
+	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_DISPLAY_TOC, NULL);
 	return 0;
 }
-#endif
 
-void MainWindow::handleHelp(unsigned id) {
-#ifdef PORT_ME
+void MainWindow::handleMenuHelp(unsigned id) {
 	UINT action = (id == IDC_HELP_CONTENTS) ? HH_DISPLAY_TOC : HH_HELP_CONTEXT;
-	::HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), action, id);
-#endif
+	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), action, id);
 }
-
-#ifdef PORT_ME
-LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	LPNMTTDISPINFO pDispInfo = (LPNMTTDISPINFO)pnmh;
-	pDispInfo->szText[0] = 0;
-
-	if((idCtrl != 0) && !(pDispInfo->uFlags & TTF_IDISHWND))
-	{
-		int stringId = -1;
-		switch(idCtrl) {
-			case ID_VIEW_CONNECT: stringId = ResourceManager::MENU_PUBLIC_HUBS; break;
-			case ID_FILE_RECONNECT: stringId = ResourceManager::MENU_RECONNECT; break;
-			case IDC_FOLLOW: stringId = ResourceManager::MENU_FOLLOW_REDIRECT; break;
-			case IDC_FAVORITES: stringId = ResourceManager::MENU_FAVORITE_HUBS; break;
-			case IDC_FAVUSERS: stringId = ResourceManager::MENU_FAVORITE_USERS; break;
-			case IDC_QUEUE: stringId = ResourceManager::MENU_DOWNLOAD_QUEUE; break;
-			case IDC_FINISHED_DL: stringId = ResourceManager::FINISHED_DOWNLOADS; break;
-			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
-			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
-			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
-			case IDC_VIEW_WAITING_USERS: stringId = ResourceManager::WAITING_USERS; break;
-			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
-			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
-			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
-			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
-			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
-		}
-		if(stringId != -1) {
-			_tcsncpy(pDispInfo->lpszText, CTSTRING_I((ResourceManager::Strings)stringId), 79);
-			pDispInfo->uFlags |= TTF_DI_SETITEM;
-		}
-	} else { // if we're really in the status bar, this should be detected intelligently
-		lastLines.clear();
-		for(TStringIter i = lastLinesList.begin(); i != lastLinesList.end(); ++i) {
-			lastLines += *i;
-			lastLines += _T("\r\n");
-		}
-		if(lastLines.size() > 2) {
-			lastLines.erase(lastLines.size() - 2);
-		}
-		pDispInfo->lpszText = const_cast<TCHAR*>(lastLines.c_str());
-	}
-	return 0;
-}
-
-LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	if(wParam == SIZE_MINIMIZED) {
-		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
-			Util::setAway(true);
-		}
-		if(BOOLSETTING(MINIMIZE_TRAY) != WinUtil::isShift()) {
-			updateTray(true);
-			ShowWindow(SW_HIDE);
-		}
-		maximized = IsZoomed() > 0;
-
-	} else if( (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) ) {
-		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
-			Util::setAway(false);
-		}
-		if(trayIcon) {
-			updateTray(false);
-		}
-	}
-
-	bHandled = FALSE;
-	return 0;
-}
-#endif
 
 LRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
 	if (c != NULL) {
@@ -1263,29 +1067,34 @@ void MainWindow::handleRefreshFileList() {
 	ShareManager::getInstance()->refresh(true);
 }
 
-#ifdef PORT_ME
-LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+void MainWindow::handleRestore() {
+	if(maximized) {
+		maximize();
+	} else {
+		restore();
+	}
+}
+
+LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
 {
 	if (lParam == WM_LBUTTONUP) {
-		ShowWindow(SW_SHOW);
-		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
+		handleRestore();
 	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
-		CPoint pt;
-		CMenu mnuTrayMenu;
-		mnuTrayMenu.CreatePopupMenu();
-		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_SHOW, CTSTRING(MENU_SHOW));
-		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_QUIT, CTSTRING(MENU_EXIT));
-		mnuTrayMenu.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CTSTRING(MENU_OPEN_DOWNLOADS_DIR));
-		mnuTrayMenu.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CTSTRING(MENU_SETTINGS));
+		POINT pt;
+		WidgetMenuPtr trayMenu = createMenu(true);
+		trayMenu->appendItem(IDC_TRAY_SHOW, TSTRING(MENU_SHOW), std::tr1::bind(&MainWindow::handleRestore, this));
+		trayMenu->appendItem(IDC_TRAY_QUIT, TSTRING(MENU_EXIT), std::tr1::bind(&MainWindow::close, this, true));
+		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, TSTRING(MENU_OPEN_DOWNLOADS_DIR));
+		trayMenu->appendItem(IDC_SETTINGS, TSTRING(MENU_SETTINGS));
+		trayMenu->setDefaultItem(0,TRUE);
 		GetCursorPos(&pt);
-		SetForegroundWindow(m_hWnd);
-		mnuTrayMenu.TrackPopupMenu(TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON,pt.x,pt.y,m_hWnd);
-		PostMessage(WM_NULL, 0, 0);
-		mnuTrayMenu.SetMenuDefaultItem(0,TRUE);
+		::SetForegroundWindow(handle());
+		trayMenu->trackPopupMenu(this, pt.x, pt.y, TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON);
+		postMessage(WM_NULL);
 	} else if(lParam == WM_MOUSEMOVE && ((lastMove + 1000) < GET_TICK()) ) {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
-		nid.hWnd = m_hWnd;
+		nid.hWnd = handle();
 		nid.uID = 0;
 		nid.uFlags = NIF_TIP;
 		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getRunningAverage()) + "/s (" +
@@ -1299,6 +1108,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	return 0;
 }
 
+#ifdef PORT_ME
 LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	static BOOL bVisible = TRUE; // initially visible

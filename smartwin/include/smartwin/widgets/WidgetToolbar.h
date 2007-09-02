@@ -146,7 +146,7 @@ public:
 	  */
 	void appendSeparator();
 
-	void appendItem(unsigned int id, const SmartUtil::tstring& toolTip = SmartUtil::tstring());
+	void appendItem(unsigned int id, int image, const SmartUtil::tstring& toolTip = SmartUtil::tstring());
 	
 	/// Set the image list with the normal button images.
 	/** normalImageList is the image list that contains the images
@@ -210,6 +210,7 @@ protected:
 	virtual ~WidgetToolbar()
 	{}
 
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 private:
 	std::map< unsigned int, SmartUtil::tstring > itsToolTips;
 
@@ -339,36 +340,6 @@ inline WidgetToolbar::WidgetToolbar( SmartWin::Widget * parent )
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
-
-
-#ifdef PORT_ME
-
-LRESULT WidgetToolbar::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
-{
-	// First the stuff we HAVE to do something about...
-	switch ( msg )
-	{
-		case WM_NOTIFY :
-		{
-			switch ( ( reinterpret_cast< LPNMHDR >( lPar ) )->code )
-			{
-				// TODO: Outfactor into Tooltip Aspect...
-				case TTN_GETDISPINFO :
-				{
-					LPTOOLTIPTEXT lpttt = reinterpret_cast< LPTOOLTIPTEXT >( lPar );
-					lpttt->lpszText = const_cast < TCHAR * >( itsToolTips[lpttt->hdr.idFrom].c_str() );
-				} break;
-				default:
-					return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
-			}
-		} break;
-		default:
-			return MessageMapType::sendWidgetMessage( hWnd, msg, wPar, lPar );
-	}
-	// Removing compiler hickup...
-	return 0;
-}
-#endif
 
 // end namespace SmartWin
 }

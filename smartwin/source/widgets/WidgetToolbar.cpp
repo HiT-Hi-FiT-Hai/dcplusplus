@@ -43,7 +43,7 @@ void WidgetToolbar::appendSeparator()
 	}
 }
 
-void WidgetToolbar::appendItem( unsigned int id, const SmartUtil::tstring& toolTip)
+void WidgetToolbar::appendItem( unsigned int id, int image, const SmartUtil::tstring& toolTip)
 {
 	// Checking if tooltip id exists from before
 	if ( itsToolTips.find( id ) != itsToolTips.end() )
@@ -54,7 +54,7 @@ void WidgetToolbar::appendItem( unsigned int id, const SmartUtil::tstring& toolT
 
 	// Adding button
 	TBBUTTON tb = { 0 };
-	tb.iBitmap = size();
+	tb.iBitmap = image;
 	tb.idCommand = id;
 	tb.fsState = TBSTATE_ENABLED;
 	tb.fsStyle = BTNS_AUTOSIZE;
@@ -67,6 +67,22 @@ void WidgetToolbar::appendItem( unsigned int id, const SmartUtil::tstring& toolT
 	if(!toolTip.empty()) {
 		itsToolTips[id] = toolTip;
 	}
+}
+
+bool WidgetToolbar::tryFire( const MSG & msg, LRESULT & retVal )
+{
+	if(msg.message == WM_NOTIFY) {
+		LPNMHDR hdr = reinterpret_cast< LPNMHDR >( msg.lParam );
+		if(hdr->code == TTN_GETDISPINFO) {
+			LPTOOLTIPTEXT lpttt = reinterpret_cast< LPTOOLTIPTEXT >( msg.lParam );
+			if(itsToolTips.find(lpttt->hdr.idFrom) != itsToolTips.end()) {
+				lpttt->lpszText = const_cast < TCHAR * >( itsToolTips[lpttt->hdr.idFrom].c_str() );
+				return true;
+			}
+		}
+	}
+	
+	return PolicyType::tryFire(msg, retVal);
 }
 
 }

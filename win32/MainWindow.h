@@ -99,7 +99,6 @@ private:
 		tstring bugs;
 	} links;
 
-
 	WidgetHPanedPtr paned;
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
@@ -152,13 +151,16 @@ private:
 	void handleLink(unsigned id);
 	void handleAbout();
 	void handleMDIReorder(unsigned id);
-	void handleHelp(unsigned id);
+	void handleMenuHelp(unsigned id);
 	void handleHashProgress();
 	void handleCloseWindows(unsigned id);
 	void handleMinimizeAll();
 	void handleRestoreAll();
+	void handleSize();
+	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
 	LRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
 	bool handleTabResize(const SmartWin::WidgetSizedEventResult& sz);
+	LRESULT handleTrayIcon(WPARAM wParam, LPARAM lParam);
 	
 	// Other events
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
@@ -180,6 +182,7 @@ private:
 	void parseCommandLine(const tstring& cmdLine);
 	
 	bool closing();
+	void handleRestore();
 	
 	static DWORD WINAPI stopper(void* p);
 
@@ -194,9 +197,7 @@ private:
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi, const string& dir, int64_t speed) throw();
 	virtual void on(PartialList, const UserPtr&, const string& text) throw();
 
-
 #ifdef PORT_ME
-	DECLARE_FRAME_WND_CLASS(_T(APPNAME), IDR_MAINFRAME)
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -213,37 +214,10 @@ private:
 		return FALSE;
 	}
 
-	typedef CSplitterImpl<MainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(MainFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
-		MESSAGE_HANDLER(WM_CLOSE, OnClose)
-		MESSAGE_HANDLER(FTM_SELECTED, onSelected)
-		MESSAGE_HANDLER(FTM_ROWS_CHANGED, onRowsChanged)
-		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
-		MESSAGE_HANDLER(WM_SIZE, onSize)
-		MESSAGE_HANDLER(trayMessage, onTray)
-		MESSAGE_HANDLER(WM_COPYDATA, onCopyData)
 		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
-		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_HELP_CONTENTS, onMenuHelp)
-		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
-		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
-		COMMAND_ID_HANDLER(IDC_MATCH_ALL, onMatchAll)
-		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
-		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
-		COMMAND_ID_HANDLER(ID_VIEW_TRANSFER_VIEW, OnViewTransferView)
-		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onMenuHelp)
-		COMMAND_ID_HANDLER(IDC_TRAY_QUIT, onTrayQuit)
-		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
-		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
-		COMMAND_ID_HANDLER(ID_WINDOW_RESTORE_ALL, onWindowRestoreAll)
-		COMMAND_ID_HANDLER(IDC_HASH_PROGRESS, onHashProgress)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
-		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
-		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
-		CHAIN_MSG_MAP(splitterBase);
 	END_MSG_MAP()
 
 	BEGIN_UPDATE_UI_MAP(MainFrame)
@@ -253,20 +227,11 @@ private:
 	END_UPDATE_UI_MAP()
 
 
-	LRESULT onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onLink(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return WMU_WHERE_ARE_YOU;
@@ -280,11 +245,6 @@ private:
 	LRESULT onTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		ShowWindow(SW_SHOW);
 		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
-		return 0;
-	}
-
-	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		updateTray(true);
 		return 0;
 	}
 

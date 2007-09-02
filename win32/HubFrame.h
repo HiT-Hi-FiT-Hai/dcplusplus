@@ -243,7 +243,8 @@ private:
 	void handleAddAsFavorite();
 	void handleReconnect();
 	void handleFollow();
-
+	void handleChatLButton();
+	
 	void updateFilter(const tstring& newText);
 	bool parseFilter(FilterModes& mode, int64_t& size);
 	bool matchFilter(const UserInfo& ui, int sel, bool doSizeCompare = false, FilterModes mode = NONE, int64_t size = 0);

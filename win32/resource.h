@@ -124,6 +124,8 @@
 #define IDC_MATCH_QUEUE				1070
 #define IDC_COPY_HUB				1071
 #define IDC_CLOSE_WINDOW			1072
+#define IDC_TRAY_SHOW				1073
+#define IDC_TRAY_QUIT				1074
 
 // Stuff that uses multiple id's
 #define IDC_BROWSELIST				3000
