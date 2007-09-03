@@ -77,10 +77,7 @@ void Widget::invalidateWidget()
 
 void Widget::kill()
 {
-	// Checking to see if this is our HeartBeat object...
-	HeartBeat * tmp = dynamic_cast< HeartBeat * >( this );
-	if ( 0 == tmp )
-		delete this;
+	delete this;
 }
 
 void Widget::create( const SmartWin::Seed & cs )

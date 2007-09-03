@@ -57,8 +57,6 @@ public:
 
 	MainWindow();
 	
-	bool filter(MSG& msg);
-	
 	virtual ~MainWindow();
 private:
 	
@@ -120,6 +118,9 @@ private:
 	int64_t lastDown;
 	uint64_t lastTick;
 
+	SmartWin::Application::FilterIter filterIter;
+	SmartWin::AcceleratorPtr accel;
+
 	static MainWindow* instance;
 	
 	enum { MAX_CLIENT_LINES = 10 };
@@ -180,6 +181,7 @@ private:
 	void saveWindowSettings();
 	void resizeMDIClient();
 	void parseCommandLine(const tstring& cmdLine);
+	bool filter(MSG& msg);
 	
 	bool closing();
 	void handleRestore();

@@ -320,9 +320,8 @@ int SmartWinMain(SmartWin::Application& app) {
 		MainWindow* wnd = new MainWindow;
 		WinUtil::mainWindow = wnd;
 		WinUtil::mdiParent = wnd->getMDIParent();
-		// Close splash here, closing it before mainwindow makes smartwin think that we're exiting
 		splash->close();
-		ret = app.run(std::tr1::bind(&MainWindow::filter, wnd, _1));
+		ret = app.run();
 	} catch(const SmartWin::xCeption& e) {
 		printf("Exception: %s\n Additional info: %s\n", e.what(), e.whatWndMsg());
 	} catch(const std::exception& e) {

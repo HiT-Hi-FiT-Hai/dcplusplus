@@ -144,6 +144,9 @@ MainWindow::MainWindow() :
 		::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
 		postMessage(WM_COMMAND, IDC_SETTINGS);
 	}
+	
+	filterIter = SmartWin::Application::instance().addFilter(std::tr1::bind(&MainWindow::filter, this, _1));	
+	accel = SmartWin::AcceleratorPtr(new SmartWin::Accelerator(this, IDR_MAINFRAME));
 }
 
 void MainWindow::initWindow() {
@@ -275,9 +278,8 @@ void MainWindow::initToolbar() {
 		
 		toolbar->setHotImageList(list);
 	}
-	toolbar->setButtonSize(20, 15);
 	
-	int image;
+	int image = 0;
 	toolbar->appendItem(IDC_PUBLIC_HUBS, image++, TSTRING(PUBLIC_HUBS));
 	toolbar->appendItem(IDC_RECONNECT, image++, TSTRING(MENU_RECONNECT));
 	toolbar->appendItem(IDC_FOLLOW, image++, TSTRING(MENU_FOLLOW_REDIRECT));
@@ -334,6 +336,11 @@ bool MainWindow::filter(MSG& msg) {
 			return true;
 		}
 	}
+
+	if(accel && accel->translate(msg)) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -589,11 +596,11 @@ void MainWindow::updateStatus() {
 }
 
 MainWindow::~MainWindow() {
+	SmartWin::Application::instance().removeFilter(filterIter);
 	instance = 0;
 }
 
 void MainWindow::handleSettings() {
-
 	SettingsDialog dlg(this);
 
 	unsigned short lastTCP = static_cast<unsigned short>(SETTING(TCP_PORT));
@@ -606,11 +613,6 @@ void MainWindow::handleSettings() {
 
 	if (dlg.run() == IDOK) {
 		SettingsManager::getInstance()->save();
-#ifdef PORT_ME
-		if(missedAutoConnect && !SETTING(NICK).empty()) {
-			PostMessage(WM_SPEAKER, AUTO_CONNECT);
-		}
-#endif
 		if (SETTING(INCOMING_CONNECTIONS) != lastConn || SETTING(TCP_PORT) != lastTCP || SETTING(UDP_PORT) != lastUDP || SETTING(TLS_PORT) != lastTLS) {
 			startSocket();
 		}

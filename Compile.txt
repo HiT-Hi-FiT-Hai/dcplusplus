@@ -33,7 +33,8 @@ and copy the file to the include directory of your compiler (or add it to the in
 	"mode=release" - Compile an optimized release build
 
 	To see more options, type "scons -h".
-	
+	Tip: You can create a file custom.py and put your options in there.
+
 If you get a linking error citing missing references on the first compile, run scons again.
 
 Note; If you have problems, use google. It works for me.

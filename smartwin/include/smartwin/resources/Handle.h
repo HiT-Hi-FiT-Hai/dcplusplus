@@ -12,6 +12,7 @@ template<typename H>
 struct NullPolicy {
 	typedef H HandleType;
 	static const H NULL_HANDLE;
+	void release(H) { }
 };
 
 template<typename H> const H NullPolicy<H>::NULL_HANDLE = NULL;

@@ -102,7 +102,7 @@ protected:
 private:
 	HWND lastFocus;
 	bool reallyClose;
-	
+
 	template<typename A>
 	void addColor(SmartWin::AspectBackgroundColor<A>* widget) {
 		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));

@@ -68,27 +68,6 @@ namespace Policies {
 class ModalDialog;
 }
 
-/// HeartBeat class
-/** Abstract class which classes which are supposed to be the "Heart Beat" class must
-  * implement.
-  */
-class HeartBeat
-{
-public:
-	/// The tick function which does the rendering and "heart beat" logic when in
-	/// game mode.
-	/** If you're gonna use SmartWin++ for game development you must have one class
-	  * which inherits from the abstract HeartBeat class. This class must implement
-	  * the tick function which is the function called by the library every "one
-	  * tick". This is the place where one normally would put rendering and other
-	  * "game logic" stuff. See the Tic Tac Toe application for an example
-	  * implementation of this.
-	  */
-	virtual void tick() = 0;
-	virtual ~HeartBeat()
-	{}
-};
-
 /// Class declaration for the application class
 /** Every application using SmartWin will get ONE and ONLY one Application object
   * automatically. <br>
@@ -151,13 +130,20 @@ public:
 	SmartUtil::tstring getModuleFileName() const;
 
 	typedef std::tr1::function<bool (MSG&)> FilterFunction;
+	// List becuse its iterators aren't invalidated on add/delete...
+	typedef std::list<FilterFunction> FilterList;
+	typedef FilterList::iterator FilterIter;
+	
+	FilterIter addFilter(const FilterFunction& f);
+	void removeFilter(const FilterIter& i);
+	
 	/// Starts the application
 	/** Normally this function will be called from your
 	  * "SmartWinMain(SmartWin::Application & app )" function as the last function.
 	  * <br>
 	  * E.g. return myApp.run();
 	  */
-	int run(const FilterFunction& filter = FilterFunction());
+	int run();
 
 	/// The initialization that must be done first.
 	/** Used internally by the WinMain function, and externally for DLL initialization.
@@ -180,17 +166,6 @@ public:
 	  * Use this function to retrieve the command line object
 	  */
 	const CommandLine & getCommandLine();
-
-	/// Sets the Heart Beat object
-	/** If you set this function before calling Application::run the library will go
-	  * into "Game Mode" meaning that instead of waiting for next message it will
-	  * peek for messages and after returning if it did find a message it will
-	  * dispatch that message but anyway call your HeartBeat::tick() function after
-	  * dispatching (or not!) your message. Normally the HeartBeat object would be
-	  * the main Widget or something in which would be your primary rendering
-	  * surface.
-	  */
-	void setHeartBeatFunction( HeartBeat * mainHeartBeatObject );
 
 	/// Determine if is an application is already running or not
 	/** Returns true if this application have another instance running!
@@ -229,17 +204,14 @@ private:
 	// Its raw command line parameters
 	const char * itsCmdLine;
 
-	// If this one is none null we're in "Game Mode" meaning we're supposed to use
-	// PeekMessage instead of GetMessage and call this callback function every
-	// iteration etc...
-	HeartBeat * itsHeartBeatObject;
-
 	// We want to be notified when certain event HANDLEs become signalled by Windows.
 	// Those handles go in this vector.
 	std::vector< HANDLE > itsVHEvents;
 
 	// The according signals we must raise, go in this vector.
 	std::vector< SignalPtr > itsVSignals;
+	
+	FilterList filters;
 	
 	// Private Constructor to ensure Singleton Implementation
 	Application( HINSTANCE hInst, int nCmdShow, const char * cmdLine );

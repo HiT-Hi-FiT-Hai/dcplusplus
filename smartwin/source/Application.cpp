@@ -178,7 +178,7 @@ HINSTANCE Application::getAppHandle()
 Application::Application( HINSTANCE hInst, int nCmdShow, const char * cmdLine )
 	: itsHInstance( hInst )
 	, itsCmdLine( cmdLine )
-	, itsHeartBeatObject( 0 )
+	
 {
 }
 
@@ -191,11 +191,6 @@ const CommandLine & Application::getCommandLine()
 {
 	static CommandLine retVal( itsCmdLine );
 	return retVal;
-}
-
-void Application::setHeartBeatFunction( HeartBeat * mainHeartBeatObject )
-{
-	itsHeartBeatObject = mainHeartBeatObject;
 }
 
 bool Application::isAppAlreadyRunning()
@@ -317,133 +312,84 @@ int Application::run()
 //
 // This routine works excellent in single threaded environments, but I suspect it will fail if client wants
 // to create more than one thread(e.g. WaitMessage waits WITHIN thread), probably need to refactor to get multiple threads to work
-int Application::run(const FilterFunction& filter)
+int Application::run()
 {
-	// First checking to see if we're in "Game Mode"
-	if ( itsHeartBeatObject != 0 )
+	// Checking if idx window was the window that had a message
+	MSG msg;
+
+	 /* This message loop is event aware and was inspired by an example
+	  * in Jeffrey Richter's book "Advanced Windows" (from 1996?)
+	  * (see Fig. 14-3 or file 'FileChng.c')
+	  */
+	bool bQuit = false;
+	while ( !bQuit )
 	{
-		MSG msg;
-		while ( true )
-		{
-			if ( ::PeekMessage( & msg, 0, 0, 0, PM_REMOVE ) )
-			{
-				if ( msg.message == WM_QUIT )
-					break;
-
-#ifndef WINCE
-				if ( !::IsDialogMessage( GetParent( msg.hwnd ), & msg )
-					&& !TranslateMDISysAccel( msg.hwnd, & msg ) )
-#else
-				if ( !::IsDialogMessage( GetParent( msg.hwnd ), & msg ) )
-#endif
-				{
-					::TranslateMessage( & msg );
-					::DispatchMessage( & msg );
-				}
-			}
-			if ( itsVHEvents.size() )
-			{
-				DWORD dwWaitResult = ::WaitForMultipleObjects(
-					static_cast< DWORD >( itsVHEvents.size() ),
-					& itsVHEvents[0],
-					FALSE,
-					0 );
-				if ( dwWaitResult != WAIT_TIMEOUT )
-				{
-					// something has happend to an object
-					if ( dwWaitResult < WAIT_OBJECT_0 + itsVHEvents.size() )
-					{
-						// the wait event was signaled by Windows
-						// signal its handlers
-						( * itsVSignals[dwWaitResult - WAIT_OBJECT_0] )();
-					}
-					else if ( dwWaitResult < WAIT_ABANDONED_0 + itsVHEvents.size() )
-					{
-						// a HANDLE was closed before the wait was over
-						// this is in general caused by a logical error in the code
-						SmartUtil::tstring strX =
-							_T( "Application::run : Encountered an abandoned wait mutex object (index " );
-						strX += boost::lexical_cast< SmartUtil::tstring >( dwWaitResult - WAIT_ABANDONED_0 );
-						strX += _T( " )." );
-
-						throw xCeption( strX );
-					}
-					else
-					{
-						// Win32-API function failure (runtime error)
-						throw xCeption( _T( "Application::run : WaitForMultipleObjects() failed!" ) );
-					}
-				}   // dwResult != WAIT_TIMEOUT
-			}   // itsVHEvents.size()
-
-			itsHeartBeatObject->tick();
-		}
-		delete itsHeartBeatObject;
-		return static_cast< int >( msg.wParam );
-	}
-	else
-	{
-		// Checking if idx window was the window that had a message
-		MSG msg;
-
-		 /* This message loop is event aware and was inspired by an example
-		  * in Jeffrey Richter's book "Advanced Windows" (from 1996?)
-		  * (see Fig. 14-3 or file 'FileChng.c')
+		 /* MsgWaitForMultipleObjects behaves like GetMessage except that it is also
+		  * sensitive to waitable event HANDLEs.
 		  */
-		bool bQuit = false;
-		while ( !bQuit )
+		DWORD dwWaitResult = MsgWaitForMultipleObjectsEx(
+			static_cast< DWORD >( itsVHEvents.size() ),
+			( itsVHEvents.size() > 0 ) ? & itsVHEvents[0] : 0,
+			INFINITE,
+			QS_ALLINPUT,
+			0 );
+
+		if ( dwWaitResult < WAIT_OBJECT_0 + itsVHEvents.size() )
 		{
-			 /* MsgWaitForMultipleObjects behaves like GetMessage except that it is also
-			  * sensitive to waitable event HANDLEs.
-			  */
-			DWORD dwWaitResult = MsgWaitForMultipleObjectsEx(
-				static_cast< DWORD >( itsVHEvents.size() ),
-				( itsVHEvents.size() > 0 ) ? & itsVHEvents[0] : 0,
-				INFINITE,
-				QS_ALLINPUT,
-				0 );
-
-			if ( dwWaitResult < WAIT_OBJECT_0 + itsVHEvents.size() )
+			// the wait event was signalled by Windows
+			// signal its handlers
+			( * itsVSignals[dwWaitResult - WAIT_OBJECT_0] )();
+		}
+		else if ( dwWaitResult == WAIT_OBJECT_0 + itsVHEvents.size() )
+		{
+			while ( PeekMessage( & msg, NULL, 0, 0, PM_REMOVE ) )
 			{
-				// the wait event was signalled by Windows
-				// signal its handlers
-				( * itsVSignals[dwWaitResult - WAIT_OBJECT_0] )();
-			}
-			else if ( dwWaitResult == WAIT_OBJECT_0 + itsVHEvents.size() )
-			{
-				while ( PeekMessage( & msg, NULL, 0, 0, PM_REMOVE ) )
-				{
-					if(filter && filter(msg)) {
-							continue;
-					}
-
-					if ( msg.message == WM_QUIT )
-					{
-						bQuit = true;
-					}
-					else
-					{
-						::TranslateMessage ( & msg );
-						::DispatchMessage ( & msg );
+				bool filtered = false;
+				for(FilterIter i = filters.begin(); i != filters.end(); ++i) {
+					if((*i)(msg)) {
+						filtered = true;
+						break;
 					}
 				}
-			}
-			else if ( dwWaitResult < WAIT_ABANDONED_0 + itsVHEvents.size() )
-			{
-				SmartUtil::tstring strX =
-					_T( "Application::run : Encountered an abandoned wait mutex object (index " );
-				strX += boost::lexical_cast< SmartUtil::tstring >( dwWaitResult - WAIT_ABANDONED_0 );
-				strX += _T( " )." );
+				
+				if(filtered) {
+						continue;
+				}
 
-				throw xCeption( strX );
-			}
-			else if ( dwWaitResult != WAIT_TIMEOUT )
-			{
-				throw xCeption( _T( "Application::run : MsgWaitForMultipleObjects() failed!" ) );
+				if ( msg.message == WM_QUIT )
+				{
+					bQuit = true;
+				}
+				else
+				{
+					::TranslateMessage ( & msg );
+					::DispatchMessage ( & msg );
+				}
 			}
 		}
-		return static_cast< int >( msg.wParam );
+		else if ( dwWaitResult < WAIT_ABANDONED_0 + itsVHEvents.size() )
+		{
+			SmartUtil::tstring strX =
+				_T( "Application::run : Encountered an abandoned wait mutex object (index " );
+			strX += boost::lexical_cast< SmartUtil::tstring >( dwWaitResult - WAIT_ABANDONED_0 );
+			strX += _T( " )." );
+
+			throw xCeption( strX );
+		}
+		else if ( dwWaitResult != WAIT_TIMEOUT )
+		{
+			throw xCeption( _T( "Application::run : MsgWaitForMultipleObjects() failed!" ) );
+		}
 	}
+	return static_cast< int >( msg.wParam );
+}
+
+Application::FilterIter Application::addFilter(const FilterFunction& f) {
+	return filters.insert(filters.end(), f);
+}
+
+void Application::removeFilter(const FilterIter& i) {
+	filters.erase(i);
 }
 
 #endif // not __WINE__
