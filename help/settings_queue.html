@@ -80,7 +80,7 @@ was recognized as too slow. </dd>
   <dt>Don't remove the source when autodropping, only disconnect</dt>
   <dd>With this option enabled, sources will only be disconnected but
 not removed from the queue.</dd>
-  <dt>Automatically Search for Alternative Download Locations</dt>
+  <dt><a name="autosearchdl"></a>Automatically Search for Alternative Download Locations</dt>
   <dd>Every few minutes, the client will search for files in your
 Download Queue to find more download locations (more users/sources). If
 the download was started with a TTH root hash available, the autosearch
@@ -119,13 +119,6 @@ is reserved, less drive space being available while you are
 downloading, and possibly losing <span style="font-weight: bold;">all</span> 
 progress on your download if Windows crashes and DC++ cannot exit 
 cleanly.</span></dd>
-  <dt><a name="advanced_resume"></a>Advanced resume using TTH</dt>
-  <dd>Enables a more advanced form of transfer resuming than the <a href="settings_expert.html#rollback">rollback</a> method. The
-last block of the incomplete file will be checked for validity using
-the leaves, retrieved from the remote client, of the TTH. If the
-block fails verification, the previous block in the file will be tried,
-and so on, until a good block is found, or there is no more data in the
-file.</dd>
 </dl>
 </div>
 </body>

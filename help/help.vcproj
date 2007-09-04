@@ -74,10 +74,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\adlsearch.html"
-				>
-			</File>
-			<File
 				RelativePath=".\changelog.html"
 				>
 			</File>
@@ -142,14 +138,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\favorite_hubs.html"
-				>
-			</File>
-			<File
-				RelativePath=".\favorite_users.html"
-				>
-			</File>
-			<File
 				RelativePath=".\fdl.html"
 				>
 			</File>
@@ -179,10 +167,6 @@
 			</File>
 			<File
 				RelativePath=".\plusplus_tag.html"
-				>
-			</File>
-			<File
-				RelativePath=".\public_hubs.html"
 				>
 			</File>
 			<File
@@ -247,6 +231,62 @@
 			</File>
 			<File
 				RelativePath=".\template.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_adlsearch.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_download_queue.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_favorite_hubs.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_favorite_users.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_finished_downloads.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_finished_uploads.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_indexing_progress.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_network_stats.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_notepad.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_public_hubs.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_search_frame.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_search_spy.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_system_log.html"
+				>
+			</File>
+			<File
+				RelativePath=".\window_waiting_users.html"
 				>
 			</File>
 		</Filter>
