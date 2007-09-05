@@ -265,14 +265,14 @@ void MainWindow::initToolbar() {
 	cs.style |= TBSTYLE_FLAT;
 	toolbar = createToolbar(cs);
 	{
-		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 15, ILC_COLOR32 | ILC_MASK));
+		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap bmp(IDB_TOOLBAR20);
 		list->add(bmp, RGB(255, 0, 255));
 		
 		toolbar->setNormalImageList(list);
 	}
 	{
-		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 15, ILC_COLOR32 | ILC_MASK));
+		SmartWin::ImageListPtr list(new SmartWin::ImageList(20, 20, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap bmp(IDB_TOOLBAR20_HOT);
 		list->add(bmp, RGB(255, 0, 255));
 		
@@ -284,7 +284,7 @@ void MainWindow::initToolbar() {
 	toolbar->appendItem(IDC_RECONNECT, image++, TSTRING(MENU_RECONNECT));
 	toolbar->appendItem(IDC_FOLLOW, image++, TSTRING(MENU_FOLLOW_REDIRECT));
 	toolbar->appendSeparator();
-	toolbar->appendItem(IDC_FAVORITES, image++, TSTRING(FAVORITE_HUBS));
+	toolbar->appendItem(IDC_FAVORITE_HUBS, image++, TSTRING(FAVORITE_HUBS));
 	toolbar->appendItem(IDC_FAVUSERS, image++, TSTRING(FAVORITE_USERS));
 	toolbar->appendSeparator();
 	toolbar->appendItem(IDC_QUEUE, image++, TSTRING(DOWNLOAD_QUEUE));
@@ -338,6 +338,7 @@ bool MainWindow::filter(MSG& msg) {
 	}
 
 	if(accel && accel->translate(msg)) {
+		printf("Accel found\n");
 		return true;
 	}
 

@@ -174,6 +174,8 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 	onSpeaker(std::tr1::bind(&HubFrame::handleSpeaker, this, _1, _2));
 	onRaw(std::tr1::bind(&HubFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	onTabContextMenu(std::tr1::bind(&HubFrame::handleTabContextMenu, this, _1));
+	onCommand(std::tr1::bind(&HubFrame::handleReconnect, this), IDC_RECONNECT);
+	onCommand(std::tr1::bind(&HubFrame::handleFollow, this), IDC_FOLLOW);
 	
 	client = ClientManager::getInstance()->getClient(url);
 	client->addListener(this);

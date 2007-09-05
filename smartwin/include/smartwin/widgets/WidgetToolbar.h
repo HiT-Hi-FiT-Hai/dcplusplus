@@ -146,7 +146,7 @@ public:
 	  */
 	void appendSeparator();
 
-	void appendItem(unsigned int id, int image, const SmartUtil::tstring& toolTip = SmartUtil::tstring());
+	void appendItem(unsigned int id, int image, const SmartUtil::tstring& toolTip, const Dispatcher::F& f = Dispatcher::F());
 	
 	/// Set the image list with the normal button images.
 	/** normalImageList is the image list that contains the images

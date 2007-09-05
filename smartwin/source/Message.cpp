@@ -71,16 +71,16 @@ Message::Message(const MSG& msg_ )
 	}
 	case WM_TIMER:
 		{
-			// Checking to see if this is from a menu
 			param = msg_.wParam;
 		} break;
 	case WM_COMMAND :
 		{
-			// Checking to see if this is from a menu
-			if ( msg_.lParam == 0 )
-				param = static_cast< WPARAM >( LOWORD( msg_.wParam ) );
-			else
-				param = static_cast< WPARAM >( HIWORD( msg_.wParam ) );
+			if(msg_.lParam == 0) {
+				param = LOWORD( msg_.wParam );
+			} else {
+				// Include notification code for controls - the most useful code is zero so things should "just work" 
+				param = msg_.wParam;
+			}
 		} break;
 	}
 }

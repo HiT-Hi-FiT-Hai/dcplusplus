@@ -43,7 +43,7 @@ void WidgetToolbar::appendSeparator()
 	}
 }
 
-void WidgetToolbar::appendItem( unsigned int id, int image, const SmartUtil::tstring& toolTip)
+void WidgetToolbar::appendItem( unsigned int id, int image, const SmartUtil::tstring& toolTip, const Dispatcher::F& f)
 {
 	// Checking if tooltip id exists from before
 	if ( itsToolTips.find( id ) != itsToolTips.end() )
@@ -67,6 +67,9 @@ void WidgetToolbar::appendItem( unsigned int id, int image, const SmartUtil::tst
 	if(!toolTip.empty()) {
 		itsToolTips[id] = toolTip;
 	}
+	
+	if(f)
+		setCallback(Message(WM_COMMAND, id), Dispatcher(f));
 }
 
 bool WidgetToolbar::tryFire( const MSG & msg, LRESULT & retVal )
@@ -82,7 +85,18 @@ bool WidgetToolbar::tryFire( const MSG & msg, LRESULT & retVal )
 		}
 	}
 	
-	return PolicyType::tryFire(msg, retVal);
+	bool handled = PolicyType::tryFire(msg, retVal);
+	
+	if(!handled && msg.message == WM_COMMAND) {
+		MessageMapBase* parent = dynamic_cast<MessageMapBase*>(getParent());
+		if(parent != NULL) {
+			printf("Forwarding to parent\n");
+			// Maybe parent knows what to do with the WM_COMMAND (in case of shared menu/toolbar id's)
+			handled = parent->tryFire(msg, retVal);
+		}
+	}
+	
+	return handled;
 }
 
 }
