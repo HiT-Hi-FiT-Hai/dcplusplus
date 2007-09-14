@@ -56,7 +56,7 @@ public:
 	  */
 	void onClicked(const typename Dispatcher::F& f) {
 		static_cast<WidgetType*>(this)->setCallback(
-			WidgetType::getClickMessage(), Dispatcher(f)
+			static_cast<WidgetType*>(this)->getClickMessage(), Dispatcher(f)
 		);
 	}
 

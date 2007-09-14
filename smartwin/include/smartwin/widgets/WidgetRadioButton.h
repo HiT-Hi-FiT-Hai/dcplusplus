@@ -30,19 +30,7 @@
 #define WidgetRadioButton_h
 
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectBackgroundColor.h"
-#include "../aspects/AspectBorder.h"
-#include "../aspects/AspectClickable.h"
-#include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectThreads.h"
-#include "../aspects/AspectVisible.h"
+#include "../aspects/AspectButton.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -70,28 +58,10 @@ class WidgetRadioButton :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBackgroundColor< WidgetRadioButton >,
-	public AspectBorder< WidgetRadioButton >,
-	public AspectClickable< WidgetRadioButton >,
-	public AspectDblClickable< WidgetRadioButton >,
-	public AspectEnabled< WidgetRadioButton >,
-	public AspectFocus< WidgetRadioButton >,
-	public AspectFont< WidgetRadioButton >,
-	public AspectPainting< WidgetRadioButton >,
-	public AspectRaw< WidgetRadioButton >,
-	public AspectSizable< WidgetRadioButton >,
-	public AspectText< WidgetRadioButton >,
-	public AspectThreads< WidgetRadioButton >,
-	public AspectVisible< WidgetRadioButton >
+	public AspectButton< WidgetRadioButton >
 {
 	friend class WidgetCreator< WidgetRadioButton >;
 public:
-	/// Class type
-	typedef WidgetRadioButton ThisType;
-
-	/// Object type
-	typedef ThisType* ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
@@ -118,15 +88,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Contract needed by AspectClickable Aspect class
-	static inline Message & getClickMessage();
-
-	// Contract needed by AspectClickable Aspect class
-	static inline Message & getDblClickMessage();
-
-	// Contract needed by AspectBackgroundColor Aspect class
-	static inline Message & getBackgroundColorMessage();
 
 	/// Returns true if the RadioButton is selected
 	 /** Call this function to determine if the RadioButton is selected or not,
@@ -164,24 +125,6 @@ protected:
 inline WidgetRadioButton::Seed::Seed()
 {
 	* this = WidgetRadioButton::getDefaultSeed();
-}
-
-inline Message & WidgetRadioButton::getClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
-	return retVal;
-}
-
-inline Message & WidgetRadioButton::getDblClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
-	return retVal;
-}
-
-inline Message & WidgetRadioButton::getBackgroundColorMessage()
-{
-	static Message retVal = Message( WM_CTLCOLORBTN );
-	return retVal;
 }
 
 inline WidgetRadioButton::WidgetRadioButton( SmartWin::Widget * parent )

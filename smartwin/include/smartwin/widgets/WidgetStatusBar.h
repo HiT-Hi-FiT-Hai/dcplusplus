@@ -188,10 +188,10 @@ public:
 	void refresh();
 
 	// Contract needed by AspectClickable Aspect class
-	static inline Message & getClickMessage();
+	static const Message& getClickMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
-	static inline Message & getDblClickMessage();
+	static const Message& getDblClickMessage();
 
 	/// Actually creates the StatusBar
 	/** You should call WidgetFactory::createStatusBar if you instantiate class
@@ -280,14 +280,14 @@ void WidgetStatusBar< TypeOfStatusBar >::refresh()
 }
 
 template< class TypeOfStatusBar >
-Message & WidgetStatusBar< TypeOfStatusBar >::getClickMessage()
+const Message & WidgetStatusBar< TypeOfStatusBar >::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
 template< class TypeOfStatusBar >
-Message & WidgetStatusBar< TypeOfStatusBar >::getDblClickMessage()
+const Message & WidgetStatusBar< TypeOfStatusBar >::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;

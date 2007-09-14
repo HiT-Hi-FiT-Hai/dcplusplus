@@ -30,19 +30,7 @@
 #define WidgetCheckBox_h
 
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectBackgroundColor.h"
-#include "../aspects/AspectBorder.h"
-#include "../aspects/AspectClickable.h"
-#include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectThreads.h"
-#include "../aspects/AspectVisible.h"
+#include "../aspects/AspectButton.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -66,28 +54,10 @@ class WidgetCheckBox :
 	public MessageMapPolicy< Policies::Subclassed >,
 	
 	// Aspect classes
-	public AspectBackgroundColor< WidgetCheckBox >,
-	public AspectBorder< WidgetCheckBox >,
-	public AspectClickable< WidgetCheckBox >,
-	public AspectDblClickable< WidgetCheckBox >,
-	public AspectEnabled< WidgetCheckBox >,
-	public AspectFocus< WidgetCheckBox >,
-	public AspectFont< WidgetCheckBox >,
-	public AspectPainting< WidgetCheckBox >,
-	public AspectRaw< WidgetCheckBox >,
-	public AspectSizable< WidgetCheckBox >,
-	public AspectText< WidgetCheckBox >,
-	public AspectThreads< WidgetCheckBox >,
-	public AspectVisible< WidgetCheckBox >
+	public AspectButton< WidgetCheckBox >
 {
 	friend class WidgetCreator< WidgetCheckBox >;
 public:
-	/// Class type
-	typedef WidgetCheckBox ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	/// Policy type
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
@@ -115,15 +85,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Contract needed by AspectClickable Aspect class
-	static inline Message & getClickMessage();
-
-	// Contract needed by AspectClickable Aspect class
-	static inline Message & getDblClickMessage();
-
-	// Contract needed by AspectClickable Aspect class
-	static inline Message & getBackgroundColorMessage();
 
 	/// Returns the checked state of the Check Box
 	/** Return value is true if Check Box is checked, otherwise false.
@@ -166,28 +127,6 @@ inline void WidgetCheckBox::setChecked( bool value )
 {
 	this->sendMessage(BM_SETCHECK, static_cast< WPARAM >( value ? BST_CHECKED : BST_UNCHECKED ) );
 }
-
-
-inline Message & WidgetCheckBox::getClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
-	return retVal;
-}
-
-
-inline Message & WidgetCheckBox::getDblClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
-	return retVal;
-}
-
-
-inline Message & WidgetCheckBox::getBackgroundColorMessage()
-{
-	static Message retVal = Message( WM_CTLCOLORBTN );
-	return retVal;
-}
-
 
 inline bool WidgetCheckBox::getChecked()
 {

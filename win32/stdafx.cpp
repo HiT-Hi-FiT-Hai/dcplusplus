@@ -16,18 +16,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef PORT_ME
-
 #include "stdafx.h"
-#include "Resource.h"
-
-// Only need this for older ATL:s
-#if _ATL_VER < 0x0700
-#include <atlimpl.cpp>
-#endif
-
-// Basic sanity check
-#if (_WTL_VER < 0x750)
-#error WTL not correctly installed, read compile.txt
-#endif
-#endif

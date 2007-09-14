@@ -78,7 +78,6 @@ Message::Message(const MSG& msg_ )
 			if(msg_.lParam == 0) {
 				param = LOWORD( msg_.wParam );
 			} else {
-				// Include notification code for controls - the most useful code is zero so things should "just work" 
 				param = msg_.wParam;
 			}
 		} break;

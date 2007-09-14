@@ -22,46 +22,37 @@
 #include <SmartWin.h>
 
 template<class T>
-class ListViewArrows : public SmartWin::WidgetFactory<SmartWin::WidgetWindow, T> {
+class ListViewArrows {
 public:
 	ListViewArrows() {
-		this->onCreate(onCreate);
-		this->onClosing(onDestroy);
+		rebuildArrows();
 	}
 
 	virtual ~ListViewArrows() { }
 
 	typedef ListViewArrows<T> thisClass;
 
-#ifdef PORT_ME
-	MESSAGE_HANDLER(WM_SETTINGCHANGE, onSettingChange)
-#endif
-
 	void rebuildArrows()
 	{
 		POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
 		POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
 
-		BufferedCanvas dc;
-		Pen penLight;
-		Pen penShadow;
+		SmartWin::FreeCanvas dc(NULL, ::CreateCompatibleDc(NULL));
 
 		const int bitmapWidth = 8;
 		const int bitmapHeight = 8;
 		const Rectangle rect = {0, 0, bitmapWidth, bitmapHeight};
 
-		Brush brush(dc, COLOR_3DFACE);
-		Pen penLight(dc, COLOR_3DHIGHLIGHT, 1);
-		Pen penShadow(dc, COLOR_3DSHADOW, 1);
+		SmartWin::Brush brush(dc, COLOR_3DFACE);
+		SmartWin::Pen penLight(dc, COLOR_3DHIGHLIGHT, 1);
+		SmartWin::Pen penShadow(dc, COLOR_3DSHADOW, 1);
 
-		if (!upArrow)
-			upArrow = Bitmap(::CreateCompatibleBitmap(::GetDC(NULL), bitmapWidth, bitmapHeight));
+		upArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.getDc(), bitmapWidth, bitmapHeight)));
 
-		if (!downArrow)
-			downArrow = Bitmap(::CreateCompatibleBitmap(::GetDC(NULL), bitmapWidth, bitmapHeight));
+		downArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.getDc(), bitmapWidth, bitmapHeight)));
 
 		// create up arrow
-		::SelectBitmap(dc.getDc(), upArrow.getBitmap());
+		::SelectBitmap(dc.getDc(), upArrow.handle());
 		dc.FillRect(&rect, brush);
 #ifdef PORT_ME
 		dc.SelectPen(penLight);
@@ -117,26 +108,9 @@ public:
 		}
 	}
 
-	void onCreate(CREATESTRUCT* /* cs */) {
-		rebuildArrows();
-		T* pThis = (T*)this;
-		_Module.AddSettingChangeNotify(pThis->m_hWnd);
-	}
-
-	bool onDestroy() {
-		T* pThis = (T*)this;
-		_Module.RemoveSettingChangeNotify(pThis->m_hWnd);
-		return true;
-	}
-
-	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		rebuildArrows();
-		bHandled = FALSE;
-		return 1;
-	}
 private:
-	auto_ptr<SmartWin::Bitmap> upArrow;
-	auto_ptr<SmartWin::Bitmap> downArrow;
+	SmartWin::BitmapPtr upArrow;
+	SmartWin::BitmapPtr downArrow;
 };
 
 #endif // !defined(LIST_VIEW_ARROWS_H)

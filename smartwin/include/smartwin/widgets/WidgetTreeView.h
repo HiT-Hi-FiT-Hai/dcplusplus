@@ -314,10 +314,10 @@ public:
 	static Message & getSelectionChangedMessage();
 
 	// Contract needed by AspectClickable Aspect class
-	static inline Message & getClickMessage();
+	static const Message& getClickMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
-	static Message & getDblClickMessage();
+	static const Message& getDblClickMessage();
 
 	/// Actually creates the TreeView
 	/** You should call WidgetFactory::createTreeView if you instantiate class
@@ -480,13 +480,13 @@ inline Message & WidgetTreeView::getSelectionChangedMessage()
 	return retVal;
 }
 
-inline Message & WidgetTreeView::getClickMessage()
+inline const Message & WidgetTreeView::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-inline Message & WidgetTreeView::getDblClickMessage()
+inline const Message & WidgetTreeView::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;

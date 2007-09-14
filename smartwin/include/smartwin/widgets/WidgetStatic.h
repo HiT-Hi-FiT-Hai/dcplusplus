@@ -120,13 +120,13 @@ public:
 	static const Seed & getDefaultSeed();
 
 	// Contract needed by AspectClickable Aspect class
-	static inline Message & getClickMessage();
+	static const Message& getClickMessage();
 
 	// Contract needed by AspectBackgroundColor Aspect class
-	static inline Message & getBackgroundColorMessage();
+	static const Message & getBackgroundColorMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
-	static inline Message & getDblClickMessage();
+	static const Message& getDblClickMessage();
 
 	/// Actually creates the Static Control
 	/** You should call WidgetFactory::createStatic if you instantiate class
@@ -165,19 +165,19 @@ inline WidgetStatic::Seed::Seed()
 	* this = WidgetStatic::getDefaultSeed();
 }
 
-inline Message & WidgetStatic::getClickMessage()
+inline const Message & WidgetStatic::getClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, STN_CLICKED );
 	return retVal;
 }
 
-inline Message & WidgetStatic::getBackgroundColorMessage()
+inline const Message & WidgetStatic::getBackgroundColorMessage()
 {
 	static Message retVal = Message( WM_CTLCOLORSTATIC );
 	return retVal;
 }
 
-inline Message & WidgetStatic::getDblClickMessage()
+inline const Message & WidgetStatic::getDblClickMessage()
 {
 	static Message retVal = Message( WM_COMMAND, STN_DBLCLK );
 	return retVal;
@@ -187,11 +187,11 @@ inline WidgetStatic::WidgetStatic( SmartWin::Widget * parent )
 	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );
+	xAssert( parent, _T( "Can't have a Static without a parent..." ) );
 }
 
 inline void WidgetStatic::setBitmap( HBITMAP bitmap )
-{            // "this" only for for ming compiler.
+{
 	this->addRemoveStyle( SS_BITMAP, true );
 	::SendMessage( this->handle(), STM_SETIMAGE, ( WPARAM ) IMAGE_BITMAP, ( LPARAM ) bitmap );
 }

@@ -414,10 +414,10 @@ public:
 	static Message & getSelectionChangedMessage();
 
 	// Contract needed by AspectClickable Aspect class
-	static inline Message & getClickMessage();
+	static const Message & getClickMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
-	static Message & getDblClickMessage();
+	static const Message & getDblClickMessage();
 #ifdef PORT_ME
 	/// \ingroup EventHandlersWidgetDataGrid
 	/// Validation event handler setter
@@ -943,14 +943,14 @@ inline bool WidgetDataGrid::isValidSelectionChanged( LPARAM lPar )
 }
 
 
-inline Message & WidgetDataGrid::getClickMessage()
+inline const Message & WidgetDataGrid::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
 
-inline Message & WidgetDataGrid::getDblClickMessage()
+inline const Message & WidgetDataGrid::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;

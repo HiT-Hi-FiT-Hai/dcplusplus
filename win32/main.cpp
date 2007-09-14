@@ -29,118 +29,6 @@
 
 #ifdef PORT_ME
 
-#include "Resource.h"
-#include "ExtendedTrace.h"
-
-#include "MainFrm.h"
-
-#include <delayimp.h>
-CAppModule _Module;
-
-CriticalSection cs;
-enum { DEBUG_BUFSIZE = 8192 };
-static char guard[DEBUG_BUFSIZE];
-static int recursion = 0;
-static bool firstException = true;
-
-static char buf[DEBUG_BUFSIZE];
-
-#ifndef _DEBUG
-
-FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo /* pdli */) {
-	MessageBox(WinUtil::mainWnd, _T("DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("DC++ Has Crashed"), MB_OK | MB_ICONERROR);
-	exit(-1);
-}
-
-#endif
-
-#include "../client/SSLSocket.h"
-
-LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
-{
-	Lock l(cs);
-
-	if(recursion++ > 30)
-		exit(-1);
-
-#ifndef _DEBUG
-#if _MSC_VER == 1200
-	__pfnDliFailureHook = FailHook;
-#elif _MSC_VER == 1300 || _MSC_VER == 1310 || _MSC_VER == 1400
-	__pfnDliFailureHook2 = FailHook;
-#else
-#error Unknown Compiler version
-#endif
-
-	// The release version loads the dll and pdb:s here...
-	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
-
-#endif
-
-	if(firstException) {
-		File::deleteFile(Util::getConfigPath() + "exceptioninfo.txt");
-		firstException = false;
-	}
-
-	if(File::getSize(Util::getDataPath() + "DCPlusPlus.pdb") == -1) {
-		// No debug symbols, we're not interested...
-		::MessageBox(WinUtil::mainWnd, _T("DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution..."), _T("DC++ has crashed"), MB_OK);
-#ifndef _DEBUG
-		exit(1);
-#else
-		return EXCEPTION_CONTINUE_SEARCH;
-#endif
-	}
-
-	File f(Util::getConfigPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
-	f.setEndPos(0);
-
-	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
-
-	sprintf(buf, "Code: %x\r\nVersion: %s\r\n",
-		exceptionCode, VERSIONSTRING);
-
-	f.write(buf, strlen(buf));
-
-	OSVERSIONINFOEX ver;
-	WinUtil::getVersionInfo(ver);
-
-	sprintf(buf, "Major: %d\r\nMinor: %d\r\nBuild: %d\r\nSP: %d\r\nType: %d\r\n",
-		(DWORD)ver.dwMajorVersion, (DWORD)ver.dwMinorVersion, (DWORD)ver.dwBuildNumber,
-		(DWORD)ver.wServicePackMajor, (DWORD)ver.wProductType);
-
-	f.write(buf, strlen(buf));
-	time_t now;
-	time(&now);
-	strftime(buf, DEBUG_BUFSIZE, "Time: %Y-%m-%d %H:%M:%S\r\n", localtime(&now));
-
-	f.write(buf, strlen(buf));
-
-	f.write(LIT("TTH: "));
-	f.write(tth, strlen(tth));
-	f.write(LIT("\r\n"));
-
-	f.write(LIT("\r\n"));
-
-	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
-
-	f.write(LIT("\r\n"));
-
-	f.close();
-
-	if(MessageBox(WinUtil::mainWnd, _T("DC++ just encountered a fatal bug and should have written an exceptioninfo.txt the same directory as the executable. You can upload this file at http://dcplusplus.sf.net/crash/ to help us find out what happened (please do not report this bug in the bug tracker unless you know the exact steps to reproduce it...). Go there now?"), _T("DC++ Has Crashed"), MB_YESNO | MB_ICONERROR) == IDYES) {
-		WinUtil::openLink(_T("http://dcplusplus.sf.net/crash/"));
-	}
-
-#ifndef _DEBUG
-	EXTENDEDTRACEUNINITIALIZE();
-
-	exit(-1);
-#else
-	return EXCEPTION_CONTINUE_SEARCH;
-#endif
-}
-
 static void sendCmdLine(HWND hOther, LPTSTR lpstrCmdLine)
 {
 	tstring cmdLine = lpstrCmdLine;
@@ -168,28 +56,6 @@ BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	return TRUE;
 }
 
-static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
-{
-	CMessageLoop theLoop;
-	_Module.AddMessageLoop(&theLoop);
-
-	splash.DestroyWindow();
-	dummy.DestroyWindow();
-
-	if(ResourceManager::getInstance()->isRTL()) {
-		SetProcessDefaultLayout(LAYOUT_RTL);
-	}
-
-	MainFrame wndMain;
-
-	int nRet = theLoop.Run();
-
-	_Module.RemoveMessageLoop();
-
-	shutdown();
-
-	return nRet;
-}
 #endif
 
 static void checkCommonControls() {
@@ -278,13 +144,6 @@ void term_handler() {
 
 int SmartWinMain(SmartWin::Application& app) {
 	dcdebug("StartWinMain\n");
-#ifdef PORT_ME
-#ifdef _DEBUG
-	EXTENDEDTRACEINITIALIZE( Util::getDataPath().c_str() );
-	//File::deleteFile(Util::getDataPath() + "exceptioninfo.txt");
-#endif
-	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
-#endif
 
 	if(!checkOtherInstances()) {
 		return 1;
@@ -315,7 +174,11 @@ int SmartWinMain(SmartWin::Application& app) {
 	try {
 		SplashWindow* splash(new SplashWindow);
 		startup(&callBack, splash);
-	
+
+		if(ResourceManager::getInstance()->isRTL()) {
+			SetProcessDefaultLayout(LAYOUT_RTL);
+		}
+
 		WinUtil::init();
 		MainWindow* wnd = new MainWindow;
 		WinUtil::mainWindow = wnd;
@@ -334,12 +197,6 @@ int SmartWinMain(SmartWin::Application& app) {
 	shutdown();
 
 	::CoUninitialize();
-	
-#ifdef PORT_ME
-#ifdef _DEBUG
-	EXTENDEDTRACEUNINITIALIZE();
-#endif
-#endif
 
 	return ret;
 }

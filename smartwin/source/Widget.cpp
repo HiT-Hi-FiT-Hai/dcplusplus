@@ -203,6 +203,9 @@ void Widget::setCallback( const Message& msg, const CallbackType& callback )
 
 bool Widget::tryFire( const MSG & msg, LRESULT & retVal ) {
 	// First we must create a "comparable" message...
+	if(msg.message == WM_COMMAND) {
+		printf("WM_COMMAND %x %x\n", msg.wParam, msg.lParam);
+	}
 	Message msgComparer( msg );
 	CallbackCollectionType::iterator i = itsCallbacks.find(msgComparer);
 	if(i != itsCallbacks.end()) {

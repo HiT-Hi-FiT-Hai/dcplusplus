@@ -30,19 +30,7 @@
 #define WidgetGroupBox_h
 
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectBackgroundColor.h"
-#include "../aspects/AspectBorder.h"
-#include "../aspects/AspectClickable.h"
-#include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectEraseBackground.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectThreads.h"
-#include "../aspects/AspectVisible.h"
+#include "../aspects/AspectButton.h"
 #include "../xCeption.h"
 #include "WidgetRadioButton.h"
 
@@ -68,28 +56,10 @@ class WidgetGroupBox :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBackgroundColor< WidgetGroupBox >,
-	public AspectBorder< WidgetGroupBox >,
-	public AspectClickable< WidgetGroupBox >,
-	public AspectDblClickable< WidgetGroupBox >,
-	public AspectEnabled< WidgetGroupBox >,
-	public AspectEraseBackground< WidgetGroupBox >,
-	public AspectFocus< WidgetGroupBox >,
-	public AspectFont< WidgetGroupBox >,
-	public AspectRaw< WidgetGroupBox >,
-	public AspectSizable< WidgetGroupBox >,
-	public AspectText< WidgetGroupBox >,
-	public AspectThreads< WidgetGroupBox >,
-	public AspectVisible< WidgetGroupBox >
+	public AspectButton< WidgetGroupBox >
 {
 	friend class WidgetCreator< WidgetGroupBox >;
 public:
-	/// Class type
-	typedef WidgetGroupBox ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
@@ -116,15 +86,6 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
-
-	// Contract needed by AspectBackgroundColor Aspect class
-	static inline Message & getBackgroundColorMessage();
-
-	// Contract needed by AspectBackgroundColor Aspect class
-	static inline Message & getClickMessage();
-
-	// Contract needed by AspectBackgroundColor Aspect class
-	static inline Message & getDblClickMessage();
 
 	/// Actually creates the Button Control
 	/** You should call WidgetFactory::createButton if you instantiate class
@@ -156,24 +117,6 @@ private:
 inline WidgetGroupBox::Seed::Seed()
 {
 	* this = WidgetGroupBox::getDefaultSeed();
-}
-
-inline Message & WidgetGroupBox::getBackgroundColorMessage()
-{
-	static Message retVal = Message( WM_CTLCOLORBTN );
-	return retVal;
-}
-
-inline Message & WidgetGroupBox::getClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
-	return retVal;
-}
-
-inline Message & WidgetGroupBox::getDblClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
-	return retVal;
 }
 
 inline WidgetGroupBox::WidgetGroupBox( SmartWin::Widget * parent )

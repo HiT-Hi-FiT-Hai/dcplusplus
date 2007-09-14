@@ -30,20 +30,7 @@
 #define WidgetButton_h
 
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectBackgroundColor.h"
-#include "../aspects/AspectBorder.h"
-#include "../aspects/AspectClickable.h"
-#include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
-#include "../aspects/AspectFocus.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectThreads.h"
-#include "../aspects/AspectVisible.h"
+#include "../aspects/AspectButton.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -67,28 +54,10 @@ class WidgetButton :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectBackgroundColor< WidgetButton >,
-	public AspectBorder< WidgetButton >,
-	public AspectClickable< WidgetButton >,
-	public AspectDblClickable< WidgetButton >,
-	public AspectEnabled< WidgetButton >,
-	public AspectFocus< WidgetButton >,
-	public AspectFont< WidgetButton >,
-	public AspectKeyboard< WidgetButton >,
-	public AspectPainting< WidgetButton >,
-	public AspectRaw< WidgetButton >,
-	public AspectSizable< WidgetButton >,
-	public AspectText< WidgetButton >,
-	public AspectThreads< WidgetButton >,
-	public AspectVisible< WidgetButton >
+	public AspectButton< WidgetButton >
 {
 	friend class WidgetCreator< WidgetButton >;
 public:
-	/// Class type
-	typedef WidgetButton ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
 
 	/// Policy type
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
@@ -118,15 +87,6 @@ public:
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
 
-	// Contract needed by AspectClickable Aspect class
-	static inline Message & getClickMessage();
-
-	// Contract needed by AspectClickable Aspect class
-	static inline Message & getDblClickMessage();
-
-	// Contract needed by AspectBackgroundColor Aspect class
-	static inline Message & getBackgroundColorMessage();
-
 	/// Actually creates the Button Control
 	/** You should call WidgetFactory::createButton if you instantiate class
 	  * directly. <br>
@@ -151,24 +111,6 @@ protected:
 inline WidgetButton::Seed::Seed()
 {
 	* this = WidgetButton::getDefaultSeed();
-}
-
-inline Message & WidgetButton::getClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_CLICKED );
-	return retVal;
-}
-
-inline Message & WidgetButton::getDblClickMessage()
-{
-	static Message retVal = Message( WM_COMMAND, BN_DBLCLK );
-	return retVal;
-}
-
-inline Message & WidgetButton::getBackgroundColorMessage()
-{
-	static Message retVal = Message( WM_CTLCOLORBTN );
-	return retVal;
 }
 
 inline WidgetButton::WidgetButton( SmartWin::Widget * parent )
