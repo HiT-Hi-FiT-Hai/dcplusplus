@@ -35,6 +35,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include <map>
 #include "Atom.h"
 #include "Message.h"
 
@@ -157,6 +158,8 @@ public:
 	/** This will be called when it's time to delete the widget */
 	virtual void kill();
 
+	void setHandle(HWND hWnd) { itsHandle = hWnd; }
+
 protected:
 	std::vector < Widget * > itsChildren; // Derived widgets might need access to the children
 
@@ -179,8 +182,6 @@ protected:
 	// Erases the "this" widget from its parent's list of children.
 	void eraseMeFromParentsChildren();
 
-	void setHandle(HWND hWnd) { itsHandle = hWnd; }
-	
 private:
 	friend class Application;
 	template<typename T> friend T hwnd_cast(HWND hwnd);

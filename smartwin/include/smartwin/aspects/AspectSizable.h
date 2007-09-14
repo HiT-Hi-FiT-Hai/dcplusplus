@@ -29,6 +29,7 @@
 #ifndef AspectSizable_h
 #define AspectSizable_h
 
+#include "../Widget.h"
 #include "../Place.h"
 #include "../xCeption.h"
 

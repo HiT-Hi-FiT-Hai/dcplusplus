@@ -88,7 +88,7 @@ bool WidgetToolbar::tryFire( const MSG & msg, LRESULT & retVal )
 	bool handled = PolicyType::tryFire(msg, retVal);
 	
 	if(!handled && msg.message == WM_COMMAND) {
-		MessageMapBase* parent = dynamic_cast<MessageMapBase*>(getParent());
+		Widget* parent = getParent();
 		if(parent != NULL) {
 			// Maybe parent knows what to do with the WM_COMMAND (in case of shared menu/toolbar id's)
 			handled = parent->tryFire(msg, retVal);

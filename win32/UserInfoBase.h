@@ -70,7 +70,7 @@ public:
 	// std::tr1::bind(&UserInfoBase::connectFav, _1, parent) doesn't seem to work with g++ svn 2007-07-30...
 	// wonder if it's me or the implementation as boost::bind/function swallows it...
 	struct Caller {
-		Caller(SmartWin::WidgetMDIParent* parent_, void (UserInfoBase::*f_)(SmartWin::WidgetMDIParent*)) { parent = parent_; }
+		Caller(SmartWin::WidgetMDIParent* parent_, void (UserInfoBase::*f_)(SmartWin::WidgetMDIParent*)) : parent(parent_), f(f_) { }
 		void operator()(UserInfoBase* uib) { (uib->*f)(parent); }
 		SmartWin::WidgetMDIParent* parent;
 		void (UserInfoBase::*f)(SmartWin::WidgetMDIParent*);

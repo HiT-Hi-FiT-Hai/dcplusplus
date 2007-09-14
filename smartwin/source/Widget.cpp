@@ -107,25 +107,14 @@ void Widget::attach(HWND hwnd) {
 
 Widget::Widget( Widget * parent, HWND hWnd, bool doReg )
 	: 
-	itsCtrlId(NULL),
 	itsHandle( hWnd ),
-	itsParent( parent ),
-	itsCriticalSection( 0 )
+	itsParent( parent )
 {
 	if ( doReg )
 	{
 		if ( itsParent )
 			itsParent->itsChildren.push_back( this );
 	}
-}
-
-Utilities::CriticalSection & Widget::getCriticalSection()
-{
-	if ( !itsCriticalSection.get() )
-	{
-		itsCriticalSection.reset( new Utilities::CriticalSection );
-	}
-	return * itsCriticalSection;
 }
 
 void Widget::killMe()
