@@ -200,11 +200,28 @@ void Widget::addRemoveExStyle( DWORD addStyle, bool add )
 	}
 }
 
+GlobalAtom Widget::propAtom(_T("SmartWin::Widget*"));
 
-void private_::setHandle( SmartWin::Widget * widget, HWND handle )
+void Widget::setCallback( const Message& msg, const CallbackType& callback )
 {
-	widget->itsHandle = handle;
+	CallbackCollectionType::iterator i = itsCallbacks.find(msg);
+	if(i == itsCallbacks.end()) {
+		itsCallbacks.insert(std::make_pair(msg, callback));
+	} else {
+		i->second = callback;
+	}
 }
+
+bool Widget::tryFire( const MSG & msg, LRESULT & retVal ) {
+	// First we must create a "comparable" message...
+	Message msgComparer( msg );
+	CallbackCollectionType::iterator i = itsCallbacks.find(msgComparer);
+	if(i != itsCallbacks.end()) {
+		return i->second( msg, retVal );
+	}
+	return false;
+}
+
 
 // end namespace SmartWin
 }

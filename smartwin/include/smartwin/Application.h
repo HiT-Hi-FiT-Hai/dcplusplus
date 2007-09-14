@@ -43,7 +43,6 @@
 #include <boost/signal.hpp>
 #include <map>
 #include "Message.h"
-#include "MessageMapBase.h"
 
 #ifdef _MSC_VER
 #ifndef WINCE

@@ -66,8 +66,7 @@ void WidgetMenu::setText( unsigned id, const SmartUtil::tstring& text )
 		throw xCeption( _T( "Couldn't set item info in setItemText()" ) );
 }
 
-void WidgetMenuBase::addCommands(MessageMapBase* widget) {
-	printf("Adding %d\n", callbacks.size());
+void WidgetMenuBase::addCommands(Widget* widget) {
 	for(CallbackMap::iterator i = callbacks.begin(); i != callbacks.end(); ++i) {
 		widget->setCallback(Message(WM_COMMAND, i->first), i->second);
 	}

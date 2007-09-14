@@ -29,7 +29,7 @@
 #ifndef MessageMapPolicyClasses_h
 #define MessageMapPolicyClasses_h
 
-#include "MessageMapBase.h"
+#include "Widget.h"
 
 namespace SmartWin
 {
@@ -51,13 +51,13 @@ public:
 		MSG msg = { hwnd, uMsg, wParam, lParam };
 		
 		// Try to get the this pointer
-		MessageMapBase* map = MessageMapBase::fromProp(handler);
+		Widget* w = hwnd_cast<Widget*>(handler);
 		
-		if(!map) {
+		if(!w) {
 			if(handler != hwnd) {
-				map = MessageMapBase::fromProp(hwnd);
-				if(map) {
-					return static_cast<Policy*>(map)->returnUnhandled(hwnd, uMsg, wParam, lParam);
+				Policy* p = hwnd_cast<Policy*>(hwnd);
+				if(p) {
+					return p->returnUnhandled(hwnd, uMsg, wParam, lParam);
 				}
 			} 
 			return Policy::returnUnknown(hwnd, uMsg, wParam, lParam);
@@ -68,25 +68,28 @@ public:
 		if(uMsg == WM_NCDESTROY) {
 #endif
 			
-			map->kill();
+			w->kill();
 			return Policy::returnDestroyed(hwnd, uMsg, wParam, lParam);
 		}
 
 		LRESULT res = 0;
-		if(map->tryFire(msg, res)) {
+		if(w->tryFire(msg, res)) {
 			return Policy::returnHandled(res, hwnd, uMsg, wParam, lParam);
 		}
 		
+		Policy* p;
+		
 		if(handler != hwnd) {
-			map = MessageMapBase::fromProp(hwnd);
-			if(!map) {
-				return Policy::returnUnknown(hwnd, uMsg, wParam, lParam);
-			}
-		} 
+			p = hwnd_cast<Policy*>(hwnd);
+		} else {
+			p = dynamic_cast<Policy*>(w);
+		}
 		
-		Policy* This = static_cast<Policy*>(map);
+		if(!p) {
+			return Policy::returnUnknown(hwnd, uMsg, wParam, lParam);
+		}
 		
-		return This->returnUnhandled(hwnd, uMsg, wParam, lParam);
+		return p->returnUnhandled(hwnd, uMsg, wParam, lParam);
 	}
 private:
 
@@ -139,11 +142,11 @@ namespace Policies {
   * MessageMapPolicyDialogWidget
   */
 class Dialog
-	: public MessageMapBase
+	: public Widget
 {
 public:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	Dialog(Widget* parent) : MessageMapBase(parent) { }
+	Dialog(Widget* parent) : Widget(parent) { }
 	
 	virtual void kill()
 	{
@@ -185,8 +188,8 @@ public:
 		if ( uMsg == WM_INITDIALOG )
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
-			MessageMapBase* This = static_cast<MessageMapBase*>(reinterpret_cast< Widget * >( lParam ));
-			private_::setHandle( This, hwnd );
+			Widget* This = static_cast<Widget*>(reinterpret_cast< Widget * >( lParam ));
+			This->setHandle( hwnd );
 			This->setProp();
 		}
 	}
@@ -217,7 +220,7 @@ public:
   * SmartWin will assume this is the one you're after!
   */
 class Normal
-	: public MessageMapBase
+	: public Widget
 {
 public:
 	virtual void kill()
@@ -226,7 +229,7 @@ public:
 	}
 
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	Normal(Widget* parent) : MessageMapBase(parent) { }
+	Normal(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
 		return ::DefWindowProc( hWnd, msg, wPar, lPar );
@@ -253,8 +256,8 @@ public:
 		if ( uMsg == WM_NCCREATE ) {
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-			MessageMapBase* This = static_cast<MessageMapBase*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
-			private_::setHandle( This, hWnd );
+			Widget* This = static_cast<Widget*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
+			This->setHandle( hWnd );
 			This->setProp();
 		}
 	}
@@ -305,7 +308,7 @@ private:
   * Child Container Widget
   */
 class MDIChild
-	: public MessageMapBase
+	: public Widget
 {
 public:
 	virtual void kill()
@@ -314,7 +317,7 @@ public:
 	}
 	
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
-	MDIChild(Widget* parent) : MessageMapBase(parent) { }
+	MDIChild(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
 		return ::DefMDIChildProc( hWnd, msg, wPar, lPar );
@@ -352,9 +355,8 @@ public:
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
 			MDICREATESTRUCT * mcs = reinterpret_cast< MDICREATESTRUCT*>(cs->lpCreateParams);
 			
-			MessageMapBase* This = static_cast<MessageMapBase*>(reinterpret_cast< Widget * >( mcs->lParam ));
-			private_::setHandle( This, hWnd );
-
+			Widget* This = static_cast<Widget*>(reinterpret_cast< Widget * >( mcs->lParam ));
+			This->setHandle( hWnd );
 			This->setProp();
 		}
 	}
@@ -378,7 +380,7 @@ public:
 		bool handled = Normal::tryFire(msg, retVal);
 		WidgetType* This = static_cast<WidgetType*>(this);
 		if(!handled && msg.message == WM_COMMAND && This->getMDIParent()) {
-			MessageMapBase* active = MessageMapBase::fromProp(This->getMDIParent()->getActive());
+			Widget* active = hwnd_cast<Widget*>(This->getMDIParent()->getActive());
 			if(active)
 				handled = active->tryFire(msg, retVal);
 		}

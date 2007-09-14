@@ -330,16 +330,15 @@ bool MainWindow::filter(MSG& msg) {
 		return true;
 	}
 
+	if(accel && accel->translate(msg)) {
+		return true;
+	}
+
 	HWND active = getMDIParent()->getActive();
 	if(active != NULL) {
 		if(::IsDialogMessage( active, & msg )) {
 			return true;
 		}
-	}
-
-	if(accel && accel->translate(msg)) {
-		printf("Accel found\n");
-		return true;
 	}
 
 	return false;

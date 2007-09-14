@@ -34,6 +34,9 @@
 #include <boost/noncopyable.hpp>
 #include <memory>
 #include <vector>
+#include <functional>
+#include "Atom.h"
+#include "Message.h"
 
 namespace SmartWin
 {
@@ -41,17 +44,9 @@ namespace SmartWin
 
 class Application;
 class Widget;
-namespace Utilities {
-class CriticalSection;
-}
 
-namespace private_
-{
-	// Helper function to be able to set itsHandle to Widget in WM_NCCREATE message
-	// Since we don't want to have it public and cannot have it a friend (templates
-	// can't be friends)
-	void setHandle( Widget * widget, HWND handle );
-}
+template<typename T>
+T hwnd_cast(HWND hwnd);
 
 /// Abstract Base class for all Widgets
 /** Basically (almost) all Widgets derive from this class, this is the root class for
@@ -66,24 +61,13 @@ namespace private_
 class Widget
 	: public boost::noncopyable
 {
-	friend void private_::setHandle( Widget * widget, HWND handle );
 public:
 	/// Returns the HWND to the Widget
 	/** Returns the HWND to the inner window of the Widget. <br>
 	  * If you need to do directly manipulation of the window use this function to
 	  * retrieve the HWND of the Widget.
 	  */
-	HWND handle() const
-	{ return itsHandle;
-	}
-
-	/// Returns a CriticalSection associated with the current Widget object
-	/** If you need serialized thread safe access to the Widget call this function
-	  * and either stuff the returned object into a Utilities::ThreadLock or call
-	  * Utilities::CriticalSection::lock (then you manually have to ensure
-	  * CriticalSection::unlock is called on it)
-	  */
-	Utilities::CriticalSection & getCriticalSection();
+	HWND handle() const	{ return itsHandle; }
 
 	/// Returns the control id of the Widget
 	/** This one only makes sense for control items, e.g. WidgetButton,
@@ -91,9 +75,7 @@ public:
 	  * Every control in a Widget has got its own control ID, mark that for a
 	  * WidgetWindow this will always be ZERO
 	  */
-	HMENU getCtrlId() const
-	{ return itsCtrlId;
-	}
+	HMENU getCtrlId() const { return NULL; }
 
 	// TODO These need to be moved to an appropriate location so that they're only
 	// available when the handle is a HWND...
@@ -155,15 +137,32 @@ public:
 	bool clientToScreen(POINT& pt) { return ::ClientToScreen(handle(), &pt); }
 	bool screenToClient(POINT& pt) { return ::ScreenToClient(handle(), &pt); }
 	
+	void setProp() { ::SetProp(handle(), propAtom, reinterpret_cast<HANDLE>(this) ); }
+	
+	typedef std::tr1::function<bool(const MSG& msg, LRESULT& ret)> CallbackType;
+	
+	// We only support one Callback per message, so a map is appropriate
+	typedef std::map<Message, CallbackType> CallbackCollectionType;
+	
+	/// Adds a new Callback into the Callback collection or replaces the existing one
+	void setCallback(const Message& msg, const CallbackType& callback );
+
+	CallbackCollectionType & getCallbacks() { 
+		return itsCallbacks;
+	}
+
+	/// Returns true if fired, else false
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
+		
+	/** This will be called when it's time to delete the widget */
+	virtual void kill();
+
 protected:
-	// TODO: Can these become PRIVATE?!?!?
-	HMENU itsCtrlId;
 	std::vector < Widget * > itsChildren; // Derived widgets might need access to the children
 
-	// Widget will almost ALLWAYS be deleted from a pointer to a Widget
-	virtual ~Widget();
-
 	Widget( Widget * parent, HWND hWnd = NULL, bool doReg = true );
+
+	virtual ~Widget();
 
 	// Creates the Widget, should NOT be called directly but overridden in the
 	// derived class (with no parameters)
@@ -181,20 +180,29 @@ protected:
 	void eraseMeFromParentsChildren();
 
 	void setHandle(HWND hWnd) { itsHandle = hWnd; }
-
+	
 private:
 	friend class Application;
+	template<typename T> friend T hwnd_cast(HWND hwnd);
+	
 	HWND itsHandle;
 	Widget * itsParent;
 
-	std::auto_ptr< Utilities::CriticalSection > itsCriticalSection;
+	// Contains the list of signals we're (this window) processing
+	CallbackCollectionType itsCallbacks;
 
-	// Kills the Widget, wrapper around "delete this" plus some other logic
-	void kill();
+	/// The ATOM with which the pointer to the MessageMapBase is registered on the HWND
+	static GlobalAtom propAtom;
 };
 
 inline bool Widget::hasStyle(DWORD style) {
 	return (::GetWindowLong(this->handle(), GWL_STYLE) & style) == style;	
+}
+
+template<typename T>
+T hwnd_cast(HWND hwnd) {
+	Widget* w = reinterpret_cast<Widget*>(::GetProp(hwnd, Widget::propAtom));
+	return dynamic_cast<T>(w);
 }
 
 // end namespace SmartWin

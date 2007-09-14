@@ -31,6 +31,9 @@ inline Accelerator::Accelerator(Widget* widget_, unsigned id) :
 }
 
 inline bool Accelerator::translate(const MSG& msg) {
+	if(!handle()) {
+		return false;
+	}
 	return ::TranslateAccelerator(widget->handle(), handle(), const_cast<MSG*>(&msg)) > 0;
 }
 

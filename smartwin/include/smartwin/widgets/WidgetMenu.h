@@ -64,10 +64,10 @@ protected:
 
 	HMENU itsHandle;
 	
-	typedef std::map<unsigned, MessageMapBase::CallbackType> CallbackMap;
+	typedef std::map<unsigned, Widget::CallbackType> CallbackMap;
 	CallbackMap callbacks;
 	
-	void addCommands(MessageMapBase* widget);
+	void addCommands(Widget* widget);
 
 };
 
@@ -179,7 +179,7 @@ public:
 	  * This can be done by attaching another menu object. <br>
 	  * For an example of this see the WidgetMenu project.       
 	  */
-	void attach( MessageMapBase * mainWindow )
+	void attach( Widget * mainWindow )
 	{
 		addCommands(mainWindow);
 		::SetMenu( mainWindow->handle(), handle() );
@@ -432,7 +432,7 @@ public:
 	  * < li >TPM_VERPOSANIMATION : Animates the menu from top to bottom< /li >
 	  * < /ul >
 	  */
-	unsigned trackPopupMenu( MessageMapBase * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
+	unsigned trackPopupMenu( Widget * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
 
 	bool isSystemMenu()
 	{
@@ -538,7 +538,7 @@ inline bool WidgetMenu::isSeparator( UINT id, bool byPosition )
 	return (getMenuState(id, byPosition) & MF_SEPARATOR) == MF_SEPARATOR; 
 }
 
-inline unsigned WidgetMenu::trackPopupMenu( MessageMapBase * mainWindow, int x, int y, unsigned flags )
+inline unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, int x, int y, unsigned flags )
 {
 	
 	xAssert( mainWindow != 0, _T( "EventHandlerClass can't be null while trying to display Popup Menu" ) );
