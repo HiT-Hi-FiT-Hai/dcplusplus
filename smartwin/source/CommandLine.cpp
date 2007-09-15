@@ -32,87 +32,45 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-std::vector< std::string > buildCommandLine( const char * cmdLine )
+const std::vector< SmartUtil::tstring > & CommandLine::getParams() const
 {
-	using namespace std;
-	vector< string > retVal;
-	if ( cmdLine == 0 )
-		return std::vector< std::string >( 0 );
-	string strCmdLine( cmdLine );
-	enum POS
-	{ EMPTY = '\0', STRING = '"', ESCAPED = '~'
-	};
-	POS pos = EMPTY;
-	string buffer;
-
-	// Looping over string to parse out Command line Arguments
-	for ( std::string::iterator idx = strCmdLine.begin();
-		idx != strCmdLine.end();
-		++idx )
-	{
-		switch ( * idx )
-		{
-			case STRING :
-			{
-				if ( pos == ESCAPED )
-				{
-					buffer.push_back( * idx );
-					pos = STRING;
-					break;
+	if(itsCmdLine.empty()) {
+		// Maybe we haven't converted them yet...
+		bool inEscape = false;
+		bool inQuote = false;
+		SmartUtil::tstring param;
+		for(size_t i = 0; i < getParamsRaw().size(); ++i) {
+			SmartUtil::tstring::value_type c = getParamsRaw()[i];
+			if(c == '\\') {
+				if(inEscape) {
+					param.push_back(c);
 				}
-				pos = pos == EMPTY ? STRING : EMPTY;
-			} break;
-			case ESCAPED :
-			{
-				if ( STRING != pos )
-					buffer.push_back( * idx );
-				pos = pos == ESCAPED ? STRING : pos == STRING ? ESCAPED : EMPTY;
-			} break;
-			default:
-			{
-				if ( pos == STRING )
-					buffer.push_back( * idx );
-				else if ( * idx != ' ' )
-					buffer.push_back( * idx );
-				else
-				{
-					if ( buffer.size() > 0 )
-					{
-						retVal.push_back( buffer );
-						buffer.clear();
-					}
+				inEscape = !inEscape;
+			} else if(c == '"') {
+				if(inEscape) {
+					param.push_back(c);
+				} else {
+					inQuote = !inQuote;
 				}
+				inEscape = false;
+			} else if(c == ' ' && !inQuote && !inEscape) {
+				itsCmdLine.push_back(param);
+				param.clear();
+			} else {
+				param.push_back(c);
+				inEscape = false;
 			}
 		}
+		if(!param.empty())
+			itsCmdLine.push_back(param);
 	}
-
-	// Adding the last one...
-	if ( buffer.size() > 0 )
-	{
-		retVal.push_back( buffer );
-		buffer.clear();
-	}
-
-	return retVal;
-}
-
-CommandLine::CommandLine( const char * cmdLine )
-	: itsCmdLine( buildCommandLine( cmdLine ) ),
-	itsRawCmdLine( cmdLine )
-{
-}
-
-CommandLine::~CommandLine()
-{
-}
-
-const std::vector< std::string > & CommandLine::getParams() const
-{
 	return itsCmdLine;
 }
 
-const char * CommandLine::getParamsRaw() const
-{
+const SmartUtil::tstring& CommandLine::getParamsRaw() const {
+	if(itsRawCmdLine.empty()) {
+		itsRawCmdLine = GetCommandLine();
+	}
 	return itsRawCmdLine;
 }
 

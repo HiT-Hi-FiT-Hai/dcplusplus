@@ -169,6 +169,7 @@ private:
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	LRESULT trayMessage(WPARAM wParam, LPARAM lParam);
 	LRESULT handleCopyData(WPARAM wParam, LPARAM lParam);
+	LRESULT handleWhereAreYou(WPARAM wParam, LPARAM lParam);
 	
 	void layout();
 	bool eachSecond();
@@ -217,27 +218,14 @@ private:
 	}
 
 	BEGIN_MSG_MAP(MainFrame)
-		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
-		CHAIN_MDI_CHILD_COMMANDS()
 	END_MSG_MAP()
-
-	BEGIN_UPDATE_UI_MAP(MainFrame)
-		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
-		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
-		UPDATE_ELEMENT(ID_VIEW_TRANSFER_VIEW, UPDUI_MENUPOPUP)
-	END_UPDATE_UI_MAP()
-
 
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return WMU_WHERE_ARE_YOU;
-	}
 
 	LRESULT onTrayQuit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		PostMessage(WM_CLOSE);

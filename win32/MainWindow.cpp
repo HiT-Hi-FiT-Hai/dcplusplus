@@ -113,7 +113,8 @@ MainWindow::MainWindow() :
 
 	onRaw(std::tr1::bind(&MainWindow::trayMessage, this, _1, _2), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
 	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
-
+	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this, _1, _2), SmartWin::Message(WMU_WHERE_ARE_YOU));
+	
 	TimerManager::getInstance()->start();
 
 	c = new HttpConnection;
@@ -553,6 +554,9 @@ bool MainWindow::handleTabResize(const SmartWin::WidgetSizedEventResult& sz) {
 	return false;
 }
 
+LRESULT MainWindow::handleWhereAreYou(WPARAM, LPARAM) {
+	return WMU_WHERE_ARE_YOU;
+}
 void MainWindow::resizeMDIClient() {
 	SmartWin::Rectangle rc = tabs->getUsableArea();
 	SmartWin::Rectangle rctabs(SmartWin::Point(0, 0), tabs->getClientAreaSize());

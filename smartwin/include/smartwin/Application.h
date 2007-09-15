@@ -147,7 +147,10 @@ public:
 	/// The initialization that must be done first.
 	/** Used internally by the WinMain function, and externally for DLL initialization.
 	  */
-	static void neededSmartWinInit( HINSTANCE hInstance, int nCmdShow, const char * cmdLine );
+	static void init( HINSTANCE hInstance, int nCmdShow );
+	
+	/// Shut down operations
+	static void uninit();
 
 	/// Calls various leak and memory corruption routines.
 	/** Used after the message loop completes in WinMain.
@@ -164,7 +167,9 @@ public:
 	  * startup. <br>
 	  * Use this function to retrieve the command line object
 	  */
-	const CommandLine & getCommandLine();
+	const CommandLine & getCommandLine() const;
+	
+	int getCmdShow() const;
 
 	/// Determine if is an application is already running or not
 	/** Returns true if this application have another instance running!
@@ -200,8 +205,10 @@ private:
 	// The global HINSTANCE given in the WinMain function
 	const HINSTANCE itsHInstance;
 
-	// Its raw command line parameters
-	const char * itsCmdLine;
+	int itsCmdShow;
+	
+	// Command line parameters
+	CommandLine itsCmdLine;
 
 	// We want to be notified when certain event HANDLEs become signalled by Windows.
 	// Those handles go in this vector.
@@ -213,14 +220,7 @@ private:
 	FilterList filters;
 	
 	// Private Constructor to ensure Singleton Implementation
-	Application( HINSTANCE hInst, int nCmdShow, const char * cmdLine );
-
-	// Since the Constructor needs parameters we need to have a static Constructor
-	// which takes those parameters (Module Handle and show params)
-	static void Instantiate( HINSTANCE hInst, int nCmdShow, const char * cmdLine = 0 );
-
-	// Cleaning up...
-	static void UnInstantiate();
+	Application( HINSTANCE hInst, int nCmdShow );
 };
 
 // end namespace SmartWin

@@ -71,18 +71,12 @@ int PASCAL WinMain
 {
 	unsigned int retVal = 0;
 	bool corruptMemMemLeak = false;
-
-#ifndef WINCE
-	std::string cmdLineString = lpCmdLine;
-#else
-	std::string cmdLineString = SmartUtil::AsciiGuaranteed::doConvert( lpCmdLine, SmartUtil::ConversionCodepage::ANSI );
-#endif
-
-	Application::neededSmartWinInit( hInstance, nCmdShow, cmdLineString.c_str() );
+	
+	Application::init( hInstance, nCmdShow );
 	try
 	{
 		retVal = SmartWinMain( Application::instance() ); // Call library user's startup function.
-		Application::UnInstantiate();
+		Application::uninit();
 
 		Application::checkCorruptOrMemleak( corruptMemMemLeak );
 	}
@@ -96,101 +90,92 @@ int PASCAL WinMain
 
 // Application implementation
 
-	/** Initializes the runtime for SmartWin++
-		Typically only called by WinMain or DllMain.
-	  */
-	void Application::neededSmartWinInit( HINSTANCE hInstance, int nCmdShow, const char * cmdLine )
-	{
-		Application::Instantiate( hInstance, nCmdShow, cmdLine );
+/** Initializes the runtime for SmartWin++
+	Typically only called by WinMain or DllMain.
+  */
+void Application::init( HINSTANCE hInstance, int nCmdShow )
+{
+	itsInstance = new Application( hInstance, nCmdShow );
 
 #ifndef WINCE
-		BOOL enable;
-		::SystemParametersInfo( SPI_GETUIEFFECTS, 0, & enable, 0 );
-		if ( ! enable ) {
-			enable = TRUE;
-			::SystemParametersInfo( SPI_SETUIEFFECTS, 0, & enable, 0 );
-		}
+	BOOL enable;
+	::SystemParametersInfo( SPI_GETUIEFFECTS, 0, & enable, 0 );
+	if ( ! enable ) {
+		enable = TRUE;
+		::SystemParametersInfo( SPI_SETUIEFFECTS, 0, & enable, 0 );
+	}
 #endif
 
-		// Initializing Common Controls...
-		INITCOMMONCONTROLSEX init;
-		init.dwSize = sizeof( INITCOMMONCONTROLSEX );
-		init.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES | ICC_DATE_CLASSES | ICC_PROGRESS_CLASS;
-		::InitCommonControlsEx( & init );
+	// Initializing Common Controls...
+	INITCOMMONCONTROLSEX init;
+	init.dwSize = sizeof( INITCOMMONCONTROLSEX );
+	init.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES | ICC_DATE_CLASSES | ICC_PROGRESS_CLASS;
+	::InitCommonControlsEx( & init );
 
 #ifdef _MSC_VER
 #ifndef WINCE
 #ifdef _DEBUG
-		_CrtSetDbgFlag( _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF ); // Show heap leaks at exit, to debug window.
+	_CrtSetDbgFlag( _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF ); // Show heap leaks at exit, to debug window.
 #endif
 #endif
 #endif
-	}
+}
 
-	void Application::checkCorruptOrMemleak( bool & corruptMemMemLeak )
-	{
-		corruptMemMemLeak = false;
+void Application::checkCorruptOrMemleak( bool & corruptMemMemLeak )
+{
+	corruptMemMemLeak = false;
 #ifdef _MSC_VER
 #ifndef WINCE
 #ifdef _DEBUG
-		corruptMemMemLeak = _CrtCheckMemory() != TRUE; // Check for corruption right now.
-		xAssert( ! corruptMemMemLeak, _T( "The application has corrupted its heap memory." ) );
+	corruptMemMemLeak = _CrtCheckMemory() != TRUE; // Check for corruption right now.
+	xAssert( ! corruptMemMemLeak, _T( "The application has corrupted its heap memory." ) );
 #endif
 #endif
 #endif
-	}
+}
 
-	unsigned int Application::reportErr( xCeption & err, bool corruptMemMemLeak )
-	{
-		unsigned int retVal;
+unsigned int Application::reportErr( xCeption & err, bool corruptMemMemLeak )
+{
+	unsigned int retVal;
 
-		if ( corruptMemMemLeak )
-			retVal = 0xdeadbeef;
-		else
-			retVal = err.getErrorCode();
+	if ( corruptMemMemLeak )
+		retVal = 0xdeadbeef;
+	else
+		retVal = err.getErrorCode();
 
 #ifdef _MSC_VER
 #ifndef WINCE
 #ifdef _DEBUG
+	_RPT0( _CRT_WARN, "\r\n" );
+	_RPT0( _CRT_WARN, "*** ERROR ***\r\n" );
+	_RPT0( _CRT_WARN, err.what() );
+	_RPT0( _CRT_WARN, "\r\n" );
+	if ( ! corruptMemMemLeak )
+	{
+		_RPT0( _CRT_WARN, err.whatWndMsg() );
 		_RPT0( _CRT_WARN, "\r\n" );
-		_RPT0( _CRT_WARN, "*** ERROR ***\r\n" );
-		_RPT0( _CRT_WARN, err.what() );
-		_RPT0( _CRT_WARN, "\r\n" );
-		if ( ! corruptMemMemLeak )
-		{
-			_RPT0( _CRT_WARN, err.whatWndMsg() );
-			_RPT0( _CRT_WARN, "\r\n" );
-		}
-		_RPT0( _CRT_WARN, "*** END OF ERROR ***" );
-		_RPT0( _CRT_WARN, "\r\n" );
-#endif
-#endif
-#endif
-		return retVal;
 	}
-
+	_RPT0( _CRT_WARN, "*** END OF ERROR ***" );
+	_RPT0( _CRT_WARN, "\r\n" );
+#endif
+#endif
+#endif
+	return retVal;
+}
 
 HINSTANCE Application::getAppHandle()
 {
 	return itsHInstance;
 }
 
-Application::Application( HINSTANCE hInst, int nCmdShow, const char * cmdLine )
-	: itsHInstance( hInst )
-	, itsCmdLine( cmdLine )
-	
+Application::Application( HINSTANCE hInst, int nCmdShow )
+	: itsHInstance( hInst ), itsCmdShow(nCmdShow)
 {
 }
 
-void Application::Instantiate( HINSTANCE hInst, int nCmdShow, const char * cmdLine )
+const CommandLine & Application::getCommandLine() const
 {
-	itsInstance = new Application( hInst, nCmdShow, cmdLine );
-}
-
-const CommandLine & Application::getCommandLine()
-{
-	static CommandLine retVal( itsCmdLine );
-	return retVal;
+	return itsCmdLine;
 }
 
 bool Application::isAppAlreadyRunning()
@@ -199,14 +184,11 @@ bool Application::isAppAlreadyRunning()
 	itsMutex = ::CreateMutex( NULL, FALSE, appPath.c_str() );
 	if ( !itsMutex )
 		return false;
-	if ( ::GetLastError() == ERROR_ALREADY_EXISTS )
-	{
+	if ( ::GetLastError() == ERROR_ALREADY_EXISTS ) {
 		::CloseHandle( itsMutex );
 		itsMutex = 0;
 		return true;
-	}
-	else
-	{
+	} else {
 		// We were the first one to create the mutex
 		// so that makes us the main instance.
 		return false;
@@ -246,14 +228,8 @@ void Application::removeWaitEvent( HANDLE hWaitEvent )
 	}
 }
 
-void Application::UnInstantiate()
+void Application::uninit()
 {
-	// TODO: is this really needed, or does the OS take care of local classes?
-	//for ( std::list< SmartUtil::tstring >::const_iterator b_Iter = itsClassesToUnregister.begin()
-	//  ; b_Iter != itsClassesToUnregister.end()
-	//  ; ++b_Iter
-	//  )
-	//  ::UnregisterClass( b_Iter->c_str(), Application::instance().getAppHandle() );
 	delete itsInstance;
 	itsInstance = 0;
 	if ( itsMutex )
@@ -267,7 +243,7 @@ Application & Application::instance()
 {
 	if ( 0 == itsInstance )
 	{
-		Instantiate( ::GetModuleHandle( NULL ), 0, 0 );
+		init( ::GetModuleHandle( NULL ), 0 );
 	}
 	return * itsInstance;
 }
@@ -411,11 +387,14 @@ MouseEventResult::MouseEventResult( WPARAM wP, LPARAM lP )
 	isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
 
 	// These might be an issue when porting to Windows CE since CE does only support LEFT (or something...)
-	// TODO: Also should we provide support for MK_XBUTTON1/2 ? ?
 	ButtonPressed = (
 		MK_LBUTTON & wP ? MouseEventResult::LEFT : (
 			MK_RBUTTON & wP ? MouseEventResult::RIGHT : (
-				MK_MBUTTON & wP ? MouseEventResult::MIDDLE : MouseEventResult::OTHER
+				MK_MBUTTON & wP ? MouseEventResult::MIDDLE : (
+					MK_XBUTTON1 & wP ? MouseEventResult::X1 : (
+						MK_XBUTTON2 & wP ? MouseEventResult::X2 : MouseEventResult::OTHER
+					)
+				)
 			)
 		)
 	);

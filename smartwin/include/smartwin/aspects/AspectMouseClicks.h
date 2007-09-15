@@ -46,7 +46,7 @@ struct MouseEventResult
 	/// Types of buttons
 	enum Button
 	{
-		OTHER, LEFT, RIGHT, MIDDLE
+		OTHER, LEFT, RIGHT, MIDDLE, X1, X2
 	};
 
 	/// Position of mouse
@@ -70,8 +70,6 @@ struct MouseEventResult
 	bool isAltPressed;
 
 	/// Indicates which mouse button was actually pressed
-	/** possible values are LEFT, RIGHT or MIDDLE
-	  */
 	Button ButtonPressed;
 };
 

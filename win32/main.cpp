@@ -27,11 +27,8 @@
 #include <dcpp/File.h>
 #include <dcpp/Text.h>
 
-#ifdef PORT_ME
-
-static void sendCmdLine(HWND hOther, LPTSTR lpstrCmdLine)
+static void sendCmdLine(HWND hOther, const tstring& cmdLine)
 {
-	tstring cmdLine = lpstrCmdLine;
 	LRESULT result;
 
 	COPYDATASTRUCT cpd;
@@ -45,9 +42,8 @@ BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	DWORD result;
 	LRESULT ok = ::SendMessageTimeout(hWnd, WMU_WHERE_ARE_YOU, 0, 0,
 		SMTO_BLOCK | SMTO_ABORTIFHUNG, 5000, &result);
-	if(ok == 0)
-		return TRUE;
-	if(result == WMU_WHERE_ARE_YOU) {
+
+	if(ok && result == WMU_WHERE_ARE_YOU) {
 		// found it
 		HWND *target = (HWND *)lParam;
 		*target = hWnd;
@@ -55,8 +51,6 @@ BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	}
 	return TRUE;
 }
-
-#endif
 
 static void checkCommonControls() {
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
@@ -96,35 +90,33 @@ static void checkCommonControls() {
 	}
 }
 
-bool checkOtherInstances() {
+bool checkOtherInstances(const tstring& cmdLine) {
 #ifndef _DEBUG
 	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}"));
 #else
 	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48350}"));
 #endif
 
-#ifdef PORT_ME
 	if(dcapp.isRunning()) {
 		HWND hOther = NULL;
-		EnumWindows(searchOtherInstance, (LPARAM)&hOther);
+		::EnumWindows(&searchOtherInstance, (LPARAM)&hOther);
 
 #ifndef _DEBUG
 		if( hOther != NULL ) {
 #else
-		if( hOther != NULL && _tcslen(lpstrCmdLine) > 0 ) {
+		if( hOther != NULL && !cmdLine.empty() ) {
 #endif
 			// pop up
 			::SetForegroundWindow(hOther);
 
-			if( IsIconic(hOther)) {
+			if( ::IsIconic(hOther)) {
 				// restore
 				::ShowWindow(hOther, SW_RESTORE);
 			}
-			sendCmdLine(hOther, lpstrCmdLine);
+			sendCmdLine(hOther, cmdLine);
 			return false;
 		}
 	}
-#endif
 	return true;
 }
 
@@ -145,7 +137,7 @@ void term_handler() {
 int SmartWinMain(SmartWin::Application& app) {
 	dcdebug("StartWinMain\n");
 
-	if(!checkOtherInstances()) {
+	if(!checkOtherInstances(app.getCommandLine().getParamsRaw())) {
 		return 1;
 	}
 
