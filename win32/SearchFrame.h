@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_SEARCH_FRAME_H
 
 #include "MDIChildFrame.h"
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 #include "AspectUserCommand.h"
 
 #include <dcpp/SearchManager.h>
@@ -172,13 +172,13 @@ private:
 	bool onlyFree;
 
 	WidgetStaticPtr hubsLabel;
-	typedef TypedListViewCtrl<SearchFrame, HubInfo> WidgetHubs;
+	typedef TypedListView<SearchFrame, HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
 	WidgetButtonPtr doSearch;
 
-	typedef TypedListViewCtrl<SearchFrame, SearchInfo> WidgetResults;
+	typedef TypedListView<SearchFrame, SearchInfo> WidgetResults;
 	typedef WidgetResults* WidgetResultsPtr;
 	WidgetResultsPtr results;
 

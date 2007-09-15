@@ -40,7 +40,6 @@
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRightClickable.h"
-#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectBorder.h"
 #include "../xCeption.h"
 
@@ -125,7 +124,6 @@ class WidgetStatusBar :
 	public AspectRightClickable< WidgetStatusBar< TypeOfStatusBar > >,
 	// GCC chokes on private inheritance here since we're casting to WidgetType in some of the member functions in AspectSizable!!
 	protected AspectSizable< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectThreads< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectVisible< WidgetStatusBar< TypeOfStatusBar > >
 {
 	typedef SmartWin::AspectSizable< WidgetStatusBar< TypeOfStatusBar > > AspectSizable;

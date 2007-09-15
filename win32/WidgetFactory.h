@@ -19,7 +19,6 @@
 #ifndef DCPLUSPLUS_WIN32_WIDGETFACTORY2_H_
 #define DCPLUSPLUS_WIN32_WIDGETFACTORY2_H_
 
-#include "WidgetDataGrid.h"
 #include "WidgetTextBox.h"
 #include "WidgetPaned.h"
 
@@ -30,20 +29,6 @@ template<typename ContainerWidgetType>
 class WidgetFactory : public SmartWin::WidgetFactory<ContainerWidgetType> {
 public:
 	explicit WidgetFactory(SmartWin::Widget* parent) : SmartWin::WidgetFactory<ContainerWidgetType>(parent) { }
-
-	/// DataGrid class type.
-	typedef ::WidgetDataGrid WidgetDataGrid;
-
-	/// DataGrid object type.
-	typedef typename WidgetDataGrid::ObjectType WidgetDataGridPtr;
-
-	WidgetDataGridPtr createDataGrid( const WidgetDataGrid::Seed & cs = WidgetDataGrid::getDefaultSeed() ) {
-		return SmartWin::WidgetCreator< WidgetDataGrid >::create( this, cs );
-	}
-
-	WidgetDataGridPtr subclassList( unsigned id ) {
-		return SmartWin::WidgetCreator< WidgetDataGrid >::subclass( this, id );
-	}
 
 	/// TextBox class type.
 	typedef ::WidgetTextBox WidgetTextBox;

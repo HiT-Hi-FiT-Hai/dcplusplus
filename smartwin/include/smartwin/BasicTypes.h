@@ -52,6 +52,10 @@ struct Point
 	  */
 	Point();
 
+	Point(POINT pt);
+	
+	operator POINT() const;
+	
 	/// Sets this Point to the maximum value for each x y dimension.
 	/** Each x,y dimension is adjusted by the p Point.
 	  */
@@ -138,6 +142,8 @@ struct Rectangle
 	/** Default constructor initializing everything to zero (0)
 	  */
 	Rectangle();
+	
+	Rectangle(const RECT& rc);
 
 	/// Constructor initializing the rectangle with a position and size.
 	/** Note that the pSize is actually a size and NOT the lower right Point.
@@ -176,13 +182,7 @@ struct Rectangle
 				double xFraction, double yFraction,
 				double widthFraction, double heightFraction );
 
-	operator const ::RECT() const;
-
-	/// Creates a new rectangle from a Windows RECT
-	/** Windows RECT structure uses the coordinates of the top-left and bottom-right
-	  * points. SmartWin::Rectangle, on the other hand, uses top-left, width-height.
-	  */
-	static Rectangle FromRECT( const ::RECT & );
+	operator RECT() const;
 
 	/// Return the lower right point of the rectangle.
 	/** Note that the rectangle is defined with pos, and a size, so we need this

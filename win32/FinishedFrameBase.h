@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_FINISHED_FRAME_BASE_H
 
 #include "StaticFrame.h"
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 #include "TextFrame.h"
 #include "ShellContextMenu.h"
 #include "HoldRedraw.h"
@@ -181,7 +181,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListViewCtrl<T, ItemInfo> WidgetItems;
+	typedef TypedListView<T, ItemInfo> WidgetItems;
 	typedef WidgetItems* WidgetItemsPtr;
 	WidgetItemsPtr items;
 
@@ -204,7 +204,7 @@ private:
 
 	void handleDoubleClick() {
 		if(items->hasSelection())
-			items->getSelectedItem()->openFile();
+			items->getSelectedData()->openFile();
 	}
 
 	bool handleKeyDown(int c) {
@@ -224,7 +224,7 @@ private:
 			}
 
 			if(BOOLSETTING(SHOW_SHELL_MENU) && items->getSelectedCount() == 1) {
-				string path = items->getSelectedItem()->entry->getTarget();
+				string path = items->getSelectedData()->entry->getTarget();
 				if(File::getSize(path) != -1) {
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
@@ -261,8 +261,8 @@ private:
 
 	void handleViewAsText() {
 		int i = -1;
-		while((i = items->getNextItem(i, LVNI_SELECTED)) != -1)
-			new TextFrame(this->getParent(), items->getItemData(i)->entry->getTarget());
+		while((i = items->getNext(i, LVNI_SELECTED)) != -1)
+			new TextFrame(this->getParent(), items->getData(i)->entry->getTarget());
 	}
 
 	void handleOpenFile() {
@@ -275,10 +275,10 @@ private:
 
 	void handleRemove() {
 		int i;
-		while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
-			FinishedManager::getInstance()->remove(items->getItemData(i)->entry, in_UL);
-			delete items->getItemData(i);
-			items->removeRow(i);
+		while((i = items->getNext(-1, LVNI_SELECTED)) != -1) {
+			FinishedManager::getInstance()->remove(items->getData(i)->entry, in_UL);
+			delete items->getData(i);
+			items->erase(i);
 		}
 	}
 
@@ -287,7 +287,7 @@ private:
 	}
 
 	void updateStatus() {
-		setStatus(STATUS_COUNT, Text::toT(Util::toString(items->getRowCount()) + ' ' + STRING(ITEMS)));
+		setStatus(STATUS_COUNT, Text::toT(Util::toString(items->size()) + ' ' + STRING(ITEMS)));
 		setStatus(STATUS_BYTES, Text::toT(Util::formatBytes(totalBytes)));
 		setStatus(STATUS_SPEED, Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s"));
 	}
@@ -304,16 +304,16 @@ private:
 		totalBytes += entry->getChunkSize();
 		totalTime += entry->getMilliSeconds();
 
-		int loc = items->insertItem(new ItemInfo(entry));
+		int loc = items->insert(new ItemInfo(entry));
 		items->ensureVisible(loc);
 	}
 
 	void clearList() {
-		unsigned n = items->getRowCount();
+		unsigned n = items->size();
 		for(unsigned i = 0; i < n; ++i)
-			delete items->getItemData(i);
+			delete items->getData(i);
 
-		items->removeAllRows();
+		items->clear();
 	}
 
 	virtual void on(Added, bool upload, FinishedItemPtr entry) throw() {

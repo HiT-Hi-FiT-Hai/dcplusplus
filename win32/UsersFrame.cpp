@@ -92,26 +92,26 @@ void UsersFrame::layout() {
 }
 
 void UsersFrame::addUser(const FavoriteUser& aUser) {
-	int i = users->insertItem(new UserInfo(aUser));
+	int i = users->insert(new UserInfo(aUser));
 	bool b = aUser.isSet(FavoriteUser::FLAG_GRANTSLOT);
-	users->setRowChecked(i, b);
+	users->setChecked(i, b);
 }
 
 void UsersFrame::updateUser(const UserPtr& aUser) {
-	for(int i = 0; i < users->getRowCount(); ++i) {
-		UserInfo *ui = users->getItemData(i);
+	for(int i = 0; i < users->size(); ++i) {
+		UserInfo *ui = users->getData(i);
 		if(ui->user == aUser) {
 			ui->columns[COLUMN_SEEN] = aUser->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", FavoriteManager::getInstance()->getLastSeen(aUser)));
-			users->updateItem(i);
+			users->update(i);
 		}
 	}
 }
 
 void UsersFrame::removeUser(const FavoriteUser& aUser) {
-	for(int i = 0; i < users->getRowCount(); ++i) {
-		UserInfo *ui = users->getItemData(i);
+	for(int i = 0; i < users->size(); ++i) {
+		UserInfo *ui = users->getData(i);
 		if(ui->user == aUser.getUser()) {
-			users->removeRow(i);
+			users->erase(i);
 			delete ui;
 			return;
 		}
@@ -127,8 +127,8 @@ void UsersFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
 
-	for(int i = 0; i < users->getRowCount(); ++i) {
-		delete users->getItemData(i);
+	for(int i = 0; i < users->size(); ++i) {
+		delete users->getData(i);
 	}
 }
 
@@ -168,13 +168,13 @@ void UsersFrame::handleRemove() {
 void UsersFrame::handleProperties() {
 	if(users->getSelectedCount() == 1) {
 		int i = users->getSelectedIndex();
-		UserInfo* ui = users->getItemData(i);
+		UserInfo* ui = users->getData(i);
 		LineDlg dlg(this, ui->columns[COLUMN_NICK], TSTRING(DESCRIPTION), ui->columns[COLUMN_DESCRIPTION]);
 
 		if(dlg.run() == IDOK) {
 			FavoriteManager::getInstance()->setUserDescription(ui->user, Text::fromT(dlg.getLine()));
 			ui->columns[COLUMN_DESCRIPTION] = dlg.getLine();
-			users->updateItem(i);
+			users->update(i);
 		}
 	}
 }
@@ -184,7 +184,7 @@ void UsersFrame::handleProperties() {
 LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
-		FavoriteManager::getInstance()->setAutoGrant(ctrlUsers.getItemData(l->iItem)->user, ctrlUsers.GetCheckState(l->iItem) != FALSE);
+		FavoriteManager::getInstance()->setAutoGrant(ctrlUsers.getData(l->iItem)->user, ctrlUsers.GetCheckState(l->iItem) != FALSE);
 	}
 	return 0;
 }
@@ -218,7 +218,7 @@ LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
 
 LRESULT UsersFrame::onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
-		UserInfo *ui = ctrlUsers.getItemData(i);
+		UserInfo *ui = ctrlUsers.getData(i);
 		FavoriteManager::FavoriteMap favUsers = FavoriteManager::getInstance()->getFavoriteUsers();
 		const FavoriteUser u = favUsers.find(ui->user->getCID())->second;
 		if(u.getUrl().length() > 0)

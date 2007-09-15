@@ -32,7 +32,6 @@
 
 #include "../BasicTypes.h"
 #include "../CanvasClasses.h"
-#include "../aspects/AspectGetParent.h"
 #include <boost/cast.hpp>
 #ifdef PORT_ME
 namespace SmartWin
@@ -1156,7 +1155,7 @@ public:
 	MenuColorInfo getColorInfo();
 
 	/// Returns item data
-	MenuItemDataPtr getItemData( int itemIndex );
+	MenuItemDataPtr getData( int itemIndex );
 
 	virtual ~WidgetMenuExtended();
 
@@ -1416,7 +1415,7 @@ int WidgetMenuExtended< EventHandlerClass >::getItemIndex( unsigned itemID )
 }
 
 template< class EventHandlerClass >
-MenuItemDataPtr WidgetMenuExtended< EventHandlerClass >::getItemData( int itemIndex )
+MenuItemDataPtr WidgetMenuExtended< EventHandlerClass >::getData( int itemIndex )
 {
 	size_t i = 0;
 

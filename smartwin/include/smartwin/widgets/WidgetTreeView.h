@@ -34,11 +34,12 @@
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
+#include "../aspects/AspectCollection.h"
+#include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectRightClickable.h"
@@ -47,8 +48,6 @@
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
-#include <commctrl.h>
-
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -56,26 +55,6 @@ namespace SmartWin
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
-
-/// One "node" in the TreeView.
- /** Used e.g. when inserting nodes into the TreeView. <br>
-   * When you add a node by calling WidgetTreeView::insertNode the return value is an
-   * instance of this class, if you later wish to insert CHILDREN to that very node,
-   * then use the returned node from your first call as the second parameter to the
-   * insertNode function.
-   */
-struct TreeViewNode
-{
-	TreeViewNode() : handle( NULL )
-	{}
-
-	TreeViewNode(HTREEITEM handle_) : handle( handle_ )
-	{}
-
-	HTREEITEM handle;
-	
-	operator HTREEITEM() { return handle; }
-};
 
 /// TreeView class
  /** \ingroup WidgetControls
@@ -94,6 +73,8 @@ class WidgetTreeView :
 	// Aspects
 	public AspectBorder< WidgetTreeView >,
 	public AspectClickable< WidgetTreeView >,
+	public AspectCollection<WidgetTreeView, HTREEITEM>,
+	public AspectData<WidgetTreeView, HTREEITEM>,
 	public AspectDblClickable< WidgetTreeView >,
 	public AspectEnabled< WidgetTreeView >,
 	public AspectFocus< WidgetTreeView >,
@@ -127,6 +108,9 @@ protected:
 	};
 
 	friend class WidgetCreator< WidgetTreeView >;
+	friend class AspectCollection<WidgetTreeView, HTREEITEM>;
+	friend class AspectData<WidgetTreeView, HTREEITEM>;
+	
 public:
 	/// Class type
 	typedef WidgetTreeView ThisType;
@@ -177,50 +161,26 @@ public:
 	  * The "selectedIconIndex" optionally specifies the icon index of the item in the
 	  * selected state (if not specified or -1, it defaults to the iconIndex)
 	  */
-	TreeViewNode insertNode( const SmartUtil::tstring & text, const TreeViewNode & parent = TreeViewNode(), unsigned param = 0, int iconIndex = - 1, int selectedIconIndex = - 1 );
+	HTREEITEM insert( const SmartUtil::tstring & text, HTREEITEM parent = NULL, unsigned param = 0, int iconIndex = - 1, int selectedIconIndex = - 1 );
 
-	/// Returns the node with a relationship in flags to the specified node.
-	/** The node specified comes from insertNode< br >
-	  * Flag definitions : < br >
-	  * TVGN_CARET...........Retrieves the currently selected item.< br >
-	  * TVGN_CHILD...........Retrieves the first child node of the specified node.< br >
-	  * TVGN_DROPHILITE......Retrieves the target mode of a drag - and - drop operation.< br >
-	  * TVGN_FIRSTVISIBLE....Retrieves the first visible node.
-	  * TVGN_NEXT............Retrieves the next sibling node. ( TVGN_CHILD is the first )< br >
-	  * TVGN_NEXTVISIBLE.....Retrieves the next visible node after the specified node.< br >
-	  * TVGN_PARENT..........Retrieves the parent of the specified node.< br >
-	  * TVGN_PREVIOUS........Retrieves the previous sibling node.< br >
-	  * TVGN_PREVIOUSVISIBLE.Retrieves the first visible node that precedes the specified node.< br >
-	  * TVGN_ROOT............Retrieves the topmost or very first node of the tree - view control.< br >
-	  */
-	bool getNode( const TreeViewNode & node, unsigned flag, TreeViewNode & resultNode );
-
-	/// Deletes every node in the tree.
-	/** Every node and all of its children are deleted.
-	  */
-	void DeleteAllItems();
-
-	/// Deletes a "node" and its children from the TreeView< br >
-	/** The node and all of its children are deleted.
-	  */
-	void deleteNode( const TreeViewNode & node );
-
+	HTREEITEM getNext(HTREEITEM node, unsigned flag);
+	
 	/// Deletes just the children of a "node" from the TreeView< br >
 	/** Cycles through all the children of node, and deletes them. <br>
 	  * The node itself is preserved.
 	  */
-	void deleteChildrenOfNode( const TreeViewNode & node );
+	void eraseChildren( HTREEITEM node );
 
 	/// Edits the label of the "node"
 	/** The label of the node is put to edit modus. The node edited must be visible.
 	  */
-	void editLabel( const TreeViewNode & node );
+	void editLabel( HTREEITEM node );
 
 	/// Ensures that the node is visible.
 	/** Nodes may not be visible if they are indicated with a + , or do not appear in
 	  * the window due to scrolling.
 	  */
-	void ensureVisible( const TreeViewNode & node );
+	void ensureVisible( HTREEITEM node );
 
 	/// Adds a plus/minus sign in front of items.
 	/** To add items also at the root node call setLinesAtRoot
@@ -270,12 +230,12 @@ public:
 	/// Returns the text of the current selected node
 	/** Returns the text of the current selected node in the tree view.
 	  */
-	SmartUtil::tstring getSelectedItemText();
+	SmartUtil::tstring getSelectedText();
 
 	/// Returns the text of a particular node
 	/** Returns the text of a particular node.
 	  */
-	SmartUtil::tstring getText( const TreeViewNode & node );
+	SmartUtil::tstring getText( HTREEITEM node );
 
 	/// Returns the param of the current selected node
 	/** The return value is a unique application defined unsigned number ( optionally
@@ -329,9 +289,6 @@ public:
 	static bool isValidSelectionChanged( LPARAM lPar )
 	{ return true;
 	}
-
-	LPARAM getData(HTREEITEM item);
-	void setData(HTREEITEM item, LPARAM data);
 	
 protected:
 	// Constructor Taking pointer to parent
@@ -342,170 +299,90 @@ protected:
 	virtual ~WidgetTreeView()
 	{}
 
-	private:
-		ImageListPtr itsNormalImageList;
-		ImageListPtr itsStateImageList;
+private:
+	ImageListPtr itsNormalImageList;
+	ImageListPtr itsStateImageList;
+	
+	// AspectData
+	LPARAM getDataImpl(HTREEITEM item);
+	void setDataImpl(HTREEITEM item, LPARAM data);
+
+	// AspectCollection
+	void eraseImpl( HTREEITEM node );
+	void clearImpl();
+	size_t sizeImpl() const;
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetTreeView::Seed::Seed()
-{
+inline WidgetTreeView::Seed::Seed() {
 	 * this = WidgetTreeView::getDefaultSeed();
 }
 
-inline bool WidgetTreeView::getNode( const TreeViewNode & node, unsigned flag, TreeViewNode & resultNode )
-{
-	resultNode.handle = TreeView_GetNextItem( this->handle(), node.handle, flag );
-	return ( NULL != resultNode.handle );
+inline HTREEITEM WidgetTreeView::getNext( HTREEITEM node, unsigned flag ) {
+	return TreeView_GetNextItem( this->handle(), node, flag );
 }
 
-inline void WidgetTreeView::DeleteAllItems()
-{
+inline void WidgetTreeView::clearImpl() {
 	TreeView_DeleteAllItems( this->handle() );
 }
 
-inline void WidgetTreeView::deleteNode( const TreeViewNode & node )
-{
-	TreeView_DeleteItem( this->handle(), node.handle );
+inline void WidgetTreeView::eraseImpl( HTREEITEM node ) {
+	TreeView_DeleteItem( this->handle(), node );
 }
 
-inline void WidgetTreeView::editLabel( const TreeViewNode & node )
-{
-	TreeView_EditLabel( this->handle(), node.handle );
+inline size_t WidgetTreeView::sizeImpl() const {
+	TreeView_GetCount(this->handle());
 }
 
-inline void WidgetTreeView::ensureVisible( const TreeViewNode & node )
-{
-	TreeView_EnsureVisible( this->handle(), node.handle );
+inline void WidgetTreeView::editLabel( HTREEITEM node ) {
+	TreeView_EditLabel( this->handle(), node );
 }
 
-inline void WidgetTreeView::setHasButtons( bool value )
-{
+inline void WidgetTreeView::ensureVisible( HTREEITEM node ) {
+	TreeView_EnsureVisible( this->handle(), node );
+}
+
+inline void WidgetTreeView::setHasButtons( bool value ) {
 	this->Widget::addRemoveStyle( TVS_HASBUTTONS, value );
 }
 
-inline void WidgetTreeView::setLinesAtRoot( bool value )
-{
+inline void WidgetTreeView::setLinesAtRoot( bool value ) {
 	this->Widget::addRemoveStyle( TVS_LINESATROOT, value );
 }
 
-inline void WidgetTreeView::setHasLines( bool value )
-{
+inline void WidgetTreeView::setHasLines( bool value ) {
 	this->Widget::addRemoveStyle( TVS_HASLINES, value );
 }
 
-inline void WidgetTreeView::setTrackSelect( bool value )
-{
+inline void WidgetTreeView::setTrackSelect( bool value ) {
 	this->Widget::addRemoveStyle( TVS_TRACKSELECT, value );
 }
 
-inline void WidgetTreeView::setFullRowSelect( bool value )
-{
+inline void WidgetTreeView::setFullRowSelect( bool value ) {
 	this->Widget::addRemoveStyle( TVS_FULLROWSELECT, value );
 }
 
-inline void WidgetTreeView::setEditLabels( bool value )
-{
+inline void WidgetTreeView::setEditLabels( bool value ) {
 	this->Widget::addRemoveStyle( TVS_EDITLABELS, value );
 }
 
-inline void WidgetTreeView::setNormalImageList( ImageListPtr imageList )
-{
-	  itsNormalImageList = imageList;
-	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_NORMAL );
-}
-
-inline void WidgetTreeView::setStateImageList( ImageListPtr imageList )
-{
-	  itsStateImageList = imageList;
-	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_STATE );
-}
-
-inline SmartUtil::tstring WidgetTreeView::getSelectedItemText()
-{
-	TreeViewNode selNode;
-	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
-	selNode.handle = hSelItem;
-	SmartUtil::tstring retVal = getText( selNode );
-	return retVal;
-}
-
-inline SmartUtil::tstring WidgetTreeView::getText( const TreeViewNode & node )
-{
-	TVITEMEX item;
-	item.mask = TVIF_HANDLE | TVIF_TEXT;
-	item.hItem = node.handle;
-	TCHAR buffer[1024];
-	buffer[0] = '\0';
-	item.cchTextMax = 1022;
-	item.pszText = buffer;
-	if ( TreeView_GetItem( this->handle(), & item ) )
-	{
-		SmartUtil::tstring retVal( buffer );
-		return retVal;
-	}
-	return _T( "" );
-}
-
-inline int WidgetTreeView::getSelectedIndex() const
-{
-	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
-	TVITEM item;
-	ZeroMemory( & item, sizeof( TVITEM ) );
-	item.mask = TVIF_HANDLE | TVIF_PARAM;
-	item.hItem = hSelItem;
-	if ( TreeView_GetItem( this->handle(), & item ) )
-		return static_cast< unsigned >( item.lParam );
-	return 0;
-}
-
-inline void WidgetTreeView::setSelectedIndex( int idx )
-{
-	TVITEM item;
-	item.mask = TVIF_PARAM;
-	item.lParam = idx;
-	if ( TreeView_GetItem( this->handle(), & item ) == FALSE )
-	{
-		throw xCeption( _T( "Couldn't find given item" ) );
-	}
-	TreeView_Select( this->handle(), item.hItem, TVGN_FIRSTVISIBLE );
-}
-
-inline Message & WidgetTreeView::getSelectionChangedMessage()
-{
+inline Message & WidgetTreeView::getSelectionChangedMessage() {
 	static Message retVal = Message( WM_NOTIFY, TVN_SELCHANGED );
 	return retVal;
 }
 
-inline const Message & WidgetTreeView::getClickMessage()
-{
+inline const Message & WidgetTreeView::getClickMessage() {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-inline const Message & WidgetTreeView::getDblClickMessage()
-{
+inline const Message & WidgetTreeView::getDblClickMessage() {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
-}
-
-inline LPARAM WidgetTreeView::getData(HTREEITEM item) {
-	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
-	tvitem.hItem = item;
-	if(!TreeView_GetItem(this->handle(), &tvitem)) {
-		return 0;
-	}
-	return tvitem.lParam;
-}
-
-inline void WidgetTreeView::setData(HTREEITEM item, LPARAM lParam) {
-	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
-	tvitem.hItem = item;
-	tvitem.lParam = lParam;
-	TreeView_SetItem(this->handle(), &tvitem);
 }
 
 inline WidgetTreeView::WidgetTreeView( Widget * parent )

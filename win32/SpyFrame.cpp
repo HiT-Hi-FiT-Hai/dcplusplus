@@ -131,7 +131,7 @@ bool SpyFrame::preClosing() {
 }
 
 void SpyFrame::postClosing() {
-	searches->removeAllRows();
+	searches->clear();
 
 	SettingsManager::getInstance()->set(SettingsManager::SPYFRAME_ORDER, WinUtil::toString(searches->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::SPYFRAME_WIDTHS, WinUtil::toString(searches->getColumnWidths()));
@@ -148,19 +148,19 @@ LRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		// Not thread safe, but who cares really...
 		perSecond[cur]++;
 
-		int j = searches->findItem(*x);
+		int j = searches->find(*x);
 		if(j == -1) {
 			TStringList a;
 			a.push_back(*x);
 			a.push_back(Text::toT(Util::toString(1)));
 			a.push_back(Text::toT(Util::getTimeString()));
-			searches->insertRow(a);
-			if(searches->getRowCount() > 500) {
-				searches->removeRow(searches->getRowCount() - 1);
+			searches->insert(a);
+			if(searches->size() > 500) {
+				searches->erase(searches->size() - 1);
 			}
 		} else {
-			searches->setCellText(COLUMN_COUNT, j, Text::toT(Util::toString(Util::toInt(Text::fromT(searches->getCellText(COLUMN_COUNT, j))) + 1)));
-			searches->setCellText(COLUMN_TIME, j, Text::toT(Util::getTimeString()));
+			searches->setText(j, COLUMN_COUNT, Text::toT(Util::toString(Util::toInt(Text::fromT(searches->getText(j, COLUMN_COUNT))) + 1)));
+			searches->setText(j, COLUMN_TIME, Text::toT(Util::getTimeString()));
 #ifdef PORT_ME
 			if(searches->getSortColumn() == COLUMN_COUNT )
 				searches->resort();
@@ -205,7 +205,7 @@ LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 			pt = searches->getContextMenuPos();
 		}
 
-		searchString = searches->getCellText(COLUMN_STRING, searches->getSelectedIndex());
+		searchString = searches->getText(searches->getSelectedIndex(), COLUMN_STRING);
 
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;

@@ -39,7 +39,6 @@
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
-#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
@@ -74,7 +73,6 @@ class WidgetDateTimePicker :
 	public AspectPainting< WidgetDateTimePicker >,
 	public AspectRaw< WidgetDateTimePicker >,
 	public AspectSizable< WidgetDateTimePicker >,
-	public AspectThreads< WidgetDateTimePicker >,
 	public AspectVisible< WidgetDateTimePicker >
 {
 	struct Dispatcher

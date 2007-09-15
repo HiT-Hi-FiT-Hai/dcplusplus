@@ -80,11 +80,11 @@ private:
 	// Contained controls
 	WidgetTreeViewPtr queued;
 
-	SmartWin::TreeViewNode GetParentItem();
+	HTREEITEM GetParentItem();
 
 	UserPtr getSelectedUser() {
-		SmartWin::TreeViewNode selectedItem = GetParentItem();
-		return selectedItem.handle?reinterpret_cast<UserItem *>(queued->getData(selectedItem.handle))->u : UserPtr(0);
+		HTREEITEM selectedItem = GetParentItem();
+		return selectedItem ? reinterpret_cast<UserItem *>(queued->getData(selectedItem))->u : UserPtr(0);
 	}
 
 	// Communication with manager

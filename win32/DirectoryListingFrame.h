@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_DIRECTORY_LISTING_FRAME_H
 
 #include "MDIChildFrame.h"
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 #include "TypedTreeView.h"
 #include "AspectUserCommand.h"
 
@@ -132,7 +132,7 @@ private:
 	typedef TypedTreeView<DirectoryListingFrame, ItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
-	typedef TypedListViewCtrl<DirectoryListingFrame, ItemInfo> WidgetFiles;
+	typedef TypedListView<DirectoryListingFrame, ItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	
 	WidgetFilesPtr files;

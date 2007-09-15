@@ -44,7 +44,6 @@
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 #include "WidgetTextBox.h"
@@ -83,7 +82,6 @@ class WidgetComboBox :
 	public AspectSelection< WidgetComboBox >,
 	public AspectSizable< WidgetComboBox >,
 	public AspectText< WidgetComboBox >,
-	public AspectThreads< WidgetComboBox >,
 	public AspectVisible< WidgetComboBox >
 {
 	friend class WidgetCreator< WidgetComboBox >;

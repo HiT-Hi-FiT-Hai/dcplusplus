@@ -29,7 +29,7 @@
 #include <dcpp/Upload.h>
 
 #include "AspectSpeaker.h"
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 #include "WidgetFactory.h"
 #include "AspectUserCommand.h"
 
@@ -169,7 +169,7 @@ private:
 	static int columnIndexes[];
 	static int columnSizes[];
 
-	typedef TypedListViewCtrl<TransferView, ItemInfo> WidgetTransfers;
+	typedef TypedListView<TransferView, ItemInfo> WidgetTransfers;
 	typedef WidgetTransfers* WidgetTransfersPtr;
 	WidgetTransfersPtr transfers;
 	SmartWin::WidgetMDIParent* mdi;

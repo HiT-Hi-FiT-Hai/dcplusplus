@@ -190,16 +190,16 @@ void FavHubsFrame::handleAdd() {
 void FavHubsFrame::handleProperties() {
 	if(hubs->getSelectedCount() == 1) {
 		int i = hubs->getSelectedIndex();
-		FavoriteHubEntryPtr e = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getItemData(i));
+		FavoriteHubEntryPtr e = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(i));
 		dcassert(e != NULL);
 		FavHubProperties dlg(this, e);
 		if(dlg.run() == IDOK) {
-			hubs->setCellText(COLUMN_NAME, i, Text::toT(e->getName()));
-			hubs->setCellText(COLUMN_DESCRIPTION, i, Text::toT(e->getDescription()));
-			hubs->setCellText(COLUMN_SERVER, i, Text::toT(e->getServer()));
-			hubs->setCellText(COLUMN_NICK, i, Text::toT(e->getNick(false)));
-			hubs->setCellText(COLUMN_PASSWORD, i, tstring(e->getPassword().size(), '*'));
-			hubs->setCellText(COLUMN_USERDESCRIPTION, i, Text::toT(e->getUserDescription()));
+			hubs->setText(COLUMN_NAME, i, Text::toT(e->getName()));
+			hubs->setText(COLUMN_DESCRIPTION, i, Text::toT(e->getDescription()));
+			hubs->setText(COLUMN_SERVER, i, Text::toT(e->getServer()));
+			hubs->setText(COLUMN_NICK, i, Text::toT(e->getNick(false)));
+			hubs->setText(COLUMN_PASSWORD, i, tstring(e->getPassword().size(), '*'));
+			hubs->setText(COLUMN_USERDESCRIPTION, i, Text::toT(e->getUserDescription()));
 		}
 	}
 }
@@ -208,14 +208,14 @@ void FavHubsFrame::handleUp() {
 	nosave = true;
 	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
-	std::vector<unsigned> selected = hubs->getSelectedRows();
+	std::vector<unsigned> selected = hubs->getSelected();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		if(*i > 0) {
 			FavoriteHubEntryPtr e = fh[*i];
 			swap(fh[*i], fh[*i - 1]);
-			hubs->removeRow(*i);
+			hubs->erase(*i);
 			addEntry(e, *i - 1);
-			hubs->selectRow(*i - 1);
+			hubs->select(*i - 1);
 		}
 	}
 	FavoriteManager::getInstance()->save();
@@ -226,14 +226,14 @@ void FavHubsFrame::handleDown() {
 	nosave = true;
 	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
-	std::vector<unsigned> selected = hubs->getSelectedRows();
+	std::vector<unsigned> selected = hubs->getSelected();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
-		if(*i < hubs->getRowCount() - 1) {
+		if(*i < hubs->size() - 1) {
 			FavoriteHubEntryPtr e = fh[*i];
 			swap(fh[*i], fh[*i + 1]);
-			hubs->removeRow(*i);
+			hubs->erase(*i);
 			addEntry(e, *i + 1);
-			hubs->selectRow(*i + 1);
+			hubs->select(*i + 1);
 		}
 	}
 	FavoriteManager::getInstance()->save();
@@ -243,8 +243,8 @@ void FavHubsFrame::handleDown() {
 void FavHubsFrame::handleRemove() {
 	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
 		int i;
-		while((i = hubs->getNextItem(-1, LVNI_SELECTED)) != -1)
-			FavoriteManager::getInstance()->removeFavorite(reinterpret_cast<FavoriteHubEntryPtr>(hubs->getItemData(i)));
+		while((i = hubs->getNext(-1, LVNI_SELECTED)) != -1)
+			FavoriteManager::getInstance()->removeFavorite(reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(i)));
 	}
 }
 
@@ -274,8 +274,8 @@ bool FavHubsFrame::handleKeyDown(int c) {
 LRESULT FavHubsFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	LPNMITEMACTIVATE l = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
 	if(!nosave && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
-		FavoriteHubEntryPtr f = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getItemData(l->iItem));
-		f->setConnect(hubs->getIsRowChecked(l->iItem));
+		FavoriteHubEntryPtr f = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(l->iItem));
+		f->setConnect(hubs->isChecked(l->iItem));
 		FavoriteManager::getInstance()->save();
 	}
 	return 0;
@@ -308,8 +308,8 @@ void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int index) {
 	l.push_back(Text::toT(entry->getServer()));
 	l.push_back(Text::toT(entry->getUserDescription()));
 	bool b = entry->getConnect();
-	int i = hubs->getRowNumberFromLParam(hubs->insertRow(l, reinterpret_cast<LPARAM>(entry), index));
-	hubs->setRowChecked(i, b);
+	int i = hubs->insert(l, reinterpret_cast<LPARAM>(entry), index);
+	hubs->setChecked(i, b);
 }
 
 void FavHubsFrame::openSelected() {
@@ -321,9 +321,9 @@ void FavHubsFrame::openSelected() {
 		return;
 	}
 
-	std::vector<unsigned> items = hubs->getSelectedRows();
+	std::vector<unsigned> items = hubs->getSelected();
 	for(std::vector<unsigned>::iterator i = items.begin(); i != items.end(); ++i) {
-		FavoriteHubEntryPtr entry = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getItemData(*i));
+		FavoriteHubEntryPtr entry = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(*i));
 		HubFrame::openWindow(getParent(), entry->getServer());
 	}
 }
@@ -333,5 +333,5 @@ void FavHubsFrame::on(FavoriteAdded, const FavoriteHubEntryPtr e) throw() {
 }
 
 void FavHubsFrame::on(FavoriteRemoved, const FavoriteHubEntryPtr e) throw() {
-	hubs->removeRow(hubs->getRowNumberFromLParam(reinterpret_cast<LPARAM>(e)));
+	hubs->erase(hubs->findData(reinterpret_cast<LPARAM>(e)));
 }

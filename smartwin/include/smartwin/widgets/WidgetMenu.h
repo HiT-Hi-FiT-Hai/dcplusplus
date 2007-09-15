@@ -31,8 +31,8 @@
 
 #include "../Application.h"
 #include "../BasicTypes.h"
-#include "../aspects/AspectGetParent.h"
 #include "../Dispatchers.h"
+#include "../Widget.h"
 #include "../xCeption.h"
 
 namespace SmartWin

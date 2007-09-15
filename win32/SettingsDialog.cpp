@@ -126,7 +126,7 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 	string::size_type i = str.find(SEPARATOR);
 	if(i == string::npos) {
 		// Last dir, the actual page
-		HTREEITEM item = findItem(str, first);
+		HTREEITEM item = find(str, first);
 		if(item == NULL) {
 			// Doesn't exist, add
 			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
@@ -143,7 +143,7 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 		}
 	} else {
 		tstring name = str.substr(0, i);
-		HTREEITEM item = findItem(name, first);
+		HTREEITEM item = find(name, first);
 		if(item == NULL) {
 			// Doesn't exist, add...
 			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
@@ -157,7 +157,7 @@ HTREEITEM SettingsDialog::createTree(const tstring& str, HTREEITEM parent, PropP
 	}
 }
 
-HTREEITEM SettingsDialog::findItem(const tstring& str, HTREEITEM start) {
+HTREEITEM SettingsDialog::find(const tstring& str, HTREEITEM start) {
 	while(start != NULL) {
 		if(pageTree->getText(start) == str) {
 			return start;

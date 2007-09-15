@@ -116,13 +116,13 @@ void UCPage::handleChangeClicked() {
 	if(commands->getSelectedCount() == 1) {
 		int i = commands->getSelectedIndex();
 		UserCommand uc;
-		FavoriteManager::getInstance()->getUserCommand(commands->getItemData(i), uc);
+		FavoriteManager::getInstance()->getUserCommand(commands->getData(i), uc);
 
 		CommandDlg dlg(this, uc.getType(), uc.getCtx(), Text::toT(uc.getName()), Text::toT(uc.getCommand()), Text::toT(uc.getHub()));
 		if(dlg.run() == IDOK) {
-			commands->setCellText(0, i, (dlg.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : dlg.getName());
-			commands->setCellText(1, i, dlg.getCommand());
-			commands->setCellText(2, i, dlg.getHub());
+			commands->setText(0, i, (dlg.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : dlg.getName());
+			commands->setText(1, i, dlg.getCommand());
+			commands->setText(2, i, dlg.getHub());
 
 			uc.setName(Text::fromT(dlg.getName()));
 			uc.setCommand(Text::fromT(dlg.getCommand()));
@@ -139,10 +139,10 @@ void UCPage::handleMoveUpClicked() {
 		int i = commands->getSelectedIndex();
 		if(i == 0)
 			return;
-		int n = commands->getItemData(i);
+		int n = commands->getData(i);
 		FavoriteManager::getInstance()->moveUserCommand(n, -1);
 		HoldRedraw hold(commands);
-		commands->removeRow(i);
+		commands->erase(i);
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, --i);
@@ -154,12 +154,12 @@ void UCPage::handleMoveUpClicked() {
 void UCPage::handleMoveDownClicked() {
 	if(commands->getSelectedCount() == 1) {
 		int i = commands->getSelectedIndex();
-		if(i == commands->getRowCount() - 1)
+		if(i == commands->size() - 1)
 			return;
-		int n = commands->getItemData(i);
+		int n = commands->getData(i);
 		FavoriteManager::getInstance()->moveUserCommand(n, 1);
 		HoldRedraw hold(commands);
-		commands->removeRow(i);
+		commands->erase(i);
 		UserCommand uc;
 		FavoriteManager::getInstance()->getUserCommand(n, uc);
 		addEntry(uc, ++i);
@@ -171,8 +171,8 @@ void UCPage::handleMoveDownClicked() {
 void UCPage::handleRemoveClicked() {
 	if(commands->getSelectedCount() == 1) {
 		int i = commands->getSelectedIndex();
-		FavoriteManager::getInstance()->removeUserCommand(commands->getItemData(i));
-		commands->removeRow(i);
+		FavoriteManager::getInstance()->removeUserCommand(commands->getData(i));
+		commands->erase(i);
 	}
 }
 
@@ -181,5 +181,5 @@ void UCPage::addEntry(const UserCommand& uc, int index) {
 	row.push_back((uc.getType() == UserCommand::TYPE_SEPARATOR) ? TSTRING(SEPARATOR) : Text::toT(uc.getName()));
 	row.push_back(Text::toT(uc.getCommand()));
 	row.push_back(Text::toT(uc.getHub()));
-	commands->insertRow(row, (LPARAM)uc.getId(), index);
+	commands->insert(row, (LPARAM)uc.getId(), index);
 }

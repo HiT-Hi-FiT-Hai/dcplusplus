@@ -271,7 +271,20 @@ public:
 	  */
 	void setLowerCase( bool value = true );
 
+	Point getContextMenuPos();
+	
+	int charFromPos(const SmartWin::Point& pt);
+	
+	int lineFromPos(const SmartWin::Point& pt);
+	
+	int lineIndex(int line);
+	
+	int lineLength(int c);
+	
+	SmartUtil::tstring getLine(int line);
 
+	SmartUtil::tstring textUnderCursor(const Point& p);
+	
 	/// Actually creates the TextBox
 	/** You should call WidgetFactory::createTextBox if you instantiate class
 	  * directly. <br>
@@ -316,14 +329,6 @@ inline void WidgetTextBoxBase::setSelection( long start, long end )
 	this->sendMessage(EM_SETSEL, start, end );
 }
 
-inline SmartUtil::tstring WidgetTextBoxBase::getSelection() const
-{
-	DWORD start, end;
-	this->sendMessage( EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
-	SmartUtil::tstring retVal = this->getText().substr( start, end - start );
-	return retVal;
-}
-
 inline void WidgetTextBoxBase::replaceSelection( const SmartUtil::tstring & txt, bool canUndo )
 {
 	this->sendMessage(EM_REPLACESEL, static_cast< WPARAM >( canUndo ? TRUE : FALSE ), reinterpret_cast< LPARAM >( txt.c_str() ) );
@@ -350,50 +355,41 @@ inline long WidgetTextBoxBase::findText( const SmartUtil::tstring & txt, unsigne
 	return static_cast< long >( position );
 }
 
-inline long WidgetTextBoxBase::getCaretPos()
-{
+inline long WidgetTextBoxBase::getCaretPos() {
 	DWORD start, end;
 	this->sendMessage(EM_GETSEL, reinterpret_cast< WPARAM >( & start ), reinterpret_cast< LPARAM >( & end ) );
 	return static_cast< long >( end );
 }
 
-inline void WidgetTextBoxBase::showCaret()
-{
+inline void WidgetTextBoxBase::showCaret() {
 	this->sendMessage(EM_SCROLLCARET);
 }
 
-inline void WidgetTextBoxBase::setScrollBarHorizontally( bool value )
-{
+inline void WidgetTextBoxBase::setScrollBarHorizontally( bool value ) {
 	Widget::addRemoveStyle( WS_HSCROLL, value );
 }
 
-inline void WidgetTextBoxBase::setScrollBarVertically( bool value )
-{
+inline void WidgetTextBoxBase::setScrollBarVertically( bool value ) {
 	Widget::addRemoveStyle( WS_VSCROLL, value );
 }
 
-inline void WidgetTextBoxBase::setReadOnly( bool value )
-{
+inline void WidgetTextBoxBase::setReadOnly( bool value ) {
 	this->sendMessage(EM_SETREADONLY, static_cast< WPARAM >( value ) );
 }
 
-inline bool WidgetTextBoxBase::isReadOnly( )
-{	
+inline bool WidgetTextBoxBase::isReadOnly( ) {	
 	return hasStyle(ES_READONLY);
 }
 
-inline void WidgetTextBoxBase::setBorder( bool value )
-{
+inline void WidgetTextBoxBase::setBorder( bool value ) {
 	this->Widget::addRemoveStyle( WS_BORDER, value );
 }
 
-inline void WidgetTextBoxBase::setTextLimit( DWORD maxChars ) 
-{ 
+inline void WidgetTextBoxBase::setTextLimit( DWORD maxChars ) { 
 	this->sendMessage(EM_LIMITTEXT, static_cast< WPARAM >(maxChars) ); 
 } 
  
-inline DWORD WidgetTextBoxBase::getTextLimit() const 
-{ 
+inline DWORD WidgetTextBoxBase::getTextLimit() const { 
 	return static_cast< DWORD >( this->sendMessage(EM_GETLIMITTEXT) );
 }
 
@@ -403,28 +399,23 @@ inline void WidgetTextBoxBase::onTextChanged( const Dispatcher::F& f ) {
 	);
 }
 
-inline int WidgetTextBoxBase::lineFromChar( int c )
-{
+inline int WidgetTextBoxBase::lineFromChar( int c ) {
 	return this->sendMessage( EM_LINEFROMCHAR, c );
 }
 
-inline int WidgetTextBoxBase::lineIndex( int l )
-{
+inline int WidgetTextBoxBase::lineIndex( int l ) {
 	return this->sendMessage( EM_LINEINDEX, l );
 }
 
-inline void WidgetTextBoxBase::setModify( bool modify )
-{
+inline void WidgetTextBoxBase::setModify( bool modify ) {
 	this->sendMessage( EM_SETMODIFY, modify );
 }
 
-inline bool WidgetTextBoxBase::getModify( )
-{
+inline bool WidgetTextBoxBase::getModify( ) {
 	return this->sendMessage( EM_GETMODIFY ) > 0;
 }
 
-inline WidgetTextBox::Seed::Seed()
-{
+inline WidgetTextBox::Seed::Seed() {
 	* this = WidgetTextBox::getDefaultSeed();
 }
 
@@ -440,24 +431,38 @@ inline WidgetTextBox::WidgetTextBox( SmartWin::Widget * parent )
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-inline void WidgetTextBox::setPassword( bool value, TCHAR pwdChar )
-{
+inline void WidgetTextBox::setPassword( bool value, TCHAR pwdChar ) {
 	this->sendMessage(EM_SETPASSWORDCHAR, static_cast< WPARAM >( value ? pwdChar : 0 ));
 }
 
-inline void WidgetTextBox::setNumbersOnly( bool value )
-{
+inline void WidgetTextBox::setNumbersOnly( bool value ) {
 	this->Widget::addRemoveStyle( ES_NUMBER, value );
 }
 
-inline void WidgetTextBox::setLowerCase( bool value )
-{
+inline void WidgetTextBox::setLowerCase( bool value ) {
 	this->Widget::addRemoveStyle( ES_LOWERCASE, value );
 }
 
-inline void WidgetTextBox::setUpperCase( bool value )
-{
+inline void WidgetTextBox::setUpperCase( bool value ) {
 	this->Widget::addRemoveStyle( ES_UPPERCASE, value );
+}
+
+inline int WidgetTextBox::charFromPos(const SmartWin::Point& pt) {		
+	LPARAM lp = MAKELPARAM(pt.x, pt.y);
+	return LOWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
+}
+
+inline int WidgetTextBox::lineFromPos(const SmartWin::Point& pt) {
+	LPARAM lp = MAKELPARAM(pt.x, pt.y);
+	return HIWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
+}
+
+inline int WidgetTextBox::lineIndex(int line) {
+	return static_cast<int>(::SendMessage(this->handle(), EM_LINEINDEX, static_cast<WPARAM>(line), 0));
+}
+
+inline int WidgetTextBox::lineLength(int c) {
+	return static_cast<int>(::SendMessage(this->handle(), EM_LINELENGTH, static_cast<WPARAM>(c), 0));
 }
 
 // end namespace SmartWin

@@ -130,7 +130,7 @@ HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
 		if(ti->first == ADD_ITEM) {
 			boost::scoped_ptr<QueueItemInfoTask> iit(static_cast<QueueItemInfoTask*>(ti->second));
 			
-			dcassert(files->findItem(iit->ii) == -1);
+			dcassert(files->find(iit->ii) == -1);
 			addQueueItem(iit->ii, false);
 			updateStatus();
 		} else if(ti->first == REMOVE_ITEM) {
@@ -142,8 +142,8 @@ HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
 			}
 
 			if(!showTree->getChecked() || isCurDir(ii->getPath()) ) {
-				dcassert(files->findItem(ii) != -1);
-				files->deleteItem(ii);
+				dcassert(files->find(ii) != -1);
+				files->erase(ii);
 			}
 
 			if(!ii->isSet(QueueItem::FLAG_USER_LIST)) {
@@ -184,9 +184,9 @@ HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
 			ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED;
 
 			if(!showTree->getChecked() || isCurDir(ii->getPath())) {
-				dcassert(files->findItem(ii) != -1);
+				dcassert(files->find(ii) != -1);
 				ii->update();
-				files->updateItem(ii);
+				files->update(ii);
 			}
 		}
 	}
@@ -263,10 +263,10 @@ void QueueFrame::updateStatus() {
 	int64_t total = 0;
 	int cnt = files->getSelectedCount();
 	if(cnt < 2) {
-		cnt = files->getRowCount();
+		cnt = files->size();
 		if(showTree->getChecked()) {
 			for(int i = 0; i < cnt; ++i) {
-				QueueItemInfo* ii = files->getItemData(i);
+				QueueItemInfo* ii = files->getData(i);
 				total += (ii->getSize() > 0) ? ii->getSize() : 0;
 			}
 		} else {
@@ -274,8 +274,8 @@ void QueueFrame::updateStatus() {
 		}
 	} else {
 		int i = -1;
-		while( (i = files->getNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueItemInfo* ii = files->getItemData(i);
+		while( (i = files->getNext(i, LVNI_SELECTED)) != -1) {
+			QueueItemInfo* ii = files->getData(i);
 			total += (ii->getSize() > 0) ? ii->getSize() : 0;
 		}
 
@@ -309,7 +309,7 @@ void QueueFrame::postClosing() {
 		delete i->second;
 	}
 	directories.clear();
-	files->removeAllRows();
+	files->clear();
 	
 	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_ORDER, WinUtil::toString(files->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_WIDTHS, WinUtil::toString(files->getColumnWidths()));
@@ -333,9 +333,9 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	if(!showTree->getChecked() || isCurDir(dir)) {
 		ii->update();
 		if(noSort) {
-			files->insertItem(files->getRowCount(), ii);
+			files->insert(files->size(), ii);
 		} else {
-			files->insertItem(ii);
+			files->insert(ii);
 		}
 	}
 }
@@ -352,7 +352,7 @@ void QueueFrame::handleShowTreeClicked() {
 void QueueFrame::updateFiles() {
 	HoldRedraw hold(files);
 
-	files->removeAllRows();
+	files->clear();
 	pair<DirectoryIter, DirectoryIter> i;
 	if(showTree->getChecked()) {
 		i = directories.equal_range(getSelectedDir());
@@ -364,7 +364,7 @@ void QueueFrame::updateFiles() {
 	for(DirectoryIter j = i.first; j != i.second; ++j) {
 		QueueItemInfo* ii = j->second;
 		ii->update();
-		files->insertItem(files->getRowCount(), ii);
+		files->insert(files->size(), ii);
 	}
 	
 	files->resort();
@@ -597,7 +597,7 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 				next = dirs->getChild(oldRoot);
 			}
 			delete rootInfo;
-			dirs->deleteItem(oldRoot);
+			dirs->erase(oldRoot);
 			parent = newRoot;
 		} else {
 			// Use this root as parent
@@ -653,7 +653,7 @@ void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false *
 	if(isFileList) {
 		dcassert(fileLists != NULL);
 		delete dirs->getData(fileLists);
-		dirs->deleteItem(fileLists);
+		dirs->erase(fileLists);
 		fileLists = NULL;
 		return;
 	} else {
@@ -682,7 +682,7 @@ void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false *
 		delete dirs->getData(next);
 		parent = dirs->getParent(next);
 
-		dirs->deleteItem(next);
+		dirs->erase(next);
 		if(parent == NULL)
 			break;
 		next = parent;
@@ -696,7 +696,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 		next = dirs->getNextSibling(ht);
 	}
 	delete dirs->getData(ht);
-	dirs->deleteItem(ht);
+	dirs->erase(ht);
 }
 
 void QueueFrame::removeSelected() {
@@ -710,11 +710,10 @@ void QueueFrame::removeSelectedDir() {
 }
 
 void QueueFrame::moveSelected() {
-
 	int n = files->getSelectedCount();
 	if(n == 1) {
 		// Single file, get the full filename and move...
-		QueueItemInfo* ii = files->getSelectedItem();
+		QueueItemInfo* ii = files->getSelectedData();
 		tstring target = Text::toT(ii->getTarget());
 		tstring ext = Util::getFileExt(target);
 		tstring ext2;
@@ -742,8 +741,8 @@ void QueueFrame::moveSelected() {
 		}
 		if(WinUtil::browseDirectory(name, handle())) {
 			int i = -1;
-			while( (i = files->getNextItem(i, LVNI_SELECTED)) != -1) {
-				QueueItemInfo* ii = files->getItemData(i);
+			while( (i = files->getNext(i, LVNI_SELECTED)) != -1) {
+				QueueItemInfo* ii = files->getData(i);
 				QueueManager::getInstance()->move(ii->getTarget(), Text::fromT(name) + Util::getFileName(ii->getTarget()));
 			}
 		}
@@ -781,19 +780,19 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 
 void QueueFrame::handleSearchAlternates() {
 	if(files->getSelectedCount() == 1) {
-		WinUtil::searchHash(files->getSelectedItem()->getTTH());
+		WinUtil::searchHash(files->getSelectedData()->getTTH());
 	}
 }
 
 void QueueFrame::handleBitziLookup() {
 	if(files->getSelectedCount() == 1) {
-		WinUtil::bitziLink(files->getSelectedItem()->getTTH());
+		WinUtil::bitziLink(files->getSelectedData()->getTTH());
 	}
 }
 
 void QueueFrame::handleCopyMagnet() {
 	if(files->getSelectedCount() == 1) {
-		QueueItemInfo* ii = files->getSelectedItem();
+		QueueItemInfo* ii = files->getSelectedData();
 		WinUtil::copyMagnet(ii->getTTH(), Text::toT(Util::getFileName(ii->getTarget())));
 	}
 }
@@ -811,7 +810,7 @@ void QueueFrame::handleBrowseList(const UserPtr& user) {
 void QueueFrame::handleReadd(const UserPtr& user) {
 
 	if(files->getSelectedCount() == 1) {
-		QueueItemInfo* ii = files->getSelectedItem();
+		QueueItemInfo* ii = files->getSelectedData();
 
 		if(!user) {
 			// re-add all sources
@@ -839,7 +838,7 @@ void QueueFrame::handleMove() {
 void QueueFrame::handleRemoveSource(const UserPtr& user) {
 
 	if(files->getSelectedCount() == 1) {
-		QueueItemInfo* ii = files->getSelectedItem();
+		QueueItemInfo* ii = files->getSelectedData();
 
 		if(!user) {
 			for(QueueItem::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
@@ -877,9 +876,9 @@ void QueueFrame::handlePriority(unsigned id) {
 	if(usingDirMenu) {
 		setPriority(dirs->getSelected(), p);
 	} else {
-		std::vector<size_t> selected = files->getSelectedRows();
+		std::vector<size_t> selected = files->getSelected();
 		for(std::vector<size_t>::iterator i = selected.begin(); i != selected.end(); ++i) {
-			QueueManager::getInstance()->setPriority(files->getItemData(*i)->getTarget(), p);
+			QueueManager::getInstance()->setPriority(files->getData(*i)->getTarget(), p);
 		}
 	}
 }
@@ -903,9 +902,9 @@ void QueueFrame::removeDir(HTREEITEM ht) {
  * @param inc True = increase, False = decrease
  */
 void QueueFrame::changePriority(bool inc){
-	std::vector<size_t> selected = files->getSelectedRows();
+	std::vector<size_t> selected = files->getSelected();
 	for(std::vector<size_t>::iterator i = selected.begin(); i != selected.end(); ++i) {
-		QueueItemInfo* ii = files->getItemData(*i);
+		QueueItemInfo* ii = files->getData(*i);
 		QueueItem::Priority p = ii->getPriority();
 
 		if ((inc && p == QueueItem::HIGHEST) || (!inc && p == QueueItem::PAUSED)){
@@ -971,7 +970,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 		moveNode(next, ht);
 		next = dirs->getChild(item);
 	}
-	dirs->deleteItem(item);
+	dirs->erase(item);
 }
 
 const string& QueueFrame::getSelectedDir() {
@@ -1102,7 +1101,7 @@ HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		WidgetMenuPtr contextMenu;
 		
 		if(files->getSelectedCount() == 1) {
-			QueueItemInfo* ii = files->getSelectedItem();
+			QueueItemInfo* ii = files->getSelectedData();
 			contextMenu = makeSingleMenu(ii);
 		} else {
 			contextMenu = makeMultiMenu();

@@ -30,7 +30,6 @@
 #define WidgetWindow_h
 
 #include "../BasicTypes.h"
-#include "../aspects/AspectThreads.h"
 #include "../WindowClass.h"
 #include "WidgetWindowBase.h"
 

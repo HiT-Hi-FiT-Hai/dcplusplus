@@ -433,7 +433,7 @@ bool HubFrame::enter() {
 }
 
 void HubFrame::clearUserList() {
-	users->removeAllRows();
+	users->clear();
 	for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 		delete i->second;
 	}
@@ -635,7 +635,7 @@ bool HubFrame::updateUser(const UserTask& u) {
 		UserInfo* ui = new UserInfo(u);
 		userMap.insert(make_pair(u.user, ui));
 		if(!ui->isHidden() && showUsers->getChecked())
-			users->insertItem(ui);
+			users->insert(ui);
 
 		if(!filterString.empty())
 			updateUserList(ui);
@@ -643,14 +643,14 @@ bool HubFrame::updateUser(const UserTask& u) {
 	} else {
 		UserInfo* ui = i->second;
 		if(!ui->isHidden() && u.identity.isHidden() && showUsers->getChecked()) {
-			users->deleteItem(ui);
+			users->erase(ui);
 		}
 
 		resort = ui->update(u.identity, users->getSortColumn()) || resort;
 		if(showUsers->getChecked()) {
-			int pos = users->findItem(ui);
+			int pos = users->find(ui);
 			if(pos != -1) {
-				users->updateItem(pos);
+				users->update(pos);
 			}
 			updateUserList(ui);
 		}
@@ -696,7 +696,7 @@ void HubFrame::removeUser(const UserPtr& aUser) {
 
 	UserInfo* ui = i->second;
 	if(!ui->isHidden() && showUsers->getChecked())
-		users->deleteItem(ui);
+		users->erase(ui);
 
 	userMap.erase(i);
 	delete ui;
@@ -708,9 +708,9 @@ bool HubFrame::historyActive() {
 
 bool HubFrame::handleUsersKeyDown(int c) {
 	if(c == VK_RETURN) {
-		int item = users->getNextItem(-1, LVNI_FOCUSED);
+		int item = users->getNext(-1, LVNI_FOCUSED);
 		if(item != -1) {
-			users->getItemData(item)->getList();
+			users->getData(item)->getList();
 		}
 		return true;
 	}
@@ -978,8 +978,8 @@ tstring HubFrame::getStatusUsers() const {
 	tstring textForUsers;
 	if (users->getSelectedCount() > 1)
 		textForUsers += Text::toT(Util::toString(users->getSelectedCount()) + "/");
-	if (showUsers->getChecked() && users->getRowCount() < userCount)
-		textForUsers += Text::toT(Util::toString(users->getRowCount()) + "/");
+	if (showUsers->getChecked() && users->size() < userCount)
+		textForUsers += Text::toT(Util::toString(users->size()) + "/");
 	return textForUsers + Text::toT(Util::toString(userCount) + " " + STRING(HUB_USERS));
 }
 
@@ -1106,35 +1106,35 @@ void HubFrame::updateUserList(UserInfo* ui) {
 			return;
 		}
 		if(filterString.empty()) {
-			if(users->findItem(ui) == -1) {
-				users->insertItem(ui);
+			if(users->find(ui) == -1) {
+				users->insert(ui);
 			}
 		} else {
 			if(matchFilter(*ui, sel, doSizeCompare, mode, size)) {
-				if(users->findItem(ui) == -1) {
-					users->insertItem(ui);
+				if(users->find(ui) == -1) {
+					users->insert(ui);
 				}
 			} else {
-				//deleteItem checks to see that the item exists in the list
+				//erase checks to see that the item exists in the list
 				//unnecessary to do it twice.
-				users->deleteItem(ui);
+				users->erase(ui);
 			}
 		}
 	} else {
 		HoldRedraw hold(users);
-		users->removeAllRows();
+		users->clear();
 
 		if(filterString.empty()) {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i){
 				UserInfo* ui = i->second;
 				if(!ui->isHidden())
-					users->insertItem(i->second);
+					users->insert(i->second);
 			}
 		} else {
 			for(UserMapIter i = userMap.begin(); i != userMap.end(); ++i) {
 				UserInfo* ui = i->second;
 				if(!ui->isHidden() && matchFilter(*ui, sel, doSizeCompare, mode, size)) {
-					users->insertItem(ui);
+					users->insert(ui);
 				}
 			}
 		}
@@ -1189,7 +1189,7 @@ HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		
 		if(!txt.empty()) {
 			// Possible nickname click, let's see if we can find one like it in the name list...
-			int pos = users->findItem(txt);
+			int pos = users->find(txt);
 			if(pos != -1) {
 				users->clearSelection();
 				users->setSelectedIndex(pos);
@@ -1269,8 +1269,8 @@ void HubFrame::handleCopyNick() {
 	int i=-1;
 	string nicks;
 
-	while( (i = users->getNextItem(i, LVNI_SELECTED)) != -1) {
-		nicks += users->getItemData(i)->getNick();
+	while( (i = users->getNext(i, LVNI_SELECTED)) != -1) {
+		nicks += users->getData(i)->getNick();
 		nicks += ' ';
 	}
 	if(!nicks.empty()) {
@@ -1286,7 +1286,7 @@ void HubFrame::handleCopyHub() {
 
 void HubFrame::handleDoubleClickUsers() {
 	if(users->hasSelection()) {
-		users->getSelectedItem()->getList();
+		users->getSelectedData()->getList();
 	}
 }
 
@@ -1333,7 +1333,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 					int pos = -1;
 					ctrlUsers.SetRedraw(FALSE);
 					for(int i = 0; i < items; ++i) {
-						if(ctrlUsers.getItemData(i) == ui)
+						if(ctrlUsers.getData(i) == ui)
 							pos = i;
 						ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
 					}
@@ -1362,8 +1362,8 @@ void HubFrame::runUserCommand(const UserCommand& uc) {
 		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams, false));
 	} else {
 		int sel = -1;
-		while((sel = users->getNextItem(sel, LVNI_SELECTED)) != -1) {
-			UserInfo* u = users->getItemData(sel);
+		while((sel = users->getNext(sel, LVNI_SELECTED)) != -1) {
+			UserInfo* u = users->getData(sel);
 			StringMap tmp = ucParams;
 
 			u->getIdentity().getParams(tmp, "user", true);
@@ -1459,7 +1459,7 @@ bool HubFrame::tab() {
 
 			// Maybe it found a unique match. If userlist showing, highlight.
 			if (showUsers->getChecked() && tabCompleteNicks.size() == 2) {
-				int i = users->findItem(Text::toT(tabCompleteNicks[1]));
+				int i = users->find(Text::toT(tabCompleteNicks[1]));
 				users->setSelectedIndex(i);
 				users->ensureVisible(i);
 			}

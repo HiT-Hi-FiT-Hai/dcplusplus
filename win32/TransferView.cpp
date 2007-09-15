@@ -132,7 +132,7 @@ HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 
 		/// @todo Fix multiple selection menu...
 		int i = -1;
-		ItemInfo* ii = transfers->getSelectedItem();
+		ItemInfo* ii = transfers->getSelectedData();
 		WidgetMenuPtr contextMenu = makeContextMenu(ii);
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
@@ -152,8 +152,8 @@ void TransferView::runUserCommand(const UserCommand& uc) {
 	StringMap ucParams = ucLineParams;
 
 	int i = -1;
-	while((i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
-		ItemInfo* itemI = transfers->getItemData(i);
+	while((i = transfers->getNext(i, LVNI_SELECTED)) != -1) {
+		ItemInfo* itemI = transfers->getData(i);
 		if(!itemI->user->isOnline())
 			continue;
 
@@ -176,9 +176,9 @@ bool TransferView::handleKeyDown(int c) {
 
 void TransferView::handleForce() {
 	int i = -1;
-	while( (i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
-		transfers->setCellText(i, COLUMN_STATUS, TSTRING(CONNECTING_FORCED));
-		ConnectionManager::getInstance()->force(transfers->getItemData(i)->user);
+	while( (i = transfers->getNext(i, LVNI_SELECTED)) != -1) {
+		transfers->setText(i, COLUMN_STATUS, TSTRING(CONNECTING_FORCED));
+		ConnectionManager::getInstance()->force(transfers->getData(i)->user);
 	}
 }
 
@@ -186,8 +186,8 @@ void TransferView::handleCopyNick() {
 	int i = -1;
 
 	/// @todo Fix when more items are selected
-	while( (i = transfers->getNextItem(i, LVNI_SELECTED)) != -1) {
-		WinUtil::setClipboard(WinUtil::getNicks(transfers->getItemData(i)->user));
+	while( (i = transfers->getNext(i, LVNI_SELECTED)) != -1) {
+		WinUtil::setClipboard(WinUtil::getNicks(transfers->getData(i)->user));
 	}
 }
 
@@ -300,7 +300,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 #endif
 
 void TransferView::handleDblClicked() {
-	ItemInfo* ii = transfers->getSelectedItem();
+	ItemInfo* ii = transfers->getSelectedData();
 	if(ii) {
 		ii->pm(mdi);
 	}
@@ -345,26 +345,26 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
 			ItemInfo* ii = new ItemInfo(ui->user, ui->download);
 			ii->update(*ui);
-			transfers->insertItem(ii);
+			transfers->insert(ii);
 		} else if(i->first == REMOVE_ITEM) {
 			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
-			int ic = transfers->getRowCount();
+			int ic = transfers->size();
 			for(int i = 0; i < ic; ++i) {
-				ItemInfo* ii = transfers->getItemData(i);
+				ItemInfo* ii = transfers->getData(i);
 				if(*ui == *ii) {
-					transfers->removeRow(i);
+					transfers->erase(i);
 					delete ii;
 					break;
 				}
 			}
 		} else if(i->first == UPDATE_ITEM) {
 			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
-			int ic = transfers->getRowCount();
+			int ic = transfers->size();
 			for(int i = 0; i < ic; ++i) {
-				ItemInfo* ii = transfers->getItemData(i);
+				ItemInfo* ii = transfers->getData(i);
 				if(ii->download == ui->download && ii->user == ui->user) {
 					ii->update(*ui);
-					transfers->updateItem(i);
+					transfers->update(i);
 					break;
 				}
 			}
@@ -379,10 +379,10 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 }
 
 void TransferView::handleSearchAlternates() {
-	int i = transfers->getNextItem(-1, LVNI_SELECTED);
+	int i = transfers->getNext(-1, LVNI_SELECTED);
 
 	if(i != -1) {
-		ItemInfo *ii = transfers->getItemData(i);
+		ItemInfo *ii = transfers->getData(i);
 
 		string target = Text::fromT(ii->getText(COLUMN_PATH) + ii->getText(COLUMN_FILE));
 

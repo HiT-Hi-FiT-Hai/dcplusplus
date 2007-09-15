@@ -291,7 +291,7 @@ void PublicHubsFrame::updateDropDown() {
 
 void PublicHubsFrame::updateList() {
 	hubs->forEachSelectedT(DeleteFunction());
-	hubs->removeAllRows();
+	hubs->clear();
 	users = 0;
 	visibleHubs = 0;
 
@@ -306,7 +306,7 @@ void PublicHubsFrame::updateList() {
 
 	for(HubEntry::List::const_iterator i = entries.begin(); i != entries.end(); ++i) {
 		if(matchFilter(*i, sel, doSizeCompare, mode, size)) {
-			hubs->insertItem(hubs->getRowCount(), new HubInfo(&(*i)));
+			hubs->insert(hubs->size(), new HubInfo(&(*i)));
 			visibleHubs++;
 			users += i->getUsers();
 		}
@@ -483,7 +483,7 @@ void PublicHubsFrame::handleConnect() {
 		return;
 
 	if(hubs->hasSelection() == 1) {
-		HubFrame::openWindow(getParent(), hubs->getSelectedItem()->entry->getServer());
+		HubFrame::openWindow(getParent(), hubs->getSelectedData()->entry->getServer());
 	}
 }
 
@@ -492,13 +492,13 @@ void PublicHubsFrame::handleAdd() {
 		return;
 
 	if(hubs->hasSelection()) {
-		FavoriteManager::getInstance()->addFavorite(*hubs->getSelectedItem()->entry);
+		FavoriteManager::getInstance()->addFavorite(*hubs->getSelectedData()->entry);
 	}	
 }
 
 void PublicHubsFrame::handleCopyHub() {
 	if(hubs->hasSelection()) {
-		WinUtil::setClipboard(Text::toT(hubs->getSelectedItem()->entry->getServer()));
+		WinUtil::setClipboard(Text::toT(hubs->getSelectedData()->entry->getServer()));
 	}
 }
 
@@ -515,8 +515,8 @@ void PublicHubsFrame::openSelected() {
 	if(!checkNick())
 		return;
 	
-	if(hubs->getSelectedCount() == 1) {
-		HubFrame::openWindow(getParent(), hubs->getSelectedItem()->entry->getServer());
+	if(hubs->hasSelection()) {
+		HubFrame::openWindow(getParent(), hubs->getSelectedData()->entry->getServer());
 	}
 }
 

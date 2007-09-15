@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_HUB_FRAME_H
 
 #include "MDIChildFrame.h"
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 #include "AspectUserCommand.h"
 #include "UserInfoBase.h"
 
@@ -150,7 +150,7 @@ private:
 	WidgetVPanedPtr paned;
 	WidgetCheckBoxPtr showUsers;
 	
-	typedef TypedListViewCtrl<HubFrame, UserInfo> WidgetUsers;
+	typedef TypedListView<HubFrame, UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 	

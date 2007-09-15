@@ -226,7 +226,7 @@ public:
 		fi.psz = aText.c_str();
 		return FindItem(&fi, aStart);
 	}
-	void deleteItem(const tstring& aItem, int col = 0) {
+	void erase(const tstring& aItem, int col = 0) {
 		for(int i = 0; i < GetItemCount(); i++) {
 			TCHAR buf[256];
 			GetItemText(i, col, buf, 256);

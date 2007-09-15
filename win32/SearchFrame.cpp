@@ -275,8 +275,8 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 
 	onSpeaker(std::tr1::bind(&SearchFrame::handleSpeaker, this, _1, _2));
 
-	hubs->insertItem(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
-	hubs->setRowChecked(0, false);
+	hubs->insert(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
+	hubs->setChecked(0, false);
 
 	ClientManager* clientMgr = ClientManager::getInstance();
 	clientMgr->lock();
@@ -326,14 +326,14 @@ void SearchFrame::layout() {
 		const int width = 220, spacing = 50, labelH = 16, comboH = 140, lMargin = 2, rMargin = 4;
 
 		rect.left += width;
-		results->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		results->setBounds(rect);
 
 		// "Search for"
 		rect.right = width - rMargin;
 		rect.left = lMargin;
 		rect.top += 25;
 		rect.bottom = rect.top + comboH + 21;
-		searchBox->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		searchBox->setBounds(rect);
 		rect.bottom -= comboH;
 
 		searchLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
@@ -343,12 +343,12 @@ void SearchFrame::layout() {
 		rect.left = lMargin;
 		rect.top += 25;
 		rect.bottom = rect.top + 21;
-		purge->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		purge->setBounds(rect);
 		
 		// "Search"
 		rect.right = width - rMargin;
 		rect.left = rect.right - 100;
-		doSearch->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		doSearch->setBounds(rect);
 		
 		// "Size"
 		int w2 = width - rMargin - lMargin;
@@ -356,26 +356,26 @@ void SearchFrame::layout() {
 		rect.bottom = rect.top + comboH;
 		rect.left = lMargin;
 		rect.right = w2/3;
-		mode->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		mode->setBounds(rect);
 
 		sizeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
 
 		rect.left = rect.right + lMargin;
 		rect.right += w2/3;
 		rect.bottom = rect.top + 21;
-		size->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		size->setBounds(rect);
 
 		rect.left = rect.right + lMargin;
 		rect.right = width - rMargin;
 		rect.bottom = rect.top + comboH;
-		sizeMode->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		sizeMode->setBounds(rect);
 
 		// "File type"
 		rect.left = lMargin;
 		rect.right = width - rMargin;
 		rect.top += spacing;
 		rect.bottom = rect.top + comboH + 21;
-		fileType->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		fileType->setBounds(rect);
 		rect.bottom -= comboH;
 
 		typeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
@@ -385,7 +385,7 @@ void SearchFrame::layout() {
 		rect.right = width - rMargin;
 		rect.top += spacing;
 		rect.bottom += spacing;
-		slots->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		slots->setBounds(rect);
 
 		optionLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
 
@@ -400,12 +400,12 @@ void SearchFrame::layout() {
 				rect.bottom = rect.top + (labelH*3)/2;
 		}
 
-		hubs->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		hubs->setBounds(rect);
 
 		hubsLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
 
 	} else {
-		results->setBounds(SmartWin::Rectangle::FromRECT(rect));
+		results->setBounds(rect);
 
 		SmartWin::Rectangle rNULL(0, 0, 0, 0);
 		searchBox->setBounds(rNULL);
@@ -433,9 +433,9 @@ bool SearchFrame::preClosing() {
 
 void SearchFrame::postClosing() {
 	results->forEachT(DeleteFunction());
-	results->removeAllRows();
+	results->clear();
 	hubs->forEachT(DeleteFunction());
-	hubs->removeAllRows();
+	hubs->clear();
 
 	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_ORDER, WinUtil::toString(results->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_WIDTHS, WinUtil::toString(results->getColumnWidths()));
@@ -583,8 +583,8 @@ LRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 			SearchInfo* si = reinterpret_cast<SearchInfo*>(lParam);
 			SearchResult* sr = si->sr;
 			// Check previous search results for dupes
-			for(int i = 0, j = results->getRowCount(); i < j; ++i) {
-				SearchInfo* si2 = results->getItemData(i);
+			for(int i = 0, j = results->size(); i < j; ++i) {
+				SearchInfo* si2 = results->getData(i);
 				SearchResult* sr2 = si2->sr;
 				if((sr->getUser()->getCID() == sr2->getUser()->getCID()) && (sr->getFile() == sr2->getFile())) {
 					delete si;
@@ -592,8 +592,8 @@ LRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 				}
 			}
 
-			results->insertItem(si);
-			setStatus(STATUS_COUNT, Text::toT(Util::toString(results->getRowCount()) + ' ' + STRING(ITEMS)));
+			results->insert(si);
+			setStatus(STATUS_COUNT, Text::toT(Util::toString(results->size()) + ' ' + STRING(ITEMS)));
 			setDirty(SettingsManager::BOLD_SEARCH);
 		}
 		break;
@@ -631,10 +631,10 @@ LRESULT SearchFrame::handleHubItemChanged(WPARAM wParam, LPARAM lParam) {
 	LPNMLISTVIEW lv = (LPNMLISTVIEW)lParam;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
 		if (((lv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1) {
-			for(int iItem = 0; (iItem = hubs->getNextItem(iItem, LVNI_ALL)) != -1; ) {
-				HubInfo* client = hubs->getItemData(iItem);
+			for(int iItem = 0; (iItem = hubs->getNext(iItem, LVNI_ALL)) != -1; ) {
+				HubInfo* client = hubs->getData(iItem);
 				if (!client->op)
-					hubs->setRowChecked(iItem, false);
+					hubs->setChecked(iItem, false);
 			}
 		}
 	}
@@ -687,9 +687,9 @@ void SearchFrame::handleDownloadFavoriteDirs(unsigned id) {
 
 void SearchFrame::handleDownloadTo() {
 	if(results->getSelectedCount() == 1) {
-		int i = results->getNextItem(-1, LVNI_SELECTED);
+		int i = results->getNext(-1, LVNI_SELECTED);
 		dcassert(i != -1);
-		SearchInfo* si = results->getItemData(i);
+		SearchInfo* si = results->getData(i);
 		SearchResult* sr = si->sr;
 
 		if(sr->getType() == SearchResult::TYPE_FILE) {
@@ -755,8 +755,8 @@ void SearchFrame::handleViewAsText() {
 
 void SearchFrame::handleSearchAlternates() {
 	if(results->getSelectedCount() == 1) {
-		int i = results->getNextItem(-1, LVNI_SELECTED);
-		SearchResult* sr = results->getItemData(i)->sr;
+		int i = results->getNext(-1, LVNI_SELECTED);
+		SearchResult* sr = results->getData(i)->sr;
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			WinUtil::searchHash(sr->getTTH());
 		}
@@ -765,8 +765,8 @@ void SearchFrame::handleSearchAlternates() {
 
 void SearchFrame::handleBitziLookup() {
 	if(results->getSelectedCount() == 1) {
-		int i = results->getNextItem(-1, LVNI_SELECTED);
-		SearchResult* sr = results->getItemData(i)->sr;
+		int i = results->getNext(-1, LVNI_SELECTED);
+		SearchResult* sr = results->getData(i)->sr;
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			WinUtil::bitziLink(sr->getTTH());
 		}
@@ -775,8 +775,8 @@ void SearchFrame::handleBitziLookup() {
 
 void SearchFrame::handleCopyMagnet() {
 	if(results->getSelectedCount() == 1) {
-		int i = results->getNextItem(-1, LVNI_SELECTED);
-		SearchResult* sr = results->getItemData(i)->sr;
+		int i = results->getNext(-1, LVNI_SELECTED);
+		SearchResult* sr = results->getData(i)->sr;
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			WinUtil::copyMagnet(sr->getTTH(), Text::toT(sr->getFileName()));
 		}
@@ -785,9 +785,9 @@ void SearchFrame::handleCopyMagnet() {
 
 void SearchFrame::handleRemove() {
 	int i = -1;
-	while((i = results->getNextItem(-1, LVNI_SELECTED)) != -1) {
-		delete results->getItemData(i);
-		results->removeRow(i);
+	while((i = results->getNext(-1, LVNI_SELECTED)) != -1) {
+		delete results->getData(i);
+		results->erase(i);
 	}
 }
 
@@ -909,43 +909,43 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 }
 
 void SearchFrame::onHubAdded(HubInfo* info) {
-	int nItem = hubs->insertItem(info);
-	hubs->setRowChecked(nItem, (hubs->getIsRowChecked(0) ? info->op : true));
+	int nItem = hubs->insert(info);
+	hubs->setChecked(nItem, (hubs->isChecked(0) ? info->op : true));
 	hubs->setColumnWidth(0, LVSCW_AUTOSIZE);
 }
 
 void SearchFrame::onHubChanged(HubInfo* info) {
 	int nItem = 0;
-	int n = hubs->getRowCount();
+	int n = hubs->size();
 	for(; nItem < n; nItem++) {
-		if(hubs->getItemData(nItem)->url == info->url)
+		if(hubs->getData(nItem)->url == info->url)
 			break;
 	}
 	if (nItem == n)
 		return;
 
-	delete hubs->getItemData(nItem);
-	hubs->setItemData(nItem, info);
-	hubs->updateItem(nItem);
+	delete hubs->getData(nItem);
+	hubs->setData(nItem, info);
+	hubs->update(nItem);
 
-	if (hubs->getIsRowChecked(0))
-		hubs->setRowChecked(nItem, info->op);
+	if (hubs->isChecked(0))
+		hubs->setChecked(nItem, info->op);
 
 	hubs->setColumnWidth(0, LVSCW_AUTOSIZE);
 }
 
 void SearchFrame::onHubRemoved(HubInfo* info) {
 	int nItem = 0;
-	int n = hubs->getRowCount();
+	int n = hubs->size();
 	for(; nItem < n; nItem++) {
-		if(hubs->getItemData(nItem)->url == info->url)
+		if(hubs->getData(nItem)->url == info->url)
 			break;
 	}
 	if (nItem == n)
 		return;
 
-	delete hubs->getItemData(nItem);
-	hubs->removeRow(nItem);
+	delete hubs->getData(nItem);
+	hubs->erase(nItem);
 	hubs->setColumnWidth(0, LVSCW_AUTOSIZE);
 }
 
@@ -968,10 +968,10 @@ void SearchFrame::runSearch() {
 	if(s.empty())
 		return;
 
-	int n = hubs->getRowCount();
+	int n = hubs->size();
 	for(int i = 0; i < n; i++) {
-		if(hubs->getIsRowChecked(i)) {
-			clients.push_back(Text::fromT(hubs->getItemData(i)->url));
+		if(hubs->isChecked(i)) {
+			clients.push_back(Text::fromT(hubs->getData(i)->url));
 		}
 	}
 
@@ -993,7 +993,7 @@ void SearchFrame::runSearch() {
 	int64_t llsize = (int64_t)lsize;
 
 	results->forEachT(DeleteFunction());
-	results->removeAllRows();
+	results->clear();
 
 	{
 		Lock l(cs);
@@ -1090,8 +1090,8 @@ void SearchFrame::runUserCommand(const UserCommand& uc) {
 	set<CID> users;
 
 	int sel = -1;
-	while((sel = results->getNextItem(sel, LVNI_SELECTED)) != -1) {
-		SearchResult* sr = results->getItemData(sel)->sr;
+	while((sel = results->getNext(sel, LVNI_SELECTED)) != -1) {
+		SearchResult* sr = results->getData(sel)->sr;
 
 		if(!sr->getUser()->isOnline())
 			continue;

@@ -36,7 +36,6 @@
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSizable.h"
-#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
@@ -67,7 +66,6 @@ class WidgetProgressBar :
 	public AspectPainting< WidgetProgressBar >,
 	public AspectRaw< WidgetProgressBar >,
 	public AspectSizable< WidgetProgressBar >,
-	public AspectThreads< WidgetProgressBar >,
 	public AspectVisible< WidgetProgressBar >
 {
 	friend class WidgetCreator< WidgetProgressBar >;

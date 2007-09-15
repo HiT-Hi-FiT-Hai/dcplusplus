@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_QUEUE_FRAME_H
 
 #include "StaticFrame.h"
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 #include "TypedTreeView.h"
 
 #include <dcpp/TaskQueue.h>
@@ -128,7 +128,7 @@ private:
 
 		void remove();
 
-		// TypedListViewCtrl functions
+		// TypedListView functions
 		const tstring& getText(int col) {
 			return getDisplay()->columns[col];
 		}
@@ -209,7 +209,7 @@ private:
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
 	
-	typedef TypedListViewCtrl<QueueFrame, QueueItemInfo> WidgetFiles;
+	typedef TypedListView<QueueFrame, QueueItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
 	WidgetVPanedPtr paned;

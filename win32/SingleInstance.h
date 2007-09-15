@@ -19,15 +19,14 @@
 #if !defined(DCPLUSPLUS_WIN32_SINGLE_INSTANCE_H)
 #define DCPLUSPLUS_WIN32_SINGLE_INSTANCE_H
 
-#define WMU_WHERE_ARE_YOU_MSG _T("WMU_WHERE_ARE_YOU-{885D4B75-6606-4add-A8DE-EEEDC04181F1}")
-const UINT WMU_WHERE_ARE_YOU = ::RegisterWindowMessage(_T("WMU_WHERE_ARE_YOU_MSG"));
-
 class SingleInstance
 {
 	DWORD  LastError;
 	HANDLE hMutex;
 
 public:
+	static const UINT WMU_WHERE_ARE_YOU;
+
 	SingleInstance(const TCHAR* strMutexName)
 	{
 		// strMutexName must be unique

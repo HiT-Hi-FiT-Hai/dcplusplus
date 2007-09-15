@@ -183,7 +183,7 @@ void ADLSearchFrame::handleAdd() {
 
 void ADLSearchFrame::handleProperties() {
 	// Get selection info
-	std::vector<unsigned> selected = items->getSelectedRows();
+	std::vector<unsigned> selected = items->getSelected();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		// Edit existing
 		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
@@ -197,9 +197,9 @@ void ADLSearchFrame::handleProperties() {
 
 			// Update list control
 			HoldRedraw hold(items);
-			items->removeRow(*i);
+			items->erase(*i);
 			addEntry(search, *i);
-			items->selectRow(*i);
+			items->select(*i);
 		}
 	}
 }
@@ -207,14 +207,14 @@ void ADLSearchFrame::handleProperties() {
 void ADLSearchFrame::handleUp() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	HoldRedraw hold(items);
-	std::vector<unsigned> selected = items->getSelectedRows();
+	std::vector<unsigned> selected = items->getSelected();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		if(*i > 0) {
 			ADLSearch search = collection[*i];
 			swap(collection[*i], collection[*i - 1]);
-			items->removeRow(*i);
+			items->erase(*i);
 			addEntry(search, *i - 1);
-			items->selectRow(*i - 1);
+			items->select(*i - 1);
 		}
 	}
 }
@@ -222,14 +222,14 @@ void ADLSearchFrame::handleUp() {
 void ADLSearchFrame::handleDown() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	HoldRedraw hold(items);
-	std::vector<unsigned> selected = items->getSelectedRows();
+	std::vector<unsigned> selected = items->getSelected();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
-		if(*i < items->getRowCount() - 1) {
+		if(*i < items->size() - 1) {
 			ADLSearch search = collection[*i];
 			swap(collection[*i], collection[*i + 1]);
-			items->removeRow(*i);
+			items->erase(*i);
 			addEntry(search, *i + 1);
-			items->selectRow(*i + 1);
+			items->select(*i + 1);
 		}
 	}
 }
@@ -237,9 +237,9 @@ void ADLSearchFrame::handleDown() {
 void ADLSearchFrame::handleRemove() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	int i;
-	while((i = items->getNextItem(-1, LVNI_SELECTED)) != -1) {
+	while((i = items->getNext(-1, LVNI_SELECTED)) != -1) {
 		collection.erase(collection.begin() + i);
-		items->removeRow(i);
+		items->erase(i);
 	}
 }
 
@@ -285,7 +285,7 @@ LRESULT ADLSearchFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 		// Set new active status check box
 		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 		ADLSearch& search = collection[item->iItem];
-		search.isActive = items->getIsRowChecked(item->iItem);
+		search.isActive = items->isChecked(item->iItem);
 	}
 	return 0;
 }
@@ -312,6 +312,6 @@ void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
 	l.push_back(Text::toT(search.destDir));
 	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
 	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
-	int itemCount = items->insertRow(l, 0, index);
-	items->setRowChecked((index == -1) ? itemCount : index, search.isActive);
+	int itemCount = items->insert(l, 0, index);
+	items->setChecked((index == -1) ? itemCount : index, search.isActive);
 }

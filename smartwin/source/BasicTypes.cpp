@@ -40,6 +40,13 @@ Point::Point()
 	: x( 0 ), y( 0 )
 {}
 
+Point::Point(POINT pt) : x(pt.x), y(pt.y) { }
+
+Point::operator POINT() const {
+	POINT pt = { x, y };
+	return pt;
+}
+
 void Point::maxOf( const Point & p )
 {
 	if ( p.x > x )
@@ -98,6 +105,10 @@ Rectangle::Rectangle()
 	: pos( Point() ), size( Point() )
 {}
 
+Rectangle::Rectangle( const RECT & rc ) :
+	pos(rc.left, rc.top), size(rc.right - rc.left, rc.bottom - rc.top)
+{
+}
 Rectangle::Rectangle( const Point & pPos, const Point & pSize )
 	: pos( pPos ), size( pSize )
 {}
@@ -118,22 +129,14 @@ Rectangle::Rectangle( const Rectangle & rect,
 	* this = subRect( xFraction, yFraction, widthFraction, heightFraction );
 }
 
-Rectangle::operator const ::RECT() const
+Rectangle::operator RECT() const
 {
 	RECT retVal;
 	retVal.left = pos.x;
 	retVal.top = pos.y;
-
-	// TODO: Is this right??
-	// (Adding pos to size to get bottom/right...)
 	retVal.right = pos.x + size.x;
 	retVal.bottom = pos.y + size.y;
 	return retVal;
-}
-
-Rectangle Rectangle::FromRECT( const ::RECT & a_RECT )
-{
-	return Rectangle( a_RECT.left, a_RECT.top, a_RECT.right - a_RECT.left, a_RECT.bottom - a_RECT.top );
 }
 
 Point Rectangle::lowRight() const

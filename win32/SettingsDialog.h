@@ -47,7 +47,7 @@ private:
 	void showPage(PropPage* page);
 	
 	HTREEITEM createTree(const tstring& str, HTREEITEM parent, PropPage* page);	
-	HTREEITEM findItem(const tstring& str, HTREEITEM start);
+	HTREEITEM find(const tstring& str, HTREEITEM start);
 };
 
 #endif 

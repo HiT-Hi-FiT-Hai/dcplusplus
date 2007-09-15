@@ -50,7 +50,7 @@ SmartWin::Rectangle WidgetTabSheet::getUsableArea() const
 	::GetWindowRect(handle(), &rc);
 	::MapWindowPoints(NULL, getParent()->handle(), (LPPOINT)&rc, 2);
 	TabCtrl_AdjustRect( this->handle(), false, &rc );
-	return Rectangle::FromRECT( rc );
+	return Rectangle( rc );
 }
 
 void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)

@@ -42,7 +42,6 @@
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
@@ -83,7 +82,6 @@ class WidgetTabSheet :
 	public AspectSelection< WidgetTabSheet >,
 	public AspectSizable< WidgetTabSheet >,
 	public AspectText< WidgetTabSheet >,
-	public AspectThreads< WidgetTabSheet >,
 	public AspectVisible< WidgetTabSheet >
 {
 	struct ChangingDispatcher

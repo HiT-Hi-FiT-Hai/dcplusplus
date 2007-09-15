@@ -56,7 +56,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 		TStringList row;
 		row.push_back(Text::toT(j->second));
 		row.push_back(Text::toT(j->first));
-		directories->insertRow(row);
+		directories->insert(row);
 	}
 
 	directories->onDblClicked(std::tr1::bind(&FavoriteDirsPage::handleDoubleClick, this));
@@ -115,13 +115,13 @@ void FavoriteDirsPage::handleDragDrop(const TStringList& files) {
 
 void FavoriteDirsPage::handleRenameClicked() {
 	int i = -1;
-	while((i = directories->getNextItem(i, LVNI_SELECTED)) != -1) {
-		tstring old = directories->getCellText(0, i);
+	while((i = directories->getNext(i, LVNI_SELECTED)) != -1) {
+		tstring old = directories->getText(i, 0);
 		LineDlg dlg(this, TSTRING(FAVORITE_DIR_NAME), TSTRING(FAVORITE_DIR_NAME_LONG), old);
 		if(dlg.run() == IDOK) {
 			tstring line = dlg.getLine();
 			if (FavoriteManager::getInstance()->renameFavoriteDir(Text::fromT(old), Text::fromT(line))) {
-				directories->setCellText(0, i, line);
+				directories->setText(i, 0, line);
 			} else {
 				createMessageBox().show(TSTRING(DIRECTORY_ADD_ERROR), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 			}
@@ -131,9 +131,9 @@ void FavoriteDirsPage::handleRenameClicked() {
 
 void FavoriteDirsPage::handleRemoveClicked() {
 	int i = -1;
-	while((i = directories->getNextItem(-1, LVNI_SELECTED)) != -1)
-		if(FavoriteManager::getInstance()->removeFavoriteDir(Text::fromT(directories->getCellText(1, i))))
-			directories->removeRow(i);
+	while((i = directories->getNext(-1, LVNI_SELECTED)) != -1)
+		if(FavoriteManager::getInstance()->removeFavoriteDir(Text::fromT(directories->getText(i, 1))))
+			directories->erase(i);
 }
 
 void FavoriteDirsPage::handleAddClicked() {
@@ -154,7 +154,7 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath) {
 			TStringList row;
 			row.push_back(line);
 			row.push_back(path);
-			directories->insertRow(row);
+			directories->insert(row);
 		} else {
 			createMessageBox().show(TSTRING(DIRECTORY_ADD_ERROR), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 		}

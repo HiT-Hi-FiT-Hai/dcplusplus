@@ -40,14 +40,12 @@
 #include "../aspects/AspectEraseBackground.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectGetParent.h"
 #include "../aspects/AspectKeyboard.h"
 #include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
@@ -100,7 +98,6 @@ class WidgetWindowBase :
 	public AspectRaw< WidgetWindowBase< Policy > >,
 	public AspectSizable< WidgetWindowBase< Policy > >,
 	public AspectText< WidgetWindowBase< Policy > >,
-	public AspectThreads< WidgetWindowBase< Policy > >,
 	public AspectVisible< WidgetWindowBase< Policy > >
 {
 	struct CloseDispatcher

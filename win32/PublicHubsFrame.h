@@ -21,7 +21,7 @@
 
 #include "StaticFrame.h"
 
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 
 #include <dcpp/FavoriteManager.h>
 #include "resource.h"
@@ -94,7 +94,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListViewCtrl<PublicHubsFrame, HubInfo> WidgetHubs;
+	typedef TypedListView<PublicHubsFrame, HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 

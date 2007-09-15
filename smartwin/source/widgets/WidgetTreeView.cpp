@@ -17,11 +17,18 @@ const WidgetTreeView::Seed & WidgetTreeView::getDefaultSeed()
 	return d_DefaultValues;
 }
 
-TreeViewNode WidgetTreeView::insertNode( const SmartUtil::tstring & text, const TreeViewNode & parent, unsigned param, int iconIndex, int selectedIconIndex )
+void WidgetTreeView::create( const Seed & cs )
 {
-	TVINSERTSTRUCT tv;
-	ZeroMemory( & tv, sizeof( TVINSERTSTRUCT ) );
-	tv.hParent = parent.handle;
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
+	PolicyType::create(cs);
+
+	setFont( cs.font );
+}
+
+HTREEITEM WidgetTreeView::insert( const SmartUtil::tstring & text, HTREEITEM parent, unsigned param, int iconIndex, int selectedIconIndex )
+{
+	TVINSERTSTRUCT tv = { 0 };
+	tv.hParent = parent;
 	tv.hInsertAfter = TVI_LAST;
 
 	TVITEMEX t;
@@ -30,7 +37,7 @@ TreeViewNode WidgetTreeView::insertNode( const SmartUtil::tstring & text, const 
 	if ( param != 0 )
 	{
 		t.mask |= TVIF_PARAM;
-		t.lParam = static_cast< LPARAM >( param );
+		t.lParam = param;
 	}
 	if ( itsNormalImageList )
 	{
@@ -44,32 +51,99 @@ TreeViewNode WidgetTreeView::insertNode( const SmartUtil::tstring & text, const 
 #else
 	tv.itemex = t;
 #endif
-	TreeViewNode retVal;
-	retVal.handle = reinterpret_cast< HTREEITEM >( this->sendMessage(TVM_INSERTITEM, 0, reinterpret_cast< LPARAM >( & tv ) ) );
-	return retVal;
+	return reinterpret_cast< HTREEITEM >( this->sendMessage(TVM_INSERTITEM, 0, reinterpret_cast< LPARAM >( & tv ) ) );
 }
 
-void WidgetTreeView::deleteChildrenOfNode( const TreeViewNode & node )
+SmartUtil::tstring WidgetTreeView::getSelectedText() {
+	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
+	return getText( hSelItem );
+}
+
+SmartUtil::tstring WidgetTreeView::getText( HTREEITEM node )
 {
-	TreeViewNode next_node, current_node;
-
-	if ( ! getNode( node, TVGN_CHILD, current_node ) ) return;
-
-	while ( getNode( current_node, TVGN_NEXT, next_node ) )
+	if(node == NULL) {
+		return SmartUtil::tstring();
+	}
+	
+	TVITEMEX item;
+	item.mask = TVIF_HANDLE | TVIF_TEXT;
+	item.hItem = node;
+	TCHAR buffer[1024];
+	buffer[0] = '\0';
+	item.cchTextMax = 1022;
+	item.pszText = buffer;
+	if ( TreeView_GetItem( this->handle(), & item ) )
 	{
-		deleteNode( current_node );
+		return buffer;
+	}
+	return SmartUtil::tstring();
+}
+
+void WidgetTreeView::eraseChildren( HTREEITEM node )
+{
+	HTREEITEM next_node, current_node;
+
+	if ( (current_node = getNext( node, TVGN_CHILD ) ) == NULL ) 
+		return;
+
+	while ( (next_node = getNext( current_node, TVGN_NEXT )) != NULL )
+	{
+		erase( current_node );
 		current_node = next_node;
 	}
 
-	deleteNode( current_node );
+	erase( current_node );
 }
 
-void WidgetTreeView::create( const Seed & cs )
+void WidgetTreeView::setNormalImageList( ImageListPtr imageList ) {
+	  itsNormalImageList = imageList;
+	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_NORMAL );
+}
+
+void WidgetTreeView::setStateImageList( ImageListPtr imageList ) {
+	  itsStateImageList = imageList;
+	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_STATE );
+}
+
+int WidgetTreeView::getSelectedIndex() const
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-
-	setFont( cs.font );
+	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
+	TVITEM item;
+	ZeroMemory( & item, sizeof( TVITEM ) );
+	item.mask = TVIF_HANDLE | TVIF_PARAM;
+	item.hItem = hSelItem;
+	if ( TreeView_GetItem( this->handle(), & item ) )
+		return static_cast< unsigned >( item.lParam );
+	return 0;
 }
+
+void WidgetTreeView::setSelectedIndex( int idx )
+{
+	TVITEM item;
+	item.mask = TVIF_PARAM;
+	item.lParam = idx;
+	if ( TreeView_GetItem( this->handle(), & item ) == FALSE )
+	{
+		throw xCeption( _T( "Couldn't find given item" ) );
+	}
+	TreeView_Select( this->handle(), item.hItem, TVGN_FIRSTVISIBLE );
+}
+
+LPARAM WidgetTreeView::getDataImpl(HTREEITEM item) {
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
+	tvitem.hItem = item;
+	if(!TreeView_GetItem(this->handle(), &tvitem)) {
+		return 0;
+	}
+	return tvitem.lParam;
+}
+
+void WidgetTreeView::setDataImpl(HTREEITEM item, LPARAM lParam) {
+	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
+	tvitem.hItem = item;
+	tvitem.lParam = lParam;
+	TreeView_SetItem(this->handle(), &tvitem);
+}
+
 
 }

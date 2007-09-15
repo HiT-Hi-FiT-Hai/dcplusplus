@@ -74,7 +74,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 		row.push_back(Text::toT(j->first));
 		row.push_back(Text::toT(j->second));
 		row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))));
-		directories->insertRow(row);
+		directories->insert(row);
 	}
 
 	directories->onDblClicked(std::tr1::bind(&UploadPage::handleDoubleClick, this));
@@ -162,7 +162,7 @@ void UploadPage::handleShareHiddenClicked(WidgetCheckBoxPtr checkBox) {
 	ShareManager::getInstance()->refresh(true, false, true);
 
 	// Clear the GUI list, for insertion of updated shares
-	directories->removeAllRows();
+	directories->clear();
 	StringPairList dirs = ShareManager::getInstance()->getDirectories();
 	for(StringPairIter j = dirs.begin(); j != dirs.end(); j++)
 	{
@@ -170,7 +170,7 @@ void UploadPage::handleShareHiddenClicked(WidgetCheckBoxPtr checkBox) {
 		row.push_back(Text::toT(j->first));
 		row.push_back(Text::toT(j->second));
 		row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))));
-		directories->insertRow(row);
+		directories->insert(row);
 	}
 
 	// Display the new total share size
@@ -181,16 +181,16 @@ void UploadPage::handleRenameClicked() {
 	bool setDirty = false;
 
 	int i = -1;
-	while((i = directories->getNextItem(i, LVNI_SELECTED)) != -1) {
-		tstring vName = directories->getCellText(0, i);
-		tstring rPath = directories->getCellText(1, i);
+	while((i = directories->getNext(i, LVNI_SELECTED)) != -1) {
+		tstring vName = directories->getText(i, 0);
+		tstring rPath = directories->getText(i, 1);
 		try {
 			LineDlg dlg(this, TSTRING(VIRTUAL_NAME), TSTRING(VIRTUAL_NAME_LONG), vName);
 			if(dlg.run() == IDOK) {
 				tstring line = dlg.getLine();
 				if (Util::stricmp(vName, line) != 0) {
 					ShareManager::getInstance()->renameDirectory(Text::fromT(rPath), Text::fromT(line));
-					directories->setCellText(0, i, line);
+					directories->setText(i, 0, line);
 
 					setDirty = true;
 				} else {
@@ -208,10 +208,10 @@ void UploadPage::handleRenameClicked() {
 
 void UploadPage::handleRemoveClicked() {
 	int i = -1;
-	while((i = directories->getNextItem(-1, LVNI_SELECTED)) != -1) {
-		ShareManager::getInstance()->removeDirectory(Text::fromT(directories->getCellText(1, i)));
+	while((i = directories->getNext(-1, LVNI_SELECTED)) != -1) {
+		ShareManager::getInstance()->removeDirectory(Text::fromT(directories->getText(i, 1)));
 		total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
-		directories->removeRow(i);
+		directories->erase(i);
 	}
 }
 
@@ -237,7 +237,7 @@ void UploadPage::addDirectory(const tstring& aPath) {
 			row.push_back(line);
 			row.push_back(path);
 			row.push_back(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))));
-			directories->insertRow(row);
+			directories->insert(row);
 			total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 		}
 	} catch(const ShareException& e) {

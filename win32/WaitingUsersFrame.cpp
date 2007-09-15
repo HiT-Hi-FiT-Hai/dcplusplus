@@ -71,19 +71,16 @@ bool WaitingUsersFrame::preClosing() {
 	UploadManager::getInstance()->removeListener(this);
 	return true;
 }
+
 void WaitingUsersFrame::postClosing() {
 	
-	// This looks like the correct way of doing this according to
-	// the getNode implementation, but the abstraction leakage is
-	// horrid.
-	SmartWin::TreeViewNode userNode;
-	queued->getNode(SmartWin::TreeViewNode(), TVGN_ROOT, userNode);
+	HTREEITEM userNode = queued->getNext(NULL, TVGN_ROOT);
 
 	// SmartWin doesn't appear to have any way to access the item data,
 	// rather than text. TVM_GETITEM, at least, appears nowhere in it.
-	while (userNode.handle) {
-		delete reinterpret_cast<UserItem *>(queued->getData(userNode.handle));
-		queued->getNode(userNode, TVGN_NEXT, userNode);
+	while (userNode) {
+		delete reinterpret_cast<UserItem *>(queued->getData(userNode));
+		userNode = queued->getNext(userNode, TVGN_NEXT);
 	}
 }
 
@@ -126,12 +123,12 @@ void WaitingUsersFrame::loadAll()
 	// Load queue
 	UserList users = UploadManager::getInstance()->getWaitingUsers();
 	for (UserList::iterator uit = users.begin(); uit != users.end(); ++uit) {
-		SmartWin::TreeViewNode lastInserted = queued->insertNode(
+		HTREEITEM lastInserted = queued->insert(
 			(WinUtil::getNicks(*uit) + _T(" - ") + WinUtil::getHubNames(*uit).first),
-			SmartWin::TreeViewNode(TVI_ROOT), (LPARAM)(new UserPtr(*uit)));
+			TVI_ROOT, (LPARAM)(new UserPtr(*uit)));
 		UploadManager::FileSet files = UploadManager::getInstance()->getWaitingUserFiles(*uit);
 		for (UploadManager::FileSet::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
-			queued->insertNode(Text::toT(*fit), lastInserted);
+			queued->insert(Text::toT(*fit), lastInserted);
 		}
 	}
 }
@@ -157,14 +154,8 @@ void WaitingUsersFrame::onAddToFavorites() {
 	}
 }
 
-SmartWin::TreeViewNode WaitingUsersFrame::GetParentItem() {
-	SmartWin::TreeViewNode item, parent;
-	queued->getNode(SmartWin::TreeViewNode(), TVM_GETNEXTITEM, item);
-#ifdef PORT_ME
-	// @todo presumably another getNode WRT YA TVGN constant. Hurray.
-	parent = queued->GetParentItem(item);
-#endif
-	return parent.handle?parent:item;
+HTREEITEM WaitingUsersFrame::GetParentItem() {
+	return queued->getNext(NULL, TVM_GETNEXTITEM);
 }
 
 void WaitingUsersFrame::onGetList()
@@ -178,7 +169,7 @@ void WaitingUsersFrame::onGetList()
 void WaitingUsersFrame::onCopyFilename() {
 #ifdef PORT_ME
 	// @todo see previous comment. 
-	SmartWin::TreeViewNode selectedItem = getSelectedItem(), parentItem = queued->GetParentItem(selectedItem);
+	SmartWin::TreeViewNode selectedItem = getSelected(), parentItem = queued->GetParentItem(selectedItem);
 
 	if (!selectedItem || !parentItem || selectedItem == parentItem)
 		return;

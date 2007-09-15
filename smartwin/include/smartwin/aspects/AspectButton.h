@@ -14,7 +14,6 @@
 #include "AspectRaw.h"
 #include "AspectSizable.h"
 #include "AspectText.h"
-#include "AspectThreads.h"
 #include "AspectVisible.h"
 
 namespace SmartWin {
@@ -34,7 +33,6 @@ class AspectButton :
 	public AspectRaw< WidgetType >,
 	public AspectSizable< WidgetType >,
 	public AspectText< WidgetType >,
-	public AspectThreads< WidgetType >,
 	public AspectVisible< WidgetType >
 {
 public:

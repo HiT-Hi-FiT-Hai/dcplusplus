@@ -21,6 +21,7 @@
 
 #include "WinUtil.h"
 
+/** Our own flavour of text boxes that handle double clicks */
 class WidgetTextBox : public SmartWin::WidgetTextBox {
 private:
 	typedef SmartWin::WidgetTextBox BaseType;
@@ -33,67 +34,10 @@ public:
 		this->onLeftMouseDblClick(std::tr1::bind(&WidgetTextBox::handleLeftDblClick, this, _1));
 	}
 
-	POINT getContextMenuPos() {
-		RECT rc;
-		::GetClientRect(this->handle(), &rc);
-		POINT pt = { rc.right/2, rc.bottom/2};
-		this->clientToScreen(pt);
-		return pt;
-	}
-	
-	int charFromPos(const SmartWin::Point& pt) {		
-		LPARAM lp = MAKELPARAM(pt.x, pt.y);
-		return LOWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
-	}
-	
-	int lineFromPos(const SmartWin::Point& pt) {
-		LPARAM lp = MAKELPARAM(pt.x, pt.y);
-		return HIWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
-	}
-	
-	int lineIndex(int line) {
-		return static_cast<int>(::SendMessage(this->handle(), EM_LINEINDEX, static_cast<WPARAM>(line), 0));
-	}
-	
-	int lineLength(int c) {
-		return static_cast<int>(::SendMessage(this->handle(), EM_LINELENGTH, static_cast<WPARAM>(c), 0));
-	}
-	
-	tstring getLine(int line) {
-		tstring tmp;
-		tmp.resize(std::max(2, lineLength(lineIndex(line))));
-		
-		*reinterpret_cast<WORD*>(&tmp[0]) = static_cast<WORD>(tmp.size());
-		tmp.resize(::SendMessage(this->handle(), EM_GETLINE, static_cast<WPARAM>(line), reinterpret_cast<LPARAM>(&tmp[0])));
-		return tmp;
-	}
-
-	tstring textUnderCursor(const SmartWin::Point& p) {
-		int i = charFromPos(p);
-		int line = lineFromPos(p);
-		int c = i - lineIndex(line);
-		
-		tstring tmp = getLine(line);
-		
-		string::size_type start = tmp.find_last_of(_T(" <\t\r\n"), c);
-		if(start == string::npos)
-			start = 0;
-		else
-			start++;
-		
-		string::size_type end = tmp.find_first_of(_T(" >\t\r\n"), start + 1);
-		if(end == string::npos)
-			end = tmp.size();
-		
-		return tmp.substr(start, end-start);
-	}
-	
 private:
-	
 	void handleLeftDblClick(const SmartWin::MouseEventResult& ev) {
 		WinUtil::parseDBLClick(textUnderCursor(ev.pos));
 	}
-	
 };
 
 #endif /*WIDGETTEXTBOX_H_*/

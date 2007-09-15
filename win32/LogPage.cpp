@@ -121,7 +121,7 @@ HRESULT LogPage::handleItemChanged(WidgetDataGridPtr dataGrid, WPARAM wParam, LP
 	int sel = dataGrid->getSelectedIndex();
 
 	if(sel >= 0 && sel < LogManager::LAST) {
-		BOOL checkState = dataGrid->getIsRowChecked(sel) ? TRUE : FALSE;
+		BOOL checkState = dataGrid->isChecked(sel) ? TRUE : FALSE;
 		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), checkState);
 		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), checkState);
 

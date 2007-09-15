@@ -109,7 +109,7 @@ public:
 		return TreeView_GetParent(this->handle(), item);
 	}
 	
-	void deleteItem(HTREEITEM item) {
+	void erase(HTREEITEM item) {
 		TreeView_DeleteItem(this->handle(), item);
 	}
 	

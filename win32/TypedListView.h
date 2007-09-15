@@ -16,20 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_CTRL_H
-#define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_CTRL_H
+#ifndef DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
+#define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 
 template<class T, class ContentType>
-class TypedListViewCtrl : public T::WidgetDataGrid
+class TypedListView : public T::WidgetDataGrid
 {
 private:
 	typedef typename T::WidgetDataGrid BaseType;
-	typedef TypedListViewCtrl<T, ContentType> ThisType;
+	typedef TypedListView<T, ContentType> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedListViewCtrl( SmartWin::Widget * parent ) : BaseType(parent), sortColumn(-1), sortAscending(true) { 
+	explicit TypedListView( SmartWin::Widget * parent ) : BaseType(parent), sortColumn(-1), sortAscending(true) { 
 		
 	}
 	
@@ -47,33 +47,28 @@ public:
 		}
 	}
 
-	int insertItem(ContentType* item) {
-		return insertItem(getSortPos(item), item);
+	int insert(ContentType* item) {
+		return insert(getSortPos(item), item);
 	}
-	int insertItem(int i, ContentType* item) {
-		return BaseType::insertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i,
+	
+	int insert(int i, ContentType* item) {
+		return BaseType::insert(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, i,
 			LPSTR_TEXTCALLBACK, 0, 0, I_IMAGECALLBACK, reinterpret_cast<LPARAM>(item));
 	}
 	
-	ContentType* getItemData(int iItem) { 
-		LVITEM item = { LVIF_PARAM };
-        item.iItem = iItem;
-		if(ListView_GetItem(this->handle(), &item)) {
-			return reinterpret_cast<ContentType*>(item.lParam);
-		}
-		return 0;
+	ContentType* getData(int iItem) {
+		return reinterpret_cast<ContentType*>(BaseType::getData(iItem));
 	}
 
-	BOOL setItemData(int iItem, ContentType* lparam) {
-		LVITEM item = { LVIF_PARAM };
-		item.iItem = iItem;
-		item.lParam = reinterpret_cast<LPARAM>(lparam);
-		return ListView_SetItem(this->handle(), &item);
+	void setData(int iItem, ContentType* lparam) {
+		BaseType::setData(iItem, reinterpret_cast<LPARAM>(lparam));
 	}
 
-	ContentType* getSelectedItem() { return this->hasSelection() ? getItemData(this->getSelectedIndex()) : 0; }
+	ContentType* getSelectedData() { return this->hasSelection() ? getData(this->getSelectedIndex()) : 0; }
 
-	int findItem(ContentType* item) {
+	using BaseType::find;
+	
+	int find(ContentType* item) {
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
 		return ListView_FindItem(this->handle(), -1, &fi);
 	}
@@ -84,46 +79,45 @@ public:
 			return Util::stricmp(a.getText(0), b) < 0;
 		}
 	};
-	int findItem(const tstring& b, int start = -1, bool aPartial = false) {
-		LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
-		return ListView_FindItem(this->handle(), start, &fi);
-	}
-
+	
 	void forEach(void (ContentType::*func)()) {
-		unsigned n = this->getRowCount();
+		unsigned n = this->size();
 		for(unsigned i = 0; i < n; ++i)
-			(getItemData(i)->*func)();
+			(getData(i)->*func)();
 	}
 	void forEachSelected(void (ContentType::*func)()) {
 		int i = -1;
 		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
-			(getItemData(i)->*func)();
+			(getData(i)->*func)();
 	}
 	template<class _Function>
 	_Function forEachT(_Function pred) {
-		unsigned n = this->getRowCount();
+		unsigned n = this->size();
 		for(unsigned i = 0; i < n; ++i)
-			pred(getItemData(i));
+			pred(getData(i));
 		return pred;
 	}
 	template<class _Function>
 	_Function forEachSelectedT(_Function pred) {
 		int i = -1;
 		while( (i = ListView_GetNextItem(this->handle(), i, LVNI_SELECTED)) != -1)
-			pred(getItemData(i));
+			pred(getData(i));
 		return pred;
 	}
 
-	void updateItem(int i) {
+	void update(int i) {
 		unsigned k = this->getColumnCount();
 		for(unsigned j = 0; j < k; ++j)
 			ListView_SetItemText(this->handle(), i, j, LPSTR_TEXTCALLBACK);
 	}
-	void updateItem(ContentType* item) { int i = findItem(item); if(i != -1) updateItem(i); }
-	void deleteItem(ContentType* item) { int i = findItem(item); if(i != -1) this->removeRow(i); }
+	
+	void update(ContentType* item) { int i = find(item); if(i != -1) update(i); }
+
+	using BaseType::erase;
+	void erase(ContentType* item) { int i = find(item); if(i != -1) this->erase(i); }
 
 	int getSortPos(ContentType* a) {
-		int high = this->getRowCount();
+		int high = this->size();
 		if((sortColumn == -1) || (high == 0))
 			return high;
 
@@ -135,7 +129,7 @@ public:
 		int comp = 0;
 		while( low <= high ) {
 			mid = (low + high) / 2;
-			b = getItemData(mid);
+			b = getData(mid);
 			comp = ContentType::compareItems(a, b, sortColumn);
 
 			if(!sortAscending)
@@ -201,11 +195,11 @@ private:
 #include "memdc.h"
 
 template<class T, class ContentType>
-class TypedListViewCtrl : public T::WidgetDataGrid,
-	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
+class TypedListView : public T::WidgetDataGrid,
+	ListViewArrows<TypedListView<T, ctrlId> >
 {
 
-	typedef TypedListViewCtrl<T, ctrlId> thisClass;
+	typedef TypedListView<T, ctrlId> thisClass;
 	typedef CListViewCtrl baseClass;
 	typedef ListViewArrows<thisClass> arrowBase;
 
@@ -233,9 +227,9 @@ class TypedListViewCtrl : public T::WidgetDataGrid,
 		iterator& operator+=(int n) { cur += n; return *this; }
 		iterator& operator-=(int n) { return (cur += -n); }
 
-		T& operator*() { return *typedList->getItemData(cur); }
+		T& operator*() { return *typedList->getData(cur); }
 		T* operator->() { return &(*(*this)); }
-		T& operator[](int n) { return *typedList->getItemData(cur + n); }
+		T& operator[](int n) { return *typedList->getData(cur + n); }
 
 		iterator operator++(int) {
 			iterator tmp(*this);
@@ -301,35 +295,6 @@ class TypedListViewCtrl : public T::WidgetDataGrid,
 	}
 	iterator begin() { return iterator(this); }
 	iterator end() { return iterator(this, GetItemCount()); }
-
-	LRESULT onEraseBkgnd(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-
-	LRESULT onPaint(UINT msg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		CRect updateRect;
-		CRect crc;
-		GetClientRect(&crc);
-		if(GetUpdateRect(updateRect, FALSE)){
-			CPaintDC dc(m_hWnd);
-			int oldDCSettings = dc.SaveDC();
-			dc.SetBkColor(WinUtil::bgColor);
-			CMemDC memDC(&dc, &crc);
-
-			//it seems like the default paint method actually
-			//uses the HDC it's passed, saves a lot of work =)
-			LRESULT ret = DefWindowProc(msg, (WPARAM)memDC.m_hDC, NULL);
-
-			//make sure to paint before CPaintDC goes out of scope and destroys our hdc
-			memDC.Paint();
-
-			dc.RestoreDC(oldDCSettings);
-
-			return ret;
-		}
-
-		return 0;
-	}
 
 };
 #endif

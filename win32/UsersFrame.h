@@ -23,7 +23,7 @@
 
 #include "StaticFrame.h"
 #include "WinUtil.h"
-#include "TypedListViewCtrl.h"
+#include "TypedListView.h"
 
 #include "UserInfoBase.h"
 #include "resource.h"
@@ -84,7 +84,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedListViewCtrl<UsersFrame, UserInfo> WidgetUsers;
+	typedef TypedListView<UsersFrame, UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 

@@ -301,7 +301,7 @@ void DirectoryListingFrame::refreshTree(const tstring& root) {
 
 	HTREEITEM next = NULL;
 	while((next = dirs->getChild(ht)) != NULL) {
-		dirs->deleteItem(next);
+		dirs->erase(next);
 	}
 
 	updateTree(d, ht);
@@ -418,7 +418,7 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		if(files->getSelectedCount() == 1) {
 			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe())) {
 				string path;
-				ItemInfo* ii = files->getSelectedItem();
+				ItemInfo* ii = files->getSelectedData();
 				try {
 					path = ShareManager::getInstance()->toReal(Util::toAdcFile(dl->getPath(ii->file) + ii->file->getName()));
 				} catch(const ShareException&) {
@@ -432,7 +432,7 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 					return TRUE;
 				}
 			}
-			ItemInfo* ii = files->getSelectedItem();
+			ItemInfo* ii = files->getSelectedData();
 			
 			contextMenu = makeSingleMenu(ii);
 		} else {
@@ -466,8 +466,8 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 void DirectoryListingFrame::downloadFiles(const string& aTarget, bool view /* = false */) {
 	int i=-1;
 	
-	while( (i = files->getNextItem(i, LVNI_SELECTED)) != -1) {
-		download(files->getItemData(i), aTarget, view);
+	while( (i = files->getNext(i, LVNI_SELECTED)) != -1) {
+		download(files->getData(i), aTarget, view);
 	}
 }
 
@@ -488,21 +488,21 @@ void DirectoryListingFrame::download(ItemInfo* ii, const string& dir, bool view)
 }
 
 void DirectoryListingFrame::handleSearchAlternates() {
-	ItemInfo* ii = files->getSelectedItem();
+	ItemInfo* ii = files->getSelectedData();
 	if(ii != NULL && ii->type == ItemInfo::FILE) {
 		WinUtil::searchHash(ii->file->getTTH());
 	}
 }
 
 void DirectoryListingFrame::handleLookupBitzi() {
-	ItemInfo* ii = files->getSelectedItem();
+	ItemInfo* ii = files->getSelectedData();
 	if(ii != NULL && ii->type == ItemInfo::FILE) {
 		WinUtil::bitziLink(ii->file->getTTH());
 	}
 }
 
 void DirectoryListingFrame::handleCopyMagnet() {
-	ItemInfo* ii = files->getSelectedItem();
+	ItemInfo* ii = files->getSelectedData();
 	if(ii != NULL && ii->type == ItemInfo::FILE) {
 		WinUtil::copyMagnet(ii->file->getTTH(), ii->getText(COLUMN_FILENAME));
 	}
@@ -531,7 +531,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 		}
 	} else {
 		if(files->getSelectedCount() == 1) {
-			ItemInfo* ii = files->getSelectedItem();
+			ItemInfo* ii = files->getSelectedData();
 			try {
 				if(ii->type == ItemInfo::FILE) {
 					tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + ii->getText(COLUMN_FILENAME);
@@ -587,7 +587,7 @@ void DirectoryListingFrame::handleDownloadTarget(unsigned id) {
 	}
 
 	const string& target = targets[n];
-	ItemInfo* ii = files->getSelectedItem();
+	ItemInfo* ii = files->getSelectedData();
 	try {
 		dl->download(ii->file, target, false, WinUtil::isShift());
 	} catch(const Exception& e) {
@@ -601,7 +601,7 @@ void DirectoryListingFrame::handleGoToDirectory() {
 		return;
 
 	tstring fullPath;
-	ItemInfo* ii = files->getSelectedItem();
+	ItemInfo* ii = files->getSelectedData();
 	
 	if(ii->type == ItemInfo::FILE) {
 		if(!ii->file->getAdls())
@@ -629,7 +629,7 @@ void DirectoryListingFrame::download(const string& target) {
 		}
 	} else {
 		if(files->getSelectedCount() == 1) {
-			ItemInfo* ii = files->getSelectedItem();
+			ItemInfo* ii = files->getSelectedData();
 			download(ii, target);
 		} else {
 			downloadFiles(target);
@@ -677,7 +677,7 @@ void DirectoryListingFrame::updateStatus() {
 		int cnt = files->getSelectedCount();
 		int64_t total = 0;
 		if(cnt == 0) {
-			cnt = files->getRowCount();
+			cnt = files->size();
 			total = files->forEachT(ItemInfo::TotalSize()).total;
 		} else {
 			total = files->forEachSelectedT(ItemInfo::TotalSize()).total;
@@ -708,11 +708,11 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
 	clearList();
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
-		files->insertItem(files->getRowCount(), new ItemInfo(*i));
+		files->insert(files->size(), new ItemInfo(*i));
 	}
 	for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 		ItemInfo* ii = new ItemInfo(*j);
-		files->insertItem(files->getRowCount(), ii);
+		files->insert(files->size(), ii);
 	}
 	files->resort();
 	
@@ -734,11 +734,11 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
 }
 
 void DirectoryListingFrame::clearList() {
-	int j = files->getRowCount();
+	int j = files->size();
 	for(int i = 0; i < j; i++) {
-		delete files->getItemData(i);
+		delete files->getData(i);
 	}
-	files->removeAllRows();
+	files->clear();
 }
 
 void DirectoryListingFrame::addHistory(const string& name) {
@@ -797,8 +797,8 @@ HTREEITEM DirectoryListingFrame::findFile(const StringSearch& str, HTREEITEM roo
 	changeDir(dir);
 
 	// Check file names in list pane
-	for(int i=0; i<files->getRowCount(); i++) {
-		ItemInfo* ii = files->getItemData(i);
+	for(int i=0; i<files->size(); i++) {
+		ItemInfo* ii = files->getData(i);
 		if(ii->type == ItemInfo::FILE) {
 			if(str.match(ii->file->getName())) {
 				if(skipHits == 0) {
@@ -870,7 +870,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 				// Locate the dir in the file list
 				DirectoryListing::Directory* dir = dirs->getData(foundDir)->dir;
 
-				foundFile = files->findItem(Text::toT(dir->getName()), -1, false);
+				foundFile = files->find(Text::toT(dir->getName()), -1, false);
 			} else {
 				// If no parent exists, just the dir tree item and skip the list highlighting
 				dirs->select(foundDir);
@@ -905,8 +905,8 @@ void DirectoryListingFrame::runUserCommand(const UserCommand& uc) {
 	set<UserPtr> users;
 
 	int sel = -1;
-	while((sel = files->getNextItem(sel, LVNI_SELECTED)) != -1) {
-		ItemInfo* ii = files->getItemData(sel);
+	while((sel = files->getNext(sel, LVNI_SELECTED)) != -1) {
+		ItemInfo* ii = files->getData(sel);
 		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
 			if(users.find(dl->getUser()) != users.end())
 				continue;
@@ -944,7 +944,7 @@ void DirectoryListingFrame::handleDoubleClickFiles() {
 	HTREEITEM t = dirs->getSelected();
 	int i = files->getSelectedIndex();
 	if(t != NULL && i != -1) {
-		ItemInfo* ii = files->getItemData(i);
+		ItemInfo* ii = files->getData(i);
 
 		if(ii->type == ItemInfo::FILE) {
 			try {
@@ -986,7 +986,7 @@ bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 		forward();
 	} else if(c == VK_RETURN) {
 		if(files->getSelectedCount() == 1) {
-			ItemInfo* ii = files->getSelectedItem();
+			ItemInfo* ii = files->getSelectedData();
 			if(ii->type == ItemInfo::DIRECTORY) {
 				HTREEITEM ht = dirs->getChild(dirs->getSelected());
 				while(ht != NULL) {

@@ -59,7 +59,6 @@
 #include "widgets/WidgetWindow.h"
 #include "widgets/WidgetWindowBase.h"
 #include "WidgetFactoryPlatformImplementation.h"
-#include "aspects/AspectGetParent.h"
 #include "WidgetCreator.h"
 #include <memory>
 

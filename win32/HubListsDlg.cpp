@@ -120,52 +120,52 @@ void HubListsDlg::handleAddClicked() {
 
 void HubListsDlg::handleMoveUpClicked() {
 	HoldRedraw hold(hubLists);
-	std::vector<unsigned> selected = hubLists->getSelectedRows();
+	std::vector<unsigned> selected = hubLists->getSelected();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		if(*i > 0) {
-			tstring selText = hubLists->getCellText(0, *i);
-			hubLists->removeRow(*i);
+			tstring selText = hubLists->getText(*i, 0);
+			hubLists->erase(*i);
 			addHubList(selText, *i - 1);
-			hubLists->selectRow(*i - 1);
+			hubLists->select(*i - 1);
 		}
 	}
 }
 
 void HubListsDlg::handleMoveDownClicked() {
 	HoldRedraw hold(hubLists);
-	std::vector<unsigned> selected = hubLists->getSelectedRows();
+	std::vector<unsigned> selected = hubLists->getSelected();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
-		if(*i < hubLists->getRowCount() - 1) {
-			tstring selText = hubLists->getCellText(0, *i);
-			hubLists->removeRow(*i);
+		if(*i < hubLists->size() - 1) {
+			tstring selText = hubLists->getText(*i, 0);
+			hubLists->erase(*i);
 			addHubList(selText, *i + 1);
-			hubLists->selectRow(*i + 1);
+			hubLists->select(*i + 1);
 		}
 	}
 }
 
 void HubListsDlg::handleEditClicked() {
 	int i = -1;
-	while((i = hubLists->getNextItem(i, LVNI_SELECTED)) != -1) {
-		LineDlg dlg(this, TSTRING(HUB_LIST), TSTRING(HUB_LIST_EDIT), hubLists->getCellText(0, i));
+	while((i = hubLists->getNext(i, LVNI_SELECTED)) != -1) {
+		LineDlg dlg(this, TSTRING(HUB_LIST), TSTRING(HUB_LIST_EDIT), hubLists->getText(i, 0));
 		if(dlg.run() == IDOK)
-			hubLists->setCellText(0, i, dlg.getLine());
+			hubLists->setText(i, 0, dlg.getLine());
 	}
 }
 
 void HubListsDlg::handleRemoveClicked() {
 	int i = -1;
-	while((i = hubLists->getNextItem(-1, LVNI_SELECTED)) != -1)
-		hubLists->removeRow(i);
+	while((i = hubLists->getNext(-1, LVNI_SELECTED)) != -1)
+		hubLists->erase(i);
 }
 
 void HubListsDlg::handleOKClicked() {
 	tstring tmp;
-	int j = hubLists->getRowCount();
+	int j = hubLists->size();
 	for(int i = 0; i < j; ++i) {
 		if(i != 0)
 			tmp += ';';
-		tmp += hubLists->getCellText(0, i);
+		tmp += hubLists->getText(i, 0);
 	}
 	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, Text::fromT(tmp));
 	endDialog(IDOK);
@@ -174,5 +174,5 @@ void HubListsDlg::handleOKClicked() {
 void HubListsDlg::addHubList(const tstring& address, int index) {
 	TStringList row;
 	row.push_back(address);
-	hubLists->insertRow(row, 0, index);
+	hubLists->insert(row, 0, index);
 }

@@ -34,6 +34,8 @@
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
+#include "../aspects/AspectCollection.h"
+#include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
@@ -45,7 +47,6 @@
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectSizable.h"
-#include "../aspects/AspectThreads.h"
 #include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 #include "WidgetDataGridEditBox.h"
@@ -338,6 +339,7 @@ public:
 		}
 };
 #endif
+
 /// List View Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -357,6 +359,8 @@ class WidgetDataGrid :
 	// Aspect classes
 	public AspectBorder< WidgetDataGrid >,
 	public AspectClickable< WidgetDataGrid >,
+	public AspectCollection<WidgetDataGrid, int>,
+	public AspectData<WidgetDataGrid, int>,
 	public AspectDblClickable< WidgetDataGrid >,
 	public AspectEnabled< WidgetDataGrid >,
 	public AspectFocus< WidgetDataGrid >,
@@ -368,13 +372,14 @@ class WidgetDataGrid :
 	public AspectScrollable< WidgetDataGrid >,
 	public AspectSelection< WidgetDataGrid >,
 	public AspectSizable< WidgetDataGrid >,
-	public AspectThreads< WidgetDataGrid >,
 	public AspectVisible< WidgetDataGrid >
 {
 protected:
 
 	// Need to be friend to access private data...
 	friend class WidgetCreator< WidgetDataGrid >;
+	friend class AspectCollection<WidgetDataGrid, int>;
+	friend class AspectData<WidgetDataGrid, int>;
 
 public:
 	/// Class type
@@ -520,24 +525,14 @@ public:
 	  * 3 which now might be moved to the beginning of the grid, NOT the NEW column
 	  * no. 3 <br>
 	  * The above does NOT apply for ROWS, meaning it will get the text of the NEW
-	  * row if row is moved due to a sort e.g. <br>
-	  * If you need to get "logical" row use getCellTextByLParam instead.
+	  * row if row is moved due to a sort e.g.
 	  */
-	SmartUtil::tstring getCellText( unsigned int column, unsigned int row );
+	SmartUtil::tstring getText( unsigned int row, unsigned int column );
 
-	/// Returns the text of the given cell
-	/** The column is which column you wish to retrieve the text for. <br>
-	  * The lParam is what the LPARAM value when inserted was for the specific item,
-	  * mark here that if you insert items with the default parameter the LPARAM will
-	  * start from 0 and increase, meaning you can get this to map between rows which
-	  * are moved due to a sort or something! <br>
-	  * Note this one returns the text of the "logical" column which means that if
-	  * you have moved a column ( e.g. column no 3 ) and you're trying to retrieve
-	  * the text of column no. 3 it will still return the text of the OLD column no.
-	  * 3, NOT the NEW column no. 3 <br>
-	  * Note that this function throws if it can't find the item searching for!!
+	/// Sets the text of the given cell
+	/** Sets a new string value for a given cell.
 	  */
-	SmartUtil::tstring getCellTextByLParam( unsigned int column, LPARAM lParam );
+	void setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal );
 
 	/// Returns true if grid has got a "current selected item"
 	/** If the List View has got a "currently selected" row, this function will
@@ -552,12 +547,12 @@ public:
 	  * getSelectedRow function. <br>
 	  * If grid does NOT have any selected items the return vector is empty.
 	  */
-	std::vector< unsigned > getSelectedRows();
+	std::vector< unsigned > getSelected();
 
 	/// Returns an unsigned integer which is the selected row of the grid.
 	/** The return value defines the row in the grid that is selected. <br>
 	  * If the grid is in "multiple selection mode" you should rather use the
-	  * getSelectedRows function. <br>
+	  * getSelected function. <br>
 	  * If grid does NOT have a selected item the return value is - 1. <br>
 	  * Note! <br>
 	  * This returns the ROW of the selected item and NOT the lparam given when
@@ -573,15 +568,10 @@ public:
 	/// Clears the selection of the grid.
 	void clearSelection();
 
-	/// Sets the text of the given cell
-	/** Sets a new string value for a given cell.
-	  */
-	void setCellText( unsigned column, unsigned row, const SmartUtil::tstring & newVal );
-
 	/// Change the current icon of an item
 	/** Sets a new icon for a given item
 	  */
-	void setItemIcon( unsigned row, int newIconIndex );
+	void setIcon( unsigned row, int newIconIndex );
 
 	/// Returns a boolean indicating if the Grid is in "read only" mode or not
 	/** If the return value is true the Grid is in "read only" mode and cannot be
@@ -604,13 +594,6 @@ public:
 	  */
 	void setReadOnly( bool value = true );
 
-	/// Sets the background color of the DataGrid
-	/** Sets the background color of the rows that does NOT have content! If you need
-	  * to set the background color of the rows in the DataGrid that does actually
-	  * have CONTENT you need to handle the onCustomDraw Event!
-	  */
-	void setBackgroundColor( COLORREF bgColor );
-
 	/// Returns the number of column in the grid
 	/** Returns the number of columns in the Data Grid. <br>
 	  * Useful if you need to know how many values you must use when inserting rows
@@ -623,17 +606,55 @@ public:
 	  */
 	SmartUtil::tstring getColumnName( unsigned col );
 
+	bool setColumnOrder(const std::vector<int>& columns);
+	
+	std::vector<int> getColumnOrder();
+
+	void setColumnWidths(const std::vector<int>& widths);
+	
+	std::vector<int> getColumnWidths();	
+
+	/// Create columns in the grid
+	/** Normally this would be called just after creation of the grid, it MUST be
+	  * called before adding items to the grid. <br>
+	  * The vector parameter is a vector containing the column names of the columns.
+	  * <br>
+	  * Columns will be added the way they sequentially appear in the vector.
+	  */
+	void createColumns( const std::vector< SmartUtil::tstring > & colNames );
+
+	/// Deletes the given column
+	/** Column zero CANNOT be deleted.
+	  */
+	void eraseColumn( unsigned columnNo );
+
+	/// Sets the width of a given column
+	/** Sets the width of the given column, the columnNo parameter is a zero - based
+	  * index of the column you wish to change, the width parameter is number of
+	  * pixels you wish the column to be. <br>
+	  * If you submit LVSCW_AUTOSIZE as the width parameter the column is being
+	  * "autosized" meaning it will aquire the width needed to display the "widest"
+	  * cell content in that column, if you submit LVSCW_AUTOSIZE_USEHEADER as the
+	  * width parameter it will be as wide as it needs to minimum display the
+	  * complete header text of the column. <br>
+	  * If you use the LVSCW_AUTOSIZE_USEHEADER on the last column of the list it
+	  * will be resized to be as wide as it needs to completely fill the remaining
+	  * width of the list which is quite useful to make the Data Grid fill its whole
+	  * client area.
+	  */
+	void setColumnWidth( unsigned columnNo, int width );
+
 	/// Returns the checked state of the given row
 	/** A list view can have checkboxes in each row, if the checkbox for the given
 	  * row is CHECKED this funtion returns true.
 	  */
-	bool getIsRowChecked( unsigned row );
+	bool isChecked( unsigned row );
 
 	/// Sets the checked state of the given row
 	/** Every row in a List View can have its own checkbox column.< br >
 	  * If this checkbox is selected in the queried row this function will return true.
 	  */
-	void setRowChecked( unsigned row, bool value = true );
+	void setChecked( unsigned row, bool value = true );
 
 	/// Sets (or removes) full row select.
 	/** Full row select means that when a user press any place in a row the whole row
@@ -661,7 +682,7 @@ public:
 	  * select property of the grid or not. <br>
 	  * If omitted, parameter defaults to true. <br>
 	  * Related functions are getSelectedRow ( single row selection mode ) or
-	  * getSelectedRows ( multiple row selection mode )
+	  * getSelected ( multiple row selection mode )
 	  */
 	void setSingleRowSelection( bool value = true );
 
@@ -680,7 +701,7 @@ public:
 	  * remove it. <br>
 	  * If omitted, parameter defaults to true.
 	  */
-	void setHoover( bool value = true );
+	void setHover( bool value = true );
 #endif
 
 	/// Adds (or removes) the header drag drop style.
@@ -700,51 +721,6 @@ public:
 	  */
 	void setAlwaysShowSelection( bool value = true );
 
-	/// Create columns in the grid
-	/** Normally this would be called just after creation of the grid, it MUST be
-	  * called before adding items to the grid. <br>
-	  * The vector parameter is a vector containing the column names of the columns.
-	  * <br>
-	  * Columns will be added the way they sequentially appear in the vector.
-	  */
-	void createColumns( const std::vector< SmartUtil::tstring > & colNames );
-
-	/// Deletes the given column
-	/** Column zero CANNOT be deleted.
-	  */
-	void deleteColumn( unsigned columnNo );
-
-	/// Sets the width of a given column
-	/** Sets the width of the given column, the columnNo parameter is a zero - based
-	  * index of the column you wish to change, the width parameter is number of
-	  * pixels you wish the column to be. <br>
-	  * If you submit LVSCW_AUTOSIZE as the width parameter the column is being
-	  * "autosized" meaning it will aquire the width needed to display the "widest"
-	  * cell content in that column, if you submit LVSCW_AUTOSIZE_USEHEADER as the
-	  * width parameter it will be as wide as it needs to minimum display the
-	  * complete header text of the column. <br>
-	  * If you use the LVSCW_AUTOSIZE_USEHEADER on the last column of the list it
-	  * will be resized to be as wide as it needs to completely fill the remaining
-	  * width of the list which is quite useful to make the Data Grid fill its whole
-	  * client area.
-	  */
-	void setColumnWidth( unsigned columnNo, int width );
-
-	/// Removes all rows contained in the grid.
-	/** Removes ALL rows in the Data Grid
-	  */
-	void removeAllRows();
-
-	/// Remove a specific row in the grid
-	/** Removes a SPECIFIC row from the Data Grid
-	  */
-	void removeRow( unsigned row );
-
-	/// Returns the number of rows in the grid
-	/** Returns the number of rows in the Data Grid
-	  */
-	unsigned getRowCount();
-
 	/// Inserts a row into the grid
 	/** The row parameter is a vector containing all the cells of the row. <br>
 	  * This vector must ( of course ) be the same size as the number of columns in
@@ -756,35 +732,7 @@ public:
 	  * image list that will be shown on the row. <br>
 	  * Call createColumns before inserting items.
 	  */
-	LPARAM insertRow( const std::vector< SmartUtil::tstring > & row, LPARAM lPar = 0, int index = - 1, int iconIndex = - 1 );
-
-	/// Inserts an empty row into the grid
-	/** Inserts an empty row into the grid. <br>
-	  * Will insert an empty string as the value of all cells in the row. <br>
-	  * The index parameter ( optionally ) defines at which index the new row will be
-	  * inserted at. <br>
-	  * If omitted it defaults to - 1 ( which means at the "end" of the grid ) <br>
-	  * The iconIndex parameter ( optionally ) defines the index of the icon on the
-	  * image list that will be shown on the row. <br>
-	  * Call createColumns before inserting items.
-	  */
-	void insertRow( int index = - 1, int iconIndex = - 1 );
-
-	/// Inserts a callback row
-	/** A callback row is a row that doesn't contain the actual data to display. <br>
-	  * Instead your Event Handler object will be called when the control needs data
-	  * to display in a cell. <br>
-	  * Useful for grids containing very large amounts of data since this way you
-	  * don't have to store the data in memory, you can for instance use a reader
-	  * from disc and read items on "demand basis" or maybe from a database etc...
-	  * <br>
-	  * Note! <br>
-	  * If you insert callback rows you MUST handle the onGetItem event since this
-	  * event handler will be called whenever the control needs data to display! <br>
-	  * The lParam can be ANYTHING, often you cast an application defined Id or maybe
-	  * a pointer of some sort to an LPARAM and pass to this function!
-	  */
-	void insertCallbackRow( const LPARAM lParam );
+	int insert( const std::vector< SmartUtil::tstring > & row, LPARAM lPar = 0, int index = - 1, int iconIndex = - 1 );
 
 	/// Reserves a number of items to the list
 	/** To be used in combination with the "onGetItem" event <br>
@@ -795,13 +743,7 @@ public:
 	  * insertCallbackRow and the "onGetItem" event in which the application is
 	  * queried for items when the control needs to get data to display.
 	  */
-	void setItemCount( unsigned size );
-
-	/// Returns the physical rownumber from a given LPARAM number
-	/** Use this e.g. in the onCustomDraw Event Handler to find the physical row
-	  * number of a given LPARAM ID. Returns - 1 if unsucessful
-	  */
-	unsigned getRowNumberFromLParam( unsigned lParam );
+	void resize( unsigned size );
 
 	/// Set the normal image list for the Data Grid.
 	/** normalImageList is the image list that contains the images
@@ -831,12 +773,25 @@ public:
 	/// Force redraw of a range of items.
 	/** You may want to call invalidateWidget after the this call to force repaint.
 	  */
-	void redrawItems( int firstRow, int lastRow );
+	void redraw( int firstRow = 0, int lastRow = -1 );
 
-	/// Force redraw all items.
-	/** You may want to call invalidateWidget after the this call to force repaint.
-	  */
-	void redrawItems();
+	int getSelectedCount();
+	
+	void setListViewStyle(int style);
+	
+	int insert(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int image, LPARAM lparam);
+	
+	int getNext(int i, int type) const;
+	
+    int find(const SmartUtil::tstring& b, int start = -1, bool aPartial = false);
+
+    void select(int row);
+    
+	Point getContextMenuPos();
+	
+	void ensureVisible(int i, bool partial = false);
+	
+	void setColor(COLORREF text, COLORREF background);
 
 	/// Actually creates the Data Grid Control
 	/** You should call WidgetFactory::createDataGrid if you instantiate class
@@ -856,18 +811,14 @@ protected:
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
-	virtual ~WidgetDataGrid()
-	{
-#ifdef WINCE
-		ImageList_Destroy( itsHImageList );
-#endif
+	virtual ~WidgetDataGrid() {
 	}
 
 	// Returns the rect for the item per code (wraps ListView_GetItemRect)
-	RECT getItemRect( int item, int code );
+	Rectangle getRect( int item, int code );
 
 	// Returns the rect for the subitem item per code (wraps ListView_GetSubItemRect)
-	RECT getSubItemRect( int item, int subitem, int code );
+	Rectangle getRect( int item, int subitem, int code );
 
 private:
 	// Edit row index and Edit column index, only used when grid is in "edit mode"
@@ -877,16 +828,10 @@ private:
 	unsigned itsXMousePosition;
 	unsigned itsYMousePosition;
 
-		ImageListPtr itsNormalImageList;
+	ImageListPtr itsNormalImageList;
 	ImageListPtr itsSmallImageList;
 	ImageListPtr itsStateImageList;
-#ifdef PORT_ME
-	typename MessageMapType::intCallbackCompareFunc itsGlobalSortFunction;
-	typename MessageMapType::itsIntLparamLparam itsMemberSortFunction;
-
-	typename MessageMapType::voidGetIconFunc itsGlobalGetIconFunction;
-	typename MessageMapType::itsVoidGetIconFunc itsMemberGetIconFunction;
-#endif
+	
 	static int CALLBACK CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
 
 	// If true the grid is in "read only mode" meaning that cell values cannot be edited.
@@ -894,9 +839,6 @@ private:
 	bool isReadOnly;
 
 	bool itsEditingCurrently; // Inbetween BEGIN and END EDIT
-
-	// Number of columns in grid
-	unsigned int itsNoColumns;
 
 #ifdef PORT_ME
 	// Private validate function, this ones returns the "read only" property of the list
@@ -908,6 +850,16 @@ private:
 #ifdef WINCE
 	HIMAGELIST itsHImageList;
 #endif
+
+	// AspectData
+	int findDataImpl(LPARAM data, int start = -1);
+	LPARAM getDataImpl(int idx);
+	void setDataImpl(int i, LPARAM data);
+	
+	// AspectCollection
+	void eraseImpl( int row );
+	void clearImpl();
+	size_t sizeImpl() const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -919,13 +871,11 @@ inline WidgetDataGrid::Seed::Seed()
 	* this = WidgetDataGrid::getDefaultSeed();
 }
 
-
 inline Message & WidgetDataGrid::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
 	return retVal;
 }
-
 
 inline bool WidgetDataGrid::isValidSelectionChanged( LPARAM lPar )
 {
@@ -942,19 +892,18 @@ inline bool WidgetDataGrid::isValidSelectionChanged( LPARAM lPar )
 	return false;
 }
 
-
 inline const Message & WidgetDataGrid::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-
 inline const Message & WidgetDataGrid::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
+
 #ifdef PORT_ME
 
 void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsBoolValidationFunc eventHandler )
@@ -976,7 +925,6 @@ void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, 
 	);
 }
 
-
 void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::boolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
@@ -995,7 +943,6 @@ void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, 
 		)
 	);
 }
-
 
 void WidgetDataGrid::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetItemFunc eventHandler )
 {
@@ -1134,7 +1081,6 @@ void WidgetDataGrid::onColumnHeaderClick( typename MessageMapControl< EventHandl
 }
 #endif
 
-
 inline void WidgetDataGrid::sortList()
 {
 #ifdef PORT_ME
@@ -1145,115 +1091,28 @@ inline void WidgetDataGrid::sortList()
 #endif
 }
 
-
-inline SmartUtil::tstring WidgetDataGrid::getCellText( unsigned int column, unsigned int row )
-{
-	// TODO: Fix
-	const int BUFFER_MAX = 2048;
-	TCHAR buffer[BUFFER_MAX + 1];
-	buffer[0] = '\0';
-	ListView_GetItemText( this->handle(), row, column, buffer, BUFFER_MAX );
-	return buffer;
-}
-
-
-inline SmartUtil::tstring WidgetDataGrid::getCellTextByLParam( unsigned int column, LPARAM lParam )
-{
-	LVFINDINFO lvfi;
-	lvfi.flags = LVFI_PARAM;
-	lvfi.lParam = lParam;
-	int row = ListView_FindItem( this->handle(), - 1, & lvfi );
-	if ( row == - 1 )
-		throw xCeption( _T( "Couldn't find WidgetDataGrid item with given LPARAM" ) );
-	return this->getCellText( column, row );
-}
-
-
-inline bool WidgetDataGrid::hasSelection()
-{
+inline bool WidgetDataGrid::hasSelection() {
 	return ListView_GetSelectedCount( this->handle() ) > 0;
 }
 
-
-inline std::vector< unsigned > WidgetDataGrid::getSelectedRows()
-{
-	std::vector< unsigned > retVal;
-	int tmpIdx = - 1;
-	while ( true )
-	{
-		tmpIdx = ListView_GetNextItem( this->handle(), tmpIdx, LVNI_SELECTED );
-		if ( tmpIdx == - 1 )
-			break;
-		retVal.push_back( static_cast< unsigned >( tmpIdx ) );
-	}
-	return retVal;
+inline int WidgetDataGrid::getSelectedIndex() const {
+	return getNext(-1, LVNI_SELECTED);
 }
 
-
-inline int WidgetDataGrid::getSelectedIndex() const
-{
-	int tmpIdx = - 1;
-	tmpIdx = ListView_GetNextItem( this->handle(), tmpIdx, LVNI_SELECTED );
-	return tmpIdx;
-}
-
-inline void WidgetDataGrid::setCellText( unsigned column, unsigned row, const SmartUtil::tstring & newVal )
-{
-	// const bug inn Windows API
+inline void WidgetDataGrid::setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal ) {
 	ListView_SetItemText( this->handle(), row, column, const_cast < TCHAR * >( newVal.c_str() ) );
 }
 
-/// TODO review, why does it first get the lvitem???
-inline void WidgetDataGrid::setItemIcon( unsigned row, int newIconIndex )
-{
-	LVITEM it;
-	ZeroMemory( & it, sizeof( LVITEM ) );
-	it.iItem = row;
-	it.mask = LVIF_IMAGE;
-	//Get item
-	if(ListView_GetItem( this->handle(), &it) != TRUE)
-	{
-		xCeption err( _T( "Something went wrong while trying to receive the selected item of the ListView" ) );
-		throw err;
-	}
-	//Modify item
-	it.iImage = newIconIndex;
-	//Set item
-	if(ListView_SetItem( this->handle(), &it) != TRUE)
-	{
-		xCeption err( _T( "Something went wrong while trying to change the selected item of the ListView" ) );
-		throw err;
-	}
-}
-
-
-inline bool WidgetDataGrid::getReadOnly()
-{
+inline bool WidgetDataGrid::getReadOnly() {
 	return isReadOnly;
 }
 
-
-inline void WidgetDataGrid::setReadOnly( bool value )
-{
+inline void WidgetDataGrid::setReadOnly( bool value ) {
 	isReadOnly = value;
 	this->Widget::addRemoveStyle( LVS_EDITLABELS, !value );
 }
 
-
-inline void WidgetDataGrid::setBackgroundColor( COLORREF bgColor )
-{
-	ListView_SetBkColor( this->handle(), bgColor );
-}
-
-
-inline unsigned WidgetDataGrid::getColumnCount()
-{
-	return itsNoColumns;
-}
-
-
-inline SmartUtil::tstring WidgetDataGrid::getColumnName( unsigned col )
-{
+inline SmartUtil::tstring WidgetDataGrid::getColumnName( unsigned col ) {
 	// TODO: Fix
 	const int BUFFER_MAX = 2048;
 	TCHAR buffer[BUFFER_MAX + 1];
@@ -1265,139 +1124,55 @@ inline SmartUtil::tstring WidgetDataGrid::getColumnName( unsigned col )
 	return colInfo.pszText;
 }
 
-
-inline bool WidgetDataGrid::getIsRowChecked( unsigned row )
-{
+inline bool WidgetDataGrid::isChecked( unsigned row ) {
 	return ListView_GetCheckState( this->handle(), row ) == TRUE;
 }
 
-
-inline void WidgetDataGrid::setRowChecked( unsigned row, bool value )
-{
+inline void WidgetDataGrid::setChecked( unsigned row, bool value ) {
 	ListView_SetCheckState( this->handle(), row, value );
 }
 
-
-inline void WidgetDataGrid::setFullRowSelect( bool value )
-{
+inline void WidgetDataGrid::setFullRowSelect( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_FULLROWSELECT, value );
 }
 
-
-inline void WidgetDataGrid::setItemCount( unsigned size )
-{
+inline void WidgetDataGrid::resize( unsigned size ) {
 	ListView_SetItemCount( this->handle(), size );
 }
 
-
-inline unsigned WidgetDataGrid::getRowNumberFromLParam( unsigned lParam )
-{
-	LVFINDINFO lv;
-	lv.flags = LVFI_PARAM;
-	lv.lParam = lParam;
-	return ( unsigned ) ListView_FindItem( this->handle(), - 1, & lv );
-}
-
-
-inline void WidgetDataGrid::setNormalImageList( ImageListPtr imageList )
-{
-	  itsNormalImageList = imageList;
-	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_NORMAL );
-}
-
-
-inline void WidgetDataGrid::setSmallImageList( ImageListPtr imageList )
-{
-	  itsSmallImageList = imageList;
-	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_SMALL );
-}
-
-
-inline void WidgetDataGrid::setStateImageList( ImageListPtr imageList )
-{
-	  itsStateImageList = imageList;
-	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_STATE );
-}
-
-
-inline void WidgetDataGrid::setView( int view )
-{
-	if ( ( view & LVS_TYPEMASK ) != view )
-	{
-		xCeption x( _T( "Invalid View type" ) );
-		throw x;
-	}
-	//little hack because there is no way to do this with Widget::addRemoveStyle
-	int newStyle = GetWindowLong( this->handle(), GWL_STYLE );
-	if ( ( newStyle & LVS_TYPEMASK ) != view )
-	{
-		SetWindowLong( this->handle(), GWL_STYLE, ( newStyle & ~LVS_TYPEMASK ) | view );
-	}
-}
-
-
-inline void WidgetDataGrid::redrawItems( int firstRow, int lastRow )
-{
-	if( ListView_RedrawItems( this->handle(), firstRow, lastRow ) == FALSE )
-	{
-		throw xCeption( _T( "Error while redrawing items in ListView" ) );
-	}
-}
-
-
-inline void WidgetDataGrid::redrawItems()
-{
-	this->redrawItems( 0, this->getRowCount() );
-}
-
-
-inline void WidgetDataGrid::setCheckBoxes( bool value )
-{
+inline void WidgetDataGrid::setCheckBoxes( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_CHECKBOXES, value );
 }
 
-
-inline void WidgetDataGrid::setSingleRowSelection( bool value )
-{
+inline void WidgetDataGrid::setSingleRowSelection( bool value ) {
 	this->Widget::addRemoveStyle( LVS_SINGLESEL, value );
 }
 
-
-inline void WidgetDataGrid::setGridLines( bool value )
-{
+inline void WidgetDataGrid::setGridLines( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_GRIDLINES, value );
 }
 
 #ifndef WINCE
 
-inline void WidgetDataGrid::setHoover( bool value )
-{
+inline void WidgetDataGrid::setHover( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_TWOCLICKACTIVATE, value );
 }
 #endif
 
-
-inline void WidgetDataGrid::setHeaderDragDrop( bool value )
-{
+inline void WidgetDataGrid::setHeaderDragDrop( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_HEADERDRAGDROP, value );
 }
 
-
-inline void WidgetDataGrid::setAlwaysShowSelection( bool value )
-{
+inline void WidgetDataGrid::setAlwaysShowSelection( bool value ) {
 	this->Widget::addRemoveStyle( LVS_SHOWSELALWAYS, value );
 }
 
-inline void WidgetDataGrid::deleteColumn( unsigned columnNo )
-{
+inline void WidgetDataGrid::eraseColumn( unsigned columnNo ) {
 	xAssert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
 	ListView_DeleteColumn( this->handle(), columnNo );
-	--itsNoColumns;
 }
 
-
-inline void WidgetDataGrid::setColumnWidth( unsigned columnNo, int width )
-{
+inline void WidgetDataGrid::setColumnWidth( unsigned columnNo, int width ) {
 	if ( ListView_SetColumnWidth( this->handle(), columnNo, width ) == FALSE )
 	{
 		xCeption x( _T( "Couldn't resize columns of WidgetDataGrid" ) );
@@ -1405,35 +1180,16 @@ inline void WidgetDataGrid::setColumnWidth( unsigned columnNo, int width )
 	}
 }
 
-inline void WidgetDataGrid::removeAllRows()
-{
+inline void WidgetDataGrid::clearImpl() {
 	ListView_DeleteAllItems( this->handle() );
 }
 
-
-inline void WidgetDataGrid::removeRow( unsigned row )
-{
+inline void WidgetDataGrid::eraseImpl( int row ) {
 	ListView_DeleteItem( this->handle(), row );
 }
 
-
-inline unsigned WidgetDataGrid::getRowCount()
-{
+inline size_t WidgetDataGrid::sizeImpl() const {
 	return ListView_GetItemCount( this->handle() );
-}
-
-inline void WidgetDataGrid::addRemoveListViewExtendedStyle( DWORD addStyle, bool add )
-{
-	DWORD newStyle = ListView_GetExtendedListViewStyle( this->handle() );
-	if ( add && ( newStyle & addStyle ) != addStyle )
-	{
-		newStyle |= addStyle;
-	}
-	else if ( !add && ( newStyle & addStyle ) == addStyle )
-	{
-		newStyle ^= addStyle;
-	}
-	ListView_SetExtendedListViewStyle( this->handle(), newStyle );
 }
 
 // Constructor
@@ -1447,8 +1203,7 @@ inline WidgetDataGrid::WidgetDataGrid( SmartWin::Widget * parent )
 	itsMemberGetIconFunction( 0 ),
 #endif
 	isReadOnly( false ),
-	itsEditingCurrently( false ),
-	itsNoColumns( 0 )
+	itsEditingCurrently( false )
 {
 #ifdef WINCE
 	itsHImageList = ImageList_Create( 1, 18, ILC_COLOR | ILC_MASK, 0, 2 );
@@ -1466,19 +1221,58 @@ bool WidgetDataGrid::defaultValidate( EventHandlerClass * parent, WidgetDataGrid
 #endif
 // Calculates the adjustment from the columns of an item.
 
-inline RECT WidgetDataGrid::getItemRect( int item, int code )
+inline Rectangle WidgetDataGrid::getRect( int item, int code )
 {
 	RECT r;
 	ListView_GetItemRect( this->handle(), item, & r, code );
 	return r;
 }
 
-
-inline RECT WidgetDataGrid::getSubItemRect( int item, int subitem, int code )
+inline Rectangle WidgetDataGrid::getRect( int item, int subitem, int code )
 {
 	RECT r;
 	ListView_GetSubItemRect( this->handle(), item, subitem, code, & r );
 	return r;
+}
+
+inline bool WidgetDataGrid::setColumnOrder(const std::vector<int>& columns) {
+	return ::SendMessage(this->handle(), LVM_SETCOLUMNORDERARRAY, static_cast<WPARAM>(columns.size()), reinterpret_cast<LPARAM>(&columns[0])) > 0;
+}
+
+inline int WidgetDataGrid::getSelectedCount() {
+	return ListView_GetSelectedCount(this->handle());
+}
+
+inline void WidgetDataGrid::setListViewStyle(int style) {
+	ListView_SetExtendedListViewStyle(this->handle(), style);
+}
+
+inline int WidgetDataGrid::getNext(int i, int type) const {
+	return ListView_GetNextItem(this->handle(), i, type);
+}
+
+inline int WidgetDataGrid::find(const SmartUtil::tstring& b, int start, bool aPartial) {
+    LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
+    return ListView_FindItem(this->handle(), start, &fi);
+}
+
+inline int WidgetDataGrid::findDataImpl(LPARAM data, int start) {
+    LVFINDINFO fi = { LVFI_PARAM, NULL, data };
+    return ListView_FindItem(this->handle(), start, &fi);
+}
+
+inline void WidgetDataGrid::select(int i) {
+	ListView_SetItemState(this->handle(), i, LVIS_SELECTED, LVIS_SELECTED);
+}
+
+inline void WidgetDataGrid::ensureVisible(int i, bool partial) {
+	ListView_EnsureVisible(this->handle(), i, false);
+}
+
+inline void WidgetDataGrid::setColor(COLORREF text, COLORREF background) {
+	ListView_SetTextColor(this->handle(), text);
+	ListView_SetTextBkColor(this->handle(), background);
+	ListView_SetBkColor(this->handle(), background);
 }
 
 #ifdef PORT_ME
