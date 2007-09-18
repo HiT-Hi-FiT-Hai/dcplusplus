@@ -207,32 +207,6 @@ public:
 		return CDRF_SKIPDEFAULT;
 	}
 
-	static HRESULT dispatchColumnClick( private_::SignalContent & params )
-	{
-		NMLISTVIEW * nm = reinterpret_cast< NMLISTVIEW * >( params.Msg.LParam );
-		typename MessageMapType::voidFunctionTakingInt func
-			= reinterpret_cast< typename MessageMapType::voidFunctionTakingInt >( params.Function );
-
-		func
-			( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-			, boost::polymorphic_cast< WidgetType * >( params.This )
-			, nm->iSubItem
-			);
-		return 0;
-	}
-
-	static HRESULT dispatchColumnClickThis( private_::SignalContent & params )
-	{
-		NMLISTVIEW * nm = reinterpret_cast< NMLISTVIEW * >( params.Msg.LParam );
-		typename MessageMapType::itsVoidFunctionTakingInt func
-			= reinterpret_cast< typename MessageMapType::itsVoidFunctionTakingInt >( params.FunctionThis );
-		( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )
-			( boost::polymorphic_cast< WidgetType * >( params.This )
-			, nm->iSubItem
-			);
-		return 0;
-	}
-
 	static HRESULT dispatchBoolIntIntString( private_::SignalContent & params )
 	{
 		// TODO: Check if value has actually changed before initiating the event
@@ -374,7 +348,19 @@ class WidgetDataGrid :
 	public AspectSizable< WidgetDataGrid >,
 	public AspectVisible< WidgetDataGrid >
 {
-protected:
+	struct HeaderDispatcher {
+		typedef std::tr1::function<void (int)> F;
+
+		HeaderDispatcher(const F& f_) : f(f_) { }
+
+		bool operator()(const MSG& msg, LRESULT& ret) {
+			LPNMLISTVIEW p = (LPNMLISTVIEW) msg.lParam; 
+			f(p->iSubItem);
+			return true;
+		}
+
+		F f;
+	};
 
 	// Need to be friend to access private data...
 	friend class WidgetCreator< WidgetDataGrid >;
@@ -382,6 +368,8 @@ protected:
 	friend class AspectData<WidgetDataGrid, int>;
 
 public:
+	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
+	
 	/// Class type
 	typedef WidgetDataGrid ThisType;
 
@@ -410,6 +398,14 @@ public:
 		/// Doesn't fill any values
 		Seed( DontInitialize )
 		{}
+	};
+	
+	enum SortType {
+		SORT_CALLBACK,
+ 		SORT_STRING,
+		SORT_STRING_NOCASE,
+		SORT_INT,
+		SORT_FLOAT
 	};
 
 	/// Default values for creation
@@ -492,11 +488,8 @@ public:
 	  * This function will be called MANY times when you sort a grid so you probably
 	  * will NOT want to run a costly operation within this event handler.
 	  */
-#ifdef PORT_ME
-	void onSortItems( typename MessageMapType::itsIntLparamLparam );
-	void onSortItems( typename MessageMapType::intCallbackCompareFunc );
-#endif
-#ifdef PORT_ME
+	void onSortItems( const SortFunction& f );
+	
 	/// \ingroup EventHandlersWidgetDataGrid
 	/// Event Handler for the Column Header Click event
 	/** This Event is raised whenever one of the headers is clicked, it is useful to
@@ -504,9 +497,8 @@ public:
 	  * Parameters passed is int which defines which header from left to right ( zero
 	  * indexed ) is being clicked!
 	  */
-	void onColumnHeaderClick( typename MessageMapType::itsVoidFunctionTakingInt );
-	void onColumnHeaderClick( typename MessageMapType::voidFunctionTakingInt );
-#endif
+	void onColumnClick( const HeaderDispatcher::F& f );
+	
 	/// Sorts the list
 	/** Call this function to sort the list, it's IMPERATIVE that you before calling
 	  * this function defines an event handler for the SortItems event. <br>
@@ -514,7 +506,15 @@ public:
 	  * expects to have a compare function to compare items with which you can define
 	  * in the onSortItems Event Handler setter
 	  */
-	void sortList();
+	void resort();
+
+	void setSort(int aColumn, SortType aType, bool aAscending = true);
+
+	bool isAscending();
+	
+	int getSortColumn();
+	
+	SortType getSortType();
 
 	/// Returns the text of the given cell
 	/** The column is which column you wish to retrieve the text for. <br>
@@ -832,24 +832,24 @@ private:
 	ImageListPtr itsSmallImageList;
 	ImageListPtr itsStateImageList;
 	
-	static int CALLBACK CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
-
 	// If true the grid is in "read only mode" meaning that cell values cannot be edited.
 	// A simpler version of defining a beenValidate always returning false
 	bool isReadOnly;
-
 	bool itsEditingCurrently; // Inbetween BEGIN and END EDIT
 
+	int sortColumn;
+	SortType sortType;
+	bool ascending;
+	SortFunction fun;
+
+	static int CALLBACK compareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
+	
 #ifdef PORT_ME
 	// Private validate function, this ones returns the "read only" property of the list
 	static bool defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue );
 #endif
 	// Calculates the adjustment from the columns of an item.
 	int xoffFromColumn( int column, int & logicalColumn );
-
-#ifdef WINCE
-	HIMAGELIST itsHImageList;
-#endif
 
 	// AspectData
 	int findDataImpl(LPARAM data, int start = -1);
@@ -1043,52 +1043,17 @@ void WidgetDataGrid::onSortItems( typename MessageMapControl< EventHandlerClass,
 	itsGlobalSortFunction = eventHandler;
 }
 #endif
-#ifdef PORT_ME
 
-void WidgetDataGrid::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidFunctionTakingInt eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_NOTIFY, LVN_COLUMNCLICK ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherList::dispatchColumnClickThis )
-			)
-		)
+inline void WidgetDataGrid::onColumnClick( const HeaderDispatcher::F& f ) {
+	this->setCallback(
+		Message( WM_NOTIFY, LVN_COLUMNCLICK ), HeaderDispatcher(f)
 	);
 }
 
-
-void WidgetDataGrid::onColumnHeaderClick( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidFunctionTakingInt eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_NOTIFY, LVN_COLUMNCLICK ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherList::dispatchColumnClick )
-			)
-		)
-	);
-}
-#endif
-
-inline void WidgetDataGrid::sortList()
-{
-#ifdef PORT_ME
-	xAssert( itsGlobalSortFunction || itsMemberSortFunction, _T( "No sort event handlers defined" ) );
-
-	xAssert( ListView_SortItems( this->handle(), CompareFunc, reinterpret_cast< LPARAM >( this ) ) == TRUE,
-		_T( "ListView_SortItems fizzled" ) );
-#endif
+inline void WidgetDataGrid::resort() {
+	if(sortColumn != -1) {
+		ListView_SortItems(this->handle(), &compareFunc, reinterpret_cast< LPARAM >(this));
+	}
 }
 
 inline bool WidgetDataGrid::hasSelection() {
@@ -1152,6 +1117,10 @@ inline void WidgetDataGrid::setGridLines( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_GRIDLINES, value );
 }
 
+inline void WidgetDataGrid::onSortItems(const SortFunction& f) {
+	fun = f;
+}
+
 #ifndef WINCE
 
 inline void WidgetDataGrid::setHover( bool value ) {
@@ -1192,26 +1161,6 @@ inline size_t WidgetDataGrid::sizeImpl() const {
 	return ListView_GetItemCount( this->handle() );
 }
 
-// Constructor
-
-inline WidgetDataGrid::WidgetDataGrid( SmartWin::Widget * parent )
-	: PolicyType( parent ),
-#ifdef PORT_ME
-	itsGlobalSortFunction( 0 ),
-	itsMemberSortFunction( 0 ),
-	itsGlobalGetIconFunction( 0 ),
-	itsMemberGetIconFunction( 0 ),
-#endif
-	isReadOnly( false ),
-	itsEditingCurrently( false )
-{
-#ifdef WINCE
-	itsHImageList = ImageList_Create( 1, 18, ILC_COLOR | ILC_MASK, 0, 2 );
-#endif
-	// Can't have a list view without a parent...
-	xAssert( parent, _T( "Cant have a WidgetDataGrid without a parent..." ) );
-}
-
 #ifdef PORT_ME
 bool WidgetDataGrid::defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
 {
@@ -1224,15 +1173,27 @@ bool WidgetDataGrid::defaultValidate( EventHandlerClass * parent, WidgetDataGrid
 inline Rectangle WidgetDataGrid::getRect( int item, int code )
 {
 	RECT r;
-	ListView_GetItemRect( this->handle(), item, & r, code );
+	ListView_GetItemRect( this->handle(), item, &r, code );
 	return r;
 }
 
 inline Rectangle WidgetDataGrid::getRect( int item, int subitem, int code )
 {
 	RECT r;
-	ListView_GetSubItemRect( this->handle(), item, subitem, code, & r );
+	ListView_GetSubItemRect( this->handle(), item, subitem, code, &r );
 	return r;
+}
+
+inline bool WidgetDataGrid::isAscending() { 
+	return ascending; 
+}
+
+inline int WidgetDataGrid::getSortColumn() { 
+	return sortColumn; 
+}
+
+inline WidgetDataGrid::SortType WidgetDataGrid::getSortType() { 
+	return sortType; 
 }
 
 inline bool WidgetDataGrid::setColumnOrder(const std::vector<int>& columns) {

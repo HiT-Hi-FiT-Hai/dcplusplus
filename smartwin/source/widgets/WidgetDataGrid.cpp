@@ -18,6 +18,50 @@ const WidgetDataGrid::Seed & WidgetDataGrid::getDefaultSeed()
 	return d_DefaultValues;
 }
 
+void WidgetDataGrid::create( const Seed & cs )
+{
+	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
+	PolicyType::create(cs);
+	//TODO: use CreationalInfo parameters
+
+	// Setting default event handler for beenValidate to a function returning "read
+	// only" property of control Note! If you supply a beenValidate event handler
+	// this will have no effect
+#ifdef PORT_ME
+	onValidate( WidgetDataGrid::defaultValidate );
+#endif
+}
+
+WidgetDataGrid::WidgetDataGrid( SmartWin::Widget * parent )
+	: PolicyType( parent ),
+	itsEditRow(0),
+	itsEditColumn(0),
+	itsXMousePosition(0),
+	itsYMousePosition(0),
+	isReadOnly( false ),
+	itsEditingCurrently( false ),
+	sortColumn(-1),
+	sortType(SORT_CALLBACK),
+	ascending(true)
+{
+	// Can't have a list view without a parent...
+	xAssert( parent, _T( "Cant have a WidgetDataGrid without a parent..." ) );
+}
+
+void WidgetDataGrid::setSort(int aColumn, SortType aType, bool aAscending) {
+	bool doUpdateArrow = (aColumn != sortColumn || aAscending != ascending);
+
+	sortColumn = aColumn;
+	sortType = aType;
+	ascending = aAscending;
+
+	resort();
+#ifdef PORT_ME
+	if (doUpdateArrow)
+		updateArrow();
+#endif
+}
+
 void WidgetDataGrid::setSelectedIndex( int idx )
 {
 	// TODO: Check if this is working right...
@@ -265,40 +309,46 @@ void WidgetDataGrid::redraw( int firstRow, int lastRow ) {
 	}
 }
 
-int CALLBACK WidgetDataGrid::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort )
-{
-#ifdef PORT_ME
-	WidgetDataGrid * This = reinterpret_cast< WidgetDataGrid * > ( lParamSort );
-	if ( This->itsGlobalSortFunction )
-	{
-		return This->itsGlobalSortFunction(
-			internal_::getTypedParentOrThrow < EventHandlerClass * >( This ), This, lParam1, lParam2 );
-	}
-	else
-	{
-		return ( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( This ) ).*( This->itsMemberSortFunction ) )
-			( This, lParam1, lParam2 );
-	}
-#endif
+template<typename T>
+static int compare(T a, T b) {
+	return (a < b) ? -1 : ((a == b) ? 0 : 1);
 }
 
-void WidgetDataGrid::create( const Seed & cs )
-{
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-	//TODO: use CreationalInfo parameters
+int CALLBACK WidgetDataGrid::compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
+	WidgetDataGrid* p = reinterpret_cast<WidgetDataGrid*>(lParamSort);
 
-#ifdef WINCE
-	// WinCE fix for gridlines...
-	ListView_SetImageList( itsHandle, itsHImageList, LVSIL_SMALL );
-#endif
+	const int BUF_SIZE = 128;
+	TCHAR buf[BUF_SIZE];
+	TCHAR buf2[BUF_SIZE];
 
-	// Setting default event handler for beenValidate to a function returning "read
-	// only" property of control Note! If you supply a beenValidate event handler
-	// this will have no effect
-#ifdef PORT_ME
-	onValidate( WidgetDataGrid::defaultValidate );
-#endif
+	int na = (int)lParam1;
+	int nb = (int)lParam2;
+	
+	int result = 0;
+	
+	SortType type = p->sortType;
+	if(type == SORT_CALLBACK) {
+		result = p->fun(p->getData(na), p->getData(nb));
+	} else {
+		ListView_GetItemText(p->handle(), na, p->sortColumn, buf, BUF_SIZE);
+		ListView_GetItemText(p->handle(), nb, p->sortColumn, buf2, BUF_SIZE);
+		
+		if(type == SORT_STRING) {
+			result = lstrcmp(buf, buf2);
+		} else if(type == SORT_STRING_NOCASE) {
+			result = lstrcmpi(buf, buf2);
+		} else if(type == SORT_INT) {
+			result = compare(_ttoi(buf), _ttoi(buf2));
+		} else if(type == SORT_FLOAT) {
+			double b1, b2;
+			_stscanf(buf, _T("%lf"), &b1);
+			_stscanf(buf2, _T("%lf"), &b2);
+			result = compare(b1, b2);
+		}
+	}
+	if(!p->ascending)
+		result = -result;
+	return result;
 }
 
 int WidgetDataGrid::xoffFromColumn( int column, int & logicalColumn )

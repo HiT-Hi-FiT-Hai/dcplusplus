@@ -38,7 +38,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	total(0),
 	cur(0)
 {
-	ZeroMemory(perSecond, sizeof(perSecond));
+	memset(perSecond, 0, sizeof(perSecond));
 
 	{
 		WidgetDataGrid::Seed cs;
@@ -50,9 +50,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
-#ifdef PORT_ME
-		searches->setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
-#endif
+		searches->setSort(COLUMN_COUNT, SmartWin::WidgetDataGrid::SORT_INT, false);
 		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 
@@ -80,10 +78,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 
 	ClientManager::getInstance()->addListener(this);
 
-	searches->onRaw(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_COLUMNCLICK));
-
-	contextMenu = createMenu(true);
-	contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), std::tr1::bind(&SpyFrame::handleSearch, this));
+	searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
 	searches->onRaw(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 	initSecond();
@@ -98,8 +93,6 @@ SpyFrame::~SpyFrame() {
 }
 
 void SpyFrame::layout() {
-	const int border = 2;
-
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
@@ -113,13 +106,12 @@ void SpyFrame::initSecond() {
 }
 
 bool SpyFrame::eachSecond() {
-	float x = 0.0;
-	for(int i = 0; i < AVG_TIME; ++i) {
-		x += (float)perSecond[i];
-	}
-	x /= AVG_TIME;
+	size_t tot = std::accumulate(perSecond, perSecond + AVG_TIME, 0u);
+	size_t t = std::max(1u, std::min(cur, (size_t)AVG_TIME));
+	
+	float x = static_cast<float>(tot)/t;
 
-	cur = (cur + 1) % AVG_TIME;
+	cur++;
 	perSecond[cur] = 0;
 	setStatus(STATUS_AVG_PER_SECOND, Text::toT(STRING(AVERAGE) + Util::toString(x)));
 	return true;
@@ -141,12 +133,12 @@ void SpyFrame::postClosing() {
 
 LRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if(wParam == SPEAK_SEARCH) {
-		tstring* x = (tstring*)lParam;
+		boost::scoped_ptr<tstring> x((tstring*)lParam);
 
 		total++;
 
 		// Not thread safe, but who cares really...
-		perSecond[cur]++;
+		perSecond[cur % AVG_TIME]++;
 
 		int j = searches->find(*x);
 		if(j == -1) {
@@ -161,14 +153,9 @@ LRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		} else {
 			searches->setText(j, COLUMN_COUNT, Text::toT(Util::toString(Util::toInt(Text::fromT(searches->getText(j, COLUMN_COUNT))) + 1)));
 			searches->setText(j, COLUMN_TIME, Text::toT(Util::getTimeString()));
-#ifdef PORT_ME
-			if(searches->getSortColumn() == COLUMN_COUNT )
+			if(searches->getSortColumn() == COLUMN_COUNT || searches->getSortColumn() == COLUMN_TIME )
 				searches->resort();
-			if(searches->getSortColumn() == COLUMN_TIME )
-				searches->resort();
-#endif
 		}
-		delete x;
 
 		setStatus(STATUS_TOTAL, Text::toT(STRING(TOTAL) + Util::toString(total)));
 		setStatus(STATUS_HITS, Text::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())));
@@ -178,23 +165,19 @@ LRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT SpyFrame::handleColumnClick(WPARAM wParam, LPARAM lParam) {
-	LPNMLISTVIEW l = (LPNMLISTVIEW)lParam;
-#ifdef PORT_ME
-	if(l->iSubItem == searches->getSortColumn()) {
+void SpyFrame::handleColumnClick(int column) {
+	if(column == searches->getSortColumn()) {
 		if (!searches->isAscending())
 			searches->setSort(-1, searches->getSortType());
 		else
-			searches->setSortDirection(false);
+			searches->setSort(searches->getSortColumn(), searches->getSortType(), false);
 	} else {
-		if(l->iSubItem == COLUMN_COUNT) {
-			searches->setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+		if(column == COLUMN_COUNT) {
+			searches->setSort(column, SmartWin::WidgetDataGrid::SORT_INT);
 		} else {
-			searches->setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			searches->setSort(column, SmartWin::WidgetDataGrid::SORT_STRING_NOCASE);
 		}
 	}
-#endif
-	return 0;
 }
 
 LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
@@ -206,6 +189,9 @@ LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		}
 
 		searchString = searches->getText(searches->getSelectedIndex(), COLUMN_STRING);
+
+		WidgetMenuPtr contextMenu = createMenu(true);
+		contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), std::tr1::bind(&SpyFrame::handleSearch, this));
 
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;

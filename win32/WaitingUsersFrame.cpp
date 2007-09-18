@@ -41,9 +41,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		queued = createTreeView(cs);
 		addWidget(queued);
-#ifdef PORT_ME
 		queued->setColor(WinUtil::textColor, WinUtil::bgColor);
-#endif
 	}
 
 	initStatus();
@@ -73,14 +71,8 @@ bool WaitingUsersFrame::preClosing() {
 }
 
 void WaitingUsersFrame::postClosing() {
-	
-	HTREEITEM userNode = queued->getNext(NULL, TVGN_ROOT);
-
-	// SmartWin doesn't appear to have any way to access the item data,
-	// rather than text. TVM_GETITEM, at least, appears nowhere in it.
-	while (userNode) {
+	for(HTREEITEM userNode = queued->getRoot(); userNode; userNode = queued->getNextSibling(userNode)) {
 		delete reinterpret_cast<UserItem *>(queued->getData(userNode));
-		userNode = queued->getNext(userNode, TVGN_NEXT);
 	}
 }
 
@@ -125,7 +117,7 @@ void WaitingUsersFrame::loadAll()
 	for (UserList::iterator uit = users.begin(); uit != users.end(); ++uit) {
 		HTREEITEM lastInserted = queued->insert(
 			(WinUtil::getNicks(*uit) + _T(" - ") + WinUtil::getHubNames(*uit).first),
-			TVI_ROOT, (LPARAM)(new UserPtr(*uit)));
+			NULL, (LPARAM)(new UserPtr(*uit)));
 		UploadManager::FileSet files = UploadManager::getInstance()->getWaitingUserFiles(*uit);
 		for (UploadManager::FileSet::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
 			queued->insert(Text::toT(*fit), lastInserted);
@@ -154,8 +146,13 @@ void WaitingUsersFrame::onAddToFavorites() {
 	}
 }
 
-HTREEITEM WaitingUsersFrame::GetParentItem() {
-	return queued->getNext(NULL, TVM_GETNEXTITEM);
+HTREEITEM WaitingUsersFrame::getParentItem() {
+	HTREEITEM sel = queued->getSelection();
+	if(!sel) {
+		return NULL;
+	}
+	HTREEITEM parent = queued->getParent(sel);
+	return parent ? parent : sel;
 }
 
 void WaitingUsersFrame::onGetList()
@@ -167,22 +164,19 @@ void WaitingUsersFrame::onGetList()
 }
 
 void WaitingUsersFrame::onCopyFilename() {
-#ifdef PORT_ME
-	// @todo see previous comment. 
-	SmartWin::TreeViewNode selectedItem = getSelected(), parentItem = queued->GetParentItem(selectedItem);
+	HTREEITEM selectedItem = queued->getSelection(), parentItem = getParentItem();
 
 	if (!selectedItem || !parentItem || selectedItem == parentItem)
 		return;
-	TCHAR filenameBuf[256];
-	queued->GetItemText(selectedItem, filenameBuf, 255);
-	*_tcschr(filenameBuf, _T('(')) = NULL;
-	tstring tmpstr(filenameBuf);
-	if(!tmpstr.empty()) {
-		// remove last space
-		tmpstr.erase(tmpstr.length() - 1);
-		WinUtil::setClipboard(tmpstr);
+	
+	tstring txt = queued->getText(selectedItem);
+	tstring::size_type i = txt.find(_T('('));
+	if(i != tstring::npos && i > 0) {
+		txt.erase(i - 1);
 	}
-#endif
+	if(!txt.empty()) {
+		WinUtil::setClipboard(txt);
+	}
 }
 
 // Remove queued item
@@ -219,80 +213,53 @@ LRESULT WaitingUsersFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
 	return 0;
 }
 
-LRESULT WaitingUsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-	// Get the bounding rectangle of the client area.
-	RECT rc;
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	queued->GetClientRect(&rc);
-	queued->ScreenToClient(&pt);
-
-	// Change selected item
-	HTREEITEM item = queued->HitTest(pt, NULL);
-	if (item == NULL) return FALSE;
-	queued->SelectItem(item);
-
-	// Hit-test
-	if(PtInRect(&rc, pt))
-	{
-		queued->ClientToScreen(&pt);
-		contextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		return TRUE;
-	}
-
-	return FALSE;
-}
 #endif
 
 void WaitingUsersFrame::onRemoveUser(const UserPtr& aUser) {
-#ifdef PORT_ME
-	HTREEITEM userNode = queued->GetRootItem();
+	HTREEITEM userNode = queued->getRoot();
 
 	while (userNode) {
-		UserPtr *u = reinterpret_cast<UserPtr *>(queued->GetItemData(userNode));
-		if (aUser == u->u) {
+		UserPtr *u = reinterpret_cast<UserPtr *>(queued->getData(userNode));
+		if (aUser == *u) {
 			delete u;
-			queued->DeleteItem(userNode);
+			queued->erase(userNode);
 			return;
 		}
-		userNode = queued->GetNextSiblingItem(userNode);
+		userNode = queued->getNextSibling(userNode);
 	}
-#endif
 }
 
 void WaitingUsersFrame::onAddFile(const UserPtr& aUser, const string& aFile) {
-#ifdef PORT_ME
-	HTREEITEM userNode = queued->GetRootItem();
+	HTREEITEM userNode = queued->getRoot();
 
+	string fname = aFile.substr(0, aFile.find(_T('(')));
+	
 	while (userNode) {
-		if (aUser == reinterpret_cast<UserPtr *>(queued->GetItemData(userNode))->u) {
-			HTREEITEM childNode = queued->GetChildItem(userNode);
+		if (aUser == *reinterpret_cast<UserPtr *>(queued->getData(userNode))) {
+			HTREEITEM childNode = queued->getChild(userNode);
 			while (childNode) {
-				TCHAR nickBuf[256];
-				queued->GetItemText(childNode, nickBuf, 255);
-				if (aFile.substr(0, aFile.find(_T('('))) ==
-					Text::fromT(tstring(nickBuf).substr(0, tstring(nickBuf).find(_T('('))))) {
-						delete reinterpret_cast<UserPtr *>(queued->GetItemData(childNode));
-						queued->DeleteItem(childNode);
-						break;
-					}
-					childNode = queued->GetNextSiblingItem(childNode);
+				tstring buf = queued->getText(childNode);
+				
+				if (fname == Text::fromT(buf.substr(0, buf.find(_T('('))))) {
+					delete reinterpret_cast<UserPtr *>(queued->getData(childNode));
+					queued->erase(childNode);
+					break;
+				}
+				childNode = queued->getNextSibling(childNode);
 			}
 
 			//file isn't already listed, add it
-			queued->InsertItem(TVIF_PARAM | TVIF_TEXT, Text::toT(aFile).c_str(), 0,
-				0, 0, 0, (LPARAM)new UserPtr(aUser), userNode, TVI_LAST);
+			queued->insert(Text::toT(aFile), userNode, (LPARAM)new UserPtr(aUser));
 
 			return;
 		}
 
-		userNode = queued->GetNextSiblingItem(userNode);
+		userNode = queued->getNextSibling(userNode);
 	}
 
-	userNode = queued->InsertItem(TVIF_PARAM | TVIF_TEXT, (WinUtil::getNicks(aUser) + _T(" - ") + WinUtil::getHubNames(aUser).first).c_str(),
-		0, 0, 0, 0, (LPARAM)new UserPtr(aUser),	TVI_ROOT, TVI_LAST);
-	queued->InsertItem(Text::toT(aFile).c_str(), userNode, TVI_LAST);
-	queued->Expand(userNode);
-#endif
+	userNode = queued->insert(WinUtil::getNicks(aUser) + _T(" - ") + WinUtil::getHubNames(aUser).first,
+		NULL, (LPARAM)new UserPtr(aUser));
+	queued->insert(Text::toT(aFile), userNode);
+	queued->expand(userNode);
 }
 

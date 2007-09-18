@@ -80,10 +80,10 @@ private:
 	// Contained controls
 	WidgetTreeViewPtr queued;
 
-	HTREEITEM GetParentItem();
+	HTREEITEM getParentItem();
 
 	UserPtr getSelectedUser() {
-		HTREEITEM selectedItem = GetParentItem();
+		HTREEITEM selectedItem = getParentItem();
 		return selectedItem ? reinterpret_cast<UserItem *>(queued->getData(selectedItem))->u : UserPtr(0);
 	}
 

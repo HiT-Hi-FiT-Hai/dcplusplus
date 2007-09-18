@@ -76,9 +76,7 @@ private:
 	WidgetCheckBoxPtr ignoreTTH;
 	bool bIgnoreTTH;
 
-	WidgetMenuPtr contextMenu;
-
-	int total, cur, perSecond[AVG_TIME];
+	size_t total, cur, perSecond[AVG_TIME];
 	tstring searchString;
 
 	void initSecond();
@@ -86,7 +84,7 @@ private:
 
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
-	LRESULT handleColumnClick(WPARAM wParam, LPARAM lParam);
+	void handleColumnClick(int column);
 	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
 
 	void handleSearch();

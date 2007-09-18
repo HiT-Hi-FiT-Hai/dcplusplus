@@ -161,10 +161,33 @@ public:
 	  * The "selectedIconIndex" optionally specifies the icon index of the item in the
 	  * selected state (if not specified or -1, it defaults to the iconIndex)
 	  */
-	HTREEITEM insert( const SmartUtil::tstring & text, HTREEITEM parent = NULL, unsigned param = 0, int iconIndex = - 1, int selectedIconIndex = - 1 );
+	HTREEITEM insert( const SmartUtil::tstring & text, HTREEITEM parent = NULL, LPARAM param = 0, int iconIndex = - 1, int selectedIconIndex = - 1 );
 
 	HTREEITEM getNext(HTREEITEM node, unsigned flag);
+
+	HTREEITEM getChild(HTREEITEM node);
 	
+	HTREEITEM getNextSibling(HTREEITEM node);
+	
+	HTREEITEM getParent(HTREEITEM node);
+	
+	HTREEITEM getSelection();
+	
+	HTREEITEM getRoot();
+	
+	void setColor(COLORREF text, COLORREF background);
+	
+	Point getContextMenuPos();
+	
+	void expand(HTREEITEM node);
+	
+	void select(HTREEITEM item);
+
+	void select(POINT pt);
+	
+	HTREEITEM hitTest(const Point& pt);
+	
+	Rectangle getItemRect(HTREEITEM item);
 	/// Deletes just the children of a "node" from the TreeView< br >
 	/** Cycles through all the children of node, and deletes them. <br>
 	  * The node itself is preserved.
@@ -326,6 +349,56 @@ inline HTREEITEM WidgetTreeView::getNext( HTREEITEM node, unsigned flag ) {
 	return TreeView_GetNextItem( this->handle(), node, flag );
 }
 
+inline HTREEITEM WidgetTreeView::getChild(HTREEITEM node) {
+	return TreeView_GetChild(this->handle(), node);
+}
+
+inline HTREEITEM WidgetTreeView::getNextSibling(HTREEITEM node) {
+	return TreeView_GetNextSibling(this->handle(), node);
+}
+
+inline HTREEITEM WidgetTreeView::getParent(HTREEITEM node) {
+	return TreeView_GetParent(this->handle(), node);
+}
+
+inline HTREEITEM WidgetTreeView::getRoot() {
+	return TreeView_GetRoot(this->handle());
+}
+
+inline void WidgetTreeView::setColor(COLORREF text, COLORREF background) {
+	TreeView_SetTextColor(this->handle(), text);
+	TreeView_SetBkColor(this->handle(), background);
+}
+
+inline void WidgetTreeView::select(HTREEITEM item) {
+	TreeView_SelectItem(this->handle(), item);
+}
+
+inline void WidgetTreeView::select(POINT pt) {
+	this->screenToClient(pt);
+	HTREEITEM ht = this->hitTest(pt);
+	if(ht != NULL && ht != this->getSelection())
+		this->select(ht);
+}
+
+inline Rectangle WidgetTreeView::getItemRect(HTREEITEM item) {
+	RECT rc;
+	TreeView_GetItemRect(this->handle(), item, &rc, TRUE);
+	return rc;
+}
+
+inline HTREEITEM WidgetTreeView::hitTest(const Point& pt) {
+	return TreeView_HitTest(this->handle(), &pt);
+}
+
+inline HTREEITEM WidgetTreeView::getSelection() {
+	return TreeView_GetSelection(this->handle());
+}
+
+inline void WidgetTreeView::expand(HTREEITEM node) {
+	TreeView_Expand(this->handle(), node, TVE_EXPAND);
+}
+
 inline void WidgetTreeView::clearImpl() {
 	TreeView_DeleteAllItems( this->handle() );
 }
@@ -335,7 +408,7 @@ inline void WidgetTreeView::eraseImpl( HTREEITEM node ) {
 }
 
 inline size_t WidgetTreeView::sizeImpl() const {
-	TreeView_GetCount(this->handle());
+	return static_cast<size_t>(TreeView_GetCount(this->handle()));
 }
 
 inline void WidgetTreeView::editLabel( HTREEITEM node ) {

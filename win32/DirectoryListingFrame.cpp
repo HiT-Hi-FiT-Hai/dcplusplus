@@ -442,14 +442,14 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
 	} else if(reinterpret_cast<HWND>(wParam) == dirs->handle()) {
+		if(dirs->getSelection() == NULL) {
+			return FALSE;
+		}
+
 		if(pt.x == -1 && pt.y == -1) {
 			pt = dirs->getContextMenuPos();
 		} else {
 			dirs->select(pt);
-		}
-
-		if(dirs->getSelected() == NULL) {
-			return FALSE;
 		}
 
 		contextMenu = makeDirMenu();
@@ -750,7 +750,7 @@ void DirectoryListingFrame::addHistory(const string& name) {
 }
 
 void DirectoryListingFrame::up() {
-	HTREEITEM t = dirs->getSelected();
+	HTREEITEM t = dirs->getSelection();
 	if(t == NULL)
 		return;
 	t = dirs->getParent(t);
@@ -848,7 +848,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 	
 	// Do a search
 	int foundFile = -1, skipHitsTmp = skipHits;
-	HTREEITEM const oldDir = dirs->getSelected();
+	HTREEITEM const oldDir = dirs->getSelection();
 	HTREEITEM const foundDir = findFile(StringSearch(findStr), treeRoot, foundFile, skipHitsTmp);
 
 	if(foundDir) {
@@ -941,7 +941,7 @@ void DirectoryListingFrame::runUserCommand(const UserCommand& uc) {
 
 void DirectoryListingFrame::handleDoubleClickFiles() {
 
-	HTREEITEM t = dirs->getSelected();
+	HTREEITEM t = dirs->getSelection();
 	int i = files->getSelectedIndex();
 	if(t != NULL && i != -1) {
 		ItemInfo* ii = files->getData(i);
@@ -988,7 +988,7 @@ bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 		if(files->getSelectedCount() == 1) {
 			ItemInfo* ii = files->getSelectedData();
 			if(ii->type == ItemInfo::DIRECTORY) {
-				HTREEITEM ht = dirs->getChild(dirs->getSelected());
+				HTREEITEM ht = dirs->getChild(dirs->getSelection());
 				while(ht != NULL) {
 					if(dirs->getData(ht)->dir == ii->dir) {
 						dirs->select(ht);

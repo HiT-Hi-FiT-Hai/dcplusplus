@@ -53,20 +53,7 @@ public:
 	}
 	
 	ContentType* getData(HTREEITEM item) {
-		TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
-		tvitem.hItem = item;
-		if(!TreeView_GetItem(this->handle(), &tvitem)) {
-			return 0;
-		}
-		return reinterpret_cast<ContentType*>(tvitem.lParam);
-	}
-	
-	void expand(HTREEITEM item) {
-		TreeView_Expand(this->handle(), item, TVE_EXPAND);
-	}
-	
-	void ensureVisible(HTREEITEM item) {
-		TreeView_EnsureVisible(this->handle(), item);
+		return reinterpret_cast<ContentType*>(BaseType::getData(item));
 	}
 	
 	void getItem(TVITEMEX* item) {
@@ -74,74 +61,12 @@ public:
 	}
 	
 	ContentType* getSelectedData() {
-		HTREEITEM item = getSelected();
+		HTREEITEM item = this->getSelection();
 		return item == NULL ? 0 : getData(item);
-	}
-
-	HTREEITEM getRoot() {
-		return TreeView_GetRoot(this->handle());
-	}
-	
-	HTREEITEM getSelected() {
-		return TreeView_GetSelection(this->handle());
-	}
-	
-	void select(HTREEITEM item) {
-		TreeView_SelectItem(this->handle(), item);
-	}
-
-	void select(POINT pt) {
-		this->screenToClient(pt);
-		HTREEITEM ht = this->hitTest(pt);
-		if(ht != NULL && ht != this->getSelected())
-			this->select(ht);
-	}
-	
-	HTREEITEM getNextSibling(HTREEITEM item) {
-		return TreeView_GetNextSibling(this->handle(), item);
-	}
-
-	HTREEITEM getChild(HTREEITEM item) {
-		return TreeView_GetChild(this->handle(), item);
-	}
-	
-	HTREEITEM getParent(HTREEITEM item) {
-		return TreeView_GetParent(this->handle(), item);
-	}
-	
-	void erase(HTREEITEM item) {
-		TreeView_DeleteItem(this->handle(), item);
-	}
-	
-	HTREEITEM hitTest(POINT& pt) {
-		return TreeView_HitTest(this->handle(), &pt);
-	}
-	
-	RECT getItemRect(HTREEITEM item) {
-		RECT rc;
-		TreeView_GetItemRect(this->handle(), item, &rc, TRUE);
-		return rc;
-	}
-	
-	POINT getContextMenuPos() {
-		HTREEITEM item = getSelected();
-		POINT pt = { 0 };
-		if(item != NULL) {
-			RECT trc = this->getItemRect(item);
-			pt.x = trc.left;
-			pt.y = trc.top + ((trc.bottom - trc.top) / 2);
-		} 
-		this->clientToScreen(pt);
-		return pt;
 	}
 	
 	void setItemState(HTREEITEM item, int state, int mask) {
 		TreeView_SetItemState(this->handle(), item, state, mask);
-	}
-	
-	void setColor(COLORREF text, COLORREF background) {
-		TreeView_SetTextColor(this->handle(), text);
-		TreeView_SetBkColor(this->handle(), background);
 	}
 private:
 

@@ -25,7 +25,7 @@ void WidgetTreeView::create( const Seed & cs )
 	setFont( cs.font );
 }
 
-HTREEITEM WidgetTreeView::insert( const SmartUtil::tstring & text, HTREEITEM parent, unsigned param, int iconIndex, int selectedIconIndex )
+HTREEITEM WidgetTreeView::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARAM param, int iconIndex, int selectedIconIndex )
 {
 	TVINSERTSTRUCT tv = { 0 };
 	tv.hParent = parent;
@@ -145,5 +145,16 @@ void WidgetTreeView::setDataImpl(HTREEITEM item, LPARAM lParam) {
 	TreeView_SetItem(this->handle(), &tvitem);
 }
 
+Point WidgetTreeView::getContextMenuPos() {
+	HTREEITEM item = getSelection();
+	POINT pt = { 0 };
+	if(item != NULL) {
+		RECT trc = this->getItemRect(item);
+		pt.x = trc.left;
+		pt.y = trc.top + ((trc.bottom - trc.top) / 2);
+	} 
+	this->clientToScreen(pt);
+	return pt;
+}
 
 }

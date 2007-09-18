@@ -706,7 +706,7 @@ void QueueFrame::removeSelected() {
 
 void QueueFrame::removeSelectedDir() {
 	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
-		removeDir(dirs->getSelected());
+		removeDir(dirs->getSelection());
 }
 
 void QueueFrame::moveSelected() {
@@ -750,14 +750,14 @@ void QueueFrame::moveSelected() {
 }
 
 void QueueFrame::moveSelectedDir() {
-	if(dirs->getSelected() == NULL)
+	if(dirs->getSelection() == NULL)
 		return;
 
 	dcassert(!curDir.empty());
 	tstring name = Text::toT(curDir);
 
 	if(WinUtil::browseDirectory(name, handle())) {
-		moveDir(dirs->getSelected(), Text::fromT(name));
+		moveDir(dirs->getSelection(), Text::fromT(name));
 	}
 }
 
@@ -874,7 +874,7 @@ void QueueFrame::handlePriority(unsigned id) {
 	}
 
 	if(usingDirMenu) {
-		setPriority(dirs->getSelected(), p);
+		setPriority(dirs->getSelection(), p);
 	} else {
 		std::vector<size_t> selected = files->getSelected();
 		for(std::vector<size_t>::iterator i = selected.begin(); i != selected.end(); ++i) {
@@ -1116,7 +1116,7 @@ HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 			dirs->select(pt);
 		}
 		
-		if(dirs->getSelected() == NULL) {
+		if(dirs->getSelection() == NULL) {
 			return FALSE;
 		}
 		usingDirMenu = true;
