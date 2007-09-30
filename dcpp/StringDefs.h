@@ -304,7 +304,6 @@ enum Strings { // @DontAdd
 	NO_CRC32_MATCH, // " not shared; calculated CRC32 does not match the one found in SFV file."
 	NO_DIRECTORY_SPECIFIED, // "No directory specified"
 	NO_DOWNLOADS_FROM_SELF, // "You're trying to download from yourself!"
-	NO_DOWNLOADS_FROM_PASSIVE, // "Can't download from passive users when you're passive"
 	NO_ERRORS, // "No errors"
 	NO_MATCHES, // "No matches"
 	NO_SLOTS_AVAILABLE, // "No slots available"

@@ -16,15 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_FINISHED_MANAGER_H
-#define DCPLUSPLUS_CLIENT_FINISHED_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_FINISHED_MANAGER_H
+#define DCPLUSPLUS_DCPP_FINISHED_MANAGER_H
 
-#include "DownloadManager.h"
-#include "UploadManager.h"
+#include "DownloadManagerListener.h"
+#include "UploadManagerListener.h"
 
+#include "Speaker.h"
 #include "CriticalSection.h"
 #include "Singleton.h"
 #include "FinishedManagerListener.h"
+#include "Util.h"
 
 namespace dcpp {
 
@@ -66,10 +68,7 @@ public:
 private:
 	friend class Singleton<FinishedManager>;
 
-	FinishedManager() {
-		DownloadManager::getInstance()->addListener(this);
-		UploadManager::getInstance()->addListener(this);
-	}
+	FinishedManager();
 	virtual ~FinishedManager() throw();
 
 	virtual void on(DownloadManagerListener::Complete, Download* d) throw();
@@ -81,4 +80,4 @@ private:
 
 } // namespace dcpp
 
-#endif // !defined(DCPLUSPLUS_CLIENT_FINISHED_MANAGER_H)
+#endif // !defined(DCPLUSPLUS_DCPP_FINISHED_MANAGER_H)

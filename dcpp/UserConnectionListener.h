@@ -39,8 +39,6 @@ public:
 	typedef X<6> Direction;
 	typedef X<7> Get;
 	typedef X<8> Error;
-	typedef X<10> Sending;
-	typedef X<11> FileLength;
 	typedef X<12> Send;
 	typedef X<13> GetListLength;
 	typedef X<14> MaxedOut;
@@ -49,9 +47,6 @@ public:
 	typedef X<17> TransmitDone;
 	typedef X<18> Supports;
 	typedef X<19> FileNotAvailable;
-	typedef X<20> ADCGet;
-	typedef X<21> ADCSnd;
-	typedef X<22> ADCSta;
 
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw() { }
 	virtual void on(Connected, UserConnection*) throw() { }
@@ -62,8 +57,6 @@ public:
 	virtual void on(Key, UserConnection*, const string&) throw() { }
 	virtual void on(Direction, UserConnection*, const string&, const string&) throw() { }
 	virtual void on(Get, UserConnection*, const string&, int64_t) throw() { }
-	virtual void on(Sending, UserConnection*, int64_t) throw() { }
-	virtual void on(FileLength, UserConnection*, int64_t) throw() { }
 	virtual void on(Send, UserConnection*) throw() { }
 	virtual void on(GetListLength, UserConnection*) throw() { }
 	virtual void on(MaxedOut, UserConnection*) throw() { }

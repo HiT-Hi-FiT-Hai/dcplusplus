@@ -61,6 +61,11 @@ bool HashManager::getTree(const TTHValue& root, TigerTree& tt) {
 	return store.getTree(root, tt);
 }
 
+size_t HashManager::getBlockSize(const TTHValue& root) {
+	Lock l(cs);
+	return store.getBlockSize(root);
+}
+
 void HashManager::hashDone(const string& aFileName, uint32_t aTimeStamp, const TigerTree& tth, int64_t speed) {
 	try {
 		Lock l(cs);
@@ -171,6 +176,11 @@ bool HashManager::HashStore::getTree(const TTHValue& root, TigerTree& tt) {
 	} catch(const Exception&) {
 		return false;
 	}
+}
+
+size_t HashManager::HashStore::getBlockSize(const TTHValue& root) const {
+	TreeMap::const_iterator i = treeIndex.find(root);
+	return i == treeIndex.end() ? 0 : i->second.getBlockSize();
 }
 
 bool HashManager::HashStore::checkTTH(const string& aFileName, int64_t aSize, uint32_t aTimeStamp) {

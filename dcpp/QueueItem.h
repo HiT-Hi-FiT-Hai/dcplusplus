@@ -16,39 +16,31 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(QUEUE_ITEM_H)
-#define QUEUE_ITEM_H
+#ifndef DCPLUSPLUS_DCPP_QUEUE_ITEM_H
+#define DCPLUSPLUS_DCPP_QUEUE_ITEM_H
 
 #include "User.h"
 #include "FastAlloc.h"
 #include "MerkleTree.h"
 #include "Flags.h"
+#include "forward.h"
+#include "Segment.h"
 
 namespace dcpp {
 
 class QueueManager;
-class Download;
 
 class QueueItem : public Flags, public FastAlloc<QueueItem> {
 public:
 	typedef QueueItem* Ptr;
-	// Strange, the vc7 optimizer won't take a deque here...
-	typedef vector<Ptr> List;
+	typedef std::list<Ptr> List;
 	typedef List::iterator Iter;
-	typedef map<string*, Ptr, noCaseStringLess> StringMap;
-	//	typedef HASH_MAP<string, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
+	typedef unordered_map<string*, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
 	typedef StringMap::iterator StringIter;
 	typedef unordered_map<UserPtr, Ptr, User::Hash> UserMap;
 	typedef UserMap::iterator UserIter;
 	typedef unordered_map<UserPtr, List, User::Hash> UserListMap;
 	typedef UserListMap::iterator UserListIter;
-
-	enum Status {
-		/** The queue item is waiting to be downloaded and can be found in userQueue */
-		STATUS_WAITING,
-		/** This item is being downloaded and can be found in running */
-		STATUS_RUNNING
-	};
 
 	enum Priority {
 		DEFAULT = -1,
@@ -108,38 +100,28 @@ public:
 		GETSET(UserPtr, user, User);
 	};
 	
-	typedef vector<Source> SourceList;
+	typedef std::vector<Source> SourceList;
 	typedef SourceList::iterator SourceIter;
 	typedef SourceList::const_iterator SourceConstIter;
 
-	QueueItem(const string& aTarget, int64_t aSize,
-		Priority aPriority, int aFlag, int64_t aDownloadedBytes, time_t aAdded, const TTHValue& tth) :
-	Flags(aFlag), target(aTarget),
-		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING),
-		priority(aPriority), currentDownload(NULL), added(aAdded),
-		tthRoot(tth)
+	typedef set<Segment> SegmentSet;
+	typedef SegmentSet::iterator SegmentIter;
+	
+	QueueItem(const string& aTarget, int64_t aSize, Priority aPriority, int aFlag, 
+		const SegmentSet& aDone, time_t aAdded, const TTHValue& tth) :
+		Flags(aFlag), done(aDone), target(aTarget), size(aSize), 
+		priority(aPriority), added(aAdded),	tthRoot(tth)
 	{ }
 
 	QueueItem(const QueueItem& rhs) :
-	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget),
-		size(rhs.size), downloadedBytes(rhs.downloadedBytes), status(rhs.status), priority(rhs.priority),
-		current(rhs.current), currentDownload(rhs.currentDownload), added(rhs.added), tthRoot(rhs.tthRoot),
-		sources(rhs.sources), badSources(rhs.badSources)
-	{
-	}
+		Flags(rhs), done(rhs.done), downloads(rhs.downloads), target(rhs.target),
+		size(rhs.size), priority(rhs.priority), added(rhs.added), tthRoot(rhs.tthRoot),
+		sources(rhs.sources), badSources(rhs.badSources), tempTarget(rhs.tempTarget)
+	{ }
 
-	virtual ~QueueItem() {
-	}
+	virtual ~QueueItem() { }
 
-	int countOnlineUsers() const {
-		int n = 0;
-		SourceConstIter i = sources.begin();
-		for(; i != sources.end(); ++i) {
-			if(i->getUser()->isOnline())
-				n++;
-		}
-		return n;
-	}
+	int countOnlineUsers() const;
 	bool hasOnlineUsers() const { return countOnlineUsers() > 0; }
 
 	SourceList& getSources() { return sources; }
@@ -168,7 +150,28 @@ public:
 			return i->isAnySet(exceptions^Source::FLAG_MASK);
 		return false;
 	}
-
+	
+	int64_t getDownloadedBytes() const;
+	double getDownloadedFraction() const { return static_cast<double>(getDownloadedBytes()) / getSize(); }
+	
+	DownloadList& getDownloads() { return downloads; }
+	
+	/** Next segment that is not done and not being downloaded, zero-sized segment returned if there is none is found */
+	Segment getNextSegment(int64_t blockSize) const;
+	
+	void addSegment(const Segment& segment);
+	
+	bool isFinished() const {
+		return done.size() == 1 && *done.begin() == Segment(0, getSize());
+	}
+	
+	bool isRunning() const {
+		return !isWaiting();
+	}
+	bool isWaiting() const {
+		return downloads.empty();
+	}
+	
 	string getListName() const {
 		dcassert(isSet(QueueItem::FLAG_USER_LIST));
 		if(isSet(QueueItem::FLAG_XML_BZLIST)) {
@@ -179,17 +182,13 @@ public:
 	}
 
 	const string& getTempTarget();
-	void setTempTarget(const string& aTempTarget) {
-		tempTarget = aTempTarget;
-	}
+	void setTempTarget(const string& aTempTarget) { tempTarget = aTempTarget; }
+	
+	GETSET(SegmentSet, done, Done);
+	GETSET(DownloadList, downloads, Downloads);
 	GETSET(string, target, Target);
-	string tempTarget;
 	GETSET(int64_t, size, Size);
-	GETSET(int64_t, downloadedBytes, DownloadedBytes);
-	GETSET(Status, status, Status);
 	GETSET(Priority, priority, Priority);
-	GETSET(UserPtr, current, Current);
-	GETSET(Download*, currentDownload, CurrentDownload);
 	GETSET(time_t, added, Added);
 	GETSET(TTHValue, tthRoot, TTH);
 private:
@@ -198,6 +197,7 @@ private:
 	friend class QueueManager;
 	SourceList sources;
 	SourceList badSources;
+	string tempTarget;
 
 	void addSource(const UserPtr& aUser);
 	void removeSource(const UserPtr& aUser, int reason);

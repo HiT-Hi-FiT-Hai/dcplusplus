@@ -488,7 +488,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) th
 	ui->setActual(aDownload->getActual());
 	ui->setStart(aDownload->getPos());
 	ui->setSize(aDownload->getSize());
-	ui->setFile(Text::toT(aDownload->getTarget()));
+	ui->setFile(Text::toT(aDownload->getPath()));
 	ui->setStatusString(TSTRING(DOWNLOAD_STARTING));
 	tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aDownload->getUserConnection().getRemoteIp());
@@ -497,7 +497,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) th
 	} else {
 		ui->setIP(country + _T(" (") + ip + _T(")"));
 	}
-	if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+	if(aDownload->getType() == Transfer::TYPE_TREE) {
 		ui->file = _T("TTH: ") + ui->file;
 	}
 
@@ -512,7 +512,7 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 		ui->setActual(d->getActual());
 		ui->setPos(d->getTotal());
 		ui->setTimeLeft(d->getSecondsLeft());
-		ui->setSpeed(d->getRunningAverage());
+		ui->setSpeed(d->getAverageSpeed());
 
 		tstring pos = Text::toT(Util::formatBytes(d->getPos()));
 		double percent = (double)d->getPos()*100.0/(double)d->getSize();
@@ -551,8 +551,8 @@ void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, cons
 	ui->setPos(0);
 	ui->setStatusString(Text::toT(aReason));
 	ui->setSize(aDownload->getSize());
-	ui->setFile(Text::toT(aDownload->getTarget()));
-	if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+	ui->setFile(Text::toT(aDownload->getPath()));
+	if(aDownload->getType() == Transfer::TYPE_TREE) {
 		ui->file = _T("TTH: ") + ui->file;
 	}
 
@@ -576,7 +576,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() 
 	} else {
 		ui->setIP(country + _T(" (") + ip + _T(")"));
 	}
-	if(aUpload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+	if(aUpload->getType() == Transfer::TYPE_TREE) {
 		ui->file = _T("TTH: ") + ui->file;
 	}
 
@@ -593,7 +593,7 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 		ui->setActual(u->getActual());
 		ui->setPos(u->getTotal());
 		ui->setTimeLeft(u->getSecondsLeft());
-		ui->setSpeed(u->getRunningAverage());
+		ui->setSpeed(u->getAverageSpeed());
 
 		tstring pos = Text::toT(Util::formatBytes(u->getPos()));
 		double percent = (double)u->getPos()*100.0/(double)u->getSize();

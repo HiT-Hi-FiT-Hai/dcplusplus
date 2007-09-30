@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_RESOURCE_MANAGER_H
-#define DCPLUSPLUS_CLIENT_RESOURCE_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_RESOURCE_MANAGER_H
+#define DCPLUSPLUS_DCPP_RESOURCE_MANAGER_H
 
 #include "Singleton.h"
 

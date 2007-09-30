@@ -1,18 +1,44 @@
-#ifndef DCPLUSPLUS_CLIENT_TRANSFER_H_
-#define DCPLUSPLUS_CLIENT_TRANSFER_H_
+/*
+ * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#ifndef DCPLUSPLUS_DCPP_TRANSFER_H_
+#define DCPLUSPLUS_DCPP_TRANSFER_H_
 
 #include "forward.h"
 #include "MerkleTree.h"
 #include "TimerManager.h"
 #include "Util.h"
+#include "CriticalSection.h"
+#include "Segment.h"
 
 namespace dcpp {
 
 class Transfer {
 public:
-	static const string TYPE_FILE;		///< File transfer
-	static const string TYPE_LIST;		///< Partial file list
-	static const string TYPE_TTHL;		///< TTH Leaves
+	enum Type {
+		TYPE_FILE,
+		TYPE_FULL_LIST,
+		TYPE_PARTIAL_LIST,
+		TYPE_TREE,
+		TYPE_LAST
+	};
+	
+	static const string names[TYPE_LAST];
 
 	static const string USER_LIST_NAME;
 	static const string USER_LIST_NAME_BZ;
@@ -20,33 +46,28 @@ public:
 	Transfer(UserConnection& conn);
 	virtual ~Transfer() { };
 
-	int64_t getPos() const { return pos; }
-	void setPos(int64_t aPos) { pos = aPos; }
+	int64_t getPos() const { return getStartPos() + pos; }
 
-	void resetPos() { pos = getStartPos(); }
-	void setStartPos(int64_t aPos) { startPos = aPos; pos = aPos; }
-	int64_t getStartPos() const { return startPos; }
+	void resetPos() { pos = 0; }
+	
+	int64_t getStartPos() const { return getSegment().getStart(); }
 
 	void addPos(int64_t aBytes, int64_t aActual) { pos += aBytes; actual+= aActual; }
 
-	enum { AVG_PERIOD = 30000 };
-	void updateRunningAverage();
+	enum { SAMPLES = 15 };
+	
+	/** Record a sample for average calculation */
+	void tick();
 
-	int64_t getTotal() const { return getPos() - getStartPos(); }
 	int64_t getActual() const { return actual; }
 
-	int64_t getSize() const { return size; }
-	void setSize(int64_t aSize) { size = aSize; }
+	int64_t getSize() const { return getSegment().getSize(); }
 
-	int64_t getAverageSpeed() const {
-		int64_t diff = (int64_t)(GET_TICK() - getStart());
-		return (diff > 0) ? (getTotal() * (int64_t)1000 / diff) : 0;
-	}
+	double getAverageSpeed() const;
 
 	int64_t getSecondsLeft() {
-		updateRunningAverage();
-		int64_t avg = getRunningAverage();
-		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
+		double avg = getAverageSpeed();
+		return (avg > 0) ? (getBytesLeft() / avg) : 0;
 	}
 
 	int64_t getBytesLeft() const {
@@ -60,24 +81,26 @@ public:
 	UserConnection& getUserConnection() { return userConnection; }
 	const UserConnection& getUserConnection() const { return userConnection; }
 
-	GETSET(uint64_t, start, Start);
-	GETSET(uint64_t, lastTick, LastTick);
-	GETSET(int64_t, runningAverage, RunningAverage);
+	GETSET(Segment, segment, Segment);
 	GETSET(TTHValue, tth, TTH);
+	GETSET(Type, type, Type);
+	GETSET(int64_t, total, Total);
+	GETSET(uint64_t, start, Start);
 private:
+	
+	typedef std::pair<uint64_t, int64_t> Sample;
+	typedef deque<Sample> SampleList;
+	
 	Transfer(const Transfer&);
 	Transfer& operator=(const Transfer&);
-
-	/** Bytes on last avg update */
-	int64_t last;
-	/** Total actual bytes transfered this session (compression?) */
+	
+	SampleList samples;
+	mutable CriticalSection cs;
+	
+	/** Bytes transferred over socket */
 	int64_t actual;
-	/** Write position in file */
+	/** Bytes transferred to/from file */
 	int64_t pos;
-	/** Starting position */
-	int64_t startPos;
-	/** Target size of this transfer */
-	int64_t size;
 
 	UserConnection& userConnection;
 };

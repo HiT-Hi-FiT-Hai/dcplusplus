@@ -25,6 +25,7 @@
 #include "HoldRedraw.h"
 #include "HubListsDlg.h"
 
+#include <dcpp/FavoriteManager.h>
 #include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
 
@@ -304,7 +305,7 @@ void PublicHubsFrame::updateList() {
 
 	bool doSizeCompare = parseFilter(mode, size);
 
-	for(HubEntry::List::const_iterator i = entries.begin(); i != entries.end(); ++i) {
+	for(HubEntryList::const_iterator i = entries.begin(); i != entries.end(); ++i) {
 		if(matchFilter(*i, sel, doSizeCompare, mode, size)) {
 			hubs->insert(hubs->size(), new HubInfo(&(*i)));
 			visibleHubs++;

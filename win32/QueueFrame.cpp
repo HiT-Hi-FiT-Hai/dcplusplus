@@ -176,7 +176,7 @@ HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
             QueueItemInfo* ii = getItemInfo(ui->target);
 
 			ii->setPriority(ui->priority);
-			ii->setStatus(ui->status);
+			ii->setRunning(ui->running);
 			ii->setDownloadedBytes(ui->downloadedBytes);
 			ii->setSources(ui->sources);
 			ii->setBadSources(ui->badSources);
@@ -416,7 +416,7 @@ void QueueFrame::QueueItemInfo::update() {
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
 		if(colMask & MASK_STATUS) {
-			if(getStatus() == QueueItem::STATUS_WAITING) {
+			if(!getRunning()) {
 
 				TCHAR buf[64];
 				if(online > 0) {
@@ -442,7 +442,7 @@ void QueueFrame::QueueItemInfo::update() {
 						display->columns[COLUMN_STATUS] = buf;
 					}
 				}
-			} else if(getStatus() == QueueItem::STATUS_RUNNING) {
+			} else {
 				display->columns[COLUMN_STATUS] = TSTRING(RUNNING);
 			}
 		}

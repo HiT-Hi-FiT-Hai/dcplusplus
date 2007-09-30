@@ -59,10 +59,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 		cs.caption = TSTRING(IGNORE_TTH_SEARCHES);
 		ignoreTTH = createCheckBox(cs);
 		ignoreTTH->setChecked(bIgnoreTTH);
-#ifdef PORT_ME
-		ignoreTTH->setFont(WinUtil::systemFont);
-#endif
-
+		ignoreTTH->setFont(WinUtil::font);
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
 	}
 

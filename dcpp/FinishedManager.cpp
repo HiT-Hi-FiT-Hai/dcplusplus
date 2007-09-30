@@ -25,8 +25,15 @@
 #include "FinishedManagerListener.h"
 #include "Download.h"
 #include "Upload.h"
+#include "DownloadManager.h"
+#include "UploadManager.h"
 
 namespace dcpp {
+
+FinishedManager::FinishedManager() {
+	DownloadManager::getInstance()->addListener(this);
+	UploadManager::getInstance()->addListener(this);
+}
 
 FinishedManager::~FinishedManager() throw() {
 	DownloadManager::getInstance()->removeListener(this);
@@ -64,9 +71,9 @@ void FinishedManager::removeAll(bool upload /* = false */) {
 
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
-	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && (!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
+	if(d->getType() == Transfer::TYPE_FILE || (d->getType() == Transfer::TYPE_FULL_LIST && BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItemPtr item = new FinishedItem(
-			d->getTarget(), Util::toString(ClientManager::getInstance()->getNicks(d->getUser()->getCID())),
+			d->getPath(), Util::toString(ClientManager::getInstance()->getNicks(d->getUser()->getCID())),
 			Util::toString(ClientManager::getInstance()->getHubNames(d->getUser()->getCID())),
 			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
 		{
@@ -80,7 +87,7 @@ void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 
 void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
-	if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
+	if(u->getType() == Transfer::TYPE_FILE || (u->getType() == Transfer::TYPE_FULL_LIST && BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItemPtr item = new FinishedItem(
 			u->getSourceFile(), Util::toString(ClientManager::getInstance()->getNicks(u->getUser()->getCID())),
 			Util::toString(ClientManager::getInstance()->getHubNames(u->getUser()->getCID())),

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(HASH_MANAGER_H)
-#define HASH_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_HASH_MANAGER_H
+#define DCPLUSPLUS_DCPP_HASH_MANAGER_H
 
 #include "Singleton.h"
 #include "MerkleTree.h"
@@ -29,22 +29,13 @@
 #include "FastAlloc.h"
 #include "Text.h"
 #include "Streams.h"
+#include "HashManagerListener.h"
 
 namespace dcpp {
 
 STANDARD_EXCEPTION(HashException);
 class File;
 class CRC32Filter;
-
-class HashManagerListener {
-public:
-	virtual ~HashManagerListener() { }
-	template<int I>	struct X { enum { TYPE = I }; };
-
-	typedef X<0> TTHDone;
-
-	virtual void on(TTHDone, const string& /* fileName */, const TTHValue& /* root */) throw() = 0;
-};
 
 class HashLoader;
 class FileException;
@@ -77,6 +68,9 @@ public:
 	TTHValue getTTH(const string& aFileName, int64_t aSize) throw(HashException);
 
 	bool getTree(const TTHValue& root, TigerTree& tt);
+	
+	/** Return block size of the tree associated with root, or 0 if no such tree is in the store */
+	size_t getBlockSize(const TTHValue& root);
 
 	void addTree(const string& aFileName, uint32_t aTimeStamp, const TigerTree& tt) {
 		hashDone(aFileName, aTimeStamp, tt, -1);
@@ -102,7 +96,6 @@ public:
 	}
 
 private:
-
 	class Hasher : public Thread {
 	public:
 		Hasher() : stop(false), running(false), rebuild(false), currentSize(0) { }
@@ -150,6 +143,7 @@ private:
 		void addTree(const TigerTree& tt) throw();
 		const TTHValue* getTTH(const string& aFileName);
 		bool getTree(const TTHValue& root, TigerTree& tth);
+		size_t getBlockSize(const TTHValue& root) const;
 		bool isDirty() { return dirty; }
 	private:
 		/** Root -> tree mapping info, we assume there's only one tree for each root (a collision would mean we've broken tiger...) */

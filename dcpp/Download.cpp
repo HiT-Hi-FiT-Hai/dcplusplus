@@ -23,45 +23,84 @@
 
 #include "UserConnection.h"
 #include "QueueItem.h"
+#include "SharedFile.h"
+#include "HashManager.h"
 
 namespace dcpp {
 
-Download::Download(UserConnection& conn) throw() : Transfer(conn), file(0),
-crcCalc(NULL), treeValid(false) {
+Download::Download(UserConnection& conn, const string& pfsDir) throw() : Transfer(conn), 
+	path(pfsDir), file(0), crcCalc(NULL), treeValid(false) 
+{
 	conn.setDownload(this);
+	setType(TYPE_PARTIAL_LIST);
 }
 
-Download::Download(UserConnection& conn, QueueItem& qi) throw() : Transfer(conn),
-	target(qi.getTarget()), tempTarget(qi.getTempTarget()), file(0),
+Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) throw() : Transfer(conn),
+	path(qi.getTarget()), tempTarget(qi.getTempTarget()), file(0),
 	crcCalc(NULL), treeValid(false) 
 {
 	conn.setDownload(this);
 	
 	setTTH(qi.getTTH());
-	setSize(qi.getSize());
-	if(qi.isSet(QueueItem::FLAG_USER_LIST))
-		setFlag(Download::FLAG_USER_LIST);
-	if(qi.isSet(QueueItem::FLAG_RESUME))
-		setFlag(Download::FLAG_RESUME);
+	
+	if(qi.isSet(QueueItem::FLAG_USER_LIST)) {
+		setType(TYPE_FULL_LIST);
+	}
+
+	if(qi.getSize() != -1) {
+		if(HashManager::getInstance()->getTree(getTTH(), getTigerTree())) {
+			setTreeValid(true);
+			setSegment(qi.getNextSegment(getTigerTree().getBlockSize()));
+		} else if(supportsTrees && !qi.getSource(conn.getUser())->isSet(QueueItem::Source::FLAG_NO_TREE) && qi.getSize() > HashManager::MIN_BLOCK_SIZE) {
+			// Get the tree unless the file is small (for small files, we'd probably only get the root anyway)
+			setType(TYPE_TREE);
+			getTigerTree().setFileSize(qi.getSize());
+		} else {
+			// Use the root as tree to get some sort of validation at least...
+			getTigerTree() = TigerTree(qi.getSize(), qi.getSize(), getTTH());
+			setTreeValid(true);
+			setSegment(qi.getNextSegment(getTigerTree().getBlockSize()));
+		}
+		
+		if(qi.isSet(QueueItem::FLAG_RESUME)) {
+			const string& target = (getTempTarget().empty() ? getPath() : getTempTarget());
+			int64_t start = File::getSize(target);
+
+#ifdef PORT_ME
+			// Only use antifrag if we don't have a previous non-antifrag part
+			if( BOOLSETTING(ANTI_FRAG) && (start == -1) ) {
+				int64_t aSize = File::getSize(target + Download::ANTI_FRAG_EXT);
+
+				if(aSize == d->getTotal()) {
+					start = d->getStartPos();
+				} else {
+					start = 0;
+				}
+				d->setFlag(Download::FLAG_ANTI_FRAG);
+			}
+#else
+			setFlag(Download::FLAG_ANTI_FRAG);
+#endif
+		}
+	}
+	
 }
+
 Download::~Download() {
 	getUserConnection().setDownload(0);
 }
 
 AdcCommand Download::getCommand(bool zlib) {
 	AdcCommand cmd(AdcCommand::CMD_GET);
-	if(isSet(FLAG_TREE_DOWNLOAD)) {
-		cmd.addParam(Transfer::TYPE_TTHL);
-	} else if(isSet(FLAG_PARTIAL_LIST)) {
-		cmd.addParam(Transfer::TYPE_LIST);
-	} else {
-		cmd.addParam(Transfer::TYPE_FILE);
-	}
-	if(isSet(FLAG_PARTIAL_LIST) || isSet(FLAG_USER_LIST)) {
-		cmd.addParam(Util::toAdcFile(getSource()));
+	
+	cmd.addParam(Transfer::names[getType()]);
+
+	if(getType() == TYPE_PARTIAL_LIST || getType() == TYPE_FULL_LIST) {
+		cmd.addParam(Util::toAdcFile(getPath()));
 	} else {
 		cmd.addParam("TTH/" + getTTH().toBase32());
 	}
+	
 	cmd.addParam(Util::toString(getPos()));
 	cmd.addParam(Util::toString(getSize() - getPos()));
 
@@ -74,8 +113,12 @@ AdcCommand Download::getCommand(bool zlib) {
 
 void Download::getParams(const UserConnection& aSource, StringMap& params) {
 	Transfer::getParams(aSource, params);
-	params["target"] = getTarget();
+	params["target"] = getPath();
 	params["sfv"] = Util::toString(isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
+}
+
+void Download::setSharedFile(SharedFile* f)  { 
+	file = sharedFile = f;
 }
 
 } // namespace dcpp

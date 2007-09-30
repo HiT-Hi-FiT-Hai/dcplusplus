@@ -72,12 +72,11 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	bool userlist = (aFile == Transfer::USER_LIST_NAME_BZ || aFile == Transfer::USER_LIST_NAME);
 	bool free = userlist;
-	bool leaves = false;
-	bool partList = false;
 
 	string sourceFile;
+	Transfer::Type type;
 	try {
-		if(aType == Transfer::TYPE_FILE) {
+		if(aType == Transfer::names[Transfer::TYPE_FILE]) {
 			sourceFile = ShareManager::getInstance()->toReal(aFile);
 
 			if(aFile == Transfer::USER_LIST_NAME) {
@@ -112,7 +111,8 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 					is = new LimitedInputStream<true>(is, aBytes);
 				}
 			}
-		} else if(aType == Transfer::TYPE_TTHL) {
+			type = userlist ? Transfer::TYPE_FULL_LIST : Transfer::TYPE_FILE;
+		} else if(aType == Transfer::names[Transfer::TYPE_TREE]) {
 			sourceFile = ShareManager::getInstance()->toReal(aFile);
 			MemoryInputStream* mis = ShareManager::getInstance()->getTree(aFile);
 			if(!mis) {
@@ -123,9 +123,9 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 			start = 0;
 			bytesLeft = size = mis->getSize();
 			is = mis;
-			leaves = true;
 			free = true;
-		} else if(aType == Transfer::TYPE_LIST) {
+			type = Transfer::TYPE_TREE;
+		} else if(aType == Transfer::names[Transfer::TYPE_PARTIAL_LIST]) {
 			// Partial file list
 			MemoryInputStream* mis = ShareManager::getInstance()->generatePartialList(aFile, listRecursive);
 			if(mis == NULL) {
@@ -139,7 +139,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 	
 			is = mis;
 			free = true;
-			partList = true;
+			type = Transfer::TYPE_PARTIAL_LIST;
 		} else {
 			aSource.fileNotAvail("Unknown file type");
 			return false;
@@ -189,20 +189,10 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	Upload* u = new Upload(aSource);
 	u->setStream(is);
-	if(aBytes == -1)
-		u->setSize(size);
-	else
-		u->setSize(start + bytesLeft);
-
-	u->setStartPos(start);
+	u->setSegment(Segment(start, aBytes == -1 ? size : start + bytesLeft));
 	u->setSourceFile(sourceFile);
 
-	if(userlist)
-		u->setFlag(Upload::FLAG_USER_LIST);
-	if(leaves)
-		u->setFlag(Upload::FLAG_TTH_LEAVES);
-	if(partList)
-		u->setFlag(Upload::FLAG_PARTIAL_LIST);
+	u->setType(type);
 
 	uploads.push_back(u);
 
@@ -232,7 +222,7 @@ int64_t UploadManager::getRunningAverage() {
 	int64_t avg = 0;
 	for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
 		Upload* u = *i;
-		avg += (int)u->getRunningAverage();
+		avg += u->getAverageSpeed();
 	}
 	return avg;
 }
@@ -270,7 +260,7 @@ void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, con
 		return;
 	}
 
-	if(prepareFile(*aSource, Transfer::TYPE_FILE, Util::toAdcFile(aFile), aResume, -1)) {
+	if(prepareFile(*aSource, Transfer::names[Transfer::TYPE_FILE], Util::toAdcFile(aFile), aResume, -1)) {
 		aSource->setState(UserConnection::STATE_SEND);
 		aSource->fileLength(Util::toString(aSource->getUpload()->getSize()));
 	}
@@ -348,7 +338,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 
 	aSource->setState(UserConnection::STATE_GET);
 
-	if(BOOLSETTING(LOG_UPLOADS) && !u->isSet(Upload::FLAG_TTH_LEAVES) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
+	if(BOOLSETTING(LOG_UPLOADS) && u->getType() != Transfer::TYPE_TREE && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || u->getType() != Transfer::TYPE_FULL_LIST)) {
 		StringMap params;
 		u->getParams(*aSource, params);
 		LOG(LogManager::UPLOAD, params);
@@ -461,7 +451,8 @@ void UploadManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw
 }
 
 void UploadManager::on(GetListLength, UserConnection* conn) throw() {
-	conn->listLen("42");
+	conn->error("GetListLength not supported");
+	conn->disconnect(false);
 }
 
 void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcCommand& c) throw() {
@@ -473,7 +464,7 @@ void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcComman
 	const string& type = c.getParam(0);
 	const string& ident = c.getParam(1);
 
-	if(type == Transfer::TYPE_FILE) {
+	if(type == Transfer::names[Transfer::TYPE_FILE]) {
 		try {
 			aSource->send(ShareManager::getInstance()->getFileInfo(ident));
 		} catch(const ShareException&) {

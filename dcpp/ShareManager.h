@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SHARE_MANAGER_H)
-#define SHARE_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_SHARE_MANAGER_H
+#define DCPLUSPLUS_DCPP_SHARE_MANAGER_H
 
 #include "TimerManager.h"
 #include "SearchManager.h"
 #include "SettingsManager.h"
-#include "HashManager.h"
-#include "DownloadManager.h"
+#include "HashManagerListener.h"
+#include "DownloadManagerListener.h"
 
 #include "Exception.h"
 #include "CriticalSection.h"

@@ -10,11 +10,8 @@ namespace dcpp {
 class Upload : public Transfer, public Flags {
 public:
 	enum Flags {
-		FLAG_USER_LIST = 0x01,
-		FLAG_TTH_LEAVES = 0x02,
-		FLAG_ZUPLOAD = 0x04,
-		FLAG_PARTIAL_LIST = 0x08,
-		FLAG_PENDING_KICK = 0x10
+		FLAG_ZUPLOAD = 1 << 0,
+		FLAG_PENDING_KICK = 1 << 1
 	};
 
 	Upload(UserConnection& conn);

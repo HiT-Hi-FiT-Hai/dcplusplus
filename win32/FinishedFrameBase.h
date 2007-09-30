@@ -27,6 +27,7 @@
 
 #include <dcpp/File.h>
 #include <dcpp/FinishedManager.h>
+#include <dcpp/TimerManager.h>
 
 template<class T, bool in_UL>
 class FinishedFrameBase : public StaticFrame<T>, private FinishedManagerListener {

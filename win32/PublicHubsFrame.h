@@ -23,7 +23,8 @@
 
 #include "TypedListView.h"
 
-#include <dcpp/FavoriteManager.h>
+#include <dcpp/HubEntry.h>
+#include <dcpp/FavoriteManagerListener.h>
 #include "resource.h"
 
 class PublicHubsFrame : 
@@ -111,7 +112,7 @@ private:
 	
 	string filterString;
 
-	HubEntry::List entries;
+	HubEntryList entries;
 	
 	static int columnIndexes[];
 	static int columnSizes[];

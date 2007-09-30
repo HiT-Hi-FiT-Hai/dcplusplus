@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_FORWARD_H_
-#define DCPLUSPLUS_CLIENT_FORWARD_H_
+#ifndef DCPLUSPLUS_DCPP_FORWARD_H_
+#define DCPLUSPLUS_DCPP_FORWARD_H_
 
 /** @file
  * This file contains forward declarations for the various DC++ classes
@@ -58,6 +58,7 @@ typedef std::vector<FinishedItemPtr> FinishedItemList;
 class FinishedManager;
 
 class HubEntry;
+typedef std::vector<HubEntry> HubEntryList;
 
 class Identity;
 
@@ -70,6 +71,8 @@ typedef std::vector<OnlineUserPtr> OnlineUserList;
 class QueueItem;
 
 class ServerSocket;
+
+class SharedFile;
 
 class Socket;
 class SocketException;
@@ -96,4 +99,4 @@ typedef std::vector<UserConnectionPtr> UserConnectionList;
 
 } // namespace dcpp
 
-#endif /*DCPLUSPLUS_CLIENT_FORWARD_H_*/
+#endif /*DCPLUSPLUS_DCPP_FORWARD_H_*/

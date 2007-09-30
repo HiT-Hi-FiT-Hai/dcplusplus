@@ -102,8 +102,8 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 
 	layout();
 
-	const FavoriteHubEntry::List& fl = FavoriteManager::getInstance()->getFavoriteHubs();
-	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i)
+	const FavoriteHubEntryList& fl = FavoriteManager::getInstance()->getFavoriteHubs();
+	for(FavoriteHubEntryList::const_iterator i = fl.begin(); i != fl.end(); ++i)
 		addEntry(*i);
 
 	FavoriteManager::getInstance()->addListener(this);
@@ -206,7 +206,7 @@ void FavHubsFrame::handleProperties() {
 
 void FavHubsFrame::handleUp() {
 	nosave = true;
-	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntryList& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
 	std::vector<unsigned> selected = hubs->getSelected();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
@@ -224,7 +224,7 @@ void FavHubsFrame::handleUp() {
 
 void FavHubsFrame::handleDown() {
 	nosave = true;
-	FavoriteHubEntry::List& fh = FavoriteManager::getInstance()->getFavoriteHubs();
+	FavoriteHubEntryList& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
 	std::vector<unsigned> selected = hubs->getSelected();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {

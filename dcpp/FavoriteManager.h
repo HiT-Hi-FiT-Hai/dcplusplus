@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_FAVORITE_MANAGER_H
-#define DCPLUSPLUS_CLIENT_FAVORITE_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_FAVORITE_MANAGER_H
+#define DCPLUSPLUS_DCPP_FAVORITE_MANAGER_H
 
 #include "SettingsManager.h"
 
@@ -29,82 +29,9 @@
 #include "Singleton.h"
 #include "ClientManagerListener.h"
 #include "FavoriteManagerListener.h"
+#include "HubEntry.h"
 
 namespace dcpp {
-
-class HubEntry {
-public:
-	typedef vector<HubEntry> List;
-
-	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() :
-	name(aName), server(aServer), description(aDescription), country(Util::emptyString),
-	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), users(Util::toInt(aUsers)), minSlots(0), maxHubs(0), maxUsers(0) { }
-
-	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers, const string& aCountry,
-		const string& aShared, const string& aMinShare, const string& aMinSlots, const string& aMaxHubs, const string& aMaxUsers,
-		const string& aReliability, const string& aRating) : name(aName), server(aServer), description(aDescription), country(aCountry),
-		rating(aRating), reliability((float)(Util::toFloat(aReliability) / 100.0)), shared(Util::toInt64(aShared)), minShare(Util::toInt64(aMinShare)),
-		users(Util::toInt(aUsers)), minSlots(Util::toInt(aMinSlots)), maxHubs(Util::toInt(aMaxHubs)), maxUsers(Util::toInt(aMaxUsers))
-	{
-
-	}
-
-	HubEntry() throw() { }
-	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country),
-		rating(rhs.rating), reliability(rhs.reliability), shared(rhs.shared), minShare(rhs.minShare), users(rhs.users), minSlots(rhs.minSlots),
-		maxHubs(rhs.maxHubs), maxUsers(rhs.maxUsers) { }
-
-	~HubEntry() throw() { }
-
-	GETSET(string, name, Name);
-	GETSET(string, server, Server);
-	GETSET(string, description, Description);
-	GETSET(string, country, Country);
-	GETSET(string, rating, Rating);
-	GETSET(float, reliability, Reliability);
-	GETSET(int64_t, shared, Shared);
-	GETSET(int64_t, minShare, MinShare);
-	GETSET(int, users, Users);
-	GETSET(int, minSlots, MinSlots);
-	GETSET(int, maxHubs, MaxHubs)
-	GETSET(int, maxUsers, MaxUsers);
-};
-
-class FavoriteHubEntry {
-public:
-	typedef FavoriteHubEntry* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-
-	FavoriteHubEntry() throw() : connect(false), encoding(Text::systemCharset), bottom(0), top(0), left(0), right(0){ }
-	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), encoding(Text::systemCharset), bottom(0), top(0), left(0), right(0){ }
-	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()),
-		password(rhs.getPassword()), connect(rhs.getConnect()), encoding(rhs.getEncoding()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), nick(rhs.nick){ }
-	~FavoriteHubEntry() throw() { }
-
-	const string& getNick(bool useDefault = true) const {
-		return (!nick.empty() || !useDefault) ? nick : SETTING(NICK);
-	}
-
-	void setNick(const string& aNick) { nick = aNick; }
-
-	GETSET(string, userdescription, UserDescription);
-	GETSET(string, name, Name);
-	GETSET(string, server, Server);
-	GETSET(string, description, Description);
-	GETSET(string, password, Password);
-	GETSET(bool, connect, Connect);
-	GETSET(string, encoding, Encoding);
-
-	GETSET(uint16_t, bottom, Bottom);
-	GETSET(uint16_t, top, Top);
-	GETSET(uint16_t, left, Left);
-	GETSET(uint16_t, right, Right);
-
-
-private:
-	string nick;
-};
 
 class SimpleXML;
 
@@ -125,7 +52,7 @@ public:
 	int getSelectedHubList() { return lastServer; }
 	void refresh(bool forceDownload = false);
 	HubTypes getHubListType() { return listType; }
-	HubEntry::List getPublicHubs() {
+	HubEntryList getPublicHubs() {
 		Lock l(cs);
 		return publicListMatrix[publicListServer];
 	}
@@ -147,12 +74,12 @@ public:
 	std::string getUserURL(const UserPtr& aUser) const;
 	
 // Favorite Hubs
-	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; }
+	FavoriteHubEntryList& getFavoriteHubs() { return favoriteHubs; }
 
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
 	bool isFavoriteHub(const std::string& aUrl);
-	FavoriteHubEntry* getFavoriteHubEntry(const string& aUrl);
+	FavoriteHubEntryPtr getFavoriteHubEntry(const string& aUrl);
 
 // Favorite Directories
 	bool addFavoriteDir(const string& aDirectory, const string& aName);
@@ -177,7 +104,7 @@ public:
 	void save();
 
 private:
-	FavoriteHubEntry::List favoriteHubs;
+	FavoriteHubEntryList favoriteHubs;
 	StringPairList favoriteDirs;
 	UserCommand::List userCommands;
 	int lastId;
@@ -187,7 +114,7 @@ private:
 	mutable CriticalSection cs;
 
 	// Public Hubs
-	typedef map<string, HubEntry::List> PubListMap;
+	typedef unordered_map<string, HubEntryList> PubListMap;
 	PubListMap publicListMatrix;
 	string publicListServer;
 	bool useHttp, running;
@@ -204,15 +131,7 @@ private:
 	FavoriteManager();
 	virtual ~FavoriteManager() throw();
 
-	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
-		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
-			if(Util::stricmp((*i)->getServer(), aServer) == 0) {
-				return i;
-			}
-		}
-		return favoriteHubs.end();
-	}
-
+	FavoriteHubEntryList::iterator getFavoriteHub(const string& aServer);
 	void loadXmlList(const string& xml);
 
 	// ClientManagerListener

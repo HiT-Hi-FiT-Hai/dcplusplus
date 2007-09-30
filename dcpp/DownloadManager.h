@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_DOWNLOAD_MANAGER_H
-#define DCPLUSPLUS_CLIENT_DOWNLOAD_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_DOWNLOAD_MANAGER_H
+#define DCPLUSPLUS_DCPP_DOWNLOAD_MANAGER_H
 
 #include "forward.h"
 
@@ -105,15 +105,13 @@ private:
 	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw();
 	virtual void on(Error, UserConnection*, const string&) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
-	virtual void on(Sending, UserConnection*, int64_t) throw();
-	virtual void on(FileLength, UserConnection*, int64_t) throw();
 	virtual void on(MaxedOut, UserConnection*) throw();
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
-	bool prepareFile(UserConnection* aSource, int64_t newSize, bool z);
+	bool prepareFile(UserConnection* aSource, int64_t start, int64_t newSize, bool z);
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
 };

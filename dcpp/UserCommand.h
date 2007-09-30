@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_USER_COMMAND_H
-#define DCPLUSPLUS_CLIENT_USER_COMMAND_H
+#ifndef DCPLUSPLUS_DCPP_USER_COMMAND_H
+#define DCPLUSPLUS_DCPP_USER_COMMAND_H
 
 #include "Util.h"
 #include "Flags.h"
@@ -74,4 +74,4 @@ public:
 
 } // namespace dcpp
 
-#endif // !defined(DCPLUSPLUS_CLIENT_USER_COMMAND_H)
+#endif // !defined(DCPLUSPLUS_DCPP_USER_COMMAND_H)

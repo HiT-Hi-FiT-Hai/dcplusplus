@@ -86,9 +86,6 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		} else {
 			fire(UserConnectionListener::Failed(), this, param);
 		}
-	} else if(cmd == "$FileLength") {
-		if(!param.empty())
-			fire(UserConnectionListener::FileLength(), this, Util::toInt64(param));
 	} else if(cmd == "$GetListLen") {
 		fire(UserConnectionListener::GetListLength(), this);
 	} else if(cmd == "$Get") {
@@ -117,11 +114,6 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		}
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::Send(), this);
-	} else if(cmd == "$Sending") {
-		int64_t bytes = -1;
-		if(!param.empty())
-			bytes = Util::toInt64(param);
-		fire(UserConnectionListener::Sending(), this, bytes);
 	} else if(cmd == "$MaxedOut") {
 		fire(UserConnectionListener::MaxedOut(), this);
 	} else if(cmd == "$Supports") {

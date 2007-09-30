@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_CLIENT_USER_CONNECTION_H
-#define DCPLUSPLUS_CLIENT_USER_CONNECTION_H
+#ifndef DCPLUSPLUS_DCPP_USER_CONNECTION_H
+#define DCPLUSPLUS_DCPP_USER_CONNECTION_H
 
 #include "forward.h"
 #include "TimerManager.h"
@@ -92,7 +92,7 @@ public:
 		STATE_RUNNING,		// Transmitting data
 
 		// DownloadManager
-		STATE_FILELENGTH,
+		STATE_SND,	// Waiting for SND
 		STATE_TREE
 
 	};
@@ -104,10 +104,7 @@ public:
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
-	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); } 	// No acp - utf conversion here...
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
-	void startSend() { send("$Send|"); }
-	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); }
 	void error(const string& aError) { send("$Error " + aError + '|'); }
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); }
 	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : send(AdcCommand(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_SLOTS_FULL, "Slots full")); }

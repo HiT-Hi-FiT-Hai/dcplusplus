@@ -1189,7 +1189,7 @@ void MainWindow::on(QueueManagerListener::Finished, QueueItem* qi, const string&
 	if (qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 		if (qi->isSet(QueueItem::FLAG_USER_LIST)) {
 			// This is a file listing, show it...
-			DirectoryListInfo* i = new DirectoryListInfo(qi->getCurrent(), Text::toT(qi->getListName()), Text::toT(dir), speed);
+			DirectoryListInfo* i = new DirectoryListInfo(qi->getDownloads()[0]->getUser(), Text::toT(qi->getListName()), Text::toT(dir), speed);
 
 			speak(DOWNLOAD_LISTING, (LPARAM)i);
 		} else if (qi->isSet(QueueItem::FLAG_TEXT)) {

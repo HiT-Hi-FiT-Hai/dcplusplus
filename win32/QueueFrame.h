@@ -117,7 +117,7 @@ private:
 		QueueItemInfo(const QueueItem& aQI) : Flags(aQI), target(aQI.getTarget()),
 			path(Util::getFilePath(aQI.getTarget())),
 			size(aQI.getSize()), downloadedBytes(aQI.getDownloadedBytes()),
-			added(aQI.getAdded()), priority(aQI.getPriority()), status(aQI.getStatus()), tth(aQI.getTTH()), 
+			added(aQI.getAdded()), priority(aQI.getPriority()), running(aQI.isRunning()), tth(aQI.getTTH()), 
 			sources(aQI.getSources()), badSources(aQI.getBadSources()), updateMask((uint32_t)-1), display(0)
 		{
 		}
@@ -169,7 +169,7 @@ private:
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
 		GETSET(time_t, added, Added);
 		GETSET(QueueItem::Priority, priority, Priority);
-		GETSET(QueueItem::Status, status, Status);
+		GETSET(bool, running, Running);
 		GETSET(TTHValue, tth, TTH);
 		GETSET(QueueItem::SourceList, sources, Sources);
 		GETSET(QueueItem::SourceList, badSources, BadSources);
@@ -190,13 +190,13 @@ private:
 
 	struct UpdateTask : public FastAlloc<UpdateTask>, public Task {
 		UpdateTask(const QueueItem& source) : target(source.getTarget()), priority(source.getPriority()),
-			status(source.getStatus()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
+			running(source.isRunning()), downloadedBytes(source.getDownloadedBytes()), sources(source.getSources()), badSources(source.getBadSources()) 
 		{
 		}
 
 		string target;
 		QueueItem::Priority priority;
-		QueueItem::Status status;
+		bool running;
 		int64_t downloadedBytes;
 
 		QueueItem::SourceList sources;

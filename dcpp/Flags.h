@@ -1,5 +1,5 @@
-#ifndef DCPLUSPLUS_CLIENT_FLAGS_H_
-#define DCPLUSPLUS_CLIENT_FLAGS_H_
+#ifndef DCPLUSPLUS_DCPP_FLAGS_H_
+#define DCPLUSPLUS_DCPP_FLAGS_H_
 
 namespace dcpp {
 
