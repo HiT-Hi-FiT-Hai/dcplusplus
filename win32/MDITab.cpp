@@ -16,7 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef PORT_ME
 #include "stdafx.h"
+
 
 #include "MDITab.h"
 #include <dcpp/ResourceManager.h>
@@ -274,3 +276,4 @@ LRESULT MDITab::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 
 	return TRUE;
 }
+#endif

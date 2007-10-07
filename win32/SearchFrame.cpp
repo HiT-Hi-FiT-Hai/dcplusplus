@@ -61,7 +61,7 @@ int SearchFrame::SearchInfo::compareItems(SearchInfo* a, SearchInfo* b, int col)
 }
 
 
-void SearchFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
+void SearchFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& str /* = Util::emptyStringT */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
 	SearchFrame* pChild = new SearchFrame(mdiParent, str, size, mode, type);
 	frames.insert(pChild);
 }
@@ -71,7 +71,7 @@ void SearchFrame::closeAll() {
 		(*i)->close(true);
 }
 
-SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
+SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	BaseType(mdiParent, TSTRING(SEARCH), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
 	searchLabel(0),
 	searchBox(0),
@@ -269,7 +269,6 @@ SearchFrame::SearchFrame(SmartWin::WidgetMDIParent* mdiParent, const tstring& in
 	initStatus();
 	
 	statusSizes[STATUS_SHOW_UI] = 16; ///@todo get real checkbox width
-	statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
 
 	layout();
 

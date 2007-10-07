@@ -23,7 +23,7 @@
 #include <dcpp/File.h>
 #include <dcpp/Text.h>
 
-NotepadFrame::NotepadFrame(SmartWin::WidgetMDIParent* mdiParent) : 
+NotepadFrame::NotepadFrame(SmartWin::WidgetTabView* mdiParent) : 
 	BaseType(mdiParent),
 	pad(0) 
 {

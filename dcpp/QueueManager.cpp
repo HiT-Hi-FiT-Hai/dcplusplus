@@ -54,7 +54,7 @@ namespace dcpp {
 
 QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget, 
-						  QueueItem::SegmentSet aDone, time_t aAdded, const TTHValue& root) throw(QueueException, FileException)
+						  time_t aAdded, const TTHValue& root) throw(QueueException, FileException)
 {
 	if(p == QueueItem::DEFAULT) {
 		p = QueueItem::NORMAL;
@@ -71,7 +71,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 		}
 	}
 	
-	QueueItem* qi = new QueueItem(aTarget, aSize, p, aFlags, aDone, aAdded, root);
+	QueueItem* qi = new QueueItem(aTarget, aSize, p, aFlags, aAdded, root);
 
 	if(!qi->isSet(QueueItem::FLAG_USER_LIST)) {
 		if(!aTempTarget.empty()) {
@@ -413,7 +413,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
-			q = fileQueue.add(target, aSize, aFlags, QueueItem::DEFAULT, Util::emptyString, QueueItem::SegmentSet(), GET_TIME(), root);
+			q = fileQueue.add(target, aSize, aFlags, QueueItem::DEFAULT, Util::emptyString, GET_TIME(), root);
 			fire(QueueManagerListener::Added(), q);
 		} else {
 			if(q->getSize() != aSize) {
@@ -1093,14 +1093,19 @@ void QueueManager::saveQueue() throw() {
 				b32tmp.clear();
 				f.write(LIT("\" TTH=\""));
 				f.write(qi->getTTH().toBase32(b32tmp));
-				if(qi->getDownloadedBytes() > 0) {
+				if(!qi->getDone().empty()) {
 					f.write(LIT("\" TempTarget=\""));
 					f.write(SimpleXML::escape(qi->getTempTarget(), tmp, true));
-					f.write(LIT("\" Downloaded=\""));
-					f.write(Util::toString(qi->getDownloadedBytes()));
 				}
 				f.write(LIT("\">\r\n"));
 
+				for(QueueItem::SegmentSet::const_iterator i = qi->getDone().begin(); i != qi->getDone().end(); ++i) {
+					f.write(LIT("\t\t<Segment Start=\""));
+					f.write(Util::toString(i->getStart()));
+					f.write(LIT("\" Size=\""));
+					f.write(Util::toString(i->getSize()));
+					f.write(LIT("\"/>\r\n"));
+				}
 				for(QueueItem::SourceConstIter j = qi->sources.begin(); j != qi->sources.end(); ++j) {
 					f.write(LIT("\t\t<Source CID=\""));
 					f.write(j->getUser()->getCID().toBase32());
@@ -1174,6 +1179,8 @@ static const string sDirectory = "Directory";
 static const string sAdded = "Added";
 static const string sTTH = "TTH";
 static const string sCID = "CID";
+static const string sSegment = "Segment";
+static const string sStart = "Start";
 
 void QueueLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
 	QueueManager* qm = QueueManager::getInstance();
@@ -1210,13 +1217,22 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			QueueItem* qi = qm->fileQueue.find(target);
 
 			if(qi == NULL) {
-				// TODO fix downloaded bytes
-				qi = qm->fileQueue.add(target, size, flags, p, tempTarget, QueueItem::SegmentSet(), added, TTHValue(tthRoot));
+				qi = qm->fileQueue.add(target, size, flags, p, tempTarget, added, TTHValue(tthRoot));
+				if(downloaded > 0) {
+					qi->addSegment(Segment(0, downloaded));
+				}
 				qm->fire(QueueManagerListener::Added(), qi);
 			}
 			if(!simple)
 				cur = qi;
-		} else if(cur != NULL && name == sSource) {
+		} else if(cur && name == sSegment) {
+			int64_t start = Util::toInt64(getAttrib(attribs, sStart, 0));
+			int64_t size = Util::toInt64(getAttrib(attribs, sSize, 1));
+			
+			if(size > 0 && start >= 0 && (start + size) < cur->getSize()) {
+				cur->addSegment(Segment(start, size));
+			}
+		} else if(cur && name == sSource) {
 			const string& cid = getAttrib(attribs, sCID, 0);
 			if(cid.length() != 39) {
 				// Skip loading this source - sorry old users

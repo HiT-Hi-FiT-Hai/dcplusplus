@@ -57,8 +57,8 @@ void UserInfoBase::addFav() {
 	FavoriteManager::getInstance()->addFavoriteUser(user);
 }
 
-void UserInfoBase::pm(SmartWin::WidgetMDIParent* parent) {
-	PrivateFrame::openWindow(parent, user);
+void UserInfoBase::pm(SmartWin::WidgetTabView* mdiParent) {
+	PrivateFrame::openWindow(mdiParent, user);
 }
 
 void UserInfoBase::grant() {
@@ -79,9 +79,9 @@ void UserInfoBase::UserTraits::operator()(UserInfoBase* ui) {
 		favOnly = false;
 }
 
-void UserInfoBase::connectFav(SmartWin::WidgetMDIParent* parent) {
+void UserInfoBase::connectFav(SmartWin::WidgetTabView* mdiParent) {
 	std::string url = FavoriteManager::getInstance()->getUserURL(user);
 	if(!url.empty()) {
-		HubFrame::openWindow(parent, url);
+		HubFrame::openWindow(mdiParent, url);
 	}
 }

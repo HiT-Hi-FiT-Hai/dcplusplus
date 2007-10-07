@@ -48,7 +48,7 @@ void HubFrame::closeDisconnected() {
 	}
 }
 
-void HubFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const string& url) {
+void HubFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const string& url) {
 	for(FrameIter i = frames.begin(); i!= frames.end(); ++i) {
 		HubFrame* frame = *i;
 		if(frame->url == url) {
@@ -60,7 +60,7 @@ void HubFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const string& ur
 	new HubFrame(mdiParent, url);
 }
 
-HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) : 
+HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) : 
 	BaseType(mdiParent, Text::toT(url_), SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
 	chat(0),
 	message(0),
@@ -115,6 +115,7 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 		addWidget(filter);
 		filter->onTextChanging(std::tr1::bind(&HubFrame::updateFilter, this, _1));
 	}
+
 	{
 		WidgetComboBox::Seed cs;
 		
@@ -165,7 +166,6 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 	initStatus();
 	///@todo get real resizer width
 	statusSizes[STATUS_SHOW_USERS] = 16;
-	statusSizes[STATUS_DUMMY] = 16;
 
 	layout();
 	
@@ -185,19 +185,6 @@ HubFrame::HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url_) :
 	
 	showUsers->onClicked(std::tr1::bind(&HubFrame::handleShowUsersClicked, this));
 
-	BOOL max = FALSE;
-	if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max)) && !max) {
-		FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(url);
-		if(fhe != NULL){
-			//retrieve window position
-			SmartWin::Rectangle rc(fhe->getLeft(), fhe->getTop(), fhe->getRight() - fhe->getLeft(), fhe->getBottom() - fhe->getTop());
-	
-			//check that we have a window position stored
-			if(rc.pos.x >= 0 && rc.pos.y >= 0 && rc.size.x > 0 && rc.size.y > 0) {
-				setBounds(rc);
-			}
-		}
-	}
 	FavoriteManager::getInstance()->addListener(this);
 }
 
@@ -222,23 +209,6 @@ void HubFrame::postClosing() {
 
 	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
-	
-	FavoriteHubEntry *fhe = FavoriteManager::getInstance()->getFavoriteHubEntry(url);
-	if(fhe != NULL && !this->isIconic()){
-		//Get position of window
-
-		//convert the position so it's relative to main window
-		SmartWin::Point pos = getPosition();
-		SmartWin::Point size = getSize();
-
-		//save the position
-		fhe->setBottom((uint16_t)std::max(pos.y + size.y, 0L));
-		fhe->setTop((uint16_t)std::max(pos.y, 0L));
-		fhe->setLeft((uint16_t)std::max(pos.x, 0L));
-		fhe->setRight((uint16_t)std::max(pos.x + size.x, 0L));
-
-		FavoriteManager::getInstance()->save();
-	}
 }
 
 void HubFrame::layout() {

@@ -71,12 +71,12 @@ int DirectoryListingFrame::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int 
 	}
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
 		if(!BOOLSETTING(POPUNDER_FILELIST)) {
-			i->second->activate();
+			//i->second->activate();
 		}
 	} else {
 		DirectoryListingFrame* frame = new DirectoryListingFrame(mdiParent, aUser, aSpeed);
@@ -89,7 +89,7 @@ void DirectoryListingFrame::closeAll(){
 		::PostMessage(i->second->handle(), WM_CLOSE, 0, 0);
 }
 
-void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
+void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed) {
 	UserIter i = lists.find(aUser);
 	if(i != lists.end()) {
 		i->second->speed = aSpeed;
@@ -100,7 +100,7 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetMDIParent* mdiParent, con
 	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
+DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
 	BaseType(mdiParent, _T(""), SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
@@ -178,8 +178,6 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParen
 	}
 	
 	initStatus();
-	///@todo get real resizer width
-	statusSizes[STATUS_DUMMY] = 16;
 	
 	// This will set the widths correctly
 	setStatus(STATUS_FILE_LIST_DIFF, TSTRING(FILE_LIST_DIFF));

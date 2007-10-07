@@ -30,9 +30,12 @@ protected:
 		statusSizes.resize(WidgetType::STATUS_LAST);
 	}
 
-	void initStatus() {
+	void initStatus(bool sizeGrip = false) {
 		WidgetStatusBarSections::Seed cs;
-		cs.exStyle = WS_EX_TRANSPARENT; 
+		cs.style = WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+		if(sizeGrip) {
+			cs.style |= SBARS_SIZEGRIP;
+		}
 		status = static_cast<WidgetType*>(this)->createStatusBarSections();
 		statusTip = static_cast<WidgetType*>(this)->createToolTip();
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));

@@ -33,12 +33,11 @@ class PrivateFrame :
 public:
 	enum Status {
 		STATUS_STATUS,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	
-	static void gotMessage(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage);
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
+	static void gotMessage(SmartWin::WidgetTabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
 	static bool isOpen(const UserPtr u) { return frames.find(u) != frames.end(); }
 	static void closeAll();
 	static void closeAllOffline();
@@ -63,7 +62,7 @@ private:
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 
-	PrivateFrame(WidgetMDIParent* mdiParent, const UserPtr& replyTo_, bool activte);
+	PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, bool activte);
 	virtual ~PrivateFrame();
 	
 	void layout();

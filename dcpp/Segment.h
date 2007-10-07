@@ -28,6 +28,8 @@ public:
 	int64_t getSize() const { return size; }
 	int64_t getEnd() const { return getStart() + getSize(); }
 	
+	void setSize(int64_t size_) { size = size_; }
+	
 	bool overlaps(const Segment& rhs) const {
 		int64_t end = getEnd();
 		int64_t rend = rhs.getEnd();

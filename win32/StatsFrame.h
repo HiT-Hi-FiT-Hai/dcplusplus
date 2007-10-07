@@ -42,7 +42,7 @@ private:
 	friend class StaticFrame<StatsFrame>;
 	friend class MDIChildFrame<StatsFrame>;
 
-	StatsFrame(SmartWin::WidgetMDIParent* mdiParent);
+	StatsFrame(SmartWin::WidgetTabView* mdiParent);
 
 	virtual ~StatsFrame() { }
 

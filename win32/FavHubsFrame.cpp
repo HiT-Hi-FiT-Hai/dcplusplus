@@ -32,7 +32,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT,
 	ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
 };
 
-FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) : 
+FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) : 
 	BaseType(mdiParent),
 	hubs(0),
 	connect(0),
@@ -98,7 +98,6 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	}
 
 	initStatus();
-	statusSizes[STATUS_DUMMY] = 16;
 
 	layout();
 

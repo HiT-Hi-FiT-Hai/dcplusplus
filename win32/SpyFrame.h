@@ -33,7 +33,6 @@ public:
 		STATUS_AVG_PER_SECOND,
 		STATUS_HITS,
 		STATUS_HIT_RATIO,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
@@ -45,7 +44,7 @@ protected:
 	friend class StaticFrame<SpyFrame>;
 	friend class MDIChildFrame<SpyFrame>;
 
-	SpyFrame(SmartWin::WidgetMDIParent* mdiParent);
+	SpyFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~SpyFrame();
 
 	void layout();

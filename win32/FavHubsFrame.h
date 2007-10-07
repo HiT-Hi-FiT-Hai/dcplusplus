@@ -31,7 +31,6 @@ class FavHubsFrame :
 public:
 	enum Status {
 		STATUS_STATUS,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	
@@ -43,7 +42,7 @@ protected:
 	friend class StaticFrame<FavHubsFrame>;
 	friend class MDIChildFrame<FavHubsFrame>;
 	
-	FavHubsFrame(SmartWin::WidgetMDIParent* mdiParent);
+	FavHubsFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~FavHubsFrame();
 
 	void layout();

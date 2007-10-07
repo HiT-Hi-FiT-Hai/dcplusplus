@@ -43,7 +43,7 @@ private:
 	
 	WidgetTextBoxPtr log;
 	
-	SystemFrame(SmartWin::WidgetMDIParent* parent);
+	SystemFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~SystemFrame();
 
 	void layout();

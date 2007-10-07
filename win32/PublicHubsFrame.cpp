@@ -91,7 +91,7 @@ int PublicHubsFrame::HubInfo::compareItems(const HubInfo* a, const HubInfo* b, i
 	}
 }
 
-PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
+PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	hubs(0),
 	configure(0),
@@ -178,8 +178,6 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	}
 	
 	initStatus();
-
-	statusSizes[STATUS_DUMMY] = 16;
 
 	FavoriteManager::getInstance()->addListener(this);
 	

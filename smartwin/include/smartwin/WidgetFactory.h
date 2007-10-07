@@ -52,6 +52,7 @@
 #include "widgets/WidgetSpinner.h"
 #include "widgets/WidgetStatic.h"
 #include "widgets/WidgetStatusBar.h"
+#include "widgets/WidgetTabView.h"
 #include "widgets/WidgetTabSheet.h"
 #include "widgets/WidgetTextBox.h"
 #include "widgets/WidgetTreeView.h"
@@ -141,6 +142,12 @@ public:
 
 	/// MDIWindow object type.
 	typedef typename WidgetMDIParent::ObjectType WidgetMDIParentPtr;
+
+	/// TabView class type.
+	typedef SmartWin::WidgetTabView WidgetTabView;
+
+	/// TabView object type.
+	typedef typename WidgetTabView::ObjectType WidgetTabViewPtr;
 
 	/// TabSheet class type.
 	typedef SmartWin::WidgetTabSheet WidgetTabSheet;
@@ -359,7 +366,12 @@ public:
 	  */
 	WidgetMDIParentPtr createMDIParent( const typename WidgetMDIParent::Seed & cs = WidgetMDIParent::getDefaultSeed() );
 
-	/// Creates a Button Control and returns a pointer to it.
+	/// Creates a Tab View and returns a pointer to it.
+	/** DON'T delete the returned pointer!!!
+	  */
+	WidgetTabViewPtr createTabView( const typename WidgetTabView::Seed& cs = WidgetTabView::getDefaultSeed() );
+	
+	/// Creates a Tab Sheet and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
 	WidgetTabSheetPtr createTabSheet( const typename WidgetTabSheet::Seed & cs = WidgetTabSheet::getDefaultSeed() );
@@ -386,15 +398,12 @@ public:
 	  */
 	WidgetButtonPtr subclassButton( unsigned id );
 
-
-	
 	/// \ingroup SubclassDialog
 	/// Subclasses a Progress Bar Control from the given resource id.
 	/** DON'T delete the returned pointer!!!< br >
 	  * Use e.g. the Dialog Designer to design a dialog and subclass the controls with this function.
 	  */
 	WidgetProgressBarPtr subclassProgressBar( unsigned id );
-
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Slider Control from the given resource id.
@@ -488,40 +497,35 @@ template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetChooseFolder
 WidgetFactory< ContainerWidgetType >::createChooseFolder()
 {
-	WidgetChooseFolder retVal( this );
-	return retVal;
+	return WidgetChooseFolder ( this );
 }
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetLoadFile
 WidgetFactory< ContainerWidgetType >::createLoadFile()
 {
-	WidgetLoadFile retVal( this );
-	return retVal;
+	return WidgetLoadFile ( this );
 }
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetSaveFile
 WidgetFactory< ContainerWidgetType >::createSaveFile()
 {
-	WidgetSaveFile retVal( this );
-	return retVal;
+	return WidgetSaveFile ( this );
 }
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetChooseColor
 WidgetFactory< ContainerWidgetType >::createChooseColor()
 {
-	WidgetChooseColor retVal( this );
-	return retVal;
+	return WidgetChooseColor( this );
 }
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetMessageBox
 WidgetFactory< ContainerWidgetType >::createMessageBox()
 {
-	WidgetMessageBox retVal( this );
-	return retVal;
+	return WidgetMessageBox( this );
 }
 
 template<typename ContainerWidgetType>
@@ -622,6 +626,13 @@ typename WidgetFactory< ContainerWidgetType >::WidgetMDIParentPtr
 WidgetFactory< ContainerWidgetType >::createMDIParent( const typename WidgetMDIParent::Seed & cs )
 {
 	return WidgetCreator< WidgetMDIParent >::create( this, cs );
+}
+
+template<typename ContainerWidgetType>
+typename WidgetFactory< ContainerWidgetType >::WidgetTabViewPtr
+WidgetFactory< ContainerWidgetType >::createTabView( const typename WidgetTabView::Seed & cs )
+{
+	return WidgetCreator< WidgetTabView >::create( this, cs );
 }
 
 template<typename ContainerWidgetType>

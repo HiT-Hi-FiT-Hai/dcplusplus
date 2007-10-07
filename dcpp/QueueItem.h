@@ -108,8 +108,8 @@ public:
 	typedef SegmentSet::iterator SegmentIter;
 	
 	QueueItem(const string& aTarget, int64_t aSize, Priority aPriority, int aFlag, 
-		const SegmentSet& aDone, time_t aAdded, const TTHValue& tth) :
-		Flags(aFlag), done(aDone), target(aTarget), size(aSize), 
+		time_t aAdded, const TTHValue& tth) :
+		Flags(aFlag), target(aTarget), size(aSize), 
 		priority(aPriority), added(aAdded),	tthRoot(tth)
 	{ }
 

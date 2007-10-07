@@ -261,8 +261,8 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t start, int64_
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
-	if(bytes != -1) {
-		///TODO  d->setSize(bytes);
+	if(bytes != -1 && d->getSize() == -1) {
+		d->setSize(bytes);
 	}
 	
 	if(d->getPos() >= d->getSize()) {

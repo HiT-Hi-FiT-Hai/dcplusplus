@@ -32,6 +32,8 @@
 * Added segmented downloads
 * Improved accuracy of transfer stats
 * Files from passive users queued even when passive (in the hopes of finding an alternative source)
+* Tabs are on top with ugly little icons (new icons, anyone?)
+* No more MDI
 
 -- 0.699 2006-12-18 --
 * Switched to VC8/VS2005

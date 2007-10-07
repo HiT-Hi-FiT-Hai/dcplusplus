@@ -37,7 +37,7 @@ protected:
 	friend class StaticFrame<ADLSearchFrame>;
 	friend class MDIChildFrame<ADLSearchFrame>;
 
-	ADLSearchFrame(SmartWin::WidgetMDIParent* mdiParent);
+	ADLSearchFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~ADLSearchFrame();
 
 	void layout();

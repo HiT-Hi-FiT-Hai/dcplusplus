@@ -43,7 +43,7 @@ void QueueFrame::QueueItemInfo::remove() {
 	QueueManager::getInstance()->remove(getTarget()); 
 }
 
-QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
+QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	dirs(0),
 	files(0),
@@ -101,8 +101,6 @@ QueueFrame::QueueFrame(SmartWin::WidgetMDIParent* mdiParent) :
 	
 	initStatus();
 	statusSizes[STATUS_SHOW_TREE] = 16;
-	///@todo get real resizer width
-	statusSizes[STATUS_DUMMY] = 16;
 	
 	showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));
 

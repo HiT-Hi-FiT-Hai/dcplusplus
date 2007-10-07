@@ -45,12 +45,11 @@ public:
 		STATUS_MATCH_QUEUE,
 		STATUS_FIND,
 		STATUS_NEXT,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed);
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const tstring& aFile, const tstring& aDir, const UserPtr& aUser, int64_t aSpeed);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, const string& txt, int64_t aSpeed);
 	static void closeAll();
 
 protected:
@@ -172,7 +171,7 @@ private:
 
 	static UserMap lists;
 	
-	DirectoryListingFrame(SmartWin::WidgetMDIParent* mdiParent, const UserPtr& aUser, int64_t aSpeed);
+	DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed);
 	virtual ~DirectoryListingFrame();
 
 	WidgetMenuPtr makeSingleMenu(ItemInfo* ii);

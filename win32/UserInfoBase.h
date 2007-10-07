@@ -30,11 +30,11 @@ public:
 	void getList();
 	void browseList();
 	void matchQueue();
-	void pm(SmartWin::WidgetMDIParent*);
+	void pm(SmartWin::WidgetTabView*);
 	void grant();
 	void addFav();
 	void removeAll();
-	void connectFav(SmartWin::WidgetMDIParent*);
+	void connectFav(SmartWin::WidgetTabView*);
 
 	UserPtr& getUser() { return user; }
 	UserPtr user;
@@ -70,13 +70,13 @@ public:
 	// std::tr1::bind(&UserInfoBase::connectFav, _1, parent) doesn't seem to work with g++ svn 2007-07-30...
 	// wonder if it's me or the implementation as boost::bind/function swallows it...
 	struct Caller {
-		Caller(SmartWin::WidgetMDIParent* parent_, void (UserInfoBase::*f_)(SmartWin::WidgetMDIParent*)) : parent(parent_), f(f_) { }
+		Caller(SmartWin::WidgetTabView* parent_, void (UserInfoBase::*f_)(SmartWin::WidgetTabView*)) : parent(parent_), f(f_) { }
 		void operator()(UserInfoBase* uib) { (uib->*f)(parent); }
-		SmartWin::WidgetMDIParent* parent;
-		void (UserInfoBase::*f)(SmartWin::WidgetMDIParent*);
+		SmartWin::WidgetTabView* parent;
+		void (UserInfoBase::*f)(SmartWin::WidgetTabView*);
 	};
 	
-	void handlePrivateMessage(SmartWin::WidgetMDIParent* parent) {
+	void handlePrivateMessage(SmartWin::WidgetTabView* parent) {
 		static_cast<T*>(this)->getUserList()->forEachSelectedT(Caller(parent, &UserInfoBase::pm));
 	}
 	void handleGrantSlot() {
@@ -85,12 +85,12 @@ public:
 	void handleRemoveAll() {
 		static_cast<T*>(this)->getUserList()->forEachSelected(&UserInfoBase::removeAll);
 	}
-	void handleConnectFav(SmartWin::WidgetMDIParent* parent) {
+	void handleConnectFav(SmartWin::WidgetTabView* parent) {
 		static_cast<T*>(this)->getUserList()->forEachSelectedT(Caller(parent, &UserInfoBase::connectFav));
 	}
 
 	template<typename MenuType>
-	void appendUserItems(SmartWin::WidgetMDIParent* parent, MenuType menu) {
+	void appendUserItems(SmartWin::WidgetTabView* parent, MenuType menu) {
 		T* This = static_cast<T*>(this);
 		UserInfoBase::UserTraits traits = This->getUserList()->forEachSelectedT(UserInfoBase::UserTraits());
 		menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&T::handleGetList, This));

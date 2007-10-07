@@ -48,11 +48,10 @@ public:
 		STATUS_USERS,
 		STATUS_SHARED,
 		STATUS_SHOW_USERS,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	
-	static void openWindow(SmartWin::WidgetMDIParent* mdiParent, const string& url);
+	static void openWindow(SmartWin::WidgetTabView* mdiParent, const string& url);
 	static void closeDisconnected();
 	static void resortUsers();
 	
@@ -192,7 +191,7 @@ private:
 	typedef FrameList::iterator FrameIter;
 	static FrameList frames;
 
-	HubFrame(SmartWin::WidgetMDIParent* mdiParent, const string& url);
+	HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url);
 	virtual ~HubFrame();
 	
 	void layout();

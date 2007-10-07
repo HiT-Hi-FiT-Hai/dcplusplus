@@ -29,12 +29,11 @@
 #include "WidgetFactory.h"
 #include "AspectStatus.h"
 #include "AspectSpeaker.h"
-#include "MDITab.h"
 
 class UPnP;
 
 class MainWindow : 
-	public WidgetFactory<SmartWin::WidgetMDIFrame>, 
+	public WidgetFactory<SmartWin::WidgetWindow>, 
 	public AspectSpeaker<MainWindow>,
 	private HttpConnectionListener, 
 	private QueueManagerListener, 
@@ -55,6 +54,9 @@ public:
 		STATUS_LAST
 	};
 
+	/// @deprecated
+	WidgetTabView* getMDIParent() { return tabs; }
+	
 	MainWindow();
 	
 	virtual ~MainWindow();
@@ -101,7 +103,7 @@ private:
 	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
 	WidgetToolbarPtr toolbar;
-	MDITab* tabs;
+	WidgetTabViewPtr tabs;
 	
 	/** Is the tray icon visible? */
 	bool trayIcon;
@@ -151,16 +153,12 @@ private:
 	void handleOpenDownloadsDir();
 	void handleLink(unsigned id);
 	void handleAbout();
-	void handleMDIReorder(unsigned id);
 	void handleMenuHelp(unsigned id);
 	void handleHashProgress();
 	void handleCloseWindows(unsigned id);
-	void handleMinimizeAll();
-	void handleRestoreAll();
 	void handleSize();
 	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
 	LRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
-	bool handleTabResize(const SmartWin::WidgetSizedEventResult& sz);
 	LRESULT handleTrayIcon(WPARAM wParam, LPARAM lParam);
 	
 	// Other events
@@ -180,7 +178,6 @@ private:
 	void startUPnP();
 	void stopUPnP();
 	void saveWindowSettings();
-	void resizeMDIClient();
 	void parseCommandLine(const tstring& cmdLine);
 	bool filter(MSG& msg);
 	

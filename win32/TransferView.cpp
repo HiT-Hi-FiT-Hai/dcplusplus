@@ -39,7 +39,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::USER, Resourc
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
 ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
 
-TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetMDIParent* mdi_) : 
+TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
 	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
 	transfers(0),
 	mdi(mdi_)

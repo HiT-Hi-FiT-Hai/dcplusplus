@@ -36,7 +36,7 @@ protected:
 	friend class StaticFrame<NotepadFrame>;
 	friend class MDIChildFrame<NotepadFrame>;
 	
-	NotepadFrame(SmartWin::WidgetMDIParent* mdiParent);
+	NotepadFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~NotepadFrame();
 
 	void layout();

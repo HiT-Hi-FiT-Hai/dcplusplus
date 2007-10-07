@@ -310,7 +310,6 @@ inline Message & WidgetTabSheet::getSelectionChangedMessage()
 	return retVal;
 }
 
-
 inline int WidgetTabSheet::getSelectedIndex() const
 {
 	int retVal = TabCtrl_GetCurSel( this->handle() );

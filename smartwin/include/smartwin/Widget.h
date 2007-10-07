@@ -43,6 +43,8 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
+using namespace std::tr1::placeholders;
+
 class Application;
 class Widget;
 

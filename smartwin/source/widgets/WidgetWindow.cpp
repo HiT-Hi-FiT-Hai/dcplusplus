@@ -28,7 +28,7 @@ void WidgetWindow::createWindow( Seed cs )
 {
 	windowClass.reset(new WindowClass(WindowClass::getNewClassName(this), &ThisType::wndProc, cs.menuName, cs.background, cs.icon, cs.smallIcon, cs.cursor));
 	cs.className = windowClass->getClassName();
-	Widget::create( cs );
+	BaseType::create( cs );
 }
 
 }

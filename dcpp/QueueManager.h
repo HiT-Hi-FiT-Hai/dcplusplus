@@ -129,9 +129,9 @@ private:
 				delete i->second;
 		}
 		void add(QueueItem* qi);
-		QueueItem* add(const string& aTarget, int64_t aSize,
-			int aFlags, QueueItem::Priority p, const string& aTempTarget, 
-			QueueItem::SegmentSet aDone, time_t aAdded, const TTHValue& root) throw(QueueException, FileException);
+		QueueItem* add(const string& aTarget, int64_t aSize, int aFlags, QueueItem::Priority p, 
+			const string& aTempTarget, time_t aAdded, const TTHValue& root) 
+			throw(QueueException, FileException);
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& sl, int64_t aSize, const string& ext);

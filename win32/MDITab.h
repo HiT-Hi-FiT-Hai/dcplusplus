@@ -36,7 +36,7 @@ private:
 
 	std::tr1::function<void (const SmartWin::Rectangle&)> resized;
 	bool inTab;
-	SmartWin::WidgetMDIParent::ObjectType mdi;
+	SmartWin::Widget::ObjectType mdi;
 	
 	int findTab(SmartWin::WidgetMDIChild* w);
 	void layout();

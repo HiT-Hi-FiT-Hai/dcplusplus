@@ -221,7 +221,7 @@ const typename WidgetStatusBar< TypeOfStatusBar >::Seed & WidgetStatusBar< TypeO
 	if ( d_NeedsInit )
 	{
 		d_DefaultValues.className = STATUSCLASSNAME;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP | WS_CLIPSIBLINGS | SS_NOTIFY;
+		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP | WS_CLIPSIBLINGS;
 		d_DefaultValues.font = createFont( DefaultGuiFont );
 		d_NeedsInit = false;
 	}

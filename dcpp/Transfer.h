@@ -62,6 +62,7 @@ public:
 	int64_t getActual() const { return actual; }
 
 	int64_t getSize() const { return getSegment().getSize(); }
+	void setSize(int64_t size) { segment.setSize(size); }
 
 	double getAverageSpeed() const;
 

@@ -36,7 +36,6 @@ public:
 		STATUS_STATUS,
 		STATUS_HUBS,
 		STATUS_USERS,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
@@ -47,7 +46,7 @@ private:
 	friend class StaticFrame<PublicHubsFrame>;
 	friend class MDIChildFrame<PublicHubsFrame>;
 
-	PublicHubsFrame(SmartWin::WidgetMDIParent* mdiParent);
+	PublicHubsFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~PublicHubsFrame();
 
 	enum {

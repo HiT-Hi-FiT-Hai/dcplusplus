@@ -43,7 +43,6 @@ public:
 		STATUS_PARTIAL_BYTES,
 		STATUS_TOTAL_COUNT,
 		STATUS_TOTAL_BYTES,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
@@ -233,7 +232,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
-	QueueFrame(SmartWin::WidgetMDIParent* mdiParent);
+	QueueFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~QueueFrame();
 	
 	void updateStatus();

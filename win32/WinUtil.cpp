@@ -51,7 +51,7 @@ int WinUtil::dirIconIndex;
 int WinUtil::dirMaskedIndex;
 TStringList WinUtil::lastDirs;
 SmartWin::Widget* WinUtil::mainWindow = 0;
-SmartWin::WidgetMDIParent* WinUtil::mdiParent = 0;
+SmartWin::WidgetTabView* WinUtil::mdiParent = 0;
 bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;

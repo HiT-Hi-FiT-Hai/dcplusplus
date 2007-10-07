@@ -37,7 +37,6 @@ public:
 		STATUS_COUNT,
 		STATUS_BYTES,
 		STATUS_SPEED,
-		STATUS_DUMMY,
 		STATUS_LAST
 	};
 
@@ -48,7 +47,7 @@ protected:
 	friend class MDIChildFrame<T>;
 	typedef FinishedFrameBase<T, in_UL> ThisType;
 	
-	FinishedFrameBase(SmartWin::WidgetMDIParent* mdiParent) :
+	FinishedFrameBase(SmartWin::WidgetTabView* mdiParent) :
 		BaseType(mdiParent),
 		items(0),
 		totalBytes(0),
@@ -75,8 +74,6 @@ protected:
 		}
 
 		this->initStatus();
-
-		this->statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
 
 		layout();
 

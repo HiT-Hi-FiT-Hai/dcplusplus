@@ -30,7 +30,7 @@ int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
 static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING, ResourceManager::COUNT, ResourceManager::TIME };
 
-SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
+SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	searches(0),
 	ignoreTTH(0),
@@ -65,7 +65,6 @@ SpyFrame::SpyFrame(SmartWin::WidgetMDIParent* mdiParent) :
 
 	initStatus();
 	statusSizes[STATUS_IGNORE_TTH] = 150; ///@todo get real checkbox + text width
-	statusSizes[STATUS_DUMMY] = 16; ///@todo get real resizer width
 
 	layout();
 

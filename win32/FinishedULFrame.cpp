@@ -21,7 +21,7 @@
 
 #include "FinishedULFrame.h"
 
-FinishedULFrame::FinishedULFrame(SmartWin::WidgetMDIParent* mdiParent) :
+FinishedULFrame::FinishedULFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent)
 {
 }

@@ -62,7 +62,7 @@
 MainWindow* MainWindow::instance = 0;
 
 MainWindow::MainWindow() :
-	WidgetFactory<SmartWin::WidgetMDIFrame>(0), 
+	WidgetFactory<SmartWin::WidgetWindow>(0), 
 	paned(0), 
 	transfers(0), 
 	toolbar(0),
@@ -98,7 +98,6 @@ MainWindow::MainWindow() :
 	initTransfers();
 	initSecond();
 
-	tabs->onSized(std::tr1::bind(&MainWindow::handleTabResize, this, _1));
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
 	onRaw(std::tr1::bind(&MainWindow::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
@@ -228,13 +227,6 @@ void MainWindow::initMenu() {
 
 	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
 
-	window->appendItem(IDC_MDI_CASCADE, TSTRING(MENU_CASCADE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
-	window->appendItem(IDC_MDI_TILE_HORZ, TSTRING(MENU_HORIZONTAL_TILE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
-	window->appendItem(IDC_MDI_TILE_VERT, TSTRING(MENU_VERTICAL_TILE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
-	window->appendItem(IDC_MDI_ARRANGE, TSTRING(MENU_ARRANGE), std::tr1::bind(&MainWindow::handleMDIReorder, this, _1));
-	window->appendItem(IDC_MDI_MINIMIZE_ALL, TSTRING(MENU_MINIMIZE_ALL), std::tr1::bind(&MainWindow::handleMinimizeAll, this));
-	window->appendItem(IDC_MDI_RESTORE_ALL, TSTRING(MENU_RESTORE_ALL), std::tr1::bind(&MainWindow::handleRestoreAll, this));
-	window->appendSeparatorItem();
 	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, TSTRING(MENU_CLOSE_DISCONNECTED), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 	window->appendItem(IDC_CLOSE_ALL_PM, TSTRING(MENU_CLOSE_ALL_PM), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 	window->appendItem(IDC_CLOSE_ALL_OFFLINE_PM, TSTRING(MENU_CLOSE_ALL_OFFLINE_PM), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
@@ -305,19 +297,16 @@ void MainWindow::initToolbar() {
 
 void MainWindow::initStatusBar() {
 	dcdebug("initStatusBar\n");
-	initStatus();
+	initStatus(true);
 	statusSizes[STATUS_AWAY] = status->getTextSize(TSTRING(AWAY)).x + 12;
 	///@todo set to checkbox width + resizedrag width really
 	statusSizes[STATUS_DUMMY] = 32;
 }
 
 void MainWindow::initTabs() {
-	MDITab::Seed cs;
-	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | 
-		TCS_MULTILINE | TCS_HOTTRACK | TCS_RAGGEDRIGHT;
-	cs.font = WinUtil::font;
-	tabs = SmartWin::WidgetCreator<MDITab>::create(this, cs);
-	tabs->onResized(std::tr1::bind(&MainWindow::resizeMDIClient, this));
+	WidgetTabView::Seed cs;
+	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
+	tabs = createTabView(cs);
 	paned->setFirst(tabs);
 }
 
@@ -328,17 +317,17 @@ void MainWindow::initTransfers() {
 }
 
 bool MainWindow::filter(MSG& msg) {
-	if (::TranslateMDISysAccel(getMDIParent()->handle(), &msg)) {
+	if(tabs->filter(msg)) {
 		return true;
 	}
-
+	
 	if(accel && accel->translate(msg)) {
 		return true;
 	}
 
-	HWND active = getMDIParent()->getActive();
-	if(active != NULL) {
-		if(::IsDialogMessage( active, & msg )) {
+	SmartWin::Widget* active = getMDIParent()->getActive();
+	if(active) {
+		if(::IsDialogMessage( active->handle(), & msg )) {
 			return true;
 		}
 	}
@@ -511,23 +500,6 @@ LRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-void MainWindow::handleMDIReorder(unsigned id) {
-	switch (id) {
-	case IDC_MDI_CASCADE:
-		getMDIParent()->cascade();
-		break;
-	case IDC_MDI_TILE_VERT:
-		getMDIParent()->tile(false);
-		break;
-	case IDC_MDI_TILE_HORZ:
-		getMDIParent()->tile(true);
-		break;
-	case IDC_MDI_ARRANGE:
-		getMDIParent()->arrange();
-		break;
-	}
-}
-
 void MainWindow::initSecond() {
 	createTimer(std::tr1::bind(&MainWindow::eachSecond, this), 1000);
 }
@@ -550,24 +522,8 @@ void MainWindow::layout() {
 	paned->setRect(r);
 }
 
-bool MainWindow::handleTabResize(const SmartWin::WidgetSizedEventResult& sz) {
-	resizeMDIClient();
-	return false;
-}
-
 LRESULT MainWindow::handleWhereAreYou(WPARAM, LPARAM) {
 	return SingleInstance::WMU_WHERE_ARE_YOU;
-}
-
-void MainWindow::resizeMDIClient() {
-	SmartWin::Rectangle rc = tabs->getUsableArea();
-	SmartWin::Rectangle rctabs(SmartWin::Point(0, 0), tabs->getClientAreaSize());
-	// Get rid of ugly border...assume y border is the same as x border
-	long border = (rctabs.size.x - rc.size.x) / 2;
-	rc.pos.x = rctabs.pos.x;
-	rc.size.x = rctabs.size.x;
-	rc.size.y += border;
-	getMDIParent()->setBounds(rc);	
 }
 
 void MainWindow::updateStatus() {
@@ -858,22 +814,6 @@ void MainWindow::handleAbout() {
 
 void MainWindow::handleOpenDownloadsDir() {
 	WinUtil::openFile(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
-}
-
-void MainWindow::handleMinimizeAll() {
-	HWND tmpWnd =:: GetWindow(getMDIParent()->handle(), GW_CHILD); //getting first child window
-	while (tmpWnd!=NULL) {
-		::CloseWindow(tmpWnd);
-		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
-	}
-}
-
-void MainWindow::handleRestoreAll() {
-	HWND tmpWnd =:: GetWindow(getMDIParent()->handle(), GW_CHILD); //getting first child window
-	while (tmpWnd!=NULL) {
-		::SendMessage(getMDIParent()->handle(), WM_MDIRESTORE, (WPARAM)tmpWnd, 0);
-		tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
-	}
 }
 
 void MainWindow::handleOpenWindow(unsigned id) {
