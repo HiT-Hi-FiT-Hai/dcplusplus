@@ -26,7 +26,7 @@
 
 namespace dcpp {
 
-Upload::Upload(UserConnection& conn) : Transfer(conn), stream(0) { 
+Upload::Upload(UserConnection& conn, const string& path, const TTHValue& tth) : Transfer(conn, path, tth), stream(0) { 
 	conn.setUpload(this);
 }
 
@@ -37,7 +37,7 @@ Upload::~Upload() {
 
 void Upload::getParams(const UserConnection& aSource, StringMap& params) {
 	Transfer::getParams(aSource, params);
-	params["source"] = getSourceFile();
+	params["source"] = getPath();
 }
 
 } // namespace dcpp

@@ -84,10 +84,13 @@ void WidgetTabView::swapWidgets(Widget* oldW, Widget* newW) {
 	if(oldW)
 		::ShowWindow(oldW->handle(), SW_HIDE);
 	::ShowWindow(newW->handle(), SW_SHOW);
-	::SetWindowPos(newW->handle(), tab->handle(), clientSize.pos.x, clientSize.pos.y, clientSize.size.x, clientSize.size.y, SWP_NOREDRAW);
+	::SetWindowPos(newW->handle(), tab->handle(), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOREDRAW);
+	::MoveWindow(newW->handle(), clientSize.pos.x, clientSize.pos.y, clientSize.size.x, clientSize.size.y, FALSE);
 	
 	sendMessage(WM_SETREDRAW, TRUE);
 	::RedrawWindow(handle(), NULL, NULL, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+	
+	::SetFocus(newW->handle());
 }
 
 void WidgetTabView::handleTabSelected() {
@@ -107,6 +110,7 @@ void WidgetTabView::handleTabSelected() {
 	if(!inTab)
 		setTop(ti->w);
 	active = i;
+	tab->setHighlight(i, false);
 }
 
 void WidgetTabView::mark(Widget* w) {

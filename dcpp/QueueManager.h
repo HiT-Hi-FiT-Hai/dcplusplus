@@ -116,6 +116,24 @@ public:
 	GETSET(uint64_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
 private:
+	enum { MOVER_LIMIT = 10*1024*1024 };
+	class FileMover : public Thread {
+	public:
+		FileMover() : active(false) { }
+		virtual ~FileMover() { join(); }
+
+		void moveFile(const string& source, const string& target);
+		virtual int run();
+	private:
+		typedef pair<string, string> FilePair;
+		typedef vector<FilePair> FileList;
+		typedef FileList::iterator FileIter;
+
+		bool active;
+
+		FileList files;
+		CriticalSection cs;
+	} mover;
 
 	typedef unordered_map<CID, string, CID::Hash> PfsQueue;
 	typedef PfsQueue::iterator PfsIter;
@@ -204,6 +222,7 @@ private:
 	void processList(const string& name, UserPtr& user, int flags);
 
 	void load(const SimpleXML& aXml);
+	void moveFile(const string& source, const string& target);
 
 	void setDirty() {
 		if(!dirty) {

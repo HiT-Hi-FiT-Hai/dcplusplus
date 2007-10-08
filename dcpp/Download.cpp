@@ -28,20 +28,17 @@
 
 namespace dcpp {
 
-Download::Download(UserConnection& conn, const string& pfsDir) throw() : Transfer(conn), 
-	path(pfsDir), file(0), crcCalc(NULL), treeValid(false) 
+Download::Download(UserConnection& conn, const string& pfsDir) throw() : Transfer(conn, pfsDir, TTHValue()), 
+	file(0), crcCalc(NULL), treeValid(false) 
 {
 	conn.setDownload(this);
 	setType(TYPE_PARTIAL_LIST);
 }
 
-Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) throw() : Transfer(conn),
-	path(qi.getTarget()), tempTarget(qi.getTempTarget()), file(0),
-	crcCalc(NULL), treeValid(false) 
+Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) throw() : Transfer(conn, qi.getTarget(), qi.getTTH()),
+	tempTarget(qi.getTempTarget()), file(0), crcCalc(0), treeValid(false) 
 {
 	conn.setDownload(this);
-	
-	setTTH(qi.getTTH());
 	
 	if(qi.isSet(QueueItem::FLAG_USER_LIST)) {
 		setType(TYPE_FULL_LIST);
@@ -55,6 +52,7 @@ Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) thro
 			// Get the tree unless the file is small (for small files, we'd probably only get the root anyway)
 			setType(TYPE_TREE);
 			getTigerTree().setFileSize(qi.getSize());
+			setSegment(Segment(0, -1));
 		} else {
 			// Use the root as tree to get some sort of validation at least...
 			getTigerTree() = TigerTree(qi.getSize(), qi.getSize(), getTTH());
@@ -83,7 +81,6 @@ Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) thro
 #endif
 		}
 	}
-	
 }
 
 Download::~Download() {
@@ -95,8 +92,14 @@ AdcCommand Download::getCommand(bool zlib) {
 	
 	cmd.addParam(Transfer::names[getType()]);
 
-	if(getType() == TYPE_PARTIAL_LIST || getType() == TYPE_FULL_LIST) {
+	if(getType() == TYPE_PARTIAL_LIST) { 
 		cmd.addParam(Util::toAdcFile(getPath()));
+	} else if(getType() == TYPE_FULL_LIST) {
+		if(isSet(Download::FLAG_XML_BZ_LIST)) {
+			cmd.addParam(USER_LIST_NAME_BZ);
+		} else {
+			cmd.addParam(USER_LIST_NAME);
+		}
 	} else {
 		cmd.addParam("TTH/" + getTTH().toBase32());
 	}

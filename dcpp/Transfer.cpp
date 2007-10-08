@@ -34,8 +34,8 @@ const string Transfer::names[] = {
 const string Transfer::USER_LIST_NAME = "files.xml";
 const string Transfer::USER_LIST_NAME_BZ = "files.xml.bz2";
 
-Transfer::Transfer(UserConnection& conn) : segment(0, -1), type(TYPE_FILE), total(0), start(0),
-	actual(0), pos(0), userConnection(conn) { }
+Transfer::Transfer(UserConnection& conn, const string& path_, const TTHValue& tth_) : segment(0, -1), type(TYPE_FILE), start(0),
+	path(path_), tth(tth_), actual(0), pos(0), userConnection(conn) { }
 
 void Transfer::tick() {
 	Lock l(cs);
@@ -69,8 +69,8 @@ void Transfer::getParams(const UserConnection& aSource, StringMap& params) {
 	params["hubURL"] = Util::toString(hubs);
 	params["fileSI"] = Util::toString(getSize());
 	params["fileSIshort"] = Util::formatBytes(getSize());
-	params["fileSIchunk"] = Util::toString(getTotal());
-	params["fileSIchunkshort"] = Util::formatBytes(getTotal());
+//	params["fileSIchunk"] = Util::toString(getTotal());
+//	params["fileSIchunkshort"] = Util::formatBytes(getTotal());
 	params["fileSIactual"] = Util::toString(getActual());
 	params["fileSIactualshort"] = Util::formatBytes(getActual());
 	params["speed"] = Util::formatBytes(getAverageSpeed()) + "/s";

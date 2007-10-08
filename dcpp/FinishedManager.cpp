@@ -75,7 +75,7 @@ void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 		FinishedItemPtr item = new FinishedItem(
 			d->getPath(), Util::toString(ClientManager::getInstance()->getNicks(d->getUser()->getCID())),
 			Util::toString(ClientManager::getInstance()->getHubNames(d->getUser()->getCID())),
-			d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
+			d->getSize(), d->getPos(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
 		{
 			Lock l(cs);
 			downloads.push_back(item);
@@ -89,9 +89,9 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
 	if(u->getType() == Transfer::TYPE_FILE || (u->getType() == Transfer::TYPE_FULL_LIST && BOOLSETTING(LOG_FILELIST_TRANSFERS))) {
 		FinishedItemPtr item = new FinishedItem(
-			u->getSourceFile(), Util::toString(ClientManager::getInstance()->getNicks(u->getUser()->getCID())),
+			u->getPath(), Util::toString(ClientManager::getInstance()->getNicks(u->getUser()->getCID())),
 			Util::toString(ClientManager::getInstance()->getHubNames(u->getUser()->getCID())),
-			u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
+			u->getSize(), u->getPos(), (GET_TICK() - u->getStart()), GET_TIME());
 		{
 			Lock l(cs);
 			uploads.push_back(item);

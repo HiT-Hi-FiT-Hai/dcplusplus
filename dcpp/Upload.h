@@ -14,12 +14,11 @@ public:
 		FLAG_PENDING_KICK = 1 << 1
 	};
 
-	Upload(UserConnection& conn);
+	Upload(UserConnection& conn, const string& path, const TTHValue& tth);
 	virtual ~Upload();
 
 	virtual void getParams(const UserConnection& aSource, StringMap& params);
 
-	GETSET(string, sourceFile, SourceFile);
 	GETSET(InputStream*, stream, Stream);
 };
 

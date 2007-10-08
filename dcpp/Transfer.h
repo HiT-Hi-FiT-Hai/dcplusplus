@@ -43,13 +43,11 @@ public:
 	static const string USER_LIST_NAME;
 	static const string USER_LIST_NAME_BZ;
 
-	Transfer(UserConnection& conn);
+	Transfer(UserConnection& conn, const string& path, const TTHValue& tth);
 	virtual ~Transfer() { };
 
-	int64_t getPos() const { return getStartPos() + pos; }
+	int64_t getPos() const { return pos; }
 
-	void resetPos() { pos = 0; }
-	
 	int64_t getStartPos() const { return getSegment().getStart(); }
 
 	void addPos(int64_t aBytes, int64_t aActual) { pos += aBytes; actual+= aActual; }
@@ -78,14 +76,15 @@ public:
 	virtual void getParams(const UserConnection& aSource, StringMap& params);
 
 	UserPtr getUser();
+	
+	const string& getPath() const { return path; }
+	const TTHValue& getTTH() const { return tth; }
 
 	UserConnection& getUserConnection() { return userConnection; }
 	const UserConnection& getUserConnection() const { return userConnection; }
 
 	GETSET(Segment, segment, Segment);
-	GETSET(TTHValue, tth, TTH);
 	GETSET(Type, type, Type);
-	GETSET(int64_t, total, Total);
 	GETSET(uint64_t, start, Start);
 private:
 	
@@ -98,6 +97,10 @@ private:
 	SampleList samples;
 	mutable CriticalSection cs;
 	
+	/** The file being transferred */
+	string path;
+	/** TTH of the file being transferred */
+	TTHValue tth;
 	/** Bytes transferred over socket */
 	int64_t actual;
 	/** Bytes transferred to/from file */

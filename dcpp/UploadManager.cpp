@@ -187,10 +187,9 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 		setLastGrant(GET_TICK());
 	}
 
-	Upload* u = new Upload(aSource);
+	Upload* u = new Upload(aSource, sourceFile, TTHValue());
 	u->setStream(is);
 	u->setSegment(Segment(start, aBytes == -1 ? size : start + bytesLeft));
-	u->setSourceFile(sourceFile);
 
 	u->setType(type);
 
@@ -481,7 +480,10 @@ void UploadManager::on(TimerManagerListener::Second, uint32_t) throw() {
 	UploadList ticks;
 
 	for(UploadList::iterator i = uploads.begin(); i != uploads.end(); ++i) {
-		ticks.push_back(*i);
+		if((*i)->getPos() > 0) {
+			ticks.push_back(*i);
+			(*i)->tick();
+		}
 	}
 
 	if(ticks.size() > 0)

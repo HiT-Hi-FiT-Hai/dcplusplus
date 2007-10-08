@@ -89,10 +89,15 @@ Segment QueueItem::getNextSegment(int64_t  blockSize) const {
 		return Segment(0, -1);
 	}
 	
+	if(done.empty()) {
+		return Segment(0, blockSize > getSize() ? getSize() : blockSize);
+	}
+	
 	for(SegmentIter i = done.begin(); i != done.end(); ++i) {
 		int64_t end = i->getStart() + i->getSize();
-		Segment block(end - (end % blockSize), blockSize);
-		
+		int64_t start = end - (end % blockSize);
+		Segment block(start, start + blockSize > getSize() ? getSize() - start : blockSize);
+
 		bool overlaps = false;
 		for(DownloadList::const_iterator j = downloads.begin(); j != downloads.end(); ++j) {
 			if(block.overlaps((*j)->getSegment())) {

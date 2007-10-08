@@ -57,24 +57,6 @@ public:
 
 	bool startDownload(QueueItem::Priority prio);
 private:
-	enum { MOVER_LIMIT = 10*1024*1024 };
-	class FileMover : public Thread {
-	public:
-		FileMover() : active(false) { }
-		virtual ~FileMover() { join(); }
-
-		void moveFile(const string& source, const string& target);
-		virtual int run();
-	private:
-		typedef pair<string, string> FilePair;
-		typedef vector<FilePair> FileList;
-		typedef FileList::iterator FileIter;
-
-		bool active;
-
-		FileList files;
-		CriticalSection cs;
-	} mover;
 
 	CriticalSection cs;
 	DownloadList downloads;
@@ -85,7 +67,6 @@ private:
 	void fileNotAvailable(UserConnection* aSource);
 	void noSlots(UserConnection* aSource);
 
-	void moveFile(const string& source, const string&target);
 	void logDownload(UserConnection* aSource, Download* d);
 	uint32_t calcCrc32(const string& file) throw(FileException);
 	bool checkSfv(UserConnection* aSource, Download* d, uint32_t crc);

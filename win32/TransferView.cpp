@@ -484,9 +484,9 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) throw() {
 	UpdateInfo* ui = new UpdateInfo(aDownload->getUser(), true);
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
-	ui->setPos(aDownload->getTotal());
+	ui->setPos(aDownload->getPos());
 	ui->setActual(aDownload->getActual());
-	ui->setStart(aDownload->getPos());
+	ui->setStart(0);
 	ui->setSize(aDownload->getSize());
 	ui->setFile(Text::toT(aDownload->getPath()));
 	ui->setStatusString(TSTRING(DOWNLOAD_STARTING));
@@ -510,7 +510,7 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 
 		UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
 		ui->setActual(d->getActual());
-		ui->setPos(d->getTotal());
+		ui->setPos(d->getPos());
 		ui->setTimeLeft(d->getSecondsLeft());
 		ui->setSpeed(d->getAverageSpeed());
 
@@ -563,11 +563,11 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() 
 	UpdateInfo* ui = new UpdateInfo(aUpload->getUser(), false);
 
 	ui->setStatus(ItemInfo::STATUS_RUNNING);
-	ui->setPos(aUpload->getTotal());
+	ui->setPos(aUpload->getPos());
 	ui->setActual(aUpload->getActual());
 	ui->setStart(aUpload->getPos());
 	ui->setSize(aUpload->getSize());
-	ui->setFile(Text::toT(aUpload->getSourceFile()));
+	ui->setFile(Text::toT(aUpload->getPath()));
 	ui->setStatusString(TSTRING(UPLOAD_STARTING));
 	tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aUpload->getUserConnection().getRemoteIp());
@@ -591,7 +591,7 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 
 		UpdateInfo* ui = new UpdateInfo(u->getUser(), false);
 		ui->setActual(u->getActual());
-		ui->setPos(u->getTotal());
+		ui->setPos(u->getPos());
 		ui->setTimeLeft(u->getSecondsLeft());
 		ui->setSpeed(u->getAverageSpeed());
 

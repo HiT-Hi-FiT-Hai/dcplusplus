@@ -194,6 +194,7 @@ enum Strings { // @DontAdd
 	INCOMPLETE_FAV_HUB, // "Hub address cannot be empty."
 	INVALID_LISTNAME, // "Invalid file list name"
 	INVALID_NUMBER_OF_SLOTS, // "Invalid number of slots"
+	INVALID_SIZE, // "Invalid size"
 	INVALID_TARGET_FILE, // "Invalid target file (missing directory, check default download directory setting)"
 	INVALID_TREE, // "Full tree does not match TTH root"
 	IP, // "IP: "

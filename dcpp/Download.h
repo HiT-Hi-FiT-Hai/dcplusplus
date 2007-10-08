@@ -57,7 +57,6 @@ public:
 	void setSharedFile(SharedFile* f);
 	
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
-	GETSET(string, path, Path);
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);

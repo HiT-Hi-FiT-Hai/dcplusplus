@@ -718,6 +718,7 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
 	updateStatus();
 
 	if(!d->getComplete()) {
+		dcdebug("Directory incomplete\n");
 		if(dl->getUser()->isOnline()) {
 			try {
 				QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
