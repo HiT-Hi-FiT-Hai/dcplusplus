@@ -17,187 +17,124 @@
  */
 
 #include "stdafx.h"
-#include "resource.h"
 
 #include "StatsFrame.h"
 
+#include <dcpp/Socket.h>
 #include <dcpp/TimerManager.h>
 
-StatsFrame::StatsFrame(SmartWin::WidgetTabView* mdiParent) : 
-	BaseType(mdiParent)
-#ifdef PORT_ME 
-	width(0), 
-	height(0), 
-	timerId(0), 
-	twidth(0), 
-	lastTick(GET_TICK()), 
+StatsFrame::StatsFrame(SmartWin::WidgetTabView* mdiParent) :
+	BaseType(mdiParent),
+	width(0),
+	height(0),
+	twidth(0),
+	lastTick(GET_TICK()),
 	scrollTick(0),
-	lastUp(Socket::getTotalUp()), 
-	lastDown(Socket::getTotalDown()), 
+	lastUp(Socket::getTotalUp()),
+	lastDown(Socket::getTotalDown()),
 	max(0)
-#endif
 {
+	setFont(WinUtil::font);
+
+	onRaw(std::tr1::bind(&StatsFrame::handlePaint, this), SmartWin::Message(WM_PAINT));
+	// can't use onPainting because it calls ::BeginPaint through PaintCanvas and doesn't give access to the update rect
+
+	layout();
+
+	createTimer(std::tr1::bind(&StatsFrame::eachSecond, this), 1000);
+}
+
+StatsFrame::~StatsFrame() {
+}
+
+LRESULT StatsFrame::handlePaint() {
+	SmartWin::PaintCanvas canvas(handle());
+
+	SmartWin::Rectangle rect = canvas.getPaintRect();
+
+	if(rect.size.x == 0 || rect.size.y == 0)
+		return 0;
+
 #ifdef PORT_ME
-	backgr.CreateSolidBrush(WinUtil::bgColor);
-upload.CreatePen(PS_SOLID, 0, SETTING(UPLOAD_BAR_COLOR));
-download.CreatePen(PS_SOLID, 0, SETTING(DOWNLOAD_BAR_COLOR));
-foregr.CreatePen(PS_SOLID, 0, WinUtil::textColor);
+	canvas.SelectBrush(WinUtil::bgBrush);
 #endif
+	::BitBlt(canvas.getDc(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, NULL, 0, 0, PATCOPY);
 
-}
+	canvas.setBkColor(WinUtil::bgColor);
+	canvas.setTextColor(WinUtil::textColor);
 
-#ifdef PORT_ME
+	::SetDCPenColor(canvas.getDc(), WinUtil::textColor);
+	canvas.selectFont(WinUtil::font);
+	long fontHeight = getTextSize(_T("A")).y;
+	int lines = height / (fontHeight * LINE_HEIGHT);
+	int lheight = height / (lines+1);
 
-#include "stdafx.h"
-#include "../client/DCPlusPlus.h"
-#include "Resource.h"
-
-#include "../client/Socket.h"
-
-#include "StatsFrame.h"
-#include "WinUtil.h"
-
-LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	timerId = SetTimer(1, 1000);
-
-	SetFont(WinUtil::font);
-
-	bHandled = FALSE;
-	return 1;
-}
-
-LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(timerId != 0)
-		KillTimer(timerId);
-
-	bHandled = FALSE;
-	return 0;
-}
-
-void StatsFrame::drawLine(CDC& dc, StatIter begin, StatIter end, CRect& rc, CRect& crc) {
-	int x = crc.right;
-
-	StatIter i;
-	for(i = begin; i != end; ++i) {
-		if((x - (int)i->scroll) < rc.right)
-			break;
-		x -= i->scroll;
-	}
-	if(i != end) {
-		int y = (max == 0) ? 0 : (int)((i->speed * height) / max);
-		dc.MoveTo(x, height - y);
-		x -= i->scroll;
-		++i;
-
-		for(; i != end && x > twidth; ++i) {
-			y = (max == 0) ? 0 : (int)((i->speed * height) / max);
-			dc.LineTo(x, height - y);
-			if(x < rc.left)
-				break;
-			x -= i->scroll;
-		}
-	}
-}
-
-LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	if(GetUpdateRect(NULL)) {
-		CPaintDC dc(m_hWnd);
-		CRect rc(dc.m_ps.rcPaint);
-		dcdebug("Update: %d, %d, %d, %d\n", rc.left, rc.top, rc.right, rc.bottom);
-
-		dc.SelectBrush(backgr);
-		dc.BitBlt(rc.left, rc.top, rc.Width(), rc.Height(), NULL, 0, 0, PATCOPY);
-
-		CRect clientRC;
-		GetClientRect(clientRC);
-
-		dc.SetTextColor(WinUtil::textColor);
-		dc.SetBkColor(WinUtil::bgColor);
-
-		dc.SelectPen(foregr);
-		dc.SelectFont(WinUtil::font);
-		int lines = height / (WinUtil::fontHeight * LINE_HEIGHT);
-		int lheight = height / (lines+1);
-
-		for(int i = 0; i < lines; ++i) {
-			int ypos = lheight * (i+1);
-			if(ypos > WinUtil::fontHeight + 2) {
-				dc.MoveTo(rc.left, ypos);
-				dc.LineTo(rc.right, ypos);
-			}
-
-			if(rc.left <= twidth) {
-
-				ypos -= WinUtil::fontHeight + 2;
-				if(ypos < 0)
-					ypos = 0;
-				if(height == 0)
-					height = 1;
-				tstring txt = Text::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
-				int tw = WinUtil::getTextWidth(txt, dc);
-				if(tw + 2 > twidth)
-					twidth = tw + 2;
-				dc.TextOut(1, ypos, txt.c_str());
-			}
+	for(int i = 0; i < lines; ++i) {
+		int ypos = lheight * (i+1);
+		if(ypos > fontHeight + 2) {
+			canvas.moveTo(rect.pos.x, ypos);
+			canvas.lineTo(rect.pos.x + rect.size.x, ypos);
 		}
 
-		if(rc.left < twidth) {
-			tstring txt = Text::toT(Util::formatBytes(max) + "/s");
-			int tw = WinUtil::getTextWidth(txt, dc);
+		if(rect.pos.x <= twidth) {
+			ypos -= fontHeight + 2;
+			if(ypos < 0)
+				ypos = 0;
+			if(height == 0)
+				height = 1;
+			tstring txt = Text::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
+			SmartWin::Point txtSize = getTextSize(txt);
+			long tw = txtSize.x;
 			if(tw + 2 > twidth)
 				twidth = tw + 2;
-			dc.TextOut(1, 1, txt.c_str());
+			canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, ypos), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
 		}
-
-		dc.SelectPen(upload);
-		drawLine(dc, up.begin(), up.end(), rc, clientRC);
-
-		dc.SelectPen(download);
-		drawLine(dc, down.begin(), down.end(), rc, clientRC);
-
 	}
+
+	if(rect.pos.x < twidth) {
+		tstring txt = Text::toT(Util::formatBytes(max) + "/s");
+		SmartWin::Point txtSize = getTextSize(txt);
+		long tw = txtSize.x;
+		if(tw + 2 > twidth)
+			twidth = tw + 2;
+		canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, 1), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
+	}
+
+	long clientRight = getClientAreaSize().x;
+
+	::SetDCPenColor(canvas.getDc(), SETTING(UPLOAD_BAR_COLOR));
+	drawLine(canvas, up.begin(), up.end(), rect, clientRight);
+
+	::SetDCPenColor(canvas.getDc(), SETTING(DOWNLOAD_BAR_COLOR));
+	drawLine(canvas, down.begin(), down.end(), rect, clientRight);
+
 	return 0;
 }
 
-void StatsFrame::addTick(int64_t bdiff, int64_t tdiff, StatList& lst, AvgList& avg, int scroll) {
-	while((int)lst.size() > ((width / PIX_PER_SEC) + 1) ) {
-		lst.pop_back();
-	}
-	while(avg.size() > AVG_SIZE ) {
-		avg.pop_back();
-	}
-	int64_t bspeed = bdiff * (int64_t)1000 / tdiff;
-	avg.push_front(bspeed);
-
-	bspeed = 0;
-
-	for(AvgIter ai = avg.begin(); ai != avg.end(); ++ai) {
-		bspeed += *ai;
-	}
-
-	bspeed /= avg.size();
-	lst.push_front(Stat(scroll, bspeed));
+void StatsFrame::layout() {
+	SmartWin::Point clientSize = getClientAreaSize();
+	width = clientSize.x;
+	height = clientSize.y - 1;
+	invalidateWidget();
 }
 
-LRESULT StatsFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+bool StatsFrame::eachSecond() {
 	uint32_t tick = GET_TICK();
 	uint32_t tdiff = tick - lastTick;
 	if(tdiff == 0)
-		return 0;
+		return true;
 
 	uint32_t scrollms = (tdiff + scrollTick)*PIX_PER_SEC;
 	uint32_t scroll = scrollms / 1000;
 
 	if(scroll == 0)
-		return 0;
+		return true;
 
 	scrollTick = scrollms - (scroll * 1000);
 
-	CRect rc;
-	GetClientRect(rc);
-	rc.left = twidth;
-	ScrollWindow(-((int)scroll), 0, rc, rc);
+	SmartWin::Point clientSize = getClientAreaSize();
+	RECT rect = { twidth, 0, clientSize.x, clientSize.y };
+	::ScrollWindow(handle(), -((int)scroll), 0, &rect, &rect);
 
 	int64_t d = Socket::getTotalDown();
 	int64_t ddiff = d - lastDown;
@@ -219,26 +156,54 @@ LRESULT StatsFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 	if(mspeed > max || ((max * 3 / 4) > mspeed) ) {
 		max = mspeed;
-		Invalidate();
+		invalidateWidget();
 	}
 
 	lastTick = tick;
 	lastUp = u;
 	lastDown = d;
-	return 0;
+	return true;
 }
 
-LRESULT StatsFrame::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	CRect rc;
-	GetClientRect(rc);
-	width = rc.Width();
-	height = rc.Height() - 1;
-	Invalidate();
-	bHandled = FALSE;
-	return 0;
+void StatsFrame::drawLine(SmartWin::Canvas& canvas, StatIter begin, StatIter end, SmartWin::Rectangle& rect, long clientRight) {
+	StatIter i;
+	for(i = begin; i != end; ++i) {
+		if((clientRight - (long)i->scroll) < (rect.pos.x + rect.size.x))
+			break;
+		clientRight -= i->scroll;
+	}
+	if(i != end) {
+		int y = (max == 0) ? 0 : (int)((i->speed * height) / max);
+		canvas.moveTo(clientRight, height - y);
+		clientRight -= i->scroll;
+		++i;
+
+		for(; i != end && clientRight > twidth; ++i) {
+			y = (max == 0) ? 0 : (int)((i->speed * height) / max);
+			canvas.lineTo(clientRight, height - y);
+			if(clientRight < rect.pos.x)
+				break;
+			clientRight -= i->scroll;
+		}
+	}
 }
 
-void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
+void StatsFrame::addTick(int64_t bdiff, int64_t tdiff, StatList& lst, AvgList& avg, int scroll) {
+	while((int)lst.size() > ((width / PIX_PER_SEC) + 1) ) {
+		lst.pop_back();
+	}
+	while(avg.size() > AVG_SIZE ) {
+		avg.pop_back();
+	}
+	int64_t bspeed = bdiff * (int64_t)1000 / tdiff;
+	avg.push_front(bspeed);
 
+	bspeed = 0;
+
+	for(AvgIter ai = avg.begin(); ai != avg.end(); ++ai) {
+		bspeed += *ai;
+	}
+
+	bspeed /= avg.size();
+	lst.push_front(Stat(scroll, bspeed));
 }
-#endif

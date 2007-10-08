@@ -439,11 +439,7 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		usingDirMenu = false;
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
-	} else if(reinterpret_cast<HWND>(wParam) == dirs->handle()) {
-		if(dirs->getSelection() == NULL) {
-			return FALSE;
-		}
-
+	} else if(reinterpret_cast<HWND>(wParam) == dirs->handle() && dirs->getSelection()) {
 		if(pt.x == -1 && pt.y == -1) {
 			pt = dirs->getContextMenuPos();
 		} else {

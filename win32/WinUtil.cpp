@@ -308,11 +308,18 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 		}
 		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
 		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-		SmartWin::Icon tmp(fi.hIcon);
-		fileImages->add(tmp);
+		if(!fi.hIcon) {
+			return 2;
+		}
+		try {
+			SmartWin::Icon tmp(fi.hIcon);
+			fileImages->add(tmp);
 
-		fileIndexes[x] = fileImageCount++;
-		return fileImageCount - 1;
+			fileIndexes[x] = fileImageCount++;
+			return fileImageCount - 1;
+		} catch(const SmartWin::xCeption&) {
+			return 2;
+		}
 	} else {
 		return 2;
 	}

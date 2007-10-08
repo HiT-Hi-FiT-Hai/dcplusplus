@@ -275,6 +275,11 @@ PaintCanvas::~PaintCanvas()
 	::EndPaint( itsHandle, & itsPaint );
 }
 
+Rectangle PaintCanvas::getPaintRect()
+{
+	return itsPaint.rcPaint;
+}
+
 void PaintCanvas::initialize()
 {
 	itsHdc = ::BeginPaint( itsHandle, & itsPaint );

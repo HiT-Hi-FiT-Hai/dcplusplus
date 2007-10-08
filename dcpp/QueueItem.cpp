@@ -90,7 +90,8 @@ Segment QueueItem::getNextSegment(int64_t  blockSize) const {
 	}
 	
 	if(done.empty()) {
-		return Segment(0, blockSize > getSize() ? getSize() : blockSize);
+		Segment ret(0, blockSize > getSize() ? getSize() : blockSize);
+		return ret;
 	}
 	
 	for(SegmentIter i = done.begin(); i != done.end(); ++i) {

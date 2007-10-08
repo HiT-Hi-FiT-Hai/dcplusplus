@@ -256,6 +256,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t start, int64_
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
+	dcdebug("Preparing " I64_FMT ":" I64_FMT ", " I64_FMT ":" I64_FMT"\n", d->getStartPos(), start, d->getSize(), bytes);
 	if(d->getSize() == -1) {
 		if(bytes != -1) {
 			d->setSize(bytes);

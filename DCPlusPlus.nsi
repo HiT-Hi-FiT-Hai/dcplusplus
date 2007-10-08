@@ -25,7 +25,7 @@ UninstPage uninstConfirm
 UninstPage instfiles
 
 ; The file to write
-OutFile "DCPlusPlus.exe"
+OutFile "DCPlusPlus-xxx.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\DC++
@@ -54,15 +54,14 @@ Section "DC++ (required)"
 
 no_backup:
   ; Put file there
-  File "/oname=DCPlusPlus.exe" "App\DCPlusPlus.exe"
-  File "/oname=DCPlusPlus.chm" "App\DCPlusPlus.chm"
-  File "unicows.dll"
-  File "ChangeLog.txt"
+  File "changelog.txt"
+  File "dcppboot.xml"
+;  File "DCPlusPlus.chm"
+  File "DCPlusPlus.exe"
   File "Example.xml"
   File "License.txt"
-  File "License-GeoIP.txt"
-  File "Magnet.exe"
-  File "dcppboot.xml"
+  File "LICENSE-GeoIP.txt"
+  File "magnet.exe"
   ; Remove opencow just in case we're upgrading
   Delete "$INSTDIR\opencow.dll"
   
@@ -92,13 +91,6 @@ SectionEnd
 Section "IP -> Country mappings"
   SetOutPath $INSTDIR
   File "GeoIPCountryWhois.csv"
-SectionEnd
-
-Section "Debug Information (recommended, helps finding bugs)"
-  SetOutPath $INSTDIR
-  File "/oname=DCPlusPlus.pdb" "App\DCPlusPlus.pdb"
-  File "unicows.pdb"
-  File "dbghelp.dll"
 SectionEnd
 
 ; optional section

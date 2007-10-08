@@ -104,8 +104,8 @@ AdcCommand Download::getCommand(bool zlib) {
 		cmd.addParam("TTH/" + getTTH().toBase32());
 	}
 	
-	cmd.addParam(Util::toString(getPos()));
-	cmd.addParam(Util::toString(getSize() - getPos()));
+	cmd.addParam(Util::toString(getStartPos()));
+	cmd.addParam(Util::toString(getSize()));
 
 	if(zlib && BOOLSETTING(COMPRESS_TRANSFERS)) {
 		cmd.addParam("ZL1");

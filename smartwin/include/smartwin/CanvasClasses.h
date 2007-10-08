@@ -544,6 +544,8 @@ public:
 	  */
 	virtual ~PaintCanvas();
 
+	Rectangle getPaintRect();
+
 private:
 	PAINTSTRUCT itsPaint;
 	PaintCanvas( const PaintCanvas & ); // Never defined, class cannot be copied!

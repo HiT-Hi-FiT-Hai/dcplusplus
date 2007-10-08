@@ -31,50 +31,18 @@ public:
 	};
 	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::NETWORK_STATISTICS;
 	static const unsigned ICON_RESOURCE = IDR_NET_STATS;
-	
-protected:
-	void layout() {
-		
-	}
-	
+
 private:
 	typedef StaticFrame<StatsFrame> BaseType;
 	friend class StaticFrame<StatsFrame>;
 	friend class MDIChildFrame<StatsFrame>;
 
-	StatsFrame(SmartWin::WidgetTabView* mdiParent);
-
-	virtual ~StatsFrame() { }
-
-#ifdef PORT_ME
-	typedef MDITabChildWindowImpl<StatsFrame> baseClass;
-	BEGIN_MSG_MAP(StatsFrame)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_PAINT, onPaint)
-		MESSAGE_HANDLER(WM_TIMER, onTimer)
-		MESSAGE_HANDLER(WM_SIZE, onSize)
-		CHAIN_MSG_MAP(baseClass)
-	END_MSG_MAP()
-
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
-private:
-	// Pixels per second
-	enum { PIX_PER_SEC = 2 };
+	enum { PIX_PER_SEC = 2 }; // Pixels per second
 	enum { LINE_HEIGHT = 10 };
 	enum { AVG_SIZE = 5 };
 
-	CBrush backgr;
-	CPen upload;
-	CPen download;
-	CPen foregr;
+	StatsFrame(SmartWin::WidgetTabView* mdiParent);
+	virtual ~StatsFrame();
 
 	struct Stat {
 		Stat() : scroll(0), speed(0) { }
@@ -86,28 +54,27 @@ private:
 	typedef StatList::iterator StatIter;
 	typedef deque<int64_t> AvgList;
 	typedef AvgList::iterator AvgIter;
-
 	StatList up;
-	AvgList upAvg;
 	StatList down;
+	AvgList upAvg;
 	AvgList downAvg;
 
-	int width;
-	int height;
-	UINT_PTR timerId;
-	int twidth;
-
+	long width;
+	long height;
+	long twidth;
 	uint32_t lastTick;
 	uint32_t scrollTick;
 	int64_t lastUp;
 	int64_t lastDown;
-
 	int64_t max;
 
-	void drawLine(CDC& dc, StatIter begin, StatIter end, CRect& rc, CRect& crc);
+	LRESULT handlePaint();
+
+	void layout();
+	bool eachSecond();
+
+	void drawLine(SmartWin::Canvas& canvas, StatIter begin, StatIter end, SmartWin::Rectangle& rect, long clientRight);
 	void addTick(int64_t bdiff, int64_t tdiff, StatList& lst, AvgList& avg, int scroll);
-#endif
-	
 };
 
 #endif

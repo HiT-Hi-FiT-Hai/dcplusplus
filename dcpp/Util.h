@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(UTIL_H)
-#define UTIL_H
+#ifndef DCPLUSPLUS_DCPP_UTIL_H
+#define DCPLUSPLUS_DCPP_UTIL_H
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -149,36 +149,7 @@ public:
 	/** Notepad filename */
 	static string getNotepadFile() { return getConfigPath() + "Notepad.txt"; }
 
-	static string translateError(int aError) {
-#ifdef _WIN32
-		LPVOID lpMsgBuf;
-		DWORD chars = FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER |
-			FORMAT_MESSAGE_FROM_SYSTEM |
-			FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL,
-			aError,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-			(LPTSTR) &lpMsgBuf,
-			0,
-			NULL
-			);
-		if(chars == 0) {
-			return string();
-		}
-		string tmp = Text::fromT((LPCTSTR)lpMsgBuf);
-		// Free the buffer.
-		LocalFree( lpMsgBuf );
-		string::size_type i = 0;
-
-		while( (i = tmp.find_first_of("\r\n", i)) != string::npos) {
-			tmp.erase(i, 1);
-		}
-		return tmp;
-#else // _WIN32
-		return Text::toUtf8(strerror(aError));
-#endif // _WIN32
-	}
+	static string translateError(int aError);
 
 	static string getFilePath(const string& path) {
 		string::size_type i = path.rfind(PATH_SEPARATOR);
