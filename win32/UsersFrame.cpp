@@ -29,22 +29,6 @@ int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN
 int UsersFrame::columnSizes[] = { 200, 300, 150, 200, 125 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION, ResourceManager::CID };
 
-UsersFrame::UserInfo::UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) {
-	update(u);
-}
-
-void UsersFrame::UserInfo::update(const FavoriteUser& u) {
-	columns[COLUMN_NICK] = Text::toT(u.getNick());
-	columns[COLUMN_HUB] = user->isOnline() ? WinUtil::getHubNames(u.getUser()).first : Text::toT(u.getUrl());
-	columns[COLUMN_SEEN] = user->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
-	columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
-	columns[COLUMN_CID] = Text::toT(u.getUser()->getCID().toBase32());
-}
-
-void UsersFrame::UserInfo::remove() { 
-	FavoriteManager::getInstance()->removeFavoriteUser(user); 
-}
-
 UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) : 
 	BaseType(mdiParent),
 	users(0),
@@ -52,33 +36,43 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 {
 	{
 		WidgetUsers::Seed cs;
-		
+
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 		cs.exStyle =  WS_EX_CLIENTEDGE;
 		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
 		users->setListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 		users->setFont(WinUtil::font);
 		addWidget(users);
-		
+
 		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		users->setSortColumn(COLUMN_NICK);
+		users->setColor(WinUtil::textColor, WinUtil::bgColor);
+
+		users->onDblClicked(std::tr1::bind(&UsersFrame::handleGetList, this));
+		users->onKeyDown(std::tr1::bind(&UsersFrame::handleKeyDown, this, _1));
+		users->onRaw(std::tr1::bind(&UsersFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		users->onRaw(std::tr1::bind(&UsersFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	}
-	
+
 	FavoriteManager::FavoriteMap ul = FavoriteManager::getInstance()->getFavoriteUsers();
 	HoldRedraw hold(users);
 	for(FavoriteManager::FavoriteMap::iterator i = ul.begin(); i != ul.end(); ++i) {
 		addUser(i->second);
 	}
 	FavoriteManager::getInstance()->addListener(this);
-	
-	initStatus();
-	layout();
-	
-	startup = false;
-	onSpeaker(std::tr1::bind(&UsersFrame::handleSpeaker, this, _1, _2));
 
+	initStatus();
+
+	layout();
+
+	startup = false;
+
+	onSpeaker(std::tr1::bind(&UsersFrame::handleSpeaker, this, _1, _2));
+}
+
+UsersFrame::~UsersFrame() {
 }
 
 void UsersFrame::layout() {
@@ -89,6 +83,36 @@ void UsersFrame::layout() {
 	layoutStatus(r);
 
 	users->setBounds(r);
+}
+
+bool UsersFrame::preClosing() {
+	FavoriteManager::getInstance()->removeListener(this);
+	return true;
+}
+
+void UsersFrame::postClosing() {
+	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
+
+	for(int i = 0; i < users->size(); ++i) {
+		delete users->getData(i);
+	}
+}
+
+UsersFrame::UserInfo::UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) {
+	update(u);
+}
+
+void UsersFrame::UserInfo::remove() { 
+	FavoriteManager::getInstance()->removeFavoriteUser(user); 
+}
+
+void UsersFrame::UserInfo::update(const FavoriteUser& u) {
+	columns[COLUMN_NICK] = Text::toT(u.getNick());
+	columns[COLUMN_HUB] = user->isOnline() ? WinUtil::getHubNames(u.getUser()).first : Text::toT(u.getUrl());
+	columns[COLUMN_SEEN] = user->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
+	columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
+	columns[COLUMN_CID] = Text::toT(u.getUser()->getCID().toBase32());
 }
 
 void UsersFrame::addUser(const FavoriteUser& aUser) {
@@ -118,29 +142,45 @@ void UsersFrame::removeUser(const FavoriteUser& aUser) {
 	}
 }
 
-bool UsersFrame::preClosing() {
-	FavoriteManager::getInstance()->removeListener(this);
-	return true;
-}
+void UsersFrame::handleProperties() {
+	if(users->getSelectedCount() == 1) {
+		int i = users->getSelectedIndex();
+		UserInfo* ui = users->getData(i);
+		LineDlg dlg(this, ui->columns[COLUMN_NICK], TSTRING(DESCRIPTION), ui->columns[COLUMN_DESCRIPTION]);
 
-void UsersFrame::postClosing() {
-	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
-	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
-
-	for(int i = 0; i < users->size(); ++i) {
-		delete users->getData(i);
+		if(dlg.run() == IDOK) {
+			FavoriteManager::getInstance()->setUserDescription(ui->user, Text::fromT(dlg.getLine()));
+			ui->columns[COLUMN_DESCRIPTION] = dlg.getLine();
+			users->update(i);
+		}
 	}
 }
 
-HRESULT UsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
-	if(wParam == USER_UPDATED) {
-		boost::scoped_ptr<UserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lParam));
-		updateUser(uib->user);
+void UsersFrame::handleRemove() {
+	users->forEachSelected(&UsersFrame::UserInfo::remove);
+}
+
+bool UsersFrame::handleKeyDown(int c) {
+	switch(c) {
+	case VK_DELETE:
+		handleRemove();
+		return true;
+	case VK_RETURN:
+		handleProperties();
+		return true;
+	}
+	return false;
+}
+
+LRESULT UsersFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
+	LPNMITEMACTIVATE l = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
+	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
+		FavoriteManager::getInstance()->setAutoGrant(users->getData(l->iItem)->user, users->isChecked(l->iItem));
 	}
 	return 0;
 }
 
-HRESULT UsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+LRESULT UsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	if (reinterpret_cast<HWND>(wParam) == users->handle() && users->hasSelection()) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
@@ -161,72 +201,22 @@ HRESULT UsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
-void UsersFrame::handleRemove() {
-	users->forEachSelected(&UsersFrame::UserInfo::remove);
-}
-
-void UsersFrame::handleProperties() {
-	if(users->getSelectedCount() == 1) {
-		int i = users->getSelectedIndex();
-		UserInfo* ui = users->getData(i);
-		LineDlg dlg(this, ui->columns[COLUMN_NICK], TSTRING(DESCRIPTION), ui->columns[COLUMN_DESCRIPTION]);
-
-		if(dlg.run() == IDOK) {
-			FavoriteManager::getInstance()->setUserDescription(ui->user, Text::fromT(dlg.getLine()));
-			ui->columns[COLUMN_DESCRIPTION] = dlg.getLine();
-			users->update(i);
-		}
-	}
-}
-
-#ifdef PORT_ME
-
-LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
-	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
-		FavoriteManager::getInstance()->setAutoGrant(ctrlUsers.getData(l->iItem)->user, ctrlUsers.GetCheckState(l->iItem) != FALSE);
+LRESULT UsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+	if(wParam == USER_UPDATED) {
+		boost::scoped_ptr<UserInfoBase> uib(reinterpret_cast<UserInfoBase*>(lParam));
+		updateUser(uib->user);
 	}
 	return 0;
 }
 
-LRESULT UsersFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
-
-	if(item->iItem != -1) {
-		PostMessage(WM_COMMAND, IDC_GETLIST, 0);
-	} else {
-		bHandled = FALSE;
-	}
-
-	return 0;
+void UsersFrame::on(UserAdded, const FavoriteUser& aUser) throw() {
+	addUser(aUser);
 }
 
-LRESULT UsersFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
-	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-	switch(kd->wVKey) {
-	case VK_DELETE:
-		PostMessage(WM_COMMAND, IDC_REMOVE, 0);
-		break;
-	case VK_RETURN:
-		PostMessage(WM_COMMAND, IDC_EDIT, 0);
-		break;
-	default:
-		bHandled = FALSE;
-	}
-	return 0;
+void UsersFrame::on(UserRemoved, const FavoriteUser& aUser) throw() {
+	removeUser(aUser);
 }
 
-LRESULT UsersFrame::onConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
-		UserInfo *ui = ctrlUsers.getData(i);
-		FavoriteManager::FavoriteMap favUsers = FavoriteManager::getInstance()->getFavoriteUsers();
-		const FavoriteUser u = favUsers.find(ui->user->getCID())->second;
-		if(u.getUrl().length() > 0)
-		{
-			HubFrame::openWindow(Text::toT(u.getUrl()));
-		}
-	}
-	return 0;
+void UsersFrame::on(StatusChanged, const UserPtr& aUser) throw() {
+	speak(USER_UPDATED, reinterpret_cast<LPARAM>(new UserInfoBase(aUser)));
 }
-
-#endif
