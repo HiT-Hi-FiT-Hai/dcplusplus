@@ -60,53 +60,61 @@ LRESULT StatsFrame::handlePaint() {
 #endif
 	::BitBlt(canvas.getDc(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, NULL, 0, 0, PATCOPY);
 
-	canvas.setBkColor(WinUtil::bgColor);
 	canvas.setTextColor(WinUtil::textColor);
+	canvas.setBkColor(WinUtil::bgColor);
 
-	::SetDCPenColor(canvas.getDc(), WinUtil::textColor);
 	canvas.selectFont(WinUtil::font);
 	long fontHeight = getTextSize(_T("A")).y;
 	int lines = height / (fontHeight * LINE_HEIGHT);
 	int lheight = height / (lines+1);
 
-	for(int i = 0; i < lines; ++i) {
-		int ypos = lheight * (i+1);
-		if(ypos > fontHeight + 2) {
-			canvas.moveTo(rect.pos.x, ypos);
-			canvas.lineTo(rect.pos.x + rect.size.x, ypos);
+	{
+		SmartWin::Pen pen(canvas, WinUtil::textColor);
+
+		for(int i = 0; i < lines; ++i) {
+			int ypos = lheight * (i+1);
+			if(ypos > fontHeight + 2) {
+				canvas.moveTo(rect.pos.x, ypos);
+				canvas.lineTo(rect.pos.x + rect.size.x, ypos);
+			}
+
+			if(rect.pos.x <= twidth) {
+				ypos -= fontHeight + 2;
+				if(ypos < 0)
+					ypos = 0;
+				if(height == 0)
+					height = 1;
+				tstring txt = Text::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
+				SmartWin::Point txtSize = getTextSize(txt);
+				long tw = txtSize.x;
+				if(tw + 2 > twidth)
+					twidth = tw + 2;
+				canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, ypos), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
+			}
 		}
 
-		if(rect.pos.x <= twidth) {
-			ypos -= fontHeight + 2;
-			if(ypos < 0)
-				ypos = 0;
-			if(height == 0)
-				height = 1;
-			tstring txt = Text::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
+		if(rect.pos.x < twidth) {
+			tstring txt = Text::toT(Util::formatBytes(max) + "/s");
 			SmartWin::Point txtSize = getTextSize(txt);
 			long tw = txtSize.x;
 			if(tw + 2 > twidth)
 				twidth = tw + 2;
-			canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, ypos), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
+			canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, 1), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
 		}
-	}
 
-	if(rect.pos.x < twidth) {
-		tstring txt = Text::toT(Util::formatBytes(max) + "/s");
-		SmartWin::Point txtSize = getTextSize(txt);
-		long tw = txtSize.x;
-		if(tw + 2 > twidth)
-			twidth = tw + 2;
-		canvas.drawText(txt, SmartWin::Rectangle(SmartWin::Point(1, 1), txtSize), DT_LEFT | DT_TOP | DT_SINGLELINE);
 	}
 
 	long clientRight = getClientAreaSize().x;
 
-	::SetDCPenColor(canvas.getDc(), SETTING(UPLOAD_BAR_COLOR));
-	drawLine(canvas, up.begin(), up.end(), rect, clientRight);
+	{
+		SmartWin::Pen upPen(canvas, SETTING(UPLOAD_BAR_COLOR));
+		drawLine(canvas, up.begin(), up.end(), rect, clientRight);
+	}
 
-	::SetDCPenColor(canvas.getDc(), SETTING(DOWNLOAD_BAR_COLOR));
-	drawLine(canvas, down.begin(), down.end(), rect, clientRight);
+	{
+		SmartWin::Pen downPen(canvas, SETTING(DOWNLOAD_BAR_COLOR));
+		drawLine(canvas, down.begin(), down.end(), rect, clientRight);
+	}
 
 	return 0;
 }

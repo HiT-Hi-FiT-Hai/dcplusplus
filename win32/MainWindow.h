@@ -56,7 +56,9 @@ public:
 
 	/// @deprecated
 	WidgetTabView* getMDIParent() { return tabs; }
-	
+
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
+
 	MainWindow();
 	
 	virtual ~MainWindow();
