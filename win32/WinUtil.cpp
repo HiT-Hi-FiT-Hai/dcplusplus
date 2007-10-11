@@ -1021,17 +1021,4 @@ double WinUtil::toBytes(TCHAR* aSize) {
 		return bytes;
 	}
 }
-
-void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
-	CRect trc;
-	HTREEITEM ht = aTree.GetSelectedItem();
-	if(ht) {
-		aTree.GetItemRect(ht, &trc, TRUE);
-		aPt.x = trc.left;
-		aPt.y = trc.top + (trc.Height() / 2);
-	} else {
-		aPt.x = aPt.y = 0;
-	}
-	aTree.ClientToScreen(&aPt);
-}
 #endif

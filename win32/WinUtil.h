@@ -175,11 +175,6 @@ public:
 
 	static double toBytes(TCHAR* aSize);
 
-	//returns the position where the context menu should be
-	//opened if it was invoked from the keyboard.
-	//aPt is relative to the screen not the control.
-	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
-
 #endif
 };
 

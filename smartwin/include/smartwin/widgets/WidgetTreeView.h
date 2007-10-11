@@ -183,7 +183,7 @@ public:
 	
 	void select(HTREEITEM item);
 
-	void select(POINT pt);
+	void select(const Point& pt);
 	
 	HTREEITEM hitTest(const Point& pt);
 	
@@ -372,13 +372,6 @@ inline void WidgetTreeView::setColor(COLORREF text, COLORREF background) {
 
 inline void WidgetTreeView::select(HTREEITEM item) {
 	TreeView_SelectItem(this->handle(), item);
-}
-
-inline void WidgetTreeView::select(POINT pt) {
-	this->screenToClient(pt);
-	HTREEITEM ht = this->hitTest(pt);
-	if(ht != NULL && ht != this->getSelection())
-		this->select(ht);
 }
 
 inline Rectangle WidgetTreeView::getItemRect(HTREEITEM item) {
