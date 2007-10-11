@@ -1023,6 +1023,14 @@ void MainWindow::handleRestore() {
 	}
 }
 
+bool MainWindow::tryFire(const MSG& msg, LRESULT& retVal) {
+	bool handled = SmartWin::WidgetWindow::tryFire(msg, retVal);
+	if(!handled && msg.message == WM_COMMAND && tabs) {
+		handled = tabs->tryFire(msg, retVal);
+	}
+	return handled;
+}
+
 LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
 {
 	if (lParam == WM_LBUTTONUP) {

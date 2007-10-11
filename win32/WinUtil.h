@@ -25,11 +25,6 @@
 #include <dcpp/MerkleTree.h>
 
 #ifdef PORT_ME
-#include "../client/Util.h"
-#include "../client/SettingsManager.h"
-#include "../client/User.h"
-#include "../client/MerkleTree.h"
-
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus
 typedef DWORD HLSCOLOR;
@@ -42,9 +37,6 @@ HLSCOLOR RGB2HLS (COLORREF rgb);
 COLORREF HLS2RGB (HLSCOLOR hls);
 
 COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
-
-class FlatTabCtrl;
-class UserCommand;
 
 #endif
 
@@ -167,17 +159,6 @@ public:
 	}
 
 #ifdef PORT_ME
-	static CImageList userImages;
-
-	static int fontHeight;
-	static HFONT boldFont;
-	static HFONT systemFont;
-	static HFONT monoFont;
-	static HWND mainWnd;
-	static HWND mdiClient;
-	static FlatTabCtrl* tabCtrl;
-
-
 	static int getTextWidth(const tstring& str, HWND hWnd) {
 		HDC dc = ::GetDC(hWnd);
 		int sz = getTextWidth(str, dc);
@@ -190,28 +171,9 @@ public:
 		return sz.cx;
 	}
 
-
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 
 	static double toBytes(TCHAR* aSize);
-
-	//returns the position where the context menu should be
-	//opened if it was invoked from the keyboard.
-	//aPt is relative to the screen not the control.
-	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
-
-	template<class T> static HWND hiddenCreateEx(T& p) throw() {
-		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);
-		::LockWindowUpdate(mdiClient);
-		HWND ret = p.CreateEx(mdiClient);
-		if(active && ::IsWindow(active))
-			::SendMessage(mdiClient, WM_MDIACTIVATE, (WPARAM)active, 0);
-		::LockWindowUpdate(0);
-		return ret;
-	}
-	template<class T> static HWND hiddenCreateEx(T* p) throw() {
-		return hiddenCreateEx(*p);
-	}
 
 #endif
 };

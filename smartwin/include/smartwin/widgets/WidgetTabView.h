@@ -40,25 +40,8 @@ public:
 	
 	template<typename T>
 	void add(T* w, const IconPtr& icon) {
-		int image = addIcon(icon);
-		size_t tabs = tab->size();
-		TabInfo* ti = new TabInfo(w);
-		tab->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(ti), image);
-
+		addWidget(w, icon, w->getText(), w->getVisible());
 		w->onTextChanging(std::tr1::bind(&WidgetTabView::handleTextChanging, this, w, _1));
-
-		viewOrder.push_front(w);
-
-		if(viewOrder.size() == 1 || w->getVisible()) {
-			if(viewOrder.size() > 1) {
-				swapWidgets(viewOrder.back(), w);
-			} else {
-				swapWidgets(0, w);
-			}
-			setActive(tabs);
-		}
-		
-		layout();
 	}
 
 	void mark(Widget* w);
@@ -75,6 +58,8 @@ public:
 	bool filter(const MSG& msg);
 	
 	WidgetTabSheet::ObjectType getTab();
+
+	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
 	
 	virtual void create( const Seed & cs = getDefaultSeed() );
 
@@ -121,7 +106,7 @@ private:
 	void layout();
 	
 	int addIcon(const IconPtr& icon);
-	
+	void addWidget(Widget* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible);
 	void swapWidgets(Widget* oldW, Widget* newW);
 };
 

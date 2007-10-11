@@ -370,7 +370,6 @@ void DirectoryListingFrame::addUserCommands(const WidgetMenuPtr& parent) {
 
 void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii) {
 	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_TO));
-	
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 	size_t i = 0;
 	for(; i < spl.size(); ++i) {
@@ -439,19 +438,21 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		usingDirMenu = false;
 		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return TRUE;
-	} else if(reinterpret_cast<HWND>(wParam) == dirs->handle() && dirs->getSelection()) {
+	} else if(reinterpret_cast<HWND>(wParam) == dirs->handle()) {
 		if(pt.x == -1 && pt.y == -1) {
 			pt = dirs->getContextMenuPos();
 		} else {
-			dirs->select(pt);
+			// this call makes it crash on getSelection...hmm...my bug or gcc 4.2.1's?
+			//dirs->select(pt);
 		}
-
-		contextMenu = makeDirMenu();
-		usingDirMenu = true;
 		
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-
-		return TRUE;
+		if(dirs->getSelection()) {
+			contextMenu = makeDirMenu();
+			usingDirMenu = true;
+			contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	
+			return TRUE;
+		}
 	}
 
 	return FALSE;

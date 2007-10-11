@@ -660,7 +660,7 @@ void WinUtil::registerDchubHandler() {
 			return;
 		}
 
-		TCHAR* tmp = _T("URL:Direct Connect Protocol");
+		TCHAR tmp[] = _T("URL:Direct Connect Protocol");
 		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		::RegCloseKey(hk);
@@ -699,7 +699,7 @@ void WinUtil::registerDchubHandler() {
 			 return;
 		 }
 
-		 TCHAR* tmp = _T("URL:Direct Connect Protocol");
+		 TCHAR tmp[] = _T("URL:Direct Connect Protocol");
 		 ::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, sizeof(TCHAR) * (_tcslen(tmp) + 1));
 		 ::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
 		 ::RegCloseKey(hk);
@@ -1020,18 +1020,5 @@ double WinUtil::toBytes(TCHAR* aSize) {
 	} else {
 		return bytes;
 	}
-}
-
-void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
-	CRect trc;
-	HTREEITEM ht = aTree.GetSelectedItem();
-	if(ht) {
-		aTree.GetItemRect(ht, &trc, TRUE);
-		aPt.x = trc.left;
-		aPt.y = trc.top + (trc.Height() / 2);
-	} else {
-		aPt.x = aPt.y = 0;
-	}
-	aTree.ClientToScreen(&aPt);
 }
 #endif

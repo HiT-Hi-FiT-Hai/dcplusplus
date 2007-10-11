@@ -63,6 +63,7 @@ protected:
 		onFocus(std::tr1::bind(&ThisType::handleFocus, this));
 		onSized(std::tr1::bind(&ThisType::handleSized, this, _1));
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
+		onCommand(std::tr1::bind(&ThisType::close, this, true), IDC_CLOSE_WINDOW);
 	}
 	
 	virtual ~MDIChildFrame() {

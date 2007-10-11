@@ -45,6 +45,26 @@ void WidgetTabView::create(const Seed & cs) {
 	onRaw(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1, _2), Message(WM_CONTEXTMENU));
 }
 
+void WidgetTabView::addWidget(Widget* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible) {
+	int image = addIcon(icon);
+	size_t tabs = tab->size();
+	TabInfo* ti = new TabInfo(w);
+	tab->addPage(cutTitle(title), tabs, reinterpret_cast<LPARAM>(ti), image);
+
+	viewOrder.push_front(w);
+
+	if(viewOrder.size() == 1 || visible) {
+		if(viewOrder.size() > 1) {
+			swapWidgets(viewOrder.back(), w);
+		} else {
+			swapWidgets(0, w);
+		}
+		setActive(tabs);
+	}
+	
+	layout();
+}
+
 void WidgetTabView::remove(Widget* w) {
 	if(viewOrder.size() > 1 && viewOrder.back() == w) {
 		setActive(*(--(--viewOrder.end())));
@@ -271,19 +291,29 @@ LRESULT WidgetTabView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 }
 
 bool WidgetTabView::filter(const MSG& msg) {
-	if(msg.message == WM_KEYDOWN && msg.wParam == VK_CONTROL) {
-		inTab = true;
-	} else if(msg.message == WM_KEYUP && msg.wParam == VK_CONTROL) {
+	if(msg.message == WM_KEYUP && msg.wParam == VK_CONTROL) {
 		inTab = false;
 		TabInfo* ti = getTabInfo(tab->getSelectedIndex());
 		if(ti) {
 			setTop(ti->w);
 		}
-	} else if(msg.message == WM_KEYDOWN && msg.wParam == VK_TAB) {
+	} else if(msg.message == WM_KEYDOWN && msg.wParam == VK_TAB && ::GetKeyState(VK_CONTROL) < 0) {
+		inTab = true;
 		next(::GetKeyState(VK_SHIFT) < 0);
 		return true;
 	}
 	return false;
+}
+
+bool WidgetTabView::tryFire(const MSG& msg, LRESULT& retVal) {
+	bool handled = PolicyType::tryFire(msg, retVal);
+	if(!handled && msg.message == WM_COMMAND && getTab()) {
+		TabInfo* ti = getTabInfo(getTab()->getSelectedIndex());
+		if(ti) {
+			handled = ti->w->tryFire(msg, retVal);
+		}
+	}
+	return handled;
 }
 
 }
