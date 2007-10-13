@@ -207,7 +207,8 @@ private:
 	void download(ItemInfo* ii, const string& aDir, bool view = false);
 	void downloadFiles(const string& aTarget, bool view = false);
 	
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleDirsContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleFilesContextMenu(SmartWin::ScreenCoordinate pt);
 	LRESULT handleXButtonUp(WPARAM wParam, LPARAM lParam);
 	
 	void changeDir(DirectoryListing::Directory* d);

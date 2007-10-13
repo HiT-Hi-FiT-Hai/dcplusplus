@@ -42,7 +42,7 @@ void WidgetTabView::create(const Seed & cs) {
 	tab->onSelectionChanged(std::tr1::bind(&WidgetTabView::handleTabSelected, this));
 
 	onSized(std::tr1::bind(&WidgetTabView::handleSized, this, _1));
-	onRaw(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1, _2), Message(WM_CONTEXTMENU));
+	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
 }
 
 void WidgetTabView::addWidget(Widget* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible) {
@@ -83,7 +83,7 @@ void WidgetTabView::remove(Widget* w) {
 	active = findTab(cur);
 }
 
-void WidgetTabView::onTabContextMenu(Widget* w, const std::tr1::function<bool (const Point& pt)>& f) {
+void WidgetTabView::onTabContextMenu(Widget* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f) {
 	TabInfo* ti = getTabInfo(w);
 	if(ti) {
 		ti->handleContextMenu = f;
@@ -261,33 +261,31 @@ int WidgetTabView::addIcon(const IconPtr& icon) {
 	return image;
 }
 
-LRESULT WidgetTabView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	Point pt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+bool WidgetTabView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	TabInfo* ti = 0;
-	if(pt.x == -1 && pt.y == -1) {
+	if(pt.x() == -1 && pt.y() == -1) {
 		int i = tab->getSelectedIndex();
 		
 		RECT rc;
 		if(i == -1 || !TabCtrl_GetItemRect(tab->handle(), i, &rc)) {
-			return FALSE;
+			return false;
 		}
-		pt.x = rc.left;
-		pt.y = rc.top;
+		pt = ScreenCoordinate(Point(rc.left, rc.top));
 		
 		ti = getTabInfo(i);
 	} else {
 		int i = tab->hitTest(pt);
 		if(i == -1) {
-			return FALSE;
+			return false;
 		}
 		ti = getTabInfo(i);
 	}
 	
 	if(ti->handleContextMenu && ti->handleContextMenu(pt)) {
-		return TRUE;
+		return true;
 	}
 	
-	return TRUE;
+	return false;
 }
 
 bool WidgetTabView::filter(const MSG& msg) {

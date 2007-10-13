@@ -34,7 +34,7 @@ SmartUtil::tstring WidgetTextBox::getLine(int line) {
 	return tmp;
 }
 
-SmartUtil::tstring WidgetTextBox::textUnderCursor(const SmartWin::Point& p) {
+SmartUtil::tstring WidgetTextBox::textUnderCursor(const ScreenCoordinate& p) {
 	int i = charFromPos(p);
 	int line = lineFromPos(p);
 	int c = i - lineIndex(line);
@@ -62,12 +62,10 @@ SmartUtil::tstring WidgetTextBoxBase::getSelection() const
 	return retVal;
 }
 
-Point WidgetTextBox::getContextMenuPos() {
+ScreenCoordinate WidgetTextBox::getContextMenuPos() {
 	RECT rc;
 	::GetClientRect(this->handle(), &rc);
-	POINT pt = { rc.right/2, rc.bottom/2};
-	this->clientToScreen(pt);
-	return pt;
+	return ClientCoordinate (Point(rc.right/2, rc.bottom/2), this);
 }
 
 }

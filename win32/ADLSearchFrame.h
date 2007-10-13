@@ -66,7 +66,6 @@ private:
 	WidgetButtonPtr down;
 	WidgetButtonPtr remove;
 	WidgetButtonPtr help;
-	WidgetMenuPtr contextMenu;
 
 	void handleAdd();
 	void handleProperties();
@@ -77,7 +76,7 @@ private:
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
-	LRESULT handleContextMenu(WPARAM /*wParam*/, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate sc);
 
 	void addEntry(ADLSearch& search, int index = -1);
 };

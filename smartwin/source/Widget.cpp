@@ -89,7 +89,7 @@ void Widget::create( const SmartWin::Seed & cs )
 		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
 		itsParent ? itsParent->handle() : 0,
 		cs.menuHandle == - 1
-			? reinterpret_cast< HMENU >( getCtrlId() )  // This value will become the controls ID when e.g. getting messages in the parent,
+			? reinterpret_cast< HMENU >( 0 ) 
 			: reinterpret_cast< HMENU >( cs.menuHandle ),
 		Application::instance().getAppHandle(),
 		reinterpret_cast< LPVOID >( this ) );

@@ -243,7 +243,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 		results->onDblClicked(std::tr1::bind(&SearchFrame::handleDoubleClick, this));
 		results->onKeyDown(std::tr1::bind(&SearchFrame::handleKeyDown, this, _1));
-		results->onRaw(std::tr1::bind(&SearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+		results->onContextMenu(std::tr1::bind(&SearchFrame::handleContextMenu, this, _1));
 	}
 
 	{
@@ -652,19 +652,17 @@ bool SearchFrame::handleKeyDown(int c) {
 	return false;
 }
 
-LRESULT SearchFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+bool SearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	if(results->getSelectedCount() > 0) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = results->getContextMenuPos();
 		}
 
 		WidgetMenuPtr contextMenu = makeMenu();
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void SearchFrame::handleDownload() {

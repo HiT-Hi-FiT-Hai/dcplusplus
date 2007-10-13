@@ -33,18 +33,13 @@
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSelection.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 #include "WidgetTextBox.h"
 
@@ -71,27 +66,16 @@ class WidgetComboBox :
 	public AspectBackgroundColor< WidgetComboBox >,
 	public AspectBorder< WidgetComboBox >,
 	public AspectClickable< WidgetComboBox >,
+	public AspectControl<WidgetComboBox>,
 	public AspectDblClickable< WidgetComboBox >,
-	public AspectEnabled< WidgetComboBox >,
 	public AspectFocus< WidgetComboBox >,
 	public AspectFont< WidgetComboBox >,
-	public AspectKeyboard< WidgetComboBox >,
-	public AspectMouseClicks< WidgetComboBox >,
 	public AspectPainting< WidgetComboBox >,
-	public AspectRaw< WidgetComboBox >,
 	public AspectSelection< WidgetComboBox >,
-	public AspectSizable< WidgetComboBox >,
-	public AspectText< WidgetComboBox >,
-	public AspectVisible< WidgetComboBox >
+	public AspectText< WidgetComboBox >
 {
 	friend class WidgetCreator< WidgetComboBox >;
 public:
-	/// Class type
-	typedef WidgetComboBox ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class

@@ -30,17 +30,13 @@
 #define WidgetStatusBar_h
 
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectClickable.h"
-#include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
-#include "../aspects/AspectFont.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectMouseClicks.h"
-#include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRightClickable.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectClickable.h"
+#include "../aspects/AspectControl.h"
+#include "../aspects/AspectDblClickable.h"
+#include "../aspects/AspectFont.h"
+#include "../aspects/AspectPainting.h"
+#include "../aspects/AspectText.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -116,38 +112,13 @@ class WidgetStatusBar :
 	// Aspects
 	public AspectBorder< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectClickable< WidgetStatusBar< TypeOfStatusBar > >,
+	public AspectControl<WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectDblClickable< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectFont< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectMouseClicks< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectPainting< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectRaw< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectRightClickable< WidgetStatusBar< TypeOfStatusBar > >,
-	// GCC chokes on private inheritance here since we're casting to WidgetType in some of the member functions in AspectSizable!!
-	protected AspectSizable< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectVisible< WidgetStatusBar< TypeOfStatusBar > >
+	public AspectPainting< WidgetStatusBar< TypeOfStatusBar > >
 {
-	typedef SmartWin::AspectSizable< WidgetStatusBar< TypeOfStatusBar > > AspectSizable;
 	friend class WidgetCreator< WidgetStatusBar >;
 public:
-	// Including the stuff we need from AspectSizable to make it accessible.
-	// Note here that since we DON'T want the setBounds functions we must inherit
-	// privately from AspectSizable and include the stuff we WAN'T to expose from
-	// AspectSizable in a public block of the class.
-	using AspectSizable::getBounds;
-	using AspectSizable::getSize;
-	using AspectSizable::getPosition;
-	using AspectSizable::getClientAreaSize;
-	using AspectSizable::getTextSize;
-	using AspectSizable::bringToFront;
-	using AspectSizable::onSized;
-	using AspectSizable::onMoved;
-
-	/// Class type
-	typedef WidgetStatusBar< TypeOfStatusBar > ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class

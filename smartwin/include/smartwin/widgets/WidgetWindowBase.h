@@ -35,6 +35,7 @@
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectCommand.h"
+#include "../aspects/AspectContextMenu.h"
 #include "../aspects/AspectDragDrop.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectEraseBackground.h"
@@ -87,6 +88,7 @@ class WidgetWindowBase :
 	public AspectActivate< WidgetWindowBase< Policy > >,
 	public AspectBorder< WidgetWindowBase< Policy > >,
 	public AspectCommand< WidgetWindowBase< Policy > >,
+	public AspectContextMenu< WidgetWindowBase< Policy > >,
 	public AspectDragDrop< WidgetWindowBase< Policy > >,
 	public AspectEnabled< WidgetWindowBase< Policy > >,
 	public AspectEraseBackground< WidgetWindowBase< Policy > >,

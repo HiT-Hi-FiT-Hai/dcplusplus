@@ -31,15 +31,10 @@
 
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectClickable.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -65,15 +60,10 @@ class WidgetDateTimePicker :
 	
 	// Aspects
 	public AspectClickable< WidgetDateTimePicker >,
-	public AspectEnabled< WidgetDateTimePicker >,
+	public AspectControl<WidgetDateTimePicker>,
 	public AspectFocus< WidgetDateTimePicker >,
 	public AspectFont< WidgetDateTimePicker >,
-	public AspectKeyboard< WidgetDateTimePicker >,
-	public AspectMouseClicks< WidgetDateTimePicker >,
-	public AspectPainting< WidgetDateTimePicker >,
-	public AspectRaw< WidgetDateTimePicker >,
-	public AspectSizable< WidgetDateTimePicker >,
-	public AspectVisible< WidgetDateTimePicker >
+	public AspectPainting< WidgetDateTimePicker >
 {
 	struct Dispatcher
 	{
@@ -90,11 +80,6 @@ class WidgetDateTimePicker :
 	};
 
 public:
-	/// Class type
-	typedef WidgetDateTimePicker ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
 
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 

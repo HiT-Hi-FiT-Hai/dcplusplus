@@ -49,8 +49,6 @@ TextFrame::TextFrame(SmartWin::WidgetTabView* mdiParent, const string& fileName)
 }
 
 void TextFrame::layout() {
-	const int border = 2;
-
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);

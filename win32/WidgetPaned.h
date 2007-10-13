@@ -110,11 +110,9 @@ private:
 	void handleMouseMove(const SmartWin::MouseEventResult& event) {
 		if ( event.ButtonPressed == SmartWin::MouseEventResult::LEFT && moving )
 		{
-			POINT pt = { event.pos.x, event.pos.y };
-			this->clientToScreen(pt);
-			this->getParent()->screenToClient(pt);
-			
-			int x = horizontal ? pt.y : pt.x;
+			SmartWin::ClientCoordinate cc(event.pos, this);
+
+			int x = horizontal ? cc.y() : cc.x();
 			int w = horizontal ? rect.size.y : rect.size.x;
 			pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));
 			resizeChildren();

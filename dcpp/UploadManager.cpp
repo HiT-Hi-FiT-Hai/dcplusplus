@@ -67,7 +67,6 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	InputStream* is = 0;
 	int64_t start = 0;
-	int64_t bytesLeft = 0;
 	int64_t size = 0;
 
 	bool userlist = (aFile == Transfer::USER_LIST_NAME_BZ || aFile == Transfer::USER_LIST_NAME);
@@ -88,15 +87,15 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				string().swap(bz2);
 				is = new MemoryInputStream(xml);
 				start = 0;
-				bytesLeft = size = xml.size();
+				size = xml.size();
 			} else {
 				File* f = new File(sourceFile, File::READ, File::OPEN);
 
 				start = aStartPos;
-				size = f->getSize();
-				bytesLeft = (aBytes == -1) ? size : aBytes;
+				int64_t sz = f->getSize();
+				size = (aBytes == -1) ? sz - start : aBytes;
 
-				if(size < (start + bytesLeft)) {
+				if((start + size) > sz) {
 					aSource.fileNotAvail();
 					delete f;
 					return false;
@@ -104,11 +103,9 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 				free = free || (size <= (int64_t)(SETTING(SET_MINISLOT_SIZE) * 1024) );
 
-				f->setPos(start);
-
 				is = f;
-				if((start + bytesLeft) < size) {
-					is = new LimitedInputStream<true>(is, aBytes);
+				if((start + size) < sz) {
+					is = new LimitedInputStream<true>(is, size);
 				}
 			}
 			type = userlist ? Transfer::TYPE_FULL_LIST : Transfer::TYPE_FILE;
@@ -121,7 +118,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 			}
 
 			start = 0;
-			bytesLeft = size = mis->getSize();
+			size = mis->getSize();
 			is = mis;
 			free = true;
 			type = Transfer::TYPE_TREE;
@@ -132,11 +129,9 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 				aSource.fileNotAvail();
 				return false;
 			}
-			// Some old dc++ clients err here...
-			aBytes = -1;
+
 			start = 0;
-			bytesLeft = size = mis->getSize();
-	
+			size = mis->getSize();
 			is = mis;
 			free = true;
 			type = Transfer::TYPE_PARTIAL_LIST;
@@ -189,7 +184,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	Upload* u = new Upload(aSource, sourceFile, TTHValue());
 	u->setStream(is);
-	u->setSegment(Segment(start, aBytes == -1 ? size : start + bytesLeft));
+	u->setSegment(Segment(start, size));
 
 	u->setType(type);
 

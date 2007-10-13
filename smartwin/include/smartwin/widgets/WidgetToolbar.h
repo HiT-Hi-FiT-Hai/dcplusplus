@@ -34,12 +34,9 @@
 #include "../BasicTypes.h"
 #include "../Dispatchers.h"
 #include "../MessageMapPolicyClasses.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
 #include "../resources/ImageList.h"
 #include "../xCeption.h"
 
@@ -65,37 +62,15 @@ class WidgetToolbar :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspects
-	public AspectEnabled< WidgetToolbar >,
+	public AspectControl< WidgetToolbar >,
 	public AspectFocus< WidgetToolbar >,
-	public AspectFont< WidgetToolbar >,
-	public AspectRaw< WidgetToolbar >,
-	private AspectSizable< WidgetToolbar >,
-	public AspectVisible< WidgetToolbar >
+	public AspectFont< WidgetToolbar >
 {
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 	typedef SmartWin::AspectSizable< WidgetToolbar > AspectSizable;
 	friend class WidgetCreator< WidgetToolbar >;
 	friend class SmartWin::AspectSizable<WidgetToolbar>;
 public:
-	// Including the stuff we need from AspectSizable to make it accessible.
-	// Note here that since we DON'T want the setBounds functions we must inherit
-	// privately from AspectSizable and include the stuff we WAN'T to expose from
-	// AspectSizable in a public block of the class.
-	using AspectSizable::getBounds;
-	using AspectSizable::getSize;
-	using AspectSizable::getPosition;
-	using AspectSizable::getClientAreaSize;
-	using AspectSizable::getTextSize;
-	using AspectSizable::bringToFront;
-	using AspectSizable::onSized;
-	using AspectSizable::onMoved;
-
-	/// Class type
-	typedef WidgetToolbar ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class

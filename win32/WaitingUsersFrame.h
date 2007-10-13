@@ -56,7 +56,7 @@ protected:
 	void onGetList();
 	void onCopyFilename();
 	void onRemove();
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	//LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	void onPrivateMessage();

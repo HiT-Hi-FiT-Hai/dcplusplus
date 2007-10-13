@@ -110,7 +110,7 @@ private:
 	void handleRemove();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	WidgetUsersPtr getUserList() { return users; }

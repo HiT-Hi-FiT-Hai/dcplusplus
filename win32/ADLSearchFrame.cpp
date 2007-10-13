@@ -59,6 +59,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 		items->onDblClicked(std::tr1::bind(&ADLSearchFrame::handleDoubleClick, this));
 		items->onKeyDown(std::tr1::bind(&ADLSearchFrame::handleKeyDown, this, _1));
 		items->onRaw(std::tr1::bind(&ADLSearchFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		items->onContextMenu(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1));
 	}
 
 	{
@@ -104,12 +105,6 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	for(ADLSearchManager::SearchCollection::iterator i = collection.begin(); i != collection.end(); ++i)
 		addEntry(*i);
-
-	contextMenu = createMenu(true);
-	contextMenu->appendItem(IDC_ADD, TSTRING(NEW), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
-	contextMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
-	contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
-	items->onRaw(std::tr1::bind(&ADLSearchFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 }
 
 ADLSearchFrame::~ADLSearchFrame() {
@@ -290,19 +285,22 @@ LRESULT ADLSearchFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT ADLSearchFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-	if(pt.x == -1 && pt.y == -1) {
+bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
 		pt = items->getContextMenuPos();
 	}
+
+	WidgetMenuPtr contextMenu = createMenu(true);
+	contextMenu->appendItem(IDC_ADD, TSTRING(NEW), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
+	contextMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
+	contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 
 	bool status = items->hasSelection();
 	contextMenu->setItemEnabled(IDC_EDIT, status);
 	contextMenu->setItemEnabled(IDC_REMOVE, status);
 
-	contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-	return TRUE;
+	contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	return true;
 }
 
 void ADLSearchFrame::addEntry(ADLSearch& search, int index) {

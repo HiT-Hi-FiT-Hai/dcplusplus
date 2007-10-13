@@ -84,7 +84,7 @@ private:
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 
 	void handleColumnClick(int column);
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 
 	void handleSearch();
 

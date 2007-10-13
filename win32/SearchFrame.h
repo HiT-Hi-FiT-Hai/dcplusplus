@@ -210,7 +210,7 @@ private:
 	LRESULT handleHubItemChanged(WPARAM wParam, LPARAM lParam);
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	void handleDownload();
 	void handleDownloadFavoriteDirs(unsigned id);
 	void handleDownloadTo();

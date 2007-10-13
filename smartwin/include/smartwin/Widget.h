@@ -72,16 +72,6 @@ public:
 	  */
 	HWND handle() const	{ return itsHandle; }
 
-	/// Returns the control id of the Widget
-	/** This one only makes sense for control items, e.g. WidgetButton,
-	  * WidgetComboBox etc. <br>
-	  * Every control in a Widget has got its own control ID, mark that for a
-	  * WidgetWindow this will always be ZERO
-	  */
-	HMENU getCtrlId() const { return NULL; }
-
-	// TODO These need to be moved to an appropriate location so that they're only
-	// available when the handle is a HWND...
 	/// Send a message to the Widget
 	/** If you need to be able to send a message to a Widget then use this function
 	  * as it will unroll into <br>
@@ -137,9 +127,6 @@ public:
 	  */
 	void addRemoveExStyle( DWORD addStyle, bool add );
 
-	bool clientToScreen(POINT& pt) { return ::ClientToScreen(handle(), &pt); }
-	bool screenToClient(POINT& pt) { return ::ScreenToClient(handle(), &pt); }
-	
 	void setProp() { ::SetProp(handle(), propAtom, reinterpret_cast<HANDLE>(this) ); }
 	
 	typedef std::tr1::function<bool(const MSG& msg, LRESULT& ret)> CallbackType;

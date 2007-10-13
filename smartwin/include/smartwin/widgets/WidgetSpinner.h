@@ -32,15 +32,10 @@
 #include "../Widget.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectScrollable.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -67,24 +62,13 @@ class WidgetSpinner :
 
 	// Aspects
 	public AspectBorder< WidgetSpinner >,
-	public AspectEnabled< WidgetSpinner >,
+	public AspectControl<WidgetSpinner>,
 	public AspectFocus< WidgetSpinner >,
-	public AspectKeyboard< WidgetSpinner >,
-	public AspectMouseClicks< WidgetSpinner >,
 	public AspectPainting< WidgetSpinner >,
-	public AspectRaw< WidgetSpinner >,
-	public AspectScrollable< WidgetSpinner >,
-	public AspectSizable< WidgetSpinner >,
-	public AspectVisible< WidgetSpinner >
+	public AspectScrollable< WidgetSpinner >
 {
 	friend class WidgetCreator< WidgetSpinner >;
 public:
-	/// Class type
-	typedef WidgetSpinner ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class

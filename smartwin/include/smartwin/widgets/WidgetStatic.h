@@ -33,16 +33,12 @@
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
 #include "../resources/Bitmap.h"
 #include "../xCeption.h"
 
@@ -73,25 +69,15 @@ class WidgetStatic :
 	public AspectBackgroundColor< WidgetStatic >,
 	public AspectBorder< WidgetStatic >,
 	public AspectClickable< WidgetStatic >,
+	public AspectControl<WidgetStatic>,
 	public AspectDblClickable< WidgetStatic >,
-	public AspectEnabled< WidgetStatic >,
 	public AspectFocus< WidgetStatic >,
 	public AspectFont< WidgetStatic >,
-	public AspectMouseClicks< WidgetStatic >,
 	public AspectPainting< WidgetStatic >,
-	public AspectRaw< WidgetStatic >,
-	public AspectSizable< WidgetStatic >,
-	public AspectText< WidgetStatic >,
-	public AspectVisible< WidgetStatic >
+	public AspectText< WidgetStatic >
 {
 	friend class WidgetCreator< WidgetStatic >;
 public:
-	/// Class type
-	typedef WidgetStatic ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class

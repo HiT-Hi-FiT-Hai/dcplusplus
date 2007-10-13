@@ -53,7 +53,7 @@ public:
 	Widget* getActive();
 	void setActive(Widget* w) { setActive(findTab(w)); }
 	
-	void onTabContextMenu(Widget* w, const std::tr1::function<bool (const Point& pt)>& f);
+	void onTabContextMenu(Widget* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f);
 
 	bool filter(const MSG& msg);
 	
@@ -75,7 +75,7 @@ private:
 	struct TabInfo {
 		TabInfo(Widget* w_) : w(w_) { }
 		Widget* w;
-		std::tr1::function<bool (const Point& pt)> handleContextMenu;
+		std::tr1::function<bool (const ScreenCoordinate& pt)> handleContextMenu;
 	};
 	
 	WidgetTabSheet::ObjectType tab;
@@ -100,7 +100,7 @@ private:
 	bool handleTextChanging(Widget* w, const SmartUtil::tstring& newText);
 	bool handleSized(const WidgetSizedEventResult&);
 	void handleTabSelected();
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	
 	SmartUtil::tstring cutTitle(const SmartUtil::tstring& title);
 	void layout();

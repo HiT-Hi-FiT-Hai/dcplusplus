@@ -65,10 +65,10 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
 		transfers->setSortColumn(COLUMN_USER);
+		transfers->onContextMenu(std::tr1::bind(&TransferView::handleContextMenu, this, _1));
 	}
 	
 	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
-	onRaw(std::tr1::bind(&TransferView::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
 	
@@ -122,11 +122,9 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	return menu;
 }
 
-HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	if (reinterpret_cast<HWND>(wParam) == transfers->handle() && transfers->hasSelection()) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+bool TransferView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if (transfers->hasSelection()) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = transfers->getContextMenuPos();
 		}
 
@@ -134,11 +132,11 @@ HRESULT TransferView::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		int i = -1;
 		ItemInfo* ii = transfers->getSelectedData();
 		WidgetMenuPtr contextMenu = makeContextMenu(ii);
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void TransferView::handleRemove() {

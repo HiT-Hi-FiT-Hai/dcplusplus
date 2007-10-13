@@ -358,7 +358,7 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 		speak(USER_UPDATED);
 }
 
-bool PrivateFrame::handleTabContextMenu(const SmartWin::Point& pt) {
+bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 	
 	menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&PrivateFrame::handleGetList, this));
@@ -371,7 +371,7 @@ bool PrivateFrame::handleTabContextMenu(const SmartWin::Point& pt) {
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&PrivateFrame::close, this, true));
 
-	menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return TRUE;
 }
 

@@ -27,20 +27,19 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "../include/smartwin/BasicTypes.h"
+#include "../include/smartwin/Widget.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
 Point::Point( long pX, long pY )
-	: x( pX ), y( pY )
-{}
+{ x = pX; y = pY; }
 
 Point::Point()
-	: x( 0 ), y( 0 )
-{}
+{ x = y = 0; }
 
-Point::Point(POINT pt) : x(pt.x), y(pt.y) { }
+Point::Point(const POINT& pt) : POINT(pt) { }
 
 Point::operator POINT() const {
 	POINT pt = { x, y };
@@ -101,6 +100,22 @@ bool operator != ( const Point & lhs, const Point & rhs )
 	return !( lhs == rhs );
 }
 
+ClientCoordinate::ClientCoordinate(const ClientCoordinate& cc, Widget* w_) : point(cc.getPoint()), w(w_) {
+	if(cc.w != w) {
+		::MapWindowPoints(cc.w->handle(), w->handle(), &point, 1);
+	}
+}
+
+ClientCoordinate::ClientCoordinate(const ScreenCoordinate& sc, Widget* w_) : point(sc.getPoint()), w(w_) {
+	::ScreenToClient(w->handle(), &point);
+}
+
+ClientCoordinate::operator ScreenCoordinate() const {
+	ScreenCoordinate pt(getPoint());
+	::ClientToScreen(w->handle(), &pt.getPoint());
+	return pt;
+}
+
 Rectangle::Rectangle()
 	: pos( Point() ), size( Point() )
 {}
@@ -109,6 +124,7 @@ Rectangle::Rectangle( const RECT & rc ) :
 	pos(rc.left, rc.top), size(rc.right - rc.left, rc.bottom - rc.top)
 {
 }
+
 Rectangle::Rectangle( const Point & pPos, const Point & pSize )
 	: pos( pPos ), size( pSize )
 {}

@@ -42,6 +42,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
 		queued = createTreeView(cs);
 		addWidget(queued);
 		queued->setColor(WinUtil::textColor, WinUtil::bgColor);
+		queued->onContextMenu(std::tr1::bind(&WaitingUsersFrame::handleContextMenu, this, _1));
 	}
 
 	initStatus();
@@ -76,24 +77,19 @@ void WaitingUsersFrame::postClosing() {
 	}
 }
 
-HRESULT WaitingUsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-	if(reinterpret_cast<HWND>(wParam) == queued->handle()) {
-		if(pt.x == -1 || pt.y == -1) {
-			//pt = queued->getContextMenuPos();
-		}
-		WidgetMenuPtr menu = createMenu(true);
-		menu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), std::tr1::bind(&WaitingUsersFrame::onGetList, this));
-		menu->appendItem(IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME), std::tr1::bind(&WaitingUsersFrame::onCopyFilename, this));
-		menu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), std::tr1::bind(&WaitingUsersFrame::onRemove, this));
-		menu->appendItem(IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&WaitingUsersFrame::onGrantSlot, this));
-		menu->appendItem(IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES), std::tr1::bind(&WaitingUsersFrame::onAddToFavorites, this));
-		menu->appendItem(IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE), std::tr1::bind(&WaitingUsersFrame::onPrivateMessage, this));
-		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+bool WaitingUsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 || pt.y() == -1) {
+		pt = queued->getContextMenuPos();
 	}
-	return FALSE;
+	WidgetMenuPtr menu = createMenu(true);
+	menu->appendItem(IDC_GETLIST, CTSTRING(GET_FILE_LIST), std::tr1::bind(&WaitingUsersFrame::onGetList, this));
+	menu->appendItem(IDC_COPY_FILENAME, CTSTRING(COPY_FILENAME), std::tr1::bind(&WaitingUsersFrame::onCopyFilename, this));
+	menu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), std::tr1::bind(&WaitingUsersFrame::onRemove, this));
+	menu->appendItem(IDC_GRANTSLOT, CTSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&WaitingUsersFrame::onGrantSlot, this));
+	menu->appendItem(IDC_ADD_TO_FAVORITES, CTSTRING(ADD_TO_FAVORITES), std::tr1::bind(&WaitingUsersFrame::onAddToFavorites, this));
+	menu->appendItem(IDC_PRIVATEMESSAGE, CTSTRING(SEND_PRIVATE_MESSAGE), std::tr1::bind(&WaitingUsersFrame::onPrivateMessage, this));
+	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	return true;
 }
 
 HRESULT WaitingUsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {

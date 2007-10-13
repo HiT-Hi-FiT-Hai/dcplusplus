@@ -52,6 +52,9 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
 		searches->setSort(COLUMN_COUNT, SmartWin::WidgetDataGrid::SORT_INT, false);
 		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
+		searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
+		searches->onContextMenu(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1));
+
 	}
 
 	{
@@ -73,9 +76,6 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	ShareManager::getInstance()->setHits(0);
 
 	ClientManager::getInstance()->addListener(this);
-
-	searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
-	searches->onRaw(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 	initSecond();
 #if 0
@@ -176,11 +176,9 @@ void SpyFrame::handleColumnClick(int column) {
 	}
 }
 
-LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
+bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	if(searches->getSelectedCount() == 1) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = searches->getContextMenuPos();
 		}
 
@@ -189,10 +187,10 @@ LRESULT SpyFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		WidgetMenuPtr contextMenu = createMenu(true);
 		contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), std::tr1::bind(&SpyFrame::handleSearch, this));
 
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void SpyFrame::handleSearch() {

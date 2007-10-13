@@ -432,7 +432,7 @@ public:
 	  * < li >TPM_VERPOSANIMATION : Animates the menu from top to bottom< /li >
 	  * < /ul >
 	  */
-	unsigned trackPopupMenu( Widget * mainWindow, int x = - 1, int y = - 1, unsigned flags = 0 );
+	unsigned trackPopupMenu( Widget * mainWindow, const ScreenCoordinate& sc, unsigned flags = 0 );
 
 	bool isSystemMenu()
 	{
@@ -536,27 +536,6 @@ inline bool WidgetMenu::isPopup( UINT id, bool byPosition )
 inline bool WidgetMenu::isSeparator( UINT id, bool byPosition )
 {
 	return (getMenuState(id, byPosition) & MF_SEPARATOR) == MF_SEPARATOR; 
-}
-
-inline unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, int x, int y, unsigned flags )
-{
-	
-	xAssert( mainWindow != 0, _T( "EventHandlerClass can't be null while trying to display Popup Menu" ) );
-	addCommands(mainWindow);
-
-	if ( x == - 1 && y == - 1 )
-	{
-		DWORD pos = ::GetMessagePos();
-		x = LOWORD( pos );
-		y = HIWORD( pos );
-	}
-	
-	int retVal = ::TrackPopupMenu
-		( this->handle()
-		, flags, x, y, 0
-		, mainWindow->handle(), 0
-		);
-	return retVal;
 }
 
 inline WidgetMenu::WidgetMenu( )

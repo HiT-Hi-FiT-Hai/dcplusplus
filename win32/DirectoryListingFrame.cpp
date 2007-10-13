@@ -132,6 +132,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
 		dirs->onSelectionChanged(std::tr1::bind(&DirectoryListingFrame::handleSelectionChanged, this));
+		dirs->onContextMenu(std::tr1::bind(&DirectoryListingFrame::handleDirsContextMenu, this, _1));
 	}
 	
 	{
@@ -154,6 +155,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 		files->onSelectionChanged(std::tr1::bind(&DirectoryListingFrame::updateStatus, this));
 		files->onDblClicked(std::tr1::bind(&DirectoryListingFrame::handleDoubleClickFiles, this));
 		files->onKeyDown(std::tr1::bind(&DirectoryListingFrame::handleKeyDownFiles, this, _1));
+		files->onContextMenu(std::tr1::bind(&DirectoryListingFrame::handleFilesContextMenu, this, _1));
 	}
 	
 	{
@@ -185,7 +187,6 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	setStatus(STATUS_FIND, TSTRING(FIND));
 	setStatus(STATUS_NEXT, TSTRING(NEXT));
 
-	onRaw(std::tr1::bind(&DirectoryListingFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	string nick = ClientManager::getInstance()->getNicks(dl->getUser()->getCID())[0];
@@ -403,12 +404,10 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 	}
 }
 
-LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	
+bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
 	WidgetMenuPtr contextMenu;
-	if(reinterpret_cast<HWND>(wParam) == files->handle() && files->hasSelection()) {
-		if(pt.x == -1 && pt.y == -1) {
+	if(files->hasSelection()) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = files->getContextMenuPos();
 		}
 		
@@ -426,7 +425,7 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 					shellMenu.ShowContextMenu(menu, this, pt);
-					return TRUE;
+					return true;
 				}
 			}
 			ItemInfo* ii = files->getSelectedData();
@@ -436,26 +435,27 @@ LRESULT DirectoryListingFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 			contextMenu = makeMultiMenu();
 		}
 		usingDirMenu = false;
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
-	} else if(reinterpret_cast<HWND>(wParam) == dirs->handle()) {
-		if(pt.x == -1 && pt.y == -1) {
-			pt = dirs->getContextMenuPos();
-		} else {
-			// this call makes it crash on getSelection...hmm...my bug or gcc 4.2.1's?
-			//dirs->select(pt);
-		}
-		
-		if(dirs->getSelection()) {
-			contextMenu = makeDirMenu();
-			usingDirMenu = true;
-			contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-	
-			return TRUE;
-		}
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
+	return false;
+}
 
-	return FALSE;
+bool DirectoryListingFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
+		pt = dirs->getContextMenuPos();
+	} else {
+		dirs->select(pt);
+	}
+	
+	if(dirs->getSelection()) {
+		WidgetMenuPtr contextMenu = makeDirMenu();
+		usingDirMenu = true;
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+		return true;
+	}
+	return false;
 }
 
 void DirectoryListingFrame::downloadFiles(const string& aTarget, bool view /* = false */) {

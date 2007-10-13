@@ -1036,16 +1036,16 @@ LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
 	if (lParam == WM_LBUTTONUP) {
 		handleRestore();
 	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
-		POINT pt;
+		SmartWin::ScreenCoordinate pt;
 		WidgetMenuPtr trayMenu = createMenu(true);
 		trayMenu->appendItem(IDC_TRAY_SHOW, TSTRING(MENU_SHOW), std::tr1::bind(&MainWindow::handleRestore, this));
 		trayMenu->appendItem(IDC_TRAY_QUIT, TSTRING(MENU_EXIT), std::tr1::bind(&MainWindow::close, this, true));
 		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, TSTRING(MENU_OPEN_DOWNLOADS_DIR));
 		trayMenu->appendItem(IDC_SETTINGS, TSTRING(MENU_SETTINGS));
 		trayMenu->setDefaultItem(0,TRUE);
-		GetCursorPos(&pt);
+		::GetCursorPos(&pt.getPoint());
 		::SetForegroundWindow(handle());
-		trayMenu->trackPopupMenu(this, pt.x, pt.y, TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON);
+		trayMenu->trackPopupMenu(this, pt, TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON);
 		postMessage(WM_NULL);
 	} else if(lParam == WM_MOUSEMOVE && ((lastMove + 1000) < GET_TICK()) ) {
 		NOTIFYICONDATA nid;

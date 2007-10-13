@@ -29,6 +29,8 @@
 #ifndef AspectMouseClicks_h
 #define AspectMouseClicks_h
 
+#include "../BasicTypes.h"
+
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -41,7 +43,7 @@ namespace SmartWin
   */
 struct MouseEventResult
 {
-	MouseEventResult(WPARAM wParam, LPARAM lParam);
+	MouseEventResult(Widget* w, WPARAM wParam, LPARAM lParam);
 	
 	/// Types of buttons
 	enum Button
@@ -52,7 +54,7 @@ struct MouseEventResult
 	/// Position of mouse
 	/** Position of mouse when event was raised
 	  */
-	Point pos;
+	ClientCoordinate pos;
 
 	/// is the CTRL key pressed
 	/** true if CTRL key is pressed, otherwise false
@@ -73,7 +75,6 @@ struct MouseEventResult
 	Button ButtonPressed;
 };
 
-
 /// Aspect class used by Widgets that have the possibility of trapping "mouse
 /// clicked" events.
 /** \ingroup AspectClasses
@@ -87,13 +88,14 @@ class AspectMouseClicks
 	{
 		typedef std::tr1::function<void (const MouseEventResult &)> F;
 
-		Dispatcher(const F& f_) : f(f_) { }
+		Dispatcher(Widget* w_, const F& f_) : w(w_), f(f_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(MouseEventResult( msg.wParam, msg.lParam ));
+			f(MouseEventResult(w, msg.wParam, msg.lParam ));
 			return true;
 		}
 
+		Widget* w;
 		F f;
 	};
 
@@ -197,7 +199,7 @@ protected:
 	
 	void onMouse(UINT msg, const typename Dispatcher::F& f) {
 		static_cast<WidgetType*>(this)->setCallback(
-			Message( msg ), Dispatcher(f)
+			Message( msg ), Dispatcher(static_cast<WidgetType*>(this), f)
 		);
 	}
 	virtual ~AspectMouseClicks()

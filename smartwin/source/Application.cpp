@@ -378,11 +378,9 @@ WidgetSizedEventResult::WidgetSizedEventResult( WPARAM wP, LPARAM lP )
 	isRestored = ( wP == SIZE_RESTORED );
 }
 
-MouseEventResult::MouseEventResult( WPARAM wP, LPARAM lP )
+MouseEventResult::MouseEventResult(Widget* w, WPARAM wP, LPARAM lP ) : pos(Point(GET_X_LPARAM( lP ), GET_Y_LPARAM( lP )), w)
 {
 	isAltPressed = ::GetKeyState( VK_MENU ) < 0;
-	pos.x = GET_X_LPARAM( lP );
-	pos.y = GET_Y_LPARAM( lP );
 	isControlPressed = ( ( wP & MK_CONTROL ) == MK_CONTROL );
 	isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
 

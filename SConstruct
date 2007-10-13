@@ -16,7 +16,7 @@ opts.AddOptions(
 )
 
 gcc_flags = {
-	'common': ['-g', '-Wall', '-Wextra', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
+	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
 	'debug': [], 
 	'release' : ['-O2', '-mwindows']
 }
@@ -42,7 +42,7 @@ msvc_xxflags = {
 }
 
 gcc_link_flags = {
-	'common' : ['-g', '-Wl,--no-undefined', '-time'],
+	'common' : ['-ggdb', '-Wl,--no-undefined', '-time'],
 	'debug' : [],
 	'release' : ['-mwindows']
 }

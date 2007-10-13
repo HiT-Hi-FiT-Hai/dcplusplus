@@ -35,7 +35,7 @@ public:
 
 	void SetPath(const wstring& strPath);
 
-	UINT ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, SmartWin::Widget * parent, POINT pt);
+	UINT ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, SmartWin::Widget * parent, const SmartWin::ScreenCoordinate& pt);
 
 private:
 	bool bDelete;

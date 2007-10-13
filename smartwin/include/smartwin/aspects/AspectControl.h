@@ -1,11 +1,27 @@
 #ifndef ASPECTCONTROL_H_
 #define ASPECTCONTROL_H_
 
+#include "AspectContextMenu.h"
+#include "AspectEnabled.h"
+#include "AspectKeyboard.h"
+#include "AspectMouseClicks.h"
+#include "AspectRaw.h"
+#include "AspectSizable.h"
+#include "AspectVisible.h"
+
 namespace SmartWin {
 
 /** This class is for all windows common controls */
 template<typename WidgetType >
-class AspectControl {
+class AspectControl : 
+	public AspectContextMenu<WidgetType>,
+	public AspectEnabled<WidgetType>,
+	public AspectKeyboard<WidgetType>,
+	public AspectMouseClicks<WidgetType>,
+	public AspectRaw<WidgetType>,
+	public AspectSizable<WidgetType>,
+	public AspectVisible<WidgetType>
+{
 public:
 	/// Class type
 	typedef WidgetType ThisType;

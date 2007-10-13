@@ -33,16 +33,12 @@
 #include "../BasicTypes.h"
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectMouseClicks.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSelection.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -73,16 +69,12 @@ class WidgetTabSheet :
 	
 	// Aspects
 	public AspectBorder< WidgetTabSheet >,
-	public AspectEnabled< WidgetTabSheet >,
+	public AspectControl<WidgetTabSheet>,
 	public AspectFocus< WidgetTabSheet >,
 	public AspectFont< WidgetTabSheet >,
-	public AspectMouseClicks< WidgetTabSheet >,
 	public AspectPainting< WidgetTabSheet >,
-	public AspectRaw< WidgetTabSheet >,
 	public AspectSelection< WidgetTabSheet >,
-	public AspectSizable< WidgetTabSheet >,
-	public AspectText< WidgetTabSheet >,
-	public AspectVisible< WidgetTabSheet >
+	public AspectText< WidgetTabSheet >
 {
 	struct ChangingDispatcher
 	{
@@ -119,12 +111,6 @@ class WidgetTabSheet :
 	friend class WidgetCreator< WidgetTabSheet >;
 
 public:
-	/// Class type
-	typedef WidgetTabSheet ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
@@ -273,14 +259,14 @@ public:
 		TabCtrl_DeleteItem(this->handle(), i);
 	}
 	
-	int hitTest(const SmartWin::Point& pt);
+	int hitTest(const ScreenCoordinate& pt);
 	
-/// Get the area not used by the tabs
-/** This function should be used after adding the pages, so that the area not used by
-  * the tabs can be calculated accurately. It returns coordinates respect to the
-  * TabControl, this is, you have to adjust for the position of the control itself.   
-  */
-SmartWin::Rectangle getUsableArea() const;
+	/// Get the area not used by the tabs
+	/** This function should be used after adding the pages, so that the area not used by
+	  * the tabs can be calculated accurately. It returns coordinates respect to the
+	  * TabControl, this is, you have to adjust for the position of the control itself.   
+	  */
+	SmartWin::Rectangle getUsableArea() const;
 protected:
 	// Constructor Taking pointer to parent
 	explicit WidgetTabSheet( SmartWin::Widget * parent );
@@ -421,9 +407,8 @@ inline void WidgetTabSheet::setHighlight(int item, bool highlight) {
 	TabCtrl_HighlightItem(handle(), item, highlight);
 }
 
-inline int WidgetTabSheet::hitTest(const Point& pt) {
-	TCHITTESTINFO tci = { {pt.x, pt.y} };
-	screenToClient(tci.pt);
+inline int WidgetTabSheet::hitTest(const ScreenCoordinate& pt) {
+	TCHITTESTINFO tci = { ClientCoordinate(pt, this).getPoint() };
 	
 	return TabCtrl_HitTest(handle(), &tci);
 }

@@ -121,6 +121,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		
 		hubs->onDblClicked(std::tr1::bind(&PublicHubsFrame::openSelected, this));
 		hubs->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleKeyDown, this, _1));
+		hubs->onContextMenu(std::tr1::bind(&PublicHubsFrame::handleContextMenu, this, _1));
 	}
 	
 	{
@@ -188,7 +189,6 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	layout();
 	
 	onSpeaker(std::tr1::bind(&PublicHubsFrame::handleSpeaker, this, _1, _2));
-	onRaw(std::tr1::bind(&PublicHubsFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	
 	entries	 = FavoriteManager::getInstance()->getPublicHubs();
 	if(FavoriteManager::getInstance()->isDownloading()) {
@@ -445,11 +445,9 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 	return insert;
 }
 
-HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	if(reinterpret_cast<HWND>(wParam) == hubs->handle() && hubs->hasSelection()) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(hubs->hasSelection()) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = hubs->getContextMenuPos();
 		}
 
@@ -458,10 +456,10 @@ HRESULT PublicHubsFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		menu->appendItem(IDC_ADD, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
 		menu->appendItem(IDC_COPY_HUB, TSTRING(COPY_HUB), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
 		menu->setDefaultItem(IDC_CONNECT);
-		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void PublicHubsFrame::handleRefresh() {

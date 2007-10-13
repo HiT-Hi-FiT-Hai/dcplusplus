@@ -232,12 +232,13 @@ private:
 	bool handleMessageChar(int c);
 	bool handleMessageKeyDown(int c);
 	bool handleUsersKeyDown(int c);
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleChatContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleUsersContextMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleShowUsersClicked();
 	void handleCopyNick();
 	void handleDoubleClickUsers();
-	bool handleTabContextMenu(const SmartWin::Point& pt);
+	bool handleTabContextMenu(const SmartWin::ScreenCoordinate& pt);
 	void handleCopyHub();
 	void handleAddAsFavorite();
 	void handleReconnect();

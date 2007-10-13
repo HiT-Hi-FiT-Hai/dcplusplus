@@ -299,8 +299,8 @@ private:
 	void handleReadd(const UserPtr& user);
 	bool handleKeyDownFiles(int c);
 	bool handleKeyDownDirs(int c);
-	
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleFilesContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleDirsContextMenu(SmartWin::ScreenCoordinate pt);
 	
 	using MDIChildFrame<QueueFrame>::speak;
 	void speak(Tasks s, Task* t) { tasks.add(s, t); speak(); }

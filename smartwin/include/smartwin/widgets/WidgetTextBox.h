@@ -33,16 +33,11 @@
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectEnabled.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectSizable.h"
 #include "../aspects/AspectText.h"
 #include "../aspects/AspectUpdate.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -77,16 +72,11 @@ class WidgetTextBoxBase :
 	// Aspect classes
 	public AspectBackgroundColor< WidgetTextBoxBase >,
 	public AspectBorder< WidgetTextBoxBase >,
-	public AspectEnabled< WidgetTextBoxBase >,
+	public AspectControl< WidgetTextBoxBase >,
 	public AspectFocus< WidgetTextBoxBase >,
 	public AspectFont< WidgetTextBoxBase >,
-	public AspectKeyboard< WidgetTextBoxBase >,
-	public AspectMouseClicks< WidgetTextBoxBase >,
-	public AspectRaw< WidgetTextBoxBase >,
-	public AspectSizable< WidgetTextBoxBase >,
 	public AspectText< WidgetTextBoxBase >,
-	public AspectUpdate< WidgetTextBoxBase >,
-	public AspectVisible< WidgetTextBoxBase >
+	public AspectUpdate< WidgetTextBoxBase >
 {
 	friend class WidgetCreator< WidgetTextBoxBase >;
 
@@ -271,11 +261,11 @@ public:
 	  */
 	void setLowerCase( bool value = true );
 
-	Point getContextMenuPos();
+	ScreenCoordinate getContextMenuPos();
 	
-	int charFromPos(const SmartWin::Point& pt);
+	int charFromPos(const ScreenCoordinate& pt);
 	
-	int lineFromPos(const SmartWin::Point& pt);
+	int lineFromPos(const ScreenCoordinate& pt);
 	
 	int lineIndex(int line);
 	
@@ -283,7 +273,7 @@ public:
 	
 	SmartUtil::tstring getLine(int line);
 
-	SmartUtil::tstring textUnderCursor(const Point& p);
+	SmartUtil::tstring textUnderCursor(const ScreenCoordinate& p);
 	
 	/// Actually creates the TextBox
 	/** You should call WidgetFactory::createTextBox if you instantiate class
@@ -419,12 +409,12 @@ inline WidgetTextBox::Seed::Seed() {
 	* this = WidgetTextBox::getDefaultSeed();
 }
 
-inline WidgetTextBoxBase::WidgetTextBoxBase( SmartWin::Widget * parent )
+inline WidgetTextBoxBase::WidgetTextBoxBase( Widget * parent )
 	: PolicyType( parent )
 {
 }
 
-inline WidgetTextBox::WidgetTextBox( SmartWin::Widget * parent )
+inline WidgetTextBox::WidgetTextBox( Widget * parent )
 	: WidgetTextBoxBase( parent )
 {
 	// Can't have a text box without a parent...
@@ -447,13 +437,15 @@ inline void WidgetTextBox::setUpperCase( bool value ) {
 	this->Widget::addRemoveStyle( ES_UPPERCASE, value );
 }
 
-inline int WidgetTextBox::charFromPos(const SmartWin::Point& pt) {		
-	LPARAM lp = MAKELPARAM(pt.x, pt.y);
+inline int WidgetTextBox::charFromPos(const ScreenCoordinate& pt) {	
+	ClientCoordinate cc(pt, this);
+	LPARAM lp = MAKELPARAM(cc.x(), cc.y());
 	return LOWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
 }
 
-inline int WidgetTextBox::lineFromPos(const SmartWin::Point& pt) {
-	LPARAM lp = MAKELPARAM(pt.x, pt.y);
+inline int WidgetTextBox::lineFromPos(const ScreenCoordinate& pt) {
+	ClientCoordinate cc(pt, this);
+	LPARAM lp = MAKELPARAM(cc.x(), cc.y());
 	return HIWORD(::SendMessage(this->handle(), EM_CHARFROMPOS, 0, lp));
 }
 

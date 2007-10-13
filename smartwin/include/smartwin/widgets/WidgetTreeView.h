@@ -35,17 +35,12 @@
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectRightClickable.h"
 #include "../aspects/AspectSelection.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -74,17 +69,12 @@ class WidgetTreeView :
 	public AspectBorder< WidgetTreeView >,
 	public AspectClickable< WidgetTreeView >,
 	public AspectCollection<WidgetTreeView, HTREEITEM>,
+	public AspectControl<WidgetTreeView>,
 	public AspectData<WidgetTreeView, HTREEITEM>,
 	public AspectDblClickable< WidgetTreeView >,
-	public AspectEnabled< WidgetTreeView >,
 	public AspectFocus< WidgetTreeView >,
 	public AspectFont< WidgetTreeView >,
-	public AspectKeyboard< WidgetTreeView >,
-	public AspectRaw< WidgetTreeView >,
-	public AspectRightClickable< WidgetTreeView >,
-	public AspectSelection< WidgetTreeView >,
-	public AspectSizable< WidgetTreeView >,
-	public AspectVisible< WidgetTreeView >
+	public AspectSelection< WidgetTreeView >
 {
 protected:
 	struct Dispatcher
@@ -177,15 +167,15 @@ public:
 	
 	void setColor(COLORREF text, COLORREF background);
 	
-	Point getContextMenuPos();
+	ScreenCoordinate getContextMenuPos();
 	
 	void expand(HTREEITEM node);
 	
 	void select(HTREEITEM item);
 
-	void select(const Point& pt);
+	void select(const ScreenCoordinate& pt);
 	
-	HTREEITEM hitTest(const Point& pt);
+	HTREEITEM hitTest(const ScreenCoordinate& pt);
 	
 	Rectangle getItemRect(HTREEITEM item);
 	/// Deletes just the children of a "node" from the TreeView< br >
@@ -380,8 +370,9 @@ inline Rectangle WidgetTreeView::getItemRect(HTREEITEM item) {
 	return rc;
 }
 
-inline HTREEITEM WidgetTreeView::hitTest(const Point& pt) {
-	return TreeView_HitTest(this->handle(), &pt);
+inline HTREEITEM WidgetTreeView::hitTest(const ScreenCoordinate& pt) {
+	ClientCoordinate cc(pt, this);
+	return TreeView_HitTest(this->handle(), &cc.getPoint());
 }
 
 inline HTREEITEM WidgetTreeView::getSelection() {

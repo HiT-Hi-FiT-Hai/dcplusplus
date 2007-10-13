@@ -104,6 +104,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		chat->setFont(WinUtil::font);
 		addWidget(chat);
 		paned->setFirst(chat);
+		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
 	}
 	
 	{
@@ -154,6 +155,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		users->onSelectionChanged(std::tr1::bind(&HubFrame::updateStatus, this));
 		users->onDblClicked(std::tr1::bind(&HubFrame::handleDoubleClickUsers, this));
 		users->onKeyDown(std::tr1::bind(&HubFrame::handleUsersKeyDown, this, _1));
+		users->onContextMenu(std::tr1::bind(&HubFrame::handleUsersContextMenu, this, _1));
 	}
 	
 	{
@@ -172,7 +174,6 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	initSecond();
 	
 	onSpeaker(std::tr1::bind(&HubFrame::handleSpeaker, this, _1, _2));
-	onRaw(std::tr1::bind(&HubFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	onTabContextMenu(std::tr1::bind(&HubFrame::handleTabContextMenu, this, _1));
 	onCommand(std::tr1::bind(&HubFrame::handleReconnect, this), IDC_RECONNECT);
 	onCommand(std::tr1::bind(&HubFrame::handleFollow, this), IDC_FOLLOW);
@@ -1142,35 +1143,32 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 	return insert;
 }
 
-HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
+bool HubFrame::handleChatContextMenu(SmartWin::ScreenCoordinate pt) {
 	bool doMenu = false;
 
-	if(reinterpret_cast<HWND>(wParam) == chat->handle()) {
-		if(pt.x == -1 || pt.y == -1) {
-			pt = chat->getContextMenuPos();
-		}
+	if(pt.x() == -1 || pt.y() == -1) {
+		pt = chat->getContextMenuPos();
+	}
 		
-		chat->screenToClient(pt);
-		
-		tstring txt = chat->textUnderCursor(SmartWin::Point(pt.x, pt.y));
-		chat->clientToScreen(pt);
-		
-		if(!txt.empty()) {
-			// Possible nickname click, let's see if we can find one like it in the name list...
-			int pos = users->find(txt);
-			if(pos != -1) {
-				users->clearSelection();
-				users->setSelectedIndex(pos);
-				users->ensureVisible(pos);
-				doMenu = true;
-			}
+	tstring txt = chat->textUnderCursor(pt);
+	
+	if(!txt.empty()) {
+		// Possible nickname click, let's see if we can find one like it in the name list...
+		int pos = users->find(txt);
+		if(pos != -1) {
+			users->clearSelection();
+			users->setSelectedIndex(pos);
+			users->ensureVisible(pos);
+			doMenu = true;
 		}
 	}
+	
+	return doMenu ? handleUsersContextMenu(pt) : false;
+}
 
-	if((doMenu || (reinterpret_cast<HWND>(wParam) == users->handle())) && users->hasSelection()) {
-		if(pt.x == -1 || pt.y == -1) {
+bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(users->hasSelection()) {
+		if(pt.x() == -1 || pt.y() == -1) {
 			pt = users->getContextMenuPos();
 		}
 
@@ -1183,13 +1181,13 @@ HRESULT HubFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		
 		inTabMenu = true;
 		
-		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-		return TRUE;
+		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
-bool HubFrame::handleTabContextMenu(const SmartWin::Point& pt) {
+bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
@@ -1205,7 +1203,7 @@ bool HubFrame::handleTabContextMenu(const SmartWin::Point& pt) {
 
 	inTabMenu = true;
 	
-	menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;
 }
 

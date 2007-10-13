@@ -179,7 +179,7 @@ private:
 	StringMap ucLineParams;
 
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
 	void handleForce();

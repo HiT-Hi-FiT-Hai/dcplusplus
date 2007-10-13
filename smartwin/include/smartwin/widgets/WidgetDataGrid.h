@@ -35,19 +35,13 @@
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
-#include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
-#include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
-#include "../aspects/AspectRaw.h"
-#include "../aspects/AspectRightClickable.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 #include "WidgetDataGridEditBox.h"
 
@@ -334,19 +328,13 @@ class WidgetDataGrid :
 	public AspectBorder< WidgetDataGrid >,
 	public AspectClickable< WidgetDataGrid >,
 	public AspectCollection<WidgetDataGrid, int>,
+	public AspectControl<WidgetDataGrid>,
 	public AspectData<WidgetDataGrid, int>,
 	public AspectDblClickable< WidgetDataGrid >,
-	public AspectEnabled< WidgetDataGrid >,
 	public AspectFocus< WidgetDataGrid >,
 	public AspectFont< WidgetDataGrid >,
-	public AspectKeyboard< WidgetDataGrid >,
-	public AspectMouseClicks< WidgetDataGrid >,
-	public AspectRaw< WidgetDataGrid >,
-	public AspectRightClickable< WidgetDataGrid >,
 	public AspectScrollable< WidgetDataGrid >,
-	public AspectSelection< WidgetDataGrid >,
-	public AspectSizable< WidgetDataGrid >,
-	public AspectVisible< WidgetDataGrid >
+	public AspectSelection< WidgetDataGrid >
 {
 	struct HeaderDispatcher {
 		typedef std::tr1::function<void (int)> F;
@@ -370,12 +358,6 @@ class WidgetDataGrid :
 public:
 	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
 	
-	/// Class type
-	typedef WidgetDataGrid ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	/// Seed class
@@ -787,7 +769,7 @@ public:
 
     void select(int row);
     
-	Point getContextMenuPos();
+	ScreenCoordinate getContextMenuPos();
 	
 	void ensureVisible(int i, bool partial = false);
 	

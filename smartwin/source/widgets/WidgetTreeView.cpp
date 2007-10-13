@@ -145,7 +145,7 @@ void WidgetTreeView::setDataImpl(HTREEITEM item, LPARAM lParam) {
 	TreeView_SetItem(this->handle(), &tvitem);
 }
 
-Point WidgetTreeView::getContextMenuPos() {
+ScreenCoordinate WidgetTreeView::getContextMenuPos() {
 	HTREEITEM item = getSelection();
 	POINT pt = { 0 };
 	if(item) {
@@ -153,14 +153,10 @@ Point WidgetTreeView::getContextMenuPos() {
 		pt.x = trc.left;
 		pt.y = trc.top + ((trc.bottom - trc.top) / 2);
 	} 
-	this->clientToScreen(pt);
-	return pt;
+	return ClientCoordinate(pt, this);
 }
 
-void WidgetTreeView::select(const Point& p) {
-	POINT pt = p;
-	
-	this->screenToClient(pt);
+void WidgetTreeView::select(const ScreenCoordinate& pt) {
 	HTREEITEM ht = this->hitTest(pt);
 	if(ht != NULL && ht != this->getSelection()) {
 		this->select(ht);

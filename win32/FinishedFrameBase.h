@@ -71,6 +71,7 @@ protected:
 
 			items->onDblClicked(std::tr1::bind(&ThisType::handleDoubleClick, this));
 			items->onKeyDown(std::tr1::bind(&ThisType::handleKeyDown, this, _1));
+			items->onContextMenu(std::tr1::bind(&ThisType::handleContextMenu, this, _1));
 		}
 
 		this->initStatus();
@@ -78,7 +79,6 @@ protected:
 		layout();
 
 		onSpeaker(std::tr1::bind(&ThisType::handleSpeaker, this, _1, _2));
-		onRaw(std::tr1::bind(&ThisType::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 
 		FinishedManager::getInstance()->addListener(this);
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
@@ -213,11 +213,9 @@ private:
 		return false;
 	}
 
-	LRESULT handleContextMenu(WPARAM wParam, LPARAM lParam) {
-		if(reinterpret_cast<HWND>(wParam) == items->handle() && items->hasSelection()) {
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-			if(pt.x == -1 && pt.y == -1) {
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt) {
+		if(items->hasSelection()) {
+			if(pt.x() == -1 && pt.y() == -1) {
 				pt = items->getContextMenuPos();
 			}
 
@@ -239,7 +237,7 @@ private:
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
 					if(idCommand != 0)
 						this->postMessage(WM_COMMAND, idCommand);
-					return TRUE;
+					return true;
 				}
 			}
 
@@ -251,10 +249,10 @@ private:
 			contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
 			contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this));
 			contextMenu->setDefaultItem(IDC_OPEN_FILE);
-			contextMenu->trackPopupMenu(static_cast<T*>(this), pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-			return TRUE;
+			contextMenu->trackPopupMenu(static_cast<T*>(this), pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+			return true;
 		}
-		return FALSE;
+		return false;
 	}
 
 	void handleViewAsText() {

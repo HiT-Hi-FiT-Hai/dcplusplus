@@ -68,7 +68,7 @@ private:
 	void layout();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool preClosing();
-	bool handleTabContextMenu(const SmartWin::Point& pt);
+	bool handleTabContextMenu(const SmartWin::ScreenCoordinate& pt);
 	void handleGetList();
 	void handleMatchQueue();
 	

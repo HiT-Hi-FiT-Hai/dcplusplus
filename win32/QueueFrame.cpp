@@ -67,6 +67,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		dirs->setNormalImageList(WinUtil::fileImages);
 		dirs->onSelectionChanged(std::tr1::bind(&QueueFrame::updateFiles, this));
 		dirs->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownDirs, this, _1));
+		dirs->onContextMenu(std::tr1::bind(&QueueFrame::handleDirsContextMenu, this, _1));
 		paned->setFirst(dirs);
 	}
 	
@@ -88,6 +89,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		
 		files->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownFiles, this, _1));
 		files->onSelectionChanged(std::tr1::bind(&QueueFrame::updateStatus, this));
+		files->onContextMenu(std::tr1::bind(&QueueFrame::handleFilesContextMenu, this, _1));
 
 		paned->setSecond(files);
 	}
@@ -109,7 +111,6 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	QueueManager::getInstance()->addListener(this);
 
 	onSpeaker(std::tr1::bind(&QueueFrame::handleSpeaker, this, _1, _2));
-	onRaw(std::tr1::bind(&QueueFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
 	
 	updateStatus();	
 	layout();
@@ -1088,10 +1089,9 @@ unsigned int QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startI
 	return id - startId;
 }
 
-HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	if (reinterpret_cast<HWND>(wParam) == files->handle() && files->getSelectedCount() > 0) {
-		if(pt.x == -1 || pt.y == -1) {
+bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(files->getSelectedCount() > 0) {
+		if(pt.x() == -1 || pt.y() == -1) {
 			pt = files->getContextMenuPos();
 		}
 
@@ -1104,25 +1104,27 @@ HRESULT QueueFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		} else {
 			contextMenu = makeMultiMenu();
 		}
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		return TRUE;
-	} else if (reinterpret_cast<HWND>(wParam) == dirs->handle()) {
-		if(pt.x == -1 && pt.y == -1) {
-			pt = dirs->getContextMenuPos();
-		} else {
-			dirs->select(pt);
-		}
-		
-		if(dirs->getSelection() == NULL) {
-			return FALSE;
-		}
+		return true;
+	}
+	return false;
+}
+
+bool QueueFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
+		pt = dirs->getContextMenuPos();
+	} else {
+		dirs->select(pt);
+	}
+	
+	if(dirs->getSelection()) {
 		usingDirMenu = true;
 		WidgetMenuPtr contextMenu = makeDirMenu();
-		contextMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		return TRUE;
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }

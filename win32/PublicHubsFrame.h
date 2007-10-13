@@ -127,7 +127,7 @@ private:
 	void handleConnect();
 	void handleAdd();
 	void handleCopyHub();
-	HRESULT handleContextMenu(WPARAM wParam, LPARAM lParam);
+	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	bool handleKeyDown(int c);
 	void handleListSelChanged();
 	bool handleFilterChar(int c);

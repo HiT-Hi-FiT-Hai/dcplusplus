@@ -39,7 +39,7 @@ namespace SmartWin
 /// POD structure for defining a point
 /** Used in e.g. functions that take a mouse position etc...
   */
-struct Point
+struct Point : POINT
 {
 	/// Constructor initializing the point with the given arguments.
 	/** Constructor initializing the structure with the given arguments. Takes x and
@@ -52,7 +52,7 @@ struct Point
 	  */
 	Point();
 
-	Point(POINT pt);
+	Point(const POINT& pt);
 	
 	operator POINT() const;
 	
@@ -65,16 +65,47 @@ struct Point
 	/** Each x,y dimension is adjusted by the p Point.
 	  */
 	void minOf( const Point & p );
+};
 
-	/// x position
-	/** The x position of the Point
-	  */
-	long x;
+class ScreenCoordinate {
+public:
+	ScreenCoordinate() { }
+	ScreenCoordinate(const ScreenCoordinate& sc) : point(sc.point) { }
+	
+	explicit ScreenCoordinate(const Point& pt) : point(pt) { }
+	
+	const Point& getPoint() const { return point; }
+	Point& getPoint() { return point; }
+	
+	long x() const { return getPoint().x; }
+	long y() const { return getPoint().y; }
+	
+	ScreenCoordinate& operator=(const ScreenCoordinate& rhs) { point = rhs.point; return *this; }
+private:
+	Point point;
+};
 
-	/// y position
-	/** The y position of the Point
-	  */
-	long y;
+class Widget;
+
+class ClientCoordinate {
+public:
+	explicit ClientCoordinate(const ClientCoordinate& cc, Widget* w_);
+	
+	explicit ClientCoordinate(const ScreenCoordinate& sc, Widget* w_);
+	
+	explicit ClientCoordinate(const Point& pt, Widget* w_) : point(pt), w(w_) { }
+
+	operator ScreenCoordinate() const;
+
+	const Point& getPoint() const { return point; }
+	Point& getPoint() { return point; }
+
+	long x() const { return getPoint().x; }
+	long y() const { return getPoint().y; }
+
+private:
+	Point point;
+	Widget* w;
 };
 
 /// \ingroup GlobalStuff

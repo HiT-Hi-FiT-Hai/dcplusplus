@@ -53,7 +53,7 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 		users->onDblClicked(std::tr1::bind(&UsersFrame::handleGetList, this));
 		users->onKeyDown(std::tr1::bind(&UsersFrame::handleKeyDown, this, _1));
 		users->onRaw(std::tr1::bind(&UsersFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
-		users->onRaw(std::tr1::bind(&UsersFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+		users->onContextMenu(std::tr1::bind(&UsersFrame::handleContextMenu, this, _1));
 	}
 
 	FavoriteManager::FavoriteMap ul = FavoriteManager::getInstance()->getFavoriteUsers();
@@ -76,8 +76,6 @@ UsersFrame::~UsersFrame() {
 }
 
 void UsersFrame::layout() {
-	const int border = 2;
-	
 	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
@@ -94,9 +92,7 @@ void UsersFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
 
-	for(int i = 0; i < users->size(); ++i) {
-		delete users->getData(i);
-	}
+	users->forEachT(DeleteFunction());
 }
 
 UsersFrame::UserInfo::UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) {
@@ -180,11 +176,9 @@ LRESULT UsersFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT UsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
-	if (reinterpret_cast<HWND>(wParam) == users->handle() && users->hasSelection()) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-		if(pt.x == -1 && pt.y == -1) {
+bool UsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if (users->hasSelection()) {
+		if(pt.x() == -1 && pt.y() == -1) {
 			pt = users->getContextMenuPos();
 		}
 
@@ -194,11 +188,11 @@ LRESULT UsersFrame::handleContextMenu(WPARAM wParam, LPARAM lParam) {
 		menu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&UsersFrame::handleProperties, this));
 		menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&UsersFrame::handleRemove, this));
 		
-		menu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 LRESULT UsersFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {

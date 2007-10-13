@@ -117,7 +117,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	hubsMenu->appendSeparatorItem();
 	hubsMenu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), std::tr1::bind(&FavHubsFrame::handleRemove, this));
 	hubsMenu->setDefaultItem(IDC_CONNECT);
-	hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1, _2), SmartWin::Message(WM_CONTEXTMENU));
+	hubs->onContextMenu(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1));
 }
 
 FavHubsFrame::~FavHubsFrame() {
@@ -280,10 +280,8 @@ LRESULT FavHubsFrame::handleItemChanged(WPARAM /*wParam*/, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT FavHubsFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
-	if(pt.x == -1 && pt.y == -1) {
+bool FavHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+	if(pt.x() == -1 && pt.y() == -1) {
 		pt = hubs->getContextMenuPos();
 	}
 
@@ -294,8 +292,8 @@ LRESULT FavHubsFrame::handleContextMenu(WPARAM /*wParam*/, LPARAM lParam) {
 	hubsMenu->setItemEnabled(IDC_MOVE_DOWN, status);
 	hubsMenu->setItemEnabled(IDC_REMOVE, status);
 
-	hubsMenu->trackPopupMenu(this, pt.x, pt.y, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
-	return TRUE;
+	hubsMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	return true;
 }
 
 void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int index) {

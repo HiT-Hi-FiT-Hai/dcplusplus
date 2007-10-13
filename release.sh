@@ -17,5 +17,5 @@ rm DCPlusPlus.exe
 
 svn status
 read -p "Press ctrl-c to abort svn copy"
-svn copy . https://svn.sourceforge.net/svnroot/dcplusplus/dcplusplus/tags/dcplusplus-$1 -m "$1"
+svn copy . https://dcplusplus.svn.sourceforge.net/svnroot/dcplusplus/dcplusplus/tags/dcplusplus-$1 -m "$1"
 

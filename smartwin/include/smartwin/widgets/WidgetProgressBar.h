@@ -31,12 +31,9 @@
 
 #include "../MessageMapPolicyClasses.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectMouseClicks.h"
+#include "../aspects/AspectControl.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectRaw.h"
 #include "../aspects/AspectScrollable.h"
-#include "../aspects/AspectSizable.h"
-#include "../aspects/AspectVisible.h"
 #include "../xCeption.h"
 
 namespace SmartWin
@@ -62,19 +59,11 @@ class WidgetProgressBar :
 
 	// Aspects
 	public AspectBorder< WidgetProgressBar >,
-	public AspectMouseClicks< WidgetProgressBar >,
-	public AspectPainting< WidgetProgressBar >,
-	public AspectRaw< WidgetProgressBar >,
-	public AspectSizable< WidgetProgressBar >,
-	public AspectVisible< WidgetProgressBar >
+	public AspectControl<WidgetProgressBar>,
+	public AspectPainting< WidgetProgressBar >
 {
 	friend class WidgetCreator< WidgetProgressBar >;
 public:
-	/// Class type
-	typedef WidgetProgressBar ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
 
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 

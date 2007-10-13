@@ -165,16 +165,15 @@ int WidgetDataGrid::insert(int mask, int i, LPCTSTR text, UINT state, UINT state
 	return ListView_InsertItem(this->handle(), &item);
 }
 
-Point WidgetDataGrid::getContextMenuPos() {
+ScreenCoordinate WidgetDataGrid::getContextMenuPos() {
 	int pos = getNext(-1, LVNI_SELECTED | LVNI_FOCUSED);
 	POINT pt = { 0 };
 	if(pos >= 0) {
 		RECT lrc = this->getRect(pos, LVIR_LABEL);
 		pt.x = lrc.left;
 		pt.y = lrc.top + ((lrc.bottom - lrc.top) / 2);
-	} 
-	this->clientToScreen(pt);
-	return pt;
+	}
+	return ClientCoordinate(pt, this);
 }
 
 SmartUtil::tstring WidgetDataGrid::getText( unsigned int row, unsigned int column )

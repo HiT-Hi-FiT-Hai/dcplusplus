@@ -6,15 +6,10 @@
 #include "AspectClickable.h"
 #include "AspectControl.h"
 #include "AspectDblClickable.h"
-#include "AspectEnabled.h"
 #include "AspectFocus.h"
 #include "AspectFont.h"
-#include "AspectKeyboard.h"
 #include "AspectPainting.h"
-#include "AspectRaw.h"
-#include "AspectSizable.h"
 #include "AspectText.h"
-#include "AspectVisible.h"
 
 namespace SmartWin {
 /** Common stuff for all buttons */
@@ -25,15 +20,10 @@ class AspectButton :
 	public AspectClickable<WidgetType>,
 	public AspectControl<WidgetType>,
 	public AspectDblClickable<WidgetType>,
-	public AspectEnabled< WidgetType >,
 	public AspectFocus< WidgetType >,
 	public AspectFont< WidgetType >,
-	public AspectKeyboard< WidgetType >,
 	public AspectPainting< WidgetType >,
-	public AspectRaw< WidgetType >,
-	public AspectSizable< WidgetType >,
-	public AspectText< WidgetType >,
-	public AspectVisible< WidgetType >
+	public AspectText< WidgetType >
 {
 public:
 	// Contract needed by AspectBackgroundColor Aspect class

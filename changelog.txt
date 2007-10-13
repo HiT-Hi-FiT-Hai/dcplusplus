@@ -1,4 +1,4 @@
--- --
+-- 0.700 2007-10-11 --
 * [bug 1102] Fixed move/rename queue folder (thanks mikael eman)
 * [bug 1124] Fixed thread shutdown on *nix (thanks mikael eman)
 * Fixed invalid share size

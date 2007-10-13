@@ -11,7 +11,6 @@ void WidgetMenu::appendItem
 	callbacks.insert(std::make_pair(id, IdDispatcher(f)));
 }
 
-
 void WidgetMenu::appendItem
 	( unsigned int id, const SmartUtil::tstring & name
 	, ULONG_PTR data, const SimpleDispatcher::F& f
@@ -73,6 +72,23 @@ void WidgetMenuBase::addCommands(Widget* widget) {
 	for(std::vector< std::tr1::shared_ptr<WidgetMenu> >::iterator i = itsChildren.begin(); i != itsChildren.end(); ++i) {
 		(*i)->addCommands(widget);
 	}
+}
+
+unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, const ScreenCoordinate& sc, unsigned flags )
+{
+	xAssert( mainWindow != 0, _T( "EventHandlerClass can't be null while trying to display Popup Menu" ) );
+	addCommands(mainWindow);
+	
+	long x = sc.getPoint().x, y = sc.getPoint().y;
+
+	if ( x == - 1 && y == - 1 ) {
+		DWORD pos = ::GetMessagePos();
+		x = LOWORD( pos );
+		y = HIWORD( pos );
+	}
+	
+	int retVal = ::TrackPopupMenu(this->handle(), flags, x, y, 0, mainWindow->handle(), 0);
+	return retVal;
 }
 
 }
