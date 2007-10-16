@@ -27,6 +27,8 @@
 #include "LogManager.h"
 #include "ClientManager.h"
 
+#include <openssl/bn.h>
+
 #ifdef _WIN32
 #include "../bzip2/bzlib.h"
 #else
@@ -105,43 +107,61 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 		throw CryptoException("No certificate file chosen");
 	}
 
-#ifdef _WIN32
-	tstring cmd = _T("openssl.exe genrsa -out \"") + Text::toT(SETTING(TLS_PRIVATE_KEY_FILE)) + _T("\" 2048");
-	PROCESS_INFORMATION pi = { 0 };
-	STARTUPINFO si = { 0 };
-	si.cb = sizeof(si);
+	BIGNUM* bn = BN_new();
+	RSA* rsa = RSA_new();
+	EVP_PKEY* pkey = EVP_PKEY_new();
+	X509_NAME *nm = X509_NAME_new();
+	const EVP_MD *digest = EVP_sha1();
+	X509 *x509ss = X509_new();
+	int days = 3650;
+	int keylength = 2048;
 
-	if(!CreateProcess(0, const_cast<TCHAR*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
-		throw CryptoException(Util::translateError(::GetLastError()));
+	const char* err = NULL;
+	
+#define CHECK(n) if(!(n)) { err = #n; goto end; }
+	
+	// Generate key pair
+	CHECK((BN_set_word(bn, RSA_F4)))
+	CHECK((RSA_generate_key_ex(rsa, keylength, bn, NULL)))
+	CHECK((EVP_PKEY_set1_RSA(pkey, rsa)))
+
+	// Set CID
+	CHECK((X509_NAME_add_entry_by_txt(nm, "CN", MBSTRING_ASC,
+		(const unsigned char*)ClientManager::getInstance()->getMyCID().toBase32().c_str(), -1, -1, 0)))
+
+	// Prepare self-signed cert
+	CHECK((X509_set_issuer_name(x509ss, nm)))
+	CHECK((X509_set_subject_name(x509ss, nm)))
+	CHECK((X509_gmtime_adj(X509_get_notBefore(x509ss), 0)))
+	CHECK((X509_gmtime_adj(X509_get_notAfter(x509ss), (long)60*60*24*days)))
+	CHECK((X509_set_pubkey(x509ss, pkey)))
+	
+	// Sign using own private key
+	CHECK((X509_sign(x509ss, pkey, digest)))
+
+#undef CHECK
+	// Write the key and cert
+	{
+		FILE* f = fopen(SETTING(TLS_PRIVATE_KEY_FILE).c_str(), "w");
+		PEM_write_RSAPrivateKey(f, rsa, NULL, NULL, 0, NULL, NULL);
+		fclose(f);
 	}
-	WaitForSingleObject(pi.hProcess, INFINITE);
-	CloseHandle(pi.hThread);
-	CloseHandle(pi.hProcess);
-
-	cmd = _T("openssl.exe req -x509 -new -batch -days 3650 -key \"") + Text::toT(SETTING(TLS_PRIVATE_KEY_FILE)) +
-		_T("\" -out \"") + Text::toT(SETTING(TLS_CERTIFICATE_FILE)) + _T("\" -subj \"/CN=") +
-		Text::toT(ClientManager::getInstance()->getMyCID().toBase32()) + _T("\"");
-
-	if(!CreateProcess(0, const_cast<TCHAR*>(cmd.c_str()), 0, 0, FALSE, 0, 0, 0, &si, &pi)) {
-		throw CryptoException(Util::translateError(::GetLastError()));
+	{
+		FILE* f = fopen(SETTING(TLS_CERTIFICATE_FILE).c_str(), "w");
+		PEM_write_X509(f, x509ss);
+		fclose(f);
 	}
+end:
 
-	WaitForSingleObject(pi.hProcess, INFINITE);
-	CloseHandle(pi.hThread);
-	CloseHandle(pi.hProcess);
-#else
-	string cmd = "openssl genrsa -out \"" + Text::fromUtf8(SETTING(TLS_PRIVATE_KEY_FILE)) + "\" 2048";
-	if (system(cmd.c_str()) == -1) {
-		throw CryptoException("Failed to spawn process: openssl");
+	X509_free(x509ss);
+	X509_NAME_free(nm);
+	EVP_PKEY_free(pkey);
+	RSA_free(rsa);
+	BN_free(bn);
+	
+	if(err) {
+		throw CryptoException(err);
 	}
-
-	cmd = "openssl req -x509 -new -batch -days 3650 -key \"" + Text::fromUtf8(SETTING(TLS_PRIVATE_KEY_FILE)) +
-		"\" -out \"" + Text::fromUtf8(SETTING(TLS_CERTIFICATE_FILE)) + "\" -subj \"/CN=" +
-		ClientManager::getInstance()->getMyCID().toBase32() + "\"";
-	if (system(cmd.c_str()) == -1) {
-		throw CryptoException("Failed to spawn process: openssl");
-	}
-#endif
 }
 
 void CryptoManager::loadCertificates() throw() {
@@ -161,10 +181,11 @@ void CryptoManager::loadCertificates() throw() {
 		return;
 	}
 
-	if(File::getSize(cert) == -1 || File::getSize(key) == -1) {
+	if(File::getSize(cert) == -1 || File::getSize(key) == -1 || !checkCertificate()) {
 		// Try to generate them...
 		try {
 			generateCertificate();
+			LogManager::getInstance()->message(STRING(CERTIFICATE_GENERATED));
 		} catch(const CryptoException& e) {
 			LogManager::getInstance()->message(STRING(CERTIFICATE_GENERATION_FAILED) + e.getError());
 		}
@@ -224,6 +245,11 @@ void CryptoManager::loadCertificates() throw() {
 	certsLoaded = true;
 }
 
+
+bool CryptoManager::checkCertificate() throw() {
+	/// @todo Check if CID in cert is ok and if cert hasn't expired
+	return true;
+}
 
 SSLSocket* CryptoManager::getClientSocket(bool allowUntrusted) throw(SocketException) {
 	return new SSLSocket(allowUntrusted ? clientContext : clientVerContext);

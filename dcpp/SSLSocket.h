@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SSLSOCKET_H)
-#define SSLSOCKET_H
+#ifndef DCPLUSPLUS_DCPP_SSLSOCKET_H
+#define DCPLUSPLUS_DCPP_SSLSOCKET_H
 
 #include "Socket.h"
 #include "Singleton.h"

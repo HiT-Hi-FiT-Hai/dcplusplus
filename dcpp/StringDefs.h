@@ -46,6 +46,7 @@ enum Strings { // @DontAdd
 	BROWSE, // "Browse..."
 	BROWSE_ACCEL, // "&Browse..."
 	BROWSE_FILE_LIST, // "Browse file list"
+	CERTIFICATE_GENERATED, // "Generated new TLS certificate"
 	CERTIFICATE_NOT_TRUSTED, // "Certificate not trusted, unable to connect"
 	CERTIFICATE_GENERATION_FAILED, // "TLS disabled, failed to generate certificate: "
 	CHOOSE_FOLDER, // "Choose folder"

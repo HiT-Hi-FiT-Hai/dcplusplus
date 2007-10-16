@@ -11,8 +11,9 @@ res = env.RES(dev.get_sources(source_path, '*.rc'))
 env.Depends(res, 'resource.h')
 sources += res
 
-env.Prepend(LIBS=["comctl32", "ws2_32", "ole32", "gdi32", "comdlg32", "winmm", "shlwapi", "htmlhelp", "oleaut32", "uuid"])
-env.Append(CPPPATH=['#/yassl/include', "#/smartwin/include", "#/"])
+env.Prepend(LIBS=["ssl", "crypto", "comctl32", "ws2_32", "ole32", "gdi32", "comdlg32", "winmm", "shlwapi", "htmlhelp", "oleaut32", "uuid"])
+env.Append(CPPPATH=['#/openssl/include', "#/smartwin/include", "#/"])
+env.Append(LIBPATH=["#/openssl/lib"])
 
-ret = env.Program(target, [sources, dev.client, dev.zlib, dev.bzip2, dev.yassl, dev.smartwin, dev.boost])
+ret = env.Program(target, [sources, dev.client, dev.zlib, dev.bzip2, dev.smartwin, dev.boost])
 Return('ret')

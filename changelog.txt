@@ -1,3 +1,8 @@
+-- 0.701 --
+* Fixed an upload bug
+* Reworked some context menu stuff
+* Replaced yassl with OpenSSL, SSL certs no longer require external OpenSSL application
+
 -- 0.700 2007-10-11 --
 * [bug 1102] Fixed move/rename queue folder (thanks mikael eman)
 * [bug 1124] Fixed thread shutdown on *nix (thanks mikael eman)

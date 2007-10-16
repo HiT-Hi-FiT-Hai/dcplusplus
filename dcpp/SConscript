@@ -25,8 +25,9 @@ def getRevision():
 Import('dev source_path')
 
 env, target, sources = dev.prepare_build(source_path, 'dcpp', in_bin=False)
+sources += dev.get_sources(source_path, "*.c")
 
-env.Append(CPPPATH = ['.','../yassl/include', '../bzip2', '../zlib'])
+env.Append(CPPPATH = ['#/openssl/include', '#/bzip2', '#/zlib'])
 
 for i, source in enumerate(sources):
 	if source.find("version.cpp") != -1:
