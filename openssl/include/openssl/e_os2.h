@@ -7,7 +7,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *    notice, this list of conditions and the following disclaimer. 
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -264,7 +264,7 @@ extern "C" {
 # define OPENSSL_IMPLEMENT_GLOBAL(type,name)			     \
 	extern type _hide_##name;				     \
 	type *_shadow_##name(void) { return &_hide_##name; }	     \
-	static type _hide_##name
+	type _hide_##name
 # define OPENSSL_DECLARE_GLOBAL(type,name) type *_shadow_##name(void)
 # define OPENSSL_GLOBAL_REF(name) (*(_shadow_##name()))
 #else

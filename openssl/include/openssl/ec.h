@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *    notice, this list of conditions and the following disclaimer. 
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -58,13 +58,13 @@
 /* ====================================================================
  * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
  *
- * Portions of the attached software ("Contribution") are developed by
+ * Portions of the attached software ("Contribution") are developed by 
  * SUN MICROSYSTEMS, INC., and are contributed to the OpenSSL project.
  *
  * The Contribution is licensed pursuant to the OpenSSL open source
  * license provided above.
  *
- * The elliptic curve binary polynomial software is originally written by
+ * The elliptic curve binary polynomial software is originally written by 
  * Sheueling Chang Shantz and Douglas Stebila of Sun Microsystems Laboratories.
  *
  */
@@ -186,13 +186,13 @@ EC_GROUP *EC_GROUP_new_curve_GF2m(const BIGNUM *p, const BIGNUM *a, const BIGNUM
  * specified by a curve name (in form of a NID) */
 EC_GROUP *EC_GROUP_new_by_curve_name(int nid);
 /* handling of internal curves */
-typedef struct {
+typedef struct { 
 	int nid;
 	const char *comment;
 	} EC_builtin_curve;
-/* EC_builtin_curves(EC_builtin_curve *r, size_t size) returns number
- * of all available curves or zero if a error occurred.
- * In case r ist not zero nitems EC_builtin_curve structures
+/* EC_builtin_curves(EC_builtin_curve *r, size_t size) returns number 
+ * of all available curves or zero if a error occurred. 
+ * In case r ist not zero nitems EC_builtin_curve structures 
  * are filled with the data of the first nitems internal groups */
 size_t EC_get_builtin_curves(EC_builtin_curve *r, size_t nitems);
 
@@ -204,7 +204,7 @@ void EC_POINT_free(EC_POINT *);
 void EC_POINT_clear_free(EC_POINT *);
 int EC_POINT_copy(EC_POINT *, const EC_POINT *);
 EC_POINT *EC_POINT_dup(const EC_POINT *, const EC_GROUP *);
-
+ 
 const EC_METHOD *EC_POINT_method_of(const EC_POINT *);
 
 int EC_POINT_set_to_infinity(const EC_GROUP *, EC_POINT *);
@@ -269,7 +269,7 @@ int EC_GROUP_have_precompute_mult(const EC_GROUP *);
  * used to represent the field elements */
 int EC_GROUP_get_basis_type(const EC_GROUP *);
 int EC_GROUP_get_trinomial_basis(const EC_GROUP *, unsigned int *k);
-int EC_GROUP_get_pentanomial_basis(const EC_GROUP *, unsigned int *k1,
+int EC_GROUP_get_pentanomial_basis(const EC_GROUP *, unsigned int *k1, 
 	unsigned int *k2, unsigned int *k3);
 
 #define OPENSSL_EC_NAMED_CURVE	0x001
@@ -319,7 +319,7 @@ void EC_KEY_set_enc_flags(EC_KEY *, unsigned int);
 point_conversion_form_t EC_KEY_get_conv_form(const EC_KEY *);
 void EC_KEY_set_conv_form(EC_KEY *, point_conversion_form_t);
 /* functions to set/get method specific data  */
-void *EC_KEY_get_key_method_data(EC_KEY *,
+void *EC_KEY_get_key_method_data(EC_KEY *, 
 	void *(*dup_func)(void *), void (*free_func)(void *), void (*clear_free_func)(void *));
 void EC_KEY_insert_key_method_data(EC_KEY *, void *data,
 	void *(*dup_func)(void *), void (*free_func)(void *), void (*clear_free_func)(void *));
@@ -471,6 +471,7 @@ void ERR_load_EC_strings(void);
 #define EC_F_EC_POINT_SET_JPROJECTIVE_COORDINATES_GFP	 126
 #define EC_F_EC_POINT_SET_TO_INFINITY			 127
 #define EC_F_EC_PRE_COMP_DUP				 207
+#define EC_F_EC_PRE_COMP_NEW				 196
 #define EC_F_EC_WNAF_MUL				 187
 #define EC_F_EC_WNAF_PRECOMPUTE_MULT			 188
 #define EC_F_I2D_ECPARAMETERS				 190

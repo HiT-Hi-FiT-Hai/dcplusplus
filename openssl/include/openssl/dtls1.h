@@ -1,7 +1,7 @@
 /* ssl/dtls1.h */
-/*
+/* 
  * DTLS implementation written by Nagendra Modadugu
- * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
+ * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.  
  */
 /* ====================================================================
  * Copyright (c) 1999-2005 The OpenSSL Project.  All rights reserved.
@@ -11,7 +11,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *    notice, this list of conditions and the following disclaimer. 
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -57,8 +57,8 @@
  *
  */
 
-#ifndef HEADER_DTLS1_H
-#define HEADER_DTLS1_H
+#ifndef HEADER_DTLS1_H 
+#define HEADER_DTLS1_H 
 
 #include <openssl/buffer.h>
 #include <openssl/pqueue.h>
@@ -67,9 +67,8 @@
 extern "C" {
 #endif
 
-#define DTLS1_VERSION			0x0100
-#define DTLS1_VERSION_MAJOR		0x01
-#define DTLS1_VERSION_MINOR		0x00
+#define DTLS1_VERSION			0xFEFF
+#define DTLS1_BAD_VER			0x0100
 
 #define DTLS1_AD_MISSING_HANDSHAKE_MESSAGE    110
 
@@ -83,7 +82,7 @@ extern "C" {
 #define DTLS1_HM_BAD_FRAGMENT                   -2
 #define DTLS1_HM_FRAGMENT_RETRY                 -3
 
-#define DTLS1_CCS_HEADER_LENGTH                  3
+#define DTLS1_CCS_HEADER_LENGTH                  1
 
 #define DTLS1_AL_HEADER_LENGTH                   7
 
@@ -115,10 +114,10 @@ struct dtls1_timeout_st
 	{
 	/* Number of read timeouts so far */
 	unsigned int read_timeouts;
-
+	
 	/* Number of write timeouts so far */
 	unsigned int write_timeouts;
-
+	
 	/* Number of alerts received so far */
 	unsigned int num_alerts;
 	};
@@ -142,10 +141,10 @@ typedef struct dtls1_state_st
 	unsigned char rcvd_cookie[DTLS1_COOKIE_LENGTH];
 	unsigned int cookie_len;
 
-	/*
+	/* 
 	 * The current data and handshake epoch.  This is initially
 	 * undefined, and starts at zero once the initial handshake is
-	 * completed
+	 * completed 
 	 */
 	unsigned short r_epoch;
 	unsigned short w_epoch;
@@ -178,7 +177,7 @@ typedef struct dtls1_state_st
 	struct hm_header_st r_msg_hdr;
 
 	struct dtls1_timeout_st timeout;
-
+	
 	/* storage for Alert/Handshake protocol data received but not
 	 * yet processed by ssl3_read_bytes: */
 	unsigned char alert_fragment[DTLS1_AL_HEADER_LENGTH];

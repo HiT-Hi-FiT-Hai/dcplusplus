@@ -5,21 +5,21 @@
  * This package is an SSL implementation written
  * by Eric Young (eay@cryptsoft.com).
  * The implementation was written so as to conform with Netscapes SSL.
- *
+ * 
  * This library is free for commercial and non-commercial use as long as
  * the following conditions are aheared to.  The following conditions
  * apply to all code found in this distribution, be it the RC4, RSA,
  * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
  * included with this distribution is covered by the same copyright terms
  * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- *
+ * 
  * Copyright remains Eric Young's, and as such any Copyright notices in
  * the code are not to be removed.
  * If this package is used in a product, Eric Young should be given attribution
  * as the author of the parts of the library used.
  * This can be in the form of a textual message at program startup or
  * in documentation (online or textual) provided with the package.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,10 +34,10 @@
  *     Eric Young (eay@cryptsoft.com)"
  *    The word 'cryptographic' can be left out if the rouines from the library
  *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from
+ * 4. If you include any Windows specific code (or a derivative thereof) from 
  *    the apps directory (application code) you must include an acknowledgement:
  *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
+ * 
  * The licence and distribution terms for any publically available version or
  * derivative of this code cannot be changed.  i.e. this code cannot simply be
  * copied and put under another distribution licence
@@ -215,9 +215,9 @@ typedef struct asn1_object_st
 #define ASN1_STRING_FLAG_BITS_LEFT 0x08 /* Set if 0x07 has bits left value */
 /* This indicates that the ASN1_STRING is not a real value but just a place
  * holder for the location where indefinite length constructed data should
- * be inserted in the memory buffer
+ * be inserted in the memory buffer 
  */
-#define ASN1_STRING_FLAG_NDEF 0x010
+#define ASN1_STRING_FLAG_NDEF 0x010 
 /* This is the base type that holds just about everything :-) */
 typedef struct asn1_string_st
 	{
@@ -322,6 +322,17 @@ typedef struct ASN1_VALUE_st ASN1_VALUE;
 #define I2D_OF(type) int (*)(type *,unsigned char **)
 #define I2D_OF_const(type) int (*)(const type *,unsigned char **)
 
+#define CHECKED_D2I_OF(type, d2i) \
+    ((d2i_of_void*) (1 ? d2i : ((D2I_OF(type))0)))
+#define CHECKED_I2D_OF(type, i2d) \
+    ((i2d_of_void*) (1 ? i2d : ((I2D_OF(type))0)))
+#define CHECKED_NEW_OF(type, xnew) \
+    ((void *(*)(void)) (1 ? xnew : ((type *(*)(void))0)))
+#define CHECKED_PTR_OF(type, p) \
+    ((void*) (1 ? p : (type*)0))
+#define CHECKED_PPTR_OF(type, p) \
+    ((void**) (1 ? p : (type**)0))
+
 #define TYPEDEF_D2I_OF(type) typedef type *d2i_of_##type(type **,const unsigned char **,long)
 #define TYPEDEF_I2D_OF(type) typedef int i2d_of_##type(type *,unsigned char **)
 #define TYPEDEF_D2I2D_OF(type) TYPEDEF_D2I_OF(type); TYPEDEF_I2D_OF(type)
@@ -347,7 +358,7 @@ TYPEDEF_D2I2D_OF(void);
  *      ...
  *      ASN1_ITEM_EXP *iptr;
  *      ...
- * } SOMETHING;
+ * } SOMETHING; 
  *
  * It would be initialised as e.g.:
  *
@@ -435,7 +446,7 @@ typedef const ASN1_ITEM * ASN1_ITEM_EXP(void);
  */
 
 /* If this is set we convert all character strings
- * to UTF8 first
+ * to UTF8 first 
  */
 
 #define ASN1_STRFLGS_UTF8_CONVERT	0x10
@@ -902,23 +913,41 @@ int ASN1_object_size(int constructed, int length, int tag);
 
 /* Used to implement other functions */
 void *ASN1_dup(i2d_of_void *i2d, d2i_of_void *d2i, char *x);
+
 #define ASN1_dup_of(type,i2d,d2i,x) \
-	((type *(*)(I2D_OF(type),D2I_OF(type),type *))openssl_fcast(ASN1_dup))(i2d,d2i,x)
+    ((type*)ASN1_dup(CHECKED_I2D_OF(type, i2d), \
+		     CHECKED_D2I_OF(type, d2i), \
+		     CHECKED_PTR_OF(type, x)))
+
 #define ASN1_dup_of_const(type,i2d,d2i,x) \
-	((type *(*)(I2D_OF_const(type),D2I_OF(type),type *))openssl_fcast(ASN1_dup))(i2d,d2i,x)
+    ((type*)ASN1_dup(CHECKED_I2D_OF(const type, i2d), \
+		     CHECKED_D2I_OF(type, d2i), \
+		     CHECKED_PTR_OF(const type, x)))
 
 void *ASN1_item_dup(const ASN1_ITEM *it, void *x);
 
 #ifndef OPENSSL_NO_FP_API
 void *ASN1_d2i_fp(void *(*xnew)(void), d2i_of_void *d2i, FILE *in, void **x);
+
 #define ASN1_d2i_fp_of(type,xnew,d2i,in,x) \
-	((type *(*)(type *(*)(void),D2I_OF(type),FILE *,type **))openssl_fcast(ASN1_d2i_fp))(xnew,d2i,in,x)
+    ((type*)ASN1_d2i_fp(CHECKED_NEW_OF(type, xnew), \
+			CHECKED_D2I_OF(type, d2i), \
+			in, \
+			CHECKED_PPTR_OF(type, x)))
+
 void *ASN1_item_d2i_fp(const ASN1_ITEM *it, FILE *in, void *x);
 int ASN1_i2d_fp(i2d_of_void *i2d,FILE *out,void *x);
+
 #define ASN1_i2d_fp_of(type,i2d,out,x) \
-	((int (*)(I2D_OF(type),FILE *,type *))openssl_fcast(ASN1_i2d_fp))(i2d,out,x)
+    (ASN1_i2d_fp(CHECKED_I2D_OF(type, i2d), \
+		 out, \
+		 CHECKED_PTR_OF(type, x)))
+
 #define ASN1_i2d_fp_of_const(type,i2d,out,x) \
-	((int (*)(I2D_OF_const(type),FILE *,type *))openssl_fcast(ASN1_i2d_fp))(i2d,out,x)
+    (ASN1_i2d_fp(CHECKED_I2D_OF(const type, i2d), \
+		 out, \
+		 CHECKED_PTR_OF(const type, x)))
+
 int ASN1_item_i2d_fp(const ASN1_ITEM *it, FILE *out, void *x);
 int ASN1_STRING_print_ex_fp(FILE *fp, ASN1_STRING *str, unsigned long flags);
 #endif
@@ -927,14 +956,26 @@ int ASN1_STRING_to_UTF8(unsigned char **out, ASN1_STRING *in);
 
 #ifndef OPENSSL_NO_BIO
 void *ASN1_d2i_bio(void *(*xnew)(void), d2i_of_void *d2i, BIO *in, void **x);
+
 #define ASN1_d2i_bio_of(type,xnew,d2i,in,x) \
-	((type *(*)(type *(*)(void),D2I_OF(type),BIO *,type **))openssl_fcast(ASN1_d2i_bio))(xnew,d2i,in,x)
+    ((type*)ASN1_d2i_bio( CHECKED_NEW_OF(type, xnew), \
+			  CHECKED_D2I_OF(type, d2i), \
+			  in, \
+			  CHECKED_PPTR_OF(type, x)))
+
 void *ASN1_item_d2i_bio(const ASN1_ITEM *it, BIO *in, void *x);
 int ASN1_i2d_bio(i2d_of_void *i2d,BIO *out, unsigned char *x);
+
 #define ASN1_i2d_bio_of(type,i2d,out,x) \
-	((int (*)(I2D_OF(type),BIO *,type *))openssl_fcast(ASN1_i2d_bio))(i2d,out,x)
+    (ASN1_i2d_bio(CHECKED_I2D_OF(type, i2d), \
+		  out, \
+		  CHECKED_PTR_OF(type, x)))
+
 #define ASN1_i2d_bio_of_const(type,i2d,out,x) \
-	((int (*)(I2D_OF_const(type),BIO *,const type *))openssl_fcast(ASN1_i2d_bio))(i2d,out,x)
+    (ASN1_i2d_bio(CHECKED_I2D_OF(const type, i2d), \
+		  out, \
+		  CHECKED_PTR_OF(const type, x)))
+
 int ASN1_item_i2d_bio(const ASN1_ITEM *it, BIO *out, void *x);
 int ASN1_UTCTIME_print(BIO *fp,ASN1_UTCTIME *a);
 int ASN1_GENERALIZEDTIME_print(BIO *fp,ASN1_GENERALIZEDTIME *a);
@@ -977,8 +1018,12 @@ void *ASN1_unpack_string(ASN1_STRING *oct, d2i_of_void *d2i);
 void *ASN1_item_unpack(ASN1_STRING *oct, const ASN1_ITEM *it);
 ASN1_STRING *ASN1_pack_string(void *obj, i2d_of_void *i2d,
 			      ASN1_OCTET_STRING **oct);
+
 #define ASN1_pack_string_of(type,obj,i2d,oct) \
-	((ASN1_STRING *(*)(type *,I2D_OF(type),ASN1_OCTET_STRING **))openssl_fcast(ASN1_pack_string))(obj,i2d,oct)
+    (ASN1_pack_string(CHECKED_PTR_OF(type, obj), \
+		      CHECKED_I2D_OF(type, i2d), \
+		      oct))
+
 ASN1_STRING *ASN1_item_pack(void *obj, const ASN1_ITEM *it, ASN1_OCTET_STRING **oct);
 
 void ASN1_STRING_set_default_mask(unsigned long mask);
@@ -987,10 +1032,10 @@ unsigned long ASN1_STRING_get_default_mask(void);
 int ASN1_mbstring_copy(ASN1_STRING **out, const unsigned char *in, int len,
 					int inform, unsigned long mask);
 int ASN1_mbstring_ncopy(ASN1_STRING **out, const unsigned char *in, int len,
-					int inform, unsigned long mask,
+					int inform, unsigned long mask, 
 					long minsize, long maxsize);
 
-ASN1_STRING *ASN1_STRING_set_by_NID(ASN1_STRING **out,
+ASN1_STRING *ASN1_STRING_set_by_NID(ASN1_STRING **out, 
 		const unsigned char *in, int inlen, int inform, int nid);
 ASN1_STRING_TABLE *ASN1_STRING_TABLE_get(int nid);
 int ASN1_STRING_TABLE_add(int, long, long, unsigned long, unsigned long);
@@ -1009,7 +1054,7 @@ void ASN1_add_oid_module(void);
 
 ASN1_TYPE *ASN1_generate_nconf(char *str, CONF *nconf);
 ASN1_TYPE *ASN1_generate_v3(char *str, X509V3_CTX *cnf);
-
+	
 /* BEGIN ERROR CODES */
 /* The following lines are auto generated by the script mkerr.pl. Any changes
  * made after this point may be overwritten when the script is next run.
