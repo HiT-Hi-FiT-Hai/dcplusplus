@@ -505,7 +505,7 @@ void WinUtil::setClipboard(const tstring& str) {
 #ifdef UNICODE
 	SetClipboardData(CF_UNICODETEXT, hglbCopy);
 #else
-	SetClipboardData(CF_TEXT hglbCopy);
+	SetClipboardData(CF_TEXT, hglbCopy);
 #endif
 
 	CloseClipboard();

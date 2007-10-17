@@ -65,6 +65,11 @@ void WidgetTabView::addWidget(Widget* w, const IconPtr& icon, const SmartUtil::t
 	layout();
 }
 
+Widget* WidgetTabView::getActive() {
+	TabInfo* ti = getTabInfo(tab->getSelectedIndex());
+	return ti ? ti->w : 0;
+}
+
 void WidgetTabView::remove(Widget* w) {
 	if(viewOrder.size() > 1 && viewOrder.back() == w) {
 		setActive(*(--(--viewOrder.end())));
@@ -120,6 +125,7 @@ void WidgetTabView::handleTabSelected() {
 	}
 	
 	TabInfo* old = getTabInfo(active);
+
 	TabInfo* ti = getTabInfo(i);
 	
 	if(ti == old)
@@ -271,7 +277,6 @@ bool WidgetTabView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 			return false;
 		}
 		pt = ScreenCoordinate(Point(rc.left, rc.top));
-		
 		ti = getTabInfo(i);
 	} else {
 		int i = tab->hitTest(pt);
@@ -291,6 +296,7 @@ bool WidgetTabView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 bool WidgetTabView::filter(const MSG& msg) {
 	if(msg.message == WM_KEYUP && msg.wParam == VK_CONTROL) {
 		inTab = false;
+
 		TabInfo* ti = getTabInfo(tab->getSelectedIndex());
 		if(ti) {
 			setTop(ti->w);

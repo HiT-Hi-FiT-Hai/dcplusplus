@@ -148,7 +148,8 @@ public:
 	UserPtr& getUser() { return user; }
 	bool isSecure() const { return socket && socket->isSecure(); }
 	bool isTrusted() const { return socket && socket->isTrusted(); }
-
+	std::string getCipherName() const { return socket ? socket->getCipherName() : Util::emptyString; }
+	
 	string getRemoteIp() const { return socket->getIp(); }
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; }
 	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; }

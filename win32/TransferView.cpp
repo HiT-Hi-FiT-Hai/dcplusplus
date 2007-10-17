@@ -32,12 +32,12 @@
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID };
-int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID, COLUMN_CIPHER };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
-ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, };
+ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, ResourceManager::CIPHER };
 
 TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
 	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
@@ -446,6 +446,9 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 	if(ui.updateMask & UpdateInfo::MASK_IP) {
 		columns[COLUMN_IP] = ui.IP;
 	}
+	if(ui.updateMask & UpdateInfo::MASK_CIPHER) {
+		columns[COLUMN_CIPHER] = ui.cipher;
+	}
 }
 
 void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw() {
@@ -453,7 +456,6 @@ void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCq
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setStatusString(TSTRING(CONNECTING));
-
 	speak(ADD_ITEM, ui);
 }
 
@@ -488,6 +490,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) th
 	ui->setSize(aDownload->getSize());
 	ui->setFile(Text::toT(aDownload->getPath()));
 	ui->setStatusString(TSTRING(DOWNLOAD_STARTING));
+	ui->setCipher(Text::toT(aDownload->getUserConnection().getCipherName()));
 	tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aDownload->getUserConnection().getRemoteIp());
 	if(country.empty()) {
@@ -567,6 +570,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() 
 	ui->setSize(aUpload->getSize());
 	ui->setFile(Text::toT(aUpload->getPath()));
 	ui->setStatusString(TSTRING(UPLOAD_STARTING));
+	ui->setCipher(Text::toT(aUpload->getUserConnection().getCipherName()));
 	tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aUpload->getUserConnection().getRemoteIp());
 	if(country.empty()) {

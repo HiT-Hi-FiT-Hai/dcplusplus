@@ -73,6 +73,7 @@ private:
 		COLUMN_IP,
 		COLUMN_RATIO,
 		COLUMN_CID,
+		COLUMN_CIPHER,
 		COLUMN_LAST
 	};
 
@@ -132,6 +133,7 @@ private:
 			MASK_IP = 1 << 8,
 			MASK_STATUS_STRING = 1 << 9,
 			MASK_COUNTRY = 1 << 10,
+			MASK_CIPHER = 1 << 11
 		};
 
 		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
@@ -164,6 +166,8 @@ private:
 		tstring path;
 		void setIP(const tstring& aIP) { IP = aIP; updateMask |= MASK_IP; }
 		tstring IP;
+		void setCipher(const tstring& aCipher) { cipher = aCipher; updateMask |= MASK_CIPHER; }
+		tstring cipher;
 	};
 
 	static int columnIndexes[];

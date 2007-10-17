@@ -75,7 +75,8 @@ public:
 
 	bool isSecure() const { return sock && sock->isSecure(); }
 	bool isTrusted() const { return sock && sock->isTrusted(); }
-
+	std::string getCipherName() const { return sock ? sock->getCipherName() : Util::emptyString; }
+	
 	void write(const string& aData) throw() { write(aData.data(), aData.length()); }
 	void write(const char* aBuf, size_t aLen) throw();
 	/** Send the file f over this socket. */

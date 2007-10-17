@@ -22,7 +22,7 @@
 #include "Socket.h"
 #include "Singleton.h"
 
-#include <openssl/ssl.h>
+#include "SSL.h"
 
 #ifndef SSL_SUCCESS
 #define SSL_SUCCESS 1
@@ -50,7 +50,7 @@ public:
 
 	virtual bool isSecure() const throw() { return true; }
 	virtual bool isTrusted() const throw();
-
+	virtual std::string getCipherName() const throw();
 private:
 	friend class CryptoManager;
 
@@ -59,7 +59,7 @@ private:
 	SSLSocket& operator=(const SSLSocket&);
 
 	SSL_CTX* ctx;
-	SSL* ssl;
+	ssl::SSL ssl;
 
 	int checkSSL(int ret) throw(SocketException);
 };

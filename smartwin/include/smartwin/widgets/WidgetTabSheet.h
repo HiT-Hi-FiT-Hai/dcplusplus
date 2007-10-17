@@ -321,7 +321,7 @@ inline LPARAM WidgetTabSheet::getData(unsigned idx)
 	TCITEM item = { TCIF_PARAM };
 	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
 	{
-		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
+		throw xCeption( _T( "Couldn't get data of item." ) );
 	}
 	return item.lParam;
 }

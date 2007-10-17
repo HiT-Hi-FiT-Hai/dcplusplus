@@ -59,12 +59,13 @@ private:
 	CryptoManager();
 	virtual ~CryptoManager();
 
-	SSL_CTX* clientContext;
-	SSL_CTX* clientVerContext;
-	SSL_CTX* serverContext;
-	SSL_CTX* serverVerContext;
+	ssl::SSL_CTX clientContext;
+	ssl::SSL_CTX clientVerContext;
+	ssl::SSL_CTX serverContext;
+	ssl::SSL_CTX serverVerContext;
 
-	DH* dh;
+	ssl::DH dh;
+	
 	bool certsLoaded;
 
 	const string lock;

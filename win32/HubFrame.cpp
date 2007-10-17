@@ -696,19 +696,6 @@ bool HubFrame::handleMessageChar(int c) {
 			return true;
 		}
 	} break;
-	case VK_UP:
-	case VK_DOWN:
-	case VK_END:
-	case VK_HOME:
-	{
-		if(historyActive()) {
-			return true;
-		}
-	} break;
-	case VK_PRIOR:
-	case VK_NEXT: {
-		return true;
-	}
 	}
 	return false;
 }

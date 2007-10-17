@@ -51,6 +51,7 @@ enum Strings { // @DontAdd
 	CERTIFICATE_GENERATION_FAILED, // "TLS disabled, failed to generate certificate: "
 	CHOOSE_FOLDER, // "Choose folder"
 	CID, // "CID"
+	CIPHER, // "Cipher"
 	CLOSE, // "Close"
 	CLOSE_CONNECTION, // "Close connection"
 	CLOSING_CONNECTION, // "Closing connection..."

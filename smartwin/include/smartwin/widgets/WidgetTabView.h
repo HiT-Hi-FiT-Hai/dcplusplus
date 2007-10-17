@@ -115,11 +115,6 @@ inline WidgetTabView::Seed::Seed()
 	* this = WidgetTabView::getDefaultSeed();
 }
 
-inline Widget* WidgetTabView::getActive() {
-	 TabInfo* ti = getTabInfo(tab->getSelectedIndex());
-	 return ti ? ti->w : 0;
-}
-
 inline WidgetTabSheet::ObjectType WidgetTabView::getTab()
 {
 	return tab;

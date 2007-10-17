@@ -482,16 +482,19 @@ bool MainWindow::closing() {
 			stopUPnP();
 
 			DWORD id;
-			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+			dcdebug("Starting stopper\n");
+			stopperThread = CreateThread(NULL, 0, &stopper, this, 0, &id);
 		}
 		return false;
-	} else {
-		// This should end immediately, as it only should be the stopper that sends another WM_CLOSE
-		WaitForSingleObject(stopperThread, 60*1000);
-		CloseHandle(stopperThread);
-		stopperThread = NULL;
-		::PostQuitMessage(0);
-	}
+	} 
+
+	dcdebug("Waiting for stopper\n");
+	// This should end immediately, as it only should be the stopper that sends another WM_CLOSE
+	WaitForSingleObject(stopperThread, 60*1000);
+	CloseHandle(stopperThread);
+	stopperThread = NULL;
+	::PostQuitMessage(0);
+	dcdebug("Quit message posted\n");
 	return true;
 }
 
@@ -731,10 +734,10 @@ DWORD WINAPI MainWindow::stopper(void* p) {
 	MainWindow* mf = reinterpret_cast<MainWindow*>(p);
 	HWND wnd, wnd2 = NULL;
 
-	while( (wnd=::GetWindow(mf->getMDIParent()->handle(), GW_CHILD)) != NULL) {
-		if(wnd == wnd2)
-		Sleep(100);
-		else {
+	while( (wnd=::GetWindow(mf->getMDIParent()->getTab()->handle(), GW_CHILD)) != NULL) {
+		if(wnd == wnd2) {
+			::Sleep(100);
+		} else {
 			::PostMessage(wnd, WM_CLOSE, 0, 0);
 			wnd2 = wnd;
 		}
