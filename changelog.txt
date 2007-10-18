@@ -1,10 +1,11 @@
--- 0.701 --
+-- 0.701 2007-10-18 --
 * Fixed an upload bug
 * Reworked some context menu stuff
 * Replaced yassl with OpenSSL, SSL certs no longer require external OpenSSL application
 * Added cipher column to transfer view
 * Because certs are automagically generated, ADC transfers will now by default be encrypted if both
   clients use a recent version (see the cipher column to know)
+* Fixed one of several possible crashes at exit
 
 -- 0.700 2007-10-11 --
 * [bug 1102] Fixed move/rename queue folder (thanks mikael eman)

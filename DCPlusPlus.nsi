@@ -56,7 +56,7 @@ no_backup:
   ; Put file there
   File "changelog.txt"
   File "dcppboot.xml"
-;  File "DCPlusPlus.chm"
+  File "DCPlusPlus.chm"
   File "DCPlusPlus.exe"
   File "Example.xml"
   File "License.txt"
