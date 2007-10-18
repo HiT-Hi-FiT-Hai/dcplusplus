@@ -622,12 +622,17 @@ void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCo
 		token = aSource->getToken();
 	}
 
-	bool down = true;
+	bool down = false;
 	{
 		Lock l(cs);
 		ConnectionQueueItem::Iter i = find(downloads.begin(), downloads.end(), aSource->getUser());
-		if(i == downloads.end() || (*i)->getToken() != token) {
-			down = false;
+		
+		if(i != downloads.end()) {
+			// Last compare for compatibility with pre-0.700
+			const string& to = (*i)->getToken();
+			if(to == token || (to.size() > 2 && to.compare(0, 2, "TO") == 0 && to.compare(2, to.size() - 2, token) == 0)) {
+				down = true;
+			}
 		}
 		/** @todo check tokens for upload connections */
 	}

@@ -74,6 +74,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 	string sourceFile;
 	Transfer::Type type;
+	
 	try {
 		if(aType == Transfer::names[Transfer::TYPE_FILE]) {
 			sourceFile = ShareManager::getInstance()->toReal(aFile);
@@ -103,6 +104,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 
 				free = free || (size <= (int64_t)(SETTING(SET_MINISLOT_SIZE) * 1024) );
 
+				f->setPos(start);
 				is = f;
 				if((start + size) < sz) {
 					is = new LimitedInputStream<true>(is, size);
@@ -276,10 +278,10 @@ void UploadManager::on(UserConnectionListener::Send, UserConnection* aSource) th
 }
 
 void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
-	int64_t aBytes = Util::toInt64(c.getParam(3));
-	int64_t aStartPos = Util::toInt64(c.getParam(2));
-	const string& fname = c.getParam(1);
 	const string& type = c.getParam(0);
+	const string& fname = c.getParam(1);
+	int64_t aStartPos = Util::toInt64(c.getParam(2));
+	int64_t aBytes = Util::toInt64(c.getParam(3));
 
 	if(prepareFile(*aSource, type, fname, aStartPos, aBytes, c.hasFlag("RE", 4))) {
 		Upload* u = aSource->getUpload();
@@ -287,8 +289,8 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 
 		AdcCommand cmd(AdcCommand::CMD_SND);
 		cmd.addParam(type).addParam(fname)
-			.addParam(Util::toString(u->getPos()))
-			.addParam(Util::toString(u->getSize() - u->getPos()));
+			.addParam(Util::toString(u->getStartPos()))
+			.addParam(Util::toString(u->getSize()));
 
 		if(c.hasFlag("ZL", 4)) {
 			u->setStream(new FilteredInputStream<ZFilter, true>(u->getStream()));
