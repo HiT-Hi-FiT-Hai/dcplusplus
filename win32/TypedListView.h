@@ -39,6 +39,7 @@ public:
 		this->setCallback(
 			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &TypedListViewDispatcher
 		);
+		this->onColumnClick(std::tr1::bind(&ThisType::handleColumnClick, this, _1));
 	}
 	
 	void resort() {
@@ -188,6 +189,20 @@ private:
 		return true;
 	}
 	
+	// Sorting
+	void handleColumnClick(int column) {
+		if(column != sortColumn) {
+			sortAscending = true;
+			sortColumn = column;
+		} else if(sortAscending) {
+			sortAscending = false;
+		} else {
+			sortColumn = -1;
+		}
+		/// TODO updateArrow();
+		resort();
+	}
+
 };
 
 #ifdef PORT_ME
@@ -278,21 +293,6 @@ class TypedListView : public T::WidgetDataGrid,
 		return 0;
 	}
 
-	// Sorting
-	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem != sortColumn) {
-			sortAscending = true;
-			sortColumn = l->iSubItem;
-		} else if(sortAscending) {
-			sortAscending = false;
-		} else {
-			sortColumn = -1;
-		}
-		updateArrow();
-		resort();
-		return 0;
-	}
 	iterator begin() { return iterator(this); }
 	iterator end() { return iterator(this, GetItemCount()); }
 

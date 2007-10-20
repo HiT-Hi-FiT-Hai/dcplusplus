@@ -470,17 +470,6 @@ inline void WidgetMenu::checkItem( unsigned id, bool value )
 	::CheckMenuItem( this->handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
 }
 
-inline WidgetMenu::ObjectType WidgetMenu::getChild( unsigned position ) {
-	HMENU h = reinterpret_cast<HMENU>(getId(position));
-	for(size_t i = 0; i < this->itsChildren.size(); ++i) {
-		ObjectType& menu = this->itsChildren[i];
-		if(menu->handle() == h) {
-			return menu;
-		}
-	}
-	return ObjectType();
-}
-
 inline bool WidgetMenu::getCheckedState( unsigned id )
 {
 	return isChecked(id);
