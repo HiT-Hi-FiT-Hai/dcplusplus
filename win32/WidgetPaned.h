@@ -24,7 +24,7 @@
 template< bool horizontal >
 class WidgetPaned :
 	public SmartWin::MessageMapPolicy< SmartWin::Policies::Normal >,
-	public SmartWin::AspectMouseClicks< WidgetPaned< horizontal > >,
+	public SmartWin::AspectMouse< WidgetPaned< horizontal > >,
 	public SmartWin::AspectSizable< WidgetPaned< horizontal > >,
 	public SmartWin::AspectVisible< WidgetPaned< horizontal > >,
 	public SmartWin::AspectRaw< WidgetPaned< horizontal > >

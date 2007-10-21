@@ -26,8 +26,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef AspectMouseClicks_h
-#define AspectMouseClicks_h
+#ifndef AspectMouse_h
+#define AspectMouse_h
 
 #include "../BasicTypes.h"
 
@@ -79,10 +79,10 @@ struct MouseEventResult
 /// clicked" events.
 /** \ingroup AspectClasses
   * E.g. the WidgetWindow can trap "mouse clicked events" therefore it realize the
-  * AspectMouseClicks through inheritance.
+  * AspectMouse through inheritance.
   */
 template< class WidgetType >
-class AspectMouseClicks
+class AspectMouse
 {
 	struct Dispatcher
 	{
@@ -100,7 +100,7 @@ class AspectMouseClicks
 	};
 
 public:
-	/// \ingroup EventHandlersAspectMouseClicks
+	/// \ingroup EventHandlersAspectMouse
 	/// Left mouse button pressed and released event handler setter
 	/** If supplied, function will be called when user releases the Left Mouse button
 	  * after clicking onto the client area of the Widget. <br>
@@ -111,7 +111,7 @@ public:
 		onMouse(WM_LBUTTONUP, f);
 	}
 	
-	/// \ingroup EventHandlersAspectMouseClicks
+	/// \ingroup EventHandlersAspectMouse
 	/// Right mouse button pressed and released event handler setter
 	/** If supplied, function will be called when user releases the Right Mouse
 	  * button after clicking onto the client area of the Widget. <br>
@@ -122,7 +122,7 @@ public:
 		onRightMouseUp(WM_RBUTTONUP, f);
 	}
 
-	/// \ingroup EventHandlersAspectMouseClicks
+	/// \ingroup EventHandlersAspectMouse
 	/// Middle mouse button pressed and released event handler setter
 	/** If supplied, function will be called when user releases the middle Mouse
 	  * button after clicking onto the client area of the Widget. <br>
@@ -133,7 +133,7 @@ public:
 		onMiddleMouseUp(WM_MBUTTONUP, f);
 	}
 
-	/// \ingroup EventHandlersAspectMouseClicks
+	/// \ingroup EventHandlersAspectMouse
 	/// Left mouse button pressed event handler setter
 	/** If supplied, function will be called when user press the Left Mouse button in
 	  * the client area of the widget. <br>
@@ -144,7 +144,7 @@ public:
 		onMouse(WM_LBUTTONDOWN, f);
 	}
 
-	/// \ingroup EventHandlersAspectMouseClicks
+	/// \ingroup EventHandlersAspectMouse
 	/// Right mouse button pressed event handler setter
 	/** If supplied, function will be called when user press the Right Mouse button
 	  * in the client area of the widget. <br>
@@ -185,7 +185,7 @@ public:
 		onMouse(WM_RBUTTONDBLCLK, f);
 	}
 
-	/// \ingroup EventHandlersAspectMouseClicks
+	/// \ingroup EventHandlersAspectMouse
 	/// Mouse moved event handler setter
 	/** If supplied, function will be called when user moves the mouse. <br>
 	  * The parameter passed is const MouseEventResult & which contains the state of
@@ -202,7 +202,7 @@ protected:
 			Message( msg ), Dispatcher(static_cast<WidgetType*>(this), f)
 		);
 	}
-	virtual ~AspectMouseClicks()
+	virtual ~AspectMouse()
 	{}
 };
 

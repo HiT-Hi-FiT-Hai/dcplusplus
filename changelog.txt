@@ -2,6 +2,9 @@
 * Fixed missing sorting in most places
 * Fixed crash on startup when missing Certificates folder
 * Fixed right-click menu with nested user commands
+* Added expiry check to certificate regeneration
+* Readded splash screen
+* Readded sfv check (always done at end of download due to segmented downloading)
 
 -- 0.701 2007-10-18 --
 * Fixed an upload bug

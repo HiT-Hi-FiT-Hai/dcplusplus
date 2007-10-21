@@ -29,7 +29,7 @@
 #include "../include/smartwin/Application.h"
 #include "../SmartUtil/tstring.h"
 #include "../include/smartwin/BasicTypes.h"
-#include "../include/smartwin/aspects/AspectMouseClicks.h"
+#include "../include/smartwin/aspects/AspectMouse.h"
 #include "../include/smartwin/aspects/AspectSizable.h"
 
 #include <boost/lexical_cast.hpp>
@@ -358,6 +358,10 @@ int Application::run()
 		}
 	}
 	return static_cast< int >( msg.wParam );
+}
+
+int Application::getCmdShow() const {
+	return itsCmdShow;
 }
 
 Application::FilterIter Application::addFilter(const FilterFunction& f) {

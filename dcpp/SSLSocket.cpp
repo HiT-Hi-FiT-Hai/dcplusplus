@@ -139,6 +139,16 @@ std::string SSLSocket::getCipherName() const throw() {
 	return SSL_get_cipher_name(ssl);
 }
 
+std::string SSLSocket::getDigest() const throw() {
+	if(!ssl)
+		return Util::emptyString;
+	X509* x509 = SSL_get_peer_certificate(ssl);
+	if(!x509)
+		return Util::emptyString;
+	
+	return ssl::X509_digest(x509, EVP_sha1());
+}
+
 void SSLSocket::shutdown() throw() {
 	if(ssl)
 		SSL_shutdown(ssl);

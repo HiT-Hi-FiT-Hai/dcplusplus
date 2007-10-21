@@ -321,8 +321,12 @@ bool CryptoManager::checkCertificate() throw() {
 		return false;
 	}
 	
-	// TODO check expired
-	
+	ASN1_TIME* t = X509_get_notAfter(x509);
+	if(t) {
+		if(X509_cmp_current_time(t) < 0) {
+			return false;
+		}
+	}
 	return true;
 }
 

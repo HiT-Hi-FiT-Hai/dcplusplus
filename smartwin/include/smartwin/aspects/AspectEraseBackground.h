@@ -76,9 +76,19 @@ public:
 		);
 	}
 
+	void noEraseBackground() {
+		static_cast<WidgetType*>(this)->setCallback(
+			Message( WM_ERASEBKGND ), &AspectEraseBackground<WidgetType>::noEraseDispatcher
+		);
+	}
 protected:
 	virtual ~AspectEraseBackground()
 	{}
+	
+	static bool noEraseDispatcher(const MSG& msg, LRESULT& ret) {
+		ret = 1;
+		return true;
+	}
 };
 
 // end namespace SmartWin
