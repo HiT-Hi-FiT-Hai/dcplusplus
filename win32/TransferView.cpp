@@ -45,7 +45,6 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 	mdi(mdi_)
 {
 	createWindow();
-	
 	{
 		arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap tmp(IDB_ARROWS);
@@ -53,7 +52,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 	}
 	{
 		WidgetTransfers::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SHAREIMAGELISTS;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, cs);
 		transfers->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
@@ -71,6 +70,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
+	noEraseBackground();
 	
 	transfers->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
 	transfers->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));

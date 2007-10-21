@@ -42,7 +42,7 @@
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectKeyboard.h"
-#include "../aspects/AspectMouseClicks.h"
+#include "../aspects/AspectMouse.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
 #include "../aspects/AspectSizable.h"
@@ -95,7 +95,7 @@ class WidgetWindowBase :
 	public AspectFocus< WidgetWindowBase< Policy > >,
 	public AspectFont< WidgetWindowBase< Policy > >,
 	public AspectKeyboard< WidgetWindowBase< Policy > >,
-	public AspectMouseClicks< WidgetWindowBase< Policy > >,
+	public AspectMouse< WidgetWindowBase< Policy > >,
 	public AspectPainting< WidgetWindowBase< Policy > >,
 	public AspectRaw< WidgetWindowBase< Policy > >,
 	public AspectSizable< WidgetWindowBase< Policy > >,

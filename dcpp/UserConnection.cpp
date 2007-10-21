@@ -84,7 +84,9 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 			param.rfind(/*path/file*/" no more exists") != string::npos) {
 			fire(UserConnectionListener::FileNotAvailable(), this);
 		} else {
+			dcdebug("Unknown $Error %s\n", param.c_str());
 			fire(UserConnectionListener::Failed(), this, param);
+			disconnect(true);
 		}
 	} else if(cmd == "$GetListLen") {
 		fire(UserConnectionListener::GetListLength(), this);

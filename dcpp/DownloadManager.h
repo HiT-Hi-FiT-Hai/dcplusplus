@@ -69,7 +69,7 @@ private:
 
 	void logDownload(UserConnection* aSource, Download* d);
 	uint32_t calcCrc32(const string& file) throw(FileException);
-	bool checkSfv(UserConnection* aSource, Download* d, uint32_t crc);
+	bool checkSfv(UserConnection* aSource, Download* d);
 	int64_t getResumePos(const string& file, const TigerTree& tt, int64_t startPos);
 
 	void failDownload(UserConnection* aSource, const string& reason);

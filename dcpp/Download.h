@@ -4,9 +4,8 @@
 #include "forward.h"
 #include "Transfer.h"
 #include "MerkleTree.h"
-#include "ZUtils.h"
-#include "FilteredFile.h"
 #include "Flags.h"
+#include "Streams.h"
 
 namespace dcpp {
 
@@ -56,12 +55,9 @@ public:
 	const SharedFile* getSharedFile() const{ return sharedFile; }
 	void setSharedFile(SharedFile* f);
 	
-	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
-	GETSET(CrcOS*, crcCalc, CrcCalc);
 	GETSET(bool, treeValid, TreeValid);
-
 private:
 	Download(const Download&);
 	Download& operator=(const Download&);

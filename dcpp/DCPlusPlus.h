@@ -97,7 +97,7 @@ typedef pair<wstring, wstring> WStringPair;
 typedef vector<WStringPair> WStringPairList;
 typedef WStringPairList::iterator WStringPairIter;
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #define _LL(x) x##ll
 #define _ULL(x) x##ull
 #define I64_FMT "%I64d"

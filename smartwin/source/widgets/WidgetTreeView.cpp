@@ -163,4 +163,15 @@ void WidgetTreeView::select(const ScreenCoordinate& pt) {
 	}
 }
 
+/// Returns true if fired, else false
+bool WidgetTreeView::tryFire( const MSG & msg, LRESULT & retVal ) {
+	bool handled = PolicyType::tryFire(msg, retVal);
+	if(!handled && msg.message == WM_RBUTTONDOWN) {
+		// Tree view control does strange things to rbuttondown, preventing wm_contextmenu from reaching it
+		retVal = ::DefWindowProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+		return true;
+	}
+	return handled;
+}
+
 }

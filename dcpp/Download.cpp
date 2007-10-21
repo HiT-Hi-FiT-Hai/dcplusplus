@@ -29,14 +29,14 @@
 namespace dcpp {
 
 Download::Download(UserConnection& conn, const string& pfsDir) throw() : Transfer(conn, pfsDir, TTHValue()), 
-	file(0), crcCalc(NULL), treeValid(false) 
+	file(0), treeValid(false) 
 {
 	conn.setDownload(this);
 	setType(TYPE_PARTIAL_LIST);
 }
 
 Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) throw() : Transfer(conn, qi.getTarget(), qi.getTTH()),
-	tempTarget(qi.getTempTarget()), file(0), crcCalc(0), treeValid(false) 
+	tempTarget(qi.getTempTarget()), file(0), treeValid(false) 
 {
 	conn.setDownload(this);
 	

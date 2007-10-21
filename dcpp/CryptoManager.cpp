@@ -182,12 +182,21 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 #undef CHECK
 	// Write the key and cert
 	{
+		File::ensureDirectory(SETTING(TLS_PRIVATE_KEY_FILE));
 		FILE* f = fopen(SETTING(TLS_PRIVATE_KEY_FILE).c_str(), "w");
+		if(!f) {
+			return;
+		}
 		PEM_write_RSAPrivateKey(f, rsa, NULL, NULL, 0, NULL, NULL);
 		fclose(f);
 	}
 	{
+		File::ensureDirectory(SETTING(TLS_CERTIFICATE_FILE));
 		FILE* f = fopen(SETTING(TLS_CERTIFICATE_FILE).c_str(), "w");
+		if(!f) {
+			File::deleteFile(SETTING(TLS_PRIVATE_KEY_FILE));
+			return;
+		}
 		PEM_write_X509(f, x509ss);
 		fclose(f);
 	}
@@ -312,8 +321,12 @@ bool CryptoManager::checkCertificate() throw() {
 		return false;
 	}
 	
-	// TODO check expired
-	
+	ASN1_TIME* t = X509_get_notAfter(x509);
+	if(t) {
+		if(X509_cmp_current_time(t) < 0) {
+			return false;
+		}
+	}
 	return true;
 }
 

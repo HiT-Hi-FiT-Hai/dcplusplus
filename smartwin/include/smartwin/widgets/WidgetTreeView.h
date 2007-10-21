@@ -292,6 +292,9 @@ public:
 	// Contract needed by AspectDblClickable Aspect class
 	static const Message& getDblClickMessage();
 
+	/// Returns true if fired, else false
+	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
+		
 	/// Actually creates the TreeView
 	/** You should call WidgetFactory::createTreeView if you instantiate class
 	  * directly. <br>

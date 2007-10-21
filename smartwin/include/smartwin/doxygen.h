@@ -41,7 +41,7 @@
   * \EventHandlerGenericInfo
   */
 
-/** \defgroup EventHandlersAspectMouseClicks Event Handlers for AspectMouseClicks
+/** \defgroup EventHandlersAspectMouse Event Handlers for AspectMouse
   * \EventHandlerGenericInfo
   */
 

@@ -148,6 +148,10 @@ MainWindow::MainWindow() :
 	
 	filterIter = SmartWin::Application::instance().addFilter(std::tr1::bind(&MainWindow::filter, this, _1));	
 	accel = SmartWin::AcceleratorPtr(new SmartWin::Accelerator(this, IDR_MAINFRAME));
+	
+	int cmdShow = SmartWin::Application::instance().getCmdShow();
+	::ShowWindow(handle(), ((cmdShow == SW_SHOWDEFAULT) || (cmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : cmdShow);
+
 }
 
 void MainWindow::initWindow() {
@@ -166,19 +170,17 @@ void MainWindow::initWindow() {
 		cs.location = SmartWin::Rectangle(pos_x, pos_y, size_x, size_y);
 	}
 
-	cs.style |= WS_CLIPCHILDREN;
+	cs.style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
 	cs.exStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
 	if (ResourceManager::getInstance()->isRTL())
 		cs.exStyle |= WS_EX_RTLREADING;
 
-#ifdef PORT_ME
-	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
-#endif
 	// Set window name
 	cs.caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
 	cs.icon = SmartWin::IconPtr(new SmartWin::Icon(IDR_MAINFRAME));
+	cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 	createWindow(cs);
-
+	
 	paned = createHPaned();
 	paned->setRelativePos(0.7);
 }

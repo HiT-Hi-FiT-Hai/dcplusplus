@@ -33,6 +33,14 @@ SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0
 		cs.style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		cs.exStyle = WS_EX_STATICEDGE;
 		cs.caption = _T(APPNAME);
+		tmp = new SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0);
+		tmp->createWindow(cs);
+	}
+	{
+		Seed cs;
+		cs.style = WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+		cs.exStyle = WS_EX_STATICEDGE;
+		cs.caption = _T(APPNAME);
 		createWindow(cs);
 	}
 	tstring caption = _T(APPNAME) _T(" ") _T(VERSIONSTRING);
@@ -60,6 +68,10 @@ SplashWindow::SplashWindow() : SmartWin::WidgetFactory<SmartWin::WidgetWindow>(0
 	text->setVisible(true);
 	text->bringToFront();
 	text->updateWidget();
+}
+
+SplashWindow::~SplashWindow() {
+	tmp->close();
 }
 
 void SplashWindow::operator()(const string& str) {

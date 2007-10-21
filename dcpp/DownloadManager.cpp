@@ -31,6 +31,7 @@
 #include "FilteredFile.h"
 #include "MerkleCheckOutputStream.h"
 #include "UserConnection.h"
+#include "ZUtils.h"
 
 #include <limits>
 
@@ -292,17 +293,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t start, int64_
 		d->setFile(new BufferedOutputStream<true>(d->getFile()));
 	}
 		
-	bool sfvcheck = BOOLSETTING(SFV_CHECK) && d->getType() == Transfer::TYPE_FILE && (d->getPos() == 0) && (SFVReader(d->getPath()).hasCRC());
-
-#ifdef PORT_ME
-	if(sfvcheck) {
-		d->setFlag(Download::FLAG_CALC_CRC32);
-		Download::CrcOS* crc = new Download::CrcOS(d->getFile());
-		d->setCrcCalc(crc);
-		d->setFile(crc);
-	}
-#endif
-	
 	if(d->getType() == Transfer::TYPE_FILE) {
 		typedef MerkleCheckOutputStream<TigerTree, true> MerkleStream;
 		
@@ -374,18 +364,11 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		}
 		d->setTreeValid(true);
 	} else {
-
-		// Hm, if the real crc == 0, we'll get a file reread extra, but what the heck...
-		uint32_t crc = 0;
-
 		// First, finish writing the file (flushing the buffers and closing the file...)
 		try {
 			d->getFile()->flush();
-			if(d->getCrcCalc())
-				crc = d->getCrcCalc()->getFilter().getValue();
 			delete d->getFile();
 			d->setFile(0);
-			d->setCrcCalc(0);
 		} catch(const FileException& e) {
 			failDownload(aSource, e.getError());
 			return;
@@ -393,13 +376,10 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 		dcdebug("Download finished: %s, size " I64_FMT ", downloaded " I64_FMT "\n", d->getPath().c_str(), d->getSize(), d->getPos());
 
-		// Check if we have some crc:s...
-#ifdef PORT_ME
-		if(BOOLSETTING(SFV_CHECK)) {
-			if(!checkSfv(aSource, d, crc))
+		if(BOOLSETTING(SFV_CHECK) && d->getType() == Transfer::TYPE_FILE) {
+			if(!checkSfv(aSource, d))
 				return;
 		}
-#endif
 		
 		if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || d->getType() == Transfer::TYPE_FILE)) {
 			logDownload(aSource, d);
@@ -426,18 +406,14 @@ uint32_t DownloadManager::calcCrc32(const string& file) throw(FileException) {
 	return f.getFilter().getValue();
 }
 
-bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, uint32_t crc) {
+bool DownloadManager::checkSfv(UserConnection* aSource, Download* d) {
 	SFVReader sfv(d->getPath());
 	if(sfv.hasCRC()) {
-		bool crcMatch = (crc == sfv.getCRC());
-		if(!crcMatch && crc == 0) {
-			// Blah. We have to reread the file...
-			try {
-				crcMatch = (calcCrc32(d->getDownloadTarget()) == sfv.getCRC());
-			} catch(const FileException& ) {
-				// Couldn't read the file to get the CRC(!!!)
-				crcMatch = false;
-			}
+		bool crcMatch = false;
+		try {
+			crcMatch = (calcCrc32(d->getDownloadTarget()) == sfv.getCRC());
+		} catch(const FileException& ) {
+			// Couldn't read the file to get the CRC(!!!)
 		}
 
 		if(!crcMatch) {
@@ -519,7 +495,6 @@ void DownloadManager::removeDownload(Download* d) {
 		}
 		delete d->getFile();
 		d->setFile(NULL);
-		d->setCrcCalc(NULL);
 
 		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 			d->unsetFlag(Download::FLAG_ANTI_FRAG);
