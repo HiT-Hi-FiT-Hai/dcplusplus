@@ -758,7 +758,6 @@ void NmdcHub::myInfo(bool alwaysSend) {
 
 	reloadSettings(false);
 
-	dcdebug("MyInfo %s...\n", getMyNick().c_str());
 	lastCounts = counts;
 
 	string tmp1 = ";**\x1fU9";
@@ -790,6 +789,7 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
  
  	if(lastMyInfoA != myInfoA || alwaysSend || (lastMyInfoB != myInfoB && lastUpdate + 15*60*1000 < GET_TICK()) ){
+ 		dcdebug("MyInfo %s...\n", getMyNick().c_str());
  		send(myInfoA + myInfoB);
  		lastMyInfoA = myInfoA;
  		lastMyInfoB = myInfoB;

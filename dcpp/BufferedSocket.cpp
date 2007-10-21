@@ -266,7 +266,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 
 void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	dcassert(sock);
-	if(!sock)
+	if(!sock || disconnecting)
 		return;
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);

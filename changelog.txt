@@ -1,4 +1,4 @@
--- --
+-- 0.702 2007-10-21 --
 * Fixed missing sorting in most places
 * Fixed crash on startup when missing Certificates folder
 * Fixed right-click menu with nested user commands

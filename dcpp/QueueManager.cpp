@@ -721,7 +721,7 @@ void QueueManager::setFile(Download* d) {
 		
 		QueueItem* qi = fileQueue.find(d->getPath());
 		if(!qi) {
-			return;
+			throw QueueException(STRING(TARGET_REMOVED));
 		}
 		
 		for(DownloadList::const_iterator i = qi->getDownloads().begin(); i != qi->getDownloads().end(); ++i) {

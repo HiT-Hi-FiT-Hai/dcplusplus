@@ -65,6 +65,7 @@ protected:
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
 		onCommand(std::tr1::bind(&ThisType::close, this, true), IDC_CLOSE_WINDOW);
 		noEraseBackground();
+		onPainting(std::tr1::bind(&ThisType::handlePaint, this, _1));
 	}
 	
 	virtual ~MDIChildFrame() {
@@ -169,6 +170,11 @@ private:
 			return false;
 		}
 		return false;
+	}
+	
+	void handlePaint(SmartWin::PaintCanvas& canvas) {
+		SmartWin::Brush b(canvas, SmartWin::Brush::WindowFrame);
+		canvas.fillRectangle(canvas.getPaintRect(), b);
 	}
 };
 
