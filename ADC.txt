@@ -1,6 +1,6 @@
-= ADC Protocol Draft 0.13
+= ADC Protocol Draft
 Jacek Sieka <arnetheduck@gmail.com>
-v0.13, October 2007
+0.13, October 2007
 
 == Abstract
 ADC is a text protocol for a client-server network similar to Neo-Modus'
@@ -17,6 +17,9 @@ Advanced DC is the first neutral thing that springs to mind =).
 Many ideas for this I've taken from Jan Vidar Krey's DCTNG draft, others come
 from the DC dev hub people (notably cologic, fusbar, farcry and sedulus). Oh,
 and not to forget, Jon Hess for the original DC idea.
+
+The latest draft version of this document can be downloaded from
+$URL$. This version correspods to $Revision$.
 
 == Line protocol
 === General
@@ -66,7 +69,7 @@ my_sid                ::= encoded_sid
 encoded_sid           ::= base32_character{4}
 my_cid                ::= encoded_cid
 encoded_cid           ::= base32_character{39}
-base32_character      ::= simple_alpha<nowiki> | [2-7]
+base32_character      ::= simple_alpha | [2-7]
 feature_name          ::= simple_alpha simple_alphanum{3}
 escaped_letter        ::= [^ \#x0a] | escape 's' | escape 'n' | escape escape
 escape                ::= '\'
@@ -97,8 +100,8 @@ U | UDP message | Clients must use this message type when communicating directly
 ___
 
 === Client identification
-Each client is identified by three different IDs, Session ID (SID), Private 
-ID (PID) and Client ID (CID).
+Each client is identified by three different IDs, Session ID (SID), Private ID
+(PID) and Client ID (CID).
 
 ==== Session ID
 Session IDs appear in all communication that interacts with the hub. They
@@ -135,14 +138,13 @@ and '..' may not occur as a directory or filename; any file list received
 containing those must be ignored. Shared files are identified relative to the
 unnamed root '/' ("/dir/subdir/filename.ext"), while extensions can add named
 roots to this namespace, preferably using their SUP name. "TTH/<root-base32>",
-for example, </nowiki>locates a file in the share by TTH root rather than
-filename. Rootless filenames are special, for they may not appear in the file
-listing, and can be used to supply binary transfers of arbitrary data, but
-should not be used to avoid polluting the namespace by using a named root. All
-directory names must end with a '/'. Names in the unnamed root generally find
-little use identifying files, as the TTH root does so more effectively. Hence,
-commands that get files or file data may never use the unnamed root for
-selecting file.
+for example, locates a file in the share by TTH root rather than filename.
+Rootless filenames are special, for they may not appear in the file listing,
+and can be used to supply binary transfers of arbitrary data, but should not
+be used to avoid polluting the namespace by using a named root. All directory
+names must end with a '/'. Names in the unnamed root generally find little use
+identifying files, as the TTH root does so more effectively. Hence, commands
+that get files or file data may never use the unnamed root for selecting file.
 
 The special, rootless filename "files.xml" specifies the full file listing,
 uncompressed, in XML using the UTF-8 encoding. Clients can then compress this
@@ -434,7 +436,7 @@ Flags:
 
 [separator="|",grid="all",frame="all"]
 ``_
-PM<group-SID> | Private message, <group-SID> is the SID clients must send responses to. This field must contain the originating SID if this is a normal private conversation.</nowiki>
+PM<group-SID> | Private message, <group-SID> is the SID clients must send responses to. This field must contain the originating SID if this is a normal private conversation.
 ME | 1 = message should be displayed as /me in IRC ("*nick text")
 ___
 
@@ -570,7 +572,7 @@ new types.
 sending <bytes> bytes. Identifier must be a TTH root value from the "TTH/"
 root.
 
-"tthl" transfers send the largest set of <nowiki>leaves available) as a binary
+"tthl" transfers send the largest set of leaves available) as a binary
 stream of leaf data, right-to-left, with no spacing in between them.
 <start_pos> must be set to 0 and <bytes> to -1 when requesting the data.
 <bytes> must contain the total binary size of the leaf stream in SND, and by
@@ -694,7 +696,7 @@ with the current time.
 ==== CMD
  CMD name
 
-Types: I
+Context: F
 
 Name uniquely (per hub) identifies a particular user command. The name may
 contain '/' to indicate a logical structure on the viewing client, where each
@@ -709,7 +711,7 @@ CT | Context, the following flags summed:
    | 2 = User list command, client and user parameters
    | 4 = Search result command, client, user and file parameters
    | 8 = File list command, client, user and file parameters
-TT | Text to be sent to hub
+TT | The full text to be sent to hub, including fourcc and any parameters
 CO | 1 = Constrained, when sending this command on multiple users (for example in search results), constrain it to once per CID only
 SP | 1 = Insert separator instead of command name (name must still be present to uniquely identify the command)
 ___
