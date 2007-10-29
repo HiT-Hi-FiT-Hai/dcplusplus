@@ -63,7 +63,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
-		transfers->setSortColumn(COLUMN_USER);
+		transfers->setSort(COLUMN_USER);
 		transfers->onContextMenu(std::tr1::bind(&TransferView::handleContextMenu, this, _1));
 	}
 	

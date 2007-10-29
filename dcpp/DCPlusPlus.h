@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(DC_PLUS_PLUS_H)
-#define DC_PLUS_PLUS_H
+#ifndef DCPP_DCPLUSPLUS_H
+#define DCPP_DCPLUSPLUS_H
 
 #ifdef _WIN32
 #define snprintf _snprintf

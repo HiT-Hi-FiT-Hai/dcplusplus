@@ -150,7 +150,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		users->setColor(WinUtil::textColor, WinUtil::bgColor);
-		users->setSortColumn(COLUMN_NICK);
+		users->setSort(COLUMN_NICK);
 		
 		users->onSelectionChanged(std::tr1::bind(&HubFrame::updateStatus, this));
 		users->onDblClicked(std::tr1::bind(&HubFrame::handleDoubleClickUsers, this));

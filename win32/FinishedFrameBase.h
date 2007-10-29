@@ -64,7 +64,7 @@ protected:
 			items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 			items->setColumnOrder(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER), columnIndexes));
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
-			items->setSortColumn(COLUMN_DONE);
+			items->setSort(COLUMN_DONE);
 			
 			items->setColor(WinUtil::textColor, WinUtil::bgColor);
 			items->setSmallImageList(WinUtil::fileImages);

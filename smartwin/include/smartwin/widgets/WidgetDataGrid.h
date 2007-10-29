@@ -823,8 +823,13 @@ private:
 	SortType sortType;
 	bool ascending;
 	SortFunction fun;
+	
+	BitmapPtr upArrow;
+	BitmapPtr downArrow;
 
 	static int CALLBACK compareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
+	
+	void createArrows();
 	
 #ifdef PORT_ME
 	// Private validate function, this ones returns the "read only" property of the list

@@ -28,6 +28,11 @@ protected:
 
 	AspectStatus() : status(0) {
 		statusSizes.resize(WidgetType::STATUS_LAST);
+		filterIter = SmartWin::Application::instance().addFilter(std::tr1::bind(&ThisType::filter, this, _1));
+	}
+
+	~AspectStatus() {
+		SmartWin::Application::instance().removeFilter(filterIter);
 	}
 
 	void initStatus(bool sizeGrip = false) {
@@ -37,6 +42,7 @@ protected:
 			cs.style |= SBARS_SIZEGRIP;
 		}
 		status = static_cast<WidgetType*>(this)->createStatusBarSections();
+
 		statusTip = static_cast<WidgetType*>(this)->createToolTip();
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
 	}
@@ -86,12 +92,18 @@ protected:
 	std::vector<unsigned> statusSizes;
 
 private:
+	SmartWin::Application::FilterIter filterIter;
 	typename SmartWin::WidgetToolTip::ObjectType statusTip;
 	TStringList lastLines;
 	tstring tip;
 	
 	enum { MAX_LINES = 10 };
-	
+
+	bool filter(const MSG& msg) {
+		statusTip->relayEvent(msg);
+		return false;
+	}
+
 	const tstring& handleToolTip() {
 		tip.clear();
 		for(size_t i = 0; i < lastLines.size(); ++i) {

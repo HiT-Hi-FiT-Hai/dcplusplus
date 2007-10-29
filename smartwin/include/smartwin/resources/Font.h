@@ -1,4 +1,3 @@
-// $Revision: 1.12 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,14 +28,17 @@
 #ifndef Font_h
 #define Font_h
 
-#include "WindowsHeaders.h"
-#include "../SmartUtil.h"
-#include "xCeption.h"
-#include <memory>
+#include "../WindowsHeaders.h"
+#include "../../SmartUtil.h"
+#include "../xCeption.h"
+#include "Handle.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
+
+class Font;
+typedef boost::intrusive_ptr< Font > FontPtr;
 
 #ifndef WINCE
 /// Type of default installed fonts you can create with the Font class
@@ -73,17 +75,13 @@ typedef enum PredefinedFontTypes
   * One instance of this class can be shared among different Widgets ( even different
   * types of Widgets )
   */
-class Font 
+class Font : public Handle<GdiPolicy<HFONT> >
 {
 public:
 
 	Font( PredefinedFontTypes inFontType )
-		: isOwner( true )
+		: ResourceType(static_cast< HFONT >( ::GetStockObject( inFontType ) ), true )
 	{
-#ifndef WINCE
-		itsHandle = static_cast< HFONT >( ::GetStockObject( inFontType ) );
-		checkCreationOfFont();
-#endif
 	}
 
 	/// Constructor taking all parameters
@@ -102,7 +100,7 @@ public:
 		DWORD clipPrecision = CLIP_DEFAULT_PRECIS,
 		DWORD quality = DEFAULT_QUALITY,
 		DWORD pitchAndFamliy = FF_DONTCARE )
-		: isOwner( true )
+		
 	{
 		LOGFONT lf;
 		lf.lfHeight = height;
@@ -122,61 +120,16 @@ public:
 		_tcscpy_s( lf.lfFaceName, 32, faceName.c_str() );
 #endif
 		lf.lfEscapement = escapementOrientation;
-		itsHandle = ::CreateFontIndirect( & lf );
-		checkCreationOfFont();
+		init(::CreateFontIndirect( & lf ), true);
 	}
 
-	Font( HFONT font, bool owner )
-		: isOwner( owner )
-	{
-		itsHandle = font;
-	}
-	/// DTOR cleaning up
-	/** DTOR of this class automatically calls DeleteObject on the HFONT so be sure
-	  * to create the instance as a SmartPtr if you wish to have access to it after
-	  * the object goes out of scope.
-	  */
-	~Font()
-	{
-		if ( isOwner )
-		{
-			// If the font was made through CreateStockObject it is not (according
-			// to documentation) dangerous to delete even this object, therefore
-			// for simplicity we just do it anyway...
-			::DeleteObject( itsHandle );
-		}
-	}
-
-	/// Returns the HFONT to the Font object
-	/** Be careful with that gun son, it's loaded!
-	  */
-	HFONT getHandle() const
-	{
-		return itsHandle;
+	Font( HFONT font, bool owner ) : ResourceType( font, owner ) {
 	}
 
 private:
-	Font( const Font & ); // Never implemented
-	Font & operator =( const Font & ); // Never implemented
-
-	void checkCreationOfFont()
-	{
-		if ( 0 == itsHandle )
-			throw xCeption( _T( "Couldn't create font" ) );
-	}
-
-	// The actual Windows Handle
-	HFONT itsHandle;
-
-	// false if class does not have ownership of font and should not destroy the HFONT
-	bool isOwner;
+	friend class Handle<GdiPolicy<HFONT> >;
+	typedef Handle<GdiPolicy<HFONT> > ResourceType;
 };
-
-/// \ingroup GlobalStuff
-/// Font OBJECT type.
-/** Use this typedefed pointer to ensure compatibility in future versions of SmartWin++
-  */
-typedef std::tr1::shared_ptr< Font > FontPtr;
 
 //TODO: shouldn't this be within #ifndef WINCE ... #endif
 /// \ingroup GlobalStuff

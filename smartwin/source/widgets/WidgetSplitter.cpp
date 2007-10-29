@@ -1,4 +1,3 @@
-// $Revision: 1.8 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -32,6 +31,7 @@
 #include "../../include/smartwin/CanvasClasses.h"
 #include "../../include/smartwin/WindowsHeaders.h"
 #include "../../include/smartwin/Application.h"
+#include "../../include/smartwin/resources/Pen.h"
 
 namespace SmartWin
 {
@@ -41,13 +41,15 @@ namespace SmartWin
 		PaintCanvas canvas( handle );
 		{
 			// Borders
-			Pen pen( canvas, RGB( 160, 160, 160 ) );
+			Pen pen( RGB( 160, 160, 160 ) );
+			Canvas::Selector select(canvas, pen);
 			canvas.line( 0, 0, 0, ySize );
 			canvas.line( width - 1, 0, width - 1, ySize );
 		}
 		{
 			// Inside
-			Pen pen( canvas, RGB( 190, 190, 190 ) );
+			Pen pen( RGB( 190, 190, 190 ) );
+			Canvas::Selector select(canvas, pen);
 			for ( unsigned idx = 1;
 				idx < width - 1;
 				++idx )
@@ -68,13 +70,15 @@ namespace SmartWin
 		PaintCanvas canvas( handle );
 		{
 			// Borders
-			Pen pen( canvas, RGB( 280, 0, 0 ) );
+			Pen pen( RGB( 280, 0, 0 ) );
+			Canvas::Selector select(canvas, pen);
 			canvas.line( 0, 0, 0, ySize );
 			canvas.line( width - 1, 0, width - 1, ySize );
 		}
 		{
 			// Inside
-			Pen pen( canvas, RGB( 255, 0, 0 ) );
+			Pen pen( RGB( 255, 0, 0 ) );
+			Canvas::Selector select(canvas, pen);
 			for ( unsigned idx = 1;
 				idx < width - 1;
 				++idx )

@@ -30,7 +30,7 @@ class Dev:
 				if self.env.get('prefix') is not None:
 					prefix = self.env['prefix']
 				else:
-					prefix = 'i386-mingw32'
+					prefix = 'i386-mingw32-'
 				self.env['CC'] = prefix + 'gcc'
 				self.env['CXX'] = prefix + 'g++'
 				self.env['LINK'] = prefix + 'g++'

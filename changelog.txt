@@ -1,3 +1,11 @@
+-- --
+* Fixed invalid strings (thanks james ross)
+* Reverted initial anti-flicker (needs rethinking)
+* Fixed some memory leaks
+* Fixed background color in settings dialog example (thanks poy)
+* Fixed disappearing tooltips (thanks poy)
+
+
 -- 0.702 2007-10-21 --
 * Fixed missing sorting in most places
 * Fixed crash on startup when missing Certificates folder

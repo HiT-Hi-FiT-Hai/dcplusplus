@@ -55,22 +55,22 @@ LRESULT StatsFrame::handlePaint() {
 	if(rect.size.x == 0 || rect.size.y == 0)
 		return 0;
 
-#ifdef PORT_ME
-	canvas.SelectBrush(WinUtil::bgBrush);
-#endif
-	::BitBlt(canvas.getDc(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, NULL, 0, 0, PATCOPY);
+	{
+		SmartWin::Canvas::Selector select(canvas, *WinUtil::bgBrush);
+		::BitBlt(canvas.handle(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, NULL, 0, 0, PATCOPY);
+	}
 
 	canvas.setTextColor(WinUtil::textColor);
 	canvas.setBkColor(WinUtil::bgColor);
-
 	canvas.selectFont(WinUtil::font);
+	
 	long fontHeight = getTextSize(_T("A")).y;
 	int lines = height / (fontHeight * LINE_HEIGHT);
 	int lheight = height / (lines+1);
 
 	{
-		SmartWin::Pen pen(canvas, WinUtil::textColor);
-
+		SmartWin::Pen pen(WinUtil::textColor);
+		SmartWin::Canvas::Selector select(canvas, pen);
 		for(int i = 0; i < lines; ++i) {
 			int ypos = lheight * (i+1);
 			if(ypos > fontHeight + 2) {
@@ -107,12 +107,14 @@ LRESULT StatsFrame::handlePaint() {
 	long clientRight = getClientAreaSize().x;
 
 	{
-		SmartWin::Pen upPen(canvas, SETTING(UPLOAD_BAR_COLOR));
+		SmartWin::Pen upPen(SETTING(UPLOAD_BAR_COLOR));
+		SmartWin::Canvas::Selector select(canvas, upPen);
 		drawLine(canvas, up.begin(), up.end(), rect, clientRight);
 	}
 
 	{
-		SmartWin::Pen downPen(canvas, SETTING(DOWNLOAD_BAR_COLOR));
+		SmartWin::Pen downPen(SETTING(DOWNLOAD_BAR_COLOR));
+		SmartWin::Canvas::Selector select(canvas, downPen);
 		drawLine(canvas, down.begin(), down.end(), rect, clientRight);
 	}
 

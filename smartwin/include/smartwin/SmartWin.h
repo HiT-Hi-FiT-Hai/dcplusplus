@@ -1,4 +1,3 @@
-// $Revision: 1.15 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -64,9 +63,13 @@
 #include "WindowClass.h"
 #include "resources/Accelerator.h"
 #include "resources/Bitmap.h"
+#include "resources/Brush.h"
+#include "resources/Font.h"
 #include "resources/Icon.h"
 #include "resources/ImageList.h"
+#include "resources/Pen.h"
 #include "widgets/WidgetModalDialog.h"
+
 namespace sw = SmartWin;
 
 // 2005.05.03 was there 18427 lines of code in SmartWin

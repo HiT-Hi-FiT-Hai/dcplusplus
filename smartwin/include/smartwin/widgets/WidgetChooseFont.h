@@ -1,4 +1,3 @@
-// $Revision: 1.12 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -30,7 +29,7 @@
 #ifndef WidgetChooseFont_h
 #define WidgetChooseFont_h
 
-#include "../Font.h"
+#include "../resources/Font.h"
 #include "../FreeCommonDialog.h"
 #include "../WindowsHeaders.h"
 #include <memory>

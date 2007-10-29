@@ -34,8 +34,6 @@
 #include "CommandLine.h"
 #include "BasicTypes.h"
 #include "ApplicationPlatform.h"
-#include "resources/Bitmap.h"
-#include "Font.h"
 #include "xCeption.h"
 #include <vector>
 #include <memory>

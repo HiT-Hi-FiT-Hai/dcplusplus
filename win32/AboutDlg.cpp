@@ -41,7 +41,7 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, "
 "bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, "
 "krzysztof tyszecki, poison, pothead, pur, bigmuscle, martin, jove, bart vullings, "
-"steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman. "
+"steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman, james ross. "
 "Keep it coming!";
 
 AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {

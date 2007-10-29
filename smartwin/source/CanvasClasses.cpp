@@ -1,4 +1,3 @@
-// $Revision: 1.16 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -29,19 +28,15 @@
 #include "../include/smartwin/WindowsHeaders.h"
 #include "../include/smartwin/CanvasClasses.h"
 #include "../include/smartwin/xCeption.h"
+#include "../include/smartwin/resources/Brush.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
 
-HDC Canvas::getDc()
-{
-	return itsHdc;
-}
-
 void Canvas::selectFont( FontPtr font )
 {
-	SelectFont( itsHdc, font->getHandle() );
+	SelectFont( itsHdc, font->handle() );
 }
 
 int Canvas::getDeviceCaps( int nIndex )
@@ -162,7 +157,7 @@ void Canvas::fillRectangle( int left, int top, int right, int bottom, Brush & br
 	rc.right = right;
 	rc.top = top;
 
-	::FillRect( itsHdc, & rc, brush.getBrushHandle() );
+	::FillRect( itsHdc, & rc, brush.handle() );
 }
 
 void Canvas::fillRectangle( const SmartWin::Rectangle & rect, Brush & brush )
@@ -171,7 +166,7 @@ void Canvas::fillRectangle( const SmartWin::Rectangle & rect, Brush & brush )
 	RECT rc =
 	{ rect.pos.x, rect.pos.y, rect.pos.x + rect.size.x, rect.pos.y + rect.size.y
 	};
-	::FillRect( itsHdc, & rc, brush.getBrushHandle() );
+	::FillRect( itsHdc, & rc, brush.handle() );
 }
 
 COLORREF Canvas::setPixel( int x, int y, COLORREF pixcolor )
@@ -321,95 +316,17 @@ FreeCanvas::FreeCanvas( Widget * widget, HDC hdc )
 
 #ifndef WINCE
 HdcModeSetter::HdcModeSetter( Canvas & canvas, int mode )
-	: itsOldMode( ::GetROP2( canvas.getDc() ) ),
+	: itsOldMode( ::GetROP2( canvas.handle() ) ),
 	itsCanvas( canvas )
 {
-	::SetROP2( itsCanvas.getDc(), mode );
+	::SetROP2( itsCanvas.handle(), mode );
 }
 
 HdcModeSetter::~HdcModeSetter()
 {
-	::SetROP2( itsCanvas.getDc(), itsOldMode );
+	::SetROP2( itsCanvas.handle(), itsOldMode );
 }
 #endif //! WINCE
-
-Canvas & Pen::getCanvas()
-{
-	return itsCanvas;
-}
-
-HPEN Pen::getPenHandle()
-{
-	return itsPen;
-}
-
-Pen::Pen( Canvas & canvas, COLORREF color, int width )
-	: itsCanvas( canvas )
-{
-	itsPen = ::CreatePen( PS_SOLID, width, color );
-	itsPenOld = ( HPEN )::SelectObject( itsCanvas.getDc(), itsPen );
-}
-
-Pen::~Pen()
-{
-	::SelectObject( itsCanvas.getDc(), itsPenOld );
-	::DeleteObject( itsPen );
-}
-
-Canvas & Brush::getCanvas()
-{
-	return *itsCanvas;
-}
-
-HBRUSH Brush::getBrushHandle()
-{
-	return itsBrush;
-}
-
-Brush::Brush(COLORREF color) : itsBrushOld(NULL), isSysColor(false), itsBrush(NULL), itsCanvas(0) {
-	itsBrush = ::CreateSolidBrush(color);
-}
-
-Brush::Brush( Canvas & canvas, COLORREF color )
-	: isSysColor( false ),
-	itsCanvas( &canvas )
-{
-	itsBrush = ::CreateSolidBrush( color );
-	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas->getDc(), itsBrush );
-}
-
-Brush::Brush( Canvas & canvas, BitmapPtr bitmap )
-	: isSysColor( false ),
-	itsCanvas( &canvas )
-{
-	itsBrush = ::CreatePatternBrush( bitmap->getBitmap() );
-	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas->getDc(), itsBrush );
-}
-
-Brush::Brush( Canvas & canvas, Brush::SysColor color )
-	: isSysColor( true ),
-	itsCanvas( &canvas )
-{
-	itsBrush = ::GetSysColorBrush( ( int ) color );
-	itsBrushOld = ( HBRUSH )::SelectObject( itsCanvas->getDc(), itsBrush );
-}
-
-Brush::Brush( Canvas & canvas )
-	: isSysColor( true ),
-	itsCanvas( &canvas )
-{
-	itsBrush = ( HBRUSH )::GetStockObject( NULL_BRUSH );
-}
-
-Brush::~Brush()
-{
-	if ( !isSysColor )
-	{
-		if(itsCanvas)
-			::SelectObject( itsCanvas->getDc(), itsBrushOld );
-		::DeleteObject( itsBrush );
-	}
-}
 
 TextPen::TextPen( Canvas & canvas, COLORREF color )
 	: itsCanvas( canvas )
@@ -419,7 +336,7 @@ TextPen::TextPen( Canvas & canvas, COLORREF color )
 
 TextPen::~TextPen()
 {
-	::SetTextColor( itsCanvas.getDc(), itsColorOld );
+	::SetTextColor( itsCanvas.handle(), itsColorOld );
 }
 
 // end namespace SmartWin

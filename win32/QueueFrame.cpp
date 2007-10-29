@@ -85,7 +85,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
-		files->setSortColumn(COLUMN_TARGET);
+		files->setSort(COLUMN_TARGET);
 		
 		files->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownFiles, this, _1));
 		files->onSelectionChanged(std::tr1::bind(&QueueFrame::updateStatus, this));

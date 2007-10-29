@@ -29,7 +29,7 @@ private:
 public:
 	typedef ThisType* ObjectType;
 
-	explicit TypedListView( SmartWin::Widget * parent ) : BaseType(parent), sortColumn(-1), sortAscending(true) { 
+	explicit TypedListView( SmartWin::Widget * parent ) : BaseType(parent) { 
 		
 	}
 	
@@ -37,17 +37,12 @@ public:
 		BaseType::create(cs);
 		
 		this->setCallback(
-			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &TypedListViewDispatcher
+			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedListViewDispatcher
 		);
 		this->onColumnClick(std::tr1::bind(&ThisType::handleColumnClick, this, _1));
+		this->onSortItems(std::tr1::bind(&ThisType::handleSort, this, _1, _2));
 	}
 	
-	void resort() {
-		if(sortColumn != -1) {
-			ListView_SortItems(this->handle(), &compareFunc, reinterpret_cast< LPARAM >(this));
-		}
-	}
-
 	int insert(ContentType* item) {
 		return insert(getSortPos(item), item);
 	}
@@ -119,7 +114,7 @@ public:
 
 	int getSortPos(ContentType* a) {
 		int high = this->size();
-		if((sortColumn == -1) || (high == 0))
+		if((this->getSortColumn() == -1) || (high == 0))
 			return high;
 
 		high--;
@@ -131,9 +126,9 @@ public:
 		while( low <= high ) {
 			mid = (low + high) / 2;
 			b = getData(mid);
-			comp = ContentType::compareItems(a, b, sortColumn);
+			comp = ContentType::compareItems(a, b, this->getSortColumn());
 
-			if(!sortAscending)
+			if(!this->isAscending())
 				comp = -comp;
 
 			if(comp == 0) {
@@ -145,8 +140,8 @@ public:
 			}
 		}
 
-		comp = ContentType::compareItems(a, b, sortColumn);
-		if(!sortAscending)
+		comp = ContentType::compareItems(a, b, this->getSortColumn());
+		if(!this->isAscending())
 			comp = -comp;
 		if(comp > 0)
 			mid++;
@@ -154,22 +149,13 @@ public:
 		return mid;
 	}
 
-	void setSortColumn(int aSortColumn) {
-		sortColumn = aSortColumn;
-		//TODO updateArrow();
+	void setSort(int col = -1, bool ascending = false) {
+		BaseType::setSort(col, BaseType::SORT_CALLBACK, ascending);
 	}
-	int getSortColumn() { return sortColumn; }
-	bool isAscending() { return sortAscending; }
-
 private:
 
-	int sortColumn;
-	bool sortAscending;
-
-	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
-		ThisType* t = reinterpret_cast<ThisType*>(lParamSort);
-		int result = ContentType::compareItems((ContentType*)lParam1, (ContentType*)lParam2, t->sortColumn);
-		return (t->sortAscending ? result : -result);
+	int handleSort(LPARAM lhs, LPARAM rhs) {
+		return ContentType::compareItems(reinterpret_cast<ContentType*>(lhs), reinterpret_cast<ContentType*>(rhs), this->getSortColumn());
 	}
 	
 	static bool TypedListViewDispatcher(const MSG& msg, HRESULT& res) {
@@ -178,7 +164,7 @@ private:
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
 			const tstring& text = content->getText(nm->item.iSubItem);
 			_tcsncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
-			if(text.size() < nm->item.cchTextMax) {
+			if(text.size() < static_cast<size_t>(nm->item.cchTextMax)) {
 				nm->item.pszText[text.size()] = 0;
 			}
 		}
@@ -189,87 +175,24 @@ private:
 		return true;
 	}
 	
-	// Sorting
 	void handleColumnClick(int column) {
-		if(column != sortColumn) {
-			sortAscending = true;
-			sortColumn = column;
-		} else if(sortAscending) {
-			sortAscending = false;
+		if(column != this->getSortColumn()) {
+			this->setSort(column, true);
+		} else if(this->isAscending()) {
+			this->setSort(this->getSortColumn(), false);
 		} else {
-			sortColumn = -1;
+			this->setSort(-1, true);
 		}
-		/// TODO updateArrow();
-		resort();
 	}
 
 };
 
 #ifdef PORT_ME
-#include "ListViewArrows.h"
-#include "memdc.h"
 
 template<class T, class ContentType>
 class TypedListView : public T::WidgetDataGrid,
 	ListViewArrows<TypedListView<T, ctrlId> >
 {
-
-	typedef TypedListView<T, ctrlId> thisClass;
-	typedef CListViewCtrl baseClass;
-	typedef ListViewArrows<thisClass> arrowBase;
-
-	BEGIN_MSG_MAP(thisClass)
-		MESSAGE_HANDLER(WM_CHAR, onChar)
-		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
-		MESSAGE_HANDLER(WM_PAINT, onPaint)
-		CHAIN_MSG_MAP(arrowBase)
-	END_MSG_MAP();
-
-	class iterator : public ::iterator<random_access_iterator_tag, T*> {
-	public:
-		iterator() : typedList(NULL), cur(0), cnt(0) { }
-		iterator(const iterator& rhs) : typedList(rhs.typedList), cur(rhs.cur), cnt(rhs.cnt) { }
-		iterator& operator=(const iterator& rhs) { typedList = rhs.typedList; cur = rhs.cur; cnt = rhs.cnt; return *this; }
-
-		bool operator==(const iterator& rhs) const { return cur == rhs.cur; }
-		bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
-		bool operator<(const iterator& rhs) const { return cur < rhs.cur; }
-
-		int operator-(const iterator& rhs) const {
-			return cur - rhs.cur;
-		}
-
-		iterator& operator+=(int n) { cur += n; return *this; }
-		iterator& operator-=(int n) { return (cur += -n); }
-
-		T& operator*() { return *typedList->getData(cur); }
-		T* operator->() { return &(*(*this)); }
-		T& operator[](int n) { return *typedList->getData(cur + n); }
-
-		iterator operator++(int) {
-			iterator tmp(*this);
-			operator++();
-			return tmp;
-		}
-		iterator& operator++() {
-			++cur;
-			return *this;
-		}
-
-	private:
-		iterator(thisClass* aTypedList) : typedList(aTypedList), cur(aTypedList->GetNextItem(-1, LVNI_ALL)), cnt(aTypedList->GetItemCount()) {
-			if(cur == -1)
-				cur = cnt;
-		}
-		iterator(thisClass* aTypedList, int first) : typedList(aTypedList), cur(first), cnt(aTypedList->GetItemCount()) {
-			if(cur == -1)
-				cur = cnt;
-		}
-		friend class thisClass;
-		thisClass* typedList;
-		int cur;
-		int cnt;
-	};
 
 	LRESULT onChar(UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		if((GetKeyState(VkKeyScan('A') & 0xFF) & 0xFF00) > 0 && (GetKeyState(VK_CONTROL) & 0xFF00) > 0){
@@ -283,19 +206,6 @@ class TypedListView : public T::WidgetDataGrid,
 		bHandled = FALSE;
 		return 1;
 	}
-
-	LRESULT onGetDispInfo(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
-		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
-		if(di->item.mask & LVIF_TEXT) {
-			di->item.mask |= LVIF_DI_SETITEM;
-			di->item.pszText = const_cast<TCHAR*>(((T*)di->item.lParam)->getText(di->item.iSubItem).c_str());
-		}
-		return 0;
-	}
-
-	iterator begin() { return iterator(this); }
-	iterator end() { return iterator(this, GetItemCount()); }
-
 };
 #endif
 

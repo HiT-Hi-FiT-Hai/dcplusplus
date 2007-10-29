@@ -1,4 +1,3 @@
-// $Revision: 1.10 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,7 +28,7 @@
 #ifndef AspectFont_h
 #define AspectFont_h
 
-#include "../Font.h"
+#include "../resources/Font.h"
 
 namespace SmartWin
 {
@@ -79,7 +78,7 @@ template< class WidgetType >
 void AspectFont< WidgetType >::setFont( const FontPtr& font_, bool forceUpdate )
 {
 	font = font_;
-	static_cast< WidgetType * >( this )->sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( font->getHandle() ), static_cast< LPARAM >( forceUpdate ) );
+	static_cast< WidgetType * >( this )->sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( font->handle() ), static_cast< LPARAM >( forceUpdate ) );
 }
 
 template< class WidgetType >

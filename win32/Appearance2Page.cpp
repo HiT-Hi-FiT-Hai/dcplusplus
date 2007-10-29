@@ -56,13 +56,13 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), font);
 	fg = SETTING(TEXT_COLOR);
 	bg = SETTING(BACKGROUND_COLOR);
-	bgbrush = ::CreateSolidBrush(bg);
+	bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
 	fontObj = ::CreateFontIndirect(&font);
 	upBar = SETTING(UPLOAD_BAR_COLOR);
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
 
 	example = subclassStatic(IDC_COLOREXAMPLE);
-	example->onRaw(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1, _2), WM_CTLCOLORSTATIC);
+	example->onBackgroundColor(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1));
 
 	WidgetButtonPtr button = subclassButton(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
@@ -82,7 +82,6 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 
 Appearance2Page::~Appearance2Page()
 {
-	::DeleteObject(bgbrush);
 	::DeleteObject(fontObj);
 }
 
@@ -101,21 +100,19 @@ void Appearance2Page::write()
 	settings->set(SettingsManager::TEXT_FONT, Text::fromT(f));
 }
 
-HRESULT Appearance2Page::handleExampleColor(WPARAM wParam, LPARAM lParam) {
-	HDC hDC((HDC)wParam);
-	::SetBkMode(hDC, TRANSPARENT);
-	::SetTextColor(hDC, fg);
-	::SelectObject(hDC, fontObj);
-	return (LRESULT)bgbrush;
+SmartWin::BrushPtr Appearance2Page::handleExampleColor(SmartWin::Canvas& canvas) {
+	canvas.setBkColor(bg);
+	canvas.setTextColor(fg);
+	::SelectObject(canvas.handle(), fontObj);
+	return bgBrush;
 }
 
 void Appearance2Page::handleBackgroundClicked() {
 	WidgetChooseColor::ColorParams initialColorParams(bg),
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk()) {
-		::DeleteObject(bgbrush);
 		bg = colorParams.getColor();
-		bgbrush = CreateSolidBrush(bg);
+		bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
 		example->invalidateWidget();
 	}
 }

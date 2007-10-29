@@ -80,20 +80,6 @@ private:
 	const T2& a;
 };
 
-template<class T>
-struct PointerHash {
-#ifdef _MSC_VER
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
-#endif
-	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); }
-	bool operator()(const T* a, const T* b) { return a < b; }
-};
-template<>
-struct PointerHash<void> {
-	size_t operator()(const void* a) const { return ((size_t)a)>>2; }
-};
-
 /**
  * Compares two values
  * @return -1 if v1 < v2, 0 if v1 == v2 and 1 if v1 > v2

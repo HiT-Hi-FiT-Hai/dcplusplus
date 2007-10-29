@@ -150,7 +150,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
-		files->setSortColumn(COLUMN_FILENAME);
+		files->setSort(COLUMN_FILENAME);
 		
 		files->onSelectionChanged(std::tr1::bind(&DirectoryListingFrame::updateStatus, this));
 		files->onDblClicked(std::tr1::bind(&DirectoryListingFrame::handleDoubleClickFiles, this));

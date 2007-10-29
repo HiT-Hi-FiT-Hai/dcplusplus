@@ -24,6 +24,11 @@ void WidgetToolTip::create( const Seed & cs )
 	PolicyType::create(cs);
 }
 
+void WidgetToolTip::relayEvent(const MSG& msg) {
+	if(msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST)
+		sendMessage(TTM_RELAYEVENT, 0, reinterpret_cast<LPARAM>(&msg));
+}
+
 void WidgetToolTip::setTool(Widget* widget, const Dispatcher::F& f) {
 	setCallback(
 		Message(WM_NOTIFY, TTN_GETDISPINFO), Dispatcher(f)

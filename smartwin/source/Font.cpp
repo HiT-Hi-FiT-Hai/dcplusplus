@@ -1,4 +1,3 @@
-// $Revision: 1.4 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -26,7 +25,7 @@
   OR TORT ( INCLUDING NEGLIGENCE OR OTHERWISE ) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "../include/smartwin/Font.h"
+#include "../include/smartwin/resources/Font.h"
 
 namespace SmartWin
 {

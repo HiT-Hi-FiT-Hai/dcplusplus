@@ -19,7 +19,8 @@ from the DC dev hub people (notably cologic, fusbar, farcry and sedulus). Oh,
 and not to forget, Jon Hess for the original DC idea.
 
 The latest draft version of this document can be downloaded from
-$URL$. This version correspods to $Revision$.
+$URL$. 
+This version correspods to $Revision$.
 
 == Line protocol
 === General

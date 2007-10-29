@@ -6,7 +6,6 @@
 
 namespace SmartWin {
 
-
 /** Policy for all handles that have null as NULL_HANDLE */
 template<typename H>
 struct NullPolicy {

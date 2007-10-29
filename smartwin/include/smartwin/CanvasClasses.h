@@ -32,7 +32,7 @@
 #include "Widget.h"
 #include "BasicTypes.h"
 #include "resources/Bitmap.h"
-#include "Font.h"
+#include "resources/Font.h"
 
 namespace SmartWin
 {
@@ -267,13 +267,26 @@ private:
   * <li>Pen</li>
   * </ul>
   */
+
 class Canvas
 {
 public:
+	class Selector {
+	public:
+		template<typename T>
+		Selector(Canvas& canvas_, T& t) : canvas(canvas_), h(::SelectObject(canvas.handle(), t.handle())) { }
+		
+		~Selector() { ::SelectObject(canvas.handle(), h); }
+		
+	private:
+		Canvas& canvas;
+		HGDIOBJ h;
+	};
+	
 	/// Returns the Device Context for the Canvas
 	/** Can be used to construct e.g. a Pen object or a HdcModeSetter object
 	  */
-	HDC getDc();
+	HDC handle() const;
 
 	/// Selects the given font
 	/** Selects the given font for later text operations
@@ -679,178 +692,6 @@ private:
 };
 #endif //! WINCE
 
-// TODO: Create a custom object for creating COLORREF...?
-/// Class for control of a pens lifetime
-/** Constructor takes a COLORREF which can be obtained by using e.g. the RGB macro.
-  * <br>
-  * Class ensures that when finished with your pen your pen is released and the
-  * former one is reactivated. <br>
-  * Automatically resets back to the former used pen when object is destroyed. <br>
-  * The hdc parameter to the Constructor is the Device Context you wish to create the
-  * pen in. <br>
-  * Related classes<br>
-  * <ul>
-  * <li>UpdateCanvas</li>
-  * <li>PaintCanvas</li>
-  * <li>FreeCanvas</li>
-  * <li>Canvas</li>
-  * <li>Brush</li>
-  * <li>TextPen</li>
-  * <li>HdcModeSetter</li>
-  * </ul>
-  */
-class Pen
-{
-public:
-	/// Returns the Canvas the pen belongs to
-	/** Normally this would be the same as the "parent" object used to construct the
-	  * Pen
-	  */
-	Canvas & getCanvas();
-
-	/// Returns the Handle to the pen
-	/** Returns the Handle to the pen
-	  */
-	HPEN getPenHandle();
-
-	/// Constructor taking a Canvas, a COLORREF, and optionally a width.
-	/** Build a COLORREF argument with windows.h's RGB( red, green, blue ). The
-	  * optional width is the width in pixels of the line drawn by the pen.
-	  */
-	Pen( Canvas & canvas, COLORREF color, int width = 0 );
-
-	/// Automatically resets the pen back to the former pen and frees the given pen.
-	/** Freeing the current pen and resetting back to the former pen. Note that the
-	  * Pen object cannot have a longer lifetime than the Canvas it belongs to (given
-	  * to the Constructor) since this will cause undefined behaviour.
-	  */
-	~Pen();
-
-private:
-	// Handle to the old pen (this pen will be restored in the DTOR of the object)
-	HPEN itsPenOld;
-
-	// Handle to the actual pen.
-	HPEN itsPen;
-
-	// Handle to its Device Context.
-	Canvas & itsCanvas;
-};
-
-/// Class for control of a brush lifetime
-/** Constructor takes a COLORREF which can be obtained by using e.g. the RGB macro.
-  * <br>
-  * Class ensures that your brush is released and the former one is reactivated. <br>
-  * Automatically resets back to the former used brush when object is destroyed. <br>
-  * The hdc parameter to the Constructor is the Device Context for the brush. <br>
-  * Related classes<br>
-  * <ul>
-  * <li>UpdateCanvas</li>
-  * <li>PaintCanvas</li>
-  * <li>Canvas</li>
-  * <li>Pen</li>
-  * <li>HdcModeSetter</li>
-  * </ul>
-  */
-class Brush
-{
-public:
-
-	enum SysColor
-	{
-		Scrollbar = COLOR_SCROLLBAR,
-		Background = COLOR_BACKGROUND,
-		ActiveCaption = COLOR_ACTIVECAPTION,
-		InActiveCaption = COLOR_INACTIVECAPTION,
-		Menu = COLOR_MENU,
-		Window = COLOR_WINDOW,
-		WindowFrame = COLOR_WINDOWFRAME,
-		MenuText = COLOR_MENUTEXT,
-		WindowText = COLOR_WINDOWTEXT,
-		CaptionText = COLOR_CAPTIONTEXT,
-		ActiveBorder = COLOR_ACTIVEBORDER,
-		InActiveBorder = COLOR_INACTIVEBORDER,
-		AppWorkSpace = COLOR_APPWORKSPACE,
-		HighLight = COLOR_HIGHLIGHT,
-		HighLightText = COLOR_HIGHLIGHTTEXT,
-		BtnFace = COLOR_BTNFACE,
-		BtnShadow = COLOR_BTNSHADOW,
-		GrayText = COLOR_GRAYTEXT,
-		BtnText = COLOR_BTNTEXT,
-		InActiveCaptionText = COLOR_INACTIVECAPTIONTEXT,
-		BtnHighLight = COLOR_BTNHIGHLIGHT,
-		//3DDkShadow                        = COLOR_3DDKSHADOW,
-		//3DLight                           = COLOR_3DLIGHT,
-		InfoText = COLOR_INFOTEXT,
-		InfoBk = COLOR_INFOBK,
-#ifdef WINCE
-		Static = COLOR_STATIC,
-		StaticText = COLOR_STATICTEXT,
-#else  //! WINCE
-		Static = COLOR_BACKGROUND, // try ?
-		StaticText = COLOR_BTNTEXT,
-#endif
-		GradientActiveCaption = COLOR_GRADIENTACTIVECAPTION,
-		GradientInActiveCaption = COLOR_GRADIENTINACTIVECAPTION
-	};
-
-	/// Returns the Device Context of the brush.
-	/** Normally the same as the "parent" object used to construct the Pen
-	  */
-	Canvas & getCanvas();
-
-	/// Returns the Handle to the brush
-	/** Returns the Handle to the brush
-	  */
-	HBRUSH getBrushHandle();
-	
-	/// Constructor for a free brush (not tied to a canvas)
-	Brush(COLORREF color);
-
-	/// Constructor taking a Canvas and a COLORREF
-	/** Build a COLORREF argument with windows.h's RGB( red, green, blue )
-	  */
-	Brush( Canvas & canvas, COLORREF color );
-
-	/// Constructor taking a Canvas and a COLORREF
-	/** Build a COLORREF argument with windows.h's RGB( red, green, blue )
-	  */
-	Brush( Canvas & canvas, BitmapPtr bitmap );
-
-	/// Constructor taking a Canvas and a syscolorbrush enum
-	/** A syscolorbrush is one of the system brushes used to draw e.g. Buttons, Text,
-	  * etc. Use this Constructor if you wish to use one of those cached brushes
-	  * instead of creating your own
-	  */
-	Brush( Canvas & canvas, SysColor color );
-
-	/// Static Constructor returning a "NULL_BRUSH"
-	Brush( Canvas & canvas );
-
-	/// Automatically restores the old brush and frees the given brush.
-	/** Freeing the current brush and resetting back to the former brush. Note that
-	  * the Pen object cannot have a longer lifetime than the Canvas it belongs to
-	  * (given to the Constructor) since this will cause undefined behaviour.
-	  */
-	~Brush();
-
-private:
-	// NEVER IMPLEMENTED INTENTIONALLY, DENY COPYING!
-	Brush( const Brush & rhs );
-
-	// Handle to the old brush (this brush will be restored in the DTOR of the object)
-	HBRUSH itsBrushOld;
-
-	// true if SysColorBrush
-	bool isSysColor;
-
-	// Handle to the actual brush.
-	HBRUSH itsBrush;
-
-	// Handle to its Device Context.
-	Canvas* itsCanvas;
-};
-
 /// Class for control of the text color lifetime
 /** Constructor takes a COLORREF. (Use the RGB macro. <br>
   * Class ensures that the previous text color is restored on object destruction.
@@ -884,11 +725,7 @@ private:
 	Canvas & itsCanvas;
 };
 
-/// \ingroup GlobalStuff
-/// Brush pointer
-/** Use this typedef instead to ensure compatibility in future versions of SmartWin!!
-  */
-typedef std::tr1::shared_ptr< Brush > BrushPtr;
+inline HDC Canvas::handle() const { return itsHdc; }
 
 // end namespace SmartWin
 }

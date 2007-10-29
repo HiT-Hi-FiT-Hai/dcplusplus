@@ -37,11 +37,11 @@ private:
 	WidgetStaticPtr example;
 
 	COLORREF fg, bg, upBar, downBar;
-	HBRUSH bgbrush;
+	SmartWin::BrushPtr bgBrush;
 	HFONT fontObj;
 	LOGFONT font;
 
-	HRESULT handleExampleColor(WPARAM wParam, LPARAM lParam);
+	SmartWin::BrushPtr handleExampleColor(SmartWin::Canvas& canvas);
 	void handleBackgroundClicked();
 	void handleTextClicked();
 	void handleULClicked();

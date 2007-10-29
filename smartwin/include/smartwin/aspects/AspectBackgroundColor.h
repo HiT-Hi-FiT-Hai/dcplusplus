@@ -29,6 +29,7 @@
 #ifndef AspectBackgroundColor_h
 #define AspectBackgroundColor_h
 
+#include "../resources/Brush.h"
 #include "../CanvasClasses.h"
 
 namespace SmartWin
@@ -53,7 +54,7 @@ class AspectBackgroundColor
 			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( msg.wParam ) );
 
 			BrushPtr retBrush = f(canvas);
-			ret = retBrush ? reinterpret_cast< HRESULT >( retBrush->getBrushHandle() ) : 0;
+			ret = retBrush ? reinterpret_cast< HRESULT >( retBrush->handle() ) : 0;
 			return true;
 		}
 

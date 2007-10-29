@@ -1,5 +1,7 @@
 #include "../../include/smartwin/widgets/WidgetDataGrid.h"
 
+#include "../../include/smartwin/resources/Pen.h"
+
 namespace SmartWin {
 
 const WidgetDataGrid::Seed & WidgetDataGrid::getDefaultSeed()
@@ -384,5 +386,62 @@ int WidgetDataGrid::xoffFromColumn( int column, int & logicalColumn )
 
 	return xOffset;
 }
+
+void WidgetDataGrid::createArrows() {
+	POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
+	POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
+
+	FreeCanvas dc(handle(), ::CreateCompatibleDC(NULL));
+
+	const int bitmapWidth = 8;
+	const int bitmapHeight = 8;
+	const Rectangle rect(0, 0, bitmapWidth, bitmapHeight );
+
+	Brush brush(Brush::Face3D);
+	Pen penLight(::GetSysColor(COLOR_3DHIGHLIGHT));
+	Pen penShadow(::GetSysColor(COLOR_3DSHADOW));
+
+	upArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.handle(), bitmapWidth, bitmapHeight)));
+	downArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.handle(), bitmapWidth, bitmapHeight)));
+
+	// create up arrow
+	SelectBitmap(dc.handle(), upArrow->handle());
+	dc.fillRectangle(rect, brush);
+
+	{
+		Canvas::Selector select(dc, penLight);
+		::Polyline(dc.handle(), pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
+	}
+
+	{
+		Canvas::Selector select(dc, penShadow);
+		::Polyline(dc.handle(), pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
+	}
+
+	// create down arrow
+	SelectBitmap(dc.handle(), downArrow->handle());
+	dc.fillRectangle(rect, brush);
+	
+	for (size_t i = 0; i < sizeof(pathArrowShort)/sizeof(pathArrowShort[0]); ++i) {
+		POINT& pt = pathArrowShort[i];
+		pt.x = bitmapWidth - pt.x;
+		pt.y = bitmapHeight - pt.y;
+	}
+	{
+		Canvas::Selector select(dc, penLight);
+		::Polyline(dc.handle(), pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
+	}
+
+	for (size_t i = 0; i < sizeof(pathArrowLong)/sizeof(pathArrowLong[0]); ++i) {
+		POINT& pt = pathArrowLong[i];
+		pt.x = bitmapWidth - pt.x;
+		pt.y = bitmapHeight - pt.y;
+	}
+	{
+		Canvas::Selector select(dc, penShadow);
+		::Polyline(dc.handle(), pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
+	}		
+}
+
 
 }

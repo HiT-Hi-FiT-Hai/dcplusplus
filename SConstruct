@@ -16,7 +16,7 @@ opts.AddOptions(
 )
 
 gcc_flags = {
-	'common': ['-ggdb', '-Wall', '-Wextra', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
+	'common': ['-ggdb', '-Wall', '-Wextra', '-pipe', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
 	'debug': [], 
 	'release' : ['-O2', '-mwindows']
 }
@@ -54,13 +54,13 @@ msvc_link_flags = {
 }
 
 msvc_defs = {
-	'common' : ['_REENTRANT', 'USE_SYS_STL=1'],
+	'common' : ['_REENTRANT'],
 	'debug' : [''],
 	'release' : ['NDEBUG']
 }
 
 gcc_defs = {
-	'common' : ['_REENTRANT', 'USE_SYS_STL=1'],
+	'common' : ['_REENTRANT'],
 	'debug' : ['_DEBUG'],
 	'release' : ['NDEBUG']
 }
@@ -71,7 +71,7 @@ import os,sys
 
 tools = ARGUMENTS.get('tools', 'mingw')
 
-toolset = [tools, 'swig']
+toolset = [tools]
 
 env = Environment(tools = toolset, options=opts, ENV=os.environ)
 Help(opts.GenerateHelpText(env))

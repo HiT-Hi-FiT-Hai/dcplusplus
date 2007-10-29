@@ -67,6 +67,8 @@ public:
 
 	/// Default values for creation
 	static const Seed & getDefaultSeed();
+
+	void relayEvent(const MSG& msg);
 	
 	void setTool(Widget* widget, const Dispatcher::F& callback);
 	
