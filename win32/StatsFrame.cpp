@@ -25,6 +25,9 @@
 
 StatsFrame::StatsFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
+	pen(new SmartWin::Pen(WinUtil::textColor)),
+	upPen(new SmartWin::Pen(SETTING(UPLOAD_BAR_COLOR))),
+	downPen(new SmartWin::Pen(SETTING(DOWNLOAD_BAR_COLOR))),
 	width(0),
 	height(0),
 	twidth(0),
@@ -36,9 +39,9 @@ StatsFrame::StatsFrame(SmartWin::WidgetTabView* mdiParent) :
 {
 	setFont(WinUtil::font);
 
-	onRaw(std::tr1::bind(&StatsFrame::handlePaint, this), SmartWin::Message(WM_PAINT));
-	// can't use onPainting because it calls ::BeginPaint through PaintCanvas and doesn't give access to the update rect
+	onPainting(std::tr1::bind(&StatsFrame::handlePaint, this, _1));
 
+	initStatus();
 	layout();
 
 	createTimer(std::tr1::bind(&StatsFrame::eachSecond, this), 1000);
@@ -47,13 +50,11 @@ StatsFrame::StatsFrame(SmartWin::WidgetTabView* mdiParent) :
 StatsFrame::~StatsFrame() {
 }
 
-LRESULT StatsFrame::handlePaint() {
-	SmartWin::PaintCanvas canvas(handle());
-
+void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
 	SmartWin::Rectangle rect = canvas.getPaintRect();
 
 	if(rect.size.x == 0 || rect.size.y == 0)
-		return 0;
+		return;
 
 	{
 		SmartWin::Canvas::Selector select(canvas, *WinUtil::bgBrush);
@@ -69,8 +70,7 @@ LRESULT StatsFrame::handlePaint() {
 	int lheight = height / (lines+1);
 
 	{
-		SmartWin::Pen pen(WinUtil::textColor);
-		SmartWin::Canvas::Selector select(canvas, pen);
+		SmartWin::Canvas::Selector select(canvas, *pen);
 		for(int i = 0; i < lines; ++i) {
 			int ypos = lheight * (i+1);
 			if(ypos > fontHeight + 2) {
@@ -107,24 +107,24 @@ LRESULT StatsFrame::handlePaint() {
 	long clientRight = getClientAreaSize().x;
 
 	{
-		SmartWin::Pen upPen(SETTING(UPLOAD_BAR_COLOR));
-		SmartWin::Canvas::Selector select(canvas, upPen);
+		SmartWin::Canvas::Selector select(canvas, *upPen);
 		drawLine(canvas, up.begin(), up.end(), rect, clientRight);
 	}
 
 	{
-		SmartWin::Pen downPen(SETTING(DOWNLOAD_BAR_COLOR));
-		SmartWin::Canvas::Selector select(canvas, downPen);
+		SmartWin::Canvas::Selector select(canvas, *downPen);
 		drawLine(canvas, down.begin(), down.end(), rect, clientRight);
 	}
-
-	return 0;
 }
 
 void StatsFrame::layout() {
-	SmartWin::Point clientSize = getClientAreaSize();
-	width = clientSize.x;
-	height = clientSize.y - 1;
+	SmartWin::Rectangle r(getClientAreaSize());
+
+	layoutStatus(r);
+
+	width = r.size.x;
+	height = r.size.y - 1;
+
 	invalidateWidget();
 }
 

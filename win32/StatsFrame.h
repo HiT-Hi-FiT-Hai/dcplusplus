@@ -44,6 +44,10 @@ private:
 	StatsFrame(SmartWin::WidgetTabView* mdiParent);
 	virtual ~StatsFrame();
 
+	SmartWin::PenPtr pen;
+	SmartWin::PenPtr upPen;
+	SmartWin::PenPtr downPen;
+
 	struct Stat {
 		Stat() : scroll(0), speed(0) { }
 		Stat(uint32_t aScroll, int64_t aSpeed) : scroll(aScroll), speed(aSpeed) { }
@@ -68,7 +72,7 @@ private:
 	int64_t lastDown;
 	int64_t max;
 
-	LRESULT handlePaint();
+	void handlePaint(SmartWin::PaintCanvas& canvas);
 
 	void layout();
 	bool eachSecond();

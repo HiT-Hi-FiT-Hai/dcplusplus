@@ -4,7 +4,9 @@
 * Fixed some memory leaks
 * Fixed background color in settings dialog example (thanks poy)
 * Fixed disappearing tooltips (thanks poy)
-
+* Stats frame work (thanks poy)
+* Appearance page font cleanup (thanks poy)
+* Context menu fix (thanks poy)
 
 -- 0.702 2007-10-21 --
 * Fixed missing sorting in most places

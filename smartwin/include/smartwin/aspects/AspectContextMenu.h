@@ -14,7 +14,7 @@ class AspectContextMenu {
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
 			ret = f(ScreenCoordinate(Point(GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam))));
-			return true;
+			return ret;
 		}
 
 		F f;
