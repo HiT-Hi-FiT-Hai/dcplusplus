@@ -22,7 +22,7 @@
 #include <dcpp/forward.h>
 #include "WidgetFactory.h"
 
-class FavHubProperties : public WidgetFactory<SmartWin::WidgetModalDialog>
+class FavHubProperties : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry);
@@ -46,7 +46,6 @@ private:
 	void handleTextChanged(WidgetTextBoxPtr textBox);
 
 	void handleOKClicked();
-	void handleCancelClicked();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_FAV_HUB_PROPERTIES_H)

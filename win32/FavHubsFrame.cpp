@@ -125,8 +125,6 @@ FavHubsFrame::~FavHubsFrame() {
 }
 
 void FavHubsFrame::layout() {
-	const int border = 2;
-	
 	SmartWin::Rectangle r(getClientAreaSize());
 
 	layoutStatus(r);
@@ -193,12 +191,12 @@ void FavHubsFrame::handleProperties() {
 		dcassert(e != NULL);
 		FavHubProperties dlg(this, e);
 		if(dlg.run() == IDOK) {
-			hubs->setText(COLUMN_NAME, i, Text::toT(e->getName()));
-			hubs->setText(COLUMN_DESCRIPTION, i, Text::toT(e->getDescription()));
-			hubs->setText(COLUMN_SERVER, i, Text::toT(e->getServer()));
-			hubs->setText(COLUMN_NICK, i, Text::toT(e->getNick(false)));
-			hubs->setText(COLUMN_PASSWORD, i, tstring(e->getPassword().size(), '*'));
-			hubs->setText(COLUMN_USERDESCRIPTION, i, Text::toT(e->getUserDescription()));
+			hubs->setText(i, COLUMN_NAME, Text::toT(e->getName()));
+			hubs->setText(i, COLUMN_DESCRIPTION, Text::toT(e->getDescription()));
+			hubs->setText(i, COLUMN_SERVER, Text::toT(e->getServer()));
+			hubs->setText(i, COLUMN_NICK, Text::toT(e->getNick(false)));
+			hubs->setText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*'));
+			hubs->setText(i, COLUMN_USERDESCRIPTION, Text::toT(e->getUserDescription()));
 		}
 	}
 }

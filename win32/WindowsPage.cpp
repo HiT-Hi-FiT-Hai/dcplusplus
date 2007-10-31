@@ -34,8 +34,7 @@ PropPage::TextItem WindowsPage::textItem[] = {
 };
 
 WindowsPage::ListItem WindowsPage::listItems[] = {
-	{ SettingsManager::OPEN_PUBLIC, ResourceManager::PUBLIC_HUBS },
-	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::FAVORITE_HUBS },
+	{ SettingsManager::OPEN_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
 	{ SettingsManager::OPEN_FAVORITE_USERS, ResourceManager::FAVORITE_USERS },
 	{ SettingsManager::OPEN_QUEUE, ResourceManager::DOWNLOAD_QUEUE },
 	{ SettingsManager::OPEN_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
@@ -44,7 +43,8 @@ WindowsPage::ListItem WindowsPage::listItems[] = {
 	{ SettingsManager::OPEN_SEARCH_SPY, ResourceManager::SEARCH_SPY },
 	{ SettingsManager::OPEN_NETWORK_STATISTICS, ResourceManager::NETWORK_STATISTICS },
 	{ SettingsManager::OPEN_NOTEPAD, ResourceManager::NOTEPAD },
-	{ SettingsManager::OPEN_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
+	{ SettingsManager::OPEN_PUBLIC, ResourceManager::PUBLIC_HUBS },
+	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::FAVORITE_HUBS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

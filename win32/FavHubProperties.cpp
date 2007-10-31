@@ -27,7 +27,7 @@
 #include <dcpp/version.h>
 
 FavHubProperties::FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry) :
-	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
 	name(0),
 	address(0),
 	description(0),
@@ -84,7 +84,7 @@ bool FavHubProperties::handleInitDialog() {
 	button->onClicked(std::tr1::bind(&FavHubProperties::handleOKClicked, this));
 
 	button = subclassButton(IDCANCEL);
-	button->onClicked(std::tr1::bind(&FavHubProperties::handleCancelClicked, this));
+	button->onClicked(std::tr1::bind(&FavHubProperties::endDialog, this, IDCANCEL));
 
 	centerWindow();
 	
@@ -128,8 +128,4 @@ void FavHubProperties::handleOKClicked() {
 	entry->setUserDescription(Text::fromT(userDescription->getText()));
 	FavoriteManager::getInstance()->save();
 	endDialog(IDOK);
-}
-
-void FavHubProperties::handleCancelClicked() {
-	endDialog(IDCANCEL);
 }

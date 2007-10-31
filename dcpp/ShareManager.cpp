@@ -669,10 +669,6 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 		if(name == "." || name == "..")
 			continue;
-		if(name.find('$') != string::npos) {
-			LogManager::getInstance()->message(STRING(FORBIDDEN_DOLLAR_FILE) + name + " (" + STRING(SIZE) + ": " + Util::toString(File::getSize(name)) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + aName + "\")");
-			continue;
-		}
 		if(!BOOLSETTING(SHARE_HIDDEN) && i->isHidden() )
 			continue;
 

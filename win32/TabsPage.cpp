@@ -36,14 +36,14 @@ PropPage::TextItem TabsPage::texts[] = {
 };
 
 PropPage::ListItem TabsPage::listItems[] = {
-	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
-	{ SettingsManager::BOLD_FINISHED_UPLOADS, ResourceManager::FINISHED_UPLOADS },
-	{ SettingsManager::BOLD_QUEUE, ResourceManager::DOWNLOAD_QUEUE },
 	{ SettingsManager::BOLD_HUB, ResourceManager::HUB },
 	{ SettingsManager::BOLD_PM, ResourceManager::PRIVATE_MESSAGE },
 	{ SettingsManager::BOLD_SEARCH, ResourceManager::SEARCH },
-	{ SettingsManager::BOLD_WAITING_USERS, ResourceManager::WAITING_USERS },
 	{ SettingsManager::BOLD_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
+	{ SettingsManager::BOLD_QUEUE, ResourceManager::DOWNLOAD_QUEUE },
+	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
+	{ SettingsManager::BOLD_WAITING_USERS, ResourceManager::WAITING_USERS },
+	{ SettingsManager::BOLD_FINISHED_UPLOADS, ResourceManager::FINISHED_UPLOADS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

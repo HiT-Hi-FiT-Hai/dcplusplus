@@ -7,6 +7,9 @@
 * Stats frame work (thanks poy)
 * Appearance page font cleanup (thanks poy)
 * Context menu fix (thanks poy)
+* Magnet dialog fixed (thanks poy)
+* Reorder some options (thanks poy)
+* Allow files with $ in them (thanks ullner)
 
 -- 0.702 2007-10-21 --
 * Fixed missing sorting in most places

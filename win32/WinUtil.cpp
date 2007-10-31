@@ -20,8 +20,8 @@
 #include "stdafx.h"
 
 #include "WinUtil.h"
+
 #include "resource.h"
-#include "LineDlg.h"
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ShareManager.h>
@@ -35,6 +35,8 @@
 #include <dcpp/File.h>
 #include <dcpp/UserCommand.h>
 
+#include "LineDlg.h"
+#include "MagnetDlg.h"
 #include "HubFrame.h"
 #include "SearchFrame.h"
 
@@ -990,15 +992,10 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 			//	};
 			//} else {
 			// use aOverride to force the display of the dialog.  used for auto-updating
-#ifdef PORT_ME
-			MagnetDlg dlg(fhash, fname);
-				dlg.DoModal(mainWnd);
-#endif
+				MagnetDlg(mainWindow, fhash, fname).run();
 			//}
 		} else {
-#ifdef PORT_ME
-			MessageBox(mainWnd, CTSTRING(MAGNET_DLG_TEXT_BAD), CTSTRING(MAGNET_DLG_TITLE), MB_OK | MB_ICONEXCLAMATION);
-#endif
+			SmartWin::WidgetMessageBox(mainWindow).show(TSTRING(MAGNET_DLG_TEXT_BAD), TSTRING(MAGNET_DLG_TITLE), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
 		}
 	}
 }
