@@ -40,8 +40,8 @@ public:
 		return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
 	}
 
-	WidgetTextBoxPtr subclassTextBox( unsigned id ) {
-		return SmartWin::WidgetCreator< WidgetTextBox >::subclass( this, id );
+	WidgetTextBoxPtr attachTextBox( unsigned id ) {
+		return SmartWin::WidgetCreator< WidgetTextBox >::attach( this, id );
 	}
 
 	/// VPaned class type.

@@ -71,59 +71,59 @@ bool CommandDlg::handleInitDialog() {
 	::SetDlgItemText(handle(), IDC_SETTINGS_TO, CTSTRING(USER_CMD_TO));
 	::SetDlgItemText(handle(), IDC_USER_CMD_PREVIEW, CTSTRING(USER_CMD_PREVIEW));
 
-	separator = subclassRadioButton(IDC_SETTINGS_SEPARATOR);
+	separator = attachRadioButton(IDC_SETTINGS_SEPARATOR);
 	separator->setText(TSTRING(SEPARATOR));
 	separator->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	raw = subclassRadioButton(IDC_SETTINGS_RAW);
+	raw = attachRadioButton(IDC_SETTINGS_RAW);
 	raw->setText(TSTRING(USER_CMD_RAW));
 	raw->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	chat = subclassRadioButton(IDC_SETTINGS_CHAT);
+	chat = attachRadioButton(IDC_SETTINGS_CHAT);
 	chat->setText(TSTRING(USER_CMD_CHAT));
 	chat->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	PM = subclassRadioButton(IDC_SETTINGS_PM);
+	PM = attachRadioButton(IDC_SETTINGS_PM);
 	PM->setText(TSTRING(USER_CMD_PM));
 	PM->onClicked(std::tr1::bind(&CommandDlg::handleTypeChanged, this));
 
-	hubMenu = subclassCheckBox(IDC_SETTINGS_HUB_MENU);
+	hubMenu = attachCheckBox(IDC_SETTINGS_HUB_MENU);
 	hubMenu->setText(TSTRING(USER_CMD_HUB_MENU));
 
-	userMenu = subclassCheckBox(IDC_SETTINGS_USER_MENU);
+	userMenu = attachCheckBox(IDC_SETTINGS_USER_MENU);
 	userMenu->setText(TSTRING(USER_CMD_USER_MENU));
 
-	searchMenu = subclassCheckBox(IDC_SETTINGS_SEARCH_MENU);
+	searchMenu = attachCheckBox(IDC_SETTINGS_SEARCH_MENU);
 	searchMenu->setText(TSTRING(USER_CMD_SEARCH_MENU));
 
-	fileListMenu = subclassCheckBox(IDC_SETTINGS_FILELIST_MENU);
+	fileListMenu = attachCheckBox(IDC_SETTINGS_FILELIST_MENU);
 	fileListMenu->setText(TSTRING(USER_CMD_FILELIST_MENU));
 
-	nameBox = subclassTextBox(IDC_NAME);
+	nameBox = attachTextBox(IDC_NAME);
 
-	commandBox = subclassTextBox(IDC_COMMAND);
+	commandBox = attachTextBox(IDC_COMMAND);
 	commandBox->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
-	hubBox = subclassTextBox(IDC_HUB);
+	hubBox = attachTextBox(IDC_HUB);
 
-	nick = subclassTextBox(IDC_NICK);
+	nick = attachTextBox(IDC_NICK);
 	nick->onTextChanged(std::tr1::bind(&CommandDlg::updateCommand, this));
 
-	once = subclassCheckBox(IDC_SETTINGS_ONCE);
+	once = attachCheckBox(IDC_SETTINGS_ONCE);
 	once->setText(TSTRING(USER_CMD_ONCE));
 
-	result = subclassTextBox(IDC_RESULT);
+	result = attachTextBox(IDC_RESULT);
 
-	openHelp = subclassCheckBox(IDC_USER_CMD_OPEN_HELP);
+	openHelp = attachCheckBox(IDC_USER_CMD_OPEN_HELP);
 	openHelp->setText(TSTRING(SETTINGS_OPEN_USER_CMD_HELP));
 	bool bOpenHelp = BOOLSETTING(OPEN_USER_CMD_HELP);
 	openHelp->setChecked(bOpenHelp);
 
-	subclassButton(IDOK)->onClicked(std::tr1::bind(&CommandDlg::handleOKClicked, this));
+	attachButton(IDOK)->onClicked(std::tr1::bind(&CommandDlg::handleOKClicked, this));
 
-	subclassButton(IDCANCEL)->onClicked(std::tr1::bind(&CommandDlg::endDialog, this, IDCANCEL));
+	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&CommandDlg::endDialog, this, IDCANCEL));
 
-	subclassButton(IDHELP)->onClicked(std::tr1::bind(&CommandDlg::handleHelpClicked, this));
+	attachButton(IDHELP)->onClicked(std::tr1::bind(&CommandDlg::handleHelpClicked, this));
 
 	if(bOpenHelp) {
 		// launch the help file, instead of having the help in the dialog

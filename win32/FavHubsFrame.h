@@ -65,7 +65,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetDataGridPtr hubs;
+	WidgetListViewPtr hubs;
 	WidgetButtonPtr connect;
 	WidgetButtonPtr add;
 	WidgetButtonPtr properties;

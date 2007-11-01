@@ -1,4 +1,3 @@
-// $Revision: 1.18 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -30,7 +29,7 @@
 #define WidgetMDIParent_h
 
 #include "../BasicTypes.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectRaw.h"

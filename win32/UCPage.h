@@ -36,7 +36,7 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	WidgetDataGridPtr commands;
+	WidgetListViewPtr commands;
 
 	void handleDoubleClick();
 	bool handleKeyDown(int c);

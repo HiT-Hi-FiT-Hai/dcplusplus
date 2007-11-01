@@ -1,4 +1,3 @@
-// $Revision: 1.8 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -26,8 +25,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetDataGridViewEditBox_h
-#define WidgetDataGridViewEditBox_h
+#ifndef WidgetListViewViewEditBox_h
+#define WidgetListViewViewEditBox_h
 
 #include "WidgetTextBox.h"
 
@@ -39,7 +38,7 @@ namespace private_
 {
 // begin namespace private_
 
-// Class is only to make subclassing of Edit Control in List View possible
+// Class is only to make attaching of Edit Control in List View possible
 // TODO: Make window NOT hide the leftmost cell of row when entering "edit modus"..
 class ListViewEditBox : WidgetTextBox
 {
@@ -91,7 +90,7 @@ LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT
 		case WM_WINDOWPOSCHANGING :
 		{
 			// Ensuring position is "locked" in the rectangle initially set in
-			// WidgetDataGrid's create func And then letting message "pass
+			// WidgetListView's create func And then letting message "pass
 			// through" the rest of the hierarchy...
 			WINDOWPOS * pos = ( WINDOWPOS * ) lPar;
 			pos->x = itsRect.pos.x;

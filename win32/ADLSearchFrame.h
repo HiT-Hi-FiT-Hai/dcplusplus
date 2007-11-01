@@ -59,7 +59,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetDataGridPtr items;
+	WidgetListViewPtr items;
 	WidgetButtonPtr add;
 	WidgetButtonPtr properties;
 	WidgetButtonPtr up;

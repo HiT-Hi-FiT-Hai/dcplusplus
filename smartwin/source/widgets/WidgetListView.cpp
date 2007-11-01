@@ -1,10 +1,10 @@
-#include "../../include/smartwin/widgets/WidgetDataGrid.h"
+#include "../../include/smartwin/widgets/WidgetListView.h"
 
 #include "../../include/smartwin/resources/Pen.h"
 
 namespace SmartWin {
 
-const WidgetDataGrid::Seed & WidgetDataGrid::getDefaultSeed()
+const WidgetListView::Seed & WidgetListView::getDefaultSeed()
 {
 	static bool d_NeedsInit = true;
 	static Seed d_DefaultValues( DontInitializeMe );
@@ -20,7 +20,7 @@ const WidgetDataGrid::Seed & WidgetDataGrid::getDefaultSeed()
 	return d_DefaultValues;
 }
 
-void WidgetDataGrid::create( const Seed & cs )
+void WidgetListView::create( const Seed & cs )
 {
 	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
@@ -30,11 +30,11 @@ void WidgetDataGrid::create( const Seed & cs )
 	// only" property of control Note! If you supply a beenValidate event handler
 	// this will have no effect
 #ifdef PORT_ME
-	onValidate( WidgetDataGrid::defaultValidate );
+	onValidate( WidgetListView::defaultValidate );
 #endif
 }
 
-WidgetDataGrid::WidgetDataGrid( SmartWin::Widget * parent )
+WidgetListView::WidgetListView( SmartWin::Widget * parent )
 	: PolicyType( parent ),
 	itsEditRow(0),
 	itsEditColumn(0),
@@ -47,10 +47,10 @@ WidgetDataGrid::WidgetDataGrid( SmartWin::Widget * parent )
 	ascending(true)
 {
 	// Can't have a list view without a parent...
-	xAssert( parent, _T( "Cant have a WidgetDataGrid without a parent..." ) );
+	xAssert( parent, _T( "Cant have a WidgetListView without a parent..." ) );
 }
 
-void WidgetDataGrid::setSort(int aColumn, SortType aType, bool aAscending) {
+void WidgetListView::setSort(int aColumn, SortType aType, bool aAscending) {
 	bool doUpdateArrow = (aColumn != sortColumn || aAscending != ascending);
 
 	sortColumn = aColumn;
@@ -64,7 +64,7 @@ void WidgetDataGrid::setSort(int aColumn, SortType aType, bool aAscending) {
 #endif
 }
 
-void WidgetDataGrid::setSelectedIndex( int idx )
+void WidgetListView::setSelectedIndex( int idx )
 {
 	// TODO: Check if this is working right...
 	LVITEM it = { LVIF_STATE };
@@ -83,7 +83,7 @@ void WidgetDataGrid::setSelectedIndex( int idx )
 	}
 }
 
-void WidgetDataGrid::clearSelection()
+void WidgetListView::clearSelection()
 {
 	LVITEM it = { LVIF_STATE };
 	it.stateMask = LVIS_SELECTED;
@@ -101,7 +101,7 @@ void WidgetDataGrid::clearSelection()
 	}
 }
 
-void WidgetDataGrid::createColumns( const std::vector< SmartUtil::tstring > & colNames )
+void WidgetListView::createColumns( const std::vector< SmartUtil::tstring > & colNames )
 {
 	// Deleting all data
 	clear();
@@ -124,7 +124,7 @@ void WidgetDataGrid::createColumns( const std::vector< SmartUtil::tstring > & co
 	}
 }
 
-int WidgetDataGrid::insert(const std::vector< SmartUtil::tstring > & row, LPARAM lPar, int index, int iconIndex) {
+int WidgetListView::insert(const std::vector< SmartUtil::tstring > & row, LPARAM lPar, int index, int iconIndex) {
 	if (index == - 1) {
 		// Appending at bottom
 		index = ListView_GetItemCount( this->handle() );
@@ -156,7 +156,7 @@ int WidgetDataGrid::insert(const std::vector< SmartUtil::tstring > & row, LPARAM
 	return index;
 }
 
-int WidgetDataGrid::insert(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int image, LPARAM lparam) {
+int WidgetListView::insert(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int image, LPARAM lparam) {
 	LVITEM item = { mask };
 	item.iItem = i;
 	item.state = state;
@@ -167,7 +167,7 @@ int WidgetDataGrid::insert(int mask, int i, LPCTSTR text, UINT state, UINT state
 	return ListView_InsertItem(this->handle(), &item);
 }
 
-ScreenCoordinate WidgetDataGrid::getContextMenuPos() {
+ScreenCoordinate WidgetListView::getContextMenuPos() {
 	int pos = getNext(-1, LVNI_SELECTED | LVNI_FOCUSED);
 	POINT pt = { 0 };
 	if(pos >= 0) {
@@ -178,7 +178,7 @@ ScreenCoordinate WidgetDataGrid::getContextMenuPos() {
 	return ClientCoordinate(pt, this);
 }
 
-SmartUtil::tstring WidgetDataGrid::getText( unsigned int row, unsigned int column )
+SmartUtil::tstring WidgetListView::getText( unsigned int row, unsigned int column )
 {
 	// TODO: Get string length first?
 	const int BUFFER_MAX = 2048;
@@ -188,7 +188,7 @@ SmartUtil::tstring WidgetDataGrid::getText( unsigned int row, unsigned int colum
 	return buffer;
 }
 
-std::vector< unsigned > WidgetDataGrid::getSelected()
+std::vector< unsigned > WidgetListView::getSelected()
 {
 	std::vector< unsigned > retVal;
 	int tmpIdx = - 1;
@@ -202,12 +202,12 @@ std::vector< unsigned > WidgetDataGrid::getSelected()
 	return retVal;
 }
 
-unsigned WidgetDataGrid::getColumnCount() {
+unsigned WidgetListView::getColumnCount() {
 	HWND header = ListView_GetHeader(handle());
 	return Header_GetItemCount(header);
 }
 
-void WidgetDataGrid::addRemoveListViewExtendedStyle( DWORD addStyle, bool add ) {
+void WidgetListView::addRemoveListViewExtendedStyle( DWORD addStyle, bool add ) {
 	DWORD newStyle = ListView_GetExtendedListViewStyle( this->handle() );
 	if ( add && ( newStyle & addStyle ) != addStyle )
 	{
@@ -220,7 +220,7 @@ void WidgetDataGrid::addRemoveListViewExtendedStyle( DWORD addStyle, bool add ) 
 	ListView_SetExtendedListViewStyle( this->handle(), newStyle );
 }
 
-std::vector<int> WidgetDataGrid::getColumnOrder() {
+std::vector<int> WidgetListView::getColumnOrder() {
 	std::vector<int> ret(this->getColumnCount());
 	if(!::SendMessage(this->handle(), LVM_GETCOLUMNORDERARRAY, static_cast<WPARAM>(ret.size()), reinterpret_cast<LPARAM>(&ret[0]))) {
 		ret.clear();
@@ -228,13 +228,13 @@ std::vector<int> WidgetDataGrid::getColumnOrder() {
 	return ret;
 }
 
-void WidgetDataGrid::setColumnWidths(const std::vector<int>& widths) {
+void WidgetListView::setColumnWidths(const std::vector<int>& widths) {
 	for(size_t i = 0; i < widths.size(); ++i) {
 		this->setColumnWidth(i, widths[i]);
 	}
 }
 
-std::vector<int> WidgetDataGrid::getColumnWidths() {
+std::vector<int> WidgetListView::getColumnWidths() {
 	std::vector<int> ret(this->getColumnCount());
 	for(size_t i = 0; i < ret.size(); ++i) {
 		ret[i] = ::SendMessage(this->handle(), LVM_GETCOLUMNWIDTH, static_cast<WPARAM>(i), 0);
@@ -242,7 +242,7 @@ std::vector<int> WidgetDataGrid::getColumnWidths() {
 	return ret;
 }
 
-LPARAM WidgetDataGrid::getDataImpl(int idx) {
+LPARAM WidgetListView::getDataImpl(int idx) {
 	LVITEM item = { LVIF_PARAM };
 	item.iItem = idx;
 	
@@ -252,7 +252,7 @@ LPARAM WidgetDataGrid::getDataImpl(int idx) {
 	return item.lParam;
 }
 
-void WidgetDataGrid::setDataImpl(int idx, LPARAM data) {
+void WidgetListView::setDataImpl(int idx, LPARAM data) {
 	LVITEM item = { LVIF_PARAM };
 	item.iItem = idx;
 	item.lParam = data;
@@ -260,7 +260,7 @@ void WidgetDataGrid::setDataImpl(int idx, LPARAM data) {
 	ListView_SetItem(handle(), &item);
 }
 
-void WidgetDataGrid::setIcon( unsigned row, int newIconIndex ) {
+void WidgetListView::setIcon( unsigned row, int newIconIndex ) {
 	LVITEM it = { LVIF_IMAGE };
 	it.iItem = row;
 	it.iImage = newIconIndex;
@@ -271,22 +271,22 @@ void WidgetDataGrid::setIcon( unsigned row, int newIconIndex ) {
 	}
 }
 
-void WidgetDataGrid::setNormalImageList( ImageListPtr imageList ) {
+void WidgetListView::setNormalImageList( ImageListPtr imageList ) {
 	  itsNormalImageList = imageList;
 	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_NORMAL );
 }
 
-void WidgetDataGrid::setSmallImageList( ImageListPtr imageList ) {
+void WidgetListView::setSmallImageList( ImageListPtr imageList ) {
 	  itsSmallImageList = imageList;
 	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_SMALL );
 }
 
-void WidgetDataGrid::setStateImageList( ImageListPtr imageList ) {
+void WidgetListView::setStateImageList( ImageListPtr imageList ) {
 	  itsStateImageList = imageList;
 	  ListView_SetImageList( this->handle(), imageList->getImageList(), LVSIL_STATE );
 }
 
-void WidgetDataGrid::setView( int view ) {
+void WidgetListView::setView( int view ) {
 	if ( ( view & LVS_TYPEMASK ) != view )
 	{
 		xCeption x( _T( "Invalid View type" ) );
@@ -300,7 +300,7 @@ void WidgetDataGrid::setView( int view ) {
 	}
 }
 
-void WidgetDataGrid::redraw( int firstRow, int lastRow ) {
+void WidgetListView::redraw( int firstRow, int lastRow ) {
 	if(lastRow == -1) {
 		lastRow = size();
 	}
@@ -315,8 +315,8 @@ static int compare(T a, T b) {
 	return (a < b) ? -1 : ((a == b) ? 0 : 1);
 }
 
-int CALLBACK WidgetDataGrid::compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
-	WidgetDataGrid* p = reinterpret_cast<WidgetDataGrid*>(lParamSort);
+int CALLBACK WidgetListView::compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
+	WidgetListView* p = reinterpret_cast<WidgetListView*>(lParamSort);
 
 	const int BUF_SIZE = 128;
 	TCHAR buf[BUF_SIZE];
@@ -352,7 +352,7 @@ int CALLBACK WidgetDataGrid::compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM 
 	return result;
 }
 
-int WidgetDataGrid::xoffFromColumn( int column, int & logicalColumn )
+int WidgetListView::xoffFromColumn( int column, int & logicalColumn )
 {
 	HWND hWnd = this->handle();
 
@@ -387,7 +387,7 @@ int WidgetDataGrid::xoffFromColumn( int column, int & logicalColumn )
 	return xOffset;
 }
 
-void WidgetDataGrid::createArrows() {
+void WidgetListView::createArrows() {
 	POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
 	POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
 

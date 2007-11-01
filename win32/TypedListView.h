@@ -20,10 +20,10 @@
 #define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 
 template<class T, class ContentType>
-class TypedListView : public T::WidgetDataGrid
+class TypedListView : public T::WidgetListView
 {
 private:
-	typedef typename T::WidgetDataGrid BaseType;
+	typedef typename T::WidgetListView BaseType;
 	typedef TypedListView<T, ContentType> ThisType;
 	
 public:
@@ -190,7 +190,7 @@ private:
 #ifdef PORT_ME
 
 template<class T, class ContentType>
-class TypedListView : public T::WidgetDataGrid,
+class TypedListView : public T::WidgetListView,
 	ListViewArrows<TypedListView<T, ctrlId> >
 {
 

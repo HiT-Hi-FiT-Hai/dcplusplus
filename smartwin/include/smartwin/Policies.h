@@ -1,4 +1,3 @@
-// $Revision: 1.14 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -26,8 +25,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef MessageMapPolicyClasses_h
-#define MessageMapPolicyClasses_h
+#ifndef Policies_h
+#define Policies_h
 
 #include "Widget.h"
 
@@ -148,12 +147,6 @@ public:
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	Dialog(Widget* parent) : Widget(parent) { }
 	
-	virtual void kill()
-	{
-		killChildren();
-		killMe();
-	}
-
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
 		return FALSE;
 	}
@@ -165,7 +158,6 @@ public:
 		// message
 		/// @todo We should SetWindowLong with the actual result in some cases, see DialogProc docs
 		return TRUE;
-		
 	}
 
 	static LRESULT returnUnknown(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -203,15 +195,7 @@ class ModalDialog
 	: public Dialog
 {
 public:
-	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	ModalDialog(Widget* parent) : Dialog(parent) { }
-
-	virtual void kill()
-	{
-		killChildren();	// needed for resource based WidgetModalDialogs.
-		eraseMeFromParentsChildren();
-	}
-
 };
 
 /// Aspect classes for a normal Container Widget
@@ -223,11 +207,6 @@ class Normal
 	: public Widget
 {
 public:
-	virtual void kill()
-	{
-		killMe();
-	}
-
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	Normal(Widget* parent) : Widget(parent) { }
 	
@@ -235,8 +214,7 @@ public:
 		return ::DefWindowProc( hWnd, msg, wPar, lPar );
 	}
 	
-	static LRESULT returnHandled( LRESULT hres, HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
+	static LRESULT returnHandled( LRESULT hres, HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar ) {
 		return hres;
 	}
 
@@ -244,15 +222,13 @@ public:
 		return ::DefWindowProc( hWnd, msg, wPar, lPar );
 	}
 
-	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar )
-	{
+	LRESULT returnUnhandled( HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar ) {
 		return ::DefWindowProc( hWnd, msg, wPar, lPar );
 	}
 
 	// STATIC EXTRACTER/Windows Message Procedure, extracts the this pointer and
 	// dispatches the message to the this Widget
-	static void initPolicy( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
-	{
+	static void initPolicy( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 		if ( uMsg == WM_NCCREATE ) {
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
@@ -274,8 +250,8 @@ public:
 		return Normal::returnUnhandled(hWnd, msg, wPar, lPar);
 	}
 	
-	virtual void subclass( unsigned id ) {
-		Normal::subclass(id);
+	virtual void attach( unsigned id ) {
+		Normal::attach(id);
 		createMessageMap();
 	}
 
@@ -311,11 +287,6 @@ class MDIChild
 	: public Widget
 {
 public:
-	virtual void kill()
-	{
-		killMe();
-	}
-	
 	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	MDIChild(Widget* parent) : Widget(parent) { }
 	

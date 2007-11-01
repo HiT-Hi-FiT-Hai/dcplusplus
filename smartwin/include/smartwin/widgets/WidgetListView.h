@@ -1,4 +1,3 @@
-// $Revision: 1.38 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -26,12 +25,12 @@
   OR TORT ( INCLUDING NEGLIGENCE OR OTHERWISE ) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WidgetDataGrid_h
-#define WidgetDataGrid_h
+#ifndef WidgetListView_h
+#define WidgetListView_h
 
 #include "../BasicTypes.h"
 #include "../resources/ImageList.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
@@ -43,7 +42,9 @@
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
 #include "../xCeption.h"
-#include "WidgetDataGridEditBox.h"
+#include "WidgetListViewEditBox.h"
+
+#include <vector>
 
 namespace SmartWin
 {
@@ -52,261 +53,6 @@ namespace SmartWin
 // Forward declaring friends
 template< class WidgetType >
 class WidgetCreator;
-
-#ifdef PORT_ME
-template< class EventHandlerClass, class WidgetType, class MessageMapType >
-class AspectListDispatcher
-{
-public:
-	static HRESULT dispatchLparamIntIntString( private_::SignalContent & params )
-	{
-		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
-		if ( nm->item.mask & LVIF_TEXT )
-		{
-			SmartUtil::tstring insertionString;
-
-			typename MessageMapType::voidGetItemFunc func
-				= reinterpret_cast< typename MessageMapType::voidGetItemFunc >( params.Function );
-
-			func
-				( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-				, boost::polymorphic_cast< WidgetType * >( params.This )
-				, nm->item.lParam
-				, nm->item.iSubItem
-				, nm->item.iItem
-				, insertionString
-				);
-#if _MSC_VER >= 1400 // Whidbey supports "safe string copy"
-			_tcsncpy_s( nm->item.pszText, nm->item.cchTextMax, insertionString.c_str(), insertionString.size() + sizeof( TCHAR ) );
-#else
-			_tcsncpy( nm->item.pszText, insertionString.c_str(), insertionString.size() + sizeof( TCHAR ) );
-#endif
-		}
-			if ( nm->item.mask & LVIF_IMAGE )
-			{
-				nm->item.iImage = dispatchGetIcon( params, nm->item.lParam, nm->item.iItem );
-			}
-		return 0;
-	}
-
-	static HRESULT dispatchLparamIntIntStringThis( private_::SignalContent & params )
-	{
-		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
-		if ( nm->item.mask & LVIF_TEXT )
-		{
-			SmartUtil::tstring insertionString;
-			typename MessageMapType::itsVoidGetItemFunc func
-				= reinterpret_cast< typename MessageMapType::itsVoidGetItemFunc >( params.FunctionThis );
-			( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )
-				( boost::polymorphic_cast< WidgetType * >( params.This )
-				, nm->item.lParam
-				, nm->item.iSubItem
-				, nm->item.iItem
-				, insertionString
-				);
-#if _MSC_VER >= 1400 // Whidbey supports "safe string copy"
-			_tcsncpy_s( nm->item.pszText, nm->item.cchTextMax, insertionString.c_str(), insertionString.size() + sizeof( TCHAR ) );
-#else
-			_tcsncpy( nm->item.pszText, insertionString.c_str(), insertionString.size() + sizeof( TCHAR ) );
-#endif
-			}
-			if ( nm->item.mask & LVIF_IMAGE )
-			{
-				nm->item.iImage = dispatchGetIcon( params, nm->item.lParam, nm->item.iItem );
-		}
-		return 0;
-	}
-
-	static HRESULT dispatchDrawItem( private_::SignalContent & params )
-	{
-		NMLVCUSTOMDRAW * nmLVCustomDraw = reinterpret_cast< NMLVCUSTOMDRAW * >( params.Msg.LParam );
-
-		if ( nmLVCustomDraw->nmcd.dwDrawStage == CDDS_PREPAINT || nmLVCustomDraw->nmcd.dwDrawStage == CDDS_ITEMPREPAINT )
-			return CDRF_NOTIFYSUBITEMDRAW;
-		else if ( nmLVCustomDraw->nmcd.dwDrawStage == ( CDDS_ITEMPREPAINT | CDDS_SUBITEM ) )
-		{
-			int subItem = nmLVCustomDraw->iSubItem;
-			int lParam = nmLVCustomDraw->nmcd.lItemlParam;
-
-			RECT rc;
-			LV_FINDINFO find;
-			find.flags = LVFI_PARAM;
-			find.lParam = lParam;
-			int idxOfItem = ListView_FindItem( params.This->handle(), - 1, & find );
-			ListView_GetSubItemRect( params.This->handle(), idxOfItem, subItem, LVIR_BOUNDS, & rc );
-
-			typename MessageMapType::itsVoidUnsignedUnsignedBoolCanvasRectangle func
-				= reinterpret_cast< typename MessageMapType::itsVoidUnsignedUnsignedBoolCanvasRectangle >( params.FunctionThis );
-			FreeCanvas canvas( params.This->handle(), nmLVCustomDraw->nmcd.hdc );
-			SmartWin::Rectangle rect
-				( rc.left
-				, rc.top
-				, rc.right - rc.left
-				, rc.bottom - rc.top
-				);
-			rect = rect.shrink( 2, 0 );
-			if ( subItem == 0 )
-				rect.size.x = ListView_GetColumnWidth( params.This->handle(), subItem );
-			func
-				( internal_::getTypedParentOrThrow < WidgetType * >( params.This )
-				, lParam
-				, subItem
-				, ( nmLVCustomDraw->nmcd.uItemState & CDIS_SELECTED ) == CDIS_SELECTED && ( nmLVCustomDraw->nmcd.uItemState & ODS_FOCUS ) == ODS_FOCUS
-				, canvas
-				, rect
-				);
-		}
-		return CDRF_SKIPDEFAULT;
-	}
-
-	static HRESULT dispatchDrawItemThis( private_::SignalContent & params )
-	{
-		NMLVCUSTOMDRAW * nmLVCustomDraw = reinterpret_cast< NMLVCUSTOMDRAW * >( params.Msg.LParam );
-
-		if ( nmLVCustomDraw->nmcd.dwDrawStage == CDDS_PREPAINT || nmLVCustomDraw->nmcd.dwDrawStage == CDDS_ITEMPREPAINT )
-			return CDRF_NOTIFYSUBITEMDRAW;
-		else if ( nmLVCustomDraw->nmcd.dwDrawStage == ( CDDS_ITEMPREPAINT | CDDS_SUBITEM ) )
-		{
-			int subItem = nmLVCustomDraw->iSubItem;
-			int lParam = nmLVCustomDraw->nmcd.lItemlParam;
-
-			RECT rc; // = nmLVCustomDraw->nmcd.rc;
-			LV_FINDINFO find;
-			find.flags = LVFI_PARAM;
-			find.lParam = lParam;
-			int idxOfItem = ListView_FindItem( params.This->handle(), - 1, & find );
-			ListView_GetSubItemRect( params.This->handle(), idxOfItem, subItem, LVIR_BOUNDS, & rc );
-
-			typename MessageMapType::itsVoidUnsignedUnsignedBoolCanvasRectangle func
-				= reinterpret_cast< typename MessageMapType::itsVoidUnsignedUnsignedBoolCanvasRectangle >( params.FunctionThis );
-			FreeCanvas canvas( params.This->handle(), nmLVCustomDraw->nmcd.hdc );
-			SmartWin::Rectangle rect
-				( rc.left
-				, rc.top
-				, rc.right - rc.left
-				, rc.bottom - rc.top
-				);
-			rect = rect.shrink( 2, 0 );
-			if ( subItem == 0 )
-				rect.size.x = ListView_GetColumnWidth( params.This->handle(), subItem );
-			( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )
-				( boost::polymorphic_cast< WidgetType * >( params.This )
-				, lParam
-				, subItem
-				, ( nmLVCustomDraw->nmcd.uItemState & CDIS_SELECTED ) == CDIS_SELECTED && ( nmLVCustomDraw->nmcd.uItemState & ODS_FOCUS ) == ODS_FOCUS
-				, canvas
-				, rect
-				);
-		}
-		return CDRF_SKIPDEFAULT;
-	}
-
-	static HRESULT dispatchBoolIntIntString( private_::SignalContent & params )
-	{
-		// TODO: Check if value has actually changed before initiating the event
-		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
-		if ( nm->item.pszText == NULL )
-			return FALSE;
-		else
-		{
-			WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-			SmartUtil::tstring updateNewVal = nm->item.pszText;
-
-			typename MessageMapType::boolValidationFunc func =
-				reinterpret_cast< typename MessageMapType::boolValidationFunc >( ( void( * )() ) params.Function );
-
-			bool update =
-			func
-				( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-				, boost::polymorphic_cast< WidgetType * >( params.This )
-				, This->itsEditColumn
-				, This->itsEditRow
-				, updateNewVal
-				);
-
-			if ( update )
-			{
-				// Faking a fresh on the item/subItem
-				ListView_SetItemText
-					( This->handle()
-					, This->itsEditRow
-					, This->itsEditColumn
-					, const_cast < TCHAR * >( updateNewVal.c_str() )
-					);
-			}
-			return 0;
-		}
-	}
-
-	static HRESULT dispatchBoolIntIntStringThis( private_::SignalContent & params )
-	{
-		// TODO: Check if value has actually changed before initiating the event
-		NMLVDISPINFO * nm = reinterpret_cast< NMLVDISPINFO * >( params.Msg.LParam );
-		if ( nm->item.pszText == NULL )
-			return FALSE;
-		else
-		{
-			WidgetType * This = boost::polymorphic_cast< WidgetType * >( params.This );
-			SmartUtil::tstring updateNewVal = nm->item.pszText;
-
-			typename MessageMapType::itsBoolValidationFunc func =
-				reinterpret_cast< typename MessageMapType::itsBoolValidationFunc >( params.FunctionThis );
-
-			bool update =
-			( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*func )
-				( boost::polymorphic_cast< WidgetType * >( params.This )
-				, This->itsEditColumn
-				, This->itsEditRow
-				, updateNewVal
-				);
-
-			if ( update )
-			{
-				// Faking a fresh on the item/subItem
-				ListView_SetItemText
-					( This->handle()
-					, This->itsEditRow
-					, This->itsEditColumn
-					, const_cast < TCHAR * >( updateNewVal.c_str() )
-					);
-			}
-			return 0;
-		}
-	}
-
-	private:
-		//helper function for dispatchLParamIntIntString[This], handles both member/global callbacks
-		static int dispatchGetIcon( private_::SignalContent & params, int lParam, int item )
-		{
-			int iconIndex = I_IMAGECALLBACK;
-
-			WidgetType * widget = boost::polymorphic_cast< WidgetType * >( params.This );
-			typename MessageMapType::itsVoidGetIconFunc memberFunc = widget->itsMemberGetIconFunction;
-			typename MessageMapType::voidGetIconFunc globalFunc = widget->itsGlobalGetIconFunction;
-
-			if ( memberFunc )
-			{
-				( ( * internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This ) ).*memberFunc )
-					( widget
-					, lParam
-					, item
-					, iconIndex
-					);
-			}
-			else if ( globalFunc )
-			{
-				globalFunc
-					( internal_::getTypedParentOrThrow < EventHandlerClass * >( params.This )
-					, widget
-					, lParam
-					, item
-					, iconIndex
-					);
-			}
-			return iconIndex;
-		}
-};
-#endif
 
 /// List View Control class
 /** \ingroup WidgetControls
@@ -321,20 +67,20 @@ public:
   * source of error when you get unwanted behaviour. This means you often will have
   * to "map" an LPARAM value to a physical rownumber and vice versa.
   */
-class WidgetDataGrid :
+class WidgetListView :
 	public MessageMapPolicy< Policies::Subclassed >,
 
 	// Aspect classes
-	public AspectBorder< WidgetDataGrid >,
-	public AspectClickable< WidgetDataGrid >,
-	public AspectCollection<WidgetDataGrid, int>,
-	public AspectControl<WidgetDataGrid>,
-	public AspectData<WidgetDataGrid, int>,
-	public AspectDblClickable< WidgetDataGrid >,
-	public AspectFocus< WidgetDataGrid >,
-	public AspectFont< WidgetDataGrid >,
-	public AspectScrollable< WidgetDataGrid >,
-	public AspectSelection< WidgetDataGrid >
+	public AspectBorder< WidgetListView >,
+	public AspectClickable< WidgetListView >,
+	public AspectCollection<WidgetListView, int>,
+	public AspectControl<WidgetListView>,
+	public AspectData<WidgetListView, int>,
+	public AspectDblClickable< WidgetListView >,
+	public AspectFocus< WidgetListView >,
+	public AspectFont< WidgetListView >,
+	public AspectScrollable< WidgetListView >,
+	public AspectSelection< WidgetListView >
 {
 	struct HeaderDispatcher {
 		typedef std::tr1::function<void (int)> F;
@@ -351,9 +97,9 @@ class WidgetDataGrid :
 	};
 
 	// Need to be friend to access private data...
-	friend class WidgetCreator< WidgetDataGrid >;
-	friend class AspectCollection<WidgetDataGrid, int>;
-	friend class AspectData<WidgetDataGrid, int>;
+	friend class WidgetCreator< WidgetListView >;
+	friend class AspectCollection<WidgetListView, int>;
+	friend class AspectData<WidgetListView, int>;
 
 public:
 	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
@@ -369,7 +115,7 @@ public:
 		: public SmartWin::Seed
 	{
 	public:
-		typedef WidgetDataGrid::ThisType WidgetType;
+		typedef WidgetListView::ThisType WidgetType;
 
 		//TODO: put variables to be filled here
 
@@ -402,7 +148,7 @@ public:
 	// Contract needed by AspectDblClickable Aspect class
 	static const Message & getDblClickMessage();
 #ifdef PORT_ME
-	/// \ingroup EventHandlersWidgetDataGrid
+	/// \ingroup EventHandlersWidgetListView
 	/// Validation event handler setter
 	/** If supplied event handler is called after a cell has been edited but before
 	  * the value is actually changed. <br>
@@ -415,49 +161,10 @@ public:
 	void onValidate( typename MessageMapType::itsBoolValidationFunc eventHandler );
 	void onValidate( typename MessageMapType::boolValidationFunc eventHandler );
 
-	/// \ingroup EventHandlersWidgetDataGrid
-	/// Event handler for the GetItem event
-	/** If you insert callback items this function will be called whenever the grid
-	  * needs data to display in a row. <br>
-	  * The row and column will be given along with the LPARAM to the event handler,
-	  * normally the LPARAM will be either some sort of application defined ID of
-	  * some sort ( maybe a primary key to a record in a database ) or a pointer to
-	  * an object of some sort casted to an LPARAM!
-	  */
-	void onGetItem( typename MessageMapType::itsVoidGetItemFunc eventHandler );
-	void onGetItem( typename MessageMapType::voidGetItemFunc eventHandler );
-
-		/// \ingroup EventHandlersWidgetDataGrid
-		/// Event handler for the GetIcon event
-		/** If you insert callback items, this function will be called whenever the grid needs an icon to display in
-		  * a row (you will need to specify the icon index in the associated image list, if you don't, no icon will
-		  * be displayed).< br >
-		  * The row will be given along with the LPARAM to the event handler, normally the LPARAM will
-		  * be either some sort of application defined ID of some sort ( maybe a primary key to a record in a database )
-		  * or a pointer to an object of some sort casted to an LPARAM!< br >
-		  */
-		void onGetIcon( typename MessageMapType::itsVoidGetIconFunc eventHandler );
-		void onGetIcon( typename MessageMapType::voidGetIconFunc eventHandler );
-	// TODO: Rename to onCustomPainting, but this is DEADLY since it WILL break EXISTING code!!
-	// Find some solution around, maybe mark as deprecated or something...
-	/// \ingroup EventHandlersWidgetDataGrid
-	/// Event handler for the Custom Draw Event
-	/** If you want to do custom drawing for the WidgetDataGrid use this event
-	  * handler. Note that the given unsigned row number is NOT the PHYSICAL row but
-	  * rather the n'th inserted row if rows are inserted with default LPARAM values
-	  * or the LPARAM value given when row was inserted if LPARAM value was
-	  * explicitly given. This means that if you for instance inserts 5 rows with the
-	  * default given LPARAM value and removes the three rows in the middle the rows
-	  * remaining will be the 0'th and the 4'th row, this will be also the values
-	  * given to you in your Custom Draw Event Handler... If you need to get the
-	  * PHYSICAL row number use the getRowNumberFromLParam function.
-	  */
-		void onCustomPainting( typename MessageMapType::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler );
-		void onCustomPainting( typename MessageMapType::voidUnsignedUnsignedBoolCanvasRectangle eventHandler );
 #endif
-	/// \ingroup EventHandlersWidgetDataGrid
+	/// \ingroup EventHandlersWidgetListView
 	/// Event handler for the SortItems event
-	/** When you sort a WidgetDataGrid you need to supply a callback function for
+	/** When you sort a WidgetListView you need to supply a callback function for
 	  * comparing items. <br>
 	  * Otherwise the grid won't know how it should sort items. <br>
 	  * Some items might be compared after their integer values while other will
@@ -472,10 +179,10 @@ public:
 	  */
 	void onSortItems( const SortFunction& f );
 	
-	/// \ingroup EventHandlersWidgetDataGrid
+	/// \ingroup EventHandlersWidgetListView
 	/// Event Handler for the Column Header Click event
 	/** This Event is raised whenever one of the headers is clicked, it is useful to
-	  * e.g. sort the WidgetDataGrid according to which header is being clicked. <br>
+	  * e.g. sort the WidgetListView according to which header is being clicked. <br>
 	  * Parameters passed is int which defines which header from left to right ( zero
 	  * indexed ) is being clicked!
 	  */
@@ -783,7 +490,7 @@ public:
 	virtual void create( const Seed & cs = getDefaultSeed() );
 
 	// Constructor Taking pointer to parent
-	explicit WidgetDataGrid( SmartWin::Widget * parent );
+	explicit WidgetListView( SmartWin::Widget * parent );
 
 	static bool isValidSelectionChanged( LPARAM lPar );
 
@@ -793,7 +500,7 @@ protected:
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
-	virtual ~WidgetDataGrid() {
+	virtual ~WidgetListView() {
 	}
 
 	// Returns the rect for the item per code (wraps ListView_GetItemRect)
@@ -833,7 +540,7 @@ private:
 	
 #ifdef PORT_ME
 	// Private validate function, this ones returns the "read only" property of the list
-	static bool defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue );
+	static bool defaultValidate( EventHandlerClass * parent, WidgetListView * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue );
 #endif
 	// Calculates the adjustment from the columns of an item.
 	int xoffFromColumn( int column, int & logicalColumn );
@@ -853,18 +560,18 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetDataGrid::Seed::Seed()
+inline WidgetListView::Seed::Seed()
 {
-	* this = WidgetDataGrid::getDefaultSeed();
+	* this = WidgetListView::getDefaultSeed();
 }
 
-inline Message & WidgetDataGrid::getSelectionChangedMessage()
+inline Message & WidgetListView::getSelectionChangedMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
 	return retVal;
 }
 
-inline bool WidgetDataGrid::isValidSelectionChanged( LPARAM lPar )
+inline bool WidgetListView::isValidSelectionChanged( LPARAM lPar )
 {
 	//TODO: Make support for CHOOSING how onSelectedChanged is supposed to behave,
 	//TODO: make non static function and pure abstract in base class and override
@@ -879,13 +586,13 @@ inline bool WidgetDataGrid::isValidSelectionChanged( LPARAM lPar )
 	return false;
 }
 
-inline const Message & WidgetDataGrid::getClickMessage()
+inline const Message & WidgetListView::getClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
-inline const Message & WidgetDataGrid::getDblClickMessage()
+inline const Message & WidgetListView::getDblClickMessage()
 {
 	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
@@ -893,7 +600,7 @@ inline const Message & WidgetDataGrid::getDblClickMessage()
 
 #ifdef PORT_ME
 
-void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsBoolValidationFunc eventHandler )
+void WidgetListView::onValidate( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsBoolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
@@ -912,7 +619,7 @@ void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, 
 	);
 }
 
-void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::boolValidationFunc eventHandler )
+void WidgetListView::onValidate( typename MessageMapControl< EventHandlerClass, WidgetListView >::boolValidationFunc eventHandler )
 {
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
@@ -931,7 +638,7 @@ void WidgetDataGrid::onValidate( typename MessageMapControl< EventHandlerClass, 
 	);
 }
 
-void WidgetDataGrid::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetItemFunc eventHandler )
+void WidgetListView::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsVoidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -949,7 +656,7 @@ void WidgetDataGrid::onGetItem( typename MessageMapControl< EventHandlerClass, W
 }
 
 
-void WidgetDataGrid::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetItemFunc eventHandler )
+void WidgetListView::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetListView >::voidGetItemFunc eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -967,21 +674,21 @@ void WidgetDataGrid::onGetItem( typename MessageMapControl< EventHandlerClass, W
 }
 
 
-void WidgetDataGrid::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidGetIconFunc eventHandler )
+void WidgetListView::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsVoidGetIconFunc eventHandler )
 {
 	itsGlobalGetIconFunction = 0;
 	itsMemberGetIconFunction = eventHandler;
 }
 
 
-void WidgetDataGrid::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidGetIconFunc eventHandler )
+void WidgetListView::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetListView >::voidGetIconFunc eventHandler )
 {
 	itsGlobalGetIconFunction = eventHandler;
 	itsMemberGetIconFunction = 0;
 }
 
 
-void WidgetDataGrid::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
+void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -999,7 +706,7 @@ void WidgetDataGrid::onCustomPainting( typename MessageMapControl< EventHandlerC
 }
 
 
-	void WidgetDataGrid::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
+	void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetListView >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
 	ptrThis->setCallback(
@@ -1017,54 +724,54 @@ void WidgetDataGrid::onCustomPainting( typename MessageMapControl< EventHandlerC
 }
 #endif
 #ifdef PORT_ME
-void WidgetDataGrid::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::itsIntLparamLparam eventHandler )
+void WidgetListView::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsIntLparamLparam eventHandler )
 {
 	itsGlobalSortFunction = 0;
 	itsMemberSortFunction = eventHandler;
 }
 
 
-void WidgetDataGrid::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetDataGrid >::intCallbackCompareFunc eventHandler )
+void WidgetListView::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetListView >::intCallbackCompareFunc eventHandler )
 {
 	itsMemberSortFunction = 0;
 	itsGlobalSortFunction = eventHandler;
 }
 #endif
 
-inline void WidgetDataGrid::onColumnClick( const HeaderDispatcher::F& f ) {
+inline void WidgetListView::onColumnClick( const HeaderDispatcher::F& f ) {
 	this->setCallback(
 		Message( WM_NOTIFY, LVN_COLUMNCLICK ), HeaderDispatcher(f)
 	);
 }
 
-inline void WidgetDataGrid::resort() {
+inline void WidgetListView::resort() {
 	if(sortColumn != -1) {
 		ListView_SortItems(this->handle(), &compareFunc, reinterpret_cast< LPARAM >(this));
 	}
 }
 
-inline bool WidgetDataGrid::hasSelection() {
+inline bool WidgetListView::hasSelection() {
 	return ListView_GetSelectedCount( this->handle() ) > 0;
 }
 
-inline int WidgetDataGrid::getSelectedIndex() const {
+inline int WidgetListView::getSelectedIndex() const {
 	return getNext(-1, LVNI_SELECTED);
 }
 
-inline void WidgetDataGrid::setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal ) {
+inline void WidgetListView::setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal ) {
 	ListView_SetItemText( this->handle(), row, column, const_cast < TCHAR * >( newVal.c_str() ) );
 }
 
-inline bool WidgetDataGrid::getReadOnly() {
+inline bool WidgetListView::getReadOnly() {
 	return isReadOnly;
 }
 
-inline void WidgetDataGrid::setReadOnly( bool value ) {
+inline void WidgetListView::setReadOnly( bool value ) {
 	isReadOnly = value;
 	this->Widget::addRemoveStyle( LVS_EDITLABELS, !value );
 }
 
-inline SmartUtil::tstring WidgetDataGrid::getColumnName( unsigned col ) {
+inline SmartUtil::tstring WidgetListView::getColumnName( unsigned col ) {
 	// TODO: Fix
 	const int BUFFER_MAX = 2048;
 	TCHAR buffer[BUFFER_MAX + 1];
@@ -1076,80 +783,80 @@ inline SmartUtil::tstring WidgetDataGrid::getColumnName( unsigned col ) {
 	return colInfo.pszText;
 }
 
-inline bool WidgetDataGrid::isChecked( unsigned row ) {
+inline bool WidgetListView::isChecked( unsigned row ) {
 	return ListView_GetCheckState( this->handle(), row ) == TRUE;
 }
 
-inline void WidgetDataGrid::setChecked( unsigned row, bool value ) {
+inline void WidgetListView::setChecked( unsigned row, bool value ) {
 	ListView_SetCheckState( this->handle(), row, value );
 }
 
-inline void WidgetDataGrid::setFullRowSelect( bool value ) {
+inline void WidgetListView::setFullRowSelect( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_FULLROWSELECT, value );
 }
 
-inline void WidgetDataGrid::resize( unsigned size ) {
+inline void WidgetListView::resize( unsigned size ) {
 	ListView_SetItemCount( this->handle(), size );
 }
 
-inline void WidgetDataGrid::setCheckBoxes( bool value ) {
+inline void WidgetListView::setCheckBoxes( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_CHECKBOXES, value );
 }
 
-inline void WidgetDataGrid::setSingleRowSelection( bool value ) {
+inline void WidgetListView::setSingleRowSelection( bool value ) {
 	this->Widget::addRemoveStyle( LVS_SINGLESEL, value );
 }
 
-inline void WidgetDataGrid::setGridLines( bool value ) {
+inline void WidgetListView::setGridLines( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_GRIDLINES, value );
 }
 
-inline void WidgetDataGrid::onSortItems(const SortFunction& f) {
+inline void WidgetListView::onSortItems(const SortFunction& f) {
 	fun = f;
 }
 
 #ifndef WINCE
 
-inline void WidgetDataGrid::setHover( bool value ) {
+inline void WidgetListView::setHover( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_TWOCLICKACTIVATE, value );
 }
 #endif
 
-inline void WidgetDataGrid::setHeaderDragDrop( bool value ) {
+inline void WidgetListView::setHeaderDragDrop( bool value ) {
 	addRemoveListViewExtendedStyle( LVS_EX_HEADERDRAGDROP, value );
 }
 
-inline void WidgetDataGrid::setAlwaysShowSelection( bool value ) {
+inline void WidgetListView::setAlwaysShowSelection( bool value ) {
 	this->Widget::addRemoveStyle( LVS_SHOWSELALWAYS, value );
 }
 
-inline void WidgetDataGrid::eraseColumn( unsigned columnNo ) {
+inline void WidgetListView::eraseColumn( unsigned columnNo ) {
 	xAssert( columnNo != 0, _T( "Can't delete the leftmost column" ) );
 	ListView_DeleteColumn( this->handle(), columnNo );
 }
 
-inline void WidgetDataGrid::setColumnWidth( unsigned columnNo, int width ) {
+inline void WidgetListView::setColumnWidth( unsigned columnNo, int width ) {
 	if ( ListView_SetColumnWidth( this->handle(), columnNo, width ) == FALSE )
 	{
-		xCeption x( _T( "Couldn't resize columns of WidgetDataGrid" ) );
+		xCeption x( _T( "Couldn't resize columns of WidgetListView" ) );
 		throw x;
 	}
 }
 
-inline void WidgetDataGrid::clearImpl() {
+inline void WidgetListView::clearImpl() {
 	ListView_DeleteAllItems( this->handle() );
 }
 
-inline void WidgetDataGrid::eraseImpl( int row ) {
+inline void WidgetListView::eraseImpl( int row ) {
 	ListView_DeleteItem( this->handle(), row );
 }
 
-inline size_t WidgetDataGrid::sizeImpl() const {
+inline size_t WidgetListView::sizeImpl() const {
 	return ListView_GetItemCount( this->handle() );
 }
 
 #ifdef PORT_ME
-bool WidgetDataGrid::defaultValidate( EventHandlerClass * parent, WidgetDataGrid * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
+bool WidgetListView::defaultValidate( EventHandlerClass * parent, WidgetListView * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue )
 {
 	list->updateWidget();
 	return !list->getReadOnly();
@@ -1157,67 +864,67 @@ bool WidgetDataGrid::defaultValidate( EventHandlerClass * parent, WidgetDataGrid
 #endif
 // Calculates the adjustment from the columns of an item.
 
-inline Rectangle WidgetDataGrid::getRect( int item, int code )
+inline Rectangle WidgetListView::getRect( int item, int code )
 {
 	RECT r;
 	ListView_GetItemRect( this->handle(), item, &r, code );
 	return r;
 }
 
-inline Rectangle WidgetDataGrid::getRect( int item, int subitem, int code )
+inline Rectangle WidgetListView::getRect( int item, int subitem, int code )
 {
 	RECT r;
 	ListView_GetSubItemRect( this->handle(), item, subitem, code, &r );
 	return r;
 }
 
-inline bool WidgetDataGrid::isAscending() { 
+inline bool WidgetListView::isAscending() { 
 	return ascending; 
 }
 
-inline int WidgetDataGrid::getSortColumn() { 
+inline int WidgetListView::getSortColumn() { 
 	return sortColumn; 
 }
 
-inline WidgetDataGrid::SortType WidgetDataGrid::getSortType() { 
+inline WidgetListView::SortType WidgetListView::getSortType() { 
 	return sortType; 
 }
 
-inline bool WidgetDataGrid::setColumnOrder(const std::vector<int>& columns) {
+inline bool WidgetListView::setColumnOrder(const std::vector<int>& columns) {
 	return ::SendMessage(this->handle(), LVM_SETCOLUMNORDERARRAY, static_cast<WPARAM>(columns.size()), reinterpret_cast<LPARAM>(&columns[0])) > 0;
 }
 
-inline int WidgetDataGrid::getSelectedCount() {
+inline int WidgetListView::getSelectedCount() {
 	return ListView_GetSelectedCount(this->handle());
 }
 
-inline void WidgetDataGrid::setListViewStyle(int style) {
+inline void WidgetListView::setListViewStyle(int style) {
 	ListView_SetExtendedListViewStyle(this->handle(), style);
 }
 
-inline int WidgetDataGrid::getNext(int i, int type) const {
+inline int WidgetListView::getNext(int i, int type) const {
 	return ListView_GetNextItem(this->handle(), i, type);
 }
 
-inline int WidgetDataGrid::find(const SmartUtil::tstring& b, int start, bool aPartial) {
+inline int WidgetListView::find(const SmartUtil::tstring& b, int start, bool aPartial) {
     LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
     return ListView_FindItem(this->handle(), start, &fi);
 }
 
-inline int WidgetDataGrid::findDataImpl(LPARAM data, int start) {
+inline int WidgetListView::findDataImpl(LPARAM data, int start) {
     LVFINDINFO fi = { LVFI_PARAM, NULL, data };
     return ListView_FindItem(this->handle(), start, &fi);
 }
 
-inline void WidgetDataGrid::select(int i) {
+inline void WidgetListView::select(int i) {
 	ListView_SetItemState(this->handle(), i, LVIS_SELECTED, LVIS_SELECTED);
 }
 
-inline void WidgetDataGrid::ensureVisible(int i, bool partial) {
+inline void WidgetListView::ensureVisible(int i, bool partial) {
 	ListView_EnsureVisible(this->handle(), i, false);
 }
 
-inline void WidgetDataGrid::setColor(COLORREF text, COLORREF background) {
+inline void WidgetListView::setColor(COLORREF text, COLORREF background) {
 	ListView_SetTextColor(this->handle(), text);
 	ListView_SetTextBkColor(this->handle(), background);
 	ListView_SetBkColor(this->handle(), background);
@@ -1226,7 +933,7 @@ inline void WidgetDataGrid::setColor(COLORREF text, COLORREF background) {
 #ifdef PORT_ME
 // TODO: Should these
 
-LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
+LRESULT WidgetListView::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )
 {
 	switch ( msg )
 	{
@@ -1312,8 +1019,8 @@ LRESULT WidgetDataGrid::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, L
 						throw err;
 					}
 
-					private_::ListViewEditBox< WidgetDataGrid > * text
-						= new private_::ListViewEditBox< WidgetDataGrid >( this );
+					private_::ListViewEditBox< WidgetListView > * text
+						= new private_::ListViewEditBox< WidgetListView >( this );
 					text->createSubclass( editControl );
 
 #ifndef WINCE

@@ -3,6 +3,7 @@
 
 #include "WidgetTabSheet.h"
 #include <list>
+#include <vector>
 
 namespace SmartWin {
 /** 

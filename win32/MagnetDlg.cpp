@@ -49,30 +49,30 @@ bool MagnetDlg::handleInitDialog() {
 	::SetDlgItemText(handle(), IDC_MAGNET_NAME, CTSTRING(MAGNET_DLG_FILE));
 	::SetDlgItemText(handle(), IDC_MAGNET_DISP_NAME, mFileName.c_str());
 
-	//queue = subclassRadioButton(IDC_MAGNET_1_QUEUE);
+	//queue = attachRadioButton(IDC_MAGNET_1_QUEUE);
 	//queue->setText(TSTRING(MAGNET_DLG_QUEUE));
 	//queue->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, queue));
 	::ShowWindow(::GetDlgItem(handle(), IDC_MAGNET_1_QUEUE), false);
 
-	search = subclassRadioButton(IDC_MAGNET_2_SEARCH);
+	search = attachRadioButton(IDC_MAGNET_2_SEARCH);
 	search->setText(TSTRING(MAGNET_DLG_SEARCH));
 	search->setFocus();
 	//search->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, search));
 
-	doNothing = subclassRadioButton(IDC_MAGNET_3_NOTHING);
+	doNothing = attachRadioButton(IDC_MAGNET_3_NOTHING);
 	doNothing->setText(TSTRING(MAGNET_DLG_NOTHING));
 	//doNothing->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, doNothing));
 
-	//remember = subclassCheckBox(IDC_MAGNET_REMEMBER);
+	//remember = attachCheckBox(IDC_MAGNET_REMEMBER);
 	//remember->setText(TSTRING(MAGNET_DLG_REMEMBER));
 	::ShowWindow(::GetDlgItem(handle(), IDC_MAGNET_REMEMBER), false);
 
 	::CheckRadioButton(handle(), IDC_MAGNET_1_QUEUE, IDC_MAGNET_3_NOTHING, IDC_MAGNET_2_SEARCH);
 
-	WidgetButtonPtr button = subclassButton(IDOK);
+	WidgetButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&MagnetDlg::handleOKClicked, this));
 
-	button = subclassButton(IDCANCEL);
+	button = attachButton(IDCANCEL);
 	button->onClicked(std::tr1::bind(&MagnetDlg::endDialog, this, IDCANCEL));
 
 	centerWindow();

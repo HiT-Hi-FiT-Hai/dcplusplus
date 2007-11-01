@@ -1,4 +1,3 @@
-// $Revision: 1.23 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -121,12 +120,12 @@ public:
 	/// \ingroup SubclassDialog
 	/// Subclasses a Rich Edit Control from the given resource id.
 	/** DON'T delete the returned pointer!!! <br>
-	  * Use e.g. the Dialog Designer to design a dialog and subclass the controls
+	  * Use e.g. the Dialog Designer to design a dialog and attach the controls
 	  * with this function.
 	  */
-	WidgetRichTextBoxPtr subclassRichTextBox( unsigned id )
+	WidgetRichTextBoxPtr attachRichTextBox( unsigned id )
 	{
-		return WidgetCreator< WidgetRichTextBox >::subclass( this, id );
+		return WidgetCreator< WidgetRichTextBox >::attach( this, id );
 	}
 
 #ifdef PORT_ME

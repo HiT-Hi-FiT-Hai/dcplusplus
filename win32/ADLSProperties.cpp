@@ -54,44 +54,44 @@ bool ADLSProperties::handleInitDialog() {
 	::SetDlgItemText(handle(), IDC_ADLSP_UNITS, CTSTRING(ADLS_UNITS));
 	::SetDlgItemText(handle(), IDC_ADLSP_DESTINATION, CTSTRING(ADLS_DESTINATION));
 
-	searchString = subclassTextBox(IDC_SEARCH_STRING);
+	searchString = attachTextBox(IDC_SEARCH_STRING);
 	searchString->setText(Text::toT(search->searchString));
 	searchString->setFocus();
 
-	searchType = subclassComboBox(IDC_SOURCE_TYPE);
+	searchType = attachComboBox(IDC_SOURCE_TYPE);
 	searchType->addValue(TSTRING(FILENAME));
 	searchType->addValue(TSTRING(DIRECTORY));
 	searchType->addValue(TSTRING(ADLS_FULL_PATH));
 	searchType->setSelectedIndex(search->sourceType);
 
-	minSize = subclassTextBox(IDC_MIN_FILE_SIZE);
+	minSize = attachTextBox(IDC_MIN_FILE_SIZE);
 	minSize->setText((search->minFileSize > 0) ? Text::toT(Util::toString(search->minFileSize)) : Util::emptyStringT);
 
-	maxSize = subclassTextBox(IDC_MAX_FILE_SIZE);
+	maxSize = attachTextBox(IDC_MAX_FILE_SIZE);
 	maxSize->setText((search->maxFileSize > 0) ? Text::toT(Util::toString(search->maxFileSize)) : Util::emptyStringT);
 
-	sizeType = subclassComboBox(IDC_SIZE_TYPE);
+	sizeType = attachComboBox(IDC_SIZE_TYPE);
 	sizeType->addValue(TSTRING(B));
 	sizeType->addValue(TSTRING(KiB));
 	sizeType->addValue(TSTRING(MiB));
 	sizeType->addValue(TSTRING(GiB));
 	sizeType->setSelectedIndex(search->typeFileSize);
 
-	destDir = subclassTextBox(IDC_DEST_DIR);
+	destDir = attachTextBox(IDC_DEST_DIR);
 	destDir->setText(Text::toT(search->destDir));
 
-	active = subclassCheckBox(IDC_IS_ACTIVE);
+	active = attachCheckBox(IDC_IS_ACTIVE);
 	active->setText(TSTRING(ADLS_ENABLED));
 	active->setChecked(search->isActive);
 
-	autoQueue = subclassCheckBox(IDC_AUTOQUEUE);
+	autoQueue = attachCheckBox(IDC_AUTOQUEUE);
 	autoQueue->setText(TSTRING(ADLS_DOWNLOAD));
 	autoQueue->setChecked(search->isAutoQueue);
 
-	WidgetButtonPtr button = subclassButton(IDOK);
+	WidgetButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&ADLSProperties::handleOKClicked, this));
 
-	button = subclassButton(IDCANCEL);
+	button = attachButton(IDCANCEL);
 	button->onClicked(std::tr1::bind(&ADLSProperties::endDialog, this, IDCANCEL));
 
 	centerWindow();

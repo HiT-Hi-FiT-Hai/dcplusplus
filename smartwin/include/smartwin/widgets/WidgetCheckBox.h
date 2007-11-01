@@ -1,4 +1,3 @@
-// $Revision: 1.26 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,7 +28,7 @@
 #ifndef WidgetCheckBox_h
 #define WidgetCheckBox_h
 
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectButton.h"
 #include "../xCeption.h"
 

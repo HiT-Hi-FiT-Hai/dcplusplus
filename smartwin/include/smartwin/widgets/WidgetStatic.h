@@ -1,4 +1,3 @@
-// $Revision: 1.31 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,7 +28,7 @@
 #ifndef WidgetStatic_h
 #define WidgetStatic_h
 
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"

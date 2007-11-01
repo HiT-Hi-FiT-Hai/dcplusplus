@@ -1,4 +1,3 @@
-// $Revision: 1.12 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -29,15 +28,14 @@
 #ifndef Widget_h
 #define Widget_h
 
+#include "Atom.h"
 #include "BasicTypes.h"
+#include "Message.h"
 
 #include <boost/noncopyable.hpp>
 #include <memory>
-#include <vector>
 #include <functional>
 #include <map>
-#include "Atom.h"
-#include "Message.h"
 
 namespace SmartWin
 {
@@ -85,7 +83,6 @@ public:
 		return ::PostMessage(handle(), msg, wParam, lParam);
 	}
 
-	// TODO: Change all references to typedefed WidgetPtr...??
 	/// Returns the parent Widget of the Widget
 	/** Most Widgets have got a parent, this function will retrieve a pointer to the
 	  * Widgets parent, if the Widget doesn't have a parent it will return a null
@@ -109,7 +106,7 @@ public:
 	  * Should normally not be called directly but rather called from e.g. one of the
 	  * creational functions found in the WidgetFactory class.
 	  */
-	virtual void subclass( unsigned id );
+	virtual void attach( unsigned id );
 
 	/// Use this function to add or remove windows styles.
 	/** The first parameter is the type of style you wish to add/remove. <br>
@@ -150,9 +147,7 @@ public:
 	void setHandle(HWND hWnd) { itsHandle = hWnd; }
 
 protected:
-	std::vector < Widget * > itsChildren; // Derived widgets might need access to the children
-
-	Widget( Widget * parent, HWND hWnd = NULL, bool doReg = true );
+	Widget( Widget * parent, HWND hWnd = NULL );
 
 	virtual ~Widget();
 
@@ -162,15 +157,6 @@ protected:
 
 	virtual void attach(HWND wnd);
 	
-	// Kills the "this" Widget
-	void killMe();
-
-	// Kills all children to the this Widget
-	void killChildren();
-
-	// Erases the "this" widget from its parent's list of children.
-	void eraseMeFromParentsChildren();
-
 private:
 	friend class Application;
 	template<typename T> friend T hwnd_cast(HWND hwnd);

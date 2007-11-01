@@ -55,35 +55,35 @@ bool FavHubProperties::handleInitDialog() {
 	::SetDlgItemText(handle(), IDC_FH_PASSWORD, CTSTRING(PASSWORD));
 	::SetDlgItemText(handle(), IDC_FH_USER_DESC, CTSTRING(DESCRIPTION));
 
-	name = subclassTextBox(IDC_HUBNAME);
+	name = attachTextBox(IDC_HUBNAME);
 	name->setText(Text::toT(entry->getName()));
 	name->setFocus();
 	name->setSelection();
 	
-	address = subclassTextBox(IDC_HUBADDR);
+	address = attachTextBox(IDC_HUBADDR);
 	address->setText(Text::toT(entry->getServer()));
 
-	description = subclassTextBox(IDC_HUBDESCR);
+	description = attachTextBox(IDC_HUBDESCR);
 	description->setText(Text::toT(entry->getDescription()));
 
-	nick = subclassTextBox(IDC_HUBNICK);
+	nick = attachTextBox(IDC_HUBNICK);
 	nick->setTextLimit(35);
 	nick->setText(Text::toT(entry->getNick(false)));
 	nick->onTextChanged(std::tr1::bind(&FavHubProperties::handleTextChanged, this, nick));
 
-	password = subclassTextBox(IDC_HUBPASS);
+	password = attachTextBox(IDC_HUBPASS);
 	password->setPassword();
 	password->setText(Text::toT(entry->getPassword()));
 	password->onTextChanged(std::tr1::bind(&FavHubProperties::handleTextChanged, this, password));
 
-	userDescription = subclassTextBox(IDC_HUBUSERDESCR);
+	userDescription = attachTextBox(IDC_HUBUSERDESCR);
 	userDescription->setTextLimit(35);
 	userDescription->setText(Text::toT(entry->getUserDescription()));
 
-	WidgetButtonPtr button = subclassButton(IDOK);
+	WidgetButtonPtr button = attachButton(IDOK);
 	button->onClicked(std::tr1::bind(&FavHubProperties::handleOKClicked, this));
 
-	button = subclassButton(IDCANCEL);
+	button = attachButton(IDCANCEL);
 	button->onClicked(std::tr1::bind(&FavHubProperties::endDialog, this, IDCANCEL));
 
 	centerWindow();

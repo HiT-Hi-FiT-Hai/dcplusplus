@@ -1,4 +1,3 @@
-// $Revision: 1.19 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -34,7 +33,7 @@
 #include "../../SmartUtil.h"
 #include "../BasicTypes.h"
 #include "../resources/Icon.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../WindowClass.h"
 #include "WidgetMDIParent.h"
 #include "WidgetWindowBase.h"

@@ -33,7 +33,7 @@ public:
 private:
 	static TextItem texts[];
 
-	WidgetDataGridPtr directories;
+	WidgetListViewPtr directories;
 
 	void handleDoubleClick();
 	bool handleKeyDown(int c);

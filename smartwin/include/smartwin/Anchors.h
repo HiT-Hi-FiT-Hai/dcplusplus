@@ -1,4 +1,3 @@
-
 /* Copyright (c) 2006 - Carmi Grushko (venndigram@users.sf.net)
  * Implements behaviour similar to Delphi's Control.Anchor
  * Permission to use under the BSD license

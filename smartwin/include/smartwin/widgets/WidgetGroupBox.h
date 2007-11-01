@@ -1,4 +1,3 @@
-// $Revision: 1.24 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,10 +28,12 @@
 #ifndef WidgetGroupBox_h
 #define WidgetGroupBox_h
 
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectButton.h"
 #include "../xCeption.h"
 #include "WidgetRadioButton.h"
+
+#include <vector>
 
 namespace SmartWin
 {

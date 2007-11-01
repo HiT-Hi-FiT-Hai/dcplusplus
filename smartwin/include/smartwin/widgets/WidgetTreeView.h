@@ -1,4 +1,3 @@
-// $Revision: 1.36 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -31,7 +30,7 @@
 
 #include "../BasicTypes.h"
 #include "../resources/ImageList.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"

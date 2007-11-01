@@ -1,4 +1,3 @@
-// $Revision: 1.7 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -34,14 +33,6 @@
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-// TODO: Think about having a "private_" folder...
-// TODO: One .cpp file for each class...
-// TODO: Even all the template classes should separate definition and declaration...
-// TODO: Add unit test for inheriting from ALL controls
-// TODO: Add unit test for AspectEnabled event handler setter
-// TODO: Use iterator ctor in UNICODE conversion classes
-// TODO: Make automated tool to count lines of source in project, today (2004.22.08) is 14900 and 83 classes
 
 /// Class for comparing messages
 /** Class helps out abstract away System Messages, used in e.g. AspectRaw to let user

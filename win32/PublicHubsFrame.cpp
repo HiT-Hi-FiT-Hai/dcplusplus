@@ -105,7 +105,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	users(0)
 {
 	{
-		WidgetDataGrid::Seed cs;
+		WidgetListView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);

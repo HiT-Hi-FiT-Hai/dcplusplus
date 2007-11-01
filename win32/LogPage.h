@@ -45,7 +45,7 @@ private:
 
 	void handleBrowseClicked();
 
-	HRESULT handleItemChanged(WidgetDataGridPtr dataGrid, WPARAM wParam, LPARAM lParam);
+	HRESULT handleItemChanged(WidgetListViewPtr dataGrid, WPARAM wParam, LPARAM lParam);
 
 	void getValues();
 };

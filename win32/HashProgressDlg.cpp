@@ -42,10 +42,10 @@ bool HashProgressDlg::handleInitDialog() {
 	::SetDlgItemText(handle(), IDC_HASH_INDEXING, CTSTRING(HASH_PROGRESS_TEXT));
 	::SetDlgItemText(handle(), IDC_STATISTICS, CTSTRING(HASH_PROGRESS_STATS));
 
-	progress = subclassProgressBar(IDC_HASH_PROGRESS);
+	progress = attachProgressBar(IDC_HASH_PROGRESS);
 	progress->setRange(0, 10000);
 
-	WidgetButtonPtr ok = subclassButton(IDOK);
+	WidgetButtonPtr ok = attachButton(IDOK);
 	ok->setText(TSTRING(HASH_PROGRESS_BACKGROUND));
 	ok->onClicked(std::tr1::bind(&HashProgressDlg::endDialog, this, IDOK));
 

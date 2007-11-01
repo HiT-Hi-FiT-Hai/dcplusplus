@@ -1,4 +1,3 @@
-// $Revision: 1.18 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -30,7 +29,7 @@
 #define WidgetSpinner_h
 
 #include "../Widget.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"

@@ -1,4 +1,3 @@
-// $Revision: 1.25 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,7 +28,7 @@
 #ifndef WidgetComboBox_h
 #define WidgetComboBox_h
 
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"

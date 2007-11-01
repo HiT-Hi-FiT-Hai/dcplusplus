@@ -45,11 +45,11 @@ SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : WidgetFactory<SmartWi
 }
 
 bool SettingsDialog::initDialog() {
-	subclassButton(IDOK)->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
+	attachButton(IDOK)->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
 
-	subclassButton(IDCANCEL)->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
+	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
 
-	pageTree = subclassTreeView(IDC_SETTINGS_PAGES);
+	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 	
 	setText(TSTRING(SETTINGS));

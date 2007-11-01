@@ -64,7 +64,7 @@ Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 
-	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SEARCH_HISTORY_SPIN);
+	WidgetSpinnerPtr spinner = attachSpinner(IDC_SEARCH_HISTORY_SPIN);
 	spinner->setRange(0, 100);
 }
 

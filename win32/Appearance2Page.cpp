@@ -64,22 +64,22 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), logFont);
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
 
-	example = subclassStatic(IDC_COLOREXAMPLE);
+	example = attachStatic(IDC_COLOREXAMPLE);
 	example->onBackgroundColor(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1));
 
-	WidgetButtonPtr button = subclassButton(IDC_SELWINCOLOR);
+	WidgetButtonPtr button = attachButton(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
 
-	button = subclassButton(IDC_SELTEXT);
+	button = attachButton(IDC_SELTEXT);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleTextClicked, this));
 
-	button = subclassButton(IDC_SETTINGS_UPLOAD_BAR_COLOR);
+	button = attachButton(IDC_SETTINGS_UPLOAD_BAR_COLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleULClicked, this));
 
-	button = subclassButton(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
+	button = attachButton(IDC_SETTINGS_DOWNLOAD_BAR_COLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleDLClicked, this));
 
-	button = subclassButton(IDC_BROWSE);
+	button = attachButton(IDC_BROWSE);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
 }
 

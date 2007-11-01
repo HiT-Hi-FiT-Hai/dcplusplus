@@ -1,4 +1,3 @@
-// $Revision: 1.18 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -32,7 +31,7 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "../BasicTypes.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"

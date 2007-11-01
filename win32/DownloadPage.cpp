@@ -58,16 +58,16 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	subclassButton(IDC_BROWSEDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseDir, this));
+	attachButton(IDC_BROWSEDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseDir, this));
 
-	subclassButton(IDC_BROWSETEMPDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseTempDir, this));
+	attachButton(IDC_BROWSETEMPDIR)->onClicked(std::tr1::bind(&DownloadPage::handleBrowseTempDir, this));
 
-	subclassButton(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
+	attachButton(IDC_SETTINGS_LIST_CONFIG)->onClicked(std::tr1::bind(&DownloadPage::handleConfigHubLists, this));
 
-	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SLOTSSPIN);
+	WidgetSpinnerPtr spinner = attachSpinner(IDC_SLOTSSPIN);
 	spinner->setRange(0, 100);
 
-	spinner = subclassSpinner(IDC_SPEEDSPIN);
+	spinner = attachSpinner(IDC_SPEEDSPIN);
 	spinner->setRange(0, 10000);
 }
 

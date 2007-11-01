@@ -106,7 +106,7 @@ public:
 
 /// Aspect class used by Widgets that have the possibility of trapping keyboard events.
 /** \ingroup AspectClasses
-  * E.g. the WidgetDataGrid can trap "key pressed events" therefore they realize the AspectKeyboard through inheritance.
+  * E.g. the WidgetListView can trap "key pressed events" therefore they realize the AspectKeyboard through inheritance.
   */
 template< class WidgetType >
 class AspectKeyboard : public AspectKeyboardBase

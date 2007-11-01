@@ -70,9 +70,9 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	oldSelection = -1;
 
-	subclassButton(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
+	attachButton(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
-	WidgetDataGridPtr dataGrid = subclassList(IDC_LOG_OPTIONS);
+	WidgetListViewPtr dataGrid = attachList(IDC_LOG_OPTIONS);
 	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this, dataGrid, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 }
 
@@ -115,7 +115,7 @@ void LogPage::handleBrowseClicked() {
 	}
 }
 
-HRESULT LogPage::handleItemChanged(WidgetDataGridPtr dataGrid, WPARAM wParam, LPARAM lParam) {
+HRESULT LogPage::handleItemChanged(WidgetListViewPtr dataGrid, WPARAM wParam, LPARAM lParam) {
 	getValues();
 
 	int sel = dataGrid->getSelectedIndex();

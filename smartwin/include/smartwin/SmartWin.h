@@ -39,12 +39,6 @@
 #pragma warning( disable : 4312 )
 #pragma warning( disable : 4311 )
 
-// We also need to tell the compiler that it needs to link pointer to members as
-// virtual multiple inheritance pointers. We generally want as little as possible
-// of Project Settings therefore we set this directly in the code instead of
-// forcing the library user to set lots of different settings before managing to
-// compile his project.
-#pragma pointers_to_members( full_generality, virtual_inheritance )
 #endif
 
 #include "WindowsHeaders.h"

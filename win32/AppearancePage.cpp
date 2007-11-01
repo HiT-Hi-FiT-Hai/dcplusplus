@@ -63,7 +63,7 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 
-	subclassButton(IDC_BROWSE)->onClicked(std::tr1::bind(&AppearancePage::handleBrowse, this));
+	attachButton(IDC_BROWSE)->onClicked(std::tr1::bind(&AppearancePage::handleBrowse, this));
 }
 
 AppearancePage::~AppearancePage() {

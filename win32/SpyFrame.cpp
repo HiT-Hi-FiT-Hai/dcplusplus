@@ -41,7 +41,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	memset(perSecond, 0, sizeof(perSecond));
 
 	{
-		WidgetDataGrid::Seed cs;
+		WidgetListView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		searches = createDataGrid(cs);
@@ -50,7 +50,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
-		searches->setSort(COLUMN_COUNT, SmartWin::WidgetDataGrid::SORT_INT, false);
+		searches->setSort(COLUMN_COUNT, SmartWin::WidgetListView::SORT_INT, false);
 		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
 		searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
 		searches->onContextMenu(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1));
@@ -169,9 +169,9 @@ void SpyFrame::handleColumnClick(int column) {
 			searches->setSort(searches->getSortColumn(), searches->getSortType(), false);
 	} else {
 		if(column == COLUMN_COUNT) {
-			searches->setSort(column, SmartWin::WidgetDataGrid::SORT_INT);
+			searches->setSort(column, SmartWin::WidgetListView::SORT_INT);
 		} else {
-			searches->setSort(column, SmartWin::WidgetDataGrid::SORT_STRING_NOCASE);
+			searches->setSort(column, SmartWin::WidgetListView::SORT_STRING_NOCASE);
 		}
 	}
 }

@@ -1,4 +1,3 @@
-// $Revision: 1.32 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -33,7 +32,7 @@
 
 #include "../BasicTypes.h"
 #include "../Dispatchers.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"

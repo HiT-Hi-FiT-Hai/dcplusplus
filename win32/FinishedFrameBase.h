@@ -54,7 +54,7 @@ protected:
 		totalTime(0)
 	{
 		{
-			typename MDIChildType::WidgetDataGrid::Seed cs;
+			typename MDIChildType::WidgetListView::Seed cs;
 			cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 			cs.exStyle = WS_EX_CLIENTEDGE;
 			items = SmartWin::WidgetCreator<WidgetItems>::create(static_cast<T*>(this), cs);

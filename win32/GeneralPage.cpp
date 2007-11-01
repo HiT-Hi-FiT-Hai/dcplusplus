@@ -48,7 +48,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	WidgetComboBoxPtr connections = subclassComboBox(IDC_CONNECTION);
+	WidgetComboBoxPtr connections = attachComboBox(IDC_CONNECTION);
 
 	int selected = 0, j = 0;
 	for(StringIter i = SettingsManager::connectionSpeeds.begin(); i != SettingsManager::connectionSpeeds.end(); ++i, ++j) {
@@ -62,7 +62,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	WidgetTextBoxPtr textBox;
 #define TEXTBOX_ATTACH(id) \
-	textBox = subclassTextBox(id); \
+	textBox = attachTextBox(id); \
 	textBox->setTextLimit(35); \
 	textBox->onTextChanged(std::tr1::bind(&GeneralPage::handleTextChanged, this, textBox))
 	TEXTBOX_ATTACH(IDC_NICK);

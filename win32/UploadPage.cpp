@@ -56,7 +56,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	directories = subclassList(IDC_DIRECTORIES);
+	directories = attachList(IDC_DIRECTORIES);
 	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -83,25 +83,25 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	onDragDrop(std::tr1::bind(&UploadPage::handleDragDrop, this, _1));
 
-	WidgetCheckBoxPtr shareHidden = subclassCheckBox(IDC_SHAREHIDDEN);
+	WidgetCheckBoxPtr shareHidden = attachCheckBox(IDC_SHAREHIDDEN);
 	shareHidden->onClicked(std::tr1::bind(&UploadPage::handleShareHiddenClicked, this, shareHidden));
 
-	total = subclassStatic(IDC_TOTAL);
+	total = attachStatic(IDC_TOTAL);
 	total->setText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())));
 
-	WidgetButtonPtr button = subclassButton(IDC_RENAME);
+	WidgetButtonPtr button = attachButton(IDC_RENAME);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRenameClicked, this));
 
-	button = subclassButton(IDC_REMOVE);
+	button = attachButton(IDC_REMOVE);
 	button->onClicked(std::tr1::bind(&UploadPage::handleRemoveClicked, this));
 
-	button = subclassButton(IDC_ADD);
+	button = attachButton(IDC_ADD);
 	button->onClicked(std::tr1::bind(&UploadPage::handleAddClicked, this));
 
-	WidgetSpinnerPtr spinner = subclassSpinner(IDC_SLOTSPIN);
+	WidgetSpinnerPtr spinner = attachSpinner(IDC_SLOTSPIN);
 	spinner->setRange(1, UD_MAXVAL);
 
-	spinner = subclassSpinner(IDC_MIN_UPLOAD_SPIN);
+	spinner = attachSpinner(IDC_MIN_UPLOAD_SPIN);
 	spinner->setRange(0, UD_MAXVAL);
 }
 

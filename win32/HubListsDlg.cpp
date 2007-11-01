@@ -43,9 +43,9 @@ HubListsDlg::~HubListsDlg() {
 bool HubListsDlg::handleInitDialog() {
 	setText(TSTRING(CONFIGURED_HUB_LISTS));
 
-	editBox = subclassTextBox(IDC_LIST_EDIT_BOX);
+	editBox = attachTextBox(IDC_LIST_EDIT_BOX);
 
-	hubLists = subclassList(IDC_LIST_LIST);
+	hubLists = attachList(IDC_LIST_LIST);
 	hubLists->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -60,29 +60,29 @@ bool HubListsDlg::handleInitDialog() {
 	hubLists->onDblClicked(std::tr1::bind(&HubListsDlg::handleDoubleClick, this));
 	hubLists->onKeyDown(std::tr1::bind(&HubListsDlg::handleKeyDown, this, _1));
 
-	WidgetButtonPtr button = subclassButton(IDC_LIST_ADD);
+	WidgetButtonPtr button = attachButton(IDC_LIST_ADD);
 	button->setText(TSTRING(ADD));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleAddClicked, this));
 
-	button = subclassButton(IDC_LIST_UP);
+	button = attachButton(IDC_LIST_UP);
 	button->setText(TSTRING(MOVE_UP));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveUpClicked, this));
 
-	button = subclassButton(IDC_LIST_DOWN);
+	button = attachButton(IDC_LIST_DOWN);
 	button->setText(TSTRING(MOVE_DOWN));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveDownClicked, this));
 
-	button = subclassButton(IDC_LIST_EDIT);
+	button = attachButton(IDC_LIST_EDIT);
 	button->setText(TSTRING(EDIT_ACCEL));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleEditClicked, this));
 
-	button = subclassButton(IDC_LIST_REMOVE);
+	button = attachButton(IDC_LIST_REMOVE);
 	button->setText(TSTRING(REMOVE));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleRemoveClicked, this));
 
-	subclassButton(IDOK)->onClicked(std::tr1::bind(&HubListsDlg::handleOKClicked, this));
+	attachButton(IDOK)->onClicked(std::tr1::bind(&HubListsDlg::handleOKClicked, this));
 
-	subclassButton(IDCANCEL)->onClicked(std::tr1::bind(&HubListsDlg::endDialog, this, IDCANCEL));
+	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&HubListsDlg::endDialog, this, IDCANCEL));
 
 	centerWindow();
 	

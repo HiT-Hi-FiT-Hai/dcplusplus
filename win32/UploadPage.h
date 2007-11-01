@@ -35,7 +35,7 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	WidgetDataGridPtr directories;
+	WidgetListViewPtr directories;
 	WidgetStaticPtr total;
 
 	void handleDoubleClick();

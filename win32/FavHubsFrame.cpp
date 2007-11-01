@@ -44,7 +44,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	nosave(false)
 {
 	{
-		WidgetDataGrid::Seed cs;
+		WidgetListView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = createDataGrid(cs);

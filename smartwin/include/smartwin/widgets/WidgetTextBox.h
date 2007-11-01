@@ -1,4 +1,3 @@
-// $Revision: 1.38 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -30,7 +29,7 @@
 #define WidgetTextBox_h
 
 #include "../../SmartUtil.h"
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"

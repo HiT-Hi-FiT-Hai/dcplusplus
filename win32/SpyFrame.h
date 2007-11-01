@@ -70,7 +70,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
-	WidgetDataGridPtr searches;
+	WidgetListViewPtr searches;
 
 	WidgetCheckBoxPtr ignoreTTH;
 	bool bIgnoreTTH;

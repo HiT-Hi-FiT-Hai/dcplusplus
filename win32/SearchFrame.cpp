@@ -210,7 +210,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetDataGrid::Seed cs;
+		WidgetListView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_NOCOLUMNHEADER;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
@@ -227,7 +227,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetDataGrid::Seed cs;
+		WidgetListView::Seed cs;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
 		cs.exStyle = WS_EX_CLIENTEDGE;
 		results = SmartWin::WidgetCreator<WidgetResults>::create(this, cs);

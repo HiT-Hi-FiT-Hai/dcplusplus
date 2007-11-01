@@ -1,4 +1,3 @@
-// $Revision: 1.6 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -74,10 +73,10 @@ public:
 		return retVal;
 	}
 
-	static typename WidgetType::ObjectType subclass( Widget * parent, unsigned id )
+	static typename WidgetType::ObjectType attach( Widget * parent, unsigned id )
 	{
 		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
-		retVal->subclass( id );
+		retVal->attach( id );
 		return retVal;
 	}
 

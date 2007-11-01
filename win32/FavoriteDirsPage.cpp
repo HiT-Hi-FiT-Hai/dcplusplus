@@ -41,7 +41,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 
 	PropPage::translate(handle(), texts);
 
-	directories = subclassList(IDC_FAVORITE_DIRECTORIES);
+	directories = attachList(IDC_FAVORITE_DIRECTORIES);
 	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -65,11 +65,11 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 
 	onDragDrop(std::tr1::bind(&FavoriteDirsPage::handleDragDrop, this, _1));
 
-	subclassButton(IDC_RENAME)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRenameClicked, this));
+	attachButton(IDC_RENAME)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRenameClicked, this));
 
-	subclassButton(IDC_REMOVE)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRemoveClicked, this));
+	attachButton(IDC_REMOVE)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleRemoveClicked, this));
 
-	subclassButton(IDC_ADD)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleAddClicked, this));
+	attachButton(IDC_ADD)->onClicked(std::tr1::bind(&FavoriteDirsPage::handleAddClicked, this));
 }
 
 FavoriteDirsPage::~FavoriteDirsPage() {

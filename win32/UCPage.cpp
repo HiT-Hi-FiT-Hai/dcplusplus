@@ -46,7 +46,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 
-	commands = subclassList(IDC_MENU_ITEMS);
+	commands = attachList(IDC_MENU_ITEMS);
 	commands->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
@@ -68,15 +68,15 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	commands->onDblClicked(std::tr1::bind(&UCPage::handleDoubleClick, this));
 	commands->onKeyDown(std::tr1::bind(&UCPage::handleKeyDown, this, _1));
 
-	subclassButton(IDC_ADD_MENU)->onClicked(std::tr1::bind(&UCPage::handleAddClicked, this));
+	attachButton(IDC_ADD_MENU)->onClicked(std::tr1::bind(&UCPage::handleAddClicked, this));
 
-	subclassButton(IDC_CHANGE_MENU)->onClicked(std::tr1::bind(&UCPage::handleChangeClicked, this));
+	attachButton(IDC_CHANGE_MENU)->onClicked(std::tr1::bind(&UCPage::handleChangeClicked, this));
 
-	subclassButton(IDC_MOVE_UP)->onClicked(std::tr1::bind(&UCPage::handleMoveUpClicked, this));
+	attachButton(IDC_MOVE_UP)->onClicked(std::tr1::bind(&UCPage::handleMoveUpClicked, this));
 
-	subclassButton(IDC_MOVE_DOWN)->onClicked(std::tr1::bind(&UCPage::handleMoveDownClicked, this));
+	attachButton(IDC_MOVE_DOWN)->onClicked(std::tr1::bind(&UCPage::handleMoveDownClicked, this));
 
-	subclassButton(IDC_REMOVE_MENU)->onClicked(std::tr1::bind(&UCPage::handleRemoveClicked, this));
+	attachButton(IDC_REMOVE_MENU)->onClicked(std::tr1::bind(&UCPage::handleRemoveClicked, this));
 }
 
 UCPage::~UCPage() {

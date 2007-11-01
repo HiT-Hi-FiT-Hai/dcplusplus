@@ -1,7 +1,7 @@
 #ifndef WIDGETTOOLTIP_H_
 #define WIDGETTOOLTIP_H_
 
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectRaw.h"

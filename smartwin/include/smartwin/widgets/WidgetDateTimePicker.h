@@ -1,4 +1,3 @@
-// $Revision: 1.28 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -29,7 +28,7 @@
 #ifndef WidgetDateTimePicker_h
 #define WidgetDateTimePicker_h
 
-#include "../MessageMapPolicyClasses.h"
+#include "../Policies.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"

@@ -1,4 +1,3 @@
-// $Revision: 1.6 $
 /*  Definitions for doxygen
 	(Never included by c++ compilers)
 */
@@ -97,7 +96,7 @@
   * \EventHandlerGenericInfo
   */
 
-/** \defgroup EventHandlersWidgetDataGrid Event Handlers for WidgetDataGrid
+/** \defgroup EventHandlersWidgetListView Event Handlers for WidgetListView
   * \EventHandlerGenericInfo
   */
 

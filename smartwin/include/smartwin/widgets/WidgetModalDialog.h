@@ -1,4 +1,3 @@
-// $Revision: 1.21 $
 /*
   Copyright ( c ) 2005, Thomas Hansen
   All rights reserved.
@@ -90,11 +89,11 @@ public:
 	  * The return comes from the parameter to endDialog() <br>
 	  * You must call onInitDialog( &MyDialogWidget::initDialog ); or similar either 
 	  * in the constructor of your dialog or right before calling this function. <br>
-	  * And in your initDialog, you must call subclassXxxx for all of the controls 
+	  * And in your initDialog, you must call attachXxxx for all of the controls 
 	  * you wish to use, and set the event handlers for all controls and events you 
 	  * wish to handle. <br>
 	  * Example : <br>
-	  * WidgetStaticPtr prompt = subclassStatic( IDC_PROMPT ); <br>
+	  * WidgetStaticPtr prompt = attachStatic( IDC_PROMPT ); <br>
 	  * prompt->onClicked( &X::myClickMethod ); <br>
 	  * ...etc... 
 	  */
@@ -123,7 +122,7 @@ public:
 	void endDialog( int returnValue );
 
 	/// Dialog Init Event Handler setter
-	/** This would normally be the event handler where you subclass your Widget
+	/** This would normally be the event handler where you attach your Widget
 	  * controls and do all the initializing etc... <br>
 	  * It's important that you declare this event handler BEFORE calling the 
 	  * createDialog function since that function doesn't actually return before the 

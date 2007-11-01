@@ -31,7 +31,7 @@ public:
 
 private:
 	WidgetTextBoxPtr editBox;
-	WidgetDataGridPtr hubLists;
+	WidgetListViewPtr hubLists;
 
 	bool handleInitDialog();
 	void handleFocus();
