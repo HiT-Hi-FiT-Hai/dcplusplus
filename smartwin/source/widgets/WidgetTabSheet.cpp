@@ -3,7 +3,8 @@
 namespace SmartWin {
 
 WidgetTabSheet::Seed::Seed() :
-	Widget::Seed(WC_TABCONTROL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN)
+	Widget::Seed(WC_TABCONTROL, WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN),
+	font(new Font(DefaultGuiFont))
 {
 }
 

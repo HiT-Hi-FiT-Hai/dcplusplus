@@ -3,7 +3,8 @@
 namespace SmartWin {
 
 WidgetTreeView::Seed::Seed() :
-	Widget::Seed(WC_TREEVIEW, WS_CHILD | WS_VISIBLE)
+	Widget::Seed(WC_TREEVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP),
+	font(new Font(DefaultGuiFont))
 {
 }
 

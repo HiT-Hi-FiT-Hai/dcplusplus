@@ -122,11 +122,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	paned->setRelativePos(0.3);
 
 	{
-		WidgetTreeView::Seed cs;
-		
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
 		addWidget(dirs);
 		paned->setFirst(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
@@ -136,12 +132,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		WidgetFiles::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, cs);
-		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		files->setFont(WinUtil::font);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
 		addWidget(files);
 		paned->setSecond(files);
 
@@ -159,8 +150,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	}
 	
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		
 		cs.caption = TSTRING(FIND);
 		find = createButton(cs);

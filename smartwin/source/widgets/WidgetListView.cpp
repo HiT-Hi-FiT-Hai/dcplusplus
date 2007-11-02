@@ -6,6 +6,7 @@ namespace SmartWin {
 
 WidgetListView::Seed::Seed() : 
 	Widget::Seed(WC_LISTVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT | LVS_EDITLABELS),
+	font(new Font(DefaultGuiFont)),
 	lvStyle(0)
 {
 }

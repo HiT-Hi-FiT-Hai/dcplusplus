@@ -3,7 +3,7 @@
 namespace SmartWin {
 
 WidgetSlider::Seed::Seed() :
-	Widget::Seed(TRACKBAR_CLASS, WS_CHILD | WS_VISIBLE)
+	Widget::Seed(TRACKBAR_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP)
 {
 }
 

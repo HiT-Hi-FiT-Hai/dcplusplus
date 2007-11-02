@@ -85,45 +85,34 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	paned->setRelativePos(0.7);
 
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		message = createTextBox(cs);
-		message->setFont(WinUtil::font);
 		addWidget(message);
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));
 	}
 	
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		chat = createTextBox(cs);
 		chat->setTextLimit(0);
-		chat->setFont(WinUtil::font);
 		addWidget(chat);
 		paned->setFirst(chat);
 		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
 	}
 	
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		filter = createTextBox(cs);
-		filter->setFont(WinUtil::font);
 		addWidget(filter);
 		filter->onTextChanging(std::tr1::bind(&HubFrame::updateFilter, this, _1));
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.exStyle =  WS_EX_CLIENTEDGE;
-		filterType = createComboBox(cs);
-		filterType->setFont(WinUtil::font);
+		filterType = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(filterType);
 		
 		for(int j=0; j<COLUMN_LAST; j++) {
@@ -135,13 +124,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 	
 	{
-		WidgetUsers::Seed cs;
-		
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-		cs.exStyle =  WS_EX_CLIENTEDGE;
-		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
-		users->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		users->setFont(WinUtil::font);
+		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, WinUtil::Seeds::listView);
 		addWidget(users);
 		paned->setSecond(users);
 		
@@ -159,8 +142,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	}
 	
 	{
-		WidgetCheckBox::Seed cs;
-		cs.caption = _T("+/-");
+		WidgetCheckBox::Seed cs(_T("+/-"));
 		showUsers = createCheckBox(cs);
 		showUsers->setChecked(BOOLSETTING(GET_USER_INFO));
 	}

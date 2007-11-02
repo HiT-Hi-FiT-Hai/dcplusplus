@@ -35,13 +35,7 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 	startup(true)
 {
 	{
-		WidgetUsers::Seed cs;
-
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-		cs.exStyle =  WS_EX_CLIENTEDGE;
-		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
-		users->setListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		users->setFont(WinUtil::font);
+		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, WinUtil::Seeds::listView);
 		addWidget(users);
 
 		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));

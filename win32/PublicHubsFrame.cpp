@@ -105,12 +105,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	users(0)
 {
 	{
-		WidgetListView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_SINGLESEL;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
-		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);		
-		hubs->setFont(WinUtil::font);
 		addWidget(hubs);
 		
 		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -125,8 +122,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 	
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		
 		cs.caption = TSTRING(CONFIGURE);
 		configure = createButton(cs);
@@ -153,15 +149,10 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.caption.clear();
-		pubLists = createComboBox(cs);
-		pubLists->setFont(WinUtil::font);
+		pubLists = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
 		
-		filterSel = createComboBox(cs);
-		filterSel->setFont(WinUtil::font);
+		filterSel = createComboBox(WinUtil::Seeds::comboBoxStatic);
 
 		//populate the filter list with the column names
 		for(int j=0; j<COLUMN_LAST; j++) {
@@ -171,10 +162,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		filterSel->setSelectedIndex(COLUMN_LAST);
 	}
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
-		filter->setFont(WinUtil::font);
 		filter->onChar(std::tr1::bind(&PublicHubsFrame::handleFilterChar, this, _1));
 	}
 	

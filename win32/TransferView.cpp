@@ -51,12 +51,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		arrows->add(tmp, RGB(255, 0, 255));
 	}
 	{
-		WidgetTransfers::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, cs);
-		transfers->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		transfers->setFont(WinUtil::font);
+		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, WinUtil::Seeds::listView);
 
 		transfers->setSmallImageList(arrows);
 		transfers->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -65,15 +60,14 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
 		transfers->setSort(COLUMN_USER);
 		transfers->onContextMenu(std::tr1::bind(&TransferView::handleContextMenu, this, _1));
+		transfers->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
+		transfers->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
 	}
 	
 	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
 	noEraseBackground();
-	
-	transfers->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
-	transfers->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
 	
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);

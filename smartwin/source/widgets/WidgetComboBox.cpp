@@ -4,7 +4,8 @@
 namespace SmartWin {
 
 WidgetComboBox::Seed::Seed() : 
-	Widget::Seed(WC_COMBOBOX, WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWNLIST | CBS_HASSTRINGS),
+	Widget::Seed(WC_COMBOBOX, WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWNLIST | CBS_AUTOHSCROLL),
+	font(new Font(DefaultGuiFont)),
 	extended(true)
 {
 }

@@ -3,7 +3,8 @@
 namespace SmartWin {
 
 WidgetTextBox::Seed::Seed() : 
-	Widget::Seed(WC_EDIT, WS_CHILD | WS_VISIBLE | WS_TABSTOP, WS_EX_CLIENTEDGE)
+	Widget::Seed(WC_EDIT, WS_CHILD | WS_VISIBLE | WS_TABSTOP, WS_EX_CLIENTEDGE),
+	font(new Font(DefaultGuiFont))
 {
 }
 

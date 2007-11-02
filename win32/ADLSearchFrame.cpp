@@ -43,12 +43,9 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	help(0)
 {
 	{
-		WidgetListView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.lvStyle |= LVS_EX_CHECKBOXES;
 		items = createDataGrid(cs);
-		items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
-		items->setFont(WinUtil::font);
 		addWidget(items);
 
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -63,8 +60,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = TSTRING(NEW);
 		add = createButton(cs);

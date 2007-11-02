@@ -3,7 +3,7 @@
 namespace SmartWin {
 
 WidgetSpinner::Seed::Seed() :
-	Widget::Seed(UPDOWN_CLASS, WS_CHILD | WS_VISIBLE),
+	Widget::Seed(UPDOWN_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP),
 	minValue(0),
 	maxValue(100)
 {

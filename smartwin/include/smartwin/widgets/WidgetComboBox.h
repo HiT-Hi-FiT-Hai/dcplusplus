@@ -29,8 +29,8 @@
 #define WidgetComboBox_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"

@@ -41,12 +41,11 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	memset(perSecond, 0, sizeof(perSecond));
 
 	{
-		WidgetListView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_SINGLESEL;
 		searches = createDataGrid(cs);
 		addWidget(searches);
-		searches->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+
 		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
@@ -58,11 +57,9 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetCheckBox::Seed cs;
-		cs.caption = TSTRING(IGNORE_TTH_SEARCHES);
+		WidgetCheckBox::Seed cs(TSTRING(IGNORE_TTH_SEARCHES));
 		ignoreTTH = createCheckBox(cs);
 		ignoreTTH->setChecked(bIgnoreTTH);
-		ignoreTTH->setFont(WinUtil::font);
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
 	}
 

@@ -58,10 +58,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	paned = createVPaned();
 	paned->setRelativePos(0.3);
 	{
-		WidgetTreeView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, cs);
+		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
 		addWidget(dirs);
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
@@ -72,12 +69,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 	
 	{
-		WidgetFiles::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, cs);
-		files->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		files->setFont(WinUtil::font);
+		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
 		addWidget(files);
 
 		files->setSmallImageList(WinUtil::fileImages);
@@ -99,12 +91,11 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		cs.caption = _T("+/-");
 		showTree = createCheckBox(cs);
 		showTree->setChecked(BOOLSETTING(QUEUEFRAME_SHOW_TREE));
+		showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));
 	}
 	
 	initStatus();
 	statusSizes[STATUS_SHOW_TREE] = 16;
-	
-	showTree->onClicked(std::tr1::bind(&QueueFrame::handleShowTreeClicked, this));
 
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();

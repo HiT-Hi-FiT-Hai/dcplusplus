@@ -59,6 +59,13 @@ bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
 DWORD WinUtil::helpCookie = 0;
 
+const SmartWin::WidgetButton::Seed WinUtil::Seeds::button;
+const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxStatic;
+const SmartWin::WidgetComboBox::Seed WinUtil::Seeds::comboBoxEdit;
+const SmartWin::WidgetListView::Seed WinUtil::Seeds::listView;
+const SmartWin::WidgetTextBox::Seed WinUtil::Seeds::textBox;
+const SmartWin::WidgetTreeView::Seed WinUtil::Seeds::treeView;
+
 void WinUtil::init() {
 
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
@@ -111,6 +118,30 @@ void WinUtil::init() {
 		registerMagnetHandler();
 		urlMagnetRegistered = true;
 	}
+	
+	// Const so that noone else will change them after they've been initialized
+	SmartWin::WidgetButton::Seed& xbutton = const_cast<SmartWin::WidgetButton::Seed&>(Seeds::button);
+	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
+	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
+	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);
+	SmartWin::WidgetTextBox::Seed& xtextBox = const_cast<SmartWin::WidgetTextBox::Seed&>(Seeds::textBox);
+	SmartWin::WidgetTreeView::Seed& xtreeView =  const_cast<SmartWin::WidgetTreeView::Seed&>(Seeds::treeView);
+
+	xcomboBoxStatic.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
+	xcomboBoxEdit.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
+	
+	xlistView.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
+	xlistView.exStyle = WS_EX_CLIENTEDGE;
+	xlistView.lvStyle = LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT;
+	xlistView.font = font;
+	
+	xtextBox.exStyle = WS_EX_CLIENTEDGE;
+	xtextBox.font = font;
+
+	xtreeView.style |= TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP;
+	xtreeView.exStyle = WS_EX_CLIENTEDGE;
+	xtreeView.font = font;
+	
 
 	::HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
 }

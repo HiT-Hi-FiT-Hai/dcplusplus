@@ -4,6 +4,7 @@ namespace SmartWin {
 
 WidgetDateTimePicker::Seed::Seed() :
 	Widget::Seed(DATETIMEPICK_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP | DTS_SHORTDATEFORMAT),
+	font(new Font(DefaultGuiFont)),
 	format(_T( "yyyy.MM.dd" )),
 	backgroundColor(0x000080),
 	monthBackgroundColor(0x808080),

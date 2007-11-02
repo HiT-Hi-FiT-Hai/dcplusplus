@@ -120,11 +120,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_AUTOHSCROLL;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		searchBox = createComboBox(cs);
-		searchBox->setFont(WinUtil::font);
+		searchBox = createComboBox(WinUtil::Seeds::comboBoxEdit);
 		addWidget(searchBox);
 		
 		for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
@@ -135,8 +131,8 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
+		cs.style |= BS_DEFPUSHBUTTON;
 		cs.caption = TSTRING(SEARCH);
 		doSearch = createButton(cs);
 
@@ -144,11 +140,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		mode = createComboBox(cs);
-		mode->setFont(WinUtil::font);
+		mode = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(mode);
 
 		mode->addValue(TSTRING(NORMAL));
@@ -157,20 +149,14 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL | ES_NUMBER;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		size = createTextBox(cs);
-		size->setFont(WinUtil::font);
 		addWidget(size);
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		sizeMode = createComboBox(cs);
-		sizeMode->setFont(WinUtil::font);
+		sizeMode = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(sizeMode);
 
 		sizeMode->addValue(TSTRING(B));
@@ -181,11 +167,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetComboBox::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		fileType = createComboBox(cs);
-		fileType->setFont(WinUtil::font);
+		fileType = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(fileType);
 
 		fileType->addValue(TSTRING(ANY));
@@ -200,9 +182,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetCheckBox::Seed cs;
-		cs.style |= WS_TABSTOP;
-		cs.caption = TSTRING(ONLY_FREE_SLOTS);
+		WidgetCheckBox::Seed cs(TSTRING(ONLY_FREE_SLOTS));
 		slots = createCheckBox(cs);
 		slots->setChecked(onlyFree);
 
@@ -210,11 +190,9 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetListView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_NOCOLUMNHEADER;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_NOCOLUMNHEADER;
 		hubs = SmartWin::WidgetCreator<WidgetHubs>::create(this, cs);
-		hubs->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 		addWidget(hubs);
 
 		TStringList dummy;
@@ -224,14 +202,15 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
 
 		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+
+		hubs->insert(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
+		hubs->setChecked(0, false);
+
+
 	}
 
 	{
-		WidgetListView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS;
-		cs.exStyle = WS_EX_CLIENTEDGE;
-		results = SmartWin::WidgetCreator<WidgetResults>::create(this, cs);
-		results->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::listView);
 		addWidget(results);
 
 		results->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -247,8 +226,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		cs.caption = TSTRING(PURGE);
 		purge = createButton(cs);
 
@@ -257,9 +235,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 
 	{
-		WidgetCheckBox::Seed cs;
-		cs.style |= WS_TABSTOP;
-		cs.caption = _T("+/-");
+		WidgetCheckBox::Seed cs(_T("+/-"));
 		showUI = createCheckBox(cs);
 		showUI->setChecked(bShowUI);
 
@@ -273,9 +249,6 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	layout();
 
 	onSpeaker(std::tr1::bind(&SearchFrame::handleSpeaker, this, _1, _2));
-
-	hubs->insert(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
-	hubs->setChecked(0, false);
 
 	ClientManager* clientMgr = ClientManager::getInstance();
 	clientMgr->lock();
@@ -313,8 +286,6 @@ SearchFrame::~SearchFrame() {
 }
 
 void SearchFrame::layout() {
-	const int border = 2;
-
 	SmartWin::Rectangle r(getClientAreaSize()); 
 	
 	layoutStatus(r);

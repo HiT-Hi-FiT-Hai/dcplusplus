@@ -99,23 +99,19 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& re
 	replyTo(replyTo_)
 {
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		message = createTextBox(cs);
-		message->setFont(WinUtil::font);
 		addWidget(message);
 		message->onKeyDown(std::tr1::bind(&PrivateFrame::handleKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&PrivateFrame::handleChar, this, _1));
 	}
 	
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		chat = createTextBox(cs);
 		chat->setTextLimit(0);
-		chat->setFont(WinUtil::font);
 		addWidget(chat);
 	}
 	

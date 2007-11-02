@@ -28,11 +28,9 @@ NotepadFrame::NotepadFrame(SmartWin::WidgetTabView* mdiParent) :
 	pad(0) 
 {
 	{
-		WidgetTextBox::Seed cs;
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL;
-		cs.exStyle = WS_EX_CLIENTEDGE;
 		pad = createTextBox(cs);
-		pad->setFont(WinUtil::font);
 		addWidget(pad);
 	}
 	

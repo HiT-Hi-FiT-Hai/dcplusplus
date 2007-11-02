@@ -64,6 +64,15 @@ public:
 	typedef ImageMap::iterator ImageIter;
 	static ImageMap fileIndexes;
 	
+	struct Seeds {
+		static const SmartWin::WidgetButton::Seed button;
+		static const SmartWin::WidgetComboBox::Seed comboBoxStatic;
+		static const SmartWin::WidgetComboBox::Seed comboBoxEdit;
+		static const SmartWin::WidgetListView::Seed listView;
+		static const SmartWin::WidgetTextBox::Seed textBox;
+		static const SmartWin::WidgetTreeView::Seed treeView;
+	};
+	
 	static void init();
 	static void uninit();
 

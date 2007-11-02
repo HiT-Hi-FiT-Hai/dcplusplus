@@ -44,12 +44,9 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	nosave(false)
 {
 	{
-		WidgetListView::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER;
-		cs.exStyle = WS_EX_CLIENTEDGE;
+		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.lvStyle |= LVS_EX_CHECKBOXES;
 		hubs = createDataGrid(cs);
-		hubs->setListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-		hubs->setFont(WinUtil::font);
 		addWidget(hubs);
 
 		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
@@ -63,8 +60,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
+		WidgetButton::Seed cs = WinUtil::Seeds::button;
 
 		cs.caption = TSTRING(CONNECT);
 		connect = createButton(cs);
