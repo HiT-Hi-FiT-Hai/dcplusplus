@@ -1,4 +1,3 @@
-// $Revision: 1.14 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -28,6 +27,8 @@
 */
 #ifndef AspectEnabled_h
 #define AspectEnabled_h
+
+#include <functional>
 
 namespace SmartWin
 {

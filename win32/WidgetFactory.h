@@ -36,7 +36,7 @@ public:
 	/// TextBox object type.
 	typedef typename WidgetTextBox::ObjectType WidgetTextBoxPtr;
 
-	WidgetTextBoxPtr createTextBox( const WidgetTextBox::Seed & cs = WidgetTextBox::getDefaultSeed() ) {
+	WidgetTextBoxPtr createTextBox( const WidgetTextBox::Seed & cs = WidgetTextBox::Seed() ) {
 		return SmartWin::WidgetCreator< WidgetTextBox >::create( this, cs );
 	}
 
@@ -50,7 +50,7 @@ public:
 	/// VPaned object type.
 	typedef typename WidgetVPaned::ObjectType WidgetVPanedPtr;
 
-	WidgetVPanedPtr createVPaned( const typename WidgetVPaned::Seed & cs = WidgetVPaned::getDefaultSeed() ) {
+	WidgetVPanedPtr createVPaned( const typename WidgetVPaned::Seed & cs = WidgetVPaned::Seed() ) {
 		return SmartWin::WidgetCreator< WidgetVPaned >::create( this, cs );
 	}
 
@@ -60,7 +60,7 @@ public:
 	/// HPaned object type.
 	typedef typename WidgetHPaned::ObjectType WidgetHPanedPtr;
 
-	WidgetHPanedPtr createHPaned( const typename WidgetHPaned::Seed & cs = WidgetHPaned::getDefaultSeed() ) {
+	WidgetHPanedPtr createHPaned( const typename WidgetHPaned::Seed & cs = WidgetHPaned::Seed() ) {
 		return SmartWin::WidgetCreator< WidgetHPaned >::create( this, cs );
 	}
 

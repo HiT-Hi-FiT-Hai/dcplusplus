@@ -28,9 +28,9 @@
 #ifndef WidgetListView_h
 #define WidgetListView_h
 
+#include "../Widget.h"
 #include "../BasicTypes.h"
 #include "../resources/ImageList.h"
-#include "../Policies.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
@@ -41,7 +41,6 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
-#include "../xCeption.h"
 #include "WidgetListViewEditBox.h"
 
 #include <vector>
@@ -68,8 +67,6 @@ class WidgetCreator;
   * to "map" an LPARAM value to a physical rownumber and vice versa.
   */
 class WidgetListView :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspect classes
 	public AspectBorder< WidgetListView >,
 	public AspectClickable< WidgetListView >,
@@ -104,28 +101,22 @@ class WidgetListView :
 public:
 	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
 	
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetListView::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
+		FontPtr font;
+		
+		/// List view extended styles (LVS_EX_*)
+		DWORD lvStyle;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
 	
 	enum SortType {
@@ -487,7 +478,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = getDefaultSeed() );
 
 	// Constructor Taking pointer to parent
 	explicit WidgetListView( SmartWin::Widget * parent );
@@ -559,11 +550,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetListView::Seed::Seed()
-{
-	* this = WidgetListView::getDefaultSeed();
-}
 
 inline Message & WidgetListView::getSelectionChangedMessage()
 {
@@ -638,55 +624,6 @@ void WidgetListView::onValidate( typename MessageMapControl< EventHandlerClass, 
 	);
 }
 
-void WidgetListView::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsVoidGetItemFunc eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_NOTIFY, LVN_GETDISPINFO ),
-				reinterpret_cast< itsVoidFunction >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherList::dispatchLparamIntIntStringThis )
-			)
-		)
-	);
-}
-
-
-void WidgetListView::onGetItem( typename MessageMapControl< EventHandlerClass, WidgetListView >::voidGetItemFunc eventHandler )
-{
-	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
-		typename MessageMapType::SignalTupleType(
-			private_::SignalContent(
-				Message( WM_NOTIFY, LVN_GETDISPINFO ),
-				reinterpret_cast< private_::SignalContent::voidFunctionTakingVoid >( eventHandler ),
-				ptrThis
-			),
-			typename MessageMapType::SignalType(
-				typename MessageMapType::SignalType::SlotType( & DispatcherList::dispatchLparamIntIntString )
-			)
-		)
-	);
-}
-
-
-void WidgetListView::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsVoidGetIconFunc eventHandler )
-{
-	itsGlobalGetIconFunction = 0;
-	itsMemberGetIconFunction = eventHandler;
-}
-
-
-void WidgetListView::onGetIcon( typename MessageMapControl< EventHandlerClass, WidgetListView >::voidGetIconFunc eventHandler )
-{
-	itsGlobalGetIconFunction = eventHandler;
-	itsMemberGetIconFunction = 0;
-}
-
 
 void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
@@ -723,20 +660,6 @@ void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerC
 	);
 }
 #endif
-#ifdef PORT_ME
-void WidgetListView::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsIntLparamLparam eventHandler )
-{
-	itsGlobalSortFunction = 0;
-	itsMemberSortFunction = eventHandler;
-}
-
-
-void WidgetListView::onSortItems( typename MessageMapControl< EventHandlerClass, WidgetListView >::intCallbackCompareFunc eventHandler )
-{
-	itsMemberSortFunction = 0;
-	itsGlobalSortFunction = eventHandler;
-}
-#endif
 
 inline void WidgetListView::onColumnClick( const HeaderDispatcher::F& f ) {
 	this->setCallback(
@@ -746,7 +669,7 @@ inline void WidgetListView::onColumnClick( const HeaderDispatcher::F& f ) {
 
 inline void WidgetListView::resort() {
 	if(sortColumn != -1) {
-		ListView_SortItems(this->handle(), &compareFunc, reinterpret_cast< LPARAM >(this));
+		ListView_SortItemsEx(this->handle(), &compareFunc, reinterpret_cast< LPARAM >(this));
 	}
 }
 

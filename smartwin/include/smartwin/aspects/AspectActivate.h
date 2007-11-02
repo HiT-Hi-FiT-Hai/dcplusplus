@@ -1,4 +1,3 @@
-// $Revision: 1.13 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.

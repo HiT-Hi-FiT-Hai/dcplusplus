@@ -3,22 +3,11 @@
 
 namespace SmartWin {
 
-const WidgetMDIParent::Seed & WidgetMDIParent::getDefaultSeed()
+WidgetMDIParent::Seed::Seed() : 
+	Widget::Seed(_T("MDICLIENT"), WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VSCROLL | WS_HSCROLL, WS_EX_CLIENTEDGE),
+	idFirstChild(0),
+	windowMenu(NULL)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = _T("MDICLIENT");
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_VSCROLL | WS_HSCROLL;
-		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
-		d_DefaultValues.idFirstChild = 0;
-		d_DefaultValues.windowMenu = NULL;
-		//TODO: initialize the values here
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetMDIParent::create( const Seed & cs )
@@ -28,7 +17,7 @@ void WidgetMDIParent::create( const Seed & cs )
 	ccs.idFirstChild = cs.idFirstChild;
 	
 	HWND wnd = ::CreateWindowEx( cs.exStyle,
-		cs.getClassName(),
+		cs.className,
 		cs.caption.c_str(),
 		cs.style,
 		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,

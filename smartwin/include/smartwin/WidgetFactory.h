@@ -284,7 +284,7 @@ public:
 	/// Creates a List View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetListViewPtr createDataGrid( const typename WidgetListView::Seed & cs = WidgetListView::getDefaultSeed() );
+	WidgetListViewPtr createDataGrid( const typename WidgetListView::Seed & cs = WidgetListView::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Check Box from the given resource id.
@@ -297,7 +297,7 @@ public:
 	/// Creates a Check Box and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetCheckBoxPtr createCheckBox( const typename WidgetCheckBox::Seed & cs = WidgetCheckBox::getDefaultSeed() );
+	WidgetCheckBoxPtr createCheckBox( const typename WidgetCheckBox::Seed & cs = WidgetCheckBox::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Check Box from the given resource id.
@@ -310,12 +310,12 @@ public:
 	/// Creates a child window and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetChildWindowPtr createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs = WidgetChildWindow::getDefaultSeed() );
+	WidgetChildWindowPtr createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs = WidgetChildWindow::Seed() );
 
 	/// Creates a Tree View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetTreeViewPtr createTreeView( const typename WidgetTreeView::Seed & cs = WidgetTreeView::getDefaultSeed() );
+	WidgetTreeViewPtr createTreeView( const typename WidgetTreeView::Seed & cs = WidgetTreeView::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Tree View Control from the given resource id.
@@ -334,7 +334,7 @@ public:
 	/// Creates a Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetTextBoxPtr createTextBox( const typename WidgetTextBox::Seed & cs = WidgetTextBox::getDefaultSeed() );
+	WidgetTextBoxPtr createTextBox( const typename WidgetTextBox::Seed & cs = WidgetTextBox::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Text Box Control from the given resource id.
@@ -348,47 +348,47 @@ public:
 	/// Creates a Status Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetStatusBarPtr createStatusBar( const typename WidgetStatusBar::Seed & cs = WidgetStatusBar::getDefaultSeed() );
+	WidgetStatusBarPtr createStatusBar( const typename WidgetStatusBar::Seed & cs = WidgetStatusBar::Seed() );
 
 	/// Creates a Status Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetStatusBarSectionsPtr createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs = WidgetStatusBarSections::getDefaultSeed() );
+	WidgetStatusBarSectionsPtr createStatusBarSections( const typename WidgetStatusBarSections::Seed & cs = WidgetStatusBarSections::Seed() );
 
 	/// Creates a Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetButtonPtr createButton( const typename WidgetButton::Seed & cs = WidgetButton::getDefaultSeed() );
+	WidgetButtonPtr createButton( const typename WidgetButton::Seed & cs = WidgetButton::Seed() );
 
 	/// Creates a Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetMDIParentPtr createMDIParent( const typename WidgetMDIParent::Seed & cs = WidgetMDIParent::getDefaultSeed() );
+	WidgetMDIParentPtr createMDIParent( const typename WidgetMDIParent::Seed & cs = WidgetMDIParent::Seed() );
 
 	/// Creates a Tab View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetTabViewPtr createTabView( const typename WidgetTabView::Seed& cs = WidgetTabView::getDefaultSeed() );
+	WidgetTabViewPtr createTabView( const typename WidgetTabView::Seed& cs = WidgetTabView::Seed() );
 	
 	/// Creates a Tab Sheet and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetTabSheetPtr createTabSheet( const typename WidgetTabSheet::Seed & cs = WidgetTabSheet::getDefaultSeed() );
+	WidgetTabSheetPtr createTabSheet( const typename WidgetTabSheet::Seed & cs = WidgetTabSheet::Seed() );
 
 	/// Creates a Slider Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetSliderPtr createSlider( const typename WidgetSlider::Seed & cs = WidgetSlider::getDefaultSeed() );
+	WidgetSliderPtr createSlider( const typename WidgetSlider::Seed & cs = WidgetSlider::Seed() );
 
 	/// Creates a Spinner Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetSpinnerPtr createSpinner( const typename WidgetSpinner::Seed & cs = WidgetSpinner::getDefaultSeed() );
+	WidgetSpinnerPtr createSpinner( const typename WidgetSpinner::Seed & cs = WidgetSpinner::Seed() );
 
 	/// Creates a Progress Bar Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetProgressBarPtr createProgressBar( const typename WidgetProgressBar::Seed & cs = WidgetProgressBar::getDefaultSeed() );
+	WidgetProgressBarPtr createProgressBar( const typename WidgetProgressBar::Seed & cs = WidgetProgressBar::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Button Control from the given resource id.
@@ -423,7 +423,7 @@ public:
 	/// Creates a Group Box Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetGroupBoxPtr createGroupBox( const typename WidgetGroupBox::Seed & cs = WidgetGroupBox::getDefaultSeed() );
+	WidgetGroupBoxPtr createGroupBox( const typename WidgetGroupBox::Seed & cs = WidgetGroupBox::Seed() );
 
 	/// Subclasses a Group Box Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -433,7 +433,7 @@ public:
 	/// Creates a DateTime Picker Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetDateTimePickerPtr createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs = WidgetDateTimePicker::getDefaultSeed() );
+	WidgetDateTimePickerPtr createDateTimePicker( const typename WidgetDateTimePicker::Seed & cs = WidgetDateTimePicker::Seed() );
 
 	/// Suvclasses a DateTime Picker Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -443,7 +443,7 @@ public:
 	/// Creates a Radio Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetRadioButtonPtr createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs = WidgetRadioButton::getDefaultSeed() );
+	WidgetRadioButtonPtr createRadioButton( WidgetGroupBoxPtr parent, const typename WidgetRadioButton::Seed & cs = WidgetRadioButton::Seed() );
 
 	/// Subclasses a Radio Button Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -453,7 +453,7 @@ public:
 	/// Creates a Comb Box and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetComboBoxPtr createComboBox( const typename WidgetComboBox::Seed & cs = WidgetComboBox::getDefaultSeed() );
+	WidgetComboBoxPtr createComboBox( const typename WidgetComboBox::Seed & cs = WidgetComboBox::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a ComboBox Control from the given resource id.
@@ -466,7 +466,7 @@ public:
 	/// Creates a Static Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetStaticPtr createStatic( const typename WidgetStatic::Seed & cs = WidgetStatic::getDefaultSeed() );
+	WidgetStaticPtr createStatic( const typename WidgetStatic::Seed & cs = WidgetStatic::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Static Control from the given resource id.
@@ -476,7 +476,7 @@ public:
 	  */
 	WidgetStaticPtr attachStatic( unsigned id );
 
-	WidgetToolTipPtr createToolTip( const typename WidgetToolTip::Seed & cs = WidgetToolTip::getDefaultSeed() );
+	WidgetToolTipPtr createToolTip( const typename WidgetToolTip::Seed & cs = WidgetToolTip::Seed() );
 protected:
 	// Protected to try to avoid stack creation...
 	virtual ~WidgetFactory()

@@ -26,6 +26,7 @@ class AspectButton :
 	public AspectText< WidgetType >
 {
 public:
+	
 	// Contract needed by AspectBackgroundColor Aspect class
 	static const Message & getBackgroundColorMessage();
 
@@ -34,6 +35,14 @@ public:
 
 	// Contract needed by AspectDblClickable Aspect class
 	Message getDblClickMessage();
+	
+	template<typename SeedType>
+	void create(const SeedType& cs);
+	
+protected:
+	typedef AspectButton<WidgetType> ButtonType;
+	
+	AspectButton(Widget* parent);
 };
 
 template<typename WidgetType>
@@ -51,6 +60,19 @@ Message AspectButton<WidgetType>::getClickMessage() {
 template<typename WidgetType>
 Message AspectButton<WidgetType>::getDblClickMessage() {
 	return Message( WM_COMMAND, MAKEWPARAM(static_cast<WidgetType*>(this)->getControlId(), BN_CLICKED) );
+}
+
+template<typename WidgetType>
+AspectButton<WidgetType>::AspectButton(Widget* parent) : AspectControl<WidgetType>(parent) {
+	
+}
+
+template<typename WidgetType>
+template<typename SeedType>
+void AspectButton<WidgetType>::create( const SeedType & cs ) {
+	WidgetType::ControlType::create(cs);
+	if(cs.font)
+		setFont( cs.font );
 }
 
 }

@@ -255,7 +255,7 @@ public:
 		createMessageMap();
 	}
 
-	virtual void create( const SmartWin::Seed & cs) {
+	void create( const Widget::Seed & cs) {
 		Normal::create(cs);
 		createMessageMap();
 	}

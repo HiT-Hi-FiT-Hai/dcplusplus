@@ -2,29 +2,14 @@
 
 namespace SmartWin {
 
-const WidgetToolbar::Seed & WidgetToolbar::getDefaultSeed()
+WidgetToolbar::Seed::Seed() :
+	Widget::Seed(TOOLBARCLASSNAME, WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = TOOLBARCLASSNAME;
-#ifndef WINCE
-		d_DefaultValues.exStyle = TBSTYLE_EX_MIXEDBUTTONS;
-#else
-		d_DefaultValues.exStyle = 0;
-#endif
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetToolbar::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
+	ControlType::create(cs);
 
 	//// Telling the toolbar what the size of TBBUTTON struct is
 	this->sendMessage(TB_BUTTONSTRUCTSIZE, ( WPARAM ) sizeof( TBBUTTON ));

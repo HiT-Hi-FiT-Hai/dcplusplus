@@ -40,19 +40,11 @@ public:
 	typedef ThisType * ObjectType;
 
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef typename WidgetPaned::ThisType WidgetType;
-
 		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( SmartWin::DontInitialize )
-		{}
 	};
-
-	static const Seed & getDefaultSeed();
 
 	void setRelativePos(double pos_) {
 		pos = pos_;
@@ -75,7 +67,7 @@ public:
 		resizeChildren();
 	}
 
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	void setRect(SmartWin::Rectangle r) {
 		rect = r;
@@ -122,29 +114,18 @@ private:
 		::ReleaseCapture();
 		moving = false;
 	}
+	
+	static SmartWin::WindowClass windowClass; 
 };
 
-template< bool horizontal >
-const typename WidgetPaned< horizontal >::Seed & WidgetPaned< horizontal >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( SmartWin::DontInitializeMe );
-	static boost::scoped_ptr<SmartWin::WindowClass> windowClass;
-
-	if ( d_NeedsInit )
-	{
-		windowClass.reset(new SmartWin::WindowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), &ThisType::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE )));
-		d_DefaultValues.className = windowClass->getClassName();
-		d_DefaultValues.style = WS_VISIBLE | WS_CHILD;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
-}
+template<bool horizontal>
+SmartWin::WindowClass WidgetPaned<horizontal>::windowClass(horizontal ? _T("WidgetPanedH") : _T("WidgetPanedV"), 
+	&WidgetPaned<horizontal>::wndProc, NULL, ( HBRUSH )( COLOR_3DFACE + 1 ), 
+	SmartWin::IconPtr(), SmartWin::IconPtr(), LoadCursor( 0, horizontal ? IDC_SIZENS : IDC_SIZEWE ));
 
 template< bool horizontal >
-WidgetPaned< horizontal >::Seed::Seed()
+WidgetPaned< horizontal >::Seed::Seed() : SmartWin::Widget::Seed(windowClass.getClassName(), WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS)
 {
-	* this = WidgetPaned::getDefaultSeed();
 }
 
 template< bool horizontal >

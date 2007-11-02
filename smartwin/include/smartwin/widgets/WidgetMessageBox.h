@@ -30,7 +30,6 @@
 
 #include "../../SmartUtil.h"
 #include "../Widget.h"
-#include "../WindowsHeaders.h"
 
 namespace SmartWin
 {

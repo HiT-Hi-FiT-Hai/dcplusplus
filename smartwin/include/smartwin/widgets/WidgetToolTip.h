@@ -49,24 +49,12 @@ public:
 	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetToolTip::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
-
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	void relayEvent(const MSG& msg);
 	
@@ -79,22 +67,17 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetToolTip( SmartWin::Widget * parent );
+	explicit WidgetToolTip( Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
 	virtual ~WidgetToolTip()
 	{}
 };
-
-inline WidgetToolTip::Seed::Seed()
-{
-	* this = WidgetToolTip::getDefaultSeed();
-}
 
 inline WidgetToolTip::WidgetToolTip( Widget * parent )
 	: PolicyType( parent )

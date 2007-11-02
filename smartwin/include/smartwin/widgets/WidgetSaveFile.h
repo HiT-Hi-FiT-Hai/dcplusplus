@@ -28,9 +28,9 @@
 #ifndef WidgetSaveFile_h
 #define WidgetSaveFile_h
 
+#include "../WindowsHeaders.h"
 #include "../../SmartUtil.h"
 #include "../FreeCommonDialog.h"
-#include "../WindowsHeaders.h"
 #include "../aspects/AspectFileFilter.h"
 
 namespace SmartWin

@@ -63,6 +63,45 @@ class Widget
 	: public boost::noncopyable
 {
 public:
+	/** Most Widgets can override the creational parameters which sets the style and the
+	  * initial position of the Widget, those Widgets will take an object of this type to
+	  * their creational function(s).
+	  */
+	struct Seed {
+		LPCTSTR className;
+
+		/// Initial caption
+		/** Windows with a title bar will use this string in the title bar. Controls with
+		  * caption (e.g. static control, edit control) will use it in the control. <br>
+		  * It is feed directly to CreateWindowEx, this means that it follows its
+		  * conventions. In particular, the string "#num" has a special meaning.
+		  */
+		SmartUtil::tstring caption;
+
+		/// The style of the object (starts with WS_ or BS_ etc...)
+		/** WARNING: The creation of most of the controls require WS_CHILD to be set.
+		  * This is done, by default, in the appropriate controls. If you override the
+		  * default style, then be sure that WS_CHILD is set (if needed).
+		  */
+		DWORD style;
+
+		/// The Extended Style of the object (starts often with WS_EX_ etc)
+		DWORD exStyle;
+
+		/// The initial position / size of the Widget
+		Rectangle location;
+
+		HMENU menuHandle;
+
+		/// Constructor initializing all member variables to default values
+		Seed(LPCTSTR className_, DWORD style_ = WS_VISIBLE, DWORD exStyle_ = 0, 
+			const SmartUtil::tstring& caption_ = SmartUtil::tstring(), 
+			const Rectangle& location_ = letTheSystemDecide, HMENU menuHandle_ = NULL)
+			: className(className_), caption(caption_), style( style_ ), exStyle( exStyle_ ), location( location_ ), menuHandle( menuHandle_ )
+		{}
+
+	};
+	
 	/// Returns the HWND to the Widget
 	/** Returns the HWND to the inner window of the Widget. <br>
 	  * If you need to do directly manipulation of the window use this function to
@@ -99,14 +138,6 @@ public:
 	/** Same as updateWidget except that this does not force an immediate redraw.
 	  */
 	void invalidateWidget();
-
-	/// Subclasses the dialog item with the given dialog item id
-	/** Subclasses a dialog item, the id is the dialog item id from the resource
-	  * editor. <br>
-	  * Should normally not be called directly but rather called from e.g. one of the
-	  * creational functions found in the WidgetFactory class.
-	  */
-	virtual void attach( unsigned id );
 
 	/// Use this function to add or remove windows styles.
 	/** The first parameter is the type of style you wish to add/remove. <br>
@@ -153,10 +184,18 @@ protected:
 
 	// Creates the Widget, should NOT be called directly but overridden in the
 	// derived class (with no parameters)
-	virtual void create( const SmartWin::Seed & );
+	void create( const Seed & cs );
 
 	virtual void attach(HWND wnd);
-	
+
+	/// Subclasses the dialog item with the given dialog item id
+	/** Subclasses a dialog item, the id is the dialog item id from the resource
+	  * editor. <br>
+	  * Should normally not be called directly but rather called from e.g. one of the
+	  * creational functions found in the WidgetFactory class.
+	  */
+	virtual void attach( unsigned id );
+
 private:
 	friend class Application;
 	template<typename T> friend T hwnd_cast(HWND hwnd);

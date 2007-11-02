@@ -30,14 +30,13 @@
 
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
+#include "../Widget.h"
 #include "../BasicTypes.h"
 #include "../Dispatchers.h"
-#include "../Policies.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../resources/ImageList.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -58,8 +57,6 @@ class WidgetCreator;
   * to view the log of URL's you have been to etc...   
   */
 class WidgetToolbar :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectControl< WidgetToolbar >,
 	public AspectFocus< WidgetToolbar >,
@@ -78,24 +75,12 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetToolbar::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
-
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	// TODO: Outfactor into Aspect, also WidgetStatusBar...
 	/// Refreshes the toolbar, must be called after main window has been resized
@@ -173,11 +158,11 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetToolbar( SmartWin::Widget * parent );
+	explicit WidgetToolbar( Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -199,11 +184,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetToolbar::Seed::Seed()
-{
-	* this = WidgetToolbar::getDefaultSeed();
-}
 
 inline void WidgetToolbar::refresh()
 {
@@ -309,10 +289,8 @@ inline bool WidgetToolbar::getButtonChecked( unsigned int id )
 }
 
 inline WidgetToolbar::WidgetToolbar( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
 // end namespace SmartWin

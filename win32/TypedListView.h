@@ -33,7 +33,7 @@ public:
 		
 	}
 	
-	virtual void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
+	void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
 		BaseType::create(cs);
 		
 		this->setCallback(

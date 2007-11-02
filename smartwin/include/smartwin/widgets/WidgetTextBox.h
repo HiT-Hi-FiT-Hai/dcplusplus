@@ -28,8 +28,7 @@
 #ifndef WidgetTextBox_h
 #define WidgetTextBox_h
 
-#include "../../SmartUtil.h"
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
@@ -37,7 +36,6 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectText.h"
 #include "../aspects/AspectUpdate.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -66,8 +64,6 @@ class WidgetCreator;
   * < ul > < li >WidgetRichTextBox< /li > < /ul >
   */
 class WidgetTextBoxBase :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspect classes
 	public AspectBackgroundColor< WidgetTextBoxBase >,
 	public AspectBorder< WidgetTextBoxBase >,
@@ -82,8 +78,6 @@ class WidgetTextBoxBase :
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	// Contract needed by AspectUpdate Aspect class
 	static inline Message & getUpdateMessage();
 
@@ -211,25 +205,15 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetTextBox::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
+	
 	/// Adds (or removes) the numbers property
 	/** If you pass false you remove this ability <br>
 	  * If you pass true or call function without arguments you force the control to
@@ -279,13 +263,13 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	friend class WidgetCreator< WidgetTextBox >;
 
 	// Constructor Taking pointer to parent
-	explicit WidgetTextBox( SmartWin::Widget * parent );
+	explicit WidgetTextBox( Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -404,20 +388,16 @@ inline bool WidgetTextBoxBase::getModify( ) {
 	return this->sendMessage( EM_GETMODIFY ) > 0;
 }
 
-inline WidgetTextBox::Seed::Seed() {
-	* this = WidgetTextBox::getDefaultSeed();
-}
-
 inline WidgetTextBoxBase::WidgetTextBoxBase( Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
+	// Can't have a text box without a parent...
+	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
 inline WidgetTextBox::WidgetTextBox( Widget * parent )
 	: WidgetTextBoxBase( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
 inline void WidgetTextBox::setPassword( bool value, TCHAR pwdChar ) {

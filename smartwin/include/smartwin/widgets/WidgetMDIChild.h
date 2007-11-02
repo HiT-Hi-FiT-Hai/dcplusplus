@@ -77,32 +77,26 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
 		typedef WidgetMDIChild::ThisType WidgetType;
 
-		SmartWin::IconPtr smallIcon;
-		SmartWin::IconPtr icon;
+		IconPtr smallIcon;
+		IconPtr icon;
 		HBRUSH background;
 		bool activate;
 		
 		/// Fills with default parameters
-		Seed();
+		Seed(const SmartUtil::tstring& caption = SmartUtil::tstring());
 
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Creates a MDIChild Window
 	/** This version creates a MessageMapPolicyMDIChildWidget to plug into MDIParent
 	  * container window.
 	  */
-	virtual void createMDIChild( Seed cs = getDefaultSeed() );
+	void createMDIChild( Seed cs = Seed() );
 	
 	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
 	
@@ -122,11 +116,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetMDIChild::Seed::Seed()
-{
-	* this = WidgetMDIChild::getDefaultSeed();
-}
 
 inline WidgetMDIChild::~WidgetMDIChild()
 {

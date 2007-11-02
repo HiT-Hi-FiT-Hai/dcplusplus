@@ -28,9 +28,8 @@
 #ifndef WidgetGroupBox_h
 #define WidgetGroupBox_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectButton.h"
-#include "../xCeption.h"
 #include "WidgetRadioButton.h"
 
 #include <vector>
@@ -54,46 +53,25 @@ class WidgetCreator;
   * add up your WidgetRadioButtons into an object of this type   
   */
 class WidgetGroupBox :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectButton< WidgetGroupBox >
 {
 	friend class WidgetCreator< WidgetGroupBox >;
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetGroupBox::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
-	/// Actually creates the Button Control
-	/** You should call WidgetFactory::createButton if you instantiate class
-	  * directly. <br>
-	  * Only if you DERIVE from class you should call this function directly.       
-	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
 
 	/// Add a radio button to the group box
 	void addChild( WidgetRadioButton::ObjectType btn );
@@ -115,16 +93,9 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetGroupBox::Seed::Seed()
-{
-	* this = WidgetGroupBox::getDefaultSeed();
-}
-
 inline WidgetGroupBox::WidgetGroupBox( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ButtonType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
 inline void WidgetGroupBox::addChild( WidgetRadioButton::ObjectType btn )

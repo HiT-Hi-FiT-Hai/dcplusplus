@@ -28,13 +28,12 @@
 #ifndef WidgetSlider_h
 #define WidgetSlider_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectScrollable.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -58,8 +57,6 @@ class WidgetCreator;
   * the WidgetSpinner control, but have another visual appearance.
   */
 class WidgetSlider :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectBorder< WidgetSlider >,
 	public AspectControl<WidgetSlider>,
@@ -77,24 +74,12 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetSlider::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
-
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Sets the Auto Ticks property of the control
 	/** Auto ticks means that the control will have a tick note for each increment in
@@ -193,16 +178,9 @@ public:
 	  */
 	void assignBuddy( bool beginning, Widget * buddy );
 
-	/// Actually creates the Slider Control
-	/** You should call WidgetFactory::createSlider if you instantiate class
-	  * directly. <br>
-	  * Only if you DERIVE from class you should call this function directly.
-	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
-
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetSlider( SmartWin::Widget * parent );
+	explicit WidgetSlider( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -214,44 +192,39 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetSlider::Seed::Seed()
-{
-	* this = WidgetSlider::getDefaultSeed();
-}
-
 inline void WidgetSlider::setAutoTicks( bool value )
 {
-	this->Widget::addRemoveStyle( TBS_AUTOTICKS, value );
+	this->addRemoveStyle( TBS_AUTOTICKS, value );
 }
 
 inline void WidgetSlider::setHorizontal( bool value )
 {
-	this->Widget::addRemoveStyle( TBS_HORZ, value );
-	this->Widget::addRemoveStyle( TBS_VERT, !value );
+	this->addRemoveStyle( TBS_HORZ, value );
+	this->addRemoveStyle( TBS_VERT, !value );
 }
 
 inline void WidgetSlider::setShowTicksLeft( bool value )
 {
 	// TODO: Add assertion that the TBS_VERT is set!
-	this->Widget::addRemoveStyle( TBS_LEFT, value );
-	this->Widget::addRemoveStyle( TBS_RIGHT, !value );
+	this->addRemoveStyle( TBS_LEFT, value );
+	this->addRemoveStyle( TBS_RIGHT, !value );
 }
 
 inline void WidgetSlider::setShowTicksTop( bool value )
 {
 	// TODO: Add assertion that the TBS_HORZ is set!
-	this->Widget::addRemoveStyle( TBS_TOP, value );
-	this->Widget::addRemoveStyle( TBS_BOTTOM, !value );
+	this->addRemoveStyle( TBS_TOP, value );
+	this->addRemoveStyle( TBS_BOTTOM, !value );
 }
 
 inline void WidgetSlider::setShowTicksBoth( bool value )
 {
-	this->Widget::addRemoveStyle( TBS_BOTH, value );
+	this->addRemoveStyle( TBS_BOTH, value );
 }
 
 inline void WidgetSlider::setShowTicks( bool value )
 {
-	this->Widget::addRemoveStyle( TBS_NOTICKS, !value );
+	this->addRemoveStyle( TBS_NOTICKS, !value );
 }
 
 inline void WidgetSlider::setRange( short minimum, short maximum )
@@ -292,10 +265,8 @@ inline void WidgetSlider::assignBuddy( bool beginning, Widget * buddy )
 }
 
 inline WidgetSlider::WidgetSlider( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Slider without a parent..." ) );
 }
 
 // end namespace SmartWin

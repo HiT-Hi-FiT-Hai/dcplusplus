@@ -32,7 +32,7 @@ public:
 
 	explicit TypedTreeView( SmartWin::Widget* parent ) : BaseType(parent) { }
 	
-	virtual void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
+	void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
 		BaseType::create(cs);
 		this->setCallback(
 			SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ), &TypedTreeViewDispatcher

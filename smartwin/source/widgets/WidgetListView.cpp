@@ -4,27 +4,21 @@
 
 namespace SmartWin {
 
-const WidgetListView::Seed & WidgetListView::getDefaultSeed()
+WidgetListView::Seed::Seed() : 
+	Widget::Seed(WC_LISTVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT | LVS_EDITLABELS),
+	lvStyle(0)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = WC_LISTVIEW;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_EDITLABELS;
-		d_DefaultValues.exStyle = WS_EX_CLIENTEDGE;
-		//TODO: fill the values
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetListView::create( const Seed & cs )
 {
 	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
 	PolicyType::create(cs);
-	//TODO: use CreationalInfo parameters
+
+	if(cs.font)
+		setFont(cs.font);
+	if(cs.lvStyle != 0)
+		setListViewStyle(cs.lvStyle);
 
 	// Setting default event handler for beenValidate to a function returning "read
 	// only" property of control Note! If you supply a beenValidate event handler
@@ -35,7 +29,7 @@ void WidgetListView::create( const Seed & cs )
 }
 
 WidgetListView::WidgetListView( SmartWin::Widget * parent )
-	: PolicyType( parent ),
+	: ControlType( parent ),
 	itsEditRow(0),
 	itsEditColumn(0),
 	itsXMousePosition(0),
@@ -46,8 +40,6 @@ WidgetListView::WidgetListView( SmartWin::Widget * parent )
 	sortType(SORT_CALLBACK),
 	ascending(true)
 {
-	// Can't have a list view without a parent...
-	xAssert( parent, _T( "Cant have a WidgetListView without a parent..." ) );
 }
 
 void WidgetListView::setSort(int aColumn, SortType aType, bool aAscending) {

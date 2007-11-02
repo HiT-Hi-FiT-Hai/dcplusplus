@@ -2,27 +2,17 @@
 
 namespace SmartWin {
 
-const WidgetTreeView::Seed & WidgetTreeView::getDefaultSeed()
+WidgetTreeView::Seed::Seed() :
+	Widget::Seed(WC_TREEVIEW, WS_CHILD | WS_VISIBLE)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = WC_TREEVIEW;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetTreeView::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
+	ControlType::create(cs);
 
-	setFont( cs.font );
+	if(cs.font)
+		setFont( cs.font );
 }
 
 HTREEITEM WidgetTreeView::insert( const SmartUtil::tstring & text, HTREEITEM parent, LPARAM param, int iconIndex, int selectedIconIndex )

@@ -2,6 +2,7 @@
 #define WIDGETTABVIEW_H_
 
 #include "WidgetTabSheet.h"
+#include "../WindowClass.h"
 #include <list>
 #include <vector>
 
@@ -24,20 +25,11 @@ public:
 	
 	typedef MessageMapPolicy<Policies::Normal> PolicyType;
 
-	class Seed : public SmartWin::Seed {
+	class Seed : public Widget::Seed {
 	public:
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
-		
+		Seed();
 	};
-	
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 	
 	template<typename T>
 	void add(T* w, const IconPtr& icon) {
@@ -62,7 +54,7 @@ public:
 
 	virtual bool tryFire(const MSG& msg, LRESULT& retVal);
 	
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	friend class WidgetCreator<WidgetTabView>;
@@ -79,6 +71,8 @@ private:
 		std::tr1::function<bool (const ScreenCoordinate& pt)> handleContextMenu;
 	};
 	
+	static WindowClass windowClass;
+	
 	WidgetTabSheet::ObjectType tab;
 
 	bool inTab;
@@ -89,7 +83,7 @@ private:
 	Rectangle clientSize;
 	std::vector<IconPtr> icons;
 	int active;
-
+	
 	int findTab(Widget* w);
 	
 	void setActive(int i);
@@ -110,11 +104,6 @@ private:
 	void addWidget(Widget* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible);
 	void swapWidgets(Widget* oldW, Widget* newW);
 };
-
-inline WidgetTabView::Seed::Seed()
-{
-	* this = WidgetTabView::getDefaultSeed();
-}
 
 inline WidgetTabSheet::ObjectType WidgetTabView::getTab()
 {

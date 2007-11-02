@@ -323,7 +323,5 @@ bool operator==(const Rectangle& lhs, const Rectangle& rhs) {
 
 const SmartWin::Rectangle letTheSystemDecide( CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT );
 
-const DontInitialize DontInitializeMe;
-
 // end namespace SmartWin
 }

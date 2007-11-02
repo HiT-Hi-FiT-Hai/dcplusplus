@@ -28,9 +28,8 @@
 #ifndef WidgetButton_h
 #define WidgetButton_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectButton.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -40,8 +39,6 @@ namespace SmartWin
 template< class WidgetType >
 class WidgetCreator;
 
-/** sideeffect = \par Side Effects :
-  */
 /// Button Control class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -50,52 +47,27 @@ class WidgetCreator;
   * A button is a Widget which can be pressed, it can contain descriptive text etc.
   */
 class WidgetButton :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectButton< WidgetButton >
 {
 	friend class WidgetCreator< WidgetButton >;
-public:
-
-	/// Policy type
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-	
+public:	
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
-	class Seed
-		: public SmartWin::Seed
-	{
+	class Seed : public Widget::Seed {
 	public:
-		typedef WidgetButton::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
-	/// Actually creates the Button Control
-	/** You should call WidgetFactory::createButton if you instantiate class
-	  * directly. <br>
-	  * Only if you DERIVE from class you should call this function directly.
-	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
 
 protected:
 	/// Constructor Taking pointer to parent
-	explicit WidgetButton( SmartWin::Widget * parent );
+	explicit WidgetButton( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetCreator class which is friend
@@ -107,16 +79,9 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetButton::Seed::Seed()
+inline WidgetButton::WidgetButton( Widget * parent )
+	: ButtonType( parent )
 {
-	* this = WidgetButton::getDefaultSeed();
-}
-
-inline WidgetButton::WidgetButton( SmartWin::Widget * parent )
-	: PolicyType( parent )
-{
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
 // end namespace SmartWin

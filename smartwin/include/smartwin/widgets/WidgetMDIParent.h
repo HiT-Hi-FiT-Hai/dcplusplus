@@ -28,6 +28,7 @@
 #ifndef WidgetMDIParent_h
 #define WidgetMDIParent_h
 
+#include "../Widget.h"
 #include "../BasicTypes.h"
 #include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
@@ -87,21 +88,9 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetMDIParent::ThisType WidgetType;
-
-		// TODO: put variables to be filled here
-
-		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
-		
 		/** 
 		 * First child id for mdi menu, must be different from any other main menu id. 
 		 * Also, the menuHandle parameter of cs should point to the menu that will receive 
@@ -110,19 +99,17 @@ public:
 		UINT idFirstChild;
 		
 		HMENU windowMenu;
-	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
+		Seed();
+	};
 
 	/// Actually creates the MDI EventHandlerClass Control
 	/** You should call WidgetFactory::createMDIParent if you instantiate class
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
-	
 	void cascade() {
 		this->sendMessage(WM_MDICASCADE);
 	}
@@ -168,12 +155,7 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetMDIParent::Seed::Seed()
-{
-	* this = WidgetMDIParent::getDefaultSeed();
-}
-
-inline WidgetMDIParent::WidgetMDIParent( SmartWin::Widget * parent )
+inline WidgetMDIParent::WidgetMDIParent( Widget * parent )
 	: PolicyType( parent )
 {
 	// Can't have a text box without a parent...

@@ -3,25 +3,13 @@
 #include "../../include/smartwin/WindowClass.h"
 #include "../../include/smartwin/widgets/WidgetMenu.h"
 
-#include <boost/scoped_ptr.hpp>
-
 namespace SmartWin {
 
-const WidgetTabView::Seed & WidgetTabView::getDefaultSeed()
+WindowClass WidgetTabView::windowClass(_T("WidgetTabView"), &WidgetTabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
+
+WidgetTabView::Seed::Seed() :
+	Widget::Seed(windowClass.getClassName(), WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-	static boost::scoped_ptr<WindowClass> windowClass;
-
-	if ( d_NeedsInit )
-	{
-		windowClass.reset(new WindowClass(_T("WidgetTabView"), &PolicyType::wndProc, NULL, ( HBRUSH )( COLOR_GRAYTEXT + 1 )));
-
-		d_DefaultValues.className = windowClass->getClassName();
-		d_DefaultValues.style = WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 WidgetTabView::WidgetTabView(Widget* w) : 

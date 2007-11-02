@@ -4,25 +4,12 @@
 
 namespace SmartWin {
 
-const WidgetMDIFrame::Seed & WidgetMDIFrame::getDefaultSeed()
+WidgetMDIFrame::Seed::Seed() :
+	Widget::Seed(NULL, WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN),
+	background(( HBRUSH )( COLOR_APPWORKSPACE + 1 )),
+	menuName(NULL),
+	cursor(NULL)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
-		d_DefaultValues.background = ( HBRUSH )( COLOR_APPWORKSPACE + 1 );
-#ifndef WINCE
-		d_DefaultValues.cursor = NULL;
-#else
-		d_DefaultValues.cursor = 0;
-#endif
-		d_DefaultValues.menuName = NULL;
-
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetMDIFrame::createInvisibleWindow( Seed cs )

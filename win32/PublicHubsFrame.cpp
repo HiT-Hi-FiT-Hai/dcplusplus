@@ -126,7 +126,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	
 	{
 		WidgetButton::Seed cs;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON | BS_PUSHBUTTON;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON;
 		
 		cs.caption = TSTRING(CONFIGURE);
 		configure = createButton(cs);

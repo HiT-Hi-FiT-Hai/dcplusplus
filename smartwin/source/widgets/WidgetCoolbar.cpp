@@ -2,20 +2,9 @@
 
 namespace SmartWin {
 
-const WidgetCoolbar::Seed & WidgetCoolbar::getDefaultSeed()
+WidgetCoolbar::Seed::Seed() : 
+	Widget::Seed(REBARCLASSNAME, WS_CHILD | WS_VISIBLE | RBS_VARHEIGHT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_NODIVIDER)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = REBARCLASSNAME;
-		d_DefaultValues.exStyle = WS_EX_TOOLWINDOW;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | RBS_VARHEIGHT | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_NODIVIDER;
-		//TODO: fill the values
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetCoolbar::create( const Seed & cs )

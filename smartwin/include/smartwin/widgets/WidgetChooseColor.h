@@ -28,8 +28,8 @@
 #ifndef WidgetChooseColor_h
 #define WidgetChooseColor_h
 
-#include "../FreeCommonDialog.h"
 #include "../WindowsHeaders.h"
+#include "../FreeCommonDialog.h"
 #include <memory>
 
 namespace SmartWin

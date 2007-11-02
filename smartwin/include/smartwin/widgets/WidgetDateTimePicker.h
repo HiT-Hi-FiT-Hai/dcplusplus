@@ -28,13 +28,12 @@
 #ifndef WidgetDateTimePicker_h
 #define WidgetDateTimePicker_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -55,8 +54,6 @@ class WidgetCreator;
   * declare a point in time within 1800 - 2100   
   */
 class WidgetDateTimePicker :
-	public MessageMapPolicy< Policies::Subclassed >,
-	
 	// Aspects
 	public AspectClickable< WidgetDateTimePicker >,
 	public AspectControl<WidgetDateTimePicker>,
@@ -90,12 +87,11 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetDateTimePicker::ThisType WidgetType;
-
 		FontPtr font;
+
 		SmartUtil::tstring format;
 		COLORREF backgroundColor;
 		COLORREF monthBackgroundColor;
@@ -104,19 +100,10 @@ public:
 		COLORREF titleTextColor;
 		COLORREF trailingTextColor;
 		SYSTEMTIME initialDateTime;
-		//TODO: put variables to be filled here
-
+	
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	// Aspect expectation implementation
 	static Message & getClickMessage();
@@ -209,7 +196,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	/// Constructor Taking pointer to parent
@@ -224,11 +211,6 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetDateTimePicker::Seed::Seed()
-{
-	* this = WidgetDateTimePicker::getDefaultSeed();
-}
 
 inline Message & WidgetDateTimePicker::getClickMessage()
 {
@@ -254,7 +236,7 @@ inline void WidgetDateTimePicker::setFormat( const SmartUtil::tstring & format )
 }
 
 inline WidgetDateTimePicker::WidgetDateTimePicker( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
 	// Can't have a text box without a parent...
 	xAssert( parent, _T( "Can't have a TextBox without a parent..." ) );

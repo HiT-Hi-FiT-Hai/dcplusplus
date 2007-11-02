@@ -28,9 +28,9 @@
 #ifndef WidgetTabSheet_h
 #define WidgetTabSheet_h
 
+#include "../Widget.h"
 #include "../resources/ImageList.h"
 #include "../BasicTypes.h"
-#include "../Policies.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
@@ -38,7 +38,6 @@
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectText.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -64,8 +63,6 @@ class WidgetCreator;
   * has.
   */
 class WidgetTabSheet :
-	public MessageMapPolicy< Policies::Subclassed >,
-	
 	// Aspects
 	public AspectBorder< WidgetTabSheet >,
 	public AspectControl<WidgetTabSheet>,
@@ -118,24 +115,14 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetTabSheet::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
 		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	// AspectSelection expectation implementation
 	static Message & getSelectionChangedMessage();
@@ -188,7 +175,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	/// Set tab buttons at bottom of control
 	/** If passed true to this function tabs will appear at the bottom of the control
@@ -268,7 +255,7 @@ public:
 	SmartWin::Rectangle getUsableArea() const;
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetTabSheet( SmartWin::Widget * parent );
+	explicit WidgetTabSheet( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -283,11 +270,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetTabSheet::Seed::Seed()
-{
-	* this = WidgetTabSheet::getDefaultSeed();
-}
 
 inline Message & WidgetTabSheet::getSelectionChangedMessage()
 {
@@ -345,10 +327,8 @@ inline void WidgetTabSheet::setData( unsigned index, LPARAM lParam )
 }
 
 inline WidgetTabSheet::WidgetTabSheet( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a ComboBox without a parent...
-	xAssert( parent, _T( "Cant have a WidgetTabSheet without a parent..." ) );
 }
 
 inline void WidgetTabSheet::setTabsAtBottom( bool value )

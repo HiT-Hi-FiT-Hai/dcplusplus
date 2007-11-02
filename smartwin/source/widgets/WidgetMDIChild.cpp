@@ -2,21 +2,11 @@
 
 namespace SmartWin {
 
-const WidgetMDIChild::Seed & WidgetMDIChild::getDefaultSeed()
+WidgetMDIChild::Seed::Seed(const SmartUtil::tstring& caption) :
+	Widget::Seed(NULL, WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_MDICHILD, caption),
+	background((HBRUSH)(COLOR_WINDOW + 1)),
+	activate(true)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.exStyle = WS_EX_MDICHILD;
-		d_DefaultValues.style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-		d_DefaultValues.background = ( HBRUSH )( COLOR_WINDOW + 1 );
-		d_DefaultValues.activate = true;
-		//TODO: initialize the values here
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetMDIChild::createMDIChild( Seed cs )

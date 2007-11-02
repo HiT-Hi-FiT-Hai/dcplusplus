@@ -1,4 +1,3 @@
-// $Revision: 1.14 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -28,6 +27,8 @@
 */
 #ifndef AspectRaw_h
 #define AspectRaw_h
+
+#include "../Message.h"
 
 namespace SmartWin
 {

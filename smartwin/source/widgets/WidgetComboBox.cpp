@@ -3,30 +3,19 @@
 
 namespace SmartWin {
 
-const WidgetComboBox::Seed & WidgetComboBox::getDefaultSeed()
+WidgetComboBox::Seed::Seed() : 
+	Widget::Seed(WC_COMBOBOX, WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWNLIST | CBS_HASSTRINGS),
+	extended(true)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = WC_COMBOBOX;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_VSCROLL;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_DefaultValues.extended = true;
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
 }
 
 void WidgetComboBox::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-	setFont( cs.font );
-	if(cs.extended) {
-		::SendMessage(this->handle(), CB_SETEXTENDEDUI, TRUE, 0);
-	}
+	ControlType::create(cs);
+	if(cs.font)
+		setFont( cs.font );
+	if(cs.extended)
+		sendMessage(CB_SETEXTENDEDUI, TRUE);
 }
 
 WidgetComboBox::WidgetTextBoxPtr WidgetComboBox::getTextBox() {

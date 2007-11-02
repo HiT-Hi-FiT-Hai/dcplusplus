@@ -28,6 +28,7 @@
 #ifndef WidgetMDIFrame_h
 #define WidgetMDIFrame_h
 
+#include "../WindowsHeaders.h"
 #include "../BasicTypes.h"
 #include "../WindowClass.h"
 #include "WidgetWindowBase.h"
@@ -69,12 +70,9 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetMDIFrame::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
 		IconPtr icon;
 		IconPtr iconSmall;
 		HBRUSH background;
@@ -83,15 +81,9 @@ public:
 
 		/// Fills with default parameters
 		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
+		Seed();
 
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Actually creates the window
 	/** This one creates the window. <br>
@@ -100,7 +92,7 @@ public:
       * The simple version "createWindow()" uses a default Seed for the window attributes.
 	  * The seed is not taken a constant because the class name will be generated at registration.
 	  */
-	virtual void createWindow( Seed = getDefaultSeed() );
+	void createWindow( Seed = Seed() );
 
 	/// Creates an invisible window, for quiet initialization.
 	/** Same as createWindow, except that the window lacks WS_VISIBLE.
@@ -122,7 +114,7 @@ public:
 	  * The other styles are either defaulted with createInvisibleWindow()
 	  * or specified with createInvisibleWindow( Seed ).
 	  */
-	virtual void createInvisibleWindow( Seed = getDefaultSeed() );
+	void createInvisibleWindow( Seed seed = Seed() );
 
 	WidgetMDIParent* getMDIParent() { return mdi; }
 protected:
@@ -138,11 +130,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetMDIFrame::Seed::Seed()
-{
-	* this = WidgetMDIFrame::getDefaultSeed();
-}
 
 inline WidgetMDIFrame::WidgetMDIFrame( Widget * parent )
 	: BaseType( parent ), mdi(0)

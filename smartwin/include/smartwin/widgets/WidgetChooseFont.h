@@ -29,9 +29,9 @@
 #ifndef WidgetChooseFont_h
 #define WidgetChooseFont_h
 
+#include "../WindowsHeaders.h"
 #include "../resources/Font.h"
 #include "../FreeCommonDialog.h"
-#include "../WindowsHeaders.h"
 #include <memory>
 
 namespace SmartWin

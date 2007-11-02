@@ -28,9 +28,9 @@
 #ifndef WidgetTreeView_h
 #define WidgetTreeView_h
 
+#include "../Widget.h"
 #include "../BasicTypes.h"
 #include "../resources/ImageList.h"
-#include "../Policies.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
@@ -40,7 +40,6 @@
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectSelection.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -62,8 +61,6 @@ class WidgetCreator;
    */
 
 class WidgetTreeView :
-	public MessageMapPolicy< Policies::Subclassed >,
-	
 	// Aspects
 	public AspectBorder< WidgetTreeView >,
 	public AspectClickable< WidgetTreeView >,
@@ -101,38 +98,20 @@ protected:
 	friend class AspectData<WidgetTreeView, HTREEITEM>;
 	
 public:
-	/// Class type
-	typedef WidgetTreeView ThisType;
-
-	/// Object type
-	typedef ThisType * ObjectType;
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	 /** This class contains all of the values needed to create the widget. It also
 	   * knows the type of the class whose seed values it contains. Every widget
 	   * should define one of these.
 	   */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetTreeView::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Inserts a "node" into the TreeView
 	/** The return value from a call to this function is a Node. <br>
@@ -299,7 +278,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	static bool isValidSelectionChanged( LPARAM lPar )
 	{ return true;
@@ -307,7 +286,7 @@ public:
 	
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetTreeView( SmartWin::Widget * parent );
+	explicit WidgetTreeView( Widget * parent );
 
 	// To assure nobody accidentally deletes any heaped object of this type, parent
 	// is supposed to do so when parent is killed...
@@ -332,10 +311,6 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetTreeView::Seed::Seed() {
-	 * this = WidgetTreeView::getDefaultSeed();
-}
 
 inline HTREEITEM WidgetTreeView::getNext( HTREEITEM node, unsigned flag ) {
 	return TreeView_GetNextItem( this->handle(), node, flag );
@@ -445,10 +420,8 @@ inline const Message & WidgetTreeView::getDblClickMessage() {
 }
 
 inline WidgetTreeView::WidgetTreeView( Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a list view without a parent...
-	xAssert( parent, _T( "Cant have a WidgetTreeView without a parent..." ) );
 }
 
 // end namespace SmartWin

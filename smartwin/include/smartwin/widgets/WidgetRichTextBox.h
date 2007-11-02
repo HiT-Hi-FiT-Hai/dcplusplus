@@ -71,7 +71,7 @@ public:
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
 		typedef WidgetRichTextBox::ThisType WidgetType;
@@ -80,15 +80,9 @@ public:
 		COLORREF backgroundColor;
 		bool scrollBarHorizontallyFlag;
 		bool scrollBarVerticallyFlag;
-		//TODO: put variables to be filled here
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
 
 	/// Default values for creation
@@ -99,7 +93,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = getDefaultSeed() );
 
 	/// Sets the background color of the WidgetRichTextBox
 	/** Call this function to alter the background color of the WidgetRichEdit. <br>
@@ -121,16 +115,9 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetRichTextBox::Seed::Seed()
-{
-	* this = WidgetRichTextBox::getDefaultSeed();
-}
-
 inline WidgetRichTextBox::WidgetRichTextBox( SmartWin::Widget * parent )
 	: WidgetTextBoxBase( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
 inline void WidgetRichTextBox::setBackgroundColor( COLORREF color )

@@ -28,9 +28,9 @@
 #ifndef WidgetLoadFile_h
 #define WidgetLoadFile_h
 
+#include "../WindowsHeaders.h"
 #include "../../SmartUtil.h"
 #include "../FreeCommonDialog.h"
-#include "../WindowsHeaders.h"
 #include "../aspects/AspectFileFilter.h"
 #include <vector>
 

@@ -28,9 +28,9 @@
 #ifndef WidgetChooseFolder_h
 #define WidgetChooseFolder_h
 
+#include "../WindowsHeaders.h"
 #include "../../SmartUtil.h"
 #include "../FreeCommonDialog.h"
-#include "../WindowsHeaders.h"
 #include <shlobj.h>
 
 namespace SmartWin

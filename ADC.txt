@@ -12,11 +12,12 @@ The same protocol structure is used both for client-hub and client-client
 communication. This document is split into two parts; the first shows the
 structure of the protocol, while the second implements a specific system using
 this structure. ADC stands for anything you would like it to stand for;
-Advanced DC is the first neutral thing that springs to mind =).
+Advanced Direct Connect is the first neutral thing that springs to mind =).
 
-Many ideas for this I've taken from Jan Vidar Krey's DCTNG draft, others come
-from the DC dev hub people (notably cologic, fusbar, farcry and sedulus). Oh,
-and not to forget, Jon Hess for the original DC idea.
+Many ideas for the protocol come from Jan Vidar Krey's DCTNG draft. Other
+contributors include Dustin Brody, Walter Doekes, ...). Jon Hess contributed the
+original Direct Connect idea through the Neo-Modus Direct Connect client /
+hub.
 
 The latest draft version of this document can be downloaded from
 $URL$. 

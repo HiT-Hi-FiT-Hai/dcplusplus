@@ -85,7 +85,7 @@ public:
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
 		typedef WidgetWindow::ThisType WidgetType;
@@ -97,16 +97,8 @@ public:
 		HCURSOR cursor;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Actually creates the window
 	/** This one creates the window. <br>
@@ -115,7 +107,7 @@ public:
       * The simple version "createWindow()" uses a default Seed for the window attributes.
 	  * The seed is not taken a constant because the class name will be generated at registration.
 	  */
-	virtual void createWindow( Seed = getDefaultSeed() );
+	void createWindow( Seed cs = Seed() );
 
 	/// Creates an invisible window, for quiet initialization.
 	/** Same as createWindow, except that the window lacks WS_VISIBLE.
@@ -137,7 +129,7 @@ public:
 	  * The other styles are either defaulted with createInvisibleWindow()
 	  * or specified with createInvisibleWindow( Seed ).
 	  */
-	virtual void createInvisibleWindow( Seed = getDefaultSeed() );
+	void createInvisibleWindow( Seed cs = Seed() );
 
 	// TODO: Check up if the CREATESTRUCT * actualy IS modyfiable...!!
 	/// Setting the event handler for the "create" event
@@ -189,16 +181,8 @@ public:
 	{
 	public:
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	//TODO: This could be specialized to take WNDPROC from MessageMapPolicy
 	/// Actually creates the window
@@ -207,7 +191,7 @@ public:
 	  * call WidgetWindow::create with WidgetWindow::getDefaultSeed, which wouldn't
 	  * create a child window.
 	  */
-	virtual void createWindow( Seed cs = getDefaultSeed() )
+	void createWindow( const Seed& cs = Seed() )
 	{
 		WidgetWindow::createWindow( cs );
 	}
@@ -221,11 +205,6 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetWindow::Seed::Seed()
-{
-	* this = WidgetWindow::getDefaultSeed();
-}
 
 inline WidgetWindow::WidgetWindow( Widget * parent )
 	: BaseType( parent )
@@ -261,15 +240,6 @@ inline void WidgetWindow::activatePreviousInstance()
 		}
 	}
 #endif
-}
-
-inline const WidgetChildWindow::Seed & WidgetChildWindow::getDefaultSeed()
-{
-	static Seed d_DefaultValues;
-
-	// checking whether it needs initialization uses the same time as doing it
-	d_DefaultValues.style |= WS_CHILD;
-	return d_DefaultValues;
 }
 
 inline WidgetChildWindow::Seed::Seed()

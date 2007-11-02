@@ -2,37 +2,24 @@
 
 namespace SmartWin {
 
-const WidgetDateTimePicker::Seed & WidgetDateTimePicker::getDefaultSeed()
+WidgetDateTimePicker::Seed::Seed() :
+	Widget::Seed(DATETIMEPICK_CLASS, WS_CHILD | WS_VISIBLE | WS_TABSTOP | DTS_SHORTDATEFORMAT),
+	format(_T( "yyyy.MM.dd" )),
+	backgroundColor(0x000080),
+	monthBackgroundColor(0x808080),
+	monthTextColor(0xFFFFFF),
+	titleBackgroundColor(0x202020),
+	titleTextColor(0x008080),
+	trailingTextColor(0x000000)
 {
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = DATETIMEPICK_CLASS;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | DTS_SHORTDATEFORMAT;
-		d_DefaultValues.backgroundColor = 0x000080;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_DefaultValues.format = _T( "yyyy.MM.dd" ); //TODO: should be filled out with locale from OS
-		GetSystemTime( & d_DefaultValues.initialDateTime );
-		d_DefaultValues.monthBackgroundColor = 0x808080;
-		d_DefaultValues.monthTextColor = 0xFFFFFF;
-		d_DefaultValues.titleBackgroundColor = 0x202020;
-		d_DefaultValues.titleTextColor = 0x008080;
-		d_DefaultValues.trailingTextColor = 0x000000;
-		//TODO: initialize the values here
-
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
+	::GetSystemTime( &initialDateTime );
 }
 
 void WidgetDateTimePicker::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-	//TODO: use CreationalInfo parameters
-	setFont( cs.font );
+	ControlType::create(cs);
+	if(cs.font)
+		setFont( cs.font );
 	setFormat( cs.format );
 	setDateTime( cs.initialDateTime );
 	setBackgroundColor( cs.backgroundColor );

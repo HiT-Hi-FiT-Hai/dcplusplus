@@ -28,9 +28,8 @@
 #ifndef WidgetCheckBox_h
 #define WidgetCheckBox_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectButton.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -50,40 +49,24 @@ class WidgetCreator;
   * It can contain descriptive text etc. 
   */
 class WidgetCheckBox :
-	public MessageMapPolicy< Policies::Subclassed >,
-	
 	// Aspect classes
 	public AspectButton< WidgetCheckBox >
 {
 	friend class WidgetCreator< WidgetCheckBox >;
 public:
-	/// Policy type
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
-	class Seed
-		: public SmartWin::Seed
+	class Seed : public Widget::Seed
 	{
 	public:
-		typedef WidgetCheckBox::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Returns the checked state of the Check Box
 	/** Return value is true if Check Box is checked, otherwise false.
@@ -94,13 +77,6 @@ public:
 	/** Call this one to programmaticially check a Check Box.
 	  */
 	void setChecked( bool value = true );
-
-	/// Actually creates the Check Box Control
-	/** You should call WidgetFactory::createCheckBox if you instantiate class
-	  * directly. <br>
-	  * Only if you DERIVE from class you should call this function directly.
-	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
 
 protected:
 	// Constructor Taking pointer to parent
@@ -116,12 +92,6 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetCheckBox::Seed::Seed()
-{
-	* this = WidgetCheckBox::getDefaultSeed();
-}
-
-
 inline void WidgetCheckBox::setChecked( bool value )
 {
 	this->sendMessage(BM_SETCHECK, static_cast< WPARAM >( value ? BST_CHECKED : BST_UNCHECKED ) );
@@ -132,14 +102,9 @@ inline bool WidgetCheckBox::getChecked()
 	return this->sendMessage(BM_GETCHECK) == BST_CHECKED;
 }
 
-// Protected to avoid direct instantiation, you can inherit and use WidgetFactory
-// class which is friend
-
 inline WidgetCheckBox::WidgetCheckBox( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ButtonType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
 // end namespace SmartWin

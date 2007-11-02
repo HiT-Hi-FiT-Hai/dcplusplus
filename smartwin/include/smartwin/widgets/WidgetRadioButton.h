@@ -28,9 +28,8 @@
 #ifndef WidgetRadioButton_h
 #define WidgetRadioButton_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectButton.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -54,35 +53,24 @@ class WidgetCreator;
    * previously selected one.
    */
 class WidgetRadioButton :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectButton< WidgetRadioButton >
 {
 	friend class WidgetCreator< WidgetRadioButton >;
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetRadioButton::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
 
 	/// Default values for creation
@@ -105,11 +93,11 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( Widget * parent, const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	// Constructor Taking pointer to parent
-	explicit WidgetRadioButton( SmartWin::Widget * parent );
+	explicit WidgetRadioButton( Widget * parent );
 
 	// Protected to avoid direct instantiation, you can inherit and use
 	// WidgetFactory class which is friend
@@ -121,16 +109,9 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline WidgetRadioButton::Seed::Seed()
+inline WidgetRadioButton::WidgetRadioButton( Widget * parent )
+	: ButtonType( parent )
 {
-	* this = WidgetRadioButton::getDefaultSeed();
-}
-
-inline WidgetRadioButton::WidgetRadioButton( SmartWin::Widget * parent )
-	: PolicyType( parent )
-{
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Button without a parent..." ) );
 }
 
 inline bool WidgetRadioButton::getChecked()

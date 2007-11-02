@@ -28,7 +28,7 @@
 #ifndef WidgetStatusBar_h
 #define WidgetStatusBar_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
@@ -36,7 +36,6 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectText.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -106,7 +105,6 @@ class NoSection :
 template< class TypeOfStatusBar = NoSection >
 class WidgetStatusBar :
 	public TypeOfStatusBar,
-	public MessageMapPolicy< Policies::Subclassed >,
 	
 	// Aspects
 	public AspectBorder< WidgetStatusBar< TypeOfStatusBar > >,
@@ -118,32 +116,20 @@ class WidgetStatusBar :
 {
 	friend class WidgetCreator< WidgetStatusBar >;
 public:
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef typename WidgetStatusBar::ThisType WidgetType;
-
 		FontPtr font;
 
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
 		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 	/// Refreshes the status bar, must be called after main window has been resized
 	/** Refreshes the status bar, call this one whenever you need to redraw the
@@ -166,7 +152,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 protected:
 	// Constructor Taking pointer to parent
@@ -183,27 +169,9 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template< class TypeOfStatusBar >
-const typename WidgetStatusBar< TypeOfStatusBar >::Seed & WidgetStatusBar< TypeOfStatusBar >::getDefaultSeed()
-{
-	static bool d_NeedsInit = true;
-	static Seed d_DefaultValues( DontInitializeMe );
-
-	if ( d_NeedsInit )
-	{
-		d_DefaultValues.className = STATUSCLASSNAME;
-		d_DefaultValues.style = WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP | WS_CLIPSIBLINGS;
-		d_DefaultValues.font = createFont( DefaultGuiFont );
-		d_NeedsInit = false;
-	}
-	return d_DefaultValues;
+WidgetStatusBar< TypeOfStatusBar >::Seed::Seed() : Widget::Seed(STATUSCLASSNAME, WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP | WS_CLIPSIBLINGS) {
+	
 }
-
-template< class TypeOfStatusBar >
-WidgetStatusBar< TypeOfStatusBar >::Seed::Seed()
-{
-	* this = WidgetStatusBar::getDefaultSeed();
-}
-
 
 inline void Section::setSections( const std::vector< unsigned > & width )
 {
@@ -263,18 +231,16 @@ const Message & WidgetStatusBar< TypeOfStatusBar >::getDblClickMessage()
 
 template< class TypeOfStatusBar >
 WidgetStatusBar< TypeOfStatusBar >::WidgetStatusBar( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: AspectControl<WidgetStatusBar< TypeOfStatusBar > >( parent )
 {
-	// Can't have a ComboBox without a parent...
-	xAssert( parent, _T( "Cant have a WidgetStatusBar without a parent..." ) );
 }
 
 template< class TypeOfStatusBar >
 void WidgetStatusBar< TypeOfStatusBar >::create( const Seed & cs )
 {
-	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Widget must have WS_CHILD style"));
-	PolicyType::create(cs);
-	setFont( cs.font );
+	AspectControl<WidgetStatusBar< TypeOfStatusBar > >::create(cs);
+	if(cs.font)
+		setFont( cs.font );
 }
 
 // end namespace SmartWin

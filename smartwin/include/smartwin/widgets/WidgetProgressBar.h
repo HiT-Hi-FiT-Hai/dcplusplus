@@ -28,12 +28,11 @@
 #ifndef WidgetProgressBar_h
 #define WidgetProgressBar_h
 
-#include "../Policies.h"
+#include "../Widget.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectScrollable.h"
-#include "../xCeption.h"
 
 namespace SmartWin
 {
@@ -54,8 +53,6 @@ class WidgetCreator;
   * jobs, often used when downloading from internet or installing applications etc.   
   */
 class WidgetProgressBar :
-	public MessageMapPolicy< Policies::Subclassed >,
-
 	// Aspects
 	public AspectBorder< WidgetProgressBar >,
 	public AspectControl<WidgetProgressBar>,
@@ -63,33 +60,18 @@ class WidgetProgressBar :
 {
 	friend class WidgetCreator< WidgetProgressBar >;
 public:
-
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
-
 	/// Seed class
 	/** This class contains all of the values needed to create the widget. It also
 	  * knows the type of the class whose seed values it contains. Every widget
 	  * should define one of these.       
 	  */
 	class Seed
-		: public SmartWin::Seed
+		: public Widget::Seed
 	{
 	public:
-		typedef WidgetProgressBar::ThisType WidgetType;
-
-		//TODO: put variables to be filled here
-
 		/// Fills with default parameters
-		// explicit to avoid conversion through SmartWin::CreationalStruct
-		explicit Seed();
-
-		/// Doesn't fill any values
-		Seed( DontInitialize )
-		{}
+		Seed();
 	};
-
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
 
 #ifdef COMCTRL_V6
 	/// Sets the Vertical property of the control
@@ -151,13 +133,6 @@ public:
 	  */
 	int getMinValue();
 
-	/// Actually creates the Progress Bar Control
-	/** You should call WidgetFactory::createProgressBar if you instantiate class
-	  * directly. <br>
-	  * Only if you DERIVE from class you should call this function directly.
-	  */
-	virtual void create( const Seed & cs = getDefaultSeed() );
-
 protected:
 	/// CTOR Taking pointer to parent
 	explicit WidgetProgressBar( SmartWin::Widget * parent );
@@ -171,11 +146,6 @@ protected:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of class
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline WidgetProgressBar::Seed::Seed()
-{
-	* this = WidgetProgressBar::getDefaultSeed();
-}
 
 #ifdef COMCTRL_V6
 
@@ -233,10 +203,8 @@ inline int WidgetProgressBar::getPosition()
 }
 
 inline WidgetProgressBar::WidgetProgressBar( SmartWin::Widget * parent )
-	: PolicyType( parent )
+	: ControlType( parent )
 {
-	// Can't have a text box without a parent...
-	xAssert( parent, _T( "Can't have a Progressbar without a parent..." ) );
 }
 
 // end namespace SmartWin
