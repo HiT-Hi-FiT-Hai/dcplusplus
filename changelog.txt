@@ -10,6 +10,11 @@
 * Magnet dialog fixed (thanks poy)
 * Reorder some options (thanks poy)
 * Allow files with $ in them (thanks ullner)
+* Fixed splitter resizing
+* Fixed average download speed
+* Removed test entries from finished frames
+* Fixed an issue with multisource downloads
+
 
 -- 0.702 2007-10-21 --
 * Fixed missing sorting in most places

@@ -15,9 +15,10 @@ this structure. ADC stands for anything you would like it to stand for;
 Advanced Direct Connect is the first neutral thing that springs to mind =).
 
 Many ideas for the protocol come from Jan Vidar Krey's DCTNG draft. Other
-contributors include Dustin Brody, Walter Doekes, ...). Jon Hess contributed the
-original Direct Connect idea through the Neo-Modus Direct Connect client /
-hub.
+contributors include Dustin Brody, Walter Doekes, Timmo Stange, Fredrik 
+Ullner. Jon Hess 
+contributed the original Direct Connect idea through the Neo-Modus Direct 
+Connect client / hub.
 
 The latest draft version of this document can be downloaded from
 $URL$. 

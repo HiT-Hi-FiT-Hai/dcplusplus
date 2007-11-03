@@ -44,6 +44,7 @@
 #include "WaitingUsersFrame.h"
 #include "AboutDlg.h"
 #include "UPnP.h"
+#include "TransferView.h"
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ResourceManager.h>
@@ -58,8 +59,6 @@
 #include <dcpp/ShareManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
-
-MainWindow* MainWindow::instance = 0;
 
 MainWindow::MainWindow() :
 	WidgetFactory<SmartWin::WidgetWindow>(0), 
@@ -78,8 +77,6 @@ MainWindow::MainWindow() :
 	UPnP_TCPConnection(0),
 	UPnP_UDPConnection(0)
 {
-	instance = this;
-
 	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
@@ -554,8 +551,8 @@ void MainWindow::updateStatus() {
 	setStatus(STATUS_AWAY, Util::getAway() ? TSTRING(AWAY) : _T(""));
 	setStatus(STATUS_COUNTS, Text::toT(Client::getCounts()));
 	setStatus(STATUS_SLOTS, Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
-	setStatus(STATUS_DOWN_TOTAL, Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
-	setStatus(STATUS_UP_TOTAL, Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
+	setStatus(STATUS_DOWN_TOTAL, Text::toT("D: " + Util::formatBytes(down)));
+	setStatus(STATUS_UP_TOTAL, Text::toT("U: " + Util::formatBytes(up)));
 	setStatus(STATUS_DOWN_DIFF, Text::toT("D: " + Util::formatBytes(downdiff*1000/tdiff) + "/s ("
 	    + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
 	setStatus(STATUS_UP_DIFF, Text::toT("U: " + Util::formatBytes(updiff*1000/tdiff) + "/s ("
@@ -564,7 +561,6 @@ void MainWindow::updateStatus() {
 
 MainWindow::~MainWindow() {
 	SmartWin::Application::instance().removeFilter(filterIter);
-	instance = 0;
 }
 
 void MainWindow::handleSettings() {

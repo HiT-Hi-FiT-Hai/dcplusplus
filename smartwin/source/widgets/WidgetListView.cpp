@@ -41,6 +41,7 @@ WidgetListView::WidgetListView( SmartWin::Widget * parent )
 	sortType(SORT_CALLBACK),
 	ascending(true)
 {
+	createArrows();
 }
 
 void WidgetListView::setSort(int aColumn, SortType aType, bool aAscending) {
@@ -51,10 +52,33 @@ void WidgetListView::setSort(int aColumn, SortType aType, bool aAscending) {
 	ascending = aAscending;
 
 	resort();
-#ifdef PORT_ME
 	if (doUpdateArrow)
 		updateArrow();
-#endif
+}
+
+void WidgetListView::updateArrow() {
+	if(!upArrow || !downArrow)
+		return;
+	
+	HBITMAP bitmap = (isAscending() ? upArrow : downArrow)->handle();
+
+	HWND header = ListView_GetHeader(this->handle());
+	int count = Header_GetItemCount(header);
+	for (int i=0; i < count; ++i)
+	{
+		HDITEM item;
+		item.mask = HDI_FORMAT;
+		Header_GetItem(header, i, &item);
+		item.mask = HDI_FORMAT | HDI_BITMAP;
+		if (i == this->getSortColumn()) {
+			item.fmt |= HDF_BITMAP | HDF_BITMAP_ON_RIGHT;
+			item.hbm = bitmap;
+		} else {
+			item.fmt &= ~(HDF_BITMAP | HDF_BITMAP_ON_RIGHT);
+			item.hbm = 0;
+		}
+		Header_SetItem(header, i, &item);
+	}
 }
 
 void WidgetListView::setSelectedIndex( int idx )
@@ -308,6 +332,14 @@ static int compare(T a, T b) {
 	return (a < b) ? -1 : ((a == b) ? 0 : 1);
 }
 
+int CALLBACK WidgetListView::compareFuncCallback(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
+	WidgetListView* p = reinterpret_cast<WidgetListView*>(lParamSort);
+	int result = p->fun(lParam1, lParam2);
+	if(!p->isAscending())
+		result = -result;
+	return result;
+}
+
 int CALLBACK WidgetListView::compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 	WidgetListView* p = reinterpret_cast<WidgetListView*>(lParamSort);
 
@@ -384,15 +416,15 @@ void WidgetListView::createArrows() {
 	POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
 	POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
 
-	FreeCanvas dc(handle(), ::CreateCompatibleDC(NULL));
+	FreeCanvas dc(this, ::CreateCompatibleDC(NULL));
 
 	const int bitmapWidth = 8;
 	const int bitmapHeight = 8;
 	const Rectangle rect(0, 0, bitmapWidth, bitmapHeight );
 
 	Brush brush(Brush::Face3D);
-	Pen penLight(::GetSysColor(COLOR_3DHIGHLIGHT));
-	Pen penShadow(::GetSysColor(COLOR_3DSHADOW));
+	Pen penLight(::GetSysColor(COLOR_3DHIGHLIGHT), Pen::Solid, 1);
+	Pen penShadow(::GetSysColor(COLOR_3DSHADOW), Pen::Solid, 1);
 
 	upArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.handle(), bitmapWidth, bitmapHeight)));
 	downArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.handle(), bitmapWidth, bitmapHeight)));
@@ -433,7 +465,7 @@ void WidgetListView::createArrows() {
 	{
 		Canvas::Selector select(dc, penShadow);
 		::Polyline(dc.handle(), pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
-	}		
+	}	
 }
 
 

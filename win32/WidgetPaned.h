@@ -102,8 +102,7 @@ private:
 	void handleMouseMove(const SmartWin::MouseEventResult& event) {
 		if ( event.ButtonPressed == SmartWin::MouseEventResult::LEFT && moving )
 		{
-			SmartWin::ClientCoordinate cc(event.pos, this);
-
+			SmartWin::ClientCoordinate cc(event.pos, getParent());
 			int x = horizontal ? cc.y() : cc.x();
 			int w = horizontal ? rect.size.y : rect.size.x;
 			pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));

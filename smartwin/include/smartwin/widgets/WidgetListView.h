@@ -526,9 +526,10 @@ private:
 	BitmapPtr downArrow;
 
 	static int CALLBACK compareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
+	static int CALLBACK compareFuncCallback( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort );
 	
 	void createArrows();
-	
+	void updateArrow();
 #ifdef PORT_ME
 	// Private validate function, this ones returns the "read only" property of the list
 	static bool defaultValidate( EventHandlerClass * parent, WidgetListView * list, unsigned int col, unsigned int row, SmartUtil::tstring & newValue );
@@ -669,7 +670,12 @@ inline void WidgetListView::onColumnClick( const HeaderDispatcher::F& f ) {
 
 inline void WidgetListView::resort() {
 	if(sortColumn != -1) {
-		ListView_SortItemsEx(this->handle(), &compareFunc, reinterpret_cast< LPARAM >(this));
+		if(sortType == SORT_CALLBACK) {
+			ListView_SortItems(this->handle(), &WidgetListView::compareFuncCallback, reinterpret_cast<LPARAM>(this));
+		} else {
+			// Wine 0.9.48 doesn't support this
+			ListView_SortItemsEx(this->handle(), &WidgetListView::compareFunc, reinterpret_cast< LPARAM >(this));
+		}
 	}
 }
 

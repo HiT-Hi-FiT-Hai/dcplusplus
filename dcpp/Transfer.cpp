@@ -47,13 +47,13 @@ void Transfer::tick() {
 
 double Transfer::getAverageSpeed() const {
 	Lock l(cs);
-	uint64_t ticks = 0;
-	int64_t bytes = 0;
-	for(SampleList::const_iterator i = samples.begin(); i != samples.end(); ++i) {
-		ticks += i->first;
-		bytes += i->second;
+	if(samples.size() < 2) {
+		return 0;
 	}
-	return bytes > 0 ? (static_cast<double>(bytes) / ticks) * 1000.0 : 0;
+	uint64_t ticks = samples.back().first - samples.front().first;
+	int64_t bytes = samples.back().second - samples.front().second;
+	
+	return ticks > 0 ? (static_cast<double>(bytes) / ticks) * 1000.0 : 0;
 }
 
 void Transfer::getParams(const UserConnection& aSource, StringMap& params) {

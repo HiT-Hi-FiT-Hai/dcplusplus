@@ -83,12 +83,6 @@ protected:
 		FinishedManager::getInstance()->addListener(this);
 		updateList(FinishedManager::getInstance()->lockList(in_UL));
 		FinishedManager::getInstance()->unlockList();
-
-#if 1
-		// for testing purposes; adds 2 dummy lines into the list
-		addEntry(new FinishedItem("C:\\folder\\file.txt", "nicks", "hubs", 1024, 1024, 1000, GET_TIME() - 1000, false));
-		addEntry(new FinishedItem("C:\\folder\\file2.txt", "nicks2", "hubs2", 2048, 2048, 1000, GET_TIME(), false));
-#endif
 	}
 
 	virtual ~FinishedFrameBase() { }

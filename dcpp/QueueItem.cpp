@@ -88,27 +88,30 @@ Segment QueueItem::getNextSegment(int64_t  blockSize) const {
 	if(getSize() == -1 || blockSize == 0) {
 		return Segment(0, -1);
 	}
+	int64_t start = 0;
 	
-	if(done.empty()) {
-		Segment ret(0, blockSize > getSize() ? getSize() : blockSize);
-		return ret;
-	}
-	
-	for(SegmentIter i = done.begin(); i != done.end(); ++i) {
-		int64_t end = i->getStart() + i->getSize();
-		int64_t start = end - (end % blockSize);
-		Segment block(start, start + blockSize > getSize() ? getSize() - start : blockSize);
-
+	while(start < getSize()) {
+		int64_t end = std::min(getSize(), start + blockSize);
+		Segment block(start, end - start);
 		bool overlaps = false;
-		for(DownloadList::const_iterator j = downloads.begin(); j != downloads.end(); ++j) {
-			if(block.overlaps((*j)->getSegment())) {
+		for(SegmentIter i = done.begin(); !overlaps && i != done.end(); ++i) {
+			int64_t dstart = i->getStart();
+			int64_t dend = i->getEnd();
+			// We accept partial overlaps, only consider the block done if it is fully consumed by the done block
+			if(dstart <= start && dend >= end) {
 				overlaps = true;
-				break;
 			}
 		}
+		
+		for(DownloadList::const_iterator i = downloads.begin(); !overlaps && i !=downloads.end(); ++i) {
+			overlaps = block.overlaps((*i)->getSegment());
+		}
+		
 		if(!overlaps) {
 			return block;
 		}
+		
+		start = end;
 	}
 	
 	return Segment(0, 0);

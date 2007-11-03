@@ -382,12 +382,10 @@ WidgetSizedEventResult::WidgetSizedEventResult( WPARAM wP, LPARAM lP )
 	isRestored = ( wP == SIZE_RESTORED );
 }
 
-MouseEventResult::MouseEventResult(Widget* w, WPARAM wP, LPARAM lP ) : pos(Point(GET_X_LPARAM( lP ), GET_Y_LPARAM( lP )), w)
-{
-	isAltPressed = ::GetKeyState( VK_MENU ) < 0;
-	isControlPressed = ( ( wP & MK_CONTROL ) == MK_CONTROL );
+MouseEventResult::MouseEventResult(HWND hwnd, WPARAM wP, LPARAM lP ) : pos(Point(GET_X_LPARAM( lP ), GET_Y_LPARAM( lP ))) {
 	isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
-
+	::ClientToScreen(hwnd, &pos.getPoint());
+	
 	// These might be an issue when porting to Windows CE since CE does only support LEFT (or something...)
 	ButtonPressed = (
 		MK_LBUTTON & wP ? MouseEventResult::LEFT : (

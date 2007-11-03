@@ -196,6 +196,10 @@ class ModalDialog
 {
 public:
 	ModalDialog(Widget* parent) : Dialog(parent) { }
+	
+	virtual void kill() {
+		// Modal dialogs are stack allocated, so no delete
+	}
 };
 
 /// Aspect classes for a normal Container Widget

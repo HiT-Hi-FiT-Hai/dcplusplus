@@ -25,12 +25,12 @@
 #include <dcpp/LogManager.h>
 #include <dcpp/HttpConnection.h>
 
-#include "TransferView.h"
 #include "WidgetFactory.h"
 #include "AspectStatus.h"
 #include "AspectSpeaker.h"
 
 class UPnP;
+class TransferView;
 
 class MainWindow : 
 	public WidgetFactory<SmartWin::WidgetWindow>, 
@@ -125,8 +125,6 @@ private:
 	SmartWin::Application::FilterIter filterIter;
 	SmartWin::AcceleratorPtr accel;
 
-	static MainWindow* instance;
-	
 	enum { MAX_CLIENT_LINES = 10 };
 	TStringList lastLinesList;
 	tstring lastLines;
