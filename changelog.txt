@@ -14,7 +14,9 @@
 * Fixed average download speed
 * Removed test entries from finished frames
 * Fixed an issue with multisource downloads
-
+* Fixed missing hubs on pub hubs reopen
+* Fixed crash on setting priority on running item
+* Fixed issue adc connectivity when starting for the first time
 
 -- 0.702 2007-10-21 --
 * Fixed missing sorting in most places

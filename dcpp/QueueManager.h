@@ -176,8 +176,9 @@ private:
 		void addDownload(QueueItem* qi, Download* d);
 		void removeDownload(QueueItem* qi, const UserPtr& d);
 		QueueItem::UserListMap& getList(int p) { return userQueue[p]; }
-		void remove(QueueItem* qi);
-		void remove(QueueItem* qi, const UserPtr& aUser);
+		void remove(QueueItem* qi, bool removeRunning = true);
+		void remove(QueueItem* qi, const UserPtr& aUser, bool removeRunning = true);
+		void setPriority(QueueItem* qi, QueueItem::Priority p);
 
 		QueueItem::UserMap& getRunning() { return running; }
 		bool isRunning(const UserPtr& aUser) const {

@@ -70,7 +70,6 @@ public:
 	bool isOnline() const { return isSet(ONLINE); }
 	bool isNMDC() const { return isSet(NMDC); }
 
-	GETSET(string, firstNick, FirstNick);
 private:
 	User(const User&);
 	User& operator=(const User&);

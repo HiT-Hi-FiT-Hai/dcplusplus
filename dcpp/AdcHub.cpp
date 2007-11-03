@@ -164,10 +164,6 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 		u->getUser()->unsetFlag(User::BOT);
 	}
 
-	if(u->getUser()->getFirstNick().empty()) {
-		u->getUser()->setFirstNick(u->getIdentity().getNick());
-	}
-
 	if(u->getIdentity().supports(ADCS_FEATURE)) {
 		u->getUser()->setFlag(User::TLS);
 	}

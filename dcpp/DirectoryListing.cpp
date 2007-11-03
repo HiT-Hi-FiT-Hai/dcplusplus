@@ -59,22 +59,19 @@ UserPtr DirectoryListing::getUserFromFilename(const string& fileName) {
 	// Find CID
 	string::size_type i = name.rfind('.');
 	if(i == string::npos) {
-		return NULL;
+		return UserPtr();
 	}
 
 	size_t n = name.length() - (i + 1);
 	// CID's always 39 chars long...
 	if(n != 39)
-		return NULL;
+		return UserPtr();
 
 	CID cid(name.substr(i + 1));
 	if(cid.isZero())
-		return NULL;
+		return UserPtr();
 
-	UserPtr p = ClientManager::getInstance()->getUser(cid);
-	if(p->getFirstNick().empty())
-		p->setFirstNick(name.substr(0, i));
-	return p;
+	return ClientManager::getInstance()->getUser(cid);
 }
 
 void DirectoryListing::loadFile(const string& name) throw(Exception) {

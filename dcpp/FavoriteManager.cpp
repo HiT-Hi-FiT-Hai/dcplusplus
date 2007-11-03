@@ -491,8 +491,6 @@ void FavoriteManager::load(SimpleXML& aXml) {
 				u = ClientManager::getInstance()->getUser(nick, hubUrl);
 			} else {
 				u = ClientManager::getInstance()->getUser(CID(cid));
-				if(u->getFirstNick().empty())
-					u->setFirstNick(nick);
 			}
 			FavoriteMap::iterator i = users.insert(make_pair(u->getCID(), FavoriteUser(u, nick, hubUrl))).first;
 

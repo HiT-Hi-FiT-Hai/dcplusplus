@@ -171,7 +171,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	initStatus();
 
 	FavoriteManager::getInstance()->addListener(this);
-	
+
+	entries	 = FavoriteManager::getInstance()->getPublicHubs();
+
 	// populate with values from the settings
 	updateDropDown();
 	updateList();
@@ -180,7 +182,6 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	
 	onSpeaker(std::tr1::bind(&PublicHubsFrame::handleSpeaker, this, _1, _2));
 	
-	entries	 = FavoriteManager::getInstance()->getPublicHubs();
 	if(FavoriteManager::getInstance()->isDownloading()) {
 		setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_HUB_LIST));
 	} else if(entries.empty()) {

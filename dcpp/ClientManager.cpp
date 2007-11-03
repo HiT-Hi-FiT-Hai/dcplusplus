@@ -102,12 +102,7 @@ StringList ClientManager::getNicks(const CID& cid) const {
 	}
 	if(nicks.empty()) {
 		// Offline perhaps?
-		UserMap::const_iterator i = users.find(cid);
-		if(i != users.end() && !i->second->getFirstNick().empty()) {
-			nicks.insert(i->second->getFirstNick());
-		} else {
-			nicks.insert('{' + cid.toBase32() + '}');
-		}
+		nicks.insert('{' + cid.toBase32() + '}');
 	}
 	return StringList(nicks.begin(), nicks.end());
 }
@@ -200,14 +195,11 @@ UserPtr ClientManager::getUser(const string& aNick, const string& aHubUrl) throw
 
 	UserIter ui = users.find(cid);
 	if(ui != users.end()) {
-		if(ui->second->getFirstNick().empty())
-			ui->second->setFirstNick(aNick);
 		ui->second->setFlag(User::NMDC);
 		return ui->second;
 	}
 
 	UserPtr p(new User(cid));
-	p->setFirstNick(aNick);
 	p->setFlag(User::NMDC);
 	users.insert(make_pair(cid, p));
 
@@ -442,10 +434,6 @@ void ClientManager::search(StringList& who, int aSizeMode, int64_t aSize, int aF
 	}
 }
 
-void ClientManager::on(Load, SimpleXML&) throw() {
-	users.insert(make_pair(getMe()->getCID(), getMe()));
-}
-
 void ClientManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw() {
 	Lock l(cs);
 
@@ -469,7 +457,7 @@ UserPtr& ClientManager::getMe() {
 		Lock l(cs);
 		if(!me) {
 			me = new User(getMyCID());
-			me->setFirstNick(SETTING(NICK));
+			users.insert(make_pair(me->getCID(), me));
 		}
 	}
 	return me;

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(CLIENT_MANAGER_H)
-#define CLIENT_MANAGER_H
+#ifndef DCPLUSPLUS_DCPP_CLIENT_MANAGER_H
+#define DCPLUSPLUS_DCPP_CLIENT_MANAGER_H
 
 #include "TimerManager.h"
 
@@ -34,7 +34,7 @@ class UserCommand;
 
 class ClientManager : public Speaker<ClientManagerListener>,
 	private ClientListener, public Singleton<ClientManager>,
-	private TimerManagerListener, private SettingsManagerListener
+	private TimerManagerListener
 {
 public:
 	Client* getClient(const string& aHubURL);
@@ -126,18 +126,13 @@ private:
 
 	ClientManager() {
 		TimerManager::getInstance()->addListener(this);
-		SettingsManager::getInstance()->addListener(this);
 	}
 
 	virtual ~ClientManager() throw() {
-		SettingsManager::getInstance()->removeListener(this);
 		TimerManager::getInstance()->removeListener(this);
 	}
 
 	void updateCachedIp();
-
-	// SettingsManagerListener
-	virtual void on(Load, SimpleXML&) throw();
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
