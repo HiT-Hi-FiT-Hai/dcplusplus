@@ -57,8 +57,8 @@ const string SettingsManager::settingTags[] =
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState",
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
-	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows",
-	"MaxCompression", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
+	"CompressTransfers", "ShowProgressBars", "SFVCheck", 
+	"MaxCompression", "AntiFrag", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
@@ -180,7 +180,6 @@ SettingsManager::SettingsManager()
 	setDefault(SFV_CHECK, true);
 	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. State your business and I might answer later if you're lucky.");
 	setDefault(TIME_STAMPS_FORMAT, "%H:%M");
-	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(MAX_COMPRESSION, 6);
 	setDefault(ANTI_FRAG, true);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
@@ -278,7 +277,6 @@ SettingsManager::SettingsManager()
 	setDefault(MAIN_WINDOW_SIZE_Y, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_POS_X, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_POS_Y, CW_USEDEFAULT);
-	setDefault(MDI_MAXIMIZED, true);
 	setDefault(UPLOAD_BAR_COLOR, RGB(205, 60, 55));
 	setDefault(DOWNLOAD_BAR_COLOR, RGB(55, 170, 85));
 

@@ -25,12 +25,10 @@
 #include <dcpp/SettingsManager.h>
 
 PropPage::Item TabsPage::items[] = {
-	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
 PropPage::TextItem TabsPage::texts[] = {
-	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
 	{ IDC_SETTINGS_BOLD_CONTENTS, ResourceManager::SETTINGS_BOLD_OPTIONS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };

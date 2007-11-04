@@ -114,7 +114,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
-		hubs->setSort(COLUMN_USERS);
+		hubs->setSort(COLUMN_USERS, false);
 		
 		hubs->onDblClicked(std::tr1::bind(&PublicHubsFrame::openSelected, this));
 		hubs->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleKeyDown, this, _1));

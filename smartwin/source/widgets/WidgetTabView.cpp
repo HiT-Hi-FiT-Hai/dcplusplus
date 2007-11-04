@@ -94,16 +94,17 @@ void WidgetTabView::setActive(int i) {
 void WidgetTabView::swapWidgets(Widget* oldW, Widget* newW) {
 	sendMessage(WM_SETREDRAW, FALSE);
 
-	if(oldW)
+	if(oldW) {
+		oldW->sendMessage(WM_ACTIVATE, WA_INACTIVE, reinterpret_cast<LPARAM>(newW->handle()));
 		::ShowWindow(oldW->handle(), SW_HIDE);
+	}
 	::ShowWindow(newW->handle(), SW_SHOW);
-	::SetWindowPos(newW->handle(), tab->handle(), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOREDRAW);
 	::MoveWindow(newW->handle(), clientSize.pos.x, clientSize.pos.y, clientSize.size.x, clientSize.size.y, FALSE);
 	
+	newW->sendMessage(WM_ACTIVATE, WA_ACTIVE, oldW ? reinterpret_cast<LPARAM>(oldW->handle()) : 0);
 	sendMessage(WM_SETREDRAW, TRUE);
 	::RedrawWindow(handle(), NULL, NULL, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 	
-	::SetFocus(newW->handle());
 }
 
 void WidgetTabView::handleTabSelected() {

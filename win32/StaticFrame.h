@@ -40,7 +40,7 @@ public:
 		if(frame) {
 			SmartWin::Widget* active = mdiClient->getActive();
 			if(active != frame) {
-				//frame->activate();
+				frame->activate();
 			} else if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
 				mdiClient->next();
 			}

@@ -17,6 +17,13 @@
 * Fixed missing hubs on pub hubs reopen
 * Fixed crash on setting priority on running item
 * Fixed issue adc connectivity when starting for the first time
+* Fixed average overall transfer speed in main status bar
+* Removed max tab rows setting, won't be implemented in the near future
+* Fixed text not being displayed when opening private chat
+* Fixed initial focus issues
+* Fixed search on enter
+* Fixed window activation on toolbar click
+* Fixed spyframe crash
 
 -- 0.702 2007-10-21 --
 * Fixed missing sorting in most places

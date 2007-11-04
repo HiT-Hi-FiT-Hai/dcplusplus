@@ -209,5 +209,5 @@ void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw(
 	while( (i=x->find(_T('$'))) != string::npos) {
 		(*x)[i] = _T(' ');
 	}
-	speak(SPEAK_SEARCH, static_cast<LPARAM>(SPEAK_SEARCH));
+	speak(SPEAK_SEARCH, reinterpret_cast<LPARAM>(x));
 }

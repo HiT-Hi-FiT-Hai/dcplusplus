@@ -225,7 +225,7 @@ private:
 	void handleCopyMagnet();
 	void handleRemove();
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	bool handleChar(int c);
+	bool handleSearchKeyDown(int c);
 	
 	void handleGetList();
 	void handleBrowseList();

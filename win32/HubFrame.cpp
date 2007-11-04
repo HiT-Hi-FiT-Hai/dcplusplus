@@ -108,7 +108,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		filter = createTextBox(cs);
 		addWidget(filter);
-		filter->onTextChanging(std::tr1::bind(&HubFrame::updateFilter, this, _1));
+		filter->onKeyUp(std::tr1::bind(&HubFrame::handleFilterKey, this, _1));
 	}
 
 	{
@@ -1463,10 +1463,11 @@ void HubFrame::resortUsers() {
 		(*i)->resortForFavsFirst(true);
 }
 
-void HubFrame::updateFilter(const tstring& newText) {
-
+bool HubFrame::handleFilterKey(int) {
+	tstring newText = filter->getText();
 	if(newText != filterString) {
 		filterString = newText;
 		updateUserList();
 	}
+	return true;
 }

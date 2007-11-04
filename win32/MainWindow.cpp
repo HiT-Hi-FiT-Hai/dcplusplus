@@ -95,6 +95,7 @@ MainWindow::MainWindow() :
 	initTransfers();
 	initSecond();
 
+	onActivate(std::tr1::bind(&MainWindow::handleActivate, this, _1));
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
 	onRaw(std::tr1::bind(&MainWindow::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
@@ -530,7 +531,7 @@ LRESULT MainWindow::handleWhereAreYou(WPARAM, LPARAM) {
 
 void MainWindow::updateStatus() {
 	uint64_t now= GET_TICK();
-	uint64_t tdiff = lastTick - now;
+	uint64_t tdiff = now - lastTick;
 	if (tdiff < 100) {
 		tdiff = 1;
 	}
@@ -539,7 +540,7 @@ void MainWindow::updateStatus() {
 	uint64_t down = Socket::getTotalDown();
 	uint64_t updiff = up - lastUp;
 	uint64_t downdiff = down - lastDown;
-
+	
 	lastTick = now;
 	lastUp = up;
 	lastDown = down;
@@ -553,9 +554,9 @@ void MainWindow::updateStatus() {
 	setStatus(STATUS_SLOTS, Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
 	setStatus(STATUS_DOWN_TOTAL, Text::toT("D: " + Util::formatBytes(down)));
 	setStatus(STATUS_UP_TOTAL, Text::toT("U: " + Util::formatBytes(up)));
-	setStatus(STATUS_DOWN_DIFF, Text::toT("D: " + Util::formatBytes(downdiff*1000/tdiff) + "/s ("
+	setStatus(STATUS_DOWN_DIFF, Text::toT("D: " + Util::formatBytes((downdiff*1000)/tdiff) + "/s ("
 	    + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
-	setStatus(STATUS_UP_DIFF, Text::toT("U: " + Util::formatBytes(updiff*1000/tdiff) + "/s ("
+	setStatus(STATUS_UP_DIFF, Text::toT("U: " + Util::formatBytes((updiff*1000)/tdiff) + "/s ("
 	    + Util::toString(UploadManager::getInstance()->getUploadCount()) + ")"));
 }
 
@@ -780,6 +781,14 @@ void MainWindow::handleMatchAll() {
 	} catch(const ThreadException&) {
 		///@todo add error message
 		delete matcher;
+	}
+}
+
+void MainWindow::handleActivate(bool active) {
+	// Forward to active tab window
+	Widget* w = tabs->getActive();
+	if(w) {
+		w->sendMessage(WM_ACTIVATE, active ? WA_ACTIVE : WA_INACTIVE);
 	}
 }
 

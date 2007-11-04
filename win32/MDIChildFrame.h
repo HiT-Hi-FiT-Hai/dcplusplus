@@ -54,6 +54,7 @@ protected:
 		cs.caption = title;
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.icon = icon;
+		cs.location = tabView->getClientSize();
 		this->createWindow(cs);
 
 		tabView->add(this, icon);
@@ -91,6 +92,7 @@ protected:
 		addColor(widget);
 		if(lastFocus == NULL) {
 			lastFocus = widget->handle();
+			::SetFocus(lastFocus);
 		}
 	}
 	
@@ -115,6 +117,13 @@ protected:
 private:
 	HWND lastFocus;
 	bool reallyClose;
+	
+	void addColor(SmartWin::WidgetComboBox* widget) {
+		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+		SmartWin::WidgetTextBox* text = widget->getTextBox();
+		if(text)
+			text->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+	}
 
 	template<typename A>
 	void addColor(SmartWin::AspectBackgroundColor<A>* widget) {
@@ -128,18 +137,18 @@ private:
 
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz) { 
 		static_cast<T*>(this)->layout();
-		BOOL max = FALSE;
-		if(this->getParent()->sendMessage(WM_MDIGETACTIVE, 0, reinterpret_cast<LPARAM>(&max))) {
-			SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, max > 0);
-		}
 		return false;
 	}
 	
 	void handleActivate(bool active) {
 		if(active) {
-			// clear dirty...
+			if(lastFocus) {
+				::SetFocus(lastFocus);
+			}
 		} else {
-			lastFocus = ::GetFocus();
+			HWND focus = ::GetFocus();
+			if(focus != NULL && ::IsChild(static_cast<T*>(this)->handle(), focus))
+				lastFocus = focus;
 		}
 	}
 	
