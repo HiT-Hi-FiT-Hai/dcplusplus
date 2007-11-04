@@ -149,7 +149,7 @@ public:
 		return mid;
 	}
 
-	void setSort(int col = -1, bool ascending = false) {
+	void setSort(int col = -1, bool ascending = true) {
 		BaseType::setSort(col, BaseType::SORT_CALLBACK, ascending);
 	}
 private:

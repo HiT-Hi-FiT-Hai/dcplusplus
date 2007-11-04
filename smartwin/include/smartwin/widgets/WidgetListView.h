@@ -474,7 +474,7 @@ public:
 	void setColor(COLORREF text, COLORREF background);
 
 	/// Actually creates the Data Grid Control
-	/** You should call WidgetFactory::createDataGrid if you instantiate class
+	/** You should call WidgetFactory::createListView if you instantiate class
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */

@@ -46,7 +46,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		WidgetListView::Seed cs = WinUtil::Seeds::listView;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		hubs = createDataGrid(cs);
+		hubs = createListView(cs);
 		addWidget(hubs);
 
 		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));

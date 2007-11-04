@@ -45,7 +45,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		WidgetListView::Seed cs = WinUtil::Seeds::listView;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
-		items = createDataGrid(cs);
+		items = createListView(cs);
 		addWidget(items);
 
 		items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));

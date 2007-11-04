@@ -284,7 +284,7 @@ public:
 	/// Creates a List View and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetListViewPtr createDataGrid( const typename WidgetListView::Seed & cs = WidgetListView::Seed() );
+	WidgetListViewPtr createListView( const typename WidgetListView::Seed & cs = WidgetListView::Seed() );
 
 	/// \ingroup SubclassDialog
 	/// Subclasses a Check Box from the given resource id.
@@ -529,7 +529,7 @@ WidgetFactory< ContainerWidgetType >::createMessageBox()
 
 template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetListViewPtr
-WidgetFactory< ContainerWidgetType >::createDataGrid( const typename WidgetListView::Seed & cs )
+WidgetFactory< ContainerWidgetType >::createListView( const typename WidgetListView::Seed & cs )
 {
 	return WidgetCreator< WidgetListView >::create( this, cs );
 }

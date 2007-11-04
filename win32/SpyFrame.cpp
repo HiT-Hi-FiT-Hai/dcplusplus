@@ -43,7 +43,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		WidgetListView::Seed cs = WinUtil::Seeds::listView;
 		cs.style |= LVS_SINGLESEL;
-		searches = createDataGrid(cs);
+		searches = createListView(cs);
 		addWidget(searches);
 
 		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
