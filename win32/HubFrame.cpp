@@ -943,8 +943,8 @@ void HubFrame::addAsFavorite() {
 	if(!existingHub) {
 		FavoriteHubEntry aEntry;
 		aEntry.setServer(url);
-		aEntry.setName(Text::fromT(getText()));
-		aEntry.setDescription(Text::fromT(getText()));
+		aEntry.setName(client->getHubName());
+		aEntry.setDescription(client->getHubDescription());
 		aEntry.setConnect(false);
 		aEntry.setNick(client->getMyNick());
 		FavoriteManager::getInstance()->addFavorite(aEntry);

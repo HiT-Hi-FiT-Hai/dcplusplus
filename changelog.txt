@@ -1,4 +1,4 @@
--- --
+-- 0.703 2007-11-05 --
 * Fixed invalid strings (thanks james ross)
 * Reverted initial anti-flicker (needs rethinking)
 * Fixed some memory leaks
@@ -24,6 +24,7 @@
 * Fixed search on enter
 * Fixed window activation on toolbar click
 * Fixed spyframe crash
+* Fixed /fav info (thanks ullner)
 
 -- 0.702 2007-10-21 --
 * Fixed missing sorting in most places
