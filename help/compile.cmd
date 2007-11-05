@@ -13,6 +13,7 @@ exit 1
 
 :compile
 copy ..\res\users.bmp .
+mkdir ..\build\help
 "%ProgramFiles%\HTML Help Workshop\hhc.exe" DCPlusPlus.hhp
 if errorlevel 1 goto okay
 

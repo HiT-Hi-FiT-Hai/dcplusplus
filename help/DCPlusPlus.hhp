@@ -1,7 +1,7 @@
 [OPTIONS]
 Auto Index=Yes
 Compatibility=1.1 or later
-Compiled file=..\app\DCPlusPlus.chm
+Compiled file=..\build\help\DCPlusPlus.chm
 Contents file=toc.hhc
 Default topic=index.html
 Display compile progress=Yes
@@ -50,7 +50,6 @@ window_finished_downloads.html
 window_finished_uploads.html
 window_waiting_users.html
 fdl.html
-settings_favoritedirs.html
 faq_keyboard_commands.html
 faq_upnp.html
 faq_activemode.html
