@@ -125,7 +125,7 @@ public:
 	};
 
 	// AspectSelection expectation implementation
-	static Message & getSelectionChangedMessage();
+	static const Message & getSelectionChangedMessage();
 
 	// Commented in AspectSelection
 	int getSelectedIndex() const;
@@ -271,9 +271,9 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message & WidgetTabSheet::getSelectionChangedMessage()
+inline const Message & WidgetTabSheet::getSelectionChangedMessage()
 {
-	static Message retVal = Message( WM_NOTIFY, TCN_SELCHANGE );
+	static const Message retVal( WM_NOTIFY, TCN_SELCHANGE );
 	return retVal;
 }
 

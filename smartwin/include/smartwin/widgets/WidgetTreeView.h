@@ -262,7 +262,7 @@ public:
 	}
 
 	// Contract needed by AspectClickable Aspect class
-	static Message & getSelectionChangedMessage();
+	static const Message & getSelectionChangedMessage();
 
 	// Contract needed by AspectClickable Aspect class
 	static const Message& getClickMessage();
@@ -404,18 +404,18 @@ inline void WidgetTreeView::setEditLabels( bool value ) {
 	this->Widget::addRemoveStyle( TVS_EDITLABELS, value );
 }
 
-inline Message & WidgetTreeView::getSelectionChangedMessage() {
-	static Message retVal = Message( WM_NOTIFY, TVN_SELCHANGED );
+inline const Message & WidgetTreeView::getSelectionChangedMessage() {
+	static const Message retVal( WM_NOTIFY, TVN_SELCHANGED );
 	return retVal;
 }
 
 inline const Message & WidgetTreeView::getClickMessage() {
-	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
+	static const Message retVal( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
 inline const Message & WidgetTreeView::getDblClickMessage() {
-	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
+	static const Message retVal( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 

@@ -65,7 +65,7 @@ public:
 	  */
 	void onSelectionChanged(const typename Dispatcher::F& f) {
 		static_cast<WidgetType*>(this)->setCallback(
-			WidgetType::getSelectionChangedMessage(), Dispatcher(f)
+			static_cast<WidgetType*>(this)->getSelectionChangedMessage(), Dispatcher(f)
 		);
 	}
 

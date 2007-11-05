@@ -517,6 +517,7 @@ bool PublicHubsFrame::handleKeyDown(int c) {
 }
 
 void PublicHubsFrame::handleListSelChanged() {
+	printf("x\n");
 	FavoriteManager::getInstance()->setHubList(pubLists->getSelectedIndex());
 	entries = FavoriteManager::getInstance()->getPublicHubs();
 	updateList();

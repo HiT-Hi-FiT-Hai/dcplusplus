@@ -92,16 +92,16 @@ public:
 	};
 
 	// Aspect expectation implementation
-	static Message & getSelectionChangedMessage();
+	Message getSelectionChangedMessage();
 
 	// Aspect expectation implementation
-	static Message & getClickMessage();
+	Message getClickMessage();
 
 	// Aspect expectation implementation
-	static Message & getDblClickMessage();
+	Message getDblClickMessage();
 
 	// Aspect expectation implementation
-	static Message & getBackgroundColorMessage();
+	static const Message & getBackgroundColorMessage();
 
 	// Commented in AspectSelection
 	int getSelectedIndex() const;
@@ -175,27 +175,24 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message & WidgetComboBox::getSelectionChangedMessage()
+inline Message WidgetComboBox::getSelectionChangedMessage()
 {
-	static Message retVal = Message( WM_COMMAND, CBN_SELENDOK );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), CBN_SELENDOK ));
 }
 
-inline Message & WidgetComboBox::getClickMessage()
+inline Message WidgetComboBox::getClickMessage()
 {
-	static Message retVal = Message( WM_COMMAND, CBN_DROPDOWN );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), CBN_DROPDOWN ));
 }
 
-inline Message & WidgetComboBox::getDblClickMessage()
+inline Message WidgetComboBox::getDblClickMessage()
 {
-	static Message retVal = Message( WM_COMMAND, CBN_DBLCLK );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), CBN_DBLCLK ));
 }
 
-inline Message & WidgetComboBox::getBackgroundColorMessage()
+inline const Message & WidgetComboBox::getBackgroundColorMessage()
 {
-	static Message retVal = Message( WM_CTLCOLORLISTBOX );
+	static const Message retVal( WM_CTLCOLORLISTBOX );
 	return retVal;
 }
 

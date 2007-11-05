@@ -131,7 +131,7 @@ public:
 	static const Seed & getDefaultSeed();
 
 	// Aspect expectation implementation
-	static Message & getSelectionChangedMessage();
+	static const Message & getSelectionChangedMessage();
 
 	// Contract needed by AspectClickable Aspect class
 	static const Message & getClickMessage();
@@ -552,9 +552,9 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message & WidgetListView::getSelectionChangedMessage()
+inline const Message & WidgetListView::getSelectionChangedMessage()
 {
-	static Message retVal = Message( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
+	static const Message retVal( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
 	return retVal;
 }
 
@@ -575,13 +575,13 @@ inline bool WidgetListView::isValidSelectionChanged( LPARAM lPar )
 
 inline const Message & WidgetListView::getClickMessage()
 {
-	static Message retVal = Message( WM_NOTIFY, NM_CLICK );
+	static const Message retVal( WM_NOTIFY, NM_CLICK );
 	return retVal;
 }
 
 inline const Message & WidgetListView::getDblClickMessage()
 {
-	static Message retVal = Message( WM_NOTIFY, NM_DBLCLK );
+	static const Message retVal( WM_NOTIFY, NM_DBLCLK );
 	return retVal;
 }
 
