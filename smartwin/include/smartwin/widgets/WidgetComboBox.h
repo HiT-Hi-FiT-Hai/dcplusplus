@@ -177,17 +177,17 @@ private:
 
 inline Message WidgetComboBox::getSelectionChangedMessage()
 {
-	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), CBN_SELENDOK ));
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_SELENDOK) );
 }
 
 inline Message WidgetComboBox::getClickMessage()
 {
-	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), CBN_DROPDOWN ));
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DROPDOWN) );
 }
 
 inline Message WidgetComboBox::getDblClickMessage()
 {
-	return Message( WM_COMMAND, MAKEWPARAM(getControlId(), CBN_DBLCLK ));
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DBLCLK) );
 }
 
 inline const Message & WidgetComboBox::getBackgroundColorMessage()

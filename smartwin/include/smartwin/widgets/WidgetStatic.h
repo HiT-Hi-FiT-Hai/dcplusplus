@@ -90,13 +90,13 @@ public:
 	};
 
 	// Contract needed by AspectClickable Aspect class
-	static const Message& getClickMessage();
+	Message getClickMessage();
 
 	// Contract needed by AspectBackgroundColor Aspect class
 	static const Message & getBackgroundColorMessage();
 
 	// Contract needed by AspectDblClickable Aspect class
-	static const Message& getDblClickMessage();
+	Message getDblClickMessage();
 
 	/// Actually creates the Static Control
 	/** You should call WidgetFactory::createStatic if you instantiate class
@@ -130,22 +130,20 @@ private:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline const Message & WidgetStatic::getClickMessage()
+inline Message WidgetStatic::getClickMessage()
 {
-	static Message retVal = Message( WM_COMMAND, STN_CLICKED );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), STN_CLICKED) );
 }
 
 inline const Message & WidgetStatic::getBackgroundColorMessage()
 {
-	static Message retVal = Message( WM_CTLCOLORSTATIC );
+	static const Message retVal( WM_CTLCOLORSTATIC );
 	return retVal;
 }
 
-inline const Message & WidgetStatic::getDblClickMessage()
+inline Message WidgetStatic::getDblClickMessage()
 {
-	static Message retVal = Message( WM_COMMAND, STN_DBLCLK );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), STN_DBLCLK) );
 }
 
 inline WidgetStatic::WidgetStatic( Widget * parent )

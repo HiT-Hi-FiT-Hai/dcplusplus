@@ -79,10 +79,10 @@ class WidgetTextBoxBase :
 
 public:
 	// Contract needed by AspectUpdate Aspect class
-	static inline Message & getUpdateMessage();
+	Message getUpdateMessage();
 
 	// Contract needed by AspectBackgroundColor Aspect class
-	Message & getBackgroundColorMessage();
+	const Message & getBackgroundColorMessage();
 
 	/// Sets the current selection of the Edit Control
 	/** Start means the offset of where the current selection shall start, if it is
@@ -282,17 +282,16 @@ protected:
 // Implementation of class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Message & WidgetTextBoxBase::getUpdateMessage()
+inline Message WidgetTextBoxBase::getUpdateMessage()
 {
-	static Message retVal = Message( WM_COMMAND, EN_UPDATE );
-	return retVal;
+	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_UPDATE) );
 }
 
-inline Message & WidgetTextBoxBase::getBackgroundColorMessage()
+inline const Message & WidgetTextBoxBase::getBackgroundColorMessage()
 {
 	// TODO What if readonly status changes?
-	static Message rw = Message( WM_CTLCOLOREDIT );
-	static Message ro = Message( WM_CTLCOLORSTATIC );
+	static const Message rw = Message( WM_CTLCOLOREDIT );
+	static const Message ro = Message( WM_CTLCOLORSTATIC );
 	
 	return this->isReadOnly() ? ro : rw;
 }
@@ -368,7 +367,7 @@ inline DWORD WidgetTextBoxBase::getTextLimit() const {
 
 inline void WidgetTextBoxBase::onTextChanged( const Dispatcher::F& f ) {
 	this->setCallback(
-		Message( WM_COMMAND, EN_CHANGE ), Dispatcher(f)
+		Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_CHANGE) ), Dispatcher(f)
 	);
 }
 
