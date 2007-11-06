@@ -87,7 +87,8 @@ IDD_CERTSPAGE=settings_certs.html
 IDD_TABSPAGE=settings_tabs.html
 
 [MAP]
-#include ..\windows\resource.h
+#include ..\win32\resource.h
+
 
 [INFOTYPES]
 
