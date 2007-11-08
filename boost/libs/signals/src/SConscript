@@ -1,0 +1,16 @@
+# vim: set filetype=py
+ 
+Import('dev source_path')
+
+env, target, sources = dev.prepare_build(source_path, 'dcpp-boost', in_bin=False)
+
+# No tr1 games when compiling boost
+if env['nativestl']:
+	env['CPPPATH'] = ['#/boost/']
+else:
+	env['CPPPATH'] = ['#/stlport/stlport/', '#/boost/']
+	
+ret = env.StaticLibrary(target, sources)
+
+Return('ret')
+

@@ -1,0 +1,14 @@
+# vim: set filetype=py
+ 
+Import('dev source_path')
+
+env, target, sources = dev.prepare_build(source_path, 'dcpp-smartutil', in_bin=False)
+
+env.Append(CPPPATH=["../include"])
+
+ret = []
+
+ret += env.StaticLibrary(target, sources)
+
+Return('ret')
+

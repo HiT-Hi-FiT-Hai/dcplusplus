@@ -1,0 +1,67 @@
+The most important thing about compiling: It works for me.
+
+How to compile in n easy steps:
+
+1a) Either install Mingw from www.mingw.org. You'll need w32api, binutils, mingw-runtime, gcc-core 
+    and gcc-g++, see their site for installation instructions. I just untar the files into a folder named
+    mingw and add mingw\bin to my path. I've never used the installer, but that maybe
+    works as well. GCC 4.2+ is required (Technology preview release currently). I use the dw2 variant of gcc,
+    but if you want to experiment you can try the potentially slower sjlj. After installing gcc, you will
+    need to go to the bin folder of your mingw installation and copy g++-dw2/sjlj.exe and gcc-dw2/sjlj.exe to g++.exe
+    and gcc.exe respectively.
+    Note; Make sure gcc/g++ is in your path and before any cygwin installation.
+
+1b) or install Microsoft Visual C++ 8.0 (I don't use it so there might be some compile problems)
+   - Make sure cl.exe is in your path (open a VS command prompt when building).
+   - You will probably need STLPort as MSVC doesn't have tr1 unordered containers (this might change
+     those are included in boost at some point in the future). Make sure to turn off nativestl (see 
+     "scons -h") and compile/install STLPort in the stlport directory.
+
+Note; If you get errors about a missing file "natupnp.h", you need to download the Platform SDK from MS
+and copy the file to the include directory of your compiler (or add it to the include path...).
+
+2) Install recent stable release of SCons (www.scons.org) and make sure you have it in your PATH.
+
+3) Download HTML help workshop from http://msdn2.microsoft.com/en-us/library/ms670169.aspx. Copy the
+   include and library files to the respective directories in the htmlhelp folder. Make sure hhc.exe is
+   in your PATH.
+   
+4) Open a command prompt and type "scons" followed by some options:
+	"tools=mingw" - Use mingw for building (default)
+	"tools=default" - Use msvc for building (yes, the option value is strange)
+	"mode=debug" - Compile a debug build (default)
+	"mode=release" - Compile an optimized release build
+
+	To see more options, type "scons -h".
+	Tip: You can create a file custom.py and put your options in there.
+
+If you get a linking error citing missing references on the first compile, run scons again.
+
+Note; If you have problems, use google. It works for me.
+
+By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
+to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...
+
+Linux / Unix:
+Look at linuxdcpp.berlios.de for the *nix port of DC++ - they'll gladly accept any help. 
+
+Submitting patches
+
+If you think you've done something that more people could use, you can always submit a patch for inclusion in the
+original distribution. I will then consider whether I like the patch or not based on things that might seem to be 
+completely random, which just might be the case. Popular reasons for rejecting a patch include, but are not limited to,
+ugly code, abusable features, feature that I don't like that bloat the application and incompatibility with other 
+modifications I've already done. 
+
+To increase the chances of your patch being accepted, do like this:
+1) Check out the latest code from SVN (see http://sf.net/projects/dcplusplus for instructions)
+2) Make your modification. If you make other modifications apart from the one you want to submit, do them
+   on a separate copy of the DC++ source code and then copy them to this folder.
+3) In the source root folder (the one with this file in it) do "svn diff > my-patch.diff".
+4) Post the file in the DC++ bugzilla (don't forget to hand over copyright, see below).
+
+By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
+the copyright is split out over a million people, each of which could stop further distribution of DC++, and also
+to make it easier for us to defend the gpl against violators. If you don't like this policy, start your own 
+distribution, if you're lucky it might become more popular than the original =). Please
+state explicitly in the bugzilla that you give me copyright over the code if the submission is larger than trivial.

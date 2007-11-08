@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link type="text/css" rel="stylesheet" href="office11.css">
+  <title></title>
+  <meta content="Slow download speeds" name="description">
+</head>
+<body>
+<h1>Slow download speeds </h1>
+<p>If you experience slow downloads, it could be for many reasons:</p>
+<ol>
+  <li>The upload bandwidth of the person you're downloading from is
+maxed out. Don't pay attention to the value of the <span
+ style="font-style: italic;">connection type</span> column, the value
+is often is not an accurate representation of the user's
+connection type.
+    <ul>
+      <li>Users with fewer slots used <span style="font-style: italic;">may</span>
+result in faster speeds - someone with two out of three (2/3) slots
+free may have more bandwidth available than someone with one out of
+three (1/3). This number appears in the status column of the
+Search Window. </li>
+    </ul>
+  </li>
+  <li>You need to optimize your operating system for your current
+connection speed. First, <span style="font-weight: bold;">close <span
+ style="text-decoration: underline;">all</span></span> <acronym
+ title="peer to peer">P2P</acronym> applications. Next run the <a
+ href="http://www.dslreports.com/tweaks" target="_blank" class="external">DSLReports
+TweakTest</a> <img title="External Link" src="external.png" border="0"
+ height="10" width="10">. Once you have optimized it, then run a 
+<a href="http://www.dslreports.com/stest" target="_blank" class="external">Speed
+Test</a> <img title="External Link" src="external.png" border="0"
+ height="10" width="10"> (select the site closest to your location for
+accurate results). This will give you a good idea what your
+maximum download and upload speeds are. If you're getting within
+10% of your connection speed, that's the best you can get! If you
+are having trouble with your <span style="font-style: italic;">broadband</span>
+connection, and it relates to packet loss, excessive latency, or
+Internet or <acronym title="Internet Service Provider">ISP</acronym>
+congestion, running the <a href="http://www.dslreports.com/linequality"
+ target="_blank" class="external">Line Quality Test </a><img
+ title="External Link" src="external.png" border="0" height="10"
+ width="10"> may help find the cause (<i>requires logon, free signup).</i>
+  </li>
+  <li>The person who you are downloading from is using a bandwidth
+limiter. There are two types: client based and third-party
+program. <br>
+    <ul>
+      <li>Often the clients with limiting capability have set download
+and upload speed ratios in place to avoid abuse. (ex. If the
+upload speed limit is set below 6 KiB/s, then the client will restrict
+the client download speed to a 2:1 ratio). This varies from
+client to client and obviously not all support upload limiting.&nbsp;
+This type of speed limiting <span style="font-style: italic;">only</span>
+restricts the uploading of files, including user lists. It
+does not limit chat, private messages, or searches.</li>
+      <li>Users could also be using a third-party program to limit the
+speed of traffic. This type of speed limiting is absolute; it
+will limit the speed of all traffic by the user, which can include file
+transfers, searches, chat, and private messages. Since this type
+of application does not enforce a download speed:upload speed ratio, it
+may be more prone to abuse. For particularly slow transfers - 1
+KiB/s or slower, it <span style="font-weight: bold;">may</span> be to
+blame. </li>
+    </ul>
+  </li>
+  <li>Your Internet connection is shared with others on your <acronym
+ title="Local Area Network">LAN</acronym> and they are using up all the
+available bandwidth. Tell them to knock it off. =) </li>
+  <li>Your copy of Windows XP or Server 2003 has the "<acronym
+ title="Quality of Service">QoS</acronym> Packet Scheduler"
+enabled. Follow <a
+ href="http://support.earthlink.net/mu/1/psc/img/walkthroughs/windows_XP/6800.psc.html"
+ target="_blank" class="external"> this guide to disable QoS</a> <img
+ title="External Link" src="external.png" border="0" height="10"
+ width="10">. Windows 95/98, Millennium, and 2000 do not come
+with QoS. Some routers have QoS capabilities, but shouldn't be
+enabled by default. Please consult your router's manual for more
+information. </li>
+  <li>Your ISP may be limiting your P2P traffic via some method of
+packet shaping. Call up the ISP and inquire if they do anything
+with P2P traffic. If the ISP <span style="font-style: italic;">does</span>
+throttle you, then there is nothing that can be done to increase the
+speeds. This is very common at Universities and at the workplace,
+and is <a href="faq_university.html">the topic of another FAQ</a>.</li>
+  <li>Your Internet connection is <acronym
+ title="Digital Subscriber Loop">DSL</acronym>, cable, or satellite one
+with an asymmetrical connection speed, such as 768/128 Kib/s or
+3.0 Mib/s / 256 Kib/s. On such connections, if you upload near the speed of
+your upload limit (16 KiB/s in the case of the 768/128 connection), it
+will affect the speeds of your downloads, no matter how much larger
+your download connection is. If this is happening, you can use
+the "<a href="settings_advanced.html#smallbuffer">Use small send buffer</a>"
+setting. </li>
+</ol>
+</body>
+</html>

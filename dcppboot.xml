@@ -1,0 +1,16 @@
+<Boot>
+	<!-- 
+	ConfigPath specifies where settings, queue and other runtime data should be saved.
+	Relative paths are relative to the DC++ executable.
+	You may use the following variables, which are interpreted on a per-user basis:
+
+	%[APPDATA] - Application data, typically c:\documents and settings\<username>\Application Data\
+	%[PERSONAL] - My documents
+	
+	All % variables from strftime with the current time: 
+	http://msdn.microsoft.com/library/en-us/vclib/html/_crt_strftime.2c_.wcsftime.asp
+
+	-->
+
+	<ConfigPath>.\</ConfigPath>
+</Boot>

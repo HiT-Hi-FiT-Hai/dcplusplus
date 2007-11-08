@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link type="text/css" rel="stylesheet" href="office11.css">
+  <title>What do the units mean?</title>
+</head>
+<body>
+<h1>What do the units mean?</h1>
+DC++ has always measured file sizes and speeds with the understanding
+that 1024 of something make the next unit up. Using SI prefixes,
+kilo means 1000, so one kilobyte should imply 1000 bytes. In
+popular usage, one kilobyte nearly always means 1024 bytes, which means
+that "kilo" has multiple definitions depending on context. The
+International Electrotechnical
+Commission (IEC) created new prefixes to remove the ambiguity, so kilo
+could always mean 1000 (and so on). In&nbsp;v0.402, DC++ adopted these
+prefixes.
+<table style="width: 100%; text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="font-weight: bold;">New Prefix<br>
+      </td>
+      <td style="font-weight: bold;">Factor<br>
+      </td>
+      <td style="font-weight: bold;">Old Prefix<br>
+      </td>
+      <td style="font-weight: bold;">Factor<br>
+      </td>
+    </tr>
+    <tr>
+      <td>kibi-<br>
+      </td>
+      <td>2<sup>10</sup></td>
+      <td>kilo-<br>
+      </td>
+      <td>10<sup>3</sup></td>
+    </tr>
+    <tr>
+      <td>mebi-<br>
+      </td>
+      <td>2<sup>20</sup></td>
+      <td>mega-<br>
+      </td>
+      <td>10<sup>6</sup></td>
+    </tr>
+    <tr>
+      <td>gibi-<br>
+      </td>
+      <td>2<sup>30</sup></td>
+      <td>giga-<br>
+      </td>
+      <td>10<sup>9</sup></td>
+    </tr>
+    <tr>
+      <td>tebi-<br>
+      </td>
+      <td>2<sup>40</sup></td>
+      <td>tera-<br>
+      </td>
+      <td>10<sup>12</sup></td>
+    </tr>
+    <tr>
+      <td>pebi-<br>
+      </td>
+      <td>2<sup>50</sup></td>
+      <td>peta-<br>
+      </td>
+      <td>10<sup>15</sup></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+For more information about the binary units see the <a href="http://physics.nist.gov/cuu/Units/binary.html" target="_blank" class="external">National Institute of Standards and Technology</a> <img title="External Link" src="external.png" border="0" height="10" width="10">.
+</body>
+</html>
