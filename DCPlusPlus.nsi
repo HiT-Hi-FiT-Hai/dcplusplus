@@ -61,6 +61,7 @@ no_backup:
   File "Example.xml"
   File "License.txt"
   File "LICENSE-GeoIP.txt"
+  File "LICENSE-OpenSSL.txt"
   File "magnet.exe"
   ; Remove opencow just in case we're upgrading
   Delete "$INSTDIR\opencow.dll"

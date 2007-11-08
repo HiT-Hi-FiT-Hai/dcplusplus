@@ -1,4 +1,4 @@
--- 0.703 2007-11-05 --
+﻿-- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)
 * Reverted initial anti-flicker (needs rethinking)
 * Fixed some memory leaks
