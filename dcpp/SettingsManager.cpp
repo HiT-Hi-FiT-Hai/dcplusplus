@@ -136,7 +136,7 @@ SettingsManager::SettingsManager()
 	setDefault(IGNORE_BOT_PMS, false);
 	setDefault(LIST_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://hublist.hubtracker.com/hublist.xml.bz2;http://dchublist.com/hublist.xml.bz2;http://adchublist.com/hublist.xml.bz2;http://www.hublist.org/PublicHubList.xml.bz2;http://dclist.eu/hublist.xml.bz2;http://download.hublist.cz/hublist.xml.bz2;http://hublist.awenet.info/PublicHubList.xml.bz2");
+	setDefault(HUBLIST_SERVERS, "http://hublist.hubtracker.com/hublist.xml.bz2;http://dchublist.com/hublist.xml.bz2;http://adchublist.com/hublist.xml.bz2;http://www.hublist.org/PublicHubList.xml.bz2;http://dclist.eu/hublist.xml.bz2;http://download.hublist.cz/hublist.xml.bz2;http://hublist.awenet.info/PublicHubList.xml.bz2;http://hublist.hubtracker.com.nyud.net/hublist.xml.bz2;http://dchublist.com.nyud.net/hublist.xml.bz2;http://adchublist.com.nyud.net/hublist.xml.bz2;http://www.hublist.org.nyud.net/PublicHubList.xml.bz2;http://dclist.eu.nyud.net/hublist.xml.bz2;http://download.hublist.cz.nyud.net/hublist.xml.bz2;http://hublist.awenet.info.nyud.net/PublicHubList.xml.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
 	setDefault(LOG_DIRECTORY, Util::getConfigPath() + "Logs" PATH_SEPARATOR_STR);
