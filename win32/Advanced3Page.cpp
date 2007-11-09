@@ -39,6 +39,7 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_MB, ResourceManager::MiB },
 	{ IDC_SETTINGS_AUTO_REFRESH_TIME, ResourceManager::SETTINGS_AUTO_REFRESH_TIME },
 	{ IDC_SETTINGS_AUTO_SEARCH_LIMIT, ResourceManager::SETTINGS_AUTO_SEARCH_LIMIT },
+	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, ResourceManager::SETTINGS_MIN_SEGMENT_SIZE },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -55,6 +56,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_PRIVATE_ID, SettingsManager::PRIVATE_ID, PropPage::T_STR },
 	{ IDC_AUTO_REFRESH_TIME, SettingsManager::AUTO_REFRESH_TIME, PropPage::T_INT },
 	{ IDC_AUTO_SEARCH_LIMIT, SettingsManager::AUTO_SEARCH_LIMIT, PropPage::T_INT },
+	{ IDC_MIN_SEGMENT_SIZE, SettingsManager::MIN_SEGMENT_SIZE, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 

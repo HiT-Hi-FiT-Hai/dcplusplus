@@ -158,6 +158,21 @@ void UserConnection::inf(bool withToken) {
 	send(c);
 }
 
+void UserConnection::sup(const StringList& features) {
+	AdcCommand c(AdcCommand::CMD_SUP);
+	for(StringIterC i = features.begin(); i != features.end(); ++i)
+		c.addParam(*i);
+	send(c);
+}
+
+void UserConnection::supports(const StringList& feat) {
+	string x;
+	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+		x+= *i + ' ';
+	}
+	send("$Supports " + x + '|');
+}
+
 void UserConnection::on(Connected) throw() {
 	lastActivity = GET_TICK();
 	fire(UserConnectionListener::Connected(), this);

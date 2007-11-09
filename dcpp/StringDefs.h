@@ -467,6 +467,7 @@ enum Strings { // @DontAdd
 	SETTINGS_MAX_FILELIST_SIZE, // "Max filelist size"
 	SETTINGS_MAX_HASH_SPEED, // "Max hash speed"
 	SETTINGS_MAX_TAB_ROWS, // "Max tab rows"
+	SETTINGS_MIN_SEGMENT_SIZE, // "Min segment size"
 	SETTINGS_MINIMIZE_TRAY, // "Minimize to tray"
 	SETTINGS_NAME, // "Name"
 	SETTINGS_NETWORK, // "Connection settings"
