@@ -98,11 +98,15 @@ Segment QueueItem::getNextSegment(int64_t  blockSize) const {
 		Segment block(start, end - start);
 		bool overlaps = false;
 		for(SegmentIter i = done.begin(); !overlaps && i != done.end(); ++i) {
-			int64_t dstart = i->getStart();
-			int64_t dend = i->getEnd();
-			// We accept partial overlaps, only consider the block done if it is fully consumed by the done block
-			if(dstart <= start && dend >= end) {
-				overlaps = true;
+			if(curSize <= blockSize) {
+				int64_t dstart = i->getStart();
+				int64_t dend = i->getEnd();
+				// We accept partial overlaps, only consider the block done if it is fully consumed by the done block
+				if(dstart <= start && dend >= end) {
+					overlaps = true;
+				}
+			} else {
+				overlaps = block.overlaps(*i);
 			}
 		}
 		
@@ -143,8 +147,8 @@ void QueueItem::addSegment(const Segment& segment) {
 	for(SegmentSet::iterator i = ++done.begin() ; i != done.end(); ) {
 		SegmentSet::iterator prev = i;
 		prev--;
-		if(prev->getEnd() == i->getStart()) {
-			Segment big(prev->getStart(), prev->getSize() + i->getSize());
+		if(prev->getEnd() >= i->getStart()) {
+			Segment big(prev->getStart(), i->getEnd() - prev->getStart());
 			done.erase(prev);
 			done.erase(i++);
 			done.insert(big);
