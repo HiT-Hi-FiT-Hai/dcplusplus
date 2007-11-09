@@ -299,8 +299,11 @@ void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int index) {
 	l.push_back(Text::toT(entry->getServer()));
 	l.push_back(Text::toT(entry->getUserDescription()));
 	bool b = entry->getConnect();
-	int i = hubs->insert(l, reinterpret_cast<LPARAM>(entry), index);
-	hubs->setChecked(i, b);
+	int itemCount = hubs->insert(l, reinterpret_cast<LPARAM>(entry), index);
+	if(index == -1)
+		index = itemCount;
+	hubs->setChecked(index, b);
+	hubs->ensureVisible(index);
 }
 
 void FavHubsFrame::openSelected() {

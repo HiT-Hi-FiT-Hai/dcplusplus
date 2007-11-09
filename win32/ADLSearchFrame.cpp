@@ -206,6 +206,7 @@ void ADLSearchFrame::handleUp() {
 			items->erase(*i);
 			addEntry(search, *i - 1);
 			items->select(*i - 1);
+			items->ensureVisible(*i - 1);
 		}
 	}
 }
@@ -221,6 +222,7 @@ void ADLSearchFrame::handleDown() {
 			items->erase(*i);
 			addEntry(search, *i + 1);
 			items->select(*i + 1);
+			items->ensureVisible(*i + 1);
 		}
 	}
 }
@@ -307,5 +309,8 @@ void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
 	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
 	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
 	int itemCount = items->insert(l, 0, index);
-	items->setChecked((index == -1) ? itemCount : index, search.isActive);
+	if(index == -1)
+		index = itemCount;
+	items->setChecked(index, search.isActive);
+	items->ensureVisible(index);
 }

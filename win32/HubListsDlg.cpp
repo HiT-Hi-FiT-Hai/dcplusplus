@@ -174,5 +174,8 @@ void HubListsDlg::handleOKClicked() {
 void HubListsDlg::addHubList(const tstring& address, int index) {
 	TStringList row;
 	row.push_back(address);
-	hubLists->insert(row, 0, index);
+	int itemCount = hubLists->insert(row, 0, index);
+	if(index == -1)
+		index = itemCount;
+	hubLists->ensureVisible(index);
 }
