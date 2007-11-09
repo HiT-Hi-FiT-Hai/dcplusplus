@@ -23,7 +23,6 @@
 #include <dcpp/DCPlusPlus.h>
 
 #include <SmartWin.h>
-#include <shlwapi.h>
 #include <shlobj.h>
 #include <malloc.h>
 #include <htmlhelp.h>

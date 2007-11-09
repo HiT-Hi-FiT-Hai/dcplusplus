@@ -53,7 +53,7 @@ AboutDlg::~AboutDlg() {
 }
 
 bool AboutDlg::handleInitDialog() {
-	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2006 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2007 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 	setItemText(IDC_TTH, WinUtil::tth);
 	setItemText(IDC_THANKS, Text::toT(thanks));
 	setItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + Util::formatBytes(SETTING(TOTAL_DOWNLOAD))));

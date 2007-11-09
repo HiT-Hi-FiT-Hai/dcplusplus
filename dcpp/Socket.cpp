@@ -87,7 +87,7 @@ void Socket::accept(const Socket& listeningSocket) throw(SocketException) {
 
 	do {
 		sock = ::accept(listeningSocket.sock, (sockaddr*)&sock_addr, &sz);
-	} while (sock < 0 && getLastError() == EINTR);
+	} while (sock == SOCKET_ERROR && getLastError() == EINTR);
 	check(sock);
 
 #ifdef _WIN32

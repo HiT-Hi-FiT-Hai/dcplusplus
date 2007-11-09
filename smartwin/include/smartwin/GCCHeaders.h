@@ -31,14 +31,14 @@
 #ifdef __GNUC__
 
 	// Need to tell gcc which version of Windows we're targeting!
-#ifndef _WIN_IE
-	#define _WIN_IE 0x0501
+#ifndef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0501
 #endif
 #ifndef _WIN32_IE
 	#define _WIN32_IE 0x0501
 #endif
 #ifndef WINVER
-	#define WINVER 0x500
+	#define WINVER 0x501
 #endif
 	// Removing windows.h max and min macro
 	#undef NOMINMAX
@@ -56,6 +56,7 @@
 	#include <winuser.h>
 	#include <windowsx.h>
 	#include <shellapi.h>
+	#include <shlwapi.h>
 	#include <commctrl.h>
 	#include <commdlg.h>
 	#include <assert.h>

@@ -1,5 +1,9 @@
 ﻿-- 0.704 --
 * Hub lists added to utilize Coral's distributed network (ullner)
+* Use system header arrows on common controls 6+ (thanks poy)
+* Fixed badly drawn arrows (thanks poy)
+* Fixed transfer view header widths (thanks james ross)
+* Fixed about years (thanks james ross)
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)

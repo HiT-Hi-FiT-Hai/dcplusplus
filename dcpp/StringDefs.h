@@ -55,6 +55,7 @@ enum Strings { // @DontAdd
 	CLOSE, // "Close"
 	CLOSE_CONNECTION, // "Close connection"
 	CLOSING_CONNECTION, // "Closing connection..."
+	COMCTL_TOO_OLD, // "Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."
 	COMPRESSED, // "Compressed"
 	COMPRESSION_ERROR, // "Error during compression"
 	COMMAND_TOO_LONG, // "Maximum command length exceeded"

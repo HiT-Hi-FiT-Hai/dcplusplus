@@ -55,8 +55,8 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 
 		transfers->setSmallImageList(arrows);
 		transfers->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
-		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
-		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
+		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(MAINFRAME_ORDER), columnIndexes));
+		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(MAINFRAME_WIDTHS), columnSizes));
 		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
 		transfers->setSort(COLUMN_USER);
 		transfers->onContextMenu(std::tr1::bind(&TransferView::handleContextMenu, this, _1));

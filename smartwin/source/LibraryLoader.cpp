@@ -34,6 +34,10 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
+// Static members definitions!
+Utilities::CriticalSection LibraryLoader::itsCs;
+std::map< SmartUtil::tstring, std::pair< int, HMODULE > > LibraryLoader::itsLibrariesLoaded;
+
 LibraryLoader::~LibraryLoader()
 {
 	// Need a lock here since we're accessing the shared static version of its map!
@@ -100,24 +104,30 @@ LibraryLoader::LibraryLoader()
 {
 }
 
+// Get procedure address from loaded library by name
+FARPROC LibraryLoader::getProcAddress( const SmartUtil::tstring & procedureName )
+{
+	return ::GetProcAddress( itsHMod, SmartUtil::AsciiGuaranteed::doConvert( procedureName, SmartUtil::ConversionCodepage::ANSI ).c_str() );
+}
 
-	// Get procedure address from loaded library by name
-	FARPROC LibraryLoader::getProcAddress( const SmartUtil::tstring & procedureName )
-	{
-		return ::GetProcAddress( itsHMod, SmartUtil::AsciiGuaranteed::doConvert( procedureName, SmartUtil::ConversionCodepage::ANSI ).c_str() );
+// Get procedure address from loaded library by ordinal value
+FARPROC LibraryLoader::getProcAddress( long procedureOrdinal )
+{
+	return ::GetProcAddress( itsHMod, (LPCSTR)0 + procedureOrdinal );
+}
+
+DWORD LibraryLoader::getCommonControlsVersion() {
+	LibraryLoader lib(_T("comctl32.dll"));
+	DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)lib.getProcAddress(_T("DllGetVersion"));
+	if(pDllGetVersion) {
+		DLLVERSIONINFO dvi;
+		ZeroMemory(&dvi, sizeof(dvi));
+		dvi.cbSize = sizeof(dvi);
+		if(SUCCEEDED((*pDllGetVersion)(&dvi)))
+			return PACK_COMCTL_VERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
 	}
-
-	// Get procedure address from loaded library by ordinal value
-	FARPROC LibraryLoader::getProcAddress( long procedureOrdinal )
-	{
-		return ::GetProcAddress( itsHMod, (LPCSTR)0 + procedureOrdinal );
-	}
-
-
-
-// Static members definitions!
-Utilities::CriticalSection LibraryLoader::itsCs;
-std::map< SmartUtil::tstring, std::pair< int, HMODULE > > LibraryLoader::itsLibrariesLoaded;
+	return 0;
+}
 
 // end namespace SmartWin
 }

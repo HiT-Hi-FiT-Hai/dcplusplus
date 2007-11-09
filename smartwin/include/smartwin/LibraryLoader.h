@@ -112,6 +112,9 @@ public:
 	  */
 	~LibraryLoader();
 
+	#define PACK_COMCTL_VERSION(major,minor) MAKELONG(minor,major)
+	static DWORD getCommonControlsVersion();
+
 private:
 	LibraryLoader( const LibraryLoader & ); // DENY COPY
 	LibraryLoader & operator =( const LibraryLoader & ); // DENY ASSIGNMENT

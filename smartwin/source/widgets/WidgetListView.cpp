@@ -2,13 +2,18 @@
 
 #include "../../include/smartwin/resources/Pen.h"
 
+#include "../../include/smartwin/LibraryLoader.h"
+
 namespace SmartWin {
+
+bool WidgetListView::ComCtl6 = false;
 
 WidgetListView::Seed::Seed() : 
 	Widget::Seed(WC_LISTVIEW, WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT | LVS_EDITLABELS),
 	font(new Font(DefaultGuiFont)),
 	lvStyle(0)
 {
+	ComCtl6 = (LibraryLoader::getCommonControlsVersion() >= PACK_COMCTL_VERSION(6,00));
 }
 
 void WidgetListView::create( const Seed & cs )
@@ -56,7 +61,33 @@ void WidgetListView::setSort(int aColumn, SortType aType, bool aAscending) {
 		updateArrow();
 }
 
+// these should be defined in CommCtrl.h, but the one in MinGW doesn't define them... (2007-11-06)
+#if (_WIN32_WINNT >= 0x0501)
+#ifndef HDF_SORTUP
+#define HDF_SORTUP              0x0400
+#endif
+#ifndef HDF_SORTDOWN
+#define HDF_SORTDOWN            0x0200
+#endif
+#endif
 void WidgetListView::updateArrow() {
+	if(ComCtl6) {
+		int flag = isAscending() ? HDF_SORTUP : HDF_SORTDOWN;
+		HWND header = ListView_GetHeader(this->handle());
+		int count = Header_GetItemCount(header);
+		for (int i=0; i < count; ++i)
+		{
+			HDITEM item;
+			item.mask = HDI_FORMAT;
+			Header_GetItem(header, i, &item);
+			item.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
+			if (i == this->getSortColumn())
+				item.fmt |= flag;
+			Header_SetItem(header, i, &item);
+		}
+		return;
+	}
+
 	if(!upArrow || !downArrow)
 		return;
 	
@@ -413,59 +444,43 @@ int WidgetListView::xoffFromColumn( int column, int & logicalColumn )
 }
 
 void WidgetListView::createArrows() {
-	POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
-	POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
+	if(ComCtl6)
+		return;
+
+	POINT triangle[3] = { {5, 0}, {0, 5}, {10, 5} };
 
 	FreeCanvas dc(this, ::CreateCompatibleDC(NULL));
 
-	const int bitmapWidth = 8;
-	const int bitmapHeight = 8;
+	const int bitmapWidth = 11;
+	const int bitmapHeight = 6;
 	const Rectangle rect(0, 0, bitmapWidth, bitmapHeight );
 
 	Brush brush(Brush::Face3D);
-	Pen penLight(::GetSysColor(COLOR_3DHIGHLIGHT), Pen::Solid, 1);
-	Pen penShadow(::GetSysColor(COLOR_3DSHADOW), Pen::Solid, 1);
 
 	upArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.handle(), bitmapWidth, bitmapHeight)));
 	downArrow = BitmapPtr(new Bitmap(::CreateCompatibleBitmap(dc.handle(), bitmapWidth, bitmapHeight)));
 
-	// create up arrow
-	SelectBitmap(dc.handle(), upArrow->handle());
-	dc.fillRectangle(rect, brush);
+	{
+		// create up arrow
+		Canvas::Selector select(dc, *upArrow);
+
+		dc.fillRectangle(rect, brush);
+
+		::InvertRgn(dc.handle(), ::CreatePolygonRgn(triangle, 3, WINDING));
+	}
 
 	{
-		Canvas::Selector select(dc, penLight);
-		::Polyline(dc.handle(), pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
-	}
+		// create down arrow
+		Canvas::Selector select(dc, *downArrow);
 
-	{
-		Canvas::Selector select(dc, penShadow);
-		::Polyline(dc.handle(), pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
-	}
+		dc.fillRectangle(rect, brush);
 
-	// create down arrow
-	SelectBitmap(dc.handle(), downArrow->handle());
-	dc.fillRectangle(rect, brush);
-	
-	for (size_t i = 0; i < sizeof(pathArrowShort)/sizeof(pathArrowShort[0]); ++i) {
-		POINT& pt = pathArrowShort[i];
-		pt.x = bitmapWidth - pt.x;
-		pt.y = bitmapHeight - pt.y;
+		for (size_t i = 0; i < sizeof(triangle)/sizeof(triangle[0]); ++i) {
+			POINT& pt = triangle[i];
+			pt.y = bitmapHeight - 1 - pt.y;
+		}
+		::InvertRgn(dc.handle(), ::CreatePolygonRgn(triangle, 3, WINDING));
 	}
-	{
-		Canvas::Selector select(dc, penLight);
-		::Polyline(dc.handle(), pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
-	}
-
-	for (size_t i = 0; i < sizeof(pathArrowLong)/sizeof(pathArrowLong[0]); ++i) {
-		POINT& pt = pathArrowLong[i];
-		pt.x = bitmapWidth - pt.x;
-		pt.y = bitmapHeight - pt.y;
-	}
-	{
-		Canvas::Selector select(dc, penShadow);
-		::Polyline(dc.handle(), pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
-	}	
 }
 
 

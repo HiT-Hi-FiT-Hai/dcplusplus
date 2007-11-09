@@ -57,44 +57,6 @@ BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
 	return TRUE;
 }
 
-static void checkCommonControls() {
-#define PACKVERSION(major,minor) MAKELONG(minor,major)
-
-	HINSTANCE hinstDll;
-	DWORD dwVersion = 0;
-
-	hinstDll = LoadLibrary(_T("comctl32.dll"));
-
-	if(hinstDll)
-	{
-		DLLGETVERSIONPROC pDllGetVersion;
-
-		pDllGetVersion = (DLLGETVERSIONPROC) GetProcAddress(hinstDll, "DllGetVersion");
-
-		if(pDllGetVersion)
-		{
-			DLLVERSIONINFO dvi;
-			HRESULT hr;
-
-			ZeroMemory(&dvi, sizeof(dvi));
-			dvi.cbSize = sizeof(dvi);
-
-			hr = (*pDllGetVersion)(&dvi);
-
-			if(SUCCEEDED(hr))
-			{
-				dwVersion = PACKVERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
-			}
-		}
-
-		FreeLibrary(hinstDll);
-	}
-
-	if(dwVersion < PACKVERSION(5,80)) {
-		MessageBox(NULL, _T("Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T("User Interface Warning"), MB_OK);
-	}
-}
-
 bool checkOtherInstances(const tstring& cmdLine) {
 #ifndef _DEBUG
 	SingleInstance dcapp(_T("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}"));
@@ -149,14 +111,15 @@ int SmartWinMain(SmartWin::Application& app) {
 #ifdef _DEBUG
 	old_handler = set_terminate(&term_handler);
 #endif
-	checkCommonControls();
 
 	// For debugging
 	::LoadLibrary(_T("exchndl.dll"));
 	
 	// For SHBrowseForFolder, UPnP
-	/// @todo check return
-	::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	HRESULT hr = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	if(FAILED(hr))
+		return hr;
+
 	try {
 		std::string module = File(Text::fromT(app.getModuleFileName()), File::READ, File::OPEN).read();
 		TigerTree tth(TigerTree::calcBlockSize(module.size(), 1));

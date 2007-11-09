@@ -150,6 +150,8 @@ MainWindow::MainWindow() :
 	int cmdShow = SmartWin::Application::instance().getCmdShow();
 	::ShowWindow(handle(), ((cmdShow == SW_SHOWDEFAULT) || (cmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : cmdShow);
 
+	if(SmartWin::LibraryLoader::getCommonControlsVersion() < PACK_COMCTL_VERSION(5,80))
+		createMessageBox().show(TSTRING(COMCTL_TOO_OLD), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
 }
 
 void MainWindow::initWindow() {
