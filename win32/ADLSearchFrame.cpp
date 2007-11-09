@@ -206,7 +206,6 @@ void ADLSearchFrame::handleUp() {
 			items->erase(*i);
 			addEntry(search, *i - 1);
 			items->select(*i - 1);
-			items->ensureVisible(*i - 1);
 		}
 	}
 }
@@ -222,7 +221,6 @@ void ADLSearchFrame::handleDown() {
 			items->erase(*i);
 			addEntry(search, *i + 1);
 			items->select(*i + 1);
-			items->ensureVisible(*i + 1);
 		}
 	}
 }
