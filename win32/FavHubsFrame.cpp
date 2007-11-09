@@ -45,6 +45,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 {
 	{
 		WidgetListView::Seed cs = WinUtil::Seeds::listView;
+		cs.style |= LVS_NOSORTHEADER;
 		cs.lvStyle |= LVS_EX_CHECKBOXES;
 		hubs = createListView(cs);
 		addWidget(hubs);
