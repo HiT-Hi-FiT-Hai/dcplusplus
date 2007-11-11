@@ -2,11 +2,7 @@
  
 Import('dev source_path')
 
-env, target, sources = dev.prepare_build(source_path, 'dcpp-smartwin', in_bin=False)
-
-ret = []
-
-ret += dev.build('libs/signals/src/')
+ret = dev.build('libs/signals/src/')
 
 Return('ret')
 

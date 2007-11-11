@@ -15,8 +15,8 @@ this structure. ADC stands for anything you would like it to stand for;
 Advanced Direct Connect is the first neutral thing that springs to mind =).
 
 Many ideas for the protocol come from Jan Vidar Krey's DCTNG draft. Other
-contributors include Dustin Brody, Walter Doekes, Timmo Stange, Fredrik
-Ullner. Jon Hess contributed the original Direct Connect idea through the
+contributors include Dustin Brody, Walter Doekes, Timmo Stange, Fredrik Ullner
+and others. Jon Hess contributed the original Direct Connect idea through the
 Neo-Modus Direct Connect client / hub.
 
 The latest draft version of this document can be downloaded from
@@ -121,8 +121,8 @@ Each client is identified by three different IDs, Session ID (SID), Private ID
 ==== Session ID
 Session IDs appear in all communication that interacts with the hub. They
 identify a unique user on a single hub and are assigned by the hub during
-initial protocol negotiation. SIDs
-are 20 bits long and encoded using a 4-byte base32 encoded string.
+initial protocol negotiation. SIDs are 20 bits long and encoded using a 4-byte
+base32 encoded string.
 
 ==== Private ID
 Private IDs globally identify a unique client. They function during initial
@@ -154,17 +154,17 @@ containing those must be ignored. All directory names must end with a "/".
 
 Shared files are identified relative to the unnamed root "/"
 ("/dir/subdir/filename.ext"), while extensions can add named roots to this
-namespace. For example, "TTH/..." from the TIGR extension uses the named root "TTH" to
-identify files by their tiger tree hash.  It is invalid for names from the
-unnamed root to appear in the share without also being identified by at 
-least one hash value.
+namespace. For example, "TTH/..." from the TIGR extension uses the named root
+"TTH" to identify files by their tiger tree hash.  It is invalid for names
+from the unnamed root to appear in the share without also being identified by
+at least one hash value.
 
 The rootless filename "files.xml" specifies the full file listing,
 uncompressed, in XML using the UTF-8 encoding. It is recommended that clients
 use an extension to transfer this list in compressed form.
 
-Extensions may specify additional rootless filenames, but should generally avoid
-doing so to avoid name clashes.
+Extensions may specify additional rootless filenames, but should generally
+avoid doing so to avoid name clashes.
 
 The special type "list" is used to browse partial lists. A partial file list
 has the same structure as a normal list, but directories may be tagged with an
@@ -178,8 +178,8 @@ are few entries, for example a directory only containing a few files). The
 list represents.
 
 === File list
-files.xml is the list of files intended for browsing. The file list must validate
-against the following XML schema:
+files.xml is the list of files intended for browsing. The file list must
+validate against the following XML schema:
 
 ----
 <?xml version="1.0" encoding="UTF-8"?>
@@ -312,7 +312,7 @@ C | Between clients (client-client TCP)
 U | Between clients (client-client UDP)
 ___
 
-For client-client communication, this protocol is identified by the string
+When requesting a new client-client connection, this protocol is identified by
 "ADC/1.0".
 
 In the descriptions of the commands, the message header and trailing named
@@ -508,7 +508,8 @@ pass to the NORMAL state.
 
 Contexts: F, T
 
-A chat message. The receiving clients should precede it with '<' nick '>', to allow for uniform message displays.
+A chat message. The receiving clients should precede it with "<" nick ">", to
+allow for uniform message displays.
 
 Flags:
 
@@ -603,8 +604,8 @@ Contexts: T
 States: VERIFY
 
 Password. The password (utf-8 encoded bytes), followed by the random data
-(binary), passed through the session hash algorithm then converted to
-base32. When validated, this transitions the server into NORMAL state.
+(binary), passed through the session hash algorithm then converted to base32.
+When validated, this transitions the server into NORMAL state.
 
 ==== QUI
  QUI sid
@@ -613,11 +614,10 @@ Contexts: F
 
 States: IDENTIFY, VERIFY, NORMAL
 
-The client identified by <sid> disconnected from the hub. If the SID
-belongs to the client receiving the QUI, it means that it should take action
-according to the reason (i.e. redirect or not reconnect in case of ban). The
-hub must not send data after the QUI to the client being
-disconnected.
+The client identified by <sid> disconnected from the hub. If the SID belongs
+to the client receiving the QUI, it means that it should take action according
+to the reason (i.e. redirect or not reconnect in case of ban). The hub must
+not send data after the QUI to the client being disconnected.
 
 The following flags may be present:
 
@@ -655,7 +655,7 @@ well. If this is too much, the sending client may choose to send only parts.
 The flag should be taken as a hint that the requesting client will be getting
 the subdirectories as well, so they might as well be sent in one go.
 Identifier must be a directory in the unnamed root, ending (and beginning)
-with '/'.
+with "/".
 
 Note that GET can also be used by extensions for binary transfers between hub
 and client.
@@ -741,20 +741,20 @@ also request the rest of the tree using the normal client-client transfer
 procedure. The root must be encoded using base32 encoding when converted to
 text.
 
-In the file list, each File element carries an additional attribute "TTH" 
+In the file list, each File element carries an additional attribute "TTH"
 containing the base32-encoded value of the tiger tree root.
 
 In the GET/GFI type, the full tree may be accessed using the "tthl" type.
 
-"tthl" transfers send the largest set of leaves available) as a binary
-stream of leaf data, right-to-left, with no spacing in between them.
-<start_pos> must be set to 0 and <bytes> to -1 when requesting the data.
-<bytes> must contain the total binary size of the leaf stream in SND, and by
-dividing this length by the individual hash length, the number of leaves, and
-thus the leaf level can be deducted. The received leaves can then be used to
-reconstruct the entire tree, and the resulting root must match the root of the
-file (this verifies the integrity of the tree itself). Identifier must be a
-TTH root value from the "TTH/" root.
+"tthl" transfers send the largest set of leaves available) as a binary stream
+of leaf data, right-to-left, with no spacing in between them.  <start_pos>
+must be set to 0 and <bytes> to -1 when requesting the data.  <bytes> must
+contain the total binary size of the leaf stream in SND, and by dividing this
+length by the individual hash length, the number of leaves, and thus the leaf
+level can be deducted. The received leaves can then be used to reconstruct the
+entire tree, and the resulting root must match the root of the file (this
+verifies the integrity of the tree itself). Identifier must be a TTH root
+value from the "TTH/" root.
 
 In the GET/GFI namespace, files are identified by 
 "TTH/<base32-encoded tree root>".
@@ -790,8 +790,8 @@ stream). The compressing end must partially flush the zlib buffer after each
 chunk of data to allow for decompression by the peer.
 
 ==== ZLIB-GET
-The alternative is to send "ZLIG" to indicate that zlib is supported
-for binary transfers using the GET command, but not otherwise. A flag "ZL1" is
+The alternative is to send "ZLIG" to indicate that zlib is supported for
+binary transfers using the GET command, but not otherwise. A flag "ZL1" is
 added to the to the SND command to indicate that the data will come
 compressed, and the client receiving requests it by adding the same flag to
 GET (the sending client may ignore a request for a compressed transfer, but
@@ -815,8 +815,8 @@ with the current time.
 Context: F
 
 Name uniquely (per hub) identifies a particular user command. The name may
-contain '/' to indicate a logical structure on the viewing client, where each
-'/' introduces a new submenu level. Other than name, the command also has a
+contain "/" to indicate a logical structure on the viewing client, where each
+"/" introduces a new submenu level. Other than name, the command also has a
 number of flags that further detail what to do with it.
 
 [separator="|"]
@@ -872,12 +872,22 @@ ___
 
 === ADCS - Secure ADC <work-in-progress>
 ==== Introduction
-Secure ADC connections can be established using a TLS tunnel, both for hub and for client connections. Certificates can be used to authenticate both hub and user, for example by making the hub the root CA, and only allow clients signed by the hub to connect. Ephemeral keys should be use to ensure forward secrecy when possible.
+Secure ADC connections can be established using a TLS tunnel, both for hub and
+for client connections. Certificates can be used to authenticate both hub and
+user, for example by making the hub the root CA, and only allow clients signed
+by the hub to connect. Ephemeral keys should be use to ensure forward secrecy
+when possible.
 
 ==== Client-Hub encryption
-TLS client-hub connections can be initiated either by negotiating the feature "ADCS" on connection or by using the protocol adcs:// when initiating the connection. Hubs can choose to request a certificate for the user on login, and use this certificate to replace password-based login.
+TLS client-hub connections can be initiated either by negotiating the feature
+"ADCS" on connection or by using the protocol adcs:// when initiating the
+connection. Hubs can choose to request a certificate for the user on login,
+and use this certificate to replace password-based login.
 
 ==== Client-Client encryption
-TLS client-client connections can be established either by negotiating the feature "ADCS" on connection or by specifying "ADCS/1.0" in the CTM protocol field. Clients supporting encrypted connections must indicate this in the INF SU field with "ADCS"
+TLS client-client connections can be established either by negotiating the
+feature "ADCS" on connection or by specifying "ADCS/1.0" in the CTM protocol
+field. Clients supporting encrypted connections must indicate this in the INF
+SU field with "ADCS"
 
 // vim: set syntax=asciidoc:
