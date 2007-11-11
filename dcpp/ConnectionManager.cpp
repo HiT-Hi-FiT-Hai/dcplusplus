@@ -42,7 +42,8 @@ ConnectionManager::ConnectionManager() : floodCounter(0), server(0), secureServe
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
 
-	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BASE);
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BAS0);
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_TIGR);
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BZIP);
 }
 
@@ -327,12 +328,17 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 	}
 
 	bool baseOk = false;
-
+	bool tigrOk = false;
+	
 	for(StringIterC i = cmd.getParameters().begin(); i != cmd.getParameters().end(); ++i) {
 		if(i->compare(0, 2, "AD") == 0) {
 			string feat = i->substr(2);
-			if(feat == UserConnection::FEATURE_ADC_BASE) {
+			if(feat == UserConnection::FEATURE_ADC_BASE || feat == UserConnection::FEATURE_ADC_BAS0) {
 				baseOk = true;
+				// For bas0 tiger is implicit
+				if(feat == UserConnection::FEATURE_ADC_BAS0) {
+					tigrOk = true;
+				}
 				// ADC clients must support all these...
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ADCGET);
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
@@ -344,6 +350,8 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
 			} else if(feat == UserConnection::FEATURE_ADC_BZIP) {
 				aSource->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
+			} else if(feat == UserConnection::FEATURE_ADC_TIGR) {
+				tigrOk = true;
 			}
 		}
 	}

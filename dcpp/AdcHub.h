@@ -77,6 +77,9 @@ private:
 	static const string ADCS_FEATURE;
 	static const string TCP4_FEATURE;
 	static const string UDP4_FEATURE;
+	static const string BASE_SUPPORT;
+	static const string BAS0_SUPPORT;
+	static const string TIGR_SUPPORT;
 
 	virtual string checkNick(const string& nick);
 

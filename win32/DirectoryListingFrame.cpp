@@ -173,6 +173,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	
 	// This will set the widths correctly
 	setStatus(STATUS_FILE_LIST_DIFF, TSTRING(FILE_LIST_DIFF));
+
 	setStatus(STATUS_MATCH_QUEUE, TSTRING(MATCH_QUEUE));
 	setStatus(STATUS_FIND, TSTRING(FIND));
 	setStatus(STATUS_NEXT, TSTRING(NEXT));
@@ -720,10 +721,6 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
 }
 
 void DirectoryListingFrame::clearList() {
-	int j = files->size();
-	for(int i = 0; i < j; i++) {
-		delete files->getData(i);
-	}
 	files->clear();
 }
 

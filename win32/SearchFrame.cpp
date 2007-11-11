@@ -409,11 +409,6 @@ bool SearchFrame::preClosing() {
 }
 
 void SearchFrame::postClosing() {
-	results->forEachT(DeleteFunction());
-	results->clear();
-	hubs->forEachT(DeleteFunction());
-	hubs->clear();
-
 	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_ORDER, WinUtil::toString(results->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_WIDTHS, WinUtil::toString(results->getColumnWidths()));
 }
@@ -761,7 +756,6 @@ void SearchFrame::handleCopyMagnet() {
 void SearchFrame::handleRemove() {
 	int i = -1;
 	while((i = results->getNext(-1, LVNI_SELECTED)) != -1) {
-		delete results->getData(i);
 		results->erase(i);
 	}
 }
@@ -899,7 +893,6 @@ void SearchFrame::onHubChanged(HubInfo* info) {
 	if (nItem == n)
 		return;
 
-	delete hubs->getData(nItem);
 	hubs->setData(nItem, info);
 	hubs->update(nItem);
 
@@ -919,7 +912,6 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 	if (nItem == n)
 		return;
 
-	delete hubs->getData(nItem);
 	hubs->erase(nItem);
 	hubs->setColumnWidth(0, LVSCW_AUTOSIZE);
 }
@@ -967,7 +959,6 @@ void SearchFrame::runSearch() {
 
 	int64_t llsize = (int64_t)lsize;
 
-	results->forEachT(DeleteFunction());
 	results->clear();
 
 	{

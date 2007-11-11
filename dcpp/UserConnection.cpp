@@ -36,8 +36,10 @@ const string UserConnection::FEATURE_ADCGET = "ADCGet";
 const string UserConnection::FEATURE_ZLIB_GET = "ZLIG";
 const string UserConnection::FEATURE_TTHL = "TTHL";
 const string UserConnection::FEATURE_TTHF = "TTHF";
-const string UserConnection::FEATURE_ADC_BASE = "BAS0";
+const string UserConnection::FEATURE_ADC_BAS0 = "BAS0";
+const string UserConnection::FEATURE_ADC_BASE = "BASE";
 const string UserConnection::FEATURE_ADC_BZIP = "BZIP";
+const string UserConnection::FEATURE_ADC_TIGR = "TIGR";
 
 const string UserConnection::FILE_NOT_AVAILABLE = "File Not Available";
 

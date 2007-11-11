@@ -149,7 +149,7 @@ private:
 	WidgetVPanedPtr paned;
 	WidgetCheckBoxPtr showUsers;
 	
-	typedef TypedListView<HubFrame, UserInfo> WidgetUsers;
+	typedef TypedListView<HubFrame, UserInfo, false> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 	

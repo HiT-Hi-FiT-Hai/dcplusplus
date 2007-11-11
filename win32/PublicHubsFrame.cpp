@@ -280,7 +280,6 @@ void PublicHubsFrame::updateDropDown() {
 }
 
 void PublicHubsFrame::updateList() {
-	hubs->forEachT(DeleteFunction());
 	hubs->clear();
 	users = 0;
 	visibleHubs = 0;

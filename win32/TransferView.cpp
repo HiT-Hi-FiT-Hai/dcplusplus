@@ -94,8 +94,6 @@ HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
 	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, WinUtil::toString(transfers->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, WinUtil::toString(transfers->getColumnWidths()));
 
-	transfers->forEach(&ItemInfo::deleteSelf);
-
 	return 0;
 }
 
@@ -345,7 +343,6 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 				ItemInfo* ii = transfers->getData(i);
 				if(*ui == *ii) {
 					transfers->erase(i);
-					delete ii;
 					break;
 				}
 			}

@@ -267,7 +267,6 @@ private:
 		int i;
 		while((i = items->getNext(-1, LVNI_SELECTED)) != -1) {
 			FinishedManager::getInstance()->remove(items->getData(i)->entry, in_UL);
-			delete items->getData(i);
 			items->erase(i);
 		}
 	}
@@ -299,10 +298,6 @@ private:
 	}
 
 	void clearList() {
-		unsigned n = items->size();
-		for(unsigned i = 0; i < n; ++i)
-			delete items->getData(i);
-
 		items->clear();
 	}
 

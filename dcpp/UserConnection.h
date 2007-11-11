@@ -45,9 +45,11 @@ public:
 	static const string FEATURE_ZLIB_GET;
 	static const string FEATURE_TTHL;
 	static const string FEATURE_TTHF;
+	static const string FEATURE_ADC_BAS0;
 	static const string FEATURE_ADC_BASE;
 	static const string FEATURE_ADC_BZIP;
-
+	static const string FEATURE_ADC_TIGR;
+	
 	static const string FILE_NOT_AVAILABLE;
 
 	enum Modes {

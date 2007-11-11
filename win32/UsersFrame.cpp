@@ -87,8 +87,6 @@ bool UsersFrame::preClosing() {
 void UsersFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_ORDER, WinUtil::toString(users->getColumnOrder()));
 	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_WIDTHS, WinUtil::toString(users->getColumnWidths()));
-
-	users->forEachT(DeleteFunction());
 }
 
 UsersFrame::UserInfo::UserInfo(const FavoriteUser& u) : UserInfoBase(u.getUser()) {
@@ -128,7 +126,6 @@ void UsersFrame::removeUser(const FavoriteUser& aUser) {
 		UserInfo *ui = users->getData(i);
 		if(ui->user == aUser.getUser()) {
 			users->erase(i);
-			delete ui;
 			return;
 		}
 	}

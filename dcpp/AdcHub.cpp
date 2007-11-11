@@ -40,6 +40,9 @@ const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
 const string AdcHub::ADCS_FEATURE("ADC0");
 const string AdcHub::TCP4_FEATURE("TCP4");
 const string AdcHub::UDP4_FEATURE("UDP4");
+const string AdcHub::BASE_SUPPORT("ADBASE");
+const string AdcHub::BAS0_SUPPORT("ADBAS0");
+const string AdcHub::TIGR_SUPPORT("ADTIGR");
 
 AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), sid(0) {
 	TimerManager::getInstance()->addListener(this);
@@ -186,12 +189,26 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 	if(state != STATE_PROTOCOL) /** @todo SUP changes */
 		return;
-	if(find(c.getParameters().begin(), c.getParameters().end(), "ADBASE") == c.getParameters().end()
-		&& find(c.getParameters().begin(), c.getParameters().end(), "ADBAS0") == c.getParameters().end())
-	{
+	bool baseOk = false;
+	bool tigrOk = false;
+	for(StringIter i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
+		if(*i == BAS0_SUPPORT) {
+			baseOk = true;
+			tigrOk = true;
+		} else if(*i == BASE_SUPPORT) {
+			baseOk = true;
+		} else if(*i == TIGR_SUPPORT) {
+			tigrOk = true;
+		}
+	}
+	
+	if(!baseOk) {
 		fire(ClientListener::StatusMessage(), this, "Failed to negotiate base protocol"); // @todo internationalize
 		socket->disconnect(false);
 		return;
+	} else if(!tigrOk) {
+		// What now? Some hubs fake BASE support without TIGR support =/
+		fire(ClientListener::StatusMessage(), this, "Hub probably uses an old version of ADC, please encourage the owner to upgrade");
 	}
 }
 
@@ -625,7 +642,7 @@ void AdcHub::on(Connected) throw() {
 	lastInfoMap.clear();
 	sid = 0;
 
-	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("ADBAS0"));
+	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam(BAS0_SUPPORT).addParam(TIGR_SUPPORT));
 }
 
 void AdcHub::on(Line, const string& aLine) throw() {

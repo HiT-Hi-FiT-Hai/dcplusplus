@@ -208,7 +208,7 @@ private:
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
 	
-	typedef TypedListView<QueueFrame, QueueItemInfo> WidgetFiles;
+	typedef TypedListView<QueueFrame, QueueItemInfo, false> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
 	WidgetVPanedPtr paned;

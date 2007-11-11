@@ -19,18 +19,23 @@
 #ifndef DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 #define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 
-template<class T, class ContentType>
+template<class T, class ContentType, bool managed = true>
 class TypedListView : public T::WidgetListView
 {
 private:
 	typedef typename T::WidgetListView BaseType;
-	typedef TypedListView<T, ContentType> ThisType;
+	typedef TypedListView<T, ContentType, managed> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
 	explicit TypedListView( SmartWin::Widget * parent ) : BaseType(parent) { 
 		
+	}
+	
+	~TypedListView() {
+		if(managed)
+			this->clear();
 	}
 	
 	void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
@@ -57,6 +62,9 @@ public:
 	}
 
 	void setData(int iItem, ContentType* lparam) {
+		if(managed) {
+			delete getData(iItem);
+		}
 		BaseType::setData(iItem, reinterpret_cast<LPARAM>(lparam));
 	}
 
@@ -109,7 +117,9 @@ public:
 	
 	void update(ContentType* item) { int i = find(item); if(i != -1) update(i); }
 
-	using BaseType::erase;
+	void clear() { if(managed) this->forEachT(DeleteFunction()); this->BaseType::clear(); }
+	void erase(int i) { if(managed) delete getData(i); this->BaseType::erase(i); }
+	
 	void erase(ContentType* item) { int i = find(item); if(i != -1) this->erase(i); }
 
 	int getSortPos(ContentType* a) {
