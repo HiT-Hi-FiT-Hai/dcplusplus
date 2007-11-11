@@ -1,6 +1,6 @@
 = ADC Protocol Draft
 Jacek Sieka <arnetheduck@gmail.com>
-0.13, October 2007
+0.14, November 2007
 
 == Abstract
 ADC is a text protocol for a client-server network similar to Neo-Modus'
@@ -49,12 +49,13 @@ This version correspods to $Revision$.
 * Extension names, protocol names and other text not entered by the user may
   only include viewable characters that can be encoded by one byte in the
   UTF-8 encoding (Unicode codepoints 33-127). ADC is case-sensitive, requiring
-  upper case.
-* A session hash function is negotiated for each connection. The session hash
-  function may not be changed without a complete session renegotiation.
+  upper case for command names.
+* Some of the commands and functionality require the use of a hash function.
+  The hash function is negotiated during session setup and stays the same for
+  the duration of the session.
   
 === Message syntax
-....................
+..................
 message               ::= message_body? eol
 message_body          ::= (b_message_header | cih_message_header | de_message_header | f_message_header | u_message_header | message_header) 
                           (separator positional_parameter)* (separator named_parameter)*
@@ -81,7 +82,7 @@ simple_alpha          ::= [A-Z]
 simple_alphanum       ::= [A-Z0-9]
 eol                   ::= #x0a
 separator             ::= ' '
-....................
+..................
 
 === Message types
 Message type specifies how messages should be routed, and thus which
@@ -91,7 +92,7 @@ message when sending it to the hub for distribution. Clients should disregard
 the message type when interpreting the message (after having parsed it). The
 following message types are defined:
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ```_
 B | Broadcast | Hub must send message to all connected clients, including the sender of the message.
 C | Client message | Clients must use this message type when communicating directly over TCP.
@@ -120,9 +121,8 @@ Each client is identified by three different IDs, Session ID (SID), Private ID
 ==== Session ID
 Session IDs appear in all communication that interacts with the hub. They
 identify a unique user on a single hub and are assigned by the hub during
-initial protocol negotiation. The hub may choose any SID for a connecting
-client apart from "0" ("AAAA" in base32). "0" represents the hub itself. SIDs
-are 20 bits and encoded using a 4-byte base32 encoded string.
+initial protocol negotiation. SIDs
+are 20 bits long and encoded using a 4-byte base32 encoded string.
 
 ==== Private ID
 Private IDs globally identify a unique client. They function during initial
@@ -143,32 +143,28 @@ must be prepared to handle CIDs of varying lengths.
 
 == Files
 === File names and structure
-Filenames are relative to a fictive root in the user's share. '/' separates
+Filenames are relative to a fictive root in the user's share. "/" separates
 directories, and each file or directory name must be unique in a
 case-insensitive context. All printable characters, including whitespace, are
-valid names for files, the '/' and '\' being escaped by '\'. Clients must then
+valid names for files, the "/" and "\" being escaped by "\". Clients must then
 properly filter the filename for the target file system, as well as request
-filenames from other clients according to these rules. The special names '.'
-and '..' may not occur as a directory or filename; any file list received
-containing those must be ignored. 
+filenames from other clients according to these rules. The special names "."
+and ".." may not occur as a directory or filename; any file list received
+containing those must be ignored. All directory names must end with a "/". 
 
-Shared files are identified relative to the unnamed root '/'
+Shared files are identified relative to the unnamed root "/"
 ("/dir/subdir/filename.ext"), while extensions can add named roots to this
-namespace. "TTH/<root-base32>" from the TIGR extension for example, locates a
-file in the share by TTH root rather than filename.
+namespace. For example, "TTH/..." from the TIGR extension uses the named root "TTH" to
+identify files by their tiger tree hash.  It is invalid for names from the
+unnamed root to appear in the share without also being identified by at 
+least one hash value.
 
-Rootless filenames are special, for they may not appear in the file listing,
-and can be used to supply binary transfers of arbitrary data, but should not
-be used to avoid polluting the namespace by using a named root. All directory
-names must end with a '/'. Names in the unnamed root generally find little use
-identifying files, as the hash of a file does so more effectively. Hence,
-commands that get files or file data may never use the unnamed root for
-selecting file.  It is invalid for normal files to appear in the share without
-being identified by at least one hash value.
+The rootless filename "files.xml" specifies the full file listing,
+uncompressed, in XML using the UTF-8 encoding. It is recommended that clients
+use an extension to transfer this list in compressed form.
 
-The special, rootless filename "files.xml" specifies the full file listing,
-uncompressed, in XML using the UTF-8 encoding. Clients can then compress this
-list and offer the compressed one as relevant SUP features allow.
+Extensions may specify additional rootless filenames, but should generally avoid
+doing so to avoid name clashes.
 
 The special type "list" is used to browse partial lists. A partial file list
 has the same structure as a normal list, but directories may be tagged with an
@@ -182,18 +178,93 @@ are few entries, for example a directory only containing a few files). The
 list represents.
 
 === File list
-files.xml is the list of files intended for browsing. It has the following
-general structure:
+files.xml is the list of files intended for browsing. The file list must validate
+against the following XML schema:
+
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="base32Binary">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z2-7]+"></xs:pattern>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="zeroOne">
+		<xs:restriction base="xs:int">
+			<xs:enumeration value="0"></xs:enumeration>
+			<xs:enumeration value="1"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="ContainerType">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:choice>
+				<xs:element ref="Directory"></xs:element>
+				<xs:element ref="File"></xs:element>
+				<xs:any processContents="lax"></xs:any>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:attribute name="Base" type="xs:string"></xs:attribute>
+	<xs:attribute name="CID" type="base32Binary"></xs:attribute>
+	<xs:attribute name="Generator" type="xs:string"></xs:attribute>
+	<xs:attribute name="Incomplete" type="zeroOne" default="0"></xs:attribute>
+	<xs:attribute name="Name" type="xs:string"></xs:attribute>
+	<xs:attribute name="Size" type="xs:int"></xs:attribute>
+	<xs:attribute name="Version" type="xs:int"></xs:attribute>
+
+	<xs:element name="FileListing">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="ContainerType">
+					<xs:attribute ref="CID" use="required"></xs:attribute>
+					<xs:attribute ref="Version" use="required"></xs:attribute>
+					<xs:attribute ref="Generator" use="optional"></xs:attribute>
+					<xs:attribute ref="Base" use="required"></xs:attribute>
+					<xs:anyAttribute processContents="lax"></xs:anyAttribute>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Directory">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="ContainerType">
+					<xs:attribute ref="Name" use="required"></xs:attribute>
+					<xs:anyAttribute processContents="lax"></xs:anyAttribute>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="File">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded"></xs:any>
+			</xs:sequence>
+			<xs:attribute ref="Name" use="required"></xs:attribute>
+			<xs:attribute ref="Size" use="required"></xs:attribute>
+			<xs:anyAttribute processContents="lax"></xs:anyAttribute>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>
+----
+
+An example file list:
 
 ----
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<FileListing Version="1" CID="my-cid" Generator="DC++ 0.401" Base="/">
+<FileListing Version="1" CID="mycid" Generator="DC++ 0.701" Base="/" xmlns="http://dcpp.net/FileListing">
  <Directory Name="share">
   <Directory Name="DC++ Prerelease">
-   <File Name="DCPlusPlus.pdb" Size="17648640" ... />
-   <File Name="DCPlusPlus.exe" Size="946176" ... />
+   <File Name="DCPlusPlus.pdb" Size="17648640" TTH="xxx" />
+   <File Name="DCPlusPlus.exe" Size="946176" TTH="yyy" />
   </Directory>
-  <File Name="ADC.txt" Size="154112" ...  />
+  <File Name="ADC.txt" Size="154112" TTH="zzz"  />
  </Directory>
  <!-- Only used by partial lists -->
  <Directory Name="share2" Incomplete="1"/>
@@ -233,7 +304,7 @@ The message context specifies how the message may be received / sent. Hubs and
 clients may support using the message in additional contexts as well. The
 context codes are as follows:
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 F | From hub (hub-client TCP)
 T | To hub (hub-client TCP)
@@ -275,13 +346,16 @@ could occur at different severity levels.
 
 Severity values:
 
-0 Success (used for confirming commands), error code must be "00" and an additional flag "FC" contains the FOURCC of the command being confirmed if applicable.
-1 Recoverable (error but no disconnect)
-2 Fatal (disconnect)
+[separator="|"]
+``_
+0 | Success (used for confirming commands), error code must be "00" and an additional flag "FC" contains the FOURCC of the command being confirmed if applicable.
+1 | Recoverable (error but no disconnect)
+2 | Fatal (disconnect)
+___
 
 Error codes:
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 00 | Generic, show description
 x0 | Same as 00, but categorized according to the rough structure set below
@@ -378,7 +452,7 @@ have changed.
 
 Fields:
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ```_
 Code | Type    | Description
 ___
@@ -438,7 +512,7 @@ A chat message. The receiving clients should precede it with '<' nick '>', to al
 
 Flags:
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 PM<group-SID> | Private message, <group-SID> is the SID clients must send responses to. This field must contain the originating SID if this is a normal private conversation.
 ME | 1 = message should be displayed as /me in IRC ("*nick text")
@@ -455,7 +529,7 @@ unknown fields and complete the search request as if they were not present,
 unless no known fields are present in which case the client must ignore the
 search.
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 AN, NO, EX | String search term, where AN is include (and), NO is exclude (and not), and EX is extension. Each filename (including the path to it) should be matched using case insensitive substring search as follows: match all AN, remove those that match any NO, and make sure the extension matches at least one of the EX (if it is present). Extensions must be sent without the leading '.'.
 LE | Smaller (less) than or equal size in bytes
@@ -480,7 +554,7 @@ INF ones. Clients must provide filename, TTH root, size and token, but are
 encouraged to supply additional fields if available. Passive results should be
 limited to 5 and active to 10.
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 FN | Full filename including path in share
 SI | Size, in bytes
@@ -547,7 +621,7 @@ disconnected.
 
 The following flags may be present:
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 ID | SID of the initiator of the disconnect (for example the one that issued a kick).
 TL | Time Left until reconnect is allowed, in seconds. -1 = forever. 
@@ -593,7 +667,8 @@ Contexts: C
 
 Get File Information. Requests that the other client returns a RES about the
 file as if it had responded to a SCH command. Type and identifier are the same
-as for GET.
+as for GET, but the identifier may come from any namespace, including the
+unnamed root.
 
 ==== SND
  SND type identifier start_pos bytes
@@ -609,7 +684,7 @@ starting at <start_pos>.
 == Examples
 === Client – Hub connection
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 Client                       | Hub
 ___
@@ -627,7 +702,7 @@ ___
 
 === Client – Client connection
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 Client                       | Server
 ___
@@ -640,14 +715,15 @@ CSND ...                     |
 <data>                       |
 ___
 
-== Standard Extensions <work-in-progress>
+== Standard Extensions
 
 === TIGR - Tiger tree hash support
+
+==== General
+
 This extension adds tiger tree hash support to the base protocol. It is
 intended to be used both for identifying files and for protocol purposes such
 as CID generation and password negotiation
-
-==== General
 
 ==== TIGR for shared files
 TIGR supporting clients must share only files hashed using Merkle Hash trees,
@@ -665,8 +741,8 @@ also request the rest of the tree using the normal client-client transfer
 procedure. The root must be encoded using base32 encoding when converted to
 text.
 
-In the file list, each file carries an additional attribute "TTH" containing
-the base32-encoded value of the tiger tree root.
+In the file list, each File element carries an additional attribute "TTH" 
+containing the base32-encoded value of the tiger tree root.
 
 In the GET/GFI type, the full tree may be accessed using the "tthl" type.
 
@@ -683,9 +759,9 @@ TTH root value from the "TTH/" root.
 In the GET/GFI namespace, files are identified by 
 "TTH/<base32-encoded tree root>".
 
-In searches and GFI, the following attributes are added:
+In SCH and GFI, the following attributes are added:
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 TR | Tiger tree hash root, encoded with base32.
 TD | Tree depth, index of the highest level of tree data available, root-only = 0, first level (2 leaves) = 1, second level = 2, etc...
@@ -743,7 +819,7 @@ contain '/' to indicate a logical structure on the viewing client, where each
 '/' introduces a new submenu level. Other than name, the command also has a
 number of flags that further detail what to do with it.
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 RM | 1 = Remove command
 CT | Context, the following flags summed:
@@ -764,7 +840,7 @@ The following tables specify the parameters that must be available.
 
 Client parameters
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 myCID | Client CID
 mySID | Client SID
@@ -773,7 +849,7 @@ ___
 
 User parameters
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 userCID | User CID
 userSID | SID of the user
@@ -782,14 +858,14 @@ ___
 
 File parameters
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 fileXX | One for each flag contained within a search result or file list entry (see RES)
 ___
 
 Hub parameters
 
-[separator="|",grid="all",frame="all"]
+[separator="|"]
 ``_
 hubXX | One for each flag of the hub
 ___
