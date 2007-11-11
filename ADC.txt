@@ -184,72 +184,72 @@ validate against the following XML schema:
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:simpleType name="base32Binary">
-		<xs:restriction base="xs:string">
-			<xs:pattern value="[A-Za-z2-7]+"></xs:pattern>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="base32Binary">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Za-z2-7]+"></xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:simpleType name="zeroOne">
-		<xs:restriction base="xs:int">
-			<xs:enumeration value="0"></xs:enumeration>
-			<xs:enumeration value="1"></xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+  <xs:simpleType name="zeroOne">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="0"></xs:enumeration>
+      <xs:enumeration value="1"></xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:complexType name="ContainerType">
-		<xs:sequence minOccurs="0" maxOccurs="unbounded">
-			<xs:choice>
-				<xs:element ref="Directory"></xs:element>
-				<xs:element ref="File"></xs:element>
-				<xs:any processContents="lax"></xs:any>
-			</xs:choice>
-		</xs:sequence>
-	</xs:complexType>
+  <xs:complexType name="ContainerType">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:choice>
+        <xs:element ref="Directory"></xs:element>
+        <xs:element ref="File"></xs:element>
+        <xs:any processContents="lax"></xs:any>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
 
-	<xs:attribute name="Base" type="xs:string"></xs:attribute>
-	<xs:attribute name="CID" type="base32Binary"></xs:attribute>
-	<xs:attribute name="Generator" type="xs:string"></xs:attribute>
-	<xs:attribute name="Incomplete" type="zeroOne" default="0"></xs:attribute>
-	<xs:attribute name="Name" type="xs:string"></xs:attribute>
-	<xs:attribute name="Size" type="xs:int"></xs:attribute>
-	<xs:attribute name="Version" type="xs:int"></xs:attribute>
+  <xs:attribute name="Base" type="xs:string"></xs:attribute>
+  <xs:attribute name="CID" type="base32Binary"></xs:attribute>
+  <xs:attribute name="Generator" type="xs:string"></xs:attribute>
+  <xs:attribute name="Incomplete" type="zeroOne" default="0"></xs:attribute>
+  <xs:attribute name="Name" type="xs:string"></xs:attribute>
+  <xs:attribute name="Size" type="xs:int"></xs:attribute>
+  <xs:attribute name="Version" type="xs:int"></xs:attribute>
 
-	<xs:element name="FileListing">
-		<xs:complexType>
-			<xs:complexContent>
-				<xs:extension base="ContainerType">
-					<xs:attribute ref="CID" use="required"></xs:attribute>
-					<xs:attribute ref="Version" use="required"></xs:attribute>
-					<xs:attribute ref="Generator" use="optional"></xs:attribute>
-					<xs:attribute ref="Base" use="required"></xs:attribute>
-					<xs:anyAttribute processContents="lax"></xs:anyAttribute>
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="FileListing">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="ContainerType">
+          <xs:attribute ref="CID" use="required"></xs:attribute>
+          <xs:attribute ref="Version" use="required"></xs:attribute>
+          <xs:attribute ref="Generator" use="optional"></xs:attribute>
+          <xs:attribute ref="Base" use="required"></xs:attribute>
+          <xs:anyAttribute processContents="lax"></xs:anyAttribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
 
-	<xs:element name="Directory">
-		<xs:complexType>
-			<xs:complexContent>
-				<xs:extension base="ContainerType">
-					<xs:attribute ref="Name" use="required"></xs:attribute>
-					<xs:anyAttribute processContents="lax"></xs:anyAttribute>
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="Directory">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="ContainerType">
+          <xs:attribute ref="Name" use="required"></xs:attribute>
+          <xs:anyAttribute processContents="lax"></xs:anyAttribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
 
-	<xs:element name="File">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:any minOccurs="0" maxOccurs="unbounded"></xs:any>
-			</xs:sequence>
-			<xs:attribute ref="Name" use="required"></xs:attribute>
-			<xs:attribute ref="Size" use="required"></xs:attribute>
-			<xs:anyAttribute processContents="lax"></xs:anyAttribute>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="File">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any minOccurs="0" maxOccurs="unbounded"></xs:any>
+      </xs:sequence>
+      <xs:attribute ref="Name" use="required"></xs:attribute>
+      <xs:attribute ref="Size" use="required"></xs:attribute>
+      <xs:anyAttribute processContents="lax"></xs:anyAttribute>
+    </xs:complexType>
+  </xs:element>
 
 </xs:schema>
 ----
@@ -259,15 +259,15 @@ An example file list:
 ----
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <FileListing Version="1" CID="mycid" Generator="DC++ 0.701" Base="/" xmlns="http://dcpp.net/FileListing">
- <Directory Name="share">
-  <Directory Name="DC++ Prerelease">
-   <File Name="DCPlusPlus.pdb" Size="17648640" TTH="xxx" />
-   <File Name="DCPlusPlus.exe" Size="946176" TTH="yyy" />
+  <Directory Name="share">
+    <Directory Name="DC++ Prerelease">
+      <File Name="DCPlusPlus.pdb" Size="17648640" TTH="xxx" />
+      <File Name="DCPlusPlus.exe" Size="946176" TTH="yyy" />
+    </Directory>
+    <File Name="ADC.txt" Size="154112" TTH="zzz"  />
   </Directory>
-  <File Name="ADC.txt" Size="154112" TTH="zzz"  />
- </Directory>
- <!-- Only used by partial lists -->
- <Directory Name="share2" Incomplete="1"/>
+  <!-- Only used by partial lists -->
+  <Directory Name="share2" Incomplete="1"/>
 </FileListing>
 ----
 
