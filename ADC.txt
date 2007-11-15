@@ -536,7 +536,6 @@ LE | Smaller (less) than or equal size in bytes
 GE | Larger (greater) than or equal size in bytes
 EQ | Exact size in bytes
 TO | Token, string. Used by the client to tell one search from the other. If present, the responding client must copy this field to each search result.
-TR | Tiger tree hash root, encoded with base32. 
 TY | File type, to be chosen from the following (none specified = any type): 1 = File, 2 = Directory
 ___
 
@@ -550,7 +549,7 @@ environment.
 Contexts: F, T, C, U
 
 Search result, made up of fields syntactically and structurally similar to the
-INF ones. Clients must provide filename, TTH root, size and token, but are
+INF ones. Clients must provide filename, session hash, size and token, but are
 encouraged to supply additional fields if available. Passive results should be
 limited to 5 and active to 10.
 
@@ -725,13 +724,14 @@ intended to be used both for identifying files and for protocol purposes such
 as CID generation and password negotiation
 
 ==== TIGR for shared files
-TIGR supporting clients must share only files hashed using Merkle Hash trees,
-as defined by http://www.open-content.net/specs/draft-jchapweske-thex-02.html.
-The Tiger algorithm, as specified by
-http://www.cs.technion.ac.il/~biham/Reports/Tiger/ functions as the hash
-algorithm. A base segment size of 1024 bytes must be used when generating the
-tree, but clients may then discard parts of the tree as long as at least 7
-levels are kept or a block granularity of 64 KiB is achieved.
+All files shared by TIGR supporting clients must have been hashed using Merkle
+Hash trees, as defined by
+http://www.open-content.net/specs/draft-jchapweske-thex-02.html.  The Tiger
+algorithm, as specified by http://www.cs.technion.ac.il/~biham/Reports/Tiger/
+functions as the hash algorithm. A base segment size of 1024 bytes must be
+used when generating the tree, but clients may then discard parts of the tree
+as long as at least 7 levels are kept or a block granularity of 64 KiB is
+achieved.
 
 Generally, the root of the tree (TTH) serves to identify a file uniquely.
 Searches use it and it must be present in the file list. Further, the root of
