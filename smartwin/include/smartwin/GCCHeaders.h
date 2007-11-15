@@ -135,6 +135,19 @@
 		#endif // !_WIN64
 	#endif // !GetWindowLongPtr
 
+	// these should be defined in CommCtrl.h, but the one in MinGW doesn't define them... (2007-11-06)
+	#if (_WIN32_WINNT >= 0x0501)
+	#ifndef HDF_SORTUP
+	#define HDF_SORTUP              0x0400
+	#endif
+	#ifndef HDF_SORTDOWN
+	#define HDF_SORTDOWN            0x0200
+	#endif
+	#ifndef LVS_EX_DOUBLEBUFFER
+	#define LVS_EX_DOUBLEBUFFER     0x00010000
+	#endif
+	#endif
+
 	#ifdef max
 	#undef max
 	#endif

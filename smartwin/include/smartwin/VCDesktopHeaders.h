@@ -31,6 +31,17 @@
 #ifndef __GNUC__
 #ifndef WINCE
 
+	// Need to tell msvc which version of Windows we're targeting!
+#ifndef _WIN32_WINNT
+	#define _WIN32_WINNT 0x0501
+#endif
+#ifndef _WIN32_IE
+	#define _WIN32_IE 0x0501
+#endif
+#ifndef WINVER
+	#define WINVER 0x501
+#endif
+
 	static const SmartWin::Platform CurrentPlatform = SmartWin::SmartWinDesktop;
 
 	#define SMARTWIN_WNDCLASSEX WNDCLASSEX
@@ -42,18 +53,11 @@
 	#include <winuser.h>
 	#include <windowsx.h>
 	#include <Shellapi.h>
+	#include <shlwapi.h>
 	#include <commctrl.h>
+	#include <commdlg.h>
 	#include <assert.h>
 
-/* No longer needed because we replaced std:min() with (std:min)()
-	#ifdef max
-	#undef max
-	#endif
-
-	#ifdef min
-	#undef min
-	#endif
-*/
 #pragma comment( lib, "Comdlg32.lib" )
 	#pragma comment( lib, "comctl32.lib" )
 #ifdef DLL

@@ -10,6 +10,8 @@
 * Update to ADC 0.14
 * Fixed pressing enter in the notepad (poy)
 * Fixed user commands params (poy)
+* Readded list view double buffering (thanks poy)
+* Fixed some msvc compile issues (thanks james ross)
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)

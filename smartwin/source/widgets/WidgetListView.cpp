@@ -61,15 +61,6 @@ void WidgetListView::setSort(int aColumn, SortType aType, bool aAscending) {
 		updateArrow();
 }
 
-// these should be defined in CommCtrl.h, but the one in MinGW doesn't define them... (2007-11-06)
-#if (_WIN32_WINNT >= 0x0501)
-#ifndef HDF_SORTUP
-#define HDF_SORTUP              0x0400
-#endif
-#ifndef HDF_SORTDOWN
-#define HDF_SORTDOWN            0x0200
-#endif
-#endif
 void WidgetListView::updateArrow() {
 	if(ComCtl6) {
 		int flag = isAscending() ? HDF_SORTUP : HDF_SORTDOWN;
