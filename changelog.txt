@@ -9,6 +9,7 @@
 * Fixed clicking in the header of the favorite hubs list view (poy)
 * Update to ADC 0.14
 * Fixed pressing enter in the notepad (poy)
+* Fixed user commands params (poy)
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)

@@ -1148,7 +1148,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 		menu->setDefaultItem(IDC_GETLIST);
 		prepareMenu(menu, UserCommand::CONTEXT_CHAT, client->getHubUrl());
 		
-		inTabMenu = true;
+		inTabMenu = false;
 		
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
