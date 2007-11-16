@@ -477,7 +477,7 @@ HN   | integer | Hubs where user is a normal user and in NORMAL state
 HR   | integer | Hubs where user is registered (had to supply password) and in NORMAL state
 HO   | integer | Hubs where user is op and in NORMAL state
 TO   | string  | Token, as received in RCM/CTM, when establishing a C-C connection.
-CT   | integer | Client (user) type, 1=bot, 2=registered user, 3=operator, 4=hub owner, 5=hub (used when the hub sends an INF about itself)
+CT   | integer | Client (user) type, 1=bot, 2=registered user, 4=operator, 8=hub owner, 16=hub (used when the hub sends an INF about itself). Multiple types are specified by adding the numbers together.
 AW   | integer | 1=Away, 2=Extended away, not interested in hub chat (hubs may skip sending broadcast type MSG commands to clients with this flag)
 SU   | string  | Comma-separated list of feature FOURCC's. This notifies other clients of extended capabilities of the connecting client. Use with discretion.
 ___
