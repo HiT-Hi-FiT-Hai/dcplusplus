@@ -61,6 +61,11 @@ void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility
 	}
 }
 
+bool Identity::isClientType(ClientType ct) const {
+	int type = Util::toInt(get("CT"));
+	return (type & ct) == ct;
+}
+
 string Identity::getTag() const {
 	if(!get("TA").empty())
 		return get("TA");
@@ -69,6 +74,7 @@ string Identity::getTag() const {
 	return "<" + get("VE") + ",M:" + string(isTcpActive() ? "A" : "P") + ",H:" + get("HN") + "/" +
 		get("HR") + "/" + get("HO") + ",S:" + get("SL") + ">";
 }
+
 string Identity::get(const char* name) const {
 	Lock l(cs);
 	InfMap::const_iterator i = info.find(*(short*)name);

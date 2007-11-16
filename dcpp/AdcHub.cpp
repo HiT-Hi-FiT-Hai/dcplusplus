@@ -527,6 +527,24 @@ void AdcHub::password(const string& pwd) {
 	}
 }
 
+static void addParam(StringMap& lastInfoMap, AdcCommand& c, const string& var, const string& value) {
+	StringMapIter i = lastInfoMap.find(var);
+	
+	if(i != lastInfoMap.end()) {
+		if(i->second != value) {
+			if(value.empty()) {
+				lastInfoMap.erase(i);
+			} else { 
+				i->second = value;
+			}
+			c.addParam(var, value);
+		}
+	} else if(!value.empty()) {
+		lastInfoMap.insert(make_pair(var, value));
+		c.addParam(var, value);
+	}
+}
+
 void AdcHub::info(bool /*alwaysSend*/) {
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 		return;
@@ -534,51 +552,30 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	reloadSettings(false);
 
 	AdcCommand c(AdcCommand::CMD_INF, AdcCommand::TYPE_BROADCAST);
-	string tmp;
 
-	StringMapIter i;
-#define ADDPARAM(var, content) \
-	tmp = content; \
-	if((i = lastInfoMap.find(var)) != lastInfoMap.end()) { \
-		if(i->second != tmp) { \
-			if(tmp.empty()) \
-				lastInfoMap.erase(i); \
-			else \
-				i->second = tmp; \
-			c.addParam(var, tmp); \
-		} \
-	} else if(!tmp.empty()) { \
-		c.addParam(var, tmp); \
-		lastInfoMap[var] = tmp; \
-	}
+	updateCounts(false);
 
-	updateCounts(false); \
-
-	ADDPARAM("ID", ClientManager::getInstance()->getMyCID().toBase32());
-	ADDPARAM("PD", ClientManager::getInstance()->getMyPID().toBase32());
-	ADDPARAM("NI", getCurrentNick());
-	ADDPARAM("DE", getCurrentDescription());
-	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
-	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
-	ADDPARAM("SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
-	ADDPARAM("EM", SETTING(EMAIL));
-	ADDPARAM("HN", Util::toString(counts.normal));
-	ADDPARAM("HR", Util::toString(counts.registered));
-	ADDPARAM("HO", Util::toString(counts.op));
-	ADDPARAM("VE", "++ " VERSIONSTRING);
-	ADDPARAM("US", Util::toString((long)(Util::toDouble(SETTING(UPLOAD_SPEED))*1024*1024)));
+	addParam(lastInfoMap, c, "ID", ClientManager::getInstance()->getMyCID().toBase32());
+	addParam(lastInfoMap, c, "PD", ClientManager::getInstance()->getMyPID().toBase32());
+	addParam(lastInfoMap, c, "NI", getCurrentNick());
+	addParam(lastInfoMap, c, "DE", getCurrentDescription());
+	addParam(lastInfoMap, c, "SL", Util::toString(SETTING(SLOTS)));
+	addParam(lastInfoMap, c, "SS", ShareManager::getInstance()->getShareSizeString());
+	addParam(lastInfoMap, c, "SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
+	addParam(lastInfoMap, c, "EM", SETTING(EMAIL));
+	addParam(lastInfoMap, c, "HN", Util::toString(counts.normal));
+	addParam(lastInfoMap, c, "HR", Util::toString(counts.registered));
+	addParam(lastInfoMap, c, "HO", Util::toString(counts.op));
+	addParam(lastInfoMap, c, "VE", "++ " VERSIONSTRING);
+	addParam(lastInfoMap, c, "US", Util::toString((long)(Util::toDouble(SETTING(UPLOAD_SPEED))*1024*1024)));
+	addParam(lastInfoMap, c, "AW", Util::getAway() ? "1" : Util::emptyString);
 
 	if(SETTING(MAX_DOWNLOAD_SPEED) > 0) {
-		ADDPARAM("DS", Util::toString((SETTING(MAX_DOWNLOAD_SPEED)*1024*8)));
+		addParam(lastInfoMap, c, "DS", Util::toString((SETTING(MAX_DOWNLOAD_SPEED)*1024*8)));
 	} else {
-		ADDPARAM("DS", Util::emptyString);
+		addParam(lastInfoMap, c, "DS", Util::emptyString);
 	}
 
-	if(Util::getAway()){
-		ADDPARAM("AW", '1');
-	} else {
-		ADDPARAM("AW", Util::emptyString);
-	}
 
 	string su;
 	if(CryptoManager::getInstance()->TLSOk()) {
@@ -587,24 +584,22 @@ void AdcHub::info(bool /*alwaysSend*/) {
 
 	if(ClientManager::getInstance()->isActive()) {
 		if(BOOLSETTING(NO_IP_OVERRIDE) && !SETTING(EXTERNAL_IP).empty()) {
-			ADDPARAM("I4", Socket::resolve(SETTING(EXTERNAL_IP)));
+			addParam(lastInfoMap, c, "I4", Socket::resolve(SETTING(EXTERNAL_IP)));
 		} else {
-			ADDPARAM("I4", "0.0.0.0");
+			addParam(lastInfoMap, c, "I4", "0.0.0.0");
 		}
-		ADDPARAM("U4", Util::toString(SearchManager::getInstance()->getPort()));
+		addParam(lastInfoMap, c, "U4", Util::toString(SearchManager::getInstance()->getPort()));
 		su += TCP4_FEATURE + ",";
 		su += UDP4_FEATURE + ",";
 	} else {
-		ADDPARAM("I4", "");
-		ADDPARAM("U4", "");
+		addParam(lastInfoMap, c, "I4", "");
+		addParam(lastInfoMap, c, "U4", "");
 	}
 
 	if(!su.empty()) {
 		su.erase(su.size() - 1);
 	}
-	ADDPARAM("SU", su);
-
-#undef ADDPARAM
+	addParam(lastInfoMap, c, "SU", su);
 
 	if(c.getParameters().size() > 0) {
 		send(c);
