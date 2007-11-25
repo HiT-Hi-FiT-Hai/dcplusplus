@@ -963,11 +963,17 @@ LRESULT DirectoryListingFrame::handleXButtonUp(WPARAM wParam, LPARAM lParam) {
 bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 	if(c == VK_BACK) {
 		up();
-	} else if(c == VK_LEFT && WinUtil::isAlt()) {
+		return true;
+	}
+	if(c == VK_LEFT && WinUtil::isAlt()) {
 		back();
-	} else if(c == VK_RIGHT && WinUtil::isAlt()) {
+		return true;
+	}
+	if(c == VK_RIGHT && WinUtil::isAlt()) {
 		forward();
-	} else if(c == VK_RETURN) {
+		return true;
+	}
+	if(c == VK_RETURN) {
 		if(files->getSelectedCount() == 1) {
 			ItemInfo* ii = files->getSelectedData();
 			if(ii->type == ItemInfo::DIRECTORY) {
@@ -985,6 +991,7 @@ bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 		} else {
 			downloadFiles(SETTING(DOWNLOAD_DIRECTORY));
 		}
+		return true;
 	}
-	return true;
+	return false;
 }
