@@ -39,10 +39,11 @@ public:
 	typedef WidgetFactory< SmartWin::WidgetChildWindow > BaseType;
 protected:
 
-	MDIChildFrame(SmartWin::WidgetTabView* tabView, const tstring& title, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) : 
-		BaseType(tabView->getTab()), 
-		lastFocus(NULL), 
-		reallyClose(false) 
+	MDIChildFrame(SmartWin::WidgetTabView* tabView, const tstring& title, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
+		BaseType(tabView->getTab()),
+		lastFocus(NULL),
+		alwaysSameFocus(false),
+		reallyClose(false)
 	{
 		typename ThisType::Seed cs;
 		cs.style |= WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
@@ -88,12 +89,14 @@ protected:
 	void postClosing() { }
 	
 	template<typename W>
-	void addWidget(W* widget) {
+	void addWidget(W* widget, bool alwaysFocus = false) {
 		addColor(widget);
-		if(lastFocus == NULL) {
+		if(alwaysFocus || (lastFocus == NULL)) {
 			lastFocus = widget->handle();
 			::SetFocus(lastFocus);
 		}
+		if(alwaysFocus)
+			alwaysSameFocus = true;
 	}
 	
 	void setDirty(SettingsManager::IntSetting setting) {
@@ -115,7 +118,9 @@ protected:
 	}
 	
 private:
-	HWND lastFocus;
+	HWND lastFocus; // last focused widget
+	bool alwaysSameFocus; // always focus the same widget
+
 	bool reallyClose;
 	
 	void addColor(SmartWin::WidgetComboBox* widget) {
@@ -145,7 +150,7 @@ private:
 			if(lastFocus) {
 				::SetFocus(lastFocus);
 			}
-		} else {
+		} else if(!alwaysSameFocus) {
 			HWND focus = ::GetFocus();
 			if(focus != NULL && ::IsChild(static_cast<T*>(this)->handle(), focus))
 				lastFocus = focus;

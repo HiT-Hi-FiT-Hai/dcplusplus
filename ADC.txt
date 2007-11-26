@@ -479,7 +479,7 @@ HO   | integer | Hubs where user is op and in NORMAL state
 TO   | string  | Token, as received in RCM/CTM, when establishing a C-C connection.
 CT   | integer | Client (user) type, 1=bot, 2=registered user, 4=operator, 8=hub owner, 16=hub (used when the hub sends an INF about itself). Multiple types are specified by adding the numbers together.
 AW   | integer | 1=Away, 2=Extended away, not interested in hub chat (hubs may skip sending broadcast type MSG commands to clients with this flag)
-SU   | string  | Comma-separated list of feature FOURCC's. This notifies other clients of extended capabilities of the connecting client. Use with discretion.
+SU   | string  | Comma-separated list of feature FOURCC's. This notifies other clients of extended capabilities of the connecting client.
 ___
 
 Hubs may mandate or discard any set of fields, but obviously the more the
@@ -686,8 +686,8 @@ starting at <start_pos>.
 ``_
 Client                       | Hub
 ___
-HSUP ADBASE <other-features> |
-                             | ISUP ADBASE <other-features>
+HSUP ADBASE ADTIGR ...       |
+                             | ISUP ADBASE ADTIGR ...
                              | ISID <client-sid>
                              | IINF HU1 HI1 ...
 BINF <my-sid> ID... PD...    |
@@ -704,8 +704,8 @@ ___
 ``_
 Client                       | Server
 ___
-CSUP ADBASE <other-features> |
-                             | CSUP ADBASE <other-features>
+CSUP ADBASE ADTIGR ...       |
+                             | CSUP ADBASE ADTIGR ...
                              | CINF IDxxx
 CINF IDxxx TO<token>         |
                              | CGET ...

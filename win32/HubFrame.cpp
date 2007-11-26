@@ -88,7 +88,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		message = createTextBox(cs);
-		addWidget(message);
+		addWidget(message, true);
 		message->onKeyDown(std::tr1::bind(&HubFrame::handleMessageKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&HubFrame::handleMessageChar, this, _1));
 	}

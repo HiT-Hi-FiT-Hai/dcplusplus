@@ -102,7 +102,7 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& re
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
 		message = createTextBox(cs);
-		addWidget(message);
+		addWidget(message, true);
 		message->onKeyDown(std::tr1::bind(&PrivateFrame::handleKeyDown, this, _1));
 		message->onChar(std::tr1::bind(&PrivateFrame::handleChar, this, _1));
 	}
