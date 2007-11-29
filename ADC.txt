@@ -15,9 +15,9 @@ this structure. ADC stands for anything you would like it to stand for;
 Advanced Direct Connect is the first neutral thing that springs to mind =).
 
 Many ideas for the protocol come from Jan Vidar Krey's DCTNG draft. Other
-contributors include Dustin Brody, Walter Doekes, Timmo Stange, Fredrik Ullner
-and others. Jon Hess contributed the original Direct Connect idea through the
-Neo-Modus Direct Connect client / hub.
+contributors include Dustin Brody, Walter Doekes, Timmo Stange, Fredrik
+Ullner, Fredrik Stenberg and others. Jon Hess contributed the original Direct
+Connect idea through the Neo-Modus Direct Connect client / hub.
 
 The latest draft version of this document can be downloaded from
 $URL$. 
@@ -27,9 +27,9 @@ This version correspods to $Revision$.
 === General
 * All messages begin with a four-letter word. The first letter designates how
   the message should be sent and the other three specify what to do.
-* Parameters are separated by space, and a newline (codepoint 0x0a) ends each
+* Parameters are separated by space and a newline (codepoint 0x0a) ends each
   message. The string "\s" escapes space, "\n" newline and "\\" backslash.
-  This version of the protocol reserves all other escapes for future use; and
+  This version of the protocol reserves all other escapes for future use; 
   any message containing unknown escapes must be discarded.
 * All text must be sent as UTF-8 encoded Unicode in normalization form C.
 * Clients must ignore unknown/badly formatted messages. Hubs must ignore
@@ -39,18 +39,18 @@ This version correspods to $Revision$.
   IPv4 and RFC 1884 form for IPv6. Hub addresses must be specified in URL
   form, with "adc" as protocol specifier ("adc://server:port/").
 * Numbers are sent as strings in standard floating point notation, using '.'
-  as the decimal separator and no thousands separator. Integers are numbers
+  as the decimal separator and without a thousands separator. Integers are numbers
   with neither a decimal portion nor an exponent. Applications should be
   prepared to handle at least 64-bit signed integers and 64-bit floating point
   numbers. A '-' prefix negates.
-* SIDs, PIDs, CIDs and short binary data are sent as base32-encoded strings.
+* SIDs, PIDs, CIDs, and short binary data are sent as base32-encoded strings.
   Long binary data transfers should use the file transfer mechanism with named
   roots.
-* Extension names, protocol names and other text not entered by the user may
+* Extension names, protocol names, and other text not entered by the user may
   only include viewable characters that can be encoded by one byte in the
   UTF-8 encoding (Unicode codepoints 33-127). ADC is case-sensitive, requiring
   upper case for command names.
-* Some of the commands and functionality require the use of a hash function.
+* Some commands and functionality require the use of a hash function.
   The hash function is negotiated during session setup and stays the same for
   the duration of the session.
   
@@ -85,11 +85,11 @@ separator             ::= ' '
 ..................
 
 === Message types
-Message type specifies how messages should be routed, and thus which
-additional fields can be found in the message header. Clients should use the
-most limiting type, in terms of recipients, that makes sense for a particular
-message when sending it to the hub for distribution. Clients should disregard
-the message type when interpreting the message (after having parsed it). The
+Message type specifies how messages should be routed and thus which additional
+fields can be found in the message header. Clients should use the most
+limiting type, in terms of recipients, that makes sense for a particular
+message when sending it to the hub for distribution. Clients should use the
+message type only to aid in parsing the message and otherwise ignore it. The
 following message types are defined:
 
 [separator="|"]
@@ -106,9 +106,9 @@ ___
 
 === Session hash
 Certain commands require the use of a hash function. The hash function used is
-negotiated each time a new connection is established using the SUP mechanism.
+negotiated using the SUP mechanism each time a new connection is established.
 When a client first connects, it offers a set of hash functions as SUP
-features. The server picks one of the offered functions and communicates the
+features. The server picks one of the offered functions and communicates its
 choice to the client by placing it before any other hash features present in
 the first SUP from the server. Clients and hubs are required to support at
 least one hash function, used both for protocol purposes and file
@@ -116,7 +116,7 @@ identification.
 
 === Client identification
 Each client is identified by three different IDs, Session ID (SID), Private ID
-(PID) and Client ID (CID).
+(PID), and Client ID (CID).
 
 ==== Session ID
 Session IDs appear in all communication that interacts with the hub. They
@@ -126,7 +126,7 @@ base32 encoded string.
 
 ==== Private ID
 Private IDs globally identify a unique client. They function during initial
-protocol negotiation to generate the CID, and are invisible to other clients.
+protocol negotiation to generate the CID and are invisible to other clients.
 PIDs should be generated in a way to avoid collisions, for example using the
 hash of the current time and primary network card MAC address if sufficient
 randomness cannot be generated. Hubs and clients may not disclose PIDs to
@@ -144,18 +144,18 @@ must be prepared to handle CIDs of varying lengths.
 == Files
 === File names and structure
 Filenames are relative to a fictive root in the user's share. "/" separates
-directories, and each file or directory name must be unique in a
-case-insensitive context. All printable characters, including whitespace, are
-valid names for files, the "/" and "\" being escaped by "\". Clients must then
-properly filter the filename for the target file system, as well as request
-filenames from other clients according to these rules. The special names "."
-and ".." may not occur as a directory or filename; any file list received
-containing those must be ignored. All directory names must end with a "/". 
+directories; each file or directory name must be unique in a case-insensitive
+context. All printable characters, including whitespace, are valid names for
+files, the "/" and "\" being escaped by "\". Clients must then properly filter
+the filename for the target file system, as well as request filenames from
+other clients according to these rules. The special names "." and ".." may not
+occur as a directory or filename; any file list received containing those must
+be ignored. All directory names must end with a "/". 
 
 Shared files are identified relative to the unnamed root "/"
 ("/dir/subdir/filename.ext"), while extensions can add named roots to this
 namespace. For example, "TTH/..." from the TIGR extension uses the named root
-"TTH" to identify files by their tiger tree hash.  It is invalid for names
+"TTH" to identify files by their Tiger tree hash.  It is invalid for names
 from the unnamed root to appear in the share without also being identified by
 at least one hash value.
 
@@ -322,7 +322,7 @@ parameters have been omitted.
 During login, the client goes through a number of stages. An action is valid
 only in the NORMAL stage unless otherwise noted. The stages, in login order,
 are PROTOCOL (feature support discovery), IDENTIFY (user identification,
-static checks), VERIFY (password check), NORMAL (normal operation) and DATA
+static checks), VERIFY (password check), NORMAL (normal operation), and DATA
 (for binary transfers). 
 
 === Client – Client communication
@@ -340,7 +340,7 @@ Contexts: F, T, C, U
 
 States: All
 
-Status code in the form "xyy" where x specifies severity, and yy the specific
+Status code in the form "xyy" where x specifies severity and yy the specific
 error code. The severity and error code are treated separately, the same error
 could occur at different severity levels.
 
@@ -348,7 +348,7 @@ Severity values:
 
 [separator="|"]
 ``_
-0 | Success (used for confirming commands), error code must be "00" and an additional flag "FC" contains the FOURCC of the command being confirmed if applicable.
+0 | Success (used for confirming commands), error code must be "00", and an additional flag "FC" contains the FOURCC of the command being confirmed if applicable.
 1 | Recoverable (error but no disconnect)
 2 | Fatal (disconnect)
 ___
@@ -380,10 +380,12 @@ x0 | Same as 00, but categorized according to the rough structure set below
 44 | Invalid state, flag "FC" the FOURCC of the offending command.
 45 | Required feature missing, flag "FC" specifies the FOURCC of the missing feature. 
 46 | Invalid IP supplied in INF, flag "I4" or "I6" specifies the correct IP.
+47 | No hash support overlap in SUP between client and hub.
 50 | Client-client / file transfer error
 51 | File not available
 52 | File part not available
 53 | Slots full
+54 | No hash support overlap in SUP between clients.
 ___
 
 Description:
@@ -410,11 +412,11 @@ which is this protocol. The server may use any feature that the client
 indicates support for regardless of its own SUP, and vice versa. 
 
 This command can also be used to dynamically add / remove features, 'AD'
-meaning add and 'RM' remove. 
+meaning add and 'RM' meaning remove. 
 
 When the server receives this message the first time, it should reply in kind,
-assign an SID to the client, send an INF about itself and move to the IDENTIFY
-state. 
+assign an SID to the client, send an INF about itself, and move to the
+IDENTIFY state. 
 
 ==== SID
  SID sid
@@ -437,7 +439,7 @@ States: IDENTIFY, NORMAL
 This command updates the information about a client. Each time this is
 received, it means that the fields specified have been added or updated. Each
 field is identified by two characters, directly followed by the data
-associated with that field. A field (and the effects of its presence) can be
+associated with that field. A field, and the effects of its presence, can be
 canceled by sending the field name without data. Clients must ignore fields
 they don't recognize. Most of these fields are only interesting in the
 client-hub communication; during client-client this command is mainly used for
@@ -458,7 +460,7 @@ Code | Type    | Description
 ___
 ID   | base32  | The CID of the client. Mandatory for C-C connections.
 PD   | base32  | The PID of the client. Hubs must check that the hash(PID) == CID and then discard the field before broadcasting it to other clients. Must not be sent in C-C connections.
-I4   | IPv4    | IPv4 address without port. A zero address (0.0.0.0) means that the server should replace it with the real IP of the client. Hubs must check that a specified address corresponds to what the client is connecting from to avoid DoS attacks, and only allow trusted clients to specify a different address. Clients should use the zero address when connecting, but may opt not to do so at the user's discretion. Any client that supports incoming TCPv4 connections must also add the feature TCP4 to their SU field.
+I4   | IPv4    | IPv4 address without port. A zero address (0.0.0.0) means that the server should replace it with the real IP of the client. Hubs must check that a specified address corresponds to what the client is connecting from to avoid DoS attacks and only allow trusted clients to specify a different address. Clients should use the zero address when connecting, but may opt not to do so at the user's discretion. Any client that supports incoming TCPv4 connections must also add the feature TCP4 to their SU field.
 I6   | IPv6    | IPv6 address without port. A zero address (::) means that the server should replace it with the IP of the client. Any client that supports incoming TCPv6 connections must also add the feature TCP6 to their SU field.
 U4   | integer | Client UDP port. Any client that supports incoming UDPv4 packets must also add the feature UDP4 to their SU field. 
 U6   | integer | Same as U4, but for IPv6. Any client that supports incoming UDPv6 packets must also add the feature UDP6 to their SU field.
@@ -486,17 +488,16 @@ Hubs may mandate or discard any set of fields, but obviously the more the
 merrier (and clients could be disconnected for not sending some of them).
 
 Note; normally one would only accept an IP (I4 or I6) that is the same as the
-source IP of the connecting peer, allowing otherwise for trusted users only
-because your could channel DDoS attacks. Use caution when accepting unknown
-IPs. Only for trusted users one may allow a different IP or an IP from a
-different domain (Ipv4 or Ipv6) to be specified. If you fail to do this, your
-hub can be used as a medium for DDoS attacks.
+source IP of the connecting peer. Use caution when accepting unknown IPs. Only
+for trusted users one may allow a different IP or an IP from a different
+domain (IPv4 or IPv6) to be specified. If you fail to do this, your hub can be
+used as a medium for DDoS attacks.
 
 When a hub receives this message in the IDENTIFY state, it should proceed to
 the VERIFY state by sending a PAS request or NORMAL state by starting sending
 the INF of all clients, where the INF of the connecting client must come last.
-When the hub that sends an INF about itself, the NI becomes hub name, VE
-version etc.
+When the hub that sends an INF about itself, the NI becomes hub name, the VE
+the hub version, and DE the hub description.
 
 When the server receives this during client-client communication in IDENTIFY
 state, it should verify the ID and TO fields, send an INF about itself and
@@ -539,8 +540,8 @@ TO | Token, string. Used by the client to tell one search from the other. If pre
 TY | File type, to be chosen from the following (none specified = any type): 1 = File, 2 = Directory
 ___
 
-Searching by UDP is subject to IP spoofing, and can thus be used to initiate a
-DoS attack. Clients should only accept incoming UDP searches in a trusted
+Searching by UDP is subject to IP spoofing; can thus be used to initiate a DoS
+attack. Clients should only accept incoming UDP searches in a trusted
 environment.
 
 ==== RES
@@ -568,11 +569,11 @@ Contexts: F, T
 
 Connect to me. Used by active clients that want to connect to someone, or in
 response to RCM. Only TCP active clients may send this. <token> is a string
-that identifies the incoming connection triggered by this command, and must be
+that identifies the incoming connection triggered by this command and must be
 present in the INF command of the connecting client. Clients should not accept
 incoming connections with a token they did not send earlier. <protocol> is an
 arbitrary string specifying the protocol to connect with; in the case of an
-ADC compliant connection attempt, this should be the string "ADC/1.0". If
+ADC 1.0 compliant connection attempt, this should be the string "ADC/1.0". If
 <protocol> is supported, a response to RCM must copy the <token> and
 <protocol> fields directly. If a protocol is not supported, a DSTA must be
 sent indicating this.
@@ -674,9 +675,9 @@ unnamed root.
 Contexts: C
 
 Transitions to DATA state. The sender will transmit until <bytes> bytes of
-binary data have been sent, and then will transition back to NORMAL state. The
-parameters essentially correspond to the GET parameters, but if <bytes> equals
--1 it must be replaced by the number of bytes needed to complete the file
+binary data have been sent and then will transition back to NORMAL state. The
+parameters correspond to the GET parameters except that if <bytes> equals -1
+it must be replaced by the number of bytes needed to complete the file
 starting at <start_pos>.
 
 == Examples
@@ -715,19 +716,23 @@ ___
 
 == Standard Extensions
 
+Apart from supporting BASE, clients may opt to implement one or more of the 
+following standard extensions. To be considered for addition, an extension must
+be well documented and must be implemented and tested in the real world. 
+
 === TIGR - Tiger tree hash support
 
 ==== General
 
-This extension adds tiger tree hash support to the base protocol. It is
-intended to be used both for identifying files and for protocol purposes such
-as CID generation and password negotiation
+This extension adds Tiger tree hash support to the base protocol. It is
+intended to be used both for identifying files and for purposes such as CID
+generation and password negotiation
 
 ==== TIGR for shared files
 All files shared by TIGR supporting clients must have been hashed using Merkle
 Hash trees, as defined by
 http://www.open-content.net/specs/draft-jchapweske-thex-02.html.  The Tiger
-algorithm, as specified by http://www.cs.technion.ac.il/~biham/Reports/Tiger/
+algorithm, as specified by http://www.cs.technion.ac.il/~biham/Reports/Tiger/,
 functions as the hash algorithm. A base segment size of 1024 bytes must be
 used when generating the tree, but clients may then discard parts of the tree
 as long as at least 7 levels are kept or a block granularity of 64 KiB is
@@ -735,23 +740,23 @@ achieved.
 
 Generally, the root of the tree (TTH) serves to identify a file uniquely.
 Searches use it and it must be present in the file list. Further, the root of
-the file list must also be available, and discoverable via GFI. A client may
+the file list must also be available and discoverable via GFI. A client may
 also request the rest of the tree using the normal client-client transfer
 procedure. The root must be encoded using base32 encoding when converted to
 text.
 
 In the file list, each File element carries an additional attribute "TTH"
-containing the base32-encoded value of the tiger tree root.
+containing the base32-encoded value of the Tiger tree root.
 
 In the GET/GFI type, the full tree may be accessed using the "tthl" type.
 
 "tthl" transfers send the largest set of leaves available) as a binary stream
 of leaf data, right-to-left, with no spacing in between them.  <start_pos>
 must be set to 0 and <bytes> to -1 when requesting the data.  <bytes> must
-contain the total binary size of the leaf stream in SND, and by dividing this
+contain the total binary size of the leaf stream in SND; by dividing this
 length by the individual hash length, the number of leaves, and thus the leaf
-level can be deducted. The received leaves can then be used to reconstruct the
-entire tree, and the resulting root must match the root of the file (this
+level, can be deducted. The received leaves can then be used to reconstruct
+the entire tree, and the resulting root must match the root of the file (this
 verifies the integrity of the tree itself). Identifier must be a TTH root
 value from the "TTH/" root.
 
@@ -762,19 +767,13 @@ In SCH and GFI, the following attributes are added:
 
 [separator="|"]
 ``_
-TR | Tiger tree hash root, encoded with base32.
+TR | Tiger tree Hash root, encoded with base32.
 TD | Tree depth, index of the highest level of tree data available, root-only = 0, first level (2 leaves) = 1, second level = 2, etc...
 ___
 
 === BZIP – File list compressed with bzip2
 This extension adds a special file "files.xml.bz2" in the unnamed root of the
 share which contains "files.xml" compressed with bzip2 1.0.3+ (www.bzip.org).
-
-=== REGX - Regular expressions in searches
-This extension adds to the SCH command an additional operator RE that takes a
-Perl regular expression (http://perldoc.perl.org/perlre.html) with full
-Unicode support. Clients that support this must send "REGX" in their support
-string in the INF SU field.
 
 === ZLIB - Compressed communication
 There are two variants of zlib support, FULL and GET, and only one should be
@@ -801,11 +800,11 @@ uncompressed bytes to be transferred.
 === UCMD - User commands
 User commands are used to send hub-specific commands to the client which
 provide useful shortcuts for the user. These commands contain strings which
-must be sent back to the hub, and parameter substitutions in the strings. Each
+must be sent back to the hub and parameter substitutions in the strings. Each
 user command has a display name, a string to be sent to the hub, and one or
 more categories where it may appear. The strings passed to the hub must first
 be passed through a dictionary replacement that replaces all keywords in the
-string, and then through the equivalent of the C standard function "strftime",
+string and then through the equivalent of the C standard function "strftime",
 with the current time.
 
 ==== CMD
@@ -826,7 +825,7 @@ CT | Context, the following flags summed:
    | 2 = User list command, client and user parameters
    | 4 = Search result command, client, user and file parameters
    | 8 = File list command, client, user and file parameters
-TT | The full text to be sent to hub, including fourcc and any parameters
+TT | The full text to be sent to hub, including FOURCC and any parameters
 CO | 1 = Constrained, when sending this command on multiple users (for example in search results), constrain it to once per CID only
 SP | 1 = Insert separator instead of command name (name must still be present to uniquely identify the command)
 ___
@@ -843,7 +842,7 @@ Client parameters
 ``_
 myCID | Client CID
 mySID | Client SID
-myXX  | One for each flag on that particular hub, for example myI4, myNI, etc.
+myXX  | One for each flag on that particular hub; for example, myI4 and myNI
 ___
 
 User parameters
@@ -852,7 +851,7 @@ User parameters
 ``_
 userCID | User CID
 userSID | SID of the user
-userXX  | One for each flag the user sent, for example userI4, userNI, etc.
+userXX  | One for each flag the user sent; for example, userI4 and userNI
 ___
 
 File parameters
@@ -868,25 +867,5 @@ Hub parameters
 ``_
 hubXX | One for each flag of the hub
 ___
-
-=== ADCS - Secure ADC <work-in-progress>
-==== Introduction
-Secure ADC connections can be established using a TLS tunnel, both for hub and
-for client connections. Certificates can be used to authenticate both hub and
-user, for example by making the hub the root CA, and only allow clients signed
-by the hub to connect. Ephemeral keys should be use to ensure forward secrecy
-when possible.
-
-==== Client-Hub encryption
-TLS client-hub connections can be initiated either by negotiating the feature
-"ADCS" on connection or by using the protocol adcs:// when initiating the
-connection. Hubs can choose to request a certificate for the user on login,
-and use this certificate to replace password-based login.
-
-==== Client-Client encryption
-TLS client-client connections can be established either by negotiating the
-feature "ADCS" on connection or by specifying "ADCS/1.0" in the CTM protocol
-field. Clients supporting encrypted connections must indicate this in the INF
-SU field with "ADCS"
 
 // vim: set syntax=asciidoc:

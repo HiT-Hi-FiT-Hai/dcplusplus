@@ -1,0 +1,32 @@
+= Proposed ADC extensions
+
+These are extensions which have been proposed but lack implementation, detail
+or testing before they can be added to the real ADC spec.
+
+=== REGX - Regular expressions in searches
+This extension adds to the SCH command an additional operator RE that takes a
+Perl regular expression (http://perldoc.perl.org/perlre.html) with full
+Unicode support. Clients that support this must send "REGX" in their support
+string in the INF SU field.
+
+=== ADCS - Secure ADC <work-in-progress>
+==== Introduction
+Secure ADC connections can be established using a TLS tunnel, both for hub and
+for client connections. Certificates can be used to authenticate both hub and
+user, for example by making the hub the root CA, and only allow clients signed
+by the hub to connect. Ephemeral keys should be use to ensure forward secrecy
+when possible.
+
+==== Client-Hub encryption
+TLS client-hub connections can be initiated either by negotiating the feature
+"ADCS" on connection or by using the protocol adcs:// when initiating the
+connection. Hubs can choose to request a certificate for the user on login,
+and use this certificate to replace password-based login.
+
+==== Client-Client encryption
+TLS client-client connections can be established either by negotiating the
+feature "ADCS" on connection or by specifying "ADCS/1.0" in the CTM protocol
+field. Clients supporting encrypted connections must indicate this in the INF
+SU field with "ADCS"
+
+// vim: set syntax=asciidoc:
