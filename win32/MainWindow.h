@@ -169,6 +169,8 @@ private:
 	LRESULT trayMessage(WPARAM wParam, LPARAM lParam);
 	LRESULT handleCopyData(WPARAM wParam, LPARAM lParam);
 	LRESULT handleWhereAreYou(WPARAM wParam, LPARAM lParam);
+
+	void handleTabsTitleChanged(const SmartUtil::tstring& title);
 	
 	void layout();
 	bool eachSecond();

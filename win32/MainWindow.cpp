@@ -309,6 +309,7 @@ void MainWindow::initTabs() {
 	WidgetTabView::Seed cs;
 	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
 	tabs = createTabView(cs);
+	tabs->onTitleChanged(std::tr1::bind(&MainWindow::handleTabsTitleChanged, this, _1));
 	paned->setFirst(tabs);
 }
 
@@ -327,7 +328,7 @@ bool MainWindow::filter(MSG& msg) {
 		return true;
 	}
 
-	SmartWin::Widget* active = getMDIParent()->getActive();
+	SmartWin::WidgetChildWindow* active = getMDIParent()->getActive();
 	if(active) {
 		if(::IsDialogMessage( active->handle(), & msg )) {
 			return true;
@@ -335,6 +336,10 @@ bool MainWindow::filter(MSG& msg) {
 	}
 
 	return false;
+}
+
+void MainWindow::handleTabsTitleChanged(const SmartUtil::tstring& title) {
+	setText(title.empty() ? _T(APPNAME) _T(" ") _T(VERSIONSTRING) : _T(APPNAME) _T(" ") _T(VERSIONSTRING) _T(" - [") + title + _T("]"));
 }
 
 void MainWindow::handleExit() {
@@ -788,7 +793,7 @@ void MainWindow::handleMatchAll() {
 
 void MainWindow::handleActivate(bool active) {
 	// Forward to active tab window
-	Widget* w = tabs->getActive();
+	WidgetChildWindow* w = tabs->getActive();
 	if(w) {
 		w->sendMessage(WM_ACTIVATE, active ? WA_ACTIVE : WA_INACTIVE);
 	}

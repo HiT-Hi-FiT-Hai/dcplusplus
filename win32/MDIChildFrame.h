@@ -66,6 +66,7 @@ protected:
 		onSized(std::tr1::bind(&ThisType::handleSized, this, _1));
 		onActivate(std::tr1::bind(&ThisType::handleActivate, this, _1));
 		onCommand(std::tr1::bind(&ThisType::close, this, true), IDC_CLOSE_WINDOW);
+		addDlgCodeMessage(this);
 	}
 	
 	virtual ~MDIChildFrame() {
@@ -90,7 +91,10 @@ protected:
 	
 	template<typename W>
 	void addWidget(W* widget, bool alwaysFocus = false) {
+		addDlgCodeMessage(widget);
+
 		addColor(widget);
+
 		if(alwaysFocus || (lastFocus == NULL)) {
 			lastFocus = widget->handle();
 			::SetFocus(lastFocus);
@@ -122,7 +126,19 @@ private:
 	bool alwaysSameFocus; // always focus the same widget
 
 	bool reallyClose;
-	
+
+	void addDlgCodeMessage(SmartWin::WidgetComboBox* widget) {
+		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+		SmartWin::WidgetTextBox* text = widget->getTextBox();
+		if(text)
+			text->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+	}
+
+	template<typename W>
+	void addDlgCodeMessage(W* widget) {
+		widget->onRaw(std::tr1::bind(&ThisType::handleGetDlgCode, this, _1), SmartWin::Message(WM_GETDLGCODE));
+	}
+
 	void addColor(SmartWin::WidgetComboBox* widget) {
 		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
 		SmartWin::WidgetTextBox* text = widget->getTextBox();
@@ -156,7 +172,13 @@ private:
 				lastFocus = focus;
 		}
 	}
-	
+
+	LRESULT handleGetDlgCode(WPARAM wParam) {
+		 if(wParam != VK_TAB)
+			return DLGC_WANTMESSAGE;
+		return 0;
+	}
+
 	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
 		canvas.setBkColor(WinUtil::bgColor);
 		canvas.setTextColor(WinUtil::textColor);

@@ -153,6 +153,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
 		
 		filterSel = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		addWidget(filterSel);
 
 		//populate the filter list with the column names
 		for(int j=0; j<COLUMN_LAST; j++) {
@@ -160,12 +161,14 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		}
 		filterSel->addValue(CTSTRING(ANY));
 		filterSel->setSelectedIndex(COLUMN_LAST);
+		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
 	}
 	{
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
-		filter->onChar(std::tr1::bind(&PublicHubsFrame::handleFilterChar, this, _1));
+		addWidget(filter);
+		filter->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleFilterKeyDown, this, _1));
 	}
 	
 	initStatus();
@@ -306,7 +309,7 @@ void PublicHubsFrame::updateList() {
 	updateStatus();
 }
 
-HRESULT PublicHubsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
+LRESULT PublicHubsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	if((wParam == FINISHED) || (wParam == LOADED_FROM_CACHE)) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
 		entries = FavoriteManager::getInstance()->getPublicHubs();
@@ -516,13 +519,12 @@ bool PublicHubsFrame::handleKeyDown(int c) {
 }
 
 void PublicHubsFrame::handleListSelChanged() {
-	printf("x\n");
 	FavoriteManager::getInstance()->setHubList(pubLists->getSelectedIndex());
 	entries = FavoriteManager::getInstance()->getPublicHubs();
 	updateList();
 }
 
-bool PublicHubsFrame::handleFilterChar(int c) {
+bool PublicHubsFrame::handleFilterKeyDown(int c) {
 	if(c == VK_RETURN) {
 		filterString = Text::fromT(filter->getText());
 		updateList();

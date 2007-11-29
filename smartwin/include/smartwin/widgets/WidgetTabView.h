@@ -2,6 +2,7 @@
 #define WIDGETTABVIEW_H_
 
 #include "WidgetTabSheet.h"
+#include "WidgetWindow.h"
 #include "../WindowClass.h"
 #include <list>
 #include <vector>
@@ -30,23 +31,26 @@ public:
 		/// Fills with default parameters
 		Seed();
 	};
-	
-	template<typename T>
-	void add(T* w, const IconPtr& icon) {
+
+	void add(WidgetChildWindow* w, const IconPtr& icon) {
 		addWidget(w, icon, w->getText(), w->getVisible());
 		w->onTextChanging(std::tr1::bind(&WidgetTabView::handleTextChanging, this, w, _1));
 	}
 
-	void mark(Widget* w);
+	void mark(WidgetChildWindow* w);
 	
-	void remove(Widget* w);
+	void remove(WidgetChildWindow* w);
 	
 	void next(bool reverse = false);
 	
-	Widget* getActive();
-	void setActive(Widget* w) { setActive(findTab(w)); }
-	
-	void onTabContextMenu(Widget* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f);
+	WidgetChildWindow* getActive();
+	void setActive(WidgetChildWindow* w) { setActive(findTab(w)); }
+
+	void onTitleChanged(const std::tr1::function<void (const SmartUtil::tstring&)>& f) {
+		titleChangedFunction = f;
+	}
+
+	void onTabContextMenu(WidgetChildWindow* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f);
 
 	bool filter(const MSG& msg);
 	
@@ -68,8 +72,8 @@ protected:
 private:
 	enum { MAX_TITLE_LENGTH = 20 };
 	struct TabInfo {
-		TabInfo(Widget* w_) : w(w_) { }
-		Widget* w;
+		TabInfo(WidgetChildWindow* w_) : w(w_) { }
+		WidgetChildWindow* w;
 		std::tr1::function<bool (const ScreenCoordinate& pt)> handleContextMenu;
 	};
 	
@@ -77,24 +81,26 @@ private:
 	
 	WidgetTabSheet::ObjectType tab;
 
+	std::tr1::function<void (const SmartUtil::tstring&)> titleChangedFunction;
+
 	bool inTab;
 	
-	typedef std::list<Widget*> WindowList;
+	typedef std::list<WidgetChildWindow*> WindowList;
 	typedef WindowList::iterator WindowIter;
 	WindowList viewOrder;
 	Rectangle clientSize;
 	std::vector<IconPtr> icons;
 	int active;
 	
-	int findTab(Widget* w);
+	int findTab(WidgetChildWindow* w);
 	
 	void setActive(int i);
-	TabInfo* getTabInfo(Widget* w);
+	TabInfo* getTabInfo(WidgetChildWindow* w);
 	TabInfo* getTabInfo(int i);
 	
-	void setTop(Widget* w);
+	void setTop(WidgetChildWindow* w);
 
-	bool handleTextChanging(Widget* w, const SmartUtil::tstring& newText);
+	bool handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText);
 	bool handleSized(const WidgetSizedEventResult&);
 	void handleTabSelected();
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
@@ -103,8 +109,8 @@ private:
 	void layout();
 	
 	int addIcon(const IconPtr& icon);
-	void addWidget(Widget* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible);
-	void swapWidgets(Widget* oldW, Widget* newW);
+	void addWidget(WidgetChildWindow* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible);
+	void swapWidgets(WidgetChildWindow* oldW, WidgetChildWindow* newW);
 };
 
 inline WidgetTabSheet::ObjectType WidgetTabView::getTab()

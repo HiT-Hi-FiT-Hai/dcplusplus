@@ -14,6 +14,8 @@
 * Fixed some msvc compile issues (thanks james ross)
 * Fixed key handling in file listings (poy)
 * Message always focused first in chats (poy)
+* Fixed filter in public hubs (thanks poy)
+* Fixed missing title changes on tab change (thanks poy)
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)

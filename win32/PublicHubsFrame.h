@@ -121,7 +121,7 @@ private:
 	void layout();
 	bool preClosing();
 	void postClosing();
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	void handleConfigure();
 	void handleRefresh();
 	void handleConnect();
@@ -130,7 +130,7 @@ private:
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	bool handleKeyDown(int c);
 	void handleListSelChanged();
-	bool handleFilterChar(int c);
+	bool handleFilterKeyDown(int c);
 	
 	bool checkNick();
 	void updateStatus();

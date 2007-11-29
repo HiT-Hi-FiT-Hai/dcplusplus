@@ -33,7 +33,7 @@ void WidgetTabView::create(const Seed & cs) {
 	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
 }
 
-void WidgetTabView::addWidget(Widget* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible) {
+void WidgetTabView::addWidget(WidgetChildWindow* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible) {
 	int image = addIcon(icon);
 	size_t tabs = tab->size();
 	TabInfo* ti = new TabInfo(w);
@@ -53,17 +53,17 @@ void WidgetTabView::addWidget(Widget* w, const IconPtr& icon, const SmartUtil::t
 	layout();
 }
 
-Widget* WidgetTabView::getActive() {
+WidgetChildWindow* WidgetTabView::getActive() {
 	TabInfo* ti = getTabInfo(tab->getSelectedIndex());
 	return ti ? ti->w : 0;
 }
 
-void WidgetTabView::remove(Widget* w) {
+void WidgetTabView::remove(WidgetChildWindow* w) {
 	if(viewOrder.size() > 1 && viewOrder.back() == w) {
 		setActive(*(--(--viewOrder.end())));
 	}
 	
-	Widget* cur = getTabInfo(tab->getSelectedIndex())->w;
+	WidgetChildWindow* cur = getTabInfo(tab->getSelectedIndex())->w;
 	
 	viewOrder.remove(w);
 
@@ -74,9 +74,13 @@ void WidgetTabView::remove(Widget* w) {
 		layout();
 	}
 	active = findTab(cur);
+
+	// when no tab is opened
+	if(titleChangedFunction && (active == -1))
+		titleChangedFunction(SmartUtil::tstring());
 }
 
-void WidgetTabView::onTabContextMenu(Widget* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f) {
+void WidgetTabView::onTabContextMenu(WidgetChildWindow* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f) {
 	TabInfo* ti = getTabInfo(w);
 	if(ti) {
 		ti->handleContextMenu = f;
@@ -91,7 +95,7 @@ void WidgetTabView::setActive(int i) {
 	handleTabSelected();
 }
 
-void WidgetTabView::swapWidgets(Widget* oldW, Widget* newW) {
+void WidgetTabView::swapWidgets(WidgetChildWindow* oldW, WidgetChildWindow* newW) {
 	sendMessage(WM_SETREDRAW, FALSE);
 
 	if(oldW) {
@@ -126,16 +130,19 @@ void WidgetTabView::handleTabSelected() {
 		setTop(ti->w);
 	active = i;
 	tab->setHighlight(i, false);
+
+	if(titleChangedFunction)
+		titleChangedFunction(ti->w->getText());
 }
 
-void WidgetTabView::mark(Widget* w) {
+void WidgetTabView::mark(WidgetChildWindow* w) {
 	int i = findTab(w);
 	if(i != -1 && i != tab->getSelectedIndex()) {
 		tab->setHighlight(i, true);
 	}
 }
 
-int WidgetTabView::findTab(Widget* w) {
+int WidgetTabView::findTab(WidgetChildWindow* w) {
 	for(size_t i = 0; i < tab->size(); ++i) {
 		if(getTabInfo(i)->w == w) {
 			return static_cast<int>(i);
@@ -144,7 +151,7 @@ int WidgetTabView::findTab(Widget* w) {
 	return -1;
 }
 
-WidgetTabView::TabInfo* WidgetTabView::getTabInfo(Widget* w) {
+WidgetTabView::TabInfo* WidgetTabView::getTabInfo(WidgetChildWindow* w) {
 	return getTabInfo(findTab(w));
 }
 
@@ -152,11 +159,14 @@ WidgetTabView::TabInfo* WidgetTabView::getTabInfo(int i) {
 	return i == -1 ? 0 : reinterpret_cast<TabInfo*>(tab->getData(i));
 }
 
-bool WidgetTabView::handleTextChanging(Widget* w, const SmartUtil::tstring& newText) {
+bool WidgetTabView::handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
 		tab->setHeader(i, cutTitle(newText));
 		layout();
+
+		if(titleChangedFunction)
+			titleChangedFunction(newText);
 	}
 	return true;
 }
@@ -195,7 +205,7 @@ void WidgetTabView::next(bool reverse) {
 	if(viewOrder.size() < 2) {
 		return;
 	}
-	Widget* wnd = getActive();
+	WidgetChildWindow* wnd = getActive();
 	if(!wnd) {
 		return;
 	}
@@ -230,7 +240,7 @@ void WidgetTabView::next(bool reverse) {
 	return;
 }
 
-void WidgetTabView::setTop(Widget* wnd) {
+void WidgetTabView::setTop(WidgetChildWindow* wnd) {
 	WindowIter i = std::find(viewOrder.begin(), viewOrder.end(), wnd);
 	if(i != viewOrder.end() && i != --viewOrder.end()) {
 		viewOrder.erase(i);

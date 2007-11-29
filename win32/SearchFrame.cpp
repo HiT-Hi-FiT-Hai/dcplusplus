@@ -71,12 +71,6 @@ void SearchFrame::closeAll() {
 		(*i)->close(true);
 }
 
-static HRESULT allKeys(WPARAM wParam, LPARAM) {
-	if(wParam != VK_TAB)
-		return DLGC_WANTMESSAGE;
-	return 0;
-}
-
 SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
 	BaseType(mdiParent, TSTRING(SEARCH), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
 	searchLabel(0),
@@ -132,7 +126,6 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		for(TStringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
 			searchBox->insertValue(0, *i);
 		}
-		searchBox->getTextBox()->onRaw(std::tr1::bind(&allKeys, _1, _2), SmartWin::Message(WM_GETDLGCODE));
 		searchBox->getTextBox()->onKeyDown(std::tr1::bind(&SearchFrame::handleSearchKeyDown, this, _1));
 	}
 
