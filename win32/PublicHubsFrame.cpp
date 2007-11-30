@@ -157,9 +157,9 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		//populate the filter list with the column names
 		for(int j=0; j<COLUMN_LAST; j++) {
-			filterSel->addValue(CTSTRING_I(columnNames[j]));
+			filterSel->addValue(TSTRING_I(columnNames[j]));
 		}
-		filterSel->addValue(CTSTRING(ANY));
+		filterSel->addValue(TSTRING(ANY));
 		filterSel->setSelectedIndex(COLUMN_LAST);
 		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
 	}

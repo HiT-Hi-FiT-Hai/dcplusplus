@@ -105,7 +105,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 	
 	{
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE;
+		cs.style = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
 		filter = createTextBox(cs);
 		addWidget(filter);
 		filter->onKeyUp(std::tr1::bind(&HubFrame::handleFilterKey, this, _1));
@@ -118,7 +118,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		for(int j=0; j<COLUMN_LAST; j++) {
 			filterType->addValue(TSTRING_I(columnNames[j]));
 		}
-		filterType->addValue(CTSTRING(ANY));
+		filterType->addValue(TSTRING(ANY));
 		filterType->setSelectedIndex(COLUMN_LAST);
 		filterType->onSelectionChanged(std::tr1::bind(&HubFrame::updateUserList, this, (UserInfo*)0));
 	}
@@ -206,6 +206,8 @@ void HubFrame::layout() {
 	int xfilter = showUsers->getChecked() ? std::min(r.size.x / 4, 200l) : 0;
 	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
 	message->setBounds(rm);
+
+	r.size.y -= rm.size.y + border;
 	
 	rm.pos.x += rm.size.x + border;
 	rm.size.x = showUsers->getChecked() ? xfilter * 2 / 3 - border : 0;
@@ -213,9 +215,8 @@ void HubFrame::layout() {
 	
 	rm.pos.x += rm.size.x + border;
 	rm.size.x = showUsers->getChecked() ? xfilter / 3 - border : 0;
+	rm.size.y += 140;
 	filterType->setBounds(rm);
-	
-	r.size.y -= rm.size.y + border;
 
 	bool checked = showUsers->getChecked();
 	if(checked && !paned->getSecond()) {
