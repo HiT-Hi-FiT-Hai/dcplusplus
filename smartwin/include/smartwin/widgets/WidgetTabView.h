@@ -32,10 +32,7 @@ public:
 		Seed();
 	};
 
-	void add(WidgetChildWindow* w, const IconPtr& icon) {
-		addWidget(w, icon, w->getText(), w->getVisible());
-		w->onTextChanging(std::tr1::bind(&WidgetTabView::handleTextChanging, this, w, _1));
-	}
+	void add(WidgetChildWindow* w, const IconPtr& icon);
 
 	void mark(WidgetChildWindow* w);
 	
@@ -109,7 +106,6 @@ private:
 	void layout();
 	
 	int addIcon(const IconPtr& icon);
-	void addWidget(WidgetChildWindow* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible);
 	void swapWidgets(WidgetChildWindow* oldW, WidgetChildWindow* newW);
 };
 

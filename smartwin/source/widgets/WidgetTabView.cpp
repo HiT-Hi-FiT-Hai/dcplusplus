@@ -33,15 +33,15 @@ void WidgetTabView::create(const Seed & cs) {
 	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
 }
 
-void WidgetTabView::addWidget(WidgetChildWindow* w, const IconPtr& icon, const SmartUtil::tstring& title, bool visible) {
+void WidgetTabView::add(WidgetChildWindow* w, const IconPtr& icon) {
 	int image = addIcon(icon);
 	size_t tabs = tab->size();
 	TabInfo* ti = new TabInfo(w);
-	tab->addPage(cutTitle(title), tabs, reinterpret_cast<LPARAM>(ti), image);
+	tab->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(ti), image);
 
 	viewOrder.push_front(w);
 
-	if(viewOrder.size() == 1 || visible) {
+	if(viewOrder.size() == 1 || w->getVisible()) {
 		if(viewOrder.size() > 1) {
 			swapWidgets(viewOrder.back(), w);
 		} else {
@@ -51,6 +51,8 @@ void WidgetTabView::addWidget(WidgetChildWindow* w, const IconPtr& icon, const S
 	}
 	
 	layout();
+
+	w->onTextChanging(std::tr1::bind(&WidgetTabView::handleTextChanging, this, w, _1));
 }
 
 WidgetChildWindow* WidgetTabView::getActive() {
@@ -165,7 +167,7 @@ bool WidgetTabView::handleTextChanging(WidgetChildWindow* w, const SmartUtil::ts
 		tab->setHeader(i, cutTitle(newText));
 		layout();
 
-		if(titleChangedFunction)
+		if((i == active) && titleChangedFunction)
 			titleChangedFunction(newText);
 	}
 	return true;
