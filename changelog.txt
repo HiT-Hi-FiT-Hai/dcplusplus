@@ -17,6 +17,7 @@
 * Fixed filter in public hubs (thanks poy)
 * Fixed missing title changes on tab change (thanks poy)
 * Fixed user list filter (poy)
+* Readded chat message box auto-scroll (poy)
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)
