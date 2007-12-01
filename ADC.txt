@@ -415,7 +415,7 @@ This command can also be used to dynamically add / remove features, 'AD'
 meaning add and 'RM' meaning remove. 
 
 When the hub receives this message in PROTOCOL state, it should reply in kind,
-assign and SID to the client, optionally send an INF about itself, and move to
+assign a SID to the client, optionally send an INF about itself, and move to
 the IDENTIFY state.
 
 When the server receives this message in a client-client connection in the
