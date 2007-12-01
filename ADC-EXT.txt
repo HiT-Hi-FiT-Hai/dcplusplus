@@ -29,4 +29,75 @@ feature "ADCS" on connection or by specifying "ADCS/1.0" in the CTM protocol
 field. Clients supporting encrypted connections must indicate this in the INF
 SU field with "ADCS"
 
+=== UCMD - User commands
+User commands are used to send hub-specific commands to the client which
+provide useful shortcuts for the user. These commands contain strings which
+must be sent back to the hub and parameter substitutions in the strings. Each
+user command has a display name, a string to be sent to the hub, and one or
+more categories where it may appear. The strings passed to the hub must first
+be passed through a dictionary replacement that replaces all keywords in the
+string and then through the equivalent of the C standard function "strftime",
+with the current time.
+
+==== CMD
+ CMD name
+
+Context: F
+
+Name uniquely (per hub) identifies a particular user command. The name may
+contain "/" to indicate a logical structure on the viewing client, where each
+"/" introduces a new submenu level. Other than name, the command also has a
+number of flags that further detail what to do with it.
+
+[separator="|"]
+``_
+RM | 1 = Remove command
+CT | Context, the following flags summed:
+   | 1 = Hub command, client parameters only
+   | 2 = User list command, client and user parameters
+   | 4 = Search result command, client, user and file parameters
+   | 8 = File list command, client, user and file parameters
+TT | The full text to be sent to hub, including FOURCC and any parameters
+CO | 1 = Constrained, when sending this command on multiple users (for example in search results), constrain it to once per CID only
+SP | 1 = Insert separator instead of command name (name must still be present to uniquely identify the command)
+___
+
+Keywords are specified using "%[keyword]". Unknown keywords must be replaced
+by the empty string. Additionally, all %-substitutions of the C function
+"strftime" must be supported.
+
+The following tables specify the parameters that must be available.
+
+Client parameters
+
+[separator="|"]
+``_
+myCID | Client CID
+mySID | Client SID
+myXX  | One for each flag on that particular hub; for example, myI4 and myNI
+___
+
+User parameters
+
+[separator="|"]
+``_
+userCID | User CID
+userSID | SID of the user
+userXX  | One for each flag the user sent; for example, userI4 and userNI
+___
+
+File parameters
+
+[separator="|"]
+``_
+fileXX | One for each flag contained within a search result or file list entry (see RES)
+___
+
+Hub parameters
+
+[separator="|"]
+``_
+hubXX | One for each flag of the hub
+___
+
 // vim: set syntax=asciidoc:

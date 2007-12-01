@@ -1,12 +1,12 @@
 = ADC Protocol Draft
 Jacek Sieka <arnetheduck@gmail.com>
-0.14, November 2007
+1.0, December 2007
 
 == Abstract
 ADC is a text protocol for a client-server network similar to Neo-Modus'
 Direct Connect (NMDC). The goal is to create a simple protocol that doesn't
 require much effort neither in hub nor client, and is yet extensible. It
-addresses some of the issues in the NMDC protocol, but definitely not all.
+addresses some of the issues in the NMDC protocol, but not all.
 
 The same protocol structure is used both for client-hub and client-client
 communication. This document is split into two parts; the first shows the
@@ -14,7 +14,7 @@ structure of the protocol, while the second implements a specific system using
 this structure. ADC stands for anything you would like it to stand for;
 Advanced Direct Connect is the first neutral thing that springs to mind =).
 
-Many ideas for the protocol come from Jan Vidar Krey's DCTNG draft. Other
+Many ideas for the protocol come from Jan Vidar Krey's DCTNG draft. Major 
 contributors include Dustin Brody, Walter Doekes, Timmo Stange, Fredrik
 Ullner, Fredrik Stenberg and others. Jon Hess contributed the original Direct
 Connect idea through the Neo-Modus Direct Connect client / hub.
@@ -414,9 +414,13 @@ indicates support for regardless of its own SUP, and vice versa.
 This command can also be used to dynamically add / remove features, 'AD'
 meaning add and 'RM' meaning remove. 
 
-When the server receives this message the first time, it should reply in kind,
-assign an SID to the client, send an INF about itself, and move to the
-IDENTIFY state. 
+When the hub receives this message in PROTOCOL state, it should reply in kind,
+assign and SID to the client, optionally send an INF about itself, and move to
+the IDENTIFY state.
+
+When the server receives this message in a client-client connection in the
+PROTOCOL state, it should reply in kind, send an INF about itself, and move to
+the IDENTIFY state. 
 
 ==== SID
  SID sid
@@ -493,11 +497,12 @@ for trusted users one may allow a different IP or an IP from a different
 domain (IPv4 or IPv6) to be specified. If you fail to do this, your hub can be
 used as a medium for DDoS attacks.
 
-When a hub receives this message in the IDENTIFY state, it should proceed to
-the VERIFY state by sending a PAS request or NORMAL state by starting sending
-the INF of all clients, where the INF of the connecting client must come last.
-When the hub that sends an INF about itself, the NI becomes hub name, the VE
-the hub version, and DE the hub description.
+When a hub receives this message in the IDENTIFY state, it should verify the
+PD and ID fields, and proceed to the VERIFY state by sending a PAS request or
+NORMAL state by sending its own INF (unless it already did so previously),
+then the INF of all connected clients in NORMAL state, and last the INF of the
+connecting client. When the hub that sends an INF about itself, the NI becomes
+hub name, the VE the hub version, and DE the hub description.
 
 When the server receives this during client-client communication in IDENTIFY
 state, it should verify the ID and TO fields, send an INF about itself and
@@ -796,76 +801,5 @@ GET (the sending client may ignore a request for a compressed transfer, but
 may also use it even when not requested by the receiver). The <bytes>
 parameter of the GET and SND commands is to be interpreted as the number of
 uncompressed bytes to be transferred.
-
-=== UCMD - User commands
-User commands are used to send hub-specific commands to the client which
-provide useful shortcuts for the user. These commands contain strings which
-must be sent back to the hub and parameter substitutions in the strings. Each
-user command has a display name, a string to be sent to the hub, and one or
-more categories where it may appear. The strings passed to the hub must first
-be passed through a dictionary replacement that replaces all keywords in the
-string and then through the equivalent of the C standard function "strftime",
-with the current time.
-
-==== CMD
- CMD name
-
-Context: F
-
-Name uniquely (per hub) identifies a particular user command. The name may
-contain "/" to indicate a logical structure on the viewing client, where each
-"/" introduces a new submenu level. Other than name, the command also has a
-number of flags that further detail what to do with it.
-
-[separator="|"]
-``_
-RM | 1 = Remove command
-CT | Context, the following flags summed:
-   | 1 = Hub command, client parameters only
-   | 2 = User list command, client and user parameters
-   | 4 = Search result command, client, user and file parameters
-   | 8 = File list command, client, user and file parameters
-TT | The full text to be sent to hub, including FOURCC and any parameters
-CO | 1 = Constrained, when sending this command on multiple users (for example in search results), constrain it to once per CID only
-SP | 1 = Insert separator instead of command name (name must still be present to uniquely identify the command)
-___
-
-Keywords are specified using "%[keyword]". Unknown keywords must be replaced
-by the empty string. Additionally, all %-substitutions of the C function
-"strftime" must be supported.
-
-The following tables specify the parameters that must be available.
-
-Client parameters
-
-[separator="|"]
-``_
-myCID | Client CID
-mySID | Client SID
-myXX  | One for each flag on that particular hub; for example, myI4 and myNI
-___
-
-User parameters
-
-[separator="|"]
-``_
-userCID | User CID
-userSID | SID of the user
-userXX  | One for each flag the user sent; for example, userI4 and userNI
-___
-
-File parameters
-
-[separator="|"]
-``_
-fileXX | One for each flag contained within a search result or file list entry (see RES)
-___
-
-Hub parameters
-
-[separator="|"]
-``_
-hubXX | One for each flag of the hub
-___
 
 // vim: set syntax=asciidoc:
