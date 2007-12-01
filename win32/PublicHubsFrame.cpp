@@ -120,7 +120,32 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		hubs->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleKeyDown, this, _1));
 		hubs->onContextMenu(std::tr1::bind(&PublicHubsFrame::handleContextMenu, this, _1));
 	}
-	
+
+	{
+		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
+		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
+		filter = createTextBox(cs);
+		addWidget(filter);
+		filter->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleFilterKeyDown, this, _1));
+	}
+
+	{
+		filterSel = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		addWidget(filterSel);
+
+		//populate the filter list with the column names
+		for(int j=0; j<COLUMN_LAST; j++) {
+			filterSel->addValue(TSTRING_I(columnNames[j]));
+		}
+		filterSel->addValue(TSTRING(ANY));
+		filterSel->setSelectedIndex(COLUMN_LAST);
+		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
+
+		pubLists = createComboBox(WinUtil::Seeds::comboBoxStatic);
+		addWidget(pubLists);
+		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
+	}
+
 	{
 		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		
@@ -145,32 +170,8 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		cs.caption = TSTRING(FILTER);
 		filterDesc = createButton(cs);
 		filterDesc->setFont(WinUtil::font);
-
 	}
 
-	{
-		pubLists = createComboBox(WinUtil::Seeds::comboBoxStatic);
-		pubLists->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::handleListSelChanged, this));
-		
-		filterSel = createComboBox(WinUtil::Seeds::comboBoxStatic);
-		addWidget(filterSel);
-
-		//populate the filter list with the column names
-		for(int j=0; j<COLUMN_LAST; j++) {
-			filterSel->addValue(TSTRING_I(columnNames[j]));
-		}
-		filterSel->addValue(TSTRING(ANY));
-		filterSel->setSelectedIndex(COLUMN_LAST);
-		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
-	}
-	{
-		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
-		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_AUTOHSCROLL;
-		filter = createTextBox(cs);
-		addWidget(filter);
-		filter->onKeyDown(std::tr1::bind(&PublicHubsFrame::handleFilterKeyDown, this, _1));
-	}
-	
 	initStatus();
 
 	FavoriteManager::getInstance()->addListener(this);
