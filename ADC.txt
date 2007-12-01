@@ -1,4 +1,4 @@
-= ADC Protocol Draft
+= ADC Protocol
 Jacek Sieka <arnetheduck@gmail.com>
 1.0, December 2007
 
@@ -19,9 +19,14 @@ contributors include Dustin Brody, Walter Doekes, Timmo Stange, Fredrik
 Ullner, Fredrik Stenberg and others. Jon Hess contributed the original Direct
 Connect idea through the Neo-Modus Direct Connect client / hub.
 
-The latest draft version of this document can be downloaded from
+== Version history
+The latest draft of the next version of this document as well as intermediate
+and older versions can be downloaded from
 $URL$. 
 This version correspods to $Revision$.
+
+=== Version 1.0, 2007-12-01
+* Initial release
 
 == Line protocol
 === General
@@ -29,8 +34,8 @@ This version correspods to $Revision$.
   the message should be sent and the other three specify what to do.
 * Parameters are separated by space and a newline (codepoint 0x0a) ends each
   message. The string "\s" escapes space, "\n" newline and "\\" backslash.
-  This version of the protocol reserves all other escapes for future use; 
-  any message containing unknown escapes must be discarded.
+  This version of the protocol reserves all other escapes for future use; any
+  message containing unknown escapes must be discarded.
 * All text must be sent as UTF-8 encoded Unicode in normalization form C.
 * Clients must ignore unknown/badly formatted messages. Hubs must ignore
   invalid messages and should dispatch unknown messages according to their
@@ -39,10 +44,10 @@ This version correspods to $Revision$.
   IPv4 and RFC 1884 form for IPv6. Hub addresses must be specified in URL
   form, with "adc" as protocol specifier ("adc://server:port/").
 * Numbers are sent as strings in standard floating point notation, using '.'
-  as the decimal separator and without a thousands separator. Integers are numbers
-  with neither a decimal portion nor an exponent. Applications should be
-  prepared to handle at least 64-bit signed integers and 64-bit floating point
-  numbers. A '-' prefix negates.
+  as the decimal separator and without a thousands separator. Integers are
+  numbers with neither a decimal portion nor an exponent. Applications should
+  be prepared to handle at least 64-bit signed integers and 64-bit floating
+  point numbers. A '-' prefix negates.
 * SIDs, PIDs, CIDs, and short binary data are sent as base32-encoded strings.
   Long binary data transfers should use the file transfer mechanism with named
   roots.
@@ -50,10 +55,10 @@ This version correspods to $Revision$.
   only include viewable characters that can be encoded by one byte in the
   UTF-8 encoding (Unicode codepoints 33-127). ADC is case-sensitive, requiring
   upper case for command names.
-* Some commands and functionality require the use of a hash function.
-  The hash function is negotiated during session setup and stays the same for
-  the duration of the session.
-  
+* Some commands and functionality require the use of a hash function.  The
+  hash function is negotiated during session setup and stays the same for the
+  duration of the session.
+
 === Message syntax
 ..................
 message               ::= message_body? eol
@@ -486,7 +491,7 @@ TO   | string  | Token, as received in RCM/CTM, when establishing a C-C connecti
 CT   | integer | Client (user) type, 1=bot, 2=registered user, 4=operator, 8=super user, 16=hub owner, 32=hub (used when the hub sends an INF about itself). Multiple types are specified by adding the numbers together.
 AW   | integer | 1=Away, 2=Extended away, not interested in hub chat (hubs may skip sending broadcast type MSG commands to clients with this flag)
 SU   | string  | Comma-separated list of feature FOURCC's. This notifies other clients of extended capabilities of the connecting client.
-RF   | string  | URL of referxrer (hub in case of redirect, web page)
+RF   | string  | URL of referer (hub in case of redirect, web page)
 ___
 
 NOTE: Normally one would only accept an IP (I4 or I6) that is the same as the
@@ -499,8 +504,8 @@ When a hub receives this message in the IDENTIFY state, it should verify the
 PD and ID fields, and proceed to the VERIFY state by sending a PAS request or
 NORMAL state by sending its own INF (unless it already did so previously),
 then the INF of all connected clients in NORMAL state, and last the INF of the
-connecting client. When the hub that sends an INF about itself, the NI becomes
-hub name, the VE the hub version, and DE the hub description.
+connecting client. When the hub sends an INF about itself, the NI becomes hub
+name, the VE the hub version, and DE the hub description.
 
 When the server receives this during client-client communication in IDENTIFY
 state, it should verify the ID and TO fields, send an INF about itself and
