@@ -229,6 +229,7 @@ private:
 	
 	void runUserCommand(const UserCommand& uc);
 
+	LRESULT handleMessageGetDlgCode();
 	bool handleMessageChar(int c);
 	bool handleMessageKeyDown(int c);
 	bool handleUsersKeyDown(int c);
