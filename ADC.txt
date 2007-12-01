@@ -486,12 +486,10 @@ TO   | string  | Token, as received in RCM/CTM, when establishing a C-C connecti
 CT   | integer | Client (user) type, 1=bot, 2=registered user, 4=operator, 8=hub owner, 16=hub (used when the hub sends an INF about itself). Multiple types are specified by adding the numbers together.
 AW   | integer | 1=Away, 2=Extended away, not interested in hub chat (hubs may skip sending broadcast type MSG commands to clients with this flag)
 SU   | string  | Comma-separated list of feature FOURCC's. This notifies other clients of extended capabilities of the connecting client.
+RF   | string  | URL of referxrer (hub in case of redirect, web page)
 ___
 
-Hubs may mandate or discard any set of fields, but obviously the more the
-merrier (and clients could be disconnected for not sending some of them).
-
-Note; normally one would only accept an IP (I4 or I6) that is the same as the
+NOTE: normally one would only accept an IP (I4 or I6) that is the same as the
 source IP of the connecting peer. Use caution when accepting unknown IPs. Only
 for trusted users one may allow a different IP or an IP from a different
 domain (IPv4 or IPv6) to be specified. If you fail to do this, your hub can be
