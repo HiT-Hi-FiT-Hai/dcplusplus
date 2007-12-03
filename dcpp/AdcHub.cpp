@@ -28,21 +28,22 @@
 #include "version.h"
 #include "Util.h"
 #include "UserCommand.h"
-#include "FavoriteManager.h"
 #include "CryptoManager.h"
 #include "ResourceManager.h"
 #include "LogManager.h"
 
 namespace dcpp {
 
-const string AdcHub::CLIENT_PROTOCOL("ADC/0.10");
-const string AdcHub::SECURE_CLIENT_PROTOCOL("ADCS/0.10");
+const string AdcHub::CLIENT_PROTOCOL("ADC/1.0");
+const string AdcHub::CLIENT_PROTOCOL_TEST("ADC/0.10");
+const string AdcHub::SECURE_CLIENT_PROTOCOL_TEST("ADCS/0.10");
 const string AdcHub::ADCS_FEATURE("ADC0");
 const string AdcHub::TCP4_FEATURE("TCP4");
 const string AdcHub::UDP4_FEATURE("UDP4");
 const string AdcHub::BASE_SUPPORT("ADBASE");
 const string AdcHub::BAS0_SUPPORT("ADBAS0");
 const string AdcHub::TIGR_SUPPORT("ADTIGR");
+const string AdcHub::UCM0_SUPPORT("ADUCM0");
 
 AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), sid(0) {
 	TimerManager::getInstance()->addListener(this);
@@ -288,10 +289,10 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 		token = c.getParam(2);
 	}
 
-	bool secure;
-	if(protocol == CLIENT_PROTOCOL) {
-		secure = false;
-	} else if(protocol == SECURE_CLIENT_PROTOCOL && CryptoManager::getInstance()->TLSOk()) {
+	bool secure = false;
+	if(protocol == CLIENT_PROTOCOL || protocol == CLIENT_PROTOCOL_TEST) {
+		// Nothing special
+	} else if(protocol == SECURE_CLIENT_PROTOCOL_TEST && CryptoManager::getInstance()->TLSOk()) {
 		secure = true;
 	} else {
 		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
@@ -328,9 +329,9 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 	bool hasToken = c.getParam("TO", 1, token);
 
 	bool secure;
-	if(protocol == CLIENT_PROTOCOL) {
+	if(protocol == CLIENT_PROTOCOL || protocol == CLIENT_PROTOCOL_TEST) {
 		secure = false;
-	} else if(protocol == SECURE_CLIENT_PROTOCOL && CryptoManager::getInstance()->TLSOk()) {
+	} else if(protocol == SECURE_CLIENT_PROTOCOL_TEST && CryptoManager::getInstance()->TLSOk()) {
 		secure = true;
 	} else {
 		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
@@ -352,9 +353,8 @@ void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
 	const string& name = c.getParam(0);
 	bool rem = c.hasFlag("RM", 1);
 	if(rem) {
-		int cmd = FavoriteManager::getInstance()->findUserCommand(name);
-		if(cmd != -1)
-			FavoriteManager::getInstance()->removeUserCommand(cmd);
+		fire(ClientListener::HubUserCommand(), this, (int)UserCommand::TYPE_REMOVE, 0, name, Util::emptyString);
+		return;
 	}
 	bool sep = c.hasFlag("SP", 1);
 	string sctx;
@@ -364,14 +364,14 @@ void AdcHub::handle(AdcCommand::CMD, AdcCommand& c) throw() {
 	if(ctx <= 0)
 		return;
 	if(sep) {
-		FavoriteManager::getInstance()->addUserCommand(UserCommand::TYPE_SEPARATOR, ctx, UserCommand::FLAG_NOSAVE, name, "", getHubUrl());
+		fire(ClientListener::HubUserCommand(), this, (int)UserCommand::TYPE_SEPARATOR, ctx, name, Util::emptyString);
 		return;
 	}
 	bool once = c.hasFlag("CO", 1);
 	string txt;
 	if(!c.getParam("TT", 1, txt))
 		return;
-	FavoriteManager::getInstance()->addUserCommand(once ? UserCommand::TYPE_RAW_ONCE : UserCommand::TYPE_RAW, ctx, UserCommand::FLAG_NOSAVE, name, txt, getHubUrl());
+	fire(ClientListener::HubUserCommand(), this, (int)(once ? UserCommand::TYPE_RAW_ONCE : UserCommand::TYPE_RAW), ctx, name, txt);
 }
 
 void AdcHub::sendUDP(const AdcCommand& cmd) throw() {
@@ -417,8 +417,19 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 
 	if(code == AdcCommand::ERROR_BAD_PASSWORD) {
 		setPassword(Util::emptyString);
+	} else if(code == AdcCommand::ERROR_PROTOCOL_UNSUPPORTED) {
+		string tmp;
+		if(c.getParam("PR", 1, tmp)) {
+			if(tmp == CLIENT_PROTOCOL) {
+				u->getUser()->setFlag(User::NO_ADC_1_0_PROTOCOL);
+			} else if(tmp == CLIENT_PROTOCOL_TEST) {
+				u->getUser()->setFlag(User::NO_ADC_0_10_PROTOCOL);
+			} else if(tmp == SECURE_CLIENT_PROTOCOL_TEST) {
+				u->getUser()->setFlag(User::NO_ADCS_0_10_PROTOCOL);
+				u->getUser()->unsetFlag(User::TLS);
+			}
+		}
 	}
-	// @todo Check for invalid protocol and unset TLS if necessary
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
 }
 
@@ -448,8 +459,26 @@ void AdcHub::connect(const OnlineUser& user, const string& token) {
 void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	if(state != STATE_NORMAL)
 		return;
+	
+	const string* proto = 0;
+	if(secure) {
+		if(user.getUser()->isSet(User::NO_ADCS_0_10_PROTOCOL)) {
+			/// @todo log
+			return;
+		}
+		proto = &SECURE_CLIENT_PROTOCOL_TEST;
+	} else {
+		if(user.getUser()->isSet(User::NO_ADC_1_0_PROTOCOL)) {
+			if(user.getUser()->isSet(User::NO_ADC_0_10_PROTOCOL)) {
+				/// @todo log
+				return;
+			}
+			proto = &CLIENT_PROTOCOL_TEST;
+		} else {
+			proto = &CLIENT_PROTOCOL;
+		}
+	}
 
-	const string& proto = secure ? SECURE_CLIENT_PROTOCOL : CLIENT_PROTOCOL;
 	if(ClientManager::getInstance()->isActive()) {
 		uint16_t port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
 		if(port == 0) {
@@ -457,9 +486,9 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 			LogManager::getInstance()->message(STRING(NOT_LISTENING));
 			return;
 		}
-		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID(), AdcCommand::TYPE_DIRECT).addParam(proto).addParam(Util::toString(port)).addParam(token));
+		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID(), AdcCommand::TYPE_DIRECT).addParam(*proto).addParam(Util::toString(port)).addParam(token));
 	} else {
-		send(AdcCommand(AdcCommand::CMD_RCM, user.getIdentity().getSID(), AdcCommand::TYPE_DIRECT).addParam(proto).addParam(token));
+		send(AdcCommand(AdcCommand::CMD_RCM, user.getIdentity().getSID(), AdcCommand::TYPE_DIRECT).addParam(*proto).addParam(token));
 	}
 }
 
@@ -576,7 +605,6 @@ void AdcHub::info(bool /*alwaysSend*/) {
 		addParam(lastInfoMap, c, "DS", Util::emptyString);
 	}
 
-
 	string su;
 	if(CryptoManager::getInstance()->TLSOk()) {
 		su += ADCS_FEATURE + ",";
@@ -637,7 +665,13 @@ void AdcHub::on(Connected) throw() {
 	lastInfoMap.clear();
 	sid = 0;
 
-	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam(BAS0_SUPPORT).addParam(TIGR_SUPPORT));
+	AdcCommand cmd(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB);
+	cmd.addParam(BAS0_SUPPORT).addParam(TIGR_SUPPORT);
+	
+	if(BOOLSETTING(HUB_USER_COMMANDS)) {
+		cmd.addParam(UCM0_SUPPORT);
+	}
+	send(cmd);
 }
 
 void AdcHub::on(Line, const string& aLine) throw() {

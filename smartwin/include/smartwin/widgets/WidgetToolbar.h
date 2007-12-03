@@ -171,8 +171,6 @@ protected:
 
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
 private:
-	std::map< unsigned int, SmartUtil::tstring > itsToolTips;
-
 	// Keep references
 	ImageListPtr itsNormalImageList;
 	ImageListPtr itsHotImageList;

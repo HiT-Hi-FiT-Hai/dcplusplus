@@ -40,7 +40,10 @@ public:
 		NMDC_BIT,
 		BOT_BIT,
 		TLS_BIT,
-		OLD_CLIENT_BIT
+		OLD_CLIENT_BIT,
+		NO_ADC_1_0_PROTOCOL_BIT,
+		NO_ADC_0_10_PROTOCOL_BIT,
+		NO_ADCS_0_10_PROTOCOL_BIT
 	};
 
 	/** Each flag is set if it's true in at least one hub */
@@ -51,7 +54,10 @@ public:
 		NMDC = 1<<NMDC_BIT,
 		BOT = 1<<BOT_BIT,
 		TLS = 1<<TLS_BIT,				//< Client supports TLS
-		OLD_CLIENT = 1<<OLD_CLIENT_BIT  //< Can't download - old client
+		OLD_CLIENT = 1<<OLD_CLIENT_BIT,  //< Can't download - old client
+		NO_ADC_1_0_PROTOCOL = 1<<NO_ADC_1_0_PROTOCOL_BIT,	//< Doesn't support "ADC/1.0" (dc++ <=0.703)
+		NO_ADC_0_10_PROTOCOL = 1<<NO_ADC_0_10_PROTOCOL_BIT,	//< Doesn't support "ADC/0.10"
+		NO_ADCS_0_10_PROTOCOL = 1<< NO_ADCS_0_10_PROTOCOL_BIT	//< Doesn't support "ADCS/0.10"
 	};
 
 	struct Hash {
@@ -90,8 +96,9 @@ public:
 		CT_BOT = 1,
 		CT_REGGED = 2,
 		CT_OP = 4,
-		CT_OWNER = 8,
-		CT_HUB = 16
+		CT_SU = 8,
+		CT_OWNER = 16,
+		CT_HUB = 32
 	};
 	
 	Identity() : sid(0) { }
@@ -117,7 +124,7 @@ public:
 	string getTag() const;
 	bool supports(const string& name) const;
 	bool isHub() const { return isClientType(CT_HUB) || !get("HU").empty(); }
-	bool isOp() const { return isClientType(CT_OP) || !get("OP").empty(); }
+	bool isOp() const { return isClientType(CT_OP) || isClientType(CT_SU) || isClientType(CT_OWNER) || !get("OP").empty(); }
 	bool isRegistered() const { return isClientType(CT_REGGED) || !get("RG").empty(); }
 	bool isHidden() const { return !get("HI").empty(); }
 	bool isBot() const { return isClientType(CT_BOT) || !get("BO").empty(); }

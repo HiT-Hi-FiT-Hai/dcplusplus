@@ -90,7 +90,7 @@ public:
 // User Commands
 	UserCommand addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub);
 	bool getUserCommand(int cid, UserCommand& uc);
-	int findUserCommand(const string& aName);
+	int findUserCommand(const string& aName, const string& aUrl);
 	bool moveUserCommand(int cid, int pos);
 	void updateUserCommand(const UserCommand& uc);
 	void removeUserCommand(int cid);

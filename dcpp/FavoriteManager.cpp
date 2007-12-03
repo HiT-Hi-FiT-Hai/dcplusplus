@@ -98,10 +98,10 @@ void FavoriteManager::updateUserCommand(const UserCommand& uc) {
 		save();
 }
 
-int FavoriteManager::findUserCommand(const string& aName) {
+int FavoriteManager::findUserCommand(const string& aName, const string& aUrl) {
 	Lock l(cs);
 	for(UserCommand::List::iterator i = userCommands.begin(); i != userCommands.end(); ++i) {
-		if(i->getName() == aName) {
+		if(i->getName() == aName && i->getHub() == aUrl) {
 			return i->getId();
 		}
 	}

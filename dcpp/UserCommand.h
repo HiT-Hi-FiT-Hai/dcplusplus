@@ -32,7 +32,8 @@ public:
 		TYPE_SEPARATOR,
 		TYPE_RAW,
 		TYPE_RAW_ONCE,
-		TYPE_CLEAR = 255
+		TYPE_REMOVE,
+		TYPE_CLEAR = 255		// In a momentary lapse of reason, 255 was chosen in the nmdc version of usercommand for clearing them all
 	};
 
 	enum {

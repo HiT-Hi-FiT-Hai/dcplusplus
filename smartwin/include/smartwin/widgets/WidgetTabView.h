@@ -101,6 +101,7 @@ private:
 	bool handleSized(const WidgetSizedEventResult&);
 	void handleTabSelected();
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	void handleMiddleMouseDown(const MouseEventResult& mouseEventResult);
 	
 	SmartUtil::tstring cutTitle(const SmartUtil::tstring& title);
 	void layout();

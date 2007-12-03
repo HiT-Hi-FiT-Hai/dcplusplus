@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(ADC_HUB_H)
-#define ADC_HUB_H
+#ifndef DCPLUSPLUS_DCPP_ADC_HUB_H
+#define DCPLUSPLUS_DCPP_ADC_HUB_H
 
 #include "Client.h"
 #include "AdcCommand.h"
@@ -73,13 +73,15 @@ private:
 	uint32_t sid;
 
 	static const string CLIENT_PROTOCOL;
-	static const string SECURE_CLIENT_PROTOCOL;
+	static const string CLIENT_PROTOCOL_TEST;
+	static const string SECURE_CLIENT_PROTOCOL_TEST;
 	static const string ADCS_FEATURE;
 	static const string TCP4_FEATURE;
 	static const string UDP4_FEATURE;
 	static const string BASE_SUPPORT;
 	static const string BAS0_SUPPORT;
 	static const string TIGR_SUPPORT;
+	static const string UCM0_SUPPORT;
 
 	virtual string checkNick(const string& nick);
 

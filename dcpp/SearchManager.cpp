@@ -126,7 +126,7 @@ void SearchManager::listen() throw(SocketException) {
 
 	socket = new Socket();
 	socket->create(Socket::TYPE_UDP);
-	port = socket->bind(static_cast<uint16_t>(SETTING(UDP_PORT)));
+	port = socket->bind(static_cast<uint16_t>(SETTING(UDP_PORT)), SETTING(BIND_ADDRESS));
 
 	start();
 }
@@ -166,7 +166,7 @@ int SearchManager::run() {
 		try {
 			socket->disconnect();
 			socket->create(Socket::TYPE_UDP);
-			socket->bind(port);
+			socket->bind(port, SETTING(BIND_ADDRESS));
 		} catch(const SocketException& e) {
 			// Oops, fatal this time...
 			dcdebug("SearchManager::run Stopped listening: %s\n", e.getError().c_str());

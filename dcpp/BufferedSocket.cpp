@@ -112,6 +112,7 @@ void BufferedSocket::connect(const string& aAddress, uint16_t aPort, bool secure
 		sock = secure ? CryptoManager::getInstance()->getClientSocket(allowUntrusted) : new Socket;
 
 		sock->create();
+		sock->bind(0, SETTING(BIND_ADDRESS));
 		if(SETTING(SOCKET_IN_BUFFER) >= 1024)
 			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
 		if(SETTING(SOCKET_OUT_BUFFER) >= 1024)

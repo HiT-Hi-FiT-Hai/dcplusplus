@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(ADC_COMMAND_H)
-#define ADC_COMMAND_H
+#ifndef DCPLUSPLUS_DCPP_ADC_COMMAND_H
+#define DCPLUSPLUS_DCPP_ADC_COMMAND_H
 
 #include "SettingsManager.h"
 #include "Exception.h"
@@ -58,10 +58,12 @@ public:
 		ERROR_BAD_STATE = 44,
 		ERROR_FEATURE_MISSING = 45,
 		ERROR_BAD_IP = 46,
+		ERROR_NO_HUB_HASH = 47,
 		ERROR_TRANSFER_GENERIC = 50,
 		ERROR_FILE_NOT_AVAILABLE = 51,
 		ERROR_FILE_PART_NOT_AVAILABLE = 52,
-		ERROR_SLOTS_FULL = 53
+		ERROR_SLOTS_FULL = 53,
+		ERROR_NO_CLIENT_HASH = 54
 	};
 
 	enum Severity {

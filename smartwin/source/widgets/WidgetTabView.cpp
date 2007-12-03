@@ -31,6 +31,7 @@ void WidgetTabView::create(const Seed & cs) {
 
 	onSized(std::tr1::bind(&WidgetTabView::handleSized, this, _1));
 	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
+	tab->onMiddleMouseDown(std::tr1::bind(&WidgetTabView::handleMiddleMouseDown, this, _1));
 }
 
 void WidgetTabView::add(WidgetChildWindow* w, const IconPtr& icon) {
@@ -268,7 +269,7 @@ int WidgetTabView::addIcon(const IconPtr& icon) {
 	return image;
 }
 
-bool WidgetTabView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
+bool WidgetTabView::handleContextMenu(ScreenCoordinate pt) {
 	TabInfo* ti = 0;
 	if(pt.x() == -1 && pt.y() == -1) {
 		int i = tab->getSelectedIndex();
@@ -292,6 +293,12 @@ bool WidgetTabView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	}
 	
 	return false;
+}
+
+void WidgetTabView::handleMiddleMouseDown(const MouseEventResult& mouseEventResult) {
+	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
+	if(ti)
+		ti->w->close();
 }
 
 bool WidgetTabView::filter(const MSG& msg) {
