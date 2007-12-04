@@ -106,7 +106,7 @@ public:
 	C(CMD, 'C','M','D');
 #undef C
 
-	static const uint32_t HUB_SID = 0x41414141;		// AAAA in base32
+	static const uint32_t HUB_SID = 0xffffffff;		// No client will have this sid
 
 	explicit AdcCommand(uint32_t aCmd, char aType = TYPE_CLIENT);
 	explicit AdcCommand(uint32_t aCmd, const uint32_t aTarget, char aType);

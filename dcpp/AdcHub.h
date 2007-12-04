@@ -64,6 +64,7 @@ private:
 	typedef unordered_map<uint32_t, OnlineUser*> SIDMap;
 	typedef SIDMap::iterator SIDIter;
 
+	bool oldPassword;
 	Socket udp;
 	SIDMap users;
 	StringMap lastInfoMap;

@@ -45,7 +45,7 @@ const string AdcHub::BAS0_SUPPORT("ADBAS0");
 const string AdcHub::TIGR_SUPPORT("ADTIGR");
 const string AdcHub::UCM0_SUPPORT("ADUCM0");
 
-AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), sid(0) {
+AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), oldPassword(false), sid(0) {
 	TimerManager::getInstance()->addListener(this);
 }
 
@@ -53,7 +53,6 @@ AdcHub::~AdcHub() throw() {
 	TimerManager::getInstance()->removeListener(this);
 	clearUsers();
 }
-
 
 OnlineUser& AdcHub::getUser(const uint32_t aSID, const CID& aCID) {
 	OnlineUser* ou = findUser(aSID);
@@ -208,6 +207,7 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 		socket->disconnect(false);
 		return;
 	} else if(!tigrOk) {
+		oldPassword = true;
 		// What now? Some hubs fake BASE support without TIGR support =/
 		fire(ClientListener::StatusMessage(), this, "Hub probably uses an old version of ADC, please encourage the owner to upgrade");
 	}
@@ -266,7 +266,7 @@ void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 	putUser(s);
 
 	// No use to hammer if we're banned
-	if(s == sid &&  c.hasFlag("TL", 1)) {
+	if(s == sid && c.hasFlag("TL", 1)) {
 		setAutoReconnect(false);
 	}
 }
@@ -295,7 +295,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 	} else if(protocol == SECURE_CLIENT_PROTOCOL_TEST && CryptoManager::getInstance()->TLSOk()) {
 		secure = true;
 	} else {
-		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
+		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown", AdcCommand::TYPE_DIRECT);
 		cmd.setTo(c.getFrom());
 		cmd.addParam("PR", protocol);
 
@@ -334,7 +334,7 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 	} else if(protocol == SECURE_CLIENT_PROTOCOL_TEST && CryptoManager::getInstance()->TLSOk()) {
 		secure = true;
 	} else {
-		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown");
+		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown", AdcCommand::TYPE_DIRECT);
 		cmd.setTo(c.getFrom());
 		cmd.addParam("PR", protocol);
 
@@ -460,7 +460,7 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	if(state != STATE_NORMAL)
 		return;
 	
-	const string* proto = 0;
+	const string* proto;
 	if(secure) {
 		if(user.getUser()->isSet(User::NO_ADCS_0_10_PROTOCOL)) {
 			/// @todo log
@@ -468,7 +468,8 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 		}
 		proto = &SECURE_CLIENT_PROTOCOL_TEST;
 	} else {
-		if(user.getUser()->isSet(User::NO_ADC_1_0_PROTOCOL)) {
+		// dc++ <= 0.703 has a bug which makes it respond with CSTA to the hub if an unrecognised protocol is used *sigh*
+		if(true || user.getUser()->isSet(User::NO_ADC_1_0_PROTOCOL)) {
 			if(user.getUser()->isSet(User::NO_ADC_0_10_PROTOCOL)) {
 				/// @todo log
 				return;
@@ -547,8 +548,10 @@ void AdcHub::password(const string& pwd) {
 		AutoArray<uint8_t> buf(saltBytes);
 		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
-		CID cid = getMyIdentity().getUser()->getCID();
-		th.update(cid.data(), CID::SIZE);
+		if(oldPassword) {
+			CID cid = getMyIdentity().getUser()->getCID();
+			th.update(cid.data(), CID::SIZE);
+		}
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
@@ -659,8 +662,8 @@ void AdcHub::send(const AdcCommand& cmd) {
 	send(cmd.toString(sid));
 }
 
-void AdcHub::on(Connected) throw() {
-	Client::on(Connected());
+void AdcHub::on(Connected c) throw() {
+	Client::on(c);
 
 	lastInfoMap.clear();
 	sid = 0;
@@ -674,8 +677,8 @@ void AdcHub::on(Connected) throw() {
 	send(cmd);
 }
 
-void AdcHub::on(Line, const string& aLine) throw() {
-	Client::on(Line(), aLine);
+void AdcHub::on(Line l, const string& aLine) throw() {
+	Client::on(l, aLine);
 
 	if(BOOLSETTING(ADC_DEBUG)) {
 		fire(ClientListener::StatusMessage(), this, "<ADC>" + aLine + "</ADC>");
@@ -683,13 +686,13 @@ void AdcHub::on(Line, const string& aLine) throw() {
 	dispatch(aLine);
 }
 
-void AdcHub::on(Failed, const string& aLine) throw() {
+void AdcHub::on(Failed f, const string& aLine) throw() {
 	clearUsers();
-	Client::on(Failed(), aLine);
+	Client::on(f, aLine);
 }
 
-void AdcHub::on(Second, uint32_t aTick) throw() {
-	Client::on(Second(), aTick);
+void AdcHub::on(Second s, uint32_t aTick) throw() {
+	Client::on(s, aTick);
 	if(state == STATE_NORMAL && (aTick > (getLastActivity() + 120*1000)) ) {
 		send("\n", 1);
 	}
