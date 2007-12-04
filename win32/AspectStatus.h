@@ -41,7 +41,7 @@ protected:
 		if(sizeGrip) {
 			cs.style |= SBARS_SIZEGRIP;
 		}
-		status = static_cast<WidgetType*>(this)->createStatusBarSections();
+		status = static_cast<WidgetType*>(this)->createStatusBarSections(cs);
 
 		statusTip = static_cast<WidgetType*>(this)->createToolTip();
 		statusTip->setTool(status, std::tr1::bind(&ThisType::handleToolTip, this));
