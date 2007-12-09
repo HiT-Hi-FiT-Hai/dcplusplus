@@ -341,8 +341,6 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 	if(d->getType() == Transfer::TYPE_TREE) {
 		d->getFile()->flush();
-		delete d->getFile();
-		d->setFile(NULL);
 
 		int64_t bl = 1024;
 		while(bl * (int64_t)d->getTigerTree().getLeaves().size() < d->getTigerTree().getFileSize())
@@ -367,8 +365,6 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		// First, finish writing the file (flushing the buffers and closing the file...)
 		try {
 			d->getFile()->flush();
-			delete d->getFile();
-			d->setFile(0);
 		} catch(const FileException& e) {
 			failDownload(aSource, e.getError());
 			return;
@@ -493,8 +489,6 @@ void DownloadManager::removeDownload(Download* d) {
 			} catch(const Exception&) {
 			}
 		}
-		delete d->getFile();
-		d->setFile(NULL);
 
 		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 			d->unsetFlag(Download::FLAG_ANTI_FRAG);

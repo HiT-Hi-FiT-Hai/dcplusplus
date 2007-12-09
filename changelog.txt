@@ -25,6 +25,7 @@
 * Finished UCMD extension draft implementation
 * Fixed status bars (poy)
 * Fixed protocol error STA being sent as type C
+* Fixed a multisource download crash
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)
