@@ -849,6 +849,10 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 						}
 						
 						if(aDownload->getType() != Transfer::TYPE_FILE || q->isFinished()) {
+							// Delete file here to ensure that move works
+							delete aDownload->getFile();
+							aDownload->setFile(0);
+
 							// Check if we're anti-fragging...
 							if(aDownload->isSet(Download::FLAG_ANTI_FRAG)) {
 								// Ok, rename the file to what we expect it to be...
