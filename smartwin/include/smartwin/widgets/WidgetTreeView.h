@@ -349,7 +349,8 @@ inline Rectangle WidgetTreeView::getItemRect(HTREEITEM item) {
 
 inline HTREEITEM WidgetTreeView::hitTest(const ScreenCoordinate& pt) {
 	ClientCoordinate cc(pt, this);
-	return TreeView_HitTest(this->handle(), &cc.getPoint());
+	TVHITTESTINFO tvhti = { cc.getPoint() };
+	return TreeView_HitTest(this->handle(), &tvhti);
 }
 
 inline HTREEITEM WidgetTreeView::getSelection() {
