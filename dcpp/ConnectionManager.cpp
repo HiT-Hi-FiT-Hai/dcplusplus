@@ -323,7 +323,7 @@ void ConnectionManager::disconnect() throw() {
 void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...@todo fix support updates
-		dcdebug("CM::onMyNick %p sent nick twice\n", (void*)aSource);
+		dcdebug("CM::onSUP %p sent sup twice\n", (void*)aSource);
 		return;
 	}
 
@@ -375,7 +375,7 @@ void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCo
 	aSource->setState(UserConnection::STATE_INF);
 }
 
-void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() {
+void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand& cmd) throw() {
 
 }
 
@@ -595,9 +595,7 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 
 void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_INF) {
-		// Already got this once, ignore...
 		aSource->send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Expecting INF"));
-		dcdebug("CM::onINF %p sent INF twice\n", (void*)aSource);
 		aSource->disconnect();
 		return;
 	}

@@ -26,6 +26,7 @@
 * Fixed status bars (poy)
 * Fixed protocol error STA being sent as type C
 * Fixed a multisource download crash
+* Fixed state checks for uploads (an invalid sequence could possibly crash client from remote)
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)
