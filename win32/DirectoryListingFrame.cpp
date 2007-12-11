@@ -204,7 +204,7 @@ void DirectoryListingFrame::loadFile(const tstring& name, const tstring& dir) {
 		error = WinUtil::getNicks(dl->getUser()) + Text::toT(": " + e.getError());
 	}
 
-	initStatus();
+	initStatusText();
 }
 
 void DirectoryListingFrame::loadXML(const string& txt) {
@@ -214,14 +214,7 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 		error = WinUtil::getNicks(dl->getUser()) + Text::toT(": " + e.getError());
 	}
 
-	initStatus();
-}
-
-
-void DirectoryListingFrame::initStatusText() {
-	setStatus(STATUS_TOTAL_FILES, Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true))));
-	setStatus(STATUS_TOTAL_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true))));
-	setStatus(STATUS_SPEED, Text::toT(STRING(SPEED) + ": " + Util::formatBytes(speed) + "/s"));
+	initStatusText();
 }
 
 void DirectoryListingFrame::layout() {
@@ -271,7 +264,7 @@ void DirectoryListingFrame::handleListDiff() {
 			dirList.loadFile(Text::fromT(file));
 			dl->getRoot()->filterList(dirList);
 			refreshTree(Util::emptyStringT);
-			initStatus();
+			initStatusText();
 			updateStatus();
 		} catch(const Exception&) {
 			/// @todo report to user?
@@ -533,7 +526,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 					}
 				}
 			} catch(const Exception& e) {
-				setStatus(STATUS_STATUS, Text::toT(e.getError()).c_str());
+				setStatus(STATUS_STATUS, Text::toT(e.getError()));
 			}
 		} else {
 			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
@@ -577,7 +570,7 @@ void DirectoryListingFrame::handleDownloadTarget(unsigned id) {
 	try {
 		dl->download(ii->file, target, false, WinUtil::isShift());
 	} catch(const Exception& e) {
-		setStatus(STATUS_STATUS, Text::toT(e.getError()).c_str());
+		setStatus(STATUS_STATUS, Text::toT(e.getError()));
 	}
 }
 
@@ -658,6 +651,12 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 	}
 }
 
+void DirectoryListingFrame::initStatusText() {
+	setStatus(STATUS_TOTAL_FILES, Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true))));
+	setStatus(STATUS_TOTAL_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true))));
+	setStatus(STATUS_SPEED, Text::toT(STRING(SPEED) + ": " + Util::formatBytes(speed) + "/s"));
+}
+
 void DirectoryListingFrame::updateStatus() {
 	if(!searching && !updating) {
 		int cnt = files->getSelectedCount();
@@ -669,11 +668,9 @@ void DirectoryListingFrame::updateStatus() {
 			total = files->forEachSelectedT(ItemInfo::TotalSize()).total;
 		}
 
-		tstring tmp = Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt));
-		setStatus(STATUS_SELECTED_FILES, tmp.c_str());
+		setStatus(STATUS_SELECTED_FILES, Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt)));
 
-		tmp = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
-		setStatus(STATUS_SELECTED_SIZE, tmp.c_str());
+		setStatus(STATUS_SELECTED_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total)));
 	}
 }
 
@@ -710,12 +707,12 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
 		if(dl->getUser()->isOnline()) {
 			try {
 				QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
-				setStatus(STATUS_STATUS, CTSTRING(DOWNLOADING_LIST));
+				setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_LIST));
 			} catch(const QueueException& e) {
-				setStatus(STATUS_STATUS, Text::toT(e.getError()).c_str());
+				setStatus(STATUS_STATUS, Text::toT(e.getError()));
 			}
 		} else {
-			setStatus(STATUS_STATUS, CTSTRING(USER_OFFLINE));
+			setStatus(STATUS_STATUS, TSTRING(USER_OFFLINE));
 		}
 	}
 }
