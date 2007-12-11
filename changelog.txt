@@ -27,6 +27,7 @@
 * Fixed protocol error STA being sent as type C
 * Fixed a multisource download crash
 * Fixed state checks for uploads (an invalid sequence could possibly crash client from remote)
+* Page up/down in private chat scrolls chat log just as in hub chat
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)

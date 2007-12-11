@@ -469,14 +469,15 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 		proto = &SECURE_CLIENT_PROTOCOL_TEST;
 	} else {
 		// dc++ <= 0.703 has a bug which makes it respond with CSTA to the hub if an unrecognised protocol is used *sigh*
-		if(true || user.getUser()->isSet(User::NO_ADC_1_0_PROTOCOL)) {
-			if(user.getUser()->isSet(User::NO_ADC_0_10_PROTOCOL)) {
+		// so we try 0.10 first...
+		if(user.getUser()->isSet(User::NO_ADC_0_10_PROTOCOL)) {
+			if(user.getUser()->isSet(User::NO_ADC_1_0_PROTOCOL)) {
 				/// @todo log
 				return;
 			}
-			proto = &CLIENT_PROTOCOL_TEST;
-		} else {
 			proto = &CLIENT_PROTOCOL;
+		} else {
+			proto = &CLIENT_PROTOCOL_TEST;
 		}
 	}
 

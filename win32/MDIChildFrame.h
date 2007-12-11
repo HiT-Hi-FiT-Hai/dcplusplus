@@ -97,7 +97,6 @@ protected:
 
 		if(alwaysFocus || (lastFocus == NULL)) {
 			lastFocus = widget->handle();
-			::SetFocus(lastFocus);
 		}
 		if(alwaysFocus)
 			alwaysSameFocus = true;

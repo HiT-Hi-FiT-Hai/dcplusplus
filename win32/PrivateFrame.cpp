@@ -145,8 +145,8 @@ void PrivateFrame::addChat(const tstring& aLine) {
 	}
 	line += aLine;
 
-	int limit = chat->getTextLimit();
-	if(chat->length() + static_cast<int>(line.size()) > limit) {
+	size_t limit = chat->getTextLimit();
+	if(chat->length() + line.size() > limit) {
 		HoldRedraw hold(chat);
 		chat->setSelection(0, chat->lineIndex(chat->lineFromChar(limit / 10)));
 		chat->replaceSelection(_T(""));
@@ -336,8 +336,14 @@ HRESULT PrivateFrame::handleSpeaker(WPARAM, LPARAM) {
 bool PrivateFrame::handleKeyDown(int c) {	
 	if(c == VK_RETURN && enter()) {
 		return true;
+	} else if(c == VK_PRIOR) { // page up
+		chat->sendMessage(WM_VSCROLL, SB_PAGEUP);
+		return true;
+	} else if(c == VK_NEXT) { // page down
+		chat->sendMessage(WM_VSCROLL, SB_PAGEDOWN);
+		return true;
 	}
-	
+
 	return false;
 }
 
