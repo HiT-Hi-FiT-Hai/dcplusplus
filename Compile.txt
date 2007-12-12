@@ -50,7 +50,7 @@ Submitting patches
 If you think you've done something that more people could use, you can always submit a patch for inclusion in the
 original distribution. I will then consider whether I like the patch or not based on things that might seem to be 
 completely random, which just might be the case. Popular reasons for rejecting a patch include, but are not limited to,
-ugly code, abusable features, feature that I don't like that bloat the application and incompatibility with other 
+ugly code, abusable features, features that I don't like that bloat the application and incompatibility with other 
 modifications I've already done. 
 
 To increase the chances of your patch being accepted, do like this:
@@ -58,10 +58,12 @@ To increase the chances of your patch being accepted, do like this:
 2) Make your modification. If you make other modifications apart from the one you want to submit, do them
    on a separate copy of the DC++ source code and then copy them to this folder.
 3) In the source root folder (the one with this file in it) do "svn diff > my-patch.diff".
-4) Post the file in the DC++ bugzilla (don't forget to hand over copyright, see below).
+4) Send the patch along with a description to the dcplusplus-devel mailing list (more information here: 
+   http://sourceforge.net/mail/?group_id=40287). Please make sure to include a
+   copyright handover notice (see below).
 
-By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
-the copyright is split out over a million people, each of which could stop further distribution of DC++, and also
-to make it easier for us to defend the gpl against violators. If you don't like this policy, start your own 
-distribution, if you're lucky it might become more popular than the original =). Please
-state explicitly in the bugzilla that you give me copyright over the code if the submission is larger than trivial.
+In order to avoid future licensing issues, I ask you to give me copyright over any submitted code. 
+If you don't like this policy, you are free to start your own distribution (as
+many have done), and if you're lucky it might become more popular than the original =). Please
+state explicitly when submitting the patch that you give me copyright over the code if the submission is larger than trivial.
+
