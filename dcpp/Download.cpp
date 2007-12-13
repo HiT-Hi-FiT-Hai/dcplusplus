@@ -85,7 +85,6 @@ Download::Download(UserConnection& conn, QueueItem& qi, bool supportsTrees) thro
 
 Download::~Download() {
 	getUserConnection().setDownload(0);
-	delete file;
 }
 
 AdcCommand Download::getCommand(bool zlib) {

@@ -797,6 +797,9 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 	{
 		Lock l(cs);
 
+		delete aDownload->getFile();
+		aDownload->setFile(0);
+
 		if(aDownload->getType() == Transfer::TYPE_PARTIAL_LIST) {
 			pair<PfsIter, PfsIter> range = pfsQueue.equal_range(aDownload->getUser()->getCID());
 			PfsIter i = find_if(range.first, range.second, CompareSecond<CID, string>(aDownload->getPath()));
@@ -849,9 +852,6 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 						}
 						
 						if(aDownload->getType() != Transfer::TYPE_FILE || q->isFinished()) {
-							// Delete file here to ensure that move works
-							delete aDownload->getFile();
-							aDownload->setFile(0);
 
 							// Check if we're anti-fragging...
 							if(aDownload->isSet(Download::FLAG_ANTI_FRAG)) {

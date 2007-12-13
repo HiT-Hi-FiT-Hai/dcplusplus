@@ -7,7 +7,7 @@
 * Fixed version info (poy)
 * Keep selection visible on move up/down in some list views (poy)
 * Fixed clicking in the header of the favorite hubs list view (poy)
-* Update to ADC 1.0
+* Update most things to ADC 1.0
 * Fixed pressing enter in the notepad (poy)
 * Fixed user commands params (poy)
 * Readded list view double buffering (thanks poy)

@@ -489,10 +489,6 @@ void DownloadManager::removeDownload(Download* d) {
 			} catch(const Exception&) {
 			}
 		}
-
-		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
-			d->unsetFlag(Download::FLAG_ANTI_FRAG);
-		}
 	}
 
 	{

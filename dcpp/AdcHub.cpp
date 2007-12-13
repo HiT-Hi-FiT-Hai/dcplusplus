@@ -275,20 +275,26 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 	OnlineUser* u = findUser(c.getFrom());
 	if(!u || u->getUser() == ClientManager::getInstance()->getMe())
 		return;
-	if(c.getParameters().size() < 3)
+	if(c.getParameters().size() < 2)
 		return;
 
 	const string& protocol = c.getParam(0);
 	const string& port = c.getParam(1);
-
+	
 	string token;
-	bool hasToken = c.getParam("TO", 2, token);
-
-	if(!hasToken) {
-		// @todo remove this bugfix for <=0.698 some time
-		token = c.getParam(2);
+	if(c.getParameters().size() == 3) {
+		const string& tok = c.getParam(2);
+		
+		// 0.699 put TO before the token, keep this bug fix for a while
+		if(tok.compare(0, 2, "TO") == 0) {
+			token = tok.substr(2);
+		} else {
+			token = tok;
+		}
+	} else {
+		// <= 0.703 would send an empty token for passive connections...
 	}
-
+	
 	bool secure = false;
 	if(protocol == CLIENT_PROTOCOL || protocol == CLIENT_PROTOCOL_TEST) {
 		// Nothing special
@@ -298,9 +304,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown", AdcCommand::TYPE_DIRECT);
 		cmd.setTo(c.getFrom());
 		cmd.addParam("PR", protocol);
-
-		if(hasToken)
-			cmd.addParam("TO", token);
+		cmd.addParam("TO", token);
 
 		send(cmd);
 		return;
@@ -315,7 +319,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
-	if(c.getParameters().empty()) {
+	if(c.getParameters().size() < 2) {
 		return;
 	}
 	if(!ClientManager::getInstance()->isActive())
@@ -325,8 +329,14 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 		return;
 
 	const string& protocol = c.getParam(0);
+	const string& tok = c.getParam(1);
 	string token;
-	bool hasToken = c.getParam("TO", 1, token);
+	// 0.699 sent a token with "TO" prefix
+	if(tok.compare(0, 2, "TO") == 0) {
+		token = tok.substr(2);
+	} else {
+		token = tok;
+	}
 
 	bool secure;
 	if(protocol == CLIENT_PROTOCOL || protocol == CLIENT_PROTOCOL_TEST) {
@@ -337,9 +347,7 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 		AdcCommand cmd(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_UNSUPPORTED, "Protocol unknown", AdcCommand::TYPE_DIRECT);
 		cmd.setTo(c.getFrom());
 		cmd.addParam("PR", protocol);
-
-		if(hasToken)
-			cmd.addParam("TO", token);
+		cmd.addParam("TO", token);
 
 		send(cmd);
 		return;
