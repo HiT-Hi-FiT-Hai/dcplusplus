@@ -200,46 +200,6 @@ private:
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi, const string& dir, int64_t speed) throw();
 	virtual void on(PartialList, const UserPtr&, const string& text) throw();
 
-#ifdef PORT_ME
-
-	virtual BOOL PreTranslateMessage(MSG* pMsg)
-	{
-		if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
-			ctrlLastLines.RelayEvent(pMsg);
-
-		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
-			return TRUE;
-
-		HWND hWnd = MDIGetActive();
-		if(hWnd != NULL)
-			return (BOOL)::SendMessage(hWnd, WM_FORWARDMSG, 0, (LPARAM)pMsg);
-
-		return FALSE;
-	}
-
-	BEGIN_MSG_MAP(MainFrame)
-		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
-	END_MSG_MAP()
-
-	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCloseWindows(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-	LRESULT onTrayQuit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		PostMessage(WM_CLOSE);
-		return 0;
-	}
-
-	LRESULT onTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ShowWindow(SW_SHOW);
-		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
-		return 0;
-	}
-
-#endif
-
 };
 
 #endif // !defined(MAIN_FRM_H)

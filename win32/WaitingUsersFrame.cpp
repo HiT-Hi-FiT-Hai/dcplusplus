@@ -40,6 +40,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
 		addWidget(queued);
 		queued->setColor(WinUtil::textColor, WinUtil::bgColor);
 		queued->onContextMenu(std::tr1::bind(&WaitingUsersFrame::handleContextMenu, this, _1));
+		queued->onChar(std::tr1::bind(&WaitingUsersFrame::handleChar, this, _1));
 	}
 
 	initStatus();
@@ -190,23 +191,14 @@ void WaitingUsersFrame::on(UploadManagerListener::WaitingAddFile, const UserPtr 
 	speak(SPEAK_ADD_FILE, (LPARAM)new pair<UserPtr, string>(aUser, aFilename));
 }
 
-#ifdef PORT_ME
-
 // Keyboard shortcuts
-LRESULT WaitingUsersFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	switch(wParam)
-	{
-	case VK_DELETE:
+bool WaitingUsersFrame::onChar(int c) {
+	if(c == VK_DELETE) {
 		onRemove(0, 0, 0, bHandled);
-		break;
-	default:
-		bHandled = FALSE;
+		return true;
 	}
-	return 0;
+	return false;
 }
-
-#endif
 
 void WaitingUsersFrame::onRemoveUser(const UserPtr& aUser) {
 	HTREEITEM userNode = queued->getRoot();

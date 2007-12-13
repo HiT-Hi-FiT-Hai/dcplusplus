@@ -58,7 +58,7 @@ protected:
 	void onRemove();
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	//LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	bool handleChar(int c);
 	void onPrivateMessage();
 	void onGrantSlot();
 	void onAddToFavorites();

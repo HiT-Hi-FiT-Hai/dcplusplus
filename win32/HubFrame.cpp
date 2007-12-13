@@ -1198,17 +1198,6 @@ void HubFrame::handleShowUsersClicked() {
 	layout();
 }
 
-#ifdef PORT_ME
-
-LRESULT HubFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	LPMSG pMsg = (LPMSG)lParam;
-	if((pMsg->message >= WM_MOUSEFIRST) && (pMsg->message <= WM_MOUSELAST))
-		ctrlLastLines.RelayEvent(pMsg);
-	return 0;
-}
-
-#endif
-
 void HubFrame::handleCopyNick() {
 	int i=-1;
 	string nicks;
@@ -1233,64 +1222,6 @@ void HubFrame::handleDoubleClickUsers() {
 		users->getSelectedData()->getList();
 	}
 }
-
-#ifdef PORT_ME
-static const COLORREF RED = RGB(255, 0, 0);
-static const COLORREF GREEN = RGB(0, 255, 0);
-
-LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	HWND focus = GetFocus();
-	bHandled = false;
-	if(focus == ctrlClient.m_hWnd) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		tstring x;
-		tstring::size_type start = (tstring::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
-		tstring::size_type end = x.find(_T(" "), start);
-
-		if(end == tstring::npos)
-			end = x.length();
-
-		bHandled = WinUtil::parseDBLClick(x, start, end);
-		if (!bHandled) {
-			string::size_type end = x.find_first_of(_T(" >\t"), start+1);
-
-			if(end == tstring::npos) // get EOL as well
-				end = x.length();
-			else if(end == start + 1)
-				return 0;
-
-			// Nickname click, let's see if we can find one like it in the name list...
-			tstring nick = x.substr(start, end - start);
-			UserInfo* ui = findUser(nick);
-			if(ui) {
-				bHandled = true;
-				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					PrivateFrame::openWindow(ui->user);
-				} else if (wParam & MK_SHIFT) {
-					try {
-						QueueManager::getInstance()->addList(ui->user, QueueItem::FLAG_CLIENT_VIEW);
-					} catch(const Exception& e) {
-						addClientLine(Text::toT(e.getError()));
-					}
-				} else if(showUsers->getChecked()) {
-					int items = ctrlUsers.GetItemCount();
-					int pos = -1;
-					ctrlUsers.SetRedraw(FALSE);
-					for(int i = 0; i < items; ++i) {
-						if(ctrlUsers.getData(i) == ui)
-							pos = i;
-						ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
-					}
-					ctrlUsers.SetRedraw(TRUE);
-					ctrlUsers.EnsureVisible(pos, FALSE);
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-#endif
 
 void HubFrame::runUserCommand(const UserCommand& uc) {
 	if(!WinUtil::getUCParams(this, uc, ucLineParams))
@@ -1447,23 +1378,6 @@ void HubFrame::handleFollow() {
 		client->connect();
 	}
 }
-
-#ifdef PORT_ME
-LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMTTDISPINFO* nm = (NMTTDISPINFO*)pnmh;
-	lastLines.clear();
-	for(TStringIter i = lastLinesList.begin(); i != lastLinesList.end(); ++i) {
-		lastLines += *i;
-		lastLines += _T("\r\n");
-	}
-	if(lastLines.size() > 2) {
-		lastLines.erase(lastLines.size() - 2);
-	}
-	nm->lpszText = const_cast<TCHAR*>(lastLines.c_str());
-	return 0;
-}
-
-#endif
 
 void HubFrame::resortUsers() {
 	for(FrameIter i = frames.begin(); i != frames.end(); ++i)

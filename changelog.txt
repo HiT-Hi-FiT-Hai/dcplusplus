@@ -29,6 +29,7 @@
 * Fixed state checks for uploads (an invalid sequence could possibly crash client from remote)
 * Page up/down in private chat scrolls chat log just as in hub chat
 * Fixed crash on right-click in the download queue (poy)
+* Readded waiting users frame keyboard shortcut
 
 -- 0.703 2007-11-08 --
 * Fixed invalid strings (thanks james ross)
