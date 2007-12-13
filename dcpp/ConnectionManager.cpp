@@ -43,6 +43,7 @@ ConnectionManager::ConnectionManager() : floodCounter(0), server(0), secureServe
 	features.push_back(UserConnection::FEATURE_TTHF);
 
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BAS0);
+	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BASE);
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_TIGR);
 	adcFeatures.push_back("AD" + UserConnection::FEATURE_ADC_BZIP);
 }

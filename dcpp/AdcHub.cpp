@@ -208,7 +208,7 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 		return;
 	} else if(!tigrOk) {
 		oldPassword = true;
-		// What now? Some hubs fake BASE support without TIGR support =/
+		// Some hubs fake BASE support without TIGR support =/
 		fire(ClientListener::StatusMessage(), this, "Hub probably uses an old version of ADC, please encourage the owner to upgrade");
 	}
 }
@@ -292,7 +292,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 			token = tok;
 		}
 	} else {
-		// <= 0.703 would send an empty token for passive connections...
+		// <= 0.703 would send an empty token for passive connections when replying to RCM
 	}
 	
 	bool secure = false;
@@ -678,7 +678,7 @@ void AdcHub::on(Connected c) throw() {
 	sid = 0;
 
 	AdcCommand cmd(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB);
-	cmd.addParam(BAS0_SUPPORT).addParam(TIGR_SUPPORT);
+	cmd.addParam(BAS0_SUPPORT).addParam(BASE_SUPPORT).addParam(TIGR_SUPPORT);
 	
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
 		cmd.addParam(UCM0_SUPPORT);
