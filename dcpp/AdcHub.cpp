@@ -450,6 +450,8 @@ void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
 				u->getUser()->setFlag(User::NO_ADCS_0_10_PROTOCOL);
 				u->getUser()->unsetFlag(User::TLS);
 			}
+			// Try again...
+			ConnectionManager::getInstance()->force(u->getUser());
 		}
 	}
 	fire(ClientListener::Message(), this, *u, c.getParam(1));
