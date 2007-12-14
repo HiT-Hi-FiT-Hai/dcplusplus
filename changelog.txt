@@ -1,4 +1,4 @@
-﻿-- 0.704 --
+﻿-- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
 * Use system header arrows on common controls 6+ (thanks poy)
 * Fixed badly drawn arrows (thanks poy)
