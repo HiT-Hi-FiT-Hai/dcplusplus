@@ -263,11 +263,25 @@ void AdcHub::handle(AdcCommand::GPA, AdcCommand& c) throw() {
 
 void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 	uint32_t s = AdcCommand::toSID(c.getParam(0));
-	putUser(s);
-
-	// No use to hammer if we're banned
-	if(s == sid && c.hasFlag("TL", 1)) {
-		setAutoReconnect(false);
+	putUser(s); // @todo: use the DI flag
+	
+	string tmp;
+	if(c.getParam("MS", 1, tmp)) {
+		fire(ClientListener::StatusMessage(), this, tmp);
+	}
+	
+	if(s == sid) {
+		if(c.getParam("TL", 1, tmp)) {
+			if(tmp == "-1") {
+				setAutoReconnect(false);
+			} else {
+				setAutoReconnect(true);
+				setReconnDelay(Util::toUInt32(tmp));
+			}
+		}
+		if(c.getParam("RD", 1, tmp)) {
+			fire(ClientListener::Redirect(), this, tmp);
+		}
 	}
 }
 

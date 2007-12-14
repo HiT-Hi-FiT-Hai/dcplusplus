@@ -192,9 +192,9 @@ void WaitingUsersFrame::on(UploadManagerListener::WaitingAddFile, const UserPtr 
 }
 
 // Keyboard shortcuts
-bool WaitingUsersFrame::onChar(int c) {
+bool WaitingUsersFrame::handleChar(int c) {
 	if(c == VK_DELETE) {
-		onRemove(0, 0, 0, bHandled);
+		onRemove();
 		return true;
 	}
 	return false;
