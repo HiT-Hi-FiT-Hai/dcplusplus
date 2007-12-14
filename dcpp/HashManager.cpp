@@ -601,7 +601,7 @@ cleanup:
 
 static const int64_t BUF_SIZE = 0x1000000 - (0x1000000 % getpagesize());
 
-bool HashManager::Hasher::fastHash(const string& filename, u_int8_t* , TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
+bool HashManager::Hasher::fastHash(const string& filename, uint8_t* , TigerTree& tth, int64_t size, CRC32Filter* xcrc32) {
 	int fd = open(Text::fromUtf8(filename).c_str(), O_RDONLY);
 	if(fd == -1)
 		return false;
@@ -611,7 +611,7 @@ bool HashManager::Hasher::fastHash(const string& filename, u_int8_t* , TigerTree
 	int64_t size_read = 0;
 	void *buf = 0;
 
-	u_int32_t lastRead = GET_TICK();
+	uint32_t lastRead = GET_TICK();
 	while(pos <= size) {
 		if(size_left > 0) {
 			size_read = std::min(size_left, BUF_SIZE);
@@ -624,10 +624,10 @@ bool HashManager::Hasher::fastHash(const string& filename, u_int8_t* , TigerTree
 			madvise(buf, size_read, MADV_SEQUENTIAL | MADV_WILLNEED);
 
 			if(SETTING(MAX_HASH_SPEED) > 0) {
-				u_int32_t now = GET_TICK();
-				u_int32_t minTime = size_read * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
+				uint32_t now = GET_TICK();
+				uint32_t minTime = size_read * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
 				if(lastRead + minTime > now) {
-					u_int32_t diff = now - lastRead;
+					uint32_t diff = now - lastRead;
 					Thread::sleep(minTime - diff);
 				} 
 				lastRead = lastRead + minTime;
@@ -643,7 +643,7 @@ bool HashManager::Hasher::fastHash(const string& filename, u_int8_t* , TigerTree
 			(*xcrc32)(buf, size_read);
 		{
 			Lock l(cs);
-			currentSize = max(static_cast<u_int64_t>(currentSize - size_read), static_cast<u_int64_t>(0));
+			currentSize = max(static_cast<uint64_t>(currentSize - size_read), static_cast<uint64_t>(0));
 		}
 
 		if(size_left <= 0) {

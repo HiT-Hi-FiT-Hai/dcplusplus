@@ -307,11 +307,15 @@ const string& toLower(const string& str, string& tmp) throw() {
 }
 
 const string& toUtf8(const string& str, const string& fromCharset, string& tmp) throw() {
-	if(str.empty() || fromCharset == utf8 || toLower(fromCharset, tmp) == utf8) {
+	if(str.empty()) {
 		return str;
 	}
-	
+
 #ifdef _WIN32
+	if (fromCharset == utf8 || toLower(fromCharset, tmp) == utf8) {
+		return str;
+	}
+
 	return acpToUtf8(str, tmp);
 #else
 	return convert(str, tmp, fromCharset, utf8);
@@ -319,11 +323,15 @@ const string& toUtf8(const string& str, const string& fromCharset, string& tmp) 
 }
 
 const string& fromUtf8(const string& str, const string& toCharset, string& tmp) throw() {
-	if(str.empty() || toCharset == utf8 || toLower(toCharset, tmp) == utf8) {
+	if(str.empty()) {
 		return str;
 	}
-	
+
 #ifdef _WIN32
+	if (toCharset == utf8 || toLower(toCharset, tmp) == utf8) {
+		return str;
+	}
+
 	return utf8ToAcp(str, tmp);
 #else
 	return convert(str, tmp, utf8, toCharset);
@@ -331,10 +339,12 @@ const string& fromUtf8(const string& str, const string& toCharset, string& tmp) 
 }
 
 const string& convert(const string& str, string& tmp, const string& fromCharset, const string& toCharset) throw() {
-	if(str.empty() || Util::stricmp(fromCharset, toCharset) == 0)
+	if(str.empty())
 		return str;
 
 #ifdef _WIN32
+	if (Util::stricmp(fromCharset, toCharset) == 0)
+		return str;
 	if(toCharset == utf8 || toLower(toCharset, tmp) == utf8)
 		return acpToUtf8(str, tmp);
 	if(fromCharset == utf8 || toLower(fromCharset, tmp) == utf8)
