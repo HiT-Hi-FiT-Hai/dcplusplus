@@ -23,7 +23,6 @@
 
 #include "UserConnection.h"
 #include "QueueItem.h"
-#include "SharedFile.h"
 #include "HashManager.h"
 
 namespace dcpp {
@@ -118,10 +117,6 @@ void Download::getParams(const UserConnection& aSource, StringMap& params) {
 	Transfer::getParams(aSource, params);
 	params["target"] = getPath();
 	params["sfv"] = Util::toString(isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
-}
-
-void Download::setSharedFile(SharedFile* f)  { 
-	file = sharedFile = f;
 }
 
 } // namespace dcpp

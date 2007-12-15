@@ -31,7 +31,6 @@
 #include "ResourceManager.h"
 #include "SearchManager.h"
 #include "ShareManager.h"
-#include "SharedFile.h"
 #include "SimpleXML.h"
 #include "StringTokenizer.h"
 #include "Transfer.h"
@@ -733,19 +732,11 @@ void QueueManager::setFile(Download* d) {
 			throw QueueException(STRING(TARGET_REMOVED));
 		}
 		
-		for(DownloadList::const_iterator i = qi->getDownloads().begin(); i != qi->getDownloads().end(); ++i) {
-			const Download* d2 = *i;
-			if(d2->getFile()) {
-				// Already downloading, reuse same file
-				d->setSharedFile(new SharedFile(*d2->getSharedFile(), d->getSegment()));
-				return;
-			}
-		}
-		
 		string target = d->getDownloadTarget();
 		File::ensureDirectory(target);
-	
-		d->setSharedFile(new SharedFile(target, d->getSegment(), qi->getSize()));
+		File* f = new File(target, File::WRITE, File::OPEN | File::CREATE | File::SHARED);
+		f->setPos(d->getSegment().getStart());
+		d->setFile(f);
 	} else if(d->getType() == Transfer::TYPE_FULL_LIST) {
 		string target = d->getDownloadTarget();
 		File::ensureDirectory(target);

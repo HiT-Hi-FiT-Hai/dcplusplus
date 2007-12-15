@@ -52,9 +52,6 @@ public:
 	/** @internal */
 	AdcCommand getCommand(bool zlib);
 	
-	const SharedFile* getSharedFile() const{ return sharedFile; }
-	void setSharedFile(SharedFile* f);
-	
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(bool, treeValid, TreeValid);
@@ -64,7 +61,6 @@ private:
 
 	TigerTree tt;
 	string pfs;
-	SharedFile* sharedFile;
 };
 
 } // namespace dcpp

@@ -46,7 +46,8 @@ public:
 	enum {
 		OPEN = 0x01,
 		CREATE = 0x02,
-		TRUNCATE = 0x04
+		TRUNCATE = 0x04,
+		SHARED = 0x08
 	};
 
 #ifdef _WIN32

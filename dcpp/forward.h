@@ -72,8 +72,6 @@ class QueueItem;
 
 class ServerSocket;
 
-class SharedFile;
-
 class Socket;
 class SocketException;
 
