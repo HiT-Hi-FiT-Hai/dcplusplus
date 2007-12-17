@@ -179,7 +179,7 @@ void Socket::socksConnect(const string& aAddr, uint16_t aPort, uint32_t timeout)
 
 	socksAuth(timeLeft(start, timeout));
 
-	vector<uint8_t> connStr;
+	ByteVector connStr;
 
 	// Authenticated, let's get on with it...
 	connStr.push_back(5);			// SOCKSv5

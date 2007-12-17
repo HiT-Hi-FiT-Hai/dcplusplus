@@ -273,8 +273,8 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
 	size_t bufSize = max(sockSize, (size_t)64*1024);
 
-	vector<uint8_t> readBuf(bufSize);
-	vector<uint8_t> writeBuf(bufSize);
+	ByteVector readBuf(bufSize);
+	ByteVector writeBuf(bufSize);
 
 	size_t readPos = 0;
 

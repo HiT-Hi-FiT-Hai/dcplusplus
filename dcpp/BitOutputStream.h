@@ -27,8 +27,8 @@ public:
 	BitOutputStream(string& aStream) : is(aStream), bitPos(0), next(0) { }
 	~BitOutputStream() { }
 
-	void put(vector<uint8_t>& b) {
-		for(vector<uint8_t>::iterator i = b.begin(); i != b.end(); ++i) {
+	void put(const ByteVector& b) {
+		for(ByteVector::const_iterator i = b.begin(); i != b.end(); ++i) {
 			next |= (*i) << bitPos++;
 
 			if(bitPos > 7) {

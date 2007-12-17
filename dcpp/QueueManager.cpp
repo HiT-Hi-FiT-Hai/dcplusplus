@@ -556,7 +556,7 @@ QueueItem::Priority QueueManager::hasDownload(const UserPtr& aUser) throw() {
 	return qi->getPriority();
 }
 namespace {
-typedef unordered_map<TTHValue, const DirectoryListing::File*, TTHValue::Hash> TTHMap;
+typedef unordered_map<TTHValue, const DirectoryListing::File*> TTHMap;
 
 // *** WARNING ***
 // Lock(cs) makes sure that there's only one thread accessing this

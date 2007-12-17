@@ -80,6 +80,8 @@ public:
 
 	string getShareSizeString() const { return Util::toString(getShareSize()); }
 	string getShareSizeString(const string& aDir) const { return Util::toString(getShareSize(aDir)); }
+	
+	void getBloom(ByteVector& v, size_t k, size_t m) const;
 
 	SearchManager::TypeModes getType(const string& fileName) const throw();
 
@@ -256,7 +258,7 @@ private:
 	// Map real name to directory structure
 	Directory::Map directories;
 
-	typedef unordered_map<TTHValue, Directory::File::Set::const_iterator, TTHValue::Hash> HashFileMap;
+	typedef unordered_map<TTHValue, Directory::File::Set::const_iterator> HashFileMap;
 	typedef HashFileMap::iterator HashFileIter;
 
 	HashFileMap tthIndex;

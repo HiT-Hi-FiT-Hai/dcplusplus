@@ -16,10 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(HASH_VALUE_H)
-#define HASH_VALUE_H
+#ifndef DCPLUSPLUS_DCPP_HASH_VALUE_H
+#define DCPLUSPLUS_DCPP_HASH_VALUE_H
 
 #include "FastAlloc.h"
+#include "Encoder.h"
 
 namespace dcpp {
 
@@ -27,25 +28,30 @@ template<class Hasher>
 struct HashValue : FastAlloc<HashValue<Hasher> >{
 	static const size_t SIZE = Hasher::HASH_SIZE;
 
-	struct Hash {
-		size_t operator()(const HashValue& rhs) const { return *(size_t*)&rhs; }
-	};
-
 	HashValue() { }
 	explicit HashValue(uint8_t* aData) { memcpy(data, aData, SIZE); }
-	explicit HashValue(const string& base32) { Encoder::fromBase32(base32.c_str(), data, SIZE); }
+	explicit HashValue(const std::string& base32) { Encoder::fromBase32(base32.c_str(), data, SIZE); }
 	HashValue(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); }
 	HashValue& operator=(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); return *this; }
 	bool operator!=(const HashValue& rhs) const { return !(*this == rhs); }
 	bool operator==(const HashValue& rhs) const { return memcmp(data, rhs.data, SIZE) == 0; }
 	bool operator<(const HashValue& rhs) const { return memcmp(data, rhs.data, SIZE) < 0; }
 
-	string toBase32() const { return Encoder::toBase32(data, SIZE); }
-	string& toBase32(string& tmp) const { return Encoder::toBase32(data, SIZE, tmp); }
+	std::string toBase32() const { return Encoder::toBase32(data, SIZE); }
+	std::string& toBase32(std::string& tmp) const { return Encoder::toBase32(data, SIZE, tmp); }
 
 	uint8_t data[SIZE];
 };
 
 } // namespace dcpp
+
+namespace std { namespace tr1 {
+template<>
+template<typename T>
+struct hash<dcpp::HashValue<T> > {
+	size_t operator()(const dcpp::HashValue<T>& rhs) const { return *(size_t*)rhs.data; }
+};
+}
+}
 
 #endif // !defined(HASH_VALUE_H)

@@ -91,8 +91,6 @@ public:
 
 	Client::List& getClients() { return clients; }
 
-	string getCachedIp() const { Lock l(cs); return cachedIp; }
-
 	CID getMyCID();
 	const CID& getMyPID();
 
@@ -100,10 +98,10 @@ private:
 	typedef unordered_map<string, UserPtr> LegacyMap;
 	typedef LegacyMap::iterator LegacyIter;
 
-	typedef unordered_map<CID, UserPtr, CID::Hash> UserMap;
+	typedef unordered_map<CID, UserPtr> UserMap;
 	typedef UserMap::iterator UserIter;
 
-	typedef unordered_multimap<CID, OnlineUser*, CID::Hash> OnlineMap;
+	typedef unordered_multimap<CID, OnlineUser*> OnlineMap;
 	typedef OnlineMap::iterator OnlineIter;
 	typedef OnlineMap::const_iterator OnlineIterC;
 	typedef pair<OnlineIter, OnlineIter> OnlinePair;
@@ -119,7 +117,6 @@ private:
 
 	Socket udp;
 
-	string cachedIp;
 	CID pid;
 
 	friend class Singleton<ClientManager>;
@@ -131,8 +128,6 @@ private:
 	virtual ~ClientManager() throw() {
 		TimerManager::getInstance()->removeListener(this);
 	}
-
-	void updateCachedIp();
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }

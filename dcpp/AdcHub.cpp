@@ -44,6 +44,7 @@ const string AdcHub::BASE_SUPPORT("ADBASE");
 const string AdcHub::BAS0_SUPPORT("ADBAS0");
 const string AdcHub::TIGR_SUPPORT("ADTIGR");
 const string AdcHub::UCM0_SUPPORT("ADUCM0");
+const string AdcHub::BLO0_SUPPORT("ADBLO0");
 
 AdcHub::AdcHub(const string& aHubURL, bool secure) : Client(aHubURL, '\n', secure), oldPassword(false), sid(0) {
 	TimerManager::getInstance()->addListener(this);
@@ -476,6 +477,31 @@ void AdcHub::handle(AdcCommand::RES, AdcCommand& c) throw() {
 	SearchManager::getInstance()->onRES(c, ou->getUser());
 }
 
+void AdcHub::handle(AdcCommand::GET, AdcCommand& c) throw() {
+	if(c.getParameters().size() < 5) {
+		dcdebug("Get with few parameters");
+		// TODO return STA?
+		return;
+	}
+	const string& type = c.getParam(0);
+	string tmp;
+	if(type == "blom" && c.getParam("BK", 4, tmp))  {
+		ByteVector v;
+		size_t m = Util::toUInt32(c.getParam(3)) * 8;
+		size_t k = Util::toUInt32(tmp);
+				
+		ShareManager::getInstance()->getBloom(v, k, m);
+		AdcCommand cmd(AdcCommand::CMD_SND, AdcCommand::TYPE_HUB);
+		cmd.addParam(c.getParam(0));
+		cmd.addParam(c.getParam(1));
+		cmd.addParam(c.getParam(2));
+		cmd.addParam(c.getParam(3));
+		cmd.addParam(c.getParam(4));
+		send(cmd);
+		send((char*)&v[0], v.size());
+	}
+}
+
 void AdcHub::connect(const OnlineUser& user, const string& token) {
 	connect(user, token, CryptoManager::getInstance()->TLSOk() && user.getUser()->isSet(User::TLS));
 }
@@ -698,6 +724,9 @@ void AdcHub::on(Connected c) throw() {
 	
 	if(BOOLSETTING(HUB_USER_COMMANDS)) {
 		cmd.addParam(UCM0_SUPPORT);
+	}
+	if(BOOLSETTING(SEND_BLOOM)) {
+		cmd.addParam(BLO0_SUPPORT);
 	}
 	send(cmd);
 }

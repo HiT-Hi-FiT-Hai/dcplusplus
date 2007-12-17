@@ -135,7 +135,7 @@ private:
 		CriticalSection cs;
 	} mover;
 
-	typedef unordered_map<CID, string, CID::Hash> PfsQueue;
+	typedef unordered_map<CID, string> PfsQueue;
 	typedef PfsQueue::iterator PfsIter;
 
 	/** All queue items by target */

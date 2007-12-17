@@ -83,7 +83,8 @@ private:
 	static const string BAS0_SUPPORT;
 	static const string TIGR_SUPPORT;
 	static const string UCM0_SUPPORT;
-
+	static const string BLO0_SUPPORT;
+	
 	virtual string checkNick(const string& nick);
 
 	OnlineUser& getUser(const uint32_t aSID, const CID& aCID);
@@ -105,6 +106,7 @@ private:
 	void handle(AdcCommand::SCH, AdcCommand& c) throw();
 	void handle(AdcCommand::CMD, AdcCommand& c) throw();
 	void handle(AdcCommand::RES, AdcCommand& c) throw();
+	void handle(AdcCommand::GET, AdcCommand& c) throw();
 
 	template<typename T> void handle(T, AdcCommand&) { }
 

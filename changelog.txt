@@ -1,5 +1,7 @@
 ﻿-- 0.705 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
+* Improve segmented download file sharing
+* Fix search request ip when using multiple ip's (thanks stanislav maslovski)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

@@ -178,7 +178,7 @@ private:
 		typedef unordered_map<string, FileInfoList> DirMap;
 		typedef DirMap::iterator DirIter;
 
-		typedef unordered_map<TTHValue, TreeInfo, TTHValue::Hash> TreeMap;
+		typedef unordered_map<TTHValue, TreeInfo> TreeMap;
 		typedef TreeMap::iterator TreeIter;
 
 		friend class HashLoader;

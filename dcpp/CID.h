@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(CID_H)
-#define CID_H
+#ifndef DCPLUSPLUS_DCPP_CID_H
+#define DCPLUSPLUS_DCPP_CID_H
 
 #include "Encoder.h"
 #include "Util.h"
@@ -28,9 +28,6 @@ class CID {
 public:
 	enum { SIZE = 192 / 8 };
 
-	struct Hash {
-		size_t operator()(const CID& c) const { return c.toHash(); }
-	};
 	CID() { memset(cid, 0, sizeof(cid)); }
 	explicit CID(const uint8_t* data) { memcpy(cid, data, sizeof(cid)); }
 	explicit CID(const string& base32) { Encoder::fromBase32(base32.c_str(), cid, sizeof(cid)); }
@@ -59,5 +56,15 @@ private:
 };
 
 } // namespace dcpp
+
+namespace std { namespace tr1 {
+template<>
+struct hash<dcpp::CID> {
+	size_t operator()(const dcpp::CID& rhs) const {
+		return *reinterpret_cast<const size_t*>(rhs.data());
+	}
+};
+}
+}
 
 #endif // !defined(CID_H)

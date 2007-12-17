@@ -59,7 +59,7 @@ public:
 	bool isDownloading() { return (useHttp && running); }
 
 // Favorite Users
-	typedef unordered_map<CID, FavoriteUser, CID::Hash> FavoriteMap;
+	typedef unordered_map<CID, FavoriteUser> FavoriteMap;
 	FavoriteMap getFavoriteUsers() { Lock l(cs); return users; }
 
 	void addFavoriteUser(UserPtr& aUser);

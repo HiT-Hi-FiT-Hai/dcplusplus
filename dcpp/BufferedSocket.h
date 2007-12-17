@@ -130,9 +130,9 @@ private:
 	size_t rollback;
 	bool failed;
 	string line;
-	vector<uint8_t> inbuf;
-	vector<uint8_t> writeBuf;
-	vector<uint8_t> sendBuf;
+	ByteVector inbuf;
+	ByteVector writeBuf;
+	ByteVector sendBuf;
 
 	Socket* sock;
 	bool disconnecting;

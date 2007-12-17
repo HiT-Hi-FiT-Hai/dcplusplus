@@ -36,6 +36,7 @@
 #include "Transfer.h"
 #include "UserConnection.h"
 #include "Download.h"
+#include "HashBloom.h"
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -178,7 +179,7 @@ MemoryInputStream* ShareManager::getTree(const string& virtualFile) const {
 		}
 	}
 
-	vector<uint8_t> buf = tree.getLeafData();
+	ByteVector buf = tree.getLeafData();
 	return new MemoryInputStream(&buf[0], buf.size());
 }
 
@@ -830,6 +831,19 @@ int ShareManager::run() {
 	refreshing = 0;
 	return 0;
 }
+
+void ShareManager::getBloom(ByteVector& v, size_t k, size_t m) const {
+	dcdebug("Creating bloom filter, k=%u, m=%u\n", k, m);
+	Lock l(cs);
+	
+	HashBloom bloom;
+	bloom.reset(k, m);
+	for(HashFileMap::const_iterator i = tthIndex.begin(); i != tthIndex.end(); ++i) {
+		bloom.add(i->first);
+	}
+	bloom.copy_to(v);
+}
+
 
 void ShareManager::generateXmlList() {
 	Lock l(cs);

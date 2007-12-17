@@ -146,8 +146,8 @@ public:
 		root = getHash(0, fileSize);
 	}
 
-	vector<uint8_t> getLeafData() {
-		vector<uint8_t> buf(getLeaves().size() * HASH_SIZE);
+	ByteVector getLeafData() {
+		ByteVector buf(getLeaves().size() * HASH_SIZE);
 		uint8_t* p = &buf[0];
 		for(size_t i = 0; i < getLeaves().size(); ++i) {
 			memcpy(p + i * HASH_SIZE, &getLeaves()[i], HASH_SIZE);
