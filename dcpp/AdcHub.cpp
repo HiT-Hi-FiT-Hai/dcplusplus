@@ -489,7 +489,20 @@ void AdcHub::handle(AdcCommand::GET, AdcCommand& c) throw() {
 		ByteVector v;
 		size_t m = Util::toUInt32(c.getParam(3)) * 8;
 		size_t k = Util::toUInt32(tmp);
-				
+		
+		if(k > 8 || k < 1) {
+			send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_TRANSFER_GENERIC, "Unsupported k"));
+			return;
+		}
+		
+		size_t n = ShareManager::getInstance()->getSharedFiles();
+		
+		// Ideal size for m is n * k / ln(2), but we allow some slack
+		if(m > (5 * n * k / log(2))) {
+			send(AdcCommand(AdcCommand::SEV_FATAL, AdcCommand::ERROR_TRANSFER_GENERIC, "Unsupported m"));
+			return;
+		}
+		
 		ShareManager::getInstance()->getBloom(v, k, m);
 		AdcCommand cmd(AdcCommand::CMD_SND, AdcCommand::TYPE_HUB);
 		cmd.addParam(c.getParam(0));

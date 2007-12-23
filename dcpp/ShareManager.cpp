@@ -844,7 +844,6 @@ void ShareManager::getBloom(ByteVector& v, size_t k, size_t m) const {
 	bloom.copy_to(v);
 }
 
-
 void ShareManager::generateXmlList() {
 	Lock l(cs);
 	if(xmlDirty && (lastXmlUpdate + 15 * 60 * 1000 < GET_TICK() || lastXmlUpdate < lastFullUpdate)) {
