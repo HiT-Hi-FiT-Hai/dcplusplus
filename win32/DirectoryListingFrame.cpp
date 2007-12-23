@@ -396,9 +396,9 @@ bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt
 		}
 		
 		if(files->getSelectedCount() == 1) {
-			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe())) {
+			ItemInfo* ii = files->getSelectedData();
+			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe()) && ii->type == ItemInfo::FILE) {
 				string path;
-				ItemInfo* ii = files->getSelectedData();
 				try {
 					path = ShareManager::getInstance()->toReal(Util::toAdcFile(dl->getPath(ii->file) + ii->file->getName()));
 				} catch(const ShareException&) {
@@ -412,7 +412,6 @@ bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt
 					return true;
 				}
 			}
-			ItemInfo* ii = files->getSelectedData();
 			
 			contextMenu = makeSingleMenu(ii);
 		} else {

@@ -836,6 +836,12 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		if(currentSearch.empty()) {
 			return;
 		}
+		
+		if(!aResult->getToken().empty() && token != aResult->getToken()) {
+			droppedResults++;
+			speak(SPEAK_FILTER_RESULT);
+			return;
+		}
 
 		if(isHash) {
 			if(aResult->getType() != SearchResult::TYPE_FILE || TTHValue(Text::fromT(currentSearch[0])) != aResult->getTTH()) {
@@ -970,6 +976,7 @@ void SearchFrame::runSearch() {
 		}
 
 		s = s.substr(0, max(s.size(), static_cast<tstring::size_type>(1)) - 1);
+		token = Util::toString(Util::rand());
 	}
 
 
@@ -1004,7 +1011,7 @@ void SearchFrame::runSearch() {
 
 	if(SearchManager::getInstance()->okToSearch()) {
 		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize,
-			(SearchManager::TypeModes)ftype, mode, "manual");
+			(SearchManager::TypeModes)ftype, mode, token);
 		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
 			searchBox->setText(Util::emptyStringT);
 	} else {

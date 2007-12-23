@@ -1,7 +1,10 @@
 ﻿-- 0.705 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)
-* Improve segmented download file sharing
+* Improve segmented download implementation
 * Fix search request ip when using multiple ip's (thanks stanislav maslovski)
+* Fixed a crash when right-clicking in own file list
+* [ADC] Searches filtered by token if available so that each search window only gets its own results
+* [ADC] Implemented test version of bloom filters which will dramatically reduce hub bandwidth usage for TTH searches
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

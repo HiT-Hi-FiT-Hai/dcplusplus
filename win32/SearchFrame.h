@@ -200,6 +200,8 @@ private:
 	CriticalSection cs;
 
 	StringMap ucLineParams;
+	
+	std::string token;
 
 	SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_);
 	virtual ~SearchFrame();
