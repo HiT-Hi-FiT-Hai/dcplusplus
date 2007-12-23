@@ -274,7 +274,6 @@ void DirectoryListingFrame::handleListDiff() {
 
 void DirectoryListingFrame::refreshTree(const tstring& root) {
 	HoldRedraw hold(dirs);
-	
 	HTREEITEM ht = findItem(treeRoot, root);
 	if(ht == NULL) {
 		ht = treeRoot;
@@ -286,12 +285,12 @@ void DirectoryListingFrame::refreshTree(const tstring& root) {
 	while((next = dirs->getChild(ht)) != NULL) {
 		dirs->erase(next);
 	}
-
 	updateTree(d, ht);
 	
 	dirs->select(NULL);
 	selectItem(root);
 
+	dcdebug("selected");
 	dirs->expand(treeRoot);
 }
 
@@ -674,8 +673,12 @@ void DirectoryListingFrame::updateStatus() {
 }
 
 void DirectoryListingFrame::handleSelectionChanged() {
+	ItemInfo* ii = dirs->getSelectedData();
+	if(!ii) {
+		return;
+	}
 	
-	DirectoryListing::Directory* d = dirs->getSelectedData()->dir;
+	DirectoryListing::Directory* d = ii->dir;
 	if(d == 0) {
 		return;
 	}
