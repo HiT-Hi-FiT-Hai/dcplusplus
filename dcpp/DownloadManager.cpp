@@ -372,11 +372,13 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 		dcdebug("Download finished: %s, size " I64_FMT ", downloaded " I64_FMT "\n", d->getPath().c_str(), d->getSize(), d->getPos());
 
+#if PORT_ME
+		// This should be done when the file is done, not the chunk...
 		if(BOOLSETTING(SFV_CHECK) && d->getType() == Transfer::TYPE_FILE) {
 			if(!checkSfv(aSource, d))
 				return;
 		}
-		
+#endif	
 		if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || d->getType() == Transfer::TYPE_FILE)) {
 			logDownload(aSource, d);
 		}
