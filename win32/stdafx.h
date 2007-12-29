@@ -44,8 +44,9 @@ using namespace dcpp;
 using std::tr1::placeholders::_1;
 using std::tr1::placeholders::_2;
 
-#define LOCALEDIR (dcpp::Util::getDataPath() + "/locale/").c_str()
+#define LOCALEDIR dcpp::Util::getLocalePath().c_str()
 #define PACKAGE "dcpp-win32"
 #define _(String) gettext(String)
+#define T_(String) Text::toT(gettext(String))
 
 #endif

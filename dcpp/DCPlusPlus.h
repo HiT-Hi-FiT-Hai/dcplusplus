@@ -170,7 +170,7 @@ extern void shutdown();
 
 #ifdef BUILDING_DCPP
 #define PACKAGE "dcpp"
-#define LOCALEDIR (Util::getDataPath() + "/locale/").c_str()
+#define LOCALEDIR Util::getLocalePath().c_str()
 #define _(String) dgettext(PACKAGE, String) 
 #endif
 

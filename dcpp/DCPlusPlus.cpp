@@ -89,11 +89,9 @@ void startup(void (*f)(void*, const string&), void* p) {
 		_nl_msg_cat_cntr++;
 	}
 	
-	printf(_("test"));
-
-	if(!SETTING(LANGUAGE_FILE).empty()) {
-		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
-	}
+	//if(!SETTING(LANGUAGE_FILE).empty()) {
+		//ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
+	//}
 
 	FavoriteManager::getInstance()->load();
 	CryptoManager::getInstance()->loadCertificates();

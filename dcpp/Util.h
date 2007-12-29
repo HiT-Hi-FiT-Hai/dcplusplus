@@ -127,6 +127,7 @@ public:
 	static const string& getConfigPath() { return configPath; }
 	static const string& getDataPath() { return dataPath; }
 	static const string& getSystemPath() { return systemPath; }
+	static const string& getLocalePath() { return localePath; }
 
 	/** Path of file lists */
 	static string getListPath() { return getConfigPath() + "FileLists" PATH_SEPARATOR_STR; }
@@ -379,6 +380,8 @@ private:
 	static string systemPath;
 	/** Various resources (help files etc) */
 	static string dataPath;
+	/** Translations */
+	static string localePath;
 
 	static bool away;
 	static bool manualAway;

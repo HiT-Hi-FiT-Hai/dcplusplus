@@ -63,6 +63,7 @@ Util::CountryList Util::countries;
 string Util::configPath;
 string Util::systemPath;
 string Util::dataPath;
+string Util::localePath;
 
 static void sgenrand(unsigned long seed);
 
@@ -88,12 +89,14 @@ void Util::initialize() {
 	systemPath = Util::getFilePath(Text::fromT(buf));
 	configPath = systemPath;
 	dataPath = systemPath;
+	localePath = dataPath + "locale\\";
 
 #else
 	systemPath = "/etc/";
 	char* home = getenv("HOME");
 	configPath = home ? Text::toUtf8(home) + "/.dc++/" : "/tmp/";
 	dataPath = configPath; // dataPath in linux is usually prefix + /share/app_name, so we can't represent it here
+	localePath = dataPath; // TODO no good default here either, fix
 #endif
 
 	// Load boot settings

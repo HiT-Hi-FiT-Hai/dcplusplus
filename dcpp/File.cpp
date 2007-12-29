@@ -419,7 +419,8 @@ StringList File::findFiles(const string& path, const string& pattern) {
 	hFind = ::FindFirstFile(Text::toT(path + pattern).c_str(), &data);
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
-			ret.push_back(path + Text::fromT(data.cFileName));
+			const char* extra = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "\\" : ""; 
+			ret.push_back(path + Text::fromT(data.cFileName) + extra);
 		} while(::FindNextFile(hFind, &data));
 
 		::FindClose(hFind);
@@ -429,7 +430,8 @@ StringList File::findFiles(const string& path, const string& pattern) {
 	if (dir) {
 		while (struct dirent* ent = readdir(dir)) {
 			if (fnmatch(pattern.c_str(), ent->d_name, 0) == 0) {
-				ret.push_back(path + Text::toUtf8(ent->d_name));
+				const char* extra = (ent->d_type & DT_DIR) ? "/" : ""; 
+				ret.push_back(path + Text::toUtf8(ent->d_name) + extra);
 			}
 		}
 		closedir(dir);

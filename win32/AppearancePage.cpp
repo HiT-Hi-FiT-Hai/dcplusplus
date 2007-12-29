@@ -23,6 +23,8 @@
 #include "AppearancePage.h"
 
 #include <dcpp/SettingsManager.h>
+#include <dcpp/File.h>
+
 #include "WinUtil.h"
 
 PropPage::TextItem AppearancePage::texts[] = {
@@ -30,7 +32,6 @@ PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, ResourceManager::SETTINGS_DEFAULT_AWAY_MSG },
 	{ IDC_SETTINGS_TIME_STAMPS_FORMAT, ResourceManager::SETTINGS_TIME_STAMPS_FORMAT },
 	{ IDC_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_LANGUAGE_FILE },
-	{ IDC_BROWSE, ResourceManager::BROWSE_ACCEL },
 	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
@@ -38,7 +39,6 @@ PropPage::TextItem AppearancePage::texts[] = {
 PropPage::Item AppearancePage::items[] = {
 	{ IDC_DEFAULT_AWAY_MESSAGE, SettingsManager::DEFAULT_AWAY_MESSAGE, PropPage::T_STR },
 	{ IDC_TIME_STAMPS_FORMAT, SettingsManager::TIME_STAMPS_FORMAT, PropPage::T_STR },
-	{ IDC_LANGUAGE, SettingsManager::LANGUAGE_FILE, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -57,13 +57,44 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
-AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent) {
+AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), languages(0) {
 	createDialog(IDD_APPEARANCEPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 
-	attachButton(IDC_BROWSE)->onClicked(std::tr1::bind(&AppearancePage::handleBrowse, this));
+	languages = attachComboBox(IDC_LANGUAGE);
+
+	StringList dirs = File::findFiles(Util::getLocalePath(), "*");
+
+	TStringList langs;
+	
+	langs.push_back(_T("en"));
+	
+	for(StringList::const_iterator i = dirs.begin(); i != dirs.end(); ++i) {
+		string dir = *i + "LC_MESSAGES" PATH_SEPARATOR_STR;
+		StringList files = File::findFiles(dir, "*.mo");
+		if(find(files.begin(), files.end(), dir + "dcpp.mo") == files.end() && find(files.begin(), files.end(), dir + "dcpp-win32.mo") == files.end()) {
+			continue;
+		}
+		// TODO Convert to real language name?
+		langs.push_back(Text::toT(Util::getLastDir(*i)));
+	}
+	
+	std::sort(langs.begin(), langs.end(), noCaseStringLess());
+	
+	languages->addValue(T_("Default"));
+	
+	int selected = 0, j = 1;
+	const tstring cur = Text::toT(SETTING(LANGUAGE));
+	for(TStringList::const_iterator i = langs.begin(); i != langs.end(); ++i, ++j) {
+		languages->addValue(*i);
+		if(selected != 0 && *i == cur || (*i == _T("en") && cur == _T("C"))) {
+			selected = j;
+		}
+	}
+	
+	languages->setSelectedIndex(selected);
 }
 
 AppearancePage::~AppearancePage() {
@@ -72,16 +103,14 @@ AppearancePage::~AppearancePage() {
 void AppearancePage::write()
 {
 	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
-}
 
-void AppearancePage::handleBrowse() {
-	TCHAR buf[MAX_PATH];
-	static const TCHAR types[] = _T("Language Files\0*.xml\0All Files\0*.*\0");
-
-	::GetDlgItemText(handle(), IDC_LANGUAGE, buf, MAX_PATH);
-	tstring x = buf;
-
-	if(WinUtil::browseFile(x, handle(), false, Text::toT(Util::getDataPath()), types) == IDOK) {
-		::SetDlgItemText(handle(), IDC_LANGUAGE, x.c_str());
+	tstring lang = languages->getText();
+	
+	if(lang == T_("Default")) {
+		SettingsManager::getInstance()->set(SettingsManager::LANGUAGE, "");
+	} else if(lang == _T("en")) {
+		SettingsManager::getInstance()->set(SettingsManager::LANGUAGE, "C");
+	} else {
+		SettingsManager::getInstance()->set(SettingsManager::LANGUAGE, Text::fromT(lang));
 	}
 }
