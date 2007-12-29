@@ -26,6 +26,7 @@
 #include <shlobj.h>
 #include <malloc.h>
 #include <htmlhelp.h>
+#include <libintl.h>
 
 enum {
 	WM_SPEAKER  = WM_APP + 500
@@ -42,5 +43,9 @@ enum {
 using namespace dcpp;
 using std::tr1::placeholders::_1;
 using std::tr1::placeholders::_2;
+
+#define LOCALEDIR (dcpp::Util::getDataPath() + "/locale/").c_str()
+#define PACKAGE "dcpp-win32"
+#define _(String) gettext(String)
 
 #endif

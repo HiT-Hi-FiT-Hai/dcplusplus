@@ -20,7 +20,9 @@
 #define DCPP_DCPLUSPLUS_H
 
 #ifdef _WIN32
+#ifndef snprintf
 #define snprintf _snprintf
+#endif
 #endif
 
 #ifdef _DEBUG
@@ -165,6 +167,12 @@ typedef StringMapIter TStringMapIter;
 
 extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
+
+#ifdef BUILDING_DCPP
+#define PACKAGE "dcpp"
+#define LOCALEDIR (Util::getDataPath() + "/locale/").c_str()
+#define _(String) dgettext(PACKAGE, String) 
+#endif
 
 } // namespace dcpp
 

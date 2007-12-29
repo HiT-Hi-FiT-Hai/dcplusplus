@@ -91,7 +91,7 @@ dev.prepare()
 env.SConsignFile()
 env.Tool("gch", toolpath=".")
 
-env.Append(CPPPATH = ["#/boost/boost/tr1/tr1/", "#/boost/", "#/htmlhelp/include/"])
+env.Append(CPPPATH = ["#/boost/boost/tr1/tr1/", "#/boost/", "#/htmlhelp/include/", "#/intl/"])
 env.Append(LIBPATH = ["#/htmlhelp/lib/"])
 
 if not env['nativestl']:
@@ -144,6 +144,25 @@ SWIGScanner = SCons.Scanner.ClassicCPP(
 )
 env.Append(SCANNERS=[SWIGScanner])
 
+#
+# internationalization (ardour.org provided the initial idea)
+#
+
+po_args = ['msgmerge', '-q', '--update', '$TARGET', '$SOURCE']
+po_bld = Builder (action = Action([po_args], 'Updating translation $TARGET from $SOURCES'))
+env.Append(BUILDERS = {'PoBuild' : po_bld})
+
+mo_args = ['msgfmt', '-c', '-o', '$TARGET', '$SOURCE']
+mo_bld = Builder (action = Action([mo_args], 'Compiling message catalog $TARGET from $SOURCES'))
+env.Append(BUILDERS = {'MoBuild' : mo_bld})
+
+pot_args = ['xgettext','--from-code=UTF-8', '--foreign-user', '--package-name=$PACKAGE',
+		'--copyright-holder=Jacek Sieka', '--msgid-bugs-address=dcplusplus-devel@lists.sourceforge.net',
+		'--no-wrap', '--keyword=_', '--output=$TARGET', '$SOURCES']
+
+pot_bld = Builder (action = Action([pot_args], 'Extracting messages to $TARGET from $SOURCES'))
+env.Append(BUILDERS = {'PotBuild' : pot_bld})
+
 from makedefs import convert
 env.Command('dcpp/StringDefs.cpp', 'dcpp/StringDefs.h', lambda target, source, env: convert())
 env.Depends('dcpp/StringDefs.cpp', 'dcpp/StringDefs.h')
@@ -151,6 +170,7 @@ env.SideEffect('Example.xml', 'dcpp/StringDefs.cpp')
 
 dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')
+dev.intl = dev.build('intl/')
 dev.boost = dev.build('boost/')
 dev.client = dev.build('dcpp/')
 env.Depends(dev.client, 'dcpp/StringDefs.cpp')

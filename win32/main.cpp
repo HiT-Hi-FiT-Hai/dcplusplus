@@ -134,7 +134,10 @@ int SmartWinMain(SmartWin::Application& app) {
 	try {
 		SplashWindow* splash(new SplashWindow);
 		startup(&callBack, splash);
-
+		
+		bindtextdomain(PACKAGE, LOCALEDIR);
+		textdomain(PACKAGE);
+		
 		if(ResourceManager::getInstance()->isRTL()) {
 			SetProcessDefaultLayout(LAYOUT_RTL);
 		}

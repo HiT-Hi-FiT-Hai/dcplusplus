@@ -1,5 +1,6 @@
 import glob
 import sys
+import os
 
 class Dev:
 	def __init__(self, mode, tools, env):
@@ -40,6 +41,10 @@ class Dev:
 				self.env['PROGSUFFIX'] = '.exe'
 				self.env['LIBPREFIX'] = 'lib'
 				self.env['LIBSUFFIX'] = '.a'
+				self.env['SHLIBSUFFIX'] = '.dll'
+				
+	def is_win32(self):
+		return sys.platform == 'win32' or 'mingw' in self.env['TOOLS']
 
 	def get_build_root(self):
 		return '#/build/' + self.mode + '-' + self.tools + '/'
@@ -68,6 +73,25 @@ class Dev:
 			local_env = self.env
 		full_path = local_env.Dir('.').path + '/' + source_path	
 		return local_env.SConscript(source_path + 'SConscript', exports={'dev' : self, 'source_path' : full_path })
+
+	def i18n (self, source_path, buildenv, sources, name):
+		p_oze = glob.glob('po/*.po')
+		languages = [ os.path.basename(po).replace ('.po', '') for po in p_oze ]
+		potfile = 'po/' + name + '.pot'
+		buildenv['PACKAGE'] = name
+		ret = buildenv.PotBuild(potfile, sources)
+		
+		for po_file in p_oze:
+			buildenv.Precious(buildenv.PoBuild(po_file, [potfile]))
+			lang = os.path.basename(po)[:-3]
+			mo_file = self.get_target(source_path, "locale/" + lang + "/LC_MESSAGES/" + name + ".mo", True)
+			buildenv.MoBuild (mo_file, po_file)
+		
+#		for lang in languages:
+#			modir = (os.path.join (install_prefix, 'share/locale/' + lang + '/LC_MESSAGES/'))
+#			moname = domain + '.mo'
+#			installenv.Alias('install', installenv.InstallAs (os.path.join (modir, moname), lang + '.mo'))
+		return ret
 
 def CheckPKGConfig(context, version):
 	context.Message( 'Checking for pkg-config... ' )

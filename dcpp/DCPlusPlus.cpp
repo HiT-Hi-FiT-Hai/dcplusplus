@@ -43,6 +43,8 @@ void __stl_debug_terminate() {
 }
 #endif
 
+extern "C" int _nl_msg_cat_cntr;
+
 namespace dcpp {
 
 void startup(void (*f)(void*, const string&), void* p) {
@@ -57,6 +59,8 @@ void startup(void (*f)(void*, const string&), void* p) {
 #endif
 
 	Util::initialize();
+	
+	bindtextdomain(PACKAGE, LOCALEDIR);
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
@@ -77,6 +81,15 @@ void startup(void (*f)(void*, const string&), void* p) {
 	ADLSearchManager::newInstance();
 
 	SettingsManager::getInstance()->load();
+	
+	if(!SETTING(LANGUAGE).empty()) {
+		string language = "LANGUAGE=" + SETTING(LANGUAGE);
+		putenv(language.c_str());
+		// Apparently this is supposted to make gettext reload the message catalog...
+		_nl_msg_cat_cntr++;
+	}
+	
+	printf(_("test"));
 
 	if(!SETTING(LANGUAGE_FILE).empty()) {
 		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));

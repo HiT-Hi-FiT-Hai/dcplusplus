@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(STDINC_H)
-#define STDINC_H
+#ifndef DCPLUSPLUS_DCPP_STDINC_H
+#define DCPLUSPLUS_DCPP_STDINC_H
 
 // This enables stlport's debug mode (and slows it down to a crawl...)
 //#define _STLP_DEBUG 1
@@ -117,6 +117,7 @@ typedef unsigned __int64 uint64_t;
 #include <memory>
 #include <numeric>
 #include <limits>
+#include <libintl.h>
 
 #ifdef _STLPORT_VERSION
 

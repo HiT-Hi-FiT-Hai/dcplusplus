@@ -37,6 +37,10 @@ for i, source in enumerate(sources):
 if 'gcc' in env['TOOLS']:
 	env['Gch'] = env.Gch('stdinc.h')[0]
 
+env.Append(CPPDEFINES=["BUILDING_DCPP=1"])
+
+dev.i18n(source_path, env, sources, 'dcpp')
+
 ret = env.StaticLibrary(target, sources)
 
 Return('ret')
