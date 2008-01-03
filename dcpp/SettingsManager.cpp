@@ -78,7 +78,7 @@ const string SettingsManager::settingTags[] =
 	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
 	"TLSPort", "FastHash", "SortFavUsersFirst", "ShowShellMenu", "MinSegmentSize", "FollowLinks",
-	"SendBloom",
+	"SendBloom", "OpenDownloads",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -274,6 +274,7 @@ SettingsManager::SettingsManager()
 	setDefault(MIN_SEGMENT_SIZE, 1024);
 	setDefault(FOLLOW_LINKS, false);
 	setDefault(SEND_BLOOM, true);
+	setDefault(OPEN_DOWNLOADS, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp-win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-01-03 20:12+0100\n"
+"POT-Creation-Date: 2008-01-03 22:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: win32/DownloadsFrame.cpp:36
+#: win32/MainWindow.cpp:218 win32/DownloadsFrame.cpp:38
 msgid "Downloads"
 msgstr ""
 
-#: win32/DownloadsFrame.cpp:98
+#: win32/DownloadsFrame.cpp:110
 msgid "Waiting for slot"
 msgstr ""
 
-#: win32/DownloadsFrame.cpp:103
+#: win32/DownloadsFrame.cpp:114
 #, boost-format
 msgid "Downloading from %1% user"
 msgid_plural "Downloading from %1% users"
 msgstr[0] ""
 msgstr[1] ""
 
-#: win32/DownloadsFrame.cpp:105
+#: win32/DownloadsFrame.cpp:116
 #, boost-format
 msgid "%1%/s"
 msgstr ""

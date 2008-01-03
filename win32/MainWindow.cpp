@@ -21,30 +21,18 @@
 #include "MainWindow.h"
 #include "resource.h"
 
-#include "SystemFrame.h"
-#include "NotepadFrame.h"
-#include "HubFrame.h"
-#include "PublicHubsFrame.h"
-#include "FavHubsFrame.h"
-#include "QueueFrame.h"
-#include "SearchFrame.h"
-#include "ADLSearchFrame.h"
-#include "SpyFrame.h"
-#include "FinishedDLFrame.h"
-#include "FinishedULFrame.h"
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 #include "SettingsDialog.h"
 #include "TextFrame.h"
-#include "DirectoryListingFrame.h"
-#include "PrivateFrame.h"
 #include "SingleInstance.h"
-#include "StatsFrame.h"
-#include "UsersFrame.h"
-#include "WaitingUsersFrame.h"
 #include "AboutDlg.h"
 #include "UPnP.h"
 #include "TransferView.h"
+#include "HubFrame.h"
+#include "PrivateFrame.h"
+#include "DirectoryListingFrame.h"
+#include "SearchFrame.h"
 
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ResourceManager.h>
@@ -134,6 +122,7 @@ MainWindow::MainWindow() :
 	if(BOOLSETTING(OPEN_NOTEPAD)) postMessage(WM_COMMAND, IDC_NOTEPAD);
 	if(BOOLSETTING(OPEN_PUBLIC)) postMessage(WM_COMMAND, IDC_PUBLIC_HUBS);
 	if(BOOLSETTING(OPEN_FAVORITE_HUBS)) postMessage(WM_COMMAND, IDC_FAVORITE_HUBS);
+	if(BOOLSETTING(OPEN_DOWNLOADS)) postMessage(WM_COMMAND, IDC_DOWNLOADS);
 
 	if (!WinUtil::isShift())
 		speak(AUTO_CONNECT);
@@ -226,8 +215,9 @@ void MainWindow::initMenu() {
 	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_NET_STATS, TSTRING(MENU_NETWORK_STATISTICS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_HASH_PROGRESS, TSTRING(MENU_HASH_PROGRESS), std::tr1::bind(&MainWindow::handleHashProgress, this));
-
+	
 	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
 
 	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, TSTRING(MENU_CLOSE_DISCONNECTED), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
@@ -832,53 +822,6 @@ void MainWindow::handleAbout() {
 
 void MainWindow::handleOpenDownloadsDir() {
 	WinUtil::openFile(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
-}
-
-void MainWindow::handleOpenWindow(unsigned id) {
-	switch (id) {
-	case IDC_PUBLIC_HUBS:
-		PublicHubsFrame::openWindow(getMDIParent());
-		break;
-	case IDC_FAVORITE_HUBS:
-		FavHubsFrame::openWindow(getMDIParent());
-		break;
-	case IDC_FAVUSERS:
-		UsersFrame::openWindow(getMDIParent());
-		break;
-	case IDC_QUEUE:
-		QueueFrame::openWindow(getMDIParent());
-		break;
-	case IDC_FINISHED_DL:
-		FinishedDLFrame::openWindow(getMDIParent());
-		break;
-	case IDC_WAITING_USERS:
-		WaitingUsersFrame::openWindow(getMDIParent());
-		break;
-	case IDC_FINISHED_UL:
-		FinishedULFrame::openWindow(getMDIParent());
-		break;
-	case IDC_SEARCH:
-		SearchFrame::openWindow(getMDIParent());
-		break;
-	case IDC_ADL_SEARCH:
-		ADLSearchFrame::openWindow(getMDIParent());
-		break;
-	case IDC_SEARCH_SPY:
-		SpyFrame::openWindow(getMDIParent());
-		break;
-	case IDC_NOTEPAD:
-		NotepadFrame::openWindow(getMDIParent());
-		break;
-	case IDC_SYSTEM_LOG:
-		SystemFrame::openWindow(getMDIParent());
-		break;
-	case IDC_NET_STATS:
-		StatsFrame::openWindow(getMDIParent());
-		break;
-	default:
-		dcassert(0);
-		break;
-	}
 }
 
 void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, const string&) throw() {

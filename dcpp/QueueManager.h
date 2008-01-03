@@ -87,6 +87,9 @@ public:
 	int matchListing(const DirectoryListing& dl) throw();
 
 	bool getTTH(const string& name, TTHValue& tth) throw();
+	
+	int64_t getSize(const string& target) throw();
+	int64_t getPos(const string& target) throw();
 
 	/** Move the target location of a queued item. Running items are silently ignored */
 	void move(const string& aSource, const string& aTarget) throw();

@@ -8,6 +8,7 @@
 * Fixed a crash with partial list browsing
 * Replaced homegrown i18n solution with gettext
 * Fixed an issue with nick encodings and nmdc connections (thanks stanislav maslovski)
+* Added download view which shows per-file download information
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

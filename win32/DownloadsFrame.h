@@ -20,7 +20,7 @@
 #define DCPLUSPLUS_WIN32_DOWNLOADS_FRAME_H
 
 #include <dcpp/DownloadManagerListener.h>
-#include <dcpp/ConnectionManagerListener.h>
+#include <dcpp/QueueManagerListener.h>
 #include <dcpp/forward.h>
 #include <dcpp/ResourceManager.h>
 
@@ -30,8 +30,8 @@
 
 class DownloadsFrame : 
 	public StaticFrame<DownloadsFrame>,
-	private DownloadManagerListener, 
-	private ConnectionManagerListener
+	public DownloadManagerListener, 
+	public QueueManagerListener
 {
 public:
 	enum Status {
@@ -88,17 +88,22 @@ private:
 			return columns[col];
 		}
 
-		int getImage() const {
-			return 0;
-		}
+		int getImage() const;
 
 		static int compareItems(DownloadInfo* a, DownloadInfo* b, int col) {
-			return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+			switch(col) {
+			case COLUMN_STATUS: return compare(a->users, b->users);
+			case COLUMN_TIMELEFT: return compare(a->timeleft(), b->timeleft());
+			case COLUMN_SPEED: return compare(a->bps, b->bps);
+			case COLUMN_SIZE: return compare(a->size, b->size);
+			default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+			}
 		}
 		
 		void update();
 		void update(const TickInfo& ti);
 		
+		int64_t timeleft() { return bps == 0 ? 0 : (size - done) / bps; }
 		string path;
 		int64_t done;
 		int64_t size;
@@ -119,7 +124,6 @@ private:
 	
 	int find(const string& path);
 
-	bool handleKeyDown(int c);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	

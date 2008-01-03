@@ -45,6 +45,7 @@ WindowsPage::ListItem WindowsPage::listItems[] = {
 	{ SettingsManager::OPEN_NOTEPAD, ResourceManager::NOTEPAD },
 	{ SettingsManager::OPEN_PUBLIC, ResourceManager::PUBLIC_HUBS },
 	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::FAVORITE_HUBS },
+	{ SettingsManager::OPEN_DOWNLOADS, ResourceManager::DOWNLOADS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 

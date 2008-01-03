@@ -602,6 +602,25 @@ int QueueManager::matchListing(const DirectoryListing& dl) throw() {
 	return matches;
 }
 
+int64_t QueueManager::getPos(const string& target) throw() {
+	Lock l(cs);
+	QueueItem* qi = fileQueue.find(target);
+	if(qi) {
+		return qi->getDownloadedBytes();
+	}
+	return -1;
+}
+
+int64_t QueueManager::getSize(const string& target) throw() {
+	Lock l(cs);
+	QueueItem* qi = fileQueue.find(target);
+	if(qi) {
+		return qi->getSize();
+	}
+	return -1;
+}
+
+
 void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 	string target = Util::validateFileName(aTarget);
 	if(aSource == target)

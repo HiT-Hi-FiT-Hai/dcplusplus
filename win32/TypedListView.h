@@ -112,9 +112,7 @@ public:
 	}
 
 	void update(int i) {
-		unsigned k = this->getColumnCount();
-		for(unsigned j = 0; j < k; ++j)
-			ListView_SetItemText(this->handle(), i, j, LPSTR_TEXTCALLBACK);
+		redraw(i, i);
 	}
 	
 	void update(ContentType* item) { int i = find(item); if(i != -1) update(i); }

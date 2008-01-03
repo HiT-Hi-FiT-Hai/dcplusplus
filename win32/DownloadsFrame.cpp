@@ -22,9 +22,11 @@
 #include <dcpp/QueueItem.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/Download.h>
+#include <dcpp/DownloadManager.h>
 
 #include "DownloadsFrame.h"
 #include "HoldRedraw.h"
+#include "WinUtil.h"
 
 int DownloadsFrame::columnIndexes[] = { COLUMN_FILE, COLUMN_PATH, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_SIZE };
 int DownloadsFrame::columnSizes[] = { 200, 300, 150, 200, 125, 100};
@@ -46,8 +48,8 @@ DownloadsFrame::DownloadsFrame(SmartWin::WidgetTabView* mdiParent) :
 		downloads->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		downloads->setSort(COLUMN_STATUS);
 		downloads->setColor(WinUtil::textColor, WinUtil::bgColor);
+		downloads->setSmallImageList(WinUtil::fileImages);
 
-		downloads->onKeyDown(std::tr1::bind(&DownloadsFrame::handleKeyDown, this, _1));
 		downloads->onContextMenu(std::tr1::bind(&DownloadsFrame::handleContextMenu, this, _1));
 	}
 
@@ -58,10 +60,14 @@ DownloadsFrame::DownloadsFrame(SmartWin::WidgetTabView* mdiParent) :
 	startup = false;
 	
 	onSpeaker(std::tr1::bind(&DownloadsFrame::handleSpeaker, this, _1, _2));
+	
+	QueueManager::getInstance()->addListener(this);
+	DownloadManager::getInstance()->addListener(this);
 }
 
 DownloadsFrame::~DownloadsFrame() {
-	
+	QueueManager::getInstance()->removeListener(this);
+	DownloadManager::getInstance()->removeListener(this);
 }
 
 void DownloadsFrame::layout() {
@@ -81,16 +87,22 @@ void DownloadsFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::DOWNLOADSFRAME_WIDTHS, WinUtil::toString(downloads->getColumnWidths()));
 }
 
-DownloadsFrame::DownloadInfo::DownloadInfo(const string& filename, int64_t size_) : path(filename), done(0), size(size), users(0) {
-	columns[COLUMN_FILE] = Text::toT(Util::getFileName(filename));
-	columns[COLUMN_PATH] = Text::toT(Util::getFilePath(filename));
-	columns[COLUMN_SIZE] = Text::toT(Util::toString(size));
+DownloadsFrame::DownloadInfo::DownloadInfo(const string& target, int64_t size_) : path(target), done(QueueManager::getInstance()->getPos(target)), size(size_), users(0) {
+	columns[COLUMN_FILE] = Text::toT(Util::getFileName(target));
+	columns[COLUMN_PATH] = Text::toT(Util::getFilePath(target));
+	columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(size));
+	update();
+}
+
+int DownloadsFrame::DownloadInfo::getImage() const {
+	return WinUtil::getIconIndex(Text::toT(path));
 }
 
 void DownloadsFrame::DownloadInfo::update(const DownloadsFrame::TickInfo& ti) {
 	users = ti.users;
-	done = ti.done; // TODO Add done from queuemanager...
+	done = ti.done + QueueManager::getInstance()->getInstance()->getPos(ti.path);
 	bps = ti.bps;
+	update();
 }
 
 void DownloadsFrame::DownloadInfo::update() {
@@ -99,17 +111,10 @@ void DownloadsFrame::DownloadInfo::update() {
 		columns[COLUMN_TIMELEFT].clear();
 		columns[COLUMN_SPEED].clear();
 	} else {
-		double timeleft = bps > 0 ? (size - done) / bps : 0;
 		columns[COLUMN_STATUS] = str(TFN_("Downloading from %1% user", "Downloading from %1% users", users) % users);
-		columns[COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(static_cast<int64_t>(timeleft)));
+		columns[COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(static_cast<int64_t>(timeleft())));
 		columns[COLUMN_SPEED] = str(TF_("%1%/s") % Text::toT(Util::formatBytes(static_cast<int64_t>(bps))));
 	}
-}
-
-bool DownloadsFrame::handleKeyDown(int c) {
-	switch(c) {
-	}
-	return false;
 }
 
 bool DownloadsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
@@ -142,19 +147,26 @@ LRESULT DownloadsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		boost::scoped_ptr<TickInfo> ti(reinterpret_cast<TickInfo*>(lParam));
 		int i = find(ti->path);
 		if(i == -1) {
-			// TODO get size
-			i = downloads->insert(new DownloadInfo(ti->path, 0));
+			int64_t size = QueueManager::getInstance()->getSize(ti->path);
+			if(size == -1) {
+				return 0;
+			}
+			i = downloads->insert(new DownloadInfo(ti->path, size));
 		}
 		DownloadInfo* di = downloads->getData(i);
 		di->update(*ti);
+		downloads->update(i);
 	} else if(wParam == SPEAKER_DISCONNECTED) {
 		boost::scoped_ptr<string> path(reinterpret_cast<string*>(lParam));
 		
 		int i = find(*path);
 		if(i != -1) {
 			DownloadInfo* di = downloads->getData(i);
-			di->users--;
+			if(--di->users == 0) {
+				di->bps = 0;
+			}
 			di->update();
+			downloads->update(i);
 		}
 	} else if(wParam == SPEAKER_REMOVED) {
 		boost::scoped_ptr<string> path(reinterpret_cast<string*>(lParam));
@@ -170,6 +182,10 @@ void DownloadsFrame::on(DownloadManagerListener::Tick, const DownloadList& l) th
 	std::vector<TickInfo*> dis;
 	for(DownloadList::const_iterator i = l.begin(); i != l.end(); ++i) {
 		Download* d = *i;
+		if(d->getType() != Transfer::TYPE_FILE) {
+			continue;
+		}
+		
 		TickInfo* ti = 0;
 		for(std::vector<TickInfo*>::iterator j = dis.begin(); j != dis.end(); ++j) {
 			TickInfo* ti2 = *j;
@@ -180,6 +196,7 @@ void DownloadsFrame::on(DownloadManagerListener::Tick, const DownloadList& l) th
 		}
 		if(!ti) {
 			ti = new TickInfo(d->getPath());
+			dis.push_back(ti);
 		}
 		ti->users++;
 		ti->bps += d->getAverageSpeed();

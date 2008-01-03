@@ -9,6 +9,9 @@ How to compile in n easy steps:
     but if you want to experiment you can try the potentially slower sjlj. After installing gcc, you will
     need to go to the bin folder of your mingw installation and copy g++-dw2/sjlj.exe and gcc-dw2/sjlj.exe to g++.exe
     and gcc.exe respectively.
+    You will also need the gettext tools: gettext-0.16.1-1-bin.tar.bz2, gettext-0.16.1-1-dll.tar.bz2 and 
+    libiconv-1.11-1-dll.tar.bz2. Extract and make sure they're in your PATH.
+    
     Note; Make sure gcc/g++ is in your path and before any cygwin installation.
 
 1b) or install Microsoft Visual C++ 8.0 (I don't use it so there might be some compile problems)
@@ -25,7 +28,7 @@ and copy the file to the include directory of your compiler (or add it to the in
 3) Download HTML help workshop from http://msdn2.microsoft.com/en-us/library/ms670169.aspx. Copy the
    include and library files to the respective directories in the htmlhelp folder. Make sure hhc.exe is
    in your PATH.
-   
+
 4) Open a command prompt and type "scons" followed by some options:
 	"tools=mingw" - Use mingw for building (default)
 	"tools=default" - Use msvc for building (yes, the option value is strange)
@@ -34,8 +37,6 @@ and copy the file to the include directory of your compiler (or add it to the in
 
 	To see more options, type "scons -h".
 	Tip: You can create a file custom.py and put your options in there.
-
-If you get a linking error citing missing references on the first compile, run scons again.
 
 Note; If you have problems, use google. It works for me.
 
@@ -65,5 +66,6 @@ To increase the chances of your patch being accepted, do like this:
 In order to avoid future licensing issues, I ask you to give me copyright over any submitted code. 
 If you don't like this policy, you are free to start your own distribution (as
 many have done), and if you're lucky it might become more popular than the original =). Please
-state explicitly when submitting the patch that you give me copyright over the code if the submission is larger than trivial.
+state explicitly when submitting the patch that you give me copyright over the code if the submission is larger 
+than trivial.
 
