@@ -128,10 +128,10 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedTreeView<DirectoryListingFrame, ItemInfo> WidgetDirs;
+	typedef TypedTreeView<ItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
-	typedef TypedListView<DirectoryListingFrame, ItemInfo> WidgetFiles;
+	typedef TypedListView<ItemInfo> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	
 	WidgetFilesPtr files;

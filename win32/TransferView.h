@@ -25,8 +25,6 @@
 #include <dcpp/TaskQueue.h>
 #include <dcpp/forward.h>
 #include <dcpp/Util.h>
-#include <dcpp/Download.h>
-#include <dcpp/Upload.h>
 
 #include "AspectSpeaker.h"
 #include "TypedListView.h"
@@ -173,7 +171,7 @@ private:
 	static int columnIndexes[];
 	static int columnSizes[];
 
-	typedef TypedListView<TransferView, ItemInfo> WidgetTransfers;
+	typedef TypedListView<ItemInfo> WidgetTransfers;
 	typedef WidgetTransfers* WidgetTransfersPtr;
 	WidgetTransfersPtr transfers;
 	SmartWin::WidgetTabView* mdi;
@@ -207,14 +205,14 @@ private:
 	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();
 	virtual void on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw();
 
-	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw() { onTransferComplete(aDownload, false);}
+	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw();
 	virtual void on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw();
 	virtual void on(DownloadManagerListener::Starting, Download* aDownload) throw();
 	virtual void on(DownloadManagerListener::Tick, const DownloadList& aDownload) throw();
 
 	virtual void on(UploadManagerListener::Starting, Upload* aUpload) throw();
 	virtual void on(UploadManagerListener::Tick, const UploadList& aUpload) throw();
-	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw() { onTransferComplete(aUpload, true); }
+	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw();
 
 	void onTransferComplete(Transfer* aTransfer, bool isUpload);
 

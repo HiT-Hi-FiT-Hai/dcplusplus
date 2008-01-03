@@ -59,6 +59,7 @@
 #include <dcpp/ShareManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
+#include <dcpp/Download.h>
 
 MainWindow::MainWindow() :
 	WidgetFactory<SmartWin::WidgetWindow>(0), 

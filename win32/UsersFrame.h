@@ -93,7 +93,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 	
-	typedef TypedListView<UsersFrame, UserInfo> WidgetUsers;
+	typedef TypedListView<UserInfo> WidgetUsers;
 	typedef WidgetUsers* WidgetUsersPtr;
 	WidgetUsersPtr users;
 

@@ -39,6 +39,7 @@
 #include "MagnetDlg.h"
 #include "HubFrame.h"
 #include "SearchFrame.h"
+#include "MainWindow.h"
 
 tstring WinUtil::tth;
 SmartWin::BrushPtr WinUtil::bgBrush;
@@ -52,8 +53,7 @@ int WinUtil::fileImageCount;
 int WinUtil::dirIconIndex;
 int WinUtil::dirMaskedIndex;
 TStringList WinUtil::lastDirs;
-SmartWin::Widget* WinUtil::mainWindow = 0;
-SmartWin::WidgetTabView* WinUtil::mdiParent = 0;
+MainWindow* WinUtil::mainWindow = 0;
 bool WinUtil::urlDcADCRegistered = false;
 bool WinUtil::urlMagnetRegistered = false;
 WinUtil::ImageMap WinUtil::fileIndexes;
@@ -252,7 +252,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
-			SearchFrame::openWindow(mdiParent, param);
+			SearchFrame::openWindow(mainWindow->getMDIParent(), param);
 		} else {
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		}
@@ -373,7 +373,7 @@ void WinUtil::copyMagnet(const TTHValue& aHash, const tstring& aFile) {
 }
 
 void WinUtil::searchHash(const TTHValue& aHash) {
-	SearchFrame::openWindow(mdiParent, Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
+	SearchFrame::openWindow(mainWindow->getMDIParent(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 }
 
 tstring WinUtil::escapeMenu(tstring str) {
@@ -941,7 +941,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	uint16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
-		HubFrame::openWindow(mdiParent, server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getMDIParent(), server + ":" + Util::toString(port));
 	}
 	if(!file.empty()) {
 		if(file[0] == '/') // Remove any '/' in from of the file
@@ -962,7 +962,7 @@ void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	uint16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
-		HubFrame::openWindow(mdiParent, "adc://" + server + ":" + Util::toString(port));
+		HubFrame::openWindow(mainWindow->getMDIParent(), "adc://" + server + ":" + Util::toString(port));
 	}
 }
 

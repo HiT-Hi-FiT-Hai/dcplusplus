@@ -94,7 +94,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListView<PublicHubsFrame, HubInfo> WidgetHubs;
+	typedef TypedListView<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 

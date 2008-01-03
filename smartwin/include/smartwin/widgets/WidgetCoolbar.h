@@ -114,9 +114,6 @@ public:
 		Seed();
 	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
 	/// ComboBox object type.
 	typedef WidgetComboBox::ObjectType WidgetComboBoxPtr;
 

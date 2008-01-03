@@ -73,9 +73,6 @@ public:
 		Seed(const SmartUtil::tstring& caption_ = SmartUtil::tstring());
 	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
 	/// Returns true if the RadioButton is selected
 	 /** Call this function to determine if the RadioButton is selected or not,
 	   * returns true if it is selected

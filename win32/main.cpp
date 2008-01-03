@@ -145,7 +145,7 @@ int SmartWinMain(SmartWin::Application& app) {
 		WinUtil::init();
 		MainWindow* wnd = new MainWindow;
 		WinUtil::mainWindow = wnd;
-		WinUtil::mdiParent = wnd->getMDIParent();
+		//WinUtil::mdiParent = wnd->getMDIParent();
 		splash->close();
 		ret = app.run();
 	} catch(const SmartWin::xCeption& e) {

@@ -204,11 +204,11 @@ private:
 
 	TaskQueue tasks;
 
-	typedef TypedTreeView<QueueFrame, DirItemInfo> WidgetDirs;
+	typedef TypedTreeView<DirItemInfo> WidgetDirs;
 	typedef WidgetDirs* WidgetDirsPtr;
 	WidgetDirsPtr dirs;
 	
-	typedef TypedListView<QueueFrame, QueueItemInfo, false> WidgetFiles;
+	typedef TypedListView<QueueItemInfo, false> WidgetFiles;
 	typedef WidgetFiles* WidgetFilesPtr;
 	WidgetFilesPtr files;
 	WidgetVPanedPtr paned;

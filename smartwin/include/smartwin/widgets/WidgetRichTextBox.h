@@ -85,15 +85,12 @@ public:
 		Seed();
 	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
 	/// Actually creates the Rich Edit Control
 	/** You should call WidgetFactory::createRichTextBox if you instantiate class
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.       
 	  */
-	void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	/// Sets the background color of the WidgetRichTextBox
 	/** Call this function to alter the background color of the WidgetRichEdit. <br>

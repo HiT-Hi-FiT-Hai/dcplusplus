@@ -31,6 +31,8 @@
 #include <dcpp/UploadManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
+#include <dcpp/Download.h>
+#include <dcpp/Upload.h>
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID, COLUMN_CIPHER };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125, 125 };
@@ -615,6 +617,14 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 	}
 
 	speak();
+}
+
+void TransferView::on(DownloadManagerListener::Complete, Download* aDownload) throw() { 
+	onTransferComplete(aDownload, false);
+}
+
+void TransferView::on(UploadManagerListener::Complete, Upload* aUpload) throw() { 
+	onTransferComplete(aUpload, true); 
 }
 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {

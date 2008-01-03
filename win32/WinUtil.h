@@ -40,6 +40,8 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
 
 #endif
 
+class MainWindow;
+
 class WinUtil {
 public:
 	static tstring tth;
@@ -56,8 +58,8 @@ public:
 	static int dirIconIndex;
 	static int dirMaskedIndex;
 	static TStringList lastDirs;
-	static SmartWin::Widget* mainWindow;
-	static SmartWin::WidgetTabView* mdiParent;
+	static MainWindow* mainWindow;
+	//static SmartWin::WidgetTabView* mdiParent;
 	static DWORD helpCookie;
 	
 	typedef unordered_map<string, int> ImageMap;

@@ -173,7 +173,7 @@ private:
 		tstring columns[COLUMN_LAST];
 	};
 
-	typedef TypedListView<T, ItemInfo> WidgetItems;
+	typedef TypedListView<ItemInfo> WidgetItems;
 	typedef WidgetItems* WidgetItemsPtr;
 	WidgetItemsPtr items;
 

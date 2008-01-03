@@ -423,8 +423,11 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 		}
 		aSource->setToken(i.first);
 		aSource->setHubUrl(i.second);
+		aSource->setEncoding(ClientManager::getInstance()->findHubEncoding(i.second));
 	}
-	CID cid = ClientManager::getInstance()->makeCid(aNick, aSource->getHubUrl());
+
+	string nick = Text::toUtf8(aNick, aSource->getEncoding());
+	CID cid = ClientManager::getInstance()->makeCid(nick, aSource->getHubUrl());
 
 	// First, we try looking in the pending downloads...hopefully it's one of them...
 	{
@@ -445,7 +448,7 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 
 		aSource->setUser(ClientManager::getInstance()->findUser(cid));
 		if(!aSource->getUser() || !ClientManager::getInstance()->isOnline(aSource->getUser())) {
-			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
+			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", nick.c_str());
 			putConnection(aSource);
 			return;
 		}

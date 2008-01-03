@@ -171,7 +171,8 @@ extern void shutdown();
 #ifdef BUILDING_DCPP
 #define PACKAGE "dcpp"
 #define LOCALEDIR Util::getLocalePath().c_str()
-#define _(String) dgettext(PACKAGE, String) 
+#define _(String) dgettext(PACKAGE, String)
+#define F_(String) boost::format(dgettext(PACKAGE, String))
 #endif
 
 } // namespace dcpp

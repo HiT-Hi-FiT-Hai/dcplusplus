@@ -19,12 +19,14 @@
 #ifndef DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 #define DCPLUSPLUS_WIN32_TYPED_LIST_VIEW_H
 
-template<class T, class ContentType, bool managed = true>
-class TypedListView : public T::WidgetListView
+#include <dcpp/Util.h>
+
+template<class ContentType, bool managed = true>
+class TypedListView : public SmartWin::WidgetListView
 {
 private:
-	typedef typename T::WidgetListView BaseType;
-	typedef TypedListView<T, ContentType, managed> ThisType;
+	typedef typename SmartWin::WidgetListView BaseType;
+	typedef TypedListView<ContentType, managed> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
@@ -38,7 +40,7 @@ public:
 			this->clear();
 	}
 	
-	void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
+	void create( const typename BaseType::Seed & cs = BaseType::Seed() ) {
 		BaseType::create(cs);
 		
 		this->setCallback(

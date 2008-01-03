@@ -171,13 +171,13 @@ private:
 	bool onlyFree;
 
 	WidgetStaticPtr hubsLabel;
-	typedef TypedListView<SearchFrame, HubInfo> WidgetHubs;
+	typedef TypedListView<HubInfo> WidgetHubs;
 	typedef WidgetHubs* WidgetHubsPtr;
 	WidgetHubsPtr hubs;
 
 	WidgetButtonPtr doSearch;
 
-	typedef TypedListView<SearchFrame, SearchInfo> WidgetResults;
+	typedef TypedListView<SearchInfo> WidgetResults;
 	typedef WidgetResults* WidgetResultsPtr;
 	WidgetResultsPtr results;
 

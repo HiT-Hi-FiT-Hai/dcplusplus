@@ -116,7 +116,7 @@ public:
 	  * is ready, createInvisibleWindow() lets you add Widgets while
 	  * the main Widget is not visible.  Of course you could do code like <br>
 	  *
-	  *   Seed defInvisible = getDefaultSeed(); <br>
+	  *   Seed defInvisible = Seed(); <br>
 	  *   defInvisible.style= defInvisible.style & ( ~ WS_VISIBLE ); <br>
 	  *   createWindow( defInvisible ); <br>
 	  *
@@ -188,7 +188,7 @@ public:
 	/// Actually creates the window
 	/** This one creates the window. It is implemented in case somebody wants to use
 	  * createWindow() without parameters. If it wasn't declared, the compiler would
-	  * call WidgetWindow::create with WidgetWindow::getDefaultSeed, which wouldn't
+	  * call WidgetWindow::create with WidgetWindow::Seed, which wouldn't
 	  * create a child window.
 	  */
 	void createWindow( const Seed& cs = Seed() )

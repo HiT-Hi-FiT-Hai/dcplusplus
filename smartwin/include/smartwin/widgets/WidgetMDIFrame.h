@@ -101,7 +101,7 @@ public:
 	  * is ready, createInvisibleWindow() lets you add Widgets while
 	  * the main Widget is not visible.  Of course you could do code like <br>
 	  *
-	  *   Seed defInvisible = getDefaultSeed(); <br>
+	  *   Seed defInvisible = Seed(); <br>
 	  *   defInvisible.style= defInvisible.style & ( ~ WS_VISIBLE ); <br>
 	  *   createWindow( defInvisible ); <br>
 	  *

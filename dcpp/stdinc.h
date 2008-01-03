@@ -119,6 +119,8 @@ typedef unsigned __int64 uint64_t;
 #include <limits>
 #include <libintl.h>
 
+#include <boost/format.hpp>
+
 #ifdef _STLPORT_VERSION
 
 #include <unordered_map>

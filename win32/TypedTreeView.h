@@ -20,19 +20,19 @@
 #define DCPLUSPLUS_WIN32_TYPED_TREE_VIEW_H
 
 
-template<class T, class ContentType>
-class TypedTreeView : public T::WidgetTreeView
+template<class ContentType>
+class TypedTreeView : public SmartWin::WidgetTreeView
 {
 private:
-	typedef typename T::WidgetTreeView BaseType;
-	typedef TypedTreeView<T, ContentType> ThisType;
+	typedef typename SmartWin::WidgetTreeView BaseType;
+	typedef TypedTreeView<ContentType> ThisType;
 	
 public:
 	typedef ThisType* ObjectType;
 
 	explicit TypedTreeView( SmartWin::Widget* parent ) : BaseType(parent) { }
 	
-	void create( const typename BaseType::Seed & cs = BaseType::getDefaultSeed() ) {
+	void create( const typename BaseType::Seed & cs = BaseType::Seed() ) {
 		BaseType::create(cs);
 		this->setCallback(
 			SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ), &TypedTreeViewDispatcher

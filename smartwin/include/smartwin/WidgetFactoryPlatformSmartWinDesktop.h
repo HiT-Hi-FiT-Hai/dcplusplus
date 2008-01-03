@@ -99,7 +99,7 @@ public:
 	/// Creates a Rich Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetRichTextBoxPtr createRichTextBox( const typename WidgetRichTextBox::Seed & cs = WidgetRichTextBox::getDefaultSeed() )
+	WidgetRichTextBoxPtr createRichTextBox( const typename WidgetRichTextBox::Seed & cs = WidgetRichTextBox::Seed() )
 	{
 		return WidgetCreator< WidgetRichTextBox >::create( this, cs );
 	}
@@ -138,7 +138,7 @@ public:
 	/// Creates a Cool Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */
-	WidgetCoolbarPtr createCoolbar( const typename WidgetCoolbar::Seed & cs = WidgetCoolbar::getDefaultSeed() )
+	WidgetCoolbarPtr createCoolbar( const typename WidgetCoolbar::Seed & cs = WidgetCoolbar::Seed() )
 	{
 		return WidgetCreator< WidgetCoolbar >::create( this, cs );
 	}

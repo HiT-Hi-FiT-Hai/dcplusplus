@@ -127,9 +127,6 @@ public:
 		SORT_FLOAT
 	};
 
-	/// Default values for creation
-	static const Seed & getDefaultSeed();
-
 	// Aspect expectation implementation
 	static const Message & getSelectionChangedMessage();
 
@@ -478,7 +475,7 @@ public:
 	  * directly. <br>
 	  * Only if you DERIVE from class you should call this function directly.
 	  */
-	void create( const Seed & cs = getDefaultSeed() );
+	void create( const Seed & cs = Seed() );
 
 	// Constructor Taking pointer to parent
 	explicit WidgetListView( SmartWin::Widget * parent );
