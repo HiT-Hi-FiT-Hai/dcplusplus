@@ -81,7 +81,7 @@ namespace Text {
 #ifdef UNICODE
 	inline const tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
 	inline tstring toT(const string& str) throw() { return utf8ToWide(str); }
-
+	
 	inline const string& fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
 	inline string fromT(const tstring& str) throw() { return wideToUtf8(str); }
 #else

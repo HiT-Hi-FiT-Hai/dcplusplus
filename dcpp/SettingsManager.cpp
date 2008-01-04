@@ -129,7 +129,7 @@ SettingsManager::SettingsManager()
 	setDefault(FILTER_MESSAGES, true);
 	setDefault(MINIMIZE_TRAY, true);
 	setDefault(AUTO_SEARCH, false);
-	setDefault(TIME_STAMPS, false);
+	setDefault(TIME_STAMPS, true);
 	setDefault(CONFIRM_EXIT, true);
 	setDefault(POPUP_HUB_PMS, true);
 	setDefault(POPUP_BOT_PMS, true);

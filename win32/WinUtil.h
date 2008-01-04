@@ -108,6 +108,16 @@ public:
 	static std::string toString(const std::vector<int>& tokens);
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	
+	template<typename T>
+	static TStringList getStrings(const T& t) {
+		const size_t n = sizeof(t) / sizeof(t[0]);
+		TStringList ret(n);
+		for(size_t i = 0; i < n; ++i) {
+			ret[i] = T_(t[i]);
+		}
+		return ret;
+	}
+
 	static int getIconIndex(const tstring& aFileName);
 	static int getDirIconIndex() { return dirIconIndex; }
 	static int getDirMaskedIndex() { return dirMaskedIndex; }

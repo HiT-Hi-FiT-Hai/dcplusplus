@@ -434,7 +434,7 @@ enum Strings { // @DontAdd
 	SETTINGS_DOWNLOADS, // "Downloads"
 	SETTINGS_DOWNLOADS_MAX, // "Maximum simultaneous downloads (0 = infinite)"
 	SETTINGS_DOWNLOADS_SPEED_PAUSE, // "No new downloads if speed exceeds (KiB/s, 0 = disable)"
-	SETTINGS_EXAMPLE_TEXT, // "Donate :s! (ok, dirty dollars are fine as well =) (see help menu)"
+	SETTINGS_EXAMPLE_TEXT, // "Donate \342\202\254\342\202\254\342\202\254:s! (ok, dirty dollars are fine as well =) (see help menu)"
 	SETTINGS_EXTERNAL_IP, // "External / WAN IP"
 	SETTINGS_FAV_SHOW_JOINS, // "Only show joins / parts for favorite users"
 	SETTINGS_FAVORITE_DIRS_PAGE, // "Downloads\\Favorites"

@@ -47,11 +47,14 @@ using std::tr1::placeholders::_2;
 #define LOCALEDIR dcpp::Util::getLocalePath().c_str()
 #define PACKAGE "dcpp-win32"
 #define _(String) gettext(String)
+#define gettext_noop(String) String
+#define N_(String) gettext_noop (String)
 #define T_(String) Text::toT(gettext(String))
 #ifdef UNICODE
 #define TF_(String) boost::wformat(Text::toT(gettext(String)))
 #define TFN_(String1,String2, N) boost::wformat(Text::toT(ngettext(String1, String2, N)))
 #else
 #define TF_(String) boost::format(Text::toT(gettext(String)))
+#define TFN_(String1,String2, N) boost::format(Text::toT(ngettext(String1, String2, N)))
 #endif
 #endif

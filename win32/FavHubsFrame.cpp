@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #include "stdafx.h"
 
 #include "FavHubsFrame.h"
@@ -28,11 +28,16 @@
 
 int FavHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
 int FavHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT, ResourceManager::DESCRIPTION,
-	ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
+static const char* columnNames[] = {
+	N_("Auto connect / Name"),
+	N_("Description"),
+	N_("Nick"),
+	N_("Password"),
+	N_("Server"),
+	N_("User Description")
 };
 
-FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) : 
+FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
 	hubs(0),
 	connect(0),
@@ -50,7 +55,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		hubs = createListView(cs);
 		addWidget(hubs);
 
-		hubs->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		hubs->createColumns(WinUtil::getStrings(columnNames));
 		hubs->setColumnOrder(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_ORDER), columnIndexes));
 		hubs->setColumnWidths(WinUtil::splitTokens(SETTING(FAVHUBSFRAME_WIDTHS), columnSizes));
 		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
@@ -63,32 +68,32 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		WidgetButton::Seed cs = WinUtil::Seeds::button;
 
-		cs.caption = TSTRING(CONNECT);
+		cs.caption = T_("&Connect");
 		connect = createButton(cs);
 		connect->onClicked(std::tr1::bind(&FavHubsFrame::openSelected, this));
 		addWidget(connect);
 
-		cs.caption = TSTRING(NEW);
+		cs.caption = T_("&New...");
 		add = createButton(cs);
 		add->onClicked(std::tr1::bind(&FavHubsFrame::handleAdd, this));
 		addWidget(add);
 
-		cs.caption = TSTRING(PROPERTIES);
+		cs.caption = T_("&Properties");
 		properties = createButton(cs);
 		properties->onClicked(std::tr1::bind(&FavHubsFrame::handleProperties, this));
 		addWidget(properties);
 
-		cs.caption = TSTRING(MOVE_UP);
+		cs.caption = T_("Move &Up");
 		up = createButton(cs);
 		up->onClicked(std::tr1::bind(&FavHubsFrame::handleUp, this));
 		addWidget(up);
 
-		cs.caption = TSTRING(MOVE_DOWN);
+		cs.caption = T_("Move &Down");
 		down = createButton(cs);
 		down->onClicked(std::tr1::bind(&FavHubsFrame::handleDown, this));
 		addWidget(down);
 
-		cs.caption = TSTRING(REMOVE);
+		cs.caption = T_("&Remove");
 		remove = createButton(cs);
 		remove->onClicked(std::tr1::bind(&FavHubsFrame::handleRemove, this));
 		addWidget(remove);
@@ -105,20 +110,20 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 	FavoriteManager::getInstance()->addListener(this);
 
 	hubsMenu = createMenu(true);
-	hubsMenu->appendItem(IDC_CONNECT, TSTRING(CONNECT), std::tr1::bind(&FavHubsFrame::openSelected, this));
+	hubsMenu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
 	hubsMenu->appendSeparatorItem();
-	hubsMenu->appendItem(IDC_NEWFAV, TSTRING(NEW), std::tr1::bind(&FavHubsFrame::handleAdd, this));
-	hubsMenu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&FavHubsFrame::handleProperties, this));
-	hubsMenu->appendItem(IDC_MOVE_UP, TSTRING(MOVE_UP), std::tr1::bind(&FavHubsFrame::handleUp, this));
-	hubsMenu->appendItem(IDC_MOVE_DOWN, TSTRING(MOVE_DOWN), std::tr1::bind(&FavHubsFrame::handleDown, this));
+	hubsMenu->appendItem(IDC_NEWFAV, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
+	hubsMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&FavHubsFrame::handleProperties, this));
+	hubsMenu->appendItem(IDC_MOVE_UP, T_("Move &Up"), std::tr1::bind(&FavHubsFrame::handleUp, this));
+	hubsMenu->appendItem(IDC_MOVE_DOWN, T_("Move &Down"), std::tr1::bind(&FavHubsFrame::handleDown, this));
 	hubsMenu->appendSeparatorItem();
-	hubsMenu->appendItem(IDC_REMOVE, CTSTRING(REMOVE), std::tr1::bind(&FavHubsFrame::handleRemove, this));
+	hubsMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&FavHubsFrame::handleRemove, this));
 	hubsMenu->setDefaultItem(IDC_CONNECT);
 	hubs->onContextMenu(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1));
 }
 
 FavHubsFrame::~FavHubsFrame() {
-	
+
 }
 
 void FavHubsFrame::layout() {
@@ -171,7 +176,7 @@ void FavHubsFrame::handleAdd() {
 	while(true) {
 		if(dlg.run() == IDOK) {
 			if(FavoriteManager::getInstance()->isFavoriteHub(e.getServer())) {
-				createMessageBox().show(TSTRING(FAVORITE_HUB_ALREADY_EXISTS), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+				createMessageBox().show(T_("Hub already exists as a favorite"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
 			} else {
 				FavoriteManager::getInstance()->addFavorite(e);
 				break;
@@ -235,7 +240,7 @@ void FavHubsFrame::handleDown() {
 }
 
 void FavHubsFrame::handleRemove() {
-	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
+	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
 		int i;
 		while((i = hubs->getNext(-1, LVNI_SELECTED)) != -1)
 			FavoriteManager::getInstance()->removeFavorite(reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(i)));
@@ -312,7 +317,7 @@ void FavHubsFrame::openSelected() {
 		return;
 
 	if(SETTING(NICK).empty()) {
-		createMessageBox().show(TSTRING(ENTER_NICK), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+		createMessageBox().show(T_("Please enter a nickname in the settings dialog!"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 		return;
 	}
 

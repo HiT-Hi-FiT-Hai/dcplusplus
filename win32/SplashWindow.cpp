@@ -74,7 +74,7 @@ SplashWindow::~SplashWindow() {
 	tmp->close();
 }
 
-void SplashWindow::operator()(const string& str) {
-	text->setText(Text::toT(STRING(LOADING) + "(" + str + ")"));
+void SplashWindow::operator()(const string& status) {
+	text->setText(str(TF_("Loading DC++, please wait... (%1%)") % Text::toT(status) ));
 	text->updateWidget();
 }

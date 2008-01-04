@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: dcpp-win32\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-01-03 22:52+0100\n"
+"POT-Creation-Date: 2008-01-04 10:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,66 @@ msgstr ""
 
 #: win32/MainWindow.cpp:218 win32/DownloadsFrame.cpp:38
 msgid "Downloads"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:32
+msgid "Auto connect / Name"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:33
+msgid "Description"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:34
+msgid "Nick"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:35
+msgid "Password"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:36
+msgid "Server"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:37
+msgid "User Description"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:71 win32/FavHubsFrame.cpp:113
+msgid "&Connect"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:76 win32/FavHubsFrame.cpp:115
+msgid "&New..."
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:81 win32/FavHubsFrame.cpp:116
+msgid "&Properties"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:86 win32/FavHubsFrame.cpp:117
+msgid "Move &Up"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:91 win32/FavHubsFrame.cpp:118
+msgid "Move &Down"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:96 win32/FavHubsFrame.cpp:120
+msgid "&Remove"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:179
+msgid "Hub already exists as a favorite"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:243
+msgid "Really remove?"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:320
+msgid "Please enter a nickname in the settings dialog!"
 msgstr ""
 
 #: win32/DownloadsFrame.cpp:110
@@ -35,6 +95,11 @@ msgstr[1] ""
 #: win32/DownloadsFrame.cpp:116
 #, boost-format
 msgid "%1%/s"
+msgstr ""
+
+#: win32/SplashWindow.cpp:78
+#, boost-format
+msgid "Loading DC++, please wait... (%1%)"
 msgstr ""
 
 #: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:109
