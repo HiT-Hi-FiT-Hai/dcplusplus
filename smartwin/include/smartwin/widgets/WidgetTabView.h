@@ -88,6 +88,7 @@ private:
 	Rectangle clientSize;
 	std::vector<IconPtr> icons;
 	int active;
+	int dragging;
 	
 	int findTab(WidgetChildWindow* w);
 	
@@ -100,6 +101,8 @@ private:
 	bool handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText);
 	bool handleSized(const WidgetSizedEventResult&);
 	void handleTabSelected();
+	void handleLeftMouseDown(const MouseEventResult& mouseEventResult);
+	void handleLeftMouseUp(const MouseEventResult& mouseEventResult);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	void handleMiddleMouseDown(const MouseEventResult& mouseEventResult);
 	

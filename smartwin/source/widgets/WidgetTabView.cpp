@@ -16,7 +16,8 @@ WidgetTabView::WidgetTabView(Widget* w) :
 	PolicyType(w), 
 	tab(0), 
 	inTab(false),
-	active(-1)
+	active(-1),
+	dragging(-1)
 	{ }
 
 void WidgetTabView::create(const Seed & cs) {
@@ -30,6 +31,8 @@ void WidgetTabView::create(const Seed & cs) {
 	tab->onSelectionChanged(std::tr1::bind(&WidgetTabView::handleTabSelected, this));
 
 	onSized(std::tr1::bind(&WidgetTabView::handleSized, this, _1));
+	tab->onLeftMouseDown(std::tr1::bind(&WidgetTabView::handleLeftMouseDown, this, _1));
+	tab->onLeftMouseUp(std::tr1::bind(&WidgetTabView::handleLeftMouseUp, this, _1));
 	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
 	tab->onMiddleMouseDown(std::tr1::bind(&WidgetTabView::handleMiddleMouseDown, this, _1));
 }
@@ -267,6 +270,56 @@ int WidgetTabView::addIcon(const IconPtr& icon) {
 		}
 	}
 	return image;
+}
+
+void WidgetTabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult) {
+	int i = tab->hitTest(mouseEventResult.pos);
+	if(i != -1) {
+		if(mouseEventResult.isShiftPressed)
+			getTabInfo(i)->w->close();
+		else {
+			dragging = i;
+			::SetCapture(tab->handle());
+		}
+	}
+}
+
+void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) {
+	::ReleaseCapture();
+
+	if(dragging != -1) {
+		int dropPos = tab->hitTest(mouseEventResult.pos);
+
+		if(dropPos == -1) {
+			// not in the tab control; move the tab to the end
+			dropPos = tab->size() - 1;
+		}
+
+		if(dropPos == dragging) {
+			// the tab hasn't moved; select it
+			setActive(dropPos);
+			dragging = -1;
+			return;
+		}
+
+		// save some information about the tab before we erase it
+		TabInfo* ti = getTabInfo(dragging);
+		int image = tab->getImage(dragging);
+
+		tab->erase(dragging);
+
+		tab->addPage(cutTitle(ti->w->getText()), dropPos, reinterpret_cast<LPARAM>(ti), image);
+
+		// in case the active tab was moved
+		if(dragging == active)
+			active = dropPos;
+		else if(dropPos == active)
+			active = dragging;
+
+		layout();
+
+		dragging = -1;
+	}
 }
 
 bool WidgetTabView::handleContextMenu(ScreenCoordinate pt) {

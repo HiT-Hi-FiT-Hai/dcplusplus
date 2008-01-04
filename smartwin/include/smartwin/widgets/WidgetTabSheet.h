@@ -165,7 +165,9 @@ public:
 	  */
 	// the negative values are already covered by throwing an exception
 	unsigned int addPage( const SmartUtil::tstring & header, unsigned index, LPARAM lParam = 0, int image = -1 );
-	
+
+	int getImage(unsigned idx) const;
+
 	LPARAM getData(unsigned idx);
 	
 	void setData(unsigned idx, LPARAM data);
@@ -295,6 +297,16 @@ inline SmartUtil::tstring WidgetTabSheet::getSelectedHeader() const
 		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
 	}
 	return buffer;
+}
+
+inline int WidgetTabSheet::getImage(unsigned idx) const
+{
+	TCITEM item = { TCIF_IMAGE };
+	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
+	{
+		throw xCeption( _T( "Couldn't get image of item." ) );
+	}
+	return item.iImage;
 }
 
 inline LPARAM WidgetTabSheet::getData(unsigned idx)
