@@ -66,7 +66,7 @@ int SSLSocket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 
 	if(len > 0) {
 		stats.totalDown += len;
-		dcdebug("In(s): %.*s\n", len, (char*)aBuffer);
+		//dcdebug("In(s): %.*s\n", len, (char*)aBuffer);
 	}
 	return len;
 }
@@ -78,7 +78,7 @@ int SSLSocket::write(const void* aBuffer, int aLen) throw(SocketException) {
 	int ret = checkSSL(SSL_write(ssl, aBuffer, aLen));
 	if(ret > 0) {
 		stats.totalUp += ret;
-		dcdebug("Out(s): %.*s\n", ret, (char*)aBuffer);
+		//dcdebug("Out(s): %.*s\n", ret, (char*)aBuffer);
 	}
 	return ret;
 }
