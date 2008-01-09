@@ -310,11 +310,7 @@ void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) 
 
 		tab->addPage(cutTitle(ti->w->getText()), dropPos, reinterpret_cast<LPARAM>(ti), image);
 
-		// in case the active tab was moved
-		if(dragging == active)
-			active = dropPos;
-		else if(dropPos == active)
-			active = dragging;
+		active = tab->getSelectedIndex();
 
 		layout();
 
