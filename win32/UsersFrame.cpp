@@ -23,11 +23,16 @@
 #include "HoldRedraw.h"
 
 #include <dcpp/FavoriteManager.h>
-#include <dcpp/ResourceManager.h>
 
 int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION, COLUMN_CID };
 int UsersFrame::columnSizes[] = { 200, 300, 150, 200, 125 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION, ResourceManager::CID };
+static const char* columnNames[] = {
+	N_("Auto grant slot / Nick"),
+	N_("Hub (last seen on if offline)"),
+	N_("Time last seen"),
+	N_("Description"),
+	N_("CID"),
+};
 
 UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) : 
 	BaseType(mdiParent),
@@ -40,7 +45,7 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 		users = SmartWin::WidgetCreator<WidgetUsers>::create(this, cs);
 		addWidget(users);
 
-		users->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		users->createColumns(WinUtil::getStrings(columnNames));
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		users->setSort(COLUMN_NICK);
@@ -100,7 +105,7 @@ void UsersFrame::UserInfo::remove() {
 void UsersFrame::UserInfo::update(const FavoriteUser& u) {
 	columns[COLUMN_NICK] = Text::toT(u.getNick());
 	columns[COLUMN_HUB] = user->isOnline() ? WinUtil::getHubNames(u.getUser()).first : Text::toT(u.getUrl());
-	columns[COLUMN_SEEN] = user->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
+	columns[COLUMN_SEEN] = user->isOnline() ? T_("Online") : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", u.getLastSeen()));
 	columns[COLUMN_DESCRIPTION] = Text::toT(u.getDescription());
 	columns[COLUMN_CID] = Text::toT(u.getUser()->getCID().toBase32());
 }
@@ -115,7 +120,7 @@ void UsersFrame::updateUser(const UserPtr& aUser) {
 	for(int i = 0; i < users->size(); ++i) {
 		UserInfo *ui = users->getData(i);
 		if(ui->user == aUser) {
-			ui->columns[COLUMN_SEEN] = aUser->isOnline() ? TSTRING(ONLINE) : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", FavoriteManager::getInstance()->getLastSeen(aUser)));
+			ui->columns[COLUMN_SEEN] = aUser->isOnline() ? T_("Online") : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", FavoriteManager::getInstance()->getLastSeen(aUser)));
 			users->update(i);
 		}
 	}
@@ -135,7 +140,7 @@ void UsersFrame::handleProperties() {
 	if(users->getSelectedCount() == 1) {
 		int i = users->getSelectedIndex();
 		UserInfo* ui = users->getData(i);
-		LineDlg dlg(this, ui->columns[COLUMN_NICK], TSTRING(DESCRIPTION), ui->columns[COLUMN_DESCRIPTION]);
+		LineDlg dlg(this, ui->columns[COLUMN_NICK], T_("Description"), ui->columns[COLUMN_DESCRIPTION]);
 
 		if(dlg.run() == IDOK) {
 			FavoriteManager::getInstance()->setUserDescription(ui->user, Text::fromT(dlg.getLine()));
@@ -178,8 +183,8 @@ bool UsersFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		WidgetMenuPtr menu = createMenu(true);
 		appendUserItems(getParent(), menu);
 		menu->appendSeparatorItem();
-		menu->appendItem(IDC_EDIT, TSTRING(PROPERTIES), std::tr1::bind(&UsersFrame::handleProperties, this));
-		menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&UsersFrame::handleRemove, this));
+		menu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&UsersFrame::handleProperties, this));
+		menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&UsersFrame::handleRemove, this));
 		
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 

@@ -25,7 +25,6 @@
 #include "AspectSpeaker.h"
 #include "AspectStatus.h"
 #include <dcpp/SettingsManager.h>
-#include <dcpp/ResourceManager.h>
 #include "resource.h"
 
 template<typename T>
@@ -188,7 +187,7 @@ private:
 	
 	bool handleContextMenu(const SmartWin::ScreenCoordinate& pt) {
 		SmartWin::WidgetMenu::ObjectType menu = SmartWin::WidgetCreator<SmartWin::WidgetMenu>::create(SmartWin::WidgetMenu::Seed(true));
-		menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&ThisType::close, this, true));
+		menu->appendItem(IDC_CLOSE_WINDOW, T_("Close"), std::tr1::bind(&ThisType::close, this, true));
 		
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 

@@ -28,7 +28,11 @@
 
 int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
-static ResourceManager::Strings columnNames[] = { ResourceManager::SEARCH_STRING, ResourceManager::COUNT, ResourceManager::TIME };
+static const char* columnNames[] = {
+	N_("Search String"),
+	N_("Count"),
+	N_("Time"),
+};
 
 SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	BaseType(mdiParent),
@@ -46,7 +50,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 		searches = createListView(cs);
 		addWidget(searches);
 
-		searches->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		searches->createColumns(WinUtil::getStrings(columnNames));
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
 		searches->setSort(COLUMN_COUNT, SmartWin::WidgetListView::SORT_INT, false);
@@ -57,7 +61,7 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 	}
 
 	{
-		WidgetCheckBox::Seed cs(TSTRING(IGNORE_TTH_SEARCHES));
+		WidgetCheckBox::Seed cs(T_("Ignore TTH searches"));
 		ignoreTTH = createCheckBox(cs);
 		ignoreTTH->setChecked(bIgnoreTTH);
 		ignoreTTH->onClicked(std::tr1::bind(&SpyFrame::handleIgnoreTTHClicked, this));
@@ -182,7 +186,7 @@ bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		searchString = searches->getText(searches->getSelectedIndex(), COLUMN_STRING);
 
 		WidgetMenuPtr contextMenu = createMenu(true);
-		contextMenu->appendItem(IDC_SEARCH, TSTRING(SEARCH), std::tr1::bind(&SpyFrame::handleSearch, this));
+		contextMenu->appendItem(IDC_SEARCH, T_("Search"), std::tr1::bind(&SpyFrame::handleSearch, this));
 
 		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;

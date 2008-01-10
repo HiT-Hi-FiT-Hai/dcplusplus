@@ -26,7 +26,6 @@
 #include <dcpp/Client.h>
 #include <dcpp/LogManager.h>
 #include <dcpp/User.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/UploadManager.h>
 #include <dcpp/QueueItem.h>
@@ -283,12 +282,12 @@ bool PrivateFrame::enter() {
 			chat->setText(Util::emptyStringT);
 		} else if(Util::stricmp(s.c_str(), _T("grant")) == 0) {
 			UploadManager::getInstance()->reserveSlot(replyTo);
-			addStatus(TSTRING(SLOT_GRANTED));
+			addStatus(T_("Slot granted"));
 		} else if(Util::stricmp(s.c_str(), _T("close")) == 0) {
 			postMessage(WM_CLOSE);
 		} else if((Util::stricmp(s.c_str(), _T("favorite")) == 0) || (Util::stricmp(s.c_str(), _T("fav")) == 0)) {
 			FavoriteManager::getInstance()->addFavoriteUser(replyTo);
-			addStatus(TSTRING(FAVORITE_USER_ADDED));
+			addStatus(T_("Favorite user added"));
 		} else if(Util::stricmp(s.c_str(), _T("getlist")) == 0) {
 			// TODO handleGetList();
 		} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
@@ -313,7 +312,7 @@ bool PrivateFrame::enter() {
 		if(replyTo->isOnline()) {
 			sendMessage(s);
 		} else {
-			addStatus(TSTRING(USER_WENT_OFFLINE));
+			addStatus(T_("User went offline"));
 			resetText = false;
 		}
 	}
@@ -363,15 +362,15 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&PrivateFrame::handleGetList, this));
-	menu->appendItem(IDC_MATCH_QUEUE, TSTRING(MATCH_QUEUE), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));
-	menu->appendItem(IDC_GRANTSLOT, TSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), replyTo));
+	menu->appendItem(IDC_GETLIST, T_("Get file list"), std::tr1::bind(&PrivateFrame::handleGetList, this));
+	menu->appendItem(IDC_MATCH_QUEUE, T_("Match queue"), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));
+	menu->appendItem(IDC_GRANTSLOT, T_("Grant extra slot"), std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), replyTo));
 	if(!FavoriteManager::getInstance()->isFavoriteUser(replyTo))
-		menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To Favorites"), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo));
 
 	prepareMenu(menu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, TSTRING(CLOSE), std::tr1::bind(&PrivateFrame::close, this, true));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("Close"), std::tr1::bind(&PrivateFrame::close, this, true));
 
 	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return TRUE;
