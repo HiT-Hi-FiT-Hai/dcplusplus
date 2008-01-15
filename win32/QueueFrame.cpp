@@ -33,9 +33,20 @@ COLUMN_USERS, COLUMN_PATH, COLUMN_EXACT_SIZE, COLUMN_ERRORS, COLUMN_ADDED, COLUM
 
 int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 75, 200, 100, 125, 75 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, ResourceManager::DOWNLOADED,
-ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::EXACT_SIZE, ResourceManager::ERRORS,
-ResourceManager::ADDED, ResourceManager::TTH_ROOT, ResourceManager::TYPE };
+static const char* columnNames[] = {
+	N_("Filename"),
+	N_("Status"),
+	N_("Size"),
+	N_("Downloaded"),
+	N_("Priority"),
+	N_("Users"),
+	N_("Path"),
+	N_("Exact size"),
+	N_("Errors"),
+	N_("Added"),
+	N_("TTH Root"),
+	N_("Type")
+};
 
 #define FILE_LIST_NAME _T("File Lists")
 
@@ -73,7 +84,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		addWidget(files);
 
 		files->setSmallImageList(WinUtil::fileImages);
-		files->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		files->createColumns(WinUtil::getStrings(columnNames));
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);

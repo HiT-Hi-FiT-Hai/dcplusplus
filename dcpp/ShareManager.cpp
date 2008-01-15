@@ -832,12 +832,12 @@ int ShareManager::run() {
 	return 0;
 }
 
-void ShareManager::getBloom(ByteVector& v, size_t k, size_t m) const {
-	dcdebug("Creating bloom filter, k=%u, m=%u\n", k, m);
+void ShareManager::getBloom(ByteVector& v, size_t k, size_t m, size_t h) const {
+	dcdebug("Creating bloom filter, k=%u, m=%u, h=%u\n", k, m, h);
 	Lock l(cs);
 	
 	HashBloom bloom;
-	bloom.reset(k, m);
+	bloom.reset(k, m, h);
 	for(HashFileMap::const_iterator i = tthIndex.begin(); i != tthIndex.end(); ++i) {
 		bloom.add(i->first);
 	}

@@ -33,7 +33,7 @@ static const char* columnNames[] = {
 	N_("Source Type"),
 	N_("Destination Directory"),
 	N_("Min Size"),
-	N_("Max Size"),
+	N_("Max Size")
 };
 
 ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :

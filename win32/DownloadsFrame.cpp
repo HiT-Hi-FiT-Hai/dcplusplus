@@ -31,8 +31,14 @@
 int DownloadsFrame::columnIndexes[] = { COLUMN_FILE, COLUMN_PATH, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_SIZE };
 int DownloadsFrame::columnSizes[] = { 200, 300, 150, 200, 125, 100};
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::PATH, 
-	ResourceManager::STATUS, ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::SIZE };
+static const char* columnNames[] = {
+	N_("Filename"),
+	N_("Path"),
+	N_("Status"),
+	N_("Time left"),
+	N_("Speed"),
+	N_("Size")
+};
 
 DownloadsFrame::DownloadsFrame(SmartWin::WidgetTabView* mdiParent) : 
 	BaseType(mdiParent, T_("Downloads")),
@@ -43,7 +49,7 @@ DownloadsFrame::DownloadsFrame(SmartWin::WidgetTabView* mdiParent) :
 		downloads = SmartWin::WidgetCreator<WidgetDownloads>::create(this, WinUtil::Seeds::listView);
 		addWidget(downloads);
 
-		downloads->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		downloads->createColumns(WinUtil::getStrings(columnNames));
 		downloads->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		downloads->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		downloads->setSort(COLUMN_STATUS);

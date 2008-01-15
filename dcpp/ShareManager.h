@@ -81,7 +81,7 @@ public:
 	string getShareSizeString() const { return Util::toString(getShareSize()); }
 	string getShareSizeString(const string& aDir) const { return Util::toString(getShareSize(aDir)); }
 	
-	void getBloom(ByteVector& v, size_t k, size_t m) const;
+	void getBloom(ByteVector& v, size_t k, size_t m, size_t h) const;
 
 	SearchManager::TypeModes getType(const string& fileName) const throw();
 

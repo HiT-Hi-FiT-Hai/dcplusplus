@@ -31,7 +31,7 @@ int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
 static const char* columnNames[] = {
 	N_("Search String"),
 	N_("Count"),
-	N_("Time"),
+	N_("Time")
 };
 
 SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :

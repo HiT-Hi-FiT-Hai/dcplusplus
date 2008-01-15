@@ -714,15 +714,15 @@ public:
 		uint8_t* b = (uint8_t*)xbuf;
 		while(pos < len) {
 			size_t left = len - pos;
-			if(bufPos == 0 && left >= TigerTree::HASH_SIZE) {
+			if(bufPos == 0 && left >= TigerTree::BYTES) {
 				tree.getLeaves().push_back(TTHValue(b + pos));
-				pos += TigerTree::HASH_SIZE;
+				pos += TigerTree::BYTES;
 			} else {
-				size_t bytes = min(TigerTree::HASH_SIZE - bufPos, left);
+				size_t bytes = min(TigerTree::BYTES - bufPos, left);
 				memcpy(buf + bufPos, b + pos, bytes);
 				bufPos += bytes;
 				pos += bytes;
-				if(bufPos == TigerTree::HASH_SIZE) {
+				if(bufPos == TigerTree::BYTES) {
 					tree.getLeaves().push_back(TTHValue(buf));
 					bufPos = 0;
 				}
@@ -736,7 +736,7 @@ public:
 	}
 private:
 	TigerTree& tree;
-	uint8_t buf[TigerTree::HASH_SIZE];
+	uint8_t buf[TigerTree::BYTES];
 	size_t bufPos;
 };
 

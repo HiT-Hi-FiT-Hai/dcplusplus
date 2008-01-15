@@ -38,7 +38,7 @@ HashProgressDlg::~HashProgressDlg() {
 }
 
 bool HashProgressDlg::handleInitDialog() {
-	setText(TSTRING(HASH_PROGRESS));
+	setText(T_("Creating file index..."));
 	::SetDlgItemText(handle(), IDC_HASH_INDEXING, CTSTRING(HASH_PROGRESS_TEXT));
 	::SetDlgItemText(handle(), IDC_STATISTICS, CTSTRING(HASH_PROGRESS_STATS));
 
@@ -46,7 +46,7 @@ bool HashProgressDlg::handleInitDialog() {
 	progress->setRange(0, 10000);
 
 	WidgetButtonPtr ok = attachButton(IDOK);
-	ok->setText(TSTRING(HASH_PROGRESS_BACKGROUND));
+	ok->setText(T_("Run in background"));
 	ok->onClicked(std::tr1::bind(&HashProgressDlg::endDialog, this, IDOK));
 
 	string tmp;

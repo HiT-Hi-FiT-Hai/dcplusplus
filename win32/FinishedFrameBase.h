@@ -140,7 +140,7 @@ private:
 			columns[COLUMN_HUB] = Text::toT(entry->getHub());
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(entry->getSize()));
 			columns[COLUMN_SPEED] = Text::toT(Util::formatBytes(entry->getAvgSpeed()) + "/s");
-			columns[COLUMN_CRC32] = entry->getCrc32Checked() ? TSTRING(YES_STR) : TSTRING(NO_STR);
+			columns[COLUMN_CRC32] = entry->getCrc32Checked() ? T_("Yes") : T_("No");
 		}
 
 		FinishedItemPtr entry;
@@ -220,12 +220,12 @@ private:
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
 					typename T::WidgetMenuPtr pShellMenu = this->createMenu(true);
-					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this));
-					pShellMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this));
-					pShellMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this));
+					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
+					pShellMenu->appendItem(IDC_OPEN_FILE, T_("Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
+					pShellMenu->appendItem(IDC_OPEN_FOLDER, T_("Open folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
 					pShellMenu->appendSeparatorItem();
 					pShellMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
-					pShellMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this));
+					pShellMenu->appendItem(IDC_REMOVE_ALL, T_("Remove all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
 					pShellMenu->appendSeparatorItem();
 
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
@@ -236,12 +236,12 @@ private:
 			}
 
 			typename T::WidgetMenuPtr contextMenu = this->createMenu(true);
-			contextMenu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&ThisType::handleViewAsText, this));
-			contextMenu->appendItem(IDC_OPEN_FILE, TSTRING(OPEN), std::tr1::bind(&ThisType::handleOpenFile, this));
-			contextMenu->appendItem(IDC_OPEN_FOLDER, TSTRING(OPEN_FOLDER), std::tr1::bind(&ThisType::handleOpenFolder, this));
+			contextMenu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
+			contextMenu->appendItem(IDC_OPEN_FILE, T_("Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
+			contextMenu->appendItem(IDC_OPEN_FOLDER, T_("Open folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
 			contextMenu->appendSeparatorItem();
 			contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
-			contextMenu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_ALL), std::tr1::bind(&ThisType::handleRemoveAll, this));
+			contextMenu->appendItem(IDC_REMOVE_ALL, T_("Remove all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
 			contextMenu->setDefaultItem(IDC_OPEN_FILE);
 			contextMenu->trackPopupMenu(static_cast<T*>(this), pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 			return true;

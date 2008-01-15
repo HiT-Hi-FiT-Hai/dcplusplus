@@ -16,14 +16,16 @@ namespace dcpp {
  */
 class HashBloom {
 public:
-	/** Return the largest k such that get_m returns a value smaller than 2^(TTHValue::SIZE/k) */
-	static size_t get_k(size_t n);
+	HashBloom() : k(0), h(0) { }
+
+	/** Return a suitable value for k based on n */
+	static size_t get_k(size_t n, size_t h);
 	/** Optimal number of bits to allocate for n elements when using k hashes */
 	static uint64_t get_m(size_t n, size_t k);
 	
 	void add(const TTHValue& tth);
 	bool match(const TTHValue& tth) const;
-	void reset(size_t k, size_t m);
+	void reset(size_t k, size_t m, size_t h);
 	void push_back(bool v);
 	
 	void copy_to(ByteVector& v) const;
@@ -33,6 +35,7 @@ private:
 	
 	std::vector<bool> bloom;
 	size_t k;
+	size_t h;
 };
 
 }

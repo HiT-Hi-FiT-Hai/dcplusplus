@@ -45,7 +45,7 @@ FavHubProperties::~FavHubProperties() {
 
 bool FavHubProperties::handleInitDialog() {
 	// Translate dialog
-	setText(TSTRING(FAVORITE_HUB_PROPERTIES));
+	setText(T_("Favorite Hub Properties"));
 	::SetDlgItemText(handle(), IDC_FH_HUB, CTSTRING(HUB));
 	::SetDlgItemText(handle(), IDC_FH_IDENT, CTSTRING(FAVORITE_HUB_IDENTITY));
 	::SetDlgItemText(handle(), IDC_FH_NAME, CTSTRING(HUB_NAME));
@@ -117,7 +117,7 @@ void FavHubProperties::handleTextChanged(WidgetTextBoxPtr textBox) {
 void FavHubProperties::handleOKClicked() {
 	tstring addressText = address->getText();
 	if(addressText.empty()) {
-		createMessageBox().show(TSTRING(INCOMPLETE_FAV_HUB), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+		createMessageBox().show(T_("Hub address cannot be empty."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
 		return;
 	}
 	entry->setServer(Text::fromT(addressText));

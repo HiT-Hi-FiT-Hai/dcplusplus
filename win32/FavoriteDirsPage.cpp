@@ -45,8 +45,8 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
-	columns.push_back(TSTRING(FAVORITE_DIR_NAME));
-	columns.push_back(TSTRING(DIRECTORY));
+	columns.push_back(T_("Favorite name"));
+	columns.push_back(T_("Directory"));
 	directories->createColumns(columns);
 	directories->setColumnWidth(0, 100);
 	directories->setColumnWidth(1, directories->getSize().x - 120);
@@ -117,13 +117,13 @@ void FavoriteDirsPage::handleRenameClicked() {
 	int i = -1;
 	while((i = directories->getNext(i, LVNI_SELECTED)) != -1) {
 		tstring old = directories->getText(i, 0);
-		LineDlg dlg(this, TSTRING(FAVORITE_DIR_NAME), TSTRING(FAVORITE_DIR_NAME_LONG), old);
+		LineDlg dlg(this, T_("Favorite name"), T_("Under what name you see the directory"), old);
 		if(dlg.run() == IDOK) {
 			tstring line = dlg.getLine();
 			if (FavoriteManager::getInstance()->renameFavoriteDir(Text::fromT(old), Text::fromT(line))) {
 				directories->setText(i, 0, line);
 			} else {
-				createMessageBox().show(TSTRING(DIRECTORY_ADD_ERROR), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+				createMessageBox().show(T_("Directory or directory name already exists"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 			}
 		}
 	}
@@ -147,7 +147,7 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath) {
 	if( path[ path.length() -1 ] != PATH_SEPARATOR )
 		path += PATH_SEPARATOR;
 
-	LineDlg dlg(this, TSTRING(FAVORITE_DIR_NAME), TSTRING(FAVORITE_DIR_NAME_LONG), Util::getLastDir(path));
+	LineDlg dlg(this, T_("Favorite name"), T_("Under what name you see the directory"), Util::getLastDir(path));
 	if(dlg.run() == IDOK) {
 		tstring line = dlg.getLine();
 		if (FavoriteManager::getInstance()->addFavoriteDir(Text::fromT(path), Text::fromT(line))) {
@@ -156,7 +156,7 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath) {
 			row.push_back(path);
 			directories->insert(row);
 		} else {
-			createMessageBox().show(TSTRING(DIRECTORY_ADD_ERROR), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			createMessageBox().show(T_("Directory or directory name already exists"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 		}
 	}
 }

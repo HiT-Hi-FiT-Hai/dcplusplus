@@ -37,9 +37,20 @@
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO, COLUMN_CID, COLUMN_CIPHER };
 int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75, 125, 125 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
-ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
-ResourceManager::IP_BARE, ResourceManager::RATIO, ResourceManager::CID, ResourceManager::CIPHER };
+static const char* columnNames[] = {
+	N_("User"),
+	N_("Hub"),
+	N_("Status"),
+	N_("Time left"),
+	N_("Speed"),
+	N_("Filename"),
+	N_("Size"),
+	N_("Path"),
+	N_("IP"),
+	N_("Ratio"),
+	N_("CID"),
+	N_("Cipher")
+};
 
 TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
 	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
@@ -56,7 +67,7 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, WinUtil::Seeds::listView);
 
 		transfers->setSmallImageList(arrows);
-		transfers->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		transfers->createColumns(WinUtil::getStrings(columnNames));
 		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(MAINFRAME_ORDER), columnIndexes));
 		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(MAINFRAME_WIDTHS), columnSizes));
 		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);

@@ -37,7 +37,13 @@
 int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
 int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::EXACT_SIZE, ResourceManager::SIZE, ResourceManager::TTH_ROOT };
+static const char* columnNames[] = {
+	N_("File"),
+	N_("Type"),
+	N_("Exact size"),
+	N_("Size"),
+	N_("TTH Root")
+};
 
 DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
 
@@ -137,7 +143,7 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 		paned->setSecond(files);
 
 		files->setSmallImageList(WinUtil::fileImages);
-		files->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		files->createColumns(WinUtil::getStrings(columnNames));
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
 		files->setColor(WinUtil::textColor, WinUtil::bgColor);
@@ -152,19 +158,19 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	{
 		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		
-		cs.caption = TSTRING(FIND);
+		cs.caption = T_("Find");
 		find = createButton(cs);
 		find->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFind, this));
 		
-		cs.caption = TSTRING(NEXT);
+		cs.caption = T_("Next");
 		findNext = createButton(cs);
 		findNext->onClicked(std::tr1::bind(&DirectoryListingFrame::handleFindNext, this));
 
-		cs.caption = TSTRING(MATCH_QUEUE);
+		cs.caption = T_("Match queue");
 		matchQueue = createButton(cs);
 		matchQueue->onClicked(std::tr1::bind(&DirectoryListingFrame::handleMatchQueue, this));
 		
-		cs.caption = TSTRING(FILE_LIST_DIFF);
+		cs.caption = T_("Subtract list");
 		listDiff = createButton(cs);
 		listDiff->onClicked(std::tr1::bind(&DirectoryListingFrame::handleListDiff, this));
 	}
@@ -172,11 +178,10 @@ DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent,
 	initStatus();
 	
 	// This will set the widths correctly
-	setStatus(STATUS_FILE_LIST_DIFF, TSTRING(FILE_LIST_DIFF));
-
-	setStatus(STATUS_MATCH_QUEUE, TSTRING(MATCH_QUEUE));
-	setStatus(STATUS_FIND, TSTRING(FIND));
-	setStatus(STATUS_NEXT, TSTRING(NEXT));
+	setStatus(STATUS_FILE_LIST_DIFF, T_("Subtract list"));
+	setStatus(STATUS_MATCH_QUEUE, T_("Match queue"));
+	setStatus(STATUS_FIND, T_("Find"));
+	setStatus(STATUS_NEXT, T_("Next"));
 
 	files->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
 	dirs->onRaw(std::tr1::bind(&DirectoryListingFrame::handleXButtonUp, this, _1, _2), SmartWin::Message(WM_XBUTTONUP));
@@ -304,23 +309,23 @@ void DirectoryListingFrame::setWindowTitle() {
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu, ii);
 	
 	if(ii->type == ItemInfo::FILE) {
-		menu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&DirectoryListingFrame::handleViewAsText, this));
+		menu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&DirectoryListingFrame::handleViewAsText, this));
 		
 		menu->appendSeparatorItem();
 		
-		menu->appendItem(IDC_SEARCH_ALTERNATES, TSTRING(SEARCH_FOR_ALTERNATES), std::tr1::bind(&DirectoryListingFrame::handleSearchAlternates, this));
-		menu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), std::tr1::bind(&DirectoryListingFrame::handleLookupBitzi, this));
-		menu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), std::tr1::bind(&DirectoryListingFrame::handleCopyMagnet, this));
+		menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&DirectoryListingFrame::handleSearchAlternates, this));
+		menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(&DirectoryListingFrame::handleLookupBitzi, this));
+		menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&DirectoryListingFrame::handleCopyMagnet, this));
 	}
 
 	if((ii->type == ItemInfo::FILE && ii->file->getAdls()) ||
 		(ii->type == ItemInfo::DIRECTORY && ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) )	{
 		menu->appendSeparatorItem();
-		menu->appendItem(IDC_GO_TO_DIRECTORY, TSTRING(GO_TO_DIRECTORY), std::tr1::bind(&DirectoryListingFrame::handleGoToDirectory, this));
+		menu->appendItem(IDC_GO_TO_DIRECTORY, T_("Go to directory"), std::tr1::bind(&DirectoryListingFrame::handleGoToDirectory, this));
 	}
 	
 	addUserCommands(menu);
@@ -331,7 +336,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemI
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
 	addUserCommands(menu);
 	
@@ -343,7 +348,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeDirMenu() {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
 	return menu;
 }
@@ -353,7 +358,7 @@ void DirectoryListingFrame::addUserCommands(const WidgetMenuPtr& parent) {
 }
 
 void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii) {
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_TO));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Download to..."));
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 	size_t i = 0;
 	for(; i < spl.size(); ++i) {
@@ -364,7 +369,7 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 		menu->appendSeparatorItem();
 	}
 
-	menu->appendItem(IDC_DOWNLOAD_BROWSE, TSTRING(BROWSE), std::tr1::bind(&DirectoryListingFrame::handleDownloadBrowse, this));
+	menu->appendItem(IDC_DOWNLOAD_BROWSE, T_("Browse..."), std::tr1::bind(&DirectoryListingFrame::handleDownloadBrowse, this));
 
 	targets.clear();
 	
@@ -709,12 +714,12 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d) {
 		if(dl->getUser()->isOnline()) {
 			try {
 				QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
-				setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_LIST));
+				setStatus(STATUS_STATUS, T_("Downloading list..."));
 			} catch(const QueueException& e) {
 				setStatus(STATUS_STATUS, Text::toT(e.getError()));
 			}
 		} else {
-			setStatus(STATUS_STATUS, TSTRING(USER_OFFLINE));
+			setStatus(STATUS_STATUS, T_("User offline"));
 		}
 	}
 }
@@ -811,7 +816,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 {
 	if(!findNext) {
 		// Prompt for substring to find
-		LineDlg dlg(this, TSTRING(SEARCH_FOR_FILE), TSTRING(ENTER_SEARCH_STRING));
+		LineDlg dlg(this, T_("Search for file"), T_("Enter search string"));
 
 		if(dlg.run() != IDOK)
 			return;
@@ -874,7 +879,7 @@ void DirectoryListingFrame::findFile(bool findNext)
 		}
 	} else {
 		dirs->select(oldDir);
-		createMessageBox().show(TSTRING(NO_MATCHES), TSTRING(SEARCH_FOR_FILE));
+		createMessageBox().show(T_("No matches"), T_("Search for file"));
 	}
 }
 

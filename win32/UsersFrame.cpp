@@ -31,7 +31,7 @@ static const char* columnNames[] = {
 	N_("Hub (last seen on if offline)"),
 	N_("Time last seen"),
 	N_("Description"),
-	N_("CID"),
+	N_("CID")
 };
 
 UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) : 

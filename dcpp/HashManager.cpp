@@ -133,13 +133,13 @@ int64_t HashManager::HashStore::saveTree(File& f, const TigerTree& tt) throw(Fil
 
 	// Check if we should grow the file, we grow by a meg at a time...
 	int64_t datsz = f.getSize();
-	if((pos + (int64_t)(tt.getLeaves().size() * TTHValue::SIZE)) >= datsz) {
+	if((pos + (int64_t)(tt.getLeaves().size() * TTHValue::BYTES)) >= datsz) {
 		f.setPos(datsz + 1024*1024);
 		f.setEOF();
 	}
 	f.setPos(pos);
 	dcassert(tt.getLeaves().size() > 1);
-	f.write(tt.getLeaves()[0].data, (tt.getLeaves().size() * TTHValue::SIZE));
+	f.write(tt.getLeaves()[0].data, (tt.getLeaves().size() * TTHValue::BYTES));
 	int64_t p2 = f.getPos();
 	f.setPos(0);
 	f.write(&p2, sizeof(p2));
@@ -153,7 +153,7 @@ bool HashManager::HashStore::loadTree(File& f, const TreeInfo& ti, const TTHValu
 	}
 	try {
 		f.setPos(ti.getIndex());
-		size_t datalen = TigerTree::calcBlocks(ti.getSize(), ti.getBlockSize()) * TTHValue::SIZE;
+		size_t datalen = TigerTree::calcBlocks(ti.getSize(), ti.getBlockSize()) * TTHValue::BYTES;
 		AutoArray<uint8_t> buf(datalen);
 		f.read((uint8_t*)buf, datalen);
 		tt = TigerTree(ti.getSize(), ti.getBlockSize(), buf);

@@ -41,7 +41,7 @@ HubListsDlg::~HubListsDlg() {
 }
 
 bool HubListsDlg::handleInitDialog() {
-	setText(TSTRING(CONFIGURED_HUB_LISTS));
+	setText(T_("Configured Public Hub Lists"));
 
 	editBox = attachTextBox(IDC_LIST_EDIT_BOX);
 
@@ -61,23 +61,23 @@ bool HubListsDlg::handleInitDialog() {
 	hubLists->onKeyDown(std::tr1::bind(&HubListsDlg::handleKeyDown, this, _1));
 
 	WidgetButtonPtr button = attachButton(IDC_LIST_ADD);
-	button->setText(TSTRING(ADD));
+	button->setText(T_("&Add"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleAddClicked, this));
 
 	button = attachButton(IDC_LIST_UP);
-	button->setText(TSTRING(MOVE_UP));
+	button->setText(T_("Move &Up"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveUpClicked, this));
 
 	button = attachButton(IDC_LIST_DOWN);
-	button->setText(TSTRING(MOVE_DOWN));
+	button->setText(T_("Move &Down"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleMoveDownClicked, this));
 
 	button = attachButton(IDC_LIST_EDIT);
-	button->setText(TSTRING(EDIT_ACCEL));
+	button->setText(T_("&Edit"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleEditClicked, this));
 
 	button = attachButton(IDC_LIST_REMOVE);
-	button->setText(TSTRING(REMOVE));
+	button->setText(T_("&Remove"));
 	button->onClicked(std::tr1::bind(&HubListsDlg::handleRemoveClicked, this));
 
 	attachButton(IDOK)->onClicked(std::tr1::bind(&HubListsDlg::handleOKClicked, this));
@@ -147,7 +147,7 @@ void HubListsDlg::handleMoveDownClicked() {
 void HubListsDlg::handleEditClicked() {
 	int i = -1;
 	while((i = hubLists->getNext(i, LVNI_SELECTED)) != -1) {
-		LineDlg dlg(this, TSTRING(HUB_LIST), TSTRING(HUB_LIST_EDIT), hubLists->getText(i, 0));
+		LineDlg dlg(this, T_("Hublist"), T_("Edit the hublist"), hubLists->getText(i, 0));
 		if(dlg.run() == IDOK)
 			hubLists->setText(i, 0, dlg.getLine());
 	}

@@ -29,9 +29,20 @@
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH, COLUMN_CID };
 int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 100, 125, 125 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::USER, ResourceManager::TYPE, ResourceManager::SIZE,
-	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION,
-	ResourceManager::HUB, ResourceManager::EXACT_SIZE, ResourceManager::IP_BARE, ResourceManager::TTH_ROOT, ResourceManager::CID };
+static const char* columnNames[] = {
+	N_("File"),
+	N_("User"),
+	N_("Type"),
+	N_("Size"),
+	N_("Path"),
+	N_("Slots"),
+	N_("Connection"),
+	N_("Hub"),
+	N_("Exact size"),
+	N_("IP"),
+	N_("TTH Root"),
+	N_("CID")
+};
 
 TStringList SearchFrame::lastSearches;
 
@@ -213,7 +224,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		results = SmartWin::WidgetCreator<WidgetResults>::create(this, WinUtil::Seeds::listView);
 		addWidget(results);
 
-		results->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+		results->createColumns(WinUtil::getStrings(columnNames));
 		results->setColumnOrder(WinUtil::splitTokens(SETTING(SEARCHFRAME_ORDER), columnIndexes));
 		results->setColumnWidths(WinUtil::splitTokens(SETTING(SEARCHFRAME_WIDTHS), columnSizes));
 
