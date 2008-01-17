@@ -23,7 +23,6 @@
 
 #include <dcpp/version.h>
 #include <dcpp/Text.h>
-#include <dcpp/ResourceManager.h>
 
 #include "WinUtil.h"
 

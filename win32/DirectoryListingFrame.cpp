@@ -258,7 +258,7 @@ void DirectoryListingFrame::handleFindNext() {
 
 void DirectoryListingFrame::handleMatchQueue() {
 	int matched = QueueManager::getInstance()->matchListing(*dl);
-	setStatus(STATUS_STATUS, Text::tformat(TSTRING(MATCHED_FILES), matched));
+	setStatus(STATUS_STATUS, str(TFN_("Matched %1% file", "Matched %1% files", matched) % matched));
 }
 
 void DirectoryListingFrame::handleListDiff() {

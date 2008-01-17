@@ -60,9 +60,9 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	directories->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_FULLROWSELECT);
 
 	TStringList columns;
-	columns.push_back(TSTRING(VIRTUAL_NAME));
-	columns.push_back(TSTRING(DIRECTORY));
-	columns.push_back(TSTRING(SIZE));
+	columns.push_back(T_("Virtual name"));
+	columns.push_back(T_("Directory"));
+	columns.push_back(T_("Size"));
 	directories->createColumns(columns);
 	directories->setColumnWidth(0, 100);
 	directories->setColumnWidth(1, directories->getSize().x - 220);
@@ -185,7 +185,7 @@ void UploadPage::handleRenameClicked() {
 		tstring vName = directories->getText(i, 0);
 		tstring rPath = directories->getText(i, 1);
 		try {
-			LineDlg dlg(this, TSTRING(VIRTUAL_NAME), TSTRING(VIRTUAL_NAME_LONG), vName);
+			LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), vName);
 			if(dlg.run() == IDOK) {
 				tstring line = dlg.getLine();
 				if (Util::stricmp(vName, line) != 0) {
@@ -194,7 +194,7 @@ void UploadPage::handleRenameClicked() {
 
 					setDirty = true;
 				} else {
-					createMessageBox().show(TSTRING(SKIP_RENAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONINFORMATION);
+					createMessageBox().show(T_("New virtual name matches old name, skipping..."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONINFORMATION);
 				}
 			}
 		} catch(const ShareException& e) {
@@ -229,7 +229,7 @@ void UploadPage::addDirectory(const tstring& aPath) {
 		path += _T('\\');
 
 	try {
-		LineDlg dlg(this, TSTRING(VIRTUAL_NAME), TSTRING(VIRTUAL_NAME_LONG), Text::toT(ShareManager::getInstance()->validateVirtual(Util::getLastDir(Text::fromT(path)))));
+		LineDlg dlg(this, T_("Virtual name"), T_("Name under which the others see the directory"), Text::toT(ShareManager::getInstance()->validateVirtual(Util::getLastDir(Text::fromT(path)))));
 		if(dlg.run() == IDOK) {
 			tstring line = dlg.getLine();
 			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(line));

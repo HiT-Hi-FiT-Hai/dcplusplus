@@ -22,7 +22,6 @@
 
 #include "HubListsDlg.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/StringTokenizer.h>
 #include "HoldRedraw.h"

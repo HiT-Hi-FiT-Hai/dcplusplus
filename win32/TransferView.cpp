@@ -116,13 +116,13 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	appendUserItems(mdi, menu);
 	menu->appendSeparatorItem();
 	
-	menu->appendItem(IDC_FORCE, TSTRING(FORCE_ATTEMPT), std::tr1::bind(&TransferView::handleForce, this));
+	menu->appendItem(IDC_FORCE, T_("Force attempt"), std::tr1::bind(&TransferView::handleForce, this));
 	if(ii->download) {
 		menu->appendItem(IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES), std::tr1::bind(&TransferView::handleSearchAlternates, this));
 	}
-	menu->appendItem(IDC_COPY_NICK, TSTRING(COPY_NICK), std::tr1::bind(&TransferView::handleCopyNick, this));
+	menu->appendItem(IDC_COPY_NICK, T_("Copy nick to clipboard"), std::tr1::bind(&TransferView::handleCopyNick, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_REMOVE, TSTRING(CLOSE_CONNECTION), std::tr1::bind(&TransferView::handleRemove, this));
+	menu->appendItem(IDC_REMOVE, T_("Close connection"), std::tr1::bind(&TransferView::handleRemove, this));
 	menu->setDefaultItem(IDC_PRIVATEMESSAGE);
 	return menu;
 }
@@ -180,7 +180,7 @@ bool TransferView::handleKeyDown(int c) {
 void TransferView::handleForce() {
 	int i = -1;
 	while( (i = transfers->getNext(i, LVNI_SELECTED)) != -1) {
-		transfers->setText(i, COLUMN_STATUS, TSTRING(CONNECTING_FORCED));
+		transfers->setText(i, COLUMN_STATUS, T_("Connecting (forced)..."));
 		ConnectionManager::getInstance()->force(transfers->getData(i)->user);
 	}
 }
@@ -459,14 +459,14 @@ void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCq
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
-	ui->setStatusString(TSTRING(CONNECTING));
+	ui->setStatusString(T_("Connecting..."));
 	speak(ADD_ITEM, ui);
 }
 
 void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw() {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
-	ui->setStatusString((aCqi->getState() == ConnectionQueueItem::CONNECTING) ? TSTRING(CONNECTING) : TSTRING(WAITING_TO_RETRY));
+	ui->setStatusString((aCqi->getState() == ConnectionQueueItem::CONNECTING) ? T_("Connecting...") : T_("Waiting to retry..."));
 
 	speak(UPDATE_ITEM, ui);
 }
@@ -478,7 +478,7 @@ void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* a
 void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw() {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 	if(aCqi->getUser()->isSet(User::OLD_CLIENT)) {
-		ui->setStatusString(TSTRING(SOURCE_TOO_OLD));
+		ui->setStatusString(T_("Remote client does not fully support TTH - cannot download"));
 	} else {
 		ui->setStatusString(Text::toT(aReason));
 	}
@@ -493,7 +493,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) th
 	ui->setStart(0);
 	ui->setSize(aDownload->getSize());
 	ui->setFile(Text::toT(aDownload->getPath()));
-	ui->setStatusString(TSTRING(DOWNLOAD_STARTING));
+	ui->setStatusString(T_("Download starting..."));
 	ui->setCipher(Text::toT(aDownload->getUserConnection().getCipherName()));
 	tstring country = Text::toT(Util::getIpCountry(aDownload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aDownload->getUserConnection().getRemoteIp());
@@ -541,7 +541,7 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 		if(!statusString.empty()) {
 			statusString += _T(" ");
 		}
-		statusString += Text::tformat(TSTRING(DOWNLOADED_BYTES), pos.c_str(), percent, elapsed.c_str());
+		statusString += str(TF_("Downloaded %1% (%|2$.1f|%%) in %3%") % pos % percent % elapsed);
 		ui->setStatusString(statusString);
 
 		tasks.add(UPDATE_ITEM, ui);
@@ -573,7 +573,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() 
 	ui->setStart(aUpload->getPos());
 	ui->setSize(aUpload->getSize());
 	ui->setFile(Text::toT(aUpload->getPath()));
-	ui->setStatusString(TSTRING(UPLOAD_STARTING));
+	ui->setStatusString(T_("Upload starting..."));
 	ui->setCipher(Text::toT(aUpload->getUserConnection().getCipherName()));
 	tstring country = Text::toT(Util::getIpCountry(aUpload->getUserConnection().getRemoteIp()));
 	tstring ip = Text::toT(aUpload->getUserConnection().getRemoteIp());
@@ -590,8 +590,6 @@ void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) throw() 
 }
 
 void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw() {
-	AutoArray<TCHAR> buf(TSTRING(UPLOADED_BYTES).size() + 64);
-
 	for(UploadList::const_iterator j = ul.begin(); j != ul.end(); ++j) {
 		Upload* u = *j;
 
@@ -620,7 +618,7 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 		if(!statusString.empty()) {
 			statusString += _T(" ");
 		}
-		statusString += Text::tformat(TSTRING(UPLOADED_BYTES), pos.c_str(), percent, elapsed.c_str());
+		statusString += str(TF_("Uploaded %1% (%|2$.1f|%%) in %3%") % pos % percent % elapsed);
 
 		ui->setStatusString(statusString);
 
@@ -643,7 +641,7 @@ void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 
 	ui->setStatus(ItemInfo::STATUS_WAITING);
 	ui->setPos(0);
-	ui->setStatusString(isUpload ? TSTRING(UPLOAD_FINISHED_IDLE) : TSTRING(DOWNLOAD_FINISHED_IDLE));
+	ui->setStatusString(isUpload ? T_("Upload finished, idle...") : T_("Download finished, idle..."));
 
 	speak(UPDATE_ITEM, ui);
 }

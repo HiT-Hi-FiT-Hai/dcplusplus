@@ -83,7 +83,7 @@ void SearchFrame::closeAll() {
 }
 
 SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	BaseType(mdiParent, TSTRING(SEARCH), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
+	BaseType(mdiParent, T_("Search"), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
 	searchLabel(0),
 	searchBox(0),
 	purge(0),
@@ -114,19 +114,19 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		cs.exStyle = WS_EX_TRANSPARENT;
 		
 		searchLabel = createStatic(cs);
-		searchLabel->setText(TSTRING(SEARCH_FOR));
+		searchLabel->setText(T_("Search for"));
 
 		sizeLabel = createStatic(cs);
-		sizeLabel->setText(TSTRING(SIZE));
+		sizeLabel->setText(T_("Size"));
 		
 		typeLabel = createStatic(cs);
-		typeLabel->setText(TSTRING(FILE_TYPE));
+		typeLabel->setText(T_("File type"));
 
 		optionLabel = createStatic();
-		optionLabel->setText(TSTRING(SEARCH_OPTIONS));
+		optionLabel->setText(T_("Search options"));
 
 		hubsLabel = createStatic();
-		hubsLabel->setText(TSTRING(HUBS));
+		hubsLabel->setText(T_("Hubs"));
 
 	}
 
@@ -143,7 +143,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	{
 		WidgetButton::Seed cs = WinUtil::Seeds::button;
 		cs.style |= BS_DEFPUSHBUTTON;
-		cs.caption = TSTRING(SEARCH);
+		cs.caption = T_("Search");
 		doSearch = createButton(cs);
 
 		doSearch->onClicked(std::tr1::bind(&SearchFrame::runSearch, this));
@@ -153,9 +153,9 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		mode = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(mode);
 
-		mode->addValue(TSTRING(NORMAL));
-		mode->addValue(TSTRING(AT_LEAST));
-		mode->addValue(TSTRING(AT_MOST));
+		mode->addValue(T_("Normal"));
+		mode->addValue(T_("At least"));
+		mode->addValue(T_("At most"));
 	}
 
 	{
@@ -169,10 +169,10 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		sizeMode = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(sizeMode);
 
-		sizeMode->addValue(TSTRING(B));
-		sizeMode->addValue(TSTRING(KiB));
-		sizeMode->addValue(TSTRING(MiB));
-		sizeMode->addValue(TSTRING(GiB));
+		sizeMode->addValue(T_("B"));
+		sizeMode->addValue(T_("KiB"));
+		sizeMode->addValue(T_("MiB"));
+		sizeMode->addValue(T_("GiB"));
 		sizeMode->setSelectedIndex((initialSize == 0) ? 2 : 0);
 	}
 
@@ -180,19 +180,19 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		fileType = createComboBox(WinUtil::Seeds::comboBoxStatic);
 		addWidget(fileType);
 
-		fileType->addValue(TSTRING(ANY));
-		fileType->addValue(TSTRING(AUDIO));
-		fileType->addValue(TSTRING(COMPRESSED));
-		fileType->addValue(TSTRING(DOCUMENT));
-		fileType->addValue(TSTRING(EXECUTABLE));
-		fileType->addValue(TSTRING(PICTURE));
-		fileType->addValue(TSTRING(VIDEO));
-		fileType->addValue(TSTRING(DIRECTORY));
-		fileType->addValue(_T("TTH"));
+		fileType->addValue(T_("Any"));
+		fileType->addValue(T_("Audio"));
+		fileType->addValue(T_("Compressed"));
+		fileType->addValue(T_("Document"));
+		fileType->addValue(T_("Executable"));
+		fileType->addValue(T_("Picture"));
+		fileType->addValue(T_("Video"));
+		fileType->addValue(T_("Directory"));
+		fileType->addValue(T_("TTH"));
 	}
 
 	{
-		WidgetCheckBox::Seed cs(TSTRING(ONLY_FREE_SLOTS));
+		WidgetCheckBox::Seed cs(T_("Only users with free slots"));
 		slots = createCheckBox(cs);
 		slots->setChecked(onlyFree);
 
@@ -214,7 +214,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
-		hubs->insert(new HubInfo(Util::emptyStringT, TSTRING(ONLY_WHERE_OP), false));
+		hubs->insert(new HubInfo(Util::emptyStringT, T_("Only where I'm op"), false));
 		hubs->setChecked(0, false);
 
 
@@ -238,7 +238,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 
 	{
 		WidgetButton::Seed cs = WinUtil::Seeds::button;
-		cs.caption = TSTRING(PURGE);
+		cs.caption = T_("Purge");
 		purge = createButton(cs);
 
 		purge->onClicked(std::tr1::bind(&SearchFrame::handlePurgeClicked, this));
@@ -528,7 +528,7 @@ void SearchFrame::SearchInfo::update() {
 	} else {
 		columns[COLUMN_FILENAME] = Text::toT(sr->getFileName());
 		columns[COLUMN_PATH] = Text::toT(sr->getFile());
-		columns[COLUMN_TYPE] = TSTRING(DIRECTORY);
+		columns[COLUMN_TYPE] = T_("Directory");
 		if(sr->getSize() > 0) {
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(sr->getSize()));
 			columns[COLUMN_EXACT_SIZE] = Text::toT(Util::formatExactSize(sr->getSize()));
@@ -770,15 +770,15 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	StringPairList favoriteDirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	SearchInfo::CheckTTH checkTTH = results->forEachSelectedT(SearchInfo::CheckTTH());
 
-	menu->appendItem(IDC_DOWNLOAD, TSTRING(DOWNLOAD), std::tr1::bind(&SearchFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&SearchFrame::handleDownload, this));
 	addTargetMenu(menu, favoriteDirs, checkTTH);
-	menu->appendItem(IDC_DOWNLOADDIR, TSTRING(DOWNLOAD_WHOLE_DIR), std::tr1::bind(&SearchFrame::handleDownloadDir, this));
+	menu->appendItem(IDC_DOWNLOADDIR, T_("Download whole directory"), std::tr1::bind(&SearchFrame::handleDownloadDir, this));
 	addTargetDirMenu(menu, favoriteDirs);
-	menu->appendItem(IDC_VIEW_AS_TEXT, TSTRING(VIEW_AS_TEXT), std::tr1::bind(&SearchFrame::handleViewAsText, this));
+	menu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&SearchFrame::handleViewAsText, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_SEARCH_ALTERNATES, TSTRING(SEARCH_FOR_ALTERNATES), std::tr1::bind(&SearchFrame::handleSearchAlternates, this));
-	menu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), std::tr1::bind(&SearchFrame::handleBitziLookup, this));
-	menu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), std::tr1::bind(&SearchFrame::handleCopyMagnet, this));
+	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&SearchFrame::handleSearchAlternates, this));
+	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(&SearchFrame::handleBitziLookup, this));
+	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&SearchFrame::handleCopyMagnet, this));
 	menu->appendSeparatorItem();
 	appendUserItems(getParent(), menu);
 	menu->appendSeparatorItem();
@@ -791,7 +791,7 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 }
 
 void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs, const SearchInfo::CheckTTH& checkTTH) {
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_TO));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Download to..."));
 
 	int n = 0;
 	if(favoriteDirs.size() > 0) {
@@ -801,7 +801,7 @@ void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairLis
 	}
 
 	n = 0;
-	menu->appendItem(IDC_DOWNLOADTO, TSTRING(BROWSE), std::tr1::bind(&SearchFrame::handleDownloadTo, this));
+	menu->appendItem(IDC_DOWNLOADTO, T_("Browse..."), std::tr1::bind(&SearchFrame::handleDownloadTo, this));
 	if(WinUtil::lastDirs.size() > 0) {
 		menu->appendSeparatorItem();
 		for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i)
@@ -821,7 +821,7 @@ void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairLis
 }
 
 void SearchFrame::addTargetDirMenu(const WidgetMenuPtr& parent, const StringPairList& favoriteDirs) {
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(DOWNLOAD_WHOLE_DIR_TO));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Download whole directory to..."));
 
 	int n = 0;
 	if(favoriteDirs.size() > 0) {
@@ -831,7 +831,7 @@ void SearchFrame::addTargetDirMenu(const WidgetMenuPtr& parent, const StringPair
 	}
 
 	n = 0;
-	menu->appendItem(IDC_DOWNLOADDIRTO, TSTRING(BROWSE), std::tr1::bind(&SearchFrame::handleDownloadDirTo, this));
+	menu->appendItem(IDC_DOWNLOADDIRTO, T_("Browse..."), std::tr1::bind(&SearchFrame::handleDownloadDirTo, this));
 	if(WinUtil::lastDirs.size() > 0) {
 		menu->appendSeparatorItem();
 		for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i)
@@ -1027,13 +1027,13 @@ void SearchFrame::runSearch() {
 			searchBox->setText(Util::emptyStringT);
 	} else {
 		int32_t waitFor = SearchManager::getInstance()->timeToSearch();
-		tstring msg = Text::tformat(TSTRING(SEARCHING_WAIT), waitFor);
+		tstring msg = str(TFN_("Searching too soon, next search in %1% second", "Searching too soon, next search in %1% seconds", waitFor) % waitFor);
 
 		setStatus(STATUS_STATUS, msg);
 		setStatus(STATUS_COUNT, Util::emptyStringT);
 		setStatus(STATUS_FILTERED, Util::emptyStringT);
 
-		setText(TSTRING(SEARCH) + _T(" - ") + msg);
+		setText(T_("Search") + _T(" - ") + msg);
 		// Start the countdown timer
 		initSecond();
 	}
@@ -1046,14 +1046,14 @@ void SearchFrame::initSecond() {
 bool SearchFrame::eachSecond() {
 	int32_t waitFor = SearchManager::getInstance()->timeToSearch();
 	if(waitFor > 0) {
-		tstring msg = Text::tformat(TSTRING(SEARCHING_WAIT), waitFor);
+		tstring msg = str(TFN_("Searching too soon, next search in %1% second", "Searching too soon, next search in %1% seconds", waitFor) % waitFor);
 		setStatus(STATUS_STATUS, msg);
-		setText(TSTRING(SEARCH) + _T(" - ") + msg);
+		setText(T_("Search") + _T(" - ") + msg);
 		return true;
 	} 
 	
-	setStatus(STATUS_STATUS, TSTRING(SEARCHING_READY));
-	setText(TSTRING(SEARCH) + _T(" - ") + TSTRING(SEARCHING_READY));
+	setStatus(STATUS_STATUS, T_("Ready to search..."));
+	setText(T_("Search") + _T(" - ") + T_("Ready to search..."));
 	
 	return false;
 }

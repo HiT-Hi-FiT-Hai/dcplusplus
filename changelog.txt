@@ -104,9 +104,9 @@
 * [bug 1066] Search for alternates not available on uploads (thanks ullner)
 * [bug 1104] Better error message on dupe source (thanks ullner)
 * [bug 1132] Download queue updated when users go offline (thanks stephan hohe)
-* [bug 1133] Fixed max tab rows being reset (thanks pothead)
+* [bug 1133] Fixed max tab rows being reset (thanks mikejj)
 * [bug 1134] Use SO_REUSEADDR for connection manager socket (thanks mikael eman)
-* [bug 1136] Fixed dupe changelog rebuild (thanks pothead)
+* [bug 1136] Fixed dupe changelog rebuild (thanks mikejj)
 * [bug 1139] Fixed download delay in some cases (thanks mikael eman)
 * [bug 1144] Added possibility to add many hub lists in one go (use ; as separator) (thanks poy)
 * [bug 1152] Only refresh if there are directories shared (thanks ullner)
@@ -188,7 +188,7 @@
 
 -- 0.696 2006-09-22 --
 * Fixed a possible deadlock
-* [bug 1058] Removed some whitespace (big thanks to pothead)
+* [bug 1058] Removed some whitespace (big thanks to mikejj)
 * Removed the possibility to download files without TTH
 * Removed the possibility to read *.DcLst files (no TTH, no i18n support)
 * Files with no TTH no longer show up in search and directory listings
@@ -220,13 +220,13 @@
 * [bug 1027] Improved unix socket support (thanks steven sheehy)
 * [bug 1028] Improved big endian support (thanks steven sheehy)
 * [bug 1029] Fixed BSD compile issue (thanks steven sheehy)
-* [bug 1031] Fixed a crash after closing hub window (thanks bigmuscle/pothead)
-* [bug 1032] Fixed certificates help (thanks pothead)
+* [bug 1031] Fixed a crash after closing hub window (thanks bigmuscle/mikejj)
+* [bug 1032] Fixed certificates help (thanks mikejj)
 * Added possibility to store configuration files in separate directory
 * Switched back to unicows for w9x users, opencow was missing too many functions
 * [bug 876] Fixed lost tooltips (thanks poy and bigmuscle)
-* [bug 1041] Fixed about tab order (thanks pothead)
-* [bug 1042] Fixed experts tab order (thanks pothead)
+* [bug 1041] Fixed about tab order (thanks mikejj)
+* [bug 1042] Fixed experts tab order (thanks mikejj)
 * [bug 1047] Fixed possible nmdc crash (thanks guitarm)
 * [bug 1049] Added tooltip to tab bar (thanks poy)
 * [bug 1053] Fixed vista detection (thanks ullner)
@@ -245,7 +245,7 @@
 * Added language code to example language xml
 
 -- 0.692 2006-07-09 --
-* [bug 927] Fixed OP detection bug really (thanks pothead)
+* [bug 927] Fixed OP detection bug really (thanks mikejj)
 * [bug 938] Added a few more ADC info fields (thanks ullner)
 * [bug 939] Fixed hub info update (thanks ullner)
 * [bug 940] Fixed a 64-bit compile error (thanks steven sheehy)
@@ -254,10 +254,10 @@
 * [bug 944] Fixed unix string conversion bug (thanks tobias nygren)
 * [bug 945] Fixed unix mutex initialiser (thanks tobias nygren)
 * [bug 946] Tiger hash supports big endian and 64-bit architectures (thanks tobias nygren)
-* [bug 941] Updated usercount display (thanks pothead)
+* [bug 941] Updated usercount display (thanks mikejj)
 * [bug 951] Fixed issue with high port numbers (thanks tpo)
 * [bug 958] Search spy tth option automagically saved (thanks ullner)
-* [bug 959] Code cleanup (thanks pothead)
+* [bug 959] Code cleanup (thanks mikejj)
 * [bug 966] Max hash speed fixed when fast hashing method is not used (thanks steven sheehy)
 * [bug 967] Fixed path case-sensitivity issue (thanks steven sheehy)
 * Fixed auto-reconnect
@@ -270,8 +270,8 @@
 * Fixed a crash bug when hash data cannot be saved
 * Possibly fixed issues with queue items not being updated
 * Added warning when someone tries to spam hublist.org or dcpp.net with your client
-* [bug 968] Fixed unix compile issue (thanks pothead)
-* [bug 975] Fixed silly warning (thanks pothead)
+* [bug 968] Fixed unix compile issue (thanks mikejj)
+* [bug 975] Fixed silly warning (thanks mikejj)
 * [bug 978] Fixed 64-bit compiler issue (thanks steven sheehy)
 * [bug 988] Only unique nicks diplayed in title bar 
 * Added protection from hubs/clients sending junk data resulting in high memory usage / crash
@@ -283,7 +283,7 @@
 * [bug 949] Fixed a crash when reading invalid XML files
 * TLS port may now be specified in settings and is only opened if TLS is enabled
 * Added TLS port to /connection
-* [bug 977] Added copy hub address to hub right-click menu (thanks pothead)
+* [bug 977] Added copy hub address to hub right-click menu (thanks mikejj)
 * [bug 1001] Fixed assertion on unix (thanks steven sheehy)
 
 -- 0.691 2006-06-03 -- 
@@ -294,7 +294,7 @@
 * [bug 878] Added close all ... to window menu (thanks trem)
 * [bug 903] Holding shift while minimizing will use opposite tray setting (thanks joakim tosteberg)
 * [bug 923] PM history always read (thanks trem)
-* [bug 927] Fixed OP detection bug (thanks pothead)
+* [bug 927] Fixed OP detection bug (thanks mikejj)
 * [bug 929] Fixed list view flicker issues (thanks trem)
 * [bug 931] Improved keyboard navigation (thanks trem)
 * Added "all" to hub list field search (thanks trem)
@@ -335,7 +335,7 @@
 * [bug 853] Fixed missing function in opencow
 
 -- 0.688 2006-03-18 --
-* Fixed public hubs sorting (thanks pothead)
+* Fixed public hubs sorting (thanks mikejj)
 * Fixed a ZPipe issue (thanks jove)
 * [bug 858] Fixed a 100% cpu / crash bug
 * [bug 872] Fixed a pm issue hopefully
@@ -374,7 +374,7 @@
 * Added filelist download speed to filelist browser status bar
 * Added advanced hublist filter (thanks trem)
 * [bug 579] Fixed 0-byte files not being created if directory doesn't exist
-* [bug 804] Cleaned up project files (thanks pothead)
+* [bug 804] Cleaned up project files (thanks mikejj)
 * Socket buffer size = 0 now means use system default
 * [bug 789] Fixed wrong nick being copied (thanks ullner)
 * [bug 794] [ADC] Fixed automatic reconnect (thanks ullner)
@@ -382,8 +382,8 @@
 * Updated to latest ADC specs, this will break 0.68/0.681/0.6811 queue sources and fav users (for NMDC as well)
 * Fixed a bufferedsocket crash
 * [ADC] Fixed quitting user processing (thanks ullner)
-* Clarified upload speed setting (thanks pothead)
-* Manual away setting no longer cleared when un-minimizing (thanks pothead)
+* Clarified upload speed setting (thanks mikejj)
+* Manual away setting no longer cleared when un-minimizing (thanks mikejj)
 * Search result automatching waits with match until file list is downloaded if auto-matching enabled
 * Slight performance improvement when sending files
 * Fixed an issue with nick names disappearing from hub
@@ -409,7 +409,7 @@
 * [bug 484] Added a check for multiple refreshes running at the same time (thanks trem)
 * Fixed a few crashes here and there
 * Fixed no-slots message not being sent out always
-* Fixed yassl build locations (thanks pothead)
+* Fixed yassl build locations (thanks mikejj)
 * Added ip resolve cache when searching (thanks trem)
 * [bug 413] Failed file moves are now reported to the system log
 
@@ -438,8 +438,8 @@
 * Updated bzip2 to 1.0.3 (thanks garg)
 * Some small *nix fixes (thanks poison)
 * Source path no longer saved for TTH enabled clients (saves memory and queue file space)
-* [bug 335] Search window settings saved automatically (thanks pothead)
-* Open folder selects file in explorer (thanks pothead)
+* [bug 335] Search window settings saved automatically (thanks mikejj)
+* Open folder selects file in explorer (thanks mikejj)
 * Local echo in pm window formatted as the other side should see it (thanks paka)
 * Fixed debug assertion (thanks tpo)
 * Dirty tabs settings improved (thanks ullner)
@@ -474,11 +474,11 @@
 * Improved hashing error reporting
 * Fixed hash database rebuild
 * Added /removefav command to remove a favorite hub (thanks ullner)
-* [bug 717] Fixed search combo box (thanks pothead)
+* [bug 717] Fixed search combo box (thanks mikejj)
 * Added option to change auto-refresh interval (thanks ullner)
 * [bug 740] Removed tab completion option (thanks ullner)
 * [bug 743] Added registry key creation failure notification (thanks ullner)
-* [bug 717] Fixed dropdown sizes (thanks pothead)
+* [bug 717] Fixed dropdown sizes (thanks mikejj)
 * [bug 760] Fixed list subtraction issue (thanks cologic)
 * Added some right-to-left support, but it probably needs more work
 * [NMDC] Minislots are no longer given to old DC++ clients (<0.304)

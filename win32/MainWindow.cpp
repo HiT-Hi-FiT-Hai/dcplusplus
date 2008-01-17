@@ -141,7 +141,7 @@ MainWindow::MainWindow() :
 	::ShowWindow(handle(), ((cmdShow == SW_SHOWDEFAULT) || (cmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : cmdShow);
 
 	if(SmartWin::LibraryLoader::getCommonControlsVersion() < PACK_COMCTL_VERSION(5,80))
-		createMessageBox().show(TSTRING(COMCTL_TOO_OLD), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+		createMessageBox().show(T_("Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
 }
 
 void MainWindow::initWindow() {
@@ -181,68 +181,68 @@ void MainWindow::initMenu() {
 
 	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
 
-	file->appendItem(IDC_QUICK_CONNECT, TSTRING(MENU_QUICK_CONNECT), std::tr1::bind(&MainWindow::handleQuickConnect, this));
-	file->appendItem(IDC_FOLLOW, TSTRING(MENU_FOLLOW_REDIRECT));
-	file->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT));
+	file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this));
+	file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"));
+	file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"));
 	file->appendSeparatorItem();
 
-	file->appendItem(IDC_OPEN_FILE_LIST, TSTRING(MENU_OPEN_FILE_LIST), std::tr1::bind(&MainWindow::handleOpenFileList, this));
-	file->appendItem(IDC_OPEN_OWN_LIST, TSTRING(MENU_OPEN_OWN_LIST), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
-	file->appendItem(IDC_MATCH_ALL, TSTRING(MENU_OPEN_MATCH_ALL), std::tr1::bind(&MainWindow::handleMatchAll, this));
-	file->appendItem(IDC_REFRESH_FILE_LIST, TSTRING(MENU_REFRESH_FILE_LIST), std::tr1::bind(&MainWindow::handleRefreshFileList, this));
-	file->appendItem(IDC_OPEN_DOWNLOADS, TSTRING(MENU_OPEN_DOWNLOADS_DIR), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this));
+	file->appendItem(IDC_OPEN_FILE_LIST, T_("Open file list...\tCtrl+L"), std::tr1::bind(&MainWindow::handleOpenFileList, this));
+	file->appendItem(IDC_OPEN_OWN_LIST, T_("Open own list"), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
+	file->appendItem(IDC_MATCH_ALL, T_("Match downloaded lists"), std::tr1::bind(&MainWindow::handleMatchAll, this));
+	file->appendItem(IDC_REFRESH_FILE_LIST, T_("Refresh file list\tCtrl+E"), std::tr1::bind(&MainWindow::handleRefreshFileList, this));
+	file->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this));
 	file->appendSeparatorItem();
 
-	file->appendItem(IDC_SETTINGS, TSTRING(MENU_SETTINGS), std::tr1::bind(&MainWindow::handleSettings, this));
+	file->appendItem(IDC_SETTINGS, T_("Settings..."), std::tr1::bind(&MainWindow::handleSettings, this));
 	file->appendSeparatorItem();
-	file->appendItem(IDC_EXIT, TSTRING(MENU_EXIT), std::tr1::bind(&MainWindow::handleExit, this));
+	file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this));
 
 	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
 
-	view->appendItem(IDC_PUBLIC_HUBS, TSTRING(MENU_PUBLIC_HUBS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_FAVORITE_HUBS, TSTRING(MENU_FAVORITE_HUBS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_FAVUSERS, TSTRING(MENU_FAVORITE_USERS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_PUBLIC_HUBS, T_("&Public Hubs\tCtrl+P"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FAVORITE_HUBS, T_("&Favorite Hubs\tCtrl+F"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FAVUSERS, T_("Favorite &Users\tCtrl+U"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendSeparatorItem();
-	view->appendItem(IDC_QUEUE, TSTRING(MENU_DOWNLOAD_QUEUE), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_FINISHED_DL, TSTRING(FINISHED_DOWNLOADS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_WAITING_USERS, TSTRING(WAITING_USERS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_FINISHED_UL, TSTRING(FINISHED_UPLOADS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_QUEUE, T_("&Download Queue\tCtrl+D"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FINISHED_DL, T_("Finished Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_WAITING_USERS, T_("Waiting Users"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_FINISHED_UL, T_("Finished Uploads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendSeparatorItem();
-	view->appendItem(IDC_SEARCH, TSTRING(MENU_SEARCH), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_ADL_SEARCH, TSTRING(MENU_ADL_SEARCH), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_SEARCH_SPY, TSTRING(MENU_SEARCH_SPY), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_SEARCH, T_("&Search\tCtrl+S"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_ADL_SEARCH, T_("ADL Search"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_SEARCH_SPY, T_("Search Spy"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendSeparatorItem();
-	view->appendItem(IDC_NOTEPAD, TSTRING(MENU_NOTEPAD), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_SYSTEM_LOG, TSTRING(MENU_SYSTEM_LOG), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_NET_STATS, TSTRING(MENU_NETWORK_STATISTICS), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_NOTEPAD, T_("&Notepad\tCtrl+N"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_SYSTEM_LOG, T_("System Log"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+	view->appendItem(IDC_NET_STATS, T_("Network Statistics"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_HASH_PROGRESS, TSTRING(MENU_HASH_PROGRESS), std::tr1::bind(&MainWindow::handleHashProgress, this));
+	view->appendItem(IDC_HASH_PROGRESS, T_("Indexing progress"), std::tr1::bind(&MainWindow::handleHashProgress, this));
 	
 	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
 
-	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, TSTRING(MENU_CLOSE_DISCONNECTED), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_PM, TSTRING(MENU_CLOSE_ALL_PM), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_OFFLINE_PM, TSTRING(MENU_CLOSE_ALL_OFFLINE_PM), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_DIR_LIST, TSTRING(MENU_CLOSE_ALL_DIR_LIST), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_SEARCH_FRAME, TSTRING(MENU_CLOSE_ALL_SEARCHFRAME), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, T_("Close disconnected"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_PM, T_("Close all PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_OFFLINE_PM, T_("Close all offline PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_DIR_LIST, T_("Close all file list windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	window->appendItem(IDC_CLOSE_ALL_SEARCH_FRAME, T_("Close all search windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 
 	WidgetMenuPtr help = mainMenu->appendPopup(TSTRING(MENU_HELP));
 
-	help->appendItem(IDC_HELP_CONTENTS, TSTRING(MENU_CONTENTS), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+	help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
 	help->appendSeparatorItem();
-	help->appendItem(IDC_HELP_CHANGELOG, TSTRING(MENU_CHANGELOG), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
-	help->appendItem(IDC_ABOUT, TSTRING(MENU_ABOUT), std::tr1::bind(&MainWindow::handleAbout, this));
+	help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+	help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this));
 	help->appendSeparatorItem();
-	help->appendItem(IDC_HELP_HOMEPAGE, TSTRING(MENU_HOMEPAGE), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_DOWNLOADS, TSTRING(MENU_HELP_DOWNLOADS), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_GEOIPFILE, TSTRING(MENU_HELP_GEOIPFILE), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_TRANSLATIONS, TSTRING(MENU_HELP_TRANSLATIONS), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_FAQ, TSTRING(MENU_FAQ), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_FORUM, TSTRING(MENU_HELP_FORUM), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_DISCUSS, TSTRING(MENU_DISCUSS), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_REQUEST_FEATURE, TSTRING(MENU_REQUEST_FEATURE), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_REPORT_BUG, TSTRING(MENU_REPORT_BUG), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_DONATE, TSTRING(MENU_DONATE), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_GEOIPFILE, T_("GeoIP database update"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_TRANSLATIONS, T_("Translations"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_FAQ, T_("Frequently asked questions"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_FORUM, T_("Help forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_DISCUSS, T_("DC++ discussion forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_REQUEST_FEATURE, T_("Request a feature"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_REPORT_BUG, T_("Report a bug"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	help->appendItem(IDC_HELP_DONATE, T_("Donate (paypal)"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 
 	mainMenu->attach(this);
 }
@@ -342,7 +342,7 @@ void MainWindow::handleQuickConnect() {
 	if (SETTING(NICK).empty())
 		return;
 
-	LineDlg dlg(this, TSTRING(QUICK_CONNECT), TSTRING(HUB_ADDRESS));
+	LineDlg dlg(this, T_("Quick Connect"), T_("Address"));
 
 	if (dlg.run() == IDOK) {
 
@@ -457,7 +457,7 @@ void MainWindow::saveWindowSettings() {
 
 bool MainWindow::closing() {
 	if (stopperThread == NULL) {
-		if ( !BOOLSETTING(CONFIRM_EXIT) || (createMessageBox().show(TSTRING(REALLY_EXIT), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)) {
+		if ( !BOOLSETTING(CONFIRM_EXIT) || (createMessageBox().show(T_("Really exit?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)) {
 			if (c != NULL) {
 				c->removeListener(this);
 				delete c;
@@ -610,7 +610,7 @@ void MainWindow::startSocket() {
 		try {
 			ConnectionManager::getInstance()->listen();
 		} catch(const Exception&) {
-			WidgetMessageBox().show(TSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			WidgetMessageBox().show(T_("Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 		}
 		try {
 			SearchManager::getInstance()->listen();
@@ -632,7 +632,7 @@ void MainWindow::startUPnP() {
 		if ( FAILED(UPnP_UDPConnection->OpenPorts()) || FAILED(UPnP_TCPConnection->OpenPorts()) )
 		{
 			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
-			createMessageBox().show(TSTRING(UPNP_FAILED_TO_CREATE_MAPPINGS), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
+			createMessageBox().show(T_("Failed to create port mappings. Please set up your NAT yourself."), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 
 			// We failed! thus reset the objects
 			delete UPnP_TCPConnection;
@@ -651,7 +651,7 @@ void MainWindow::startUPnP() {
 					//:-( Looks like we have to rely on the user setting the external IP manually
 					// no need to do cleanup here because the mappings work
 					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
-					createMessageBox().show(TSTRING(UPNP_FAILED_TO_GET_EXTERNAL_IP), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
+					createMessageBox().show(T_("Failed to get external IP via  UPnP. Please set it yourself."), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 				}
 			}
 		}
@@ -690,7 +690,7 @@ void MainWindow::handleOpenFileList() {
 		if (u) {
 			DirectoryListingFrame::openWindow(getMDIParent(), file, Text::toT(Util::emptyString), u, 0);
 		} else {
-			createMessageBox().show(TSTRING(INVALID_LISTNAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
+			createMessageBox().show(T_("Invalid file list name"), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 		}
 	}
 }
@@ -999,10 +999,10 @@ LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
 	} else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU) {
 		SmartWin::ScreenCoordinate pt;
 		WidgetMenuPtr trayMenu = createMenu(true);
-		trayMenu->appendItem(IDC_TRAY_SHOW, TSTRING(MENU_SHOW), std::tr1::bind(&MainWindow::handleRestore, this));
+		trayMenu->appendItem(IDC_TRAY_SHOW, T_("Show"), std::tr1::bind(&MainWindow::handleRestore, this));
 		trayMenu->appendItem(IDC_TRAY_QUIT, TSTRING(MENU_EXIT), std::tr1::bind(&MainWindow::close, this, true));
-		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, TSTRING(MENU_OPEN_DOWNLOADS_DIR));
-		trayMenu->appendItem(IDC_SETTINGS, TSTRING(MENU_SETTINGS));
+		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"));
+		trayMenu->appendItem(IDC_SETTINGS, T_("Settings..."));
 		trayMenu->setDefaultItem(0,TRUE);
 		::GetCursorPos(&pt.getPoint());
 		::SetForegroundWindow(handle());

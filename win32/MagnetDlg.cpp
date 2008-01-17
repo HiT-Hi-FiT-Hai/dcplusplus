@@ -42,7 +42,7 @@ MagnetDlg::~MagnetDlg() {
 }
 
 bool MagnetDlg::handleInitDialog() {
-	setText(TSTRING(MAGNET_DLG_TITLE));
+	setText(T_("MAGNET Link detected"));
 	::SetDlgItemText(handle(), IDC_MAGNET_TEXT, CTSTRING(MAGNET_DLG_TEXT_GOOD));
 	::SetDlgItemText(handle(), IDC_MAGNET_HASH, CTSTRING(MAGNET_DLG_HASH));
 	::SetDlgItemText(handle(), IDC_MAGNET_DISP_HASH, mHash.c_str());
@@ -50,21 +50,21 @@ bool MagnetDlg::handleInitDialog() {
 	::SetDlgItemText(handle(), IDC_MAGNET_DISP_NAME, mFileName.c_str());
 
 	//queue = attachRadioButton(IDC_MAGNET_1_QUEUE);
-	//queue->setText(TSTRING(MAGNET_DLG_QUEUE));
+	//queue->setText(T_("Add this file to your download queue"));
 	//queue->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, queue));
 	::ShowWindow(::GetDlgItem(handle(), IDC_MAGNET_1_QUEUE), false);
 
 	search = attachRadioButton(IDC_MAGNET_2_SEARCH);
-	search->setText(TSTRING(MAGNET_DLG_SEARCH));
+	search->setText(T_("Start a search for this file"));
 	search->setFocus();
 	//search->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, search));
 
 	doNothing = attachRadioButton(IDC_MAGNET_3_NOTHING);
-	doNothing->setText(TSTRING(MAGNET_DLG_NOTHING));
+	doNothing->setText(T_("Do nothing"));
 	//doNothing->onClicked(std::tr1::bind(&MagnetDlg::handleRadioButtonClicked, this, doNothing));
 
 	//remember = attachCheckBox(IDC_MAGNET_REMEMBER);
-	//remember->setText(TSTRING(MAGNET_DLG_REMEMBER));
+	//remember->setText(T_("Do the same action next time without asking"));
 	::ShowWindow(::GetDlgItem(handle(), IDC_MAGNET_REMEMBER), false);
 
 	::CheckRadioButton(handle(), IDC_MAGNET_1_QUEUE, IDC_MAGNET_3_NOTHING, IDC_MAGNET_2_SEARCH);

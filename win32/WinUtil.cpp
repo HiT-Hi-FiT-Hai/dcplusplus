@@ -245,16 +245,16 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		int j = Util::toInt(Text::fromT(param));
 		if(j > 0) {
 			SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
-			status = TSTRING(SLOTS_SET);
+			status = T_("Slots set");
 			ClientManager::getInstance()->infoUpdated();
 		} else {
-			status = TSTRING(INVALID_NUMBER_OF_SLOTS);
+			status = T_("Invalid number of slots");
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("search")) == 0) {
 		if(!param.empty()) {
 			SearchFrame::openWindow(mainWindow->getMDIParent(), param);
 		} else {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
+			status = T_("Specify a search string");
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("dc++")) == 0) {
 		message = msgs[GET_TICK() % MSGS];
@@ -320,7 +320,7 @@ tstring WinUtil::getNicks(const UserPtr& u) {
 pair<tstring, bool> WinUtil::getHubNames(const CID& cid) throw() {
 	StringList hubs = ClientManager::getInstance()->getHubNames(cid);
 	if(hubs.empty()) {
-		return make_pair(TSTRING(OFFLINE), false);
+		return make_pair(T_("Offline"), false);
 	} else {
 		return make_pair(Text::toT(Util::toString(hubs)), true);
 	}
@@ -804,7 +804,7 @@ void WinUtil::registerDchubHandler() {
 			LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_MAGNET));
 			return;
 		}
-		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_SHELL_DESC), sizeof(TCHAR)*(TSTRING(MAGNET_SHELL_DESC).length()+1));
+		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_SHELL_DESC), sizeof(TCHAR)*(T_("URL:MAGNET URI").length()+1));
 		::RegSetValueEx(hk, _T("URL Protocol"), NULL, REG_SZ, NULL, NULL);
 		::RegCloseKey(hk);
 		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
@@ -820,7 +820,7 @@ void WinUtil::registerDchubHandler() {
 	SHDeleteKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"));
 	// add DC++ to magnet-handler's list of applications
 	::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
-	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (TSTRING(MAGNET_HANDLER_ROOT).size()+1));
+	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (T_("DC++").size()+1));
 	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_DESC), sizeof(TCHAR) * (STRING(MAGNET_HANDLER_DESC).size()+1));
 	// set ShellExecute
 	tstring app = Text::toT("\"" + getAppName() + "\" %URL");
@@ -1026,7 +1026,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 				MagnetDlg(mainWindow, fhash, fname).run();
 			//}
 		} else {
-			SmartWin::WidgetMessageBox(mainWindow).show(TSTRING(MAGNET_DLG_TEXT_BAD), TSTRING(MAGNET_DLG_TITLE), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
+			SmartWin::WidgetMessageBox(mainWindow).show(T_("A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."), T_("MAGNET Link detected"), SmartWin::WidgetMessageBox::BOX_OK, SmartWin::WidgetMessageBox::BOX_ICONEXCLAMATION);
 		}
 	}
 }

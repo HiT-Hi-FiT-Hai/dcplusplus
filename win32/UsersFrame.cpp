@@ -28,7 +28,7 @@ int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_HUB, COLUMN_SEEN, COLUMN
 int UsersFrame::columnSizes[] = { 200, 300, 150, 200, 125 };
 static const char* columnNames[] = {
 	N_("Auto grant slot / Nick"),
-	N_("Hub (last seen on if offline)"),
+	N_("Hub (last seen in, if offline)"),
 	N_("Time last seen"),
 	N_("Description"),
 	N_("CID")

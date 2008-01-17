@@ -22,7 +22,6 @@
 #include <dcpp/DownloadManagerListener.h>
 #include <dcpp/QueueManagerListener.h>
 #include <dcpp/forward.h>
-#include <dcpp/ResourceManager.h>
 
 #include "TypedListView.h"
 #include "StaticFrame.h"

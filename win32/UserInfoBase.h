@@ -20,7 +20,7 @@
 #define USERINFOBASE_H_
 
 #include <dcpp/forward.h>
-#include <dcpp/ResourceManager.h>
+#include <dcpp/Text.h>
 #include "resource.h"
 
 class UserInfoBase {
@@ -93,18 +93,18 @@ public:
 	void appendUserItems(SmartWin::WidgetTabView* parent, MenuType menu) {
 		T* This = static_cast<T*>(this);
 		UserInfoBase::UserTraits traits = This->getUserList()->forEachSelectedT(UserInfoBase::UserTraits());
-		menu->appendItem(IDC_GETLIST, TSTRING(GET_FILE_LIST), std::tr1::bind(&T::handleGetList, This));
+		menu->appendItem(IDC_GETLIST, T_("Get file list"), std::tr1::bind(&T::handleGetList, This));
 		if(traits.adcOnly)
-			menu->appendItem(IDC_BROWSELIST, TSTRING(BROWSE_FILE_LIST), std::tr1::bind(&T::handleBrowseList, This));
-		menu->appendItem(IDC_MATCH_QUEUE, TSTRING(MATCH_QUEUE), std::tr1::bind(&T::handleMatchQueue, This));
-		menu->appendItem(IDC_PRIVATEMESSAGE, TSTRING(SEND_PRIVATE_MESSAGE), std::tr1::bind(&T::handlePrivateMessage, This, parent));
+			menu->appendItem(IDC_BROWSELIST, T_("Browse file list"), std::tr1::bind(&T::handleBrowseList, This));
+		menu->appendItem(IDC_MATCH_QUEUE, T_("Match queue"), std::tr1::bind(&T::handleMatchQueue, This));
+		menu->appendItem(IDC_PRIVATEMESSAGE, T_("Send private message"), std::tr1::bind(&T::handlePrivateMessage, This, parent));
 		if(!traits.favOnly)
-			menu->appendItem(IDC_ADD_TO_FAVORITES, TSTRING(ADD_TO_FAVORITES), std::tr1::bind(&T::handleAddFavorite, This));
-		menu->appendItem(IDC_GRANTSLOT, TSTRING(GRANT_EXTRA_SLOT), std::tr1::bind(&T::handleGrantSlot, This));
+			menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To Favorites"), std::tr1::bind(&T::handleAddFavorite, This));
+		menu->appendItem(IDC_GRANTSLOT, T_("Grant extra slot"), std::tr1::bind(&T::handleGrantSlot, This));
 		if(!traits.nonFavOnly)
-			menu->appendItem(IDC_CONNECT, TSTRING(CONNECT_FAVUSER_HUB), std::tr1::bind(&T::handleConnectFav, This, parent));
+			menu->appendItem(IDC_CONNECT, T_("Connect to hub"), std::tr1::bind(&T::handleConnectFav, This, parent));
 		menu->appendSeparatorItem();
-		menu->appendItem(IDC_REMOVE_ALL, TSTRING(REMOVE_FROM_ALL), std::tr1::bind(&T::handleRemoveAll, This));
+		menu->appendItem(IDC_REMOVE_ALL, T_("Remove user from queue"), std::tr1::bind(&T::handleRemoveAll, This));
 	}
 };
 

@@ -25,7 +25,6 @@
 #include "PrivateFrame.h"
 
 #include <dcpp/QueueManager.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
@@ -414,42 +413,32 @@ void QueueFrame::QueueItemInfo::update() {
 
 				tmp += WinUtil::getNicks(j->getUser());
 			}
-			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
+			display->columns[COLUMN_USERS] = tmp.empty() ? T_("No users") : tmp;
 		}
 		if(colMask & MASK_STATUS) {
 			if(!getRunning()) {
-
-				TCHAR buf[64];
 				if(online > 0) {
 					if(getSources().size() == 1) {
-						display->columns[COLUMN_STATUS] = TSTRING(WAITING_USER_ONLINE);
+						display->columns[COLUMN_STATUS] = T_("Waiting (User online)");
 					} else {
-						_sntprintf(buf, 64, CTSTRING(WAITING_USERS_ONLINE), online, getSources().size());
-						display->columns[COLUMN_STATUS] = buf;
+						display->columns[COLUMN_STATUS] = str(TF_("Waiting (%1% of %2% users online)") % online % getSources().size());
 					}
 				} else {
 					if(getSources().size() == 0) {
-						display->columns[COLUMN_STATUS] = TSTRING(NO_USERS_TO_DOWNLOAD_FROM);
+						display->columns[COLUMN_STATUS] = T_("No users to download from");
 					} else if(getSources().size() == 1) {
-						display->columns[COLUMN_STATUS] = TSTRING(USER_OFFLINE);
-					} else if(getSources().size() == 2) {
-						display->columns[COLUMN_STATUS] = TSTRING(BOTH_USERS_OFFLINE);
-					} else if(getSources().size() == 3) {
-						display->columns[COLUMN_STATUS] = TSTRING(ALL_3_USERS_OFFLINE);
-					} else if(getSources().size() == 4) {
-						display->columns[COLUMN_STATUS] = TSTRING(ALL_4_USERS_OFFLINE);
+						display->columns[COLUMN_STATUS] = T_("User offline");
 					} else {
-						_sntprintf(buf, 64, CTSTRING(ALL_USERS_OFFLINE), getSources().size());
-						display->columns[COLUMN_STATUS] = buf;
+						display->columns[COLUMN_STATUS] = str(TF_("All %1% users offline") % getSources().size());
 					}
 				}
 			} else {
-				display->columns[COLUMN_STATUS] = TSTRING(RUNNING);
+				display->columns[COLUMN_STATUS] = T_("Running...");
 			}
 		}
 		if(colMask & MASK_SIZE) {
-			display->columns[COLUMN_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Text::toT(Util::formatBytes(getSize()));
-			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Text::toT(Util::formatExactSize(getSize()));
+			display->columns[COLUMN_SIZE] = (getSize() == -1) ? T_("Unknown") : Text::toT(Util::formatBytes(getSize()));
+			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? T_("Unknown") : Text::toT(Util::formatExactSize(getSize()));
 		}
 		if(colMask & MASK_DOWNLOADED) {
 			if(getSize() > 0)
@@ -459,12 +448,12 @@ void QueueFrame::QueueItemInfo::update() {
 		}
 		if(colMask & MASK_PRIORITY) {
 			switch(getPriority()) {
-		case QueueItem::PAUSED: display->columns[COLUMN_PRIORITY] = TSTRING(PAUSED); break;
-		case QueueItem::LOWEST: display->columns[COLUMN_PRIORITY] = TSTRING(LOWEST); break;
-		case QueueItem::LOW: display->columns[COLUMN_PRIORITY] = TSTRING(LOW); break;
-		case QueueItem::NORMAL: display->columns[COLUMN_PRIORITY] = TSTRING(NORMAL); break;
-		case QueueItem::HIGH: display->columns[COLUMN_PRIORITY] = TSTRING(HIGH); break;
-		case QueueItem::HIGHEST: display->columns[COLUMN_PRIORITY] = TSTRING(HIGHEST); break;
+		case QueueItem::PAUSED: display->columns[COLUMN_PRIORITY] = T_("Paused"); break;
+		case QueueItem::LOWEST: display->columns[COLUMN_PRIORITY] = T_("Lowest"); break;
+		case QueueItem::LOW: display->columns[COLUMN_PRIORITY] = T_("Low"); break;
+		case QueueItem::NORMAL: display->columns[COLUMN_PRIORITY] = T_("Normal"); break;
+		case QueueItem::HIGH: display->columns[COLUMN_PRIORITY] = T_("High"); break;
+		case QueueItem::HIGHEST: display->columns[COLUMN_PRIORITY] = T_("Highest"); break;
 		default: dcasserta(0); break;
 			}
 		}
@@ -482,22 +471,22 @@ void QueueFrame::QueueItemInfo::update() {
 					tmp += WinUtil::getNicks(j->getUser());
 					tmp += _T(" (");
 					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
-						tmp += TSTRING(FILE_NOT_AVAILABLE);
+						tmp += T_("File not available");
 					} else if(j->isSet(QueueItem::Source::FLAG_PASSIVE)) {
-						tmp += TSTRING(PASSIVE_USER);
+						tmp += T_("Passive user");
 					} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
-						tmp += TSTRING(SFV_INCONSISTENCY);
+						tmp += T_("CRC32 inconsistency (SFV-Check)");
 					} else if(j->isSet(QueueItem::Source::FLAG_BAD_TREE)) {
-						tmp += TSTRING(INVALID_TREE);
+						tmp += T_("Full tree does not match TTH root");
 					} else if(j->isSet(QueueItem::Source::FLAG_SLOW_SOURCE)) {
-						tmp += TSTRING(SOURCE_TOO_SLOW);
+						tmp += T_("Source too slow");
 					} else if(j->isSet(QueueItem::Source::FLAG_NO_TTHF)) {
-						tmp += TSTRING(SOURCE_TOO_OLD);
+						tmp += T_("Remote client does not fully support TTH - cannot download");
 					}
 					tmp += ')';
 				}
 			}
-			display->columns[COLUMN_ERRORS] = tmp.empty() ? TSTRING(NO_ERRORS) : tmp;
+			display->columns[COLUMN_ERRORS] = tmp.empty() ? T_("No errors") : tmp;
 		}
 
 		if(colMask & MASK_ADDED) {
@@ -701,12 +690,12 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 }
 
 void QueueFrame::removeSelected() {
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
 		files->forEachSelected(&QueueItemInfo::remove);
 }
 
 void QueueFrame::removeSelectedDir() {
-	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(TSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
+	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
 		removeDir(dirs->getSelection());
 }
 
@@ -987,10 +976,10 @@ const string& QueueFrame::getDir(HTREEITEM item) {
 QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
 	WidgetMenuPtr menu = createMenu(true);
 
-	menu->appendItem(IDC_SEARCH_ALTERNATES, TSTRING(SEARCH_FOR_ALTERNATES), std::tr1::bind(&QueueFrame::handleSearchAlternates, this));
-	menu->appendItem(IDC_BITZI_LOOKUP, TSTRING(LOOKUP_AT_BITZI), std::tr1::bind(&QueueFrame::handleBitziLookup, this));
-	menu->appendItem(IDC_COPY_MAGNET, TSTRING(COPY_MAGNET), std::tr1::bind(&QueueFrame::handleCopyMagnet, this));
-	menu->appendItem(IDC_MOVE, TSTRING(MOVE), std::tr1::bind(&QueueFrame::handleMove, this));
+	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&QueueFrame::handleSearchAlternates, this));
+	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(&QueueFrame::handleBitziLookup, this));
+	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&QueueFrame::handleCopyMagnet, this));
+	menu->appendItem(IDC_MOVE, T_("Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
 	addPriorityMenu(menu);
 	addBrowseMenu(menu, qii);
 	addPMMenu(menu, qii);
@@ -1008,7 +997,7 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeMultiMenu() {
 
 	addPriorityMenu(menu);
 	
-	menu->appendItem(IDC_MOVE, TSTRING(MOVE), std::tr1::bind(&QueueFrame::handleMove, this));
+	menu->appendItem(IDC_MOVE, T_("Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&QueueFrame::handleRemove, this));
 	return menu;
@@ -1018,25 +1007,25 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeDirMenu() {
 	WidgetMenuPtr menu = createMenu(true);
 
 	addPriorityMenu(menu);
-	menu->appendItem(IDC_MOVE, TSTRING(MOVE), std::tr1::bind(&QueueFrame::handleMove, this));
+	menu->appendItem(IDC_MOVE, T_("Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
 	menu->appendSeparatorItem();
 	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&QueueFrame::handleRemove, this));
 	return menu;
 }
 
 void QueueFrame::addPriorityMenu(const WidgetMenuPtr& parent) {
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(SET_PRIORITY));
-	menu->appendItem(IDC_PRIORITY_PAUSED, TSTRING(PAUSED), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
-	menu->appendItem(IDC_PRIORITY_LOWEST, TSTRING(LOWEST), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
-	menu->appendItem(IDC_PRIORITY_LOW, TSTRING(LOW), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
-	menu->appendItem(IDC_PRIORITY_NORMAL, TSTRING(NORMAL), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
-	menu->appendItem(IDC_PRIORITY_HIGH, TSTRING(HIGH), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
-	menu->appendItem(IDC_PRIORITY_HIGHEST, TSTRING(HIGHEST), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Set priority"));
+	menu->appendItem(IDC_PRIORITY_PAUSED, T_("Paused"), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
+	menu->appendItem(IDC_PRIORITY_LOWEST, T_("Lowest"), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
+	menu->appendItem(IDC_PRIORITY_LOW, T_("Low"), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
+	menu->appendItem(IDC_PRIORITY_NORMAL, T_("Normal"), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
+	menu->appendItem(IDC_PRIORITY_HIGH, T_("High"), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
+	menu->appendItem(IDC_PRIORITY_HIGHEST, T_("Highest"), std::tr1::bind(&QueueFrame::handlePriority, this, _1));
 }
 
 void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(GET_FILE_LIST));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Get file list"));
 	if(addUsers(menu, IDC_BROWSELIST, &QueueFrame::handleBrowseList, qii, false) == 0) {
 		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
@@ -1044,7 +1033,7 @@ void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) 
 
 void QueueFrame::addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(SEND_PRIVATE_MESSAGE));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Send private message"));
 	if(addUsers(menu, IDC_PM, &QueueFrame::handlePM, qii, false) == 0) {
 		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
@@ -1052,9 +1041,9 @@ void QueueFrame::addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 
 void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(READD_SOURCE));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Re-add source"));
 	
-	menu->appendItem(IDC_READD, TSTRING(ALL), std::tr1::bind(&QueueFrame::handleReadd, this, UserPtr()));
+	menu->appendItem(IDC_READD, T_("All"), std::tr1::bind(&QueueFrame::handleReadd, this, UserPtr()));
 	menu->appendSeparatorItem();
 	if(addUsers(menu, IDC_READD + 1, &QueueFrame::handleReadd, qii, true) == 0) {
 		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
@@ -1063,8 +1052,8 @@ void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 
 void QueueFrame::addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(REMOVE_SOURCE));
-	menu->appendItem(IDC_REMOVE_SOURCE, TSTRING(ALL), std::tr1::bind(&QueueFrame::handleRemoveSource, this, UserPtr()));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Remove source"));
+	menu->appendItem(IDC_REMOVE_SOURCE, T_("All"), std::tr1::bind(&QueueFrame::handleRemoveSource, this, UserPtr()));
 	menu->appendSeparatorItem();
 	if(addUsers(menu, IDC_REMOVE_SOURCE + 1, &QueueFrame::handleRemoveSource, qii, true) == 0) {
 		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
@@ -1073,7 +1062,7 @@ void QueueFrame::addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) 
 
 void QueueFrame::addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
-	WidgetMenuPtr menu = parent->appendPopup(TSTRING(REMOVE_FROM_ALL));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Remove user from queue"));
 	if(addUsers(menu, IDC_REMOVE_SOURCES, &QueueFrame::handleRemoveSources, qii, true) == 0) {
 		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}

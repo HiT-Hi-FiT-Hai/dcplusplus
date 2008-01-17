@@ -52,23 +52,23 @@ bool SettingsDialog::initDialog() {
 	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 	
-	setText(TSTRING(SETTINGS));
+	setText(T_("Settings"));
 	
-	addPage(TSTRING(SETTINGS_GENERAL), new GeneralPage(this));
-	addPage(TSTRING(SETTINGS_NETWORK), new NetworkPage(this));
-	addPage(TSTRING(SETTINGS_DOWNLOADS), new DownloadPage(this));
-	addPage(TSTRING(SETTINGS_FAVORITE_DIRS_PAGE), new FavoriteDirsPage(this));
-	addPage(TSTRING(SETTINGS_QUEUE), new QueuePage(this));
-	addPage(TSTRING(SETTINGS_UPLOADS), new UploadPage(this));
-	addPage(TSTRING(SETTINGS_APPEARANCE), new AppearancePage(this));
-	addPage(TSTRING(SETTINGS_APPEARANCE2), new Appearance2Page(this));
-	addPage(TSTRING(SETTINGS_TABS), new TabsPage(this));
-	addPage(TSTRING(SETTINGS_WINDOWS), new WindowsPage(this));
-	addPage(TSTRING(SETTINGS_ADVANCED), new AdvancedPage(this));
-	addPage(TSTRING(SETTINGS_LOGS), new LogPage(this));
-	addPage(TSTRING(SETTINGS_ADVANCED3), new Advanced3Page(this));
-	addPage(TSTRING(SETTINGS_USER_COMMANDS), new UCPage(this));
-	addPage(TSTRING(SETTINGS_CERTIFICATES), new CertificatesPage(this));
+	addPage(T_("Personal information"), new GeneralPage(this));
+	addPage(T_("Connection settings"), new NetworkPage(this));
+	addPage(T_("Downloads"), new DownloadPage(this));
+	addPage(T_("Downloads\\Favorites"), new FavoriteDirsPage(this));
+	addPage(T_("Downloads\\Queue"), new QueuePage(this));
+	addPage(T_("Sharing"), new UploadPage(this));
+	addPage(T_("Appearance"), new AppearancePage(this));
+	addPage(T_("Appearance\\Colors and sounds"), new Appearance2Page(this));
+	addPage(T_("Appearance\\Tabs"), new TabsPage(this));
+	addPage(T_("Appearance\\Windows"), new WindowsPage(this));
+	addPage(T_("Advanced"), new AdvancedPage(this));
+	addPage(T_("Advanced\\Logs"), new LogPage(this));
+	addPage(T_("Advanced\\Experts only"), new Advanced3Page(this));
+	addPage(T_("Advanced\\User Commands"), new UCPage(this));
+	addPage(T_("Advanced\\Security Certificates"), new CertificatesPage(this));
 	
 	return false;
 }
