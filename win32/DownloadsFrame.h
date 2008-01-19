@@ -60,6 +60,7 @@ private:
 		COLUMN_STATUS,
 		COLUMN_TIMELEFT,
 		COLUMN_SPEED,
+		COLUMN_DONE,
 		COLUMN_SIZE,
 		COLUMN_LAST
 	};
@@ -95,6 +96,7 @@ private:
 			case COLUMN_TIMELEFT: return compare(a->timeleft(), b->timeleft());
 			case COLUMN_SPEED: return compare(a->bps, b->bps);
 			case COLUMN_SIZE: return compare(a->size, b->size);
+			case COLUMN_DONE: return compare(a->done, b->done);
 			default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 			}
 		}

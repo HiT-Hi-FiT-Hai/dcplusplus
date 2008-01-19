@@ -63,6 +63,7 @@ private:
 		COLUMN_USER = COLUMN_FIRST,
 		COLUMN_STATUS,
 		COLUMN_SPEED,
+		COLUMN_CHUNK,
 		COLUMN_TRANSFERED,
 		COLUMN_QUEUED,
 		COLUMN_CIPHER,
@@ -91,15 +92,17 @@ private:
 		Status status;
 		
 		int64_t actual;
+		int64_t lastActual;
 		int64_t transfered;
+		int64_t lastTransfered;
 		int64_t queued;
 		int64_t speed;
-
+		int64_t chunk;
+		
 		tstring columns[COLUMN_LAST];
 		void update(const UpdateInfo& ui);
 
 		void disconnect();
-		void deleteSelf() { delete this; }
 
 		double getRatio() { return (transfered > 0) ? (double)actual / (double)transfered : 1.0; }
 
@@ -120,7 +123,8 @@ private:
 			MASK_SPEED = 1 << 2,
 			MASK_TRANSFERED = 1 << 3,
 			MASK_IP = 1 << 4,
-			MASK_CIPHER = 1 << 5
+			MASK_CIPHER = 1 << 5,
+			MASK_CHUNK = 1 << 6
 		};
 
 		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
@@ -144,6 +148,8 @@ private:
 		int64_t speed;
 		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
 		tstring statusString;
+		void setChunk(int64_t aChunk) { chunk = aChunk; updateMask |= MASK_CHUNK; }
+		int64_t chunk;
 		
 		void setIP(const tstring& aIp) { ip = aIp; updateMask |= MASK_IP; }
 		tstring ip;
@@ -168,9 +174,8 @@ private:
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
 	void handleForce();
-	void handleSearchAlternates();
 	void handleCopyNick();
-	void handleRemove();
+	void handleDisconnect();
 	void runUserCommand(const UserCommand& uc);
 	bool handleKeyDown(int c);
 	void handleDblClicked();
@@ -198,7 +203,8 @@ private:
 	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw();
 
 	void onTransferComplete(Transfer* aTransfer, bool isUpload);
-
+	void starting(UpdateInfo* ui, Transfer* t);
+	
 #ifdef PORT_ME
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 #endif

@@ -28,7 +28,7 @@
 #include "HoldRedraw.h"
 #include "WinUtil.h"
 
-int DownloadsFrame::columnIndexes[] = { COLUMN_FILE, COLUMN_PATH, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_SIZE };
+int DownloadsFrame::columnIndexes[] = { COLUMN_FILE, COLUMN_PATH, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_DONE, COLUMN_SIZE };
 int DownloadsFrame::columnSizes[] = { 200, 300, 150, 200, 125, 100};
 
 static const char* columnNames[] = {
@@ -37,6 +37,7 @@ static const char* columnNames[] = {
 	N_("Status"),
 	N_("Time left"),
 	N_("Speed"),
+	N_("Done"),
 	N_("Size")
 };
 
@@ -97,6 +98,7 @@ DownloadsFrame::DownloadInfo::DownloadInfo(const string& target, int64_t size_) 
 	columns[COLUMN_FILE] = Text::toT(Util::getFileName(target));
 	columns[COLUMN_PATH] = Text::toT(Util::getFilePath(target));
 	columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(size));
+	
 	update();
 }
 
@@ -121,6 +123,7 @@ void DownloadsFrame::DownloadInfo::update() {
 		columns[COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(static_cast<int64_t>(timeleft())));
 		columns[COLUMN_SPEED] = str(TF_("%1%/s") % Text::toT(Util::formatBytes(static_cast<int64_t>(bps))));
 	}
+	columns[COLUMN_DONE] = Text::toT(Util::formatBytes(done));
 }
 
 bool DownloadsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
