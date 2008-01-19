@@ -262,31 +262,32 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		if(Util::getAway() && param.empty()) {
 			Util::setAway(false);
 			Util::setManualAway(false);
-			status = TSTRING(AWAY_MODE_OFF);
+			status = T_("Away mode off");
 		} else {
 			Util::setAway(true);
 			Util::setManualAway(true);
 			Util::setAwayMessage(Text::fromT(param));
-			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
+			status = str(TF_("Away mode on: %1%") % Text::toT(Util::getAwayMessage()));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("back")) == 0) {
 		Util::setAway(false);
-		status = TSTRING(AWAY_MODE_OFF);
+		Util::setManualAway(false);
+		status = T_("Away mode off");
 	} else if(Util::stricmp(cmd.c_str(), _T("g")) == 0) {
 		if(param.empty()) {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
+			status = T_("Specify a search string");
 		} else {
 			WinUtil::openLink(_T("http://www.google.com/search?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("imdb")) == 0) {
 		if(param.empty()) {
-			status = TSTRING(SPECIFY_SEARCH_STRING);
+			status = T_("Specify a search string");
 		} else {
 			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("u")) == 0) {
 		if (param.empty()) {
-			status = TSTRING(SPECIFY_URL);
+			status = T_("Specify a URL");
 		} else {
 			WinUtil::openLink(Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
@@ -414,7 +415,7 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
-	bi.lpszTitle = CTSTRING(CHOOSE_FOLDER);
+	bi.lpszTitle = CT_("Choose folder");
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
@@ -689,7 +690,7 @@ void WinUtil::registerDchubHandler() {
 
 	if(Util::stricmp(app.c_str(), Buf) != 0) {
 		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("dchub"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-			LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_DCHUB));
+			LogManager::getInstance()->message(_("Error creating dchub registry key"));
 			return;
 		}
 
@@ -728,7 +729,7 @@ void WinUtil::registerDchubHandler() {
 
 	 if(Util::stricmp(app.c_str(), Buf) != 0) {
 		 if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("adc"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-			 LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_ADC));
+			 LogManager::getInstance()->message(_("Error creating adc registry key"));
 			 return;
 		 }
 
@@ -788,7 +789,7 @@ void WinUtil::registerDchubHandler() {
 		} else {
 			// set Magnet\Location
 			if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-				LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_MAGNET));
+				LogManager::getInstance()->message(_("Error creating magnet registry key"));
 				return;
 			}
 
@@ -801,10 +802,10 @@ void WinUtil::registerDchubHandler() {
 	if(BOOLSETTING(MAGNET_REGISTER) && (Util::strnicmp(openCmd, magnetLoc, magnetLoc.size()) != 0 || !haveMagnet)) {
 		SHDeleteKey(HKEY_CLASSES_ROOT, _T("magnet"));
 		if (::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL)) {
-			LogManager::getInstance()->message(STRING(ERROR_CREATING_REGISTRY_KEY_MAGNET));
+			LogManager::getInstance()->message(_("Error creating magnet registry key"));
 			return;
 		}
-		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_SHELL_DESC), sizeof(TCHAR)*(T_("URL:MAGNET URI").length()+1));
+		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CT_("URL:MAGNET URI"), sizeof(TCHAR)*(T_("URL:MAGNET URI").length()+1));
 		::RegSetValueEx(hk, _T("URL Protocol"), NULL, REG_SZ, NULL, NULL);
 		::RegCloseKey(hk);
 		::RegCreateKeyEx(HKEY_CLASSES_ROOT, _T("magnet\\DefaultIcon"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
@@ -820,8 +821,8 @@ void WinUtil::registerDchubHandler() {
 	SHDeleteKey(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"));
 	// add DC++ to magnet-handler's list of applications
 	::RegCreateKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Magnet\\Handlers\\DC++"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hk, NULL);
-	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (T_("DC++").size()+1));
-	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_DESC), sizeof(TCHAR) * (STRING(MAGNET_HANDLER_DESC).size()+1));
+	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CT_("DC++"), sizeof(TCHAR) * (T_("DC++").size()+1));
+	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CT_("Download files from the Direct Connect network"), sizeof(TCHAR) * (T_("Download files from the Direct Connect network").size()+1));
 	// set ShellExecute
 	tstring app = Text::toT("\"" + getAppName() + "\" %URL");
 	::RegSetValueEx(hk, _T("ShellExecute"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length()+1));
@@ -1035,15 +1036,15 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 double WinUtil::toBytes(TCHAR* aSize) {
 	double bytes = _tstof(aSize);
 
-	if (_tcsstr(aSize, CTSTRING(PIB))) {
+	if (_tcsstr(aSize, CT_("PiB"))) {
 		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(TiB))) {
+	} else if (_tcsstr(aSize, CT_("TiB"))) {
 		return bytes * 1024.0 * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(GiB))) {
+	} else if (_tcsstr(aSize, CT_("GiB"))) {
 		return bytes * 1024.0 * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(MiB))) {
+	} else if (_tcsstr(aSize, CT_("MiB"))) {
 		return bytes * 1024.0 * 1024.0;
-	} else if (_tcsstr(aSize, CTSTRING(KiB))) {
+	} else if (_tcsstr(aSize, CT_("KiB"))) {
 		return bytes * 1024.0;
 	} else {
 		return bytes;

@@ -276,9 +276,9 @@ private:
 	}
 
 	void updateStatus() {
-		setStatus(STATUS_COUNT, Text::toT(Util::toString(items->size()) + ' ' + STRING(ITEMS)));
+		setStatus(STATUS_COUNT, str(TFN_("%1% item", "%1% items", items->size()) % items->size()));
 		setStatus(STATUS_BYTES, Text::toT(Util::formatBytes(totalBytes)));
-		setStatus(STATUS_SPEED, Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s"));
+		setStatus(STATUS_SPEED, str(TF_("%1%/s") % Text::toT(Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0))));
 	}
 
 	void updateList(const FinishedItemList& fl) {

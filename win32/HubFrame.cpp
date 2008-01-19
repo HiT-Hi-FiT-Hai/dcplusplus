@@ -328,12 +328,11 @@ bool HubFrame::enter() {
 		} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 			showUsers->setChecked(!showUsers->getChecked());
 		} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-			addStatus(Text::toT((STRING(IP) + client->getLocalIp() + ", " +
-			STRING(PORT) +
-			Util::toString(ConnectionManager::getInstance()->getPort()) + "/" +
-			Util::toString(SearchManager::getInstance()->getPort()) + "/" +
-				Util::toString(ConnectionManager::getInstance()->getSecurePort())
-				)));
+			addStatus(str(TF_("IP: %1%, Port: %2%/%3%/%4%") % Text::toT(client->getLocalIp())
+				% ConnectionManager::getInstance()->getPort()
+				% SearchManager::getInstance()->getPort()
+				% ConnectionManager::getInstance()->getSecurePort()
+				));
 		} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 			addAsFavorite();
 		} else if((Util::stricmp(cmd.c_str(), _T("removefavorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("removefav")) == 0)) {
@@ -379,12 +378,12 @@ bool HubFrame::enter() {
 			if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
 				client->hubMessage(Text::fromT(s));
 			} else {
-				addStatus(TSTRING(UNKNOWN_COMMAND) + cmd);
+				addStatus(str(TF_("Unknown command: %1%") % cmd));
 			}
 		}
 		message->setText(_T(""));
 	} else if(waitingForPW) {
-		addStatus(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
+		addStatus(T_("Don't remove /password before your password"));
 		message->setText(_T("/password "));
 		message->setFocus();
 		message->setSelection(10, 10);
@@ -489,14 +488,14 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			if(updateUser(u)) {
 				if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-					addStatus(_T("*** ") + TSTRING(JOINS) + Text::toT(u.identity.getNick()));
+					addStatus(str(TF_("*** Joins: %1%") % Text::toT(u.identity.getNick())));
 				}
 			}
 		} else if(i->first == REMOVE_USER) {
 			UserTask& u = *static_cast<UserTask*>(i->second);
 			removeUser(u.user);
 			if (showJoins || (favShowJoins && FavoriteManager::getInstance()->isFavoriteUser(u.user))) {
-				addStatus(Text::toT("*** " + STRING(PARTS) + u.identity.getNick()));
+				addStatus(str(TF_("*** Parts: %1%") % Text::toT(u.identity.getNick())));
 			}
 		} else if(i->first == CONNECTED) {
 			addStatus(T_("Connected"));
@@ -541,25 +540,25 @@ HRESULT HubFrame::handleSpeaker(WPARAM, LPARAM) {
 			PMTask& pm = *static_cast<PMTask*>(i->second);
 			if(pm.hub) {
 				if(BOOLSETTING(IGNORE_HUB_PMS)) {
-					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+					addStatus(str(TF_("Ignored message: %1%") % Text::toT(pm.str)), false);
 				} else if(BOOLSETTING(POPUP_HUB_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(str(TF_("Private message from %1%: %2%") % getNick(pm.from) % Text::toT(pm.str)));
 				}
 			} else if(pm.bot) {
 				if(BOOLSETTING(IGNORE_BOT_PMS)) {
-					addStatus(TSTRING(IGNORED_MESSAGE) + Text::toT(pm.str), false);
+					addStatus(str(TF_("Ignored message: %1%") % Text::toT(pm.str)), false);
 				} else if(BOOLSETTING(POPUP_BOT_PMS) || PrivateFrame::isOpen(pm.replyTo)) {
 					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(str(TF_("Private message from %1%: %2%") % getNick(pm.from) % Text::toT(pm.str)));
 				}
 			} else {
 				if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(pm.replyTo) || pm.from == client->getMyIdentity().getUser()) {
 					PrivateFrame::gotMessage(getParent(), pm.from, pm.to, pm.replyTo, Text::toT(pm.str));
 				} else {
-					addChat(TSTRING(PRIVATE_MESSAGE_FROM) + getNick(pm.from) + _T(": ") + Text::toT(pm.str));
+					addChat(str(TF_("Private message from %1%: %2%") % getNick(pm.from) % Text::toT(pm.str)));
 				}
 			}
 		} else if(i->first == FOLLOW) {
@@ -905,7 +904,7 @@ void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineU
 }
 
 void HubFrame::on(NickTaken, Client*) throw() {
-	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
+	speak(ADD_STATUS_LINE, _("Your nick was already taken, please change to something else!"));
 }
 
 void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
@@ -935,7 +934,7 @@ tstring HubFrame::getStatusUsers() const {
 		textForUsers += Text::toT(Util::toString(users->getSelectedCount()) + "/");
 	if (showUsers->getChecked() && users->size() < userCount)
 		textForUsers += Text::toT(Util::toString(users->size()) + "/");
-	return textForUsers + Text::toT(Util::toString(userCount) + " " + STRING(HUB_USERS));
+	return textForUsers + str(TFN_("%1% user", "%1% users", userCount) % userCount);
 }
 
 

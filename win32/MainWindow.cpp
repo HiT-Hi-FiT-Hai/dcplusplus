@@ -179,7 +179,7 @@ void MainWindow::initMenu() {
 	dcdebug("initMenu\n");
 	mainMenu = createMenu(false);
 
-	WidgetMenuPtr file = mainMenu->appendPopup(CTSTRING(MENU_FILE));
+	WidgetMenuPtr file = mainMenu->appendPopup(T_("&File"));
 
 	file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this));
 	file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"));
@@ -197,7 +197,7 @@ void MainWindow::initMenu() {
 	file->appendSeparatorItem();
 	file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this));
 
-	WidgetMenuPtr view = mainMenu->appendPopup(CTSTRING(MENU_VIEW));
+	WidgetMenuPtr view = mainMenu->appendPopup(T_("&View"));
 
 	view->appendItem(IDC_PUBLIC_HUBS, T_("&Public Hubs\tCtrl+P"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_FAVORITE_HUBS, T_("&Favorite Hubs\tCtrl+F"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
@@ -218,7 +218,7 @@ void MainWindow::initMenu() {
 	view->appendItem(IDC_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
 	view->appendItem(IDC_HASH_PROGRESS, T_("Indexing progress"), std::tr1::bind(&MainWindow::handleHashProgress, this));
 	
-	WidgetMenuPtr window = mainMenu->appendPopup(CTSTRING(MENU_WINDOW));
+	WidgetMenuPtr window = mainMenu->appendPopup(T_("&Window"));
 
 	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, T_("Close disconnected"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 	window->appendItem(IDC_CLOSE_ALL_PM, T_("Close all PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
@@ -226,7 +226,7 @@ void MainWindow::initMenu() {
 	window->appendItem(IDC_CLOSE_ALL_DIR_LIST, T_("Close all file list windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 	window->appendItem(IDC_CLOSE_ALL_SEARCH_FRAME, T_("Close all search windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
 
-	WidgetMenuPtr help = mainMenu->appendPopup(TSTRING(MENU_HELP));
+	WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
 	help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
 	help->appendSeparatorItem();
@@ -615,7 +615,7 @@ void MainWindow::startSocket() {
 		try {
 			SearchManager::getInstance()->listen();
 		} catch(const Exception&) {
-			WidgetMessageBox().show(CTSTRING(TCP_PORT_BUSY), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
+			WidgetMessageBox().show(T_("Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONSTOP);
 		}
 	}
 
@@ -631,7 +631,7 @@ void MainWindow::startUPnP() {
 
 		if ( FAILED(UPnP_UDPConnection->OpenPorts()) || FAILED(UPnP_TCPConnection->OpenPorts()) )
 		{
-			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_CREATE_MAPPINGS));
+			LogManager::getInstance()->message(_("Failed to create port mappings. Please set up your NAT yourself."));
 			createMessageBox().show(T_("Failed to create port mappings. Please set up your NAT yourself."), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 
 			// We failed! thus reset the objects
@@ -650,7 +650,7 @@ void MainWindow::startUPnP() {
 				} else {
 					//:-( Looks like we have to rely on the user setting the external IP manually
 					// no need to do cleanup here because the mappings work
-					LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_GET_EXTERNAL_IP));
+					LogManager::getInstance()->message(_("Failed to get external IP via  UPnP. Please set it yourself."));
 					createMessageBox().show(T_("Failed to get external IP via  UPnP. Please set it yourself."), _T(APPNAME) _T(" ") _T(VERSIONSTRING));
 				}
 			}
@@ -664,7 +664,7 @@ void MainWindow::stopUPnP() {
 	{
 		if (FAILED(UPnP_TCPConnection->ClosePorts()) )
 		{
-			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
+			LogManager::getInstance()->message(_("Failed to remove port mappings"));
 		}
 		delete UPnP_TCPConnection;
 	}
@@ -672,7 +672,7 @@ void MainWindow::stopUPnP() {
 	{
 		if (FAILED(UPnP_UDPConnection->ClosePorts()) )
 		{
-			LogManager::getInstance()->message(STRING(UPNP_FAILED_TO_REMOVE_MAPPINGS));
+			LogManager::getInstance()->message(_("Failed to remove port mappings"));
 		}
 		delete UPnP_UDPConnection;
 	}

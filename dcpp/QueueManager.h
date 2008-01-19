@@ -108,6 +108,8 @@ public:
 	void putDownload(Download* aDownload, bool finished) throw();
 	void setFile(Download* download);
 	
+	int64_t getQueued(const UserPtr& aUser) const;
+	
 	/** @return The highest priority download the user has, PAUSED may also mean no downloads */
 	QueueItem::Priority hasDownload(const UserPtr& aUser) throw();
 
@@ -187,6 +189,7 @@ private:
 		bool isRunning(const UserPtr& aUser) const {
 			return (running.find(aUser) != running.end());
 		}
+		int64_t getQueued(const UserPtr& aUser) const;
 	private:
 		/** QueueItems by priority and user (this is where the download order is determined) */
 		QueueItem::UserListMap userQueue[QueueItem::LAST];

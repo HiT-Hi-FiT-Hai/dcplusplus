@@ -278,15 +278,14 @@ void QueueFrame::updateStatus() {
 			QueueItemInfo* ii = files->getData(i);
 			total += (ii->getSize() > 0) ? ii->getSize() : 0;
 		}
-
 	}
 
-	setStatus(STATUS_PARTIAL_COUNT, Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt)));
-	setStatus(STATUS_PARTIAL_BYTES, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total)));
+	setStatus(STATUS_PARTIAL_COUNT, str(TF_("Items: %1%") % cnt));
+	setStatus(STATUS_PARTIAL_BYTES, str(TF_("Size: %1%") % Text::toT(Util::formatBytes(total))));
 	
 	if(dirty) {
-		setStatus(STATUS_TOTAL_COUNT, Text::toT(STRING(FILES) + ": " + Util::toString(queueItems)));
-		setStatus(STATUS_TOTAL_BYTES, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(queueSize)));
+		setStatus(STATUS_TOTAL_COUNT, str(TF_("Files: %1%") % queueItems));
+		setStatus(STATUS_TOTAL_BYTES, str(TF_("Size: %1%") % Text::toT(Util::formatBytes(queueSize))));
 		dirty = false;
 	}
 }

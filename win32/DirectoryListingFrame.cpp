@@ -655,9 +655,9 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 }
 
 void DirectoryListingFrame::initStatusText() {
-	setStatus(STATUS_TOTAL_FILES, Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true))));
-	setStatus(STATUS_TOTAL_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true))));
-	setStatus(STATUS_SPEED, Text::toT(STRING(SPEED) + ": " + Util::formatBytes(speed) + "/s"));
+	setStatus(STATUS_TOTAL_FILES, str(TF_("Files: %1%") % dl->getTotalFileCount(true)));
+	setStatus(STATUS_TOTAL_SIZE, str(TF_("Size: %1%") % Text::toT(Util::formatBytes(dl->getTotalSize(true)))));
+	setStatus(STATUS_SPEED, str(TF_("Speed: %1%/s") % Text::toT(Util::formatBytes(speed))));
 }
 
 void DirectoryListingFrame::updateStatus() {
@@ -671,9 +671,9 @@ void DirectoryListingFrame::updateStatus() {
 			total = files->forEachSelectedT(ItemInfo::TotalSize()).total;
 		}
 
-		setStatus(STATUS_SELECTED_FILES, Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt)));
+		setStatus(STATUS_SELECTED_FILES, str(TF_("Files: %1%") % cnt));
 
-		setStatus(STATUS_SELECTED_SIZE, Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total)));
+		setStatus(STATUS_SELECTED_SIZE, str(TF_("Size: %1%") % Text::toT(Util::formatBytes(total))));
 	}
 }
 

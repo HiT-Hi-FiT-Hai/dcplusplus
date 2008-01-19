@@ -42,7 +42,7 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka, nils maier, jens oknelid, yoji, "
 "krzysztof tyszecki, poison, mikejj, pur, bigmuscle, martin, jove, bart vullings, "
 "steven sheehy, tobias nygren, poy, dorian, stephan hohe, mafa_45, mikael eman, james ross,"
-"stanislav maslovski. "
+"stanislav maslovski, david grundberg. "
 "Keep it coming!";
 
 AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
@@ -63,7 +63,7 @@ bool AboutDlg::handleInitDialog() {
 		sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
 		setItemText(IDC_RATIO, Text::toT(buf));
 	}
-	setItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
+	setItemText(IDC_LATEST, T_("Downloading..."));
 
 	attachButton(IDOK)->onClicked(std::tr1::bind(&AboutDlg::endDialog, this, IDOK));
 

@@ -43,10 +43,10 @@ MagnetDlg::~MagnetDlg() {
 
 bool MagnetDlg::handleInitDialog() {
 	setText(T_("MAGNET Link detected"));
-	::SetDlgItemText(handle(), IDC_MAGNET_TEXT, CTSTRING(MAGNET_DLG_TEXT_GOOD));
-	::SetDlgItemText(handle(), IDC_MAGNET_HASH, CTSTRING(MAGNET_DLG_HASH));
+	::SetDlgItemText(handle(), IDC_MAGNET_TEXT, CT_("DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?"));
+	::SetDlgItemText(handle(), IDC_MAGNET_HASH, CT_("File Hash:"));
 	::SetDlgItemText(handle(), IDC_MAGNET_DISP_HASH, mHash.c_str());
-	::SetDlgItemText(handle(), IDC_MAGNET_NAME, CTSTRING(MAGNET_DLG_FILE));
+	::SetDlgItemText(handle(), IDC_MAGNET_NAME, CT_("Filename:"));
 	::SetDlgItemText(handle(), IDC_MAGNET_DISP_NAME, mFileName.c_str());
 
 	//queue = attachRadioButton(IDC_MAGNET_1_QUEUE);

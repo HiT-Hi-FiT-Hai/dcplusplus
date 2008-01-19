@@ -305,10 +305,10 @@ bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 void ADLSearchFrame::addEntry(ADLSearch& search, int index) {
 	TStringList l;
 	l.push_back(Text::toT(search.searchString));
-	l.push_back(search.SourceTypeToDisplayString(search.sourceType));
+	l.push_back(Text::toT(search.SourceTypeToString(search.sourceType)));
 	l.push_back(Text::toT(search.destDir));
-	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
-	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + search.SizeTypeToDisplayString(search.typeFileSize) : Util::emptyStringT);
+	l.push_back((search.minFileSize >= 0) ? Text::toT(Util::toString(search.minFileSize)) + _T(" ") + Text::toT(search.SizeTypeToString(search.typeFileSize)) : Util::emptyStringT);
+	l.push_back((search.maxFileSize >= 0) ? Text::toT(Util::toString(search.maxFileSize)) + _T(" ") + Text::toT(search.SizeTypeToString(search.typeFileSize)) : Util::emptyStringT);
 	int itemCount = items->insert(l, 0, index);
 	if(index == -1)
 		index = itemCount;

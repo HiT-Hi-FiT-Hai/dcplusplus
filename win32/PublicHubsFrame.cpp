@@ -269,8 +269,8 @@ void PublicHubsFrame::layout() {
 }
 
 void PublicHubsFrame::updateStatus() {
-	setStatus(STATUS_HUBS, Text::toT(STRING(HUBS) + ": " + Util::toString(visibleHubs)));
-	setStatus(STATUS_USERS, Text::toT(STRING(USERS) + ": " + Util::toString(users)));
+	setStatus(STATUS_HUBS, str(TF_("Hubs: %1%") % visibleHubs));
+	setStatus(STATUS_USERS, str(TF_("Users: %1%") % users));
 }
 
 void PublicHubsFrame::updateDropDown() {
@@ -314,13 +314,13 @@ LRESULT PublicHubsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
 		entries = FavoriteManager::getInstance()->getPublicHubs();
 		updateList();
-		setStatus(STATUS_STATUS, ((wParam == LOADED_FROM_CACHE) ? TSTRING(HUB_LIST_LOADED_FROM_CACHE) : TSTRING(HUB_LIST_DOWNLOADED)) + _T(" (") + (*x) + _T(")"));
+		setStatus(STATUS_STATUS, ((wParam == LOADED_FROM_CACHE) ? T_("Hub list loaded from cache...") : str(TF_("Hub list downloaded... (%1%)") % (*x))));
 	} else if(wParam == STARTING) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
-		setStatus(STATUS_STATUS, TSTRING(DOWNLOADING_HUB_LIST) + _T(" (") + (*x) + _T(")"));
+		setStatus(STATUS_STATUS, str(TF_("Downloading public hub list... (%1%)") % (*x)));
 	} else if(wParam == FAILED) {
 		std::auto_ptr<tstring> x(reinterpret_cast<tstring*>(lParam));
-		setStatus(STATUS_STATUS, TSTRING(DOWNLOAD_FAILED) + (*x));
+		setStatus(STATUS_STATUS, str(TF_("Download failed: %1%") % (*x)));
 	}
 	return 0;
 }
@@ -456,7 +456,7 @@ bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 void PublicHubsFrame::handleRefresh() {
-	setStatus(STATUS_STATUS, CTSTRING(DOWNLOADING_HUB_LIST));
+	setStatus(STATUS_STATUS, CT_("Downloading public hub list..."));
 	FavoriteManager::getInstance()->refresh(true);
 	updateDropDown();
 }

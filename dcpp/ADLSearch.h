@@ -110,26 +110,20 @@ public:
 		}
 	}
 
-	tstring SourceTypeToDisplayString(SourceType t) {
-		switch(t) {
-		default:
-		case OnlyFile:		return TSTRING(FILENAME);
-		case OnlyDirectory:	return TSTRING(DIRECTORY);
-		case FullPath:		return TSTRING(ADLS_FULL_PATH);
-		}
-	}
-
 	// Maximum & minimum file sizes (in bytes).
 	// Negative values means do not check.
 	int64_t minFileSize;
 	int64_t maxFileSize;
+
 	enum SizeType {
 		SizeBytes	= TypeFirst,
 		SizeKibiBytes,
 		SizeMebiBytes,
 		SizeGibiBytes
 	};
+
 	SizeType typeFileSize;
+
 	SizeType StringToSizeType(const string& s) {
 		if(Util::stricmp(s.c_str(), "B") == 0) {
 			return SizeBytes;
@@ -143,6 +137,7 @@ public:
 			return SizeBytes;
 		}
 	}
+
 	string SizeTypeToString(SizeType t) {
 		switch(t) {
 		default:
@@ -152,15 +147,7 @@ public:
 		case SizeGibiBytes:	return "GiB";
 		}
 	}
-	tstring SizeTypeToDisplayString(SizeType t) {
-		switch(t) {
-		default:
-		case SizeBytes:		return CTSTRING(B);
-		case SizeKibiBytes:	return CTSTRING(KiB);
-		case SizeMebiBytes:	return CTSTRING(MiB);
-		case SizeGibiBytes:	return CTSTRING(GiB);
-		}
-	}
+
 	int64_t GetSizeBase() {
 		switch(typeFileSize) {
 		default:

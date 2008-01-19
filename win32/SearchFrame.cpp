@@ -569,12 +569,12 @@ LRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 			}
 
 			results->insert(si);
-			setStatus(STATUS_COUNT, Text::toT(Util::toString(results->size()) + ' ' + STRING(ITEMS)));
+			setStatus(STATUS_COUNT, str(TFN_("%1% item", "%1% items", results->size()) % results->size()));
 			setDirty(SettingsManager::BOLD_SEARCH);
 		}
 		break;
 	case SPEAK_FILTER_RESULT:
-		setStatus(STATUS_FILTERED, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)));
+		setStatus(STATUS_FILTERED, str(TF_("%1% filtered") % droppedResults));
 		break;
 	case SPEAK_HUB_ADDED:
 		onHubAdded(reinterpret_cast<HubInfo*>(lParam));
@@ -990,10 +990,9 @@ void SearchFrame::runSearch() {
 		token = Util::toString(Util::rand());
 	}
 
-
-	SearchManager::SizeModes mode((SearchManager::SizeModes)sizeMode->getSelectedIndex());
+	SearchManager::SizeModes searchMode((SearchManager::SizeModes)mode->getSelectedIndex());
 	if(llsize == 0)
-		mode = SearchManager::SIZE_DONTCARE;
+		searchMode = SearchManager::SIZE_DONTCARE;
 
 	int ftype = fileType->getSelectedIndex();
 
@@ -1012,17 +1011,17 @@ void SearchFrame::runSearch() {
 		lastSearches.push_back(s);
 	}
 
-	setStatus(STATUS_STATUS, TSTRING(SEARCHING_FOR) + s + _T("..."));
+	setStatus(STATUS_STATUS, str(TF_("Searching for %1%...") % s));
 	setStatus(STATUS_COUNT, Util::emptyStringT);
 	setStatus(STATUS_FILTERED, Util::emptyStringT);
 	droppedResults = 0;
 	isHash = (ftype == SearchManager::TYPE_TTH);
 
-	setText(TSTRING(SEARCH) + _T(" - ") + s);
+	setText(str(TF_("Search - %1%") % s));
 
 	if(SearchManager::getInstance()->okToSearch()) {
 		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize,
-			(SearchManager::TypeModes)ftype, mode, token);
+			(SearchManager::TypeModes)ftype, searchMode, token);
 		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
 			searchBox->setText(Util::emptyStringT);
 	} else {
@@ -1033,7 +1032,7 @@ void SearchFrame::runSearch() {
 		setStatus(STATUS_COUNT, Util::emptyStringT);
 		setStatus(STATUS_FILTERED, Util::emptyStringT);
 
-		setText(T_("Search") + _T(" - ") + msg);
+		setText(str(TF_("Search - %1%") % msg));
 		// Start the countdown timer
 		initSecond();
 	}
@@ -1048,12 +1047,12 @@ bool SearchFrame::eachSecond() {
 	if(waitFor > 0) {
 		tstring msg = str(TFN_("Searching too soon, next search in %1% second", "Searching too soon, next search in %1% seconds", waitFor) % waitFor);
 		setStatus(STATUS_STATUS, msg);
-		setText(T_("Search") + _T(" - ") + msg);
+		setText(str(TF_("Search - %1%") % msg));
 		return true;
 	} 
 	
 	setStatus(STATUS_STATUS, T_("Ready to search..."));
-	setText(T_("Search") + _T(" - ") + T_("Ready to search..."));
+	setText(T_("Search - Ready to search..."));
 	
 	return false;
 }

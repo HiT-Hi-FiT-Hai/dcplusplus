@@ -46,14 +46,14 @@ FavHubProperties::~FavHubProperties() {
 bool FavHubProperties::handleInitDialog() {
 	// Translate dialog
 	setText(T_("Favorite Hub Properties"));
-	::SetDlgItemText(handle(), IDC_FH_HUB, CTSTRING(HUB));
-	::SetDlgItemText(handle(), IDC_FH_IDENT, CTSTRING(FAVORITE_HUB_IDENTITY));
-	::SetDlgItemText(handle(), IDC_FH_NAME, CTSTRING(HUB_NAME));
-	::SetDlgItemText(handle(), IDC_FH_ADDRESS, CTSTRING(HUB_ADDRESS));
-	::SetDlgItemText(handle(), IDC_FH_HUB_DESC, CTSTRING(DESCRIPTION));
-	::SetDlgItemText(handle(), IDC_FH_NICK, CTSTRING(NICK));
-	::SetDlgItemText(handle(), IDC_FH_PASSWORD, CTSTRING(PASSWORD));
-	::SetDlgItemText(handle(), IDC_FH_USER_DESC, CTSTRING(DESCRIPTION));
+	::SetDlgItemText(handle(), IDC_FH_HUB, CT_("Hub"));
+	::SetDlgItemText(handle(), IDC_FH_IDENT, CT_("Identification (leave blank for defaults)"));
+	::SetDlgItemText(handle(), IDC_FH_NAME, CT_("Name"));
+	::SetDlgItemText(handle(), IDC_FH_ADDRESS, CT_("Address"));
+	::SetDlgItemText(handle(), IDC_FH_HUB_DESC, CT_("Description"));
+	::SetDlgItemText(handle(), IDC_FH_NICK, CT_("Nick"));
+	::SetDlgItemText(handle(), IDC_FH_PASSWORD, CT_("Password"));
+	::SetDlgItemText(handle(), IDC_FH_USER_DESC, CT_("Description"));
 
 	name = attachTextBox(IDC_HUBNAME);
 	name->setText(Text::toT(entry->getName()));

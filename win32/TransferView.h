@@ -61,17 +61,12 @@ private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_USER = COLUMN_FIRST,
-		COLUMN_HUB,
 		COLUMN_STATUS,
-		COLUMN_TIMELEFT,
 		COLUMN_SPEED,
-		COLUMN_FILE,
-		COLUMN_SIZE,
-		COLUMN_PATH,
-		COLUMN_IP,
-		COLUMN_RATIO,
-		COLUMN_CID,
+		COLUMN_TRANSFERED,
+		COLUMN_QUEUED,
 		COLUMN_CIPHER,
+		COLUMN_IP,
 		COLUMN_LAST
 	};
 
@@ -84,21 +79,21 @@ private:
 	class ItemInfo : public UserInfoBase {
 	public:
 		enum Status {
-			STATUS_RUNNING,
-			STATUS_WAITING
+			STATUS_RUNNING,		///< Transfering
+			STATUS_WAITING		///< Idle
 		};
 
 		ItemInfo(const UserPtr& u, bool aDownload);
 
 		bool download;
 		bool transferFailed;
+		
 		Status status;
-		int64_t pos;
-		int64_t size;
-		int64_t start;
+		
 		int64_t actual;
+		int64_t transfered;
+		int64_t queued;
 		int64_t speed;
-		int64_t timeLeft;
 
 		tstring columns[COLUMN_LAST];
 		void update(const UpdateInfo& ui);
@@ -106,7 +101,7 @@ private:
 		void disconnect();
 		void deleteSelf() { delete this; }
 
-		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
+		double getRatio() { return (transfered > 0) ? (double)actual / (double)transfered : 1.0; }
 
 		const tstring& getText(int col) const {
 			return columns[col];
@@ -120,18 +115,12 @@ private:
 
 	struct UpdateInfo : public Task {
 		enum {
-			MASK_POS = 1 << 0,
-			MASK_SIZE = 1 << 1,
-			MASK_START = 1 << 2,
-			MASK_ACTUAL = 1 << 3,
-			MASK_SPEED = 1 << 4,
-			MASK_FILE = 1 << 5,
-			MASK_STATUS = 1 << 6,
-			MASK_TIMELEFT = 1 << 7,
-			MASK_IP = 1 << 8,
-			MASK_STATUS_STRING = 1 << 9,
-			MASK_COUNTRY = 1 << 10,
-			MASK_CIPHER = 1 << 11
+			MASK_STATUS = 1 << 0,
+			MASK_STATUS_STRING = 1 << 1,
+			MASK_SPEED = 1 << 2,
+			MASK_TRANSFERED = 1 << 3,
+			MASK_IP = 1 << 4,
+			MASK_CIPHER = 1 << 5
 		};
 
 		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
@@ -143,27 +132,21 @@ private:
 		UserPtr user;
 		bool download;
 		bool transferFailed;
+		
 		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
 		ItemInfo::Status status;
-		void setPos(int64_t aPos) { pos = aPos; updateMask |= MASK_POS; }
-		int64_t pos;
-		void setSize(int64_t aSize) { size = aSize; updateMask |= MASK_SIZE; }
-		int64_t size;
-		void setStart(int64_t aStart) { start = aStart; updateMask |= MASK_START; }
-		int64_t start;
-		void setActual(int64_t aActual) { actual = aActual; updateMask |= MASK_ACTUAL; }
+		void setTransfered(int64_t aTransfered, int64_t aActual) {
+			transfered = aTransfered; actual = aActual; updateMask |= MASK_TRANSFERED; 
+		}
 		int64_t actual;
+		int64_t transfered;
 		void setSpeed(int64_t aSpeed) { speed = aSpeed; updateMask |= MASK_SPEED; }
 		int64_t speed;
-		void setTimeLeft(int64_t aTimeLeft) { timeLeft = aTimeLeft; updateMask |= MASK_TIMELEFT; }
-		int64_t timeLeft;
 		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
 		tstring statusString;
-		void setFile(const tstring& aFile) { file = Util::getFileName(aFile); path = Util::getFilePath(aFile); updateMask|= MASK_FILE; }
-		tstring file;
-		tstring path;
-		void setIP(const tstring& aIP) { IP = aIP; updateMask |= MASK_IP; }
-		tstring IP;
+		
+		void setIP(const tstring& aIp) { ip = aIp; updateMask |= MASK_IP; }
+		tstring ip;
 		void setCipher(const tstring& aCipher) { cipher = aCipher; updateMask |= MASK_CIPHER; }
 		tstring cipher;
 	};

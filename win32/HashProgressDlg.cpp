@@ -39,8 +39,8 @@ HashProgressDlg::~HashProgressDlg() {
 
 bool HashProgressDlg::handleInitDialog() {
 	setText(T_("Creating file index..."));
-	::SetDlgItemText(handle(), IDC_HASH_INDEXING, CTSTRING(HASH_PROGRESS_TEXT));
-	::SetDlgItemText(handle(), IDC_STATISTICS, CTSTRING(HASH_PROGRESS_STATS));
+	::SetDlgItemText(handle(), IDC_HASH_INDEXING, CT_("Please wait while DC++ indexes your files (they won't be shared until they've been indexed)..."));
+	::SetDlgItemText(handle(), IDC_STATISTICS, CT_("Statistics"));
 
 	progress = attachProgressBar(IDC_HASH_PROGRESS);
 	progress->setRange(0, 10000);
@@ -103,7 +103,7 @@ bool HashProgressDlg::updateStats() {
 	}
 
 	if(files == 0) {
-		::SetDlgItemText(handle(), IDC_CURRENT_FILE, CTSTRING(DONE));
+		::SetDlgItemText(handle(), IDC_CURRENT_FILE, CT_("Done"));
 	} else {
 		::SetDlgItemText(handle(), IDC_CURRENT_FILE, Text::toT(file).c_str());
 	}

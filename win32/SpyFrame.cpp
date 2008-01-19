@@ -110,7 +110,7 @@ bool SpyFrame::eachSecond() {
 
 	cur++;
 	perSecond[cur] = 0;
-	setStatus(STATUS_AVG_PER_SECOND, Text::toT(STRING(AVERAGE) + Util::toString(x)));
+	setStatus(STATUS_AVG_PER_SECOND, str(TF_("Average/s: %1%") % x));
 	return true;
 }
 
@@ -154,10 +154,10 @@ LRESULT SpyFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 				searches->resort();
 		}
 
-		setStatus(STATUS_TOTAL, Text::toT(STRING(TOTAL) + Util::toString(total)));
-		setStatus(STATUS_HITS, Text::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())));
+		setStatus(STATUS_TOTAL, str(TF_("Total: %1%") % total));
+		setStatus(STATUS_HITS, str(TF_("Hits: %1%") % ShareManager::getInstance()->getHits()));
 		double ratio = total > 0 ? ((double)ShareManager::getInstance()->getHits()) / (double)total : 0.0;
-		setStatus(STATUS_HIT_RATIO, Text::toT(STRING(HIT_RATIO) + Util::toString(ratio)));
+		setStatus(STATUS_HIT_RATIO, str(TF_("Hit Ratio: %1%") % ratio));
 	}
 	return 0;
 }

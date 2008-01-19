@@ -6,11 +6,13 @@
 * [ADC] Searches filtered by token if available so that each search window only gets its own results
 * [ADC] Implemented test version of bloom filters which will dramatically reduce hub bandwidth usage for TTH searches
 * Fixed a crash with partial list browsing
-* Replaced homegrown i18n solution with gettext
+* Replaced homegrown i18n solution with gettext (thanks david grundberg, mikejj)
 * Fixed an issue with nick encodings and nmdc connections (thanks stanislav maslovski)
 * Added download view which shows per-file download information
 * Chat timestamps on by default
 * Added tab drag/drop (thanks poy)
+* Changed Pothead to mikejj 
+
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
