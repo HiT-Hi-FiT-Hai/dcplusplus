@@ -222,9 +222,6 @@ private:
 	void handleDownloadWholeTarget(unsigned id);
 	void handleDownloadDirTo();
 	void handleViewAsText();
-	void handleSearchAlternates();
-	void handleBitziLookup();
-	void handleCopyMagnet();
 	void handleRemove();
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	bool handleSearchKeyDown(int c);

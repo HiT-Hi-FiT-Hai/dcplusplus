@@ -727,36 +727,6 @@ void SearchFrame::handleViewAsText() {
 	results->forEachSelected(&SearchInfo::view);
 }
 
-void SearchFrame::handleSearchAlternates() {
-	if(results->getSelectedCount() == 1) {
-		int i = results->getNext(-1, LVNI_SELECTED);
-		SearchResult* sr = results->getData(i)->sr;
-		if(sr->getType() == SearchResult::TYPE_FILE) {
-			WinUtil::searchHash(sr->getTTH());
-		}
-	}
-}
-
-void SearchFrame::handleBitziLookup() {
-	if(results->getSelectedCount() == 1) {
-		int i = results->getNext(-1, LVNI_SELECTED);
-		SearchResult* sr = results->getData(i)->sr;
-		if(sr->getType() == SearchResult::TYPE_FILE) {
-			WinUtil::bitziLink(sr->getTTH());
-		}
-	}
-}
-
-void SearchFrame::handleCopyMagnet() {
-	if(results->getSelectedCount() == 1) {
-		int i = results->getNext(-1, LVNI_SELECTED);
-		SearchResult* sr = results->getData(i)->sr;
-		if(sr->getType() == SearchResult::TYPE_FILE) {
-			WinUtil::copyMagnet(sr->getTTH(), Text::toT(sr->getFileName()));
-		}
-	}
-}
-
 void SearchFrame::handleRemove() {
 	int i = -1;
 	while((i = results->getNext(-1, LVNI_SELECTED)) != -1) {
@@ -776,9 +746,10 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	addTargetDirMenu(menu, favoriteDirs);
 	menu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&SearchFrame::handleViewAsText, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&SearchFrame::handleSearchAlternates, this));
-	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(&SearchFrame::handleBitziLookup, this));
-	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&SearchFrame::handleCopyMagnet, this));
+	if(checkTTH.hasTTH) {
+		SearchInfo* si = results->getSelectedData();
+		WinUtil::addHashItems(menu, TTHValue(Text::fromT(checkTTH.tth)), si->getText(COLUMN_FILENAME));
+	}
 	menu->appendSeparatorItem();
 	appendUserItems(getParent(), menu);
 	menu->appendSeparatorItem();

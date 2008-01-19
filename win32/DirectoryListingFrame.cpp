@@ -317,9 +317,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemI
 		
 		menu->appendSeparatorItem();
 		
-		menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&DirectoryListingFrame::handleSearchAlternates, this));
-		menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(&DirectoryListingFrame::handleLookupBitzi, this));
-		menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&DirectoryListingFrame::handleCopyMagnet, this));
+		WinUtil::addHashItems(menu, ii->file->getTTH(), Text::toT(ii->file->getName()));
 	}
 
 	if((ii->type == ItemInfo::FILE && ii->file->getAdls()) ||
@@ -466,27 +464,6 @@ void DirectoryListingFrame::download(ItemInfo* ii, const string& dir, bool view)
 			
 	} catch(const Exception& e) {
 		setStatus(STATUS_STATUS, Text::toT(e.getError()));
-	}
-}
-
-void DirectoryListingFrame::handleSearchAlternates() {
-	ItemInfo* ii = files->getSelectedData();
-	if(ii != NULL && ii->type == ItemInfo::FILE) {
-		WinUtil::searchHash(ii->file->getTTH());
-	}
-}
-
-void DirectoryListingFrame::handleLookupBitzi() {
-	ItemInfo* ii = files->getSelectedData();
-	if(ii != NULL && ii->type == ItemInfo::FILE) {
-		WinUtil::bitziLink(ii->file->getTTH());
-	}
-}
-
-void DirectoryListingFrame::handleCopyMagnet() {
-	ItemInfo* ii = files->getSelectedData();
-	if(ii != NULL && ii->type == ItemInfo::FILE) {
-		WinUtil::copyMagnet(ii->file->getTTH(), ii->getText(COLUMN_FILENAME));
 	}
 }
 

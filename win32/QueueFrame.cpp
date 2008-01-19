@@ -767,25 +767,6 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 	}
 }
 
-void QueueFrame::handleSearchAlternates() {
-	if(files->getSelectedCount() == 1) {
-		WinUtil::searchHash(files->getSelectedData()->getTTH());
-	}
-}
-
-void QueueFrame::handleBitziLookup() {
-	if(files->getSelectedCount() == 1) {
-		WinUtil::bitziLink(files->getSelectedData()->getTTH());
-	}
-}
-
-void QueueFrame::handleCopyMagnet() {
-	if(files->getSelectedCount() == 1) {
-		QueueItemInfo* ii = files->getSelectedData();
-		WinUtil::copyMagnet(ii->getTTH(), Text::toT(Util::getFileName(ii->getTarget())));
-	}
-}
-
 void QueueFrame::handleBrowseList(const UserPtr& user) {
 
 	if(files->getSelectedCount() == 1) {
@@ -975,9 +956,7 @@ const string& QueueFrame::getDir(HTREEITEM item) {
 QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
 	WidgetMenuPtr menu = createMenu(true);
 
-	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&QueueFrame::handleSearchAlternates, this));
-	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(&QueueFrame::handleBitziLookup, this));
-	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&QueueFrame::handleCopyMagnet, this));
+	WinUtil::addHashItems(menu, qii->getTTH(), Text::toT(Util::getFileName(qii->getTarget())));
 	menu->appendItem(IDC_MOVE, T_("Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
 	addPriorityMenu(menu);
 	addBrowseMenu(menu, qii);

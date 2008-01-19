@@ -358,6 +358,11 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 		return 2;
 	}
 }
+void WinUtil::addHashItems(const SmartWin::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename) {
+	menu->appendItem(IDC_SEARCH_ALTERNATES, T_("Search for alternates"), std::tr1::bind(&WinUtil::searchHash, tth));
+	menu->appendItem(IDC_BITZI_LOOKUP, T_("Lookup TTH at Bitzi.com"), std::tr1::bind(WinUtil::bitziLink, tth));
+	menu->appendItem(IDC_COPY_MAGNET, T_("Copy magnet link to clipboard"), std::tr1::bind(&WinUtil::copyMagnet, tth, filename));
+}
 
 void WinUtil::bitziLink(const TTHValue& aHash) {
 	// to use this free service by bitzi, we must not hammer or request information from bitzi

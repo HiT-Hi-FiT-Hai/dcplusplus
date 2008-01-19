@@ -190,9 +190,6 @@ private:
 	
 	void handleDownload();
 	void handleViewAsText();
-	void handleSearchAlternates();
-	void handleLookupBitzi();
-	void handleCopyMagnet();
 	void handleGoToDirectory();
 	void handleDownloadLastDir(unsigned id);
 	void handleDownloadTarget(unsigned id);

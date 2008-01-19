@@ -94,7 +94,13 @@ void DownloadsFrame::postClosing() {
 	SettingsManager::getInstance()->set(SettingsManager::DOWNLOADSFRAME_WIDTHS, WinUtil::toString(downloads->getColumnWidths()));
 }
 
-DownloadsFrame::DownloadInfo::DownloadInfo(const string& target, int64_t size_) : path(target), done(QueueManager::getInstance()->getPos(target)), size(size_), users(0) {
+DownloadsFrame::DownloadInfo::DownloadInfo(const string& target, int64_t size_, const TTHValue& tth_) : 
+	path(target), 
+	done(QueueManager::getInstance()->getPos(target)), 
+	size(size_), 
+	users(0),
+	tth(tth_)
+{
 	columns[COLUMN_FILE] = Text::toT(Util::getFileName(target));
 	columns[COLUMN_PATH] = Text::toT(Util::getFilePath(target));
 	columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(size));
@@ -127,13 +133,14 @@ void DownloadsFrame::DownloadInfo::update() {
 }
 
 bool DownloadsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
-	if (downloads->hasSelection()) {
+	if (downloads->getSelectedCount() == 1) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = downloads->getContextMenuPos();
 		}
 
 		WidgetMenuPtr menu = createMenu(true);
-		
+		DownloadInfo* di = downloads->getSelectedData();
+		WinUtil::addHashItems(menu, di->tth, di->columns[COLUMN_FILE]);
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
@@ -160,7 +167,12 @@ LRESULT DownloadsFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 			if(size == -1) {
 				return 0;
 			}
-			i = downloads->insert(new DownloadInfo(ti->path, size));
+			TTHValue tth;
+			if(QueueManager::getInstance()->getTTH(ti->path, tth)) {
+				i = downloads->insert(new DownloadInfo(ti->path, size, tth));
+			} else {
+				return 0;
+			}
 		}
 		DownloadInfo* di = downloads->getData(i);
 		di->update(*ti);

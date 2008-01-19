@@ -133,6 +133,7 @@ public:
 	static pair<tstring, bool> getHubNames(const UserPtr& u);
 
 	// Hash related
+	static void addHashItems(const SmartWin::WidgetMenu::ObjectType& menu, const TTHValue& tth, const tstring& filename);
 	static void bitziLink(const TTHValue& /*aHash*/);
 	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
 	static void searchHash(const TTHValue& /*aHash*/);

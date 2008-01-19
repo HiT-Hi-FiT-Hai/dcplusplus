@@ -286,9 +286,6 @@ private:
 	
 	void handleShowTreeClicked();
 
-	void handleSearchAlternates();
-	void handleBitziLookup();
-	void handleCopyMagnet();
 	void handleMove();
 	void handleRemove();
 	void handlePriority(unsigned id);

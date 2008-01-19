@@ -82,7 +82,7 @@ private:
 
 	class DownloadInfo {
 	public:
-		DownloadInfo(const string& filename, int64_t size);
+		DownloadInfo(const string& filename, int64_t size, const TTHValue& tth);
 		
 		const tstring& getText(int col) const {
 			return columns[col];
@@ -110,6 +110,7 @@ private:
 		int64_t size;
 		double bps;
 		int users;
+		TTHValue tth;
 		
 		tstring columns[COLUMN_LAST];
 	};
