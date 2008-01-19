@@ -27,6 +27,7 @@
 #include "HubListsDlg.h"
 
 PropPage::TextItem DownloadPage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_DIRECTORIES, ResourceManager::SETTINGS_DIRECTORIES },
 	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, ResourceManager::SETTINGS_DOWNLOAD_DIRECTORY },
 	{ IDC_BROWSEDIR, ResourceManager::BROWSE_ACCEL },
@@ -40,7 +41,8 @@ PropPage::TextItem DownloadPage::texts[] = {
 	{ IDC_SETTINGS_PUBLIC_HUB_LIST_URL, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_URL },
 	{ IDC_SETTINGS_LIST_CONFIG, ResourceManager::SETTINGS_CONFIGURE_HUB_LISTS },
 	{ IDC_SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item DownloadPage::items[] = {

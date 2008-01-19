@@ -30,6 +30,7 @@
 #include "HashProgressDlg.h"
 
 PropPage::TextItem UploadPage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
 	{ IDC_SETTINGS_SHARE_SIZE, ResourceManager::SETTINGS_SHARE_SIZE },
 	{ IDC_SHAREHIDDEN, ResourceManager::SETTINGS_SHARE_HIDDEN },
@@ -40,7 +41,8 @@ PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_SETTINGS_KBPS, ResourceManager::KiBPS },
 	{ IDC_SETTINGS_UPLOADS_SLOTS, ResourceManager::SETTINGS_UPLOADS_SLOTS },
 	{ IDC_SETTINGS_ONLY_HASHED, ResourceManager::SETTINGS_ONLY_HASHED },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item UploadPage::items[] = {

@@ -28,12 +28,14 @@
 #include "WinUtil.h"
 
 PropPage::TextItem LogPage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
 	{ IDC_SETTINGS_LOG_DIR, ResourceManager::DIRECTORY },
 	{ IDC_BROWSE_LOG, ResourceManager::BROWSE_ACCEL },
 	{ IDC_SETTINGS_FORMAT, ResourceManager::SETTINGS_FORMAT },
 	{ IDC_SETTINGS_FILE_NAME, ResourceManager::SETTINGS_FILE_NAME },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item LogPage::items[] = {
@@ -42,6 +44,7 @@ PropPage::Item LogPage::items[] = {
 };
 
 PropPage::ListItem LogPage::listItems[] = {
+#ifdef PORT_ME
 	{ SettingsManager::LOG_MAIN_CHAT, ResourceManager::SETTINGS_LOG_MAIN_CHAT },
 	{ SettingsManager::LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
 	{ SettingsManager::LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS },
@@ -49,7 +52,8 @@ PropPage::ListItem LogPage::listItems[] = {
 	{ SettingsManager::LOG_SYSTEM, ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
 	{ SettingsManager::LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
 	{ SettingsManager::LOG_FILELIST_TRANSFERS, ResourceManager::SETTINGS_LOG_FILELIST_TRANSFERS },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {

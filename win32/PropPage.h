@@ -21,7 +21,6 @@
 
 #define SETTINGS_BUF_LEN 1024
 
-#include <dcpp/ResourceManager.h>
 #include "WidgetFactory.h"
 #include "resource.h"
 
@@ -47,11 +46,11 @@ public:
 	};
 	struct ListItem {
 		int setting;
-		ResourceManager::Strings desc;
+		const char* desc;
 	};
 	struct TextItem {
 		WORD itemID;
-		ResourceManager::Strings translatedString;
+		const char* translatedString;
 	};
 
 protected:

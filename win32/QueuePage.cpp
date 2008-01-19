@@ -25,6 +25,7 @@
 #include <dcpp/SettingsManager.h>
 
 PropPage::TextItem QueuePage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_AUTOPRIO, ResourceManager::SETTINGS_PRIO_AUTOPRIO },
 	{ IDC_SETTINGS_PRIO_HIGHEST, ResourceManager::SETTINGS_PRIO_HIGHEST },
 	{ IDC_SETTINGS_KB3, ResourceManager::KiB },
@@ -47,7 +48,8 @@ PropPage::TextItem QueuePage::texts[] = {
 	{ IDC_SETTINGS_AUTODROP_FILESIZE, ResourceManager::SETTINGS_AUTODROP_FILESIZE },
 	{ IDC_SETTINGS_KB7, ResourceManager::KiB },
 	{ IDC_SETTINGS_OTHER_QUEUE_OPTIONS, ResourceManager::SETTINGS_OTHER_QUEUE_OPTIONS },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item QueuePage::items[] = {
@@ -65,6 +67,7 @@ PropPage::Item QueuePage::items[] = {
 };
 
 PropPage::ListItem QueuePage::optionItems[] = {
+#ifdef PORT_ME
 	{ SettingsManager::PRIO_LOWEST, ResourceManager::SETTINGS_PRIO_LOWEST },
 	{ SettingsManager::AUTODROP_ALL, ResourceManager::SETTINGS_AUTODROP_ALL },
 	{ SettingsManager::AUTODROP_FILELISTS, ResourceManager::SETTINGS_AUTODROP_FILELISTS },
@@ -75,7 +78,8 @@ PropPage::ListItem QueuePage::optionItems[] = {
 	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::SETTINGS_DONT_DL_ALREADY_SHARED },
 	{ SettingsManager::DONT_DL_ALREADY_QUEUED, ResourceManager::SETTINGS_DONT_DL_ALREADY_QUEUED },
 	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ANTI_FRAG },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {

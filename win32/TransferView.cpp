@@ -40,7 +40,7 @@ static const char* columnNames[] = {
 	N_("User"),
 	N_("Status"),
 	N_("Speed"),
-	N_("Transfered"),
+	N_("Transfered (Ratio)"),
 	N_("Queued"),
 	N_("Cipher"),
 	N_("IP")
@@ -127,7 +127,6 @@ bool TransferView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		}
 
 		/// @todo Fix multiple selection menu...
-		int i = -1;
 		ItemInfo* ii = transfers->getSelectedData();
 		WidgetMenuPtr contextMenu = makeContextMenu(ii);
 		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
@@ -404,9 +403,8 @@ TransferView::ItemInfo::ItemInfo(const UserPtr& u, bool aDownload) :
 	columns[COLUMN_TRANSFERED] = Text::toT(Util::toString(0));
 	if(aDownload) {
 		queued = QueueManager::getInstance()->getQueued(u);
-		columns[COLUMN_QUEUED] = Text::toT(Util::toString(queued));
+		columns[COLUMN_QUEUED] = Text::toT(Util::formatBytes(queued));
 	}
-	
 }
 
 void TransferView::ItemInfo::update(const UpdateInfo& ui) {
@@ -415,28 +413,29 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 		if(download) {
 			// Also update queued when status changes...
 			queued = QueueManager::getInstance()->getQueued(user);
-			columns[COLUMN_QUEUED] = Text::toT(Util::toString(queued));
+			columns[COLUMN_QUEUED] = Text::toT(Util::formatBytes(queued));
 		}
-		
 	}
+
 	if(ui.updateMask & UpdateInfo::MASK_STATUS_STRING) {
 		// No slots etc from transfermanager better than disconnected from connectionmanager
 		if(!transferFailed)
 			columns[COLUMN_STATUS] = ui.statusString;
 		transferFailed = ui.transferFailed;
 	}
+	
 	if(ui.updateMask & UpdateInfo::MASK_TRANSFERED) {
 		actual = ui.actual;
 		transfered = ui.transfered;
 		if(actual == transfered) {
 			columns[COLUMN_TRANSFERED] = Text::toT(Util::formatBytes(transfered));
 		} else {
-			columns[COLUMN_TRANSFERED] = str(TF_("%1% (%2%, %3%%%)") 
+			columns[COLUMN_TRANSFERED] = str(TF_("%1% (%|.2|)") 
 				% Text::toT(Util::formatBytes(transfered))
-				% Text::toT(Util::formatBytes(actual))
-				% (actual * 100.0 / transfered));
+				% (static_cast<double>(actual) / transfered));
 		}
 	}
+	
 	if(ui.updateMask & UpdateInfo::MASK_SPEED) {
 		speed = ui.speed;
 		if (status == STATUS_RUNNING) {
@@ -445,9 +444,11 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 			columns[COLUMN_SPEED] = Util::emptyStringT;
 		}
 	}
+	
 	if(ui.updateMask & UpdateInfo::MASK_IP) {
 		columns[COLUMN_IP] = ui.ip;
 	}
+	
 	if(ui.updateMask & UpdateInfo::MASK_CIPHER) {
 		columns[COLUMN_CIPHER] = ui.cipher;
 	}

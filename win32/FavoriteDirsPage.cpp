@@ -29,11 +29,13 @@
 #include "LineDlg.h"
 
 PropPage::TextItem FavoriteDirsPage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, ResourceManager::SETTINGS_FAVORITE_DIRS },
 	{ IDC_REMOVE, ResourceManager::REMOVE },
 	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
 	{ IDC_RENAME, ResourceManager::SETTINGS_RENAME_FOLDER },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) {

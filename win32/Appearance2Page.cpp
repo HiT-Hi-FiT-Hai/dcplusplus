@@ -26,6 +26,7 @@
 #include "WinUtil.h"
 
 PropPage::TextItem Appearance2Page::texts[] = {
+#ifdef PORT_ME
 	{ IDC_BEEP_NOTIFICATION, ResourceManager::SETTINGS_NOTIFICATION_SOUND },
 	{ IDC_BROWSE, ResourceManager::BROWSE_ACCEL },
 	{ IDC_SETTINGS_COLORS, ResourceManager::SETTINGS_COLORS },
@@ -38,7 +39,8 @@ PropPage::TextItem Appearance2Page::texts[] = {
 	{ IDC_PRIVATE_MESSAGE_BEEP, ResourceManager::SETTINGS_PM_BEEP },
 	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, ResourceManager::SETTINGS_PM_BEEP_OPEN },
 	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, ResourceManager::DOWNLOADS },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item Appearance2Page::items[] = {

@@ -29,11 +29,14 @@ PropPage::Item TabsPage::items[] = {
 };
 
 PropPage::TextItem TabsPage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_BOLD_CONTENTS, ResourceManager::SETTINGS_BOLD_OPTIONS },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::ListItem TabsPage::listItems[] = {
+#ifdef PORT_ME
 	{ SettingsManager::BOLD_HUB, ResourceManager::HUB },
 	{ SettingsManager::BOLD_PM, ResourceManager::PRIVATE_MESSAGE },
 	{ SettingsManager::BOLD_SEARCH, ResourceManager::SEARCH },
@@ -42,7 +45,8 @@ PropPage::ListItem TabsPage::listItems[] = {
 	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
 	{ SettingsManager::BOLD_WAITING_USERS, ResourceManager::WAITING_USERS },
 	{ SettingsManager::BOLD_FINISHED_UPLOADS, ResourceManager::FINISHED_UPLOADS },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 TabsPage::TabsPage(SmartWin::Widget* parent) : PropPage(parent) {

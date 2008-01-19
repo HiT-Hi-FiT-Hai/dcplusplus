@@ -25,6 +25,7 @@
 #include <dcpp/SettingsManager.h>
 
 PropPage::TextItem Advanced3Page::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_B, ResourceManager::B },
 	{ IDC_SETTINGS_WRITE_BUFFER, ResourceManager::SETTINGS_WRITE_BUFFER },
 	{ IDC_SETTINGS_KB, ResourceManager::KiB },
@@ -40,7 +41,8 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_AUTO_REFRESH_TIME, ResourceManager::SETTINGS_AUTO_REFRESH_TIME },
 	{ IDC_SETTINGS_AUTO_SEARCH_LIMIT, ResourceManager::SETTINGS_AUTO_SEARCH_LIMIT },
 	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, ResourceManager::SETTINGS_MIN_SEGMENT_SIZE },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item Advanced3Page::items[] = {

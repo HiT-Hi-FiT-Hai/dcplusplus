@@ -28,12 +28,14 @@
 #include "HoldRedraw.h"
 
 PropPage::TextItem UCPage::texts[] = {
-	{ IDC_MOVE_UP, ResourceManager::MOVE_UP },
+	{ IDC_MOVE_UP, N_("Move &Up") },
+#ifdef PORT_ME
 	{ IDC_MOVE_DOWN, ResourceManager::MOVE_DOWN },
 	{ IDC_ADD_MENU, ResourceManager::ADD },
 	{ IDC_CHANGE_MENU, ResourceManager::SETTINGS_CHANGE },
 	{ IDC_REMOVE_MENU, ResourceManager::REMOVE },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item UCPage::items[] = {

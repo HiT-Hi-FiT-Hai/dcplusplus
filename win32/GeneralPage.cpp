@@ -25,13 +25,15 @@
 #include <dcpp/SettingsManager.h>
 
 PropPage::TextItem GeneralPage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_PERSONAL_INFORMATION, ResourceManager::SETTINGS_PERSONAL_INFORMATION },
 	{ IDC_SETTINGS_NICK, ResourceManager::NICK },
 	{ IDC_SETTINGS_EMAIL, ResourceManager::EMAIL },
 	{ IDC_SETTINGS_DESCRIPTION, ResourceManager::DESCRIPTION },
 	{ IDC_SETTINGS_UPLOAD_LINE_SPEED, ResourceManager::SETTINGS_UPLOAD_LINE_SPEED },
 	{ IDC_SETTINGS_MEBIBITS, ResourceManager::MiBITSPS },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item GeneralPage::items[] = {

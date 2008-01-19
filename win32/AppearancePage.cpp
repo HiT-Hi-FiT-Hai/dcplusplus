@@ -28,12 +28,14 @@
 #include "WinUtil.h"
 
 PropPage::TextItem AppearancePage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_SETTINGS_APPEARANCE_OPTIONS, ResourceManager::SETTINGS_OPTIONS },
 	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, ResourceManager::SETTINGS_DEFAULT_AWAY_MSG },
 	{ IDC_SETTINGS_TIME_STAMPS_FORMAT, ResourceManager::SETTINGS_TIME_STAMPS_FORMAT },
 	{ IDC_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_LANGUAGE_FILE },
 	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 PropPage::Item AppearancePage::items[] = {
@@ -43,6 +45,7 @@ PropPage::Item AppearancePage::items[] = {
 };
 
 PropPage::ListItem AppearancePage::listItems[] = {
+#ifdef PORT_ME
 	{ SettingsManager::ALT_SORT_ORDER, ResourceManager::SETTINGS_ALT_SORT_ORDER },
 	{ SettingsManager::FILTER_MESSAGES, ResourceManager::SETTINGS_FILTER_MESSAGES },
 	{ SettingsManager::MINIMIZE_TRAY, ResourceManager::SETTINGS_MINIMIZE_TRAY },
@@ -54,7 +57,8 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
 	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
 	{ SettingsManager::GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), languages(0) {

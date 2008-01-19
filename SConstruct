@@ -159,7 +159,7 @@ env.Append(BUILDERS = {'MoBuild' : mo_bld})
 pot_args = ['xgettext', '--from-code=UTF-8', '--foreign-user',# '--package-name=$PACKAGE',
 		'--copyright-holder=Jacek Sieka', '--msgid-bugs-address=dcplusplus-devel@lists.sourceforge.net',
 		'--no-wrap', '--keyword=_', '--keyword=T_', '--keyword=TF_', '--keyword=TFN_:1,2',
-		'--keyword=F_', '--keyword=gettext_noop', '--keyword=N_', '--boost',
+		'--keyword=F_', '--keyword=gettext_noop', '--keyword=N_', '--boost', '-s',
 		'--output=$TARGET', '$SOURCES']
 
 pot_bld = Builder (action = Action([pot_args], 'Extracting messages to $TARGET from $SOURCES'))

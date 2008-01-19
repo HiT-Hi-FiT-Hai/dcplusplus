@@ -27,6 +27,7 @@
 PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };
 
 AdvancedPage::ListItem AdvancedPage::listItems[] = {
+#ifdef PORT_ME
 	{ SettingsManager::AUTO_AWAY, ResourceManager::SETTINGS_AUTO_AWAY },
 	{ SettingsManager::AUTO_FOLLOW, ResourceManager::SETTINGS_AUTO_FOLLOW },
 	{ SettingsManager::CLEAR_SEARCH, ResourceManager::SETTINGS_CLEAR_SEARCH },
@@ -46,7 +47,8 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::USE_CTRL_FOR_LINE_HISTORY, ResourceManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY },
 	{ SettingsManager::AUTO_KICK_NO_FAVS, ResourceManager::SETTINGS_AUTO_KICK_NO_FAVS },
 	{ SettingsManager::SHOW_SHELL_MENU, ResourceManager::SETTINGS_SHOW_SHELL_MENU },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif
+	{ 0, 0 }
 };
 
 AdvancedPage::AdvancedPage(SmartWin::Widget* parent) : PropPage(parent) {

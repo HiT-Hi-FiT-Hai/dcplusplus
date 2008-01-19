@@ -27,6 +27,7 @@
 #include "WinUtil.h"
 
 PropPage::TextItem NetworkPage::texts[] = {
+#ifdef PORT_ME
 	{ IDC_DIRECT, ResourceManager::SETTINGS_DIRECT },
 	{ IDC_DIRECT_OUT, ResourceManager::SETTINGS_DIRECT },
 	{ IDC_FIREWALL_UPNP, ResourceManager::SETTINGS_FIREWALL_UPNP },
@@ -46,7 +47,8 @@ PropPage::TextItem NetworkPage::texts[] = {
 	{ IDC_SOCKS_RESOLVE, ResourceManager::SETTINGS_SOCKS5_RESOLVE },
 	{ IDC_SETTINGS_INCOMING, ResourceManager::SETTINGS_INCOMING },
 	{ IDC_SETTINGS_OUTGOING, ResourceManager::SETTINGS_OUTGOING },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+#endif 
+	{ 0, 0 }
 };
 
 PropPage::Item NetworkPage::items[] = {
