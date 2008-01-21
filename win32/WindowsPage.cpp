@@ -27,54 +27,46 @@
 PropPage::Item WindowsPage::items[] = { { 0, 0, PropPage::T_END } };
 
 PropPage::TextItem WindowsPage::textItem[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_AUTO_OPEN, ResourceManager::SETTINGS_AUTO_OPEN },
-	{ IDC_SETTINGS_WINDOWS_OPTIONS, ResourceManager::SETTINGS_WINDOWS_OPTIONS },
-	{ IDC_SETTINGS_CONFIRM_OPTIONS, ResourceManager::SETTINGS_CONFIRM_DIALOG_OPTIONS },
-#endif
+	{ IDC_SETTINGS_AUTO_OPEN, N_("Auto-open at startup") },
+	{ IDC_SETTINGS_WINDOWS_OPTIONS, N_("Window options") },
+	{ IDC_SETTINGS_CONFIRM_OPTIONS, N_("Confirm dialog options") },
 	{ 0, 0 }
 };
 
 WindowsPage::ListItem WindowsPage::listItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::OPEN_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
-	{ SettingsManager::OPEN_FAVORITE_USERS, ResourceManager::FAVORITE_USERS },
-	{ SettingsManager::OPEN_QUEUE, ResourceManager::DOWNLOAD_QUEUE },
-	{ SettingsManager::OPEN_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
-	{ SettingsManager::OPEN_WAITING_USERS, ResourceManager::WAITING_USERS },
-	{ SettingsManager::OPEN_FINISHED_UPLOADS, ResourceManager::FINISHED_UPLOADS },
-	{ SettingsManager::OPEN_SEARCH_SPY, ResourceManager::SEARCH_SPY },
-	{ SettingsManager::OPEN_NETWORK_STATISTICS, ResourceManager::NETWORK_STATISTICS },
-	{ SettingsManager::OPEN_NOTEPAD, ResourceManager::NOTEPAD },
-	{ SettingsManager::OPEN_PUBLIC, ResourceManager::PUBLIC_HUBS },
-	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::FAVORITE_HUBS },
-	{ SettingsManager::OPEN_DOWNLOADS, ResourceManager::DOWNLOADS },
-#endif
+	{ SettingsManager::OPEN_SYSTEM_LOG, N_("System Log") },
+	{ SettingsManager::OPEN_FAVORITE_USERS, N_("Favorite Users") },
+	{ SettingsManager::OPEN_QUEUE, N_("Download Queue") },
+	{ SettingsManager::OPEN_FINISHED_DOWNLOADS, N_("Finished Downloads") },
+	{ SettingsManager::OPEN_WAITING_USERS, N_("Waiting Users") },
+	{ SettingsManager::OPEN_FINISHED_UPLOADS, N_("Finished Uploads") },
+	{ SettingsManager::OPEN_SEARCH_SPY, N_("Search Spy") },
+	{ SettingsManager::OPEN_NETWORK_STATISTICS, N_("Network Statistics") },
+	{ SettingsManager::OPEN_NOTEPAD, N_("Notepad") },
+	{ SettingsManager::OPEN_PUBLIC, N_("Public Hubs") },
+	{ SettingsManager::OPEN_FAVORITE_HUBS, N_("Favorite Hubs") },
+	{ SettingsManager::OPEN_DOWNLOADS, N_("Downloads") },
 	{ 0, 0 }
 };
 
 WindowsPage::ListItem WindowsPage::optionItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::POPUP_PMS, ResourceManager::SETTINGS_POPUP_PMS },
-	{ SettingsManager::POPUP_HUB_PMS, ResourceManager::SETTINGS_POPUP_HUB_PMS },
-	{ SettingsManager::POPUP_BOT_PMS, ResourceManager::SETTINGS_POPUP_BOT_PMS },
-	{ SettingsManager::POPUNDER_FILELIST, ResourceManager::SETTINGS_POPUNDER_FILELIST },
-	{ SettingsManager::POPUNDER_PM, ResourceManager::SETTINGS_POPUNDER_PM },
-	{ SettingsManager::JOIN_OPEN_NEW_WINDOW, ResourceManager::SETTINGS_OPEN_NEW_WINDOW },
-	{ SettingsManager::IGNORE_HUB_PMS, ResourceManager::SETTINGS_IGNORE_HUB_PMS },
-	{ SettingsManager::IGNORE_BOT_PMS, ResourceManager::SETTINGS_IGNORE_BOT_PMS },
-	{ SettingsManager::TOGGLE_ACTIVE_WINDOW, ResourceManager::SETTINGS_TOGGLE_ACTIVE_WINDOW },
-	{ SettingsManager::PROMPT_PASSWORD, ResourceManager::SETTINGS_PROMPT_PASSWORD },
-#endif
+	{ SettingsManager::POPUP_PMS, N_("Open private messages in their own window") },
+	{ SettingsManager::POPUP_HUB_PMS, N_("Open private messages from bots in their own window") },
+	{ SettingsManager::POPUP_BOT_PMS, N_("Open private messages from the hub in their own window") },
+	{ SettingsManager::POPUNDER_FILELIST, N_("Open new file list windows in the background") },
+	{ SettingsManager::POPUNDER_PM, N_("Open new private message windows in the background") },
+	{ SettingsManager::JOIN_OPEN_NEW_WINDOW, N_("Open new window when using /join") },
+	{ SettingsManager::IGNORE_HUB_PMS, N_("Ignore private messages from the hub") },
+	{ SettingsManager::IGNORE_BOT_PMS, N_("Ignore private messages from bots") },
+	{ SettingsManager::TOGGLE_ACTIVE_WINDOW, N_("Toggle window when selecting an active tab") },
+	{ SettingsManager::PROMPT_PASSWORD, N_("Popup box to input password for hubs") },
 	{ 0, 0 }
 };
 
 WindowsPage::ListItem WindowsPage::confirmItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::CONFIRM_EXIT, ResourceManager::SETTINGS_CONFIRM_EXIT },
-	{ SettingsManager::CONFIRM_HUB_REMOVAL, ResourceManager::SETTINGS_CONFIRM_HUB_REMOVAL },
-	{ SettingsManager::CONFIRM_ITEM_REMOVAL, ResourceManager::SETTINGS_CONFIRM_ITEM_REMOVAL },
-#endif
+	{ SettingsManager::CONFIRM_EXIT, N_("Confirm application exit") },
+	{ SettingsManager::CONFIRM_HUB_REMOVAL, N_("Confirm favorite hub removal") },
+	{ SettingsManager::CONFIRM_ITEM_REMOVAL, N_("Confirm item removal in download queue") },
 	{ 0, 0 }
 };
 

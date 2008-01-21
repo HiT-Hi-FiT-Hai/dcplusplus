@@ -26,7 +26,6 @@
 #include "HubListsDlg.h"
 
 #include <dcpp/FavoriteManager.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
 
 int PublicHubsFrame::columnIndexes[] = {

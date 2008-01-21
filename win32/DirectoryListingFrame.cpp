@@ -25,7 +25,6 @@
 
 #include "resource.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/ADLSearch.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/File.h>

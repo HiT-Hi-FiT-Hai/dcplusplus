@@ -22,7 +22,6 @@
 
 #include "CommandDlg.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/UserCommand.h>
 #include <dcpp/NmdcHub.h>
 #include <dcpp/version.h>

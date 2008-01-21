@@ -30,18 +30,16 @@
 #include "HashProgressDlg.h"
 
 PropPage::TextItem UploadPage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
-	{ IDC_SETTINGS_SHARE_SIZE, ResourceManager::SETTINGS_SHARE_SIZE },
-	{ IDC_SHAREHIDDEN, ResourceManager::SETTINGS_SHARE_HIDDEN },
-	{ IDC_REMOVE, ResourceManager::REMOVE },
-	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
-	{ IDC_RENAME, ResourceManager::SETTINGS_RENAME_FOLDER },
-	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, ResourceManager::SETTINGS_UPLOADS_MIN_SPEED },
-	{ IDC_SETTINGS_KBPS, ResourceManager::KiBPS },
-	{ IDC_SETTINGS_UPLOADS_SLOTS, ResourceManager::SETTINGS_UPLOADS_SLOTS },
-	{ IDC_SETTINGS_ONLY_HASHED, ResourceManager::SETTINGS_ONLY_HASHED },
-#endif
+	{ IDC_SETTINGS_SHARED_DIRECTORIES, N_("Shared directories") },
+	{ IDC_SETTINGS_SHARE_SIZE, N_("Total size:") },
+	{ IDC_SHAREHIDDEN, N_("Share hidden files") },
+	{ IDC_REMOVE, N_("&Remove") },
+	{ IDC_ADD, N_("&Add folder") },
+	{ IDC_RENAME, N_("Rename") },
+	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, N_("Automatically open an extra slot if speed is below (0 = disable)") },
+	{ IDC_SETTINGS_KBPS, N_("KiB/s") },
+	{ IDC_SETTINGS_UPLOADS_SLOTS, N_("Upload slots") },
+	{ IDC_SETTINGS_ONLY_HASHED, N_("Note; Files appear in the share only after they've been hashed!") },
 	{ 0, 0 }
 };
 

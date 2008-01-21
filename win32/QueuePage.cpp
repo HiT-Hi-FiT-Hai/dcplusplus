@@ -25,30 +25,28 @@
 #include <dcpp/SettingsManager.h>
 
 PropPage::TextItem QueuePage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_AUTOPRIO, ResourceManager::SETTINGS_PRIO_AUTOPRIO },
-	{ IDC_SETTINGS_PRIO_HIGHEST, ResourceManager::SETTINGS_PRIO_HIGHEST },
-	{ IDC_SETTINGS_KB3, ResourceManager::KiB },
-	{ IDC_SETTINGS_PRIO_HIGH, ResourceManager::SETTINGS_PRIO_HIGH },
-	{ IDC_SETTINGS_KB4, ResourceManager::KiB },
-	{ IDC_SETTINGS_PRIO_NORMAL, ResourceManager::SETTINGS_PRIO_NORMAL },
-	{ IDC_SETTINGS_KB5, ResourceManager::KiB },
-	{ IDC_SETTINGS_PRIO_LOW, ResourceManager::SETTINGS_PRIO_LOW },
-	{ IDC_SETTINGS_KB6, ResourceManager::KiB },
-	{ IDC_SETTINGS_AUTODROP, ResourceManager::SETTINGS_AUTODROP_AUTODROPSETTINGS },
-	{ IDC_SETTINGS_AUTODROP_SPEED, ResourceManager::SETTINGS_AUTODROP_SPEED },
-	{ IDC_SETTINGS_BPS, ResourceManager::BPS },
-	{ IDC_SETTINGS_AUTODROP_INTERVAL, ResourceManager::SETTINGS_AUTODROP_INTERVAL },
-	{ IDC_SETTINGS_S1, ResourceManager::S },
-	{ IDC_SETTINGS_AUTODROP_ELAPSED, ResourceManager::SETTINGS_AUTODROP_ELAPSED },
-	{ IDC_SETTINGS_S2, ResourceManager::S },
-	{ IDC_SETTINGS_AUTODROP_INACTIVITY, ResourceManager::SETTINGS_AUTODROP_INACTIVITY },
-	{ IDC_SETTINGS_S3, ResourceManager::S },
-	{ IDC_SETTINGS_AUTODROP_MINSOURCES, ResourceManager::SETTINGS_AUTODROP_MINSOURCES },
-	{ IDC_SETTINGS_AUTODROP_FILESIZE, ResourceManager::SETTINGS_AUTODROP_FILESIZE },
-	{ IDC_SETTINGS_KB7, ResourceManager::KiB },
-	{ IDC_SETTINGS_OTHER_QUEUE_OPTIONS, ResourceManager::SETTINGS_OTHER_QUEUE_OPTIONS },
-#endif
+	{ IDC_SETTINGS_AUTOPRIO, N_("Auto priority settings") },
+	{ IDC_SETTINGS_PRIO_HIGHEST, N_("Highest prio max size") },
+	{ IDC_SETTINGS_KB3, N_("KiB") },
+	{ IDC_SETTINGS_PRIO_HIGH, N_("High prio max size") },
+	{ IDC_SETTINGS_KB4, N_("KiB") },
+	{ IDC_SETTINGS_PRIO_NORMAL, N_("Normal prio max size") },
+	{ IDC_SETTINGS_KB5, N_("KiB") },
+	{ IDC_SETTINGS_PRIO_LOW, N_("Low prio max size") },
+	{ IDC_SETTINGS_KB6, N_("KiB") },
+	{ IDC_SETTINGS_AUTODROP, N_("Autodrop settings") },
+	{ IDC_SETTINGS_AUTODROP_SPEED, N_("Drop sources below") },
+	{ IDC_SETTINGS_BPS, N_("B/s") },
+	{ IDC_SETTINGS_AUTODROP_INTERVAL, N_("Check every") },
+	{ IDC_SETTINGS_S1, N_("s") },
+	{ IDC_SETTINGS_AUTODROP_ELAPSED, N_("Min elapsed") },
+	{ IDC_SETTINGS_S2, N_("s") },
+	{ IDC_SETTINGS_AUTODROP_INACTIVITY, N_("Max inactivity") },
+	{ IDC_SETTINGS_S3, N_("s") },
+	{ IDC_SETTINGS_AUTODROP_MINSOURCES, N_("Min sources online") },
+	{ IDC_SETTINGS_AUTODROP_FILESIZE, N_("Min filesize") },
+	{ IDC_SETTINGS_KB7, N_("KiB") },
+	{ IDC_SETTINGS_OTHER_QUEUE_OPTIONS, N_("Other queue options") },
 	{ 0, 0 }
 };
 
@@ -67,18 +65,16 @@ PropPage::Item QueuePage::items[] = {
 };
 
 PropPage::ListItem QueuePage::optionItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::PRIO_LOWEST, ResourceManager::SETTINGS_PRIO_LOWEST },
-	{ SettingsManager::AUTODROP_ALL, ResourceManager::SETTINGS_AUTODROP_ALL },
-	{ SettingsManager::AUTODROP_FILELISTS, ResourceManager::SETTINGS_AUTODROP_FILELISTS },
-	{ SettingsManager::AUTODROP_DISCONNECT, ResourceManager::SETTINGS_AUTODROP_DISCONNECT },
-	{ SettingsManager::AUTO_SEARCH, ResourceManager::SETTINGS_AUTO_SEARCH },
-	{ SettingsManager::AUTO_SEARCH_AUTO_MATCH, ResourceManager::SETTINGS_AUTO_SEARCH_AUTO_MATCH },
-	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_SKIP_ZERO_BYTE },
-	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::SETTINGS_DONT_DL_ALREADY_SHARED },
-	{ SettingsManager::DONT_DL_ALREADY_QUEUED, ResourceManager::SETTINGS_DONT_DL_ALREADY_QUEUED },
-	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ANTI_FRAG },
-#endif
+	{ SettingsManager::PRIO_LOWEST, N_("Set lowest prio for newly added files larger than Low prio size") },
+	{ SettingsManager::AUTODROP_ALL, N_("Autodrop slow sources for all queue items (except filelists)") },
+	{ SettingsManager::AUTODROP_FILELISTS, N_("Remove slow filelists") },
+	{ SettingsManager::AUTODROP_DISCONNECT, N_("Don't remove the source when autodropping, only disconnect") },
+	{ SettingsManager::AUTO_SEARCH, N_("Automatically search for alternative download locations") },
+	{ SettingsManager::AUTO_SEARCH_AUTO_MATCH, N_("Automatically match queue for auto search hits") },
+	{ SettingsManager::SKIP_ZERO_BYTE, N_("Skip zero-byte files") },
+	{ SettingsManager::DONT_DL_ALREADY_SHARED, N_("Don't download files already in share") },
+	{ SettingsManager::DONT_DL_ALREADY_QUEUED, N_("Don't download files already in the queue") },
+	{ SettingsManager::ANTI_FRAG, N_("Use antifragmentation method for downloads") },
 	{ 0, 0 }
 };
 

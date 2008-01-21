@@ -27,21 +27,19 @@
 #include "HubListsDlg.h"
 
 PropPage::TextItem DownloadPage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_DIRECTORIES, ResourceManager::SETTINGS_DIRECTORIES },
-	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, ResourceManager::SETTINGS_DOWNLOAD_DIRECTORY },
-	{ IDC_BROWSEDIR, ResourceManager::BROWSE_ACCEL },
-	{ IDC_SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY, ResourceManager::SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY },
-	{ IDC_BROWSETEMPDIR, ResourceManager::BROWSE },
-	{ IDC_SETTINGS_DOWNLOAD_LIMITS, ResourceManager::SETTINGS_DOWNLOAD_LIMITS },
-	{ IDC_SETTINGS_DOWNLOADS_MAX, ResourceManager::SETTINGS_DOWNLOADS_MAX },
-	{ IDC_SETTINGS_DOWNLOADS_SPEED_PAUSE, ResourceManager::SETTINGS_DOWNLOADS_SPEED_PAUSE },
-	{ IDC_SETTINGS_SPEEDS_NOT_ACCURATE, ResourceManager::SETTINGS_SPEEDS_NOT_ACCURATE },
-	{ IDC_SETTINGS_PUBLIC_HUB_LIST, ResourceManager::SETTINGS_PUBLIC_HUB_LIST },
-	{ IDC_SETTINGS_PUBLIC_HUB_LIST_URL, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_URL },
-	{ IDC_SETTINGS_LIST_CONFIG, ResourceManager::SETTINGS_CONFIGURE_HUB_LISTS },
-	{ IDC_SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY },
-#endif
+	{ IDC_SETTINGS_DIRECTORIES, N_("Directories") },
+	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, N_("Default download directory") },
+	{ IDC_BROWSEDIR, N_("&Browse...") },
+	{ IDC_SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY, N_("Unfinished downloads directory") },
+	{ IDC_BROWSETEMPDIR, N_("Browse...") },
+	{ IDC_SETTINGS_DOWNLOAD_LIMITS, N_("Limits") },
+	{ IDC_SETTINGS_DOWNLOADS_MAX, N_("Maximum simultaneous downloads (0 = infinite)") },
+	{ IDC_SETTINGS_DOWNLOADS_SPEED_PAUSE, N_("No new downloads if speed exceeds (KiB/s, 0 = disable)") },
+	{ IDC_SETTINGS_SPEEDS_NOT_ACCURATE, N_("Note; because of changing download speeds, this is not 100% accurate...") },
+	{ IDC_SETTINGS_PUBLIC_HUB_LIST, N_("Public Hubs list") },
+	{ IDC_SETTINGS_PUBLIC_HUB_LIST_URL, N_("Public Hubs list URL") },
+	{ IDC_SETTINGS_LIST_CONFIG, N_("Configure Public Hub Lists") },
+	{ IDC_SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, N_("HTTP Proxy (for hublist only)") },
 	{ 0, 0 }
 };
 

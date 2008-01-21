@@ -26,20 +26,18 @@
 #include "WinUtil.h"
 
 PropPage::TextItem Appearance2Page::texts[] = {
-#ifdef PORT_ME
-	{ IDC_BEEP_NOTIFICATION, ResourceManager::SETTINGS_NOTIFICATION_SOUND },
-	{ IDC_BROWSE, ResourceManager::BROWSE_ACCEL },
-	{ IDC_SETTINGS_COLORS, ResourceManager::SETTINGS_COLORS },
-	{ IDC_SELWINCOLOR, ResourceManager::SETTINGS_SELECT_WINDOW_COLOR },
-	{ IDC_SELTEXT, ResourceManager::SETTINGS_SELECT_TEXT_FACE },
-	{ IDC_COLOREXAMPLE, ResourceManager::SETTINGS_EXAMPLE_TEXT },
-	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
-	{ IDC_SETTINGS_UPLOAD_BAR_COLOR, ResourceManager::UPLOADS },
-	{ IDC_SETTINGS_SOUNDS, ResourceManager::SETTINGS_SOUNDS },
-	{ IDC_PRIVATE_MESSAGE_BEEP, ResourceManager::SETTINGS_PM_BEEP },
-	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, ResourceManager::SETTINGS_PM_BEEP_OPEN },
-	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, ResourceManager::DOWNLOADS },
-#endif
+	{ IDC_BEEP_NOTIFICATION, N_("Notification sound") },
+	{ IDC_BROWSE, N_("&Browse...") },
+	{ IDC_SETTINGS_COLORS, N_("Colors") },
+	{ IDC_SELWINCOLOR, N_("Select &window color") },
+	{ IDC_SELTEXT, N_("Select &text style") },
+	{ IDC_COLOREXAMPLE, N_("Donate \342\202\254\342\202\254\342\202\254:s! (ok, dirty dollars are fine as well =) (see help menu)") },
+	{ IDC_SETTINGS_REQUIRES_RESTART, N_("Note; most of these options require that you restart DC++") },
+	{ IDC_SETTINGS_UPLOAD_BAR_COLOR, N_("Uploads") },
+	{ IDC_SETTINGS_SOUNDS, N_("Sounds") },
+	{ IDC_PRIVATE_MESSAGE_BEEP, N_("Make an annoying sound every time a private message is received") },
+	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, N_("Make an annoying sound when a private message window is opened") },
+	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, N_("Downloads") },
 	{ 0, 0 }
 };
 

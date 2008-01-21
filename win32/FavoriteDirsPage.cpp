@@ -29,12 +29,10 @@
 #include "LineDlg.h"
 
 PropPage::TextItem FavoriteDirsPage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, ResourceManager::SETTINGS_FAVORITE_DIRS },
-	{ IDC_REMOVE, ResourceManager::REMOVE },
-	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
-	{ IDC_RENAME, ResourceManager::SETTINGS_RENAME_FOLDER },
-#endif
+	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, N_("Favorite download directories") },
+	{ IDC_REMOVE, N_("&Remove") },
+	{ IDC_ADD, N_("&Add folder") },
+	{ IDC_RENAME, N_("Rename") },
 	{ 0, 0 }
 };
 

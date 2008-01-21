@@ -29,23 +29,19 @@ PropPage::Item TabsPage::items[] = {
 };
 
 PropPage::TextItem TabsPage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_BOLD_CONTENTS, ResourceManager::SETTINGS_BOLD_OPTIONS },
-#endif
+	{ IDC_SETTINGS_BOLD_CONTENTS, N_("Tab highlight on content change") },
 	{ 0, 0 }
 };
 
 PropPage::ListItem TabsPage::listItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::BOLD_HUB, ResourceManager::HUB },
-	{ SettingsManager::BOLD_PM, ResourceManager::PRIVATE_MESSAGE },
-	{ SettingsManager::BOLD_SEARCH, ResourceManager::SEARCH },
-	{ SettingsManager::BOLD_SYSTEM_LOG, ResourceManager::SYSTEM_LOG },
-	{ SettingsManager::BOLD_QUEUE, ResourceManager::DOWNLOAD_QUEUE },
-	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, ResourceManager::FINISHED_DOWNLOADS },
-	{ SettingsManager::BOLD_WAITING_USERS, ResourceManager::WAITING_USERS },
-	{ SettingsManager::BOLD_FINISHED_UPLOADS, ResourceManager::FINISHED_UPLOADS },
-#endif
+	{ SettingsManager::BOLD_HUB, N_("Hub") },
+	{ SettingsManager::BOLD_PM, N_("Private message") },
+	{ SettingsManager::BOLD_SEARCH, N_("Search") },
+	{ SettingsManager::BOLD_SYSTEM_LOG, N_("System Log") },
+	{ SettingsManager::BOLD_QUEUE, N_("Download Queue") },
+	{ SettingsManager::BOLD_FINISHED_DOWNLOADS, N_("Finished Downloads") },
+	{ SettingsManager::BOLD_WAITING_USERS, N_("Waiting Users") },
+	{ SettingsManager::BOLD_FINISHED_UPLOADS, N_("Finished Uploads") },
 	{ 0, 0 }
 };
 

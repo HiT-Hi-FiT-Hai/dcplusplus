@@ -28,13 +28,11 @@
 #include "WinUtil.h"
 
 PropPage::TextItem AppearancePage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_APPEARANCE_OPTIONS, ResourceManager::SETTINGS_OPTIONS },
-	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, ResourceManager::SETTINGS_DEFAULT_AWAY_MSG },
-	{ IDC_SETTINGS_TIME_STAMPS_FORMAT, ResourceManager::SETTINGS_TIME_STAMPS_FORMAT },
-	{ IDC_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_LANGUAGE_FILE },
-	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
-#endif
+	{ IDC_SETTINGS_APPEARANCE_OPTIONS, N_("Options") },
+	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, N_("Default away message") },
+	{ IDC_SETTINGS_TIME_STAMPS_FORMAT, N_("Set timestamps") },
+	{ IDC_SETTINGS_LANGUAGE_FILE, N_("Language file") },
+	{ IDC_SETTINGS_REQUIRES_RESTART, N_("Note; most of these options require that you restart DC++") },
 	{ 0, 0 }
 };
 
@@ -45,19 +43,17 @@ PropPage::Item AppearancePage::items[] = {
 };
 
 PropPage::ListItem AppearancePage::listItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::ALT_SORT_ORDER, ResourceManager::SETTINGS_ALT_SORT_ORDER },
-	{ SettingsManager::FILTER_MESSAGES, ResourceManager::SETTINGS_FILTER_MESSAGES },
-	{ SettingsManager::MINIMIZE_TRAY, ResourceManager::SETTINGS_MINIMIZE_TRAY },
-	{ SettingsManager::TIME_STAMPS, ResourceManager::SETTINGS_TIME_STAMPS },
-	{ SettingsManager::STATUS_IN_CHAT, ResourceManager::SETTINGS_STATUS_IN_CHAT },
-	{ SettingsManager::SHOW_JOINS, ResourceManager::SETTINGS_SHOW_JOINS },
-	{ SettingsManager::FAV_SHOW_JOINS, ResourceManager::SETTINGS_FAV_SHOW_JOINS },
-	{ SettingsManager::SORT_FAVUSERS_FIRST, ResourceManager::SETTINGS_SORT_FAVUSERS_FIRST },
-	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
-	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
-	{ SettingsManager::GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
-#endif
+	{ SettingsManager::ALT_SORT_ORDER, N_("Sort all downloads first") },
+	{ SettingsManager::FILTER_MESSAGES, N_("Filter kick and NMDC debug messages") },
+	{ SettingsManager::MINIMIZE_TRAY, N_("Minimize to tray") },
+	{ SettingsManager::TIME_STAMPS, N_("Show timestamps in chat by default") },
+	{ SettingsManager::STATUS_IN_CHAT, N_("View status messages in main chat") },
+	{ SettingsManager::SHOW_JOINS, N_("Show joins / parts in chat by default") },
+	{ SettingsManager::FAV_SHOW_JOINS, N_("Only show joins / parts for favorite users") },
+	{ SettingsManager::SORT_FAVUSERS_FIRST, N_("Sort favorite users first") },
+	{ SettingsManager::USE_SYSTEM_ICONS, N_("Use system icons when browsing files (slows browsing down a bit)") },
+	{ SettingsManager::USE_OEM_MONOFONT, N_("Use OEM monospaced font for viewing text files") },
+	{ SettingsManager::GET_USER_COUNTRY, N_("Guess user country from IP") },
 	{ 0, 0 }
 };
 

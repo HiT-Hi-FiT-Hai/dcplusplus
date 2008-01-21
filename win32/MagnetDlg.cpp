@@ -22,7 +22,6 @@
 
 #include "MagnetDlg.h"
 
-#include <dcpp/ResourceManager.h>
 #include "WinUtil.h"
 
 MagnetDlg::MagnetDlg(SmartWin::Widget* parent, const tstring& aHash, const tstring& aFileName) :

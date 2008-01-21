@@ -28,13 +28,11 @@
 #include "WinUtil.h"
 
 PropPage::TextItem LogPage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
-	{ IDC_SETTINGS_LOG_DIR, ResourceManager::DIRECTORY },
-	{ IDC_BROWSE_LOG, ResourceManager::BROWSE_ACCEL },
-	{ IDC_SETTINGS_FORMAT, ResourceManager::SETTINGS_FORMAT },
-	{ IDC_SETTINGS_FILE_NAME, ResourceManager::SETTINGS_FILE_NAME },
-#endif
+	{ IDC_SETTINGS_LOGGING, N_("Logging") },
+	{ IDC_SETTINGS_LOG_DIR, N_("Directory") },
+	{ IDC_BROWSE_LOG, N_("&Browse...") },
+	{ IDC_SETTINGS_FORMAT, N_("Format") },
+	{ IDC_SETTINGS_FILE_NAME, N_("Filename") },
 	{ 0, 0 }
 };
 
@@ -44,15 +42,13 @@ PropPage::Item LogPage::items[] = {
 };
 
 PropPage::ListItem LogPage::listItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::LOG_MAIN_CHAT, ResourceManager::SETTINGS_LOG_MAIN_CHAT },
-	{ SettingsManager::LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
-	{ SettingsManager::LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS },
-	{ SettingsManager::LOG_UPLOADS, ResourceManager::SETTINGS_LOG_UPLOADS },
-	{ SettingsManager::LOG_SYSTEM, ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
-	{ SettingsManager::LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
-	{ SettingsManager::LOG_FILELIST_TRANSFERS, ResourceManager::SETTINGS_LOG_FILELIST_TRANSFERS },
-#endif
+	{ SettingsManager::LOG_MAIN_CHAT, N_("Log main chat") },
+	{ SettingsManager::LOG_PRIVATE_CHAT, N_("Log private chat") },
+	{ SettingsManager::LOG_DOWNLOADS, N_("Log downloads") },
+	{ SettingsManager::LOG_UPLOADS, N_("Log uploads") },
+	{ SettingsManager::LOG_SYSTEM, N_("Log system messages") },
+	{ SettingsManager::LOG_STATUS_MESSAGES, N_("Log status messages") },
+	{ SettingsManager::LOG_FILELIST_TRANSFERS, N_("Log filelist transfers") },
 	{ 0, 0 }
 };
 

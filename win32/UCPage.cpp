@@ -29,12 +29,10 @@
 
 PropPage::TextItem UCPage::texts[] = {
 	{ IDC_MOVE_UP, N_("Move &Up") },
-#ifdef PORT_ME
-	{ IDC_MOVE_DOWN, ResourceManager::MOVE_DOWN },
-	{ IDC_ADD_MENU, ResourceManager::ADD },
-	{ IDC_CHANGE_MENU, ResourceManager::SETTINGS_CHANGE },
-	{ IDC_REMOVE_MENU, ResourceManager::REMOVE },
-#endif
+	{ IDC_MOVE_DOWN, N_("Move &Down") },
+	{ IDC_ADD_MENU, N_("&Add") },
+	{ IDC_CHANGE_MENU, N_("&Change") },
+	{ IDC_REMOVE_MENU, N_("&Remove") },
 	{ 0, 0 }
 };
 

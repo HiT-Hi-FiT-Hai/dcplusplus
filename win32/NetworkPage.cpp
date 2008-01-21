@@ -27,27 +27,25 @@
 #include "WinUtil.h"
 
 PropPage::TextItem NetworkPage::texts[] = {
-#ifdef PORT_ME
-	{ IDC_DIRECT, ResourceManager::SETTINGS_DIRECT },
-	{ IDC_DIRECT_OUT, ResourceManager::SETTINGS_DIRECT },
-	{ IDC_FIREWALL_UPNP, ResourceManager::SETTINGS_FIREWALL_UPNP },
-	{ IDC_FIREWALL_NAT, ResourceManager::SETTINGS_FIREWALL_NAT },
-	{ IDC_FIREWALL_PASSIVE, ResourceManager::SETTINGS_FIREWALL_PASSIVE },
-	{ IDC_OVERRIDE, ResourceManager::SETTINGS_OVERRIDE },
-	{ IDC_SOCKS5, ResourceManager::SETTINGS_SOCKS5 },
-	{ IDC_SETTINGS_PORTS, ResourceManager::SETTINGS_PORTS },
-	{ IDC_SETTINGS_IP, ResourceManager::SETTINGS_EXTERNAL_IP },
-	{ IDC_SETTINGS_PORT_TCP, ResourceManager::SETTINGS_TCP_PORT },
-	{ IDC_SETTINGS_PORT_UDP, ResourceManager::SETTINGS_UDP_PORT },
-	{ IDC_SETTINGS_PORT_TLS, ResourceManager::SETTINGS_TLS_PORT },
-	{ IDC_SETTINGS_SOCKS5_IP, ResourceManager::SETTINGS_SOCKS5_IP },
-	{ IDC_SETTINGS_SOCKS5_PORT, ResourceManager::SETTINGS_SOCKS5_PORT },
-	{ IDC_SETTINGS_SOCKS5_USERNAME, ResourceManager::SETTINGS_SOCKS5_USERNAME },
-	{ IDC_SETTINGS_SOCKS5_PASSWORD, ResourceManager::PASSWORD },
-	{ IDC_SOCKS_RESOLVE, ResourceManager::SETTINGS_SOCKS5_RESOLVE },
-	{ IDC_SETTINGS_INCOMING, ResourceManager::SETTINGS_INCOMING },
-	{ IDC_SETTINGS_OUTGOING, ResourceManager::SETTINGS_OUTGOING },
-#endif 
+	{ IDC_DIRECT, N_("Direct connection") },
+	{ IDC_DIRECT_OUT, N_("Direct connection") },
+	{ IDC_FIREWALL_UPNP, N_("Firewall with UPnP") },
+	{ IDC_FIREWALL_NAT, N_("Firewall with manual port forwarding") },
+	{ IDC_FIREWALL_PASSIVE, N_("Firewall (passive, last resort)") },
+	{ IDC_OVERRIDE, N_("Don't allow hub/UPnP to override") },
+	{ IDC_SOCKS5, N_("SOCKS5") },
+	{ IDC_SETTINGS_PORTS, N_("Ports") },
+	{ IDC_SETTINGS_IP, N_("External / WAN IP") },
+	{ IDC_SETTINGS_PORT_TCP, N_("TCP") },
+	{ IDC_SETTINGS_PORT_UDP, N_("UDP") },
+	{ IDC_SETTINGS_PORT_TLS, N_("TLS") },
+	{ IDC_SETTINGS_SOCKS5_IP, N_("Socks IP") },
+	{ IDC_SETTINGS_SOCKS5_PORT, N_("Port") },
+	{ IDC_SETTINGS_SOCKS5_USERNAME, N_("Login") },
+	{ IDC_SETTINGS_SOCKS5_PASSWORD, N_("Password") },
+	{ IDC_SOCKS_RESOLVE, N_("Use SOCKS5 server to resolve host names") },
+	{ IDC_SETTINGS_INCOMING, N_("Incoming connection settings (see Help/FAQ if unsure)") },
+	{ IDC_SETTINGS_OUTGOING, N_("Outgoing connection settings") },
 	{ 0, 0 }
 };
 

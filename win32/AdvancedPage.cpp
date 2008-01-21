@@ -27,27 +27,25 @@
 PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };
 
 AdvancedPage::ListItem AdvancedPage::listItems[] = {
-#ifdef PORT_ME
-	{ SettingsManager::AUTO_AWAY, ResourceManager::SETTINGS_AUTO_AWAY },
-	{ SettingsManager::AUTO_FOLLOW, ResourceManager::SETTINGS_AUTO_FOLLOW },
-	{ SettingsManager::CLEAR_SEARCH, ResourceManager::SETTINGS_CLEAR_SEARCH },
-	{ SettingsManager::LIST_DUPES, ResourceManager::SETTINGS_LIST_DUPES },
-	{ SettingsManager::URL_HANDLER, ResourceManager::SETTINGS_URL_HANDLER },
-	{ SettingsManager::MAGNET_REGISTER, ResourceManager::SETTINGS_URL_MAGNET },
-	{ SettingsManager::KEEP_LISTS, ResourceManager::SETTINGS_KEEP_LISTS },
-	{ SettingsManager::AUTO_KICK, ResourceManager::SETTINGS_AUTO_KICK },
-	{ SettingsManager::SHOW_PROGRESS_BARS, ResourceManager::SETTINGS_SHOW_PROGRESS_BARS },
-	{ SettingsManager::SFV_CHECK, ResourceManager::SETTINGS_SFV_CHECK },
-	{ SettingsManager::NO_AWAYMSG_TO_BOTS, ResourceManager::SETTINGS_NO_AWAYMSG_TO_BOTS },
-	{ SettingsManager::ADLS_BREAK_ON_FIRST, ResourceManager::SETTINGS_ADLS_BREAK_ON_FIRST },
-	{ SettingsManager::COMPRESS_TRANSFERS, ResourceManager::SETTINGS_COMPRESS_TRANSFERS },
-	{ SettingsManager::HUB_USER_COMMANDS, ResourceManager::SETTINGS_HUB_USER_COMMANDS },
-	{ SettingsManager::SEND_UNKNOWN_COMMANDS, ResourceManager::SETTINGS_SEND_UNKNOWN_COMMANDS },
-	{ SettingsManager::ADD_FINISHED_INSTANTLY, ResourceManager::SETTINGS_ADD_FINISHED_INSTANTLY },
-	{ SettingsManager::USE_CTRL_FOR_LINE_HISTORY, ResourceManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY },
-	{ SettingsManager::AUTO_KICK_NO_FAVS, ResourceManager::SETTINGS_AUTO_KICK_NO_FAVS },
-	{ SettingsManager::SHOW_SHELL_MENU, ResourceManager::SETTINGS_SHOW_SHELL_MENU },
-#endif
+	{ SettingsManager::AUTO_AWAY, N_("Auto-away on minimize (and back on restore)") },
+	{ SettingsManager::AUTO_FOLLOW, N_("Automatically follow redirects") },
+	{ SettingsManager::CLEAR_SEARCH, N_("Clear search box after each search") },
+	{ SettingsManager::LIST_DUPES, N_("Keep duplicate files in your file list") },
+	{ SettingsManager::URL_HANDLER, N_("Register with Windows to handle dchub:// and adc:// URL links") },
+	{ SettingsManager::MAGNET_REGISTER, N_("Register with Windows to handle magnet: URI links") },
+	{ SettingsManager::KEEP_LISTS, N_("Don't delete file lists when exiting") },
+	{ SettingsManager::AUTO_KICK, N_("Automatically disconnect users who leave the hub") },
+	{ SettingsManager::SHOW_PROGRESS_BARS, N_("Show progress bars for transfers") },
+	{ SettingsManager::SFV_CHECK, N_("Enable automatic SFV checking") },
+	{ SettingsManager::NO_AWAYMSG_TO_BOTS, N_("Don't send the away message to bots") },
+	{ SettingsManager::ADLS_BREAK_ON_FIRST, N_("Break on first ADLSearch match") },
+	{ SettingsManager::COMPRESS_TRANSFERS, N_("Enable safe and compressed transfers") },
+	{ SettingsManager::HUB_USER_COMMANDS, N_("Accept custom user commands from hub") },
+	{ SettingsManager::SEND_UNKNOWN_COMMANDS, N_("Send unknown /commands to the hub") },
+	{ SettingsManager::ADD_FINISHED_INSTANTLY, N_("Add finished files to share instantly (if shared)") },
+	{ SettingsManager::USE_CTRL_FOR_LINE_HISTORY, N_("Use CTRL for line history") },
+	{ SettingsManager::AUTO_KICK_NO_FAVS, N_("Don't automatically disconnect favorite users who leave the hub") },
+	{ SettingsManager::SHOW_SHELL_MENU, N_("Show shell menu where possible") },
 	{ 0, 0 }
 };
 

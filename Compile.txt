@@ -9,9 +9,6 @@ How to compile in n easy steps:
     but if you want to experiment you can try the potentially slower sjlj. After installing gcc, you will
     need to go to the bin folder of your mingw installation and copy g++-dw2/sjlj.exe and gcc-dw2/sjlj.exe to g++.exe
     and gcc.exe respectively.
-    You will also need the gettext tools: gettext-0.16.1-1-bin.tar.bz2, gettext-0.16.1-1-dll.tar.bz2 and 
-    libiconv-1.11-1-dll.tar.bz2. Extract and make sure they're in your PATH.
-    
     Note; Make sure gcc/g++ is in your path and before any cygwin installation.
 
 1b) or install Microsoft Visual C++ 8.0 (I don't use it so there might be some compile problems)
@@ -29,7 +26,15 @@ and copy the file to the include directory of your compiler (or add it to the in
    include and library files to the respective directories in the htmlhelp folder. Make sure hhc.exe is
    in your PATH.
 
-4) Open a command prompt and type "scons" followed by some options:
+4) Install gettext (http://www.gnu.org/software/gettext/). The easiest way to do this is to get the
+   precompiled binaries from http://www.gimp.org/~tml/gimp/win32/downloads.html, you'll need 
+   gettext-runtime and gettext-tools, at least version 0.17. These links should work:
+   http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime-0.17.zip
+   http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-tools-0.17.zip
+
+   Make sure gettext is in your PATH.
+   
+5) Open a command prompt and type "scons" followed by some options:
 	"tools=mingw" - Use mingw for building (default)
 	"tools=default" - Use msvc for building (yes, the option value is strange)
 	"mode=debug" - Compile a debug build (default)

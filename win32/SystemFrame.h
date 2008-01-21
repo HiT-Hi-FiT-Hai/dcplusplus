@@ -22,7 +22,6 @@
 #include "StaticFrame.h"
 
 #include <dcpp/LogManager.h>
-#include <dcpp/ResourceManager.h>
 #include "resource.h"
 
 class SystemFrame : public StaticFrame<SystemFrame>,

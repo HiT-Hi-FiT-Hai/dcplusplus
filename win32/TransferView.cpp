@@ -23,7 +23,6 @@
 #include "WinUtil.h"
 #include "HoldRedraw.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/SettingsManager.h>
 #include <dcpp/ConnectionManager.h>
 #include <dcpp/DownloadManager.h>

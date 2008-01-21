@@ -156,7 +156,7 @@ mo_args = ['msgfmt', '-c', '-o', '$TARGET', '$SOURCE']
 mo_bld = Builder (action = Action([mo_args], 'Compiling message catalog $TARGET from $SOURCES'))
 env.Append(BUILDERS = {'MoBuild' : mo_bld})
 
-pot_args = ['xgettext', '--from-code=UTF-8', '--foreign-user',# '--package-name=$PACKAGE',
+pot_args = ['xgettext', '--from-code=UTF-8', '--foreign-user', '--package-name=$PACKAGE',
 		'--copyright-holder=Jacek Sieka', '--msgid-bugs-address=dcplusplus-devel@lists.sourceforge.net',
 		'--no-wrap', '--keyword=_', '--keyword=T_', '--keyword=TF_', '--keyword=TFN_:1,2',
 		'--keyword=F_', '--keyword=gettext_noop', '--keyword=N_', '--boost', '-s',

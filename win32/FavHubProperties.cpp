@@ -23,7 +23,6 @@
 #include "FavHubProperties.h"
 
 #include <dcpp/FavoriteManager.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/version.h>
 
 FavHubProperties::FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry) :
