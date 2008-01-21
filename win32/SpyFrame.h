@@ -36,9 +36,6 @@ public:
 		STATUS_LAST
 	};
 
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::SEARCH_SPY;
-	static const unsigned ICON_RESOURCE = IDR_SPY;
-
 protected:
 	typedef StaticFrame<SpyFrame> BaseType;
 	friend class StaticFrame<SpyFrame>;

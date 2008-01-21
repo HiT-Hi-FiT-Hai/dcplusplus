@@ -38,8 +38,6 @@ public:
 		STATUS_USERS,
 		STATUS_LAST
 	};
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::PUBLIC_HUBS;
-	static const unsigned ICON_RESOURCE = IDR_PUBLICHUBS;
 	
 private:
 	typedef StaticFrame<PublicHubsFrame> BaseType;

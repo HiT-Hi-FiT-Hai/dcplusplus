@@ -35,9 +35,6 @@ public:
 		STATUS_STATUS,
 		STATUS_LAST
 	};
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::WAITING_USERS;
-	static const unsigned ICON_RESOURCE = IDR_WAITING_USERS;
-	
 protected:
 	typedef StaticFrame<WaitingUsersFrame> BaseType;
 	friend class StaticFrame<WaitingUsersFrame>;

@@ -34,9 +34,6 @@ public:
 		STATUS_LAST
 	};
 	
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_HUBS;
-	static const unsigned ICON_RESOURCE = IDR_FAVORITES;
-
 protected:
 	typedef StaticFrame<FavHubsFrame> BaseType;
 	friend class StaticFrame<FavHubsFrame>;

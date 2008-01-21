@@ -37,8 +37,6 @@ public:
 		STATUS_STATUS,
 		STATUS_LAST
 	};
-	static const unsigned ICON_RESOURCE = IDR_QUEUE;
-
 protected:
 	typedef StaticFrame<DownloadsFrame> BaseType;
 	friend class StaticFrame<DownloadsFrame>;

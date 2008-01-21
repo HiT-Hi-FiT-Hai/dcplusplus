@@ -37,7 +37,7 @@ static const char* columnNames[] = {
 };
 
 ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent),
+	BaseType(mdiParent, T_("Automatic Directory Listing Search"), IDR_ADLSEARCH),
 	add(0),
 	properties(0),
 	up(0),

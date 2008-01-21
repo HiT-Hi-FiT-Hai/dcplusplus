@@ -38,8 +38,6 @@ public:
 		STATUS_STATUS,
 		STATUS_LAST
 	};
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FAVORITE_USERS;
-	static const unsigned ICON_RESOURCE = IDR_USERS;
 
 protected:
 	typedef StaticFrame<UsersFrame> BaseType;

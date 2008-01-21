@@ -28,17 +28,11 @@ template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
 
-	StaticFrame(SmartWin::WidgetTabView* mdiClient, const tstring& title) : 
-		MDIChildFrame<T>(mdiClient, title, SmartWin::IconPtr(new SmartWin::Icon(T::ICON_RESOURCE))) 
+	StaticFrame(SmartWin::WidgetTabView* mdiClient, const tstring& title, int icon) : 
+		MDIChildFrame<T>(mdiClient, title, SmartWin::IconPtr(new SmartWin::Icon(icon))) 
 	{ 
 	}
 
-	/** @deprecated */
-	StaticFrame(SmartWin::WidgetTabView* mdiClient) : 
-		MDIChildFrame<T>(mdiClient, TSTRING_I(T::TITLE_RESOURCE), SmartWin::IconPtr(new SmartWin::Icon(T::ICON_RESOURCE))) 
-	{ 
-	}
-	
 	virtual ~StaticFrame() { 
 		frame = 0; 
 	}

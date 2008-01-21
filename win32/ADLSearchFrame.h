@@ -29,9 +29,6 @@ public:
 		STATUS_LAST
 	};
 
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::ADL_SEARCH;
-	static const unsigned ICON_RESOURCE = IDR_ADLSEARCH;
-
 protected:
 	typedef StaticFrame<ADLSearchFrame> BaseType;
 	friend class StaticFrame<ADLSearchFrame>;

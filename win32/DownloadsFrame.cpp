@@ -42,7 +42,7 @@ static const char* columnNames[] = {
 };
 
 DownloadsFrame::DownloadsFrame(SmartWin::WidgetTabView* mdiParent) : 
-	BaseType(mdiParent, T_("Downloads")),
+	BaseType(mdiParent, T_("Downloads"), IDR_QUEUE),
 	downloads(0),
 	startup(true)
 {

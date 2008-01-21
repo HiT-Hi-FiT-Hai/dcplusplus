@@ -24,7 +24,7 @@
 #include <dcpp/TimerManager.h>
 
 StatsFrame::StatsFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent),
+	BaseType(mdiParent, T_("Network Statistics"), IDR_NET_STATS),
 	pen(new SmartWin::Pen(WinUtil::textColor)),
 	upPen(new SmartWin::Pen(SETTING(UPLOAD_BAR_COLOR))),
 	downPen(new SmartWin::Pen(SETTING(DOWNLOAD_BAR_COLOR))),

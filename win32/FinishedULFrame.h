@@ -29,8 +29,6 @@ public:
 	virtual ~FinishedULFrame() { }
 
 	typedef FinishedFrameBase<FinishedULFrame, true> BaseType;
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FINISHED_UPLOADS;
-	static const unsigned ICON_RESOURCE = IDR_FINISHED_UL;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_FINISHED_UL_FRAME_H)

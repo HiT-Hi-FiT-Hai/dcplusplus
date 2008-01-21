@@ -29,9 +29,6 @@ public:
 	virtual ~FinishedDLFrame() { }
 
 	typedef FinishedFrameBase<FinishedDLFrame, false> BaseType;
-	
-	static const ResourceManager::Strings TITLE_RESOURCE = ResourceManager::FINISHED_DOWNLOADS;
-	static const unsigned ICON_RESOURCE = IDR_FINISHED_DL;
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_FINISHED_DL_FRAME_H)

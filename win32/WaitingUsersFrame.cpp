@@ -30,7 +30,7 @@
 
 // Constructor
 WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent)
+	BaseType(mdiParent, T_("Waiting Users"), IDR_WAITING_USERS)
 {
 	UploadManager::getInstance()->addListener(this);
 
