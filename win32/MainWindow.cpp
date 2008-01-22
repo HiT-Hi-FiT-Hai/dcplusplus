@@ -267,31 +267,31 @@ void MainWindow::initToolbar() {
 	}
 	
 	int image = 0;
-	toolbar->appendItem(IDC_PUBLIC_HUBS, image++, TSTRING(PUBLIC_HUBS));
-	toolbar->appendItem(IDC_RECONNECT, image++, TSTRING(MENU_RECONNECT));
-	toolbar->appendItem(IDC_FOLLOW, image++, TSTRING(MENU_FOLLOW_REDIRECT));
+	toolbar->appendItem(IDC_PUBLIC_HUBS, image++, T_("Public Hubs"));
+	toolbar->appendItem(IDC_RECONNECT, image++, T_("Reconnect"));
+	toolbar->appendItem(IDC_FOLLOW, image++, T_("Follow last redirect"));
 	toolbar->appendSeparator();
-	toolbar->appendItem(IDC_FAVORITE_HUBS, image++, TSTRING(FAVORITE_HUBS));
-	toolbar->appendItem(IDC_FAVUSERS, image++, TSTRING(FAVORITE_USERS));
+	toolbar->appendItem(IDC_FAVORITE_HUBS, image++, T_("Favorite Hubs"));
+	toolbar->appendItem(IDC_FAVUSERS, image++, T_("Favorite Users"));
 	toolbar->appendSeparator();
-	toolbar->appendItem(IDC_QUEUE, image++, TSTRING(DOWNLOAD_QUEUE));
-	toolbar->appendItem(IDC_FINISHED_DL, image++, TSTRING(FINISHED_DOWNLOADS));
-	toolbar->appendItem(IDC_WAITING_USERS, image++, TSTRING(WAITING_USERS));
-	toolbar->appendItem(IDC_FINISHED_UL, image++, TSTRING(FINISHED_UPLOADS));
+	toolbar->appendItem(IDC_QUEUE, image++, T_("Download Queue"));
+	toolbar->appendItem(IDC_FINISHED_DL, image++, T_("Finished Downloads"));
+	toolbar->appendItem(IDC_WAITING_USERS, image++, T_("Waiting Users"));
+	toolbar->appendItem(IDC_FINISHED_UL, image++, T_("Finished Uploads"));
 	toolbar->appendSeparator();
-	toolbar->appendItem(IDC_SEARCH, image++, TSTRING(SEARCH));
-	toolbar->appendItem(IDC_ADL_SEARCH, image++, TSTRING(ADL_SEARCH));
-	toolbar->appendItem(IDC_SEARCH_SPY, image++, TSTRING(SEARCH_SPY));
+	toolbar->appendItem(IDC_SEARCH, image++, T_("Search"));
+	toolbar->appendItem(IDC_ADL_SEARCH, image++, T_("ADL Search"));
+	toolbar->appendItem(IDC_SEARCH_SPY, image++, T_("Search Spy"));
 	toolbar->appendSeparator();
-	toolbar->appendItem(IDC_OPEN_FILE_LIST, image++, TSTRING(MENU_OPEN_FILE_LIST));
-	toolbar->appendItem(IDC_SETTINGS, image++, TSTRING(SETTINGS));
-	toolbar->appendItem(IDC_NOTEPAD, image++, TSTRING(NOTEPAD));
+	toolbar->appendItem(IDC_OPEN_FILE_LIST, image++, T_("Open file list..."));
+	toolbar->appendItem(IDC_SETTINGS, image++, T_("Settings"));
+	toolbar->appendItem(IDC_NOTEPAD, image++, T_("Notepad"));
 }
 
 void MainWindow::initStatusBar() {
 	dcdebug("initStatusBar\n");
 	initStatus(true);
-	statusSizes[STATUS_AWAY] = status->getTextSize(TSTRING(AWAY)).x + 12;
+	statusSizes[STATUS_AWAY] = status->getTextSize(T_("AWAY")).x + 12;
 	///@todo set to checkbox width + resizedrag width really
 	statusSizes[STATUS_DUMMY] = 32;
 }
@@ -547,15 +547,13 @@ void MainWindow::updateStatus() {
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + static_cast<int64_t>(updiff));
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + static_cast<int64_t>(downdiff));
 
-	setStatus(STATUS_AWAY, Util::getAway() ? TSTRING(AWAY) : _T(""));
+	setStatus(STATUS_AWAY, Util::getAway() ? T_("AWAY") : _T(""));
 	setStatus(STATUS_COUNTS, Text::toT(Client::getCounts()));
-	setStatus(STATUS_SLOTS, Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
-	setStatus(STATUS_DOWN_TOTAL, Text::toT("D: " + Util::formatBytes(down)));
-	setStatus(STATUS_UP_TOTAL, Text::toT("U: " + Util::formatBytes(up)));
-	setStatus(STATUS_DOWN_DIFF, Text::toT("D: " + Util::formatBytes((downdiff*1000)/tdiff) + "/s ("
-	    + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
-	setStatus(STATUS_UP_DIFF, Text::toT("U: " + Util::formatBytes((updiff*1000)/tdiff) + "/s ("
-	    + Util::toString(UploadManager::getInstance()->getUploadCount()) + ")"));
+	setStatus(STATUS_SLOTS, str(TF_("Slots: %1%/%2%") % UploadManager::getInstance()->getFreeSlots() % (SETTING(SLOTS))));
+	setStatus(STATUS_DOWN_TOTAL, str(TF_("D: %1%") % Text::toT(Util::formatBytes(down))));
+	setStatus(STATUS_UP_TOTAL, str(TF_("U: %1%") % Text::toT(Util::formatBytes(up))));
+	setStatus(STATUS_DOWN_DIFF, str(TF_("D: %1%/s (%2%)") % Text::toT(Util::formatBytes((downdiff*1000)/tdiff)) % DownloadManager::getInstance()->getDownloadCount()));
+	setStatus(STATUS_UP_DIFF, str(TF_("U: %1%/s (%2%)") % Text::toT(Util::formatBytes((updiff*1000)/tdiff)) % UploadManager::getInstance()->getUploadCount()));
 }
 
 MainWindow::~MainWindow() {
@@ -758,10 +756,9 @@ public:
 			DirectoryListing dl(u);
 			try {
 				dl.loadFile(*i);
-				const size_t BUF_SIZE = STRING(MATCHED_FILES).size() + 16;
-				AutoArray<char> tmp(BUF_SIZE);
-				snprintf(tmp, BUF_SIZE, CSTRING(MATCHED_FILES), QueueManager::getInstance()->matchListing(dl));
-				LogManager::getInstance()->message(Util::toString(ClientManager::getInstance()->getNicks(u->getCID())) + ": " + string(tmp));
+				LogManager::getInstance()->message(str(FN_("%1%: matched %2% file", "%1%: matched %2% files", QueueManager::getInstance()->matchListing(dl)) 
+				% Util::toString(ClientManager::getInstance()->getNicks(u->getCID()))
+				% QueueManager::getInstance()->matchListing(dl)));
 			} catch(const Exception&) {
 
 			}
@@ -849,8 +846,7 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 							const string& msg = xml.getChildData();
 							createMessageBox().show(Text::toT(msg), Text::toT(title));
 						} else {
-							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
-							if(createMessageBox().show(Text::toT(msg), Text::toT(title), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES) {
+							if(createMessageBox().show(str(TF_("%1%\nOpen download page?") % Text::toT(xml.getChildData())), Text::toT(title), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES) {
 								WinUtil::openLink(Text::toT(url));
 							}
 						}
@@ -1000,7 +996,7 @@ LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
 		SmartWin::ScreenCoordinate pt;
 		WidgetMenuPtr trayMenu = createMenu(true);
 		trayMenu->appendItem(IDC_TRAY_SHOW, T_("Show"), std::tr1::bind(&MainWindow::handleRestore, this));
-		trayMenu->appendItem(IDC_TRAY_QUIT, TSTRING(MENU_EXIT), std::tr1::bind(&MainWindow::close, this, true));
+		trayMenu->appendItem(IDC_TRAY_QUIT, T_("Exit"), std::tr1::bind(&MainWindow::close, this, true));
 		trayMenu->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"));
 		trayMenu->appendItem(IDC_SETTINGS, T_("Settings..."));
 		trayMenu->setDefaultItem(0,TRUE);

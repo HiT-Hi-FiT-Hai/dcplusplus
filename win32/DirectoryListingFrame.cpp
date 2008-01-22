@@ -308,11 +308,11 @@ void DirectoryListingFrame::setWindowTitle() {
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu, ii);
 	
 	if(ii->type == ItemInfo::FILE) {
-		menu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&DirectoryListingFrame::handleViewAsText, this));
+		menu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&DirectoryListingFrame::handleViewAsText, this));
 		
 		menu->appendSeparatorItem();
 		
@@ -322,7 +322,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemI
 	if((ii->type == ItemInfo::FILE && ii->file->getAdls()) ||
 		(ii->type == ItemInfo::DIRECTORY && ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) )	{
 		menu->appendSeparatorItem();
-		menu->appendItem(IDC_GO_TO_DIRECTORY, T_("Go to directory"), std::tr1::bind(&DirectoryListingFrame::handleGoToDirectory, this));
+		menu->appendItem(IDC_GO_TO_DIRECTORY, T_("&Go to directory"), std::tr1::bind(&DirectoryListingFrame::handleGoToDirectory, this));
 	}
 	
 	addUserCommands(menu);
@@ -333,7 +333,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemI
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
 	addUserCommands(menu);
 	
@@ -345,7 +345,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeDirMenu() {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
 	return menu;
 }
@@ -355,7 +355,7 @@ void DirectoryListingFrame::addUserCommands(const WidgetMenuPtr& parent) {
 }
 
 void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii) {
-	WidgetMenuPtr menu = parent->appendPopup(T_("Download to..."));
+	WidgetMenuPtr menu = parent->appendPopup(T_("Download &to..."));
 	StringPairList spl = FavoriteManager::getInstance()->getFavoriteDirs();
 	size_t i = 0;
 	for(; i < spl.size(); ++i) {
@@ -366,7 +366,7 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 		menu->appendSeparatorItem();
 	}
 
-	menu->appendItem(IDC_DOWNLOAD_BROWSE, T_("Browse..."), std::tr1::bind(&DirectoryListingFrame::handleDownloadBrowse, this));
+	menu->appendItem(IDC_DOWNLOAD_BROWSE, T_("&Browse..."), std::tr1::bind(&DirectoryListingFrame::handleDownloadBrowse, this));
 
 	targets.clear();
 	

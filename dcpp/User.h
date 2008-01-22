@@ -30,7 +30,7 @@
 namespace dcpp {
 
 /** A user connected to one or more hubs. */
-class User : public FastAlloc<User>, public PointerBase, public Flags
+class User : public FastAlloc<User>, public intrusive_ptr_base, public Flags
 {
 public:
 	enum Bits {

@@ -27,7 +27,6 @@
 #include <dcpp/Client.h>
 #include <dcpp/LogManager.h>
 #include <dcpp/User.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/ConnectionManager.h>
 #include <dcpp/SearchManager.h>
@@ -824,7 +823,7 @@ int HubFrame::UserInfo::compareItems(const HubFrame::UserInfo* a, const HubFrame
 }
 
 void HubFrame::on(Connecting, Client*) throw() {
-	speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getHubUrl() + "...");
+	speak(ADD_STATUS_LINE, str(F_("Connecting to %1%...") % client->getHubUrl()));
 	speak(SET_WINDOW_TITLE, client->getHubUrl());
 }
 void HubFrame::on(Connected, Client*) throw() {
@@ -846,14 +845,14 @@ void HubFrame::on(ClientListener::UserRemoved, Client*, const OnlineUser& user) 
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() {
 	if(ClientManager::getInstance()->isConnected(line)) {
-		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
+		speak(ADD_STATUS_LINE, _("Redirect request received to a hub that's already connected"));
 		return;
 	}
 	redirect = line;
 	if(BOOLSETTING(AUTO_FOLLOW)) {
 		speak(FOLLOW);
 	} else {
-		speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
+		speak(ADD_STATUS_LINE, str(F_("Press the follow redirect button to connect to %1%") % line));
 	}
 }
 
@@ -908,7 +907,7 @@ void HubFrame::on(NickTaken, Client*) throw() {
 }
 
 void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
-	speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line);
+	speak(ADD_STATUS_LINE, str(F_("Search spam detected from %1%") % line));
 }
 
 tstring HubFrame::getStatusShared() const {
@@ -1158,7 +1157,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 		WidgetMenuPtr menu = createMenu(true);
 		appendUserItems(getParent(), menu);
 		
-		menu->appendItem(IDC_COPY_NICK, T_("Copy nick to clipboard"), std::tr1::bind(&HubFrame::handleCopyNick, this));
+		menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&HubFrame::handleCopyNick, this));
 		menu->setDefaultItem(IDC_GETLIST);
 		prepareMenu(menu, UserCommand::CONTEXT_CHAT, client->getHubUrl());
 		
@@ -1174,15 +1173,15 @@ bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
-		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this));
 	}
 	
-	menu->appendItem(IDC_RECONNECT, TSTRING(MENU_RECONNECT), std::tr1::bind(&HubFrame::handleReconnect, this));
-	menu->appendItem(IDC_COPY_HUB, T_("Copy address to clipboard"), std::tr1::bind(&HubFrame::handleCopyHub, this));
+	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this));
+	menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&HubFrame::handleCopyHub, this));
 
 	prepareMenu(menu, UserCommand::CONTEXT_HUB, url);
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, T_("Close"), std::tr1::bind(&HubFrame::close, this, true));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true));
 
 	inTabMenu = true;
 	

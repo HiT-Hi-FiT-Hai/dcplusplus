@@ -27,7 +27,6 @@
 #include <dcpp/ShareManager.h>
 #include <dcpp/ClientManager.h>
 #include <dcpp/HashManager.h>
-#include <dcpp/ResourceManager.h>
 #include <dcpp/LogManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/StringTokenizer.h>
@@ -979,7 +978,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 	//  as = acceptable substitute
 	//  dn = display name
 	if (Util::strnicmp(aUrl.c_str(), _T("magnet:?"), 8) == 0) {
-		LogManager::getInstance()->message(STRING(MAGNET_DLG_TITLE) + ": " + Text::fromT(aUrl));
+		LogManager::getInstance()->message(str(F_("MAGNET Link detected: %1%") % Text::fromT(aUrl)));
 		StringTokenizer<tstring> mag(aUrl.substr(8), _T('&'));
 		typedef map<tstring, tstring> MagMap;
 		MagMap hashes;

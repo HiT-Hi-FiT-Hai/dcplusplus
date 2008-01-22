@@ -61,7 +61,7 @@ protected:
 			items->setListViewStyle(LVS_EX_LABELTIP | LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 			addWidget(items);
 
-			items->createColumns(ResourceManager::getInstance()->getStrings(columnNames));
+			items->createColumns(WinUtil::getStrings(columnNames));
 			items->setColumnOrder(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_ORDER : SettingsManager::FINISHED_ORDER), columnIndexes));
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
 			items->setSort(COLUMN_DONE);
@@ -128,7 +128,7 @@ private:
 
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
-	static ResourceManager::Strings columnNames[COLUMN_LAST];
+	static const char* columnNames[COLUMN_LAST];
 
 	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
@@ -220,12 +220,12 @@ private:
 					shellMenu.SetPath(Text::utf8ToWide(path));
 
 					typename T::WidgetMenuPtr pShellMenu = this->createMenu(true);
-					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
-					pShellMenu->appendItem(IDC_OPEN_FILE, T_("Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
-					pShellMenu->appendItem(IDC_OPEN_FOLDER, T_("Open folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
+					pShellMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
+					pShellMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
+					pShellMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
 					pShellMenu->appendSeparatorItem();
-					pShellMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
-					pShellMenu->appendItem(IDC_REMOVE_ALL, T_("Remove all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
+					pShellMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&ThisType::handleRemove, this));
+					pShellMenu->appendItem(IDC_REMOVE_ALL, T_("Remove &all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
 					pShellMenu->appendSeparatorItem();
 
 					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
@@ -236,12 +236,12 @@ private:
 			}
 
 			typename T::WidgetMenuPtr contextMenu = this->createMenu(true);
-			contextMenu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
-			contextMenu->appendItem(IDC_OPEN_FILE, T_("Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
-			contextMenu->appendItem(IDC_OPEN_FOLDER, T_("Open folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
+			contextMenu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&ThisType::handleViewAsText, this));
+			contextMenu->appendItem(IDC_OPEN_FILE, T_("&Open"), std::tr1::bind(&ThisType::handleOpenFile, this));
+			contextMenu->appendItem(IDC_OPEN_FOLDER, T_("Open &folder"), std::tr1::bind(&ThisType::handleOpenFolder, this));
 			contextMenu->appendSeparatorItem();
-			contextMenu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&ThisType::handleRemove, this));
-			contextMenu->appendItem(IDC_REMOVE_ALL, T_("Remove all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
+			contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&ThisType::handleRemove, this));
+			contextMenu->appendItem(IDC_REMOVE_ALL, T_("Remove &all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
 			contextMenu->setDefaultItem(IDC_OPEN_FILE);
 			contextMenu->trackPopupMenu(static_cast<T*>(this), pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 			return true;
@@ -330,8 +330,15 @@ template <class T, bool in_UL>
 int FinishedFrameBase<T, in_UL>::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80, 90 };
 
 template <class T, bool in_UL>
-ResourceManager::Strings FinishedFrameBase<T, in_UL>::columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH,
-ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
+const char* FinishedFrameBase<T, in_UL>::columnNames[] = { 
+	N_("Filename"),
+	N_("Time"),
+	N_("Path"), 
+	N_("Nick"),
+	N_("Hub"),
+	N_("Size"),
+	N_("Speed"),
+	N_("CRC Checked")
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_FINISHED_FRAME_BASE_H)

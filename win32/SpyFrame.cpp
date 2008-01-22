@@ -28,6 +28,8 @@
 
 int SpyFrame::columnSizes[] = { 305, 70, 85 };
 int SpyFrame::columnIndexes[] = { COLUMN_STRING, COLUMN_COUNT, COLUMN_TIME };
+const size_t SpyFrame::AVG_TIME; // TODO gcc needs this - why?
+
 static const char* columnNames[] = {
 	N_("Search String"),
 	N_("Count"),
@@ -104,12 +106,12 @@ void SpyFrame::initSecond() {
 
 bool SpyFrame::eachSecond() {
 	size_t tot = std::accumulate(perSecond, perSecond + AVG_TIME, 0u);
-	size_t t = std::max(1u, std::min(cur, (size_t)AVG_TIME));
+	size_t t = std::max(1u, std::min(cur, AVG_TIME));
 	
 	float x = static_cast<float>(tot)/t;
 
 	cur++;
-	perSecond[cur] = 0;
+	perSecond[cur % AVG_TIME] = 0;
 	setStatus(STATUS_AVG_PER_SECOND, str(TF_("Average/s: %1%") % x));
 	return true;
 }
@@ -186,7 +188,7 @@ bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		searchString = searches->getText(searches->getSelectedIndex(), COLUMN_STRING);
 
 		WidgetMenuPtr contextMenu = createMenu(true);
-		contextMenu->appendItem(IDC_SEARCH, T_("Search"), std::tr1::bind(&SpyFrame::handleSearch, this));
+		contextMenu->appendItem(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this));
 
 		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;

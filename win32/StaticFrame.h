@@ -21,7 +21,6 @@
 
 #include "MDIChildFrame.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/Text.h>
 
 template<class T>

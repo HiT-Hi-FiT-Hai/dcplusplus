@@ -444,9 +444,9 @@ bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		}
 
 		WidgetMenuPtr menu = createMenu(true);
-		menu->appendItem(IDC_CONNECT, TSTRING(CONNECT), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
-		menu->appendItem(IDC_ADD, T_("Add To Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
-		menu->appendItem(IDC_COPY_HUB, T_("Copy address to clipboard"), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
+		menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&PublicHubsFrame::handleConnect, this));
+		menu->appendItem(IDC_ADD, T_("Add To &Favorites"), std::tr1::bind(&PublicHubsFrame::handleAdd, this));
+		menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&PublicHubsFrame::handleCopyHub, this));
 		menu->setDefaultItem(IDC_CONNECT);
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;

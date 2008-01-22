@@ -86,7 +86,7 @@ typedef Upload* UploadPtr;
 typedef std::vector<UploadPtr> UploadList;
 
 class User;
-typedef Pointer<User> UserPtr;
+typedef boost::intrusive_ptr<User> UserPtr;
 typedef std::vector<UserPtr> UserList;
 
 class UserCommand;

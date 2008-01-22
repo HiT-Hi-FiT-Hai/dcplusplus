@@ -957,7 +957,7 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
 	WidgetMenuPtr menu = createMenu(true);
 
 	WinUtil::addHashItems(menu, qii->getTTH(), Text::toT(Util::getFileName(qii->getTarget())));
-	menu->appendItem(IDC_MOVE, T_("Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
+	menu->appendItem(IDC_MOVE, T_("&Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
 	addPriorityMenu(menu);
 	addBrowseMenu(menu, qii);
 	addPMMenu(menu, qii);
@@ -965,7 +965,7 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
 	addReaddMenu(menu, qii);
 	addRemoveMenu(menu, qii);
 	addRemoveAllMenu(menu, qii);
-	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&QueueFrame::handleRemove, this));
+	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&QueueFrame::handleRemove, this));
 	
 	return menu;
 }
@@ -975,9 +975,9 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeMultiMenu() {
 
 	addPriorityMenu(menu);
 	
-	menu->appendItem(IDC_MOVE, T_("Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
+	menu->appendItem(IDC_MOVE, T_("&Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&QueueFrame::handleRemove, this));
+	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&QueueFrame::handleRemove, this));
 	return menu;
 }
 
@@ -985,9 +985,9 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeDirMenu() {
 	WidgetMenuPtr menu = createMenu(true);
 
 	addPriorityMenu(menu);
-	menu->appendItem(IDC_MOVE, T_("Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
+	menu->appendItem(IDC_MOVE, T_("&Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&QueueFrame::handleRemove, this));
+	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&QueueFrame::handleRemove, this));
 	return menu;
 }
 
@@ -1003,7 +1003,7 @@ void QueueFrame::addPriorityMenu(const WidgetMenuPtr& parent) {
 
 void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
-	WidgetMenuPtr menu = parent->appendPopup(T_("Get file list"));
+	WidgetMenuPtr menu = parent->appendPopup(T_("&Get file list"));
 	if(addUsers(menu, IDC_BROWSELIST, &QueueFrame::handleBrowseList, qii, false) == 0) {
 		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}
@@ -1011,7 +1011,7 @@ void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) 
 
 void QueueFrame::addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
-	WidgetMenuPtr menu = parent->appendPopup(T_("Send private message"));
+	WidgetMenuPtr menu = parent->appendPopup(T_("&Send private message"));
 	if(addUsers(menu, IDC_PM, &QueueFrame::handlePM, qii, false) == 0) {
 		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
 	}

@@ -24,6 +24,7 @@
 #include <dcpp/QueueManagerListener.h>
 #include <dcpp/LogManager.h>
 #include <dcpp/HttpConnection.h>
+#include <dcpp/User.h>
 
 #include "WidgetFactory.h"
 #include "AspectStatus.h"

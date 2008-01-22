@@ -21,7 +21,6 @@
 
 #include "SearchFrame.h"
 
-#include <dcpp/ResourceManager.h>
 #include <dcpp/FavoriteManager.h>
 #include <dcpp/QueueManager.h>
 #include <dcpp/ClientManager.h>
@@ -740,11 +739,11 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	StringPairList favoriteDirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	SearchInfo::CheckTTH checkTTH = results->forEachSelectedT(SearchInfo::CheckTTH());
 
-	menu->appendItem(IDC_DOWNLOAD, T_("Download"), std::tr1::bind(&SearchFrame::handleDownload, this));
+	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&SearchFrame::handleDownload, this));
 	addTargetMenu(menu, favoriteDirs, checkTTH);
 	menu->appendItem(IDC_DOWNLOADDIR, T_("Download whole directory"), std::tr1::bind(&SearchFrame::handleDownloadDir, this));
 	addTargetDirMenu(menu, favoriteDirs);
-	menu->appendItem(IDC_VIEW_AS_TEXT, T_("View as text"), std::tr1::bind(&SearchFrame::handleViewAsText, this));
+	menu->appendItem(IDC_VIEW_AS_TEXT, T_("&View as text"), std::tr1::bind(&SearchFrame::handleViewAsText, this));
 	menu->appendSeparatorItem();
 	if(checkTTH.hasTTH) {
 		SearchInfo* si = results->getSelectedData();
@@ -753,7 +752,7 @@ SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
 	menu->appendSeparatorItem();
 	appendUserItems(getParent(), menu);
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_REMOVE, TSTRING(REMOVE), std::tr1::bind(&SearchFrame::handleRemove, this));
+	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&SearchFrame::handleRemove, this));
 	prepareMenu(menu, UserCommand::CONTEXT_SEARCH, checkTTH.hubs);
 
 	menu->setDefaultItem(IDC_DOWNLOAD);
@@ -772,7 +771,7 @@ void SearchFrame::addTargetMenu(const WidgetMenuPtr& parent, const StringPairLis
 	}
 
 	n = 0;
-	menu->appendItem(IDC_DOWNLOADTO, T_("Browse..."), std::tr1::bind(&SearchFrame::handleDownloadTo, this));
+	menu->appendItem(IDC_DOWNLOADTO, T_("&Browse..."), std::tr1::bind(&SearchFrame::handleDownloadTo, this));
 	if(WinUtil::lastDirs.size() > 0) {
 		menu->appendSeparatorItem();
 		for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i)
@@ -802,7 +801,7 @@ void SearchFrame::addTargetDirMenu(const WidgetMenuPtr& parent, const StringPair
 	}
 
 	n = 0;
-	menu->appendItem(IDC_DOWNLOADDIRTO, T_("Browse..."), std::tr1::bind(&SearchFrame::handleDownloadDirTo, this));
+	menu->appendItem(IDC_DOWNLOADDIRTO, T_("&Browse..."), std::tr1::bind(&SearchFrame::handleDownloadDirTo, this));
 	if(WinUtil::lastDirs.size() > 0) {
 		menu->appendSeparatorItem();
 		for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i)

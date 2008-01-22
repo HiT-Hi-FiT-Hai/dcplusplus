@@ -109,10 +109,10 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	appendUserItems(mdi, menu);
 	menu->appendSeparatorItem();
 	
-	menu->appendItem(IDC_FORCE, T_("Force attempt"), std::tr1::bind(&TransferView::handleForce, this));
-	menu->appendItem(IDC_COPY_NICK, T_("Copy nick to clipboard"), std::tr1::bind(&TransferView::handleCopyNick, this));
+	menu->appendItem(IDC_FORCE, T_("&Force attempt"), std::tr1::bind(&TransferView::handleForce, this));
+	menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&TransferView::handleCopyNick, this));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_REMOVE, T_("Disconnect"), std::tr1::bind(&TransferView::handleDisconnect, this));
+	menu->appendItem(IDC_REMOVE, T_("&Disconnect"), std::tr1::bind(&TransferView::handleDisconnect, this));
 	menu->setDefaultItem(IDC_PRIVATEMESSAGE);
 	return menu;
 }

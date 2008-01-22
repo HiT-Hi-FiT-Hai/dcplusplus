@@ -50,7 +50,7 @@ protected:
 	void postClosing();
 
 private:
-	enum { AVG_TIME = 60 };
+	static const size_t AVG_TIME = 60;
 
 	enum {
 		SPEAK_SEARCH

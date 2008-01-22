@@ -362,15 +362,15 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuPtr menu = createMenu(true);
 	
-	menu->appendItem(IDC_GETLIST, T_("Get file list"), std::tr1::bind(&PrivateFrame::handleGetList, this));
-	menu->appendItem(IDC_MATCH_QUEUE, T_("Match queue"), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));
-	menu->appendItem(IDC_GRANTSLOT, T_("Grant extra slot"), std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), replyTo));
+	menu->appendItem(IDC_GETLIST, T_("&Get file list"), std::tr1::bind(&PrivateFrame::handleGetList, this));
+	menu->appendItem(IDC_MATCH_QUEUE, T_("&Match queue"), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));
+	menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&UploadManager::reserveSlot, UploadManager::getInstance(), replyTo));
 	if(!FavoriteManager::getInstance()->isFavoriteUser(replyTo))
-		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To Favorites"), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&FavoriteManager::addFavoriteUser, FavoriteManager::getInstance(), replyTo));
 
 	prepareMenu(menu, UserCommand::CONTEXT_CHAT, ClientManager::getInstance()->getHubs(replyTo->getCID()));
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, T_("Close"), std::tr1::bind(&PrivateFrame::close, this, true));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&PrivateFrame::close, this, true));
 
 	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return TRUE;
