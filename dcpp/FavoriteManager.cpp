@@ -22,7 +22,6 @@
 #include "FavoriteManager.h"
 
 #include "ClientManager.h"
-#include "ResourceManager.h"
 #include "CryptoManager.h"
 
 #include "HttpConnection.h"
@@ -436,11 +435,11 @@ void FavoriteManager::load() {
 	static const char kickstr[] =
 		"$To: %[userNI] From: %[myNI] $<%[myNI]> You are being kicked because: %[line:Reason]|<%[myNI]> %[myNI] is kicking %[userNI] because: %[line:Reason]|$Kick %[userNI]|";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(KICK_USER), kickstr, "op");
+		_("Kick user(s)"), kickstr, "op");
 	static const char redirstr[] =
 		"$OpForceMove $Who:%[userNI]$Where:%[line:Target Server]$Msg:%[line:Message]|";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
-		STRING(REDIRECT_USER), redirstr, "op");
+		_("Redirect user(s)"), redirstr, "op");
 
 	try {
 		SimpleXML xml;

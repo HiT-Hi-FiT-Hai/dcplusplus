@@ -29,7 +29,6 @@
 #include "Util.h"
 #include "UserCommand.h"
 #include "CryptoManager.h"
-#include "ResourceManager.h"
 #include "LogManager.h"
 
 namespace dcpp {
@@ -552,7 +551,7 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 		uint16_t port = secure ? ConnectionManager::getInstance()->getSecurePort() : ConnectionManager::getInstance()->getPort();
 		if(port == 0) {
 			// Oops?
-			LogManager::getInstance()->message(STRING(NOT_LISTENING));
+			LogManager::getInstance()->message(_("Not listening for connections - please restart DC++"));
 			return;
 		}
 		send(AdcCommand(AdcCommand::CMD_CTM, user.getIdentity().getSID(), AdcCommand::TYPE_DIRECT).addParam(*proto).addParam(Util::toString(port)).addParam(token));

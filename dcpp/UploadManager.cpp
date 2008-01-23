@@ -27,7 +27,6 @@
 #include "ClientManager.h"
 #include "FilteredFile.h"
 #include "ZUtils.h"
-#include "ResourceManager.h"
 #include "HashManager.h"
 #include "AdcCommand.h"
 #include "FavoriteManager.h"
@@ -147,7 +146,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 		aSource.fileNotAvail(e.getError());
 		return false;
 	} catch(const Exception& e) {
-		LogManager::getInstance()->message(STRING(UNABLE_TO_SEND_FILE) + sourceFile + ": " + e.getError());
+		LogManager::getInstance()->message(str(F_("Unable to send file %1%: %2%") % sourceFile % e.getError()));
 		aSource.fileNotAvail();
 		return false;
 	}
@@ -448,7 +447,7 @@ void UploadManager::on(TimerManagerListener::Minute, uint32_t /* aTick */) throw
 	}
 
 	for(UserList::iterator i = disconnects.begin(); i != disconnects.end(); ++i) {
-		LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + Util::toString(ClientManager::getInstance()->getNicks((*i)->getCID())));
+		LogManager::getInstance()->message(str(F_("Disconnected user leaving the hub: %1%") % Util::toString(ClientManager::getInstance()->getNicks((*i)->getCID()))));
 		ConnectionManager::getInstance()->disconnect(*i, false);
 	}
 }

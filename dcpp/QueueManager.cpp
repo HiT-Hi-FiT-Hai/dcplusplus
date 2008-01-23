@@ -381,7 +381,7 @@ void QueueManager::addList(const UserPtr& aUser, int aFlags, const string& aInit
 
 void QueueManager::addPfs(const UserPtr& aUser, const string& aDir) throw(QueueException) {
 	if(aUser == ClientManager::getInstance()->getMe()) {
-		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
+		throw QueueException(_("You're trying to download from yourself!"));
 	}
 
 	if(!aUser->isOnline())
@@ -405,13 +405,13 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 
 	// Check that we're not downloading from ourselves...
 	if(aUser == ClientManager::getInstance()->getMe()) {
-		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
+		throw QueueException(_("You're trying to download from yourself!"));
 	}
 
 	// Check if we're not downloading something already in our share
 	if(BOOLSETTING(DONT_DL_ALREADY_SHARED)){
 		if (ShareManager::getInstance()->isTTHShared(root)){
-			throw QueueException(STRING(TTH_ALREADY_SHARED));
+			throw QueueException(_("A file with the same hash already exists in your share"));
 		}
 	}
 
@@ -434,7 +434,7 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 			QueueItem::List ql;
 			fileQueue.find(ql, root);
 			if(!ql.empty()) {
-				throw QueueException(STRING(FILE_IS_ALREADY_QUEUED));
+				throw QueueException(_("This file is already queued"));
 			}
 		}
 
@@ -444,10 +444,10 @@ void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& roo
 			fire(QueueManagerListener::Added(), q);
 		} else {
 			if(q->getSize() != aSize) {
-				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
+				throw QueueException(_("A file with a different size already exists in the queue"));
 			} 
 			if(!(root == q->getTTH())) {
-				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
+				throw QueueException(_("A file with different tth root already exists in the queue"));
 			} 
 			q->setFlag(aFlags);
 
@@ -479,20 +479,20 @@ void QueueManager::readd(const string& target, const UserPtr& aUser) throw(Queue
 string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
 #ifdef _WIN32
 	if(aTarget.length() > MAX_PATH) {
-		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
+		throw QueueException(_("Target filename too long"));
 	}
 	// Check that target starts with a drive or is an UNC path
 	if( (aTarget[1] != ':' || aTarget[2] != '\\') &&
 		(aTarget[0] != '\\' && aTarget[1] != '\\') ) {
-		throw QueueException(STRING(INVALID_TARGET_FILE));
+		throw QueueException(_("Invalid target file (missing directory, check default download directory setting)"));
 	}
 #else
 	if(aTarget.length() > PATH_MAX) {
-		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
+		throw QueueException(_("Target filename too long"));
 	}
 	// Check that target contains at least one directory...we don't want headless files...
 	if(aTarget[0] != '/') {
-		throw QueueException(STRING(INVALID_TARGET_FILE));
+		throw QueueException(_("Invalid target file (missing directory, check default download directory setting)"));
 	}
 #endif
 
@@ -501,7 +501,7 @@ string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flag
 	// Check that the file doesn't already exist...
 	int64_t sz = File::getSize(target);
 	if( (aSize != -1) && (aSize <= sz) ) {
-		throw FileException(STRING(LARGER_TARGET_FILE_EXISTS));
+		throw FileException(_("A file of equal or larger size already exists at the target location"));
 	}
 	if(sz > 0)
 		flags |= QueueItem::FLAG_EXISTS;
@@ -514,11 +514,11 @@ bool QueueManager::addSource(QueueItem* qi, UserPtr aUser, Flags::MaskType addBa
 	bool wantConnection = (qi->getPriority() != QueueItem::PAUSED) && !userQueue.getRunning(aUser);
 
 	if(qi->isSource(aUser)) {
-		throw QueueException(STRING(DUPLICATE_SOURCE) + ": " + Util::getFileName(qi->getTarget()));
+		throw QueueException(str(F_("Duplicate source: %1%") % Util::getFileName(qi->getTarget())));
 	}
 
 	if(qi->isBadSourceExcept(aUser, addBad)) {
-		throw QueueException(STRING(DUPLICATE_SOURCE) + ": " + Util::getFileName(qi->getTarget()));
+		throw QueueException(str(F_("Duplicate source: %1%") % Util::getFileName(qi->getTarget())));
 	}
 
 	qi->addSource(aUser);
@@ -767,7 +767,7 @@ void QueueManager::setFile(Download* d) {
 		
 		QueueItem* qi = fileQueue.find(d->getPath());
 		if(!qi) {
-			throw QueueException(STRING(TARGET_REMOVED));
+			throw QueueException(_("Target removed"));
 		}
 		
 		string target = d->getDownloadTarget();
@@ -955,7 +955,7 @@ void QueueManager::processList(const string& name, UserPtr& user, int flags) {
 	try {
 		dirList.loadFile(name);
 	} catch(const Exception&) {
-		LogManager::getInstance()->message(STRING(UNABLE_TO_OPEN_FILELIST) + name);
+		LogManager::getInstance()->message(str(F_("Unable to open filelist: %1%") % name));
 		return;
 	}
 

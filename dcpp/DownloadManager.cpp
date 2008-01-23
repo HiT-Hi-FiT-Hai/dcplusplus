@@ -21,7 +21,6 @@
 
 #include "DownloadManager.h"
 
-#include "ResourceManager.h"
 #include "QueueManager.h"
 #include "Download.h"
 #include "LogManager.h"
@@ -141,9 +140,9 @@ int QueueManager::FileMover::run() {
 				// Try to just rename it to the correct name at least
 				string newTarget = Util::getFilePath(next.first) + Util::getFileName(next.second);
 				File::renameFile(next.first, newTarget);
-				LogManager::getInstance()->message(next.first + STRING(RENAMED_TO) + newTarget);
+				LogManager::getInstance()->message(str(F_("%1% renamed to %2%") % next.first % newTarget));
 			} catch(const FileException& e) {
-				LogManager::getInstance()->message(STRING(UNABLE_TO_RENAME) + next.first + ": " + e.getError());
+				LogManager::getInstance()->message(str(F_("Unable to rename %1%: %2%") % next.first % e.getError()));
 			}
 		}
 	}
@@ -262,12 +261,12 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t start, int64_
 		if(bytes != -1) {
 			d->setSize(bytes);
 		} else {
-			failDownload(aSource, STRING(INVALID_SIZE));
+			failDownload(aSource, _("Invalid size"));
 			return false;
 		}
 	} else if(d->getSize() != bytes || d->getStartPos() != start) {
 		// This is not what we requested...
-		failDownload(aSource, STRING(INVALID_SIZE));
+		failDownload(aSource, _("Invalid size"));
 		return false;
 	}
 	
@@ -282,7 +281,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t start, int64_
 	try {
 		QueueManager::getInstance()->setFile(d);
 	} catch(const FileException& e) {
-		failDownload(aSource, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
+		failDownload(aSource, str(F_("Could not open target file: %1%") % e.getError()));
 		return false;
 	} catch(const Exception& e) {
 		failDownload(aSource, e.getError());
@@ -321,7 +320,7 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 		d->addPos(d->getFile()->write(aData, aLen), aLen);
 
 		if(d->getPos() > d->getSize()) {
-			throw Exception(STRING(TOO_MUCH_DATA));
+			throw Exception(_("More data was sent than was expected"));
 		} else if(d->getPos() == d->getSize()) {
 			handleEndData(aSource);
 			aSource->setLineMode(0);
@@ -351,7 +350,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		if(!(d->getTTH() == d->getTigerTree().getRoot())) {
 			// This tree is for a different file, remove from queue...
 			removeDownload(d);
-			fire(DownloadManagerListener::Failed(), d, STRING(INVALID_TREE));
+			fire(DownloadManagerListener::Failed(), d, _("Full tree does not match TTH root"));
 
 			QueueManager::getInstance()->removeSource(d->getPath(), aSource->getUser(), QueueItem::Source::FLAG_BAD_TREE, false);
 
@@ -417,9 +416,9 @@ bool DownloadManager::checkSfv(UserConnection* aSource, Download* d) {
 		if(!crcMatch) {
 			File::deleteFile(d->getDownloadTarget());
 			dcdebug("DownloadManager: CRC32 mismatch for %s\n", d->getPath().c_str());
-			LogManager::getInstance()->message(STRING(SFV_INCONSISTENCY) + " (" + STRING(FILE) + ": " + d->getPath() + ")");
+			LogManager::getInstance()->message(str(F_("CRC32 inconsistency (SFV-Check) (File: %1%)") % d->getPath()));
 			removeDownload(d);
-			fire(DownloadManagerListener::Failed(), d, STRING(SFV_INCONSISTENCY));
+			fire(DownloadManagerListener::Failed(), d, _("CRC32 inconsistency (SFV-Check)"));
 
 			QueueManager::getInstance()->removeSource(d->getPath(), aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
 			QueueManager::getInstance()->putDownload(d, false);
@@ -460,7 +459,7 @@ void DownloadManager::noSlots(UserConnection* aSource) {
 		return;
 	}
 
-	failDownload(aSource, STRING(NO_SLOTS_AVAILABLE));
+	failDownload(aSource, _("No slots available"));
 }
 
 void DownloadManager::on(UserConnectionListener::Error, UserConnection* aSource, const string& aError) throw() {
@@ -545,7 +544,7 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	dcdebug("File Not Available: %s\n", d->getPath().c_str());
 
 	removeDownload(d);
-	fire(DownloadManagerListener::Failed(), d, d->getTargetFileName() + ": " + STRING(FILE_NOT_AVAILABLE));
+	fire(DownloadManagerListener::Failed(), d, str(F_("%1%: File not available") % d->getTargetFileName()));
 
 	QueueManager::getInstance()->removeSource(d->getPath(), aSource->getUser(), d->getType() == Transfer::TYPE_TREE ? QueueItem::Source::FLAG_NO_TREE : QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 

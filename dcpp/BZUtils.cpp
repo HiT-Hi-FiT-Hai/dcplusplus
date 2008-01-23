@@ -21,7 +21,6 @@
 
 #include "BZUtils.h"
 #include "Exception.h"
-#include "ResourceManager.h"
 
 namespace dcpp {
 
@@ -29,7 +28,7 @@ BZFilter::BZFilter() {
 	memset(&zs, 0, sizeof(zs));
 
 	if(BZ2_bzCompressInit(&zs, 9, 0, 30) != BZ_OK) {
-		throw Exception(STRING(COMPRESSION_ERROR));
+		throw Exception(_("Error during compression"));
 	}
 }
 
@@ -50,7 +49,7 @@ bool BZFilter::operator()(const void* in, size_t& insize, void* out, size_t& out
 	if(insize == 0) {
 		int err = ::BZ2_bzCompress(&zs, BZ_FINISH);
 		if(err != BZ_FINISH_OK && err != BZ_STREAM_END)
-			throw Exception(STRING(COMPRESSION_ERROR));
+			throw Exception(_("Error during compression"));
 
 		outsize = outsize - zs.avail_out;
 		insize = insize - zs.avail_in;
@@ -58,7 +57,7 @@ bool BZFilter::operator()(const void* in, size_t& insize, void* out, size_t& out
 	} else {
 		int err = ::BZ2_bzCompress(&zs, BZ_RUN);
 		if(err != BZ_RUN_OK)
-			throw Exception(STRING(COMPRESSION_ERROR));
+			throw Exception(_("Error during compression"));
 
 		outsize = outsize - zs.avail_out;
 		insize = insize - zs.avail_in;
@@ -70,7 +69,7 @@ UnBZFilter::UnBZFilter() {
 	memset(&zs, 0, sizeof(zs));
 
 	if(BZ2_bzDecompressInit(&zs, 0, 0) != BZ_OK)
-		throw Exception(STRING(DECOMPRESSION_ERROR));
+		throw Exception(_("Error during decompression"));
 
 }
 
@@ -92,10 +91,10 @@ bool UnBZFilter::operator()(const void* in, size_t& insize, void* out, size_t& o
 
 	// No more input data, and inflate didn't think it has reached the end...
 	if(insize == 0 && zs.avail_out != 0 && err != BZ_STREAM_END)
-		throw Exception(STRING(DECOMPRESSION_ERROR));
+		throw Exception(_("Error during decompression"));
 
 	if(err != BZ_OK && err != BZ_STREAM_END)
-		throw Exception(STRING(DECOMPRESSION_ERROR));
+		throw Exception(_("Error during decompression"));
 
 	outsize = outsize - zs.avail_out;
 	insize = insize - zs.avail_in;

@@ -21,7 +21,6 @@
 
 #include "ConnectionManager.h"
 
-#include "ResourceManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
 #include "CryptoManager.h"
@@ -179,13 +178,13 @@ void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw()
 							attemptDone = true;
 						} else {
 							cqi->setState(ConnectionQueueItem::NO_DOWNLOAD_SLOTS);
-							fire(ConnectionManagerListener::Failed(), cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
+							fire(ConnectionManagerListener::Failed(), cqi, _("All download slots taken"));
 						}
 					} else if(cqi->getState() == ConnectionQueueItem::NO_DOWNLOAD_SLOTS && startDown) {
 						cqi->setState(ConnectionQueueItem::WAITING);
 					}
 				} else if(((cqi->getLastAttempt() + 50*1000) < aTick) && (cqi->getState() == ConnectionQueueItem::CONNECTING)) {
-					fire(ConnectionManagerListener::Failed(), cqi, STRING(CONNECTION_TIMEOUT));
+					fire(ConnectionManagerListener::Failed(), cqi, _("Connection timeout"));
 					cqi->setState(ConnectionQueueItem::WAITING);
 				}
 			}
@@ -237,7 +236,7 @@ int ConnectionManager::Server::run() throw() {
 			}
 		}
 	} catch(const Exception& e) {
-		LogManager::getInstance()->message(STRING(LISTENER_FAILED) + e.getError());
+		LogManager::getInstance()->message(str(F_("Listening socket failed (you need to restart DC++): %1%") % e.getError()));
 	}
 	return 0;
 }
@@ -383,7 +382,7 @@ void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand& c
 void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	if(aSource->isSecure() && !aSource->isTrusted() && !BOOLSETTING(ALLOW_UNTRUSTED_CLIENTS)) {
 		putConnection(aSource);
-		LogManager::getInstance()->message(STRING(CERTIFICATE_NOT_TRUSTED));
+		LogManager::getInstance()->message(_("Certificate not trusted, unable to connect"));
 		return;
 	}
 

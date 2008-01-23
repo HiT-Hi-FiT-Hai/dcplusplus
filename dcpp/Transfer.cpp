@@ -22,7 +22,6 @@
 #include "Transfer.h"
 
 #include "UserConnection.h"
-#include "ResourceManager.h"
 #include "ClientManager.h"
 
 namespace dcpp {
@@ -61,11 +60,11 @@ void Transfer::getParams(const UserConnection& aSource, StringMap& params) {
 	params["userI4"] = aSource.getRemoteIp();
 	StringList hubNames = ClientManager::getInstance()->getHubNames(aSource.getUser()->getCID());
 	if(hubNames.empty())
-		hubNames.push_back(STRING(OFFLINE));
+		hubNames.push_back(_("Offline"));
 	params["hub"] = Util::toString(hubNames);
 	StringList hubs = ClientManager::getInstance()->getHubs(aSource.getUser()->getCID());
 	if(hubs.empty())
-		hubs.push_back(STRING(OFFLINE));
+		hubs.push_back(_("Offline"));
 	params["hubURL"] = Util::toString(hubs);
 	params["fileSI"] = Util::toString(getSize());
 	params["fileSIshort"] = Util::formatBytes(getSize());

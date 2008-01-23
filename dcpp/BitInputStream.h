@@ -20,7 +20,6 @@
 #define BIT_INPUT_STREAM_H
 
 #include "Exception.h"
-#include "ResourceManager.h"
 
 namespace dcpp {
 
@@ -38,7 +37,7 @@ public:
 
 	bool get() throw(BitStreamException) {
 		if(bitPos > endPos) {
-			throw BitStreamException(STRING(SEEK_BEYOND_END));
+			throw BitStreamException(_("Request to seek beyond the end of data"));
 		}
 		bool ret = (((uint8_t)is[bitPos>>3]) >> (bitPos&0x07)) & 0x01;
 		bitPos++;

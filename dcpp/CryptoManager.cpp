@@ -23,7 +23,6 @@
 
 #include "BitInputStream.h"
 #include "BitOutputStream.h"
-#include "ResourceManager.h"
 #include "LogManager.h"
 #include "ClientManager.h"
 
@@ -211,7 +210,7 @@ void CryptoManager::loadCertificates() throw() {
 	const string& key = SETTING(TLS_PRIVATE_KEY_FILE);
 
 	if(cert.empty() || key.empty()) {
-		LogManager::getInstance()->message(STRING(NO_CERTIFICATE_FILE_SET));
+		LogManager::getInstance()->message(_("TLS disabled, no certificate file set"));
 		return;
 	}
 
@@ -219,45 +218,45 @@ void CryptoManager::loadCertificates() throw() {
 		// Try to generate them...
 		try {
 			generateCertificate();
-			LogManager::getInstance()->message(STRING(CERTIFICATE_GENERATED));
+			LogManager::getInstance()->message(_("Generated new TLS certificate"));
 		} catch(const CryptoException& e) {
-			LogManager::getInstance()->message(STRING(CERTIFICATE_GENERATION_FAILED) + e.getError());
+			LogManager::getInstance()->message(str(F_("TLS disabled, failed to generate certificate: %1%") % e.getError()));
 		}
 	}
 
 	if(SSL_CTX_use_certificate_file(serverContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		LogManager::getInstance()->message(_("Failed to load certificate file"));
 		return;
 	}
 	if(SSL_CTX_use_certificate_file(clientContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		LogManager::getInstance()->message(_("Failed to load certificate file"));
 		return;
 	}
 
 	if(SSL_CTX_use_certificate_file(serverVerContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		LogManager::getInstance()->message(_("Failed to load certificate file"));
 		return;
 	}
 	if(SSL_CTX_use_certificate_file(clientVerContext, SETTING(TLS_CERTIFICATE_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_CERTIFICATE));
+		LogManager::getInstance()->message(_("Failed to load certificate file"));
 		return;
 	}
 
 	if(SSL_CTX_use_PrivateKey_file(serverContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		LogManager::getInstance()->message(_("Failed to load private key"));
 		return;
 	}
 	if(SSL_CTX_use_PrivateKey_file(clientContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		LogManager::getInstance()->message(_("Failed to load private key"));
 		return;
 	}
 
 	if(SSL_CTX_use_PrivateKey_file(serverVerContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		LogManager::getInstance()->message(_("Failed to load private key"));
 		return;
 	}
 	if(SSL_CTX_use_PrivateKey_file(clientVerContext, SETTING(TLS_PRIVATE_KEY_FILE).c_str(), SSL_FILETYPE_PEM) != SSL_SUCCESS) {
-		LogManager::getInstance()->message(STRING(FAILED_TO_LOAD_PRIVATE_KEY));
+		LogManager::getInstance()->message(_("Failed to load private key"));
 		return;
 	}
 
@@ -342,7 +341,7 @@ void CryptoManager::decodeBZ2(const uint8_t* is, size_t sz, string& os) throw (C
 	bz_stream bs = { 0 };
 
 	if(BZ2_bzDecompressInit(&bs, 0, 0) != BZ_OK)
-		throw(CryptoException(STRING(DECOMPRESSION_ERROR)));
+		throw(CryptoException(_("Error during decompression")));
 
 	// We assume that the files aren't compressed more than 2:1...if they are it'll work anyway,
 	// but we'll have to do multiple passes...
@@ -361,7 +360,7 @@ void CryptoManager::decodeBZ2(const uint8_t* is, size_t sz, string& os) throw (C
 	while((err = BZ2_bzDecompress(&bs)) == BZ_OK) {
 		if (bs.avail_in == 0 && bs.avail_out > 0) { // error: BZ_UNEXPECTED_EOF
 			BZ2_bzDecompressEnd(&bs);
-			throw CryptoException(STRING(DECOMPRESSION_ERROR));
+			throw CryptoException(_("Error during decompression"));
 		}
 		os.append(buf, bufsize-bs.avail_out);
 		bs.avail_out = bufsize;
@@ -375,7 +374,7 @@ void CryptoManager::decodeBZ2(const uint8_t* is, size_t sz, string& os) throw (C
 
 	if(err < 0) {
 		// This was a real error
-		throw CryptoException(STRING(DECOMPRESSION_ERROR));
+		throw CryptoException(_("Error during decompression"));
 	}
 }
 

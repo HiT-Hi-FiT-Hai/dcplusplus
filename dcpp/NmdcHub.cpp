@@ -21,7 +21,6 @@
 
 #include "NmdcHub.h"
 
-#include "ResourceManager.h"
 #include "ClientManager.h"
 #include "SearchManager.h"
 #include "ShareManager.h"
@@ -271,7 +270,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				if(seeker.compare(0, 4, "Hub:") == 0)
 					fire(ClientListener::SearchFlood(), this, seeker.substr(4));
 				else
-					fire(ClientListener::SearchFlood(), this, seeker + STRING(NICK_UNKNOWN));
+					fire(ClientListener::SearchFlood(), this, str(F_("%1% (Nick unknown)") % seeker));
 
 				flooders.push_back(make_pair(seeker, tick));
 				return;

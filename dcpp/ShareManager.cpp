@@ -20,7 +20,6 @@
 #include "DCPlusPlus.h"
 
 #include "ShareManager.h"
-#include "ResourceManager.h"
 
 #include "CryptoManager.h"
 #include "ClientManager.h"
@@ -401,11 +400,11 @@ void ShareManager::save(SimpleXML& aXml) {
 
 void ShareManager::addDirectory(const string& realPath, const string& virtualName) throw(ShareException) {
 	if(realPath.empty() || virtualName.empty()) {
-		throw ShareException(STRING(NO_DIRECTORY_SPECIFIED));
+		throw ShareException(_("No directory specified"));
 	}
 
 	if(Util::stricmp(SETTING(TEMP_DOWNLOAD_DIRECTORY), realPath) == 0) {
-		throw ShareException(STRING(DONT_SHARE_TEMP_DIRECTORY));
+		throw ShareException(_("The temporary download directory cannot be shared"));
 	}
 
 	string vName = validateVirtual(virtualName);
@@ -416,15 +415,15 @@ void ShareManager::addDirectory(const string& realPath, const string& virtualNam
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			if(Util::strnicmp(realPath, i->first, i->first.length()) == 0) {
 				// Trying to share an already shared directory
-				throw ShareException(STRING(DIRECTORY_ALREADY_SHARED));
+				throw ShareException(_("Directory already shared"));
 			} else if(Util::strnicmp(realPath, i->first, realPath.length()) == 0) {
 				// Trying to share a parent directory
-				throw ShareException(STRING(REMOVE_ALL_SUBDIRECTORIES));
+				throw ShareException(_("Remove all subdirectories before adding this one"));
 			}
 		}
 
 		if(hasVirtual(vName)) {
-			throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
+			throw ShareException(_("Virtual directory name already exists"));
 		}
 	}
 
@@ -466,7 +465,7 @@ void ShareManager::renameDirectory(const string& realPath, const string& virtual
 	Lock l(cs);
 	//Find the virtual name
 	if (hasVirtual(vName)) {
-		throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
+		throw ShareException(_("Virtual directory name already exists"));
 	}
 
 	Directory::MapIter j = directories.find(realPath);
@@ -743,7 +742,8 @@ void ShareManager::addFile(Directory& dir, const Directory::File::Set::iterator&
 		dir.size+=f.getSize();
 	} else {
 		if(!SETTING(LIST_DUPES)) {
-			LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir.getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
+			LogManager::getInstance()->message(str(F_("Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched against: %4%%5%") 
+			% dir.getFullName() % f.getName() % Util::toString(f.getSize()) % j->second->getParent()->getFullName() % j->second->getName()));
 			dir.files.erase(i);
 			return;
 		}
@@ -757,7 +757,7 @@ void ShareManager::addFile(Directory& dir, const Directory::File::Set::iterator&
 
 void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */) throw() {
 	if(Thread::safeExchange(refreshing, 1) == 1) {
-		LogManager::getInstance()->message(STRING(FILE_LIST_REFRRESH_IN_PROGRESS));
+		LogManager::getInstance()->message(_("File list refresh in progress, please wait for it to finish before trying to refresh again"));
 		return;
 	}
 
@@ -777,7 +777,7 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, b
 			setThreadPriority(Thread::LOW);
 		}
 	} catch(const ThreadException& e) {
-		LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FAILED) + e.getError());
+		LogManager::getInstance()->message(str(F_("File list refresh failed: %1%") % e.getError()));
 	}
 }
 
@@ -799,7 +799,7 @@ int ShareManager::run() {
 
 	{
 		if(refreshDirs) {
-			LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
+			LogManager::getInstance()->message(_("File list refresh initiated"));
 			
 			lastFullUpdate = GET_TICK();
 
@@ -821,7 +821,7 @@ int ShareManager::run() {
 			}
 			refreshDirs = false;
 			
-			LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
+			LogManager::getInstance()->message(_("File list refresh finished"));
 		}
 	}
 	

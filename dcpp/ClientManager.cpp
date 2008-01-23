@@ -27,7 +27,6 @@
 #include "FavoriteManager.h"
 #include "SimpleXML.h"
 #include "UserCommand.h"
-#include "ResourceManager.h"
 #include "LogManager.h"
 
 #include "AdcHub.h"
@@ -113,7 +112,7 @@ string ClientManager::getConnection(const CID& cid) const {
 	if(i != onlineUsers.end()) {
 		return i->second->getIdentity().getConnection();
 	}
-	return STRING(OFFLINE);
+	return _("Offline");
 }
 
 int64_t ClientManager::getAvailable() const {

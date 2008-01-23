@@ -20,7 +20,6 @@
 #include "DCPlusPlus.h"
 
 #include "HashManager.h"
-#include "ResourceManager.h"
 #include "SimpleXML.h"
 #include "LogManager.h"
 #include "File.h"
@@ -71,7 +70,7 @@ void HashManager::hashDone(const string& aFileName, uint32_t aTimeStamp, const T
 		Lock l(cs);
 		store.addFile(aFileName, aTimeStamp, tth, true);
 	} catch(const Exception& e) {
-		LogManager::getInstance()->message(STRING(HASHING_FAILED) + e.getError());
+		LogManager::getInstance()->message(str(F_("Hashing failed: %1%") % e.getError()));
 		return;
 	}
 
@@ -85,9 +84,9 @@ void HashManager::hashDone(const string& aFileName, uint32_t aTimeStamp, const T
 		fn.insert(0, "...");
 	}
 	if(speed > 0) {
-		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn + " (" + Util::formatBytes(speed) + "/s)");
+		LogManager::getInstance()->message(str(F_("Finished hashing: %1% (%2%/s)") % fn % Util::formatBytes(speed)));
 	} else {
-		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn);
+		LogManager::getInstance()->message(str(F_("Finished hashing: %1%") % fn));
 	}
 }
 
@@ -116,7 +115,7 @@ void HashManager::HashStore::addTree(const TigerTree& tt) throw() {
 			treeIndex.insert(make_pair(tt.getRoot(), TreeInfo(tt.getFileSize(), index, tt.getBlockSize())));
 			dirty = true;
 		} catch(const FileException& e) {
-			LogManager::getInstance()->message(STRING(ERROR_SAVING_HASH) + e.getError());
+			LogManager::getInstance()->message(str(F_("Error saving hash data: %1%") % e.getError()));
 		}
 	}
 }
@@ -129,7 +128,7 @@ int64_t HashManager::HashStore::saveTree(File& f, const TigerTree& tt) throw(Fil
 	int64_t pos = 0;
 	size_t n = sizeof(pos);
 	if(f.read(&pos, n) != sizeof(pos))
-		throw HashException(STRING(HASH_READ_FAILED));
+		throw HashException(_("Unable to read hash data file"));
 
 	// Check if we should grow the file, we grow by a meg at a time...
 	int64_t datsz = f.getSize();
@@ -275,7 +274,7 @@ void HashManager::HashStore::rebuild() {
 		dirty = true;
 		save();
 	} catch(const Exception& e) {
-		LogManager::getInstance()->message(STRING(HASHING_FAILED) + e.getError());
+		LogManager::getInstance()->message(str(F_("Hashing failed: %1%") % e.getError()));
 	}
 }
 
@@ -331,7 +330,7 @@ void HashManager::HashStore::save() {
 
 			dirty = false;
 		} catch(const FileException& e) {
-			LogManager::getInstance()->message(STRING(ERROR_SAVING_HASH) + e.getError());
+			LogManager::getInstance()->message(str(F_("Error saving hash data: %1%") % e.getError()));
 		}
 	}
 }
@@ -454,7 +453,7 @@ void HashManager::HashStore::createDataFile(const string& name) {
 		dat.write(&start, sizeof(start));
 
 	} catch(const FileException& e) {
-		LogManager::getInstance()->message(STRING(ERROR_CREATING_HASH_DATA_FILE) + e.getError());
+		LogManager::getInstance()->message(str(F_("Error creating hash data file: %1%") % e.getError()));
 	}
 }
 
@@ -675,7 +674,7 @@ int HashManager::Hasher::run() {
 		if(rebuild) {
 			HashManager::getInstance()->doRebuild();
 			rebuild = false;
-			LogManager::getInstance()->message(STRING(HASH_REBUILT));
+			LogManager::getInstance()->message(_("Hash database rebuilt"));
 			continue;
 		}
 		{
@@ -765,12 +764,12 @@ int HashManager::Hasher::run() {
 					speed = size * _LL(1000) / (end - start);
 				}
 				if(xcrc32 && xcrc32->getValue() != sfv.getCRC()) {
-					LogManager::getInstance()->message(fname + STRING(NO_CRC32_MATCH));
+					LogManager::getInstance()->message(str(F_("%1% not shared; calculated CRC32 does not match the one found in SFV file.") % fname));
 				} else {
 					HashManager::getInstance()->hashDone(fname, timestamp, *tth, speed);
 				}
 			} catch(const FileException& e) {
-				LogManager::getInstance()->message(STRING(ERROR_HASHING) + fname + ": " + e.getError());
+				LogManager::getInstance()->message(str(F_("Error hashing %1%: %2%") % fname % e.getError()));
 			}
 		}
 		{

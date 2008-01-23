@@ -21,8 +21,6 @@
 
 #include "Thread.h"
 
-#include "ResourceManager.h"
-
 namespace dcpp {
 
 #ifndef _WIN32
@@ -33,7 +31,7 @@ pthread_mutex_t Thread::mtx = PTHREAD_MUTEX_INITIALIZER;
 void Thread::start() throw(ThreadException) {
 	join();
 	if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
-		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
+		throw ThreadException(_("Unable to create thread"));
 	}
 }
 
@@ -41,7 +39,7 @@ void Thread::start() throw(ThreadException) {
 void Thread::start() throw(ThreadException) {
 	join();
 	if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
-		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
+		throw ThreadException(_("Unable to create thread"));
 	}
 }
 #endif

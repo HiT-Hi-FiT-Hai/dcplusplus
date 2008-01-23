@@ -50,7 +50,7 @@ public:
 		cur.finalize();
 		if(cur.getLeaves().size() == real.getLeaves().size()) {
 			if (cur.getRoot() != real.getRoot())
-				throw FileException(STRING(TTH_INCONSISTENCY));
+				throw FileException(_("TTH inconsistency"));
 		} else {
 			checkTrees();
 		}
@@ -110,7 +110,7 @@ private:
 			if(cur.getLeaves().size() > real.getLeaves().size() ||
 				!(cur.getLeaves()[verified] == real.getLeaves()[verified]))
 			{
-				throw FileException(STRING(TTH_INCONSISTENCY));
+				throw FileException(_("TTH inconsistency"));
 			}
 			verified++;
 		}

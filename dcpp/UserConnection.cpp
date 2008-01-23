@@ -21,7 +21,6 @@
 
 #include "UserConnection.h"
 #include "ClientManager.h"
-#include "ResourceManager.h"
 
 #include "StringTokenizer.h"
 #include "AdcCommand.h"

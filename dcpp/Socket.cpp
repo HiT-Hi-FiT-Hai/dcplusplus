@@ -22,7 +22,6 @@
 #include "Socket.h"
 
 #include "SettingsManager.h"
-#include "ResourceManager.h"
 #include "TimerManager.h"
 
 namespace dcpp {
@@ -53,9 +52,7 @@ string SocketException::errorToString(int aError) throw() {
 	string msg = Util::translateError(aError);
 	if(msg.empty())
 	{
-		char tmp[64];
-		snprintf(tmp, sizeof(tmp), CSTRING(UNKNOWN_ERROR), aError);
-		msg = tmp;
+		msg = str(F_("Unknown error: 0x%1%") % aError);
 	}
 	return msg;
 }
@@ -155,7 +152,7 @@ namespace {
 		}
 		uint64_t now = GET_TICK();
 		if(start + timeout < now)
-			throw SocketException(STRING(CONNECTION_TIMEOUT));
+			throw SocketException(_("Connection timeout"));
 		return start + timeout - now;
 	}
 }
@@ -163,7 +160,7 @@ namespace {
 void Socket::socksConnect(const string& aAddr, uint16_t aPort, uint32_t timeout) throw(SocketException) {
 
 	if(SETTING(SOCKS_SERVER).empty() || SETTING(SOCKS_PORT) == 0) {
-		throw SocketException(STRING(SOCKS_FAILED));
+		throw SocketException(_("The socks server failed establish a connection"));
 	}
 
 	bool oldblock = getBlocking();
@@ -174,7 +171,7 @@ void Socket::socksConnect(const string& aAddr, uint16_t aPort, uint32_t timeout)
 	connect(SETTING(SOCKS_SERVER), static_cast<uint16_t>(SETTING(SOCKS_PORT)));
 
 	if(wait(timeLeft(start, timeout), WAIT_CONNECT) != WAIT_CONNECT) {
-		throw SocketException(STRING(SOCKS_FAILED));
+		throw SocketException(_("The socks server failed establish a connection"));
 	}
 
 	socksAuth(timeLeft(start, timeout));
@@ -207,11 +204,11 @@ void Socket::socksConnect(const string& aAddr, uint16_t aPort, uint32_t timeout)
 	// We assume we'll get a ipv4 address back...therefore, 10 bytes...
 	/// @todo add support for ipv6
 	if(readAll(&connStr[0], 10, timeLeft(start, timeout)) != 10) {
-		throw SocketException(STRING(SOCKS_FAILED));
+		throw SocketException(_("The socks server failed establish a connection"));
 	}
 
 	if(connStr[0] != 5 || connStr[1] != 0) {
-		throw SocketException(STRING(SOCKS_FAILED));
+		throw SocketException(_("The socks server failed establish a connection"));
 	}
 
 	in_addr sock_addr;
@@ -238,11 +235,11 @@ void Socket::socksAuth(uint32_t timeout) throw(SocketException) {
 		writeAll(&connStr[0], 3, timeLeft(start, timeout));
 
 		if(readAll(&connStr[0], 2, timeLeft(start, timeout)) != 2) {
-			throw SocketException(STRING(SOCKS_FAILED));
+			throw SocketException(_("The socks server failed establish a connection"));
 		}
 
 		if(connStr[1] != 0) {
-			throw SocketException(STRING(SOCKS_NEEDS_AUTH));
+			throw SocketException(_("The socks server requires authentication"));
 		}
 	} else {
 		// We try the username and password auth type (no, we don't support gssapi)
@@ -253,10 +250,10 @@ void Socket::socksAuth(uint32_t timeout) throw(SocketException) {
 		writeAll(&connStr[0], 3, timeLeft(start, timeout));
 
 		if(readAll(&connStr[0], 2, timeLeft(start, timeout)) != 2) {
-			throw SocketException(STRING(SOCKS_FAILED));
+			throw SocketException(_("The socks server failed establish a connection"));
 		}
 		if(connStr[1] != 2) {
-			throw SocketException(STRING(SOCKS_AUTH_UNSUPPORTED));
+			throw SocketException(_("The socks server doesn't support login / password authentication"));
 		}
 
 		connStr.clear();
@@ -270,11 +267,11 @@ void Socket::socksAuth(uint32_t timeout) throw(SocketException) {
 		writeAll(&connStr[0], connStr.size(), timeLeft(start, timeout));
 
 		if(readAll(&connStr[0], 2, timeLeft(start, timeout)) != 2) {
-			throw SocketException(STRING(SOCKS_AUTH_FAILED));
+			throw SocketException(_("Socks server authentication failed (bad login / password?)"));
 		}
 
 		if(connStr[1] != 0) {
-			throw SocketException(STRING(SOCKS_AUTH_FAILED));
+			throw SocketException(_("Socks server authentication failed (bad login / password?)"));
 		}
 	}
 }
@@ -409,7 +406,7 @@ void Socket::writeTo(const string& aAddr, uint16_t aPort, const void* aBuffer, i
 	int sent;
 	if(SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5 && proxy) {
 		if(udpServer.empty() || udpPort == 0) {
-			throw SocketException(STRING(SOCKS_SETUP_ERROR));
+			throw SocketException(_("Failed to set up the socks server for UDP relay (check socks address and port)"));
 		}
 
 		serv_addr.sin_port = htons(udpPort);

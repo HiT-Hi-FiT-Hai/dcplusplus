@@ -21,7 +21,6 @@
 
 #include "BufferedSocket.h"
 
-#include "ResourceManager.h"
 #include "TimerManager.h"
 #include "SettingsManager.h"
 
@@ -152,7 +151,7 @@ void BufferedSocket::threadConnect(const string& aAddr, uint16_t aPort, bool pro
 			return;
 
 		if((startTime + 30000) < GET_TICK()) {
-			throw SocketException(STRING(CONNECTION_TIMEOUT));
+			throw SocketException(_("Connection timeout"));
 		}
 	}
 
@@ -169,7 +168,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		return;
 	} else if(left == 0) {
 		// This socket has been closed...
-		throw SocketException(STRING(CONNECTION_CLOSED));
+		throw SocketException(("Connection closed"));
 	}
 	size_t used;
 	string::size_type pos = 0;
@@ -261,7 +260,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 	}
 
 	if(mode == MODE_LINE && line.size() > static_cast<size_t>(SETTING(MAX_COMMAND_LENGTH))) {
-		throw SocketException(STRING(COMMAND_TOO_LONG));
+		throw SocketException(_("Maximum command length exceeded"));
 	}
 }
 
@@ -407,7 +406,7 @@ bool BufferedSocket::checkEvents() {
 		}
 		if(failed && p.first != SHUTDOWN) {
 			dcdebug("BufferedSocket: New command when already failed: %d\n", p.first);
-			fail(STRING(DISCONNECTED));
+			fail(_("Disconnected"));
 			delete p.second;
 			continue;
 		}
@@ -425,7 +424,7 @@ bool BufferedSocket::checkEvents() {
 				}
 			case DISCONNECT:
 				if(isConnected())
-					fail(STRING(DISCONNECTED));
+					fail(_("Disconnected"));
 				break;
 			case SHUTDOWN:
 				return false;

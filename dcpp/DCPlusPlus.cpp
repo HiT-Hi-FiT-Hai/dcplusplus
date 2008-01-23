@@ -97,13 +97,13 @@ void startup(void (*f)(void*, const string&), void* p) {
 	CryptoManager::getInstance()->loadCertificates();
 
 	if(f != NULL)
-		(*f)(p, STRING(HASH_DATABASE));
+		(*f)(p, _("Hash database"));
 	HashManager::getInstance()->startup();
 	if(f != NULL)
-		(*f)(p, STRING(SHARED_FILES));
+		(*f)(p, _("Shared Files"));
 	ShareManager::getInstance()->refresh(true, false, true);
 	if(f != NULL)
-		(*f)(p, STRING(DOWNLOAD_QUEUE));
+		(*f)(p, _("Download Queue"));
 	QueueManager::getInstance()->loadQueue();
 }
 

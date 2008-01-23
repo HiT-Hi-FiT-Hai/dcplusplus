@@ -30,7 +30,6 @@
 #include "FilteredFile.h"
 #include "BZUtils.h"
 #include "CryptoManager.h"
-#include "ResourceManager.h"
 
 #ifdef ff
 #undef ff
@@ -100,7 +99,7 @@ void DirectoryListing::loadFile(const string& name) throw(Exception) {
 	} else if(Util::stricmp(ext, ".xml") == 0) {
 		int64_t sz = dcpp::File::getSize(name);
 		if(sz == -1 || sz >= static_cast<int64_t>(txt.max_size()))
-			throw FileException(STRING(FILE_NOT_AVAILABLE));
+			throw FileException(_("File not available"));
 		
 		txt.resize((size_t) sz);
 		size_t n = txt.length();

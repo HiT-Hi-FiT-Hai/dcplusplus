@@ -21,7 +21,6 @@
 
 #include "ZUtils.h"
 #include "Exception.h"
-#include "ResourceManager.h"
 
 namespace dcpp {
 
@@ -31,7 +30,7 @@ ZFilter::ZFilter() : totalIn(0), totalOut(0), compressing(true) {
 	memset(&zs, 0, sizeof(zs));
 
 	if(deflateInit(&zs, 3) != Z_OK) {
-		throw Exception(STRING(COMPRESSION_ERROR));
+		throw Exception(_("Error during compression"));
 	}
 }
 
@@ -52,7 +51,7 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 		zs.avail_in = 0;
 		zs.avail_out = outsize;
 		if(deflateParams(&zs, 0, Z_DEFAULT_STRATEGY) != Z_OK) {
-			throw Exception(STRING(COMPRESSION_ERROR));
+			throw Exception(_("Error during compression"));
 		}
 		zs.avail_in = insize;
 		compressing = false;
@@ -74,7 +73,7 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 	if(insize == 0) {
 		int err = ::deflate(&zs, Z_FINISH);
 		if(err != Z_OK && err != Z_STREAM_END)
-			throw Exception(STRING(COMPRESSION_ERROR));
+			throw Exception(_("Error during compression"));
 
 		outsize = outsize - zs.avail_out;
 		insize = insize - zs.avail_in;
@@ -84,7 +83,7 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 	} else {
 		int err = ::deflate(&zs, Z_NO_FLUSH);
 		if(err != Z_OK)
-			throw Exception(STRING(COMPRESSION_ERROR));
+			throw Exception(_("Error during compression"));
 
 		outsize = outsize - zs.avail_out;
 		insize = insize - zs.avail_in;
@@ -98,7 +97,7 @@ UnZFilter::UnZFilter() {
 	memset(&zs, 0, sizeof(zs));
 
 	if(inflateInit(&zs) != Z_OK)
-		throw Exception(STRING(DECOMPRESSION_ERROR));
+		throw Exception(_("Error during decompression"));
 }
 
 UnZFilter::~UnZFilter() {
@@ -121,7 +120,7 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 	// with a dummy byte if at end of stream - since we don't do this it's not a real
 	// error
 	if(!(err == Z_OK || err == Z_STREAM_END || (err == Z_BUF_ERROR && in == NULL)))
-		throw Exception(STRING(DECOMPRESSION_ERROR));
+		throw Exception(_("Error during decompression"));
 
 	outsize = outsize - zs.avail_out;
 	insize = insize - zs.avail_in;

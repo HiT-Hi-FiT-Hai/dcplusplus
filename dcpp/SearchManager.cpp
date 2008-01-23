@@ -24,7 +24,6 @@
 
 #include "ClientManager.h"
 #include "ShareManager.h"
-#include "ResourceManager.h"
 
 namespace dcpp {
 
@@ -265,7 +264,7 @@ void SearchManager::onData(const uint8_t* buf, size_t aLen, const string& remote
 		if(hubName.compare(0, 4, "TTH:") == 0) {
 			tth = hubName.substr(4);
 			StringList names = ClientManager::getInstance()->getHubNames(user->getCID());
-			hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
+			hubName = names.empty() ? _("Offline") : Util::toString(names);
 		}
 
 		if(tth.empty() && type == SearchResult::TYPE_FILE) {
@@ -327,9 +326,9 @@ void SearchManager::onRES(const AdcCommand& cmd, const UserPtr& from, const stri
 	if(!file.empty() && freeSlots != -1 && size != -1) {
 
 		StringList names = ClientManager::getInstance()->getHubNames(from->getCID());
-		string hubName = names.empty() ? STRING(OFFLINE) : Util::toString(names);
+		string hubName = names.empty() ? _("Offline") : Util::toString(names);
 		StringList hubs = ClientManager::getInstance()->getHubs(from->getCID());
-		string hub = hubs.empty() ? STRING(OFFLINE) : Util::toString(hubs);
+		string hub = hubs.empty() ? _("Offline") : Util::toString(hubs);
 
 		SearchResult::Types type = (file[file.length() - 1] == '\\' ? SearchResult::TYPE_DIRECTORY : SearchResult::TYPE_FILE);
 		if(type == SearchResult::TYPE_FILE && tth.empty())
