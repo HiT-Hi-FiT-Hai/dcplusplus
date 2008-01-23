@@ -165,16 +165,10 @@ pot_args = ['xgettext', '--from-code=UTF-8', '--foreign-user', '--package-name=$
 pot_bld = Builder (action = Action([pot_args], 'Extracting messages to $TARGET from $SOURCES'))
 env.Append(BUILDERS = {'PotBuild' : pot_bld})
 
-from makedefs import convert
-env.Command('dcpp/StringDefs.cpp', 'dcpp/StringDefs.h', lambda target, source, env: convert())
-env.Depends('dcpp/StringDefs.cpp', 'dcpp/StringDefs.h')
-env.SideEffect('Example.xml', 'dcpp/StringDefs.cpp')
-
 dev.zlib = dev.build('zlib/')
 dev.bzip2 = dev.build('bzip2/')
 dev.intl = dev.build('intl/')
 dev.boost = dev.build('boost/')
 dev.client = dev.build('dcpp/')
-env.Depends(dev.client, 'dcpp/StringDefs.cpp')
 dev.smartwin = dev.build('smartwin/')
 dev.win32 = dev.build('win32/')

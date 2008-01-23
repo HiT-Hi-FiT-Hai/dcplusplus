@@ -31,7 +31,6 @@
 #include "Util.h"
 
 #include "SettingsManager.h"
-#include "ResourceManager.h"
 
 #include "StringSearch.h"
 #include "StringTokenizer.h"
@@ -279,7 +278,7 @@ private:
 	void PrepareDestinationDirectories(DestDirList& destDirVector, DirectoryListing::Directory* root, StringMap& params);
 	// Finalize destination directories
 	void FinalizeDestinationDirectories(DestDirList& destDirVector, DirectoryListing::Directory* root) {
-		string szDiscard = "<<<" + STRING(ADLS_DISCARD) + ">>>";
+		string szDiscard(_("<<<Discard>>>"));
 
 		// Add non-empty destination directories to the top level
 		for(vector<DestDir>::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id) {

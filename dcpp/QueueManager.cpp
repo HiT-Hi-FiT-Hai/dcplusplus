@@ -28,7 +28,6 @@
 #include "DownloadManager.h"
 #include "HashManager.h"
 #include "LogManager.h"
-#include "ResourceManager.h"
 #include "SearchManager.h"
 #include "ShareManager.h"
 #include "SimpleXML.h"
@@ -977,10 +976,9 @@ void QueueManager::processList(const string& name, UserPtr& user, int flags) {
 		}
 	}
 	if(flags & QueueItem::FLAG_MATCH_QUEUE) {
-		const size_t BUF_SIZE = STRING(MATCHED_FILES).size() + 16;
-		AutoArray<char> tmp(BUF_SIZE);
-		snprintf(tmp, BUF_SIZE, CSTRING(MATCHED_FILES), matchListing(dirList));
-		LogManager::getInstance()->message(Util::toString(ClientManager::getInstance()->getNicks(user->getCID())) + ": " + string(tmp));
+		size_t files = matchListing(dirList);
+		LogManager::getInstance()->message(str(FN_("%1%: Matched %2% file", "%1%: Matched %2% files", files) % 
+			Util::toString(ClientManager::getInstance()->getNicks(user->getCID())) % files));
 	}
 }
 

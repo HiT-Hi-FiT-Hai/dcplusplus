@@ -20,7 +20,6 @@
 #include "DCPlusPlus.h"
 
 #include "SettingsManager.h"
-#include "ResourceManager.h"
 
 #include "SimpleXML.h"
 #include "Util.h"
@@ -154,8 +153,8 @@ SettingsManager::SettingsManager()
 	setDefault(USE_OEM_MONOFONT, false);
 	setDefault(POPUP_PMS, true);
 	setDefault(MIN_UPLOAD_SPEED, 0);
-	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time], %[fileTR]");
-	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time], %[fileTR]");
+	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target] " + string(_("downloaded from")) + " %[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time], %[fileTR]");
+	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source] " + string(_("uploaded to")) + " %[userNI] (%[userCID]), %[fileSI] (%[fileSIchunk]), %[speed], %[time], %[fileTR]");
 	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_STATUS, "[%Y-%m-%d %H:%M] %[message]");

@@ -23,7 +23,6 @@
 #include "File.h"
 
 #include "SettingsManager.h"
-#include "ResourceManager.h"
 #include "StringTokenizer.h"
 #include "SettingsManager.h"
 #include "version.h"
@@ -333,19 +332,19 @@ string Util::getAwayMessage() {
 	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
 }
 string Util::formatBytes(int64_t aBytes) {
-	char buf[64];
+	char buf[128];
 	if(aBytes < 1024) {
-		snprintf(buf, sizeof(buf), "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
+		snprintf(buf, sizeof(buf), _("%d B"), (int)(aBytes&0xffffffff));
 	} else if(aBytes < 1024*1024) {
-		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0), CSTRING(KiB));
+		snprintf(buf, sizeof(buf), _("%.02f KiB"), (double)aBytes/(1024.0));
 	} else if(aBytes < 1024*1024*1024) {
-		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MiB));
+		snprintf(buf, sizeof(buf), _("%.02f MiB"), (double)aBytes/(1024.0*1024.0));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GiB));
+		snprintf(buf, sizeof(buf), _("%.02f GiB"), (double)aBytes/(1024.0*1024.0*1024.0));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024*1024) {
-		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TiB));
+		snprintf(buf, sizeof(buf), _("%.02f TiB"), (double)aBytes/(1024.0*1024.0*1024.0*1024.0));
 	} else {
-		snprintf(buf, sizeof(buf), "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
+		snprintf(buf, sizeof(buf), _("%.02f PiB"), (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0));
 	}
 
 	return buf;
@@ -353,7 +352,7 @@ string Util::formatBytes(int64_t aBytes) {
 
 string Util::formatExactSize(int64_t aBytes) {
 #ifdef _WIN32
-		TCHAR buf[128];
+		TCHAR tbuf[128];
 		TCHAR number[64];
 		NUMBERFMT nf;
 		_sntprintf(number, 64, _T("%I64d"), aBytes);
@@ -372,14 +371,15 @@ string Util::formatExactSize(int64_t aBytes) {
 		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Dummy, 16 );
 		nf.lpThousandSep = Dummy;
 
-		GetNumberFormat(LOCALE_USER_DEFAULT, 0, number, &nf, buf, sizeof(buf)/sizeof(buf[0]));
+		GetNumberFormat(LOCALE_USER_DEFAULT, 0, number, &nf, tbuf, sizeof(tbuf)/sizeof(tbuf[0]));
 
-		_sntprintf(buf, 128, _T("%s %s"), buf, CTSTRING(B));
-		return Text::fromT(buf);
+		char buf[128];
+		_snprintf(buf, sizeof(buf), _("%s B"), Text::fromT(tbuf).c_str());
+		return buf;
 #else
-		char buf[64];
-		snprintf(buf, sizeof(buf), "%'lld", (long long int)aBytes);
-		return string(buf) + STRING(B);
+		char buf[128];
+		snprintf(buf, sizeof(buf), _("%'lld B"), (long long int)aBytes);
+		return string(buf)
 #endif
 }
 
