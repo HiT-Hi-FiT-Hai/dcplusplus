@@ -173,6 +173,8 @@ extern void shutdown();
 #define LOCALEDIR Util::getLocalePath().c_str()
 #define _(String) dgettext(PACKAGE, String)
 #define F_(String) boost::format(dgettext(PACKAGE, String))
+#define FN_(String1,String2, N) boost::format(dngettext(PACKAGE, String1, String2, N))
+
 #endif
 
 } // namespace dcpp
