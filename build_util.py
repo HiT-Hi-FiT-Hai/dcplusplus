@@ -83,7 +83,7 @@ class Dev:
 		
 		for po_file in p_oze:
 			buildenv.Precious(buildenv.PoBuild(po_file, [potfile]))
-			lang = os.path.basename(po)[:-3]
+			lang = os.path.basename(po_file)[:-3]
 			mo_file = self.get_target(source_path, "locale/" + lang + "/LC_MESSAGES/" + name + ".mo", True)
 			buildenv.MoBuild (mo_file, po_file)
 		
