@@ -381,15 +381,6 @@ void WinUtil::searchHash(const TTHValue& aHash) {
 	SearchFrame::openWindow(mainWindow->getMDIParent(), Text::toT(aHash.toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 }
 
-tstring WinUtil::escapeMenu(tstring str) {
-	string::size_type i = 0;
-	while( (i = str.find(_T('&'), i)) != string::npos) {
-		str.insert(str.begin()+i, 1, _T('&'));
-		i += 2;
-	}
-	return str;
-}
-
 void WinUtil::addLastDir(const tstring& dir) {
 	TStringIter i = find(lastDirs.begin(), lastDirs.end(), dir); 
 	if(i != lastDirs.end()) {

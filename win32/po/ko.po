@@ -1,3 +1,4 @@
+
 # Korean translations for the DC++ package.
 # Copyright (C) 2008 The translators
 # This file is distributed under the same license as the DC++ package.
@@ -7,2307 +8,1149 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-01-23 21:22+0100\n"
 "Last-Translator:  <gutfeast@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: win32/MainWindow.cpp:849
-#, fuzzy, boost-format
-msgid ""
-"%1%\n"
-"Open download page?"
-msgstr "'기본 다운로드 디렉토리' 열기"
-
-#: win32/TransferView.cpp:420
-#, boost-format
-msgid "%1% (%2$0.2f)"
-msgstr ""
-
-#: win32/HashProgressDlg.cpp:91
-#, boost-format
-msgid "%1% files/h, %2% files left"
-msgstr ""
-
-#: win32/SearchFrame.cpp:576
-#, boost-format
-msgid "%1% filtered"
-msgstr ""
-
-#: win32/SearchFrame.cpp:571
-#, boost-format
-msgid "%1% item"
-msgid_plural "%1% items"
-msgstr[0] ""
-
-#: win32/HashProgressDlg.cpp:100
-#, boost-format
-msgid "%1% left"
-msgstr ""
-
-#: win32/HubFrame.cpp:936
-#, fuzzy, boost-format
-msgid "%1% user"
-msgid_plural "%1% users"
-msgstr[0] "사용자 없음"
-
-#: win32/TransferView.cpp:434 win32/DownloadsFrame.cpp:130
-#, boost-format
-msgid "%1%/s"
-msgstr ""
-
-#: win32/HashProgressDlg.cpp:92
-#, boost-format
-msgid "%1%/s, %2% left"
-msgstr ""
-
-#: win32/HubListsDlg.cpp:63 win32/UCPage.cpp:33
-#, fuzzy
-msgid "&Add"
-msgstr "등록 시간"
-
-#: win32/UploadPage.cpp:37 win32/FavoriteDirsPage.cpp:34
-msgid "&Add folder"
-msgstr ""
-
-#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
-#: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
-#: win32/Appearance2Page.cpp:30
-#, fuzzy
-msgid "&Browse..."
-msgstr "찾기..."
-
-#: win32/UCPage.cpp:34
-#, fuzzy
-msgid "&Change"
-msgstr "프로그램 업데이트 히스토리"
-
-#: win32/PrivateFrame.cpp:373 win32/HubFrame.cpp:1184
-#, fuzzy
-msgid "&Close"
-msgstr "색상/글꼴"
-
-#: win32/PublicHubsFrame.cpp:150
-msgid "&Configure"
-msgstr ""
-
-#: win32/FavHubsFrame.cpp:71 win32/FavHubsFrame.cpp:113
-#: win32/PublicHubsFrame.cpp:447
-#, fuzzy
-msgid "&Connect"
-msgstr "접속되었음"
-
-#: win32/TransferView.cpp:115
-#, fuzzy
-msgid "&Disconnect"
-msgstr "허브에 직접 접속하기"
-
-#: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
-#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
-#, fuzzy
-msgid "&Download"
-msgstr "다운로드"
-
-#: win32/MainWindow.cpp:206
-#, fuzzy
-msgid "&Download Queue\tCtrl+D"
-msgstr "다운로드 대기열"
-
-#: win32/HubListsDlg.cpp:75
-msgid "&Edit"
-msgstr ""
-
-#: win32/MainWindow.cpp:203
-#, fuzzy
-msgid "&Favorite Hubs\tCtrl+F"
-msgstr "즐겨찾는 허브"
-
-#: win32/MainWindow.cpp:182
-#, fuzzy
-msgid "&File"
-msgstr "파일"
-
-#: win32/TransferView.cpp:112
-msgid "&Force attempt"
-msgstr ""
-
-#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:83
-#: win32/PrivateFrame.cpp:365
-msgid "&Get file list"
-msgstr ""
-
-#: win32/DirectoryListingFrame.cpp:325
-#, fuzzy
-msgid "&Go to directory"
-msgstr "다운로드하기 (디렉토리 통째)"
-
-#: win32/MainWindow.cpp:229 win32/ADLSearchFrame.cpp:93
-msgid "&Help"
-msgstr ""
-
-#: win32/PrivateFrame.cpp:366
-#, fuzzy
-msgid "&Match queue"
-msgstr "파일-목록에서 내 '다운로드 대기열'의 파일을 찾아 소스에 추가하기"
-
-#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
-#, fuzzy
-msgid "&Move/Rename"
-msgstr "이름 바꾸기"
-
-#: win32/FavHubsFrame.cpp:76 win32/FavHubsFrame.cpp:115
-#: win32/ADLSearchFrame.cpp:68 win32/ADLSearchFrame.cpp:293
-msgid "&New..."
-msgstr ""
-
-#: win32/MainWindow.cpp:215
-#, fuzzy
-msgid "&Notepad\tCtrl+N"
-msgstr "메모장"
-
-#: win32/FavHubsFrame.cpp:81 win32/FavHubsFrame.cpp:116
-#: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:294
-#: win32/UsersFrame.cpp:186
-#, fuzzy
-msgid "&Properties"
-msgstr "ADL 검색 등록정보"
-
-#: win32/MainWindow.cpp:202
-#, fuzzy
-msgid "&Public Hubs\tCtrl+P"
-msgstr "공개 허브"
-
-#: win32/MainWindow.cpp:184
-#, fuzzy
-msgid "&Quick Connect ...\tCtrl+Q"
-msgstr "허브에 직접 접속하기"
-
-#: win32/MainWindow.cpp:186 win32/HubFrame.cpp:1179
-msgid "&Reconnect\tCtrl+R"
-msgstr ""
-
-#: win32/PublicHubsFrame.cpp:156
-msgid "&Refresh"
-msgstr ""
-
-#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
-#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
-#: win32/WaitingUsersFrame.cpp:85 win32/FavoriteDirsPage.cpp:33
-#: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:96
-#: win32/FavHubsFrame.cpp:120 win32/ADLSearchFrame.cpp:88
-#: win32/ADLSearchFrame.cpp:295 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
-#, fuzzy
-msgid "&Remove"
-msgstr "이름 바꾸기"
-
-#: win32/SpyFrame.cpp:191
-#, fuzzy
-msgid "&Search"
-msgstr "검색"
-
-#: win32/MainWindow.cpp:211
-#, fuzzy
-msgid "&Search\tCtrl+S"
-msgstr "검색"
-
-#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:88
-#, fuzzy
-msgid "&Send private message"
-msgstr "1:1 메시지"
-
-#: win32/MainWindow.cpp:200
-#, fuzzy
-msgid "&View"
-msgstr "비디오 파일"
-
-#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
-msgid "&View as text"
-msgstr ""
-
-#: win32/MainWindow.cpp:221
-msgid "&Window"
-msgstr ""
-
-#: win32/HubFrame.cpp:490
-#, boost-format
-msgid "*** Joins: %1%"
-msgstr ""
-
-#: win32/HubFrame.cpp:497
-#, boost-format
-msgid "*** Parts: %1%"
-msgstr ""
-
-#: win32/HashProgressDlg.cpp:84
-#, boost-format
-msgid "-.-- B/s, %1% left"
-msgstr ""
-
-#: win32/HashProgressDlg.cpp:83
-#, boost-format
-msgid "-.-- files/h, %1% files left"
-msgstr ""
-
-#: win32/WinUtil.cpp:1034
-msgid ""
-"A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
-"use on the Direct Connect network.  No action will be taken."
-msgstr ""
-"MAGNET 링크를 DC++가 처리했지만, Direct Connect 네트워크상에서 사용하기 위한 "
-"유효한 파일 Hash를 포함하고있지 않음 (아무 작업도 수행하지 않음)"
-
-#: win32/MainWindow.cpp:212 win32/MainWindow.cpp:283
-msgid "ADL Search"
-msgstr "ADL 검색"
-
-#: win32/ADLSProperties.cpp:49
-msgid "ADLSearch Properties"
-msgstr "ADL 검색 등록정보"
-
-#: win32/MainWindow.cpp:294 win32/MainWindow.cpp:550
-msgid "AWAY"
-msgstr "자리비움"
-
-#: win32/MainWindow.cpp:234
-msgid "About DC++..."
-msgstr "DC++ 정보"
-
-#: win32/AdvancedPage.cpp:43
-msgid "Accept custom user commands from hub"
-msgstr ""
-"허브로부터 사용자 정의 명령어를 받아들임 (이러한 사용자 정의 명령어는 허브 "
-"창 탭을 클릭하거나 전송 프레임, 검색 창, 사용자 목록 등에 있는 사용자를 클릭"
-"하면 나타나게 되며, 허브의 규칙 사항을 읽도록 만들거나 운영자 기능의 수행, 허"
-"브 Bot와의 상호작용 등등의 여러가지를 가능하게 함)"
-
-#: win32/WaitingUsersFrame.cpp:87 win32/PrivateFrame.cpp:369
-#: win32/HubFrame.cpp:1176 win32/PublicHubsFrame.cpp:448
-#, fuzzy
-msgid "Add To &Favorites"
-msgstr "즐겨찾는 허브"
-
-#: win32/AdvancedPage.cpp:45
-msgid "Add finished files to share instantly (if shared)"
-msgstr ""
-"다운로드 완료된 파일을 즉시 공유시킴 (이 옵션을 체크하면 파일을 다운로드할 "
-"때 공유 디렉토리로 직접 받거나 '기본 다운로드 디렉토리'가 공유되었을 경우, "
-"그 파일의 전송이 완료되자 마자 공유됨)(내 파일-목록에는 갱신하기 전까지는 나"
-"타나지 않음)"
-
-#: win32/QueueFrame.cpp:45
-msgid "Added"
-msgstr "등록 시간"
-
-#: win32/MainWindow.cpp:345 win32/PublicHubsFrame.cpp:52
-msgid "Address"
-msgstr "허브 주소"
-
-#: win32/SettingsDialog.cpp:67
-msgid "Advanced"
-msgstr "고급"
-
-#: win32/SettingsDialog.cpp:69
-msgid "Advanced\\Experts only"
-msgstr ""
-
-#: win32/SettingsDialog.cpp:68
-#, fuzzy
-msgid "Advanced\\Logs"
-msgstr "고급"
-
-#: win32/SettingsDialog.cpp:71
-msgid "Advanced\\Security Certificates"
-msgstr ""
-
-#: win32/SettingsDialog.cpp:70
-msgid "Advanced\\User Commands"
-msgstr ""
-
-#: win32/QueueFrame.cpp:1024 win32/QueueFrame.cpp:1034
-msgid "All"
-msgstr "모두"
-
-#: win32/QueueFrame.cpp:431
-#, fuzzy, boost-format
-msgid "All %1% users offline"
-msgstr "사용자가 오프라인"
-
-#: win32/CertificatesPage.cpp:43
-msgid "Allow TLS connections to clients without trusted certificate"
-msgstr "신뢰할 수 있는 인증이 없는 클라이언트들과의 TLS 연결을 허용함"
-
-#: win32/CertificatesPage.cpp:42
-msgid "Allow TLS connections to hubs without trusted certificate"
-msgstr "신뢰할 수 있는 인증이 없는 허브로의 TLS 접속을 허용함"
-
-#: win32/CommandDlg.cpp:117
-msgid "Always open help file with this dialog"
-msgstr "관련된 도움말 항목을 항상 띄움"
-
-#: win32/SearchFrame.cpp:182 win32/HubFrame.cpp:129
-#: win32/PublicHubsFrame.cpp:138
-msgid "Any"
-msgstr "모든 종류"
-
-#: win32/SettingsDialog.cpp:63
-msgid "Appearance"
-msgstr "모양"
-
-#: win32/SettingsDialog.cpp:64
-msgid "Appearance\\Colors and sounds"
-msgstr ""
-
-#: win32/SettingsDialog.cpp:65
-#, fuzzy
-msgid "Appearance\\Tabs"
-msgstr "모양"
-
-#: win32/SettingsDialog.cpp:66
-#, fuzzy
-msgid "Appearance\\Windows"
-msgstr "모양"
-
-#: win32/SearchFrame.cpp:156
-msgid "At least"
-msgstr "적어도"
-
-#: win32/SearchFrame.cpp:157
-msgid "At most"
-msgstr "많아야"
-
-#: win32/SearchFrame.cpp:183
-msgid "Audio"
-msgstr "오디오 파일"
-
-#: win32/FavHubsFrame.cpp:32
-msgid "Auto connect / Name"
-msgstr "자동 접속 (체크) / 허브 이름"
-
-#: win32/UsersFrame.cpp:30
-msgid "Auto grant slot / Nick"
-msgstr "자동 슬롯 허용 (체크) / 사용자 닉네임"
-
-#: win32/QueuePage.cpp:28
-#, fuzzy
-msgid "Auto priority settings"
-msgstr "다운로드 소스 자동-버림 설정"
-
-#: win32/Advanced3Page.cpp:40
-msgid "Auto refresh time"
-msgstr "자동 갱신 시간"
-
-#: win32/AdvancedPage.cpp:30
-msgid "Auto-away on minimize (and back on restore)"
-msgstr ""
-"프로그램을 최소화하면 자동으로 자리비움 상태로 표시함 (프로그램을 복원하면 상"
-"태가 되돌아 옴)"
-
-#: win32/WindowsPage.cpp:30
-msgid "Auto-open at startup"
-msgstr "시작할 때 자동으로 열 창"
-
-#: win32/Advanced3Page.cpp:41
-msgid "Auto-search limit"
-msgstr "자동-검색 제한"
-
-#: win32/QueuePage.cpp:37
-msgid "Autodrop settings"
-msgstr "다운로드 소스 자동-버림 설정"
-
-#: win32/QueuePage.cpp:69
-msgid "Autodrop slow sources for all queue items (except filelists)"
-msgstr ""
-"자동-버림된 느린 사용자를 모든 다운로드 대기열 항목의 소스에서 제거함 (파일-"
-"목록 제외)"
-
-#: win32/ADLSearchFrame.cpp:40
-msgid "Automatic Directory Listing Search"
-msgstr "ADL(Automatic Directory Listing) 검색"
-
-#: win32/AdvancedPage.cpp:37
-msgid "Automatically disconnect users who leave the hub"
-msgstr ""
-"허브를 떠난 사용자는 자동으로 파일 전송을 끊음 (얌체 공유자를 차단하고 싶은 "
-"경우, 이 옵션을 체크하는 것이 유용함)"
-
-#: win32/AdvancedPage.cpp:31
-msgid "Automatically follow redirects"
-msgstr "허브의 접속-전환(Redirect) 제안에 자동으로 응함"
-
-#: win32/QueuePage.cpp:73
-msgid "Automatically match queue for auto search hits"
-msgstr ""
-"'다운로드 대기열' 자동-검색이 성공한 경우, 검색된 파일의 소스 뿐만 아니라, "
-"그 파일 소유자의 파일-목록을 받고 그 파일-목록에서 내 '다운로드 대기열'의 파"
-"일을 찾아 일치하는 모든 파일의 소스에도 그 소유자를 추가함"
-
-#: win32/UploadPage.cpp:39
-msgid "Automatically open an extra slot if speed is below (0 = disable)"
-msgstr "속도가 다음 미만이면 별도 슬롯을 자동 오픈 (0=사용 안함)"
-
-#: win32/QueuePage.cpp:72
-msgid "Automatically search for alternative download locations"
-msgstr ""
-"내 '다운로드 대기열'의 모든 파일을 순차적으로 자동-검색하고, 파일 소스(소유"
-"자 목록)에 새로 검색되는 파일 소유자를 추가해 나감 (기존 파일 소유자 이외의 "
-"새로운 대체 소스를 확보함으로써 다운로드 효율성이 높아짐)"
-
-#: win32/SpyFrame.cpp:115
-#, boost-format
-msgid "Average/s: %1%"
-msgstr ""
-
-#: win32/WinUtil.cpp:264 win32/WinUtil.cpp:274
-msgid "Away mode off"
-msgstr "자리비움 모드 꺼짐"
-
-#: win32/WinUtil.cpp:269
-#, fuzzy, boost-format
-msgid "Away mode on: %1%"
-msgstr "자리비움 모드 꺼짐"
-
-#: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
-#: win32/ADLSProperties.cpp:74
-msgid "B"
-msgstr "B"
-
-#: win32/QueuePage.cpp:39
-msgid "B/s"
-msgstr "B/s"
-
-#: win32/Advanced3Page.cpp:37
-msgid "Bind address"
-msgstr "바인딩 주소"
-
-#: win32/AdvancedPage.cpp:41
-msgid "Break on first ADLSearch match"
-msgstr "첫번째 ADL 검색에서 일치하면 검색을 멈춤"
-
-#: win32/DownloadPage.cpp:34
-msgid "Browse..."
-msgstr "찾기..."
-
-#: win32/SearchFrame.cpp:43 win32/HubFrame.cpp:44 win32/UsersFrame.cpp:34
-msgid "CID"
-msgstr "CID"
-
-#: win32/QueueFrame.cpp:477
-msgid "CRC32 inconsistency (SFV-Check)"
-msgstr "32-bit CRC 코드 불일치 (SFV-검사)"
-
-#: win32/MainWindow.cpp:233
-msgid "Change Log"
-msgstr "프로그램 업데이트 히스토리"
-
-#: win32/CommandDlg.cpp:82
-msgid "Chat"
-msgstr "대화"
-
-#: win32/QueuePage.cpp:40
-msgid "Check every"
-msgstr "체크 간격"
-
-#: win32/TransferView.cpp:42
-msgid "Chunk size"
-msgstr ""
-
-#: win32/TransferView.cpp:45
-msgid "Cipher"
-msgstr ""
-
-#: win32/AdvancedPage.cpp:32
-msgid "Clear search box after each search"
-msgstr ""
-"검색 창에서 검색을 시작할 때마다 검색 문자열 입력 박스를 지움 (지워지더라도 "
-"최근 사용한 검색어 중 10개까지 드랍-다운 메뉴에서 고를 수 있음)"
-
-#: win32/MainWindow.cpp:224
-msgid "Close all PM windows"
-msgstr "모든 1:1 메시지 창 닫기"
-
-#: win32/MainWindow.cpp:226
-msgid "Close all file list windows"
-msgstr "모든 파일-목록 창 닫기"
-
-#: win32/MainWindow.cpp:225
-msgid "Close all offline PM windows"
-msgstr "모든 오프라인 1:1 메시지 창 닫기"
-
-#: win32/MainWindow.cpp:227
-msgid "Close all search windows"
-msgstr "모든 검색 창 닫기"
-
-#: win32/MainWindow.cpp:223
-msgid "Close disconnected"
-msgstr "접속이 끊긴 창 닫기"
-
-#: win32/Appearance2Page.cpp:31
-msgid "Colors"
-msgstr "색상/글꼴"
-
-#: win32/UCPage.cpp:54
-msgid "Command"
-msgstr "명령어"
-
-#: win32/SearchFrame.cpp:184
-msgid "Compressed"
-msgstr "압축 파일"
-
-#: win32/DownloadPage.cpp:41
-msgid "Configure Public Hub Lists"
-msgstr "공개 허브 목록 설정"
-
-#: win32/HubListsDlg.cpp:43 win32/PublicHubsFrame.cpp:164
-msgid "Configured Public Hub Lists"
-msgstr "설정된 공개 허브 목록"
-
-#: win32/WindowsPage.cpp:67
-msgid "Confirm application exit"
-msgstr "프로그램을 종료할 때 확인함"
-
-#: win32/WindowsPage.cpp:32
-msgid "Confirm dialog options"
-msgstr "확인 옵션"
-
-#: win32/WindowsPage.cpp:68
-msgid "Confirm favorite hub removal"
-msgstr "'즐겨찾는 허브'에서 허브를 삭제할 때 확인함"
-
-#: win32/WindowsPage.cpp:69
-msgid "Confirm item removal in download queue"
-msgstr "'다운로드 대기열'에서 항목을 삭제할 때 확인함"
-
-#: win32/HubFrame.cpp:500
-msgid "Connected"
-msgstr "접속되었음"
-
-#: win32/TransferView.cpp:453 win32/TransferView.cpp:460
-#, fuzzy
-msgid "Connecting"
-msgstr "연결"
-
-#: win32/TransferView.cpp:172
-#, fuzzy
-msgid "Connecting (forced)"
-msgstr "접속되었음"
-
-#: win32/HubFrame.cpp:826
-#, fuzzy, boost-format
-msgid "Connecting to %1%..."
-msgstr "연결"
-
-#: win32/SearchFrame.cpp:38 win32/HubFrame.cpp:41
-msgid "Connection"
-msgstr "연결"
-
-#: win32/SettingsDialog.cpp:58
-msgid "Connection settings"
-msgstr "접속 설정"
-
-#: win32/HubFrame.cpp:1180 win32/PublicHubsFrame.cpp:449
-#, fuzzy
-msgid "Copy &address to clipboard"
-msgstr "클립보드에 MAGNET 링크 복사하기"
-
-#: win32/TransferView.cpp:113 win32/HubFrame.cpp:1160
-#, fuzzy
-msgid "Copy &nick to clipboard"
-msgstr "클립보드에 MAGNET 링크 복사하기"
-
-#: win32/WaitingUsersFrame.cpp:84
-msgid "Copy Filename"
-msgstr "파일 이름 복사하기"
-
-#: win32/WinUtil.cpp:363
-msgid "Copy magnet link to clipboard"
-msgstr "클립보드에 MAGNET 링크 복사하기"
-
-#: win32/SpyFrame.cpp:35
-msgid "Count"
-msgstr "개수"
-
-#: win32/PublicHubsFrame.cpp:53
-msgid "Country"
-msgstr "국가"
-
-#: win32/CommandDlg.cpp:63
-msgid "Create / Modify Command"
-msgstr "사용자 정의 명령어 추가/변경"
-
-#: win32/HashProgressDlg.cpp:40
-msgid "Creating file index..."
-msgstr "파일 색인 생성..."
-
-#: win32/MainWindow.cpp:553
-#, boost-format
-msgid "D: %1%"
-msgstr ""
-
-#: win32/MainWindow.cpp:555
-#, boost-format
-msgid "D: %1%/s (%2%)"
-msgstr ""
-
-#: win32/WinUtil.cpp:828
-msgid "DC++"
-msgstr "DC++"
-
-#: win32/MainWindow.cpp:236
-msgid "DC++ Homepage"
-msgstr "DC++ 홈페이지"
-
-#: win32/MainWindow.cpp:242
-msgid "DC++ discussion forum"
-msgstr "DC++ 토론 포럼"
-
-#: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:109
-msgid "Default"
-msgstr ""
-
-#: win32/AppearancePage.cpp:32
-msgid "Default away message"
-msgstr "기본 자리비움 메시지"
-
-#: win32/DownloadPage.cpp:31
-msgid "Default download directory"
-msgstr "기본 다운로드 디렉토리"
-
-#: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
-#: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
-#: win32/UsersFrame.cpp:143
-msgid "Description"
-msgstr "설명"
-
-#: win32/ADLSearchFrame.cpp:34
-msgid "Destination Directory"
-msgstr "대상 디렉토리"
-
-#: win32/NetworkPage.cpp:30 win32/NetworkPage.cpp:31
-msgid "Direct connection"
-msgstr "직접 접속"
-
-#: win32/DownloadPage.cpp:30
-msgid "Directories"
-msgstr "다운로드 디렉토리"
-
-#: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
-#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
-#: win32/ADLSProperties.cpp:63
-msgid "Directory"
-msgstr "디렉토리"
-
-#: win32/FavoriteDirsPage.cpp:126 win32/FavoriteDirsPage.cpp:159
-msgid "Directory or directory name already exists"
-msgstr "같은 디렉토리나 디렉토리 대표 이름이 이미 존재함"
-
-#: win32/MagnetDlg.cpp:62
-msgid "Do nothing"
-msgstr "무시하기"
-
-#: win32/SearchFrame.cpp:185
-msgid "Document"
-msgstr "문서 파일"
-
-#: win32/NetworkPage.cpp:35
-msgid "Don't allow hub/UPnP to override"
-msgstr "hub/UPnP가 이 설정을 우선하지 않도록 함"
-
-#: win32/AdvancedPage.cpp:47
-msgid "Don't automatically disconnect favorite users who leave the hub"
-msgstr "허브를 떠난 '즐겨 찾는 사용자'를 자동으로 끊지 않음"
-
-#: win32/AdvancedPage.cpp:36
-msgid "Don't delete file lists when exiting"
-msgstr "다운로드한 파일-목록을 프로그램을 종료할 때 삭제하지 않고 보존함"
-
-#: win32/QueuePage.cpp:75
-msgid "Don't download files already in share"
-msgstr "이미 공유하고 있는 파일은 다운로드하지 않음"
-
-#: win32/QueuePage.cpp:76
-msgid "Don't download files already in the queue"
-msgstr "이미 '다운로드 대기열'에 추가한 파일은 다운로드하지 않음"
-
-#: win32/HubFrame.cpp:385
-msgid "Don't remove /password before your password"
-msgstr "비밀번호 앞의 \"/password\" 부분을 없애면 안됨"
-
-#: win32/QueuePage.cpp:71
-msgid "Don't remove the source when autodropping, only disconnect"
-msgstr "자동-버림할 때 전송만 끊고 해당 소스를 제거하지는 않음"
-
-#: win32/AdvancedPage.cpp:40
-msgid "Don't send the away message to bots"
-msgstr "허브 Bot에게는 자리비움 메시지를 보내지 않음"
-
-#: win32/MainWindow.cpp:245
-msgid "Donate (paypal)"
-msgstr "후원금 기부 (paypal)"
-
-#: win32/Appearance2Page.cpp:34
-msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
-msgstr ""
-
-#: win32/DownloadsFrame.cpp:40
-msgid "Done"
-msgstr "완료"
-
-#: win32/DirectoryListingFrame.cpp:358
-#, fuzzy
-msgid "Download &to..."
-msgstr "다운로드하기 - 위치 지정"
-
-#: win32/ADLSProperties.cpp:88
-msgid "Download Matches"
-msgstr "자동 다운로드"
-
-#: win32/QueueFrame.cpp:57 win32/TabsPage.cpp:41 win32/WindowsPage.cpp:39
-#: win32/MainWindow.cpp:277
-msgid "Download Queue"
-msgstr "다운로드 대기열"
-
-#: win32/PublicHubsFrame.cpp:322
-#, fuzzy, boost-format
-msgid "Download failed: %1%"
-msgstr "받은 크기"
-
-#: win32/WinUtil.cpp:829
-msgid "Download files from the Direct Connect network"
-msgstr "Direct Connect 네트워크로부터 파일 다운로드"
-
-#: win32/SearchFrame.cpp:764
-msgid "Download to..."
-msgstr "다운로드하기 - 위치 지정"
-
-#: win32/SearchFrame.cpp:744
-msgid "Download whole directory"
-msgstr "다운로드하기 (디렉토리 통째)"
-
-#: win32/SearchFrame.cpp:794
-msgid "Download whole directory to..."
-msgstr "다운로드하기 (디렉토리 통째) - 위치 지정"
-
-#: win32/QueueFrame.cpp:39
-msgid "Downloaded"
-msgstr "받은 크기"
-
-#: win32/TransferView.cpp:531
-#, fuzzy, boost-format
-msgid "Downloading %1%"
-msgstr "다운로드..."
-
-#: win32/DownloadsFrame.cpp:128
-#, boost-format
-msgid "Downloading from %1% user"
-msgid_plural "Downloading from %1% users"
-msgstr[0] ""
-
-#: win32/DirectoryListingFrame.cpp:693
-msgid "Downloading list..."
-msgstr "목록 다운로드..."
-
-#: win32/PublicHubsFrame.cpp:188
-msgid "Downloading public hub list..."
-msgstr "허브 목록 다운로드..."
-
-#: win32/PublicHubsFrame.cpp:319
-#, fuzzy, boost-format
-msgid "Downloading public hub list... (%1%)"
-msgstr "허브 목록 다운로드..."
-
-#: win32/AboutDlg.cpp:63
-msgid "Downloading..."
-msgstr "다운로드..."
-
-#: win32/WindowsPage.cpp:48 win32/SettingsDialog.cpp:59
-#: win32/MainWindow.cpp:218 win32/MainWindow.cpp:237
-#: win32/DownloadsFrame.cpp:45 win32/Appearance2Page.cpp:40
-msgid "Downloads"
-msgstr "다운로드"
-
-#: win32/SettingsDialog.cpp:60
-#, fuzzy
-msgid "Downloads\\Favorites"
-msgstr "자동 다운로드"
-
-#: win32/SettingsDialog.cpp:61
-#, fuzzy
-msgid "Downloads\\Queue"
-msgstr "다운로드 대기열"
-
-#: win32/QueuePage.cpp:38
-msgid "Drop sources below"
-msgstr "자동-버림 속도(↓)"
-
-#: win32/MainWindow.cpp:198
-msgid "E&xit"
-msgstr ""
-
-#: win32/GeneralPage.cpp:30 win32/HubFrame.cpp:43
-msgid "E-Mail"
-msgstr "E-Mail"
-
-#: win32/HubListsDlg.cpp:149
-msgid "Edit the hublist"
-msgstr "허브 목록 편집"
-
-#: win32/AdvancedPage.cpp:39
-msgid "Enable automatic SFV checking"
-msgstr ""
-"SFV(Simple File Verification)-검사를 자동으로 실시함 (이 옵션을 체크하면 각 "
-"파일의 32-bit CRC 코드 목록을 담고 있는 sfv-파일이 있고 그 목록 중의 파일에 "
-"대한 다운로드가 완료되었을 경우, 자동으로 그 파일의 CRC 코드를 계산하고 sfv-"
-"파일의 것과 일치하는지 비교하여 파일이 전송과정에서 손상되었는지 여부를 검사"
-"하고, 일치하지 않는다면 다운로드를 재시도함)"
-
-#: win32/AdvancedPage.cpp:42
-msgid "Enable safe and compressed transfers"
-msgstr ""
-"안전한 압축 방식을 사용하여 데이터를 전송함 (이 옵션을 체크하면 이 기능을 지"
-"원하는 호환 클라이언트와 파일을 주고 받을 때, 무결성 검사를 포함하는 ZLIB 압"
-"축 방식을 사용하여 데이터를 전송함)(이러한 전송 방식은 CPU 성능을 어느 정도 "
-"사용하지만 압축되지 않은 구조를 갖는 포맷의 파일을 전송하는데 있어 엄청난 속"
-"도의 향상을 가져올 수 있을 뿐더러 파일의 무결성까지 보장할 수 있음)"
-
-#: win32/ADLSProperties.cpp:84
-msgid "Enabled"
-msgstr "활성화"
-
-#: win32/ADLSearchFrame.cpp:32
-msgid "Enabled / Search String"
-msgstr "활성 (체크) / 검색 문자열"
-
-#: win32/DirectoryListingFrame.cpp:795
-msgid "Enter search string"
-msgstr "검색 문자열 입력하기..."
-
-#: win32/WinUtil.cpp:736
-msgid "Error creating adc registry key"
-msgstr "\"adc://\" URL 레지스트리 키 생성 오류"
-
-#: win32/WinUtil.cpp:697
-msgid "Error creating dchub registry key"
-msgstr "\"dchub://\" URL 레지스트리 키 생성 오류"
-
-#: win32/WinUtil.cpp:796 win32/WinUtil.cpp:809
-msgid "Error creating magnet registry key"
-msgstr "\"magnet:\" URI 레지스트리 키 생성 오류"
-
-#: win32/QueueFrame.cpp:44
-msgid "Errors"
-msgstr "오류"
-
-#: win32/QueueFrame.cpp:43 win32/DirectoryListingFrame.cpp:42
-#: win32/SearchFrame.cpp:40
-msgid "Exact size"
-msgstr "정확한 크기"
-
-#: win32/SearchFrame.cpp:186
-msgid "Executable"
-msgstr "실행 가능 파일"
-
-#: win32/MainWindow.cpp:999
-msgid "Exit"
-msgstr ""
-
-#: win32/NetworkPage.cpp:38
-msgid "External / WAN IP"
-msgstr "전역/WAN IP"
-
-#: win32/PublicHubsFrame.cpp:168
-#, fuzzy
-msgid "F&ilter"
-msgstr "파일"
-
-#: win32/MainWindow.cpp:632 win32/MainWindow.cpp:633
-msgid "Failed to create port mappings. Please set up your NAT yourself."
-msgstr ""
-"포트 매핑을 생성하는데 실패함, NAT(Network Address Translation)를 직접 설정하"
-"세요"
-
-#: win32/MainWindow.cpp:651 win32/MainWindow.cpp:652
-msgid "Failed to get external IP via  UPnP. Please set it yourself."
-msgstr "UPnP를 통하여 외부 IP를 얻는데 실패함, 직접 설정하세요"
-
-#: win32/MainWindow.cpp:665 win32/MainWindow.cpp:673
-msgid "Failed to remove port mappings"
-msgstr "포트 매핑을 제거하는데 실패함"
-
-#: win32/MainWindow.cpp:204
-#, fuzzy
-msgid "Favorite &Users\tCtrl+U"
-msgstr "즐겨찾는 사용자"
-
-#: win32/FavHubProperties.cpp:47
-msgid "Favorite Hub Properties"
-msgstr "즐겨찾는 허브 등록정보"
-
-#: win32/WindowsPage.cpp:47 win32/MainWindow.cpp:274 win32/FavHubsFrame.cpp:41
-msgid "Favorite Hubs"
-msgstr "즐겨찾는 허브"
-
-#: win32/WindowsPage.cpp:38 win32/MainWindow.cpp:275 win32/UsersFrame.cpp:38
-msgid "Favorite Users"
-msgstr "즐겨찾는 사용자"
-
-#: win32/FavoriteDirsPage.cpp:32
-msgid "Favorite download directories"
-msgstr "지정 다운로드 디렉토리"
-
-#: win32/HubFrame.cpp:964
-msgid "Favorite hub added"
-msgstr "'즐겨찾는 허브'에 추가되었음"
-
-#: win32/HubFrame.cpp:974
-msgid "Favorite hub removed"
-msgstr "허브가 제거되었음"
-
-#: win32/FavoriteDirsPage.cpp:48 win32/FavoriteDirsPage.cpp:120
-#: win32/FavoriteDirsPage.cpp:150
-msgid "Favorite name"
-msgstr "대표 이름"
-
-#: win32/PrivateFrame.cpp:290
-msgid "Favorite user added"
-msgstr "'즐겨찾는 사용자'에 추가되었음"
-
-#: win32/DirectoryListingFrame.cpp:40 win32/SearchFrame.cpp:32
-msgid "File"
-msgstr "파일"
-
-#: win32/QueueFrame.cpp:473
-msgid "File not available"
-msgstr "파일이 유효하지 않음"
-
-#: win32/SearchFrame.cpp:122
-msgid "File type"
-msgstr "종류"
-
-#: win32/CommandDlg.cpp:99
-msgid "Filelist Menu"
-msgstr "파일-목록 메뉴"
-
-#: win32/QueueFrame.cpp:36 win32/LogPage.cpp:35 win32/DownloadsFrame.cpp:35
-#: win32/ADLSProperties.cpp:62
-msgid "Filename"
-msgstr "파일 이름"
-
-#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:634
-#: win32/DirectoryListingFrame.cpp:650
-#, boost-format
-msgid "Files: %1%"
-msgstr ""
-
-#: win32/AppearancePage.cpp:47
-msgid "Filter kick and NMDC debug messages"
-msgstr "추방 메시지 및 NMDC(NeoModus® Direct Connect) 디버그 메시지를 걸러냄"
-
-#: win32/DirectoryListingFrame.cpp:160 win32/DirectoryListingFrame.cpp:182
-msgid "Find"
-msgstr "파일/디렉토리 찾기"
-
-#: win32/TabsPage.cpp:42 win32/WindowsPage.cpp:40 win32/MainWindow.cpp:207
-#: win32/MainWindow.cpp:278 win32/FinishedDLFrame.cpp:25
-msgid "Finished Downloads"
-msgstr "완료된 다운로드"
-
-#: win32/TabsPage.cpp:44 win32/WindowsPage.cpp:42 win32/MainWindow.cpp:209
-#: win32/MainWindow.cpp:280 win32/FinishedULFrame.cpp:25
-msgid "Finished Uploads"
-msgstr "완료된 업로드"
-
-#: win32/NetworkPage.cpp:34
-msgid "Firewall (passive, last resort)"
-msgstr "방화벽 (피동 모드, 최악의 경우 사용)"
-
-#: win32/NetworkPage.cpp:32
-msgid "Firewall with UPnP"
-msgstr "방화벽 (UPnP)"
-
-#: win32/NetworkPage.cpp:33
-msgid "Firewall with manual port forwarding"
-msgstr "Port Forwarding 설정한 방화벽"
-
-#: win32/MainWindow.cpp:185
-msgid "Follow last redirec&t\tCtrl+T"
-msgstr ""
-
-#: win32/MainWindow.cpp:272
-msgid "Follow last redirect"
-msgstr ""
-
-#: win32/LogPage.cpp:34
-msgid "Format"
-msgstr "형식"
-
-#: win32/MainWindow.cpp:240
-msgid "Frequently asked questions"
-msgstr "FAQ(자주 묻는 질문)"
-
-#: win32/ADLSProperties.cpp:64
-msgid "Full Path"
-msgstr "전체 경로"
-
-#: win32/QueueFrame.cpp:479
-msgid "Full tree does not match TTH root"
-msgstr "받은 파일-목록의 TTH(Tigertree Hash) Root 값이 일치하지 않음"
-
-#: win32/MainWindow.cpp:238
-msgid "GeoIP database update"
-msgstr "다운로드 - GeoIP 데이터베이스"
-
-#: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
-msgid "GiB"
-msgstr "GiB"
-
-#: win32/WaitingUsersFrame.cpp:86 win32/PrivateFrame.cpp:367
-msgid "Grant &extra slot"
-msgstr ""
-
-#: win32/AppearancePage.cpp:56
-msgid "Guess user country from IP"
-msgstr "사용자의 IP 주소로 국가/지역 정보를 유추함"
-
-#: win32/DownloadPage.cpp:42
-msgid "HTTP Proxy (for hublist only)"
-msgstr "HTTP Proxy (hublist.org만 가능)"
-
-#: win32/MainWindow.cpp:231
-msgid "Help &Contents\tF1"
-msgstr ""
-
-#: win32/MainWindow.cpp:241
-msgid "Help forum"
-msgstr "도움말 포럼"
-
-#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
-msgid "High"
-msgstr "높음"
-
-#: win32/QueuePage.cpp:31
-msgid "High prio max size"
-msgstr "'높음' 상한 크기"
-
-#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
-msgid "Highest"
-msgstr "최고"
-
-#: win32/QueuePage.cpp:29
-msgid "Highest prio max size"
-msgstr "'최고' 상한 크기"
-
-#: win32/SpyFrame.cpp:162
-#, boost-format
-msgid "Hit Ratio: %1%"
-msgstr ""
-
-#: win32/SpyFrame.cpp:160
-#, boost-format
-msgid "Hits: %1%"
-msgstr ""
-
-#: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
-msgid "Hub"
-msgstr "허브"
-
-#: win32/UsersFrame.cpp:31
-msgid "Hub (last seen in, if offline)"
-msgstr ""
-
-#: win32/CommandDlg.cpp:90
-msgid "Hub Menu"
-msgstr "허브 메뉴"
-
-#: win32/FavHubProperties.cpp:119
-msgid "Hub address cannot be empty"
-msgstr ""
-
-#: win32/FavHubsFrame.cpp:179 win32/HubFrame.cpp:966
-msgid "Hub already exists as a favorite"
-msgstr "이미 '즐겨찾는 허브'에 있음"
-
-#: win32/PublicHubsFrame.cpp:316
-#, fuzzy, boost-format
-msgid "Hub list downloaded... (%1%)"
-msgstr "저장소에서 불러온 허브 목록..."
-
-#: win32/PublicHubsFrame.cpp:316
-msgid "Hub list loaded from cache..."
-msgstr "저장소에서 불러온 허브 목록..."
-
-#: win32/HubListsDlg.cpp:149
-msgid "Hublist"
-msgstr "허브 목록"
-
-#: win32/SearchFrame.cpp:128
-msgid "Hubs"
-msgstr "허브"
-
-#: win32/PublicHubsFrame.cpp:271
-#, fuzzy, boost-format
-msgid "Hubs: %1%"
-msgstr "허브"
-
-#: win32/SearchFrame.cpp:41 win32/TransferView.cpp:46 win32/HubFrame.cpp:42
-msgid "IP"
-msgstr "IP"
-
-#: win32/HubFrame.cpp:330
-#, boost-format
-msgid "IP: %1%, Port: %2%/%3%/%4%"
-msgstr ""
-
-#: win32/TransferView.cpp:386 win32/TransferView.cpp:612
-msgid "Idle"
-msgstr ""
-
-#: win32/SpyFrame.cpp:66
-msgid "Ignore TTH searches"
-msgstr "TTH 검색을 무시하기"
-
-#: win32/WindowsPage.cpp:60
-msgid "Ignore private messages from bots"
-msgstr ""
-"허브 보트(Bot)로부터 온 1:1 메시지를 무시함(보통 허브의 규칙이나 주의사항 같"
-"은 정보를 담고 있을 수 있음)"
-
-#: win32/WindowsPage.cpp:59
-msgid "Ignore private messages from the hub"
-msgstr "허브로부터 온 1:1 메시지를 무시함"
-
-#: win32/HubFrame.cpp:542 win32/HubFrame.cpp:550
-#, boost-format
-msgid "Ignored message: %1%"
-msgstr ""
-
-#: win32/NetworkPage.cpp:47
-msgid "Incoming connection settings (see Help/FAQ if unsure)"
-msgstr "인입 접속 설정 (설정 방법은 도움말/FAQ을 참조)"
-
-#: win32/MainWindow.cpp:219
-msgid "Indexing progress"
-msgstr "Hashing 진행상태"
-
-#: win32/MainWindow.cpp:691
-msgid "Invalid file list name"
-msgstr "잘못된 파일-목록 이름"
-
-#: win32/WinUtil.cpp:250
-msgid "Invalid number of slots"
-msgstr "슬롯 개수가 잘못됨"
-
-#: win32/QueueFrame.cpp:283
-#, boost-format
-msgid "Items: %1%"
-msgstr ""
-
-#: win32/HubFrame.cpp:323
-msgid "Join/part of favorite users showing off"
-msgstr "'즐겨찾는 사용자'의 입장/퇴장 상황 표시 꺼짐"
-
-#: win32/HubFrame.cpp:321
-msgid "Join/part of favorite users showing on"
-msgstr "'즐겨찾는 사용자'의 입장/퇴장 상황 표시 켜짐"
-
-#: win32/HubFrame.cpp:316
-msgid "Join/part showing off"
-msgstr "입장/퇴장 상황 표시 꺼짐"
-
-#: win32/HubFrame.cpp:314
-msgid "Join/part showing on"
-msgstr "입장/퇴장 상황 표시 켜짐"
-
-#: win32/AdvancedPage.cpp:33
-msgid "Keep duplicate files in your file list"
-msgstr "내 파일-목록에 중복된 파일을 포함함"
-
-#: win32/QueuePage.cpp:30 win32/QueuePage.cpp:32 win32/QueuePage.cpp:34
-#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:30
-#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
-#: win32/ADLSProperties.cpp:75
-msgid "KiB"
-msgstr "kiB"
-
-#: win32/UploadPage.cpp:40
-msgid "KiB/s"
-msgstr "kiB/s"
-
-#: win32/AppearancePage.cpp:34
-msgid "Language file"
-msgstr "언어 변환 파일"
-
-#: win32/DownloadPage.cpp:35
-msgid "Limits"
-msgstr "다운로드 제한"
-
-#: win32/GeneralPage.cpp:32
-msgid "Line speed (upload)"
-msgstr "회선 속도 (업로드)"
-
-#: win32/SplashWindow.cpp:77
-#, boost-format
-msgid "Loading DC++, please wait... (%1%)"
-msgstr ""
-
-#: win32/LogPage.cpp:47
-msgid "Log downloads"
-msgstr "파일 다운로드 Log"
-
-#: win32/LogPage.cpp:51
-msgid "Log filelist transfers"
-msgstr "파일-목록 전송 내역을 파일 다운로드/업로드 Log에 기록함"
-
-#: win32/LogPage.cpp:45
-msgid "Log main chat"
-msgstr "허브 대화방 대화 Log"
-
-#: win32/LogPage.cpp:46
-msgid "Log private chat"
-msgstr "1:1 메시지 대화 Log"
-
-#: win32/LogPage.cpp:50
-msgid "Log status messages"
-msgstr "상태 메시지 Log"
-
-#: win32/LogPage.cpp:49
-msgid "Log system messages"
-msgstr "시스템 메시지 Log"
-
-#: win32/LogPage.cpp:48
-msgid "Log uploads"
-msgstr "파일 업로드 Log"
-
-#: win32/LogPage.cpp:31
-msgid "Logging"
-msgstr "Log 작성"
-
-#: win32/NetworkPage.cpp:44
-msgid "Login"
-msgstr "로그인이름"
-
-#: win32/WinUtil.cpp:362
-msgid "Lookup TTH at Bitzi.com"
-msgstr "Bitzi.com에서 TTH로 찾아보기"
-
-#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
-msgid "Low"
-msgstr "낮음"
-
-#: win32/QueuePage.cpp:35
-msgid "Low prio max size"
-msgstr "'낮음' 상한 크기"
-
-#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
-msgid "Lowest"
-msgstr "최저"
-
-#: win32/MagnetDlg.cpp:44 win32/WinUtil.cpp:1034
-msgid "MAGNET Link detected"
-msgstr "MAGNET 링크 감지"
-
-#: win32/WinUtil.cpp:981
-#, fuzzy, boost-format
-msgid "MAGNET Link detected: %1%"
-msgstr "MAGNET 링크 감지"
-
-#: win32/Appearance2Page.cpp:38
-msgid "Make an annoying sound every time a private message is received"
-msgstr "1:1 메시지를 받을 때마다 알림 소리를 냄"
-
-#: win32/Appearance2Page.cpp:39
-msgid "Make an annoying sound when a private message window is opened"
-msgstr "1:1 메시지 창이 열릴 때 알림 소리를 냄"
-
-#: win32/MainWindow.cpp:191
-msgid "Match downloaded lists"
-msgstr "받은 파일-목록을 비교하기"
-
-#: win32/DirectoryListingFrame.cpp:168 win32/DirectoryListingFrame.cpp:181
-msgid "Match queue"
-msgstr "파일-목록에서 내 '다운로드 대기열'의 파일을 찾아 소스에 추가하기"
-
-#: win32/DirectoryListingFrame.cpp:260
-#, boost-format
-msgid "Matched %1% file"
-msgid_plural "Matched %1% files"
-msgstr[0] ""
-
-#: win32/PublicHubsFrame.cpp:57
-msgid "Max Hubs"
-msgstr "최대 허브"
-
-#: win32/ADLSearchFrame.cpp:36
-msgid "Max Size"
-msgstr "최대 크기"
-
-#: win32/PublicHubsFrame.cpp:58
-msgid "Max Users"
-msgstr "최대 인원"
-
-#: win32/Advanced3Page.cpp:38
-msgid "Max filelist size"
-msgstr "최대 파일-목록"
-
-#: win32/Advanced3Page.cpp:31
-msgid "Max hash speed"
-msgstr "최대 Hash 속도"
-
-#: win32/QueuePage.cpp:44
-msgid "Max inactivity"
-msgstr "최대 무반응"
-
-#: win32/DownloadPage.cpp:36
-msgid "Maximum simultaneous downloads (0 = infinite)"
-msgstr "최대 동시 다운로드 개수 (0=무제한)"
-
-#: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
-#: win32/ADLSProperties.cpp:76
-msgid "MiB"
-msgstr "MiB"
-
-#: win32/Advanced3Page.cpp:32
-msgid "MiB/s"
-msgstr "MiB/s"
-
-#: win32/GeneralPage.cpp:33
-msgid "MiBits/s"
-msgstr "MiBits/s"
-
-#: win32/PublicHubsFrame.cpp:55
-msgid "Min Share"
-msgstr "최소 공유"
-
-#: win32/ADLSearchFrame.cpp:35
-msgid "Min Size"
-msgstr "최소 크기"
-
-#: win32/PublicHubsFrame.cpp:56
-msgid "Min Slots"
-msgstr "최소 슬롯"
-
-#: win32/QueuePage.cpp:42
-msgid "Min elapsed"
-msgstr "최소 경과시간"
-
-#: win32/QueuePage.cpp:47
-msgid "Min filesize"
-msgstr "최소 파일 크기"
-
-#: win32/Advanced3Page.cpp:42
-#, fuzzy
-msgid "Min segment size"
-msgstr "미니슬롯 파일"
-
-#: win32/QueuePage.cpp:46
-msgid "Min sources online"
-msgstr "최소 온라인 소스"
-
-#: win32/Advanced3Page.cpp:35
-msgid "Mini slot size"
-msgstr "미니슬롯 파일"
-
-#: win32/AppearancePage.cpp:48
-msgid "Minimize to tray"
-msgstr "프로그램을 최소화하면 시스템 트레이 아이콘으로 숨김"
-
-#: win32/HubListsDlg.cpp:71 win32/FavHubsFrame.cpp:91
-#: win32/FavHubsFrame.cpp:118 win32/ADLSearchFrame.cpp:83 win32/UCPage.cpp:32
-msgid "Move &Down"
-msgstr ""
-
-#: win32/HubListsDlg.cpp:67 win32/FavHubsFrame.cpp:86
-#: win32/FavHubsFrame.cpp:117 win32/ADLSearchFrame.cpp:78 win32/UCPage.cpp:31
-msgid "Move &Up"
-msgstr ""
-
-#: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
-msgid "Name"
-msgstr "이름"
-
-#: win32/UploadPage.cpp:188 win32/UploadPage.cpp:232
-msgid "Name under which the others see the directory"
-msgstr "다른 사람들이 보게 될 공유 디렉토리의 이름"
-
-#: win32/WindowsPage.cpp:44 win32/MainWindow.cpp:217 win32/StatsFrame.cpp:27
-msgid "Network Statistics"
-msgstr "네트워크 통계"
-
-#: win32/UploadPage.cpp:197
-msgid "New virtual name matches old name, skipping..."
-msgstr "지정한 공유 이름이 이전 것과 같으므로 무시함..."
-
-#: win32/DirectoryListingFrame.cpp:164 win32/DirectoryListingFrame.cpp:183
-msgid "Next"
-msgstr "다음 찾기"
-
-#: win32/GeneralPage.cpp:29 win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
-msgid "Nick"
-msgstr "닉네임"
-
-#: win32/QueueFrame.cpp:488
-msgid "No errors"
-msgstr "없음"
-
-#: win32/DirectoryListingFrame.cpp:858
-msgid "No matches"
-msgstr "일치하는 것이 없음"
-
-#: win32/DownloadPage.cpp:37
-msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
-msgstr "초과하면 새로운 다운로드가 제한되는 속도 (kiB/s, 0=무제한)"
-
-#: win32/QueueFrame.cpp:415
-msgid "No users"
-msgstr "사용자 없음"
-
-#: win32/QueueFrame.cpp:427
-msgid "No users to download from"
-msgstr "파일을 소유한 사용자가 없음"
-
-#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
-msgid "Normal"
-msgstr "보통"
-
-#: win32/QueuePage.cpp:33
-msgid "Normal prio max size"
-msgstr "'보통' 상한 크기"
-
-#: win32/UploadPage.cpp:42
-msgid "Note; Files appear in the share only after they've been hashed!"
-msgstr "주의; 파일들은 Hash가 작성되어야만 공유에 나타남!"
-
-#: win32/DownloadPage.cpp:38
-#, fuzzy, c-format
-msgid "Note; because of changing download speeds, this is not 100% accurate..."
-msgstr "주의; 다운로드 속도가 수시로 변하므로, 100% 정확하지는 않음"
-
-#: win32/Appearance2Page.cpp:35 win32/AppearancePage.cpp:35
-msgid "Note; most of these options require that you restart DC++"
-msgstr "주의; 이 옵션들 대부분은 변경한 후 DC++를 다시 실행하였을 때 적용됨"
-
-#: win32/WindowsPage.cpp:45 win32/NotepadFrame.cpp:27 win32/MainWindow.cpp:288
-msgid "Notepad"
-msgstr "메모장"
-
-#: win32/Appearance2Page.cpp:29
-msgid "Notification sound"
-msgstr "알림 소리 음원"
-
-#: win32/WinUtil.cpp:323
-msgid "Offline"
-msgstr "오프라인"
-
-#: win32/UsersFrame.cpp:108 win32/UsersFrame.cpp:123
-msgid "Online"
-msgstr "온라인"
-
-#: win32/AppearancePage.cpp:52
-msgid "Only show joins / parts for favorite users"
-msgstr "허브 대화방에 '즐겨찾는 사용자'에 대해서만 입장/퇴장 상황을 표시함"
-
-#: win32/SearchFrame.cpp:194
-msgid "Only users with free slots"
-msgstr "Slot이 남아 있는 사용자만 검색"
-
-#: win32/SearchFrame.cpp:216
-msgid "Only where I'm op"
-msgstr "내가 운영자로 있는 곳에서만"
-
-#: win32/MainWindow.cpp:193 win32/MainWindow.cpp:1000
-msgid "Open downloads directory"
-msgstr "'기본 다운로드 디렉토리' 열기"
-
-#: win32/MainWindow.cpp:286
-#, fuzzy
-msgid "Open file list..."
-msgstr "내 파일-목록 열기"
-
-#: win32/MainWindow.cpp:189
-msgid "Open file list...\tCtrl+L"
-msgstr ""
-
-#: win32/WindowsPage.cpp:56
-msgid "Open new file list windows in the background"
-msgstr "새로운 파일-목록 창을 백그라운드(비활성화 상태)로 띄움"
-
-#: win32/WindowsPage.cpp:57
-msgid "Open new private message windows in the background"
-msgstr "새로운 1:1 메시지 창을 백그라운드(비활성화 상태)로 띄움"
-
-#: win32/WindowsPage.cpp:58
-msgid "Open new window when using /join"
-msgstr "\"/join\" 명령어를 사용할 때 허브를 새 창에 열도록 함"
-
-#: win32/MainWindow.cpp:190
-msgid "Open own list"
-msgstr "내 파일-목록 열기"
-
-#: win32/WindowsPage.cpp:54
-msgid "Open private messages from bots in their own window"
-msgstr "허브로부터 온 1:1 메시지를 별도의 창에 표시함"
-
-#: win32/WindowsPage.cpp:55
-msgid "Open private messages from the hub in their own window"
-msgstr "허브 보트(Bot)로부터 온 1:1 메시지를 별도의 창에 표시함"
-
-#: win32/WindowsPage.cpp:53
-msgid "Open private messages in their own window"
-msgstr ""
-"1:1 메시지를 별도의 창에 표시함 (이 옵션을 체크하지 않으면 1:1 메시지는 허브 "
-"대화방에 상태 메시지 형태로 표시됨)"
-
-#: win32/AppearancePage.cpp:31
-msgid "Options"
-msgstr "옵션"
-
-#: win32/QueuePage.cpp:49
-msgid "Other queue options"
-msgstr "기타 다운로드 대기열 옵션"
-
-#: win32/NetworkPage.cpp:48
-msgid "Outgoing connection settings"
-msgstr "인출 접속 설정"
-
-#: win32/CommandDlg.cpp:86
-msgid "PM"
-msgstr "PM(1:1 메시지)"
-
-#: win32/Advanced3Page.cpp:33
-msgid "PM history"
-msgstr "PM History"
-
-#: win32/QueueFrame.cpp:475
-msgid "Passive user"
-msgstr "피동 모드 사용자"
-
-#: win32/NetworkPage.cpp:45 win32/FavHubsFrame.cpp:35
-msgid "Password"
-msgstr "비밀번호"
-
-#: win32/QueueFrame.cpp:42 win32/SearchFrame.cpp:36
-#: win32/DownloadsFrame.cpp:36
-msgid "Path"
-msgstr "파일 경로"
-
-#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
-msgid "Paused"
-msgstr "일시 정지"
-
-#: win32/GeneralPage.cpp:28
-msgid "Personal Information"
-msgstr "개인 정보"
-
-#: win32/SettingsDialog.cpp:57
-msgid "Personal information"
-msgstr "개인 정보"
-
-#: win32/SearchFrame.cpp:187
-msgid "Picture"
-msgstr "그림 파일"
-
-#: win32/FavHubsFrame.cpp:320 win32/PublicHubsFrame.cpp:496
-msgid "Please enter a nickname in the settings dialog!"
-msgstr "설정에서 닉네임을 입력하세요!"
-
-#: win32/HubFrame.cpp:528
-msgid "Please enter a password"
-msgstr "비밀번호를 입력하세요"
-
-#: win32/WindowsPage.cpp:62
-msgid "Popup box to input password for hubs"
-msgstr "허브 접속을 위한 비밀번호를 입력하는 대화상자를 팝업"
-
-#: win32/NetworkPage.cpp:43
-msgid "Port"
-msgstr "포트"
-
-#: win32/NetworkPage.cpp:37
-msgid "Ports"
-msgstr "포트"
-
-#: win32/HubFrame.cpp:855
-#, boost-format
-msgid "Press the follow redirect button to connect to %1%"
-msgstr ""
-
-#: win32/QueueFrame.cpp:40
-msgid "Priority"
-msgstr "우선순위"
-
-#: win32/TabsPage.cpp:38
-msgid "Private message"
-msgstr "1:1 메시지"
-
-#: win32/HubFrame.cpp:546 win32/HubFrame.cpp:554 win32/HubFrame.cpp:560
-#, fuzzy, boost-format
-msgid "Private message from %1%: %2%"
-msgstr "1:1 메시지"
-
-#: win32/WindowsPage.cpp:46 win32/MainWindow.cpp:270
-#: win32/PublicHubsFrame.cpp:93
-msgid "Public Hubs"
-msgstr "공개 허브"
-
-#: win32/DownloadPage.cpp:39
-msgid "Public Hubs list"
-msgstr "공개 허브 목록"
-
-#: win32/DownloadPage.cpp:40
-msgid "Public Hubs list URL"
-msgstr "공개 허브 목록 URL"
-
-#: win32/SearchFrame.cpp:240
-msgid "Purge"
-msgstr "소거"
-
-#: win32/TransferView.cpp:44
-msgid "Queued"
-msgstr ""
-
-#: win32/MainWindow.cpp:345
-msgid "Quick Connect"
-msgstr "허브에 직접 접속하기"
-
-#: win32/PublicHubsFrame.cpp:60
-msgid "Rating"
-msgstr "평가"
-
-#: win32/AboutDlg.cpp:61
-#, c-format, boost-format
-msgid "Ratio (up/down): %1$0.2f"
-msgstr ""
-
-#: win32/CommandDlg.cpp:78
-msgid "Raw"
-msgstr "Raw"
-
-#: win32/QueueFrame.cpp:1022
-msgid "Re-add source"
-msgstr "파일의 소스에서 삭제했던 사용자를 다시 추가하기"
-
-#: win32/SearchFrame.cpp:1024
-msgid "Ready to search..."
-msgstr "검색 대기..."
-
-#: win32/MainWindow.cpp:460
-msgid "Really exit?"
-msgstr "프로그램을 종료하시겠습니까?"
-
-#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
-#: win32/FavHubsFrame.cpp:243
-msgid "Really remove?"
-msgstr "삭제하시겠습니까?"
-
-#: win32/MainWindow.cpp:271
-#, fuzzy
-msgid "Reconnect"
-msgstr "접속되었음"
-
-#: win32/HubFrame.cpp:848 win32/HubFrame.cpp:1371
-msgid "Redirect request received to a hub that's already connected"
-msgstr ""
-"이미 접속하고 있는 허브로의 접속-전환(Redirect) 제안이므로 응할 필요가 없음"
-
-#: win32/MainWindow.cpp:192
-msgid "Refresh file list\tCtrl+E"
-msgstr ""
-
-#: win32/AdvancedPage.cpp:34
-msgid "Register with Windows to handle dchub:// and adc:// URL links"
-msgstr ""
-"DC++가 \"dchub://\" 및 \"adc://\" URL(Uniform Resource Locator) 링크를 처리하"
-"도록 Windows에 등록함 (Direct Connect Protocol 관련 링크로서, 웹페이지 및 인"
-"터넷 바로가기 파일인 url-파일에 포함되거나 Windows 시작 메뉴의 '실행'에 직접 "
-"입력되어 처리될 수 있음)"
-
-#: win32/AdvancedPage.cpp:35
-msgid "Register with Windows to handle magnet: URI links"
-msgstr ""
-"DC++가 \"magnet:\" URI(Uniform Resource Identifier) 링크를 처리하도록 Windows"
-"에 등록함 (Direct Connect 네트워크에서 주어진 파일 Hash로 일치하는 파일을 찾"
-"게 해주는 링크이며, magnet.exe가 이미 시스템에 설치되어 있는 경우, DC++는 설"
-"치된 기존 응용프로그램과 DC++ 중에서 이 링크의 처리자를 선택하도록 물음)"
-
-#: win32/PublicHubsFrame.cpp:59
-msgid "Reliability"
-msgstr "신뢰도"
-
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:472
-msgid "Remote client does not fully support TTH - cannot download"
-msgstr "상대방 클라이언트가 TTH를 완전히 지원하지 않음 - 다운로드할 수 없음"
-
-#: win32/QueuePage.cpp:70
-msgid "Remove slow filelists"
-msgstr "전송 속도가 느린 파일-목록은 다운로드 대기열에서 제거함"
-
-#: win32/QueueFrame.cpp:1033
-msgid "Remove source"
-msgstr "파일의 소스에서 사용자를 삭제하기"
-
-#: win32/QueueFrame.cpp:1043
-msgid "Remove user from queue"
-msgstr "'다운로드 대기열'의 모든 파일의 소스에서 사용자를 삭제하기"
-
-#: win32/UploadPage.cpp:38 win32/FavoriteDirsPage.cpp:35
-msgid "Rename"
-msgstr "이름 바꾸기"
-
-#: win32/MainWindow.cpp:244
-msgid "Report a bug"
-msgstr "버그 신고"
-
-#: win32/MainWindow.cpp:243
-msgid "Request a feature"
-msgstr "기능 개선 제안"
-
-#: win32/HashProgressDlg.cpp:48
-msgid "Run in background"
-msgstr "백그라운드로 실행하기"
-
-#: win32/QueueFrame.cpp:435
-msgid "Running..."
-msgstr "다운로드 진행..."
-
-#: win32/NetworkPage.cpp:36
-msgid "SOCKS5"
-msgstr "SOCKS5 모드"
-
-#: win32/TabsPage.cpp:39 win32/MainWindow.cpp:282 win32/SearchFrame.cpp:85
-#: win32/SearchFrame.cpp:145
-msgid "Search"
-msgstr "검색"
-
-#: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
-#: win32/SearchFrame.cpp:1020
-#, fuzzy, boost-format
-msgid "Search - %1%"
-msgstr "검색"
-
-#: win32/SearchFrame.cpp:1025
-#, fuzzy
-msgid "Search - Ready to search..."
-msgstr "검색 대기..."
-
-#: win32/CommandDlg.cpp:96
-msgid "Search Menu"
-msgstr "검색 메뉴"
-
-#: win32/WindowsPage.cpp:43 win32/MainWindow.cpp:213 win32/MainWindow.cpp:284
-#: win32/SpyFrame.cpp:40
-msgid "Search Spy"
-msgstr "검색 스파이"
-
-#: win32/SpyFrame.cpp:34
-msgid "Search String"
-msgstr "검색 문자열"
-
-#: win32/SearchFrame.cpp:116
-msgid "Search for"
-msgstr "검색 문자열"
-
-#: win32/WinUtil.cpp:361
-msgid "Search for alternates"
-msgstr "대체 파일 검색하기"
-
-#: win32/DirectoryListingFrame.cpp:795 win32/DirectoryListingFrame.cpp:858
-msgid "Search for file"
-msgstr "파일/디렉토리 찾기"
-
-#: win32/Advanced3Page.cpp:34
-msgid "Search history"
-msgstr "검색 History"
-
-#: win32/SearchFrame.cpp:125
-msgid "Search options"
-msgstr "검색 옵션"
-
-#: win32/HubFrame.cpp:910
-#, boost-format
-msgid "Search spam detected from %1%"
-msgstr ""
-
-#: win32/SearchFrame.cpp:984
-#, fuzzy, boost-format
-msgid "Searching for %1%..."
-msgstr "검색 문자열"
-
-#: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
-#, boost-format
-msgid "Searching too soon, next search in %1% second"
-msgid_plural "Searching too soon, next search in %1% seconds"
-msgstr[0] ""
-
-#: win32/Appearance2Page.cpp:33
-msgid "Select &text style"
-msgstr ""
-
-#: win32/Appearance2Page.cpp:32
-msgid "Select &window color"
-msgstr ""
-
-#: win32/CommandDlg.cpp:112
-msgid "Send once per nick"
-msgstr "닉네임당 한번씩만 보냄"
-
-#: win32/AdvancedPage.cpp:44
-msgid "Send unknown /commands to the hub"
-msgstr ""
-"알 수 없는 명령어는 허브 대화방으로 보냄 (이 옵션을 체크하면 DC++가 이해하지 "
-"못하는 명령어는 허브 대화방에 보통의 대화처럼 표시됨)"
-
-#: win32/UCPage.cpp:123 win32/UCPage.cpp:181 win32/CommandDlg.cpp:74
-msgid "Separator"
-msgstr "Separator"
-
-#: win32/FavHubsFrame.cpp:36
-msgid "Server"
-msgstr "허브 주소"
-
-#: win32/QueuePage.cpp:68
-msgid "Set lowest prio for newly added files larger than Low prio size"
-msgstr ""
-"다운로드 우선순위 '낮음'의 자동-분류 상한 크기보다 큰 파일이 새로 추가되면 우"
-"선순위를 '최저'로 분류"
-
-#: win32/QueueFrame.cpp:995
-msgid "Set priority"
-msgstr "다운로드 우선순위 지정하기"
-
-#: win32/AppearancePage.cpp:33
-msgid "Set timestamps"
-msgstr "시간 스탬프 형식"
-
-#: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:287
-msgid "Settings"
-msgstr "DC++ 설정"
-
-#: win32/MainWindow.cpp:196 win32/MainWindow.cpp:1001
-msgid "Settings..."
-msgstr "DC++ 설정..."
-
-#: win32/UploadPage.cpp:35
-msgid "Share hidden files"
-msgstr "숨김 파일을 공유함"
-
-#: win32/HubFrame.cpp:38 win32/PublicHubsFrame.cpp:54
-msgid "Shared"
-msgstr "공유 크기"
-
-#: win32/UploadPage.cpp:33
-msgid "Shared directories"
-msgstr "공유 디렉토리"
-
-#: win32/SettingsDialog.cpp:62
-msgid "Sharing"
-msgstr "공유(업로드)"
-
-#: win32/MainWindow.cpp:998
-msgid "Show"
-msgstr "보기"
-
-#: win32/AppearancePage.cpp:51
-msgid "Show joins / parts in chat by default"
-msgstr "허브 대화방에 입장/퇴장 상황을 기본적으로 표시함"
-
-#: win32/AdvancedPage.cpp:38
-msgid "Show progress bars for transfers"
-msgstr "파일 전송 프레임에 진행율 막대를 표시함"
-
-#: win32/AdvancedPage.cpp:48
-msgid "Show shell menu where possible"
-msgstr ""
-"'완료된 다운로드/업로드' 전송 목록에 Windows 쉘(Shell)-메뉴를 표시함 (이 옵션"
-"을 체크하면 전송 목록에 있는 파일에 마우스 오른쪽 버튼을 클릭할 시, DC++의 메"
-"뉴 대신 Windows Explorer에서 사용되는 쉘-메뉴가 표시됨)"
-
-#: win32/AppearancePage.cpp:49
-msgid "Show timestamps in chat by default"
-msgstr "대화에 시간 스탬프를 기본으로 보여줌"
-
-#: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
-#: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
-#: win32/SearchFrame.cpp:119 win32/DownloadsFrame.cpp:41
-msgid "Size"
-msgstr "크기"
-
-#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
-#: win32/DirectoryListingFrame.cpp:635 win32/DirectoryListingFrame.cpp:652
-#, fuzzy, boost-format
-msgid "Size: %1%"
-msgstr "크기"
-
-#: win32/QueuePage.cpp:74
-msgid "Skip zero-byte files"
-msgstr ""
-"0 byte인 파일은 다운로드하지 않음 (이 옵션을 체크하면 0 byte인 파일은 다운로"
-"드를 시도해도 디스크에 저장이 안됨)(종종 파일 이름 자체에 어떤 정보를 담고 있"
-"는 0 byte 파일을 다운로드할 필요가 있는 경우, 이 옵션을 체크하지 않아야 됨)"
-
-#: win32/PrivateFrame.cpp:285
 msgid "Slot granted"
 msgstr "허용된 슬롯"
 
-#: win32/SearchFrame.cpp:37
-msgid "Slots"
-msgstr "슬롯"
+msgid "Run in background"
+msgstr "백그라운드로 실행하기"
 
-#: win32/WinUtil.cpp:247
-msgid "Slots set"
-msgstr "슬롯 설정"
+msgid "Guess user country from IP"
+msgstr "사용자의 IP 주소로 국가/지역 정보를 유추함"
 
-#: win32/MainWindow.cpp:552
-#, boost-format
-msgid "Slots: %1%/%2%"
-msgstr ""
+msgid "Log main chat"
+msgstr "허브 대화방 대화 Log"
 
-#: win32/NetworkPage.cpp:42
-msgid "Socks IP"
-msgstr "소켓 IP"
+msgid "Keep duplicate files in your file list"
+msgstr "내 파일-목록에 중복된 파일을 포함함"
 
-#: win32/AppearancePage.cpp:46
-msgid "Sort all downloads first"
-msgstr "전송 프레임에 표시되는 다운로드 전송들을 먼저 시작된 순으로 정렬함"
+msgid "Join/part of favorite users showing on"
+msgstr "'즐겨찾는 사용자'의 입장/퇴장 상황 표시 켜짐"
 
-#: win32/AppearancePage.cpp:53
-msgid "Sort favorite users first"
-msgstr "즐겨찾는 사용자를 먼저 정렬시킴"
+msgid "Notification sound"
+msgstr "알림 소리 음원"
 
-#: win32/Appearance2Page.cpp:37
-msgid "Sounds"
-msgstr "사운드"
+msgid "Finished Uploads"
+msgstr "완료된 업로드"
 
-#: win32/ADLSearchFrame.cpp:33
-msgid "Source Type"
-msgstr "검색 유형"
+msgid "File type"
+msgstr "종류"
 
-#: win32/QueueFrame.cpp:481
-msgid "Source too slow"
-msgstr "너무 느린 소스"
+msgid "MiB/s"
+msgstr "MiB/s"
 
-#: win32/WinUtil.cpp:289
+msgid "GiB"
+msgstr "GiB"
+
+msgid "Min sources online"
+msgstr "최소 온라인 소스"
+
+msgid "Outgoing connection settings"
+msgstr "인출 접속 설정"
+
+msgid "Popup box to input password for hubs"
+msgstr "허브 접속을 위한 비밀번호를 입력하는 대화상자를 팝업"
+
+msgid "Log uploads"
+msgstr "파일 업로드 Log"
+
+msgid "ADLSearch Properties"
+msgstr "ADL 검색 등록정보"
+
+msgid "Directories"
+msgstr "다운로드 디렉토리"
+
+msgid "Ready to search..."
+msgstr "검색 대기..."
+
+msgid "Autodrop settings"
+msgstr "다운로드 소스 자동-버림 설정"
+
 msgid "Specify a URL"
 msgstr "URL을 지정하세요"
 
-#: win32/WinUtil.cpp:256 win32/WinUtil.cpp:277 win32/WinUtil.cpp:283
-msgid "Specify a search string"
-msgstr "찾으려는 문자열을 지정하세요"
+msgid "Shared directories"
+msgstr "공유 디렉토리"
 
-#: win32/HubFrame.cpp:296
-msgid "Specify a server to connect to"
-msgstr "연결할 서버를 지정하세요"
+msgid "Really exit?"
+msgstr "프로그램을 종료하시겠습니까?"
 
-#: win32/TransferView.cpp:41 win32/DownloadsFrame.cpp:39
-msgid "Speed"
-msgstr "전송 속도"
-
-#: win32/DirectoryListingFrame.cpp:636
-#, boost-format
-msgid "Speed: %1%/s"
-msgstr ""
-
-#: win32/MagnetDlg.cpp:57
-msgid "Start a search for this file"
-msgstr "이 파일에 대한 검색을 시작하기"
-
-#: win32/QueueFrame.cpp:37 win32/TransferView.cpp:40
-#: win32/DownloadsFrame.cpp:37
-msgid "Status"
-msgstr "상태"
-
-#: win32/HubFrame.cpp:520
-msgid "Stored password sent..."
-msgstr "저장된 비밀번호를 보냄..."
-
-#: win32/DirectoryListingFrame.cpp:172 win32/DirectoryListingFrame.cpp:180
-msgid "Subtract list"
-msgstr "목록 추리기"
-
-#: win32/TabsPage.cpp:40 win32/WindowsPage.cpp:37 win32/SystemFrame.cpp:26
-#: win32/MainWindow.cpp:216
-msgid "System Log"
-msgstr "시스템 Log"
-
-#: win32/NetworkPage.cpp:39
-msgid "TCP"
-msgstr "TCP"
-
-#: win32/NetworkPage.cpp:41
-msgid "TLS"
-msgstr "TLS"
-
-#: win32/SearchFrame.cpp:190
-msgid "TTH"
-msgstr ""
-
-#: win32/QueueFrame.cpp:46 win32/DirectoryListingFrame.cpp:44
-#: win32/SearchFrame.cpp:42
-msgid "TTH Root"
-msgstr "TTH Root"
-
-#: win32/TransferView.cpp:483
-#, boost-format
-msgid "TTH: %1%"
-msgstr ""
-
-#: win32/TabsPage.cpp:32
-msgid "Tab highlight on content change"
-msgstr "내용이 변화되면 탭을 진하게 표시할 창"
-
-#: win32/HubFrame.cpp:40
 msgid "Tag"
 msgstr "태그"
 
-#: win32/HubFrame.cpp:976
-msgid "This hub is not a favorite hub"
-msgstr "이것은 '즐겨찾는 허브'에 등록된 허브가 아님"
+msgid "MAGNET Link detected"
+msgstr "MAGNET 링크 감지"
 
-#: win32/SpyFrame.cpp:36
-msgid "Time"
-msgstr "시간"
+msgid "Automatically disconnect users who leave the hub"
+msgstr "허브를 떠난 사용자는 자동으로 파일 전송을 끊음 (얌체 공유자를 차단하고 싶은 경우, 이 옵션을 체크하는 것이 유용함)"
 
-#: win32/UsersFrame.cpp:32
-msgid "Time last seen"
-msgstr "마지막으로 발견한 시간"
+msgid "Use antifragmentation method for downloads"
+msgstr "다운로드에 파일 조각화를 방지하는 방식을 사용함 (이 옵션을 체크하면 파일 다운로드를 시작하면서 그 파일이 차지할 전체 용량 만큼의 공간을 미리 확보하여 다운로드를 진행함으로써 파일의 조각화를 방지하지만, 단점으로는 대용량 파일의 다운로드를 시작할 때 하드디스크에 대한 접근이 일시적으로 멈출 수 있음)(조각화된 파일은 읽어들일 때 여기 저기 흩어진 파일의 클러스터를 찾아 Head가 이동하므로 하드디스크 성능에 영향을 줌)"
 
-#: win32/DownloadsFrame.cpp:38
-msgid "Time left"
-msgstr "남은 시간"
+msgid "Remove source"
+msgstr "파일의 소스에서 사용자를 삭제하기"
 
-#: win32/HubFrame.cpp:305
-msgid "Timestamps disabled"
-msgstr "시간 스탬프 사용 안함"
-
-#: win32/HubFrame.cpp:303
-msgid "Timestamps enabled"
-msgstr "시간 스탬프 사용함"
-
-#: win32/WindowsPage.cpp:61
-msgid "Toggle window when selecting an active tab"
-msgstr ""
-"활성화된 창의 탭을 누르면 다른 창(창 아이콘이 정렬된 역순의 창)으로 바뀌어 활"
-"성화 됨"
-
-#: win32/UploadPage.cpp:34
-msgid "Total size:"
-msgstr "공유량:"
-
-#: win32/SpyFrame.cpp:159
-#, boost-format
-msgid "Total: %1%"
-msgstr ""
-
-#: win32/TransferView.cpp:43
-#, fuzzy
-msgid "Transfered (Ratio)"
-msgstr "다운로드 - 언어팩"
-
-#: win32/MainWindow.cpp:239
-msgid "Translations"
-msgstr "다운로드 - 언어팩"
-
-#: win32/QueueFrame.cpp:47 win32/DirectoryListingFrame.cpp:41
-#: win32/SearchFrame.cpp:34
-msgid "Type"
-msgstr "파일 종류"
-
-#: win32/MainWindow.cpp:554
-#, boost-format
-msgid "U: %1%"
-msgstr ""
-
-#: win32/MainWindow.cpp:556
-#, boost-format
-msgid "U: %1%/s (%2%)"
-msgstr ""
-
-#: win32/NetworkPage.cpp:40
-msgid "UDP"
-msgstr "UDP"
-
-#: win32/WinUtil.cpp:812
-msgid "URL:MAGNET URI"
-msgstr "URL:MAGNET URI"
-
-#: win32/MainWindow.cpp:611
-msgid ""
-"Unable to open TCP/TLS port. File transfers will not work correctly until "
-"you change settings or turn off any application that might be using the TCP/"
-"TLS port"
-msgstr ""
-"TCP/TLS 포트를 열 수 없으므로, 설정을 다시 하거나 해당 포트를 사용하는 응용프"
-"로그램을 종료하기 전까지 파일 전송이 정상적으로 작동하지 않게 됨"
-
-#: win32/MainWindow.cpp:616
-msgid ""
-"Unable to open UDP port. Searching will not work correctly until you change "
-"settings or turn off any application that might be using the UDP port"
-msgstr ""
-"UDP 포트를 열 수 없으므로, 설정을 다시 하거나 해당 포트를 사용하는 응용프로그"
-"램을 종료하기 전까지 검색이 정상적으로 작동하지 않게 됨"
-
-#: win32/FavoriteDirsPage.cpp:120 win32/FavoriteDirsPage.cpp:150
 msgid "Under what name you see the directory"
 msgstr "이 '지정 다운로드 디렉토리'를 대표하는 이름"
 
-#: win32/DownloadPage.cpp:33
-msgid "Unfinished downloads directory"
-msgstr "미완료 다운로드 디렉토리"
+msgid "Join/part of favorite users showing off"
+msgstr "'즐겨찾는 사용자'의 입장/퇴장 상황 표시 꺼짐"
 
-#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
-msgid "Unknown"
-msgstr "불명"
+msgid "Confirm item removal in download queue"
+msgstr "'다운로드 대기열'에서 항목을 삭제할 때 확인함"
 
-#: win32/HubFrame.cpp:380
-#, boost-format
-msgid "Unknown command: %1%"
-msgstr ""
+msgid "Download Matches"
+msgstr "자동 다운로드"
 
-#: win32/UploadPage.cpp:41
-msgid "Upload slots"
-msgstr "업로드 슬롯 개수"
-
-#: win32/AboutDlg.cpp:59
-#, boost-format
-msgid "Upload: %1%, Download: %2%"
-msgstr ""
-
-#: win32/TransferView.cpp:579
-#, fuzzy, boost-format
-msgid "Uploading %1%"
-msgstr "업로드"
-
-#: win32/Appearance2Page.cpp:36
-msgid "Uploads"
-msgstr "업로드"
-
-#: win32/AdvancedPage.cpp:46
-msgid "Use CTRL for line history"
-msgstr ""
-"대화 입력 히스토리 기능에 CTRL 키를 사용함 (이 옵션을 체크하면 허브 대화방의 "
-"대화 입력란에서 CTRL 키를 누른 채 ↑/↓ 키를 눌러야 이전에 입력했던 대화를 불러"
-"올 수 있음)(옵션을 체크하지 않으면 ↑/↓ 키만 눌러도 됨)"
-
-#: win32/AppearancePage.cpp:55
-msgid "Use OEM monospaced font for viewing text files"
-msgstr "텍스트 파일을 보는데 OEM monospaced-font를 사용함"
-
-#: win32/NetworkPage.cpp:46
-msgid "Use SOCKS5 server to resolve host names"
-msgstr "Host 주소를 분석하기 위해 SOCKS5 서버를 사용함"
-
-#: win32/CertificatesPage.cpp:41
-msgid "Use TLS when remote client supports it"
-msgstr "상대방 클라이언트가 지원할 경우 TLS(Transport Layer Security)를 사용함"
-
-#: win32/QueuePage.cpp:77
-msgid "Use antifragmentation method for downloads"
-msgstr ""
-"다운로드에 파일 조각화를 방지하는 방식을 사용함 (이 옵션을 체크하면 파일 다운"
-"로드를 시작하면서 그 파일이 차지할 전체 용량 만큼의 공간을 미리 확보하여 다운"
-"로드를 진행함으로써 파일의 조각화를 방지하지만, 단점으로는 대용량 파일의 다운"
-"로드를 시작할 때 하드디스크에 대한 접근이 일시적으로 멈출 수 있음)(조각화된 "
-"파일은 읽어들일 때 여기 저기 흩어진 파일의 클러스터를 찾아 Head가 이동하므로 "
-"하드디스크 성능에 영향을 줌)"
-
-#: win32/AppearancePage.cpp:54
-msgid "Use system icons when browsing files (slows browsing down a bit)"
-msgstr ""
-"검색 창이나 파일-목록 창에 표시되는 파일의 아이콘으로 Windows의 시스템 아이콘"
-"을 사용함 (약간 속도가 느려짐)"
-
-#: win32/SearchFrame.cpp:33 win32/TransferView.cpp:39
-msgid "User"
-msgstr "사용자"
-
-#: win32/FavHubsFrame.cpp:37
-msgid "User Description"
-msgstr "설명"
-
-#: win32/CommandDlg.cpp:93
-msgid "User Menu"
-msgstr "사용자 메뉴"
-
-#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:698
-msgid "User offline"
-msgstr "사용자가 오프라인"
-
-#: win32/PrivateFrame.cpp:315
-msgid "User went offline"
-msgstr "상대방이 오프라인 되었음"
-
-#: win32/QueueFrame.cpp:41 win32/PublicHubsFrame.cpp:51
-msgid "Users"
-msgstr "사용자"
-
-#: win32/PublicHubsFrame.cpp:272
-#, fuzzy, boost-format
-msgid "Users: %1%"
-msgstr "사용자"
-
-#: win32/SearchFrame.cpp:188
 msgid "Video"
 msgstr "비디오 파일"
 
-#: win32/AppearancePage.cpp:50
-msgid "View status messages in main chat"
-msgstr "허브 대화방에 상태 메시지를 표시함"
+msgid "Browse..."
+msgstr "찾기..."
 
-#: win32/UploadPage.cpp:63 win32/UploadPage.cpp:188 win32/UploadPage.cpp:232
-msgid "Virtual name"
-msgstr "공유 이름"
+msgid "Logging"
+msgstr "Log 작성"
 
-#: win32/QueueFrame.cpp:423
-#, fuzzy, boost-format
-msgid "Waiting (%1% of %2% users online)"
-msgstr "대기 (사용자 온라인)"
+msgid "Name under which the others see the directory"
+msgstr "다른 사람들이 보게 될 공유 디렉토리의 이름"
 
-#: win32/QueueFrame.cpp:421
-msgid "Waiting (User online)"
-msgstr "대기 (사용자 온라인)"
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "초과하면 새로운 다운로드가 제한되는 속도 (kiB/s, 0=무제한)"
 
-#: win32/TabsPage.cpp:43 win32/WindowsPage.cpp:41
-#: win32/WaitingUsersFrame.cpp:33 win32/MainWindow.cpp:208
-#: win32/MainWindow.cpp:279
-msgid "Waiting Users"
-msgstr "대기 중인 사용자"
+msgid "Appearance"
+msgstr "모양"
 
-#: win32/DownloadsFrame.cpp:124
-#, fuzzy
-msgid "Waiting for slot"
-msgstr "대기 중인 사용자"
+msgid "Favorite Hubs"
+msgstr "즐겨찾는 허브"
 
-#: win32/TransferView.cpp:460
-#, fuzzy
-msgid "Waiting to retry"
-msgstr "대기 중인 사용자"
-
-#: win32/WindowsPage.cpp:31
 msgid "Window options"
 msgstr "창 옵션"
 
-#: win32/Advanced3Page.cpp:29
-msgid "Write buffer size"
-msgstr "기록 버퍼 크기"
+msgid "Auto-open at startup"
+msgstr "시작할 때 자동으로 열 창"
 
-#: win32/HubFrame.cpp:906
+msgid "Sharing"
+msgstr "공유(업로드)"
+
+msgid "No matches"
+msgstr "일치하는 것이 없음"
+
+msgid "Enable automatic SFV checking"
+msgstr "SFV(Simple File Verification)-검사를 자동으로 실시함 (이 옵션을 체크하면 각 파일의 32-bit CRC 코드 목록을 담고 있는 sfv-파일이 있고 그 목록 중의 파일에 대한 다운로드가 완료되었을 경우, 자동으로 그 파일의 CRC 코드를 계산하고 sfv-파일의 것과 일치하는지 비교하여 파일이 전송과정에서 손상되었는지 여부를 검사하고, 일치하지 않는다면 다운로드를 재시도함)"
+
+msgid "Skip zero-byte files"
+msgstr "0 byte인 파일은 다운로드하지 않음 (이 옵션을 체크하면 0 byte인 파일은 다운로드를 시도해도 디스크에 저장이 안됨)(종종 파일 이름 자체에 어떤 정보를 담고 있는 0 byte 파일을 다운로드할 필요가 있는 경우, 이 옵션을 체크하지 않아야 됨)"
+
+msgid "Min Slots"
+msgstr "최소 슬롯"
+
+msgid "Clear search box after each search"
+msgstr "검색 창에서 검색을 시작할 때마다 검색 문자열 입력 박스를 지움 (지워지더라도 최근 사용한 검색어 중 10개까지 드랍-다운 메뉴에서 고를 수 있음)"
+
+msgid "Do nothing"
+msgstr "무시하기"
+
+msgid "Accept custom user commands from hub"
+msgstr "허브로부터 사용자 정의 명령어를 받아들임 (이러한 사용자 정의 명령어는 허브 창 탭을 클릭하거나 전송 프레임, 검색 창, 사용자 목록 등에 있는 사용자를 클릭하면 나타나게 되며, 허브의 규칙 사항을 읽도록 만들거나 운영자 기능의 수행, 허브 Bot와의 상호작용 등등의 여러가지를 가능하게 함)"
+
+msgid "Invalid number of slots"
+msgstr "슬롯 개수가 잘못됨"
+
+msgid "Don't send the away message to bots"
+msgstr "허브 Bot에게는 자리비움 메시지를 보내지 않음"
+
+msgid "Request a feature"
+msgstr "기능 개선 제안"
+
+msgid "Max hash speed"
+msgstr "최대 Hash 속도"
+
+msgid "Don't download files already in the queue"
+msgstr "이미 '다운로드 대기열'에 추가한 파일은 다운로드하지 않음"
+
+msgid "Show timestamps in chat by default"
+msgstr "대화에 시간 스탬프를 기본으로 보여줌"
+
+msgid "Status"
+msgstr "상태"
+
+msgid "Search for"
+msgstr "검색 문자열"
+
+msgid "Hub"
+msgstr "허브"
+
+msgid "Favorite hub removed"
+msgstr "허브가 제거되었음"
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "Compressed"
+msgstr "압축 파일"
+
+msgid "Count"
+msgstr "개수"
+
+msgid "Firewall with UPnP"
+msgstr "방화벽 (UPnP)"
+
+msgid "Limits"
+msgstr "다운로드 제한"
+
+msgid "Public Hubs list"
+msgstr "공개 허브 목록"
+
+msgid "Connection"
+msgstr "연결"
+
+msgid "Time"
+msgstr "시간"
+
+msgid "Tab highlight on content change"
+msgstr "내용이 변화되면 탭을 진하게 표시할 창"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "프로그램을 최소화하면 자동으로 자리비움 상태로 표시함 (프로그램을 복원하면 상태가 되돌아 옴)"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "검색 창이나 파일-목록 창에 표시되는 파일의 아이콘으로 Windows의 시스템 아이콘을 사용함 (약간 속도가 느려짐)"
+
+msgid "Don't delete file lists when exiting"
+msgstr "다운로드한 파일-목록을 프로그램을 종료할 때 삭제하지 않고 보존함"
+
+msgid "Auto grant slot / Nick"
+msgstr "자동 슬롯 허용 (체크) / 사용자 닉네임"
+
+msgid "Max filelist size"
+msgstr "최대 파일-목록"
+
+msgid "Confirm application exit"
+msgstr "프로그램을 종료할 때 확인함"
+
+msgid "Ignore private messages from the hub"
+msgstr "허브로부터 온 1:1 메시지를 무시함"
+
+msgid "Exact size"
+msgstr "정확한 크기"
+
+msgid "DC++ discussion forum"
+msgstr "DC++ 토론 포럼"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "DC++가 \"dchub://\" 및 \"adc://\" URL(Uniform Resource Locator) 링크를 처리하도록 Windows에 등록함 (Direct Connect Protocol 관련 링크로서, 웹페이지 및 인터넷 바로가기 파일인 url-파일에 포함되거나 Windows 시작 메뉴의 '실행'에 직접 입력되어 처리될 수 있음)"
+
+msgid "Search options"
+msgstr "검색 옵션"
+
+msgid "Re-add source"
+msgstr "파일의 소스에서 삭제했던 사용자를 다시 추가하기"
+
+msgid "Format"
+msgstr "형식"
+
+msgid "Use CTRL for line history"
+msgstr "대화 입력 히스토리 기능에 CTRL 키를 사용함 (이 옵션을 체크하면 허브 대화방의 대화 입력란에서 CTRL 키를 누른 채 ↑/↓ 키를 눌러야 이전에 입력했던 대화를 불러올 수 있음)(옵션을 체크하지 않으면 ↑/↓ 키만 눌러도 됨)"
+
+msgid "MiB"
+msgstr "MiB"
+
+msgid "Notepad"
+msgstr "메모장"
+
+msgid "DC++ Homepage"
+msgstr "DC++ 홈페이지"
+
+msgid "Join/part showing off"
+msgstr "입장/퇴장 상황 표시 꺼짐"
+
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "인입 접속 설정 (설정 방법은 도움말/FAQ을 참조)"
+
+msgid "Mini slot size"
+msgstr "미니슬롯 파일"
+
+msgid "Hublist"
+msgstr "허브 목록"
+
+msgid "UDP"
+msgstr "UDP"
+
+msgid "Ignore TTH searches"
+msgstr "TTH 검색을 무시하기"
+
+msgid "File"
+msgstr "파일"
+
+msgid "User went offline"
+msgstr "상대방이 오프라인 되었음"
+
+msgid "Slots"
+msgstr "슬롯"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Host 주소를 분석하기 위해 SOCKS5 서버를 사용함"
+
+msgid "Log status messages"
+msgstr "상태 메시지 Log"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "허브 대화방에 '즐겨찾는 사용자'에 대해서만 입장/퇴장 상황을 표시함"
+
+msgid "KiB/s"
+msgstr "kiB/s"
+
+msgid "Downloading..."
+msgstr "다운로드..."
+
+msgid "Don't remove /password before your password"
+msgstr "비밀번호 앞의 \"/password\" 부분을 없애면 안됨"
+
+msgid "Path"
+msgstr "파일 경로"
+
+msgid "Specify a search string"
+msgstr "찾으려는 문자열을 지정하세요"
+
+msgid "Open private messages in their own window"
+msgstr "1:1 메시지를 별도의 창에 표시함 (이 옵션을 체크하지 않으면 1:1 메시지는 허브 대화방에 상태 메시지 형태로 표시됨)"
+
+msgid "Use TLS when remote client supports it"
+msgstr "상대방 클라이언트가 지원할 경우 TLS(Transport Layer Security)를 사용함"
+
+msgid "Minimize to tray"
+msgstr "프로그램을 최소화하면 시스템 트레이 아이콘으로 숨김"
+
+msgid "Download whole directory to..."
+msgstr "다운로드하기 (디렉토리 통째) - 위치 지정"
+
+msgid "Enable safe and compressed transfers"
+msgstr "안전한 압축 방식을 사용하여 데이터를 전송함 (이 옵션을 체크하면 이 기능을 지원하는 호환 클라이언트와 파일을 주고 받을 때, 무결성 검사를 포함하는 ZLIB 압축 방식을 사용하여 데이터를 전송함)(이러한 전송 방식은 CPU 성능을 어느 정도 사용하지만 압축되지 않은 구조를 갖는 포맷의 파일을 전송하는데 있어 엄청난 속도의 향상을 가져올 수 있을 뿐더러 파일의 무결성까지 보장할 수 있음)"
+
+msgid "Ports"
+msgstr "포트"
+
+msgid "Quick Connect"
+msgstr "허브에 직접 접속하기"
+
+msgid "Raw"
+msgstr "Raw"
+
+msgid "Reliability"
+msgstr "신뢰도"
+
+msgid "Open private messages from bots in their own window"
+msgstr "허브로부터 온 1:1 메시지를 별도의 창에 표시함"
+
+msgid "Sounds"
+msgstr "사운드"
+
+msgid "Error creating adc registry key"
+msgstr "\"adc://\" URL 레지스트리 키 생성 오류"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr "신뢰할 수 있는 인증이 없는 클라이언트들과의 TLS 연결을 허용함"
+
+msgid "Default away message"
+msgstr "기본 자리비움 메시지"
+
+msgid "Next"
+msgstr "다음 찾기"
+
+msgid "Configured Public Hub Lists"
+msgstr "설정된 공개 허브 목록"
+
+msgid "Change Log"
+msgstr "프로그램 업데이트 히스토리"
+
+msgid "Show shell menu where possible"
+msgstr "'완료된 다운로드/업로드' 전송 목록에 Windows 쉘(Shell)-메뉴를 표시함 (이 옵션을 체크하면 전송 목록에 있는 파일에 마우스 오른쪽 버튼을 클릭할 시, DC++의 메뉴 대신 Windows Explorer에서 사용되는 쉘-메뉴가 표시됨)"
+
+msgid "Type"
+msgstr "파일 종류"
+
+msgid "Lowest"
+msgstr "최저"
+
+msgid "Picture"
+msgstr "그림 파일"
+
+msgid "Added"
+msgstr "등록 시간"
+
+msgid "Min filesize"
+msgstr "최소 파일 크기"
+
+msgid "Default download directory"
+msgstr "기본 다운로드 디렉토리"
+
+msgid "Translations"
+msgstr "다운로드 - 언어팩"
+
+msgid "Search for file"
+msgstr "파일/디렉토리 찾기"
+
+msgid "Connected"
+msgstr "접속되었음"
+
+msgid "Low prio max size"
+msgstr "'낮음' 상한 크기"
+
+msgid "At least"
+msgstr "적어도"
+
+msgid "Options"
+msgstr "옵션"
+
+msgid "Hub Menu"
+msgstr "허브 메뉴"
+
+msgid "Rename"
+msgstr "이름 바꾸기"
+
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr "자동-버림된 느린 사용자를 모든 다운로드 대기열 항목의 소스에서 제거함 (파일-목록 제외)"
+
+msgid "No errors"
+msgstr "없음"
+
+msgid "Socks IP"
+msgstr "소켓 IP"
+
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr "신뢰할 수 있는 인증이 없는 허브로의 TLS 접속을 허용함"
+
+msgid "Chat"
+msgstr "대화"
+
+msgid "Favorite user added"
+msgstr "'즐겨찾는 사용자'에 추가되었음"
+
+msgid "At most"
+msgstr "많아야"
+
+msgid "Log filelist transfers"
+msgstr "파일-목록 전송 내역을 파일 다운로드/업로드 Log에 기록함"
+
+msgid "User Description"
+msgstr "설명"
+
+msgid "Favorite hub added"
+msgstr "'즐겨찾는 허브'에 추가되었음"
+
+msgid "Hub list loaded from cache..."
+msgstr "저장소에서 불러온 허브 목록..."
+
+msgid "Error creating magnet registry key"
+msgstr "\"magnet:\" URI 레지스트리 키 생성 오류"
+
+msgid "Downloading public hub list..."
+msgstr "허브 목록 다운로드..."
+
+msgid "Downloaded"
+msgstr "받은 크기"
+
+msgid "Favorite name"
+msgstr "대표 이름"
+
+msgid "TLS"
+msgstr "TLS"
+
+msgid "Search"
+msgstr "검색"
+
+msgid "B"
+msgstr "B"
+
+msgid "Automatically search for alternative download locations"
+msgstr "내 '다운로드 대기열'의 모든 파일을 순차적으로 자동-검색하고, 파일 소스(소유자 목록)에 새로 검색되는 파일 소유자를 추가해 나감 (기존 파일 소유자 이외의 새로운 대체 소스를 확보함으로써 다운로드 효율성이 높아짐)"
+
+msgid "Subtract list"
+msgstr "목록 추리기"
+
+msgid "Download Queue"
+msgstr "다운로드 대기열"
+
+msgid "Enabled"
+msgstr "활성화"
+
+msgid "All"
+msgstr "모두"
+
+msgid "Time last seen"
+msgstr "마지막으로 발견한 시간"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "주의; 다운로드 속도가 수시로 변하므로, 100% 정확하지는 않음"
+
+msgid "Don't allow hub/UPnP to override"
+msgstr "hub/UPnP가 이 설정을 우선하지 않도록 함"
+
+msgid "Personal Information"
+msgstr "개인 정보"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "속도가 다음 미만이면 별도 슬롯을 자동 오픈 (0=사용 안함)"
+
+msgid "Executable"
+msgstr "실행 가능 파일"
+
+msgid "Open new window when using /join"
+msgstr "\"/join\" 명령어를 사용할 때 허브를 새 창에 열도록 함"
+
+msgid "Upload slots"
+msgstr "업로드 슬롯 개수"
+
+msgid "Public Hubs"
+msgstr "공개 허브"
+
+msgid "Min Size"
+msgstr "최소 크기"
+
+msgid "KiB"
+msgstr "kiB"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "주의; 이 옵션들 대부분은 변경한 후 DC++를 다시 실행하였을 때 적용됨"
+
+msgid "Open downloads directory"
+msgstr "'기본 다운로드 디렉토리' 열기"
+
+msgid "Users"
+msgstr "사용자"
+
+msgid "System Log"
+msgstr "시스템 Log"
+
+msgid "Help forum"
+msgstr "도움말 포럼"
+
+msgid "Name"
+msgstr "이름"
+
+msgid "Really remove?"
+msgstr "삭제하시겠습니까?"
+
+msgid "Indexing progress"
+msgstr "Hashing 진행상태"
+
+msgid "Login"
+msgstr "로그인이름"
+
+msgid "Only users with free slots"
+msgstr "Slot이 남아 있는 사용자만 검색"
+
+msgid "File not available"
+msgstr "파일이 유효하지 않음"
+
+msgid "Max Size"
+msgstr "최대 크기"
+
+msgid "High"
+msgstr "높음"
+
+msgid "Speed"
+msgstr "전송 속도"
+
+msgid "Invalid file list name"
+msgstr "잘못된 파일-목록 이름"
+
+msgid "Search Menu"
+msgstr "검색 메뉴"
+
+msgid "Create / Modify Command"
+msgstr "사용자 정의 명령어 추가/변경"
+
+msgid "Document"
+msgstr "문서 파일"
+
+msgid "GeoIP database update"
+msgstr "다운로드 - GeoIP 데이터베이스"
+
+msgid "Report a bug"
+msgstr "버그 신고"
+
+msgid "Share hidden files"
+msgstr "숨김 파일을 공유함"
+
+msgid "Max Hubs"
+msgstr "최대 허브"
+
+msgid "Highest"
+msgstr "최고"
+
+msgid "Send unknown /commands to the hub"
+msgstr "알 수 없는 명령어는 허브 대화방으로 보냄 (이 옵션을 체크하면 DC++가 이해하지 못하는 명령어는 허브 대화방에 보통의 대화처럼 표시됨)"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "포트 매핑을 생성하는데 실패함, NAT(Network Address Translation)를 직접 설정하세요"
+
+msgid "Private message"
+msgstr "1:1 메시지"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "텍스트 파일을 보는데 OEM monospaced-font를 사용함"
+
+msgid "Settings..."
+msgstr "DC++ 설정..."
+
+msgid "Enabled / Search String"
+msgstr "활성 (체크) / 검색 문자열"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "추방 메시지 및 NMDC(NeoModus® Direct Connect) 디버그 메시지를 걸러냄"
+
+msgid "Unfinished downloads directory"
+msgstr "미완료 다운로드 디렉토리"
+
+msgid "Personal information"
+msgstr "개인 정보"
+
+msgid "Rating"
+msgstr "평가"
+
+msgid "Failed to remove port mappings"
+msgstr "포트 매핑을 제거하는데 실패함"
+
+msgid "Favorite Users"
+msgstr "즐겨찾는 사용자"
+
+msgid "Search Spy"
+msgstr "검색 스파이"
+
+msgid "Close disconnected"
+msgstr "접속이 끊긴 창 닫기"
+
+msgid "Add finished files to share instantly (if shared)"
+msgstr "다운로드 완료된 파일을 즉시 공유시킴 (이 옵션을 체크하면 파일을 다운로드할 때 공유 디렉토리로 직접 받거나 '기본 다운로드 디렉토리'가 공유되었을 경우, 그 파일의 전송이 완료되자 마자 공유됨)(내 파일-목록에는 갱신하기 전까지는 나타나지 않음)"
+
+msgid "Priority"
+msgstr "우선순위"
+
+msgid "This hub is not a favorite hub"
+msgstr "이것은 '즐겨찾는 허브'에 등록된 허브가 아님"
+
+msgid "Close all search windows"
+msgstr "모든 검색 창 닫기"
+
+msgid "Copy Filename"
+msgstr "파일 이름 복사하기"
+
+msgid "Open own list"
+msgstr "내 파일-목록 열기"
+
+msgid "Virtual name"
+msgstr "공유 이름"
+
+msgid "Destination Directory"
+msgstr "대상 디렉토리"
+
+msgid "TCP"
+msgstr "TCP"
+
+msgid "Full Path"
+msgstr "전체 경로"
+
+msgid "Search String"
+msgstr "검색 문자열"
+
+msgid "Advanced"
+msgstr "고급"
+
+msgid "PM"
+msgstr "PM(1:1 메시지)"
+
+msgid "Frequently asked questions"
+msgstr "FAQ(자주 묻는 질문)"
+
+msgid "Show joins / parts in chat by default"
+msgstr "허브 대화방에 입장/퇴장 상황을 기본적으로 표시함"
+
+msgid "Settings"
+msgstr "DC++ 설정"
+
+msgid "Server"
+msgstr "허브 주소"
+
+msgid "Waiting (User online)"
+msgstr "대기 (사용자 온라인)"
+
+msgid "Separator"
+msgstr "Separator"
+
+msgid "Ignore private messages from bots"
+msgstr "허브 보트(Bot)로부터 온 1:1 메시지를 무시함(보통 허브의 규칙이나 주의사항 같은 정보를 담고 있을 수 있음)"
+
+msgid "Directory"
+msgstr "디렉토리"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Bitzi.com에서 TTH로 찾아보기"
+
+msgid "Unknown"
+msgstr "불명"
+
+msgid "Sort all downloads first"
+msgstr "전송 프레임에 표시되는 다운로드 전송들을 먼저 시작된 순으로 정렬함"
+
+msgid "Waiting Users"
+msgstr "대기 중인 사용자"
+
+msgid "Language file"
+msgstr "언어 변환 파일"
+
+msgid "User offline"
+msgstr "사용자가 오프라인"
+
+msgid "s"
+msgstr "s"
+
+msgid "Donate (paypal)"
+msgstr "후원금 기부 (paypal)"
+
+msgid "Away mode off"
+msgstr "자리비움 모드 꺼짐"
+
+msgid "Auto connect / Name"
+msgstr "자동 접속 (체크) / 허브 이름"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Proxy (hublist.org만 가능)"
+
+msgid "Low"
+msgstr "낮음"
+
+msgid "Online"
+msgstr "온라인"
+
+msgid "View status messages in main chat"
+msgstr "허브 대화방에 상태 메시지를 표시함"
+
+msgid "Only where I'm op"
+msgstr "내가 운영자로 있는 곳에서만"
+
+msgid "Stored password sent..."
+msgstr "저장된 비밀번호를 보냄..."
+
+msgid "Auto-search limit"
+msgstr "자동-검색 제한"
+
+msgid "Normal prio max size"
+msgstr "'보통' 상한 크기"
+
+msgid "Sort favorite users first"
+msgstr "즐겨찾는 사용자를 먼저 정렬시킴"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "MAGNET 링크를 DC++가 처리했지만, Direct Connect 네트워크상에서 사용하기 위한 유효한 파일 Hash를 포함하고있지 않음 (아무 작업도 수행하지 않음)"
+
+msgid "Show progress bars for transfers"
+msgstr "파일 전송 프레임에 진행율 막대를 표시함"
+
+msgid "Set priority"
+msgstr "다운로드 우선순위 지정하기"
+
+msgid "Download whole directory"
+msgstr "다운로드하기 (디렉토리 통째)"
+
+msgid "Log downloads"
+msgstr "파일 다운로드 Log"
+
+msgid "Purge"
+msgstr "소거"
+
+msgid "Timestamps enabled"
+msgstr "시간 스탬프 사용함"
+
+msgid "Confirm favorite hub removal"
+msgstr "'즐겨찾는 허브'에서 허브를 삭제할 때 확인함"
+
+msgid "Please enter a password"
+msgstr "비밀번호를 입력하세요"
+
+msgid "Drop sources below"
+msgstr "자동-버림 속도(↓)"
+
+msgid "Finished Downloads"
+msgstr "완료된 다운로드"
+
+msgid "Download to..."
+msgstr "다운로드하기 - 위치 지정"
+
+msgid "Colors"
+msgstr "색상/글꼴"
+
+msgid "Done"
+msgstr "완료"
+
+msgid "Any"
+msgstr "모든 종류"
+
+msgid "Size"
+msgstr "크기"
+
+msgid "Public Hubs list URL"
+msgstr "공개 허브 목록 URL"
+
+msgid "Always open help file with this dialog"
+msgstr "관련된 도움말 항목을 항상 띄움"
+
+msgid "Start a search for this file"
+msgstr "이 파일에 대한 검색을 시작하기"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "1:1 메시지 창이 열릴 때 알림 소리를 냄"
+
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "자동-버림할 때 전송만 끊고 해당 소스를 제거하지는 않음"
+
+msgid "AWAY"
+msgstr "자리비움"
+
+msgid "Check every"
+msgstr "체크 간격"
+
+msgid "Favorite download directories"
+msgstr "지정 다운로드 디렉토리"
+
+msgid "Highest prio max size"
+msgstr "'최고' 상한 크기"
+
+msgid "Address"
+msgstr "허브 주소"
+
+msgid "Total size:"
+msgstr "공유량:"
+
+msgid "ADL Search"
+msgstr "ADL 검색"
+
+msgid "Remove user from queue"
+msgstr "'다운로드 대기열'의 모든 파일의 소스에서 사용자를 삭제하기"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Directory or directory name already exists"
+msgstr "같은 디렉토리나 디렉토리 대표 이름이 이미 존재함"
+
+msgid "Full tree does not match TTH root"
+msgstr "받은 파일-목록의 TTH(Tigertree Hash) Root 값이 일치하지 않음"
+
+msgid "Search history"
+msgstr "검색 History"
+
+msgid "Filelist Menu"
+msgstr "파일-목록 메뉴"
+
 msgid "Your nick was already taken, please change to something else!"
 msgstr "닉네임을 이미 다른 사람이 사용 중이므로 다른 것으로 바꿔서 접속하세요!"
 
-#: win32/MainWindow.cpp:144
-msgid ""
-"Your version of windows common controls is too old for DC++ to run "
-"correctly, and you will most probably experience problems with the user "
-"interface. You should download version 5.80 or higher from the DC++ homepage "
-"or from Microsoft directly."
-msgstr ""
+msgid "Port"
+msgstr "포트"
 
-#: win32/TransferView.cpp:485
-#, fuzzy
-msgid "file list"
-msgstr "파일-목록 메뉴"
+msgid "Auto refresh time"
+msgstr "자동 갱신 시간"
 
-#: win32/QueuePage.cpp:41 win32/QueuePage.cpp:43 win32/QueuePage.cpp:45
-msgid "s"
-msgstr "s"
+msgid "Errors"
+msgstr "오류"
+
+msgid "Filename"
+msgstr "파일 이름"
+
+msgid "Firewall (passive, last resort)"
+msgstr "방화벽 (피동 모드, 최악의 경우 사용)"
+
+msgid "Open new file list windows in the background"
+msgstr "새로운 파일-목록 창을 백그라운드(비활성화 상태)로 띄움"
+
+msgid "High prio max size"
+msgstr "'높음' 상한 크기"
+
+msgid "SOCKS5"
+msgstr "SOCKS5 모드"
+
+msgid "Close all file list windows"
+msgstr "모든 파일-목록 창 닫기"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "DC++가 \"magnet:\" URI(Uniform Resource Identifier) 링크를 처리하도록 Windows에 등록함 (Direct Connect 네트워크에서 주어진 파일 Hash로 일치하는 파일을 찾게 해주는 링크이며, magnet.exe가 이미 시스템에 설치되어 있는 경우, DC++는 설치된 기존 응용프로그램과 DC++ 중에서 이 링크의 처리자를 선택하도록 물음)"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "지정한 공유 이름이 이전 것과 같으므로 무시함..."
+
+msgid "Running..."
+msgstr "다운로드 진행..."
+
+msgid "External / WAN IP"
+msgstr "전역/WAN IP"
+
+msgid "Favorite Hub Properties"
+msgstr "즐겨찾는 허브 등록정보"
+
+msgid "PM history"
+msgstr "PM History"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "다운로드 우선순위 '낮음'의 자동-분류 상한 크기보다 큰 파일이 새로 추가되면 우선순위를 '최저'로 분류"
+
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+msgid "Show"
+msgstr "보기"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "설정에서 닉네임을 입력하세요!"
+
+msgid "Source too slow"
+msgstr "너무 느린 소스"
+
+msgid "Timestamps disabled"
+msgstr "시간 스탬프 사용 안함"
+
+msgid "Find"
+msgstr "파일/디렉토리 찾기"
+
+msgid "Passive user"
+msgstr "피동 모드 사용자"
+
+msgid "Direct connection"
+msgstr "직접 접속"
+
+msgid "User Menu"
+msgstr "사용자 메뉴"
+
+msgid "Connection settings"
+msgstr "접속 설정"
+
+msgid "Downloads"
+msgstr "다운로드"
+
+msgid "MiBits/s"
+msgstr "MiBits/s"
+
+msgid "Break on first ADLSearch match"
+msgstr "첫번째 ADL 검색에서 일치하면 검색을 멈춤"
+
+msgid "Set timestamps"
+msgstr "시간 스탬프 형식"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "주의; 파일들은 Hash가 작성되어야만 공유에 나타남!"
+
+msgid "Close all PM windows"
+msgstr "모든 1:1 메시지 창 닫기"
+
+msgid "Nick"
+msgstr "닉네임"
+
+msgid "Command"
+msgstr "명령어"
+
+msgid "Hubs"
+msgstr "허브"
+
+msgid "Confirm dialog options"
+msgstr "확인 옵션"
+
+msgid "Other queue options"
+msgstr "기타 다운로드 대기열 옵션"
+
+msgid "Remote client does not fully support TTH - cannot download"
+msgstr "상대방 클라이언트가 TTH를 완전히 지원하지 않음 - 다운로드할 수 없음"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "활성화된 창의 탭을 누르면 다른 창(창 아이콘이 정렬된 역순의 창)으로 바뀌어 활성화 됨"
+
+msgid "Join/part showing on"
+msgstr "입장/퇴장 상황 표시 켜짐"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "이미 접속하고 있는 허브로의 접속-전환(Redirect) 제안이므로 응할 필요가 없음"
+
+msgid "Bind address"
+msgstr "바인딩 주소"
+
+msgid "Paused"
+msgstr "일시 정지"
+
+msgid "Write buffer size"
+msgstr "기록 버퍼 크기"
+
+msgid "B/s"
+msgstr "B/s"
+
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "허브를 떠난 '즐겨 찾는 사용자'를 자동으로 끊지 않음"
+
+msgid "Line speed (upload)"
+msgstr "회선 속도 (업로드)"
+
+msgid "Shared"
+msgstr "공유 크기"
+
+msgid "Normal"
+msgstr "보통"
+
+msgid "Automatically follow redirects"
+msgstr "허브의 접속-전환(Redirect) 제안에 자동으로 응함"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "32-bit CRC 코드 불일치 (SFV-검사)"
+
+msgid "User"
+msgstr "사용자"
+
+msgid "Search for alternates"
+msgstr "대체 파일 검색하기"
+
+msgid "Configure Public Hub Lists"
+msgstr "공개 허브 목록 설정"
+
+msgid "Open private messages from the hub in their own window"
+msgstr "허브 보트(Bot)로부터 온 1:1 메시지를 별도의 창에 표시함"
+
+msgid "About DC++..."
+msgstr "DC++ 정보"
+
+msgid "Hub already exists as a favorite"
+msgstr "이미 '즐겨찾는 허브'에 있음"
+
+msgid "Send once per nick"
+msgstr "닉네임당 한번씩만 보냄"
+
+msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
+msgstr "UDP 포트를 열 수 없으므로, 설정을 다시 하거나 해당 포트를 사용하는 응용프로그램을 종료하기 전까지 검색이 정상적으로 작동하지 않게 됨"
+
+msgid "Match queue"
+msgstr "파일-목록에서 내 '다운로드 대기열'의 파일을 찾아 소스에 추가하기"
+
+msgid "Downloading list..."
+msgstr "목록 다운로드..."
+
+msgid "Log system messages"
+msgstr "시스템 메시지 Log"
+
+msgid "Uploads"
+msgstr "업로드"
+
+msgid "Max Users"
+msgstr "최대 인원"
+
+msgid "Don't download files already in share"
+msgstr "이미 공유하고 있는 파일은 다운로드하지 않음"
+
+msgid "Copy magnet link to clipboard"
+msgstr "클립보드에 MAGNET 링크 복사하기"
+
+msgid "Slots set"
+msgstr "슬롯 설정"
+
+msgid "Error creating dchub registry key"
+msgstr "\"dchub://\" URL 레지스트리 키 생성 오류"
+
+msgid "No users"
+msgstr "사용자 없음"
+
+msgid "Time left"
+msgstr "남은 시간"
+
+msgid "TTH Root"
+msgstr "TTH Root"
+
+msgid "Remove slow filelists"
+msgstr "전송 속도가 느린 파일-목록은 다운로드 대기열에서 제거함"
+
+msgid "CID"
+msgstr "CID"
+
+msgid "Specify a server to connect to"
+msgstr "연결할 서버를 지정하세요"
+
+msgid "Source Type"
+msgstr "검색 유형"
+
+msgid "Download files from the Direct Connect network"
+msgstr "Direct Connect 네트워크로부터 파일 다운로드"
+
+msgid "No users to download from"
+msgstr "파일을 소유한 사용자가 없음"
+
+msgid "Offline"
+msgstr "오프라인"
+
+msgid "Match downloaded lists"
+msgstr "받은 파일-목록을 비교하기"
+
+msgid "Creating file index..."
+msgstr "파일 색인 생성..."
+
+msgid "Description"
+msgstr "설명"
+
+msgid "Enter search string"
+msgstr "검색 문자열 입력하기..."
+
+msgid "Password"
+msgstr "비밀번호"
+
+msgid "Edit the hublist"
+msgstr "허브 목록 편집"
+
+msgid "Network Statistics"
+msgstr "네트워크 통계"
+
+msgid "Firewall with manual port forwarding"
+msgstr "Port Forwarding 설정한 방화벽"
+
+msgid "Country"
+msgstr "국가"
+
+msgid "Close all offline PM windows"
+msgstr "모든 오프라인 1:1 메시지 창 닫기"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "1:1 메시지를 받을 때마다 알림 소리를 냄"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "최대 동시 다운로드 개수 (0=무제한)"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "UPnP를 통하여 외부 IP를 얻는데 실패함, 직접 설정하세요"
+
+msgid "Automatic Directory Listing Search"
+msgstr "ADL(Automatic Directory Listing) 검색"
+
+msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
+msgstr "TCP/TLS 포트를 열 수 없으므로, 설정을 다시 하거나 해당 포트를 사용하는 응용프로그램을 종료하기 전까지 파일 전송이 정상적으로 작동하지 않게 됨"
+
+msgid "Audio"
+msgstr "오디오 파일"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "'다운로드 대기열' 자동-검색이 성공한 경우, 검색된 파일의 소스 뿐만 아니라, 그 파일 소유자의 파일-목록을 받고 그 파일-목록에서 내 '다운로드 대기열'의 파일을 찾아 일치하는 모든 파일의 소스에도 그 소유자를 추가함"
+
+msgid "Max inactivity"
+msgstr "최대 무반응"
+
+msgid "Log private chat"
+msgstr "1:1 메시지 대화 Log"
+
+msgid "Min Share"
+msgstr "최소 공유"
+
+msgid "Open new private message windows in the background"
+msgstr "새로운 1:1 메시지 창을 백그라운드(비활성화 상태)로 띄움"
+
+msgid "Min elapsed"
+msgstr "최소 경과시간"
+

@@ -138,8 +138,6 @@ public:
 	static void copyMagnet(const TTHValue& /*aHash*/, const tstring& /*aFile*/);
 	static void searchHash(const TTHValue& /*aHash*/);
 
-	static tstring escapeMenu(tstring str);
-
 	static void addLastDir(const tstring& dir);
 
 	static void openLink(const tstring& url);

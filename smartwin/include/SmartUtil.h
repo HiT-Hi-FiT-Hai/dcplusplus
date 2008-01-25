@@ -31,5 +31,6 @@
 #include "../SmartUtil/DateTime.h"
 #include "../SmartUtil/TimeSpan.h"
 #include "../SmartUtil/StringConversion.h"
+#include "../SmartUtil/StringUtils.h"
 #include "../SmartUtil/null_pointer.h"
 #endif

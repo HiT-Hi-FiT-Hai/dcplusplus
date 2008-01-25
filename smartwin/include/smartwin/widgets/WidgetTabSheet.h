@@ -168,6 +168,8 @@ public:
 
 	int getImage(unsigned idx) const;
 
+	HWND getToolTips() const;
+
 	LPARAM getData(unsigned idx);
 	
 	void setData(unsigned idx, LPARAM data);
@@ -307,6 +309,16 @@ inline int WidgetTabSheet::getImage(unsigned idx) const
 		throw xCeption( _T( "Couldn't get image of item." ) );
 	}
 	return item.iImage;
+}
+
+inline HWND WidgetTabSheet::getToolTips() const
+{
+	HWND wnd = TabCtrl_GetToolTips(this->handle());
+	if(wnd == NULL)
+	{
+		throw xCeption( _T( "Couldn't get tooltips HWND." ) );
+	}
+	return wnd;
 }
 
 inline LPARAM WidgetTabSheet::getData(unsigned idx)

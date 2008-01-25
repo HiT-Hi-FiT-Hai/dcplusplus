@@ -2,6 +2,7 @@
 #define WIDGETTABVIEW_H_
 
 #include "WidgetTabSheet.h"
+#include "WidgetToolTip.h"
 #include "WidgetWindow.h"
 #include "../WindowClass.h"
 #include <list>
@@ -77,6 +78,7 @@ private:
 	static WindowClass windowClass;
 	
 	WidgetTabSheet::ObjectType tab;
+	WidgetToolTip::ObjectType tip;
 
 	std::tr1::function<void (const SmartUtil::tstring&)> titleChangedFunction;
 
@@ -101,12 +103,13 @@ private:
 	bool handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText);
 	bool handleSized(const WidgetSizedEventResult&);
 	void handleTabSelected();
+	LRESULT handleToolTip(WPARAM /*wParam*/, LPARAM lParam);
 	void handleLeftMouseDown(const MouseEventResult& mouseEventResult);
 	void handleLeftMouseUp(const MouseEventResult& mouseEventResult);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 	void handleMiddleMouseDown(const MouseEventResult& mouseEventResult);
 	
-	SmartUtil::tstring cutTitle(const SmartUtil::tstring& title);
+	SmartUtil::tstring formatTitle(SmartUtil::tstring title);
 	void layout();
 	
 	int addIcon(const IconPtr& icon);

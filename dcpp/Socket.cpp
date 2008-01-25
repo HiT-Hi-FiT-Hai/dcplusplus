@@ -50,9 +50,8 @@ static const uint32_t SOCKS_TIMEOUT = 30000;
 
 string SocketException::errorToString(int aError) throw() {
 	string msg = Util::translateError(aError);
-	if(msg.empty())
-	{
-		msg = str(F_("Unknown error: 0x%1%") % aError);
+	if(msg.empty()) {
+		msg = str(F_("Unknown error: 0x%1$x") % aError);
 	}
 	return msg;
 }

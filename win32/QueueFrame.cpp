@@ -1051,7 +1051,7 @@ unsigned int QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startI
 	for(QueueItem::SourceIter i = qii->getSources().begin(); i != qii->getSources().end(); ++i) {
 		QueueItem::Source& source = *i;
 		if(offline || source.getUser()->isOnline()) {
-			tstring nick = WinUtil::escapeMenu(WinUtil::getNicks(source.getUser()));
+			tstring nick = SmartUtil::escapeMenu(WinUtil::getNicks(source.getUser()));
 			menu->appendItem(id++, nick, reinterpret_cast<ULONG_PTR>(&source), (const WidgetMenu::SimpleDispatcher::F&)std::tr1::bind(handler, this, source.getUser()));
 		}
 	}

@@ -13,6 +13,8 @@
 * Added tab drag/drop (thanks poy)
 * Changed Pothead to mikejj 
 * Fixed search spy crash
+* Upgraded to bzip 1.0.4 (thanks pothead)
+* Tab tooltips (thanks poy)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

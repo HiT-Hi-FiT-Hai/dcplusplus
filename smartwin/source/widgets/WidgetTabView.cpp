@@ -12,9 +12,10 @@ WidgetTabView::Seed::Seed() :
 {
 }
 
-WidgetTabView::WidgetTabView(Widget* w) : 
-	PolicyType(w), 
-	tab(0), 
+WidgetTabView::WidgetTabView(Widget* w) :
+	PolicyType(w),
+	tab(0),
+	tip(0),
 	inTab(false),
 	active(-1),
 	dragging(-1)
@@ -24,24 +25,29 @@ void WidgetTabView::create(const Seed & cs) {
 	PolicyType::create(cs);
 
 	WidgetTabSheet::Seed tcs;
-	tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | 
-		TCS_MULTILINE | TCS_HOTTRACK | TCS_RAGGEDRIGHT;
+	tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
+		 TCS_HOTTRACK | TCS_MULTILINE | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER;
 	tab = WidgetCreator<WidgetTabSheet>::create(this, tcs);
 	tab->setImageList(ImageListPtr(new ImageList(16, 16, ILC_COLOR32 | ILC_MASK)));
 	tab->onSelectionChanged(std::tr1::bind(&WidgetTabView::handleTabSelected, this));
-
 	onSized(std::tr1::bind(&WidgetTabView::handleSized, this, _1));
 	tab->onLeftMouseDown(std::tr1::bind(&WidgetTabView::handleLeftMouseDown, this, _1));
 	tab->onLeftMouseUp(std::tr1::bind(&WidgetTabView::handleLeftMouseUp, this, _1));
 	tab->onContextMenu(std::tr1::bind(&WidgetTabView::handleContextMenu, this, _1));
 	tab->onMiddleMouseDown(std::tr1::bind(&WidgetTabView::handleMiddleMouseDown, this, _1));
+
+	tip = WidgetCreator<WidgetToolTip>::attach(this, tab->getToolTips()); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
+	if(tip) {
+		tip->addRemoveStyle(TTS_NOPREFIX, true);
+		tip->onRaw(std::tr1::bind(&WidgetTabView::handleToolTip, this, _1, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
+	}
 }
 
 void WidgetTabView::add(WidgetChildWindow* w, const IconPtr& icon) {
 	int image = addIcon(icon);
 	size_t tabs = tab->size();
 	TabInfo* ti = new TabInfo(w);
-	tab->addPage(cutTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(ti), image);
+	tab->addPage(formatTitle(w->getText()), tabs, reinterpret_cast<LPARAM>(ti), image);
 
 	viewOrder.push_front(w);
 
@@ -168,7 +174,7 @@ WidgetTabView::TabInfo* WidgetTabView::getTabInfo(int i) {
 bool WidgetTabView::handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
-		tab->setHeader(i, cutTitle(newText));
+		tab->setHeader(i, formatTitle(newText));
 		layout();
 
 		if((i == active) && titleChangedFunction)
@@ -177,11 +183,11 @@ bool WidgetTabView::handleTextChanging(WidgetChildWindow* w, const SmartUtil::ts
 	return true;
 }
 
-SmartUtil::tstring WidgetTabView::cutTitle(const SmartUtil::tstring& title) {
+SmartUtil::tstring WidgetTabView::formatTitle(SmartUtil::tstring title) {
 	if(title.length() > MAX_TITLE_LENGTH) {
-		return title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
+		title = title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
 	}
-	return title;
+	return SmartUtil::escapeMenu(title);
 }
 
 bool WidgetTabView::handleSized(const WidgetSizedEventResult& sz) {
@@ -272,6 +278,14 @@ int WidgetTabView::addIcon(const IconPtr& icon) {
 	return image;
 }
 
+LRESULT WidgetTabView::handleToolTip(WPARAM /*wParam*/, LPARAM lParam) {
+	LPNMTTDISPINFO ttdi = reinterpret_cast<LPNMTTDISPINFO>(lParam);
+	TabInfo* ti = getTabInfo(ttdi->hdr.idFrom); // here idFrom corresponds to the index of the tab
+	if(ti)
+		ttdi->lpszText = const_cast<LPTSTR>(ti->w->getText().c_str());
+	return 0;
+}
+
 void WidgetTabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult) {
 	int i = tab->hitTest(mouseEventResult.pos);
 	if(i != -1) {
@@ -308,7 +322,7 @@ void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) 
 
 		tab->erase(dragging);
 
-		tab->addPage(cutTitle(ti->w->getText()), dropPos, reinterpret_cast<LPARAM>(ti), image);
+		tab->addPage(formatTitle(ti->w->getText()), dropPos, reinterpret_cast<LPARAM>(ti), image);
 
 		active = tab->getSelectedIndex();
 
@@ -351,6 +365,9 @@ void WidgetTabView::handleMiddleMouseDown(const MouseEventResult& mouseEventResu
 }
 
 bool WidgetTabView::filter(const MSG& msg) {
+	if(tip)
+		tip->relayEvent(msg);
+
 	if(msg.message == WM_KEYUP && msg.wParam == VK_CONTROL) {
 		inTab = false;
 

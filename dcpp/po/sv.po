@@ -1,0 +1,399 @@
+# Swedish translation for dcplusplus
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the dcplusplus package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcplusplus\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-01-23 22:20+0100\n"
+"PO-Revision-Date: 2008-01-25 07:51+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Swedish <sv@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2008-01-25 19:24+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: dcpp/Util.cpp:381
+#, boost-format, c-format
+msgid "%'lld B"
+msgstr "%'lld B"
+
+#: dcpp/Util.cpp:343
+#, boost-format, c-format
+msgid "%.02f GiB"
+msgstr "%.02f GiB"
+
+#: dcpp/Util.cpp:339
+#, boost-format, c-format
+msgid "%.02f KiB"
+msgstr "%.02f KiB"
+
+#: dcpp/Util.cpp:341
+#, boost-format, c-format
+msgid "%.02f MiB"
+msgstr "%.02f MiB"
+
+#: dcpp/Util.cpp:347
+#, boost-format, c-format
+msgid "%.02f PiB"
+msgstr "%.02f PiB"
+
+#: dcpp/Util.cpp:345
+#, boost-format, c-format
+msgid "%.02f TiB"
+msgstr "%.02f TiB"
+
+#: dcpp/NmdcHub.cpp:273
+#, boost-format
+msgid "%1% (Nick unknown)"
+msgstr "%1% (Okänt nickname)"
+
+#: dcpp/HashManager.cpp:767
+#, boost-format
+msgid ""
+"%1% not shared; calculated CRC32 does not match the one found in SFV file."
+msgstr "%1% inte utdelad; beräknad CRC32 matchar inte den i SFV-filen."
+
+#: dcpp/DownloadManager.cpp:143
+#, boost-format
+msgid "%1% renamed to %2%"
+msgstr "%1% omdöpt till %2%"
+
+#: dcpp/DownloadManager.cpp:547
+#, boost-format
+msgid "%1%: File not available"
+msgstr "%1%: Filen ej tillgänglig"
+
+#: dcpp/Util.cpp:337
+#, boost-format, c-format
+msgid "%d B"
+msgstr "%d B"
+
+#: dcpp/Util.cpp:377
+#, boost-format, c-format
+msgid "%s B"
+msgstr "%s B"
+
+#: dcpp/QueueManager.cpp:503
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "En fil med samma eller större storlek finns redan vid destinationen"
+
+#: dcpp/QueueManager.cpp:446
+msgid "A file with a different size already exists in the queue"
+msgstr "En fil med annan storlek finns redan i kön"
+
+#: dcpp/QueueManager.cpp:449
+msgid "A file with different tth root already exists in the queue"
+msgstr "En fel med annan tth-rot finns redan i kön"
+
+#: dcpp/QueueManager.cpp:413
+msgid "A file with the same hash already exists in your share"
+msgstr "Delar redan ut en fil med samma hash"
+
+#: dcpp/ConnectionManager.cpp:181
+msgid "All download slots taken"
+msgstr "Alla nedladdningsplatser är upptagna"
+
+#: dcpp/DownloadManager.cpp:421
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "CRC32 stämmer ej (SFV-check)"
+
+#: dcpp/DownloadManager.cpp:419
+#, boost-format
+msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
+msgstr "CRC32 stämmer ej (SFV-check) (Fil: %1%)"
+
+#: dcpp/ConnectionManager.cpp:385
+msgid "Certificate not trusted, unable to connect"
+msgstr "Ej pålitligt certifikat, kan ej ansluta"
+
+#: dcpp/Socket.cpp:155 dcpp/ConnectionManager.cpp:187
+#: dcpp/BufferedSocket.cpp:154
+msgid "Connection timeout"
+msgstr "Inget svar på förbindelsen inom tidsgränsen"
+
+#: dcpp/DownloadManager.cpp:284
+#, boost-format
+msgid "Could not open target file: %1%"
+msgstr "Kunde ej öppna målfilen: %1%"
+
+#: dcpp/ShareManager.cpp:418
+msgid "Directory already shared"
+msgstr "Katalogen är redan utdelad"
+
+#: dcpp/BufferedSocket.cpp:409 dcpp/BufferedSocket.cpp:427
+msgid "Disconnected"
+msgstr "Frånkopplad"
+
+#: dcpp/UploadManager.cpp:450
+#, boost-format
+msgid "Disconnected user leaving the hub: %1%"
+msgstr "Frånkopplad användare lämnar hubben: %1%"
+
+#: dcpp/DCPlusPlus.cpp:103
+msgid "Download Queue"
+msgstr "Nedladdningskö"
+
+#: dcpp/ShareManager.cpp:745
+#, boost-format
+msgid ""
+"Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
+"against: %4%%5%"
+msgstr ""
+"Dubblettfil kommer ej delas ut: %1%%2% (Storlek: %3% B) Dubblett av: %4%%5%"
+
+#: dcpp/QueueManager.cpp:516 dcpp/QueueManager.cpp:520
+#, boost-format
+msgid "Duplicate source: %1%"
+msgstr "Dubblerad källa: %1%"
+
+#: dcpp/HashManager.cpp:456
+#, boost-format
+msgid "Error creating hash data file: %1%"
+msgstr "Fel under framställning av hashdatafil: %1%"
+
+#: dcpp/ZUtils.cpp:33 dcpp/ZUtils.cpp:54 dcpp/ZUtils.cpp:76 dcpp/ZUtils.cpp:86
+#: dcpp/BZUtils.cpp:31 dcpp/BZUtils.cpp:52 dcpp/BZUtils.cpp:60
+msgid "Error during compression"
+msgstr "Fel under komprimering"
+
+#: dcpp/ZUtils.cpp:100 dcpp/ZUtils.cpp:123 dcpp/BZUtils.cpp:72
+#: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:344
+#: dcpp/CryptoManager.cpp:363 dcpp/CryptoManager.cpp:377
+msgid "Error during decompression"
+msgstr "Fel under avkomprimering"
+
+#: dcpp/HashManager.cpp:772
+#, boost-format
+msgid "Error hashing %1%: %2%"
+msgstr "Fel under hashning %1%: %2%"
+
+#: dcpp/HashManager.cpp:118 dcpp/HashManager.cpp:333
+#, boost-format
+msgid "Error saving hash data: %1%"
+msgstr "Fel under sparandet av hashdatan: %1%"
+
+#: dcpp/CryptoManager.cpp:228 dcpp/CryptoManager.cpp:232
+#: dcpp/CryptoManager.cpp:237 dcpp/CryptoManager.cpp:241
+msgid "Failed to load certificate file"
+msgstr "Misslyckades att ladda certifikatfil"
+
+#: dcpp/CryptoManager.cpp:246 dcpp/CryptoManager.cpp:250
+#: dcpp/CryptoManager.cpp:255 dcpp/CryptoManager.cpp:259
+msgid "Failed to load private key"
+msgstr "Misslyckades att ladda privat nyckel"
+
+#: dcpp/Socket.cpp:409
+msgid ""
+"Failed to set up the socks server for UDP relay (check socks address and "
+"port)"
+msgstr ""
+"Misslyckades att sätta upp UDP-relay hos socks-servern (kolla socks-adress "
+"och port)"
+
+#: dcpp/ShareManager.cpp:780
+#, boost-format
+msgid "File list refresh failed: %1%"
+msgstr "Misslyckades uppdatera fillistan: %1%"
+
+#: dcpp/ShareManager.cpp:824
+msgid "File list refresh finished"
+msgstr "Uppdatering av fillistan klar"
+
+#: dcpp/ShareManager.cpp:760
+msgid ""
+"File list refresh in progress, please wait for it to finish before trying to "
+"refresh again"
+msgstr ""
+"Uppdatering av fillistan pågår, var god vänta tills den är klar innan du "
+"försöker uppdatera igen"
+
+#: dcpp/ShareManager.cpp:802
+msgid "File list refresh initiated"
+msgstr "Uppdatering av fillistan påbörjad"
+
+#: dcpp/DirectoryListing.cpp:102
+msgid "File not available"
+msgstr "Filen är inte tillgänglig"
+
+#: dcpp/HashManager.cpp:89
+#, boost-format
+msgid "Finished hashing: %1%"
+msgstr "Hashning färdig: %1%"
+
+#: dcpp/HashManager.cpp:87
+#, boost-format
+msgid "Finished hashing: %1% (%2%/s)"
+msgstr "Hashning färdig: %1% (%2%/s)"
+
+#: dcpp/DownloadManager.cpp:353
+msgid "Full tree does not match TTH root"
+msgstr "Fullt träd matchar inte TTH-roten"
+
+#: dcpp/CryptoManager.cpp:221
+msgid "Generated new TLS certificate"
+msgstr "Genererade nytt TLS-certifikat"
+
+#: dcpp/DCPlusPlus.cpp:97
+msgid "Hash database"
+msgstr "Hashdatabas"
+
+#: dcpp/HashManager.cpp:677
+msgid "Hash database rebuilt"
+msgstr "Hashdatabasen ombyggd"
+
+#: dcpp/HashManager.cpp:73 dcpp/HashManager.cpp:277
+#, boost-format
+msgid "Hashing failed: %1%"
+msgstr "Hashning misslyckades: %1%"
+
+#: dcpp/DownloadManager.cpp:264 dcpp/DownloadManager.cpp:269
+msgid "Invalid size"
+msgstr "Ogiltig storlek"
+
+#: dcpp/QueueManager.cpp:486 dcpp/QueueManager.cpp:494
+msgid ""
+"Invalid target file (missing directory, check default download directory "
+"setting)"
+msgstr ""
+"Ogiltig målfil (saknar katalog, kolla inställning för "
+"standardnedladdningskatalog)"
+
+#: dcpp/FavoriteManager.cpp:438
+msgid "Kick user(s)"
+msgstr "Sparka användare"
+
+#: dcpp/ConnectionManager.cpp:239
+#, boost-format
+msgid "Listening socket failed (you need to restart DC++): %1%"
+msgstr "Lyssnadesockel misslyckades (du måste starta om DC++): %1%"
+
+#: dcpp/BufferedSocket.cpp:263
+msgid "Maximum command length exceeded"
+msgstr "Högsta längden på kommando överstigen"
+
+#: dcpp/DownloadManager.cpp:323
+msgid "More data was sent than was expected"
+msgstr "Skickade mer data än vad som förväntades"
+
+#: dcpp/ShareManager.cpp:403
+msgid "No directory specified"
+msgstr "Ingen katalog specifierad"
+
+#: dcpp/DownloadManager.cpp:462
+msgid "No slots available"
+msgstr "Inga platser tillgängliga"
+
+#: dcpp/AdcHub.cpp:554
+msgid "Not listening for connections - please restart DC++"
+msgstr "Lyssnar inte efter anslutningar - var god starta om DC++"
+
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
+#: dcpp/SearchManager.cpp:331
+msgid "Offline"
+msgstr "Frånkopplad"
+
+#: dcpp/FavoriteManager.cpp:442
+msgid "Redirect user(s)"
+msgstr "Omdirigera användare"
+
+#: dcpp/ShareManager.cpp:421
+msgid "Remove all subdirectories before adding this one"
+msgstr "Ta bort alla underkataloger innan du lägger till denna"
+
+#: dcpp/DCPlusPlus.cpp:100
+msgid "Shared Files"
+msgstr "Delade filer"
+
+#: dcpp/Socket.cpp:270 dcpp/Socket.cpp:274
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr ""
+"Verifiering hos socks-servern misslyckades (fel användarnamn / lösenord?)"
+
+#: dcpp/CryptoManager.cpp:223
+#, boost-format
+msgid "TLS disabled, failed to generate certificate: %1%"
+msgstr "TLS avstängd. misslyckades att generera ceritifikat: %1%"
+
+#: dcpp/CryptoManager.cpp:213
+msgid "TLS disabled, no certificate file set"
+msgstr "TLS avstängd, ingen certifikatsfil bestämd"
+
+#: dcpp/QueueManager.cpp:481 dcpp/QueueManager.cpp:490
+msgid "Target filename too long"
+msgstr "Målets filnamn är för långt"
+
+#: dcpp/QueueManager.cpp:769
+msgid "Target removed"
+msgstr "Målet borttaget"
+
+#: dcpp/Socket.cpp:256
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Socks-servern stöder inte användarnamn/lösenordsverifiering"
+
+#: dcpp/Socket.cpp:163 dcpp/Socket.cpp:174 dcpp/Socket.cpp:207
+#: dcpp/Socket.cpp:211 dcpp/Socket.cpp:238 dcpp/Socket.cpp:253
+msgid "The socks server failed establish a connection"
+msgstr "Socks-servern misslyckades upprätta en anslutning"
+
+#: dcpp/Socket.cpp:242
+msgid "The socks server requires authentication"
+msgstr "Socks-servern kräver verifiering"
+
+#: dcpp/ShareManager.cpp:407
+msgid "The temporary download directory cannot be shared"
+msgstr "Den tillfälliga nedladdningskatalogen kan ej delas ut"
+
+#: dcpp/QueueManager.cpp:436
+msgid "This file is already queued"
+msgstr "Filen finns redan i kön"
+
+#: dcpp/Thread.cpp:34 dcpp/Thread.cpp:42
+msgid "Unable to create thread"
+msgstr "Kan ej skapa tråd"
+
+#: dcpp/QueueManager.cpp:957
+#, boost-format
+msgid "Unable to open filelist: %1%"
+msgstr "Kan ej öppna fillista: %1%"
+
+#: dcpp/HashManager.cpp:131
+msgid "Unable to read hash data file"
+msgstr "Kan ej läsa hashdatafilen"
+
+#: dcpp/DownloadManager.cpp:145
+#, boost-format
+msgid "Unable to rename %1%: %2%"
+msgstr "Kan ej döpa om %1%: %2%"
+
+#: dcpp/UploadManager.cpp:149
+#, boost-format
+msgid "Unable to send file %1%: %2%"
+msgstr "Kan ej skicka fil %1%: %2%"
+
+#: dcpp/Socket.cpp:55
+#, boost-format
+msgid "Unknown error: 0x%1%"
+msgstr "Okänt fel: 0x%1%"
+
+#: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468
+msgid "Virtual directory name already exists"
+msgstr "Virtuellt katalogsnamn finns redan"
+
+#: dcpp/QueueManager.cpp:383 dcpp/QueueManager.cpp:407
+msgid "You're trying to download from yourself!"
+msgstr "Du försöker ladda ner från dig själv!"
+
+#: dcpp/SettingsManager.cpp:156
+msgid "downloaded from"
+msgstr "nedladdad från"
+
+#: dcpp/SettingsManager.cpp:157
+msgid "uploaded to"
+msgstr "uppladdad till"

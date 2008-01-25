@@ -278,7 +278,7 @@ private:
 	void PrepareDestinationDirectories(DestDirList& destDirVector, DirectoryListing::Directory* root, StringMap& params);
 	// Finalize destination directories
 	void FinalizeDestinationDirectories(DestDirList& destDirVector, DirectoryListing::Directory* root) {
-		string szDiscard(_("<<<Discard>>>"));
+		string szDiscard("<<<" + string(_("Discard")) + ">>>");
 
 		// Add non-empty destination directories to the top level
 		for(vector<DestDir>::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id) {
