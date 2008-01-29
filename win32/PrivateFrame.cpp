@@ -110,7 +110,6 @@ PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& re
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		chat = createTextBox(cs);
-		chat->setTextLimit(0);
 		addWidget(chat);
 	}
 	
