@@ -42,7 +42,7 @@ PropPage::Item GeneralPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent) {
+GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 	createDialog(IDD_GENERALPAGE);
 
 	PropPage::translate(handle(), texts);
@@ -60,14 +60,11 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	connections->setSelectedIndex(selected);
 
-	WidgetTextBoxPtr textBox;
-#define TEXTBOX_ATTACH(id) \
-	textBox = attachTextBox(id); \
-	textBox->setTextLimit(35); \
-	textBox->onTextChanged(std::tr1::bind(&GeneralPage::handleTextChanged, this, textBox))
-	TEXTBOX_ATTACH(IDC_NICK);
-	TEXTBOX_ATTACH(IDC_DESCRIPTION);
-#undef TEXTBOX_ATTACH
+	nick = attachTextBox(IDC_NICK);
+	nick->setTextLimit(35);
+	nick->onTextChanged(std::tr1::bind(&GeneralPage::handleNickTextChanged, this));
+
+	attachTextBox(IDC_DESCRIPTION)->setTextLimit(35);
 }
 
 GeneralPage::~GeneralPage() {
@@ -77,8 +74,8 @@ void GeneralPage::write() {
 	PropPage::write(handle(), items);
 }
 
-void GeneralPage::handleTextChanged(WidgetTextBoxPtr textBox) {
-	tstring text = textBox->getText();
+void GeneralPage::handleNickTextChanged() {
+	tstring text = nick->getText();
 	bool update = false;
 
 	// Strip ' '
@@ -90,8 +87,8 @@ void GeneralPage::handleTextChanged(WidgetTextBoxPtr textBox) {
 
 	if(update) {
 		// Something changed; update window text without changing cursor pos
-		long caretPos = textBox->getCaretPos() - 1;
-		textBox->setText(text);
-		textBox->setSelection(caretPos, caretPos);
+		long caretPos = nick->getCaretPos() - 1;
+		nick->setText(text);
+		nick->setSelection(caretPos, caretPos);
 	}
 }

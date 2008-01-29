@@ -34,7 +34,9 @@ private:
 	static Item items[];
 	static TextItem texts[];
 
-	void handleTextChanged(WidgetTextBoxPtr textBox);
+	WidgetTextBoxPtr nick;
+
+	void handleNickTextChanged();
 };
 
 #endif // !defined(DCPLUSPLUS_WIN32_GENERAL_PAGE_H)
