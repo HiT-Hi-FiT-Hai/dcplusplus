@@ -1,0 +1,148 @@
+
+# Polish translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <k4r0l@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <k4r0l@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Błąd autoryzacji serwera SOCKS (nieprawidłowy login/hasło)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Serwer SOCKS nie obsługuje autoryzacji login/hasło"
+
+msgid "The temporary download directory cannot be shared"
+msgstr "Katalog plików tymczasowych nie może być udostępniony"
+
+msgid "Maximum command length exceeded"
+msgstr "Przekroczono maksymalną długość komendy"
+
+msgid "More data was sent than was expected"
+msgstr "Więcej danych wysłano niż oczekiwano"
+
+msgid "You're trying to download from yourself!"
+msgstr "Próbujesz pobrać sam od siebie!"
+
+msgid "Offline"
+msgstr "Niedostępny"
+
+msgid "Failed to load private key"
+msgstr "Nie udało się wczytać klucza prywatnego"
+
+msgid "Not listening for connections - please restart DC++"
+msgstr "Nie nasłuchuje połączeń - uruchom ponownie DC++"
+
+msgid "Hash database"
+msgstr "Baza danych hashów"
+
+msgid "All download slots taken"
+msgstr "Wszystkie sloty są zajęte"
+
+msgid "Redirect user(s)"
+msgstr "Przekieruj użytkownika(ów)"
+
+msgid "Target filename too long"
+msgstr "Za długa docelowa nazwa pliku"
+
+msgid "Connection timeout"
+msgstr "Wygasł czas oczekiwania na połączenie"
+
+msgid "The socks server requires authentication"
+msgstr "Serwer SOCKS wymaga autoryzacji"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Plik o innym rozmiarze znajduje się już w kolejce pobierania"
+
+msgid "Error during decompression"
+msgstr "Błąd podczas kompresowania"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Niezgodne CRC32 (sprawdź SFV)"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Plik o innym tth root znajduje się już w kolejce pobierania"
+
+msgid "TLS disabled, no certificate file set"
+msgstr "TLS wyłączony. Nie ustalony certyfikat pliku"
+
+msgid "No slots available"
+msgstr "Brak wolnych slotów"
+
+msgid "Error during compression"
+msgstr "Błąd podczas kompresji"
+
+msgid "Disconnected"
+msgstr "Rozłączony"
+
+msgid "Hash database rebuilt"
+msgstr "Odbudowano bazę danych hashów"
+
+msgid "Remove all subdirectories before adding this one"
+msgstr "Usuń wszystkie podkatalogi przed dodaniem tego"
+
+msgid "File list refresh initiated"
+msgstr "Odświeżanie listy plików rozpoczęte"
+
+msgid "Virtual directory name already exists"
+msgstr "Nazwa wirtualnego katalogu już istnieje"
+
+msgid "Full tree does not match TTH root"
+msgstr "Drzewo katalogu nie odpowiada TTH"
+
+msgid "Shared Files"
+msgstr "Udostępnione pliki"
+
+msgid "No directory specified"
+msgstr "Brak zdefiniowanego katalogu"
+
+msgid "Unable to read hash data file"
+msgstr "Błąd odczytu danych pliku hash"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "Plik o tym samym lub większym rozmiarze znajduje się już w aktualnej lokalizacji"
+
+msgid "This file is already queued"
+msgstr "Ten plik już jest na liście oczekujących"
+
+msgid "Unable to create thread"
+msgstr "Nie można utworzyć wątku"
+
+msgid "Kick user(s)"
+msgstr "Wykop użytkownika(ów)"
+
+msgid "File not available"
+msgstr "Plik niedostępny"
+
+msgid "The socks server failed establish a connection"
+msgstr "Serwer SOCKS nie ustanowił połączenia"
+
+msgid "Directory already shared"
+msgstr "Katalog jest już udostępniony"
+
+msgid "Download Queue"
+msgstr "Kolejka pobierania"
+
+msgid "Certificate not trusted, unable to connect"
+msgstr "Certyfikat niepotwierdzony, nie można połaczyć"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "Plik z tym samym hashem jest już udostępniony"
+
+msgid "Generated new TLS certificate"
+msgstr "Wygenerowany nowy ceryfikat TLS"
+
+msgid "Failed to load certificate file"
+msgstr "Nie udało się wczytać pliku certyfikatu"
+
+msgid "File list refresh finished"
+msgstr "Odświeżanie listy plików zakończone"
+

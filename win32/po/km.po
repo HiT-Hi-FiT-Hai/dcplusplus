@@ -1,0 +1,1111 @@
+
+# Khmer translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <Veyanong@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <Veyanong@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: plurals=2; plural=(n != 1);\n"
+
+msgid "Slot granted"
+msgstr "ប្រលោះត្រូវបានផ្តល់"
+
+msgid "Run in background"
+msgstr "ដំណើរការនៅផ្ទៃខាងក្រោយ"
+
+msgid "Guess user country from IP"
+msgstr "ទាយប្រទេសរបស់អ្នកប្រើ តាមរយៈ IP"
+
+msgid "Log main chat"
+msgstr "ចុះកំណត់ហេតុជជេកកំសាន្តមេ"
+
+msgid "Keep duplicate files in your file list"
+msgstr "រក្សារាល់ឯកសារចម្លងនៅក្នុងបញ្ជីឯកសាររបស់អ្នក"
+
+msgid "Join/part of favorite users showing on"
+msgstr "ត/ផ្នែកនៃអ្នកប្រើសំណព្វ កំពុងបង្ហាញបើក"
+
+msgid "Finished Uploads"
+msgstr "ផ្ទុកឡើងបានបញ្ចប់"
+
+msgid "File type"
+msgstr "ប្រភេទឯកសារ"
+
+msgid "MiB/s"
+msgstr "MiB/s"
+
+msgid "GiB"
+msgstr "GiB"
+
+msgid "Min sources online"
+msgstr "ចំនួនប្រភពអប្បបរមាលើបណ្តាញ"
+
+msgid "Outgoing connection settings"
+msgstr "ការកំណត់ការតភ្ជាប់ដែលចាកចេញ"
+
+msgid "Popup box to input password for hubs"
+msgstr "ប្រអប់លេចឡើងដើម្បីបញ្ចូលពាក្យសម្ងាត់សម្រាប់ hubs"
+
+msgid "Log uploads"
+msgstr "ចុះកំណត់ហេតុរាល់ការផ្ទុកឡើង"
+
+msgid "ADLSearch Properties"
+msgstr "ADL ស្វែងរកលក្ខណៈសម្បត្តិ"
+
+msgid "Directories"
+msgstr "ថតក្រូណូ"
+
+msgid "Ready to search..."
+msgstr "រួចរាល់ដើម្បីស្វែងរក..."
+
+msgid "Autodrop settings"
+msgstr "ស្វ័យជម្រុះរាល់ការកំណត់"
+
+msgid "Specify a URL"
+msgstr "បញ្ជាក់លម្អិត URL"
+
+msgid "Shared directories"
+msgstr "ថតក្រូណូបានចែករំលែក"
+
+msgid "Really exit?"
+msgstr "ពិតជាចង់ចាកចេញមែនឬ?"
+
+msgid "Tag"
+msgstr "ស្លាក"
+
+msgid "MAGNET Link detected"
+msgstr "បណ្តាញ MAGNET បានរកឃើញ"
+
+msgid "Automatically disconnect users who leave the hub"
+msgstr "ផ្តាច់ដោយស្វ័យប្រវត្តិ រាល់អ្នកប្រើណាដែលបានចាកចេញពី hub"
+
+msgid "Use antifragmentation method for downloads"
+msgstr "ប្រើវិធីសាស្រ្ត antifragmentation ដើម្បីធ្វើការទាញយក"
+
+msgid "Remove source"
+msgstr "យកប្រភពចេញ"
+
+msgid "Under what name you see the directory"
+msgstr "នៅខានក្រោមឈ្មោះអ្វី អ្នកចង់ឃើញថតក្រូណូ"
+
+msgid "Join/part of favorite users showing off"
+msgstr "ត/ផ្នែកនៃអ្នកប្រើសំណព្វ កំពុងបង្ហាញបិទ"
+
+msgid "Confirm item removal in download queue"
+msgstr "បញ្ជាក់នៅពេលយកធាតុដែលនៅក្នុងកន្លែងទាញយកជាជួរចេញ"
+
+msgid "Download Matches"
+msgstr "ការទាញយក ដំណូច"
+
+msgid "Video"
+msgstr "វីដេអូ"
+
+msgid "Browse..."
+msgstr "រកមើល..."
+
+msgid "Logging"
+msgstr "ការចុះកំណត់ហេតុ"
+
+msgid "Name under which the others see the directory"
+msgstr "ឈ្មោះនៅខាងក្រោមផ្សេងៗទៀត នឹងឃើញថតក្រូណូ"
+
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "គ្មានការទាញយកថ្មី ប្រសិនបើល្បឿនហួសពី (KiB/s, 0 = disable)"
+
+msgid "Appearance"
+msgstr "រូបរាង"
+
+msgid "Favorite Hubs"
+msgstr "Hubs សំណព្វ"
+
+msgid "Window options"
+msgstr "ជម្រើសបង្អួច"
+
+msgid "Auto-open at startup"
+msgstr "បើកដោយស្វ័យប្រវត្តិ នៅពេលចាប់ផ្តើមឡើង"
+
+msgid "Stored password sent..."
+msgstr "ពាក្យសម្ងាត់ដែលទុក បានផ្ញើ..."
+
+msgid "No matches"
+msgstr "គ្មានផ្គូផ្គង"
+
+msgid "Enable automatic SFV checking"
+msgstr "អនុញ្ញាតការត្រួតពិនិត្យ SFV ដោយស្វ័យប្រវត្តិ"
+
+msgid "Skip zero-byte files"
+msgstr "រំលងឯកសារ zero-byte"
+
+msgid "Min Slots"
+msgstr "អប្បបរមាប្រលោះ"
+
+msgid "Clear search box after each search"
+msgstr "ជម្រះប្រអប់ស្វែងរក បន្ទាប់ពីបានស្វែងរកនិមួយៗ"
+
+msgid "Do nothing"
+msgstr "គ្មានធ្វើស្អីទេ"
+
+msgid "Accept custom user commands from hub"
+msgstr "យល់ព្រមបញ្ជារបស់អ្នកប្រើ ពី hub"
+
+msgid "Invalid number of slots"
+msgstr "ចំនួនប្រលោះមិនត្រឹមត្រូវ"
+
+msgid "Don't send the away message to bots"
+msgstr "កុំផ្ញើសារដែលឃ្លាតឆ្ងាយទៅ bots"
+
+msgid "Request a feature"
+msgstr "សំណើលក្ខណៈពិសេសមួយ"
+
+msgid "Max hash speed"
+msgstr "ល្បឿនច្របូកច្របល់អតិបរមា"
+
+msgid "Show timestamps in chat by default"
+msgstr "បង្ហាញពេលវេលាបង្ហាប់នៅក្នុងទំព័រជជែកកំសាន្ត ដោយយកតាមលំនាំដើម"
+
+msgid "Status"
+msgstr "ស្ថានភាព"
+
+msgid "Search for"
+msgstr "ស្វែងរកសម្រាប់"
+
+msgid "Hub"
+msgstr "Hub"
+
+msgid "Favorite hub removed"
+msgstr "Hubសំណព្វ បានយកចេញ"
+
+msgid "E-Mail"
+msgstr "អ៊ីមែល"
+
+msgid "Compressed"
+msgstr "បានបង្ហាប់"
+
+msgid "Count"
+msgstr "រាប់"
+
+msgid "Firewall with UPnP"
+msgstr "ជញ្ជាំងភ្លើងជាមួយនឹង UPnP"
+
+msgid "Limits"
+msgstr "ព្រំដែន"
+
+msgid "Public Hubs list"
+msgstr "បញ្ជី Hubs សាធារណៈ"
+
+msgid "Connection"
+msgstr "ការតភ្ជាប់"
+
+msgid "Time"
+msgstr "ពេល"
+
+msgid "Tab highlight on content change"
+msgstr "ធ្វើអោយដិតផ្ទាំង ទៅលើការប្តូរមាតិកា"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "ដាក់អោយឃ្លាតឆ្ងាយនៅជាតូចដោយស្វ័យប្រវត្តិ (ហើយពេលត្រឡប់មកវិញ បើកធម្មតា)"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "ប្រើប្រព័ន្ធរូបតំណាង ពេលកំពុងរកមើលឯកសារ (បង្អង់ល្បឿនរកមើលបន្តិច)"
+
+msgid "Don't delete file lists when exiting"
+msgstr "កុំលុបបញ្ជីឯកសារចោល នៅពេលចាកចេញ"
+
+msgid "Auto grant slot / Nick"
+msgstr "ផ្តល់រន្ធស្វ័យប្រវត្តិ / សម្មតិនាម"
+
+msgid "Max filelist size"
+msgstr "ទំហំបញ្ជីឯកសារអតិបរមា"
+
+msgid "Confirm application exit"
+msgstr "បញ្ជាក់នៅពេលចាកចេញពីកម្មវិធី"
+
+msgid "Exact size"
+msgstr "ទំហំត្រូវល្អ"
+
+msgid "DC++ discussion forum"
+msgstr "DC++ មាតិកាពិភាក្សា"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "ចុះឈ្មោះជាមួយនឹង Windows ដើម្បីដោះស្រាយ dchub:// និង adc:// បណ្តាញ URL "
+
+msgid "Search options"
+msgstr "ស្វែងរកជម្រើស"
+
+msgid "Re-add source"
+msgstr "បន្ថែមប្រភពម្តងទៀត"
+
+msgid "Format"
+msgstr "ទ្រង់ទ្រាយ"
+
+msgid "Use CTRL for line history"
+msgstr "ប្រើ CTRL សម្រាប់បណ្តាញប្រវត្តិ"
+
+msgid "MiB"
+msgstr "MiB"
+
+msgid "Notepad"
+msgstr "Notepad"
+
+msgid "DC++ Homepage"
+msgstr "DC++ ទំព័រដើម"
+
+msgid "Join/part showing off"
+msgstr "បង្ហាញការចូលរួម/ចាកចេញរបស់អ្នកប្រើ ចូរបិទ"
+
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "ការកំណត់ការតភ្ជាប់មកដល់ (មើល Help/FAQ ប្រសិនបើមិនច្បាស់)"
+
+msgid "Mini slot size"
+msgstr "ទំហំប្រលោះអប្បបរមា"
+
+msgid "Hublist"
+msgstr "បញ្ជី Hub"
+
+msgid "UDP"
+msgstr "ច្រក UDP"
+
+msgid "Ignore TTH searches"
+msgstr "មិនអើពើ TTH ស្វែងរក"
+
+msgid "File"
+msgstr "ឯកសារ"
+
+msgid "User went offline"
+msgstr "អ្នកប្រើបានទៅក្រៅបណ្តាញ"
+
+msgid "Slots"
+msgstr "ប្រលោះ"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "ប្រើម៉ាស៊ីនបម្រើ SOCKS5 ដើម្បីដោះស្រាយឈ្មោះម៉ាស៊ីន"
+
+msgid "Log status messages"
+msgstr "ចុះកំណត់ហេតុរាល់ស្ថានភាពសារ"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "បង្ហាញនៅក្នុងទំព័រជជែកលេងមេ តែអ្នកចូលរួម / ចាកចេញ សម្រាប់អ្នកប្រើសំណព្វ"
+
+msgid "KiB/s"
+msgstr "KiB/s"
+
+msgid "Downloading..."
+msgstr "កំពុងទាញយក..."
+
+msgid "Don't remove /password before your password"
+msgstr "កុំយកចេញ /ពាក្យសម្ងាត់ មុនពាក្យសម្ងាត់របស់អ្នក"
+
+msgid "Path"
+msgstr "ផ្លូវ"
+
+msgid "Specify a search string"
+msgstr "បញ្ជាក់លម្អិតការស្វែងរកខ្សែអក្សរ"
+
+msgid "Open private messages in their own window"
+msgstr "បើកសារឯកជននៅក្នុងបង្អួចផ្ទាល់ខ្លួនពួកគេ"
+
+msgid "Minimize to tray"
+msgstr "បង្រួមអប្បបរមាទៅជាថាសតូច"
+
+msgid "Download whole directory to..."
+msgstr "ទាញយកថតក្រូណូទាំងមូលទៅទុកក្នុង..."
+
+msgid "Enable safe and compressed transfers"
+msgstr "អនុញ្ញាតការផ្ទេរដែលសុវត្តិភាព និង បង្ហាប់"
+
+msgid "Ports"
+msgstr "ច្រក"
+
+msgid "Quick Connect"
+msgstr "តភ្ជាប់រហ័ស"
+
+msgid "Raw"
+msgstr "ឆៅ"
+
+msgid "Reliability"
+msgstr "ភាពអាចទុកចិត្តបាន"
+
+msgid "Sounds"
+msgstr "សំលេង"
+
+msgid "Error creating adc registry key"
+msgstr "កំហុសក្នុងការបង្កើតសោរបញ្ជីឈ្មោះadc"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Default away message"
+msgstr "ដាក់សារតាមលំនាំដើម នៅពេលមិននៅ"
+
+msgid "Next"
+msgstr "បន្ទាប់"
+
+msgid "Configured Public Hub Lists"
+msgstr "បញ្ជី HUB សាធារណៈបានកំណត់ជារចនាសម្ព័ន្ធ"
+
+msgid "Change Log"
+msgstr "ប្តូរកំណត់ហេតុ"
+
+msgid "Type"
+msgstr "ប្រភេទ"
+
+msgid "Lowest"
+msgstr "ទាបបំផុត"
+
+msgid "Picture"
+msgstr "រូបភាព"
+
+msgid "Added"
+msgstr "បានបន្ថែម"
+
+msgid "Min filesize"
+msgstr "ទំហំឯកសារអប្បបរមា"
+
+msgid "Default download directory"
+msgstr "ដាក់ថតក្រូណូដែលទាញយកបានបញ្ចប់ ទៅក្នុង"
+
+msgid "Translations"
+msgstr "ការបកប្រែ"
+
+msgid "Search for file"
+msgstr "ស្វែងរកដើម្បីឯកសារ"
+
+msgid "Connected"
+msgstr "បានតភ្ជាប់"
+
+msgid "Low prio max size"
+msgstr "អាទិភាពទាប ទំហំអតិបរមា"
+
+msgid "At least"
+msgstr "យ៉ាងហោច"
+
+msgid "Options"
+msgstr "ជម្រើស"
+
+msgid "Hub Menu"
+msgstr "ម៉ឺនុយ Hub"
+
+msgid "Rename"
+msgstr "ប្តូរឈ្មោះ"
+
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr "ស្វ័យជម្រុះរាល់ប្រភពណាដែលទាញយកយឺត (លើកលែងតែបញ្ជីឯកសារ)"
+
+msgid "No errors"
+msgstr "គ្មានកំហុស"
+
+msgid "Socks IP"
+msgstr "រន្ធ IP"
+
+msgid "Chat"
+msgstr "ជជែកកំសាន្ត"
+
+msgid "Favorite user added"
+msgstr "អ្នកប្រើសំណព្វ បានបន្ថែម"
+
+msgid "At most"
+msgstr "យ៉ាងច្រើន"
+
+msgid "Log filelist transfers"
+msgstr "ចុះកំណត់ហេតុរាល់បញ្ជីឯកសារផ្ទេរ"
+
+msgid "User Description"
+msgstr "ពិពណ៌នាពីអ្នកប្រើ"
+
+msgid "Favorite hub added"
+msgstr "Hubសំណព្វបានបន្ថែម"
+
+msgid "Send once per nick"
+msgstr "ផ្ញើម្តងក្នុងសម្មតិនាមមួយ"
+
+msgid "Error creating magnet registry key"
+msgstr "កំហុសក្នុងការបង្កើតសោរបញ្ជីឈ្មោះទាក់ចិត្ត"
+
+msgid "Downloading public hub list..."
+msgstr "កំពុងទាញយកបញ្ជី hub សាធារណៈ..."
+
+msgid "Downloaded"
+msgstr "បានទាញយក"
+
+msgid "Favorite name"
+msgstr "ឈ្មោះសំណព្វ"
+
+msgid "Search"
+msgstr "ស្វែងរក"
+
+msgid "B"
+msgstr "B"
+
+msgid "Automatically search for alternative download locations"
+msgstr "ស្វែងរកដោយស្វ័យប្រវត្តិ សម្រាប់រាល់ទីតាំងទាញយកឆ្លាស់គ្នា"
+
+msgid "Subtract list"
+msgstr "ដកបញ្ជី"
+
+msgid "Download Queue"
+msgstr "ទាញយកដាក់ជាជួរ"
+
+msgid "Enabled"
+msgstr "បានអនុញ្ញាត"
+
+msgid "All"
+msgstr "ទាំងអស់"
+
+msgid "Time last seen"
+msgstr "ពេលវេលា (បានតភ្ជាប់លើកចុងក្រោយនៅពេលណា)"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "ចំណាំ; ព្រោះតែការផ្លាស់ប្តូរល្បឿនទាញយក នាំអោយមិនបាន 100% ទៀងទាត់..."
+
+msgid "Don't allow hub/UPnP to override"
+msgstr "កុំអនុញ្ញាត hub/UPnP បដិសេធ"
+
+msgid "Personal Information"
+msgstr "ពត៌មានផ្ទាល់ខ្លួន"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "បើកប្រលោះបន្ថែមមួយដោយស្វ័យប្រវត្តិ ប្រសិនបើល្បឿនទាបជាង (0 = មិនអនុញ្ញាត)"
+
+msgid "Executable"
+msgstr "ដែលអាចប្រតិបត្តិ"
+
+msgid "Open new window when using /join"
+msgstr "បើកបង្អួចថ្មី នៅពេលប្រើ /ចូលរួម"
+
+msgid "Upload slots"
+msgstr "ប្រលោះផ្ទុកឡើង"
+
+msgid "Public Hubs"
+msgstr "Hubsសាធារណៈ"
+
+msgid "Min Size"
+msgstr "ទំហំអប្បបរមា"
+
+msgid "KiB"
+msgstr "KiB"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "ចំណាំ; ភាគច្រើននៃជម្រើសទាំងនេះ តម្រូវអោយអ្នកចាប់ផ្តើមកម្មវិធី DC++ ឡើងវិញ"
+
+msgid "Open downloads directory"
+msgstr "បើកថតក្រូណូទាញយក"
+
+msgid "Users"
+msgstr "អ្នកប្រើ"
+
+msgid "System Log"
+msgstr "ប្រព័ន្ធកំណត់ហេតុ"
+
+msgid "Help forum"
+msgstr "មាតិកាជំនួយ"
+
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+msgid "Really remove?"
+msgstr "ពិតជាចង់យកចេញមែនឬ?"
+
+msgid "Indexing progress"
+msgstr "វឌ្ឍនភាពលិបិក្រម"
+
+msgid "Login"
+msgstr "ចូល"
+
+msgid "Only users with free slots"
+msgstr "សម្រាប់តែអ្នកប្រើមានប្រលោះទំនេរ"
+
+msgid "File not available"
+msgstr "ឯកសារពុំអាចរកបាន"
+
+msgid "Max Size"
+msgstr "ទំហំអតិបរមា"
+
+msgid "High"
+msgstr "ខ្ពស់"
+
+msgid "Speed"
+msgstr "ល្បឿន"
+
+msgid "Invalid file list name"
+msgstr "បញ្ជីឈ្មោះឯកសារមិនត្រឹមត្រូវ"
+
+msgid "Search Menu"
+msgstr "ម៉ឺនុយស្វែងរក"
+
+msgid "Create / Modify Command"
+msgstr "បង្កើត / កែប្រែបញ្ជា"
+
+msgid "Document"
+msgstr "ឯកសារ"
+
+msgid "GeoIP database update"
+msgstr "GeoIP ធ្វើអោយទាន់សម័យមូលដ្ឋានទិន្នន័យ"
+
+msgid "Report a bug"
+msgstr "របាយការណ៍កំហុសមួយ"
+
+msgid "Share hidden files"
+msgstr "ចែករំលែកឯកសារដែលលាក់ខ្លួន"
+
+msgid "Max Hubs"
+msgstr "Hubs អតិបរមា"
+
+msgid "Highest"
+msgstr "ខ្ពស់បំផុត"
+
+msgid "Send unknown /commands to the hub"
+msgstr "ផ្ញើមិនស្គាល់ /បញ្ជាទៅ hub"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "បរាជ័យក្នុងការបង្កើតច្រក mappings។ សូមដំឡើង NAT របស់អ្នកដោយខ្លួនឯង។"
+
+msgid "Private message"
+msgstr "សារឯកជន"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "ប្រើ OEM អក្សរគម្លាតតែមួយ សម្រាប់មើលឯកសារអត្ថបទ"
+
+msgid "Settings..."
+msgstr "ការកំណត់..."
+
+msgid "Enabled / Search String"
+msgstr "បានអនុញ្ញាត / ស្វែងរកខ្សែអក្សរ"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "ត្រងយកសារណាដែលទាត់ចោល និង បំបាត់កំហុស NMDC"
+
+msgid "Unfinished downloads directory"
+msgstr "ដាក់ថតក្រូណូដែលទាញយកមិនទាន់ចប់ ទៅក្នុង"
+
+msgid "Personal information"
+msgstr "ពត៌មានផ្ទាល់ខ្លួន"
+
+msgid "Rating"
+msgstr "កម្រិតគុណភាព"
+
+msgid "Failed to remove port mappings"
+msgstr "បរាជ័យក្នុងការយក mappings ចេញ"
+
+msgid "Favorite Users"
+msgstr "អ្នកប្រើ សំណព្វ"
+
+msgid "Search Spy"
+msgstr "ស្វែងរកអ្នកស៊ើបការណ៍"
+
+msgid "Close disconnected"
+msgstr "បិទបណ្តាញដែលផ្តាច់"
+
+msgid "Add finished files to share instantly (if shared)"
+msgstr "បន្ថែមឯកសារដែលបានទាញយកបញ្ចប់ ទៅចែករំលែកដោយស្វ័យប្រវត្តិ (ប្រសិនបើបានចែករំលែក)"
+
+msgid "Priority"
+msgstr "អាទិភាព"
+
+msgid "This hub is not a favorite hub"
+msgstr "Hubនេះ គឺមិនមែនជាhubសំណព្វទេ"
+
+msgid "Close all search windows"
+msgstr "បិទរាល់បង្អួចស្វែងរកទាំងអស់"
+
+msgid "Copy Filename"
+msgstr "ចម្លងឈ្មោះឯកសារ"
+
+msgid "Open own list"
+msgstr "បើកបញ្ជីម្ចាស់"
+
+msgid "Virtual name"
+msgstr "ឈ្មោះនិម្មិត"
+
+msgid "Destination Directory"
+msgstr "ទិសដៅថតក្រូណូ"
+
+msgid "TCP"
+msgstr "ច្រក TCP"
+
+msgid "Full Path"
+msgstr "បំណះពេញលេញ"
+
+msgid "Search String"
+msgstr "ស្វែងរកខ្សែអក្សរ"
+
+msgid "Advanced"
+msgstr "កម្រិតខ្ពស់"
+
+msgid "PM"
+msgstr "PM"
+
+msgid "Frequently asked questions"
+msgstr "សំណួរដែលសួររឿយៗ"
+
+msgid "Show joins / parts in chat by default"
+msgstr "បង្ហាញអ្នកចូលរួម / ចាកចេញ នៅក្នុងទំព័រជជែកកំសាន្ត តាមលំនាំដើម"
+
+msgid "Settings"
+msgstr "ការកំណត់"
+
+msgid "Server"
+msgstr "ម៉ាស៊ីនបម្រើ"
+
+msgid "Waiting (User online)"
+msgstr "រង់ចាំ (អ្នកប្រើលើបណ្តាញ)"
+
+msgid "Separator"
+msgstr "អ្នកបំបែក"
+
+msgid "Directory"
+msgstr "ថតក្រូណូ"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "រកមើល TTH នៅ Bitzi.com"
+
+msgid "Unknown"
+msgstr "មិនស្គាល់"
+
+msgid "Sort all downloads first"
+msgstr "តម្រៀបរាល់ការទាញយកទាំងអស់ជាដំបូង"
+
+msgid "Waiting Users"
+msgstr "រង់ចាំអ្នកប្រើ"
+
+msgid "Language file"
+msgstr "ឯកសារភាសា"
+
+msgid "User offline"
+msgstr "អ្នកប្រើ ក្រៅបណ្តាញ"
+
+msgid "s"
+msgstr "s"
+
+msgid "Donate (paypal)"
+msgstr "ធ្វើអំណោយ (paypal)"
+
+msgid "Away mode off"
+msgstr "មិននៅ បិទ"
+
+msgid "Auto connect / Name"
+msgstr "តភ្ជាប់ស្វ័យប្រវត្តិ / ឈ្មោះ"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Proxy (សម្រាប់តែបញ្ជី hub ប៉ុណ្ណោះ)"
+
+msgid "Low"
+msgstr "ទាប"
+
+msgid "Online"
+msgstr "លើបណ្តាញ"
+
+msgid "View status messages in main chat"
+msgstr "មើលស្ថានភាពសារនៅក្នុងទំព័រជជែកកំសាន្តមេ"
+
+msgid "Only where I'm op"
+msgstr "សម្រាប់តែកន្លែងដែលខ្ញុំជា op"
+
+msgid "Auto-search limit"
+msgstr "ស្វែងរកដោយស្វ័យប្រវត្តិមានកំណត់"
+
+msgid "Normal prio max size"
+msgstr "អាទិភាពធម្មតា ទំហំអតិបរមា"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "បណ្តាញ MAGNET ត្រូវបានផ្តល់ទៅ DC++, ប៉ុន្តែវាគ្មានយកជាការបាននូវឯកសារច្របូកច្របល់ សម្រាប់ប្រើលើបណ្តាញ Direct Connect.  គ្មានសកម្មភាពណាមួយត្រូវបានយក"
+
+msgid "Show progress bars for transfers"
+msgstr "បង្ហាញរបារវឌ្ឍនភាព សំរាប់ផ្ទេរ"
+
+msgid "Set priority"
+msgstr "កំណត់អាទិភាព"
+
+msgid "Download whole directory"
+msgstr "ទាញយកថតក្រូណូទាំងមូល"
+
+msgid "Log downloads"
+msgstr "ចុះកំណត់ហេតុរាល់ការទាញយក"
+
+msgid "Purge"
+msgstr "លុបបំបាត់"
+
+msgid "Timestamps enabled"
+msgstr "ពេលវេលាបង្ហាប់បានអនុញ្ញាត"
+
+msgid "Confirm favorite hub removal"
+msgstr "បញ្ជាក់នៅពេលយក hub សំណព្វចេញ"
+
+msgid "Please enter a password"
+msgstr "សូមបញ្ចូលពាក្យសម្ងាត់"
+
+msgid "Drop sources below"
+msgstr "ជម្រុះរាល់ប្រភពខាងក្រោម"
+
+msgid "Finished Downloads"
+msgstr "ទាញយកបានបញ្ចប់"
+
+msgid "Download to..."
+msgstr "Download to ទាញយកទៅទុកក្នុង..."
+
+msgid "Colors"
+msgstr "ពណ៌"
+
+msgid "Done"
+msgstr "ធ្វើរួច"
+
+msgid "Any"
+msgstr "យ៉ាងម៉េចក៏បាន"
+
+msgid "Size"
+msgstr "ទំហំ"
+
+msgid "Sharing"
+msgstr "ទីចែករំលែក"
+
+msgid "Public Hubs list URL"
+msgstr "អាសយដ្ឋានបញ្ជី Hubs សាធារណៈ"
+
+msgid "Always open help file with this dialog"
+msgstr "បើកឯកសារជំនួយជារឿយៗ ជាមួយនឹងការសន្ទនានេះ"
+
+msgid "Start a search for this file"
+msgstr "ចាប់ផ្តើមស្វែងរកសម្រាប់ឯកសារមួយនេះ"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "ដាក់សម្លេងរោឡើង នៅពេលដែលបង្អួចសារឯកជនត្រូវបានបើក"
+
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "កុំយកអ្នកប្រើចេញ នៅពេលដែលកំពុងស្វ័យជម្រុះ, បានតែផ្តាច់ប៉ុណ្ណោះ"
+
+msgid "AWAY"
+msgstr "មិននៅ"
+
+msgid "Check every"
+msgstr "ពិនិត្យមើលទាំងអស់"
+
+msgid "Favorite download directories"
+msgstr "ថតក្រូណូដែលអ្កកពេញចិត្ត"
+
+msgid "Highest prio max size"
+msgstr "អាទិភាពខ្ពស់បំផុត ទំហំអតិបរមា"
+
+msgid "Address"
+msgstr "អាសយដ្ឋាន"
+
+msgid "Total size:"
+msgstr "ទំហំសរុប:"
+
+msgid "ADL Search"
+msgstr "ADL ស្វែងរក"
+
+msgid "Remove user from queue"
+msgstr "យកអ្នកប្រើចេញពីជួរ"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Directory or directory name already exists"
+msgstr "ថតក្រូណូ ឫ ឈ្មោះថតក្រូណូ មានរួចហើយ"
+
+msgid "Full tree does not match TTH root"
+msgstr "មែកធាងពេញលេញ មិនអាចផ្គុផ្គងនឹងឫស TTH"
+
+msgid "Search history"
+msgstr "ស្វែងរកប្រវត្តិ"
+
+msgid "Filelist Menu"
+msgstr "ម៉ឺនុយបញ្ជីឯកសារ"
+
+msgid "Your nick was already taken, please change to something else!"
+msgstr "សម្មតិនាមរបស់អ្នកមានគេប្រើរួចហើយ សូមប្តូរទៅឈ្មោះផ្សេង!"
+
+msgid "Port"
+msgstr "ច្រក"
+
+msgid "Auto refresh time"
+msgstr "ធ្វើពេលវេលាអោយស្រស់ដោយស្វ័យប្រវត្តិ"
+
+msgid "Errors"
+msgstr "មានកំហុស"
+
+msgid "Filename"
+msgstr "ឈ្មោះឯកសារ"
+
+msgid "Firewall (passive, last resort)"
+msgstr "ជញ្ជាំងភ្លើង (អកម្ម, មធ្យោបាយចុងក្រោយ)"
+
+msgid "Open new file list windows in the background"
+msgstr "បើកបង្អួចបញ្ជីឯកសារថ្មីនៅផ្ទៃខាងក្រោយ"
+
+msgid "High prio max size"
+msgstr "អាទិភាពខ្ពស់ ទំហំអតិបរមា"
+
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+msgid "Close all file list windows"
+msgstr "បិទរាល់បង្អួចបញ្ជីឯកសារទាំងអស់"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "ចុះឈ្មោះជាមួយនឹង Windows ដើម្បីដោះស្រាយ magnet: បណ្តាញ URI"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "ឈ្មោះនិម្មិតថ្មី ផ្គូផ្គងនឹងឈ្មោះចាស់, កំពុងរំលង..."
+
+msgid "Running..."
+msgstr "កំពុងដំណើរការ..."
+
+msgid "External / WAN IP"
+msgstr "ក្រៅ / WAN IP"
+
+msgid "Favorite Hub Properties"
+msgstr "លក្ខណៈសម្បត្តិ Hub សំណព្វ"
+
+msgid "PM history"
+msgstr "ប្រវត្តិ PM"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "កំណត់អទិភាពទាបបំផុត សម្រាប់ឯកសារបន្ថែមថ្មីៗដែលធំជាងទំហំអាទិភាពដែលទាប"
+
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+msgid "Show"
+msgstr "បង្ហាញ"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "សូមបញ្ចូលសម្មតិនាមក្នុងការកំណត់ការសន្ទនា!"
+
+msgid "Source too slow"
+msgstr "ប្រភពដែលយឺតណាស់"
+
+msgid "Timestamps disabled"
+msgstr "ពេលវេលាបង្ហាប់មិនបានអនុញ្ញាត"
+
+msgid "Find"
+msgstr "រក"
+
+msgid "Passive user"
+msgstr "អ្នកប្រើអកម្ម"
+
+msgid "Direct connection"
+msgstr "ការបន្តភ្ជាប់ដោយផ្ទាល់"
+
+msgid "User Menu"
+msgstr "ម៉ឺនុយអ្នកប្រើ"
+
+msgid "Connection settings"
+msgstr "ការកំណត់ការតភ្ជាប់"
+
+msgid "Downloads"
+msgstr "ទីទាញយក"
+
+msgid "MiBits/s"
+msgstr "MiBits/s"
+
+msgid "Break on first ADLSearch match"
+msgstr "បញ្ឈប់ ADLSearch នៅត្រឹមការផ្គូផ្គងលើកដំបូង"
+
+msgid "Set timestamps"
+msgstr "កំណត់ពេលវេលាបង្ហាប់"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "ចំណាំ; ឯកសារលេចឡើងតែនៅក្នុងទីចែករំលែកប៉ុណ្ណោះ បន្ទាប់ពីពួកវាត្រូវបានច្របូកច្របល់!"
+
+msgid "Close all PM windows"
+msgstr "បិទបង្អួច PM ទាំងអស់"
+
+msgid "Nick"
+msgstr "សម្មតិនាម"
+
+msgid "Command"
+msgstr "បញ្ជា"
+
+msgid "Hubs"
+msgstr "Hubs"
+
+msgid "Confirm dialog options"
+msgstr "បញ្ជាក់ជម្រើសសន្ទនា"
+
+msgid "Other queue options"
+msgstr "ជម្រើសជួរដ៏ទៃ"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "បិទបើកបង្អួច នៅពេលដែលជ្រើសរើសផ្ទាំងសកម្ម"
+
+msgid "Join/part showing on"
+msgstr "បង្ហាញការចូលរួម/ចាកចេញរបស់អ្នកប្រើ ចូរបើក"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "ប្តូរទិសសំណើរដែលបានទទួល ទៅhubដែលត្រូវបានតភ្ជាប់រួច"
+
+msgid "Bind address"
+msgstr "ចងភ្ជាប់អាសយដ្ឋាន"
+
+msgid "Paused"
+msgstr "បានផ្អាក"
+
+msgid "Write buffer size"
+msgstr "សរសេរទំហំសតិបណ្តោះអាសន្ន"
+
+msgid "B/s"
+msgstr "B/s"
+
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "កុំផ្តាច់ដោយស្វ័យប្រវត្តិ រាល់អ្នកប្រើសំណព្វណាដែលបានចាកចេញពី hub"
+
+msgid "Line speed (upload)"
+msgstr "ជួរល្បឿន (ផ្ទុកឡើង)"
+
+msgid "Shared"
+msgstr "បានចែករំលែក"
+
+msgid "Normal"
+msgstr "ធម្មតា"
+
+msgid "Automatically follow redirects"
+msgstr "ទៅតាមករប្តូរទិសដោយស្វ័ប្រវត្តិ"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "CRC32 មិនខ្ជាប់ខ្ជួន (SFV-ត្រួតពិនិត្យ)"
+
+msgid "User"
+msgstr "អ្នកប្រើ"
+
+msgid "Search for alternates"
+msgstr "ស្វែងរកដើម្បីជំនួស"
+
+msgid "Configure Public Hub Lists"
+msgstr "កំណត់រចនាសម្ព័ន្ធបញ្ជី Hub សាធារណៈ"
+
+msgid "About DC++..."
+msgstr "អំពី DC++..."
+
+msgid "Hub already exists as a favorite"
+msgstr "Hubមានរួចហើយជាសំណព្វ"
+
+msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
+msgstr "មិនអាចបើកច្រក UDP. ការស្វែងរកនឹងមិនដំណើរការត្រឹមត្រូវ លុះត្រាតែអ្នកប្តូរការកំណត់ ឬ បិទកម្មវិធីណាមួយ ដែលអាចកំពុងប្រើច្រក UDP"
+
+msgid "Match queue"
+msgstr "ផ្គូរផ្គងជួរ"
+
+msgid "Downloading list..."
+msgstr "កំពុងទាញយកបញ្ជី..."
+
+msgid "Log system messages"
+msgstr "ចុះកំណត់ហេតុគ្រប់ប្រព័ន្ធសារ"
+
+msgid "Uploads"
+msgstr "ផ្ទុកឡើង"
+
+msgid "Max Users"
+msgstr "អ្នកប្រើអតិបរមា"
+
+msgid "Don't download files already in share"
+msgstr "កុំទាញយកឯកសារណាដែលមានរួចហើយនៅក្នុងទីចែករំលែក"
+
+msgid "Copy magnet link to clipboard"
+msgstr "ចម្លងតំណទាក់ចិត្ត ទៅក្តារតម្បៀតខ្ទាស់"
+
+msgid "Slots set"
+msgstr "សំណុំប្រលោះ"
+
+msgid "Error creating dchub registry key"
+msgstr "កំហុសក្នុងការបង្កើតសោរបញ្ជីឈ្មោះdchub"
+
+msgid "No users"
+msgstr "គ្មានអ្នកប្រើ"
+
+msgid "Time left"
+msgstr "រយៈពេលនៅសល់"
+
+msgid "TTH Root"
+msgstr "ឫស TTH"
+
+msgid "Remove slow filelists"
+msgstr "យករាល់បញ្ជីឯកសារណាដែលទាញយកយឺតចេញ"
+
+msgid "CID"
+msgstr "CID"
+
+msgid "Specify a server to connect to"
+msgstr "បញ្ជាក់លម្អិតម៉ាស៊ីនបម្រើ ដើម្បីតភ្ជាប់ទៅ"
+
+msgid "Source Type"
+msgstr "ប្រភេទប្រភព"
+
+msgid "Download files from the Direct Connect network"
+msgstr "ទាញយកឯកសារពីបណ្តាញតភ្ជាប់ផ្ទាល់"
+
+msgid "No users to download from"
+msgstr "គ្មានអ្នកប្រើដើម្បីទាញយកពី"
+
+msgid "Offline"
+msgstr "ក្រៅបណ្តាញ"
+
+msgid "Creating file index..."
+msgstr "កំពុងបង្កើតសន្ទស្សន៍ឯកសារ..."
+
+msgid "Description"
+msgstr "ពិពណ៌នា"
+
+msgid "Enter search string"
+msgstr "បញ្ចូលការស្វែងរកខ្សែអក្សរ"
+
+msgid "Password"
+msgstr "ពាក្យសម្ងាត់"
+
+msgid "Edit the hublist"
+msgstr "កែសម្រួលបញ្ជី hub"
+
+msgid "Network Statistics"
+msgstr "ស្ថិតិបណ្តាញ"
+
+msgid "Firewall with manual port forwarding"
+msgstr "ជញ្ជាំងភ្លើង ជាមួយនឹងច្រកដែលដំឡើងដោយដៃ"
+
+msgid "Country"
+msgstr "ប្រទេស"
+
+msgid "Close all offline PM windows"
+msgstr "បិទរាល់បង្អួច PM ក្រៅបណ្តាញទាំងអស់"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "ដាក់សម្លេងរោឡើង រាល់ពេលដែលសារឯកជនត្រូវបានទទួល"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "អតិបរមានៃការទាញយកដែលកើតឡើងក្នុងពេលជាមួយគ្នា (0 = infinite)"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "បរាជ័យក្នុងការយក IP ខាងក្រៅ តាមរយៈ  UPnP. សូមដំឡើងវាដោយខ្លួនអ្នកផ្ទាល់។"
+
+msgid "Automatic Directory Listing Search"
+msgstr "ស្វែងរកបញ្ជីថតក្រូណូស្វ័យប្រវត្តិ"
+
+msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
+msgstr "មិនអាចបើកច្រក TCP. ឯកសារផ្ទេរនឹងមិនដំណើរការត្រឹមត្រូវ លុះត្រាតែអ្នកប្តូរការកំណត់ ឬ បិទកម្មវិធីណាមួយ ដែលអាចកំពុងប្រើច្រក TCP"
+
+msgid "Audio"
+msgstr "អូឌីយ៉ូ"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "ផ្គូផ្គងជួរដោយស្វ័យប្រវត្តិ សម្រាប់រាល់ជោគជ័យស្វែងរកស្វ័យប្រវត្តិ"
+
+msgid "Max inactivity"
+msgstr "ដែលស្ងៀម អតិបរមា"
+
+msgid "Log private chat"
+msgstr "ចុះកំណត់ហេតុរាល់ការជជែកកំសាន្តជាឯកជន"
+
+msgid "Min Share"
+msgstr "អប្បបរមាចែករំលែក"
+
+msgid "Open new private message windows in the background"
+msgstr "បើកបង្អួចសារឯកជនថ្មីនៅផ្ទៃខាងក្រោយ"
+
+msgid "Min elapsed"
+msgstr "ពេលវេលាដែលកន្លងទៅអប្បបរមា"
+

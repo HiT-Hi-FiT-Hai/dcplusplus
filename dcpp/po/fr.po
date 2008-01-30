@@ -1,0 +1,145 @@
+
+# French translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <spok@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <spok@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Echec de l'authentification serveur Socks (mauvais login / mot-de-passe?)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Le serveur Socks server ne supporte pas l'autentifiaction login / mot-de-passe"
+
+msgid "The temporary download directory cannot be shared"
+msgstr "Le répertoire des temporaires ne peut être partagé"
+
+msgid "Maximum command length exceeded"
+msgstr "Dépassement de la longueur maximale de la commande"
+
+msgid "More data was sent than was expected"
+msgstr "Plus de données ont été envoyées que ce qu'il était attendu"
+
+msgid "You're trying to download from yourself!"
+msgstr "Vous essayez de télécharger sur  vous-même!"
+
+msgid "Offline"
+msgstr "Non connecté"
+
+msgid "Failed to load private key"
+msgstr "Echec de chargement de la clef privée"
+
+msgid "Not listening for connections - please restart DC++"
+msgstr "Pas en écoute pour les connexions - veuillez relancer DC++0.699"
+
+msgid "Hash database"
+msgstr "Hachage de la base de données"
+
+msgid "All download slots taken"
+msgstr "Tous les slots sont pris"
+
+msgid "Redirect user(s)"
+msgstr "Rediriger utilisateur(s)"
+
+msgid "Target filename too long"
+msgstr "Nom du fichier cible trop long"
+
+msgid "Connection timeout"
+msgstr "Temps d'attente dépassé"
+
+msgid "The socks server requires authentication"
+msgstr "Le serveur Socks requiert une authentication"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Un fichier d'une taille différente existe déjà dans la file d'attente"
+
+msgid "Error during decompression"
+msgstr "Erreur pendant la décompression"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Incompatibilité CRC32 (Contrôle SFV)"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Un fichier avec une racine tth différente existe déjà dans la file d'attente"
+
+msgid "TLS disabled, no certificate file set"
+msgstr "TLS désactivé, pas de fichier certificat"
+
+msgid "No slots available"
+msgstr "Pas de slot disponible"
+
+msgid "Error during compression"
+msgstr "Erreur pendant la compression"
+
+msgid "Disconnected"
+msgstr "Déconnecté"
+
+msgid "Hash database rebuilt"
+msgstr "Hache de la base de données reconstruite"
+
+msgid "Remove all subdirectories before adding this one"
+msgstr "Retirer tous les sous-répertoires avant d'ajouter celui-çi"
+
+msgid "File list refresh initiated"
+msgstr "Rafraîchissement de la liste initialisé"
+
+msgid "Virtual directory name already exists"
+msgstr "Nom de répertoire virtuel déjà existant"
+
+msgid "Full tree does not match TTH root"
+msgstr "Toute l'arborescence ne trouve pas de racine TTH"
+
+msgid "Shared Files"
+msgstr "Fichier Partagés"
+
+msgid "No directory specified"
+msgstr "Pas de répertoire spécifié"
+
+msgid "Unable to read hash data file"
+msgstr "Ne parvient pas à lire la Hache de la base de données"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "Un fichier d'une taille égale ou supérieure existe déjà à l'emplacement du fichier cible"
+
+msgid "This file is already queued"
+msgstr "Ce fichier est déjà mis en file d'attente de téléchargement"
+
+msgid "Unable to create thread"
+msgstr "Ne parvient pas à créer le thread"
+
+msgid "Kick user(s)"
+msgstr "Kicker utilisateur(s)"
+
+msgid "File not available"
+msgstr "Fichier indisponible"
+
+msgid "The socks server failed establish a connection"
+msgstr "Le serveur Socks a échoué à établir une connexion"
+
+msgid "Directory already shared"
+msgstr "Répertoire déjà partagé"
+
+msgid "Download Queue"
+msgstr "File d'attente Téléchargements"
+
+msgid "Certificate not trusted, unable to connect"
+msgstr "Le certificat n'est pas De Confiance, ne parvient pas à se connecter"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "Un fichier ayant la même Hache existe déjà dans votre share"
+
+msgid "Failed to load certificate file"
+msgstr "Echec de chargement du fichier certificat"
+
+msgid "File list refresh finished"
+msgstr "Rafraîchissement de la liste terminé"
+

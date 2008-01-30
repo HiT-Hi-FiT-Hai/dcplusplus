@@ -1,0 +1,154 @@
+
+# Italian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <vecna_ita@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <vecna_ita@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Autenticazione del server Socks fallita (nome utente /password non validi?)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Il server socks non riconosce l'utente / autenticazione password"
+
+msgid "Invalid size"
+msgstr "Grandezza non valida"
+
+msgid "The temporary download directory cannot be shared"
+msgstr "La cartella di download temporanea non può essere condivisa"
+
+msgid "Maximum command length exceeded"
+msgstr "Superata massima lunghezza comando"
+
+msgid "More data was sent than was expected"
+msgstr "Sono stati inviati più dati di quanto previsto"
+
+msgid "You're trying to download from yourself!"
+msgstr "Stai cercando di scaricare da te stesso!"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "Failed to load private key"
+msgstr "Impossibile caricare il codice privato"
+
+msgid "Target removed"
+msgstr "File di destinazione rimosso"
+
+msgid "Not listening for connections - please restart DC++"
+msgstr "Nessun ascolto per la connessione - riavviare DC++"
+
+msgid "Hash database"
+msgstr "Archivio hash"
+
+msgid "All download slots taken"
+msgstr "Tutti gli slot per il download occupati"
+
+msgid "Redirect user(s)"
+msgstr "Reindirizza utente(i)"
+
+msgid "Target filename too long"
+msgstr "Nome file di destinazione troppo lungo"
+
+msgid "Connection timeout"
+msgstr "Connessione in timeout"
+
+msgid "The socks server requires authentication"
+msgstr "Il server socks richiede l'autenticazione"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Nei Download in Coda esiste già un file di dimensione differente"
+
+msgid "Error during decompression"
+msgstr "Errore durante la decompressione"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Inconsistenza CRC32 (Controllo SFV)"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Nei Download in Coda esiste già un file con TTH root differente"
+
+msgid "TLS disabled, no certificate file set"
+msgstr "TLS disattivato, file certificato non impostato"
+
+msgid "No slots available"
+msgstr "Nessuno slot disponibile"
+
+msgid "Error during compression"
+msgstr "Errore durante la compressione"
+
+msgid "Disconnected"
+msgstr "Disconnesso"
+
+msgid "Hash database rebuilt"
+msgstr "Ricostruzione archivio hash"
+
+msgid "Remove all subdirectories before adding this one"
+msgstr "Elimina tutte le sottocartelle prima di aggiungere questa"
+
+msgid "File list refresh initiated"
+msgstr "Aggiornamento elenco file condivisi iniziato"
+
+msgid "Virtual directory name already exists"
+msgstr "Nome cartella virtuale gi�sistente"
+
+msgid "Full tree does not match TTH root"
+msgstr "L'albero delle cartelle non è coerente con la radice TTH"
+
+msgid "Shared Files"
+msgstr "File Condivisi"
+
+msgid "No directory specified"
+msgstr "Nessuna cartella specificata"
+
+msgid "Unable to read hash data file"
+msgstr "Impossibile leggere dati hash del file"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "Nella cartella di destinazione esiste già un file di dimensioni uguali o maggiori"
+
+msgid "This file is already queued"
+msgstr "Questo file è già in coda"
+
+msgid "Unable to create thread"
+msgstr "Impossibile creare la discussione"
+
+msgid "Kick user(s)"
+msgstr "Blocca utente(i)"
+
+msgid "File not available"
+msgstr "File non disponibile"
+
+msgid "The socks server failed establish a connection"
+msgstr "Il server socks ha fallito nello stabilire una connessione"
+
+msgid "Directory already shared"
+msgstr "Cartella già condivisa"
+
+msgid "Download Queue"
+msgstr "Download in Coda"
+
+msgid "Certificate not trusted, unable to connect"
+msgstr "Certificato non valido, impossibile connettersi"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "Esiste già un file con lo stesso TTH nei tuoi file condivisi"
+
+msgid "Generated new TLS certificate"
+msgstr "Creato nuovo certificato TLS"
+
+msgid "Failed to load certificate file"
+msgstr "Impossibile caricare il file certificato"
+
+msgid "File list refresh finished"
+msgstr "Aggiornamento elenco file condivisi completato"
+

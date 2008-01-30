@@ -1,0 +1,133 @@
+
+# Portuguese translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <Isildur@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <Isildur@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Autenticação no servidor socks falhou (verifique o nome de utilizador e a palavra-passe)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "O servidor socks não suporta autenticação"
+
+msgid "The temporary download directory cannot be shared"
+msgstr "A pasta dos Downloads temporários não pode ser partilhada"
+
+msgid "More data was sent than was expected"
+msgstr "Foram enviados mais dados que julgado inicialmente"
+
+msgid "You're trying to download from yourself!"
+msgstr "Está a tentar transferir de si próprio!"
+
+msgid "Offline"
+msgstr "Desligado"
+
+msgid "Failed to load private key"
+msgstr "Falha ao carregar a chave privada"
+
+msgid "Hash database"
+msgstr "Hash da base de dados "
+
+msgid "All download slots taken"
+msgstr "Todos as slots estão ocupadas"
+
+msgid "Redirect user(s)"
+msgstr "Redireccionar Utilizador(es)"
+
+msgid "Target filename too long"
+msgstr "Nome do ficheiro de destino demasiado longo"
+
+msgid "Connection timeout"
+msgstr "Tempo de ligação excedido"
+
+msgid "The socks server requires authentication"
+msgstr "O servidor socks requer autenticação"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Um ficheiro com tamanho diferente já existe na lista de espera"
+
+msgid "Error during decompression"
+msgstr "Erro ao descomprimir"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Inconsistência CRC32 (Controlo SFV)"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Um ficheiro TTH diferente já existe na lista de espera"
+
+msgid "No slots available"
+msgstr "Nenhuma slot disponível"
+
+msgid "Error during compression"
+msgstr "Erro ao comprimir"
+
+msgid "Disconnected"
+msgstr "Desligado"
+
+msgid "Hash database rebuilt"
+msgstr "Hash da base de dados reconstruído "
+
+msgid "Remove all subdirectories before adding this one"
+msgstr "Remova todas as subpastas antes de adicionar esta"
+
+msgid "File list refresh initiated"
+msgstr "Iniciou a actualização da lista de ficheiros"
+
+msgid "Virtual directory name already exists"
+msgstr "O nome da Pasta Virtual já existe"
+
+msgid "Full tree does not match TTH root"
+msgstr "Caminho invalido para a hash TTH"
+
+msgid "Shared Files"
+msgstr "Ficheiros partilhados"
+
+msgid "No directory specified"
+msgstr "Nenhuma pasta especificada"
+
+msgid "Unable to read hash data file"
+msgstr "Impossível de ler a informação da hash"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "Um ficheiro com tamanho igual ou superior já existe na pasta de destino"
+
+msgid "Unable to create thread"
+msgstr "Impossível criar Thread"
+
+msgid "Kick user(s)"
+msgstr "Kickar Utilizador(es)"
+
+msgid "File not available"
+msgstr "Ficheiro indisponível"
+
+msgid "The socks server failed establish a connection"
+msgstr "Ligação ao servidor socks falhou"
+
+msgid "Directory already shared"
+msgstr "Pasta já partilhada"
+
+msgid "Download Queue"
+msgstr "Lista de Espera"
+
+msgid "Certificate not trusted, unable to connect"
+msgstr "Certificado inactivo, impossível de conectar"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "Um ficheiro com a mesma Hash já existe na sua partilha"
+
+msgid "Failed to load certificate file"
+msgstr "Falha ao carregar o ficheiro do certificado"
+
+msgid "File list refresh finished"
+msgstr "Acabou a actualização da lista de ficheiros"
+

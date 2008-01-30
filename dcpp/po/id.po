@@ -1,0 +1,121 @@
+
+# Indonesian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <dodywijaya@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <dodywijaya@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: plurals=2; plural=(n != 1);\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Autentikasi server sock gagal (username / password salah?)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Server sock tidak mendukung autentikai user / password"
+
+msgid "The socks server requires authentication"
+msgstr "Server sock membutuhkan autentikasi"
+
+msgid "More data was sent than was expected"
+msgstr "Lebih banyak data dikirim dari yang diharapkan"
+
+msgid "You're trying to download from yourself!"
+msgstr "Anda mengunduh dari diri sendiri!"
+
+msgid "Offline"
+msgstr "Terputus"
+
+msgid "Hash database"
+msgstr "Hash-kan basis data"
+
+msgid "All download slots taken"
+msgstr "Semua slot unduh terpakai"
+
+msgid "Redirect user(s)"
+msgstr "Redirect pengguna"
+
+msgid "Target filename too long"
+msgstr "Nama arsip tujuan terlalu panjang"
+
+msgid "Connection timeout"
+msgstr "Sambungan timeout"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Sebuah arsip dengan ukuran lain telah ada di antrian"
+
+msgid "Error during decompression"
+msgstr "Kesalahan saat pemuaian"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Inkonsistensi CRC32 (Pemeriksaan SFV)"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Sebuah arsip dengan tth root lain telah ada di antrian"
+
+msgid "No slots available"
+msgstr "Slot tidak tersedia"
+
+msgid "Error during compression"
+msgstr "Kesalahan pada pemampatan"
+
+msgid "Disconnected"
+msgstr "Terputus"
+
+msgid "Hash database rebuilt"
+msgstr "Basis data hash telah dibuat ulang"
+
+msgid "Remove all subdirectories before adding this one"
+msgstr "Hapus semua subdirektori sebelum menambah ini"
+
+msgid "File list refresh initiated"
+msgstr "Pembaharuan daftar arsip diinisiasi"
+
+msgid "Virtual directory name already exists"
+msgstr "Nama direktori semu telah ada"
+
+msgid "Full tree does not match TTH root"
+msgstr "Pohon yang diunduh tidak cocok dengan TTH root"
+
+msgid "Shared Files"
+msgstr "Arsip Ter-Share"
+
+msgid "No directory specified"
+msgstr "Direktori tidak diberikan"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "Sebuah arsip berukuran sama atau lebih besar sudah ada di lokasi tujuan"
+
+msgid "Unable to create thread"
+msgstr "Gagal menciptakan thread"
+
+msgid "Kick user(s)"
+msgstr "Tendang pengguna"
+
+msgid "File not available"
+msgstr "Arsip tidak tersedia"
+
+msgid "The socks server failed establish a connection"
+msgstr "Server sock gagal menjalin koneksi"
+
+msgid "Directory already shared"
+msgstr "Direktori telah dishare"
+
+msgid "Download Queue"
+msgstr "Antrian Unduh"
+
+msgid "The temporary download directory cannot be shared"
+msgstr "Direktori unduh sementara tidak boleh di-share"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "Arsip dengan hash yang sama sudah ada di share Anda"
+
+msgid "File list refresh finished"
+msgstr "Pembaharuan daftar arsip telah selesai"
+

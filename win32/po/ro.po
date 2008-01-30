@@ -1,0 +1,1165 @@
+
+# Romanian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <muntealb@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <muntealb@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
+
+msgid "Slot granted"
+msgstr "Slot alocat"
+
+msgid "Run in background"
+msgstr "Rulează în fundal"
+
+msgid "Guess user country from IP"
+msgstr "Ghicește țara utilizatorului după IP"
+
+msgid "Log main chat"
+msgstr "Creează un log al taifasului [chat] din camera principală"
+
+msgid "Keep duplicate files in your file list"
+msgstr "Păstrează fișierele duplicate în listă"
+
+msgid "Join/part of favorite users showing on"
+msgstr "Afișarea Alăturării / Plecării utilizatorilor favoriți activată"
+
+msgid "Notification sound"
+msgstr "Sunet de Notificare"
+
+msgid "Finished Uploads"
+msgstr "Încărcările Terminate"
+
+msgid "File type"
+msgstr "Tip de fișier"
+
+msgid "Cipher"
+msgstr "Cifru"
+
+msgid "GiB"
+msgstr "GB"
+
+msgid "Min sources online"
+msgstr "Nr. min. surse conect."
+
+msgid "Outgoing connection settings"
+msgstr "Setările Conexiunii de Ieșire"
+
+msgid "Popup box to input password for hubs"
+msgstr "Căsuță popup pentru introducerea parolei de acces la huburi"
+
+msgid "Log uploads"
+msgstr "Creează un log al încărcarilor"
+
+msgid "ADLSearch Properties"
+msgstr "Proprietăți ale Căutarii ADL"
+
+msgid "Directories"
+msgstr "Dosare"
+
+msgid "Ready to search..."
+msgstr "Pregătit de căutare..."
+
+msgid "Autodrop settings"
+msgstr "Setări la Abandonarea Automată"
+
+msgid "Specify a URL"
+msgstr "Specifică un URL"
+
+msgid "Shared directories"
+msgstr "Dosare Partajate"
+
+msgid "Really exit?"
+msgstr "Sigur doriți să ieșiți?"
+
+msgid "Tag"
+msgstr "Tag"
+
+msgid "MAGNET Link detected"
+msgstr "Legătură MAGNET detectată"
+
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Deconectează automat utilizatorii care părăsesc hubul"
+
+msgid "Use antifragmentation method for downloads"
+msgstr "Folosește metoda de antifragmentare pentru descărcări"
+
+msgid "Remove source"
+msgstr "Înlătură Sursa"
+
+msgid "Under what name you see the directory"
+msgstr "Sub ce nume vedeți dosarul"
+
+msgid "Join/part of favorite users showing off"
+msgstr "Afișarea Alăturării / Plecării utilizatorilor favoriți dezactivată"
+
+msgid "Confirm item removal in download queue"
+msgstr "Confirmare la înlăturarea itemurilor din coada de descărcare"
+
+msgid "Download Matches"
+msgstr "Descărcare deja existentă"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Browse..."
+msgstr "Explorează"
+
+msgid "Logging"
+msgstr "Setări pentru Loguri (jurnale de activitate)"
+
+msgid "Name under which the others see the directory"
+msgstr "Numele sub care ceilalți văd dosarul"
+
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Nici o desc. nouă dacă viteza depășește (KB/s, 0 = dezactivează)"
+
+msgid "Appearance"
+msgstr "Aspect"
+
+msgid "Favorite Hubs"
+msgstr "Huburile Favorite"
+
+msgid "Window options"
+msgstr "Opțiuni pentru Ferestre"
+
+msgid "Auto-open at startup"
+msgstr "Deschide Automat la Pornire"
+
+msgid "Sharing"
+msgstr "Partajare"
+
+msgid "No matches"
+msgstr "Nici o potrivire"
+
+msgid "Enable automatic SFV checking"
+msgstr "Autoactivează verificarea SFV [Simple File Verification]"
+
+msgid "Skip zero-byte files"
+msgstr "Ignoră fișierele cu mărime zero"
+
+msgid "Min Slots"
+msgstr "Sloturi - Nr. minim"
+
+msgid "Clear search box after each search"
+msgstr "Golește cîmpul de căutare după fiecare căutare"
+
+msgid "Do nothing"
+msgstr "Nu faceți nimic"
+
+msgid "Accept custom user commands from hub"
+msgstr "Acceptă comenzi personalizate de la utilizatorii hubului"
+
+msgid "Invalid number of slots"
+msgstr "Numărul de sloturi nu e valid"
+
+msgid "Don't send the away message to bots"
+msgstr "Nu trimite mesajul de absentare către boți"
+
+msgid "Request a feature"
+msgstr "Solicitați o Funcționalitate Nouă"
+
+msgid "Max hash speed"
+msgstr "Vit. max. hașare"
+
+msgid "Don't download files already in the queue"
+msgstr "Nu descărca fișierele prezente deja in coadă [queue]"
+
+msgid "Show timestamps in chat by default"
+msgstr "Arată în mod implicit marcajele de timp în camerele de taifas [chat]"
+
+msgid "Status"
+msgstr "Stare"
+
+msgid "Search for"
+msgstr "Caută Următoarele"
+
+msgid "Hub"
+msgstr "Hub"
+
+msgid "Favorite hub removed"
+msgstr "Hub Favorit înlăturat"
+
+msgid "E-Mail"
+msgstr "E-mail"
+
+msgid "MiB/s"
+msgstr "MB/s"
+
+msgid "Compressed"
+msgstr "Comprimat"
+
+msgid "Count"
+msgstr "Contor"
+
+msgid "Firewall with UPnP"
+msgstr "Paravan [firewall] cu UPnP"
+
+msgid "Limits"
+msgstr "Limitări la Descărcare"
+
+msgid "Public Hubs list"
+msgstr "Lista de Huburi Publice"
+
+msgid "Connection"
+msgstr "Conectează"
+
+msgid "Time"
+msgstr "Timp"
+
+msgid "Tab highlight on content change"
+msgstr "Evidențiază tabul cînd i se schimbă conținutul"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Autoactivează absentarea [away] la minimizare (dezactivează la restaurare)"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "Folosește iconițele de sistem la explorarea fișierelor (încetinește un pic explorarea)"
+
+msgid "Don't delete file lists when exiting"
+msgstr "Nu șterge listele de fișiere la ieșire"
+
+msgid "Auto grant slot / Nick"
+msgstr "Autoalocare de Sloturi / Poreclă"
+
+msgid "Max filelist size"
+msgstr "Mărime max. fișier"
+
+msgid "Confirm application exit"
+msgstr "Confirmare la ieșirea din program"
+
+msgid "Ignore private messages from the hub"
+msgstr "Ignoră mesajele private de la utilizatorii din huburi"
+
+msgid "Exact size"
+msgstr "Mărime exactă"
+
+msgid "DC++ discussion forum"
+msgstr "Forumul de Discuții DC++"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Înregistrează în Windows pentru procesarea legăturilor dchub:// si adc://"
+
+msgid "Search options"
+msgstr "Opțiuni de Căutare"
+
+msgid "Re-add source"
+msgstr "Readaugă Sursa"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Use CTRL for line history"
+msgstr "Folosește Ctrl pentru istoricul conexiunii"
+
+msgid "MiB"
+msgstr "MB"
+
+msgid "Notepad"
+msgstr "Editor de Text"
+
+msgid "DC++ Homepage"
+msgstr "Pagina principală DC++"
+
+msgid "Join/part showing off"
+msgstr "Afișare alăturări/plecări dezactivată"
+
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "Setările Conexiunii de Intrare (vezi Ajutor/Întrebări Frecvente pt. explicații)"
+
+msgid "Mini slot size"
+msgstr "Mărime minislot"
+
+msgid "Hublist"
+msgstr "Lista de Huburi"
+
+msgid "UDP"
+msgstr "UDP"
+
+msgid "Ignore TTH searches"
+msgstr "Ignoră căutarile TTH"
+
+msgid "File"
+msgstr "Fișier"
+
+msgid "User went offline"
+msgstr "Utilizatorul s-a deconectat"
+
+msgid "Slots"
+msgstr "Sloturi"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Folosește SOCKS5 pt. aflarea serverelor-gazdă"
+
+msgid "Log status messages"
+msgstr "Creează un log al mesajelor de stare"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "Afișează alăturările / plecările doar pentru utilizatorii favoriți"
+
+msgid "KiB/s"
+msgstr "KB/s"
+
+msgid "Downloading..."
+msgstr "Descărcare în curs..."
+
+msgid "Don't remove /password before your password"
+msgstr "Nu înlăturați /password dinaintea parolei"
+
+msgid "Path"
+msgstr "Cale"
+
+msgid "Specify a search string"
+msgstr "Specifică cuvintele de căutat"
+
+msgid "Open private messages in their own window"
+msgstr "Deschide toate mesajele private [MP] într-o fereastră separată"
+
+msgid "Use TLS when remote client supports it"
+msgstr "Folosește TLS [Transport Layer Security] cînd clientul distant îl suportă"
+
+msgid "Minimize to tray"
+msgstr "Minimizează în sistaler [system tray]"
+
+msgid "Download whole directory to..."
+msgstr "Descarcă tot dosarul în..."
+
+msgid "Enable safe and compressed transfers"
+msgstr "Activează transferurile sigure și comprimate"
+
+msgid "Ports"
+msgstr "Port"
+
+msgid "Quick Connect"
+msgstr "Conectare Rapidă"
+
+msgid "Raw"
+msgstr "Brută"
+
+msgid "Reliability"
+msgstr "Fiabilitate"
+
+msgid "Open private messages from bots in their own window"
+msgstr "Deschide mesajele private de la boți într-o fereastră separată"
+
+msgid "Sounds"
+msgstr "Sunete"
+
+msgid "Error creating adc registry key"
+msgstr "Eroare la crearea cheii de registru adc"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr "Permite conexiuni TLS la clienți fără certificate de încredere"
+
+msgid "Default away message"
+msgstr "Mesajul implicit pentru absentare"
+
+msgid "Next"
+msgstr "Următorul"
+
+msgid "Configured Public Hub Lists"
+msgstr "Alegeți Lista de Huburi Publice"
+
+msgid "Change Log"
+msgstr "Logul de Modificări"
+
+msgid "Show shell menu where possible"
+msgstr "Afișează meniul integrat [shell] cînd e posibil"
+
+msgid "Type"
+msgstr "Tip"
+
+msgid "Lowest"
+msgstr "minimă"
+
+msgid "Picture"
+msgstr "Imagine"
+
+msgid "Added"
+msgstr "Adăugat"
+
+msgid "Min filesize"
+msgstr "Dimens. min. fișier"
+
+msgid "Default download directory"
+msgstr "Dosarul Implicit de Descărcare"
+
+msgid "Translations"
+msgstr "Traducerile Softului"
+
+msgid "Search for file"
+msgstr "Caută Fișierul"
+
+msgid "Connected"
+msgstr "Conectat"
+
+msgid "Low prio max size"
+msgstr "Prio Scăzută"
+
+msgid "At least"
+msgstr "Cel puțin"
+
+msgid "Options"
+msgstr "Opțiuni"
+
+msgid "Hub Menu"
+msgstr "Meniul Hubului"
+
+msgid "Rename"
+msgstr "Redenumește"
+
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr "Abandonează automat sursele lente ale tuturor itemurilor din coadă (cu excepția listelor de fișiere)"
+
+msgid "No errors"
+msgstr "Nici o eroare"
+
+msgid "Socks IP"
+msgstr "Socks IP"
+
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr "Permite conexiuni TLS la huburi fără certificate de încredere"
+
+msgid "Chat"
+msgstr "Taifas [Chat]"
+
+msgid "Favorite user added"
+msgstr "Utilizator favorit adăugat"
+
+msgid "At most"
+msgstr "Cel mult"
+
+msgid "Log filelist transfers"
+msgstr "Creează un log al transferurilor de fișiere"
+
+msgid "User Description"
+msgstr "Descrierea Utilizatorului"
+
+msgid "Favorite hub added"
+msgstr "Hub favorit adăugat"
+
+msgid "Hub list loaded from cache..."
+msgstr "Lista de huburi a fost încărcată din cache..."
+
+msgid "Error creating magnet registry key"
+msgstr "Eroare la crearea cheii de registru magnet"
+
+msgid "Downloading public hub list..."
+msgstr "Descarc lista de huburi publice..."
+
+msgid "Downloaded"
+msgstr "Descărcat"
+
+msgid "Favorite name"
+msgstr "Numele Dosarului"
+
+msgid "TLS"
+msgstr "TLS"
+
+msgid "Search"
+msgstr "Caută"
+
+msgid "B"
+msgstr "B"
+
+msgid "Automatically search for alternative download locations"
+msgstr "Caută automat opțiuni alternative de descărcare"
+
+msgid "Subtract list"
+msgstr "Obține Lista"
+
+msgid "Download Queue"
+msgstr "Coada de Descărcare"
+
+msgid "Enabled"
+msgstr "Activat"
+
+msgid "All"
+msgstr "Tot"
+
+msgid "Time last seen"
+msgstr "Timpul ultimei apariții"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Notă : vitezele sînt fluctuante, setarea nu e 100% precisă..."
+
+msgid "Don't allow hub/UPnP to override"
+msgstr "Împiedică Hub/UPnP să nu ia in seamă"
+
+msgid "Personal Information"
+msgstr "Informații Personale"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "Deschide auto. slot nou cînd viteza e sub (0 = dezactivare)"
+
+msgid "Executable"
+msgstr "Executabil"
+
+msgid "Open new window when using /join"
+msgstr "Deschide o fereastră nouă la folosirea comenzii /join"
+
+msgid "Upload slots"
+msgstr "Sloturi de Încărcare"
+
+msgid "Public Hubs"
+msgstr "Huburi Publice"
+
+msgid "Min Size"
+msgstr "Mărime Minimă"
+
+msgid "KiB"
+msgstr "KB"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Notă : majoritatea acestor opțiuni necesită repornirea DC++"
+
+msgid "Open downloads directory"
+msgstr "Deschide Dosarul de Descărcare"
+
+msgid "Users"
+msgstr "Utilizatori"
+
+msgid "System Log"
+msgstr "Log de Sistem"
+
+msgid "Help forum"
+msgstr "Forumul de Ajutor"
+
+msgid "Name"
+msgstr "Nume"
+
+msgid "Really remove?"
+msgstr "Sigur doriți să înlăturați?"
+
+msgid "Indexing progress"
+msgstr "Progresul Indexării (Hașării)"
+
+msgid "Login"
+msgstr "Utilizator"
+
+msgid "Only users with free slots"
+msgstr "Doar utilizatori cu sloturi libere"
+
+msgid "File not available"
+msgstr "Fișierul nu e disponibil"
+
+msgid "Max Size"
+msgstr "Mărime Maximă"
+
+msgid "High"
+msgstr "Ridicată"
+
+msgid "Speed"
+msgstr "Viteza"
+
+msgid "Invalid file list name"
+msgstr "Numele listei de fișiere nu e valid"
+
+msgid "Search Menu"
+msgstr "Meniu Căutare"
+
+msgid "Create / Modify Command"
+msgstr "Creează / Modifică Comanda"
+
+msgid "Document"
+msgstr "Document"
+
+msgid "GeoIP database update"
+msgstr "Actualizează baza de date GeoIP"
+
+msgid "Report a bug"
+msgstr "Raportați un Bug"
+
+msgid "Share hidden files"
+msgstr "Partaj. fiș. ascunse"
+
+msgid "Max Hubs"
+msgstr "Huburi - Nr. Maxim"
+
+msgid "Highest"
+msgstr "Maximă"
+
+msgid "Send unknown /commands to the hub"
+msgstr "Trimite comenzile necunoscute de tip /comandă către hub"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Crearea mapărilor de porturi a eșuat. Setați singur NAT-ul dv."
+
+msgid "Private message"
+msgstr "Mesaj Privat"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Folosește font OEM monospațiat pentru afișarea fișierelor text"
+
+msgid "Settings..."
+msgstr "Setări..."
+
+msgid "Enabled / Search String"
+msgstr "Activat / Șir de Căutare"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filtrează mesajele de surghiunire [ban] a utilizatorilor și pe cele de debugare NMDC"
+
+msgid "Unfinished downloads directory"
+msgstr "Dosarul cu Descărcări Neterminate"
+
+msgid "Personal information"
+msgstr "Informații Personale"
+
+msgid "Rating"
+msgstr "Rang"
+
+msgid "Failed to remove port mappings"
+msgstr "Înlăturarea mapărilor de porturi a eșuat"
+
+msgid "Favorite Users"
+msgstr "Utilizatori Favoriți"
+
+msgid "Search Spy"
+msgstr "Spionează Căutarile Altora"
+
+msgid "Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly."
+msgstr "Versiunea de controale obișnuite ale ferestrelor este prea veche pentru ca DC++ să ruleze corect și aproape sigur veți avea probleme cu interfața softului. Ar trebui să descărcați versiunea 5.80 sau mai mare de pe situl DC++ sau direct de pe situl Microsoft."
+
+msgid "Close disconnected"
+msgstr "Închide tot ce-i neconectat"
+
+msgid "Add finished files to share instantly (if shared)"
+msgstr "Adaugă instantaneu fișierele terminate la partaj (dacă se dorește asta)"
+
+msgid "Priority"
+msgstr "Prioritate"
+
+msgid "This hub is not a favorite hub"
+msgstr "Acest hub nu este favorit"
+
+msgid "Close all search windows"
+msgstr "Închide toate ferestrele de căutare"
+
+msgid "Copy Filename"
+msgstr "Copiază Numele Fișierului"
+
+msgid "Open own list"
+msgstr "Deschide Lista Proprie"
+
+msgid "Virtual name"
+msgstr "Numele Dosarului Virtual"
+
+msgid "Destination Directory"
+msgstr "Dosarul de Descărcare"
+
+msgid "TCP"
+msgstr "TCP"
+
+msgid "Full Path"
+msgstr "Cale Completă"
+
+msgid "Search String"
+msgstr "Șir de Căutare"
+
+msgid "Advanced"
+msgstr "Avansate"
+
+msgid "PM"
+msgstr "MP"
+
+msgid "Frequently asked questions"
+msgstr "Întrebări Puse Frecvent"
+
+msgid "Show joins / parts in chat by default"
+msgstr "Afișează în mod implicit alăturările / plecările de la taifas"
+
+msgid "Settings"
+msgstr "Setări"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "Waiting (User online)"
+msgstr "Aștept (Utilizator conectat)"
+
+msgid "Separator"
+msgstr "Separator"
+
+msgid "Ignore private messages from bots"
+msgstr "Ignoră mesajele private de la boți"
+
+msgid "Directory"
+msgstr "Dosar"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Cercetează TTH la Bitzi.com"
+
+msgid "Unknown"
+msgstr "Necunoscut"
+
+msgid "Sort all downloads first"
+msgstr "Sortează toate descărcarile mai întîi"
+
+msgid "Waiting Users"
+msgstr "Utilizatorii în Așteptare"
+
+msgid "Language file"
+msgstr "Fișierul de limbă"
+
+msgid "User offline"
+msgstr "Utilizator neconectat"
+
+msgid "s"
+msgstr "s"
+
+msgid "Donate (paypal)"
+msgstr "Donați (PayPal)"
+
+msgid "Away mode off"
+msgstr "Absentare dezactivată"
+
+msgid "Auto connect / Name"
+msgstr "Conectare Automată / Nume"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "Proxy HTTP (numai pentru lista de huburi)"
+
+msgid "Low"
+msgstr "Scăzută"
+
+msgid "Online"
+msgstr "Conectat"
+
+msgid "View status messages in main chat"
+msgstr "Afișează mesajele de stare în camera de taifas principală"
+
+msgid "Only where I'm op"
+msgstr "Doar acolo unde sînt op"
+
+msgid "Stored password sent..."
+msgstr "Parola stocată a fost trimisă..."
+
+msgid "Auto-search limit"
+msgstr "Auto-Căutare"
+
+msgid "Normal prio max size"
+msgstr "Prio Normală"
+
+msgid "Sort favorite users first"
+msgstr "Sortează utilizatorii favoriți mai întîi"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "O legătura MAGNET a fost introdusă în DC++, dar nu conține un haș valid care e absolut necesar pentru utilizarea in rețeaua Direct Connect.  Nici o acțiune nu va fi întreprinsă."
+
+msgid "Automatically follow redirects"
+msgstr "Urmărește automat redirecționările"
+
+msgid "Set priority"
+msgstr "Setează Prioritatea"
+
+msgid "Download whole directory"
+msgstr "Descarcă tot dosarul"
+
+msgid "Log downloads"
+msgstr "Creează un log al descărcărilor"
+
+msgid "Purge"
+msgstr "Curăță"
+
+msgid "Timestamps enabled"
+msgstr "Marcaje de timp activate"
+
+msgid "Confirm favorite hub removal"
+msgstr "Confirmare la înlăturarea huburilor favorite"
+
+msgid "Please enter a password"
+msgstr "Introduceți o parolă"
+
+msgid "Drop sources below"
+msgstr "Viteza surse sub"
+
+msgid "Finished Downloads"
+msgstr "Descărcările Terminate"
+
+msgid "Download to..."
+msgstr "Descarcă în..."
+
+msgid "Colors"
+msgstr "Culori"
+
+msgid "Done"
+msgstr "Efectuat"
+
+msgid "Any"
+msgstr "Oricare"
+
+msgid "Size"
+msgstr "Mărime"
+
+msgid "Public Hubs list URL"
+msgstr "Adresa listei de huburi publice"
+
+msgid "Always open help file with this dialog"
+msgstr "Deschide fișierul de ajutor odată cu acest dialog"
+
+msgid "Start a search for this file"
+msgstr "Pornește o căutare pentru acest fișier"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Emite un sunet cînd e deschisă o fereastră de mesaj privat [MP]"
+
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "Nu înlătura sursa la abandonarea automată, doar deconecteaz-o "
+
+msgid "AWAY"
+msgstr "Absentare"
+
+msgid "Check every"
+msgstr "Verifică la fiecare"
+
+msgid "Favorite download directories"
+msgstr "Dosare de Descărcare Favorite"
+
+msgid "Highest prio max size"
+msgstr "Prio Foarte Înaltă"
+
+msgid "Address"
+msgstr "Adrese"
+
+msgid "Total size:"
+msgstr "Măr. totală:"
+
+msgid "ADL Search"
+msgstr "Caută folosind ADL"
+
+msgid "Remove user from queue"
+msgstr "Înlătură Utilizatorul din Coadă"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Directory or directory name already exists"
+msgstr "Dosarul sau numele dosarului există deja"
+
+msgid "Full tree does not match TTH root"
+msgstr "Arborele complet nu se potrivește cu rădacina TTH"
+
+msgid "Search history"
+msgstr "Istoricul căutărilor"
+
+msgid "Filelist Menu"
+msgstr "Meniul Listei de Fișiere"
+
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Porecla dv. e deja folosită, schimbați-o cu alta!"
+
+msgid "Port"
+msgstr "Port"
+
+msgid "Auto refresh time"
+msgstr "Auto-Împrosp."
+
+msgid "Errors"
+msgstr "Erori"
+
+msgid "Filename"
+msgstr "Numele Fișierului"
+
+msgid "Firewall (passive, last resort)"
+msgstr "Paravan (pasiv, de ultim resort)"
+
+msgid "Open new file list windows in the background"
+msgstr "Deschide în fundal ferestrele noi cu liste de fișiere"
+
+msgid "High prio max size"
+msgstr "Prio Înaltă"
+
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+msgid "Min segment size"
+msgstr "Mărime min. segment"
+
+msgid "Close all file list windows"
+msgstr "Închide toate ferestrele cu liste de fișiere"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Înregistrează în Windows pentru procesarea legăturilor magnet:"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "Noul nume al dosarului virtual e identic cu cel vechi, ignorăm..."
+
+msgid "Running..."
+msgstr "În desfășurare..."
+
+msgid "External / WAN IP"
+msgstr "Extern / WAN IP"
+
+msgid "Favorite Hub Properties"
+msgstr "Proprietățile Hubului Favorit"
+
+msgid "PM history"
+msgstr "Istoricul MP"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "Atribuie cea mai mică prioritate pentru fișierele nou-adăugate mai mari decît cele cu mărimea încadrată la prioritate scăzută"
+
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+msgid "Show"
+msgstr "Afișează"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Introduceți o poreclă în dialogul de setări!"
+
+msgid "Source too slow"
+msgstr "Sursă prea lentă"
+
+msgid "Timestamps disabled"
+msgstr "Marcaje de timp dezactivate"
+
+msgid "Find"
+msgstr "Găsește"
+
+msgid "Passive user"
+msgstr "Utilizator pasiv"
+
+msgid "Direct connection"
+msgstr "Conectare Directă"
+
+msgid "User Menu"
+msgstr "Meniu Utilizator"
+
+msgid "Connection settings"
+msgstr "Setările Conexiunii"
+
+msgid "Downloads"
+msgstr "Descărcări"
+
+msgid "MiBits/s"
+msgstr "MBiți/s"
+
+msgid "Break on first ADLSearch match"
+msgstr "Oprește căutarea cu ADL [Active Directory Listing] la prima potrivire"
+
+msgid "Set timestamps"
+msgstr "Formatul marcajelor de timp"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Notă : Fișierele apar în partaj [share] doar după ce au fost hașate (indexate)!"
+
+msgid "Close all PM windows"
+msgstr "Închide toate ferestrele cu MP"
+
+msgid "Nick"
+msgstr "Poreclă"
+
+msgid "Command"
+msgstr "Comandă"
+
+msgid "Hubs"
+msgstr "Huburi"
+
+msgid "Confirm dialog options"
+msgstr "Confirmare Expresă a unor Acțiuni"
+
+msgid "Other queue options"
+msgstr "Alte opțiuni referitoare la coadă"
+
+msgid "Remote client does not fully support TTH - cannot download"
+msgstr "Clientul distant nu suportă complet TTH - nu se poate descărca"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "Comută fereastra cînd e selectat un tab activ"
+
+msgid "Join/part showing on"
+msgstr "Afișare alăturări/plecări activată"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Redirecționează solicitarea primită către un hub care este deja conectat"
+
+msgid "Bind address"
+msgstr "Leagă adresa"
+
+msgid "Paused"
+msgstr "Repaus"
+
+msgid "Write buffer size"
+msgstr "Măr. tampon scriere"
+
+msgid "B/s"
+msgstr "B/s"
+
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "Nu deconecta automat utilizatorii favoriți care părăsesc hubul"
+
+msgid "Line speed (upload)"
+msgstr "Viteza de Încărcare"
+
+msgid "Shared"
+msgstr "Partaj"
+
+msgid "Normal"
+msgstr "Normală"
+
+msgid "Show progress bars for transfers"
+msgstr "Afișează barele de progres pentru transferuri"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Inconsistență CRC32 (Verificare SFV)"
+
+msgid "User"
+msgstr "Utilizator"
+
+msgid "Search for alternates"
+msgstr "Caută Alternative"
+
+msgid "Configure Public Hub Lists"
+msgstr "Alege Lista de Huburi Publice"
+
+msgid "Open private messages from the hub in their own window"
+msgstr "Deschide mesajele private din hub într-o fereastră separată"
+
+msgid "About DC++..."
+msgstr "Despre DC++..."
+
+msgid "Hub already exists as a favorite"
+msgstr "Hubul există deja ca favorit"
+
+msgid "Send once per nick"
+msgstr "Trimite o dată per poreclă"
+
+msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
+msgstr "Nu reușesc să deschid portul UDP. Căutarea nu va merge corespunzator pînă cînd nu veți schimba setările sau nu veți închide orice aplicație care ar putea utiliza portul UDP"
+
+msgid "Match queue"
+msgstr "Potrivește cu coada"
+
+msgid "Downloading list..."
+msgstr "Descarc lista..."
+
+msgid "Log system messages"
+msgstr "Creează un log al mesajelor de sistem"
+
+msgid "Uploads"
+msgstr "Încărcări"
+
+msgid "Max Users"
+msgstr "Utilizatori - Nr. Maxim"
+
+msgid "Don't download files already in share"
+msgstr "Nu descărca fișierele prezente deja in partaj [share]"
+
+msgid "Copy magnet link to clipboard"
+msgstr "Copiază Legătura Magnet în Cliplanșetă"
+
+msgid "Slots set"
+msgstr "Setare de Sloturi"
+
+msgid "Error creating dchub registry key"
+msgstr "Eroare la crearea cheii de registru dchub"
+
+msgid "No users"
+msgstr "Nici un utilizator"
+
+msgid "Time left"
+msgstr "Timp Rămas"
+
+msgid "TTH Root"
+msgstr "Rădăcina TTH"
+
+msgid "Remove slow filelists"
+msgstr "Înlătură listele de fișiere lente"
+
+msgid "CID"
+msgstr "CID"
+
+msgid "Specify a server to connect to"
+msgstr "Specifică un server pentru conectare"
+
+msgid "Source Type"
+msgstr "Tipul de Sursă"
+
+msgid "Download files from the Direct Connect network"
+msgstr "Descarcă fișiere din rețeaua Direct Connect"
+
+msgid "No users to download from"
+msgstr "Nici un utilizator de la care să descărcați"
+
+msgid "Offline"
+msgstr "Neconectat"
+
+msgid "Match downloaded lists"
+msgstr "Potrivește Listele Descărcate"
+
+msgid "Creating file index..."
+msgstr "Crearea indexului de fișiere..."
+
+msgid "Description"
+msgstr "Descriere"
+
+msgid "Enter search string"
+msgstr "Introduceți cuvintele de căutat"
+
+msgid "Password"
+msgstr "Parolă"
+
+msgid "Edit the hublist"
+msgstr "Editează lista de huburi"
+
+msgid "Network Statistics"
+msgstr "Statisticile de Rețea"
+
+msgid "Firewall with manual port forwarding"
+msgstr "Parav. cu porturi redirecționate manual"
+
+msgid "Country"
+msgstr "Țara"
+
+msgid "Close all offline PM windows"
+msgstr "Închide toate ferestrele cu MP neconectate"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Emite un sunet cînd e recepționat un mesaj personal"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Numărul maxim de descărcari simultane (0 = infinit)"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "Obținerea IP-ului extern prin UPnP a eșuat. Setați-l dv. singur."
+
+msgid "Automatic Directory Listing Search"
+msgstr "Căutare Automată în Dosare [ADL]"
+
+msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
+msgstr "Nu reușesc să deschid portul TCP/TLS. Transferurile de fișiere nu vor merge corespunzător pînă cînd nu veți schimba setările sau nu veți inchide orice aplicație care ar putea utiliza portul TCP/TLS"
+
+msgid "Audio"
+msgstr "Audio"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "Compară automat potrivirile căutării automate cu coada de așteptare"
+
+msgid "Max inactivity"
+msgstr "Timp max. inactiv."
+
+msgid "Log private chat"
+msgstr "Creează un log al taifasului privat"
+
+msgid "Min Share"
+msgstr "Partaj Minim"
+
+msgid "Open new private message windows in the background"
+msgstr "Deschide în fundal ferestrele noi cu mesaje private"
+
+msgid "Min elapsed"
+msgstr "Timp minim scurs"
+

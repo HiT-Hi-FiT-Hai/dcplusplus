@@ -1,0 +1,1156 @@
+
+# Slovenian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <PrimeEvil@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <PrimeEvil@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
+
+msgid "Slot granted"
+msgstr "Reža(slot) odobren"
+
+msgid "Run in background"
+msgstr "Deluj v ozadju"
+
+msgid "Guess user country from IP"
+msgstr "Ugibaj uporabnikovo državo iz IP naslova"
+
+msgid "Log main chat"
+msgstr "Piši dnevnik iz glavnega pogovornega okna"
+
+msgid "Keep duplicate files in your file list"
+msgstr "Obdrži podvojene datoteke v datotečni listi"
+
+msgid "Join/part of favorite users showing on"
+msgstr "Prikaz prihoda/odhoda priljubljenih uporabnikov onemogočen"
+
+msgid "Notification sound"
+msgstr "Opozorilni zvok"
+
+msgid "Finished Uploads"
+msgstr "Končani Prenosi Gor"
+
+msgid "File type"
+msgstr "Tip datoteke"
+
+msgid "MiB/s"
+msgstr "MiB/s"
+
+msgid "GiB"
+msgstr "GiB"
+
+msgid "Min sources online"
+msgstr "Min virov online"
+
+msgid "Outgoing connection settings"
+msgstr "Nastavitve odhajajočih povezav"
+
+msgid "Popup box to input password for hubs"
+msgstr "Odpri novo okno za vnos gesla za vstop v hub"
+
+msgid "Log uploads"
+msgstr "Piši dnevnik iz prenosov gor"
+
+msgid "ADLSearch Properties"
+msgstr "Nastavitve ADL Iskanja"
+
+msgid "Directories"
+msgstr "Mape"
+
+msgid "Ready to search..."
+msgstr "Pripravljen za iskanje..."
+
+msgid "Autodrop settings"
+msgstr "Nastavitve samodejnega zavračanja"
+
+msgid "Specify a URL"
+msgstr "Določi URL"
+
+msgid "Shared directories"
+msgstr "Deljene mape"
+
+msgid "Really exit?"
+msgstr "Ali res želite zapreti program?"
+
+msgid "Tag"
+msgstr "Značka"
+
+msgid "MAGNET Link detected"
+msgstr "MAGNETNA povezava zaznana"
+
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Samodejno prekini uporabnike, ki zapustijo hub"
+
+msgid "Use antifragmentation method for downloads"
+msgstr "Uporabi antifragmentacijo za prenose"
+
+msgid "Remove source"
+msgstr "Odstrani vir"
+
+msgid "Under what name you see the directory"
+msgstr "Pod kakšnim imenom ti vidiš ta direktorij"
+
+msgid "Join/part of favorite users showing off"
+msgstr "Prikaz prihoda/odhoda priljubljenih uporabnikov omogočen"
+
+msgid "Confirm item removal in download queue"
+msgstr "Potrjevanje brisanja datotek iz čakalne vrste"
+
+msgid "Download Matches"
+msgstr "Ujemajoči prenosi"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Browse..."
+msgstr "Išči..."
+
+msgid "Logging"
+msgstr "Pisanje Dnevnikov"
+
+msgid "Name under which the others see the directory"
+msgstr "Ime direktorija/mape kakor ga vidijo ostali"
+
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Meja za pavziranje novih prenosov dol (KiB/s, 0 = onemogočeno)"
+
+msgid "Appearance"
+msgstr "Videz"
+
+msgid "Favorite Hubs"
+msgstr "Priljubljeni Hubi"
+
+msgid "Window options"
+msgstr "Nastavitve oken"
+
+msgid "Auto-open at startup"
+msgstr "Samodejno odpri pri zagonu"
+
+msgid "Sharing"
+msgstr "Deljenje"
+
+msgid "No matches"
+msgstr "Ni ujemanj"
+
+msgid "Enable automatic SFV checking"
+msgstr "Omogoči avtomatsko SFV preverjanje"
+
+msgid "Skip zero-byte files"
+msgstr "Preskoči datoteke velike 0 bajtov"
+
+msgid "Min Slots"
+msgstr "Min Rež(Slotov)"
+
+msgid "Clear search box after each search"
+msgstr "Počisti polje za iskanje po vsakem iskanju"
+
+msgid "Do nothing"
+msgstr "Ne stori ničesar"
+
+msgid "Accept custom user commands from hub"
+msgstr "Dovoli neobičajne komande uporabnikov iz huba"
+
+msgid "Invalid number of slots"
+msgstr "Napačna številka reže(slota)"
+
+msgid "Don't send the away message to bots"
+msgstr "Ne pošiljaj odsotnostnih sporočil botom"
+
+msgid "Request a feature"
+msgstr "Predlagaj Novo Funkcijo V Programu"
+
+msgid "Max hash speed"
+msgstr "Max hash hitrost"
+
+msgid "Don't download files already in the queue"
+msgstr "Ne prenašaj datotek ki že obstajajo v čakalni vrsti"
+
+msgid "Show timestamps in chat by default"
+msgstr "Prikaži uro v pogovorih in hubih pod privzeto"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Search for"
+msgstr "Išči za "
+
+msgid "Hub"
+msgstr "Hub"
+
+msgid "Favorite hub removed"
+msgstr "Priljubljeni hub odstranjen"
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "Compressed"
+msgstr "Stisnjeno"
+
+msgid "Count"
+msgstr "Števec"
+
+msgid "Firewall with UPnP"
+msgstr "Požarni zid z funkcijo UPnP"
+
+msgid "Limits"
+msgstr "Omejitve"
+
+msgid "Public Hubs list"
+msgstr "Javna Hub Lista"
+
+msgid "Connection"
+msgstr "Povezava"
+
+msgid "Time"
+msgstr "Čas"
+
+msgid "Tab highlight on content change"
+msgstr "Jeziček se odebeli ob spremembi vsebine"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Samodejna odsotnost ob pomanjšanju (in vrnitev ob obnovi)"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "Pri brskanju po datotekah uporabljaj sistemske ikone (malce upočasni brskanje)"
+
+msgid "Don't delete file lists when exiting"
+msgstr "Ne briši datotečnih list pri izhodu iz programa"
+
+msgid "Auto grant slot / Nick"
+msgstr "Samodejno Podari Dodatno Režo(Slot) / Vzdevek"
+
+msgid "Max filelist size"
+msgstr "Max velikost datotočne liste"
+
+msgid "Confirm application exit"
+msgstr "Potrjevanje izhoda iz programa"
+
+msgid "Ignore private messages from the hub"
+msgstr "Ignoriraj zasebna sporočila iz huba"
+
+msgid "Exact size"
+msgstr "Natančna Velikost"
+
+msgid "DC++ discussion forum"
+msgstr "DC++ Forum"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Naj Windowsi upravljajo z dchub:// in adc:// URL linki"
+
+msgid "Search options"
+msgstr "Nastavitve Iskanja"
+
+msgid "Re-add source"
+msgstr "Ponovno dodaj izvor"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Use CTRL for line history"
+msgstr "Uporabi CTRL za vrstično zgodovino"
+
+msgid "MiB"
+msgstr "MiB"
+
+msgid "Notepad"
+msgstr "Beležnica"
+
+msgid "DC++ Homepage"
+msgstr "DC++ Domača Stran"
+
+msgid "Join/part showing off"
+msgstr "Prikaz prihoda/odhoda uporabnikov omogočen"
+
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "Nastavitve prihajajočih povezav (glej Pomoč/FAQ za dodatna pojasnila)"
+
+msgid "Mini slot size"
+msgstr "Mini reže"
+
+msgid "Hublist"
+msgstr "Lista Hubov"
+
+msgid "UDP"
+msgstr "UDP Vrata"
+
+msgid "Ignore TTH searches"
+msgstr "Prezri TTH iskanja"
+
+msgid "File"
+msgstr "Datoteka"
+
+msgid "User went offline"
+msgstr "Uporabnik je šel offline"
+
+msgid "Slots"
+msgstr "Reže(Sloti)"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Za razreševanje imen gostiteljev uporabi SOCKS5 strežnik"
+
+msgid "Log status messages"
+msgstr "Piši dnevnik iz statusa"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "Kaži samo prihode/odhode priljubljenih uporabnikov"
+
+msgid "KiB/s"
+msgstr "KiB/s"
+
+msgid "Downloading..."
+msgstr "Prenašanje..."
+
+msgid "Don't remove /password before your password"
+msgstr "Ne odstrani /password pred tvojim geslom"
+
+msgid "Path"
+msgstr "Pot"
+
+msgid "Specify a search string"
+msgstr "Določi iskalni niz"
+
+msgid "Open private messages in their own window"
+msgstr "Odpri zasebna sporočila v lastnem oknu"
+
+msgid "Use TLS when remote client supports it"
+msgstr "Uporabi TLS kadar to klient omogoča"
+
+msgid "Minimize to tray"
+msgstr "Minimiraj v opravilno vrstico"
+
+msgid "Download whole directory to..."
+msgstr "Prenesi celotno mapo v..."
+
+msgid "Enable safe and compressed transfers"
+msgstr "Omogoči varne in stisnjene prenose"
+
+msgid "Ports"
+msgstr "Vrata"
+
+msgid "Quick Connect"
+msgstr "Hitro Povezovanje"
+
+msgid "Raw"
+msgstr "Raw"
+
+msgid "Reliability"
+msgstr "Zanesljivost"
+
+msgid "Open private messages from bots in their own window"
+msgstr "Odpri zasebna spročila od botov v lastnem oknu"
+
+msgid "Sounds"
+msgstr "Zvoki"
+
+msgid "Error creating adc registry key"
+msgstr "Napaka pri kreiranju adc registerskega ključa"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr "Dovoli TLS povezave k klientom brez zaupnega cerfitikata"
+
+msgid "Default away message"
+msgstr "Privzeto sporočilo ob odsotnosti"
+
+msgid "Next"
+msgstr "Naslednji"
+
+msgid "Configured Public Hub Lists"
+msgstr "Trenutne Javna Hub Liste"
+
+msgid "Change Log"
+msgstr "Spremembe V Verzijah"
+
+msgid "Show shell menu where possible"
+msgstr "Pokaži shell meni v končanih prenosih"
+
+msgid "Type"
+msgstr "Tip"
+
+msgid "Lowest"
+msgstr "Najnižja"
+
+msgid "Picture"
+msgstr "Slika"
+
+msgid "Added"
+msgstr "Dodano"
+
+msgid "Min filesize"
+msgstr "Min velikost datoteke"
+
+msgid "Default download directory"
+msgstr "Privzeta mapa za shranjevanje prenešenih datotek"
+
+msgid "Translations"
+msgstr "Prevodi Programa"
+
+msgid "Search for file"
+msgstr "Išči datoteko"
+
+msgid "Connected"
+msgstr "Povezan"
+
+msgid "Low prio max size"
+msgstr "Nizka prio velikost"
+
+msgid "At least"
+msgstr "Najmanj"
+
+msgid "Options"
+msgstr "Nastavitve"
+
+msgid "Hub Menu"
+msgstr "Hub Meni"
+
+msgid "Rename"
+msgstr "Preimenuj"
+
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr "Samodejno zavrzi počasne vire pri vseh prenosih v čakalni vrsti (razen listah datotek)"
+
+msgid "No errors"
+msgstr "Brez napak"
+
+msgid "Socks IP"
+msgstr "Socks IP"
+
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr "Dovoli TLS povezave k hubom brez zaupnega cerfitikata"
+
+msgid "Chat"
+msgstr "Pogovor"
+
+msgid "Favorite user added"
+msgstr "Priljubljeni uporabnik dodan"
+
+msgid "At most"
+msgstr "Največ"
+
+msgid "Log filelist transfers"
+msgstr "Piši dnevnik o prenešenih datotečnih listah"
+
+msgid "User Description"
+msgstr "Uporabnikov Opis"
+
+msgid "Favorite hub added"
+msgstr "Priljubljen hub dodan"
+
+msgid "Hub list loaded from cache..."
+msgstr "Lista hubov naložena iz medpomnilnika..."
+
+msgid "Error creating magnet registry key"
+msgstr "Napaka pri kreiranju magnetnega registerskega ključa"
+
+msgid "Downloading public hub list..."
+msgstr "Prenašanje liste javnih hubov..."
+
+msgid "Downloaded"
+msgstr "Prenešeno"
+
+msgid "Favorite name"
+msgstr "Direktorij priljubljenih"
+
+msgid "TLS"
+msgstr "TLS"
+
+msgid "Search"
+msgstr "Išči"
+
+msgid "B"
+msgstr "B"
+
+msgid "Automatically search for alternative download locations"
+msgstr "Avtomatično išči alternativne uporabnike za prenose"
+
+msgid "Subtract list"
+msgstr "Odstrani listo"
+
+msgid "Download Queue"
+msgstr "Čakalna Vrsta"
+
+msgid "Enabled"
+msgstr "Omogočeno"
+
+msgid "All"
+msgstr "Vse"
+
+msgid "Time last seen"
+msgstr "Zadnjič Viden"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Opomba; zaradi spreminjanja hitrosti prenosov to ni 100% zanesljivo..."
+
+msgid "Don't allow hub/UPnP to override"
+msgstr "Ne dovoli hubu/UPnP da prepiše nastavitve"
+
+msgid "Personal Information"
+msgstr "Osebne Informacije"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "Odpri novo režo(slot), če je hitrost pade pod (0 = onemogočeno)"
+
+msgid "Executable"
+msgstr "Izvršljiva"
+
+msgid "Open new window when using /join"
+msgstr "Odpri novo okno ob uporabi ukaza /join"
+
+msgid "Upload slots"
+msgstr "Reže(sloti) za prenos gor"
+
+msgid "Public Hubs"
+msgstr "Javni Hubi"
+
+msgid "Min Size"
+msgstr "Min Velikost"
+
+msgid "KiB"
+msgstr "KiB"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Opomba; Večina teh nastavitev zahteva ponovni zagon programa"
+
+msgid "Open downloads directory"
+msgstr "Odpri Direktorij Prenosov"
+
+msgid "Users"
+msgstr "Uporabnikov"
+
+msgid "System Log"
+msgstr "Sistemski dnevnik"
+
+msgid "Help forum"
+msgstr "Forum Za Pomoč"
+
+msgid "Name"
+msgstr "Ime"
+
+msgid "Really remove?"
+msgstr "Ali res želite odstraniti?"
+
+msgid "Indexing progress"
+msgstr "Napredovanje Ustvarjanja Glavne Liste"
+
+msgid "Login"
+msgstr "Prijava"
+
+msgid "Only users with free slots"
+msgstr "Samo uporabniki s prostimi režami(sloti)"
+
+msgid "File not available"
+msgstr "Datoteka ni na voljo"
+
+msgid "Max Size"
+msgstr "Max Velikost"
+
+msgid "High"
+msgstr "Visoka"
+
+msgid "Speed"
+msgstr "Hitrost"
+
+msgid "Invalid file list name"
+msgstr "Napačno ime liste"
+
+msgid "Search Menu"
+msgstr "Meni Za Iskanje"
+
+msgid "Create / Modify Command"
+msgstr "Ustvari / Popravi Ukaz"
+
+msgid "Document"
+msgstr "Dokument"
+
+msgid "GeoIP database update"
+msgstr "Nadgradnja GeoIP Baze"
+
+msgid "Report a bug"
+msgstr "Poročaj O Napaki V Programu"
+
+msgid "Share hidden files"
+msgstr "Deli skrite datoteke"
+
+msgid "Max Hubs"
+msgstr "Max Hubov"
+
+msgid "Highest"
+msgstr "Najvišja"
+
+msgid "Send unknown /commands to the hub"
+msgstr "Pošlji neznane komande /commands v hub"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Napaka pri kreiranju liste vrat. Prosim nastavite NAT."
+
+msgid "Private message"
+msgstr "Zasebno sporočilo"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Za branje besedilnih datotek uporabljaj črke enake širine"
+
+msgid "Settings..."
+msgstr "Nastavitve..."
+
+msgid "Enabled / Search String"
+msgstr "Omogočeno / Iskani niz"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filtriraj sporočila o brcah s hubov in NMDC debug sporočila"
+
+msgid "Unfinished downloads directory"
+msgstr "Mapa za nedokončane prenose dol"
+
+msgid "Personal information"
+msgstr "Osebne Informacije"
+
+msgid "Rating"
+msgstr "Ocena"
+
+msgid "Failed to remove port mappings"
+msgstr "Napaka pri odstranjevanju liste vrat"
+
+msgid "Favorite Users"
+msgstr "Priljubljeni Uporabniki"
+
+msgid "Search Spy"
+msgstr "Iskalni Vohun"
+
+msgid "Close disconnected"
+msgstr "Zapri Nepovezane"
+
+msgid "Add finished files to share instantly (if shared)"
+msgstr "Dodaj končane prenešene datoteke takoj v deljenje (če so deljene)"
+
+msgid "Priority"
+msgstr "Prioriteta"
+
+msgid "This hub is not a favorite hub"
+msgstr "Ta hub ni med priljubljenimi"
+
+msgid "Close all search windows"
+msgstr "Zapri vsa iskalna okna"
+
+msgid "Copy Filename"
+msgstr "Kopiraj ime"
+
+msgid "Open own list"
+msgstr "Odpri Svojo Listo Datotek"
+
+msgid "Virtual name"
+msgstr "Navidezno Ime"
+
+msgid "Destination Directory"
+msgstr "Ciljni direktorij"
+
+msgid "TCP"
+msgstr "TCP Vrata"
+
+msgid "Full Path"
+msgstr "Celotna Pot"
+
+msgid "Search String"
+msgstr "Iskani Niz"
+
+msgid "Advanced"
+msgstr "Napredno"
+
+msgid "PM"
+msgstr "Zasebno Sporočilo"
+
+msgid "Frequently asked questions"
+msgstr "Pogosto Zastavljena Vprašanja (FAQ)"
+
+msgid "Show joins / parts in chat by default"
+msgstr "Prikazuj prihode/odhode v oknu za pogovore pod privzeto"
+
+msgid "Settings"
+msgstr "Nastavitve"
+
+msgid "Server"
+msgstr "Strežnik"
+
+msgid "Waiting (User online)"
+msgstr "Čakam (Uporabnik online)"
+
+msgid "Separator"
+msgstr "Separator"
+
+msgid "Ignore private messages from bots"
+msgstr "Ignoriraj zasebna sporočila od botov"
+
+msgid "Directory"
+msgstr "Pot"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Preglej TTH na strani Bitzi.com"
+
+msgid "Unknown"
+msgstr "Neznan"
+
+msgid "Sort all downloads first"
+msgstr "Sortiraj vse prenose dol naprej"
+
+msgid "Waiting Users"
+msgstr "Čakam Uporabnike"
+
+msgid "Language file"
+msgstr "Datoteka s prevodom"
+
+msgid "User offline"
+msgstr "Uporabnik offline"
+
+msgid "s"
+msgstr "s"
+
+msgid "Donate (paypal)"
+msgstr "Prispevaj (Preko Sistema Paypal)"
+
+msgid "Away mode off"
+msgstr "Odsotni način izključen"
+
+msgid "Auto connect / Name"
+msgstr "Samodejno Povezovanje / Ime"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Proxy (samo za hubliste)"
+
+msgid "Low"
+msgstr "Nizka"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "View status messages in main chat"
+msgstr "Sistemska sporočila prikaži v glavnem oknu klepeta"
+
+msgid "Only where I'm op"
+msgstr "Samo kjer sem operater"
+
+msgid "Stored password sent..."
+msgstr "Shranjeno geslo polano..."
+
+msgid "Auto-search limit"
+msgstr "Omejitev avtomatičnega iskanja"
+
+msgid "Normal prio max size"
+msgstr "Normalna prio velikost"
+
+msgid "Sort favorite users first"
+msgstr "Sortiraj priljubljene uporabnike kot prve"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "MAGNETNA povezana podana programu ni imela veljaven datotečni hash, zato program ni storil ničesar."
+
+msgid "Show progress bars for transfers"
+msgstr "Prikaži vrstico napredka za prenose"
+
+msgid "Set priority"
+msgstr "Nastavi prioriteto"
+
+msgid "Download whole directory"
+msgstr "Prenesi celotno mapo"
+
+msgid "Log downloads"
+msgstr "Piši dnevnik o prenosih"
+
+msgid "Purge"
+msgstr "Počisti"
+
+msgid "Timestamps enabled"
+msgstr "Časovne oznake omogočene"
+
+msgid "Confirm favorite hub removal"
+msgstr "Potrjevanje odstranitve priljubljenih hubov"
+
+msgid "Please enter a password"
+msgstr "Prosim vnesite geslo"
+
+msgid "Drop sources below"
+msgstr "Zavrzi naslednje vire"
+
+msgid "Finished Downloads"
+msgstr "Končani Prenosi Dol"
+
+msgid "Download to..."
+msgstr "Prenesi v..."
+
+msgid "Colors"
+msgstr "Barve"
+
+msgid "Done"
+msgstr "Končano"
+
+msgid "Any"
+msgstr "Katerakoli"
+
+msgid "Size"
+msgstr "Velikost"
+
+msgid "Public Hubs list URL"
+msgstr "URL-ji za javne hub liste"
+
+msgid "Always open help file with this dialog"
+msgstr "Vedno odpri pomoč s tem dialogom"
+
+msgid "Start a search for this file"
+msgstr "Najdi to datoteko"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Z zvokom me opozori vsakič, ko se odpre okno zasebnega sporočila"
+
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "Ne odstrani vira pri samodejnem zavračanju, samo prekini povezavo"
+
+msgid "AWAY"
+msgstr "ODSOTEN/A"
+
+msgid "Check every"
+msgstr "Preveri vsakih"
+
+msgid "Favorite download directories"
+msgstr "Priljubljene mape za prenos dol"
+
+msgid "Highest prio max size"
+msgstr "Največja prio velikost"
+
+msgid "Address"
+msgstr "Naslov"
+
+msgid "Total size:"
+msgstr "Skupno:"
+
+msgid "ADL Search"
+msgstr "ADL Iskanje"
+
+msgid "Remove user from queue"
+msgstr "Odstrani uporabnika iz čakalne vrste"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Directory or directory name already exists"
+msgstr "Imenik ali ime imenika že obstaja"
+
+msgid "Full tree does not match TTH root"
+msgstr "Celotno drevo se ne ujema v TTH"
+
+msgid "Search history"
+msgstr "Zgodovina iskanj"
+
+msgid "Filelist Menu"
+msgstr "Meni Seznama Datotek"
+
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Tvoj vzdevek je že v uporabi, prosim izberi drugega!"
+
+msgid "Port"
+msgstr "Vrata"
+
+msgid "Auto refresh time"
+msgstr "Časovni razmak pri avtomatski osvežitvi"
+
+msgid "Errors"
+msgstr "Napake"
+
+msgid "Filename"
+msgstr "Ime Datoteke"
+
+msgid "Firewall (passive, last resort)"
+msgstr "Požarni zid (pasiven)"
+
+msgid "Open new file list windows in the background"
+msgstr "Nova okna z seznami datotek odpri v ozadju"
+
+msgid "High prio max size"
+msgstr "Velika prio velikost"
+
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+msgid "Close all file list windows"
+msgstr "Zaprvi vse okna z datotečnimi listi"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Naj Windowsi upravljajo z magnetnimi: URI linki"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "Novo navidezno ime se ujema s starim, delam naprej..."
+
+msgid "Running..."
+msgstr "Izvajanje..."
+
+msgid "External / WAN IP"
+msgstr "Zunanji / WAN IP"
+
+msgid "Favorite Hub Properties"
+msgstr "Nstavitve priljubljenih hubov"
+
+msgid "PM history"
+msgstr "Zgodovina zasebnih sporočil"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "Nastavi nizko prioriteto za novo dodane datokeke večje kot Nizka prio velikost"
+
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNETNI URI"
+
+msgid "Show"
+msgstr "Pokaži"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Prosim, da v nastavitvah vnesete vzdevek!"
+
+msgid "Source too slow"
+msgstr "Vir je prepočasen"
+
+msgid "Timestamps disabled"
+msgstr "Časovne oznake onemogočene"
+
+msgid "Find"
+msgstr "Najdi"
+
+msgid "Passive user"
+msgstr "Pasiven uporabnik:"
+
+msgid "Direct connection"
+msgstr "Direktna povezava"
+
+msgid "User Menu"
+msgstr "Uporabnikov Meni"
+
+msgid "Connection settings"
+msgstr "Nastavitve Povezave"
+
+msgid "Downloads"
+msgstr "Prenosi"
+
+msgid "MiBits/s"
+msgstr "MiBits/s"
+
+msgid "Break on first ADLSearch match"
+msgstr "Pavza po prvem ADL Iskanje ujemanju"
+
+msgid "Set timestamps"
+msgstr "Format časov"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Opomba; Datoteke se pojavijo v deljenju ko je hashiranje končano!"
+
+msgid "Close all PM windows"
+msgstr "Zapri vsa okna z zasebnimi sporočili"
+
+msgid "Nick"
+msgstr "Vzdevek"
+
+msgid "Command"
+msgstr "Ukaz"
+
+msgid "Hubs"
+msgstr "Hubi"
+
+msgid "Confirm dialog options"
+msgstr "Potrjevanje opcij dialoga"
+
+msgid "Other queue options"
+msgstr "Ostale nastavitve čakalne vrste"
+
+msgid "Remote client does not fully support TTH - cannot download"
+msgstr "Oddaljeni klient ne podpira TTH - ni možen prenos datotek"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "Premakni okno kadar izberem aktivno vrstico"
+
+msgid "Join/part showing on"
+msgstr "Prikaz prihoda/odhoda uporabnikov onemoogočen"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Zahteva za preusmeritev je usmerjena na hub, ki je že povezan"
+
+msgid "Bind address"
+msgstr "Privzemi naslov"
+
+msgid "Paused"
+msgstr "Pavzirano"
+
+msgid "Write buffer size"
+msgstr "Velikost medpomnilnika"
+
+msgid "B/s"
+msgstr "B/s"
+
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "Ne prekini priljubljene uporabnike ki zapustijo hub"
+
+msgid "Line speed (upload)"
+msgstr "Hitrost linije (prenos gor)"
+
+msgid "Shared"
+msgstr "Deljeno"
+
+msgid "Normal"
+msgstr "Normalna"
+
+msgid "Automatically follow redirects"
+msgstr "Samodejno sledi preusmeritvam"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "CRC32 neskadnost (SFV-preverjanje)"
+
+msgid "User"
+msgstr "Uporabnik"
+
+msgid "Search for alternates"
+msgstr "Išči alternative"
+
+msgid "Configure Public Hub Lists"
+msgstr "Nastavi Listo Public Hubov"
+
+msgid "Open private messages from the hub in their own window"
+msgstr "Odpri zasebna spročila iz huba v lastnem oknu"
+
+msgid "About DC++..."
+msgstr "O Programu DC++..."
+
+msgid "Hub already exists as a favorite"
+msgstr "Hub že obstaja med priljubljenimi"
+
+msgid "Send once per nick"
+msgstr "Pošlji po enkrat na vzdevek"
+
+msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
+msgstr "Napaka pri odpiranju UDP vrat. Prenosi ne bodo delovali pravilno dokler ne odpreš vrat ali zapreš vse programe ki bi lahko uporabljali ista UDP vrata"
+
+msgid "Match queue"
+msgstr "Primerjaj ujemanje s čakalno vrsto"
+
+msgid "Downloading list..."
+msgstr "Prenašam listo..."
+
+msgid "Log system messages"
+msgstr "Piši dnevnik iz sistemskih sporočil"
+
+msgid "Uploads"
+msgstr "Prenosi gor"
+
+msgid "Max Users"
+msgstr "Max Uporabnikov"
+
+msgid "Don't download files already in share"
+msgstr "Ne prenašaj datotek ki že obstajajo v deljenju"
+
+msgid "Copy magnet link to clipboard"
+msgstr "Kopiraj magnetni link v odložišče"
+
+msgid "Slots set"
+msgstr "Reže(sloti) nastavljeni"
+
+msgid "Error creating dchub registry key"
+msgstr "Napaka pri kreiranju dchub registerskega ključa"
+
+msgid "No users"
+msgstr "Ni uporabnikov"
+
+msgid "Time left"
+msgstr "Čas Do Konca"
+
+msgid "TTH Root"
+msgstr "TTH Izvor"
+
+msgid "Remove slow filelists"
+msgstr "Zavrzi počasne liste datotek"
+
+msgid "CID"
+msgstr "CID"
+
+msgid "Specify a server to connect to"
+msgstr "Določi strežnik za povezavo"
+
+msgid "Source Type"
+msgstr "Vrsta Vira"
+
+msgid "Download files from the Direct Connect network"
+msgstr "Prenesi datoteka iz Direct Connect omrežja"
+
+msgid "No users to download from"
+msgstr "Ni uporabnikov za prenos"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "Match downloaded lists"
+msgstr "Primerjaj s prenešenimi listi datotek"
+
+msgid "Creating file index..."
+msgstr "Kreiram glavno listo datotek..."
+
+msgid "Description"
+msgstr "Opis"
+
+msgid "Enter search string"
+msgstr "Vnesite iskani niz"
+
+msgid "Password"
+msgstr "Geslo"
+
+msgid "Edit the hublist"
+msgstr "Uredi listo hubov"
+
+msgid "Network Statistics"
+msgstr "Statistika Omrežja"
+
+msgid "Firewall with manual port forwarding"
+msgstr "Požarni zid z ročnim odpiranjem vrat"
+
+msgid "Country"
+msgstr "Država"
+
+msgid "Close all offline PM windows"
+msgstr "Zapri vsa okna z zasebnimi sporočili offline uporabnikov"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Z zvokom me opozori vsakič, ko prejmem zasebno sporočilo"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Max vzporednih prenosov dol (0 = neskončno)"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "Zunanjega IPja ni bilo mogoče dobiti od UPnP. Prosim vnesite ga ročno."
+
+msgid "Automatic Directory Listing Search"
+msgstr "ADL Iskanje"
+
+msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
+msgstr "Napaka pri odpiranju UDP vrat. Prenosi ne bodo delovali pravilno dokler ne odpreš vrat ali zapreš vse programe ki bi lahko uporabljali ista UDP vrata"
+
+msgid "Audio"
+msgstr "Zvočna"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "Avtomatično primerjaj s čakalno vrsto pri samodejnem iskanju"
+
+msgid "Max inactivity"
+msgstr "Max neaktivno"
+
+msgid "Log private chat"
+msgstr "Piši dnevnik iz zasebnih sporočil"
+
+msgid "Min Share"
+msgstr "Min Deljenja"
+
+msgid "Open new private message windows in the background"
+msgstr "Nova okna zasebnih sporočil odpri v ozadju"
+
+msgid "Min elapsed"
+msgstr "Min preteklo"
+

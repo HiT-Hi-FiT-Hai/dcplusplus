@@ -1,0 +1,124 @@
+
+# Albanian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <rrjeti@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <rrjeti@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: plurals=2; plural=(n != 1);\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Verifikimi i Socks serverit dështoi(fjalëkalimi apo emri i përdoruesit është gabim?)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Socks serveri s´e përkrah verifikimi e fjalëkalimit / përdoruesit "
+
+msgid "Unable to read hash data file"
+msgstr "Data fili i TTH'së s`mund të lexohet"
+
+msgid "More data was sent than was expected"
+msgstr "U dërguan më tepër informata se sa që pritej"
+
+msgid "You're trying to download from yourself!"
+msgstr "Ty orvatesh të shkarkosh nga vetvetja!"
+
+msgid "Offline"
+msgstr "Shkëputur"
+
+msgid "Hash database"
+msgstr "TTH-indeksimi i bazës kompjuterike/dosjes"
+
+msgid "All download slots taken"
+msgstr "Të gjitha kanalet për shkarkim janë të zëna"
+
+msgid "Redirect user(s)"
+msgstr "Riorijento përdoruesin(-at)"
+
+msgid "Target filename too long"
+msgstr "Emri i filit është shumë i gjatë"
+
+msgid "Connection timeout"
+msgstr "Jashtëkohe(Timeout) gjatë lidhjes"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Në listën e shkarkimeve egziston fili me madhësi tjetër"
+
+msgid "Error during decompression"
+msgstr "Gabim gjatë ngjeshjes"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "SFV-kontrolli dha një shumë kontroll të gabuar CRC32"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Në listën e shkarkimeve egziston një fil me një TTH-kontroll shumë tjetër"
+
+msgid "No slots available"
+msgstr "Kanalet s`janë të arritshme/në dispozicion"
+
+msgid "Error during compression"
+msgstr "Gabim gjatë ngjeshjes"
+
+msgid "Disconnected"
+msgstr "Shkëputur"
+
+msgid "Hash database rebuilt"
+msgstr "U rindërtua(përfundua)TTH-indeksimi i bazës kompjuterike(dosjes)"
+
+msgid "Remove all subdirectories before adding this one"
+msgstr "Përpara se t`a vendosish këtë, zhvendos të gjitha nën-dosjet"
+
+msgid "File list refresh initiated"
+msgstr "Fillon rifreskimi i listës së filit"
+
+msgid "Virtual directory name already exists"
+msgstr "Emri viritual i dosjes egziston"
+
+msgid "Full tree does not match TTH root"
+msgstr "Struktura e shkarkuar s`i përgjigjet TTH rrënjës"
+
+msgid "Shared Files"
+msgstr "Filet e shpërndara"
+
+msgid "No directory specified"
+msgstr "S´është caktuar asnjë dosje"
+
+msgid "The socks server requires authentication"
+msgstr "Socks serveri kërkon verifikim"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "Fili me madhësi të njejtë apo më të madhe gjindet ne vendin e caktuar"
+
+msgid "Unable to create thread"
+msgstr "S`mund të krijon strukturë"
+
+msgid "Kick user(s)"
+msgstr "Përjashto përdoruesin(at)"
+
+msgid "File not available"
+msgstr "Fili s´është i arritshëm"
+
+msgid "The socks server failed establish a connection"
+msgstr "Socks serveri dështoi në krijimi e kyçjes(lidhjes)"
+
+msgid "Directory already shared"
+msgstr "Dosja i gatshëm për shpërndarje"
+
+msgid "Download Queue"
+msgstr "Lista e shkarkimeve"
+
+msgid "The temporary download directory cannot be shared"
+msgstr "Dosja me shkarkimet e pa përfunduara s´mund të shpërndahet"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "Në shpërndarjet e tua egziston(qysh prej më para) fili i grimcuar(me madhësi të njejtë)"
+
+msgid "File list refresh finished"
+msgstr "Përfundon rifreskimi i listës së filit"
+

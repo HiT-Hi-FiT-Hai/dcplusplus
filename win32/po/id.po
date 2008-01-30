@@ -1,0 +1,940 @@
+
+# Indonesian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <dodywijaya@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <dodywijaya@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: plurals=2; plural=(n != 1);\n"
+
+msgid "Search Menu"
+msgstr "Menu Pencarian"
+
+msgid "Errors"
+msgstr "Kesalahan-kesalahan"
+
+msgid "Slot granted"
+msgstr "Slot diberikan"
+
+msgid "Create / Modify Command"
+msgstr "Buat / Modifikasi Perintah"
+
+msgid "Run in background"
+msgstr "Jalankan di latar belakang"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filter pesan tendang dan pesan debug NMDC"
+
+msgid "Log main chat"
+msgstr "Catatan obrolan utama"
+
+msgid "Filename"
+msgstr "Nama arsip"
+
+msgid "UDP"
+msgstr "UDP Port"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "Hanya tampilkan gabung / pisah untuk pengguna kesukaan"
+
+msgid "KiB/s"
+msgstr "KiB/s"
+
+msgid "Document"
+msgstr "Dokumen"
+
+msgid "Open new file list windows in the background"
+msgstr "Buka jendela daftar arsip baru di latar"
+
+msgid "User Description"
+msgstr "Deskripsi Pengguna"
+
+msgid "GeoIP database update"
+msgstr "Perbarui basis data GeoIP"
+
+msgid "Downloading..."
+msgstr "Mengunduh..."
+
+msgid "Join/part of favorite users showing on"
+msgstr "Gabung/pisah pegguna kesukaan ditampilkan"
+
+msgid "Timestamps enabled"
+msgstr "Stempel waktu aktif"
+
+msgid "Finished Uploads"
+msgstr "Unggah Selesai"
+
+msgid "File type"
+msgstr "Jenis arsip"
+
+msgid "Share hidden files"
+msgstr "Arsip hidden juga"
+
+msgid "High prio max size"
+msgstr "Prioritas tinggi"
+
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+msgid "MiB/s"
+msgstr "MiB/s"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Daftar ke Windows penanganan pautan URL dchub:// dan adc://"
+
+msgid "GiB"
+msgstr "GiB"
+
+msgid "Unknown"
+msgstr "Tidak diketahui"
+
+msgid "Unfinished downloads directory"
+msgstr "Direktori untuk unduh yang belum selesai"
+
+msgid "Path"
+msgstr "Path"
+
+msgid "Max Hubs"
+msgstr "Maksimum Hub"
+
+msgid "Highest"
+msgstr "Puncak"
+
+msgid "Specify a search string"
+msgstr "Sebutkan pencarian teks"
+
+msgid "Send unknown /commands to the hub"
+msgstr "Kirim perintah /misteri ke hub"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Gagal membuat pemetaan port. Silakan atur NAT Anda sendiri."
+
+msgid "Guess user country from IP"
+msgstr "Dapatkan Negara Pengguna"
+
+msgid "ADLSearch Properties"
+msgstr "ADLSearch Properties"
+
+msgid "Open private messages in their own window"
+msgstr "Buka pesan pribadi di jendelanya sendiri"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Pakai SOCKS5 server untuk menjawab hostname"
+
+msgid "Directories"
+msgstr "Direktori"
+
+msgid "Max hash speed"
+msgstr "Kecepatan hash maksimum"
+
+msgid "Minimize to tray"
+msgstr "Minimalkan ke tray"
+
+msgid "Offline"
+msgstr "Terputus"
+
+msgid "Settings..."
+msgstr "Pengelolaan..."
+
+msgid "Running..."
+msgstr "Berjalan..."
+
+msgid "Enabled / Search String"
+msgstr "Aktif / Teks Pencarian"
+
+msgid "Download whole directory to..."
+msgstr "Unduh semua direktori ke..."
+
+msgid "Enable safe and compressed transfers"
+msgstr "Aktifkan transfer termampat dan aman"
+
+msgid "Favorite Hub Properties"
+msgstr "Pengaturan Hub Kesukaan"
+
+msgid "Configure Public Hub Lists"
+msgstr "Atur Daftar Hub Publik"
+
+msgid "Personal information"
+msgstr "Informasi Personal "
+
+msgid "PM history"
+msgstr "Sejarah Japri (pesan pribadi)"
+
+msgid "Ready to search..."
+msgstr "Siap mencari..."
+
+msgid "Rating"
+msgstr "Rating"
+
+msgid "Log uploads"
+msgstr "Catatan pengunggahan"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+msgid "Show"
+msgstr "Tampil"
+
+msgid "Log system messages"
+msgstr "Catatan pesan sistem"
+
+msgid "Favorite Users"
+msgstr "Pengguna Kesukaan"
+
+msgid "Search Spy"
+msgstr "Mata-mata Pencarian"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Silakan masukkan nickname di dialog pengelolaan!"
+
+msgid "Shared directories"
+msgstr "Direktori share"
+
+msgid "Raw"
+msgstr "Mentah"
+
+msgid "Really exit?"
+msgstr "Betul-betul ada?"
+
+msgid "Reliability"
+msgstr "Kehandalan"
+
+msgid "MAGNET Link detected"
+msgstr "Pautan MAGNET terdeteksi"
+
+msgid "Sounds"
+msgstr "Suara"
+
+msgid "Find"
+msgstr "Cari"
+
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Otomatis memutus pengguna yang meninggalkan hub"
+
+msgid "Close disconnected"
+msgstr "Tutup yang sudah putus"
+
+msgid "Default away message"
+msgstr "Pesan pergi default"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Catatan: Arsip muncul di share hanya setelah arsip tersebut sudah di-hash!"
+
+msgid "Passive user"
+msgstr "Pengguna pasif"
+
+msgid "Add finished files to share instantly (if shared)"
+msgstr "Tambah arsip yang selesai langsung ke share (bila di-share)"
+
+msgid "Next"
+msgstr "Berikut"
+
+msgid "Priority"
+msgstr "Prioritas"
+
+msgid "Configured Public Hub Lists"
+msgstr "Daftar Hub Publik"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "Prioritas terendah aktif"
+
+msgid "Change Log"
+msgstr "Ubah Log"
+
+msgid "Quick Connect"
+msgstr "Hubung Cepat"
+
+msgid "Shared"
+msgstr "Shared"
+
+msgid "Log status messages"
+msgstr "Catatan pesan status"
+
+msgid "Network Statistics"
+msgstr "Statistik Jaringan"
+
+msgid "Under what name you see the directory"
+msgstr "Anda melihat direktori ini dengan nama"
+
+msgid "Open own list"
+msgstr "Buka daftar saya sendiri"
+
+msgid "ADL Search"
+msgstr "Pencarian ADL"
+
+msgid "Join/part of favorite users showing off"
+msgstr "Gabung/pisah pegguna kesukaan disembunyikan"
+
+msgid "Picture"
+msgstr "Gambar"
+
+msgid "Virtual name"
+msgstr "Nama semu"
+
+msgid "Added"
+msgstr "Telah Ditambah"
+
+msgid "Destination Directory"
+msgstr "Direktori Tujuan"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "Otomatis cocokkan antrian pada penemuan pencarian otomat"
+
+msgid "Default download directory"
+msgstr "Direktori unduh default"
+
+msgid "No users"
+msgstr "Tak ada pengguna"
+
+msgid "Downloads"
+msgstr "Unduh"
+
+msgid "Translations"
+msgstr "Terjemahan"
+
+msgid "Search for file"
+msgstr "Cari arsip"
+
+msgid "Break on first ADLSearch match"
+msgstr "Putuskan pada kecocokan pertama pencarian ADL"
+
+msgid "Download Matches"
+msgstr "Unduh Cocok"
+
+msgid "Full Path"
+msgstr "Path Lengkap"
+
+msgid "Tag"
+msgstr "Tag"
+
+msgid "Connected"
+msgstr "Tersambung"
+
+msgid "Country"
+msgstr "Negara"
+
+msgid "Don't delete file lists when exiting"
+msgstr "Jangan hapus daftar arsip saat keluar"
+
+msgid "Search String"
+msgstr "Cari Teks"
+
+msgid "Low prio max size"
+msgstr "Prioritas rendah"
+
+msgid "Set timestamps"
+msgstr "Atur stempel waktu"
+
+msgid "Advanced"
+msgstr "Canggih"
+
+msgid "PM"
+msgstr "Japri"
+
+msgid "Browse..."
+msgstr "Telusuri..."
+
+msgid "Frequently asked questions"
+msgstr "FAQ"
+
+msgid "Logging"
+msgstr "Pencatatan"
+
+msgid "Show joins / parts in chat by default"
+msgstr "Tampilkan gabung / pisah di obrolan secara default"
+
+msgid "Name under which the others see the directory"
+msgstr "Nama direktori yang dilihat pengguna lain"
+
+msgid "Settings"
+msgstr "Pengaturan"
+
+msgid "At least"
+msgstr "Paling tidak"
+
+msgid "Appearance"
+msgstr "Penampakan"
+
+msgid "Nick"
+msgstr "Nick"
+
+msgid "Favorite Hubs"
+msgstr "Hub Kesukaan"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "Window options"
+msgstr "Opsi jendela"
+
+msgid "Confirm item removal in download queue"
+msgstr "Konfirmasi penghapusan baris di antrian unduh"
+
+msgid "Auto-open at startup"
+msgstr "Buka otomatis pada saat \"startup\""
+
+msgid "Keep duplicate files in your file list"
+msgstr "Pertahankan arsip duplikat di daftar arsip Anda"
+
+msgid "Separator"
+msgstr "Separasi"
+
+msgid "Directory"
+msgstr "Direktori"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Cari TTH di Bitzi.com"
+
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Tidak ada unduh baru bila kecepatan melebihi (KiB/s, 0 = non-aktif)"
+
+msgid "Options"
+msgstr "Opsi"
+
+msgid "Hub Menu"
+msgstr "Menu Hub"
+
+msgid "Report a bug"
+msgstr "Laporkan bug"
+
+msgid "Rename"
+msgstr "Ganti nama"
+
+msgid "Really remove?"
+msgstr "Betul-betul hapus?"
+
+msgid "Min Slots"
+msgstr "Slot Minimum"
+
+msgid "No errors"
+msgstr "Tak ada kesalahan"
+
+msgid "Language file"
+msgstr "Arsip bahasa"
+
+msgid "Socks IP"
+msgstr "Socks IP"
+
+msgid "Clear search box after each search"
+msgstr "Kosongkan kotak pencarian setelah tiap pencarian"
+
+msgid "Join/part showing on"
+msgstr "Gabung/pisah disembunyikan"
+
+msgid "Show progress bars for transfers"
+msgstr "Tampilkan batang progres untuk transfer (menggunakan sebagian CPU)"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Permintaan \"redirect\" diterima ke hub yang sudah terhubung"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Bind address"
+msgstr "Ikat alamat"
+
+msgid "Do nothing"
+msgstr "Diam saja"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Paused"
+msgstr "Tunda"
+
+msgid "Accept custom user commands from hub"
+msgstr "Terima perintah custom pengguna dari hub"
+
+msgid "Connection settings"
+msgstr "Pengaturan sambungan"
+
+msgid "Personal Information"
+msgstr "Informasi Personal"
+
+msgid "Chat"
+msgstr "Obrolan"
+
+msgid "Invalid number of slots"
+msgstr "Jumlat slot tidak valid"
+
+msgid "Away mode off"
+msgstr "Mode pergi mati"
+
+msgid "Time left"
+msgstr "Waktu sisa"
+
+msgid "Failed to remove port mappings"
+msgstr "Gagal menghapus pemetaan port"
+
+msgid "Slots"
+msgstr "Slot"
+
+msgid "Favorite user added"
+msgstr "Pengguna kesukaan ditambah"
+
+msgid "Timestamps disabled"
+msgstr "Stempel waktu non-aktif"
+
+msgid "Auto connect / Name"
+msgstr "Sambung Otomatis / Nama"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "Otomatis buka slot ekstra bila kecepatan di bawah (0 = non-aktif)"
+
+msgid "Don't remove /password before your password"
+msgstr "Jangan hapus \"/password\" sebelum password Anda"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Daftar ke Windows untuk penanganan pautan URI magnet"
+
+msgid "At most"
+msgstr "Paling banyak"
+
+msgid "Don't send the away message to bots"
+msgstr "Jangan kirim pesan \"pergi\" ke bot"
+
+msgid "Request a feature"
+msgstr "Minta fitur"
+
+msgid "Log filelist transfers"
+msgstr "Catatan transfer daftar arsip"
+
+msgid "TCP"
+msgstr "TCP Port"
+
+msgid "No users to download from"
+msgstr "Tidak ada pengguna untuk diunduh"
+
+msgid "Hubs"
+msgstr "Hub"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "Proxy HTTP (untuk daftar hub saja)"
+
+msgid "Low"
+msgstr "Rendah"
+
+msgid "Online"
+msgstr "Tersambung"
+
+msgid "Favorite hub added"
+msgstr "Hub kesukaan ditambah"
+
+msgid "Send once per nick"
+msgstr "Kirim satu per nick"
+
+msgid "View status messages in main chat"
+msgstr "Tilik pesan status di obrolan utama"
+
+msgid "Only where I'm op"
+msgstr "Hanya dimana saya op"
+
+msgid "Show timestamps in chat by default"
+msgstr "Tampilkan stempel waktu di obrolan secara default"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Stored password sent..."
+msgstr "Password simpanan terkirim..."
+
+msgid "Search for"
+msgstr "Pencarian untuk"
+
+msgid "Hub"
+msgstr "Hub"
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "Re-add source"
+msgstr "Tambah ulang sumber"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "Pakai icon sistem saat menelusuri arsip (sedikit memperlambat)"
+
+msgid "Downloading public hub list..."
+msgstr "Mengunduh daftar hub publik..."
+
+msgid "Downloaded"
+msgstr "Telah Diunduh"
+
+msgid "Automatically follow redirects"
+msgstr "Otomatis ikuti \"redirect\""
+
+msgid "Set priority"
+msgstr "Atur prioritas"
+
+msgid "Compressed"
+msgstr "Termampat"
+
+msgid "Search for alternates"
+msgstr "Cari alternatif"
+
+msgid "Favorite name"
+msgstr "Nama kesukaan"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Inkonsistensi CRC32 (Pemeriksaan SFV)"
+
+msgid "Download whole directory"
+msgstr "Unduh semua direktori"
+
+msgid "Waiting (User online)"
+msgstr "Menunggu (Pengguna online)"
+
+msgid "User"
+msgstr "Pengguna"
+
+msgid "Count"
+msgstr "Hitungan"
+
+msgid "Enable automatic SFV checking"
+msgstr "Aktifkan pemeriksaan otomatis SFV"
+
+msgid "Search"
+msgstr "Cari"
+
+msgid "B"
+msgstr "B"
+
+msgid "Time"
+msgstr "Waktu"
+
+msgid "Limits"
+msgstr "Batasan"
+
+msgid "Skip zero-byte files"
+msgstr "Lewatkan arsip 0 byte"
+
+msgid "Automatically search for alternative download locations"
+msgstr "Otomatis cari lokasi unduh alternatif"
+
+msgid "Download Queue"
+msgstr "Antrian Unduh"
+
+msgid "Enabled"
+msgstr "Aktif"
+
+msgid "All"
+msgstr "Semua"
+
+msgid "Public Hubs list"
+msgstr "Daftar hub publik"
+
+msgid "Purge"
+msgstr "Kosongkan"
+
+msgid "Downloading list..."
+msgstr "Mengunduh daftar..."
+
+msgid "Connection"
+msgstr "Sambungan"
+
+msgid "Time last seen"
+msgstr "Waktu terakhir muncul"
+
+msgid "Confirm favorite hub removal"
+msgstr "Konfirmasi penghapusan hub kesukaan"
+
+msgid "Max Users"
+msgstr "Maksimum Pengguna"
+
+msgid "Don't download files already in share"
+msgstr "Jangan unduh arsip yang sudah ada di share"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Catatan: akibat merubah kecepatan unduh, ini tidak 100% akurat..."
+
+msgid "Type"
+msgstr "Tipe"
+
+msgid "Copy magnet link to clipboard"
+msgstr "Salin pautan magnet ke clipboard"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "Toggle jendela ssaat memilih tab aktif"
+
+msgid "Slots set"
+msgstr "Slot di-set"
+
+msgid "Please enter a password"
+msgstr "Silakan masukkan password"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Otomatis \"pergi\" pada saat diminimalkan (dan \"kembali\" pada saat di-\"restore\")"
+
+msgid "Remove source"
+msgstr "Hapus sumber"
+
+msgid "Download to..."
+msgstr "Unduh ke..."
+
+msgid "Colors"
+msgstr "Warna"
+
+msgid "Specify a server to connect to"
+msgstr "Sebutkan server untuk disambungkan"
+
+msgid "Done"
+msgstr "Selesai"
+
+msgid "Auto grant slot / Nick"
+msgstr "Otomatis beri slot / Nick"
+
+msgid "Any"
+msgstr "Apa saja"
+
+msgid "Donate (paypal)"
+msgstr "Sumbang $$$ (paypal)"
+
+msgid "Size"
+msgstr "Besar"
+
+msgid "TTH Root"
+msgstr "TTH Root"
+
+msgid "Log downloads"
+msgstr "Catatan pengunduhan"
+
+msgid "Executable"
+msgstr "Executable"
+
+msgid "Public Hubs list URL"
+msgstr "Daftar URL Hub Publik"
+
+msgid "Open new window when using /join"
+msgstr "Buka jendela baru bila menggunakan \"/join\""
+
+msgid "Command"
+msgstr "Perintah"
+
+msgid "Confirm application exit"
+msgstr "Konfirmasi keluar dari aplikasi"
+
+msgid "No matches"
+msgstr "Tak ada kecocokan"
+
+msgid "Upload slots"
+msgstr "Slot unggah"
+
+msgid "Sharing"
+msgstr "Sharing"
+
+msgid "Public Hubs"
+msgstr "Hub Publik"
+
+msgid "About DC++..."
+msgstr "Tentang DC++..."
+
+msgid "Always open help file with this dialog"
+msgstr "Selalu buka arsip bantuan dengan dialog ini"
+
+msgid "Source Type"
+msgstr "Jenis Sumber"
+
+msgid "Download files from the Direct Connect network"
+msgstr "Unduh arsip dari jaringan Direct Connect"
+
+msgid "KiB"
+msgstr "KiB"
+
+msgid "Exact size"
+msgstr "Ukuran persis"
+
+msgid "Start a search for this file"
+msgstr "Mulai pencarian untuk arsip ini"
+
+msgid "DC++ discussion forum"
+msgstr "Forum diskusi DC++"
+
+msgid "Open downloads directory"
+msgstr "Buka direktori unduh"
+
+msgid "Creating file index..."
+msgstr "Membuat indeks arsip..."
+
+msgid "Search options"
+msgstr "Opsi pencarian"
+
+msgid "User offline"
+msgstr "Pengguna terputus"
+
+msgid "Normal prio max size"
+msgstr "Prioritas normal"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Pakai OEM monospaced font untuk menilik arsip teks"
+
+msgid "Description"
+msgstr "Deskripsi"
+
+msgid "Enter search string"
+msgstr "Masukkan teks pencarian"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Catatan: kebanyakan opsi ini mengharuskan Anda me-restart DC++"
+
+msgid "AWAY"
+msgstr "PERGI"
+
+msgid "MiB"
+msgstr "MiB"
+
+msgid "Notepad"
+msgstr "Notepad"
+
+msgid "DC++ Homepage"
+msgstr "Laman DC++"
+
+msgid "Join/part showing off"
+msgstr "Gabung/pisah ditunjukkan"
+
+msgid "Favorite download directories"
+msgstr "Direktori unduh kesukaan"
+
+msgid "User Menu"
+msgstr "Menu Pengguna"
+
+msgid "Highest prio max size"
+msgstr "Prioritas tertinggi"
+
+msgid "Address"
+msgstr "Alamat"
+
+msgid "Finished Downloads"
+msgstr "Unduh Selesai"
+
+msgid "Help forum"
+msgstr "Forum bantuan"
+
+msgid "Use antifragmentation method for downloads"
+msgstr "Pakai metode antifragmentasi untuk mengunduh"
+
+msgid "Total size:"
+msgstr "Besar total:"
+
+msgid "Mini slot size"
+msgstr "Ukuran slot mini"
+
+msgid "Lowest"
+msgstr "Dasar"
+
+msgid "Name"
+msgstr "Nama"
+
+msgid "Remove user from queue"
+msgstr "Hapus pengguna dari antrian"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Keluarkan suara menyebalkan bila jendela pesan pribadi dibuka"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Keluarkan suara menyebalkan tiap kali menerima pesan pribadi"
+
+msgid "Match queue"
+msgstr "Cocokkan antrian"
+
+msgid "Directory or directory name already exists"
+msgstr "Direktori atau nama direktori telah ada"
+
+msgid "Full tree does not match TTH root"
+msgstr "Pohon yang diunduh tidak cocok dengan TTH root"
+
+msgid "Search history"
+msgstr "Sejarah pencarian"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Maksimum unduh bersamaan (0 = tak terbatas)"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "Gagal mendapatkan IP eksternal melalui UPnP. Silakan atur sendiri."
+
+msgid "Automatic Directory Listing Search"
+msgstr "Pencarian Otomatis Daftar Direktori"
+
+msgid "Write buffer size"
+msgstr "Ukuruan buffer tulis"
+
+msgid "Indexing progress"
+msgstr "Progres pengindeksan"
+
+msgid "Login"
+msgstr "Username"
+
+msgid "Audio"
+msgstr "Audio"
+
+msgid "Only users with free slots"
+msgstr "Hanya pengguna dengan slot bebas"
+
+msgid "Users"
+msgstr "Pengguna"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "Nama virtual baru cocok dengan nama lama, melewati..."
+
+msgid "File not available"
+msgstr "Arsip tidak tersedia"
+
+msgid "Log private chat"
+msgstr "Catatan obrolan pribadi"
+
+msgid "Min Share"
+msgstr "Share Minimum"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "Sebuah pautan MAGNET diberikan ke DC++, namun ia tidak mengandung hash arsip yang valid untuk digunakan di jaringan Direct Connect.  Tidak ada aksi yang diambil."
+
+msgid "Filelist Menu"
+msgstr "Menu Daftar arsip"
+
+msgid "High"
+msgstr "Tinggi"
+
+msgid "Ignore TTH searches"
+msgstr "Acuhkan pencarian TTH"
+
+msgid "Open new private message windows in the background"
+msgstr "Buka jendela pesan pribadi baru di latar"
+
+msgid "File"
+msgstr "Arsip"
+
+msgid "User went offline"
+msgstr "Pengguna sekarang terputus"
+
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Nick Anda sudah dipakai, mohon ganti ke lainnya!"
+
+msgid "Use CTRL for line history"
+msgstr "Gunakan CTRL untuk sejarah baris"
+
+msgid "Speed"
+msgstr "Kecepatan"
+
+msgid "Port"
+msgstr "Port"
+
+msgid "Uploads"
+msgstr "Unggahan"
+

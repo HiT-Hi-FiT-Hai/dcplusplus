@@ -1,0 +1,154 @@
+
+# Romanian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <muntealb@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <muntealb@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Autentificarea serverului de socluri [socks] a eșuat (logare greșită / parola?)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Serverul de socluri nu suportă logarea / autentificarea parolei"
+
+msgid "Invalid size"
+msgstr "Mărime invalidă"
+
+msgid "The temporary download directory cannot be shared"
+msgstr "Dosarul de descărcare temporară nu poate fi partajat"
+
+msgid "Maximum command length exceeded"
+msgstr "Depășire lungime maximă a comenzii"
+
+msgid "More data was sent than was expected"
+msgstr "Au fost transmise mai multe date decît se aștepta"
+
+msgid "You're trying to download from yourself!"
+msgstr "Încercați să descărcați de la dv. înșivă!"
+
+msgid "Offline"
+msgstr "Neconectat"
+
+msgid "Failed to load private key"
+msgstr "Incărcarea cheii private a eșuat"
+
+msgid "Target removed"
+msgstr "Țintă înlăturată"
+
+msgid "Not listening for connections - please restart DC++"
+msgstr "Nu sînt ascultate conexiunile - reporniți DC++"
+
+msgid "Hash database"
+msgstr "Hașează baza de date"
+
+msgid "All download slots taken"
+msgstr "Toate sloturile de descărcare sînt ocupate"
+
+msgid "Redirect user(s)"
+msgstr "Redirectionează utilizatorul(ii)"
+
+msgid "Target filename too long"
+msgstr "Numele fișierului-țintă e prea lung"
+
+msgid "Connection timeout"
+msgstr "Conexiune Expirată"
+
+msgid "The socks server requires authentication"
+msgstr "Serverul de socluri [socks] necesită autentificare"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Un fișier cu o mărime diferită există deja în coadă"
+
+msgid "Error during decompression"
+msgstr "Eroare în cursul decomprimării"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Inconsistență CRC32 (Verificare SFV)"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Un fișier cu o rădăcina TTH diferită există deja în coadă"
+
+msgid "TLS disabled, no certificate file set"
+msgstr "TLS e dezactivat, nu e setat fișierul-certificat"
+
+msgid "No slots available"
+msgstr "Nici un slot disponibil"
+
+msgid "Error during compression"
+msgstr "Eroare în cursul comprimării"
+
+msgid "Disconnected"
+msgstr "Deconectat"
+
+msgid "Hash database rebuilt"
+msgstr "Baza de date de hașare a fost reclădită"
+
+msgid "Remove all subdirectories before adding this one"
+msgstr "Înlătură toate dosarele înainte de a-l adăuga pe acesta"
+
+msgid "File list refresh initiated"
+msgstr "Reîmprospătarea listei de fișiere a fost inițiată"
+
+msgid "Virtual directory name already exists"
+msgstr "Numele dosarului virtual există deja"
+
+msgid "Full tree does not match TTH root"
+msgstr "Arborele complet nu se potrivește cu rădacina TTH"
+
+msgid "Shared Files"
+msgstr "Fișiere Partajate"
+
+msgid "No directory specified"
+msgstr "Nici un dosar specificat"
+
+msgid "Unable to read hash data file"
+msgstr "Citirea fișierului cu date de hașare nu e posibilă"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "Un fișier cu o mărime egală sau mai mare există deja la destinația-țintă"
+
+msgid "This file is already queued"
+msgstr "Acest fișier există deja în coadă"
+
+msgid "Unable to create thread"
+msgstr "Nu reușesc să creez firul"
+
+msgid "Kick user(s)"
+msgstr "Izgonește utilizator(i)"
+
+msgid "File not available"
+msgstr "Fișierul nu e disponibil"
+
+msgid "The socks server failed establish a connection"
+msgstr "Serverul de socluri a eșuat în stabilirea unei conexiuni"
+
+msgid "Directory already shared"
+msgstr "Dosar partajat deja"
+
+msgid "Download Queue"
+msgstr "Coada de Descărcare"
+
+msgid "Certificate not trusted, unable to connect"
+msgstr "Certificatul nu e de încredere, conectarea nu e posibilă"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "Un fișier cu haș identic există deja în partajul dv."
+
+msgid "Generated new TLS certificate"
+msgstr "Generează certificat TLS nou"
+
+msgid "Failed to load certificate file"
+msgstr "Incărcarea fișierului certificat a eșuat"
+
+msgid "File list refresh finished"
+msgstr "Reîmprospătarea listei de fișiere s-a încheiat"
+

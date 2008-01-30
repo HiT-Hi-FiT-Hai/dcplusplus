@@ -1,0 +1,1147 @@
+
+# Portuguese translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <Isildur@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <Isildur@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Slot granted"
+msgstr "Slot dada"
+
+msgid "Run in background"
+msgstr "Usar em modo minimizado"
+
+msgid "Guess user country from IP"
+msgstr "Obter o País do utilizador"
+
+msgid "Log main chat"
+msgstr "Log do chat principal"
+
+msgid "Keep duplicate files in your file list"
+msgstr "Incluir ficheiros repetidos na partilha (os duplicados não contam no tamanho da partilha total)"
+
+msgid "Join/part of favorite users showing on"
+msgstr "Activar a visualização das Entradas/Saídas de amigos"
+
+msgid "Notification sound"
+msgstr "Notificação de Sons"
+
+msgid "Finished Uploads"
+msgstr "Uploads Terminados"
+
+msgid "File type"
+msgstr "Tipo de ficheiro"
+
+msgid "MiB/s"
+msgstr "MB/s"
+
+msgid "GiB"
+msgstr "GB"
+
+msgid "Min sources online"
+msgstr "Fontes Min."
+
+msgid "Outgoing connection settings"
+msgstr "Propriedades da Ligação Externa"
+
+msgid "Popup box to input password for hubs"
+msgstr "Janela Popup para inserir a password para os Hubs"
+
+msgid "Log uploads"
+msgstr "Log de uploads"
+
+msgid "ADLSearch Properties"
+msgstr "Propriedades da procura ADL"
+
+msgid "Directories"
+msgstr "Directórios"
+
+msgid "Ready to search..."
+msgstr "Pronto para pesquisar..."
+
+msgid "Autodrop settings"
+msgstr "Modos de Desligar"
+
+msgid "Specify a URL"
+msgstr "Especificar o Url"
+
+msgid "Shared directories"
+msgstr "Directórios partilhados"
+
+msgid "Really exit?"
+msgstr "Deseja mesmo sair?"
+
+msgid "Tag"
+msgstr "Tag"
+
+msgid "MAGNET Link detected"
+msgstr "Link Magnet detectado"
+
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Desligar utilizadores que saiam do Hub (sem efeito se o Hub cair / você sair)"
+
+msgid "Use antifragmentation method for downloads"
+msgstr "Usar anti-fragmentação para downloads"
+
+msgid "Remove source"
+msgstr "Remover fonte"
+
+msgid "Under what name you see the directory"
+msgstr "Alterar Virtualmente o nome da Pasta"
+
+msgid "Join/part of favorite users showing off"
+msgstr "Desactivar a visualização das Entradas/Saídas de amigos"
+
+msgid "Confirm item removal in download queue"
+msgstr "Confirmar a eliminação na lista de espera"
+
+msgid "Download Matches"
+msgstr "Download"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Browse..."
+msgstr "Procurar..."
+
+msgid "Logging"
+msgstr "Gravar em log"
+
+msgid "Name under which the others see the directory"
+msgstr "Alterar Virtualmente o nome da Pasta"
+
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Sem novos downloads se a velocidade exceder (kB/s, 0=desligado)"
+
+msgid "Appearance"
+msgstr "Aparência"
+
+msgid "Favorite Hubs"
+msgstr "Hubs Favoritos"
+
+msgid "Window options"
+msgstr "Opções das Janelas"
+
+msgid "Auto-open at startup"
+msgstr "Abrir automaticamente ao iniciar o DC++"
+
+msgid "Sharing"
+msgstr "Partilha"
+
+msgid "No matches"
+msgstr "Nenhum resultado"
+
+msgid "Enable automatic SFV checking"
+msgstr "Activar verificação SFV (Simple Vector Format)"
+
+msgid "Skip zero-byte files"
+msgstr "Ignorar ficheiros com zero-byte"
+
+msgid "Min Slots"
+msgstr "Slots Mínimas"
+
+msgid "Clear search box after each search"
+msgstr "Limpar caixa de pesquisa ao iniciar uma nova"
+
+msgid "Do nothing"
+msgstr "Não fazer nada"
+
+msgid "Accept custom user commands from hub"
+msgstr "Aceitar os comandos pessoais do utilizador no Hub"
+
+msgid "Invalid number of slots"
+msgstr "Número inválido de slots"
+
+msgid "Don't send the away message to bots"
+msgstr "Não enviar mensagem de ausente para bots"
+
+msgid "Request a feature"
+msgstr "Pedir uma função para o DC++"
+
+msgid "Max hash speed"
+msgstr "Velocidade Max."
+
+msgid "Don't download files already in the queue"
+msgstr "Não fazer o download de ficheiros já existentes na lista de espera"
+
+msgid "Show timestamps in chat by default"
+msgstr "Mostrar hora no chat por defeito"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Search for"
+msgstr "Pesquisar por"
+
+msgid "Hub"
+msgstr "Hub"
+
+msgid "Favorite hub removed"
+msgstr "Hub favorito removido"
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "Compressed"
+msgstr "Comprimido"
+
+msgid "Count"
+msgstr "N.º de vezes pesquisado"
+
+msgid "Firewall with UPnP"
+msgstr "Firewall + UPnP (Unicamente com WinXP)"
+
+msgid "Limits"
+msgstr "Limites"
+
+msgid "Public Hubs list"
+msgstr "Lista de Hubs Públicos"
+
+msgid "Connection"
+msgstr "Ligação"
+
+msgid "Time"
+msgstr "Tempo"
+
+msgid "Tab highlight on content change"
+msgstr "Texto a Negrito quando houver alguma mudança"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Auto-ausente ao minimizar (e presente quando restaurar)"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "Usar ícones do sistema (Diminui um pouco a velocidade da navegação)"
+
+msgid "Don't delete file lists when exiting"
+msgstr "Não eliminar as listas de ficheiros ao sair"
+
+msgid "Auto grant slot / Nick"
+msgstr "Extra slot automática / Nome"
+
+msgid "Max filelist size"
+msgstr "Tamanho Max. Lista"
+
+msgid "Confirm application exit"
+msgstr "Confirmar a saída do DC++"
+
+msgid "Ignore private messages from the hub"
+msgstr "Ignorar mensagens privadas vindo dos Hubs"
+
+msgid "Exact size"
+msgstr "Tamanho Exacto"
+
+msgid "DC++ discussion forum"
+msgstr "Fórum de discussão do DC++"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Instalar suporte para URLs do tipo dchub://"
+
+msgid "Search options"
+msgstr "Opções de pesquisa"
+
+msgid "Re-add source"
+msgstr "Readicionar fonte"
+
+msgid "Format"
+msgstr "Formato"
+
+msgid "Use CTRL for line history"
+msgstr "Usar CTRL para visualizar o histórico"
+
+msgid "MiB"
+msgstr "MB"
+
+msgid "Notepad"
+msgstr "Bloco de Notas"
+
+msgid "DC++ Homepage"
+msgstr "Página do DC++"
+
+msgid "Join/part showing off"
+msgstr "Desactivar a visualização das Entradas/Saídas de utilizadores"
+
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "Propriedades da Ligação Interna"
+
+msgid "Mini slot size"
+msgstr "Tam. Slot Min."
+
+msgid "Hublist"
+msgstr "Lista de Hubs"
+
+msgid "UDP"
+msgstr "UDP"
+
+msgid "Ignore TTH searches"
+msgstr "Ignorar as pesquisas TTH"
+
+msgid "File"
+msgstr "Ficheiro"
+
+msgid "User went offline"
+msgstr "O utilizador desligou-se"
+
+msgid "Slots"
+msgstr "Slots"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Servidor SOCKS5, resolver nomes de alojamento"
+
+msgid "Log status messages"
+msgstr "Log de mensagens de estado"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "Mostrar unicamente as entradas / saídas dos utilizadores favoritos"
+
+msgid "KiB/s"
+msgstr "kB/s"
+
+msgid "Downloading..."
+msgstr "Transferindo..."
+
+msgid "Don't remove /password before your password"
+msgstr "Não remover a password antiga"
+
+msgid "Path"
+msgstr "Caminho"
+
+msgid "Specify a search string"
+msgstr "Especifique um texto a pesquisar"
+
+msgid "Open private messages in their own window"
+msgstr "Trazer para a frente mensagens privadas"
+
+msgid "Use TLS when remote client supports it"
+msgstr "Utilizar a porta TLS caso um cliente remoto a suporta"
+
+msgid "Minimize to tray"
+msgstr "Minimizar para ícone (relógio)"
+
+msgid "Download whole directory to..."
+msgstr "Transferir a pasta inteira para..."
+
+msgid "Enable safe and compressed transfers"
+msgstr "Habilita transferência comprimida e segura"
+
+msgid "Ports"
+msgstr "Porta:"
+
+msgid "Quick Connect"
+msgstr "Conexão rápida"
+
+msgid "Raw"
+msgstr "Linha"
+
+msgid "Reliability"
+msgstr "Fiabilidade"
+
+msgid "Open private messages from bots in their own window"
+msgstr "Abrir uma mensagem privada vindo de um Hub numa nova janela"
+
+msgid "Sounds"
+msgstr "Sons"
+
+msgid "Error creating adc registry key"
+msgstr "Erro ao criar o adc do registo"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr "Permitir ligações TLS para clientes com certificados aprovados"
+
+msgid "Default away message"
+msgstr "Mensagem de ausente por defeito"
+
+msgid "Next"
+msgstr "Próximo"
+
+msgid "Configured Public Hub Lists"
+msgstr "Endereço da lista dos Hubs Públicos"
+
+msgid "Change Log"
+msgstr "Log de mudanças"
+
+msgid "Show shell menu where possible"
+msgstr "Mostrar o menu nos downloads terminados"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Lowest"
+msgstr "Baixíssima"
+
+msgid "Picture"
+msgstr "Imagem"
+
+msgid "Added"
+msgstr "Adicionado"
+
+msgid "Min filesize"
+msgstr "Ficheiros Peq."
+
+msgid "Default download directory"
+msgstr "Downloads Completos"
+
+msgid "Translations"
+msgstr "Download das traduções do DC++"
+
+msgid "Search for file"
+msgstr "Pesquisar ficheiro"
+
+msgid "Connected"
+msgstr "Ligado"
+
+msgid "Low prio max size"
+msgstr "Prioridade Baixa"
+
+msgid "At least"
+msgstr "Mínimo"
+
+msgid "Options"
+msgstr "Opções"
+
+msgid "Hub Menu"
+msgstr "Hub"
+
+msgid "Rename"
+msgstr "Renomear"
+
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr "Desligar automaticamente todos os ficheiros que se encontram na lista de espera (excepto as listas)"
+
+msgid "No errors"
+msgstr "Nenhum erro"
+
+msgid "Socks IP"
+msgstr "Socks IP"
+
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr "Permitir ligações TLS para hubs com certificados aprovados"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Favorite user added"
+msgstr "Amigo adicionado"
+
+msgid "At most"
+msgstr "Máximo"
+
+msgid "Log filelist transfers"
+msgstr "Transferência da lista em Log"
+
+msgid "User Description"
+msgstr "Descrição do Utilizador"
+
+msgid "Favorite hub added"
+msgstr "Hub favorito adicionado"
+
+msgid "Send once per nick"
+msgstr "Enviar para cada utilizador"
+
+msgid "Error creating magnet registry key"
+msgstr "Erro ao criar o registo do link magnet"
+
+msgid "Downloading public hub list..."
+msgstr "A obter a lista de Hubs Públicos..."
+
+msgid "Downloaded"
+msgstr "Transferido"
+
+msgid "Favorite name"
+msgstr "Nome"
+
+msgid "Search"
+msgstr "Pesquisar"
+
+msgid "B"
+msgstr "B"
+
+msgid "Automatically search for alternative download locations"
+msgstr "Pesquisar automaticamente mais fontes para download"
+
+msgid "Subtract list"
+msgstr "Subtrair a lista"
+
+msgid "Download Queue"
+msgstr "Lista de Espera"
+
+msgid "Enabled"
+msgstr "Permitido"
+
+msgid "All"
+msgstr "Todos"
+
+msgid "Time last seen"
+msgstr "Ultima vez visto"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Nota: Por causa da mudança de velocidade do download, isto não é 100%"
+
+msgid "Don't allow hub/UPnP to override"
+msgstr "Não usar para o UPnP"
+
+msgid "Personal Information"
+msgstr "Informação pessoal"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "Abrir automaticamente uma slot extra se a velocidade for inferior a"
+
+msgid "Executable"
+msgstr "Executável"
+
+msgid "Open new window when using /join"
+msgstr "Abrir uma nova janela quando usar /join"
+
+msgid "Upload slots"
+msgstr "Slots para upload"
+
+msgid "Public Hubs"
+msgstr "Hubs Públicos"
+
+msgid "Min Size"
+msgstr "Tamanho Mínimo"
+
+msgid "KiB"
+msgstr "kB"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Nota: A maioria das opções requerem reiniciar o DC++"
+
+msgid "Open downloads directory"
+msgstr "Abrir pasta de downloads"
+
+msgid "Users"
+msgstr "Utilizadores"
+
+msgid "System Log"
+msgstr "Sistema dos Logs"
+
+msgid "Help forum"
+msgstr "Fórum de ajuda do DC++"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "Really remove?"
+msgstr "Quer mesmo remover?"
+
+msgid "Indexing progress"
+msgstr "Índice em Progresso"
+
+msgid "Login"
+msgstr "Utilizador"
+
+msgid "Only users with free slots"
+msgstr "Só utilizadores com slots livres"
+
+msgid "File not available"
+msgstr "Ficheiro indisponível"
+
+msgid "Max Size"
+msgstr "Tamanho Máximo"
+
+msgid "High"
+msgstr "Alta"
+
+msgid "Speed"
+msgstr "Velocidade"
+
+msgid "Invalid file list name"
+msgstr "Nome invalido para a lista de ficheiros"
+
+msgid "Search Menu"
+msgstr "Procura"
+
+msgid "Create / Modify Command"
+msgstr "Criar / Alterar Commando"
+
+msgid "Document"
+msgstr "Documento"
+
+msgid "GeoIP database update"
+msgstr "Actualizar base de dados GeoIP"
+
+msgid "Report a bug"
+msgstr "Reportar um bug do DC++"
+
+msgid "Share hidden files"
+msgstr "Partilhar ocultos"
+
+msgid "Max Hubs"
+msgstr "Máximo de Hubs"
+
+msgid "Highest"
+msgstr "Altíssima"
+
+msgid "Send unknown /commands to the hub"
+msgstr "Enviar comandos desconhecidos para o Hub"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Erro ao criar a respectiva porta"
+
+msgid "Private message"
+msgstr "Mensagem Privada"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Usar fonte OEM monospaced para visualizar ficheiros de texto"
+
+msgid "Settings..."
+msgstr "Definições..."
+
+msgid "Enabled / Search String"
+msgstr "Activo / Procura"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filtrar kicks e mensagens debug do NMDC"
+
+msgid "Unfinished downloads directory"
+msgstr "Downloads Incompletos (vazio = transfere o ficheiro directamente ao destino)"
+
+msgid "Personal information"
+msgstr "Geral"
+
+msgid "Rating"
+msgstr "Avaliação"
+
+msgid "Failed to remove port mappings"
+msgstr "Erro ao remover a respectiva porta"
+
+msgid "Favorite Users"
+msgstr "Lista de Amigos"
+
+msgid "Search Spy"
+msgstr "Texto Pesquisado"
+
+msgid "Close disconnected"
+msgstr "Fechar os Hubs Desligados"
+
+msgid "Add finished files to share instantly (if shared)"
+msgstr "Adicionar ficheiros terminados automaticamente na partilha (se partilhado)"
+
+msgid "Priority"
+msgstr "Prioridade"
+
+msgid "This hub is not a favorite hub"
+msgstr "Este Hub não é um hub favorito"
+
+msgid "Close all search windows"
+msgstr "Fechar as Pesquisas"
+
+msgid "Copy Filename"
+msgstr "Copiar nome do ficheiro"
+
+msgid "Open own list"
+msgstr "Obter a lista"
+
+msgid "Virtual name"
+msgstr "Nome Virtual"
+
+msgid "Destination Directory"
+msgstr "Destino do Directório"
+
+msgid "TCP"
+msgstr "TCP"
+
+msgid "Full Path"
+msgstr "Completa"
+
+msgid "Search String"
+msgstr "A pesquisar por "
+
+msgid "Advanced"
+msgstr "Configurações Avançadas"
+
+msgid "PM"
+msgstr "Mensagem Privada"
+
+msgid "Frequently asked questions"
+msgstr "Perguntas frequentes do DC++"
+
+msgid "Show joins / parts in chat by default"
+msgstr "Mostrar entradas / saídas no chat por defeito"
+
+msgid "Settings"
+msgstr "Opções"
+
+msgid "Server"
+msgstr "Servidor"
+
+msgid "Waiting (User online)"
+msgstr "À espera (Utilizador ligado)"
+
+msgid "Separator"
+msgstr "Separador"
+
+msgid "Ignore private messages from bots"
+msgstr "Ignorar mensagens privadas vindo dos Bots"
+
+msgid "Directory"
+msgstr "Local"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Ver o TTH em Bitzi.com"
+
+msgid "Unknown"
+msgstr "Desconhecido"
+
+msgid "Sort all downloads first"
+msgstr "Ordenar primeiro os downloads"
+
+msgid "Waiting Users"
+msgstr "Utilizadores em Espera"
+
+msgid "Language file"
+msgstr "Ficheiro de linguagem por Isildur • http://ptdchelp.pt.vu •"
+
+msgid "User offline"
+msgstr "Utilizador desligado"
+
+msgid "s"
+msgstr "s"
+
+msgid "Donate (paypal)"
+msgstr "Doar €€€/$$$ ao autor do DC++"
+
+msgid "Away mode off"
+msgstr "Modo de ausente desligado"
+
+msgid "Auto connect / Name"
+msgstr "Conexão Automática / Nome do Hub"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "Proxy HTTP (Somente para a Lista de Hubs Públicos)"
+
+msgid "Low"
+msgstr "Baixa"
+
+msgid "Online"
+msgstr "Ligado"
+
+msgid "View status messages in main chat"
+msgstr "Visualizar mensagem de estado no chat principal"
+
+msgid "Only where I'm op"
+msgstr "Só onde sou Operador (OP)"
+
+msgid "Stored password sent..."
+msgstr "Senha enviada salva..."
+
+msgid "Auto-search limit"
+msgstr "Limites Pesquisas"
+
+msgid "Normal prio max size"
+msgstr "Prioridade Normal"
+
+msgid "Sort favorite users first"
+msgstr "Ordenar primeiro os utilizadores favoritos"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "Um link magnet foi enviado para o DC++, mas o link magnet tem uma hash invalida. Nenhuma acção foi efectuada."
+
+msgid "Show progress bars for transfers"
+msgstr "Mostrar barras de progresso nas transferências (Usa algum CPU)"
+
+msgid "Set priority"
+msgstr "Definir prioridade"
+
+msgid "Download whole directory"
+msgstr "Transferir a pasta inteira"
+
+msgid "Log downloads"
+msgstr "Log de downloads"
+
+msgid "Purge"
+msgstr "Apagar"
+
+msgid "Timestamps enabled"
+msgstr "Mostrar a hora: activado"
+
+msgid "Confirm favorite hub removal"
+msgstr "Confirmar a eliminação de hubs favoritos"
+
+msgid "Please enter a password"
+msgstr "Por favor insira uma palavra-passe"
+
+msgid "Drop sources below"
+msgstr "Desligar Fontes"
+
+msgid "Finished Downloads"
+msgstr "Downloads Terminados"
+
+msgid "Download to..."
+msgstr "Transferir para..."
+
+msgid "Colors"
+msgstr "Cores"
+
+msgid "Done"
+msgstr "Feito"
+
+msgid "Any"
+msgstr "Qualquer Tipo de Ficheiro"
+
+msgid "Size"
+msgstr "Tamanho"
+
+msgid "Public Hubs list URL"
+msgstr "URL da lista de Hubs públicos"
+
+msgid "Always open help file with this dialog"
+msgstr "Abrir sempre o ficheiro de ajuda"
+
+msgid "Start a search for this file"
+msgstr "Fazer uma pesquisa para este ficheiro"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Tocar um som cada vez que uma janela de mensagem privada é aberta"
+
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "Não remover as fontes quando o auto-desligar estiver activado, apenas desligar."
+
+msgid "AWAY"
+msgstr "Ausente"
+
+msgid "Check every"
+msgstr "Intervalo"
+
+msgid "Favorite download directories"
+msgstr "Directórios favoritos para download"
+
+msgid "Highest prio max size"
+msgstr "Prioridade Altíssima"
+
+msgid "Address"
+msgstr "Endereço"
+
+msgid "Total size:"
+msgstr "Tamanho total:"
+
+msgid "ADL Search"
+msgstr "Procura ADL"
+
+msgid "Remove user from queue"
+msgstr "Remover utilizador da lista de espera"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Directory or directory name already exists"
+msgstr "Pasta ou nome da pasta já existente"
+
+msgid "Full tree does not match TTH root"
+msgstr "Caminho invalido para a hash TTH"
+
+msgid "Search history"
+msgstr "Histórico Pesquisa"
+
+msgid "Filelist Menu"
+msgstr "Menu da lista"
+
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Nome já em utilização, escolha um novo!"
+
+msgid "Port"
+msgstr "Porta"
+
+msgid "Auto refresh time"
+msgstr "    Auto Actualizar"
+
+msgid "Errors"
+msgstr "Erros"
+
+msgid "Filename"
+msgstr "Nome"
+
+msgid "Firewall (passive, last resort)"
+msgstr "Firewall (Modo Passivo)"
+
+msgid "Open new file list windows in the background"
+msgstr "Abrir uma nova lista de ficheiros em segundo plano"
+
+msgid "High prio max size"
+msgstr "Prioridade Alta"
+
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+msgid "Close all file list windows"
+msgstr "Fechar as Listas de Ficheiros"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Registar com janelas \"exercer íman\": URL endereços"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "O novo nome virtual combina com o antigo, ignorar..."
+
+msgid "Running..."
+msgstr "A executar..."
+
+msgid "External / WAN IP"
+msgstr "IP Externo / WAN"
+
+msgid "Favorite Hub Properties"
+msgstr "Propriedades do Hub Favorito"
+
+msgid "PM history"
+msgstr "Histórico mensagens privadas"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "Prioridade Baixíssima"
+
+msgid "URL:MAGNET URI"
+msgstr "URL: Link Magnet"
+
+msgid "Show"
+msgstr "Mostrar"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Por favor escolha um Nome nas definições!"
+
+msgid "Source too slow"
+msgstr "Fonte demasiada lenta"
+
+msgid "Timestamps disabled"
+msgstr "Mostrar a hora: desactivado"
+
+msgid "Find"
+msgstr "Encontrar"
+
+msgid "Passive user"
+msgstr "Utilizador passivo"
+
+msgid "Direct connection"
+msgstr "Ligação Directa (Modo Activo)"
+
+msgid "User Menu"
+msgstr "Utilizador"
+
+msgid "Connection settings"
+msgstr "Configuração da Ligação"
+
+msgid "Downloads"
+msgstr "Downloads"
+
+msgid "MiBits/s"
+msgstr "MB/s"
+
+msgid "Break on first ADLSearch match"
+msgstr "Parar na primeira Procura ADL semelhante"
+
+msgid "Set timestamps"
+msgstr "Mostrar texto no chat"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Os novos ficheiros são adicionados só depois de terem sido \"hashed\""
+
+msgid "Close all PM windows"
+msgstr "Fechar as Mensagens Privadas"
+
+msgid "Nick"
+msgstr "Nome"
+
+msgid "Command"
+msgstr "Commando"
+
+msgid "Hubs"
+msgstr "Hubs"
+
+msgid "Confirm dialog options"
+msgstr "Opções das Confirmações"
+
+msgid "Other queue options"
+msgstr "Outras Opções"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "Trocar de janela quando seleccionar uma \"tab\" activa"
+
+msgid "Join/part showing on"
+msgstr "Activar a visualização das Entradas/Saídas de utilizadores"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Recebido pedido de redireccionamento para um Hub ao qual já está ligado"
+
+msgid "Bind address"
+msgstr "Endereço Ligação"
+
+msgid "Paused"
+msgstr "Em Pausa"
+
+msgid "Write buffer size"
+msgstr "Tamanho do Buffer"
+
+msgid "B/s"
+msgstr "B/s"
+
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "Não desligar automaticamente os utilizadores favoritos que deixam o Hub"
+
+msgid "Line speed (upload)"
+msgstr "Informação Uploads"
+
+msgid "Shared"
+msgstr "Partilhado"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Automatically follow redirects"
+msgstr "Seguir redireccionamentos automaticamente"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Inconsistência CRC32 (Controlo SFV)"
+
+msgid "User"
+msgstr "Utilizador"
+
+msgid "Search for alternates"
+msgstr "Pesquisar alternativas"
+
+msgid "Configure Public Hub Lists"
+msgstr "Configurar"
+
+msgid "Open private messages from the hub in their own window"
+msgstr "Abrir uma mensagem privada vindo de um Bot numa nova janela"
+
+msgid "About DC++..."
+msgstr "Sobre o DC++..."
+
+msgid "Hub already exists as a favorite"
+msgstr "O Hub já existe na lista dos hubs favoritos"
+
+msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
+msgstr "Impossível de abrir a Porta UDP. As transferências não funcionarão correctamente até que altera ou desliga a opção da Porta UDP."
+
+msgid "Match queue"
+msgstr "Adicionar a lista"
+
+msgid "Downloading list..."
+msgstr "Transferindo a lista..."
+
+msgid "Log system messages"
+msgstr "Log de mensagens do sistema"
+
+msgid "Uploads"
+msgstr "Uploads"
+
+msgid "Max Users"
+msgstr "Máximo de Utilizadores"
+
+msgid "Don't download files already in share"
+msgstr "Não fazer o download de ficheiros já existentes na partilha"
+
+msgid "Copy magnet link to clipboard"
+msgstr "Copiar Link Magnet"
+
+msgid "Slots set"
+msgstr "Ajuste de slots"
+
+msgid "Error creating dchub registry key"
+msgstr "Erro ao criar o registo dchub"
+
+msgid "No users"
+msgstr "Sem utilizadores"
+
+msgid "Time left"
+msgstr "Tempo restante"
+
+msgid "TTH Root"
+msgstr "Origem TTH"
+
+msgid "Remove slow filelists"
+msgstr "Remover downloads lentos de listas de ficheiros"
+
+msgid "CID"
+msgstr "CID"
+
+msgid "Specify a server to connect to"
+msgstr "Especifique um servidor ao qual ligar"
+
+msgid "Source Type"
+msgstr "Tipo de Fonte"
+
+msgid "Download files from the Direct Connect network"
+msgstr "Transferir ficheiros da rede Direct Connect"
+
+msgid "No users to download from"
+msgstr "Sem utilizadores de quem transferir"
+
+msgid "Offline"
+msgstr "Desligado"
+
+msgid "Match downloaded lists"
+msgstr "Abrir as listas já obtidas"
+
+msgid "Creating file index..."
+msgstr "A criar o índice..."
+
+msgid "Description"
+msgstr "Descrição"
+
+msgid "Enter search string"
+msgstr "Insira texto a pesquisar"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Edit the hublist"
+msgstr "Editar a Lista de Hubs"
+
+msgid "Network Statistics"
+msgstr "Estatísticas de rede"
+
+msgid "Firewall with manual port forwarding"
+msgstr "Firewall + Configuração manual das Portas"
+
+msgid "Country"
+msgstr "País"
+
+msgid "Close all offline PM windows"
+msgstr "Fechar as Mensagens Priv. Desligadas"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Tocar um som cada vez que uma mensagem privada é recebida"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Máximo de downloads simultâneos (0 = infinito)"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "Erro ao obter o IP por UPnP. Por favor ajuste-o você mesmo."
+
+msgid "Automatic Directory Listing Search"
+msgstr "Procura automática na listagem do directório"
+
+msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
+msgstr "Impossível de abrir a Porta TCP. As transferências não funcionarão correctamente até que altera ou desliga a opção da Porta TCP."
+
+msgid "Audio"
+msgstr "Audio"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "Verificar automaticamente a lista de espera para a procura automática"
+
+msgid "Max inactivity"
+msgstr "Inactividade Max."
+
+msgid "Log private chat"
+msgstr "Log de mensagens privadas"
+
+msgid "Min Share"
+msgstr "Partilha Mínima"
+
+msgid "Open new private message windows in the background"
+msgstr "Abrir uma nova mensagem privada em segundo plano"
+
+msgid "Min elapsed"
+msgstr "Tempo Min."
+

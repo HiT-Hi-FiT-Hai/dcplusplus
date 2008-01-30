@@ -1,0 +1,1069 @@
+
+# Danish translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <g2dude@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <g2dude@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Slot granted"
+msgstr "Ekstra slot tildelt"
+
+msgid "Run in background"
+msgstr "K�baggrunden.."
+
+msgid "Guess user country from IP"
+msgstr "Find brugerens land"
+
+msgid "Log main chat"
+msgstr "Log main chat"
+
+msgid "Keep duplicate files in your file list"
+msgstr "Inklud�duplikerede filer i min filliste (duplikerede filer t�er aldrig med i din deling)"
+
+msgid "Join/part of favorite users showing on"
+msgstr "Ankomst/Afgang af favorit brugere visning sl� til"
+
+msgid "Notification sound"
+msgstr "Notifikations lyd"
+
+msgid "Finished Uploads"
+msgstr "F�ige oploads"
+
+msgid "File type"
+msgstr "Filtype"
+
+msgid "Cipher"
+msgstr "Tal"
+
+msgid "GiB"
+msgstr "GB"
+
+msgid "Min sources online"
+msgstr "Min kilder online"
+
+msgid "Outgoing connection settings"
+msgstr "Udg�de forbindelses indstillinger"
+
+msgid "Popup box to input password for hubs"
+msgstr "�en en dialog for at andgive password til hub(ben)"
+
+msgid "Log uploads"
+msgstr "Log uploads"
+
+msgid "ADLSearch Properties"
+msgstr "ASM Egenskaber"
+
+msgid "Directories"
+msgstr "Mappe"
+
+msgid "Ready to search..."
+msgstr "Klar til at s�."
+
+msgid "Autodrop settings"
+msgstr "Auto fjern Indstillinger"
+
+msgid "Shared directories"
+msgstr "Delte Mapper"
+
+msgid "Really exit?"
+msgstr "Vil du virkelig afslutte DC++?"
+
+msgid "Tag"
+msgstr "Tag"
+
+msgid "MAGNET Link detected"
+msgstr "MAGNET link opdaget"
+
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Afbryd brugere som forlader hubben (ikke ved crash, du forlader den)"
+
+msgid "Use antifragmentation method for downloads"
+msgstr "Benyt Antifragmentationsmetode til downloads"
+
+msgid "Remove source"
+msgstr "Fjern kilde"
+
+msgid "Under what name you see the directory"
+msgstr "Hvilket favorit navn?"
+
+msgid "Join/part of favorite users showing off"
+msgstr "Ankomst/Afgang af favorit brugere visning sl� fra"
+
+msgid "Download Matches"
+msgstr "Download Matches"
+
+msgid "Video"
+msgstr "Video (avi, mov, mpg m.fl.)"
+
+msgid "Browse..."
+msgstr "Gennemse..."
+
+msgid "Logging"
+msgstr "Logging"
+
+msgid "Name under which the others see the directory"
+msgstr "Under navnet af mappen som de andre ser"
+
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Ikke nogen nye downloads hvis hastigheden er under (0 KB/s= fra)"
+
+msgid "Appearance"
+msgstr "Udseende"
+
+msgid "Favorite Hubs"
+msgstr "Favorit Hubs"
+
+msgid "Window options"
+msgstr "Vindues indstillinger"
+
+msgid "Auto-open at startup"
+msgstr "�en ved opstart"
+
+msgid "Stored password sent..."
+msgstr "Gemte kodeord er afsendt..."
+
+msgid "No matches"
+msgstr "Ingen resultater fundet!"
+
+msgid "Enable automatic SFV checking"
+msgstr "Sl�FV-kontrol til (ekstra sikkerhed for at filen overf�korrekt)"
+
+msgid "Skip zero-byte files"
+msgstr "Spring over 0 byte filer"
+
+msgid "Min Slots"
+msgstr "Min Slots"
+
+msgid "Clear search box after each search"
+msgstr "Ryd s�ltet efter hver s�g"
+
+msgid "Do nothing"
+msgstr "G�genting"
+
+msgid "Accept custom user commands from hub"
+msgstr "Accepter �rede bruger kommandoer fra huben"
+
+msgid "Invalid number of slots"
+msgstr "Ugyldigt antal slots..."
+
+msgid "Don't send the away message to bots"
+msgstr "Send ikke \"Ikke Til Stede\" beskeder til botter"
+
+msgid "Request a feature"
+msgstr "Foresl�ye Ting Til DC++"
+
+msgid "Max hash speed"
+msgstr "Max. Hash Hastighed"
+
+msgid "Show timestamps in chat by default"
+msgstr "S�Tidsstemple"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Search for"
+msgstr "S�ter"
+
+msgid "Hub"
+msgstr "Hub"
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "MiB/s"
+msgstr "MB/s"
+
+msgid "Compressed"
+msgstr "Komprimerte Filer/mapper"
+
+msgid "Firewall with UPnP"
+msgstr "Firewall med UPnP"
+
+msgid "Limits"
+msgstr "Download gr�er"
+
+msgid "Public Hubs list"
+msgstr "Offenlig Hubliste"
+
+msgid "Connection"
+msgstr "Forbindelse"
+
+msgid "Time"
+msgstr "Tid"
+
+msgid "External / WAN IP"
+msgstr "Ekstern/IP"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Auto-'Ikke til stede' til ved minimer og fra ved gendan"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "Benyt systemikoner (g�stemet lidt langsommere)"
+
+msgid "Don't delete file lists when exiting"
+msgstr "Gem hentede fillister n�DC++ afsluttes"
+
+msgid "Auto grant slot / Nick"
+msgstr "Auto. Slot / Navn"
+
+msgid "Max filelist size"
+msgstr "Max. Fillistest�se"
+
+msgid "Confirm application exit"
+msgstr "Bekr� afslutning af DC++"
+
+msgid "Ignore private messages from the hub"
+msgstr "Ignor�(PM)beskeder fra hubber"
+
+msgid "Exact size"
+msgstr "Pr�s St�se"
+
+msgid "DC++ discussion forum"
+msgstr "DC++ Diskussionsforum"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Registrer i Windows URL-styring til at h�tere dchub:// og adc:// links"
+
+msgid "Search options"
+msgstr "S�uligheder"
+
+msgid "Re-add source"
+msgstr "Tilf�lde igen"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Use CTRL for line history"
+msgstr "Brug 'CTRL' for linje historie"
+
+msgid "MiB"
+msgstr "MB"
+
+msgid "Notepad"
+msgstr "Notesblok"
+
+msgid "DC++ Homepage"
+msgstr "DC++�s Hjemmeside"
+
+msgid "Join/part showing off"
+msgstr "Ankomst/Afgang vises ikke"
+
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "Indkommende besked om indstillinger"
+
+msgid "Mini slot size"
+msgstr "St�se p�ini-slots"
+
+msgid "Hublist"
+msgstr "Hublist"
+
+msgid "UDP"
+msgstr "UDP Port"
+
+msgid "Unknown"
+msgstr "Ukendt"
+
+msgid "File"
+msgstr "Fil"
+
+msgid "User went offline"
+msgstr "Bruger gik offline..."
+
+msgid "Slots"
+msgstr "Slots"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Benyt Socks5 server til at beslutte v�navne"
+
+msgid "Log status messages"
+msgstr "Log status beskeder"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "Vis kun ankomst/afgang for favorit brugere"
+
+msgid "KiB/s"
+msgstr "Kb/s"
+
+msgid "Downloading..."
+msgstr "Downloader..."
+
+msgid "Don't remove /password before your password"
+msgstr "Lad v� med at slette /password f�t kodeord"
+
+msgid "Path"
+msgstr "Sti"
+
+msgid "Specify a search string"
+msgstr "Specifiser s�reng"
+
+msgid "Open private messages in their own window"
+msgstr "Private beskeder popper op i deres eget vindue"
+
+msgid "Use TLS when remote client supports it"
+msgstr "Benyt Tls"
+
+msgid "Minimize to tray"
+msgstr "Minim�til systembakken (ved siden af uret)"
+
+msgid "Download whole directory to..."
+msgstr "Download hele mappen til..."
+
+msgid "Enable safe and compressed transfers"
+msgstr "Benyt sikkert og komprimerede overf�er"
+
+msgid "Ports"
+msgstr "Port instillinger"
+
+msgid "Quick Connect"
+msgstr "Hurtigt Forbind"
+
+msgid "Raw"
+msgstr "Raw"
+
+msgid "Reliability"
+msgstr "P�delighed"
+
+msgid "Open private messages from bots in their own window"
+msgstr "�n nye privat beskeder vinduer i baggrunden"
+
+msgid "Sounds"
+msgstr "Lyde"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr "Tillad TLS-opkobling til klienter uden certifikat"
+
+msgid "Default away message"
+msgstr "Standart 'Ikke Til Stede' Besked"
+
+msgid "Next"
+msgstr "N�e"
+
+msgid "Configured Public Hub Lists"
+msgstr "Konfigurede Hub Lister"
+
+msgid "Change Log"
+msgstr "Nye Features i DC++..."
+
+msgid "Show shell menu where possible"
+msgstr "Vis shell menu"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Lowest"
+msgstr "Laveste"
+
+msgid "Picture"
+msgstr "Billede Filer (jpg, bmp, gif m.fl.)"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Maximum samtidlige downloads (0 = fra)"
+
+msgid "Min filesize"
+msgstr "Min filst�se"
+
+msgid "Default download directory"
+msgstr "Standart Downloads Mappen"
+
+msgid "Translations"
+msgstr "Overs�elses Filer"
+
+msgid "Search for file"
+msgstr "S�ter filen"
+
+msgid "Connected"
+msgstr "Forbindelsen oprettet"
+
+msgid "Low prio max size"
+msgstr "Lav priotet"
+
+msgid "At least"
+msgstr "Mindst"
+
+msgid "Options"
+msgstr "Valg"
+
+msgid "Hub Menu"
+msgstr "Hub Menu"
+
+msgid "Rename"
+msgstr "Omd�ppe"
+
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr "Fjern automatisk kilder for alle objekter i k�Untagen fillister)"
+
+msgid "No errors"
+msgstr "Ingen fejl"
+
+msgid "Socks IP"
+msgstr "Socks IP"
+
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr "Tillad TLS-opkobling til hubs uden certifikat"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Favorite user added"
+msgstr "Bruger tilf�til 'Favorit Brugere'"
+
+msgid "At most"
+msgstr "H�"
+
+msgid "Log filelist transfers"
+msgstr "Log filliste overf�er"
+
+msgid "User Description"
+msgstr "Brugerbeskrivelse"
+
+msgid "Favorite hub added"
+msgstr "Hub tilf�til 'Favorit Hubs'"
+
+msgid "Hub list loaded from cache..."
+msgstr "Hubliste hentet fra bufferen"
+
+msgid "Downloading public hub list..."
+msgstr "Downloader Offentlig Hubliste..."
+
+msgid "Downloaded"
+msgstr "Downloaded"
+
+msgid "Favorite name"
+msgstr "Favorit navn"
+
+msgid "TLS"
+msgstr "TLS"
+
+msgid "B"
+msgstr "B"
+
+msgid "Automatically search for alternative download locations"
+msgstr "S�tomatisk efter alternative download-kilder"
+
+msgid "Subtract list"
+msgstr "Fjerner listen"
+
+msgid "Enabled"
+msgstr "Sl�il"
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Time last seen"
+msgstr "Dato (Det sidste tid man har set ham/hende)"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Notat; Fordi af skiftende download hastigheder, er det her ikke 100% pr�st..."
+
+msgid "Don't allow hub/UPnP to override"
+msgstr "Ikke tillat at tilsides�e hub/UPnP"
+
+msgid "Personal Information"
+msgstr "Personligt Information"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "Automatisk �n et ekstra slot hvis hastigheden er under (0 = fra)"
+
+msgid "Executable"
+msgstr "Eksekverbar Filer (exe, com m.fl.)"
+
+msgid "Open new window when using /join"
+msgstr "�en ny vinduer n�\"/join\" bruges"
+
+msgid "Upload slots"
+msgstr "Opload slots"
+
+msgid "Public Hubs"
+msgstr "Offentlige Hubs"
+
+msgid "KiB"
+msgstr "Kb"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Notat; De fleste af disse indstillinger kr�r at du genstarter DC++."
+
+msgid "Open downloads directory"
+msgstr "�n Download Stien"
+
+msgid "Users"
+msgstr "Brugere"
+
+msgid "Ignore TTH searches"
+msgstr "Ignore TTH searches"
+
+msgid "System Log"
+msgstr "Systemlog"
+
+msgid "Help forum"
+msgstr "Hj�eforum"
+
+msgid "Name"
+msgstr "Navn"
+
+msgid "Really remove?"
+msgstr "Vil du virkeligt fjerne den?"
+
+msgid "Indexing progress"
+msgstr "Indekserings Fremskridt.."
+
+msgid "Login"
+msgstr "Socks5 brugernavn"
+
+msgid "Only users with free slots"
+msgstr "Kun brugere med ledige slots"
+
+msgid "File not available"
+msgstr "Fil er ikke tilg�elig..!"
+
+msgid "Speed"
+msgstr "Hastighed"
+
+msgid "Invalid file list name"
+msgstr "Ugyldigt fillist navn"
+
+msgid "Search Menu"
+msgstr "S�enu"
+
+msgid "Create / Modify Command"
+msgstr "Skab / Modificere Kommando"
+
+msgid "Document"
+msgstr "Dokument Filer (doc, pdf, txt m.fl.)"
+
+msgid "GeoIP database update"
+msgstr "Opdatering af GeoIP-database"
+
+msgid "Report a bug"
+msgstr "Rapport�en Fejl (Bug)"
+
+msgid "Share hidden files"
+msgstr "Del skjulte filer"
+
+msgid "Max Hubs"
+msgstr "Max. Hubs"
+
+msgid "Highest"
+msgstr "H�"
+
+msgid "Send unknown /commands to the hub"
+msgstr "Send ukendte /kommandoer til huben"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Det mislykkedes at skabe port kortl�er"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Benyt 'OEM monospaced' skrift for visning af tekst filer"
+
+msgid "Settings..."
+msgstr "Indstillinger..."
+
+msgid "Enabled / Search String"
+msgstr "Aktiv S�unktion"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filtr�'Kick' og 'NMDC debug'-meddelelser fra"
+
+msgid "Unfinished downloads directory"
+msgstr "Uf�ige Download Mappe"
+
+msgid "Personal information"
+msgstr "Generelt"
+
+msgid "Rating"
+msgstr "Vudering"
+
+msgid "Failed to remove port mappings"
+msgstr "Det mislykkedes at fjerne port kortl�er"
+
+msgid "Favorite Users"
+msgstr "Favorit Brugere"
+
+msgid "Search Spy"
+msgstr "S�ion"
+
+msgid "Close disconnected"
+msgstr "Luk Alle Ikke-tilsluttede Vinduer"
+
+msgid "Add finished files to share instantly (if shared)"
+msgstr "Tilf�rdige filer til deling �ikligt (hvis delt)"
+
+msgid "Priority"
+msgstr "Prioritet"
+
+msgid "Close all search windows"
+msgstr "Luk alle s�nduer"
+
+msgid "Open own list"
+msgstr "�n Egen Liste"
+
+msgid "Virtual name"
+msgstr "Virtuel navn"
+
+msgid "Destination Directory"
+msgstr "Destination Mappe"
+
+msgid "TCP"
+msgstr "TCP Port"
+
+msgid "Full Path"
+msgstr "Hele Stien"
+
+msgid "Search String"
+msgstr "S�treng"
+
+msgid "Advanced"
+msgstr "Avanceret"
+
+msgid "PM"
+msgstr "PM"
+
+msgid "Frequently asked questions"
+msgstr "Ofte Stillede Sp��(FAQ)"
+
+msgid "Show joins / parts in chat by default"
+msgstr "Vis altid ankomster/afgange i main chaten"
+
+msgid "Settings"
+msgstr "Indstillinger"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "Waiting (User online)"
+msgstr "Venter (Bruger online...)"
+
+msgid "Separator"
+msgstr "Separator"
+
+msgid "Ignore private messages from bots"
+msgstr "Ignor�(PM)beskeder fra bots"
+
+msgid "Directory"
+msgstr "Mappe"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Kig efter TTH roden p�itzi.com"
+
+msgid "Waiting Users"
+msgstr "Venter p�rugere"
+
+msgid "Language file"
+msgstr "Sprog Fil"
+
+msgid "User offline"
+msgstr "Bruger offline..."
+
+msgid "Check every"
+msgstr "Kontrollere hver"
+
+msgid "Donate (paypal)"
+msgstr "Don����/$$$ (PayPal)"
+
+msgid "Away mode off"
+msgstr "'Ikke Til Stede' sl� fra"
+
+msgid "Auto connect / Name"
+msgstr "Auto. Forbind / Navn"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Proxy (Kun For Hubliste)"
+
+msgid "Low"
+msgstr "Lav"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "View status messages in main chat"
+msgstr "Vis status beskeder i main chat"
+
+msgid "Only where I'm op"
+msgstr "Kun hvor jeg er OP!"
+
+msgid "Auto-search limit"
+msgstr "Auto-s�r�e"
+
+msgid "Normal prio max size"
+msgstr "Normal priotet"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "En MAGNET link var givet til DC++, men den havde ikke en rigtig fil hash som man bruger p�irect Connect netv�et. Derfor vil der ikke blive udf�ogen handlinger."
+
+msgid "Automatically follow redirects"
+msgstr "F�utomatisk viderestillinger..."
+
+msgid "Set priority"
+msgstr "S�prioritet"
+
+msgid "Download whole directory"
+msgstr "Download hele mappen"
+
+msgid "Log downloads"
+msgstr "Log downloads"
+
+msgid "Purge"
+msgstr "Rens"
+
+msgid "Timestamps enabled"
+msgstr "Tidsstempling sl� til"
+
+msgid "Confirm favorite hub removal"
+msgstr "Bekr� fjernelse af en hub"
+
+msgid "Please enter a password"
+msgstr "Indtast venligst et kodeord!"
+
+msgid "Drop sources below"
+msgstr "Fjerner kilder under"
+
+msgid "Finished Downloads"
+msgstr "F�ige Downloads"
+
+msgid "Download to..."
+msgstr "Download til..."
+
+msgid "Colors"
+msgstr "Farver"
+
+msgid "Any"
+msgstr "Alle Typer"
+
+msgid "Size"
+msgstr "St�se"
+
+msgid "Sharing"
+msgstr "Opload"
+
+msgid "Public Hubs list URL"
+msgstr "Offenlig Hubliste URL"
+
+msgid "Always open help file with this dialog"
+msgstr "�en hj�efilen med denne dialogboks"
+
+msgid "Start a search for this file"
+msgstr "Start en s�g efter denne fil"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Lav et irriterene lyd n�en privat besked vindue er �et"
+
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "Fjern ikke kilder n�\"auto-fjern\", kun lukker ned"
+
+msgid "AWAY"
+msgstr "Ikke Til Stede"
+
+msgid "Favorite download directories"
+msgstr "Favorit 'Download til' mapper"
+
+msgid "Highest prio max size"
+msgstr "H� priotet"
+
+msgid "Address"
+msgstr "Hub adresse"
+
+msgid "Total size:"
+msgstr "Total st�se:"
+
+msgid "ADL Search"
+msgstr "AML S�g"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Directory or directory name already exists"
+msgstr "Mappen eller mappe navn eksistere allerede"
+
+msgid "Full tree does not match TTH root"
+msgstr "Downloaded TTH tr�atcher ikke TTH roden"
+
+msgid "Search history"
+msgstr "S�ersigt"
+
+msgid "Filelist Menu"
+msgstr "Filliste Menu"
+
+msgid "Port"
+msgstr "Socks5 port"
+
+msgid "Auto refresh time"
+msgstr "Auto update tid"
+
+msgid "Errors"
+msgstr "Fejl"
+
+msgid "Filename"
+msgstr "Filnavn"
+
+msgid "Firewall (passive, last resort)"
+msgstr "Firewall passiv (D�igt valg)"
+
+msgid "Open new file list windows in the background"
+msgstr "�n nye fillister vinduer i baggrunden"
+
+msgid "High prio max size"
+msgstr "H�iotet"
+
+msgid "SOCKS5"
+msgstr "Socks5"
+
+msgid "Close all file list windows"
+msgstr "Luk alle filiste-vinduer"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Registrer i Windows til at h�tere MAGNET: URI links"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "Den nye virtuele navn matcher det gamle navn, springer over..."
+
+msgid "Running..."
+msgstr "K�.."
+
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Dit brugernavn er allerede i brug, v� venligst et andet!"
+
+msgid "Favorite Hub Properties"
+msgstr "Favorit Hub Egenskaber"
+
+msgid "PM history"
+msgstr "Log over private beskeder"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "Lavest priotet"
+
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+msgid "Show"
+msgstr "Vis"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Indtast venligst et brugernavn under 'Indstillinger'!"
+
+msgid "Timestamps disabled"
+msgstr "Tidsstempling sl� fra"
+
+msgid "Passive user"
+msgstr "Passiv bruger"
+
+msgid "Direct connection"
+msgstr "Direkte forbindelse"
+
+msgid "User Menu"
+msgstr "Bruger Menu"
+
+msgid "Connection settings"
+msgstr "Forbindelses Indstillinger"
+
+msgid "Downloads"
+msgstr "Downloads"
+
+msgid "MiBits/s"
+msgstr "MB/s"
+
+msgid "Break on first ADLSearch match"
+msgstr "Afbryd ved f� forekomst af 'Automatisk S�g i Mappeliste'"
+
+msgid "Set timestamps"
+msgstr "Tidsformat (%H:%M:%S)"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Notat; Nye filer er tilf�til deling kun n�de er blevet hashet!"
+
+msgid "Close all PM windows"
+msgstr "Luk alle PM-vinduer"
+
+msgid "Nick"
+msgstr "Brugernavn"
+
+msgid "Command"
+msgstr "Kommando"
+
+msgid "Hubs"
+msgstr "Hubber"
+
+msgid "Remote client does not fully support TTH - cannot download"
+msgstr "Fjernklienten har ikke TTH - st�kan ikke downloade!"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "Skift i mellem vinduer n�en aktiv fane v�es"
+
+msgid "Join/part showing on"
+msgstr "Ankomst/Afgang vises"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Viderestillingsforesp�l modtaget til en hub, du allerede er forbundet til!"
+
+msgid "Bind address"
+msgstr "Bind adresse"
+
+msgid "Paused"
+msgstr "Pauset"
+
+msgid "Write buffer size"
+msgstr "Skriv Buffer St�se"
+
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "Afbryd ikke automatisk fra favorittbrugere som forlader hubben"
+
+msgid "Line speed (upload)"
+msgstr "Oploade hastighed"
+
+msgid "Shared"
+msgstr "Delt"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Show progress bars for transfers"
+msgstr "Vis grafisk fremskridt for overf�r (bruger noget CPU-tid)"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "CRC32-Inkonsistens (SFV-kontrol)"
+
+msgid "User"
+msgstr "Bruger"
+
+msgid "Search for alternates"
+msgstr "S�ter alternative kilder"
+
+msgid "Configure Public Hub Lists"
+msgstr "Konfigurere Hub Listerne"
+
+msgid "Open private messages from the hub in their own window"
+msgstr "�n nye privat beskeder vinduer i baggrunden"
+
+msgid "About DC++..."
+msgstr "Om DC++..."
+
+msgid "Send once per nick"
+msgstr "Send en gang per brugernavn"
+
+msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
+msgstr "Kan ikke �e UDP-porten. Filoverf�er vil ikke k�orrekt f� �rer indstillinger eller lukker programmet som bruger porten"
+
+msgid "Downloading list..."
+msgstr "Downloader list..."
+
+msgid "Log system messages"
+msgstr "Log system beskeder"
+
+msgid "Uploads"
+msgstr "Oploads"
+
+msgid "Max Users"
+msgstr "Max. Brugere"
+
+msgid "Don't download files already in share"
+msgstr "Lad v� med at downloade filer som bliver delt allerede"
+
+msgid "Copy magnet link to clipboard"
+msgstr "Kopi�MAGNET link til Udklipsholderen"
+
+msgid "Slots set"
+msgstr "Slots indstillet"
+
+msgid "No users"
+msgstr "Ingen bruger(e)"
+
+msgid "Time left"
+msgstr "Resterende Tid"
+
+msgid "TTH Root"
+msgstr "TTH Rod"
+
+msgid "Remove slow filelists"
+msgstr "Fjern fillister"
+
+msgid "CID"
+msgstr "CID"
+
+msgid "Specify a server to connect to"
+msgstr "Angiv en server der skal oprettes forbindeelse til..."
+
+msgid "Source Type"
+msgstr "Kilde Type"
+
+msgid "Download files from the Direct Connect network"
+msgstr "Download filer fra Direct Connect netv�et"
+
+msgid "No users to download from"
+msgstr "Ingen brugere at downloade fra"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "Match downloaded lists"
+msgstr "Matcher downloadede filst�ser"
+
+msgid "Creating file index..."
+msgstr "Laver indeks filen..."
+
+msgid "Description"
+msgstr "Beskrivelse!"
+
+msgid "Enter search string"
+msgstr "Indtast en s�reng..."
+
+msgid "Password"
+msgstr "Kodeord"
+
+msgid "Edit the hublist"
+msgstr "Redigere hublisten"
+
+msgid "Network Statistics"
+msgstr "Netv� Statestiker"
+
+msgid "Firewall with manual port forwarding"
+msgstr "Firewall med manuel port forwarding'"
+
+msgid "Country"
+msgstr "Land"
+
+msgid "Close all offline PM windows"
+msgstr "Luk alle Offline PM-Vinduer"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Lav et irriterene lyd hver gang en privat besked er modtaget"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "Det mislykkedes f�en ekterne IP via UPnP. V�venligs og s�det ordenligt op."
+
+msgid "Automatic Directory Listing Search"
+msgstr "Automatisk S�g i Mappeliste"
+
+msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
+msgstr "Kan ikke �n TCP-porten. Filoverf�er vil ikke k�orrekt f� �rer indstillinger eller lukker programmet som bruger porten"
+
+msgid "Audio"
+msgstr "Lyd Filer (mp3, wma, wav m.fl.)"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "Automatisk match af k� AML s�gs fund"
+
+msgid "Max inactivity"
+msgstr "Max inaktivitet"
+
+msgid "Log private chat"
+msgstr "Log privat chat"
+
+msgid "Min Share"
+msgstr "Min. Delling"
+
+msgid "Open new private message windows in the background"
+msgstr "�n nye privat beskeder vinduer i baggrunden"
+
+msgid "Min elapsed"
+msgstr "Brugt tid"
+

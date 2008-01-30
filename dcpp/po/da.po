@@ -1,0 +1,142 @@
+
+# Danish translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <g2dude@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dcpp\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <g2dude@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Socks server authentication failed (bad login / password?)"
+msgstr "Socks-server brugerverificering sl� fejl (forkert brugernavn/kodeord)"
+
+msgid "The socks server doesn't support login / password authentication"
+msgstr "Socks-serveren underst� ikke bruger/kodeord-verificering"
+
+msgid "Invalid size"
+msgstr "Ugyldig st�se..."
+
+msgid "The temporary download directory cannot be shared"
+msgstr "Den midlertidlige download mappe kan ikke blive delt..!"
+
+msgid "Maximum command length exceeded"
+msgstr "Maxsimal l�de for kommando overskredet"
+
+msgid "More data was sent than was expected"
+msgstr "For meget data..."
+
+msgid "You're trying to download from yourself!"
+msgstr "Du pr�at downloade fra dig selv!!!"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "Failed to load private key"
+msgstr "Fejlede ved indl�ing af privat n�"
+
+msgid "Not listening for connections - please restart DC++"
+msgstr "Starter ikke - Genstart venligst DC++"
+
+msgid "Hash database"
+msgstr "Hash databasen"
+
+msgid "All download slots taken"
+msgstr "Alle downloadslots er i brug"
+
+msgid "Redirect user(s)"
+msgstr "Viderestil bruger(e)"
+
+msgid "Target filename too long"
+msgstr "Filnavnet er for langt...!"
+
+msgid "Connection timeout"
+msgstr "Forbindelsen fik 'Timeout' (den anden computer svarer ikke)"
+
+msgid "The socks server requires authentication"
+msgstr "Socks-serveren kr�r brugernavn/kodeord"
+
+msgid "A file with a different size already exists in the queue"
+msgstr "Filer med forskellige st�ser"
+
+msgid "Error during decompression"
+msgstr "Fejl under dekomprimeringen"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "CRC32-Inkonsistens (SFV-kontrol)"
+
+msgid "A file with different tth root already exists in the queue"
+msgstr "Filer med forskellige st�ser (TTH)"
+
+msgid "TLS disabled, no certificate file set"
+msgstr "TLS deaktivert, ingen certifikatfil angivet"
+
+msgid "No slots available"
+msgstr "Ingen ledige slots"
+
+msgid "Error during compression"
+msgstr "Fejl under komprimering"
+
+msgid "Disconnected"
+msgstr "Forbindelsen er afbrudt!!!"
+
+msgid "Hash database rebuilt"
+msgstr "Hash databasen er genopbygget"
+
+msgid "The socks server failed establish a connection"
+msgstr "Socks-serveren kunne ikke oprette en forbindelse"
+
+msgid "File list refresh initiated"
+msgstr "Fillisten opdatering er sat i gang..."
+
+msgid "Virtual directory name already exists"
+msgstr "Virtuel mappe navn eksister allerede..."
+
+msgid "Full tree does not match TTH root"
+msgstr "Downloaded TTH tr�atcher ikke TTH roden"
+
+msgid "Shared Files"
+msgstr "Delte filer"
+
+msgid "No directory specified"
+msgstr "Ingen mappe defineret..!"
+
+msgid "Unable to read hash data file"
+msgstr "Kan ikke l� denne TTH-fil"
+
+msgid "A file of equal or larger size already exists at the target location"
+msgstr "En fil af samme st�se eller st�findes allerede p�en angivne placering"
+
+msgid "This file is already queued"
+msgstr "Filen finnes allerede i downloadk�!"
+
+msgid "Kick user(s)"
+msgstr "Spark bruger(e)"
+
+msgid "File not available"
+msgstr "Fil er ikke tilg�elig..!"
+
+msgid "Directory already shared"
+msgstr "Mappen er allerede delt!"
+
+msgid "Certificate not trusted, unable to connect"
+msgstr "Certifikatet er ikke gyldigt, kunne ikke Oprette forbindelse"
+
+msgid "A file with the same hash already exists in your share"
+msgstr "En fil med den samme hash eksisterer i din deling!"
+
+msgid "Generated new TLS certificate"
+msgstr "Skab TLS certifikat"
+
+msgid "Failed to load certificate file"
+msgstr "Fejlede ved indl�ing af Certifikat!"
+
+msgid "File list refresh finished"
+msgstr "Fillisten er opdater�.."
+

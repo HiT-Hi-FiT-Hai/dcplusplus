@@ -1,0 +1,1093 @@
+
+# Albanian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <rrjeti@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"Last-Translator:  <rrjeti@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: plurals=2; plural=(n != 1);\n"
+
+msgid "Slot granted"
+msgstr "Kanali u dhurua"
+
+msgid "Run in background"
+msgstr "Vepro në prapaskenë"
+
+msgid "Guess user country from IP"
+msgstr "Shfaq shtetin e përdoruesit nga IP-ja"
+
+msgid "Log main chat"
+msgstr "Shëno bisedën kryesore"
+
+msgid "Keep duplicate files in your file list"
+msgstr "Filet e dyfishta mbaji në listën e fileve(duplicates never count towards your share size)"
+
+msgid "Join/part of favorite users showing on"
+msgstr "Mesazh hyrës për përdoruesin e parapëlqyer në"
+
+msgid "Finished Uploads"
+msgstr "Ngarkimet e përfunduara"
+
+msgid "File type"
+msgstr "Lloj i filit"
+
+msgid "Tab highlight on content change"
+msgstr "Kur ndryshohet përmbajtja shëno hub shenjën(ve shenjë)"
+
+msgid "Min sources online"
+msgstr "Burimet min.të lidhura"
+
+msgid "Outgoing connection settings"
+msgstr "Konfigurimet e kyçjes dalëse"
+
+msgid "Popup box to input password for hubs"
+msgstr "Dritarja e re-Kutia për shënimin e fjalëkalimit për hubat"
+
+msgid "Log uploads"
+msgstr "Shëno ngarkimet"
+
+msgid "ADLSearch Properties"
+msgstr "Konfigurimet e ADL Kërkimit"
+
+msgid "Directories"
+msgstr "Dosjet"
+
+msgid "Ready to search..."
+msgstr "Gati për kërkim..."
+
+msgid "Autodrop settings"
+msgstr "Autodrop konfigurime"
+
+msgid "Specify a URL"
+msgstr "Cakto një URL"
+
+msgid "Shared directories"
+msgstr "Dosjet e shpërndarjes"
+
+msgid "Really exit?"
+msgstr "Dëshiron dalje?"
+
+msgid "Tag"
+msgstr "Tag"
+
+msgid "MAGNET Link detected"
+msgstr "U zbulua MAGNET nyja"
+
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Përdoruesit që largohen nga hubi shkyçi automatikisht(nuk shkyçet kur hubi nuk punon / apo e len atë)"
+
+msgid "Use antifragmentation method for downloads"
+msgstr "Antifragmento shkarkimet"
+
+msgid "Remove source"
+msgstr "Zhvendose burimin"
+
+msgid "Under what name you see the directory"
+msgstr "Me ç`farë emri e shikon dosjen"
+
+msgid "Join/part of favorite users showing off"
+msgstr "Mesazh gjatë daljes për përdoruesin e parapëlqyer nga"
+
+msgid "Confirm item removal in download queue"
+msgstr "Konfirmo largimin në listën e shkarkimeve"
+
+msgid "Download Matches"
+msgstr "Shkarkimet e përputhshme"
+
+msgid "Video"
+msgstr "Film"
+
+msgid "Browse..."
+msgstr "Shfleto..."
+
+msgid "Logging"
+msgstr "Shënimet"
+
+msgid "Name under which the others see the directory"
+msgstr "Emri i dosjes të cilën e shohin(shihet nga)të tjerët"
+
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Shpejtësia e zvogëluar/s`ka shkarkime të reja(KiB/s, 0 = disable)"
+
+msgid "Appearance"
+msgstr "Paraqitja"
+
+msgid "Favorite Hubs"
+msgstr "Hubat e parapëlqyer"
+
+msgid "Window options"
+msgstr "Konfigurimet e dritares"
+
+msgid "Auto-open at startup"
+msgstr "Gjatë startimit hap automatikisht"
+
+msgid "Stored password sent..."
+msgstr "U dërgua fjalëkalimi rezerv..."
+
+msgid "No matches"
+msgstr "S`ka përputhje(fil me emër të tillë)"
+
+msgid "Enable automatic SFV checking"
+msgstr "Kontrolli automatik-SFV"
+
+msgid "Skip zero-byte files"
+msgstr "Tejkalo filet me madhësi zero bajt(bytes)"
+
+msgid "Min Slots"
+msgstr "Numri minimal i kanaleve"
+
+msgid "Clear search box after each search"
+msgstr "Pas çdo kërkimi pastro fushën e kërkimeve"
+
+msgid "Do nothing"
+msgstr "Mos vepro"
+
+msgid "Accept custom user commands from hub"
+msgstr "Prano urdhërat e zakonshme të përdoruesit nga hubi"
+
+msgid "Invalid number of slots"
+msgstr "Numër i pamjaftueshëm i kanaleve"
+
+msgid "Don't send the away message to bots"
+msgstr "Mos dërgo mesazh në bots kur je larg(-uar)"
+
+msgid "Request a feature"
+msgstr "Propozo-jep ide për-funksion në program"
+
+msgid "Max hash speed"
+msgstr "Shpejtësia maksimale e TTH-së"
+
+msgid "Show timestamps in chat by default"
+msgstr "Në biseda(chat) shfaq orën"
+
+msgid "Status"
+msgstr "Statusi"
+
+msgid "Search for"
+msgstr "Kërko për "
+
+msgid "Hub"
+msgstr "Hubi"
+
+msgid "Favorite hub removed"
+msgstr "Hubi i parapëlqyer është zhvendosur"
+
+msgid "E-Mail"
+msgstr "Posta elektronike"
+
+msgid "Compressed"
+msgstr "Ngjeshur"
+
+msgid "Count"
+msgstr "Sa herë u kërkua"
+
+msgid "Firewall with UPnP"
+msgstr "Muri mbrojtës/Firewall me UPnP"
+
+msgid "Limits"
+msgstr "Kufizimet"
+
+msgid "Public Hubs list"
+msgstr "Lista e hubave publik"
+
+msgid "Connection"
+msgstr "Lidhjaa"
+
+msgid "Time"
+msgstr "Data/Ora"
+
+msgid "External / WAN IP"
+msgstr "E jashtme / WAN IP"
+
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Automatikisht jasht/larg gjatë zvoglimit"
+
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "Gjatë shfletimit të fileve, përdor sistemin e ikonave(pak e ngadalson shfletimin)"
+
+msgid "Don't delete file lists when exiting"
+msgstr "Kur largohesh nga DC++ ruaj listat e shkarkuara"
+
+msgid "Auto grant slot / Nick"
+msgstr "Dhuro automatikisht një kanal / Pseudonim"
+
+msgid "Max filelist size"
+msgstr "Madh.maksi.e listës së filit"
+
+msgid "Confirm application exit"
+msgstr "Konfirmo daljen nga aplikacioni"
+
+msgid "Exact size"
+msgstr "Madhësia e sakt"
+
+msgid "DC++ discussion forum"
+msgstr "DC++ forum i diskutimeve"
+
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Kyç URL:të në DC++(nyje me prefiksin dchub://)"
+
+msgid "Search options"
+msgstr "Konfigurimet e kërkimit"
+
+msgid "Re-add source"
+msgstr "Rivendos burimin"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Use CTRL for line history"
+msgstr "Përdor CTRL (shigjeta posht lart)për rishqyrtim të tekstit"
+
+msgid "Notepad"
+msgstr "Shënime(Notepad)"
+
+msgid "DC++ Homepage"
+msgstr "Faqja personale e DC++"
+
+msgid "Join/part showing off"
+msgstr "Mesazh gjatë shoqërimit/bashkimit jasht"
+
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "Konfigurimet e kyçjes hyrëse(nëse s´je i sigurt shiko në Ndihmë/FAQ)"
+
+msgid "Mini slot size"
+msgstr "Madhë.e minikanalit"
+
+msgid "Hublist"
+msgstr "Lista e hubit"
+
+msgid "UDP"
+msgstr "UDP Porti"
+
+msgid "Ignore TTH searches"
+msgstr "Injoro TTH kërkimet"
+
+msgid "File"
+msgstr "Fil"
+
+msgid "User went offline"
+msgstr "Përdoruesi u (shkoi në)shkyç(-je)"
+
+msgid "Slots"
+msgstr "Kanalet"
+
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Përdor SOCKS5 serverin të zgjedhë emrat e nikoqirit(hostnames)"
+
+msgid "Log status messages"
+msgstr "Shëno gjendjen e mesazheve"
+
+msgid "Only show joins / parts for favorite users"
+msgstr "Shfaq vetëm pjesmarjet/shoqërimet për përdoruesit e parapëlqyer"
+
+msgid "Downloading..."
+msgstr "Shkarkohet..."
+
+msgid "Don't remove /password before your password"
+msgstr "Mos zhvendos/fjalëkalimin përpara fjalëkalimit tënd"
+
+msgid "Path"
+msgstr "Vendi"
+
+msgid "Specify a search string"
+msgstr "Cakto kriterjen për kërkim"
+
+msgid "Open private messages in their own window"
+msgstr "Hap mesazhet private në dritaret e tyre"
+
+msgid "Minimize to tray"
+msgstr "Zvoglo në desktop"
+
+msgid "Download whole directory to..."
+msgstr "Shkarko tërë dosjen në..."
+
+msgid "Enable safe and compressed transfers"
+msgstr "Paraqit transferimet e sigurta dhe të ngjeshura"
+
+msgid "Ports"
+msgstr "Portet"
+
+msgid "Quick Connect"
+msgstr "Lidhje e shpejt"
+
+msgid "Raw"
+msgstr "Raw"
+
+msgid "Reliability"
+msgstr "Besueshmëria"
+
+msgid "Sounds"
+msgstr "Tingujt"
+
+msgid "Error creating adc registry key"
+msgstr "Gabim kur DC++ do krijonte adc çelsin"
+
+msgid "DC++"
+msgstr "DC++"
+
+msgid "Default away message"
+msgstr "Mesazh i pacaktuar-sipas dëshirës-(kur je larguar)"
+
+msgid "Next"
+msgstr "Përpara"
+
+msgid "Configured Public Hub Lists"
+msgstr "Listat publike të hubave të konfiguruar"
+
+msgid "Unknown"
+msgstr "Panjohur"
+
+msgid "Type"
+msgstr "Lloji"
+
+msgid "Lowest"
+msgstr "Më e ulët"
+
+msgid "Picture"
+msgstr "Fotografi"
+
+msgid "Added"
+msgstr "U vendos"
+
+msgid "Min filesize"
+msgstr "Madhë. min e filit"
+
+msgid "Default download directory"
+msgstr "Dosja për shkarkim"
+
+msgid "Translations"
+msgstr "Përkthimet"
+
+msgid "Search for file"
+msgstr "Kërko filin"
+
+msgid "Connected"
+msgstr "Lidhur"
+
+msgid "Low prio max size"
+msgstr "Madhë.e ulët e prio-s"
+
+msgid "At least"
+msgstr "Minimale"
+
+msgid "Options"
+msgstr "Alternativat"
+
+msgid "Hub Menu"
+msgstr "Hub Meny"
+
+msgid "Rename"
+msgstr "Riemro"
+
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr "Zhvendos automatikisht burimet e ngadalshme për të gjitha objektet që janë në pritje(përveç listave të filit)"
+
+msgid "No errors"
+msgstr "S´ka gabime"
+
+msgid "Socks IP"
+msgstr "Socks IP"
+
+msgid "Chat"
+msgstr "Biseda"
+
+msgid "Favorite user added"
+msgstr "U vendos përdoruesi i parapëlqyer"
+
+msgid "At most"
+msgstr "Maksimale"
+
+msgid "Log filelist transfers"
+msgstr "Shëno transferimet e listës së filit"
+
+msgid "User Description"
+msgstr "Përshkrim i përdoruesit"
+
+msgid "Favorite hub added"
+msgstr "U vendos hubi i parapëlqyer"
+
+msgid "Send once per nick"
+msgstr "Për çdo pseudonim dërgo një herë"
+
+msgid "Error creating magnet registry key"
+msgstr "Gabim kur DC++ do krijonte magnet çelsin"
+
+msgid "Downloading public hub list..."
+msgstr "Shkarkohet lista e hubave publik..."
+
+msgid "Downloaded"
+msgstr "Shkarkuar"
+
+msgid "Favorite name"
+msgstr "Emri i parapëlqyer"
+
+msgid "Search"
+msgstr "Kërko"
+
+msgid "B"
+msgstr "B"
+
+msgid "Automatically search for alternative download locations"
+msgstr "Kërko automatikisht për vende alternative për shkarkim"
+
+msgid "Subtract list"
+msgstr "Largo listën"
+
+msgid "Download Queue"
+msgstr "Lista e shkarkimeve"
+
+msgid "Enabled"
+msgstr "Paraqitur"
+
+msgid "All"
+msgstr "Të gjitha"
+
+msgid "Time last seen"
+msgstr "lidhur herën e fundit"
+
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Vini Re;Variacionet e shpejtës.së shkarkimeve,s´mundës.100% siguri..."
+
+msgid "Don't allow hub/UPnP to override"
+msgstr "Mos lejo që hub/UPnP të anashkalon"
+
+msgid "Personal Information"
+msgstr "Informata Personale"
+
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "Hap një kanal shtesë (Automatikisht) nëse shpejtësia është në rënie(0 = mbyllur)"
+
+msgid "Executable"
+msgstr "Filet e programit"
+
+msgid "Open new window when using /join"
+msgstr "Hap dritare të re kur përdor/shoqërohesh"
+
+msgid "Upload slots"
+msgstr "Kanalet për ngarkime"
+
+msgid "Public Hubs"
+msgstr "Hubat publik"
+
+msgid "Min Size"
+msgstr "Madhësia minimale"
+
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Vini Re; Ndryshimi i disa(ndonjë)konfigurimeve kërkon ristartimin e DC++"
+
+msgid "Open downloads directory"
+msgstr "Hap dosjen e shkarkimeve"
+
+msgid "Users"
+msgstr "Përdorues"
+
+msgid "System Log"
+msgstr "System Log"
+
+msgid "Help forum"
+msgstr "Forumi për ndihmë"
+
+msgid "Name"
+msgstr "Emri"
+
+msgid "Really remove?"
+msgstr "Zhvendose me të vërtet?"
+
+msgid "Indexing progress"
+msgstr "Progres i Indeksimit"
+
+msgid "Login"
+msgstr "Emri i përdoruesit"
+
+msgid "Only users with free slots"
+msgstr "Vetëm përdorues me kanale të lira"
+
+msgid "File not available"
+msgstr "Fili s´është i arritshëm"
+
+msgid "Max Size"
+msgstr "Madhësia maksimale"
+
+msgid "High"
+msgstr "Lart"
+
+msgid "Speed"
+msgstr "Shpejtësia"
+
+msgid "Invalid file list name"
+msgstr "Emri i listës së filit është i pa vlefshëm"
+
+msgid "Search Menu"
+msgstr "Kërko Meny"
+
+msgid "Create / Modify Command"
+msgstr "Krijo / Modifiko urdhërin"
+
+msgid "Document"
+msgstr "Dokument"
+
+msgid "GeoIP database update"
+msgstr "Azhurim i bazës kompjut.GeoIP"
+
+msgid "Report a bug"
+msgstr "Raporto një shprazëtirë/gabim(bug)"
+
+msgid "Share hidden files"
+msgstr "Shpërn.filet e fshehura"
+
+msgid "Max Hubs"
+msgstr "Huba Maksimal"
+
+msgid "Highest"
+msgstr "Më së larti"
+
+msgid "Send unknown /commands to the hub"
+msgstr "Dërgo urdhëra/të panjohura në hub"
+
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Dështoi në krijimin e port mappings"
+
+msgid "Private message"
+msgstr "Mesazh privat"
+
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Përdor OEM pagëzore univerzale(monospaced font) për t´i shfaq tekst filet"
+
+msgid "Settings..."
+msgstr "Konfigurimet..."
+
+msgid "Enabled / Search String"
+msgstr "Aktiv / Kriteri për kërkim"
+
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filteri për përjashtim dhe NMDC debug mesazhet"
+
+msgid "Unfinished downloads directory"
+msgstr "Dosja e shkarkimeve të pa përfunduara"
+
+msgid "Personal information"
+msgstr "Informata Personale"
+
+msgid "Rating"
+msgstr "Populariteti"
+
+msgid "Failed to remove port mappings"
+msgstr "S`mund të largon port mappings"
+
+msgid "Favorite Users"
+msgstr "Përdorues të parapëlqyer"
+
+msgid "Search Spy"
+msgstr "Kërkim nëpërmjet spionimit"
+
+msgid "Close disconnected"
+msgstr "Të shkëputurat mbylli"
+
+msgid "Priority"
+msgstr "Prioritet"
+
+msgid "This hub is not a favorite hub"
+msgstr "Ky hub s´është hub i parapëlqyer"
+
+msgid "Close all search windows"
+msgstr "Mbyll të gjitha dritaret për kërkim"
+
+msgid "Copy Filename"
+msgstr "Kopjo emrin e filit"
+
+msgid "Open own list"
+msgstr "Hap listën personale"
+
+msgid "Virtual name"
+msgstr "Emri viritual"
+
+msgid "Destination Directory"
+msgstr "Vend i paracaktuar i dosjes"
+
+msgid "TCP"
+msgstr "TCP Porti"
+
+msgid "Full Path"
+msgstr "Rruga e plotë e kërkimit"
+
+msgid "Search String"
+msgstr "Kriteri për kërkim"
+
+msgid "Advanced"
+msgstr "Përparuar"
+
+msgid "PM"
+msgstr "PM"
+
+msgid "Frequently asked questions"
+msgstr "Pyetjet e shpeshta"
+
+msgid "Show joins / parts in chat by default"
+msgstr "Shfaq kur përdoruesi kyçet/largohet nga biseda kryesore"
+
+msgid "Settings"
+msgstr "Konfigurmiet"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "Waiting (User online)"
+msgstr "Pret(Përdorues i lidhur)"
+
+msgid "Separator"
+msgstr "Ndarës"
+
+msgid "Directory"
+msgstr "Dosje"
+
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Kërko TTH-kontroll shumën në Bitzi.com"
+
+msgid "Sort all downloads first"
+msgstr "Së pari klasifiko të gjitha shkarkimet"
+
+msgid "Waiting Users"
+msgstr "Në pritje të përdoruesve"
+
+msgid "Language file"
+msgstr "Fil Gjuhësor"
+
+msgid "User offline"
+msgstr "Përdoruesi është shkëputur"
+
+msgid "s"
+msgstr "s"
+
+msgid "Donate (paypal)"
+msgstr "Dhuro €€€/$$$ (paypal)"
+
+msgid "Away mode off"
+msgstr "Gjendja e largimit deaktivizuar"
+
+msgid "Auto connect / Name"
+msgstr "Lidhu automatikisht / Emri"
+
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Proxy (vetëm për hub listën)"
+
+msgid "Low"
+msgstr "Ulët"
+
+msgid "Online"
+msgstr "Lidhur"
+
+msgid "View status messages in main chat"
+msgstr "Në bisedën kryesore shfaq mesazhin(kryesore)"
+
+msgid "Only where I'm op"
+msgstr "Vetëm kur jam në lidhje-online"
+
+msgid "Auto-search limit"
+msgstr "Kufizim i kërkimit auto."
+
+msgid "Normal prio max size"
+msgstr "Madhë.norm.e prio-s"
+
+msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
+msgstr "Një MAGNET nyje e gabuar është dërguar në DC++.S`do ndërmiret asnjë veprim."
+
+msgid "Show progress bars for transfers"
+msgstr "Shfaq taktin e progresit për transferimet (përdoren disa CPU)"
+
+msgid "Set priority"
+msgstr "Vendos prioritet"
+
+msgid "Download whole directory"
+msgstr "Shkarko tërë dosjen"
+
+msgid "Log downloads"
+msgstr "Shëno shkarkimet"
+
+msgid "Purge"
+msgstr "Pastro"
+
+msgid "Timestamps enabled"
+msgstr "Shënues i kohës aktiv"
+
+msgid "Confirm favorite hub removal"
+msgstr "Konfirmo zhvendosjen e hubit të parapëlqyer"
+
+msgid "Please enter a password"
+msgstr "Të lutem shëno fjalëkalimin"
+
+msgid "Drop sources below"
+msgstr "Drop sources below"
+
+msgid "Finished Downloads"
+msgstr "Shkarkimet e përfunduara"
+
+msgid "Download to..."
+msgstr "Shkarko në..."
+
+msgid "Colors"
+msgstr "Ngjyrat"
+
+msgid "Done"
+msgstr "Përfundoi"
+
+msgid "Any"
+msgstr "Çdo"
+
+msgid "Size"
+msgstr "Madhësia"
+
+msgid "Sharing"
+msgstr "Shpërndan"
+
+msgid "Public Hubs list URL"
+msgstr "Lista e hubave publik URL-ja"
+
+msgid "Always open help file with this dialog"
+msgstr "Çdo herë hap filin për ndihmë me këtë dialog"
+
+msgid "Start a search for this file"
+msgstr "Fillo kërkimin për këtë fil"
+
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Përdor tingull gjatë hapjes së mesazheve private"
+
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "Mos e zhvendos burimin gjatë autodropping, vetëm shkyçi"
+
+msgid "AWAY"
+msgstr "LARG"
+
+msgid "Check every"
+msgstr "kontrollo çdo"
+
+msgid "Favorite download directories"
+msgstr "Të parapëlqyerit shkarko në dosje(-et)"
+
+msgid "Highest prio max size"
+msgstr "Madhë.maks.e prio-s"
+
+msgid "Address"
+msgstr "Adresa"
+
+msgid "Total size:"
+msgstr "Madhësia e përgjithëshme:"
+
+msgid "ADL Search"
+msgstr "ADL Kërkim"
+
+msgid "Remove user from queue"
+msgstr "Zhvendose përdoruesin nga rradha"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Directory or directory name already exists"
+msgstr "Dosja apo emri i dosjes tani egzitojnë"
+
+msgid "Full tree does not match TTH root"
+msgstr "Struktura e shkarkuar s`i përgjigjet TTH rrënjës"
+
+msgid "Search history"
+msgstr "Historia e kërkimit"
+
+msgid "Filelist Menu"
+msgstr "Menyja e listës së filit"
+
+msgid "Port"
+msgstr "Porti"
+
+msgid "Auto refresh time"
+msgstr "Rifre.autom.i kohës"
+
+msgid "Errors"
+msgstr "Gabime"
+
+msgid "Filename"
+msgstr "Emri i filit"
+
+msgid "Firewall (passive, last resort)"
+msgstr "Muri mbrojtës (passive, last resort)"
+
+msgid "Open new file list windows in the background"
+msgstr "Hap një listë të re të filit(dritare)në prapaskenë"
+
+msgid "High prio max size"
+msgstr "Madhë.maks.e prio-s"
+
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+msgid "Close all file list windows"
+msgstr "Mbyll të gjitha dritaret e listave të fileve"
+
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Kyç URL:të në DC++(nyje me prefiksin URL)"
+
+msgid "New virtual name matches old name, skipping..."
+msgstr "Emri i ri (viritual)përputhet me emrin e vjetër,tejkalon..."
+
+msgid "Running..."
+msgstr "Vepron..."
+
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Pseudonimi yt është i zënë,të lutem zavendëso me ndonjë tjetër!"
+
+msgid "Favorite Hub Properties"
+msgstr "Vetitë e hubit të parapëlqyer"
+
+msgid "PM history"
+msgstr "PM histori"
+
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "Prioriteti më i gjatë i aktivizuar"
+
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+msgid "Show"
+msgstr "Shfaq"
+
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Të lutem shëno një pseudonim në Konfigurimet!"
+
+msgid "Source too slow"
+msgstr "Burimi është shumë i ngadalshëm"
+
+msgid "Timestamps disabled"
+msgstr "Shënues i kohës pasiv"
+
+msgid "Find"
+msgstr "Gjej"
+
+msgid "Passive user"
+msgstr "Përdorues pasiv"
+
+msgid "Direct connection"
+msgstr "Kyçje direkte"
+
+msgid "User Menu"
+msgstr "Menyja e përdoruesit"
+
+msgid "Connection settings"
+msgstr "Konfigurimet e kyçjes"
+
+msgid "Downloads"
+msgstr "Shkarkimet"
+
+msgid "MiBits/s"
+msgstr "MiBits/s"
+
+msgid "Break on first ADLSearch match"
+msgstr "Ndërpre në përputhjen e parë të ADL kërkimit"
+
+msgid "Set timestamps"
+msgstr "Format i kohës (%H:%M:%S)"
+
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Filet e reja janë vendo.në shpërn.vetëm kur janë indeks.në dosje!"
+
+msgid "Close all PM windows"
+msgstr "Mbyll të gjitha PM dritaret"
+
+msgid "Nick"
+msgstr "Pseudonim"
+
+msgid "Command"
+msgstr "Urdhër"
+
+msgid "Hubs"
+msgstr "Hubat"
+
+msgid "Confirm dialog options"
+msgstr "Konfirmo alternativat e dialogut"
+
+msgid "Other queue options"
+msgstr "Konfigurimet e fileve të tjera të rradhitura"
+
+msgid "Toggle window when selecting an active tab"
+msgstr "Ndro katror(simbol)kur shtyp në hub shenjën"
+
+msgid "Join/part showing on"
+msgstr "Mesazh gjatë shoqërimit/bashkimit në(brenda)"
+
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Riorjentimi i kërkuar për hubin në të cilën tash më je i lidhur"
+
+msgid "Bind address"
+msgstr "Bind address"
+
+msgid "Paused"
+msgstr "Pushon"
+
+msgid "Write buffer size"
+msgstr "Shkruaj madhësinë e paqenë(buffer size)"
+
+msgid "B/s"
+msgstr "B/s"
+
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "Mos i shkyç automatikisht përdoruesit e parapëlqyer të cilët largohen nga hubi"
+
+msgid "Line speed (upload)"
+msgstr "Shpejtësia e ngarkimit"
+
+msgid "Shared"
+msgstr "Shpërndan"
+
+msgid "Normal"
+msgstr "Normale"
+
+msgid "Automatically follow redirects"
+msgstr "Ndjekje automatike e riorjentimeve"
+
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "SFV-kontrolli dha një shumë kontroll të gabuar CRC32"
+
+msgid "User"
+msgstr "Përdorues"
+
+msgid "Search for alternates"
+msgstr "Kërko vende alternative për shkarkim"
+
+msgid "Configure Public Hub Lists"
+msgstr "Konfiguro listën publike"
+
+msgid "About DC++..."
+msgstr "Rreth DC++..."
+
+msgid "Hub already exists as a favorite"
+msgstr "Hubi egziston(prej më përpara)si i parapëlqyer"
+
+msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
+msgstr "S`mund t´a hap UDP portin. Kërkimi s´do funksionon në mënyrë korrekte deri sa ju t`i ndryshoni konfigurimet apo t´i mbyllni aplikacionet të cilat e përdorin UDP portin"
+
+msgid "Match queue"
+msgstr "Përputh me listën e shkarkimit"
+
+msgid "Downloading list..."
+msgstr "Shkarkon listën..."
+
+msgid "Log system messages"
+msgstr "Shëno mesazhet e sistemit"
+
+msgid "Uploads"
+msgstr "Ngarkimet"
+
+msgid "Max Users"
+msgstr "Përdorues Maksimal"
+
+msgid "Don't download files already in share"
+msgstr "Mos shkarko file që tashmë gjinden(prej më përpara) në dosjen për shpërndarje"
+
+msgid "Copy magnet link to clipboard"
+msgstr "Kopjo nyjen magnetike në clipboard"
+
+msgid "Slots set"
+msgstr "Kanalet e kufizuara(s´ka qasje)"
+
+msgid "Error creating dchub registry key"
+msgstr "Gabim kur DC++ do krijonte dchubb çelsin"
+
+msgid "No users"
+msgstr "S´ka përdorues"
+
+msgid "Change Log"
+msgstr "Ndrysho Shënimin"
+
+msgid "Time left"
+msgstr "Koha e mbetur"
+
+msgid "TTH Root"
+msgstr "TTH-kontroll shuma"
+
+msgid "Remove slow filelists"
+msgstr "Zhvendos listat e fileve të ngadalshme"
+
+msgid "CID"
+msgstr "CID"
+
+msgid "Specify a server to connect to"
+msgstr "Cakto një server për kyçje"
+
+msgid "Source Type"
+msgstr "Lloj i burimit"
+
+msgid "Download files from the Direct Connect network"
+msgstr "Shkarko filet nga rrjeti Direct Connect"
+
+msgid "No users to download from"
+msgstr "S´ka përdorues nga i cili mund të shkarkohet"
+
+msgid "Offline"
+msgstr "Shkëputur"
+
+msgid "Creating file index..."
+msgstr "Krijohet indeksi i fileve..."
+
+msgid "Description"
+msgstr "Përshkrim"
+
+msgid "Enter search string"
+msgstr "Shëno kriterjen për kërkim"
+
+msgid "Password"
+msgstr "Fjalëkalim"
+
+msgid "Edit the hublist"
+msgstr "Redakto hub listat"
+
+msgid "Network Statistics"
+msgstr "Statistika e rrjetit"
+
+msgid "Firewall with manual port forwarding"
+msgstr "Muri mbrojtës me përcjellje manuale të portit"
+
+msgid "Country"
+msgstr "Shteti/kodi"
+
+msgid "Close all offline PM windows"
+msgstr "Mbyll të gjitha PM dritaret e shkëputura"
+
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Përdor tingull gjatë pranimit të mesazheve private"
+
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Shkarkimet maksimale të njëkohëshme (0 = pakufizuar)"
+
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "S`mund të merr IP-në nëpërmjet të UPnP-së.Të lutem vendose vet."
+
+msgid "Automatic Directory Listing Search"
+msgstr "Kërkimi automatik i dosjes"
+
+msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
+msgstr "S`mund t´a hap TCP portin. Transferimi i fileve s´do jetë korrekte deri sa të bëhen ndryshime në konfigurimet apo deri sa të mbyllet çdo(ndonjë)aplikacion që ndoshta e përdor TCP portin"
+
+msgid "Audio"
+msgstr "Muzikë"
+
+msgid "Automatically match queue for auto search hits"
+msgstr "Përputhe gjithë listën e shkarkimeve kur \"Vendos automatikisht-vende të qëlluara-kur kërkon vende alternative për shkarkim\" është aktive"
+
+msgid "Max inactivity"
+msgstr "Inaktiviteti maks"
+
+msgid "Log private chat"
+msgstr "Shëno bisedën private"
+
+msgid "Min Share"
+msgstr "Shpërndarja minimale"
+
+msgid "Open new private message windows in the background"
+msgstr "Hap dritare të reja për mesazh private në prapaskenë"
+
+msgid "Min elapsed"
+msgstr "Sa kohë?"
+
