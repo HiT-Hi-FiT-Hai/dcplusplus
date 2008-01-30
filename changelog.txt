@@ -16,7 +16,6 @@
 * Upgraded to bzip 1.0.4 (thanks pothead)
 * Tab tooltips (thanks poy)
 * Allow spaces in the description field (poy)
-* Fixed max characters limit in chats (poy)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

@@ -105,6 +105,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 		WidgetTextBox::Seed cs = WinUtil::Seeds::textBox;
 		cs.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY;
 		chat = createTextBox(cs);
+		chat->setTextLimit(0);
 		addWidget(chat);
 		paned->setFirst(chat);
 		chat->onContextMenu(std::tr1::bind(&HubFrame::handleChatContextMenu, this, _1));
