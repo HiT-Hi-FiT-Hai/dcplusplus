@@ -147,7 +147,6 @@ TransferView::~TransferView() {
 void TransferView::handleTabSelected() {
 	int i = tabs->getSelectedIndex();
 	
-	dcdebug("Setting %d visible\n", i);
 	if(i == 0) {
 		::ShowWindow(downloadsWindow->handle(), SW_HIDE);
 		::ShowWindow(connectionsWindow->handle(), SW_SHOW);
@@ -165,11 +164,11 @@ bool TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 void TransferView::layout() {
 	tabs->setBounds(SmartWin::Point(0,0), getClientAreaSize());
 	SmartWin::Rectangle rect = tabs->getUsableArea(true);
-	dcdebug("Setting rect %u, %u, %u, %u\n", rect.pos.x, rect.pos.y, rect.size.x, rect.size.y);
+
 	connectionsWindow->setBounds(rect);
-	connections->setBounds(connectionsWindow->getBounds(true));
+	connections->setBounds(SmartWin::Rectangle(connectionsWindow->getClientAreaSize()));
 	downloadsWindow->setBounds(rect);
-	downloads->setBounds(downloadsWindow->getBounds(true));
+	downloads->setBounds(SmartWin::Rectangle(downloadsWindow->getClientAreaSize()));
 }
 
 void TransferView::prepareClose() {

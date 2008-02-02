@@ -16,7 +16,9 @@
 * Upgraded to bzip 1.0.4 (thanks pothead)
 * Tab tooltips (thanks poy)
 * Allow spaces in the description field (poy)
-
+* [ADC] Handle third person formatting (thanks poy)
+* Fix right-click issue when chat history is long (thanks poy)
+ 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
 * Use system header arrows on common controls 6+ (thanks poy)

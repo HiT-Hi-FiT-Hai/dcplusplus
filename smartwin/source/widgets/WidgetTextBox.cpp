@@ -27,7 +27,7 @@ SmartUtil::tstring WidgetTextBox::getLine(int line) {
 SmartUtil::tstring WidgetTextBox::textUnderCursor(const ScreenCoordinate& p) {
 	int i = charFromPos(p);
 	int line = lineFromPos(p);
-	int c = i - lineIndex(line);
+	int c = (i - lineIndex(line)) & 0xFFFF;
 	
 	SmartUtil::tstring tmp = getLine(line);
 	

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-02-02 00:46+0100\n"
+"POT-Creation-Date: 2008-02-02 21:32+0100\n"
 "Last-Translator:  <PrimeEvil@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +22,7 @@ msgid ""
 "Open download page?"
 msgstr "Odpri Direktorij Prenosov"
 
-#: win32/TransferView.cpp:570
+#: win32/TransferView.cpp:569
 #, boost-format
 msgid "%1% (%2$0.2f)"
 msgstr ""
@@ -60,7 +60,7 @@ msgstr[1] "Ni uporabnikov"
 msgstr[2] "Ni uporabnikov"
 msgstr[3] "Ni uporabnikov"
 
-#: win32/TransferView.cpp:584 win32/TransferView.cpp:632
+#: win32/TransferView.cpp:583 win32/TransferView.cpp:631
 #, boost-format
 msgid "%1%/s"
 msgstr ""
@@ -106,7 +106,7 @@ msgstr ""
 msgid "&Connect"
 msgstr "Povezan"
 
-#: win32/TransferView.cpp:201
+#: win32/TransferView.cpp:200
 #, fuzzy
 msgid "&Disconnect"
 msgstr "Hitro Povezovanje"
@@ -136,7 +136,7 @@ msgstr "Priljubljeni Hubi"
 msgid "&File"
 msgstr "Datoteka"
 
-#: win32/TransferView.cpp:198
+#: win32/TransferView.cpp:197
 msgid "&Force attempt"
 msgstr ""
 
@@ -570,12 +570,12 @@ msgstr "Potrjevanje brisanja datotek iz čakalne vrste"
 msgid "Connected"
 msgstr "Povezan"
 
-#: win32/TransferView.cpp:641 win32/TransferView.cpp:648
+#: win32/TransferView.cpp:640 win32/TransferView.cpp:647
 #, fuzzy
 msgid "Connecting"
 msgstr "Povezava"
 
-#: win32/TransferView.cpp:285
+#: win32/TransferView.cpp:284
 #, fuzzy
 msgid "Connecting (forced)"
 msgstr "Povezan"
@@ -603,7 +603,7 @@ msgstr "Povezava"
 msgid "Copy &address to clipboard"
 msgstr "Kopiraj magnetni link v odložišče"
 
-#: win32/TransferView.cpp:199 win32/HubFrame.cpp:1160
+#: win32/TransferView.cpp:198 win32/HubFrame.cpp:1160
 #, fuzzy
 msgid "Copy &nick to clipboard"
 msgstr "Kopiraj magnetni link v odložišče"
@@ -785,12 +785,12 @@ msgstr "Prenesi celotno mapo v..."
 msgid "Downloaded"
 msgstr "Prenešeno"
 
-#: win32/TransferView.cpp:719
+#: win32/TransferView.cpp:718
 #, fuzzy, boost-format
 msgid "Downloading %1%"
 msgstr "Prenašanje..."
 
-#: win32/TransferView.cpp:630
+#: win32/TransferView.cpp:629
 #, boost-format
 msgid "Downloading from %1% user"
 msgid_plural "Downloading from %1% users"
@@ -1142,7 +1142,7 @@ msgstr "IP"
 msgid "IP: %1%, Port: %2%/%3%/%4%"
 msgstr ""
 
-#: win32/TransferView.cpp:536 win32/TransferView.cpp:832
+#: win32/TransferView.cpp:535 win32/TransferView.cpp:831
 msgid "Idle"
 msgstr ""
 
@@ -1706,7 +1706,7 @@ msgstr "Naj Windowsi upravljajo z magnetnimi: URI linki"
 msgid "Reliability"
 msgstr "Zanesljivost"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:660
+#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:659
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr "Oddaljeni klient ne podpira TTH - ni možen prenos datotek"
 
@@ -2012,7 +2012,7 @@ msgstr ""
 msgid "TTH Root"
 msgstr "TTH Izvor"
 
-#: win32/TransferView.cpp:671
+#: win32/TransferView.cpp:670
 #, boost-format
 msgid "TTH: %1%"
 msgstr ""
@@ -2137,7 +2137,7 @@ msgstr "Reže(sloti) za prenos gor"
 msgid "Upload: %1%, Download: %2%"
 msgstr ""
 
-#: win32/TransferView.cpp:797
+#: win32/TransferView.cpp:796
 #, fuzzy, boost-format
 msgid "Uploading %1%"
 msgstr "Prenosi gor"
@@ -2228,12 +2228,12 @@ msgstr "Čakam (Uporabnik online)"
 msgid "Waiting Users"
 msgstr "Čakam Uporabnike"
 
-#: win32/TransferView.cpp:626
+#: win32/TransferView.cpp:625
 #, fuzzy
 msgid "Waiting for slot"
 msgstr "Čakam Uporabnike"
 
-#: win32/TransferView.cpp:648
+#: win32/TransferView.cpp:647
 #, fuzzy
 msgid "Waiting to retry"
 msgstr "Čakam Uporabnike"
@@ -2258,7 +2258,7 @@ msgid ""
 "or from Microsoft directly."
 msgstr ""
 
-#: win32/TransferView.cpp:673
+#: win32/TransferView.cpp:672
 #, fuzzy
 msgid "file list"
 msgstr "Meni Seznama Datotek"

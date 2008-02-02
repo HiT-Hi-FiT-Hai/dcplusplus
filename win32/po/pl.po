@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-02-02 00:46+0100\n"
+"POT-Creation-Date: 2008-02-02 21:32+0100\n"
 "Last-Translator:  <k4r0l@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +22,7 @@ msgid ""
 "Open download page?"
 msgstr "Otwórz katalog pobrań"
 
-#: win32/TransferView.cpp:570
+#: win32/TransferView.cpp:569
 #, boost-format
 msgid "%1% (%2$0.2f)"
 msgstr ""
@@ -58,7 +58,7 @@ msgstr[0] "Brak użytkowników"
 msgstr[1] "Brak użytkowników"
 msgstr[2] "Brak użytkowników"
 
-#: win32/TransferView.cpp:584 win32/TransferView.cpp:632
+#: win32/TransferView.cpp:583 win32/TransferView.cpp:631
 #, boost-format
 msgid "%1%/s"
 msgstr ""
@@ -104,7 +104,7 @@ msgstr ""
 msgid "&Connect"
 msgstr "Połączony"
 
-#: win32/TransferView.cpp:201
+#: win32/TransferView.cpp:200
 #, fuzzy
 msgid "&Disconnect"
 msgstr "Szybkie połączenie"
@@ -134,7 +134,7 @@ msgstr "Ulubione Huby"
 msgid "&File"
 msgstr "Plik"
 
-#: win32/TransferView.cpp:198
+#: win32/TransferView.cpp:197
 msgid "&Force attempt"
 msgstr ""
 
@@ -572,12 +572,12 @@ msgstr "Potwierdzaj usuwanie elementu z kolejki"
 msgid "Connected"
 msgstr "Połączony"
 
-#: win32/TransferView.cpp:641 win32/TransferView.cpp:648
+#: win32/TransferView.cpp:640 win32/TransferView.cpp:647
 #, fuzzy
 msgid "Connecting"
 msgstr "Połączenie"
 
-#: win32/TransferView.cpp:285
+#: win32/TransferView.cpp:284
 #, fuzzy
 msgid "Connecting (forced)"
 msgstr "Połączony"
@@ -605,7 +605,7 @@ msgstr "Połączenie"
 msgid "Copy &address to clipboard"
 msgstr "Kopiuj magnet linka do schowka"
 
-#: win32/TransferView.cpp:199 win32/HubFrame.cpp:1160
+#: win32/TransferView.cpp:198 win32/HubFrame.cpp:1160
 #, fuzzy
 msgid "Copy &nick to clipboard"
 msgstr "Kopiuj magnet linka do schowka"
@@ -787,12 +787,12 @@ msgstr "Pobierz cały katalog do..."
 msgid "Downloaded"
 msgstr "Pobrane"
 
-#: win32/TransferView.cpp:719
+#: win32/TransferView.cpp:718
 #, fuzzy, boost-format
 msgid "Downloading %1%"
 msgstr "Pobieram..."
 
-#: win32/TransferView.cpp:630
+#: win32/TransferView.cpp:629
 #, boost-format
 msgid "Downloading from %1% user"
 msgid_plural "Downloading from %1% users"
@@ -1145,7 +1145,7 @@ msgstr "IP"
 msgid "IP: %1%, Port: %2%/%3%/%4%"
 msgstr ""
 
-#: win32/TransferView.cpp:536 win32/TransferView.cpp:832
+#: win32/TransferView.cpp:535 win32/TransferView.cpp:831
 msgid "Idle"
 msgstr ""
 
@@ -1711,7 +1711,7 @@ msgstr "Zintegruj z powłoką systemową Windows magnet: URI linki"
 msgid "Reliability"
 msgstr "Solidność"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:660
+#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:659
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr "Zdalny klient nie obsługuje w pełni TTH - nie można pobrać"
 
@@ -2015,7 +2015,7 @@ msgstr ""
 msgid "TTH Root"
 msgstr "TTH Root"
 
-#: win32/TransferView.cpp:671
+#: win32/TransferView.cpp:670
 #, boost-format
 msgid "TTH: %1%"
 msgstr ""
@@ -2142,7 +2142,7 @@ msgstr "Dostępne sloty"
 msgid "Upload: %1%, Download: %2%"
 msgstr ""
 
-#: win32/TransferView.cpp:797
+#: win32/TransferView.cpp:796
 #, fuzzy, boost-format
 msgid "Uploading %1%"
 msgstr "Wysyłane"
@@ -2231,12 +2231,12 @@ msgstr "Oczekiwanie (użytkownik dostępny)"
 msgid "Waiting Users"
 msgstr "Oczekujący użytkownicy"
 
-#: win32/TransferView.cpp:626
+#: win32/TransferView.cpp:625
 #, fuzzy
 msgid "Waiting for slot"
 msgstr "Oczekujący użytkownicy"
 
-#: win32/TransferView.cpp:648
+#: win32/TransferView.cpp:647
 #, fuzzy
 msgid "Waiting to retry"
 msgstr "Oczekujący użytkownicy"
@@ -2261,7 +2261,7 @@ msgid ""
 "or from Microsoft directly."
 msgstr ""
 
-#: win32/TransferView.cpp:673
+#: win32/TransferView.cpp:672
 #, fuzzy
 msgid "file list"
 msgstr "Menu listy plików"

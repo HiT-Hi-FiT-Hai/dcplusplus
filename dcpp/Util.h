@@ -183,7 +183,7 @@ public:
 	static string cleanPathChars(string aNick);
 
 	static string formatBytes(const string& aString) { return formatBytes(toInt64(aString)); }
-	static string formatMessage(const string& nick, const string& message);
+	static string formatMessage(const string& nick, const string& message, bool thirdPerson);
 
 	static string getShortTimeString(time_t t = time(NULL) );
 

@@ -246,9 +246,9 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		if(!replyTo)
 			return;
 
-		fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, c.getParam(0));
+		fire(ClientListener::PrivateMessage(), this, *from, *to, *replyTo, c.getParam(0), c.hasFlag("ME", 1));
 	} else {
-		fire(ClientListener::Message(), this, *from, c.getParam(0));
+		fire(ClientListener::Message(), this, *from, c.getParam(0), c.hasFlag("ME", 1));
 	}
 }
 

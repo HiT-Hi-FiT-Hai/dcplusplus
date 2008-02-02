@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-02-02 00:46+0100\n"
+"POT-Creation-Date: 2008-02-02 21:32+0100\n"
 "Last-Translator:  <dodywijaya@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +21,7 @@ msgid ""
 "Open download page?"
 msgstr "Buka direktori unduh"
 
-#: win32/TransferView.cpp:570
+#: win32/TransferView.cpp:569
 #, boost-format
 msgid "%1% (%2$0.2f)"
 msgstr ""
@@ -55,7 +55,7 @@ msgid_plural "%1% users"
 msgstr[0] "Tak ada pengguna"
 msgstr[1] "Tak ada pengguna"
 
-#: win32/TransferView.cpp:584 win32/TransferView.cpp:632
+#: win32/TransferView.cpp:583 win32/TransferView.cpp:631
 #, boost-format
 msgid "%1%/s"
 msgstr ""
@@ -101,7 +101,7 @@ msgstr ""
 msgid "&Connect"
 msgstr "Tersambung"
 
-#: win32/TransferView.cpp:201
+#: win32/TransferView.cpp:200
 #, fuzzy
 msgid "&Disconnect"
 msgstr "Hubung Cepat"
@@ -131,7 +131,7 @@ msgstr "Hub Kesukaan"
 msgid "&File"
 msgstr "Arsip"
 
-#: win32/TransferView.cpp:198
+#: win32/TransferView.cpp:197
 msgid "&Force attempt"
 msgstr ""
 
@@ -567,12 +567,12 @@ msgstr "Konfirmasi penghapusan baris di antrian unduh"
 msgid "Connected"
 msgstr "Tersambung"
 
-#: win32/TransferView.cpp:641 win32/TransferView.cpp:648
+#: win32/TransferView.cpp:640 win32/TransferView.cpp:647
 #, fuzzy
 msgid "Connecting"
 msgstr "Sambungan"
 
-#: win32/TransferView.cpp:285
+#: win32/TransferView.cpp:284
 #, fuzzy
 msgid "Connecting (forced)"
 msgstr "Tersambung"
@@ -600,7 +600,7 @@ msgstr "Sambungan"
 msgid "Copy &address to clipboard"
 msgstr "Salin pautan magnet ke clipboard"
 
-#: win32/TransferView.cpp:199 win32/HubFrame.cpp:1160
+#: win32/TransferView.cpp:198 win32/HubFrame.cpp:1160
 #, fuzzy
 msgid "Copy &nick to clipboard"
 msgstr "Salin pautan magnet ke clipboard"
@@ -786,12 +786,12 @@ msgstr "Unduh semua direktori ke..."
 msgid "Downloaded"
 msgstr "Telah Diunduh"
 
-#: win32/TransferView.cpp:719
+#: win32/TransferView.cpp:718
 #, fuzzy, boost-format
 msgid "Downloading %1%"
 msgstr "Mengunduh..."
 
-#: win32/TransferView.cpp:630
+#: win32/TransferView.cpp:629
 #, boost-format
 msgid "Downloading from %1% user"
 msgid_plural "Downloading from %1% users"
@@ -1143,7 +1143,7 @@ msgstr "IP"
 msgid "IP: %1%, Port: %2%/%3%/%4%"
 msgstr ""
 
-#: win32/TransferView.cpp:536 win32/TransferView.cpp:832
+#: win32/TransferView.cpp:535 win32/TransferView.cpp:831
 msgid "Idle"
 msgstr ""
 
@@ -1721,7 +1721,7 @@ msgstr "Daftar ke Windows untuk penanganan pautan URI magnet"
 msgid "Reliability"
 msgstr "Kehandalan"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:660
+#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:659
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr ""
 
@@ -2025,7 +2025,7 @@ msgstr ""
 msgid "TTH Root"
 msgstr "TTH Root"
 
-#: win32/TransferView.cpp:671
+#: win32/TransferView.cpp:670
 #, boost-format
 msgid "TTH: %1%"
 msgstr ""
@@ -2146,7 +2146,7 @@ msgstr "Slot unggah"
 msgid "Upload: %1%, Download: %2%"
 msgstr ""
 
-#: win32/TransferView.cpp:797
+#: win32/TransferView.cpp:796
 #, fuzzy, boost-format
 msgid "Uploading %1%"
 msgstr "Unggahan"
@@ -2236,11 +2236,11 @@ msgstr "Menunggu (Pengguna online)"
 msgid "Waiting Users"
 msgstr "Menunggu (Pengguna online)"
 
-#: win32/TransferView.cpp:626
+#: win32/TransferView.cpp:625
 msgid "Waiting for slot"
 msgstr ""
 
-#: win32/TransferView.cpp:648
+#: win32/TransferView.cpp:647
 msgid "Waiting to retry"
 msgstr ""
 
@@ -2264,7 +2264,7 @@ msgid ""
 "or from Microsoft directly."
 msgstr ""
 
-#: win32/TransferView.cpp:673
+#: win32/TransferView.cpp:672
 #, fuzzy
 msgid "file list"
 msgstr "Menu Daftar arsip"
