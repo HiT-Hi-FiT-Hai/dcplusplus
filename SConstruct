@@ -12,6 +12,7 @@ opts.AddOptions(
 	BoolOption('verbose', 'Show verbose command lines', 'no'),
 	BoolOption('savetemps', 'Save intermediate compilation files (assembly output)', 'no'),
 	BoolOption('unicode', 'Build a Unicode version which fully supports international characters', 'yes'),
+	BoolOption('i18n', 'Rebuild i18n files in debug build', 'no'),
 	('prefix', 'Prefix to use when cross compiling', 'i386-mingw32-')
 )
 
@@ -172,3 +173,4 @@ dev.boost = dev.build('boost/')
 dev.client = dev.build('dcpp/')
 dev.smartwin = dev.build('smartwin/')
 dev.win32 = dev.build('win32/')
+

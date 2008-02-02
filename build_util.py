@@ -75,6 +75,9 @@ class Dev:
 		return local_env.SConscript(source_path + 'SConscript', exports={'dev' : self, 'source_path' : full_path })
 
 	def i18n (self, source_path, buildenv, sources, name):
+		if self.env['mode'] != 'release' and not self.env['i18n']:
+			return
+
 		p_oze = glob.glob('po/*.po')
 		languages = [ os.path.basename(po).replace ('.po', '') for po in p_oze ]
 		potfile = 'po/' + name + '.pot'

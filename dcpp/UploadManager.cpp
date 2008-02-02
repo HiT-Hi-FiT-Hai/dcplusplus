@@ -174,7 +174,7 @@ bool UploadManager::prepareFile(UserConnection& aSource, const string& aType, co
 					tFile = ShareManager::getInstance()->toVirtual(TTHValue(aFile.substr(4)));
 
 				addFailedUpload(aSource, tFile +
-					" (" + Util::toString((aStartPos*1000/(size+10))/10.0)+"% of " + Util::formatBytes(size) + " done)");
+					" (" +  Util::formatBytes(aStartPos) + " - " + Util::formatBytes(aStartPos + aBytes) + ")");
 				aSource.disconnect();
 				return false;
 			}
