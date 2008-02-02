@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-01-23 22:20+0100\n"
+"POT-Creation-Date: 2008-01-31 20:32+0100\n"
 "Last-Translator:  <gutfeast@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -109,7 +109,7 @@ msgstr "32-bit CRC 코드 불일치 (SFV-검사)"
 msgid "Certificate not trusted, unable to connect"
 msgstr "인증이 신뢰되지 않으므로 연결(접속)할 수 없음"
 
-#: dcpp/Socket.cpp:155 dcpp/ConnectionManager.cpp:187
+#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:187
 #: dcpp/BufferedSocket.cpp:154
 msgid "Connection timeout"
 msgstr "연결 시간 초과"
@@ -184,7 +184,7 @@ msgstr "인증 파일을 불러오는데 실패함"
 msgid "Failed to load private key"
 msgstr "비밀(Private) 키를 불러오는데 실패함"
 
-#: dcpp/Socket.cpp:409
+#: dcpp/Socket.cpp:408
 msgid ""
 "Failed to set up the socks server for UDP relay (check socks address and "
 "port)"
@@ -304,7 +304,7 @@ msgstr "추가하기 전에 이미 공유된 모든 서브-디렉토리를 공�
 msgid "Shared Files"
 msgstr "파일 공유!"
 
-#: dcpp/Socket.cpp:270 dcpp/Socket.cpp:274
+#: dcpp/Socket.cpp:269 dcpp/Socket.cpp:273
 msgid "Socks server authentication failed (bad login / password?)"
 msgstr "소켓 서버 인증이 실패함 (잘못된 로그인이름/비밀번호?)"
 
@@ -325,16 +325,16 @@ msgstr "대상 파일 이름이 너무 김"
 msgid "Target removed"
 msgstr ""
 
-#: dcpp/Socket.cpp:256
+#: dcpp/Socket.cpp:255
 msgid "The socks server doesn't support login / password authentication"
 msgstr "소켓 서버가 '로그인이름/비밀번호' 인증을 지원하지 않음"
 
-#: dcpp/Socket.cpp:163 dcpp/Socket.cpp:174 dcpp/Socket.cpp:207
-#: dcpp/Socket.cpp:211 dcpp/Socket.cpp:238 dcpp/Socket.cpp:253
+#: dcpp/Socket.cpp:162 dcpp/Socket.cpp:173 dcpp/Socket.cpp:206
+#: dcpp/Socket.cpp:210 dcpp/Socket.cpp:237 dcpp/Socket.cpp:252
 msgid "The socks server failed establish a connection"
 msgstr "소켓 서버가 연결 구성에 실패함"
 
-#: dcpp/Socket.cpp:242
+#: dcpp/Socket.cpp:241
 msgid "The socks server requires authentication"
 msgstr "소켓 서버가 인증을 필요로 함"
 
@@ -369,9 +369,9 @@ msgstr "Thread를 생성할 수 없음"
 msgid "Unable to send file %1%: %2%"
 msgstr ""
 
-#: dcpp/Socket.cpp:55
-#, boost-format
-msgid "Unknown error: 0x%1%"
+#: dcpp/Socket.cpp:54
+#, c-format, boost-format
+msgid "Unknown error: 0x%1$x"
 msgstr ""
 
 #: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468

@@ -22,6 +22,7 @@
 #include <dcpp/DownloadManagerListener.h>
 #include <dcpp/UploadManagerListener.h>
 #include <dcpp/ConnectionManagerListener.h>
+#include <dcpp/QueueManagerListener.h>
 #include <dcpp/TaskQueue.h>
 #include <dcpp/forward.h>
 #include <dcpp/Util.h>
@@ -38,6 +39,7 @@ class TransferView :
 	private DownloadManagerListener, 
 	private UploadManagerListener, 
 	private ConnectionManagerListener,
+	private QueueManagerListener,
 	public AspectSpeaker<TransferView>,
 	public AspectUserInfo<TransferView>,
 	public AspectUserCommand<TransferView>
@@ -53,22 +55,37 @@ private:
 	friend class AspectUserInfo<TransferView>;
 	
 	enum {
-		ADD_ITEM,
-		REMOVE_ITEM,
-		UPDATE_ITEM,
+		DOWNLOAD_COLUMN_FIRST,
+		DOWNLOAD_COLUMN_FILE = DOWNLOAD_COLUMN_FIRST,
+		DOWNLOAD_COLUMN_PATH,
+		DOWNLOAD_COLUMN_STATUS,
+		DOWNLOAD_COLUMN_TIMELEFT,
+		DOWNLOAD_COLUMN_SPEED,
+		DOWNLOAD_COLUMN_DONE,
+		DOWNLOAD_COLUMN_SIZE,
+		DOWNLOAD_COLUMN_LAST
+	};
+	
+	enum {
+		DOWNLOADS_DISCONNECTED,
+		DOWNLOADS_REMOVED,
+		DOWNLOADS_TICK,
+		CONNECTIONS_ADD,
+		CONNECTIONS_REMOVE,
+		CONNECTIONS_UPDATE,
 	};
 
 	enum {
-		COLUMN_FIRST,
-		COLUMN_USER = COLUMN_FIRST,
-		COLUMN_STATUS,
-		COLUMN_SPEED,
-		COLUMN_CHUNK,
-		COLUMN_TRANSFERED,
-		COLUMN_QUEUED,
-		COLUMN_CIPHER,
-		COLUMN_IP,
-		COLUMN_LAST
+		CONNECTION_COLUMN_FIRST,
+		CONNECTION_COLUMN_USER = CONNECTION_COLUMN_FIRST,
+		CONNECTION_COLUMN_STATUS,
+		CONNECTION_COLUMN_SPEED,
+		CONNECTION_COLUMN_CHUNK,
+		CONNECTION_COLUMN_TRANSFERED,
+		CONNECTION_COLUMN_QUEUED,
+		CONNECTION_COLUMN_CIPHER,
+		CONNECTION_COLUMN_IP,
+		CONNECTION_COLUMN_LAST
 	};
 
 	enum {
@@ -77,14 +94,15 @@ private:
 	};
 
 	struct UpdateInfo;
-	class ItemInfo : public UserInfoBase {
+	
+	class ConnectionInfo : public UserInfoBase {
 	public:
 		enum Status {
 			STATUS_RUNNING,		///< Transfering
 			STATUS_WAITING		///< Idle
 		};
 
-		ItemInfo(const UserPtr& u, bool aDownload);
+		ConnectionInfo(const UserPtr& u, bool aDownload);
 
 		bool download;
 		bool transferFailed;
@@ -99,7 +117,7 @@ private:
 		int64_t speed;
 		int64_t chunk;
 		
-		tstring columns[COLUMN_LAST];
+		tstring columns[CONNECTION_COLUMN_LAST];
 		void update(const UpdateInfo& ui);
 
 		void disconnect();
@@ -113,7 +131,7 @@ private:
 			return download ? IMAGE_DOWNLOAD : IMAGE_UPLOAD;
 		}
 
-		static int compareItems(ItemInfo* a, ItemInfo* b, int col);
+		static int compareItems(ConnectionInfo* a, ConnectionInfo* b, int col);
 	};
 
 	struct UpdateInfo : public Task {
@@ -127,7 +145,7 @@ private:
 			MASK_CHUNK = 1 << 6
 		};
 
-		bool operator==(const ItemInfo& ii) { return download == ii.download && user == ii.user; }
+		bool operator==(const ConnectionInfo& ii) { return download == ii.download && user == ii.user; }
 
 		UpdateInfo(const UserPtr& aUser, bool isDownload, bool isTransferFailed = false) : updateMask(0), user(aUser), download(isDownload), transferFailed(isTransferFailed) { }
 
@@ -137,8 +155,8 @@ private:
 		bool download;
 		bool transferFailed;
 		
-		void setStatus(ItemInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
-		ItemInfo::Status status;
+		void setStatus(ConnectionInfo::Status aStatus) { status = aStatus; updateMask |= MASK_STATUS; }
+		ConnectionInfo::Status status;
 		void setTransfered(int64_t aTransfered, int64_t aActual) {
 			transfered = aTransfered; actual = aActual; updateMask |= MASK_TRANSFERED; 
 		}
@@ -157,20 +175,81 @@ private:
 		tstring cipher;
 	};
 
-	static int columnIndexes[];
-	static int columnSizes[];
+	struct TickInfo : public Task {
+		TickInfo(const string& path_) : path(path_), done(0), bps(0), users(0) { }
+		
+		string path;
+		int64_t done;
+		double bps;
+		int users;
+	};
 
-	typedef TypedListView<ItemInfo> WidgetTransfers;
-	typedef WidgetTransfers* WidgetTransfersPtr;
-	WidgetTransfersPtr transfers;
+	
+	static int connectionIndexes[CONNECTION_COLUMN_LAST];
+	static int connectionSizes[CONNECTION_COLUMN_LAST];
+	
+	class DownloadInfo {
+	public:
+		DownloadInfo(const string& filename, int64_t size, const TTHValue& tth);
+		
+		const tstring& getText(int col) const {
+			return columns[col];
+		}
+
+		int getImage() const;
+
+		static int compareItems(DownloadInfo* a, DownloadInfo* b, int col) {
+			switch(col) {
+			case DOWNLOAD_COLUMN_STATUS: return compare(a->users, b->users);
+			case DOWNLOAD_COLUMN_TIMELEFT: return compare(a->timeleft(), b->timeleft());
+			case DOWNLOAD_COLUMN_SPEED: return compare(a->bps, b->bps);
+			case DOWNLOAD_COLUMN_SIZE: return compare(a->size, b->size);
+			case DOWNLOAD_COLUMN_DONE: return compare(a->done, b->done);
+			default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
+			}
+		}
+		
+		void update();
+		void update(const TickInfo& ti);
+		
+		int64_t timeleft() { return bps == 0 ? 0 : (size - done) / bps; }
+		string path;
+		int64_t done;
+		int64_t size;
+		double bps;
+		int users;
+		TTHValue tth;
+		
+		tstring columns[DOWNLOAD_COLUMN_LAST];
+	};
+	
+
+	static int downloadIndexes[DOWNLOAD_COLUMN_LAST];
+	static int downloadSizes[DOWNLOAD_COLUMN_LAST];
+
+	typedef TypedListView<ConnectionInfo> WidgetConnections;
+	typedef WidgetConnections* WidgetConnectionsPtr;
+	WidgetConnectionsPtr connections;
+	WidgetChildWindowPtr connectionsWindow;
+	
+	typedef TypedListView<DownloadInfo> WidgetDownloads;
+	typedef WidgetDownloads* WidgetDownloadsPtr;
+	WidgetDownloadsPtr downloads;
+	WidgetChildWindowPtr downloadsWindow;
+
+	WidgetTabSheetPtr tabs;
+	
 	SmartWin::WidgetTabView* mdi;
 	SmartWin::ImageListPtr arrows;
+
+	bool startup;
 
 	TaskQueue tasks;
 	StringMap ucLineParams;
 
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
-	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
+	bool handleConnectionsMenu(SmartWin::ScreenCoordinate pt);
+	bool handleDownloadsMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	HRESULT handleDestroy(WPARAM wParam, LPARAM lParam);
 	void handleForce();
@@ -179,14 +258,19 @@ private:
 	void runUserCommand(const UserCommand& uc);
 	bool handleKeyDown(int c);
 	void handleDblClicked();
-
-	WidgetMenuPtr makeContextMenu(ItemInfo* ii);
-
-	WidgetTransfersPtr getUserList() { return transfers; }
+	void handleTabSelected();
 	
+	WidgetMenuPtr makeContextMenu(ConnectionInfo* ii);
+
+	WidgetConnectionsPtr getUserList() { return connections; }
+	
+	int find(const string& path);
+	
+	void layout();
+
 	using AspectSpeaker<TransferView>::speak;
 	
-	void speak(int type, UpdateInfo* ui) { tasks.add(type, ui); speak(); }
+	void speak(int type, Task* ui) { tasks.add(type, ui); speak(); }
 
 	virtual void on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw();
 	virtual void on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw();
@@ -201,6 +285,8 @@ private:
 	virtual void on(UploadManagerListener::Starting, Upload* aUpload) throw();
 	virtual void on(UploadManagerListener::Tick, const UploadList& aUpload) throw();
 	virtual void on(UploadManagerListener::Complete, Upload* aUpload) throw();
+
+	virtual void on(QueueManagerListener::Removed, QueueItem*) throw();
 
 	void onTransferComplete(Transfer* aTransfer, bool isUpload);
 	void starting(UpdateInfo* ui, Transfer* t);

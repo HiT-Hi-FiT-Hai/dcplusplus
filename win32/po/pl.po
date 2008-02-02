@@ -1,4 +1,3 @@
-
 # Polish translations for the DC++ package.
 # Copyright (C) 2008 The translators
 # This file is distributed under the same license as the DC++ package.
@@ -8,1149 +7,2265 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"POT-Creation-Date: 2008-02-02 00:46+0100\n"
 "Last-Translator:  <k4r0l@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-
-msgid "Slot granted"
-msgstr "Slot przyznany"
-
-msgid "Run in background"
-msgstr "Uruchom w tle"
-
-msgid "Guess user country from IP"
-msgstr "Pobierz informacje o kraju użytkownika"
-
-msgid "Log main chat"
-msgstr "Loguj głównego chata"
-
-msgid "Keep duplicate files in your file list"
-msgstr "Dodawaj zduplikowane pliki do listy plików udostępnionych (pliki te nie będą brane pod uwagę przy obliczaniu rozmiaru udostępnienia)"
-
-msgid "Join/part of favorite users showing on"
-msgstr "Włączono pokazywanie wejść / wyjść osób z ulubionych"
-
-msgid "Notification sound"
-msgstr "Dźwięk powiadomienia"
-
-msgid "Finished Uploads"
-msgstr "Plik wysyłane"
-
-msgid "File type"
-msgstr "Typ pliku"
-
-msgid "MiB/s"
-msgstr "MB/s"
-
-msgid "GiB"
-msgstr "GB"
-
-msgid "Min sources online"
-msgstr "Min liczba źródeł"
-
-msgid "Outgoing connection settings"
-msgstr "Opcje połączeń wychodzących"
-
-msgid "Popup box to input password for hubs"
-msgstr "Wyświetl okno aby wprowadzić hasło dla huba"
-
-msgid "Log uploads"
-msgstr "Loguj wysyłane pliki"
-
-msgid "ADLSearch Properties"
-msgstr "Właściwości wyszukiwania ADL"
-
-msgid "Directories"
-msgstr "Katalogi"
-
-msgid "Ready to search..."
-msgstr "Gotowy do wyszukania.."
-
-msgid "Autodrop settings"
-msgstr "Ustawienia automatycznego wyrzucania"
-
-msgid "Specify a URL"
-msgstr "Podaj URL"
-
-msgid "Shared directories"
-msgstr "Udostępnione katalogi"
-
-msgid "Really exit?"
-msgstr "Na pewno wyjść?"
-
-msgid "Tag"
-msgstr "Tag"
-
-msgid "MAGNET Link detected"
-msgstr "Wykryto MAGNET Linka"
-
-msgid "Automatically disconnect users who leave the hub"
-msgstr "Automatycznie rozłącz użytkowników którzy opuścili huba"
-
-msgid "Use antifragmentation method for downloads"
-msgstr "Użyj metody niefragmentowania ściąganych plików"
-
-msgid "Remove source"
-msgstr "Usuń źródło"
-
-msgid "Under what name you see the directory"
-msgstr "Nazwa, pod jaką będzie widoczny katalog"
-
-msgid "Join/part of favorite users showing off"
-msgstr "Wyłączono pokazywanie wejść / wyjść osób z ulubionych"
-
-msgid "Confirm item removal in download queue"
-msgstr "Potwierdzaj usuwanie elementu z kolejki"
-
-msgid "Download Matches"
-msgstr "Zgodność pobierania"
-
-msgid "Video"
-msgstr "Video"
-
-msgid "Browse..."
-msgstr "Przeglądaj..."
-
-msgid "Logging"
-msgstr "Logowanie"
-
-msgid "Name under which the others see the directory"
-msgstr "Nazwa pod którą inni widzą katalog"
-
-msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
-msgstr "Nie ściągaj nic nowego gdy transfer jest mniejszy od (kB/s, 0 = off)"
-
-msgid "Appearance"
-msgstr "Wygląd"
-
-msgid "Favorite Hubs"
-msgstr "Ulubione Huby"
-
-msgid "Window options"
-msgstr "Opcje okna"
-
-msgid "Auto-open at startup"
-msgstr "Otwórz przy starcie"
-
-msgid "Sharing"
-msgstr "Udostępnione"
-
-msgid "No matches"
-msgstr "Brak pasujących"
-
-msgid "Enable automatic SFV checking"
-msgstr "Uruchom automatyczne sprawdzanie SFV "
-
-msgid "Skip zero-byte files"
-msgstr "Pomiń pliki 0b"
-
-msgid "Min Slots"
-msgstr "Minimum Slotów"
-
-msgid "Clear search box after each search"
-msgstr "Wyczyść pole z frazą po każdym wyszukiwaniu"
-
-msgid "Do nothing"
-msgstr "Nic nie rób"
-
-msgid "Accept custom user commands from hub"
-msgstr "Akceptuj własne komendy użytkownika z  hubów"
-
-msgid "Invalid number of slots"
-msgstr "Niewłaściwa liczba slotów"
-
-msgid "Don't send the away message to bots"
-msgstr "Nie wysyłaj stanu Nieaktywności do botów (away)"
-
-msgid "Request a feature"
-msgstr "Propozycje zmian etc."
-
-msgid "Max hash speed"
-msgstr "Max prędkość hashowania"
-
-msgid "Don't download files already in the queue"
-msgstr "Nie ściągaj plików znajdujących się w kolejce do pobrania"
-
-msgid "Show timestamps in chat by default"
-msgstr "Standardowo pokazuj sygnaturę czasową na chacie"
-
-msgid "Status"
-msgstr "Status"
-
-msgid "Search for"
-msgstr "Szukaj..."
-
-msgid "Hub"
-msgstr "Hub"
-
-msgid "Favorite hub removed"
-msgstr "Usunięto hub"
-
-msgid "E-Mail"
-msgstr "E-mail"
-
-msgid "Compressed"
-msgstr "Skompresowany"
-
-msgid "Count"
-msgstr "Liczba"
-
-msgid "Firewall with UPnP"
-msgstr "Firewall z UPnP"
-
-msgid "Limits"
-msgstr "Limity"
-
-msgid "Public Hubs list"
-msgstr "Publiczna lista hubów"
-
-msgid "Connection"
-msgstr "Połączenie"
-
-msgid "Time"
-msgstr "Czas"
-
-msgid "Tab highlight on content change"
-msgstr "Karta pogrubiona przy zmianie zawartości"
-
-msgid "Auto-away on minimize (and back on restore)"
-msgstr "Auto away po zminimalizowaniu"
-
-msgid "Use system icons when browsing files (slows browsing down a bit)"
-msgstr "Używaj ikon systemowych (spowalnia szukanie)"
-
-msgid "Don't delete file lists when exiting"
-msgstr "Nie usuwaj listy plików przy wyjściu"
-
-msgid "Auto grant slot / Nick"
-msgstr "Przyznaj slot automatycznie / Nick"
-
-msgid "Max filelist size"
-msgstr "Max rozmiar listy plików"
-
-msgid "Confirm application exit"
-msgstr "Potwierdzaj przy wyjściu"
-
-msgid "Ignore private messages from the hub"
-msgstr "Ignoruj prywatne wiadomości od huba"
-
-msgid "Exact size"
-msgstr "Dokładny rozmiar"
-
-msgid "DC++ discussion forum"
-msgstr "Forum dyskusyjne DC++"
-
-msgid "Register with Windows to handle dchub:// and adc:// URL links"
-msgstr "Włącz obsługę linków dchub:// oraz adc://"
-
-msgid "Search options"
-msgstr "Szukaj opcji"
-
-msgid "Re-add source"
-msgstr "Ponownie dodaj źródło"
-
-msgid "Format"
-msgstr "Format"
-
-msgid "Use CTRL for line history"
-msgstr "Używaj CTRL dla liniowej historii"
-
-msgid "MiB"
-msgstr "MB"
-
-msgid "Notepad"
-msgstr "Notatnik"
-
-msgid "DC++ Homepage"
-msgstr "DC++ Strona domowa"
-
-msgid "Join/part showing off"
-msgstr "Wyłącz pokazywanie wejść/wyjść"
-
-msgid "Incoming connection settings (see Help/FAQ if unsure)"
-msgstr "Opcje połączeń przychodzących (zobacz Pomoc/FAQ)"
-
-msgid "Mini slot size"
-msgstr "Min roz slota"
-
-msgid "Hublist"
-msgstr "Lista hubów"
-
-msgid "UDP"
-msgstr "UDP"
-
-msgid "Ignore TTH searches"
-msgstr "Ignoruj wyszukania TTH"
-
-msgid "File"
-msgstr "Plik"
-
-msgid "User went offline"
-msgstr "Użytkownik przeszedł w niedostępność"
-
-msgid "Slots"
-msgstr "Sloty"
-
-msgid "Use SOCKS5 server to resolve host names"
-msgstr "Użyj serwera SOCKS5 aby uzyskać nazwy hosta"
-
-msgid "Log status messages"
-msgstr "Loguj wiadomości ze statusu"
-
-msgid "Only show joins / parts for favorite users"
-msgstr "Pokazuj wejścia / wyjścia tylko ulubionych użytkowników"
-
-msgid "KiB/s"
-msgstr "kB/s"
-
-msgid "Downloading..."
-msgstr "Pobieram..."
-
-msgid "Don't remove /password before your password"
-msgstr "Nie usuwaj /password sprzed swojego hasła"
-
-msgid "Path"
-msgstr "Ścieżka"
-
-msgid "Specify a search string"
-msgstr "Podaj ciąg do znalezienia"
-
-msgid "Open private messages in their own window"
-msgstr "Odbieraj wiadomości prywatne"
-
-msgid "Use TLS when remote client supports it"
-msgstr "Używaj TLS, jeśli zdalny klient je wspiera"
-
-msgid "Minimize to tray"
-msgstr "Minimalizuj do tray'a"
-
-msgid "Download whole directory to..."
-msgstr "Pobierz cały katalog do..."
-
-msgid "Enable safe and compressed transfers"
-msgstr "Uruchom bezpieczne i skompresowane transfery"
-
-msgid "Ports"
-msgstr "Porty"
-
-msgid "Quick Connect"
-msgstr "Szybkie połączenie"
-
-msgid "Raw"
-msgstr "Raw"
-
-msgid "Reliability"
-msgstr "Solidność"
-
-msgid "Open private messages from bots in their own window"
-msgstr "Otwórz wiadomości od hubów w osobnych oknach"
-
-msgid "Sounds"
-msgstr "Dźwięki"
-
-msgid "Error creating adc registry key"
-msgstr "Błąd tworzenia klucza rejestru adc"
-
-msgid "DC++"
-msgstr "DC++"
-
-msgid "Allow TLS connections to clients without trusted certificate"
-msgstr "Zezwól na połączenia TLS z klientami bez certyfikatu"
-
-msgid "Default away message"
-msgstr "Domyślna wiadomość AWAY"
-
-msgid "Next"
-msgstr "Następny"
-
-msgid "Configured Public Hub Lists"
-msgstr "Konfiguruj listę hubów"
-
-msgid "Change Log"
-msgstr "Zmiany w programie"
-
-msgid "Show shell menu where possible"
-msgstr "Pokaż menu shell'owe w Plikach pobranych"
-
-msgid "Type"
-msgstr "Typ"
-
-msgid "Lowest"
-msgstr "Najniższy"
-
-msgid "Picture"
-msgstr "Obraz"
-
-msgid "Added"
-msgstr "Dodany"
-
-msgid "Min filesize"
-msgstr "Min rozmiar pliku"
-
-msgid "Default download directory"
-msgstr "Domyślny katalog pobierania"
-
-msgid "Translations"
-msgstr "Centrum tłumaczeń"
-
-msgid "Search for file"
-msgstr "Szukaj pliku"
-
-msgid "Connected"
-msgstr "Połączony"
-
-msgid "Low prio max size"
-msgstr "Niski prio max roz"
-
-msgid "At least"
-msgstr "Co najmniej"
-
-msgid "Options"
-msgstr "Opcje"
-
-msgid "Hub Menu"
-msgstr "Menu Huba"
-
-msgid "Rename"
-msgstr "Zmień nazwę"
-
-msgid "Autodrop slow sources for all queue items (except filelists)"
-msgstr "Automatycznie usuwaj powolne źródła dla wszystkich w kolejce (oprócz list plików)"
-
-msgid "No errors"
-msgstr "Brak błędów"
-
-msgid "Socks IP"
-msgstr "Socks IP"
-
-msgid "Allow TLS connections to hubs without trusted certificate"
-msgstr "Zezwól na połączenia TLS z hubami bez certyfikatu"
-
-msgid "Chat"
-msgstr "Czat"
-
-msgid "Favorite user added"
-msgstr "Dodano do ulubionych użytkowników"
-
-msgid "At most"
-msgstr "Co najwyżej"
-
-msgid "Log filelist transfers"
-msgstr "Loguj pobrane listy plików"
-
-msgid "User Description"
-msgstr "Opis użytkownika"
-
-msgid "Favorite hub added"
-msgstr "Dodano do ulubionych hubów"
-
-msgid "Hub list loaded from cache..."
-msgstr "Lista hubów załadowana z cache'u..."
-
-msgid "Error creating magnet registry key"
-msgstr "Błąd tworzenia klucza rejestru magnetu"
-
-msgid "Downloading public hub list..."
-msgstr "Pobieram listę publicznych hubów..."
-
-msgid "Downloaded"
-msgstr "Pobrane"
-
-msgid "Favorite name"
-msgstr "Ulubiona nazwa"
-
-msgid "TLS"
-msgstr "TLS"
-
-msgid "Search"
-msgstr "Szukaj"
-
-msgid "B"
-msgstr "B"
-
-msgid "Automatically search for alternative download locations"
-msgstr "Automatycznie szukaj alternatywnego źródła pobierania"
-
-msgid "Subtract list"
-msgstr "Porównywanie listy plików"
-
-msgid "Download Queue"
-msgstr "Kolejka pobierania"
-
-msgid "Enabled"
-msgstr "Włączony"
-
-msgid "All"
-msgstr "Wszystko"
-
-msgid "Time last seen"
-msgstr "Ostatnio widziany"
-
-msgid "Note; because of changing download speeds, this is not 100% accurate..."
-msgstr "Uwaga: Ponieważ prędkości nie jest stała, stąd niezawsze to działa poprawnie"
-
-msgid "Don't allow hub/UPnP to override"
-msgstr "Nie zezwalaj hubowi/UPnP na nadpisywanie"
-
-msgid "Personal Information"
-msgstr "Informacje osobiste"
-
-msgid "Automatically open an extra slot if speed is below (0 = disable)"
-msgstr "Automatycznie otwieraj dodatkowy slot, jeżeli prędkość jest niższa niż (0 = wyłączone)"
-
-msgid "Executable"
-msgstr "Plik wykonywalny"
-
-msgid "Open new window when using /join"
-msgstr "Otwieraj nowe okno w przypadku /join"
-
-msgid "Upload slots"
-msgstr "Dostępne sloty"
-
-msgid "Public Hubs"
-msgstr "Publiczne huby"
-
-msgid "Min Size"
-msgstr "Minimalny rozmiar"
-
-msgid "KiB"
-msgstr "kB"
-
-msgid "Note; most of these options require that you restart DC++"
-msgstr "Uwaga! Zmiana w tych opcjach wymaga restartu DC++"
-
-msgid "Open downloads directory"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: win32/MainWindow.cpp:848
+#, fuzzy, boost-format
+msgid ""
+"%1%\n"
+"Open download page?"
 msgstr "Otwórz katalog pobrań"
 
-msgid "Users"
-msgstr "Użytkownicy"
-
-msgid "System Log"
-msgstr "Log systemowy"
-
-msgid "Help forum"
-msgstr "Forum pomocy"
-
-msgid "Name"
-msgstr "Nazwa"
-
-msgid "Really remove?"
-msgstr "Na pewno usunąć?"
-
-msgid "Indexing progress"
-msgstr "Postęp indeksowania"
-
-msgid "Login"
-msgstr "Nazwa użytkownika"
-
-msgid "Only users with free slots"
-msgstr "Tylko użytkownicy z wolnymi slotami"
-
-msgid "File not available"
-msgstr "Plik niedostępny"
-
-msgid "Max Size"
-msgstr "Maksymalny rozmiar"
-
-msgid "High"
-msgstr "Wysoki"
-
-msgid "Speed"
-msgstr "Prędkość"
-
-msgid "Invalid file list name"
-msgstr "Niedozwolona nazwa listy"
-
-msgid "Search Menu"
-msgstr "Menu wyszukiwań"
-
-msgid "Create / Modify Command"
-msgstr "Utwórz / Modyfikuj komendę"
-
-msgid "Document"
-msgstr "Dokument"
-
-msgid "GeoIP database update"
-msgstr "Aktualizacja bazy danych GeoIP"
-
-msgid "Report a bug"
-msgstr "Zgłoś błąd"
-
-msgid "Share hidden files"
-msgstr "Udost. ukryte pliki"
-
-msgid "Max Hubs"
-msgstr "Maksimum Hubów"
-
-msgid "Highest"
-msgstr "Najwyższy"
-
-msgid "Send unknown /commands to the hub"
-msgstr "Wysyłaj nieznane /komendy do huba"
-
-msgid "Failed to create port mappings. Please set up your NAT yourself."
-msgstr "Nie można utworzyć odwzorowań portu. Proszę ustawić NAT ręcznie."
-
-msgid "Private message"
-msgstr "Prywatna wiadomość"
-
-msgid "Use OEM monospaced font for viewing text files"
-msgstr "Używaj czcionki systemowej do przeglądania plików tekstowych"
-
-msgid "Settings..."
-msgstr "Ustawienia..."
-
-msgid "Enabled / Search String"
-msgstr "Włączone / Szukany ciąg"
-
-msgid "Filter kick and NMDC debug messages"
-msgstr "Filtruj kopnięcia i wiadomości z NMDC"
-
-msgid "Unfinished downloads directory"
-msgstr "Katalog plików tymczasowych"
-
-msgid "Personal information"
-msgstr "Informacje o mnie"
-
-msgid "Rating"
-msgstr "Ocena"
-
-msgid "Failed to remove port mappings"
-msgstr "Nie można usunąć odwzorowań portu"
-
-msgid "Favorite Users"
-msgstr "Ulubieni użytkownicy"
-
-msgid "Search Spy"
-msgstr "Szpieg"
-
-msgid "Close disconnected"
-msgstr "Zamknij rozłączone"
-
-msgid "Add finished files to share instantly (if shared)"
-msgstr "Dodawaj na bieżąco ukończone pliki do udostępnienia"
-
-msgid "Priority"
-msgstr "Priorytet"
-
-msgid "This hub is not a favorite hub"
-msgstr "Ten hub nie istnieje"
-
-msgid "Close all search windows"
-msgstr "Zamknij wszystkie okna wyszukiwania"
-
-msgid "Copy Filename"
-msgstr "Kopiuj nazwę pliku"
-
-msgid "Open own list"
-msgstr "Otwórz własną listę"
-
-msgid "Virtual name"
-msgstr "Wirtualna nazwa"
-
-msgid "Destination Directory"
-msgstr "Katalog docelowy"
-
-msgid "TCP"
-msgstr "TCP"
-
-msgid "Full Path"
-msgstr "Dokładna ścieżka"
-
-msgid "Search String"
-msgstr "Wyszukaj ciąg"
-
-msgid "Advanced"
-msgstr "Zaawansowane"
-
-msgid "PM"
-msgstr "PM"
-
-msgid "Frequently asked questions"
-msgstr "FAQ - Pytania i Odpowiedzi"
-
-msgid "Show joins / parts in chat by default"
-msgstr "Standardowo pokazuj wejścia / wyjścia na chacie"
-
-msgid "Settings"
-msgstr "Ustawienia"
-
-msgid "Server"
-msgstr "Serwer"
-
-msgid "Waiting (User online)"
-msgstr "Oczekiwanie (użytkownik dostępny)"
-
-msgid "Separator"
-msgstr "Odstęp"
-
-msgid "Ignore private messages from bots"
-msgstr "Ignoruj prywatne wiadomości od botów"
-
-msgid "Directory"
-msgstr "Katalog"
-
-msgid "Lookup TTH at Bitzi.com"
-msgstr "Szukaj TTH na Bitzi.com"
-
-msgid "Unknown"
-msgstr "Nieznany"
-
-msgid "Sort all downloads first"
-msgstr "Sortuj najpierw pobierane pliki"
-
-msgid "Waiting Users"
-msgstr "Oczekujący użytkownicy"
-
-msgid "Language file"
-msgstr "Plik tłumaczenia"
-
-msgid "User offline"
-msgstr "Użytkownik niedostępny"
-
-msgid "s"
-msgstr "s"
-
-msgid "Donate (paypal)"
-msgstr "Dotacja (paypal)"
-
-msgid "Away mode off"
-msgstr "Dostępny"
-
-msgid "Auto connect / Name"
-msgstr "Połącz automatycznie / Nazwa"
-
-msgid "HTTP Proxy (for hublist only)"
-msgstr "HTTP Proxy (tylko dla listy hubów)"
-
-msgid "Low"
-msgstr "Niski"
-
-msgid "Online"
-msgstr "Dostępny"
-
-msgid "View status messages in main chat"
-msgstr "Pokazuj wiadomości statusu na głównym chacie"
-
-msgid "Only where I'm op"
-msgstr "Tylko tam gdzie mam OPa"
-
-msgid "Stored password sent..."
-msgstr "Wysyłanie hasła..."
-
-msgid "Auto-search limit"
-msgstr "Czas auto-szukania"
-
-msgid "Normal prio max size"
-msgstr "Normalny prio max roz"
-
-msgid "Sort favorite users first"
-msgstr "Sortuj najpierw ulubionych użytkowników"
-
-msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
-msgstr "MAGNET link został dostarczony do DC++, jednak nie posiada on poprawnego hasha dla pliku aby użyć go w sieci Direct Connect.  Żadna akcja nie zostanie podjęta."
-
-msgid "Show progress bars for transfers"
-msgstr "Pokaż pasek postępu"
-
-msgid "Set priority"
-msgstr "Ustaw priorytet"
-
-msgid "Download whole directory"
-msgstr "Pobierz cały katalog"
-
-msgid "Log downloads"
-msgstr "Loguj pobrania"
-
-msgid "Purge"
-msgstr "Oczyść"
-
-msgid "Timestamps enabled"
-msgstr "Znacznik czasowy włączony"
-
-msgid "Confirm favorite hub removal"
-msgstr "Potwierdzaj usuwanie ulubionego huba"
-
-msgid "Please enter a password"
-msgstr "Wprowadź hasło"
-
-msgid "Drop sources below"
-msgstr "Wyrzuć źródła poniżej"
-
-msgid "Finished Downloads"
-msgstr "Pliki pobierane"
-
-msgid "Download to..."
-msgstr "Pobieranie do..."
-
-msgid "Colors"
+#: win32/TransferView.cpp:570
+#, boost-format
+msgid "%1% (%2$0.2f)"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:91
+#, boost-format
+msgid "%1% files/h, %2% files left"
+msgstr ""
+
+#: win32/SearchFrame.cpp:576
+#, boost-format
+msgid "%1% filtered"
+msgstr ""
+
+#: win32/SearchFrame.cpp:571
+#, boost-format
+msgid "%1% item"
+msgid_plural "%1% items"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: win32/HashProgressDlg.cpp:100
+#, boost-format
+msgid "%1% left"
+msgstr ""
+
+#: win32/HubFrame.cpp:936
+#, fuzzy, boost-format
+msgid "%1% user"
+msgid_plural "%1% users"
+msgstr[0] "Brak użytkowników"
+msgstr[1] "Brak użytkowników"
+msgstr[2] "Brak użytkowników"
+
+#: win32/TransferView.cpp:584 win32/TransferView.cpp:632
+#, boost-format
+msgid "%1%/s"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:92
+#, boost-format
+msgid "%1%/s, %2% left"
+msgstr ""
+
+#: win32/HubListsDlg.cpp:63 win32/UCPage.cpp:33
+#, fuzzy
+msgid "&Add"
+msgstr "Dodany"
+
+#: win32/UploadPage.cpp:37 win32/FavoriteDirsPage.cpp:34
+msgid "&Add folder"
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
+#: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
+#: win32/Appearance2Page.cpp:30
+#, fuzzy
+msgid "&Browse..."
+msgstr "Przeglądaj..."
+
+#: win32/UCPage.cpp:34
+#, fuzzy
+msgid "&Change"
+msgstr "Zmiany w programie"
+
+#: win32/PrivateFrame.cpp:373 win32/HubFrame.cpp:1184
+#, fuzzy
+msgid "&Close"
 msgstr "Kolory"
 
-msgid "Done"
-msgstr "Gotowe"
+#: win32/PublicHubsFrame.cpp:150
+msgid "&Configure"
+msgstr ""
 
-msgid "Any"
-msgstr "Dowolny"
+#: win32/FavHubsFrame.cpp:71 win32/FavHubsFrame.cpp:113
+#: win32/PublicHubsFrame.cpp:447
+#, fuzzy
+msgid "&Connect"
+msgstr "Połączony"
 
-msgid "Size"
-msgstr "Rozmiar"
+#: win32/TransferView.cpp:201
+#, fuzzy
+msgid "&Disconnect"
+msgstr "Szybkie połączenie"
 
-msgid "Public Hubs list URL"
-msgstr "URL publicznej listy hubów"
+#: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
+#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
+#, fuzzy
+msgid "&Download"
+msgstr "Pobieranie"
 
-msgid "Always open help file with this dialog"
-msgstr "Zawsze otwieraj plik pomocy z tym dialogiem"
+#: win32/MainWindow.cpp:205
+#, fuzzy
+msgid "&Download Queue\tCtrl+D"
+msgstr "Kolejka pobierania"
 
-msgid "Start a search for this file"
-msgstr "Rozpocznij wyszukanie dla tego pliku"
+#: win32/HubListsDlg.cpp:75
+msgid "&Edit"
+msgstr ""
 
-msgid "Make an annoying sound when a private message window is opened"
-msgstr "Powiadom dźwiękiem, gdy przyjdzie wiadomość prywatna w otwartym oknie"
+#: win32/MainWindow.cpp:202
+#, fuzzy
+msgid "&Favorite Hubs\tCtrl+F"
+msgstr "Ulubione Huby"
 
-msgid "Don't remove the source when autodropping, only disconnect"
-msgstr "Nie usuwaj źródeł podczas automatycznego usuwania, tylko rozłączaj"
+#: win32/MainWindow.cpp:181
+#, fuzzy
+msgid "&File"
+msgstr "Plik"
 
-msgid "AWAY"
-msgstr "Niedostępny"
+#: win32/TransferView.cpp:198
+msgid "&Force attempt"
+msgstr ""
 
-msgid "Check every"
-msgstr "Sprawdzaj co"
+#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:83
+#: win32/PrivateFrame.cpp:365
+msgid "&Get file list"
+msgstr ""
 
-msgid "Favorite download directories"
-msgstr "Ulubione pobieraj do katalogu"
+#: win32/DirectoryListingFrame.cpp:325
+#, fuzzy
+msgid "&Go to directory"
+msgstr "Pobierz cały katalog"
 
-msgid "Highest prio max size"
-msgstr "Najwyższy prio max roz"
+#: win32/MainWindow.cpp:228 win32/ADLSearchFrame.cpp:93
+msgid "&Help"
+msgstr ""
 
-msgid "Address"
-msgstr "Adres"
+#: win32/PrivateFrame.cpp:366
+#, fuzzy
+msgid "&Match queue"
+msgstr "Porównaj kolejkę"
 
-msgid "Total size:"
-msgstr "Wielkość:"
+#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+#, fuzzy
+msgid "&Move/Rename"
+msgstr "Zmień nazwę"
 
+#: win32/FavHubsFrame.cpp:76 win32/FavHubsFrame.cpp:115
+#: win32/ADLSearchFrame.cpp:68 win32/ADLSearchFrame.cpp:293
+msgid "&New..."
+msgstr ""
+
+#: win32/MainWindow.cpp:214
+#, fuzzy
+msgid "&Notepad\tCtrl+N"
+msgstr "Notatnik"
+
+#: win32/FavHubsFrame.cpp:81 win32/FavHubsFrame.cpp:116
+#: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:294
+#: win32/UsersFrame.cpp:186
+#, fuzzy
+msgid "&Properties"
+msgstr "Właściwości wyszukiwania ADL"
+
+#: win32/MainWindow.cpp:201
+#, fuzzy
+msgid "&Public Hubs\tCtrl+P"
+msgstr "Publiczne huby"
+
+#: win32/MainWindow.cpp:183
+#, fuzzy
+msgid "&Quick Connect ...\tCtrl+Q"
+msgstr "Szybkie połączenie"
+
+#: win32/MainWindow.cpp:185 win32/HubFrame.cpp:1179
+msgid "&Reconnect\tCtrl+R"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:156
+msgid "&Refresh"
+msgstr ""
+
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
+#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/WaitingUsersFrame.cpp:85 win32/FavoriteDirsPage.cpp:33
+#: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:96
+#: win32/FavHubsFrame.cpp:120 win32/ADLSearchFrame.cpp:88
+#: win32/ADLSearchFrame.cpp:295 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
+#, fuzzy
+msgid "&Remove"
+msgstr "Zmień nazwę"
+
+#: win32/SpyFrame.cpp:191
+#, fuzzy
+msgid "&Search"
+msgstr "Szukaj"
+
+#: win32/MainWindow.cpp:210
+#, fuzzy
+msgid "&Search\tCtrl+S"
+msgstr "Szukaj"
+
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:88
+#, fuzzy
+msgid "&Send private message"
+msgstr "Prywatna wiadomość"
+
+#: win32/MainWindow.cpp:199
+#, fuzzy
+msgid "&View"
+msgstr "Video"
+
+#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
+msgid "&View as text"
+msgstr ""
+
+#: win32/MainWindow.cpp:220
+msgid "&Window"
+msgstr ""
+
+#: win32/HubFrame.cpp:490
+#, boost-format
+msgid "*** Joins: %1%"
+msgstr ""
+
+#: win32/HubFrame.cpp:497
+#, boost-format
+msgid "*** Parts: %1%"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:84
+#, boost-format
+msgid "-.-- B/s, %1% left"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:83
+#, boost-format
+msgid "-.-- files/h, %1% files left"
+msgstr ""
+
+#: win32/WinUtil.cpp:1025
+msgid ""
+"A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
+"use on the Direct Connect network.  No action will be taken."
+msgstr ""
+"MAGNET link został dostarczony do DC++, jednak nie posiada on poprawnego "
+"hasha dla pliku aby użyć go w sieci Direct Connect.  Żadna akcja nie "
+"zostanie podjęta."
+
+#: win32/MainWindow.cpp:211 win32/MainWindow.cpp:282
 msgid "ADL Search"
 msgstr "Szukaj ADL"
 
-msgid "Remove user from queue"
-msgstr "Usuń użytkownika z kolejki pobierania"
+#: win32/ADLSProperties.cpp:49
+msgid "ADLSearch Properties"
+msgstr "Właściwości wyszukiwania ADL"
 
-msgid "IP"
-msgstr "IP"
+#: win32/MainWindow.cpp:293 win32/MainWindow.cpp:549
+msgid "AWAY"
+msgstr "Niedostępny"
 
-msgid "Directory or directory name already exists"
-msgstr "Katalog lub nazwa katalogu już istnieje"
-
-msgid "Full tree does not match TTH root"
-msgstr "Drzewo katalogu nie odpowiada TTH"
-
-msgid "Search history"
-msgstr "Historia wyszukiwań"
-
-msgid "Filelist Menu"
-msgstr "Menu listy plików"
-
-msgid "Your nick was already taken, please change to something else!"
-msgstr "Ktoś używa twojego nicka, zmień na inny!"
-
-msgid "Port"
-msgstr "Port"
-
-msgid "Auto refresh time"
-msgstr "Czas auto-odśwież"
-
-msgid "Errors"
-msgstr "Błędy"
-
-msgid "Filename"
-msgstr "Nazwa pliku"
-
-msgid "Firewall (passive, last resort)"
-msgstr "Firewall (tryb pasywny, ostateczność)"
-
-msgid "Open new file list windows in the background"
-msgstr "Otwórz w tle nowe okno z listą plików"
-
-msgid "High prio max size"
-msgstr "Wysoki prio max roz"
-
-msgid "SOCKS5"
-msgstr "SOCKS5"
-
-msgid "Close all file list windows"
-msgstr "Zamknij wszystkie listy plików"
-
-msgid "Register with Windows to handle magnet: URI links"
-msgstr "Zintegruj z powłoką systemową Windows magnet: URI linki"
-
-msgid "New virtual name matches old name, skipping..."
-msgstr "Nowa wirtualna nazwa pasuje do starej nazwy, pominięcie..."
-
-msgid "Running..."
-msgstr "Uruchomiony..."
-
-msgid "External / WAN IP"
-msgstr "Zewnętrzne / WAN IP"
-
-msgid "Favorite Hub Properties"
-msgstr "Właściwości ulubionych hubów"
-
-msgid "PM history"
-msgstr "Historia PM"
-
-msgid "Set lowest prio for newly added files larger than Low prio size"
-msgstr "Ustaw najniższy prio dla nowo dodanych plików większy niż rozmiar Niski prio"
-
-msgid "URL:MAGNET URI"
-msgstr "URL:MAGNET URI"
-
-msgid "Show"
-msgstr "Pokaż"
-
-msgid "Please enter a nickname in the settings dialog!"
-msgstr "Wprowadź nicka w ustawieniach!"
-
-msgid "Source too slow"
-msgstr "Źródło zbyt powolne"
-
-msgid "Timestamps disabled"
-msgstr "Znacznik czasowy wyłączony"
-
-msgid "Find"
-msgstr "Znajdź"
-
-msgid "Passive user"
-msgstr "Użytkownik pasywny"
-
-msgid "Direct connection"
-msgstr "Bezpośrednie połączenie"
-
-msgid "User Menu"
-msgstr "Menu użytkownika"
-
-msgid "Connection settings"
-msgstr "Ustawienia połączenia"
-
-msgid "Downloads"
-msgstr "Pobieranie"
-
-msgid "MiBits/s"
-msgstr "Mbit/s"
-
-msgid "Break on first ADLSearch match"
-msgstr "Przerwij na pierwszym pasującym wyszukaniu ADL"
-
-msgid "Set timestamps"
-msgstr "Ustaw znacznika czasu"
-
-msgid "Note; Files appear in the share only after they've been hashed!"
-msgstr "Uwaga: Nowe pliki zostaną dodane dopiero po ich zhashowaniu"
-
-msgid "Close all PM windows"
-msgstr "Zamknij wszystkie PM"
-
-msgid "Nick"
-msgstr "Nick"
-
-msgid "Command"
-msgstr "Komenda"
-
-msgid "Hubs"
-msgstr "Huby"
-
-msgid "Confirm dialog options"
-msgstr "Opcje potwierdzania"
-
-msgid "Other queue options"
-msgstr "Opcje plików oczekujących"
-
-msgid "Remote client does not fully support TTH - cannot download"
-msgstr "Zdalny klient nie obsługuje w pełni TTH - nie można pobrać"
-
-msgid "Toggle window when selecting an active tab"
-msgstr "Przełącz okno po kliknięciu w aktywną zakładkę"
-
-msgid "Join/part showing on"
-msgstr "Włącz pokazywanie wejść/wyjść"
-
-msgid "Redirect request received to a hub that's already connected"
-msgstr "Prośba o przekierowanie do huba, z którym jest już połączony"
-
-msgid "Bind address"
-msgstr "Dowiąż adres"
-
-msgid "Paused"
-msgstr "Pauza"
-
-msgid "Write buffer size"
-msgstr "Zapisz rozmiar bufora"
-
-msgid "B/s"
-msgstr "B/s"
-
-msgid "Don't automatically disconnect favorite users who leave the hub"
-msgstr "Nie rozłączaj ulubionych użytkowników, którzy opuścili hub"
-
-msgid "Line speed (upload)"
-msgstr "Prędkość wysyłania"
-
-msgid "Shared"
-msgstr "Udostępnione"
-
-msgid "Normal"
-msgstr "Normalny"
-
-msgid "Automatically follow redirects"
-msgstr "Automatycznie podążaj za przekierowaniem"
-
-msgid "CRC32 inconsistency (SFV-Check)"
-msgstr "Niezgodne CRC32 (sprawdź SFV)"
-
-msgid "User"
-msgstr "Użytkownik"
-
-msgid "Search for alternates"
-msgstr "Szukaj alternatywy"
-
-msgid "Configure Public Hub Lists"
-msgstr "Konfiguruj listę hubów"
-
-msgid "Open private messages from the hub in their own window"
-msgstr "Otwórz wiadomości od botów w osobnych oknach"
-
+#: win32/MainWindow.cpp:233
 msgid "About DC++..."
 msgstr "DC++ Informacje"
 
-msgid "Hub already exists as a favorite"
-msgstr "Ten hub istnieje już na liście ulubionych"
+#: win32/AdvancedPage.cpp:43
+msgid "Accept custom user commands from hub"
+msgstr "Akceptuj własne komendy użytkownika z  hubów"
 
-msgid "Send once per nick"
-msgstr "Wyślij raz na nicka"
+#: win32/WaitingUsersFrame.cpp:87 win32/PrivateFrame.cpp:369
+#: win32/HubFrame.cpp:1176 win32/PublicHubsFrame.cpp:448
+#, fuzzy
+msgid "Add To &Favorites"
+msgstr "Ulubione Huby"
 
-msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
-msgstr "Nie można otworzyć portu UDP. Wyszukiwanie może nie działać poprawnie, dopóki nie zmienisz ustawień lub nie zamkniesz aplikacji, które mogą korzystać z portu UDP "
+#: win32/AdvancedPage.cpp:45
+msgid "Add finished files to share instantly (if shared)"
+msgstr "Dodawaj na bieżąco ukończone pliki do udostępnienia"
 
-msgid "Match queue"
-msgstr "Porównaj kolejkę"
+#: win32/QueueFrame.cpp:45
+msgid "Added"
+msgstr "Dodany"
 
-msgid "Downloading list..."
-msgstr "Pobieram listę..."
+#: win32/MainWindow.cpp:344 win32/PublicHubsFrame.cpp:52
+msgid "Address"
+msgstr "Adres"
 
-msgid "Log system messages"
-msgstr "Loguj wiadomości systemowe"
+#: win32/SettingsDialog.cpp:67
+msgid "Advanced"
+msgstr "Zaawansowane"
 
-msgid "Uploads"
-msgstr "Wysyłane"
+#: win32/SettingsDialog.cpp:69
+msgid "Advanced\\Experts only"
+msgstr ""
 
-msgid "Max Users"
-msgstr "Maksimum Użytkowników"
+#: win32/SettingsDialog.cpp:68
+#, fuzzy
+msgid "Advanced\\Logs"
+msgstr "Zaawansowane"
 
-msgid "Don't download files already in share"
-msgstr "Nie ściągaj plików które znajdują się w udostępnionych"
+#: win32/SettingsDialog.cpp:71
+msgid "Advanced\\Security Certificates"
+msgstr ""
 
-msgid "Copy magnet link to clipboard"
-msgstr "Kopiuj magnet linka do schowka"
+#: win32/SettingsDialog.cpp:70
+msgid "Advanced\\User Commands"
+msgstr ""
 
-msgid "Slots set"
-msgstr "Sloty ustawione"
+#: win32/QueueFrame.cpp:1024 win32/QueueFrame.cpp:1034
+msgid "All"
+msgstr "Wszystko"
 
-msgid "Error creating dchub registry key"
-msgstr "Błąd tworzenia klucza rejestru dchub"
+#: win32/QueueFrame.cpp:431
+#, fuzzy, boost-format
+msgid "All %1% users offline"
+msgstr "Użytkownik niedostępny"
 
-msgid "No users"
-msgstr "Brak użytkowników"
+#: win32/CertificatesPage.cpp:43
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr "Zezwól na połączenia TLS z klientami bez certyfikatu"
 
-msgid "Time left"
-msgstr "Czas pozostały"
+#: win32/CertificatesPage.cpp:42
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr "Zezwól na połączenia TLS z hubami bez certyfikatu"
 
-msgid "TTH Root"
-msgstr "TTH Root"
+#: win32/CommandDlg.cpp:117
+msgid "Always open help file with this dialog"
+msgstr "Zawsze otwieraj plik pomocy z tym dialogiem"
 
-msgid "Remove slow filelists"
-msgstr "Usuwaj powolne listy plików"
+#: win32/SearchFrame.cpp:182 win32/HubFrame.cpp:129
+#: win32/PublicHubsFrame.cpp:138
+msgid "Any"
+msgstr "Dowolny"
 
-msgid "CID"
-msgstr "CID"
+#: win32/SettingsDialog.cpp:63
+msgid "Appearance"
+msgstr "Wygląd"
 
-msgid "Specify a server to connect to"
-msgstr "Podaj serwer, z którym chcesz się połączyć"
+#: win32/SettingsDialog.cpp:64
+msgid "Appearance\\Colors and sounds"
+msgstr ""
 
-msgid "Source Type"
-msgstr "Typ źródła"
+#: win32/SettingsDialog.cpp:65
+#, fuzzy
+msgid "Appearance\\Tabs"
+msgstr "Wygląd"
 
-msgid "Download files from the Direct Connect network"
-msgstr "Pobieraj pliki z sieci Direct Connect"
+#: win32/SettingsDialog.cpp:66
+#, fuzzy
+msgid "Appearance\\Windows"
+msgstr "Wygląd"
 
-msgid "No users to download from"
-msgstr "Nie ma od kogo pobrać"
+#: win32/SearchFrame.cpp:156
+msgid "At least"
+msgstr "Co najmniej"
 
-msgid "Offline"
-msgstr "Niedostępny"
+#: win32/SearchFrame.cpp:157
+msgid "At most"
+msgstr "Co najwyżej"
 
-msgid "Match downloaded lists"
-msgstr "Porównaj ściągnięte listy"
-
-msgid "Creating file index..."
-msgstr "Tworzenie indeksu plików..."
-
-msgid "Description"
-msgstr "Opis"
-
-msgid "Enter search string"
-msgstr "Podaj ciąg do wyszukania"
-
-msgid "Password"
-msgstr "Hasło"
-
-msgid "Edit the hublist"
-msgstr "Edytuj listę hubów"
-
-msgid "Network Statistics"
-msgstr "Statystyka sieci"
-
-msgid "Firewall with manual port forwarding"
-msgstr "Firewall z przekierowanie portów"
-
-msgid "Country"
-msgstr "Państwo"
-
-msgid "Close all offline PM windows"
-msgstr "Zamknij wszystkie PM od niedostępnych użytkowników"
-
-msgid "Make an annoying sound every time a private message is received"
-msgstr "Powiadom dźwiękiem, gdy przyjdzie nowa wiadomość prywatna"
-
-msgid "Maximum simultaneous downloads (0 = infinite)"
-msgstr "Maksymalna liczba ściąganych plików (0 = nieskończone)"
-
-msgid "Failed to get external IP via  UPnP. Please set it yourself."
-msgstr "Nie powiodło się pobranie zewnętrznego IP przez UPnP. Proszę ustawić to ręcznie."
-
-msgid "Automatic Directory Listing Search"
-msgstr "Automatyczne przeszukiwanie listingu katalogów"
-
-msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
-msgstr "Nie można otworzyć portu TCP/TLS. Transfer pliku nie będzie przeprowadzony poprawnie, dopóki nie zmienisz ustawień lub nie zamkniesz aplikacji, które mogą korzystać z portów TCP/TLS"
-
+#: win32/SearchFrame.cpp:183
 msgid "Audio"
 msgstr "Dźwięk"
 
+#: win32/FavHubsFrame.cpp:32
+msgid "Auto connect / Name"
+msgstr "Połącz automatycznie / Nazwa"
+
+#: win32/UsersFrame.cpp:30
+msgid "Auto grant slot / Nick"
+msgstr "Przyznaj slot automatycznie / Nick"
+
+#: win32/QueuePage.cpp:28
+#, fuzzy
+msgid "Auto priority settings"
+msgstr "Ustawienia automatycznego wyrzucania"
+
+#: win32/Advanced3Page.cpp:40
+msgid "Auto refresh time"
+msgstr "Czas auto-odśwież"
+
+#: win32/AdvancedPage.cpp:30
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Auto away po zminimalizowaniu"
+
+#: win32/WindowsPage.cpp:30
+msgid "Auto-open at startup"
+msgstr "Otwórz przy starcie"
+
+#: win32/Advanced3Page.cpp:41
+msgid "Auto-search limit"
+msgstr "Czas auto-szukania"
+
+#: win32/QueuePage.cpp:37
+msgid "Autodrop settings"
+msgstr "Ustawienia automatycznego wyrzucania"
+
+#: win32/QueuePage.cpp:69
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr ""
+"Automatycznie usuwaj powolne źródła dla wszystkich w kolejce (oprócz list "
+"plików)"
+
+#: win32/ADLSearchFrame.cpp:40
+msgid "Automatic Directory Listing Search"
+msgstr "Automatyczne przeszukiwanie listingu katalogów"
+
+#: win32/AdvancedPage.cpp:37
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Automatycznie rozłącz użytkowników którzy opuścili huba"
+
+#: win32/AdvancedPage.cpp:31
+msgid "Automatically follow redirects"
+msgstr "Automatycznie podążaj za przekierowaniem"
+
+#: win32/QueuePage.cpp:73
 msgid "Automatically match queue for auto search hits"
-msgstr "Automatycznie dopasuj pliki z koleki pobierania do wyniku autowyszukiwania"
+msgstr ""
+"Automatycznie dopasuj pliki z koleki pobierania do wyniku autowyszukiwania"
 
-msgid "Max inactivity"
-msgstr "Max nieaktywny"
+#: win32/UploadPage.cpp:39
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr ""
+"Automatycznie otwieraj dodatkowy slot, jeżeli prędkość jest niższa niż (0 = "
+"wyłączone)"
 
+#: win32/QueuePage.cpp:72
+msgid "Automatically search for alternative download locations"
+msgstr "Automatycznie szukaj alternatywnego źródła pobierania"
+
+#: win32/SpyFrame.cpp:115
+#, boost-format
+msgid "Average/s: %1%"
+msgstr ""
+
+#: win32/WinUtil.cpp:264 win32/WinUtil.cpp:274
+msgid "Away mode off"
+msgstr "Dostępny"
+
+#: win32/WinUtil.cpp:269
+#, fuzzy, boost-format
+msgid "Away mode on: %1%"
+msgstr "Dostępny"
+
+#: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
+#: win32/ADLSProperties.cpp:74
+msgid "B"
+msgstr "B"
+
+#: win32/QueuePage.cpp:39
+msgid "B/s"
+msgstr "B/s"
+
+#: win32/Advanced3Page.cpp:37
+msgid "Bind address"
+msgstr "Dowiąż adres"
+
+#: win32/AdvancedPage.cpp:41
+msgid "Break on first ADLSearch match"
+msgstr "Przerwij na pierwszym pasującym wyszukaniu ADL"
+
+#: win32/DownloadPage.cpp:34
+msgid "Browse..."
+msgstr "Przeglądaj..."
+
+#: win32/SearchFrame.cpp:43 win32/HubFrame.cpp:44 win32/UsersFrame.cpp:34
+msgid "CID"
+msgstr "CID"
+
+#: win32/QueueFrame.cpp:477
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "Niezgodne CRC32 (sprawdź SFV)"
+
+#: win32/MainWindow.cpp:232
+msgid "Change Log"
+msgstr "Zmiany w programie"
+
+#: win32/CommandDlg.cpp:82
+msgid "Chat"
+msgstr "Czat"
+
+#: win32/QueuePage.cpp:40
+msgid "Check every"
+msgstr "Sprawdzaj co"
+
+#: win32/TransferView.cpp:45
+msgid "Chunk size"
+msgstr ""
+
+#: win32/TransferView.cpp:48
+msgid "Cipher"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:32
+msgid "Clear search box after each search"
+msgstr "Wyczyść pole z frazą po każdym wyszukiwaniu"
+
+#: win32/MainWindow.cpp:223
+msgid "Close all PM windows"
+msgstr "Zamknij wszystkie PM"
+
+#: win32/MainWindow.cpp:225
+msgid "Close all file list windows"
+msgstr "Zamknij wszystkie listy plików"
+
+#: win32/MainWindow.cpp:224
+msgid "Close all offline PM windows"
+msgstr "Zamknij wszystkie PM od niedostępnych użytkowników"
+
+#: win32/MainWindow.cpp:226
+msgid "Close all search windows"
+msgstr "Zamknij wszystkie okna wyszukiwania"
+
+#: win32/MainWindow.cpp:222
+msgid "Close disconnected"
+msgstr "Zamknij rozłączone"
+
+#: win32/Appearance2Page.cpp:31
+msgid "Colors"
+msgstr "Kolory"
+
+#: win32/UCPage.cpp:54
+msgid "Command"
+msgstr "Komenda"
+
+#: win32/SearchFrame.cpp:184
+msgid "Compressed"
+msgstr "Skompresowany"
+
+#: win32/DownloadPage.cpp:41
+msgid "Configure Public Hub Lists"
+msgstr "Konfiguruj listę hubów"
+
+#: win32/HubListsDlg.cpp:43 win32/PublicHubsFrame.cpp:164
+msgid "Configured Public Hub Lists"
+msgstr "Konfiguruj listę hubów"
+
+#: win32/WindowsPage.cpp:66
+msgid "Confirm application exit"
+msgstr "Potwierdzaj przy wyjściu"
+
+#: win32/WindowsPage.cpp:32
+msgid "Confirm dialog options"
+msgstr "Opcje potwierdzania"
+
+#: win32/WindowsPage.cpp:67
+msgid "Confirm favorite hub removal"
+msgstr "Potwierdzaj usuwanie ulubionego huba"
+
+#: win32/WindowsPage.cpp:68
+msgid "Confirm item removal in download queue"
+msgstr "Potwierdzaj usuwanie elementu z kolejki"
+
+#: win32/HubFrame.cpp:500
+msgid "Connected"
+msgstr "Połączony"
+
+#: win32/TransferView.cpp:641 win32/TransferView.cpp:648
+#, fuzzy
+msgid "Connecting"
+msgstr "Połączenie"
+
+#: win32/TransferView.cpp:285
+#, fuzzy
+msgid "Connecting (forced)"
+msgstr "Połączony"
+
+#: win32/HubFrame.cpp:826
+#, fuzzy, boost-format
+msgid "Connecting to %1%..."
+msgstr "Połączenie"
+
+#: win32/SearchFrame.cpp:38 win32/HubFrame.cpp:41
+msgid "Connection"
+msgstr "Połączenie"
+
+#: win32/SettingsDialog.cpp:58
+msgid "Connection settings"
+msgstr "Ustawienia połączenia"
+
+#: win32/TransferView.cpp:84 win32/TransferView.cpp:90
+#, fuzzy
+msgid "Connections"
+msgstr "Połączenie"
+
+#: win32/HubFrame.cpp:1180 win32/PublicHubsFrame.cpp:449
+#, fuzzy
+msgid "Copy &address to clipboard"
+msgstr "Kopiuj magnet linka do schowka"
+
+#: win32/TransferView.cpp:199 win32/HubFrame.cpp:1160
+#, fuzzy
+msgid "Copy &nick to clipboard"
+msgstr "Kopiuj magnet linka do schowka"
+
+#: win32/WaitingUsersFrame.cpp:84
+msgid "Copy Filename"
+msgstr "Kopiuj nazwę pliku"
+
+#: win32/WinUtil.cpp:363
+msgid "Copy magnet link to clipboard"
+msgstr "Kopiuj magnet linka do schowka"
+
+#: win32/SpyFrame.cpp:35
+msgid "Count"
+msgstr "Liczba"
+
+#: win32/PublicHubsFrame.cpp:53
+msgid "Country"
+msgstr "Państwo"
+
+#: win32/CommandDlg.cpp:63
+msgid "Create / Modify Command"
+msgstr "Utwórz / Modyfikuj komendę"
+
+#: win32/HashProgressDlg.cpp:40
+msgid "Creating file index..."
+msgstr "Tworzenie indeksu plików..."
+
+#: win32/MainWindow.cpp:552
+#, boost-format
+msgid "D: %1%"
+msgstr ""
+
+#: win32/MainWindow.cpp:554
+#, boost-format
+msgid "D: %1%/s (%2%)"
+msgstr ""
+
+#: win32/WinUtil.cpp:819
+msgid "DC++"
+msgstr "DC++"
+
+#: win32/MainWindow.cpp:235
+msgid "DC++ Homepage"
+msgstr "DC++ Strona domowa"
+
+#: win32/MainWindow.cpp:241
+msgid "DC++ discussion forum"
+msgstr "Forum dyskusyjne DC++"
+
+#: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:109
+msgid "Default"
+msgstr ""
+
+#: win32/AppearancePage.cpp:32
+msgid "Default away message"
+msgstr "Domyślna wiadomość AWAY"
+
+#: win32/DownloadPage.cpp:31
+msgid "Default download directory"
+msgstr "Domyślny katalog pobierania"
+
+#: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
+#: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
+#: win32/UsersFrame.cpp:143
+msgid "Description"
+msgstr "Opis"
+
+#: win32/ADLSearchFrame.cpp:34
+msgid "Destination Directory"
+msgstr "Katalog docelowy"
+
+#: win32/NetworkPage.cpp:30 win32/NetworkPage.cpp:31
+msgid "Direct connection"
+msgstr "Bezpośrednie połączenie"
+
+#: win32/DownloadPage.cpp:30
+msgid "Directories"
+msgstr "Katalogi"
+
+#: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
+#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
+#: win32/ADLSProperties.cpp:63
+msgid "Directory"
+msgstr "Katalog"
+
+#: win32/FavoriteDirsPage.cpp:126 win32/FavoriteDirsPage.cpp:159
+msgid "Directory or directory name already exists"
+msgstr "Katalog lub nazwa katalogu już istnieje"
+
+#: win32/MagnetDlg.cpp:62
+msgid "Do nothing"
+msgstr "Nic nie rób"
+
+#: win32/SearchFrame.cpp:185
+msgid "Document"
+msgstr "Dokument"
+
+#: win32/NetworkPage.cpp:35
+msgid "Don't allow hub/UPnP to override"
+msgstr "Nie zezwalaj hubowi/UPnP na nadpisywanie"
+
+#: win32/AdvancedPage.cpp:47
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "Nie rozłączaj ulubionych użytkowników, którzy opuścili hub"
+
+#: win32/AdvancedPage.cpp:36
+msgid "Don't delete file lists when exiting"
+msgstr "Nie usuwaj listy plików przy wyjściu"
+
+#: win32/QueuePage.cpp:75
+msgid "Don't download files already in share"
+msgstr "Nie ściągaj plików które znajdują się w udostępnionych"
+
+#: win32/QueuePage.cpp:76
+msgid "Don't download files already in the queue"
+msgstr "Nie ściągaj plików znajdujących się w kolejce do pobrania"
+
+#: win32/HubFrame.cpp:385
+msgid "Don't remove /password before your password"
+msgstr "Nie usuwaj /password sprzed swojego hasła"
+
+#: win32/QueuePage.cpp:71
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "Nie usuwaj źródeł podczas automatycznego usuwania, tylko rozłączaj"
+
+#: win32/AdvancedPage.cpp:40
+msgid "Don't send the away message to bots"
+msgstr "Nie wysyłaj stanu Nieaktywności do botów (away)"
+
+#: win32/MainWindow.cpp:244
+msgid "Donate (paypal)"
+msgstr "Dotacja (paypal)"
+
+#: win32/Appearance2Page.cpp:34
+msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
+msgstr ""
+
+#: win32/TransferView.cpp:58
+msgid "Done"
+msgstr "Gotowe"
+
+#: win32/DirectoryListingFrame.cpp:358
+#, fuzzy
+msgid "Download &to..."
+msgstr "Pobieranie do..."
+
+#: win32/ADLSProperties.cpp:88
+msgid "Download Matches"
+msgstr "Zgodność pobierania"
+
+#: win32/QueueFrame.cpp:57 win32/TabsPage.cpp:41 win32/WindowsPage.cpp:39
+#: win32/MainWindow.cpp:276
+msgid "Download Queue"
+msgstr "Kolejka pobierania"
+
+#: win32/PublicHubsFrame.cpp:322
+#, fuzzy, boost-format
+msgid "Download failed: %1%"
+msgstr "Pobrane"
+
+#: win32/WinUtil.cpp:820
+msgid "Download files from the Direct Connect network"
+msgstr "Pobieraj pliki z sieci Direct Connect"
+
+#: win32/SearchFrame.cpp:764
+msgid "Download to..."
+msgstr "Pobieranie do..."
+
+#: win32/SearchFrame.cpp:744
+msgid "Download whole directory"
+msgstr "Pobierz cały katalog"
+
+#: win32/SearchFrame.cpp:794
+msgid "Download whole directory to..."
+msgstr "Pobierz cały katalog do..."
+
+#: win32/QueueFrame.cpp:39
+msgid "Downloaded"
+msgstr "Pobrane"
+
+#: win32/TransferView.cpp:719
+#, fuzzy, boost-format
+msgid "Downloading %1%"
+msgstr "Pobieram..."
+
+#: win32/TransferView.cpp:630
+#, boost-format
+msgid "Downloading from %1% user"
+msgid_plural "Downloading from %1% users"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: win32/DirectoryListingFrame.cpp:693
+msgid "Downloading list..."
+msgstr "Pobieram listę..."
+
+#: win32/PublicHubsFrame.cpp:188
+msgid "Downloading public hub list..."
+msgstr "Pobieram listę publicznych hubów..."
+
+#: win32/PublicHubsFrame.cpp:319
+#, fuzzy, boost-format
+msgid "Downloading public hub list... (%1%)"
+msgstr "Pobieram listę publicznych hubów..."
+
+#: win32/AboutDlg.cpp:63
+msgid "Downloading..."
+msgstr "Pobieram..."
+
+#: win32/SettingsDialog.cpp:59 win32/MainWindow.cpp:217
+#: win32/MainWindow.cpp:236 win32/TransferView.cpp:93
+#: win32/TransferView.cpp:95 win32/Appearance2Page.cpp:40
+msgid "Downloads"
+msgstr "Pobieranie"
+
+#: win32/SettingsDialog.cpp:60
+#, fuzzy
+msgid "Downloads\\Favorites"
+msgstr "Zgodność pobierania"
+
+#: win32/SettingsDialog.cpp:61
+#, fuzzy
+msgid "Downloads\\Queue"
+msgstr "Kolejka pobierania"
+
+#: win32/QueuePage.cpp:38
+msgid "Drop sources below"
+msgstr "Wyrzuć źródła poniżej"
+
+#: win32/MainWindow.cpp:197
+msgid "E&xit"
+msgstr ""
+
+#: win32/GeneralPage.cpp:30 win32/HubFrame.cpp:43
+msgid "E-Mail"
+msgstr "E-mail"
+
+#: win32/HubListsDlg.cpp:149
+msgid "Edit the hublist"
+msgstr "Edytuj listę hubów"
+
+#: win32/AdvancedPage.cpp:39
+msgid "Enable automatic SFV checking"
+msgstr "Uruchom automatyczne sprawdzanie SFV "
+
+#: win32/AdvancedPage.cpp:42
+msgid "Enable safe and compressed transfers"
+msgstr "Uruchom bezpieczne i skompresowane transfery"
+
+#: win32/ADLSProperties.cpp:84
+msgid "Enabled"
+msgstr "Włączony"
+
+#: win32/ADLSearchFrame.cpp:32
+msgid "Enabled / Search String"
+msgstr "Włączone / Szukany ciąg"
+
+#: win32/DirectoryListingFrame.cpp:795
+msgid "Enter search string"
+msgstr "Podaj ciąg do wyszukania"
+
+#: win32/WinUtil.cpp:727
+msgid "Error creating adc registry key"
+msgstr "Błąd tworzenia klucza rejestru adc"
+
+#: win32/WinUtil.cpp:688
+msgid "Error creating dchub registry key"
+msgstr "Błąd tworzenia klucza rejestru dchub"
+
+#: win32/WinUtil.cpp:787 win32/WinUtil.cpp:800
+msgid "Error creating magnet registry key"
+msgstr "Błąd tworzenia klucza rejestru magnetu"
+
+#: win32/QueueFrame.cpp:44
+msgid "Errors"
+msgstr "Błędy"
+
+#: win32/QueueFrame.cpp:43 win32/DirectoryListingFrame.cpp:42
+#: win32/SearchFrame.cpp:40
+msgid "Exact size"
+msgstr "Dokładny rozmiar"
+
+#: win32/SearchFrame.cpp:186
+msgid "Executable"
+msgstr "Plik wykonywalny"
+
+#: win32/MainWindow.cpp:998
+msgid "Exit"
+msgstr ""
+
+#: win32/NetworkPage.cpp:38
+msgid "External / WAN IP"
+msgstr "Zewnętrzne / WAN IP"
+
+#: win32/PublicHubsFrame.cpp:168
+#, fuzzy
+msgid "F&ilter"
+msgstr "Plik"
+
+#: win32/MainWindow.cpp:631 win32/MainWindow.cpp:632
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Nie można utworzyć odwzorowań portu. Proszę ustawić NAT ręcznie."
+
+#: win32/MainWindow.cpp:650 win32/MainWindow.cpp:651
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr ""
+"Nie powiodło się pobranie zewnętrznego IP przez UPnP. Proszę ustawić to "
+"ręcznie."
+
+#: win32/MainWindow.cpp:664 win32/MainWindow.cpp:672
+msgid "Failed to remove port mappings"
+msgstr "Nie można usunąć odwzorowań portu"
+
+#: win32/MainWindow.cpp:203
+#, fuzzy
+msgid "Favorite &Users\tCtrl+U"
+msgstr "Ulubieni użytkownicy"
+
+#: win32/FavHubProperties.cpp:47
+msgid "Favorite Hub Properties"
+msgstr "Właściwości ulubionych hubów"
+
+#: win32/WindowsPage.cpp:47 win32/MainWindow.cpp:273 win32/FavHubsFrame.cpp:41
+msgid "Favorite Hubs"
+msgstr "Ulubione Huby"
+
+#: win32/WindowsPage.cpp:38 win32/MainWindow.cpp:274 win32/UsersFrame.cpp:38
+msgid "Favorite Users"
+msgstr "Ulubieni użytkownicy"
+
+#: win32/FavoriteDirsPage.cpp:32
+msgid "Favorite download directories"
+msgstr "Ulubione pobieraj do katalogu"
+
+#: win32/HubFrame.cpp:964
+msgid "Favorite hub added"
+msgstr "Dodano do ulubionych hubów"
+
+#: win32/HubFrame.cpp:974
+msgid "Favorite hub removed"
+msgstr "Usunięto hub"
+
+#: win32/FavoriteDirsPage.cpp:48 win32/FavoriteDirsPage.cpp:120
+#: win32/FavoriteDirsPage.cpp:150
+msgid "Favorite name"
+msgstr "Ulubiona nazwa"
+
+#: win32/PrivateFrame.cpp:290
+msgid "Favorite user added"
+msgstr "Dodano do ulubionych użytkowników"
+
+#: win32/DirectoryListingFrame.cpp:40 win32/SearchFrame.cpp:32
+msgid "File"
+msgstr "Plik"
+
+#: win32/QueueFrame.cpp:473
+msgid "File not available"
+msgstr "Plik niedostępny"
+
+#: win32/SearchFrame.cpp:122
+msgid "File type"
+msgstr "Typ pliku"
+
+#: win32/CommandDlg.cpp:99
+msgid "Filelist Menu"
+msgstr "Menu listy plików"
+
+#: win32/QueueFrame.cpp:36 win32/TransferView.cpp:53 win32/LogPage.cpp:35
+#: win32/ADLSProperties.cpp:62
+msgid "Filename"
+msgstr "Nazwa pliku"
+
+#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:634
+#: win32/DirectoryListingFrame.cpp:650
+#, boost-format
+msgid "Files: %1%"
+msgstr ""
+
+#: win32/AppearancePage.cpp:47
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filtruj kopnięcia i wiadomości z NMDC"
+
+#: win32/DirectoryListingFrame.cpp:160 win32/DirectoryListingFrame.cpp:182
+msgid "Find"
+msgstr "Znajdź"
+
+#: win32/TabsPage.cpp:42 win32/WindowsPage.cpp:40 win32/MainWindow.cpp:206
+#: win32/MainWindow.cpp:277 win32/FinishedDLFrame.cpp:25
+msgid "Finished Downloads"
+msgstr "Pliki pobierane"
+
+#: win32/TabsPage.cpp:44 win32/WindowsPage.cpp:42 win32/MainWindow.cpp:208
+#: win32/MainWindow.cpp:279 win32/FinishedULFrame.cpp:25
+msgid "Finished Uploads"
+msgstr "Plik wysyłane"
+
+#: win32/NetworkPage.cpp:34
+msgid "Firewall (passive, last resort)"
+msgstr "Firewall (tryb pasywny, ostateczność)"
+
+#: win32/NetworkPage.cpp:32
+msgid "Firewall with UPnP"
+msgstr "Firewall z UPnP"
+
+#: win32/NetworkPage.cpp:33
+msgid "Firewall with manual port forwarding"
+msgstr "Firewall z przekierowanie portów"
+
+#: win32/MainWindow.cpp:184
+msgid "Follow last redirec&t\tCtrl+T"
+msgstr ""
+
+#: win32/MainWindow.cpp:271
+msgid "Follow last redirect"
+msgstr ""
+
+#: win32/LogPage.cpp:34
+msgid "Format"
+msgstr "Format"
+
+#: win32/MainWindow.cpp:239
+msgid "Frequently asked questions"
+msgstr "FAQ - Pytania i Odpowiedzi"
+
+#: win32/ADLSProperties.cpp:64
+msgid "Full Path"
+msgstr "Dokładna ścieżka"
+
+#: win32/QueueFrame.cpp:479
+msgid "Full tree does not match TTH root"
+msgstr "Drzewo katalogu nie odpowiada TTH"
+
+#: win32/MainWindow.cpp:237
+msgid "GeoIP database update"
+msgstr "Aktualizacja bazy danych GeoIP"
+
+#: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
+msgid "GiB"
+msgstr "GB"
+
+#: win32/WaitingUsersFrame.cpp:86 win32/PrivateFrame.cpp:367
+msgid "Grant &extra slot"
+msgstr ""
+
+#: win32/AppearancePage.cpp:56
+msgid "Guess user country from IP"
+msgstr "Pobierz informacje o kraju użytkownika"
+
+#: win32/DownloadPage.cpp:42
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Proxy (tylko dla listy hubów)"
+
+#: win32/MainWindow.cpp:230
+msgid "Help &Contents\tF1"
+msgstr ""
+
+#: win32/MainWindow.cpp:240
+msgid "Help forum"
+msgstr "Forum pomocy"
+
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+msgid "High"
+msgstr "Wysoki"
+
+#: win32/QueuePage.cpp:31
+msgid "High prio max size"
+msgstr "Wysoki prio max roz"
+
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+msgid "Highest"
+msgstr "Najwyższy"
+
+#: win32/QueuePage.cpp:29
+msgid "Highest prio max size"
+msgstr "Najwyższy prio max roz"
+
+#: win32/SpyFrame.cpp:162
+#, boost-format
+msgid "Hit Ratio: %1%"
+msgstr ""
+
+#: win32/SpyFrame.cpp:160
+#, boost-format
+msgid "Hits: %1%"
+msgstr ""
+
+#: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
+msgid "Hub"
+msgstr "Hub"
+
+#: win32/UsersFrame.cpp:31
+msgid "Hub (last seen in, if offline)"
+msgstr ""
+
+#: win32/CommandDlg.cpp:90
+msgid "Hub Menu"
+msgstr "Menu Huba"
+
+#: win32/FavHubProperties.cpp:119
+msgid "Hub address cannot be empty"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:179 win32/HubFrame.cpp:966
+msgid "Hub already exists as a favorite"
+msgstr "Ten hub istnieje już na liście ulubionych"
+
+#: win32/PublicHubsFrame.cpp:316
+#, fuzzy, boost-format
+msgid "Hub list downloaded... (%1%)"
+msgstr "Lista hubów załadowana z cache'u..."
+
+#: win32/PublicHubsFrame.cpp:316
+msgid "Hub list loaded from cache..."
+msgstr "Lista hubów załadowana z cache'u..."
+
+#: win32/HubListsDlg.cpp:149
+msgid "Hublist"
+msgstr "Lista hubów"
+
+#: win32/SearchFrame.cpp:128
+msgid "Hubs"
+msgstr "Huby"
+
+#: win32/PublicHubsFrame.cpp:271
+#, fuzzy, boost-format
+msgid "Hubs: %1%"
+msgstr "Huby"
+
+#: win32/SearchFrame.cpp:41 win32/TransferView.cpp:49 win32/HubFrame.cpp:42
+msgid "IP"
+msgstr "IP"
+
+#: win32/HubFrame.cpp:330
+#, boost-format
+msgid "IP: %1%, Port: %2%/%3%/%4%"
+msgstr ""
+
+#: win32/TransferView.cpp:536 win32/TransferView.cpp:832
+msgid "Idle"
+msgstr ""
+
+#: win32/SpyFrame.cpp:66
+msgid "Ignore TTH searches"
+msgstr "Ignoruj wyszukania TTH"
+
+#: win32/WindowsPage.cpp:59
+msgid "Ignore private messages from bots"
+msgstr "Ignoruj prywatne wiadomości od botów"
+
+#: win32/WindowsPage.cpp:58
+msgid "Ignore private messages from the hub"
+msgstr "Ignoruj prywatne wiadomości od huba"
+
+#: win32/HubFrame.cpp:542 win32/HubFrame.cpp:550
+#, boost-format
+msgid "Ignored message: %1%"
+msgstr ""
+
+#: win32/NetworkPage.cpp:47
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "Opcje połączeń przychodzących (zobacz Pomoc/FAQ)"
+
+#: win32/MainWindow.cpp:218
+msgid "Indexing progress"
+msgstr "Postęp indeksowania"
+
+#: win32/MainWindow.cpp:690
+msgid "Invalid file list name"
+msgstr "Niedozwolona nazwa listy"
+
+#: win32/WinUtil.cpp:250
+msgid "Invalid number of slots"
+msgstr "Niewłaściwa liczba slotów"
+
+#: win32/QueueFrame.cpp:283
+#, boost-format
+msgid "Items: %1%"
+msgstr ""
+
+#: win32/HubFrame.cpp:323
+msgid "Join/part of favorite users showing off"
+msgstr "Wyłączono pokazywanie wejść / wyjść osób z ulubionych"
+
+#: win32/HubFrame.cpp:321
+msgid "Join/part of favorite users showing on"
+msgstr "Włączono pokazywanie wejść / wyjść osób z ulubionych"
+
+#: win32/HubFrame.cpp:316
+msgid "Join/part showing off"
+msgstr "Wyłącz pokazywanie wejść/wyjść"
+
+#: win32/HubFrame.cpp:314
+msgid "Join/part showing on"
+msgstr "Włącz pokazywanie wejść/wyjść"
+
+#: win32/AdvancedPage.cpp:33
+msgid "Keep duplicate files in your file list"
+msgstr ""
+"Dodawaj zduplikowane pliki do listy plików udostępnionych (pliki te nie będą "
+"brane pod uwagę przy obliczaniu rozmiaru udostępnienia)"
+
+#: win32/QueuePage.cpp:30 win32/QueuePage.cpp:32 win32/QueuePage.cpp:34
+#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:30
+#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
+#: win32/ADLSProperties.cpp:75
+msgid "KiB"
+msgstr "kB"
+
+#: win32/UploadPage.cpp:40
+msgid "KiB/s"
+msgstr "kB/s"
+
+#: win32/AppearancePage.cpp:34
+msgid "Language file"
+msgstr "Plik tłumaczenia"
+
+#: win32/DownloadPage.cpp:35
+msgid "Limits"
+msgstr "Limity"
+
+#: win32/GeneralPage.cpp:32
+msgid "Line speed (upload)"
+msgstr "Prędkość wysyłania"
+
+#: win32/SplashWindow.cpp:77
+#, boost-format
+msgid "Loading DC++, please wait... (%1%)"
+msgstr ""
+
+#: win32/LogPage.cpp:47
+msgid "Log downloads"
+msgstr "Loguj pobrania"
+
+#: win32/LogPage.cpp:51
+msgid "Log filelist transfers"
+msgstr "Loguj pobrane listy plików"
+
+#: win32/LogPage.cpp:45
+msgid "Log main chat"
+msgstr "Loguj głównego chata"
+
+#: win32/LogPage.cpp:46
 msgid "Log private chat"
 msgstr "Loguj wiadomości prywatne"
 
+#: win32/LogPage.cpp:50
+msgid "Log status messages"
+msgstr "Loguj wiadomości ze statusu"
+
+#: win32/LogPage.cpp:49
+msgid "Log system messages"
+msgstr "Loguj wiadomości systemowe"
+
+#: win32/LogPage.cpp:48
+msgid "Log uploads"
+msgstr "Loguj wysyłane pliki"
+
+#: win32/LogPage.cpp:31
+msgid "Logging"
+msgstr "Logowanie"
+
+#: win32/NetworkPage.cpp:44
+msgid "Login"
+msgstr "Nazwa użytkownika"
+
+#: win32/WinUtil.cpp:362
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Szukaj TTH na Bitzi.com"
+
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+msgid "Low"
+msgstr "Niski"
+
+#: win32/QueuePage.cpp:35
+msgid "Low prio max size"
+msgstr "Niski prio max roz"
+
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+msgid "Lowest"
+msgstr "Najniższy"
+
+#: win32/MagnetDlg.cpp:44 win32/WinUtil.cpp:1025
+msgid "MAGNET Link detected"
+msgstr "Wykryto MAGNET Linka"
+
+#: win32/WinUtil.cpp:972
+#, fuzzy, boost-format
+msgid "MAGNET Link detected: %1%"
+msgstr "Wykryto MAGNET Linka"
+
+#: win32/Appearance2Page.cpp:38
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Powiadom dźwiękiem, gdy przyjdzie nowa wiadomość prywatna"
+
+#: win32/Appearance2Page.cpp:39
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Powiadom dźwiękiem, gdy przyjdzie wiadomość prywatna w otwartym oknie"
+
+#: win32/MainWindow.cpp:190
+msgid "Match downloaded lists"
+msgstr "Porównaj ściągnięte listy"
+
+#: win32/DirectoryListingFrame.cpp:168 win32/DirectoryListingFrame.cpp:181
+msgid "Match queue"
+msgstr "Porównaj kolejkę"
+
+#: win32/DirectoryListingFrame.cpp:260
+#, boost-format
+msgid "Matched %1% file"
+msgid_plural "Matched %1% files"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: win32/PublicHubsFrame.cpp:57
+msgid "Max Hubs"
+msgstr "Maksimum Hubów"
+
+#: win32/ADLSearchFrame.cpp:36
+msgid "Max Size"
+msgstr "Maksymalny rozmiar"
+
+#: win32/PublicHubsFrame.cpp:58
+msgid "Max Users"
+msgstr "Maksimum Użytkowników"
+
+#: win32/Advanced3Page.cpp:38
+msgid "Max filelist size"
+msgstr "Max rozmiar listy plików"
+
+#: win32/Advanced3Page.cpp:31
+msgid "Max hash speed"
+msgstr "Max prędkość hashowania"
+
+#: win32/QueuePage.cpp:44
+msgid "Max inactivity"
+msgstr "Max nieaktywny"
+
+#: win32/DownloadPage.cpp:36
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Maksymalna liczba ściąganych plików (0 = nieskończone)"
+
+#: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
+#: win32/ADLSProperties.cpp:76
+msgid "MiB"
+msgstr "MB"
+
+#: win32/Advanced3Page.cpp:32
+msgid "MiB/s"
+msgstr "MB/s"
+
+#: win32/GeneralPage.cpp:33
+msgid "MiBits/s"
+msgstr "Mbit/s"
+
+#: win32/PublicHubsFrame.cpp:55
 msgid "Min Share"
 msgstr "Minimum Udostępnionych"
 
-msgid "Open new private message windows in the background"
-msgstr "Otwórz w tle okno z nową prywatną wiadomością"
+#: win32/ADLSearchFrame.cpp:35
+msgid "Min Size"
+msgstr "Minimalny rozmiar"
 
+#: win32/PublicHubsFrame.cpp:56
+msgid "Min Slots"
+msgstr "Minimum Slotów"
+
+#: win32/QueuePage.cpp:42
 msgid "Min elapsed"
 msgstr "Min czas"
 
+#: win32/QueuePage.cpp:47
+msgid "Min filesize"
+msgstr "Min rozmiar pliku"
+
+#: win32/Advanced3Page.cpp:42
+#, fuzzy
+msgid "Min segment size"
+msgstr "Min roz slota"
+
+#: win32/QueuePage.cpp:46
+msgid "Min sources online"
+msgstr "Min liczba źródeł"
+
+#: win32/Advanced3Page.cpp:35
+msgid "Mini slot size"
+msgstr "Min roz slota"
+
+#: win32/AppearancePage.cpp:48
+msgid "Minimize to tray"
+msgstr "Minimalizuj do tray'a"
+
+#: win32/HubListsDlg.cpp:71 win32/FavHubsFrame.cpp:91
+#: win32/FavHubsFrame.cpp:118 win32/ADLSearchFrame.cpp:83 win32/UCPage.cpp:32
+msgid "Move &Down"
+msgstr ""
+
+#: win32/HubListsDlg.cpp:67 win32/FavHubsFrame.cpp:86
+#: win32/FavHubsFrame.cpp:117 win32/ADLSearchFrame.cpp:78 win32/UCPage.cpp:31
+msgid "Move &Up"
+msgstr ""
+
+#: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
+msgid "Name"
+msgstr "Nazwa"
+
+#: win32/UploadPage.cpp:188 win32/UploadPage.cpp:232
+msgid "Name under which the others see the directory"
+msgstr "Nazwa pod którą inni widzą katalog"
+
+#: win32/WindowsPage.cpp:44 win32/MainWindow.cpp:216 win32/StatsFrame.cpp:27
+msgid "Network Statistics"
+msgstr "Statystyka sieci"
+
+#: win32/UploadPage.cpp:197
+msgid "New virtual name matches old name, skipping..."
+msgstr "Nowa wirtualna nazwa pasuje do starej nazwy, pominięcie..."
+
+#: win32/DirectoryListingFrame.cpp:164 win32/DirectoryListingFrame.cpp:183
+msgid "Next"
+msgstr "Następny"
+
+#: win32/GeneralPage.cpp:29 win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+msgid "Nick"
+msgstr "Nick"
+
+#: win32/QueueFrame.cpp:488
+msgid "No errors"
+msgstr "Brak błędów"
+
+#: win32/DirectoryListingFrame.cpp:858
+msgid "No matches"
+msgstr "Brak pasujących"
+
+#: win32/DownloadPage.cpp:37
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Nie ściągaj nic nowego gdy transfer jest mniejszy od (kB/s, 0 = off)"
+
+#: win32/QueueFrame.cpp:415
+msgid "No users"
+msgstr "Brak użytkowników"
+
+#: win32/QueueFrame.cpp:427
+msgid "No users to download from"
+msgstr "Nie ma od kogo pobrać"
+
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+msgid "Normal"
+msgstr "Normalny"
+
+#: win32/QueuePage.cpp:33
+msgid "Normal prio max size"
+msgstr "Normalny prio max roz"
+
+#: win32/UploadPage.cpp:42
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Uwaga: Nowe pliki zostaną dodane dopiero po ich zhashowaniu"
+
+#: win32/DownloadPage.cpp:38
+#, fuzzy, c-format
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr ""
+"Uwaga: Ponieważ prędkości nie jest stała, stąd niezawsze to działa poprawnie"
+
+#: win32/Appearance2Page.cpp:35 win32/AppearancePage.cpp:35
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Uwaga! Zmiana w tych opcjach wymaga restartu DC++"
+
+#: win32/WindowsPage.cpp:45 win32/NotepadFrame.cpp:27 win32/MainWindow.cpp:287
+msgid "Notepad"
+msgstr "Notatnik"
+
+#: win32/Appearance2Page.cpp:29
+msgid "Notification sound"
+msgstr "Dźwięk powiadomienia"
+
+#: win32/WinUtil.cpp:323
+msgid "Offline"
+msgstr "Niedostępny"
+
+#: win32/UsersFrame.cpp:108 win32/UsersFrame.cpp:123
+msgid "Online"
+msgstr "Dostępny"
+
+#: win32/AppearancePage.cpp:52
+msgid "Only show joins / parts for favorite users"
+msgstr "Pokazuj wejścia / wyjścia tylko ulubionych użytkowników"
+
+#: win32/SearchFrame.cpp:194
+msgid "Only users with free slots"
+msgstr "Tylko użytkownicy z wolnymi slotami"
+
+#: win32/SearchFrame.cpp:216
+msgid "Only where I'm op"
+msgstr "Tylko tam gdzie mam OPa"
+
+#: win32/MainWindow.cpp:192 win32/MainWindow.cpp:999
+msgid "Open downloads directory"
+msgstr "Otwórz katalog pobrań"
+
+#: win32/MainWindow.cpp:285
+#, fuzzy
+msgid "Open file list..."
+msgstr "Otwórz własną listę"
+
+#: win32/MainWindow.cpp:188
+msgid "Open file list...\tCtrl+L"
+msgstr ""
+
+#: win32/WindowsPage.cpp:55
+msgid "Open new file list windows in the background"
+msgstr "Otwórz w tle nowe okno z listą plików"
+
+#: win32/WindowsPage.cpp:56
+msgid "Open new private message windows in the background"
+msgstr "Otwórz w tle okno z nową prywatną wiadomością"
+
+#: win32/WindowsPage.cpp:57
+msgid "Open new window when using /join"
+msgstr "Otwieraj nowe okno w przypadku /join"
+
+#: win32/MainWindow.cpp:189
+msgid "Open own list"
+msgstr "Otwórz własną listę"
+
+#: win32/WindowsPage.cpp:53
+msgid "Open private messages from bots in their own window"
+msgstr "Otwórz wiadomości od hubów w osobnych oknach"
+
+#: win32/WindowsPage.cpp:54
+msgid "Open private messages from the hub in their own window"
+msgstr "Otwórz wiadomości od botów w osobnych oknach"
+
+#: win32/WindowsPage.cpp:52
+msgid "Open private messages in their own window"
+msgstr "Odbieraj wiadomości prywatne"
+
+#: win32/AppearancePage.cpp:31
+msgid "Options"
+msgstr "Opcje"
+
+#: win32/QueuePage.cpp:49
+msgid "Other queue options"
+msgstr "Opcje plików oczekujących"
+
+#: win32/NetworkPage.cpp:48
+msgid "Outgoing connection settings"
+msgstr "Opcje połączeń wychodzących"
+
+#: win32/CommandDlg.cpp:86
+msgid "PM"
+msgstr "PM"
+
+#: win32/Advanced3Page.cpp:33
+msgid "PM history"
+msgstr "Historia PM"
+
+#: win32/QueueFrame.cpp:475
+msgid "Passive user"
+msgstr "Użytkownik pasywny"
+
+#: win32/NetworkPage.cpp:45 win32/FavHubsFrame.cpp:35
+msgid "Password"
+msgstr "Hasło"
+
+#: win32/QueueFrame.cpp:42 win32/SearchFrame.cpp:36 win32/TransferView.cpp:54
+msgid "Path"
+msgstr "Ścieżka"
+
+#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+msgid "Paused"
+msgstr "Pauza"
+
+#: win32/GeneralPage.cpp:28
+msgid "Personal Information"
+msgstr "Informacje osobiste"
+
+#: win32/SettingsDialog.cpp:57
+msgid "Personal information"
+msgstr "Informacje o mnie"
+
+#: win32/SearchFrame.cpp:187
+msgid "Picture"
+msgstr "Obraz"
+
+#: win32/FavHubsFrame.cpp:320 win32/PublicHubsFrame.cpp:496
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Wprowadź nicka w ustawieniach!"
+
+#: win32/HubFrame.cpp:528
+msgid "Please enter a password"
+msgstr "Wprowadź hasło"
+
+#: win32/WindowsPage.cpp:61
+msgid "Popup box to input password for hubs"
+msgstr "Wyświetl okno aby wprowadzić hasło dla huba"
+
+#: win32/NetworkPage.cpp:43
+msgid "Port"
+msgstr "Port"
+
+#: win32/NetworkPage.cpp:37
+msgid "Ports"
+msgstr "Porty"
+
+#: win32/HubFrame.cpp:855
+#, boost-format
+msgid "Press the follow redirect button to connect to %1%"
+msgstr ""
+
+#: win32/QueueFrame.cpp:40
+msgid "Priority"
+msgstr "Priorytet"
+
+#: win32/TabsPage.cpp:38
+msgid "Private message"
+msgstr "Prywatna wiadomość"
+
+#: win32/HubFrame.cpp:546 win32/HubFrame.cpp:554 win32/HubFrame.cpp:560
+#, fuzzy, boost-format
+msgid "Private message from %1%: %2%"
+msgstr "Prywatna wiadomość"
+
+#: win32/WindowsPage.cpp:46 win32/MainWindow.cpp:269
+#: win32/PublicHubsFrame.cpp:93
+msgid "Public Hubs"
+msgstr "Publiczne huby"
+
+#: win32/DownloadPage.cpp:39
+msgid "Public Hubs list"
+msgstr "Publiczna lista hubów"
+
+#: win32/DownloadPage.cpp:40
+msgid "Public Hubs list URL"
+msgstr "URL publicznej listy hubów"
+
+#: win32/SearchFrame.cpp:240
+msgid "Purge"
+msgstr "Oczyść"
+
+#: win32/TransferView.cpp:47
+msgid "Queued"
+msgstr ""
+
+#: win32/MainWindow.cpp:344
+msgid "Quick Connect"
+msgstr "Szybkie połączenie"
+
+#: win32/PublicHubsFrame.cpp:60
+msgid "Rating"
+msgstr "Ocena"
+
+#: win32/AboutDlg.cpp:61
+#, c-format, boost-format
+msgid "Ratio (up/down): %1$0.2f"
+msgstr ""
+
+#: win32/CommandDlg.cpp:78
+msgid "Raw"
+msgstr "Raw"
+
+#: win32/QueueFrame.cpp:1022
+msgid "Re-add source"
+msgstr "Ponownie dodaj źródło"
+
+#: win32/SearchFrame.cpp:1024
+msgid "Ready to search..."
+msgstr "Gotowy do wyszukania.."
+
+#: win32/MainWindow.cpp:459
+msgid "Really exit?"
+msgstr "Na pewno wyjść?"
+
+#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/FavHubsFrame.cpp:243
+msgid "Really remove?"
+msgstr "Na pewno usunąć?"
+
+#: win32/MainWindow.cpp:270
+#, fuzzy
+msgid "Reconnect"
+msgstr "Połączony"
+
+#: win32/HubFrame.cpp:848 win32/HubFrame.cpp:1371
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Prośba o przekierowanie do huba, z którym jest już połączony"
+
+#: win32/MainWindow.cpp:191
+msgid "Refresh file list\tCtrl+E"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:34
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Włącz obsługę linków dchub:// oraz adc://"
+
+#: win32/AdvancedPage.cpp:35
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Zintegruj z powłoką systemową Windows magnet: URI linki"
+
+#: win32/PublicHubsFrame.cpp:59
+msgid "Reliability"
+msgstr "Solidność"
+
+#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:660
+msgid "Remote client does not fully support TTH - cannot download"
+msgstr "Zdalny klient nie obsługuje w pełni TTH - nie można pobrać"
+
+#: win32/QueuePage.cpp:70
+msgid "Remove slow filelists"
+msgstr "Usuwaj powolne listy plików"
+
+#: win32/QueueFrame.cpp:1033
+msgid "Remove source"
+msgstr "Usuń źródło"
+
+#: win32/QueueFrame.cpp:1043
+msgid "Remove user from queue"
+msgstr "Usuń użytkownika z kolejki pobierania"
+
+#: win32/UploadPage.cpp:38 win32/FavoriteDirsPage.cpp:35
+msgid "Rename"
+msgstr "Zmień nazwę"
+
+#: win32/MainWindow.cpp:243
+msgid "Report a bug"
+msgstr "Zgłoś błąd"
+
+#: win32/MainWindow.cpp:242
+msgid "Request a feature"
+msgstr "Propozycje zmian etc."
+
+#: win32/HashProgressDlg.cpp:48
+msgid "Run in background"
+msgstr "Uruchom w tle"
+
+#: win32/QueueFrame.cpp:435
+msgid "Running..."
+msgstr "Uruchomiony..."
+
+#: win32/NetworkPage.cpp:36
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: win32/TabsPage.cpp:39 win32/MainWindow.cpp:281 win32/SearchFrame.cpp:85
+#: win32/SearchFrame.cpp:145
+msgid "Search"
+msgstr "Szukaj"
+
+#: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
+#: win32/SearchFrame.cpp:1020
+#, fuzzy, boost-format
+msgid "Search - %1%"
+msgstr "Szukaj"
+
+#: win32/SearchFrame.cpp:1025
+#, fuzzy
+msgid "Search - Ready to search..."
+msgstr "Gotowy do wyszukania.."
+
+#: win32/CommandDlg.cpp:96
+msgid "Search Menu"
+msgstr "Menu wyszukiwań"
+
+#: win32/WindowsPage.cpp:43 win32/MainWindow.cpp:212 win32/MainWindow.cpp:283
+#: win32/SpyFrame.cpp:40
+msgid "Search Spy"
+msgstr "Szpieg"
+
+#: win32/SpyFrame.cpp:34
+msgid "Search String"
+msgstr "Wyszukaj ciąg"
+
+#: win32/SearchFrame.cpp:116
+msgid "Search for"
+msgstr "Szukaj..."
+
+#: win32/WinUtil.cpp:361
+msgid "Search for alternates"
+msgstr "Szukaj alternatywy"
+
+#: win32/DirectoryListingFrame.cpp:795 win32/DirectoryListingFrame.cpp:858
+msgid "Search for file"
+msgstr "Szukaj pliku"
+
+#: win32/Advanced3Page.cpp:34
+msgid "Search history"
+msgstr "Historia wyszukiwań"
+
+#: win32/SearchFrame.cpp:125
+msgid "Search options"
+msgstr "Szukaj opcji"
+
+#: win32/HubFrame.cpp:910
+#, boost-format
+msgid "Search spam detected from %1%"
+msgstr ""
+
+#: win32/SearchFrame.cpp:984
+#, fuzzy, boost-format
+msgid "Searching for %1%..."
+msgstr "Szukaj..."
+
+#: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
+#, boost-format
+msgid "Searching too soon, next search in %1% second"
+msgid_plural "Searching too soon, next search in %1% seconds"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: win32/Appearance2Page.cpp:33
+msgid "Select &text style"
+msgstr ""
+
+#: win32/Appearance2Page.cpp:32
+msgid "Select &window color"
+msgstr ""
+
+#: win32/CommandDlg.cpp:112
+msgid "Send once per nick"
+msgstr "Wyślij raz na nicka"
+
+#: win32/AdvancedPage.cpp:44
+msgid "Send unknown /commands to the hub"
+msgstr "Wysyłaj nieznane /komendy do huba"
+
+#: win32/UCPage.cpp:123 win32/UCPage.cpp:181 win32/CommandDlg.cpp:74
+msgid "Separator"
+msgstr "Odstęp"
+
+#: win32/FavHubsFrame.cpp:36
+msgid "Server"
+msgstr "Serwer"
+
+#: win32/QueuePage.cpp:68
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr ""
+"Ustaw najniższy prio dla nowo dodanych plików większy niż rozmiar Niski prio"
+
+#: win32/QueueFrame.cpp:995
+msgid "Set priority"
+msgstr "Ustaw priorytet"
+
+#: win32/AppearancePage.cpp:33
+msgid "Set timestamps"
+msgstr "Ustaw znacznika czasu"
+
+#: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:286
+msgid "Settings"
+msgstr "Ustawienia"
+
+#: win32/MainWindow.cpp:195 win32/MainWindow.cpp:1000
+msgid "Settings..."
+msgstr "Ustawienia..."
+
+#: win32/UploadPage.cpp:35
+msgid "Share hidden files"
+msgstr "Udost. ukryte pliki"
+
+#: win32/HubFrame.cpp:38 win32/PublicHubsFrame.cpp:54
+msgid "Shared"
+msgstr "Udostępnione"
+
+#: win32/UploadPage.cpp:33
+msgid "Shared directories"
+msgstr "Udostępnione katalogi"
+
+#: win32/SettingsDialog.cpp:62
+msgid "Sharing"
+msgstr "Udostępnione"
+
+#: win32/MainWindow.cpp:997
+msgid "Show"
+msgstr "Pokaż"
+
+#: win32/AppearancePage.cpp:51
+msgid "Show joins / parts in chat by default"
+msgstr "Standardowo pokazuj wejścia / wyjścia na chacie"
+
+#: win32/AdvancedPage.cpp:38
+msgid "Show progress bars for transfers"
+msgstr "Pokaż pasek postępu"
+
+#: win32/AdvancedPage.cpp:48
+msgid "Show shell menu where possible"
+msgstr "Pokaż menu shell'owe w Plikach pobranych"
+
+#: win32/AppearancePage.cpp:49
+msgid "Show timestamps in chat by default"
+msgstr "Standardowo pokazuj sygnaturę czasową na chacie"
+
+#: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
+#: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
+#: win32/SearchFrame.cpp:119 win32/TransferView.cpp:59
+msgid "Size"
+msgstr "Rozmiar"
+
+#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/DirectoryListingFrame.cpp:635 win32/DirectoryListingFrame.cpp:652
+#, fuzzy, boost-format
+msgid "Size: %1%"
+msgstr "Rozmiar"
+
+#: win32/QueuePage.cpp:74
+msgid "Skip zero-byte files"
+msgstr "Pomiń pliki 0b"
+
+#: win32/PrivateFrame.cpp:285
+msgid "Slot granted"
+msgstr "Slot przyznany"
+
+#: win32/SearchFrame.cpp:37
+msgid "Slots"
+msgstr "Sloty"
+
+#: win32/WinUtil.cpp:247
+msgid "Slots set"
+msgstr "Sloty ustawione"
+
+#: win32/MainWindow.cpp:551
+#, boost-format
+msgid "Slots: %1%/%2%"
+msgstr ""
+
+#: win32/NetworkPage.cpp:42
+msgid "Socks IP"
+msgstr "Socks IP"
+
+#: win32/AppearancePage.cpp:46
+msgid "Sort all downloads first"
+msgstr "Sortuj najpierw pobierane pliki"
+
+#: win32/AppearancePage.cpp:53
+msgid "Sort favorite users first"
+msgstr "Sortuj najpierw ulubionych użytkowników"
+
+#: win32/Appearance2Page.cpp:37
+msgid "Sounds"
+msgstr "Dźwięki"
+
+#: win32/ADLSearchFrame.cpp:33
+msgid "Source Type"
+msgstr "Typ źródła"
+
+#: win32/QueueFrame.cpp:481
+msgid "Source too slow"
+msgstr "Źródło zbyt powolne"
+
+#: win32/WinUtil.cpp:289
+msgid "Specify a URL"
+msgstr "Podaj URL"
+
+#: win32/WinUtil.cpp:256 win32/WinUtil.cpp:277 win32/WinUtil.cpp:283
+msgid "Specify a search string"
+msgstr "Podaj ciąg do znalezienia"
+
+#: win32/HubFrame.cpp:296
+msgid "Specify a server to connect to"
+msgstr "Podaj serwer, z którym chcesz się połączyć"
+
+#: win32/TransferView.cpp:44 win32/TransferView.cpp:57
+msgid "Speed"
+msgstr "Prędkość"
+
+#: win32/DirectoryListingFrame.cpp:636
+#, boost-format
+msgid "Speed: %1%/s"
+msgstr ""
+
+#: win32/MagnetDlg.cpp:57
+msgid "Start a search for this file"
+msgstr "Rozpocznij wyszukanie dla tego pliku"
+
+#: win32/QueueFrame.cpp:37 win32/TransferView.cpp:43 win32/TransferView.cpp:55
+msgid "Status"
+msgstr "Status"
+
+#: win32/HubFrame.cpp:520
+msgid "Stored password sent..."
+msgstr "Wysyłanie hasła..."
+
+#: win32/DirectoryListingFrame.cpp:172 win32/DirectoryListingFrame.cpp:180
+msgid "Subtract list"
+msgstr "Porównywanie listy plików"
+
+#: win32/TabsPage.cpp:40 win32/WindowsPage.cpp:37 win32/SystemFrame.cpp:26
+#: win32/MainWindow.cpp:215
+msgid "System Log"
+msgstr "Log systemowy"
+
+#: win32/NetworkPage.cpp:39
+msgid "TCP"
+msgstr "TCP"
+
+#: win32/NetworkPage.cpp:41
+msgid "TLS"
+msgstr "TLS"
+
+#: win32/SearchFrame.cpp:190
+msgid "TTH"
+msgstr ""
+
+#: win32/QueueFrame.cpp:46 win32/DirectoryListingFrame.cpp:44
+#: win32/SearchFrame.cpp:42
+msgid "TTH Root"
+msgstr "TTH Root"
+
+#: win32/TransferView.cpp:671
+#, boost-format
+msgid "TTH: %1%"
+msgstr ""
+
+#: win32/TabsPage.cpp:32
+msgid "Tab highlight on content change"
+msgstr "Karta pogrubiona przy zmianie zawartości"
+
+#: win32/HubFrame.cpp:40
+msgid "Tag"
+msgstr "Tag"
+
+#: win32/HubFrame.cpp:976
+msgid "This hub is not a favorite hub"
+msgstr "Ten hub nie istnieje"
+
+#: win32/SpyFrame.cpp:36
+msgid "Time"
+msgstr "Czas"
+
+#: win32/UsersFrame.cpp:32
+msgid "Time last seen"
+msgstr "Ostatnio widziany"
+
+#: win32/TransferView.cpp:56
+msgid "Time left"
+msgstr "Czas pozostały"
+
+#: win32/HubFrame.cpp:305
+msgid "Timestamps disabled"
+msgstr "Znacznik czasowy wyłączony"
+
+#: win32/HubFrame.cpp:303
+msgid "Timestamps enabled"
+msgstr "Znacznik czasowy włączony"
+
+#: win32/WindowsPage.cpp:60
+msgid "Toggle window when selecting an active tab"
+msgstr "Przełącz okno po kliknięciu w aktywną zakładkę"
+
+#: win32/UploadPage.cpp:34
+msgid "Total size:"
+msgstr "Wielkość:"
+
+#: win32/SpyFrame.cpp:159
+#, boost-format
+msgid "Total: %1%"
+msgstr ""
+
+#: win32/TransferView.cpp:46
+#, fuzzy
+msgid "Transfered (Ratio)"
+msgstr "Centrum tłumaczeń"
+
+#: win32/MainWindow.cpp:238
+msgid "Translations"
+msgstr "Centrum tłumaczeń"
+
+#: win32/QueueFrame.cpp:47 win32/DirectoryListingFrame.cpp:41
+#: win32/SearchFrame.cpp:34
+msgid "Type"
+msgstr "Typ"
+
+#: win32/MainWindow.cpp:553
+#, boost-format
+msgid "U: %1%"
+msgstr ""
+
+#: win32/MainWindow.cpp:555
+#, boost-format
+msgid "U: %1%/s (%2%)"
+msgstr ""
+
+#: win32/NetworkPage.cpp:40
+msgid "UDP"
+msgstr "UDP"
+
+#: win32/WinUtil.cpp:803
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+#: win32/MainWindow.cpp:610
+msgid ""
+"Unable to open TCP/TLS port. File transfers will not work correctly until "
+"you change settings or turn off any application that might be using the TCP/"
+"TLS port"
+msgstr ""
+"Nie można otworzyć portu TCP/TLS. Transfer pliku nie będzie przeprowadzony "
+"poprawnie, dopóki nie zmienisz ustawień lub nie zamkniesz aplikacji, które "
+"mogą korzystać z portów TCP/TLS"
+
+#: win32/MainWindow.cpp:615
+msgid ""
+"Unable to open UDP port. Searching will not work correctly until you change "
+"settings or turn off any application that might be using the UDP port"
+msgstr ""
+"Nie można otworzyć portu UDP. Wyszukiwanie może nie działać poprawnie, "
+"dopóki nie zmienisz ustawień lub nie zamkniesz aplikacji, które mogą "
+"korzystać z portu UDP "
+
+#: win32/FavoriteDirsPage.cpp:120 win32/FavoriteDirsPage.cpp:150
+msgid "Under what name you see the directory"
+msgstr "Nazwa, pod jaką będzie widoczny katalog"
+
+#: win32/DownloadPage.cpp:33
+msgid "Unfinished downloads directory"
+msgstr "Katalog plików tymczasowych"
+
+#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+msgid "Unknown"
+msgstr "Nieznany"
+
+#: win32/HubFrame.cpp:380
+#, boost-format
+msgid "Unknown command: %1%"
+msgstr ""
+
+#: win32/UploadPage.cpp:41
+msgid "Upload slots"
+msgstr "Dostępne sloty"
+
+#: win32/AboutDlg.cpp:59
+#, boost-format
+msgid "Upload: %1%, Download: %2%"
+msgstr ""
+
+#: win32/TransferView.cpp:797
+#, fuzzy, boost-format
+msgid "Uploading %1%"
+msgstr "Wysyłane"
+
+#: win32/Appearance2Page.cpp:36
+msgid "Uploads"
+msgstr "Wysyłane"
+
+#: win32/AdvancedPage.cpp:46
+msgid "Use CTRL for line history"
+msgstr "Używaj CTRL dla liniowej historii"
+
+#: win32/AppearancePage.cpp:55
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Używaj czcionki systemowej do przeglądania plików tekstowych"
+
+#: win32/NetworkPage.cpp:46
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Użyj serwera SOCKS5 aby uzyskać nazwy hosta"
+
+#: win32/CertificatesPage.cpp:41
+msgid "Use TLS when remote client supports it"
+msgstr "Używaj TLS, jeśli zdalny klient je wspiera"
+
+#: win32/QueuePage.cpp:77
+msgid "Use antifragmentation method for downloads"
+msgstr "Użyj metody niefragmentowania ściąganych plików"
+
+#: win32/AppearancePage.cpp:54
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr "Używaj ikon systemowych (spowalnia szukanie)"
+
+#: win32/SearchFrame.cpp:33 win32/TransferView.cpp:42
+msgid "User"
+msgstr "Użytkownik"
+
+#: win32/FavHubsFrame.cpp:37
+msgid "User Description"
+msgstr "Opis użytkownika"
+
+#: win32/CommandDlg.cpp:93
+msgid "User Menu"
+msgstr "Menu użytkownika"
+
+#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:698
+msgid "User offline"
+msgstr "Użytkownik niedostępny"
+
+#: win32/PrivateFrame.cpp:315
+msgid "User went offline"
+msgstr "Użytkownik przeszedł w niedostępność"
+
+#: win32/QueueFrame.cpp:41 win32/PublicHubsFrame.cpp:51
+msgid "Users"
+msgstr "Użytkownicy"
+
+#: win32/PublicHubsFrame.cpp:272
+#, fuzzy, boost-format
+msgid "Users: %1%"
+msgstr "Użytkownicy"
+
+#: win32/SearchFrame.cpp:188
+msgid "Video"
+msgstr "Video"
+
+#: win32/AppearancePage.cpp:50
+msgid "View status messages in main chat"
+msgstr "Pokazuj wiadomości statusu na głównym chacie"
+
+#: win32/UploadPage.cpp:63 win32/UploadPage.cpp:188 win32/UploadPage.cpp:232
+msgid "Virtual name"
+msgstr "Wirtualna nazwa"
+
+#: win32/QueueFrame.cpp:423
+#, fuzzy, boost-format
+msgid "Waiting (%1% of %2% users online)"
+msgstr "Oczekiwanie (użytkownik dostępny)"
+
+#: win32/QueueFrame.cpp:421
+msgid "Waiting (User online)"
+msgstr "Oczekiwanie (użytkownik dostępny)"
+
+#: win32/TabsPage.cpp:43 win32/WindowsPage.cpp:41
+#: win32/WaitingUsersFrame.cpp:33 win32/MainWindow.cpp:207
+#: win32/MainWindow.cpp:278
+msgid "Waiting Users"
+msgstr "Oczekujący użytkownicy"
+
+#: win32/TransferView.cpp:626
+#, fuzzy
+msgid "Waiting for slot"
+msgstr "Oczekujący użytkownicy"
+
+#: win32/TransferView.cpp:648
+#, fuzzy
+msgid "Waiting to retry"
+msgstr "Oczekujący użytkownicy"
+
+#: win32/WindowsPage.cpp:31
+msgid "Window options"
+msgstr "Opcje okna"
+
+#: win32/Advanced3Page.cpp:29
+msgid "Write buffer size"
+msgstr "Zapisz rozmiar bufora"
+
+#: win32/HubFrame.cpp:906
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Ktoś używa twojego nicka, zmień na inny!"
+
+#: win32/MainWindow.cpp:143
+msgid ""
+"Your version of windows common controls is too old for DC++ to run "
+"correctly, and you will most probably experience problems with the user "
+"interface. You should download version 5.80 or higher from the DC++ homepage "
+"or from Microsoft directly."
+msgstr ""
+
+#: win32/TransferView.cpp:673
+#, fuzzy
+msgid "file list"
+msgstr "Menu listy plików"
+
+#: win32/QueuePage.cpp:41 win32/QueuePage.cpp:43 win32/QueuePage.cpp:45
+msgid "s"
+msgstr "s"

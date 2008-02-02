@@ -32,10 +32,13 @@
 #include <dcpp/Download.h>
 #include <dcpp/Upload.h>
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_SPEED, COLUMN_CHUNK, COLUMN_TRANSFERED, COLUMN_QUEUED, COLUMN_CIPHER, COLUMN_IP };
-int TransferView::columnSizes[] = { 125, 375, 100, 100, 125, 75, 100, 100 };
+int TransferView::connectionIndexes[] = { CONNECTION_COLUMN_USER, CONNECTION_COLUMN_STATUS, CONNECTION_COLUMN_SPEED, CONNECTION_COLUMN_CHUNK, CONNECTION_COLUMN_TRANSFERED, CONNECTION_COLUMN_QUEUED, CONNECTION_COLUMN_CIPHER, CONNECTION_COLUMN_IP };
+int TransferView::connectionSizes[] = { 125, 375, 100, 100, 125, 75, 100, 100 };
 
-static const char* columnNames[] = {
+int TransferView::downloadIndexes[] = { DOWNLOAD_COLUMN_FILE, DOWNLOAD_COLUMN_PATH, DOWNLOAD_COLUMN_STATUS, DOWNLOAD_COLUMN_TIMELEFT, DOWNLOAD_COLUMN_SPEED, DOWNLOAD_COLUMN_DONE, DOWNLOAD_COLUMN_SIZE };
+int TransferView::downloadSizes[] = { 200, 300, 150, 200, 125, 100};
+
+static const char* connectionNames[] = {
 	N_("User"),
 	N_("Status"),
 	N_("Speed"),
@@ -46,64 +49,147 @@ static const char* columnNames[] = {
 	N_("IP")
 };
 
+static const char* downloadNames[] = {
+	N_("Filename"),
+	N_("Path"),
+	N_("Status"),
+	N_("Time left"),
+	N_("Speed"),
+	N_("Done"),
+	N_("Size")
+};
+
+
 TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
 	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
-	transfers(0),
+	connections(0),
+	connectionsWindow(0),
+	downloads(0),
+	downloadsWindow(0),
 	mdi(mdi_)
 {
 	createWindow();
+	
+	{
+		WidgetTabSheet::Seed tcs;
+		tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE |
+			 TCS_HOTTRACK | TCS_RAGGEDRIGHT | TCS_TOOLTIPS | TCS_FOCUSNEVER;
+		tabs = createTabSheet(tcs);
+		tabs->onSelectionChanged(std::tr1::bind(&TransferView::handleTabSelected, this));
+	}
+	
+	{
+		WidgetChildWindow::Seed cs;
+		cs.style |= WS_CLIPCHILDREN | WS_VISIBLE;
+		cs.caption = T_("Connections");
+		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
+		cs.location = tabs->getUsableArea(true);
+		
+		connectionsWindow = createWidgetChildWindow(cs);
+		
+		tabs->addPage(T_("Connections"), 0);
+		
+		cs.style &= ~WS_VISIBLE;
+		cs.caption = T_("Downloads");
+		downloadsWindow = createWidgetChildWindow(cs);
+		tabs->addPage(T_("Downloads"), 1);
+	}
+	
 	{
 		arrows = SmartWin::ImageListPtr(new SmartWin::ImageList(16, 16, ILC_COLOR32 | ILC_MASK));
 		SmartWin::Bitmap tmp(IDB_ARROWS);
 		arrows->add(tmp, RGB(255, 0, 255));
 	}
 	{
-		transfers = SmartWin::WidgetCreator<WidgetTransfers>::create(this, WinUtil::Seeds::listView);
+		connections = SmartWin::WidgetCreator<WidgetConnections>::create(connectionsWindow, WinUtil::Seeds::listView);
 
-		transfers->setSmallImageList(arrows);
-		transfers->createColumns(WinUtil::getStrings(columnNames));
-		transfers->setColumnOrder(WinUtil::splitTokens(SETTING(MAINFRAME_ORDER), columnIndexes));
-		transfers->setColumnWidths(WinUtil::splitTokens(SETTING(MAINFRAME_WIDTHS), columnSizes));
-		transfers->setColor(WinUtil::textColor, WinUtil::bgColor);
-		transfers->setSort(COLUMN_USER);
-		transfers->onContextMenu(std::tr1::bind(&TransferView::handleContextMenu, this, _1));
-		transfers->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
-		transfers->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
+		connections->setSmallImageList(arrows);
+		connections->createColumns(WinUtil::getStrings(connectionNames));
+		connections->setColumnOrder(WinUtil::splitTokens(SETTING(CONNECTIONS_ORDER), connectionIndexes));
+		connections->setColumnWidths(WinUtil::splitTokens(SETTING(CONNECTIONS_WIDTHS), connectionSizes));
+		connections->setColor(WinUtil::textColor, WinUtil::bgColor);
+		connections->setSort(CONNECTION_COLUMN_USER);
+		connections->onContextMenu(std::tr1::bind(&TransferView::handleConnectionsMenu, this, _1));
+		connections->onKeyDown(std::tr1::bind(&TransferView::handleKeyDown, this, _1));
+		connections->onDblClicked(std::tr1::bind(&TransferView::handleDblClicked, this));
 	}
 	
+	{
+		downloads = SmartWin::WidgetCreator<WidgetDownloads>::create(downloadsWindow, WinUtil::Seeds::listView);
+
+		downloads->createColumns(WinUtil::getStrings(downloadNames));
+		downloads->setColumnOrder(WinUtil::splitTokens(SETTING(DOWNLOADS_ORDER), downloadIndexes));
+		downloads->setColumnWidths(WinUtil::splitTokens(SETTING(DOWNLOADS_WIDTHS), downloadSizes));
+		downloads->setSort(DOWNLOAD_COLUMN_STATUS);
+		downloads->setColor(WinUtil::textColor, WinUtil::bgColor);
+		downloads->setSmallImageList(WinUtil::fileImages);
+
+		downloads->onContextMenu(std::tr1::bind(&TransferView::handleDownloadsMenu, this, _1));
+	}
+
 	onSized(std::tr1::bind(&TransferView::handleSized, this, _1));
 	onRaw(std::tr1::bind(&TransferView::handleDestroy, this, _1, _2), SmartWin::Message(WM_DESTROY));
 	onSpeaker(std::tr1::bind(&TransferView::handleSpeaker, this, _1, _2));
 	noEraseBackground();
 	
+	layout();
+	
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
+	QueueManager::getInstance()->addListener(this);
 }
 
 TransferView::~TransferView() {
 
 }
 
+void TransferView::handleTabSelected() {
+	int i = tabs->getSelectedIndex();
+	
+	dcdebug("Setting %d visible\n", i);
+	if(i == 0) {
+		::ShowWindow(downloadsWindow->handle(), SW_HIDE);
+		::ShowWindow(connectionsWindow->handle(), SW_SHOW);
+	} else {
+		::ShowWindow(connectionsWindow->handle(), SW_HIDE);
+		::ShowWindow(downloadsWindow->handle(), SW_SHOW);
+	}
+}
+
 bool TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
-	transfers->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+	layout();
 	return true;
 }
 
+void TransferView::layout() {
+	tabs->setBounds(SmartWin::Point(0,0), getClientAreaSize());
+	SmartWin::Rectangle rect = tabs->getUsableArea(true);
+	dcdebug("Setting rect %u, %u, %u, %u\n", rect.pos.x, rect.pos.y, rect.size.x, rect.size.y);
+	connectionsWindow->setBounds(rect);
+	connections->setBounds(connectionsWindow->getBounds(true));
+	downloadsWindow->setBounds(rect);
+	downloads->setBounds(downloadsWindow->getBounds(true));
+}
+
 void TransferView::prepareClose() {
+	QueueManager::getInstance()->removeListener(this);
 	ConnectionManager::getInstance()->removeListener(this);
 	DownloadManager::getInstance()->removeListener(this);
 	UploadManager::getInstance()->removeListener(this);
 }
 
 HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
-	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, WinUtil::toString(transfers->getColumnOrder()));
-	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, WinUtil::toString(transfers->getColumnWidths()));
+	SettingsManager::getInstance()->set(SettingsManager::CONNECTIONS_ORDER, WinUtil::toString(connections->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::CONNECTIONS_WIDTHS, WinUtil::toString(connections->getColumnWidths()));
 
+	SettingsManager::getInstance()->set(SettingsManager::DOWNLOADS_ORDER, WinUtil::toString(downloads->getColumnOrder()));
+	SettingsManager::getInstance()->set(SettingsManager::DOWNLOADS_WIDTHS, WinUtil::toString(downloads->getColumnWidths()));
+	
 	return 0;
 }
 
-TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
+TransferView::WidgetMenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
 	WidgetMenuPtr menu = createMenu(true);
 	
 	appendUserItems(mdi, menu);
@@ -117,14 +203,14 @@ TransferView::WidgetMenuPtr TransferView::makeContextMenu(ItemInfo* ii) {
 	return menu;
 }
 
-bool TransferView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
-	if (transfers->hasSelection()) {
+bool TransferView::handleConnectionsMenu(SmartWin::ScreenCoordinate pt) {
+	if (connections->hasSelection()) {
 		if(pt.x() == -1 && pt.y() == -1) {
-			pt = transfers->getContextMenuPos();
+			pt = connections->getContextMenuPos();
 		}
 
 		/// @todo Fix multiple selection menu...
-		ItemInfo* ii = transfers->getSelectedData();
+		ConnectionInfo* ii = connections->getSelectedData();
 		WidgetMenuPtr contextMenu = makeContextMenu(ii);
 		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
@@ -133,8 +219,35 @@ bool TransferView::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	return false;
 }
 
+bool TransferView::handleDownloadsMenu(SmartWin::ScreenCoordinate pt) {
+	if (downloads->getSelectedCount() == 1) {
+		if(pt.x() == -1 && pt.y() == -1) {
+			pt = downloads->getContextMenuPos();
+		}
+
+		WidgetMenuPtr menu = createMenu(true);
+		DownloadInfo* di = downloads->getSelectedData();
+		WinUtil::addHashItems(menu, di->tth, di->columns[DOWNLOAD_COLUMN_FILE]);
+		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+
+		return true;
+	}
+	return false;
+}
+
+int TransferView::find(const string& path) {
+	for(size_t i = 0; i < downloads->size(); ++i) {
+		DownloadInfo* di = downloads->getData(i);
+		if(Util::stricmp(di->path, path) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
 void TransferView::handleDisconnect() {
-	transfers->forEachSelected(&ItemInfo::disconnect);
+	connections->forEachSelected(&ConnectionInfo::disconnect);
 }
 
 void TransferView::runUserCommand(const UserCommand& uc) {
@@ -144,8 +257,8 @@ void TransferView::runUserCommand(const UserCommand& uc) {
 	StringMap ucParams = ucLineParams;
 
 	int i = -1;
-	while((i = transfers->getNext(i, LVNI_SELECTED)) != -1) {
-		ItemInfo* itemI = transfers->getData(i);
+	while((i = connections->getNext(i, LVNI_SELECTED)) != -1) {
+		ConnectionInfo* itemI = connections->getData(i);
 		if(!itemI->user->isOnline())
 			continue;
 
@@ -161,17 +274,17 @@ void TransferView::runUserCommand(const UserCommand& uc) {
 
 bool TransferView::handleKeyDown(int c) {
 	if(c == VK_DELETE) {
-		transfers->forEachSelected(&ItemInfo::disconnect);
+		connections->forEachSelected(&ConnectionInfo::disconnect);
 	}
 	return true;
 }
 
 void TransferView::handleForce() {
 	int i = -1;
-	while( (i = transfers->getNext(i, LVNI_SELECTED)) != -1) {
-		transfers->getData(i)->columns[COLUMN_STATUS] = T_("Connecting (forced)");
-		transfers->update(i);
-		ConnectionManager::getInstance()->force(transfers->getData(i)->user);
+	while( (i = connections->getNext(i, LVNI_SELECTED)) != -1) {
+		connections->getData(i)->columns[CONNECTION_COLUMN_STATUS] = T_("Connecting (forced)");
+		connections->update(i);
+		ConnectionManager::getInstance()->force(connections->getData(i)->user);
 	}
 }
 
@@ -179,8 +292,8 @@ void TransferView::handleCopyNick() {
 	int i = -1;
 
 	/// @todo Fix when more items are selected
-	while( (i = transfers->getNext(i, LVNI_SELECTED)) != -1) {
-		WinUtil::setClipboard(WinUtil::getNicks(transfers->getData(i)->user));
+	while( (i = connections->getNext(i, LVNI_SELECTED)) != -1) {
+		WinUtil::setClipboard(WinUtil::getNicks(connections->getData(i)->user));
 	}
 }
 
@@ -204,8 +317,8 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
 		// Let's draw a box if needed...
 		if(cd->iSubItem == COLUMN_STATUS) {
-			ItemInfo* ii = (ItemInfo*)cd->nmcd.lItemlParam;
-			if(ii->status == ItemInfo::STATUS_RUNNING) {
+			ConnectionInfo* ii = (ConnectionInfo*)cd->nmcd.lItemlParam;
+			if(ii->status == ConnectionInfo::STATUS_RUNNING) {
 				// draw something nice...
 				TCHAR buf[256];
 				COLORREF barBase = ii->download ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR);
@@ -214,10 +327,10 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
 				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
 
-				transfers->GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
+				connections->GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
 				buf[255] = 0;
 
-				transfers->GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
+				connections->GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
 				CRect rc2 = rc;
 				rc2.left += 6;
 
@@ -293,17 +406,17 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 #endif
 
 void TransferView::handleDblClicked() {
-	ItemInfo* ii = transfers->getSelectedData();
+	ConnectionInfo* ii = connections->getSelectedData();
 	if(ii) {
 		ii->pm(mdi);
 	}
 }
 
-int TransferView::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
+int TransferView::ConnectionInfo::compareItems(ConnectionInfo* a, ConnectionInfo* b, int col) {
 	if(BOOLSETTING(ALT_SORT_ORDER)) {
 		if(a->download == b->download) {
 			if(a->status != b->status) {
-				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+				return (a->status == ConnectionInfo::STATUS_RUNNING) ? -1 : 1;
 			}
 		} else {
 			return a->download ? -1 : 1;
@@ -314,15 +427,15 @@ int TransferView::ItemInfo::compareItems(ItemInfo* a, ItemInfo* b, int col) {
 				return a->download ? -1 : 1;
 			}
 		} else {
-			return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+			return (a->status == ConnectionInfo::STATUS_RUNNING) ? -1 : 1;
 		}
 	}
 	switch(col) {
-	case COLUMN_STATUS: return 0;
-	case COLUMN_SPEED: return compare(a->speed, b->speed);
-	case COLUMN_TRANSFERED: return compare(a->transfered, b->transfered);
-	case COLUMN_QUEUED: return compare(a->queued, b->queued);
-	case COLUMN_CHUNK: return compare(a->chunk, b->chunk);
+	case CONNECTION_COLUMN_STATUS: return 0;
+	case CONNECTION_COLUMN_SPEED: return compare(a->speed, b->speed);
+	case CONNECTION_COLUMN_TRANSFERED: return compare(a->transfered, b->transfered);
+	case CONNECTION_COLUMN_QUEUED: return compare(a->queued, b->queued);
+	case CONNECTION_COLUMN_CHUNK: return compare(a->chunk, b->chunk);
 	default: return lstrcmpi(a->columns[col].c_str(), b->columns[col].c_str());
 	}
 }
@@ -331,46 +444,83 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 	TaskQueue::List t;
 	tasks.get(t);
 	
-	HoldRedraw hold(transfers, t.size() > 1);
+	HoldRedraw hold(connections, t.size() > 1);
 	
 	for(TaskQueue::Iter i = t.begin(); i != t.end(); ++i) {
-		if(i->first == ADD_ITEM) {
-			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
-			ItemInfo* ii = new ItemInfo(ui->user, ui->download);
+		if(i->first == CONNECTIONS_ADD) {
+			boost::scoped_ptr<UpdateInfo> ui(static_cast<UpdateInfo*>(i->second));
+			ConnectionInfo* ii = new ConnectionInfo(ui->user, ui->download);
 			ii->update(*ui);
-			transfers->insert(ii);
-		} else if(i->first == REMOVE_ITEM) {
-			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
-			int ic = transfers->size();
+			connections->insert(ii);
+		} else if(i->first == CONNECTIONS_REMOVE) {
+			auto_ptr<UpdateInfo> ui(static_cast<UpdateInfo*>(i->second));
+			int ic = connections->size();
 			for(int i = 0; i < ic; ++i) {
-				ItemInfo* ii = transfers->getData(i);
+				ConnectionInfo* ii = connections->getData(i);
 				if(*ui == *ii) {
-					transfers->erase(i);
+					connections->erase(i);
 					break;
 				}
 			}
-		} else if(i->first == UPDATE_ITEM) {
-			auto_ptr<UpdateInfo> ui(reinterpret_cast<UpdateInfo*>(i->second));
-			int ic = transfers->size();
+		} else if(i->first == CONNECTIONS_UPDATE) {
+			boost::scoped_ptr<UpdateInfo> ui(static_cast<UpdateInfo*>(i->second));
+			int ic = connections->size();
 			for(int i = 0; i < ic; ++i) {
-				ItemInfo* ii = transfers->getData(i);
+				ConnectionInfo* ii = connections->getData(i);
 				if(ii->download == ui->download && ii->user == ui->user) {
 					ii->update(*ui);
-					transfers->update(i);
+					connections->update(i);
 					break;
 				}
 			}
+		} else if(i->first == DOWNLOADS_TICK) {
+			boost::scoped_ptr<TickInfo> ti(static_cast<TickInfo*>(i->second));
+			int i = find(ti->path);
+			if(i == -1) {
+				int64_t size = QueueManager::getInstance()->getSize(ti->path);
+				if(size == -1) {
+					return 0;
+				}
+				TTHValue tth;
+				if(QueueManager::getInstance()->getTTH(ti->path, tth)) {
+					i = downloads->insert(new DownloadInfo(ti->path, size, tth));
+				} else {
+					return 0;
+				}
+			}
+			DownloadInfo* di = downloads->getData(i);
+			di->update(*ti);
+			downloads->update(i);
+		} else if(i->first == DOWNLOADS_DISCONNECTED) {
+			boost::scoped_ptr<TickInfo> ti(static_cast<TickInfo*>(i->second));
+			
+			int i = find(ti->path);
+			if(i != -1) {
+				DownloadInfo* di = downloads->getData(i);
+				if(--di->users == 0) {
+					di->bps = 0;
+				}
+				di->update();
+				downloads->update(i);
+			}
+		} else if(i->first == DOWNLOADS_REMOVED) {
+			boost::scoped_ptr<TickInfo> ti(static_cast<TickInfo*>(i->second));
+			int i = find(ti->path);
+			if(i != -1) {
+				downloads->erase(i);
+			}
 		}
+	
 	}
 
 	if(!t.empty()) {
-		transfers->resort();
+		connections->resort();
 	}
 
 	return 0;
 }
 
-TransferView::ItemInfo::ItemInfo(const UserPtr& u, bool aDownload) : 
+TransferView::ConnectionInfo::ConnectionInfo(const UserPtr& u, bool aDownload) : 
 	UserInfoBase(u), 
 	download(aDownload), 
 	transferFailed(false),
@@ -382,30 +532,30 @@ TransferView::ItemInfo::ItemInfo(const UserPtr& u, bool aDownload) :
 	queued(0),
 	speed(0)	
 {
-	columns[COLUMN_USER] = WinUtil::getNicks(u);
-	columns[COLUMN_STATUS] = T_("Idle");
-	columns[COLUMN_TRANSFERED] = Text::toT(Util::toString(0));
+	columns[CONNECTION_COLUMN_USER] = WinUtil::getNicks(u);
+	columns[CONNECTION_COLUMN_STATUS] = T_("Idle");
+	columns[CONNECTION_COLUMN_TRANSFERED] = Text::toT(Util::toString(0));
 	if(aDownload) {
 		queued = QueueManager::getInstance()->getQueued(u);
-		columns[COLUMN_QUEUED] = Text::toT(Util::formatBytes(queued));
+		columns[CONNECTION_COLUMN_QUEUED] = Text::toT(Util::formatBytes(queued));
 	}
 }
 
-void TransferView::ItemInfo::update(const UpdateInfo& ui) {
+void TransferView::ConnectionInfo::update(const UpdateInfo& ui) {
 	if(ui.updateMask & UpdateInfo::MASK_STATUS) {
 		lastTransfered = lastActual = 0;
 		status = ui.status;
 		if(download) {
 			// Also update queued when status changes...
 			queued = QueueManager::getInstance()->getQueued(user);
-			columns[COLUMN_QUEUED] = Text::toT(Util::formatBytes(queued));
+			columns[CONNECTION_COLUMN_QUEUED] = Text::toT(Util::formatBytes(queued));
 		}
 	}
 
 	if(ui.updateMask & UpdateInfo::MASK_STATUS_STRING) {
 		// No slots etc from transfermanager better than disconnected from connectionmanager
 		if(!transferFailed)
-			columns[COLUMN_STATUS] = ui.statusString;
+			columns[CONNECTION_COLUMN_STATUS] = ui.statusString;
 		transferFailed = ui.transferFailed;
 	}
 	
@@ -415,9 +565,9 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 		transfered += ui.transfered - lastTransfered;
 		lastTransfered = ui.transfered;
 		if(actual == transfered) {
-			columns[COLUMN_TRANSFERED] = Text::toT(Util::formatBytes(transfered));
+			columns[CONNECTION_COLUMN_TRANSFERED] = Text::toT(Util::formatBytes(transfered));
 		} else {
-			columns[COLUMN_TRANSFERED] = str(TF_("%1% (%2$0.2f)") 
+			columns[CONNECTION_COLUMN_TRANSFERED] = str(TF_("%1% (%2$0.2f)") 
 				% Text::toT(Util::formatBytes(transfered))
 				% (static_cast<double>(actual) / transfered));
 		}
@@ -425,33 +575,71 @@ void TransferView::ItemInfo::update(const UpdateInfo& ui) {
 	
 	if(ui.updateMask & UpdateInfo::MASK_CHUNK) {
 		chunk = ui.chunk;
-		columns[COLUMN_CHUNK] = Text::toT(Util::formatBytes(ui.chunk));
+		columns[CONNECTION_COLUMN_CHUNK] = Text::toT(Util::formatBytes(ui.chunk));
 	}
 	
 	if(ui.updateMask & UpdateInfo::MASK_SPEED) {
 		speed = ui.speed;
 		if (status == STATUS_RUNNING) {
-			columns[COLUMN_SPEED] = str(TF_("%1%/s") % Text::toT(Util::formatBytes(speed)));
+			columns[CONNECTION_COLUMN_SPEED] = str(TF_("%1%/s") % Text::toT(Util::formatBytes(speed)));
 		} else {
-			columns[COLUMN_SPEED] = Util::emptyStringT;
+			columns[CONNECTION_COLUMN_SPEED] = Util::emptyStringT;
 		}
 	}
 	
 	if(ui.updateMask & UpdateInfo::MASK_IP) {
-		columns[COLUMN_IP] = ui.ip;
+		columns[CONNECTION_COLUMN_IP] = ui.ip;
 	}
 	
 	if(ui.updateMask & UpdateInfo::MASK_CIPHER) {
-		columns[COLUMN_CIPHER] = ui.cipher;
+		columns[CONNECTION_COLUMN_CIPHER] = ui.cipher;
 	}
+}
+
+TransferView::DownloadInfo::DownloadInfo(const string& target, int64_t size_, const TTHValue& tth_) : 
+	path(target), 
+	done(QueueManager::getInstance()->getPos(target)), 
+	size(size_), 
+	users(0),
+	tth(tth_)
+{
+	columns[DOWNLOAD_COLUMN_FILE] = Text::toT(Util::getFileName(target));
+	columns[DOWNLOAD_COLUMN_PATH] = Text::toT(Util::getFilePath(target));
+	columns[DOWNLOAD_COLUMN_SIZE] = Text::toT(Util::formatBytes(size));
+	
+	update();
+}
+
+int TransferView::DownloadInfo::getImage() const {
+	return WinUtil::getIconIndex(Text::toT(path));
+}
+
+void TransferView::DownloadInfo::update(const TransferView::TickInfo& ti) {
+	users = ti.users;
+	done = ti.done + QueueManager::getInstance()->getInstance()->getPos(ti.path);
+	bps = ti.bps;
+	update();
+}
+
+void TransferView::DownloadInfo::update() {
+	if(users == 0) {
+		columns[DOWNLOAD_COLUMN_STATUS] = T_("Waiting for slot");
+		columns[DOWNLOAD_COLUMN_TIMELEFT].clear();
+		columns[DOWNLOAD_COLUMN_SPEED].clear();
+	} else {
+		columns[DOWNLOAD_COLUMN_STATUS] = str(TFN_("Downloading from %1% user", "Downloading from %1% users", users) % users);
+		columns[DOWNLOAD_COLUMN_TIMELEFT] = Text::toT(Util::formatSeconds(static_cast<int64_t>(timeleft())));
+		columns[DOWNLOAD_COLUMN_SPEED] = str(TF_("%1%/s") % Text::toT(Util::formatBytes(static_cast<int64_t>(bps))));
+	}
+	columns[DOWNLOAD_COLUMN_DONE] = Text::toT(Util::formatBytes(done));
 }
 
 void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) throw() {
 	UpdateInfo* ui = new UpdateInfo(aCqi->getUser(), aCqi->getDownload());
 
-	ui->setStatus(ItemInfo::STATUS_WAITING);
+	ui->setStatus(ConnectionInfo::STATUS_WAITING);
 	ui->setStatusString(T_("Connecting"));
-	speak(ADD_ITEM, ui);
+	speak(CONNECTIONS_ADD, ui);
 }
 
 void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw() {
@@ -459,11 +647,11 @@ void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueI
 
 	ui->setStatusString((aCqi->getState() == ConnectionQueueItem::CONNECTING) ? T_("Connecting") : T_("Waiting to retry"));
 
-	speak(UPDATE_ITEM, ui);
+	speak(CONNECTIONS_UPDATE, ui);
 }
 
 void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw() {
-	speak(REMOVE_ITEM, new UpdateInfo(aCqi->getUser(), aCqi->getDownload()));
+	speak(CONNECTIONS_REMOVE, new UpdateInfo(aCqi->getUser(), aCqi->getDownload()));
 }
 
 void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) throw() {
@@ -473,7 +661,7 @@ void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aC
 	} else {
 		ui->setStatusString(Text::toT(aReason));
 	}
-	speak(UPDATE_ITEM, ui);
+	speak(CONNECTIONS_UPDATE, ui);
 }
 
 static tstring getFile(Transfer* t) {
@@ -492,7 +680,7 @@ static tstring getFile(Transfer* t) {
 }
 
 void TransferView::starting(UpdateInfo* ui, Transfer* t) {
-	ui->setStatus(ItemInfo::STATUS_RUNNING);
+	ui->setStatus(ConnectionInfo::STATUS_RUNNING);
 	ui->setTransfered(t->getPos(), t->getActual());
 	ui->setChunk(t->getSize());
 	const UserConnection& uc = t->getUserConnection();
@@ -531,7 +719,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
 	statusString += str(TF_("Downloading %1%") % getFile(d));
 	
 	ui->setStatusString(statusString);
-	speak(UPDATE_ITEM, ui);
+	speak(CONNECTIONS_UPDATE, ui);
 }
 
 void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
@@ -542,18 +730,48 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 		ui->setTransfered(d->getPos(), d->getActual());
 		ui->setSpeed(d->getAverageSpeed());
 
-		tasks.add(UPDATE_ITEM, ui);
+		tasks.add(CONNECTIONS_UPDATE, ui);
+	}
+
+	std::vector<TickInfo*> dis;
+	for(DownloadList::const_iterator i = dl.begin(); i != dl.end(); ++i) {
+		Download* d = *i;
+		if(d->getType() != Transfer::TYPE_FILE) {
+			continue;
+		}
+		
+		TickInfo* ti = 0;
+		for(std::vector<TickInfo*>::iterator j = dis.begin(); j != dis.end(); ++j) {
+			TickInfo* ti2 = *j;
+			if(Util::stricmp(ti2->path, d->getPath()) == 0) {
+				ti = ti2;
+				break;
+			}
+		}
+		if(!ti) {
+			ti = new TickInfo(d->getPath());
+			dis.push_back(ti);
+		}
+		ti->users++;
+		ti->bps += d->getAverageSpeed();
+		ti->done += d->getPos();
+	}
+	for(std::vector<TickInfo*>::iterator i = dis.begin(); i != dis.end(); ++i) {
+		tasks.add(DOWNLOADS_TICK, *i);
 	}
 
 	speak();
 }
 
-void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw() {
-	UpdateInfo* ui = new UpdateInfo(aDownload->getUser(), true, true);
-	ui->setStatus(ItemInfo::STATUS_WAITING);
+void TransferView::on(DownloadManagerListener::Failed, Download* d, const string& aReason) throw() {
+	UpdateInfo* ui = new UpdateInfo(d->getUser(), true, true);
+	ui->setStatus(ConnectionInfo::STATUS_WAITING);
 	ui->setStatusString(Text::toT(aReason));
 
-	speak(UPDATE_ITEM, ui);
+	speak(CONNECTIONS_UPDATE, ui);
+	
+	speak(DOWNLOADS_DISCONNECTED, new TickInfo(d->getPath()));
+
 }
 
 void TransferView::on(UploadManagerListener::Starting, Upload* u) throw() {
@@ -580,7 +798,7 @@ void TransferView::on(UploadManagerListener::Starting, Upload* u) throw() {
 
 	ui->setStatusString(statusString);
 
-	speak(UPDATE_ITEM, ui);
+	speak(CONNECTIONS_UPDATE, ui);
 }
 
 void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw() {
@@ -591,14 +809,16 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 		ui->setTransfered(u->getPos(), u->getActual());
 		ui->setSpeed(u->getAverageSpeed());
 
-		tasks.add(UPDATE_ITEM, ui);
+		tasks.add(CONNECTIONS_UPDATE, ui);
 	}
 
 	speak();
 }
 
-void TransferView::on(DownloadManagerListener::Complete, Download* aDownload) throw() { 
-	onTransferComplete(aDownload, false);
+void TransferView::on(DownloadManagerListener::Complete, Download* d) throw() { 
+	onTransferComplete(d, false);
+
+	speak(DOWNLOADS_DISCONNECTED, new TickInfo(d->getPath()));
 }
 
 void TransferView::on(UploadManagerListener::Complete, Upload* aUpload) throw() { 
@@ -608,12 +828,16 @@ void TransferView::on(UploadManagerListener::Complete, Upload* aUpload) throw() 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 	UpdateInfo* ui = new UpdateInfo(aTransfer->getUser(), !isUpload);
 
-	ui->setStatus(ItemInfo::STATUS_WAITING);
+	ui->setStatus(ConnectionInfo::STATUS_WAITING);
 	ui->setStatusString(T_("Idle"));
 
-	speak(UPDATE_ITEM, ui);
+	speak(CONNECTIONS_UPDATE, ui);
 }
 
-void TransferView::ItemInfo::disconnect() {
+void TransferView::ConnectionInfo::disconnect() {
 	ConnectionManager::getInstance()->disconnect(user, download);
+}
+
+void TransferView::on(QueueManagerListener::Removed, QueueItem* qi) throw() {
+	speak(DOWNLOADS_REMOVED, new TickInfo(qi->getTarget()));
 }

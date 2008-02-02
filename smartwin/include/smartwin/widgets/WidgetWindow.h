@@ -38,6 +38,9 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
+template< class WidgetType >
+class WidgetCreator;
+
 /// "Window" class
 /** \ingroup WidgetControls
   * \WidgetUsageInfo
@@ -197,6 +200,8 @@ public:
 	}
 
 protected:
+	friend class WidgetCreator<WidgetChildWindow>;
+	
 	// Unlike WidgetWindow, WidgetChildWindow must have a parent!!!
 	explicit WidgetChildWindow( Widget * parent ) : WidgetWindow( parent ) 
 	{};

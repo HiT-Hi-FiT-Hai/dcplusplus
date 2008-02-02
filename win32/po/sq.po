@@ -1,4 +1,3 @@
-
 # Albanian translations for the DC++ package.
 # Copyright (C) 2008 The translators
 # This file is distributed under the same license as the DC++ package.
@@ -8,1086 +7,2273 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"POT-Creation-Date: 2008-02-02 00:46+0100\n"
 "Last-Translator:  <rrjeti@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: plurals=2; plural=(n != 1);\n"
 
-msgid "Slot granted"
-msgstr "Kanali u dhurua"
-
-msgid "Run in background"
-msgstr "Vepro në prapaskenë"
-
-msgid "Guess user country from IP"
-msgstr "Shfaq shtetin e përdoruesit nga IP-ja"
-
-msgid "Log main chat"
-msgstr "Shëno bisedën kryesore"
-
-msgid "Keep duplicate files in your file list"
-msgstr "Filet e dyfishta mbaji në listën e fileve(duplicates never count towards your share size)"
-
-msgid "Join/part of favorite users showing on"
-msgstr "Mesazh hyrës për përdoruesin e parapëlqyer në"
-
-msgid "Finished Uploads"
-msgstr "Ngarkimet e përfunduara"
-
-msgid "File type"
-msgstr "Lloj i filit"
-
-msgid "Tab highlight on content change"
-msgstr "Kur ndryshohet përmbajtja shëno hub shenjën(ve shenjë)"
-
-msgid "Min sources online"
-msgstr "Burimet min.të lidhura"
-
-msgid "Outgoing connection settings"
-msgstr "Konfigurimet e kyçjes dalëse"
-
-msgid "Popup box to input password for hubs"
-msgstr "Dritarja e re-Kutia për shënimin e fjalëkalimit për hubat"
-
-msgid "Log uploads"
-msgstr "Shëno ngarkimet"
-
-msgid "ADLSearch Properties"
-msgstr "Konfigurimet e ADL Kërkimit"
-
-msgid "Directories"
-msgstr "Dosjet"
-
-msgid "Ready to search..."
-msgstr "Gati për kërkim..."
-
-msgid "Autodrop settings"
-msgstr "Autodrop konfigurime"
-
-msgid "Specify a URL"
-msgstr "Cakto një URL"
-
-msgid "Shared directories"
-msgstr "Dosjet e shpërndarjes"
-
-msgid "Really exit?"
-msgstr "Dëshiron dalje?"
-
-msgid "Tag"
-msgstr "Tag"
-
-msgid "MAGNET Link detected"
-msgstr "U zbulua MAGNET nyja"
-
-msgid "Automatically disconnect users who leave the hub"
-msgstr "Përdoruesit që largohen nga hubi shkyçi automatikisht(nuk shkyçet kur hubi nuk punon / apo e len atë)"
-
-msgid "Use antifragmentation method for downloads"
-msgstr "Antifragmento shkarkimet"
-
-msgid "Remove source"
-msgstr "Zhvendose burimin"
-
-msgid "Under what name you see the directory"
-msgstr "Me ç`farë emri e shikon dosjen"
-
-msgid "Join/part of favorite users showing off"
-msgstr "Mesazh gjatë daljes për përdoruesin e parapëlqyer nga"
-
-msgid "Confirm item removal in download queue"
-msgstr "Konfirmo largimin në listën e shkarkimeve"
-
-msgid "Download Matches"
-msgstr "Shkarkimet e përputhshme"
-
-msgid "Video"
-msgstr "Film"
-
-msgid "Browse..."
-msgstr "Shfleto..."
-
-msgid "Logging"
-msgstr "Shënimet"
-
-msgid "Name under which the others see the directory"
-msgstr "Emri i dosjes të cilën e shohin(shihet nga)të tjerët"
-
-msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
-msgstr "Shpejtësia e zvogëluar/s`ka shkarkime të reja(KiB/s, 0 = disable)"
-
-msgid "Appearance"
-msgstr "Paraqitja"
-
-msgid "Favorite Hubs"
-msgstr "Hubat e parapëlqyer"
-
-msgid "Window options"
-msgstr "Konfigurimet e dritares"
-
-msgid "Auto-open at startup"
-msgstr "Gjatë startimit hap automatikisht"
-
-msgid "Stored password sent..."
-msgstr "U dërgua fjalëkalimi rezerv..."
-
-msgid "No matches"
-msgstr "S`ka përputhje(fil me emër të tillë)"
-
-msgid "Enable automatic SFV checking"
-msgstr "Kontrolli automatik-SFV"
-
-msgid "Skip zero-byte files"
-msgstr "Tejkalo filet me madhësi zero bajt(bytes)"
-
-msgid "Min Slots"
-msgstr "Numri minimal i kanaleve"
-
-msgid "Clear search box after each search"
-msgstr "Pas çdo kërkimi pastro fushën e kërkimeve"
-
-msgid "Do nothing"
-msgstr "Mos vepro"
-
-msgid "Accept custom user commands from hub"
-msgstr "Prano urdhërat e zakonshme të përdoruesit nga hubi"
-
-msgid "Invalid number of slots"
-msgstr "Numër i pamjaftueshëm i kanaleve"
-
-msgid "Don't send the away message to bots"
-msgstr "Mos dërgo mesazh në bots kur je larg(-uar)"
-
-msgid "Request a feature"
-msgstr "Propozo-jep ide për-funksion në program"
-
-msgid "Max hash speed"
-msgstr "Shpejtësia maksimale e TTH-së"
-
-msgid "Show timestamps in chat by default"
-msgstr "Në biseda(chat) shfaq orën"
-
-msgid "Status"
-msgstr "Statusi"
-
-msgid "Search for"
-msgstr "Kërko për "
-
-msgid "Hub"
-msgstr "Hubi"
-
-msgid "Favorite hub removed"
-msgstr "Hubi i parapëlqyer është zhvendosur"
-
-msgid "E-Mail"
-msgstr "Posta elektronike"
-
-msgid "Compressed"
-msgstr "Ngjeshur"
-
-msgid "Count"
-msgstr "Sa herë u kërkua"
-
-msgid "Firewall with UPnP"
-msgstr "Muri mbrojtës/Firewall me UPnP"
-
-msgid "Limits"
-msgstr "Kufizimet"
-
-msgid "Public Hubs list"
-msgstr "Lista e hubave publik"
-
-msgid "Connection"
-msgstr "Lidhjaa"
-
-msgid "Time"
-msgstr "Data/Ora"
-
-msgid "External / WAN IP"
-msgstr "E jashtme / WAN IP"
-
-msgid "Auto-away on minimize (and back on restore)"
-msgstr "Automatikisht jasht/larg gjatë zvoglimit"
-
-msgid "Use system icons when browsing files (slows browsing down a bit)"
-msgstr "Gjatë shfletimit të fileve, përdor sistemin e ikonave(pak e ngadalson shfletimin)"
-
-msgid "Don't delete file lists when exiting"
-msgstr "Kur largohesh nga DC++ ruaj listat e shkarkuara"
-
-msgid "Auto grant slot / Nick"
-msgstr "Dhuro automatikisht një kanal / Pseudonim"
-
-msgid "Max filelist size"
-msgstr "Madh.maksi.e listës së filit"
-
-msgid "Confirm application exit"
-msgstr "Konfirmo daljen nga aplikacioni"
-
-msgid "Exact size"
-msgstr "Madhësia e sakt"
-
-msgid "DC++ discussion forum"
-msgstr "DC++ forum i diskutimeve"
-
-msgid "Register with Windows to handle dchub:// and adc:// URL links"
-msgstr "Kyç URL:të në DC++(nyje me prefiksin dchub://)"
-
-msgid "Search options"
-msgstr "Konfigurimet e kërkimit"
-
-msgid "Re-add source"
-msgstr "Rivendos burimin"
-
-msgid "Format"
-msgstr "Format"
-
-msgid "Use CTRL for line history"
-msgstr "Përdor CTRL (shigjeta posht lart)për rishqyrtim të tekstit"
-
-msgid "Notepad"
-msgstr "Shënime(Notepad)"
-
-msgid "DC++ Homepage"
-msgstr "Faqja personale e DC++"
-
-msgid "Join/part showing off"
-msgstr "Mesazh gjatë shoqërimit/bashkimit jasht"
-
-msgid "Incoming connection settings (see Help/FAQ if unsure)"
-msgstr "Konfigurimet e kyçjes hyrëse(nëse s´je i sigurt shiko në Ndihmë/FAQ)"
-
-msgid "Mini slot size"
-msgstr "Madhë.e minikanalit"
-
-msgid "Hublist"
-msgstr "Lista e hubit"
-
-msgid "UDP"
-msgstr "UDP Porti"
-
-msgid "Ignore TTH searches"
-msgstr "Injoro TTH kërkimet"
-
-msgid "File"
-msgstr "Fil"
-
-msgid "User went offline"
-msgstr "Përdoruesi u (shkoi në)shkyç(-je)"
-
-msgid "Slots"
-msgstr "Kanalet"
-
-msgid "Use SOCKS5 server to resolve host names"
-msgstr "Përdor SOCKS5 serverin të zgjedhë emrat e nikoqirit(hostnames)"
-
-msgid "Log status messages"
-msgstr "Shëno gjendjen e mesazheve"
-
-msgid "Only show joins / parts for favorite users"
-msgstr "Shfaq vetëm pjesmarjet/shoqërimet për përdoruesit e parapëlqyer"
-
-msgid "Downloading..."
-msgstr "Shkarkohet..."
-
-msgid "Don't remove /password before your password"
-msgstr "Mos zhvendos/fjalëkalimin përpara fjalëkalimit tënd"
-
-msgid "Path"
-msgstr "Vendi"
-
-msgid "Specify a search string"
-msgstr "Cakto kriterjen për kërkim"
-
-msgid "Open private messages in their own window"
-msgstr "Hap mesazhet private në dritaret e tyre"
-
-msgid "Minimize to tray"
-msgstr "Zvoglo në desktop"
-
-msgid "Download whole directory to..."
-msgstr "Shkarko tërë dosjen në..."
-
-msgid "Enable safe and compressed transfers"
-msgstr "Paraqit transferimet e sigurta dhe të ngjeshura"
-
-msgid "Ports"
-msgstr "Portet"
-
-msgid "Quick Connect"
-msgstr "Lidhje e shpejt"
-
-msgid "Raw"
-msgstr "Raw"
-
-msgid "Reliability"
-msgstr "Besueshmëria"
-
-msgid "Sounds"
-msgstr "Tingujt"
-
-msgid "Error creating adc registry key"
-msgstr "Gabim kur DC++ do krijonte adc çelsin"
-
-msgid "DC++"
-msgstr "DC++"
-
-msgid "Default away message"
-msgstr "Mesazh i pacaktuar-sipas dëshirës-(kur je larguar)"
-
-msgid "Next"
-msgstr "Përpara"
-
-msgid "Configured Public Hub Lists"
-msgstr "Listat publike të hubave të konfiguruar"
-
-msgid "Unknown"
-msgstr "Panjohur"
-
-msgid "Type"
-msgstr "Lloji"
-
-msgid "Lowest"
-msgstr "Më e ulët"
-
-msgid "Picture"
-msgstr "Fotografi"
-
-msgid "Added"
-msgstr "U vendos"
-
-msgid "Min filesize"
-msgstr "Madhë. min e filit"
-
-msgid "Default download directory"
-msgstr "Dosja për shkarkim"
-
-msgid "Translations"
-msgstr "Përkthimet"
-
-msgid "Search for file"
-msgstr "Kërko filin"
-
-msgid "Connected"
-msgstr "Lidhur"
-
-msgid "Low prio max size"
-msgstr "Madhë.e ulët e prio-s"
-
-msgid "At least"
-msgstr "Minimale"
-
-msgid "Options"
-msgstr "Alternativat"
-
-msgid "Hub Menu"
-msgstr "Hub Meny"
-
-msgid "Rename"
-msgstr "Riemro"
-
-msgid "Autodrop slow sources for all queue items (except filelists)"
-msgstr "Zhvendos automatikisht burimet e ngadalshme për të gjitha objektet që janë në pritje(përveç listave të filit)"
-
-msgid "No errors"
-msgstr "S´ka gabime"
-
-msgid "Socks IP"
-msgstr "Socks IP"
-
-msgid "Chat"
-msgstr "Biseda"
-
-msgid "Favorite user added"
-msgstr "U vendos përdoruesi i parapëlqyer"
-
-msgid "At most"
-msgstr "Maksimale"
-
-msgid "Log filelist transfers"
-msgstr "Shëno transferimet e listës së filit"
-
-msgid "User Description"
-msgstr "Përshkrim i përdoruesit"
-
-msgid "Favorite hub added"
-msgstr "U vendos hubi i parapëlqyer"
-
-msgid "Send once per nick"
-msgstr "Për çdo pseudonim dërgo një herë"
-
-msgid "Error creating magnet registry key"
-msgstr "Gabim kur DC++ do krijonte magnet çelsin"
-
-msgid "Downloading public hub list..."
-msgstr "Shkarkohet lista e hubave publik..."
-
-msgid "Downloaded"
-msgstr "Shkarkuar"
-
-msgid "Favorite name"
-msgstr "Emri i parapëlqyer"
-
-msgid "Search"
-msgstr "Kërko"
-
-msgid "B"
-msgstr "B"
-
-msgid "Automatically search for alternative download locations"
-msgstr "Kërko automatikisht për vende alternative për shkarkim"
-
-msgid "Subtract list"
-msgstr "Largo listën"
-
-msgid "Download Queue"
-msgstr "Lista e shkarkimeve"
-
-msgid "Enabled"
-msgstr "Paraqitur"
-
-msgid "All"
-msgstr "Të gjitha"
-
-msgid "Time last seen"
-msgstr "lidhur herën e fundit"
-
-msgid "Note; because of changing download speeds, this is not 100% accurate..."
-msgstr "Vini Re;Variacionet e shpejtës.së shkarkimeve,s´mundës.100% siguri..."
-
-msgid "Don't allow hub/UPnP to override"
-msgstr "Mos lejo që hub/UPnP të anashkalon"
-
-msgid "Personal Information"
-msgstr "Informata Personale"
-
-msgid "Automatically open an extra slot if speed is below (0 = disable)"
-msgstr "Hap një kanal shtesë (Automatikisht) nëse shpejtësia është në rënie(0 = mbyllur)"
-
-msgid "Executable"
-msgstr "Filet e programit"
-
-msgid "Open new window when using /join"
-msgstr "Hap dritare të re kur përdor/shoqërohesh"
-
-msgid "Upload slots"
-msgstr "Kanalet për ngarkime"
-
-msgid "Public Hubs"
-msgstr "Hubat publik"
-
-msgid "Min Size"
-msgstr "Madhësia minimale"
-
-msgid "Note; most of these options require that you restart DC++"
-msgstr "Vini Re; Ndryshimi i disa(ndonjë)konfigurimeve kërkon ristartimin e DC++"
-
-msgid "Open downloads directory"
+#: win32/MainWindow.cpp:848
+#, fuzzy, boost-format
+msgid ""
+"%1%\n"
+"Open download page?"
 msgstr "Hap dosjen e shkarkimeve"
 
-msgid "Users"
-msgstr "Përdorues"
-
-msgid "System Log"
-msgstr "System Log"
-
-msgid "Help forum"
-msgstr "Forumi për ndihmë"
-
-msgid "Name"
-msgstr "Emri"
-
-msgid "Really remove?"
-msgstr "Zhvendose me të vërtet?"
-
-msgid "Indexing progress"
-msgstr "Progres i Indeksimit"
-
-msgid "Login"
-msgstr "Emri i përdoruesit"
-
-msgid "Only users with free slots"
-msgstr "Vetëm përdorues me kanale të lira"
-
-msgid "File not available"
-msgstr "Fili s´është i arritshëm"
-
-msgid "Max Size"
-msgstr "Madhësia maksimale"
-
-msgid "High"
-msgstr "Lart"
-
-msgid "Speed"
-msgstr "Shpejtësia"
-
-msgid "Invalid file list name"
-msgstr "Emri i listës së filit është i pa vlefshëm"
-
-msgid "Search Menu"
-msgstr "Kërko Meny"
-
-msgid "Create / Modify Command"
-msgstr "Krijo / Modifiko urdhërin"
-
-msgid "Document"
-msgstr "Dokument"
-
-msgid "GeoIP database update"
-msgstr "Azhurim i bazës kompjut.GeoIP"
-
-msgid "Report a bug"
-msgstr "Raporto një shprazëtirë/gabim(bug)"
-
-msgid "Share hidden files"
-msgstr "Shpërn.filet e fshehura"
-
-msgid "Max Hubs"
-msgstr "Huba Maksimal"
-
-msgid "Highest"
-msgstr "Më së larti"
-
-msgid "Send unknown /commands to the hub"
-msgstr "Dërgo urdhëra/të panjohura në hub"
-
-msgid "Failed to create port mappings. Please set up your NAT yourself."
-msgstr "Dështoi në krijimin e port mappings"
-
-msgid "Private message"
-msgstr "Mesazh privat"
-
-msgid "Use OEM monospaced font for viewing text files"
-msgstr "Përdor OEM pagëzore univerzale(monospaced font) për t´i shfaq tekst filet"
-
-msgid "Settings..."
-msgstr "Konfigurimet..."
-
-msgid "Enabled / Search String"
-msgstr "Aktiv / Kriteri për kërkim"
-
-msgid "Filter kick and NMDC debug messages"
-msgstr "Filteri për përjashtim dhe NMDC debug mesazhet"
-
-msgid "Unfinished downloads directory"
-msgstr "Dosja e shkarkimeve të pa përfunduara"
-
-msgid "Personal information"
-msgstr "Informata Personale"
-
-msgid "Rating"
-msgstr "Populariteti"
-
-msgid "Failed to remove port mappings"
-msgstr "S`mund të largon port mappings"
-
-msgid "Favorite Users"
-msgstr "Përdorues të parapëlqyer"
-
-msgid "Search Spy"
-msgstr "Kërkim nëpërmjet spionimit"
-
-msgid "Close disconnected"
-msgstr "Të shkëputurat mbylli"
-
-msgid "Priority"
-msgstr "Prioritet"
-
-msgid "This hub is not a favorite hub"
-msgstr "Ky hub s´është hub i parapëlqyer"
-
-msgid "Close all search windows"
-msgstr "Mbyll të gjitha dritaret për kërkim"
-
-msgid "Copy Filename"
-msgstr "Kopjo emrin e filit"
-
-msgid "Open own list"
-msgstr "Hap listën personale"
-
-msgid "Virtual name"
-msgstr "Emri viritual"
-
-msgid "Destination Directory"
-msgstr "Vend i paracaktuar i dosjes"
-
-msgid "TCP"
-msgstr "TCP Porti"
-
-msgid "Full Path"
-msgstr "Rruga e plotë e kërkimit"
-
-msgid "Search String"
-msgstr "Kriteri për kërkim"
-
-msgid "Advanced"
-msgstr "Përparuar"
-
-msgid "PM"
-msgstr "PM"
-
-msgid "Frequently asked questions"
-msgstr "Pyetjet e shpeshta"
-
-msgid "Show joins / parts in chat by default"
-msgstr "Shfaq kur përdoruesi kyçet/largohet nga biseda kryesore"
-
-msgid "Settings"
-msgstr "Konfigurmiet"
-
-msgid "Server"
-msgstr "Server"
-
-msgid "Waiting (User online)"
-msgstr "Pret(Përdorues i lidhur)"
-
-msgid "Separator"
-msgstr "Ndarës"
-
-msgid "Directory"
-msgstr "Dosje"
-
-msgid "Lookup TTH at Bitzi.com"
-msgstr "Kërko TTH-kontroll shumën në Bitzi.com"
-
-msgid "Sort all downloads first"
-msgstr "Së pari klasifiko të gjitha shkarkimet"
-
-msgid "Waiting Users"
-msgstr "Në pritje të përdoruesve"
-
-msgid "Language file"
-msgstr "Fil Gjuhësor"
-
-msgid "User offline"
-msgstr "Përdoruesi është shkëputur"
-
-msgid "s"
-msgstr "s"
-
-msgid "Donate (paypal)"
-msgstr "Dhuro €€€/$$$ (paypal)"
-
-msgid "Away mode off"
-msgstr "Gjendja e largimit deaktivizuar"
-
-msgid "Auto connect / Name"
-msgstr "Lidhu automatikisht / Emri"
-
-msgid "HTTP Proxy (for hublist only)"
-msgstr "HTTP Proxy (vetëm për hub listën)"
-
-msgid "Low"
-msgstr "Ulët"
-
-msgid "Online"
-msgstr "Lidhur"
-
-msgid "View status messages in main chat"
-msgstr "Në bisedën kryesore shfaq mesazhin(kryesore)"
-
-msgid "Only where I'm op"
-msgstr "Vetëm kur jam në lidhje-online"
-
-msgid "Auto-search limit"
-msgstr "Kufizim i kërkimit auto."
-
-msgid "Normal prio max size"
-msgstr "Madhë.norm.e prio-s"
-
-msgid "A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken."
-msgstr "Një MAGNET nyje e gabuar është dërguar në DC++.S`do ndërmiret asnjë veprim."
-
-msgid "Show progress bars for transfers"
-msgstr "Shfaq taktin e progresit për transferimet (përdoren disa CPU)"
-
-msgid "Set priority"
-msgstr "Vendos prioritet"
-
-msgid "Download whole directory"
-msgstr "Shkarko tërë dosjen"
-
-msgid "Log downloads"
-msgstr "Shëno shkarkimet"
-
-msgid "Purge"
-msgstr "Pastro"
-
-msgid "Timestamps enabled"
-msgstr "Shënues i kohës aktiv"
-
-msgid "Confirm favorite hub removal"
-msgstr "Konfirmo zhvendosjen e hubit të parapëlqyer"
-
-msgid "Please enter a password"
-msgstr "Të lutem shëno fjalëkalimin"
-
-msgid "Drop sources below"
-msgstr "Drop sources below"
-
-msgid "Finished Downloads"
-msgstr "Shkarkimet e përfunduara"
-
-msgid "Download to..."
-msgstr "Shkarko në..."
-
-msgid "Colors"
+#: win32/TransferView.cpp:570
+#, boost-format
+msgid "%1% (%2$0.2f)"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:91
+#, boost-format
+msgid "%1% files/h, %2% files left"
+msgstr ""
+
+#: win32/SearchFrame.cpp:576
+#, boost-format
+msgid "%1% filtered"
+msgstr ""
+
+#: win32/SearchFrame.cpp:571
+#, boost-format
+msgid "%1% item"
+msgid_plural "%1% items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/HashProgressDlg.cpp:100
+#, boost-format
+msgid "%1% left"
+msgstr ""
+
+#: win32/HubFrame.cpp:936
+#, fuzzy, boost-format
+msgid "%1% user"
+msgid_plural "%1% users"
+msgstr[0] "S´ka përdorues"
+msgstr[1] "S´ka përdorues"
+
+#: win32/TransferView.cpp:584 win32/TransferView.cpp:632
+#, boost-format
+msgid "%1%/s"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:92
+#, boost-format
+msgid "%1%/s, %2% left"
+msgstr ""
+
+#: win32/HubListsDlg.cpp:63 win32/UCPage.cpp:33
+#, fuzzy
+msgid "&Add"
+msgstr "U vendos"
+
+#: win32/UploadPage.cpp:37 win32/FavoriteDirsPage.cpp:34
+msgid "&Add folder"
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
+#: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
+#: win32/Appearance2Page.cpp:30
+#, fuzzy
+msgid "&Browse..."
+msgstr "Shfleto..."
+
+#: win32/UCPage.cpp:34
+#, fuzzy
+msgid "&Change"
+msgstr "Ndrysho Shënimin"
+
+#: win32/PrivateFrame.cpp:373 win32/HubFrame.cpp:1184
+#, fuzzy
+msgid "&Close"
 msgstr "Ngjyrat"
 
-msgid "Done"
-msgstr "Përfundoi"
+#: win32/PublicHubsFrame.cpp:150
+msgid "&Configure"
+msgstr ""
 
-msgid "Any"
-msgstr "Çdo"
+#: win32/FavHubsFrame.cpp:71 win32/FavHubsFrame.cpp:113
+#: win32/PublicHubsFrame.cpp:447
+#, fuzzy
+msgid "&Connect"
+msgstr "Lidhur"
 
-msgid "Size"
-msgstr "Madhësia"
+#: win32/TransferView.cpp:201
+#, fuzzy
+msgid "&Disconnect"
+msgstr "Lidhje e shpejt"
 
-msgid "Sharing"
-msgstr "Shpërndan"
+#: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
+#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
+#, fuzzy
+msgid "&Download"
+msgstr "Shkarkimet"
 
-msgid "Public Hubs list URL"
-msgstr "Lista e hubave publik URL-ja"
+#: win32/MainWindow.cpp:205
+#, fuzzy
+msgid "&Download Queue\tCtrl+D"
+msgstr "Lista e shkarkimeve"
 
-msgid "Always open help file with this dialog"
-msgstr "Çdo herë hap filin për ndihmë me këtë dialog"
+#: win32/HubListsDlg.cpp:75
+msgid "&Edit"
+msgstr ""
 
-msgid "Start a search for this file"
-msgstr "Fillo kërkimin për këtë fil"
+#: win32/MainWindow.cpp:202
+#, fuzzy
+msgid "&Favorite Hubs\tCtrl+F"
+msgstr "Hubat e parapëlqyer"
 
-msgid "Make an annoying sound when a private message window is opened"
-msgstr "Përdor tingull gjatë hapjes së mesazheve private"
+#: win32/MainWindow.cpp:181
+#, fuzzy
+msgid "&File"
+msgstr "Fil"
 
-msgid "Don't remove the source when autodropping, only disconnect"
-msgstr "Mos e zhvendos burimin gjatë autodropping, vetëm shkyçi"
+#: win32/TransferView.cpp:198
+msgid "&Force attempt"
+msgstr ""
 
-msgid "AWAY"
-msgstr "LARG"
+#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:83
+#: win32/PrivateFrame.cpp:365
+msgid "&Get file list"
+msgstr ""
 
-msgid "Check every"
-msgstr "kontrollo çdo"
+#: win32/DirectoryListingFrame.cpp:325
+#, fuzzy
+msgid "&Go to directory"
+msgstr "Shkarko tërë dosjen"
 
-msgid "Favorite download directories"
-msgstr "Të parapëlqyerit shkarko në dosje(-et)"
+#: win32/MainWindow.cpp:228 win32/ADLSearchFrame.cpp:93
+msgid "&Help"
+msgstr ""
 
-msgid "Highest prio max size"
-msgstr "Madhë.maks.e prio-s"
+#: win32/PrivateFrame.cpp:366
+#, fuzzy
+msgid "&Match queue"
+msgstr "Përputh me listën e shkarkimit"
 
-msgid "Address"
-msgstr "Adresa"
+#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+#, fuzzy
+msgid "&Move/Rename"
+msgstr "Riemro"
 
-msgid "Total size:"
-msgstr "Madhësia e përgjithëshme:"
+#: win32/FavHubsFrame.cpp:76 win32/FavHubsFrame.cpp:115
+#: win32/ADLSearchFrame.cpp:68 win32/ADLSearchFrame.cpp:293
+msgid "&New..."
+msgstr ""
 
+#: win32/MainWindow.cpp:214
+#, fuzzy
+msgid "&Notepad\tCtrl+N"
+msgstr "Shënime(Notepad)"
+
+#: win32/FavHubsFrame.cpp:81 win32/FavHubsFrame.cpp:116
+#: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:294
+#: win32/UsersFrame.cpp:186
+#, fuzzy
+msgid "&Properties"
+msgstr "Konfigurimet e ADL Kërkimit"
+
+#: win32/MainWindow.cpp:201
+#, fuzzy
+msgid "&Public Hubs\tCtrl+P"
+msgstr "Hubat publik"
+
+#: win32/MainWindow.cpp:183
+#, fuzzy
+msgid "&Quick Connect ...\tCtrl+Q"
+msgstr "Lidhje e shpejt"
+
+#: win32/MainWindow.cpp:185 win32/HubFrame.cpp:1179
+msgid "&Reconnect\tCtrl+R"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:156
+msgid "&Refresh"
+msgstr ""
+
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
+#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/WaitingUsersFrame.cpp:85 win32/FavoriteDirsPage.cpp:33
+#: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:96
+#: win32/FavHubsFrame.cpp:120 win32/ADLSearchFrame.cpp:88
+#: win32/ADLSearchFrame.cpp:295 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
+#, fuzzy
+msgid "&Remove"
+msgstr "Riemro"
+
+#: win32/SpyFrame.cpp:191
+#, fuzzy
+msgid "&Search"
+msgstr "Kërko"
+
+#: win32/MainWindow.cpp:210
+#, fuzzy
+msgid "&Search\tCtrl+S"
+msgstr "Kërko"
+
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:88
+#, fuzzy
+msgid "&Send private message"
+msgstr "Mesazh privat"
+
+#: win32/MainWindow.cpp:199
+#, fuzzy
+msgid "&View"
+msgstr "Film"
+
+#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
+msgid "&View as text"
+msgstr ""
+
+#: win32/MainWindow.cpp:220
+msgid "&Window"
+msgstr ""
+
+#: win32/HubFrame.cpp:490
+#, boost-format
+msgid "*** Joins: %1%"
+msgstr ""
+
+#: win32/HubFrame.cpp:497
+#, boost-format
+msgid "*** Parts: %1%"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:84
+#, boost-format
+msgid "-.-- B/s, %1% left"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:83
+#, boost-format
+msgid "-.-- files/h, %1% files left"
+msgstr ""
+
+#: win32/WinUtil.cpp:1025
+msgid ""
+"A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
+"use on the Direct Connect network.  No action will be taken."
+msgstr ""
+"Një MAGNET nyje e gabuar është dërguar në DC++.S`do ndërmiret asnjë veprim."
+
+#: win32/MainWindow.cpp:211 win32/MainWindow.cpp:282
 msgid "ADL Search"
 msgstr "ADL Kërkim"
 
-msgid "Remove user from queue"
-msgstr "Zhvendose përdoruesin nga rradha"
+#: win32/ADLSProperties.cpp:49
+msgid "ADLSearch Properties"
+msgstr "Konfigurimet e ADL Kërkimit"
 
-msgid "IP"
-msgstr "IP"
+#: win32/MainWindow.cpp:293 win32/MainWindow.cpp:549
+msgid "AWAY"
+msgstr "LARG"
 
-msgid "Directory or directory name already exists"
-msgstr "Dosja apo emri i dosjes tani egzitojnë"
-
-msgid "Full tree does not match TTH root"
-msgstr "Struktura e shkarkuar s`i përgjigjet TTH rrënjës"
-
-msgid "Search history"
-msgstr "Historia e kërkimit"
-
-msgid "Filelist Menu"
-msgstr "Menyja e listës së filit"
-
-msgid "Port"
-msgstr "Porti"
-
-msgid "Auto refresh time"
-msgstr "Rifre.autom.i kohës"
-
-msgid "Errors"
-msgstr "Gabime"
-
-msgid "Filename"
-msgstr "Emri i filit"
-
-msgid "Firewall (passive, last resort)"
-msgstr "Muri mbrojtës (passive, last resort)"
-
-msgid "Open new file list windows in the background"
-msgstr "Hap një listë të re të filit(dritare)në prapaskenë"
-
-msgid "High prio max size"
-msgstr "Madhë.maks.e prio-s"
-
-msgid "SOCKS5"
-msgstr "SOCKS5"
-
-msgid "Close all file list windows"
-msgstr "Mbyll të gjitha dritaret e listave të fileve"
-
-msgid "Register with Windows to handle magnet: URI links"
-msgstr "Kyç URL:të në DC++(nyje me prefiksin URL)"
-
-msgid "New virtual name matches old name, skipping..."
-msgstr "Emri i ri (viritual)përputhet me emrin e vjetër,tejkalon..."
-
-msgid "Running..."
-msgstr "Vepron..."
-
-msgid "Your nick was already taken, please change to something else!"
-msgstr "Pseudonimi yt është i zënë,të lutem zavendëso me ndonjë tjetër!"
-
-msgid "Favorite Hub Properties"
-msgstr "Vetitë e hubit të parapëlqyer"
-
-msgid "PM history"
-msgstr "PM histori"
-
-msgid "Set lowest prio for newly added files larger than Low prio size"
-msgstr "Prioriteti më i gjatë i aktivizuar"
-
-msgid "URL:MAGNET URI"
-msgstr "URL:MAGNET URI"
-
-msgid "Show"
-msgstr "Shfaq"
-
-msgid "Please enter a nickname in the settings dialog!"
-msgstr "Të lutem shëno një pseudonim në Konfigurimet!"
-
-msgid "Source too slow"
-msgstr "Burimi është shumë i ngadalshëm"
-
-msgid "Timestamps disabled"
-msgstr "Shënues i kohës pasiv"
-
-msgid "Find"
-msgstr "Gjej"
-
-msgid "Passive user"
-msgstr "Përdorues pasiv"
-
-msgid "Direct connection"
-msgstr "Kyçje direkte"
-
-msgid "User Menu"
-msgstr "Menyja e përdoruesit"
-
-msgid "Connection settings"
-msgstr "Konfigurimet e kyçjes"
-
-msgid "Downloads"
-msgstr "Shkarkimet"
-
-msgid "MiBits/s"
-msgstr "MiBits/s"
-
-msgid "Break on first ADLSearch match"
-msgstr "Ndërpre në përputhjen e parë të ADL kërkimit"
-
-msgid "Set timestamps"
-msgstr "Format i kohës (%H:%M:%S)"
-
-msgid "Note; Files appear in the share only after they've been hashed!"
-msgstr "Filet e reja janë vendo.në shpërn.vetëm kur janë indeks.në dosje!"
-
-msgid "Close all PM windows"
-msgstr "Mbyll të gjitha PM dritaret"
-
-msgid "Nick"
-msgstr "Pseudonim"
-
-msgid "Command"
-msgstr "Urdhër"
-
-msgid "Hubs"
-msgstr "Hubat"
-
-msgid "Confirm dialog options"
-msgstr "Konfirmo alternativat e dialogut"
-
-msgid "Other queue options"
-msgstr "Konfigurimet e fileve të tjera të rradhitura"
-
-msgid "Toggle window when selecting an active tab"
-msgstr "Ndro katror(simbol)kur shtyp në hub shenjën"
-
-msgid "Join/part showing on"
-msgstr "Mesazh gjatë shoqërimit/bashkimit në(brenda)"
-
-msgid "Redirect request received to a hub that's already connected"
-msgstr "Riorjentimi i kërkuar për hubin në të cilën tash më je i lidhur"
-
-msgid "Bind address"
-msgstr "Bind address"
-
-msgid "Paused"
-msgstr "Pushon"
-
-msgid "Write buffer size"
-msgstr "Shkruaj madhësinë e paqenë(buffer size)"
-
-msgid "B/s"
-msgstr "B/s"
-
-msgid "Don't automatically disconnect favorite users who leave the hub"
-msgstr "Mos i shkyç automatikisht përdoruesit e parapëlqyer të cilët largohen nga hubi"
-
-msgid "Line speed (upload)"
-msgstr "Shpejtësia e ngarkimit"
-
-msgid "Shared"
-msgstr "Shpërndan"
-
-msgid "Normal"
-msgstr "Normale"
-
-msgid "Automatically follow redirects"
-msgstr "Ndjekje automatike e riorjentimeve"
-
-msgid "CRC32 inconsistency (SFV-Check)"
-msgstr "SFV-kontrolli dha një shumë kontroll të gabuar CRC32"
-
-msgid "User"
-msgstr "Përdorues"
-
-msgid "Search for alternates"
-msgstr "Kërko vende alternative për shkarkim"
-
-msgid "Configure Public Hub Lists"
-msgstr "Konfiguro listën publike"
-
+#: win32/MainWindow.cpp:233
 msgid "About DC++..."
 msgstr "Rreth DC++..."
 
-msgid "Hub already exists as a favorite"
-msgstr "Hubi egziston(prej më përpara)si i parapëlqyer"
+#: win32/AdvancedPage.cpp:43
+msgid "Accept custom user commands from hub"
+msgstr "Prano urdhërat e zakonshme të përdoruesit nga hubi"
 
-msgid "Unable to open UDP port. Searching will not work correctly until you change settings or turn off any application that might be using the UDP port"
-msgstr "S`mund t´a hap UDP portin. Kërkimi s´do funksionon në mënyrë korrekte deri sa ju t`i ndryshoni konfigurimet apo t´i mbyllni aplikacionet të cilat e përdorin UDP portin"
+#: win32/WaitingUsersFrame.cpp:87 win32/PrivateFrame.cpp:369
+#: win32/HubFrame.cpp:1176 win32/PublicHubsFrame.cpp:448
+#, fuzzy
+msgid "Add To &Favorites"
+msgstr "Hubat e parapëlqyer"
 
-msgid "Match queue"
-msgstr "Përputh me listën e shkarkimit"
+#: win32/AdvancedPage.cpp:45
+msgid "Add finished files to share instantly (if shared)"
+msgstr ""
 
-msgid "Downloading list..."
-msgstr "Shkarkon listën..."
+#: win32/QueueFrame.cpp:45
+msgid "Added"
+msgstr "U vendos"
 
-msgid "Log system messages"
-msgstr "Shëno mesazhet e sistemit"
+#: win32/MainWindow.cpp:344 win32/PublicHubsFrame.cpp:52
+msgid "Address"
+msgstr "Adresa"
 
-msgid "Uploads"
-msgstr "Ngarkimet"
+#: win32/SettingsDialog.cpp:67
+msgid "Advanced"
+msgstr "Përparuar"
 
-msgid "Max Users"
-msgstr "Përdorues Maksimal"
+#: win32/SettingsDialog.cpp:69
+msgid "Advanced\\Experts only"
+msgstr ""
 
-msgid "Don't download files already in share"
-msgstr "Mos shkarko file që tashmë gjinden(prej më përpara) në dosjen për shpërndarje"
+#: win32/SettingsDialog.cpp:68
+#, fuzzy
+msgid "Advanced\\Logs"
+msgstr "Përparuar"
 
-msgid "Copy magnet link to clipboard"
-msgstr "Kopjo nyjen magnetike në clipboard"
+#: win32/SettingsDialog.cpp:71
+msgid "Advanced\\Security Certificates"
+msgstr ""
 
-msgid "Slots set"
-msgstr "Kanalet e kufizuara(s´ka qasje)"
+#: win32/SettingsDialog.cpp:70
+msgid "Advanced\\User Commands"
+msgstr ""
 
-msgid "Error creating dchub registry key"
-msgstr "Gabim kur DC++ do krijonte dchubb çelsin"
+#: win32/QueueFrame.cpp:1024 win32/QueueFrame.cpp:1034
+msgid "All"
+msgstr "Të gjitha"
 
-msgid "No users"
-msgstr "S´ka përdorues"
+#: win32/QueueFrame.cpp:431
+#, fuzzy, boost-format
+msgid "All %1% users offline"
+msgstr "Përdoruesi është shkëputur"
 
-msgid "Change Log"
-msgstr "Ndrysho Shënimin"
+#: win32/CertificatesPage.cpp:43
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr ""
 
-msgid "Time left"
-msgstr "Koha e mbetur"
+#: win32/CertificatesPage.cpp:42
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr ""
 
-msgid "TTH Root"
-msgstr "TTH-kontroll shuma"
+#: win32/CommandDlg.cpp:117
+msgid "Always open help file with this dialog"
+msgstr "Çdo herë hap filin për ndihmë me këtë dialog"
 
-msgid "Remove slow filelists"
-msgstr "Zhvendos listat e fileve të ngadalshme"
+#: win32/SearchFrame.cpp:182 win32/HubFrame.cpp:129
+#: win32/PublicHubsFrame.cpp:138
+msgid "Any"
+msgstr "Çdo"
 
-msgid "CID"
-msgstr "CID"
+#: win32/SettingsDialog.cpp:63
+msgid "Appearance"
+msgstr "Paraqitja"
 
-msgid "Specify a server to connect to"
-msgstr "Cakto një server për kyçje"
+#: win32/SettingsDialog.cpp:64
+msgid "Appearance\\Colors and sounds"
+msgstr ""
 
-msgid "Source Type"
-msgstr "Lloj i burimit"
+#: win32/SettingsDialog.cpp:65
+#, fuzzy
+msgid "Appearance\\Tabs"
+msgstr "Paraqitja"
 
-msgid "Download files from the Direct Connect network"
-msgstr "Shkarko filet nga rrjeti Direct Connect"
+#: win32/SettingsDialog.cpp:66
+#, fuzzy
+msgid "Appearance\\Windows"
+msgstr "Paraqitja"
 
-msgid "No users to download from"
-msgstr "S´ka përdorues nga i cili mund të shkarkohet"
+#: win32/SearchFrame.cpp:156
+msgid "At least"
+msgstr "Minimale"
 
-msgid "Offline"
-msgstr "Shkëputur"
+#: win32/SearchFrame.cpp:157
+msgid "At most"
+msgstr "Maksimale"
 
-msgid "Creating file index..."
-msgstr "Krijohet indeksi i fileve..."
-
-msgid "Description"
-msgstr "Përshkrim"
-
-msgid "Enter search string"
-msgstr "Shëno kriterjen për kërkim"
-
-msgid "Password"
-msgstr "Fjalëkalim"
-
-msgid "Edit the hublist"
-msgstr "Redakto hub listat"
-
-msgid "Network Statistics"
-msgstr "Statistika e rrjetit"
-
-msgid "Firewall with manual port forwarding"
-msgstr "Muri mbrojtës me përcjellje manuale të portit"
-
-msgid "Country"
-msgstr "Shteti/kodi"
-
-msgid "Close all offline PM windows"
-msgstr "Mbyll të gjitha PM dritaret e shkëputura"
-
-msgid "Make an annoying sound every time a private message is received"
-msgstr "Përdor tingull gjatë pranimit të mesazheve private"
-
-msgid "Maximum simultaneous downloads (0 = infinite)"
-msgstr "Shkarkimet maksimale të njëkohëshme (0 = pakufizuar)"
-
-msgid "Failed to get external IP via  UPnP. Please set it yourself."
-msgstr "S`mund të merr IP-në nëpërmjet të UPnP-së.Të lutem vendose vet."
-
-msgid "Automatic Directory Listing Search"
-msgstr "Kërkimi automatik i dosjes"
-
-msgid "Unable to open TCP/TLS port. File transfers will not work correctly until you change settings or turn off any application that might be using the TCP/TLS port"
-msgstr "S`mund t´a hap TCP portin. Transferimi i fileve s´do jetë korrekte deri sa të bëhen ndryshime në konfigurimet apo deri sa të mbyllet çdo(ndonjë)aplikacion që ndoshta e përdor TCP portin"
-
+#: win32/SearchFrame.cpp:183
 msgid "Audio"
 msgstr "Muzikë"
 
+#: win32/FavHubsFrame.cpp:32
+msgid "Auto connect / Name"
+msgstr "Lidhu automatikisht / Emri"
+
+#: win32/UsersFrame.cpp:30
+msgid "Auto grant slot / Nick"
+msgstr "Dhuro automatikisht një kanal / Pseudonim"
+
+#: win32/QueuePage.cpp:28
+#, fuzzy
+msgid "Auto priority settings"
+msgstr "Autodrop konfigurime"
+
+#: win32/Advanced3Page.cpp:40
+msgid "Auto refresh time"
+msgstr "Rifre.autom.i kohës"
+
+#: win32/AdvancedPage.cpp:30
+msgid "Auto-away on minimize (and back on restore)"
+msgstr "Automatikisht jasht/larg gjatë zvoglimit"
+
+#: win32/WindowsPage.cpp:30
+msgid "Auto-open at startup"
+msgstr "Gjatë startimit hap automatikisht"
+
+#: win32/Advanced3Page.cpp:41
+msgid "Auto-search limit"
+msgstr "Kufizim i kërkimit auto."
+
+#: win32/QueuePage.cpp:37
+msgid "Autodrop settings"
+msgstr "Autodrop konfigurime"
+
+#: win32/QueuePage.cpp:69
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr ""
+"Zhvendos automatikisht burimet e ngadalshme për të gjitha objektet që janë "
+"në pritje(përveç listave të filit)"
+
+#: win32/ADLSearchFrame.cpp:40
+msgid "Automatic Directory Listing Search"
+msgstr "Kërkimi automatik i dosjes"
+
+#: win32/AdvancedPage.cpp:37
+msgid "Automatically disconnect users who leave the hub"
+msgstr ""
+"Përdoruesit që largohen nga hubi shkyçi automatikisht(nuk shkyçet kur hubi "
+"nuk punon / apo e len atë)"
+
+#: win32/AdvancedPage.cpp:31
+msgid "Automatically follow redirects"
+msgstr "Ndjekje automatike e riorjentimeve"
+
+#: win32/QueuePage.cpp:73
 msgid "Automatically match queue for auto search hits"
-msgstr "Përputhe gjithë listën e shkarkimeve kur \"Vendos automatikisht-vende të qëlluara-kur kërkon vende alternative për shkarkim\" është aktive"
+msgstr ""
+"Përputhe gjithë listën e shkarkimeve kur \"Vendos automatikisht-vende të "
+"qëlluara-kur kërkon vende alternative për shkarkim\" është aktive"
 
-msgid "Max inactivity"
-msgstr "Inaktiviteti maks"
+#: win32/UploadPage.cpp:39
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr ""
+"Hap një kanal shtesë (Automatikisht) nëse shpejtësia është në rënie(0 = "
+"mbyllur)"
 
+#: win32/QueuePage.cpp:72
+msgid "Automatically search for alternative download locations"
+msgstr "Kërko automatikisht për vende alternative për shkarkim"
+
+#: win32/SpyFrame.cpp:115
+#, boost-format
+msgid "Average/s: %1%"
+msgstr ""
+
+#: win32/WinUtil.cpp:264 win32/WinUtil.cpp:274
+msgid "Away mode off"
+msgstr "Gjendja e largimit deaktivizuar"
+
+#: win32/WinUtil.cpp:269
+#, fuzzy, boost-format
+msgid "Away mode on: %1%"
+msgstr "Gjendja e largimit deaktivizuar"
+
+#: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
+#: win32/ADLSProperties.cpp:74
+msgid "B"
+msgstr "B"
+
+#: win32/QueuePage.cpp:39
+msgid "B/s"
+msgstr "B/s"
+
+#: win32/Advanced3Page.cpp:37
+msgid "Bind address"
+msgstr "Bind address"
+
+#: win32/AdvancedPage.cpp:41
+msgid "Break on first ADLSearch match"
+msgstr "Ndërpre në përputhjen e parë të ADL kërkimit"
+
+#: win32/DownloadPage.cpp:34
+msgid "Browse..."
+msgstr "Shfleto..."
+
+#: win32/SearchFrame.cpp:43 win32/HubFrame.cpp:44 win32/UsersFrame.cpp:34
+msgid "CID"
+msgstr "CID"
+
+#: win32/QueueFrame.cpp:477
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "SFV-kontrolli dha një shumë kontroll të gabuar CRC32"
+
+#: win32/MainWindow.cpp:232
+msgid "Change Log"
+msgstr "Ndrysho Shënimin"
+
+#: win32/CommandDlg.cpp:82
+msgid "Chat"
+msgstr "Biseda"
+
+#: win32/QueuePage.cpp:40
+msgid "Check every"
+msgstr "kontrollo çdo"
+
+#: win32/TransferView.cpp:45
+msgid "Chunk size"
+msgstr ""
+
+#: win32/TransferView.cpp:48
+msgid "Cipher"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:32
+msgid "Clear search box after each search"
+msgstr "Pas çdo kërkimi pastro fushën e kërkimeve"
+
+#: win32/MainWindow.cpp:223
+msgid "Close all PM windows"
+msgstr "Mbyll të gjitha PM dritaret"
+
+#: win32/MainWindow.cpp:225
+msgid "Close all file list windows"
+msgstr "Mbyll të gjitha dritaret e listave të fileve"
+
+#: win32/MainWindow.cpp:224
+msgid "Close all offline PM windows"
+msgstr "Mbyll të gjitha PM dritaret e shkëputura"
+
+#: win32/MainWindow.cpp:226
+msgid "Close all search windows"
+msgstr "Mbyll të gjitha dritaret për kërkim"
+
+#: win32/MainWindow.cpp:222
+msgid "Close disconnected"
+msgstr "Të shkëputurat mbylli"
+
+#: win32/Appearance2Page.cpp:31
+msgid "Colors"
+msgstr "Ngjyrat"
+
+#: win32/UCPage.cpp:54
+msgid "Command"
+msgstr "Urdhër"
+
+#: win32/SearchFrame.cpp:184
+msgid "Compressed"
+msgstr "Ngjeshur"
+
+#: win32/DownloadPage.cpp:41
+msgid "Configure Public Hub Lists"
+msgstr "Konfiguro listën publike"
+
+#: win32/HubListsDlg.cpp:43 win32/PublicHubsFrame.cpp:164
+msgid "Configured Public Hub Lists"
+msgstr "Listat publike të hubave të konfiguruar"
+
+#: win32/WindowsPage.cpp:66
+msgid "Confirm application exit"
+msgstr "Konfirmo daljen nga aplikacioni"
+
+#: win32/WindowsPage.cpp:32
+msgid "Confirm dialog options"
+msgstr "Konfirmo alternativat e dialogut"
+
+#: win32/WindowsPage.cpp:67
+msgid "Confirm favorite hub removal"
+msgstr "Konfirmo zhvendosjen e hubit të parapëlqyer"
+
+#: win32/WindowsPage.cpp:68
+msgid "Confirm item removal in download queue"
+msgstr "Konfirmo largimin në listën e shkarkimeve"
+
+#: win32/HubFrame.cpp:500
+msgid "Connected"
+msgstr "Lidhur"
+
+#: win32/TransferView.cpp:641 win32/TransferView.cpp:648
+#, fuzzy
+msgid "Connecting"
+msgstr "Lidhjaa"
+
+#: win32/TransferView.cpp:285
+#, fuzzy
+msgid "Connecting (forced)"
+msgstr "Lidhur"
+
+#: win32/HubFrame.cpp:826
+#, fuzzy, boost-format
+msgid "Connecting to %1%..."
+msgstr "Lidhjaa"
+
+#: win32/SearchFrame.cpp:38 win32/HubFrame.cpp:41
+msgid "Connection"
+msgstr "Lidhjaa"
+
+#: win32/SettingsDialog.cpp:58
+msgid "Connection settings"
+msgstr "Konfigurimet e kyçjes"
+
+#: win32/TransferView.cpp:84 win32/TransferView.cpp:90
+#, fuzzy
+msgid "Connections"
+msgstr "Lidhjaa"
+
+#: win32/HubFrame.cpp:1180 win32/PublicHubsFrame.cpp:449
+#, fuzzy
+msgid "Copy &address to clipboard"
+msgstr "Kopjo nyjen magnetike në clipboard"
+
+#: win32/TransferView.cpp:199 win32/HubFrame.cpp:1160
+#, fuzzy
+msgid "Copy &nick to clipboard"
+msgstr "Kopjo nyjen magnetike në clipboard"
+
+#: win32/WaitingUsersFrame.cpp:84
+msgid "Copy Filename"
+msgstr "Kopjo emrin e filit"
+
+#: win32/WinUtil.cpp:363
+msgid "Copy magnet link to clipboard"
+msgstr "Kopjo nyjen magnetike në clipboard"
+
+#: win32/SpyFrame.cpp:35
+msgid "Count"
+msgstr "Sa herë u kërkua"
+
+#: win32/PublicHubsFrame.cpp:53
+msgid "Country"
+msgstr "Shteti/kodi"
+
+#: win32/CommandDlg.cpp:63
+msgid "Create / Modify Command"
+msgstr "Krijo / Modifiko urdhërin"
+
+#: win32/HashProgressDlg.cpp:40
+msgid "Creating file index..."
+msgstr "Krijohet indeksi i fileve..."
+
+#: win32/MainWindow.cpp:552
+#, boost-format
+msgid "D: %1%"
+msgstr ""
+
+#: win32/MainWindow.cpp:554
+#, boost-format
+msgid "D: %1%/s (%2%)"
+msgstr ""
+
+#: win32/WinUtil.cpp:819
+msgid "DC++"
+msgstr "DC++"
+
+#: win32/MainWindow.cpp:235
+msgid "DC++ Homepage"
+msgstr "Faqja personale e DC++"
+
+#: win32/MainWindow.cpp:241
+msgid "DC++ discussion forum"
+msgstr "DC++ forum i diskutimeve"
+
+#: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:109
+msgid "Default"
+msgstr ""
+
+#: win32/AppearancePage.cpp:32
+msgid "Default away message"
+msgstr "Mesazh i pacaktuar-sipas dëshirës-(kur je larguar)"
+
+#: win32/DownloadPage.cpp:31
+msgid "Default download directory"
+msgstr "Dosja për shkarkim"
+
+#: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
+#: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
+#: win32/UsersFrame.cpp:143
+msgid "Description"
+msgstr "Përshkrim"
+
+#: win32/ADLSearchFrame.cpp:34
+msgid "Destination Directory"
+msgstr "Vend i paracaktuar i dosjes"
+
+#: win32/NetworkPage.cpp:30 win32/NetworkPage.cpp:31
+msgid "Direct connection"
+msgstr "Kyçje direkte"
+
+#: win32/DownloadPage.cpp:30
+msgid "Directories"
+msgstr "Dosjet"
+
+#: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
+#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
+#: win32/ADLSProperties.cpp:63
+msgid "Directory"
+msgstr "Dosje"
+
+#: win32/FavoriteDirsPage.cpp:126 win32/FavoriteDirsPage.cpp:159
+msgid "Directory or directory name already exists"
+msgstr "Dosja apo emri i dosjes tani egzitojnë"
+
+#: win32/MagnetDlg.cpp:62
+msgid "Do nothing"
+msgstr "Mos vepro"
+
+#: win32/SearchFrame.cpp:185
+msgid "Document"
+msgstr "Dokument"
+
+#: win32/NetworkPage.cpp:35
+msgid "Don't allow hub/UPnP to override"
+msgstr "Mos lejo që hub/UPnP të anashkalon"
+
+#: win32/AdvancedPage.cpp:47
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr ""
+"Mos i shkyç automatikisht përdoruesit e parapëlqyer të cilët largohen nga "
+"hubi"
+
+#: win32/AdvancedPage.cpp:36
+msgid "Don't delete file lists when exiting"
+msgstr "Kur largohesh nga DC++ ruaj listat e shkarkuara"
+
+#: win32/QueuePage.cpp:75
+msgid "Don't download files already in share"
+msgstr ""
+"Mos shkarko file që tashmë gjinden(prej më përpara) në dosjen për shpërndarje"
+
+#: win32/QueuePage.cpp:76
+#, fuzzy
+msgid "Don't download files already in the queue"
+msgstr ""
+"Mos shkarko file që tashmë gjinden(prej më përpara) në dosjen për shpërndarje"
+
+#: win32/HubFrame.cpp:385
+msgid "Don't remove /password before your password"
+msgstr "Mos zhvendos/fjalëkalimin përpara fjalëkalimit tënd"
+
+#: win32/QueuePage.cpp:71
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr "Mos e zhvendos burimin gjatë autodropping, vetëm shkyçi"
+
+#: win32/AdvancedPage.cpp:40
+msgid "Don't send the away message to bots"
+msgstr "Mos dërgo mesazh në bots kur je larg(-uar)"
+
+#: win32/MainWindow.cpp:244
+msgid "Donate (paypal)"
+msgstr "Dhuro €€€/$$$ (paypal)"
+
+#: win32/Appearance2Page.cpp:34
+msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
+msgstr ""
+
+#: win32/TransferView.cpp:58
+msgid "Done"
+msgstr "Përfundoi"
+
+#: win32/DirectoryListingFrame.cpp:358
+#, fuzzy
+msgid "Download &to..."
+msgstr "Shkarko në..."
+
+#: win32/ADLSProperties.cpp:88
+msgid "Download Matches"
+msgstr "Shkarkimet e përputhshme"
+
+#: win32/QueueFrame.cpp:57 win32/TabsPage.cpp:41 win32/WindowsPage.cpp:39
+#: win32/MainWindow.cpp:276
+msgid "Download Queue"
+msgstr "Lista e shkarkimeve"
+
+#: win32/PublicHubsFrame.cpp:322
+#, fuzzy, boost-format
+msgid "Download failed: %1%"
+msgstr "Shkarkuar"
+
+#: win32/WinUtil.cpp:820
+msgid "Download files from the Direct Connect network"
+msgstr "Shkarko filet nga rrjeti Direct Connect"
+
+#: win32/SearchFrame.cpp:764
+msgid "Download to..."
+msgstr "Shkarko në..."
+
+#: win32/SearchFrame.cpp:744
+msgid "Download whole directory"
+msgstr "Shkarko tërë dosjen"
+
+#: win32/SearchFrame.cpp:794
+msgid "Download whole directory to..."
+msgstr "Shkarko tërë dosjen në..."
+
+#: win32/QueueFrame.cpp:39
+msgid "Downloaded"
+msgstr "Shkarkuar"
+
+#: win32/TransferView.cpp:719
+#, fuzzy, boost-format
+msgid "Downloading %1%"
+msgstr "Shkarkohet..."
+
+#: win32/TransferView.cpp:630
+#, boost-format
+msgid "Downloading from %1% user"
+msgid_plural "Downloading from %1% users"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/DirectoryListingFrame.cpp:693
+msgid "Downloading list..."
+msgstr "Shkarkon listën..."
+
+#: win32/PublicHubsFrame.cpp:188
+msgid "Downloading public hub list..."
+msgstr "Shkarkohet lista e hubave publik..."
+
+#: win32/PublicHubsFrame.cpp:319
+#, fuzzy, boost-format
+msgid "Downloading public hub list... (%1%)"
+msgstr "Shkarkohet lista e hubave publik..."
+
+#: win32/AboutDlg.cpp:63
+msgid "Downloading..."
+msgstr "Shkarkohet..."
+
+#: win32/SettingsDialog.cpp:59 win32/MainWindow.cpp:217
+#: win32/MainWindow.cpp:236 win32/TransferView.cpp:93
+#: win32/TransferView.cpp:95 win32/Appearance2Page.cpp:40
+msgid "Downloads"
+msgstr "Shkarkimet"
+
+#: win32/SettingsDialog.cpp:60
+#, fuzzy
+msgid "Downloads\\Favorites"
+msgstr "Shkarkimet e përputhshme"
+
+#: win32/SettingsDialog.cpp:61
+#, fuzzy
+msgid "Downloads\\Queue"
+msgstr "Lista e shkarkimeve"
+
+#: win32/QueuePage.cpp:38
+msgid "Drop sources below"
+msgstr "Drop sources below"
+
+#: win32/MainWindow.cpp:197
+msgid "E&xit"
+msgstr ""
+
+#: win32/GeneralPage.cpp:30 win32/HubFrame.cpp:43
+msgid "E-Mail"
+msgstr "Posta elektronike"
+
+#: win32/HubListsDlg.cpp:149
+msgid "Edit the hublist"
+msgstr "Redakto hub listat"
+
+#: win32/AdvancedPage.cpp:39
+msgid "Enable automatic SFV checking"
+msgstr "Kontrolli automatik-SFV"
+
+#: win32/AdvancedPage.cpp:42
+msgid "Enable safe and compressed transfers"
+msgstr "Paraqit transferimet e sigurta dhe të ngjeshura"
+
+#: win32/ADLSProperties.cpp:84
+msgid "Enabled"
+msgstr "Paraqitur"
+
+#: win32/ADLSearchFrame.cpp:32
+msgid "Enabled / Search String"
+msgstr "Aktiv / Kriteri për kërkim"
+
+#: win32/DirectoryListingFrame.cpp:795
+msgid "Enter search string"
+msgstr "Shëno kriterjen për kërkim"
+
+#: win32/WinUtil.cpp:727
+msgid "Error creating adc registry key"
+msgstr "Gabim kur DC++ do krijonte adc çelsin"
+
+#: win32/WinUtil.cpp:688
+msgid "Error creating dchub registry key"
+msgstr "Gabim kur DC++ do krijonte dchubb çelsin"
+
+#: win32/WinUtil.cpp:787 win32/WinUtil.cpp:800
+msgid "Error creating magnet registry key"
+msgstr "Gabim kur DC++ do krijonte magnet çelsin"
+
+#: win32/QueueFrame.cpp:44
+msgid "Errors"
+msgstr "Gabime"
+
+#: win32/QueueFrame.cpp:43 win32/DirectoryListingFrame.cpp:42
+#: win32/SearchFrame.cpp:40
+msgid "Exact size"
+msgstr "Madhësia e sakt"
+
+#: win32/SearchFrame.cpp:186
+msgid "Executable"
+msgstr "Filet e programit"
+
+#: win32/MainWindow.cpp:998
+msgid "Exit"
+msgstr ""
+
+#: win32/NetworkPage.cpp:38
+msgid "External / WAN IP"
+msgstr "E jashtme / WAN IP"
+
+#: win32/PublicHubsFrame.cpp:168
+#, fuzzy
+msgid "F&ilter"
+msgstr "Fil"
+
+#: win32/MainWindow.cpp:631 win32/MainWindow.cpp:632
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr "Dështoi në krijimin e port mappings"
+
+#: win32/MainWindow.cpp:650 win32/MainWindow.cpp:651
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr "S`mund të merr IP-në nëpërmjet të UPnP-së.Të lutem vendose vet."
+
+#: win32/MainWindow.cpp:664 win32/MainWindow.cpp:672
+msgid "Failed to remove port mappings"
+msgstr "S`mund të largon port mappings"
+
+#: win32/MainWindow.cpp:203
+#, fuzzy
+msgid "Favorite &Users\tCtrl+U"
+msgstr "Përdorues të parapëlqyer"
+
+#: win32/FavHubProperties.cpp:47
+msgid "Favorite Hub Properties"
+msgstr "Vetitë e hubit të parapëlqyer"
+
+#: win32/WindowsPage.cpp:47 win32/MainWindow.cpp:273 win32/FavHubsFrame.cpp:41
+msgid "Favorite Hubs"
+msgstr "Hubat e parapëlqyer"
+
+#: win32/WindowsPage.cpp:38 win32/MainWindow.cpp:274 win32/UsersFrame.cpp:38
+msgid "Favorite Users"
+msgstr "Përdorues të parapëlqyer"
+
+#: win32/FavoriteDirsPage.cpp:32
+msgid "Favorite download directories"
+msgstr "Të parapëlqyerit shkarko në dosje(-et)"
+
+#: win32/HubFrame.cpp:964
+msgid "Favorite hub added"
+msgstr "U vendos hubi i parapëlqyer"
+
+#: win32/HubFrame.cpp:974
+msgid "Favorite hub removed"
+msgstr "Hubi i parapëlqyer është zhvendosur"
+
+#: win32/FavoriteDirsPage.cpp:48 win32/FavoriteDirsPage.cpp:120
+#: win32/FavoriteDirsPage.cpp:150
+msgid "Favorite name"
+msgstr "Emri i parapëlqyer"
+
+#: win32/PrivateFrame.cpp:290
+msgid "Favorite user added"
+msgstr "U vendos përdoruesi i parapëlqyer"
+
+#: win32/DirectoryListingFrame.cpp:40 win32/SearchFrame.cpp:32
+msgid "File"
+msgstr "Fil"
+
+#: win32/QueueFrame.cpp:473
+msgid "File not available"
+msgstr "Fili s´është i arritshëm"
+
+#: win32/SearchFrame.cpp:122
+msgid "File type"
+msgstr "Lloj i filit"
+
+#: win32/CommandDlg.cpp:99
+msgid "Filelist Menu"
+msgstr "Menyja e listës së filit"
+
+#: win32/QueueFrame.cpp:36 win32/TransferView.cpp:53 win32/LogPage.cpp:35
+#: win32/ADLSProperties.cpp:62
+msgid "Filename"
+msgstr "Emri i filit"
+
+#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:634
+#: win32/DirectoryListingFrame.cpp:650
+#, boost-format
+msgid "Files: %1%"
+msgstr ""
+
+#: win32/AppearancePage.cpp:47
+msgid "Filter kick and NMDC debug messages"
+msgstr "Filteri për përjashtim dhe NMDC debug mesazhet"
+
+#: win32/DirectoryListingFrame.cpp:160 win32/DirectoryListingFrame.cpp:182
+msgid "Find"
+msgstr "Gjej"
+
+#: win32/TabsPage.cpp:42 win32/WindowsPage.cpp:40 win32/MainWindow.cpp:206
+#: win32/MainWindow.cpp:277 win32/FinishedDLFrame.cpp:25
+msgid "Finished Downloads"
+msgstr "Shkarkimet e përfunduara"
+
+#: win32/TabsPage.cpp:44 win32/WindowsPage.cpp:42 win32/MainWindow.cpp:208
+#: win32/MainWindow.cpp:279 win32/FinishedULFrame.cpp:25
+msgid "Finished Uploads"
+msgstr "Ngarkimet e përfunduara"
+
+#: win32/NetworkPage.cpp:34
+msgid "Firewall (passive, last resort)"
+msgstr "Muri mbrojtës (passive, last resort)"
+
+#: win32/NetworkPage.cpp:32
+msgid "Firewall with UPnP"
+msgstr "Muri mbrojtës/Firewall me UPnP"
+
+#: win32/NetworkPage.cpp:33
+msgid "Firewall with manual port forwarding"
+msgstr "Muri mbrojtës me përcjellje manuale të portit"
+
+#: win32/MainWindow.cpp:184
+msgid "Follow last redirec&t\tCtrl+T"
+msgstr ""
+
+#: win32/MainWindow.cpp:271
+msgid "Follow last redirect"
+msgstr ""
+
+#: win32/LogPage.cpp:34
+msgid "Format"
+msgstr "Format"
+
+#: win32/MainWindow.cpp:239
+msgid "Frequently asked questions"
+msgstr "Pyetjet e shpeshta"
+
+#: win32/ADLSProperties.cpp:64
+msgid "Full Path"
+msgstr "Rruga e plotë e kërkimit"
+
+#: win32/QueueFrame.cpp:479
+msgid "Full tree does not match TTH root"
+msgstr "Struktura e shkarkuar s`i përgjigjet TTH rrënjës"
+
+#: win32/MainWindow.cpp:237
+msgid "GeoIP database update"
+msgstr "Azhurim i bazës kompjut.GeoIP"
+
+#: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
+msgid "GiB"
+msgstr ""
+
+#: win32/WaitingUsersFrame.cpp:86 win32/PrivateFrame.cpp:367
+msgid "Grant &extra slot"
+msgstr ""
+
+#: win32/AppearancePage.cpp:56
+msgid "Guess user country from IP"
+msgstr "Shfaq shtetin e përdoruesit nga IP-ja"
+
+#: win32/DownloadPage.cpp:42
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Proxy (vetëm për hub listën)"
+
+#: win32/MainWindow.cpp:230
+msgid "Help &Contents\tF1"
+msgstr ""
+
+#: win32/MainWindow.cpp:240
+msgid "Help forum"
+msgstr "Forumi për ndihmë"
+
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+msgid "High"
+msgstr "Lart"
+
+#: win32/QueuePage.cpp:31
+msgid "High prio max size"
+msgstr "Madhë.maks.e prio-s"
+
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+msgid "Highest"
+msgstr "Më së larti"
+
+#: win32/QueuePage.cpp:29
+msgid "Highest prio max size"
+msgstr "Madhë.maks.e prio-s"
+
+#: win32/SpyFrame.cpp:162
+#, boost-format
+msgid "Hit Ratio: %1%"
+msgstr ""
+
+#: win32/SpyFrame.cpp:160
+#, boost-format
+msgid "Hits: %1%"
+msgstr ""
+
+#: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
+msgid "Hub"
+msgstr "Hubi"
+
+#: win32/UsersFrame.cpp:31
+msgid "Hub (last seen in, if offline)"
+msgstr ""
+
+#: win32/CommandDlg.cpp:90
+msgid "Hub Menu"
+msgstr "Hub Meny"
+
+#: win32/FavHubProperties.cpp:119
+msgid "Hub address cannot be empty"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:179 win32/HubFrame.cpp:966
+msgid "Hub already exists as a favorite"
+msgstr "Hubi egziston(prej më përpara)si i parapëlqyer"
+
+#: win32/PublicHubsFrame.cpp:316
+#, boost-format
+msgid "Hub list downloaded... (%1%)"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:316
+msgid "Hub list loaded from cache..."
+msgstr ""
+
+#: win32/HubListsDlg.cpp:149
+msgid "Hublist"
+msgstr "Lista e hubit"
+
+#: win32/SearchFrame.cpp:128
+msgid "Hubs"
+msgstr "Hubat"
+
+#: win32/PublicHubsFrame.cpp:271
+#, fuzzy, boost-format
+msgid "Hubs: %1%"
+msgstr "Hubat"
+
+#: win32/SearchFrame.cpp:41 win32/TransferView.cpp:49 win32/HubFrame.cpp:42
+msgid "IP"
+msgstr "IP"
+
+#: win32/HubFrame.cpp:330
+#, boost-format
+msgid "IP: %1%, Port: %2%/%3%/%4%"
+msgstr ""
+
+#: win32/TransferView.cpp:536 win32/TransferView.cpp:832
+msgid "Idle"
+msgstr ""
+
+#: win32/SpyFrame.cpp:66
+msgid "Ignore TTH searches"
+msgstr "Injoro TTH kërkimet"
+
+#: win32/WindowsPage.cpp:59
+#, fuzzy
+msgid "Ignore private messages from bots"
+msgstr "Hap mesazhet private në dritaret e tyre"
+
+#: win32/WindowsPage.cpp:58
+#, fuzzy
+msgid "Ignore private messages from the hub"
+msgstr "Hap mesazhet private në dritaret e tyre"
+
+#: win32/HubFrame.cpp:542 win32/HubFrame.cpp:550
+#, boost-format
+msgid "Ignored message: %1%"
+msgstr ""
+
+#: win32/NetworkPage.cpp:47
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr "Konfigurimet e kyçjes hyrëse(nëse s´je i sigurt shiko në Ndihmë/FAQ)"
+
+#: win32/MainWindow.cpp:218
+msgid "Indexing progress"
+msgstr "Progres i Indeksimit"
+
+#: win32/MainWindow.cpp:690
+msgid "Invalid file list name"
+msgstr "Emri i listës së filit është i pa vlefshëm"
+
+#: win32/WinUtil.cpp:250
+msgid "Invalid number of slots"
+msgstr "Numër i pamjaftueshëm i kanaleve"
+
+#: win32/QueueFrame.cpp:283
+#, boost-format
+msgid "Items: %1%"
+msgstr ""
+
+#: win32/HubFrame.cpp:323
+msgid "Join/part of favorite users showing off"
+msgstr "Mesazh gjatë daljes për përdoruesin e parapëlqyer nga"
+
+#: win32/HubFrame.cpp:321
+msgid "Join/part of favorite users showing on"
+msgstr "Mesazh hyrës për përdoruesin e parapëlqyer në"
+
+#: win32/HubFrame.cpp:316
+msgid "Join/part showing off"
+msgstr "Mesazh gjatë shoqërimit/bashkimit jasht"
+
+#: win32/HubFrame.cpp:314
+msgid "Join/part showing on"
+msgstr "Mesazh gjatë shoqërimit/bashkimit në(brenda)"
+
+#: win32/AdvancedPage.cpp:33
+msgid "Keep duplicate files in your file list"
+msgstr ""
+"Filet e dyfishta mbaji në listën e fileve(duplicates never count towards "
+"your share size)"
+
+#: win32/QueuePage.cpp:30 win32/QueuePage.cpp:32 win32/QueuePage.cpp:34
+#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:30
+#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
+#: win32/ADLSProperties.cpp:75
+msgid "KiB"
+msgstr ""
+
+#: win32/UploadPage.cpp:40
+#, fuzzy
+msgid "KiB/s"
+msgstr "B/s"
+
+#: win32/AppearancePage.cpp:34
+msgid "Language file"
+msgstr "Fil Gjuhësor"
+
+#: win32/DownloadPage.cpp:35
+msgid "Limits"
+msgstr "Kufizimet"
+
+#: win32/GeneralPage.cpp:32
+msgid "Line speed (upload)"
+msgstr "Shpejtësia e ngarkimit"
+
+#: win32/SplashWindow.cpp:77
+#, boost-format
+msgid "Loading DC++, please wait... (%1%)"
+msgstr ""
+
+#: win32/LogPage.cpp:47
+msgid "Log downloads"
+msgstr "Shëno shkarkimet"
+
+#: win32/LogPage.cpp:51
+msgid "Log filelist transfers"
+msgstr "Shëno transferimet e listës së filit"
+
+#: win32/LogPage.cpp:45
+msgid "Log main chat"
+msgstr "Shëno bisedën kryesore"
+
+#: win32/LogPage.cpp:46
 msgid "Log private chat"
 msgstr "Shëno bisedën private"
 
+#: win32/LogPage.cpp:50
+msgid "Log status messages"
+msgstr "Shëno gjendjen e mesazheve"
+
+#: win32/LogPage.cpp:49
+msgid "Log system messages"
+msgstr "Shëno mesazhet e sistemit"
+
+#: win32/LogPage.cpp:48
+msgid "Log uploads"
+msgstr "Shëno ngarkimet"
+
+#: win32/LogPage.cpp:31
+msgid "Logging"
+msgstr "Shënimet"
+
+#: win32/NetworkPage.cpp:44
+msgid "Login"
+msgstr "Emri i përdoruesit"
+
+#: win32/WinUtil.cpp:362
+msgid "Lookup TTH at Bitzi.com"
+msgstr "Kërko TTH-kontroll shumën në Bitzi.com"
+
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+msgid "Low"
+msgstr "Ulët"
+
+#: win32/QueuePage.cpp:35
+msgid "Low prio max size"
+msgstr "Madhë.e ulët e prio-s"
+
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+msgid "Lowest"
+msgstr "Më e ulët"
+
+#: win32/MagnetDlg.cpp:44 win32/WinUtil.cpp:1025
+msgid "MAGNET Link detected"
+msgstr "U zbulua MAGNET nyja"
+
+#: win32/WinUtil.cpp:972
+#, fuzzy, boost-format
+msgid "MAGNET Link detected: %1%"
+msgstr "U zbulua MAGNET nyja"
+
+#: win32/Appearance2Page.cpp:38
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Përdor tingull gjatë pranimit të mesazheve private"
+
+#: win32/Appearance2Page.cpp:39
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Përdor tingull gjatë hapjes së mesazheve private"
+
+#: win32/MainWindow.cpp:190
+#, fuzzy
+msgid "Match downloaded lists"
+msgstr "Së pari klasifiko të gjitha shkarkimet"
+
+#: win32/DirectoryListingFrame.cpp:168 win32/DirectoryListingFrame.cpp:181
+msgid "Match queue"
+msgstr "Përputh me listën e shkarkimit"
+
+#: win32/DirectoryListingFrame.cpp:260
+#, boost-format
+msgid "Matched %1% file"
+msgid_plural "Matched %1% files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/PublicHubsFrame.cpp:57
+msgid "Max Hubs"
+msgstr "Huba Maksimal"
+
+#: win32/ADLSearchFrame.cpp:36
+msgid "Max Size"
+msgstr "Madhësia maksimale"
+
+#: win32/PublicHubsFrame.cpp:58
+msgid "Max Users"
+msgstr "Përdorues Maksimal"
+
+#: win32/Advanced3Page.cpp:38
+msgid "Max filelist size"
+msgstr "Madh.maksi.e listës së filit"
+
+#: win32/Advanced3Page.cpp:31
+msgid "Max hash speed"
+msgstr "Shpejtësia maksimale e TTH-së"
+
+#: win32/QueuePage.cpp:44
+msgid "Max inactivity"
+msgstr "Inaktiviteti maks"
+
+#: win32/DownloadPage.cpp:36
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Shkarkimet maksimale të njëkohëshme (0 = pakufizuar)"
+
+#: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
+#: win32/ADLSProperties.cpp:76
+msgid "MiB"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:32
+#, fuzzy
+msgid "MiB/s"
+msgstr "MiBits/s"
+
+#: win32/GeneralPage.cpp:33
+msgid "MiBits/s"
+msgstr "MiBits/s"
+
+#: win32/PublicHubsFrame.cpp:55
 msgid "Min Share"
 msgstr "Shpërndarja minimale"
 
-msgid "Open new private message windows in the background"
-msgstr "Hap dritare të reja për mesazh private në prapaskenë"
+#: win32/ADLSearchFrame.cpp:35
+msgid "Min Size"
+msgstr "Madhësia minimale"
 
+#: win32/PublicHubsFrame.cpp:56
+msgid "Min Slots"
+msgstr "Numri minimal i kanaleve"
+
+#: win32/QueuePage.cpp:42
 msgid "Min elapsed"
 msgstr "Sa kohë?"
 
+#: win32/QueuePage.cpp:47
+msgid "Min filesize"
+msgstr "Madhë. min e filit"
+
+#: win32/Advanced3Page.cpp:42
+#, fuzzy
+msgid "Min segment size"
+msgstr "Madhë.e minikanalit"
+
+#: win32/QueuePage.cpp:46
+msgid "Min sources online"
+msgstr "Burimet min.të lidhura"
+
+#: win32/Advanced3Page.cpp:35
+msgid "Mini slot size"
+msgstr "Madhë.e minikanalit"
+
+#: win32/AppearancePage.cpp:48
+msgid "Minimize to tray"
+msgstr "Zvoglo në desktop"
+
+#: win32/HubListsDlg.cpp:71 win32/FavHubsFrame.cpp:91
+#: win32/FavHubsFrame.cpp:118 win32/ADLSearchFrame.cpp:83 win32/UCPage.cpp:32
+msgid "Move &Down"
+msgstr ""
+
+#: win32/HubListsDlg.cpp:67 win32/FavHubsFrame.cpp:86
+#: win32/FavHubsFrame.cpp:117 win32/ADLSearchFrame.cpp:78 win32/UCPage.cpp:31
+msgid "Move &Up"
+msgstr ""
+
+#: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
+msgid "Name"
+msgstr "Emri"
+
+#: win32/UploadPage.cpp:188 win32/UploadPage.cpp:232
+msgid "Name under which the others see the directory"
+msgstr "Emri i dosjes të cilën e shohin(shihet nga)të tjerët"
+
+#: win32/WindowsPage.cpp:44 win32/MainWindow.cpp:216 win32/StatsFrame.cpp:27
+msgid "Network Statistics"
+msgstr "Statistika e rrjetit"
+
+#: win32/UploadPage.cpp:197
+msgid "New virtual name matches old name, skipping..."
+msgstr "Emri i ri (viritual)përputhet me emrin e vjetër,tejkalon..."
+
+#: win32/DirectoryListingFrame.cpp:164 win32/DirectoryListingFrame.cpp:183
+msgid "Next"
+msgstr "Përpara"
+
+#: win32/GeneralPage.cpp:29 win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+msgid "Nick"
+msgstr "Pseudonim"
+
+#: win32/QueueFrame.cpp:488
+msgid "No errors"
+msgstr "S´ka gabime"
+
+#: win32/DirectoryListingFrame.cpp:858
+msgid "No matches"
+msgstr "S`ka përputhje(fil me emër të tillë)"
+
+#: win32/DownloadPage.cpp:37
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Shpejtësia e zvogëluar/s`ka shkarkime të reja(KiB/s, 0 = disable)"
+
+#: win32/QueueFrame.cpp:415
+msgid "No users"
+msgstr "S´ka përdorues"
+
+#: win32/QueueFrame.cpp:427
+msgid "No users to download from"
+msgstr "S´ka përdorues nga i cili mund të shkarkohet"
+
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+msgid "Normal"
+msgstr "Normale"
+
+#: win32/QueuePage.cpp:33
+msgid "Normal prio max size"
+msgstr "Madhë.norm.e prio-s"
+
+#: win32/UploadPage.cpp:42
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr "Filet e reja janë vendo.në shpërn.vetëm kur janë indeks.në dosje!"
+
+#: win32/DownloadPage.cpp:38
+#, fuzzy, c-format
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Vini Re;Variacionet e shpejtës.së shkarkimeve,s´mundës.100% siguri..."
+
+#: win32/Appearance2Page.cpp:35 win32/AppearancePage.cpp:35
+msgid "Note; most of these options require that you restart DC++"
+msgstr ""
+"Vini Re; Ndryshimi i disa(ndonjë)konfigurimeve kërkon ristartimin e DC++"
+
+#: win32/WindowsPage.cpp:45 win32/NotepadFrame.cpp:27 win32/MainWindow.cpp:287
+msgid "Notepad"
+msgstr "Shënime(Notepad)"
+
+#: win32/Appearance2Page.cpp:29
+msgid "Notification sound"
+msgstr ""
+
+#: win32/WinUtil.cpp:323
+msgid "Offline"
+msgstr "Shkëputur"
+
+#: win32/UsersFrame.cpp:108 win32/UsersFrame.cpp:123
+msgid "Online"
+msgstr "Lidhur"
+
+#: win32/AppearancePage.cpp:52
+msgid "Only show joins / parts for favorite users"
+msgstr "Shfaq vetëm pjesmarjet/shoqërimet për përdoruesit e parapëlqyer"
+
+#: win32/SearchFrame.cpp:194
+msgid "Only users with free slots"
+msgstr "Vetëm përdorues me kanale të lira"
+
+#: win32/SearchFrame.cpp:216
+msgid "Only where I'm op"
+msgstr "Vetëm kur jam në lidhje-online"
+
+#: win32/MainWindow.cpp:192 win32/MainWindow.cpp:999
+msgid "Open downloads directory"
+msgstr "Hap dosjen e shkarkimeve"
+
+#: win32/MainWindow.cpp:285
+#, fuzzy
+msgid "Open file list..."
+msgstr "Hap listën personale"
+
+#: win32/MainWindow.cpp:188
+msgid "Open file list...\tCtrl+L"
+msgstr ""
+
+#: win32/WindowsPage.cpp:55
+msgid "Open new file list windows in the background"
+msgstr "Hap një listë të re të filit(dritare)në prapaskenë"
+
+#: win32/WindowsPage.cpp:56
+msgid "Open new private message windows in the background"
+msgstr "Hap dritare të reja për mesazh private në prapaskenë"
+
+#: win32/WindowsPage.cpp:57
+msgid "Open new window when using /join"
+msgstr "Hap dritare të re kur përdor/shoqërohesh"
+
+#: win32/MainWindow.cpp:189
+msgid "Open own list"
+msgstr "Hap listën personale"
+
+#: win32/WindowsPage.cpp:53
+#, fuzzy
+msgid "Open private messages from bots in their own window"
+msgstr "Hap mesazhet private në dritaret e tyre"
+
+#: win32/WindowsPage.cpp:54
+#, fuzzy
+msgid "Open private messages from the hub in their own window"
+msgstr "Hap mesazhet private në dritaret e tyre"
+
+#: win32/WindowsPage.cpp:52
+msgid "Open private messages in their own window"
+msgstr "Hap mesazhet private në dritaret e tyre"
+
+#: win32/AppearancePage.cpp:31
+msgid "Options"
+msgstr "Alternativat"
+
+#: win32/QueuePage.cpp:49
+msgid "Other queue options"
+msgstr "Konfigurimet e fileve të tjera të rradhitura"
+
+#: win32/NetworkPage.cpp:48
+msgid "Outgoing connection settings"
+msgstr "Konfigurimet e kyçjes dalëse"
+
+#: win32/CommandDlg.cpp:86
+msgid "PM"
+msgstr "PM"
+
+#: win32/Advanced3Page.cpp:33
+msgid "PM history"
+msgstr "PM histori"
+
+#: win32/QueueFrame.cpp:475
+msgid "Passive user"
+msgstr "Përdorues pasiv"
+
+#: win32/NetworkPage.cpp:45 win32/FavHubsFrame.cpp:35
+msgid "Password"
+msgstr "Fjalëkalim"
+
+#: win32/QueueFrame.cpp:42 win32/SearchFrame.cpp:36 win32/TransferView.cpp:54
+msgid "Path"
+msgstr "Vendi"
+
+#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+msgid "Paused"
+msgstr "Pushon"
+
+#: win32/GeneralPage.cpp:28
+msgid "Personal Information"
+msgstr "Informata Personale"
+
+#: win32/SettingsDialog.cpp:57
+msgid "Personal information"
+msgstr "Informata Personale"
+
+#: win32/SearchFrame.cpp:187
+msgid "Picture"
+msgstr "Fotografi"
+
+#: win32/FavHubsFrame.cpp:320 win32/PublicHubsFrame.cpp:496
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Të lutem shëno një pseudonim në Konfigurimet!"
+
+#: win32/HubFrame.cpp:528
+msgid "Please enter a password"
+msgstr "Të lutem shëno fjalëkalimin"
+
+#: win32/WindowsPage.cpp:61
+msgid "Popup box to input password for hubs"
+msgstr "Dritarja e re-Kutia për shënimin e fjalëkalimit për hubat"
+
+#: win32/NetworkPage.cpp:43
+msgid "Port"
+msgstr "Porti"
+
+#: win32/NetworkPage.cpp:37
+msgid "Ports"
+msgstr "Portet"
+
+#: win32/HubFrame.cpp:855
+#, boost-format
+msgid "Press the follow redirect button to connect to %1%"
+msgstr ""
+
+#: win32/QueueFrame.cpp:40
+msgid "Priority"
+msgstr "Prioritet"
+
+#: win32/TabsPage.cpp:38
+msgid "Private message"
+msgstr "Mesazh privat"
+
+#: win32/HubFrame.cpp:546 win32/HubFrame.cpp:554 win32/HubFrame.cpp:560
+#, fuzzy, boost-format
+msgid "Private message from %1%: %2%"
+msgstr "Mesazh privat"
+
+#: win32/WindowsPage.cpp:46 win32/MainWindow.cpp:269
+#: win32/PublicHubsFrame.cpp:93
+msgid "Public Hubs"
+msgstr "Hubat publik"
+
+#: win32/DownloadPage.cpp:39
+msgid "Public Hubs list"
+msgstr "Lista e hubave publik"
+
+#: win32/DownloadPage.cpp:40
+msgid "Public Hubs list URL"
+msgstr "Lista e hubave publik URL-ja"
+
+#: win32/SearchFrame.cpp:240
+msgid "Purge"
+msgstr "Pastro"
+
+#: win32/TransferView.cpp:47
+msgid "Queued"
+msgstr ""
+
+#: win32/MainWindow.cpp:344
+msgid "Quick Connect"
+msgstr "Lidhje e shpejt"
+
+#: win32/PublicHubsFrame.cpp:60
+msgid "Rating"
+msgstr "Populariteti"
+
+#: win32/AboutDlg.cpp:61
+#, c-format, boost-format
+msgid "Ratio (up/down): %1$0.2f"
+msgstr ""
+
+#: win32/CommandDlg.cpp:78
+msgid "Raw"
+msgstr "Raw"
+
+#: win32/QueueFrame.cpp:1022
+msgid "Re-add source"
+msgstr "Rivendos burimin"
+
+#: win32/SearchFrame.cpp:1024
+msgid "Ready to search..."
+msgstr "Gati për kërkim..."
+
+#: win32/MainWindow.cpp:459
+msgid "Really exit?"
+msgstr "Dëshiron dalje?"
+
+#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/FavHubsFrame.cpp:243
+msgid "Really remove?"
+msgstr "Zhvendose me të vërtet?"
+
+#: win32/MainWindow.cpp:270
+#, fuzzy
+msgid "Reconnect"
+msgstr "Lidhur"
+
+#: win32/HubFrame.cpp:848 win32/HubFrame.cpp:1371
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Riorjentimi i kërkuar për hubin në të cilën tash më je i lidhur"
+
+#: win32/MainWindow.cpp:191
+msgid "Refresh file list\tCtrl+E"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:34
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Kyç URL:të në DC++(nyje me prefiksin dchub://)"
+
+#: win32/AdvancedPage.cpp:35
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Kyç URL:të në DC++(nyje me prefiksin URL)"
+
+#: win32/PublicHubsFrame.cpp:59
+msgid "Reliability"
+msgstr "Besueshmëria"
+
+#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:660
+msgid "Remote client does not fully support TTH - cannot download"
+msgstr ""
+
+#: win32/QueuePage.cpp:70
+msgid "Remove slow filelists"
+msgstr "Zhvendos listat e fileve të ngadalshme"
+
+#: win32/QueueFrame.cpp:1033
+msgid "Remove source"
+msgstr "Zhvendose burimin"
+
+#: win32/QueueFrame.cpp:1043
+msgid "Remove user from queue"
+msgstr "Zhvendose përdoruesin nga rradha"
+
+#: win32/UploadPage.cpp:38 win32/FavoriteDirsPage.cpp:35
+msgid "Rename"
+msgstr "Riemro"
+
+#: win32/MainWindow.cpp:243
+msgid "Report a bug"
+msgstr "Raporto një shprazëtirë/gabim(bug)"
+
+#: win32/MainWindow.cpp:242
+msgid "Request a feature"
+msgstr "Propozo-jep ide për-funksion në program"
+
+#: win32/HashProgressDlg.cpp:48
+msgid "Run in background"
+msgstr "Vepro në prapaskenë"
+
+#: win32/QueueFrame.cpp:435
+msgid "Running..."
+msgstr "Vepron..."
+
+#: win32/NetworkPage.cpp:36
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: win32/TabsPage.cpp:39 win32/MainWindow.cpp:281 win32/SearchFrame.cpp:85
+#: win32/SearchFrame.cpp:145
+msgid "Search"
+msgstr "Kërko"
+
+#: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
+#: win32/SearchFrame.cpp:1020
+#, fuzzy, boost-format
+msgid "Search - %1%"
+msgstr "Kërko"
+
+#: win32/SearchFrame.cpp:1025
+#, fuzzy
+msgid "Search - Ready to search..."
+msgstr "Gati për kërkim..."
+
+#: win32/CommandDlg.cpp:96
+msgid "Search Menu"
+msgstr "Kërko Meny"
+
+#: win32/WindowsPage.cpp:43 win32/MainWindow.cpp:212 win32/MainWindow.cpp:283
+#: win32/SpyFrame.cpp:40
+msgid "Search Spy"
+msgstr "Kërkim nëpërmjet spionimit"
+
+#: win32/SpyFrame.cpp:34
+msgid "Search String"
+msgstr "Kriteri për kërkim"
+
+#: win32/SearchFrame.cpp:116
+msgid "Search for"
+msgstr "Kërko për "
+
+#: win32/WinUtil.cpp:361
+msgid "Search for alternates"
+msgstr "Kërko vende alternative për shkarkim"
+
+#: win32/DirectoryListingFrame.cpp:795 win32/DirectoryListingFrame.cpp:858
+msgid "Search for file"
+msgstr "Kërko filin"
+
+#: win32/Advanced3Page.cpp:34
+msgid "Search history"
+msgstr "Historia e kërkimit"
+
+#: win32/SearchFrame.cpp:125
+msgid "Search options"
+msgstr "Konfigurimet e kërkimit"
+
+#: win32/HubFrame.cpp:910
+#, boost-format
+msgid "Search spam detected from %1%"
+msgstr ""
+
+#: win32/SearchFrame.cpp:984
+#, fuzzy, boost-format
+msgid "Searching for %1%..."
+msgstr "Kërko për "
+
+#: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
+#, boost-format
+msgid "Searching too soon, next search in %1% second"
+msgid_plural "Searching too soon, next search in %1% seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/Appearance2Page.cpp:33
+msgid "Select &text style"
+msgstr ""
+
+#: win32/Appearance2Page.cpp:32
+msgid "Select &window color"
+msgstr ""
+
+#: win32/CommandDlg.cpp:112
+msgid "Send once per nick"
+msgstr "Për çdo pseudonim dërgo një herë"
+
+#: win32/AdvancedPage.cpp:44
+msgid "Send unknown /commands to the hub"
+msgstr "Dërgo urdhëra/të panjohura në hub"
+
+#: win32/UCPage.cpp:123 win32/UCPage.cpp:181 win32/CommandDlg.cpp:74
+msgid "Separator"
+msgstr "Ndarës"
+
+#: win32/FavHubsFrame.cpp:36
+msgid "Server"
+msgstr "Server"
+
+#: win32/QueuePage.cpp:68
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr "Prioriteti më i gjatë i aktivizuar"
+
+#: win32/QueueFrame.cpp:995
+msgid "Set priority"
+msgstr "Vendos prioritet"
+
+#: win32/AppearancePage.cpp:33
+msgid "Set timestamps"
+msgstr "Format i kohës (%H:%M:%S)"
+
+#: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:286
+msgid "Settings"
+msgstr "Konfigurmiet"
+
+#: win32/MainWindow.cpp:195 win32/MainWindow.cpp:1000
+msgid "Settings..."
+msgstr "Konfigurimet..."
+
+#: win32/UploadPage.cpp:35
+msgid "Share hidden files"
+msgstr "Shpërn.filet e fshehura"
+
+#: win32/HubFrame.cpp:38 win32/PublicHubsFrame.cpp:54
+msgid "Shared"
+msgstr "Shpërndan"
+
+#: win32/UploadPage.cpp:33
+msgid "Shared directories"
+msgstr "Dosjet e shpërndarjes"
+
+#: win32/SettingsDialog.cpp:62
+msgid "Sharing"
+msgstr "Shpërndan"
+
+#: win32/MainWindow.cpp:997
+msgid "Show"
+msgstr "Shfaq"
+
+#: win32/AppearancePage.cpp:51
+msgid "Show joins / parts in chat by default"
+msgstr "Shfaq kur përdoruesi kyçet/largohet nga biseda kryesore"
+
+#: win32/AdvancedPage.cpp:38
+msgid "Show progress bars for transfers"
+msgstr "Shfaq taktin e progresit për transferimet (përdoren disa CPU)"
+
+#: win32/AdvancedPage.cpp:48
+msgid "Show shell menu where possible"
+msgstr ""
+
+#: win32/AppearancePage.cpp:49
+msgid "Show timestamps in chat by default"
+msgstr "Në biseda(chat) shfaq orën"
+
+#: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
+#: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
+#: win32/SearchFrame.cpp:119 win32/TransferView.cpp:59
+msgid "Size"
+msgstr "Madhësia"
+
+#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/DirectoryListingFrame.cpp:635 win32/DirectoryListingFrame.cpp:652
+#, fuzzy, boost-format
+msgid "Size: %1%"
+msgstr "Madhësia"
+
+#: win32/QueuePage.cpp:74
+msgid "Skip zero-byte files"
+msgstr "Tejkalo filet me madhësi zero bajt(bytes)"
+
+#: win32/PrivateFrame.cpp:285
+msgid "Slot granted"
+msgstr "Kanali u dhurua"
+
+#: win32/SearchFrame.cpp:37
+msgid "Slots"
+msgstr "Kanalet"
+
+#: win32/WinUtil.cpp:247
+msgid "Slots set"
+msgstr "Kanalet e kufizuara(s´ka qasje)"
+
+#: win32/MainWindow.cpp:551
+#, boost-format
+msgid "Slots: %1%/%2%"
+msgstr ""
+
+#: win32/NetworkPage.cpp:42
+msgid "Socks IP"
+msgstr "Socks IP"
+
+#: win32/AppearancePage.cpp:46
+msgid "Sort all downloads first"
+msgstr "Së pari klasifiko të gjitha shkarkimet"
+
+#: win32/AppearancePage.cpp:53
+#, fuzzy
+msgid "Sort favorite users first"
+msgstr "Mesazh hyrës për përdoruesin e parapëlqyer në"
+
+#: win32/Appearance2Page.cpp:37
+msgid "Sounds"
+msgstr "Tingujt"
+
+#: win32/ADLSearchFrame.cpp:33
+msgid "Source Type"
+msgstr "Lloj i burimit"
+
+#: win32/QueueFrame.cpp:481
+msgid "Source too slow"
+msgstr "Burimi është shumë i ngadalshëm"
+
+#: win32/WinUtil.cpp:289
+msgid "Specify a URL"
+msgstr "Cakto një URL"
+
+#: win32/WinUtil.cpp:256 win32/WinUtil.cpp:277 win32/WinUtil.cpp:283
+msgid "Specify a search string"
+msgstr "Cakto kriterjen për kërkim"
+
+#: win32/HubFrame.cpp:296
+msgid "Specify a server to connect to"
+msgstr "Cakto një server për kyçje"
+
+#: win32/TransferView.cpp:44 win32/TransferView.cpp:57
+msgid "Speed"
+msgstr "Shpejtësia"
+
+#: win32/DirectoryListingFrame.cpp:636
+#, boost-format
+msgid "Speed: %1%/s"
+msgstr ""
+
+#: win32/MagnetDlg.cpp:57
+msgid "Start a search for this file"
+msgstr "Fillo kërkimin për këtë fil"
+
+#: win32/QueueFrame.cpp:37 win32/TransferView.cpp:43 win32/TransferView.cpp:55
+msgid "Status"
+msgstr "Statusi"
+
+#: win32/HubFrame.cpp:520
+msgid "Stored password sent..."
+msgstr "U dërgua fjalëkalimi rezerv..."
+
+#: win32/DirectoryListingFrame.cpp:172 win32/DirectoryListingFrame.cpp:180
+msgid "Subtract list"
+msgstr "Largo listën"
+
+#: win32/TabsPage.cpp:40 win32/WindowsPage.cpp:37 win32/SystemFrame.cpp:26
+#: win32/MainWindow.cpp:215
+msgid "System Log"
+msgstr "System Log"
+
+#: win32/NetworkPage.cpp:39
+msgid "TCP"
+msgstr "TCP Porti"
+
+#: win32/NetworkPage.cpp:41
+msgid "TLS"
+msgstr ""
+
+#: win32/SearchFrame.cpp:190
+msgid "TTH"
+msgstr ""
+
+#: win32/QueueFrame.cpp:46 win32/DirectoryListingFrame.cpp:44
+#: win32/SearchFrame.cpp:42
+msgid "TTH Root"
+msgstr "TTH-kontroll shuma"
+
+#: win32/TransferView.cpp:671
+#, boost-format
+msgid "TTH: %1%"
+msgstr ""
+
+#: win32/TabsPage.cpp:32
+msgid "Tab highlight on content change"
+msgstr "Kur ndryshohet përmbajtja shëno hub shenjën(ve shenjë)"
+
+#: win32/HubFrame.cpp:40
+msgid "Tag"
+msgstr "Tag"
+
+#: win32/HubFrame.cpp:976
+msgid "This hub is not a favorite hub"
+msgstr "Ky hub s´është hub i parapëlqyer"
+
+#: win32/SpyFrame.cpp:36
+msgid "Time"
+msgstr "Data/Ora"
+
+#: win32/UsersFrame.cpp:32
+msgid "Time last seen"
+msgstr "lidhur herën e fundit"
+
+#: win32/TransferView.cpp:56
+msgid "Time left"
+msgstr "Koha e mbetur"
+
+#: win32/HubFrame.cpp:305
+msgid "Timestamps disabled"
+msgstr "Shënues i kohës pasiv"
+
+#: win32/HubFrame.cpp:303
+msgid "Timestamps enabled"
+msgstr "Shënues i kohës aktiv"
+
+#: win32/WindowsPage.cpp:60
+msgid "Toggle window when selecting an active tab"
+msgstr "Ndro katror(simbol)kur shtyp në hub shenjën"
+
+#: win32/UploadPage.cpp:34
+msgid "Total size:"
+msgstr "Madhësia e përgjithëshme:"
+
+#: win32/SpyFrame.cpp:159
+#, boost-format
+msgid "Total: %1%"
+msgstr ""
+
+#: win32/TransferView.cpp:46
+#, fuzzy
+msgid "Transfered (Ratio)"
+msgstr "Përkthimet"
+
+#: win32/MainWindow.cpp:238
+msgid "Translations"
+msgstr "Përkthimet"
+
+#: win32/QueueFrame.cpp:47 win32/DirectoryListingFrame.cpp:41
+#: win32/SearchFrame.cpp:34
+msgid "Type"
+msgstr "Lloji"
+
+#: win32/MainWindow.cpp:553
+#, boost-format
+msgid "U: %1%"
+msgstr ""
+
+#: win32/MainWindow.cpp:555
+#, boost-format
+msgid "U: %1%/s (%2%)"
+msgstr ""
+
+#: win32/NetworkPage.cpp:40
+msgid "UDP"
+msgstr "UDP Porti"
+
+#: win32/WinUtil.cpp:803
+msgid "URL:MAGNET URI"
+msgstr "URL:MAGNET URI"
+
+#: win32/MainWindow.cpp:610
+msgid ""
+"Unable to open TCP/TLS port. File transfers will not work correctly until "
+"you change settings or turn off any application that might be using the TCP/"
+"TLS port"
+msgstr ""
+"S`mund t´a hap TCP portin. Transferimi i fileve s´do jetë korrekte deri sa "
+"të bëhen ndryshime në konfigurimet apo deri sa të mbyllet çdo(ndonjë)"
+"aplikacion që ndoshta e përdor TCP portin"
+
+#: win32/MainWindow.cpp:615
+msgid ""
+"Unable to open UDP port. Searching will not work correctly until you change "
+"settings or turn off any application that might be using the UDP port"
+msgstr ""
+"S`mund t´a hap UDP portin. Kërkimi s´do funksionon në mënyrë korrekte deri "
+"sa ju t`i ndryshoni konfigurimet apo t´i mbyllni aplikacionet të cilat e "
+"përdorin UDP portin"
+
+#: win32/FavoriteDirsPage.cpp:120 win32/FavoriteDirsPage.cpp:150
+msgid "Under what name you see the directory"
+msgstr "Me ç`farë emri e shikon dosjen"
+
+#: win32/DownloadPage.cpp:33
+msgid "Unfinished downloads directory"
+msgstr "Dosja e shkarkimeve të pa përfunduara"
+
+#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+msgid "Unknown"
+msgstr "Panjohur"
+
+#: win32/HubFrame.cpp:380
+#, boost-format
+msgid "Unknown command: %1%"
+msgstr ""
+
+#: win32/UploadPage.cpp:41
+msgid "Upload slots"
+msgstr "Kanalet për ngarkime"
+
+#: win32/AboutDlg.cpp:59
+#, boost-format
+msgid "Upload: %1%, Download: %2%"
+msgstr ""
+
+#: win32/TransferView.cpp:797
+#, fuzzy, boost-format
+msgid "Uploading %1%"
+msgstr "Ngarkimet"
+
+#: win32/Appearance2Page.cpp:36
+msgid "Uploads"
+msgstr "Ngarkimet"
+
+#: win32/AdvancedPage.cpp:46
+msgid "Use CTRL for line history"
+msgstr "Përdor CTRL (shigjeta posht lart)për rishqyrtim të tekstit"
+
+#: win32/AppearancePage.cpp:55
+msgid "Use OEM monospaced font for viewing text files"
+msgstr ""
+"Përdor OEM pagëzore univerzale(monospaced font) për t´i shfaq tekst filet"
+
+#: win32/NetworkPage.cpp:46
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Përdor SOCKS5 serverin të zgjedhë emrat e nikoqirit(hostnames)"
+
+#: win32/CertificatesPage.cpp:41
+msgid "Use TLS when remote client supports it"
+msgstr ""
+
+#: win32/QueuePage.cpp:77
+msgid "Use antifragmentation method for downloads"
+msgstr "Antifragmento shkarkimet"
+
+#: win32/AppearancePage.cpp:54
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr ""
+"Gjatë shfletimit të fileve, përdor sistemin e ikonave(pak e ngadalson "
+"shfletimin)"
+
+#: win32/SearchFrame.cpp:33 win32/TransferView.cpp:42
+msgid "User"
+msgstr "Përdorues"
+
+#: win32/FavHubsFrame.cpp:37
+msgid "User Description"
+msgstr "Përshkrim i përdoruesit"
+
+#: win32/CommandDlg.cpp:93
+msgid "User Menu"
+msgstr "Menyja e përdoruesit"
+
+#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:698
+msgid "User offline"
+msgstr "Përdoruesi është shkëputur"
+
+#: win32/PrivateFrame.cpp:315
+msgid "User went offline"
+msgstr "Përdoruesi u (shkoi në)shkyç(-je)"
+
+#: win32/QueueFrame.cpp:41 win32/PublicHubsFrame.cpp:51
+msgid "Users"
+msgstr "Përdorues"
+
+#: win32/PublicHubsFrame.cpp:272
+#, fuzzy, boost-format
+msgid "Users: %1%"
+msgstr "Përdorues"
+
+#: win32/SearchFrame.cpp:188
+msgid "Video"
+msgstr "Film"
+
+#: win32/AppearancePage.cpp:50
+msgid "View status messages in main chat"
+msgstr "Në bisedën kryesore shfaq mesazhin(kryesore)"
+
+#: win32/UploadPage.cpp:63 win32/UploadPage.cpp:188 win32/UploadPage.cpp:232
+msgid "Virtual name"
+msgstr "Emri viritual"
+
+#: win32/QueueFrame.cpp:423
+#, fuzzy, boost-format
+msgid "Waiting (%1% of %2% users online)"
+msgstr "Pret(Përdorues i lidhur)"
+
+#: win32/QueueFrame.cpp:421
+msgid "Waiting (User online)"
+msgstr "Pret(Përdorues i lidhur)"
+
+#: win32/TabsPage.cpp:43 win32/WindowsPage.cpp:41
+#: win32/WaitingUsersFrame.cpp:33 win32/MainWindow.cpp:207
+#: win32/MainWindow.cpp:278
+msgid "Waiting Users"
+msgstr "Në pritje të përdoruesve"
+
+#: win32/TransferView.cpp:626
+#, fuzzy
+msgid "Waiting for slot"
+msgstr "Në pritje të përdoruesve"
+
+#: win32/TransferView.cpp:648
+#, fuzzy
+msgid "Waiting to retry"
+msgstr "Në pritje të përdoruesve"
+
+#: win32/WindowsPage.cpp:31
+msgid "Window options"
+msgstr "Konfigurimet e dritares"
+
+#: win32/Advanced3Page.cpp:29
+msgid "Write buffer size"
+msgstr "Shkruaj madhësinë e paqenë(buffer size)"
+
+#: win32/HubFrame.cpp:906
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Pseudonimi yt është i zënë,të lutem zavendëso me ndonjë tjetër!"
+
+#: win32/MainWindow.cpp:143
+msgid ""
+"Your version of windows common controls is too old for DC++ to run "
+"correctly, and you will most probably experience problems with the user "
+"interface. You should download version 5.80 or higher from the DC++ homepage "
+"or from Microsoft directly."
+msgstr ""
+
+#: win32/TransferView.cpp:673
+#, fuzzy
+msgid "file list"
+msgstr "Menyja e listës së filit"
+
+#: win32/QueuePage.cpp:41 win32/QueuePage.cpp:43 win32/QueuePage.cpp:45
+msgid "s"
+msgstr "s"

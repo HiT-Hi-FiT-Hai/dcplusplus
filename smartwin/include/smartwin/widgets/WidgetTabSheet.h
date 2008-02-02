@@ -256,7 +256,7 @@ public:
 	  * the tabs can be calculated accurately. It returns coordinates respect to the
 	  * TabControl, this is, you have to adjust for the position of the control itself.   
 	  */
-	SmartWin::Rectangle getUsableArea() const;
+	SmartWin::Rectangle getUsableArea(bool cutBorders = false) const;
 protected:
 	// Constructor Taking pointer to parent
 	explicit WidgetTabSheet( Widget * parent );
@@ -285,20 +285,6 @@ inline int WidgetTabSheet::getSelectedIndex() const
 {
 	int retVal = TabCtrl_GetCurSel( this->handle() );
 	return retVal;
-}
-
-inline SmartUtil::tstring WidgetTabSheet::getSelectedHeader() const
-{
-	TCITEM item;
-	item.mask = TCIF_TEXT;
-	TCHAR buffer[200];
-	item.cchTextMax = 198;
-	item.pszText = buffer;
-	if ( !TabCtrl_GetItem( this->handle(), getSelectedIndex(), & item ) )
-	{
-		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
-	}
-	return buffer;
 }
 
 inline int WidgetTabSheet::getImage(unsigned idx) const

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-01-23 22:20+0100\n"
+"POT-Creation-Date: 2008-01-31 20:32+0100\n"
 "PO-Revision-Date: 2008-01-24 07:24+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <de@li.org>\n"
@@ -116,7 +116,7 @@ msgstr "CRC32 Inkonsistenz (SFV-Check) (Datei: %1%)"
 msgid "Certificate not trusted, unable to connect"
 msgstr "Zertifikat nicht vertrauenswürdig, Verbindung nicht möglich"
 
-#: dcpp/Socket.cpp:155 dcpp/ConnectionManager.cpp:187
+#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:187
 #: dcpp/BufferedSocket.cpp:154
 msgid "Connection timeout"
 msgstr "Zeitüberschreitung der Verbindung"
@@ -193,7 +193,7 @@ msgstr "Laden des Zertifikats fehlgeschlagen"
 msgid "Failed to load private key"
 msgstr "Laden des privaten Schlüssels fehlgeschlagen"
 
-#: dcpp/Socket.cpp:409
+#: dcpp/Socket.cpp:408
 msgid ""
 "Failed to set up the socks server for UDP relay (check socks address and "
 "port)"
@@ -316,7 +316,7 @@ msgstr "Alle Unterverzeichnisse entfernen bevor dieses hinzugefügt wird"
 msgid "Shared Files"
 msgstr "Freigegebene Dateien"
 
-#: dcpp/Socket.cpp:270 dcpp/Socket.cpp:274
+#: dcpp/Socket.cpp:269 dcpp/Socket.cpp:273
 msgid "Socks server authentication failed (bad login / password?)"
 msgstr ""
 "Socks Server Authentifizierung fehlgeschlagen (Login / Passwort falsch?)"
@@ -338,16 +338,16 @@ msgstr "Zieldateiname zu lang"
 msgid "Target removed"
 msgstr "Ziel entfernt"
 
-#: dcpp/Socket.cpp:256
+#: dcpp/Socket.cpp:255
 msgid "The socks server doesn't support login / password authentication"
 msgstr "Socks Server unterstützt keine Authentifizierung mit Login / Passwort"
 
-#: dcpp/Socket.cpp:163 dcpp/Socket.cpp:174 dcpp/Socket.cpp:207
-#: dcpp/Socket.cpp:211 dcpp/Socket.cpp:238 dcpp/Socket.cpp:253
+#: dcpp/Socket.cpp:162 dcpp/Socket.cpp:173 dcpp/Socket.cpp:206
+#: dcpp/Socket.cpp:210 dcpp/Socket.cpp:237 dcpp/Socket.cpp:252
 msgid "The socks server failed establish a connection"
 msgstr "Socks Server konnte keine Verbindung aufbauen"
 
-#: dcpp/Socket.cpp:242
+#: dcpp/Socket.cpp:241
 msgid "The socks server requires authentication"
 msgstr "Socks Server benötigt Authentifizierung"
 
@@ -382,9 +382,9 @@ msgstr "%1% kann nicht umbenannt werden: %2%"
 msgid "Unable to send file %1%: %2%"
 msgstr "Datei %1% kann nicht gesendet werden: %2%"
 
-#: dcpp/Socket.cpp:55
-#, boost-format
-msgid "Unknown error: 0x%1%"
+#: dcpp/Socket.cpp:54
+#, fuzzy, c-format, boost-format
+msgid "Unknown error: 0x%1$x"
 msgstr "Unbekannter Fehler: 0x%1%"
 
 #: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468

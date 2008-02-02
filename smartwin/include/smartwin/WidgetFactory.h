@@ -559,9 +559,7 @@ template<typename ContainerWidgetType>
 typename WidgetFactory< ContainerWidgetType >::WidgetChildWindowPtr
 WidgetFactory< ContainerWidgetType >::createWidgetChildWindow( const typename WidgetChildWindow::Seed & cs )
 {
-	WidgetChildWindowPtr retVal = new WidgetChildWindow( this );
-	retVal->createWindow( cs );
-	return retVal;
+	return WidgetCreator< WidgetChildWindow >::createWindow( this, cs );
 }
 
 template<typename ContainerWidgetType>

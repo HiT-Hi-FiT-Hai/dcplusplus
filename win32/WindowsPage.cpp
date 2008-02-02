@@ -45,7 +45,6 @@ WindowsPage::ListItem WindowsPage::listItems[] = {
 	{ SettingsManager::OPEN_NOTEPAD, N_("Notepad") },
 	{ SettingsManager::OPEN_PUBLIC, N_("Public Hubs") },
 	{ SettingsManager::OPEN_FAVORITE_HUBS, N_("Favorite Hubs") },
-	{ SettingsManager::OPEN_DOWNLOADS, N_("Downloads") },
 	{ 0, 0 }
 };
 

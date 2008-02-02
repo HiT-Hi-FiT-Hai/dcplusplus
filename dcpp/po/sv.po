@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2008-01-23 22:20+0100\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"POT-Creation-Date: 2008-01-31 20:32+0100\n"
 "PO-Revision-Date: 2008-01-25 07:51+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -19,32 +19,32 @@ msgstr ""
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%'lld B"
 msgstr "%'lld B"
 
 #: dcpp/Util.cpp:343
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%.02f GiB"
 msgstr "%.02f GiB"
 
 #: dcpp/Util.cpp:339
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%.02f KiB"
 msgstr "%.02f KiB"
 
 #: dcpp/Util.cpp:341
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%.02f MiB"
 msgstr "%.02f MiB"
 
 #: dcpp/Util.cpp:347
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%.02f PiB"
 msgstr "%.02f PiB"
 
 #: dcpp/Util.cpp:345
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%.02f TiB"
 msgstr "%.02f TiB"
 
@@ -70,12 +70,12 @@ msgid "%1%: File not available"
 msgstr "%1%: Filen ej tillgänglig"
 
 #: dcpp/Util.cpp:337
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%d B"
 msgstr "%d B"
 
 #: dcpp/Util.cpp:377
-#, boost-format, c-format
+#, c-format, boost-format
 msgid "%s B"
 msgstr "%s B"
 
@@ -112,7 +112,7 @@ msgstr "CRC32 stämmer ej (SFV-check) (Fil: %1%)"
 msgid "Certificate not trusted, unable to connect"
 msgstr "Ej pålitligt certifikat, kan ej ansluta"
 
-#: dcpp/Socket.cpp:155 dcpp/ConnectionManager.cpp:187
+#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:187
 #: dcpp/BufferedSocket.cpp:154
 msgid "Connection timeout"
 msgstr "Inget svar på förbindelsen inom tidsgränsen"
@@ -188,7 +188,7 @@ msgstr "Misslyckades att ladda certifikatfil"
 msgid "Failed to load private key"
 msgstr "Misslyckades att ladda privat nyckel"
 
-#: dcpp/Socket.cpp:409
+#: dcpp/Socket.cpp:408
 msgid ""
 "Failed to set up the socks server for UDP relay (check socks address and "
 "port)"
@@ -311,7 +311,7 @@ msgstr "Ta bort alla underkataloger innan du lägger till denna"
 msgid "Shared Files"
 msgstr "Delade filer"
 
-#: dcpp/Socket.cpp:270 dcpp/Socket.cpp:274
+#: dcpp/Socket.cpp:269 dcpp/Socket.cpp:273
 msgid "Socks server authentication failed (bad login / password?)"
 msgstr ""
 "Verifiering hos socks-servern misslyckades (fel användarnamn / lösenord?)"
@@ -333,16 +333,16 @@ msgstr "Målets filnamn är för långt"
 msgid "Target removed"
 msgstr "Målet borttaget"
 
-#: dcpp/Socket.cpp:256
+#: dcpp/Socket.cpp:255
 msgid "The socks server doesn't support login / password authentication"
 msgstr "Socks-servern stöder inte användarnamn/lösenordsverifiering"
 
-#: dcpp/Socket.cpp:163 dcpp/Socket.cpp:174 dcpp/Socket.cpp:207
-#: dcpp/Socket.cpp:211 dcpp/Socket.cpp:238 dcpp/Socket.cpp:253
+#: dcpp/Socket.cpp:162 dcpp/Socket.cpp:173 dcpp/Socket.cpp:206
+#: dcpp/Socket.cpp:210 dcpp/Socket.cpp:237 dcpp/Socket.cpp:252
 msgid "The socks server failed establish a connection"
 msgstr "Socks-servern misslyckades upprätta en anslutning"
 
-#: dcpp/Socket.cpp:242
+#: dcpp/Socket.cpp:241
 msgid "The socks server requires authentication"
 msgstr "Socks-servern kräver verifiering"
 
@@ -377,9 +377,9 @@ msgstr "Kan ej döpa om %1%: %2%"
 msgid "Unable to send file %1%: %2%"
 msgstr "Kan ej skicka fil %1%: %2%"
 
-#: dcpp/Socket.cpp:55
-#, boost-format
-msgid "Unknown error: 0x%1%"
+#: dcpp/Socket.cpp:54
+#, fuzzy, c-format, boost-format
+msgid "Unknown error: 0x%1$x"
 msgstr "Okänt fel: 0x%1%"
 
 #: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468

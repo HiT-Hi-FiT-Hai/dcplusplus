@@ -58,6 +58,13 @@ public:
 		return retVal;
 	}
 
+	static typename WidgetType::ObjectType createWindow( Widget * parent, const typename WidgetType::Seed & cs )
+	{
+		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
+		retVal->createWindow( cs );
+		return retVal;
+	}
+
 	template< class ContainerType >
 	static typename WidgetType::ObjectType create( Widget * parent, ContainerType * container, const typename WidgetType::Seed & cs )
 	{

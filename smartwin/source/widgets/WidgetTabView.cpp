@@ -197,14 +197,8 @@ bool WidgetTabView::handleSized(const WidgetSizedEventResult& sz) {
 }
 
 void WidgetTabView::layout() {
-	Rectangle tmp = tab->getUsableArea();
+	Rectangle tmp = tab->getUsableArea(true);
 	if(!(tmp == clientSize)) {
-		Rectangle rctabs(tab->getClientAreaSize());
-		// Get rid of ugly border...assume y border is the same as x border
-		long border = (rctabs.size.x - tmp.size.x) / 2;
-		tmp.pos.x = rctabs.pos.x;
-		tmp.size.x = rctabs.size.x;
-		tmp.size.y += border;
 		int i = tab->getSelectedIndex();
 		if(i != -1) {
 			::MoveWindow(getTabInfo(i)->w->handle(), tmp.pos.x, tmp.pos.y, tmp.size.x, tmp.size.y, TRUE);

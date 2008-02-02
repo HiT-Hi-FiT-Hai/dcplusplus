@@ -35,7 +35,7 @@ const string SettingsManager::settingTags[] =
 {
 	// Strings
 	"Nick", "UploadSpeed", "Description", "DownloadDirectory", "EMail", "ExternalIp",
-	"Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths",
+	"Font", "ConnectionsOrder", "ConnectionsWidths", "HubFrameOrder", "HubFrameWidths",
 	"SearchFrameOrder", "SearchFrameWidths", "FavHubsFrameOrder", "FavHubsFrameWidths",
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths",
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "LogFormatPostDownload",
@@ -46,7 +46,7 @@ const string SettingsManager::settingTags[] =
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem",
 	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
 	"TLSPrivateKeyFile", "TLSCertificateFile", "TLSTrustedCertificatesPath", "BeepFile",
-	"Language", "DownloadsFrameOrder", "DownloadsFrameWidth",
+	"Language", "DownloadsOrder", "DownloadsWidth",
 	"SENTRY",
 	// Ints
 	"IncomingConnections", "InPort", "Slots", "AutoFollow", "ClearSearch",
@@ -77,7 +77,7 @@ const string SettingsManager::settingTags[] =
 	"UseTLS", "AutoSearchLimit", "AltSortOrder", "AutoKickNoFavs", "PromptPassword", "SpyFrameIgnoreTthSearches",
 	"DontDlAlreadyQueued", "MaxCommandLength", "AllowUntrustedHubs", "AllowUntrustedClients",
 	"TLSPort", "FastHash", "SortFavUsersFirst", "ShowShellMenu", "MinSegmentSize", "FollowLinks",
-	"SendBloom", "OpenDownloads",
+	"SendBloom", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -273,7 +273,6 @@ SettingsManager::SettingsManager()
 	setDefault(MIN_SEGMENT_SIZE, 1024);
 	setDefault(FOLLOW_LINKS, false);
 	setDefault(SEND_BLOOM, true);
-	setDefault(OPEN_DOWNLOADS, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);

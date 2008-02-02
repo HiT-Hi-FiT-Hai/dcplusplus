@@ -35,13 +35,22 @@ unsigned int WidgetTabSheet::addPage( const SmartUtil::tstring & header, unsigne
 	return ( unsigned int ) newIdx;
 }
 
-SmartWin::Rectangle WidgetTabSheet::getUsableArea() const
+SmartWin::Rectangle WidgetTabSheet::getUsableArea(bool cutBorders) const
 {
 	RECT rc;
 	::GetWindowRect(handle(), &rc);
 	::MapWindowPoints(NULL, getParent()->handle(), (LPPOINT)&rc, 2);
 	TabCtrl_AdjustRect( this->handle(), false, &rc );
-	return Rectangle( rc );
+	Rectangle rect( rc );
+	if(cutBorders) {
+		Rectangle rctabs(getClientAreaSize());
+		// Get rid of ugly border...assume y border is the same as x border
+		long border = (rctabs.size.x - rect.size.x) / 2;
+		rect.pos.x = rctabs.pos.x;
+		rect.size.x = rctabs.size.x;
+		rect.size.y += border;
+	}
+	return rect;
 }
 
 void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)
@@ -49,5 +58,20 @@ void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)
 	imageList = imageList_;
 	TabCtrl_SetImageList(handle(), imageList->handle());
 }
+
+inline SmartUtil::tstring WidgetTabSheet::getSelectedHeader() const
+{
+	TCITEM item;
+	item.mask = TCIF_TEXT;
+	TCHAR buffer[200];
+	item.cchTextMax = 198;
+	item.pszText = buffer;
+	if ( !TabCtrl_GetItem( this->handle(), getSelectedIndex(), & item ) )
+	{
+		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
+	}
+	return buffer;
+}
+
 
 }
