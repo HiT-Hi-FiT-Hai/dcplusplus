@@ -19,6 +19,8 @@
 * [ADC] Handle third person formatting (thanks poy)
 * Fix right-click issue when chat history is long (thanks poy)
 * In waiting users, show requested chunk (since we can't know % done)
+* Fixed crash when download connection was disconnected before any data was received
+* Fixed crash due to race condition on idle check (thans bigmuscle)
  
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

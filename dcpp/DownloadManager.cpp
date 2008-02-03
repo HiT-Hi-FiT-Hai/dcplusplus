@@ -471,6 +471,12 @@ void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource
 }
 
 void DownloadManager::failDownload(UserConnection* aSource, const string& reason) {
+
+	{
+		Lock l(cs);
+ 		idlers.erase(remove(idlers.begin(), idlers.end(), aSource), idlers.end());
+	}
+
 	Download* d = aSource->getDownload();
 
 	if(d) {
@@ -479,7 +485,10 @@ void DownloadManager::failDownload(UserConnection* aSource, const string& reason
 
 		QueueManager::getInstance()->putDownload(d, false);
 	}
-	removeConnection(aSource);
+
+	dcassert(aSource->getDownload() == NULL);
+	aSource->removeListener(this);
+	aSource->disconnect();
 }
 
 void DownloadManager::removeDownload(Download* d) {

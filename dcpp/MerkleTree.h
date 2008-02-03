@@ -114,6 +114,10 @@ public:
 	}
 
 	uint8_t* finalize() {
+		// No updates yet, make sure we have at least one leaf for 0-length files...
+		if(leaves.empty() && blocks.empty()) {
+			update(0, 0);
+		}
 		while(blocks.size() > 1) {
 			MerkleBlock& a = blocks[blocks.size()-2];
 			MerkleBlock& b = blocks[blocks.size()-1];
