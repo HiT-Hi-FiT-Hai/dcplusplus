@@ -26,13 +26,15 @@
 
 namespace dcpp {
 
+FastCriticalSection Identity::cs;
+
 OnlineUser::OnlineUser(const UserPtr& ptr, Client& client_, uint32_t sid_) : identity(ptr, sid_), client(client_) {
 
 }
 
 void Identity::getParams(StringMap& sm, const string& prefix, bool compatibility) const {
 	{
-		Lock l(cs);
+		FastLock l(cs);
 		for(InfMap::const_iterator i = info.begin(); i != info.end(); ++i) {
 			sm[prefix + string((char*)(&i->first), 2)] = i->second;
 		}
@@ -76,13 +78,20 @@ string Identity::getTag() const {
 }
 
 string Identity::get(const char* name) const {
-	Lock l(cs);
+	FastLock l(cs);
 	InfMap::const_iterator i = info.find(*(short*)name);
 	return i == info.end() ? Util::emptyString : i->second;
 }
 
+bool Identity::isSet(const char* name) const {
+	FastLock l(cs);
+	InfMap::const_iterator i = info.find(*(short*)name);
+	return i != info.end();
+}
+
+
 void Identity::set(const char* name, const string& val) {
-	Lock l(cs);
+	FastLock l(cs);
 	if(val.empty())
 		info.erase(*(short*)name);
 	else
@@ -90,7 +99,7 @@ void Identity::set(const char* name, const string& val) {
 }
 
 bool Identity::supports(const string& name) const {
-	const string& su = get("SU");
+	string su = get("SU");
 	StringTokenizer<string> st(su, ',');
 	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
 		if(*i == name)

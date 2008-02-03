@@ -301,6 +301,42 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const UserPtr& aUser, bool r
 	}
 }
 
+void QueueManager::FileMover::moveFile(const string& source, const string& target) {
+	Lock l(cs);
+	files.push_back(make_pair(source, target));
+	if(!active) {
+		active = true;
+		start();
+	}
+}
+
+int QueueManager::FileMover::run() {
+	for(;;) {
+		FilePair next;
+		{
+			Lock l(cs);
+			if(files.empty()) {
+				active = false;
+				return 0;
+			}
+			next = files.back();
+			files.pop_back();
+		}
+		try {
+			File::renameFile(next.first, next.second);
+		} catch(const FileException&) {
+			try {
+				// Try to just rename it to the correct name at least
+				string newTarget = Util::getFilePath(next.first) + Util::getFileName(next.second);
+				File::renameFile(next.first, newTarget);
+				LogManager::getInstance()->message(str(F_("%1% renamed to %2%") % next.first % newTarget));
+			} catch(const FileException& e) {
+				LogManager::getInstance()->message(str(F_("Unable to rename %1%: %2%") % next.first % e.getError()));
+			}
+		}
+	}
+}
+
 QueueManager::QueueManager() : lastSave(0), queueFile(Util::getConfigPath() + "Queue.xml"), dirty(true), nextSearch(0) {
 	TimerManager::getInstance()->addListener(this);
 	SearchManager::getInstance()->addListener(this);
@@ -920,6 +956,15 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 						if(q->isSet(QueueItem::FLAG_USER_LIST)) {
 							// Blah...no use keeping an unfinished file list...
 							File::deleteFile(q->getListName());
+						}
+						if(aDownload->getType() == Transfer::TYPE_FILE) {
+							// mark partially downloaded chunk, but align it to block size
+							int64_t downloaded = aDownload->getPos();
+							downloaded -= downloaded % aDownload->getTigerTree().getBlockSize();
+
+							if(downloaded > 0) {
+								q->addSegment(Segment(aDownload->getStartPos(), downloaded));
+							}
 						}
 					}
 

@@ -21,7 +21,10 @@
 * In waiting users, show requested chunk (since we can't know % done)
 * Fixed crash when download connection was disconnected before any data was received
 * Fixed crash due to race condition on idle check (thans bigmuscle)
- 
+* Fixed crash when copying identity
+* Fixed potential timer race condition (thanks bigmuscle)
+* The good parts of partially downloaded segments are now added to queue (thanks bigmuscle)
+  
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
 * Use system header arrows on common controls 6+ (thanks poy)

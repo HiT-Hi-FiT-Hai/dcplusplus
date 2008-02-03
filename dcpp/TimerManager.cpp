@@ -26,6 +26,7 @@ namespace dcpp {
 #ifdef _WIN32
 DWORD TimerManager::lastTick = 0;
 uint32_t TimerManager::cycles = 0;
+FastCriticalSection TimerManager::cs;
 #else
 timeval TimerManager::tv;
 #endif
@@ -52,6 +53,8 @@ int TimerManager::run() {
 
 uint64_t TimerManager::getTick() {
 #ifdef _WIN32
+	FastLock l(cs);
+
 	DWORD tick = ::GetTickCount();
 	if(tick < lastTick) {
 		cycles++;

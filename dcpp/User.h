@@ -103,8 +103,8 @@ public:
 	
 	Identity() : sid(0) { }
 	Identity(const UserPtr& ptr, uint32_t aSID) : user(ptr), sid(aSID) { }
-	Identity(const Identity& rhs) : Flags(rhs), user(rhs.user), sid(rhs.sid), info(rhs.info) { }
-	Identity& operator=(const Identity& rhs) { Lock l(cs); *static_cast<Flags*>(this) = rhs; user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
+	Identity(const Identity& rhs) : Flags(), sid(0) { *this = rhs; } // Use operator= since we have to lock before reading...
+	Identity& operator=(const Identity& rhs) { FastLock l(cs); *static_cast<Flags*>(this) = rhs; user = rhs.user; sid = rhs.sid; info = rhs.info; return *this; }
 
 #define GS(n, x) string get##n() const { return get(x); } void set##n(const string& v) { set(x, v); }
 	GS(Nick, "NI")
@@ -123,16 +123,17 @@ public:
 	void setHidden(bool hidden) { set("HI", hidden ? "1" : Util::emptyString); }
 	string getTag() const;
 	bool supports(const string& name) const;
-	bool isHub() const { return isClientType(CT_HUB) || !get("HU").empty(); }
-	bool isOp() const { return isClientType(CT_OP) || isClientType(CT_SU) || isClientType(CT_OWNER) || !get("OP").empty(); }
-	bool isRegistered() const { return isClientType(CT_REGGED) || !get("RG").empty(); }
-	bool isHidden() const { return !get("HI").empty(); }
-	bool isBot() const { return isClientType(CT_BOT) || !get("BO").empty(); }
-	bool isAway() const { return !get("AW").empty(); }
+	bool isHub() const { return isClientType(CT_HUB) || isSet("HU"); }
+	bool isOp() const { return isClientType(CT_OP) || isClientType(CT_SU) || isClientType(CT_OWNER) || isSet("OP"); }
+	bool isRegistered() const { return isClientType(CT_REGGED) || isSet("RG"); }
+	bool isHidden() const { return isSet("HI"); }
+	bool isBot() const { return isClientType(CT_BOT) || isSet("BO"); }
+	bool isAway() const { return isSet("AW"); }
 	bool isTcpActive() const { return !getIp().empty() || (user->isSet(User::NMDC) && !user->isSet(User::PASSIVE)); }
 	bool isUdpActive() const { return !getIp().empty() && !getUdpPort().empty(); }
 	string get(const char* name) const;
 	void set(const char* name, const string& val);
+	bool isSet(const char* name) const;
 	string getSIDString() const { return string((const char*)&sid, 4); }
 	
 	bool isClientType(ClientType ct) const;
@@ -145,8 +146,8 @@ private:
 	typedef std::tr1::unordered_map<short, string> InfMap;
 	typedef InfMap::iterator InfIter;
 	InfMap info;
-	/** @todo there are probably more threading issues here ...*/
-	mutable CriticalSection cs;
+
+	static FastCriticalSection cs;
 };
 
 class Client;

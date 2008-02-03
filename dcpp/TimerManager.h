@@ -74,6 +74,7 @@ private:
 #ifdef _WIN32
 	static DWORD lastTick;
 	static uint32_t cycles;
+	static FastCriticalSection cs;
 #else
 	static timeval tv;
 #endif
