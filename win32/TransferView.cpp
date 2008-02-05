@@ -85,13 +85,13 @@ TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* md
 		cs.background = (HBRUSH)(COLOR_3DFACE + 1);
 		cs.location = tabs->getUsableArea(true);
 		
-		connectionsWindow = createWidgetChildWindow(cs);
+		connectionsWindow = SmartWin::WidgetCreator<WidgetChildWindow>::createWindow(tabs, cs);
 		
 		tabs->addPage(T_("Connections"), 0);
 		
 		cs.style &= ~WS_VISIBLE;
 		cs.caption = T_("Downloads");
-		downloadsWindow = createWidgetChildWindow(cs);
+		downloadsWindow = SmartWin::WidgetCreator<WidgetChildWindow>::createWindow(tabs, cs);
 		tabs->addPage(T_("Downloads"), 1);
 	}
 	
