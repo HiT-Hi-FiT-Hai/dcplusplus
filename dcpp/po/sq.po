@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-01-31 20:32+0100\n"
+"POT-Creation-Date: 2008-02-05 20:19+0100\n"
 "Last-Translator:  <rrjeti@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -55,12 +55,12 @@ msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:143
+#: dcpp/QueueManager.cpp:332
 #, boost-format
 msgid "%1% renamed to %2%"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:547
+#: dcpp/DownloadManager.cpp:520
 #, fuzzy, boost-format
 msgid "%1%: File not available"
 msgstr "Fili s´është i arritshëm"
@@ -75,20 +75,20 @@ msgstr ""
 msgid "%s B"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:503
+#: dcpp/QueueManager.cpp:539
 msgid "A file of equal or larger size already exists at the target location"
 msgstr "Fili me madhësi të njejtë apo më të madhe gjindet ne vendin e caktuar"
 
-#: dcpp/QueueManager.cpp:446
+#: dcpp/QueueManager.cpp:482
 msgid "A file with a different size already exists in the queue"
 msgstr "Në listën e shkarkimeve egziston fili me madhësi tjetër"
 
-#: dcpp/QueueManager.cpp:449
+#: dcpp/QueueManager.cpp:485
 msgid "A file with different tth root already exists in the queue"
 msgstr ""
 "Në listën e shkarkimeve egziston një fil me një TTH-kontroll shumë tjetër"
 
-#: dcpp/QueueManager.cpp:413
+#: dcpp/QueueManager.cpp:449
 msgid "A file with the same hash already exists in your share"
 msgstr ""
 "Në shpërndarjet e tua egziston(qysh prej më para) fili i grimcuar(me madhësi "
@@ -98,11 +98,11 @@ msgstr ""
 msgid "All download slots taken"
 msgstr "Të gjitha kanalet për shkarkim janë të zëna"
 
-#: dcpp/DownloadManager.cpp:421
+#: dcpp/DownloadManager.cpp:385
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "SFV-kontrolli dha një shumë kontroll të gabuar CRC32"
 
-#: dcpp/DownloadManager.cpp:419
+#: dcpp/DownloadManager.cpp:383
 #, fuzzy, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
 msgstr "SFV-kontrolli dha një shumë kontroll të gabuar CRC32"
@@ -116,7 +116,7 @@ msgstr ""
 msgid "Connection timeout"
 msgstr "Jashtëkohe(Timeout) gjatë lidhjes"
 
-#: dcpp/DownloadManager.cpp:284
+#: dcpp/DownloadManager.cpp:248
 #, boost-format
 msgid "Could not open target file: %1%"
 msgstr ""
@@ -145,7 +145,7 @@ msgid ""
 "against: %4%%5%"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:516 dcpp/QueueManager.cpp:520
+#: dcpp/QueueManager.cpp:552 dcpp/QueueManager.cpp:556
 #, boost-format
 msgid "Duplicate source: %1%"
 msgstr ""
@@ -225,7 +225,7 @@ msgstr ""
 msgid "Finished hashing: %1% (%2%/s)"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:353
+#: dcpp/DownloadManager.cpp:317
 msgid "Full tree does not match TTH root"
 msgstr "Struktura e shkarkuar s`i përgjigjet TTH rrënjës"
 
@@ -246,11 +246,11 @@ msgstr "U rindërtua(përfundua)TTH-indeksimi i bazës kompjuterike(dosjes)"
 msgid "Hashing failed: %1%"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:264 dcpp/DownloadManager.cpp:269
+#: dcpp/DownloadManager.cpp:228 dcpp/DownloadManager.cpp:233
 msgid "Invalid size"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:486 dcpp/QueueManager.cpp:494
+#: dcpp/QueueManager.cpp:522 dcpp/QueueManager.cpp:530
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
@@ -269,7 +269,7 @@ msgstr ""
 msgid "Maximum command length exceeded"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:323
+#: dcpp/DownloadManager.cpp:287
 msgid "More data was sent than was expected"
 msgstr "U dërguan më tepër informata se sa që pritej"
 
@@ -277,7 +277,7 @@ msgstr "U dërguan më tepër informata se sa që pritej"
 msgid "No directory specified"
 msgstr "S´është caktuar asnjë dosje"
 
-#: dcpp/DownloadManager.cpp:462
+#: dcpp/DownloadManager.cpp:426
 msgid "No slots available"
 msgstr "Kanalet s`janë të arritshme/në dispozicion"
 
@@ -318,11 +318,11 @@ msgstr ""
 msgid "TLS disabled, no certificate file set"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:481 dcpp/QueueManager.cpp:490
+#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:526
 msgid "Target filename too long"
 msgstr "Emri i filit është shumë i gjatë"
 
-#: dcpp/QueueManager.cpp:769
+#: dcpp/QueueManager.cpp:805
 msgid "Target removed"
 msgstr ""
 
@@ -343,7 +343,7 @@ msgstr "Socks serveri kërkon verifikim"
 msgid "The temporary download directory cannot be shared"
 msgstr "Dosja me shkarkimet e pa përfunduara s´mund të shpërndahet"
 
-#: dcpp/QueueManager.cpp:436
+#: dcpp/QueueManager.cpp:472
 msgid "This file is already queued"
 msgstr ""
 
@@ -351,7 +351,7 @@ msgstr ""
 msgid "Unable to create thread"
 msgstr "S`mund të krijon strukturë"
 
-#: dcpp/QueueManager.cpp:957
+#: dcpp/QueueManager.cpp:1002
 #, boost-format
 msgid "Unable to open filelist: %1%"
 msgstr ""
@@ -360,7 +360,7 @@ msgstr ""
 msgid "Unable to read hash data file"
 msgstr "Data fili i TTH'së s`mund të lexohet"
 
-#: dcpp/DownloadManager.cpp:145
+#: dcpp/QueueManager.cpp:334
 #, fuzzy, boost-format
 msgid "Unable to rename %1%: %2%"
 msgstr "S`mund të krijon strukturë"
@@ -379,7 +379,7 @@ msgstr ""
 msgid "Virtual directory name already exists"
 msgstr "Emri viritual i dosjes egziston"
 
-#: dcpp/QueueManager.cpp:383 dcpp/QueueManager.cpp:407
+#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
 msgid "You're trying to download from yourself!"
 msgstr "Ty orvatesh të shkarkosh nga vetvetja!"
 
