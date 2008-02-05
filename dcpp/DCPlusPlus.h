@@ -169,7 +169,7 @@ extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
 
 #ifdef BUILDING_DCPP
-#define PACKAGE "dcpp"
+#define PACKAGE "libdcpp"
 #define LOCALEDIR Util::getLocalePath().c_str()
 #define _(String) dgettext(PACKAGE, String)
 #define F_(String) boost::format(dgettext(PACKAGE, String))
