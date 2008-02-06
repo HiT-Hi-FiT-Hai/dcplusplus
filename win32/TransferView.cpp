@@ -36,7 +36,7 @@ int TransferView::connectionIndexes[] = { CONNECTION_COLUMN_USER, CONNECTION_COL
 int TransferView::connectionSizes[] = { 125, 375, 100, 100, 125, 75, 100, 100 };
 
 int TransferView::downloadIndexes[] = { DOWNLOAD_COLUMN_FILE, DOWNLOAD_COLUMN_PATH, DOWNLOAD_COLUMN_STATUS, DOWNLOAD_COLUMN_TIMELEFT, DOWNLOAD_COLUMN_SPEED, DOWNLOAD_COLUMN_DONE, DOWNLOAD_COLUMN_SIZE };
-int TransferView::downloadSizes[] = { 200, 300, 150, 200, 125, 100};
+int TransferView::downloadSizes[] = { 200, 300, 150, 200, 125, 100, 100 };
 
 static const char* connectionNames[] = {
 	N_("User"),
@@ -58,7 +58,6 @@ static const char* downloadNames[] = {
 	N_("Done"),
 	N_("Size")
 };
-
 
 TransferView::TransferView(SmartWin::Widget* parent, SmartWin::WidgetTabView* mdi_) : 
 	WidgetFactory<SmartWin::WidgetChildWindow>(parent),
@@ -472,28 +471,33 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 					break;
 				}
 			}
-		} else if(i->first == DOWNLOADS_TICK) {
+		} else if(i->first == DOWNLOADS_ADD_USER) {
 			boost::scoped_ptr<TickInfo> ti(static_cast<TickInfo*>(i->second));
 			int i = find(ti->path);
 			if(i == -1) {
 				int64_t size = QueueManager::getInstance()->getSize(ti->path);
 				if(size == -1) {
-					return 0;
+					break;
 				}
 				TTHValue tth;
 				if(QueueManager::getInstance()->getTTH(ti->path, tth)) {
 					i = downloads->insert(new DownloadInfo(ti->path, size, tth));
 				} else {
-					return 0;
+					break;
 				}
 			}
-			DownloadInfo* di = downloads->getData(i);
-			di->update(*ti);
-			downloads->update(i);
-		} else if(i->first == DOWNLOADS_DISCONNECTED) {
+		} else if(i->first == DOWNLOADS_TICK) {
 			boost::scoped_ptr<TickInfo> ti(static_cast<TickInfo*>(i->second));
-			
 			int i = find(ti->path);
+			if(i != -1) {
+				DownloadInfo* di = downloads->getData(i);
+				di->update(*ti);
+				downloads->update(i);
+			}
+		} else if(i->first == DOWNLOADS_REMOVE_USER) {
+			boost::scoped_ptr<TickInfo> ti(static_cast<TickInfo*>(i->second));
+			int i = find(ti->path);
+			
 			if(i != -1) {
 				DownloadInfo* di = downloads->getData(i);
 				if(--di->users == 0) {
@@ -599,7 +603,7 @@ TransferView::DownloadInfo::DownloadInfo(const string& target, int64_t size_, co
 	path(target), 
 	done(QueueManager::getInstance()->getPos(target)), 
 	size(size_), 
-	users(0),
+	users(1),
 	tth(tth_)
 {
 	columns[DOWNLOAD_COLUMN_FILE] = Text::toT(Util::getFileName(target));
@@ -614,7 +618,6 @@ int TransferView::DownloadInfo::getImage() const {
 }
 
 void TransferView::DownloadInfo::update(const TransferView::TickInfo& ti) {
-	users = ti.users;
 	done = ti.done + QueueManager::getInstance()->getInstance()->getPos(ti.path);
 	bps = ti.bps;
 	update();
@@ -719,6 +722,8 @@ void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
 	
 	ui->setStatusString(statusString);
 	speak(CONNECTIONS_UPDATE, ui);
+	
+	speak(DOWNLOADS_ADD_USER, new TickInfo(d->getPath()));
 }
 
 void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
@@ -751,7 +756,6 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 			ti = new TickInfo(d->getPath());
 			dis.push_back(ti);
 		}
-		ti->users++;
 		ti->bps += d->getAverageSpeed();
 		ti->done += d->getPos();
 	}
@@ -769,8 +773,7 @@ void TransferView::on(DownloadManagerListener::Failed, Download* d, const string
 
 	speak(CONNECTIONS_UPDATE, ui);
 	
-	speak(DOWNLOADS_DISCONNECTED, new TickInfo(d->getPath()));
-
+	speak(DOWNLOADS_REMOVE_USER, new TickInfo(d->getPath()));
 }
 
 void TransferView::on(UploadManagerListener::Starting, Upload* u) throw() {
@@ -817,7 +820,7 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 void TransferView::on(DownloadManagerListener::Complete, Download* d) throw() { 
 	onTransferComplete(d, false);
 
-	speak(DOWNLOADS_DISCONNECTED, new TickInfo(d->getPath()));
+	speak(DOWNLOADS_REMOVE_USER, new TickInfo(d->getPath()));
 }
 
 void TransferView::on(UploadManagerListener::Complete, Upload* aUpload) throw() { 

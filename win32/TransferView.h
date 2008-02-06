@@ -67,12 +67,13 @@ private:
 	};
 	
 	enum {
-		DOWNLOADS_DISCONNECTED,
-		DOWNLOADS_REMOVED,
+		DOWNLOADS_ADD_USER,
 		DOWNLOADS_TICK,
+		DOWNLOADS_REMOVE_USER,
+		DOWNLOADS_REMOVED,
 		CONNECTIONS_ADD,
 		CONNECTIONS_REMOVE,
-		CONNECTIONS_UPDATE,
+		CONNECTIONS_UPDATE
 	};
 
 	enum {
@@ -176,12 +177,11 @@ private:
 	};
 
 	struct TickInfo : public Task {
-		TickInfo(const string& path_) : path(path_), done(0), bps(0), users(0) { }
+		TickInfo(const string& path_) : path(path_), done(0), bps(0) { }
 		
 		string path;
 		int64_t done;
 		double bps;
-		int users;
 	};
 
 	
