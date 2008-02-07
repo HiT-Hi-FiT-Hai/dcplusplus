@@ -29,12 +29,27 @@ END
 // Bitmap
 //
 
-IDB_FOLDERS             BITMAP                  "res/folders.bmp"
+IDB_ADL_SEARCH          BITMAP                  "res/menu/ADLSearch.bmp"
 IDB_ARROWS              BITMAP                  "res/arrows.bmp"
-IDB_USERS               BITMAP                  "res/users.bmp"
-IDB_TOOLBAR             BITMAP                  "res/toolbar.bmp"
+IDB_DL_QUEUE            BITMAP                  "res/menu/DLQueue.bmp"
+IDB_FAVORITE_HUBS       BITMAP                  "res/menu/FavoriteHubs.bmp"
+IDB_FAVORITE_USERS      BITMAP                  "res/menu/FavoriteUsers.bmp"
+IDB_FINISHED_DL         BITMAP                  "res/menu/FinishedDL.bmp"
+IDB_FINISHED_UL         BITMAP                  "res/menu/FinishedUL.bmp"
+IDB_FOLDERS             BITMAP                  "res/folders.bmp"
+IDB_FOLLOW              BITMAP                  "res/menu/Follow.bmp"
+IDB_NETWORK_STATS       BITMAP                  "res/menu/NetworkStats.bmp"
+IDB_NOTEPAD             BITMAP                  "res/menu/Notepad.bmp"
+IDB_OPEN_FILE_LIST      BITMAP                  "res/menu/OpenFileList.bmp"
+IDB_PUBLIC_HUBS         BITMAP                  "res/menu/PublicHubs.bmp"
+IDB_RECONNECT           BITMAP                  "res/menu/Reconnect.bmp"
+IDB_SEARCH              BITMAP                  "res/menu/Search.bmp"
+IDB_SEARCH_SPY          BITMAP                  "res/menu/SearchSpy.bmp"
+IDB_SETTINGS            BITMAP                  "res/menu/Settings.bmp"
 IDB_TOOLBAR20           BITMAP                  "res/toolbar20.bmp"
 IDB_TOOLBAR20_HOT       BITMAP                  "res/toolbar20-highlight.bmp"
+IDB_USERS               BITMAP                  "res/users.bmp"
+IDB_WAITING_USERS       BITMAP                  "res/menu/WaitingUsers.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

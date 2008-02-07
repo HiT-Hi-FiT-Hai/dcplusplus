@@ -56,14 +56,12 @@ public:
 	/// RichEditBox object type.
 	typedef typename WidgetRichTextBox::ObjectType WidgetRichTextBoxPtr;
 
-#ifdef PORT_ME
 	/// ExtendedMenu class type.
-	typedef SmartWin::WidgetMenuExtended< EventHandlerClass > WidgetMenuExtended;
+	typedef SmartWin::WidgetMenuExtended WidgetMenuExtended;
 
 	/// ExtendedMenu object type.
 	typedef typename WidgetMenuExtended::ObjectType WidgetMenuExtendedPtr;
-#endif
-	
+
 	/// ChooseFont class and object type.
 	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
 
@@ -115,17 +113,15 @@ public:
 		return WidgetCreator< WidgetRichTextBox >::attach( this, id );
 	}
 
-#ifdef PORT_ME
 	/// Creates an Extended Menu
 	/** The returned object is of type std::tr1::shared_ptr< WidgetMenuExtended >, but
 	  * you should use the typedef WidgetMenuExtendedPtr and not <br>
 	  * the shared_ptr itself since this may change in future releases.
 	  */
-	WidgetMenuExtendedPtr createExtendedMenu()
+	WidgetMenuExtendedPtr createExtendedMenu(const typename WidgetMenuExtended::Seed& cs = WidgetMenuExtended::Seed())
 	{
-		return WidgetCreator< WidgetMenuExtended >::create( this );
+		return WidgetCreator< WidgetMenuExtended >::create( this, cs );
 	}
-#endif
 
 	/// Creates a Tool Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!

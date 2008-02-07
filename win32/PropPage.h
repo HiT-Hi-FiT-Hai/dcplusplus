@@ -27,12 +27,9 @@
 class PropPage : public WidgetFactory<SmartWin::WidgetDialog>
 {
 public:
-	PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) { 
-		onRaw(std::tr1::bind(&PropPage::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
-	}
-	virtual ~PropPage() { }
+	PropPage(SmartWin::Widget* parent);
+	virtual ~PropPage();
 
-	SmartWin::Widget* getWidget() { return boost::polymorphic_cast<SmartWin::Widget*>(this); }
 	virtual void write() = 0;
 	virtual int getHelpId() = 0;
 

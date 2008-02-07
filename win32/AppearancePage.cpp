@@ -89,7 +89,8 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), lan
 	const tstring cur = Text::toT(SETTING(LANGUAGE));
 	for(TStringList::const_iterator i = langs.begin(); i != langs.end(); ++i, ++j) {
 		languages->addValue(*i);
-		if(selected != 0 && *i == cur || (*i == _T("en") && cur == _T("C"))) {
+		
+		if(selected == 0 && (*i == cur || (*i == _T("en") && cur == _T("C")))) {
 			selected = j;
 		}
 	}

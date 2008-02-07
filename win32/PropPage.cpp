@@ -24,6 +24,14 @@
 
 #include <dcpp/SettingsManager.h>
 
+
+PropPage::PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) { 
+	onRaw(std::tr1::bind(&PropPage::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
+}
+
+PropPage::~PropPage() {
+}
+
 void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = 0 */)
 {
 	dcassert(page != NULL);
