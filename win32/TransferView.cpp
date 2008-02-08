@@ -476,15 +476,13 @@ HRESULT TransferView::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 			int i = find(ti->path);
 			if(i == -1) {
 				int64_t size = QueueManager::getInstance()->getSize(ti->path);
-				if(size == -1) {
-					break;
-				}
 				TTHValue tth;
-				if(QueueManager::getInstance()->getTTH(ti->path, tth)) {
+				if(size != -1 && QueueManager::getInstance()->getTTH(ti->path, tth)) {
 					i = downloads->insert(new DownloadInfo(ti->path, size, tth));
-				} else {
-					break;
 				}
+			} else {
+				downloads->getData(i)->users++;
+				downloads->update(i);
 			}
 		} else if(i->first == DOWNLOADS_TICK) {
 			boost::scoped_ptr<TickInfo> ti(static_cast<TickInfo*>(i->second));
