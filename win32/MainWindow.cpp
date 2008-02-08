@@ -176,80 +176,84 @@ void MainWindow::initWindow() {
 
 void MainWindow::initMenu() {
 	dcdebug("initMenu\n");
-	mainMenu = createExtendedMenu();
 
-	// DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
-	SmartWin::MenuColorInfo menuColorInfo = mainMenu->getColorInfo();
-	menuColorInfo.colorImageBackground = RGB(255, 0, 255);
-	mainMenu->setColorInfo(menuColorInfo);
+	{
+		WidgetMenuExtended::Seed cs;
+		cs.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
+		mainMenu = createExtendedMenu(cs);
+	}
 
-	WidgetMenuExtendedPtr file = mainMenu->appendPopup(T_("&File"));
-	file->setColorInfo(menuColorInfo);
+	{
+		WidgetMenuExtendedPtr file = mainMenu->appendPopup(T_("&File"));
 
-	file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this));
-	file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FOLLOW)));
-	file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
-	file->appendSeparatorItem();
+		file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this));
+		file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FOLLOW)));
+		file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
+		file->appendSeparatorItem();
 
-	file->appendItem(IDC_OPEN_FILE_LIST, T_("Open file list...\tCtrl+L"), std::tr1::bind(&MainWindow::handleOpenFileList, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_OPEN_FILE_LIST)));
-	file->appendItem(IDC_OPEN_OWN_LIST, T_("Open own list"), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
-	file->appendItem(IDC_MATCH_ALL, T_("Match downloaded lists"), std::tr1::bind(&MainWindow::handleMatchAll, this));
-	file->appendItem(IDC_REFRESH_FILE_LIST, T_("Refresh file list\tCtrl+E"), std::tr1::bind(&MainWindow::handleRefreshFileList, this));
-	file->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this));
-	file->appendSeparatorItem();
+		file->appendItem(IDC_OPEN_FILE_LIST, T_("Open file list...\tCtrl+L"), std::tr1::bind(&MainWindow::handleOpenFileList, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_OPEN_FILE_LIST)));
+		file->appendItem(IDC_OPEN_OWN_LIST, T_("Open own list"), std::tr1::bind(&MainWindow::handleOpenOwnList, this));
+		file->appendItem(IDC_MATCH_ALL, T_("Match downloaded lists"), std::tr1::bind(&MainWindow::handleMatchAll, this));
+		file->appendItem(IDC_REFRESH_FILE_LIST, T_("Refresh file list\tCtrl+E"), std::tr1::bind(&MainWindow::handleRefreshFileList, this));
+		file->appendItem(IDC_OPEN_DOWNLOADS, T_("Open downloads directory"), std::tr1::bind(&MainWindow::handleOpenDownloadsDir, this));
+		file->appendSeparatorItem();
 
-	file->appendItem(IDC_SETTINGS, T_("Settings..."), std::tr1::bind(&MainWindow::handleSettings, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SETTINGS)));
-	file->appendSeparatorItem();
-	file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this));
+		file->appendItem(IDC_SETTINGS, T_("Settings..."), std::tr1::bind(&MainWindow::handleSettings, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SETTINGS)));
+		file->appendSeparatorItem();
+		file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this));
+	}
 
-	WidgetMenuExtendedPtr view = mainMenu->appendPopup(T_("&View"));
-	view->setColorInfo(menuColorInfo);
+	{
+		WidgetMenuExtendedPtr view = mainMenu->appendPopup(T_("&View"));
 
-	view->appendItem(IDC_PUBLIC_HUBS, T_("&Public Hubs\tCtrl+P"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_PUBLIC_HUBS)));
-	view->appendItem(IDC_FAVORITE_HUBS, T_("&Favorite Hubs\tCtrl+F"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
-	view->appendItem(IDC_FAVUSERS, T_("Favorite &Users\tCtrl+U"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_USERS)));
-	view->appendSeparatorItem();
-	view->appendItem(IDC_QUEUE, T_("&Download Queue\tCtrl+D"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DL_QUEUE)));
-	view->appendItem(IDC_FINISHED_DL, T_("Finished Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FINISHED_DL)));
-	view->appendItem(IDC_WAITING_USERS, T_("Waiting Users"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_WAITING_USERS)));
-	view->appendItem(IDC_FINISHED_UL, T_("Finished Uploads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FINISHED_UL)));
-	view->appendSeparatorItem();
-	view->appendItem(IDC_SEARCH, T_("&Search\tCtrl+S"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
-	view->appendItem(IDC_ADL_SEARCH, T_("ADL Search"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_ADL_SEARCH)));
-	view->appendItem(IDC_SEARCH_SPY, T_("Search Spy"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH_SPY)));
-	view->appendSeparatorItem();
-	view->appendItem(IDC_NOTEPAD, T_("&Notepad\tCtrl+N"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NOTEPAD)));
-	view->appendItem(IDC_SYSTEM_LOG, T_("System Log"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
-	view->appendItem(IDC_NET_STATS, T_("Network Statistics"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NETWORK_STATS)));
-	view->appendItem(IDC_HASH_PROGRESS, T_("Indexing progress"), std::tr1::bind(&MainWindow::handleHashProgress, this));
-	
-	WidgetMenuExtendedPtr window = mainMenu->appendPopup(T_("&Window"));
-	window->setColorInfo(menuColorInfo);
+		view->appendItem(IDC_PUBLIC_HUBS, T_("&Public Hubs\tCtrl+P"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_PUBLIC_HUBS)));
+		view->appendItem(IDC_FAVORITE_HUBS, T_("&Favorite Hubs\tCtrl+F"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
+		view->appendItem(IDC_FAVUSERS, T_("Favorite &Users\tCtrl+U"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_USERS)));
+		view->appendSeparatorItem();
+		view->appendItem(IDC_QUEUE, T_("&Download Queue\tCtrl+D"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DL_QUEUE)));
+		view->appendItem(IDC_FINISHED_DL, T_("Finished Downloads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FINISHED_DL)));
+		view->appendItem(IDC_WAITING_USERS, T_("Waiting Users"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_WAITING_USERS)));
+		view->appendItem(IDC_FINISHED_UL, T_("Finished Uploads"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FINISHED_UL)));
+		view->appendSeparatorItem();
+		view->appendItem(IDC_SEARCH, T_("&Search\tCtrl+S"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
+		view->appendItem(IDC_ADL_SEARCH, T_("ADL Search"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_ADL_SEARCH)));
+		view->appendItem(IDC_SEARCH_SPY, T_("Search Spy"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH_SPY)));
+		view->appendSeparatorItem();
+		view->appendItem(IDC_NOTEPAD, T_("&Notepad\tCtrl+N"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NOTEPAD)));
+		view->appendItem(IDC_SYSTEM_LOG, T_("System Log"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1));
+		view->appendItem(IDC_NET_STATS, T_("Network Statistics"), std::tr1::bind(&MainWindow::handleOpenWindow, this, _1), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_NETWORK_STATS)));
+		view->appendItem(IDC_HASH_PROGRESS, T_("Indexing progress"), std::tr1::bind(&MainWindow::handleHashProgress, this));
+	}
 
-	window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, T_("Close disconnected"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_PM, T_("Close all PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_OFFLINE_PM, T_("Close all offline PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_DIR_LIST, T_("Close all file list windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
-	window->appendItem(IDC_CLOSE_ALL_SEARCH_FRAME, T_("Close all search windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	{
+		WidgetMenuExtendedPtr window = mainMenu->appendPopup(T_("&Window"));
 
-	WidgetMenuExtendedPtr help = mainMenu->appendPopup(T_("&Help"));
-	help->setColorInfo(menuColorInfo);
+		window->appendItem(IDC_CLOSE_ALL_DISCONNECTED, T_("Close disconnected"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+		window->appendItem(IDC_CLOSE_ALL_PM, T_("Close all PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+		window->appendItem(IDC_CLOSE_ALL_OFFLINE_PM, T_("Close all offline PM windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+		window->appendItem(IDC_CLOSE_ALL_DIR_LIST, T_("Close all file list windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+		window->appendItem(IDC_CLOSE_ALL_SEARCH_FRAME, T_("Close all search windows"), std::tr1::bind(&MainWindow::handleCloseWindows, this, _1));
+	}
 
-	help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
-	help->appendSeparatorItem();
-	help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
-	help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this));
-	help->appendSeparatorItem();
-	help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_GEOIPFILE, T_("GeoIP database update"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_TRANSLATIONS, T_("Translations"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_FAQ, T_("Frequently asked questions"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_FORUM, T_("Help forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_DISCUSS, T_("DC++ discussion forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_REQUEST_FEATURE, T_("Request a feature"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_REPORT_BUG, T_("Report a bug"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-	help->appendItem(IDC_HELP_DONATE, T_("Donate (paypal)"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	{
+		WidgetMenuExtendedPtr help = mainMenu->appendPopup(T_("&Help"));
+
+		help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+		help->appendSeparatorItem();
+		help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this));
+		help->appendSeparatorItem();
+		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_GEOIPFILE, T_("GeoIP database update"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_TRANSLATIONS, T_("Translations"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_FAQ, T_("Frequently asked questions"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_FORUM, T_("Help forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_DISCUSS, T_("DC++ discussion forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_REQUEST_FEATURE, T_("Request a feature"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_REPORT_BUG, T_("Report a bug"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+		help->appendItem(IDC_HELP_DONATE, T_("Donate (paypal)"), std::tr1::bind(&MainWindow::handleLink, this, _1));
+	}
 
 	mainMenu->attach();
 }

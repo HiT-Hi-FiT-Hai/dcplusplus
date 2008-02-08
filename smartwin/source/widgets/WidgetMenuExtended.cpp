@@ -34,16 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace SmartWin {
 
-void WidgetMenuExtended::setColorInfo( const MenuColorInfo & info )
-{
-	itsColorInfo = info;
-}
-
-MenuColorInfo WidgetMenuExtended::getColorInfo()
-{
-	return itsColorInfo;
-}
-
 int WidgetMenuExtended::getItemIndex( unsigned int id )
 {
 	int index = 0;
@@ -871,8 +861,8 @@ unsigned WidgetMenuExtended::trackPopupMenu( Widget * mainWindow, const ScreenCo
 
 WidgetMenuExtended::WidgetMenuExtended( SmartWin::Widget* parent ) :
 isSysMenu( false ),
-drawSidebar( false ),
 itsTitleFont( new Font( _T( "Tahoma" ), 20, 10 ) ),
+drawSidebar( false ),
 itsChildrenRef( WidgetMenuExtendedPlatformImplementation< WidgetMenuExtended, CurrentPlatform >::itsChildren ),
 itsItemDataRef( WidgetMenuExtendedPlatformImplementation< WidgetMenuExtended, CurrentPlatform >::itsItemData )
 {

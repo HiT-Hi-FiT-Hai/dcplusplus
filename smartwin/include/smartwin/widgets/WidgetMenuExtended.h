@@ -179,9 +179,10 @@ public:
 	typedef std::tr1::shared_ptr< MenuType > WidgetMenuExtendedPtr;
 
 	struct Seed {
-		Seed(bool popup_) : popup(popup_) { }
+		Seed(bool popup_, const MenuColorInfo& colorInfo_) : popup(popup_), colorInfo(colorInfo_) { }
 		Seed() : popup(false) { }
 		bool popup;
+		MenuColorInfo colorInfo;
 	};
 
 	HMENU handle() const {
@@ -253,6 +254,9 @@ protected:
 	HMENU itsHandle;
 
 	Widget* itsParent;
+
+	// Contains information about menu colors
+	MenuColorInfo itsColorInfo;
 
 	typedef std::map<unsigned, Widget::CallbackType> CallbackMap;
 	CallbackMap callbacks;
@@ -334,7 +338,7 @@ public:
 	* wish to truly be creative and be 100% in control you must handle this Event
 	* and do the actualy drawing of the Menu yourself, but for most people it will
 	* be enough to just manipulate the background colors etc of the MenuItemData
-	* given to the menu in the appendItem or to call the setColorInfo function <br>
+	* given to the menu in the appendItem function <br>
 	* Note! <br>
 	* If this event is handled you also MUST handle the Measure Item Event!!
 	*/
@@ -466,16 +470,6 @@ public:
 	/// Sets item text
 	void setItemText( unsigned int id, SmartUtil::tstring text );
 
-	/// Sets color information for the menu
-	/** The MenuColorInfo declares which colors will be used for drawing the menu (
-	* items ) <br>
-	* Have no effect if you override the onDrawItem/onMeasureItem
-	*/
-	void setColorInfo( const MenuColorInfo & info );
-
-	/// Returns menu color information
-	MenuColorInfo getColorInfo();
-
 	/// Returns item data
 	MenuItemDataPtr getData( int itemIndex );
 
@@ -499,9 +493,6 @@ protected:
 
 	// if true title is drawn as sidebar
 	bool drawSidebar;
-
-	// Contains information about menu colors
-	MenuColorInfo itsColorInfo;
 
 	// work around for gcc
 	std::vector< WidgetMenuExtendedPlatformImplementation< WidgetMenuExtended, CurrentPlatform > ::WidgetMenuExtendedPtr > & itsChildrenRef;
@@ -546,6 +537,8 @@ void WidgetMenuExtendedPlatformImplementation< MenuType, SmartWinDesktop >::atta
 template< typename MenuType >
 void WidgetMenuExtendedPlatformImplementation< MenuType, SmartWinDesktop >::create(const Seed& cs)
 {
+	itsColorInfo = cs.colorInfo;
+
 	// Create menu
 	if(cs.popup)
 		itsHandle = ::CreatePopupMenu();
@@ -564,7 +557,7 @@ WidgetMenuExtendedPlatformImplementation< MenuType, SmartWinDesktop >::appendPop
 {
 	// create popup menu pointer
 	WidgetMenuExtendedPtr retVal ( new MenuType(this->itsParent) );
-	retVal->create( Seed(true) );
+	retVal->create( Seed(true, itsColorInfo) );
 
 	// init structure for new item
 	MENUITEMINFO info;
