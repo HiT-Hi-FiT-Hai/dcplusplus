@@ -184,10 +184,7 @@ bool WidgetTabView::handleTextChanging(WidgetChildWindow* w, const SmartUtil::ts
 }
 
 SmartUtil::tstring WidgetTabView::formatTitle(SmartUtil::tstring title) {
-	if(title.length() > MAX_TITLE_LENGTH) {
-		title = title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
-	}
-	return SmartUtil::escapeMenu(title);
+	return SmartUtil::escapeMenu(SmartUtil::cutText(title, MAX_TITLE_LENGTH));
 }
 
 bool WidgetTabView::handleSized(const WidgetSizedEventResult& sz) {

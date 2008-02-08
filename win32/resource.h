@@ -42,6 +42,9 @@
 #define IDB_TOOLBAR20_HOT	168
 #define IDB_USERS		169
 #define IDB_WAITING_USERS	170
+#define IDB_EXIT		171
+#define IDB_HUB			172
+#define IDB_DCPP		173
 
 #define IDD_ABOUTBOX 				200
 #define IDD_ADLS_PROPERTIES			201

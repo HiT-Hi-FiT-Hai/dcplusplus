@@ -101,74 +101,58 @@ void WidgetMenuExtended::checkItem( unsigned int id, bool setChecked, bool radio
 		::CheckMenuRadioItem( this->itsHandle, id, id, id, id );
 }
 
-bool WidgetMenuExtended::isItemEnabled( unsigned int id )
+UINT WidgetMenuExtended::getMenuState( UINT id, bool byPosition )
 {
-	// init struct for item info
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( MENUITEMINFO ) );
-	info.cbSize = sizeof( MENUITEMINFO );
-
-	// set flag
-	info.fMask = MIIM_STATE;
-
-	// get item info
-	if ( ::GetMenuItemInfo( this->itsHandle, id, FALSE, & info ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in isItemEnabled()" ) );
-
-	return ( info.fState & MFS_ENABLED ) == MFS_ENABLED;
+	return ::GetMenuState(this->handle(), id, byPosition ? MF_BYPOSITION : MF_BYCOMMAND); 
 }
 
-bool WidgetMenuExtended::isItemChecked( unsigned int id )
+bool WidgetMenuExtended::isChecked( UINT id, bool byPosition )
 {
-	// init struct for item info
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( MENUITEMINFO ) );
-	info.cbSize = sizeof( MENUITEMINFO );
-
-	// set flag
-	info.fMask = MIIM_STATE;
-
-	// get item info
-	if ( ::GetMenuItemInfo( this->itsHandle, id, FALSE, & info ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in isItemChecked()" ) );
-
-	return ( info.fState & MF_CHECKED ) == MF_CHECKED;
+	return (getMenuState(id, byPosition) & MF_CHECKED) == MF_CHECKED; 
 }
 
-SmartUtil::tstring WidgetMenuExtended::getItemText( unsigned int id )
+bool WidgetMenuExtended::isEnabled( UINT id, bool byPosition )
 {
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( MENUITEMINFO ) );
-	info.cbSize = sizeof( MENUITEMINFO );
-
-	// set flag
-	info.fMask = MIIM_STRING;
-
-	if ( ::GetMenuItemInfo( this->itsHandle, id, FALSE, & info ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in getItemText()" ) );
-
-	boost::scoped_array< TCHAR > buffer( new TCHAR[++info.cch] );
-	info.dwTypeData = buffer.get();
-
-	if ( ::GetMenuItemInfo( this->itsHandle, id, FALSE, & info ) == FALSE )
-		throw xCeption( _T( "Couldn't get item info in getItemText()" ) );
-
-	SmartUtil::tstring retVal = info.dwTypeData;
-	return retVal;
+	return !(getMenuState(id, byPosition) & (MF_DISABLED | MF_GRAYED)); 
 }
 
-void WidgetMenuExtended::setItemText( unsigned int id, SmartUtil::tstring text )
+bool WidgetMenuExtended::isPopup( UINT id, bool byPosition )
 {
-	MENUITEMINFO info;
-	memset( & info, 0, sizeof( MENUITEMINFO ) );
-	info.cbSize = sizeof( MENUITEMINFO );
+	return (getMenuState(id, byPosition) & MF_POPUP) == MF_POPUP; 
+}
+
+bool WidgetMenuExtended::isSeparator( UINT id, bool byPosition )
+{
+	return (getMenuState(id, byPosition) & MF_SEPARATOR) == MF_SEPARATOR; 
+}
+
+SmartUtil::tstring WidgetMenuExtended::getText( unsigned id, bool byPosition )
+{
+	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
 	// set flag
-	info.fMask = MIIM_STRING;
-	info.dwTypeData = (TCHAR*) text.c_str();
+	mi.fMask = MIIM_STRING;
 
-	if ( ::SetMenuItemInfo( this->itsHandle, id, FALSE, & info ) == FALSE )
-		throw xCeption( _T( "Couldn't set item info in setItemText()" ) );
+	if ( ::GetMenuItemInfo( this->itsHandle, id, byPosition, & mi ) == FALSE )
+		throw xCeption( _T( "Couldn't get item info in WidgetMenuExtended::getText" ) );
+
+	boost::scoped_array< TCHAR > buffer( new TCHAR[++mi.cch] );
+	mi.dwTypeData = buffer.get();
+	if ( ::GetMenuItemInfo( this->itsHandle, id, byPosition, & mi ) == FALSE )
+		throw xCeption( _T( "Couldn't get item info in WidgetMenuExtended::getText" ) );
+	return mi.dwTypeData;
+}
+
+void WidgetMenuExtended::setText( unsigned id, const SmartUtil::tstring& text )
+{
+	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
+
+	// set flag
+	mi.fMask = MIIM_STRING;
+	mi.dwTypeData = (TCHAR*) text.c_str();
+
+	if ( ::SetMenuItemInfo( this->itsHandle, id, FALSE, & mi ) == FALSE )
+		throw xCeption( _T( "Couldn't set item info in WidgetMenuExtended::setText" ) );
 }
 
 void WidgetMenuExtended::setTitle( const SmartUtil::tstring & title, bool drawSidebar /* = false */)
@@ -224,7 +208,6 @@ bool WidgetMenuExtended::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	// setup colors
 	MenuColorInfo colorInfo = this->itsColorInfo;
 	COLORREF colorMenuBar = colorInfo.colorMenuBar;
-	COLORREF colorTitle = colorInfo.colorTitle;
 	COLORREF colorMenuDraw = colorInfo.colorMenu; // color for drawing menu
 	COLORREF colorFillHighlighted = ColorUtilities::lightenColor( colorInfo.colorHighlight, 0.7 );
 
@@ -351,7 +334,7 @@ bool WidgetMenuExtended::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		Rectangle textRectangle( 0, 0, sidebarWidth, rect.bottom - rect.top );
 
 		// draw background
-		Brush brush ( colorInfo.colorTitle );
+		Brush brush ( colorInfo.colorMenuBar );
 		canvas.fillRectangle( textRectangle, brush );
 
 		// draw title
@@ -372,7 +355,7 @@ bool WidgetMenuExtended::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	// set item background
 	if ( wrapper->isMenuTitleItem ) // for title
 	{
-		Brush brush ( colorTitle );
+		Brush brush ( colorMenuBar );
 		canvas.fillRectangle( itemRectangle, brush );
 
 		// draw raised border
@@ -859,9 +842,20 @@ unsigned WidgetMenuExtended::trackPopupMenu( Widget * mainWindow, const ScreenCo
 	return retVal;
 }
 
+WidgetMenuExtended::ObjectType WidgetMenuExtended::getChild( unsigned position ) {
+	HMENU h = ::GetSubMenu(handle(), position);
+	for(size_t i = 0; i < this->itsChildren.size(); ++i) {
+		ObjectType& menu = this->itsChildren[i];
+		if(menu->handle() == h) {
+			return menu;
+		}
+	}
+	return ObjectType();
+}
+
 WidgetMenuExtended::WidgetMenuExtended( SmartWin::Widget* parent ) :
 isSysMenu( false ),
-itsTitleFont( new Font( _T( "Tahoma" ), 20, 10 ) ),
+itsTitleFont( new Font( DefaultGuiFont ) ),
 drawSidebar( false ),
 itsChildrenRef( WidgetMenuExtendedPlatformImplementation< WidgetMenuExtended, CurrentPlatform >::itsChildren ),
 itsItemDataRef( WidgetMenuExtendedPlatformImplementation< WidgetMenuExtended, CurrentPlatform >::itsItemData )

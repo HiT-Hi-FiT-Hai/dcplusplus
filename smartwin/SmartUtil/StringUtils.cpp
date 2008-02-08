@@ -3,6 +3,12 @@
 #include "UtilSystemHeaders.h"
 
 namespace SmartUtil {
+	tstring cutText(tstring str, unsigned int maxLength) {
+		if(str.length() > maxLength)
+			str = str.substr(0, maxLength - 3) + _T("...");
+		return str;
+	}
+
 	tstring escapeMenu(tstring str) {
 		tstring::size_type i = 0;
 		while( (i = str.find(_T('&'), i)) != tstring::npos) {

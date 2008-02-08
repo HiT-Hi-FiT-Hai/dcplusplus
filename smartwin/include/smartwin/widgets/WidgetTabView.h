@@ -60,6 +60,8 @@ public:
 	
 	void create( const Seed & cs = Seed() );
 
+	enum { MAX_TITLE_LENGTH = 20 };
+
 protected:
 	friend class WidgetCreator<WidgetTabView>;
 	
@@ -68,7 +70,6 @@ protected:
 	virtual ~WidgetTabView() { }
 
 private:
-	enum { MAX_TITLE_LENGTH = 20 };
 	struct TabInfo {
 		TabInfo(WidgetChildWindow* w_) : w(w_) { }
 		WidgetChildWindow* w;

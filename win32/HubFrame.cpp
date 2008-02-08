@@ -1170,18 +1170,23 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuExtended::Seed cs;
+	cs.popup = true;
+	cs.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
+	WidgetMenuExtendedPtr menu = createExtendedMenu(cs);
+
+	menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
-		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this));
+		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));
 	}
 	
-	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this));
+	menu->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), std::tr1::bind(&HubFrame::handleReconnect, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
 	menu->appendItem(IDC_COPY_HUB, T_("Copy &address to clipboard"), std::tr1::bind(&HubFrame::handleCopyHub, this));
 
 	prepareMenu(menu, UserCommand::CONTEXT_HUB, url);
 	menu->appendSeparatorItem();
-	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true));
+	menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&HubFrame::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
 
 	inTabMenu = true;
 	

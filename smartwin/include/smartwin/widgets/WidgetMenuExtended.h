@@ -124,9 +124,6 @@ struct MenuColorInfo
 	/// Strip bar color
 	COLORREF colorStrip;
 
-	/// Title background color
-	COLORREF colorTitle;
-
 	/// Menu bar color
 	COLORREF colorMenuBar;
 
@@ -146,14 +143,12 @@ struct MenuColorInfo
 	*/
 	MenuColorInfo( COLORREF menuColor = ColorUtilities::darkenColor( ::GetSysColor( COLOR_WINDOW ), 0.02 ),
 		COLORREF stripColor = ColorUtilities::darkenColor( ::GetSysColor( COLOR_3DFACE ), 0.02 ),
-		COLORREF titleColor = ColorUtilities::darkenColor( ::GetSysColor( COLOR_MENUBAR ), 0.1 ),
 		COLORREF menuBarColor = ::GetSysColor( COLOR_MENUBAR ),
 		COLORREF highlightColor = ::GetSysColor( COLOR_HIGHLIGHT ),
 		COLORREF titleTextColor = ::GetSysColor( COLOR_MENUTEXT ),
 		COLORREF imageBackground = RGB( 0, 0, 0 ) ) // black
 		: colorMenu( menuColor ),
 		colorStrip( stripColor ),
-		colorTitle( titleColor ),
 		colorMenuBar( menuBarColor ),
 		colorHighlight( highlightColor ),
 		colorTitleText( titleTextColor ),
@@ -452,11 +447,16 @@ public:
 	*/
 	void checkItem( unsigned int id, bool setChecked, bool radioMark );
 
-	/// Returns true if item is checked
-	bool isItemEnabled( unsigned int id );
+	UINT getMenuState(UINT id, bool byPosition = false);
 
-	/// Returns true if item is checked
-	bool isItemChecked( unsigned int id );
+	/// Return true if the item is a separator (by position)
+	bool isSeparator(UINT id, bool byPosition = false);
+	/// Return true if the menu item is checked
+	bool isChecked(UINT id, bool byPosition = false);
+	/// Return true if the menu item is a popup menu
+	bool isPopup(UINT id, bool byPosition = false);
+	/// Return true if the menu item is enabled (not grey and not disabled)
+	bool isEnabled(UINT id, bool byPosition = false);
 
 	/// Returns true if menu is "system menu" (icon in top left of window)
 	bool isSystemMenu()
@@ -464,14 +464,22 @@ public:
 		return isSysMenu;
 	}
 
-	/// Returns item text
-	SmartUtil::tstring getItemText( unsigned int id );
+	/// Returns the text of a specific menu item
+	/** Which menu item you wish to retrieve the text for is defined by the "id"
+	  * parameter of the function.
+	  */
+	SmartUtil::tstring getText( unsigned idOrPos, bool byPos );
 
-	/// Sets item text
-	void setItemText( unsigned int id, SmartUtil::tstring text );
+	/// Sets the text of a specific menu item
+	/** Which menu item you wish to set the text is defined by the "id"
+	  * parameter of the function.
+	  */
+	void setText( unsigned id, const SmartUtil::tstring& text );
 
 	/// Returns item data
 	MenuItemDataPtr getData( int itemIndex );
+
+	ObjectType getChild(UINT position);
 
 	virtual ~WidgetMenuExtended();
 

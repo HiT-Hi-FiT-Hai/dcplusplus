@@ -36,7 +36,7 @@ SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
 {
 	MENUITEMINFO mi = { sizeof(MENUITEMINFO) };
 
-	mi.fMask = MIIM_TYPE;
+	mi.fMask = MIIM_STRING;
 	if ( ::GetMenuItemInfo( this->handle(), id, byPosition, & mi ) == 0 )
 	{
 		xAssert( false, _T( "Error while trying to get MenuItemInfo in WidgetMenu::getText..." ) );
@@ -59,7 +59,7 @@ void WidgetMenu::setText( unsigned id, const SmartUtil::tstring& text )
 	info.dwTypeData = (TCHAR*) text.c_str();
 
 	if ( ::SetMenuItemInfo( this->handle(), id, FALSE, & info ) == FALSE )
-		throw xCeption( _T( "Couldn't set item info in setItemText()" ) );
+		throw xCeption( _T( "Couldn't set item info in WidgetMenu::setText" ) );
 }
 
 void WidgetMenuBase::addCommands(Widget* widget) {

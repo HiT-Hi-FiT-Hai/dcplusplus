@@ -186,7 +186,7 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuExtendedPtr file = mainMenu->appendPopup(T_("&File"));
 
-		file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this));
+		file->appendItem(IDC_QUICK_CONNECT, T_("&Quick Connect ...\tCtrl+Q"), std::tr1::bind(&MainWindow::handleQuickConnect, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_HUB)));
 		file->appendItem(IDC_FOLLOW, T_("Follow last redirec&t\tCtrl+T"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FOLLOW)));
 		file->appendItem(IDC_RECONNECT, T_("&Reconnect\tCtrl+R"), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_RECONNECT)));
 		file->appendSeparatorItem();
@@ -200,7 +200,7 @@ void MainWindow::initMenu() {
 
 		file->appendItem(IDC_SETTINGS, T_("Settings..."), std::tr1::bind(&MainWindow::handleSettings, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SETTINGS)));
 		file->appendSeparatorItem();
-		file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this));
+		file->appendItem(IDC_EXIT, T_("E&xit"), std::tr1::bind(&MainWindow::handleExit, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
 	}
 
 	{
@@ -241,7 +241,7 @@ void MainWindow::initMenu() {
 		help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
 		help->appendSeparatorItem();
 		help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
-		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this));
+		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DCPP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 		help->appendItem(IDC_HELP_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleLink, this, _1));
