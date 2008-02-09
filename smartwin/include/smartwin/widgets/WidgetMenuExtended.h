@@ -174,8 +174,7 @@ public:
 	typedef std::tr1::shared_ptr< MenuType > WidgetMenuExtendedPtr;
 
 	struct Seed {
-		Seed(bool popup_, const MenuColorInfo& colorInfo_) : popup(popup_), colorInfo(colorInfo_) { }
-		Seed() : popup(false) { }
+		Seed(const MenuColorInfo& colorInfo_ = MenuColorInfo()) : popup(true), colorInfo(colorInfo_) { }
 		bool popup;
 		MenuColorInfo colorInfo;
 	};
@@ -565,7 +564,7 @@ WidgetMenuExtendedPlatformImplementation< MenuType, SmartWinDesktop >::appendPop
 {
 	// create popup menu pointer
 	WidgetMenuExtendedPtr retVal ( new MenuType(this->itsParent) );
-	retVal->create( Seed(true, itsColorInfo) );
+	retVal->create( Seed(itsColorInfo) );
 
 	// init structure for new item
 	MENUITEMINFO info;

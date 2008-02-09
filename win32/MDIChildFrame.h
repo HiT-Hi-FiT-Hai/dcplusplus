@@ -186,10 +186,7 @@ private:
 	}
 	
 	bool handleContextMenu(const SmartWin::ScreenCoordinate& pt) {
-		WidgetMenuExtended::Seed cs;
-		cs.popup = true;
-		cs.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
-		SmartWin::WidgetMenuExtended::ObjectType menu = createExtendedMenu(cs);
+		SmartWin::WidgetMenuExtended::ObjectType menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
 		menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
 		menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&ThisType::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

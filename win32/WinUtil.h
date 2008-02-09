@@ -71,6 +71,7 @@ public:
 		static const SmartWin::WidgetComboBox::Seed comboBoxStatic;
 		static const SmartWin::WidgetComboBox::Seed comboBoxEdit;
 		static const SmartWin::WidgetListView::Seed listView;
+		static const SmartWin::WidgetMenuExtended::Seed menuExtended;
 		static const SmartWin::WidgetTextBox::Seed textBox;
 		static const SmartWin::WidgetTreeView::Seed treeView;
 	};

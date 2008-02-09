@@ -1170,10 +1170,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuExtended::Seed cs;
-	cs.popup = true;
-	cs.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
-	WidgetMenuExtendedPtr menu = createExtendedMenu(cs);
+	WidgetMenuExtendedPtr menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
 
 	menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
 

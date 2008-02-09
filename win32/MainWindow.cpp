@@ -178,8 +178,8 @@ void MainWindow::initMenu() {
 	dcdebug("initMenu\n");
 
 	{
-		WidgetMenuExtended::Seed cs;
-		cs.colorInfo.colorImageBackground = RGB(255, 0, 255); // DC++ bitmaps use RGB(255, 0, 255) as their background (transparent) color
+		WidgetMenuExtended::Seed cs = WinUtil::Seeds::menuExtended;
+		cs.popup = false;
 		mainMenu = createExtendedMenu(cs);
 	}
 
