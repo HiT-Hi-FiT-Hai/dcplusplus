@@ -132,6 +132,7 @@ namespace Text {
 	}
 	
 	string toDOS(string tmp);
+	wstring toDOS(wstring tmp);
 
 }
 

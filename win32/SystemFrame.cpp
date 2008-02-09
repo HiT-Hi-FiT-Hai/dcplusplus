@@ -59,6 +59,7 @@ void SystemFrame::addLine(time_t t, const tstring& msg) {
 		log->replaceSelection(_T(""));
 	}
 	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
+	log->sendMessage(WM_VSCROLL, SB_BOTTOM);
 
 	setDirty(SettingsManager::BOLD_SYSTEM_LOG);
 }

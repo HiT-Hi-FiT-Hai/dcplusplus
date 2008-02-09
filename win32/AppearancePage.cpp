@@ -44,7 +44,7 @@ PropPage::Item AppearancePage::items[] = {
 
 PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::ALT_SORT_ORDER, N_("Sort all downloads first") },
-	{ SettingsManager::FILTER_MESSAGES, N_("Filter kick and NMDC debug messages") },
+	{ SettingsManager::FILTER_MESSAGES, N_("Filter kick messages") },
 	{ SettingsManager::MINIMIZE_TRAY, N_("Minimize to tray") },
 	{ SettingsManager::TIME_STAMPS, N_("Show timestamps in chat by default") },
 	{ SettingsManager::STATUS_IN_CHAT, N_("View status messages in main chat") },

@@ -24,7 +24,12 @@
 * Fixed crash when copying identity
 * Fixed potential timer race condition (thanks bigmuscle)
 * The good parts of partially downloaded segments are now added to queue (thanks bigmuscle)
-  
+* Fancy menus (thanks poy)
+* [ADC] Added /me handling (thanks poy)  
+* Fixed issues with scrolling (thanks poy)
+* Fixed re-add sources showing wrong sources (thanks poy)
+* Partially fixed 
+
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
 * Use system header arrows on common controls 6+ (thanks poy)

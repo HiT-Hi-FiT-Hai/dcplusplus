@@ -69,13 +69,13 @@ MainWindow::MainWindow() :
 	links.homepage = _T("http://dcpp.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
-	links.translations = _T("http://sourceforge.net/tracker/?atid=460289&group_id=40287");
 	links.faq = links.homepage + _T("faq/");
 	links.help = links.homepage + _T("forum/");
 	links.discuss = links.homepage + _T("forum/");
 	links.features = links.homepage + _T("bugzilla/");
 	links.bugs = links.homepage + _T("bugzilla/");
-
+	links.donate = _T("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8");
+	
 	initWindow();
 	initMenu();
 	initToolbar();
@@ -246,7 +246,6 @@ void MainWindow::initMenu() {
 		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 		help->appendItem(IDC_HELP_DOWNLOADS, T_("Downloads"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 		help->appendItem(IDC_HELP_GEOIPFILE, T_("GeoIP database update"), std::tr1::bind(&MainWindow::handleLink, this, _1));
-		help->appendItem(IDC_HELP_TRANSLATIONS, T_("Translations"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 		help->appendItem(IDC_HELP_FAQ, T_("Frequently asked questions"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 		help->appendItem(IDC_HELP_FORUM, T_("Help forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 		help->appendItem(IDC_HELP_DISCUSS, T_("DC++ discussion forum"), std::tr1::bind(&MainWindow::handleLink, this, _1));
@@ -880,10 +879,6 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 					links.geoipfile = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
-				if(xml.findChild("Translations")) {
-					links.translations = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
 				if(xml.findChild("Faq")) {
 					links.faq = Text::toT(xml.getChildData());
 				}
@@ -949,9 +944,6 @@ void MainWindow::handleLink(unsigned id) {
 	case IDC_HELP_GEOIPFILE:
 		site = links.geoipfile;
 		break;
-	case IDC_HELP_TRANSLATIONS:
-		site = links.translations;
-		break;
 	case IDC_HELP_FAQ:
 		site = links.faq;
 		break;
@@ -968,8 +960,7 @@ void MainWindow::handleLink(unsigned id) {
 		site = links.bugs;
 		break;
 	case IDC_HELP_DONATE:
-		site
-		    = Text::toT("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8");
+		site = links.donate;
 		break;
 	default:
 		dcassert(0);

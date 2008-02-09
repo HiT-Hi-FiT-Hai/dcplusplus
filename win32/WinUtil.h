@@ -90,7 +90,7 @@ public:
 	 * @param status Message that should be shown in the status line.
 	 * @return True if the command was processed, false otherwise.
 	 */
-	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status);
+	static bool checkCommand(tstring& cmd, tstring& param, tstring& message, tstring& status, bool& thirdPerson);
 
 	static void openFile(const tstring& file);
 	static void openFolder(const tstring& file);

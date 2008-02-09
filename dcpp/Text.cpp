@@ -417,4 +417,25 @@ string Text::toDOS(string tmp) {
 	return tmp;
 }
 
+wstring Text::toDOS(wstring tmp) {
+	if(tmp.empty())
+		return Util::emptyStringW;
+
+	if(tmp[0] == L'\r' && (tmp.size() == 1 || tmp[1] != L'\n')) {
+		tmp.insert(1, L"\n");
+	}
+	for(string::size_type i = 1; i < tmp.size() - 1; ++i) {
+		if(tmp[i] == L'\r' && tmp[i+1] != L'\n') {
+			// Mac ending
+			tmp.insert(i+1, L"\n");
+			i++;
+		} else if(tmp[i] == L'\n' && tmp[i-1] != L'\r') {
+			// Unix encoding
+			tmp.insert(i, L"\r");
+			i++;
+		}
+	}
+	return tmp;
+}
+
 } // namespace dcpp

@@ -560,16 +560,25 @@ void AdcHub::connect(const OnlineUser& user, string const& token, bool secure) {
 	}
 }
 
-void AdcHub::hubMessage(const string& aMessage) {
+void AdcHub::hubMessage(const string& aMessage, bool thirdPerson) {
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST).addParam(aMessage));
+	AdcCommand c(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST);
+	c.addParam(aMessage);
+	if(thirdPerson)
+		c.addParam("ME", "1");
+	send(c);
 }
 
-void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage) {
+void AdcHub::privateMessage(const OnlineUser& user, const string& aMessage, bool thirdPerson) {
 	if(state != STATE_NORMAL)
 		return;
-	send(AdcCommand(AdcCommand::CMD_MSG, user.getIdentity().getSID(), AdcCommand::TYPE_ECHO).addParam(aMessage).addParam("PM", getMySID()));
+	AdcCommand c(AdcCommand::CMD_MSG, user.getIdentity().getSID(), AdcCommand::TYPE_ECHO);
+	c.addParam(aMessage);
+	if(thirdPerson)
+		c.addParam("ME", "1");
+	c.addParam("PM", getMySID());
+	send(c);
 }
 
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString, const string& aToken) {

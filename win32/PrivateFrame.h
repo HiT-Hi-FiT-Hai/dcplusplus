@@ -42,7 +42,7 @@ public:
 	static void closeAll();
 	static void closeAllOffline();
 
-	void sendMessage(const tstring& msg);
+	void sendMessage(const tstring& msg, bool thirdPerson = false);
 
 private:
 	typedef MDIChildFrame<PrivateFrame> BaseType;
