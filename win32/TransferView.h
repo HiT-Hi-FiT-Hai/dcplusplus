@@ -117,6 +117,7 @@ private:
 		int64_t queued;
 		int64_t speed;
 		int64_t chunk;
+		int64_t chunkPos;
 		
 		tstring columns[CONNECTION_COLUMN_LAST];
 		void update(const UpdateInfo& ui);
@@ -167,7 +168,8 @@ private:
 		int64_t speed;
 		void setStatusString(const tstring& aStatusString) { statusString = aStatusString; updateMask |= MASK_STATUS_STRING; }
 		tstring statusString;
-		void setChunk(int64_t aChunk) { chunk = aChunk; updateMask |= MASK_CHUNK; }
+		void setChunk(int64_t aChunkPos, int64_t aChunk) { chunkPos = aChunkPos; chunk = aChunk; updateMask |= MASK_CHUNK; }
+		int64_t chunkPos;
 		int64_t chunk;
 		
 		void setIP(const tstring& aIp) { ip = aIp; updateMask |= MASK_IP; }
@@ -277,6 +279,7 @@ private:
 	virtual void on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) throw();
 	virtual void on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) throw();
 
+	virtual void on(DownloadManagerListener::Requesting, Download* aDownload) throw();
 	virtual void on(DownloadManagerListener::Complete, Download* aDownload) throw();
 	virtual void on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) throw();
 	virtual void on(DownloadManagerListener::Starting, Download* aDownload) throw();

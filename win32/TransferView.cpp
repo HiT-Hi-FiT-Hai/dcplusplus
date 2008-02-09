@@ -33,7 +33,7 @@
 #include <dcpp/Upload.h>
 
 int TransferView::connectionIndexes[] = { CONNECTION_COLUMN_USER, CONNECTION_COLUMN_STATUS, CONNECTION_COLUMN_SPEED, CONNECTION_COLUMN_CHUNK, CONNECTION_COLUMN_TRANSFERED, CONNECTION_COLUMN_QUEUED, CONNECTION_COLUMN_CIPHER, CONNECTION_COLUMN_IP };
-int TransferView::connectionSizes[] = { 125, 375, 100, 100, 125, 75, 100, 100 };
+int TransferView::connectionSizes[] = { 125, 375, 100, 125, 125, 75, 100, 100 };
 
 int TransferView::downloadIndexes[] = { DOWNLOAD_COLUMN_FILE, DOWNLOAD_COLUMN_PATH, DOWNLOAD_COLUMN_STATUS, DOWNLOAD_COLUMN_TIMELEFT, DOWNLOAD_COLUMN_SPEED, DOWNLOAD_COLUMN_DONE, DOWNLOAD_COLUMN_SIZE };
 int TransferView::downloadSizes[] = { 200, 300, 150, 200, 125, 100, 100 };
@@ -42,7 +42,7 @@ static const char* connectionNames[] = {
 	N_("User"),
 	N_("Status"),
 	N_("Speed"),
-	N_("Chunk size"),
+	N_("Chunk"),
 	N_("Transfered (Ratio)"),
 	N_("Queued"),
 	N_("Cipher"),
@@ -575,8 +575,9 @@ void TransferView::ConnectionInfo::update(const UpdateInfo& ui) {
 	}
 	
 	if(ui.updateMask & UpdateInfo::MASK_CHUNK) {
+		chunkPos = ui.chunkPos;
 		chunk = ui.chunk;
-		columns[CONNECTION_COLUMN_CHUNK] = Text::toT(Util::formatBytes(ui.chunk));
+		columns[CONNECTION_COLUMN_CHUNK] = Text::toT(Util::formatBytes(chunkPos) + "/" + Util::formatBytes(chunk));
 	}
 	
 	if(ui.updateMask & UpdateInfo::MASK_SPEED) {
@@ -682,7 +683,7 @@ static tstring getFile(Transfer* t) {
 void TransferView::starting(UpdateInfo* ui, Transfer* t) {
 	ui->setStatus(ConnectionInfo::STATUS_RUNNING);
 	ui->setTransfered(t->getPos(), t->getActual());
-	ui->setChunk(t->getSize());
+	ui->setChunk(t->getPos(), t->getSize());
 	const UserConnection& uc = t->getUserConnection();
 	ui->setCipher(Text::toT(uc.getCipherName()));
 	tstring country = Text::toT(Util::getIpCountry(uc.getRemoteIp()));
@@ -694,10 +695,21 @@ void TransferView::starting(UpdateInfo* ui, Transfer* t) {
 	}
 }
 
-void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
+void TransferView::on(DownloadManagerListener::Requesting, Download* d) throw() {
 	UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
 	
 	starting(ui, d);
+
+	ui->setStatusString(str(TF_("Requesting %1%") % getFile(d)));
+
+	speak(CONNECTIONS_UPDATE, ui);
+	
+	speak(DOWNLOADS_ADD_USER, new TickInfo(d->getPath()));
+}
+
+void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
+	UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
+	
 	tstring statusString;
 
 	if(d->getUserConnection().isSecure()) {
@@ -720,8 +732,6 @@ void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
 	
 	ui->setStatusString(statusString);
 	speak(CONNECTIONS_UPDATE, ui);
-	
-	speak(DOWNLOADS_ADD_USER, new TickInfo(d->getPath()));
 }
 
 void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
@@ -731,7 +741,7 @@ void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) thr
 		UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
 		ui->setTransfered(d->getPos(), d->getActual());
 		ui->setSpeed(d->getAverageSpeed());
-
+		ui->setChunk(d->getPos(), d->getSize());
 		tasks.add(CONNECTIONS_UPDATE, ui);
 	}
 

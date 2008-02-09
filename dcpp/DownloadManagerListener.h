@@ -45,10 +45,16 @@ public:
 	typedef X<1> Failed;
 	typedef X<2> Starting;
 	typedef X<3> Tick;
+	typedef X<3> Requesting;
 
 	/**
 	 * This is the first message sent before a download starts.
-	 * No other messages will be sent before.
+	 * No other messages will be sent before this.
+	 */
+	virtual void on(Requesting, Download*) throw() { }
+
+	/**
+	 * This is the first message sent before a download starts.
 	 */
 	virtual void on(Starting, Download*) throw() { }
 

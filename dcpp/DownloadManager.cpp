@@ -192,7 +192,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST) && d->getType() == Transfer::TYPE_FULL_LIST) {
 		d->setFlag(Download::FLAG_XML_BZ_LIST);
 	}
+
+	fire(DownloadManagerListener::Requesting(), d);
 	aConn->send(d->getCommand(aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET)));
+	
 }
 
 void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcCommand& cmd) throw() {
