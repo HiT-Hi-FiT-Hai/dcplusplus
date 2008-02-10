@@ -67,7 +67,7 @@ bool AboutDlg::handleInitDialog() {
 	centerWindow();
 
 	c.addListener(this);
-	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	c.downloadFile("http://dcplusplus.sourceforge.net.nyud.net/version.xml");
 
 	return false;
 }

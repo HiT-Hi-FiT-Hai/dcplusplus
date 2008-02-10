@@ -106,7 +106,7 @@ MainWindow::MainWindow() :
 
 	c = new HttpConnection;
 	c->addListener(this);
-	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	c->downloadFile("http://dcplusplus.sourceforge.net.nyud.net/version.xml");
 
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	startSocket();
@@ -348,9 +348,10 @@ void MainWindow::handleExit() {
 }
 
 void MainWindow::handleQuickConnect() {
-	///@todo send user to settings
-	if (SETTING(NICK).empty())
+	if (SETTING(NICK).empty()) {
+        postMessage(WM_COMMAND, IDC_SETTINGS);
 		return;
+	}
 
 	LineDlg dlg(this, T_("Quick Connect"), T_("Address"));
 

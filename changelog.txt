@@ -13,7 +13,7 @@
 * Added tab drag/drop (thanks poy)
 * Changed Pothead to mikejj 
 * Fixed search spy crash
-* Upgraded to bzip 1.0.4 (thanks pothead)
+* Upgraded to bzip 1.0.4 (thanks mikejj)
 * Tab tooltips (thanks poy)
 * Allow spaces in the description field (poy)
 * [ADC] Handle third person formatting (thanks poy)
@@ -29,6 +29,7 @@
 * Fixed issues with scrolling (thanks poy)
 * Fixed re-add sources showing wrong sources (thanks poy)
 * Partially fixed kick message filtering (thanks mikejj)
+* version.xml now use Coral (ullner)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
