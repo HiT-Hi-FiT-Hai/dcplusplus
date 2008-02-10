@@ -92,6 +92,13 @@ void WidgetTabView::remove(WidgetChildWindow* w) {
 		titleChangedFunction(SmartUtil::tstring());
 }
 
+SmartUtil::tstring WidgetTabView::getTabText(WidgetChildWindow* w) {
+	int i = findTab(w);
+	if(i != -1)
+		return tab->getText(i);
+	return SmartUtil::tstring();
+}
+
 void WidgetTabView::onTabContextMenu(WidgetChildWindow* w, const std::tr1::function<bool (const ScreenCoordinate& pt)>& f) {
 	TabInfo* ti = getTabInfo(w);
 	if(ti) {
@@ -174,7 +181,7 @@ WidgetTabView::TabInfo* WidgetTabView::getTabInfo(int i) {
 bool WidgetTabView::handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText) {
 	int i = findTab(w);
 	if(i != -1) {
-		tab->setHeader(i, formatTitle(newText));
+		tab->setText(i, formatTitle(newText));
 		layout();
 
 		if((i == active) && titleChangedFunction)
@@ -184,7 +191,9 @@ bool WidgetTabView::handleTextChanging(WidgetChildWindow* w, const SmartUtil::ts
 }
 
 SmartUtil::tstring WidgetTabView::formatTitle(SmartUtil::tstring title) {
-	return SmartUtil::escapeMenu(SmartUtil::cutText(title, MAX_TITLE_LENGTH));
+	if(title.length() > MAX_TITLE_LENGTH)
+		title = title.substr(0, MAX_TITLE_LENGTH - 3) + _T("...");
+	return SmartUtil::escapeMenu(title);
 }
 
 bool WidgetTabView::handleSized(const WidgetSizedEventResult& sz) {

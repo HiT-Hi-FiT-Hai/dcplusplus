@@ -44,6 +44,8 @@ public:
 	WidgetChildWindow* getActive();
 	void setActive(WidgetChildWindow* w) { setActive(findTab(w)); }
 
+	SmartUtil::tstring getTabText(WidgetChildWindow* w);
+
 	void onTitleChanged(const std::tr1::function<void (const SmartUtil::tstring&)>& f) {
 		titleChangedFunction = f;
 	}
@@ -60,8 +62,6 @@ public:
 	
 	void create( const Seed & cs = Seed() );
 
-	enum { MAX_TITLE_LENGTH = 20 };
-
 protected:
 	friend class WidgetCreator<WidgetTabView>;
 	
@@ -70,6 +70,8 @@ protected:
 	virtual ~WidgetTabView() { }
 
 private:
+	enum { MAX_TITLE_LENGTH = 20 };
+
 	struct TabInfo {
 		TabInfo(WidgetChildWindow* w_) : w(w_) { }
 		WidgetChildWindow* w;

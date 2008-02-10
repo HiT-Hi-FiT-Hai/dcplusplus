@@ -1168,7 +1168,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuExtendedPtr menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
 
-	menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
+	menu->setTitle(getParent()->getTabText(this));
 
 	if(!FavoriteManager::getInstance()->isFavoriteHub(url)) {
 		menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&HubFrame::addAsFavorite, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_HUBS)));

@@ -187,7 +187,7 @@ private:
 	
 	bool handleContextMenu(const SmartWin::ScreenCoordinate& pt) {
 		SmartWin::WidgetMenuExtended::ObjectType menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
-		menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
+		menu->setTitle(getParent()->getTabText(this));
 		menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&ThisType::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;

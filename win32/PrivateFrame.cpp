@@ -375,7 +375,7 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
 	WidgetMenuExtendedPtr menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
 
-	menu->setTitle(SmartUtil::cutText(getText(), SmartWin::WidgetTabView::MAX_TITLE_LENGTH));
+	menu->setTitle(getParent()->getTabText(this));
 	
 	menu->appendItem(IDC_GETLIST, T_("&Get file list"), std::tr1::bind(&PrivateFrame::handleGetList, this));
 	menu->appendItem(IDC_MATCH_QUEUE, T_("&Match queue"), std::tr1::bind(&PrivateFrame::handleMatchQueue, this));

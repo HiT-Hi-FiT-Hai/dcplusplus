@@ -130,12 +130,9 @@ public:
 	// Commented in AspectSelection
 	int getSelectedIndex() const;
 
-	/// Returns the text of the currently selected tab
-	/** Use this function to retrieve the header text of the currently selected tab.
-	  */
-	SmartUtil::tstring getSelectedHeader() const;
+	SmartUtil::tstring getText(unsigned idx) const;
 	
-	void setHeader(unsigned idx, const SmartUtil::tstring& text);
+	void setText(unsigned idx, const SmartUtil::tstring& text);
 
 	/// Setting the event handler for the "selection changing" event
 	/** The event handler must have the signature "bool foo( WidgetTabSheet * Widget,
@@ -322,10 +319,10 @@ inline void WidgetTabSheet::setSelectedIndex( int idx )
 	TabCtrl_SetCurSel( this->handle(), idx );
 }
 
-inline void WidgetTabSheet::setHeader( unsigned index, const SmartUtil::tstring& header )
+inline void WidgetTabSheet::setText( unsigned index, const SmartUtil::tstring& text )
 {
 	TCITEM item = { TCIF_TEXT };
-	item.pszText = const_cast < TCHAR * >( header.c_str() );
+	item.pszText = const_cast < TCHAR * >( text.c_str() );
 	TabCtrl_SetItem(this->handle(), index, &item);
 }
 

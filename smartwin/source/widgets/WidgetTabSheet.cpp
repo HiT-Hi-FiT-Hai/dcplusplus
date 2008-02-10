@@ -59,19 +59,17 @@ void WidgetTabSheet::setImageList(const ImageListPtr& imageList_)
 	TabCtrl_SetImageList(handle(), imageList->handle());
 }
 
-inline SmartUtil::tstring WidgetTabSheet::getSelectedHeader() const
+SmartUtil::tstring WidgetTabSheet::getText(unsigned idx) const
 {
-	TCITEM item;
-	item.mask = TCIF_TEXT;
+	TCITEM item = { TCIF_TEXT };
 	TCHAR buffer[200];
 	item.cchTextMax = 198;
 	item.pszText = buffer;
-	if ( !TabCtrl_GetItem( this->handle(), getSelectedIndex(), & item ) )
+	if ( !TabCtrl_GetItem( this->handle(), idx, & item ) )
 	{
-		throw xCeption( _T( "Couldn't retrieve text of currently selected TabSheet item." ) );
+		throw xCeption( _T( "Couldn't retrieve text in WidgetTabSheet::getText." ) );
 	}
 	return buffer;
 }
-
 
 }
