@@ -52,26 +52,34 @@ SystemFrame::~SystemFrame() {
 }
 
 void SystemFrame::addLine(time_t t, const tstring& msg) {
-	int limit = log->getTextLimit();
-	if(log->length() + static_cast<int>(msg.size()) > limit) {
-		HoldRedraw hold(log);
+	bool scroll = log->scrollIsAtEnd();
+	HoldRedraw hold(log, !scroll);
+
+	size_t limit = log->getTextLimit();
+	if(log->length() + msg.size() > limit) {
+		HoldRedraw hold2(log, scroll);
 		log->setSelection(0, log->lineIndex(log->lineFromChar(limit / 10)));
 		log->replaceSelection(_T(""));
 	}
 	log->addTextLines(Text::toT("\r\n[" + Util::getShortTimeString(t) + "] ") + msg);
-	log->sendMessage(WM_VSCROLL, SB_BOTTOM);
+
+	if(scroll)
+		log->sendMessage(WM_VSCROLL, SB_BOTTOM);
 
 	setDirty(SettingsManager::BOLD_SYSTEM_LOG);
 }
 
 void SystemFrame::layout() {
-	const int border = 2;
+	bool scroll = log->scrollIsAtEnd();
 
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);
 
 	log->setBounds(r);
+
+	if(scroll)
+		log->sendMessage(WM_VSCROLL, SB_BOTTOM);
 }
 
 HRESULT SystemFrame::handleSpeaker(WPARAM wp, LPARAM lp) {

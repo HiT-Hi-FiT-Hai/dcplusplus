@@ -203,6 +203,8 @@ void HubFrame::postClosing() {
 }
 
 void HubFrame::layout() {
+	bool scroll = chat->scrollIsAtEnd();
+
 	const int border = 2;
 	
 	SmartWin::Rectangle r(getClientAreaSize()); 
@@ -233,6 +235,9 @@ void HubFrame::layout() {
 		paned->setSecond(0);
 	}
 	paned->setRect(r);
+
+	if(scroll)
+		chat->sendMessage(WM_VSCROLL, SB_BOTTOM);
 }
 
 void HubFrame::updateStatus() {
@@ -415,11 +420,7 @@ void HubFrame::addChat(const tstring& aLine) {
 	}
 	line += Text::toDOS(aLine);
 
-	SCROLLINFO scrollInfo = { sizeof(SCROLLINFO), SIF_RANGE | SIF_PAGE | SIF_POS };
-	bool scroll = (
-		(::GetScrollInfo(chat->handle(), SB_VERT, &scrollInfo) == 0) || // on error, let's keep scrolling...
-		(scrollInfo.nPos == (scrollInfo.nMax - max(scrollInfo.nPage - 1, 0u))) // scroll only if the current scroll position is at the end
-	);
+	bool scroll = chat->scrollIsAtEnd();
 	HoldRedraw hold(chat, !scroll);
 
 	size_t limit = chat->getTextLimit();

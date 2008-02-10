@@ -34,6 +34,7 @@
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
+#include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectText.h"
 #include "../aspects/AspectUpdate.h"
 
@@ -70,6 +71,7 @@ class WidgetTextBoxBase :
 	public AspectControl< WidgetTextBoxBase >,
 	public AspectFocus< WidgetTextBoxBase >,
 	public AspectFont< WidgetTextBoxBase >,
+	public AspectScrollable< WidgetTextBoxBase >,
 	public AspectText< WidgetTextBoxBase >,
 	public AspectUpdate< WidgetTextBoxBase >
 {

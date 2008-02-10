@@ -44,6 +44,8 @@ class AspectScrollable
 {
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
+	bool scrollIsAtEnd();
+
 	/// \ingroup EventHandlersAspectScrollable
 	/// Setting the event handler for the "scrolling horizontally" event
 	/** A scrolling event occurs when for instance a WidgetSliders value is being
@@ -74,6 +76,18 @@ protected:
 	virtual ~AspectScrollable()
 	{}
 };
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Implementation of class
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template< class WidgetType >
+bool AspectScrollable< WidgetType >::scrollIsAtEnd()
+{
+	SCROLLINFO scrollInfo = { sizeof(SCROLLINFO), SIF_RANGE | SIF_PAGE | SIF_POS };
+	BOOL ret = ::GetScrollInfo(static_cast<WidgetType*>(this)->handle(), SB_VERT, &scrollInfo);
+	xAssert(ret != FALSE, _T("Can't get scroll info in scrollIsAtEnd"));
+	return (scrollInfo.nPos == static_cast<int>(scrollInfo.nMax - std::max(scrollInfo.nPage - 1, 0u)));
+}
 
 // end namespace SmartWin
 }
