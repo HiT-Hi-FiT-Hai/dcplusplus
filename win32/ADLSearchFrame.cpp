@@ -289,14 +289,14 @@ bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		pt = items->getContextMenuPos();
 	}
 
-	WidgetMenuPtr contextMenu = createMenu(true);
+	WidgetMenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
 	contextMenu->appendItem(IDC_ADD, T_("&New..."), std::tr1::bind(&ADLSearchFrame::handleAdd, this));
 	contextMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 	contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 
 	bool status = items->hasSelection();
-	contextMenu->setItemEnabled(IDC_EDIT, status);
-	contextMenu->setItemEnabled(IDC_REMOVE, status);
+	contextMenu->setItemEnabled(IDC_EDIT, false, status);
+	contextMenu->setItemEnabled(IDC_REMOVE, false, status);
 
 	contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;

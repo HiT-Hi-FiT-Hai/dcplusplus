@@ -188,7 +188,7 @@ HRESULT TransferView::handleDestroy(WPARAM wParam, LPARAM lParam) {
 }
 
 TransferView::WidgetMenuPtr TransferView::makeContextMenu(ConnectionInfo* ii) {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	appendUserItems(mdi, menu);
 	menu->appendSeparatorItem();
@@ -223,7 +223,7 @@ bool TransferView::handleDownloadsMenu(SmartWin::ScreenCoordinate pt) {
 			pt = downloads->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(true);
+		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		DownloadInfo* di = downloads->getSelectedData();
 		WinUtil::addHashItems(menu, di->tth, di->columns[DOWNLOAD_COLUMN_FILE]);
 		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

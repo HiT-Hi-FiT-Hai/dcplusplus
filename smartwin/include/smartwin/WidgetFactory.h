@@ -42,7 +42,6 @@
 #include "widgets/WidgetMDIChild.h"
 #include "widgets/WidgetMDIFrame.h"
 #include "widgets/WidgetMDIParent.h"
-#include "widgets/WidgetMenu.h"
 #include "widgets/WidgetMessageBox.h"
 #include "widgets/WidgetProgressBar.h"
 #include "widgets/WidgetRadioButton.h"
@@ -202,12 +201,6 @@ public:
 	/// Static object type.
 	typedef typename WidgetStatic::ObjectType WidgetStaticPtr;
 
-	/// Menu class type.
-	typedef SmartWin::WidgetMenu WidgetMenu;
-
-	/// Menu object type.
-	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
-
 	/// CheckBox class type.
 	typedef SmartWin::WidgetCheckBox WidgetCheckBox;
 
@@ -324,12 +317,6 @@ public:
 	  * with this function.
 	  */
 	WidgetTreeViewPtr attachTreeView( unsigned id );
-
-	/// Creates a Menu and returns a pointer to it.
-	/** The returned object is of type std::tr1::shared_ptr< WidgetMenu >, but you should use the typedef WidgetMenuPtr and not < br >
-	  * the shared_ptr itself since this may change in future releases.
-	  */
-	WidgetMenuPtr createMenu(const typename WidgetMenu::Seed& cs = WidgetMenu::Seed());
 
 	/// Creates a Edit Control and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
@@ -574,13 +561,6 @@ typename WidgetFactory< ContainerWidgetType >::WidgetTreeViewPtr
 WidgetFactory< ContainerWidgetType >::attachTreeView( unsigned id )
 {
 	return WidgetCreator< WidgetTreeView >::attach( this, id );
-}
-
-template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetMenuPtr
-WidgetFactory< ContainerWidgetType >::createMenu(const typename WidgetMenu::Seed & cs)
-{
-	return WidgetCreator< WidgetMenu >::create( cs );
 }
 
 template<typename ContainerWidgetType>

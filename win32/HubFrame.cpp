@@ -1150,7 +1150,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 			pt = users->getContextMenuPos();
 		}
 
-		WidgetMenuPtr menu = createMenu(true);
+		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		appendUserItems(getParent(), menu);
 		
 		menu->appendItem(IDC_COPY_NICK, T_("Copy &nick to clipboard"), std::tr1::bind(&HubFrame::handleCopyNick, this));
@@ -1166,7 +1166,7 @@ bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 bool HubFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuExtendedPtr menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 

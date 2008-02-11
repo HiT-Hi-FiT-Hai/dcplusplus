@@ -73,7 +73,6 @@ private:
 	bool bIgnoreTTH;
 
 	size_t total, cur, perSecond[AVG_TIME];
-	tstring searchString;
 
 	void initSecond();
 	bool eachSecond();
@@ -83,7 +82,7 @@ private:
 	void handleColumnClick(int column);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
 
-	void handleSearch();
+	void handleSearch(const tstring& searchString);
 
 	void handleIgnoreTTHClicked();
 

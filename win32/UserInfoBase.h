@@ -99,10 +99,10 @@ public:
 		menu->appendItem(IDC_MATCH_QUEUE, T_("&Match queue"), std::tr1::bind(&T::handleMatchQueue, This));
 		menu->appendItem(IDC_PRIVATEMESSAGE, T_("&Send private message"), std::tr1::bind(&T::handlePrivateMessage, This, parent));
 		if(!traits.favOnly)
-			menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&T::handleAddFavorite, This));
+			menu->appendItem(IDC_ADD_TO_FAVORITES, T_("Add To &Favorites"), std::tr1::bind(&T::handleAddFavorite, This), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_FAVORITE_USERS)));
 		menu->appendItem(IDC_GRANTSLOT, T_("Grant &extra slot"), std::tr1::bind(&T::handleGrantSlot, This));
 		if(!traits.nonFavOnly)
-			menu->appendItem(IDC_CONNECT, T_("Connect to hub"), std::tr1::bind(&T::handleConnectFav, This, parent));
+			menu->appendItem(IDC_CONNECT, T_("Connect to hub"), std::tr1::bind(&T::handleConnectFav, This, parent), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_HUB)));
 		menu->appendSeparatorItem();
 		menu->appendItem(IDC_REMOVE_ALL, T_("Remove user from queue"), std::tr1::bind(&T::handleRemoveAll, This));
 	}

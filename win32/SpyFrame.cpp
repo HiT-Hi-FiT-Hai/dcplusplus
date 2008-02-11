@@ -185,10 +185,8 @@ bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 			pt = searches->getContextMenuPos();
 		}
 
-		searchString = searches->getText(searches->getSelectedIndex(), COLUMN_STRING);
-
-		WidgetMenuPtr contextMenu = createMenu(true);
-		contextMenu->appendItem(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this));
+		WidgetMenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
+		contextMenu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelectedIndex(), COLUMN_STRING)), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
 
 		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
@@ -196,7 +194,7 @@ bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	return false;
 }
 
-void SpyFrame::handleSearch() {
+void SpyFrame::handleSearch(const tstring& searchString) {
 	if(Util::strnicmp(searchString.c_str(), _T("TTH:"), 4) == 0)
 		SearchFrame::openWindow(getParent(), searchString.substr(4), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 	else

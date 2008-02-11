@@ -110,7 +110,7 @@ UINT CShellContextMenu::ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, 
 		return 0;	// something went wrong
 
 	// lets fill the popupmenu 
-	pContextMenu->QueryContextMenu(reinterpret_cast<HMENU>(menu->handle()), menu->getCount(), ID_SHELLCONTEXTMENU_MIN, ID_SHELLCONTEXTMENU_MAX, CMF_NORMAL | CMF_EXPLORE);
+	pContextMenu->QueryContextMenu(menu->handle(), menu->getCount(), ID_SHELLCONTEXTMENU_MIN, ID_SHELLCONTEXTMENU_MAX, CMF_NORMAL | CMF_EXPLORE);
 
 	// attach window to handle menurelated messages in CShellContextMenu 
 	WNDPROC OldWndProc;

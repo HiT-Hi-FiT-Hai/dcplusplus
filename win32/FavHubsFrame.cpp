@@ -63,6 +63,7 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		hubs->onDblClicked(std::tr1::bind(&FavHubsFrame::handleDoubleClick, this));
 		hubs->onKeyDown(std::tr1::bind(&FavHubsFrame::handleKeyDown, this, _1));
 		hubs->onRaw(std::tr1::bind(&FavHubsFrame::handleItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+		hubs->onContextMenu(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1));
 	}
 
 	{
@@ -108,18 +109,6 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 		addEntry(*i);
 
 	FavoriteManager::getInstance()->addListener(this);
-
-	hubsMenu = createMenu(true);
-	hubsMenu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
-	hubsMenu->appendSeparatorItem();
-	hubsMenu->appendItem(IDC_NEWFAV, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
-	hubsMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&FavHubsFrame::handleProperties, this));
-	hubsMenu->appendItem(IDC_MOVE_UP, T_("Move &Up"), std::tr1::bind(&FavHubsFrame::handleUp, this));
-	hubsMenu->appendItem(IDC_MOVE_DOWN, T_("Move &Down"), std::tr1::bind(&FavHubsFrame::handleDown, this));
-	hubsMenu->appendSeparatorItem();
-	hubsMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&FavHubsFrame::handleRemove, this));
-	hubsMenu->setDefaultItem(IDC_CONNECT);
-	hubs->onContextMenu(std::tr1::bind(&FavHubsFrame::handleContextMenu, this, _1));
 }
 
 FavHubsFrame::~FavHubsFrame() {
@@ -285,14 +274,25 @@ bool FavHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		pt = hubs->getContextMenuPos();
 	}
 
-	bool status = hubs->hasSelection();
-	hubsMenu->setItemEnabled(IDC_CONNECT, status);
-	hubsMenu->setItemEnabled(IDC_EDIT, status);
-	hubsMenu->setItemEnabled(IDC_MOVE_UP, status);
-	hubsMenu->setItemEnabled(IDC_MOVE_DOWN, status);
-	hubsMenu->setItemEnabled(IDC_REMOVE, status);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
+	menu->appendItem(IDC_CONNECT, T_("&Connect"), std::tr1::bind(&FavHubsFrame::openSelected, this));
+	menu->appendSeparatorItem();
+	menu->appendItem(IDC_NEWFAV, T_("&New..."), std::tr1::bind(&FavHubsFrame::handleAdd, this));
+	menu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&FavHubsFrame::handleProperties, this));
+	menu->appendItem(IDC_MOVE_UP, T_("Move &Up"), std::tr1::bind(&FavHubsFrame::handleUp, this));
+	menu->appendItem(IDC_MOVE_DOWN, T_("Move &Down"), std::tr1::bind(&FavHubsFrame::handleDown, this));
+	menu->appendSeparatorItem();
+	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&FavHubsFrame::handleRemove, this));
+	menu->setDefaultItem(IDC_CONNECT);
 
-	hubsMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	bool status = hubs->hasSelection();
+	menu->setItemEnabled(IDC_CONNECT, false, status);
+	menu->setItemEnabled(IDC_EDIT, false, status);
+	menu->setItemEnabled(IDC_MOVE_UP, false, status);
+	menu->setItemEnabled(IDC_MOVE_DOWN, false, status);
+	menu->setItemEnabled(IDC_REMOVE, false, status);
+
+	menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;
 }
 

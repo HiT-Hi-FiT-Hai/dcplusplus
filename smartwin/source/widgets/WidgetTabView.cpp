@@ -1,7 +1,6 @@
 #include "../../include/smartwin/widgets/WidgetTabView.h"
 #include "../../include/smartwin/WidgetCreator.h"
 #include "../../include/smartwin/WindowClass.h"
-#include "../../include/smartwin/widgets/WidgetMenu.h"
 
 namespace SmartWin {
 

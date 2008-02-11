@@ -81,6 +81,14 @@
 	#define COLOR_MENUBAR           30
 	#define ODS_HOTLIGHT        0x0040
 	#define ODS_INACTIVE        0x0080
+	#if(_WIN32_WINNT >= 0x0500)
+	#ifndef ODS_NOACCEL
+	#define ODS_NOACCEL         0x0100
+	#endif
+	#ifndef DT_HIDEPREFIX
+	#define DT_HIDEPREFIX               0x00100000
+	#endif
+	#endif
 
 	// Additional (gcc, normally) stuff
 

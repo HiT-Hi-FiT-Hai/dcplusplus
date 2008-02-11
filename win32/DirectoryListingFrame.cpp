@@ -306,7 +306,7 @@ void DirectoryListingFrame::setWindowTitle() {
 }
 
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemInfo* ii) {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu, ii);
@@ -331,7 +331,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeSingleMenu(ItemI
 }
 
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
@@ -343,7 +343,7 @@ DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeMultiMenu() {
 }
 
 DirectoryListingFrame::WidgetMenuPtr DirectoryListingFrame::makeDirMenu() {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 	
 	menu->appendItem(IDC_DOWNLOAD, T_("&Download"), std::tr1::bind(&DirectoryListingFrame::handleDownload, this));
 	addTargets(menu);
@@ -406,7 +406,9 @@ bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt
 					// Ignore
 				}
 				if(!path.empty() && (File::getSize(path) != -1)) {
-					WidgetMenuPtr menu = this->createMenu(true);
+					WidgetMenu::Seed cs = WinUtil::Seeds::menu;
+					cs.ownerDrawn = false;
+					WidgetMenuPtr menu = createMenu(cs);
 					CShellContextMenu shellMenu;
 					shellMenu.SetPath(Text::utf8ToWide(path));
 					shellMenu.ShowContextMenu(menu, this, pt);

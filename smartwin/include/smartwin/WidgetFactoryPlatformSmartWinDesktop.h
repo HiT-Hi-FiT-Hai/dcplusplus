@@ -32,7 +32,7 @@
 #include "WidgetFactoryPlatformCommon.h"
 #include "widgets/WidgetRichTextBox.h"
 #include "widgets/WidgetChooseFont.h"
-#include "widgets/WidgetMenuExtended.h"
+#include "widgets/WidgetMenu.h"
 #include "widgets/WidgetToolbar.h"
 #include "widgets/WidgetCoolbar.h"
 #include "WidgetCreator.h"
@@ -56,11 +56,11 @@ public:
 	/// RichEditBox object type.
 	typedef typename WidgetRichTextBox::ObjectType WidgetRichTextBoxPtr;
 
-	/// ExtendedMenu class type.
-	typedef SmartWin::WidgetMenuExtended WidgetMenuExtended;
+	/// Menu class type.
+	typedef SmartWin::WidgetMenu WidgetMenu;
 
-	/// ExtendedMenu object type.
-	typedef typename WidgetMenuExtended::ObjectType WidgetMenuExtendedPtr;
+	/// Menu object type.
+	typedef typename WidgetMenu::ObjectType WidgetMenuPtr;
 
 	/// ChooseFont class and object type.
 	typedef SmartWin::WidgetChooseFont< SmartWin::Widget > WidgetChooseFont;
@@ -113,14 +113,14 @@ public:
 		return WidgetCreator< WidgetRichTextBox >::attach( this, id );
 	}
 
-	/// Creates an Extended Menu
-	/** The returned object is of type std::tr1::shared_ptr< WidgetMenuExtended >, but
-	  * you should use the typedef WidgetMenuExtendedPtr and not <br>
+	/// Creates a Menu
+	/** The returned object is of type std::tr1::shared_ptr< WidgetMenu >, but
+	  * you should use the typedef WidgetMenuPtr and not <br>
 	  * the shared_ptr itself since this may change in future releases.
 	  */
-	WidgetMenuExtendedPtr createExtendedMenu(const typename WidgetMenuExtended::Seed& cs = WidgetMenuExtended::Seed())
+	WidgetMenuPtr createMenu(const typename WidgetMenu::Seed& cs = WidgetMenu::Seed())
 	{
-		return WidgetCreator< WidgetMenuExtended >::create( this, cs );
+		return WidgetCreator< WidgetMenu >::create( this, cs );
 	}
 
 	/// Creates a Tool Bar and returns a pointer to it.

@@ -954,7 +954,7 @@ const string& QueueFrame::getDir(HTREEITEM item) {
 }
 
 QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	WinUtil::addHashItems(menu, qii->getTTH(), Text::toT(Util::getFileName(qii->getTarget())));
 	menu->appendItem(IDC_MOVE, T_("&Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
@@ -971,7 +971,7 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeSingleMenu(QueueItemInfo* qii) {
 }
 
 QueueFrame::WidgetMenuPtr QueueFrame::makeMultiMenu() {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	addPriorityMenu(menu);
 	
@@ -982,7 +982,7 @@ QueueFrame::WidgetMenuPtr QueueFrame::makeMultiMenu() {
 }
 
 QueueFrame::WidgetMenuPtr QueueFrame::makeDirMenu() {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	addPriorityMenu(menu);
 	menu->appendItem(IDC_MOVE, T_("&Move/Rename"), std::tr1::bind(&QueueFrame::handleMove, this));
@@ -1004,58 +1004,53 @@ void QueueFrame::addPriorityMenu(const WidgetMenuPtr& parent) {
 void QueueFrame::addBrowseMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(T_("&Get file list"));
-	if(addUsers(menu, IDC_BROWSELIST, &QueueFrame::handleBrowseList, qii->getSources(), false) == 0) {
-		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
-	}
+	if(!addUsers(menu, IDC_BROWSELIST, &QueueFrame::handleBrowseList, qii->getSources(), false))
+		parent->setItemEnabled(pos, true, false);
 }
 
 void QueueFrame::addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(T_("&Send private message"));
-	if(addUsers(menu, IDC_PM, &QueueFrame::handlePM, qii->getSources(), false) == 0) {
-		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
-	}
+	if(!addUsers(menu, IDC_PM, &QueueFrame::handlePM, qii->getSources(), false))
+		parent->setItemEnabled(pos, true, false);
 }
 
 void QueueFrame::addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(T_("Re-add source"));
 	
-	menu->appendItem(IDC_READD, T_("All"), std::tr1::bind(&QueueFrame::handleReadd, this, UserPtr()));
+	menu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_READD, T_("All"), std::tr1::bind(&QueueFrame::handleReadd, this, UserPtr()));
 	menu->appendSeparatorItem();
-	if(addUsers(menu, IDC_READD + 1, &QueueFrame::handleReadd, qii->getBadSources(), true) == 0) {
-		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
-	}
+	if(!addUsers(menu, IDC_READD + 1, &QueueFrame::handleReadd, qii->getBadSources(), true))
+		parent->setItemEnabled(pos, true, false);
 }
 
 void QueueFrame::addRemoveMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(T_("Remove source"));
-	menu->appendItem(IDC_REMOVE_SOURCE, T_("All"), std::tr1::bind(&QueueFrame::handleRemoveSource, this, UserPtr()));
+	menu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_REMOVE_SOURCE, T_("All"), std::tr1::bind(&QueueFrame::handleRemoveSource, this, UserPtr()));
 	menu->appendSeparatorItem();
-	if(addUsers(menu, IDC_REMOVE_SOURCE + 1, &QueueFrame::handleRemoveSource, qii->getSources(), true) == 0) {
-		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
-	}
+	if(!addUsers(menu, IDC_REMOVE_SOURCE + 1, &QueueFrame::handleRemoveSource, qii->getSources(), true))
+		parent->setItemEnabled(pos, true, false);
 }
 
 void QueueFrame::addRemoveAllMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii) {
 	unsigned int pos = parent->getCount();
 	WidgetMenuPtr menu = parent->appendPopup(T_("Remove user from queue"));
-	if(addUsers(menu, IDC_REMOVE_SOURCES, &QueueFrame::handleRemoveSources, qii->getSources(), true) == 0) {
-		::EnableMenuItem(menu->handle(), pos, MF_BYPOSITION | MF_GRAYED);
-	}
+	if(!addUsers(menu, IDC_REMOVE_SOURCES, &QueueFrame::handleRemoveSources, qii->getSources(), true))
+		parent->setItemEnabled(pos, true, false);
 }
 
-unsigned int QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline) {
+bool QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline) {
 	unsigned int id = startId;
 	for(QueueItem::SourceConstIter i = sources.begin(); i != sources.end(); ++i) {
 		const QueueItem::Source& source = *i;
 		if(offline || source.getUser()->isOnline()) {
 			tstring nick = SmartUtil::escapeMenu(WinUtil::getNicks(source.getUser()));
-			menu->appendItem(id++, nick, reinterpret_cast<ULONG_PTR>(&source), (const WidgetMenu::SimpleDispatcher::F&)std::tr1::bind(handler, this, source.getUser()));
+			menu->appendItem<WidgetMenu::SimpleDispatcher>(id++, nick, std::tr1::bind(handler, this, source.getUser()));
 		}
 	}
-	return id - startId;
+	return id > startId;
 }
 
 bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {

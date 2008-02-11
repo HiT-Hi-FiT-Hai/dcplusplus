@@ -69,7 +69,6 @@ private:
 	WidgetButtonPtr up;
 	WidgetButtonPtr down;
 	WidgetButtonPtr remove;
-	WidgetMenuPtr hubsMenu;
 
 	bool nosave;
 

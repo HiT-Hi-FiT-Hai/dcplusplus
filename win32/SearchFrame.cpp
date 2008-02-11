@@ -734,7 +734,7 @@ void SearchFrame::handleRemove() {
 }
 
 SearchFrame::WidgetMenuPtr SearchFrame::makeMenu() {
-	WidgetMenuPtr menu = createMenu(true);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	StringPairList favoriteDirs = FavoriteManager::getInstance()->getFavoriteDirs();
 	SearchInfo::CheckTTH checkTTH = results->forEachSelectedT(SearchInfo::CheckTTH());

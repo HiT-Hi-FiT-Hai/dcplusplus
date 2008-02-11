@@ -373,7 +373,7 @@ void PrivateFrame::on(ClientManagerListener::UserDisconnected, const UserPtr& aU
 }
 
 bool PrivateFrame::handleTabContextMenu(const SmartWin::ScreenCoordinate& pt) {
-	WidgetMenuExtendedPtr menu = createExtendedMenu(WinUtil::Seeds::menuExtended);
+	WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 
 	menu->setTitle(getParent()->getTabText(this));
 	

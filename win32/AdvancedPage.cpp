@@ -46,6 +46,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::USE_CTRL_FOR_LINE_HISTORY, N_("Use CTRL for line history") },
 	{ SettingsManager::AUTO_KICK_NO_FAVS, N_("Don't automatically disconnect favorite users who leave the hub") },
 	{ SettingsManager::SHOW_SHELL_MENU, N_("Show shell menu where possible") },
+	{ SettingsManager::OWNER_DRAWN_MENUS, N_("Use extended menus with icons and titles") },
 	{ 0, 0 }
 };
 

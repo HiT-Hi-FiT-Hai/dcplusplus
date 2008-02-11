@@ -103,7 +103,7 @@ private:
 	} links;
 
 	WidgetHPanedPtr paned;
-	WidgetMenuExtendedPtr mainMenu;
+	WidgetMenuPtr mainMenu;
 	TransferView* transfers;
 	WidgetToolbarPtr toolbar;
 	WidgetTabViewPtr tabs;

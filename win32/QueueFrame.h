@@ -274,7 +274,7 @@ private:
 	void addPMMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
 	void addPriorityMenu(const WidgetMenuPtr& parent);
 	void addReaddMenu(const WidgetMenuPtr& parent, QueueItemInfo* qii);
-	unsigned int addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline);
+	bool addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline);
 
 	void layout();
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
