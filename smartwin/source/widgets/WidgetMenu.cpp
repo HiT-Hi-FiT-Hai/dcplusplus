@@ -61,7 +61,7 @@ void WidgetMenu::create(const Seed& cs)
 		{
 			LOGFONT lf;
 			::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-			lf.lfWeight *= 2; // bolder
+			lf.lfWeight = FW_BOLD;
 			itsTitleFont = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&lf), true));
 		}
 
