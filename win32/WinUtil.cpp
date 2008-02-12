@@ -420,7 +420,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
-	bi.lpszTitle = CT_("Choose folder");
+	tstring title = T_("Choose folder");
+	bi.lpszTitle = title.c_str();
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
