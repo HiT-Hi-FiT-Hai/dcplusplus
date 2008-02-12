@@ -661,16 +661,16 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 			if ( isSelected && !isDisabled ) // if selected and active, then imitate icon shadow
 			{
 				// adjust icon position for later drawing
-				imageRectangle.pos.x -= 1;
-				imageRectangle.pos.y -= 1;
+				imageRectangle.pos.x--;
+				imageRectangle.pos.y--;
 
 				// setup brush for shadow emulation
-				Brush brush( ColorUtilities::darkenColor( colorInfo.colorStrip, 0.7 ) );
+				Brush brush( ColorUtilities::darkenColor( colorInfo.colorStrip, 0.2 ) );
 
 				// draw the icon shadow
 				Rectangle shadowRectangle( imageRectangle );
-				shadowRectangle.pos.x += 2;
-				shadowRectangle.pos.y += 2;
+				shadowRectangle.pos.x++;
+				shadowRectangle.pos.y++;
 				canvas.drawBitmap( image, shadowRectangle, colorInfo.colorImageBackground, true );
 			}
 
