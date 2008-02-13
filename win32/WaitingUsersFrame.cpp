@@ -53,10 +53,7 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
 }
 
 // Recalculate frame control layout
-void WaitingUsersFrame::layout()
-{
-	const int border = 2;
-
+void WaitingUsersFrame::layout() {
 	SmartWin::Rectangle r(this->getClientAreaSize());
 
 	layoutStatus(r);

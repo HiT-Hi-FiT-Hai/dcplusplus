@@ -419,6 +419,7 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 			case GREATER: insert = (size < entrySize); break;
 			case LESS: insert = (size > entrySize); break;
 			case NOT_EQUAL: insert = (size != entrySize); break;
+			case NONE: ; break;
 		}
 	} else {
 		if(sel >= COLUMN_LAST) {

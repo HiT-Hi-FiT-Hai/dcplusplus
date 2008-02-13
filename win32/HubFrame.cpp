@@ -1097,6 +1097,7 @@ bool HubFrame::matchFilter(const UserInfo& ui, int sel, bool doSizeCompare, Filt
 			case GREATER: insert = (size < ui.getIdentity().getBytesShared()); break;
 			case LESS: insert = (size > ui.getIdentity().getBytesShared()); break;
 			case NOT_EQUAL: insert = (size != ui.getIdentity().getBytesShared()); break;
+			case NONE: ; break;
 		}
 	} else {
 		if(sel >= COLUMN_LAST) {

@@ -110,8 +110,6 @@ ADLSearchFrame::~ADLSearchFrame() {
 }
 
 void ADLSearchFrame::layout() {
-	const int border = 2;
-
 	SmartWin::Rectangle r(SmartWin::Point(0, 0), getClientAreaSize());
 
 	layoutStatus(r);
