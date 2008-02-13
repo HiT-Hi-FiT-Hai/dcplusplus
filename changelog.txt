@@ -28,8 +28,9 @@
 * [ADC] Added /me handling (thanks poy)  
 * Fixed issues with scrolling (thanks poy)
 * Fixed re-add sources showing wrong sources (thanks poy)
-* Partially fixed kick message filtering (thanks mikejj)
+* Fixed kick message filtering (thanks mikejj)
 * version.xml now use Coral (ullner)
+* [ADC] Number of files counts unique files when sending stats to hub 
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

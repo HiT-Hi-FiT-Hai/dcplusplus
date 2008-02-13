@@ -811,7 +811,7 @@ void QueueFrame::handleRemoveSource(const UserPtr& user) {
 		QueueItemInfo* ii = files->getSelectedData();
 
 		if(!user) {
-			for(QueueItem::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
+			for(QueueItem::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ++si) {
 				QueueManager::getInstance()->removeSource(ii->getTarget(), si->getUser(), QueueItem::Source::FLAG_REMOVED);
 			}
 		} else {

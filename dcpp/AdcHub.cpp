@@ -136,8 +136,8 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 				if(!c.getParam("NI", 0, nick)) {
 					nick = "[nick unknown]";
 				}
-				fire(ClientListener::StatusMessage(), this, u->getIdentity().getNick() + " (" + u->getIdentity().getSIDString() + 
-					") has same CID {" + cid + "} as " + nick + " (" + AdcCommand::fromSID(c.getFrom()) + "), ignoring.");
+				fire(ClientListener::StatusMessage(), this, str(F_("%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring")
+					% u->getIdentity().getNick() % u->getIdentity().getSIDString() % cid % nick % AdcCommand::fromSID(c.getFrom())));
 				return;
 			}
 		} else {
@@ -203,13 +203,13 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 	}
 	
 	if(!baseOk) {
-		fire(ClientListener::StatusMessage(), this, "Failed to negotiate base protocol"); // @todo internationalize
+		fire(ClientListener::StatusMessage(), this, _("Failed to negotiate base protocol"));
 		socket->disconnect(false);
 		return;
 	} else if(!tigrOk) {
 		oldPassword = true;
 		// Some hubs fake BASE support without TIGR support =/
-		fire(ClientListener::StatusMessage(), this, "Hub probably uses an old version of ADC, please encourage the owner to upgrade");
+		fire(ClientListener::StatusMessage(), this, _("Hub probably uses an old version of ADC, please encourage the owner to upgrade"));
 	}
 }
 
@@ -263,12 +263,34 @@ void AdcHub::handle(AdcCommand::GPA, AdcCommand& c) throw() {
 
 void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 	uint32_t s = AdcCommand::toSID(c.getParam(0));
-	putUser(s); // @todo: use the DI flag
-	
+
+	OnlineUser* victim = findUser(s);
+	if(!victim) {
+		return;
+	}
+
 	string tmp;
 	if(c.getParam("MS", 1, tmp)) {
-		fire(ClientListener::StatusMessage(), this, tmp);
+		OnlineUser* source = 0;
+		string tmp2;
+		if(c.getParam("ID", 1, tmp2)) {
+			source = findUser(AdcCommand::toSID(tmp2));
+		}
+		
+		if(source) {
+			tmp = str(F_("%1% was kicked by %2%: %3%") % victim->getIdentity().getNick() % 
+				source->getIdentity().getNick() % tmp);
+		} else {
+			tmp = str(F_("%1% was kicked: %2%") % victim->getIdentity().getNick() % tmp);
+		}
+		fire(ClientListener::StatusMessage(), this, tmp, ClientListener::FLAG_IS_SPAM);
 	}
+
+	if(c.hasFlag("DI", 1)) {
+		ConnectionManager::getInstance()->disconnect(victim->getUser(), false);
+	}
+	
+	putUser(s); 
 	
 	if(s == sid) {
 		if(c.getParam("TL", 1, tmp)) {

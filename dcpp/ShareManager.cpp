@@ -507,11 +507,7 @@ int64_t ShareManager::getShareSize() const throw() {
 
 size_t ShareManager::getSharedFiles() const throw() {
 	Lock l(cs);
-	size_t tmp = 0;
-	for(Directory::Map::const_iterator i = directories.begin(); i != directories.end(); ++i) {
-		tmp += i->second->countFiles();
-	}
-	return tmp;
+	return tthIndex.size();
 }
 
 class FileFindIter {

@@ -877,21 +877,15 @@ void HubFrame::on(HubUpdated, Client*) throw() {
 }
 
 void HubFrame::on(Message, Client*, const OnlineUser& from, const string& msg, bool thirdPerson) throw() {
-	if(SETTING(FILTER_MESSAGES)) {
-		if((msg.find("Hub-Security") != string::npos) && (msg.find("was kicked by") != string::npos)) {
-			// Do nothing...
-		} else if((msg.find("is kicking") != string::npos) && (msg.find("because:") != string::npos)) {
-			speak(ADD_SILENT_STATUS_LINE, msg);
-		} else {
-			speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg, thirdPerson));
-		}
-	} else {
-		speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg, thirdPerson));
-	}
+	speak(ADD_CHAT_LINE, Util::formatMessage(from.getIdentity().getNick(), msg, thirdPerson));
 }
 
-void HubFrame::on(StatusMessage, Client*, const string& line) throw() {
-	speak(ADD_CHAT_LINE, line);
+void HubFrame::on(StatusMessage, Client*, const string& line, int statusFlags) throw() {
+	if(SETTING(FILTER_MESSAGES) && (statusFlags & ClientListener::FLAG_IS_SPAM)) {
+		speak(ADD_SILENT_STATUS_LINE, line);
+	} else {
+		speak(ADD_STATUS_LINE, line);
+	}
 }
 
 void HubFrame::on(PrivateMessage, Client*, const OnlineUser& from, const OnlineUser& to, const OnlineUser& replyTo, const string& line, bool thirdPerson) throw() {

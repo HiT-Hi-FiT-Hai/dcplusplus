@@ -198,6 +198,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 
+		if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
+			fire(ClientListener::StatusMessage(), this, unescape(line), ClientListener::FLAG_IS_SPAM);
+			return;
+		} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
+			fire(ClientListener::StatusMessage(), this, unescape(line), ClientListener::FLAG_IS_SPAM);
+			return;
+		}
+
 		OnlineUser* ou = findUser(nick);
 		if(ou) {
 			fire(ClientListener::Message(), this, *ou, unescape(message));
