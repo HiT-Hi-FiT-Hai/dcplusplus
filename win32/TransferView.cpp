@@ -43,7 +43,7 @@ static const char* connectionNames[] = {
 	N_("Status"),
 	N_("Speed"),
 	N_("Chunk"),
-	N_("Transfered (Ratio)"),
+	N_("Transferred (Ratio)"),
 	N_("Queued"),
 	N_("Cipher"),
 	N_("IP")
@@ -818,6 +818,7 @@ void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw()
 		UpdateInfo* ui = new UpdateInfo(u->getUser(), false);
 		ui->setTransfered(u->getPos(), u->getActual());
 		ui->setSpeed(u->getAverageSpeed());
+		ui->setChunk(u->getPos(), u->getSize());
 
 		tasks.add(CONNECTIONS_UPDATE, ui);
 	}
