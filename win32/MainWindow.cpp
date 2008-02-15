@@ -98,7 +98,7 @@ MainWindow::MainWindow() :
 
 	onClosing(std::tr1::bind(&MainWindow::closing, this));
 
-	onRaw(std::tr1::bind(&MainWindow::trayMessage, this, _1, _2), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
+	onRaw(std::tr1::bind(&MainWindow::handleTrayMessage, this), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
 	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
 	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this, _1, _2), SmartWin::Message(SingleInstance::WMU_WHERE_ARE_YOU));
 	
@@ -507,8 +507,9 @@ bool MainWindow::closing() {
 	return true;
 }
 
-LRESULT MainWindow::trayMessage(WPARAM wParam, LPARAM lParam) {
-	updateTray(true);
+LRESULT MainWindow::handleTrayMessage() {
+	if(BOOLSETTING(MINIMIZE_TRAY) && isIconic())
+		updateTray(true);
 	return 0;
 }
 

@@ -33,6 +33,7 @@
 * [ADC] Number of files counts unique files when sending stats to hub 
 * [ADC] Fixed kick handling
 * Fixed 100% on remove all sources in queue
+* Don't always show the tray icon after killing and re-opening explorer.exe (poy)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

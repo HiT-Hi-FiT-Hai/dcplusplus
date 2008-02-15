@@ -167,7 +167,7 @@ private:
 	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
 	
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
-	LRESULT trayMessage(WPARAM wParam, LPARAM lParam);
+	LRESULT handleTrayMessage();
 	LRESULT handleCopyData(WPARAM wParam, LPARAM lParam);
 	LRESULT handleWhereAreYou(WPARAM wParam, LPARAM lParam);
 
