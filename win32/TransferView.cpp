@@ -735,7 +735,7 @@ void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
 }
 
 void TransferView::onTransferTick(Transfer* t) {
-	UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
+	UpdateInfo* ui = new UpdateInfo(t->getUser(), true);
 	ui->setTransfered(t->getPos(), t->getActual());
 	ui->setSpeed(t->getAverageSpeed());
 	ui->setChunk(t->getPos(), t->getSize());
