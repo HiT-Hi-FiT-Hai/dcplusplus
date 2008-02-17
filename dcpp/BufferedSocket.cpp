@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -429,6 +429,9 @@ bool BufferedSocket::checkEvents() {
 			case SHUTDOWN:
 				return false;
 			case ACCEPTED:
+				break;
+			case UPDATED:
+				fire(BufferedSocketListener::Updated());
 				break;
 		}
 

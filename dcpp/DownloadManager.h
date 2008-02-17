@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,19 +80,19 @@ private:
 	virtual ~DownloadManager() throw();
 
 	void checkDownloads(UserConnection* aConn);
-	void handleEndData(UserConnection* aSource);
+	void startData(UserConnection* aSource, int64_t start, int64_t newSize, bool z);
+	void endData(UserConnection* aSource);
 
 	// UserConnectionListener
 	virtual void on(Data, UserConnection*, const uint8_t*, size_t) throw();
-	virtual void on(Error, UserConnection*, const string&) throw();
 	virtual void on(Failed, UserConnection*, const string&) throw();
 	virtual void on(MaxedOut, UserConnection*) throw();
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
+	virtual void on(Updated, UserConnection*) throw();
 
 	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
 	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
-	bool prepareFile(UserConnection* aSource, int64_t start, int64_t newSize, bool z);
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, uint32_t aTick) throw();
 };

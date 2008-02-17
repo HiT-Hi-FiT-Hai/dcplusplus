@@ -15,24 +15,25 @@
 * Fixed search spy crash
 * Upgraded to bzip 1.0.4 (thanks mikejj)
 * Tab tooltips (thanks poy)
-* Allow spaces in the description field (poy)
-* [ADC] Handle third person formatting (thanks poy)
-* Fix right-click issue when chat history is long (thanks poy)
-* In waiting users, show requested chunk (since we can't know % done)
-* Fixed crash when download connection was disconnected before any data was received
+* [L#185724] Allow spaces in the description field (poy)
+* [L#180321] [ADC] Handle third person formatting (thanks poy)
+* [L#186429] Fix right-click issue when chat history is long (thanks poy)
+* [L#188107] In waiting users, show requested chunk (since we can't know % done)
+* [L#188585] Fixed crash when download connection was disconnected before any data was received
 * Fixed crash due to race condition on idle check (thans bigmuscle)
 * Fixed crash when copying identity
 * Fixed potential timer race condition (thanks bigmuscle)
 * The good parts of partially downloaded segments are now added to queue (thanks bigmuscle)
 * Fancy menus (thanks poy)
-* [ADC] Added /me handling (thanks poy)  
-* Fixed issues with scrolling (thanks poy)
-* Fixed re-add sources showing wrong sources (thanks poy)
-* Fixed kick message filtering (thanks mikejj)
+* [L#180321] [ADC] Added /me handling (thanks poy)  
+* [L#187288] Fixed issues with scrolling (thanks poy)
+* [L#190463] Fixed re-add sources showing wrong sources (thanks poy)
+* [L#190469] Fixed kick message filtering (thanks mikejj)
 * version.xml now use Coral (ullner)
 * [ADC] Number of files counts unique files when sending stats to hub 
 * [ADC] Fixed kick handling
-* Fixed 100% on remove all sources in queue
+* [L#190955] Fixed 100% on remove all sources in queue
+* Fixed a few hardcoded dc++'s (thanks steven sheehy)
 * Don't always show the tray icon after killing and re-opening explorer.exe (poy)
 
 -- 0.704 2007-12-14 --
@@ -115,26 +116,26 @@
 * Fixed one of several possible crashes at exit
 
 -- 0.700 2007-10-11 --
-* [bug 1102] Fixed move/rename queue folder (thanks mikael eman)
-* [bug 1124] Fixed thread shutdown on *nix (thanks mikael eman)
+* [B#1102] Fixed move/rename queue folder (thanks mikael eman)
+* [B#1124] Fixed thread shutdown on *nix (thanks mikael eman)
 * Fixed invalid share size
-* [bug 1127] Fixed crash on invalid file list (thanks steven sheehy)
-* [bug 1019] Reworked initial filelist dir (thanks mikael eman)
+* [B#1127] Fixed crash on invalid file list (thanks steven sheehy)
+* [B#1019] Reworked initial filelist dir (thanks mikael eman)
 * Moved to smartwin to enable mingw compiling (thanks cologic, ullner, poy)
 * Removed notepad loading compatibility code for notepad texts from versions < 0.20
 * Fixed time issues with DC++ running for more than 49 days
-* [bug 980] Fixed PM's when popup is disabled (thanks ullner)
-* [bug 1066] Search for alternates not available on uploads (thanks ullner)
-* [bug 1104] Better error message on dupe source (thanks ullner)
-* [bug 1132] Download queue updated when users go offline (thanks stephan hohe)
-* [bug 1133] Fixed max tab rows being reset (thanks mikejj)
-* [bug 1134] Use SO_REUSEADDR for connection manager socket (thanks mikael eman)
-* [bug 1136] Fixed dupe changelog rebuild (thanks mikejj)
-* [bug 1139] Fixed download delay in some cases (thanks mikael eman)
-* [bug 1144] Added possibility to add many hub lists in one go (use ; as separator) (thanks poy)
-* [bug 1152] Only refresh if there are directories shared (thanks ullner)
-* [bug 1153] More shell menus (thanks poy)
-* [bug 1159] Removed unnecessary resume position reset (thanks cologic)
+* [B#980] Fixed PM's when popup is disabled (thanks ullner)
+* [B#1066] Search for alternates not available on uploads (thanks ullner)
+* [B#1104] Better error message on dupe source (thanks ullner)
+* [B#1132] Download queue updated when users go offline (thanks stephan hohe)
+* [B#1133] Fixed max tab rows being reset (thanks mikejj)
+* [B#1134] Use SO_REUSEADDR for connection manager socket (thanks mikael eman)
+* [B#1136] Fixed dupe changelog rebuild (thanks mikejj)
+* [B#1139] Fixed download delay in some cases (thanks mikael eman)
+* [B#1144] Added possibility to add many hub lists in one go (use ; as separator) (thanks poy)
+* [B#1152] Only refresh if there are directories shared (thanks ullner)
+* [B#1153] More shell menus (thanks poy)
+* [B#1159] Removed unnecessary resume position reset (thanks cologic)
 * Removed rollback support - advanced TTH resume is now always used (thanks cologic)
 * Switched to mingw/stlport5.1
 * Uninstaller removes adc registry key (thanks ullner)
@@ -159,31 +160,31 @@
 * SFV checking is now default
 * Fixed TLS port not being greyed out
 * Automatic hub reconnection is only done if at least one successful connection has been made
-* [bug 1080] Better nick tab completion (thanks cologic)
-* [bug 1081] Added user IP in hub frame (thanks cologic)
+* [B#1080] Better nick tab completion (thanks cologic)
+* [B#1081] Added user IP in hub frame (thanks cologic)
 * No more STLport for the time being
 * Linux checks for invalid file types (thanks steven sheehy)
 * Fixed potential crash when search began with space
-* [bug 1085] Better sound playing settings (thanks cologic / ullner)
-* [bug 1111] OpenSSL compatibility and some unix fixes (thanks steven sheehy)
-* [bug 1056] Added option to sort fav users above other users in hub frame (thanks poy)
-* [bug 1063] Added option to show shell context menu in finished frame (thanks poy)
-* [bug 1092] Fixed TTH tree being redownloaded (thanks stephan hohe)
-* [bug 1097] Fixed waiting users being removed (thanks stephan hohe)
-* [bug 1110] Added new adc hub list (thanks mafa_45)
-* [bug 1091] Added new nmdc hub lists (thanks poy)
-* [bug 1112] Port sign cleanup (thanks steven sheehy)
+* [B#1085] Better sound playing settings (thanks cologic / ullner)
+* [B#1111] OpenSSL compatibility and some unix fixes (thanks steven sheehy)
+* [B#1056] Added option to sort fav users above other users in hub frame (thanks poy)
+* [B#1063] Added option to show shell context menu in finished frame (thanks poy)
+* [B#1092] Fixed TTH tree being redownloaded (thanks stephan hohe)
+* [B#1097] Fixed waiting users being removed (thanks stephan hohe)
+* [B#1110] Added new adc hub list (thanks mafa_45)
+* [B#1091] Added new nmdc hub lists (thanks poy)
+* [B#1112] Port sign cleanup (thanks steven sheehy)
 * [ADC] Fixed client-to-client connection sequence
-* [bug 1064] Updated to YaSSL 1.5.0, should fix crash
-* [bug 446] Public hub lists are cached and downloaded only when user requests it (thanks poy)
-* [bug 1117] Fixed subfolders being created on filelist downloads (thanks mikael eman)
-* [bug 1096] Updated credits in about box
-* [bug 1123] Removed some typecasts (thanks stephan hohe)
-* [bug 1099] Fixed "Readd all" spin
-* [bug 1095] Fixed about dialog
+* [B#1064] Updated to YaSSL 1.5.0, should fix crash
+* [B#446] Public hub lists are cached and downloaded only when user requests it (thanks poy)
+* [B#1117] Fixed subfolders being created on filelist downloads (thanks mikael eman)
+* [B#1096] Updated credits in about box
+* [B#1123] Removed some typecasts (thanks stephan hohe)
+* [B#1099] Fixed "Readd all" spin
+* [B#1095] Fixed about dialog
 
 -- 0.698 2006-10-10 --
-* [bug 1065] Code cleanup (thanks steven sheehy)
+* [B#1065] Code cleanup (thanks steven sheehy)
 * Fixed readme.txt (thanks ullner)
 * More code cleanup
 * Fixed trusted/untrusted upload view
@@ -198,20 +199,20 @@
 * Fixed a few random crashes
 * [ADC] Removed obsolete DSC command
 * Fixed user list not being updated in some cases
-* [bug 1071] Added fasthash for unix (thanks steven sheehy)
+* [B#1071] Added fasthash for unix (thanks steven sheehy)
 
 -- 0.697 2006-09-29 --
 * [ADC] Fixed a few protocol issues
 * Some code cleanup
 * Queue frame fixes and memory saves
 * TLS port change without restart fixed
-* [bug 1007] Fixed nick character check
+* [B#1007] Fixed nick character check
 * Fixed some transfer view sorting issues
-* [bug 59] Added option to match all local lists
+* [B#59] Added option to match all local lists
 
 -- 0.696 2006-09-22 --
 * Fixed a possible deadlock
-* [bug 1058] Removed some whitespace (big thanks to mikejj)
+* [B#1058] Removed some whitespace (big thanks to mikejj)
 * Removed the possibility to download files without TTH
 * Removed the possibility to read *.DcLst files (no TTH, no i18n support)
 * Files with no TTH no longer show up in search and directory listings
@@ -223,44 +224,44 @@
 * Upgraded yaSSL to 1.4.0
 * Fixed some SSL connection issues
 * Fixed on-the-fly compression of file lists
-* [bug 1055] Stopped files.xml.bz2 from being deleted on linux (thanks dorian)
-* [bug 1061] Log page fix (thanks fleetcommand)
-* [bug 1033] Altered NMDC hubname/description detection slightly (thanks fleetcommand)
-* [bug 1059] Fixed the possibility for users to become hidden in some cases (thanks fleetcommand)
+* [B#1055] Stopped files.xml.bz2 from being deleted on linux (thanks dorian)
+* [B#1061] Log page fix (thanks fleetcommand)
+* [B#1033] Altered NMDC hubname/description detection slightly (thanks fleetcommand)
+* [B#1059] Fixed the possibility for users to become hidden in some cases (thanks fleetcommand)
 
 -- 0.695 2006-09-10 --
 * PM popup/ignore options updated, in nmdc a hub is any nick which hasn't sent a hello or myinfo, and a bot is a nick with myinfo
   without connection type
-* [bug 125] Fixed out-of-order PM/quit
-* [bug 224] Slots are no longer granted to disconnected users, instead disconnection is delayed a minute
+* [B#125] Fixed out-of-order PM/quit
+* [B#224] Slots are no longer granted to disconnected users, instead disconnection is delayed a minute
 * [NMDC] Fixed extra space in chat
-* [bug 395] Fixed password being blanked
-* [bug 419] Allowed changing case only when moving file in queue
-* [bug 736] Fixed escaping of menu items
-* [bug 1013] Fixed gcc warnings (thanks steven sheehy)
-* [bug 1023] Fixed some large stack allocations (thanks steven sheehy)
-* [bug 1026] Fixed some potential buffer overflows (thanks steven sheehy)
-* [bug 1027] Improved unix socket support (thanks steven sheehy)
-* [bug 1028] Improved big endian support (thanks steven sheehy)
-* [bug 1029] Fixed BSD compile issue (thanks steven sheehy)
-* [bug 1031] Fixed a crash after closing hub window (thanks bigmuscle/mikejj)
-* [bug 1032] Fixed certificates help (thanks mikejj)
+* [B#395] Fixed password being blanked
+* [B#419] Allowed changing case only when moving file in queue
+* [B#736] Fixed escaping of menu items
+* [B#1013] Fixed gcc warnings (thanks steven sheehy)
+* [B#1023] Fixed some large stack allocations (thanks steven sheehy)
+* [B#1026] Fixed some potential buffer overflows (thanks steven sheehy)
+* [B#1027] Improved unix socket support (thanks steven sheehy)
+* [B#1028] Improved big endian support (thanks steven sheehy)
+* [B#1029] Fixed BSD compile issue (thanks steven sheehy)
+* [B#1031] Fixed a crash after closing hub window (thanks bigmuscle/mikejj)
+* [B#1032] Fixed certificates help (thanks mikejj)
 * Added possibility to store configuration files in separate directory
 * Switched back to unicows for w9x users, opencow was missing too many functions
-* [bug 876] Fixed lost tooltips (thanks poy and bigmuscle)
-* [bug 1041] Fixed about tab order (thanks mikejj)
-* [bug 1042] Fixed experts tab order (thanks mikejj)
-* [bug 1047] Fixed possible nmdc crash (thanks guitarm)
-* [bug 1049] Added tooltip to tab bar (thanks poy)
-* [bug 1053] Fixed vista detection (thanks ullner)
-* [bug 988] Fixed duplicate nicks
-* [bug 1015] Fixed chevron text
+* [B#876] Fixed lost tooltips (thanks poy and bigmuscle)
+* [B#1041] Fixed about tab order (thanks mikejj)
+* [B#1042] Fixed experts tab order (thanks mikejj)
+* [B#1047] Fixed possible nmdc crash (thanks guitarm)
+* [B#1049] Added tooltip to tab bar (thanks poy)
+* [B#1053] Fixed vista detection (thanks ullner)
+* [B#988] Fixed duplicate nicks
+* [B#1015] Fixed chevron text
 * Default hub lists updated
 
 -- 0.694 2006-07-10 --
 * Fixed crash in certificates page
-* [bug 1005] Fixed linux compile issue (thanks tpo)
-* [bug 1004] Fixed browse file list on self
+* [B#1005] Fixed linux compile issue (thanks tpo)
+* [B#1004] Fixed browse file list on self
 * Both .crt and .pem files are read as trusted certificates
 
 -- 0.693 2006-07-09 --
@@ -268,58 +269,58 @@
 * Added language code to example language xml
 
 -- 0.692 2006-07-09 --
-* [bug 927] Fixed OP detection bug really (thanks mikejj)
-* [bug 938] Added a few more ADC info fields (thanks ullner)
-* [bug 939] Fixed hub info update (thanks ullner)
-* [bug 940] Fixed a 64-bit compile error (thanks steven sheehy)
-* [bug 942] Fixed atomic operations on unices (thanks tobias nygren)
-* [bug 943] Fixed unix utsname compile issue (thanks tobias nygren)
-* [bug 944] Fixed unix string conversion bug (thanks tobias nygren)
-* [bug 945] Fixed unix mutex initialiser (thanks tobias nygren)
-* [bug 946] Tiger hash supports big endian and 64-bit architectures (thanks tobias nygren)
-* [bug 941] Updated usercount display (thanks mikejj)
-* [bug 951] Fixed issue with high port numbers (thanks tpo)
-* [bug 958] Search spy tth option automagically saved (thanks ullner)
-* [bug 959] Code cleanup (thanks mikejj)
-* [bug 966] Max hash speed fixed when fast hashing method is not used (thanks steven sheehy)
-* [bug 967] Fixed path case-sensitivity issue (thanks steven sheehy)
+* [B#927] Fixed OP detection bug really (thanks mikejj)
+* [B#938] Added a few more ADC info fields (thanks ullner)
+* [B#939] Fixed hub info update (thanks ullner)
+* [B#940] Fixed a 64-bit compile error (thanks steven sheehy)
+* [B#942] Fixed atomic operations on unices (thanks tobias nygren)
+* [B#943] Fixed unix utsname compile issue (thanks tobias nygren)
+* [B#944] Fixed unix string conversion bug (thanks tobias nygren)
+* [B#945] Fixed unix mutex initialiser (thanks tobias nygren)
+* [B#946] Tiger hash supports big endian and 64-bit architectures (thanks tobias nygren)
+* [B#941] Updated usercount display (thanks mikejj)
+* [B#951] Fixed issue with high port numbers (thanks tpo)
+* [B#958] Search spy tth option automagically saved (thanks ullner)
+* [B#959] Code cleanup (thanks mikejj)
+* [B#966] Max hash speed fixed when fast hashing method is not used (thanks steven sheehy)
+* [B#967] Fixed path case-sensitivity issue (thanks steven sheehy)
 * Fixed auto-reconnect
-* [bug 936] Fixed duplicate entries in search hubs
+* [B#936] Fixed duplicate entries in search hubs
 * Fixed some hub title display issues
 * Some spring cleanup
-* [bug 970] Unix file permissions correctly set (thanks steven sheehy)
+* [B#970] Unix file permissions correctly set (thanks steven sheehy)
 * [ADC] Allowed $ and | in nick/description
 * Fixed targetdrive bug for temp target location
 * Fixed a crash bug when hash data cannot be saved
 * Possibly fixed issues with queue items not being updated
 * Added warning when someone tries to spam hublist.org or dcpp.net with your client
-* [bug 968] Fixed unix compile issue (thanks mikejj)
-* [bug 975] Fixed silly warning (thanks mikejj)
-* [bug 978] Fixed 64-bit compiler issue (thanks steven sheehy)
-* [bug 988] Only unique nicks diplayed in title bar 
+* [B#968] Fixed unix compile issue (thanks mikejj)
+* [B#975] Fixed silly warning (thanks mikejj)
+* [B#978] Fixed 64-bit compiler issue (thanks steven sheehy)
+* [B#988] Only unique nicks diplayed in title bar 
 * Added protection from hubs/clients sending junk data resulting in high memory usage / crash
 * Updated to yaSSL 1.3.7
 * Added a few TLS options; [U] in transfer status means untrusted TLS (encrypted but certificate not validated)
 * Added certificate generation, OpenSSL must be installed and in PATH for this to work
-* [bug 996] Fixed an issue where directories that are hard to delete were created
-* [bug 1000] Fixed linux compile issue (thanks steven sheehy)
-* [bug 949] Fixed a crash when reading invalid XML files
+* [B#996] Fixed an issue where directories that are hard to delete were created
+* [B#1000] Fixed linux compile issue (thanks steven sheehy)
+* [B#949] Fixed a crash when reading invalid XML files
 * TLS port may now be specified in settings and is only opened if TLS is enabled
 * Added TLS port to /connection
-* [bug 977] Added copy hub address to hub right-click menu (thanks mikejj)
-* [bug 1001] Fixed assertion on unix (thanks steven sheehy)
+* [B#977] Added copy hub address to hub right-click menu (thanks mikejj)
+* [B#1001] Fixed assertion on unix (thanks steven sheehy)
 
 -- 0.691 2006-06-03 -- 
 * Links to bugzilla in html changelog
-* [bug 122] Added userlist filter (thanks trem)
-* [bug 578] Added search for alternates to transfers menu (thanks trem)
-* [bug 861] Fixed auto-prio not being set correctly (thanks trem)
-* [bug 878] Added close all ... to window menu (thanks trem)
-* [bug 903] Holding shift while minimizing will use opposite tray setting (thanks joakim tosteberg)
-* [bug 923] PM history always read (thanks trem)
-* [bug 927] Fixed OP detection bug (thanks mikejj)
-* [bug 929] Fixed list view flicker issues (thanks trem)
-* [bug 931] Improved keyboard navigation (thanks trem)
+* [B#122] Added userlist filter (thanks trem)
+* [B#578] Added search for alternates to transfers menu (thanks trem)
+* [B#861] Fixed auto-prio not being set correctly (thanks trem)
+* [B#878] Added close all ... to window menu (thanks trem)
+* [B#903] Holding shift while minimizing will use opposite tray setting (thanks joakim tosteberg)
+* [B#923] PM history always read (thanks trem)
+* [B#927] Fixed OP detection bug (thanks mikejj)
+* [B#929] Fixed list view flicker issues (thanks trem)
+* [B#931] Improved keyboard navigation (thanks trem)
 * Added "all" to hub list field search (thanks trem)
 * Fixed bug when sending active ADC search results
 * Updated to ADC 0.11
@@ -342,29 +343,29 @@
 * Another fix for opencow
 * Fixed user command parameters not being remembered
 * Fixed ADC op commands
-* [bug 464] Added option for masked password prompt (thanks ullner)
-* [bug 922] Updated help links (thanks xan)
+* [B#464] Added option for masked password prompt (thanks ullner)
+* [B#922] Updated help links (thanks xan)
 * Fixed op count
-* [bug 230] Added settings to tray menu 
-* [bug 403] Unfinished file lists deleted since they're never resumed anyway
-* [bug 639] Separated remove user from queue menu option
-* [bug 766] Fixed broken app titlebar
+* [B#230] Added settings to tray menu 
+* [B#403] Unfinished file lists deleted since they're never resumed anyway
+* [B#639] Separated remove user from queue menu option
+* [B#766] Fixed broken app titlebar
 * Removed support for generating NMDC-style file lists (old clients won't be able to download from you)
 
 -- 0.689 2006-04-01 --
 * Fixed displaying of available bytes when user list is off
 * Fixed a potential crash when not showing user list
 * Fixed 100% CPU bug on upload
-* [bug 853] Fixed missing function in opencow
+* [B#853] Fixed missing function in opencow
 
 -- 0.688 2006-03-18 --
 * Fixed public hubs sorting (thanks mikejj)
 * Fixed a ZPipe issue (thanks jove)
-* [bug 858] Fixed a 100% cpu / crash bug
-* [bug 872] Fixed a pm issue hopefully
-* [bug 812] Fixed pm's being sent to bots
+* [B#858] Fixed a 100% cpu / crash bug
+* [B#872] Fixed a pm issue hopefully
+* [B#812] Fixed pm's being sent to bots
 * Files with invalid crc-32, as per their sfv file, are no longer shared
-* [bug 873] Added connect to hub option (thanks joakim tosteberg)
+* [B#873] Added connect to hub option (thanks joakim tosteberg)
 * Fixed an issue with linux file reading (thanks bart vullings and steven)
 * Added back/forward mouse/keyboard navigation to directory listing frame
 
@@ -393,15 +394,15 @@
 * Fixed "browse list" being available for NMDC users
 * [ADC] Removed obsolete CI field
 * Fixed missing upload progress
-* [bug 89] Readded dynamic compression disabling
+* [B#89] Readded dynamic compression disabling
 * Added filelist download speed to filelist browser status bar
 * Added advanced hublist filter (thanks trem)
-* [bug 579] Fixed 0-byte files not being created if directory doesn't exist
-* [bug 804] Cleaned up project files (thanks mikejj)
+* [B#579] Fixed 0-byte files not being created if directory doesn't exist
+* [B#804] Cleaned up project files (thanks mikejj)
 * Socket buffer size = 0 now means use system default
-* [bug 789] Fixed wrong nick being copied (thanks ullner)
-* [bug 794] [ADC] Fixed automatic reconnect (thanks ullner)
-* [bug 806] Fixed description for favorite hubs (thanks ullner)
+* [B#789] Fixed wrong nick being copied (thanks ullner)
+* [B#794] [ADC] Fixed automatic reconnect (thanks ullner)
+* [B#806] Fixed description for favorite hubs (thanks ullner)
 * Updated to latest ADC specs, this will break 0.68/0.681/0.6811 queue sources and fav users (for NMDC as well)
 * Fixed a bufferedsocket crash
 * [ADC] Fixed quitting user processing (thanks ullner)
@@ -414,8 +415,8 @@
 * Changed to open source version unicows for win9x users, perhaps this one will work better for you (see it as a
   last attempt; if it doesn't work, w9x support will be phased out completely unless someone else solves the win9x
   issues)
-* [bug 774] Fixed invalid description being sent if hub modifies it
-* [bug 818] Fixed default exit mnemonic
+* [B#774] Fixed invalid description being sent if hub modifies it
+* [B#818] Fixed default exit mnemonic
 * Fixed some more crashes (thanks bigmuscle)
 * Fixed some shutdown issues
 * Updated country database
@@ -429,12 +430,12 @@
 * Minor user command fix (thanks garg)
 * Removed some duplicate code (thanks trem)
 * Ctrl-a to select all items in a list (thanks garg)
-* [bug 484] Added a check for multiple refreshes running at the same time (thanks trem)
+* [B#484] Added a check for multiple refreshes running at the same time (thanks trem)
 * Fixed a few crashes here and there
 * Fixed no-slots message not being sent out always
 * Fixed yassl build locations (thanks mikejj)
 * Added ip resolve cache when searching (thanks trem)
-* [bug 413] Failed file moves are now reported to the system log
+* [B#413] Failed file moves are now reported to the system log
 
 -- 0.68 2006-01-08 --
 * Changed the user identification process completely to work better with ADC. This leads to a more strict interpretation of
@@ -443,7 +444,7 @@
   this will rarely be used (since file lists are free and downloaded almost instantly)
 * Fixed international timestamps (thanks ullner)
 * Fixed targetdrive docs (thanks ullner)
-* [bug 485] Fixed transfer list view flicker on WinXP
+* [B#485] Fixed transfer list view flicker on WinXP
 * New connection settings, please check settings page
 * Connection type strings changed
 * No longer falls back to passive mode on failed UPnP
@@ -451,35 +452,35 @@
 * Removed some old favorite file format compatibility code
 * Added country to search frame (thanks paka)
 * Strftime fix (thanks garg)
-* [bug 521] Help instead of readme shown on first startup (thanks paka)
-* [bug 553] Minimize to tray and confirm appexit default to true (thanks paka)
-* [bug 452] Fixed example.xml language file generation (thanks tpo)
-* [bug 556] Fixed last searches purge (thanks sulan)
-* [bug 73] Added option to disconnect slow sources (thanks paka)
+* [B#521] Help instead of readme shown on first startup (thanks paka)
+* [B#553] Minimize to tray and confirm appexit default to true (thanks paka)
+* [B#452] Fixed example.xml language file generation (thanks tpo)
+* [B#556] Fixed last searches purge (thanks sulan)
+* [B#73] Added option to disconnect slow sources (thanks paka)
 * ADC hub counts updated correctly (thanks ullner)
-* [bug 325] Added error message when adding dupe fav hub (thanks ullner)
+* [B#325] Added error message when adding dupe fav hub (thanks ullner)
 * Updated bzip2 to 1.0.3 (thanks garg)
 * Some small *nix fixes (thanks poison)
 * Source path no longer saved for TTH enabled clients (saves memory and queue file space)
-* [bug 335] Search window settings saved automatically (thanks mikejj)
+* [B#335] Search window settings saved automatically (thanks mikejj)
 * Open folder selects file in explorer (thanks mikejj)
 * Local echo in pm window formatted as the other side should see it (thanks paka)
 * Fixed debug assertion (thanks tpo)
 * Dirty tabs settings improved (thanks ullner)
 * ZLib upgraded to 1.2.3, possibly fixing security issues (thanks garg)
 * Slot grants now last one connection instead of 10 minutes
-* [bug 632] Subtotals shown when selecting users in hub frame (thanks cologic)
-* [bug 625] /u chat command opens url (thanks pur)
+* [B#632] Subtotals shown when selecting users in hub frame (thanks cologic)
+* [B#625] /u chat command opens url (thanks pur)
 * [NMDC] The first word of hub name is taken as short name for displaying purposes when space is limited
-* [bug 629] Waiting users frame added (thanks cologic)
+* [B#629] Waiting users frame added (thanks cologic)
 * Removed old versions check (thanks cologic)
-* [bug 635] Added option to limit maximum file list size to open (thanks paka)
+* [B#635] Added option to limit maximum file list size to open (thanks paka)
 * Filelist transfer logging default to off (thanks paka)
 * Added some checks when creating fav hubs (thanks tpo)
 * More settings screen updates (thanks ullner)
 * Fixed linux file moving (thanks naga)
-* [bug 260] Added option to only download files with TTH (thanks ullner)
-* [bug 708] Fixed registry creation functions used (thanks ullner)
+* [B#260] Added option to only download files with TTH (thanks ullner)
+* [B#708] Fixed registry creation functions used (thanks ullner)
 * Updated WTL
 * Rewrote socket code to remove some old hacks and add some new (major change)
 * Now using standard windows error messages for socket errors
@@ -497,12 +498,12 @@
 * Improved hashing error reporting
 * Fixed hash database rebuild
 * Added /removefav command to remove a favorite hub (thanks ullner)
-* [bug 717] Fixed search combo box (thanks mikejj)
+* [B#717] Fixed search combo box (thanks mikejj)
 * Added option to change auto-refresh interval (thanks ullner)
-* [bug 740] Removed tab completion option (thanks ullner)
-* [bug 743] Added registry key creation failure notification (thanks ullner)
-* [bug 717] Fixed dropdown sizes (thanks mikejj)
-* [bug 760] Fixed list subtraction issue (thanks cologic)
+* [B#740] Removed tab completion option (thanks ullner)
+* [B#743] Added registry key creation failure notification (thanks ullner)
+* [B#717] Fixed dropdown sizes (thanks mikejj)
+* [B#760] Fixed list subtraction issue (thanks cologic)
 * Added some right-to-left support, but it probably needs more work
 * [NMDC] Minislots are no longer given to old DC++ clients (<0.304)
 * [ADC] Directory size returned with search results
@@ -517,7 +518,7 @@
 * Fixed context menu open for multi-screen setups (thanks trem)
 * Changed country database to the original format so that users can update by themselves (thanks paka)
 * Fixed some registry issues (thanks trem)
-* [bug 443] Fixed localised number encodings (thanks trem)
+* [B#443] Fixed localised number encodings (thanks trem)
 * Updated sorting to use a more windows-like order (thanks trem)
 * Fixed an issue with restore all (thanks krzysztof tyszecki)
 * Added list view tooltips
@@ -538,10 +539,10 @@
 
 -- 0.671 2005-03-19 --
 * Added possibility to set minislot size (thanks ullner)
-* [bug 22] Added possibility for multiline away messages and user commands (thanks ullner)
+* [B#22] Added possibility for multiline away messages and user commands (thanks ullner)
 * Added file type to queue frame (thanks ullner)
 * Changed stats frame to use standard colors (thanks yoji)
-* [bug 439] Fixed purge button (thanks ullner)
+* [B#439] Fixed purge button (thanks ullner)
 * Fixed search frame only tth issue (thanks naga)
 * Updated to ADC 0.9
 * Fixed a crash bug (thanks trem)
@@ -557,40 +558,40 @@
 * Basic ADC transfers now work
 * Added option to specify bind address for sockets (thanks sed)
 * Made the connection flood trigger slighly less sensitive
-* [bug 58] Fixed strange user list behaviour
-* [bug 83] Consolidated auto-open window options
+* [B#58] Fixed strange user list behaviour
+* [B#83] Consolidated auto-open window options
 * Fixed some context menu stuff
 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
 * Fixed a minor crash log output address issue
 * Split off color and sound to a new page (thanks ullner)
-* [bug 359] Fixed an issue with negative search terms (thanks naga)
+* [B#359] Fixed an issue with negative search terms (thanks naga)
 * Added option to filter TTH results in search spy (thanks joakim tosteberg)
-* [bug 184] Updated log functionality to allow users to customize log filenames (thanks naga)
+* [B#184] Updated log functionality to allow users to customize log filenames (thanks naga)
 * Fixes to log edit function (thanks naga)
 * Added possibility to filter all searches without tth (thanks naga)
 * More preferences splitting (thanks ullner)
 * Small socket fix (thanks tremor)
 * Search tab goes bold if set to (thanks naga)
 * Hopefully fixed an UPnP crash
-* [bug 302] User commands in file lists (thanks joakim tosteberg)
+* [B#302] User commands in file lists (thanks joakim tosteberg)
 * ADC url's clickable (thanks naga)
-* [Bug 117] Improved search timer to avoid spamming hub (thanks naga)
+* [B#117] Improved search timer to avoid spamming hub (thanks naga)
 * Redid some of the hash storage code, should be slighly more efficient
-* [bug 94] Share is cached for faster startup
+* [B#94] Share is cached for faster startup
 * Temporary targetnames are now filled in when download starts, not when item is added to queue,
   which makes temp target dir changes happen for current queue items as well, plus we get a huge
   memory save on huge queues.
-* [bug 363] Added "Remove All Sources" to queue (thanks izzzo & garg)
+* [B#363] Added "Remove All Sources" to queue (thanks izzzo & garg)
 * Queue menu items greyed out when there are no items (thanks izzzo)
 * Fixed a crash with certain empty lists (thanks garg)
 * Added "restore all" to undo "minimize all" (thanks guitarm)
 * Added optional pm history (thanks trem and ullner)
 * Better log file managment (thanks trem)
-* [bug 412] Fixed a queue count issue on removal (thanks ullner)
-* [bug 9] Fixed a queue move issue (thanks paka)
-* [bug 20] Fixed upload auto-slot granting (thanks naga)
+* [B#412] Fixed a queue count issue on removal (thanks ullner)
+* [B#9] Fixed a queue move issue (thanks paka)
+* [B#20] Fixed upload auto-slot granting (thanks naga)
 * Redid adl search to accomodate for partial list browsing (thanks garg)
 * Added initial ADC file transfers support
 * ADC hub connectivity improved
@@ -619,10 +620,10 @@
 * Added exact file size to directory listings (thanks paka)
 * Remove confirm fix (thanks trem)
 * Added option for the new tab select behaviour (thanks trem)
-* [bug 116] Added possibility to download to temp folder on the same drive as target (thanks sed)
+* [B#116] Added possibility to download to temp folder on the same drive as target (thanks sed)
 * Fixed user command string for file list context (thanks sed)
-* [bug 290] Added more correct escaping of search strings (thanks sed)
-* [bug 432] Fixed download directory for adlsearch matches (thanks ullner)
+* [B#290] Added more correct escaping of search strings (thanks sed)
+* [B#432] Fixed download directory for adlsearch matches (thanks ullner)
 * Some UPnP fixes (thanks nils maier)
 * ADL Search byte prefix fixes, might screw up your adl search settings on first load (thanks ullner)
 * Linux download path fix (thanks jens oknelid)
@@ -631,7 +632,7 @@
 * Fixed alt source download starts (thanks paka)
 
 -- 0.668 2004-11-30 --
-* [bug 311] Fixed crash on open own filelist (thanks sulan)
+* [B#311] Fixed crash on open own filelist (thanks sulan)
 * Added option to make /join open a new window (thanks ullner)
 * Added mailto: to link-clicking (thanks ullner)
 * Fixed stack overflow with excessive xml nesting (thanks farcry)
@@ -642,18 +643,18 @@
 * PgUp/PgDn now scroll the chat window (thanks jonathan stone)
 * Small fix with line history (thanks jonathan stone)
 * Added option to use separate TCP and UDP ports
-* [bug 303] Fixed a raw command guessing bug (thanks garg)
-* [bug 345] Fixed an xml listing parsing bug
-* [bug 309] Hopefully fixed nt4 startup
+* [B#303] Fixed a raw command guessing bug (thanks garg)
+* [B#345] Fixed an xml listing parsing bug
+* [B#309] Hopefully fixed nt4 startup
 * Hopefully fixed an issue with downloading international search results from old clients
 
 -- 0.667 2004-11-15 --
 * Improved multiple hublist support (thanks garg)
 * Fixed some favdirs issues (thanks naga)
 * Fixed a status logging issue (thanks naga)
-* [bug 289] Fixed annoying login issue
+* [B#289] Fixed annoying login issue
 * Added possibility to rename shares (thanks naga and tremor)
-* [bug 106] Fixed show joins for fav users (thanks ullner)
+* [B#106] Fixed show joins for fav users (thanks ullner)
 * Fixed some unnecessary connects when download slots are full
 * Fixed magnet registration issue (thanks garg)
 * Some code documentation work (thanks jonathan jansson)
@@ -671,64 +672,64 @@
 * Fixed so that a connection attempt is made when changing a transfer to highest priority
 
 -- 0.666 2004-11-03 --
-* [bug 173] Fixed copy nick to clipboard (thanks trem)
+* [B#173] Fixed copy nick to clipboard (thanks trem)
 * Removed some old code (thanks garg)
 * Added tth to log codes (thanks garg)
 * Added # of locally filtered results to search frame (thanks garg)
 * Fixed a crash in the upnp code
 * Fixed wide formatting of time (thanks garg)
-* [bug 166] Added local filtering of searches with "-" in front of the search term (thanks cologic)
+* [B#166] Added local filtering of searches with "-" in front of the search term (thanks cologic)
 * Fixed a missing hubframe stats bug (thanks trem)
-* [bug 87] TTH's are now correctly searched for in search spy (thanks trem)
-* [bug 256] Fixed an issue with utf8 user commands (thanks trem)
+* [B#87] TTH's are now correctly searched for in search spy (thanks trem)
+* [B#256] Fixed an issue with utf8 user commands (thanks trem)
 * Moved to a less intrusive build procedure where stlport and wtl are local to the
   DC++ build (see compile.txt)
 * Added /log to show log for current hub / user (thanks garg)
 * More internationalization (thanks garg)
 * Updated some template code (thanks farcry)
 * Extended log command (thanks ullner)
-* [bug 212] Fixed issue with utf-8 nicks during login to some hubs (thanks garg)
+* [B#212] Fixed issue with utf-8 nicks during login to some hubs (thanks garg)
 * Fixed issue with utf-8 time formatting for certain languages in certain locales
 * Removed search optimisation obsoleted by tth's and bloom filters (those of
   you with a large number of files in your share, post on the forum if you notice
   any big increase in CPU usage)
-* [bug 69] Added option not to download files already in share (by TTH) (thanks TPO)
+* [B#69] Added option not to download files already in share (by TTH) (thanks TPO)
 * Help file work (garg, ullner)
 * Added petabytes (PiB) (thanks garg)
 * Clicking on active tab will deactivate it (thanks garg)
-* [bug 227] Fixed an issue with loading invalid virtual names when upgrading (thanks garg)
-* [bug 256] Fixed another issue with user commands (thanks garg)
+* [B#227] Fixed an issue with loading invalid virtual names when upgrading (thanks garg)
+* [B#256] Fixed another issue with user commands (thanks garg)
 * Updated to WTL 7.5.4291
-* [bug 183] Hopefully fixed a few issues with w9x and Unicode
+* [B#183] Hopefully fixed a few issues with w9x and Unicode
 * Fixed common control initialization
 * Unix makefile now generates a shared lib (thanks jeremy huddleston)
 * Slight memory save for hash database
-* [bug 130] Added favorite hub removal confirmation option (thanks ullner)
-* [bug 5] Fixed broken redirect (thanks garg)
+* [B#130] Added favorite hub removal confirmation option (thanks ullner)
+* [B#5] Fixed broken redirect (thanks garg)
 * Added spy frame column saving (thanks garg)
 * ADL Search autoqueue saved now (thanks garg)
 * Window minimization issue fix (thanks garg)
-* [bug 129] Fixed some issues with downloading >4GiB files
-* [bug 15] ADL Search goto directory fixed (thanks garg)
+* [B#129] Fixed some issues with downloading >4GiB files
+* [B#15] ADL Search goto directory fixed (thanks garg)
 * Some fixes for compiling on osx (thanks jonathan jansson)
 * Removed Makedefs in favour of a python script
 * FastAlloc disabled in debug builds
-* [bug 266] Fixed a crash with offline users and user commands (thanks naga)
-* [bug 165] Fixed a case insensitivity issue (thanks farcry)
-* [bug 18] Added favorite download directories (thanks naga)
+* [B#266] Fixed a crash with offline users and user commands (thanks naga)
+* [B#165] Fixed a case insensitivity issue (thanks farcry)
+* [B#18] Added favorite download directories (thanks naga)
 * Fixed MyINFO spam when hashing
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)
-* [bug 170] Fixed a few issues with files not being hashed correctly (thanks garg)
+* [B#170] Fixed a few issues with files not being hashed correctly (thanks garg)
 * More ADC fixes (thanks sed)
 * Fixed some ADLSearch stuff (thanks garg)
 * Added item count to finished frames (thanks garg)
 * Fixed user commands encoding (thanks garg)
 * Added last search time to search spy (thanks ullner)
-* [bug 3] Fixed queue size growing on queue item move
+* [B#3] Fixed queue size growing on queue item move
 * Fixed missing file list on 0 byte share
-* [bug 185] Fixed missing search results (thanks garg)
+* [B#185] Fixed missing search results (thanks garg)
 
 -- 0.4033 2004-09-27 --
 *** WARNING *** 
@@ -745,7 +746,7 @@
 * Files that can't be moved to the target drive from the temp folder
   are now renamed to their real name
 * Text with unix and mac line end encodings should now be correctly displayed
-* [bug 35] TTH Values are used for right click download menus when available
+* [B#35] TTH Values are used for right click download menus when available
 * Upgraded to WTL 7.5.4196
 * Updated license to allow others to release legal binaries compiled against WTL
 * Moved the core structures to UTF-8 to allow correct internationalisation (major change)
@@ -758,7 +759,7 @@
 * Removed autosearch string, it's not used any more
 * Fixed a tth hash speed bug (hashing should be much faster now)
 * File listings are now generated on the fly when someone needs them
-* [bug 127] Added UPnP support (thanks mark gillespie)
+* [B#127] Added UPnP support (thanks mark gillespie)
 * Ctrl-L now opens file lists (thanks garg)
 * Various ADC patches (thanks sedulus)
 * Slightly changed temporary download name
@@ -774,7 +775,7 @@
 * Files scheduled for viewing are always set to highest prio
 * Added rudimentary automake and autoconf support for the client part, perhaps this will encourage someone
   to finish a nice linux port
-* [bug 162] Fixed dupe usercommands on reconnect (thanks sed)
+* [B#162] Fixed dupe usercommands on reconnect (thanks sed)
 * Links now clickable in PM's and notepad as well (thanks naga)
 * Files are no longer hashed if the shared directory is removed while hashing
 * Added hash progress dialog, hashing is run at a higher priority when dialog is shown
@@ -782,7 +783,7 @@
 * Better strategy for removing old filelists on exit (thanks garg)
 * Added Geo-IP license and fixes (thanks garg)
 * Added Help file - make sure you read it (thanks garg)
-* [bug 169] Fixed a memory leak with rollback buffers under certain conditions
+* [B#169] Fixed a memory leak with rollback buffers under certain conditions
 * ADC INF updates only send the necessary info (thanks sed)
 
  -- 0.4032 2004-08-08 --

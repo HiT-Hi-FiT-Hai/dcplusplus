@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,8 +77,7 @@ void ConnectionManager::getDownloadConnection(const UserPtr& aUser) {
 		if(i == downloads.end()) {
 			getCQI(aUser, true);
 		} else {
-			if(find(checkIdle.begin(), checkIdle.end(), aUser) == checkIdle.end())
-				checkIdle.push_back(aUser);
+			DownloadManager::getInstance()->checkIdle(aUser);
 		}
 	}
 }
@@ -132,15 +131,11 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw() {
 	UserList passiveUsers;
 	ConnectionQueueItem::List removed;
-	UserList idlers;
 
 	{
 		Lock l(cs);
 
 		bool attemptDone = false;
-
-		idlers = checkIdle;
-		checkIdle.clear();
 
 		for(ConnectionQueueItem::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 			ConnectionQueueItem* cqi = *i;
@@ -196,10 +191,6 @@ void ConnectionManager::on(TimerManagerListener::Second, uint32_t aTick) throw()
 
 	}
 
-	for(UserList::iterator i = idlers.begin(); i != idlers.end(); ++i) {
-		DownloadManager::getInstance()->checkIdle(*i);
-	}
-
 	for(UserList::iterator ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSource(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
@@ -236,7 +227,7 @@ int ConnectionManager::Server::run() throw() {
 			}
 		}
 	} catch(const Exception& e) {
-		LogManager::getInstance()->message(str(F_("Listening socket failed (you need to restart DC++): %1%") % e.getError()));
+		LogManager::getInstance()->message(str(F_("Listening socket failed (you need to restart %1%): %2%") % APPNAME % e.getError()));
 	}
 	return 0;
 }

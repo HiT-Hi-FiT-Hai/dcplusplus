@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Jacek Sieka, arnetheduck on gmail point com
+ * Copyright (C) 2001-2008 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -191,6 +191,10 @@ void UserConnection::on(ModeChange) throw() {
 
 void UserConnection::on(TransmitDone) throw() { 
 	fire(UserConnectionListener::TransmitDone(), this); 
+}
+
+void UserConnection::on(Updated) throw() { 
+	fire(UserConnectionListener::Updated(), this); 
 }
 
 void UserConnection::on(Failed, const string& aLine) throw() {

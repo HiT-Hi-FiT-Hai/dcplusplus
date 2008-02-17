@@ -29,7 +29,8 @@ See the version history of DC++ below.
 end_html = "</body>\n</html>"
 
 start_change = "  <li>%(change)s"
-bug_text = "  <li><a href=\"http://dcpp.net/bugzilla/show_bug.cgi?id=%(bug_id)s\">[bug %(bug_id)s]</a> %(change)s"
+bugzilla_text = "  <li><a href=\"http://dcpp.net/bugzilla/show_bug.cgi?id=%(bug_id)s\">[Bugzilla bug %(bug_id)s]</a> %(change)s"
+launchpad_text = "  <li><a href=\"https://bugs.launchpad.net/dcplusplus/+bug/%(bug_id)s\">[Launchpad bug %(bug_id)s]</a> %(change)s"
 change = " %(change)s"
 end_change = "</li>\n"
 
@@ -40,7 +41,8 @@ start_warning_end = "  <li><span style=\"color: red;\">%(change)s</span></li>\n"
 
 new_version_pattern = re.compile("^.*?-- (?P<version>.*?) (?P<date>.*?) --")
 new_change = re.compile(r"^\* (?P<change>.*?)$")
-bug_change = re.compile(r"^\* \[bug (?P<bug_id>\d+?)\] (?P<change>.*?)$")
+bugzilla_change = re.compile(r"^\* \[B#(?P<bug_id>\d+?)\] (?P<change>.*?)$")
+launchpad_change = re.compile(r"^\* \[L#(?P<bug_id>\d+?)\] (?P<change>.*?)$")
 continue_change = re.compile("^\w*?(?P<change>.*?)$")
 warning_change = re.compile("^(?P<change>[^ ].*?)$")
 fp_html.write(start_head)
@@ -73,13 +75,21 @@ for line in fp_txt:
 	if not start:
 		continue
 	
-	mObj = bug_change.match(line)
+	mObj = bugzilla_change.match(line)
 	if mObj:
 		if open_change_state:
 		    fp_html.write(end_change)
-		fp_html.write(bug_text % mObj.groupdict())
+		fp_html.write(bugzilla_text % mObj.groupdict())
 		open_change_state = True
-		continue 
+		continue
+
+	mObj = launchpad_change.match(line)
+	if mObj:
+		if open_change_state:
+		    fp_html.write(end_change)
+		fp_html.write(launchpad_text % mObj.groupdict())
+		open_change_state = True
+		continue
 
 	mObj = new_change.match(line)
 	if mObj: # A new change is found: Close Open Warning or Changes.
