@@ -447,7 +447,6 @@ void DownloadManager::removeConnection(UserConnectionPtr aConn) {
 	aConn->disconnect();
 }
 
-
 void DownloadManager::removeDownload(Download* d) {
 	if(d->getFile()) {
 		if(d->getActual() > 0) {

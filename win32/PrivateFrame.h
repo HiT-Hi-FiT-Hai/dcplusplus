@@ -38,7 +38,7 @@ public:
 	
 	static void gotMessage(SmartWin::WidgetTabView* mdiParent, const UserPtr& from, const UserPtr& to, const UserPtr& replyTo, const tstring& aMessage);
 	static void openWindow(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo, const tstring& aMessage = Util::emptyStringT);
-	static bool isOpen(const UserPtr u) { return frames.find(u) != frames.end(); }
+	static bool isOpen(const UserPtr& u) { return frames.find(u) != frames.end(); }
 	static void closeAll();
 	static void closeAllOffline();
 

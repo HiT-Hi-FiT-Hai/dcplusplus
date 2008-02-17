@@ -291,6 +291,7 @@ private:
 
 	virtual void on(QueueManagerListener::Removed, QueueItem*) throw();
 
+	void onTransferTick(Transfer* aTransfer);
 	void onTransferComplete(Transfer* aTransfer, bool isUpload);
 	void starting(UpdateInfo* ui, Transfer* t);
 	

@@ -66,14 +66,14 @@ MainWindow::MainWindow() :
 	UPnP_TCPConnection(0),
 	UPnP_UDPConnection(0)
 {
-	links.homepage = _T("http://dcpp.net/");
+	links.homepage = _T("http://dcplusplus.sourceforge.net/");
 	links.downloads = links.homepage + _T("download/");
 	links.geoipfile = _T("http://www.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip");
 	links.faq = links.homepage + _T("faq/");
-	links.help = links.homepage + _T("forum/");
-	links.discuss = links.homepage + _T("forum/");
-	links.features = links.homepage + _T("bugzilla/");
-	links.bugs = links.homepage + _T("bugzilla/");
+	links.help = links.homepage + _T("help/");
+	links.discuss = links.homepage + _T("discussion/");
+	links.features = links.homepage + _T("featurereq/");
+	links.bugs = links.homepage + _T("bugs/");
 	links.donate = _T("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=arnetheduck%40gmail%2ecom&item_name=DCPlusPlus&no_shipping=1&return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cancel_return=http%3a%2f%2fdcplusplus%2esf%2enet%2f&cn=Greeting&tax=0&currency_code=EUR&bn=PP%2dDonationsBF&charset=UTF%2d8");
 	
 	initWindow();
@@ -849,7 +849,6 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 		if(xml.findChild("Version")) {
 			if(Util::toDouble(xml.getChildData()) > VERSIONFLOAT) {
 				xml.resetCurrentChild();
-				xml.resetCurrentChild();
 				if(xml.findChild("Title")) {
 					const string& title = xml.getChildData();
 					xml.resetCurrentChild();
@@ -865,43 +864,42 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 					}
 				}
 			}
-
-			xml.resetCurrentChild();
-			if(xml.findChild("Links")) {
-				xml.stepIn();
-				if(xml.findChild("Homepage")) {
-					links.homepage = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Downloads")) {
-					links.downloads = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("GeoIP database update")) {
-					links.geoipfile = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Faq")) {
-					links.faq = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Bugs")) {
-					links.bugs = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Features")) {
-					links.features = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Help")) {
-					links.help = Text::toT(xml.getChildData());
-				}
-				xml.resetCurrentChild();
-				if(xml.findChild("Forum")) {
-					links.discuss = Text::toT(xml.getChildData());
-				}
-				xml.stepOut();
+		}
+		xml.resetCurrentChild();
+		if(xml.findChild("Links")) {
+			xml.stepIn();
+			if(xml.findChild("Homepage")) {
+				links.homepage = Text::toT(xml.getChildData());
 			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Downloads")) {
+				links.downloads = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("GeoIP database update")) {
+				links.geoipfile = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Faq")) {
+				links.faq = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Bugs")) {
+				links.bugs = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Features")) {
+				links.features = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Help")) {
+				links.help = Text::toT(xml.getChildData());
+			}
+			xml.resetCurrentChild();
+			if(xml.findChild("Forum")) {
+				links.discuss = Text::toT(xml.getChildData());
+			}
+			xml.stepOut();
 		}
 		xml.stepOut();
 	} catch (const Exception&) {

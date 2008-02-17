@@ -42,12 +42,6 @@
 #undef ff
 #endif
 
-#ifndef _WIN32
-#include <sys/types.h>
-#include <dirent.h>
-#include <fnmatch.h>
-#endif
-
 namespace dcpp {
 
 QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
@@ -235,7 +229,6 @@ void QueueManager::UserQueue::addDownload(QueueItem* qi, Download* d) {
 }
 
 void QueueManager::UserQueue::removeDownload(QueueItem* qi, const UserPtr& user) {
-	// Remove the download from running
 	running.erase(user);
 
 	for(DownloadList::iterator i = qi->getDownloads().begin(); i != qi->getDownloads().end(); ++i) {
@@ -355,9 +348,8 @@ QueueManager::~QueueManager() throw() {
 	if(!BOOLSETTING(KEEP_LISTS)) {
 		string path = Util::getListPath();
 		StringList filelists = File::findFiles(path, "*.xml.bz2");
-		StringList filelists2 = File::findFiles(path, "*.DcLst");
-		filelists.insert(filelists.end(), filelists2.begin(), filelists2.end());
-
+		std::for_each(filelists.begin(), filelists.end(), &File::deleteFile);
+		filelists = File::findFiles(path, "*.DcLst");
 		std::for_each(filelists.begin(), filelists.end(), &File::deleteFile);
 	}
 }
@@ -408,6 +400,7 @@ void QueueManager::addList(const UserPtr& aUser, int aFlags, const string& aInit
 	string target = Util::getListPath() + nick + aUser->getCID().toBase32();
 
 	if (!aInitialDir.empty()) {
+		Lock l(cs);
 		dirMap[aUser->getCID().toBase32()] = aInitialDir;
 	}
 
@@ -433,7 +426,7 @@ void QueueManager::addPfs(const UserPtr& aUser, const string& aDir) throw(QueueE
 	ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& root, UserPtr aUser, 
+void QueueManager::add(const string& aTarget, int64_t aSize, const TTHValue& root, const UserPtr& aUser, 
 	int aFlags /* = QueueItem::FLAG_RESUME */, bool addBad /* = true */) throw(QueueException, FileException)
 {
 	bool wantConnection = true;
@@ -545,7 +538,7 @@ string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flag
 }
 
 /** Add a source to an existing queue item */
-bool QueueManager::addSource(QueueItem* qi, UserPtr aUser, Flags::MaskType addBad) throw(QueueException, FileException) {
+bool QueueManager::addSource(QueueItem* qi, const UserPtr& aUser, Flags::MaskType addBad) throw(QueueException, FileException) {
 	bool wantConnection = (qi->getPriority() != QueueItem::PAUSED) && !userQueue.getRunning(aUser);
 
 	if(qi->isSource(aUser)) {

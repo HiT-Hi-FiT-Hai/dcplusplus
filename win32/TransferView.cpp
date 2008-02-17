@@ -734,15 +734,17 @@ void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
 	speak(CONNECTIONS_UPDATE, ui);
 }
 
-void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
-	for(DownloadList::const_iterator j = dl.begin(); j != dl.end(); ++j) {
-		Download* d = *j;
+void TransferView::onTransferTick(Transfer* t) {
+	UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
+	ui->setTransfered(t->getPos(), t->getActual());
+	ui->setSpeed(t->getAverageSpeed());
+	ui->setChunk(t->getPos(), t->getSize());
+	tasks.add(CONNECTIONS_UPDATE, ui);
+}
 
-		UpdateInfo* ui = new UpdateInfo(d->getUser(), true);
-		ui->setTransfered(d->getPos(), d->getActual());
-		ui->setSpeed(d->getAverageSpeed());
-		ui->setChunk(d->getPos(), d->getSize());
-		tasks.add(CONNECTIONS_UPDATE, ui);
+void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
+	for(DownloadList::const_iterator i = dl.begin(); i != dl.end(); ++i) {
+		onTransferTick(*i);
 	}
 
 	std::vector<TickInfo*> dis;
@@ -812,15 +814,8 @@ void TransferView::on(UploadManagerListener::Starting, Upload* u) throw() {
 }
 
 void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw() {
-	for(UploadList::const_iterator j = ul.begin(); j != ul.end(); ++j) {
-		Upload* u = *j;
-
-		UpdateInfo* ui = new UpdateInfo(u->getUser(), false);
-		ui->setTransfered(u->getPos(), u->getActual());
-		ui->setSpeed(u->getAverageSpeed());
-		ui->setChunk(u->getPos(), u->getSize());
-
-		tasks.add(CONNECTIONS_UPDATE, ui);
+	for(UploadList::const_iterator i = ul.begin(); i != ul.end(); ++i) {
+		onTransferTick(*i);
 	}
 
 	speak();
@@ -841,6 +836,7 @@ void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 
 	ui->setStatus(ConnectionInfo::STATUS_WAITING);
 	ui->setStatusString(T_("Idle"));
+	ui->setChunk(aTransfer->getPos(), aTransfer->getSize());
 
 	speak(CONNECTIONS_UPDATE, ui);
 }

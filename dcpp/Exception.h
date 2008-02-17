@@ -21,11 +21,14 @@
 
 namespace dcpp {
 
-class Exception
+class Exception : std::exception
 {
 public:
 	Exception() { }
 	Exception(const string& aError) throw() : error(aError) { dcdrun(if(error.size()>0)) dcdebug("Thrown: %s\n", error.c_str()); }
+	
+	virtual const char* what() const throw() { return getError().c_str(); }
+	
 	virtual ~Exception() throw() { }
 	virtual const string& getError() const throw() { return error; }
 protected:

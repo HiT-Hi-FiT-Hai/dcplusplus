@@ -387,7 +387,7 @@ UserList UploadManager::getWaitingUsers() {
 	return u;
 }
 
-const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const UserPtr &u) {
+const UploadManager::FileSet& UploadManager::getWaitingUserFiles(const UserPtr& u) {
 	Lock l(cs);
 	return waitingFiles.find(u)->second;
 }

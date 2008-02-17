@@ -89,8 +89,8 @@ private:
 	void updateSearch(int index, BOOL doDelete = TRUE);
 
 	// UploadManagerListener
-	virtual void on(UploadManagerListener::WaitingRemoveUser, const UserPtr) throw();
-	virtual void on(UploadManagerListener::WaitingAddFile, const UserPtr, const string&) throw();
+	virtual void on(UploadManagerListener::WaitingRemoveUser, const UserPtr&) throw();
+	virtual void on(UploadManagerListener::WaitingAddFile, const UserPtr&, const string&) throw();
 };
 
 #endif	/* WAITING_QUEUE_FRAME_H */
