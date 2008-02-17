@@ -210,7 +210,7 @@ bool TransferView::handleConnectionsMenu(SmartWin::ScreenCoordinate pt) {
 		/// @todo Fix multiple selection menu...
 		ConnectionInfo* ii = connections->getSelectedData();
 		WidgetMenuPtr contextMenu = makeContextMenu(ii);
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
 	}
@@ -226,7 +226,7 @@ bool TransferView::handleDownloadsMenu(SmartWin::ScreenCoordinate pt) {
 		WidgetMenuPtr menu = createMenu(WinUtil::Seeds::menu);
 		DownloadInfo* di = downloads->getSelectedData();
 		WinUtil::addHashItems(menu, di->tth, di->columns[DOWNLOAD_COLUMN_FILE]);
-		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
 	}

@@ -73,46 +73,6 @@ struct MenuItemData
 */
 typedef std::tr1::shared_ptr< MenuItemData > MenuItemDataPtr;
 
-namespace private_
-{
-	// ////////////////////////////////////////////////////////////////////////
-	// Menu item data wrapper, used internally
-	// MENUITEMINFO's dwItemData *should* point to it
-	// ////////////////////////////////////////////////////////////////////////
-	struct ItemDataWrapper
-	{
-		// The menu item belongs to
-		// For some messages (e.g. WM_MEASUREITEM),
-		// Windows doesn't specify it, so
-		// we need to keep this
-		HMENU menu;
-
-		// Item index in the menu
-		// This is needed, because ID's for items
-		// are not unique (although Windows claims)
-		// e.g. we can have an item with ID 0,
-		// that is either separator or popup menu
-		int index;
-
-		// Specifies if item is menu title
-		bool isMenuTitleItem;
-
-		// Contains item data
-		MenuItemDataPtr data;
-
-		// Wrapper  Constructor
-		ItemDataWrapper( HMENU owner, int itemIndex, MenuItemDataPtr itemData, bool isTitleItem = false )
-			: menu( owner )
-			, index( itemIndex )
-			, isMenuTitleItem( isTitleItem )
-			, data( itemData )
-		{}
-
-		~ItemDataWrapper()
-		{}
-	};
-}
-
 /// Struct for coloring different areas of WidgetMenu
 /** Contains the different color settings of the WidgetMenu <br>
 * Default values to constructor makes menu look roughly like MSVC++7.1 menus
@@ -164,15 +124,8 @@ struct MenuColorInfo
 * Class for creating a Menu Control which then can be attached to e.g. a
 * WidgetWindow. <br>
 * Note for Desktop version only! <br>
-* After you have created a menu you must call WidgetMenu::attach() to make it
-* "attach" to the WidgetWindow you want it to belong to. <br>
-* Do not be fooled, a WidgetMenu is a much more advanced menu type then the
-* "normal" WidgetMenu and contains support for visualizations far beyond the
-* capabilities of the WidgetMenu. <br>
-* If you need those truly awesome visual menu effects use this menu control instead
-* of the WidgetMenu.
 */
-class WidgetMenu : public boost::enable_shared_from_this< WidgetMenu >
+class WidgetMenu : public boost::enable_shared_from_this< WidgetMenu >, boost::noncopyable
 {
 	// friends
 	friend class WidgetCreator< WidgetMenu >;
@@ -244,8 +197,8 @@ public:
 		return itsHandle;
 	}
 
-	HWND getParent() const {
-		return itsParent ? itsParent->handle() : 0;
+	Widget* getParent() const {
+		return itsParent;
 	}
 
 	/// Actually creates the menu
@@ -400,7 +353,7 @@ public:
 	* < li >TPM_VERPOSANIMATION : Animates the menu from top to bottom< /li >
 	* < /ul >
 	*/
-	unsigned trackPopupMenu( Widget * mainWindow, const ScreenCoordinate& sc, unsigned flags = 0 );
+	unsigned trackPopupMenu( const ScreenCoordinate& sc, unsigned flags = 0 );
 
 	/// Sets menu title
 	/** A WidgetMenu can have a title, this function sets that title
@@ -475,23 +428,58 @@ private:
 	/// Constructor Taking pointer to parent
 	explicit WidgetMenu( SmartWin::Widget * parent );
 
+	// ////////////////////////////////////////////////////////////////////////
+	// Menu item data wrapper, used internally
+	// MENUITEMINFO's dwItemData *should* point to it
+	// ////////////////////////////////////////////////////////////////////////
+	struct ItemDataWrapper
+	{
+		// The menu item belongs to
+		// For some messages (e.g. WM_MEASUREITEM),
+		// Windows doesn't specify it, so
+		// we need to keep this
+		const WidgetMenu* menu;
+
+		// Item index in the menu
+		// This is needed, because ID's for items
+		// are not unique (although Windows claims)
+		// e.g. we can have an item with ID 0,
+		// that is either separator or popup menu
+		int index;
+
+		// Specifies if item is menu title
+		bool isMenuTitleItem;
+
+		// Contains item data
+		MenuItemDataPtr data;
+
+		// Wrapper  Constructor
+		ItemDataWrapper( const WidgetMenu* menu_, int itemIndex, MenuItemDataPtr itemData, bool isTitleItem = false )
+			: menu( menu_ )
+			, index( itemIndex )
+			, isMenuTitleItem( isTitleItem )
+			, data( itemData )
+		{}
+
+		~ItemDataWrapper()
+		{}
+	};
+
 	// This is used during menu destruction
-	static void destroyItemDataWrapper( private_::ItemDataWrapper * wrapper );
+	static void destroyItemDataWrapper( ItemDataWrapper * wrapper );
 
 	// True is menu is "system menu" (icon in top left of window)
 	bool isSysMenu;
 
+	// its sub menus
+	std::vector< ObjectType > itsChildren;
 	// work around for gcc
 	std::vector< ObjectType > & itsChildrenRef;
 
-	// work around for gcc
-	std::vector < private_::ItemDataWrapper * > & itsItemDataRef;
-
-	// its sub menus
-	std::vector< ObjectType > itsChildren;
-
 	// its item data
-	std::vector < private_::ItemDataWrapper * > itsItemData;
+	std::vector < ItemDataWrapper * > itsItemData;
+	// work around for gcc
+	std::vector < ItemDataWrapper * > & itsItemDataRef;
 
 	HMENU itsHandle;
 
@@ -514,13 +502,11 @@ private:
 	typedef std::map<unsigned, Widget::CallbackType> CallbackMap;
 	CallbackMap callbacks;
 
-	void addCommands(Widget* widget);
+	void addCommands();
 
 	// Returns item index in the menu item list
 	// If no item with specified id is found, - 1 is returned
 	int getItemIndex( unsigned int id );
-
-	WidgetMenu( const WidgetMenu & ); // Never implemented intentionally
 };
 
 // end namespace SmartWin

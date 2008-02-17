@@ -230,7 +230,7 @@ private:
 					pShellMenu->appendItem(IDC_REMOVE_ALL, T_("Remove &all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
 					pShellMenu->appendSeparatorItem();
 
-					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, static_cast<T*>(this), pt);
+					UINT idCommand = shellMenu.ShowContextMenu(pShellMenu, pt);
 					if(idCommand != 0)
 						this->postMessage(WM_COMMAND, idCommand);
 					return true;
@@ -245,7 +245,7 @@ private:
 			contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&ThisType::handleRemove, this));
 			contextMenu->appendItem(IDC_REMOVE_ALL, T_("Remove &all"), std::tr1::bind(&ThisType::handleRemoveAll, this));
 			contextMenu->setDefaultItem(IDC_OPEN_FILE);
-			contextMenu->trackPopupMenu(static_cast<T*>(this), pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+			contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 			return true;
 		}
 		return false;

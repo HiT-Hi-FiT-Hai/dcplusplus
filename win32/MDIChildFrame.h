@@ -189,7 +189,7 @@ private:
 		SmartWin::WidgetMenu::ObjectType menu = createMenu(WinUtil::Seeds::menu);
 		menu->setTitle(getParent()->getTabText(this));
 		menu->appendItem(IDC_CLOSE_WINDOW, T_("&Close"), std::tr1::bind(&ThisType::close, this, true), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_EXIT)));
-		menu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		menu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
 	

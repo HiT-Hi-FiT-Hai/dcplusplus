@@ -101,7 +101,7 @@ void CShellContextMenu::SetPath(const wstring& strPath)
 	bDelete = true;	// indicates that m_psfFolder should be deleted by CShellContextMenu
 }
 
-UINT CShellContextMenu::ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, SmartWin::Widget * parent, const SmartWin::ScreenCoordinate& pt)
+UINT CShellContextMenu::ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, const SmartWin::ScreenCoordinate& pt)
 {
 	int iMenuType = 0;	// to know which version of IContextMenu is supported
 	LPCONTEXTMENU pContextMenu;	// common pointer to IContextMenu and higher version interface
@@ -116,7 +116,7 @@ UINT CShellContextMenu::ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, 
 	WNDPROC OldWndProc;
 	if(iMenuType > 1)	// only attach if its version 2 or 3
 	{
-		OldWndProc = (WNDPROC) SetWindowLong(parent->handle(), GWL_WNDPROC, (DWORD) HookWndProc);
+		OldWndProc = (WNDPROC) SetWindowLong(menu->getParent()->handle(), GWL_WNDPROC, (DWORD) HookWndProc);
 		if(iMenuType == 2)
 			g_IContext2 = (LPCONTEXTMENU2) pContextMenu;
 		else	// version 3
@@ -125,10 +125,10 @@ UINT CShellContextMenu::ShowContextMenu(SmartWin::WidgetMenu::ObjectType& menu, 
 	else
 		OldWndProc = NULL;
 
-	UINT idCommand = menu->trackPopupMenu(parent, pt, TPM_RETURNCMD | TPM_LEFTALIGN);
+	UINT idCommand = menu->trackPopupMenu(pt, TPM_RETURNCMD | TPM_LEFTALIGN);
 
 	if(OldWndProc) // unattach
-		SetWindowLong(parent->handle(), GWL_WNDPROC, (DWORD) OldWndProc);
+		SetWindowLong(menu->getParent()->handle(), GWL_WNDPROC, (DWORD) OldWndProc);
 
 	if(idCommand >= ID_SHELLCONTEXTMENU_MIN && idCommand <= ID_SHELLCONTEXTMENU_MAX)
 	{

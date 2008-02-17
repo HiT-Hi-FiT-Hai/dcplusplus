@@ -635,7 +635,7 @@ bool SearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		}
 
 		WidgetMenuPtr contextMenu = makeMenu();
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
 	return false;

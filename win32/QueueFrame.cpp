@@ -1068,7 +1068,7 @@ bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
 		} else {
 			contextMenu = makeMultiMenu();
 		}
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
 	}
@@ -1085,7 +1085,7 @@ bool QueueFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
 	if(dirs->getSelection()) {
 		usingDirMenu = true;
 		WidgetMenuPtr contextMenu = makeDirMenu();
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 
 		return true;
 	}

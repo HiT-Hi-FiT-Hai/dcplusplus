@@ -188,7 +188,7 @@ bool SpyFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 		WidgetMenuPtr contextMenu = createMenu(WinUtil::Seeds::menu);
 		contextMenu->appendItem<WidgetMenu::SimpleDispatcher>(IDC_SEARCH, T_("&Search"), std::tr1::bind(&SpyFrame::handleSearch, this, searches->getText(searches->getSelectedIndex(), COLUMN_STRING)), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_SEARCH)));
 
-		contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 		return true;
 	}
 	return false;

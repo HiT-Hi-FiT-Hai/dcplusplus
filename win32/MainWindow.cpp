@@ -1004,7 +1004,7 @@ LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
 		trayMenu->setDefaultItem(0,TRUE);
 		::GetCursorPos(&pt.getPoint());
 		::SetForegroundWindow(handle());
-		trayMenu->trackPopupMenu(this, pt, TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON);
+		trayMenu->trackPopupMenu(pt, TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON);
 		postMessage(WM_NULL);
 	} else if(lParam == WM_MOUSEMOVE && ((lastMove + 1000) < GET_TICK()) ) {
 		NOTIFYICONDATA nid;

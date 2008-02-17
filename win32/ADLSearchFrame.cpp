@@ -296,7 +296,7 @@ bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	contextMenu->setItemEnabled(IDC_EDIT, false, status);
 	contextMenu->setItemEnabled(IDC_REMOVE, false, status);
 
-	contextMenu->trackPopupMenu(this, pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
+	contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
 	return true;
 }
 

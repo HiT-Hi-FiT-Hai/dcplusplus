@@ -49,6 +49,7 @@ itsItemDataRef(itsItemData),
 itsParent(parent),
 drawSidebar(false)
 {
+	xAssert(itsParent != NULL, _T("A WidgetMenu must have a parent"));
 }
 
 void WidgetMenu::create(const Seed& cs)
@@ -84,15 +85,15 @@ void WidgetMenu::create(const Seed& cs)
 
 void WidgetMenu::attach()
 {
-	addCommands(itsParent);
-	if ( ::SetMenu( getParent(), this->itsHandle ) == FALSE )
+	addCommands();
+	if ( ::SetMenu( itsParent->handle(), itsHandle ) == FALSE )
 		throw xCeption( _T( "Couldn't attach menu to the parent window" ) );
 }
 
 WidgetMenu::ObjectType WidgetMenu::appendPopup( const SmartUtil::tstring & text, MenuItemDataPtr itemData )
 {
 	// create popup menu pointer
-	ObjectType retVal ( new WidgetMenu(this->itsParent) );
+	ObjectType retVal ( new WidgetMenu(itsParent) );
 	retVal->create( Seed(ownerDrawn, itsColorInfo) );
 
 	// init structure for new item
@@ -110,21 +111,21 @@ WidgetMenu::ObjectType WidgetMenu::appendPopup( const SmartUtil::tstring & text,
 	info.hSubMenu = retVal->handle();
 
 	// get position to insert
-	int position = ::GetMenuItemCount( this->itsHandle );
+	int position = ::GetMenuItemCount( itsHandle );
 
-	private_::ItemDataWrapper * wrapper;
+	ItemDataWrapper * wrapper = NULL;
 	if(ownerDrawn) {
 		info.fMask |= MIIM_DATA | MIIM_FTYPE;
 
 		info.fType = MFT_OWNERDRAW;
 
 		// create item data
-		wrapper = new private_::ItemDataWrapper( this->itsHandle, position, itemData );
-		info.dwItemData = reinterpret_cast< UINT_PTR >( wrapper );
+		wrapper = new ItemDataWrapper( this, position, itemData );
+		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
 	// append to this menu at the end
-	if ( ::InsertMenuItem( this->itsHandle, position, TRUE, & info ) )
+	if ( ::InsertMenuItem( itsHandle, position, TRUE, & info ) )
 	{
 		if(ownerDrawn)
 			itsItemData.push_back( wrapper );
@@ -137,10 +138,10 @@ WidgetMenu::ObjectType WidgetMenu::appendPopup( const SmartUtil::tstring & text,
 WidgetMenu::ObjectType WidgetMenu::getSystemMenu()
 {
 	// get system menu for the utmost parent
-	HMENU handle = ::GetSystemMenu( this->getParent(), FALSE );
+	HMENU handle = ::GetSystemMenu( itsParent->handle(), FALSE );
 
 	// create pointer to system menu
-	ObjectType sysMenu( new WidgetMenu( this->getParent() ) );
+	ObjectType sysMenu( new WidgetMenu( itsParent->handle() ) );
 
 	// create(take) system menu
 	sysMenu->isSysMenu = true;
@@ -154,22 +155,22 @@ WidgetMenu::ObjectType WidgetMenu::getSystemMenu()
 }
 #endif
 
-void WidgetMenu::addCommands(Widget* widget) {
+void WidgetMenu::addCommands() {
 	for(CallbackMap::iterator i = callbacks.begin(); i != callbacks.end(); ++i) {
-		widget->setCallback(Message(WM_COMMAND, i->first), i->second);
+		itsParent->setCallback(Message(WM_COMMAND, i->first), i->second);
 	}
 	for(std::vector< ObjectType >::iterator i = itsChildren.begin(); i != itsChildren.end(); ++i) {
-		(*i)->addCommands(widget);
+		(*i)->addCommands();
 	}
 }
 
 int WidgetMenu::getItemIndex( unsigned int id )
 {
 	int index = 0;
-	const int itemCount = ::GetMenuItemCount( this->itsHandle );
+	const int itemCount = ::GetMenuItemCount( itsHandle );
 
 	for ( index = 0; index < itemCount; ++index )
-		if ( ::GetMenuItemID( this->itsHandle, index ) == id ) // exit the loop if found
+		if ( ::GetMenuItemID( itsHandle, index ) == id ) // exit the loop if found
 			return index;
 
 	return - 1;
@@ -193,7 +194,7 @@ WidgetMenu::~WidgetMenu()
 	std::for_each( itsItemDataRef.begin(), itsItemDataRef.end(), destroyItemDataWrapper );
 }
 
-void WidgetMenu::destroyItemDataWrapper( private_::ItemDataWrapper * wrapper )
+void WidgetMenu::destroyItemDataWrapper( ItemDataWrapper * wrapper )
 {
 	if ( 0 != wrapper )
 		delete wrapper;
@@ -270,12 +271,12 @@ SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
 	// set flag
 	mi.fMask = MIIM_STRING;
 
-	if ( ::GetMenuItemInfo( this->itsHandle, id, byPosition, & mi ) == FALSE )
+	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
 		throw xCeption( _T( "Couldn't get item info in WidgetMenu::getText" ) );
 
 	boost::scoped_array< TCHAR > buffer( new TCHAR[++mi.cch] );
 	mi.dwTypeData = buffer.get();
-	if ( ::GetMenuItemInfo( this->itsHandle, id, byPosition, & mi ) == FALSE )
+	if ( ::GetMenuItemInfo( itsHandle, id, byPosition, & mi ) == FALSE )
 		throw xCeption( _T( "Couldn't get item info in WidgetMenu::getText" ) );
 	return mi.dwTypeData;
 }
@@ -288,7 +289,7 @@ void WidgetMenu::setText( unsigned id, const SmartUtil::tstring& text )
 	mi.fMask = MIIM_STRING;
 	mi.dwTypeData = (TCHAR*) text.c_str();
 
-	if ( ::SetMenuItemInfo( this->itsHandle, id, FALSE, & mi ) == FALSE )
+	if ( ::SetMenuItemInfo( itsHandle, id, FALSE, & mi ) == FALSE )
 		throw xCeption( _T( "Couldn't set item info in WidgetMenu::setText" ) );
 }
 
@@ -320,13 +321,13 @@ void WidgetMenu::setTitle( const SmartUtil::tstring & title, bool drawSidebar /*
 
 		// created info for title item
 		MenuItemDataPtr data( new MenuItemData( itsTitleFont ) );
-		private_::ItemDataWrapper * wrapper = new private_::ItemDataWrapper( this->itsHandle, 0, data, true );
+		ItemDataWrapper * wrapper = new ItemDataWrapper( this, 0, data, true );
 
 		// set item data
-		info.dwItemData = ( ULONG_PTR ) wrapper;
+		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 
-		if ( ( !hasTitle && ::InsertMenuItem( this->itsHandle, 0, TRUE, & info ) ) ||
-			( hasTitle && ::SetMenuItemInfo( this->itsHandle, 0, TRUE, & info ) ) )
+		if ( ( !hasTitle && ::InsertMenuItem( itsHandle, 0, TRUE, & info ) ) ||
+			( hasTitle && ::SetMenuItemInfo( itsHandle, 0, TRUE, & info ) ) )
 		{
 			size_t i = 0;
 
@@ -345,18 +346,18 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	if ( ( id != 0 ) || ( drawInfo->CtlType != ODT_MENU ) ) // if not intended for us
 		return false;
 
+	// get item data wrapper
+	ItemDataWrapper * wrapper = reinterpret_cast< ItemDataWrapper * >( drawInfo->itemData );
+	xAssert( wrapper != 0, _T( "Unsupported menu item in drawItem()" ) );
+
 	// setup colors
-	MenuColorInfo colorInfo = this->itsColorInfo;
+	MenuColorInfo colorInfo = wrapper->menu->itsColorInfo;
 	COLORREF colorMenuBar = colorInfo.colorMenuBar;
 	COLORREF colorMenuDraw = colorInfo.colorMenu; // color for drawing menu
 	COLORREF colorFillHighlighted = ColorUtilities::lightenColor( colorInfo.colorHighlight, 0.7 );
 
-	// get item data wrapper
-	private_::ItemDataWrapper * wrapper = reinterpret_cast< private_::ItemDataWrapper * >( drawInfo->itemData );
-	xAssert( wrapper != 0, _T( "Unsupported menu item in drawItem()" ) );
-
 	// if processing menu bar
-	const bool isMenuBar = ::GetMenu( getParent() ) == wrapper->menu;
+	const bool isMenuBar = ::GetMenu( wrapper->menu->getParent()->handle() ) == wrapper->menu->handle();
 
 	// change menu draw color for menubars
 	if ( isMenuBar )
@@ -370,7 +371,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	// set flags
 	info.fMask = MIIM_CHECKMARKS | MIIM_FTYPE | MIIM_DATA | MIIM_STATE | MIIM_STRING;
 
-	if ( ::GetMenuItemInfo( wrapper->menu, wrapper->index, TRUE, & info ) == FALSE )
+	if ( ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info ) == FALSE )
 		throw xCeption ( _T( "Couldn't get menu item info in drawItem()" ) );
 
 	// check if item is owner drawn
@@ -411,7 +412,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		drawInfo->rcItem.bottom - drawInfo->rcItem.top ); // height
 
 	// setup buffered canvas
-	BufferedCanvas< FreeCanvas > canvas( reinterpret_cast<HWND>(wrapper->menu), drawInfo->hDC );
+	BufferedCanvas< FreeCanvas > canvas( reinterpret_cast<HWND>(wrapper->menu->handle()), drawInfo->hDC );
 
 	// this will conain adjusted sidebar width
 	int sidebarWidth = 0;
@@ -425,10 +426,10 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	HFONT titleFont = NULL;
 
 	// get title font info and adjust item rectangle
-	if ( this->drawSidebar )
+	if ( wrapper->menu->drawSidebar )
 	{
 		// get title font
-		FontPtr font = this->itsTitleFont;
+		FontPtr font = wrapper->menu->itsTitleFont;
 
 		// get logical info for title font
 		::GetObject( font->handle(), sizeof( LOGFONT ), & lf );
@@ -444,7 +445,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		memset( & textSize, 0, sizeof( SIZE ) );
 
 		HGDIOBJ oldFont = ::SelectObject( canvas.handle(), titleFont );
-		::GetTextExtentPoint32( canvas.handle(), this->itsTitle.c_str(), ( int ) this->itsTitle.size(), & textSize );
+		::GetTextExtentPoint32( canvas.handle(), wrapper->menu->itsTitle.c_str(), ( int ) wrapper->menu->itsTitle.size(), & textSize );
 		::SelectObject( canvas.handle(), oldFont );
 
 		// set sidebar width to text height
@@ -456,7 +457,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	}
 
 	// draw sidebar with menu title
-	if ( ( drawInfo->itemAction & ODA_DRAWENTIRE ) && ( this->drawSidebar ) && !this->itsTitle.empty() )
+	if ( ( drawInfo->itemAction & ODA_DRAWENTIRE ) && ( wrapper->menu->drawSidebar ) && !wrapper->menu->itsTitle.empty() )
 	{
 		// select title font and color
 		HGDIOBJ oldFont = ::SelectObject ( canvas.handle(), titleFont );
@@ -479,7 +480,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 
 		// draw title
 		textRectangle.pos.y += 10;
-		canvas.drawText( this->itsTitle, textRectangle, DT_BOTTOM | DT_SINGLELINE );
+		canvas.drawText( wrapper->menu->itsTitle, textRectangle, DT_BOTTOM | DT_SINGLELINE );
 
 		// clear
 		canvas.setTextColor( oldColor );
@@ -561,7 +562,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		// get item text
 		const int length = info.cch + 1;
 		std::vector< TCHAR > buffer( length );
-		int count = ::GetMenuString( wrapper->menu, wrapper->index, & buffer[0], length, MF_BYPOSITION );
+		int count = ::GetMenuString( wrapper->menu->handle(), wrapper->index, & buffer[0], length, MF_BYPOSITION );
 		SmartUtil::tstring itemText( buffer.begin(), buffer.begin() + count );
 
 		// index will contain accelerator position
@@ -583,7 +584,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		canvas.setTextColor( isGrayed ? ::GetSysColor( COLOR_GRAYTEXT ) : wrapper->isMenuTitleItem ? colorInfo.colorTitleText : data->TextColor );
 
 		// Select item font
-		FontPtr font((static_cast<int>(::GetMenuDefaultItem(wrapper->menu, TRUE, GMDI_USEDISABLED)) == wrapper->index) ? itsTitleFont : data->Font);
+		FontPtr font((static_cast<int>(::GetMenuDefaultItem(wrapper->menu->handle(), TRUE, GMDI_USEDISABLED)) == wrapper->index) ? itsTitleFont : data->Font);
 
 		HGDIOBJ oldFont = ::SelectObject( canvas.handle(), font->handle() );
 
@@ -690,7 +691,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 	}
 
 	// blast buffer into screen
-	if ( ( drawInfo->itemAction & ODA_DRAWENTIRE ) && this->drawSidebar ) // adjustment for sidebar
+	if ( ( drawInfo->itemAction & ODA_DRAWENTIRE ) && wrapper->menu->drawSidebar ) // adjustment for sidebar
 	{
 		itemRectangle.pos.x -= sidebarWidth;
 		itemRectangle.size.x += sidebarWidth;
@@ -704,8 +705,8 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	if ( measureInfo->CtlType != ODT_MENU ) // if not intended for us
 		return false;
 
-	// get data wrapper
-	private_::ItemDataWrapper * wrapper = reinterpret_cast< private_::ItemDataWrapper * >( measureInfo->itemData );
+	// get item data wrapper
+	ItemDataWrapper * wrapper = reinterpret_cast< ItemDataWrapper * >( measureInfo->itemData );
 	xAssert( wrapper != 0, _T( "Unsupported menu item type in measureItem()" ) );
 
 	// this will contain item size
@@ -721,7 +722,7 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	info.fMask = MIIM_FTYPE | MIIM_DATA | MIIM_CHECKMARKS | MIIM_STRING;
 
 	// try to get item info
-	if ( ::GetMenuItemInfo( wrapper->menu, wrapper->index, TRUE, & info ) == FALSE )
+	if ( ::GetMenuItemInfo( wrapper->menu->handle(), wrapper->index, TRUE, & info ) == FALSE )
 		throw xCeption ( _T( "Couldn't get item info in measureItem()" ) );
 
 	// check if item is owner drawn
@@ -736,11 +737,11 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	}
 
 	// are we processing menu bar ?
-	const bool isMenuBar = ::GetMenu( getParent() ) == wrapper->menu;
+	const bool isMenuBar = ::GetMenu( wrapper->menu->getParent()->handle() ) == wrapper->menu->handle();
 
 	// compute text width and height by simulating write to dc
 	// get its DC
-	HDC hdc = ::GetDC( getParent() );
+	HDC hdc = ::GetDC( wrapper->menu->getParent()->handle() );
 
 	// get the item data
 	MenuItemDataPtr data = wrapper->data;
@@ -749,7 +750,7 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	// get item text
 	const int length = info.cch + 1;
 	std::vector< TCHAR > buffer ( length );
-	int count = ::GetMenuString( wrapper->menu, wrapper->index, & buffer[0], length, MF_BYPOSITION );
+	int count = ::GetMenuString( wrapper->menu->handle(), wrapper->index, & buffer[0], length, MF_BYPOSITION );
 	SmartUtil::tstring itemText ( buffer.begin(), buffer.begin() + count );
 
 	// now get text extents
@@ -761,7 +762,7 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	::SelectObject( hdc, oldFont );
 
 	// release DC
-	::ReleaseDC( reinterpret_cast<HWND>(wrapper->menu), hdc );
+	::ReleaseDC( reinterpret_cast<HWND>(wrapper->menu->handle()), hdc );
 
 	// adjust item size
 	itemWidth = textSize.cx + borderGap;
@@ -808,17 +809,17 @@ bool WidgetMenu::handleMeasureItem(LPMEASUREITEMSTRUCT measureInfo) {
 	}
 
 	// adjust width for system menu items
-	if ( this->isSysMenu )
+	if ( wrapper->menu->isSysMenu )
 		itemWidth = (std::max)( ( UINT ) minSysMenuItemWidth, itemWidth );
 
 	// adjust width for sidebar
-	if ( this->drawSidebar )
+	if ( wrapper->menu->drawSidebar )
 	{
 		// get title text extents
 		SIZE textSize;
 		memset( & textSize, 0, sizeof( SIZE ) );
 
-		::GetTextExtentPoint32( hdc, this->itsTitle.c_str(), ( int ) this->itsTitle.size(), & textSize );
+		::GetTextExtentPoint32( hdc, wrapper->menu->itsTitle.c_str(), ( int ) wrapper->menu->itsTitle.size(), & textSize );
 
 		itemWidth += textSize.cy;
 	}
@@ -840,34 +841,34 @@ void WidgetMenu::appendSeparatorItem()
 	itemInfo.fType = MFT_SEPARATOR;
 
 	// get position to insert
-	int position = ::GetMenuItemCount( this->itsHandle );
+	int position = ::GetMenuItemCount( itsHandle );
 
-	private_::ItemDataWrapper * wrapper;
+	ItemDataWrapper * wrapper = NULL;
 	if(ownerDrawn) {
 		itemInfo.fMask |= MIIM_DATA;
 		itemInfo.fType |= MFT_OWNERDRAW;
 
 		// create item data wrapper
-		wrapper = new private_::ItemDataWrapper( this->itsHandle, position, MenuItemDataPtr( new MenuItemData() ) );
+		wrapper = new ItemDataWrapper( this, position, MenuItemDataPtr( new MenuItemData() ) );
 		itemInfo.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
-	if ( ::InsertMenuItem( this->itsHandle, position, TRUE, & itemInfo ) && ownerDrawn )
+	if ( ::InsertMenuItem( itsHandle, position, TRUE, & itemInfo ) && ownerDrawn )
 		itsItemDataRef.push_back( wrapper );
 }
 
 void WidgetMenu::removeItem( unsigned itemIndex )
 {
 	// has sub menus ?
-	HMENU popup = ::GetSubMenu( this->itsHandle, itemIndex );
+	HMENU popup = ::GetSubMenu( itsHandle, itemIndex );
 
 	// try to remove item
-	if ( ::RemoveMenu( this->itsHandle, itemIndex, MF_BYPOSITION ) == TRUE )
+	if ( ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION ) == TRUE )
 	{
 		size_t i = 0;
 
 		if(ownerDrawn) {
-			private_::ItemDataWrapper * wrapper = 0;
+			ItemDataWrapper * wrapper = 0;
 			int itemRemoved = -1;
 
 			for ( i = 0; i < itsItemDataRef.size(); ++i )
@@ -913,7 +914,7 @@ void WidgetMenu::removeAllItems()
 
 int WidgetMenu::getCount()
 {
-	int count = ::GetMenuItemCount( this->itsHandle );
+	int count = ::GetMenuItemCount( itsHandle );
 	if( count == -1 )
 		throw xCeption( _T( "Couldn't get item count in getCount()" ) );
 	return count;
@@ -941,26 +942,26 @@ void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, Me
 
 	// set position to insert
 	bool itemExists = index != - 1;
-	index = itemExists ? index : ::GetMenuItemCount( this->itsHandle );
+	index = itemExists ? index : ::GetMenuItemCount( itsHandle );
 
-	private_::ItemDataWrapper * wrapper;
+	ItemDataWrapper * wrapper = NULL;
 	if(ownerDrawn) {
 		info.fMask |= MIIM_DATA | MIIM_FTYPE;
 		info.fType = MFT_OWNERDRAW;
 
 		// set item data
-		wrapper = new private_::ItemDataWrapper( this->itsHandle, index, itemData );
+		wrapper = new ItemDataWrapper( this, index, itemData );
 		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
-	if ( ( !itemExists && ::InsertMenuItem( this->itsHandle, id, FALSE, & info ) == TRUE ) ||
-		( itemExists && ::SetMenuItemInfo( this->itsHandle, id, FALSE, & info ) == TRUE ) )
+	if ( ( !itemExists && ::InsertMenuItem( itsHandle, id, FALSE, & info ) == TRUE ) ||
+		( itemExists && ::SetMenuItemInfo( itsHandle, id, FALSE, & info ) == TRUE ) )
 	{
 		if(ownerDrawn)
 			itsItemDataRef.push_back( wrapper );
 	}
 	else
-		throw xCeption( _T( "Couldn't insert/update item in the WidgetMenu::appendItem" ) );
+		throw xCeption( _T( "Couldn't insert/update item in WidgetMenu::appendItem" ) );
 }
 
 void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, BitmapPtr image)
@@ -971,10 +972,9 @@ void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, Bi
 	appendItem(id, text, itemData);
 }
 
-unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, const ScreenCoordinate& sc, unsigned flags )
+unsigned WidgetMenu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags )
 {
-	xAssert( mainWindow != 0, _T( "Widget can't be null while trying to display Popup Menu" ) );
-	addCommands(mainWindow);
+	addCommands();
 
 	long x = sc.getPoint().x, y = sc.getPoint().y;
 
@@ -985,7 +985,7 @@ unsigned WidgetMenu::trackPopupMenu( Widget * mainWindow, const ScreenCoordinate
 		y = HIWORD( pos );
 	}
 
-	int retVal = ::TrackPopupMenu(this->itsHandle, flags, x, y, 0, mainWindow->handle(), 0 );
+	int retVal = ::TrackPopupMenu(itsHandle, flags, x, y, 0, itsParent->handle(), 0 );
 	return retVal;
 }
 
