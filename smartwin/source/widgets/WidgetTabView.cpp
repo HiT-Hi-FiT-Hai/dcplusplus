@@ -38,7 +38,7 @@ void WidgetTabView::create(const Seed & cs) {
 	tip = WidgetCreator<WidgetToolTip>::attach(this, tab->getToolTips()); // created and managed by the tab control thanks to the TCS_TOOLTIPS style
 	if(tip) {
 		tip->addRemoveStyle(TTS_NOPREFIX, true);
-		tip->onRaw(std::tr1::bind(&WidgetTabView::handleToolTip, this, _1, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
+		tip->onRaw(std::tr1::bind(&WidgetTabView::handleToolTip, this, _2), Message(WM_NOTIFY, TTN_GETDISPINFO));
 	}
 }
 
@@ -277,11 +277,13 @@ int WidgetTabView::addIcon(const IconPtr& icon) {
 	return image;
 }
 
-LRESULT WidgetTabView::handleToolTip(WPARAM /*wParam*/, LPARAM lParam) {
+LRESULT WidgetTabView::handleToolTip(LPARAM lParam) {
 	LPNMTTDISPINFO ttdi = reinterpret_cast<LPNMTTDISPINFO>(lParam);
 	TabInfo* ti = getTabInfo(ttdi->hdr.idFrom); // here idFrom corresponds to the index of the tab
-	if(ti)
-		ttdi->lpszText = const_cast<LPTSTR>(ti->w->getText().c_str());
+	if(ti) {
+		tipText = ti->w->getText();
+		ttdi->lpszText = const_cast<LPTSTR>(tipText.c_str());
+	}
 	return 0;
 }
 

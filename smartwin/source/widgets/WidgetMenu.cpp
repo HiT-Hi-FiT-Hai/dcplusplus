@@ -584,7 +584,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 		canvas.setTextColor( isGrayed ? ::GetSysColor( COLOR_GRAYTEXT ) : wrapper->isMenuTitleItem ? colorInfo.colorTitleText : data->TextColor );
 
 		// Select item font
-		FontPtr font((static_cast<int>(::GetMenuDefaultItem(wrapper->menu->handle(), TRUE, GMDI_USEDISABLED)) == wrapper->index) ? itsTitleFont : data->Font);
+		FontPtr font((static_cast<int>(::GetMenuDefaultItem(wrapper->menu->handle(), TRUE, GMDI_USEDISABLED)) == wrapper->index) ? wrapper->menu->itsTitleFont : data->Font);
 
 		HGDIOBJ oldFont = ::SelectObject( canvas.handle(), font->handle() );
 

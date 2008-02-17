@@ -94,6 +94,7 @@ private:
 	std::vector<IconPtr> icons;
 	int active;
 	int dragging;
+	SmartUtil::tstring tipText;
 	
 	int findTab(WidgetChildWindow* w);
 	
@@ -106,7 +107,7 @@ private:
 	bool handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText);
 	bool handleSized(const WidgetSizedEventResult&);
 	void handleTabSelected();
-	LRESULT handleToolTip(WPARAM /*wParam*/, LPARAM lParam);
+	LRESULT handleToolTip(LPARAM lParam);
 	void handleLeftMouseDown(const MouseEventResult& mouseEventResult);
 	void handleLeftMouseUp(const MouseEventResult& mouseEventResult);
 	bool handleContextMenu(SmartWin::ScreenCoordinate pt);
