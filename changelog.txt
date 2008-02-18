@@ -36,6 +36,7 @@
 * Fixed a few hardcoded dc++'s (thanks steven sheehy)
 * Don't always show the tray icon after killing and re-opening explorer.exe (poy)
 * Updated links (thanks pietry)
+* Fixed clicking on active tab (poy)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)

@@ -7,7 +7,8 @@ namespace SmartWin {
 WindowClass WidgetTabView::windowClass(_T("WidgetTabView"), &WidgetTabView::wndProc, NULL, ( HBRUSH )( COLOR_WINDOW + 1 ));
 
 WidgetTabView::Seed::Seed() :
-	Widget::Seed(windowClass.getClassName(), WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE)
+	Widget::Seed(windowClass.getClassName(), WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE),
+	toggleActive(false)
 {
 }
 
@@ -15,6 +16,7 @@ WidgetTabView::WidgetTabView(Widget* w) :
 	PolicyType(w),
 	tab(0),
 	tip(0),
+	toggleActive(false),
 	inTab(false),
 	active(-1),
 	dragging(-1)
@@ -22,6 +24,7 @@ WidgetTabView::WidgetTabView(Widget* w) :
 
 void WidgetTabView::create(const Seed & cs) {
 	PolicyType::create(cs);
+	toggleActive = cs.toggleActive;
 
 	WidgetTabSheet::Seed tcs;
 	tcs.style = WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE |
@@ -311,8 +314,12 @@ void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) 
 		}
 
 		if(dropPos == dragging) {
-			// the tab hasn't moved; select it
-			setActive(dropPos);
+			// the tab hasn't moved; handle the click
+			if(dropPos == active) {
+				if(toggleActive)
+					next();
+			} else
+				setActive(dropPos);
 			dragging = -1;
 			return;
 		}

@@ -309,6 +309,7 @@ void MainWindow::initStatusBar() {
 void MainWindow::initTabs() {
 	WidgetTabView::Seed cs;
 	cs.style = WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
+	cs.toggleActive = BOOLSETTING(TOGGLE_ACTIVE_WINDOW);
 	tabs = createTabView(cs);
 	tabs->onTitleChanged(std::tr1::bind(&MainWindow::handleTabsTitleChanged, this, _1));
 	paned->setFirst(tabs);

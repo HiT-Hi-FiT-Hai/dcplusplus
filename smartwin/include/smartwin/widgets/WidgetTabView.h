@@ -31,6 +31,8 @@ public:
 	public:
 		/// Fills with default parameters
 		Seed();
+
+		bool toggleActive;
 	};
 
 	void add(WidgetChildWindow* w, const IconPtr& icon);
@@ -84,6 +86,8 @@ private:
 	WidgetToolTip::ObjectType tip;
 
 	std::tr1::function<void (const SmartUtil::tstring&)> titleChangedFunction;
+
+	bool toggleActive;
 
 	bool inTab;
 	
