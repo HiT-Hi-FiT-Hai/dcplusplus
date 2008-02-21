@@ -456,7 +456,7 @@ bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 void PublicHubsFrame::handleRefresh() {
-	setStatus(STATUS_STATUS, CT_("Downloading public hub list..."));
+	setStatus(STATUS_STATUS, T_("Downloading public hub list..."));
 	FavoriteManager::getInstance()->refresh(true);
 	updateDropDown();
 }

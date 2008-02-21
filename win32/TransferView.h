@@ -291,8 +291,8 @@ private:
 
 	virtual void on(QueueManagerListener::Removed, QueueItem*) throw();
 
-	void onTransferTick(Transfer* aTransfer);
-	void onTransferComplete(Transfer* aTransfer, bool isUpload);
+	void onTransferTick(Transfer* aTransfer, bool isDownload);
+	void onTransferComplete(Transfer* aTransfer, bool isDownload);
 	void starting(UpdateInfo* ui, Transfer* t);
 	
 #ifdef PORT_ME

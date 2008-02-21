@@ -734,8 +734,8 @@ void TransferView::on(DownloadManagerListener::Starting, Download* d) throw() {
 	speak(CONNECTIONS_UPDATE, ui);
 }
 
-void TransferView::onTransferTick(Transfer* t) {
-	UpdateInfo* ui = new UpdateInfo(t->getUser(), true);
+void TransferView::onTransferTick(Transfer* t, bool isDownload) {
+	UpdateInfo* ui = new UpdateInfo(t->getUser(), isDownload);
 	ui->setTransfered(t->getPos(), t->getActual());
 	ui->setSpeed(t->getAverageSpeed());
 	ui->setChunk(t->getPos(), t->getSize());
@@ -744,7 +744,7 @@ void TransferView::onTransferTick(Transfer* t) {
 
 void TransferView::on(DownloadManagerListener::Tick, const DownloadList& dl) throw()  {
 	for(DownloadList::const_iterator i = dl.begin(); i != dl.end(); ++i) {
-		onTransferTick(*i);
+		onTransferTick(*i, true);
 	}
 
 	std::vector<TickInfo*> dis;
@@ -815,24 +815,24 @@ void TransferView::on(UploadManagerListener::Starting, Upload* u) throw() {
 
 void TransferView::on(UploadManagerListener::Tick, const UploadList& ul) throw() {
 	for(UploadList::const_iterator i = ul.begin(); i != ul.end(); ++i) {
-		onTransferTick(*i);
+		onTransferTick(*i, false);
 	}
 
 	speak();
 }
 
 void TransferView::on(DownloadManagerListener::Complete, Download* d) throw() { 
-	onTransferComplete(d, false);
+	onTransferComplete(d, true);
 
 	speak(DOWNLOADS_REMOVE_USER, new TickInfo(d->getPath()));
 }
 
 void TransferView::on(UploadManagerListener::Complete, Upload* aUpload) throw() { 
-	onTransferComplete(aUpload, true); 
+	onTransferComplete(aUpload, false); 
 }
 
-void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
-	UpdateInfo* ui = new UpdateInfo(aTransfer->getUser(), !isUpload);
+void TransferView::onTransferComplete(Transfer* aTransfer, bool isDownload) {
+	UpdateInfo* ui = new UpdateInfo(aTransfer->getUser(), isDownload);
 
 	ui->setStatus(ConnectionInfo::STATUS_WAITING);
 	ui->setStatusString(T_("Idle"));

@@ -99,8 +99,8 @@ private:
 		}
 		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) {
 			columns[COLUMN_FILENAME] = Text::toT(d->getName());			
-			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(d->getTotalSize()));
-			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
+			columns[COLUMN_EXACTSIZE] = d->getComplete() ? Text::toT(Util::formatExactSize(d->getTotalSize())) : _T("?");
+			columns[COLUMN_SIZE] = d->getComplete() ? Text::toT(Util::formatBytes(d->getTotalSize())) : _T("?");
 		}
 		
 		const tstring& getText() const {
