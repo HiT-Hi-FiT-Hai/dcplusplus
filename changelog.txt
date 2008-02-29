@@ -37,7 +37,8 @@
 * Don't always show the tray icon after killing and re-opening explorer.exe (poy)
 * Updated links (thanks pietry)
 * Fixed clicking on active tab (poy)
-* Fixed tabbing in hub windows (poy)
+* [L#195209] Fixed tabbing in hub windows (poy)
+* [L#195209] Fixed Ctrl+F that opens favorite hubs (poy)
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
