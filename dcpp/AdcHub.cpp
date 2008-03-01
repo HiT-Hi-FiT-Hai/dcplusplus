@@ -643,15 +643,15 @@ void AdcHub::password(const string& pwd) {
 		return;
 	if(!salt.empty()) {
 		size_t saltBytes = salt.size() * 5 / 8;
-		AutoArray<uint8_t> buf(saltBytes);
-		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
+		boost::scoped_array<uint8_t> buf(new uint8_t[saltBytes]);
+		Encoder::fromBase32(salt.c_str(), &buf[0], saltBytes);
 		TigerHash th;
 		if(oldPassword) {
 			CID cid = getMyIdentity().getUser()->getCID();
 			th.update(cid.data(), CID::SIZE);
 		}
 		th.update(pwd.data(), pwd.length());
-		th.update(buf, saltBytes);
+		th.update(&buf[0], saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::BYTES)));
 		salt.clear();
 	}

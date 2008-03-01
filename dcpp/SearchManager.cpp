@@ -145,15 +145,15 @@ void SearchManager::disconnect() throw() {
 #define BUFSIZE 8192
 int SearchManager::run() {
 
-	AutoArray<uint8_t> buf(BUFSIZE);
+	boost::scoped_array<uint8_t> buf(new uint8_t[BUFSIZE]);
 	int len;
 
 	while(true) {
 
 		string remoteAddr;
 		try {
-			while( (len = socket->read((uint8_t*)buf, BUFSIZE, remoteAddr)) != 0) {
-				onData(buf, len, remoteAddr);
+			while( (len = socket->read(&buf[0], BUFSIZE, remoteAddr)) != 0) {
+				onData(&buf[0], len, remoteAddr);
 			}
 		} catch(const SocketException& e) {
 			dcdebug("SearchManager::run Error: %s\n", e.getError().c_str());

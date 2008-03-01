@@ -92,22 +92,24 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 	
 	SettingsManager* settings = SettingsManager::getInstance();
 
-	AutoArray<TCHAR> buf(SETTINGS_BUF_LEN);
+	tstring buf;
 	for(Item const* i = items; i->type != T_END; i++)
 	{
 		switch(i->type)
 		{
 		case T_STR:
 			{
-				::GetDlgItemText(page, i->itemID, buf, SETTINGS_BUF_LEN);
-				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(tstring(buf)));
+				buf.resize(SETTINGS_BUF_LEN);
+				buf.resize(::GetDlgItemText(page, i->itemID, &buf[0], buf.size()));
+				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(buf));
 
 				break;
 			}
 		case T_INT:
 			{
-				::GetDlgItemText(page, i->itemID, buf, SETTINGS_BUF_LEN);
-				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(tstring(buf)));
+				buf.resize(SETTINGS_BUF_LEN);
+				buf.resize(::GetDlgItemText(page, i->itemID, &buf[0], buf.size()));
+				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(buf));
 				break;
 			}
 		case T_BOOL:
@@ -120,7 +122,7 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 		}
 	}
 
-	if(listItems != NULL) {
+	if(listItems) {
 		int i;
 		for(i = 0; listItems[i].setting != 0; i++) {
 			settings->set(SettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);

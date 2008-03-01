@@ -350,9 +350,9 @@ uint32_t DownloadManager::calcCrc32(const string& file) throw(FileException) {
 	CalcInputStream<CRC32Filter, false> f(&ff);
 
 	const size_t BUF_SIZE = 1024*1024;
-	AutoArray<uint8_t> b(BUF_SIZE);
+	boost::scoped_array<uint8_t> b(new uint8_t[BUF_SIZE]);
 	size_t n = BUF_SIZE;
-	while(f.read((uint8_t*)b, n) > 0)
+	while(f.read(&b[0], n) > 0)
 		;		// Keep on looping...
 
 	return f.getFilter().getValue();

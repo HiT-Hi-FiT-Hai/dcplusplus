@@ -120,6 +120,7 @@ typedef unsigned __int64 uint64_t;
 #include <libintl.h>
 
 #include <boost/format.hpp>
+#include <boost/scoped_array.hpp>
 
 #ifdef _STLPORT_VERSION
 

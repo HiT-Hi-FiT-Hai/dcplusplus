@@ -127,7 +127,7 @@ class BufferedOutputStream : public OutputStream {
 public:
 	using OutputStream::write;
 
-	BufferedOutputStream(OutputStream* aStream, size_t aBufSize = SETTING(BUFFER_SIZE) * 1024) : s(aStream), pos(0), bufSize(aBufSize), buf(aBufSize) { }
+	BufferedOutputStream(OutputStream* aStream, size_t aBufSize = SETTING(BUFFER_SIZE) * 1024) : s(aStream), pos(0), buf(aBufSize) { }
 	virtual ~BufferedOutputStream() throw() {
 		try {
 			// We must do this in order not to lose bytes when a download
@@ -140,7 +140,7 @@ public:
 
 	virtual size_t flush() throw(Exception) {
 		if(pos > 0)
-			s->write(buf, pos);
+			s->write(&buf[0], pos);
 		pos = 0;
 		s->flush();
 		return 0;
@@ -149,18 +149,19 @@ public:
 	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
 		uint8_t* b = (uint8_t*)wbuf;
 		size_t l2 = len;
+		size_t bufSize = buf.size();
 		while(len > 0) {
 			if(pos == 0 && len >= bufSize) {
 				s->write(b, len);
 				break;
 			} else {
 				size_t n = min(bufSize - pos, len);
-				memcpy(buf + pos, b, n);
+				memcpy(&buf[pos], b, n);
 				b += n;
 				pos += n;
 				len -= n;
 				if(pos == bufSize) {
-					s->write(buf, bufSize);
+					s->write(&buf[0], bufSize);
 					pos = 0;
 				}
 			}
@@ -170,8 +171,7 @@ public:
 private:
 	OutputStream* s;
 	size_t pos;
-	size_t bufSize;
-	AutoArray<uint8_t> buf;
+	ByteVector buf;
 };
 
 class StringOutputStream : public OutputStream {

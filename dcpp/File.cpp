@@ -350,13 +350,13 @@ void File::renameFile(const string& source, const string& target) throw(FileExce
 // This doesn't assume all bytes are written in one write call, it is a bit safer
 void File::copyFile(const string& source, const string& target) throw(FileException) {
 	const size_t BUF_SIZE = 64 * 1024;
-	AutoArray<char> buffer(BUF_SIZE);
+	boost::scoped_array<char> buffer(BUF_SIZE);
 	size_t count = BUF_SIZE;
 	File src(source, File::READ, 0);
 	File dst(target, File::WRITE, File::CREATE | File::TRUNCATE);
 
-	while(src.read((char*)buffer, count) > 0) {
-		char* p = (char*)buffer;
+	while(src.read(&buffer[0], count) > 0) {
+		char* p = &buffer[0];
 		while(count > 0) {
 			size_t ret = dst.write(p, count);
 			p += ret;

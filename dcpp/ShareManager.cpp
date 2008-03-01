@@ -363,12 +363,12 @@ bool ShareManager::loadCache() throw() {
 		dcpp::File ff(Util::getConfigPath() + "files.xml.bz2", dcpp::File::READ, dcpp::File::OPEN);
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
-		AutoArray<char> buf(BUF_SIZE);
+		boost::scoped_array<char> buf(new char[BUF_SIZE]);
 		size_t len;
 		for(;;) {
 			size_t n = BUF_SIZE;
-			len = f.read(buf, n);
-			txt.append(buf, len);
+			len = f.read(&buf[0], n);
+			txt.append(&buf[0], len);
 			if(len < BUF_SIZE)
 				break;
 		}

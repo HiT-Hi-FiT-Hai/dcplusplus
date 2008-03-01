@@ -183,7 +183,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 					const int BufSize = 1024;
 					// Special to autodetect nmdc connections...
 					string::size_type pos = 0;
-					AutoArray<uint8_t> buffer (BufSize);
+					boost::scoped_array<uint8_t> buffer (new uint8_t[BufSize]);
 					size_t in;
 					l = line;
 					// decompress all input data and store in l.

@@ -904,9 +904,9 @@ void WinUtil::openLink(const tstring& url) {
 
 				STARTUPINFO si = { sizeof(si), 0 };
 				PROCESS_INFORMATION pi = { 0 };
-				AutoArray<TCHAR> buf(cmdLine.length() + 1);
-				_tcscpy(buf, cmdLine.c_str());
-				if(::CreateProcess(cmd.c_str(), buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+				boost::scoped_ptr<TCHAR> buf(new TCHAR[cmdLine.length() + 1]);
+				_tcscpy(&buf[0], cmdLine.c_str());
+				if(::CreateProcess(cmd.c_str(), &buf[0], NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
 					::CloseHandle(pi.hThread);
 					::CloseHandle(pi.hProcess);
 					return;
