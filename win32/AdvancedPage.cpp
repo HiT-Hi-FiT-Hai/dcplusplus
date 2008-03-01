@@ -47,6 +47,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::AUTO_KICK_NO_FAVS, N_("Don't automatically disconnect favorite users who leave the hub") },
 	{ SettingsManager::SHOW_SHELL_MENU, N_("Show shell menu where possible") },
 	{ SettingsManager::OWNER_DRAWN_MENUS, N_("Use extended menus with icons and titles") },
+	{ SettingsManager::CORAL, N_("Use Coral network when downloading hub lists (improves reliability)") },
 	{ 0, 0 }
 };
 

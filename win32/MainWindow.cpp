@@ -106,7 +106,7 @@ MainWindow::MainWindow() :
 
 	c = new HttpConnection;
 	c->addListener(this);
-	c->downloadFile("http://dcplusplus.sourceforge.net.nyud.net/version.xml");
+	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
 	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	startSocket();

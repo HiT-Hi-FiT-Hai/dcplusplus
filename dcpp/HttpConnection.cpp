@@ -26,6 +26,8 @@
 
 namespace dcpp {
 
+static const std::string CORAL_SUFFIX = ".nyud.net";
+
 /**
  * Downloads a file and returns it as a string
  * @todo Report exceptions
@@ -60,6 +62,12 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	} else {
 		Util::decodeUrl(SETTING(HTTP_PROXY), server, port, file);
 		file = currentUrl;
+	}
+	
+	if(SETTING(CORAL)) {
+		if(server.length() > CORAL_SUFFIX.length() && server.compare(server.length() - CORAL_SUFFIX.length(), CORAL_SUFFIX.length(), CORAL_SUFFIX) != 0) {
+			server += CORAL_SUFFIX;
+		}
 	}
 
 	if(port == 0)

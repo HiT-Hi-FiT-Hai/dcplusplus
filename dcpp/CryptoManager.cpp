@@ -149,7 +149,7 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 	ssl::X509 x509ss(X509_new());
 	
 	if(!bn || !rsa || !pkey || !nm || !x509ss) {
-		throw new CryptoException("Error creating objects for cert generation");
+		throw CryptoException("Error creating objects for cert generation");
 	}
 	
 	int days = 10;
