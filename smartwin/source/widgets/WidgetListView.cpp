@@ -4,6 +4,8 @@
 
 #include "../../include/smartwin/LibraryLoader.h"
 
+#include <boost/scoped_array.hpp>
+
 namespace SmartWin {
 
 bool WidgetListView::ComCtl6 = false;
@@ -408,27 +410,18 @@ int WidgetListView::xoffFromColumn( int column, int & logicalColumn )
 	logicalColumn = - 1;
 	HWND hHeader = reinterpret_cast< HWND >( ::SendMessage( hWnd, LVM_GETHEADER, 0, 0 ) );
 	int noItems = ::SendMessage( hHeader, HDM_GETITEMCOUNT, 0, 0 );
-	int * myArrayOfCols = new int[noItems]; // TODO: Use boost::scoped_array or something...
+	boost::scoped_array<int> myArrayOfCols(new int[noItems]);
 	int xOffset = 0;
-	try
+	::SendMessage( hHeader, HDM_GETORDERARRAY, static_cast< WPARAM >( noItems ), reinterpret_cast< LPARAM >( myArrayOfCols.get() ) );
+	for ( int idx = 0; idx < noItems; ++idx )
 	{
-		::SendMessage( hHeader, HDM_GETORDERARRAY, static_cast< WPARAM >( noItems ), reinterpret_cast< LPARAM >( myArrayOfCols ) );
-		for ( int idx = 0; idx < noItems; ++idx )
+		if ( myArrayOfCols[idx] == column )
 		{
-			if ( myArrayOfCols[idx] == column )
-			{
-				logicalColumn = idx;
-				break;
-			}
-			else
-				xOffset += ListView_GetColumnWidth( hWnd, myArrayOfCols[idx] );
+			logicalColumn = idx;
+			break;
 		}
-		delete [] myArrayOfCols;
-	}
-	catch ( ... )
-	{
-		delete [] myArrayOfCols;
-		throw;
+		else
+			xOffset += ListView_GetColumnWidth( hWnd, myArrayOfCols[idx] );
 	}
 
 	return xOffset;
