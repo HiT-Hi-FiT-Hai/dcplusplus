@@ -26,7 +26,7 @@
 #include <dcpp/version.h>
 
 FavHubProperties::FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry) :
-	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
 	name(0),
 	address(0),
 	description(0),

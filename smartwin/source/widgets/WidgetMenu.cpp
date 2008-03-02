@@ -52,8 +52,7 @@ drawSidebar(false)
 	xAssert(itsParent != NULL, _T("A WidgetMenu must have a parent"));
 }
 
-void WidgetMenu::create(const Seed& cs)
-{
+void WidgetMenu::createHelper(const Seed& cs) {
 	// save settings provided through the Seed
 	ownerDrawn = cs.ownerDrawn;
 	itsColorInfo = cs.colorInfo;
@@ -70,8 +69,11 @@ void WidgetMenu::create(const Seed& cs)
 		itsParent->setCallback(Message(WM_DRAWITEM), DrawItemDispatcher(std::tr1::bind(&WidgetMenu::handleDrawItem, this, _1, _2)));
 		itsParent->setCallback(Message(WM_MEASUREITEM), MeasureItemDispatcher(std::tr1::bind(&WidgetMenu::handleMeasureItem, this, _1)));
 	}
+}
 
-	// Create menu
+void WidgetMenu::create(const Seed& cs) {
+	createHelper(cs);
+
 	if(cs.popup)
 		itsHandle = ::CreatePopupMenu();
 	else
@@ -83,11 +85,46 @@ void WidgetMenu::create(const Seed& cs)
 	}
 }
 
-void WidgetMenu::attach()
-{
+void WidgetMenu::attach(HMENU hMenu, const Seed& cs) {
+	createHelper(cs);
+
+	itsHandle = hMenu;
+
+	if(ownerDrawn) {
+		// update all current items to be owner-drawn
+		// @todo update sub-menus too...
+		const int count = getCount();
+		for(int i = 0; i < count; ++i) {
+			// init structure for items
+			MENUITEMINFO info;
+			memset( & info, 0, sizeof( info ) );
+			info.cbSize = sizeof( MENUITEMINFO );
+
+			// set flags
+			info.fMask = MIIM_FTYPE | MIIM_DATA;
+
+			if(::GetMenuItemInfo(itsHandle, i, TRUE, &info)) {
+				info.fMask |= MIIM_DATA;
+				info.fType |= MFT_OWNERDRAW;
+
+				// create item data wrapper
+				ItemDataWrapper * wrapper = new ItemDataWrapper( this, i, MenuItemDataPtr( new MenuItemData() ) );
+				info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
+
+				if(::SetMenuItemInfo(itsHandle, i, TRUE, &info))
+					itsItemDataRef.push_back( wrapper );
+				else
+					throw xCeption( _T( "SetMenuItemInfo in WidgetMenu::attach fizzled..." ) );
+			} else
+				throw xCeption( _T( "GetMenuItemInfo in WidgetMenu::attach fizzled..." ) );
+		}
+	}
+}
+
+void WidgetMenu::setMenu() {
 	addCommands();
 	if ( ::SetMenu( itsParent->handle(), itsHandle ) == FALSE )
-		throw xCeption( _T( "Couldn't attach menu to the parent window" ) );
+		throw xCeption( _T( "SetMenu in WidgetMenu::setMenu fizzled..." ) );
 }
 
 WidgetMenu::ObjectType WidgetMenu::appendPopup( const SmartUtil::tstring & text, MenuItemDataPtr itemData )
@@ -111,7 +148,7 @@ WidgetMenu::ObjectType WidgetMenu::appendPopup( const SmartUtil::tstring & text,
 	info.hSubMenu = retVal->handle();
 
 	// get position to insert
-	int position = ::GetMenuItemCount( itsHandle );
+	int position = getCount();
 
 	ItemDataWrapper * wrapper = NULL;
 	if(ownerDrawn) {
@@ -167,7 +204,7 @@ void WidgetMenu::addCommands() {
 int WidgetMenu::getItemIndex( unsigned int id )
 {
 	int index = 0;
-	const int itemCount = ::GetMenuItemCount( itsHandle );
+	const int itemCount = getCount();
 
 	for ( index = 0; index < itemCount; ++index )
 		if ( ::GetMenuItemID( itsHandle, index ) == id ) // exit the loop if found
@@ -190,7 +227,7 @@ MenuItemDataPtr WidgetMenu::getData( int itemIndex )
 WidgetMenu::~WidgetMenu()
 {
 	// Destroy this menu
-	::DestroyMenu( this->handle() );
+	::DestroyMenu( handle() );
 	std::for_each( itsItemDataRef.begin(), itsItemDataRef.end(), destroyItemDataWrapper );
 }
 
@@ -205,7 +242,7 @@ void WidgetMenu::destroyItemDataWrapper( ItemDataWrapper * wrapper )
 void WidgetMenu::setTitleFont( FontPtr font )
 {
 	itsTitleFont = font;
-	setTitle( itsTitle, this->drawSidebar ); // Easy for now, should be refactored...
+	setTitle( itsTitle, drawSidebar ); // Easy for now, should be refactored...
 }
 
 void WidgetMenu::clearTitle( bool clearSidebar /* = false */)
@@ -222,12 +259,12 @@ void WidgetMenu::clearTitle( bool clearSidebar /* = false */)
 
 void WidgetMenu::checkItem( unsigned id, bool value )
 {
-	::CheckMenuItem( this->handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
+	::CheckMenuItem( handle(), id, value ? MF_CHECKED : MF_UNCHECKED );
 }
 
 void WidgetMenu::setItemEnabled( unsigned id, bool byPosition, bool value )
 {
-	if ( ::EnableMenuItem( this->handle(), id, (byPosition ? MF_BYPOSITION : MF_BYCOMMAND) | (value ? MF_ENABLED : MF_GRAYED) ) == - 1 )
+	if ( ::EnableMenuItem( handle(), id, (byPosition ? MF_BYPOSITION : MF_BYCOMMAND) | (value ? MF_ENABLED : MF_GRAYED) ) == - 1 )
 	{
 		xCeption x( _T( "Couldn't enable/disable the menu item, item doesn't exist" ) );
 		throw x;
@@ -236,7 +273,7 @@ void WidgetMenu::setItemEnabled( unsigned id, bool byPosition, bool value )
 
 UINT WidgetMenu::getMenuState( UINT id, bool byPosition )
 {
-	return ::GetMenuState(this->handle(), id, byPosition ? MF_BYPOSITION : MF_BYCOMMAND); 
+	return ::GetMenuState(handle(), id, byPosition ? MF_BYPOSITION : MF_BYCOMMAND); 
 }
 
 bool WidgetMenu::isSeparator( UINT id, bool byPosition )
@@ -261,7 +298,7 @@ bool WidgetMenu::isEnabled( UINT id, bool byPosition )
 
 void WidgetMenu::setDefaultItem( UINT id, bool byPosition )
 {
-	::SetMenuDefaultItem(this->handle(), id, byPosition);
+	::SetMenuDefaultItem(handle(), id, byPosition);
 }
 
 SmartUtil::tstring WidgetMenu::getText( unsigned id, bool byPosition )
@@ -841,7 +878,7 @@ void WidgetMenu::appendSeparatorItem()
 	itemInfo.fType = MFT_SEPARATOR;
 
 	// get position to insert
-	int position = ::GetMenuItemCount( itsHandle );
+	int position = getCount();
 
 	ItemDataWrapper * wrapper = NULL;
 	if(ownerDrawn) {
@@ -863,7 +900,7 @@ void WidgetMenu::removeItem( unsigned itemIndex )
 	HMENU popup = ::GetSubMenu( itsHandle, itemIndex );
 
 	// try to remove item
-	if ( ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION ) == TRUE )
+	if ( ::RemoveMenu( itsHandle, itemIndex, MF_BYPOSITION ) )
 	{
 		size_t i = 0;
 
@@ -906,13 +943,13 @@ void WidgetMenu::removeItem( unsigned itemIndex )
 void WidgetMenu::removeAllItems()
 {
 	//must be backwards, since bigger indexes change on remove
-	for( int i = this->getCount() - 1; i >= 0; i-- )
+	for( int i = getCount() - 1; i >= 0; i-- )
 	{
-		this->removeItem( i );
+		removeItem( i );
 	}
 }
 
-int WidgetMenu::getCount()
+int WidgetMenu::getCount() const
 {
 	int count = ::GetMenuItemCount( itsHandle );
 	if( count == -1 )
@@ -942,7 +979,7 @@ void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, Me
 
 	// set position to insert
 	bool itemExists = index != - 1;
-	index = itemExists ? index : ::GetMenuItemCount( itsHandle );
+	index = itemExists ? index : getCount();
 
 	ItemDataWrapper * wrapper = NULL;
 	if(ownerDrawn) {
@@ -954,8 +991,8 @@ void WidgetMenu::appendItem(unsigned int id, const SmartUtil::tstring & text, Me
 		info.dwItemData = reinterpret_cast< ULONG_PTR >( wrapper );
 	}
 
-	if ( ( !itemExists && ::InsertMenuItem( itsHandle, id, FALSE, & info ) == TRUE ) ||
-		( itemExists && ::SetMenuItemInfo( itsHandle, id, FALSE, & info ) == TRUE ) )
+	if ( ( !itemExists && ::InsertMenuItem( itsHandle, id, FALSE, & info ) ) ||
+		( itemExists && ::SetMenuItemInfo( itsHandle, id, FALSE, & info ) ) )
 	{
 		if(ownerDrawn)
 			itsItemDataRef.push_back( wrapper );
@@ -991,8 +1028,8 @@ unsigned WidgetMenu::trackPopupMenu( const ScreenCoordinate& sc, unsigned flags 
 
 WidgetMenu::ObjectType WidgetMenu::getChild( unsigned position ) {
 	HMENU h = ::GetSubMenu(handle(), position);
-	for(size_t i = 0; i < this->itsChildren.size(); ++i) {
-		ObjectType& menu = this->itsChildren[i];
+	for(size_t i = 0; i < itsChildren.size(); ++i) {
+		ObjectType& menu = itsChildren[i];
 		if(menu->handle() == h) {
 			return menu;
 		}

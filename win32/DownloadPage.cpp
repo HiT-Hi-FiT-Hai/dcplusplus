@@ -69,6 +69,12 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	spinner = attachSpinner(IDC_SPEEDSPIN);
 	spinner->setRange(0, 10000);
+
+	attachTextBox(IDC_DOWNLOADDIR);
+	attachTextBox(IDC_TEMP_DOWNLOAD_DIRECTORY);
+	attachTextBox(IDC_DOWNLOADS);
+	attachTextBox(IDC_MAXSPEED);
+	attachTextBox(IDC_PROXY);
 }
 
 DownloadPage::~DownloadPage() {

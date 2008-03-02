@@ -22,7 +22,7 @@
 #include <dcpp/forward.h>
 #include "WidgetFactory.h"
 
-class FavHubProperties : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>
+class FavHubProperties : public WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	FavHubProperties(SmartWin::Widget* parent, FavoriteHubEntry *_entry);

@@ -50,10 +50,13 @@ CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 
+	privateKeyFile = attachTextBox(IDC_TLS_PRIVATE_KEY_FILE);
 	attachButton(IDC_BROWSE_PRIVATE_KEY)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowsePrivateKeyClicked, this));
 
+	certificateFile = attachTextBox(IDC_TLS_CERTIFICATE_FILE);
 	attachButton(IDC_BROWSE_CERTIFICATE)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseCertificateClicked, this));
 
+	trustedCertificatesPath = attachTextBox(IDC_TLS_TRUSTED_CERTIFICATES_PATH);
 	attachButton(IDC_BROWSE_TRUSTED_PATH)->onClicked(std::tr1::bind(&CertificatesPage::handleBrowseTrustedPathClicked, this));
 
 	attachButton(IDC_GENERATE_CERTS)->onClicked(std::tr1::bind(&CertificatesPage::handleGenerateCertsClicked, this));
@@ -67,21 +70,21 @@ void CertificatesPage::write() {
 }
 
 void CertificatesPage::handleBrowsePrivateKeyClicked() {
-	tstring target = Text::toT(SETTING(TLS_PRIVATE_KEY_FILE));
+	tstring target = privateKeyFile->getText();
 	if(WinUtil::browseFile(target, handle(), false, target))
-		::SetDlgItemText(handle(), IDC_TLS_PRIVATE_KEY_FILE, &target[0]);
+		privateKeyFile->setText(target);
 }
 
 void CertificatesPage::handleBrowseCertificateClicked() {
-	tstring target = Text::toT(SETTING(TLS_CERTIFICATE_FILE));
+	tstring target = certificateFile->getText();
 	if(WinUtil::browseFile(target, handle(), false, target))
-		::SetDlgItemText(handle(), IDC_TLS_CERTIFICATE_FILE, &target[0]);
+		certificateFile->setText(target);
 }
 
 void CertificatesPage::handleBrowseTrustedPathClicked() {
-	tstring target = Text::toT(SETTING(TLS_TRUSTED_CERTIFICATES_PATH));
+	tstring target = trustedCertificatesPath->getText();
 	if(WinUtil::browseDirectory(target, handle()))
-		::SetDlgItemText(handle(), IDC_TLS_TRUSTED_CERTIFICATES_PATH, &target[0]);
+		trustedCertificatesPath->setText(target);
 }
 
 void CertificatesPage::handleGenerateCertsClicked() {

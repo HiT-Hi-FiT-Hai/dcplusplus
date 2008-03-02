@@ -81,6 +81,8 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 
 	button = attachButton(IDC_BROWSE);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBrowseClicked, this));
+
+	attachTextBox(IDC_BEEPFILE);
 }
 
 Appearance2Page::~Appearance2Page() {

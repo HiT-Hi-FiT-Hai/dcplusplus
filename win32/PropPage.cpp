@@ -23,7 +23,7 @@
 #include "PropPage.h"
 
 #include <dcpp/SettingsManager.h>
-
+#include "WinUtil.h"
 
 PropPage::PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) { 
 	onRaw(std::tr1::bind(&PropPage::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));

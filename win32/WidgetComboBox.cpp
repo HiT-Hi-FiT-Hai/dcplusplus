@@ -16,28 +16,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
-#define DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
+#include "stdafx.h"
 
-/** Our own flavour of text boxes that handle double clicks and have fancy menus */
-class WidgetTextBox : public SmartWin::WidgetTextBox {
-private:
-	typedef SmartWin::WidgetTextBox BaseType;
-public:
-	typedef WidgetTextBox ThisType;
-	
-	typedef ThisType* ObjectType;
+#include "WidgetComboBox.h"
 
-	explicit WidgetTextBox( SmartWin::Widget * parent );
+WidgetComboBox::WidgetComboBox( SmartWin::Widget * parent ) : BaseType(parent), textBox(0) {
+}
 
-private:
-	void handleLeftDblClick(const SmartWin::MouseEventResult& ev);
-
-	LRESULT handleEnterIdle(WPARAM wParam, LPARAM lParam);
-	LRESULT handleMenuSelect(WPARAM wParam, LPARAM lParam);
-
-	SmartWin::WidgetMenu::ObjectType menu;
-	bool menuOpened;
-};
-
-#endif /*WIDGETTEXTBOX_H_*/
+WidgetComboBox::WidgetTextBoxPtr WidgetComboBox::getTextBox() {
+	if(!textBox) {
+		LONG_PTR style = ::GetWindowLongPtr(handle(), GWL_STYLE);
+		if((style & CBS_SIMPLE)  == CBS_SIMPLE || (style & CBS_DROPDOWN) == CBS_DROPDOWN) {
+			HWND wnd = ::FindWindowEx(handle(), NULL, _T("EDIT"), NULL);
+			if(wnd && wnd != handle())
+				textBox = SmartWin::WidgetCreator< WidgetTextBox >::attach(this, wnd);
+		}
+	}
+	return textBox;
+}

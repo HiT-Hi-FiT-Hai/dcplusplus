@@ -65,22 +65,26 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 		options.push_back(pair);
 	}
 
-	::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), false);
-	::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), false);
-
-	oldSelection = -1;
+	attachTextBox(IDC_LOG_DIRECTORY);
 
 	attachButton(IDC_BROWSE_LOG)->onClicked(std::tr1::bind(&LogPage::handleBrowseClicked, this));
 
-	WidgetListViewPtr dataGrid = attachList(IDC_LOG_OPTIONS);
-	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this, dataGrid, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+	dataGrid = attachList(IDC_LOG_OPTIONS);
+	dataGrid->onRaw(std::tr1::bind(&LogPage::handleItemChanged, this), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
+
+	logFormat = attachTextBox(IDC_LOG_FORMAT);
+	logFormat->setEnabled(false);
+
+	logFile = attachTextBox(IDC_LOG_FILE);
+	logFile->setEnabled(false);
+
+	oldSelection = -1;
 }
 
 LogPage::~LogPage() {
 }
 
-void LogPage::write()
-{
+void LogPage::write() {
 	PropPage::write(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
 
 	const string& s = SETTING(LOG_DIRECTORY);
@@ -115,27 +119,27 @@ void LogPage::handleBrowseClicked() {
 	}
 }
 
-HRESULT LogPage::handleItemChanged(WidgetListViewPtr dataGrid, WPARAM wParam, LPARAM lParam) {
+LRESULT LogPage::handleItemChanged() {
 	getValues();
 
 	int sel = dataGrid->getSelectedIndex();
 
 	if(sel >= 0 && sel < LogManager::LAST) {
-		BOOL checkState = dataGrid->isChecked(sel) ? TRUE : FALSE;
-		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), checkState);
-		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), checkState);
+		bool checkState = dataGrid->isChecked(sel);
+		logFormat->setEnabled(checkState);
+		logFile->setEnabled(checkState);
 
-		::SetDlgItemText(handle(), IDC_LOG_FILE, options[sel].first.c_str());
-		::SetDlgItemText(handle(), IDC_LOG_FORMAT, options[sel].second.c_str());
+		logFile->setText(options[sel].first);
+		logFormat->setText(options[sel].second);
 
 		//save the old selection so we know where to save the values
 		oldSelection = sel;
 	} else {
-		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FORMAT), FALSE);
-		::EnableWindow(::GetDlgItem(handle(), IDC_LOG_FILE), FALSE);
+		logFormat->setEnabled(false);
+		logFile->setEnabled(false);
 
-		::SetDlgItemText(handle(), IDC_LOG_FILE, _T(""));
-		::SetDlgItemText(handle(), IDC_LOG_FORMAT, _T(""));
+		logFile->setText(Util::emptyStringT);
+		logFormat->setText(Util::emptyStringT);
 	}
 
 	return 0;
@@ -143,11 +147,7 @@ HRESULT LogPage::handleItemChanged(WidgetListViewPtr dataGrid, WPARAM wParam, LP
 
 void LogPage::getValues() {
 	if(oldSelection >= 0) {
-		TCHAR buf[512];
-
-		if(::GetDlgItemText(handle(), IDC_LOG_FILE, buf, 512) > 0)
-			options[oldSelection].first = buf;
-		if(::GetDlgItemText(handle(), IDC_LOG_FORMAT, buf, 512) > 0)
-			options[oldSelection].second = buf;
+		options[oldSelection].first = logFile->getText();
+		options[oldSelection].second = logFormat->getText();
 	}
 }

@@ -254,7 +254,7 @@ void MainWindow::initMenu() {
 		help->appendItem(IDC_HELP_DONATE, T_("Donate (paypal)"), std::tr1::bind(&MainWindow::handleLink, this, _1));
 	}
 
-	mainMenu->attach();
+	mainMenu->setMenu();
 }
 
 void MainWindow::initToolbar() {

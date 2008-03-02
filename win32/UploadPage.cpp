@@ -103,6 +103,9 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 
 	spinner = attachSpinner(IDC_MIN_UPLOAD_SPIN);
 	spinner->setRange(0, UD_MAXVAL);
+
+	attachTextBox(IDC_MIN_UPLOAD_SPEED);
+	attachTextBox(IDC_SLOTS);
 }
 
 UploadPage::~UploadPage() {

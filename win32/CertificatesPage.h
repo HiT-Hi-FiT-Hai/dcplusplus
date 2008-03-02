@@ -35,6 +35,10 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
+	WidgetTextBoxPtr privateKeyFile;
+	WidgetTextBoxPtr certificateFile;
+	WidgetTextBoxPtr trustedCertificatesPath;
+
 	void handleBrowsePrivateKeyClicked();
 	void handleBrowseCertificateClicked();
 	void handleBrowseTrustedPathClicked();

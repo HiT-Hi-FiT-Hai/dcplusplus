@@ -94,6 +94,12 @@ public:
 		return retVal;
 	}
 
+	static typename WidgetType::ObjectType attach( Widget * parent, HMENU hMenu, const typename WidgetType::Seed & cs )
+	{
+		typename WidgetType::ObjectType retVal(new WidgetType( parent ));
+		retVal->attach( hMenu, cs );
+		return retVal;
+	}
 };
 
 // end namespace SmartWin

@@ -84,6 +84,17 @@ QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));
+
+	attachTextBox(IDC_PRIO_HIGHEST_SIZE);
+	attachTextBox(IDC_PRIO_NORMAL_SIZE);
+	attachTextBox(IDC_PRIO_HIGH_SIZE);
+	attachTextBox(IDC_PRIO_LOW_SIZE);
+	attachTextBox(IDC_AUTODROP_SPEED);
+	attachTextBox(IDC_AUTODROP_ELAPSED);
+	attachTextBox(IDC_AUTODROP_MINSOURCES);
+	attachTextBox(IDC_AUTODROP_INTERVAL);
+	attachTextBox(IDC_AUTODROP_INACTIVITY);
+	attachTextBox(IDC_AUTODROP_FILESIZE);
 }
 
 QueuePage::~QueuePage() {

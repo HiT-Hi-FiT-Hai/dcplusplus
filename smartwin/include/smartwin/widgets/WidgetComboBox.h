@@ -39,7 +39,6 @@
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectText.h"
-#include "WidgetTextBox.h"
 
 namespace SmartWin
 {
@@ -154,9 +153,6 @@ public:
 	static bool isValidSelectionChanged( LPARAM lPar )
 	{ return true;
 	}
-
-	typedef WidgetTextBox::ObjectType WidgetTextBoxPtr;
-	WidgetTextBoxPtr getTextBox();
 	
 protected:
 	/// Constructor Taking pointer to parent
@@ -166,9 +162,6 @@ protected:
 	// WidgetFactory class which is friend
 	virtual ~WidgetComboBox()
 	{}
-	
-private:
-	WidgetTextBoxPtr textBox;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -266,7 +259,7 @@ inline SmartUtil::tstring WidgetComboBox::getValue( int index )
 }
 
 inline WidgetComboBox::WidgetComboBox( Widget * parent )
-	: ControlType( parent ), textBox(0)
+	: ControlType( parent )
 {
 }
 

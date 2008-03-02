@@ -20,8 +20,9 @@
 #define DCPLUSPLUS_WIN32_COMMAND_DLG_H
 
 #include <dcpp/Util.h>
+#include "WidgetFactory.h"
 
-class CommandDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>
+class CommandDlg : public WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	CommandDlg(SmartWin::Widget* parent, int type_ = 0, int ctx_ = 0, const tstring& name_ = Util::emptyStringT, const tstring& command_ = Util::emptyStringT, const tstring& hub_ = Util::emptyStringT);

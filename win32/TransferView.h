@@ -25,6 +25,7 @@
 #include <dcpp/QueueManagerListener.h>
 #include <dcpp/TaskQueue.h>
 #include <dcpp/forward.h>
+#include <dcpp/MerkleTree.h>
 #include <dcpp/Util.h>
 
 #include "AspectSpeaker.h"

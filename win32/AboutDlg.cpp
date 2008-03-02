@@ -44,7 +44,7 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "stanislav maslovski, david grundberg. "
 "Keep it coming!";
 
-AboutDlg::AboutDlg(SmartWin::Widget* parent) : SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
+AboutDlg::AboutDlg(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent) {
 	onInitDialog(std::tr1::bind(&AboutDlg::handleInitDialog, this));
 	onSpeaker(std::tr1::bind(&AboutDlg::handleSpeaker, this, _1, _2));
 }
@@ -54,8 +54,8 @@ AboutDlg::~AboutDlg() {
 
 bool AboutDlg::handleInitDialog() {
 	setItemText(IDC_VERSION, Text::toT("DC++ " VERSIONSTRING "\n(c) Copyright 2001-2008 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
-	setItemText(IDC_TTH, WinUtil::tth);
-	setItemText(IDC_THANKS, Text::toT(thanks));
+	attachTextBox(IDC_TTH)->setText(WinUtil::tth);
+	attachTextBox(IDC_THANKS)->setText(Text::toT(thanks));
 	setItemText(IDC_TOTALS, str(TF_("Upload: %1%, Download: %2%") % Text::toT(Util::formatBytes(SETTING(TOTAL_UPLOAD))) % Text::toT(Util::formatBytes(SETTING(TOTAL_DOWNLOAD)))));
 	if(SETTING(TOTAL_DOWNLOAD) > 0) {
 		setItemText(IDC_RATIO, str(TF_("Ratio (up/down): %1$0.2f") % (((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)))));

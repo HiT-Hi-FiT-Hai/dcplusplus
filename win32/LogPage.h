@@ -36,6 +36,10 @@ private:
 	static TextItem texts[];
 	static ListItem listItems[];
 
+	WidgetListViewPtr dataGrid;
+	WidgetTextBoxPtr logFormat;
+	WidgetTextBoxPtr logFile;
+
 	int oldSelection;
 
 	//store all log options here so we can discard them
@@ -44,8 +48,7 @@ private:
 	TStringPairList options;
 
 	void handleBrowseClicked();
-
-	HRESULT handleItemChanged(WidgetListViewPtr dataGrid, WPARAM wParam, LPARAM lParam);
+	LRESULT handleItemChanged();
 
 	void getValues();
 };

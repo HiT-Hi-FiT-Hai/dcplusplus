@@ -25,7 +25,9 @@
 // and can take filename, size, etc. values from there.
 //                                                        - GargoyleMT
 
-class MagnetDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>
+#include "WidgetFactory.h"
+
+class MagnetDlg : public WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	MagnetDlg(SmartWin::Widget* parent, const tstring& aHash, const tstring& aFileName);

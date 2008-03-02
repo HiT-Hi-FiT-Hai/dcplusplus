@@ -22,8 +22,9 @@
 #include "resource.h"
 
 #include <dcpp/Util.h>
+#include "WidgetFactory.h"
 
-class LineDlg : public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>
+class LineDlg : public WidgetFactory<SmartWin::WidgetModalDialog>
 {
 public:
 	LineDlg(SmartWin::Widget* parent, const tstring& title_, const tstring& desc_, const tstring& initial_ = Util::emptyStringT, bool password_ = false);

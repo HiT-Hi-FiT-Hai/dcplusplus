@@ -100,12 +100,17 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 	RADIO_ATTACH(IDC_SOCKS5);
 #undef RADIO_ATTACH
 
-#define TEXTBOX_ATTACH(id) attachTextBox(id)->setTextLimit(250)
-	TEXTBOX_ATTACH(IDC_SOCKS_SERVER);
-	TEXTBOX_ATTACH(IDC_SOCKS_PORT);
-	TEXTBOX_ATTACH(IDC_SOCKS_USER);
-	TEXTBOX_ATTACH(IDC_SOCKS_PASSWORD);
-#undef TEXTBOX_ATTACH
+#define TEXTBOX_LIMIT(id) attachTextBox(id)->setTextLimit(250)
+	TEXTBOX_LIMIT(IDC_SOCKS_SERVER);
+	TEXTBOX_LIMIT(IDC_SOCKS_PORT);
+	TEXTBOX_LIMIT(IDC_SOCKS_USER);
+	TEXTBOX_LIMIT(IDC_SOCKS_PASSWORD);
+#undef TEXTBOX_LIMIT
+
+	attachTextBox(IDC_PORT_TCP);
+	attachTextBox(IDC_PORT_UDP);
+	attachTextBox(IDC_PORT_TLS);
+	attachTextBox(IDC_EXTERNAL_IP);
 }
 
 NetworkPage::~NetworkPage() {

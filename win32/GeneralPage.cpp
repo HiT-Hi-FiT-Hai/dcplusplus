@@ -64,6 +64,8 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 	nick->setTextLimit(35);
 	nick->onTextChanged(std::tr1::bind(&GeneralPage::handleNickTextChanged, this));
 
+	attachTextBox(IDC_EMAIL);
+
 	attachTextBox(IDC_DESCRIPTION)->setTextLimit(35);
 }
 

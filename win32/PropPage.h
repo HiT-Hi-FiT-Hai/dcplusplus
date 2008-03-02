@@ -22,7 +22,6 @@
 #define SETTINGS_BUF_LEN 1024
 
 #include "WidgetFactory.h"
-#include "resource.h"
 
 class PropPage : public WidgetFactory<SmartWin::WidgetDialog>
 {

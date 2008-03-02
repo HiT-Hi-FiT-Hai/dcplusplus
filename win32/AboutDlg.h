@@ -21,10 +21,11 @@
 
 #include <dcpp/HttpConnection.h>
 #include "resource.h"
+#include "WidgetFactory.h"
 #include "AspectSpeaker.h"
 
 class AboutDlg :
-	public SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>,
+	public WidgetFactory<SmartWin::WidgetModalDialog>,
 	public AspectSpeaker<AboutDlg>,
 	private HttpConnectionListener
 {

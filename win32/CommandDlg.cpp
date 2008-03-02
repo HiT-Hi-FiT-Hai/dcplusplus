@@ -28,7 +28,7 @@
 #include "WinUtil.h"
 
 CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstring& name_, const tstring& command_, const tstring& hub_) :
-	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
 	separator(0),
 	raw(0),
 	chat(0),

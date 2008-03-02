@@ -25,7 +25,7 @@
 #include "WinUtil.h"
 
 MagnetDlg::MagnetDlg(SmartWin::Widget* parent, const tstring& aHash, const tstring& aFileName) :
-	SmartWin::WidgetFactory<SmartWin::WidgetModalDialog>(parent),
+	WidgetFactory<SmartWin::WidgetModalDialog>(parent),
 	//queue(0),
 	search(0),
 	doNothing(0),
@@ -44,8 +44,8 @@ bool MagnetDlg::handleInitDialog() {
 	setText(T_("MAGNET Link detected"));
 	::SetDlgItemText(handle(), IDC_MAGNET_TEXT, CT_("DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?"));
 	::SetDlgItemText(handle(), IDC_MAGNET_HASH, CT_("File Hash:"));
-	::SetDlgItemText(handle(), IDC_MAGNET_DISP_HASH, mHash.c_str());
-	::SetDlgItemText(handle(), IDC_MAGNET_NAME, CT_("Filename:"));
+	attachTextBox(IDC_MAGNET_DISP_HASH)->setText(mHash.c_str());
+	attachTextBox(IDC_MAGNET_NAME)->setText(T_("Filename:"));
 	::SetDlgItemText(handle(), IDC_MAGNET_DISP_NAME, mFileName.c_str());
 
 	//queue = attachRadioButton(IDC_MAGNET_1_QUEUE);

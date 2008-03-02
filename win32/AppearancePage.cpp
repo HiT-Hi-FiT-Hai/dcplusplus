@@ -96,6 +96,9 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), lan
 	}
 	
 	languages->setSelectedIndex(selected);
+
+	attachTextBox(IDC_DEFAULT_AWAY_MESSAGE);
+	attachTextBox(IDC_TIME_STAMPS_FORMAT);
 }
 
 AppearancePage::~AppearancePage() {

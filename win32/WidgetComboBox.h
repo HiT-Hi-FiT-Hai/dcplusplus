@@ -16,28 +16,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
-#define DCPLUSPLUS_WIN32_WIDGETTEXTBOX_H_
+#ifndef DCPLUSPLUS_WIN32_WIDGETCOMBOBOX_H_
+#define DCPLUSPLUS_WIN32_WIDGETCOMBOBOX_H_
 
-/** Our own flavour of text boxes that handle double clicks and have fancy menus */
-class WidgetTextBox : public SmartWin::WidgetTextBox {
+#include "WidgetTextBox.h"
+
+class WidgetComboBox : public SmartWin::WidgetComboBox {
 private:
-	typedef SmartWin::WidgetTextBox BaseType;
+	typedef SmartWin::WidgetComboBox BaseType;
 public:
-	typedef WidgetTextBox ThisType;
+	typedef WidgetComboBox ThisType;
 	
 	typedef ThisType* ObjectType;
 
-	explicit WidgetTextBox( SmartWin::Widget * parent );
+	explicit WidgetComboBox( SmartWin::Widget * parent );
+
+	typedef WidgetTextBox::ObjectType WidgetTextBoxPtr;
+	WidgetTextBoxPtr getTextBox();
 
 private:
-	void handleLeftDblClick(const SmartWin::MouseEventResult& ev);
-
-	LRESULT handleEnterIdle(WPARAM wParam, LPARAM lParam);
-	LRESULT handleMenuSelect(WPARAM wParam, LPARAM lParam);
-
-	SmartWin::WidgetMenu::ObjectType menu;
-	bool menuOpened;
+	WidgetTextBoxPtr textBox;
 };
 
-#endif /*WIDGETTEXTBOX_H_*/
+#endif /*WIDGETCOMBOBOX_H_*/

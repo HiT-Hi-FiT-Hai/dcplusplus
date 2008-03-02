@@ -206,8 +206,9 @@ public:
 	*/
 	void create(const Seed& cs);
 
-	/// Attaches the menu to the parent window
-	void attach();
+	void attach(HMENU hMenu, const Seed& cs);
+
+	void setMenu();
 
 	/// Appends a popup to the menu
 	/** Everything you "append" to a menu is added sequentially to the menu <br>
@@ -321,7 +322,7 @@ public:
 	void removeAllItems();
 
 	/// Return the number of items in the menu
-	int getCount();
+	int getCount() const;
 
 	/// Displays and handles a menu which can appear anywhere in the window.
 	/** Typically called by a Right Mouse click. If both the x and the y coordinate
@@ -501,6 +502,8 @@ private:
 
 	typedef std::map<unsigned, Widget::CallbackType> CallbackMap;
 	CallbackMap callbacks;
+
+	void createHelper(const Seed& cs);
 
 	void addCommands();
 

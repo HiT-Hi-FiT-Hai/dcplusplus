@@ -123,6 +123,11 @@ public:
 		return WidgetCreator< WidgetMenu >::create( this, cs );
 	}
 
+	WidgetMenuPtr attachMenu(HMENU hMenu, const typename WidgetMenu::Seed& cs = WidgetMenu::Seed())
+	{
+		return WidgetCreator< WidgetMenu >::attach( this, cs, hMenu );
+	}
+
 	/// Creates a Tool Bar and returns a pointer to it.
 	/** DON'T delete the returned pointer!!!
 	  */

@@ -81,6 +81,9 @@
 	#define COLOR_MENUBAR           30
 	#define ODS_HOTLIGHT        0x0040
 	#define ODS_INACTIVE        0x0080
+	#ifndef MN_GETHMENU
+	#define MN_GETHMENU                     0x01E1
+	#endif
 	#if(_WIN32_WINNT >= 0x0500)
 	#ifndef ODS_NOACCEL
 	#define ODS_NOACCEL         0x0100

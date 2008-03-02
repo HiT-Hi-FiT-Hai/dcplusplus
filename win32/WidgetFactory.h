@@ -20,6 +20,7 @@
 #define DCPLUSPLUS_WIN32_WIDGETFACTORY2_H_
 
 #include "WidgetTextBox.h"
+#include "WidgetComboBox.h"
 #include "WidgetPaned.h"
 
 /**
@@ -42,6 +43,20 @@ public:
 
 	WidgetTextBoxPtr attachTextBox( unsigned id ) {
 		return SmartWin::WidgetCreator< WidgetTextBox >::attach( this, id );
+	}
+
+	/// ComboBox class type.
+	typedef ::WidgetComboBox WidgetComboBox;
+
+	/// ComboBox object type.
+	typedef typename WidgetComboBox::ObjectType WidgetComboBoxPtr;
+
+	WidgetComboBoxPtr createComboBox( const WidgetComboBox::Seed & cs = WidgetComboBox::Seed() ) {
+		return SmartWin::WidgetCreator< WidgetComboBox >::create( this, cs );
+	}
+
+	WidgetComboBoxPtr attachComboBox( unsigned id ) {
+		return SmartWin::WidgetCreator< WidgetComboBox >::attach( this, id );
 	}
 
 	/// VPaned class type.
