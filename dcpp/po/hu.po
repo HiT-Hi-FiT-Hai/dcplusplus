@@ -7,15 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-02-05 20:19+0100\n"
-"PO-Revision-Date: 2008-01-28 10:02+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-03-04 23:00+0100\n"
+"PO-Revision-Date: 2008-03-03 22:19+0000\n"
+"Last-Translator: Szabolcs Molnár <Unknown>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2008-02-05 09:32+0000\n"
+"X-Launchpad-Export-Date: 2008-03-04 21:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -48,7 +47,12 @@ msgstr "%.02f PiB"
 msgid "%.02f TiB"
 msgstr "%.02f TiB"
 
-#: dcpp/NmdcHub.cpp:273
+#: dcpp/AdcHub.cpp:139
+#, boost-format
+msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
+msgstr ""
+
+#: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
 msgstr "%1% (Nick ismeretlen)"
@@ -60,12 +64,22 @@ msgid ""
 msgstr ""
 "%1% nincs megosztva. A kiszámított CRC32 nem egyezik az SFV fájlban lévővel."
 
-#: dcpp/QueueManager.cpp:332
+#: dcpp/QueueManager.cpp:325
 #, boost-format
 msgid "%1% renamed to %2%"
 msgstr "%1% átnevezve a következőre: %2%"
 
-#: dcpp/DownloadManager.cpp:520
+#: dcpp/AdcHub.cpp:281
+#, boost-format
+msgid "%1% was kicked by %2%: %3%"
+msgstr ""
+
+#: dcpp/AdcHub.cpp:284
+#, boost-format
+msgid "%1% was kicked: %2%"
+msgstr ""
+
+#: dcpp/DownloadManager.cpp:530
 #, boost-format
 msgid "%1%: File not available"
 msgstr "%1%: A fájl nem elérhető"
@@ -80,45 +94,45 @@ msgstr "%d B"
 msgid "%s B"
 msgstr "%s B"
 
-#: dcpp/QueueManager.cpp:539
+#: dcpp/QueueManager.cpp:532
 msgid "A file of equal or larger size already exists at the target location"
 msgstr "Egy egyező méretű vagy nagyobb fájl már létezik a cél helyén."
 
-#: dcpp/QueueManager.cpp:482
+#: dcpp/QueueManager.cpp:475
 msgid "A file with a different size already exists in the queue"
 msgstr "Egy különböző mérettel rendelkező fájl már van a sorban"
 
-#: dcpp/QueueManager.cpp:485
+#: dcpp/QueueManager.cpp:478
 msgid "A file with different tth root already exists in the queue"
 msgstr "Egy különböző TTH gyökerű fájl már van a sorban"
 
-#: dcpp/QueueManager.cpp:449
+#: dcpp/QueueManager.cpp:442
 msgid "A file with the same hash already exists in your share"
-msgstr ""
+msgstr "A megosztásodban már van egy fájl ugyanezzel a hash-hel"
 
-#: dcpp/ConnectionManager.cpp:181
+#: dcpp/ConnectionManager.cpp:176
 msgid "All download slots taken"
 msgstr "Összes letöltési szál foglalt"
 
-#: dcpp/DownloadManager.cpp:385
+#: dcpp/DownloadManager.cpp:376
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 inkonzisztencia (SFV-Ellenőrzés)"
 
-#: dcpp/DownloadManager.cpp:383
+#: dcpp/DownloadManager.cpp:374
 #, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
 msgstr "CRC32 inkonzisztencia (SFV-Ellenőrzés) (Fájl: %1%)"
 
-#: dcpp/ConnectionManager.cpp:385
+#: dcpp/ConnectionManager.cpp:376
 msgid "Certificate not trusted, unable to connect"
 msgstr "A tanúsítvány nem megbízható, a kapcsolódás nem lehetséges"
 
-#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:187
+#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:154
 msgid "Connection timeout"
 msgstr "Időtúllépés"
 
-#: dcpp/DownloadManager.cpp:248
+#: dcpp/DownloadManager.cpp:232
 #, boost-format
 msgid "Could not open target file: %1%"
 msgstr "Nem sikerült megnyitni a célfájlt a következő miatt: %1%"
@@ -127,7 +141,7 @@ msgstr "Nem sikerült megnyitni a célfájlt a következő miatt: %1%"
 msgid "Directory already shared"
 msgstr "A könyvtár már meg van osztva"
 
-#: dcpp/BufferedSocket.cpp:409 dcpp/BufferedSocket.cpp:427
+#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
 msgid "Disconnected"
 msgstr "Szétkapcsolva"
 
@@ -140,17 +154,17 @@ msgstr "A hubról kilépő felhasználó szétkapcsolva: %1%"
 msgid "Download Queue"
 msgstr "Letöltési Sor"
 
-#: dcpp/ShareManager.cpp:745
+#: dcpp/ShareManager.cpp:741
 #, boost-format
 msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
 "against: %4%%5%"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:552 dcpp/QueueManager.cpp:556
+#: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
 #, boost-format
 msgid "Duplicate source: %1%"
-msgstr ""
+msgstr "Dupla forrás: %1%"
 
 #: dcpp/HashManager.cpp:456
 #, boost-format
@@ -163,8 +177,8 @@ msgid "Error during compression"
 msgstr "Hiba a tömörítés alatt"
 
 #: dcpp/ZUtils.cpp:100 dcpp/ZUtils.cpp:123 dcpp/BZUtils.cpp:72
-#: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:344
-#: dcpp/CryptoManager.cpp:363 dcpp/CryptoManager.cpp:377
+#: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:342
+#: dcpp/CryptoManager.cpp:361 dcpp/CryptoManager.cpp:375
 msgid "Error during decompression"
 msgstr "Hiba a kicsomagolás alatt"
 
@@ -178,15 +192,19 @@ msgstr "Hiba a(z) %1% hashelésekor: %2%"
 msgid "Error saving hash data: %1%"
 msgstr "Hiba a hash adatok mentésekor: %1%"
 
-#: dcpp/CryptoManager.cpp:228 dcpp/CryptoManager.cpp:232
-#: dcpp/CryptoManager.cpp:237 dcpp/CryptoManager.cpp:241
+#: dcpp/CryptoManager.cpp:226 dcpp/CryptoManager.cpp:230
+#: dcpp/CryptoManager.cpp:235 dcpp/CryptoManager.cpp:239
 msgid "Failed to load certificate file"
 msgstr "Nem sikerült betölteni a tanúsítvány fájlt"
 
-#: dcpp/CryptoManager.cpp:246 dcpp/CryptoManager.cpp:250
-#: dcpp/CryptoManager.cpp:255 dcpp/CryptoManager.cpp:259
+#: dcpp/CryptoManager.cpp:244 dcpp/CryptoManager.cpp:248
+#: dcpp/CryptoManager.cpp:253 dcpp/CryptoManager.cpp:257
 msgid "Failed to load private key"
 msgstr "Nem sikerült betölteni a pirvát kulcsot"
+
+#: dcpp/AdcHub.cpp:206
+msgid "Failed to negotiate base protocol"
+msgstr ""
 
 #: dcpp/Socket.cpp:408
 msgid ""
@@ -194,16 +212,16 @@ msgid ""
 "port)"
 msgstr ""
 
-#: dcpp/ShareManager.cpp:780
+#: dcpp/ShareManager.cpp:776
 #, boost-format
 msgid "File list refresh failed: %1%"
 msgstr "Hiba a fájl-lista frissítésekor: %1%"
 
-#: dcpp/ShareManager.cpp:824
+#: dcpp/ShareManager.cpp:820
 msgid "File list refresh finished"
 msgstr "A fájl-lista frissítése befejeződött"
 
-#: dcpp/ShareManager.cpp:760
+#: dcpp/ShareManager.cpp:756
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
@@ -211,7 +229,7 @@ msgstr ""
 "A fájl-lista frissítése már folyamatban. Kérlek, várd meg, amíg befejezi, "
 "mielőtt újra frissíteni próbálsz"
 
-#: dcpp/ShareManager.cpp:802
+#: dcpp/ShareManager.cpp:798
 msgid "File list refresh initiated"
 msgstr "A fájl-lista frissítése elkezdődött"
 
@@ -229,11 +247,11 @@ msgstr "Indexelés befejezve: %1%"
 msgid "Finished hashing: %1% (%2%/s)"
 msgstr "Indexelés befejezve: %1% (%2%/s)"
 
-#: dcpp/DownloadManager.cpp:317
+#: dcpp/DownloadManager.cpp:308
 msgid "Full tree does not match TTH root"
 msgstr "A teljes fa nem megfelelő a TTH gyökérhez"
 
-#: dcpp/CryptoManager.cpp:221
+#: dcpp/CryptoManager.cpp:219
 msgid "Generated new TLS certificate"
 msgstr "Új TLS tanúsítvány generálva"
 
@@ -250,11 +268,17 @@ msgstr "A hash adatbázis újraépítve"
 msgid "Hashing failed: %1%"
 msgstr "Sikertelen indexelés: %1%"
 
-#: dcpp/DownloadManager.cpp:228 dcpp/DownloadManager.cpp:233
+#: dcpp/AdcHub.cpp:212
+msgid ""
+"Hub probably uses an old version of ADC, please encourage the owner to "
+"upgrade"
+msgstr ""
+
+#: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
 msgstr "Érvénytelen méret"
 
-#: dcpp/QueueManager.cpp:522 dcpp/QueueManager.cpp:530
+#: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
@@ -266,16 +290,16 @@ msgstr ""
 msgid "Kick user(s)"
 msgstr "Felhasználó(k) kirúgása"
 
-#: dcpp/ConnectionManager.cpp:239
+#: dcpp/ConnectionManager.cpp:230
 #, boost-format
-msgid "Listening socket failed (you need to restart DC++): %1%"
+msgid "Listening socket failed (you need to restart %1%): %2%"
 msgstr ""
 
-#: dcpp/BufferedSocket.cpp:263
+#: dcpp/BufferedSocket.cpp:261
 msgid "Maximum command length exceeded"
 msgstr "A maximális parancs hossz túllépve"
 
-#: dcpp/DownloadManager.cpp:287
+#: dcpp/DownloadManager.cpp:280
 msgid "More data was sent than was expected"
 msgstr "A vártnál több adat lett küldve"
 
@@ -283,12 +307,13 @@ msgstr "A vártnál több adat lett küldve"
 msgid "No directory specified"
 msgstr "Nincs könyvtár megadva"
 
-#: dcpp/DownloadManager.cpp:426
+#: dcpp/DownloadManager.cpp:419
 msgid "No slots available"
 msgstr "Nincs szabad slot"
 
-#: dcpp/AdcHub.cpp:554
-msgid "Not listening for connections - please restart DC++"
+#: dcpp/AdcHub.cpp:576
+#, fuzzy, boost-format
+msgid "Not listening for connections - please restart %1%"
 msgstr "Nem figyel kapcsolatokra - kérlek, indítsd újra a DC++-t!"
 
 #: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
@@ -305,6 +330,11 @@ msgstr "Felhasználó(k) átirányítása"
 msgid "Remove all subdirectories before adding this one"
 msgstr "Távolíts el minden alkönyvtárat, mielőtt ezt felveszed"
 
+#: dcpp/DownloadManager.cpp:225
+#, fuzzy
+msgid "Response does not match request"
+msgstr "A teljes fa nem megfelelő a TTH gyökérhez"
+
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"
 msgstr "Megosztott fájlok"
@@ -315,20 +345,20 @@ msgstr ""
 "A hitelesítés a socks kiszolgálónál nem sikerült (rossz felhasználói név/"
 "jelszó?)"
 
-#: dcpp/CryptoManager.cpp:223
+#: dcpp/CryptoManager.cpp:221
 #, boost-format
 msgid "TLS disabled, failed to generate certificate: %1%"
 msgstr "TLS letiltva, a tanúsítvány fájl generálása sikertelen: %1%"
 
-#: dcpp/CryptoManager.cpp:213
+#: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr "TLS letiltva, nincs tanúsítvány fájl beállítva"
 
-#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:526
+#: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"
 msgstr "A cél fájlneve túl hosszú"
 
-#: dcpp/QueueManager.cpp:805
+#: dcpp/QueueManager.cpp:798
 msgid "Target removed"
 msgstr "Cél eltávolítva"
 
@@ -350,7 +380,7 @@ msgstr "A socks kiszolgáló hitelesítést igényel"
 msgid "The temporary download directory cannot be shared"
 msgstr "Az ideiglenes letöltési könyvtár nem megosztható"
 
-#: dcpp/QueueManager.cpp:472
+#: dcpp/QueueManager.cpp:465
 msgid "This file is already queued"
 msgstr "A fájl már a sorban van"
 
@@ -358,7 +388,7 @@ msgstr "A fájl már a sorban van"
 msgid "Unable to create thread"
 msgstr "A szál léterhozása sikertelen"
 
-#: dcpp/QueueManager.cpp:1002
+#: dcpp/QueueManager.cpp:995
 #, boost-format
 msgid "Unable to open filelist: %1%"
 msgstr "Nem sikerült megnyitni a fájl-listát: %1%"
@@ -367,7 +397,7 @@ msgstr "Nem sikerült megnyitni a fájl-listát: %1%"
 msgid "Unable to read hash data file"
 msgstr "A hash adatfájl beolvasása nem lehetséges"
 
-#: dcpp/QueueManager.cpp:334
+#: dcpp/QueueManager.cpp:327
 #, boost-format
 msgid "Unable to rename %1%: %2%"
 msgstr "A fájl átnevezése sikertelen: %1%: %2%"
@@ -378,15 +408,15 @@ msgid "Unable to send file %1%: %2%"
 msgstr "A fájl küldése sikertelen: %1%: %2%"
 
 #: dcpp/Socket.cpp:54
-#, fuzzy, c-format, boost-format
+#, c-format, boost-format
 msgid "Unknown error: 0x%1$x"
-msgstr "Ismeretlen hiba: 0x%1%"
+msgstr "Ismeretlen hiba: 0x%1$x"
 
 #: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468
 msgid "Virtual directory name already exists"
 msgstr "A virtuális könyvtárnév már létezik"
 
-#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
+#: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
 msgid "You're trying to download from yourself!"
 msgstr "Saját magadtól próbálsz meg letölteni!"
 
@@ -397,3 +427,6 @@ msgstr "letöltve innen:"
 #: dcpp/SettingsManager.cpp:157
 msgid "uploaded to"
 msgstr "feltöltve ide:"
+
+#~ msgid "Unknown error: 0x%1%"
+#~ msgstr "Ismeretlen hiba: 0x%1%"

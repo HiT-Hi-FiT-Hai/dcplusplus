@@ -155,8 +155,6 @@ void CryptoManager::generateCertificate() throw(CryptoException) {
 	int days = 10;
 	int keylength = 2048;
 
-	const char* err = NULL;
-	
 #define CHECK(n) if(!(n)) { throw CryptoException(#n); }
 	
 	// Generate key pair
@@ -350,7 +348,7 @@ void CryptoManager::decodeBZ2(const uint8_t* is, size_t sz, string& os) throw (C
 
 	bs.avail_in = sz;
 	bs.avail_out = bufsize;
-	bs.next_in = (char*)(const_cast<uint8_t*>(is));
+	bs.next_in = reinterpret_cast<char*>(const_cast<uint8_t*>(is));
 	bs.next_out = &buf[0];
 
 	int err;

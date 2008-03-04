@@ -1,0 +1,2307 @@
+# Macedonian translations for the DC++ package.
+# Copyright (C) 2008 The translators
+# This file is distributed under the same license as the DC++ package.
+#  <olivermk@users.sourceforge.net>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: win32\n"
+"Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
+"POT-Creation-Date: 2008-03-04 23:00+0100\n"
+"Last-Translator:  <olivermk@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: plurals=2; plural=(n != 1);\n"
+
+#: win32/MainWindow.cpp:862
+#, fuzzy, boost-format
+msgid ""
+"%1%\n"
+"Open download page?"
+msgstr "Отвори директориум од преземањата"
+
+#: win32/TransferView.cpp:571
+#, boost-format
+msgid "%1% (%2$0.2f)"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:91
+#, boost-format
+msgid "%1% files/h, %2% files left"
+msgstr ""
+
+#: win32/SearchFrame.cpp:576
+#, boost-format
+msgid "%1% filtered"
+msgstr ""
+
+#: win32/SearchFrame.cpp:571
+#, boost-format
+msgid "%1% item"
+msgid_plural "%1% items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/HashProgressDlg.cpp:100
+#, boost-format
+msgid "%1% left"
+msgstr ""
+
+#: win32/HubFrame.cpp:927
+#, fuzzy, boost-format
+msgid "%1% user"
+msgid_plural "%1% users"
+msgstr[0] "Нема корисници"
+msgstr[1] "Нема корисници"
+
+#: win32/TransferView.cpp:586 win32/TransferView.cpp:633
+#, boost-format
+msgid "%1%/s"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:92
+#, boost-format
+msgid "%1%/s, %2% left"
+msgstr ""
+
+#: win32/HubListsDlg.cpp:63 win32/UCPage.cpp:33
+#, fuzzy
+msgid "&Add"
+msgstr "Додадено"
+
+#: win32/UploadPage.cpp:37 win32/FavoriteDirsPage.cpp:34
+msgid "&Add folder"
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
+#: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
+#: win32/Appearance2Page.cpp:30
+#, fuzzy
+msgid "&Browse..."
+msgstr "Барај..."
+
+#: win32/UCPage.cpp:34
+#, fuzzy
+msgid "&Change"
+msgstr "Смени лог"
+
+#: win32/PrivateFrame.cpp:388 win32/HubFrame.cpp:1178
+#, fuzzy
+msgid "&Close"
+msgstr "Бои"
+
+#: win32/PublicHubsFrame.cpp:150
+msgid "&Configure"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:72 win32/FavHubsFrame.cpp:278
+#: win32/PublicHubsFrame.cpp:448
+#, fuzzy
+msgid "&Connect"
+msgstr "Поврзан"
+
+#: win32/TransferView.cpp:199
+#, fuzzy
+msgid "&Disconnect"
+msgstr "Затвори hub-ови"
+
+#: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
+#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
+#, fuzzy
+msgid "&Download"
+msgstr "Преземања"
+
+#: win32/MainWindow.cpp:214
+#, fuzzy
+msgid "&Download Queue\tCtrl+D"
+msgstr "Листа за преземање"
+
+#: win32/HubListsDlg.cpp:75
+msgid "&Edit"
+msgstr ""
+
+#: win32/MainWindow.cpp:211
+#, fuzzy
+msgid "&Favorite Hubs\tCtrl+F"
+msgstr "Омилени Hub-ови"
+
+#: win32/MainWindow.cpp:188
+#, fuzzy
+msgid "&File"
+msgstr "Датотека"
+
+#: win32/TransferView.cpp:196
+msgid "&Force attempt"
+msgstr ""
+
+#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:80
+#: win32/PrivateFrame.cpp:380
+msgid "&Get file list"
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:325
+#, fuzzy
+msgid "&Go to directory"
+msgstr "Преземи цел директориум"
+
+#: win32/MainWindow.cpp:240 win32/ADLSearchFrame.cpp:93
+msgid "&Help"
+msgstr ""
+
+#: win32/PrivateFrame.cpp:381
+#, fuzzy
+msgid "&Match queue"
+msgstr "Match queue"
+
+#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+msgid "&Move/Rename"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:77 win32/FavHubsFrame.cpp:280
+#: win32/ADLSearchFrame.cpp:68 win32/ADLSearchFrame.cpp:291
+msgid "&New..."
+msgstr ""
+
+#: win32/MainWindow.cpp:223
+#, fuzzy
+msgid "&Notepad\tCtrl+N"
+msgstr "Забелешки"
+
+#: win32/FavHubsFrame.cpp:82 win32/FavHubsFrame.cpp:281
+#: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:292
+#: win32/UsersFrame.cpp:186
+msgid "&Properties"
+msgstr ""
+
+#: win32/MainWindow.cpp:210
+#, fuzzy
+msgid "&Public Hubs\tCtrl+P"
+msgstr "Јавни Hub-ови"
+
+#: win32/MainWindow.cpp:190
+msgid "&Quick Connect ...\tCtrl+Q"
+msgstr ""
+
+#: win32/MainWindow.cpp:192 win32/HubFrame.cpp:1173
+msgid "&Reconnect\tCtrl+R"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:156
+msgid "&Refresh"
+msgstr ""
+
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
+#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
+#: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
+#: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
+#: win32/ADLSearchFrame.cpp:293 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
+#, fuzzy
+msgid "&Remove"
+msgstr "Избриши извор"
+
+#: win32/SpyFrame.cpp:189
+#, fuzzy
+msgid "&Search"
+msgstr "Пребарувај"
+
+#: win32/MainWindow.cpp:219
+#, fuzzy
+msgid "&Search\tCtrl+S"
+msgstr "Пребарувај"
+
+#: win32/QueueFrame.cpp:1013 win32/WaitingUsersFrame.cpp:85
+msgid "&Send private message"
+msgstr ""
+
+#: win32/MainWindow.cpp:208
+#, fuzzy
+msgid "&View"
+msgstr "Видео"
+
+#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
+msgid "&View as text"
+msgstr ""
+
+#: win32/MainWindow.cpp:230
+msgid "&Window"
+msgstr ""
+
+#: win32/HubFrame.cpp:487
+#, boost-format
+msgid "*** Joins: %1%"
+msgstr ""
+
+#: win32/HubFrame.cpp:494
+#, boost-format
+msgid "*** Parts: %1%"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:84
+#, boost-format
+msgid "-.-- B/s, %1% left"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:83
+#, boost-format
+msgid "-.-- files/h, %1% files left"
+msgstr ""
+
+#: win32/WinUtil.cpp:1036
+msgid ""
+"A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
+"use on the Direct Connect network.  No action will be taken."
+msgstr ""
+
+#: win32/MainWindow.cpp:220 win32/MainWindow.cpp:294
+msgid "ADL Search"
+msgstr "ADL Пребарување"
+
+#: win32/ADLSProperties.cpp:49
+#, fuzzy
+msgid "ADLSearch Properties"
+msgstr "Опции за пребарување"
+
+#: win32/MainWindow.cpp:305 win32/MainWindow.cpp:564
+msgid "AWAY"
+msgstr "Зафатен Сум"
+
+#: win32/MainWindow.cpp:245
+msgid "About DC++..."
+msgstr "За DC++..."
+
+#: win32/AdvancedPage.cpp:43
+msgid "Accept custom user commands from hub"
+msgstr "Прифаќај различни кориснички команди"
+
+#: win32/WaitingUsersFrame.cpp:84 win32/PrivateFrame.cpp:384
+#: win32/HubFrame.cpp:1170 win32/PublicHubsFrame.cpp:449
+#, fuzzy
+msgid "Add To &Favorites"
+msgstr "Омилени Hub-ови"
+
+#: win32/AdvancedPage.cpp:45
+msgid "Add finished files to share instantly (if shared)"
+msgstr ""
+
+#: win32/QueueFrame.cpp:45
+msgid "Added"
+msgstr "Додадено"
+
+#: win32/MainWindow.cpp:358 win32/PublicHubsFrame.cpp:52
+msgid "Address"
+msgstr "Aдреса"
+
+#: win32/SettingsDialog.cpp:67
+msgid "Advanced"
+msgstr "Напредно"
+
+#: win32/SettingsDialog.cpp:69
+msgid "Advanced\\Experts only"
+msgstr ""
+
+#: win32/SettingsDialog.cpp:68
+#, fuzzy
+msgid "Advanced\\Logs"
+msgstr "Напредно"
+
+#: win32/SettingsDialog.cpp:71
+msgid "Advanced\\Security Certificates"
+msgstr ""
+
+#: win32/SettingsDialog.cpp:70
+msgid "Advanced\\User Commands"
+msgstr ""
+
+#: win32/QueueFrame.cpp:1022 win32/QueueFrame.cpp:1031
+msgid "All"
+msgstr ""
+
+#: win32/QueueFrame.cpp:431
+#, fuzzy, boost-format
+msgid "All %1% users offline"
+msgstr "Корисникот е отсутен"
+
+#: win32/CertificatesPage.cpp:43
+msgid "Allow TLS connections to clients without trusted certificate"
+msgstr ""
+
+#: win32/CertificatesPage.cpp:42
+msgid "Allow TLS connections to hubs without trusted certificate"
+msgstr ""
+
+#: win32/CommandDlg.cpp:117
+msgid "Always open help file with this dialog"
+msgstr ""
+
+#: win32/SearchFrame.cpp:182 win32/HubFrame.cpp:119
+#: win32/PublicHubsFrame.cpp:138
+msgid "Any"
+msgstr "Било што"
+
+#: win32/SettingsDialog.cpp:63
+msgid "Appearance"
+msgstr "Појава"
+
+#: win32/SettingsDialog.cpp:64
+msgid "Appearance\\Colors and sounds"
+msgstr ""
+
+#: win32/SettingsDialog.cpp:65
+#, fuzzy
+msgid "Appearance\\Tabs"
+msgstr "Појава"
+
+#: win32/SettingsDialog.cpp:66
+#, fuzzy
+msgid "Appearance\\Windows"
+msgstr "Појава"
+
+#: win32/SearchFrame.cpp:156
+msgid "At least"
+msgstr "Најмалку"
+
+#: win32/SearchFrame.cpp:157
+msgid "At most"
+msgstr "Најмногу"
+
+#: win32/SearchFrame.cpp:183
+msgid "Audio"
+msgstr "Аудио"
+
+#: win32/FavHubsFrame.cpp:32
+msgid "Auto connect / Name"
+msgstr "Aвтоматско поврзување / Име"
+
+#: win32/UsersFrame.cpp:30
+msgid "Auto grant slot / Nick"
+msgstr "Aвтоматски дозволи слот / Прекар"
+
+#: win32/QueuePage.cpp:28
+msgid "Auto priority settings"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:40
+msgid "Auto refresh time"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:30
+msgid "Auto-away on minimize (and back on restore)"
+msgstr ""
+"Aвтоматски-Зафатен Сум при минимализирање (и врати се при максимализирање)"
+
+#: win32/WindowsPage.cpp:30
+msgid "Auto-open at startup"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:41
+msgid "Auto-search limit"
+msgstr ""
+
+#: win32/QueuePage.cpp:37
+msgid "Autodrop settings"
+msgstr ""
+
+#: win32/QueuePage.cpp:69
+msgid "Autodrop slow sources for all queue items (except filelists)"
+msgstr ""
+
+#: win32/ADLSearchFrame.cpp:40
+msgid "Automatic Directory Listing Search"
+msgstr "Automatic Directory Listing Search"
+
+#: win32/AdvancedPage.cpp:37
+msgid "Automatically disconnect users who leave the hub"
+msgstr "Aвтоматски исклучи корисници кои го напуштаат hub-от"
+
+#: win32/AdvancedPage.cpp:31
+msgid "Automatically follow redirects"
+msgstr "Aвтоматски следи пренасочувања"
+
+#: win32/QueuePage.cpp:73
+msgid "Automatically match queue for auto search hits"
+msgstr "Automatically match queue for auto search hits"
+
+#: win32/UploadPage.cpp:39
+msgid "Automatically open an extra slot if speed is below (0 = disable)"
+msgstr "Авто. отвори нов слот ако брзината е (0 = оневозможено)"
+
+#: win32/QueuePage.cpp:72
+msgid "Automatically search for alternative download locations"
+msgstr "Aвтоматски пребарувај за алтернативни локации за преземање"
+
+#: win32/SpyFrame.cpp:115
+#, boost-format
+msgid "Average/s: %1%"
+msgstr ""
+
+#: win32/WinUtil.cpp:274 win32/WinUtil.cpp:284
+msgid "Away mode off"
+msgstr "Зафатен Сум исклучено"
+
+#: win32/WinUtil.cpp:279
+#, fuzzy, boost-format
+msgid "Away mode on: %1%"
+msgstr "Зафатен Сум исклучено"
+
+#: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
+#: win32/ADLSProperties.cpp:74
+msgid "B"
+msgstr "B"
+
+#: win32/QueuePage.cpp:39
+msgid "B/s"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:37
+#, fuzzy
+msgid "Bind address"
+msgstr "Aдреса"
+
+#: win32/AdvancedPage.cpp:41
+msgid "Break on first ADLSearch match"
+msgstr "Прекини на првиот ADLSearch резултат"
+
+#: win32/DownloadPage.cpp:34
+msgid "Browse..."
+msgstr "Барај..."
+
+#: win32/SearchFrame.cpp:43 win32/HubFrame.cpp:44 win32/UsersFrame.cpp:34
+msgid "CID"
+msgstr ""
+
+#: win32/QueueFrame.cpp:477
+msgid "CRC32 inconsistency (SFV-Check)"
+msgstr "CRC32 inconsistency (SFV-Check)"
+
+#: win32/MainWindow.cpp:244
+msgid "Change Log"
+msgstr "Смени лог"
+
+#: win32/CommandDlg.cpp:82
+msgid "Chat"
+msgstr ""
+
+#: win32/QueuePage.cpp:40
+msgid "Check every"
+msgstr ""
+
+#: win32/WinUtil.cpp:423
+msgid "Choose folder"
+msgstr "Избери папка"
+
+#: win32/TransferView.cpp:45
+#, fuzzy
+msgid "Chunk"
+msgstr "Број"
+
+#: win32/TransferView.cpp:48
+msgid "Cipher"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:32
+msgid "Clear search box after each search"
+msgstr "Избриши ја пребарувачката кутија после секое пребарување"
+
+#: win32/MainWindow.cpp:233
+msgid "Close all PM windows"
+msgstr ""
+
+#: win32/MainWindow.cpp:235
+msgid "Close all file list windows"
+msgstr ""
+
+#: win32/MainWindow.cpp:234
+msgid "Close all offline PM windows"
+msgstr ""
+
+#: win32/MainWindow.cpp:236
+msgid "Close all search windows"
+msgstr ""
+
+#: win32/MainWindow.cpp:232
+msgid "Close disconnected"
+msgstr "Затвори hub-ови"
+
+#: win32/Appearance2Page.cpp:31
+msgid "Colors"
+msgstr "Бои"
+
+#: win32/UCPage.cpp:54
+msgid "Command"
+msgstr "Команда"
+
+#: win32/SearchFrame.cpp:184
+msgid "Compressed"
+msgstr "Компресирано"
+
+#: win32/DownloadPage.cpp:41
+#, fuzzy
+msgid "Configure Public Hub Lists"
+msgstr "Листа на јавни Hub-ови"
+
+#: win32/HubListsDlg.cpp:43 win32/PublicHubsFrame.cpp:164
+#, fuzzy
+msgid "Configured Public Hub Lists"
+msgstr "Листа на јавни Hub-ови"
+
+#: win32/WindowsPage.cpp:66
+msgid "Confirm application exit"
+msgstr "Потврди излез"
+
+#: win32/WindowsPage.cpp:32
+#, fuzzy
+msgid "Confirm dialog options"
+msgstr "Потврди излез"
+
+#: win32/WindowsPage.cpp:67
+msgid "Confirm favorite hub removal"
+msgstr ""
+
+#: win32/WindowsPage.cpp:68
+msgid "Confirm item removal in download queue"
+msgstr ""
+
+#: win32/HubFrame.cpp:497
+msgid "Connected"
+msgstr "Поврзан"
+
+#: win32/TransferView.cpp:642 win32/TransferView.cpp:649
+#, fuzzy
+msgid "Connecting"
+msgstr "Врска"
+
+#: win32/TransferView.cpp:283
+#, fuzzy
+msgid "Connecting (forced)"
+msgstr "Поврзан"
+
+#: win32/HubFrame.cpp:823
+#, fuzzy, boost-format
+msgid "Connecting to %1%..."
+msgstr "Врска"
+
+#: win32/SearchFrame.cpp:38 win32/HubFrame.cpp:41
+msgid "Connection"
+msgstr "Врска"
+
+#: win32/SettingsDialog.cpp:58
+#, fuzzy
+msgid "Connection settings"
+msgstr "Врска"
+
+#: win32/TransferView.cpp:83 win32/TransferView.cpp:89
+#, fuzzy
+msgid "Connections"
+msgstr "Врска"
+
+#: win32/HubFrame.cpp:1174 win32/PublicHubsFrame.cpp:450
+msgid "Copy &address to clipboard"
+msgstr ""
+
+#: win32/TransferView.cpp:197 win32/HubFrame.cpp:1152
+msgid "Copy &nick to clipboard"
+msgstr ""
+
+#: win32/WaitingUsersFrame.cpp:81
+#, fuzzy
+msgid "Copy Filename"
+msgstr "Име на датотеката"
+
+#: win32/WinUtil.cpp:373
+msgid "Copy magnet link to clipboard"
+msgstr ""
+
+#: win32/SpyFrame.cpp:35
+msgid "Count"
+msgstr "Број"
+
+#: win32/PublicHubsFrame.cpp:53
+#, fuzzy
+msgid "Country"
+msgstr "Број"
+
+#: win32/CommandDlg.cpp:63
+msgid "Create / Modify Command"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:40
+msgid "Creating file index..."
+msgstr ""
+
+#: win32/MainWindow.cpp:567
+#, boost-format
+msgid "D: %1%"
+msgstr ""
+
+#: win32/MainWindow.cpp:569
+#, boost-format
+msgid "D: %1%/s (%2%)"
+msgstr ""
+
+#: win32/WinUtil.cpp:830
+msgid "DC++"
+msgstr ""
+
+#: win32/MainWindow.cpp:247
+msgid "DC++ Homepage"
+msgstr "DC++ Домашна Страна"
+
+#: win32/MainWindow.cpp:252
+msgid "DC++ discussion forum"
+msgstr "DC++ Форум за дискусии"
+
+#: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:113
+msgid "Default"
+msgstr ""
+
+#: win32/AppearancePage.cpp:32
+msgid "Default away message"
+msgstr "Вообичаена Зафатен Сум порака"
+
+#: win32/DownloadPage.cpp:31
+msgid "Default download directory"
+msgstr "Вообичаен директориум за преземање"
+
+#: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
+#: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
+#: win32/UsersFrame.cpp:143
+msgid "Description"
+msgstr "Опис"
+
+#: win32/ADLSearchFrame.cpp:34
+#, fuzzy
+msgid "Destination Directory"
+msgstr "Вообичаен директориум за преземање"
+
+#: win32/NetworkPage.cpp:30 win32/NetworkPage.cpp:31
+#, fuzzy
+msgid "Direct connection"
+msgstr "Врска"
+
+#: win32/DownloadPage.cpp:30
+msgid "Directories"
+msgstr "Директориуми"
+
+#: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
+#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
+#: win32/ADLSProperties.cpp:63
+msgid "Directory"
+msgstr "Директориум"
+
+#: win32/FavoriteDirsPage.cpp:126 win32/FavoriteDirsPage.cpp:159
+msgid "Directory or directory name already exists"
+msgstr ""
+
+#: win32/MagnetDlg.cpp:62
+msgid "Do nothing"
+msgstr ""
+
+#: win32/SearchFrame.cpp:185
+msgid "Document"
+msgstr "Документ"
+
+#: win32/NetworkPage.cpp:35
+msgid "Don't allow hub/UPnP to override"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:47
+#, fuzzy
+msgid "Don't automatically disconnect favorite users who leave the hub"
+msgstr "Aвтоматски исклучи корисници кои го напуштаат hub-от"
+
+#: win32/AdvancedPage.cpp:36
+msgid "Don't delete file lists when exiting"
+msgstr "Не ја бриши листата со датотеки кога излегуваш"
+
+#: win32/QueuePage.cpp:75
+msgid "Don't download files already in share"
+msgstr ""
+
+#: win32/QueuePage.cpp:76
+msgid "Don't download files already in the queue"
+msgstr ""
+
+#: win32/HubFrame.cpp:392
+msgid "Don't remove /password before your password"
+msgstr ""
+
+#: win32/QueuePage.cpp:71
+msgid "Don't remove the source when autodropping, only disconnect"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:40
+msgid "Don't send the away message to bots"
+msgstr "Не праќај Зафатен Сум порака на ботови"
+
+#: win32/MainWindow.cpp:255
+msgid "Donate (paypal)"
+msgstr "Донирај"
+
+#: win32/Appearance2Page.cpp:34
+msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
+msgstr ""
+
+#: win32/TransferView.cpp:58
+msgid "Done"
+msgstr "Готово"
+
+#: win32/DirectoryListingFrame.cpp:358
+#, fuzzy
+msgid "Download &to..."
+msgstr "Преземи во..."
+
+#: win32/ADLSProperties.cpp:88
+#, fuzzy
+msgid "Download Matches"
+msgstr "Преземања"
+
+#: win32/QueueFrame.cpp:57 win32/TabsPage.cpp:41 win32/WindowsPage.cpp:39
+#: win32/MainWindow.cpp:288
+msgid "Download Queue"
+msgstr "Листа за преземање"
+
+#: win32/PublicHubsFrame.cpp:322
+#, fuzzy, boost-format
+msgid "Download failed: %1%"
+msgstr "Преземено"
+
+#: win32/WinUtil.cpp:831
+msgid "Download files from the Direct Connect network"
+msgstr ""
+
+#: win32/SearchFrame.cpp:764
+msgid "Download to..."
+msgstr "Преземи во..."
+
+#: win32/SearchFrame.cpp:744
+msgid "Download whole directory"
+msgstr "Преземи цел директориум"
+
+#: win32/SearchFrame.cpp:794
+msgid "Download whole directory to..."
+msgstr "Преземи цел директориум во..."
+
+#: win32/QueueFrame.cpp:39
+msgid "Downloaded"
+msgstr "Преземено"
+
+#: win32/TransferView.cpp:731
+#, fuzzy, boost-format
+msgid "Downloading %1%"
+msgstr "Преземање..."
+
+#: win32/TransferView.cpp:631
+#, boost-format
+msgid "Downloading from %1% user"
+msgid_plural "Downloading from %1% users"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/DirectoryListingFrame.cpp:695
+#, fuzzy
+msgid "Downloading list..."
+msgstr "Преземање..."
+
+#: win32/PublicHubsFrame.cpp:188 win32/PublicHubsFrame.cpp:459
+msgid "Downloading public hub list..."
+msgstr "Преземање јавна hub листа..."
+
+#: win32/PublicHubsFrame.cpp:319
+#, fuzzy, boost-format
+msgid "Downloading public hub list... (%1%)"
+msgstr "Преземање јавна hub листа..."
+
+#: win32/AboutDlg.cpp:63
+msgid "Downloading..."
+msgstr "Преземање..."
+
+#: win32/SettingsDialog.cpp:59 win32/MainWindow.cpp:248
+#: win32/TransferView.cpp:92 win32/TransferView.cpp:94
+#: win32/Appearance2Page.cpp:40
+msgid "Downloads"
+msgstr "Преземања"
+
+#: win32/SettingsDialog.cpp:60
+#, fuzzy
+msgid "Downloads\\Favorites"
+msgstr "Преземања"
+
+#: win32/SettingsDialog.cpp:61
+#, fuzzy
+msgid "Downloads\\Queue"
+msgstr "Листа за преземање"
+
+#: win32/QueuePage.cpp:38
+msgid "Drop sources below"
+msgstr ""
+
+#: win32/MainWindow.cpp:204
+msgid "E&xit"
+msgstr ""
+
+#: win32/GeneralPage.cpp:30 win32/HubFrame.cpp:43
+msgid "E-Mail"
+msgstr "Е-маил"
+
+#: win32/HubListsDlg.cpp:149
+msgid "Edit the hublist"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:39
+msgid "Enable automatic SFV checking"
+msgstr "Овозможи автоматско SFV проверување"
+
+#: win32/AdvancedPage.cpp:42
+msgid "Enable safe and compressed transfers"
+msgstr "Овозможи безбедни и компресирани трансфери"
+
+#: win32/ADLSProperties.cpp:84
+msgid "Enabled"
+msgstr ""
+
+#: win32/ADLSearchFrame.cpp:32
+msgid "Enabled / Search String"
+msgstr "Aктивно / Пребарувај низа"
+
+#: win32/DirectoryListingFrame.cpp:797
+msgid "Enter search string"
+msgstr "Внесете збор за пребарување"
+
+#: win32/WinUtil.cpp:738
+msgid "Error creating adc registry key"
+msgstr ""
+
+#: win32/WinUtil.cpp:699
+msgid "Error creating dchub registry key"
+msgstr ""
+
+#: win32/WinUtil.cpp:798 win32/WinUtil.cpp:811
+msgid "Error creating magnet registry key"
+msgstr ""
+
+#: win32/QueueFrame.cpp:44
+msgid "Errors"
+msgstr "Грешки"
+
+#: win32/QueueFrame.cpp:43 win32/DirectoryListingFrame.cpp:42
+#: win32/SearchFrame.cpp:40
+msgid "Exact size"
+msgstr "Точна големина"
+
+#: win32/SearchFrame.cpp:186
+msgid "Executable"
+msgstr "Извршна"
+
+#: win32/MainWindow.cpp:1003
+msgid "Exit"
+msgstr ""
+
+#: win32/NetworkPage.cpp:38
+msgid "External / WAN IP"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:168
+#, fuzzy
+msgid "F&ilter"
+msgstr "Датотека"
+
+#: win32/MainWindow.cpp:646 win32/MainWindow.cpp:647
+msgid "Failed to create port mappings. Please set up your NAT yourself."
+msgstr ""
+
+#: win32/MainWindow.cpp:665 win32/MainWindow.cpp:666
+msgid "Failed to get external IP via  UPnP. Please set it yourself."
+msgstr ""
+
+#: win32/MainWindow.cpp:679 win32/MainWindow.cpp:687
+msgid "Failed to remove port mappings"
+msgstr ""
+
+#: win32/MainWindow.cpp:212
+#, fuzzy
+msgid "Favorite &Users\tCtrl+U"
+msgstr "Омилени корисници"
+
+#: win32/FavHubProperties.cpp:47
+#, fuzzy
+msgid "Favorite Hub Properties"
+msgstr "Омилени Hub-ови"
+
+#: win32/WindowsPage.cpp:47 win32/MainWindow.cpp:285 win32/FavHubsFrame.cpp:41
+msgid "Favorite Hubs"
+msgstr "Омилени Hub-ови"
+
+#: win32/WindowsPage.cpp:38 win32/MainWindow.cpp:286 win32/UsersFrame.cpp:38
+msgid "Favorite Users"
+msgstr "Омилени корисници"
+
+#: win32/FavoriteDirsPage.cpp:32
+#, fuzzy
+msgid "Favorite download directories"
+msgstr "Вообичаен директориум за преземање"
+
+#: win32/HubFrame.cpp:955
+msgid "Favorite hub added"
+msgstr "Додаден омилениот hub"
+
+#: win32/HubFrame.cpp:965
+#, fuzzy
+msgid "Favorite hub removed"
+msgstr "Додаден омилениот hub"
+
+#: win32/FavoriteDirsPage.cpp:48 win32/FavoriteDirsPage.cpp:120
+#: win32/FavoriteDirsPage.cpp:150
+#, fuzzy
+msgid "Favorite name"
+msgstr "Омилени корисници"
+
+#: win32/PrivateFrame.cpp:303
+msgid "Favorite user added"
+msgstr "Додаден омилениот корисник"
+
+#: win32/DirectoryListingFrame.cpp:40 win32/SearchFrame.cpp:32
+msgid "File"
+msgstr "Датотека"
+
+#: win32/QueueFrame.cpp:473
+msgid "File not available"
+msgstr "Датотеката не е достапна"
+
+#: win32/SearchFrame.cpp:122
+msgid "File type"
+msgstr "Тип на датотека"
+
+#: win32/CommandDlg.cpp:99
+msgid "Filelist Menu"
+msgstr ""
+
+#: win32/QueueFrame.cpp:36 win32/TransferView.cpp:53 win32/LogPage.cpp:35
+#: win32/ADLSProperties.cpp:62
+msgid "Filename"
+msgstr "Име на датотеката"
+
+#: win32/MagnetDlg.cpp:48
+#, fuzzy
+msgid "Filename:"
+msgstr "Име на датотеката"
+
+#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:636
+#: win32/DirectoryListingFrame.cpp:652
+#, boost-format
+msgid "Files: %1%"
+msgstr ""
+
+#: win32/AppearancePage.cpp:47
+msgid "Filter kick messages"
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:160 win32/DirectoryListingFrame.cpp:182
+msgid "Find"
+msgstr "Пронајди"
+
+#: win32/TabsPage.cpp:42 win32/WindowsPage.cpp:40 win32/MainWindow.cpp:215
+#: win32/MainWindow.cpp:289 win32/FinishedDLFrame.cpp:25
+msgid "Finished Downloads"
+msgstr "Завршени преземања"
+
+#: win32/TabsPage.cpp:44 win32/WindowsPage.cpp:42 win32/MainWindow.cpp:217
+#: win32/MainWindow.cpp:291 win32/FinishedULFrame.cpp:25
+msgid "Finished Uploads"
+msgstr "Завршени прикачувања"
+
+#: win32/NetworkPage.cpp:34
+msgid "Firewall (passive, last resort)"
+msgstr ""
+
+#: win32/NetworkPage.cpp:32
+msgid "Firewall with UPnP"
+msgstr ""
+
+#: win32/NetworkPage.cpp:33
+msgid "Firewall with manual port forwarding"
+msgstr ""
+
+#: win32/MainWindow.cpp:191
+msgid "Follow last redirec&t\tCtrl+T"
+msgstr ""
+
+#: win32/MainWindow.cpp:283
+msgid "Follow last redirect"
+msgstr ""
+
+#: win32/LogPage.cpp:34
+#, fuzzy
+msgid "Format"
+msgstr "Нормално"
+
+#: win32/MainWindow.cpp:250
+msgid "Frequently asked questions"
+msgstr "Често Поставувани Прашања"
+
+#: win32/ADLSProperties.cpp:64
+#, fuzzy
+msgid "Full Path"
+msgstr "Патека"
+
+#: win32/QueueFrame.cpp:479
+msgid "Full tree does not match TTH root"
+msgstr ""
+
+#: win32/MainWindow.cpp:249
+msgid "GeoIP database update"
+msgstr ""
+
+#: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
+msgid "GiB"
+msgstr ""
+
+#: win32/WaitingUsersFrame.cpp:83 win32/PrivateFrame.cpp:382
+msgid "Grant &extra slot"
+msgstr ""
+
+#: win32/AppearancePage.cpp:56
+msgid "Guess user country from IP"
+msgstr ""
+
+#: win32/DownloadPage.cpp:42
+msgid "HTTP Proxy (for hublist only)"
+msgstr "HTTP Прокси (за листата со hub-ови)"
+
+#: win32/MainWindow.cpp:242
+msgid "Help &Contents\tF1"
+msgstr ""
+
+#: win32/MainWindow.cpp:251
+msgid "Help forum"
+msgstr "Форум за Помош"
+
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+msgid "High"
+msgstr "Високо"
+
+#: win32/QueuePage.cpp:31
+msgid "High prio max size"
+msgstr ""
+
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+msgid "Highest"
+msgstr "Највисоко"
+
+#: win32/QueuePage.cpp:29
+msgid "Highest prio max size"
+msgstr ""
+
+#: win32/SpyFrame.cpp:162
+#, boost-format
+msgid "Hit Ratio: %1%"
+msgstr ""
+
+#: win32/SpyFrame.cpp:160
+#, boost-format
+msgid "Hits: %1%"
+msgstr ""
+
+#: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
+msgid "Hub"
+msgstr "Hub"
+
+#: win32/UsersFrame.cpp:31
+msgid "Hub (last seen in, if offline)"
+msgstr ""
+
+#: win32/CommandDlg.cpp:90
+msgid "Hub Menu"
+msgstr ""
+
+#: win32/FavHubProperties.cpp:119
+msgid "Hub address cannot be empty"
+msgstr ""
+
+#: win32/FavHubsFrame.cpp:168 win32/HubFrame.cpp:957
+msgid "Hub already exists as a favorite"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:316
+#, boost-format
+msgid "Hub list downloaded... (%1%)"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:316
+msgid "Hub list loaded from cache..."
+msgstr ""
+
+#: win32/HubListsDlg.cpp:149
+#, fuzzy
+msgid "Hublist"
+msgstr "Hub-ови"
+
+#: win32/SearchFrame.cpp:128
+msgid "Hubs"
+msgstr "Hub-ови"
+
+#: win32/PublicHubsFrame.cpp:271
+#, fuzzy, boost-format
+msgid "Hubs: %1%"
+msgstr "Hub-ови"
+
+#: win32/SearchFrame.cpp:41 win32/TransferView.cpp:49 win32/HubFrame.cpp:42
+msgid "IP"
+msgstr ""
+
+#: win32/HubFrame.cpp:337
+#, boost-format
+msgid "IP: %1%, Port: %2%/%3%/%4%"
+msgstr ""
+
+#: win32/TransferView.cpp:537 win32/TransferView.cpp:838
+msgid "Idle"
+msgstr ""
+
+#: win32/SpyFrame.cpp:66
+msgid "Ignore TTH searches"
+msgstr ""
+
+#: win32/WindowsPage.cpp:59
+#, fuzzy
+msgid "Ignore private messages from bots"
+msgstr "Попап приватни пораки"
+
+#: win32/WindowsPage.cpp:58
+#, fuzzy
+msgid "Ignore private messages from the hub"
+msgstr "Попап приватни пораки"
+
+#: win32/HubFrame.cpp:539 win32/HubFrame.cpp:547
+#, boost-format
+msgid "Ignored message: %1%"
+msgstr ""
+
+#: win32/NetworkPage.cpp:47
+msgid "Incoming connection settings (see Help/FAQ if unsure)"
+msgstr ""
+
+#: win32/MainWindow.cpp:226
+msgid "Indexing progress"
+msgstr ""
+
+#: win32/MainWindow.cpp:705
+msgid "Invalid file list name"
+msgstr ""
+
+#: win32/WinUtil.cpp:260
+msgid "Invalid number of slots"
+msgstr "Погрешен број на слотови"
+
+#: win32/QueueFrame.cpp:283
+#, boost-format
+msgid "Items: %1%"
+msgstr ""
+
+#: win32/HubFrame.cpp:330
+#, fuzzy
+msgid "Join/part of favorite users showing off"
+msgstr "Не прикажувај Вклучува/Напушта"
+
+#: win32/HubFrame.cpp:328
+#, fuzzy
+msgid "Join/part of favorite users showing on"
+msgstr "Прикажувај Вклучува/Напушта"
+
+#: win32/HubFrame.cpp:323
+msgid "Join/part showing off"
+msgstr "Не прикажувај Вклучува/Напушта"
+
+#: win32/HubFrame.cpp:321
+msgid "Join/part showing on"
+msgstr "Прикажувај Вклучува/Напушта"
+
+#: win32/AdvancedPage.cpp:33
+msgid "Keep duplicate files in your file list"
+msgstr ""
+
+#: win32/QueuePage.cpp:30 win32/QueuePage.cpp:32 win32/QueuePage.cpp:34
+#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:30
+#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
+#: win32/ADLSProperties.cpp:75
+msgid "KiB"
+msgstr ""
+
+#: win32/UploadPage.cpp:40
+msgid "KiB/s"
+msgstr ""
+
+#: win32/AppearancePage.cpp:34
+msgid "Language file"
+msgstr "Јазик"
+
+#: win32/DownloadPage.cpp:35
+msgid "Limits"
+msgstr "Ограничувања"
+
+#: win32/GeneralPage.cpp:32
+#, fuzzy
+msgid "Line speed (upload)"
+msgstr "Завршени прикачувања"
+
+#: win32/SplashWindow.cpp:77
+#, boost-format
+msgid "Loading DC++, please wait... (%1%)"
+msgstr ""
+
+#: win32/LogPage.cpp:47
+msgid "Log downloads"
+msgstr "Креирај лог од преземањата"
+
+#: win32/LogPage.cpp:51
+msgid "Log filelist transfers"
+msgstr "Креирај лог од трансферите на листите со датотеки"
+
+#: win32/LogPage.cpp:45
+msgid "Log main chat"
+msgstr "Креирај лог од главниот разговор"
+
+#: win32/LogPage.cpp:46
+msgid "Log private chat"
+msgstr "Креирај лог од приватните разговори"
+
+#: win32/LogPage.cpp:50
+#, fuzzy
+msgid "Log status messages"
+msgstr "Погледни ги статусните пораки во главниот разговор"
+
+#: win32/LogPage.cpp:49
+msgid "Log system messages"
+msgstr ""
+
+#: win32/LogPage.cpp:48
+msgid "Log uploads"
+msgstr "Креирај лог од прикачувањата"
+
+#: win32/LogPage.cpp:31
+msgid "Logging"
+msgstr "Креирање логови"
+
+#: win32/NetworkPage.cpp:44
+msgid "Login"
+msgstr "Корисничко Име"
+
+#: win32/WinUtil.cpp:372
+msgid "Lookup TTH at Bitzi.com"
+msgstr ""
+
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+msgid "Low"
+msgstr "Низок"
+
+#: win32/QueuePage.cpp:35
+msgid "Low prio max size"
+msgstr ""
+
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+msgid "Lowest"
+msgstr "Најнизок"
+
+#: win32/MagnetDlg.cpp:44 win32/WinUtil.cpp:1036
+msgid "MAGNET Link detected"
+msgstr ""
+
+#: win32/WinUtil.cpp:983
+#, boost-format
+msgid "MAGNET Link detected: %1%"
+msgstr ""
+
+#: win32/Appearance2Page.cpp:38
+msgid "Make an annoying sound every time a private message is received"
+msgstr "Пушти звук кога е примена приватна порака"
+
+#: win32/Appearance2Page.cpp:39
+msgid "Make an annoying sound when a private message window is opened"
+msgstr "Пушти звук кога е отворен прозорецот со приватни пораки"
+
+#: win32/MainWindow.cpp:197
+msgid "Match downloaded lists"
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:168 win32/DirectoryListingFrame.cpp:181
+msgid "Match queue"
+msgstr "Match queue"
+
+#: win32/DirectoryListingFrame.cpp:260
+#, boost-format
+msgid "Matched %1% file"
+msgid_plural "Matched %1% files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/PublicHubsFrame.cpp:57
+#, fuzzy
+msgid "Max Hubs"
+msgstr "Hub-ови"
+
+#: win32/ADLSearchFrame.cpp:36
+#, fuzzy
+msgid "Max Size"
+msgstr "Големина"
+
+#: win32/PublicHubsFrame.cpp:58
+#, fuzzy
+msgid "Max Users"
+msgstr "Корисници"
+
+#: win32/Advanced3Page.cpp:38
+#, fuzzy
+msgid "Max filelist size"
+msgstr "Креирај лог од трансферите на листите со датотеки"
+
+#: win32/Advanced3Page.cpp:31
+msgid "Max hash speed"
+msgstr ""
+
+#: win32/QueuePage.cpp:44
+msgid "Max inactivity"
+msgstr ""
+
+#: win32/DownloadPage.cpp:36
+msgid "Maximum simultaneous downloads (0 = infinite)"
+msgstr "Максимален број на истовремени преземања (0 = бесконечно)"
+
+#: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
+#: win32/ADLSProperties.cpp:76
+msgid "MiB"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:32
+msgid "MiB/s"
+msgstr ""
+
+#: win32/GeneralPage.cpp:33
+msgid "MiBits/s"
+msgstr ""
+
+#: win32/PublicHubsFrame.cpp:55
+#, fuzzy
+msgid "Min Share"
+msgstr "Делено"
+
+#: win32/ADLSearchFrame.cpp:35
+#, fuzzy
+msgid "Min Size"
+msgstr "Големина"
+
+#: win32/PublicHubsFrame.cpp:56
+#, fuzzy
+msgid "Min Slots"
+msgstr "Слотови"
+
+#: win32/QueuePage.cpp:42
+msgid "Min elapsed"
+msgstr ""
+
+#: win32/QueuePage.cpp:47
+msgid "Min filesize"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:42
+msgid "Min segment size"
+msgstr ""
+
+#: win32/QueuePage.cpp:46
+#, fuzzy
+msgid "Min sources online"
+msgstr "Почекајте (Корисникот е присутен)"
+
+#: win32/Advanced3Page.cpp:35
+msgid "Mini slot size"
+msgstr ""
+
+#: win32/AppearancePage.cpp:48
+msgid "Minimize to tray"
+msgstr "Минимализирај во треј"
+
+#: win32/HubListsDlg.cpp:71 win32/FavHubsFrame.cpp:92
+#: win32/FavHubsFrame.cpp:283 win32/ADLSearchFrame.cpp:83 win32/UCPage.cpp:32
+msgid "Move &Down"
+msgstr ""
+
+#: win32/HubListsDlg.cpp:67 win32/FavHubsFrame.cpp:87
+#: win32/FavHubsFrame.cpp:282 win32/ADLSearchFrame.cpp:78 win32/UCPage.cpp:31
+msgid "Move &Up"
+msgstr ""
+
+#: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
+msgid "Name"
+msgstr "Име"
+
+#: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
+msgid "Name under which the others see the directory"
+msgstr ""
+
+#: win32/WindowsPage.cpp:44 win32/MainWindow.cpp:225 win32/StatsFrame.cpp:27
+msgid "Network Statistics"
+msgstr "Мрежна статистика"
+
+#: win32/UploadPage.cpp:200
+msgid "New virtual name matches old name, skipping..."
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:164 win32/DirectoryListingFrame.cpp:183
+msgid "Next"
+msgstr "Следно"
+
+#: win32/GeneralPage.cpp:29 win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+msgid "Nick"
+msgstr "Прекар"
+
+#: win32/QueueFrame.cpp:488
+msgid "No errors"
+msgstr "Нема грешки"
+
+#: win32/DirectoryListingFrame.cpp:860
+msgid "No matches"
+msgstr "Нема разултати"
+
+#: win32/DownloadPage.cpp:37
+msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
+msgstr "Без нови преземања при брзина од... (0 = оневозможено)"
+
+#: win32/QueueFrame.cpp:415
+msgid "No users"
+msgstr "Нема корисници"
+
+#: win32/QueueFrame.cpp:427
+msgid "No users to download from"
+msgstr "Нема корисници од кои можеш да преземеш"
+
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+msgid "Normal"
+msgstr "Нормално"
+
+#: win32/QueuePage.cpp:33
+msgid "Normal prio max size"
+msgstr ""
+
+#: win32/UploadPage.cpp:42
+msgid "Note; Files appear in the share only after they've been hashed!"
+msgstr ""
+
+#: win32/DownloadPage.cpp:38
+#, fuzzy, c-format
+msgid "Note; because of changing download speeds, this is not 100% accurate..."
+msgstr "Забелешка; поради менувањето на брзината ова не е 100% точно..."
+
+#: win32/Appearance2Page.cpp:35 win32/AppearancePage.cpp:35
+msgid "Note; most of these options require that you restart DC++"
+msgstr "Забелешка; опциите ќе бидат вклучени при следното стартување на DC++"
+
+#: win32/WindowsPage.cpp:45 win32/NotepadFrame.cpp:27 win32/MainWindow.cpp:299
+msgid "Notepad"
+msgstr "Забелешки"
+
+#: win32/Appearance2Page.cpp:29
+msgid "Notification sound"
+msgstr ""
+
+#: win32/WinUtil.cpp:333
+msgid "Offline"
+msgstr "Отсутен"
+
+#: win32/UsersFrame.cpp:108 win32/UsersFrame.cpp:123
+msgid "Online"
+msgstr "Присутен"
+
+#: win32/AppearancePage.cpp:52
+msgid "Only show joins / parts for favorite users"
+msgstr ""
+
+#: win32/SearchFrame.cpp:194
+msgid "Only users with free slots"
+msgstr "Kорисници со слободни слотови"
+
+#: win32/SearchFrame.cpp:216
+msgid "Only where I'm op"
+msgstr "Единствено каде што сум оп"
+
+#: win32/MainWindow.cpp:199 win32/MainWindow.cpp:1004
+msgid "Open downloads directory"
+msgstr "Отвори директориум од преземањата"
+
+#: win32/MainWindow.cpp:297
+msgid "Open file list..."
+msgstr ""
+
+#: win32/MainWindow.cpp:195
+msgid "Open file list...\tCtrl+L"
+msgstr ""
+
+#: win32/WindowsPage.cpp:55
+msgid "Open new file list windows in the background"
+msgstr ""
+
+#: win32/WindowsPage.cpp:56
+#, fuzzy
+msgid "Open new private message windows in the background"
+msgstr "Попап приватни пораки"
+
+#: win32/WindowsPage.cpp:57
+msgid "Open new window when using /join"
+msgstr ""
+
+#: win32/MainWindow.cpp:196
+msgid "Open own list"
+msgstr ""
+
+#: win32/WindowsPage.cpp:53
+#, fuzzy
+msgid "Open private messages from bots in their own window"
+msgstr "Попап приватни пораки"
+
+#: win32/WindowsPage.cpp:54
+#, fuzzy
+msgid "Open private messages from the hub in their own window"
+msgstr "Попап приватни пораки"
+
+#: win32/WindowsPage.cpp:52
+msgid "Open private messages in their own window"
+msgstr "Попап приватни пораки"
+
+#: win32/AppearancePage.cpp:31
+msgid "Options"
+msgstr "Oпции"
+
+#: win32/QueuePage.cpp:49
+#, fuzzy
+msgid "Other queue options"
+msgstr "Опции за пребарување"
+
+#: win32/NetworkPage.cpp:48
+msgid "Outgoing connection settings"
+msgstr ""
+
+#: win32/CommandDlg.cpp:86
+msgid "PM"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:33
+msgid "PM history"
+msgstr ""
+
+#: win32/QueueFrame.cpp:475
+msgid "Passive user"
+msgstr "Пасивен корисник"
+
+#: win32/NetworkPage.cpp:45 win32/FavHubsFrame.cpp:35
+msgid "Password"
+msgstr "Лозинка"
+
+#: win32/QueueFrame.cpp:42 win32/SearchFrame.cpp:36 win32/TransferView.cpp:54
+msgid "Path"
+msgstr "Патека"
+
+#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+msgid "Paused"
+msgstr "Паузирано"
+
+#: win32/GeneralPage.cpp:28
+msgid "Personal Information"
+msgstr "Лични информации"
+
+#: win32/SettingsDialog.cpp:57
+msgid "Personal information"
+msgstr "Општо"
+
+#: win32/SearchFrame.cpp:187
+msgid "Picture"
+msgstr "Слика"
+
+#: win32/FavHubsFrame.cpp:320 win32/PublicHubsFrame.cpp:497
+msgid "Please enter a nickname in the settings dialog!"
+msgstr "Внесете прекар во дијалогот за прилагодување!"
+
+#: win32/HubFrame.cpp:525
+msgid "Please enter a password"
+msgstr "Внесете лозинка"
+
+#: win32/WindowsPage.cpp:61
+msgid "Popup box to input password for hubs"
+msgstr ""
+
+#: win32/NetworkPage.cpp:43
+msgid "Port"
+msgstr "Порт"
+
+#: win32/NetworkPage.cpp:37
+#, fuzzy
+msgid "Ports"
+msgstr "Порт"
+
+#: win32/HubFrame.cpp:852
+#, boost-format
+msgid "Press the follow redirect button to connect to %1%"
+msgstr ""
+
+#: win32/QueueFrame.cpp:40
+msgid "Priority"
+msgstr "Приоритет"
+
+#: win32/TabsPage.cpp:38
+msgid "Private message"
+msgstr ""
+
+#: win32/HubFrame.cpp:543 win32/HubFrame.cpp:551 win32/HubFrame.cpp:557
+#, boost-format
+msgid "Private message from %1%: %2%"
+msgstr ""
+
+#: win32/WindowsPage.cpp:46 win32/MainWindow.cpp:281
+#: win32/PublicHubsFrame.cpp:93
+msgid "Public Hubs"
+msgstr "Јавни Hub-ови"
+
+#: win32/DownloadPage.cpp:39
+msgid "Public Hubs list"
+msgstr "Листа на јавни Hub-ови"
+
+#: win32/DownloadPage.cpp:40
+msgid "Public Hubs list URL"
+msgstr "Адреса на листата со јавни Hub-ови"
+
+#: win32/SearchFrame.cpp:240
+#, fuzzy
+msgid "Purge"
+msgstr "Слика"
+
+#: win32/TransferView.cpp:47
+msgid "Queued"
+msgstr ""
+
+#: win32/MainWindow.cpp:358
+#, fuzzy
+msgid "Quick Connect"
+msgstr "Поврзан"
+
+#: win32/PublicHubsFrame.cpp:60
+#, fuzzy
+msgid "Rating"
+msgstr "Делење"
+
+#: win32/AboutDlg.cpp:61
+#, c-format, boost-format
+msgid "Ratio (up/down): %1$0.2f"
+msgstr ""
+
+#: win32/CommandDlg.cpp:78
+msgid "Raw"
+msgstr ""
+
+#: win32/QueueFrame.cpp:1020
+msgid "Re-add source"
+msgstr "Прочитајте извор"
+
+#: win32/SearchFrame.cpp:1024
+msgid "Ready to search..."
+msgstr ""
+
+#: win32/MainWindow.cpp:473
+msgid "Really exit?"
+msgstr "Навистина сакаш да излезеш?"
+
+#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/FavHubsFrame.cpp:232
+#, fuzzy
+msgid "Really remove?"
+msgstr "Навистина сакаш да излезеш?"
+
+#: win32/MainWindow.cpp:282
+#, fuzzy
+msgid "Reconnect"
+msgstr "Поврзан"
+
+#: win32/HubFrame.cpp:845 win32/HubFrame.cpp:1366
+msgid "Redirect request received to a hub that's already connected"
+msgstr "Пренасочувањето е примено на hub кој веќе е поврзан"
+
+#: win32/MainWindow.cpp:198
+msgid "Refresh file list\tCtrl+E"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:34
+msgid "Register with Windows to handle dchub:// and adc:// URL links"
+msgstr "Install URL handler on startup (to handle dchub:// links)"
+
+#: win32/AdvancedPage.cpp:35
+#, fuzzy
+msgid "Register with Windows to handle magnet: URI links"
+msgstr "Install URL handler on startup (to handle dchub:// links)"
+
+#: win32/PublicHubsFrame.cpp:59
+msgid "Reliability"
+msgstr ""
+
+#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:661
+msgid "Remote client does not fully support TTH - cannot download"
+msgstr ""
+
+#: win32/QueuePage.cpp:70
+msgid "Remove slow filelists"
+msgstr ""
+
+#: win32/QueueFrame.cpp:1030
+msgid "Remove source"
+msgstr "Избриши извор"
+
+#: win32/QueueFrame.cpp:1039
+msgid "Remove user from queue"
+msgstr "Избриши корисник од листата"
+
+#: win32/UploadPage.cpp:38 win32/FavoriteDirsPage.cpp:35
+#, fuzzy
+msgid "Rename"
+msgstr "Име на датотеката"
+
+#: win32/MainWindow.cpp:254
+msgid "Report a bug"
+msgstr "Пријави грешка"
+
+#: win32/MainWindow.cpp:253
+msgid "Request a feature"
+msgstr "Идни верзии"
+
+#: win32/TransferView.cpp:703
+#, boost-format
+msgid "Requesting %1%"
+msgstr ""
+
+#: win32/HashProgressDlg.cpp:48
+msgid "Run in background"
+msgstr ""
+
+#: win32/QueueFrame.cpp:435
+msgid "Running..."
+msgstr "Работи..."
+
+#: win32/NetworkPage.cpp:36
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: win32/TabsPage.cpp:39 win32/MainWindow.cpp:293 win32/SearchFrame.cpp:85
+#: win32/SearchFrame.cpp:145
+msgid "Search"
+msgstr "Пребарувај"
+
+#: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
+#: win32/SearchFrame.cpp:1020
+#, fuzzy, boost-format
+msgid "Search - %1%"
+msgstr "Пребарувај"
+
+#: win32/SearchFrame.cpp:1025
+msgid "Search - Ready to search..."
+msgstr ""
+
+#: win32/CommandDlg.cpp:96
+#, fuzzy
+msgid "Search Menu"
+msgstr "Пребарувај"
+
+#: win32/WindowsPage.cpp:43 win32/MainWindow.cpp:221 win32/MainWindow.cpp:295
+#: win32/SpyFrame.cpp:40
+msgid "Search Spy"
+msgstr "Пребарај шпиун"
+
+#: win32/SpyFrame.cpp:34
+msgid "Search String"
+msgstr "Пребарај низа"
+
+#: win32/SearchFrame.cpp:116
+msgid "Search for"
+msgstr "Пребарувај за"
+
+#: win32/WinUtil.cpp:371
+msgid "Search for alternates"
+msgstr "Пребарувај за алтернатива"
+
+#: win32/DirectoryListingFrame.cpp:797 win32/DirectoryListingFrame.cpp:860
+msgid "Search for file"
+msgstr "Пребарувај за датотека"
+
+#: win32/Advanced3Page.cpp:34
+#, fuzzy
+msgid "Search history"
+msgstr "Пребарувај за"
+
+#: win32/SearchFrame.cpp:125
+msgid "Search options"
+msgstr "Опции за пребарување"
+
+#: win32/HubFrame.cpp:901
+#, boost-format
+msgid "Search spam detected from %1%"
+msgstr ""
+
+#: win32/SearchFrame.cpp:984
+#, fuzzy, boost-format
+msgid "Searching for %1%..."
+msgstr "Пребарувај за"
+
+#: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
+#, boost-format
+msgid "Searching too soon, next search in %1% second"
+msgid_plural "Searching too soon, next search in %1% seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: win32/Appearance2Page.cpp:33
+msgid "Select &text style"
+msgstr ""
+
+#: win32/Appearance2Page.cpp:32
+msgid "Select &window color"
+msgstr ""
+
+#: win32/CommandDlg.cpp:112
+msgid "Send once per nick"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:44
+msgid "Send unknown /commands to the hub"
+msgstr ""
+
+#: win32/UCPage.cpp:123 win32/UCPage.cpp:181 win32/CommandDlg.cpp:74
+msgid "Separator"
+msgstr "Separator"
+
+#: win32/FavHubsFrame.cpp:36
+msgid "Server"
+msgstr "Сервер"
+
+#: win32/QueuePage.cpp:68
+msgid "Set lowest prio for newly added files larger than Low prio size"
+msgstr ""
+
+#: win32/QueueFrame.cpp:995
+msgid "Set priority"
+msgstr "Постави приоритет"
+
+#: win32/AppearancePage.cpp:33
+msgid "Set timestamps"
+msgstr ""
+
+#: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:298
+#, fuzzy
+msgid "Settings"
+msgstr "Прилагодувања..."
+
+#: win32/MainWindow.cpp:202 win32/MainWindow.cpp:1005
+msgid "Settings..."
+msgstr "Прилагодувања..."
+
+#: win32/UploadPage.cpp:35
+msgid "Share hidden files"
+msgstr "И скриени датотеки"
+
+#: win32/HubFrame.cpp:38 win32/PublicHubsFrame.cpp:54
+msgid "Shared"
+msgstr "Делено"
+
+#: win32/UploadPage.cpp:33
+msgid "Shared directories"
+msgstr "Делени директориуми"
+
+#: win32/SettingsDialog.cpp:62
+msgid "Sharing"
+msgstr "Делење"
+
+#: win32/MainWindow.cpp:1002
+msgid "Show"
+msgstr "Прикажи"
+
+#: win32/AppearancePage.cpp:51
+msgid "Show joins / parts in chat by default"
+msgstr "Прикажи вклучувања / напуштања"
+
+#: win32/AdvancedPage.cpp:38
+msgid "Show progress bars for transfers"
+msgstr "Прикажи лента со прогресот при трансферите (користи CPU)"
+
+#: win32/AdvancedPage.cpp:48
+msgid "Show shell menu where possible"
+msgstr ""
+
+#: win32/AppearancePage.cpp:49
+msgid "Show timestamps in chat by default"
+msgstr "Прикажувај временски печати"
+
+#: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
+#: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
+#: win32/SearchFrame.cpp:119 win32/TransferView.cpp:59
+msgid "Size"
+msgstr "Големина"
+
+#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
+#, fuzzy, boost-format
+msgid "Size: %1%"
+msgstr "Големина"
+
+#: win32/QueuePage.cpp:74
+msgid "Skip zero-byte files"
+msgstr "Прескокни ги датотеките со големина од 0 бајти"
+
+#: win32/PrivateFrame.cpp:298
+msgid "Slot granted"
+msgstr "Slot granted"
+
+#: win32/SearchFrame.cpp:37
+msgid "Slots"
+msgstr "Слотови"
+
+#: win32/WinUtil.cpp:257
+msgid "Slots set"
+msgstr "Поставени слотови"
+
+#: win32/MainWindow.cpp:566
+#, boost-format
+msgid "Slots: %1%/%2%"
+msgstr ""
+
+#: win32/NetworkPage.cpp:42
+msgid "Socks IP"
+msgstr "Socks IP"
+
+#: win32/AppearancePage.cpp:46
+#, fuzzy
+msgid "Sort all downloads first"
+msgstr "Нема корисници од кои можеш да преземеш"
+
+#: win32/AppearancePage.cpp:53
+#, fuzzy
+msgid "Sort favorite users first"
+msgstr "Омилени корисници"
+
+#: win32/Appearance2Page.cpp:37
+msgid "Sounds"
+msgstr "Звуци"
+
+#: win32/ADLSearchFrame.cpp:33
+msgid "Source Type"
+msgstr "Тип на извор"
+
+#: win32/QueueFrame.cpp:481
+msgid "Source too slow"
+msgstr ""
+
+#: win32/WinUtil.cpp:299
+msgid "Specify a URL"
+msgstr ""
+
+#: win32/WinUtil.cpp:266 win32/WinUtil.cpp:287 win32/WinUtil.cpp:293
+msgid "Specify a search string"
+msgstr "Одбери пребарувачка низа"
+
+#: win32/HubFrame.cpp:303
+msgid "Specify a server to connect to"
+msgstr "Одбери сервер за да се поврзиш"
+
+#: win32/TransferView.cpp:44 win32/TransferView.cpp:57
+msgid "Speed"
+msgstr "Брзина"
+
+#: win32/DirectoryListingFrame.cpp:638
+#, boost-format
+msgid "Speed: %1%/s"
+msgstr ""
+
+#: win32/MagnetDlg.cpp:57
+#, fuzzy
+msgid "Start a search for this file"
+msgstr "Пребарувај за датотека"
+
+#: win32/QueueFrame.cpp:37 win32/TransferView.cpp:43 win32/TransferView.cpp:55
+msgid "Status"
+msgstr "Статус"
+
+#: win32/HubFrame.cpp:517
+msgid "Stored password sent..."
+msgstr "Stored password sent..."
+
+#: win32/DirectoryListingFrame.cpp:172 win32/DirectoryListingFrame.cpp:180
+msgid "Subtract list"
+msgstr ""
+
+#: win32/TabsPage.cpp:40 win32/WindowsPage.cpp:37 win32/SystemFrame.cpp:26
+#: win32/MainWindow.cpp:224
+msgid "System Log"
+msgstr ""
+
+#: win32/NetworkPage.cpp:39
+msgid "TCP"
+msgstr ""
+
+#: win32/NetworkPage.cpp:41
+msgid "TLS"
+msgstr ""
+
+#: win32/SearchFrame.cpp:190
+msgid "TTH"
+msgstr ""
+
+#: win32/QueueFrame.cpp:46 win32/DirectoryListingFrame.cpp:44
+#: win32/SearchFrame.cpp:42
+msgid "TTH Root"
+msgstr ""
+
+#: win32/TransferView.cpp:672
+#, boost-format
+msgid "TTH: %1%"
+msgstr ""
+
+#: win32/TabsPage.cpp:32
+msgid "Tab highlight on content change"
+msgstr ""
+
+#: win32/HubFrame.cpp:40
+msgid "Tag"
+msgstr "Таг"
+
+#: win32/HubFrame.cpp:967
+msgid "This hub is not a favorite hub"
+msgstr ""
+
+#: win32/SpyFrame.cpp:36
+msgid "Time"
+msgstr "Време"
+
+#: win32/UsersFrame.cpp:32
+msgid "Time last seen"
+msgstr "Последен пат виден"
+
+#: win32/TransferView.cpp:56
+msgid "Time left"
+msgstr "Преостанато Време"
+
+#: win32/HubFrame.cpp:312
+msgid "Timestamps disabled"
+msgstr "Временските печати се оневозможени"
+
+#: win32/HubFrame.cpp:310
+msgid "Timestamps enabled"
+msgstr "Временските печати се овозможени"
+
+#: win32/WindowsPage.cpp:60
+msgid "Toggle window when selecting an active tab"
+msgstr ""
+
+#: win32/UploadPage.cpp:34
+msgid "Total size:"
+msgstr "Вкупно:"
+
+#: win32/SpyFrame.cpp:159
+#, boost-format
+msgid "Total: %1%"
+msgstr ""
+
+#: win32/TransferView.cpp:46
+msgid "Transferred (Ratio)"
+msgstr ""
+
+#: win32/QueueFrame.cpp:47 win32/DirectoryListingFrame.cpp:41
+#: win32/SearchFrame.cpp:34
+msgid "Type"
+msgstr "Tип"
+
+#: win32/MainWindow.cpp:568
+#, boost-format
+msgid "U: %1%"
+msgstr ""
+
+#: win32/MainWindow.cpp:570
+#, boost-format
+msgid "U: %1%/s (%2%)"
+msgstr ""
+
+#: win32/NetworkPage.cpp:40
+msgid "UDP"
+msgstr ""
+
+#: win32/WinUtil.cpp:814
+msgid "URL:MAGNET URI"
+msgstr ""
+
+#: win32/MainWindow.cpp:625
+msgid ""
+"Unable to open TCP/TLS port. File transfers will not work correctly until "
+"you change settings or turn off any application that might be using the TCP/"
+"TLS port"
+msgstr ""
+
+#: win32/MainWindow.cpp:630
+msgid ""
+"Unable to open UDP port. Searching will not work correctly until you change "
+"settings or turn off any application that might be using the UDP port"
+msgstr ""
+
+#: win32/FavoriteDirsPage.cpp:120 win32/FavoriteDirsPage.cpp:150
+msgid "Under what name you see the directory"
+msgstr ""
+
+#: win32/DownloadPage.cpp:33
+msgid "Unfinished downloads directory"
+msgstr "Директориум за незавршените преземања "
+
+#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+msgid "Unknown"
+msgstr "Непознато"
+
+#: win32/HubFrame.cpp:387
+#, boost-format
+msgid "Unknown command: %1%"
+msgstr ""
+
+#: win32/UploadPage.cpp:41
+msgid "Upload slots"
+msgstr "Прикачи слотови"
+
+#: win32/AboutDlg.cpp:59
+#, boost-format
+msgid "Upload: %1%, Download: %2%"
+msgstr ""
+
+#: win32/TransferView.cpp:809
+#, fuzzy, boost-format
+msgid "Uploading %1%"
+msgstr "Прикачувања"
+
+#: win32/Appearance2Page.cpp:36
+msgid "Uploads"
+msgstr "Прикачувања"
+
+#: win32/AdvancedPage.cpp:46
+msgid "Use CTRL for line history"
+msgstr ""
+
+#: win32/AdvancedPage.cpp:50
+msgid "Use Coral network when downloading hub lists (improves reliability)"
+msgstr ""
+
+#: win32/AppearancePage.cpp:55
+msgid "Use OEM monospaced font for viewing text files"
+msgstr "Use OEM monospaced font for viewing text files"
+
+#: win32/NetworkPage.cpp:46
+msgid "Use SOCKS5 server to resolve host names"
+msgstr "Користи SOCKS5 сервер за распознавање хостови"
+
+#: win32/CertificatesPage.cpp:41
+msgid "Use TLS when remote client supports it"
+msgstr ""
+
+#: win32/QueuePage.cpp:77
+msgid "Use antifragmentation method for downloads"
+msgstr "Користи антифрагментационен метод за преземања"
+
+#: win32/AdvancedPage.cpp:49
+msgid "Use extended menus with icons and titles"
+msgstr ""
+
+#: win32/AppearancePage.cpp:54
+msgid "Use system icons when browsing files (slows browsing down a bit)"
+msgstr ""
+"Употребувај системски икони при пребарување на датотеки (го забавува "
+"пребарувањето)"
+
+#: win32/SearchFrame.cpp:33 win32/TransferView.cpp:42
+msgid "User"
+msgstr "Корисник"
+
+#: win32/FavHubsFrame.cpp:37
+msgid "User Description"
+msgstr "Опис на корисникот"
+
+#: win32/CommandDlg.cpp:93
+#, fuzzy
+msgid "User Menu"
+msgstr "Корисник"
+
+#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:700
+msgid "User offline"
+msgstr "Корисникот е отсутен"
+
+#: win32/PrivateFrame.cpp:328
+msgid "User went offline"
+msgstr "Корисникот е сега отсутен"
+
+#: win32/QueueFrame.cpp:41 win32/PublicHubsFrame.cpp:51
+msgid "Users"
+msgstr "Корисници"
+
+#: win32/PublicHubsFrame.cpp:272
+#, fuzzy, boost-format
+msgid "Users: %1%"
+msgstr "Корисници"
+
+#: win32/SearchFrame.cpp:188
+msgid "Video"
+msgstr "Видео"
+
+#: win32/AppearancePage.cpp:50
+msgid "View status messages in main chat"
+msgstr "Погледни ги статусните пораки во главниот разговор"
+
+#: win32/UploadPage.cpp:63 win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
+#, fuzzy
+msgid "Virtual name"
+msgstr "Име на датотеката"
+
+#: win32/QueueFrame.cpp:423
+#, fuzzy, boost-format
+msgid "Waiting (%1% of %2% users online)"
+msgstr "Почекајте (Корисникот е присутен)"
+
+#: win32/QueueFrame.cpp:421
+msgid "Waiting (User online)"
+msgstr "Почекајте (Корисникот е присутен)"
+
+#: win32/TabsPage.cpp:43 win32/WindowsPage.cpp:41
+#: win32/WaitingUsersFrame.cpp:33 win32/MainWindow.cpp:216
+#: win32/MainWindow.cpp:290
+#, fuzzy
+msgid "Waiting Users"
+msgstr "Почекајте (Корисникот е присутен)"
+
+#: win32/TransferView.cpp:627
+msgid "Waiting for slot"
+msgstr ""
+
+#: win32/TransferView.cpp:649
+msgid "Waiting to retry"
+msgstr ""
+
+#: win32/WindowsPage.cpp:31
+msgid "Window options"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:29
+msgid "Write buffer size"
+msgstr "Пиши ја бафер големината"
+
+#: win32/HubFrame.cpp:897
+msgid "Your nick was already taken, please change to something else!"
+msgstr "Вашиот прекат веќе е избран, изберете друг!"
+
+#: win32/MainWindow.cpp:143
+msgid ""
+"Your version of windows common controls is too old for DC++ to run "
+"correctly, and you will most probably experience problems with the user "
+"interface. You should download version 5.80 or higher from the DC++ homepage "
+"or from Microsoft directly."
+msgstr ""
+
+#: win32/TransferView.cpp:674
+msgid "file list"
+msgstr ""
+
+#: win32/QueuePage.cpp:41 win32/QueuePage.cpp:43 win32/QueuePage.cpp:45
+msgid "s"
+msgstr ""

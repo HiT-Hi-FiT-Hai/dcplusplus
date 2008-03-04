@@ -35,8 +35,7 @@ public:
 	void dec() throw() {
 		dcassert(ref>0);
 
-		if ( (Thread::safeDec(ref)) == 0 ) {
-			//dcdebug("Smart Object at 0x%08x deleted\n", this);
+		if ( Thread::safeDec(ref) == 0 ) {
 			delete this;
 		}
 	}

@@ -17,7 +17,7 @@ opts.AddOptions(
 )
 
 gcc_flags = {
-	'common': ['-ggdb', '-Wall', '-Wextra', '-pipe', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
+	'common': ['-g', '-Wall', '-Wextra', '-pipe', '-Wno-unused-parameter', '-Wno-missing-field-initializers', '-fexceptions', '-mthreads'],
 	'debug': [], 
 	'release' : ['-O2', '-mwindows']
 }

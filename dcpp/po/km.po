@@ -7,12 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-02-05 20:19+0100\n"
-"Last-Translator:  <Veyanong@users.sourceforge.net>\n"
+"POT-Creation-Date: 2008-03-04 23:00+0100\n"
+"PO-Revision-Date: 2008-02-05 23:01+0000\n"
+"Last-Translator: Veyanong <Unknown>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: plurals=2; plural=(n != 1);\n"
+"X-Launchpad-Export-Date: 2008-03-04 21:52+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
 #, c-format, boost-format
@@ -44,7 +47,12 @@ msgstr ""
 msgid "%.02f TiB"
 msgstr ""
 
-#: dcpp/NmdcHub.cpp:273
+#: dcpp/AdcHub.cpp:139
+#, boost-format
+msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
+msgstr ""
+
+#: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
 msgstr ""
@@ -55,12 +63,22 @@ msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
 msgstr ""
 
-#: dcpp/QueueManager.cpp:332
+#: dcpp/QueueManager.cpp:325
 #, boost-format
 msgid "%1% renamed to %2%"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:520
+#: dcpp/AdcHub.cpp:281
+#, boost-format
+msgid "%1% was kicked by %2%: %3%"
+msgstr ""
+
+#: dcpp/AdcHub.cpp:284
+#, boost-format
+msgid "%1% was kicked: %2%"
+msgstr ""
+
+#: dcpp/DownloadManager.cpp:530
 #, fuzzy, boost-format
 msgid "%1%: File not available"
 msgstr "ឯកសារពុំអាចរកបាន"
@@ -75,45 +93,45 @@ msgstr ""
 msgid "%s B"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:539
+#: dcpp/QueueManager.cpp:532
 msgid "A file of equal or larger size already exists at the target location"
 msgstr "ទំហំឯកសារដែលប៉ុនគ្នា ឬ ធំជាង គឺមានរួចហើយនៅឯទីតាំងគោលដៅ"
 
-#: dcpp/QueueManager.cpp:482
+#: dcpp/QueueManager.cpp:475
 msgid "A file with a different size already exists in the queue"
 msgstr "ឯកសារដែលមានទំហំខុសគ្នា មានរួចហើយនៅក្នុងជួរ"
 
-#: dcpp/QueueManager.cpp:485
+#: dcpp/QueueManager.cpp:478
 msgid "A file with different tth root already exists in the queue"
 msgstr "ឯកសារដែលមានឫស tth ខុសគ្នា មានរួចហើយនៅក្នុងជួរ"
 
-#: dcpp/QueueManager.cpp:449
+#: dcpp/QueueManager.cpp:442
 msgid "A file with the same hash already exists in your share"
 msgstr "ឯកសារដែលច្របូកច្របល់ដូចគ្នានេះ មានរួចហើយនៅក្នុងទីចែករំលែករបស់អ្នក"
 
-#: dcpp/ConnectionManager.cpp:181
+#: dcpp/ConnectionManager.cpp:176
 msgid "All download slots taken"
 msgstr "ប្រលោះទាញយកទាំងអស់ គ្មានទំនេរ"
 
-#: dcpp/DownloadManager.cpp:385
+#: dcpp/DownloadManager.cpp:376
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 មិនខ្ជាប់ខ្ជួន (SFV-ត្រួតពិនិត្យ)"
 
-#: dcpp/DownloadManager.cpp:383
+#: dcpp/DownloadManager.cpp:374
 #, fuzzy, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
 msgstr "CRC32 មិនខ្ជាប់ខ្ជួន (SFV-ត្រួតពិនិត្យ)"
 
-#: dcpp/ConnectionManager.cpp:385
+#: dcpp/ConnectionManager.cpp:376
 msgid "Certificate not trusted, unable to connect"
 msgstr ""
 
-#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:187
+#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:154
 msgid "Connection timeout"
 msgstr "ការតភ្ជាប់ អស់ពេល"
 
-#: dcpp/DownloadManager.cpp:248
+#: dcpp/DownloadManager.cpp:232
 #, boost-format
 msgid "Could not open target file: %1%"
 msgstr ""
@@ -122,7 +140,7 @@ msgstr ""
 msgid "Directory already shared"
 msgstr "ថតក្រូណូបានចែករំលែករួចហើយ"
 
-#: dcpp/BufferedSocket.cpp:409 dcpp/BufferedSocket.cpp:427
+#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
 msgid "Disconnected"
 msgstr "បានផ្តាច់"
 
@@ -135,14 +153,14 @@ msgstr ""
 msgid "Download Queue"
 msgstr "ទាញយកដាក់ជាជួរ"
 
-#: dcpp/ShareManager.cpp:745
+#: dcpp/ShareManager.cpp:741
 #, boost-format
 msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
 "against: %4%%5%"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:552 dcpp/QueueManager.cpp:556
+#: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
 #, boost-format
 msgid "Duplicate source: %1%"
 msgstr ""
@@ -158,8 +176,8 @@ msgid "Error during compression"
 msgstr "កំហុសនៅពេលបង្ហាប់"
 
 #: dcpp/ZUtils.cpp:100 dcpp/ZUtils.cpp:123 dcpp/BZUtils.cpp:72
-#: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:344
-#: dcpp/CryptoManager.cpp:363 dcpp/CryptoManager.cpp:377
+#: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:342
+#: dcpp/CryptoManager.cpp:361 dcpp/CryptoManager.cpp:375
 msgid "Error during decompression"
 msgstr "កំហុសនៅពេលមិនបានបង្ហាប់"
 
@@ -173,14 +191,18 @@ msgstr ""
 msgid "Error saving hash data: %1%"
 msgstr ""
 
-#: dcpp/CryptoManager.cpp:228 dcpp/CryptoManager.cpp:232
-#: dcpp/CryptoManager.cpp:237 dcpp/CryptoManager.cpp:241
+#: dcpp/CryptoManager.cpp:226 dcpp/CryptoManager.cpp:230
+#: dcpp/CryptoManager.cpp:235 dcpp/CryptoManager.cpp:239
 msgid "Failed to load certificate file"
 msgstr ""
 
-#: dcpp/CryptoManager.cpp:246 dcpp/CryptoManager.cpp:250
-#: dcpp/CryptoManager.cpp:255 dcpp/CryptoManager.cpp:259
+#: dcpp/CryptoManager.cpp:244 dcpp/CryptoManager.cpp:248
+#: dcpp/CryptoManager.cpp:253 dcpp/CryptoManager.cpp:257
 msgid "Failed to load private key"
+msgstr ""
+
+#: dcpp/AdcHub.cpp:206
+msgid "Failed to negotiate base protocol"
 msgstr ""
 
 #: dcpp/Socket.cpp:408
@@ -189,22 +211,22 @@ msgid ""
 "port)"
 msgstr ""
 
-#: dcpp/ShareManager.cpp:780
+#: dcpp/ShareManager.cpp:776
 #, fuzzy, boost-format
 msgid "File list refresh failed: %1%"
 msgstr "បញ្ជីឯកសារដែលធ្វើអោយស្រស់ បានបញ្ចប់"
 
-#: dcpp/ShareManager.cpp:824
+#: dcpp/ShareManager.cpp:820
 msgid "File list refresh finished"
 msgstr "បញ្ជីឯកសារដែលធ្វើអោយស្រស់ បានបញ្ចប់"
 
-#: dcpp/ShareManager.cpp:760
+#: dcpp/ShareManager.cpp:756
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
 msgstr ""
 
-#: dcpp/ShareManager.cpp:802
+#: dcpp/ShareManager.cpp:798
 msgid "File list refresh initiated"
 msgstr "បញ្ជីឯកសារដែលធ្វើអោយស្រស់ បានផ្តើមថ្មី"
 
@@ -222,11 +244,11 @@ msgstr ""
 msgid "Finished hashing: %1% (%2%/s)"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:317
+#: dcpp/DownloadManager.cpp:308
 msgid "Full tree does not match TTH root"
 msgstr "មែកធាងពេញលេញ មិនអាចផ្គុផ្គងនឹងឫស TTH"
 
-#: dcpp/CryptoManager.cpp:221
+#: dcpp/CryptoManager.cpp:219
 msgid "Generated new TLS certificate"
 msgstr ""
 
@@ -243,11 +265,17 @@ msgstr "មូលដ្ឋានទិន្នន័យច្របូកច្
 msgid "Hashing failed: %1%"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:228 dcpp/DownloadManager.cpp:233
+#: dcpp/AdcHub.cpp:212
+msgid ""
+"Hub probably uses an old version of ADC, please encourage the owner to "
+"upgrade"
+msgstr ""
+
+#: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:522 dcpp/QueueManager.cpp:530
+#: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
@@ -257,16 +285,16 @@ msgstr ""
 msgid "Kick user(s)"
 msgstr "ទាត់អ្នកប្រើចេញ"
 
-#: dcpp/ConnectionManager.cpp:239
+#: dcpp/ConnectionManager.cpp:230
 #, boost-format
-msgid "Listening socket failed (you need to restart DC++): %1%"
+msgid "Listening socket failed (you need to restart %1%): %2%"
 msgstr ""
 
-#: dcpp/BufferedSocket.cpp:263
+#: dcpp/BufferedSocket.cpp:261
 msgid "Maximum command length exceeded"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:287
+#: dcpp/DownloadManager.cpp:280
 msgid "More data was sent than was expected"
 msgstr "ទិន្នន័យជាច្រើនត្រូវបានផ្ញើហួសពីការរំពឹងទុក"
 
@@ -274,12 +302,13 @@ msgstr "ទិន្នន័យជាច្រើនត្រូវបានផ
 msgid "No directory specified"
 msgstr "គ្មានថតក្រូណូបញ្ជាក់លម្អិត"
 
-#: dcpp/DownloadManager.cpp:426
+#: dcpp/DownloadManager.cpp:419
 msgid "No slots available"
 msgstr "គ្មានប្រលោះដែលអាចរកបាន"
 
-#: dcpp/AdcHub.cpp:554
-msgid "Not listening for connections - please restart DC++"
+#: dcpp/AdcHub.cpp:576
+#, boost-format
+msgid "Not listening for connections - please restart %1%"
 msgstr ""
 
 #: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
@@ -296,6 +325,11 @@ msgstr "ប្តូរទិសអ្នកប្រើ"
 msgid "Remove all subdirectories before adding this one"
 msgstr "យកថតក្រូណូរងចេញទាំងអស់ មុននឹងបន្ថែមមួយនេះ"
 
+#: dcpp/DownloadManager.cpp:225
+#, fuzzy
+msgid "Response does not match request"
+msgstr "មែកធាងពេញលេញ មិនអាចផ្គុផ្គងនឹងឫស TTH"
+
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"
 msgstr "បានចែករំលែកឯកសារ"
@@ -305,20 +339,20 @@ msgid "Socks server authentication failed (bad login / password?)"
 msgstr ""
 "ការផ្ទៀងផ្ទាត់ភាពត្រឹមត្រូវនៃរន្ធម៉ាស៊ីនបម្រើ បានបរាជ័យ (ឈ្មោះ / ពាក្យសម្ងាត់ មិនត្រឹមត្រូវ?)"
 
-#: dcpp/CryptoManager.cpp:223
+#: dcpp/CryptoManager.cpp:221
 #, boost-format
 msgid "TLS disabled, failed to generate certificate: %1%"
 msgstr ""
 
-#: dcpp/CryptoManager.cpp:213
+#: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:526
+#: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"
 msgstr "ឈ្មោះឯកសារគោលដៅវែងណាស់"
 
-#: dcpp/QueueManager.cpp:805
+#: dcpp/QueueManager.cpp:798
 msgid "Target removed"
 msgstr ""
 
@@ -339,7 +373,7 @@ msgstr "រន្ធម៉ាស៊ីនបម្រើតម្រូវអោ
 msgid "The temporary download directory cannot be shared"
 msgstr "ថតក្រូណូដែលទាញយកជាបណ្តោះអាសន្ន មិនអាចត្រូវបានចែករំលែក"
 
-#: dcpp/QueueManager.cpp:472
+#: dcpp/QueueManager.cpp:465
 msgid "This file is already queued"
 msgstr ""
 
@@ -347,7 +381,7 @@ msgstr ""
 msgid "Unable to create thread"
 msgstr "មិនអាចបង្កើតខ្សែស្រឡាយ"
 
-#: dcpp/QueueManager.cpp:1002
+#: dcpp/QueueManager.cpp:995
 #, boost-format
 msgid "Unable to open filelist: %1%"
 msgstr ""
@@ -356,7 +390,7 @@ msgstr ""
 msgid "Unable to read hash data file"
 msgstr "មិនអាចអានឯកសារទិន្នន័យច្របូកច្របល់"
 
-#: dcpp/QueueManager.cpp:334
+#: dcpp/QueueManager.cpp:327
 #, fuzzy, boost-format
 msgid "Unable to rename %1%: %2%"
 msgstr "មិនអាចបង្កើតខ្សែស្រឡាយ"
@@ -375,7 +409,7 @@ msgstr ""
 msgid "Virtual directory name already exists"
 msgstr "ឈ្មោះថតក្រូណូនិម្មិត មានរួចហើយ"
 
-#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
+#: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
 msgid "You're trying to download from yourself!"
 msgstr "អ្នកកំពុងតែសាកល្បងទាញយកពីខ្លួនឯង!"
 

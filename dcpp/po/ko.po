@@ -7,12 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-02-05 20:19+0100\n"
-"Last-Translator:  <gutfeast@users.sourceforge.net>\n"
+"POT-Creation-Date: 2008-03-04 23:00+0100\n"
+"PO-Revision-Date: 2008-02-05 23:01+0000\n"
+"Last-Translator: Gutfeast <Unknown>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Launchpad-Export-Date: 2008-03-04 21:52+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
 #, c-format, boost-format
@@ -44,7 +47,12 @@ msgstr ""
 msgid "%.02f TiB"
 msgstr ""
 
-#: dcpp/NmdcHub.cpp:273
+#: dcpp/AdcHub.cpp:139
+#, boost-format
+msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
+msgstr ""
+
+#: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
 msgstr ""
@@ -55,12 +63,22 @@ msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
 msgstr ""
 
-#: dcpp/QueueManager.cpp:332
+#: dcpp/QueueManager.cpp:325
 #, boost-format
 msgid "%1% renamed to %2%"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:520
+#: dcpp/AdcHub.cpp:281
+#, boost-format
+msgid "%1% was kicked by %2%: %3%"
+msgstr ""
+
+#: dcpp/AdcHub.cpp:284
+#, boost-format
+msgid "%1% was kicked: %2%"
+msgstr ""
+
+#: dcpp/DownloadManager.cpp:530
 #, fuzzy, boost-format
 msgid "%1%: File not available"
 msgstr "파일이 유효하지 않음"
@@ -75,46 +93,46 @@ msgstr ""
 msgid "%s B"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:539
+#: dcpp/QueueManager.cpp:532
 msgid "A file of equal or larger size already exists at the target location"
 msgstr "크기가 같거나 큰 파일이 이미 대상 위치에 있음"
 
-#: dcpp/QueueManager.cpp:482
+#: dcpp/QueueManager.cpp:475
 msgid "A file with a different size already exists in the queue"
 msgstr "다른 크기의 파일이 이미 '다운로드 대기열'에 있음"
 
-#: dcpp/QueueManager.cpp:485
+#: dcpp/QueueManager.cpp:478
 msgid "A file with different tth root already exists in the queue"
 msgstr ""
 "다른 TTH(Tigertree Hash) Root 값을 갖는 파일이 이미 '다운로드 대기열'에 있음"
 
-#: dcpp/QueueManager.cpp:449
+#: dcpp/QueueManager.cpp:442
 msgid "A file with the same hash already exists in your share"
 msgstr "동일한 Hash를 갖는 파일이 이미 공유 디렉토리에 존재함"
 
-#: dcpp/ConnectionManager.cpp:181
+#: dcpp/ConnectionManager.cpp:176
 msgid "All download slots taken"
 msgstr "모든 다운로드 슬롯이 꽉 참"
 
-#: dcpp/DownloadManager.cpp:385
+#: dcpp/DownloadManager.cpp:376
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "32-bit CRC 코드 불일치 (SFV-검사)"
 
-#: dcpp/DownloadManager.cpp:383
+#: dcpp/DownloadManager.cpp:374
 #, fuzzy, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
 msgstr "32-bit CRC 코드 불일치 (SFV-검사)"
 
-#: dcpp/ConnectionManager.cpp:385
+#: dcpp/ConnectionManager.cpp:376
 msgid "Certificate not trusted, unable to connect"
 msgstr "인증이 신뢰되지 않으므로 연결(접속)할 수 없음"
 
-#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:187
+#: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:154
 msgid "Connection timeout"
 msgstr "연결 시간 초과"
 
-#: dcpp/DownloadManager.cpp:248
+#: dcpp/DownloadManager.cpp:232
 #, boost-format
 msgid "Could not open target file: %1%"
 msgstr ""
@@ -123,7 +141,7 @@ msgstr ""
 msgid "Directory already shared"
 msgstr "디렉토리가 이미 공유됨"
 
-#: dcpp/BufferedSocket.cpp:409 dcpp/BufferedSocket.cpp:427
+#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
 msgid "Disconnected"
 msgstr "끊어짐"
 
@@ -136,14 +154,14 @@ msgstr ""
 msgid "Download Queue"
 msgstr "다운로드 대기열"
 
-#: dcpp/ShareManager.cpp:745
+#: dcpp/ShareManager.cpp:741
 #, boost-format
 msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
 "against: %4%%5%"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:552 dcpp/QueueManager.cpp:556
+#: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
 #, boost-format
 msgid "Duplicate source: %1%"
 msgstr ""
@@ -159,8 +177,8 @@ msgid "Error during compression"
 msgstr "압축 도중 오류"
 
 #: dcpp/ZUtils.cpp:100 dcpp/ZUtils.cpp:123 dcpp/BZUtils.cpp:72
-#: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:344
-#: dcpp/CryptoManager.cpp:363 dcpp/CryptoManager.cpp:377
+#: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:342
+#: dcpp/CryptoManager.cpp:361 dcpp/CryptoManager.cpp:375
 msgid "Error during decompression"
 msgstr "압축 해제 도중 오류"
 
@@ -174,15 +192,19 @@ msgstr ""
 msgid "Error saving hash data: %1%"
 msgstr ""
 
-#: dcpp/CryptoManager.cpp:228 dcpp/CryptoManager.cpp:232
-#: dcpp/CryptoManager.cpp:237 dcpp/CryptoManager.cpp:241
+#: dcpp/CryptoManager.cpp:226 dcpp/CryptoManager.cpp:230
+#: dcpp/CryptoManager.cpp:235 dcpp/CryptoManager.cpp:239
 msgid "Failed to load certificate file"
 msgstr "인증 파일을 불러오는데 실패함"
 
-#: dcpp/CryptoManager.cpp:246 dcpp/CryptoManager.cpp:250
-#: dcpp/CryptoManager.cpp:255 dcpp/CryptoManager.cpp:259
+#: dcpp/CryptoManager.cpp:244 dcpp/CryptoManager.cpp:248
+#: dcpp/CryptoManager.cpp:253 dcpp/CryptoManager.cpp:257
 msgid "Failed to load private key"
 msgstr "비밀(Private) 키를 불러오는데 실패함"
+
+#: dcpp/AdcHub.cpp:206
+msgid "Failed to negotiate base protocol"
+msgstr ""
 
 #: dcpp/Socket.cpp:408
 msgid ""
@@ -191,16 +213,16 @@ msgid ""
 msgstr ""
 "UDP 중계를 위한 소켓 서버 설정에 실패함 (소켓 주소 및 포트를 확인하세요)"
 
-#: dcpp/ShareManager.cpp:780
+#: dcpp/ShareManager.cpp:776
 #, fuzzy, boost-format
 msgid "File list refresh failed: %1%"
 msgstr "파일-목록 갱신이 완료됨"
 
-#: dcpp/ShareManager.cpp:824
+#: dcpp/ShareManager.cpp:820
 msgid "File list refresh finished"
 msgstr "파일-목록 갱신이 완료됨"
 
-#: dcpp/ShareManager.cpp:760
+#: dcpp/ShareManager.cpp:756
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
@@ -208,7 +230,7 @@ msgstr ""
 "파일-목록 갱신이 진행 중이므로 갱신을 재시도하기 전에 완료될 때까지 기다리세"
 "요"
 
-#: dcpp/ShareManager.cpp:802
+#: dcpp/ShareManager.cpp:798
 msgid "File list refresh initiated"
 msgstr "파일-목록 갱신 시작..."
 
@@ -226,11 +248,11 @@ msgstr ""
 msgid "Finished hashing: %1% (%2%/s)"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:317
+#: dcpp/DownloadManager.cpp:308
 msgid "Full tree does not match TTH root"
 msgstr "받은 파일-목록의 TTH(Tigertree Hash) Root 값이 일치하지 않음"
 
-#: dcpp/CryptoManager.cpp:221
+#: dcpp/CryptoManager.cpp:219
 msgid "Generated new TLS certificate"
 msgstr ""
 
@@ -247,11 +269,17 @@ msgstr "Hash 데이터베이스가 모두 완성되었음"
 msgid "Hashing failed: %1%"
 msgstr ""
 
-#: dcpp/DownloadManager.cpp:228 dcpp/DownloadManager.cpp:233
+#: dcpp/AdcHub.cpp:212
+msgid ""
+"Hub probably uses an old version of ADC, please encourage the owner to "
+"upgrade"
+msgstr ""
+
+#: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
 msgstr ""
 
-#: dcpp/QueueManager.cpp:522 dcpp/QueueManager.cpp:530
+#: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
@@ -261,16 +289,16 @@ msgstr "대상 파일이 잘못됨 ('다운로드 디렉토리' 설정을 확인
 msgid "Kick user(s)"
 msgstr "추방하기"
 
-#: dcpp/ConnectionManager.cpp:239
+#: dcpp/ConnectionManager.cpp:230
 #, boost-format
-msgid "Listening socket failed (you need to restart DC++): %1%"
+msgid "Listening socket failed (you need to restart %1%): %2%"
 msgstr ""
 
-#: dcpp/BufferedSocket.cpp:263
+#: dcpp/BufferedSocket.cpp:261
 msgid "Maximum command length exceeded"
 msgstr "최대 명령어 길이를 초과함"
 
-#: dcpp/DownloadManager.cpp:287
+#: dcpp/DownloadManager.cpp:280
 msgid "More data was sent than was expected"
 msgstr "예상되었던 것보다 많은 양의 데이터가 보내졌음"
 
@@ -278,12 +306,13 @@ msgstr "예상되었던 것보다 많은 양의 데이터가 보내졌음"
 msgid "No directory specified"
 msgstr "디렉토리가 지정되지 않았음"
 
-#: dcpp/DownloadManager.cpp:426
+#: dcpp/DownloadManager.cpp:419
 msgid "No slots available"
 msgstr "남은 슬롯이 없음"
 
-#: dcpp/AdcHub.cpp:554
-msgid "Not listening for connections - please restart DC++"
+#: dcpp/AdcHub.cpp:576
+#, fuzzy, boost-format
+msgid "Not listening for connections - please restart %1%"
 msgstr "연결을 위한 소켓 청취를 하지 않음 - DC++를 재시작하세요"
 
 #: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
@@ -300,6 +329,11 @@ msgstr "접속-전환(Redirect)할 허브 제안하기..."
 msgid "Remove all subdirectories before adding this one"
 msgstr "추가하기 전에 이미 공유된 모든 서브-디렉토리를 공유에서 삭제하세요"
 
+#: dcpp/DownloadManager.cpp:225
+#, fuzzy
+msgid "Response does not match request"
+msgstr "받은 파일-목록의 TTH(Tigertree Hash) Root 값이 일치하지 않음"
+
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"
 msgstr "파일 공유!"
@@ -308,20 +342,20 @@ msgstr "파일 공유!"
 msgid "Socks server authentication failed (bad login / password?)"
 msgstr "소켓 서버 인증이 실패함 (잘못된 로그인이름/비밀번호?)"
 
-#: dcpp/CryptoManager.cpp:223
+#: dcpp/CryptoManager.cpp:221
 #, fuzzy, boost-format
 msgid "TLS disabled, failed to generate certificate: %1%"
 msgstr "TLS를 사용할 수 없음, 인증 파일 셋이 없음"
 
-#: dcpp/CryptoManager.cpp:213
+#: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr "TLS를 사용할 수 없음, 인증 파일 셋이 없음"
 
-#: dcpp/QueueManager.cpp:517 dcpp/QueueManager.cpp:526
+#: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"
 msgstr "대상 파일 이름이 너무 김"
 
-#: dcpp/QueueManager.cpp:805
+#: dcpp/QueueManager.cpp:798
 msgid "Target removed"
 msgstr ""
 
@@ -342,7 +376,7 @@ msgstr "소켓 서버가 인증을 필요로 함"
 msgid "The temporary download directory cannot be shared"
 msgstr "'미완료 다운로드 디렉토리'는 공유할 수 없음"
 
-#: dcpp/QueueManager.cpp:472
+#: dcpp/QueueManager.cpp:465
 msgid "This file is already queued"
 msgstr "이 파일은 이미 '다운로드 대기열'에 추가되었음"
 
@@ -350,7 +384,7 @@ msgstr "이 파일은 이미 '다운로드 대기열'에 추가되었음"
 msgid "Unable to create thread"
 msgstr "Thread를 생성할 수 없음"
 
-#: dcpp/QueueManager.cpp:1002
+#: dcpp/QueueManager.cpp:995
 #, boost-format
 msgid "Unable to open filelist: %1%"
 msgstr ""
@@ -359,7 +393,7 @@ msgstr ""
 msgid "Unable to read hash data file"
 msgstr "Hash 데이터 파일을 읽을 수 없음"
 
-#: dcpp/QueueManager.cpp:334
+#: dcpp/QueueManager.cpp:327
 #, fuzzy, boost-format
 msgid "Unable to rename %1%: %2%"
 msgstr "Thread를 생성할 수 없음"
@@ -378,7 +412,7 @@ msgstr ""
 msgid "Virtual directory name already exists"
 msgstr "지정한 공유 이름이 이미 존재함"
 
-#: dcpp/QueueManager.cpp:419 dcpp/QueueManager.cpp:443
+#: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
 msgid "You're trying to download from yourself!"
 msgstr "자신의 파일을 다운로드할 수 없음"
 

@@ -144,6 +144,7 @@ MainWindow::MainWindow() :
 }
 
 void MainWindow::initWindow() {
+	
 	// Create main window
 	dcdebug("initWindow\n");
 	Seed cs;

@@ -170,7 +170,6 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		// This socket has been closed...
 		throw SocketException(("Connection closed"));
 	}
-	size_t used;
 	string::size_type pos = 0;
 	// always uncompressed data
 	string l;
@@ -179,20 +178,19 @@ void BufferedSocket::threadRead() throw(SocketException) {
 	while (left > 0) {
 		switch (mode) {
 			case MODE_ZPIPE:
-				if (filterIn != NULL){
-					const int BufSize = 1024;
+				if(filterIn) {
+					const int BUF_SIZE = 1024;
 					// Special to autodetect nmdc connections...
 					string::size_type pos = 0;
-					boost::scoped_array<uint8_t> buffer (new uint8_t[BufSize]);
-					size_t in;
+					boost::scoped_array<char> buffer(new char[BUF_SIZE]);
 					l = line;
 					// decompress all input data and store in l.
 					while (left) {
-						in = BufSize;
-						used = left;
-						bool ret = (*filterIn) ((void *)(&inbuf[0] + total - left), used, &buffer[0], in);
+						size_t in = BUF_SIZE;
+						size_t used = left;
+						bool ret = (*filterIn) (&inbuf[0] + total - left, used, &buffer[0], in);
 						left -= used;
-						l.append ((const char *)&buffer[0], in);
+						l.append (&buffer[0], in);
 						// if the stream ends before the data runs out, keep remainder of data in inbuf
 						if (!ret) {
 							bufpos = total-left;
@@ -203,7 +201,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 					// process all lines
 					while ((pos = l.find(separator)) != string::npos) {
 						fire(BufferedSocketListener::Line(), l.substr(0, pos));
-						l.erase (0, pos + 1 /* seperator char */);
+						l.erase (0, pos + 1 /* separator char */);
 					}
 					// store remainder
 					line = l;
