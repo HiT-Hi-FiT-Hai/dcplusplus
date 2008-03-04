@@ -19,7 +19,7 @@ WidgetTabView::WidgetTabView(Widget* w) :
 	toggleActive(false),
 	inTab(false),
 	active(-1),
-	dragging(-1)
+	dragging(0)
 	{ }
 
 void WidgetTabView::create(const Seed & cs) {
@@ -80,6 +80,9 @@ void WidgetTabView::remove(WidgetChildWindow* w) {
 	WidgetChildWindow* cur = getTabInfo(tab->getSelectedIndex())->w;
 	
 	viewOrder.remove(w);
+
+	if(w == dragging)
+		dragging = 0;
 
 	int i = findTab(w);
 	if(i != -1) {
@@ -291,12 +294,12 @@ LRESULT WidgetTabView::handleToolTip(LPARAM lParam) {
 }
 
 void WidgetTabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult) {
-	int i = tab->hitTest(mouseEventResult.pos);
-	if(i != -1) {
+	TabInfo* ti = getTabInfo(tab->hitTest(mouseEventResult.pos));
+	if(ti) {
 		if(mouseEventResult.isShiftPressed)
-			getTabInfo(i)->w->close();
+			ti->w->close();
 		else {
-			dragging = i;
+			dragging = ti->w;
 			::SetCapture(tab->handle());
 		}
 	}
@@ -305,7 +308,13 @@ void WidgetTabView::handleLeftMouseDown(const MouseEventResult& mouseEventResult
 void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) {
 	::ReleaseCapture();
 
-	if(dragging != -1) {
+	if(dragging) {
+		int dragPos = findTab(dragging);
+		dragging = 0;
+
+		if(dragPos == -1)
+			return;
+
 		int dropPos = tab->hitTest(mouseEventResult.pos);
 
 		if(dropPos == -1) {
@@ -313,30 +322,27 @@ void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) 
 			dropPos = tab->size() - 1;
 		}
 
-		if(dropPos == dragging) {
+		if(dropPos == dragPos) {
 			// the tab hasn't moved; handle the click
 			if(dropPos == active) {
 				if(toggleActive)
 					next();
 			} else
 				setActive(dropPos);
-			dragging = -1;
 			return;
 		}
 
 		// save some information about the tab before we erase it
-		TabInfo* ti = getTabInfo(dragging);
-		int image = tab->getImage(dragging);
+		TabInfo* ti = getTabInfo(dragPos);
+		int image = tab->getImage(dragPos);
 
-		tab->erase(dragging);
+		tab->erase(dragPos);
 
 		tab->addPage(formatTitle(ti->w->getText()), dropPos, reinterpret_cast<LPARAM>(ti), image);
 
 		active = tab->getSelectedIndex();
 
 		layout();
-
-		dragging = -1;
 	}
 }
 

@@ -97,7 +97,7 @@ private:
 	Rectangle clientSize;
 	std::vector<IconPtr> icons;
 	int active;
-	int dragging;
+	WidgetChildWindow* dragging;
 	SmartUtil::tstring tipText;
 	
 	int findTab(WidgetChildWindow* w);
