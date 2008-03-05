@@ -225,7 +225,7 @@ File::File(const string& aFileName, int access, int mode) throw(FileException) {
 			throw FileException("Invalid file type");
 	}
 
-	h = open(fileName.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+	h = open(filename.c_str(), m, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	if(h == -1)
 		throw FileException("Could not open file");
 }
@@ -350,7 +350,7 @@ void File::renameFile(const string& source, const string& target) throw(FileExce
 // This doesn't assume all bytes are written in one write call, it is a bit safer
 void File::copyFile(const string& source, const string& target) throw(FileException) {
 	const size_t BUF_SIZE = 64 * 1024;
-	boost::scoped_array<char> buffer(BUF_SIZE);
+	boost::scoped_array<char> buffer(new char[BUF_SIZE]);
 	size_t count = BUF_SIZE;
 	File src(source, File::READ, 0);
 	File dst(target, File::WRITE, File::CREATE | File::TRUNCATE);

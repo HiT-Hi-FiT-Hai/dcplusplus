@@ -379,7 +379,7 @@ string Util::formatExactSize(int64_t aBytes) {
 #else
 		char buf[128];
 		snprintf(buf, sizeof(buf), _("%'lld B"), (long long int)aBytes);
-		return string(buf)
+		return string(buf);
 #endif
 }
 
@@ -714,14 +714,17 @@ string Util::formatTime(const string &msg, const time_t t) {
 #else
 		// will this give wide representations for %a and %A?
 		// surely win32 can't have a leg up on linux/unixen in this area. - Todd
-		AutoArray<char> buf(bufsize);
+		string buf(bufsize, 0);
 
-		while(!strftime(buf, bufsize-1, msg.c_str(), loc)) {
+		buf.resize(strftime(&buf[0], bufsize-1, msg.c_str(), loc));
+		
+		while(buf.empty()) {
 			bufsize+=64;
-			buf = new char[bufsize];
+			buf.resize(bufsize);
+			buf.resize(strftime(&buf[0], bufsize-1, msg.c_str(), loc));
 		}
 
-		return Text::toUtf8(string(buf));
+		return Text::toUtf8(buf);
 #endif
 	}
 	return Util::emptyString;
