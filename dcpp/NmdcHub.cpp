@@ -690,10 +690,14 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(fromNick.empty())
 			return;
 
+		if(param.size() < j + 2) {
+			return;
+		}
+		string msg = param.substr(j + 2);
+
 		OnlineUser* replyTo = findUser(rtNick);
 		OnlineUser* from = findUser(fromNick);
 
-		string msg = param.substr(j + 2);
 		if(replyTo == NULL || from == NULL) {
 			if(replyTo == 0) {
 				// Assume it's from the hub

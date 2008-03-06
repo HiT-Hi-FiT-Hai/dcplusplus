@@ -41,6 +41,7 @@
 * [L#195209] Fixed Ctrl+F that opens favorite hubs (poy)
 * [L#194696] Fixed small memory leak
 * Some unix compile fixes (thanks pavel andreev and yakov suraev)
+* [L#199192] [NMDC] Fixed crash on empty private message
 
 -- 0.704 2007-12-14 --
 * Hub lists added to utilize Coral's distributed network (ullner)
