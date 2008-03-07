@@ -35,8 +35,8 @@ namespace dcpp {
 #define POLL_TIMEOUT 250
 
 BufferedSocket::BufferedSocket(char aSeparator) throw(ThreadException) :
-separator(aSeparator), mode(MODE_LINE), dataBytes(0), rollback(0), disconnecting(false),
-state(STARTING)
+separator(aSeparator), mode(MODE_LINE), dataBytes(0), rollback(0), state(STARTING),
+disconnecting(false)
 {
 	start();
 	
