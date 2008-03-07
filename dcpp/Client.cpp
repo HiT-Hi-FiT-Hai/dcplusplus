@@ -34,7 +34,7 @@ Client::Counts Client::counts;
 Client::Client(const string& hubURL, char separator_, bool secure_) :
 	myIdentity(ClientManager::getInstance()->getMe(), 0),
 	reconnDelay(120), lastActivity(GET_TICK()), registered(false), autoReconnect(false),
-	encoding(Text::systemCharset), state(STATE_DISCONNECTED), socket(0),
+	encoding(Text::systemCharset), state(STATE_DISCONNECTED), sock(0), 
 	hubUrl(hubURL), port(0), separator(separator_),
 	secure(secure_), countType(COUNT_UNCOUNTED)
 {
@@ -45,7 +45,7 @@ Client::Client(const string& hubURL, char separator_, bool secure_) :
 }
 
 Client::~Client() throw() {
-	dcassert(!socket);
+	dcassert(!sock);
 	
 	// In case we were deleted before we Failed
 	FavoriteManager::getInstance()->removeUserCommand(getHubUrl());
@@ -60,10 +60,9 @@ void Client::reconnect() {
 }
 
 void Client::shutdown() {
-
-	if(socket) {
-		BufferedSocket::putSocket(socket);
-		socket = 0;
+	if(sock) {
+		BufferedSocket::putSocket(sock);
+		sock = 0;
 	}
 }
 
@@ -90,8 +89,8 @@ void Client::reloadSettings(bool updateNick) {
 }
 
 void Client::connect() {
-	if(socket)
-		BufferedSocket::putSocket(socket);
+	if(sock)
+		BufferedSocket::putSocket(sock);
 
 	setAutoReconnect(true);
 	setReconnDelay(120 + Util::rand(0, 60));
@@ -101,13 +100,13 @@ void Client::connect() {
 	setHubIdentity(Identity());
 
 	try {
-		socket = BufferedSocket::getSocket(separator);
-		socket->addListener(this);
-		socket->connect(address, port, secure, BOOLSETTING(ALLOW_UNTRUSTED_HUBS), true);
+		sock = BufferedSocket::getSocket(separator);
+		sock->addListener(this);
+		sock->connect(address, port, secure, BOOLSETTING(ALLOW_UNTRUSTED_HUBS), true);
 	} catch(const Exception& e) {
-		if(socket) {
-			BufferedSocket::putSocket(socket);
-			socket = 0;
+		if(sock) {
+			BufferedSocket::putSocket(sock);
+			sock = 0;
 		}
 		fire(ClientListener::Failed(), this, e.getError());
 	}
@@ -115,9 +114,18 @@ void Client::connect() {
 	state = STATE_CONNECTING;
 }
 
+void Client::send(const char* aMessage, size_t aLen) {
+	dcassert(sock);
+	if(!sock)
+		return;
+	updateActivity();
+	sock->write(aMessage, aLen);
+}
+
 void Client::on(Connected) throw() {
 	updateActivity();
-	ip = socket->getIp();
+	ip = sock->getIp();
+	localIp = sock->getLocalIp();
 	fire(ClientListener::Connected(), this);
 	state = STATE_PROTOCOL;
 }
@@ -125,13 +133,13 @@ void Client::on(Connected) throw() {
 void Client::on(Failed, const string& aLine) throw() {
 	state = STATE_DISCONNECTED;
 	FavoriteManager::getInstance()->removeUserCommand(getHubUrl());
-	socket->removeListener(this);
+	sock->removeListener(this);
 	fire(ClientListener::Failed(), this, aLine);
 }
 
 void Client::disconnect(bool graceLess) {
-	if(socket) 
-		socket->disconnect(graceLess);
+	if(sock) 
+		sock->disconnect(graceLess);
 }
 
 void Client::updateCounts(bool aRemove) {
@@ -169,14 +177,12 @@ string Client::getLocalIp() const {
 	if(!SETTING(EXTERNAL_IP).empty()) {
 		return Socket::resolve(SETTING(EXTERNAL_IP));
 	}
-
-	string lip;
-	if(socket)
-		lip = socket->getLocalIp();
-
-	if(lip.empty())
+	
+	if(localIp.empty()) {
 		return Util::getLocalIp();
-	return lip;
+	}
+
+	return localIp;
 }
 
 void Client::on(Line, const string& /*aLine*/) throw() {

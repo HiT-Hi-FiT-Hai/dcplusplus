@@ -121,6 +121,7 @@ typedef unsigned __int64 uint64_t;
 
 #include <boost/format.hpp>
 #include <boost/scoped_array.hpp>
+#include <boost/noncopyable.hpp>
 
 #ifdef _STLPORT_VERSION
 

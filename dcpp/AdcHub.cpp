@@ -204,7 +204,7 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 	
 	if(!baseOk) {
 		fire(ClientListener::StatusMessage(), this, _("Failed to negotiate base protocol"));
-		socket->disconnect(false);
+		disconnect(false);
 		return;
 	} else if(!tigrOk) {
 		oldPassword = true;
@@ -441,6 +441,7 @@ void AdcHub::sendUDP(const AdcCommand& cmd) throw() {
 		udp.writeTo(ip, port, command);
 	} catch(const SocketException& e) {
 		dcdebug("AdcHub::sendUDP: write failed: %s\n", e.getError().c_str());
+		udp.close();
 	}
 }
 

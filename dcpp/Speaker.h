@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(SPEAKER_H)
-#define SPEAKER_H
+#ifndef DCPLUSPLUS_DCPP_SPEAKER_H
+#define DCPLUSPLUS_DCPP_SPEAKER_H
 
 #include "CriticalSection.h"
 

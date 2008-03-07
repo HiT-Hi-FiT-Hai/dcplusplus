@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(NMDC_HUB_H)
-#define NMDC_HUB_H
+#ifndef DCPLUSPLUS_DCPP_NMDC_HUB_H
+#define DCPLUSPLUS_DCPP_NMDC_HUB_H
 
 #include "TimerManager.h"
 #include "SettingsManager.h"
 
-#include "User.h"
+#include "forward.h"
 #include "CriticalSection.h"
 #include "Text.h"
 #include "Client.h"

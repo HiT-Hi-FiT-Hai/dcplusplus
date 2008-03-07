@@ -29,8 +29,7 @@
 
 namespace dcpp {
 
-class BufferedSocket : public Speaker<BufferedSocketListener>, public Thread
-{
+class BufferedSocket : public Speaker<BufferedSocketListener>, private Thread {
 public:
 	enum Modes {
 		MODE_LINE,
@@ -43,7 +42,7 @@ public:
 	 * @param sep Line separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep) throw() {
+	static BufferedSocket* getSocket(char sep) throw(ThreadException) {
 		return new BufferedSocket(sep);
 	}
 
@@ -57,8 +56,8 @@ public:
 			Thread::sleep(100);
 	}
 
-	void accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException, ThreadException);
-	void connect(const string& aAddress, uint16_t aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException);
+	void accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException);
+	void connect(const string& aAddress, uint16_t aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException);
 
 	/** Sets data mode for aBytes bytes. Must be called within onLine. */
 	void setDataMode(int64_t aBytes = -1) { mode = MODE_DATA; dataBytes = aBytes; }
@@ -70,12 +69,12 @@ public:
 	void setLineMode(size_t aRollback) { setMode (MODE_LINE, aRollback);}
 	void setMode(Modes mode, size_t aRollback = 0);
 	Modes getMode() const { return mode; }
-	const string& getIp() const { return sock ? sock->getIp() : Util::emptyString; }
-	bool isConnected() const { return sock && sock->isConnected(); }
+	const string& getIp() const { return sock->getIp(); }
+	bool isConnected() const { return sock->isConnected(); }
 
-	bool isSecure() const { return sock && sock->isSecure(); }
-	bool isTrusted() const { return sock && sock->isTrusted(); }
-	std::string getCipherName() const { return sock ? sock->getCipherName() : Util::emptyString; }
+	bool isSecure() const { return sock->isSecure(); }
+	bool isTrusted() const { return sock->isTrusted(); }
+	std::string getCipherName() const { return sock->getCipherName(); }
 	
 	void write(const string& aData) { write(aData.data(), aData.length()); }
 	void write(const char* aBuf, size_t aLen) throw();
@@ -87,7 +86,7 @@ public:
 
 	void disconnect(bool graceless = false) throw() { Lock l(cs); if(graceless) disconnecting = true; addTask(DISCONNECT, 0); }
 
-	string getLocalIp() const { return sock ? sock->getLocalIp() : Util::getLocalIp(); }
+	string getLocalIp() const { return sock->getLocalIp(); }
 
 	GETSET(char, separator, Separator)
 private:
@@ -99,6 +98,12 @@ private:
 		SHUTDOWN,
 		ACCEPTED,
 		UPDATED
+	};
+	
+	enum State {
+		STARTING, // Waiting for CONNECT/ACCEPTED/SHUTDOWN
+		RUNNING,
+		FAILED
 	};
 
 	struct TaskData {
@@ -115,30 +120,26 @@ private:
 		InputStream* stream;
 	};
 
-	BufferedSocket(char aSeparator) throw();
-
-	// Dummy...
-	BufferedSocket(const BufferedSocket&);
-	BufferedSocket& operator=(const BufferedSocket&);
+	BufferedSocket(char aSeparator) throw(ThreadException);
 
 	virtual ~BufferedSocket() throw();
 
 	CriticalSection cs;
 
 	Semaphore taskSem;
-	vector<pair<Tasks, TaskData*> > tasks;
+	deque<pair<Tasks, std::tr1::shared_ptr<TaskData> > > tasks;
 
 	Modes mode;
-	UnZFilter *filterIn;
+	std::auto_ptr<UnZFilter> filterIn;
 	int64_t dataBytes;
 	size_t rollback;
-	bool failed;
 	string line;
 	ByteVector inbuf;
 	ByteVector writeBuf;
 	ByteVector sendBuf;
 
-	Socket* sock;
+	std::auto_ptr<Socket> sock;
+	State state;
 	bool disconnecting;
 
 	virtual int run();
@@ -155,8 +156,9 @@ private:
 	bool checkEvents();
 	void checkSocket();
 
+	void setSocket(std::auto_ptr<Socket> s);
 	void shutdown();
-	void addTask(Tasks task, TaskData* data) { tasks.push_back(make_pair(task, data)); taskSem.signal(); }
+	void addTask(Tasks task, TaskData* data);
 };
 
 } // namespace dcpp

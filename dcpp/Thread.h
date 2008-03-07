@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(THREAD_H)
-#define THREAD_H
+#ifndef DCPLUSPLUS_DCPP_THREAD_H
+#define DCPLUSPLUS_DCPP_THREAD_H
 
 #ifndef _WIN32
 #include <pthread.h>
@@ -31,7 +31,7 @@ namespace dcpp {
 
 STANDARD_EXCEPTION(ThreadException);
 
-class Thread
+class Thread : private boost::noncopyable
 {
 public:
 #ifdef _WIN32
@@ -123,10 +123,6 @@ public:
 
 protected:
 	virtual int run() = 0;
-
-private:
-	Thread(const Thread&);
-	Thread& operator=(const Thread&);
 
 #ifdef _WIN32
 	HANDLE threadHandle;

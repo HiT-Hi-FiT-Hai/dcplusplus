@@ -120,7 +120,7 @@ void WinUtil::init() {
 	}
 	
 	// Const so that noone else will change them after they've been initialized
-	SmartWin::WidgetButton::Seed& xbutton = const_cast<SmartWin::WidgetButton::Seed&>(Seeds::button);
+	//SmartWin::WidgetButton::Seed& xbutton = const_cast<SmartWin::WidgetButton::Seed&>(Seeds::button);
 	SmartWin::WidgetComboBox::Seed& xcomboBoxEdit = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxEdit);
 	SmartWin::WidgetComboBox::Seed& xcomboBoxStatic = const_cast<SmartWin::WidgetComboBox::Seed&>(Seeds::comboBoxStatic);
 	SmartWin::WidgetListView::Seed& xlistView = const_cast<SmartWin::WidgetListView::Seed&>(Seeds::listView);

@@ -76,7 +76,7 @@ private:
 			ContentType* content = reinterpret_cast<ContentType*>(nm->item.lParam);
 			const tstring& text = content->getText();
 			_tcsncpy(nm->item.pszText, text.data(), std::min(text.size(), (size_t)nm->item.cchTextMax));
-			if(text.size() < nm->item.cchTextMax) {
+			if(text.size() < static_cast<size_t>(nm->item.cchTextMax)) {
 				nm->item.pszText[text.size()] = 0;
 			}
 		}

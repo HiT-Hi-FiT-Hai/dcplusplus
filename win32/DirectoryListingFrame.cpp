@@ -762,7 +762,7 @@ HTREEITEM DirectoryListingFrame::findFile(const StringSearch& str, HTREEITEM roo
 	changeDir(dir);
 
 	// Check file names in list pane
-	for(int i=0; i<files->size(); i++) {
+	for(size_t i = 0; i < files->size(); i++) {
 		ItemInfo* ii = files->getData(i);
 		if(ii->type == ItemInfo::FILE) {
 			if(str.match(ii->file->getName())) {

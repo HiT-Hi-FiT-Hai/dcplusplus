@@ -21,8 +21,7 @@
 
 #include "Client.h"
 #include "AdcCommand.h"
-#include "TimerManager.h"
-#include "User.h"
+#include "Socket.h"
 
 namespace dcpp {
 

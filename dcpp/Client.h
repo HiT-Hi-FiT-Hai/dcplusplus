@@ -16,12 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(CLIENT_H)
-#define CLIENT_H
+#ifndef DCPLUSPLUS_DCPP_CLIENT_H
+#define DCPLUSPLUS_DCPP_CLIENT_H
+
+#include "forward.h"
 
 #include "User.h"
-#include "BufferedSocket.h"
-#include "SettingsManager.h"
+#include "Speaker.h"
+#include "BufferedSocketListener.h"
 #include "TimerManager.h"
 #include "ClientListener.h"
 
@@ -52,7 +54,7 @@ public:
 
 	virtual string escape(string const& str) const { return str; }
 
-	bool isConnected() const { return socket && socket->isConnected(); }
+	bool isConnected() const { return state != STATE_DISCONNECTED; }
 	bool isOp() const { return getMyIdentity().isOp(); }
 
 	uint16_t getPort() const { return port; }
@@ -80,13 +82,7 @@ public:
 	void shutdown();
 
 	void send(const string& aMessage) { send(aMessage.c_str(), aMessage.length()); }
-	void send(const char* aMessage, size_t aLen) {
-		dcassert(socket);
-		if(!socket)
-			return;
-		updateActivity();
-		socket->write(aMessage, aLen);
-	}
+	void send(const char* aMessage, size_t aLen);
 
 	string getMyNick() const { return getMyIdentity().getNick(); }
 	string getHubName() const { return getHubIdentity().getNick().empty() ? getHubUrl() : getHubIdentity().getNick(); }
@@ -129,7 +125,7 @@ protected:
 		STATE_DISCONNECTED,	///< Nothing in particular
 	} state;
 
-	BufferedSocket* socket;
+	BufferedSocket* sock;
 
 	static Counts counts;
 	Counts lastCounts;
@@ -165,6 +161,7 @@ private:
 	string hubUrl;
 	string address;
 	string ip;
+	string localIp;
 	uint16_t port;
 	char separator;
 	bool secure;

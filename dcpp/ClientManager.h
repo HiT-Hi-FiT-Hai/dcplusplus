@@ -25,6 +25,7 @@
 #include "Singleton.h"
 #include "SettingsManager.h"
 #include "User.h"
+#include "Socket.h"
 
 #include "ClientManagerListener.h"
 

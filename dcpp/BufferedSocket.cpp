@@ -34,18 +34,18 @@ namespace dcpp {
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw() :
-separator(aSeparator), mode(MODE_LINE), filterIn(NULL),
-dataBytes(0), rollback(0), failed(false), sock(0), disconnecting(false)
+BufferedSocket::BufferedSocket(char aSeparator) throw(ThreadException) :
+separator(aSeparator), mode(MODE_LINE), dataBytes(0), rollback(0), disconnecting(false),
+state(STARTING)
 {
+	start();
+	
 	Thread::safeInc(sockets);
 }
 
 volatile long BufferedSocket::sockets = 0;
 
 BufferedSocket::~BufferedSocket() throw() {
-	delete sock;
-	delete filterIn;
 	Thread::safeDec(sockets);
 }
 
@@ -55,89 +55,66 @@ void BufferedSocket::setMode (Modes aMode, size_t aRollback) {
 		return;
 	}
 
-	if (mode == MODE_ZPIPE) {
-		// should not happen!
-		if (filterIn) {
-			delete filterIn;
-			filterIn = NULL;
-		}
-	}
-
-	mode = aMode;
 	switch (aMode) {
 		case MODE_LINE:
 			rollback = aRollback;
 			break;
 		case MODE_ZPIPE:
-			filterIn = new UnZFilter;
+			filterIn = std::auto_ptr<UnZFilter>(new UnZFilter);
 			break;
 		case MODE_DATA:
 			break;
 	}
+	mode = aMode;	
 }
 
-void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException, ThreadException) {
-	dcassert(!sock);
-	try {
-		dcdebug("BufferedSocket::accept() %p\n", (void*)this);
-		sock = secure ? CryptoManager::getInstance()->getServerSocket(allowUntrusted) : new Socket;
+void BufferedSocket::setSocket(std::auto_ptr<Socket> s) {
+	dcassert(!sock.get());
+	if(SETTING(SOCKET_IN_BUFFER) > 0)
+		s->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
+	if(SETTING(SOCKET_OUT_BUFFER) > 0)
+		s->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
+	s->setBlocking(false);
 
-		sock->accept(srv);
-		if(SETTING(SOCKET_IN_BUFFER) > 0)
-			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-		if(SETTING(SOCKET_OUT_BUFFER) > 0)
-			sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
-		sock->setBlocking(false);
-
-		inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
-
-		// This lock prevents the shutdown task from being added and executed before we're done initializing the socket
-		Lock l(cs);
-		start();
-		addTask(ACCEPTED, 0);
-	} catch(...) {
-		delete sock;
-		sock = 0;
-		throw;
-	}
-
+	inbuf.resize(s->getSocketOptInt(SO_RCVBUF));
+	
+	sock = s;
 }
 
-void BufferedSocket::connect(const string& aAddress, uint16_t aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException, ThreadException) {
-	dcassert(!sock);
+void BufferedSocket::accept(const Socket& srv, bool secure, bool allowUntrusted) throw(SocketException) {
+	dcdebug("BufferedSocket::accept() %p\n", (void*)this);
+	
+	std::auto_ptr<Socket> s(secure ? CryptoManager::getInstance()->getServerSocket(allowUntrusted) : new Socket);
 
-	try {
-		dcdebug("BufferedSocket::connect() %p\n", (void*)this);
-		sock = secure ? CryptoManager::getInstance()->getClientSocket(allowUntrusted) : new Socket;
+	s->accept(srv);
+	
+	setSocket(s);
+	
+	Lock l(cs);
+	addTask(ACCEPTED, 0);
+}
 
-		sock->create();
-		sock->bind(0, SETTING(BIND_ADDRESS));
-		if(SETTING(SOCKET_IN_BUFFER) >= 1024)
-			sock->setSocketOpt(SO_RCVBUF, SETTING(SOCKET_IN_BUFFER));
-		if(SETTING(SOCKET_OUT_BUFFER) >= 1024)
-			sock->setSocketOpt(SO_SNDBUF, SETTING(SOCKET_OUT_BUFFER));
-		sock->setBlocking(false);
+void BufferedSocket::connect(const string& aAddress, uint16_t aPort, bool secure, bool allowUntrusted, bool proxy) throw(SocketException) {
+	dcdebug("BufferedSocket::connect() %p\n", (void*)this);
+	std::auto_ptr<Socket> s(secure ? CryptoManager::getInstance()->getClientSocket(allowUntrusted) : new Socket);
 
-		inbuf.resize(sock->getSocketOptInt(SO_RCVBUF));
-
-		Lock l(cs);
-		start();
-		addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
-	} catch(...) {
-		delete sock;
-		sock = 0;
-		throw;
-	}
-
+	s->create();
+	s->bind(0, SETTING(BIND_ADDRESS));
+	
+	setSocket(s);
+	
+	Lock l(cs);
+	addTask(CONNECT, new ConnectInfo(aAddress, aPort, proxy && (SETTING(OUTGOING_CONNECTIONS) == SettingsManager::OUTGOING_SOCKS5)));
 }
 
 #define CONNECT_TIMEOUT 30000
 void BufferedSocket::threadConnect(const string& aAddr, uint16_t aPort, bool proxy) throw(SocketException) {
+	dcassert(state == STARTING);
+
 	dcdebug("threadConnect %s:%d\n", aAddr.c_str(), (int)aPort);
-	dcassert(sock);
-	if(!sock)
-		return;
 	fire(BufferedSocketListener::Connecting());
+	
+	state = RUNNING;
 
 	uint64_t startTime = GET_TICK();
 	if(proxy) {
@@ -159,9 +136,9 @@ void BufferedSocket::threadConnect(const string& aAddr, uint16_t aPort, bool pro
 }
 
 void BufferedSocket::threadRead() throw(SocketException) {
-	dcassert(sock);
-	if(!sock)
+	if(state != RUNNING)
 		return;
+	
 	int left = sock->read(&inbuf[0], (int)inbuf.size());
 	if(left == -1) {
 		// EWOULDBLOCK, no data received...
@@ -177,8 +154,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 
 	while (left > 0) {
 		switch (mode) {
-			case MODE_ZPIPE:
-				if(filterIn) {
+			case MODE_ZPIPE: {
 					const int BUF_SIZE = 1024;
 					// Special to autodetect nmdc connections...
 					string::size_type pos = 0;
@@ -263,8 +239,10 @@ void BufferedSocket::threadRead() throw(SocketException) {
 }
 
 void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
-	dcassert(sock);
-	if(!sock || disconnecting)
+	if(state != RUNNING)
+		return;
+	
+	if(disconnecting)
 		return;
 	dcassert(file != NULL);
 	size_t sockSize = (size_t)sock->getSocketOptInt(SO_SNDBUF);
@@ -347,8 +325,7 @@ void BufferedSocket::threadSendFile(InputStream* file) throw(Exception) {
 }
 
 void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
-	dcassert(sock);
-	if(!sock)
+	if(!sock.get())
 		return;
 	Lock l(cs);
 	if(writeBuf.empty())
@@ -358,9 +335,9 @@ void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
 }
 
 void BufferedSocket::threadSendData() {
-	dcassert(sock);
-	if(!sock)
+	if(state != RUNNING)
 		return;
+	
 	{
 		Lock l(cs);
 		if(writeBuf.empty())
@@ -394,59 +371,46 @@ void BufferedSocket::threadSendData() {
 }
 
 bool BufferedSocket::checkEvents() {
-	while(isConnected() ? taskSem.wait(0) : taskSem.wait()) {
-		pair<Tasks, TaskData*> p;
+	while(state == RUNNING ? taskSem.wait(0) : taskSem.wait()) {
+		pair<Tasks, std::tr1::shared_ptr<TaskData> > p;
 		{
 			Lock l(cs);
 			dcassert(tasks.size() > 0);
 			p = tasks.front();
 			tasks.erase(tasks.begin());
 		}
-		if(failed && p.first != SHUTDOWN) {
-			dcdebug("BufferedSocket: New command when already failed: %d\n", p.first);
-			fail(_("Disconnected"));
-			delete p.second;
-			continue;
+		
+		if(p.first == SHUTDOWN) {
+			return false;
+		} else if(p.first == UPDATED) {
+			fire(BufferedSocketListener::Updated());			
 		}
-
-		try {
-			switch(p.first) {
-				case SEND_DATA:
-					threadSendData(); break;
-				case SEND_FILE:
-					threadSendFile(((SendFileInfo*)p.second)->stream); break;
-				case CONNECT:
-					{
-						ConnectInfo* ci = (ConnectInfo*)p.second;
-						threadConnect(ci->addr, ci->port, ci->proxy);
-						break;
-					}
-				case DISCONNECT:
-					if(isConnected())
-						fail(_("Disconnected"));
-					break;
-				case SHUTDOWN:
-					return false;
-				case ACCEPTED:
-					break;
-				case UPDATED:
-					fire(BufferedSocketListener::Updated());
-					break;
+		
+		if(state == STARTING) {
+			if(p.first == CONNECT) {
+				ConnectInfo* ci = static_cast<ConnectInfo*>(p.second.get());
+				threadConnect(ci->addr, ci->port, ci->proxy);
+			} else if(p.first == ACCEPTED) {
+				state = RUNNING;
+			} else {
+				dcdebug("%d unexpected in STARTING state", p.first);
 			}
-		} catch(...) {
-			delete p.second;
-			throw;
+		} else if(state == RUNNING) {
+			if(p.first == SEND_DATA) {
+				threadSendData();
+			} else if(p.first == SEND_FILE) {
+				threadSendFile(static_cast<SendFileInfo*>(p.second.get())->stream); break;
+			} else if(p.first == DISCONNECT) {
+				fail(_("Disconnected"));
+			} else {
+				dcdebug("%d unexpected in RUNNING state", p.first);
+			}
 		}
-		delete p.second;
 	}
 	return true;
 }
 
 void BufferedSocket::checkSocket() {
-	dcassert(sock);
-	if(!sock)
-		return;
-
 	int waitFor = sock->wait(POLL_TIMEOUT, Socket::WAIT_READ);
 
 	if(waitFor & Socket::WAIT_READ) {
@@ -462,9 +426,12 @@ int BufferedSocket::run() {
 	dcdebug("BufferedSocket::run() start %p\n", (void*)this);
 	while(true) {
 		try {
-			if(!checkEvents())
+			if(!checkEvents()) {
 				break;
-			checkSocket();
+			}
+			if(state == RUNNING) {
+				checkSocket();
+			}
 		} catch(const Exception& e) {
 			fail(e.getError());
 		}
@@ -475,24 +442,23 @@ int BufferedSocket::run() {
 }
 
 void BufferedSocket::fail(const string& aError) {
-	if(sock) {
-		sock->disconnect();
-	}
-	if(!failed) {
-		failed = true;
+	sock->disconnect();
+	
+	if(state == RUNNING) {
+		state = FAILED;
 		fire(BufferedSocketListener::Failed(), aError);
 	}
 }
 
 void BufferedSocket::shutdown() {
-	if(sock) {
-		Lock l(cs);
-		disconnecting = true;
-		addTask(SHUTDOWN, 0);
-	} else {
-		// Socket thread not running yet, disconnect...
-		delete this;
-	}
+	Lock l(cs);
+	disconnecting = true;
+	addTask(SHUTDOWN, 0);
+}
+
+void BufferedSocket::addTask(Tasks task, TaskData* data) { 
+	dcassert(task == SHUTDOWN || sock.get());
+	tasks.push_back(make_pair(task, data)); taskSem.signal();
 }
 
 } // namespace dcpp

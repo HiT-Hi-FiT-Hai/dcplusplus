@@ -81,10 +81,10 @@ protected:
 	}
 	
 	void mapWidget(int s, SmartWin::Widget* widget) {
-		RECT sr;
-		::SendMessage(status->handle(), SB_GETRECT, s, reinterpret_cast<LPARAM>(&sr));
-		::MapWindowPoints(status->handle(), static_cast<WidgetType*>(this)->handle(), (POINT*)&sr, 2);
-		::MoveWindow(widget->handle(), sr.left, sr.top, sr.right - sr.left, sr.bottom - sr.top, TRUE);
+		POINT p[2];
+		::SendMessage(status->handle(), SB_GETRECT, s, reinterpret_cast<LPARAM>(p));
+		::MapWindowPoints(status->handle(), static_cast<WidgetType*>(this)->handle(), (POINT*)p, 2);
+		::MoveWindow(widget->handle(), p[0].x, p[0].y, p[1].x - p[0].x, p[1].y - p[0].y, TRUE);
 	}
 	
 	WidgetStatusBarSectionsPtr status;
