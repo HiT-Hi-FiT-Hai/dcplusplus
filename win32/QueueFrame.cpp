@@ -70,17 +70,20 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		dirs = SmartWin::WidgetCreator<WidgetDirs>::create(this, WinUtil::Seeds::treeView);
 		addWidget(dirs);
+		paned->setFirst(dirs);
+
 		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
+
 		dirs->onSelectionChanged(std::tr1::bind(&QueueFrame::updateFiles, this));
 		dirs->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownDirs, this, _1));
 		dirs->onContextMenu(std::tr1::bind(&QueueFrame::handleDirsContextMenu, this, _1));
-		paned->setFirst(dirs);
 	}
 	
 	{
 		files = SmartWin::WidgetCreator<WidgetFiles>::create(this, WinUtil::Seeds::listView);
-		addWidget(files);
+		addWidget(files, true);
+		paned->setSecond(files);
 
 		files->setSmallImageList(WinUtil::fileImages);
 		files->createColumns(WinUtil::getStrings(columnNames));
@@ -92,8 +95,6 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		files->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownFiles, this, _1));
 		files->onSelectionChanged(std::tr1::bind(&QueueFrame::updateStatus, this));
 		files->onContextMenu(std::tr1::bind(&QueueFrame::handleFilesContextMenu, this, _1));
-
-		paned->setSecond(files);
 	}
 	
 	{
@@ -111,7 +112,7 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
 
-	onSpeaker(std::tr1::bind(&QueueFrame::handleSpeaker, this, _1, _2));
+	onSpeaker(std::tr1::bind(&QueueFrame::handleSpeaker, this));
 	
 	updateStatus();	
 	layout();
@@ -121,7 +122,7 @@ QueueFrame::~QueueFrame() {
 	
 }
 
-HRESULT QueueFrame::handleSpeaker(WPARAM, LPARAM) {
+LRESULT QueueFrame::handleSpeaker() {
 	TaskQueue::List t;
 
 	tasks.get(t);

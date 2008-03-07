@@ -27,12 +27,10 @@
 #include <dcpp/FastAlloc.h>
 #include <dcpp/QueueManagerListener.h>
 #include <dcpp/QueueItem.h>
-#include <dcpp/ClientListener.h>
 #include "resource.h"
 
-class QueueFrame : 
-	public StaticFrame<QueueFrame>, 
-	private ClientListener, 
+class QueueFrame :
+	public StaticFrame<QueueFrame>,
 	private QueueManagerListener
 {
 public:
@@ -277,12 +275,12 @@ private:
 	bool addUsers(const WidgetMenuPtr& menu, unsigned int startId, void (QueueFrame::*handler)(const UserPtr&), const QueueItem::SourceList& sources, bool offline);
 
 	void layout();
-	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
+
 	bool preClosing();
 	void postClosing();
 	
 	void handleShowTreeClicked();
-
+	LRESULT handleSpeaker();
 	void handleMove();
 	void handleRemove();
 	void handlePriority(unsigned id);
