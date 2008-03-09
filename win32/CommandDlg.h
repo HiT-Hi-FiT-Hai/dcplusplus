@@ -36,8 +36,6 @@ public:
 	tstring getCommand() { return command; }
 	tstring getHub() { return hub; }
 
-	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
-	
 private:
 	WidgetRadioButtonPtr separator;
 	WidgetRadioButtonPtr raw;
@@ -63,8 +61,8 @@ private:
 
 	bool handleInitDialog();
 	void handleFocus();
+	LRESULT handleHelp();
 	void handleTypeChanged();
-
 	void handleOKClicked();
 	void handleHelpClicked();
 

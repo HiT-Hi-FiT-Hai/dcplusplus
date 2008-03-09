@@ -145,7 +145,7 @@ void BufferedSocket::threadRead() throw(SocketException) {
 		return;
 	} else if(left == 0) {
 		// This socket has been closed...
-		throw SocketException(("Connection closed"));
+		throw SocketException(_("Connection closed"));
 	}
 	string::size_type pos = 0;
 	// always uncompressed data

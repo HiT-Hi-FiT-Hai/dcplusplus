@@ -52,7 +52,7 @@ CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstr
 {
 	onInitDialog(std::tr1::bind(&CommandDlg::handleInitDialog, this));
 	onFocus(std::tr1::bind(&CommandDlg::handleFocus, this));
-	onRaw(std::tr1::bind(&CommandDlg::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
+	onRaw(std::tr1::bind(&CommandDlg::handleHelp, this), SmartWin::Message(WM_HELP));
 }
 
 CommandDlg::~CommandDlg() {
@@ -200,7 +200,7 @@ void CommandDlg::handleTypeChanged() {
 void CommandDlg::handleOKClicked() {
 	name = nameBox->getText();
 	if((type != 0) && (name.empty() || commandBox->getText().empty())) {
-		createMessageBox().show(_T("Name and command must not be empty"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
+		createMessageBox().show(T_("Name and command must not be empty"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_OK, WidgetMessageBox::BOX_ICONEXCLAMATION);
 		return;
 	}
 
@@ -274,7 +274,7 @@ void CommandDlg::updateControls() {
 	}
 }
 
-LRESULT CommandDlg::handleHelp(WPARAM wParam, LPARAM lParam) {
+LRESULT CommandDlg::handleHelp() {
 	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 	return 0;
 }
