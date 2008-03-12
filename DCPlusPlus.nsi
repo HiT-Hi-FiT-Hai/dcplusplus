@@ -62,6 +62,7 @@ no_backup:
   File "License.txt"
   File "LICENSE-GeoIP.txt"
   File "LICENSE-OpenSSL.txt"
+  File "mingwm10.dll"
   File "magnet.exe"
   ; Remove opencow just in case we're upgrading
   Delete "$INSTDIR\opencow.dll"
