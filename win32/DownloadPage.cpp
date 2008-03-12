@@ -35,7 +35,7 @@ PropPage::TextItem DownloadPage::texts[] = {
 	{ IDC_SETTINGS_DOWNLOAD_LIMITS, N_("Limits") },
 	{ IDC_SETTINGS_DOWNLOADS_MAX, N_("Maximum simultaneous downloads (0 = infinite)") },
 	{ IDC_SETTINGS_DOWNLOADS_SPEED_PAUSE, N_("No new downloads if speed exceeds (KiB/s, 0 = disable)") },
-	{ IDC_SETTINGS_SPEEDS_NOT_ACCURATE, N_("Note; because of changing download speeds, this is not 100% accurate...") },
+/*xgettext:no-c-format*/{ IDC_SETTINGS_SPEEDS_NOT_ACCURATE, N_("Note; because of changing download speeds, this is not 100% accurate...") },
 	{ IDC_SETTINGS_PUBLIC_HUB_LIST, N_("Public Hubs list") },
 	{ IDC_SETTINGS_PUBLIC_HUB_LIST_URL, N_("Public Hubs list URL") },
 	{ IDC_SETTINGS_LIST_CONFIG, N_("Configure Public Hub Lists") },
