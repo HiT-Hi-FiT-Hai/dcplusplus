@@ -43,7 +43,7 @@ msvc_xxflags = {
 }
 
 gcc_link_flags = {
-	'common' : ['-ggdb', '-Wl,--no-undefined', '-time', '-mthread'],
+	'common' : ['-g', '-Wl,--no-undefined', '-time', '-mthreads'],
 	'debug' : [],
 	'release' : ['-mwindows']
 }
