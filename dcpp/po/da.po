@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-23 10:32+0000\n"
-"Last-Translator: carson <Unknown>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-10 10:27+0000\n"
+"Last-Translator: Kryppy <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:52+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -61,7 +61,7 @@ msgstr "%1% (Okendt kælenavn)"
 #, boost-format
 msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
-msgstr ""
+msgstr "%1% Ikke delt; Udregnet CRC32 matcher ikke den som fantes i SFV filen."
 
 #: dcpp/QueueManager.cpp:325
 #, boost-format
@@ -128,21 +128,26 @@ msgstr "CRC32 stemmer ikke (SFV-tjek) (Fil: %1%)"
 msgid "Certificate not trusted, unable to connect"
 msgstr "Certifikan ikke pålideligt, kan ikke tilslutte"
 
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "Tiden er udløbet for forbindelsen"
+
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
 msgstr "Tiden er udløbet for forbindelsen"
 
 #: dcpp/DownloadManager.cpp:232
 #, boost-format
 msgid "Could not open target file: %1%"
-msgstr ""
+msgstr "Kunne ikke åbne den valgte fil:: %1%"
 
 #: dcpp/ShareManager.cpp:418
 msgid "Directory already shared"
 msgstr "Katalog deles allerede"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Afbrudt"
 
@@ -165,7 +170,7 @@ msgstr ""
 #: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
 #, boost-format
 msgid "Duplicate source: %1%"
-msgstr ""
+msgstr "Kilden findes allerede: %1%"
 
 #: dcpp/HashManager.cpp:456
 #, boost-format
@@ -189,9 +194,9 @@ msgid "Error hashing %1%: %2%"
 msgstr ""
 
 #: dcpp/HashManager.cpp:118 dcpp/HashManager.cpp:333
-#, boost-format
+#, fuzzy, boost-format
 msgid "Error saving hash data: %1%"
-msgstr ""
+msgstr "Fejl ved lagering af TTH-data: %1%"
 
 #: dcpp/CryptoManager.cpp:226 dcpp/CryptoManager.cpp:230
 #: dcpp/CryptoManager.cpp:235 dcpp/CryptoManager.cpp:239
@@ -218,7 +223,7 @@ msgstr ""
 #: dcpp/ShareManager.cpp:776
 #, boost-format
 msgid "File list refresh failed: %1%"
-msgstr ""
+msgstr "Opdatering af fillisten mislykkes: %1%"
 
 #: dcpp/ShareManager.cpp:820
 msgid "File list refresh finished"
@@ -240,14 +245,14 @@ msgid "File not available"
 msgstr "Filen er ikke tilgængelig"
 
 #: dcpp/HashManager.cpp:89
-#, boost-format
+#, fuzzy, boost-format
 msgid "Finished hashing: %1%"
-msgstr ""
+msgstr "Færdig med at hashe: %1%"
 
 #: dcpp/HashManager.cpp:87
-#, boost-format
+#, fuzzy, boost-format
 msgid "Finished hashing: %1% (%2%/s)"
-msgstr ""
+msgstr "Færdig med at hashe: %1% (%2%/s)"
 
 #: dcpp/DownloadManager.cpp:308
 msgid "Full tree does not match TTH root"
@@ -266,9 +271,9 @@ msgid "Hash database rebuilt"
 msgstr "Hash databasen er genopbygget"
 
 #: dcpp/HashManager.cpp:73 dcpp/HashManager.cpp:277
-#, boost-format
+#, fuzzy, boost-format
 msgid "Hashing failed: %1%"
-msgstr ""
+msgstr "Indeksering misslyktes: %1%"
 
 #: dcpp/AdcHub.cpp:212
 msgid ""
@@ -297,7 +302,7 @@ msgstr "Spark bruger(e)"
 msgid "Listening socket failed (you need to restart %1%): %2%"
 msgstr ""
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr "Maxsimal længde for kommando overskredet"
 
@@ -313,12 +318,12 @@ msgstr "Intet katalog specifiseret"
 msgid "No slots available"
 msgstr "Ingen ledige slots"
 
-#: dcpp/AdcHub.cpp:576
+#: dcpp/AdcHub.cpp:577
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
 msgstr ""
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -348,7 +353,7 @@ msgstr ""
 #: dcpp/CryptoManager.cpp:221
 #, boost-format
 msgid "TLS disabled, failed to generate certificate: %1%"
-msgstr ""
+msgstr "TLS deaktiveret, det misslykkedes at skabe certifikat: %1%"
 
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"

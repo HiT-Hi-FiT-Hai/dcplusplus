@@ -7,12 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"Last-Translator:  <gerstoffer@users.sourceforge.net>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 00:26+0000\n"
+"Last-Translator: Gerstoffer <Unknown>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
 #, c-format, boost-format
@@ -123,8 +126,13 @@ msgstr "CRC32 Inconsistentie (SFV-Check)"
 msgid "Certificate not trusted, unable to connect"
 msgstr "Certificaat niet goedgekeurd, geen verbinding mogelijk"
 
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "Verbindingstimeout"
+
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
 msgstr "Verbindingstimeout"
 
@@ -137,7 +145,7 @@ msgstr ""
 msgid "Directory already shared"
 msgstr "File is reeds gedeeld"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Verbroken"
 
@@ -247,7 +255,7 @@ msgstr ""
 
 #: dcpp/DownloadManager.cpp:308
 msgid "Full tree does not match TTH root"
-msgstr "Mapstructuur komt niet overeen met TTH Root "
+msgstr "Mapstructuur komt niet overeen met TTH Root"
 
 #: dcpp/CryptoManager.cpp:219
 msgid "Generated new TLS certificate"
@@ -293,7 +301,7 @@ msgstr "Kick Gebruiker"
 msgid "Listening socket failed (you need to restart %1%): %2%"
 msgstr ""
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr "Maximum lengte opdracht overschreden"
 
@@ -309,12 +317,12 @@ msgstr "Geen map gekozen"
 msgid "No slots available"
 msgstr "Geen Slots beschikbaar"
 
-#: dcpp/AdcHub.cpp:576
+#: dcpp/AdcHub.cpp:577
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
 msgstr ""
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -331,7 +339,7 @@ msgstr "Alle submappen verwijderen voordat deze toegevoegd worden"
 #: dcpp/DownloadManager.cpp:225
 #, fuzzy
 msgid "Response does not match request"
-msgstr "Mapstructuur komt niet overeen met TTH Root "
+msgstr "Mapstructuur komt niet overeen met TTH Root"
 
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"

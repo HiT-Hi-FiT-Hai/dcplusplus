@@ -1,154 +1,166 @@
 # Finnish translations for the DC++ package.
 # Copyright (C) 2008 The translators
 # This file is distributed under the same license as the DC++ package.
-#  <maalitehdas@users.sourceforge.net>, 2008.
+#  <maksis@adrenaline-network.com>, 2008.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"Last-Translator:  <maalitehdas@users.sourceforge.net>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-09 09:09+0000\n"
+"Last-Translator: maksis <maksis@adrenaline-network.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
 #, c-format, boost-format
 msgid "%'lld B"
-msgstr ""
+msgstr "%'lld t"
 
 #: dcpp/Util.cpp:343
 #, c-format, boost-format
 msgid "%.02f GiB"
-msgstr ""
+msgstr "%.02f Gt"
 
 #: dcpp/Util.cpp:339
 #, c-format, boost-format
 msgid "%.02f KiB"
-msgstr ""
+msgstr "%.02f Kt"
 
 #: dcpp/Util.cpp:341
 #, c-format, boost-format
 msgid "%.02f MiB"
-msgstr ""
+msgstr "%.02f Mt"
 
 #: dcpp/Util.cpp:347
 #, c-format, boost-format
 msgid "%.02f PiB"
-msgstr ""
+msgstr "%.02f Pt"
 
 #: dcpp/Util.cpp:345
 #, c-format, boost-format
 msgid "%.02f TiB"
-msgstr ""
+msgstr "%.02f Tt"
 
 #: dcpp/AdcHub.cpp:139
 #, boost-format
 msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
-msgstr ""
+msgstr "%1% (%2%) on sama CID {%3%} kuin käyttäjällä %4% (%5%), hylätään"
 
 #: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
-msgstr ""
+msgstr "%1% (nimimerkki tuntematon)"
 
 #: dcpp/HashManager.cpp:767
 #, boost-format
 msgid ""
 "%1% not shared; calculated CRC32 does not match the one found in SFV file."
 msgstr ""
+"Tiedostoa %1% ei jaeta; laskettu CRC32 ei vastaa SFV-tiedostossa olevaa "
+"arvoa."
 
 #: dcpp/QueueManager.cpp:325
 #, boost-format
 msgid "%1% renamed to %2%"
-msgstr ""
+msgstr "%1% nimettiin tiedostoksi %2%"
 
 #: dcpp/AdcHub.cpp:281
 #, boost-format
 msgid "%1% was kicked by %2%: %3%"
-msgstr ""
+msgstr "%2% potkaisi käyttäjän %1%: %3%"
 
 #: dcpp/AdcHub.cpp:284
 #, boost-format
 msgid "%1% was kicked: %2%"
-msgstr ""
+msgstr "%1% potkaistiin: %2%"
 
 #: dcpp/DownloadManager.cpp:530
-#, fuzzy, boost-format
+#, boost-format
 msgid "%1%: File not available"
-msgstr "Häh, tätä fisua ei näy enä ton ämpärissä!"
+msgstr "%1%: Tiedosto ei saatavilla"
 
 #: dcpp/Util.cpp:337
 #, c-format, boost-format
 msgid "%d B"
-msgstr ""
+msgstr "%d t"
 
 #: dcpp/Util.cpp:377
 #, c-format, boost-format
 msgid "%s B"
-msgstr ""
+msgstr "%s t"
 
 #: dcpp/QueueManager.cpp:532
 msgid "A file of equal or larger size already exists at the target location"
-msgstr "Samanpainoinen / suurempi fisu on jo ämpärissä!"
+msgstr "Kohdehakemistossa on jo samanniminen tai -kokoinen tiedosto"
 
 #: dcpp/QueueManager.cpp:475
 msgid "A file with a different size already exists in the queue"
-msgstr "Muuten sama mutta eripainoinen fisu on jo menossa ämpäriin"
+msgstr "Samanniminen, mutta eri kokoinen tiedosto on jo latausjonossa"
 
 #: dcpp/QueueManager.cpp:478
 msgid "A file with different tth root already exists in the queue"
-msgstr "Muuten sama fisu mutta eri kaulapannalla (TTH) on jo menossa ämpäriin"
+msgstr ""
+"Samanniminen, mutta eri TTH-tarkistussummalla oleva tiedosto on jo "
+"latausjonossa"
 
 #: dcpp/QueueManager.cpp:442
 msgid "A file with the same hash already exists in your share"
-msgstr "Samalla pannalla (tth) oleva fisu löytyy jo jakoämpäristäsi"
+msgstr "Samalla TTH-tarkistussummalla oleva tiedosto jo jaossa"
 
 #: dcpp/ConnectionManager.cpp:176
 msgid "All download slots taken"
-msgstr "Kaikissa koukuissa nykii jo, hanki lisä siimoja..."
+msgstr "Kaikki latauspaikat käytössä"
 
 #: dcpp/DownloadManager.cpp:376
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32-ristiriita (SFV-tarkastus)"
 
 #: dcpp/DownloadManager.cpp:374
-#, fuzzy, boost-format
+#, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
-msgstr "CRC32-ristiriita (SFV-tarkastus)"
+msgstr "CRC32-ristiriita (SFV-tarkastus) (tiedosto: %1%)"
 
 #: dcpp/ConnectionManager.cpp:376
 msgid "Certificate not trusted, unable to connect"
-msgstr "Tohon kalastuslupaan ei luoteta"
+msgstr "Ei luotettu sertifikaatti, ei voi yhdistää"
+
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "Yhteyden aikakatkaisu"
 
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
-msgstr "Tä viehe ei vaan tunnu nykivän..."
+msgstr "Yhteyden aikakatkaisu"
 
 #: dcpp/DownloadManager.cpp:232
 #, boost-format
 msgid "Could not open target file: %1%"
-msgstr ""
+msgstr "Kohdetiedostoa ei voitu avata: %1%"
 
 #: dcpp/ShareManager.cpp:418
 msgid "Directory already shared"
-msgstr "Tämä ämpäri on jo jaossa!"
+msgstr "Kansio on jo jaettu"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
-msgstr "Voi per... siima katkes !"
+msgstr "Yhteys katkaistu"
 
 #: dcpp/UploadManager.cpp:450
 #, boost-format
 msgid "Disconnected user leaving the hub: %1%"
-msgstr ""
+msgstr "Katkaistiin yhteys hubista lähtevään käyttäjään: %1%"
 
 #: dcpp/DCPlusPlus.cpp:103
 msgid "Download Queue"
-msgstr "Saalisämpärit"
+msgstr "Latausjono"
 
 #: dcpp/ShareManager.cpp:741
 #, boost-format
@@ -156,266 +168,272 @@ msgid ""
 "Duplicate file will not be shared: %1%%2% (Size: %3% B) Dupe matched "
 "against: %4%%5%"
 msgstr ""
+"Tuplatiedostoja ei jaeta: %1%%2% (koko: %3% t) täsmäsi tiedostoon: %4%%5%"
 
 #: dcpp/QueueManager.cpp:545 dcpp/QueueManager.cpp:549
 #, boost-format
 msgid "Duplicate source: %1%"
-msgstr ""
+msgstr "Sama lähde: %1%"
 
 #: dcpp/HashManager.cpp:456
-#, fuzzy, boost-format
+#, boost-format
 msgid "Error creating hash data file: %1%"
-msgstr "Karille meni järjestelyt..."
+msgstr "Virhe tarkistussummatietokantatiedoston luonnissa: %1%"
 
 #: dcpp/ZUtils.cpp:33 dcpp/ZUtils.cpp:54 dcpp/ZUtils.cpp:76 dcpp/ZUtils.cpp:86
 #: dcpp/BZUtils.cpp:31 dcpp/BZUtils.cpp:52 dcpp/BZUtils.cpp:60
 msgid "Error during compression"
-msgstr "Survottu surkeasti, sori..."
+msgstr "Virhe pakkaamisessa"
 
 #: dcpp/ZUtils.cpp:100 dcpp/ZUtils.cpp:123 dcpp/BZUtils.cpp:72
 #: dcpp/BZUtils.cpp:94 dcpp/BZUtils.cpp:97 dcpp/CryptoManager.cpp:342
 #: dcpp/CryptoManager.cpp:361 dcpp/CryptoManager.cpp:375
 msgid "Error during decompression"
-msgstr "Virhe survoksen käsittelyssä, ei siitä enä fisua saa!"
+msgstr "Virhe purkamisessa"
 
 #: dcpp/HashManager.cpp:772
 #, boost-format
 msgid "Error hashing %1%: %2%"
-msgstr ""
+msgstr "Virhe tarkistussumman luonnissa tiedostolle %1%: %2%"
 
 #: dcpp/HashManager.cpp:118 dcpp/HashManager.cpp:333
 #, boost-format
 msgid "Error saving hash data: %1%"
-msgstr ""
+msgstr "Virhe tallennettaessa tarkistussummaa: %1%"
 
 #: dcpp/CryptoManager.cpp:226 dcpp/CryptoManager.cpp:230
 #: dcpp/CryptoManager.cpp:235 dcpp/CryptoManager.cpp:239
 msgid "Failed to load certificate file"
-msgstr "Epäonnea pyydettäessä kalastuslupaa"
+msgstr "Sertifikaattitiedoston lataaminen epäonnistui"
 
 #: dcpp/CryptoManager.cpp:244 dcpp/CryptoManager.cpp:248
 #: dcpp/CryptoManager.cpp:253 dcpp/CryptoManager.cpp:257
 msgid "Failed to load private key"
-msgstr "Epäonnea pyydettäessä yksityisavainta"
+msgstr "Yksityisavaimen lataaminen epäonnistui"
 
 #: dcpp/AdcHub.cpp:206
 msgid "Failed to negotiate base protocol"
-msgstr ""
+msgstr "Perusprotokollan neuvottelu epäonnistui"
 
 #: dcpp/Socket.cpp:408
 msgid ""
 "Failed to set up the socks server for UDP relay (check socks address and "
 "port)"
 msgstr ""
-"Vaimon sukat eivät mahdu jalkaan UDP-ohjauksella (tarkista koordinaatti ja "
+"Socks-palvelimelle ei voitu määrittää UDP-ohjausta (tarkista osoite ja "
 "portti)"
 
 #: dcpp/ShareManager.cpp:776
-#, fuzzy, boost-format
+#, boost-format
 msgid "File list refresh failed: %1%"
-msgstr "Jakoämpärit järjestetty"
+msgstr "Tiedostolistan päivitys epäonnistui: %1%"
 
 #: dcpp/ShareManager.cpp:820
 msgid "File list refresh finished"
-msgstr "Jakoämpärit järjestetty"
+msgstr "Tiedostolistan päivitys valmis"
 
 #: dcpp/ShareManager.cpp:756
 msgid ""
 "File list refresh in progress, please wait for it to finish before trying to "
 "refresh again"
-msgstr "Jakoämpäriä putsataan... haisee edelleen... "
+msgstr ""
+"Tiedostolistan päivitys kesken, odota että se päättyy ennen kuin päivität "
+"uudelleen"
 
 #: dcpp/ShareManager.cpp:798
 msgid "File list refresh initiated"
-msgstr "Jakoämpäriä siivotaan, kalanhaju on kuvottava..."
+msgstr "Tiedostolistaa päivitetään..."
 
 #: dcpp/DirectoryListing.cpp:102
 msgid "File not available"
-msgstr "Häh, tätä fisua ei näy enä ton ämpärissä!"
+msgstr "Tiedosto ei saatavilla"
 
 #: dcpp/HashManager.cpp:89
 #, boost-format
 msgid "Finished hashing: %1%"
-msgstr ""
+msgstr "Tarkistussumman luonti valmis: %1%"
 
 #: dcpp/HashManager.cpp:87
 #, boost-format
 msgid "Finished hashing: %1% (%2%/s)"
-msgstr ""
+msgstr "Tarkistussumman luonti valmis: %1% (%2%/s)"
 
 #: dcpp/DownloadManager.cpp:308
 msgid "Full tree does not match TTH root"
-msgstr "Värä vana - vaihda reittiä!"
+msgstr "Hakemistopolku ei vastaa TTH-tarkistussummaa"
 
 #: dcpp/CryptoManager.cpp:219
 msgid "Generated new TLS certificate"
-msgstr "Kalastuslupa myönnetty"
+msgstr "Uusi TLS-serfifikaatti luotu"
 
 #: dcpp/DCPlusPlus.cpp:97
 msgid "Hash database"
-msgstr "jakoämpärin tietokanta"
+msgstr "Tarkistussummatietokanta"
 
 #: dcpp/HashManager.cpp:677
 msgid "Hash database rebuilt"
-msgstr "Siivoa jakoämpärisi uudelleen"
+msgstr "Tarkistussummatietokanta koottu uudelleen"
 
 #: dcpp/HashManager.cpp:73 dcpp/HashManager.cpp:277
 #, boost-format
 msgid "Hashing failed: %1%"
-msgstr ""
+msgstr "Tarkistussumman luonti epäonnistui: %1%"
 
 #: dcpp/AdcHub.cpp:212
 msgid ""
 "Hub probably uses an old version of ADC, please encourage the owner to "
 "upgrade"
 msgstr ""
+"Hubi todennäköisesti käyttää vanhaa ADC-versiota, kehota omistajaa "
+"päivittämään"
 
 #: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
-msgstr "Liian pieni fisu"
+msgstr "Virheellinen koko"
 
 #: dcpp/QueueManager.cpp:515 dcpp/QueueManager.cpp:523
 msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
-msgstr "Tallennat fisua, mutta ämpärikö puuttuu? - vaihdettava!"
+msgstr ""
+"Kohdetiedosto ei kelpaa (puuttuva kansio, tarkista latauskansio asetuksista)"
 
 #: dcpp/FavoriteManager.cpp:438
 msgid "Kick user(s)"
-msgstr "Vedä kölin ali kalamies/miehet"
+msgstr "Potkaise käyttäjä(t)"
 
 #: dcpp/ConnectionManager.cpp:230
 #, boost-format
 msgid "Listening socket failed (you need to restart %1%): %2%"
-msgstr ""
+msgstr "Kuuntelukahvavirhe (käynnistä %1% uudestaan): %2%"
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
-msgstr "Ei saa puhua veneessä - ainakaan noin helvetin pitkän!"
+msgstr "Suurin komennon pituus ylitettiin"
 
 #: dcpp/DownloadManager.cpp:280
 msgid "More data was sent than was expected"
-msgstr "Fisu painoi enemmän kuin miltä näytti"
+msgstr "Enemmän dataa lähetettiin kuin odotettiin"
 
 #: dcpp/ShareManager.cpp:403
 msgid "No directory specified"
-msgstr "Ämpäriä ei ole märitetty!"
+msgstr "Kansioita ei määritetty"
 
 #: dcpp/DownloadManager.cpp:419
 msgid "No slots available"
-msgstr "Ei voi heittä, liikaa ruuhkaa..."
+msgstr "Ei vapaita latauspaikkoja"
 
-#: dcpp/AdcHub.cpp:576
+#: dcpp/AdcHub.cpp:577
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
-msgstr ""
+msgstr "Ei kuunnella yhteyksiä - käynnistä %1% uudestaan"
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
-msgstr "Rannalla"
+msgstr "Offline-tilassa"
 
 #: dcpp/FavoriteManager.cpp:442
 msgid "Redirect user(s)"
-msgstr "Opasta käyttäjä muualle"
+msgstr "Uudelleenohjaa käyttäjä(t)"
 
 #: dcpp/ShareManager.cpp:421
 msgid "Remove all subdirectories before adding this one"
-msgstr "Poista kaikki ala-ämpärit ennen tämän lisämistä"
+msgstr "Poista kaikki alihakemistot ennen tämän lisäämistä"
 
 #: dcpp/DownloadManager.cpp:225
-#, fuzzy
 msgid "Response does not match request"
-msgstr "Värä vana - vaihda reittiä!"
+msgstr "Vastaus ei täsmää pyyntöön"
 
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"
-msgstr "Luovutettavat fisut lastataan ruumaan"
+msgstr "Jaetut tiedostot"
 
 #: dcpp/Socket.cpp:269 dcpp/Socket.cpp:273
 msgid "Socks server authentication failed (bad login / password?)"
-msgstr "Vaimon sukkien pukeminen epäonnistui (värä käyttäjätunnus / salasana?)"
+msgstr ""
+"Socks-palvelimelle kirjautuminen epäonnistui (väärä käyttäjätunnus / "
+"salasana?)"
 
 #: dcpp/CryptoManager.cpp:221
-#, fuzzy, boost-format
+#, boost-format
 msgid "TLS disabled, failed to generate certificate: %1%"
-msgstr "TLS poissa pältä, ei kalastuslupaa"
+msgstr "TLS ei käytössä, sertifikaatin luonti epäonnistui: %1%"
 
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
-msgstr "TLS poissa pältä, ei kalastuslupaa"
+msgstr "TLS ei käytössä, sertifikaattitiedostoja ei ole asetettu"
 
 #: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"
-msgstr "Fisun nimi on liian pitkä"
+msgstr "Kohdetiedoston nimi on liian pitkä"
 
 #: dcpp/QueueManager.cpp:798
 msgid "Target removed"
-msgstr "Fisu poistettu"
+msgstr "Kohde poistettu"
 
 #: dcpp/Socket.cpp:255
 msgid "The socks server doesn't support login / password authentication"
-msgstr "Vaimon sukkapalvelin ei tue käyttäjä/salasana tunnistusta"
+msgstr "Socks-palvelin ei tue käyttäjä-/salasana-tunnistusta"
 
 #: dcpp/Socket.cpp:162 dcpp/Socket.cpp:173 dcpp/Socket.cpp:206
 #: dcpp/Socket.cpp:210 dcpp/Socket.cpp:237 dcpp/Socket.cpp:252
 msgid "The socks server failed establish a connection"
-msgstr "Vaimon sukat jalassa ei voitu heittä viehettä"
+msgstr "Socks-palvelin ei voinut avata yhteyttä"
 
 #: dcpp/Socket.cpp:241
 msgid "The socks server requires authentication"
-msgstr "Vaimon sukat pitä laittaa jalkaan (kirjaudu)"
+msgstr "Socks-palvelin vaatii kirjautumisen"
 
 #: dcpp/ShareManager.cpp:407
 msgid "The temporary download directory cannot be shared"
-msgstr ""
-"Vasta siimassa nykiviä fisuja ei voi luovuttaa...huijarit vedetän kölin ali"
+msgstr "Keskeneräisten tiedostojen kansiota ei voi jakaa"
 
 #: dcpp/QueueManager.cpp:465
 msgid "This file is already queued"
-msgstr "Tä fisu on jo menossa ämpäriin!"
+msgstr "Tämä tiedosto on jo latausjonossa"
 
 #: dcpp/Thread.cpp:34 dcpp/Thread.cpp:42
 msgid "Unable to create thread"
-msgstr "Siimaa ei saatu suoraksi"
+msgstr "Säiettä ei voitu luoda"
 
 #: dcpp/QueueManager.cpp:995
 #, boost-format
 msgid "Unable to open filelist: %1%"
-msgstr ""
+msgstr "Ei pysty avaamaan tiedostolistaa: %1%"
 
 #: dcpp/HashManager.cpp:131
 msgid "Unable to read hash data file"
-msgstr "Karille meni järjestelyt..."
+msgstr "Ei pysty lukemaan TTH-tietokantatiedostoa"
 
 #: dcpp/QueueManager.cpp:327
-#, fuzzy, boost-format
+#, boost-format
 msgid "Unable to rename %1%: %2%"
-msgstr "Siimaa ei saatu suoraksi"
+msgstr "Ei pysty uudelleennimeämään tiedostoa %1%: %2%"
 
 #: dcpp/UploadManager.cpp:149
 #, boost-format
 msgid "Unable to send file %1%: %2%"
-msgstr ""
+msgstr "Ei pysty lähettämään tiedostoa %1%: %2%"
 
 #: dcpp/Socket.cpp:54
 #, c-format, boost-format
 msgid "Unknown error: 0x%1$x"
-msgstr ""
+msgstr "Tuntematon virhe: 0x%1$x"
 
 #: dcpp/ShareManager.cpp:426 dcpp/ShareManager.cpp:468
 msgid "Virtual directory name already exists"
-msgstr "Tämä virtuaalisen ämpärin nimi on jo olemassa"
+msgstr "Virtuaalinen kansionimi on jo olemassa"
 
 #: dcpp/QueueManager.cpp:412 dcpp/QueueManager.cpp:436
 msgid "You're trying to download from yourself!"
-msgstr "Jaa... Heitit sitte omaan ämpäriin!?!"
+msgstr "Yrität ladata itseltäsi!"
 
 #: dcpp/SettingsManager.cpp:156
 msgid "downloaded from"
-msgstr ""
+msgstr "ladattu käyttäjältä"
 
 #: dcpp/SettingsManager.cpp:157
 msgid "uploaded to"
-msgstr ""
+msgstr "lähetetty käyttäjälle"

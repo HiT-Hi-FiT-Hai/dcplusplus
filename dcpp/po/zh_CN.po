@@ -1,48 +1,51 @@
-# Chinese translations for the DC++ package.
-# Copyright (C) 2008 The translators
-# This file is distributed under the same license as the DC++ package.
-#  <fenxiang@users.sourceforge.net>, 2008.
+# Simplified Chinese translation for dcplusplus
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the dcplusplus package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: dcpp\n"
+"Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"Last-Translator:  <fenxiang@users.sourceforge.net>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 09:26+0000\n"
+"Last-Translator: Tao Wei <weitao1979@gmail.com>\n"
+"Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: plurals=2; plural=(n != 1);\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
 #, c-format, boost-format
 msgid "%'lld B"
-msgstr ""
+msgstr "%'lld B"
 
 #: dcpp/Util.cpp:343
 #, c-format, boost-format
 msgid "%.02f GiB"
-msgstr ""
+msgstr "%.02f GiB"
 
 #: dcpp/Util.cpp:339
 #, c-format, boost-format
 msgid "%.02f KiB"
-msgstr ""
+msgstr "%.02f KiB"
 
 #: dcpp/Util.cpp:341
 #, c-format, boost-format
 msgid "%.02f MiB"
-msgstr ""
+msgstr "%.02f MiB"
 
 #: dcpp/Util.cpp:347
 #, c-format, boost-format
 msgid "%.02f PiB"
-msgstr ""
+msgstr "%.02f PiB"
 
 #: dcpp/Util.cpp:345
 #, c-format, boost-format
 msgid "%.02f TiB"
-msgstr ""
+msgstr "%.02f TiB"
 
 #: dcpp/AdcHub.cpp:139
 #, boost-format
@@ -83,12 +86,12 @@ msgstr "文件不存在"
 #: dcpp/Util.cpp:337
 #, c-format, boost-format
 msgid "%d B"
-msgstr ""
+msgstr "%d B"
 
 #: dcpp/Util.cpp:377
 #, c-format, boost-format
 msgid "%s B"
-msgstr ""
+msgstr "%s B"
 
 #: dcpp/QueueManager.cpp:532
 msgid "A file of equal or larger size already exists at the target location"
@@ -123,8 +126,13 @@ msgstr "CRC32 出错(SFV-Check)"
 msgid "Certificate not trusted, unable to connect"
 msgstr ""
 
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "连接超时"
+
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
 msgstr "连接超时"
 
@@ -137,9 +145,9 @@ msgstr ""
 msgid "Directory already shared"
 msgstr "目录已经共享"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
-msgstr "连接中断"
+msgstr "已断开"
 
 #: dcpp/UploadManager.cpp:450
 #, boost-format
@@ -287,7 +295,7 @@ msgstr "踢出该用户"
 msgid "Listening socket failed (you need to restart %1%): %2%"
 msgstr ""
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr ""
 
@@ -303,12 +311,12 @@ msgstr "没有指定目录"
 msgid "No slots available"
 msgstr "对方上传通道都已经满了"
 
-#: dcpp/AdcHub.cpp:576
+#: dcpp/AdcHub.cpp:577
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
 msgstr ""
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-05 23:00+0000\n"
-"Last-Translator: Rrjeti <Unknown>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 01:26+0000\n"
+"Last-Translator: Jacek Sieka <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:48+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/MainWindow.cpp:862
@@ -139,7 +139,7 @@ msgstr "Fil"
 msgid "&Force attempt"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:80
+#: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
 #: win32/PrivateFrame.cpp:380
 msgid "&Get file list"
 msgstr ""
@@ -158,7 +158,7 @@ msgstr ""
 msgid "&Match queue"
 msgstr "Përputh me listën e shkarkimit"
 
-#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+#: win32/QueueFrame.cpp:961 win32/QueueFrame.cpp:979 win32/QueueFrame.cpp:989
 #, fuzzy
 msgid "&Move/Rename"
 msgstr "Riemro"
@@ -198,8 +198,8 @@ msgstr ""
 msgid "&Refresh"
 msgstr ""
 
-#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
-#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
+#: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
 #: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
@@ -218,7 +218,7 @@ msgstr "Kërko"
 msgid "&Search\tCtrl+S"
 msgstr "Kërko"
 
-#: win32/QueueFrame.cpp:1013 win32/WaitingUsersFrame.cpp:85
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
 #, fuzzy
 msgid "&Send private message"
 msgstr "Mesazh privat"
@@ -322,11 +322,11 @@ msgstr ""
 msgid "Advanced\\User Commands"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1022 win32/QueueFrame.cpp:1031
+#: win32/QueueFrame.cpp:1023 win32/QueueFrame.cpp:1032
 msgid "All"
 msgstr "Të gjitha"
 
-#: win32/QueueFrame.cpp:431
+#: win32/QueueFrame.cpp:432
 #, fuzzy, boost-format
 msgid "All %1% users offline"
 msgstr "Përdoruesi është shkëputur"
@@ -486,7 +486,7 @@ msgstr "Shfleto..."
 msgid "CID"
 msgstr "CID"
 
-#: win32/QueueFrame.cpp:477
+#: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "SFV-kontrolli dha një shumë kontroll të gabuar CRC32"
 
@@ -972,7 +972,7 @@ msgstr "U vendos përdoruesi i parapëlqyer"
 msgid "File"
 msgstr "Fil"
 
-#: win32/QueueFrame.cpp:473
+#: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "Fili s´është i arritshëm"
 
@@ -994,7 +994,7 @@ msgstr "Emri i filit"
 msgid "Filename:"
 msgstr "Emri i filit"
 
-#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:636
+#: win32/QueueFrame.cpp:288 win32/DirectoryListingFrame.cpp:636
 #: win32/DirectoryListingFrame.cpp:652
 #, boost-format
 msgid "Files: %1%"
@@ -1051,7 +1051,7 @@ msgstr "Pyetjet e shpeshta"
 msgid "Full Path"
 msgstr "Rruga e plotë e kërkimit"
 
-#: win32/QueueFrame.cpp:479
+#: win32/QueueFrame.cpp:480
 msgid "Full tree does not match TTH root"
 msgstr "Struktura e shkarkuar s`i përgjigjet TTH rrënjës"
 
@@ -1083,7 +1083,7 @@ msgstr ""
 msgid "Help forum"
 msgstr "Forumi për ndihmë"
 
-#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
 msgid "High"
 msgstr "Lart"
 
@@ -1091,7 +1091,7 @@ msgstr "Lart"
 msgid "High prio max size"
 msgstr "Madhë.maks.e prio-s"
 
-#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+#: win32/QueueFrame.cpp:456 win32/QueueFrame.cpp:1002
 msgid "Highest"
 msgstr "Më së larti"
 
@@ -1199,7 +1199,7 @@ msgstr "Emri i listës së filit është i pa vlefshëm"
 msgid "Invalid number of slots"
 msgstr "Numër i pamjaftueshëm i kanaleve"
 
-#: win32/QueueFrame.cpp:283
+#: win32/QueueFrame.cpp:284
 #, boost-format
 msgid "Items: %1%"
 msgstr ""
@@ -1295,7 +1295,7 @@ msgstr "Emri i përdoruesit"
 msgid "Lookup TTH at Bitzi.com"
 msgstr "Kërko TTH-kontroll shumën në Bitzi.com"
 
-#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999
 msgid "Low"
 msgstr "Ulët"
 
@@ -1303,7 +1303,7 @@ msgstr "Ulët"
 msgid "Low prio max size"
 msgstr "Madhë.e ulët e prio-s"
 
-#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
 msgid "Lowest"
 msgstr "Më e ulët"
 
@@ -1433,6 +1433,10 @@ msgstr ""
 msgid "Name"
 msgstr "Emri"
 
+#: win32/CommandDlg.cpp:203
+msgid "Name and command must not be empty"
+msgstr ""
+
 #: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Name under which the others see the directory"
 msgstr "Emri i dosjes të cilën e shohin(shihet nga)të tjerët"
@@ -1453,7 +1457,7 @@ msgstr "Përpara"
 msgid "Nick"
 msgstr "Pseudonim"
 
-#: win32/QueueFrame.cpp:488
+#: win32/QueueFrame.cpp:489
 msgid "No errors"
 msgstr "S´ka gabime"
 
@@ -1465,15 +1469,16 @@ msgstr "S`ka përputhje(fil me emër të tillë)"
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "Shpejtësia e zvogëluar/s`ka shkarkime të reja(KiB/s, 0 = disable)"
 
-#: win32/QueueFrame.cpp:415
+#: win32/QueueFrame.cpp:416
 msgid "No users"
 msgstr "S´ka përdorues"
 
-#: win32/QueueFrame.cpp:427
+#: win32/QueueFrame.cpp:428
 msgid "No users to download from"
 msgstr "S´ka përdorues nga i cili mund të shkarkohet"
 
-#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/SearchFrame.cpp:155
 msgid "Normal"
 msgstr "Normale"
 
@@ -1486,7 +1491,7 @@ msgid "Note; Files appear in the share only after they've been hashed!"
 msgstr "Filet e reja janë vendo.në shpërn.vetëm kur janë indeks.në dosje!"
 
 #: win32/DownloadPage.cpp:38
-#, c-format
+#, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
 msgstr ""
 
@@ -1586,7 +1591,7 @@ msgstr "PM"
 msgid "PM history"
 msgstr "PM histori"
 
-#: win32/QueueFrame.cpp:475
+#: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Përdorues pasiv"
 
@@ -1598,7 +1603,7 @@ msgstr "Fjalëkalim"
 msgid "Path"
 msgstr "Vendi"
 
-#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
 msgid "Paused"
 msgstr "Pushon"
 
@@ -1690,7 +1695,7 @@ msgstr ""
 msgid "Raw"
 msgstr "Raw"
 
-#: win32/QueueFrame.cpp:1020
+#: win32/QueueFrame.cpp:1021
 msgid "Re-add source"
 msgstr "Rivendos burimin"
 
@@ -1702,7 +1707,7 @@ msgstr "Gati për kërkim..."
 msgid "Really exit?"
 msgstr "Dëshiron dalje?"
 
-#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/QueueFrame.cpp:693 win32/QueueFrame.cpp:698
 #: win32/FavHubsFrame.cpp:232
 msgid "Really remove?"
 msgstr "Zhvendose me të vërtet?"
@@ -1732,7 +1737,7 @@ msgstr "Kyç URL:të në DC++(nyje me prefiksin URL)"
 msgid "Reliability"
 msgstr "Besueshmëria"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:661
+#: win32/QueueFrame.cpp:484 win32/TransferView.cpp:661
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr ""
 
@@ -1740,11 +1745,11 @@ msgstr ""
 msgid "Remove slow filelists"
 msgstr "Zhvendos listat e fileve të ngadalshme"
 
-#: win32/QueueFrame.cpp:1030
+#: win32/QueueFrame.cpp:1031
 msgid "Remove source"
 msgstr "Zhvendose burimin"
 
-#: win32/QueueFrame.cpp:1039
+#: win32/QueueFrame.cpp:1040
 msgid "Remove user from queue"
 msgstr "Zhvendose përdoruesin nga rradha"
 
@@ -1769,7 +1774,7 @@ msgstr ""
 msgid "Run in background"
 msgstr "Vepro në prapaskenë"
 
-#: win32/QueueFrame.cpp:435
+#: win32/QueueFrame.cpp:436
 msgid "Running..."
 msgstr "Vepron..."
 
@@ -1871,7 +1876,7 @@ msgstr "Server"
 msgid "Set lowest prio for newly added files larger than Low prio size"
 msgstr "Prioriteti më i gjatë i aktivizuar"
 
-#: win32/QueueFrame.cpp:995
+#: win32/QueueFrame.cpp:996
 msgid "Set priority"
 msgstr "Vendos prioritet"
 
@@ -1929,7 +1934,7 @@ msgstr "Në biseda(chat) shfaq orën"
 msgid "Size"
 msgstr "Madhësia"
 
-#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
 #, fuzzy, boost-format
 msgid "Size: %1%"
@@ -1977,7 +1982,7 @@ msgstr "Tingujt"
 msgid "Source Type"
 msgstr "Lloj i burimit"
 
-#: win32/QueueFrame.cpp:481
+#: win32/QueueFrame.cpp:482
 msgid "Source too slow"
 msgstr "Burimi është shumë i ngadalshëm"
 
@@ -2145,7 +2150,7 @@ msgstr "Me ç`farë emri e shikon dosjen"
 msgid "Unfinished downloads directory"
 msgstr "Dosja e shkarkimeve të pa përfunduara"
 
-#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+#: win32/QueueFrame.cpp:440 win32/QueueFrame.cpp:441
 msgid "Unknown"
 msgstr "Panjohur"
 
@@ -2219,7 +2224,7 @@ msgstr "Përshkrim i përdoruesit"
 msgid "User Menu"
 msgstr "Menyja e përdoruesit"
 
-#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:700
+#: win32/QueueFrame.cpp:430 win32/DirectoryListingFrame.cpp:700
 msgid "User offline"
 msgstr "Përdoruesi është shkëputur"
 
@@ -2248,12 +2253,12 @@ msgstr "Në bisedën kryesore shfaq mesazhin(kryesore)"
 msgid "Virtual name"
 msgstr "Emri viritual"
 
-#: win32/QueueFrame.cpp:423
+#: win32/QueueFrame.cpp:424
 #, fuzzy, boost-format
 msgid "Waiting (%1% of %2% users online)"
 msgstr "Pret(Përdorues i lidhur)"
 
-#: win32/QueueFrame.cpp:421
+#: win32/QueueFrame.cpp:422
 msgid "Waiting (User online)"
 msgstr "Pret(Përdorues i lidhur)"
 

@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-07 14:02+0000\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-06 16:59+0000\n"
 "Last-Translator: soccer <soccerLE@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:52+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -50,7 +50,7 @@ msgstr "%.02f TiB"
 #: dcpp/AdcHub.cpp:139
 #, boost-format
 msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
-msgstr ""
+msgstr "%1% (%2%) hat die gleiche CID {%3%} wie %4% (%5%), wird ignoriert"
 
 #: dcpp/NmdcHub.cpp:281
 #, boost-format
@@ -73,12 +73,12 @@ msgstr "%1% umbenannt in %2%"
 #: dcpp/AdcHub.cpp:281
 #, boost-format
 msgid "%1% was kicked by %2%: %3%"
-msgstr ""
+msgstr "%1% wurde von %2% gekickt: %3%"
 
 #: dcpp/AdcHub.cpp:284
 #, boost-format
 msgid "%1% was kicked: %2%"
-msgstr ""
+msgstr "%1% wurde gekickt: %2%"
 
 #: dcpp/DownloadManager.cpp:530
 #, boost-format
@@ -130,8 +130,13 @@ msgstr "CRC32 Inkonsistenz (SFV-Check) (Datei: %1%)"
 msgid "Certificate not trusted, unable to connect"
 msgstr "Zertifikat nicht vertrauenswürdig, Verbindung nicht möglich"
 
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "Zeitüberschreitung der Verbindung"
+
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
 msgstr "Zeitüberschreitung der Verbindung"
 
@@ -144,7 +149,7 @@ msgstr "Konnte die Zieldatei nicht öffnen: %1%"
 msgid "Directory already shared"
 msgstr "Verzeichnis ist bereits freigegeben"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Getrennt"
 
@@ -209,7 +214,7 @@ msgstr "Laden des privaten Schlüssels fehlgeschlagen"
 
 #: dcpp/AdcHub.cpp:206
 msgid "Failed to negotiate base protocol"
-msgstr ""
+msgstr "Basisprotokoll konnte nicht bestimmt werden"
 
 #: dcpp/Socket.cpp:408
 msgid ""
@@ -280,6 +285,8 @@ msgid ""
 "Hub probably uses an old version of ADC, please encourage the owner to "
 "upgrade"
 msgstr ""
+"Hub benutzt möglicherweise eine alte Version von ADC. Bitte empfehlen Sie "
+"dem Besitzer zu aktualisieren."
 
 #: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
@@ -298,11 +305,11 @@ msgid "Kick user(s)"
 msgstr "Kicke User"
 
 #: dcpp/ConnectionManager.cpp:230
-#, fuzzy, boost-format
+#, boost-format
 msgid "Listening socket failed (you need to restart %1%): %2%"
-msgstr "Lesen vom Socket fehlgeschlagen (DC++ muss neugestartet werden): %1%"
+msgstr "Lesen vom Socket fehlgeschlagen (%1% muss neugestartet werden): %2%"
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr "Maximale Befehlslänge überschritten"
 
@@ -318,12 +325,12 @@ msgstr "Kein Verzeichnis ausgewählt"
 msgid "No slots available"
 msgstr "Keine Slots verfügbar"
 
-#: dcpp/AdcHub.cpp:576
-#, fuzzy, boost-format
+#: dcpp/AdcHub.cpp:577
+#, boost-format
 msgid "Not listening for connections - please restart %1%"
-msgstr "Es wird nicht auf Verbindungen gewartet - bitte DC++ neustarten"
+msgstr "Es wird nicht auf Verbindungen gewartet - bitte %1% neustarten"
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -338,9 +345,8 @@ msgid "Remove all subdirectories before adding this one"
 msgstr "Alle Unterverzeichnisse entfernen bevor dieses hinzugefügt wird"
 
 #: dcpp/DownloadManager.cpp:225
-#, fuzzy
 msgid "Response does not match request"
-msgstr "Kompletter Baum stimmt nicht mit TTH Root überein"
+msgstr "Antwort stimmt nicht mit Anfrage überein"
 
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"

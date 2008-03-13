@@ -7,12 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"Last-Translator:  <navis_oden_cz@users.sourceforge.net>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 02:24+0000\n"
+"Last-Translator: Navis-oden-cz <Unknown>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: plurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/MainWindow.cpp:862
 #, fuzzy, boost-format
@@ -135,7 +139,7 @@ msgstr "Soubor"
 msgid "&Force attempt"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:80
+#: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
 #: win32/PrivateFrame.cpp:380
 msgid "&Get file list"
 msgstr ""
@@ -154,7 +158,7 @@ msgstr ""
 msgid "&Match queue"
 msgstr "Porovnani fronty"
 
-#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+#: win32/QueueFrame.cpp:961 win32/QueueFrame.cpp:979 win32/QueueFrame.cpp:989
 #, fuzzy
 msgid "&Move/Rename"
 msgstr "Prejmenovat"
@@ -194,8 +198,8 @@ msgstr ""
 msgid "&Refresh"
 msgstr ""
 
-#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
-#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
+#: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
 #: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
@@ -214,7 +218,7 @@ msgstr "Vyhledavat"
 msgid "&Search\tCtrl+S"
 msgstr "Vyhledavat"
 
-#: win32/QueueFrame.cpp:1013 win32/WaitingUsersFrame.cpp:85
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
 #, fuzzy
 msgid "&Send private message"
 msgstr "Soukroma zprava"
@@ -319,11 +323,11 @@ msgstr ""
 msgid "Advanced\\User Commands"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1022 win32/QueueFrame.cpp:1031
+#: win32/QueueFrame.cpp:1023 win32/QueueFrame.cpp:1032
 msgid "All"
 msgstr "Vsechno"
 
-#: win32/QueueFrame.cpp:431
+#: win32/QueueFrame.cpp:432
 #, fuzzy, boost-format
 msgid "All %1% users offline"
 msgstr "Uzivatel neni pripojen"
@@ -471,7 +475,7 @@ msgstr "Zavazna adresa"
 
 #: win32/AdvancedPage.cpp:41
 msgid "Break on first ADLSearch match"
-msgstr "Zastavit se na prvni polozce odpovidajici zadanemu v ADLSearch "
+msgstr "Zastavit se na prvni polozce odpovidajici zadanemu v ADLSearch"
 
 #: win32/DownloadPage.cpp:34
 msgid "Browse..."
@@ -481,7 +485,7 @@ msgstr "Hledat..."
 msgid "CID"
 msgstr ""
 
-#: win32/QueueFrame.cpp:477
+#: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 nesuhlasi (SFV kontrola)"
 
@@ -968,7 +972,7 @@ msgstr "Uzivatel byl pridan do Oblibenych"
 msgid "File"
 msgstr "Soubor"
 
-#: win32/QueueFrame.cpp:473
+#: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "Soubor je nedostupny"
 
@@ -989,7 +993,7 @@ msgstr "Nazev souboru"
 msgid "Filename:"
 msgstr "Nazov souboru:"
 
-#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:636
+#: win32/QueueFrame.cpp:288 win32/DirectoryListingFrame.cpp:636
 #: win32/DirectoryListingFrame.cpp:652
 #, boost-format
 msgid "Files: %1%"
@@ -1046,7 +1050,7 @@ msgstr "Otazky a odpovedi (FAQ)"
 msgid "Full Path"
 msgstr "Cela pristupova cesta"
 
-#: win32/QueueFrame.cpp:479
+#: win32/QueueFrame.cpp:480
 msgid "Full tree does not match TTH root"
 msgstr "Stahnuty strom neodpoveda porovnavanemu TTH zakladu (TTH root)"
 
@@ -1078,7 +1082,7 @@ msgstr ""
 msgid "Help forum"
 msgstr "Help forum"
 
-#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
 msgid "High"
 msgstr "Vysoka"
 
@@ -1086,7 +1090,7 @@ msgstr "Vysoka"
 msgid "High prio max size"
 msgstr "Vysoka-velikost"
 
-#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+#: win32/QueueFrame.cpp:456 win32/QueueFrame.cpp:1002
 msgid "Highest"
 msgstr "Najvyssi"
 
@@ -1196,7 +1200,7 @@ msgstr "Chybny seznam souboru"
 msgid "Invalid number of slots"
 msgstr "Nespravny pocet slotu"
 
-#: win32/QueueFrame.cpp:283
+#: win32/QueueFrame.cpp:284
 #, boost-format
 msgid "Items: %1%"
 msgstr ""
@@ -1295,7 +1299,7 @@ msgstr "Uzivatelske jmeno"
 msgid "Lookup TTH at Bitzi.com"
 msgstr "Vyhledat TTH na Bitzi.com"
 
-#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999
 msgid "Low"
 msgstr "Nizka"
 
@@ -1303,7 +1307,7 @@ msgstr "Nizka"
 msgid "Low prio max size"
 msgstr "Nizka-velikost"
 
-#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
 msgid "Lowest"
 msgstr "Nejnizsi"
 
@@ -1433,6 +1437,10 @@ msgstr ""
 msgid "Name"
 msgstr "Prezdivka"
 
+#: win32/CommandDlg.cpp:203
+msgid "Name and command must not be empty"
+msgstr ""
+
 #: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Name under which the others see the directory"
 msgstr "Nazev, pod kterym ostatni uvidi tuto slozku"
@@ -1453,7 +1461,7 @@ msgstr "Dalsi"
 msgid "Nick"
 msgstr "Prezdivka"
 
-#: win32/QueueFrame.cpp:488
+#: win32/QueueFrame.cpp:489
 msgid "No errors"
 msgstr "Zadne chyby"
 
@@ -1465,15 +1473,16 @@ msgstr "Nic nenalezeno"
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "Nezahajovat dalsi stahovani pri rychlosti nad (kB/s, 0 = vypnute)"
 
-#: win32/QueueFrame.cpp:415
+#: win32/QueueFrame.cpp:416
 msgid "No users"
 msgstr "Zadny uzivatele"
 
-#: win32/QueueFrame.cpp:427
+#: win32/QueueFrame.cpp:428
 msgid "No users to download from"
 msgstr "Neni od koho stahovat"
 
-#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/SearchFrame.cpp:155
 msgid "Normal"
 msgstr "Normalni"
 
@@ -1486,7 +1495,7 @@ msgid "Note; Files appear in the share only after they've been hashed!"
 msgstr "* Nove soubory budou pridane do sdileni az po jejich nahashovani !"
 
 #: win32/DownloadPage.cpp:38
-#, fuzzy, c-format
+#, fuzzy, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
 msgstr ""
 "Pozn.: Protoze dochazi k zmenam rychlosti stahovani, neni to 100% presne"
@@ -1587,7 +1596,7 @@ msgstr "PM"
 msgid "PM history"
 msgstr "Hist.s.zprav"
 
-#: win32/QueueFrame.cpp:475
+#: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Uzivatel je v pasivnim mode"
 
@@ -1599,7 +1608,7 @@ msgstr "Heslo"
 msgid "Path"
 msgstr "Cesta"
 
-#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
 msgid "Paused"
 msgstr "Pozastaveni"
 
@@ -1692,7 +1701,7 @@ msgstr ""
 msgid "Raw"
 msgstr "Raw"
 
-#: win32/QueueFrame.cpp:1020
+#: win32/QueueFrame.cpp:1021
 msgid "Re-add source"
 msgstr "Znovu vlozit zdroj"
 
@@ -1705,7 +1714,7 @@ msgstr "Pripravene k vyhledavani..."
 msgid "Really exit?"
 msgstr "Opravdu chcete odebrat tento Hub?"
 
-#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/QueueFrame.cpp:693 win32/QueueFrame.cpp:698
 #: win32/FavHubsFrame.cpp:232
 msgid "Really remove?"
 msgstr "Opravdu chcete odebrat tento Hub?"
@@ -1735,7 +1744,7 @@ msgstr "Registrovat ve Windows zachytavani magnet: URI linkov programem DC++"
 msgid "Reliability"
 msgstr "Spolehlivost"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:661
+#: win32/QueueFrame.cpp:484 win32/TransferView.cpp:661
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr ""
 
@@ -1743,11 +1752,11 @@ msgstr ""
 msgid "Remove slow filelists"
 msgstr "Odpojit pomale stahovani Filelistu"
 
-#: win32/QueueFrame.cpp:1030
+#: win32/QueueFrame.cpp:1031
 msgid "Remove source"
 msgstr "Odebrat zdroj"
 
-#: win32/QueueFrame.cpp:1039
+#: win32/QueueFrame.cpp:1040
 msgid "Remove user from queue"
 msgstr "Odebrat uzivatele z fronty"
 
@@ -1772,7 +1781,7 @@ msgstr ""
 msgid "Run in background"
 msgstr "Vykonavat indexaci na pozadi"
 
-#: win32/QueueFrame.cpp:435
+#: win32/QueueFrame.cpp:436
 msgid "Running..."
 msgstr "Stahuje ..."
 
@@ -1874,7 +1883,7 @@ msgstr "Server"
 msgid "Set lowest prio for newly added files larger than Low prio size"
 msgstr "Nejnizsi-aktivovana"
 
-#: win32/QueueFrame.cpp:995
+#: win32/QueueFrame.cpp:996
 msgid "Set priority"
 msgstr "Nastavit prioritu"
 
@@ -1933,7 +1942,7 @@ msgstr "Zobrazovat cas v chatu"
 msgid "Size"
 msgstr "Velikost"
 
-#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
 #, fuzzy, boost-format
 msgid "Size: %1%"
@@ -1982,7 +1991,7 @@ msgstr "Zvuky"
 msgid "Source Type"
 msgstr "Typ zdroje"
 
-#: win32/QueueFrame.cpp:481
+#: win32/QueueFrame.cpp:482
 msgid "Source too slow"
 msgstr ""
 
@@ -2043,7 +2052,7 @@ msgstr ""
 #: win32/QueueFrame.cpp:46 win32/DirectoryListingFrame.cpp:44
 #: win32/SearchFrame.cpp:42
 msgid "TTH Root"
-msgstr "TTH "
+msgstr "TTH"
 
 #: win32/TransferView.cpp:672
 #, boost-format
@@ -2143,7 +2152,7 @@ msgstr "Pod jakym nazvem chcete videt tuto slozku"
 msgid "Unfinished downloads directory"
 msgstr "Slozka pro nedokoncene soubory"
 
-#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+#: win32/QueueFrame.cpp:440 win32/QueueFrame.cpp:441
 msgid "Unknown"
 msgstr "Neznamy"
 
@@ -2220,7 +2229,7 @@ msgstr "Podrobnosti o uzivateli"
 msgid "User Menu"
 msgstr "User Menu"
 
-#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:700
+#: win32/QueueFrame.cpp:430 win32/DirectoryListingFrame.cpp:700
 msgid "User offline"
 msgstr "Uzivatel neni pripojen"
 
@@ -2249,12 +2258,12 @@ msgstr "Zobrazovat stavove zpravy v chatu"
 msgid "Virtual name"
 msgstr "Virtualni nazev"
 
-#: win32/QueueFrame.cpp:423
+#: win32/QueueFrame.cpp:424
 #, fuzzy, boost-format
 msgid "Waiting (%1% of %2% users online)"
 msgstr "Cekam (uzivatel je pripojen)"
 
-#: win32/QueueFrame.cpp:421
+#: win32/QueueFrame.cpp:422
 msgid "Waiting (User online)"
 msgstr "Cekam (uzivatel je pripojen)"
 

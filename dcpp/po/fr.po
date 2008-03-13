@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-07 11:12+0000\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 09:45+0000\n"
 "Last-Translator: Kryppy <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:52+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -50,7 +50,7 @@ msgstr "%.02f TiB"
 #: dcpp/AdcHub.cpp:139
 #, boost-format
 msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
-msgstr ""
+msgstr "%1% (%2%) a le mème  CID  {%3%} que %4% (%5%), ignore"
 
 #: dcpp/NmdcHub.cpp:281
 #, boost-format
@@ -73,12 +73,12 @@ msgstr "%1% renommé en %2%"
 #: dcpp/AdcHub.cpp:281
 #, boost-format
 msgid "%1% was kicked by %2%: %3%"
-msgstr ""
+msgstr "%1% a été expulsé par %2%: %3%"
 
 #: dcpp/AdcHub.cpp:284
 #, boost-format
 msgid "%1% was kicked: %2%"
-msgstr ""
+msgstr "%1% a été expulsé: %2%"
 
 #: dcpp/DownloadManager.cpp:530
 #, boost-format
@@ -131,8 +131,13 @@ msgstr "Incompatibilité CRC32 (Contrôle SFV) (Fichier: %1%)"
 msgid "Certificate not trusted, unable to connect"
 msgstr "Le certificat n'est pas De Confiance, ne parvient pas à se connecter"
 
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "Temps d'attente dépassé"
+
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
 msgstr "Temps d'attente dépassé"
 
@@ -145,7 +150,7 @@ msgstr "Impossible ouvrir le fichier cible: %1%"
 msgid "Directory already shared"
 msgstr "Répertoire déjà partagé"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Déconnecté"
 
@@ -210,7 +215,7 @@ msgstr "Echec de chargement de la clef privée"
 
 #: dcpp/AdcHub.cpp:206
 msgid "Failed to negotiate base protocol"
-msgstr ""
+msgstr "Impossible de négocier le protocole de base"
 
 #: dcpp/Socket.cpp:408
 msgid ""
@@ -281,6 +286,8 @@ msgid ""
 "Hub probably uses an old version of ADC, please encourage the owner to "
 "upgrade"
 msgstr ""
+"L' Hub utilise probablement une ancienne version de ADC, s’il vous plaît "
+"encourager le propriétaire à améliorer"
 
 #: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
@@ -299,11 +306,11 @@ msgid "Kick user(s)"
 msgstr "Kicker utilisateur(s)"
 
 #: dcpp/ConnectionManager.cpp:230
-#, fuzzy, boost-format
+#, boost-format
 msgid "Listening socket failed (you need to restart %1%): %2%"
-msgstr "Echec du socket d'écoute (vous devez redémarrer DC++): %1%"
+msgstr "Echec du socket d'écoute (vous devez redémarrer %1%): %2%"
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr "Dépassement de la longueur maximale de la commande"
 
@@ -319,12 +326,12 @@ msgstr "Pas de répertoire spécifié"
 msgid "No slots available"
 msgstr "Pas de slot disponible"
 
-#: dcpp/AdcHub.cpp:576
-#, fuzzy, boost-format
+#: dcpp/AdcHub.cpp:577
+#, boost-format
 msgid "Not listening for connections - please restart %1%"
-msgstr "Pas en écoute pour les connexions - veuillez relancer DC++"
+msgstr "Pas en écoute pour les connexions - veuillez relancer %1%"
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -339,9 +346,8 @@ msgid "Remove all subdirectories before adding this one"
 msgstr "Retirer tous les sous-répertoires avant d'ajouter celui-çi"
 
 #: dcpp/DownloadManager.cpp:225
-#, fuzzy
 msgid "Response does not match request"
-msgstr "Toute l'arborescence ne trouve pas de racine TTH"
+msgstr "Le résultat ne correspond pas a la demande"
 
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"

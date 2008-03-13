@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-05 22:57+0000\n"
-"Last-Translator: Gutfeast <Unknown>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 03:34+0000\n"
+"Last-Translator: Jacek Sieka <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:48+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/MainWindow.cpp:862
@@ -138,7 +138,7 @@ msgstr "파일"
 msgid "&Force attempt"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:80
+#: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
 #: win32/PrivateFrame.cpp:380
 msgid "&Get file list"
 msgstr ""
@@ -157,7 +157,7 @@ msgstr ""
 msgid "&Match queue"
 msgstr "파일-목록에서 내 '다운로드 대기열'의 파일을 찾아 소스에 추가하기"
 
-#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+#: win32/QueueFrame.cpp:961 win32/QueueFrame.cpp:979 win32/QueueFrame.cpp:989
 #, fuzzy
 msgid "&Move/Rename"
 msgstr "이름 바꾸기"
@@ -197,8 +197,8 @@ msgstr ""
 msgid "&Refresh"
 msgstr ""
 
-#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
-#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
+#: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
 #: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
@@ -217,7 +217,7 @@ msgstr "검색"
 msgid "&Search\tCtrl+S"
 msgstr "검색"
 
-#: win32/QueueFrame.cpp:1013 win32/WaitingUsersFrame.cpp:85
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
 #, fuzzy
 msgid "&Send private message"
 msgstr "1:1 메시지"
@@ -330,11 +330,11 @@ msgstr ""
 msgid "Advanced\\User Commands"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1022 win32/QueueFrame.cpp:1031
+#: win32/QueueFrame.cpp:1023 win32/QueueFrame.cpp:1032
 msgid "All"
 msgstr "모두"
 
-#: win32/QueueFrame.cpp:431
+#: win32/QueueFrame.cpp:432
 #, fuzzy, boost-format
 msgid "All %1% users offline"
 msgstr "사용자가 오프라인"
@@ -498,7 +498,7 @@ msgstr "찾기..."
 msgid "CID"
 msgstr "CID"
 
-#: win32/QueueFrame.cpp:477
+#: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "32-bit CRC 코드 불일치 (SFV-검사)"
 
@@ -993,7 +993,7 @@ msgstr "'즐겨찾는 사용자'에 추가되었음"
 msgid "File"
 msgstr "파일"
 
-#: win32/QueueFrame.cpp:473
+#: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "파일이 유효하지 않음"
 
@@ -1015,7 +1015,7 @@ msgstr "파일 이름"
 msgid "Filename:"
 msgstr "파일 이름"
 
-#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:636
+#: win32/QueueFrame.cpp:288 win32/DirectoryListingFrame.cpp:636
 #: win32/DirectoryListingFrame.cpp:652
 #, boost-format
 msgid "Files: %1%"
@@ -1072,7 +1072,7 @@ msgstr "FAQ(자주 묻는 질문)"
 msgid "Full Path"
 msgstr "전체 경로"
 
-#: win32/QueueFrame.cpp:479
+#: win32/QueueFrame.cpp:480
 msgid "Full tree does not match TTH root"
 msgstr "받은 파일-목록의 TTH(Tigertree Hash) Root 값이 일치하지 않음"
 
@@ -1104,7 +1104,7 @@ msgstr ""
 msgid "Help forum"
 msgstr "도움말 포럼"
 
-#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
 msgid "High"
 msgstr "높음"
 
@@ -1112,7 +1112,7 @@ msgstr "높음"
 msgid "High prio max size"
 msgstr "'높음' 상한 크기"
 
-#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+#: win32/QueueFrame.cpp:456 win32/QueueFrame.cpp:1002
 msgid "Highest"
 msgstr "최고"
 
@@ -1220,7 +1220,7 @@ msgstr "잘못된 파일-목록 이름"
 msgid "Invalid number of slots"
 msgstr "슬롯 개수가 잘못됨"
 
-#: win32/QueueFrame.cpp:283
+#: win32/QueueFrame.cpp:284
 #, boost-format
 msgid "Items: %1%"
 msgstr ""
@@ -1313,7 +1313,7 @@ msgstr "로그인이름"
 msgid "Lookup TTH at Bitzi.com"
 msgstr "Bitzi.com에서 TTH로 찾아보기"
 
-#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999
 msgid "Low"
 msgstr "낮음"
 
@@ -1321,7 +1321,7 @@ msgstr "낮음"
 msgid "Low prio max size"
 msgstr "'낮음' 상한 크기"
 
-#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
 msgid "Lowest"
 msgstr "최저"
 
@@ -1449,6 +1449,10 @@ msgstr ""
 msgid "Name"
 msgstr "이름"
 
+#: win32/CommandDlg.cpp:203
+msgid "Name and command must not be empty"
+msgstr ""
+
 #: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Name under which the others see the directory"
 msgstr "다른 사람들이 보게 될 공유 디렉토리의 이름"
@@ -1469,7 +1473,7 @@ msgstr "다음 찾기"
 msgid "Nick"
 msgstr "닉네임"
 
-#: win32/QueueFrame.cpp:488
+#: win32/QueueFrame.cpp:489
 msgid "No errors"
 msgstr "없음"
 
@@ -1481,15 +1485,16 @@ msgstr "일치하는 것이 없음"
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "초과하면 새로운 다운로드가 제한되는 속도 (kiB/s, 0=무제한)"
 
-#: win32/QueueFrame.cpp:415
+#: win32/QueueFrame.cpp:416
 msgid "No users"
 msgstr "사용자 없음"
 
-#: win32/QueueFrame.cpp:427
+#: win32/QueueFrame.cpp:428
 msgid "No users to download from"
 msgstr "파일을 소유한 사용자가 없음"
 
-#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/SearchFrame.cpp:155
 msgid "Normal"
 msgstr "보통"
 
@@ -1502,7 +1507,7 @@ msgid "Note; Files appear in the share only after they've been hashed!"
 msgstr "주의; 파일들은 Hash가 작성되어야만 공유에 나타남!"
 
 #: win32/DownloadPage.cpp:38
-#, c-format
+#, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
 msgstr ""
 
@@ -1601,7 +1606,7 @@ msgstr "PM(1:1 메시지)"
 msgid "PM history"
 msgstr "PM History"
 
-#: win32/QueueFrame.cpp:475
+#: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "피동 모드 사용자"
 
@@ -1613,7 +1618,7 @@ msgstr "비밀번호"
 msgid "Path"
 msgstr "파일 경로"
 
-#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
 msgid "Paused"
 msgstr "일시 정지"
 
@@ -1705,7 +1710,7 @@ msgstr ""
 msgid "Raw"
 msgstr "Raw"
 
-#: win32/QueueFrame.cpp:1020
+#: win32/QueueFrame.cpp:1021
 msgid "Re-add source"
 msgstr "파일의 소스에서 삭제했던 사용자를 다시 추가하기"
 
@@ -1717,7 +1722,7 @@ msgstr "검색 대기..."
 msgid "Really exit?"
 msgstr "프로그램을 종료하시겠습니까?"
 
-#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/QueueFrame.cpp:693 win32/QueueFrame.cpp:698
 #: win32/FavHubsFrame.cpp:232
 msgid "Really remove?"
 msgstr "삭제하시겠습니까?"
@@ -1756,7 +1761,7 @@ msgstr ""
 msgid "Reliability"
 msgstr "신뢰도"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:661
+#: win32/QueueFrame.cpp:484 win32/TransferView.cpp:661
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr "상대방 클라이언트가 TTH를 완전히 지원하지 않음 - 다운로드할 수 없음"
 
@@ -1764,11 +1769,11 @@ msgstr "상대방 클라이언트가 TTH를 완전히 지원하지 않음 - 다�
 msgid "Remove slow filelists"
 msgstr "전송 속도가 느린 파일-목록은 다운로드 대기열에서 제거함"
 
-#: win32/QueueFrame.cpp:1030
+#: win32/QueueFrame.cpp:1031
 msgid "Remove source"
 msgstr "파일의 소스에서 사용자를 삭제하기"
 
-#: win32/QueueFrame.cpp:1039
+#: win32/QueueFrame.cpp:1040
 msgid "Remove user from queue"
 msgstr "'다운로드 대기열'의 모든 파일의 소스에서 사용자를 삭제하기"
 
@@ -1793,7 +1798,7 @@ msgstr ""
 msgid "Run in background"
 msgstr "백그라운드로 실행하기"
 
-#: win32/QueueFrame.cpp:435
+#: win32/QueueFrame.cpp:436
 msgid "Running..."
 msgstr "다운로드 진행..."
 
@@ -1899,7 +1904,7 @@ msgstr ""
 "다운로드 우선순위 '낮음'의 자동-분류 상한 크기보다 큰 파일이 새로 추가되면 우"
 "선순위를 '최저'로 분류"
 
-#: win32/QueueFrame.cpp:995
+#: win32/QueueFrame.cpp:996
 msgid "Set priority"
 msgstr "다운로드 우선순위 지정하기"
 
@@ -1960,7 +1965,7 @@ msgstr "대화에 시간 스탬프를 기본으로 보여줌"
 msgid "Size"
 msgstr "크기"
 
-#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
 #, fuzzy, boost-format
 msgid "Size: %1%"
@@ -2010,7 +2015,7 @@ msgstr "사운드"
 msgid "Source Type"
 msgstr "검색 유형"
 
-#: win32/QueueFrame.cpp:481
+#: win32/QueueFrame.cpp:482
 msgid "Source too slow"
 msgstr "너무 느린 소스"
 
@@ -2178,7 +2183,7 @@ msgstr "이 '지정 다운로드 디렉토리'를 대표하는 이름"
 msgid "Unfinished downloads directory"
 msgstr "미완료 다운로드 디렉토리"
 
-#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+#: win32/QueueFrame.cpp:440 win32/QueueFrame.cpp:441
 msgid "Unknown"
 msgstr "불명"
 
@@ -2260,7 +2265,7 @@ msgstr "설명"
 msgid "User Menu"
 msgstr "사용자 메뉴"
 
-#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:700
+#: win32/QueueFrame.cpp:430 win32/DirectoryListingFrame.cpp:700
 msgid "User offline"
 msgstr "사용자가 오프라인"
 
@@ -2289,12 +2294,12 @@ msgstr "허브 대화방에 상태 메시지를 표시함"
 msgid "Virtual name"
 msgstr "공유 이름"
 
-#: win32/QueueFrame.cpp:423
+#: win32/QueueFrame.cpp:424
 #, fuzzy, boost-format
 msgid "Waiting (%1% of %2% users online)"
 msgstr "대기 (사용자 온라인)"
 
-#: win32/QueueFrame.cpp:421
+#: win32/QueueFrame.cpp:422
 msgid "Waiting (User online)"
 msgstr "대기 (사용자 온라인)"
 

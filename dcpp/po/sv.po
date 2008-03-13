@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-23 10:28+0000\n"
-"Last-Translator: carson <Unknown>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-08 01:16+0000\n"
+"Last-Translator: NGK <ayumi.evolution@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:52+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -50,12 +50,12 @@ msgstr "%.02f TiB"
 #: dcpp/AdcHub.cpp:139
 #, boost-format
 msgid "%1% (%2%) has same CID {%3%} as %4% (%5%), ignoring"
-msgstr ""
+msgstr "%1% (%2%) har samma CID {%3%} som %4% (%5%), ignorerar"
 
 #: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
-msgstr "%1% (Okänt nickname)"
+msgstr "%1% (Okänt smeknamn)"
 
 #: dcpp/HashManager.cpp:767
 #, boost-format
@@ -71,12 +71,12 @@ msgstr "%1% omdöpt till %2%"
 #: dcpp/AdcHub.cpp:281
 #, boost-format
 msgid "%1% was kicked by %2%: %3%"
-msgstr ""
+msgstr "%1% kickades av %2%: %3%"
 
 #: dcpp/AdcHub.cpp:284
 #, boost-format
 msgid "%1% was kicked: %2%"
-msgstr ""
+msgstr "%1% kickades: %2%"
 
 #: dcpp/DownloadManager.cpp:530
 #, boost-format
@@ -111,23 +111,28 @@ msgstr "Delar redan ut en fil med samma hash"
 
 #: dcpp/ConnectionManager.cpp:176
 msgid "All download slots taken"
-msgstr "Alla nedladdningsplatser är upptagna"
+msgstr "Alla nedladdningsplatser upptagna"
 
 #: dcpp/DownloadManager.cpp:376
 msgid "CRC32 inconsistency (SFV-Check)"
-msgstr "CRC32 stämmer ej (SFV-check)"
+msgstr "CRC32 stämmer ej (kontrollera SFV)"
 
 #: dcpp/DownloadManager.cpp:374
 #, boost-format
 msgid "CRC32 inconsistency (SFV-Check) (File: %1%)"
-msgstr "CRC32 stämmer ej (SFV-check) (Fil: %1%)"
+msgstr "CRC32 stämmer ej (kontrollera SFV) (Fil: %1%)"
 
 #: dcpp/ConnectionManager.cpp:376
 msgid "Certificate not trusted, unable to connect"
 msgstr "Ej pålitligt certifikat, kan ej ansluta"
 
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "Inget svar på förbindelsen inom tidsgränsen"
+
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
 msgstr "Inget svar på förbindelsen inom tidsgränsen"
 
@@ -140,7 +145,7 @@ msgstr "Kunde ej öppna målfilen: %1%"
 msgid "Directory already shared"
 msgstr "Katalogen är redan utdelad"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Frånkopplad"
 
@@ -204,15 +209,15 @@ msgstr "Misslyckades att ladda privat nyckel"
 
 #: dcpp/AdcHub.cpp:206
 msgid "Failed to negotiate base protocol"
-msgstr ""
+msgstr "Misslyckades att förhandla basprotokoll"
 
 #: dcpp/Socket.cpp:408
 msgid ""
 "Failed to set up the socks server for UDP relay (check socks address and "
 "port)"
 msgstr ""
-"Misslyckades att sätta upp UDP-relay hos socks-servern (kolla socks-adress "
-"och port)"
+"Misslyckades att sätta upp UDP-relay hos socks-servern (kontrollera socks-"
+"adress och port)"
 
 #: dcpp/ShareManager.cpp:776
 #, boost-format
@@ -275,6 +280,8 @@ msgid ""
 "Hub probably uses an old version of ADC, please encourage the owner to "
 "upgrade"
 msgstr ""
+"Hubben använder antagligen en gammal version av ADC, uppmana gärna ägaren "
+"att uppgradera"
 
 #: dcpp/DownloadManager.cpp:220
 msgid "Invalid size"
@@ -285,19 +292,19 @@ msgid ""
 "Invalid target file (missing directory, check default download directory "
 "setting)"
 msgstr ""
-"Ogiltig målfil (saknar katalog, kolla inställning för "
-"standardnedladdningskatalog)"
+"Ogiltig målfil (saknar katalog, kontrollera standardinställning för "
+"nedladdningskatalog)"
 
 #: dcpp/FavoriteManager.cpp:438
 msgid "Kick user(s)"
 msgstr "Sparka användare"
 
 #: dcpp/ConnectionManager.cpp:230
-#, fuzzy, boost-format
+#, boost-format
 msgid "Listening socket failed (you need to restart %1%): %2%"
-msgstr "Lyssnadesockel misslyckades (du måste starta om DC++): %1%"
+msgstr "Lyssnadssocket misslyckad (du måste starta om %1%): %2%"
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr "Högsta längden på kommando överstigen"
 
@@ -307,18 +314,18 @@ msgstr "Skickade mer data än vad som förväntades"
 
 #: dcpp/ShareManager.cpp:403
 msgid "No directory specified"
-msgstr "Ingen katalog specifierad"
+msgstr "Ingen katalog vald"
 
 #: dcpp/DownloadManager.cpp:419
 msgid "No slots available"
 msgstr "Inga platser tillgängliga"
 
-#: dcpp/AdcHub.cpp:576
-#, fuzzy, boost-format
+#: dcpp/AdcHub.cpp:577
+#, boost-format
 msgid "Not listening for connections - please restart %1%"
-msgstr "Lyssnar inte efter anslutningar - var god starta om DC++"
+msgstr "Lyssnar inte efter anslutningar - var god starta om %1%"
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
@@ -333,9 +340,8 @@ msgid "Remove all subdirectories before adding this one"
 msgstr "Ta bort alla underkataloger innan du lägger till denna"
 
 #: dcpp/DownloadManager.cpp:225
-#, fuzzy
 msgid "Response does not match request"
-msgstr "Fullt träd matchar inte TTH-roten"
+msgstr "Svaret matchar inte förfrågningen"
 
 #: dcpp/DCPlusPlus.cpp:100
 msgid "Shared Files"
@@ -365,12 +371,12 @@ msgstr "Målet borttaget"
 
 #: dcpp/Socket.cpp:255
 msgid "The socks server doesn't support login / password authentication"
-msgstr "Socks-servern stöder inte användarnamn/lösenordsverifiering"
+msgstr "Socks-servern stöder inte användarnamns- / lösenordsverifiering"
 
 #: dcpp/Socket.cpp:162 dcpp/Socket.cpp:173 dcpp/Socket.cpp:206
 #: dcpp/Socket.cpp:210 dcpp/Socket.cpp:237 dcpp/Socket.cpp:252
 msgid "The socks server failed establish a connection"
-msgstr "Socks-servern misslyckades upprätta en anslutning"
+msgstr "Socks-servern misslyckades upprätta anslutning"
 
 #: dcpp/Socket.cpp:241
 msgid "The socks server requires authentication"

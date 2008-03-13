@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-02 22:50+0000\n"
-"Last-Translator: zeugma <Unknown>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 01:18+0000\n"
+"Last-Translator: Jacek Sieka <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:48+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/MainWindow.cpp:862
@@ -129,7 +129,7 @@ msgstr ""
 msgid "&Force attempt"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:80
+#: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
 #: win32/PrivateFrame.cpp:380
 msgid "&Get file list"
 msgstr ""
@@ -146,7 +146,7 @@ msgstr ""
 msgid "&Match queue"
 msgstr ""
 
-#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+#: win32/QueueFrame.cpp:961 win32/QueueFrame.cpp:979 win32/QueueFrame.cpp:989
 msgid "&Move/Rename"
 msgstr ""
 
@@ -181,8 +181,8 @@ msgstr ""
 msgid "&Refresh"
 msgstr ""
 
-#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
-#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
+#: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
 #: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
@@ -198,7 +198,7 @@ msgstr ""
 msgid "&Search\tCtrl+S"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1013 win32/WaitingUsersFrame.cpp:85
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
 msgid "&Send private message"
 msgstr ""
 
@@ -260,7 +260,7 @@ msgstr "DC++ hakkında..."
 
 #: win32/AdvancedPage.cpp:43
 msgid "Accept custom user commands from hub"
-msgstr "Hub'dan gelen Bireysel kullanıcı menülerini kabul et (ek menü gibi) "
+msgstr "Hub'dan gelen Bireysel kullanıcı menülerini kabul et (ek menü gibi)"
 
 #: win32/WaitingUsersFrame.cpp:84 win32/PrivateFrame.cpp:384
 #: win32/HubFrame.cpp:1170 win32/PublicHubsFrame.cpp:449
@@ -299,11 +299,11 @@ msgstr ""
 msgid "Advanced\\User Commands"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1022 win32/QueueFrame.cpp:1031
+#: win32/QueueFrame.cpp:1023 win32/QueueFrame.cpp:1032
 msgid "All"
 msgstr "Tümü"
 
-#: win32/QueueFrame.cpp:431
+#: win32/QueueFrame.cpp:432
 #, boost-format
 msgid "All %1% users offline"
 msgstr ""
@@ -458,7 +458,7 @@ msgstr "Gözat..."
 msgid "CID"
 msgstr "CID"
 
-#: win32/QueueFrame.cpp:477
+#: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 uyumsuzluğu (SFV-Kontrol)"
 
@@ -540,11 +540,11 @@ msgstr "Diyalog ayarlarını doğrula"
 
 #: win32/WindowsPage.cpp:67
 msgid "Confirm favorite hub removal"
-msgstr "Favori hub silmek için onay iste "
+msgstr "Favori hub silmek için onay iste"
 
 #: win32/WindowsPage.cpp:68
 msgid "Confirm item removal in download queue"
-msgstr "İndirme listesindeki öğeleri silmek için onay iste "
+msgstr "İndirme listesindeki öğeleri silmek için onay iste"
 
 #: win32/HubFrame.cpp:497
 msgid "Connected"
@@ -929,7 +929,7 @@ msgstr "Favori kullanıcı'lara eklendi"
 msgid "File"
 msgstr "Dosya"
 
-#: win32/QueueFrame.cpp:473
+#: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "Dosya mevcut değil"
 
@@ -950,7 +950,7 @@ msgstr "Dosya İsmi"
 msgid "Filename:"
 msgstr "Dosya Adı:"
 
-#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:636
+#: win32/QueueFrame.cpp:288 win32/DirectoryListingFrame.cpp:636
 #: win32/DirectoryListingFrame.cpp:652
 #, boost-format
 msgid "Files: %1%"
@@ -1006,7 +1006,7 @@ msgstr "Sıkça sorulan sorular"
 msgid "Full Path"
 msgstr "Tam Yol"
 
-#: win32/QueueFrame.cpp:479
+#: win32/QueueFrame.cpp:480
 msgid "Full tree does not match TTH root"
 msgstr "İndirme listesindeki TTH ile uyuşmuyor"
 
@@ -1038,7 +1038,7 @@ msgstr ""
 msgid "Help forum"
 msgstr "Yardım forumu"
 
-#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
 msgid "High"
 msgstr "Yüksek"
 
@@ -1046,7 +1046,7 @@ msgstr "Yüksek"
 msgid "High prio max size"
 msgstr "Yüksek boyutu"
 
-#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+#: win32/QueueFrame.cpp:456 win32/QueueFrame.cpp:1002
 msgid "Highest"
 msgstr "En yüksek"
 
@@ -1152,7 +1152,7 @@ msgstr "Geçersiz dosya liste adı"
 msgid "Invalid number of slots"
 msgstr "(!) Geçersiz slot sayısı"
 
-#: win32/QueueFrame.cpp:283
+#: win32/QueueFrame.cpp:284
 #, boost-format
 msgid "Items: %1%"
 msgstr ""
@@ -1247,7 +1247,7 @@ msgstr "Kullanıcı adı"
 msgid "Lookup TTH at Bitzi.com"
 msgstr "TTH'ı Bitzi.com'da Ara"
 
-#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999
 msgid "Low"
 msgstr "Düşük"
 
@@ -1255,7 +1255,7 @@ msgstr "Düşük"
 msgid "Low prio max size"
 msgstr "Düşük boyutu"
 
-#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
 msgid "Lowest"
 msgstr "En düşük"
 
@@ -1382,6 +1382,10 @@ msgstr ""
 msgid "Name"
 msgstr "İsim"
 
+#: win32/CommandDlg.cpp:203
+msgid "Name and command must not be empty"
+msgstr ""
+
 #: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Name under which the others see the directory"
 msgstr "Başkaları dizini bu ad ile görecekler"
@@ -1402,7 +1406,7 @@ msgstr "Sonraki"
 msgid "Nick"
 msgstr "İsim"
 
-#: win32/QueueFrame.cpp:488
+#: win32/QueueFrame.cpp:489
 msgid "No errors"
 msgstr "Hata yok"
 
@@ -1414,15 +1418,16 @@ msgstr "Dosya bulunamadı"
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "En fazla indirme hızı (KB/sn, (0 = Limitsiz))"
 
-#: win32/QueueFrame.cpp:415
+#: win32/QueueFrame.cpp:416
 msgid "No users"
 msgstr "Kullanıcı yok"
 
-#: win32/QueueFrame.cpp:427
+#: win32/QueueFrame.cpp:428
 msgid "No users to download from"
 msgstr "Dosyanın indirileceği kullanıcı yok"
 
-#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/SearchFrame.cpp:155
 msgid "Normal"
 msgstr "Normal"
 
@@ -1436,7 +1441,7 @@ msgstr ""
 "Not;Eklediğiniz dosyalar  veritabanına eklendikten sonra paylaşılırlar!"
 
 #: win32/DownloadPage.cpp:38
-#, fuzzy, c-format
+#, fuzzy, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
 msgstr ""
 "(!)Önemli: Buradaki ayarlar değişken hızlar için %100 net doğru "
@@ -1534,7 +1539,7 @@ msgstr "Kişisel Mesaj"
 msgid "PM history"
 msgstr "Ö.M. (PM) Geçmişi"
 
-#: win32/QueueFrame.cpp:475
+#: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Pasif kullanıcı"
 
@@ -1546,7 +1551,7 @@ msgstr "Şifre"
 msgid "Path"
 msgstr "Dosya yolu"
 
-#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
 msgid "Paused"
 msgstr "Duraklatıldı"
 
@@ -1638,7 +1643,7 @@ msgstr ""
 msgid "Raw"
 msgstr "Sunucu"
 
-#: win32/QueueFrame.cpp:1020
+#: win32/QueueFrame.cpp:1021
 msgid "Re-add source"
 msgstr "Kaynağı tekrar ekle"
 
@@ -1650,7 +1655,7 @@ msgstr "Aramaya hazır..."
 msgid "Really exit?"
 msgstr "Gerçekten çıkmak istiyor musunuz?"
 
-#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/QueueFrame.cpp:693 win32/QueueFrame.cpp:698
 #: win32/FavHubsFrame.cpp:232
 msgid "Really remove?"
 msgstr "Gerçekten silmek istiyor musunuz?"
@@ -1679,7 +1684,7 @@ msgstr "magnet://\" şeklindeki kısayolları DC++ otomatik açsın"
 msgid "Reliability"
 msgstr "Güvenilirlik"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:661
+#: win32/QueueFrame.cpp:484 win32/TransferView.cpp:661
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr "Uzak bağlantı kurulamadı TTH sertifikası indirilemedi"
 
@@ -1687,11 +1692,11 @@ msgstr "Uzak bağlantı kurulamadı TTH sertifikası indirilemedi"
 msgid "Remove slow filelists"
 msgstr "Yavaş dosya listesini kaldır"
 
-#: win32/QueueFrame.cpp:1030
+#: win32/QueueFrame.cpp:1031
 msgid "Remove source"
 msgstr "Kaynağı kaldır"
 
-#: win32/QueueFrame.cpp:1039
+#: win32/QueueFrame.cpp:1040
 msgid "Remove user from queue"
 msgstr "Kullanıcıyı indirme listesinden kaldır"
 
@@ -1716,7 +1721,7 @@ msgstr ""
 msgid "Run in background"
 msgstr "Arkaplanda çalış"
 
-#: win32/QueueFrame.cpp:435
+#: win32/QueueFrame.cpp:436
 msgid "Running..."
 msgstr "Şu anda indiriliyor..."
 
@@ -1817,7 +1822,7 @@ msgstr "Sunucu"
 msgid "Set lowest prio for newly added files larger than Low prio size"
 msgstr "En düşük boyut"
 
-#: win32/QueueFrame.cpp:995
+#: win32/QueueFrame.cpp:996
 msgid "Set priority"
 msgstr "Önceliği Ayarla"
 
@@ -1875,7 +1880,7 @@ msgstr "Chat penceresinde saati göster"
 msgid "Size"
 msgstr "Boyut"
 
-#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
 #, boost-format
 msgid "Size: %1%"
@@ -1922,7 +1927,7 @@ msgstr "Sesler"
 msgid "Source Type"
 msgstr "Kaynak Tipi"
 
-#: win32/QueueFrame.cpp:481
+#: win32/QueueFrame.cpp:482
 msgid "Source too slow"
 msgstr "Hedef Çok yavaş"
 
@@ -2068,7 +2073,7 @@ msgid ""
 "you change settings or turn off any application that might be using the TCP/"
 "TLS port"
 msgstr ""
-" TCP/TLS port açılamadı. Dosya transferi sırasında TCP/TLS portları ile "
+"TCP/TLS port açılamadı. Dosya transferi sırasında TCP/TLS portları ile "
 "iletişim kurulamadı lütfen bağlantılarınızı ve ayarlarınızı kontrol ediniz"
 
 #: win32/MainWindow.cpp:630
@@ -2087,7 +2092,7 @@ msgstr "Klasör adının ne olarak gözükmesini istiyorsanız yazın"
 msgid "Unfinished downloads directory"
 msgstr "Geçici dosyalar dizini (Temp)"
 
-#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+#: win32/QueueFrame.cpp:440 win32/QueueFrame.cpp:441
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
@@ -2160,7 +2165,7 @@ msgstr "Kullanıcı tanımı"
 msgid "User Menu"
 msgstr "Kullanıcı Menüsünde"
 
-#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:700
+#: win32/QueueFrame.cpp:430 win32/DirectoryListingFrame.cpp:700
 msgid "User offline"
 msgstr "Kullanıcı Çevrimdışı"
 
@@ -2189,12 +2194,12 @@ msgstr "Chat penceresinde durum mesajlarını görüntüle"
 msgid "Virtual name"
 msgstr "Sanal Adı"
 
-#: win32/QueueFrame.cpp:423
+#: win32/QueueFrame.cpp:424
 #, boost-format
 msgid "Waiting (%1% of %2% users online)"
 msgstr ""
 
-#: win32/QueueFrame.cpp:421
+#: win32/QueueFrame.cpp:422
 msgid "Waiting (User online)"
 msgstr "Bekleniyor (Kullanıcı Çevrimiçi)"
 

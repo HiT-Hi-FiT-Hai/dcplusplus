@@ -7,269 +7,247 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-05 22:58+0000\n"
-"Last-Translator: Muntealb-users <Unknown>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-11 11:03+0000\n"
+"Last-Translator: Adrian Moș <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n == 1 ? 0: (((n % 100 > 19) || ((n % 100 "
 "== 0) && (n != 0))) ? 2: 1));\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:48+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/MainWindow.cpp:862
-#, fuzzy, boost-format
+#, boost-format
 msgid ""
 "%1%\n"
 "Open download page?"
-msgstr "Deschide Dosarul de Descărcare"
+msgstr "Deschide pagina de descărcare?"
 
 #: win32/TransferView.cpp:571
 #, boost-format
 msgid "%1% (%2$0.2f)"
-msgstr ""
+msgstr "%1% (%2$0.2f)"
 
 #: win32/HashProgressDlg.cpp:91
 #, boost-format
 msgid "%1% files/h, %2% files left"
-msgstr ""
+msgstr "%1% fișiere/oră, %2% fișiere rămase"
 
 #: win32/SearchFrame.cpp:576
 #, boost-format
 msgid "%1% filtered"
-msgstr ""
+msgstr "%1% filtrat"
 
 #: win32/SearchFrame.cpp:571
 #, boost-format
 msgid "%1% item"
 msgid_plural "%1% items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1% obiect"
+msgstr[1] "%1% obiecte"
+msgstr[2] "%1% obiecte"
 
 #: win32/HashProgressDlg.cpp:100
 #, boost-format
 msgid "%1% left"
-msgstr ""
+msgstr "%1% rămas"
 
 #: win32/HubFrame.cpp:927
-#, fuzzy, boost-format
+#, boost-format
 msgid "%1% user"
 msgid_plural "%1% users"
-msgstr[0] "Nici un utilizator"
-msgstr[1] "Nici un utilizator"
-msgstr[2] "Nici un utilizator"
+msgstr[0] "%1% utilizator"
+msgstr[1] "%1% utilizatori"
+msgstr[2] "%1% utilizatori"
 
 #: win32/TransferView.cpp:586 win32/TransferView.cpp:633
 #, boost-format
 msgid "%1%/s"
-msgstr ""
+msgstr "%1%/s"
 
 #: win32/HashProgressDlg.cpp:92
 #, boost-format
 msgid "%1%/s, %2% left"
-msgstr ""
+msgstr "%1%/s, %2% rămas"
 
 #: win32/HubListsDlg.cpp:63 win32/UCPage.cpp:33
-#, fuzzy
 msgid "&Add"
-msgstr "Adăugat"
+msgstr "&Adaugă"
 
 #: win32/UploadPage.cpp:37 win32/FavoriteDirsPage.cpp:34
 msgid "&Add folder"
-msgstr ""
+msgstr "&Adaugă subdirector"
 
 #: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
 #: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
 #: win32/Appearance2Page.cpp:30
-#, fuzzy
 msgid "&Browse..."
-msgstr "Explorează"
+msgstr "&Răsfoieşte..."
 
 #: win32/UCPage.cpp:34
-#, fuzzy
 msgid "&Change"
-msgstr "Logul de Modificări"
+msgstr "&Modifică"
 
 #: win32/PrivateFrame.cpp:388 win32/HubFrame.cpp:1178
-#, fuzzy
 msgid "&Close"
-msgstr "Culori"
+msgstr "În&chide"
 
 #: win32/PublicHubsFrame.cpp:150
 msgid "&Configure"
-msgstr ""
+msgstr "&Configurează"
 
 #: win32/FavHubsFrame.cpp:72 win32/FavHubsFrame.cpp:278
 #: win32/PublicHubsFrame.cpp:448
-#, fuzzy
 msgid "&Connect"
-msgstr "Conectat"
+msgstr "&Conectare"
 
 #: win32/TransferView.cpp:199
-#, fuzzy
 msgid "&Disconnect"
-msgstr "Conectare Rapidă"
+msgstr "&Deconectare"
 
 #: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
 #: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
-#, fuzzy
 msgid "&Download"
-msgstr "Descărcări"
+msgstr "&Descarcă"
 
 #: win32/MainWindow.cpp:214
-#, fuzzy
 msgid "&Download Queue\tCtrl+D"
-msgstr "Coada de Descărcare"
+msgstr "Coada de &Descărcare\tCtrl+D"
 
 #: win32/HubListsDlg.cpp:75
 msgid "&Edit"
-msgstr ""
+msgstr "&Editare"
 
 #: win32/MainWindow.cpp:211
-#, fuzzy
 msgid "&Favorite Hubs\tCtrl+F"
-msgstr "Huburile Favorite"
+msgstr "Huburi &Favorite\tCtrl+F"
 
 #: win32/MainWindow.cpp:188
-#, fuzzy
 msgid "&File"
-msgstr "Fișier"
+msgstr "&Fişier"
 
 #: win32/TransferView.cpp:196
 msgid "&Force attempt"
-msgstr ""
+msgstr "Conectare &Forțată"
 
-#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:80
+#: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
 #: win32/PrivateFrame.cpp:380
 msgid "&Get file list"
-msgstr ""
+msgstr "&Ia lista de fișiere"
 
 #: win32/DirectoryListingFrame.cpp:325
-#, fuzzy
 msgid "&Go to directory"
-msgstr "Descarcă tot dosarul"
+msgstr "&Găsește subdirectorul"
 
 #: win32/MainWindow.cpp:240 win32/ADLSearchFrame.cpp:93
 msgid "&Help"
-msgstr ""
+msgstr "&Ajutor"
 
 #: win32/PrivateFrame.cpp:381
-#, fuzzy
 msgid "&Match queue"
-msgstr "Potrivește cu coada"
+msgstr "&Intersectează cu coada"
 
-#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
-#, fuzzy
+#: win32/QueueFrame.cpp:961 win32/QueueFrame.cpp:979 win32/QueueFrame.cpp:989
 msgid "&Move/Rename"
-msgstr "Redenumește"
+msgstr "&Mută/Redenumește"
 
 #: win32/FavHubsFrame.cpp:77 win32/FavHubsFrame.cpp:280
 #: win32/ADLSearchFrame.cpp:68 win32/ADLSearchFrame.cpp:291
 msgid "&New..."
-msgstr ""
+msgstr "&Nou..."
 
 #: win32/MainWindow.cpp:223
-#, fuzzy
 msgid "&Notepad\tCtrl+N"
-msgstr "Editor de Text"
+msgstr "Car&net\tCtrl+N"
 
 #: win32/FavHubsFrame.cpp:82 win32/FavHubsFrame.cpp:281
 #: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:292
 #: win32/UsersFrame.cpp:186
-#, fuzzy
 msgid "&Properties"
-msgstr "Proprietăți ale Căutarii ADL"
+msgstr "&Proprietăţi"
 
 #: win32/MainWindow.cpp:210
-#, fuzzy
 msgid "&Public Hubs\tCtrl+P"
-msgstr "Huburi Publice"
+msgstr "Huburi &Publice\tCtrl+P"
 
 #: win32/MainWindow.cpp:190
-#, fuzzy
 msgid "&Quick Connect ...\tCtrl+Q"
-msgstr "Conectare Rapidă"
+msgstr "Conectare Rapi&dă ...\tCtrl+Q"
 
 #: win32/MainWindow.cpp:192 win32/HubFrame.cpp:1173
 msgid "&Reconnect\tCtrl+R"
-msgstr ""
+msgstr "&Reconectare\tCtrl+R"
 
 #: win32/PublicHubsFrame.cpp:156
 msgid "&Refresh"
-msgstr ""
+msgstr "&Reactualizează"
 
-#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
-#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
+#: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
 #: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
 #: win32/ADLSearchFrame.cpp:293 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
-#, fuzzy
 msgid "&Remove"
-msgstr "Redenumește"
+msgstr "Ște&rge"
 
 #: win32/SpyFrame.cpp:189
-#, fuzzy
 msgid "&Search"
-msgstr "Caută"
+msgstr "Gă&sire"
 
 #: win32/MainWindow.cpp:219
-#, fuzzy
 msgid "&Search\tCtrl+S"
-msgstr "Caută"
+msgstr "Gă&sire\tCtrl+S"
 
-#: win32/QueueFrame.cpp:1013 win32/WaitingUsersFrame.cpp:85
-#, fuzzy
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
 msgid "&Send private message"
-msgstr "Mesaj Privat"
+msgstr "Me&saj privat"
 
 #: win32/MainWindow.cpp:208
-#, fuzzy
 msgid "&View"
-msgstr "Video"
+msgstr "&Vizualizare"
 
 #: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
 msgid "&View as text"
-msgstr ""
+msgstr "&Vizualizare ca text"
 
 #: win32/MainWindow.cpp:230
 msgid "&Window"
-msgstr ""
+msgstr "&Fereastră"
 
 #: win32/HubFrame.cpp:487
 #, boost-format
 msgid "*** Joins: %1%"
-msgstr ""
+msgstr "*** Intră: %1%"
 
 #: win32/HubFrame.cpp:494
 #, boost-format
 msgid "*** Parts: %1%"
-msgstr ""
+msgstr "*** Iese: %1%"
 
 #: win32/HashProgressDlg.cpp:84
 #, boost-format
 msgid "-.-- B/s, %1% left"
-msgstr ""
+msgstr "-.-- B/s, %1% rămași"
 
 #: win32/HashProgressDlg.cpp:83
 #, boost-format
 msgid "-.-- files/h, %1% files left"
-msgstr ""
+msgstr "-.-- fișiere/oră, %1% fișiere rămase"
 
 #: win32/WinUtil.cpp:1036
 msgid ""
 "A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
 "use on the Direct Connect network.  No action will be taken."
 msgstr ""
-"O legătura MAGNET a fost introdusă în DC++, dar nu conține un haș valid care "
-"e absolut necesar pentru utilizarea in rețeaua Direct Connect.  Nici o "
-"acțiune nu va fi întreprinsă."
+"Un link MAGNET a fost preluat de DC++, însă nu conține un cod hash valid "
+"pentru Direct Connect. Nu se întreprinde nici o acțiune."
 
 #: win32/MainWindow.cpp:220 win32/MainWindow.cpp:294
 msgid "ADL Search"
-msgstr "Caută folosind ADL"
+msgstr "Căutare ADL"
 
 #: win32/ADLSProperties.cpp:49
 msgid "ADLSearch Properties"
@@ -277,7 +255,7 @@ msgstr "Proprietăți ale Căutarii ADL"
 
 #: win32/MainWindow.cpp:305 win32/MainWindow.cpp:564
 msgid "AWAY"
-msgstr "Absentare"
+msgstr "PLECAT"
 
 #: win32/MainWindow.cpp:245
 msgid "About DC++..."
@@ -285,18 +263,16 @@ msgstr "Despre DC++..."
 
 #: win32/AdvancedPage.cpp:43
 msgid "Accept custom user commands from hub"
-msgstr "Acceptă comenzi personalizate de la utilizatorii hubului"
+msgstr "Acceptă comenzi personalizate de la hub"
 
 #: win32/WaitingUsersFrame.cpp:84 win32/PrivateFrame.cpp:384
 #: win32/HubFrame.cpp:1170 win32/PublicHubsFrame.cpp:449
-#, fuzzy
 msgid "Add To &Favorites"
-msgstr "Huburile Favorite"
+msgstr "Adaugă la &Favorite"
 
 #: win32/AdvancedPage.cpp:45
 msgid "Add finished files to share instantly (if shared)"
-msgstr ""
-"Adaugă instantaneu fișierele terminate la partaj (dacă se dorește asta)"
+msgstr "Adaugă imediat fișierele descărcate la partaj (dacă este cazul)"
 
 #: win32/QueueFrame.cpp:45
 msgid "Added"
@@ -304,49 +280,48 @@ msgstr "Adăugat"
 
 #: win32/MainWindow.cpp:358 win32/PublicHubsFrame.cpp:52
 msgid "Address"
-msgstr "Adrese"
+msgstr "Adresă"
 
 #: win32/SettingsDialog.cpp:67
 msgid "Advanced"
-msgstr "Avansate"
+msgstr "Avansat"
 
 #: win32/SettingsDialog.cpp:69
 msgid "Advanced\\Experts only"
-msgstr ""
+msgstr "Avansat\\Pentru experți"
 
 #: win32/SettingsDialog.cpp:68
-#, fuzzy
 msgid "Advanced\\Logs"
-msgstr "Avansate"
+msgstr "Avansat\\Loguri"
 
 #: win32/SettingsDialog.cpp:71
 msgid "Advanced\\Security Certificates"
-msgstr ""
+msgstr "Avansat\\Certificate de securitate"
 
 #: win32/SettingsDialog.cpp:70
 msgid "Advanced\\User Commands"
-msgstr ""
+msgstr "Avansat\\Comenzi personalizate"
 
-#: win32/QueueFrame.cpp:1022 win32/QueueFrame.cpp:1031
+#: win32/QueueFrame.cpp:1023 win32/QueueFrame.cpp:1032
 msgid "All"
-msgstr "Tot"
+msgstr "Toate"
 
-#: win32/QueueFrame.cpp:431
-#, fuzzy, boost-format
+#: win32/QueueFrame.cpp:432
+#, boost-format
 msgid "All %1% users offline"
-msgstr "Utilizator neconectat"
+msgstr "Toți cei %1% utilizatori offline"
 
 #: win32/CertificatesPage.cpp:43
 msgid "Allow TLS connections to clients without trusted certificate"
-msgstr "Permite conexiuni TLS la clienți fără certificate de încredere"
+msgstr "Permite conexiuni TLS spre utilizatorii fără certificate de încredere"
 
 #: win32/CertificatesPage.cpp:42
 msgid "Allow TLS connections to hubs without trusted certificate"
-msgstr "Permite conexiuni TLS la huburi fără certificate de încredere"
+msgstr "Permite conexiuni TLS spre huburi fără certificate de încredere"
 
 #: win32/CommandDlg.cpp:117
 msgid "Always open help file with this dialog"
-msgstr "Deschide fișierul de ajutor odată cu acest dialog"
+msgstr "Întotdeauna deschide pagina de ajutor cu această fereastră"
 
 #: win32/SearchFrame.cpp:182 win32/HubFrame.cpp:119
 #: win32/PublicHubsFrame.cpp:138
@@ -359,17 +334,15 @@ msgstr "Aspect"
 
 #: win32/SettingsDialog.cpp:64
 msgid "Appearance\\Colors and sounds"
-msgstr ""
+msgstr "Aspect\\Culori și sunete"
 
 #: win32/SettingsDialog.cpp:65
-#, fuzzy
 msgid "Appearance\\Tabs"
-msgstr "Aspect"
+msgstr "Aspect\\Taburi"
 
 #: win32/SettingsDialog.cpp:66
-#, fuzzy
 msgid "Appearance\\Windows"
-msgstr "Aspect"
+msgstr "Aspect\\Ferestre"
 
 #: win32/SearchFrame.cpp:156
 msgid "At least"
@@ -389,21 +362,19 @@ msgstr "Conectare Automată / Nume"
 
 #: win32/UsersFrame.cpp:30
 msgid "Auto grant slot / Nick"
-msgstr "Autoalocare de Sloturi / Poreclă"
+msgstr "Garantare automată a slotului / Poreclă"
 
 #: win32/QueuePage.cpp:28
-#, fuzzy
 msgid "Auto priority settings"
-msgstr "Setări la Abandonarea Automată"
+msgstr "Setări de prioritate automată"
 
 #: win32/Advanced3Page.cpp:40
 msgid "Auto refresh time"
-msgstr "Auto-Împrosp."
+msgstr "Timpul de auto-actualizare"
 
 #: win32/AdvancedPage.cpp:30
 msgid "Auto-away on minimize (and back on restore)"
-msgstr ""
-"Autoactivează absentarea [away] la minimizare (dezactivează la restaurare)"
+msgstr "Auto-activarea modului PLECAT la minimizare (și înapoi la restaurare)"
 
 #: win32/WindowsPage.cpp:30
 msgid "Auto-open at startup"
@@ -411,17 +382,17 @@ msgstr "Deschide Automat la Pornire"
 
 #: win32/Advanced3Page.cpp:41
 msgid "Auto-search limit"
-msgstr "Auto-Căutare"
+msgstr "Limita căutării automate"
 
 #: win32/QueuePage.cpp:37
 msgid "Autodrop settings"
-msgstr "Setări la Abandonarea Automată"
+msgstr "Setări pt. deconectare automată"
 
 #: win32/QueuePage.cpp:69
 msgid "Autodrop slow sources for all queue items (except filelists)"
 msgstr ""
-"Abandonează automat sursele lente ale tuturor itemurilor din coadă (cu "
-"excepția listelor de fișiere)"
+"Abandonează sursele lente pentru orice obiect din coadă (exceptând listele "
+"de fișiere)"
 
 #: win32/ADLSearchFrame.cpp:40
 msgid "Automatic Directory Listing Search"
@@ -437,11 +408,11 @@ msgstr "Urmărește automat redirecționările"
 
 #: win32/QueuePage.cpp:73
 msgid "Automatically match queue for auto search hits"
-msgstr "Compară automat potrivirile căutării automate cu coada de așteptare"
+msgstr "Intersectează automat coada cu rezultatele căutărilor automate"
 
 #: win32/UploadPage.cpp:39
 msgid "Automatically open an extra slot if speed is below (0 = disable)"
-msgstr "Deschide auto. slot nou cînd viteza e sub (0 = dezactivare)"
+msgstr "Deschide automat un slot nou când viteza e sub (0=dezactivare)"
 
 #: win32/QueuePage.cpp:72
 msgid "Automatically search for alternative download locations"
@@ -450,16 +421,16 @@ msgstr "Caută automat opțiuni alternative de descărcare"
 #: win32/SpyFrame.cpp:115
 #, boost-format
 msgid "Average/s: %1%"
-msgstr ""
+msgstr "Media/s: %1%"
 
 #: win32/WinUtil.cpp:274 win32/WinUtil.cpp:284
 msgid "Away mode off"
-msgstr "Absentare dezactivată"
+msgstr "Mod PLECAT dezactivat"
 
 #: win32/WinUtil.cpp:279
-#, fuzzy, boost-format
+#, boost-format
 msgid "Away mode on: %1%"
-msgstr "Absentare dezactivată"
+msgstr "Mod PLECAT activat: %1%"
 
 #: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
 #: win32/ADLSProperties.cpp:74
@@ -472,32 +443,31 @@ msgstr "B/s"
 
 #: win32/Advanced3Page.cpp:37
 msgid "Bind address"
-msgstr "Leagă adresa"
+msgstr "Adresa folosită"
 
 #: win32/AdvancedPage.cpp:41
 msgid "Break on first ADLSearch match"
-msgstr "Oprește căutarea cu ADL [Active Directory Listing] la prima potrivire"
+msgstr "Oprește căutarea ADL la primul rezultat"
 
 #: win32/DownloadPage.cpp:34
 msgid "Browse..."
-msgstr "Explorează"
+msgstr "Răsfoieşte..."
 
 #: win32/SearchFrame.cpp:43 win32/HubFrame.cpp:44 win32/UsersFrame.cpp:34
 msgid "CID"
 msgstr "CID"
 
-#: win32/QueueFrame.cpp:477
-#, fuzzy
+#: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
-msgstr "Inconsistenţă CRC32 (Verificare SFV)"
+msgstr "Inconsistență CRC32 (Verificare SFV)"
 
 #: win32/MainWindow.cpp:244
 msgid "Change Log"
-msgstr "Logul de Modificări"
+msgstr "Jurnal modificări"
 
 #: win32/CommandDlg.cpp:82
 msgid "Chat"
-msgstr "Taifas [Chat]"
+msgstr "Chat"
 
 #: win32/QueuePage.cpp:40
 msgid "Check every"
@@ -505,12 +475,11 @@ msgstr "Verifică la fiecare"
 
 #: win32/WinUtil.cpp:423
 msgid "Choose folder"
-msgstr ""
+msgstr "Selectare subdirector"
 
 #: win32/TransferView.cpp:45
-#, fuzzy
 msgid "Chunk"
-msgstr "Contor"
+msgstr "Bucată"
 
 #: win32/TransferView.cpp:48
 msgid "Cipher"
@@ -538,7 +507,7 @@ msgstr "Închide toate ferestrele de căutare"
 
 #: win32/MainWindow.cpp:232
 msgid "Close disconnected"
-msgstr "Închide tot ce-i neconectat"
+msgstr "Închide orice neconectat"
 
 #: win32/Appearance2Page.cpp:31
 msgid "Colors"
@@ -554,11 +523,11 @@ msgstr "Comprimat"
 
 #: win32/DownloadPage.cpp:41
 msgid "Configure Public Hub Lists"
-msgstr "Alege Lista de Huburi Publice"
+msgstr "Configurează listele de huburi publice"
 
 #: win32/HubListsDlg.cpp:43 win32/PublicHubsFrame.cpp:164
 msgid "Configured Public Hub Lists"
-msgstr "Alegeți Lista de Huburi Publice"
+msgstr "Liste de huburi publice configurate"
 
 #: win32/WindowsPage.cpp:66
 msgid "Confirm application exit"
@@ -566,65 +535,60 @@ msgstr "Confirmare la ieșirea din program"
 
 #: win32/WindowsPage.cpp:32
 msgid "Confirm dialog options"
-msgstr "Confirmare Expresă a unor Acțiuni"
+msgstr "Confirmare expresă a acțiunilor"
 
 #: win32/WindowsPage.cpp:67
 msgid "Confirm favorite hub removal"
-msgstr "Confirmare la înlăturarea huburilor favorite"
+msgstr "Confirmarea ștergerii huburilor favorite"
 
 #: win32/WindowsPage.cpp:68
 msgid "Confirm item removal in download queue"
-msgstr "Confirmare la înlăturarea itemurilor din coada de descărcare"
+msgstr "Confirmarea ștergerii obiectelor din coada de descărcare"
 
 #: win32/HubFrame.cpp:497
 msgid "Connected"
 msgstr "Conectat"
 
 #: win32/TransferView.cpp:642 win32/TransferView.cpp:649
-#, fuzzy
 msgid "Connecting"
-msgstr "Conectează"
+msgstr "În curs de conectare"
 
 #: win32/TransferView.cpp:283
-#, fuzzy
 msgid "Connecting (forced)"
-msgstr "Conectat"
+msgstr "În curs de conectare (forțat)"
 
 #: win32/HubFrame.cpp:823
-#, fuzzy, boost-format
+#, boost-format
 msgid "Connecting to %1%..."
-msgstr "Conectează"
+msgstr "În curs de conectare la %1%..."
 
 #: win32/SearchFrame.cpp:38 win32/HubFrame.cpp:41
 msgid "Connection"
-msgstr "Conectează"
+msgstr "Conexiune"
 
 #: win32/SettingsDialog.cpp:58
 msgid "Connection settings"
-msgstr "Setările Conexiunii"
+msgstr "Setări de conexiune"
 
 #: win32/TransferView.cpp:83 win32/TransferView.cpp:89
-#, fuzzy
 msgid "Connections"
-msgstr "Conectează"
+msgstr "Conexiuni"
 
 #: win32/HubFrame.cpp:1174 win32/PublicHubsFrame.cpp:450
-#, fuzzy
 msgid "Copy &address to clipboard"
-msgstr "Copiază Legătura Magnet în Cliplanșetă"
+msgstr "Copiază &adresa în memorie"
 
 #: win32/TransferView.cpp:197 win32/HubFrame.cpp:1152
-#, fuzzy
 msgid "Copy &nick to clipboard"
-msgstr "Copiază Legătura Magnet în Cliplanșetă"
+msgstr "Copiază &porecla în memorie"
 
 #: win32/WaitingUsersFrame.cpp:81
 msgid "Copy Filename"
-msgstr "Copiază Numele Fișierului"
+msgstr "Copiază numele fișierului"
 
 #: win32/WinUtil.cpp:373
 msgid "Copy magnet link to clipboard"
-msgstr "Copiază Legătura Magnet în Cliplanșetă"
+msgstr "Copiază link-ul Magnet în memorie"
 
 #: win32/SpyFrame.cpp:35
 msgid "Count"
@@ -645,12 +609,12 @@ msgstr "Crearea indexului de fișiere..."
 #: win32/MainWindow.cpp:567
 #, boost-format
 msgid "D: %1%"
-msgstr ""
+msgstr "D: %1%"
 
 #: win32/MainWindow.cpp:569
 #, boost-format
 msgid "D: %1%/s (%2%)"
-msgstr ""
+msgstr "D: %1%/s (%2%)"
 
 #: win32/WinUtil.cpp:830
 msgid "DC++"
@@ -666,15 +630,15 @@ msgstr "Forumul de Discuții DC++"
 
 #: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:113
 msgid "Default"
-msgstr ""
+msgstr "Implicit"
 
 #: win32/AppearancePage.cpp:32
 msgid "Default away message"
-msgstr "Mesajul implicit pentru absentare"
+msgstr "Mesaj implicit pentru modul PLECAT"
 
 #: win32/DownloadPage.cpp:31
 msgid "Default download directory"
-msgstr "Dosarul Implicit de Descărcare"
+msgstr "Directorul implicit de descărcare"
 
 #: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
 #: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
@@ -684,7 +648,7 @@ msgstr "Descriere"
 
 #: win32/ADLSearchFrame.cpp:34
 msgid "Destination Directory"
-msgstr "Dosarul de Descărcare"
+msgstr "Director destinaţie"
 
 #: win32/NetworkPage.cpp:30 win32/NetworkPage.cpp:31
 msgid "Direct connection"
@@ -692,21 +656,21 @@ msgstr "Conectare Directă"
 
 #: win32/DownloadPage.cpp:30
 msgid "Directories"
-msgstr "Dosare"
+msgstr "Directoare"
 
 #: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
 #: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
 #: win32/ADLSProperties.cpp:63
 msgid "Directory"
-msgstr "Dosar"
+msgstr "Director"
 
 #: win32/FavoriteDirsPage.cpp:126 win32/FavoriteDirsPage.cpp:159
 msgid "Directory or directory name already exists"
-msgstr "Dosarul sau numele dosarului există deja"
+msgstr "Directorul sau numele lui există deja"
 
 #: win32/MagnetDlg.cpp:62
 msgid "Do nothing"
-msgstr "Nu faceți nimic"
+msgstr "Nu fă nimic"
 
 #: win32/SearchFrame.cpp:185
 msgid "Document"
@@ -714,7 +678,7 @@ msgstr "Document"
 
 #: win32/NetworkPage.cpp:35
 msgid "Don't allow hub/UPnP to override"
-msgstr "Împiedică Hub/UPnP să nu ia in seamă"
+msgstr "Nu lăsa hubul/UPnP să suprascrie"
 
 #: win32/AdvancedPage.cpp:47
 msgid "Don't automatically disconnect favorite users who leave the hub"
@@ -726,23 +690,23 @@ msgstr "Nu șterge listele de fișiere la ieșire"
 
 #: win32/QueuePage.cpp:75
 msgid "Don't download files already in share"
-msgstr "Nu descărca fișierele prezente deja in partaj [share]"
+msgstr "Nu descărca fișiere deja partajate"
 
 #: win32/QueuePage.cpp:76
 msgid "Don't download files already in the queue"
-msgstr "Nu descărca fișierele prezente deja in coadă [queue]"
+msgstr "Nu descărca fișiere deja în coadă"
 
 #: win32/HubFrame.cpp:392
 msgid "Don't remove /password before your password"
-msgstr "Nu înlăturați /password dinaintea parolei"
+msgstr "Nu înlătura /password înaintea parolei"
 
 #: win32/QueuePage.cpp:71
 msgid "Don't remove the source when autodropping, only disconnect"
-msgstr "Nu înlătura sursa la abandonarea automată, doar deconecteaz-o"
+msgstr "Nu șterge sursa la deconectare automată, doar deconecteaz-o"
 
 #: win32/AdvancedPage.cpp:40
 msgid "Don't send the away message to bots"
-msgstr "Nu trimite mesajul de absentare către boți"
+msgstr "Nu trimite mesajul PLECAT spre roboți"
 
 #: win32/MainWindow.cpp:255
 msgid "Donate (paypal)"
@@ -751,15 +715,15 @@ msgstr "Donați (PayPal)"
 #: win32/Appearance2Page.cpp:34
 msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
 msgstr ""
+"Donați €€€:! (bine, merg și dolari murdari =) (vedeți meniul de ajutor)"
 
 #: win32/TransferView.cpp:58
 msgid "Done"
-msgstr "Efectuat"
+msgstr "Terminat"
 
 #: win32/DirectoryListingFrame.cpp:358
-#, fuzzy
 msgid "Download &to..."
-msgstr "Descarcă în..."
+msgstr "Descarcă &spre"
 
 #: win32/ADLSProperties.cpp:88
 msgid "Download Matches"
@@ -767,14 +731,13 @@ msgstr "Descărcare deja existentă"
 
 #: win32/QueueFrame.cpp:57 win32/TabsPage.cpp:41 win32/WindowsPage.cpp:39
 #: win32/MainWindow.cpp:288
-#, fuzzy
 msgid "Download Queue"
-msgstr "Downloaduri curente"
+msgstr "Coada de Descărcare"
 
 #: win32/PublicHubsFrame.cpp:322
-#, fuzzy, boost-format
+#, boost-format
 msgid "Download failed: %1%"
-msgstr "Descărcat"
+msgstr "Descărcare eșuată: %1%"
 
 #: win32/WinUtil.cpp:831
 msgid "Download files from the Direct Connect network"
@@ -786,27 +749,28 @@ msgstr "Descarcă în..."
 
 #: win32/SearchFrame.cpp:744
 msgid "Download whole directory"
-msgstr "Descarcă tot dosarul"
+msgstr "Descarcă tot directorul"
 
 #: win32/SearchFrame.cpp:794
 msgid "Download whole directory to..."
-msgstr "Descarcă tot dosarul în..."
+msgstr "Descarcă tot directorul în..."
 
 #: win32/QueueFrame.cpp:39
 msgid "Downloaded"
 msgstr "Descărcat"
 
 #: win32/TransferView.cpp:731
-#, fuzzy, boost-format
+#, boost-format
 msgid "Downloading %1%"
-msgstr "Descărcare în curs..."
+msgstr "Descărcare a %1%"
 
 #: win32/TransferView.cpp:631
 #, boost-format
 msgid "Downloading from %1% user"
 msgid_plural "Downloading from %1% users"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Descărcare de la %1% utilizator"
+msgstr[1] "Descărcare de la %1% utilizatori"
+msgstr[2] "Descărcare de la %1% utilizatori"
 
 #: win32/DirectoryListingFrame.cpp:695
 msgid "Downloading list..."
@@ -817,9 +781,9 @@ msgid "Downloading public hub list..."
 msgstr "Descarc lista de huburi publice..."
 
 #: win32/PublicHubsFrame.cpp:319
-#, fuzzy, boost-format
+#, boost-format
 msgid "Downloading public hub list... (%1%)"
-msgstr "Descarc lista de huburi publice..."
+msgstr "Descarc lista de huburi publice... (%1%)"
 
 #: win32/AboutDlg.cpp:63
 msgid "Downloading..."
@@ -829,25 +793,23 @@ msgstr "Descărcare în curs..."
 #: win32/TransferView.cpp:92 win32/TransferView.cpp:94
 #: win32/Appearance2Page.cpp:40
 msgid "Downloads"
-msgstr "Descărcări"
+msgstr "Descărcare"
 
 #: win32/SettingsDialog.cpp:60
-#, fuzzy
 msgid "Downloads\\Favorites"
-msgstr "Descărcare deja existentă"
+msgstr "Descărcare\\Favorite"
 
 #: win32/SettingsDialog.cpp:61
-#, fuzzy
 msgid "Downloads\\Queue"
-msgstr "Coada de Descărcare"
+msgstr "Descărcare\\Coadă"
 
 #: win32/QueuePage.cpp:38
 msgid "Drop sources below"
-msgstr "Viteza surse sub"
+msgstr "Deconectează surse mai lente decât"
 
 #: win32/MainWindow.cpp:204
 msgid "E&xit"
-msgstr ""
+msgstr "&Ieşire"
 
 #: win32/GeneralPage.cpp:30 win32/HubFrame.cpp:43
 msgid "E-Mail"
@@ -896,7 +858,7 @@ msgstr "Erori"
 #: win32/QueueFrame.cpp:43 win32/DirectoryListingFrame.cpp:42
 #: win32/SearchFrame.cpp:40
 msgid "Exact size"
-msgstr "Mărime exactă"
+msgstr "Dimensiune exactă"
 
 #: win32/SearchFrame.cpp:186
 msgid "Executable"
@@ -904,20 +866,19 @@ msgstr "Executabil"
 
 #: win32/MainWindow.cpp:1003
 msgid "Exit"
-msgstr ""
+msgstr "Ieşire"
 
 #: win32/NetworkPage.cpp:38
 msgid "External / WAN IP"
-msgstr "Extern / WAN IP"
+msgstr "IP extern / WAN"
 
 #: win32/PublicHubsFrame.cpp:168
-#, fuzzy
 msgid "F&ilter"
-msgstr "Fișier"
+msgstr "F&iltru"
 
 #: win32/MainWindow.cpp:646 win32/MainWindow.cpp:647
 msgid "Failed to create port mappings. Please set up your NAT yourself."
-msgstr "Crearea mapărilor de porturi a eșuat. Setați singur NAT-ul dv."
+msgstr "Setarea porturilor a eșuat. Configurați manual NAT/ul."
 
 #: win32/MainWindow.cpp:665 win32/MainWindow.cpp:666
 msgid "Failed to get external IP via  UPnP. Please set it yourself."
@@ -928,13 +889,12 @@ msgid "Failed to remove port mappings"
 msgstr "Înlăturarea mapărilor de porturi a eșuat"
 
 #: win32/MainWindow.cpp:212
-#, fuzzy
 msgid "Favorite &Users\tCtrl+U"
-msgstr "Utilizatori Favoriți"
+msgstr "&Utilizatori Favoriți\tCtrl+U"
 
 #: win32/FavHubProperties.cpp:47
 msgid "Favorite Hub Properties"
-msgstr "Proprietățile Hubului Favorit"
+msgstr "Proprietățile hubului favorit"
 
 #: win32/WindowsPage.cpp:47 win32/MainWindow.cpp:285 win32/FavHubsFrame.cpp:41
 msgid "Favorite Hubs"
@@ -954,12 +914,12 @@ msgstr "Hub favorit adăugat"
 
 #: win32/HubFrame.cpp:965
 msgid "Favorite hub removed"
-msgstr "Hub Favorit înlăturat"
+msgstr "Hub favorit șters"
 
 #: win32/FavoriteDirsPage.cpp:48 win32/FavoriteDirsPage.cpp:120
 #: win32/FavoriteDirsPage.cpp:150
 msgid "Favorite name"
-msgstr "Numele Dosarului"
+msgstr "Numele obiectului favorit"
 
 #: win32/PrivateFrame.cpp:303
 msgid "Favorite user added"
@@ -969,10 +929,9 @@ msgstr "Utilizator favorit adăugat"
 msgid "File"
 msgstr "Fișier"
 
-#: win32/QueueFrame.cpp:473
-#, fuzzy
+#: win32/QueueFrame.cpp:474
 msgid "File not available"
-msgstr "Fişier nedisponibil"
+msgstr "Fișier indisponibil"
 
 #: win32/SearchFrame.cpp:122
 msgid "File type"
@@ -988,26 +947,22 @@ msgid "Filename"
 msgstr "Numele Fișierului"
 
 #: win32/MagnetDlg.cpp:48
-#, fuzzy
 msgid "Filename:"
-msgstr "Numele Fișierului"
+msgstr "Numele fișierului:"
 
-#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:636
+#: win32/QueueFrame.cpp:288 win32/DirectoryListingFrame.cpp:636
 #: win32/DirectoryListingFrame.cpp:652
 #, boost-format
 msgid "Files: %1%"
-msgstr ""
+msgstr "Fișiere: %1%"
 
 #: win32/AppearancePage.cpp:47
-#, fuzzy
 msgid "Filter kick messages"
-msgstr ""
-"Filtrează mesajele de surghiunire [ban] a utilizatorilor și pe cele de "
-"debugare NMDC"
+msgstr "Filtrare a mesajelor de izgonire"
 
 #: win32/DirectoryListingFrame.cpp:160 win32/DirectoryListingFrame.cpp:182
 msgid "Find"
-msgstr "Găsește"
+msgstr "Caută"
 
 #: win32/TabsPage.cpp:42 win32/WindowsPage.cpp:40 win32/MainWindow.cpp:215
 #: win32/MainWindow.cpp:289 win32/FinishedDLFrame.cpp:25
@@ -1021,23 +976,23 @@ msgstr "Încărcările Terminate"
 
 #: win32/NetworkPage.cpp:34
 msgid "Firewall (passive, last resort)"
-msgstr "Paravan (pasiv, de ultim resort)"
+msgstr "Firewall (pasiv, ultima soluție)"
 
 #: win32/NetworkPage.cpp:32
 msgid "Firewall with UPnP"
-msgstr "Paravan [firewall] cu UPnP"
+msgstr "Firewall cu UPnP"
 
 #: win32/NetworkPage.cpp:33
 msgid "Firewall with manual port forwarding"
-msgstr "Parav. cu porturi redirecționate manual"
+msgstr "Firewall cu porturi redirecționate manual"
 
 #: win32/MainWindow.cpp:191
 msgid "Follow last redirec&t\tCtrl+T"
-msgstr ""
+msgstr "Urmăreș&te ultima redirecționare\tCtrl+T"
 
 #: win32/MainWindow.cpp:283
 msgid "Follow last redirect"
-msgstr ""
+msgstr "Urmărește ultima redirecționare"
 
 #: win32/LogPage.cpp:34
 msgid "Format"
@@ -1045,28 +1000,27 @@ msgstr "Format"
 
 #: win32/MainWindow.cpp:250
 msgid "Frequently asked questions"
-msgstr "Întrebări Puse Frecvent"
+msgstr "Răspunsuri la întrebări frecvente"
 
 #: win32/ADLSProperties.cpp:64
 msgid "Full Path"
-msgstr "Cale Completă"
+msgstr "Calea completă"
 
-#: win32/QueueFrame.cpp:479
-#, fuzzy
+#: win32/QueueFrame.cpp:480
 msgid "Full tree does not match TTH root"
-msgstr "Fişierul nu se potriveşte cu hash-ul TTH"
+msgstr "Arborele complet nu se potrivește cu rădacina TTH"
 
 #: win32/MainWindow.cpp:249
 msgid "GeoIP database update"
-msgstr "Actualizează baza de date GeoIP"
+msgstr "Actualizarea bazei de date GeoIP"
 
 #: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
 msgid "GiB"
-msgstr "GB"
+msgstr "GiB"
 
 #: win32/WaitingUsersFrame.cpp:83 win32/PrivateFrame.cpp:382
 msgid "Grant &extra slot"
-msgstr ""
+msgstr "Of&eră slot în plus"
 
 #: win32/AppearancePage.cpp:56
 msgid "Guess user country from IP"
@@ -1078,37 +1032,37 @@ msgstr "Proxy HTTP (numai pentru lista de huburi)"
 
 #: win32/MainWindow.cpp:242
 msgid "Help &Contents\tF1"
-msgstr ""
+msgstr "&Cuprinsul fițierului de ajutor\tF1"
 
 #: win32/MainWindow.cpp:251
 msgid "Help forum"
 msgstr "Forumul de Ajutor"
 
-#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
 msgid "High"
 msgstr "Ridicată"
 
 #: win32/QueuePage.cpp:31
 msgid "High prio max size"
-msgstr "Prio Înaltă"
+msgstr "Dimensiunea maximă pentru prioritate înaltă"
 
-#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+#: win32/QueueFrame.cpp:456 win32/QueueFrame.cpp:1002
 msgid "Highest"
 msgstr "Maximă"
 
 #: win32/QueuePage.cpp:29
 msgid "Highest prio max size"
-msgstr "Prio Foarte Înaltă"
+msgstr "Dimensiunea maximă pentru prioritate maximă"
 
 #: win32/SpyFrame.cpp:162
 #, boost-format
 msgid "Hit Ratio: %1%"
-msgstr ""
+msgstr "Rata potrivirilor: %1%"
 
 #: win32/SpyFrame.cpp:160
 #, boost-format
 msgid "Hits: %1%"
-msgstr ""
+msgstr "Potriviri: %1%"
 
 #: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
 msgid "Hub"
@@ -1116,7 +1070,7 @@ msgstr "Hub"
 
 #: win32/UsersFrame.cpp:31
 msgid "Hub (last seen in, if offline)"
-msgstr ""
+msgstr "Hub (în care a fost ultima dată, dacă e offline)"
 
 #: win32/CommandDlg.cpp:90
 msgid "Hub Menu"
@@ -1124,16 +1078,16 @@ msgstr "Meniul Hubului"
 
 #: win32/FavHubProperties.cpp:119
 msgid "Hub address cannot be empty"
-msgstr ""
+msgstr "Adresa hubului nu poate fi lăsată goală"
 
 #: win32/FavHubsFrame.cpp:168 win32/HubFrame.cpp:957
 msgid "Hub already exists as a favorite"
 msgstr "Hubul există deja ca favorit"
 
 #: win32/PublicHubsFrame.cpp:316
-#, fuzzy, boost-format
+#, boost-format
 msgid "Hub list downloaded... (%1%)"
-msgstr "Lista de huburi a fost încărcată din cache..."
+msgstr "Lista de huburi descărcată... (%1%)"
 
 #: win32/PublicHubsFrame.cpp:316
 msgid "Hub list loaded from cache..."
@@ -1148,9 +1102,9 @@ msgid "Hubs"
 msgstr "Huburi"
 
 #: win32/PublicHubsFrame.cpp:271
-#, fuzzy, boost-format
+#, boost-format
 msgid "Hubs: %1%"
-msgstr "Huburi"
+msgstr "Huburi: %1%"
 
 #: win32/SearchFrame.cpp:41 win32/TransferView.cpp:49 win32/HubFrame.cpp:42
 msgid "IP"
@@ -1159,11 +1113,11 @@ msgstr "IP"
 #: win32/HubFrame.cpp:337
 #, boost-format
 msgid "IP: %1%, Port: %2%/%3%/%4%"
-msgstr ""
+msgstr "IP: %1%, Port: %2%/%3%/%4%"
 
 #: win32/TransferView.cpp:537 win32/TransferView.cpp:838
 msgid "Idle"
-msgstr ""
+msgstr "Inactiv"
 
 #: win32/SpyFrame.cpp:66
 msgid "Ignore TTH searches"
@@ -1175,12 +1129,12 @@ msgstr "Ignoră mesajele private de la boți"
 
 #: win32/WindowsPage.cpp:58
 msgid "Ignore private messages from the hub"
-msgstr "Ignoră mesajele private de la utilizatorii din huburi"
+msgstr "Ignoră mesajele private dinspre hub"
 
 #: win32/HubFrame.cpp:539 win32/HubFrame.cpp:547
 #, boost-format
 msgid "Ignored message: %1%"
-msgstr ""
+msgstr "Mesaj ignorat: %1%"
 
 #: win32/NetworkPage.cpp:47
 msgid "Incoming connection settings (see Help/FAQ if unsure)"
@@ -1190,7 +1144,7 @@ msgstr ""
 
 #: win32/MainWindow.cpp:226
 msgid "Indexing progress"
-msgstr "Progresul Indexării (Hașării)"
+msgstr "Starea indexării"
 
 #: win32/MainWindow.cpp:705
 msgid "Invalid file list name"
@@ -1200,10 +1154,10 @@ msgstr "Numele listei de fișiere nu e valid"
 msgid "Invalid number of slots"
 msgstr "Numărul de sloturi nu e valid"
 
-#: win32/QueueFrame.cpp:283
+#: win32/QueueFrame.cpp:284
 #, boost-format
 msgid "Items: %1%"
-msgstr ""
+msgstr "Obiecte: %1%"
 
 #: win32/HubFrame.cpp:330
 msgid "Join/part of favorite users showing off"
@@ -1230,11 +1184,11 @@ msgstr "Păstrează fișierele duplicate în listă"
 #: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
 #: win32/ADLSProperties.cpp:75
 msgid "KiB"
-msgstr "KB"
+msgstr "KiB"
 
 #: win32/UploadPage.cpp:40
 msgid "KiB/s"
-msgstr "KB/s"
+msgstr "KiB/s"
 
 #: win32/AppearancePage.cpp:34
 msgid "Language file"
@@ -1242,7 +1196,7 @@ msgstr "Fișierul de limbă"
 
 #: win32/DownloadPage.cpp:35
 msgid "Limits"
-msgstr "Limitări la Descărcare"
+msgstr "Limite"
 
 #: win32/GeneralPage.cpp:32
 msgid "Line speed (upload)"
@@ -1251,91 +1205,92 @@ msgstr "Viteza de Încărcare"
 #: win32/SplashWindow.cpp:77
 #, boost-format
 msgid "Loading DC++, please wait... (%1%)"
-msgstr ""
+msgstr "DC++ se încarcă, vă rugăm așteptați... (%1%)"
 
 #: win32/LogPage.cpp:47
 msgid "Log downloads"
-msgstr "Creează un log al descărcărilor"
+msgstr "Jurnalizează descărcările"
 
 #: win32/LogPage.cpp:51
 msgid "Log filelist transfers"
-msgstr "Creează un log al transferurilor de fișiere"
+msgstr "Jurnalizează transferuruile de fișiere"
 
 #: win32/LogPage.cpp:45
 msgid "Log main chat"
-msgstr "Creează un log al taifasului [chat] din camera principală"
+msgstr "Jurnalizează chat-ul principal"
 
 #: win32/LogPage.cpp:46
 msgid "Log private chat"
-msgstr "Creează un log al taifasului privat"
+msgstr "Jurnalizează mesajele private"
 
 #: win32/LogPage.cpp:50
 msgid "Log status messages"
-msgstr "Creează un log al mesajelor de stare"
+msgstr "Jurnalizează mesajele de stare"
 
 #: win32/LogPage.cpp:49
 msgid "Log system messages"
-msgstr "Creează un log al mesajelor de sistem"
+msgstr "Jurnalizează mesajele de sistem"
 
 #: win32/LogPage.cpp:48
 msgid "Log uploads"
-msgstr "Creează un log al încărcarilor"
+msgstr "Jurnalizează încărcările"
 
 #: win32/LogPage.cpp:31
 msgid "Logging"
-msgstr "Setări pentru Loguri (jurnale de activitate)"
+msgstr "Jurnalizare"
 
 #: win32/NetworkPage.cpp:44
 msgid "Login"
-msgstr "Utilizator"
+msgstr "Autentificare"
 
 #: win32/WinUtil.cpp:372
 msgid "Lookup TTH at Bitzi.com"
-msgstr "Cercetează TTH la Bitzi.com"
+msgstr "Caută TTH-ul la Bitzi.com"
 
-#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999
 msgid "Low"
 msgstr "Scăzută"
 
 #: win32/QueuePage.cpp:35
 msgid "Low prio max size"
-msgstr "Prio Scăzută"
+msgstr "Dimensiune maximă pentru prioritate scăzută"
 
-#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
 msgid "Lowest"
-msgstr "minimă"
+msgstr "Minimă"
 
 #: win32/MagnetDlg.cpp:44 win32/WinUtil.cpp:1036
 msgid "MAGNET Link detected"
-msgstr "Legătură MAGNET detectată"
+msgstr "Link Magnet detectat"
 
 #: win32/WinUtil.cpp:983
-#, fuzzy, boost-format
+#, boost-format
 msgid "MAGNET Link detected: %1%"
-msgstr "Legătură MAGNET detectată"
+msgstr "Link Magnet detectat: %1%"
 
 #: win32/Appearance2Page.cpp:38
 msgid "Make an annoying sound every time a private message is received"
-msgstr "Emite un sunet cînd e recepționat un mesaj personal"
+msgstr "Emite un sunet enervant când se recepționează un mesaj privat"
 
 #: win32/Appearance2Page.cpp:39
 msgid "Make an annoying sound when a private message window is opened"
-msgstr "Emite un sunet cînd e deschisă o fereastră de mesaj privat [MP]"
+msgstr "Emite un sunet enervant când se deschide o fereastră de mesaj privat"
 
 #: win32/MainWindow.cpp:197
 msgid "Match downloaded lists"
-msgstr "Potrivește Listele Descărcate"
+msgstr "Intersectează listele descărcate"
 
 #: win32/DirectoryListingFrame.cpp:168 win32/DirectoryListingFrame.cpp:181
 msgid "Match queue"
-msgstr "Potrivește cu coada"
+msgstr "Intersectează cu coada"
 
 #: win32/DirectoryListingFrame.cpp:260
 #, boost-format
 msgid "Matched %1% file"
 msgid_plural "Matched %1% files"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1% fișier potrivit"
+msgstr[1] "%1% fișiere potrivite"
+msgstr[2] "%1% fișiere potrivite"
 
 #: win32/PublicHubsFrame.cpp:57
 msgid "Max Hubs"
@@ -1343,7 +1298,7 @@ msgstr "Huburi - Nr. Maxim"
 
 #: win32/ADLSearchFrame.cpp:36
 msgid "Max Size"
-msgstr "Mărime Maximă"
+msgstr "Dimensiune maximă"
 
 #: win32/PublicHubsFrame.cpp:58
 msgid "Max Users"
@@ -1351,15 +1306,15 @@ msgstr "Utilizatori - Nr. Maxim"
 
 #: win32/Advanced3Page.cpp:38
 msgid "Max filelist size"
-msgstr "Mărime max. fișier"
+msgstr "Mărime maximă a listei de fișiere"
 
 #: win32/Advanced3Page.cpp:31
 msgid "Max hash speed"
-msgstr "Vit. max. hașare"
+msgstr "Viteza maximă de indexare"
 
 #: win32/QueuePage.cpp:44
 msgid "Max inactivity"
-msgstr "Timp max. inactiv."
+msgstr "Timp maxim de inactivitate"
 
 #: win32/DownloadPage.cpp:36
 msgid "Maximum simultaneous downloads (0 = infinite)"
@@ -1368,15 +1323,15 @@ msgstr "Numărul maxim de descărcari simultane (0 = infinit)"
 #: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
 #: win32/ADLSProperties.cpp:76
 msgid "MiB"
-msgstr "MB"
+msgstr "MiB"
 
 #: win32/Advanced3Page.cpp:32
 msgid "MiB/s"
-msgstr "MB/s"
+msgstr "MiB/s"
 
 #: win32/GeneralPage.cpp:33
 msgid "MiBits/s"
-msgstr "MBiți/s"
+msgstr "MiBiți/s"
 
 #: win32/PublicHubsFrame.cpp:55
 msgid "Min Share"
@@ -1400,37 +1355,42 @@ msgstr "Dimens. min. fișier"
 
 #: win32/Advanced3Page.cpp:42
 msgid "Min segment size"
-msgstr "Mărime min. segment"
+msgstr "Dimensiune minimă a segmentului"
 
 #: win32/QueuePage.cpp:46
 msgid "Min sources online"
-msgstr "Nr. min. surse conect."
+msgstr "Nr. min. surse conectate"
 
 #: win32/Advanced3Page.cpp:35
 msgid "Mini slot size"
-msgstr "Mărime minislot"
+msgstr "Dimensiune minislot"
 
 #: win32/AppearancePage.cpp:48
 msgid "Minimize to tray"
-msgstr "Minimizează în sistaler [system tray]"
+msgstr "Minimizează în bara de sistem"
 
 #: win32/HubListsDlg.cpp:71 win32/FavHubsFrame.cpp:92
 #: win32/FavHubsFrame.cpp:283 win32/ADLSearchFrame.cpp:83 win32/UCPage.cpp:32
 msgid "Move &Down"
-msgstr ""
+msgstr "Mută în &jos"
 
 #: win32/HubListsDlg.cpp:67 win32/FavHubsFrame.cpp:87
 #: win32/FavHubsFrame.cpp:282 win32/ADLSearchFrame.cpp:78 win32/UCPage.cpp:31
 msgid "Move &Up"
-msgstr ""
+msgstr "Mută în s&us"
 
 #: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
 msgid "Name"
 msgstr "Nume"
 
+#: win32/CommandDlg.cpp:203
+#, fuzzy
+msgid "Name and command must not be empty"
+msgstr "Adresa hubului nu poate fi lăsată goală"
+
 #: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Name under which the others see the directory"
-msgstr "Numele sub care ceilalți văd dosarul"
+msgstr "Numele sub care ceilalți văd directorul"
 
 #: win32/WindowsPage.cpp:44 win32/MainWindow.cpp:225 win32/StatsFrame.cpp:27
 msgid "Network Statistics"
@@ -1438,7 +1398,7 @@ msgstr "Statisticile de Rețea"
 
 #: win32/UploadPage.cpp:200
 msgid "New virtual name matches old name, skipping..."
-msgstr "Noul nume al dosarului virtual e identic cu cel vechi, ignorăm..."
+msgstr "Numele noului director virtual e identic cu cel vechi, se ignoră..."
 
 #: win32/DirectoryListingFrame.cpp:164 win32/DirectoryListingFrame.cpp:183
 msgid "Next"
@@ -1448,7 +1408,7 @@ msgstr "Următorul"
 msgid "Nick"
 msgstr "Poreclă"
 
-#: win32/QueueFrame.cpp:488
+#: win32/QueueFrame.cpp:489
 msgid "No errors"
 msgstr "Nici o eroare"
 
@@ -1458,46 +1418,46 @@ msgstr "Nici o potrivire"
 
 #: win32/DownloadPage.cpp:37
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
-msgstr "Nici o desc. nouă dacă viteza depășește (KB/s, 0 = dezactivează)"
+msgstr "Nici o descărcare nouă dacă viteza depășește (KiB/s, 0 = dezactivează)"
 
-#: win32/QueueFrame.cpp:415
+#: win32/QueueFrame.cpp:416
 msgid "No users"
 msgstr "Nici un utilizator"
 
-#: win32/QueueFrame.cpp:427
+#: win32/QueueFrame.cpp:428
 msgid "No users to download from"
 msgstr "Nici un utilizator de la care să descărcați"
 
-#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/SearchFrame.cpp:155
 msgid "Normal"
 msgstr "Normală"
 
 #: win32/QueuePage.cpp:33
 msgid "Normal prio max size"
-msgstr "Prio Normală"
+msgstr "Dimensiune maximă pentru prioritate normală"
 
 #: win32/UploadPage.cpp:42
 msgid "Note; Files appear in the share only after they've been hashed!"
-msgstr ""
-"Notă : Fișierele apar în partaj [share] doar după ce au fost hașate "
-"(indexate)!"
+msgstr "Notă: Fișierele apar în partaj doar după ce au fost indexate!"
 
 #: win32/DownloadPage.cpp:38
-#, c-format
+#, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
 msgstr ""
+"Notă: datorită vitezelor instabile de transfer, aceasta nu e 100 % exactă..."
 
 #: win32/Appearance2Page.cpp:35 win32/AppearancePage.cpp:35
 msgid "Note; most of these options require that you restart DC++"
-msgstr "Notă : majoritatea acestor opțiuni necesită repornirea DC++"
+msgstr "Notă: majoritatea acestor opțiuni necesită repornirea DC++"
 
 #: win32/WindowsPage.cpp:45 win32/NotepadFrame.cpp:27 win32/MainWindow.cpp:299
 msgid "Notepad"
-msgstr "Editor de Text"
+msgstr "Carnet"
 
 #: win32/Appearance2Page.cpp:29
 msgid "Notification sound"
-msgstr "Sunet de Notificare"
+msgstr "Sunet de atenționare"
 
 #: win32/WinUtil.cpp:333
 msgid "Offline"
@@ -1517,20 +1477,19 @@ msgstr "Doar utilizatori cu sloturi libere"
 
 #: win32/SearchFrame.cpp:216
 msgid "Only where I'm op"
-msgstr "Doar acolo unde sînt op"
+msgstr "Doar unde sunt OP"
 
 #: win32/MainWindow.cpp:199 win32/MainWindow.cpp:1004
 msgid "Open downloads directory"
-msgstr "Deschide Dosarul de Descărcare"
+msgstr "Deschide directorul de descărcări"
 
 #: win32/MainWindow.cpp:297
-#, fuzzy
 msgid "Open file list..."
-msgstr "Deschide Lista Proprie"
+msgstr "Deschide o listă de fișiere..."
 
 #: win32/MainWindow.cpp:195
 msgid "Open file list...\tCtrl+L"
-msgstr ""
+msgstr "Deschide o listă de fișiere...\tCtrl+L"
 
 #: win32/WindowsPage.cpp:55
 msgid "Open new file list windows in the background"
@@ -1546,7 +1505,7 @@ msgstr "Deschide o fereastră nouă la folosirea comenzii /join"
 
 #: win32/MainWindow.cpp:196
 msgid "Open own list"
-msgstr "Deschide Lista Proprie"
+msgstr "Deschide propria listă"
 
 #: win32/WindowsPage.cpp:53
 msgid "Open private messages from bots in their own window"
@@ -1558,7 +1517,7 @@ msgstr "Deschide mesajele private din hub într-o fereastră separată"
 
 #: win32/WindowsPage.cpp:52
 msgid "Open private messages in their own window"
-msgstr "Deschide toate mesajele private [MP] într-o fereastră separată"
+msgstr "Deschide mesajele private în propria fereastră"
 
 #: win32/AppearancePage.cpp:31
 msgid "Options"
@@ -1580,7 +1539,7 @@ msgstr "MP"
 msgid "PM history"
 msgstr "Istoricul MP"
 
-#: win32/QueueFrame.cpp:475
+#: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Utilizator pasiv"
 
@@ -1592,9 +1551,9 @@ msgstr "Parolă"
 msgid "Path"
 msgstr "Cale"
 
-#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
 msgid "Paused"
-msgstr "Repaus"
+msgstr "Pauză"
 
 #: win32/GeneralPage.cpp:28
 msgid "Personal Information"
@@ -1618,7 +1577,7 @@ msgstr "Introduceți o parolă"
 
 #: win32/WindowsPage.cpp:61
 msgid "Popup box to input password for hubs"
-msgstr "Căsuță popup pentru introducerea parolei de acces la huburi"
+msgstr "Căsuță pentru introducerea parolei pentru huburi"
 
 #: win32/NetworkPage.cpp:43
 msgid "Port"
@@ -1626,12 +1585,12 @@ msgstr "Port"
 
 #: win32/NetworkPage.cpp:37
 msgid "Ports"
-msgstr "Port"
+msgstr "Porturi"
 
 #: win32/HubFrame.cpp:852
 #, boost-format
 msgid "Press the follow redirect button to connect to %1%"
-msgstr ""
+msgstr "Apăsați butonul \"Urmărește redirectarea\" pentru conectare la %1%"
 
 #: win32/QueueFrame.cpp:40
 msgid "Priority"
@@ -1642,9 +1601,9 @@ msgid "Private message"
 msgstr "Mesaj Privat"
 
 #: win32/HubFrame.cpp:543 win32/HubFrame.cpp:551 win32/HubFrame.cpp:557
-#, fuzzy, boost-format
+#, boost-format
 msgid "Private message from %1%: %2%"
-msgstr "Mesaj Privat"
+msgstr "Mesaj privat de la %1%: %2%"
 
 #: win32/WindowsPage.cpp:46 win32/MainWindow.cpp:281
 #: win32/PublicHubsFrame.cpp:93
@@ -1665,7 +1624,7 @@ msgstr "Curăță"
 
 #: win32/TransferView.cpp:47
 msgid "Queued"
-msgstr ""
+msgstr "În coadă"
 
 #: win32/MainWindow.cpp:358
 msgid "Quick Connect"
@@ -1678,13 +1637,13 @@ msgstr "Rang"
 #: win32/AboutDlg.cpp:61
 #, c-format, boost-format
 msgid "Ratio (up/down): %1$0.2f"
-msgstr ""
+msgstr "Raport (înc./desc.): %1$0.2f"
 
 #: win32/CommandDlg.cpp:78
 msgid "Raw"
-msgstr "Brută"
+msgstr "Brut"
 
-#: win32/QueueFrame.cpp:1020
+#: win32/QueueFrame.cpp:1021
 msgid "Re-add source"
 msgstr "Readaugă Sursa"
 
@@ -1696,24 +1655,22 @@ msgstr "Pregătit de căutare..."
 msgid "Really exit?"
 msgstr "Sigur doriți să ieșiți?"
 
-#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/QueueFrame.cpp:693 win32/QueueFrame.cpp:698
 #: win32/FavHubsFrame.cpp:232
 msgid "Really remove?"
 msgstr "Sigur doriți să înlăturați?"
 
 #: win32/MainWindow.cpp:282
-#, fuzzy
 msgid "Reconnect"
-msgstr "Conectat"
+msgstr "Reconectare"
 
 #: win32/HubFrame.cpp:845 win32/HubFrame.cpp:1366
 msgid "Redirect request received to a hub that's already connected"
-msgstr ""
-"Redirecționează solicitarea primită către un hub care este deja conectat"
+msgstr "Redirecționarea primită arată spre un hub deja conectat"
 
 #: win32/MainWindow.cpp:198
 msgid "Refresh file list\tCtrl+E"
-msgstr ""
+msgstr "Reactualizează lista de fișiere\tCtrl+E"
 
 #: win32/AdvancedPage.cpp:34
 msgid "Register with Windows to handle dchub:// and adc:// URL links"
@@ -1728,21 +1685,21 @@ msgstr "Înregistrează în Windows pentru procesarea legăturilor magnet:"
 msgid "Reliability"
 msgstr "Fiabilitate"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:661
+#: win32/QueueFrame.cpp:484 win32/TransferView.cpp:661
 msgid "Remote client does not fully support TTH - cannot download"
-msgstr "Clientul distant nu suportă complet TTH - nu se poate descărca"
+msgstr "Clientul opus nu e compatibil TTH - nu se poate descărca"
 
 #: win32/QueuePage.cpp:70
 msgid "Remove slow filelists"
 msgstr "Înlătură listele de fișiere lente"
 
-#: win32/QueueFrame.cpp:1030
+#: win32/QueueFrame.cpp:1031
 msgid "Remove source"
-msgstr "Înlătură Sursa"
+msgstr "Înlătură sursa"
 
-#: win32/QueueFrame.cpp:1039
+#: win32/QueueFrame.cpp:1040
 msgid "Remove user from queue"
-msgstr "Înlătură Utilizatorul din Coadă"
+msgstr "Înlătură utilizatorul din coadă"
 
 #: win32/UploadPage.cpp:38 win32/FavoriteDirsPage.cpp:35
 msgid "Rename"
@@ -1750,22 +1707,22 @@ msgstr "Redenumește"
 
 #: win32/MainWindow.cpp:254
 msgid "Report a bug"
-msgstr "Raportați un Bug"
+msgstr "Raportează o problemă"
 
 #: win32/MainWindow.cpp:253
 msgid "Request a feature"
-msgstr "Solicitați o Funcționalitate Nouă"
+msgstr "Solicită o funcție nouă"
 
 #: win32/TransferView.cpp:703
 #, boost-format
 msgid "Requesting %1%"
-msgstr ""
+msgstr "Solcicit %1%"
 
 #: win32/HashProgressDlg.cpp:48
 msgid "Run in background"
 msgstr "Rulează în fundal"
 
-#: win32/QueueFrame.cpp:435
+#: win32/QueueFrame.cpp:436
 msgid "Running..."
 msgstr "În desfășurare..."
 
@@ -1780,12 +1737,11 @@ msgstr "Caută"
 
 #: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
 #: win32/SearchFrame.cpp:1020
-#, fuzzy, boost-format
+#, boost-format
 msgid "Search - %1%"
-msgstr "Caută"
+msgstr "Căutare - %1%"
 
 #: win32/SearchFrame.cpp:1025
-#, fuzzy
 msgid "Search - Ready to search..."
 msgstr "Pregătit de căutare..."
 
@@ -1796,23 +1752,23 @@ msgstr "Meniu Căutare"
 #: win32/WindowsPage.cpp:43 win32/MainWindow.cpp:221 win32/MainWindow.cpp:295
 #: win32/SpyFrame.cpp:40
 msgid "Search Spy"
-msgstr "Spionează Căutarile Altora"
+msgstr "Inspector de căutări"
 
 #: win32/SpyFrame.cpp:34
 msgid "Search String"
-msgstr "Șir de Căutare"
+msgstr "Text căutat"
 
 #: win32/SearchFrame.cpp:116
 msgid "Search for"
-msgstr "Caută Următoarele"
+msgstr "Caută după"
 
 #: win32/WinUtil.cpp:371
 msgid "Search for alternates"
-msgstr "Caută Alternative"
+msgstr "Caută alternative"
 
 #: win32/DirectoryListingFrame.cpp:797 win32/DirectoryListingFrame.cpp:860
 msgid "Search for file"
-msgstr "Caută Fișierul"
+msgstr "Caută fișierul"
 
 #: win32/Advanced3Page.cpp:34
 msgid "Search history"
@@ -1825,27 +1781,28 @@ msgstr "Opțiuni de Căutare"
 #: win32/HubFrame.cpp:901
 #, boost-format
 msgid "Search spam detected from %1%"
-msgstr ""
+msgstr "Spam de căutare detectat de la %1%"
 
 #: win32/SearchFrame.cpp:984
-#, fuzzy, boost-format
+#, boost-format
 msgid "Searching for %1%..."
-msgstr "Caută Următoarele"
+msgstr "În curs de căutare după %1%..."
 
 #: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
 #, boost-format
 msgid "Searching too soon, next search in %1% second"
 msgid_plural "Searching too soon, next search in %1% seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Căutare prea devreme după ultima, următoarea în %1% secundă"
+msgstr[1] "Căutare prea devreme după ultima, următoarea în %1% secunde"
+msgstr[2] "Căutare prea devreme după ultima, următoarea în %1% secunde"
 
 #: win32/Appearance2Page.cpp:33
 msgid "Select &text style"
-msgstr ""
+msgstr "Selectați stilul &textului"
 
 #: win32/Appearance2Page.cpp:32
 msgid "Select &window color"
-msgstr ""
+msgstr "Selectați culoarea &ferestrei"
 
 #: win32/CommandDlg.cpp:112
 msgid "Send once per nick"
@@ -1869,13 +1826,13 @@ msgstr ""
 "Atribuie cea mai mică prioritate pentru fișierele nou-adăugate mai mari "
 "decît cele cu mărimea încadrată la prioritate scăzută"
 
-#: win32/QueueFrame.cpp:995
+#: win32/QueueFrame.cpp:996
 msgid "Set priority"
-msgstr "Setează Prioritatea"
+msgstr "Setează prioritatea"
 
 #: win32/AppearancePage.cpp:33
 msgid "Set timestamps"
-msgstr "Formatul marcajelor de timp"
+msgstr "Formatul marcajelor temporale"
 
 #: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:298
 msgid "Settings"
@@ -1887,15 +1844,15 @@ msgstr "Setări..."
 
 #: win32/UploadPage.cpp:35
 msgid "Share hidden files"
-msgstr "Partaj. fiș. ascunse"
+msgstr "Partajează fișierele ascunse"
 
 #: win32/HubFrame.cpp:38 win32/PublicHubsFrame.cpp:54
 msgid "Shared"
-msgstr "Partaj"
+msgstr "Partajat"
 
 #: win32/UploadPage.cpp:33
 msgid "Shared directories"
-msgstr "Dosare Partajate"
+msgstr "Directoare partajate"
 
 #: win32/SettingsDialog.cpp:62
 msgid "Sharing"
@@ -1907,7 +1864,7 @@ msgstr "Afișează"
 
 #: win32/AppearancePage.cpp:51
 msgid "Show joins / parts in chat by default"
-msgstr "Afișează în mod implicit alăturările / plecările de la taifas"
+msgstr "Afișează în mod implicit alăturările / plecările în chat"
 
 #: win32/AdvancedPage.cpp:38
 msgid "Show progress bars for transfers"
@@ -1915,27 +1872,27 @@ msgstr "Afișează barele de progres pentru transferuri"
 
 #: win32/AdvancedPage.cpp:48
 msgid "Show shell menu where possible"
-msgstr "Afișează meniul integrat [shell] cînd e posibil"
+msgstr "Afișează meniul shell când e posibil"
 
 #: win32/AppearancePage.cpp:49
 msgid "Show timestamps in chat by default"
-msgstr "Arată în mod implicit marcajele de timp în camerele de taifas [chat]"
+msgstr "Arată în mod implicit marcajele temporale în chat"
 
 #: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
 #: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
 #: win32/SearchFrame.cpp:119 win32/TransferView.cpp:59
 msgid "Size"
-msgstr "Mărime"
+msgstr "Dimensiune"
 
-#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
-#, fuzzy, boost-format
+#, boost-format
 msgid "Size: %1%"
-msgstr "Mărime"
+msgstr "Dimensiune: %1%"
 
 #: win32/QueuePage.cpp:74
 msgid "Skip zero-byte files"
-msgstr "Ignoră fișierele cu mărime zero"
+msgstr "Ignoră fișierele de dimensiune zero"
 
 #: win32/PrivateFrame.cpp:298
 msgid "Slot granted"
@@ -1947,16 +1904,16 @@ msgstr "Sloturi"
 
 #: win32/WinUtil.cpp:257
 msgid "Slots set"
-msgstr "Setare de Sloturi"
+msgstr "Sloturi setate"
 
 #: win32/MainWindow.cpp:566
 #, boost-format
 msgid "Slots: %1%/%2%"
-msgstr ""
+msgstr "Sloturi: %1%/%2%"
 
 #: win32/NetworkPage.cpp:42
 msgid "Socks IP"
-msgstr "Socks IP"
+msgstr "IP SOCKS"
 
 #: win32/AppearancePage.cpp:46
 msgid "Sort all downloads first"
@@ -1974,7 +1931,7 @@ msgstr "Sunete"
 msgid "Source Type"
 msgstr "Tipul de Sursă"
 
-#: win32/QueueFrame.cpp:481
+#: win32/QueueFrame.cpp:482
 msgid "Source too slow"
 msgstr "Sursă prea lentă"
 
@@ -1992,12 +1949,12 @@ msgstr "Specifică un server pentru conectare"
 
 #: win32/TransferView.cpp:44 win32/TransferView.cpp:57
 msgid "Speed"
-msgstr "Viteza"
+msgstr "Viteză"
 
 #: win32/DirectoryListingFrame.cpp:638
 #, boost-format
 msgid "Speed: %1%/s"
-msgstr ""
+msgstr "Viteză: %1%/s"
 
 #: win32/MagnetDlg.cpp:57
 msgid "Start a search for this file"
@@ -2013,12 +1970,12 @@ msgstr "Parola stocată a fost trimisă..."
 
 #: win32/DirectoryListingFrame.cpp:172 win32/DirectoryListingFrame.cpp:180
 msgid "Subtract list"
-msgstr "Obține Lista"
+msgstr "Substrage lista"
 
 #: win32/TabsPage.cpp:40 win32/WindowsPage.cpp:37 win32/SystemFrame.cpp:26
 #: win32/MainWindow.cpp:224
 msgid "System Log"
-msgstr "Log de Sistem"
+msgstr "Jurnal de sistem"
 
 #: win32/NetworkPage.cpp:39
 msgid "TCP"
@@ -2030,7 +1987,7 @@ msgstr "TLS"
 
 #: win32/SearchFrame.cpp:190
 msgid "TTH"
-msgstr ""
+msgstr "TTH"
 
 #: win32/QueueFrame.cpp:46 win32/DirectoryListingFrame.cpp:44
 #: win32/SearchFrame.cpp:42
@@ -2040,7 +1997,7 @@ msgstr "Rădăcina TTH"
 #: win32/TransferView.cpp:672
 #, boost-format
 msgid "TTH: %1%"
-msgstr ""
+msgstr "TTH: %1%"
 
 #: win32/TabsPage.cpp:32
 msgid "Tab highlight on content change"
@@ -2048,7 +2005,7 @@ msgstr "Evidențiază tabul cînd i se schimbă conținutul"
 
 #: win32/HubFrame.cpp:40
 msgid "Tag"
-msgstr "Tag"
+msgstr "Etichetă"
 
 #: win32/HubFrame.cpp:967
 msgid "This hub is not a favorite hub"
@@ -2064,15 +2021,15 @@ msgstr "Timpul ultimei apariții"
 
 #: win32/TransferView.cpp:56
 msgid "Time left"
-msgstr "Timp Rămas"
+msgstr "Timp rămas"
 
 #: win32/HubFrame.cpp:312
 msgid "Timestamps disabled"
-msgstr "Marcaje de timp dezactivate"
+msgstr "Marcaje temporale dezactivate"
 
 #: win32/HubFrame.cpp:310
 msgid "Timestamps enabled"
-msgstr "Marcaje de timp activate"
+msgstr "Marcaje temporale activate"
 
 #: win32/WindowsPage.cpp:60
 msgid "Toggle window when selecting an active tab"
@@ -2080,17 +2037,16 @@ msgstr "Comută fereastra cînd e selectat un tab activ"
 
 #: win32/UploadPage.cpp:34
 msgid "Total size:"
-msgstr "Măr. totală:"
+msgstr "Domensiune totală:"
 
 #: win32/SpyFrame.cpp:159
 #, boost-format
 msgid "Total: %1%"
-msgstr ""
+msgstr "Total: %1%"
 
 #: win32/TransferView.cpp:46
-#, fuzzy
 msgid "Transferred (Ratio)"
-msgstr "Traducerile Softului"
+msgstr "Transferat (raport)"
 
 #: win32/QueueFrame.cpp:47 win32/DirectoryListingFrame.cpp:41
 #: win32/SearchFrame.cpp:34
@@ -2100,12 +2056,12 @@ msgstr "Tip"
 #: win32/MainWindow.cpp:568
 #, boost-format
 msgid "U: %1%"
-msgstr ""
+msgstr "Î: %1%"
 
 #: win32/MainWindow.cpp:570
 #, boost-format
 msgid "U: %1%/s (%2%)"
-msgstr ""
+msgstr "Î: %1%/s (%2%)"
 
 #: win32/NetworkPage.cpp:40
 msgid "UDP"
@@ -2136,34 +2092,34 @@ msgstr ""
 
 #: win32/FavoriteDirsPage.cpp:120 win32/FavoriteDirsPage.cpp:150
 msgid "Under what name you see the directory"
-msgstr "Sub ce nume vedeți dosarul"
+msgstr "Sub ce nume vedeți directorul"
 
 #: win32/DownloadPage.cpp:33
 msgid "Unfinished downloads directory"
-msgstr "Dosarul cu Descărcări Neterminate"
+msgstr "Directorul cu descărcări neterminate"
 
-#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+#: win32/QueueFrame.cpp:440 win32/QueueFrame.cpp:441
 msgid "Unknown"
 msgstr "Necunoscut"
 
 #: win32/HubFrame.cpp:387
 #, boost-format
 msgid "Unknown command: %1%"
-msgstr ""
+msgstr "Comandă necunoscută: %1%"
 
 #: win32/UploadPage.cpp:41
 msgid "Upload slots"
-msgstr "Sloturi de Încărcare"
+msgstr "Sloturi de încărcare"
 
 #: win32/AboutDlg.cpp:59
 #, boost-format
 msgid "Upload: %1%, Download: %2%"
-msgstr ""
+msgstr "Încărcare: %1%, Descărcare: %2%"
 
 #: win32/TransferView.cpp:809
-#, fuzzy, boost-format
+#, boost-format
 msgid "Uploading %1%"
-msgstr "Încărcări"
+msgstr "Încărcare %1%"
 
 #: win32/Appearance2Page.cpp:36
 msgid "Uploads"
@@ -2171,11 +2127,13 @@ msgstr "Încărcări"
 
 #: win32/AdvancedPage.cpp:46
 msgid "Use CTRL for line history"
-msgstr "Folosește Ctrl pentru istoricul conexiunii"
+msgstr "Folosește Ctrl pentru istoricul convorbirii"
 
 #: win32/AdvancedPage.cpp:50
 msgid "Use Coral network when downloading hub lists (improves reliability)"
 msgstr ""
+"Folosește rețeaua Coral pentru descărcarea listelor de huburi (mărește "
+"fiabilitatea)"
 
 #: win32/AppearancePage.cpp:55
 msgid "Use OEM monospaced font for viewing text files"
@@ -2187,8 +2145,7 @@ msgstr "Folosește SOCKS5 pt. aflarea serverelor-gazdă"
 
 #: win32/CertificatesPage.cpp:41
 msgid "Use TLS when remote client supports it"
-msgstr ""
-"Folosește TLS [Transport Layer Security] cînd clientul distant îl suportă"
+msgstr "Folosește TLS cînd clientul opus îl suportă"
 
 #: win32/QueuePage.cpp:77
 msgid "Use antifragmentation method for downloads"
@@ -2196,13 +2153,13 @@ msgstr "Folosește metoda de antifragmentare pentru descărcări"
 
 #: win32/AdvancedPage.cpp:49
 msgid "Use extended menus with icons and titles"
-msgstr ""
+msgstr "Afișeayă meniuri extinse, cu imagini și titluri"
 
 #: win32/AppearancePage.cpp:54
 msgid "Use system icons when browsing files (slows browsing down a bit)"
 msgstr ""
-"Folosește iconițele de sistem la explorarea fișierelor (încetinește un pic "
-"explorarea)"
+"Folosește pictogramele de sistem la explorarea fișierelor (încetinește puțin "
+"răsfoirea)"
 
 #: win32/SearchFrame.cpp:33 win32/TransferView.cpp:42
 msgid "User"
@@ -2216,7 +2173,7 @@ msgstr "Descrierea Utilizatorului"
 msgid "User Menu"
 msgstr "Meniu Utilizator"
 
-#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:700
+#: win32/QueueFrame.cpp:430 win32/DirectoryListingFrame.cpp:700
 msgid "User offline"
 msgstr "Utilizator neconectat"
 
@@ -2229,9 +2186,9 @@ msgid "Users"
 msgstr "Utilizatori"
 
 #: win32/PublicHubsFrame.cpp:272
-#, fuzzy, boost-format
+#, boost-format
 msgid "Users: %1%"
-msgstr "Utilizatori"
+msgstr "Utilizatori: %1%"
 
 #: win32/SearchFrame.cpp:188
 msgid "Video"
@@ -2239,36 +2196,34 @@ msgstr "Video"
 
 #: win32/AppearancePage.cpp:50
 msgid "View status messages in main chat"
-msgstr "Afișează mesajele de stare în camera de taifas principală"
+msgstr "Afișează mesajele de stare în chat-ul principal"
 
 #: win32/UploadPage.cpp:63 win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Virtual name"
-msgstr "Numele Dosarului Virtual"
+msgstr "Numele virtual al directorului"
 
-#: win32/QueueFrame.cpp:423
-#, fuzzy, boost-format
+#: win32/QueueFrame.cpp:424
+#, boost-format
 msgid "Waiting (%1% of %2% users online)"
-msgstr "Aștept (Utilizator conectat)"
+msgstr "În așteptare (%1% din %2% utilizatori conectați)"
 
-#: win32/QueueFrame.cpp:421
+#: win32/QueueFrame.cpp:422
 msgid "Waiting (User online)"
-msgstr "Aștept (Utilizator conectat)"
+msgstr "În așteptare (Utilizator conectat)"
 
 #: win32/TabsPage.cpp:43 win32/WindowsPage.cpp:41
 #: win32/WaitingUsersFrame.cpp:33 win32/MainWindow.cpp:216
 #: win32/MainWindow.cpp:290
 msgid "Waiting Users"
-msgstr "Utilizatorii în Așteptare"
+msgstr "Utilizatorii în așteptare"
 
 #: win32/TransferView.cpp:627
-#, fuzzy
 msgid "Waiting for slot"
-msgstr "Utilizatorii în Așteptare"
+msgstr "În așteptare pentru slot"
 
 #: win32/TransferView.cpp:649
-#, fuzzy
 msgid "Waiting to retry"
-msgstr "Utilizatorii în Așteptare"
+msgstr "În așteptare pentru reîncercare"
 
 #: win32/WindowsPage.cpp:31
 msgid "Window options"
@@ -2276,7 +2231,7 @@ msgstr "Opțiuni pentru Ferestre"
 
 #: win32/Advanced3Page.cpp:29
 msgid "Write buffer size"
-msgstr "Măr. tampon scriere"
+msgstr "Dimensiunea tamponului de scriere"
 
 #: win32/HubFrame.cpp:897
 msgid "Your nick was already taken, please change to something else!"
@@ -2291,13 +2246,12 @@ msgid ""
 msgstr ""
 "Versiunea de controale obișnuite ale ferestrelor este prea veche pentru ca DC"
 "++ să ruleze corect și aproape sigur veți avea probleme cu interfața "
-"softului. Ar trebui să descărcați versiunea 5.80 sau mai mare de pe situl DC+"
-"+ sau direct de pe situl Microsoft."
+"softului. Ar trebui să descărcați versiunea 5.80 sau mai recentă de pe site-"
+"ul DC++ sau direct de pe site-ul Microsoft."
 
 #: win32/TransferView.cpp:674
-#, fuzzy
 msgid "file list"
-msgstr "Meniul Listei de Fișiere"
+msgstr "listă de fișiere"
 
 #: win32/QueuePage.cpp:41 win32/QueuePage.cpp:43 win32/QueuePage.cpp:45
 msgid "s"

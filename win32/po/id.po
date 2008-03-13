@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"PO-Revision-Date: 2008-02-05 22:55+0000\n"
-"Last-Translator: Dodywijaya <Unknown>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 03:36+0000\n"
+"Last-Translator: Jacek Sieka <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2008-03-04 21:48+0000\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: win32/MainWindow.cpp:862
@@ -138,7 +138,7 @@ msgstr "Arsip"
 msgid "&Force attempt"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1006 win32/WaitingUsersFrame.cpp:80
+#: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
 #: win32/PrivateFrame.cpp:380
 msgid "&Get file list"
 msgstr ""
@@ -157,7 +157,7 @@ msgstr ""
 msgid "&Match queue"
 msgstr "Cocokkan antrian"
 
-#: win32/QueueFrame.cpp:960 win32/QueueFrame.cpp:978 win32/QueueFrame.cpp:988
+#: win32/QueueFrame.cpp:961 win32/QueueFrame.cpp:979 win32/QueueFrame.cpp:989
 #, fuzzy
 msgid "&Move/Rename"
 msgstr "Ganti nama"
@@ -197,8 +197,8 @@ msgstr ""
 msgid "&Refresh"
 msgstr ""
 
-#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:968 win32/QueueFrame.cpp:980
-#: win32/QueueFrame.cpp:990 win32/HubListsDlg.cpp:79
+#: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
+#: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
 #: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
@@ -217,7 +217,7 @@ msgstr "Cari"
 msgid "&Search\tCtrl+S"
 msgstr "Cari"
 
-#: win32/QueueFrame.cpp:1013 win32/WaitingUsersFrame.cpp:85
+#: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
 msgid "&Send private message"
 msgstr ""
 
@@ -322,11 +322,11 @@ msgstr ""
 msgid "Advanced\\User Commands"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1022 win32/QueueFrame.cpp:1031
+#: win32/QueueFrame.cpp:1023 win32/QueueFrame.cpp:1032
 msgid "All"
 msgstr "Semua"
 
-#: win32/QueueFrame.cpp:431
+#: win32/QueueFrame.cpp:432
 #, fuzzy, boost-format
 msgid "All %1% users offline"
 msgstr "Pengguna terputus"
@@ -481,7 +481,7 @@ msgstr "Telusuri..."
 msgid "CID"
 msgstr ""
 
-#: win32/QueueFrame.cpp:477
+#: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "Inkonsistensi CRC32 (Pemeriksaan SFV)"
 
@@ -968,7 +968,7 @@ msgstr "Pengguna kesukaan ditambah"
 msgid "File"
 msgstr "Arsip"
 
-#: win32/QueueFrame.cpp:473
+#: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "Arsip tidak tersedia"
 
@@ -990,7 +990,7 @@ msgstr "Nama arsip"
 msgid "Filename:"
 msgstr "Nama arsip"
 
-#: win32/QueueFrame.cpp:287 win32/DirectoryListingFrame.cpp:636
+#: win32/QueueFrame.cpp:288 win32/DirectoryListingFrame.cpp:636
 #: win32/DirectoryListingFrame.cpp:652
 #, boost-format
 msgid "Files: %1%"
@@ -1047,7 +1047,7 @@ msgstr "FAQ"
 msgid "Full Path"
 msgstr "Path Lengkap"
 
-#: win32/QueueFrame.cpp:479
+#: win32/QueueFrame.cpp:480
 msgid "Full tree does not match TTH root"
 msgstr "Pohon yang diunduh tidak cocok dengan TTH root"
 
@@ -1079,7 +1079,7 @@ msgstr ""
 msgid "Help forum"
 msgstr "Forum bantuan"
 
-#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
 msgid "High"
 msgstr "Tinggi"
 
@@ -1087,7 +1087,7 @@ msgstr "Tinggi"
 msgid "High prio max size"
 msgstr "Prioritas tinggi"
 
-#: win32/QueueFrame.cpp:455 win32/QueueFrame.cpp:1001
+#: win32/QueueFrame.cpp:456 win32/QueueFrame.cpp:1002
 msgid "Highest"
 msgstr "Puncak"
 
@@ -1196,7 +1196,7 @@ msgstr ""
 msgid "Invalid number of slots"
 msgstr "Jumlat slot tidak valid"
 
-#: win32/QueueFrame.cpp:283
+#: win32/QueueFrame.cpp:284
 #, boost-format
 msgid "Items: %1%"
 msgstr ""
@@ -1290,7 +1290,7 @@ msgstr "Username"
 msgid "Lookup TTH at Bitzi.com"
 msgstr "Cari TTH di Bitzi.com"
 
-#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
+#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999
 msgid "Low"
 msgstr "Rendah"
 
@@ -1298,7 +1298,7 @@ msgstr "Rendah"
 msgid "Low prio max size"
 msgstr "Prioritas rendah"
 
-#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
+#: win32/QueueFrame.cpp:452 win32/QueueFrame.cpp:998
 msgid "Lowest"
 msgstr "Dasar"
 
@@ -1433,6 +1433,10 @@ msgstr ""
 msgid "Name"
 msgstr "Nama"
 
+#: win32/CommandDlg.cpp:203
+msgid "Name and command must not be empty"
+msgstr ""
+
 #: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Name under which the others see the directory"
 msgstr "Nama direktori yang dilihat pengguna lain"
@@ -1453,7 +1457,7 @@ msgstr "Berikut"
 msgid "Nick"
 msgstr "Nick"
 
-#: win32/QueueFrame.cpp:488
+#: win32/QueueFrame.cpp:489
 msgid "No errors"
 msgstr "Tak ada kesalahan"
 
@@ -1465,15 +1469,16 @@ msgstr "Tak ada kecocokan"
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "Tidak ada unduh baru bila kecepatan melebihi (KiB/s, 0 = non-aktif)"
 
-#: win32/QueueFrame.cpp:415
+#: win32/QueueFrame.cpp:416
 msgid "No users"
 msgstr "Tak ada pengguna"
 
-#: win32/QueueFrame.cpp:427
+#: win32/QueueFrame.cpp:428
 msgid "No users to download from"
 msgstr "Tidak ada pengguna untuk diunduh"
 
-#: win32/QueueFrame.cpp:453 win32/QueueFrame.cpp:999 win32/SearchFrame.cpp:155
+#: win32/QueueFrame.cpp:454 win32/QueueFrame.cpp:1000
+#: win32/SearchFrame.cpp:155
 msgid "Normal"
 msgstr "Normal"
 
@@ -1487,7 +1492,7 @@ msgstr ""
 "Catatan: Arsip muncul di share hanya setelah arsip tersebut sudah di-hash!"
 
 #: win32/DownloadPage.cpp:38
-#, c-format
+#, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
 msgstr "Catatan: akibat merubah kecepatan unduh, ini tidak 100% akurat..."
 
@@ -1588,7 +1593,7 @@ msgstr "Japri"
 msgid "PM history"
 msgstr "Sejarah Japri (pesan pribadi)"
 
-#: win32/QueueFrame.cpp:475
+#: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Pengguna pasif"
 
@@ -1600,7 +1605,7 @@ msgstr "Password"
 msgid "Path"
 msgstr "Path"
 
-#: win32/QueueFrame.cpp:450 win32/QueueFrame.cpp:996
+#: win32/QueueFrame.cpp:451 win32/QueueFrame.cpp:997
 msgid "Paused"
 msgstr "Tunda"
 
@@ -1693,7 +1698,7 @@ msgstr ""
 msgid "Raw"
 msgstr "Mentah"
 
-#: win32/QueueFrame.cpp:1020
+#: win32/QueueFrame.cpp:1021
 msgid "Re-add source"
 msgstr "Tambah ulang sumber"
 
@@ -1705,7 +1710,7 @@ msgstr "Siap mencari..."
 msgid "Really exit?"
 msgstr "Betul-betul ada?"
 
-#: win32/QueueFrame.cpp:692 win32/QueueFrame.cpp:697
+#: win32/QueueFrame.cpp:693 win32/QueueFrame.cpp:698
 #: win32/FavHubsFrame.cpp:232
 msgid "Really remove?"
 msgstr "Betul-betul hapus?"
@@ -1735,7 +1740,7 @@ msgstr "Daftar ke Windows untuk penanganan pautan URI magnet"
 msgid "Reliability"
 msgstr "Kehandalan"
 
-#: win32/QueueFrame.cpp:483 win32/TransferView.cpp:661
+#: win32/QueueFrame.cpp:484 win32/TransferView.cpp:661
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr ""
 
@@ -1743,11 +1748,11 @@ msgstr ""
 msgid "Remove slow filelists"
 msgstr ""
 
-#: win32/QueueFrame.cpp:1030
+#: win32/QueueFrame.cpp:1031
 msgid "Remove source"
 msgstr "Hapus sumber"
 
-#: win32/QueueFrame.cpp:1039
+#: win32/QueueFrame.cpp:1040
 msgid "Remove user from queue"
 msgstr "Hapus pengguna dari antrian"
 
@@ -1772,7 +1777,7 @@ msgstr ""
 msgid "Run in background"
 msgstr "Jalankan di latar belakang"
 
-#: win32/QueueFrame.cpp:435
+#: win32/QueueFrame.cpp:436
 msgid "Running..."
 msgstr "Berjalan..."
 
@@ -1874,7 +1879,7 @@ msgstr "Server"
 msgid "Set lowest prio for newly added files larger than Low prio size"
 msgstr "Prioritas terendah aktif"
 
-#: win32/QueueFrame.cpp:995
+#: win32/QueueFrame.cpp:996
 msgid "Set priority"
 msgstr "Atur prioritas"
 
@@ -1932,7 +1937,7 @@ msgstr "Tampilkan stempel waktu di obrolan secara default"
 msgid "Size"
 msgstr "Besar"
 
-#: win32/QueueFrame.cpp:284 win32/QueueFrame.cpp:288
+#: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
 #, fuzzy, boost-format
 msgid "Size: %1%"
@@ -1981,7 +1986,7 @@ msgstr "Suara"
 msgid "Source Type"
 msgstr "Jenis Sumber"
 
-#: win32/QueueFrame.cpp:481
+#: win32/QueueFrame.cpp:482
 msgid "Source too slow"
 msgstr ""
 
@@ -2143,7 +2148,7 @@ msgstr "Anda melihat direktori ini dengan nama"
 msgid "Unfinished downloads directory"
 msgstr "Direktori untuk unduh yang belum selesai"
 
-#: win32/QueueFrame.cpp:439 win32/QueueFrame.cpp:440
+#: win32/QueueFrame.cpp:440 win32/QueueFrame.cpp:441
 msgid "Unknown"
 msgstr "Tidak diketahui"
 
@@ -2214,7 +2219,7 @@ msgstr "Deskripsi Pengguna"
 msgid "User Menu"
 msgstr "Menu Pengguna"
 
-#: win32/QueueFrame.cpp:429 win32/DirectoryListingFrame.cpp:700
+#: win32/QueueFrame.cpp:430 win32/DirectoryListingFrame.cpp:700
 msgid "User offline"
 msgstr "Pengguna terputus"
 
@@ -2243,12 +2248,12 @@ msgstr "Tilik pesan status di obrolan utama"
 msgid "Virtual name"
 msgstr "Nama semu"
 
-#: win32/QueueFrame.cpp:423
+#: win32/QueueFrame.cpp:424
 #, fuzzy, boost-format
 msgid "Waiting (%1% of %2% users online)"
 msgstr "Menunggu (Pengguna online)"
 
-#: win32/QueueFrame.cpp:421
+#: win32/QueueFrame.cpp:422
 msgid "Waiting (User online)"
 msgstr "Menunggu (Pengguna online)"
 

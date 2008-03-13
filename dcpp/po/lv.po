@@ -7,13 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-04 23:00+0100\n"
-"Last-Translator:  <fenikss@users.sourceforge.net>\n"
+"POT-Creation-Date: 2008-03-12 21:38+0100\n"
+"PO-Revision-Date: 2008-03-05 01:06+0000\n"
+"Last-Translator: Fenikss-users <Unknown>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
-"2);\n"
+"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
 #, c-format, boost-format
@@ -125,8 +127,13 @@ msgstr "CRC32 neatbilstība (SFV-Pārbaude)"
 msgid "Certificate not trusted, unable to connect"
 msgstr ""
 
+#: dcpp/BufferedSocket.cpp:148
+#, fuzzy
+msgid "Connection closed"
+msgstr "Savienošanās taimauts"
+
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
-#: dcpp/BufferedSocket.cpp:154
+#: dcpp/BufferedSocket.cpp:131
 msgid "Connection timeout"
 msgstr "Savienošanās taimauts"
 
@@ -139,7 +146,7 @@ msgstr ""
 msgid "Directory already shared"
 msgstr "Mape jau ir koplietošanā"
 
-#: dcpp/BufferedSocket.cpp:407 dcpp/BufferedSocket.cpp:426
+#: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Atvienots"
 
@@ -290,7 +297,7 @@ msgstr "Izmest lietotāju(s)"
 msgid "Listening socket failed (you need to restart %1%): %2%"
 msgstr ""
 
-#: dcpp/BufferedSocket.cpp:261
+#: dcpp/BufferedSocket.cpp:237
 msgid "Maximum command length exceeded"
 msgstr ""
 
@@ -306,12 +313,12 @@ msgstr "Nav norādīta mape"
 msgid "No slots available"
 msgstr "Kanāli nav pieejami"
 
-#: dcpp/AdcHub.cpp:576
+#: dcpp/AdcHub.cpp:577
 #, boost-format
 msgid "Not listening for connections - please restart %1%"
 msgstr ""
 
-#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:115
+#: dcpp/Transfer.cpp:63 dcpp/Transfer.cpp:67 dcpp/ClientManager.cpp:114
 #: dcpp/SearchManager.cpp:267 dcpp/SearchManager.cpp:329
 #: dcpp/SearchManager.cpp:331
 msgid "Offline"
