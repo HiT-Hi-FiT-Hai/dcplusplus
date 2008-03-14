@@ -24,7 +24,7 @@ msgstr ""
 msgid ""
 "%1%\n"
 "Open download page?"
-msgstr "Deschide pagina de descărcare?"
+msgstr "%1%\nDeschide pagina de descărcare?"
 
 #: win32/TransferView.cpp:571
 #, boost-format

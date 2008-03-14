@@ -73,7 +73,7 @@ msgstr "%1% renombrado a %2%"
 #: dcpp/AdcHub.cpp:281
 #, boost-format
 msgid "%1% was kicked by %2%: %3%"
-msgstr "% 1% ha sido expulsado de% 2%:% 3%"
+msgstr "%1% ha sido expulsado de% 2%:% 3%"
 
 #: dcpp/AdcHub.cpp:284
 #, boost-format

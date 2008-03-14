@@ -1212,7 +1212,7 @@ msgstr "Velocidad de Subida"
 #: win32/SplashWindow.cpp:77
 #, boost-format
 msgid "Loading DC++, please wait... (%1%)"
-msgstr "Cargando DC++, por favor espere ... (% 1%)"
+msgstr "Cargando DC++, por favor espere ... (%1%)"
 
 #: win32/LogPage.cpp:47
 msgid "Log downloads"
@@ -1726,7 +1726,7 @@ msgstr "Solicitar una mejora"
 #: win32/TransferView.cpp:703
 #, boost-format
 msgid "Requesting %1%"
-msgstr "Solicitando % 1%"
+msgstr "Solicitando %1%"
 
 #: win32/HashProgressDlg.cpp:48
 msgid "Run in background"
@@ -2116,7 +2116,7 @@ msgstr "Desconocido"
 #: win32/HubFrame.cpp:387
 #, boost-format
 msgid "Unknown command: %1%"
-msgstr "Comando desconocido:% 1%"
+msgstr "Comando desconocido: %1%"
 
 #: win32/UploadPage.cpp:41
 msgid "Upload slots"
