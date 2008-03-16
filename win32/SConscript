@@ -14,7 +14,8 @@ env.Prepend(LIBS=["ssl", "crypto", "comctl32", "ws2_32", "ole32", "gdi32", "comd
 env.Append(CPPPATH=['#/openssl/include', "#/smartwin/include", "#/"])
 env.Append(LIBPATH=["#/openssl/lib"])
 
-dev.i18n(source_path, env, sources, 'dcpp-win32')
+headers=dev.get_sources(source_path, "*.h")
+dev.i18n(source_path, env, [sources,headers], 'dcpp-win32')
 
 ret = env.Program(target, [sources, res, dev.client, dev.zlib, dev.bzip2, dev.smartwin, dev.boost, dev.intl])
 Return('ret')

@@ -39,7 +39,9 @@ if 'gcc' in env['TOOLS']:
 
 env.Append(CPPDEFINES=["BUILDING_DCPP=1"])
 
-dev.i18n(source_path, env, sources, 'libdcpp')
+headers=dev.get_sources(source_path, "*.h")
+
+dev.i18n(source_path, env, [sources, headers], 'libdcpp')
 
 ret = env.StaticLibrary(target, sources)
 

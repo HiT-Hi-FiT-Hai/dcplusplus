@@ -40,6 +40,8 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_AUTO_REFRESH_TIME, N_("Auto refresh time") },
 	{ IDC_SETTINGS_AUTO_SEARCH_LIMIT, N_("Auto-search limit") },
 	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, N_("Min segment size") },
+	{ IDC_SETTINGS_SOCKET_IN_BUFFER, N_("Socket read buffer") },
+	{ IDC_SETTINGS_SOCKET_OUT_BUFFER, N_("Socket write buffer") },
 	{ 0, 0 }
 };
 
