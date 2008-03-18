@@ -25,23 +25,28 @@
 #include <dcpp/SettingsManager.h>
 
 PropPage::TextItem Advanced3Page::texts[] = {
+	{ IDC_SETTINGS_ROLLBACK, N_("Rollback") },
 	{ IDC_SETTINGS_B, N_("B") },
-	{ IDC_SETTINGS_WRITE_BUFFER, N_("Write buffer size") },
-	{ IDC_SETTINGS_KB, N_("KiB") },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, N_("Max hash speed") },
 	{ IDC_SETTINGS_MBS, N_("MiB/s") },
 	{ IDC_SETTINGS_PM_HISTORY, N_("PM history") },
-	{ IDC_SETTINGS_SEARCH_HISTORY, N_("Search history") },
 	{ IDC_SETTINGS_TEXT_MINISLOT, N_("Mini slot size") },
 	{ IDC_SETTINGS_KB2, N_("KiB") },
-	{ IDC_SETTINGS_BIND_ADDRESS, N_("Bind address") },
 	{ IDC_SETTINGS_MAX_FILELIST_SIZE, N_("Max filelist size") },
 	{ IDC_SETTINGS_MB, N_("MiB") },
+	{ IDC_SETTINGS_PID, N_("PID") },
 	{ IDC_SETTINGS_AUTO_REFRESH_TIME, N_("Auto refresh time") },
+	{ IDC_SETTINGS_WRITE_BUFFER, N_("Write buffer size") },
+	{ IDC_SETTINGS_KB, N_("KiB") },
 	{ IDC_SETTINGS_AUTO_SEARCH_LIMIT, N_("Auto-search limit") },
-	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, N_("Min segment size") },
+	{ IDC_SETTINGS_SEARCH_HISTORY, N_("Search history") },
+	{ IDC_SETTINGS_BIND_ADDRESS, N_("Bind address") },
 	{ IDC_SETTINGS_SOCKET_IN_BUFFER, N_("Socket read buffer") },
+	{ IDC_SETTINGS_B2, N_("B") },
 	{ IDC_SETTINGS_SOCKET_OUT_BUFFER, N_("Socket write buffer") },
+	{ IDC_SETTINGS_B3, N_("B") },
+	{ IDC_SETTINGS_MIN_SEGMENT_SIZE, N_("Min segment size") },
+	{ IDC_SETTINGS_KB3, N_("KiB") },
 	{ 0, 0 }
 };
 
