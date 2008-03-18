@@ -28,10 +28,9 @@
 #ifndef xCeption_h
 #define xCeption_h
 
-#include "../SmartUtil.h"
 #include "WindowsHeaders.h"
+#include "../SmartUtil.h"
 #include <stdexcept>
-#include "BasicTypes.h"
 
 namespace SmartWin
 {

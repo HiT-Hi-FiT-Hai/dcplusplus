@@ -31,7 +31,7 @@
 #ifndef WINCE
 
 #include "../../SmartUtil.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../resources/Icon.h"
 #include "../Policies.h"
 #include "../WindowClass.h"

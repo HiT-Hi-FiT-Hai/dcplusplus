@@ -311,7 +311,7 @@ void SearchFrame::layout() {
 		
 		rect.size.x = width;
 
-		long yedit = size->getTextSize(_T("A")).y + 10;
+		long yedit = size->getTextSize(_T("A")).y + 8;
 		long comboH = 5 * yedit;
 		
 		rect.pos.x += margin;

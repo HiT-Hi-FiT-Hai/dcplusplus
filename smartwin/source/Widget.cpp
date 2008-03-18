@@ -1,4 +1,3 @@
-// $Revision: 1.14 $
 /*
   Copyright (c) 2005, Thomas Hansen
   All rights reserved.
@@ -38,12 +37,11 @@
 #pragma warning( disable : 4311 )
 #endif
 
-#include "../include/smartwin/Threads.h"
 #include "../include/smartwin/Widget.h"
+
+#include "../include/smartwin/Threads.h"
 #include "../include/smartwin/Application.h"
-#include "../include/smartwin/BasicTypes.h"
 #include "../include/smartwin/xCeption.h"
-#include "../include/smartwin/WindowsHeaders.h"
 
 namespace SmartWin
 {

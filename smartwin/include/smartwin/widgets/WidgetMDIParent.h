@@ -29,7 +29,7 @@
 #define WidgetMDIParent_h
 
 #include "../Widget.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../Policies.h"
 #include "../aspects/AspectEnabled.h"
 #include "../aspects/AspectFocus.h"

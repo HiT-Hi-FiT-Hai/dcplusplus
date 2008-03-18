@@ -31,7 +31,7 @@
 #ifndef WINCE // Doesn't exist in Windows CE based systems
 
 #include "../Widget.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../Dispatchers.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"

@@ -1,7 +1,7 @@
 #ifndef ASPECTCONTEXTMENU_H_
 #define ASPECTCONTEXTMENU_H_
 
-#include "../BasicTypes.h"
+#include "../Point.h"
 
 namespace SmartWin {
 

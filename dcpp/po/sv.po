@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-08 01:16+0000\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-13 23:13+0000\n"
 "Last-Translator: NGK <ayumi.evolution@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -145,6 +145,10 @@ msgstr "Kunde ej öppna målfilen: %1%"
 msgid "Directory already shared"
 msgstr "Katalogen är redan utdelad"
 
+#: dcpp/ADLSearch.h:281
+msgid "Discard"
+msgstr ""
+
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Frånkopplad"
@@ -154,7 +158,7 @@ msgstr "Frånkopplad"
 msgid "Disconnected user leaving the hub: %1%"
 msgstr "Frånkopplad användare lämnar hubben: %1%"
 
-#: dcpp/DCPlusPlus.cpp:103
+#: dcpp/DCPlusPlus.cpp:107
 msgid "Download Queue"
 msgstr "Nedladdningskö"
 
@@ -262,7 +266,7 @@ msgstr "Fullt träd matchar inte TTH-roten"
 msgid "Generated new TLS certificate"
 msgstr "Genererade nytt TLS-certifikat"
 
-#: dcpp/DCPlusPlus.cpp:97
+#: dcpp/DCPlusPlus.cpp:101
 msgid "Hash database"
 msgstr "Hashdatabas"
 
@@ -339,11 +343,15 @@ msgstr "Omdirigera användare"
 msgid "Remove all subdirectories before adding this one"
 msgstr "Ta bort alla underkataloger innan du lägger till denna"
 
+#: dcpp/BitInputStream.h:40
+msgid "Request to seek beyond the end of data"
+msgstr ""
+
 #: dcpp/DownloadManager.cpp:225
 msgid "Response does not match request"
 msgstr "Svaret matchar inte förfrågningen"
 
-#: dcpp/DCPlusPlus.cpp:100
+#: dcpp/DCPlusPlus.cpp:104
 msgid "Shared Files"
 msgstr "Delade filer"
 
@@ -360,6 +368,10 @@ msgstr "TLS avstängd. misslyckades att generera ceritifikat: %1%"
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr "TLS avstängd, ingen certifikatsfil bestämd"
+
+#: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
+msgid "TTH inconsistency"
+msgstr ""
 
 #: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"

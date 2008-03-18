@@ -29,6 +29,7 @@
 #ifndef SMARTWIN_Place_h
 #define SMARTWIN_Place_h
 
+#include "Point.h"
 #include "Rectangle.h"
 
 namespace SmartWin

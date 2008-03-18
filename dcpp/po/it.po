@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-05 09:34+0000\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-18 10:53+0000\n"
 "Last-Translator: Kryppy <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -55,7 +55,7 @@ msgstr "%1% (%2%) ha lo stesso CID {%3%} di %4% (%5%), ignora"
 #: dcpp/NmdcHub.cpp:281
 #, boost-format
 msgid "%1% (Nick unknown)"
-msgstr "%1% (Nick usconosciuto)"
+msgstr "%1% (Nick sconosciuto)"
 
 #: dcpp/HashManager.cpp:767
 #, boost-format
@@ -131,9 +131,8 @@ msgid "Certificate not trusted, unable to connect"
 msgstr "Certificato non valido, impossibile connettersi"
 
 #: dcpp/BufferedSocket.cpp:148
-#, fuzzy
 msgid "Connection closed"
-msgstr "Connessione in timeout"
+msgstr "Connessione chiusa"
 
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:131
@@ -149,6 +148,10 @@ msgstr "Impossibile aprire il file di destinazione: %1%"
 msgid "Directory already shared"
 msgstr "Cartella già condivisa"
 
+#: dcpp/ADLSearch.h:281
+msgid "Discard"
+msgstr "Abbandona"
+
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Disconnesso"
@@ -158,7 +161,7 @@ msgstr "Disconnesso"
 msgid "Disconnected user leaving the hub: %1%"
 msgstr "Utente disconnesso lasciando l' hub: %1%"
 
-#: dcpp/DCPlusPlus.cpp:103
+#: dcpp/DCPlusPlus.cpp:107
 msgid "Download Queue"
 msgstr "Download in Coda"
 
@@ -221,8 +224,8 @@ msgid ""
 "Failed to set up the socks server for UDP relay (check socks address and "
 "port)"
 msgstr ""
-"Impossibile impostare il server sockr per il relay UDP (verificare l "
-"indirizzo  del sock e la porta)"
+"Impossibile impostare il server socks per il relay UDP (verificare l "
+"indirizzo del sock e la porta)"
 
 #: dcpp/ShareManager.cpp:776
 #, boost-format
@@ -267,7 +270,7 @@ msgstr "L'albero delle cartelle non è coerente con la radice TTH"
 msgid "Generated new TLS certificate"
 msgstr "Creato nuovo certificato TLS"
 
-#: dcpp/DCPlusPlus.cpp:97
+#: dcpp/DCPlusPlus.cpp:101
 msgid "Hash database"
 msgstr "Archivio hash"
 
@@ -285,7 +288,7 @@ msgid ""
 "Hub probably uses an old version of ADC, please encourage the owner to "
 "upgrade"
 msgstr ""
-"Probabilmente l' Hub utilizza una vechhia versione di ADC , si prega di "
+"Probabilmente l' Hub utilizza una vecchia versione di ADC , si prega di "
 "incoraggiare il proprietario ad aggiornarlo"
 
 #: dcpp/DownloadManager.cpp:220
@@ -344,11 +347,15 @@ msgstr "Reindirizza utente(i)"
 msgid "Remove all subdirectories before adding this one"
 msgstr "Elimina tutte le sottocartelle prima di aggiungere questa"
 
+#: dcpp/BitInputStream.h:40
+msgid "Request to seek beyond the end of data"
+msgstr "Richiesta di ricercare oltre la fine dei dati"
+
 #: dcpp/DownloadManager.cpp:225
 msgid "Response does not match request"
 msgstr "Risultato non corrisponde con la richiesta"
 
-#: dcpp/DCPlusPlus.cpp:100
+#: dcpp/DCPlusPlus.cpp:104
 msgid "Shared Files"
 msgstr "File Condivisi"
 
@@ -365,6 +372,10 @@ msgstr "TLS disattivato, file certificato non creato: %1%"
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr "TLS disattivato, file certificato non impostato"
+
+#: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
+msgid "TTH inconsistency"
+msgstr "incoerenza TTH"
 
 #: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"

@@ -7,16 +7,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-05 03:37+0000\n"
-"Last-Translator: Anio-pke-users <Unknown>\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-14 08:07+0000\n"
+"Last-Translator: Jacek Sieka <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#: win32/AboutDlg.cpp:58
+msgid ""
+"\n"
+"(c) Copyright 2001-2008 Jacek Sieka\n"
+"Ex-codeveloper: Per Lindén\n"
+"Graphics: Martin Skogevall et al.\n"
+"DC++ is licenced under GPL\n"
+"http://dcplusplus.sourceforge.net/"
+msgstr ""
 
 #: win32/MainWindow.cpp:862
 #, fuzzy, boost-format
@@ -35,12 +45,12 @@ msgstr ""
 msgid "%1% files/h, %2% files left"
 msgstr ""
 
-#: win32/SearchFrame.cpp:576
+#: win32/SearchFrame.cpp:575
 #, boost-format
 msgid "%1% filtered"
 msgstr ""
 
-#: win32/SearchFrame.cpp:571
+#: win32/SearchFrame.cpp:570 win32/FinishedFrameBase.h:281
 #, boost-format
 msgid "%1% item"
 msgid_plural "%1% items"
@@ -60,6 +70,7 @@ msgstr[0] "Non hai usuarios"
 msgstr[1] "Non hai usuarios"
 
 #: win32/TransferView.cpp:586 win32/TransferView.cpp:633
+#: win32/FinishedFrameBase.h:283
 #, boost-format
 msgid "%1%/s"
 msgstr ""
@@ -78,8 +89,12 @@ msgstr "Engadido"
 msgid "&Add folder"
 msgstr ""
 
-#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
-#: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
+#: win32/UserInfoBase.h:98
+msgid "&Browse file list"
+msgstr ""
+
+#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:773
+#: win32/SearchFrame.cpp:803 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
 #: win32/Appearance2Page.cpp:30
 #, fuzzy
 msgid "&Browse..."
@@ -91,6 +106,7 @@ msgid "&Change"
 msgstr "Cambios en DC++"
 
 #: win32/PrivateFrame.cpp:388 win32/HubFrame.cpp:1178
+#: win32/MDIChildFrame.h:191
 #, fuzzy
 msgid "&Close"
 msgstr "Cores"
@@ -111,7 +127,7 @@ msgid "&Disconnect"
 msgstr "Pechar desconectados"
 
 #: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
-#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
+#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:741
 #, fuzzy
 msgid "&Download"
 msgstr "Descargas"
@@ -140,7 +156,7 @@ msgid "&Force attempt"
 msgstr ""
 
 #: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
-#: win32/PrivateFrame.cpp:380
+#: win32/PrivateFrame.cpp:380 win32/UserInfoBase.h:96
 msgid "&Get file list"
 msgstr ""
 
@@ -153,7 +169,7 @@ msgstr "Descargar todo o directorio"
 msgid "&Help"
 msgstr ""
 
-#: win32/PrivateFrame.cpp:381
+#: win32/PrivateFrame.cpp:381 win32/UserInfoBase.h:99
 #, fuzzy
 msgid "&Match queue"
 msgstr "Buscar de cola"
@@ -171,6 +187,10 @@ msgstr ""
 #, fuzzy
 msgid "&Notepad\tCtrl+N"
 msgstr "Bloc de notas"
+
+#: win32/FinishedFrameBase.h:226 win32/FinishedFrameBase.h:242
+msgid "&Open"
+msgstr ""
 
 #: win32/FavHubsFrame.cpp:82 win32/FavHubsFrame.cpp:281
 #: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:292
@@ -198,9 +218,10 @@ msgstr ""
 #: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
 #: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
-#: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
+#: win32/SearchFrame.cpp:754 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
 #: win32/ADLSearchFrame.cpp:293 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
+#: win32/FinishedFrameBase.h:229 win32/FinishedFrameBase.h:245
 #, fuzzy
 msgid "&Remove"
 msgstr "Eliminar Fonte"
@@ -216,6 +237,7 @@ msgid "&Search\tCtrl+S"
 msgstr "Buscar"
 
 #: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
+#: win32/UserInfoBase.h:100
 msgid "&Send private message"
 msgstr ""
 
@@ -224,7 +246,8 @@ msgstr ""
 msgid "&View"
 msgstr "Video"
 
-#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
+#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:745
+#: win32/FinishedFrameBase.h:225 win32/FinishedFrameBase.h:241
 msgid "&View as text"
 msgstr ""
 
@@ -252,6 +275,10 @@ msgstr ""
 msgid "-.-- files/h, %1% files left"
 msgstr ""
 
+#: win32/HashProgressDlg.cpp:85 win32/HashProgressDlg.cpp:95
+msgid "-:--:-- left"
+msgstr ""
+
 #: win32/WinUtil.cpp:1036
 msgid ""
 "A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
@@ -271,6 +298,10 @@ msgstr "Opcións de búsqueda"
 msgid "AWAY"
 msgstr "Ausente"
 
+#: win32/AboutDlg.cpp:56
+msgid "About DC++"
+msgstr ""
+
 #: win32/MainWindow.cpp:245
 msgid "About DC++..."
 msgstr "Acerca de DC++"
@@ -281,6 +312,7 @@ msgstr "Aceptar comandos definibles de usuario dende o hub"
 
 #: win32/WaitingUsersFrame.cpp:84 win32/PrivateFrame.cpp:384
 #: win32/HubFrame.cpp:1170 win32/PublicHubsFrame.cpp:449
+#: win32/UserInfoBase.h:102
 #, fuzzy
 msgid "Add To &Favorites"
 msgstr "Hubs Favoritos"
@@ -293,28 +325,29 @@ msgstr ""
 msgid "Added"
 msgstr "Engadido"
 
-#: win32/MainWindow.cpp:358 win32/PublicHubsFrame.cpp:52
+#: win32/FavHubProperties.cpp:51 win32/MainWindow.cpp:358
+#: win32/PublicHubsFrame.cpp:52
 msgid "Address"
 msgstr "Dirección"
 
-#: win32/SettingsDialog.cpp:67
+#: win32/SettingsDialog.cpp:87
 msgid "Advanced"
 msgstr "Avanzadas"
 
-#: win32/SettingsDialog.cpp:69
+#: win32/SettingsDialog.cpp:89
 msgid "Advanced\\Experts only"
 msgstr ""
 
-#: win32/SettingsDialog.cpp:68
+#: win32/SettingsDialog.cpp:88
 #, fuzzy
 msgid "Advanced\\Logs"
 msgstr "Avanzadas"
 
-#: win32/SettingsDialog.cpp:71
+#: win32/SettingsDialog.cpp:91
 msgid "Advanced\\Security Certificates"
 msgstr ""
 
-#: win32/SettingsDialog.cpp:70
+#: win32/SettingsDialog.cpp:90
 msgid "Advanced\\User Commands"
 msgstr ""
 
@@ -344,20 +377,20 @@ msgstr ""
 msgid "Any"
 msgstr "Cualquera"
 
-#: win32/SettingsDialog.cpp:63
+#: win32/SettingsDialog.cpp:83
 msgid "Appearance"
 msgstr "Apariencia"
 
-#: win32/SettingsDialog.cpp:64
+#: win32/SettingsDialog.cpp:84
 msgid "Appearance\\Colors and sounds"
 msgstr ""
 
-#: win32/SettingsDialog.cpp:65
+#: win32/SettingsDialog.cpp:85
 #, fuzzy
 msgid "Appearance\\Tabs"
 msgstr "Apariencia"
 
-#: win32/SettingsDialog.cpp:66
+#: win32/SettingsDialog.cpp:86
 #, fuzzy
 msgid "Appearance\\Windows"
 msgstr "Apariencia"
@@ -386,7 +419,7 @@ msgstr "Auto Slot / Usuario"
 msgid "Auto priority settings"
 msgstr ""
 
-#: win32/Advanced3Page.cpp:40
+#: win32/Advanced3Page.cpp:38
 msgid "Auto refresh time"
 msgstr ""
 
@@ -450,7 +483,8 @@ msgstr "Modo Ausente desactivado"
 msgid "Away mode on: %1%"
 msgstr "Modo Ausente desactivado"
 
-#: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
+#: win32/Advanced3Page.cpp:29 win32/Advanced3Page.cpp:45
+#: win32/Advanced3Page.cpp:47 win32/SearchFrame.cpp:171
 #: win32/ADLSProperties.cpp:74
 msgid "B"
 msgstr "B"
@@ -459,7 +493,7 @@ msgstr "B"
 msgid "B/s"
 msgstr ""
 
-#: win32/Advanced3Page.cpp:37
+#: win32/Advanced3Page.cpp:43
 #, fuzzy
 msgid "Bind address"
 msgstr "Dirección"
@@ -476,9 +510,18 @@ msgstr "Explorar..."
 msgid "CID"
 msgstr ""
 
+#: win32/FinishedFrameBase.h:343
+msgid "CRC Checked"
+msgstr ""
+
 #: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "ERRO de CRC32 (¿ficheiro corrupto?) (SFV-Check)"
+
+#: win32/SettingsDialog.cpp:69 win32/CommandDlg.cpp:127
+#, fuzzy
+msgid "Cancel"
+msgstr "Cambios en DC++"
 
 #: win32/MainWindow.cpp:244
 msgid "Change Log"
@@ -533,9 +576,13 @@ msgstr "Pechar desconectados"
 msgid "Colors"
 msgstr "Cores"
 
-#: win32/UCPage.cpp:54
+#: win32/UCPage.cpp:54 win32/CommandDlg.cpp:68
 msgid "Command"
 msgstr "Comando"
+
+#: win32/CommandDlg.cpp:64
+msgid "Command Type"
+msgstr ""
 
 #: win32/SearchFrame.cpp:184
 msgid "Compressed"
@@ -568,6 +615,10 @@ msgstr ""
 msgid "Confirm item removal in download queue"
 msgstr ""
 
+#: win32/UserInfoBase.h:105
+msgid "Connect to hub"
+msgstr ""
+
 #: win32/HubFrame.cpp:497
 msgid "Connected"
 msgstr "Conectado"
@@ -591,7 +642,7 @@ msgstr "Conexión"
 msgid "Connection"
 msgstr "Conexión"
 
-#: win32/SettingsDialog.cpp:58
+#: win32/SettingsDialog.cpp:78
 #, fuzzy
 msgid "Connection settings"
 msgstr "Conexión"
@@ -600,6 +651,10 @@ msgstr "Conexión"
 #, fuzzy
 msgid "Connections"
 msgstr "Conexión"
+
+#: win32/CommandDlg.cpp:65
+msgid "Context"
+msgstr ""
 
 #: win32/HubFrame.cpp:1174 win32/PublicHubsFrame.cpp:450
 msgid "Copy &address to clipboard"
@@ -657,6 +712,12 @@ msgstr "Páxina principal"
 msgid "DC++ discussion forum"
 msgstr "Foro de discusión"
 
+#: win32/MagnetDlg.cpp:45
+msgid ""
+"DC++ has detected a MAGNET link with a file hash that can be searched for on "
+"the Direct Connect network.  What would you like to do?"
+msgstr ""
+
 #: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:113
 msgid "Default"
 msgstr ""
@@ -669,13 +730,14 @@ msgstr "Mensaxe por defecto en modo ausente"
 msgid "Default download directory"
 msgstr "Directorio de descargas por defecto"
 
+#: win32/FavHubProperties.cpp:52 win32/FavHubProperties.cpp:55
 #: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
 #: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
 #: win32/UsersFrame.cpp:143
 msgid "Description"
 msgstr "Descripción"
 
-#: win32/ADLSearchFrame.cpp:34
+#: win32/ADLSearchFrame.cpp:34 win32/ADLSProperties.cpp:55
 #, fuzzy
 msgid "Destination Directory"
 msgstr "Directorio de descargas por defecto"
@@ -690,7 +752,7 @@ msgid "Directories"
 msgstr "Directorios"
 
 #: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
-#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
+#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:529 win32/LogPage.cpp:32
 #: win32/ADLSProperties.cpp:63
 msgid "Directory"
 msgstr "Directorio"
@@ -748,7 +810,7 @@ msgstr "Contribuir €€€/$$$ (paypal)"
 msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
 msgstr ""
 
-#: win32/TransferView.cpp:58
+#: win32/TransferView.cpp:58 win32/HashProgressDlg.cpp:105
 msgid "Done"
 msgstr "Feito"
 
@@ -776,15 +838,15 @@ msgstr "Descargado"
 msgid "Download files from the Direct Connect network"
 msgstr ""
 
-#: win32/SearchFrame.cpp:764
+#: win32/SearchFrame.cpp:763
 msgid "Download to..."
 msgstr "Descargar a..."
 
-#: win32/SearchFrame.cpp:744
+#: win32/SearchFrame.cpp:743
 msgid "Download whole directory"
 msgstr "Descargar todo o directorio"
 
-#: win32/SearchFrame.cpp:794
+#: win32/SearchFrame.cpp:793
 msgid "Download whole directory to..."
 msgstr "Descargar todo o directorio a:"
 
@@ -818,22 +880,22 @@ msgstr "Descargando a lista pública de hubs..."
 msgid "Downloading public hub list... (%1%)"
 msgstr "Descargando a lista pública de hubs..."
 
-#: win32/AboutDlg.cpp:63
+#: win32/AboutDlg.cpp:71
 msgid "Downloading..."
 msgstr "Descargando..."
 
-#: win32/SettingsDialog.cpp:59 win32/MainWindow.cpp:248
+#: win32/SettingsDialog.cpp:79 win32/MainWindow.cpp:248
 #: win32/TransferView.cpp:92 win32/TransferView.cpp:94
 #: win32/Appearance2Page.cpp:40
 msgid "Downloads"
 msgstr "Descargas"
 
-#: win32/SettingsDialog.cpp:60
+#: win32/SettingsDialog.cpp:80
 #, fuzzy
 msgid "Downloads\\Favorites"
 msgstr "Descargas"
 
-#: win32/SettingsDialog.cpp:61
+#: win32/SettingsDialog.cpp:81
 #, fuzzy
 msgid "Downloads\\Queue"
 msgstr "Cola de Descargas"
@@ -899,7 +961,7 @@ msgstr "Tamaño exacto"
 msgid "Executable"
 msgstr "Executable"
 
-#: win32/MainWindow.cpp:1003
+#: win32/MainWindow.cpp:998
 msgid "Exit"
 msgstr ""
 
@@ -970,6 +1032,10 @@ msgstr "Usuario engadido á lista de favoritos"
 msgid "File"
 msgstr "Arquivo"
 
+#: win32/MagnetDlg.cpp:46
+msgid "File Hash:"
+msgstr ""
+
 #: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "Ficheiro non dispoñible"
@@ -983,7 +1049,7 @@ msgid "Filelist Menu"
 msgstr ""
 
 #: win32/QueueFrame.cpp:36 win32/TransferView.cpp:53 win32/LogPage.cpp:35
-#: win32/ADLSProperties.cpp:62
+#: win32/ADLSProperties.cpp:62 win32/FinishedFrameBase.h:336
 msgid "Filename"
 msgstr "Nome do Ficheiro"
 
@@ -1057,12 +1123,18 @@ msgstr ""
 msgid "GeoIP database update"
 msgstr ""
 
-#: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
+#: win32/SearchFrame.cpp:174 win32/WinUtil.cpp:1049
+#: win32/ADLSProperties.cpp:77
 msgid "GiB"
 msgstr ""
 
 #: win32/WaitingUsersFrame.cpp:83 win32/PrivateFrame.cpp:382
+#: win32/UserInfoBase.h:103
 msgid "Grant &extra slot"
+msgstr ""
+
+#: win32/AboutDlg.cpp:62
+msgid "Greetz and Contributors"
 msgstr ""
 
 #: win32/AppearancePage.cpp:56
@@ -1072,6 +1144,10 @@ msgstr ""
 #: win32/DownloadPage.cpp:42
 msgid "HTTP Proxy (for hublist only)"
 msgstr "Dirección HTTP proxy para baixa-la lista de hubs"
+
+#: win32/SettingsDialog.cpp:73 win32/CommandDlg.cpp:131
+msgid "Help"
+msgstr ""
 
 #: win32/MainWindow.cpp:242
 msgid "Help &Contents\tF1"
@@ -1107,12 +1183,17 @@ msgstr ""
 msgid "Hits: %1%"
 msgstr ""
 
-#: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
+#: win32/FavHubProperties.cpp:48 win32/TabsPage.cpp:37
+#: win32/SearchFrame.cpp:39 win32/UCPage.cpp:55 win32/FinishedFrameBase.h:340
 msgid "Hub"
 msgstr "Hub"
 
 #: win32/UsersFrame.cpp:31
 msgid "Hub (last seen in, if offline)"
+msgstr ""
+
+#: win32/CommandDlg.cpp:69
+msgid "Hub IP / DNS (empty = all, 'op' = where operator)"
 msgstr ""
 
 #: win32/CommandDlg.cpp:90
@@ -1157,6 +1238,10 @@ msgstr "IP"
 #: win32/HubFrame.cpp:337
 #, boost-format
 msgid "IP: %1%, Port: %2%/%3%/%4%"
+msgstr ""
+
+#: win32/FavHubProperties.cpp:49
+msgid "Identification (leave blank for defaults)"
 msgstr ""
 
 #: win32/TransferView.cpp:537 win32/TransferView.cpp:838
@@ -1228,8 +1313,9 @@ msgstr ""
 "aumentarán o tamaño do share)"
 
 #: win32/QueuePage.cpp:30 win32/QueuePage.cpp:32 win32/QueuePage.cpp:34
-#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:30
-#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
+#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:34
+#: win32/Advanced3Page.cpp:40 win32/Advanced3Page.cpp:49
+#: win32/SearchFrame.cpp:172 win32/WinUtil.cpp:1053
 #: win32/ADLSProperties.cpp:75
 msgid "KiB"
 msgstr ""
@@ -1241,6 +1327,10 @@ msgstr ""
 #: win32/AppearancePage.cpp:34
 msgid "Language file"
 msgstr "Ficheiro de idioma"
+
+#: win32/AboutDlg.cpp:64
+msgid "Latest stable version"
+msgstr ""
 
 #: win32/DownloadPage.cpp:35
 msgid "Limits"
@@ -1341,6 +1431,10 @@ msgid_plural "Matched %1% files"
 msgstr[0] ""
 msgstr[1] ""
 
+#: win32/ADLSProperties.cpp:53
+msgid "Max FileSize"
+msgstr ""
+
 #: win32/PublicHubsFrame.cpp:57
 #, fuzzy
 msgid "Max Hubs"
@@ -1356,12 +1450,12 @@ msgstr "Tamaño"
 msgid "Max Users"
 msgstr "Usuarios"
 
-#: win32/Advanced3Page.cpp:38
+#: win32/Advanced3Page.cpp:35
 #, fuzzy
 msgid "Max filelist size"
 msgstr "Rexistra-las transferencias das listas de ficheiros"
 
-#: win32/Advanced3Page.cpp:31
+#: win32/Advanced3Page.cpp:30
 msgid "Max hash speed"
 msgstr ""
 
@@ -1373,17 +1467,21 @@ msgstr ""
 msgid "Maximum simultaneous downloads (0 = infinite)"
 msgstr "Número máximo de descargas simultáneas (0 = Sin límite)"
 
-#: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
+#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:173 win32/WinUtil.cpp:1051
 #: win32/ADLSProperties.cpp:76
 msgid "MiB"
 msgstr ""
 
-#: win32/Advanced3Page.cpp:32
+#: win32/Advanced3Page.cpp:31
 msgid "MiB/s"
 msgstr ""
 
 #: win32/GeneralPage.cpp:33
 msgid "MiBits/s"
+msgstr ""
+
+#: win32/ADLSProperties.cpp:52
+msgid "Min FileSize"
 msgstr ""
 
 #: win32/PublicHubsFrame.cpp:55
@@ -1409,7 +1507,7 @@ msgstr ""
 msgid "Min filesize"
 msgstr ""
 
-#: win32/Advanced3Page.cpp:42
+#: win32/Advanced3Page.cpp:48
 msgid "Min segment size"
 msgstr ""
 
@@ -1418,7 +1516,7 @@ msgstr ""
 msgid "Min sources online"
 msgstr "Esperando (Usuario conectado)"
 
-#: win32/Advanced3Page.cpp:35
+#: win32/Advanced3Page.cpp:33
 msgid "Mini slot size"
 msgstr ""
 
@@ -1436,11 +1534,12 @@ msgstr ""
 msgid "Move &Up"
 msgstr ""
 
-#: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
+#: win32/FavHubProperties.cpp:50 win32/UCPage.cpp:53
+#: win32/PublicHubsFrame.cpp:49 win32/CommandDlg.cpp:67
 msgid "Name"
 msgstr "Nome"
 
-#: win32/CommandDlg.cpp:203
+#: win32/CommandDlg.cpp:215
 msgid "Name and command must not be empty"
 msgstr ""
 
@@ -1460,9 +1559,15 @@ msgstr ""
 msgid "Next"
 msgstr "Seguinte"
 
-#: win32/GeneralPage.cpp:29 win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+#: win32/FavHubProperties.cpp:53 win32/GeneralPage.cpp:29
+#: win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+#: win32/FinishedFrameBase.h:339
 msgid "Nick"
 msgstr "Usuario"
+
+#: win32/FinishedFrameBase.h:143
+msgid "No"
+msgstr ""
 
 #: win32/QueueFrame.cpp:489
 msgid "No errors"
@@ -1475,6 +1580,10 @@ msgstr "Ningunha Coincidencia"
 #: win32/DownloadPage.cpp:37
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "Non iniciar descargas se a velocidade de baixada é superior a: (kB/s)"
+
+#: win32/AboutDlg.cpp:69
+msgid "No transfers yet"
+msgstr ""
 
 #: win32/QueueFrame.cpp:416
 msgid "No users"
@@ -1498,7 +1607,7 @@ msgid "Note; Files appear in the share only after they've been hashed!"
 msgstr ""
 
 #: win32/DownloadPage.cpp:38
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
 msgstr "Nota: Debido ós cambios de velocidade, isto non é preciso ó 100%..."
 
@@ -1512,6 +1621,10 @@ msgstr "Bloc de notas"
 
 #: win32/Appearance2Page.cpp:29
 msgid "Notification sound"
+msgstr ""
+
+#: win32/SettingsDialog.cpp:65 win32/CommandDlg.cpp:123
+msgid "OK"
 msgstr ""
 
 #: win32/WinUtil.cpp:333
@@ -1534,7 +1647,11 @@ msgstr "Só usuarios con Slots libres"
 msgid "Only where I'm op"
 msgstr "Só onde son Op"
 
-#: win32/MainWindow.cpp:199 win32/MainWindow.cpp:1004
+#: win32/FinishedFrameBase.h:227 win32/FinishedFrameBase.h:243
+msgid "Open &folder"
+msgstr ""
+
+#: win32/MainWindow.cpp:199 win32/MainWindow.cpp:999
 msgid "Open downloads directory"
 msgstr "Abrir directorio de descargas"
 
@@ -1590,23 +1707,33 @@ msgstr "Opcións de búsqueda"
 msgid "Outgoing connection settings"
 msgstr ""
 
+#: win32/Advanced3Page.cpp:37
+msgid "PID"
+msgstr ""
+
 #: win32/CommandDlg.cpp:86
 msgid "PM"
 msgstr ""
 
-#: win32/Advanced3Page.cpp:33
+#: win32/Advanced3Page.cpp:32
 msgid "PM history"
+msgstr ""
+
+#: win32/CommandDlg.cpp:66
+msgid "Parameters"
 msgstr ""
 
 #: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Usuario Pasivo"
 
-#: win32/NetworkPage.cpp:45 win32/FavHubsFrame.cpp:35
+#: win32/NetworkPage.cpp:45 win32/FavHubProperties.cpp:54
+#: win32/FavHubsFrame.cpp:35
 msgid "Password"
 msgstr "Contrasinal"
 
 #: win32/QueueFrame.cpp:42 win32/SearchFrame.cpp:36 win32/TransferView.cpp:54
+#: win32/FinishedFrameBase.h:338
 msgid "Path"
 msgstr "Ruta"
 
@@ -1618,9 +1745,13 @@ msgstr "En Pausa"
 msgid "Personal Information"
 msgstr "Información persoal"
 
-#: win32/SettingsDialog.cpp:57
+#: win32/SettingsDialog.cpp:77
 msgid "Personal information"
 msgstr "Xeral"
+
+#: win32/WinUtil.cpp:1045
+msgid "PiB"
+msgstr ""
 
 #: win32/SearchFrame.cpp:187
 msgid "Picture"
@@ -1633,6 +1764,12 @@ msgstr "Introduce un Alias na sección de Configuración / Xeral !"
 #: win32/HubFrame.cpp:525
 msgid "Please enter a password"
 msgstr "Introduci-lo contrasinal"
+
+#: win32/HashProgressDlg.cpp:41
+msgid ""
+"Please wait while DC++ indexes your files (they won't be shared until "
+"they've been indexed)..."
+msgstr ""
 
 #: win32/WindowsPage.cpp:61
 msgid "Popup box to input password for hubs"
@@ -1697,7 +1834,7 @@ msgstr "Conectado"
 msgid "Rating"
 msgstr "Compartir"
 
-#: win32/AboutDlg.cpp:61
+#: win32/AboutDlg.cpp:67
 #, c-format, boost-format
 msgid "Ratio (up/down): %1$0.2f"
 msgstr ""
@@ -1710,7 +1847,7 @@ msgstr ""
 msgid "Re-add source"
 msgstr "Re-Engadir Fonte"
 
-#: win32/SearchFrame.cpp:1024
+#: win32/SearchFrame.cpp:1023
 msgid "Ready to search..."
 msgstr ""
 
@@ -1754,6 +1891,10 @@ msgstr ""
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr ""
 
+#: win32/FinishedFrameBase.h:230 win32/FinishedFrameBase.h:246
+msgid "Remove &all"
+msgstr ""
+
 #: win32/QueuePage.cpp:70
 msgid "Remove slow filelists"
 msgstr ""
@@ -1762,7 +1903,7 @@ msgstr ""
 msgid "Remove source"
 msgstr "Eliminar Fonte"
 
-#: win32/QueueFrame.cpp:1040
+#: win32/QueueFrame.cpp:1040 win32/UserInfoBase.h:107
 msgid "Remove user from queue"
 msgstr "Quitar usuario da cola"
 
@@ -1784,6 +1925,10 @@ msgstr "Solicitar unha mellora"
 msgid "Requesting %1%"
 msgstr ""
 
+#: win32/Advanced3Page.cpp:28
+msgid "Rollback"
+msgstr ""
+
 #: win32/HashProgressDlg.cpp:48
 msgid "Run in background"
 msgstr ""
@@ -1801,13 +1946,13 @@ msgstr "SOCKS5"
 msgid "Search"
 msgstr "Buscar"
 
-#: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
-#: win32/SearchFrame.cpp:1020
+#: win32/SearchFrame.cpp:989 win32/SearchFrame.cpp:1004
+#: win32/SearchFrame.cpp:1019
 #, fuzzy, boost-format
 msgid "Search - %1%"
 msgstr "Buscar"
 
-#: win32/SearchFrame.cpp:1025
+#: win32/SearchFrame.cpp:1024
 msgid "Search - Ready to search..."
 msgstr ""
 
@@ -1821,9 +1966,13 @@ msgstr "Buscar"
 msgid "Search Spy"
 msgstr "Espía de Búsquedas"
 
-#: win32/SpyFrame.cpp:34
+#: win32/SpyFrame.cpp:34 win32/ADLSProperties.cpp:50
 msgid "Search String"
 msgstr "Cadena de búsqueda"
+
+#: win32/ADLSProperties.cpp:51
+msgid "Search Type"
+msgstr ""
 
 #: win32/SearchFrame.cpp:116
 msgid "Search for"
@@ -1837,7 +1986,7 @@ msgstr "Buscar alternativos"
 msgid "Search for file"
 msgstr "Buscar por ficheiro"
 
-#: win32/Advanced3Page.cpp:34
+#: win32/Advanced3Page.cpp:42
 #, fuzzy
 msgid "Search history"
 msgstr "Buscar por"
@@ -1851,12 +2000,12 @@ msgstr "Opcións de búsqueda"
 msgid "Search spam detected from %1%"
 msgstr ""
 
-#: win32/SearchFrame.cpp:984
+#: win32/SearchFrame.cpp:983
 #, fuzzy, boost-format
 msgid "Searching for %1%..."
 msgstr "Buscar por"
 
-#: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
+#: win32/SearchFrame.cpp:998 win32/SearchFrame.cpp:1017
 #, boost-format
 msgid "Searching too soon, next search in %1% second"
 msgid_plural "Searching too soon, next search in %1% seconds"
@@ -1899,11 +2048,11 @@ msgstr "Establecer prioridade"
 msgid "Set timestamps"
 msgstr ""
 
-#: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:298
+#: win32/SettingsDialog.cpp:58 win32/MainWindow.cpp:298
 msgid "Settings"
 msgstr "Opcións"
 
-#: win32/MainWindow.cpp:202 win32/MainWindow.cpp:1005
+#: win32/MainWindow.cpp:202 win32/MainWindow.cpp:1000
 msgid "Settings..."
 msgstr "Opcións..."
 
@@ -1919,11 +2068,11 @@ msgstr "Compartido"
 msgid "Shared directories"
 msgstr "Directorios compartidos"
 
-#: win32/SettingsDialog.cpp:62
+#: win32/SettingsDialog.cpp:82
 msgid "Sharing"
 msgstr "Compartir"
 
-#: win32/MainWindow.cpp:1002
+#: win32/MainWindow.cpp:997
 msgid "Show"
 msgstr "Mostrar"
 
@@ -1946,8 +2095,13 @@ msgstr "Mostra-la hora nas fiestras de chat"
 #: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
 #: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
 #: win32/SearchFrame.cpp:119 win32/TransferView.cpp:59
+#: win32/FinishedFrameBase.h:341
 msgid "Size"
 msgstr "Tamaño"
+
+#: win32/ADLSProperties.cpp:54
+msgid "Size Type"
+msgstr ""
 
 #: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
@@ -1974,6 +2128,14 @@ msgstr "Slots establecidos"
 #: win32/MainWindow.cpp:566
 #, boost-format
 msgid "Slots: %1%/%2%"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:44
+msgid "Socket read buffer"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:46
+msgid "Socket write buffer"
 msgstr ""
 
 #: win32/NetworkPage.cpp:42
@@ -2015,6 +2177,7 @@ msgid "Specify a server to connect to"
 msgstr "Especificar servidor a conectar"
 
 #: win32/TransferView.cpp:44 win32/TransferView.cpp:57
+#: win32/FinishedFrameBase.h:342
 msgid "Speed"
 msgstr "Velocidade"
 
@@ -2027,6 +2190,10 @@ msgstr ""
 #, fuzzy
 msgid "Start a search for this file"
 msgstr "Buscar por ficheiro"
+
+#: win32/HashProgressDlg.cpp:42
+msgid "Statistics"
+msgstr ""
 
 #: win32/QueueFrame.cpp:37 win32/TransferView.cpp:43 win32/TransferView.cpp:55
 msgid "Status"
@@ -2075,11 +2242,19 @@ msgstr ""
 msgid "Tag"
 msgstr "Información"
 
+#: win32/CommandDlg.cpp:71
+msgid "Text sent to hub"
+msgstr ""
+
 #: win32/HubFrame.cpp:967
 msgid "This hub is not a favorite hub"
 msgstr ""
 
-#: win32/SpyFrame.cpp:36
+#: win32/WinUtil.cpp:1047
+msgid "TiB"
+msgstr ""
+
+#: win32/SpyFrame.cpp:36 win32/FinishedFrameBase.h:337
 msgid "Time"
 msgstr "Hora"
 
@@ -2099,6 +2274,10 @@ msgstr "Ver Hora desactivado"
 msgid "Timestamps enabled"
 msgstr "Ver Hora activado"
 
+#: win32/CommandDlg.cpp:70
+msgid "To"
+msgstr ""
+
 #: win32/WindowsPage.cpp:60
 msgid "Toggle window when selecting an active tab"
 msgstr ""
@@ -2110,6 +2289,10 @@ msgstr "Tam. total:"
 #: win32/SpyFrame.cpp:159
 #, boost-format
 msgid "Total: %1%"
+msgstr ""
+
+#: win32/AboutDlg.cpp:63
+msgid "Totals"
 msgstr ""
 
 #: win32/TransferView.cpp:46
@@ -2173,7 +2356,7 @@ msgstr ""
 msgid "Upload slots"
 msgstr "slots de subida"
 
-#: win32/AboutDlg.cpp:59
+#: win32/AboutDlg.cpp:61
 #, boost-format
 msgid "Upload: %1%, Download: %2%"
 msgstr ""
@@ -2290,9 +2473,13 @@ msgstr ""
 msgid "Window options"
 msgstr ""
 
-#: win32/Advanced3Page.cpp:29
+#: win32/Advanced3Page.cpp:39
 msgid "Write buffer size"
 msgstr "Buffer de escritura"
+
+#: win32/FinishedFrameBase.h:143
+msgid "Yes"
+msgstr ""
 
 #: win32/HubFrame.cpp:897
 msgid "Your nick was already taken, please change to something else!"

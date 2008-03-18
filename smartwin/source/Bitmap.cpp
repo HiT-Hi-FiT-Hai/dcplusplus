@@ -28,6 +28,7 @@
 */
 
 #include "../include/smartwin/resources/Bitmap.h"
+#include "../include/smartwin/Point.h"
 #include "../include/smartwin/Application.h"
 
 namespace SmartWin

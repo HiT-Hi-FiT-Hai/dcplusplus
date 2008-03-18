@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-05 00:25+0000\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-13 23:10+0000\n"
 "Last-Translator: Jacek Sieka <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -146,6 +146,10 @@ msgstr ""
 msgid "Directory already shared"
 msgstr "디렉토리가 이미 공유됨"
 
+#: dcpp/ADLSearch.h:281
+msgid "Discard"
+msgstr ""
+
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "끊어짐"
@@ -155,7 +159,7 @@ msgstr "끊어짐"
 msgid "Disconnected user leaving the hub: %1%"
 msgstr ""
 
-#: dcpp/DCPlusPlus.cpp:103
+#: dcpp/DCPlusPlus.cpp:107
 msgid "Download Queue"
 msgstr "다운로드 대기열"
 
@@ -261,7 +265,7 @@ msgstr "받은 파일-목록의 TTH(Tigertree Hash) Root 값이 일치하지 않
 msgid "Generated new TLS certificate"
 msgstr ""
 
-#: dcpp/DCPlusPlus.cpp:97
+#: dcpp/DCPlusPlus.cpp:101
 msgid "Hash database"
 msgstr "Hash 데이터베이스"
 
@@ -334,12 +338,16 @@ msgstr "접속-전환(Redirect)할 허브 제안하기..."
 msgid "Remove all subdirectories before adding this one"
 msgstr "추가하기 전에 이미 공유된 모든 서브-디렉토리를 공유에서 삭제하세요"
 
+#: dcpp/BitInputStream.h:40
+msgid "Request to seek beyond the end of data"
+msgstr ""
+
 #: dcpp/DownloadManager.cpp:225
 #, fuzzy
 msgid "Response does not match request"
 msgstr "받은 파일-목록의 TTH(Tigertree Hash) Root 값이 일치하지 않음"
 
-#: dcpp/DCPlusPlus.cpp:100
+#: dcpp/DCPlusPlus.cpp:104
 msgid "Shared Files"
 msgstr "파일 공유!"
 
@@ -355,6 +363,10 @@ msgstr "TLS를 사용할 수 없음, 인증 파일 셋이 없음"
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr "TLS를 사용할 수 없음, 인증 파일 셋이 없음"
+
+#: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
+msgid "TTH inconsistency"
+msgstr ""
 
 #: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"

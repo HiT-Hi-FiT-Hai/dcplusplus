@@ -29,7 +29,7 @@
 #define WidgetMDIFrame_h
 
 #include "../WindowsHeaders.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../WindowClass.h"
 #include "WidgetWindowBase.h"
 #include <boost/scoped_ptr.hpp>

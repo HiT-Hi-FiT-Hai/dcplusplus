@@ -25,7 +25,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "../include/smartwin/BasicTypes.h"
+
+#include "../include/smartwin/Point.h"
 #include "../include/smartwin/Widget.h"
 
 namespace SmartWin

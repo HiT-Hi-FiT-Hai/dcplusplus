@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-11 15:41+0000\n"
-"Last-Translator: Szabolcs Molnár <Unknown>\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-16 22:54+0000\n"
+"Last-Translator: eMTee <Unknown>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -128,9 +128,8 @@ msgid "Certificate not trusted, unable to connect"
 msgstr "A tanúsítvány nem megbízható, a kapcsolódás nem lehetséges"
 
 #: dcpp/BufferedSocket.cpp:148
-#, fuzzy
 msgid "Connection closed"
-msgstr "Időtúllépés"
+msgstr "Kapcsolat lezárva"
 
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:131
@@ -146,6 +145,10 @@ msgstr "Nem sikerült megnyitni a célfájlt a következő miatt: %1%"
 msgid "Directory already shared"
 msgstr "A könyvtár már meg van osztva"
 
+#: dcpp/ADLSearch.h:281
+msgid "Discard"
+msgstr "Eldob"
+
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Szétkapcsolva"
@@ -155,7 +158,7 @@ msgstr "Szétkapcsolva"
 msgid "Disconnected user leaving the hub: %1%"
 msgstr "A hubról kilépő felhasználó szétkapcsolva: %1%"
 
-#: dcpp/DCPlusPlus.cpp:103
+#: dcpp/DCPlusPlus.cpp:107
 msgid "Download Queue"
 msgstr "Letöltési Sor"
 
@@ -264,7 +267,7 @@ msgstr "A teljes fa nem megfelelő a TTH gyökérhez"
 msgid "Generated new TLS certificate"
 msgstr "Új TLS tanúsítvány generálva"
 
-#: dcpp/DCPlusPlus.cpp:97
+#: dcpp/DCPlusPlus.cpp:101
 msgid "Hash database"
 msgstr "Hash adatbázis"
 
@@ -341,11 +344,15 @@ msgstr "Felhasználó(k) átirányítása"
 msgid "Remove all subdirectories before adding this one"
 msgstr "Távolíts el minden alkönyvtárat, mielőtt ezt felveszed"
 
+#: dcpp/BitInputStream.h:40
+msgid "Request to seek beyond the end of data"
+msgstr "Kérés az adatsor vége utáni pozícionálásra"
+
 #: dcpp/DownloadManager.cpp:225
 msgid "Response does not match request"
 msgstr "A válasz nem felel meg a kérésnek"
 
-#: dcpp/DCPlusPlus.cpp:100
+#: dcpp/DCPlusPlus.cpp:104
 msgid "Shared Files"
 msgstr "Megosztott fájlok"
 
@@ -363,6 +370,10 @@ msgstr "TLS letiltva, a tanúsítvány fájl generálása sikertelen: %1%"
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr "TLS letiltva, nincs tanúsítvány fájl beállítva"
+
+#: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
+msgid "TTH inconsistency"
+msgstr "TTH inkonzisztencia"
 
 #: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"

@@ -28,7 +28,7 @@
 */
 #include "../include/smartwin/Application.h"
 #include "../SmartUtil/tstring.h"
-#include "../include/smartwin/BasicTypes.h"
+#include "../include/smartwin/Point.h"
 #include "../include/smartwin/aspects/AspectMouse.h"
 #include "../include/smartwin/aspects/AspectSizable.h"
 

@@ -1,6 +1,8 @@
 #ifndef DISPATCHERS_H_
 #define DISPATCHERS_H_
 
+#include "WindowsHeaders.h"
+
 #include <functional>
 
 namespace SmartWin

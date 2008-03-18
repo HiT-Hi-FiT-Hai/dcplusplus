@@ -28,9 +28,9 @@
 #ifndef LibraryLoader_h
 #define LibraryLoader_h
 
+#include "WindowsHeaders.h"
 #include "../SmartUtil.h"
 #include "Threads.h"
-#include "WindowsHeaders.h"
 #include "xCeption.h"
 #include <map>
 #include <utility>

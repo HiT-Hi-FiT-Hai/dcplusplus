@@ -1,6 +1,7 @@
 #include "../include/smartwin/WindowClass.h"
 #include "../include/smartwin/Application.h"
 #include "../include/smartwin/xCeption.h"
+#include "../include/smartwin/Widget.h"
 
 #include <typeinfo>
 

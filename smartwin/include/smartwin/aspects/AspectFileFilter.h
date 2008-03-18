@@ -28,10 +28,10 @@
 #ifndef AspectFileFilter_h
 #define AspectFileFilter_h
 
+#include "../WindowsHeaders.h"
 #include <vector>
 #include "SmartUtil.h"
 #include "../xCeption.h"
-#include "../WindowsHeaders.h"
 
 namespace SmartWin
 {

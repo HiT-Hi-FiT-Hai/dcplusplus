@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcpp\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-05 09:45+0000\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-17 14:40+0000\n"
 "Last-Translator: Kryppy <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:20+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: dcpp/Util.cpp:381
@@ -132,9 +132,8 @@ msgid "Certificate not trusted, unable to connect"
 msgstr "Le certificat n'est pas De Confiance, ne parvient pas à se connecter"
 
 #: dcpp/BufferedSocket.cpp:148
-#, fuzzy
 msgid "Connection closed"
-msgstr "Temps d'attente dépassé"
+msgstr "Connexion fermée"
 
 #: dcpp/Socket.cpp:154 dcpp/ConnectionManager.cpp:182
 #: dcpp/BufferedSocket.cpp:131
@@ -150,6 +149,10 @@ msgstr "Impossible ouvrir le fichier cible: %1%"
 msgid "Directory already shared"
 msgstr "Répertoire déjà partagé"
 
+#: dcpp/ADLSearch.h:281
+msgid "Discard"
+msgstr "Abandonner"
+
 #: dcpp/BufferedSocket.cpp:404
 msgid "Disconnected"
 msgstr "Déconnecté"
@@ -159,7 +162,7 @@ msgstr "Déconnecté"
 msgid "Disconnected user leaving the hub: %1%"
 msgstr "Utilisateur déconnecté en sortant de l'hub: %1%"
 
-#: dcpp/DCPlusPlus.cpp:103
+#: dcpp/DCPlusPlus.cpp:107
 msgid "Download Queue"
 msgstr "File d'attente Téléchargements"
 
@@ -268,7 +271,7 @@ msgstr "Toute l'arborescence ne trouve pas de racine TTH"
 msgid "Generated new TLS certificate"
 msgstr "Nouveau certificat TLS créé"
 
-#: dcpp/DCPlusPlus.cpp:97
+#: dcpp/DCPlusPlus.cpp:101
 msgid "Hash database"
 msgstr "Hachage de la base de données"
 
@@ -345,11 +348,15 @@ msgstr "Rediriger utilisateur(s)"
 msgid "Remove all subdirectories before adding this one"
 msgstr "Retirer tous les sous-répertoires avant d'ajouter celui-çi"
 
+#: dcpp/BitInputStream.h:40
+msgid "Request to seek beyond the end of data"
+msgstr "Demande de chercher au-delà de la fin des données"
+
 #: dcpp/DownloadManager.cpp:225
 msgid "Response does not match request"
 msgstr "Le résultat ne correspond pas a la demande"
 
-#: dcpp/DCPlusPlus.cpp:100
+#: dcpp/DCPlusPlus.cpp:104
 msgid "Shared Files"
 msgstr "Fichiers partagés"
 
@@ -366,6 +373,10 @@ msgstr "TLS désactivé, échec de la création du certificat:%1%"
 #: dcpp/CryptoManager.cpp:211
 msgid "TLS disabled, no certificate file set"
 msgstr "TLS désactivé, pas de fichier certificat"
+
+#: dcpp/MerkleCheckOutputStream.h:53 dcpp/MerkleCheckOutputStream.h:113
+msgid "TTH inconsistency"
+msgstr "Inconsistance TTH"
 
 #: dcpp/QueueManager.cpp:510 dcpp/QueueManager.cpp:519
 msgid "Target filename too long"

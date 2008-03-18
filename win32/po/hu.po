@@ -7,16 +7,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dcplusplus\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-11 17:27+0000\n"
-"Last-Translator: Szabolcs Molnár <Unknown>\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-18 15:54+0000\n"
+"Last-Translator: eMTee <Unknown>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#: win32/AboutDlg.cpp:58
+msgid ""
+"\n"
+"(c) Copyright 2001-2008 Jacek Sieka\n"
+"Ex-codeveloper: Per Lindén\n"
+"Graphics: Martin Skogevall et al.\n"
+"DC++ is licenced under GPL\n"
+"http://dcplusplus.sourceforge.net/"
+msgstr ""
+"\n"
+"(c) Copyright 2001-2008 Jacek Sieka\n"
+"Korábbi kódfejlesztő: Per Lindén\n"
+"Grafika: Martin Skogevall et al.\n"
+"A DC++ GPL licensz alatt terjed\n"
+"http://dcplusplus.sourceforge.net/"
 
 #: win32/MainWindow.cpp:862
 #, boost-format
@@ -37,12 +53,12 @@ msgstr "%1% (%2$0.2f)"
 msgid "%1% files/h, %2% files left"
 msgstr "%1% fájl/óra, %2% fájl van hátra"
 
-#: win32/SearchFrame.cpp:576
+#: win32/SearchFrame.cpp:575
 #, boost-format
 msgid "%1% filtered"
 msgstr "%1% kiszűrve"
 
-#: win32/SearchFrame.cpp:571
+#: win32/SearchFrame.cpp:570 win32/FinishedFrameBase.h:281
 #, boost-format
 msgid "%1% item"
 msgid_plural "%1% items"
@@ -62,6 +78,7 @@ msgstr[0] "%1% felhasználó"
 msgstr[1] "%1% felhasználó"
 
 #: win32/TransferView.cpp:586 win32/TransferView.cpp:633
+#: win32/FinishedFrameBase.h:283
 #, boost-format
 msgid "%1%/s"
 msgstr "%1%/s"
@@ -75,12 +92,17 @@ msgstr "%1%/s, %2% van hátra"
 msgid "&Add"
 msgstr "Hozzá&adás"
 
+# (nem fér ki több)
 #: win32/UploadPage.cpp:37 win32/FavoriteDirsPage.cpp:34
 msgid "&Add folder"
-msgstr "Mappa hozzá&adása"
+msgstr "Hozzá&adás"
 
-#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
-#: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
+#: win32/UserInfoBase.h:98
+msgid "&Browse file list"
+msgstr "&Fájl-lista böngészése"
+
+#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:773
+#: win32/SearchFrame.cpp:803 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
 #: win32/Appearance2Page.cpp:30
 msgid "&Browse..."
 msgstr "&Tallózás..."
@@ -90,6 +112,7 @@ msgid "&Change"
 msgstr "&Változtatás"
 
 #: win32/PrivateFrame.cpp:388 win32/HubFrame.cpp:1178
+#: win32/MDIChildFrame.h:191
 msgid "&Close"
 msgstr "&Bezárás"
 
@@ -107,7 +130,7 @@ msgid "&Disconnect"
 msgstr "Szét&kapcsolás"
 
 #: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
-#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
+#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:741
 msgid "&Download"
 msgstr "&Letöltés"
 
@@ -132,7 +155,7 @@ msgid "&Force attempt"
 msgstr "&Kényszerített próbálkozás"
 
 #: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
-#: win32/PrivateFrame.cpp:380
+#: win32/PrivateFrame.cpp:380 win32/UserInfoBase.h:96
 msgid "&Get file list"
 msgstr "&Fájl-lista letöltése"
 
@@ -144,7 +167,7 @@ msgstr "&Könyvtárhoz ugrás"
 msgid "&Help"
 msgstr "&Segítség"
 
-#: win32/PrivateFrame.cpp:381
+#: win32/PrivateFrame.cpp:381 win32/UserInfoBase.h:99
 msgid "&Match queue"
 msgstr "&Egyeztetés a letöltésekkel"
 
@@ -160,6 +183,10 @@ msgstr "&Új..."
 #: win32/MainWindow.cpp:223
 msgid "&Notepad\tCtrl+N"
 msgstr "&Jegyzettömb\tCtrl+N"
+
+#: win32/FinishedFrameBase.h:226 win32/FinishedFrameBase.h:242
+msgid "&Open"
+msgstr "&Megnyitás"
 
 #: win32/FavHubsFrame.cpp:82 win32/FavHubsFrame.cpp:281
 #: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:292
@@ -186,9 +213,10 @@ msgstr "&Frissítés"
 #: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
 #: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
-#: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
+#: win32/SearchFrame.cpp:754 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
 #: win32/ADLSearchFrame.cpp:293 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
+#: win32/FinishedFrameBase.h:229 win32/FinishedFrameBase.h:245
 msgid "&Remove"
 msgstr "&Eltávolítás"
 
@@ -201,6 +229,7 @@ msgid "&Search\tCtrl+S"
 msgstr "&Keresés\tCtrl+S"
 
 #: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
+#: win32/UserInfoBase.h:100
 msgid "&Send private message"
 msgstr "&Privát üzenet küldése"
 
@@ -208,7 +237,8 @@ msgstr "&Privát üzenet küldése"
 msgid "&View"
 msgstr "&Nézet"
 
-#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
+#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:745
+#: win32/FinishedFrameBase.h:225 win32/FinishedFrameBase.h:241
 msgid "&View as text"
 msgstr "&Megtekintés szövegként"
 
@@ -236,6 +266,10 @@ msgstr "-.-- B/s, %1% van hátra"
 msgid "-.-- files/h, %1% files left"
 msgstr "-.-- fájl/óra, %1% fájl van hátra"
 
+#: win32/HashProgressDlg.cpp:85 win32/HashProgressDlg.cpp:95
+msgid "-:--:-- left"
+msgstr "-:--:-- van hátra"
+
 #: win32/WinUtil.cpp:1036
 msgid ""
 "A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
@@ -257,6 +291,10 @@ msgstr "ADL Keresés Tulajdonságai"
 msgid "AWAY"
 msgstr "AWAY"
 
+#: win32/AboutDlg.cpp:56
+msgid "About DC++"
+msgstr "A DC++-ról"
+
 #: win32/MainWindow.cpp:245
 msgid "About DC++..."
 msgstr "A DC++-ról..."
@@ -267,6 +305,7 @@ msgstr "Felhasználói parancsok elfogadása a hubtól"
 
 #: win32/WaitingUsersFrame.cpp:84 win32/PrivateFrame.cpp:384
 #: win32/HubFrame.cpp:1170 win32/PublicHubsFrame.cpp:449
+#: win32/UserInfoBase.h:102
 msgid "Add To &Favorites"
 msgstr "&Kedvencekhez Ad"
 
@@ -279,27 +318,28 @@ msgstr ""
 msgid "Added"
 msgstr "Felvéve"
 
-#: win32/MainWindow.cpp:358 win32/PublicHubsFrame.cpp:52
+#: win32/FavHubProperties.cpp:51 win32/MainWindow.cpp:358
+#: win32/PublicHubsFrame.cpp:52
 msgid "Address"
 msgstr "Cim"
 
-#: win32/SettingsDialog.cpp:67
+#: win32/SettingsDialog.cpp:87
 msgid "Advanced"
 msgstr "Haladó"
 
-#: win32/SettingsDialog.cpp:69
+#: win32/SettingsDialog.cpp:89
 msgid "Advanced\\Experts only"
 msgstr "Haladó\\Csak Szakértőknek"
 
-#: win32/SettingsDialog.cpp:68
+#: win32/SettingsDialog.cpp:88
 msgid "Advanced\\Logs"
 msgstr "Haladó\\Naplózás"
 
-#: win32/SettingsDialog.cpp:71
+#: win32/SettingsDialog.cpp:91
 msgid "Advanced\\Security Certificates"
 msgstr "Haladó\\Biztonsági Tanúsítványok"
 
-#: win32/SettingsDialog.cpp:70
+#: win32/SettingsDialog.cpp:90
 msgid "Advanced\\User Commands"
 msgstr "Haladó\\Felhasználói Parancsok"
 
@@ -322,28 +362,29 @@ msgid "Allow TLS connections to hubs without trusted certificate"
 msgstr ""
 "TLS kapcsolatok engedélyezése a megbízható tanúsítvány nélküli hubokhoz"
 
+# (nem fér ki több)
 #: win32/CommandDlg.cpp:117
 msgid "Always open help file with this dialog"
-msgstr "Mindig nyissa meg a segítséget ezzel a párbeszédablakkal"
+msgstr "Mindig nyisson segítséget ehhez az ablakhoz"
 
 #: win32/SearchFrame.cpp:182 win32/HubFrame.cpp:119
 #: win32/PublicHubsFrame.cpp:138
 msgid "Any"
 msgstr "Bármely"
 
-#: win32/SettingsDialog.cpp:63
+#: win32/SettingsDialog.cpp:83
 msgid "Appearance"
 msgstr "Megjelenés"
 
-#: win32/SettingsDialog.cpp:64
+#: win32/SettingsDialog.cpp:84
 msgid "Appearance\\Colors and sounds"
 msgstr "Megjelenés\\Színek és hangok"
 
-#: win32/SettingsDialog.cpp:65
+#: win32/SettingsDialog.cpp:85
 msgid "Appearance\\Tabs"
 msgstr "Megjelenés\\Fülek"
 
-#: win32/SettingsDialog.cpp:66
+#: win32/SettingsDialog.cpp:86
 msgid "Appearance\\Windows"
 msgstr "Megjelenés\\Ablakok"
 
@@ -371,9 +412,9 @@ msgstr "Automatikus slot biztosítása / Nick"
 msgid "Auto priority settings"
 msgstr "Automatikus fontossági sorrend beállításai"
 
-#: win32/Advanced3Page.cpp:40
+#: win32/Advanced3Page.cpp:38
 msgid "Auto refresh time"
-msgstr "Frissítés"
+msgstr "Auto frissítési idő"
 
 #: win32/AdvancedPage.cpp:30
 msgid "Auto-away on minimize (and back on restore)"
@@ -390,12 +431,12 @@ msgstr "Auto-keresés korláta"
 
 #: win32/QueuePage.cpp:37
 msgid "Autodrop settings"
-msgstr "Auto elvetés beállítások"
+msgstr "Automatikus elvetés beállításai"
 
 #: win32/QueuePage.cpp:69
 msgid "Autodrop slow sources for all queue items (except filelists)"
 msgstr ""
-"Lassú források automatikus elvetése minden listaelemhez (fájl-listák "
+"Lassú források automatikus eldobása a sor minden elemében (fájl-listák "
 "kivételével)"
 
 #: win32/ADLSearchFrame.cpp:40
@@ -415,10 +456,10 @@ msgid "Automatically match queue for auto search hits"
 msgstr ""
 "Listák automatikus egyeztetése a letöltésekkel alternatív forrás találatakor"
 
+# (nem fér ki több)
 #: win32/UploadPage.cpp:39
 msgid "Automatically open an extra slot if speed is below (0 = disable)"
-msgstr ""
-"Automatikusan extra slot nyitása, ha a sebesség ez alatt van (0 = letiltva)"
+msgstr "Auto extra slot nyitása ha a sebesség ez alatt van (0 = letiltva)"
 
 #: win32/QueuePage.cpp:72
 msgid "Automatically search for alternative download locations"
@@ -438,7 +479,8 @@ msgstr "Away mód kikapcsolva"
 msgid "Away mode on: %1%"
 msgstr "Away mód bekapcsolva: %1%"
 
-#: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
+#: win32/Advanced3Page.cpp:29 win32/Advanced3Page.cpp:45
+#: win32/Advanced3Page.cpp:47 win32/SearchFrame.cpp:171
 #: win32/ADLSProperties.cpp:74
 msgid "B"
 msgstr "B"
@@ -447,7 +489,7 @@ msgstr "B"
 msgid "B/s"
 msgstr "B/s"
 
-#: win32/Advanced3Page.cpp:37
+#: win32/Advanced3Page.cpp:43
 msgid "Bind address"
 msgstr "Kötési cím"
 
@@ -463,9 +505,18 @@ msgstr "Tallózás..."
 msgid "CID"
 msgstr "CID"
 
+#: win32/FinishedFrameBase.h:343
+msgid "CRC Checked"
+msgstr "CRC Ellenőrizve"
+
 #: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32 inkonzisztencia (SFV-Ellenőrzéskor)"
+
+#: win32/SettingsDialog.cpp:69 win32/CommandDlg.cpp:127
+#, fuzzy
+msgid "Cancel"
+msgstr "&Változtatás"
 
 #: win32/MainWindow.cpp:244
 msgid "Change Log"
@@ -485,7 +536,7 @@ msgstr "Válassz mappát"
 
 #: win32/TransferView.cpp:45
 msgid "Chunk"
-msgstr "Darab"
+msgstr "Rész"
 
 #: win32/TransferView.cpp:48
 msgid "Cipher"
@@ -519,9 +570,13 @@ msgstr "Szétkapcsolódottak bezárása"
 msgid "Colors"
 msgstr "Színek"
 
-#: win32/UCPage.cpp:54
+#: win32/UCPage.cpp:54 win32/CommandDlg.cpp:68
 msgid "Command"
 msgstr "Parancs"
+
+#: win32/CommandDlg.cpp:64
+msgid "Command Type"
+msgstr "Parancs típus"
 
 #: win32/SearchFrame.cpp:184
 msgid "Compressed"
@@ -551,6 +606,10 @@ msgstr "Megerősítés kedvenc hub eltávolításakor"
 msgid "Confirm item removal in download queue"
 msgstr "Megerősítés kérése a letöltési sorból való eltávolításkor"
 
+#: win32/UserInfoBase.h:105
+msgid "Connect to hub"
+msgstr "Kapcsolódás a hubhoz"
+
 #: win32/HubFrame.cpp:497
 msgid "Connected"
 msgstr "Kapcsolódva"
@@ -572,13 +631,17 @@ msgstr "Kapcsolódás a következőhöz: %1%..."
 msgid "Connection"
 msgstr "Kapcsolat"
 
-#: win32/SettingsDialog.cpp:58
+#: win32/SettingsDialog.cpp:78
 msgid "Connection settings"
 msgstr "Kapcsolat beállításai"
 
 #: win32/TransferView.cpp:83 win32/TransferView.cpp:89
 msgid "Connections"
 msgstr "Kapcsolatok"
+
+#: win32/CommandDlg.cpp:65
+msgid "Context"
+msgstr "Összefüggés"
 
 #: win32/HubFrame.cpp:1174 win32/PublicHubsFrame.cpp:450
 msgid "Copy &address to clipboard"
@@ -634,6 +697,14 @@ msgstr "DC++ Honlap"
 msgid "DC++ discussion forum"
 msgstr "DC++ fórum"
 
+#: win32/MagnetDlg.cpp:45
+msgid ""
+"DC++ has detected a MAGNET link with a file hash that can be searched for on "
+"the Direct Connect network.  What would you like to do?"
+msgstr ""
+"A DC++ egy MAGNET hivatkozást észlelt olyan fájl hash-el ami alapján keresni "
+"lehet a DC hálózatban. Mit szeretnél tenni?"
+
 #: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:113
 msgid "Default"
 msgstr "Alapértelmezett"
@@ -646,13 +717,14 @@ msgstr "Alapértelmezett away-üzenet"
 msgid "Default download directory"
 msgstr "Alapértelmezett letöltési könyvtár"
 
+#: win32/FavHubProperties.cpp:52 win32/FavHubProperties.cpp:55
 #: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
 #: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
 #: win32/UsersFrame.cpp:143
 msgid "Description"
 msgstr "Leírás"
 
-#: win32/ADLSearchFrame.cpp:34
+#: win32/ADLSearchFrame.cpp:34 win32/ADLSProperties.cpp:55
 msgid "Destination Directory"
 msgstr "Célkönyvtár"
 
@@ -665,7 +737,7 @@ msgid "Directories"
 msgstr "Könyvtárak"
 
 #: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
-#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
+#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:529 win32/LogPage.cpp:32
 #: win32/ADLSProperties.cpp:63
 msgid "Directory"
 msgstr "Könyvtár"
@@ -724,7 +796,7 @@ msgstr "Adományok (paypal)"
 msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
 msgstr "Adakozz néhány Euro-t ha tudsz! (ld: a Segítség menüt)"
 
-#: win32/TransferView.cpp:58
+#: win32/TransferView.cpp:58 win32/HashProgressDlg.cpp:105
 msgid "Done"
 msgstr "Kész"
 
@@ -750,15 +822,15 @@ msgstr "Letöltés sikertelen: %1%"
 msgid "Download files from the Direct Connect network"
 msgstr "Fájlok letöltése a Direct Connect hálózatból"
 
-#: win32/SearchFrame.cpp:764
+#: win32/SearchFrame.cpp:763
 msgid "Download to..."
 msgstr "Letöltés ide..."
 
-#: win32/SearchFrame.cpp:744
+#: win32/SearchFrame.cpp:743
 msgid "Download whole directory"
 msgstr "Egész könyvtár letöltése"
 
-#: win32/SearchFrame.cpp:794
+#: win32/SearchFrame.cpp:793
 msgid "Download whole directory to..."
 msgstr "Egész könyvtár letöltése ide..."
 
@@ -791,27 +863,28 @@ msgstr "Publikus hublista letöltése..."
 msgid "Downloading public hub list... (%1%)"
 msgstr "Publikus hublista letöltése... (%1%)"
 
-#: win32/AboutDlg.cpp:63
+#: win32/AboutDlg.cpp:71
 msgid "Downloading..."
 msgstr "Letöltés..."
 
-#: win32/SettingsDialog.cpp:59 win32/MainWindow.cpp:248
+#: win32/SettingsDialog.cpp:79 win32/MainWindow.cpp:248
 #: win32/TransferView.cpp:92 win32/TransferView.cpp:94
 #: win32/Appearance2Page.cpp:40
 msgid "Downloads"
 msgstr "Letöltések"
 
-#: win32/SettingsDialog.cpp:60
+#: win32/SettingsDialog.cpp:80
 msgid "Downloads\\Favorites"
 msgstr "Letöltések\\Kedvenc helyek"
 
-#: win32/SettingsDialog.cpp:61
+#: win32/SettingsDialog.cpp:81
 msgid "Downloads\\Queue"
 msgstr "Letöltések\\Letöltési Sor"
 
+# (nem fér ki több)
 #: win32/QueuePage.cpp:38
 msgid "Drop sources below"
-msgstr "Forrást eldobni ez alatt"
+msgstr "Forr. eldob ez alatt"
 
 #: win32/MainWindow.cpp:204
 msgid "E&xit"
@@ -870,7 +943,7 @@ msgstr "Pontos méret"
 msgid "Executable"
 msgstr "Futtatható"
 
-#: win32/MainWindow.cpp:1003
+#: win32/MainWindow.cpp:998
 msgid "Exit"
 msgstr "Kilépés"
 
@@ -939,6 +1012,10 @@ msgstr "Kedvenc felhasználó felvéve"
 msgid "File"
 msgstr "Fájl"
 
+#: win32/MagnetDlg.cpp:46
+msgid "File Hash:"
+msgstr "Fájl Hash:"
+
 #: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "A fájl nem elérhető"
@@ -952,7 +1029,7 @@ msgid "Filelist Menu"
 msgstr "Fájl-lista Menü"
 
 #: win32/QueueFrame.cpp:36 win32/TransferView.cpp:53 win32/LogPage.cpp:35
-#: win32/ADLSProperties.cpp:62
+#: win32/ADLSProperties.cpp:62 win32/FinishedFrameBase.h:336
 msgid "Filename"
 msgstr "Fájlnév"
 
@@ -1024,13 +1101,19 @@ msgstr "A teljes fa nem megfelelő a TTH gyökérhez"
 msgid "GeoIP database update"
 msgstr "GeoIP adatbázis frissítése"
 
-#: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
+#: win32/SearchFrame.cpp:174 win32/WinUtil.cpp:1049
+#: win32/ADLSProperties.cpp:77
 msgid "GiB"
 msgstr "GiB"
 
 #: win32/WaitingUsersFrame.cpp:83 win32/PrivateFrame.cpp:382
+#: win32/UserInfoBase.h:103
 msgid "Grant &extra slot"
 msgstr "&Extra slot biztosítása"
+
+#: win32/AboutDlg.cpp:62
+msgid "Greetz and Contributors"
+msgstr "Köszönetnyilvánítás és Közreműködők"
 
 #: win32/AppearancePage.cpp:56
 msgid "Guess user country from IP"
@@ -1039,6 +1122,11 @@ msgstr "Ország kijelzése IP cím alapján"
 #: win32/DownloadPage.cpp:42
 msgid "HTTP Proxy (for hublist only)"
 msgstr "HTTP Proxy (csak hublistákhoz)"
+
+#: win32/SettingsDialog.cpp:73 win32/CommandDlg.cpp:131
+#, fuzzy
+msgid "Help"
+msgstr "&Segítség"
 
 #: win32/MainWindow.cpp:242
 msgid "Help &Contents\tF1"
@@ -1074,13 +1162,18 @@ msgstr "Találati arány: %1%"
 msgid "Hits: %1%"
 msgstr "Találatok: %1%"
 
-#: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
+#: win32/FavHubProperties.cpp:48 win32/TabsPage.cpp:37
+#: win32/SearchFrame.cpp:39 win32/UCPage.cpp:55 win32/FinishedFrameBase.h:340
 msgid "Hub"
 msgstr "Hub"
 
 #: win32/UsersFrame.cpp:31
 msgid "Hub (last seen in, if offline)"
 msgstr "Hub (utoljára itt járt, amennyiben offline)"
+
+#: win32/CommandDlg.cpp:69
+msgid "Hub IP / DNS (empty = all, 'op' = where operator)"
+msgstr "Hub IP / DNS (üres = mind, 'op' = ahol operátor)"
 
 #: win32/CommandDlg.cpp:90
 msgid "Hub Menu"
@@ -1124,6 +1217,10 @@ msgstr "IP"
 #, boost-format
 msgid "IP: %1%, Port: %2%/%3%/%4%"
 msgstr "IP: %1%, Port: %2%/%3%/%4%"
+
+#: win32/FavHubProperties.cpp:49
+msgid "Identification (leave blank for defaults)"
+msgstr "Azonosítás (üres = alapértelmezett)"
 
 #: win32/TransferView.cpp:537 win32/TransferView.cpp:838
 msgid "Idle"
@@ -1188,8 +1285,9 @@ msgid "Keep duplicate files in your file list"
 msgstr "Többször meglévő fájlok megosztásban tartása"
 
 #: win32/QueuePage.cpp:30 win32/QueuePage.cpp:32 win32/QueuePage.cpp:34
-#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:30
-#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
+#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:34
+#: win32/Advanced3Page.cpp:40 win32/Advanced3Page.cpp:49
+#: win32/SearchFrame.cpp:172 win32/WinUtil.cpp:1053
 #: win32/ADLSProperties.cpp:75
 msgid "KiB"
 msgstr "KiB"
@@ -1201,6 +1299,10 @@ msgstr "KiB/s"
 #: win32/AppearancePage.cpp:34
 msgid "Language file"
 msgstr "Nyelvi fájl"
+
+#: win32/AboutDlg.cpp:64
+msgid "Latest stable version"
+msgstr "Utolsó stabil verzió"
 
 #: win32/DownloadPage.cpp:35
 msgid "Limits"
@@ -1299,6 +1401,10 @@ msgid_plural "Matched %1% files"
 msgstr[0] "%1% fájl egyezik"
 msgstr[1] "%1% fájl egyezik"
 
+#: win32/ADLSProperties.cpp:53
+msgid "Max FileSize"
+msgstr "Max.Fájlméret"
+
 #: win32/PublicHubsFrame.cpp:57
 msgid "Max Hubs"
 msgstr "Max. hubok"
@@ -1311,13 +1417,15 @@ msgstr "Max. méret"
 msgid "Max Users"
 msgstr "Max. felhasználó"
 
-#: win32/Advanced3Page.cpp:38
+# (nem fér ki több)
+#: win32/Advanced3Page.cpp:35
 msgid "Max filelist size"
-msgstr "Max. fájl-lista méret"
+msgstr "Max. fájl-lista m."
 
-#: win32/Advanced3Page.cpp:31
+# (nem fér ki több)
+#: win32/Advanced3Page.cpp:30
 msgid "Max hash speed"
-msgstr "Max. hash sebesség"
+msgstr "Max. hash seb."
 
 #: win32/QueuePage.cpp:44
 msgid "Max inactivity"
@@ -1327,18 +1435,22 @@ msgstr "Max. tétlenség"
 msgid "Maximum simultaneous downloads (0 = infinite)"
 msgstr "Egyszerre folytatható letöltések maximális száma (0 = korlátlan)"
 
-#: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
+#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:173 win32/WinUtil.cpp:1051
 #: win32/ADLSProperties.cpp:76
 msgid "MiB"
 msgstr "MiB"
 
-#: win32/Advanced3Page.cpp:32
+#: win32/Advanced3Page.cpp:31
 msgid "MiB/s"
 msgstr "MiB/s"
 
 #: win32/GeneralPage.cpp:33
 msgid "MiBits/s"
 msgstr "MiBits/s"
+
+#: win32/ADLSProperties.cpp:52
+msgid "Min FileSize"
+msgstr "Min.Fájlméret"
 
 #: win32/PublicHubsFrame.cpp:55
 msgid "Min Share"
@@ -1360,7 +1472,7 @@ msgstr "Min. eltelt idő"
 msgid "Min filesize"
 msgstr "Min. fájlméret"
 
-#: win32/Advanced3Page.cpp:42
+#: win32/Advanced3Page.cpp:48
 msgid "Min segment size"
 msgstr "Min. szegmens méret"
 
@@ -1368,7 +1480,7 @@ msgstr "Min. szegmens méret"
 msgid "Min sources online"
 msgstr "Min. online forrás"
 
-#: win32/Advanced3Page.cpp:35
+#: win32/Advanced3Page.cpp:33
 msgid "Mini slot size"
 msgstr "Minislot mérete"
 
@@ -1386,14 +1498,14 @@ msgstr "Mozgatás &le"
 msgid "Move &Up"
 msgstr "Mozgatás &fel"
 
-#: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
+#: win32/FavHubProperties.cpp:50 win32/UCPage.cpp:53
+#: win32/PublicHubsFrame.cpp:49 win32/CommandDlg.cpp:67
 msgid "Name"
 msgstr "Név"
 
-#: win32/CommandDlg.cpp:203
-#, fuzzy
+#: win32/CommandDlg.cpp:215
 msgid "Name and command must not be empty"
-msgstr "A hub címe nem lehet üres"
+msgstr "A Név és a Parancs mező nem lehet üres"
 
 #: win32/UploadPage.cpp:191 win32/UploadPage.cpp:235
 msgid "Name under which the others see the directory"
@@ -1411,9 +1523,15 @@ msgstr "A megadott név egyezik a korábbival, kihagyva..."
 msgid "Next"
 msgstr "Következő"
 
-#: win32/GeneralPage.cpp:29 win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+#: win32/FavHubProperties.cpp:53 win32/GeneralPage.cpp:29
+#: win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+#: win32/FinishedFrameBase.h:339
 msgid "Nick"
 msgstr "Nick"
+
+#: win32/FinishedFrameBase.h:143
+msgid "No"
+msgstr "Nem"
 
 #: win32/QueueFrame.cpp:489
 msgid "No errors"
@@ -1426,6 +1544,10 @@ msgstr "Nincs találat"
 #: win32/DownloadPage.cpp:37
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "Ne legyen új letöltés, ha a sebesség ezt túllépi (KiB/s, 0 = letiltás)"
+
+#: win32/AboutDlg.cpp:69
+msgid "No transfers yet"
+msgstr "Nem volt még átvitel"
 
 #: win32/QueueFrame.cpp:416
 msgid "No users"
@@ -1449,10 +1571,9 @@ msgid "Note; Files appear in the share only after they've been hashed!"
 msgstr "Megj.; Az új fájlok csak indexelés után lesznek felvéve!"
 
 #: win32/DownloadPage.cpp:38
-#, fuzzy, no-c-format
+#, no-c-format
 msgid "Note; because of changing download speeds, this is not 100% accurate..."
-msgstr ""
-"Megjegyés: a változó letöltési sebességek miatt ez nem 100%ac-ig pontos..."
+msgstr "Megj.: A változó letöltési sebességek miatt ez nem 100 %-ig pontos..."
 
 #: win32/Appearance2Page.cpp:35 win32/AppearancePage.cpp:35
 msgid "Note; most of these options require that you restart DC++"
@@ -1466,6 +1587,10 @@ msgstr "Jegyzettömb"
 #: win32/Appearance2Page.cpp:29
 msgid "Notification sound"
 msgstr "Figyelmeztető hang"
+
+#: win32/SettingsDialog.cpp:65 win32/CommandDlg.cpp:123
+msgid "OK"
+msgstr ""
 
 #: win32/WinUtil.cpp:333
 msgid "Offline"
@@ -1487,7 +1612,11 @@ msgstr "Csak szabad slottal rendelkezőket"
 msgid "Only where I'm op"
 msgstr "Csak ahol OP vagyok"
 
-#: win32/MainWindow.cpp:199 win32/MainWindow.cpp:1004
+#: win32/FinishedFrameBase.h:227 win32/FinishedFrameBase.h:243
+msgid "Open &folder"
+msgstr "&Mappa megnyitása"
+
+#: win32/MainWindow.cpp:199 win32/MainWindow.cpp:999
 msgid "Open downloads directory"
 msgstr "Letöltési könyvtár megnyitása"
 
@@ -1539,23 +1668,34 @@ msgstr "Egyéb beállítások"
 msgid "Outgoing connection settings"
 msgstr "Kimenő kapcsolat beállításai"
 
+#: win32/Advanced3Page.cpp:37
+#, fuzzy
+msgid "PID"
+msgstr "CID"
+
 #: win32/CommandDlg.cpp:86
 msgid "PM"
 msgstr "PM"
 
-#: win32/Advanced3Page.cpp:33
+#: win32/Advanced3Page.cpp:32
 msgid "PM history"
 msgstr "Privik előzménye"
+
+#: win32/CommandDlg.cpp:66
+msgid "Parameters"
+msgstr "Paraméterek"
 
 #: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Passzív felhasználó"
 
-#: win32/NetworkPage.cpp:45 win32/FavHubsFrame.cpp:35
+#: win32/NetworkPage.cpp:45 win32/FavHubProperties.cpp:54
+#: win32/FavHubsFrame.cpp:35
 msgid "Password"
 msgstr "Jelszó"
 
 #: win32/QueueFrame.cpp:42 win32/SearchFrame.cpp:36 win32/TransferView.cpp:54
+#: win32/FinishedFrameBase.h:338
 msgid "Path"
 msgstr "Elérési út"
 
@@ -1567,9 +1707,13 @@ msgstr "Szüneteltetve"
 msgid "Personal Information"
 msgstr "Személyes Információk"
 
-#: win32/SettingsDialog.cpp:57
+#: win32/SettingsDialog.cpp:77
 msgid "Personal information"
 msgstr "Személyes információk"
+
+#: win32/WinUtil.cpp:1045
+msgid "PiB"
+msgstr "PiB"
 
 #: win32/SearchFrame.cpp:187
 msgid "Picture"
@@ -1583,6 +1727,14 @@ msgstr "Kérlek, tölts ki egy nicket a Beállítások párbeszédablakban!"
 msgid "Please enter a password"
 msgstr "Kérlek adj meg egy jelszót"
 
+#: win32/HashProgressDlg.cpp:41
+msgid ""
+"Please wait while DC++ indexes your files (they won't be shared until "
+"they've been indexed)..."
+msgstr ""
+"Kérlek várj amíg a DC++ indexeli a fájljaidat (addig nem lesznek megosztva "
+"amíg nem lettek indexelve)..."
+
 #: win32/WindowsPage.cpp:61
 msgid "Popup box to input password for hubs"
 msgstr "Felugró ablak a hub belépési jelszó bekérésére"
@@ -1591,9 +1743,10 @@ msgstr "Felugró ablak a hub belépési jelszó bekérésére"
 msgid "Port"
 msgstr "Port"
 
+# (nem fér ki többes számban)
 #: win32/NetworkPage.cpp:37
 msgid "Ports"
-msgstr "Portok"
+msgstr "Port"
 
 #: win32/HubFrame.cpp:852
 #, boost-format
@@ -1626,7 +1779,7 @@ msgstr "Publikus Hublisták"
 
 #: win32/DownloadPage.cpp:40
 msgid "Public Hubs list URL"
-msgstr "Publikus Hublista URL-e"
+msgstr "Publikus Hublista URL-je"
 
 #: win32/SearchFrame.cpp:240
 msgid "Purge"
@@ -1644,7 +1797,7 @@ msgstr "Gyors Csatlakozás"
 msgid "Rating"
 msgstr "Minősítés"
 
-#: win32/AboutDlg.cpp:61
+#: win32/AboutDlg.cpp:67
 #, c-format, boost-format
 msgid "Ratio (up/down): %1$0.2f"
 msgstr "Arány (fel/letöltés): %1$0.2f"
@@ -1657,7 +1810,7 @@ msgstr "Nyers"
 msgid "Re-add source"
 msgstr "Forrás újbóli felvétle"
 
-#: win32/SearchFrame.cpp:1024
+#: win32/SearchFrame.cpp:1023
 msgid "Ready to search..."
 msgstr "Keresésre kész..."
 
@@ -1700,6 +1853,10 @@ msgstr ""
 "A távoli kliens nem támogatja teljes körűen a TTH-t - a letöltés nem "
 "lehetséges"
 
+#: win32/FinishedFrameBase.h:230 win32/FinishedFrameBase.h:246
+msgid "Remove &all"
+msgstr "Összes &eltávolítása"
+
 #: win32/QueuePage.cpp:70
 msgid "Remove slow filelists"
 msgstr "Lassú fájl-listák eltávolítása"
@@ -1708,13 +1865,13 @@ msgstr "Lassú fájl-listák eltávolítása"
 msgid "Remove source"
 msgstr "Forrás eltávolítása"
 
-#: win32/QueueFrame.cpp:1040
+#: win32/QueueFrame.cpp:1040 win32/UserInfoBase.h:107
 msgid "Remove user from queue"
 msgstr "Felhasználó eltávolítása a sorból"
 
 #: win32/UploadPage.cpp:38 win32/FavoriteDirsPage.cpp:35
 msgid "Rename"
-msgstr "Átnevez"
+msgstr "Átnevezés"
 
 #: win32/MainWindow.cpp:254
 msgid "Report a bug"
@@ -1728,6 +1885,10 @@ msgstr "Új jellemző kérése"
 #, boost-format
 msgid "Requesting %1%"
 msgstr "%1% kérése"
+
+#: win32/Advanced3Page.cpp:28
+msgid "Rollback"
+msgstr ""
 
 #: win32/HashProgressDlg.cpp:48
 msgid "Run in background"
@@ -1746,13 +1907,13 @@ msgstr "SOCKS5"
 msgid "Search"
 msgstr "Keresés"
 
-#: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
-#: win32/SearchFrame.cpp:1020
+#: win32/SearchFrame.cpp:989 win32/SearchFrame.cpp:1004
+#: win32/SearchFrame.cpp:1019
 #, boost-format
 msgid "Search - %1%"
 msgstr "Keresés - %1%"
 
-#: win32/SearchFrame.cpp:1025
+#: win32/SearchFrame.cpp:1024
 msgid "Search - Ready to search..."
 msgstr "Keresés - Keresésre kész..."
 
@@ -1765,9 +1926,13 @@ msgstr "Kereső Menü"
 msgid "Search Spy"
 msgstr "Keresések Megfigyelése"
 
-#: win32/SpyFrame.cpp:34
+#: win32/SpyFrame.cpp:34 win32/ADLSProperties.cpp:50
 msgid "Search String"
 msgstr "Keresett szöveg"
+
+#: win32/ADLSProperties.cpp:51
+msgid "Search Type"
+msgstr "Keresés típusa"
 
 #: win32/SearchFrame.cpp:116
 msgid "Search for"
@@ -1781,7 +1946,7 @@ msgstr "Alternatívák keresése"
 msgid "Search for file"
 msgstr "Fájl keresése"
 
-#: win32/Advanced3Page.cpp:34
+#: win32/Advanced3Page.cpp:42
 msgid "Search history"
 msgstr "Keresések története"
 
@@ -1794,12 +1959,12 @@ msgstr "Keresési beállítások"
 msgid "Search spam detected from %1%"
 msgstr "Túl gyakori keresés a következőtől: %1%"
 
-#: win32/SearchFrame.cpp:984
+#: win32/SearchFrame.cpp:983
 #, boost-format
 msgid "Searching for %1%..."
 msgstr "Keresés: %1%..."
 
-#: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
+#: win32/SearchFrame.cpp:998 win32/SearchFrame.cpp:1017
 #, boost-format
 msgid "Searching too soon, next search in %1% second"
 msgid_plural "Searching too soon, next search in %1% seconds"
@@ -1844,19 +2009,20 @@ msgstr "Fontossági sorrend beállítása"
 
 #: win32/AppearancePage.cpp:33
 msgid "Set timestamps"
-msgstr "Időbélyegzők"
+msgstr "Időbélyeg"
 
-#: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:298
+#: win32/SettingsDialog.cpp:58 win32/MainWindow.cpp:298
 msgid "Settings"
 msgstr "Beállítások"
 
-#: win32/MainWindow.cpp:202 win32/MainWindow.cpp:1005
+#: win32/MainWindow.cpp:202 win32/MainWindow.cpp:1000
 msgid "Settings..."
 msgstr "Beállítások..."
 
+# (nem fér ki több)
 #: win32/UploadPage.cpp:35
 msgid "Share hidden files"
-msgstr "Rejtett fájlok megosztása"
+msgstr "Rejt. fájlok osztása"
 
 #: win32/HubFrame.cpp:38 win32/PublicHubsFrame.cpp:54
 msgid "Shared"
@@ -1866,11 +2032,11 @@ msgstr "Megosztva"
 msgid "Shared directories"
 msgstr "Megosztott könyvtárak"
 
-#: win32/SettingsDialog.cpp:62
+#: win32/SettingsDialog.cpp:82
 msgid "Sharing"
 msgstr "Megosztás"
 
-#: win32/MainWindow.cpp:1002
+#: win32/MainWindow.cpp:997
 msgid "Show"
 msgstr "Megjelenítés"
 
@@ -1893,8 +2059,13 @@ msgstr "Időbélyegzők megjelenítése a chaten alapértelmezés szerint"
 #: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
 #: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
 #: win32/SearchFrame.cpp:119 win32/TransferView.cpp:59
+#: win32/FinishedFrameBase.h:341
 msgid "Size"
 msgstr "Méret"
+
+#: win32/ADLSProperties.cpp:54
+msgid "Size Type"
+msgstr "Méret típus"
 
 #: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
@@ -1922,6 +2093,14 @@ msgstr "Slotok száma beállítva"
 #, boost-format
 msgid "Slots: %1%/%2%"
 msgstr "Slotok: %1%/%2%"
+
+#: win32/Advanced3Page.cpp:44
+msgid "Socket read buffer"
+msgstr "Socket olvasási puffer"
+
+#: win32/Advanced3Page.cpp:46
+msgid "Socket write buffer"
+msgstr "Socket írási puffer"
 
 #: win32/NetworkPage.cpp:42
 msgid "Socks IP"
@@ -1960,6 +2139,7 @@ msgid "Specify a server to connect to"
 msgstr "A kapcsolódáshoz adj meg egy kiszolgálót"
 
 #: win32/TransferView.cpp:44 win32/TransferView.cpp:57
+#: win32/FinishedFrameBase.h:342
 msgid "Speed"
 msgstr "Sebesség"
 
@@ -1971,6 +2151,10 @@ msgstr "Sebesség: %1%/s"
 #: win32/MagnetDlg.cpp:57
 msgid "Start a search for this file"
 msgstr "Keresés indítása ehhez a fájlhoz"
+
+#: win32/HashProgressDlg.cpp:42
+msgid "Statistics"
+msgstr "Statisztika"
 
 #: win32/QueueFrame.cpp:37 win32/TransferView.cpp:43 win32/TransferView.cpp:55
 msgid "Status"
@@ -2019,17 +2203,25 @@ msgstr "A fül kiemelése a tartalom változásakor"
 msgid "Tag"
 msgstr "Tag"
 
+#: win32/CommandDlg.cpp:71
+msgid "Text sent to hub"
+msgstr "A hubnak küldött szöveg"
+
 #: win32/HubFrame.cpp:967
 msgid "This hub is not a favorite hub"
 msgstr "Ez a hub nincs a kedvencek között"
 
-#: win32/SpyFrame.cpp:36
+#: win32/WinUtil.cpp:1047
+msgid "TiB"
+msgstr "TiB"
+
+#: win32/SpyFrame.cpp:36 win32/FinishedFrameBase.h:337
 msgid "Time"
 msgstr "Idő"
 
 #: win32/UsersFrame.cpp:32
 msgid "Time last seen"
-msgstr "Legutóbbi időpont"
+msgstr "Legutoljára online"
 
 #: win32/TransferView.cpp:56
 msgid "Time left"
@@ -2043,18 +2235,27 @@ msgstr "Időbélyegzők letiltva"
 msgid "Timestamps enabled"
 msgstr "Időbélyegzők engedélyezve"
 
+#: win32/CommandDlg.cpp:70
+msgid "To"
+msgstr "Címzett"
+
 #: win32/WindowsPage.cpp:60
 msgid "Toggle window when selecting an active tab"
 msgstr "Ablakok megcserélése aktív fül kiválasztásakor"
 
+# (nem fér ki több)
 #: win32/UploadPage.cpp:34
 msgid "Total size:"
-msgstr "Teljes méret:"
+msgstr "Méret:"
 
 #: win32/SpyFrame.cpp:159
 #, boost-format
 msgid "Total: %1%"
 msgstr "Összesen: %1%"
+
+#: win32/AboutDlg.cpp:63
+msgid "Totals"
+msgstr "Összesítés"
 
 #: win32/TransferView.cpp:46
 msgid "Transferred (Ratio)"
@@ -2123,7 +2324,7 @@ msgstr "Ismeretlen parancs: %1%"
 msgid "Upload slots"
 msgstr "Feltöltési slotok"
 
-#: win32/AboutDlg.cpp:59
+#: win32/AboutDlg.cpp:61
 #, boost-format
 msgid "Upload: %1%, Download: %2%"
 msgstr "Feltöltve: %1%, Letöltve: %2%"
@@ -2240,9 +2441,13 @@ msgstr "Várakozás az újrapróbálkozásra"
 msgid "Window options"
 msgstr "Ablakok beállításai"
 
-#: win32/Advanced3Page.cpp:29
+#: win32/Advanced3Page.cpp:39
 msgid "Write buffer size"
 msgstr "Írási puffer méret"
+
+#: win32/FinishedFrameBase.h:143
+msgid "Yes"
+msgstr "Igen"
 
 #: win32/HubFrame.cpp:897
 msgid "Your nick was already taken, please change to something else!"
@@ -2257,7 +2462,7 @@ msgid ""
 msgstr ""
 "A Windows-od Common Controls nevű ősszetevőjének verziója túl régi ahhoz, "
 "hogy a DC++ normálisan működhessen, ezért nagy valószínűséggel problémáid "
-"lesznek a felhasználói feülettel. A Common Controls 5.80-as verziója "
+"lesznek a felhasználói felülettel. A Common Controls 5.80-as verziója "
 "letölthető a DC++ honlapjáról vagy egyenesen a Microsoft-tól."
 
 #: win32/TransferView.cpp:674

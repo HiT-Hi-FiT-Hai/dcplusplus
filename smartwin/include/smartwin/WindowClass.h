@@ -1,10 +1,13 @@
 #ifndef WINDOWCLASS_H_
 #define WINDOWCLASS_H_
 
-#include "Widget.h"
+#include "WindowsHeaders.h"
 #include "resources/Icon.h"
+#include <boost/noncopyable.hpp>
 
 namespace SmartWin {
+
+class Widget;
 
 class WindowClass : boost::noncopyable {
 public:

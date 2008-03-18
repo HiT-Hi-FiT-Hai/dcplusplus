@@ -7,16 +7,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: win32\n"
 "Report-Msgid-Bugs-To: dcplusplus-devel@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-12 21:38+0100\n"
-"PO-Revision-Date: 2008-03-09 09:09+0000\n"
-"Last-Translator: maksis <maksis@adrenaline-network.com>\n"
+"POT-Creation-Date: 2008-03-18 22:52+0100\n"
+"PO-Revision-Date: 2008-03-17 19:27+0000\n"
+"Last-Translator: RFJUU <mika.hyttinen@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-03-13 15:16+0000\n"
+"X-Launchpad-Export-Date: 2008-03-18 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#: win32/AboutDlg.cpp:58
+msgid ""
+"\n"
+"(c) Copyright 2001-2008 Jacek Sieka\n"
+"Ex-codeveloper: Per Lindén\n"
+"Graphics: Martin Skogevall et al.\n"
+"DC++ is licenced under GPL\n"
+"http://dcplusplus.sourceforge.net/"
+msgstr ""
 
 #: win32/MainWindow.cpp:862
 #, boost-format
@@ -37,12 +47,12 @@ msgstr "%1% (%2$0.2f)"
 msgid "%1% files/h, %2% files left"
 msgstr "%1% tiedostoa/h, %2% tiedostoa jäljellä"
 
-#: win32/SearchFrame.cpp:576
+#: win32/SearchFrame.cpp:575
 #, boost-format
 msgid "%1% filtered"
 msgstr "%1% suodatettu"
 
-#: win32/SearchFrame.cpp:571
+#: win32/SearchFrame.cpp:570 win32/FinishedFrameBase.h:281
 #, boost-format
 msgid "%1% item"
 msgid_plural "%1% items"
@@ -62,6 +72,7 @@ msgstr[0] "%1% käyttäjä"
 msgstr[1] "%1% käyttäjää"
 
 #: win32/TransferView.cpp:586 win32/TransferView.cpp:633
+#: win32/FinishedFrameBase.h:283
 #, boost-format
 msgid "%1%/s"
 msgstr "%1%/s"
@@ -79,8 +90,12 @@ msgstr "&Lisää"
 msgid "&Add folder"
 msgstr "&Lisää kansio"
 
-#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:774
-#: win32/SearchFrame.cpp:804 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
+#: win32/UserInfoBase.h:98
+msgid "&Browse file list"
+msgstr "&Selaa tiedostolistaa"
+
+#: win32/DirectoryListingFrame.cpp:369 win32/SearchFrame.cpp:773
+#: win32/SearchFrame.cpp:803 win32/DownloadPage.cpp:32 win32/LogPage.cpp:33
 #: win32/Appearance2Page.cpp:30
 msgid "&Browse..."
 msgstr "&Selaa..."
@@ -90,12 +105,13 @@ msgid "&Change"
 msgstr "&Muuta"
 
 #: win32/PrivateFrame.cpp:388 win32/HubFrame.cpp:1178
+#: win32/MDIChildFrame.h:191
 msgid "&Close"
 msgstr "&Sulje"
 
 #: win32/PublicHubsFrame.cpp:150
 msgid "&Configure"
-msgstr "&Määritä"
+msgstr "&Muokkaa"
 
 #: win32/FavHubsFrame.cpp:72 win32/FavHubsFrame.cpp:278
 #: win32/PublicHubsFrame.cpp:448
@@ -107,7 +123,7 @@ msgid "&Disconnect"
 msgstr "&Katkaise yhteys"
 
 #: win32/DirectoryListingFrame.cpp:311 win32/DirectoryListingFrame.cpp:336
-#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:742
+#: win32/DirectoryListingFrame.cpp:348 win32/SearchFrame.cpp:741
 msgid "&Download"
 msgstr "&Lataa"
 
@@ -132,19 +148,20 @@ msgid "&Force attempt"
 msgstr "&Pakota yhteys"
 
 #: win32/QueueFrame.cpp:1007 win32/WaitingUsersFrame.cpp:80
-#: win32/PrivateFrame.cpp:380
+#: win32/PrivateFrame.cpp:380 win32/UserInfoBase.h:96
 msgid "&Get file list"
 msgstr "&Hae tiedostolista"
 
 #: win32/DirectoryListingFrame.cpp:325
+#, fuzzy
 msgid "&Go to directory"
-msgstr "&Mene kansioon"
+msgstr "&Siirry kansioon"
 
 #: win32/MainWindow.cpp:240 win32/ADLSearchFrame.cpp:93
 msgid "&Help"
 msgstr "&Ohje"
 
-#: win32/PrivateFrame.cpp:381
+#: win32/PrivateFrame.cpp:381 win32/UserInfoBase.h:99
 msgid "&Match queue"
 msgstr "&Vertaa latausjonoon"
 
@@ -160,6 +177,10 @@ msgstr "&Uusi..."
 #: win32/MainWindow.cpp:223
 msgid "&Notepad\tCtrl+N"
 msgstr "&Muistio\tCtrl+N"
+
+#: win32/FinishedFrameBase.h:226 win32/FinishedFrameBase.h:242
+msgid "&Open"
+msgstr "&Avaa"
 
 #: win32/FavHubsFrame.cpp:82 win32/FavHubsFrame.cpp:281
 #: win32/ADLSearchFrame.cpp:73 win32/ADLSearchFrame.cpp:292
@@ -186,9 +207,10 @@ msgstr "&Päivitä"
 #: win32/UploadPage.cpp:36 win32/QueueFrame.cpp:969 win32/QueueFrame.cpp:981
 #: win32/QueueFrame.cpp:991 win32/HubListsDlg.cpp:79
 #: win32/WaitingUsersFrame.cpp:82 win32/FavoriteDirsPage.cpp:33
-#: win32/SearchFrame.cpp:755 win32/FavHubsFrame.cpp:97
+#: win32/SearchFrame.cpp:754 win32/FavHubsFrame.cpp:97
 #: win32/FavHubsFrame.cpp:285 win32/ADLSearchFrame.cpp:88
 #: win32/ADLSearchFrame.cpp:293 win32/UCPage.cpp:35 win32/UsersFrame.cpp:187
+#: win32/FinishedFrameBase.h:229 win32/FinishedFrameBase.h:245
 msgid "&Remove"
 msgstr "&Poista"
 
@@ -201,6 +223,7 @@ msgid "&Search\tCtrl+S"
 msgstr "&Etsi\tCtrl+S"
 
 #: win32/QueueFrame.cpp:1014 win32/WaitingUsersFrame.cpp:85
+#: win32/UserInfoBase.h:100
 msgid "&Send private message"
 msgstr "&Lähetä yksityisviesti"
 
@@ -208,7 +231,8 @@ msgstr "&Lähetä yksityisviesti"
 msgid "&View"
 msgstr "&Näytä"
 
-#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:746
+#: win32/DirectoryListingFrame.cpp:315 win32/SearchFrame.cpp:745
+#: win32/FinishedFrameBase.h:225 win32/FinishedFrameBase.h:241
 msgid "&View as text"
 msgstr "&Näytä tekstinä"
 
@@ -222,9 +246,9 @@ msgid "*** Joins: %1%"
 msgstr "*** Saapui: %1%"
 
 #: win32/HubFrame.cpp:494
-#, boost-format
+#, fuzzy, boost-format
 msgid "*** Parts: %1%"
-msgstr "*** Parts: %1%"
+msgstr "*** Poistui: %1%"
 
 #: win32/HashProgressDlg.cpp:84
 #, boost-format
@@ -236,13 +260,18 @@ msgstr "-.-- t/s, %1% jäljellä"
 msgid "-.-- files/h, %1% files left"
 msgstr "-.-- tiedostoa/h, %1% tiedostoa jäljellä"
 
+#: win32/HashProgressDlg.cpp:85 win32/HashProgressDlg.cpp:95
+msgid "-:--:-- left"
+msgstr "-:--:-- jäljellä"
+
 #: win32/WinUtil.cpp:1036
 msgid ""
 "A MAGNET link was given to DC++, but it didn't contain a valid file hash for "
 "use on the Direct Connect network.  No action will be taken."
 msgstr ""
 "MAGNET-linkki annettiin DC++:lle, mutta se ei sisältänyt oikeata "
-"tarkistussumma Direct Connect -verkkoa varten. Mitään toimintoa ei suoriteta."
+"tarkistussummaa Direct Connect -verkkoa varten. Mitään toimintoa ei "
+"suoriteta."
 
 #: win32/MainWindow.cpp:220 win32/MainWindow.cpp:294
 msgid "ADL Search"
@@ -256,6 +285,10 @@ msgstr "Listahaun asetukset"
 msgid "AWAY"
 msgstr "POISSA"
 
+#: win32/AboutDlg.cpp:56
+msgid "About DC++"
+msgstr "Tietoja DC++:sta"
+
 #: win32/MainWindow.cpp:245
 msgid "About DC++..."
 msgstr "Tietoja DC++:sta..."
@@ -266,6 +299,7 @@ msgstr "Hyväksy hubin lähettämät käyttäjäkomennot"
 
 #: win32/WaitingUsersFrame.cpp:84 win32/PrivateFrame.cpp:384
 #: win32/HubFrame.cpp:1170 win32/PublicHubsFrame.cpp:449
+#: win32/UserInfoBase.h:102
 msgid "Add To &Favorites"
 msgstr "Lisää &suosikkeihin"
 
@@ -277,27 +311,28 @@ msgstr "Jaa ladatatut tiedostot välittömästi (jos jaettavassa kansiossa)"
 msgid "Added"
 msgstr "Lisätty"
 
-#: win32/MainWindow.cpp:358 win32/PublicHubsFrame.cpp:52
+#: win32/FavHubProperties.cpp:51 win32/MainWindow.cpp:358
+#: win32/PublicHubsFrame.cpp:52
 msgid "Address"
 msgstr "Osoite"
 
-#: win32/SettingsDialog.cpp:67
+#: win32/SettingsDialog.cpp:87
 msgid "Advanced"
 msgstr "Lisäasetukset"
 
-#: win32/SettingsDialog.cpp:69
+#: win32/SettingsDialog.cpp:89
 msgid "Advanced\\Experts only"
 msgstr "Lisäasetukset\\Vain edistyneille"
 
-#: win32/SettingsDialog.cpp:68
+#: win32/SettingsDialog.cpp:88
 msgid "Advanced\\Logs"
 msgstr "Lisäasetukset\\Lokit"
 
-#: win32/SettingsDialog.cpp:71
+#: win32/SettingsDialog.cpp:91
 msgid "Advanced\\Security Certificates"
 msgstr "Lisäasetukset\\Tietoturvasertif."
 
-#: win32/SettingsDialog.cpp:70
+#: win32/SettingsDialog.cpp:90
 msgid "Advanced\\User Commands"
 msgstr "Lisäasetukset\\Käyttäjäkomennot"
 
@@ -327,19 +362,19 @@ msgstr "Avaa ohje aina kun tämä ikkuna avataan"
 msgid "Any"
 msgstr "Mikä tahansa"
 
-#: win32/SettingsDialog.cpp:63
+#: win32/SettingsDialog.cpp:83
 msgid "Appearance"
 msgstr "Ulkoasu"
 
-#: win32/SettingsDialog.cpp:64
+#: win32/SettingsDialog.cpp:84
 msgid "Appearance\\Colors and sounds"
 msgstr "Ulkoasu\\Värit ja äänet"
 
-#: win32/SettingsDialog.cpp:65
+#: win32/SettingsDialog.cpp:85
 msgid "Appearance\\Tabs"
 msgstr "Ulkoasu\\Välilehdet"
 
-#: win32/SettingsDialog.cpp:66
+#: win32/SettingsDialog.cpp:86
 msgid "Appearance\\Windows"
 msgstr "Ulkoasu\\Ikkunat"
 
@@ -367,7 +402,7 @@ msgstr "Anna latauspaikka automaattisesti / Nimi"
 msgid "Auto priority settings"
 msgstr "Autoprioriteettiasetukset (koot)"
 
-#: win32/Advanced3Page.cpp:40
+#: win32/Advanced3Page.cpp:38
 msgid "Auto refresh time"
 msgstr "Päivitysväli"
 
@@ -432,7 +467,8 @@ msgstr "Paikalla"
 msgid "Away mode on: %1%"
 msgstr "Poissa: %1%"
 
-#: win32/Advanced3Page.cpp:28 win32/SearchFrame.cpp:171
+#: win32/Advanced3Page.cpp:29 win32/Advanced3Page.cpp:45
+#: win32/Advanced3Page.cpp:47 win32/SearchFrame.cpp:171
 #: win32/ADLSProperties.cpp:74
 msgid "B"
 msgstr "t"
@@ -441,7 +477,7 @@ msgstr "t"
 msgid "B/s"
 msgstr "t/s"
 
-#: win32/Advanced3Page.cpp:37
+#: win32/Advanced3Page.cpp:43
 msgid "Bind address"
 msgstr "Kuunneltava osoite"
 
@@ -457,9 +493,18 @@ msgstr "Selaa..."
 msgid "CID"
 msgstr "CID"
 
+#: win32/FinishedFrameBase.h:343
+msgid "CRC Checked"
+msgstr "CRC-tarkastettu"
+
 #: win32/QueueFrame.cpp:478
 msgid "CRC32 inconsistency (SFV-Check)"
 msgstr "CRC32-ristiriita (SFV-tarkastus)"
+
+#: win32/SettingsDialog.cpp:69 win32/CommandDlg.cpp:127
+#, fuzzy
+msgid "Cancel"
+msgstr "&Muuta"
 
 #: win32/MainWindow.cpp:244
 msgid "Change Log"
@@ -479,11 +524,11 @@ msgstr "Valitse kansio"
 
 #: win32/TransferView.cpp:45
 msgid "Chunk"
-msgstr "Pala"
+msgstr "Osa"
 
 #: win32/TransferView.cpp:48
 msgid "Cipher"
-msgstr "Cipher"
+msgstr "Salaus"
 
 #: win32/AdvancedPage.cpp:32
 msgid "Clear search box after each search"
@@ -513,9 +558,13 @@ msgstr "Sulje katkenneet"
 msgid "Colors"
 msgstr "Värit"
 
-#: win32/UCPage.cpp:54
+#: win32/UCPage.cpp:54 win32/CommandDlg.cpp:68
 msgid "Command"
 msgstr "Komento"
+
+#: win32/CommandDlg.cpp:64
+msgid "Command Type"
+msgstr "Komennon tyyppi"
 
 #: win32/SearchFrame.cpp:184
 msgid "Compressed"
@@ -545,6 +594,10 @@ msgstr "Pyydä vahvistus suosikkihubia poistettaessa"
 msgid "Confirm item removal in download queue"
 msgstr "Pyydä vahvistus poistettaessa kohde latausjonosta"
 
+#: win32/UserInfoBase.h:105
+msgid "Connect to hub"
+msgstr "Yhdistä hubiin"
+
 #: win32/HubFrame.cpp:497
 msgid "Connected"
 msgstr "Yhdistetty"
@@ -566,13 +619,17 @@ msgstr "Yhdistetään kohteeseen %1%..."
 msgid "Connection"
 msgstr "Yhteys"
 
-#: win32/SettingsDialog.cpp:58
+#: win32/SettingsDialog.cpp:78
 msgid "Connection settings"
 msgstr "Yhteysasetukset"
 
 #: win32/TransferView.cpp:83 win32/TransferView.cpp:89
 msgid "Connections"
 msgstr "Yhteydet"
+
+#: win32/CommandDlg.cpp:65
+msgid "Context"
+msgstr "Sisältö"
 
 #: win32/HubFrame.cpp:1174 win32/PublicHubsFrame.cpp:450
 msgid "Copy &address to clipboard"
@@ -622,11 +679,19 @@ msgstr "DC++"
 
 #: win32/MainWindow.cpp:247
 msgid "DC++ Homepage"
-msgstr "DC++:an kotisivu"
+msgstr "DC++:n kotisivu"
 
 #: win32/MainWindow.cpp:252
 msgid "DC++ discussion forum"
-msgstr "DC++:an keskustelufoorumi"
+msgstr "DC++:n keskustelufoorumi"
+
+#: win32/MagnetDlg.cpp:45
+msgid ""
+"DC++ has detected a MAGNET link with a file hash that can be searched for on "
+"the Direct Connect network.  What would you like to do?"
+msgstr ""
+"DC++ on havainnut MAGNET-linkin, joka sisältää tarkistussumman Direct "
+"Connect verkkoa varten. Mitä haluat tehdä?"
 
 #: win32/AppearancePage.cpp:86 win32/AppearancePage.cpp:113
 msgid "Default"
@@ -640,13 +705,14 @@ msgstr "Poissa-viesti (oletus)"
 msgid "Default download directory"
 msgstr "Oletuskohdekansio"
 
+#: win32/FavHubProperties.cpp:52 win32/FavHubProperties.cpp:55
 #: win32/GeneralPage.cpp:31 win32/FavHubsFrame.cpp:33 win32/HubFrame.cpp:39
 #: win32/PublicHubsFrame.cpp:50 win32/UsersFrame.cpp:33
 #: win32/UsersFrame.cpp:143
 msgid "Description"
 msgstr "Kuvaus"
 
-#: win32/ADLSearchFrame.cpp:34
+#: win32/ADLSearchFrame.cpp:34 win32/ADLSProperties.cpp:55
 msgid "Destination Directory"
 msgstr "Kohdekansio"
 
@@ -659,7 +725,7 @@ msgid "Directories"
 msgstr "Kansiot"
 
 #: win32/UploadPage.cpp:64 win32/FavoriteDirsPage.cpp:49
-#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:530 win32/LogPage.cpp:32
+#: win32/SearchFrame.cpp:189 win32/SearchFrame.cpp:529 win32/LogPage.cpp:32
 #: win32/ADLSProperties.cpp:63
 msgid "Directory"
 msgstr "Kansio"
@@ -717,7 +783,7 @@ msgstr "Lahjoita rahaa (paypal)"
 msgid "Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)"
 msgstr "Lahjoita €€€! (katso ohjevalikko)"
 
-#: win32/TransferView.cpp:58
+#: win32/TransferView.cpp:58 win32/HashProgressDlg.cpp:105
 msgid "Done"
 msgstr "Valmis"
 
@@ -743,15 +809,15 @@ msgstr "Lataus epäonnistui: %1%"
 msgid "Download files from the Direct Connect network"
 msgstr "Lataa tiedostoja Direct Connect -verkosta"
 
-#: win32/SearchFrame.cpp:764
+#: win32/SearchFrame.cpp:763
 msgid "Download to..."
 msgstr "Lataa kohteeseen..."
 
-#: win32/SearchFrame.cpp:744
+#: win32/SearchFrame.cpp:743
 msgid "Download whole directory"
 msgstr "Lataa koko kansio"
 
-#: win32/SearchFrame.cpp:794
+#: win32/SearchFrame.cpp:793
 msgid "Download whole directory to..."
 msgstr "Lataa koko kansio kohteeseen..."
 
@@ -784,21 +850,21 @@ msgstr "Ladataan julkisten hubien luetteloa..."
 msgid "Downloading public hub list... (%1%)"
 msgstr "Ladataan julkisten hubien luetteloa... (%1%)"
 
-#: win32/AboutDlg.cpp:63
+#: win32/AboutDlg.cpp:71
 msgid "Downloading..."
 msgstr "Ladataan..."
 
-#: win32/SettingsDialog.cpp:59 win32/MainWindow.cpp:248
+#: win32/SettingsDialog.cpp:79 win32/MainWindow.cpp:248
 #: win32/TransferView.cpp:92 win32/TransferView.cpp:94
 #: win32/Appearance2Page.cpp:40
 msgid "Downloads"
 msgstr "Lataukset"
 
-#: win32/SettingsDialog.cpp:60
+#: win32/SettingsDialog.cpp:80
 msgid "Downloads\\Favorites"
 msgstr "Lataukset\\Suosikit"
 
-#: win32/SettingsDialog.cpp:61
+#: win32/SettingsDialog.cpp:81
 msgid "Downloads\\Queue"
 msgstr "Lataukset\\Latausjono"
 
@@ -863,7 +929,7 @@ msgstr "Tarkka koko"
 msgid "Executable"
 msgstr "Sovellus"
 
-#: win32/MainWindow.cpp:1003
+#: win32/MainWindow.cpp:998
 msgid "Exit"
 msgstr "Lopeta"
 
@@ -928,6 +994,10 @@ msgstr "Käyttäjä lisätty suosikkikäyttäjiin"
 msgid "File"
 msgstr "Tiedosto"
 
+#: win32/MagnetDlg.cpp:46
+msgid "File Hash:"
+msgstr ""
+
 #: win32/QueueFrame.cpp:474
 msgid "File not available"
 msgstr "Tiedosto ei ole saatavilla"
@@ -941,7 +1011,7 @@ msgid "Filelist Menu"
 msgstr "Tiedostolistavalikko"
 
 #: win32/QueueFrame.cpp:36 win32/TransferView.cpp:53 win32/LogPage.cpp:35
-#: win32/ADLSProperties.cpp:62
+#: win32/ADLSProperties.cpp:62 win32/FinishedFrameBase.h:336
 msgid "Filename"
 msgstr "Tiedoston nimi"
 
@@ -1018,13 +1088,19 @@ msgstr "Hakemistopolku ei vastaa TTH-tarkistussummaa"
 msgid "GeoIP database update"
 msgstr "GeoIP-tietokannan päivitys"
 
-#: win32/SearchFrame.cpp:174 win32/ADLSProperties.cpp:77
+#: win32/SearchFrame.cpp:174 win32/WinUtil.cpp:1049
+#: win32/ADLSProperties.cpp:77
 msgid "GiB"
 msgstr "Gt"
 
 #: win32/WaitingUsersFrame.cpp:83 win32/PrivateFrame.cpp:382
+#: win32/UserInfoBase.h:103
 msgid "Grant &extra slot"
 msgstr "Anna &ylimääräinen latauspaikka"
+
+#: win32/AboutDlg.cpp:62
+msgid "Greetz and Contributors"
+msgstr ""
 
 #: win32/AppearancePage.cpp:56
 msgid "Guess user country from IP"
@@ -1033,6 +1109,11 @@ msgstr "Arvaa käyttäjän maa IP:n perusteella"
 #: win32/DownloadPage.cpp:42
 msgid "HTTP Proxy (for hublist only)"
 msgstr "HTTP-välityspalvelin (vain hubilistoille)"
+
+#: win32/SettingsDialog.cpp:73 win32/CommandDlg.cpp:131
+#, fuzzy
+msgid "Help"
+msgstr "&Ohje"
 
 #: win32/MainWindow.cpp:242
 msgid "Help &Contents\tF1"
@@ -1068,13 +1149,18 @@ msgstr "Osumasuhde: %1%"
 msgid "Hits: %1%"
 msgstr "Osumia: %1%"
 
-#: win32/TabsPage.cpp:37 win32/SearchFrame.cpp:39 win32/UCPage.cpp:55
+#: win32/FavHubProperties.cpp:48 win32/TabsPage.cpp:37
+#: win32/SearchFrame.cpp:39 win32/UCPage.cpp:55 win32/FinishedFrameBase.h:340
 msgid "Hub"
 msgstr "Hubi"
 
 #: win32/UsersFrame.cpp:31
 msgid "Hub (last seen in, if offline)"
 msgstr "Hubi (jossa nähty viimeksi, jos offline-tilassa)"
+
+#: win32/CommandDlg.cpp:69
+msgid "Hub IP / DNS (empty = all, 'op' = where operator)"
+msgstr ""
 
 #: win32/CommandDlg.cpp:90
 msgid "Hub Menu"
@@ -1118,6 +1204,10 @@ msgstr "IP"
 #, boost-format
 msgid "IP: %1%, Port: %2%/%3%/%4%"
 msgstr "IP: %1%, Portti: %2%/%3%/%4%"
+
+#: win32/FavHubProperties.cpp:49
+msgid "Identification (leave blank for defaults)"
+msgstr ""
 
 #: win32/TransferView.cpp:537 win32/TransferView.cpp:838
 msgid "Idle"
@@ -1182,8 +1272,9 @@ msgid "Keep duplicate files in your file list"
 msgstr "Näytä tuplatiedostot tiedostolistassa"
 
 #: win32/QueuePage.cpp:30 win32/QueuePage.cpp:32 win32/QueuePage.cpp:34
-#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:30
-#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:172
+#: win32/QueuePage.cpp:36 win32/QueuePage.cpp:48 win32/Advanced3Page.cpp:34
+#: win32/Advanced3Page.cpp:40 win32/Advanced3Page.cpp:49
+#: win32/SearchFrame.cpp:172 win32/WinUtil.cpp:1053
 #: win32/ADLSProperties.cpp:75
 msgid "KiB"
 msgstr "Kt"
@@ -1195,6 +1286,10 @@ msgstr "Kt/s"
 #: win32/AppearancePage.cpp:34
 msgid "Language file"
 msgstr "Kielitiedosto"
+
+#: win32/AboutDlg.cpp:64
+msgid "Latest stable version"
+msgstr ""
 
 #: win32/DownloadPage.cpp:35
 msgid "Limits"
@@ -1293,6 +1388,10 @@ msgid_plural "Matched %1% files"
 msgstr[0] "Löydetty %1% tiedosto"
 msgstr[1] "Löydetty %1% tiedostoa"
 
+#: win32/ADLSProperties.cpp:53
+msgid "Max FileSize"
+msgstr ""
+
 #: win32/PublicHubsFrame.cpp:57
 msgid "Max Hubs"
 msgstr "Max hubit"
@@ -1305,11 +1404,11 @@ msgstr "Max koko"
 msgid "Max Users"
 msgstr "Käyttäjäraja"
 
-#: win32/Advanced3Page.cpp:38
+#: win32/Advanced3Page.cpp:35
 msgid "Max filelist size"
 msgstr "Max tied.listakoko"
 
-#: win32/Advanced3Page.cpp:31
+#: win32/Advanced3Page.cpp:30
 msgid "Max hash speed"
 msgstr "Max hash-nopeus"
 
@@ -1321,18 +1420,22 @@ msgstr "Max toimettomuus"
 msgid "Maximum simultaneous downloads (0 = infinite)"
 msgstr "Samanaikaisten latausten enimmäismäärä (0 = ei rajaa)"
 
-#: win32/Advanced3Page.cpp:39 win32/SearchFrame.cpp:173
+#: win32/Advanced3Page.cpp:36 win32/SearchFrame.cpp:173 win32/WinUtil.cpp:1051
 #: win32/ADLSProperties.cpp:76
 msgid "MiB"
 msgstr "Mt"
 
-#: win32/Advanced3Page.cpp:32
+#: win32/Advanced3Page.cpp:31
 msgid "MiB/s"
 msgstr "Mt/s"
 
 #: win32/GeneralPage.cpp:33
 msgid "MiBits/s"
 msgstr "Mbit/s"
+
+#: win32/ADLSProperties.cpp:52
+msgid "Min FileSize"
+msgstr ""
 
 #: win32/PublicHubsFrame.cpp:55
 msgid "Min Share"
@@ -1354,7 +1457,7 @@ msgstr "Min kulunut aika"
 msgid "Min filesize"
 msgstr "Min tiedostokoko"
 
-#: win32/Advanced3Page.cpp:42
+#: win32/Advanced3Page.cpp:48
 msgid "Min segment size"
 msgstr "Palan min koko"
 
@@ -1362,7 +1465,7 @@ msgstr "Palan min koko"
 msgid "Min sources online"
 msgstr "Min lähteitä online"
 
-#: win32/Advanced3Page.cpp:35
+#: win32/Advanced3Page.cpp:33
 msgid "Mini slot size"
 msgstr "Minislotin koko"
 
@@ -1380,11 +1483,12 @@ msgstr "Siirrä alas"
 msgid "Move &Up"
 msgstr "Siirrä ylös"
 
-#: win32/UCPage.cpp:53 win32/PublicHubsFrame.cpp:49
+#: win32/FavHubProperties.cpp:50 win32/UCPage.cpp:53
+#: win32/PublicHubsFrame.cpp:49 win32/CommandDlg.cpp:67
 msgid "Name"
 msgstr "Nimi"
 
-#: win32/CommandDlg.cpp:203
+#: win32/CommandDlg.cpp:215
 #, fuzzy
 msgid "Name and command must not be empty"
 msgstr "Hubin osoite ei voi olla tyhjä."
@@ -1405,9 +1509,15 @@ msgstr "Uusi virtuaalinen nimi sama kuin vanha, ohitetaan..."
 msgid "Next"
 msgstr "Seuraava"
 
-#: win32/GeneralPage.cpp:29 win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+#: win32/FavHubProperties.cpp:53 win32/GeneralPage.cpp:29
+#: win32/FavHubsFrame.cpp:34 win32/HubFrame.cpp:37
+#: win32/FinishedFrameBase.h:339
 msgid "Nick"
 msgstr "Nimimerkki"
+
+#: win32/FinishedFrameBase.h:143
+msgid "No"
+msgstr ""
 
 #: win32/QueueFrame.cpp:489
 msgid "No errors"
@@ -1420,6 +1530,10 @@ msgstr "Kohteita ei löytynyt"
 #: win32/DownloadPage.cpp:37
 msgid "No new downloads if speed exceeds (KiB/s, 0 = disable)"
 msgstr "Ei uusia latauksia, jos nopeus ylittää (kt/s, 0 = ei käytössä)"
+
+#: win32/AboutDlg.cpp:69
+msgid "No transfers yet"
+msgstr ""
 
 #: win32/QueueFrame.cpp:416
 msgid "No users"
@@ -1460,6 +1574,10 @@ msgstr "Muistio"
 msgid "Notification sound"
 msgstr "Huomautusääni"
 
+#: win32/SettingsDialog.cpp:65 win32/CommandDlg.cpp:123
+msgid "OK"
+msgstr ""
+
 #: win32/WinUtil.cpp:333
 msgid "Offline"
 msgstr "Offline-tilassa"
@@ -1480,7 +1598,11 @@ msgstr "Vain käyttäjät, joilla vapaita latauspaikkoja"
 msgid "Only where I'm op"
 msgstr "Vain jossa olen operaattori"
 
-#: win32/MainWindow.cpp:199 win32/MainWindow.cpp:1004
+#: win32/FinishedFrameBase.h:227 win32/FinishedFrameBase.h:243
+msgid "Open &folder"
+msgstr ""
+
+#: win32/MainWindow.cpp:199 win32/MainWindow.cpp:999
 msgid "Open downloads directory"
 msgstr "Avaa latausten kohdekansio"
 
@@ -1532,23 +1654,34 @@ msgstr "Muita latausjonon asetuksia"
 msgid "Outgoing connection settings"
 msgstr "Lähtevän yhteyden asetukset"
 
+#: win32/Advanced3Page.cpp:37
+#, fuzzy
+msgid "PID"
+msgstr "CID"
+
 #: win32/CommandDlg.cpp:86
 msgid "PM"
 msgstr "Yksityisviesti"
 
-#: win32/Advanced3Page.cpp:33
+#: win32/Advanced3Page.cpp:32
 msgid "PM history"
 msgstr "Yks.viestihistoria"
+
+#: win32/CommandDlg.cpp:66
+msgid "Parameters"
+msgstr ""
 
 #: win32/QueueFrame.cpp:476
 msgid "Passive user"
 msgstr "Passiivikäyttäjä"
 
-#: win32/NetworkPage.cpp:45 win32/FavHubsFrame.cpp:35
+#: win32/NetworkPage.cpp:45 win32/FavHubProperties.cpp:54
+#: win32/FavHubsFrame.cpp:35
 msgid "Password"
 msgstr "Salasana"
 
 #: win32/QueueFrame.cpp:42 win32/SearchFrame.cpp:36 win32/TransferView.cpp:54
+#: win32/FinishedFrameBase.h:338
 msgid "Path"
 msgstr "Polku"
 
@@ -1560,9 +1693,13 @@ msgstr "Keskeytetty"
 msgid "Personal Information"
 msgstr "Omat tiedot"
 
-#: win32/SettingsDialog.cpp:57
+#: win32/SettingsDialog.cpp:77
 msgid "Personal information"
 msgstr "Omat tiedot"
+
+#: win32/WinUtil.cpp:1045
+msgid "PiB"
+msgstr ""
 
 #: win32/SearchFrame.cpp:187
 msgid "Picture"
@@ -1575,6 +1712,12 @@ msgstr "Laita nimimerkki asetuksiin!"
 #: win32/HubFrame.cpp:525
 msgid "Please enter a password"
 msgstr "Anna salasana"
+
+#: win32/HashProgressDlg.cpp:41
+msgid ""
+"Please wait while DC++ indexes your files (they won't be shared until "
+"they've been indexed)..."
+msgstr ""
 
 #: win32/WindowsPage.cpp:61
 msgid "Popup box to input password for hubs"
@@ -1635,7 +1778,7 @@ msgstr "Yhdistä osoitteeseen"
 msgid "Rating"
 msgstr "Arvosana"
 
-#: win32/AboutDlg.cpp:61
+#: win32/AboutDlg.cpp:67
 #, c-format, boost-format
 msgid "Ratio (up/down): %1$0.2f"
 msgstr "Suhde (ulos/sisään): %1$0.2f"
@@ -1648,7 +1791,7 @@ msgstr "Raw"
 msgid "Re-add source"
 msgstr "Palauta lähde"
 
-#: win32/SearchFrame.cpp:1024
+#: win32/SearchFrame.cpp:1023
 msgid "Ready to search..."
 msgstr "Valmis hakemaan..."
 
@@ -1690,6 +1833,10 @@ msgstr "Luotettavuus"
 msgid "Remote client does not fully support TTH - cannot download"
 msgstr "Lähde ei tue kunnolla TTH-tarkistussummia - ei voi ladata"
 
+#: win32/FinishedFrameBase.h:230 win32/FinishedFrameBase.h:246
+msgid "Remove &all"
+msgstr ""
+
 #: win32/QueuePage.cpp:70
 msgid "Remove slow filelists"
 msgstr "Pudota hitaat tiedostolistat"
@@ -1698,7 +1845,7 @@ msgstr "Pudota hitaat tiedostolistat"
 msgid "Remove source"
 msgstr "Poista lähde"
 
-#: win32/QueueFrame.cpp:1040
+#: win32/QueueFrame.cpp:1040 win32/UserInfoBase.h:107
 msgid "Remove user from queue"
 msgstr "Poista käyttäjä latausjonosta"
 
@@ -1719,6 +1866,10 @@ msgstr "Ehdota uutta ominaisuutta"
 msgid "Requesting %1%"
 msgstr "Pyydetään %1%"
 
+#: win32/Advanced3Page.cpp:28
+msgid "Rollback"
+msgstr ""
+
 #: win32/HashProgressDlg.cpp:48
 msgid "Run in background"
 msgstr "Suorita taustalla"
@@ -1736,13 +1887,13 @@ msgstr "SOCKS5"
 msgid "Search"
 msgstr "Etsi"
 
-#: win32/SearchFrame.cpp:990 win32/SearchFrame.cpp:1005
-#: win32/SearchFrame.cpp:1020
+#: win32/SearchFrame.cpp:989 win32/SearchFrame.cpp:1004
+#: win32/SearchFrame.cpp:1019
 #, boost-format
 msgid "Search - %1%"
 msgstr "Etsi - %1%"
 
-#: win32/SearchFrame.cpp:1025
+#: win32/SearchFrame.cpp:1024
 msgid "Search - Ready to search..."
 msgstr "Etsi - Valmis hakemaan..."
 
@@ -1755,9 +1906,13 @@ msgstr "Hakuvalikko"
 msgid "Search Spy"
 msgstr "Hakusanavakooja"
 
-#: win32/SpyFrame.cpp:34
+#: win32/SpyFrame.cpp:34 win32/ADLSProperties.cpp:50
 msgid "Search String"
 msgstr "Hakusana"
+
+#: win32/ADLSProperties.cpp:51
+msgid "Search Type"
+msgstr ""
 
 #: win32/SearchFrame.cpp:116
 msgid "Search for"
@@ -1771,7 +1926,7 @@ msgstr "Etsi vaihtoehtoisia lähteitä"
 msgid "Search for file"
 msgstr "Etsi tiedosto"
 
-#: win32/Advanced3Page.cpp:34
+#: win32/Advanced3Page.cpp:42
 msgid "Search history"
 msgstr "Hakuhistoria"
 
@@ -1784,12 +1939,12 @@ msgstr "Haun asetukset"
 msgid "Search spam detected from %1%"
 msgstr "Hakuhäirintää tunnistettu käyttäjältä %1%"
 
-#: win32/SearchFrame.cpp:984
+#: win32/SearchFrame.cpp:983
 #, boost-format
 msgid "Searching for %1%..."
 msgstr "Etsitään hakusanalla %1%..."
 
-#: win32/SearchFrame.cpp:999 win32/SearchFrame.cpp:1018
+#: win32/SearchFrame.cpp:998 win32/SearchFrame.cpp:1017
 #, boost-format
 msgid "Searching too soon, next search in %1% second"
 msgid_plural "Searching too soon, next search in %1% seconds"
@@ -1834,11 +1989,11 @@ msgstr "Aseta tärkeys"
 msgid "Set timestamps"
 msgstr "Aseta aikaleimat"
 
-#: win32/SettingsDialog.cpp:55 win32/MainWindow.cpp:298
+#: win32/SettingsDialog.cpp:58 win32/MainWindow.cpp:298
 msgid "Settings"
 msgstr "Asetukset"
 
-#: win32/MainWindow.cpp:202 win32/MainWindow.cpp:1005
+#: win32/MainWindow.cpp:202 win32/MainWindow.cpp:1000
 msgid "Settings..."
 msgstr "Asetukset..."
 
@@ -1854,11 +2009,11 @@ msgstr "Jaettu"
 msgid "Shared directories"
 msgstr "Jaetut kansiot"
 
-#: win32/SettingsDialog.cpp:62
+#: win32/SettingsDialog.cpp:82
 msgid "Sharing"
 msgstr "Jakaminen"
 
-#: win32/MainWindow.cpp:1002
+#: win32/MainWindow.cpp:997
 msgid "Show"
 msgstr "Näytä"
 
@@ -1881,8 +2036,13 @@ msgstr "Näytä aikaleimat chat-ruudussa"
 #: win32/UploadPage.cpp:65 win32/QueueFrame.cpp:38
 #: win32/DirectoryListingFrame.cpp:43 win32/SearchFrame.cpp:35
 #: win32/SearchFrame.cpp:119 win32/TransferView.cpp:59
+#: win32/FinishedFrameBase.h:341
 msgid "Size"
 msgstr "Koko"
+
+#: win32/ADLSProperties.cpp:54
+msgid "Size Type"
+msgstr ""
 
 #: win32/QueueFrame.cpp:285 win32/QueueFrame.cpp:289
 #: win32/DirectoryListingFrame.cpp:637 win32/DirectoryListingFrame.cpp:654
@@ -1910,6 +2070,14 @@ msgstr "Latauspaikat asetettu"
 #, boost-format
 msgid "Slots: %1%/%2%"
 msgstr "Latauspaikat: %1%/%2%"
+
+#: win32/Advanced3Page.cpp:44
+msgid "Socket read buffer"
+msgstr ""
+
+#: win32/Advanced3Page.cpp:46
+msgid "Socket write buffer"
+msgstr ""
 
 #: win32/NetworkPage.cpp:42
 msgid "Socks IP"
@@ -1948,6 +2116,7 @@ msgid "Specify a server to connect to"
 msgstr "Valitse kohdepalvelin"
 
 #: win32/TransferView.cpp:44 win32/TransferView.cpp:57
+#: win32/FinishedFrameBase.h:342
 msgid "Speed"
 msgstr "Nopeus"
 
@@ -1959,6 +2128,10 @@ msgstr "Nopeus: %1%/s"
 #: win32/MagnetDlg.cpp:57
 msgid "Start a search for this file"
 msgstr "Aloita tämän tiedoston etsiminen"
+
+#: win32/HashProgressDlg.cpp:42
+msgid "Statistics"
+msgstr ""
 
 #: win32/QueueFrame.cpp:37 win32/TransferView.cpp:43 win32/TransferView.cpp:55
 msgid "Status"
@@ -2007,11 +2180,19 @@ msgstr "Välilehden lihavointi sisällön muuttuessa"
 msgid "Tag"
 msgstr "Tiedot"
 
+#: win32/CommandDlg.cpp:71
+msgid "Text sent to hub"
+msgstr ""
+
 #: win32/HubFrame.cpp:967
 msgid "This hub is not a favorite hub"
 msgstr "Tämä hubi ei ole suosikeissa"
 
-#: win32/SpyFrame.cpp:36
+#: win32/WinUtil.cpp:1047
+msgid "TiB"
+msgstr ""
+
+#: win32/SpyFrame.cpp:36 win32/FinishedFrameBase.h:337
 msgid "Time"
 msgstr "Aika"
 
@@ -2031,6 +2212,10 @@ msgstr "Aikaleimat pois päältä"
 msgid "Timestamps enabled"
 msgstr "Aikaleimat päällä"
 
+#: win32/CommandDlg.cpp:70
+msgid "To"
+msgstr ""
+
 #: win32/WindowsPage.cpp:60
 msgid "Toggle window when selecting an active tab"
 msgstr "Vaihda ikkunaa, kun aktiivinen välilehti valitaan"
@@ -2043,6 +2228,10 @@ msgstr "Koko yhteensä:"
 #, boost-format
 msgid "Total: %1%"
 msgstr "Yhteensä: %1%"
+
+#: win32/AboutDlg.cpp:63
+msgid "Totals"
+msgstr ""
 
 #: win32/TransferView.cpp:46
 msgid "Transferred (Ratio)"
@@ -2110,7 +2299,7 @@ msgstr "Tuntematon komento: %1%"
 msgid "Upload slots"
 msgstr "Latauspaikat"
 
-#: win32/AboutDlg.cpp:59
+#: win32/AboutDlg.cpp:61
 #, boost-format
 msgid "Upload: %1%, Download: %2%"
 msgstr "Lähetys: %1%, Lataus: %2%"
@@ -2228,13 +2417,17 @@ msgstr "Odotetaan uudelleenyritystä"
 msgid "Window options"
 msgstr "Ikkuna-asetukset"
 
-#: win32/Advanced3Page.cpp:29
+#: win32/Advanced3Page.cpp:39
 msgid "Write buffer size"
 msgstr "Kirjoituspuskuri"
 
+#: win32/FinishedFrameBase.h:143
+msgid "Yes"
+msgstr ""
+
 #: win32/HubFrame.cpp:897
 msgid "Your nick was already taken, please change to something else!"
-msgstr "Nimimerkki on jo käytössä, valitse toinen nimimerkki"
+msgstr "Nimimerkkisi on jo käytössä, valitse toinen nimimerkki"
 
 #: win32/MainWindow.cpp:143
 msgid ""
@@ -2244,8 +2437,8 @@ msgid ""
 "or from Microsoft directly."
 msgstr ""
 "Windows Common Controls -versiosi on liian vanha, josta seuraa "
-"todennäköisestiongelmia käyttöliittymän kanssa. Version 5.80 tai uudemman "
-"lataaminen DC++:an kotisivuilta tai suoraan Microsoftilta on suositeltavaa."
+"todennäköisesti ongelmia käyttöliittymän kanssa. Version 5.80 tai uudemman "
+"lataaminen DC++:n kotisivuilta tai suoraan Microsoftilta on suositeltavaa."
 
 #: win32/TransferView.cpp:674
 msgid "file list"

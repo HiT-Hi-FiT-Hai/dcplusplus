@@ -28,7 +28,7 @@
 #ifndef WidgetWindow_h
 #define WidgetWindow_h
 
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../WindowClass.h"
 #include "WidgetWindowBase.h"
 

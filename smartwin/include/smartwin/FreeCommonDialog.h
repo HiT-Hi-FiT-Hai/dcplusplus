@@ -28,6 +28,8 @@
 #ifndef FreeCommonDialog_h
 #define FreeCommonDialog_h
 
+#include "WindowsHeaders.h"
+
 namespace SmartWin
 {
 // begin namespace SmartWin

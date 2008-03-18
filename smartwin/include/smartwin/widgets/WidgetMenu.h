@@ -30,7 +30,7 @@
 #define WidgetMenu_h
 
 #include "../Application.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../CanvasClasses.h"
 #include "../Dispatchers.h"
 

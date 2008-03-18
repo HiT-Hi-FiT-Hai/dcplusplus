@@ -29,7 +29,7 @@
 #define WidgetWindowBase_h
 
 #include "../Application.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../Policies.h"
 #include "../aspects/AspectActivate.h"
 #include "../aspects/AspectBorder.h"

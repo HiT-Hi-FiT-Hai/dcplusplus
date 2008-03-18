@@ -30,7 +30,7 @@
 
 #include "../Widget.h"
 #include "../resources/ImageList.h"
-#include "../BasicTypes.h"
+#include "../Rectangle.h"
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"

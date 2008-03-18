@@ -29,7 +29,6 @@
 #define CanvasClasses_h
 
 #include "Widget.h"
-#include "BasicTypes.h"
 #include "resources/Bitmap.h"
 #include "resources/Font.h"
 

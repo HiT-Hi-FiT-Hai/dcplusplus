@@ -31,6 +31,7 @@
 
 #include "../WindowsHeaders.h"
 #include "../../SmartUtil.h"
+#include "../Point.h"
 #include "Bitmap.h"
 #include "Icon.h"
 #include "Handle.h"

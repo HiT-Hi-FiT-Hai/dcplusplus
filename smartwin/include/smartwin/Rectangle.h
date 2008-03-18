@@ -1,7 +1,7 @@
 #ifndef SMARTWIN_RECTANGLE_H_
 #define SMARTWIN_RECTANGLE_H_
 
-#include "BasicTypes.h"
+#include "Point.h"
 
 namespace SmartWin {
 /// Data structure for defining a rectangle

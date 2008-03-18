@@ -28,7 +28,7 @@
 #ifndef AspectMouse_h
 #define AspectMouse_h
 
-#include "../BasicTypes.h"
+#include "../Point.h"
 
 namespace SmartWin
 {

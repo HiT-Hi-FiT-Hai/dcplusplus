@@ -31,12 +31,11 @@
 #include "WindowsHeaders.h"
 #include "../SmartUtil.h"
 #include "CommandLine.h"
-#include "BasicTypes.h"
 #include "ApplicationPlatform.h"
 #include "xCeption.h"
 #include <vector>
 #include <memory>
-#include <boost/utility.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/signal.hpp>
 #include <map>
 #include "Message.h"
