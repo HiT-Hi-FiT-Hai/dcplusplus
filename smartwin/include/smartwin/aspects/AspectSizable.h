@@ -323,7 +323,7 @@ template< class WidgetType >
 void AspectSizable< WidgetType >::setBounds( const Rectangle & rect, bool updateWindow )
 {
 	if ( ::MoveWindow( static_cast< WidgetType * >( this )->handle(),
-		rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, updateWindow ? TRUE : FALSE ) == 0 )
+		rect.x(), rect.y(), rect.width(), rect.height(), updateWindow ? TRUE : FALSE ) == 0 )
 	{
 		xCeption err( _T( "Couldn't reposition windows" ) );
 		throw err;
@@ -371,8 +371,8 @@ void AspectSizable< WidgetType >::setSizeAsCol( const Rectangle & rect, int rows
 	int yPos = rect.pos.y + border; // Start with current y and first border.
 	yPos += rownum * ( border + ySize ); // Accumulate other rows and borders
 
-	::MoveWindow( static_cast< WidgetType * >( this )->handle(), rect.pos.x, yPos,
-					rect.size.x, ySize, updateWindow ? TRUE : FALSE );
+	::MoveWindow( static_cast< WidgetType * >( this )->handle(), rect.x(), yPos,
+					rect.width(), ySize, updateWindow ? TRUE : FALSE );
 }
 
 template< class WidgetType >
@@ -380,11 +380,11 @@ void AspectSizable< WidgetType >::setSizeAsRow( const Rectangle & rect, int cols
 	int border, bool updateWindow )
 {
 	int totBorder = border * ( cols + 1 );
-	int xSize = ( rect.size.x - totBorder ) / cols;
-	int xPos = rect.pos.x + border; // Start with current X and first border
+	int xSize = ( rect.width() - totBorder ) / cols;
+	int xPos = rect.x() + border; // Start with current X and first border
 	xPos += colnum * ( border + xSize ); // Accumulate other columns and borders
 
-	::MoveWindow( static_cast< WidgetType * >( this )->handle(), xPos, rect.pos.y, xSize, rect.size.y, updateWindow ? TRUE : FALSE );
+	::MoveWindow( static_cast< WidgetType * >( this )->handle(), xPos, rect.y(), xSize, rect.height(), updateWindow ? TRUE : FALSE );
 }
 
 template< class WidgetType >

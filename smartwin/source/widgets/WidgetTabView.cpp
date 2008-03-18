@@ -126,8 +126,9 @@ void WidgetTabView::swapWidgets(WidgetChildWindow* oldW, WidgetChildWindow* newW
 		oldW->sendMessage(WM_ACTIVATE, WA_INACTIVE, reinterpret_cast<LPARAM>(newW->handle()));
 		::ShowWindow(oldW->handle(), SW_HIDE);
 	}
+	
 	::ShowWindow(newW->handle(), SW_SHOW);
-	::MoveWindow(newW->handle(), clientSize.pos.x, clientSize.pos.y, clientSize.size.x, clientSize.size.y, FALSE);
+	::MoveWindow(newW->handle(), clientSize.x(), clientSize.y(), clientSize.width(), clientSize.height(), FALSE);
 	
 	newW->sendMessage(WM_ACTIVATE, WA_ACTIVE, oldW ? reinterpret_cast<LPARAM>(oldW->handle()) : 0);
 	sendMessage(WM_SETREDRAW, TRUE);
@@ -212,7 +213,7 @@ void WidgetTabView::layout() {
 	if(!(tmp == clientSize)) {
 		int i = tab->getSelectedIndex();
 		if(i != -1) {
-			::MoveWindow(getTabInfo(i)->w->handle(), tmp.pos.x, tmp.pos.y, tmp.size.x, tmp.size.y, TRUE);
+			::MoveWindow(getTabInfo(i)->w->handle(), tmp.x(), tmp.y(), tmp.width(), tmp.height(), TRUE);
 		}
 		clientSize = tmp;
 	}

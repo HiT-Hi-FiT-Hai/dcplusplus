@@ -87,7 +87,7 @@ MainWindow::MainWindow() :
 	onActivate(std::tr1::bind(&MainWindow::handleActivate, this, _1));
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
-	onRaw(std::tr1::bind(&MainWindow::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
+	onHelp(std::tr1::bind(&MainWindow::handleHelp, this, IDC_HELP_CONTENTS));
 	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _1, _2), SmartWin::Message(WM_APP + 242));
 	
 	updateStatus();
@@ -129,7 +129,7 @@ MainWindow::MainWindow() :
 	speak(PARSE_COMMAND_LINE);
 
 	if(SETTING(NICK).empty()) {
-		::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_GENERALPAGE);
+		handleHelp(IDD_GENERALPAGE);
 		postMessage(WM_COMMAND, IDC_SETTINGS);
 	}
 	
@@ -239,9 +239,9 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
-		help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+		help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleHelp, this, _1));
 		help->appendSeparatorItem();
-		help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleMenuHelp, this, _1));
+		help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleHelp, this, _1));
 		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DCPP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
@@ -909,12 +909,7 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 	}
 }
 
-LRESULT MainWindow::handleHelp(WPARAM wParam, LPARAM lParam) {
-	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_DISPLAY_TOC, NULL);
-	return 0;
-}
-
-void MainWindow::handleMenuHelp(unsigned id) {
+void MainWindow::handleHelp(unsigned id) {
 	UINT action = (id == IDC_HELP_CONTENTS) ? HH_DISPLAY_TOC : HH_HELP_CONTEXT;
 	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), action, id);
 }

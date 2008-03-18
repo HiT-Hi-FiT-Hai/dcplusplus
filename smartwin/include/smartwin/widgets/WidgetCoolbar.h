@@ -155,7 +155,7 @@ public:
 	{
 #ifdef PORT_ME
 		WidgetRadioButtonPtr retVal ( WidgetCreator< WidgetRadioButton >::create( parent, internal_::getTypedParentOrThrow < EventHandlerClass * >( this ), cs ) );
-		retVal->setBounds( 0, 0, cs.location.size.x, cs.location.size.y );
+		retVal->setBounds( 0, 0, cs.location.width(), cs.location.size.y );
 		parent->addChild( retVal );
 		return retVal;
 #endif
@@ -168,8 +168,8 @@ public:
 	typename A_Seed::WidgetType::ObjectType sow( const /*typename*/ A_Seed & cs, const SmartUtil::tstring & label = _T("") )
 	{
 		typename A_Seed::WidgetType::ObjectType retVal ( WidgetCreator< typename A_Seed::WidgetType >::create( this, cs ) );
-		retVal->setBounds( 0, 0, cs.location.size.x, cs.location.size.y );
-		this->addChild( retVal, cs.location.size.x, cs.location.size.y, label );
+		retVal->setBounds( 0, 0, cs.location.width(), cs.location.size.y );
+		this->addChild( retVal, cs.location.width(), cs.location.size.y, label );
 		return retVal;
 	}
 
@@ -191,9 +191,9 @@ public:
 	// ( const typename WidgetCoolbar< EventHandlerClass >::Seed & cs, const SmartUtil::tstring & label = _T("") )
 	//{
 	// typename WidgetCoolbar< EventHandlerClass >::ObjectType retVal (WidgetCreator< typename WidgetCoolbar< EventHandlerClass > >::create( this, cs ));
-	// retVal->setBounds( 0, 0, cs.rect.size.x, cs.rect.size.y );
+	// retVal->setBounds( 0, 0, cs.rect.width(), cs.rect.size.y );
 	// //TODO: use something like cs.itsOpenedHeight
-	// this->addChild( retVal, cs.rect.size.x, cs.rect.size.y, label );
+	// this->addChild( retVal, cs.rect.width(), cs.rect.size.y, label );
 	// return retVal;
 	//}
 
@@ -241,7 +241,7 @@ inline void WidgetCoolbar::refresh()
 	// They mess up with my macros to check delimiters ...
 	SmartWin::Rectangle rect;
 	if ( ::MoveWindow( this->handle(),
-		rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, TRUE ) == 0 )
+		rect.x(), rect.y(), rect.width(), rect.height(), TRUE ) == 0 )
 	{
 		xCeption err( _T( "Couldn't reposition windows" ) );
 		throw err;

@@ -61,10 +61,9 @@ private:
 
 	bool handleInitDialog();
 	void handleFocus();
-	LRESULT handleHelp();
+	void handleHelp();
 	void handleTypeChanged();
 	void handleOKClicked();
-	void handleHelpClicked();
 
 	void updateType();
 	void updateCommand();

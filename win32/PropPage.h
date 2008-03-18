@@ -54,8 +54,6 @@ protected:
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void translate(HWND page, TextItem* textItems);
-	
-	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
 };
 
 #endif // !defined(PROP_PAGE_H)

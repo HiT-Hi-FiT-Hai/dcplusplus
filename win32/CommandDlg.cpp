@@ -52,7 +52,7 @@ CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstr
 {
 	onInitDialog(std::tr1::bind(&CommandDlg::handleInitDialog, this));
 	onFocus(std::tr1::bind(&CommandDlg::handleFocus, this));
-	onRaw(std::tr1::bind(&CommandDlg::handleHelp, this), SmartWin::Message(WM_HELP));
+	onHelp(std::tr1::bind(&CommandDlg::handleHelp, this));
 }
 
 CommandDlg::~CommandDlg() {
@@ -118,15 +118,23 @@ bool CommandDlg::handleInitDialog() {
 	bool bOpenHelp = BOOLSETTING(OPEN_USER_CMD_HELP);
 	openHelp->setChecked(bOpenHelp);
 
-	attachButton(IDOK)->onClicked(std::tr1::bind(&CommandDlg::handleOKClicked, this));
+	{
+		WidgetButtonPtr button = attachButton(IDOK);
+		button->setText(T_("OK"));
+		button->onClicked(std::tr1::bind(&CommandDlg::handleOKClicked, this));
 
-	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&CommandDlg::endDialog, this, IDCANCEL));
+		button = attachButton(IDCANCEL);
+		button->setText(T_("Cancel"));
+		button->onClicked(std::tr1::bind(&CommandDlg::endDialog, this, IDCANCEL));
 
-	attachButton(IDHELP)->onClicked(std::tr1::bind(&CommandDlg::handleHelpClicked, this));
+		button = attachButton(IDHELP);
+		button->setText(T_("Help"));
+		button->onClicked(std::tr1::bind(&CommandDlg::handleHelp, this));
+	}
 
 	if(bOpenHelp) {
 		// launch the help file, instead of having the help in the dialog
-		HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+		handleHelp();
 	}
 
 	if(type == UserCommand::TYPE_SEPARATOR) {
@@ -191,6 +199,10 @@ void CommandDlg::handleFocus() {
 	nameBox->setFocus();
 }
 
+void CommandDlg::handleHelp() {
+	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+}
+
 void CommandDlg::handleTypeChanged() {
 	updateType();
 	updateCommand();
@@ -222,10 +234,6 @@ void CommandDlg::handleOKClicked() {
 	SettingsManager::getInstance()->set(SettingsManager::OPEN_USER_CMD_HELP, openHelp->getChecked());
 
 	endDialog(IDOK);
-}
-
-void CommandDlg::handleHelpClicked() {
-	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 }
 
 void CommandDlg::updateType() {
@@ -272,9 +280,4 @@ void CommandDlg::updateControls() {
 			nick->setEnabled(true);
 			break;
 	}
-}
-
-LRESULT CommandDlg::handleHelp() {
-	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
-	return 0;
 }

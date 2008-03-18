@@ -25,8 +25,7 @@
 #include <dcpp/SettingsManager.h>
 #include "WinUtil.h"
 
-PropPage::PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) { 
-	onRaw(std::tr1::bind(&PropPage::handleHelp, this, _1, _2), SmartWin::Message(WM_HELP));
+PropPage::PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDialog>(parent) {
 }
 
 PropPage::~PropPage() {
@@ -138,9 +137,4 @@ void PropPage::translate(HWND page, TextItem* textItems)
 				CT_(textItems[i].translatedString));
 		}
 	}
-}
-
-LRESULT PropPage::handleHelp(WPARAM, LPARAM) {
-	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, getHelpId());
-	return 0;
 }

@@ -91,7 +91,7 @@ void Canvas::line( const SmartWin::Rectangle & rect )
 	SmartWin::Point lr( rect.lowRight() );
 	lineTo( lr.x, rect.pos.y );
 	lineTo( lr.x, lr.y );
-	lineTo( rect.pos.x, lr.y );
+	lineTo( rect.x(), lr.y );
 	lineTo( rect.pos );
 }
 
@@ -133,16 +133,15 @@ void Canvas::rectangle( int left, int top, int right, int bottom )
 
 void Canvas::rectangle( const SmartWin::Rectangle & rect )
 {
-	rectangle( rect.pos.x,
-			   rect.pos.y,
-			   rect.pos.x + rect.size.x,
-			   rect.pos.y + rect.size.y );
+	rectangle( rect.left(),
+			   rect.top(),
+			   rect.right(),
+			   rect.bottom() );
 }
 
 void Canvas::ellipse( const SmartWin::Rectangle & rect )
 {
-	if ( ! ::Ellipse( itsHdc, rect.pos.x, rect.pos.y,
-					rect.pos.x + rect.size.x, rect.pos.y + rect.size.y ) )
+	if ( ! ::Ellipse( itsHdc, rect.left(), rect.top(), rect.right(), rect.bottom() ) )
 					{
 		xCeption x( _T( "Error in CanvasClasses ellipse" ) );
 		throw x;
@@ -162,10 +161,7 @@ void Canvas::fillRectangle( int left, int top, int right, int bottom, Brush & br
 
 void Canvas::fillRectangle( const SmartWin::Rectangle & rect, Brush & brush )
 {
-	// FIXED: RECT takes right/bottom for 3rd and 4th args
-	RECT rc =
-	{ rect.pos.x, rect.pos.y, rect.pos.x + rect.size.x, rect.pos.y + rect.size.y
-	};
+	RECT rc = rect;
 	::FillRect( itsHdc, & rc, brush.handle() );
 }
 
@@ -194,9 +190,7 @@ bool Canvas::extFloodFill( int x, int y, COLORREF color, bool fillTilColorFound 
 
 int Canvas::drawText( const SmartUtil::tstring & text, const SmartWin::Rectangle & rect, unsigned format )
 {
-	RECT rc =
-	{ rect.pos.x, rect.pos.y, rect.pos.x + rect.size.x, rect.pos.y + rect.size.y
-	};
+	RECT rc = rect;
 	int retVal = ::DrawText( itsHdc, text.c_str(), ( int ) text.length(), & rc, format );
 	if ( 0 == retVal )
 	{

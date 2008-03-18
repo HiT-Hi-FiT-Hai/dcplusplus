@@ -45,9 +45,9 @@ SmartWin::Rectangle WidgetTabSheet::getUsableArea(bool cutBorders) const
 	if(cutBorders) {
 		Rectangle rctabs(getClientAreaSize());
 		// Get rid of ugly border...assume y border is the same as x border
-		long border = (rctabs.size.x - rect.size.x) / 2;
-		rect.pos.x = rctabs.pos.x;
-		rect.size.x = rctabs.size.x;
+		long border = (rctabs.width() - rect.width()) / 2;
+		rect.pos.x = rctabs.x();
+		rect.size.x = rctabs.width();
 		rect.size.y += border;
 	}
 	return rect;

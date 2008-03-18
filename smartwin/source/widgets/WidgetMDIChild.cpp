@@ -18,7 +18,7 @@ void WidgetMDIChild::createMDIChild( Seed cs )
 	HWND wnd = ::CreateMDIWindow( windowClass->getClassName(),
 		cs.caption.c_str(),
 		cs.style,
-		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
+		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		getParent()->handle(),
 		Application::instance().getAppHandle(),
 		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );

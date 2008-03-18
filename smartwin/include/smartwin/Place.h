@@ -26,8 +26,10 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef Place_h
-#define Place_h
+#ifndef SMARTWIN_Place_h
+#define SMARTWIN_Place_h
+
+#include "Rectangle.h"
 
 namespace SmartWin
 {
@@ -77,10 +79,10 @@ public:
 	/** This is suitable for cases in which you want place objects inside a rect
 	  * that does NOT have to start at 0,0.
 	  */
-	void setBoundsBorders( const SmartWin::Rectangle & rect, const int borderX = 0,
+	void setBoundsBorders( const Rectangle & rect, const int borderX = 0,
 		const int borderY = 0 )
 	{
-		setBoundsBorders( rect.pos, rect.lowRight(), borderX, borderY );
+		setBoundsBorders( rect.upperLeft(), rect.lowRight(), borderX, borderY );
 	}
 
 	/// Set the bounds and borders from a size. (implied 0,0 position)
@@ -134,10 +136,10 @@ public:
 
 		obj.pos = itsPos; // Return current position
 
-		itsPos.x += obj.size.x + itsBorder.x; // Update next position.
-		if ( itsMaxYInLine < obj.size.y )
+		itsPos.x += obj.width() + itsBorder.x; // Update next position.
+		if ( itsMaxYInLine < obj.height() )
 		{
-			itsMaxYInLine = obj.size.y; // Update max y
+			itsMaxYInLine = obj.height(); // Update max y
 		}
 	}
 
@@ -173,17 +175,17 @@ public:
 	  */
 	void positionBelow( struct Rectangle & obj )
 	{
-		if ( obj.size.y <= itsLowRight.y )
+		if ( obj.height() <= itsLowRight.y )
 		{
 			newColIfNeeded( obj );
 		}
 
 		obj.pos = itsPos; // Return current position
 
-		itsPos.y += obj.size.y + itsBorder.y; // Update next position.
-		if ( itsMaxXInCol < obj.size.x )
+		itsPos.y += obj.height() + itsBorder.y; // Update next position.
+		if ( itsMaxXInCol < obj.width() )
 		{
-			itsMaxXInCol = obj.size.x; // Update max x
+			itsMaxXInCol = obj.width(); // Update max x
 		}
 	}
 
@@ -236,10 +238,10 @@ private:
 	void newRowIfNeeded( struct Rectangle & obj )
 	{
 		// If the obj's size is larger than the area's size, then skip the new row.
-		if ( obj.size.x > ( itsLowRight.x - itsUpLeft.x ) ) return;
+		if ( obj.width() > ( itsLowRight.x - itsUpLeft.x ) ) return;
 
 		// If the object would extend past the area, then do a new row.
-		if ( ( itsPos.x + obj.size.x + itsBorder.x ) > itsLowRight.x )
+		if ( ( itsPos.x + obj.width() + itsBorder.x ) > itsLowRight.x )
 		{
 			newRow();
 		}
@@ -247,7 +249,7 @@ private:
 
 	void newColIfNeeded( struct Rectangle & obj )
 	{
-		if ( ( itsPos.y + obj.size.y + itsBorder.y ) > itsLowRight.y )
+		if ( ( itsPos.y + obj.height() + itsBorder.y ) > itsLowRight.y )
 		{
 			newCol();
 		}

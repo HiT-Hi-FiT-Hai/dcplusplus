@@ -29,8 +29,9 @@
 #define Widget_h
 
 #include "Atom.h"
-#include "BasicTypes.h"
+#include "Rectangle.h"
 #include "Message.h"
+#include "../../SmartUtil/tstring.h"
 
 #include <boost/noncopyable.hpp>
 #include <memory>

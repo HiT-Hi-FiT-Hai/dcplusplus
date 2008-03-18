@@ -42,6 +42,7 @@ private:
 	void write();
 	
 	bool initDialog();
+	void handleHelp();
 	void handleOKClicked();
 	void selectionChanged();
 	void showPage(PropPage* page);

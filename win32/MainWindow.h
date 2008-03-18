@@ -154,12 +154,11 @@ private:
 	void handleOpenDownloadsDir();
 	void handleLink(unsigned id);
 	void handleAbout();
-	void handleMenuHelp(unsigned id);
+	void handleHelp(unsigned id);
 	void handleHashProgress();
 	void handleCloseWindows(unsigned id);
 	void handleSize();
 	void handleActivate(bool active);
-	LRESULT handleHelp(WPARAM wParam, LPARAM lParam);
 	LRESULT handleEndSession(WPARAM wParam, LPARAM lParam);
 	LRESULT handleTrayIcon(WPARAM wParam, LPARAM lParam);
 	

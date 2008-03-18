@@ -21,6 +21,8 @@
 #include "SettingsDialog.h"
 #include "resource.h"
 
+#include "WinUtil.h"
+
 #include "GeneralPage.h"
 #include "NetworkPage.h"
 #include "DownloadPage.h"
@@ -42,18 +44,36 @@ static const size_t MAX_NAME_LENGTH = 256;
 
 SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent), currentPage(0) {
 	onInitDialog(std::tr1::bind(&SettingsDialog::initDialog, this));
+	onHelp(std::tr1::bind(&SettingsDialog::handleHelp, this));
+}
+
+int SettingsDialog::run() {
+	return createDialog(IDD_SETTINGS);
+}
+
+SettingsDialog::~SettingsDialog() {
 }
 
 bool SettingsDialog::initDialog() {
-	attachButton(IDOK)->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
-
-	attachButton(IDCANCEL)->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
+	setText(T_("Settings"));
 
 	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
-	
-	setText(T_("Settings"));
-	
+
+	{
+		WidgetButtonPtr button = attachButton(IDOK);
+		button->setText(T_("OK"));
+		button->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
+
+		button = attachButton(IDCANCEL);
+		button->setText(T_("Cancel"));
+		button->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
+
+		button = attachButton(IDHELP);
+		button->setText(T_("Help"));
+		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this));
+	}
+
 	addPage(T_("Personal information"), new GeneralPage(this));
 	addPage(T_("Connection settings"), new NetworkPage(this));
 	addPage(T_("Downloads"), new DownloadPage(this));
@@ -73,11 +93,17 @@ bool SettingsDialog::initDialog() {
 	return false;
 }
 
-SettingsDialog::~SettingsDialog() {
-}
-
-int SettingsDialog::run() {
-	return createDialog(IDD_SETTINGS);
+void SettingsDialog::handleHelp() {
+	UINT action;
+	DWORD id;
+	if(currentPage) {
+		action = HH_HELP_CONTEXT;
+		id = currentPage->getHelpId();
+	} else {
+		action = HH_DISPLAY_TOC;
+		id = 0;
+	}
+	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), action, id);
 }
 
 void SettingsDialog::addPage(const tstring& title, PropPage* page) {

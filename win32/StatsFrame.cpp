@@ -53,12 +53,12 @@ StatsFrame::~StatsFrame() {
 void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
 	SmartWin::Rectangle rect = canvas.getPaintRect();
 
-	if(rect.size.x == 0 || rect.size.y == 0)
+	if(rect.width() == 0 || rect.size.y == 0)
 		return;
 
 	{
 		SmartWin::Canvas::Selector select(canvas, *WinUtil::bgBrush);
-		::BitBlt(canvas.handle(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, NULL, 0, 0, PATCOPY);
+		::BitBlt(canvas.handle(), rect.x(), rect.y(), rect.width(), rect.height(), NULL, 0, 0, PATCOPY);
 	}
 
 	canvas.setTextColor(WinUtil::textColor);
@@ -74,11 +74,11 @@ void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
 		for(int i = 0; i < lines; ++i) {
 			int ypos = lheight * (i+1);
 			if(ypos > fontHeight + 2) {
-				canvas.moveTo(rect.pos.x, ypos);
-				canvas.lineTo(rect.pos.x + rect.size.x, ypos);
+				canvas.moveTo(rect.left(), ypos);
+				canvas.lineTo(rect.right(), ypos);
 			}
 
-			if(rect.pos.x <= twidth) {
+			if(rect.x() <= twidth) {
 				ypos -= fontHeight + 2;
 				if(ypos < 0)
 					ypos = 0;
@@ -93,7 +93,7 @@ void StatsFrame::handlePaint(SmartWin::PaintCanvas& canvas) {
 			}
 		}
 
-		if(rect.pos.x < twidth) {
+		if(rect.x() < twidth) {
 			tstring txt = Text::toT(Util::formatBytes(max) + "/s");
 			SmartWin::Point txtSize = getTextSize(txt);
 			long tw = txtSize.x;
@@ -122,7 +122,7 @@ void StatsFrame::layout() {
 
 	layoutStatus(r);
 
-	width = r.size.x;
+	width = r.width();
 	height = r.size.y - 1;
 
 	invalidateWidget();
@@ -178,7 +178,7 @@ bool StatsFrame::eachSecond() {
 void StatsFrame::drawLine(SmartWin::Canvas& canvas, StatIter begin, StatIter end, SmartWin::Rectangle& rect, long clientRight) {
 	StatIter i;
 	for(i = begin; i != end; ++i) {
-		if((clientRight - (long)i->scroll) < (rect.pos.x + rect.size.x))
+		if((clientRight - (long)i->scroll) < rect.right())
 			break;
 		clientRight -= i->scroll;
 	}
@@ -191,7 +191,7 @@ void StatsFrame::drawLine(SmartWin::Canvas& canvas, StatIter begin, StatIter end
 		for(; i != end && clientRight > twidth; ++i) {
 			y = (max == 0) ? 0 : (int)((i->speed * height) / max);
 			canvas.lineTo(clientRight, height - y);
-			if(clientRight < rect.pos.x)
+			if(clientRight < rect.left())
 				break;
 			clientRight -= i->scroll;
 		}

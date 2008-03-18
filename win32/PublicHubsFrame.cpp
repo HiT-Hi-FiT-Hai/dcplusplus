@@ -224,7 +224,7 @@ void PublicHubsFrame::layout() {
 	r.size.y = ymessage * 2 + 8;
 	
 	// filter box
-	r.size.x = (r.size.x - 100 - border * 2) / 2 ;
+	r.size.x = (r.width() - 100 - border * 2) / 2 ;
 	filterDesc->setBounds(r);
 
 	SmartWin::Rectangle rc = r;
@@ -232,18 +232,18 @@ void PublicHubsFrame::layout() {
 	rc.pos.y += ymessage - 4;
 	rc.size.y = ymessage;
 	rc.pos.x += 16;
-	rc.size.x = rc.size.x * 2 / 3 - 24 - border;
+	rc.size.x = rc.width() * 2 / 3 - 24 - border;
 	filter->setBounds(rc);
 	
 	//filter sel
 	rc.size.y += comboH;
 	
-	rc.pos.x += rc.size.x + border;
-	rc.size.x = (rc.size.x + 24 + border) / 2 - 8;
+	rc.pos.x += rc.width() + border;
+	rc.size.x = (rc.width() + 24 + border) / 2 - 8;
 	filterSel->setBounds(rc);
 
 	// lists box
-	r.pos.x = r.size.x + border;
+	r.pos.x = r.width() + border;
 	lists->setBounds(r);
 
 	rc = r;
@@ -258,12 +258,12 @@ void PublicHubsFrame::layout() {
 
 	// configure button
 	rc.size.y -= comboH;
-	rc.pos.x += rc.size.x + border;
+	rc.pos.x += rc.width() + border;
 	rc.size.x = 100;
 	configure->setBounds(rc);
 
 	// refresh button
-	rc.pos.x += rc.size.x + 8;
+	rc.pos.x += rc.width() + 8;
 	refresh->setBounds(rc);
 }
 

@@ -160,7 +160,7 @@ public:
 	/// BitBlasts buffer into specified rectangle of source
 	void blast( const Rectangle & rectangle )
 	{
-		if ( ::BitBlt( itsSource, rectangle.pos.x, rectangle.pos.y, rectangle.size.x, rectangle.size.y, this->CanvasType::itsHdc, rectangle.pos.x, rectangle.pos.y, SRCCOPY ) == FALSE )
+		if ( ::BitBlt( itsSource, rectangle.x(), rectangle.y(), rectangle.width(), rectangle.height(), this->CanvasType::itsHdc, rectangle.x(), rectangle.y(), SRCCOPY ) == FALSE )
 			throw xCeption( _T( "Couldn't bit blast in blast()" ) );
 	}
 
@@ -171,8 +171,8 @@ public:
 	void drawBitmap( HBITMAP bitmap, const Rectangle & imageRectangle, COLORREF bitmapBackgroundColor, bool drawDisabled )
 	{
 		// bitmap size
-		int width = imageRectangle.size.x;
-		int height = imageRectangle.size.y;
+		int width = imageRectangle.width();
+		int height = imageRectangle.height();
 
 		// memory buffer for bitmap
 		HDC memoryDC = ::CreateCompatibleDC( this->CanvasType::itsHdc );
@@ -196,12 +196,12 @@ public:
 			// bits in the destination DC. The magic ROP comes from the Charles
 			// Petzold's book
 			HGDIOBJ oldBrush = ::SelectObject( this->CanvasType::itsHdc, ::CreateSolidBrush( ::GetSysColor( COLOR_3DHILIGHT ) ) );
-			::BitBlt( this->CanvasType::itsHdc, imageRectangle.pos.x, imageRectangle.pos.y, width, height, maskDC, 0, 0, 0xB8074A );
+			::BitBlt( this->CanvasType::itsHdc, imageRectangle.left(), imageRectangle.top(), width, height, maskDC, 0, 0, 0xB8074A );
 
 			// BitBlt the black bits in the monochrome bitmap into COLOR_3DSHADOW
 			// bits in the destination DC
 			::DeleteObject( ::SelectObject( this->CanvasType::itsHdc, ::CreateSolidBrush( ::GetSysColor( COLOR_3DSHADOW ) ) ) );
-			::BitBlt( this->CanvasType::itsHdc, imageRectangle.pos.x, imageRectangle.pos.y, width, height, maskDC, 0, 0, 0xB8074A );
+			::BitBlt( this->CanvasType::itsHdc, imageRectangle.left(), imageRectangle.top(), width, height, maskDC, 0, 0, 0xB8074A );
 			::DeleteObject( ::SelectObject( this->CanvasType::itsHdc, oldBrush ) );
 		}
 		else    // draw bitmap with transparency
@@ -217,8 +217,8 @@ public:
 			// set bitmap background to black
 			::BitBlt( memoryDC, 0, 0, width, height, backMaskDC, 0, 0, SRCAND );
 
-			::BitBlt( this->CanvasType::itsHdc, imageRectangle.pos.x, imageRectangle.pos.y, width, height, maskDC, 0, 0, SRCAND );
-			::BitBlt( this->CanvasType::itsHdc, imageRectangle.pos.x, imageRectangle.pos.y, width, height, memoryDC, 0, 0, SRCPAINT );
+			::BitBlt( this->CanvasType::itsHdc, imageRectangle.left(), imageRectangle.top(), width, height, maskDC, 0, 0, SRCAND );
+			::BitBlt( this->CanvasType::itsHdc, imageRectangle.left(), imageRectangle.top(), width, height, memoryDC, 0, 0, SRCPAINT );
 
 			// clear
 			::DeleteObject( ::SelectObject( backMaskDC, oldBackMaskBitmap ) );

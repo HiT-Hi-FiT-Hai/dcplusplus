@@ -585,14 +585,14 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 
 		// center in the item rectangle
 		rectangle.pos.x += stripWidth + textIconGap;
-		rectangle.pos.y += rectangle.size.y / 2 - 1;
+		rectangle.pos.y += rectangle.width() / 2 - 1;
 
 		// select color
 		Canvas::Selector select(canvas, *PenPtr(new Pen(::GetSysColor( COLOR_GRAYTEXT ))));
 
 		// draw separator
-		canvas.moveTo( rectangle.pos.x, rectangle.pos.y );
-		canvas.lineTo( rectangle.size.x, rectangle.pos.y );
+		canvas.moveTo( rectangle.left(), rectangle.top() );
+		canvas.lineTo( rectangle.right(), rectangle.bottom() );
 	} // end if
 	else // not a seperator, then draw item text and icon
 	{
@@ -665,7 +665,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 
 		// adjust icon rectangle
 		imageRectangle.pos.x += ( stripWidth - imageSize.x ) / 2;
-		imageRectangle.pos.y += ( itemRectangle.size.y - imageSize.y ) / 2;
+		imageRectangle.pos.y += ( itemRectangle.width() - imageSize.y ) / 2;
 
 		if ( image == NULL ) // drawing item without icon
 		{
@@ -687,7 +687,7 @@ bool WidgetMenu::handleDrawItem(int id, LPDRAWITEMSTRUCT drawInfo) {
 				const int adjustment = 2; // adjustment for mark to be in the center
 
 				// bit - blast into out canvas
-				::BitBlt( canvas.handle(), imageRectangle.pos.x + adjustment, imageRectangle.pos.y, imageSize.x, imageSize.y, memoryDC, 0, 0, SRCAND );
+				::BitBlt( canvas.handle(), imageRectangle.x() + adjustment, imageRectangle.y(), imageSize.x, imageSize.y, memoryDC, 0, 0, SRCAND );
 
 				// delete memory dc
 				::DeleteObject( ::SelectObject( memoryDC, old ) );

@@ -104,7 +104,7 @@ private:
 		{
 			SmartWin::ClientCoordinate cc(event.pos, getParent());
 			int x = horizontal ? cc.y() : cc.x();
-			int w = horizontal ? rect.size.y : rect.size.x;
+			int w = horizontal ? rect.size.y : rect.width();
 			pos = 1. - (static_cast<double>(w - x) / static_cast<double>(w));
 			resizeChildren();
 		}
@@ -162,10 +162,10 @@ SmartWin::Rectangle WidgetPaned< horizontal >::getSplitterRect()
 	}
 
 	if(horizontal) {
-		rc.size.x = rect.size.x;
-		rc.pos.x = rect.pos.x;
+		rc.size.x = rect.width();
+		rc.pos.x = rect.x();
 
-		int cwidth = rect.size.y;
+		int cwidth = rect.height();
 		int swidth = ::GetSystemMetrics(SM_CYEDGE) + 2;
 		int realpos = static_cast<int>(pos * cwidth);
 		rc.pos.y = realpos - swidth / 2;
@@ -174,7 +174,7 @@ SmartWin::Rectangle WidgetPaned< horizontal >::getSplitterRect()
 		rc.size.y = rect.size.y;
 		rc.pos.y = rect.pos.y;
 	
-		int cwidth = rect.size.x;
+		int cwidth = rect.width();
 		int swidth = ::GetSystemMetrics(SM_CXEDGE) + 2;
 		int realpos = static_cast<int>(pos * cwidth);
 		rc.pos.x = realpos - swidth / 2;
@@ -188,12 +188,12 @@ void WidgetPaned< horizontal >::resizeChildren( )
 {
 	if(!children.first) {
 		if(children.second) {
-			::MoveWindow(children.second->handle(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, TRUE);
+			::MoveWindow(children.second->handle(), rect.x(), rect.y(), rect.width(), rect.height(), TRUE);
 		}
 		return;
 	}
 	if(!children.second) {
-		::MoveWindow(children.first->handle(), rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, TRUE);
+		::MoveWindow(children.first->handle(), rect.x(), rect.y(), rect.width(), rect.height(), TRUE);
 		return;
 	}
 	
@@ -201,17 +201,17 @@ void WidgetPaned< horizontal >::resizeChildren( )
 	SmartWin::Rectangle rcSplit = getSplitterRect();
 	
 	if(horizontal) {
-		left.size.y = rcSplit.pos.y - left.pos.y;
-		right.pos.y = rcSplit.pos.y + rcSplit.size.y;
-		right.size.y = rect.size.y - rcSplit.size.y - left.size.y;		
+		left.size.y = rcSplit.y() - left.y();
+		right.pos.y = rcSplit.y() + rcSplit.height();
+		right.size.y = rect.height() - rcSplit.height() - left.height();		
 	} else {
-		left.size.x = rcSplit.pos.x - left.pos.x;
-		right.pos.x = rcSplit.pos.x + rcSplit.size.x;
-		right.size.x = rect.size.x - rcSplit.size.x - left.size.x;
+		left.size.x = rcSplit.x() - left.x();
+		right.pos.x = rcSplit.x() + rcSplit.width();
+		right.size.x = rect.width() - rcSplit.width() - left.width();
 	}
 
-	::MoveWindow(children.first->handle(), left.pos.x, left.pos.y, left.size.x, left.size.y, TRUE);
-	::MoveWindow(children.second->handle(), right.pos.x, right.pos.y, right.size.x, right.size.y, TRUE);
+	::MoveWindow(children.first->handle(), left.x(), left.y(), left.width(), left.height(), TRUE);
+	::MoveWindow(children.second->handle(), right.x(), right.y(), right.width(), right.height(), TRUE);
 
 	this->setBounds(rcSplit);
 }

@@ -214,17 +214,17 @@ void HubFrame::layout() {
 	mapWidget(STATUS_SHOW_USERS, showUsers);
 	
 	int ymessage = message->getTextSize(_T("A")).y + 10;
-	int xfilter = showUsers->getChecked() ? std::min(r.size.x / 4, 200l) : 0;
-	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x - xfilter, ymessage);
+	int xfilter = showUsers->getChecked() ? std::min(r.width() / 4, 200l) : 0;
+	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.width() - xfilter, ymessage);
 	message->setBounds(rm);
 
 	r.size.y -= rm.size.y + border;
 	
-	rm.pos.x += rm.size.x + border;
+	rm.pos.x += rm.width() + border;
 	rm.size.x = showUsers->getChecked() ? xfilter * 2 / 3 - border : 0;
 	filter->setBounds(rm);
 	
-	rm.pos.x += rm.size.x + border;
+	rm.pos.x += rm.width() + border;
 	rm.size.x = showUsers->getChecked() ? xfilter / 3 - border : 0;
 	rm.size.y += 140;
 	filterType->setBounds(rm);

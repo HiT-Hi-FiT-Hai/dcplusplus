@@ -301,91 +301,90 @@ void SearchFrame::layout() {
 	layoutStatus(r);
 	mapWidget(STATUS_SHOW_UI, showUI);
 
-	RECT rect = r, initialRect = rect;
 	if(showUI->getChecked()) {
-		const int width = 220, spacing = 50, labelH = 16, comboH = 140, lMargin = 2, rMargin = 4;
 
-		rect.left += width;
-		results->setBounds(rect);
+		const long width = 220, labelH = 16, margin = 4, spacing = 2, groupSpacing = 4;
+		
+		SmartWin::Rectangle rect = r;
+		
+		results->setBounds(rect.getRight(rect.width() - width));
+		
+		rect.size.x = width;
 
+		long yedit = size->getTextSize(_T("A")).y + 10;
+		long comboH = 5 * yedit;
+		
+		rect.pos.x += margin;
+		rect.size.x -= margin * 2;
+		
+		rect.size.y = labelH;
+		
 		// "Search for"
-		rect.right = width - rMargin;
-		rect.left = lMargin;
-		rect.top += 25;
-		rect.bottom = rect.top + comboH + 21;
+		searchLabel->setBounds(rect);
+		
+		rect.pos.y += rect.size.y + spacing;
+		rect.size.y = comboH;
+		
 		searchBox->setBounds(rect);
-		rect.bottom -= comboH;
-
-		searchLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		// "Purge"
-		rect.right = rect.left + spacing;
-		rect.left = lMargin;
-		rect.top += 25;
-		rect.bottom = rect.top + 21;
-		purge->setBounds(rect);
 		
-		// "Search"
-		rect.right = width - rMargin;
-		rect.left = rect.right - 100;
-		doSearch->setBounds(rect);
+		rect.pos.y += yedit + spacing;
 		
-		// "Size"
-		int w2 = width - rMargin - lMargin;
-		rect.top += spacing;
-		rect.bottom = rect.top + comboH;
-		rect.left = lMargin;
-		rect.right = w2/3;
-		mode->setBounds(rect);
-
-		sizeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		rect.left = rect.right + lMargin;
-		rect.right += w2/3;
-		rect.bottom = rect.top + 21;
-		size->setBounds(rect);
-
-		rect.left = rect.right + lMargin;
-		rect.right = width - rMargin;
-		rect.bottom = rect.top + comboH;
-		sizeMode->setBounds(rect);
-
-		// "File type"
-		rect.left = lMargin;
-		rect.right = width - rMargin;
-		rect.top += spacing;
-		rect.bottom = rect.top + comboH + 21;
+		purge->setBounds(SmartWin::Rectangle(rect.x(), rect.y(), 75, yedit));
+		doSearch->setBounds(SmartWin::Rectangle(rect.right() - 100, rect.y(), 100, yedit));
+		
+		rect.pos.y += yedit + groupSpacing;
+		
+		rect.size.y = labelH;
+		sizeLabel->setBounds(rect);
+		
+		rect.pos.y += rect.size.y + spacing;
+		
+		long w2 = rect.size.x - 2 * spacing;
+		
+		SmartWin::Rectangle third = rect;
+		
+		third.size.y = comboH;
+		third.size.x = w2 / 3;
+		
+		mode->setBounds(third);
+		
+		third.pos.x += third.size.x + spacing;
+		third.size.y = yedit;
+		
+		size->setBounds(third);
+		
+		third.pos.x += third.size.x + spacing;
+		third.size.y = comboH;
+		
+		sizeMode->setBounds(third);
+		
+		rect.pos.y += yedit + groupSpacing;
+		rect.size.y = labelH;
+		
+		typeLabel->setBounds(rect);
+		
+		rect.pos.y += rect.size.y + spacing;
+		rect.size.y = comboH;
 		fileType->setBounds(rect);
-		rect.bottom -= comboH;
 
-		typeLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		// "Search options"
-		rect.left = lMargin;
-		rect.right = width - rMargin;
-		rect.top += spacing;
-		rect.bottom += spacing;
+		rect.pos.y += yedit + groupSpacing;
+		rect.size.y = labelH;
+		
+		optionLabel->setBounds(rect);
+		
+		rect.pos.y += rect.size.y + spacing;
+		rect.size.y = yedit;
 		slots->setBounds(rect);
-
-		optionLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
-		// "Hubs"
-		rect.left = lMargin;
-		rect.right = width - rMargin;
-		rect.top += spacing;
-		rect.bottom = rect.top + comboH;
-		if(rect.bottom + labelH + 21 > initialRect.bottom) {
-			rect.bottom = initialRect.bottom - labelH - 21;
-			if(rect.bottom < rect.top + (labelH*3)/2)
-				rect.bottom = rect.top + (labelH*3)/2;
-		}
-
+		
+		rect.pos.y += rect.size.y + groupSpacing;
+		rect.size.y = labelH;
+		hubsLabel->setBounds(rect);
+		
+		rect.pos.y += rect.size.y + spacing;
+		rect.size.y = std::min(yedit * 5, r.size.y - rect.pos.y - margin * 2);
 		hubs->setBounds(rect);
-
-		hubsLabel->setBounds(SmartWin::Rectangle(rect.left + lMargin, rect.top - labelH, width - rMargin, labelH - 1));
-
 	} else {
-		results->setBounds(rect);
+		results->setBounds(r);
 
 		SmartWin::Rectangle rNULL(0, 0, 0, 0);
 		searchBox->setBounds(rNULL);

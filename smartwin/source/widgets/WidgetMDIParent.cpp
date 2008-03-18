@@ -20,7 +20,7 @@ void WidgetMDIParent::create( const Seed & cs )
 		cs.className,
 		cs.caption.c_str(),
 		cs.style,
-		cs.location.pos.x, cs.location.pos.y, cs.location.size.x, cs.location.size.y,
+		cs.location.x(), cs.location.y(), cs.location.width(), cs.location.height(),
 		this->getParent() ? this->getParent()->handle() : 0,
 		NULL,
 		Application::instance().getAppHandle(),

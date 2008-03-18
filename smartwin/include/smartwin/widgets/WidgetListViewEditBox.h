@@ -95,7 +95,7 @@ LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT
 			WINDOWPOS * pos = ( WINDOWPOS * ) lPar;
 			pos->x = itsRect.pos.x;
 			pos->y = itsRect.pos.y;
-			pos->cx = itsRect.size.x - itsRect.pos.x;
+			pos->cx = itsRect.width() - itsRect.pos.x;
 			pos->cy = itsRect.size.y - itsRect.pos.y;
 		} break;
 #endif

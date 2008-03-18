@@ -233,7 +233,7 @@ void PrivateFrame::layout() {
 	layoutStatus(r);
 	
 	int ymessage = message->getTextSize(_T("A")).y + 10;
-	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.size.x , ymessage);
+	SmartWin::Rectangle rm(0, r.size.y - ymessage, r.width() , ymessage);
 	message->setBounds(rm);
 	
 	r.size.y -= rm.size.y + border;

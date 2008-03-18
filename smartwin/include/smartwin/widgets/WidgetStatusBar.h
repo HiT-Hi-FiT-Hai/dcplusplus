@@ -208,7 +208,7 @@ void WidgetStatusBar< TypeOfStatusBar >::refresh()
 	// size after the main window is being resized.
 	SmartWin::Rectangle rect;
 	if ( ::MoveWindow( this->handle(),
-		rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, TRUE ) == 0 )
+		rect.x(), rect.y(), rect.width(), rect.height(), TRUE ) == 0 )
 	{
 		xCeption err( _T( "Couldn't reposition windows" ) );
 		throw err;
