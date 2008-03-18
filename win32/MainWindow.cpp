@@ -972,6 +972,7 @@ void MainWindow::handleRefreshFileList() {
 }
 
 void MainWindow::handleRestore() {
+	setVisible(true);
 	if(maximized) {
 		maximize();
 	} else {
