@@ -56,8 +56,8 @@ bool AboutDlg::handleInitDialog() {
 	setText(T_("About DC++"));
 	
 	setItemText(IDC_VERSION, Text::toT(APPNAME " " VERSIONSTRING) + T_("\n(c) Copyright 2001-2008 Jacek Sieka\nEx-codeveloper: Per Lind\303\251n\nGraphics: Martin Skogevall et al.\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
-	setItemText(IDC_TTH, WinUtil::tth);
-	setItemText(IDC_THANKS, Text::toT(thanks));
+	attachTextBox(IDC_TTH)->setText(WinUtil::tth);
+	attachTextBox(IDC_THANKS)->setText(Text::toT(thanks));
 	setItemText(IDC_TOTALS, str(TF_("Upload: %1%, Download: %2%") % Text::toT(Util::formatBytes(SETTING(TOTAL_UPLOAD))) % Text::toT(Util::formatBytes(SETTING(TOTAL_DOWNLOAD)))));
 	setItemText(IDC_GREETZ, T_("Greetz and Contributors"));
 	setItemText(IDC_TOTALS, T_("Totals"));
