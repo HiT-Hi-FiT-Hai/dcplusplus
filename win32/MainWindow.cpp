@@ -88,7 +88,7 @@ MainWindow::MainWindow() :
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
 	onHelp(std::tr1::bind(&MainWindow::handleHelp, this, IDC_HELP_CONTENTS));
-	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _1, _2), SmartWin::Message(WM_APP + 242));
+	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _2), SmartWin::Message(WM_APP + 242));
 	
 	updateStatus();
 	layout();
@@ -99,8 +99,9 @@ MainWindow::MainWindow() :
 	onClosing(std::tr1::bind(&MainWindow::closing, this));
 
 	onRaw(std::tr1::bind(&MainWindow::handleTrayMessage, this), SmartWin::Message(RegisterWindowMessage(_T("TaskbarCreated"))));
-	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this, _1, _2), SmartWin::Message(WM_ENDSESSION));
-	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this, _1, _2), SmartWin::Message(SingleInstance::WMU_WHERE_ARE_YOU));
+	onRaw(std::tr1::bind(&MainWindow::handleEndSession, this), SmartWin::Message(WM_ENDSESSION));
+	onRaw(std::tr1::bind(&MainWindow::handleCopyData, this, _2), SmartWin::Message(WM_COPYDATA));
+	onRaw(std::tr1::bind(&MainWindow::handleWhereAreYou, this), SmartWin::Message(SingleInstance::WMU_WHERE_ARE_YOU));
 	
 	TimerManager::getInstance()->start();
 
@@ -537,7 +538,7 @@ void MainWindow::layout() {
 	paned->setRect(r);
 }
 
-LRESULT MainWindow::handleWhereAreYou(WPARAM, LPARAM) {
+LRESULT MainWindow::handleWhereAreYou() {
 	return SingleInstance::WMU_WHERE_ARE_YOU;
 }
 
@@ -817,10 +818,9 @@ void MainWindow::parseCommandLine(const tstring& cmdLine)
 	}
 }
 
-LRESULT MainWindow::handleCopyData(WPARAM /*wParam*/, LPARAM lParam) {
-	tstring cmdLine = (LPCTSTR) (((COPYDATASTRUCT *)lParam)->lpData);
-	parseCommandLine(Text::toT(WinUtil::getAppName() + " ") + cmdLine);
-	return true;
+LRESULT MainWindow::handleCopyData(LPARAM lParam) {
+	parseCommandLine(Text::toT(WinUtil::getAppName() + " ") + reinterpret_cast<LPCTSTR>(reinterpret_cast<COPYDATASTRUCT*>(lParam)->lpData));
+	return TRUE;
 }
 
 void MainWindow::handleHashProgress() {
@@ -914,7 +914,7 @@ void MainWindow::handleHelp(unsigned id) {
 	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), action, id);
 }
 
-LRESULT MainWindow::handleEndSession(WPARAM wParam, LPARAM lParam) {
+LRESULT MainWindow::handleEndSession() {
 	if (c != NULL) {
 		c->removeListener(this);
 		delete c;
@@ -988,7 +988,7 @@ bool MainWindow::tryFire(const MSG& msg, LRESULT& retVal) {
 	return handled;
 }
 
-LRESULT MainWindow::handleTrayIcon(WPARAM /*wParam*/, LPARAM lParam)
+LRESULT MainWindow::handleTrayIcon(LPARAM lParam)
 {
 	if (lParam == WM_LBUTTONUP) {
 		handleRestore();
