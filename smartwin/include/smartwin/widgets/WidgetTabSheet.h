@@ -142,13 +142,13 @@ public:
 	  * validation of fields etc...)
 	  */
 	void onSelectionChanging(const ChangingDispatcher::F& f) {
-		setCallback(
+		addCallback(
 			Message( WM_NOTIFY, TCN_SELCHANGING ), ChangingDispatcher(f, this )
 		);
 	}
 
 	void onSelectionChanged(const ChangedDispatcher::F& f) {
-		setCallback(
+		addCallback(
 			Message( WM_NOTIFY, TCN_SELCHANGE ), ChangedDispatcher(f, this )
 		);
 	}

@@ -134,7 +134,7 @@ public:
 	  * controls!       
 	  */
 	void onInitDialog(const Dispatcher::F& f) {
-		setCallback(
+		addCallback(
 			Message( WM_INITDIALOG ), Dispatcher(f)
 		);
 	}

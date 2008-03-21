@@ -84,7 +84,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onEnabled(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_ENABLE ), Dispatcher(f)
 		);
 	}

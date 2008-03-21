@@ -20,7 +20,7 @@ void WidgetToolTip::relayEvent(const MSG& msg) {
 }
 
 void WidgetToolTip::setTool(Widget* widget, const Dispatcher::F& f) {
-	setCallback(
+	addCallback(
 		Message(WM_NOTIFY, TTN_GETDISPINFO), Dispatcher(f)
 	);
 	

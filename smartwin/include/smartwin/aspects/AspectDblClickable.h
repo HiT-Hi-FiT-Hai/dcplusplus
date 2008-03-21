@@ -52,7 +52,7 @@ public:
 	  */
 
 	void onDblClicked(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			WidgetType::getDblClickMessage(), Dispatcher(f)
 		);
 	}

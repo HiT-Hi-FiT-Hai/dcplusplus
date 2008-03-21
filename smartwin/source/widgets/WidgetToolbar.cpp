@@ -46,7 +46,7 @@ void WidgetToolbar::appendItem( unsigned int id, int image, const SmartUtil::tst
 	}
 
 	if(f)
-		setCallback(Message(WM_COMMAND, id), Dispatcher(f));
+		addCallback(Message(WM_COMMAND, id), Dispatcher(f));
 }
 
 bool WidgetToolbar::tryFire( const MSG & msg, LRESULT & retVal )

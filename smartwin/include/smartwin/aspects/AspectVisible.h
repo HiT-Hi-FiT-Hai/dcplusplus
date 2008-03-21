@@ -81,7 +81,7 @@ public:
 	  * invisible.
 	  */
 	void onVisibilityChanged(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_SHOWWINDOW ), Dispatcher(f)
 		);
 	}

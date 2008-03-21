@@ -39,7 +39,7 @@ public:
 	
 	unsigned int getControlId();
 	
-	void create(const Seed& cs);
+	virtual HWND create(const Seed& cs);
 protected:
 	typedef AspectControl<WidgetType> ControlType;
 
@@ -52,9 +52,9 @@ AspectControl<WidgetType>::AspectControl(Widget* parent) : PolicyType(parent) {
 }
 
 template<typename WidgetType>
-void AspectControl<WidgetType>::create(const Seed& cs) {
+HWND AspectControl<WidgetType>::create(const Seed& cs) {
 	xAssert((cs.style & WS_CHILD) == WS_CHILD, _T("Common controls must have WS_CHILD style"));
-	PolicyType::create(cs);
+	return PolicyType::create(cs);
 }
 
 template<typename WidgetType>

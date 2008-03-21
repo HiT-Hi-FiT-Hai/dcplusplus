@@ -22,7 +22,7 @@ class AspectContextMenu {
 	
 public:
 	void onContextMenu(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_CONTEXTMENU ), Dispatcher(f)
 		);
 	}

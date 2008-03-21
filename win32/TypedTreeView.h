@@ -34,7 +34,7 @@ public:
 	
 	void create( const typename BaseType::Seed & cs = BaseType::Seed() ) {
 		BaseType::create(cs);
-		this->setCallback(
+		this->addCallback(
 			SmartWin::Message( WM_NOTIFY, TVN_GETDISPINFO ), &TypedTreeViewDispatcher
 		);
 	}

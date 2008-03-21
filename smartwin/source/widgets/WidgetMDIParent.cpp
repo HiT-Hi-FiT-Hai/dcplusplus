@@ -28,12 +28,8 @@ void WidgetMDIParent::create( const Seed & cs )
 	if ( !wnd )
 	{
 		// The most common error is to forget WS_CHILD in the styles
-		xCeption x( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
-		throw x;
+		throw xCeption( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
 	}
-	setHandle(wnd);
-
-	ThisType::createMessageMap();
 }
 
 }

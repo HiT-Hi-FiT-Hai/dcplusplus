@@ -35,8 +35,9 @@
 
 #include <boost/noncopyable.hpp>
 #include <memory>
+#include <list>
 #include <functional>
-#include <map>
+#include <tr1/unordered_map>
 
 namespace SmartWin
 {
@@ -108,27 +109,23 @@ public:
 	  * If you need to do directly manipulation of the window use this function to
 	  * retrieve the HWND of the Widget.
 	  */
-	HWND handle() const	{ return itsHandle; }
+	HWND handle() const;
 
 	/// Send a message to the Widget
 	/** If you need to be able to send a message to a Widget then use this function
 	  * as it will unroll into <br>
 	  * a ::SendMessage from the Windows API
 	  */
-	LRESULT sendMessage( UINT msg, WPARAM wParam = 0, LPARAM lParam = 0 ) const {
-		return ::SendMessage(handle(), msg, wParam, lParam);
-	}
+	LRESULT sendMessage( UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const;
 	
-	bool postMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const {
-		return ::PostMessage(handle(), msg, wParam, lParam);
-	}
+	bool postMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const;
 
 	/// Returns the parent Widget of the Widget
 	/** Most Widgets have got a parent, this function will retrieve a pointer to the
 	  * Widgets parent, if the Widget doesn't have a parent it will return a null
 	  * pointer.
 	  */
-	Widget * getParent() const { return itsParent; }
+	Widget* getParent() const;
 
 	/// Repaints the whole window
 	/** Invalidate the window and repaints it.
@@ -155,20 +152,15 @@ public:
 	  * style (if true add style, else remove)
 	  */
 	void addRemoveExStyle( DWORD addStyle, bool add );
-
-	void setProp() { ::SetProp(handle(), propAtom, reinterpret_cast<HANDLE>(this) ); }
 	
 	typedef std::tr1::function<bool(const MSG& msg, LRESULT& ret)> CallbackType;
+	typedef std::list<CallbackType> CallbackList;
+	typedef std::tr1::unordered_map<Message, CallbackList> CallbackCollectionType;
 	
-	// We only support one Callback per message, so a map is appropriate
-	typedef std::map<Message, CallbackType> CallbackCollectionType;
-	
-	/// Adds a new Callback into the Callback collection or replaces the existing one
-	void setCallback(const Message& msg, const CallbackType& callback );
+	/// Adds a new callback - multiple callbacks for the same message will be called in the order they were added
+	void addCallback(const Message& msg, const CallbackType& callback );
 
-	CallbackCollectionType & getCallbacks() { 
-		return itsCallbacks;
-	}
+	CallbackCollectionType & getCallbacks();
 
 	/// Returns true if fired, else false
 	virtual bool tryFire( const MSG & msg, LRESULT & retVal );
@@ -176,16 +168,14 @@ public:
 	/** This will be called when it's time to delete the widget */
 	virtual void kill();
 
-	void setHandle(HWND hWnd) { itsHandle = hWnd; }
-
 protected:
-	Widget( Widget * parent, HWND hWnd = NULL );
+	Widget(Widget * parent);
 
 	virtual ~Widget();
 
 	// Creates the Widget, should NOT be called directly but overridden in the
 	// derived class (with no parameters)
-	void create( const Seed & cs );
+	virtual HWND create( const Seed & cs );
 
 	virtual void attach(HWND wnd);
 
@@ -195,24 +185,48 @@ protected:
 	  * Should normally not be called directly but rather called from e.g. one of the
 	  * creational functions found in the WidgetFactory class.
 	  */
-	virtual void attach( unsigned id );
+	void attach( unsigned id );
 
 private:
 	friend class Application;
 	template<typename T> friend T hwnd_cast(HWND hwnd);
 	
-	HWND itsHandle;
-	Widget * itsParent;
-
 	// Contains the list of signals we're (this window) processing
 	CallbackCollectionType itsCallbacks;
 
-	/// The ATOM with which the pointer to the MessageMapBase is registered on the HWND
+	Widget * itsParent;
+	HWND itsHandle;
+
+	/// The atom with which the pointer to the MessageMapBase is registered on the HWND
 	static GlobalAtom propAtom;
 };
 
+inline Widget::Widget( Widget * parent ) : itsParent(parent), itsHandle(NULL) {
+	
+}
+
+inline LRESULT Widget::sendMessage( UINT msg, WPARAM wParam, LPARAM lParam) const {
+	return ::SendMessage(handle(), msg, wParam, lParam);
+}
+
+inline bool Widget::postMessage(UINT msg, WPARAM wParam, LPARAM lParam) const {
+	return ::PostMessage(handle(), msg, wParam, lParam);
+}
+
+inline HWND Widget::handle() const { 
+	return itsHandle;
+}
+
+inline Widget* Widget::getParent() const { 
+	return itsParent; 
+}
+
 inline bool Widget::hasStyle(DWORD style) {
 	return (::GetWindowLong(this->handle(), GWL_STYLE) & style) == style;	
+}
+
+inline Widget::CallbackCollectionType& Widget::getCallbacks() { 
+	return itsCallbacks;
 }
 
 template<typename T>

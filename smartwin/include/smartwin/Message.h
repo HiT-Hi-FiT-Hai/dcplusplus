@@ -30,6 +30,8 @@
 
 #include "WindowsHeaders.h"
 
+#include <functional>
+
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -43,8 +45,6 @@ namespace SmartWin
 struct Message
 {
 public:
-	// Note!
-	// We're asserting this constructor comes from a setter for an event callback
 	/// Constructor taking a System Message
 	/** Use this one if you need to e.g. handle an AspectRaw::onRaw Event and the
 	  * only interesting parameter to figure out what Message to handle is the actual
@@ -70,12 +70,12 @@ public:
 	// forceValues will if false "manipulate" the values for easy comparison
 	Message( const MSG& msg );
 
-	~Message()
-	{}
+	~Message() { }
 
 	bool operator<(const Message& rhs) const;
 	bool operator==(const Message& rhs) const;
 private:
+	friend class std::tr1::hash<Message>;
 	/// Contains the actual Message
 	UINT msg;
 
@@ -83,7 +83,20 @@ private:
 	LPARAM param;
 };
 
+inline bool Message::operator==( const Message & right ) const {
+	return msg == right.msg && param == right.param;
+}
+
 // end namespace SmartWin
 }
+
+namespace std { namespace tr1 {
+template<>
+struct hash<SmartWin::Message> {
+	size_t operator()(const SmartWin::Message& message) const { return message.msg * 31 + message.param; }
+};
+
+} }
+
 
 #endif

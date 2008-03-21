@@ -64,7 +64,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onSelectionChanged(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			static_cast<WidgetType*>(this)->getSelectionChangedMessage(), Dispatcher(f)
 		);
 	}

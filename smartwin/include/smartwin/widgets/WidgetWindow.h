@@ -144,7 +144,7 @@ public:
 	  * can add/remove styles and add remove EX styles etc.       
 	  */
 	void onCreate(const CreateDispatcher::F& f) {
-		setCallback(
+		addCallback(
 			Message( WM_CREATE ), CreateDispatcher(f)
 		);
 	}

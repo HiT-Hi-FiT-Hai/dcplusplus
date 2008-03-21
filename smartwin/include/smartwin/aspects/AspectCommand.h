@@ -10,19 +10,19 @@ class AspectCommand {
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	void onCommand(const Dispatcher::F& f, unsigned id) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message(WM_COMMAND, id), Dispatcher(f)
 		);
 	}
 
 	void onCommand(const Dispatcher::F& f, unsigned controlId, unsigned code) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message(WM_COMMAND, MAKEWPARAM(controlId, code)), Dispatcher(f)
 		);
 	}
 
 	void onSysCommand(const Dispatcher::F& f, unsigned id) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message(WM_SYSCOMMAND, id), Dispatcher(f)
 		);
 	}

@@ -54,27 +54,22 @@ Message::Message( UINT msg_, LPARAM extraCode )
 	}
 }
 
-Message::Message(const MSG& msg_ )
-	: msg(msg_.message),
+Message::Message(const MSG& msg_ ) : 
+	msg(msg_.message),
 	param( 0 )
 {
-	switch ( msg )
-	{
-	case WM_NOTIFY :
-		{
+	switch ( msg ) {
+	case WM_NOTIFY: {
 			NMHDR * ptrOriginal = reinterpret_cast< NMHDR * >( msg_.lParam );
 			param = ptrOriginal->code;
 		} break;
-	case WM_SYSCOMMAND : {
-		param = msg_.wParam & 0xfff0;
-		break;
-	}
-	case WM_TIMER:
-		{
+	case WM_SYSCOMMAND: {
+			param = msg_.wParam & 0xfff0;
+		} break;
+	case WM_TIMER: {
 			param = msg_.wParam;
 		} break;
-	case WM_COMMAND :
-		{
+	case WM_COMMAND: {
 			if(msg_.lParam == 0) {
 				param = LOWORD( msg_.wParam );
 			} else {
@@ -84,19 +79,15 @@ Message::Message(const MSG& msg_ )
 	}
 }
 
-bool Message::operator <( const Message & right ) const
-{
-	if ( msg < right.msg )
+bool Message::operator <( const Message & right ) const {
+	if ( msg < right.msg ) {
 		return true;
+	}
 
 	if(msg == right.msg && param < right.param) {
 		return true;
 	}
 	return false;
-}
-
-bool Message::operator == ( const Message & right ) const {
-	return msg == right.msg && param == right.param;
 }
 
 // end namespace SmartWin

@@ -43,7 +43,7 @@ public:
 	void create( const typename BaseType::Seed & cs = BaseType::Seed() ) {
 		BaseType::create(cs);
 		
-		this->setCallback(
+		this->addCallback(
 			SmartWin::Message( WM_NOTIFY, LVN_GETDISPINFO ), &ThisType::TypedListViewDispatcher
 		);
 		this->onColumnClick(std::tr1::bind(&ThisType::handleColumnClick, this, _1));

@@ -256,7 +256,7 @@ public:
 	  * updated or false if you want to disallow the item to actually become updated!
 	  */
 	void onValidateEditLabels(const Dispatcher::F& f) {
-		setCallback(
+		addCallback(
 			Message( WM_NOTIFY, TVN_ENDLABELEDIT ), Dispatcher(f)
 		);		
 	}

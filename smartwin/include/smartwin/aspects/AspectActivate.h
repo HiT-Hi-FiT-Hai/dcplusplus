@@ -76,7 +76,7 @@ public:
 	  * Parameter passed is bool
 	  */
 	void onActivate(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message(WM_ACTIVATE), Dispatcher(f)
 		);
 	}

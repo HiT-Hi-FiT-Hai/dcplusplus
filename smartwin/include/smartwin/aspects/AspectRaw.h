@@ -80,7 +80,7 @@ public:
 	/// WARNING, this function uses the natural wparam/lparam order, not the inverted that previous
 	/// smartwin versions did. The two functions above emulate the old behaviour though...
 	void onRaw(const typename Dispatcher::F& f, const Message & msg) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			msg, Dispatcher(f)
 		);
 	}

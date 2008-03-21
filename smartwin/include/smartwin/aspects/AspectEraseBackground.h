@@ -70,13 +70,13 @@ public:
 	  * background property of the Widget.
 	  */
 	void onEraseBackground(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_ERASEBKGND ), Dispatcher(f, static_cast<WidgetType*>(this) )
 		);
 	}
 
 	void noEraseBackground() {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_ERASEBKGND ), &AspectEraseBackground<WidgetType>::noEraseDispatcher
 		);
 	}

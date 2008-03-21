@@ -47,25 +47,18 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-Widget::Widget( Widget * parent, HWND hWnd ) : 
-	itsHandle( hWnd ),
-	itsParent( parent )
-{
-}
-
-Widget::~Widget()
-{
+Widget::~Widget() {
+	
 }
 
 // Subclasses a dialog item inside a dialog, usually used in combination with Dialog resources.
-void Widget::attach( unsigned id )
-{
+void Widget::attach( unsigned id ) {
 	if ( !itsParent )
 		throw xCeption( _T( "Can't attach a Widget without a parent..." ) );
-	itsHandle = ::GetDlgItem( itsParent->handle(), id );
-	if ( !itsHandle )
+	HWND hWnd = ::GetDlgItem( itsParent->handle(), id );
+	if ( !hWnd )
 		throw xCeption( _T( "GetDlgItem failed." ) );
-
+	attach(hWnd);
 }
 
 void Widget::updateWidget()
@@ -74,19 +67,16 @@ void Widget::updateWidget()
 	::UpdateWindow( itsHandle );
 }
 
-void Widget::invalidateWidget()
-{
+void Widget::invalidateWidget() {
 	::InvalidateRect( itsHandle, 0, TRUE );
 }
 
-void Widget::kill()
-{
+void Widget::kill() {
 	delete this;
 }
 
-void Widget::create( const Seed & cs )
-{
-	itsHandle = ::CreateWindowEx( cs.exStyle,
+HWND Widget::create( const Seed & cs ) {
+	HWND hWnd = ::CreateWindowEx( cs.exStyle,
 		cs.className,
 		cs.caption.c_str(),
 		cs.style,
@@ -96,15 +86,19 @@ void Widget::create( const Seed & cs )
 		Application::instance().getAppHandle(),
 		reinterpret_cast< LPVOID >( this ) 
 	);
-	if ( !itsHandle )
-	{
+	if (!hWnd) {
 		// The most common error is to forget WS_CHILD in the styles
 		throw xCeption( _T( "CreateWindowEx in Widget::create fizzled ..." ) );
 	}
+	return hWnd;
 }
 
 void Widget::attach(HWND hwnd) {
+	if(itsHandle) {
+		throw xCeption(_T("You may not attach to a widget that's already attached"));
+	}
 	itsHandle = hwnd;
+	::SetProp(hwnd, propAtom, reinterpret_cast<HANDLE>(this) );
 }
 
 void Widget::addRemoveStyle( DWORD addStyle, bool add )
@@ -157,14 +151,8 @@ void Widget::addRemoveExStyle( DWORD addStyle, bool add )
 
 GlobalAtom Widget::propAtom(_T("SmartWin::Widget*"));
 
-void Widget::setCallback( const Message& msg, const CallbackType& callback )
-{
-	CallbackCollectionType::iterator i = itsCallbacks.find(msg);
-	if(i == itsCallbacks.end()) {
-		itsCallbacks.insert(std::make_pair(msg, callback));
-	} else {
-		i->second = callback;
-	}
+void Widget::addCallback( const Message& msg, const CallbackType& callback ) {
+	itsCallbacks[msg].push_back(callback);
 }
 
 bool Widget::tryFire( const MSG & msg, LRESULT & retVal ) {
@@ -172,7 +160,12 @@ bool Widget::tryFire( const MSG & msg, LRESULT & retVal ) {
 	Message msgComparer( msg );
 	CallbackCollectionType::iterator i = itsCallbacks.find(msgComparer);
 	if(i != itsCallbacks.end()) {
-		return i->second( msg, retVal );
+		CallbackList& list = i->second;
+		for(CallbackList::iterator j = list.begin(); j != list.end(); ++j) {
+			if((*j)(msg, retVal)) {
+				return true;
+			}
+		}
 	}
 	return false;
 }

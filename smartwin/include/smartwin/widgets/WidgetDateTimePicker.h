@@ -116,7 +116,7 @@ public:
 	  * when the WidgetDateTimePicker date value is changed. 
 	  */
 	void onDateTimeChanged(const Dispatcher::F& f) {
-		setCallback(
+		addCallback(
 			Message( WM_NOTIFY, DTN_DATETIMECHANGE ), Dispatcher(f)
 		);
 	}

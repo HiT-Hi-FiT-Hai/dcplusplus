@@ -49,8 +49,6 @@ public:
 	// Object type
 	typedef ThisType * ObjectType;
 
-	void createSubclass( HWND hWnd );
-
 	explicit ListViewEditBox( SmartWin::Widget * parent );
 
 	virtual ~ListViewEditBox()
@@ -69,11 +67,6 @@ inline ListViewEditBox::ListViewEditBox( SmartWin::Widget * parent )
 	xAssert( parent, _T( "Cant have a TextBox without a parent..." ) );
 }
 
-inline void ListViewEditBox::createSubclass( HWND hWnd )
-{
-	setHandle(hWnd);
-	this->createMessageMap();
-}
 #ifdef PORT_ME
 template< class EventHandlerClass >
 LRESULT ListViewEditBox< EventHandlerClass >::sendWidgetMessage( HWND hWnd, UINT msg, WPARAM & wPar, LPARAM & lPar )

@@ -11,10 +11,8 @@ void WidgetDialog::createDialog( unsigned resourceId )
 		reinterpret_cast< LPARAM >( static_cast< Widget * >( this ) ) );
 
 	if ( !wnd ) {
-		xCeption x( _T( "CreateDialogParam failed." ) );
-		throw x;
+		throw xCeption( _T( "CreateDialogParam failed." ) );
 	}
-	setHandle(wnd);
 }
 
 }

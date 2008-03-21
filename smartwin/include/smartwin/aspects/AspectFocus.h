@@ -68,7 +68,7 @@ public:
 	  * parameters are passed.
 	  */
 	void onKillFocus(const typename KillFocusDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_KILLFOCUS ), KillFocusDispatcher(f)
 		);
 	}
@@ -79,7 +79,7 @@ public:
 	  * parameters are passed.
 	  */	
 	void onFocus(const typename FocusDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_SETFOCUS ), FocusDispatcher(f)
 		);
 	}

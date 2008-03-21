@@ -54,7 +54,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onScrollHorz(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_HSCROLL ), Dispatcher(f)
 		);
 	}
@@ -67,7 +67,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onScrollVert(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_VSCROLL ), Dispatcher(f)
 		);
 	}

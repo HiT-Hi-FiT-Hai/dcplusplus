@@ -196,7 +196,7 @@ public:
 protected:
 	
 	void onMouse(UINT msg, const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( msg ), Dispatcher(f)
 		);
 	}

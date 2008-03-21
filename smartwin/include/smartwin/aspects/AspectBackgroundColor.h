@@ -78,7 +78,7 @@ public:
 	  */
 	void onBackgroundColor(const typename Dispatcher::F& f) {
 		WidgetType* This = static_cast<WidgetType*>(this);
-		This->setCallback(
+		This->addCallback(
 			This->getBackgroundColorMessage(), Dispatcher(f, This )
 		);
 	}

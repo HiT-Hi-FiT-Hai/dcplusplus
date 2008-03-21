@@ -54,7 +54,7 @@ public:
 	  * something else. No parameters are passed.
 	  */
 	void onClicked(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			static_cast<WidgetType*>(this)->getClickMessage(), Dispatcher(f)
 		);
 	}

@@ -52,30 +52,21 @@ public:
 		// Try to get the this pointer
 		Widget* w = hwnd_cast<Widget*>(handler);
 		
-		if(!w) {
-			if(handler != hwnd) {
-				Policy* p = hwnd_cast<Policy*>(hwnd);
-				if(p) {
-					return p->returnUnhandled(hwnd, uMsg, wParam, lParam);
-				}
-			} 
-			return Policy::returnUnknown(hwnd, uMsg, wParam, lParam);
-		}
+		if(w) {
 #ifdef WINCE
-		if(uMsg == WM_DESTROY) {
+			if(uMsg == WM_DESTROY) {
 #else
-		if(uMsg == WM_NCDESTROY) {
+			if(uMsg == WM_NCDESTROY) {
 #endif
-			
-			w->kill();
-			return Policy::returnDestroyed(hwnd, uMsg, wParam, lParam);
-		}
-
-		LRESULT res = 0;
-		if(w->tryFire(msg, res)) {
-			return Policy::returnHandled(res, hwnd, uMsg, wParam, lParam);
-		}
+				w->kill();
+				return Policy::returnDestroyed(hwnd, uMsg, wParam, lParam);
+			}
 		
+			LRESULT res = 0;
+			if(w->tryFire(msg, res)) {
+				return Policy::returnHandled(res, hwnd, uMsg, wParam, lParam);
+			}
+		}
 		Policy* p;
 		
 		if(handler != hwnd) {
@@ -104,20 +95,9 @@ private:
 			handler = reinterpret_cast<HWND>(lParam);
 			
 		} break;
-		case WM_DRAWITEM : {
-			/// @todo Not sure who should handle these....
-			handler = hwnd;
-		} break;
 		case WM_NOTIFY : {
 			NMHDR* nmhdr = reinterpret_cast<NMHDR*>(lParam);
 			handler = nmhdr->hwndFrom;
-		} break;
-		/// @todo Not sure who should handle these....
-		case WM_HSCROLL :
-		case WM_VSCROLL :
-		case WM_MEASUREITEM :
-		case WM_INITMENUPOPUP : {
-			handler = hwnd;
 		} break;
 		case WM_COMMAND: {
 			if(lParam != 0) {
@@ -144,7 +124,6 @@ class Dialog
 	: public Widget
 {
 public:
-	// Note; SmartWin::Widget won't actually be initialized here because of the virtual inheritance
 	Dialog(Widget* parent) : Widget(parent) { }
 	
 	static LRESULT returnDestroyed(HWND hWnd, UINT msg, WPARAM wPar, LPARAM lPar) {
@@ -180,9 +159,8 @@ public:
 		if ( uMsg == WM_INITDIALOG )
 		{
 			// extracting the this pointer and stuffing it into the Window with SetProp
-			Widget* This = static_cast<Widget*>(reinterpret_cast< Widget * >( lParam ));
-			This->setHandle( hwnd );
-			This->setProp();
+			Dialog* This = reinterpret_cast<Dialog*>(lParam);
+			This->attach( hwnd );
 		}
 	}
 };
@@ -236,9 +214,8 @@ public:
 		if ( uMsg == WM_NCCREATE ) {
 			// extracting the this pointer and stuffing it into the Window with SetProp
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
-			Widget* This = static_cast<Widget*>(reinterpret_cast< Widget * >( cs->lpCreateParams ));
-			This->setHandle( hWnd );
-			This->setProp();
+			Normal* This = reinterpret_cast<Normal*>( cs->lpCreateParams );
+			This->attach( hWnd );
 		}
 	}
 };
@@ -254,29 +231,15 @@ public:
 		return Normal::returnUnhandled(hWnd, msg, wPar, lPar);
 	}
 	
-	virtual void attach( unsigned id ) {
-		Normal::attach(id);
-		createMessageMap();
-	}
-
-	void create( const Widget::Seed & cs) {
-		Normal::create(cs);
-		createMessageMap();
+	virtual HWND create(const Widget::Seed& seed) {
+		attach(Widget::create(seed));
 	}
 	
 	virtual void attach(HWND hwnd) {
 		Normal::attach(hwnd);
-		createMessageMap();
+		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
 	}
-
-	/// Call this function from your overridden create() if you add a new Widget to
-	/// make the Windows Message Procedure dispatching map right.
-	void createMessageMap() {
-		if(!oldProc) {
-			setProp();
-			oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
-		}
-	}
+	using Normal::attach;
 	
 private:
 	WNDPROC oldProc;	
@@ -330,9 +293,8 @@ public:
 			CREATESTRUCT * cs = reinterpret_cast< CREATESTRUCT * >( lParam );
 			MDICREATESTRUCT * mcs = reinterpret_cast< MDICREATESTRUCT*>(cs->lpCreateParams);
 			
-			Widget* This = static_cast<Widget*>(reinterpret_cast< Widget * >( mcs->lParam ));
-			This->setHandle( hWnd );
-			This->setProp();
+			MDIChild* This = reinterpret_cast<MDIChild*>(mcs->lParam);
+			This->attach(hWnd);
 		}
 	}
 };
@@ -356,8 +318,9 @@ public:
 		WidgetType* This = static_cast<WidgetType*>(this);
 		if(!handled && msg.message == WM_COMMAND && This->getMDIParent()) {
 			Widget* active = hwnd_cast<Widget*>(This->getMDIParent()->getActive());
-			if(active)
+			if(active) {
 				handled = active->tryFire(msg, retVal);
+			}
 		}
 		return handled;
 	}

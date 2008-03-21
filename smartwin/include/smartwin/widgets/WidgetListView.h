@@ -591,7 +591,7 @@ void WidgetListView::onValidate( typename MessageMapControl< EventHandlerClass, 
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
+	ptrThis->addCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_ENDLABELEDIT ),
@@ -610,7 +610,7 @@ void WidgetListView::onValidate( typename MessageMapControl< EventHandlerClass, 
 	if ( this->getReadOnly() )
 		this->setReadOnly( false );
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
+	ptrThis->addCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, LVN_ENDLABELEDIT ),
@@ -628,7 +628,7 @@ void WidgetListView::onValidate( typename MessageMapControl< EventHandlerClass, 
 void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetListView >::itsVoidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
+	ptrThis->addCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, NM_CUSTOMDRAW ),
@@ -646,7 +646,7 @@ void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerC
 	void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerClass, WidgetListView >::voidUnsignedUnsignedBoolCanvasRectangle eventHandler )
 {
 	MessageMapType * ptrThis = boost::polymorphic_cast< MessageMapType * >( this );
-	ptrThis->setCallback(
+	ptrThis->addCallback(
 		typename MessageMapType::SignalTupleType(
 			private_::SignalContent(
 				Message( WM_NOTIFY, NM_CUSTOMDRAW ),
@@ -662,7 +662,7 @@ void WidgetListView::onCustomPainting( typename MessageMapControl< EventHandlerC
 #endif
 
 inline void WidgetListView::onColumnClick( const HeaderDispatcher::F& f ) {
-	this->setCallback(
+	this->addCallback(
 		Message( WM_NOTIFY, LVN_COLUMNCLICK ), HeaderDispatcher(f)
 	);
 }

@@ -34,7 +34,6 @@ void WidgetMDIChild::createMDIChild( Seed cs )
 		xCeption x( _T( "CreateWindowEx in WidgetMDIChild::createMDIChild fizzled..." ) );
 		throw x;
 	}
-	setHandle(wnd);
 }
 
 bool WidgetMDIChild::tryFire(const MSG& msg, LRESULT& retVal) {

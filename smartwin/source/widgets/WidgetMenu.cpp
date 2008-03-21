@@ -66,8 +66,8 @@ void WidgetMenu::createHelper(const Seed& cs) {
 		}
 
 		// set default drawing
-		itsParent->setCallback(Message(WM_DRAWITEM), DrawItemDispatcher(std::tr1::bind(&WidgetMenu::handleDrawItem, this, _1, _2)));
-		itsParent->setCallback(Message(WM_MEASUREITEM), MeasureItemDispatcher(std::tr1::bind(&WidgetMenu::handleMeasureItem, this, _1)));
+		itsParent->addCallback(Message(WM_DRAWITEM), DrawItemDispatcher(std::tr1::bind(&WidgetMenu::handleDrawItem, this, _1, _2)));
+		itsParent->addCallback(Message(WM_MEASUREITEM), MeasureItemDispatcher(std::tr1::bind(&WidgetMenu::handleMeasureItem, this, _1)));
 	}
 }
 
@@ -194,7 +194,7 @@ WidgetMenu::ObjectType WidgetMenu::getSystemMenu()
 
 void WidgetMenu::addCommands() {
 	for(CallbackMap::iterator i = callbacks.begin(); i != callbacks.end(); ++i) {
-		itsParent->setCallback(Message(WM_COMMAND, i->first), i->second);
+		itsParent->addCallback(Message(WM_COMMAND, i->first), i->second);
 	}
 	for(std::vector< ObjectType >::iterator i = itsChildren.begin(); i != itsChildren.end(); ++i) {
 		(*i)->addCommands();

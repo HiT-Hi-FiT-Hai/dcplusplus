@@ -88,7 +88,7 @@ public:
 	  * Widget.
 	  */
 	void onTextChanging(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_SETTEXT ), Dispatcher(f)
 		);
 	}

@@ -295,7 +295,7 @@ public:
 	  * information.
 	  */
 	void onSized(const typename SizeDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_SIZE ), SizeDispatcher(f)
 		);
 	}
@@ -306,7 +306,7 @@ public:
 	  * passed is Point which is the new position of the Widget
 	  */
 	void onMoved(const typename MoveDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_MOVE ), MoveDispatcher(f)
 		);
 	}

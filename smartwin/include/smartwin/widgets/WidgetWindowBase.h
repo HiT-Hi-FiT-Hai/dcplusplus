@@ -167,7 +167,7 @@ public:
 	  * the window is NOT allowed to actually close!!       
 	  */
 	void onClosing(const typename CloseDispatcher::F& f) {
-		this->setCallback(
+		this->addCallback(
 			Message( WM_CLOSE ), CloseDispatcher(f, this)
 		);
 	}
@@ -269,7 +269,7 @@ void WidgetWindowBase< Policy >::createTimer( const typename TimerDispatcher::F&
 {
 
 	::SetTimer( this->handle(), id, static_cast< UINT >( milliSecond ), NULL);
-	setCallback(
+	addCallback(
 		Message( WM_TIMER, id ), TimerDispatcher(f)
 	);
 }

@@ -52,7 +52,7 @@ public:
 	/** When the Widget value/text is being updated this event will be raised.
 	  */
 	void onUpdate(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			WidgetType::getUpdateMessage(), Dispatcher(f)
 		);
 	}

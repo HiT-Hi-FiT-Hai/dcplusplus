@@ -368,7 +368,7 @@ inline DWORD WidgetTextBoxBase::getTextLimit() const {
 }
 
 inline void WidgetTextBoxBase::onTextChanged( const Dispatcher::F& f ) {
-	this->setCallback(
+	this->addCallback(
 		Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_CHANGE) ), Dispatcher(f)
 	);
 }

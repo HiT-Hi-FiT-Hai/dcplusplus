@@ -66,7 +66,7 @@ public:
 	  * Parameters passed is Canvas &
 	  */
 	void onPainting(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->setCallback(
+		static_cast<WidgetType*>(this)->addCallback(
 			Message( WM_PAINT ), Dispatcher(f, static_cast<WidgetType*>(this) )
 		);
 	}
