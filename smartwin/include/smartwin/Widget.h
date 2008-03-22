@@ -168,6 +168,16 @@ public:
 	/** This will be called when it's time to delete the widget */
 	virtual void kill();
 
+	/// Subclasses the dialog item with the given dialog item id
+	/** Subclasses a dialog item, the id is the dialog item id from the resource
+	  * editor. <br>
+	  * Should normally not be called directly but rather called from e.g. one of the
+	  * creational functions found in the WidgetFactory class.
+	  */
+	void attach( unsigned id );
+
+	void attach(HWND wnd);
+
 protected:
 	Widget(Widget * parent);
 
@@ -176,16 +186,6 @@ protected:
 	// Creates the Widget, should NOT be called directly but overridden in the
 	// derived class (with no parameters)
 	virtual HWND create( const Seed & cs );
-
-	virtual void attach(HWND wnd);
-
-	/// Subclasses the dialog item with the given dialog item id
-	/** Subclasses a dialog item, the id is the dialog item id from the resource
-	  * editor. <br>
-	  * Should normally not be called directly but rather called from e.g. one of the
-	  * creational functions found in the WidgetFactory class.
-	  */
-	void attach( unsigned id );
 
 private:
 	friend class Application;

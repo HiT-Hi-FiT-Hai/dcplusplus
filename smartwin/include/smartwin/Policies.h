@@ -232,14 +232,11 @@ public:
 	}
 	
 	virtual HWND create(const Widget::Seed& seed) {
-		attach(Widget::create(seed));
+		HWND hWnd = Widget::create(seed);
+		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( hWnd, GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
+		attach(hWnd);
+		return hWnd;
 	}
-	
-	virtual void attach(HWND hwnd) {
-		Normal::attach(hwnd);
-		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( handle(), GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
-	}
-	using Normal::attach;
 	
 private:
 	WNDPROC oldProc;	
