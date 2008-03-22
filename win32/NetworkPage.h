@@ -29,7 +29,6 @@ public:
 	virtual ~NetworkPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_NETWORKPAGE; }
 
 private:
 	static Item items[];

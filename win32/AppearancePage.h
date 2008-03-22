@@ -28,7 +28,6 @@ public:
 	virtual ~AppearancePage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_APPEARANCEPAGE; }
 
 private:
 	static Item items[];

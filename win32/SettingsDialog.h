@@ -42,7 +42,7 @@ private:
 	void write();
 	
 	bool initDialog();
-	void handleHelp();
+	void handleHelp(HWND hWnd, unsigned id);
 	void handleOKClicked();
 	void selectionChanged();
 	void showPage(PropPage* page);

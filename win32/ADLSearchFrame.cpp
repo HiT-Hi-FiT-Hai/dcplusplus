@@ -37,7 +37,7 @@ static const char* columnNames[] = {
 };
 
 ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent, T_("Automatic Directory Listing Search"), IDR_ADLSEARCH),
+	BaseType(mdiParent, T_("Automatic Directory Listing Search"), IDH_ADL_SEARCH, IDR_ADLSEARCH),
 	add(0),
 	properties(0),
 	up(0),
@@ -92,7 +92,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		cs.caption = T_("&Help");
 		help = createButton(cs);
-		help->onClicked(std::tr1::bind(&ADLSearchFrame::handleHelp, this));
+		help->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_ADL_SEARCH));
 		addWidget(help);
 	}
 
@@ -233,10 +233,6 @@ void ADLSearchFrame::handleRemove() {
 		collection.erase(collection.begin() + i);
 		items->erase(i);
 	}
-}
-
-void ADLSearchFrame::handleHelp() {
-	HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
 }
 
 void ADLSearchFrame::handleDoubleClick() {

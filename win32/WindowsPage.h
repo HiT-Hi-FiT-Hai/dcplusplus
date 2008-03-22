@@ -29,7 +29,6 @@ public:
 	virtual ~WindowsPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_WINDOWSPAGE; }
 
 private:
 	static TextItem textItem[];

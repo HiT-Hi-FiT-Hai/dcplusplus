@@ -28,7 +28,6 @@ public:
 	virtual ~FavoriteDirsPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_FAVORITE_DIRSPAGE; }
 
 private:
 	static TextItem texts[];

@@ -28,7 +28,6 @@ public:
 	virtual ~AdvancedPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_ADVANCEDPAGE; }
 
 private:
 	static Item items[];

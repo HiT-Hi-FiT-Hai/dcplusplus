@@ -23,7 +23,7 @@
 #include "WinUtil.h"
 
 SystemFrame::SystemFrame(SmartWin::WidgetTabView* mdiParent) : 
-	BaseType(mdiParent, T_("System Log"), IDR_MAINFRAME),
+	BaseType(mdiParent, T_("System Log"), IDH_SYSTEM_LOG, IDR_MAINFRAME),
 	log(0) 
 {
 	{

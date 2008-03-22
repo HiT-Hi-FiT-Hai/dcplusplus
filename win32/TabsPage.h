@@ -29,7 +29,6 @@ public:
 	virtual ~TabsPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_TABSPAGE; }
 
 private:
 	static TextItem texts[];

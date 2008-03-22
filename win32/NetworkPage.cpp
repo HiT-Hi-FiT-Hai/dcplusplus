@@ -65,6 +65,7 @@ PropPage::Item NetworkPage::items[] = {
 
 NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_NETWORKPAGE);
+	setHelpId(IDH_NETWORKPAGE);
 
 	PropPage::translate(handle(), texts);
 

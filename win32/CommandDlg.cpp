@@ -52,7 +52,7 @@ CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstr
 {
 	onInitDialog(std::tr1::bind(&CommandDlg::handleInitDialog, this));
 	onFocus(std::tr1::bind(&CommandDlg::handleFocus, this));
-	onHelp(std::tr1::bind(&CommandDlg::handleHelp, this));
+	onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 }
 
 CommandDlg::~CommandDlg() {
@@ -129,12 +129,12 @@ bool CommandDlg::handleInitDialog() {
 
 		button = attachButton(IDHELP);
 		button->setText(T_("Help"));
-		button->onClicked(std::tr1::bind(&CommandDlg::handleHelp, this));
+		button->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_UCPAGE));
 	}
 
 	if(bOpenHelp) {
 		// launch the help file, instead of having the help in the dialog
-		handleHelp();
+		postMessage(WM_COMMAND, IDHELP);
 	}
 
 	if(type == UserCommand::TYPE_SEPARATOR) {
@@ -197,10 +197,6 @@ bool CommandDlg::handleInitDialog() {
 
 void CommandDlg::handleFocus() {
 	nameBox->setFocus();
-}
-
-void CommandDlg::handleHelp() {
-	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 }
 
 void CommandDlg::handleTypeChanged() {

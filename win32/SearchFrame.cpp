@@ -82,7 +82,7 @@ void SearchFrame::closeAll() {
 }
 
 SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& initialString_, LONGLONG initialSize_, SearchManager::SizeModes initialMode_, SearchManager::TypeModes initialType_) :
-	BaseType(mdiParent, T_("Search"), SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
+	BaseType(mdiParent, T_("Search"), IDH_SEARCH, SmartWin::IconPtr(new SmartWin::Icon(IDR_SEARCH))),
 	searchLabel(0),
 	searchBox(0),
 	purge(0),

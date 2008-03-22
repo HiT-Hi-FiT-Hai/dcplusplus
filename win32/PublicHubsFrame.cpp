@@ -90,7 +90,7 @@ int PublicHubsFrame::HubInfo::compareItems(const HubInfo* a, const HubInfo* b, i
 }
 
 PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent, T_("Public Hubs"), IDR_PUBLICHUBS),
+	BaseType(mdiParent, T_("Public Hubs"), IDH_PUBLIC_HUBS, IDR_PUBLICHUBS),
 	hubs(0),
 	configure(0),
 	refresh(0),

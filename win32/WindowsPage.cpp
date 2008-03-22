@@ -71,6 +71,7 @@ WindowsPage::ListItem WindowsPage::confirmItems[] = {
 
 WindowsPage::WindowsPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_WINDOWSPAGE);
+	setHelpId(IDH_WINDOWSPAGE);
 
 	PropPage::translate(handle(), textItem);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_WINDOWS_STARTUP));

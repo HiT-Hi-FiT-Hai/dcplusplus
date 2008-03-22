@@ -69,7 +69,6 @@ private:
 	void handleUp();
 	void handleDown();
 	void handleRemove();
-	void handleHelp();
 	void handleDoubleClick();
 	bool handleKeyDown(int c);
 	LRESULT handleItemChanged(WPARAM /*wParam*/, LPARAM lParam);

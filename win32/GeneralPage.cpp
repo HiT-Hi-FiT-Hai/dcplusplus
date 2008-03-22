@@ -44,6 +44,7 @@ PropPage::Item GeneralPage::items[] = {
 
 GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 	createDialog(IDD_GENERALPAGE);
+	setHelpId(IDH_GENERALPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);

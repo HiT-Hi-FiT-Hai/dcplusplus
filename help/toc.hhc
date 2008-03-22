@@ -25,24 +25,20 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Hub">
+			<param name="Local" value="window_hub.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Private Message">
+			<param name="Local" value="window_pm.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="File List">
+			<param name="Local" value="window_directory_listing.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Public Hubs">
 			<param name="Local" value="window_public_hubs.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Download queue">
-			<param name="Local" value="window_download_queue.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Waiting users">
-			<param name="Local" value="window_waiting_users.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Finished downloads">
-			<param name="Local" value="window_finished_downloads.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Finished uploads">
-			<param name="Local" value="window_finished_uploads.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Favorite Hubs">
@@ -53,8 +49,24 @@
 			<param name="Local" value="window_favorite_users.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Download queue">
+			<param name="Local" value="window_download_queue.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Finished downloads">
+			<param name="Local" value="window_finished_downloads.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Waiting users">
+			<param name="Local" value="window_waiting_users.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Finished uploads">
+			<param name="Local" value="window_finished_uploads.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Search">
-			<param name="Local" value="window_search_frame.html">
+			<param name="Local" value="window_search.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="ADLSearch">
@@ -65,20 +77,25 @@
 			<param name="Local" value="window_search_spy.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Network statistics">
-			<param name="Local" value="window_network_stats.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Notepad">
 			<param name="Local" value="window_notepad.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Indexing progress">
-			<param name="Local" value="window_indexing_progress.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="System log">
 			<param name="Local" value="window_system_log.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Network statistics">
+			<param name="Local" value="window_network_stats.html">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Dialogs">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Indexing progress">
+			<param name="Local" value="dialog_indexing_progress.html">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">

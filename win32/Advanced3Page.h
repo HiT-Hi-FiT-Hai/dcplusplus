@@ -28,7 +28,7 @@ public:
 	virtual ~Advanced3Page();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_ADVANCED3PAGE; }
+
 private:
 	static Item items[];
 	static TextItem texts[];

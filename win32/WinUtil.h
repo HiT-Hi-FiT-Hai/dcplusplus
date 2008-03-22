@@ -157,9 +157,7 @@ public:
 	static void parseADChubUrl(const tstring& /*aUrl*/);
 	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
 
-	static tstring getHelpFile() {
-		return Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
-	}
+	static void help(HWND hWnd, unsigned id);
 
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 

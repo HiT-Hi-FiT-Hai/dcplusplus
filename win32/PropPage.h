@@ -30,7 +30,6 @@ public:
 	virtual ~PropPage();
 
 	virtual void write() = 0;
-	virtual int getHelpId() = 0;
 
 	enum Type { T_STR, T_INT, T_BOOL, T_CUSTOM, T_END };
 

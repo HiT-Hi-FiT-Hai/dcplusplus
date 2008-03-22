@@ -38,7 +38,7 @@ public:
 	typedef WidgetFactory< SmartWin::WidgetChildWindow > BaseType;
 protected:
 
-	MDIChildFrame(SmartWin::WidgetTabView* tabView, const tstring& title, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
+	MDIChildFrame(SmartWin::WidgetTabView* tabView, const tstring& title, unsigned helpId = 0, SmartWin::IconPtr icon = SmartWin::IconPtr(), bool activate = true) :
 		BaseType(tabView->getTab()),
 		lastFocus(NULL),
 		alwaysSameFocus(false),
@@ -56,6 +56,9 @@ protected:
 		cs.icon = icon;
 		cs.location = tabView->getClientSize();
 		this->createWindow(cs);
+
+		if(helpId)
+			setHelpId(helpId);
 
 		tabView->add(this, icon);
 		this->onTabContextMenu(std::tr1::bind(&ThisType::handleContextMenu, this, _1));

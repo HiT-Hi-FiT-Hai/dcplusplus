@@ -47,6 +47,7 @@ PropPage::ListItem TabsPage::listItems[] = {
 
 TabsPage::TabsPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_TABSPAGE);
+	setHelpId(IDH_TABSPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems,::GetDlgItem(handle(), IDC_BOLD_BOOLEANS));

@@ -42,6 +42,7 @@ PropPage::Item UCPage::items[] = {
 
 UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UCPAGE);
+	setHelpId(IDH_UCPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);

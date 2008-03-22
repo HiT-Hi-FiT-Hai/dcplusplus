@@ -68,7 +68,7 @@ void HubFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const string& url)
 }
 
 HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) : 
-	BaseType(mdiParent, Text::toT(url_), SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
+	BaseType(mdiParent, Text::toT(url_), IDH_HUB, SmartWin::IconPtr(new SmartWin::Icon(IDR_HUB))),
 	chat(0),
 	message(0),
 	filter(0),

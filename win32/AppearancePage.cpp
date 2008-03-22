@@ -59,6 +59,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 
 AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), languages(0) {
 	createDialog(IDD_APPEARANCEPAGE);
+	setHelpId(IDH_APPEARANCEPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));

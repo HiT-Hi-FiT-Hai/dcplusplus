@@ -29,7 +29,6 @@ public:
 	virtual ~LogPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_LOGPAGE; }
 
 private:
 	static Item items[];

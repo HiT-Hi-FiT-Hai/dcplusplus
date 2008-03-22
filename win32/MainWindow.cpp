@@ -87,7 +87,7 @@ MainWindow::MainWindow() :
 	onActivate(std::tr1::bind(&MainWindow::handleActivate, this, _1));
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
-	onHelp(std::tr1::bind(&MainWindow::handleHelp, this, IDC_HELP_CONTENTS));
+	onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
 	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _2), SmartWin::Message(WM_APP + 242));
 	
 	updateStatus();
@@ -130,7 +130,7 @@ MainWindow::MainWindow() :
 	speak(PARSE_COMMAND_LINE);
 
 	if(SETTING(NICK).empty()) {
-		handleHelp(IDD_GENERALPAGE);
+		WinUtil::help(handle(), IDH_GENERALPAGE);
 		postMessage(WM_COMMAND, IDC_SETTINGS);
 	}
 	
@@ -240,9 +240,9 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
-		help->appendItem(IDC_HELP_CONTENTS, T_("Help &Contents\tF1"), std::tr1::bind(&MainWindow::handleHelp, this, _1));
+		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, handle(), _1));
 		help->appendSeparatorItem();
-		help->appendItem(IDC_HELP_CHANGELOG, T_("Change Log"), std::tr1::bind(&MainWindow::handleHelp, this, _1));
+		help->appendItem(IDH_CHANGELOG, T_("Change Log"), std::tr1::bind(&WinUtil::help, handle(), _1));
 		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DCPP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));
@@ -907,11 +907,6 @@ void MainWindow::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/,
 	} catch (const Exception&) {
 		// ...
 	}
-}
-
-void MainWindow::handleHelp(unsigned id) {
-	UINT action = (id == IDC_HELP_CONTENTS) ? HH_DISPLAY_TOC : HH_HELP_CONTEXT;
-	::HtmlHelp(handle(), WinUtil::getHelpFile().c_str(), action, id);
 }
 
 LRESULT MainWindow::handleEndSession() {

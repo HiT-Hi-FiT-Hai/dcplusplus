@@ -106,7 +106,7 @@ void DirectoryListingFrame::openWindow(SmartWin::WidgetTabView* mdiParent, const
 }
 
 DirectoryListingFrame::DirectoryListingFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& aUser, int64_t aSpeed) :
-	BaseType(mdiParent, _T(""), SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
+	BaseType(mdiParent, _T(""), IDH_DIRECTORY_LISTING, SmartWin::IconPtr(new SmartWin::Icon(IDR_DIRECTORY)), !BOOLSETTING(POPUNDER_FILELIST)),
 	dirs(0),
 	files(0),
 	paned(0),

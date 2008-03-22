@@ -28,7 +28,6 @@ public:
 	virtual ~DownloadPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_DOWNLOADPAGE; }
 
 private:
 	static Item items[];

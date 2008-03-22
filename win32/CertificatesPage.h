@@ -28,7 +28,6 @@ public:
 	virtual ~CertificatesPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_CERTIFICATESPAGE; }
 
 private:
 	static Item items[];

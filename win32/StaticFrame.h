@@ -27,8 +27,8 @@ template<class T>
 class StaticFrame : public MDIChildFrame<T> {
 public:
 
-	StaticFrame(SmartWin::WidgetTabView* mdiClient, const tstring& title, int icon) : 
-		MDIChildFrame<T>(mdiClient, title, SmartWin::IconPtr(new SmartWin::Icon(icon))) 
+	StaticFrame(SmartWin::WidgetTabView* mdiClient, const tstring& title, unsigned helpId, int icon) : 
+		MDIChildFrame<T>(mdiClient, title, helpId, SmartWin::IconPtr(new SmartWin::Icon(icon))) 
 	{ 
 	}
 

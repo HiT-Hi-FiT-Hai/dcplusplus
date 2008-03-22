@@ -35,7 +35,7 @@ static const char* columnNames[] = {
 };
 
 UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) : 
-	BaseType(mdiParent, T_("Favorite Users"), IDR_USERS),
+	BaseType(mdiParent, T_("Favorite Users"), IDH_FAVUSERS, IDR_USERS),
 	users(0),
 	startup(true)
 {

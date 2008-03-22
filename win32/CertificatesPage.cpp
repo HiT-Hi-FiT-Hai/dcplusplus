@@ -46,6 +46,7 @@ PropPage::ListItem CertificatesPage::listItems[] = {
 
 CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_CERTIFICATESPAGE);
+	setHelpId(IDH_CERTIFICATESPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));

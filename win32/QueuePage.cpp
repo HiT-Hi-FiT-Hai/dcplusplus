@@ -80,6 +80,7 @@ PropPage::ListItem QueuePage::optionItems[] = {
 
 QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_QUEUEPAGE);
+	setHelpId(IDH_QUEUEPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);

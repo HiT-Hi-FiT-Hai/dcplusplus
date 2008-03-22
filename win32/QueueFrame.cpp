@@ -54,7 +54,7 @@ void QueueFrame::QueueItemInfo::remove() {
 }
 
 QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent, T_("Download Queue"), IDR_QUEUE),
+	BaseType(mdiParent, T_("Download Queue"), IDH_QUEUE, IDR_QUEUE),
 	dirs(0),
 	files(0),
 	paned(0),

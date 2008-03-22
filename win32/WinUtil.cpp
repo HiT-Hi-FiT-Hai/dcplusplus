@@ -575,6 +575,11 @@ bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, Strin
 	return true;
 }
 
+void WinUtil::help(HWND hWnd, unsigned id) {
+	dcdebug("WinUtil::help; hWnd: %p; id: %u\n", hWnd, id);
+	::HtmlHelp(hWnd, Text::toT(Util::getDataPath() + "DCPlusPlus.chm").c_str(), id ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, id);
+}
+
 bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
 	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);

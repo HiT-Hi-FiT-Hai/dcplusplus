@@ -61,7 +61,6 @@ private:
 
 	bool handleInitDialog();
 	void handleFocus();
-	void handleHelp();
 	void handleTypeChanged();
 	void handleOKClicked();
 

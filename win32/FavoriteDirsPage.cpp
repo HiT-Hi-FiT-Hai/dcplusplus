@@ -38,6 +38,7 @@ PropPage::TextItem FavoriteDirsPage::texts[] = {
 
 FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_FAVORITE_DIRSPAGE);
+	setHelpId(IDH_FAVORITE_DIRSPAGE);
 
 	PropPage::translate(handle(), texts);
 

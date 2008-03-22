@@ -92,7 +92,7 @@ void PrivateFrame::closeAllOffline() {
 }
 
 PrivateFrame::PrivateFrame(SmartWin::WidgetTabView* mdiParent, const UserPtr& replyTo_, bool activate) : 
-	BaseType(mdiParent, _T(""), SmartWin::IconPtr(new SmartWin::Icon(IDR_PRIVATE)), activate),
+	BaseType(mdiParent, _T(""), IDH_PM, SmartWin::IconPtr(new SmartWin::Icon(IDR_PRIVATE)), activate),
 	chat(0),
 	message(0),
 	replyTo(replyTo_)

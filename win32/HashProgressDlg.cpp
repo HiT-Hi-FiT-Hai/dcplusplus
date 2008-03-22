@@ -37,6 +37,8 @@ HashProgressDlg::~HashProgressDlg() {
 }
 
 bool HashProgressDlg::handleInitDialog() {
+	setHelpId(IDH_HASH_PROGRESS);
+
 	setText(T_("Creating file index..."));
 	::SetDlgItemText(handle(), IDC_HASH_INDEXING, CT_("Please wait while DC++ indexes your files (they won't be shared until they've been indexed)..."));
 	::SetDlgItemText(handle(), IDC_STATISTICS, CT_("Statistics"));

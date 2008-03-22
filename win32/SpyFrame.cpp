@@ -37,7 +37,7 @@ static const char* columnNames[] = {
 };
 
 SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
-	BaseType(mdiParent, T_("Search Spy"), IDR_SPY),
+	BaseType(mdiParent, T_("Search Spy"), IDH_SEARCH_SPY, IDR_SPY),
 	searches(0),
 	ignoreTTH(0),
 	bIgnoreTTH(BOOLSETTING(SPY_FRAME_IGNORE_TTH_SEARCHES)),

@@ -69,6 +69,7 @@ PropPage::Item Advanced3Page::items[] = {
 
 Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCED3PAGE);
+	setHelpId(IDH_ADVANCED3PAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);

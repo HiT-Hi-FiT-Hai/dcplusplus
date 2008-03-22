@@ -54,6 +54,7 @@ PropPage::Item DownloadPage::items[] = {
 
 DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_DOWNLOADPAGE);
+	setHelpId(IDH_DOWNLOADPAGE);
 
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);

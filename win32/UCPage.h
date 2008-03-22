@@ -30,7 +30,6 @@ public:
 	virtual ~UCPage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_UCPAGE; }
 
 private:
 	static Item items[];

@@ -29,7 +29,6 @@ public:
 	virtual ~QueuePage();
 
 	virtual void write();
-	virtual int getHelpId() { return IDD_QUEUEPAGE; }
 
 private:
 	static Item items[];
