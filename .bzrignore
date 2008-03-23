@@ -1,0 +1,10 @@
+./build
+./.project
+./.cproject
+./.sconsign.dblite
+./.settings
+custom.py
+*.h.gch
+./htmlhelp/include/htmlhelp.h
+./htmlhelp/lib/htmlhelp.lib
+natupnp.h
