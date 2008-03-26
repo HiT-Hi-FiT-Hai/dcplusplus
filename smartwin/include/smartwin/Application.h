@@ -34,10 +34,9 @@
 #include "ApplicationPlatform.h"
 #include "xCeption.h"
 #include <vector>
-#include <memory>
-#include <boost/noncopyable.hpp>
-#include <boost/signal.hpp>
+#include <list>
 #include <map>
+#include <boost/noncopyable.hpp>
 #include "Message.h"
 
 #ifdef _MSC_VER
@@ -172,9 +171,8 @@ public:
 	  */
 	bool isAppAlreadyRunning();
 
-	/// Since boost::signal is noncopyable we use smart pointers of signals
-	typedef std::tr1::shared_ptr < boost::signal < void () > > SignalPtr;
-
+	typedef std::tr1::function<void()> Callback;
+	
 	/// Adds a waitable event HANDLE and the according signal
 	/** You can feed in here HANDLEs of thread handles, console inputs, mutexes,
 	  * processes, semaphores etc. (see Win32-API on MsgWaitForMultipleObjects) you
@@ -183,7 +181,7 @@ public:
 	  * Windows signals the HANDLE. (Since boost::signal is noncopyable we actually
 	  * need here a smart pointer to the signal.)
 	  */
-	bool addWaitEvent( HANDLE hEvent, SignalPtr );
+	bool addWaitEvent( HANDLE hEvent, const Callback& );
 
 	/// Removes the waitable event HANDLE and the according signal
 	/** Remove the event HANDLE in case we are not longer interested in being
@@ -211,7 +209,7 @@ private:
 	std::vector< HANDLE > itsVHEvents;
 
 	// The according signals we must raise, go in this vector.
-	std::vector< SignalPtr > itsVSignals;
+	std::vector< Callback > itsVSignals;
 	
 	FilterList filters;
 	

@@ -28,7 +28,6 @@
 */
 #include "UtilSystemHeaders.h"
 #include "DateTime.h"
-#include <boost/lexical_cast.hpp>
 
 namespace SmartUtil
 {
@@ -47,49 +46,6 @@ DateTime::DateTime()
 DateTime::DateTime( const SYSTEMTIME & sysTime )
 	: itsSysTime( sysTime )
 {}
-
-DateTime::DateTime( const tstring & date, const tstring & format )
-{
-	itsSysTime.wYear = 1601;
-	itsSysTime.wMonth = 1;
-	itsSysTime.wDayOfWeek = 0;
-	itsSysTime.wDay = 1;
-	itsSysTime.wHour = 0;
-	itsSysTime.wMinute = 0;
-	itsSysTime.wSecond = 0;
-	itsSysTime.wMilliseconds = 0;
-
-	size_t yearsStart = format.find( _T( "yyyy" ) );
-	size_t monthsStart = format.find( _T( "MM" ) );
-	size_t daysStart = format.find( _T( "dd" ) );
-	size_t hoursStart = format.find( _T( "HH" ) );
-	size_t minutesStart = format.find( _T( "mm" ) );
-	size_t secondsStart = format.find( _T( "ss" ) );
-	if ( yearsStart != tstring::npos )
-	{
-		itsSysTime.wYear = boost::lexical_cast< WORD >( date.substr( yearsStart, 4 ) );
-	}
-	if ( monthsStart != tstring::npos )
-	{
-		itsSysTime.wMonth = boost::lexical_cast< WORD >( date.substr( monthsStart, 2 ) );
-	}
-	if ( daysStart != tstring::npos )
-	{
-		itsSysTime.wDay = boost::lexical_cast< WORD >( date.substr( daysStart, 2 ) );
-	}
-	if ( hoursStart != tstring::npos )
-	{
-		itsSysTime.wHour = boost::lexical_cast< WORD >( date.substr( hoursStart, 2 ) );
-	}
-	if ( minutesStart != tstring::npos )
-	{
-		itsSysTime.wMinute = boost::lexical_cast< WORD >( date.substr( minutesStart, 2 ) );
-	}
-	if ( secondsStart != tstring::npos )
-	{
-		itsSysTime.wSecond = boost::lexical_cast< WORD >( date.substr( secondsStart, 2 ) );
-	}
-}
 
 DateTime::DateTime( unsigned year, unsigned month, unsigned day, unsigned hour, unsigned minute, unsigned seconds, unsigned milliseconds )
 {

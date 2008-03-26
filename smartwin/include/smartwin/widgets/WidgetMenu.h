@@ -125,7 +125,7 @@ struct MenuColorInfo
 * WidgetWindow. <br>
 * Note for Desktop version only! <br>
 */
-class WidgetMenu : public boost::enable_shared_from_this< WidgetMenu >, boost::noncopyable
+class WidgetMenu : public boost::noncopyable
 {
 	// friends
 	friend class WidgetCreator< WidgetMenu >;

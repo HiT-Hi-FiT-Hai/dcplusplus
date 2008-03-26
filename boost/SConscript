@@ -1,8 +1,0 @@
-# vim: set filetype=py
- 
-Import('dev source_path')
-
-ret = dev.build('libs/signals/src/')
-
-Return('ret')
-

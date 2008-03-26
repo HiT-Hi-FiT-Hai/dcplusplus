@@ -9,3 +9,4 @@ custom.py
 ./htmlhelp/lib/htmlhelp.lib
 natupnp.h
 ./help/changelog.html
+./.pydevproject

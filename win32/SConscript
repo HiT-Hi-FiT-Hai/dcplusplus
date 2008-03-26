@@ -17,5 +17,5 @@ env.Append(LIBPATH=["#/openssl/lib"])
 headers=dev.get_sources(source_path, "*.h")
 dev.i18n(source_path, env, [sources,headers], 'dcpp-win32')
 
-ret = env.Program(target, [sources, res, dev.client, dev.zlib, dev.bzip2, dev.smartwin, dev.boost, dev.intl])
+ret = env.Program(target, [sources, res, dev.client, dev.zlib, dev.bzip2, dev.smartwin, dev.intl])
 Return('ret')

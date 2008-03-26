@@ -59,11 +59,6 @@ namespace SmartUtil
 		/// Construct a new DateTime from the given SYSTEMTIME
 		explicit DateTime( const SYSTEMTIME & sysTime );
 
-		/// Construct a DateTime object from the given "date" which is being expected to be in the given "format"
-		/** format could be e.g. "yyyy.MM.dd" while date could be e.g. "2006.11.29"
-		  */
-		DateTime( const tstring & date, const tstring & format );
-
 		/// Constructs a date according to the values given
 		DateTime( unsigned year, unsigned month, unsigned day, unsigned hour = 0, unsigned minute = 0, unsigned seconds = 0, unsigned milliseconds = 0 );
 
