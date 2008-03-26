@@ -47,6 +47,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectRaw
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 	struct Dispatcher {
 		typedef std::tr1::function<LRESULT (WPARAM, LPARAM)> F;
 
@@ -80,9 +81,7 @@ public:
 	/// WARNING, this function uses the natural wparam/lparam order, not the inverted that previous
 	/// smartwin versions did. The two functions above emulate the old behaviour though...
 	void onRaw(const typename Dispatcher::F& f, const Message & msg) {
-		static_cast<WidgetType*>(this)->addCallback(
-			msg, Dispatcher(f)
-		);
+		W().addCallback(msg, Dispatcher(f));
 	}
 
 protected:

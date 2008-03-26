@@ -45,6 +45,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectUpdate
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	/// \ingroup EventHandlersAspectUpdate
@@ -52,14 +53,11 @@ public:
 	/** When the Widget value/text is being updated this event will be raised.
 	  */
 	void onUpdate(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			WidgetType::getUpdateMessage(), Dispatcher(f)
-		);
+		W().addCallback(WidgetType::getUpdateMessage(), Dispatcher(f));
 	}
 
 protected:
-	virtual ~AspectUpdate()
-	{}
+	virtual ~AspectUpdate() { }
 };
 
 // end namespace SmartWin

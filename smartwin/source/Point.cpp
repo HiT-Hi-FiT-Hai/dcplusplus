@@ -33,71 +33,42 @@ namespace SmartWin
 {
 // begin namespace SmartWin
 
-Point::Point( long pX, long pY )
-{ x = pX; y = pY; }
-
-Point::Point()
-{ x = y = 0; }
-
-Point::Point(const POINT& pt) : POINT(pt) { }
-
-Point::operator POINT() const {
-	POINT pt = { x, y };
-	return pt;
-}
-
-void Point::maxOf( const Point & p )
-{
+void Point::maxOf( const Point & p ) {
 	if ( p.x > x )
 		x = p.x;
 	if ( p.y > y )
 		y = p.y;
 }
 
-void Point::minOf( const Point & p )
-{
+void Point::minOf( const Point & p ) {
 	if ( p.x < x )
 		x = p.x;
 	if ( p.y < y )
 		y = p.y;
 }
 
-Point & operator += ( Point & lhs, const Point & rhs )
-{
+Point & operator += ( Point & lhs, const Point & rhs ) {
 	lhs.x += rhs.x;
 	lhs.y += rhs.y;
 	return lhs;
 }
 
-Point operator +( const Point & lhs, const Point & rhs )
-{
+Point operator +( const Point & lhs, const Point & rhs ) {
 	Point retVal = lhs;
 	retVal += rhs;
 	return retVal;
 }
 
-Point & operator -= ( Point & lhs, const Point & rhs )
-{
+Point & operator -= ( Point & lhs, const Point & rhs ) {
 	lhs.x -= rhs.x;
 	lhs.y -= rhs.y;
 	return lhs;
 }
 
-Point operator -( const Point & lhs, const Point & rhs )
-{
+Point operator -( const Point & lhs, const Point & rhs ) {
 	Point retVal = lhs;
 	retVal -= rhs;
 	return retVal;
-}
-
-bool operator == ( const Point & lhs, const Point & rhs )
-{
-	return lhs.x == rhs.x && lhs.y == rhs.y;
-}
-
-bool operator != ( const Point & lhs, const Point & rhs )
-{
-	return !( lhs == rhs );
 }
 
 ClientCoordinate::ClientCoordinate(const ClientCoordinate& cc, Widget* w_) : point(cc.getPoint()), w(w_) {

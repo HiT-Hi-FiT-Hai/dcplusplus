@@ -160,6 +160,9 @@ public:
 	/// Adds a new callback - multiple callbacks for the same message will be called in the order they were added
 	void addCallback(const Message& msg, const CallbackType& callback );
 
+	/// Sets the callback for msg - clears any other callbacks registered for the same message
+	void setCallback(const Message& msg, const CallbackType& callback );
+	
 	CallbackCollectionType & getCallbacks();
 
 	/// Returns true if fired, else false
@@ -176,7 +179,7 @@ public:
 	  */
 	void attach( unsigned id );
 
-	void attach(HWND wnd);
+	virtual void attach(HWND wnd);
 
 protected:
 	Widget(Widget * parent);

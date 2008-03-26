@@ -37,7 +37,7 @@ namespace SmartWin
 /// POD structure for defining a point
 /** Used in e.g. functions that take a mouse position etc...
   */
-struct Point : ::POINT
+struct Point : public ::POINT
 {
 	/// Constructor initializing the point with the given arguments.
 	/** Constructor initializing the structure with the given arguments. Takes x and
@@ -52,7 +52,11 @@ struct Point : ::POINT
 
 	Point(const POINT& pt);
 	
-	operator POINT() const;
+	static Point fromMSG(const MSG& msg);
+	
+	static Point fromLParam(LPARAM lParam);
+	
+	LPARAM toLParam() const;
 	
 	/// Sets this Point to the maximum value for each x y dimension.
 	/** Each x,y dimension is adjusted by the p Point.
@@ -145,6 +149,25 @@ bool operator == ( const Point & lhs, const Point & rhs );
 /** Operator != for checking for equality
   */
 bool operator != ( const Point & lhs, const Point & rhs );
+
+inline Point::Point( long pX, long pY ) { x = pX; y = pY; }
+
+inline Point::Point() { x = y = 0; }
+
+inline Point::Point(const POINT& pt) : POINT(pt) { }
+
+inline Point Point::fromLParam(LPARAM lParam) { return Point(GET_X_LPARAM( lParam ), GET_Y_LPARAM( lParam )); }
+
+inline Point Point::fromMSG(const MSG& msg) { return fromLParam(msg.lParam); }
+
+inline LPARAM Point::toLParam() const { return MAKELPARAM(x, y); }
+
+inline bool operator == ( const Point & lhs, const Point & rhs ) {
+	return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+inline bool operator != ( const Point & lhs, const Point & rhs ) { return !( lhs == rhs ); }
+
 
 // end namespace SmartWin
 }

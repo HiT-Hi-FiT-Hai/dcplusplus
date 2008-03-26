@@ -28,7 +28,7 @@
 #ifndef AspectEnabled_h
 #define AspectEnabled_h
 
-#include <functional>
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
@@ -47,20 +47,12 @@ namespace SmartWin
 template< class WidgetType >
 class AspectEnabled
 {
-	struct Dispatcher
-	{
-		typedef std::tr1::function<void (bool)> F;
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 
-		Dispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(msg.wParam > 0);
-			return true;
-		}
-
-		F f;
-	};
-
+	static bool isEnabled(const MSG& msg) { return msg.wParam > 0; }
+	
+	typedef Dispatchers::ConvertBase<bool, &AspectEnabled<WidgetType>::isEnabled> Dispatcher;
+	friend class Dispatchers::ConvertBase<bool, &AspectEnabled<WidgetType>::isEnabled>;
 
 public:
 	/// Sets the enabled property of the Widget
@@ -84,14 +76,11 @@ public:
 	  * No parameters are passed.
 	  */
 	void onEnabled(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_ENABLE ), Dispatcher(f)
-		);
+		W().addCallback(Message( WM_ENABLE ), Dispatcher(f));
 	}
 
 protected:
-	virtual ~AspectEnabled()
-	{}
+	virtual ~AspectEnabled() { }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,13 +89,13 @@ protected:
 template< class WidgetType >
 void AspectEnabled< WidgetType >::setEnabled( bool enabled )
 {
-	::EnableWindow( static_cast< WidgetType * >( this )->handle(), enabled ? TRUE : FALSE );
+	::EnableWindow( W().handle(), enabled ? TRUE : FALSE );
 }
 
 template< class WidgetType >
 bool AspectEnabled< WidgetType >::getEnabled() const
 {
-	return ::IsWindowEnabled( static_cast< const WidgetType * >( this )->handle() ) != 0;
+	return ::IsWindowEnabled( W().handle() ) != 0;
 }
 
 // end namespace SmartWin

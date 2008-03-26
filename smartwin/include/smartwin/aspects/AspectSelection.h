@@ -41,6 +41,8 @@ namespace SmartWin
 template< class WidgetType >
 class AspectSelection
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+
 	struct Dispatcher
 	{
 		typedef std::tr1::function<void ()> F;
@@ -64,9 +66,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onSelectionChanged(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			static_cast<WidgetType*>(this)->getSelectionChangedMessage(), Dispatcher(f)
-		);
+		W().addCallback(W().getSelectionChangedMessage(), Dispatcher(f));
 	}
 
 	/// Sets the selected index of the Widget

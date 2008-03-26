@@ -29,6 +29,7 @@
 #define AspectMouse_h
 
 #include "../Point.h"
+#include <functional>
 
 namespace SmartWin
 {

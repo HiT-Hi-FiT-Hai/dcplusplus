@@ -58,7 +58,7 @@ class WidgetCreator;
   */
 class WidgetComboBox :
 	// Aspects
-	public AspectBackgroundColor< WidgetComboBox >,
+	public AspectCtlColor< WidgetComboBox >,
 	public AspectBorder< WidgetComboBox >,
 	public AspectClickable< WidgetComboBox >,
 	public AspectControl<WidgetComboBox>,

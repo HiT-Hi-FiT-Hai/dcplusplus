@@ -374,7 +374,7 @@ void MainWindow::handleQuickConnect() {
 	}
 }
 
-bool MainWindow::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
+void MainWindow::handleSized(const SmartWin::SizedEvent& sz) {
 	if(sz.isMinimized) {
 		if(BOOLSETTING(AUTO_AWAY) && !Util::getManualAway()) {
 			Util::setAway(true);
@@ -393,8 +393,6 @@ bool MainWindow::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
 		}
 		layout();
 	}
-
-	return true;
 }
 
 LRESULT MainWindow::handleSpeaker(WPARAM wParam, LPARAM lParam) {

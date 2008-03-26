@@ -110,6 +110,8 @@ public:
 template< class WidgetType >
 class AspectKeyboard : public AspectKeyboardBase
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+
 	struct Dispatcher
 	{
 		typedef std::tr1::function<bool (int)> F;

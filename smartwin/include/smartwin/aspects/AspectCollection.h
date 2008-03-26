@@ -4,20 +4,22 @@
 /** A control that holds a collection of items, such as a list or tree */
 template<typename WidgetType, typename IndexType>
 class AspectCollection {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
 public:
 	/** Erase a particular item */
 	void erase(IndexType i) {
-		static_cast<WidgetType*>(this)->eraseImpl(i);
+		W().eraseImpl(i);
 	}
 	
 	/** Erase all items from collection */
 	void clear() {
-		static_cast<WidgetType*>(this)->clearImpl();
+		W().clearImpl();
 	}
 	
 	/** Return number of items in collection */
 	size_t size() const {
-		return static_cast<const WidgetType*>(this)->sizeImpl();
+		return W().sizeImpl();
 	}
 	
 	bool empty() const {

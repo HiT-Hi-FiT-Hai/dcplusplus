@@ -15,7 +15,7 @@ namespace SmartWin {
 /** Common stuff for all buttons */
 template<typename WidgetType>
 class AspectButton :
-	public AspectBackgroundColor<WidgetType>,
+	public AspectCtlColor<WidgetType>,
 	public AspectBorder< WidgetType >,
 	public AspectClickable<WidgetType>,
 	public AspectControl<WidgetType>,
@@ -25,11 +25,9 @@ class AspectButton :
 	public AspectPainting< WidgetType >,
 	public AspectText< WidgetType >
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 public:
 	
-	// Contract needed by AspectBackgroundColor Aspect class
-	static const Message & getBackgroundColorMessage();
-
 	// Contract needed by AspectClickable Aspect class
 	Message getClickMessage();
 
@@ -44,13 +42,6 @@ protected:
 	
 	AspectButton(Widget* parent);
 };
-
-template<typename WidgetType>
-inline const Message & AspectButton<WidgetType>::getBackgroundColorMessage()
-{
-	static Message retVal = Message( WM_CTLCOLORBTN );
-	return retVal;
-}
 
 template<typename WidgetType>
 Message AspectButton<WidgetType>::getClickMessage() {

@@ -109,7 +109,7 @@ private:
 	void setTop(WidgetChildWindow* w);
 
 	bool handleTextChanging(WidgetChildWindow* w, const SmartUtil::tstring& newText);
-	bool handleSized(const WidgetSizedEventResult&);
+	void handleSized(const SizedEvent&);
 	void handleTabSelected();
 	LRESULT handleToolTip(LPARAM lParam);
 	void handleLeftMouseDown(const MouseEventResult& mouseEventResult);

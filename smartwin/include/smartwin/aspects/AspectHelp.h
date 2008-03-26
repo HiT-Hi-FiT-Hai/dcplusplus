@@ -1,6 +1,8 @@
 #ifndef ASPECTHELP_H_
 #define ASPECTHELP_H_
 
+#include <functional>
+
 namespace SmartWin {
 
 template<typename WidgetType>

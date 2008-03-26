@@ -40,6 +40,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectBorder
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 public:
 	/// Set or remove the simple border (solid line)
 	void setBorder( bool value = true );
@@ -60,25 +61,25 @@ public:
 template< class WidgetType >
 void AspectBorder< WidgetType >::setBorder( bool value )
 {
-	static_cast< WidgetType * >( this )->addRemoveStyle( WS_BORDER, value );
+	W().addRemoveStyle( WS_BORDER, value );
 }
 
 template< class WidgetType >
 void AspectBorder< WidgetType >::setSunkenBorder( bool value )
 {
-	static_cast< WidgetType * >( this )->addRemoveExStyle( WS_EX_CLIENTEDGE, value );
+	W().addRemoveExStyle( WS_EX_CLIENTEDGE, value );
 }
 
 template< class WidgetType >
 void AspectBorder< WidgetType >::setSmoothSunkenBorder( bool value )
 {
-	static_cast< WidgetType * >( this )->addRemoveExStyle( WS_EX_STATICEDGE, value );
+	W().addRemoveExStyle( WS_EX_STATICEDGE, value );
 }
 
 template< class WidgetType >
 void AspectBorder< WidgetType >::setRaisedBorder( bool value )
 {
-	static_cast< WidgetType * >( this )->addRemoveStyle( WS_THICKFRAME, value );
+	W().addRemoveStyle( WS_THICKFRAME, value );
 }
 
 // end namespace SmartWin

@@ -29,6 +29,7 @@
 #define AspectText_h
 
 #include "../../SmartUtil.h"
+#include "../Dispatchers.h"
 
 namespace SmartWin
 {
@@ -43,19 +44,15 @@ namespace SmartWin
 template< class WidgetType >
 class AspectText
 {
-	struct Dispatcher
-	{
-		typedef std::tr1::function<void (const SmartUtil::tstring &)> F;
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
 
-		Dispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(SmartUtil::tstring( reinterpret_cast< TCHAR * >( msg.lParam ) ));
-			return false;
-		}
-
-		F f;
-	};
+	static SmartUtil::tstring isActive(const MSG& msg) { 
+		return SmartUtil::tstring( reinterpret_cast< TCHAR * >( msg.lParam ) );
+	}
+	
+	typedef Dispatchers::ConvertBase<SmartUtil::tstring, &AspectText<WidgetType>::isActive, false> Dispatcher;
+	friend class Dispatchers::ConvertBase<SmartUtil::tstring, &AspectText<WidgetType>::isActive, false>;
 public:
 	/// Sets the text of the AspectText realizing class
 	/** The txt parameter is the new text to put into the realizing object.
@@ -88,9 +85,7 @@ public:
 	  * Widget.
 	  */
 	void onTextChanging(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_SETTEXT ), Dispatcher(f)
-		);
+		W().addCallback(Message( WM_SETTEXT ), Dispatcher(f));
 	}
 
 protected:
@@ -104,7 +99,7 @@ protected:
 template< class WidgetType >
 void AspectText< WidgetType >::setText( const SmartUtil::tstring & txt )
 {
-	static_cast< WidgetType * >( this )->sendMessage(WM_SETTEXT, 0, reinterpret_cast< LPARAM >(txt.c_str()) );
+	W().sendMessage(WM_SETTEXT, 0, reinterpret_cast< LPARAM >(txt.c_str()) );
 }
 
 
@@ -135,7 +130,7 @@ void AspectText< WidgetType >::setTextLines( const SmartUtil::tstring & inTxt )
 
 template< class WidgetType >
 size_t AspectText< WidgetType >::length( ) const {
-	return static_cast<size_t>(static_cast<const WidgetType*>(this)->sendMessage(WM_GETTEXTLENGTH));
+	return W().sendMessage(WM_GETTEXTLENGTH);
 }
 
 template< class WidgetType >
@@ -145,7 +140,7 @@ SmartUtil::tstring AspectText< WidgetType >::getText() const
 	if ( textLength == 0 )
 		return _T( "" );
 	SmartUtil::tstring retVal(textLength + 1, 0);
-	retVal.resize(static_cast<const WidgetType*>(this)->sendMessage(WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
+	retVal.resize(W().sendMessage(WM_GETTEXT, static_cast<WPARAM>(textLength + 1), reinterpret_cast<LPARAM>(&retVal[0])));
 	return retVal;
 }
 

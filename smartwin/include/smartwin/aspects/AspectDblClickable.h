@@ -43,6 +43,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectDblClickable
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	/// \ingroup EventHandlersAspectDblClickable
@@ -52,14 +53,11 @@ public:
 	  */
 
 	void onDblClicked(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			WidgetType::getDblClickMessage(), Dispatcher(f)
-		);
+		W().addCallback(WidgetType::getDblClickMessage(), Dispatcher(f));
 	}
 
 protected:
-	virtual ~AspectDblClickable()
-	{}
+	virtual ~AspectDblClickable() { }
 };
 
 // end namespace SmartWin

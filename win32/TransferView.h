@@ -250,7 +250,7 @@ private:
 	TaskQueue tasks;
 	StringMap ucLineParams;
 
-	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
+	void handleSized(const SmartWin::SizedEvent& sz);
 	bool handleConnectionsMenu(SmartWin::ScreenCoordinate pt);
 	bool handleDownloadsMenu(SmartWin::ScreenCoordinate pt);
 	HRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);

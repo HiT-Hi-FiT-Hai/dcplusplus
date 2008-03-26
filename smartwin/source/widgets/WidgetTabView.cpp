@@ -202,10 +202,9 @@ SmartUtil::tstring WidgetTabView::formatTitle(SmartUtil::tstring title) {
 	return SmartUtil::escapeMenu(title);
 }
 
-bool WidgetTabView::handleSized(const WidgetSizedEventResult& sz) {
-	tab->setBounds(Rectangle(sz.newSize));
+void WidgetTabView::handleSized(const SizedEvent& sz) {
+	tab->setBounds(Rectangle(sz.size));
 	layout();
-	return true;
 }
 
 void WidgetTabView::layout() {

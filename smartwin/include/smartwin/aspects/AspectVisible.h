@@ -28,6 +28,8 @@
 #ifndef AspectVisible_h
 #define AspectVisible_h
 
+#include "../Dispatchers.h"
+
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -46,19 +48,15 @@ namespace SmartWin
 template< class WidgetType >
 class AspectVisible
 {
-	struct Dispatcher
-	{
-		typedef std::tr1::function<void (bool)> F;
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
+	HWND H() const { return W().handle(); }
 
-		Dispatcher(const F& f_) : f(f_) { }
+	static bool isVisible(const MSG& msg) { return msg.wParam > 0; }
+	
+	typedef Dispatchers::ConvertBase<bool, &AspectVisible<WidgetType>::isVisible> Dispatcher;
+	friend class Dispatchers::ConvertBase<bool, &AspectVisible<WidgetType>::isVisible>;
 
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(msg.wParam > 0);
-			return true;
-		}
-
-		F f;
-	};
 public:
 	/// Sets the visibility property of the Widget
 	/** Changes the visibility property of the Widget. <br>
@@ -81,9 +79,7 @@ public:
 	  * invisible.
 	  */
 	void onVisibilityChanged(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_SHOWWINDOW ), Dispatcher(f)
-		);
+		W().addCallback(Message( WM_SHOWWINDOW ), Dispatcher(f));
 	}
 
 protected:
@@ -97,13 +93,13 @@ protected:
 template< class WidgetType >
 void AspectVisible< WidgetType >::setVisible( bool visible )
 {
-	::ShowWindow( static_cast< WidgetType * >( this )->handle(), visible ? SW_SHOW : SW_HIDE );
+	::ShowWindow( H(), visible ? SW_SHOW : SW_HIDE );
 }
 
 template< class WidgetType >
 bool AspectVisible< WidgetType >::getVisible() const
 {
-	return ::IsWindowVisible( static_cast< const WidgetType * >( this )->handle() ) != 0;
+	return ::IsWindowVisible( H() ) != 0;
 }
 // end namespace SmartWin
 }

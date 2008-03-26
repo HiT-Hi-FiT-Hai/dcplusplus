@@ -42,50 +42,33 @@ namespace SmartWin
   * realizes the AspectEnabled through inheritance.
   */
 template< class WidgetType >
-class AspectBackgroundColor
-{
+class AspectCtlColor {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+
 	struct Dispatcher {
-		typedef std::tr1::function<BrushPtr (Canvas&)> F;
-		
-		Dispatcher(const F& f_, WidgetType* widget_) : f(f_), widget(widget_) { }
+		Dispatcher(const BrushPtr& brush_, COLORREF text_, COLORREF bg_) : brush(brush_), text(text_), bg(bg_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
-			FreeCanvas canvas( widget->handle(), reinterpret_cast< HDC >( msg.wParam ) );
-
-			BrushPtr retBrush = f(canvas);
-			ret = retBrush ? reinterpret_cast< HRESULT >( retBrush->handle() ) : 0;
+			HDC dc = (HDC) msg.wParam;
+			::SetTextColor(dc, text);
+			::SetBkColor(dc, bg);
+			ret = brush ? reinterpret_cast< LRESULT >( brush->handle() ) : 0;
 			return true;
 		}
 
-		F f;
-		WidgetType* widget;
+		BrushPtr brush;
+		COLORREF text;
+		COLORREF bg;
 	};
 
 public:
-	/// \ingroup EventHandlersAspectBackgroundColor
-	/// Setting the event handler for the "erase background" event
-	/** The erase background event is raised when the Widget needs to redraw its
-	  * background. <br>
-	  * Since the Brush object needs to live past the function call we use a BrushPtr
-	  * to wrap the Brush object into, you can for instance add a BrushPtr object as
-	  * a member of your Widget class and return that BrushPtr from your event
-	  * handler. <br>
-	  * The parameter passed is Canvas & and return value is BrushPtr <br>
-	  * Note! <br>
-	  * It is imperative that you keep a reference to the BrushPtr yourself somewhere
-	  * e.g. as member of class since otherwise the brush will be released before it
-	  * is returned to the system and cannot be used!
-	  */
-	void onBackgroundColor(const typename Dispatcher::F& f) {
-		WidgetType* This = static_cast<WidgetType*>(this);
-		This->addCallback(
-			This->getBackgroundColorMessage(), Dispatcher(f, This )
-		);
+	/// Set the background, text and text colors 
+	void setColor(const BrushPtr& brush, COLORREF text, COLORREF textBackground) {
+		W().setCallback(Message(WM_CTLCOLOR), Dispatcher( brush, text, textBackground ));
 	}
 
 protected:
-	virtual ~AspectBackgroundColor()
-	{}
+	virtual ~AspectCtlColor() { }
 };
 
 // end namespace SmartWin

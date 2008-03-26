@@ -31,41 +31,12 @@
 #include "../Widget.h"
 #include "../Place.h"
 #include "../xCeption.h"
+#include "../Dispatchers.h"
+#include "../Events.h"
 
 namespace SmartWin
 {
 // begin namespace SmartWin
-
-/// Widget sized POD structure
-/** Several event handlers supply an object of this type as one or more parameters to
-  * the event handler callback function. <br>
-  * E.g. the "onSized" event handler
-  */
-struct WidgetSizedEventResult
-{
-	WidgetSizedEventResult(WPARAM wParam, LPARAM lParam);
-	
-	/// Sise
-	/** New size of the window
-	  */
-	Point newSize;
-
-	/// is window maximized
-	/** true if window was being maximized, otherwise false
-	  */
-	bool isMaximized;
-
-	/// is window minimized
-	/** true if window was being minimized, otherwise false
-	  */
-	bool isMinimized;
-
-	/// is window restored
-	/** true if window was being restored, otherwise false
-	  */
-	bool isRestored;
-};
-
 
 /// \ingroup AspectClasses
 /// \ingroup WidgetLayout
@@ -88,30 +59,14 @@ struct WidgetSizedEventResult
 template< class WidgetType >
 class AspectSizable
 {
-	struct SizeDispatcher {
-		typedef std::tr1::function<bool (const WidgetSizedEventResult & )> F;
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
 
-		SizeDispatcher(const F& f_) : f(f_) { }
+	HWND H() const { return W().handle(); }
 
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			return f(WidgetSizedEventResult( msg.wParam, msg.lParam ));
-		}
+	typedef Dispatchers::ConvertBase<SizedEvent> SizeDispatcher;
+	typedef Dispatchers::ConvertBase<Point, &Point::fromMSG> MoveDispatcher;
 
-		F f;
-	};
-
-	struct MoveDispatcher {
-		typedef std::tr1::function<void (const Point & )> F;
-
-		MoveDispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(Point( GET_X_LPARAM( msg.lParam ), GET_Y_LPARAM( msg.lParam ) ));
-			return true;
-		}
-
-		F f;
-	};
 public:
 	/// Sets the new size and position of the window
 	/** The input parameter Rectangle defines the new size (and position) of the
@@ -295,9 +250,7 @@ public:
 	  * information.
 	  */
 	void onSized(const typename SizeDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_SIZE ), SizeDispatcher(f)
-		);
+		W().addCallback(Message( WM_SIZE ), SizeDispatcher(f));
 	}
 
 	/// \ingroup EventHandlersAspectSizable
@@ -306,14 +259,11 @@ public:
 	  * passed is Point which is the new position of the Widget
 	  */
 	void onMoved(const typename MoveDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_MOVE ), MoveDispatcher(f)
-		);
+		W().addCallback(Message( WM_MOVE ), MoveDispatcher(f));
 	}
 
 protected:
-	virtual ~AspectSizable()
-	{}
+	virtual ~AspectSizable() { }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +272,7 @@ protected:
 template< class WidgetType >
 void AspectSizable< WidgetType >::setBounds( const Rectangle & rect, bool updateWindow )
 {
-	if ( ::MoveWindow( static_cast< WidgetType * >( this )->handle(),
+	if ( ::MoveWindow( H(),
 		rect.x(), rect.y(), rect.width(), rect.height(), updateWindow ? TRUE : FALSE ) == 0 )
 	{
 		xCeption err( _T( "Couldn't reposition windows" ) );
@@ -333,7 +283,7 @@ void AspectSizable< WidgetType >::setBounds( const Rectangle & rect, bool update
 template< class WidgetType >
 void AspectSizable< WidgetType >::setBounds( const Point & newPos, const Point & newSize, bool updateWindow )
 {
-	if ( ::MoveWindow( static_cast< WidgetType * >( this )->handle(), newPos.x, newPos.y, newSize.x, newSize.y, updateWindow ? TRUE : FALSE ) == 0 )
+	if ( ::MoveWindow( H(), newPos.x, newPos.y, newSize.x, newSize.y, updateWindow ? TRUE : FALSE ) == 0 )
 	{
 		xCeption err( _T( "Couldn't reposition windows" ) );
 		throw err;
@@ -343,7 +293,7 @@ void AspectSizable< WidgetType >::setBounds( const Point & newPos, const Point &
 template< class WidgetType >
 void AspectSizable< WidgetType >::setBounds( int x, int y, int width, int height, bool updateWindow )
 {
-	if ( ::MoveWindow( static_cast< WidgetType * >( this )->handle(), x, y, width, height, updateWindow ? TRUE : FALSE ) == 0 )
+	if ( ::MoveWindow( H(), x, y, width, height, updateWindow ? TRUE : FALSE ) == 0 )
 	{
 		xCeption err( _T( "Couldn't reposition windows" ) );
 		throw err;
@@ -371,7 +321,7 @@ void AspectSizable< WidgetType >::setSizeAsCol( const Rectangle & rect, int rows
 	int yPos = rect.pos.y + border; // Start with current y and first border.
 	yPos += rownum * ( border + ySize ); // Accumulate other rows and borders
 
-	::MoveWindow( static_cast< WidgetType * >( this )->handle(), rect.x(), yPos,
+	::MoveWindow( H(), rect.x(), yPos,
 					rect.width(), ySize, updateWindow ? TRUE : FALSE );
 }
 
@@ -384,7 +334,7 @@ void AspectSizable< WidgetType >::setSizeAsRow( const Rectangle & rect, int cols
 	int xPos = rect.x() + border; // Start with current X and first border
 	xPos += colnum * ( border + xSize ); // Accumulate other columns and borders
 
-	::MoveWindow( static_cast< WidgetType * >( this )->handle(), xPos, rect.y(), xSize, rect.height(), updateWindow ? TRUE : FALSE );
+	::MoveWindow( H(), xPos, rect.y(), xSize, rect.height(), updateWindow ? TRUE : FALSE );
 }
 
 template< class WidgetType >
@@ -436,7 +386,7 @@ Rectangle AspectSizable< WidgetType >::getBounds( bool adjustForParent ) const
 	int width, height;
 	RECT rc;
 	POINT pt;
-	HWND hwnd = const_cast < WidgetType * >( static_cast< const WidgetType * >( this ) )->handle();
+	HWND hwnd = H();
 	::GetWindowRect( hwnd, & rc );
 	width = rc.right - rc.left;
 	height = rc.bottom - rc.top;
@@ -444,7 +394,7 @@ Rectangle AspectSizable< WidgetType >::getBounds( bool adjustForParent ) const
 	pt.y = rc.top;
 	if( adjustForParent )
 	{
-		Widget* parent = static_cast< const WidgetType * >( this )->getParent();
+		Widget* parent = W().getParent();
 		if( parent )
 		{
 			//if it's a child, adjust coordinates relative to parent
@@ -471,7 +421,7 @@ template< class WidgetType >
 Point AspectSizable< WidgetType >::getScreenPosition() const
 {
 	RECT rc;
-	::GetWindowRect( const_cast < WidgetType * >( static_cast< const WidgetType * >( this ) )->handle(), & rc );
+	::GetWindowRect( H(), & rc );
 	return Point( rc.left, rc.top );
 }
 
@@ -481,7 +431,7 @@ template< class WidgetType >
 Point AspectSizable< WidgetType >::getClientAreaSize() const
 {
 	RECT rc;
-	::GetClientRect( const_cast < WidgetType * >( static_cast< const WidgetType * >( this ) )->handle(), & rc );
+	::GetClientRect( H(), & rc );
 	return Point( rc.right, rc.bottom );
 }
 
@@ -490,7 +440,7 @@ Point AspectSizable< WidgetType >
 ::getTextSize( const SmartUtil::tstring & text )
 {
 	// Some win32 api code to determine the actual size of the string
-	HWND hWnd = static_cast< WidgetType * >( this )->handle();
+	HWND hWnd = H();
 	HDC hDC = ::GetDC( hWnd );
 	HFONT hf = ( HFONT ) ::SendMessage( hWnd, WM_GETFONT, 0, 0 );
 	if ( 0 != hf )
@@ -498,13 +448,11 @@ Point AspectSizable< WidgetType >
 		SelectFont( hDC, hf );
 	}
 
-	RECT wRect =
-	{ 0, 0, 0, 0
-	};
+	RECT wRect = { 0, 0, 0, 0 };
 	DrawText( hDC, text.c_str(), ( int ) text.size(), & wRect, DT_CALCRECT );
 	::ReleaseDC( hWnd, hDC );
 
-	return( Point( wRect.right, wRect.bottom ) );
+	return(Point( wRect.right, wRect.bottom ) );
 }
 
 template< class WidgetType >
@@ -518,7 +466,7 @@ void AspectSizable< WidgetType >::maximize()
 #else
 	typename WidgetType::MaxiMiniRestorable checker;
 #endif
-	::ShowWindow( static_cast< WidgetType * >( this )->handle(), SW_SHOWMAXIMIZED );
+	::ShowWindow(H(), SW_SHOWMAXIMIZED );
 }
 
 template< class WidgetType >
@@ -532,7 +480,7 @@ void AspectSizable< WidgetType >::minimize()
 #else
 	typename WidgetType::MaxiMiniRestorable checker;
 #endif
-	::ShowWindow( static_cast< WidgetType * >( this )->handle(), SW_MINIMIZE );
+	::ShowWindow(H(), SW_MINIMIZE );
 }
 
 template< class WidgetType >
@@ -546,31 +494,31 @@ void AspectSizable< WidgetType >::restore()
 #else
 	typename WidgetType::MaxiMiniRestorable checker;
 #endif
-	::ShowWindow( static_cast< WidgetType * >( this )->handle(), SW_RESTORE );
+	::ShowWindow(H(), SW_RESTORE );
 }
 
 template< class WidgetType >
 void AspectSizable< WidgetType >::bringToFront()
 {
-	::SetWindowPos( static_cast< WidgetType * >( this )->handle(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+	::SetWindowPos(H(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
 template< class WidgetType >
 void AspectSizable< WidgetType >::bringToBottom()
 {
-	::SetWindowPos( static_cast< WidgetType * >( this )->handle(), HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+	::SetWindowPos(H(), HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
 template< class WidgetType >
 bool AspectSizable< WidgetType >::isIconic()
 {
-	return ::IsIconic( static_cast< WidgetType * >( this )->handle()) > 0;
+	return ::IsIconic(H()) > 0;
 }
 
 template< class WidgetType >
 bool AspectSizable< WidgetType >::isZoomed()
 {
-	return ::IsZoomed( static_cast< WidgetType * >( this )->handle()) > 0;
+	return ::IsZoomed(H()) > 0;
 }
 
 // end namespace SmartWin

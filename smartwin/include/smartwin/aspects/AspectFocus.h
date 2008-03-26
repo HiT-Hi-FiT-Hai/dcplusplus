@@ -45,7 +45,9 @@ namespace SmartWin
 template< class WidgetType >
 class AspectFocus
 {
-
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	HWND H() { return W().handle(); }
+	
 	typedef Dispatchers::VoidVoid<0, false> FocusDispatcher;
 	typedef Dispatchers::VoidVoid<0, true> KillFocusDispatcher;
 
@@ -68,9 +70,7 @@ public:
 	  * parameters are passed.
 	  */
 	void onKillFocus(const typename KillFocusDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_KILLFOCUS ), KillFocusDispatcher(f)
-		);
+		W().addCallback(Message( WM_KILLFOCUS ), KillFocusDispatcher(f));
 	}
 
 	/// \ingroup EventHandlersAspectAspectFocus
@@ -79,14 +79,11 @@ public:
 	  * parameters are passed.
 	  */	
 	void onFocus(const typename FocusDispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_SETFOCUS ), FocusDispatcher(f)
-		);
+		W().addCallback(Message( WM_SETFOCUS ), FocusDispatcher(f));
 	}
 
 protected:
-	virtual ~AspectFocus()
-	{}
+	virtual ~AspectFocus() { }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,13 +92,13 @@ protected:
 template< class WidgetType >
 void AspectFocus< WidgetType >::setFocus()
 {
-	::SetFocus( static_cast< WidgetType * >( this )->handle() );
+	::SetFocus( H() );
 }
 
 template< class WidgetType >
 bool AspectFocus< WidgetType >::getFocus() const
 {
-	return ::GetFocus() == static_cast< const WidgetType * >( this )->handle();
+	return ::GetFocus() == H();
 }
 
 // end namespace SmartWin

@@ -27,7 +27,7 @@ public:
 	
 	template<typename F>
 	void onSpeaker(const F& f) {
-		static_cast<WidgetType*>(this)->onRaw(f, WM_SPEAKER);
+		static_cast<WidgetType*>(this)->onRaw(f, SmartWin::Message(WM_SPEAKER));
 	}
 	
 	BOOL speak(WPARAM w = 0, LPARAM l = 0) { return static_cast<WidgetType*>(this)->postMessage(WM_SPEAKER, w, l); }

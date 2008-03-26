@@ -40,7 +40,6 @@ private:
 	SmartWin::FontPtr font;
 	LOGFONT logFont;
 
-	SmartWin::BrushPtr handleExampleColor(SmartWin::Canvas& canvas);
 	void handleBackgroundClicked();
 	void handleTextClicked();
 	void handleULClicked();

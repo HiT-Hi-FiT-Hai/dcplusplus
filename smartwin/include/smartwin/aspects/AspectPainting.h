@@ -43,6 +43,8 @@ namespace SmartWin
 template< class WidgetType >
 class AspectPainting
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+
 	struct Dispatcher {
 		typedef std::tr1::function<void (PaintCanvas&)> F;
 		
@@ -66,9 +68,7 @@ public:
 	  * Parameters passed is Canvas &
 	  */
 	void onPainting(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_PAINT ), Dispatcher(f, static_cast<WidgetType*>(this) )
-		);
+		W().addCallback(Message( WM_PAINT ), Dispatcher(f, &W()));
 	}
 
 protected:

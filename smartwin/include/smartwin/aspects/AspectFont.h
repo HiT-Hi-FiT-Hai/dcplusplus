@@ -48,6 +48,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectFont
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 public:
 	/// Sets the font used by the Widget
 	/** Changes the font of the Widget to the given font. Use the class Font to
@@ -78,14 +79,14 @@ template< class WidgetType >
 void AspectFont< WidgetType >::setFont( const FontPtr& font_, bool forceUpdate )
 {
 	font = font_;
-	static_cast< WidgetType * >( this )->sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( font->handle() ), static_cast< LPARAM >( forceUpdate ) );
+	W().sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( font->handle() ), static_cast< LPARAM >( forceUpdate ) );
 }
 
 template< class WidgetType >
 const FontPtr& AspectFont< WidgetType >::getFont()
 {
 	if(!font) {
-		HFONT f = ( HFONT )static_cast< WidgetType * >( this )->sendMessage(WM_GETFONT);
+		HFONT f = ( HFONT )W().sendMessage(WM_GETFONT);
 		font = FontPtr( new Font( f, false ) );
 	}
 	return font;
@@ -96,7 +97,7 @@ void AspectFont< WidgetType >::setFont( PredefinedFontTypes stockObjectFont, boo
 {
 	font = FontPtr();
 	HANDLE hFont = static_cast< HFONT >( ::GetStockObject( stockObjectFont ) );
-	static_cast< WidgetType * >( this )->sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( hFont ), static_cast< LPARAM >( forceUpdate ) );
+	W().sendMessage(WM_SETFONT, reinterpret_cast< WPARAM >( hFont ), static_cast< LPARAM >( forceUpdate ) );
 }
 
 // end namespace SmartWin

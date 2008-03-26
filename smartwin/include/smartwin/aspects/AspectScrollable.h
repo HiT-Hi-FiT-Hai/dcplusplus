@@ -42,6 +42,8 @@ namespace SmartWin
 template< class WidgetType >
 class AspectScrollable
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	bool scrollIsAtEnd();
@@ -54,9 +56,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onScrollHorz(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_HSCROLL ), Dispatcher(f)
-		);
+		W().addCallback(Message( WM_HSCROLL ), Dispatcher(f));
 	}
 
 	/// \ingroup EventHandlersAspectScrollable
@@ -67,9 +67,7 @@ public:
 	  * No parameters are passed.
 	  */
 	void onScrollVert(const Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_VSCROLL ), Dispatcher(f)
-		);
+		W().addCallback(Message( WM_VSCROLL ), Dispatcher(f));
 	}
 
 protected:

@@ -163,7 +163,7 @@ private:
 	LRESULT handleTrayIcon(LPARAM lParam);
 	
 	// Other events
-	bool handleSized(const SmartWin::WidgetSizedEventResult& sz);
+	void handleSized(const SmartWin::SizedEvent& sz);
 	
 	LRESULT handleSpeaker(WPARAM wParam, LPARAM lParam);
 	LRESULT handleTrayMessage();

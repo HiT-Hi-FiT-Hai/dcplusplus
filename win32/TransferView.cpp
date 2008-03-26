@@ -155,9 +155,8 @@ void TransferView::handleTabSelected() {
 	}
 }
 
-bool TransferView::handleSized(const SmartWin::WidgetSizedEventResult& sz) {
+void TransferView::handleSized(const SmartWin::SizedEvent& sz) {
 	layout();
-	return true;
 }
 
 void TransferView::layout() {

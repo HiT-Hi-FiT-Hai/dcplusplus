@@ -43,6 +43,7 @@ namespace SmartWin
 template< class WidgetType >
 class AspectClickable
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 	typedef Dispatchers::VoidVoid<> Dispatcher;
 
 public:
@@ -54,14 +55,11 @@ public:
 	  * something else. No parameters are passed.
 	  */
 	void onClicked(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			static_cast<WidgetType*>(this)->getClickMessage(), Dispatcher(f)
-		);
+		W().addCallback(W().getClickMessage(), Dispatcher(f));
 	}
 
 protected:
-	virtual ~AspectClickable()
-	{}
+	virtual ~AspectClickable() { }
 };
 
 // end namespace SmartWin

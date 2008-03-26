@@ -145,15 +145,15 @@ private:
 	}
 
 	void addColor(WidgetComboBox* widget) {
-		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+		widget->setColor(WinUtil::bgBrush, WinUtil::textColor, WinUtil::bgColor);
 		WidgetTextBox* text = widget->getTextBox();
 		if(text)
-			text->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+			text->setColor(WinUtil::bgBrush, WinUtil::textColor, WinUtil::bgColor);
 	}
 
 	template<typename A>
-	void addColor(SmartWin::AspectBackgroundColor<A>* widget) {
-		widget->onBackgroundColor(std::tr1::bind(&ThisType::handleBackgroundColor, this, _1));
+	void addColor(SmartWin::AspectCtlColor<A>* widget) {
+		widget->setColor(WinUtil::bgBrush, WinUtil::textColor, WinUtil::bgColor);
 	}
 	
 	// Catch-rest for the above
@@ -161,9 +161,8 @@ private:
 		
 	}
 
-	bool handleSized(const SmartWin::WidgetSizedEventResult& sz) { 
+	void handleSized(const SmartWin::SizedEvent& sz) { 
 		static_cast<T*>(this)->layout();
-		return false;
 	}
 	
 	void handleActivate(bool active) {
@@ -184,12 +183,6 @@ private:
 		return 0;
 	}
 
-	SmartWin::BrushPtr handleBackgroundColor(SmartWin::Canvas& canvas) {
-		canvas.setBkColor(WinUtil::bgColor);
-		canvas.setTextColor(WinUtil::textColor);
-		return WinUtil::bgBrush;
-	}
-	
 	bool handleContextMenu(const SmartWin::ScreenCoordinate& pt) {
 		SmartWin::WidgetMenu::ObjectType menu = createMenu(WinUtil::Seeds::menu);
 		menu->setTitle(getParent()->getTabText(this));

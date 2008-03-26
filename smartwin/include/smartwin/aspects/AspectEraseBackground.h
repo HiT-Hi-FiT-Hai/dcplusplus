@@ -46,6 +46,8 @@ namespace SmartWin
 template< class WidgetType >
 class AspectEraseBackground
 {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+
 	struct Dispatcher {
 		typedef std::tr1::function<void (Canvas&)> F;
 		
@@ -70,19 +72,14 @@ public:
 	  * background property of the Widget.
 	  */
 	void onEraseBackground(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_ERASEBKGND ), Dispatcher(f, static_cast<WidgetType*>(this) )
-		);
+		W().setCallback(Message( WM_ERASEBKGND ), Dispatcher(f, &W() ) );
 	}
 
 	void noEraseBackground() {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message( WM_ERASEBKGND ), &AspectEraseBackground<WidgetType>::noEraseDispatcher
-		);
+		W().setCallback(Message( WM_ERASEBKGND ), &AspectEraseBackground<WidgetType>::noEraseDispatcher);
 	}
 protected:
-	virtual ~AspectEraseBackground()
-	{}
+	virtual ~AspectEraseBackground() { }
 	
 	static bool noEraseDispatcher(const MSG& msg, LRESULT& ret) {
 		ret = 1;

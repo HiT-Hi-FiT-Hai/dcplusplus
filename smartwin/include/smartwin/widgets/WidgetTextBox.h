@@ -66,7 +66,7 @@ class WidgetCreator;
   */
 class WidgetTextBoxBase :
 	// Aspect classes
-	public AspectBackgroundColor< WidgetTextBoxBase >,
+	public AspectCtlColor< WidgetTextBoxBase >,
 	public AspectBorder< WidgetTextBoxBase >,
 	public AspectControl< WidgetTextBoxBase >,
 	public AspectFocus< WidgetTextBoxBase >,

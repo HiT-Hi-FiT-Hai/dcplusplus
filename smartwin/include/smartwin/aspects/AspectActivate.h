@@ -28,8 +28,9 @@
 #ifndef AspectActivate_h
 #define AspectActivate_h
 
-namespace SmartWin
-{
+#include "../Dispatchers.h"
+
+namespace SmartWin {
 // begin namespace SmartWin
 
 /// Aspect class used by Widgets that can be activated.
@@ -41,19 +42,14 @@ namespace SmartWin
 template< class WidgetType >
 class AspectActivate
 {
-	struct Dispatcher {
-		typedef std::tr1::function<void (bool)> F;
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 
-		Dispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			f(LOWORD( msg.wParam ) == WA_ACTIVE || LOWORD( msg.wParam ) == WA_CLICKACTIVE);
-			return true;
-		}
-
-		F f;
-	};
-
+	static bool isActive(const MSG& msg) { 
+		return LOWORD( msg.wParam ) == WA_ACTIVE || LOWORD( msg.wParam ) == WA_CLICKACTIVE;
+	}
+	
+	typedef Dispatchers::ConvertBase<bool, &AspectActivate<WidgetType>::isActive> Dispatcher;
+	friend class Dispatchers::ConvertBase<bool, &AspectActivate<WidgetType>::isActive>;
 public:
 	/// Activates the Widget
 	/** Changes the activated property of the Widget. <br>
@@ -76,14 +72,12 @@ public:
 	  * Parameter passed is bool
 	  */
 	void onActivate(const typename Dispatcher::F& f) {
-		static_cast<WidgetType*>(this)->addCallback(
-			Message(WM_ACTIVATE), Dispatcher(f)
-		);
+		W().addCallback(Message(WM_ACTIVATE), Dispatcher(f));
 	}
 
 protected:
-	virtual ~AspectActivate()
-	{}
+	virtual ~AspectActivate() { }
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

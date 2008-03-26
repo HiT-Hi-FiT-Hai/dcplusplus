@@ -50,7 +50,7 @@ public:
 	  * only interesting parameter to figure out what Message to handle is the actual
 	  * Message.
 	  */
-	Message( UINT msg );
+	explicit Message( UINT msg );
 
 	/// Normally used with e.g. WM_COMMAND or WM_NOTIFY messages
 	/** In such cases WM_COMMAND or WM_NOTIFY should be added as the msg and the
@@ -59,7 +59,7 @@ public:
 	  * Use this one if you need to e.g. handle an AspectRaw::onRaw Event and it's a
 	  * WM_COMMAND, WM_NOTIFY or similar type of Message
 	  */
-	Message( UINT msg, LPARAM param );
+	explicit Message( UINT msg, LPARAM param );
 	
 	// Note!
 	// We're asserting this constructor call comes from the mainWndProc...

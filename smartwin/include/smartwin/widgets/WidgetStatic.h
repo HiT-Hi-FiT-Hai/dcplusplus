@@ -62,7 +62,7 @@ class WidgetCreator;
   */
 class WidgetStatic :
 	// Aspects
-	public AspectBackgroundColor< WidgetStatic >,
+	public AspectCtlColor< WidgetStatic >,
 	public AspectBorder< WidgetStatic >,
 	public AspectClickable< WidgetStatic >,
 	public AspectControl<WidgetStatic>,

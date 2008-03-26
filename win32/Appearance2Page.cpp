@@ -81,7 +81,8 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
 
 	example = attachStatic(IDC_COLOREXAMPLE);
-	example->onBackgroundColor(std::tr1::bind(&Appearance2Page::handleExampleColor, this, _1));
+	example->setColor(bgBrush, fg, bg);
+	example->setFont(font);
 
 	WidgetButtonPtr button = attachButton(IDC_SELWINCOLOR);
 	button->onClicked(std::tr1::bind(&Appearance2Page::handleBackgroundClicked, this));
@@ -116,20 +117,13 @@ void Appearance2Page::write() {
 	settings->set(SettingsManager::TEXT_FONT, Text::fromT(WinUtil::encodeFont(logFont)));
 }
 
-SmartWin::BrushPtr Appearance2Page::handleExampleColor(SmartWin::Canvas& canvas) {
-	canvas.setBkColor(bg);
-	canvas.setTextColor(fg);
-	canvas.selectFont(font);
-	return bgBrush;
-}
-
 void Appearance2Page::handleBackgroundClicked() {
 	WidgetChooseColor::ColorParams initialColorParams(bg),
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk()) {
 		bg = colorParams.getColor();
 		bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
-		example->invalidateWidget();
+		example->setColor(bgBrush, fg, bg);
 	}
 }
 
@@ -140,7 +134,7 @@ void Appearance2Page::handleTextClicked() {
 		logFont = logFont_;
 		fg = fg_;
 		font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
-		example->invalidateWidget();
+		example->setFont(font);
 	}
 }
 

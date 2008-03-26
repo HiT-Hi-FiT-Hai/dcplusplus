@@ -367,15 +367,7 @@ void Application::removeFilter(const FilterIter& i) {
 
 #endif // not __WINE__
 
-WidgetSizedEventResult::WidgetSizedEventResult( WPARAM wP, LPARAM lP )
-{
-	newSize = Point( GET_X_LPARAM( lP ), GET_Y_LPARAM( lP ) );
-	isMaximized = ( wP == SIZE_MAXIMIZED );
-	isMinimized = ( wP == SIZE_MINIMIZED );
-	isRestored = ( wP == SIZE_RESTORED );
-}
-
-MouseEventResult::MouseEventResult(HWND hwnd, WPARAM wP, LPARAM lP ) : pos(Point(GET_X_LPARAM( lP ), GET_Y_LPARAM( lP ))) {
+MouseEventResult::MouseEventResult(HWND hwnd, WPARAM wP, LPARAM lP ) : pos(Point::fromLParam(lP)) {
 	isShiftPressed = ( ( wP & MK_SHIFT ) == MK_SHIFT );
 	::ClientToScreen(hwnd, &pos.getPoint());
 	

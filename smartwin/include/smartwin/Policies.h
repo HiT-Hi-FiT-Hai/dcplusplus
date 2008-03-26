@@ -83,7 +83,7 @@ public:
 	}
 private:
 
-	static HWND getHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	static HWND getHandler(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam) {
 		HWND handler;
 		// Check who should handle the message - parent or child
 		switch(uMsg) {
@@ -93,7 +93,8 @@ private:
 		case WM_CTLCOLORLISTBOX :
 		case WM_CTLCOLORSCROLLBAR : {
 			handler = reinterpret_cast<HWND>(lParam);
-			
+			// We change message to avoid handling different messages of read-only vs normal edit controls
+			uMsg = WM_CTLCOLOR;  
 		} break;
 		case WM_NOTIFY : {
 			NMHDR* nmhdr = reinterpret_cast<NMHDR*>(lParam);
@@ -233,11 +234,15 @@ public:
 	
 	virtual HWND create(const Widget::Seed& seed) {
 		HWND hWnd = Widget::create(seed);
-		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( hWnd, GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
 		attach(hWnd);
 		return hWnd;
 	}
 	
+	virtual void attach(HWND hWnd) {
+		Normal::attach(hWnd);
+		oldProc = reinterpret_cast< WNDPROC >( ::SetWindowLongPtr( hWnd, GWL_WNDPROC, ( LONG_PTR ) &MessageMapPolicy<Subclassed>::wndProc ) );
+	}
+	using Widget::attach;
 private:
 	WNDPROC oldProc;	
 };
