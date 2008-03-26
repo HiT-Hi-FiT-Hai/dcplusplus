@@ -23,8 +23,9 @@
 #include "QueuePage.h"
 
 #include <dcpp/SettingsManager.h>
+#include "WinUtil.h"
 
-PropPage::HelpItem QueuePage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_AUTOPRIO, IDH_SETTINGS_QUEUE_AUTOPRIO },
 	{ IDC_SETTINGS_PRIO_HIGHEST, IDH_SETTINGS_QUEUE_PRIO_HIGHEST },
 	{ IDC_PRIO_HIGHEST_SIZE, IDH_SETTINGS_QUEUE_PRIO_HIGHEST },
@@ -117,7 +118,7 @@ QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_QUEUEPAGE);
 	setHelpId(IDH_QUEUEPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));

@@ -1,11 +1,11 @@
+.topic IDH_DCPP_OK
+Press this button to save your changes and close this dialog.
+.topic IDH_DCPP_CANCEL
+Press this button to close this dialog without saving your changes.
+.topic IDH_DCPP_HELP
+Press this button to launch the help file.
 .topic IDH_SETTINGS_TREE
 Choose a settings category here.
-.topic IDH_SETTINGS_OK
-Press this button to save your changes and close this dialog.
-.topic IDH_SETTINGS_CANCEL
-Press this button to close this dialog without saving your changes.
-.topic IDH_SETTINGS_HELP
-Press this button to launch the help file.
 .topic IDH_SETTINGS_GENERAL_PERSONAL_INFORMATION
 This is general information about yourself. The nick is required, though it's suggested that you pick the correct connection type as well.
 .topic IDH_SETTINGS_GENERAL_NICK
@@ -174,3 +174,31 @@ This file is your personal and private certificate file. Do not share this with 
 This file is the certificate file you should give to other users and hubs that you want to consider "trusted".
 .topic IDH_SETTINGS_CERTIFICATES_TRUSTED_CERTIFICATES_PATH
 Where trusted certificates from users or hubs will be stored. (default: the "Certificates\" subdirectory of where you've installed the application.)
+.topic IDH_USER_COMMAND_SEPARATOR
+Adds a separator to the menu
+.topic IDH_USER_COMMAND_RAW
+Sends raw command to the hub (experts only, end it with '|' in NMDC hubs and '\n' in ADC hubs!)
+.topic IDH_USER_COMMAND_CHAT
+Sends command as if you were typing it in the chat
+.topic IDH_USER_COMMAND_PM
+Sends command as if you sent it by PM
+.topic IDH_USER_COMMAND_CONTEXT
+Contexts determine where the command is shown.
+.topic IDH_USER_COMMAND_HUB_MENU
+Hub tab (at the bottom of the screen) right-click menu
+.topic IDH_USER_COMMAND_USER_MENU
+User right-click menu in chat and PM tab menu
+.topic IDH_USER_COMMAND_SEARCH_MENU
+Search right-click menu
+.topic IDH_USER_COMMAND_FILELIST_MENU
+File list right-click menu
+.topic IDH_USER_COMMAND_NAME
+Name (use '\' to create submenus)
+.topic IDH_USER_COMMAND_COMMAND
+Command text (may contain any of the variables listed below). Use Ctrl + Enter to create a new line.
+.topic IDH_USER_COMMAND_HUB
+Hub ip as typed when connecting (empty = all NMDC hubs, "op" = NMDC hubs where you're an operator, "adc://" = all ADC hubs, "adc://op" = ADC hubs where you're an operator, "adcs://" = all TLS enabled hubs)
+.topic IDH_USER_COMMAND_NICK
+Private Message recipient
+.topic IDH_USER_COMMAND_ONCE
+Send only once per user from search frame, regardless of how many files you've selected from that user

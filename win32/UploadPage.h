@@ -32,7 +32,6 @@ public:
 	virtual int getHelpId() { return IDD_UPLOADPAGE; }
 
 private:
-	static HelpItem helpItems[];
 	static Item items[];
 	static TextItem texts[];
 

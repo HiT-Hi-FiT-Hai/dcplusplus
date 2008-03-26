@@ -31,12 +31,6 @@ PropPage::PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDia
 PropPage::~PropPage() {
 }
 
-void PropPage::setHelpIds(HWND page, HelpItem* items) {
-	if(items)
-		for(size_t i = 0; items[i].ctrlId != 0; ++i)
-			::SetWindowContextHelpId(::GetDlgItem(page, items[i].ctrlId), items[i].helpId);
-}
-
 void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = 0 */)
 {
 	dcassert(page != NULL);
@@ -127,12 +121,9 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 		}
 	}
 
-	if(listItems) {
-		int i;
-		for(i = 0; listItems[i].setting != 0; i++) {
+	if(listItems)
+		for(size_t i = 0; listItems[i].setting != 0; ++i)
 			settings->set(SettingsManager::IntSetting(listItems[i].setting), ListView_GetCheckState(list, i) > 0);
-		}
-	}
 }
 
 void PropPage::translate(HWND page, TextItem* items) {

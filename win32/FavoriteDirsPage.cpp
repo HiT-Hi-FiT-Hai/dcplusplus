@@ -28,7 +28,7 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 
-PropPage::HelpItem FavoriteDirsPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, IDH_SETTINGS_FAVORITE_DIRS_FAVORITE_DIRECTORIES },
 	{ IDC_FAVORITE_DIRECTORIES, IDH_SETTINGS_FAVORITE_DIRS_FAVORITE_DIRECTORIES },
 	{ IDC_RENAME, IDH_SETTINGS_FAVORITE_DIRS_RENAME },
@@ -49,7 +49,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 	createDialog(IDD_FAVORITE_DIRSPAGE);
 	setHelpId(IDH_FAVORITE_DIRSPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 
 	directories = attachList(IDC_FAVORITE_DIRECTORIES);

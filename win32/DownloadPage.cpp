@@ -26,7 +26,7 @@
 #include "WinUtil.h"
 #include "HubListsDlg.h"
 
-PropPage::HelpItem DownloadPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },
 	{ IDC_DOWNLOADDIR, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },
 	{ IDC_BROWSEDIR, IDH_SETTINGS_DOWNLOAD_DOWNLOADDIR },
@@ -76,7 +76,7 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_DOWNLOADPAGE);
 	setHelpId(IDH_DOWNLOADPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

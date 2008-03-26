@@ -25,7 +25,7 @@
 #include <dcpp/SettingsManager.h>
 #include "WinUtil.h"
 
-PropPage::HelpItem Appearance2Page::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_COLORS, IDH_SETTINGS_APPEARANCE2_COLORS },
 	{ IDC_SELWINCOLOR, IDH_SETTINGS_APPEARANCE2_SELWINCOLOR },
 	{ IDC_SELTEXT, IDH_SETTINGS_APPEARANCE2_SELTEXT },
@@ -66,7 +66,7 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_APPEARANCE2PAGE);
 	setHelpId(IDH_APPEARANCE2PAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 

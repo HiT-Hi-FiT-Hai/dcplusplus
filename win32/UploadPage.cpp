@@ -29,7 +29,7 @@
 #include "LineDlg.h"
 #include "HashProgressDlg.h"
 
-PropPage::HelpItem UploadPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
 	{ IDC_DIRECTORIES, IDH_SETTINGS_UPLOAD_DIRECTORIES },
 	{ IDC_SETTINGS_ONLY_HASHED, IDH_SETTINGS_UPLOAD_DIRECTORIES },
@@ -74,7 +74,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UPLOADPAGE);
 	setHelpId(IDH_UPLOADPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

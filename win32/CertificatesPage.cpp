@@ -26,7 +26,7 @@
 #include <dcpp/CryptoManager.h>
 #include "WinUtil.h"
 
-PropPage::HelpItem CertificatesPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_PRIVATE_KEY_FILE, IDH_SETTINGS_CERTIFICATES_PRIVATE_KEY_FILE },
 	{ IDC_TLS_PRIVATE_KEY_FILE, IDH_SETTINGS_CERTIFICATES_PRIVATE_KEY_FILE },
 	{ IDC_BROWSE_PRIVATE_KEY, IDH_SETTINGS_CERTIFICATES_PRIVATE_KEY_FILE },
@@ -65,7 +65,7 @@ CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) 
 	createDialog(IDD_CERTIFICATESPAGE);
 	setHelpId(IDH_CERTIFICATESPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 

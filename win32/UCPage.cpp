@@ -26,8 +26,9 @@
 #include <dcpp/FavoriteManager.h>
 #include "CommandDlg.h"
 #include "HoldRedraw.h"
+#include "WinUtil.h"
 
-PropPage::HelpItem UCPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_MENU_ITEMS, IDH_SETTINGS_UC_LIST },
 	{ IDC_ADD_MENU, IDH_SETTINGS_UC_ADD },
 	{ IDC_CHANGE_MENU, IDH_SETTINGS_UC_CHANGE },
@@ -54,7 +55,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UCPAGE);
 	setHelpId(IDH_UCPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

@@ -23,8 +23,9 @@
 #include "Advanced3Page.h"
 
 #include <dcpp/SettingsManager.h>
+#include "WinUtil.h"
 
-PropPage::HelpItem Advanced3Page::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_ROLLBACK, IDH_SETTINGS_ADVANCED3_ROLLBACK },
 	{ IDC_ROLLBACK, IDH_SETTINGS_ADVANCED3_ROLLBACK },
 	{ IDC_SETTINGS_B, IDH_SETTINGS_ADVANCED3_ROLLBACK },
@@ -112,7 +113,7 @@ Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCED3PAGE);
 	setHelpId(IDH_ADVANCED3PAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 

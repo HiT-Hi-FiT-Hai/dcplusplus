@@ -23,8 +23,9 @@
 #include "GeneralPage.h"
 
 #include <dcpp/SettingsManager.h>
+#include "WinUtil.h"
 
-PropPage::HelpItem GeneralPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_PERSONAL_INFORMATION, IDH_SETTINGS_GENERAL_PERSONAL_INFORMATION },
 	{ IDC_SETTINGS_NICK, IDH_SETTINGS_GENERAL_NICK },
 	{ IDC_NICK, IDH_SETTINGS_GENERAL_NICK },
@@ -60,7 +61,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 	createDialog(IDD_GENERALPAGE);
 	setHelpId(IDH_GENERALPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

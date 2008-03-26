@@ -26,7 +26,7 @@
 #include <dcpp/Socket.h>
 #include "WinUtil.h"
 
-PropPage::HelpItem NetworkPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_DIRECT, IDH_SETTINGS_NETWORK_DIRECT },
 	{ IDC_FIREWALL_UPNP, IDH_SETTINGS_NETWORK_FIREWALL_UPNP },
 	{ IDC_FIREWALL_NAT, IDH_SETTINGS_NETWORK_FIREWALL_NAT },
@@ -95,7 +95,7 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_NETWORKPAGE);
 	setHelpId(IDH_NETWORKPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 
 	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 //WinXP & WinSvr2003

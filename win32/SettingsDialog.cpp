@@ -39,6 +39,14 @@
 #include "UCPage.h"
 #include "CertificatesPage.h"
 
+static const WinUtil::HelpItem helpItems[] = {
+	{ IDC_SETTINGS_PAGES, IDH_SETTINGS_TREE },
+	{ IDOK, IDH_DCPP_OK },
+	{ IDCANCEL, IDH_DCPP_CANCEL },
+	{ IDHELP, IDH_DCPP_HELP },
+	{ 0, 0 }
+};
+
 static const TCHAR SEPARATOR = _T('\\');
 static const size_t MAX_NAME_LENGTH = 256;
 
@@ -55,27 +63,28 @@ SettingsDialog::~SettingsDialog() {
 }
 
 bool SettingsDialog::initDialog() {
+	// set this to IDH_STARTPAGE so that clicking in an empty space of the dialog generates a WM_HELP message with no error; then SettingsDialog::handleHelp will convert IDH_STARTPAGE to the current page's help id
+	setHelpId(IDH_STARTPAGE);
+
+	WinUtil::setHelpIds(handle(), helpItems);
+
 	setText(T_("Settings"));
 
 	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
-	pageTree->setHelpId(IDH_SETTINGS_TREE);
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 
 	{
 		WidgetButtonPtr button = attachButton(IDOK);
-		button->setHelpId(IDH_SETTINGS_OK);
 		button->setText(T_("OK"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
 
 		button = attachButton(IDCANCEL);
-		button->setHelpId(IDH_SETTINGS_CANCEL);
 		button->setText(T_("Cancel"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
 
 		button = attachButton(IDHELP);
-		button->setHelpId(IDH_SETTINGS_HELP);
 		button->setText(T_("Help"));
-		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, 0, handle(), 0));
+		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, 0, handle(), IDH_STARTPAGE));
 	}
 
 	addPage(T_("Personal information"), new GeneralPage(this));
@@ -98,7 +107,7 @@ bool SettingsDialog::initDialog() {
 }
 
 void SettingsDialog::handleHelp(unsigned ctrlId, HWND hWnd, unsigned helpId) {
-	if(helpId == 0 && currentPage)
+	if(helpId == IDH_STARTPAGE && currentPage)
 		helpId = currentPage->getHelpId();
 	WinUtil::help(ctrlId, hWnd, helpId);
 }

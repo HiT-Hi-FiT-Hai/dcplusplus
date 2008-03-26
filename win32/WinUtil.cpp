@@ -198,6 +198,12 @@ void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	}
 }
 
+void WinUtil::setHelpIds(HWND hWnd, const HelpItem* items) {
+	dcassert(hWnd && items);
+	for(size_t i = 0; items[i].ctrlId != 0; ++i)
+		::SetWindowContextHelpId(::GetDlgItem(hWnd, items[i].ctrlId), items[i].helpId);
+}
+
 #define LINE2 _T("-- http://dcplusplus.sourceforge.net <DC++ ") _T(VERSIONSTRING) _T(">")
 const TCHAR *msgs[] = { _T("\r\n-- I'm a happy dc++ user. You could be happy too.\r\n") LINE2,
 _T("\r\n-- Neo-...what? Nope...never heard of it...\r\n") LINE2,
@@ -577,9 +583,14 @@ bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, Strin
 
 void WinUtil::help(unsigned ctrlId, HWND hWnd, unsigned helpId) {
 	dcdebug("WinUtil::help; ctrlId: %u; hWnd: %p; helpId: %u\n", ctrlId, hWnd, helpId);
+
+	string path = Util::getDataPath() + "DCPlusPlus.chm";
+	if(File::getSize(path) == -1)
+		return;
+	tstring helpFile = Text::toT(path);
+
 	if(helpId >= IDH_TOPICS_BEGIN && helpId <= IDH_TOPICS_END)
 		ctrlId = 0;
-	tstring helpFile = Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
 	if(ctrlId && helpId) {
 		// a control ID has been given; display a toolTip
 		DWORD ids[3];

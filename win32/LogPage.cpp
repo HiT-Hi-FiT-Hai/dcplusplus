@@ -27,7 +27,7 @@
 #include <dcpp/LogManager.h>
 #include "WinUtil.h"
 
-PropPage::HelpItem LogPage::helpItems[] = {
+static const WinUtil::HelpItem helpItems[] = {
 	{ IDC_SETTINGS_LOG_DIR, IDH_SETTINGS_LOG_DIRECTORY },
 	{ IDC_LOG_DIRECTORY, IDH_SETTINGS_LOG_DIRECTORY },
 	{ IDC_BROWSE_LOG, IDH_SETTINGS_LOG_DIRECTORY },
@@ -63,7 +63,7 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_LOGPAGE);
 	setHelpId(IDH_LOGPAGE);
 
-	PropPage::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
 

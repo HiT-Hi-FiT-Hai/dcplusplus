@@ -75,12 +75,19 @@ public:
 		static const SmartWin::WidgetTextBox::Seed textBox;
 		static const SmartWin::WidgetTreeView::Seed treeView;
 	};
-	
+
+	struct HelpItem {
+		unsigned ctrlId;
+		unsigned helpId;
+	};
+
 	static void init();
 	static void uninit();
 
 	static tstring encodeFont(LOGFONT const& font);
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
+
+	static void setHelpIds(HWND hWnd, const HelpItem* items);
 
 	/**
 	 * Check if this is a common /-command.
