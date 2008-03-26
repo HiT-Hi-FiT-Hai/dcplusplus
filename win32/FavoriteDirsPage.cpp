@@ -92,7 +92,7 @@ void FavoriteDirsPage::write()
 }
 
 void FavoriteDirsPage::handleDoubleClick() {
-	if(directories->hasSelection()) {
+	if(directories->hasSelected()) {
 		handleRenameClicked();
 	} else {
 		handleAddClicked();
@@ -112,9 +112,9 @@ bool FavoriteDirsPage::handleKeyDown(int c) {
 }
 
 LRESULT FavoriteDirsPage::handleItemChanged(WPARAM wParam, LPARAM lParam) {
-	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
-	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
-	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
+	BOOL hasSelected = directories->hasSelected() ? TRUE : FALSE;
+	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelected);
+	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelected);
 	return 0;
 }
 

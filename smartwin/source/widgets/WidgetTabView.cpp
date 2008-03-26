@@ -68,7 +68,7 @@ void WidgetTabView::add(WidgetChildWindow* w, const IconPtr& icon) {
 }
 
 WidgetChildWindow* WidgetTabView::getActive() {
-	TabInfo* ti = getTabInfo(tab->getSelectedIndex());
+	TabInfo* ti = getTabInfo(tab->getSelected());
 	return ti ? ti->w : 0;
 }
 
@@ -77,7 +77,7 @@ void WidgetTabView::remove(WidgetChildWindow* w) {
 		setActive(*(--(--viewOrder.end())));
 	}
 	
-	WidgetChildWindow* cur = getTabInfo(tab->getSelectedIndex())->w;
+	WidgetChildWindow* cur = getTabInfo(tab->getSelected())->w;
 	
 	viewOrder.remove(w);
 
@@ -115,7 +115,7 @@ void WidgetTabView::setActive(int i) {
 	if(i == -1)
 		return;
 
-	tab->setSelectedIndex(i);
+	tab->setSelected(i);
 	handleTabSelected();
 }
 
@@ -137,7 +137,7 @@ void WidgetTabView::swapWidgets(WidgetChildWindow* oldW, WidgetChildWindow* newW
 }
 
 void WidgetTabView::handleTabSelected() {
-	int i = tab->getSelectedIndex();
+	int i = tab->getSelected();
 	if(i == active) {
 		return;
 	}
@@ -162,7 +162,7 @@ void WidgetTabView::handleTabSelected() {
 
 void WidgetTabView::mark(WidgetChildWindow* w) {
 	int i = findTab(w);
-	if(i != -1 && i != tab->getSelectedIndex()) {
+	if(i != -1 && i != tab->getSelected()) {
 		tab->setHighlight(i, true);
 	}
 }
@@ -210,7 +210,7 @@ void WidgetTabView::handleSized(const SizedEvent& sz) {
 void WidgetTabView::layout() {
 	Rectangle tmp = tab->getUsableArea(true);
 	if(!(tmp == clientSize)) {
-		int i = tab->getSelectedIndex();
+		int i = tab->getSelected();
 		if(i != -1) {
 			::MoveWindow(getTabInfo(i)->w->handle(), tmp.x(), tmp.y(), tmp.width(), tmp.height(), TRUE);
 		}
@@ -340,7 +340,7 @@ void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) 
 
 		tab->addPage(formatTitle(ti->w->getText()), dropPos, reinterpret_cast<LPARAM>(ti), image);
 
-		active = tab->getSelectedIndex();
+		active = tab->getSelected();
 
 		layout();
 	}
@@ -349,7 +349,7 @@ void WidgetTabView::handleLeftMouseUp(const MouseEventResult& mouseEventResult) 
 bool WidgetTabView::handleContextMenu(ScreenCoordinate pt) {
 	TabInfo* ti = 0;
 	if(pt.x() == -1 && pt.y() == -1) {
-		int i = tab->getSelectedIndex();
+		int i = tab->getSelected();
 		
 		RECT rc;
 		if(i == -1 || !TabCtrl_GetItemRect(tab->handle(), i, &rc)) {
@@ -385,7 +385,7 @@ bool WidgetTabView::filter(const MSG& msg) {
 	if(msg.message == WM_KEYUP && msg.wParam == VK_CONTROL) {
 		inTab = false;
 
-		TabInfo* ti = getTabInfo(tab->getSelectedIndex());
+		TabInfo* ti = getTabInfo(tab->getSelected());
 		if(ti) {
 			setTop(ti->w);
 		}
@@ -400,7 +400,7 @@ bool WidgetTabView::filter(const MSG& msg) {
 bool WidgetTabView::tryFire(const MSG& msg, LRESULT& retVal) {
 	bool handled = PolicyType::tryFire(msg, retVal);
 	if(!handled && msg.message == WM_COMMAND && getTab()) {
-		TabInfo* ti = getTabInfo(getTab()->getSelectedIndex());
+		TabInfo* ti = getTabInfo(getTab()->getSelected());
 		if(ti) {
 			handled = ti->w->tryFire(msg, retVal);
 		}

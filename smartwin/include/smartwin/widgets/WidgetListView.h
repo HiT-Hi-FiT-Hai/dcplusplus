@@ -78,7 +78,7 @@ class WidgetListView :
 	public AspectFocus< WidgetListView >,
 	public AspectFont< WidgetListView >,
 	public AspectScrollable< WidgetListView >,
-	public AspectSelection< WidgetListView >
+	public AspectSelection< WidgetListView, int >
 {
 	struct HeaderDispatcher {
 		typedef std::tr1::function<void (int)> F;
@@ -99,6 +99,7 @@ class WidgetListView :
 	friend class AspectCollection<WidgetListView, int>;
 	friend class AspectColor<WidgetListView>;
 	friend class AspectData<WidgetListView, int>;
+	friend class AspectSelection<WidgetListView, int>;
 
 public:
 	typedef std::tr1::function<int (LPARAM a, LPARAM b)> SortFunction;
@@ -213,12 +214,6 @@ public:
 	  */
 	void setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal );
 
-	/// Returns true if grid has got a "current selected item"
-	/** If the List View has got a "currently selected" row, this function will
-	  * return true, if no row is selected it will return false.
-	  */
-	bool hasSelection();
-
 	/// Returns a vector containing all the selected rows of the grid.
 	/** The return vector contains unsigned integer values, each value defines a row
 	  * in the grid that is selected. <br>
@@ -226,23 +221,7 @@ public:
 	  * getSelectedRow function. <br>
 	  * If grid does NOT have any selected items the return vector is empty.
 	  */
-	std::vector< unsigned > getSelected();
-
-	/// Returns an unsigned integer which is the selected row of the grid.
-	/** The return value defines the row in the grid that is selected. <br>
-	  * If the grid is in "multiple selection mode" you should rather use the
-	  * getSelected function. <br>
-	  * If grid does NOT have a selected item the return value is - 1. <br>
-	  * Note! <br>
-	  * This returns the ROW of the selected item and NOT the lparam given when
-	  * inserted items meaning if you sort the grid or something this function will
-	  * return another number for the same item if its position has moved due to the
-	  * sort etc.
-	  */
-	int getSelectedIndex() const;
-
-	// Commented in AspectSelection
-	void setSelectedIndex( int idx );
+	std::vector< unsigned > getSelection() const;
 
 	/// Clears the selection of the grid.
 	void clearSelection();
@@ -454,8 +433,6 @@ public:
 	  */
 	void redraw( int firstRow = 0, int lastRow = -1 );
 
-	int getSelectedCount();
-	
 	void setListViewStyle(int style);
 	
 	int insert(int mask, int i, LPCTSTR text, UINT state, UINT stateMask, int image, LPARAM lparam);
@@ -479,8 +456,6 @@ public:
 
 	// Constructor Taking pointer to parent
 	explicit WidgetListView( SmartWin::Widget * parent );
-
-	static bool isValidSelectionChanged( LPARAM lPar );
 
 protected:
 	/// Adds or Removes extended list view styles from the list view
@@ -548,6 +523,11 @@ private:
 	// AspectColor
 	void setColorImpl(COLORREF text, COLORREF background);
 
+	// AspectSelection
+	int getSelectedImpl() const;
+	void setSelectedImpl( int idx );
+	size_t countSelectedImpl() const;
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -558,21 +538,6 @@ inline const Message & WidgetListView::getSelectionChangedMessage()
 {
 	static const Message retVal( WM_NOTIFY, LVN_ITEMCHANGED ); // TODO: Implement LVN_ITEMCHANGING Event Handlers (return bool to indicate allowance)
 	return retVal;
-}
-
-inline bool WidgetListView::isValidSelectionChanged( LPARAM lPar )
-{
-	//TODO: Make support for CHOOSING how onSelectedChanged is supposed to behave,
-	//TODO: make non static function and pure abstract in base class and override
-	//TODO: and add enum param to event handler setter which MUST have default
-	//TODO: value to be backwards compatible
-	NMLISTVIEW * tmp = reinterpret_cast< NMLISTVIEW * >( lPar );
-	if ( ( tmp->uChanged & LVIF_STATE ) == LVIF_STATE &&
-		( tmp->uNewState & LVIS_SELECTED ) == LVIS_SELECTED &&
-		( tmp->uOldState & LVIS_SELECTED ) != LVIS_SELECTED &&
-		( tmp->uOldState & LVIS_FOCUSED ) != LVIS_FOCUSED )
-		return true;
-	return false;
 }
 
 inline const Message & WidgetListView::getClickMessage()
@@ -681,12 +646,12 @@ inline void WidgetListView::resort() {
 	}
 }
 
-inline bool WidgetListView::hasSelection() {
-	return ListView_GetSelectedCount( this->handle() ) > 0;
+inline int WidgetListView::getSelectedImpl() const {
+	return getNext(-1, LVNI_SELECTED);
 }
 
-inline int WidgetListView::getSelectedIndex() const {
-	return getNext(-1, LVNI_SELECTED);
+inline size_t WidgetListView::countSelectedImpl() const {
+	return static_cast<size_t>(ListView_GetSelectedCount( this->handle() ));
 }
 
 inline void WidgetListView::setText( unsigned row, unsigned column, const SmartUtil::tstring & newVal ) {
@@ -823,10 +788,6 @@ inline WidgetListView::SortType WidgetListView::getSortType() {
 
 inline bool WidgetListView::setColumnOrder(const std::vector<int>& columns) {
 	return ::SendMessage(this->handle(), LVM_SETCOLUMNORDERARRAY, static_cast<WPARAM>(columns.size()), reinterpret_cast<LPARAM>(&columns[0])) > 0;
-}
-
-inline int WidgetListView::getSelectedCount() {
-	return ListView_GetSelectedCount(this->handle());
 }
 
 inline void WidgetListView::setListViewStyle(int style) {

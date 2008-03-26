@@ -70,7 +70,10 @@ public:
 		BaseType::setData(iItem, reinterpret_cast<LPARAM>(lparam));
 	}
 
-	ContentType* getSelectedData() { return this->hasSelection() ? getData(this->getSelectedIndex()) : 0; }
+	ContentType* getSelectedData() {
+		int item = this->getSelected();
+		return item == -1 ? 0 : getData(item);
+	}
 
 	using BaseType::find;
 	

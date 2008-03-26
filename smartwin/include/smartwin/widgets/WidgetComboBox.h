@@ -31,6 +31,7 @@
 #include "../Widget.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
+#include "../aspects/AspectCollection.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFocus.h"
@@ -58,6 +59,7 @@ class WidgetCreator;
 class WidgetComboBox :
 	// Aspects
 	public AspectClickable< WidgetComboBox >,
+	public AspectCollection<WidgetComboBox, int>,
 	public AspectColor< WidgetComboBox >,
 	public AspectColorCtlImpl<WidgetComboBox>,
 	public AspectControl<WidgetComboBox>,
@@ -65,12 +67,13 @@ class WidgetComboBox :
 	public AspectFocus< WidgetComboBox >,
 	public AspectFont< WidgetComboBox >,
 	public AspectPainting< WidgetComboBox >,
-	public AspectSelection< WidgetComboBox >,
+	public AspectSelection< WidgetComboBox, int >,
 	public AspectText< WidgetComboBox >
 {
 	friend class WidgetCreator< WidgetComboBox >;
+	friend class AspectCollection<WidgetComboBox, int>;
 	friend class AspectColor<WidgetComboBox>;
-	
+	friend class AspectSelection<WidgetComboBox, int>;
 public:
 
 	/// Seed class
@@ -100,24 +103,10 @@ public:
 	// Aspect expectation implementation
 	Message getDblClickMessage();
 
-	// Commented in AspectSelection
-	int getSelectedIndex() const;
-
-	// Commented in AspectSelection
-	void setSelectedIndex( int idx );
-
 	/// Return the selected value of the ComboBox
 	/** If no item is actually selected the return value is "".
 	  */
 	SmartUtil::tstring getSelectedValue();
-
-	/// Removes all items from the ComboBox
-	/** After this call there will be zero items in the ComboBox.
-	  */
-	void removeAllItems();
-
-	/// Remove an item from the ComboBox
-	void removeItem( int index );
 
 	/// Appends a value to the ComboBox.
 	/** The return value is the index of the new item appended.
@@ -128,11 +117,6 @@ public:
 	/** The return value is the index of the new item appended.
 	  */
 	int insertValue(int pos, const SmartUtil::tstring & val );
-
-	/// Returns the number of items present in the ComboBox.
-	/** Returns the number of items present in the ComboBox.
-	  */
-	int getCount();
 
 	/// Returns the string at the zero - based index of the items present in the
 	/// ComboBox.
@@ -148,10 +132,6 @@ public:
 	  */
 	void create( const Seed & cs = Seed() );
 
-	static bool isValidSelectionChanged( LPARAM lPar )
-	{ return true;
-	}
-	
 protected:
 	/// Constructor Taking pointer to parent
 	explicit WidgetComboBox( Widget * parent );
@@ -160,6 +140,18 @@ protected:
 	// WidgetFactory class which is friend
 	virtual ~WidgetComboBox()
 	{}
+	
+private:
+	
+	// AspectSelection
+	int getSelectedImpl() const;
+	void setSelectedImpl( int idx );
+
+	// AspectCollection
+	void eraseImpl( int row );
+	void clearImpl();
+	size_t sizeImpl() const;
+	
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,14 +173,11 @@ inline Message WidgetComboBox::getDblClickMessage()
 	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DBLCLK) );
 }
 
-inline int WidgetComboBox::getSelectedIndex() const
-{
-	int retVal = ComboBox_GetCurSel( handle() );
-	return retVal;
+inline int WidgetComboBox::getSelectedImpl() const {
+	return ComboBox_GetCurSel( handle() );
 }
 
-inline void WidgetComboBox::setSelectedIndex( int idx )
-{
+inline void WidgetComboBox::setSelectedImpl( int idx ) {
 	ComboBox_SetCurSel( handle(), idx );
 }
 
@@ -202,12 +191,12 @@ inline SmartUtil::tstring WidgetComboBox::getSelectedValue()
 	return retVal;
 }
 
-inline void WidgetComboBox::removeAllItems()
+inline void WidgetComboBox::clearImpl()
 {
 	ComboBox_ResetContent( handle() );
 }
 
-inline void WidgetComboBox::removeItem( int index )
+inline void WidgetComboBox::eraseImpl( int index )
 {
 	ComboBox_DeleteString( handle(), index );
 }
@@ -234,9 +223,8 @@ inline int WidgetComboBox::insertValue( int pos, const SmartUtil::tstring & val 
 	return newIdx;
 }
 
-inline int WidgetComboBox::getCount()
-{
-	return ComboBox_GetCount( handle() ); // Number of items present.
+inline size_t WidgetComboBox::sizeImpl() const {
+	return static_cast<size_t>(ComboBox_GetCount( handle() )); // Number of items present.
 }
 
 inline SmartUtil::tstring WidgetComboBox::getValue( int index )

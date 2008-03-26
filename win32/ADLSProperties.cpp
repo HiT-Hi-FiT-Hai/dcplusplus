@@ -62,7 +62,7 @@ bool ADLSProperties::handleInitDialog() {
 	searchType->addValue(T_("Filename"));
 	searchType->addValue(T_("Directory"));
 	searchType->addValue(T_("Full Path"));
-	searchType->setSelectedIndex(search->sourceType);
+	searchType->setSelected(search->sourceType);
 
 	minSize = attachTextBox(IDC_MIN_FILE_SIZE);
 	minSize->setText((search->minFileSize > 0) ? Text::toT(Util::toString(search->minFileSize)) : Util::emptyStringT);
@@ -75,7 +75,7 @@ bool ADLSProperties::handleInitDialog() {
 	sizeType->addValue(T_("KiB"));
 	sizeType->addValue(T_("MiB"));
 	sizeType->addValue(T_("GiB"));
-	sizeType->setSelectedIndex(search->typeFileSize);
+	sizeType->setSelected(search->typeFileSize);
 
 	destDir = attachTextBox(IDC_DEST_DIR);
 	destDir->setText(Text::toT(search->destDir));
@@ -106,7 +106,7 @@ void ADLSProperties::handleFocus() {
 void ADLSProperties::handleOKClicked() {
 	search->searchString = Text::fromT(searchString->getText());
 
-	search->sourceType = (ADLSearch::SourceType)searchType->getSelectedIndex();
+	search->sourceType = ADLSearch::SourceType(searchType->getSelected());
 
 	tstring minFileSize = minSize->getText();
 	search->minFileSize = minFileSize.empty() ? -1 : Util::toInt64(Text::fromT(minFileSize));
@@ -114,7 +114,7 @@ void ADLSProperties::handleOKClicked() {
 	tstring maxFileSize = maxSize->getText();
 	search->maxFileSize = maxFileSize.empty() ? -1 : Util::toInt64(Text::fromT(maxFileSize));
 	
-	search->typeFileSize = (ADLSearch::SizeType)sizeType->getSelectedIndex();
+	search->typeFileSize = ADLSearch::SizeType(sizeType->getSelected());
 
 	search->destDir = Text::fromT(destDir->getText());
 

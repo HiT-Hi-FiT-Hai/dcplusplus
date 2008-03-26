@@ -144,7 +144,7 @@ void UploadPage::write()
 }
 
 void UploadPage::handleDoubleClick() {
-	if(directories->hasSelection()) {
+	if(directories->hasSelected()) {
 		handleRenameClicked();
 	} else {
 		handleAddClicked();
@@ -164,9 +164,9 @@ bool UploadPage::handleKeyDown(int c) {
 }
 
 LRESULT UploadPage::handleItemChanged() {
-	BOOL hasSelection = directories->hasSelection() ? TRUE : FALSE;
-	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelection);
-	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelection);
+	BOOL hasSelected = directories->hasSelected() ? TRUE : FALSE;
+	::EnableWindow(::GetDlgItem(handle(), IDC_RENAME), hasSelected);
+	::EnableWindow(::GetDlgItem(handle(), IDC_REMOVE), hasSelected);
 	return 0;
 }
 

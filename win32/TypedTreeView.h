@@ -61,7 +61,7 @@ public:
 	}
 	
 	ContentType* getSelectedData() {
-		HTREEITEM item = this->getSelection();
+		HTREEITEM item = this->getSelected();
 		return item == NULL ? 0 : getData(item);
 	}
 	

@@ -160,8 +160,8 @@ void ADLSearchFrame::handleAdd() {
 		int index;
 
 		// Add new search to the end or if selected, just before
-		if(items->getSelectedCount() == 1) {
-			index = items->getSelectedIndex();
+		if(items->countSelected() == 1) {
+			index = items->getSelected();
 			collection.insert(collection.begin() + index, search);
 		} else {
 			index = -1;
@@ -174,7 +174,7 @@ void ADLSearchFrame::handleAdd() {
 
 void ADLSearchFrame::handleProperties() {
 	// Get selection info
-	std::vector<unsigned> selected = items->getSelected();
+	std::vector<unsigned> selected = items->getSelection();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		// Edit existing
 		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
@@ -198,7 +198,7 @@ void ADLSearchFrame::handleProperties() {
 void ADLSearchFrame::handleUp() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	HoldRedraw hold(items);
-	std::vector<unsigned> selected = items->getSelected();
+	std::vector<unsigned> selected = items->getSelection();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		if(*i > 0) {
 			ADLSearch search = collection[*i];
@@ -213,7 +213,7 @@ void ADLSearchFrame::handleUp() {
 void ADLSearchFrame::handleDown() {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 	HoldRedraw hold(items);
-	std::vector<unsigned> selected = items->getSelected();
+	std::vector<unsigned> selected = items->getSelection();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
 		if(*i < items->size() - 1) {
 			ADLSearch search = collection[*i];
@@ -235,7 +235,7 @@ void ADLSearchFrame::handleRemove() {
 }
 
 void ADLSearchFrame::handleDoubleClick() {
-	if(items->hasSelection()) {
+	if(items->hasSelected()) {
 		handleProperties();
 	} else {
 		handleAdd();
@@ -287,7 +287,7 @@ bool ADLSearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	contextMenu->appendItem(IDC_EDIT, T_("&Properties"), std::tr1::bind(&ADLSearchFrame::handleProperties, this));
 	contextMenu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&ADLSearchFrame::handleRemove, this));
 
-	bool status = items->hasSelection();
+	bool status = items->hasSelected();
 	contextMenu->setItemEnabled(IDC_EDIT, false, status);
 	contextMenu->setItemEnabled(IDC_REMOVE, false, status);
 

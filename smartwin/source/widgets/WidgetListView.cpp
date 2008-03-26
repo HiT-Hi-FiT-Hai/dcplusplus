@@ -105,40 +105,19 @@ void WidgetListView::updateArrow() {
 	}
 }
 
-void WidgetListView::setSelectedIndex( int idx )
-{
-	// TODO: Check if this is working right...
-	LVITEM it = { LVIF_STATE };
-	it.iItem = idx;
-	it.state = LVIS_SELECTED | LVIS_FOCUSED;
-	it.stateMask = LVIS_SELECTED | LVIS_FOCUSED;
-	if ( ListView_SetItem( this->handle(), & it ) != TRUE )
-	{
-		xCeption err( _T( "Something went wrong while trying to set the selected property of the ListView" ) );
-		throw err;
-	}
-	if ( ListView_EnsureVisible( this->handle(), idx, FALSE ) != TRUE )
-	{
-		xCeption err( _T( "Something went wrong while trying to scroll selected item into view in setSelectedIndex" ) );
-		throw err;
-	}
+void WidgetListView::setSelectedImpl(int item) {
+	clearSelection();
+	ListView_SetItemState(handle(), item, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+	ListView_EnsureVisible(handle(), item, FALSE);
 }
 
-void WidgetListView::clearSelection()
-{
-	LVITEM it = { LVIF_STATE };
-	it.stateMask = LVIS_SELECTED;
-	it.state = 0;
-	std::vector< unsigned > selectedItems = getSelected();
-
-	for ( std::vector< unsigned >::iterator iter = selectedItems.begin(); iter != selectedItems.end(); ++iter )
-	{
-		it.iItem = * iter;
-		if ( ListView_SetItem( this->handle(), & it ) != TRUE )
-		{
-			xCeption err( _T( "Something went wrong while trying to unset the selected property of the ListView" ) );
-			throw err;
-		}
+void WidgetListView::clearSelection() {
+	int i = -1;
+	while((i = getNext(i, LVNI_SELECTED)) != -1) {
+		ListView_SetItemState(handle(), i, 0, LVIS_SELECTED | LVIS_FOCUSED);
+	}
+	while((i = getNext(i, LVNI_FOCUSED)) != -1) {
+		ListView_SetItemState(handle(), i, 0, LVIS_FOCUSED);
 	}
 }
 
@@ -229,7 +208,7 @@ SmartUtil::tstring WidgetListView::getText( unsigned int row, unsigned int colum
 	return buffer;
 }
 
-std::vector< unsigned > WidgetListView::getSelected()
+std::vector< unsigned > WidgetListView::getSelection() const
 {
 	std::vector< unsigned > retVal;
 	int tmpIdx = - 1;

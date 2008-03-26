@@ -137,7 +137,7 @@ void WaitingUsersFrame::onAddToFavorites() {
 }
 
 HTREEITEM WaitingUsersFrame::getParentItem() {
-	HTREEITEM sel = queued->getSelection();
+	HTREEITEM sel = queued->getSelected();
 	if(!sel) {
 		return NULL;
 	}
@@ -154,7 +154,7 @@ void WaitingUsersFrame::onGetList()
 }
 
 void WaitingUsersFrame::onCopyFilename() {
-	HTREEITEM selectedItem = queued->getSelection(), parentItem = getParentItem();
+	HTREEITEM selectedItem = queued->getSelected(), parentItem = getParentItem();
 
 	if (!selectedItem || !parentItem || selectedItem == parentItem)
 		return;

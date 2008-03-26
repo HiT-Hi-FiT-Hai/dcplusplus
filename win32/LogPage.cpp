@@ -131,7 +131,7 @@ void LogPage::handleBrowseClicked() {
 LRESULT LogPage::handleItemChanged() {
 	getValues();
 
-	int sel = dataGrid->getSelectedIndex();
+	int sel = dataGrid->getSelected();
 
 	if(sel >= 0 && sel < LogManager::LAST) {
 		bool checkState = dataGrid->isChecked(sel);

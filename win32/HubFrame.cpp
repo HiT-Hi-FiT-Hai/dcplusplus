@@ -117,7 +117,7 @@ HubFrame::HubFrame(SmartWin::WidgetTabView* mdiParent, const string& url_) :
 			filterType->addValue(T_(columnNames[j]));
 		}
 		filterType->addValue(T_("Any"));
-		filterType->setSelectedIndex(COLUMN_LAST);
+		filterType->setSelected(COLUMN_LAST);
 		filterType->onSelectionChanged(std::tr1::bind(&HubFrame::updateUserList, this, (UserInfo*)0));
 	}
 
@@ -902,7 +902,7 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 tstring HubFrame::getStatusShared() const {
 	int64_t available;
-	if (users->getSelectedCount() > 1) {
+	if (users->countSelected() > 1) {
 		available = users->forEachSelectedT(CountAvailable()).available;
 	} else {
 		available = std::for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
@@ -919,8 +919,8 @@ tstring HubFrame::getStatusUsers() const {
 	}
 
 	tstring textForUsers;
-	if (users->getSelectedCount() > 1)
-		textForUsers += Text::toT(Util::toString(users->getSelectedCount()) + "/");
+	if (users->countSelected() > 1)
+		textForUsers += Text::toT(Util::toString(users->countSelected()) + "/");
 	if (showUsers->getChecked() && users->size() < userCount)
 		textForUsers += Text::toT(Util::toString(users->size()) + "/");
 	return textForUsers + str(TFN_("%1% user", "%1% users", userCount) % userCount);
@@ -1037,7 +1037,7 @@ void HubFrame::updateUserList(UserInfo* ui) {
 	int64_t size = -1;
 	FilterModes mode = NONE;
 
-	int sel = filterType->getSelectedIndex();
+	int sel = filterType->getSelected();
 
 	bool doSizeCompare = parseFilter(mode, size) && sel == COLUMN_SHARED;
 
@@ -1130,7 +1130,7 @@ bool HubFrame::handleChatContextMenu(SmartWin::ScreenCoordinate pt) {
 		int pos = users->find(txt);
 		if(pos != -1) {
 			users->clearSelection();
-			users->setSelectedIndex(pos);
+			users->setSelected(pos);
 			users->ensureVisible(pos);
 			doMenu = true;
 		}
@@ -1140,7 +1140,7 @@ bool HubFrame::handleChatContextMenu(SmartWin::ScreenCoordinate pt) {
 }
 
 bool HubFrame::handleUsersContextMenu(SmartWin::ScreenCoordinate pt) {
-	if(users->hasSelection()) {
+	if(users->hasSelected()) {
 		if(pt.x() == -1 || pt.y() == -1) {
 			pt = users->getContextMenuPos();
 		}
@@ -1217,7 +1217,7 @@ void HubFrame::handleCopyHub() {
 }
 
 void HubFrame::handleDoubleClickUsers() {
-	if(users->hasSelection()) {
+	if(users->hasSelected()) {
 		users->getSelectedData()->getList();
 	}
 }
@@ -1335,7 +1335,7 @@ bool HubFrame::tab() {
 			// Maybe it found a unique match. If userlist showing, highlight.
 			if (showUsers->getChecked() && tabCompleteNicks.size() == 2) {
 				int i = users->find(Text::toT(tabCompleteNicks[1]));
-				users->setSelectedIndex(i);
+				users->setSelected(i);
 				users->ensureVisible(i);
 			}
 

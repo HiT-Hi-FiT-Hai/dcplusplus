@@ -172,7 +172,7 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		sizeMode->addValue(T_("KiB"));
 		sizeMode->addValue(T_("MiB"));
 		sizeMode->addValue(T_("GiB"));
-		sizeMode->setSelectedIndex((initialSize == 0) ? 2 : 0);
+		sizeMode->setSelected((initialSize == 0) ? 2 : 0);
 	}
 
 	{
@@ -275,14 +275,14 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 	if(!initialString.empty()) {
 		lastSearches.push_back(initialString);
 		searchBox->insertValue(0, initialString);
-		searchBox->setSelectedIndex(0);
-		mode->setSelectedIndex(initialMode);
+		searchBox->setSelected(0);
+		mode->setSelected(initialMode);
 		size->setText(Text::toT(Util::toString(initialSize)));
-		fileType->setSelectedIndex(initialType);
+		fileType->setSelected(initialType);
 		runSearch();
 	} else {
-		mode->setSelectedIndex(1);
-		fileType->setSelectedIndex(SETTING(LAST_SEARCH_TYPE));
+		mode->setSelected(1);
+		fileType->setSelected(SETTING(LAST_SEARCH_TYPE));
 	}
 	searchBox->setFocus();
 }
@@ -583,7 +583,7 @@ LRESULT SearchFrame::handleSpeaker(WPARAM wParam, LPARAM lParam) {
 }
 
 void SearchFrame::handlePurgeClicked() {
-	searchBox->removeAllItems();
+	searchBox->clear();
 	lastSearches.clear();
 }
 
@@ -623,7 +623,7 @@ bool SearchFrame::handleKeyDown(int c) {
 }
 
 bool SearchFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
-	if(results->getSelectedCount() > 0) {
+	if(results->countSelected() > 0) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = results->getContextMenuPos();
 		}
@@ -653,7 +653,7 @@ void SearchFrame::handleDownloadFavoriteDirs(unsigned id) {
 }
 
 void SearchFrame::handleDownloadTo() {
-	if(results->getSelectedCount() == 1) {
+	if(results->countSelected() == 1) {
 		int i = results->getNext(-1, LVNI_SELECTED);
 		dcassert(i != -1);
 		SearchInfo* si = results->getData(i);
@@ -901,8 +901,8 @@ void SearchFrame::runSearch() {
 	// Change Default Settings If Changed
 	if (onlyFree != BOOLSETTING(SEARCH_ONLY_FREE_SLOTS))
 		SettingsManager::getInstance()->set(SettingsManager::SEARCH_ONLY_FREE_SLOTS, onlyFree);
-	if (!initialType && fileType->getSelectedIndex() != SETTING(LAST_SEARCH_TYPE))
-		SettingsManager::getInstance()->set(SettingsManager::LAST_SEARCH_TYPE, fileType->getSelectedIndex());
+	if (!initialType && fileType->getSelected() != SETTING(LAST_SEARCH_TYPE))
+		SettingsManager::getInstance()->set(SettingsManager::LAST_SEARCH_TYPE, fileType->getSelected());
 
 	tstring s = searchBox->getText();
 	
@@ -922,7 +922,7 @@ void SearchFrame::runSearch() {
 	tstring tsize = size->getText();
 
 	double lsize = Util::toDouble(Text::fromT(tsize));
-	switch(sizeMode->getSelectedIndex()) {
+	switch(sizeMode->getSelected()) {
 	case 1:
 		lsize*=1024.0; break;
 	case 2:
@@ -954,19 +954,19 @@ void SearchFrame::runSearch() {
 		token = Util::toString(Util::rand());
 	}
 
-	SearchManager::SizeModes searchMode((SearchManager::SizeModes)mode->getSelectedIndex());
+	SearchManager::SizeModes searchMode((SearchManager::SizeModes)mode->getSelected());
 	if(llsize == 0)
 		searchMode = SearchManager::SIZE_DONTCARE;
 
-	int ftype = fileType->getSelectedIndex();
+	int ftype = fileType->getSelected();
 
 	// Add new searches to the last-search dropdown list
 	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end())
 	{
 		int i = max(SETTING(SEARCH_HISTORY)-1, 0);
 
-		if(searchBox->getCount() > i)
-			searchBox->removeItem(i);
+		if(searchBox->size() > i)
+			searchBox->erase(i);
 		searchBox->insertValue(0, s);
 
 		while(lastSearches.size() > (TStringList::size_type)i) {

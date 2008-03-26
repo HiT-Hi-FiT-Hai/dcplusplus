@@ -181,8 +181,8 @@ void FavHubsFrame::handleAdd() {
 }
 
 void FavHubsFrame::handleProperties() {
-	if(hubs->getSelectedCount() == 1) {
-		int i = hubs->getSelectedIndex();
+	if(hubs->countSelected() == 1) {
+		int i = hubs->getSelected();
 		FavoriteHubEntryPtr e = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(i));
 		dcassert(e != NULL);
 		FavHubProperties dlg(this, e);
@@ -201,7 +201,7 @@ void FavHubsFrame::handleUp() {
 	nosave = true;
 	FavoriteHubEntryList& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
-	std::vector<unsigned> selected = hubs->getSelected();
+	std::vector<unsigned> selected = hubs->getSelection();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		if(*i > 0) {
 			FavoriteHubEntryPtr e = fh[*i];
@@ -219,7 +219,7 @@ void FavHubsFrame::handleDown() {
 	nosave = true;
 	FavoriteHubEntryList& fh = FavoriteManager::getInstance()->getFavoriteHubs();
 	HoldRedraw hold(hubs);
-	std::vector<unsigned> selected = hubs->getSelected();
+	std::vector<unsigned> selected = hubs->getSelection();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
 		if(*i < hubs->size() - 1) {
 			FavoriteHubEntryPtr e = fh[*i];
@@ -234,7 +234,7 @@ void FavHubsFrame::handleDown() {
 }
 
 void FavHubsFrame::handleRemove() {
-	if(hubs->hasSelection() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
+	if(hubs->hasSelected() && (!BOOLSETTING(CONFIRM_HUB_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == WidgetMessageBox::RETBOX_YES)) {
 		int i;
 		while((i = hubs->getNext(-1, LVNI_SELECTED)) != -1)
 			FavoriteManager::getInstance()->removeFavorite(reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(i)));
@@ -242,7 +242,7 @@ void FavHubsFrame::handleRemove() {
 }
 
 void FavHubsFrame::handleDoubleClick() {
-	if(hubs->hasSelection()) {
+	if(hubs->hasSelected()) {
 		openSelected();
 	} else {
 		handleAdd();
@@ -290,7 +290,7 @@ bool FavHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
 	menu->appendItem(IDC_REMOVE, T_("&Remove"), std::tr1::bind(&FavHubsFrame::handleRemove, this));
 	menu->setDefaultItem(IDC_CONNECT);
 
-	bool status = hubs->hasSelection();
+	bool status = hubs->hasSelected();
 	menu->setItemEnabled(IDC_CONNECT, false, status);
 	menu->setItemEnabled(IDC_EDIT, false, status);
 	menu->setItemEnabled(IDC_MOVE_UP, false, status);
@@ -318,7 +318,7 @@ void FavHubsFrame::addEntry(const FavoriteHubEntryPtr entry, int index) {
 }
 
 void FavHubsFrame::openSelected() {
-	if(!hubs->hasSelection())
+	if(!hubs->hasSelected())
 		return;
 
 	if(SETTING(NICK).empty()) {
@@ -326,7 +326,7 @@ void FavHubsFrame::openSelected() {
 		return;
 	}
 
-	std::vector<unsigned> items = hubs->getSelected();
+	std::vector<unsigned> items = hubs->getSelection();
 	for(std::vector<unsigned>::iterator i = items.begin(); i != items.end(); ++i) {
 		FavoriteHubEntryPtr entry = reinterpret_cast<FavoriteHubEntryPtr>(hubs->getData(*i));
 		HubFrame::openWindow(getParent(), entry->getServer());

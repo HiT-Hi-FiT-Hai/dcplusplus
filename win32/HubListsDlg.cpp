@@ -93,7 +93,7 @@ void HubListsDlg::handleFocus() {
 }
 
 void HubListsDlg::handleDoubleClick() {
-	if(hubLists->hasSelection()) {
+	if(hubLists->hasSelected()) {
 		handleEditClicked();
 	}
 }
@@ -119,7 +119,7 @@ void HubListsDlg::handleAddClicked() {
 
 void HubListsDlg::handleMoveUpClicked() {
 	HoldRedraw hold(hubLists);
-	std::vector<unsigned> selected = hubLists->getSelected();
+	std::vector<unsigned> selected = hubLists->getSelection();
 	for(std::vector<unsigned>::const_iterator i = selected.begin(); i != selected.end(); ++i) {
 		if(*i > 0) {
 			tstring selText = hubLists->getText(*i, 0);
@@ -132,7 +132,7 @@ void HubListsDlg::handleMoveUpClicked() {
 
 void HubListsDlg::handleMoveDownClicked() {
 	HoldRedraw hold(hubLists);
-	std::vector<unsigned> selected = hubLists->getSelected();
+	std::vector<unsigned> selected = hubLists->getSelection();
 	for(std::vector<unsigned>::reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i) {
 		if(*i < hubLists->size() - 1) {
 			tstring selText = hubLists->getText(*i, 0);

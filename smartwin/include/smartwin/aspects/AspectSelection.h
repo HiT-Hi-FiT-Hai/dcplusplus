@@ -28,6 +28,8 @@
 #ifndef AspectSelection_h
 #define AspectSelection_h
 
+#include "../Dispatchers.h"
+
 namespace SmartWin
 {
 // begin namespace SmartWin
@@ -38,26 +40,12 @@ namespace SmartWin
   * E.g. the WidgetComboBox have a "selected" Aspect therefore it realizes the
   * AspectSelection through inheritance.
   */
-template< class WidgetType >
-class AspectSelection
-{
+template< class WidgetType, typename IndexType >
+class AspectSelection {
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+	const WidgetType& W() const { return *static_cast<const WidgetType*>(this); }
 
-	struct Dispatcher
-	{
-		typedef std::tr1::function<void ()> F;
-		
-		Dispatcher(const F& f_) : f(f_) { }
-
-		bool operator()(const MSG& msg, LRESULT& ret) {
-			if ( !WidgetType::isValidSelectionChanged( msg.lParam ) )
-				return false;
-			f();
-			return true;
-		}
-
-		F f;
-	};
+	typedef Dispatchers::VoidVoid<> Dispatcher;
 public:
 	/// \ingroup EventHandlersAspectSelection
 	/// Setting the event handler for the "selection changed" event
@@ -74,7 +62,7 @@ public:
 	  * selected item.         You must add the items before you set the selected
 	  * index.
 	  */
-	virtual void setSelectedIndex( int idx ) = 0;
+	void setSelected( IndexType item );
 
 	/// Return the selected index of the Widget
 	/** The return value is the selected items index of the Widget, if no item is
@@ -83,12 +71,35 @@ public:
 	  * Some Widgets have the possibillity of selecting multiple items, if so you
 	  * should not use this function but rather the multiple selection value getter.
 	  */
-	virtual int getSelectedIndex() const = 0;
+	IndexType getSelected() const;
+	
+	size_t countSelected() const;
+	
+	bool hasSelected() const;
 
 protected:
-	virtual ~AspectSelection()
-	{}
+	virtual ~AspectSelection() { }
 };
+
+template< class WidgetType, typename IndexType >
+IndexType AspectSelection<WidgetType, IndexType>::getSelected() const {
+	return W().getSelectedImpl();
+}
+
+template< class WidgetType, typename IndexType >
+void AspectSelection<WidgetType, IndexType>::setSelected(IndexType item) {
+	W().setSelectedImpl(item);
+}
+
+template< class WidgetType, typename IndexType >
+size_t AspectSelection<WidgetType, IndexType>::countSelected() const {
+	return W().countSelectedImpl();
+}
+
+template< class WidgetType, typename IndexType >
+bool AspectSelection<WidgetType, IndexType>::hasSelected() const {
+	return countSelected() > 0;
+}
 
 // end namespace SmartWin
 }

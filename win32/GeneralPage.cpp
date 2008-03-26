@@ -75,7 +75,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 		}
 	}
 
-	connections->setSelectedIndex(selected);
+	connections->setSelected(selected);
 
 	nick = attachTextBox(IDC_NICK);
 	nick->setTextLimit(35);

@@ -260,7 +260,7 @@ bool QueueFrame::isCurDir(const std::string& aDir) const {
 
 void QueueFrame::updateStatus() {
 	int64_t total = 0;
-	int cnt = files->getSelectedCount();
+	int cnt = files->countSelected();
 	if(cnt < 2) {
 		cnt = files->size();
 		if(showTree->getChecked()) {
@@ -694,11 +694,11 @@ void QueueFrame::removeSelected() {
 
 void QueueFrame::removeSelectedDir() {
 	if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || createMessageBox().show(T_("Really remove?"), _T(APPNAME) _T(" ") _T(VERSIONSTRING), WidgetMessageBox::BOX_YESNO, WidgetMessageBox::BOX_ICONQUESTION) == IDYES)
-		removeDir(dirs->getSelection());
+		removeDir(dirs->getSelected());
 }
 
 void QueueFrame::moveSelected() {
-	int n = files->getSelectedCount();
+	int n = files->countSelected();
 	if(n == 1) {
 		// Single file, get the full filename and move...
 		QueueItemInfo* ii = files->getSelectedData();
@@ -738,14 +738,15 @@ void QueueFrame::moveSelected() {
 }
 
 void QueueFrame::moveSelectedDir() {
-	if(dirs->getSelection() == NULL)
+	HTREEITEM item = dirs->getSelected();
+	if(!item)
 		return;
 
 	dcassert(!curDir.empty());
 	tstring name = Text::toT(curDir);
 
 	if(WinUtil::browseDirectory(name, handle())) {
-		moveDir(dirs->getSelection(), Text::fromT(name));
+		moveDir(item, Text::fromT(name));
 	}
 }
 
@@ -768,7 +769,7 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 
 void QueueFrame::handleBrowseList(const UserPtr& user) {
 
-	if(files->getSelectedCount() == 1) {
+	if(files->countSelected() == 1) {
 		try {
 			QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception&) {
@@ -778,7 +779,7 @@ void QueueFrame::handleBrowseList(const UserPtr& user) {
 
 void QueueFrame::handleReadd(const UserPtr& user) {
 
-	if(files->getSelectedCount() == 1) {
+	if(files->countSelected() == 1) {
 		QueueItemInfo* ii = files->getSelectedData();
 
 		if(!user) {
@@ -806,7 +807,7 @@ void QueueFrame::handleMove() {
 
 void QueueFrame::handleRemoveSource(const UserPtr& user) {
 
-	if(files->getSelectedCount() == 1) {
+	if(files->countSelected() == 1) {
 		QueueItemInfo* ii = files->getSelectedData();
 
 		if(!user) {
@@ -824,7 +825,7 @@ void QueueFrame::handleRemoveSources(const UserPtr& user) {
 }
 
 void QueueFrame::handlePM(const UserPtr& user) {
-	if(files->getSelectedCount() == 1) {
+	if(files->countSelected() == 1) {
 		PrivateFrame::openWindow(getParent(), user);
 	}
 }
@@ -843,9 +844,9 @@ void QueueFrame::handlePriority(unsigned id) {
 	}
 
 	if(usingDirMenu) {
-		setPriority(dirs->getSelection(), p);
+		setPriority(dirs->getSelected(), p);
 	} else {
-		std::vector<size_t> selected = files->getSelected();
+		std::vector<size_t> selected = files->getSelection();
 		for(std::vector<size_t>::iterator i = selected.begin(); i != selected.end(); ++i) {
 			QueueManager::getInstance()->setPriority(files->getData(*i)->getTarget(), p);
 		}
@@ -871,7 +872,7 @@ void QueueFrame::removeDir(HTREEITEM ht) {
  * @param inc True = increase, False = decrease
  */
 void QueueFrame::changePriority(bool inc){
-	std::vector<size_t> selected = files->getSelected();
+	std::vector<size_t> selected = files->getSelection();
 	for(std::vector<size_t>::iterator i = selected.begin(); i != selected.end(); ++i) {
 		QueueItemInfo* ii = files->getData(*i);
 		QueueItem::Priority p = ii->getPriority();
@@ -1053,7 +1054,7 @@ bool QueueFrame::addUsers(const WidgetMenuPtr& menu, unsigned int startId, void 
 }
 
 bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
-	if(files->getSelectedCount() > 0) {
+	if(files->countSelected() > 0) {
 		if(pt.x() == -1 || pt.y() == -1) {
 			pt = files->getContextMenuPos();
 		}
@@ -1061,7 +1062,7 @@ bool QueueFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
 		usingDirMenu = false;
 		WidgetMenuPtr contextMenu;
 		
-		if(files->getSelectedCount() == 1) {
+		if(files->countSelected() == 1) {
 			QueueItemInfo* ii = files->getSelectedData();
 			contextMenu = makeSingleMenu(ii);
 		} else {
@@ -1081,7 +1082,7 @@ bool QueueFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt) {
 		dirs->select(pt);
 	}
 	
-	if(dirs->getSelection()) {
+	if(dirs->hasSelected()) {
 		usingDirMenu = true;
 		WidgetMenuPtr contextMenu = makeDirMenu();
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);

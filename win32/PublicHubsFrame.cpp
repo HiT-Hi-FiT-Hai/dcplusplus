@@ -135,7 +135,7 @@ PublicHubsFrame::PublicHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 			filterSel->addValue(T_(columnNames[j]));
 		}
 		filterSel->addValue(T_("Any"));
-		filterSel->setSelectedIndex(COLUMN_LAST);
+		filterSel->setSelected(COLUMN_LAST);
 		filterSel->onSelectionChanged(std::tr1::bind(&PublicHubsFrame::updateList, this));
 
 		pubLists = createComboBox(WinUtil::Seeds::comboBoxStatic);
@@ -272,12 +272,12 @@ void PublicHubsFrame::updateStatus() {
 }
 
 void PublicHubsFrame::updateDropDown() {
-	pubLists->removeAllItems();
+	pubLists->clear();
 	StringList lists(FavoriteManager::getInstance()->getHubLists());
 	for(StringList::iterator idx = lists.begin(); idx != lists.end(); ++idx) {
 		pubLists->addValue(Text::toT(*idx).c_str());
 	}
-	pubLists->setSelectedIndex(FavoriteManager::getInstance()->getSelectedHubList());
+	pubLists->setSelected(FavoriteManager::getInstance()->getSelectedHubList());
 }
 
 void PublicHubsFrame::updateList() {
@@ -290,7 +290,7 @@ void PublicHubsFrame::updateList() {
 	double size = -1;
 	FilterModes mode = NONE;
 
-	int sel = filterSel->getSelectedIndex();
+	int sel = filterSel->getSelected();
 
 	bool doSizeCompare = parseFilter(mode, size);
 
@@ -438,7 +438,7 @@ bool PublicHubsFrame::matchFilter(const HubEntry& entry, const int& sel, bool do
 }
 
 bool PublicHubsFrame::handleContextMenu(SmartWin::ScreenCoordinate pt) {
-	if(hubs->hasSelection()) {
+	if(hubs->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = hubs->getContextMenuPos();
 		}
@@ -471,7 +471,7 @@ void PublicHubsFrame::handleConnect() {
 	if(!checkNick())
 		return;
 
-	if(hubs->hasSelection() == 1) {
+	if(hubs->hasSelected() == 1) {
 		HubFrame::openWindow(getParent(), hubs->getSelectedData()->entry->getServer());
 	}
 }
@@ -480,13 +480,13 @@ void PublicHubsFrame::handleAdd() {
 	if(!checkNick())
 		return;
 
-	if(hubs->hasSelection()) {
+	if(hubs->hasSelected()) {
 		FavoriteManager::getInstance()->addFavorite(*hubs->getSelectedData()->entry);
 	}	
 }
 
 void PublicHubsFrame::handleCopyHub() {
-	if(hubs->hasSelection()) {
+	if(hubs->hasSelected()) {
 		WinUtil::setClipboard(Text::toT(hubs->getSelectedData()->entry->getServer()));
 	}
 }
@@ -504,7 +504,7 @@ void PublicHubsFrame::openSelected() {
 	if(!checkNick())
 		return;
 	
-	if(hubs->hasSelection()) {
+	if(hubs->hasSelected()) {
 		HubFrame::openWindow(getParent(), hubs->getSelectedData()->entry->getServer());
 	}
 }
@@ -518,7 +518,7 @@ bool PublicHubsFrame::handleKeyDown(int c) {
 }
 
 void PublicHubsFrame::handleListSelChanged() {
-	FavoriteManager::getInstance()->setHubList(pubLists->getSelectedIndex());
+	FavoriteManager::getInstance()->setHubList(pubLists->getSelected());
 	entries = FavoriteManager::getInstance()->getPublicHubs();
 	updateList();
 }

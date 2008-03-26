@@ -289,10 +289,10 @@ void DirectoryListingFrame::refreshTree(const tstring& root) {
 	}
 	updateTree(d, ht);
 	
-	dirs->select(NULL);
+	dirs->setSelected(NULL);
 	selectItem(root);
 
-	dcdebug("selected");
+	dcdebug("setSelecteded");
 	dirs->expand(treeRoot);
 }
 
@@ -389,12 +389,12 @@ void DirectoryListingFrame::addTargets(const WidgetMenuPtr& parent, ItemInfo* ii
 
 bool DirectoryListingFrame::handleFilesContextMenu(SmartWin::ScreenCoordinate pt) {
 	WidgetMenuPtr contextMenu;
-	if(files->hasSelection()) {
+	if(files->hasSelected()) {
 		if(pt.x() == -1 && pt.y() == -1) {
 			pt = files->getContextMenuPos();
 		}
 		
-		if(files->getSelectedCount() == 1) {
+		if(files->countSelected() == 1) {
 			ItemInfo* ii = files->getSelectedData();
 			if(BOOLSETTING(SHOW_SHELL_MENU) && (dl->getUser() == ClientManager::getInstance()->getMe()) && ii->type == ItemInfo::FILE) {
 				string path;
@@ -432,7 +432,7 @@ bool DirectoryListingFrame::handleDirsContextMenu(SmartWin::ScreenCoordinate pt)
 		dirs->select(pt);
 	}
 	
-	if(dirs->getSelection()) {
+	if(dirs->getSelected()) {
 		WidgetMenuPtr contextMenu = makeDirMenu();
 		usingDirMenu = true;
 		contextMenu->trackPopupMenu(pt, TPM_LEFTALIGN | TPM_RIGHTBUTTON);
@@ -488,7 +488,7 @@ void DirectoryListingFrame::handleDownloadBrowse() {
 			}
 		}
 	} else {
-		if(files->getSelectedCount() == 1) {
+		if(files->countSelected() == 1) {
 			ItemInfo* ii = files->getSelectedData();
 			try {
 				if(ii->type == ItemInfo::FILE) {
@@ -540,7 +540,7 @@ void DirectoryListingFrame::handleDownloadTarget(unsigned id) {
 		return;
 	}
 	
-	if(files->getSelectedCount() != 1) {
+	if(files->countSelected() != 1) {
 		return;
 	}
 
@@ -555,7 +555,7 @@ void DirectoryListingFrame::handleDownloadTarget(unsigned id) {
 
 
 void DirectoryListingFrame::handleGoToDirectory() {
-	if(files->getSelectedCount() != 1)
+	if(files->countSelected() != 1)
 		return;
 
 	tstring fullPath;
@@ -586,7 +586,7 @@ void DirectoryListingFrame::download(const string& target) {
 			download(ii, target);
 		}
 	} else {
-		if(files->getSelectedCount() == 1) {
+		if(files->countSelected() == 1) {
 			ItemInfo* ii = files->getSelectedData();
 			download(ii, target);
 		} else {
@@ -617,7 +617,7 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 	HTREEITEM ht = findItem(treeRoot, name);
 	if(ht != NULL) {
 		dirs->ensureVisible(ht);
-		dirs->select(ht);
+		dirs->setSelected(ht);
 	}
 }
 
@@ -638,7 +638,7 @@ void DirectoryListingFrame::initStatusText() {
 
 void DirectoryListingFrame::updateStatus() {
 	if(!searching && !updating) {
-		int cnt = files->getSelectedCount();
+		int cnt = files->countSelected();
 		int64_t total = 0;
 		if(cnt == 0) {
 			cnt = files->size();
@@ -713,13 +713,13 @@ void DirectoryListingFrame::addHistory(const string& name) {
 }
 
 void DirectoryListingFrame::up() {
-	HTREEITEM t = dirs->getSelection();
+	HTREEITEM t = dirs->getSelected();
 	if(t == NULL)
 		return;
 	t = dirs->getParent(t);
 	if(t == NULL)
 		return;
-	dirs->select(t);
+	dirs->setSelected(t);
 }
 
 void DirectoryListingFrame::back() {
@@ -811,24 +811,24 @@ void DirectoryListingFrame::findFile(bool findNext)
 	
 	// Do a search
 	int foundFile = -1, skipHitsTmp = skipHits;
-	HTREEITEM const oldDir = dirs->getSelection();
+	HTREEITEM const oldDir = dirs->getSelected();
 	HTREEITEM const foundDir = findFile(StringSearch(findStr), treeRoot, foundFile, skipHitsTmp);
 
 	if(foundDir) {
 		// Highlight the directory tree and list if the parent dir/a matched dir was found
 		if(foundFile >= 0) {
 			// SelectItem won't update the list if SetRedraw was set to FALSE and then
-			// to TRUE and the item selected is the same as the last one... workaround:
+			// to TRUE and the item setSelecteded is the same as the last one... workaround:
 			if(oldDir == foundDir)
-				dirs->select(NULL);
+				dirs->setSelected(NULL);
 
-			dirs->select(foundDir);
+			dirs->setSelected(foundDir);
 		} else {
-			// Got a dir; select its parent directory in the tree if there is one
+			// Got a dir; setSelected its parent directory in the tree if there is one
 			HTREEITEM parentItem = dirs->getParent(foundDir);
 			if(parentItem) {
 				// Go to parent file list
-				dirs->select(parentItem);
+				dirs->setSelected(parentItem);
 
 				// Locate the dir in the file list
 				DirectoryListing::Directory* dir = dirs->getData(foundDir)->dir;
@@ -836,25 +836,25 @@ void DirectoryListingFrame::findFile(bool findNext)
 				foundFile = files->find(Text::toT(dir->getName()), -1, false);
 			} else {
 				// If no parent exists, just the dir tree item and skip the list highlighting
-				dirs->select(foundDir);
+				dirs->setSelected(foundDir);
 			}
 		}
 
-		// Remove prev. selection from file list
-		if(files->hasSelection()) {
+		// Remove prev. setSelectedion from file list
+		if(files->hasSelected()) {
 			files->clearSelection();
 		}
 
 		// Highlight and focus the dir/file if possible
 		if(foundFile >= 0) {
 			files->setFocus();
-			files->setSelectedIndex(foundFile);
+			files->setSelected(foundFile);
 			files->ensureVisible(foundFile);
 		} else {
 			dirs->setFocus();
 		}
 	} else {
-		dirs->select(oldDir);
+		dirs->setSelected(oldDir);
 		createMessageBox().show(T_("No matches"), T_("Search for file"));
 	}
 }
@@ -904,8 +904,8 @@ void DirectoryListingFrame::runUserCommand(const UserCommand& uc) {
 
 void DirectoryListingFrame::handleDoubleClickFiles() {
 
-	HTREEITEM t = dirs->getSelection();
-	int i = files->getSelectedIndex();
+	HTREEITEM t = dirs->getSelected();
+	int i = files->getSelected();
 	if(t != NULL && i != -1) {
 		ItemInfo* ii = files->getData(i);
 
@@ -919,7 +919,7 @@ void DirectoryListingFrame::handleDoubleClickFiles() {
 			HTREEITEM ht = dirs->getChild(t);
 			while(ht != NULL) {
 				if(dirs->getData(ht)->dir == ii->dir) {
-					dirs->select(ht);
+					dirs->setSelected(ht);
 					break;
 				}
 				ht = dirs->getNextSibling(ht);
@@ -954,13 +954,13 @@ bool DirectoryListingFrame::handleKeyDownFiles(int c) {
 		return true;
 	}
 	if(c == VK_RETURN) {
-		if(files->getSelectedCount() == 1) {
+		if(files->countSelected() == 1) {
 			ItemInfo* ii = files->getSelectedData();
 			if(ii->type == ItemInfo::DIRECTORY) {
-				HTREEITEM ht = dirs->getChild(dirs->getSelection());
+				HTREEITEM ht = dirs->getChild(dirs->getSelected());
 				while(ht != NULL) {
 					if(dirs->getData(ht)->dir == ii->dir) {
-						dirs->select(ht);
+						dirs->setSelected(ht);
 						break;
 					}
 					ht = dirs->getNextSibling(ht);

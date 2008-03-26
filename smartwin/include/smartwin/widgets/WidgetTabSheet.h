@@ -31,6 +31,7 @@
 #include "../Widget.h"
 #include "../resources/ImageList.h"
 #include "../Rectangle.h"
+#include "../aspects/AspectCollection.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
@@ -63,13 +64,17 @@ class WidgetCreator;
   */
 class WidgetTabSheet :
 	// Aspects
+	public AspectCollection<WidgetTabSheet, int>,
 	public AspectControl<WidgetTabSheet>,
 	public AspectFocus< WidgetTabSheet >,
 	public AspectFont< WidgetTabSheet >,
 	public AspectPainting< WidgetTabSheet >,
-	public AspectSelection< WidgetTabSheet >,
+	public AspectSelection< WidgetTabSheet, int >,
 	public AspectText< WidgetTabSheet >
 {
+	friend class AspectCollection<WidgetTabSheet, int>;
+	friend class AspectSelection<WidgetTabSheet, int>;
+	
 	struct ChangingDispatcher
 	{
 		typedef std::tr1::function<bool (unsigned)> F;
@@ -125,9 +130,6 @@ public:
 	// AspectSelection expectation implementation
 	static const Message & getSelectionChangedMessage();
 
-	// Commented in AspectSelection
-	int getSelectedIndex() const;
-
 	SmartUtil::tstring getText(unsigned idx) const;
 	
 	void setText(unsigned idx, const SmartUtil::tstring& text);
@@ -150,9 +152,6 @@ public:
 			Message( WM_NOTIFY, TCN_SELCHANGE ), ChangedDispatcher(f, this )
 		);
 	}
-
-	// Commented in AspectSelection
-	void setSelectedIndex( int idx );
 
 	/// Appends a "page" to the Tab Sheet
 	/** The return value is the index of the new item appended. The input index is
@@ -228,21 +227,9 @@ public:
 	  */
 	void setFlatSeparators( bool value = true );
 
-	static bool isValidSelectionChanged( LPARAM lPar )
-	{ return true;
-	}
-	
 	void setImageList(const ImageListPtr& imageList);
 
 	const ImageListPtr& getImageList() const;
-	
-	size_t size() {
-		return static_cast<size_t>(TabCtrl_GetItemCount(this->handle()));
-	}
-	
-	void erase(size_t i) {
-		TabCtrl_DeleteItem(this->handle(), i);
-	}
 	
 	int hitTest(const ScreenCoordinate& pt);
 	
@@ -251,7 +238,7 @@ public:
 	  * the tabs can be calculated accurately. It returns coordinates respect to the
 	  * TabControl, this is, you have to adjust for the position of the control itself.   
 	  */
-	SmartWin::Rectangle getUsableArea(bool cutBorders = false) const;
+	Rectangle getUsableArea(bool cutBorders = false) const;
 protected:
 	// Constructor Taking pointer to parent
 	explicit WidgetTabSheet( Widget * parent );
@@ -264,6 +251,16 @@ protected:
 private:
 	// Keep a copy so it won't get deallocated...
 	ImageListPtr imageList;
+
+	// AspectCollection
+	void eraseImpl( int row );
+	void clearImpl();
+	size_t sizeImpl() const;
+	
+	// AspectSelection
+	int getSelectedImpl() const;
+	void setSelectedImpl( int idx );
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,10 +273,8 @@ inline const Message & WidgetTabSheet::getSelectionChangedMessage()
 	return retVal;
 }
 
-inline int WidgetTabSheet::getSelectedIndex() const
-{
-	int retVal = TabCtrl_GetCurSel( this->handle() );
-	return retVal;
+inline int WidgetTabSheet::getSelectedImpl() const {
+	return TabCtrl_GetCurSel( this->handle() );
 }
 
 inline int WidgetTabSheet::getImage(unsigned idx) const
@@ -312,8 +307,7 @@ inline LPARAM WidgetTabSheet::getData(unsigned idx)
 	return item.lParam;
 }
 
-inline void WidgetTabSheet::setSelectedIndex( int idx )
-{
+inline void WidgetTabSheet::setSelectedImpl( int idx ) {
 	TabCtrl_SetCurSel( this->handle(), idx );
 }
 
@@ -397,6 +391,17 @@ inline int WidgetTabSheet::hitTest(const ScreenCoordinate& pt) {
 	return TabCtrl_HitTest(handle(), &tci);
 }
 
+inline void WidgetTabSheet::eraseImpl(int i) {
+	TabCtrl_DeleteItem(this->handle(), i);
+}
+
+inline void WidgetTabSheet::clearImpl() {
+	TabCtrl_DeleteAllItems(handle());
+}
+
+inline size_t WidgetTabSheet::sizeImpl() const {
+	return static_cast<size_t>(TabCtrl_GetItemCount(this->handle()));
+}
 
 // end namespace SmartWin
 }

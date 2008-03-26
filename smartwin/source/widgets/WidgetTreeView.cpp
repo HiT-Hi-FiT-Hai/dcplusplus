@@ -96,30 +96,6 @@ void WidgetTreeView::setStateImageList( ImageListPtr imageList ) {
 	  TreeView_SetImageList( this->Widget::handle(), imageList->getImageList(), TVSIL_STATE );
 }
 
-int WidgetTreeView::getSelectedIndex() const
-{
-	HTREEITEM hSelItem = TreeView_GetSelection( this->handle() );
-	TVITEM item;
-	ZeroMemory( & item, sizeof( TVITEM ) );
-	item.mask = TVIF_HANDLE | TVIF_PARAM;
-	item.hItem = hSelItem;
-	if ( TreeView_GetItem( this->handle(), & item ) )
-		return static_cast< unsigned >( item.lParam );
-	return 0;
-}
-
-void WidgetTreeView::setSelectedIndex( int idx )
-{
-	TVITEM item;
-	item.mask = TVIF_PARAM;
-	item.lParam = idx;
-	if ( TreeView_GetItem( this->handle(), & item ) == FALSE )
-	{
-		throw xCeption( _T( "Couldn't find given item" ) );
-	}
-	TreeView_Select( this->handle(), item.hItem, TVGN_FIRSTVISIBLE );
-}
-
 LPARAM WidgetTreeView::getDataImpl(HTREEITEM item) {
 	TVITEM tvitem = { TVIF_PARAM | TVIF_HANDLE };
 	tvitem.hItem = item;
@@ -137,7 +113,7 @@ void WidgetTreeView::setDataImpl(HTREEITEM item, LPARAM lParam) {
 }
 
 ScreenCoordinate WidgetTreeView::getContextMenuPos() {
-	HTREEITEM item = getSelection();
+	HTREEITEM item = getSelected();
 	POINT pt = { 0 };
 	if(item) {
 		RECT trc = this->getItemRect(item);
@@ -149,8 +125,8 @@ ScreenCoordinate WidgetTreeView::getContextMenuPos() {
 
 void WidgetTreeView::select(const ScreenCoordinate& pt) {
 	HTREEITEM ht = this->hitTest(pt);
-	if(ht != NULL && ht != this->getSelection()) {
-		this->select(ht);
+	if(ht != NULL && ht != this->getSelected()) {
+		this->setSelected(ht);
 	}
 }
 

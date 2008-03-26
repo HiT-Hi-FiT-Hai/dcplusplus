@@ -159,6 +159,7 @@ public:
 		parent->addChild( retVal );
 		return retVal;
 #endif
+		return NULL;
 	}
 
 	/// Creates a Widget using its CreationalInfo
