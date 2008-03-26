@@ -72,7 +72,7 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), lan
 	createDialog(IDD_APPEARANCEPAGE);
 	setHelpId(IDH_APPEARANCEPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 

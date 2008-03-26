@@ -86,7 +86,7 @@ CommandDlg::~CommandDlg() {
 bool CommandDlg::handleInitDialog() {
 	setHelpId(IDH_USER_COMMAND);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 
 	// Translate
 	setText(T_("Create / Modify User Command"));

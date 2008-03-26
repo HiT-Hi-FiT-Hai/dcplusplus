@@ -63,7 +63,7 @@ LogPage::LogPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_LOGPAGE);
 	setHelpId(IDH_LOGPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_LOG_OPTIONS));
 

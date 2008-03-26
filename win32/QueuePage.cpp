@@ -118,7 +118,7 @@ QueuePage::QueuePage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_QUEUEPAGE);
 	setHelpId(IDH_QUEUEPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 	PropPage::read(handle(), items, optionItems, ::GetDlgItem(handle(), IDC_OTHER_QUEUE_OPTIONS));

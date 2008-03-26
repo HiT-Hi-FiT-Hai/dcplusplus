@@ -28,6 +28,7 @@
 #ifndef WidgetDialog_h
 #define WidgetDialog_h
 
+#include "../aspects/AspectDialog.h"
 #include "WidgetWindowBase.h"
 
 namespace SmartWin
@@ -43,8 +44,9 @@ namespace SmartWin
   * Class is a public superclass of WidgetWindowBase and therefor can use all features 
   * of WidgetWindowBase. 
   */
-class WidgetDialog
-	: public WidgetWindowBase< Policies::Dialog >
+class WidgetDialog :
+	public WidgetWindowBase< Policies::Dialog >,
+	public AspectDialog<WidgetDialog >
 {
 public:
 	typedef WidgetWindowBase< Policies::Dialog > BaseType;

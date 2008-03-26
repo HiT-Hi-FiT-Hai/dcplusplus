@@ -61,7 +61,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 	createDialog(IDD_GENERALPAGE);
 	setHelpId(IDH_GENERALPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

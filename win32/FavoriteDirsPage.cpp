@@ -49,7 +49,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 	createDialog(IDD_FAVORITE_DIRSPAGE);
 	setHelpId(IDH_FAVORITE_DIRSPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 
 	directories = attachList(IDC_FAVORITE_DIRECTORIES);

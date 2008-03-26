@@ -95,7 +95,7 @@ NetworkPage::NetworkPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_NETWORKPAGE);
 	setHelpId(IDH_NETWORKPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 
 	if(!(WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 //WinXP & WinSvr2003

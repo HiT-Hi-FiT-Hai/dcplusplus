@@ -66,7 +66,7 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_APPEARANCE2PAGE);
 	setHelpId(IDH_APPEARANCE2PAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 

@@ -198,12 +198,6 @@ void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	}
 }
 
-void WinUtil::setHelpIds(HWND hWnd, const HelpItem* items) {
-	dcassert(hWnd && items);
-	for(size_t i = 0; items[i].ctrlId != 0; ++i)
-		::SetWindowContextHelpId(::GetDlgItem(hWnd, items[i].ctrlId), items[i].helpId);
-}
-
 #define LINE2 _T("-- http://dcplusplus.sourceforge.net <DC++ ") _T(VERSIONSTRING) _T(">")
 const TCHAR *msgs[] = { _T("\r\n-- I'm a happy dc++ user. You could be happy too.\r\n") LINE2,
 _T("\r\n-- Neo-...what? Nope...never heard of it...\r\n") LINE2,

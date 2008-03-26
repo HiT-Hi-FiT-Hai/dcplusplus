@@ -66,7 +66,7 @@ bool SettingsDialog::initDialog() {
 	// set this to IDH_STARTPAGE so that clicking in an empty space of the dialog generates a WM_HELP message with no error; then SettingsDialog::handleHelp will convert IDH_STARTPAGE to the current page's help id
 	setHelpId(IDH_STARTPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 
 	setText(T_("Settings"));
 

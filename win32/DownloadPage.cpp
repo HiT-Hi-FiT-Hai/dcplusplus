@@ -76,7 +76,7 @@ DownloadPage::DownloadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_DOWNLOADPAGE);
 	setHelpId(IDH_DOWNLOADPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

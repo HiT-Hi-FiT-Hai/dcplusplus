@@ -74,7 +74,7 @@ UploadPage::UploadPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UPLOADPAGE);
 	setHelpId(IDH_UPLOADPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

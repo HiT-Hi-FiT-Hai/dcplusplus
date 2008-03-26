@@ -65,7 +65,7 @@ CertificatesPage::CertificatesPage(SmartWin::Widget* parent) : PropPage(parent) 
 	createDialog(IDD_CERTIFICATESPAGE);
 	setHelpId(IDH_CERTIFICATESPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_TLS_OPTIONS));
 

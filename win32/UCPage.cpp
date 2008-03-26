@@ -55,7 +55,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UCPAGE);
 	setHelpId(IDH_UCPAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

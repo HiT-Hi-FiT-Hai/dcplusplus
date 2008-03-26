@@ -113,7 +113,7 @@ Advanced3Page::Advanced3Page(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_ADVANCED3PAGE);
 	setHelpId(IDH_ADVANCED3PAGE);
 
-	WinUtil::setHelpIds(handle(), helpItems);
+	WinUtil::setHelpIds(this, helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, 0, 0);
 

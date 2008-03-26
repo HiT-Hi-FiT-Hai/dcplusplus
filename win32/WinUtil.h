@@ -87,7 +87,12 @@ public:
 	static tstring encodeFont(LOGFONT const& font);
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
 
-	static void setHelpIds(HWND hWnd, const HelpItem* items);
+	template<typename A>
+	static void setHelpIds(SmartWin::AspectDialog<A>* dialog, const HelpItem* items) {
+		dcassert(dialog && items);
+		for(size_t i = 0; items[i].ctrlId != 0; ++i)
+			::SetWindowContextHelpId(dialog->getItem(items[i].ctrlId), items[i].helpId);
+	}
 
 	/**
 	 * Check if this is a common /-command.
