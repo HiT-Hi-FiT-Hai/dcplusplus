@@ -159,15 +159,14 @@ bool Widget::tryFire( const MSG & msg, LRESULT & retVal ) {
 	// First we must create a "comparable" message...
 	Message msgComparer( msg );
 	CallbackCollectionType::iterator i = itsCallbacks.find(msgComparer);
+	bool handled = false;
 	if(i != itsCallbacks.end()) {
 		CallbackList& list = i->second;
 		for(CallbackList::iterator j = list.begin(); j != list.end(); ++j) {
-			if((*j)(msg, retVal)) {
-				return true;
-			}
+			handled |= (*j)(msg, retVal);
 		}
 	}
-	return false;
+	return handled;
 }
 
 
