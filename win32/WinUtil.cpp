@@ -575,9 +575,20 @@ bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, Strin
 	return true;
 }
 
-void WinUtil::help(HWND hWnd, unsigned id) {
-	dcdebug("WinUtil::help; hWnd: %p; id: %u\n", hWnd, id);
-	::HtmlHelp(hWnd, Text::toT(Util::getDataPath() + "DCPlusPlus.chm").c_str(), id ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, id);
+void WinUtil::help(unsigned ctrlId, HWND hWnd, unsigned helpId) {
+	dcdebug("WinUtil::help; ctrlId: %u; hWnd: %p; helpId: %u\n", ctrlId, hWnd, helpId);
+	if(helpId >= IDH_TOPICS_BEGIN && helpId <= IDH_TOPICS_END)
+		ctrlId = 0;
+	tstring helpFile = Text::toT(Util::getDataPath() + "DCPlusPlus.chm");
+	if(ctrlId && helpId) {
+		// a control ID has been given; display a toolTip
+		DWORD ids[3];
+		ids[0] = ctrlId;
+		ids[1] = helpId;
+		ids[2] = 0;
+		::HtmlHelp(hWnd, helpFile.c_str(), HH_TP_HELP_WM_HELP, (DWORD)ids);
+	} else
+		::HtmlHelp(hWnd, helpFile.c_str(), helpId ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, helpId);
 }
 
 bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {

@@ -7,3 +7,5 @@ mkdir ..\build\help
 hhc.exe DCPlusPlus.hhp
 
 del users.bmp
+
+pause

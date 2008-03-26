@@ -87,7 +87,7 @@ MainWindow::MainWindow() :
 	onActivate(std::tr1::bind(&MainWindow::handleActivate, this, _1));
 	onSized(std::tr1::bind(&MainWindow::handleSized, this, _1));
 	onSpeaker(std::tr1::bind(&MainWindow::handleSpeaker, this, _1, _2));
-	onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
+	onHelp(std::tr1::bind(&WinUtil::help, _1, _2, _3));
 	onRaw(std::tr1::bind(&MainWindow::handleTrayIcon, this, _2), SmartWin::Message(WM_APP + 242));
 	
 	updateStatus();
@@ -130,7 +130,7 @@ MainWindow::MainWindow() :
 	speak(PARSE_COMMAND_LINE);
 
 	if(SETTING(NICK).empty()) {
-		WinUtil::help(handle(), IDH_GENERALPAGE);
+		WinUtil::help(0, handle(), IDH_GENERALPAGE);
 		postMessage(WM_COMMAND, IDC_SETTINGS);
 	}
 	
@@ -240,9 +240,9 @@ void MainWindow::initMenu() {
 	{
 		WidgetMenuPtr help = mainMenu->appendPopup(T_("&Help"));
 
-		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, handle(), _1));
+		help->appendItem(IDH_STARTPAGE, T_("Help &Contents\tF1"), std::tr1::bind(&WinUtil::help, 0, handle(), _1));
 		help->appendSeparatorItem();
-		help->appendItem(IDH_CHANGELOG, T_("Change Log"), std::tr1::bind(&WinUtil::help, handle(), _1));
+		help->appendItem(IDH_CHANGELOG, T_("Change Log"), std::tr1::bind(&WinUtil::help, 0, handle(), _1));
 		help->appendItem(IDC_ABOUT, T_("About DC++..."), std::tr1::bind(&MainWindow::handleAbout, this), SmartWin::BitmapPtr(new SmartWin::Bitmap(IDB_DCPP)));
 		help->appendSeparatorItem();
 		help->appendItem(IDC_HELP_HOMEPAGE, T_("DC++ Homepage"), std::tr1::bind(&MainWindow::handleLink, this, _1));

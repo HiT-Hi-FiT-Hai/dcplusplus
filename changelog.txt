@@ -4,6 +4,7 @@
 * Use setenv on unix (thanks yakov suraev)
 * Fixed out of focus window when restoring from icon (poy)
 * [L#203865] Fixed multiple instances (poy)
+* Context-sensitive help (poy)
 
 -- 0.705 2008-03-14 --
 * Several patches for better *nix compatibility of the core (thanks steven sheehy et al)

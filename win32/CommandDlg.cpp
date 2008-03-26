@@ -52,13 +52,15 @@ CommandDlg::CommandDlg(SmartWin::Widget* parent, int type_, int ctx_, const tstr
 {
 	onInitDialog(std::tr1::bind(&CommandDlg::handleInitDialog, this));
 	onFocus(std::tr1::bind(&CommandDlg::handleFocus, this));
-	onHelp(std::tr1::bind(&WinUtil::help, _1, _2));
+	onHelp(std::tr1::bind(&WinUtil::help, _1, _2, _3));
 }
 
 CommandDlg::~CommandDlg() {
 }
 
 bool CommandDlg::handleInitDialog() {
+	setHelpId(IDH_USER_COMMAND);
+
 	// Translate
 	setText(T_("Create / Modify Command"));
 	::SetDlgItemText(handle(), IDC_SETTINGS_TYPE, CT_("Command Type"));
@@ -129,12 +131,12 @@ bool CommandDlg::handleInitDialog() {
 
 		button = attachButton(IDHELP);
 		button->setText(T_("Help"));
-		button->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_UCPAGE));
+		button->onClicked(std::tr1::bind(&WinUtil::help, 0, handle(), IDH_USER_COMMAND));
 	}
 
 	if(bOpenHelp) {
 		// launch the help file, instead of having the help in the dialog
-		postMessage(WM_COMMAND, IDHELP);
+		WinUtil::help(0, handle(), IDH_USER_COMMAND);
 	}
 
 	if(type == UserCommand::TYPE_SEPARATOR) {

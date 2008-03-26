@@ -27,11 +27,22 @@
 
 #include "WinUtil.h"
 
+PropPage::HelpItem AppearancePage::helpItems[] = {
+	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, IDH_SETTINGS_APPEARANCE_DEFAULT_AWAY_MESSAGE },
+	{ IDC_DEFAULT_AWAY_MESSAGE, IDH_SETTINGS_APPEARANCE_DEFAULT_AWAY_MESSAGE },
+	{ IDC_SETTINGS_TIME_STAMPS_FORMAT, IDH_SETTINGS_APPEARANCE_TIME_STAMPS_FORMAT },
+	{ IDC_TIME_STAMPS_FORMAT, IDH_SETTINGS_APPEARANCE_TIME_STAMPS_FORMAT },
+	{ IDC_SETTINGS_LANGUAGE, IDH_SETTINGS_APPEARANCE_LANGUAGE },
+	{ IDC_LANGUAGE, IDH_SETTINGS_APPEARANCE_LANGUAGE },
+	{ IDC_SETTINGS_REQUIRES_RESTART, IDH_SETTINGS_APPEARANCE_REQUIRES_RESTART },
+	{ 0, 0 }
+};
+
 PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_APPEARANCE_OPTIONS, N_("Options") },
 	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, N_("Default away message") },
 	{ IDC_SETTINGS_TIME_STAMPS_FORMAT, N_("Set timestamps") },
-	{ IDC_SETTINGS_LANGUAGE_FILE, N_("Language file") },
+	{ IDC_SETTINGS_LANGUAGE, N_("Language") },
 	{ IDC_SETTINGS_REQUIRES_RESTART, N_("Note; most of these options require that you restart DC++") },
 	{ 0, 0 }
 };
@@ -61,6 +72,7 @@ AppearancePage::AppearancePage(SmartWin::Widget* parent) : PropPage(parent), lan
 	createDialog(IDD_APPEARANCEPAGE);
 	setHelpId(IDH_APPEARANCEPAGE);
 
+	PropPage::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items, listItems, ::GetDlgItem(handle(), IDC_APPEARANCE_BOOLEANS));
 

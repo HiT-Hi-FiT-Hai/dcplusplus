@@ -30,6 +30,7 @@ public:
 	virtual void write();
 
 private:
+	static HelpItem helpItems[];
 	static TextItem texts[];
 
 	WidgetListViewPtr directories;

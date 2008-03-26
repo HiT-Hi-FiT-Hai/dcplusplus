@@ -6,6 +6,7 @@
 
 #include "AspectContextMenu.h"
 #include "AspectEnabled.h"
+#include "AspectHelp.h"
 #include "AspectKeyboard.h"
 #include "AspectMouse.h"
 #include "AspectRaw.h"
@@ -21,6 +22,7 @@ class AspectControl :
 
 	public AspectContextMenu<WidgetType>,
 	public AspectEnabled<WidgetType>,
+	public AspectHelp<WidgetType>,
 	public AspectKeyboard<WidgetType>,
 	public AspectMouse<WidgetType>,
 	public AspectRaw<WidgetType>,

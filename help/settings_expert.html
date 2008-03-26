@@ -8,6 +8,8 @@
 <body>
 <h1>Experts only</h1>
 <dl style="margin-left: 40px;">
+  <dt>Rollback</dt>
+  <dd>This option is not used currently.</dd>
   <dt>Max Hash Speed</dt>
   <dd>This is the speed at which DC++ will hash your files, in
 MiB/s.
@@ -21,7 +23,6 @@ log and displayed when a new PM is received. (no default)</dd>
   <dt><a name="minislotsize"></a>Mini slot size</dt>
   <dd>This defines the size of the <a href="settings_sharing.html#slots">mini slot</a>. The
 minimum value for this setting is&nbsp;64 KiB. (default: 64 KiB)</dd>
-
   <dt>Max filelist size</dt>
   <dd>This setting controls the size of the maximum file list
 that DC++
@@ -33,11 +34,13 @@ based on personal experience. (default: 512 MiB)</dd>
   <dd>This is your unique private ID (PID). This will later with an algorithm be used to identify you on ADC hubs. <span style="font-weight: bold;">Do not share this with other users.</span></dd>
   <dt>Auto refresh time</dt>
   <dd>This controls the interval at which your shared directories
-are rescanned for new and changed content. &nbsp;This is measured
-in minutes (default: 60 minutes)</dd>
+are rescanned for new and changed content. This is measured
+in minutes. (default: 60 minutes)</dd>
   <dt>Write Buffer Size</dt>
   <dd>This controls the size of the chunks that DC++ writes to
 disk for downloads. Measured in kibibytes. (default: 16 KiB)</dd>
+  <dt>Auto-search limit</dt>
+  <dd>This will limit the amount of sources a file can have before it will no longer be auto searched for. For example, if this option is set to 2, if a file has more than or exactly 2 sources, the file will be excluded from the auto-search list.</dd>
   <dt><a name="searchhistory"></a>Search
 history</dt>
   <dd>Number of old search lines that will be shown in the Search
@@ -60,8 +63,8 @@ in bytes. (default: 8192 bytes)</dd>
   <dt>Socket write buffer</dt>
   <dd>The size of the buffer DC++ use to write to sockets.
 Measured in bytes. (default: 8192 bytes)</dd>
-  <dt>Auto-search limit</dt>
-  <dd>This will limit the amount of sources a file can have before it will no longer be auto searched for. For example, if this option is set to 2, if a file has more than or exactly 2 sources, the file will be excluded from the auto-search list.</dd>
+  <dt>Min segment size</dt>
+  <dd>DC++ now uses segment downloading. i.e. it downloads each file in many little parts.  This setting lets you specifiy the mimium size of these parts. (default: 1MiB)</dd>
 </dl>
 </body>
 </html>

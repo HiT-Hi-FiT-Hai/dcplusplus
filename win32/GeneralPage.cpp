@@ -24,6 +24,20 @@
 
 #include <dcpp/SettingsManager.h>
 
+PropPage::HelpItem GeneralPage::helpItems[] = {
+	{ IDC_SETTINGS_PERSONAL_INFORMATION, IDH_SETTINGS_GENERAL_PERSONAL_INFORMATION },
+	{ IDC_SETTINGS_NICK, IDH_SETTINGS_GENERAL_NICK },
+	{ IDC_NICK, IDH_SETTINGS_GENERAL_NICK },
+	{ IDC_SETTINGS_EMAIL, IDH_SETTINGS_GENERAL_EMAIL },
+	{ IDC_EMAIL, IDH_SETTINGS_GENERAL_EMAIL },
+	{ IDC_SETTINGS_DESCRIPTION, IDH_SETTINGS_GENERAL_DESCRIPTION },
+	{ IDC_DESCRIPTION, IDH_SETTINGS_GENERAL_DESCRIPTION },
+	{ IDC_SETTINGS_UPLOAD_LINE_SPEED, IDH_SETTINGS_GENERAL_CONNECTION },
+	{ IDC_CONNECTION, IDH_SETTINGS_GENERAL_CONNECTION },
+	{ IDC_SETTINGS_MEBIBITS, IDH_SETTINGS_GENERAL_CONNECTION },
+	{ 0, 0 }
+};
+
 PropPage::TextItem GeneralPage::texts[] = {
 	{ IDC_SETTINGS_PERSONAL_INFORMATION, N_("Personal Information") },
 	{ IDC_SETTINGS_NICK, N_("Nick") },
@@ -46,6 +60,7 @@ GeneralPage::GeneralPage(SmartWin::Widget* parent) : PropPage(parent), nick(0) {
 	createDialog(IDD_GENERALPAGE);
 	setHelpId(IDH_GENERALPAGE);
 
+	PropPage::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

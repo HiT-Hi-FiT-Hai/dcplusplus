@@ -92,7 +92,7 @@ ADLSearchFrame::ADLSearchFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		cs.caption = T_("&Help");
 		help = createButton(cs);
-		help->onClicked(std::tr1::bind(&WinUtil::help, handle(), IDH_ADL_SEARCH));
+		help->onClicked(std::tr1::bind(&WinUtil::help, 0, handle(), IDH_ADL_SEARCH));
 		addWidget(help);
 	}
 

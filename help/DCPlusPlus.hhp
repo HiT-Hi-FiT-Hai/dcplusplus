@@ -8,11 +8,13 @@ Display compile progress=Yes
 Enhanced decompilation=Yes
 Full-text search=Yes
 Index file=index.hhk
-Language=0x409 English (United States)
+Language=0x409 Anglais (États-Unis)
 Title=Help for DC++
 
 
 [FILES]
+cshelp.h
+cshelp.txt
 office11.css
 index.html
 changelog.html
@@ -22,7 +24,7 @@ settings_downloads.html
 settings_general.html
 settings_logs.html
 settings_sharing.html
-settings_usercommands.html
+settings_user_commands.html
 settings_colors_and_sounds.html
 settings_expert.html
 settings_connection.html
@@ -53,6 +55,7 @@ window_notepad.html
 window_system_log.html
 window_network_stats.html
 dialog_indexing_progress.html
+dialog_user_command.html
 fdl.html
 faq_keyboard_commands.html
 faq_upnp.html
@@ -69,7 +72,9 @@ dev_applypatch.html
 links.html
 
 [ALIAS]
+IDH_STARTPAGE=index.html
 IDH_CHANGELOG=changelog.html
+IDH_KEYBOARD=faq_keyboard_commands.html
 IDH_HUB=window_hub.html
 IDH_PM=window_pm.html
 IDH_DIRECTORY_LISTING=window_directory_listing.html
@@ -87,6 +92,7 @@ IDH_NOTEPAD=window_notepad.html
 IDH_SYSTEM_LOG=window_system_log.html
 IDH_NET_STATS=window_network_stats.html
 IDH_HASH_PROGRESS=dialog_indexing_progress.html
+IDH_USER_COMMAND=dialog_user_command.html
 IDH_ADVANCED3PAGE=settings_expert.html
 IDH_ADVANCEDPAGE=settings_advanced.html
 IDH_APPEARANCE2PAGE=settings_colors_and_sounds.html
@@ -94,12 +100,10 @@ IDH_APPEARANCEPAGE=settings_appearance.html
 IDH_DOWNLOADPAGE=settings_downloads.html
 IDH_FAVORITE_DIRSPAGE=settings_favoritedirs.html
 IDH_GENERALPAGE=settings_general.html
-IDH_KEYBOARD=faq_keyboard_commands.html
 IDH_LOGPAGE=settings_logs.html
 IDH_NETWORKPAGE=settings_connection.html
 IDH_QUEUEPAGE=settings_queue.html
-IDH_STARTPAGE=index.html
-IDH_UCPAGE=settings_usercommands.html
+IDH_UCPAGE=settings_user_commands.html
 IDH_UPLOADPAGE=settings_sharing.html
 IDH_WINDOWSPAGE=settings_windows.html
 IDH_CERTIFICATESPAGE=settings_certs.html
@@ -108,6 +112,9 @@ IDH_TABSPAGE=settings_tabs.html
 [MAP]
 #include resource.h
 
+[TEXT POPUPS]
+cshelp.h
+cshelp.txt
 
 [INFOTYPES]
 

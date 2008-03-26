@@ -27,11 +27,21 @@
 #include "CommandDlg.h"
 #include "HoldRedraw.h"
 
+PropPage::HelpItem UCPage::helpItems[] = {
+	{ IDC_MENU_ITEMS, IDH_SETTINGS_UC_LIST },
+	{ IDC_ADD_MENU, IDH_SETTINGS_UC_ADD },
+	{ IDC_CHANGE_MENU, IDH_SETTINGS_UC_CHANGE },
+	{ IDC_MOVE_UP, IDH_SETTINGS_UC_MOVE_UP },
+	{ IDC_MOVE_DOWN, IDH_SETTINGS_UC_MOVE_DOWN },
+	{ IDC_REMOVE_MENU, IDH_SETTINGS_UC_REMOVE },
+	{ 0, 0 }
+};
+
 PropPage::TextItem UCPage::texts[] = {
-	{ IDC_MOVE_UP, N_("Move &Up") },
-	{ IDC_MOVE_DOWN, N_("Move &Down") },
 	{ IDC_ADD_MENU, N_("&Add") },
 	{ IDC_CHANGE_MENU, N_("&Change") },
+	{ IDC_MOVE_UP, N_("Move &Up") },
+	{ IDC_MOVE_DOWN, N_("Move &Down") },
 	{ IDC_REMOVE_MENU, N_("&Remove") },
 	{ 0, 0 }
 };
@@ -44,6 +54,7 @@ UCPage::UCPage(SmartWin::Widget* parent) : PropPage(parent) {
 	createDialog(IDD_UCPAGE);
 	setHelpId(IDH_UCPAGE);
 
+	PropPage::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 	PropPage::read(handle(), items);
 

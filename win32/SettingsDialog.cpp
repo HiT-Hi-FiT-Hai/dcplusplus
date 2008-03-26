@@ -44,7 +44,7 @@ static const size_t MAX_NAME_LENGTH = 256;
 
 SettingsDialog::SettingsDialog(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetModalDialog>(parent), currentPage(0) {
 	onInitDialog(std::tr1::bind(&SettingsDialog::initDialog, this));
-	onHelp(std::tr1::bind(&SettingsDialog::handleHelp, this, _1, _2));
+	onHelp(std::tr1::bind(&SettingsDialog::handleHelp, this, _1, _2, _3));
 }
 
 int SettingsDialog::run() {
@@ -58,20 +58,24 @@ bool SettingsDialog::initDialog() {
 	setText(T_("Settings"));
 
 	pageTree = attachTreeView(IDC_SETTINGS_PAGES);
+	pageTree->setHelpId(IDH_SETTINGS_TREE);
 	pageTree->onSelectionChanged(std::tr1::bind(&SettingsDialog::selectionChanged, this));
 
 	{
 		WidgetButtonPtr button = attachButton(IDOK);
+		button->setHelpId(IDH_SETTINGS_OK);
 		button->setText(T_("OK"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::handleOKClicked, this));
 
 		button = attachButton(IDCANCEL);
+		button->setHelpId(IDH_SETTINGS_CANCEL);
 		button->setText(T_("Cancel"));
 		button->onClicked(std::tr1::bind(&SettingsDialog::endDialog, this, IDCANCEL));
 
 		button = attachButton(IDHELP);
+		button->setHelpId(IDH_SETTINGS_HELP);
 		button->setText(T_("Help"));
-		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, handle(), 0));
+		button->onClicked(std::tr1::bind(&SettingsDialog::handleHelp, this, 0, handle(), 0));
 	}
 
 	addPage(T_("Personal information"), new GeneralPage(this));
@@ -93,10 +97,10 @@ bool SettingsDialog::initDialog() {
 	return false;
 }
 
-void SettingsDialog::handleHelp(HWND hWnd, unsigned id) {
-	if(id == 0 && currentPage)
-		id = currentPage->getHelpId();
-	WinUtil::help(hWnd, id);
+void SettingsDialog::handleHelp(unsigned ctrlId, HWND hWnd, unsigned helpId) {
+	if(helpId == 0 && currentPage)
+		helpId = currentPage->getHelpId();
+	WinUtil::help(ctrlId, hWnd, helpId);
 }
 
 void SettingsDialog::addPage(const tstring& title, PropPage* page) {

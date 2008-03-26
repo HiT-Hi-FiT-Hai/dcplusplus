@@ -28,11 +28,20 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 
+PropPage::HelpItem FavoriteDirsPage::helpItems[] = {
+	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, IDH_SETTINGS_FAVORITE_DIRS_FAVORITE_DIRECTORIES },
+	{ IDC_FAVORITE_DIRECTORIES, IDH_SETTINGS_FAVORITE_DIRS_FAVORITE_DIRECTORIES },
+	{ IDC_RENAME, IDH_SETTINGS_FAVORITE_DIRS_RENAME },
+	{ IDC_REMOVE, IDH_SETTINGS_FAVORITE_DIRS_REMOVE },
+	{ IDC_ADD, IDH_SETTINGS_FAVORITE_DIRS_ADD },
+	{ 0, 0 }
+};
+
 PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, N_("Favorite download directories") },
+	{ IDC_RENAME, N_("Rename") },
 	{ IDC_REMOVE, N_("&Remove") },
 	{ IDC_ADD, N_("&Add folder") },
-	{ IDC_RENAME, N_("Rename") },
 	{ 0, 0 }
 };
 
@@ -40,6 +49,7 @@ FavoriteDirsPage::FavoriteDirsPage(SmartWin::Widget* parent) : PropPage(parent) 
 	createDialog(IDD_FAVORITE_DIRSPAGE);
 	setHelpId(IDH_FAVORITE_DIRSPAGE);
 
+	PropPage::setHelpIds(handle(), helpItems);
 	PropPage::translate(handle(), texts);
 
 	directories = attachList(IDC_FAVORITE_DIRECTORIES);

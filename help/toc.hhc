@@ -97,6 +97,10 @@
 			<param name="Name" value="Indexing progress">
 			<param name="Local" value="dialog_indexing_progress.html">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="User Command">
+			<param name="Local" value="dialog_user_command.html">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Frequently Asked Questions">
@@ -206,7 +210,7 @@
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="User Commands">
-				<param name="Local" value="settings_usercommands.html">
+				<param name="Local" value="settings_user_commands.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="Security Certificates">

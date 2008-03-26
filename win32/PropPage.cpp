@@ -31,6 +31,12 @@ PropPage::PropPage(SmartWin::Widget* parent) : WidgetFactory<SmartWin::WidgetDia
 PropPage::~PropPage() {
 }
 
+void PropPage::setHelpIds(HWND page, HelpItem* items) {
+	if(items)
+		for(size_t i = 0; items[i].ctrlId != 0; ++i)
+			::SetWindowContextHelpId(::GetDlgItem(page, items[i].ctrlId), items[i].helpId);
+}
+
 void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = 0 */)
 {
 	dcassert(page != NULL);
@@ -129,12 +135,8 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 	}
 }
 
-void PropPage::translate(HWND page, TextItem* textItems)
-{
-	if (textItems != NULL) {
-		for(int i = 0; textItems[i].itemID != 0; i++) {
-			::SetDlgItemText(page, textItems[i].itemID,
-				CT_(textItems[i].translatedString));
-		}
-	}
+void PropPage::translate(HWND page, TextItem* items) {
+	if(items)
+		for(size_t i = 0; items[i].itemID != 0; ++i)
+			::SetDlgItemText(page, items[i].itemID, CT_(items[i].translatedString));
 }
