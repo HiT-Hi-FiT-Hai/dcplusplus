@@ -5,8 +5,6 @@
 
 #include "cshelp.h"
 
-#define IDH_TOPICS_BEGIN 10000
-
 #define IDH_STARTPAGE 10000
 #define IDH_CHANGELOG 10001
 #define IDH_KEYBOARD 10002
@@ -50,6 +48,8 @@
 #define IDH_CERTIFICATESPAGE 10313
 #define IDH_TABSPAGE 10314
 
-#define IDH_TOPICS_END 10999
+// reserved for cshelp ids
+#define IDH_CSHELP_BEGIN 11000
+#define IDH_CSHELP_END 11999
 
 #endif

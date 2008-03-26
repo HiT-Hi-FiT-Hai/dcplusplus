@@ -43,7 +43,6 @@ enum {
 using namespace dcpp;
 using std::tr1::placeholders::_1;
 using std::tr1::placeholders::_2;
-using std::tr1::placeholders::_3;
 
 #define LOCALEDIR dcpp::Util::getLocalePath().c_str()
 #define PACKAGE "dcpp-win32"

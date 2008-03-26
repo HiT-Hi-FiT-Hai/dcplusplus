@@ -202,3 +202,15 @@ Hub ip as typed when connecting (empty = all NMDC hubs, "op" = NMDC hubs where y
 Private Message recipient
 .topic IDH_USER_COMMAND_ONCE
 Send only once per user from search frame, regardless of how many files you've selected from that user
+.topic IDH_FAVORITE_HUBS_CONNECT
+Connect to selected hubs.
+.topic IDH_FAVORITE_HUBS_ADD
+Create a new favorite hub.
+.topic IDH_FAVORITE_HUBS_PROPERTIES
+Change pre-existing hub properties for the selected hub.
+.topic IDH_FAVORITE_HUBS_MOVE_UP
+Move up selected hubs in the list. If several hubs have auto connect enabled, the highest hub will be connected to first.
+.topic IDH_FAVORITE_HUBS_MOVE_DOWN
+Move down selected hubs in the list. If several hubs have auto connect enabled, the lowest hub will be connected to last.
+.topic IDH_FAVORITE_HUBS_REMOVE
+Removes selected hubs from the favorite hubs list.

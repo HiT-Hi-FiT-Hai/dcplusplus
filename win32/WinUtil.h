@@ -169,7 +169,7 @@ public:
 	static void parseADChubUrl(const tstring& /*aUrl*/);
 	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
 
-	static void help(unsigned ctrlId, HWND hWnd, unsigned helpId);
+	static void help(HWND hWnd, unsigned id);
 
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 

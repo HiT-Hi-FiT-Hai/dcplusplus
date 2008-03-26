@@ -575,25 +575,33 @@ bool WinUtil::getUCParams(SmartWin::Widget* parent, const UserCommand& uc, Strin
 	return true;
 }
 
-void WinUtil::help(unsigned ctrlId, HWND hWnd, unsigned helpId) {
-	dcdebug("WinUtil::help; ctrlId: %u; hWnd: %p; helpId: %u\n", ctrlId, hWnd, helpId);
+void WinUtil::help(HWND hWnd, unsigned id) {
+	dcdebug("WinUtil::help; hWnd: %p; id: %u\n", hWnd, id);
 
 	string path = Util::getDataPath() + "DCPlusPlus.chm";
 	if(File::getSize(path) == -1)
 		return;
 	tstring helpFile = Text::toT(path);
 
-	if(helpId >= IDH_TOPICS_BEGIN && helpId <= IDH_TOPICS_END)
-		ctrlId = 0;
-	if(ctrlId && helpId) {
-		// a control ID has been given; display a toolTip
-		DWORD ids[3];
-		ids[0] = ctrlId;
-		ids[1] = helpId;
-		ids[2] = 0;
-		::HtmlHelp(hWnd, helpFile.c_str(), HH_TP_HELP_WM_HELP, reinterpret_cast<DWORD_PTR>(ids));
+	if(id >= IDH_CSHELP_BEGIN && id <= IDH_CSHELP_END) {
+		// context-sensitive help; display a tooltip
+		HH_POPUP popup = { 0 };
+		popup.cbStruct = sizeof(HH_POPUP);
+		popup.idString = id;
+
+		RECT rect;
+		::GetWindowRect(hWnd, &rect);
+		popup.pt.x = (rect.left + rect.right) / 2;
+		popup.pt.y = rect.top;
+
+		popup.rcMargins.left = 5;
+		popup.rcMargins.top = 5;
+		popup.rcMargins.right = 5;
+		popup.rcMargins.bottom = 5;
+
+		::HtmlHelp(hWnd, helpFile.c_str(), HH_DISPLAY_TEXT_POPUP, reinterpret_cast<DWORD_PTR>(&popup));
 	} else
-		::HtmlHelp(hWnd, helpFile.c_str(), helpId ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, helpId);
+		::HtmlHelp(hWnd, helpFile.c_str(), id ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, id);
 }
 
 bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {

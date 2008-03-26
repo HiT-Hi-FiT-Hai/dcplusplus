@@ -8,7 +8,7 @@ namespace SmartWin {
 template<typename WidgetType>
 class AspectHelp {
 	struct Dispatcher {
-		typedef std::tr1::function<void (unsigned, HWND, unsigned)> F;
+		typedef std::tr1::function<void (HWND, unsigned)> F;
 
 		Dispatcher(const F& f_) : f(f_) { }
 
@@ -16,7 +16,7 @@ class AspectHelp {
 			LPHELPINFO lphi = reinterpret_cast<LPHELPINFO>(msg.lParam);
 			if(lphi->iContextType != HELPINFO_WINDOW)
 				return false;
-			f(lphi->iCtrlId, reinterpret_cast<HWND>(lphi->hItemHandle), lphi->dwContextId);
+			f(reinterpret_cast<HWND>(lphi->hItemHandle), lphi->dwContextId);
 			ret = TRUE;
 			return true;
 		}

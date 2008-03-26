@@ -71,31 +71,37 @@ FavHubsFrame::FavHubsFrame(SmartWin::WidgetTabView* mdiParent) :
 
 		cs.caption = T_("&Connect");
 		connect = createButton(cs);
+		connect->setHelpId(IDH_FAVORITE_HUBS_CONNECT);
 		connect->onClicked(std::tr1::bind(&FavHubsFrame::openSelected, this));
 		addWidget(connect);
 
 		cs.caption = T_("&New...");
 		add = createButton(cs);
+		add->setHelpId(IDH_FAVORITE_HUBS_ADD);
 		add->onClicked(std::tr1::bind(&FavHubsFrame::handleAdd, this));
 		addWidget(add);
 
 		cs.caption = T_("&Properties");
 		properties = createButton(cs);
+		properties->setHelpId(IDH_FAVORITE_HUBS_PROPERTIES);
 		properties->onClicked(std::tr1::bind(&FavHubsFrame::handleProperties, this));
 		addWidget(properties);
 
 		cs.caption = T_("Move &Up");
 		up = createButton(cs);
+		up->setHelpId(IDH_FAVORITE_HUBS_MOVE_UP);
 		up->onClicked(std::tr1::bind(&FavHubsFrame::handleUp, this));
 		addWidget(up);
 
 		cs.caption = T_("Move &Down");
 		down = createButton(cs);
+		down->setHelpId(IDH_FAVORITE_HUBS_MOVE_DOWN);
 		down->onClicked(std::tr1::bind(&FavHubsFrame::handleDown, this));
 		addWidget(down);
 
 		cs.caption = T_("&Remove");
 		remove = createButton(cs);
+		remove->setHelpId(IDH_FAVORITE_HUBS_REMOVE);
 		remove->onClicked(std::tr1::bind(&FavHubsFrame::handleRemove, this));
 		addWidget(remove);
 	}
