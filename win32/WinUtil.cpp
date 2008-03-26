@@ -597,7 +597,7 @@ void WinUtil::help(unsigned ctrlId, HWND hWnd, unsigned helpId) {
 		ids[0] = ctrlId;
 		ids[1] = helpId;
 		ids[2] = 0;
-		::HtmlHelp(hWnd, helpFile.c_str(), HH_TP_HELP_WM_HELP, (DWORD)ids);
+		::HtmlHelp(hWnd, helpFile.c_str(), HH_TP_HELP_WM_HELP, reinterpret_cast<DWORD_PTR>(ids));
 	} else
 		::HtmlHelp(hWnd, helpFile.c_str(), helpId ? HH_HELP_CONTEXT : HH_DISPLAY_TOC, helpId);
 }

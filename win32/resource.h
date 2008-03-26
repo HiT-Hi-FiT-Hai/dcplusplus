@@ -138,6 +138,7 @@
 #define IDC_CLOSE_WINDOW			1072
 #define IDC_TRAY_SHOW				1073
 #define IDC_TRAY_QUIT				1074
+#define IDC_WHATS_THIS				1075
 
 #define IDC_ADD 2000
 #define IDC_ADD_MENU 2001

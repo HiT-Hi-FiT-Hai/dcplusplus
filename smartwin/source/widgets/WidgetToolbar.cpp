@@ -20,8 +20,6 @@ void WidgetToolbar::create( const Seed & cs )
 void WidgetToolbar::appendSeparator()
 {
 	TBBUTTON tb = { 0 };
-	tb.iBitmap = 1;
-	tb.fsState = TBSTATE_ENABLED;
 	tb.fsStyle = BTNS_SEP;
 	if ( this->sendMessage(TB_ADDBUTTONS, 1, reinterpret_cast< LPARAM >( &tb ) ) == FALSE )
 	{
