@@ -29,7 +29,6 @@
 #define WidgetSlider_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"
@@ -58,7 +57,6 @@ class WidgetCreator;
   */
 class WidgetSlider :
 	// Aspects
-	public AspectBorder< WidgetSlider >,
 	public AspectControl<WidgetSlider>,
 	public AspectFocus< WidgetSlider >,
 	public AspectPainting< WidgetSlider >,

@@ -31,7 +31,6 @@
 #include "../Widget.h"
 #include "../Rectangle.h"
 #include "../resources/ImageList.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
 #include "../aspects/AspectColor.h"
@@ -63,7 +62,6 @@ class WidgetCreator;
 
 class WidgetTreeView :
 	// Aspects
-	public AspectBorder< WidgetTreeView >,
 	public AspectClickable< WidgetTreeView >,
 	public AspectCollection<WidgetTreeView, HTREEITEM>,
 	public AspectColor<WidgetTreeView>,

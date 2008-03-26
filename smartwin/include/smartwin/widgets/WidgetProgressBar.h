@@ -29,10 +29,8 @@
 #define WidgetProgressBar_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectPainting.h"
-#include "../aspects/AspectScrollable.h"
 
 namespace SmartWin
 {
@@ -54,7 +52,6 @@ class WidgetCreator;
   */
 class WidgetProgressBar :
 	// Aspects
-	public AspectBorder< WidgetProgressBar >,
 	public AspectControl<WidgetProgressBar>,
 	public AspectPainting< WidgetProgressBar >
 {

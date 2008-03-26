@@ -29,7 +29,6 @@
 #define WidgetStatusBar_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
@@ -107,7 +106,6 @@ class WidgetStatusBar :
 	public TypeOfStatusBar,
 	
 	// Aspects
-	public AspectBorder< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectClickable< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectControl<WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectDblClickable< WidgetStatusBar< TypeOfStatusBar > >,

@@ -31,7 +31,6 @@
 #include "../Widget.h"
 #include "../resources/ImageList.h"
 #include "../Rectangle.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
@@ -64,7 +63,6 @@ class WidgetCreator;
   */
 class WidgetTabSheet :
 	// Aspects
-	public AspectBorder< WidgetTabSheet >,
 	public AspectControl<WidgetTabSheet>,
 	public AspectFocus< WidgetTabSheet >,
 	public AspectFont< WidgetTabSheet >,

@@ -4,6 +4,7 @@
 #include "../Policies.h"
 #include "../xCeption.h"
 
+#include "AspectBorder.h"
 #include "AspectContextMenu.h"
 #include "AspectEnabled.h"
 #include "AspectHelp.h"
@@ -20,6 +21,7 @@ template<typename WidgetType >
 class AspectControl : 
 	public MessageMapPolicy< Policies::Subclassed >,
 
+	public AspectBorder<WidgetType>,
 	public AspectContextMenu<WidgetType>,
 	public AspectEnabled<WidgetType>,
 	public AspectHelp<WidgetType>,

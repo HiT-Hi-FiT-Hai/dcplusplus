@@ -29,7 +29,6 @@
 #define WidgetStatic_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
@@ -62,7 +61,6 @@ class WidgetCreator;
   */
 class WidgetStatic :
 	// Aspects
-	public AspectBorder< WidgetStatic >,
 	public AspectClickable< WidgetStatic >,
 	public AspectColor< WidgetStatic >,
 	public AspectColorCtlImpl<WidgetStatic>,

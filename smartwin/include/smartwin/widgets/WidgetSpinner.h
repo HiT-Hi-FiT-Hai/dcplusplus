@@ -29,7 +29,6 @@
 #define WidgetSpinner_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"
@@ -56,7 +55,6 @@ class WidgetCreator;
   */
 class WidgetSpinner :
 	// Aspects
-	public AspectBorder< WidgetSpinner >,
 	public AspectControl<WidgetSpinner>,
 	public AspectFocus< WidgetSpinner >,
 	public AspectPainting< WidgetSpinner >,

@@ -29,7 +29,6 @@
 #define WidgetComboBox_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
@@ -58,7 +57,6 @@ class WidgetCreator;
   */
 class WidgetComboBox :
 	// Aspects
-	public AspectBorder< WidgetComboBox >,
 	public AspectClickable< WidgetComboBox >,
 	public AspectColor< WidgetComboBox >,
 	public AspectColorCtlImpl<WidgetComboBox>,

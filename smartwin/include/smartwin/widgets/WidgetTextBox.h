@@ -29,7 +29,6 @@
 #define WidgetTextBox_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBorder.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
@@ -66,7 +65,6 @@ class WidgetCreator;
   */
 class WidgetTextBoxBase :
 	// Aspect classes
-	public AspectBorder< WidgetTextBoxBase >,
 	public AspectColor< WidgetTextBoxBase >,
 	public AspectColorCtlImpl<WidgetTextBoxBase>,
 	public AspectControl< WidgetTextBoxBase >,
