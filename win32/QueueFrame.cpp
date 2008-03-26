@@ -72,7 +72,6 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		addWidget(dirs);
 		paned->setFirst(dirs);
 
-		dirs->setColor(WinUtil::textColor, WinUtil::bgColor);
 		dirs->setNormalImageList(WinUtil::fileImages);
 
 		dirs->onSelectionChanged(std::tr1::bind(&QueueFrame::updateFiles, this));
@@ -89,7 +88,6 @@ QueueFrame::QueueFrame(SmartWin::WidgetTabView* mdiParent) :
 		files->createColumns(WinUtil::getStrings(columnNames));
 		files->setColumnOrder(WinUtil::splitTokens(SETTING(QUEUEFRAME_ORDER), columnIndexes));
 		files->setColumnWidths(WinUtil::splitTokens(SETTING(QUEUEFRAME_WIDTHS), columnSizes));
-		files->setColor(WinUtil::textColor, WinUtil::bgColor);
 		files->setSort(COLUMN_TARGET);
 		
 		files->onKeyDown(std::tr1::bind(&QueueFrame::handleKeyDownFiles, this, _1));

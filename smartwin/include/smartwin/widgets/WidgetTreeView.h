@@ -34,6 +34,7 @@
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
+#include "../aspects/AspectColor.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
@@ -65,6 +66,7 @@ class WidgetTreeView :
 	public AspectBorder< WidgetTreeView >,
 	public AspectClickable< WidgetTreeView >,
 	public AspectCollection<WidgetTreeView, HTREEITEM>,
+	public AspectColor<WidgetTreeView>,
 	public AspectControl<WidgetTreeView>,
 	public AspectData<WidgetTreeView, HTREEITEM>,
 	public AspectDblClickable< WidgetTreeView >,
@@ -95,6 +97,7 @@ protected:
 
 	friend class WidgetCreator< WidgetTreeView >;
 	friend class AspectCollection<WidgetTreeView, HTREEITEM>;
+	friend class AspectColor<WidgetTreeView>;
 	friend class AspectData<WidgetTreeView, HTREEITEM>;
 	
 public:
@@ -142,8 +145,6 @@ public:
 	HTREEITEM getSelection();
 	
 	HTREEITEM getRoot();
-	
-	void setColor(COLORREF text, COLORREF background);
 	
 	ScreenCoordinate getContextMenuPos();
 	
@@ -305,6 +306,9 @@ private:
 	void eraseImpl( HTREEITEM node );
 	void clearImpl();
 	size_t sizeImpl() const;
+	
+	// AspectColor
+	void setColorImpl(COLORREF text, COLORREF background);
 
 };
 
@@ -332,7 +336,7 @@ inline HTREEITEM WidgetTreeView::getRoot() {
 	return TreeView_GetRoot(this->handle());
 }
 
-inline void WidgetTreeView::setColor(COLORREF text, COLORREF background) {
+inline void WidgetTreeView::setColorImpl(COLORREF text, COLORREF background) {
 	TreeView_SetTextColor(this->handle(), text);
 	TreeView_SetBkColor(this->handle(), background);
 }

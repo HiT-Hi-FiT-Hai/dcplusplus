@@ -209,14 +209,10 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		dummy.push_back(Util::emptyStringT);
 		hubs->createColumns(dummy);
 
-		hubs->setColor(WinUtil::textColor, WinUtil::bgColor);
-
 		hubs->onRaw(std::tr1::bind(&SearchFrame::handleHubItemChanged, this, _1, _2), SmartWin::Message(WM_NOTIFY, LVN_ITEMCHANGED));
 
 		hubs->insert(new HubInfo(Util::emptyStringT, T_("Only where I'm op"), false));
 		hubs->setChecked(0, false);
-
-
 	}
 
 	{
@@ -227,7 +223,6 @@ SearchFrame::SearchFrame(SmartWin::WidgetTabView* mdiParent, const tstring& init
 		results->setColumnOrder(WinUtil::splitTokens(SETTING(SEARCHFRAME_ORDER), columnIndexes));
 		results->setColumnWidths(WinUtil::splitTokens(SETTING(SEARCHFRAME_WIDTHS), columnSizes));
 
-		results->setColor(WinUtil::textColor, WinUtil::bgColor);
 		results->setSmallImageList(WinUtil::fileImages);
 
 		results->onDblClicked(std::tr1::bind(&SearchFrame::handleDoubleClick, this));

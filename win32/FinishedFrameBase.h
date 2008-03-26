@@ -66,7 +66,6 @@ protected:
 			items->setColumnWidths(WinUtil::splitTokens(SettingsManager::getInstance()->get(in_UL ? SettingsManager::FINISHED_UL_WIDTHS : SettingsManager::FINISHED_WIDTHS), columnSizes));
 			items->setSort(COLUMN_DONE);
 			
-			items->setColor(WinUtil::textColor, WinUtil::bgColor);
 			items->setSmallImageList(WinUtil::fileImages);
 
 			items->onDblClicked(std::tr1::bind(&ThisType::handleDoubleClick, this));

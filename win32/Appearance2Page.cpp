@@ -75,13 +75,11 @@ Appearance2Page::Appearance2Page(SmartWin::Widget* parent) : PropPage(parent) {
 	upBar = SETTING(UPLOAD_BAR_COLOR);
 	downBar = SETTING(DOWNLOAD_BAR_COLOR);
 
-	bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
-
 	WinUtil::decodeFont(Text::toT(SETTING(TEXT_FONT)), logFont);
 	font = SmartWin::FontPtr(new SmartWin::Font(::CreateFontIndirect(&logFont), true));
 
 	example = attachStatic(IDC_COLOREXAMPLE);
-	example->setColor(bgBrush, fg, bg);
+	example->setColor(fg, bg);
 	example->setFont(font);
 
 	WidgetButtonPtr button = attachButton(IDC_SELWINCOLOR);
@@ -122,8 +120,7 @@ void Appearance2Page::handleBackgroundClicked() {
 		colorParams = createChooseColor().showDialog(initialColorParams);
 	if(colorParams.userPressedOk()) {
 		bg = colorParams.getColor();
-		bgBrush = SmartWin::BrushPtr(new SmartWin::Brush(bg));
-		example->setColor(bgBrush, fg, bg);
+		example->setColor(fg, bg);
 	}
 }
 

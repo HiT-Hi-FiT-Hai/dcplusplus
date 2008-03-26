@@ -29,8 +29,8 @@
 #define WidgetTextBox_h
 
 #include "../Widget.h"
-#include "../aspects/AspectBackgroundColor.h"
 #include "../aspects/AspectBorder.h"
+#include "../aspects/AspectColor.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
@@ -66,8 +66,9 @@ class WidgetCreator;
   */
 class WidgetTextBoxBase :
 	// Aspect classes
-	public AspectCtlColor< WidgetTextBoxBase >,
 	public AspectBorder< WidgetTextBoxBase >,
+	public AspectColor< WidgetTextBoxBase >,
+	public AspectColorCtlImpl<WidgetTextBoxBase>,
 	public AspectControl< WidgetTextBoxBase >,
 	public AspectFocus< WidgetTextBoxBase >,
 	public AspectFont< WidgetTextBoxBase >,
@@ -82,9 +83,6 @@ class WidgetTextBoxBase :
 public:
 	// Contract needed by AspectUpdate Aspect class
 	Message getUpdateMessage();
-
-	// Contract needed by AspectBackgroundColor Aspect class
-	const Message & getBackgroundColorMessage();
 
 	/// Sets the current selection of the Edit Control
 	/** Start means the offset of where the current selection shall start, if it is
@@ -287,15 +285,6 @@ protected:
 inline Message WidgetTextBoxBase::getUpdateMessage()
 {
 	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), EN_UPDATE) );
-}
-
-inline const Message & WidgetTextBoxBase::getBackgroundColorMessage()
-{
-	// TODO What if readonly status changes?
-	static const Message rw = Message( WM_CTLCOLOREDIT );
-	static const Message ro = Message( WM_CTLCOLORSTATIC );
-	
-	return this->isReadOnly() ? ro : rw;
 }
 
 inline void WidgetTextBoxBase::setSelection( long start, long end )

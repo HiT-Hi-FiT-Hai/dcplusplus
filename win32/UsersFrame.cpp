@@ -49,7 +49,6 @@ UsersFrame::UsersFrame(SmartWin::WidgetTabView* mdiParent) :
 		users->setColumnOrder(WinUtil::splitTokens(SETTING(HUBFRAME_ORDER), columnIndexes));
 		users->setColumnWidths(WinUtil::splitTokens(SETTING(HUBFRAME_WIDTHS), columnSizes));
 		users->setSort(COLUMN_NICK);
-		users->setColor(WinUtil::textColor, WinUtil::bgColor);
 
 		users->onDblClicked(std::tr1::bind(&UsersFrame::handleGetList, this));
 		users->onKeyDown(std::tr1::bind(&UsersFrame::handleKeyDown, this, _1));

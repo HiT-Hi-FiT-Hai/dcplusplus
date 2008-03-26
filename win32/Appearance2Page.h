@@ -36,7 +36,6 @@ private:
 	WidgetStaticPtr example;
 
 	COLORREF fg, bg, upBar, downBar;
-	SmartWin::BrushPtr bgBrush;
 	SmartWin::FontPtr font;
 	LOGFONT logFont;
 

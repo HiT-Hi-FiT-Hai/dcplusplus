@@ -1,8 +1,8 @@
 #ifndef ASPECTBUTTON_H_
 #define ASPECTBUTTON_H_
 
-#include "AspectBackgroundColor.h"
 #include "AspectBorder.h"
+#include "AspectColor.h"
 #include "AspectClickable.h"
 #include "AspectControl.h"
 #include "AspectDblClickable.h"
@@ -15,9 +15,10 @@ namespace SmartWin {
 /** Common stuff for all buttons */
 template<typename WidgetType>
 class AspectButton :
-	public AspectCtlColor<WidgetType>,
 	public AspectBorder< WidgetType >,
 	public AspectClickable<WidgetType>,
+	public AspectColor<WidgetType>,
+	public AspectColorCtlImpl<WidgetType>,
 	public AspectControl<WidgetType>,
 	public AspectDblClickable<WidgetType>,
 	public AspectFocus< WidgetType >,

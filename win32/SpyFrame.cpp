@@ -56,10 +56,8 @@ SpyFrame::SpyFrame(SmartWin::WidgetTabView* mdiParent) :
 		searches->setColumnOrder(WinUtil::splitTokens(SETTING(SPYFRAME_ORDER), columnIndexes));
 		searches->setColumnWidths(WinUtil::splitTokens(SETTING(SPYFRAME_WIDTHS), columnSizes));
 		searches->setSort(COLUMN_COUNT, SmartWin::WidgetListView::SORT_INT, false);
-		searches->setColor(WinUtil::textColor, WinUtil::bgColor);
 		searches->onColumnClick(std::tr1::bind(&SpyFrame::handleColumnClick, this, _1));
 		searches->onContextMenu(std::tr1::bind(&SpyFrame::handleContextMenu, this, _1));
-
 	}
 
 	{

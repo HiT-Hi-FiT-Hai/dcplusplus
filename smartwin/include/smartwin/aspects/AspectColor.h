@@ -25,8 +25,8 @@
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef AspectBackgroundColor_h
-#define AspectBackgroundColor_h
+#ifndef AspectColor_h
+#define AspectColor_h
 
 #include "../resources/Brush.h"
 #include "../CanvasClasses.h"
@@ -41,12 +41,26 @@ namespace SmartWin
   * E.g. the WidgetWindow has a background Aspect to it, therefore WidgetListView
   * realizes the AspectEnabled through inheritance.
   */
+template<class WidgetType>
+class AspectColor {
+	WidgetType& W() { return *static_cast<WidgetType*>(this); }
+public:
+	void setColor(COLORREF text, COLORREF background) {
+		W().setColorImpl(text, background);
+	}
+	
+protected:
+	virtual ~AspectColor() { }
+};
+
 template< class WidgetType >
-class AspectCtlColor {
+class AspectColorCtlImpl {
+	friend class AspectColor<WidgetType>;
+	
 	WidgetType& W() { return *static_cast<WidgetType*>(this); }
 
 	struct Dispatcher {
-		Dispatcher(const BrushPtr& brush_, COLORREF text_, COLORREF bg_) : brush(brush_), text(text_), bg(bg_) { }
+		Dispatcher(COLORREF text_, COLORREF bg_) : brush(new Brush(bg_)), text(text_), bg(bg_) { }
 
 		bool operator()(const MSG& msg, LRESULT& ret) {
 			HDC dc = (HDC) msg.wParam;
@@ -61,15 +75,15 @@ class AspectCtlColor {
 		COLORREF bg;
 	};
 
-public:
 	/// Set the background, text and text colors 
-	void setColor(const BrushPtr& brush, COLORREF text, COLORREF textBackground) {
-		W().setCallback(Message(WM_CTLCOLOR), Dispatcher( brush, text, textBackground ));
+	void setColorImpl(COLORREF text, COLORREF background) {
+		W().setCallback(Message(WM_CTLCOLOR), Dispatcher(text, background));
 	}
 
 protected:
-	virtual ~AspectCtlColor() { }
+	virtual ~AspectColorCtlImpl() { }
 };
+
 
 // end namespace SmartWin
 }

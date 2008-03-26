@@ -30,7 +30,7 @@
 
 #include "../Widget.h"
 #include "../aspects/AspectBorder.h"
-#include "../aspects/AspectBackgroundColor.h"
+#include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
@@ -58,9 +58,10 @@ class WidgetCreator;
   */
 class WidgetComboBox :
 	// Aspects
-	public AspectCtlColor< WidgetComboBox >,
 	public AspectBorder< WidgetComboBox >,
 	public AspectClickable< WidgetComboBox >,
+	public AspectColor< WidgetComboBox >,
+	public AspectColorCtlImpl<WidgetComboBox>,
 	public AspectControl<WidgetComboBox>,
 	public AspectDblClickable< WidgetComboBox >,
 	public AspectFocus< WidgetComboBox >,
@@ -70,6 +71,8 @@ class WidgetComboBox :
 	public AspectText< WidgetComboBox >
 {
 	friend class WidgetCreator< WidgetComboBox >;
+	friend class AspectColor<WidgetComboBox>;
+	
 public:
 
 	/// Seed class
@@ -98,9 +101,6 @@ public:
 
 	// Aspect expectation implementation
 	Message getDblClickMessage();
-
-	// Aspect expectation implementation
-	static const Message & getBackgroundColorMessage();
 
 	// Commented in AspectSelection
 	int getSelectedIndex() const;
@@ -181,12 +181,6 @@ inline Message WidgetComboBox::getClickMessage()
 inline Message WidgetComboBox::getDblClickMessage()
 {
 	return Message( WM_COMMAND, MAKEWPARAM(this->getControlId(), CBN_DBLCLK) );
-}
-
-inline const Message & WidgetComboBox::getBackgroundColorMessage()
-{
-	static const Message retVal( WM_CTLCOLORLISTBOX );
-	return retVal;
 }
 
 inline int WidgetComboBox::getSelectedIndex() const

@@ -145,15 +145,15 @@ private:
 	}
 
 	void addColor(WidgetComboBox* widget) {
-		widget->setColor(WinUtil::bgBrush, WinUtil::textColor, WinUtil::bgColor);
+		widget->setColor(WinUtil::textColor, WinUtil::bgColor);
 		WidgetTextBox* text = widget->getTextBox();
 		if(text)
-			text->setColor(WinUtil::bgBrush, WinUtil::textColor, WinUtil::bgColor);
+			text->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 
 	template<typename A>
-	void addColor(SmartWin::AspectCtlColor<A>* widget) {
-		widget->setColor(WinUtil::bgBrush, WinUtil::textColor, WinUtil::bgColor);
+	void addColor(SmartWin::AspectColor<A>* widget) {
+		widget->setColor(WinUtil::textColor, WinUtil::bgColor);
 	}
 	
 	// Catch-rest for the above

@@ -38,7 +38,6 @@ WaitingUsersFrame::WaitingUsersFrame(SmartWin::WidgetTabView* mdiParent) :
 	{
 		queued = createTreeView(WinUtil::Seeds::treeView);
 		addWidget(queued);
-		queued->setColor(WinUtil::textColor, WinUtil::bgColor);
 		queued->onContextMenu(std::tr1::bind(&WaitingUsersFrame::handleContextMenu, this, _1));
 		queued->onChar(std::tr1::bind(&WaitingUsersFrame::handleChar, this, _1));
 	}

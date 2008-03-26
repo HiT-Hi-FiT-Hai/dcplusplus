@@ -35,6 +35,7 @@
 #include "../aspects/AspectBorder.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
+#include "../aspects/AspectColor.h"
 #include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
@@ -72,6 +73,7 @@ class WidgetListView :
 	public AspectBorder< WidgetListView >,
 	public AspectClickable< WidgetListView >,
 	public AspectCollection<WidgetListView, int>,
+	public AspectColor<WidgetListView>,
 	public AspectControl<WidgetListView>,
 	public AspectData<WidgetListView, int>,
 	public AspectDblClickable< WidgetListView >,
@@ -97,6 +99,7 @@ class WidgetListView :
 	// Need to be friend to access private data...
 	friend class WidgetCreator< WidgetListView >;
 	friend class AspectCollection<WidgetListView, int>;
+	friend class AspectColor<WidgetListView>;
 	friend class AspectData<WidgetListView, int>;
 
 public:
@@ -469,8 +472,6 @@ public:
 	
 	void ensureVisible(int i, bool partial = false);
 	
-	void setColor(COLORREF text, COLORREF background);
-
 	/// Actually creates the Data Grid Control
 	/** You should call WidgetFactory::createListView if you instantiate class
 	  * directly. <br>
@@ -545,6 +546,10 @@ private:
 	void eraseImpl( int row );
 	void clearImpl();
 	size_t sizeImpl() const;
+	
+	// AspectColor
+	void setColorImpl(COLORREF text, COLORREF background);
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -852,7 +857,7 @@ inline void WidgetListView::ensureVisible(int i, bool partial) {
 	ListView_EnsureVisible(this->handle(), i, false);
 }
 
-inline void WidgetListView::setColor(COLORREF text, COLORREF background) {
+inline void WidgetListView::setColorImpl(COLORREF text, COLORREF background) {
 	ListView_SetTextColor(this->handle(), text);
 	ListView_SetTextBkColor(this->handle(), background);
 	ListView_SetBkColor(this->handle(), background);
