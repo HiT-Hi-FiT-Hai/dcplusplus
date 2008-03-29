@@ -116,9 +116,8 @@ void Appearance2Page::write() {
 }
 
 void Appearance2Page::handleBackgroundClicked() {
-	WidgetChooseColor::ColorParams initialColorParams(bg),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk()) {
+	ColorDialog::ColorParams colorParams(bg);
+	if(createColorDialog().open(colorParams)) {
 		bg = colorParams.getColor();
 		example->setColor(fg, bg);
 		example->invalidateWidget();
@@ -139,17 +138,17 @@ void Appearance2Page::handleTextClicked() {
 }
 
 void Appearance2Page::handleULClicked() {
-	WidgetChooseColor::ColorParams initialColorParams(upBar),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(upBar);
+	if(createColorDialog().open(colorParams)) {
 		upBar = colorParams.getColor();
+	}
 }
 
 void Appearance2Page::handleDLClicked() {
-	WidgetChooseColor::ColorParams initialColorParams(downBar),
-		colorParams = createChooseColor().showDialog(initialColorParams);
-	if(colorParams.userPressedOk())
+	ColorDialog::ColorParams colorParams(downBar);
+	if(createColorDialog().open(colorParams)) {
 		downBar = colorParams.getColor();
+	}
 }
 
 void Appearance2Page::handleBrowseClicked() {

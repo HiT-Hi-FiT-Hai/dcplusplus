@@ -32,7 +32,7 @@
 #include "widgets/Button.h"
 #include "widgets/FolderDialog.h"
 #include "widgets/WidgetCheckBox.h"
-#include "widgets/WidgetChooseColor.h"
+#include "widgets/ColorDialog.h"
 #include "widgets/WidgetComboBox.h"
 #include "widgets/WidgetListView.h"
 #include "widgets/WidgetDateTimePicker.h"
@@ -185,8 +185,8 @@ public:
 	/// SaveFileDialog class and object type.
 	typedef SmartWin::WidgetSaveFile WidgetSaveFile;
 
-	/// WidgetChooseColor class and object type.
-	typedef SmartWin::WidgetChooseColor WidgetChooseColor;
+	/// ColorDialog class and object type.
+	typedef SmartWin::ColorDialog ColorDialog;
 
 	/// ComboBox class type.
 	typedef SmartWin::WidgetComboBox WidgetComboBox;
@@ -262,10 +262,10 @@ public:
 	  */
 	WidgetSaveFile createSaveFile();
 
-	/// Creates a WidgetChooseColor and returns it.
+	/// Creates a ColorDialog and returns it.
 	/** Usable to let user choose font from the system installed fonts.
 	  */
-	WidgetChooseColor createChooseColor();
+	ColorDialog createColorDialog();
 
 	// TODO: Update, this isn't an automated collected Widget anymore...
 	/// Creates a Message Box and returns a pointer to it.
@@ -500,10 +500,10 @@ WidgetFactory< ContainerWidgetType >::createSaveFile()
 }
 
 template<typename ContainerWidgetType>
-typename WidgetFactory< ContainerWidgetType >::WidgetChooseColor
-WidgetFactory< ContainerWidgetType >::createChooseColor()
+typename WidgetFactory< ContainerWidgetType >::ColorDialog
+WidgetFactory< ContainerWidgetType >::createColorDialog()
 {
-	return WidgetChooseColor( this );
+	return ColorDialog( this );
 }
 
 template<typename ContainerWidgetType>
