@@ -3,10 +3,8 @@
 namespace SmartWin {
 
 bool ColorDialog::open( ColorParams & colorParams, bool basic, bool allowFullOpen ) {
-	CHOOSECOLOR cc;
-	cc.lStructSize = ( DWORD ) sizeof( CHOOSECOLOR );
+	CHOOSECOLOR cc = { sizeof( CHOOSECOLOR ) };
 	cc.hwndOwner = getParentHandle();
-	cc.hInstance = NULL;
 	cc.rgbResult = colorParams.itsColor;
 	cc.lpCustColors = itsColorParams.itsCustomColors;
 	cc.Flags = CC_ANYCOLOR | CC_RGBINIT;
@@ -14,11 +12,8 @@ bool ColorDialog::open( ColorParams & colorParams, bool basic, bool allowFullOpe
 		cc.Flags |= CC_FULLOPEN;
 	if ( !allowFullOpen )
 		cc.Flags |= CC_PREVENTFULLOPEN;
-	cc.lCustData = NULL;
-	cc.lpfnHook = NULL;
-	cc.lpTemplateName = NULL;
 
-	if(::ChooseColor( & cc ) == TRUE) {
+	if(::ChooseColor( & cc )) {
 		colorParams.itsColor = cc.rgbResult;
 		return true;
 	}
