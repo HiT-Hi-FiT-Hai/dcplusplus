@@ -930,9 +930,9 @@ tstring HubFrame::getStatusUsers() const {
 tstring HubFrame::getStatusAverageShared() const {
 	int64_t available;
 	size_t userCount = 0;
-	if (users->getSelectedCount() > 1) {
+	if (users->countSelected() > 1) {
 		available = users->forEachSelectedT(CountAvailable()).available;
-		userCount = users->getSelectedCount();
+		userCount = users->countSelected();
 	} else {
 		available = std::for_each(userMap.begin(), userMap.end(), CountAvailable()).available;
 		for(UserMap::const_iterator i = userMap.begin(); i != userMap.end(); ++i){
