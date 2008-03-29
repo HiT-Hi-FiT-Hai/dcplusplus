@@ -37,6 +37,8 @@ namespace SmartWin
 template<typename Policy>
 class MessageMapPolicy : public Policy {
 public:
+	typedef MessageMapPolicy<Policy> PolicyType;
+	
 	MessageMapPolicy(Widget* parent) : Policy(parent) { }
 
 	static LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {

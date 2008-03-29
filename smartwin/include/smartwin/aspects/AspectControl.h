@@ -37,9 +37,6 @@ public:
 
 	/// Object type
 	typedef ThisType* ObjectType;
-
-	/// Policy type
-	typedef MessageMapPolicy<Policies::Subclassed> PolicyType;
 	
 	unsigned int getControlId();
 	

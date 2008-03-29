@@ -196,28 +196,6 @@ public:
 	  */
 	Point getTextSize( const SmartUtil::tstring & text );
 
-	/// Maximize your window
-	/** This will make the window fill the whole area that the window has available.
-	  * <br>
-	  * This function cannot be called for any Widget types other than those derived
-	  * from WidgetWindowBase.
-	  */
-	void maximize();
-
-	/// Minimize your window
-	/** This will make the window become minimized. <br>
-	  * This function cannot be called for any Widget types other than those derived
-	  * from WidgetWindowBase.
-	  */
-	void minimize();
-
-	/// Restores your window
-	/** This will make the window become restored. <br>
-	  * This function cannot be called for any Widget types other than those derived
-	  * from WidgetWindowBase.
-	  */
-	void restore();
-
 	/// Brings the widget to the front
 	/** Makes the widget become the front most widget meaning it will not be obscured
 	  * by other widgets which are contained in the same container widget. <br>
@@ -416,7 +394,6 @@ Point AspectSizable< WidgetType >::getPosition() const
 	return this->getBounds().pos;
 }
 
-
 template< class WidgetType >
 Point AspectSizable< WidgetType >::getScreenPosition() const
 {
@@ -424,8 +401,6 @@ Point AspectSizable< WidgetType >::getScreenPosition() const
 	::GetWindowRect( H(), & rc );
 	return Point( rc.left, rc.top );
 }
-
-
 
 template< class WidgetType >
 Point AspectSizable< WidgetType >::getClientAreaSize() const
@@ -453,48 +428,6 @@ Point AspectSizable< WidgetType >
 	::ReleaseDC( hWnd, hDC );
 
 	return(Point( wRect.right, wRect.bottom ) );
-}
-
-template< class WidgetType >
-void AspectSizable< WidgetType >::maximize()
-{
-	// Magic Enum construct!!
-	// If you get a compile time error in the next line you are trying to maximize
-	// a window which doesn't support being maximized, e.g. a WidgetButton or WidgetTreeView
-#ifdef _MSC_VER
-	typename WidgetType::MaxiMiniRestorable;
-#else
-	typename WidgetType::MaxiMiniRestorable checker;
-#endif
-	::ShowWindow(H(), SW_SHOWMAXIMIZED );
-}
-
-template< class WidgetType >
-void AspectSizable< WidgetType >::minimize()
-{
-	// Magic Enum construct!!
-	// If you get a compile time error in the next line you are trying to minimize
-	// a window which soesn't support being minimized, e.g. a WidgetButton or WidgetTreeView
-#ifdef _MSC_VER
-	typename WidgetType::MaxiMiniRestorable;
-#else
-	typename WidgetType::MaxiMiniRestorable checker;
-#endif
-	::ShowWindow(H(), SW_MINIMIZE );
-}
-
-template< class WidgetType >
-void AspectSizable< WidgetType >::restore()
-{
-	// Magic Enum construct!!
-	// If you get a compile time error in the next line you are trying to restore
-	// a window which soesn't support being restored, e.g. a WidgetButton or WidgetTreeView
-#ifdef _MSC_VER
-	typename WidgetType::MaxiMiniRestorable;
-#else
-	typename WidgetType::MaxiMiniRestorable checker;
-#endif
-	::ShowWindow(H(), SW_RESTORE );
 }
 
 template< class WidgetType >

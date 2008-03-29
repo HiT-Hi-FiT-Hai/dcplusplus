@@ -42,6 +42,7 @@
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectHelp.h"
 #include "../aspects/AspectKeyboard.h"
+#include "../aspects/AspectMinMax.h"
 #include "../aspects/AspectMouse.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectRaw.h"
@@ -96,6 +97,7 @@ class WidgetWindowBase :
 	public AspectFont< WidgetWindowBase< Policy > >,
 	public AspectHelp< WidgetWindowBase< Policy > >,
 	public AspectKeyboard< WidgetWindowBase< Policy > >,
+	public AspectMinMax<WidgetWindowBase<Policy> >,
 	public AspectMouse< WidgetWindowBase< Policy > >,
 	public AspectPainting< WidgetWindowBase< Policy > >,
 	public AspectRaw< WidgetWindowBase< Policy > >,
@@ -151,14 +153,6 @@ public:
 
 	typedef MessageMapPolicy< Policy > PolicyType;
 	
-	// The next line must be included in Widgets that are supposed to support being
-	// Maximized, Minimized or Restored. It's a Magic Enum construct and can be
-	// read about at
-	// http://blog.notus.no/thomas/PermaLink.aspx?guid=c311fe7e-40d5-48a2-baa3-f69957d5f313
-	// The enum is dereferenced in AspectSizable::restore/minimize/maximize
-	enum MaxiMiniRestorable
-	{};
-
 	// TODO: Outfactor into WidgetClosable
 	/// Event Handler setter for the Closing Event
 	/** If supplied event handler is called before the window is closed. <br>
