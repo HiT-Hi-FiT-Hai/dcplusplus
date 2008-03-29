@@ -3,12 +3,12 @@
 
 #include "AspectColor.h"
 #include "AspectClickable.h"
-#include "AspectControl.h"
 #include "AspectDblClickable.h"
 #include "AspectFocus.h"
 #include "AspectFont.h"
 #include "AspectPainting.h"
 #include "AspectText.h"
+#include "../widgets/Control.h"
 
 namespace SmartWin {
 /** Common stuff for all buttons */
@@ -17,7 +17,7 @@ class AspectButton :
 	public AspectClickable<WidgetType>,
 	public AspectColor<WidgetType>,
 	public AspectColorCtlImpl<WidgetType>,
-	public AspectControl,
+	public Control,
 	public AspectDblClickable<WidgetType>,
 	public AspectFocus< WidgetType >,
 	public AspectFont< WidgetType >,
@@ -54,7 +54,7 @@ Message AspectButton<WidgetType>::getClickMessage() {
 
 template<typename WidgetType>
 Message AspectButton<WidgetType>::getDblClickMessage() {
-	return Message( WM_COMMAND, MAKEWPARAM(static_cast<WidgetType*>(this)->getControlId(), BN_CLICKED) );
+	return Message( WM_COMMAND, MAKEWPARAM(static_cast<WidgetType*>(this)->getControlId(), BN_DBLCLK) );
 }
 
 template<typename WidgetType>

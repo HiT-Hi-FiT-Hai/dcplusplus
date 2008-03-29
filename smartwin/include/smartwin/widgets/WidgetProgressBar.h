@@ -29,8 +29,8 @@
 #define WidgetProgressBar_h
 
 #include "../Widget.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectPainting.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -51,8 +51,8 @@ class WidgetCreator;
   * jobs, often used when downloading from internet or installing applications etc.   
   */
 class WidgetProgressBar :
+	public Control,
 	// Aspects
-	public AspectControl,
 	public AspectPainting< WidgetProgressBar >
 {
 	friend class WidgetCreator< WidgetProgressBar >;

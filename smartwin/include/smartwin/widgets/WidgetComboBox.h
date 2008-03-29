@@ -32,13 +32,13 @@
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectText.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -62,7 +62,7 @@ class WidgetComboBox :
 	public AspectCollection<WidgetComboBox, int>,
 	public AspectColor< WidgetComboBox >,
 	public AspectColorCtlImpl<WidgetComboBox>,
-	public AspectControl,
+	public Control,
 	public AspectDblClickable< WidgetComboBox >,
 	public AspectFocus< WidgetComboBox >,
 	public AspectFont< WidgetComboBox >,

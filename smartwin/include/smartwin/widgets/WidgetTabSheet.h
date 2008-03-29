@@ -32,12 +32,12 @@
 #include "../resources/ImageList.h"
 #include "../Rectangle.h"
 #include "../aspects/AspectCollection.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectSelection.h"
 #include "../aspects/AspectText.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -63,9 +63,9 @@ class WidgetCreator;
   * has.
   */
 class WidgetTabSheet :
+	public Control,
 	// Aspects
 	public AspectCollection<WidgetTabSheet, int>,
-	public AspectControl,
 	public AspectFocus< WidgetTabSheet >,
 	public AspectFont< WidgetTabSheet >,
 	public AspectPainting< WidgetTabSheet >,

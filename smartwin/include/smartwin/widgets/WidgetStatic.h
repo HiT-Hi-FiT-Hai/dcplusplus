@@ -31,13 +31,13 @@
 #include "../Widget.h"
 #include "../aspects/AspectColor.h"
 #include "../aspects/AspectClickable.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectText.h"
 #include "../resources/Bitmap.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -60,11 +60,11 @@ class WidgetCreator;
   * It can load a bitmap.
   */
 class WidgetStatic :
+	public Control,
 	// Aspects
 	public AspectClickable< WidgetStatic >,
 	public AspectColor< WidgetStatic >,
 	public AspectColorCtlImpl<WidgetStatic>,
-	public AspectControl,
 	public AspectDblClickable< WidgetStatic >,
 	public AspectFocus< WidgetStatic >,
 	public AspectFont< WidgetStatic >,

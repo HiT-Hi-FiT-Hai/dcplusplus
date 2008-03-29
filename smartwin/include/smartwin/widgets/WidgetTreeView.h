@@ -34,12 +34,12 @@
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
 #include "../aspects/AspectColor.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectSelection.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -61,11 +61,11 @@ class WidgetCreator;
    */
 
 class WidgetTreeView :
+	public Control,
 	// Aspects
 	public AspectClickable< WidgetTreeView >,
 	public AspectCollection<WidgetTreeView, HTREEITEM>,
 	public AspectColor<WidgetTreeView>,
-	public AspectControl,
 	public AspectData<WidgetTreeView, HTREEITEM>,
 	public AspectDblClickable< WidgetTreeView >,
 	public AspectFocus< WidgetTreeView >,

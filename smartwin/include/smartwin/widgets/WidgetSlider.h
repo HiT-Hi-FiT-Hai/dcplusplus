@@ -29,10 +29,10 @@
 #define WidgetSlider_h
 
 #include "../Widget.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectScrollable.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -56,8 +56,8 @@ class WidgetCreator;
   * the WidgetSpinner control, but have another visual appearance.
   */
 class WidgetSlider :
+	public Control,
 	// Aspects
-	public AspectControl,
 	public AspectFocus< WidgetSlider >,
 	public AspectPainting< WidgetSlider >,
 	public AspectScrollable< WidgetSlider >

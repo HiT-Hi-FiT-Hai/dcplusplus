@@ -30,12 +30,12 @@
 
 #include "../Widget.h"
 #include "../aspects/AspectColor.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectText.h"
 #include "../aspects/AspectUpdate.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -64,10 +64,10 @@ class WidgetCreator;
   * < ul > < li >WidgetRichTextBox< /li > < /ul >
   */
 class WidgetTextBoxBase :
+	public Control,
 	// Aspect classes
 	public AspectColor< WidgetTextBoxBase >,
 	public AspectColorCtlImpl<WidgetTextBoxBase>,
-	public AspectControl,
 	public AspectFocus< WidgetTextBoxBase >,
 	public AspectFont< WidgetTextBoxBase >,
 	public AspectScrollable< WidgetTextBoxBase >,

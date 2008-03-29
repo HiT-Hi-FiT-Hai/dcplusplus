@@ -30,10 +30,10 @@
 
 #include "../Widget.h"
 #include "../aspects/AspectClickable.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -54,9 +54,9 @@ class WidgetCreator;
   * declare a point in time within 1800 - 2100   
   */
 class WidgetDateTimePicker :
+	public Control,
 	// Aspects
 	public AspectClickable< WidgetDateTimePicker >,
-	public AspectControl,
 	public AspectFocus< WidgetDateTimePicker >,
 	public AspectFont< WidgetDateTimePicker >,
 	public AspectPainting< WidgetDateTimePicker >

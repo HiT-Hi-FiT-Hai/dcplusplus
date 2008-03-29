@@ -33,10 +33,10 @@
 #include "../Widget.h"
 #include "../Rectangle.h"
 #include "../Dispatchers.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../resources/ImageList.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -57,8 +57,8 @@ class WidgetCreator;
   * to view the log of URL's you have been to etc...   
   */
 class WidgetToolbar :
+	public Control,
 	// Aspects
-	public AspectControl,
 	public AspectFocus< WidgetToolbar >,
 	public AspectFont< WidgetToolbar >
 {

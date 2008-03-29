@@ -35,13 +35,13 @@
 #include "../aspects/AspectClickable.h"
 #include "../aspects/AspectCollection.h"
 #include "../aspects/AspectColor.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectData.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFocus.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectScrollable.h"
 #include "../aspects/AspectSelection.h"
+#include "Control.h"
 #include "WidgetListViewEditBox.h"
 
 #include <vector>
@@ -68,11 +68,11 @@ class WidgetCreator;
   * to "map" an LPARAM value to a physical rownumber and vice versa.
   */
 class WidgetListView :
+	public Control,
 	// Aspect classes
 	public AspectClickable< WidgetListView >,
 	public AspectCollection<WidgetListView, int>,
 	public AspectColor<WidgetListView>,
-	public AspectControl,
 	public AspectData<WidgetListView, int>,
 	public AspectDblClickable< WidgetListView >,
 	public AspectFocus< WidgetListView >,

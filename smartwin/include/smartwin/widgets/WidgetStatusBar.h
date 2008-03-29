@@ -30,11 +30,11 @@
 
 #include "../Widget.h"
 #include "../aspects/AspectClickable.h"
-#include "../aspects/AspectControl.h"
 #include "../aspects/AspectDblClickable.h"
 #include "../aspects/AspectFont.h"
 #include "../aspects/AspectPainting.h"
 #include "../aspects/AspectText.h"
+#include "Control.h"
 
 namespace SmartWin
 {
@@ -104,10 +104,10 @@ class NoSection :
 template< class TypeOfStatusBar = NoSection >
 class WidgetStatusBar :
 	public TypeOfStatusBar,
+	public Control,
 	
 	// Aspects
 	public AspectClickable< WidgetStatusBar< TypeOfStatusBar > >,
-	public AspectControl,
 	public AspectDblClickable< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectFont< WidgetStatusBar< TypeOfStatusBar > >,
 	public AspectPainting< WidgetStatusBar< TypeOfStatusBar > >
